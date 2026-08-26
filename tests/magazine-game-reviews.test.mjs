@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
+import vm from "node:vm";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
@@ -51,8 +52,8 @@ test("cached magazine references cover almost the entire Amiga catalogue without
   const source = reviewSource();
   const amigaGames = games.filter((game) => /amiga/i.test(String(game.system || "")));
   const covered = amigaGames.filter((game) => source.games[`amiga:${game.slug}`]?.length);
-  assert.equal(amigaGames.length, 99);
-  assert.equal(covered.length, 98);
+  assert.equal(amigaGames.length, 100);
+  assert.equal(covered.length, 99);
 });
 
 test("Amiga title variants retain their complete verified review sets", () => {
@@ -75,6 +76,68 @@ test("schema loader uses the combined magazine runtime", () => {
   const schema = fs.readFileSync(path.join(root, "js", "ccg-schema.js"), "utf8");
   assert.match(schema, /magazine-game-reviews-runtime\.js/);
   assert.doesNotMatch(schema, /script\.src = '\/js\/zzap64-game-reviews-runtime\.js'/);
+});
+
+test("magazine runtime resolves Amiga pages from their generated VideoGame schema", async () => {
+  const runtime = fs.readFileSync(path.join(root, "js", "magazine-game-reviews-runtime.js"), "utf8");
+  const ruffPage = fs.readFileSync(path.join(root, "games", "ruff-n-tumble", "index.html"), "utf8");
+  const source = reviewSource();
+  const schema = (ruffPage.match(/<script type="application\/ld\+json" data-ccg-schema="game-graph">([\s\S]*?)<\/script>/) || [])[1];
+  const requested = [];
+  const requestedKeys = [];
+  const container = {
+    isConnected: true,
+    appendChild() {},
+    querySelectorAll() { return []; }
+  };
+  const document = {
+    readyState: "complete",
+    title: "Ruff 'N' Tumble – AMIGA | Review, Screens & History",
+    body: { dataset: {} },
+    documentElement: { dataset: {}, matches: () => true },
+    getElementById(id) { return id === "gameMagazineReviews" ? container : null; },
+    querySelector() { return null; },
+    querySelectorAll(selector) { return selector === 'script[type="application/ld+json"]' ? [{ textContent: schema }] : []; }
+  };
+  class MutationObserver {
+    disconnect() {}
+    observe() {}
+  }
+  const window = {
+    location: { pathname: "/games/ruff-n-tumble/" },
+    setTimeout() {}
+  };
+
+  assert.doesNotMatch(ruffPage, /id="gameMetaSystem"/);
+  assert.match(ruffPage, /"@type":"VideoGame"/);
+  assert.match(ruffPage, /"gamePlatform":"Amiga"/);
+  assert.equal(source.games["amiga:ruff-n-tumble"].length, 13);
+
+  vm.runInNewContext(runtime, {
+    console,
+    document,
+    MutationObserver,
+    URL,
+    setTimeout() {},
+    window,
+    fetch: async (url) => {
+      requested.push(String(url));
+      return {
+        ok: true,
+        json: async () => ({
+          games: new Proxy({}, {
+            get(target, key) {
+              requestedKeys.push(String(key));
+              return target[key];
+            }
+          })
+        })
+      };
+    }
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.ok(requested.includes("/data/magazine-game-reviews/q-t.json"));
+  assert.ok(requestedKeys.includes("amiga:ruff-n-tumble"));
 });
 
 test("game music requests metadata when its player opens", () => {

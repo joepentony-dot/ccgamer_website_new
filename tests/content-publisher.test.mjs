@@ -30,6 +30,11 @@ test('publisher keeps the YouTube API key server-side', () => {
   assert.match(html, /never reads or exposes the YouTube API key/i);
 });
 
+test('publisher labels the site video total as games plus all retro IDs', () => {
+  assert.match(html, /unique game \+ all retro IDs/i);
+  assert.doesNotMatch(html, /unique public \+ game IDs/i);
+});
+
 test('game publishing writes authoritative source data and optional thumbnail only', () => {
   assert.match(js, /games\/games\.json/);
   assert.match(js, /resources\/images\/thumbnails\/all\//);
