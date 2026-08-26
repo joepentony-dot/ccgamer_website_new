@@ -15,6 +15,7 @@ assert.match(index,/v10-41-r30-buglog\.js\?v=20260826r30/);
 assert.match(guard,/clearInterval\(api\.state\.timer\)/,"r30 must stop the competing r29 installer timer");
 assert.match(guard,/__ccgV141R30Cooperative/,"r30 must replace r29 maintenance with cooperative mode ownership");
 assert.match(guard,/goldenLocked/,"r30 must preserve a known-good post-release ownership snapshot");
+assert.match(guard,/const recoveryMove=\(\)=>state\.goldenMove\|\|state\.baselineMove/,"watchdog recovery must prefer the locked golden movement owner over later mutable wrappers");
 assert.match(guard,/assertNormalRuntimeOwnership/,"normal modes must continuously validate runtime ownership");
 assert.match(guard,/STALL_RECOVERY_MS=700/,"a held-key movement watchdog must recover silent movement stalls");
 assert.match(guard,/watchdogRecoveries/,"movement watchdog self-heals must be measurable");
