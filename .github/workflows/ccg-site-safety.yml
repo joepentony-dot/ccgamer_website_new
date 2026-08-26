@@ -8,6 +8,7 @@ on:
     paths:
       - "**/*.html"
       - "**/*.js"
+      - "**/*.mjs"
       - "**/*.css"
       - "**/*.json"
       - "**/*.xml"
@@ -98,6 +99,9 @@ jobs:
           node --check admin/js/admin-nav.js
           node --check admin/js/member-submissions.js
           node --check admin/js/member-hub-health.js
+          node --check admin/js/content-publisher-image-optimizer.js
+          node --check admin/js/content-publisher-status-reconciler.js
+          node --check admin/js/content-publisher-source-preflight.mjs
           node --check resources/js/auth/profile-lists.js
           node --check resources/js/auth/member-hub.js
           node --check resources/js/auth/member-library-sync.js
@@ -145,7 +149,17 @@ jobs:
         run: node scripts/audit-scroll-reachability.js
 
       - name: Run legacy game route audit
-        run: node scripts/audit-legacy-game-routes.js
+        shell: bash
+        run: |
+          ROUTE_AUDIT_ROOT="$RUNNER_TEMP/ccg-route-audit"
+          rm -rf "$ROUTE_AUDIT_ROOT"
+          cp -a . "$ROUTE_AUDIT_ROOT"
+          cd "$ROUTE_AUDIT_ROOT"
+          node scripts/migrate-ruff-n-tumble-thumbnail.js
+          node scripts/build-games.js
+          node scripts/prepare-seo-game-routes.js --output-root .
+          node scripts/generate-sitemaps.js
+          node scripts/audit-legacy-game-routes.js
 
       - name: Run music navigation audit
         run: node scripts/audit-music-navigation.js
