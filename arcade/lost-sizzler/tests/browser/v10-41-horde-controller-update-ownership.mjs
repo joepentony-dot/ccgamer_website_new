@@ -10,9 +10,11 @@ const repo=path.resolve(here,"../../../..");
 const v139Source=fs.readFileSync(path.join(repo,"arcade/lost-sizzler/js/v10-39-horde-live-loadout.js"),"utf8");
 const v140Source=fs.readFileSync(path.join(repo,"arcade/lost-sizzler/js/v10-40-horde-final.js"),"utf8");
 const hordeSafetySource=fs.readFileSync(path.join(repo,"arcade/lost-sizzler/js/v10-41-horde-mode-safety.js"),"utf8");
+const noPauseSource=fs.readFileSync(path.join(repo,"arcade/lost-sizzler/js/v10-41-multiplayer-no-pause.js"),"utf8");
 assert.doesNotMatch(v139Source,/window\.update\s*=/,"V10.39 must not replace the shared update loop after controller migration");
 assert.doesNotMatch(v140Source,/window\.update\s*=/,"V10.40 must not replace the shared update loop after controller migration");
 assert.doesNotMatch(hordeSafetySource,/window\.update\s*=/,"Horde mode safety must not sit in the shared update ancestry after isolation migration");
+assert.doesNotMatch(noPauseSource,/window\.update\s*=/,"multiplayer pause enforcement must not sit in the shared update ancestry after isolation migration");
 
 const mime={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".json":"application/json; charset=utf-8",".svg":"image/svg+xml",".webp":"image/webp",".png":"image/png",".ogg":"audio/ogg",".mp3":"audio/mpeg"};
 const sockets=new Set();
@@ -38,16 +40,18 @@ try{
   const page=await context.newPage();page.setDefaultTimeout(30000);
   const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerModeRuntime)&&Boolean(window.CCGLostSizzlerV139?.state?.installed)&&Boolean(window.CCGLostSizzlerV140?.state?.installed)&&Boolean(window.CCGLostSizzlerHordeModeSafety?.state?.installed));
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerModeRuntime)&&Boolean(window.CCGLostSizzlerV139?.state?.installed)&&Boolean(window.CCGLostSizzlerV140?.state?.installed)&&Boolean(window.CCGLostSizzlerHordeModeSafety?.state?.installed)&&Boolean(window.CCGLostSizzlerV141MultiplayerNoPause));
 
   const ownership=await page.evaluate(()=>({
     v139:{controllerOwned:Boolean(window.CCGLostSizzlerV139?.state?.controllerOwned),wrapped:Boolean(window.CCGLostSizzlerV139?.state?.wrapped)},
     v140:{controllerOwned:Boolean(window.CCGLostSizzlerV140?.state?.controllerOwned),wrapped:Boolean(window.CCGLostSizzlerV140?.state?.updateWrapped)},
-    hordeSafety:{wrapped:Boolean(window.CCGLostSizzlerHordeModeSafety?.state?.updateWrapped),schedulerActive:Number(window.CCGLostSizzlerHordeModeSafety?.state?.timer||0)>0}
+    hordeSafety:{wrapped:Boolean(window.CCGLostSizzlerHordeModeSafety?.state?.updateWrapped),schedulerActive:Number(window.CCGLostSizzlerHordeModeSafety?.state?.timer||0)>0},
+    noPause:{wrapped:Boolean(window.CCGLostSizzlerV141MultiplayerNoPause?.state?.updateWrapped),schedulerActive:Number(window.CCGLostSizzlerV141MultiplayerNoPause?.state?.timer||0)>0}
   }));
   assert.deepEqual(ownership.v139,{controllerOwned:true,wrapped:false},"V10.39 loadout maintenance must be controller-owned and not globally wrapped");
   assert.deepEqual(ownership.v140,{controllerOwned:true,wrapped:false},"V10.40 reserve maintenance must be controller-owned and not globally wrapped");
   assert.deepEqual(ownership.hordeSafety,{wrapped:false,schedulerActive:true},"Horde safety must use its Horde-only scheduler instead of intercepting every shared update");
+  assert.deepEqual(ownership.noPause,{wrapped:false,schedulerActive:true},"multiplayer pause recovery must use its mode-checked scheduler instead of intercepting every shared update");
 
   const routed=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerModeRuntime,special=window.CCGLostSizzlerSpecialModes,safety=window.CCGLostSizzlerHordeModeSafety;
@@ -87,7 +91,7 @@ try{
   assert.ok(routed.hordeOnline.reserveDelta>=1,"Horde Multiplayer must execute controller-owned reserve maintenance");
   assert.deepEqual(errors,[],`controller-owned Horde maintenance regression must have no uncaught browser errors: ${errors.join("\n")}`);
 
-  console.log("Lost Sizzler Horde controller maintenance, Horde safety isolation and Dungeon Solo update-ancestry regression passed in Chromium.");
+  console.log("Lost Sizzler Horde controller maintenance, Horde safety, multiplayer no-pause and Dungeon Solo update-ancestry regression passed in Chromium.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
