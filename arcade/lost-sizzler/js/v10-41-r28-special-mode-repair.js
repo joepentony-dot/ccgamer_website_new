@@ -27,6 +27,7 @@
   const modeType=()=>String(special()?.type||document.body?.dataset?.specialMode||"");
   const hordeActive=()=>modeType()==="horde-survivor";
   const spyActive=()=>modeType()==="sizzler-saboteurs";
+  const r29SpyOwnsWorld=()=>{try{return Boolean(window.CCGLostSizzlerV141R29SpyEngine?.state?.isolated||world?._v141r29SpyIsolated||special()?.state?.map?.spyRuntimeIsolatedR29)}catch(_){return false}};
   const hash32=value=>{let h=2166136261>>>0;for(const ch of String(value||"")){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
   const livePlayers=()=>{try{return typeof localPlayers==="function"?localPlayers():[p1,p2].filter(Boolean)}catch(_){return[]}};
 
@@ -200,6 +201,7 @@
 
   function spyFurnitureType(seed,index){const others=["desk","cupboard","cabinet","barrel","readingDesk"];return others[hash32(`${seed}|${index}`)%others.length]}
   function positionSpyFurniture(match){
+    if(r29SpyOwnsWorld())return false;
     if(!spyActive()||!match?.map?.rooms||!world?._v135SpyDoorMap)return false;let changed=false;
     const logicalById=new Map(match.map.rooms.map(room=>[String(room.id),room]));
     for(const physical of world.rooms||[]){
@@ -216,6 +218,10 @@
   function ensureSpyFurniture(){
     const active=special(),match=active?.state,map=match?.map;if(!spyActive()||!active?.authoritative||!map?.largeRoomGridV135||!Array.isArray(map.rooms))return false;
     const key=`${match.seed}|${match.round}`;
+    // r29 owns compact Spy map geometry and physical furniture. Once its
+    // ownership marker is present, the retained r28 compatibility timer must
+    // not rebuild or reposition that world underneath the controller runtime.
+    if(r29SpyOwnsWorld()){state.spyFurnitureKey=key;return true}
     if(!map._v141r28Bookcases){
       for(const room of map.rooms){
         room.furniture=Array.isArray(room.furniture)?room.furniture:[];
