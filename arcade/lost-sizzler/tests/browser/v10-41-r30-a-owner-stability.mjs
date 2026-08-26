@@ -1,4 +1,4 @@
-// Exact-head regression: trace late movement ownership against the current main merge ref.
+// Exact-head regression: trace late movement ownership after the current-main integration commit.
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import http from "node:http";
