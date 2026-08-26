@@ -11,9 +11,9 @@ const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const hotfix=read("js/v10-41-r25-spy-speed-bounty-hotfix.js");
 const index=read("index.html");
 
-// Delivery: r25 remains part of the canonical runtime under the current r29
+// Delivery: r25 remains part of the canonical runtime under the current r30
 // cache shell so browsers cannot retain an older copy of this compatibility layer.
-assert.match(index,/v10-41-r25-spy-speed-bounty-hotfix\.js\?v=20260825r29/,"canonical page must load the r25 Spy hotfix under the current r29 cache token");
+assert.match(index,/v10-41-r25-spy-speed-bounty-hotfix\.js\?v=20260826r30/,"canonical page must load the retained r25 Spy hotfix under the current r30 cache token");
 
 // Movement: the emergency r24 fallback and ordinary movement must be re-armed
 // from one normal dungeon cadence after any real Spy movement.
@@ -102,4 +102,4 @@ context.CCGLostSizzlerRareEvents.state.bounty={type:"KILL 3 HUNTERS"};
 assert.equal(api.purgeSpecialDungeonState(),false,"ordinary dungeon bounty behaviour must remain untouched");
 assert.deepEqual(context.CCGLostSizzlerRareEvents.state.bounty,{type:"KILL 3 HUNTERS"});
 
-console.log("Lost Sizzler r25 Spy movement cadence, Dungeon Bounty isolation and wrapper-stability checks passed under r29.");
+console.log("Lost Sizzler r25 Spy movement cadence, Dungeon Bounty isolation and wrapper-stability checks passed under r30.");
