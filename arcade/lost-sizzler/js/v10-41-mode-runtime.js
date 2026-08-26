@@ -91,6 +91,7 @@
   const state={
     activeId:"",previousId:"",transitions:0,generation:0,timer:0,lastSyncAt:0,lastTransitionReason:"",lastResetReason:"",
     hordeWaveResets:0,hordePhaseResets:0,globalHazardsPurged:0,globalCampingPurges:0,
+    hordeLoadoutMaintenances:0,hordeReserveMaintenances:0,
     ownedSystemInstalls:0,ownedSystemReassertions:0,ownedSystemCalls:0,blockedOwnedSystemCalls:0,hordeDeathPresentations:0
   };
 
@@ -248,9 +249,23 @@
     return presented
   }
 
+  function maintainHordeControllerSystems(){
+    const current=activeController();if(current.profile.family!=="horde")return false;
+    let maintained=false;
+    try{
+      const reserve=window.CCGLostSizzlerV140?.ensureExpandedWaveReserve;
+      if(typeof reserve==="function"){reserve();state.hordeReserveMaintenances++;maintained=true}
+    }catch(error){console.warn("[Lost Sizzler mode runtime] Horde reserve maintenance failed",error)}
+    try{
+      const loadout=window.CCGLostSizzlerV139?.syncLocalLoadout;
+      if(typeof loadout==="function"){loadout();state.hordeLoadoutMaintenances++;maintained=true}
+    }catch(error){console.warn("[Lost Sizzler mode runtime] Horde loadout maintenance failed",error)}
+    return maintained
+  }
+
   function frame(){
     const current=sync("frame");current.frame();ensureOwnedSystemGates();
-    if(current.profile.family==="horde"){monitorHordeLifecycle();presentHordeDeaths()}
+    if(current.profile.family==="horde"){maintainHordeControllerSystems();monitorHordeLifecycle();presentHordeDeaths()}
     return current
   }
 
@@ -259,6 +274,7 @@
       activeId:current.id,previousId:state.previousId,generation:state.generation,transitions:state.transitions,
       profile:{...current.profile},controllerState:{...current.state},lastTransitionReason:state.lastTransitionReason,lastResetReason:state.lastResetReason,
       hordeWaveResets:state.hordeWaveResets,hordePhaseResets:state.hordePhaseResets,globalHazardsPurged:state.globalHazardsPurged,globalCampingPurges:state.globalCampingPurges,
+      hordeLoadoutMaintenances:state.hordeLoadoutMaintenances,hordeReserveMaintenances:state.hordeReserveMaintenances,
       ownedSystemInstalls:state.ownedSystemInstalls,ownedSystemReassertions:state.ownedSystemReassertions,ownedSystemCalls:state.ownedSystemCalls,blockedOwnedSystemCalls:state.blockedOwnedSystemCalls,hordeDeathPresentations:state.hordeDeathPresentations
     }
   }
@@ -269,7 +285,7 @@
 
   window.CCGLostSizzlerModeRuntime={
     IDS,PROFILES,SHARED_CORE,MODE_OWNED,OWNED_SYSTEMS,detect,sync,frame,allows,inFamily,activeController,activeProfile,
-    resetModeTransient,monitorHordeLifecycle,presentHordeDeaths,ensureOwnedSystemGates,ownedSystemState,snapshot,
+    resetModeTransient,monitorHordeLifecycle,presentHordeDeaths,maintainHordeControllerSystems,ensureOwnedSystemGates,ownedSystemState,snapshot,
     get state(){return state},get controllers(){return controllers},get ownedSystems(){return ownedSystems}
   };
 })();
