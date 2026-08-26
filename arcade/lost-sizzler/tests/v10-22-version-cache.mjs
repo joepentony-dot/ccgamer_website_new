@@ -34,8 +34,8 @@ assert.ok(metaBuild,"game HTML must publish its loaded Lost Sizzler build number
 assert.equal(metaBuild,manifest.build,"HTML build number and live version manifest must match");
 assert.equal(metaCache,manifest.cacheToken,"HTML cache token and live version manifest must match");
 assert.equal(manifest.releaseVersion,"V10.41","current semantic release must remain V10.41");
-assert.equal(manifest.build,"2026.08.25.29","current published build must be explicit in the regression check");
-assert.equal(manifest.cacheToken,"20260825r29","current release cache token must be explicit in the live manifest");
+assert.equal(manifest.build,"2026.08.26.30","current published build must be explicit in the regression check");
+assert.equal(manifest.cacheToken,"20260826r30","current release cache token must be explicit in the live manifest");
 
 for(const asset of [
   "css/game.css","css/v10-6-gameplay.css","css/v10-41-r28.css","css/v10-41-r29.css","js/v10-41-cache-guard.js","js/v10-41-load-watchdog.js",
