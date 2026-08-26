@@ -190,9 +190,14 @@
   function movementWatchdogFor(player,watch){
     if(!player||spyActive()||!playing()){resetWatch(watch);return false}
     const code=heldCodeFor(player);if(!code){resetWatch(watch);return false}
-    const dir=directionForCode(code,player);if(!dir||!stepExpectedFree(player,dir)||(player.hitStunMs||0)>0||!cooldownReady(player)){resetWatch(watch);return false}
+    const dir=directionForCode(code,player);
+    if(!dir||!stepExpectedFree(player,dir)||(player.hitStunMs||0)>0){resetWatch(watch);return false}
     const x=Number(player.x),y=Number(player.y),now=performance.now();
     if(watch.code!==code||watch.x!==x||watch.y!==y){watch.code=code;watch.x=x;watch.y=y;watch.since=now;return false}
+    /* Movement cooldown is transient and must not erase held movement intent.
+     * A dead wrapper can repeatedly re-arm the cooldown while never moving the
+     * player, so the stall timer is allowed to continue through cooldown ticks. */
+    if(!cooldownReady(player))return false;
     if(now-watch.since<STALL_RECOVERY_MS||now-state.lastWatchdogRecoveryAt<RECOVERY_COOLDOWN_MS)return false;
     state.lastWatchdogRecoveryAt=now;
     assertNormalRuntimeOwnership("movement watchdog ownership repair");
