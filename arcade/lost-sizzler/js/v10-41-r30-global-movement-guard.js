@@ -57,6 +57,14 @@
     return false;
   }
   function spyContaminated(fn){return ISOLATED_MARKERS.some(marker=>chainHas(fn,marker))}
+  function topLevelSpyOwner(fn){
+    if(typeof fn!=="function")return false;
+    return ISOLATED_MARKERS.some(marker=>{try{return Boolean(fn[marker])}catch(_){return false}})
+  }
+  function controllerProtectedUpdate(fn){
+    if(typeof fn!=="function"||topLevelSpyOwner(fn))return false;
+    return chainHas(fn,"__ccgV141ModeFrameBoundary")
+  }
 
   function healthyBaseline(fn){return typeof fn==="function"&&!spyContaminated(fn)}
   function captureBaseline(){
@@ -133,7 +141,7 @@
   function assertNormalRuntimeOwnership(reason="periodic invariant"){
     if(spyActive()||spyEngine()?.state?.isolated)return false;
     const currentUpdate=window.update,currentMove=window.movePlayer,currentHurt=window.hurtPlayer;
-    const updateBad=typeof currentUpdate!=="function"||spyContaminated(currentUpdate);
+    const updateBad=typeof currentUpdate!=="function"||(!controllerProtectedUpdate(currentUpdate)&&spyContaminated(currentUpdate));
     const moveBad=typeof currentMove!=="function"||spyContaminated(currentMove);
     const hurtBad=typeof currentHurt!=="function"||spyContaminated(currentHurt);
     if(!(updateBad||moveBad||hurtBad))return false;
@@ -191,7 +199,7 @@
     held.add(event.code);
     try{input.add(event.code);const player=playerForCode(event.code);if(player&&typeof setDir==="function")setDir(player,event.code);state.inputBridges++}catch(_){}
   }
-  function bridgeKeyUp(event){if(!MOVE_CODES.has(event.code))return;held.delete(event.code);try{input.delete(event.code)}catch(_){}}
+  function bridgeKeyUp(event){if(!MOVE_CODES.has(event.code))return;held.delete(event.code);try{input.delete(event.code)}catch(_){}
   function resetWatch(watch){watch.x=null;watch.y=null;watch.code="";watch.since=0}
   function clearHeld(){held.clear();resetWatch(watches.p1);resetWatch(watches.p2)}
 
@@ -277,7 +285,7 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);clearHeld()},{once:true});
 
   window.CCGLostSizzlerV141R30={
-    originalLink,originalLinks,chainHas,spyContaminated,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,reassertHeldInput,movementWatchdog,makeR29Cooperative,
+    originalLink,originalLinks,chainHas,spyContaminated,topLevelSpyOwner,controllerProtectedUpdate,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,reassertHeldInput,movementWatchdog,makeR29Cooperative,
     constants:{ORIGINAL_LINKS},get state(){return state}
   };
 })();
