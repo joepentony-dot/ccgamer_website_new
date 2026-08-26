@@ -9,6 +9,7 @@
   const P2_CODES=new Set(["KeyI","KeyJ","KeyK","KeyL"]);
   const MOVE_CODES=new Set([...P1_CODES,...P2_CODES]);
   const ISOLATED_MARKERS=["__ccgV141R29SpyRuntimeOwner","__ccgV141SpyIsolated","__ccgV141SpyDamageBoundary"];
+  const ORIGINAL_LINKS=["__ccgOriginal","__ccgV141Original","__ccgV141TutorialOriginal","__ccgV141R27Original","__ccgV141R25Original"];
   const state={
     timer:0,r29TimerStopped:false,r29InstallCooperative:false,spyTimerStopped:false,
     baselineUpdate:null,baselineMove:null,baselineHurt:null,
@@ -16,7 +17,7 @@
     spyOwnerUpdate:null,spyOwnerMove:null,spyOwnerHurt:null,
     forcedRestores:0,ownershipRepairs:0,inputBridges:0,inputReassertions:0,
     watchdogRecoveries:0,watchdogMisses:0,watchdogCooldownBreaks:0,lastWatchdogRecoveryAt:0,
-    notificationOwnershipRepairs:0,
+    notificationOwnershipRepairs:0,nestedOwnershipDetections:0,
     lastRestoreAt:0,lastRestoreReason:"",lastModeType:"",modeTransitions:0,lastRecoveryLogAt:0
   };
   const held=new Set();
@@ -30,11 +31,18 @@
   const playing=()=>{try{return mode==="playing"&&document.body?.dataset?.runActive==="true"}catch(_){return false}};
   const releaseReady=()=>document.body?.dataset?.releaseReady==="true";
 
+  function originalLink(fn){
+    if(typeof fn!=="function")return null;
+    for(const key of ORIGINAL_LINKS){try{if(typeof fn[key]==="function"&&fn[key]!==fn)return fn[key]}catch(_){} }
+    return null;
+  }
   function chainHas(fn,marker){
     let current=fn;
-    for(let depth=0;depth<32&&typeof current==="function";depth++){
-      if(current?.[marker])return true;
-      current=current.__ccgOriginal||current.__ccgV141Original||null;
+    const seen=new Set();
+    for(let depth=0;depth<48&&typeof current==="function"&&!seen.has(current);depth++){
+      seen.add(current);
+      if(current?.[marker]){if(depth>0)state.nestedOwnershipDetections++;return true}
+      current=originalLink(current);
     }
     return false;
   }
@@ -244,7 +252,7 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);clearHeld()},{once:true});
 
   window.CCGLostSizzlerV141R30={
-    chainHas,spyContaminated,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,reassertHeldInput,movementWatchdog,makeR29Cooperative,
-    get state(){return state}
+    originalLink,chainHas,spyContaminated,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,reassertHeldInput,movementWatchdog,makeR29Cooperative,
+    constants:{ORIGINAL_LINKS},get state(){return state}
   };
 })();
