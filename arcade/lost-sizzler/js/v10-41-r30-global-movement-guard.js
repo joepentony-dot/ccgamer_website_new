@@ -15,7 +15,7 @@
     baselineUpdate:null,baselineMove:null,baselineHurt:null,
     goldenUpdate:null,goldenMove:null,goldenHurt:null,goldenLocked:false,goldenLockedAt:0,
     spyOwnerUpdate:null,spyOwnerMove:null,spyOwnerHurt:null,
-    forcedRestores:0,ownershipRepairs:0,inputBridges:0,inputReassertions:0,
+    forcedRestores:0,ownershipRepairs:0,ownershipCooldownResets:0,inputBridges:0,inputReassertions:0,
     watchdogRecoveries:0,watchdogMisses:0,watchdogCooldownBreaks:0,lastWatchdogRecoveryAt:0,
     notificationOwnershipRepairs:0,notificationPostInstallRepairs:0,nestedOwnershipDetections:0,
     lastRestoreAt:0,lastRestoreReason:"",lastModeType:"",modeTransitions:0,lastRecoveryLogAt:0
@@ -138,6 +138,14 @@
     state.spyOwnerUpdate=state.spyOwnerMove=state.spyOwnerHurt=null;noteRecovery(state.lastRestoreReason);return true;
   }
 
+  function resetRecoveredMovementCooldowns(){
+    let cleared=0;
+    try{if(typeof move1!=="undefined"&&Number(move1||0)>0){move1=0;cleared++}}catch(_){}
+    try{if(typeof move2!=="undefined"&&Number(move2||0)>0){move2=0;cleared++}}catch(_){}
+    state.ownershipCooldownResets+=cleared;
+    return cleared
+  }
+
   function assertNormalRuntimeOwnership(reason="periodic invariant"){
     if(spyActive()||spyEngine()?.state?.isolated)return false;
     const currentUpdate=window.update,currentMove=window.movePlayer,currentHurt=window.hurtPlayer;
@@ -147,7 +155,10 @@
     if(!(updateBad||moveBad||hurtBad))return false;
     const u=updateBad?recoveryUpdate():currentUpdate,m=moveBad?recoveryMove():currentMove,h=hurtBad?recoveryHurt():currentHurt;
     if((updateBad&&typeof u!=="function")||(moveBad&&typeof m!=="function")||(hurtBad&&typeof h!=="function"))return false;
-    state.ownershipRepairs++;return forceRestore(u,m,h,reason);
+    state.ownershipRepairs++;
+    const repaired=forceRestore(u,m,h,reason);
+    if(repaired&&moveBad)resetRecoveredMovementCooldowns();
+    return repaired
   }
 
   function maintainSpyOwnership(){
@@ -285,7 +296,7 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);clearHeld()},{once:true});
 
   window.CCGLostSizzlerV141R30={
-    originalLink,originalLinks,chainHas,spyContaminated,topLevelSpyOwner,controllerProtectedUpdate,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,reassertHeldInput,movementWatchdog,makeR29Cooperative,
+    originalLink,originalLinks,chainHas,spyContaminated,topLevelSpyOwner,controllerProtectedUpdate,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,resetRecoveredMovementCooldowns,reassertHeldInput,movementWatchdog,makeR29Cooperative,
     constants:{ORIGINAL_LINKS},get state(){return state}
   };
 })();
