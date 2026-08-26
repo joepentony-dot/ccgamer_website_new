@@ -7,7 +7,7 @@ import {chromium} from "playwright";
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const repo=path.resolve(here,"../../../..");
-const mime={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".json":"application/json",".svg":"image/svg+xml",".webp":"image/webp",".png":"image/png",".ogg":"audio/ogg",".mp3":"audio/mpeg"};
+const mime={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".json":"application/json; charset=utf-8",".svg":"image/svg+xml",".webp":"image/webp",".png":"image/png",".ogg":"audio/ogg",".mp3":"audio/mpeg"};
 const sockets=new Set();
 const server=http.createServer((req,res)=>{
   try{
@@ -36,28 +36,8 @@ const prepareSolo=async(page,seed)=>page.evaluate(seed=>{
   document.body.dataset.runActive="true";document.body.dataset.specialMode="";UI.menu?.classList.add("hidden");
   host.enemies=[];host.generators=[];move1=0;input.clear();return{x:p1.x,y:p1.y};
 },seed);
-const diagnosticState=(page,code)=>page.evaluate(code=>{
-  const r30=window.CCGLostSizzlerV141R30;
-  const describe=fn=>({name:String(fn?.name||""),spyFinal:Boolean(fn?.__ccgV141SpyFinal),spyIsolated:Boolean(fn?.__ccgV141SpyIsolated),spyRuntime:Boolean(fn?.__ccgV141R29SpyRuntimeOwner)});
-  return{
-    x:Number(p1?.x),y:Number(p1?.y),move1:Number(move1||0),move2:Number(move2||0),held:Boolean(code&&input?.has?.(code)),inputSize:Number(input?.size||0),
-    move:describe(window.movePlayer),golden:describe(r30.state.goldenMove),baseline:describe(r30.state.baselineMove),sameGolden:window.movePlayer===r30.state.goldenMove,sameBaseline:window.movePlayer===r30.state.baselineMove,
-    currentContaminated:r30.spyContaminated(window.movePlayer),goldenContaminated:r30.spyContaminated(r30.state.goldenMove),updateName:String(window.update?.name||""),controllerProtected:r30.controllerProtectedUpdate(window.update),
-    repairs:Number(r30.state.ownershipRepairs||0),cooldownResets:Number(r30.state.ownershipCooldownResets||0),watchdogRecoveries:Number(r30.state.watchdogRecoveries||0),inputReassertions:Number(r30.state.inputReassertions||0),
-    stack:{tutorial:Boolean(window.CCGLostSizzlerV141TutorialActionFinalizer?.state?.installed),spyMove:Boolean(window.CCGLostSizzlerV141SpyMovementFinalizer?.state?.moveInstalled),stabilityMove:Boolean(window.CCGLostSizzlerV141BrowserStabilityGameplay?.state?.moveGuard)}
-  };
-},code);
 const assertKeyboardMove=async(page,label,wait=320)=>{
   const d=await directionFor(page);assert.ok(d,`${label}: a walkable adjacent tile is required`);
-  if(label==="Solo after periodic ownership recovery"){
-    const before=await diagnosticState(page,d.code);
-    await page.keyboard.down(d.code);await page.waitForTimeout(70);const at70=await diagnosticState(page,d.code);
-    await page.waitForTimeout(100);const at170=await diagnosticState(page,d.code);
-    await page.waitForTimeout(Math.max(0,wait-170));const atEnd=await diagnosticState(page,d.code);
-    await page.keyboard.up(d.code);await page.waitForTimeout(100);const after=await diagnosticState(page,d.code);
-    console.log(`[r30-periodic-diagnostic] ${JSON.stringify({direction:d,before,at70,at170,atEnd,after})}`);
-    assert.notDeepEqual({x:after.x,y:after.y},{x:d.x,y:d.y},`${label}: held keyboard movement must change player coordinates`);return;
-  }
   await page.keyboard.down(d.code);await page.waitForTimeout(wait);await page.keyboard.up(d.code);await page.waitForTimeout(100);
   const after=await page.evaluate(()=>({x:p1.x,y:p1.y}));
   assert.notDeepEqual(after,{x:d.x,y:d.y},`${label}: held keyboard movement must change player coordinates`);
