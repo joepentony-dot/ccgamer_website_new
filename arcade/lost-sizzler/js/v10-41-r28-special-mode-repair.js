@@ -183,6 +183,11 @@
     if(current.__ccgV141R28SpyBoundary){state.toastSource=current;return true}
     if(current===state.toastSource)return true;
     const wrapped=function showToastV141R28ModeBoundary(title,text){if(hordeActive()&&HORDE_SUPPRESSED_TOAST.test(String(title||""))){state.hordeToastSuppressed++;clearHordeToastLeak();return false}if(spyActive()&&!allowedSpyNotification(title,text)){state.spySuppressed++;clearSpyNotificationLeak();return false}return current.apply(this,arguments)};
+    // Preserve final notification ownership synchronously when this retained
+    // special-mode guard becomes the outer showToast layer. Without this, the
+    // 80 ms compatibility timer can expose a top-level function without the
+    // r29 priority marker until the next finalizer pass.
+    if(current.__ccgV141Priority===true)wrapped.__ccgV141Priority=true;
     wrapped.__ccgV141R28SpyBoundary=true;wrapped.__ccgOriginal=current;window.showToast=wrapped;state.toastSource=wrapped;return true;
   }
   function installSpyMajorGuard(){
