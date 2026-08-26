@@ -21,6 +21,7 @@ on:
       - "data/publisher-histories*.json"
       - "data/seo-opportunity-targets.json"
       - "admin/js/content-publisher-image-optimizer.js"
+      - "admin/js/content-publisher-status-reconciler.js"
       - "js/game-secondary-publisher-runtime.js"
       - "js/ccg-publisher-history.js"
       - "js/ccg-category-omega.js"
@@ -29,6 +30,7 @@ on:
       - "scripts/upgrade-games-index.js"
       - "scripts/upgrade-category-pages.js"
       - "scripts/rebuild-games.js"
+      - "scripts/build-game-description-enrichments.js"
       - "scripts/apply-seo-opportunity-plan.js"
       - "scripts/build-games.js"
       - "scripts/build-magazine-review-chunks.js"
@@ -74,6 +76,7 @@ on:
       - "tests/cloudflare-audio-admin.test.mjs"
       - "tests/manual-viewer-polish.test.mjs"
       - "tests/seo-opportunity-plan.test.mjs"
+      - "tests/game-description-enrichment-fallback.test.mjs"
       - "tools/seo/static-pages.json"
       - "emulation.html"
       - "quiz/quiz.html"
@@ -105,6 +108,12 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: "24"
+
+      - name: Validate Content Publisher recovery controls
+        run: node --check admin/js/content-publisher-status-reconciler.js
+
+      - name: Validate game description fallback
+        run: node --test tests/game-description-enrichment-fallback.test.mjs
 
       - name: Validate magazine publishing pipeline
         run: node --test tests/magazine-publishing-pipeline.test.mjs
