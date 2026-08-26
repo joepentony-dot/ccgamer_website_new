@@ -19350,6 +19350,54 @@
     "_ccg_migrated": false
   },
   {
+    "system": "AMIGA",
+    "id": "ruff_n_tumble",
+    "slug": "ruff-n-tumble",
+    "title": "Ruff 'N' Tumble",
+    "sorttitle": "Ruff 'N' Tumble",
+    "year": 1993,
+    "genres": [
+      "arcade",
+      "platform",
+      "shooting"
+    ],
+    "collections": [
+      "top-picks"
+    ],
+    "videoid": "dLZpRuG_NwA",
+    "thumbnail": "resources/images/thumbnails/all/ruff-n-tumble.png",
+    "pdf": "https://drive.google.com/file/d/1JWLtEmSGKryPXr5A47dtahGkI7d_nzvo/view?usp=drive_link",
+    "disk": [],
+    "download_status": "",
+    "lemon": [
+      "https://drive.google.com/file/d/1JWLtEmSGKryPXr5A47dtahGkI7d_nzvo/view?usp=drive_link"
+    ],
+    "zzap": [],
+    "description": "Ruff ’n’ Tumble is a superb 1994 Commodore Amiga run-and-gun platformer from Wunderkind Software and Renegade. Guide Ruff Rodgers through 16 action-packed stages filled with Tinheads, weapon upgrades, hidden routes and demanding platforming, all backed by detailed OCS/ECS graphics and a memorable Jason Page soundtrack.",
+    "ccg_rating": 9,
+    "ccg_rating_reason": "Superb graphics, satisfying weapons and excellent platforming make Ruff ’n’ Tumble one of the Amiga’s best action platformers, despite a few scrolling quirks.",
+    "credits": {
+      "publisher": [
+        "Renegade"
+      ],
+      "producer": "",
+      "coder": [
+        "Jason Perkins"
+      ],
+      "graphics": [
+        "Robin Levy"
+      ],
+      "musician": [
+        "Jason Page"
+      ],
+      "re_releaser": [],
+      "developer": "Wunderkind"
+    },
+    "developer": "Wunderkind",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+  {
     "system": "C64",
     "id": "the_running_man",
     "slug": "the-running-man",
