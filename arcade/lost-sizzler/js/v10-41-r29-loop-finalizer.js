@@ -129,6 +129,10 @@
       return true;
     }
     const wrapped=function showToastV141R29NotificationRail(title){
+      // A late installer can become the outer showToast owner between 40 ms
+      // maintenance passes. Reassert priority synchronously during the real
+      // dispatch so notification ownership cannot be sampled in that race.
+      stabiliseToastOwner(window.showToast);
       // Keep the final notification owner capable of enforcing the Spy hint
       // cooldown even if a late legacy wrapper temporarily displaces the r29
       // throttle from the visible showToast ancestry. This is notification
