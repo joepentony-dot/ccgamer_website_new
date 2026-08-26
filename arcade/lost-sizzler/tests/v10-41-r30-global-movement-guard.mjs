@@ -14,6 +14,8 @@ assert.match(index,/v10-41-r30-global-movement-guard\.js\?v=20260826r30/);
 assert.match(index,/v10-41-r30-buglog\.js\?v=20260826r30/);
 assert.match(guard,/clearInterval\(api\.state\.timer\)/,"r30 must stop the competing r29 installer timer");
 assert.match(guard,/__ccgV141R30Cooperative/,"r30 must replace r29 maintenance with cooperative mode ownership");
+assert.match(guard,/const result=original\(\);\s*stabilisePostR29Install\(\);\s*return result;/,"every cooperative r29 install must synchronously stabilise notification ownership before returning");
+assert.match(guard,/notificationPostInstallRepairs/,"synchronous post-r29 notification repairs must be measurable");
 assert.match(guard,/goldenLocked/,"r30 must preserve a known-good post-release ownership snapshot");
 assert.match(guard,/const recoveryMove=\(\)=>state\.goldenMove\|\|state\.baselineMove/,"watchdog recovery must prefer the locked golden movement owner over later mutable wrappers");
 assert.match(guard,/function originalLinks\(fn\)/,"r30 must inspect every known wrapper ancestry link instead of only one parent branch");
