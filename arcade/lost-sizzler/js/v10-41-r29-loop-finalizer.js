@@ -9,7 +9,8 @@
     spyRuntimeRequested:false,spyRuntimeReady:false,spyRuntimeError:"",
     spyNetworkRequested:false,spyNetworkReady:false,spyNetworkError:"",
     notificationRail:null,notificationObserver:null,notificationRailReady:false,notificationLive:false,
-    notificationPending:false,notificationToastWrapped:false,notificationTopStabilised:0
+    notificationPending:false,notificationToastWrapped:false,notificationTopStabilised:0,
+    spyHintAt:0,spyHintSuppressed:0
   };
 
   const releaseRevision=()=>String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||"20260825r29");
@@ -93,6 +94,22 @@
     return false;
   }
 
+  function spyGuidanceSuppressed(title){
+    if(String(title||"").toUpperCase()!=="MOVE BESIDE FURNITURE")return false;
+    let spy=false;
+    try{spy=window.CCGLostSizzlerSpecialModes?.active?.type==="sizzler-saboteurs"||document.body?.dataset?.specialMode==="sizzler-saboteurs"}catch(_){}
+    if(!spy){state.spyHintAt=0;return false}
+    const runtime=window.CCGLostSizzlerV141R29,runtimeState=runtime?.state,now=performance.now(),cooldown=Math.max(250,Number(runtime?.SPY_HINT_COOLDOWN_MS)||1800);
+    const last=Math.max(Number(state.spyHintAt||0),Number(runtimeState?.lastSpyHintAt||0));
+    if(last>0&&now-last<cooldown){
+      state.spyHintSuppressed++;
+      if(runtimeState)runtimeState.spyHintsSuppressed=Number(runtimeState.spyHintsSuppressed||0)+1;
+      return true;
+    }
+    state.spyHintAt=now;
+    return false;
+  }
+
   function stabiliseToastOwner(fn){
     if(typeof fn!=="function")return false;
     // The V10.41 major-notification hardener treats this marker as final
@@ -112,6 +129,11 @@
       return true;
     }
     const wrapped=function showToastV141R29NotificationRail(title){
+      // Keep the final notification owner capable of enforcing the Spy hint
+      // cooldown even if a late legacy wrapper temporarily displaces the r29
+      // throttle from the visible showToast ancestry. This is notification
+      // ownership only; it does not intercept the gameplay update loop.
+      if(spyGuidanceSuppressed(title))return false;
       const result=current.apply(this,arguments);
       const rail=state.notificationRail||document.querySelector(".ccg-game>.game-area>.game-message-rail");
       const renderedTitle=String(document.getElementById("pickup-title")?.textContent||"");
@@ -147,5 +169,5 @@
     state.notificationObserver=null;
   },{once:true});
 
-  window.CCGLostSizzlerV141R29LoopFinalizer={ensureFinalLoop,ensureSpyRuntime,ensureSpyNetwork,ensureNotificationRailGuard,ensureNotificationToastOwner,syncNotificationRail,get state(){return state}};
+  window.CCGLostSizzlerV141R29LoopFinalizer={ensureFinalLoop,ensureSpyRuntime,ensureSpyNetwork,ensureNotificationRailGuard,ensureNotificationToastOwner,spyGuidanceSuppressed,syncNotificationRail,get state(){return state}};
 })();
