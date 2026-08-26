@@ -91,7 +91,7 @@
   const state={
     activeId:"",previousId:"",transitions:0,generation:0,timer:0,lastSyncAt:0,lastTransitionReason:"",lastResetReason:"",
     hordeWaveResets:0,hordePhaseResets:0,globalHazardsPurged:0,globalCampingPurges:0,
-    hordeLoadoutMaintenances:0,hordeReserveMaintenances:0,hordeFocusPostFrames:0,hordeLivePostFrames:0,
+    hordeLoadoutMaintenances:0,hordeReserveMaintenances:0,hordeFocusPostFrames:0,hordeLivePostFrames:0,hordeCombatPreFrames:0,hordeCombatPostFrames:0,
     sharedFrameBoundary:null,sharedFrameBoundarySource:null,sharedFrameBoundaryInstalls:0,sharedPreFrames:0,sharedPostFrames:0,
     ownedSystemInstalls:0,ownedSystemReassertions:0,ownedSystemCalls:0,blockedOwnedSystemCalls:0,hordeDeathPresentations:0
   };
@@ -264,7 +264,18 @@
     return maintained
   }
 
-  function postSharedFrame(dt){
+  function preSharedFrame(dt){
+    const current=sync("shared frame pre");state.sharedPreFrames++;
+    const context={controllerId:current.id,hordeCombat:null};
+    if(current.profile.family!=="horde")return context;
+    try{
+      const combat=window.CCGLostSizzlerV141HordeCombatPolish?.preHordeCombatFrame;
+      if(typeof combat==="function"){context.hordeCombat=combat(dt);state.hordeCombatPreFrames++}
+    }catch(error){console.warn("[Lost Sizzler mode runtime] Horde combat pre-frame failed",error)}
+    return context
+  }
+
+  function postSharedFrame(dt,context=null){
     const current=sync("shared frame post");state.sharedPostFrames++;
     if(current.profile.family!=="horde")return current;
     try{
@@ -275,6 +286,10 @@
       const live=window.CCGLostSizzlerV138?.updateHordeLive;
       if(typeof live==="function"){live(dt);state.hordeLivePostFrames++}
     }catch(error){console.warn("[Lost Sizzler mode runtime] Horde live post-frame failed",error)}
+    try{
+      const combat=window.CCGLostSizzlerV141HordeCombatPolish?.postHordeCombatFrame;
+      if(typeof combat==="function"){combat(context?.hordeCombat||null);state.hordeCombatPostFrames++}
+    }catch(error){console.warn("[Lost Sizzler mode runtime] Horde combat post-frame failed",error)}
     return current
   }
 
@@ -282,9 +297,9 @@
     if(state.sharedFrameBoundary||typeof window.update!=="function")return Boolean(state.sharedFrameBoundary);
     const source=window.update;
     const boundary=function updateV141ModeControllerBoundary(dt){
-      sync("shared frame pre");state.sharedPreFrames++;
+      const context=preSharedFrame(dt);
       const result=source.apply(this,arguments);
-      postSharedFrame(dt);
+      postSharedFrame(dt,context);
       return result
     };
     boundary.__ccgV141ModeFrameBoundary=true;
@@ -306,6 +321,7 @@
       profile:{...current.profile},controllerState:{...current.state},lastTransitionReason:state.lastTransitionReason,lastResetReason:state.lastResetReason,
       hordeWaveResets:state.hordeWaveResets,hordePhaseResets:state.hordePhaseResets,globalHazardsPurged:state.globalHazardsPurged,globalCampingPurges:state.globalCampingPurges,
       hordeLoadoutMaintenances:state.hordeLoadoutMaintenances,hordeReserveMaintenances:state.hordeReserveMaintenances,hordeFocusPostFrames:state.hordeFocusPostFrames,hordeLivePostFrames:state.hordeLivePostFrames,
+      hordeCombatPreFrames:state.hordeCombatPreFrames,hordeCombatPostFrames:state.hordeCombatPostFrames,
       sharedFrameBoundaryInstalls:state.sharedFrameBoundaryInstalls,sharedPreFrames:state.sharedPreFrames,sharedPostFrames:state.sharedPostFrames,
       ownedSystemInstalls:state.ownedSystemInstalls,ownedSystemReassertions:state.ownedSystemReassertions,ownedSystemCalls:state.ownedSystemCalls,blockedOwnedSystemCalls:state.blockedOwnedSystemCalls,hordeDeathPresentations:state.hordeDeathPresentations
     }
@@ -317,7 +333,7 @@
 
   window.CCGLostSizzlerModeRuntime={
     IDS,PROFILES,SHARED_CORE,MODE_OWNED,OWNED_SYSTEMS,detect,sync,frame,allows,inFamily,activeController,activeProfile,
-    resetModeTransient,monitorHordeLifecycle,presentHordeDeaths,maintainHordeControllerSystems,postSharedFrame,installSharedFrameBoundary,ensureOwnedSystemGates,ownedSystemState,snapshot,
+    resetModeTransient,monitorHordeLifecycle,presentHordeDeaths,maintainHordeControllerSystems,preSharedFrame,postSharedFrame,installSharedFrameBoundary,ensureOwnedSystemGates,ownedSystemState,snapshot,
     get state(){return state},get controllers(){return controllers},get ownedSystems(){return ownedSystems}
   };
 })();
