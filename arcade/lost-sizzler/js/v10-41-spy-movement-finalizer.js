@@ -62,7 +62,9 @@
       if(!Number.isFinite(Number(player.rx)))player.rx=ox;if(!Number.isFinite(Number(player.ry)))player.ry=oy;
       try{reveal?.(player);markRoomVisit?.(player);rememberTrail?.(player);sync?.()}catch(_){}state.fallbackMoves++;return result;
     };
-    window.movePlayer.__ccgV141SpyFinal=true;state.moveInstalled=true;return true;
+    window.movePlayer.__ccgV141SpyFinal=true;window.movePlayer.__ccgOriginal=original;state.moveInstalled=true;
+    try{window.CCGLostSizzlerV141R30?.adoptReleaseMoveOwner?.(window.movePlayer)}catch(_){}
+    return true;
   }
   function installUpdate(){
     if(state.updateInstalled||typeof window.update!=="function")return state.updateInstalled;
