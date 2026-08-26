@@ -6,7 +6,7 @@
 
   const STORAGE_KEY="ccg-lost-sizzler:horde-leaderboard:v1";
   const CATEGORIES=Object.freeze(["SOLO","DUO","TRIO","SQUAD"]);
-  const state={installed:false,aiWrapped:false,updateWrapped:false,timer:0,lastResultKey:"",category:"SOLO",startingSolo:false};
+  const state={installed:false,aiWrapped:false,controllerOwnedUpdate:true,timer:0,lastResultKey:"",category:"SOLO",startingSolo:false};
 
   const special=()=>window.CCGLostSizzlerSpecialModes||null;
   const active=()=>special()?.active||null;
@@ -171,16 +171,27 @@
     state.aiWrapped=true;return true;
   }
 
-  function wrapUpdate(){
-    if(state.updateWrapped||typeof window.update!=="function")return state.updateWrapped;
-    const original=window.update;window.update=function updateV141HordeCompletion(){const result=original.apply(this,arguments);try{if(isHorde()){captureTerminalResult();updateTransitionBanner()}else{delete document.body.dataset.hordeSolo;updateTransitionBanner()}}catch(error){console.warn("[Lost Sizzler V10.41] Horde completion update failed",error)}return result};state.updateWrapped=true;return true;
+  function postHordeCompletionFrame(){
+    try{
+      if(isHorde()){
+        captureTerminalResult();
+        updateTransitionBanner();
+      }else{
+        delete document.body.dataset.hordeSolo;
+        updateTransitionBanner();
+      }
+      return true;
+    }catch(error){
+      console.warn("[Lost Sizzler V10.41] Horde completion update failed",error);
+      return false;
+    }
   }
 
   function install(){
     injectStyles();injectSoloButton();injectLeaderboard();injectTransitionBanner();
     const gate=window.CCGLostSizzlerReleaseGate;if(gate&&!gate.state?.ready)return false;
     if(!special()?.startOnline||!H()||!window.CCGLostSizzlerV138||!window.CCGLostSizzlerV140?.state?.installed)return false;
-    if(!wrapEnemyAiMovement()||!wrapUpdate())return false;
+    if(!wrapEnemyAiMovement())return false;
     state.installed=true;document.body.dataset.v141HordeCompletion="true";return true;
   }
 
@@ -189,5 +200,5 @@
   window.addEventListener("storage",event=>{if(event.key===STORAGE_KEY)renderLeaderboard()});
   window.addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
 
-  window.CCGLostSizzlerV141HordeCompletion={STORAGE_KEY,CATEGORIES,startSoloHorde,readLeaderboard,saveLeaderboard,renderLeaderboard,captureTerminalResult,get state(){return state}};
+  window.CCGLostSizzlerV141HordeCompletion={STORAGE_KEY,CATEGORIES,startSoloHorde,readLeaderboard,saveLeaderboard,renderLeaderboard,captureTerminalResult,updateTransitionBanner,postHordeCompletionFrame,get state(){return state}};
 })();
