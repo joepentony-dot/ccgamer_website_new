@@ -167,8 +167,8 @@
 
   function assertNormalRuntimeOwnership(reason="periodic invariant"){
     if(spyActive()||spyEngine()?.state?.isolated)return false;
-    const currentUpdate=window.update,currentMove=window.movePlayer,currentHurt=window.hurtPlayer,controllerUpdate=authoritativeControllerUpdate();
-    const updateBad=typeof currentUpdate!=="function"||(controllerUpdate?currentUpdate!==controllerUpdate:(!controllerProtectedUpdate(currentUpdate)&&spyContaminated(currentUpdate)));
+    const currentUpdate=window.update,currentMove=window.movePlayer,currentHurt=window.hurtPlayer;
+    const updateBad=typeof currentUpdate!=="function"||(!controllerProtectedUpdate(currentUpdate)&&spyContaminated(currentUpdate));
     const moveBad=typeof currentMove!=="function"||spyContaminated(currentMove);
     const hurtBad=typeof currentHurt!=="function"||spyContaminated(currentHurt);
     if(!(updateBad||moveBad||hurtBad))return false;

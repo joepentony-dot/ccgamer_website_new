@@ -388,7 +388,6 @@
   }
 
   function frame(){
-    installSharedFrameBoundary();
     const current=sync("frame");current.frame();ensureOwnedSystemGates();
     if(current.profile.family==="horde"){maintainHordeControllerSystems();monitorHordeLifecycle();presentHordeDeaths()}
     if(current.id===IDS.SPY_ONLINE)try{window.CCGLostSizzlerV141R29SpyEngine?.enterIsolation?.()}catch(_){}

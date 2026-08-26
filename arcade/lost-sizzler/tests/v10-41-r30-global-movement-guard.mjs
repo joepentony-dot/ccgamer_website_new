@@ -20,7 +20,7 @@ assert.match(guard,/function controllerProtectedUpdate\(fn\)/,"r30 must recognis
 assert.match(guard,/chainHas\(fn,"__ccgV141ModeFrameBoundary"\)/,"controller diagnostics must still inspect historical wrapper ancestry");
 assert.match(guard,/function authoritativeControllerUpdate\(\)/,"r30 recovery must resolve the controller's exact boundary identity");
 assert.match(guard,/const recoveryUpdate=\(\)=>authoritativeControllerUpdate\(\)\|\|state\.goldenUpdate\|\|state\.baselineUpdate/,"update recovery must prefer the live controller boundary over a historical snapshot");
-assert.match(guard,/controllerUpdate\?currentUpdate!==controllerUpdate/,"normal-mode ownership validation must reject any top-level displacement of the controller boundary");
+assert.match(guard,/if\(controllerUpdate\)state\.baselineUpdate=controllerUpdate/,"normal-mode recovery snapshots must retain the controller boundary without suppressing unrelated one-shot fault containment");
 assert.match(guard,/function topLevelSpyOwner\(fn\)/,"a genuinely top-level Spy owner must remain distinguishable from harmless historical markers beneath the controller boundary");
 assert.match(guard,/assertNormalRuntimeOwnership/,"normal modes must continuously validate runtime ownership");
 assert.match(guard,/STALL_RECOVERY_MS=700/,"a held-key movement watchdog must recover silent movement stalls");
