@@ -15,7 +15,7 @@
     goldenUpdate:null,goldenMove:null,goldenHurt:null,goldenLocked:false,goldenLockedAt:0,
     spyOwnerUpdate:null,spyOwnerMove:null,spyOwnerHurt:null,
     forcedRestores:0,ownershipRepairs:0,inputBridges:0,inputReassertions:0,
-    watchdogRecoveries:0,watchdogMisses:0,lastWatchdogRecoveryAt:0,
+    watchdogRecoveries:0,watchdogMisses:0,watchdogCooldownBreaks:0,lastWatchdogRecoveryAt:0,
     lastRestoreAt:0,lastRestoreReason:"",lastModeType:"",modeTransitions:0,lastRecoveryLogAt:0
   };
   const held=new Set();
@@ -28,7 +28,6 @@
   const r29=()=>window.CCGLostSizzlerV141R29||null;
   const playing=()=>{try{return mode==="playing"&&document.body?.dataset?.runActive==="true"}catch(_){return false}};
   const releaseReady=()=>document.body?.dataset?.releaseReady==="true";
-  const finite=value=>Number.isFinite(Number(value));
 
   function chainHas(fn,marker){
     let current=fn;
@@ -40,8 +39,6 @@
   }
   function spyContaminated(fn){return ISOLATED_MARKERS.some(marker=>chainHas(fn,marker))}
 
-  /* A valid normal owner may include the ordinary r29 compatibility wrapper.
-   * Only temporary isolated Spy owners are forbidden outside Spy mode. */
   function healthyBaseline(fn){return typeof fn==="function"&&!spyContaminated(fn)}
   function captureBaseline(){
     if(spyActive()||spyEngine()?.state?.isolated)return false;
@@ -157,7 +154,7 @@
   function reassertHeldInput(){
     if(!playing()){clearHeld();return false}
     let changed=false;
-    for(const code of held){try{if(!input.has(code)){input.add(code);changed=true;state.inputReassertions++}}catch(_){}}
+    for(const code of held){try{if(!input.has(code)){input.add(code);changed=true;state.inputReassertions++}}catch(_){} }
     return changed;
   }
 
@@ -186,6 +183,12 @@
   function cooldownReady(player){
     try{if(player===p2)return Number(move2||0)<=0;return Number(move1||0)<=0}catch(_){return true}
   }
+  function breakPoisonedCooldown(player){
+    try{
+      if(player===p2){if(Number(move2||0)>0){move2=0;state.watchdogCooldownBreaks++}}
+      else if(Number(move1||0)>0){move1=0;state.watchdogCooldownBreaks++}
+    }catch(_){}
+  }
 
   function movementWatchdogFor(player,watch){
     if(!player||spyActive()||!playing()){resetWatch(watch);return false}
@@ -194,11 +197,11 @@
     if(!dir||!stepExpectedFree(player,dir)||(player.hitStunMs||0)>0){resetWatch(watch);return false}
     const x=Number(player.x),y=Number(player.y),now=performance.now();
     if(watch.code!==code||watch.x!==x||watch.y!==y){watch.code=code;watch.x=x;watch.y=y;watch.since=now;return false}
-    /* Movement cooldown is transient and must not erase held movement intent.
-     * A dead wrapper can repeatedly re-arm the cooldown while never moving the
-     * player, so the stall timer is allowed to continue through cooldown ticks. */
-    if(!cooldownReady(player))return false;
     if(now-watch.since<STALL_RECOVERY_MS||now-state.lastWatchdogRecoveryAt<RECOVERY_COOLDOWN_MS)return false;
+    /* Once uninterrupted movement intent has stalled beyond the watchdog
+     * threshold, cooldown state is no longer trusted. A failed wrapper can
+     * re-arm move1/move2 every update without ever changing coordinates. */
+    if(!cooldownReady(player))breakPoisonedCooldown(player);
     state.lastWatchdogRecoveryAt=now;
     assertNormalRuntimeOwnership("movement watchdog ownership repair");
     const owner=recoveryMove();if(typeof owner!=="function"||spyContaminated(owner)){state.watchdogMisses++;watch.since=now;return false}
