@@ -29,9 +29,36 @@
         }
     }
 
+    function schemaGamePlatform() {
+        const scripts = document.querySelectorAll('script[type="application/ld+json"]');
+        for (const script of scripts) {
+            try {
+                const payload = JSON.parse(script.textContent || "{}");
+                const nodes = Array.isArray(payload?.["@graph"]) ? payload["@graph"] : [payload];
+                const game = nodes.find((node) => {
+                    const types = Array.isArray(node?.["@type"]) ? node["@type"] : [node?.["@type"]];
+                    return types.includes("VideoGame");
+                });
+                const platforms = Array.isArray(game?.gamePlatform) ? game.gamePlatform : [game?.gamePlatform];
+                const platform = platforms.map((value) => String(value || "").trim()).find(Boolean);
+                if (platform) return platform;
+            } catch {
+                // Ignore unrelated or malformed JSON-LD blocks and continue looking.
+            }
+        }
+        return "";
+    }
+
     function currentSystem() {
-        const text = String(document.getElementById("gameMetaSystem")?.textContent || "").trim().toLowerCase();
-        if (text.includes("amiga")) return "amiga";
+        const values = [
+            document.documentElement?.dataset?.gameSystem,
+            document.body?.dataset?.gameSystem,
+            document.getElementById("gameMetaSystem")?.textContent,
+            schemaGamePlatform(),
+            document.title
+        ];
+        const text = values.map((value) => String(value || "").trim().toLowerCase()).find((value) => /\bamiga\b|\bc64\b|commodore\s*64/.test(value)) || "";
+        if (/\bamiga\b/.test(text)) return "amiga";
         return "c64";
     }
 

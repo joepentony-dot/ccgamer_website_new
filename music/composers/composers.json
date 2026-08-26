@@ -3900,9 +3900,9 @@
   {
     "name": "Jason Page",
     "slug": "jason-page",
-    "count": 2,
+    "count": 3,
     "c64Count": 1,
-    "amigaCount": 1,
+    "amigaCount": 2,
     "firstYear": 1990,
     "lastYear": 1995,
     "existing": false,
@@ -3913,6 +3913,7 @@
       "Jason Page"
     ],
     "games": [
+      "ruff-n-tumble",
       "sensible-soccer",
       "ivan-ironman-stewarts-super-off-road"
     ]

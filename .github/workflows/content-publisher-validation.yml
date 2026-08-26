@@ -9,6 +9,9 @@ on:
       - "admin/content-publisher.html"
       - "admin/help.html"
       - "admin/js/content-publisher.js"
+      - "admin/js/content-publisher-image-optimizer.js"
+      - "admin/js/content-publisher-status-reconciler.js"
+      - "admin/js/content-publisher-source-preflight.mjs"
       - "admin/js/collection-values.js"
       - "admin/js/guard.js"
       - "resources/css/ccg-content-publisher.css"
@@ -18,6 +21,7 @@ on:
       - "data/zzap64-review-links.json"
       - "scripts/audit-admin-runtime-bootstrap.js"
       - "tests/content-publisher.test.mjs"
+      - "tests/content-publisher-source-preflight.test.mjs"
       - "tests/admin-collection-values.test.mjs"
       - "tests/game-zzap-links.test.mjs"
       - ".github/workflows/content-publisher-validation.yml"
@@ -29,6 +33,9 @@ on:
       - "admin/content-publisher.html"
       - "admin/help.html"
       - "admin/js/content-publisher.js"
+      - "admin/js/content-publisher-image-optimizer.js"
+      - "admin/js/content-publisher-status-reconciler.js"
+      - "admin/js/content-publisher-source-preflight.mjs"
       - "admin/js/collection-values.js"
       - "admin/js/guard.js"
       - "resources/css/ccg-content-publisher.css"
@@ -38,6 +45,7 @@ on:
       - "data/zzap64-review-links.json"
       - "scripts/audit-admin-runtime-bootstrap.js"
       - "tests/content-publisher.test.mjs"
+      - "tests/content-publisher-source-preflight.test.mjs"
       - "tests/admin-collection-values.test.mjs"
       - "tests/game-zzap-links.test.mjs"
       - ".github/workflows/content-publisher-validation.yml"
@@ -62,6 +70,9 @@ jobs:
       - name: Validate JavaScript syntax
         run: |
           node --check admin/js/content-publisher.js
+          node --check admin/js/content-publisher-image-optimizer.js
+          node --check admin/js/content-publisher-status-reconciler.js
+          node --check admin/js/content-publisher-source-preflight.mjs
           node --check admin/js/collection-values.js
           node --check admin/js/guard.js
           node --check scripts/audit-admin-runtime-bootstrap.js
@@ -72,6 +83,7 @@ jobs:
       - name: Run publisher and collection regression tests
         run: |
           node --test tests/content-publisher.test.mjs
+          node --test tests/content-publisher-source-preflight.test.mjs
           node --test tests/admin-collection-values.test.mjs
           node --test tests/game-zzap-links.test.mjs
 

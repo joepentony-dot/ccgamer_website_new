@@ -12,6 +12,7 @@ on:
       - "scripts/generate-retro-pages.js"
       - "scripts/generate-slug-pages.js"
       - "scripts/prepare-seo-game-routes.js"
+      - "scripts/generate-sitemaps.js"
       - "scripts/validate-seo-game-routes.js"
       - "scripts/game-output-utils.js"
       - "scripts/validate_structured_data.py"
@@ -54,6 +55,7 @@ jobs:
           node --check scripts/generate-retro-pages.js
           node --check scripts/generate-slug-pages.js
           node --check scripts/prepare-seo-game-routes.js
+          node --check scripts/generate-sitemaps.js
           node --check scripts/validate-seo-game-routes.js
 
       - name: Validate committed structured data
@@ -101,7 +103,9 @@ jobs:
           git clean -fd -- retro-events retro-specials amiga-demo-music
 
       - name: Regenerate authoritative canonical game pages for validation
-        run: node scripts/prepare-seo-game-routes.js --output-root .
+        run: |
+          node scripts/prepare-seo-game-routes.js --output-root .
+          node scripts/generate-sitemaps.js
 
       - name: Validate regenerated canonical game routes
         run: node scripts/validate-seo-game-routes.js --root .
@@ -124,6 +128,7 @@ jobs:
           slugs.discard("")
           allowed = {f"games/{slug}/index.html" for slug in slugs}
           allowed.update(f"games/{slug}.html" for slug in slugs)
+          allowed.update(path.name for path in Path(".").glob("sitemap*.xml"))
 
           output = subprocess.check_output(
               ["git", "status", "--porcelain", "--untracked-files=all"],
@@ -135,7 +140,13 @@ jobs:
               if " -> " in path:
                   path = path.split(" -> ", 1)[1]
               paths.append(path)
-          unexpected = sorted(set(paths) - allowed)
+
+          def is_allowed(path):
+              if path in allowed:
+                  return True
+              return path.startswith("music/") and path.endswith("/index.html")
+
+          unexpected = sorted(path for path in set(paths) if not is_allowed(path))
           if unexpected:
               raise SystemExit(f"Game generator changed unexpected paths: {unexpected}")
           print(f"Validated game generator scope across {len(paths)} changed paths.")
@@ -147,6 +158,7 @@ jobs:
           set -euo pipefail
           git diff --binary > "$RUNNER_TEMP/game-first.diff"
           node scripts/prepare-seo-game-routes.js --output-root .
+          node scripts/generate-sitemaps.js
           node scripts/validate-seo-game-routes.js --root .
           git diff --binary > "$RUNNER_TEMP/game-second.diff"
           cmp "$RUNNER_TEMP/game-first.diff" "$RUNNER_TEMP/game-second.diff"
@@ -155,8 +167,8 @@ jobs:
       - name: Restore temporary game output
         if: always()
         run: |
-          git restore --source=HEAD -- games
-          git clean -fd -- games
+          git restore --source=HEAD -- games music sitemap.xml sitemap-*.xml
+          git clean -fd -- games music sitemap.xml sitemap-*.xml
 
       - name: Remove compiler bytecode
         if: always()

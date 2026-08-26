@@ -13,6 +13,7 @@ const videoMetadataPath = path.join(repoRoot, "data", "video-metadata.json");
 const outputPath = path.join(repoRoot, "data", "game-description-enrichments.json");
 
 const MIN_WORDS = 90;
+const SOURCE_MIN_WORDS = 40;
 const TARGET_WORDS = 135;
 const MAX_WORDS = 165;
 
@@ -112,14 +113,45 @@ function extractEditorialDescription(rawDescription) {
   return normalizeText(chosen.join(" "));
 }
 
-function validateDescription(slug, description) {
+function descriptionErrors(description, minimumWords = MIN_WORDS) {
   const words = wordCount(description);
   const errors = [];
-  if (words < MIN_WORDS) errors.push(`${words} words (minimum ${MIN_WORDS})`);
+  if (words < minimumWords) errors.push(`${words} words (minimum ${minimumWords})`);
   if (words > MAX_WORDS) errors.push(`${words} words (maximum ${MAX_WORDS})`);
   if (/https?:\/\/|www\.|#[a-z0-9_]+/i.test(description)) errors.push("contains a URL or hashtag");
   if (!/[.!?][”"']?$/.test(description)) errors.push("does not end at a sentence boundary");
+  return errors;
+}
+
+function validateDescription(slug, description, minimumWords = MIN_WORDS) {
+  const errors = descriptionErrors(description, minimumWords);
   if (errors.length) throw new Error(`${slug}: ${errors.join(", ")}`);
+}
+
+function selectDescription(game, metadata, override) {
+  const slug = String(game?.slug || "").trim();
+  if (override?.description) {
+    const description = normalizeText(override.description);
+    validateDescription(slug, description, MIN_WORDS);
+    return { description, sourceKind: "override" };
+  }
+
+  const youtubeDescription = normalizeText(extractEditorialDescription(metadata?.description || ""));
+  if (!descriptionErrors(youtubeDescription, MIN_WORDS).length) {
+    return { description: youtubeDescription, sourceKind: "youtube" };
+  }
+
+  const sourceDescription = normalizeText(game?.description || "");
+  if (!descriptionErrors(sourceDescription, SOURCE_MIN_WORDS).length) {
+    return { description: sourceDescription, sourceKind: "games-json" };
+  }
+
+  const youtubeErrors = descriptionErrors(youtubeDescription, MIN_WORDS).join(", ") || "not usable";
+  const sourceErrors = descriptionErrors(sourceDescription, SOURCE_MIN_WORDS).join(", ") || "not usable";
+  throw new Error(
+    `${slug}: no usable archive description. Verified YouTube description: ${youtubeErrors}. ` +
+    `games.json description: ${sourceErrors}. Add at least ${SOURCE_MIN_WORDS} words of finished source copy or restore verified YouTube metadata.`
+  );
 }
 
 function main() {
@@ -127,26 +159,27 @@ function main() {
   const videoPayload = readJson(videoMetadataPath);
   const videos = videoPayload?.videos || {};
   const enrichments = {};
+  const sourceCounts = { override: 0, youtube: 0, "games-json": 0 };
 
   for (const game of games) {
     const slug = String(game?.slug || "").trim();
     const videoId = String(game?.videoid || game?.videoId || "").trim();
     const override = overrides[slug];
     const metadata = videoId ? videos[videoId] : null;
-    const description = normalizeText(
-      override?.description || extractEditorialDescription(metadata?.description || "")
-    );
+    const selected = selectDescription(game, metadata, override);
+    sourceCounts[selected.sourceKind] += 1;
 
-    validateDescription(slug, description);
     enrichments[slug] = {
-      description,
-      sources: override?.sources || [`https://www.youtube.com/watch?v=${videoId}`]
+      description: selected.description,
+      sources: override?.sources || (selected.sourceKind === "youtube" && videoId
+        ? [`https://www.youtube.com/watch?v=${videoId}`]
+        : [])
     };
   }
 
   const output = {
-    version: 1,
-    policy: "Concise archive descriptions distilled from verified CCG video metadata, with targeted reference research where local metadata was unavailable or required correction.",
+    version: 2,
+    policy: "Archive descriptions prefer verified CCG YouTube metadata, with curated overrides and a guarded games.json fallback so an unavailable video cannot strand an otherwise complete source record.",
     games: enrichments
   };
   const content = `${JSON.stringify(output, null, 2)}\n`;
@@ -155,11 +188,12 @@ function main() {
 
   const counts = Object.values(enrichments).reduce((summary, entry) => {
     const words = wordCount(entry.description);
-    const bucket = words < 110 ? "90-109" : words < 130 ? "110-129" : "130-165";
+    const bucket = words < 90 ? "40-89" : words < 110 ? "90-109" : words < 130 ? "110-129" : "130-165";
     summary[bucket] += 1;
     return summary;
-  }, { "90-109": 0, "110-129": 0, "130-165": 0 });
+  }, { "40-89": 0, "90-109": 0, "110-129": 0, "130-165": 0 });
   console.log(`[game-description-enrichments] Games enriched: ${Object.keys(enrichments).length}`);
+  console.log(`[game-description-enrichments] Description sources: ${JSON.stringify(sourceCounts)}`);
   console.log(`[game-description-enrichments] Word-count bands: ${JSON.stringify(counts)}`);
 }
 
@@ -173,8 +207,10 @@ if (require.main === module) {
 }
 
 module.exports = {
+  descriptionErrors,
   extractEditorialDescription,
   normalizeText,
+  selectDescription,
   validateDescription,
   wordCount,
 };
