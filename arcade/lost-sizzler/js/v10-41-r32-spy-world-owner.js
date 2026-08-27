@@ -49,7 +49,7 @@
     if(!state.lastMode||state.lastX==null||state.lastY==null){state.lastX=x;state.lastY=y;state.lastMode=true;return false}
     const distance=Math.abs(x-state.lastX)+Math.abs(y-state.lastY);state.lastX=x;state.lastY=y;
     if(distance<=0)return false;
-    const steps=Math.max(1,Math.round(distance));current.state.moves=Number(current.state.moves||0)+steps;state.mirroredMoves+=steps;return true
+    current.state.moves=Number(current.state.moves||0)+1;state.mirroredMoves++;return true
   }
 
   function monitor(){install();mirrorLegacyMoveCounter()}
