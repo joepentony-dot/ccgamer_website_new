@@ -8,8 +8,13 @@
   const MAX_ENEMY_SPEED=.72;
   const MAX_WARDEN_SPEED=.78;
   const SIDE_STEP_GRACE_MS=1100;
+  const PACING_MAINTENANCE_MS=240;
+  const NAV_SAMPLE_MS=160;
   const WAVE_POWER=Object.freeze([2,2,3,3,4,4,5,5,6,7]);
-  const state={installed:false,wrapped:false,controllerOwnedUpdate:true,timer:0,runKey:"",lastPhase:"",lastWave:0,recoveredWave:0,nav:new Map()};
+  const state={
+    installed:false,wrapped:false,controllerOwnedUpdate:true,timer:0,runKey:"",lastPhase:"",lastWave:0,recoveredWave:0,nav:new Map(),
+    lastPacingAt:0,lastNavSampleAt:0,pacingRuns:0,navSamples:0,navLookups:0
+  };
 
   const active=()=>window.CCGLostSizzlerSpecialModes?.active||null;
   const isHorde=()=>active()?.type==="horde-survivor";
@@ -17,6 +22,7 @@
   const actorId=()=>String(net?.sessionId||p1?.id||"P1");
   const hordeState=()=>active()?.state||null;
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,Number(value)||0));
+  const perfNow=()=>{try{return Number(performance.now())||Date.now()}catch(_){return Date.now()}};
 
   function liveFor(id){
     const key=String(id||"");
@@ -65,6 +71,15 @@
       enemy.moveCooldown=Math.max(Number(enemy.moveCooldown||0),90000);
       enemy.aiState="chase";
     }
+    state.pacingRuns++;
+    return true;
+  }
+
+  function maintainPacing(now=perfNow(),force=false){
+    if(!isHorde())return false;
+    if(!force&&now-state.lastPacingAt<PACING_MAINTENANCE_MS)return false;
+    state.lastPacingAt=now;
+    capEnemyPacing();strengthenLocalWeapon();
     return true;
   }
 
@@ -89,7 +104,15 @@
         targetX:Number(target.x),targetY:Number(target.y)
       });
     }
+    state.navSamples++;
     return snapshot;
+  }
+
+  function sampleApproachSteps(now=perfNow(),force=false){
+    if(!isAuthority())return null;
+    if(!force&&now-state.lastNavSampleAt<NAV_SAMPLE_MS)return null;
+    state.lastNavSampleAt=now;
+    return snapshotApproachSteps();
   }
 
   function restoreEnemyPosition(enemy,before){
@@ -100,8 +123,10 @@
 
   function filterRapidSideSteps(before,now=Date.now()){
     if(!before||!isAuthority())return false;
+    const byId=new Map();
+    for(const enemy of host?.enemies||[])if(enemy?.alive&&enemy.hordeEnemy)byId.set(String(enemy.id),enemy);
     for(const [id,old] of before){
-      const enemy=(host?.enemies||[]).find(row=>String(row?.id)===id&&row?.alive&&row?.hordeEnemy);if(!enemy)continue;
+      const enemy=byId.get(id);state.navLookups++;if(!enemy)continue;
       if(Number(enemy.x)===old.x&&Number(enemy.y)===old.y)continue;
       if(!(old.approachMs<=0&&Number(enemy._v138ApproachMs||0)>0))continue;
       const oldDistance=Math.abs(old.targetX-old.x)+Math.abs(old.targetY-old.y);
@@ -111,7 +136,7 @@
       if(now-nav.blockedSince<SIDE_STEP_GRACE_MS){
         restoreEnemyPosition(enemy,old);
         state.nav.set(id,nav);
-        continue;
+        continue
       }
       // One occasional lateral pathing step is allowed after being physically
       // blocked for over a second so crowds cannot become permanently wedged.
@@ -138,8 +163,9 @@
 
   function resetRunTracking(runState){
     const key=String(active()?.seed||runState?.seed||"");
-    if(state.runKey===key)return;
-    state.runKey=key;state.lastPhase=String(runState?.state||"");state.lastWave=Number(runState?.wave||0);state.recoveredWave=0;state.nav.clear();
+    if(state.runKey===key)return false;
+    state.runKey=key;state.lastPhase=String(runState?.state||"");state.lastWave=Number(runState?.wave||0);state.recoveredWave=0;state.nav.clear();state.lastPacingAt=0;state.lastNavSampleAt=0;
+    return true;
   }
 
   function processWaveTransition(previousPhase,previousWave){
@@ -152,21 +178,19 @@
 
   function preHordeCombatFrame(){
     if(!isHorde()){
-      if(state.runKey){state.runKey="";state.lastPhase="";state.lastWave=0;state.recoveredWave=0;state.nav.clear()}
+      if(state.runKey){state.runKey="";state.lastPhase="";state.lastWave=0;state.recoveredWave=0;state.nav.clear();state.lastPacingAt=0;state.lastNavSampleAt=0}
       return null
     }
-    const runState=hordeState();
-    resetRunTracking(runState);
+    const runState=hordeState(),freshRun=resetRunTracking(runState),now=perfNow();
     const context={previousPhase:String(runState?.state||state.lastPhase||""),previousWave:Number(runState?.wave||state.lastWave||0),before:null};
-    capEnemyPacing();strengthenLocalWeapon();
-    if(isAuthority())context.before=snapshotApproachSteps();
+    maintainPacing(now,freshRun);
+    if(isAuthority())context.before=sampleApproachSteps(now,freshRun);
     return context
   }
 
   function postHordeCombatFrame(context){
     if(!isHorde())return false;
-    capEnemyPacing();strengthenLocalWeapon();
-    if(isAuthority())filterRapidSideSteps(context?.before||null,Date.now());
+    filterRapidSideSteps(context?.before||null,Date.now());
     processWaveTransition(String(context?.previousPhase||""),Number(context?.previousWave||0));
     return true
   }
@@ -184,7 +208,7 @@
   window.addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
 
   window.CCGLostSizzlerV141HordeCombatPolish={
-    WAVE_RECOVERY_HP,MAX_ENEMY_SPEED,MAX_WARDEN_SPEED,SIDE_STEP_GRACE_MS,WAVE_POWER,
-    wavePower,strengthenLocalWeapon,capEnemyPacing,grantWaveRecovery,filterRapidSideSteps,preHordeCombatFrame,postHordeCombatFrame,get state(){return state}
+    WAVE_RECOVERY_HP,MAX_ENEMY_SPEED,MAX_WARDEN_SPEED,SIDE_STEP_GRACE_MS,PACING_MAINTENANCE_MS,NAV_SAMPLE_MS,WAVE_POWER,
+    wavePower,strengthenLocalWeapon,capEnemyPacing,maintainPacing,grantWaveRecovery,filterRapidSideSteps,snapshotApproachSteps,sampleApproachSteps,preHordeCombatFrame,postHordeCombatFrame,get state(){return state}
   };
 })();

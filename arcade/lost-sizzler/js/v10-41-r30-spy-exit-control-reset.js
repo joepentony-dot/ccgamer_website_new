@@ -57,9 +57,17 @@
     script.async=false;script.dataset.ccgUiSpyPerformanceHardening="true";document.head.appendChild(script);return true;
   }
 
+  function loadHordeFramePerformance(){
+    if(document.querySelector('script[data-ccg-horde-frame-performance="true"]'))return true;
+    const script=document.createElement("script");
+    script.src=`js/v10-41-horde-frame-performance.js?v=${encodeURIComponent(cacheToken())}`;
+    script.async=false;script.dataset.ccgHordeFramePerformance="true";document.head.appendChild(script);return true;
+  }
+
   loadPostPlaytestStability();
   loadUiSpyPerformanceHardening();
+  loadHordeFramePerformance();
   if(!install())state.timer=setInterval(()=>{if(install()){clearInterval(state.timer);state.timer=0}},40);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
-  window.CCGLostSizzlerV141R30SpyExitControlReset={install,resetPostSpyControls,loadPostPlaytestStability,loadUiSpyPerformanceHardening,get state(){return state}};
+  window.CCGLostSizzlerV141R30SpyExitControlReset={install,resetPostSpyControls,loadPostPlaytestStability,loadUiSpyPerformanceHardening,loadHordeFramePerformance,get state(){return state}};
 })();
