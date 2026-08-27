@@ -23,7 +23,11 @@ assert.match(source,/clearTerminalInput\(\)/,"terminal Horde states must clear m
 
 assert.match(source,/compactHordeArena\?\.\(\)/,"real Horde starts must retry compact arena creation");
 assert.match(source,/shapeHordeArena\?\.\(\)/,"real Horde starts must retry traversal geometry after compaction");
-assert.match(source,/_v141TraversalHordeArena/,"the live repair must wait for the traversal-arena marker");
+assert.match(source,/function hordeTraversalGeometryHealthy/,"live Horde traversal readiness must validate actual map geometry instead of trusting a stale marker");
+assert.match(source,/interiorWalls<40/,"real Horde traversal validation must require meaningful interior wall cells");
+assert.match(source,/function invalidateHordeTraversalGeometry/,"stale traversal metadata must be invalidated before rebuilding wiped walls");
+assert.match(source,/delete world\._v141TraversalHordeArena/,"a stale Horde traversal world marker must be cleared before repair");
+assert.match(source,/!hordeTraversalGeometryHealthy\(\)/,"Horde arena maintenance must rebuild whenever the real map no longer matches its traversal metadata");
 
 assert.match(source,/legacyHordeBannerRect/,"obsolete Horde canvas banner rectangles must be identified narrowly");
 assert.match(source,/legacyHordeBannerText/,"obsolete Horde canvas banner copy must be identified narrowly");
