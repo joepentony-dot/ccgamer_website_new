@@ -386,17 +386,25 @@ try{
     for(const [key,direction] of [["w","up"],["s","down"],["a","left"],["d","right"]]){
       let registered=false,lastError=null;
       for(let attempt=1;attempt<=2&&!registered;attempt++){
+        await state.page.evaluate(safe=>{
+          input.clear();
+          p1.x=p1.rx=safe.x;p1.y=p1.ry=safe.y;p1.dir={x:1,y:0};
+          const tutorial=window.CCGLostSizzlerOnboardingV120?.state;
+          tutorial?.lastMovement?.set?.(p1.id||p1,{...safe});
+          const active=document.activeElement;
+          if(active&&active!==document.body&&typeof active.blur==="function")active.blur();
+          if(document.body){document.body.tabIndex=-1;document.body.focus({preventScroll:true});}
+        },tutorialMove.safe);
+        await state.page.waitForTimeout(80);
         await state.page.keyboard.down(key);
+        await state.page.waitForTimeout(180);
+        await state.page.keyboard.up(key);
         try{
-          try{
-            await withTimeout(state.page.waitForFunction(expected=>window.CCGLostSizzlerOnboardingV120?.state?.movementDirections?.has?.(expected),direction,{timeout:attempt===1?2500:6000}),attempt===1?3500:8000,`Tutorial movement ${direction} attempt ${attempt}`);
-            registered=true;
-          }catch(error){
-            lastError=error;
-            if(attempt===2)throw error;
-          }
-        }finally{
-          await state.page.keyboard.up(key);
+          await withTimeout(state.page.waitForFunction(expected=>window.CCGLostSizzlerOnboardingV120?.state?.movementDirections?.has?.(expected),direction,{timeout:attempt===1?2500:6000}),attempt===1?3500:8000,`Tutorial movement ${direction} attempt ${attempt}`);
+          registered=true;
+        }catch(error){
+          lastError=error;
+          if(attempt===2)throw error;
         }
         if(!registered)await state.page.waitForTimeout(120);
       }
