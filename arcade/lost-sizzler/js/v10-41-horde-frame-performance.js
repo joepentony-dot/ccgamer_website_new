@@ -11,7 +11,9 @@
   const FIRST_WAVE_TRACK="assets/audio/music/horde-survival-waves-1-4.ogg";
   const LATER_TRACKS=["assets/audio/music/horde-survival-waves-5-9.ogg","assets/audio/music/horde-survival-wave-10.ogg"];
   const state={
-    timer:0,installed:false,radarWrapped:false,radarSource:null,lastRadarAt:0,radarDraws:0,radarSkips:0,
+    timer:0,installed:false,
+    radarWrapped:false,radarSource:null,lastRadarAt:0,radarDraws:0,radarSkips:0,
+    fogWrapped:false,fogSource:null,fogTilePassSkips:0,lightingPasses:0,
     statusTimer:0,lastStatusSignature:"",statusRenders:0,
     firstWavePrewarmStarted:false,firstWavePrewarmReady:false,laterPrewarmStarted:false,imageDecodes:0,prewarmErrors:0
   };
@@ -73,6 +75,23 @@
     window.renderRadarPanel=wrapped;state.radarSource=wrapped;state.radarWrapped=true;return true
   }
 
+  function installHordeFogFastPath(){
+    const current=window.drawFog;if(typeof current!=="function")return false;
+    if(current.__ccgV141HordeFogFastPath){state.fogWrapped=true;state.fogSource=current;return true}
+    const source=current;
+    const wrapped=function drawFogV141HordeFastPath(){
+      if(!isHorde())return source.apply(this,arguments);
+      // Horde is a single survival arena, not an exploration dungeon. Avoid
+      // recalculating per-tile exploration/fog visibility every display frame,
+      // while retaining the lightweight dynamic light pools for visual depth.
+      state.fogTilePassSkips++;
+      if(typeof window.drawDynamicLighting==="function"){state.lightingPasses++;return window.drawDynamicLighting()}
+      return false
+    };
+    wrapped.__ccgV141HordeFogFastPath=true;wrapped.__ccgOriginal=source;
+    window.drawFog=wrapped;state.fogSource=wrapped;state.fogWrapped=true;return true
+  }
+
   function desiredQuota(runState){
     const wave=Math.max(0,Number(runState?.wave)||0),players=Math.max(1,Number(runState?.playerCount)||1);if(!wave)return 0;
     try{if(window.CCGLostSizzlerV138?.desiredQuota)return Math.max(0,Number(window.CCGLostSizzlerV138.desiredQuota(wave,players))||0)}catch(_){}
@@ -121,9 +140,9 @@
   }
 
   function install(){
-    ensureStyles();ensureStatusStrip();installRadarThrottle();
+    ensureStyles();ensureStatusStrip();installRadarThrottle();installHordeFogFastPath();
     if(!state.statusTimer)state.statusTimer=setInterval(()=>{try{updateStatus();if(isHorde())prewarmLaterWaves()}catch(_){}},STATUS_REFRESH_MS);
-    if(state.radarWrapped){state.installed=true;document.body.dataset.v141HordeFramePerformance="true"}
+    if(state.radarWrapped&&state.fogWrapped){state.installed=true;document.body.dataset.v141HordeFramePerformance="true"}
     return state.installed
   }
 
@@ -132,6 +151,7 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);if(state.statusTimer)clearInterval(state.statusTimer);state.timer=state.statusTimer=0},{once:true});
 
   window.CCGLostSizzlerV141HordeFramePerformance={
-    RADAR_REFRESH_MS,STATUS_REFRESH_MS,FIRST_WAVE_TRACK,LATER_TRACKS,prewarmFirstWave,prewarmLaterWaves,decodeKnownImages,installRadarThrottle,ensureStatusStrip,updateStatus,remaining,get state(){return state}
+    RADAR_REFRESH_MS,STATUS_REFRESH_MS,FIRST_WAVE_TRACK,LATER_TRACKS,prewarmFirstWave,prewarmLaterWaves,decodeKnownImages,
+    installRadarThrottle,installHordeFogFastPath,ensureStatusStrip,updateStatus,remaining,get state(){return state}
   };
 })();
