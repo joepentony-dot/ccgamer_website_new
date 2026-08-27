@@ -34,6 +34,7 @@
     if(state.loaded||state.loading||!spyActive())return state.loaded;state.loading=true;
     try{
       await loadScript("v10-41-r32-spy-overhaul.js","data-ccg-r32-spy-overhaul",()=>Boolean(window.CCGLostSizzlerV141R32SpyOverhaul));
+      await loadScript("v10-41-r32-spy-search-ui-owner.js","data-ccg-r32-spy-search-ui-owner",()=>Boolean(window.CCGLostSizzlerV141R32SpySearchUiOwner));
       await loadScript("v10-41-r32-spy-packet-owner.js","data-ccg-r32-spy-packet-owner",()=>Boolean(window.CCGLostSizzlerV141R32SpyPacketOwner));
       state.loaded=true;state.loads++;state.lastError="";return true
     }catch(error){state.lastError=String(error?.message||error);console.warn("[Lost Sizzler r32] Spy lazy load failed safely",error);return false}
