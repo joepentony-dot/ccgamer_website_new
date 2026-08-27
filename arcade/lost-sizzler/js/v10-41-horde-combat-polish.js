@@ -188,7 +188,7 @@
 
   function postHordeCombatFrame(context){
     if(!isHorde())return false;
-    if(context?.before)filterRapidSideSteps(context.before,Date.now());
+    filterRapidSideSteps(context?.before||null,Date.now());
     processWaveTransition(String(context?.previousPhase||""),Number(context?.previousWave||0));
     return true
   }
