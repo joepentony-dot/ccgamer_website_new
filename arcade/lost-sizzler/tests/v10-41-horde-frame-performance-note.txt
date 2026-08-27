@@ -1,0 +1,1 @@
+Horde frame-performance regression coverage is implemented in v10-41-horde-frame-performance.mjs and browser/v10-41-horde-frame-performance.mjs. This marker exists only to force no assumptions about stale CI and may be removed before merge.
