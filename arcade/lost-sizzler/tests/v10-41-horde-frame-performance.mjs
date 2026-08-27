@@ -29,7 +29,11 @@ assert.match(perf,/pointerenter/,"Horde prewarm must begin from explicit Horde p
 assert.match(perf,/pointerdown/,"touch/mouse Horde launch intent must begin prewarm");
 assert.match(perf,/button\.addEventListener\("focus"/,"keyboard Horde launch intent must begin prewarm");
 assert.doesNotMatch(perf,/requestIdleCallback\(begin/,"Horde image decoding must not run during unrelated Tutorial/Solo page idle time");
-assert.match(perf,/if\(!isHorde\(\)\)\{state\.lastStatusSignature="";return\}/,"status timer must return before DOM/status work outside Horde");
+assert.match(perf,/new MutationObserver\(\(\)=>syncStatusTimer\(\)\)/,"Horde status lifecycle must react to mode transitions without a polling timer");
+assert.match(perf,/attributeFilter:\["data-special-mode"\]/,"mode observer must watch only the special-mode attribute");
+assert.match(perf,/function startStatusTimer\(\)[\s\S]*if\(!isHorde\(\)\)return stopStatusTimer\(\)/,"hot status timer must refuse to start outside Horde");
+assert.match(perf,/function stopStatusTimer\(\)[\s\S]*clearInterval\(state\.statusTimer\)/,"Horde status timer must be cleared on mode exit");
+assert.doesNotMatch(perf,/if\(!state\.statusTimer\)state\.statusTimer=setInterval/,"install must not create a permanent status interval on every game mode");
 assert.doesNotMatch(perf,/window\.update\s*=/,"Horde frame optimisation must not compete for update ownership");
 assert.doesNotMatch(perf,/window\.movePlayer\s*=/,"Horde frame optimisation must not compete for movement ownership");
-console.log("Lost Sizzler Horde frame-performance, radar, status and intent-prewarm contracts passed.");
+console.log("Lost Sizzler Horde frame-performance, radar, Horde-only status lifecycle and intent-prewarm contracts passed.");
