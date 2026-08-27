@@ -39,7 +39,16 @@
     engine.leaveIsolation=wrapped;state.installed=true;return true;
   }
 
+  function loadPostPlaytestStability(){
+    if(document.querySelector('script[data-ccg-post-playtest-stability="true"]'))return true;
+    const cache=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
+    const script=document.createElement("script");
+    script.src=`js/v10-41-post-playtest-stability.js?v=${encodeURIComponent(cache)}`;
+    script.async=false;script.dataset.ccgPostPlaytestStability="true";document.head.appendChild(script);return true;
+  }
+
+  loadPostPlaytestStability();
   if(!install())state.timer=setInterval(()=>{if(install()){clearInterval(state.timer);state.timer=0}},40);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
-  window.CCGLostSizzlerV141R30SpyExitControlReset={install,resetPostSpyControls,get state(){return state}};
+  window.CCGLostSizzlerV141R30SpyExitControlReset={install,resetPostSpyControls,loadPostPlaytestStability,get state(){return state}};
 })();
