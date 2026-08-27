@@ -13,7 +13,7 @@
   const state={
     timer:0,moveSource:null,moveInstalled:false,damageSource:null,damageInstalled:false,
     wasSpy:false,rendering:false,protectedFurniture:0,doorsPrimed:0,doorsRecovered:0,
-    fieldKitToggles:0,blockedDungeonActions:0,snapshots:new Map(),textSnapshots:new Map()
+    fieldKitToggles:0,blockedDungeonActions:0,searchBridges:0,snapshots:new Map(),textSnapshots:new Map()
   };
 
   function specialModeType(){
@@ -215,9 +215,10 @@
   function onSpyKeyDown(event){
     if(!spyActive()||editable(event?.target))return false;const code=String(event?.code||"");
     if(code==="KeyE"){
-      // The existing Spy adapter is registered earlier on Window and records E
-      // as `interact`. stopPropagation prevents the later Dungeon bubble listener
-      // from treating that same E press as a potion without blocking Spy Search.
+      const loader=window.CCGLostSizzlerV141R32SpyLoader;
+      if(!event.repeat&&typeof loader?.dispatchSearchAction==="function"){
+        event.preventDefault?.();event.stopImmediatePropagation?.();state.searchBridges++;loader.dispatchSearchAction();return true;
+      }
       stopDungeonPropagation(event);return true;
     }
     if(code==="KeyF"){
