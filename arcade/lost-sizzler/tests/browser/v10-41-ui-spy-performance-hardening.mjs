@@ -64,6 +64,7 @@ try{
   });
   assert.equal(spyStarted,true,"isolated Spy fixture must start through the real special-mode adapter");
   await page.waitForFunction(()=>document.body.dataset.specialMode==="sizzler-saboteurs"&&document.body.dataset.spyIndependentUi==="true"&&Boolean(window.CCGLostSizzlerV141R29SpyEngine?.state?.isolated));
+  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R32SpyLoader?.state?.loaded&&window.CCGLostSizzlerV141R32SpyLoader?.state?.uiLoaded&&window.CCGLostSizzlerV141R32SpyOverhaul?.state?.worldBuilds>=1&&window.CCGLostSizzlerV141R32SpySearchUiOwner),null,{timeout:15000});
   await page.waitForFunction(()=>getComputedStyle(document.getElementById("spy-independent-hud")).display!=="none");
 
   const spyUi=await page.evaluate(()=>{
@@ -108,8 +109,18 @@ try{
   assert.match(searchReady.label,/E — SEARCH/,"searchable Spy furniture must advertise the E interaction");
 
   await page.keyboard.press("KeyE");await page.waitForTimeout(210);
-  const searchProgress=await page.evaluate(()=>{window.CCGLostSizzlerV141UiSpyPerformance.renderSearchIndicator();const indicator=document.getElementById("spy-search-indicator"),fill=document.getElementById("spy-search-fill");return{state:indicator.dataset.state,label:document.getElementById("spy-search-label")?.textContent||"",width:parseFloat(fill?.style?.width||"0"),pulses:window.CCGLostSizzlerV141UiSpyPerformance.state.searchPulses}});
-  assert.equal(searchProgress.state,"searching","Spy furniture interaction must show an in-progress state");
+  const searchProgress=await page.evaluate(()=>{
+    const api=window.CCGLostSizzlerV141UiSpyPerformance,loader=window.CCGLostSizzlerV141R32SpyLoader,owner=window.CCGLostSizzlerV141R32SpyOverhaul,match=window.CCGLostSizzlerSpecialModes?.active?.state,actor=String(net?.sessionId||p1?.id||"P1"),model=match?.players?.find(row=>String(row?.id||"")===actor)||match?.players?.[0]||null,near=api.nearSpyFurniture();
+    api.renderSearchIndicator();const indicator=document.getElementById("spy-search-indicator"),fill=document.getElementById("spy-search-fill");
+    return{
+      state:indicator.dataset.state,label:document.getElementById("spy-search-label")?.textContent||"",width:parseFloat(fill?.style?.width||"0"),pulses:api.state.searchPulses,searchStartedAt:Number(api.state.searchStartedAt||0),searchTargetId:String(api.state.searchTargetId||""),
+      loader:{loaded:Boolean(loader?.state?.loaded),searchKeyDowns:Number(loader?.state?.searchKeyDowns||0),directSearchActions:Number(loader?.state?.directSearchActions||0),searchTargetBridges:Number(loader?.state?.searchTargetBridges||0),searchRoomBridges:Number(loader?.state?.searchRoomBridges||0),searchKeyUpFallbacks:Number(loader?.state?.searchKeyUpFallbacks||0),pendingActionCode:String(loader?.state?.pendingActionCode||"")},
+      ownerSearch:owner?.state?.search?{targetId:String(owner.state.search.targetId||""),startedAt:Number(owner.state.search.startedAt||0),completesAt:Number(owner.state.search.completesAt||0)}:null,
+      live:p1?{id:String(p1.id||""),x:Number(p1.x),y:Number(p1.y)}:null,model:model?{id:String(model.id||""),roomId:String(model.roomId||""),x:Number(model.x),y:Number(model.y)}:null,
+      near:near?{id:String(near.id||""),searched:Boolean(near.searched),x:Number(near.near?.x),y:Number(near.near?.y),spyR32Furniture:Boolean(near.near?.spyR32Furniture),logicalRoomId:String(near.near?.logicalRoomId||"")}:null
+    };
+  });
+  assert.equal(searchProgress.state,"searching",`Spy furniture interaction must show an in-progress state; diagnostics=${JSON.stringify(searchProgress)}`);
   assert.match(searchProgress.label,/SEARCHING/,"Spy search indicator must say what is being searched");
   assert.ok(searchProgress.width>0&&searchProgress.width<100,`Spy search progress bar must visibly advance, got ${searchProgress.width}%`);
   assert.ok(searchProgress.pulses>=1,"Spy search feedback must register the interaction pulse");

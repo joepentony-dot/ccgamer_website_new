@@ -96,11 +96,12 @@ try{
 }
 
 // This file is already called by the canonical Lost Sizzler Arcade Validation
-// workflow. Keep the new structural browser regressions chained here so mode
-// isolation cannot exist only as dormant tests under tests/browser/.
+// workflow. Keep the structural browser regressions chained here so mode
+// isolation cannot exist only as dormant tests under tests/browser/. The Spy
+// movement suite is scheduled explicitly by Arcade Validation and by Load
+// Safety's browser glob, so it must not be run twice through this chain.
 for(const regression of [
   "./v10-41-solo-combat-load-movement.mjs",
   "./v10-41-mode-controller-isolation.mjs",
-  "./v10-41-horde-controller-update-ownership.mjs",
-  "./v10-41-r29-spy-engine-isolation.mjs"
+  "./v10-41-horde-controller-update-ownership.mjs"
 ])await import(regression);

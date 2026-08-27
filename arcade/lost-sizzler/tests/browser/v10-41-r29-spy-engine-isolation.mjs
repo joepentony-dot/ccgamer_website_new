@@ -13,8 +13,8 @@ const server=http.createServer((req,res)=>{
   try{
     const pathname=decodeURIComponent(new URL(req.url,"http://local").pathname),relative=pathname.endsWith("/")?`${pathname}index.html`:pathname,file=path.resolve(repo,`.${relative}`);
     if(!file.startsWith(`${repo}${path.sep}`)&&file!==repo){res.writeHead(403).end("forbidden");return}
-    fs.readFile(file,(error,data)=>{if(error){res.writeHead(404,{"connection":"close"}).end("not found");return}res.writeHead(200,{"content-type":mime[path.extname(file).toLowerCase()]||"application/octet-stream","cache-control":"no-store","connection":"close"});res.end(data)});
-  }catch(error){res.writeHead(500,{"connection":"close"}).end(String(error))}
+    fs.readFile(file,(error,data)=>{if(error){res.writeHead(404,{"connection":"close"}).end("not found");return}res.writeHead(200,{"content-type":mime[path.extname(file).toLowerCase()]||"application/octet-stream","cache-control":"no-store",connection:"close"});res.end(data)});
+  }catch(error){res.writeHead(500,{connection:"close"}).end(String(error))}
 });
 server.on("connection",socket=>{sockets.add(socket);socket.on("close",()=>sockets.delete(socket))});
 await new Promise((resolve,reject)=>{server.once("error",reject);server.listen(0,"127.0.0.1",resolve)});
@@ -125,11 +125,10 @@ try{
     return null;
   });
   assert.ok(direction,"Spy cadence test requires a five-tile clear path");
-  const beforeMoves=await page.evaluate(()=>window.CCGLostSizzlerV141R29SpyEngine.state.moves);
   await page.keyboard.down(direction.code);await page.waitForTimeout(760);await page.keyboard.up(direction.code);await page.waitForTimeout(80);
-  const movement=await page.evaluate(before=>({moves:window.CCGLostSizzlerV141R29SpyEngine.state.moves-before,x:p1.x,y:p1.y}),beforeMoves);
-  assert.ok(movement.moves>=1,"held Spy movement must still advance the local agent");
-  assert.ok(movement.moves<=4,`220ms Spy cadence must prevent over-fast repeated steps; observed ${movement.moves} moves in 760ms`);
+  const movement=await page.evaluate(start=>({tiles:Math.abs(Number(p1.x)-Number(start.x))+Math.abs(Number(p1.y)-Number(start.y)),x:p1.x,y:p1.y}),direction);
+  assert.ok(movement.tiles>=1,"held Spy movement must still advance the local agent");
+  assert.ok(movement.tiles<=4,`220ms Spy cadence must prevent over-fast repeated steps; observed ${movement.tiles} tiles in 760ms`);
 
   const exit=await page.evaluate(()=>{
     const special=window.CCGLostSizzlerSpecialModes,runtime=window.CCGLostSizzlerModeRuntime,saved=window.__CCG_SPY_BROWSER_STATE__;
