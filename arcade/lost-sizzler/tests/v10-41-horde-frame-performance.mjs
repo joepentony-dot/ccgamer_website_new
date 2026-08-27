@@ -11,16 +11,16 @@ const loader=fs.readFileSync(path.join(root,"js/v10-41-r30-spy-exit-control-rese
 
 assert.match(loader,/v10-41-horde-frame-performance\.js/,"r30 tail must load Horde frame performance layer");
 assert.match(loader,/data-ccg-horde-frame-performance/,"Horde performance loader must be deduplicated");
-
 assert.match(combat,/PACING_MAINTENANCE_MS=240/,"enemy pacing scans must be cadence-gated");
 assert.match(combat,/NAV_SAMPLE_MS=160/,"anti-sidestep snapshots must be cadence-gated");
 assert.match(combat,/const byId=new Map\(\)/,"anti-sidestep lookup must build one enemy ID map per sampled pass");
 assert.match(combat,/const enemy=byId\.get\(id\)/,"anti-sidestep lookup must use constant-time ID lookup");
 assert.doesNotMatch(combat,/const enemy=\(host\?\.enemies\|\|\[\]\)\.find/,"sampled anti-sidestep pass must not perform one linear enemy search per enemy");
 assert.match(combat,/if\(context\?\.before\)filterRapidSideSteps/,"post frame must only process navigation when a sample was actually captured");
-
 assert.match(perf,/RADAR_REFRESH_MS=140/,"Horde tactical radar must be bounded to a low-cost refresh cadence");
 assert.match(perf,/now-state\.lastRadarAt<RADAR_REFRESH_MS/,"Horde radar wrapper must skip redundant display-frame redraws");
+assert.match(perf,/drawFogV141HordeFastPath/,"Horde must have a dedicated no-exploration fog fast path");
+assert.match(perf,/window\.drawDynamicLighting\(\)/,"Horde fog fast path must retain dynamic light pools while skipping the Dungeon tile fog loop");
 assert.match(perf,/id="horde-performance-status"/,"remaining-enemy status must have a dedicated always-visible strip");
 assert.match(perf,/insertAdjacentElement\("beforebegin",node\)/,"Horde status must sit above the game area instead of at the page foot");
 assert.match(perf,/#horde-live-remaining\{display:none!important\}/,"old bottom remaining-enemy line must be hidden in Horde");
@@ -29,5 +29,4 @@ assert.match(perf,/cache:"force-cache"/,"prewarm must reuse browser cache rather
 assert.match(perf,/requestIdleCallback/,"prewarm should happen before play when the browser is idle");
 assert.doesNotMatch(perf,/window\.update\s*=/,"Horde frame optimisation must not compete for update ownership");
 assert.doesNotMatch(perf,/window\.movePlayer\s*=/,"Horde frame optimisation must not compete for movement ownership");
-
-console.log("Lost Sizzler Horde frame-performance, radar, status and prewarm contracts passed.");
+console.log("Lost Sizzler Horde frame-performance, fog, radar, status and prewarm contracts passed.");
