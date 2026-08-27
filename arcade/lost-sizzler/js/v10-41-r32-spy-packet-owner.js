@@ -96,7 +96,11 @@
       if(spyActive()){restoreSteppedVisual(before,api);smoothVisualPositions(dt)}
       return result
     };
-    wrapped.__ccgV141R32SpyOverhaul=true;wrapped.__ccgV141R32SpyVisualSmoothing=true;wrapped.__ccgOriginal=base;
+    wrapped.__ccgV141R32SpyOverhaul=true;wrapped.__ccgV141R32SpyVisualSmoothing=true;
+    // The retained post-playtest monitor predates r32 and otherwise wraps the
+    // Spy update again every 40 ms. Advertising its compatibility marker makes
+    // that older owner yield while r32 remains the single final smoothing path.
+    wrapped.__ccgV141PostPlaytestSpySmooth=true;wrapped.__ccgOriginal=base;
     engine.isolatedUpdate=wrapped;state.visualSmoothingSeals++;return true
   }
 
