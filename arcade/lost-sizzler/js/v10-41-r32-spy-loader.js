@@ -13,12 +13,13 @@
 
   const MODE_ID="sizzler-saboteurs",MONITOR_MS=20;
   const OWNER_ACTION_CODES=new Set(["KeyE","KeyT","KeyX"]);
-  const state={timer:0,loading:false,loaded:false,loads:0,lastError:"",uiLoading:false,uiLoaded:false,uiLoads:0,uiLastError:"",pendingActionCode:"",queuedActions:0,replayedActions:0,queuedSearchFeedbacks:0,directSearchActions:0,searchTargetBridges:0};
-  let loadPromise=null,uiPromise=null,pendingActionPromise=null;
+  const state={timer:0,loading:false,loaded:false,loads:0,lastError:"",uiLoading:false,uiLoaded:false,uiLoads:0,uiLastError:"",pendingActionCode:"",queuedActions:0,replayedActions:0,queuedSearchFeedbacks:0,directSearchActions:0,searchTargetBridges:0,searchKeyDowns:0,searchKeyUpFallbacks:0};
+  let loadPromise=null,uiPromise=null,pendingActionPromise=null,lastSearchDispatchAt=0;
 
   const spyActive=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type===MODE_ID||document.body?.dataset?.specialMode===MODE_ID}catch(_){return false}};
   const revision=()=>String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
   const overhaul=()=>{try{return window.CCGLostSizzlerV141R32SpyOverhaul||null}catch(_){return null}};
+  const perfNow=()=>{try{return Number(performance.now())||Date.now()}catch(_){return Date.now()}};
 
   function loadScript(path,marker,ready){
     return new Promise((resolve,reject)=>{
@@ -98,6 +99,7 @@
     bridgeSearchTarget();
     const started=Boolean(owner.beginSearch());
     if(started){state.directSearchActions++;return true}
+    if(owner?.state?.search)return true;
     return queueSearchFeedback()
   }
 
@@ -114,23 +116,38 @@
     return true
   }
 
+  function dispatchSearchAction(){
+    if(!spyActive())return false;
+    lastSearchDispatchAt=perfNow();state.searchKeyDowns++;
+    if(state.loaded&&typeof overhaul()?.beginSearch==="function")return directSearchAction();
+    return queueOwnerAction("KeyE")
+  }
+
   function onKeyDown(event){
     if(!spyActive()||event?.repeat)return;const code=String(event?.code||"");if(!OWNER_ACTION_CODES.has(code))return;
-    if(code==="KeyE"&&state.loaded&&typeof overhaul()?.beginSearch==="function"){
-      event.preventDefault?.();event.stopImmediatePropagation?.();directSearchAction();return
+    if(code==="KeyE"){
+      event.preventDefault?.();event.stopImmediatePropagation?.();dispatchSearchAction();return
     }
     if(state.loaded)return;
     event.preventDefault?.();event.stopImmediatePropagation?.();queueOwnerAction(code)
   }
 
-  function monitor(){
-    if(spyActive()){ensureSearchUi();ensureLoaded()}
-    else state.pendingActionCode=""
+  function onKeyUp(event){
+    if(!spyActive()||String(event?.code||"")!=="KeyE")return;
+    const owner=overhaul(),recent=perfNow()-lastSearchDispatchAt<140,searchActive=Boolean(owner?.state?.search),searchQueued=state.pendingActionCode==="KeyE";
+    if(recent&&(searchActive||searchQueued))return;
+    event.preventDefault?.();event.stopImmediatePropagation?.();state.searchKeyUpFallbacks++;
+    if(state.loaded&&typeof owner?.beginSearch==="function")directSearchAction();else queueOwnerAction("KeyE")
   }
 
-  addEventListener("keydown",onKeyDown,true);
-  monitor();state.timer=setInterval(monitor,MONITOR_MS);
-  addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0;state.pendingActionCode=""},{once:true});
+  function monitor(){
+    if(spyActive()){ensureSearchUi();ensureLoaded()}
+    else{state.pendingActionCode="";lastSearchDispatchAt=0}
+  }
 
-  window.CCGLostSizzlerV141R32SpyLoader={ensureLoaded,ensureSearchUi,queueOwnerAction,directSearchAction,bridgeSearchTarget,get state(){return state}};
+  addEventListener("keydown",onKeyDown,true);addEventListener("keyup",onKeyUp,true);
+  monitor();state.timer=setInterval(monitor,MONITOR_MS);
+  addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0;state.pendingActionCode="";lastSearchDispatchAt=0},{once:true});
+
+  window.CCGLostSizzlerV141R32SpyLoader={ensureLoaded,ensureSearchUi,queueOwnerAction,directSearchAction,bridgeSearchTarget,dispatchSearchAction,get state(){return state}};
 })();
