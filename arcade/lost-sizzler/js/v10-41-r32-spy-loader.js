@@ -13,12 +13,13 @@
 
   const MODE_ID="sizzler-saboteurs",MONITOR_MS=20;
   const OWNER_ACTION_CODES=new Set(["KeyE","KeyT","KeyX"]);
-  const state={timer:0,loading:false,loaded:false,loads:0,lastError:"",uiLoading:false,uiLoaded:false,uiLoads:0,uiLastError:"",pendingActionCode:"",queuedActions:0,replayedActions:0,queuedSearchFeedbacks:0,directSearchActions:0,searchTargetBridges:0,searchKeyDowns:0,searchKeyUpFallbacks:0};
+  const state={timer:0,loading:false,loaded:false,loads:0,lastError:"",uiLoading:false,uiLoaded:false,uiLoads:0,uiLastError:"",pendingActionCode:"",queuedActions:0,replayedActions:0,queuedSearchFeedbacks:0,directSearchActions:0,searchTargetBridges:0,searchRoomBridges:0,searchKeyDowns:0,searchKeyUpFallbacks:0};
   let loadPromise=null,uiPromise=null,pendingActionPromise=null,lastSearchDispatchAt=0;
 
   const spyActive=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type===MODE_ID||document.body?.dataset?.specialMode===MODE_ID}catch(_){return false}};
   const revision=()=>String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
   const overhaul=()=>{try{return window.CCGLostSizzlerV141R32SpyOverhaul||null}catch(_){return null}};
+  const actorId=()=>{try{return String(net?.sessionId||p1?.id||"P1")}catch(_){return"P1"}};
   const perfNow=()=>{try{return Number(performance.now())||Date.now()}catch(_){return Date.now()}};
 
   function loadScript(path,marker,ready){
@@ -89,6 +90,8 @@
       if(!physical.spyR32Furniture){physical.spyR32Furniture=true;changed=true}
       if(String(physical.logicalFurnitureId||"")!==targetId){physical.logicalFurnitureId=targetId;changed=true}
       if(String(physical.logicalRoomId||"")!==String(room.id)){physical.logicalRoomId=room.id;changed=true}
+      const model=match?.players?.find?.(row=>String(row?.id||"")===actorId())||match?.players?.[0]||null;
+      if(model&&String(model.roomId||"")!==String(room.id)){model.roomId=room.id;state.searchRoomBridges++}
       if(changed)state.searchTargetBridges++;
       return true
     }catch(_){return false}
