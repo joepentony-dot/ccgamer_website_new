@@ -9,7 +9,7 @@
   const POST_RESUME_ATTACK_GRACE_MS=2600;
   const ACTIVE_SPECIAL_MODES=new Set(["horde-survivor","sizzler-saboteurs"]);
   const state={
-    timer:0,monitorTimer:0,installed:false,chestWrapped:false,pauseWrapped:false,shopBound:false,styleInstalled:false,cpuCookRenderWrapped:false,
+    timer:0,monitorTimer:0,installed:false,chestWrapped:false,pauseWrapped:false,shopBound:false,styleInstalled:false,cpuCookRenderWrapped:false,cpuCookSpawnWrapped:false,
     shopWalletRefreshes:0,chestImmediateDeliveries:0,chestFeedbacks:0,cpuCookRepairs:0,genericCookRelabels:0,pauseCombatResets:0,postResumeAttackRearms:0,lastResumeAt:0,lastHost:null
   };
 
@@ -139,6 +139,20 @@
     if(changed){host.revision=(host.revision||0)+1;state.cpuCookRepairs++}
     return changed
   }
+  function installCpuCookSpawnFix(){
+    const current=window.startWorld;if(typeof current!=="function")return false;
+    if(sourceHasMarker(current,"__ccgV141R31CpuCookSpawnFix")){state.cpuCookSpawnWrapped=true;return true}
+    const wrapped=function startWorldV141R31CpuCook(){
+      const result=current.apply(this,arguments);
+      if(dungeonSolo()){
+        normaliseCpuCook();
+        queueMicrotask(()=>normaliseCpuCook());
+      }
+      return result
+    };
+    wrapped.__ccgV141R31CpuCookSpawnFix=true;wrapped.__ccgOriginal=current;
+    window.startWorld=wrapped;state.cpuCookSpawnWrapped=true;return true
+  }
   function genericCookDisplayName(enemy){return enemy&&String(enemy.kind||"")==="cook"&&!enemy.follower?"Kitchen Cook":null}
   function installCpuCookRenderFix(){
     const current=window.drawEnemy;if(typeof current!=="function")return false;
@@ -207,7 +221,7 @@
 
   function monitor(){
     try{
-      installChestFix();installPauseFix();installCpuCookRenderFix();
+      installChestFix();installPauseFix();installCpuCookSpawnFix();installCpuCookRenderFix();
       if(dungeonSolo()){
         if(host&&host!==state.lastHost){state.lastHost=host;normaliseCpuCook()}
         else normaliseCpuCook();
@@ -221,7 +235,7 @@
   function install(){
     const gate=window.CCGLostSizzlerReleaseGate;if(gate&&!gate.state?.ready)return false;
     if(!document.body||!window.CCGLostSizzlerModeRuntime||typeof window.openChest!=="function"||typeof window.pause!=="function")return false;
-    installScoreVisibilityStyle();installShopFix();installChestFix();installPauseFix();installCpuCookRenderFix();
+    installScoreVisibilityStyle();installShopFix();installChestFix();installPauseFix();installCpuCookSpawnFix();installCpuCookRenderFix();
     addEventListener("keydown",onPostResumeAttack,true);
     monitor();state.monitorTimer=setInterval(monitor,MONITOR_MS);
     state.installed=true;document.body.dataset.v141R31SoloDungeon="true";return true
@@ -234,5 +248,5 @@
     removeEventListener("keydown",onPostResumeAttack,true)
   },{once:true});
 
-  window.CCGLostSizzlerV141R31SoloDungeon={refreshShopWallet,normaliseCpuCook,genericCookDisplayName,resetSoloCombatAfterResume,installChestFix,installPauseFix,installCpuCookRenderFix,mountLog,monitor,logEntries,get state(){return state}};
+  window.CCGLostSizzlerV141R31SoloDungeon={refreshShopWallet,normaliseCpuCook,genericCookDisplayName,resetSoloCombatAfterResume,installChestFix,installPauseFix,installCpuCookSpawnFix,installCpuCookRenderFix,mountLog,monitor,logEntries,get state(){return state}};
 })();
