@@ -20,7 +20,7 @@
   const MODE_HORDE="horde-survivor",MODE_SPY="sizzler-saboteurs",MONITOR_MS=40;
   const state={
     timer:0,hurtWrapped:false,renderWrapped:false,spyWrapped:false,
-    hordeHpSyncs:0,hordeSoloDefeats:0,hordeTerminalLocks:0,hordeArenaRetries:0,hordeArenaReady:0,
+    hordeHpSyncs:0,hordeSoloDefeats:0,hordeTerminalLocks:0,hordeArenaRetries:0,hordeArenaReady:0,hordeArenaInvalidations:0,
     bannerRectsSuppressed:0,bannerTextSuppressed:0,spySmoothedFrames:0,spySmoothedMoves:0,
     fireCooldownRepairs:0,fireBufferRepairs:0,visualTrims:0,lastRepairAt:0
   };
@@ -129,12 +129,38 @@
     window.hurtPlayer=wrapped;state.hurtWrapped=true;return true
   }
 
+  function hordeTraversalGeometryHealthy(){
+    if(!isHorde())return false;
+    try{
+      const room=world?.rooms?.[0],map=world?.map;
+      if(!world?._v141CompactHordeArena||!world?._v141TraversalHordeArena||!room?.hordeTraversalArena||Number(room?.hordeTraversalBlocks||0)<4||!Array.isArray(map))return false;
+      let interiorWalls=0;
+      for(let y=room.y+4;y<=room.y+room.h-4;y++)for(let x=room.x+4;x<=room.x+room.w-4;x++)if(map?.[y]?.[x]===1)interiorWalls++;
+      if(interiorWalls<40)return false;
+      const centreX=Math.round(room.x+room.w/2),centreY=Math.round(room.y+room.h/2);
+      return map?.[centreY]?.[centreX]===0
+    }catch(_){return false}
+  }
+
+  function invalidateHordeTraversalGeometry(){
+    try{
+      if(typeof world==="undefined"||!world)return false;
+      const room=world.rooms?.[0];
+      delete world._v141TraversalHordeArena;
+      if(room){delete room.hordeTraversalArena;delete room.hordeTraversalBlocks}
+      state.hordeArenaInvalidations++;state.lastRepairAt=now();return true
+    }catch(_){return false}
+  }
+
   function ensureHordeArena(){
     if(!isHorde())return false;
     try{
       if(!world?._v141CompactHordeArena){state.hordeArenaRetries++;window.CCGLostSizzlerV141BrowserStabilityGameplay?.compactHordeArena?.()}
-      if(world?._v141CompactHordeArena&&!world?._v141TraversalHordeArena){state.hordeArenaRetries++;window.CCGLostSizzlerHordeModeSafety?.shapeHordeArena?.()}
-      if(world?._v141TraversalHordeArena){state.hordeArenaReady++;return true}
+      if(world?._v141CompactHordeArena&&!hordeTraversalGeometryHealthy()){
+        if(world?._v141TraversalHordeArena||world?.rooms?.[0]?.hordeTraversalArena)invalidateHordeTraversalGeometry();
+        state.hordeArenaRetries++;window.CCGLostSizzlerHordeModeSafety?.shapeHordeArena?.();
+      }
+      if(hordeTraversalGeometryHealthy()){state.hordeArenaReady++;return true}
     }catch(_){}
     return false
   }
@@ -243,7 +269,7 @@
   monitor();state.timer=setInterval(monitor,MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
   window.CCGLostSizzlerV141PostPlaytestStability={
-    monitor,ensureHordeArena,syncHordePhysicalState,resolveSoloHordeDefeat,repairSoloFireState,trimVisualBacklog,
+    monitor,ensureHordeArena,hordeTraversalGeometryHealthy,invalidateHordeTraversalGeometry,syncHordePhysicalState,resolveSoloHordeDefeat,repairSoloFireState,trimVisualBacklog,
     installHurtGuard,installRenderGuard,installSpySmoothing,get state(){return state}
   };
 })();
