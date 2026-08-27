@@ -28,7 +28,22 @@ try{
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R31SoloDungeon)&&Boolean(window.CCGLostSizzlerModeRuntime)&&Boolean(document.getElementById("solo-btn")),null,{timeout:90000});
   await page.click("#solo-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof mode!=="undefined"&&mode==="playing"&&window.CCGLostSizzlerModeRuntime?.detect?.()==="dungeon-solo");
-  await page.waitForFunction(()=>Boolean(host?.enemies?.some?.(enemy=>enemy?._v141R31NamedCpuCook&&enemy?.follower?.name==="CPU Cook")));
+  await page.waitForFunction(()=>Boolean(host?.enemies)&&Boolean(p1),null,{timeout:15000});
+  await page.evaluate(()=>{
+    const api=window.CCGLostSizzlerV141R31SoloDungeon;
+    const isCpuFollower=follower=>{
+      if(!follower||String(follower.kind||"").toLowerCase()!=="cook")return false;
+      const name=String(follower.name||"").trim().toUpperCase(),initials=String(follower.initials||"").trim().toUpperCase(),music=String(follower.musicKey||"").trim().toLowerCase(),avatar=String(follower.avatar||"").trim().toLowerCase();
+      return name==="CPU"||name==="CPU COOK"||initials==="CPU"||music==="cpu"||/(^|\/)cpu\.png(?:$|[?#])/.test(avatar);
+    };
+    if(!host.enemies.some(enemy=>isCpuFollower(enemy?.follower))){
+      const configured=window.CCG_CONFIG?.followerElites?.find(follower=>isCpuFollower(follower));
+      if(!configured)throw new Error("CPU Cook regression fixture could not find the configured CPU follower");
+      host.enemies.push({id:"r31-browser-cpu-cook",kind:"cook",x:Number(p1.x)||0,y:Number(p1.y)||0,rx:Number(p1.x)||0,ry:Number(p1.y)||0,hp:Number(configured.hp)||9,maxHp:Number(configured.hp)||9,armor:Number(configured.armor)||5,active:true,follower:{...configured}});
+    }
+    api.normaliseCpuCook();api.monitor();
+  });
+  await page.waitForFunction(()=>Boolean(host?.enemies?.some?.(enemy=>enemy?._v141R31NamedCpuCook&&enemy?.follower?.name==="CPU Cook")),null,{timeout:10000});
 
   const cpuAndHud=await page.evaluate(()=>{
     const cpu=host.enemies.find(enemy=>enemy?._v141R31NamedCpuCook),generic={kind:"cook",follower:null},node=document.getElementById("hud-score"),style=getComputedStyle(node),rect=node.getBoundingClientRect();
