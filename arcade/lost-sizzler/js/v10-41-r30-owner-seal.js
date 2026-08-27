@@ -5,7 +5,8 @@
   window.__CCG_LOST_SIZZLER_V141_R30_OWNER_SEAL__=true;
 
   const SPY_MODE="sizzler-saboteurs",CHECK_MS=16;
-  const state={timer:0,repairs:0,lastRepairAt:0,lastObserved:null};
+  const state={timer:0,repairs:0,blockedWrites:0,lastRepairAt:0,lastObserved:null,lastBlocked:null,assignmentGate:false,assignmentGateUnsupported:false};
+  let gatedMove=null;
 
   function r30(){return window.CCGLostSizzlerV141R30||null}
   function spyOwned(){
@@ -23,7 +24,31 @@
     const api=r30(),move=api?.state?.goldenMove;
     return api?.state?.goldenLocked&&typeof move==="function"?move:null;
   }
+  function installAssignmentGate(){
+    if(state.assignmentGate||state.assignmentGateUnsupported)return state.assignmentGate;
+    const target=golden();if(!target)return false;
+    let descriptor;
+    try{descriptor=Object.getOwnPropertyDescriptor(window,"movePlayer")}catch(_){descriptor=null}
+    if(descriptor&&descriptor.configurable===false){state.assignmentGateUnsupported=true;return false}
+    gatedMove=typeof window.movePlayer==="function"?window.movePlayer:target;
+    try{
+      Object.defineProperty(window,"movePlayer",{
+        configurable:true,
+        enumerable:descriptor?.enumerable!==false,
+        get(){return gatedMove},
+        set(value){
+          const locked=golden();
+          if(!locked||spyOwned()||tutorialOwned()||value===locked){gatedMove=value;return}
+          state.blockedWrites++;state.lastBlocked=value;gatedMove=locked;
+        }
+      });
+      state.assignmentGate=true;
+      if(!spyOwned()&&!tutorialOwned())gatedMove=target;
+      return true;
+    }catch(_){state.assignmentGateUnsupported=true;return false}
+  }
   function seal(reason="normal-mode owner seal"){
+    installAssignmentGate();
     if(spyOwned()||tutorialOwned())return false;
     const target=golden();if(!target)return false;
     const current=window.movePlayer;state.lastObserved=current;
@@ -50,5 +75,5 @@
     removeEventListener("keydown",onMovementKey,true);removeEventListener("keyup",onMovementKey,true);
   },{once:true});
 
-  window.CCGLostSizzlerV141R30OwnerSeal={seal,spyOwned,tutorialOwned,get state(){return state}};
+  window.CCGLostSizzlerV141R30OwnerSeal={seal,installAssignmentGate,spyOwned,tutorialOwned,get state(){return state}};
 })();
