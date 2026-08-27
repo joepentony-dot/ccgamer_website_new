@@ -40,12 +40,15 @@
     state.tutorialWindow=active;
     return active;
   }
-  function noteBlockedWrite(value){
-    state.blockedWrites++;state.lastBlocked=value;state.repairs++;state.lastRepairAt=Date.now();
+  function noteR30OwnershipRepair(){
     try{
       const api=r30();
       if(api?.state){api.state.ownershipRepairs=Math.max(0,Number(api.state.ownershipRepairs||0))+1;api.state.lastOwnershipRepairAt=Date.now()}
     }catch(_){}
+  }
+  function noteBlockedWrite(value){
+    state.blockedWrites++;state.lastBlocked=value;state.repairs++;state.lastRepairAt=Date.now();
+    noteR30OwnershipRepair();
   }
   function installAssignmentGate(){
     if(state.assignmentGate||state.assignmentGateUnsupported)return state.assignmentGate;
@@ -79,7 +82,7 @@
     const current=window.movePlayer;state.lastObserved=current;
     if(current===target)return false;
     window.movePlayer=target;
-    state.repairs++;state.lastRepairAt=Date.now();
+    state.repairs++;state.lastRepairAt=Date.now();noteR30OwnershipRepair();
     try{r30()?.assertNormalRuntimeOwnership?.(reason)}catch(_){}
     try{if(typeof move1!=="undefined"&&Number(move1||0)>0)move1=0;if(typeof move2!=="undefined"&&Number(move2||0)>0)move2=0}catch(_){}
     return true;
