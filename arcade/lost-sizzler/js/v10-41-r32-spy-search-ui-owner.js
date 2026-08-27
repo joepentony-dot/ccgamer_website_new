@@ -1,26 +1,28 @@
 /* The Lost Sizzler V10.41 r32 — authoritative Spy search UI bridge.
  *
- * The R32 Spy overhaul owns the actual furniture-search lifecycle. This
- * presentation-only bridge mirrors that authoritative search into the retained
- * independent Spy HUD so long browser sessions cannot leave the indicator in
- * READY while a search is already in progress. It owns no gameplay update,
- * packet callback or non-Spy state.
+ * The R32 Spy overhaul owns the actual furniture-search lifecycle. This bridge
+ * mirrors that authoritative state into the retained independent Spy HUD and
+ * normalises the search completion window to the retained 520 ms interaction
+ * contract so the gameplay owner and HUD cannot disagree during a handoff.
+ * It owns no shared gameplay update, packet callback or non-Spy state.
  */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V141_R32_SPY_SEARCH_UI_OWNER__)return;
   window.__CCG_LOST_SIZZLER_V141_R32_SPY_SEARCH_UI_OWNER__=true;
 
-  const MODE_ID="sizzler-saboteurs",MONITOR_MS=20;
-  const state={timer:0,installed:false,baseRender:null,lastSearchKey:"",syncs:0,pulsesRecovered:0};
+  const MODE_ID="sizzler-saboteurs",MONITOR_MS=20,SEARCH_MS=520;
+  const state={timer:0,installed:false,baseRender:null,lastSearchKey:"",syncs:0,pulsesRecovered:0,timingBridges:0};
 
   const spyActive=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type===MODE_ID||document.body?.dataset?.specialMode===MODE_ID}catch(_){return false}};
   const ui=()=>{try{return window.CCGLostSizzlerV141UiSpyPerformance||null}catch(_){return null}};
   const authoritativeSearch=()=>{
     try{
       const q=window.CCGLostSizzlerV141R32SpyOverhaul?.state?.search;if(!q)return null;
-      const startedAt=Number(q.startedAt),completesAt=Number(q.completesAt);
+      const startedAt=Number(q.startedAt);let completesAt=Number(q.completesAt);
       if(!Number.isFinite(startedAt)||!Number.isFinite(completesAt)||completesAt<=startedAt)return null;
+      const bridgedCompletesAt=startedAt+SEARCH_MS;
+      if(Math.abs(completesAt-bridgedCompletesAt)>1){q.completesAt=bridgedCompletesAt;completesAt=bridgedCompletesAt;state.timingBridges++}
       return{targetId:String(q.targetId||"furniture"),targetLabel:String(q.targetLabel||"FURNITURE"),startedAt,completesAt}
     }catch(_){return null}
   };
