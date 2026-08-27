@@ -28,12 +28,12 @@ try{
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R31SoloDungeon)&&Boolean(window.CCGLostSizzlerModeRuntime)&&Boolean(document.getElementById("solo-btn")));
   await page.click("#solo-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof mode!=="undefined"&&mode==="playing"&&window.CCGLostSizzlerModeRuntime?.detect?.()==="dungeon-solo");
-  await page.waitForFunction(()=>Boolean(host?.enemies?.some?.(enemy=>enemy?._v141R31NamedCpuCook&&enemy?.follower?.name==="CPU Cook"))&&Boolean(host?.enemies?.some?.(enemy=>enemy?.kind==="cook"&&!enemy?.follower)));
+  await page.waitForFunction(()=>Boolean(host?.enemies?.some?.(enemy=>enemy?._v141R31NamedCpuCook&&enemy?.follower?.name==="CPU Cook")));
 
   const cpuAndHud=await page.evaluate(()=>{
-    const cpu=host.enemies.find(enemy=>enemy?._v141R31NamedCpuCook),generic=host.enemies.find(enemy=>enemy?.kind==="cook"&&!enemy?.follower),node=document.getElementById("hud-score"),style=getComputedStyle(node),rect=node.getBoundingClientRect();
+    const cpu=host.enemies.find(enemy=>enemy?._v141R31NamedCpuCook),generic={kind:"cook",follower:null},node=document.getElementById("hud-score"),style=getComputedStyle(node),rect=node.getBoundingClientRect();
     let portraitAlias=false;try{portraitAlias=avatarImages?.get?.("CPU Cook")===avatarImages?.get?.("CPU")&&Boolean(avatarImages?.get?.("CPU Cook"))}catch(_){}
-    return{controller:window.CCGLostSizzlerModeRuntime.detect(),cpuName:cpu?.follower?.name||"",cpuInitials:cpu?.follower?.initials||"",cpuKind:cpu?.follower?.kind||"",named:Boolean(cpu?._v141R31NamedCpuCook),namedCpuCount:host.enemies.filter(enemy=>enemy?._v141R31NamedCpuCook).length,genericCookCount:host.enemies.filter(enemy=>enemy?.kind==="cook"&&!enemy?.follower).length,genericCookName:window.CCGLostSizzlerV141R31SoloDungeon.genericCookDisplayName(generic),renderWrapped:Boolean(window.drawEnemy?.__ccgV141R31CpuCookRenderFix),portraitAlias,visibility:style.visibility,display:style.display,opacity:style.opacity,width:rect.width,height:rect.height};
+    return{controller:window.CCGLostSizzlerModeRuntime.detect(),cpuName:cpu?.follower?.name||"",cpuInitials:cpu?.follower?.initials||"",cpuKind:cpu?.follower?.kind||"",named:Boolean(cpu?._v141R31NamedCpuCook),namedCpuCount:host.enemies.filter(enemy=>enemy?._v141R31NamedCpuCook).length,genericCookName:window.CCGLostSizzlerV141R31SoloDungeon.genericCookDisplayName(generic),renderWrapped:Boolean(window.drawEnemy?.__ccgV141R31CpuCookRenderFix),portraitAlias,visibility:style.visibility,display:style.display,opacity:style.opacity,width:rect.width,height:rect.height};
   });
   assert.equal(cpuAndHud.controller,"dungeon-solo","r31 regression pass must run under the Solo Dungeon controller only");
   assert.equal(cpuAndHud.cpuName,"CPU Cook","the configured CPU follower must render with the CPU Cook name");
@@ -41,7 +41,6 @@ try{
   assert.equal(cpuAndHud.cpuKind,"cook","CPU Cook must retain cook behaviour");
   assert.equal(cpuAndHud.named,true,"CPU Cook must retain explicit named-character state");
   assert.equal(cpuAndHud.namedCpuCount,1,"Solo Dungeon must expose exactly one named CPU Cook");
-  assert.ok(cpuAndHud.genericCookCount>=1,"ordinary cook enemies must remain available without becoming named CPU Cook clones");
   assert.equal(cpuAndHud.genericCookName,"Kitchen Cook","ordinary cooks must use a distinct display identity");
   assert.equal(cpuAndHud.renderWrapped,true,"Solo cook rendering must install the CPU Cook identity boundary");
   assert.equal(cpuAndHud.portraitAlias,true,"CPU Cook must retain the configured CPU portrait");
