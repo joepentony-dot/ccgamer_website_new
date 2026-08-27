@@ -27,8 +27,9 @@ try{
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141HordeFramePerformance)&&Boolean(document.getElementById("horde-solo-btn")));
 
-  const beforeIntent=await page.evaluate(()=>window.CCGLostSizzlerV141HordeFramePerformance.state.firstWavePrewarmStarted);
-  assert.equal(beforeIntent,false,"Horde image/audio prewarm must not burden unrelated page startup before Horde intent");
+  const beforeIntent=await page.evaluate(()=>({prewarm:window.CCGLostSizzlerV141HordeFramePerformance.state.firstWavePrewarmStarted,statusTimer:window.CCGLostSizzlerV141HordeFramePerformance.state.statusTimer}));
+  assert.equal(beforeIntent.prewarm,false,"Horde image/audio prewarm must not burden unrelated page startup before Horde intent");
+  assert.equal(beforeIntent.statusTimer,0,"Horde status refresh timer must be completely asleep before Horde starts");
   await page.hover("#horde-solo-btn");
   await page.waitForFunction(()=>window.CCGLostSizzlerV141HordeFramePerformance.state.firstWavePrewarmStarted===true);
   const prewarm=await page.evaluate(async()=>({ready:await window.CCGLostSizzlerV141HordeFramePerformance.prewarmFirstWave(),started:window.CCGLostSizzlerV141HordeFramePerformance.state.firstWavePrewarmStarted}));
@@ -37,7 +38,7 @@ try{
 
   await page.click("#horde-solo-btn");
   await page.waitForFunction(()=>document.body.dataset.specialMode==="horde-survivor"&&document.body.dataset.hordeSolo==="true"&&Boolean(window.CCGLostSizzlerSpecialModes?.active?.state));
-  await page.waitForFunction(()=>Boolean(document.getElementById("horde-performance-status")));
+  await page.waitForFunction(()=>Boolean(document.getElementById("horde-performance-status"))&&window.CCGLostSizzlerV141HordeFramePerformance.state.statusTimer!==0);
   await page.waitForTimeout(1200);
 
   const result=await page.evaluate(()=>{
@@ -46,7 +47,7 @@ try{
     const sr=status.getBoundingClientRect(),gr=gameArea.getBoundingClientRect();
     return{
       statusText:status.textContent||"",statusDisplay:getComputedStyle(status).display,oldDisplay:old?getComputedStyle(old).display:"missing",
-      statusBottom:sr.bottom,gameTop:gr.top,
+      statusBottom:sr.bottom,gameTop:gr.top,statusTimer:api.state.statusTimer,statusStarts:api.state.statusStarts,
       radarDraws:api.state.radarDraws,radarSkips:api.state.radarSkips,statusRenders:api.state.statusRenders,
       pacingRuns:combat.state.pacingRuns,navSamples:combat.state.navSamples,
       mode:document.body.dataset.modeController||""
@@ -57,6 +58,8 @@ try{
   assert.match(result.statusText,/ENEMIES LEFT\s+\d+/i,"Horde status must show remaining monsters in the visible upper strip");
   assert.ok(result.statusBottom<=result.gameTop+2,`Horde remaining status must sit above gameplay: ${JSON.stringify(result)}`);
   assert.equal(result.oldDisplay,"none","old foot-of-screen remaining counter must be suppressed");
+  assert.notEqual(result.statusTimer,0,"Horde status refresh timer must run while Horde is active");
+  assert.ok(result.statusStarts>=1,"Horde mode entry must start the dedicated status timer");
   assert.ok(result.radarDraws>=2,`Horde radar should still refresh periodically: ${JSON.stringify(result)}`);
   assert.ok(result.radarSkips>result.radarDraws,`Horde radar should skip most display-frame redraws: ${JSON.stringify(result)}`);
   assert.ok(result.statusRenders>=1,"Horde status should render at least once");
@@ -64,7 +67,7 @@ try{
   assert.ok(result.navSamples<=10,`Horde navigation snapshots must be cadence-gated over ~1.2 seconds: ${JSON.stringify(result)}`);
   assert.match(result.mode,/horde-/,"mode controller must remain in a Horde-isolated controller");
   assert.deepEqual(errors,[],`Horde frame-performance regression must have no uncaught browser errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler real Horde frame cadence, radar throttle, intent-prewarm and visible remaining-enemy HUD regressions passed in Chromium.");
+  console.log("Lost Sizzler real Horde frame cadence, sleeping non-Horde status timer, radar throttle, intent-prewarm and visible remaining-enemy HUD regressions passed in Chromium.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
