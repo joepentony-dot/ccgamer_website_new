@@ -16,7 +16,8 @@ assert.match(combat,/NAV_SAMPLE_MS=160/,"anti-sidestep snapshots must be cadence
 assert.match(combat,/const byId=new Map\(\)/,"anti-sidestep lookup must build one enemy ID map per sampled pass");
 assert.match(combat,/const enemy=byId\.get\(id\)/,"anti-sidestep lookup must use constant-time ID lookup");
 assert.doesNotMatch(combat,/const enemy=\(host\?\.enemies\|\|\[\]\)\.find/,"sampled anti-sidestep pass must not perform one linear enemy search per enemy");
-assert.match(combat,/if\(context\?\.before\)filterRapidSideSteps/,"post frame must only process navigation when a sample was actually captured");
+assert.match(combat,/filterRapidSideSteps\(context\?\.before\|\|null,Date\.now\(\)\)/,"post frame must preserve the established controller contract while null samples exit without scans");
+assert.match(combat,/if\(!before\|\|!isAuthority\(\)\)return false/,"unsampled navigation frames must return before building an enemy lookup map");
 assert.match(perf,/RADAR_REFRESH_MS=140/,"Horde tactical radar must be bounded to a low-cost refresh cadence");
 assert.match(perf,/now-state\.lastRadarAt<RADAR_REFRESH_MS/,"Horde radar wrapper must skip redundant display-frame redraws");
 assert.match(perf,/drawFogV141HordeFastPath/,"Horde must have a dedicated no-exploration fog fast path");
