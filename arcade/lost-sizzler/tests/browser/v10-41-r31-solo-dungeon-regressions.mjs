@@ -172,7 +172,7 @@ try{
   assert.ok(resumeState.lastResumeAt>0,"Solo resume must arm the bounded first-attack safeguard");
 
   await page.evaluate(()=>toggleInventory());await page.waitForFunction(()=>mode==="inventory"&&!document.getElementById("inventory-panel").classList.contains("hidden"));
-  await page.click("#inventory-close-top");await page.waitForFunction(()=>mode==="playing"&&document.getElementById("inventory-panel").classList.contains("hidden"));
+  await page.click("#inventory-close");await page.waitForFunction(()=>mode==="playing"&&document.getElementById("inventory-panel").classList.contains("hidden"));
   await page.waitForTimeout(120);
   const displayState=await page.evaluate(()=>{
     const game=document.getElementById("game"),context=game.getContext("2d"),pixels=context.getImageData(0,0,game.width,game.height).data;
