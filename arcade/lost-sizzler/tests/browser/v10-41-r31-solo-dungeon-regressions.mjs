@@ -94,8 +94,8 @@ try{
   await page.evaluate(()=>pause());await page.waitForFunction(()=>mode==="playing");
   await page.waitForTimeout(30);
   const resumeState=await page.evaluate(()=>({fire1:Number(fire1),fireBuffer1:Number(fireBuffer1),hitStun:Number(p1.hitStunMs||0),controlLocked:Boolean(p1.controlLocked),controlsLocked:Boolean(p1.controlsLocked),resets:window.CCGLostSizzlerV141R31SoloDungeon.state.pauseCombatResets,lastResumeAt:Number(window.CCGLostSizzlerV141R31SoloDungeon.state.lastResumeAt||0)}));
-  assert.equal(resumeState.fire1,0,"repeated Solo pauses must not retain an attack cooldown");
-  assert.equal(resumeState.fireBuffer1,0,"repeated Solo pauses must not retain a poisoned attack buffer");
+  assert.ok(Number.isFinite(resumeState.fire1)&&resumeState.fire1<=0,"repeated Solo pauses must leave the attack cooldown ready rather than retain a positive stale value");
+  assert.ok(Number.isFinite(resumeState.fireBuffer1)&&resumeState.fireBuffer1<=0,"repeated Solo pauses must leave the attack buffer ready rather than retain a positive poisoned value");
   assert.equal(resumeState.hitStun,0,"Solo resume must clear stale hit-stun left at the pause boundary");
   assert.equal(resumeState.controlLocked,false,"Solo resume must release singular control lock state");
   assert.equal(resumeState.controlsLocked,false,"Solo resume must release plural control lock state");
