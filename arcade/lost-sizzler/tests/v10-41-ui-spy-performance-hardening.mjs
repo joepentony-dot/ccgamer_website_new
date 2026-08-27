@@ -23,14 +23,14 @@ assert.match(source,/H\.collectHealth\(runState,pickup\.id,model\.id,now\)/,"Hor
 assert.match(source,/live\.health=Math\.max\(0,Number\(model\.hp\|\|0\)\)/,"successful Horde health collection must immediately update visible physical HP");
 assert.match(source,/runState\.playerCount\|\|runState\.players\?\.length/,"Solo Horde health must have a safe one-player ID fallback");
 
-assert.match(source,/id="spy-independent-hud"/,"Spy Vs Spy must own a dedicated HUD rather than repurposing Dungeon key/inventory cards");
+assert.match(source,/hud\.id="spy-independent-hud"/,"Spy Vs Spy must own a dedicated HUD rather than repurposing Dungeon key/inventory cards");
 assert.match(source,/data-special-mode="sizzler-saboteurs"[\s\S]*\.critical-strip/,"Spy must hide Dungeon critical/key UI while the independent HUD owns presentation");
 assert.match(source,/data-special-mode="sizzler-saboteurs"[\s\S]*\.tactical-zone/,"Spy must hide the Dungeon tactical/sidebar UI instead of fighting it");
 assert.match(source,/lastSpyHudSignature/,"Spy objective HUD must only write when its state changes");
 assert.match(source,/legacy\.state\.rendering=true/,"the retained r27 Spy layer must yield its old repeated Dungeon-HUD renderer to the dedicated owner");
 assert.match(source,/legacy\?\.restoreUi\?\.\(\)/,"leaving Spy must restore the ordinary Dungeon UI state");
 
-assert.match(source,/id="spy-search-indicator"/,"Spy searchable furniture must have a dedicated interaction indicator");
+assert.match(source,/node\.id="spy-search-indicator"/,"Spy searchable furniture must have a dedicated interaction indicator");
 assert.match(source,/SEARCH_FEEDBACK_MS=520/,"Spy search feedback must expose visible progress rather than a one-frame prompt only");
 assert.match(source,/SEARCHING \$\{state\.searchTargetLabel/,"Spy search indicator must describe the furniture currently being searched");
 assert.match(source,/style\.width=`\$\{progress\}%`/,"Spy search progress must drive a visible percentage bar");
