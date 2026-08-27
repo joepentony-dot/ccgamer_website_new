@@ -138,6 +138,8 @@
         state.nav.set(id,nav);
         continue
       }
+      // One occasional lateral pathing step is allowed after being physically
+      // blocked for over a second so crowds cannot become permanently wedged.
       nav.blockedSince=now;state.nav.set(id,nav);
     }
     return true;
