@@ -11,7 +11,7 @@
   if(window.__CCG_LOST_SIZZLER_V141_R32_SPY_WORLD_OWNER__)return;
   window.__CCG_LOST_SIZZLER_V141_R32_SPY_WORLD_OWNER__=true;
 
-  const MODE_ID="sizzler-saboteurs",MONITOR_MS=20;
+  const MODE_ID="sizzler-saboteurs",MONITOR_MS=20,HANDOFF_FALLBACK_MS=1200;
   const MOVE_CODES=new Set(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","KeyA","KeyD","KeyW","KeyS"]);
   const ROOM_W=7,ROOM_H=7,ROOM_STEP_X=9,ROOM_STEP_Y=9,MAP_X=5,MAP_Y=5;
   const ROOM_ARCHETYPES=Object.freeze([
@@ -24,7 +24,7 @@
     Object.freeze({name:"ARMOURY RECORDS",theme:"ARMOURY",types:["rack","bookcase","table","table","cabinet","desk","bookcase"]}),
     Object.freeze({name:"SID LAB",theme:"SID_REACTOR",types:["driveBench","table","rack","bookcase","bookcase","desk","table"]})
   ]);
-  const state={timer:0,installed:false,baseBuild:null,engine:null,reassertions:0,controllerReassertions:0,delegations:0,fallbacks:0,fallbackR32Builds:0,mirroredMoves:0,inputBaselines:0,lastX:null,lastY:null,lastMode:false,lastFallbackKey:""};
+  const state={timer:0,installed:false,baseBuild:null,baseUpdate:null,engine:null,reassertions:0,controllerReassertions:0,updateGateInstalls:0,gatedFrames:0,gateStartedAt:0,handoffFallbacks:0,delegations:0,fallbacks:0,fallbackR32Builds:0,mirroredMoves:0,inputBaselines:0,lastX:null,lastY:null,lastMode:false,lastFallbackKey:""};
 
   const spyActive=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type===MODE_ID||document.body?.dataset?.specialMode===MODE_ID}catch(_){return false}};
   const activeMatch=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.state||null}catch(_){return null}};
@@ -96,19 +96,40 @@
   }
   worldOwner.__ccgV141R32SpyWorldOwner=true;
 
+  function r32Ready(){return typeof overhaul()?.overhaulUpdate==="function"}
+
+  function preOverhaulUpdate(){
+    if(!spyActive()||r32Ready())return typeof state.baseUpdate==="function"?state.baseUpdate.apply(this,arguments):false;
+    const loader=window.CCGLostSizzlerV141R32SpyLoader,now=performance.now();
+    if(!state.gateStartedAt)state.gateStartedAt=now;
+    try{loader?.ensureLoaded?.()}catch(_){}
+    if(loader?.state?.lastError||now-state.gateStartedAt>HANDOFF_FALLBACK_MS){state.handoffFallbacks++;return typeof state.baseUpdate==="function"?state.baseUpdate.apply(this,arguments):false}
+    const current=engine();
+    try{current?.compactLogicalMap?.()}catch(_){}
+    try{current?.buildCompactWorld?.()}catch(_){}
+    try{current?.sanitiseSharedDungeonState?.()}catch(_){}
+    try{current?.updatePrompt?.()}catch(_){}
+    state.gatedFrames++;return true
+  }
+  preOverhaulUpdate.__ccgV141R32SpyHandoffGate=true;
+
   function install(){
     const current=engine();if(!current||typeof current.buildCompactWorld!=="function")return false;
-    if(state.engine!==current){state.engine=current;state.baseBuild=null;state.lastX=state.lastY=null}
+    if(state.engine!==current){state.engine=current;state.baseBuild=null;state.baseUpdate=null;state.lastX=state.lastY=null;state.gateStartedAt=0}
     if(current.buildCompactWorld!==worldOwner){if(!state.baseBuild||!spyActive())state.baseBuild=current.buildCompactWorld;current.buildCompactWorld=worldOwner;state.reassertions++}
-    const runtime=window.CCGLostSizzlerModeRuntime,registered=runtime?.runtimes?.[MODE_ID],next=overhaul();
+    const next=overhaul();
+    if(!state.baseUpdate&&typeof current.isolatedUpdate==="function"&&!current.isolatedUpdate?.__ccgV141R32SpyOverhaul&&!current.isolatedUpdate?.__ccgV141R32SpyHandoffGate)state.baseUpdate=current.isolatedUpdate;
+    if(!r32Ready()&&typeof state.baseUpdate==="function"&&current.isolatedUpdate!==preOverhaulUpdate){current.isolatedUpdate=preOverhaulUpdate;state.updateGateInstalls++}
+    const runtime=window.CCGLostSizzlerModeRuntime,registered=runtime?.runtimes?.[MODE_ID];
     if(registered&&registered.buildWorld!==worldOwner)registered.buildWorld=worldOwner;
     if(registered&&typeof next?.overhaulUpdate==="function"&&registered.update!==next.overhaulUpdate){registered.update=next.overhaulUpdate;state.controllerReassertions++}
+    if(!spyActive())state.gateStartedAt=0;
     state.installed=true;return true
   }
 
   function r32ControllerOwnsMovement(){
-    const registered=window.CCGLostSizzlerModeRuntime?.runtimes?.[MODE_ID],next=overhaul();
-    return Boolean(registered&&typeof next?.overhaulUpdate==="function"&&(registered.update===next.overhaulUpdate||registered.update?.__ccgV141R32SpyOverhaul))
+    const current=engine(),registered=window.CCGLostSizzlerModeRuntime?.runtimes?.[MODE_ID],next=overhaul();
+    return Boolean(typeof next?.overhaulUpdate==="function"&&(current?.isolatedUpdate===next.overhaulUpdate||registered?.update===next.overhaulUpdate||registered?.update?.__ccgV141R32SpyOverhaul))
   }
 
   function movementInputHeld(){
@@ -137,5 +158,5 @@
   monitor();state.timer=setInterval(()=>{try{monitor()}catch(error){console.warn("[Lost Sizzler r32] Spy world-owner monitor failed safely",error)}},MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
-  window.CCGLostSizzlerV141R32SpyWorldOwner={worldOwner,install,buildFallbackR32World,ensureLogicalFurniture,r32ControllerOwnsMovement,movementInputHeld,primeMovementBaseline,mirrorLegacyMoveCounter,get state(){return state}};
+  window.CCGLostSizzlerV141R32SpyWorldOwner={worldOwner,install,buildFallbackR32World,ensureLogicalFurniture,r32Ready,preOverhaulUpdate,r32ControllerOwnsMovement,movementInputHeld,primeMovementBaseline,mirrorLegacyMoveCounter,get state(){return state}};
 })();
