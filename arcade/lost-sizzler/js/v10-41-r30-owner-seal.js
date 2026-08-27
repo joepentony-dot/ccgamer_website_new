@@ -5,7 +5,7 @@
   window.__CCG_LOST_SIZZLER_V141_R30_OWNER_SEAL__=true;
 
   const SPY_MODE="sizzler-saboteurs",CHECK_MS=16;
-  const state={timer:0,repairs:0,blockedWrites:0,lastRepairAt:0,lastObserved:null,lastBlocked:null,assignmentGate:false,assignmentGateUnsupported:false};
+  const state={timer:0,repairs:0,blockedWrites:0,lastRepairAt:0,lastObserved:null,lastBlocked:null,assignmentGate:false,assignmentGateUnsupported:false,tutorialWindow:false};
   let gatedMove=null;
 
   function r30(){return window.CCGLostSizzlerV141R30||null}
@@ -18,11 +18,27 @@
     }catch(_){return false}
   }
   function tutorialOwned(){
-    try{return Boolean(window.CCGLostSizzlerOnboardingV120?.state?.active)}catch(_){return false}
+    try{
+      const ts=window.CCGLostSizzlerOnboardingV120?.state;
+      return Boolean(ts?.active||ts?.tutorialRequested||ts?.forceTutorial||document.body?.dataset?.tutorialActive==="true");
+    }catch(_){return false}
   }
   function golden(){
     const api=r30(),move=api?.state?.goldenMove;
     return api?.state?.goldenLocked&&typeof move==="function"?move:null;
+  }
+  function setTutorialCompatibility(target,allowed){
+    if(typeof target!=="function")return;
+    try{
+      if(allowed){target.__tutorial=true}
+      else if(target.__tutorial===true)delete target.__tutorial;
+    }catch(_){try{target.__tutorial=Boolean(allowed)}catch(__){}}
+  }
+  function syncTutorialWindow(){
+    const target=golden(),active=tutorialOwned();
+    if(target)setTutorialCompatibility(target,!active);
+    state.tutorialWindow=active;
+    return active;
   }
   function installAssignmentGate(){
     if(state.assignmentGate||state.assignmentGateUnsupported)return state.assignmentGate;
@@ -37,20 +53,22 @@
         enumerable:descriptor?.enumerable!==false,
         get(){return gatedMove},
         set(value){
-          const locked=golden();
-          if(!locked||spyOwned()||tutorialOwned()||value===locked){gatedMove=value;return}
+          const locked=golden(),tutorial=syncTutorialWindow();
+          if(!locked||spyOwned()||tutorial||value===locked){gatedMove=value;return}
           state.blockedWrites++;state.lastBlocked=value;gatedMove=locked;
         }
       });
       state.assignmentGate=true;
-      if(!spyOwned()&&!tutorialOwned())gatedMove=target;
+      if(!spyOwned()&&!syncTutorialWindow())gatedMove=target;
       return true;
     }catch(_){state.assignmentGateUnsupported=true;return false}
   }
   function seal(reason="normal-mode owner seal"){
+    const tutorial=syncTutorialWindow();
     installAssignmentGate();
-    if(spyOwned()||tutorialOwned())return false;
+    if(spyOwned()||tutorial)return false;
     const target=golden();if(!target)return false;
+    setTutorialCompatibility(target,true);
     const current=window.movePlayer;state.lastObserved=current;
     if(current===target)return false;
     window.movePlayer=target;
@@ -75,5 +93,5 @@
     removeEventListener("keydown",onMovementKey,true);removeEventListener("keyup",onMovementKey,true);
   },{once:true});
 
-  window.CCGLostSizzlerV141R30OwnerSeal={seal,installAssignmentGate,spyOwned,tutorialOwned,get state(){return state}};
+  window.CCGLostSizzlerV141R30OwnerSeal={seal,installAssignmentGate,spyOwned,tutorialOwned,syncTutorialWindow,get state(){return state}};
 })();
