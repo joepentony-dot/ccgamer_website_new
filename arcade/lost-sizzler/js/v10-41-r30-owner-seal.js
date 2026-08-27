@@ -16,12 +16,15 @@
       return String(active||dataset||"")===SPY_MODE||Boolean(isolated);
     }catch(_){return false}
   }
+  function tutorialOwned(){
+    try{return Boolean(window.CCGLostSizzlerOnboardingV120?.state?.active)}catch(_){return false}
+  }
   function golden(){
     const api=r30(),move=api?.state?.goldenMove;
     return api?.state?.goldenLocked&&typeof move==="function"?move:null;
   }
   function seal(reason="normal-mode owner seal"){
-    if(spyOwned())return false;
+    if(spyOwned()||tutorialOwned())return false;
     const target=golden();if(!target)return false;
     const current=window.movePlayer;state.lastObserved=current;
     if(current===target)return false;
@@ -47,5 +50,5 @@
     removeEventListener("keydown",onMovementKey,true);removeEventListener("keyup",onMovementKey,true);
   },{once:true});
 
-  window.CCGLostSizzlerV141R30OwnerSeal={seal,spyOwned,get state(){return state}};
+  window.CCGLostSizzlerV141R30OwnerSeal={seal,spyOwned,tutorialOwned,get state(){return state}};
 })();
