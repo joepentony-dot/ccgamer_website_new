@@ -82,12 +82,13 @@
     try{
       const ui=window.CCGLostSizzlerV141UiSpyPerformance,target=ui?.nearSpyFurniture?.(),physical=target?.near;
       if(!physical?.spyFurniture)return false;
+      const match=window.CCGLostSizzlerSpecialModes?.active?.state,targetId=String(target?.id||physical.logicalFurnitureId||"");
+      const room=match?.map?.rooms?.find?.(row=>(row?.furniture||[]).some(item=>String(item?.id||"")===targetId));
+      if(!room?.id||!targetId)return false;
       let changed=false;
       if(!physical.spyR32Furniture){physical.spyR32Furniture=true;changed=true}
-      if(!physical.logicalRoomId){
-        const match=window.CCGLostSizzlerSpecialModes?.active?.state,room=match?.map?.rooms?.find?.(row=>(row?.furniture||[]).some(item=>String(item?.id||"")===String(target?.id||physical.logicalFurnitureId||"")));
-        if(room?.id){physical.logicalRoomId=room.id;changed=true}
-      }
+      if(String(physical.logicalFurnitureId||"")!==targetId){physical.logicalFurnitureId=targetId;changed=true}
+      if(String(physical.logicalRoomId||"")!==String(room.id)){physical.logicalRoomId=room.id;changed=true}
       if(changed)state.searchTargetBridges++;
       return true
     }catch(_){return false}
