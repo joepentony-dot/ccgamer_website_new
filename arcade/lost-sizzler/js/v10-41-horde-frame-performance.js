@@ -13,9 +13,8 @@
   const state={
     timer:0,installed:false,
     radarWrapped:false,radarSource:null,lastRadarAt:0,radarDraws:0,radarSkips:0,
-    fogWrapped:false,fogSource:null,fogTilePassSkips:0,lightingPasses:0,
     statusTimer:0,lastStatusSignature:"",statusRenders:0,
-    firstWavePrewarmStarted:false,firstWavePrewarmReady:false,laterPrewarmStarted:false,imageDecodes:0,prewarmErrors:0
+    firstWavePrewarmStarted:false,firstWavePrewarmReady:false,firstWavePrewarmPromise:null,laterPrewarmStarted:false,imageDecodes:0,prewarmErrors:0
   };
 
   const special=()=>{try{return window.CCGLostSizzlerSpecialModes?.active||null}catch(_){return null}};
@@ -37,12 +36,13 @@
     return images.size
   }
 
-  async function prewarmFirstWave(){
-    if(state.firstWavePrewarmStarted)return state.firstWavePrewarmReady;
+  function prewarmFirstWave(){
+    if(state.firstWavePrewarmPromise)return state.firstWavePrewarmPromise;
     state.firstWavePrewarmStarted=true;
-    const results=await Promise.all([fetchWarm(FIRST_WAVE_TRACK),decodeKnownImages()]);
-    state.firstWavePrewarmReady=Boolean(results[0]);
-    return state.firstWavePrewarmReady
+    state.firstWavePrewarmPromise=Promise.all([fetchWarm(FIRST_WAVE_TRACK),decodeKnownImages()]).then(results=>{
+      state.firstWavePrewarmReady=Boolean(results[0]);return state.firstWavePrewarmReady
+    }).catch(()=>{state.prewarmErrors++;return false});
+    return state.firstWavePrewarmPromise
   }
 
   async function prewarmLaterWaves(){
@@ -54,7 +54,8 @@
 
   function schedulePrewarm(){
     const begin=()=>{prewarmFirstWave().catch(()=>{state.prewarmErrors++})};
-    if(typeof requestIdleCallback==="function")requestIdleCallback(begin,{timeout:1800});else setTimeout(begin,350);
+    // Do not spend decode/network work on Solo, Dungeon, Tutorial or Spy startup.
+    // Warm Horde assets only once the player shows intent to launch Horde.
     for(const selector of ["#horde-mode-btn","[data-horde-solo-btn]","#horde-solo-btn"]){
       const button=document.querySelector(selector);if(!button)continue;
       button.addEventListener("pointerenter",begin,{once:true,passive:true});button.addEventListener("focus",begin,{once:true});button.addEventListener("pointerdown",begin,{once:true,passive:true})
@@ -73,23 +74,6 @@
     };
     wrapped.__ccgV141HordeRadarThrottle=true;wrapped.__ccgOriginal=source;
     window.renderRadarPanel=wrapped;state.radarSource=wrapped;state.radarWrapped=true;return true
-  }
-
-  function installHordeFogFastPath(){
-    const current=window.drawFog;if(typeof current!=="function")return false;
-    if(current.__ccgV141HordeFogFastPath){state.fogWrapped=true;state.fogSource=current;return true}
-    const source=current;
-    const wrapped=function drawFogV141HordeFastPath(){
-      if(!isHorde())return source.apply(this,arguments);
-      // Horde is a single survival arena, not an exploration dungeon. Avoid
-      // recalculating per-tile exploration/fog visibility every display frame,
-      // while retaining the lightweight dynamic light pools for visual depth.
-      state.fogTilePassSkips++;
-      if(typeof window.drawDynamicLighting==="function"){state.lightingPasses++;return window.drawDynamicLighting()}
-      return false
-    };
-    wrapped.__ccgV141HordeFogFastPath=true;wrapped.__ccgOriginal=source;
-    window.drawFog=wrapped;state.fogSource=wrapped;state.fogWrapped=true;return true
   }
 
   function desiredQuota(runState){
@@ -129,8 +113,8 @@
   }
 
   function updateStatus(){
-    const node=ensureStatusStrip();if(!node)return false;
     if(!isHorde()){state.lastStatusSignature="";return false}
+    const node=ensureStatusStrip();if(!node)return false;
     const runState=special()?.state,wave=Math.max(0,Number(runState?.wave)||0),left=remaining(runState);
     let active=0;try{active=(host?.enemies||[]).filter(enemy=>enemy?.alive&&enemy.hordeEnemy).length}catch(_){}
     const signature=`${wave}|${left}|${active}`;if(signature===state.lastStatusSignature)return false;state.lastStatusSignature=signature;
@@ -140,9 +124,9 @@
   }
 
   function install(){
-    ensureStyles();ensureStatusStrip();installRadarThrottle();installHordeFogFastPath();
-    if(!state.statusTimer)state.statusTimer=setInterval(()=>{try{updateStatus();if(isHorde())prewarmLaterWaves()}catch(_){}},STATUS_REFRESH_MS);
-    if(state.radarWrapped&&state.fogWrapped){state.installed=true;document.body.dataset.v141HordeFramePerformance="true"}
+    ensureStyles();ensureStatusStrip();installRadarThrottle();
+    if(!state.statusTimer)state.statusTimer=setInterval(()=>{try{if(!isHorde()){state.lastStatusSignature="";return}updateStatus();prewarmLaterWaves()}catch(_){}},STATUS_REFRESH_MS);
+    if(state.radarWrapped){state.installed=true;document.body.dataset.v141HordeFramePerformance="true"}
     return state.installed
   }
 
@@ -152,6 +136,6 @@
 
   window.CCGLostSizzlerV141HordeFramePerformance={
     RADAR_REFRESH_MS,STATUS_REFRESH_MS,FIRST_WAVE_TRACK,LATER_TRACKS,prewarmFirstWave,prewarmLaterWaves,decodeKnownImages,
-    installRadarThrottle,installHordeFogFastPath,ensureStatusStrip,updateStatus,remaining,get state(){return state}
+    installRadarThrottle,ensureStatusStrip,updateStatus,remaining,get state(){return state}
   };
 })();
