@@ -12,7 +12,8 @@
   function loadOwnerSeal(){if(!window.CCGLostSizzlerV141R30OwnerSeal)loadScript("v10-41-r30-owner-seal.js","data-ccg-r30-owner-seal")}
   function loadModeRuntime(){if(!window.CCGLostSizzlerModeRuntime)loadScript("v10-41-mode-runtime.js","data-ccg-mode-runtime")}
   function loadSpyExitControlReset(){if(!window.CCGLostSizzlerV141R30SpyExitControlReset)loadScript("v10-41-r30-spy-exit-control-reset.js","data-ccg-r30-spy-exit-reset")}
-  loadOwnerSeal();loadModeRuntime();loadSpyExitControlReset();
+  function loadSoloDungeonR31(){if(!window.CCGLostSizzlerV141R31SoloDungeon)loadScript("v10-41-r31-solo-dungeon-regressions.js","data-ccg-r31-solo-dungeon")}
+  loadOwnerSeal();loadModeRuntime();loadSpyExitControlReset();loadSoloDungeonR31();
 
   const entries=[
     ["LS-0826-09","FIXED","Global movement freeze after Spy mode","A Spy runtime ownership race could leave ordinary movement routed through the isolated Spy owner after the mode ended. Because the Spy owner had already released its saved base function, later Solo or Horde movement could return false forever. r30 restores the pre-Spy update, movement and damage owners unconditionally when Spy exits."],
