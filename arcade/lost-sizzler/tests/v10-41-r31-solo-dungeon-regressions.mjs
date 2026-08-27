@@ -12,6 +12,8 @@ const loader=read("js/v10-41-r30-buglog.js");
 assert.match(loader,/v10-41-r31-solo-dungeon-regressions\.js/,"r30 tail must load the r31 Solo Dungeon regression layer");
 assert.match(loader,/data-ccg-r31-solo-dungeon/,"r31 Solo Dungeon loader must be deduplicated");
 assert.match(source,/dungeon-solo/,"r31 fixes must remain scoped to the Solo Dungeon controller");
+assert.match(source,/new Set\(\["horde-survivor","sizzler-saboteurs"\]\)/,"Solo isolation must reject only the two authoritative special-mode controller IDs");
+assert.match(source,/\["dungeon-online","horde-solo","horde-online","spy-online","split-screen"\]\.includes\(detected\)/,"Solo fallback detection must explicitly reject every non-Solo controller");
 
 for(const id of ["shop-score","shop-artefacts","shop-next-price","hud-score"])assert.match(source,new RegExp(id),`shop/HUD refresh must own ${id}`);
 assert.match(source,/addEventListener\("click",onShopClick,true\)/,"shop refresh must observe purchase clicks before the core handler replaces the button DOM");
@@ -27,8 +29,13 @@ assert.match(source,/floatText\(chest\.x,chest\.y,text/,"chest reward feedback m
 assert.match(source,/chestImmediateDeliveries/,"immediate chest deliveries must be observable for regression testing");
 
 assert.match(source,/avatarImages\.set\("CPU Cook",avatarImages\.get\("CPU"\)\)/,"CPU Cook must retain the configured CPU portrait");
+assert.match(source,/function isCpuCookFollower\(follower\)/,"named CPU recognition must use an explicit identity predicate");
+assert.match(source,/name==="CPU"\|\|name==="CPU COOK"\|\|initials==="CPU"\|\|music==="cpu"/,"CPU identity must survive name/presentation changes");
 assert.match(source,/name:"CPU Cook",initials:"CPU"/,"the configured CPU follower must be presented as CPU Cook");
 assert.match(source,/_v141R31NamedCpuCook=true/,"named CPU Cook normalisation must be explicit and testable");
+assert.match(source,/function genericCookDisplayName\(enemy\).*"Kitchen Cook"/s,"ordinary cook enemies must have an identity distinct from CPU Cook");
+assert.match(source,/__ccgV141R31CpuCookRenderFix/,"the Solo renderer must install the generic-cook identity correction once");
+assert.match(source,/baseLabel\.call\(this,"Kitchen Cook"/,"generic cook labels must no longer impersonate CPU Cook");
 
 assert.match(source,/fire1=0;fireBuffer1=0/,"Solo resume must clear stale attack cooldown and buffer state");
 assert.match(source,/p1\.hitStunMs=0/,"Solo resume must clear stale hit-stun");
