@@ -40,6 +40,13 @@
     state.tutorialWindow=active;
     return active;
   }
+  function noteBlockedWrite(value){
+    state.blockedWrites++;state.lastBlocked=value;state.repairs++;state.lastRepairAt=Date.now();
+    try{
+      const api=r30();
+      if(api?.state){api.state.ownershipRepairs=Math.max(0,Number(api.state.ownershipRepairs||0))+1;api.state.lastOwnershipRepairAt=Date.now()}
+    }catch(_){}
+  }
   function installAssignmentGate(){
     if(state.assignmentGate||state.assignmentGateUnsupported)return state.assignmentGate;
     const target=golden();if(!target)return false;
@@ -55,7 +62,7 @@
         set(value){
           const locked=golden(),tutorial=syncTutorialWindow();
           if(!locked||spyOwned()||tutorial||value===locked){gatedMove=value;return}
-          state.blockedWrites++;state.lastBlocked=value;gatedMove=locked;
+          noteBlockedWrite(value);gatedMove=locked;
         }
       });
       state.assignmentGate=true;
