@@ -128,7 +128,7 @@ try{
   assert.equal(shopResult.purchases,4,"the score purchase ladder must advance for every repeat purchase");
   assert.equal(shopResult.capacity,5,"the two inventory expansion purchases must persist");
   assert.ok(shopResult.refreshes>=4,"r31 shop wallet refresh must execute after every purchase");
-  await page.evaluate(()=>{closeShop();p1.weapon=baseWeapon()});
+  await page.evaluate(()=>{closeShop();p1.weapon=null;p1.firearmUnlocked=false});
   await page.waitForFunction(()=>typeof mode!=="undefined"&&mode==="playing");
 
   const chestResult=await page.evaluate(()=>{
