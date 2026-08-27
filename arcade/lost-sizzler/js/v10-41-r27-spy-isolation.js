@@ -217,7 +217,7 @@
     if(code==="KeyE"){
       const loader=window.CCGLostSizzlerV141R32SpyLoader;
       if(!event.repeat&&typeof loader?.dispatchSearchAction==="function"){
-        event.preventDefault?.();event.stopImmediatePropagation?.();state.searchBridges++;loader.dispatchSearchAction();return true;
+        stopDungeonPropagation(event);state.searchBridges++;loader.dispatchSearchAction();return true;
       }
       stopDungeonPropagation(event);return true;
     }
