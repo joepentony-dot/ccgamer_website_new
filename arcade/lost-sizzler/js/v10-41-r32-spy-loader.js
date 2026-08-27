@@ -127,17 +127,17 @@
   function onKeyDown(event){
     if(!spyActive()||event?.repeat)return;const code=String(event?.code||"");if(!OWNER_ACTION_CODES.has(code))return;
     if(code==="KeyE"){
-      event.preventDefault?.();event.stopImmediatePropagation?.();dispatchSearchAction();return
+      event.preventDefault?.();event.stopPropagation?.();dispatchSearchAction();return
     }
     if(state.loaded)return;
-    event.preventDefault?.();event.stopImmediatePropagation?.();queueOwnerAction(code)
+    event.preventDefault?.();event.stopPropagation?.();queueOwnerAction(code)
   }
 
   function onKeyUp(event){
     if(!spyActive()||String(event?.code||"")!=="KeyE")return;
     const owner=overhaul(),recent=perfNow()-lastSearchDispatchAt<140,searchActive=Boolean(owner?.state?.search),searchQueued=state.pendingActionCode==="KeyE";
     if(recent&&(searchActive||searchQueued))return;
-    event.preventDefault?.();event.stopImmediatePropagation?.();state.searchKeyUpFallbacks++;
+    event.preventDefault?.();event.stopPropagation?.();state.searchKeyUpFallbacks++;
     if(state.loaded&&typeof owner?.beginSearch==="function")directSearchAction();else queueOwnerAction("KeyE")
   }
 
