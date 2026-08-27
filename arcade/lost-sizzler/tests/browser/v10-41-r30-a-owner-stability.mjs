@@ -30,6 +30,26 @@ const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usag
 try{
   const context=await browser.newContext({viewport:{width:1920,height:1080}});
   const page=await context.newPage();page.setDefaultTimeout(30000);
+  await page.addInitScript(()=>{
+    const nativeInterval=window.setInterval.bind(window),nativeTimeout=window.setTimeout.bind(window);
+    window.__ccgTimerMovementWrites=[];
+    const sourceOf=value=>String(value||"").slice(0,520).replace(/\s+/g," ");
+    const wrap=(kind,callback,delay)=>{
+      if(typeof callback!=="function")return callback;
+      const callbackSource=sourceOf(callback);
+      return function ccgMovementWriterProbe(){
+        const before=window.movePlayer;
+        const result=callback.apply(this,arguments);
+        const after=window.movePlayer;
+        if(typeof before==="function"&&typeof after==="function"&&after!==before){
+          window.__ccgTimerMovementWrites.push({at:Math.round(performance.now()),kind,delay:Number(delay)||0,callbackSource,before:sourceOf(before),after:sourceOf(after)});
+        }
+        return result;
+      };
+    };
+    window.setInterval=(callback,delay,...args)=>nativeInterval(wrap("interval",callback,delay),delay,...args);
+    window.setTimeout=(callback,delay,...args)=>nativeTimeout(wrap("timeout",callback,delay),delay,...args);
+  });
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R30?.state?.goldenLocked));
@@ -75,13 +95,14 @@ try{
     const events=trace.events;
     const firstRestored=events.findIndex(event=>event.reason==="identity-change"&&event.move.golden);
     const driftAfterRestore=firstRestored>=0?events.slice(firstRestored+1).filter(event=>!event.move.golden||!event.storedGolden.golden):[];
-    return{events,firstRestored,driftAfterRestore,finalMoveGolden:window.movePlayer===trace.initialGolden,storedGoldenStable:r30.state.goldenMove===trace.initialGolden,repairs:r30.state.ownershipRepairs,watchdog:r30.state.watchdogRecoveries};
+    return{events,timerWrites:window.__ccgTimerMovementWrites||[],firstRestored,driftAfterRestore,finalMoveGolden:window.movePlayer===trace.initialGolden,storedGoldenStable:r30.state.goldenMove===trace.initialGolden,repairs:r30.state.ownershipRepairs,watchdog:r30.state.watchdogRecoveries};
   });
 
-  assert.ok(result.firstRestored>=0,`r30 must restore the initial locked owner after dead-wrapper injection. Trace: ${JSON.stringify(result.events)}`);
-  assert.equal(result.storedGoldenStable,true,`the locked golden owner must be immutable after release. Trace: ${JSON.stringify(result.events)}`);
-  assert.deepEqual(result.driftAfterRestore,[],`no late installer may reclaim movement after r30 restores the golden owner. Trace: ${JSON.stringify(result.events)}`);
-  assert.equal(result.finalMoveGolden,true,`final movement owner must remain the initial locked golden owner. Trace: ${JSON.stringify(result.events)}`);
+  const diagnostic=()=>JSON.stringify({events:result.events,timerWrites:result.timerWrites});
+  assert.ok(result.firstRestored>=0,`r30 must restore the initial locked owner after dead-wrapper injection. Trace: ${diagnostic()}`);
+  assert.equal(result.storedGoldenStable,true,`the locked golden owner must be immutable after release. Trace: ${diagnostic()}`);
+  assert.deepEqual(result.driftAfterRestore,[],`no late installer may reclaim movement after r30 restores the golden owner. Trace: ${diagnostic()}`);
+  assert.equal(result.finalMoveGolden,true,`final movement owner must remain the initial locked golden owner. Trace: ${diagnostic()}`);
   assert.ok(result.repairs>0||result.watchdog>0,"owner-stability injection must exercise an r30 recovery path");
   console.log("Lost Sizzler r30 locked-owner stability passed across repeated late-installer intervals.");
   await context.close();
