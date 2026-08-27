@@ -171,6 +171,14 @@ try{
   assert.ok(resumeState.resets>=4,"each repeated Solo resume must pass through the combat recovery boundary");
   assert.ok(resumeState.lastResumeAt>0,"Solo resume must arm the bounded first-attack safeguard");
 
+  const attackBefore=await page.evaluate(()=>({rearms:window.CCGLostSizzlerV141R31SoloDungeon.state.postResumeAttackRearms,swing:Number(p1._meleeSwingAt||0)}));
+  await page.keyboard.press("Space");
+  await page.waitForFunction(previous=>window.CCGLostSizzlerV141R31SoloDungeon.state.postResumeAttackRearms>previous.rearms&&Number(p1._meleeSwingAt||0)>previous.swing,attackBefore);
+  const attackAfter=await page.evaluate(()=>({rearms:window.CCGLostSizzlerV141R31SoloDungeon.state.postResumeAttackRearms,swing:Number(p1._meleeSwingAt||0),fire1:Number(fire1)}));
+  assert.ok(attackAfter.rearms>attackBefore.rearms,"first attack after resume must pass through the r31 rearm safeguard");
+  assert.ok(attackAfter.swing>attackBefore.swing,"first attack after repeated pauses must execute a real Solo attack");
+  assert.ok(Number.isFinite(attackAfter.fire1),"post-resume attack cooldown must remain finite");
+
   await page.evaluate(()=>toggleInventory());await page.waitForFunction(()=>mode==="inventory"&&!document.getElementById("inventory-panel").classList.contains("hidden"));
   await page.click("#inventory-close");await page.waitForFunction(()=>mode==="playing"&&document.getElementById("inventory-panel").classList.contains("hidden"));
   await page.waitForTimeout(120);
@@ -184,14 +192,6 @@ try{
   assert.ok(displayState.visibleSamples>0,"closing Pause or inventory must leave a visibly painted game frame rather than a black canvas");
   assert.ok(displayState.recoveries>=5,"Pause and inventory returns must pass through the display recovery boundary");
   assert.ok(displayState.frames>=5,"display recovery must paint verified canvas frames");
-
-  const attackBefore=await page.evaluate(()=>({rearms:window.CCGLostSizzlerV141R31SoloDungeon.state.postResumeAttackRearms,swing:Number(p1._meleeSwingAt||0)}));
-  await page.keyboard.press("Space");
-  await page.waitForFunction(previous=>window.CCGLostSizzlerV141R31SoloDungeon.state.postResumeAttackRearms>previous.rearms&&Number(p1._meleeSwingAt||0)>previous.swing,attackBefore);
-  const attackAfter=await page.evaluate(()=>({rearms:window.CCGLostSizzlerV141R31SoloDungeon.state.postResumeAttackRearms,swing:Number(p1._meleeSwingAt||0),fire1:Number(fire1)}));
-  assert.ok(attackAfter.rearms>attackBefore.rearms,"first attack after resume must pass through the r31 rearm safeguard");
-  assert.ok(attackAfter.swing>attackBefore.swing,"first attack after repeated pauses must execute a real Solo attack");
-  assert.ok(Number.isFinite(attackAfter.fire1),"post-resume attack cooldown must remain finite");
 
   assert.deepEqual(errors,[],`r31 Solo Dungeon browser regression must have no uncaught browser errors: ${errors.join("\n")}`);
   console.log("Lost Sizzler r31 Solo Dungeon repeat-shop, chest-reward, panel-display, CPU Cook, pause-combat and score-HUD regressions passed in Chromium.");
