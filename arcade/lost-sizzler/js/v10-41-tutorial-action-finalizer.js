@@ -36,8 +36,19 @@
     if(Math.abs(ax-bx)>=Math.abs(ay-by)&&dx)return dx<0?"left":"right";
     return dy<0?"up":"down";
   }
+  function movementOwnedByR30(){
+    try{
+      const r30=window.CCGLostSizzlerV141R30?.state;
+      return Boolean(r30?.goldenLocked&&typeof r30.goldenMove==="function");
+    }catch(_){return false}
+  }
 
   function installMove(){
+    // Once r30 has sealed the known-good movement stack it is the sole normal-
+    // mode movement owner. Continuing to wrap window.movePlayer here creates a
+    // 60 ms tutorial-vs-40 ms recovery race and can leave a transient wrapper
+    // sampled between recovery passes. Fire/dash finalisation remains live.
+    if(movementOwnedByR30())return true;
     const current=window.movePlayer;if(typeof current!=="function")return false;
     if(current.__ccgV141TutorialMoveFinal)return true;
     const original=current;
@@ -118,5 +129,5 @@
   state.timer=setInterval(()=>{if(ready())install()},60);
   if(ready())install();
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
-  window.CCGLostSizzlerV141TutorialActionFinalizer={install,repaintCount,loadMerchantHardening,get state(){return state}};
+  window.CCGLostSizzlerV141TutorialActionFinalizer={install,repaintCount,loadMerchantHardening,movementOwnedByR30,get state(){return state}};
 })();

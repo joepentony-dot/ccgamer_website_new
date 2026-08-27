@@ -14,6 +14,7 @@
     toastWrapped:false,
     inventoryWrapped:false,
     updateWrapped:false,
+    controllerOwnedUpdate:true,
     renderWrapped:false,
     initialHealthScheduled:false,
     lastMode:"",
@@ -393,16 +394,7 @@
     }
   }
 
-  function wrapUpdateAndRender(){
-    if(!state.updateWrapped&&typeof window.update==="function"){
-      const originalUpdate=window.update;
-      window.update=function updateV137HordeFocus(){
-        const result=originalUpdate.apply(this,arguments);
-        updateHordeFocus();
-        return result
-      };
-      state.updateWrapped=true
-    }
+  function wrapRender(){
     if(!state.renderWrapped&&typeof window.render==="function"){
       const originalRender=window.render;
       window.render=function renderV137HordeHealth(){
@@ -412,7 +404,7 @@
       };
       state.renderWrapped=true
     }
-    return state.updateWrapped&&state.renderWrapped
+    return state.renderWrapped
   }
 
   function interceptHordeKeys(event){
@@ -432,13 +424,13 @@
     if(!specialApi()||!hordeApi())return false;
     wrapToast();
     wrapInventory();
-    wrapUpdateAndRender();
+    wrapRender();
     if(!state.installed){
       addEventListener("keydown",interceptHordeKeys,true);
       state.installed=true;
       document.body.dataset.v137HordeFocus="true"
     }
-    return state.toastWrapped&&state.updateWrapped&&state.renderWrapped
+    return state.toastWrapped&&state.inventoryWrapped&&state.renderWrapped
   }
 
   injectStyles();

@@ -29,7 +29,7 @@
   const MAX_SOLO_RINGS=80;
 
   const state={
-    updateInstalled:false,aiInstalled:false,startInstalled:false,worldInstalled:false,ammoInstalled:false,
+    updateInstalled:false,controllerOwnedSpyMovement:false,aiInstalled:false,startInstalled:false,worldInstalled:false,ammoInstalled:false,
     spyFallbackMoves:0,spyPrimes:0,delayedEnemyShots:0,hesitatedEnemyShots:0,diagonalEnemyShots:0,
     roomRehomes:0,roomTrims:0,swarmTrims:0,ammoNormalised:0,hazardRoomsRedesigned:0,
     layoutRerolls:0,layoutLastViolations:0,transientTrims:0,
@@ -112,22 +112,9 @@
   }
 
   function installSpyUpdateGuard(){
-    if(typeof window.update!=="function")return false;
-    if(window.update.__ccgV141R24SpyMovement){state.updateInstalled=true;return true}
-    const original=window.update;
-    window.update=function updateV141R24SpyMovement(dt){
-      const delta=Math.max(0,Number(dt)||0);state.spyMoveCooldownMs=Math.max(0,state.spyMoveCooldownMs-delta);
-      let before=null,dir=null,local=null;
-      try{if(spyActive()){ensureLocalSpySpawn();local=p1;dir=spyDirection();if(local&&dir)before={x:local.x,y:local.y}}}catch(_){}
-      const result=original.apply(this,arguments);
-      try{
-        if(local&&dir&&spyActive()&&typeof mode!=="undefined"&&mode==="playing"&&spyCanMove(local)&&local.x===before?.x&&local.y===before?.y&&state.spyMoveCooldownMs<=0){
-          const moved=trySpyFallbackStep(local,dir.x,dir.y);state.spyMoveCooldownMs=moved?Math.max(90,Number(window.CCG_CONFIG?.player?.moveDelay||138)):70;
-        }
-      }catch(_){}
-      return result;
-    };
-    window.update.__ccgV141R24SpyMovement=true;state.updateInstalled=true;return true;
+    // The isolated Spy engine and six-mode controller now own input cadence and
+    // movement. Retain the r24 compatibility API, but never claim window.update.
+    state.controllerOwnedSpyMovement=true;state.updateInstalled=true;return true;
   }
 
   function livingPlayers(players){return(players||[]).filter(player=>player&&Number(player.health||0)>0)}
@@ -382,11 +369,6 @@
     try{balanceTick()}catch(_){}
     return state.updateInstalled&&state.aiInstalled&&state.startInstalled&&state.worldInstalled&&state.ammoInstalled;
   }
-
-  addEventListener("keydown",event=>{if(editable(event.target))return;held.add(event.code)},true);
-  addEventListener("keyup",event=>held.delete(event.code),true);
-  addEventListener("blur",()=>held.clear(),{passive:true});
-  document.addEventListener("visibilitychange",()=>{if(document.hidden)held.clear()},{passive:true});
 
   install();state.timer=setInterval(()=>{install();balanceTick()},180);
   addEventListener("pagehide",()=>{held.clear();if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});

@@ -7,7 +7,7 @@
   if(window.__CCG_LOST_SIZZLER_V141_HORDE_MODE_SAFETY__)return;
   window.__CCG_LOST_SIZZLER_V141_HORDE_MODE_SAFETY__=true;
 
-  const state={installed:false,voiceWrapped:false,toastWrapped:false,wasHorde:false,timer:0,purges:0,lastPurgeAt:0};
+  const state={installed:false,updateWrapped:false,voiceWrapped:false,toastWrapped:false,wasHorde:false,timer:0,purges:0,lastPurgeAt:0};
   const active=()=>window.CCGLostSizzlerSpecialModes?.active||null;
   const isHorde=()=>{
     try{return active()?.type==="horde-survivor"||document.body?.dataset?.specialMode==="horde-survivor"}catch(_){return false}
@@ -155,25 +155,21 @@
   function install(){
     wrapLegacyVoice();
     wrapToast();
-    if(state.installed||typeof window.update!=="function")return state.installed;
-    const previous=window.update;
-    window.update=function updateV141HordeIsolation(){
-      transitionGuard();
-      if(isHorde())purgeDungeonRuntime();
-      const result=previous.apply(this,arguments);
-      if(isHorde())purgeDungeonRuntime();
-      return result;
-    };
+    if(state.installed)return true;
+    // Phase 3: this safety layer no longer sits in every shared update() call.
+    // The lightweight scheduler below performs Horde-only transition/purge work,
+    // while Dungeon Solo and the other controllers never enter a Horde wrapper.
+    state.updateWrapped=false;
     state.installed=true;
     return true;
   }
 
   state.timer=setInterval(()=>{
-    wrapLegacyVoice();wrapToast();
+    wrapLegacyVoice();wrapToast();transitionGuard();
     if(isHorde())purgeDungeonRuntime();
-    if(install()&&window.CCGLostSizzlerSpecialModes&&state.voiceWrapped&&state.toastWrapped){clearInterval(state.timer);state.timer=0}
+    install();
   },90);
-  install();
-  window.addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
-  window.CCGLostSizzlerHordeModeSafety={purgeSanctuaryState,purgeRareDungeonState,purgeHostDungeonObjects,purgeDungeonRuntime,isHorde,get state(){return state}};
+  transitionGuard();install();
+  window.addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
+  window.CCGLostSizzlerHordeModeSafety={purgeSanctuaryState,purgeRareDungeonState,purgeHostDungeonObjects,purgeDungeonRuntime,transitionGuard,isHorde,get state(){return state}};
 })();

@@ -5,7 +5,7 @@
   window.__CCG_LOST_SIZZLER_V141_SANCTUARY_AZALEA__=true;
 
   const ESSENTIAL_KINDS=new Set(["key","mainKey","bronze","bronzeKey","exitSigil","sigil"]);
-  const state={installed:false,startWrapped:false,updateWrapped:false,renderWrapped:false,enemyWrapped:false,radarWrapped:false,timer:0,sceneKey:"",greetings:new Map(),lastLakeSafetyCheck:0,lakeSafetyRepairs:0};
+  const state={installed:false,startWrapped:false,updateWrapped:false,renderWrapped:false,enemyWrapped:false,radarWrapped:false,timer:0,sceneKey:"",greetings:new Map(),lastLakeSafetyCheck:0,lakeSafetyRepairs:0,controllerBoundaryDeferred:false};
   const cellKey=(x,y)=>`${Math.round(x)},${Math.round(y)}`;
   const md=(a,b)=>Math.abs(Number(a?.x||0)-Number(b?.x||0))+Math.abs(Number(a?.y||0)-Number(b?.y||0));
 
@@ -223,13 +223,32 @@
     const s=toScreen(p);g.fillStyle="#6cecff";g.strokeStyle="#071017";g.lineWidth=2;g.beginPath();g.moveTo(s.x,s.y-6);g.lineTo(s.x+6,s.y+5);g.lineTo(s.x-6,s.y+5);g.closePath();g.fill();g.stroke();g.restore();
   }
 
+  function wrapUpdateRuntime(){
+    if(state.updateWrapped||typeof update!=="function")return state.updateWrapped;
+    const current=update;
+    if(current.__ccgV141ModeFrameBoundary===true){
+      // A late compatibility installer must never wrap the authoritative mode
+      // boundary. The controller monitor remains the sole global frame owner.
+      state.controllerBoundaryDeferred=true;
+      return false;
+    }
+    const original=current;
+    update=function updateV141SanctuaryScenes(dt){
+      const result=original.apply(this,arguments);
+      try{
+        const runtime=window.CCGLostSizzlerModeRuntime;
+        if(!runtime||runtime.inFamily?.("dungeon")===true){updateGreetings();enforceLakeSafety(false)}
+      }catch(_){}
+      return result
+    };
+    state.updateWrapped=true;state.controllerBoundaryDeferred=false;return true;
+  }
+
   function wrapRuntime(){
     if(!state.startWrapped&&typeof startWorld==="function"){
       const original=startWorld;startWorld=function startWorldV141SanctuaryScenes(){const result=original.apply(this,arguments);try{buildScenes();enforceLakeSafety(true)}catch(error){console.warn("[Lost Sizzler V10.41] sanctuary scene build failed",error)}return result};state.startWrapped=true;
     }
-    if(!state.updateWrapped&&typeof update==="function"){
-      const original=update;update=function updateV141SanctuaryScenes(dt){const result=original.apply(this,arguments);try{updateGreetings();enforceLakeSafety(false)}catch(_){}return result};state.updateWrapped=true;
-    }
+    wrapUpdateRuntime();
     if(!state.renderWrapped&&typeof drawSpecialObjects==="function"){
       const original=drawSpecialObjects;drawSpecialObjects=function drawSpecialObjectsV141SanctuaryScenes(){const result=original.apply(this,arguments);try{drawScenes()}catch(_){}return result};state.renderWrapped=true;
     }
@@ -242,13 +261,18 @@
   }
 
   function install(){
-    applyAzaleaDefinition();const gate=window.CCGLostSizzlerReleaseGate;if(gate&&!gate.state?.ready)return false;wrapRuntime();
-    if(!state.startWrapped||!state.updateWrapped||!state.enemyWrapped||!state.radarWrapped)return false;
+    applyAzaleaDefinition();
+    // Install the update compatibility layer before the release gate becomes
+    // ready so the later mode controller can capture it as source ancestry.
+    // Never allow this delayed installer to wrap the controller boundary.
+    wrapUpdateRuntime();
+    const gate=window.CCGLostSizzlerReleaseGate;if(gate&&!gate.state?.ready)return false;wrapRuntime();
+    if(!state.startWrapped||(!state.updateWrapped&&!state.controllerBoundaryDeferred)||!state.enemyWrapped||!state.radarWrapped)return false;
     if(world&&host&&!host.sanctuaryScenes)try{buildScenes();enforceLakeSafety(true)}catch(_){}
     state.installed=true;document.body.dataset.v141SanctuaryAzalea="true";return true;
   }
 
   state.timer=setInterval(()=>{if(install()){clearInterval(state.timer);state.timer=0}},100);install();
   window.addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
-  window.CCGLostSizzlerV141SanctuaryAzalea={ESSENTIAL_KINDS,essentialPickup,buildScenes,enforceLakeSafety,drawScenes,drawAzalea,drawRadarOverlay,get state(){return state}};
+  window.CCGLostSizzlerV141SanctuaryAzalea={ESSENTIAL_KINDS,essentialPickup,buildScenes,enforceLakeSafety,drawScenes,drawAzalea,drawRadarOverlay,wrapUpdateRuntime,get state(){return state}};
 })();

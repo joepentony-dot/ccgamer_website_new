@@ -3,7 +3,7 @@
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V139_HORDE_LIVE_LOADOUT__)return;
   window.__CCG_LOST_SIZZLER_V139_HORDE_LIVE_LOADOUT__=true;
-  const state={installed:false,wrapped:false,timer:0,lastWave:0};
+  const state={installed:false,wrapped:false,controllerOwned:true,timer:0,lastWave:0};
   const active=()=>window.CCGLostSizzlerSpecialModes?.active||null;
   const H=()=>window.CCGLostSizzlerHorde||null;
   const isHorde=()=>active()?.type==="horde-survivor";
@@ -21,8 +21,10 @@
   }
 
   function install(){
-    if(state.installed)return true;const gate=window.CCGLostSizzlerReleaseGate;if(gate&&!gate.state?.ready)return false;if(!window.CCGLostSizzlerV138?.state?.installed||typeof window.update!=="function")return false;
-    const original=window.update;window.update=function updateV139HordeLoadout(){const result=original.apply(this,arguments);try{syncLocalLoadout()}catch(error){console.warn("[Lost Sizzler V10.39] Horde loadout sync failed",error)}return result};state.wrapped=true;state.installed=true;document.body.dataset.v139HordeLoadout="true";return true
+    if(state.installed)return true;const gate=window.CCGLostSizzlerReleaseGate;if(gate&&!gate.state?.ready)return false;if(!window.CCGLostSizzlerV138?.state?.installed)return false;
+    // Phase 3: the authoritative mode controller calls syncLocalLoadout only while
+    // Horde owns the frame. This legacy layer no longer wraps the shared update().
+    state.wrapped=false;state.installed=true;document.body.dataset.v139HordeLoadout="true";return true
   }
 
   state.timer=setInterval(()=>{if(install()){clearInterval(state.timer);state.timer=0}},90);install();window.addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});

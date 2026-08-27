@@ -15,7 +15,7 @@
   ]);
   const missingSince=new Map();
   const seenPlayers=new Set();
-  const state={installed:false,updateWrapped:false,renderWrapped:false,membersWrapped:false,packetWrapped:false,toastWrapped:false,localSpawnKey:"",waveKey:"",nextExtraAt:0,timer:0};
+  const state={installed:false,updateWrapped:false,controllerOwnedUpdate:true,renderWrapped:false,membersWrapped:false,packetWrapped:false,toastWrapped:false,localSpawnKey:"",waveKey:"",nextExtraAt:0,timer:0};
 
   const api=()=>window.CCGLostSizzlerSpecialModes||null;
   const active=()=>api()?.active||null;
@@ -187,6 +187,19 @@
     ctx.save();ctx.fillStyle="rgba(3,2,7,.9)";ctx.fillRect(14,14,width,70);ctx.strokeStyle="#ffd85a";ctx.strokeRect(14.5,14.5,width-1,69);ctx.textAlign="left";ctx.font='bold 16px "Courier New",monospace';ctx.fillStyle="#ffd85a";ctx.fillText(`HORDE SURVIVOR · WAVE ${wave}/10 · ${definition?.title||"BRIEFING"}`,27,38);ctx.font='bold 12px "Courier New",monospace';ctx.fillStyle="#6cecff";ctx.fillText(`DEFEATED ${Number(runState.defeated||0)}/${quota} · ACTIVE ${physical} · PLAYERS ${runState.playerCount||playerCount()}/4 · AMMO ∞`,27,62);ctx.restore();return true
   }
 
+  function updateHordeLive(dt){
+    if(!isHorde()){state.localSpawnKey="";state.waveKey="";return false}
+    try{
+      ensureLocalCentreSpawn();
+      if(isAuthority()){reconcilePlayers();reinforceWave(Date.now());driveEnemies(dt)}
+      updateRoster();
+      return true
+    }catch(error){
+      console.warn("[Lost Sizzler V10.38] Horde live update failed",error);
+      return false
+    }
+  }
+
   function wrapToast(){
     if(state.toastWrapped||typeof window.showToast!=="function")return false;const original=window.showToast;
     window.showToast=function showToastV138HordeQuota(title,text,tone,duration){if(isHorde()&&/^HORDE WAVE /i.test(String(title||""))){const runState=active()?.state;if(runState?.wave)text=`${desiredQuota(runState.wave,runState.playerCount||playerCount())} enemies. They enter from the outer perimeter and converge on the centre. Unlimited ammunition and shared revives are active.`}return original.call(this,title,text,tone,duration)};
@@ -201,21 +214,18 @@
     if(state.packetWrapped||!net?.cb)return false;const original=net.cb.onPacket;
     net.cb.onPacket=function onPacketV138HordeLive(event,payload){const result=original?.(event,payload);if(event==="v133_special_state"&&isHorde())setTimeout(updateRoster,0);return result};state.packetWrapped=true;return true
   }
-  function wrapUpdateRender(){
-    if(!state.updateWrapped&&typeof window.update==="function"){
-      const original=window.update;window.update=function updateV138HordeLive(dt){const result=original.apply(this,arguments);if(isHorde()){try{ensureLocalCentreSpawn();if(isAuthority()){reconcilePlayers();reinforceWave(Date.now());driveEnemies(dt)}updateRoster()}catch(error){console.warn("[Lost Sizzler V10.38] Horde live update failed",error)}}else{state.localSpawnKey="";state.waveKey=""}return result};state.updateWrapped=true
-    }
+  function wrapRender(){
     if(!state.renderWrapped&&typeof window.render==="function"){
       const original=window.render;window.render=function renderV138HordeLive(){const result=original.apply(this,arguments);try{redrawHordeBanner()}catch(error){console.warn("[Lost Sizzler V10.38] Horde banner render failed",error)}return result};state.renderWrapped=true
     }
-    return state.updateWrapped&&state.renderWrapped
+    return state.renderWrapped
   }
 
   function install(){
     injectUi();const gate=window.CCGLostSizzlerReleaseGate;if(gate&&!gate.state?.ready)return false;if(!window.CCGLostSizzlerV137?.state?.installed||!api()||!H()||!net?.cb)return false;
-    wrapToast();wrapMembers();wrapPacket();wrapUpdateRender();if(!state.installed){state.installed=true;document.body.dataset.v138HordeLive="true"}return state.toastWrapped&&state.membersWrapped&&state.packetWrapped&&state.updateWrapped&&state.renderWrapped
+    wrapToast();wrapMembers();wrapPacket();wrapRender();if(!state.installed){state.installed=true;document.body.dataset.v138HordeLive="true"}return state.toastWrapped&&state.membersWrapped&&state.packetWrapped&&state.renderWrapped
   }
 
   injectUi();state.timer=setInterval(()=>{if(install()){clearInterval(state.timer);state.timer=0}},INSTALL_MS);install();window.addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
-  window.CCGLostSizzlerV138={SINGLE_PLAYER_QUOTAS,PLAYER_QUOTA_SCALE,ACTIVE_CAP,CENTRE_OFFSETS,desiredQuota,desiredActiveCap,reconcilePlayers,ensureLocalCentreSpawn,perimeterCell,reinforceWave,driveEnemies,updateRoster,redrawHordeBanner,get state(){return state}};
+  window.CCGLostSizzlerV138={SINGLE_PLAYER_QUOTAS,PLAYER_QUOTA_SCALE,ACTIVE_CAP,CENTRE_OFFSETS,desiredQuota,desiredActiveCap,reconcilePlayers,ensureLocalCentreSpawn,perimeterCell,reinforceWave,driveEnemies,updateHordeLive,updateRoster,redrawHordeBanner,get state(){return state}};
 })();

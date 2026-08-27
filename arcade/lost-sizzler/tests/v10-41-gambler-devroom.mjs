@@ -9,6 +9,7 @@ const gambler=fs.readFileSync(path.join(root,"js/v10-41-gambler-devroom.js"),"ut
 const hardening=fs.readFileSync(path.join(root,"js/v10-41-developer-vault-hardening.js"),"utf8");
 const catalog=fs.readFileSync(path.join(root,"js/v10-41-developer-asset-catalog.js"),"utf8");
 const lake=fs.readFileSync(path.join(root,"js/v10-41-lake-item-safety.js"),"utf8");
+const controller=fs.readFileSync(path.join(root,"js/v10-41-mode-runtime.js"),"utf8");
 
 assert.match(gambler,/const SPAWN_CHANCE=\.04/,"Gambler must remain a rare dungeon occurrence");
 assert.match(gambler,/const STAKE=1000/,"Gambler stake must be exactly 1,000 score");
@@ -22,6 +23,10 @@ assert.match(gambler,/!run\.daily/,"Weekly Vault runs must never spawn the Gambl
 assert.match(gambler,/run\?\.gamblerEncountered/,"normal runs must contain at most one Gambler encounter");
 assert.match(gambler,/Press G to gamble 1,000 score/,"nearby interaction must explain the G-key wager");
 assert.match(gambler,/ccg-gambler-reel/,"Gambler must use the animated reel panel");
+assert.match(gambler,/function controllerFrame\(controllerId\)/,"Gambler frame work must expose an explicit controller hook");
+assert.match(gambler,/state\.controllerOwnedUpdate=true/,"Gambler must declare controller-owned update execution");
+assert.doesNotMatch(gambler,/update=function updateV141Gambler|window\.update\s*=/,"Gambler must never replace the controller update boundary");
+assert.match(controller,/CCGLostSizzlerV141Gambler\?\.controllerFrame/,"the mode runtime must dispatch Gambler work through Dungeon Solo and split-screen controllers");
 
 assert.match(gambler,/client\.auth\.getSession\(\)/,"Developer Vault must require a real authenticated Supabase session");
 assert.match(gambler,/import\("\/admin\/js\/config\.js"\)/,"Developer Vault must reuse canonical admin owner configuration");

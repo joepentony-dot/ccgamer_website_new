@@ -7,7 +7,8 @@
   const PUSH_HOLD_MS=3000;
   const PUSH_GRACE_MS=850;
   const STARTER_MELEE={power:1,cooldown:390,colour:"#ffd85a",short:"SWORD"};
-  const state={fireWrapped:null,moveWrapped:null,toastWrapped:false,sayWrapped:false,timer:0,pushes:new Map()};
+  const P2_CONTROL_CODES=Object.freeze(["KeyJ","KeyL","KeyI","KeyK","Enter","ControlRight","KeyO"]);
+  const state={fireWrapped:null,moveWrapped:null,toastWrapped:false,sayWrapped:false,timer:0,observer:null,pushes:new Map(),controllerId:"",controllerResets:0,lastControllerResetReason:"",movementOwnershipYields:0};
 
   function splitReady(){
     try{return Boolean(window.CCGLostSizzlerReleaseGate?.state?.ready&&window.__CCG_LOST_SIZZLER_MELEE_AMMO_V125__&&typeof firePlayer==="function"&&typeof hurtPlayer==="function"&&typeof movePlayer==="function")}catch(_){return false}
@@ -61,6 +62,37 @@
 
   function resetPush(player){if(player?.id!=null)state.pushes.delete(String(player.id))}
   function resetAllPushes(){state.pushes.clear()}
+
+  function resetP2ControlState(){
+    try{move2=0}catch(_){}
+    try{fire2=0}catch(_){}
+    try{fireBuffer2=0}catch(_){}
+    try{for(const code of P2_CONTROL_CODES)input?.delete?.(code)}catch(_){}
+    try{
+      if(p2){
+        if(Number(p2.hitStunMs||0)>0)p2.hitStunMs=0;
+        if("controlLocked" in p2)p2.controlLocked=false;
+        if("controlsLocked" in p2)p2.controlsLocked=false;
+      }
+    }catch(_){}
+  }
+
+  function resetControllerState(reason="split controller transition"){
+    resetAllPushes();
+    resetP2ControlState();
+    state.controllerResets++;
+    state.lastControllerResetReason=String(reason||"split controller transition");
+    return true;
+  }
+
+  function syncControllerOwnership(){
+    const id=String(document.body?.dataset?.modeController||"");
+    if(id===state.controllerId)return false;
+    const previous=state.controllerId;
+    state.controllerId=id;
+    if(previous==="split-screen"||id==="split-screen")resetControllerState(`${previous||"none"} -> ${id||"none"}`);
+    return true;
+  }
 
   function solidBudgeCell(x,y,movingPlayer){
     try{
@@ -163,9 +195,32 @@
     return true;
   }
 
+  function movementChainHasSplitOwner(fn=window.movePlayer){
+    const seen=new Set();let current=fn;
+    for(let depth=0;depth<40&&typeof current==="function"&&!seen.has(current);depth++){
+      seen.add(current);
+      if(current.__ccgV141SplitBudge===true)return true;
+      current=current.__ccgPreviousMovePlayer||current.__ccgOriginal||current.__ccgV141Original||current.__ccgV141TutorialOriginal||current.__ccgV141R27Original||current.__ccgV141R25Original||null;
+    }
+    return false;
+  }
+
+  function r30OwnsNormalMovement(){
+    try{
+      const r30=window.CCGLostSizzlerV141R30?.state;
+      return Boolean(r30?.goldenLocked&&typeof r30.goldenMove==="function"&&String(document.body?.dataset?.specialMode||"")!=="sizzler-saboteurs");
+    }catch(_){return false}
+  }
+
   function installPlayerCollision(){
-    if(movePlayer?.__ccgV141SplitBudge)return true;
-    const previous=movePlayer;
+    const current=window.movePlayer;if(typeof current!=="function")return false;
+    // The split collision layer is installed before the final release owners and
+    // therefore normally lives inside r30's sealed golden movement chain. Do not
+    // mistake a later outer finalizer for a missing split owner and wrap the
+    // golden function every 90 ms. That created a short ownership race in Solo.
+    if(movementChainHasSplitOwner(current)){state.moveWrapped=current;return true}
+    if(r30OwnsNormalMovement()&&String(playMode)!=="split"){state.movementOwnershipYields++;return true}
+    const previous=current;
     const wrapped=function movePlayerV141SplitBudge(player,dx,dy,dash=false){
       if(String(playMode)==="split"&&player&&String(mode)==="playing"){
         const dir={x:Math.sign(Number(dx||0)),y:Math.sign(Number(dy||0))};
@@ -216,10 +271,15 @@
   }
 
   function install(){
+    syncControllerOwnership();
     if(!splitReady())return false;
     wrapFriendlyCopy();installFriendlyFire();installPlayerCollision();enforceSeparateTiles();return true;
   }
 
+  state.observer=new MutationObserver(()=>{try{syncControllerOwnership()}catch(error){console.warn("[Lost Sizzler V10.41] split controller transition reset failed safely",error)}});
+  state.observer.observe(document.body,{attributes:true,attributeFilter:["data-mode-controller"]});
   state.timer=setInterval(()=>{try{install()}catch(error){console.warn("[Lost Sizzler V10.41] split player collision/friendly-fire install failed safely",error)}},90);
-  window.addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);resetAllPushes()},{once:true});
+  install();
+  window.addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0;state.observer?.disconnect?.();state.observer=null;resetControllerState("pagehide")},{once:true});
+  window.CCGLostSizzlerV141SplitFriendlyFire={P2_CONTROL_CODES,resetControllerState,syncControllerOwnership,movementChainHasSplitOwner,r30OwnsNormalMovement,get state(){return state}};
 })();

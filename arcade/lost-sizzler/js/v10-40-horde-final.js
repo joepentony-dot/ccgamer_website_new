@@ -4,10 +4,9 @@
   if(window.__CCG_LOST_SIZZLER_V140_HORDE_FINAL__)return;
   window.__CCG_LOST_SIZZLER_V140_HORDE_FINAL__=true;
 
-  const state={installed:false,updateWrapped:false,timer:0};
+  const state={installed:false,updateWrapped:false,controllerOwned:true,timer:0};
   const active=()=>window.CCGLostSizzlerSpecialModes?.active||null;
   const H=()=>window.CCGLostSizzlerHorde||null;
-  const isHorde=()=>active()?.type==="horde-survivor";
 
   function injectStyles(){
     if(document.getElementById("ccg-v140-horde-final-style"))return;
@@ -61,25 +60,15 @@
     return true;
   }
 
-  function wrapUpdate(){
-    if(state.updateWrapped||typeof window.update!=="function")return state.updateWrapped;
-    const original=window.update;
-    window.update=function updateV140HordeGuard(){
-      try{if(isHorde())ensureExpandedWaveReserve()}catch(error){console.warn("[Lost Sizzler V10.40] Horde reserve guard failed",error)}
-      return original.apply(this,arguments)
-    };
-    state.updateWrapped=true;
-    return true;
-  }
-
   function install(){
     injectStyles();
     if(state.installed)return true;
     const gate=window.CCGLostSizzlerReleaseGate;
     if(gate&&!gate.state?.ready)return false;
     if(!window.CCGLostSizzlerV139?.state?.installed||!window.CCGLostSizzlerV138||!H())return false;
-    if(!wrapUpdate())return false;
-    state.installed=true;
+    // Phase 3: the Horde controller owns reserve maintenance. This layer keeps
+    // its UI and reserve implementation but no longer wraps shared update().
+    state.updateWrapped=false;state.installed=true;
     document.body.dataset.v140HordeFinal="true";
     return true;
   }

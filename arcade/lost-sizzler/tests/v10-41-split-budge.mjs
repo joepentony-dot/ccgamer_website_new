@@ -16,6 +16,9 @@ assert.match(source,/player\.x=oldTarget\.x;player\.y=oldTarget\.y/,"the pushing
 assert.match(source,/resetAllPushes\(\)/,"successful displacement must clear both players' push timers");
 assert.match(source,/secondStepOpponent/,"split-screen dash movement must not pass through or land on the other player");
 assert.match(source,/enforceSeparateTiles/,"the split-screen runtime must repair any forced overlap from knockback or other systems");
+assert.match(source,/function movementChainHasSplitOwner\(fn=window\.movePlayer\)/,"split maintenance must detect its collision owner anywhere inside the final movement wrapper chain");
+assert.match(source,/if\(movementChainHasSplitOwner\(current\)\)\{state\.moveWrapped=current;return true\}/,"split maintenance must not re-wrap a sealed movement stack that already contains split collision ownership");
+assert.match(source,/if\(r30OwnsNormalMovement\(\)&&String\(playMode\)!=="split"\)/,"non-split modes must yield to r30 once normal movement ownership is sealed");
 assert.doesNotMatch(source,/hurtPlayer\(target[^\n]*BUDGE/,"budging itself must not damage the other player");
 
-console.log("Lost Sizzler split-screen player collision and three-second budge checks passed.");
+console.log("Lost Sizzler split-screen player collision, three-second budge and sealed movement-ownership checks passed.");

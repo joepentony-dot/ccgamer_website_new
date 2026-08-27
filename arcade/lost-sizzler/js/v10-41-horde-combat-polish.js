@@ -9,7 +9,7 @@
   const MAX_WARDEN_SPEED=.78;
   const SIDE_STEP_GRACE_MS=1100;
   const WAVE_POWER=Object.freeze([2,2,3,3,4,4,5,5,6,7]);
-  const state={installed:false,wrapped:false,timer:0,runKey:"",lastPhase:"",lastWave:0,recoveredWave:0,nav:new Map()};
+  const state={installed:false,wrapped:false,controllerOwnedUpdate:true,timer:0,runKey:"",lastPhase:"",lastWave:0,recoveredWave:0,nav:new Map()};
 
   const active=()=>window.CCGLostSizzlerSpecialModes?.active||null;
   const isHorde=()=>active()?.type==="horde-survivor";
@@ -62,8 +62,6 @@
       if(!enemy?.alive||!enemy.hordeEnemy)continue;
       const cap=enemy.hordeWarden?MAX_WARDEN_SPEED:MAX_ENEMY_SPEED;
       enemy.moveSpeedScale=Math.min(Number(enemy.moveSpeedScale||1),cap);
-      // Keep the normal tactical AI from inserting extra dodge/wander steps.
-      // Horde movement is owned by the dedicated inward-pressure driver.
       enemy.moveCooldown=Math.max(Number(enemy.moveCooldown||0),90000);
       enemy.aiState="chase";
     }
@@ -105,8 +103,6 @@
     for(const [id,old] of before){
       const enemy=(host?.enemies||[]).find(row=>String(row?.id)===id&&row?.alive&&row?.hordeEnemy);if(!enemy)continue;
       if(Number(enemy.x)===old.x&&Number(enemy.y)===old.y)continue;
-      // The V10.38 Horde driver resets this timer when it takes an approach step.
-      // Restrict only those steps; weapon knockback and other combat reactions remain intact.
       if(!(old.approachMs<=0&&Number(enemy._v138ApproachMs||0)>0))continue;
       const oldDistance=Math.abs(old.targetX-old.x)+Math.abs(old.targetY-old.y);
       const newDistance=Math.abs(old.targetX-Number(enemy.x))+Math.abs(old.targetY-Number(enemy.y));
@@ -154,23 +150,25 @@
     state.lastPhase=phase;state.lastWave=wave;
   }
 
-  function wrapUpdate(){
-    if(state.wrapped||typeof window.update!=="function")return state.wrapped;
-    const original=window.update;
-    window.update=function updateV141HordeCombatPolish(){
-      let before=null,previousPhase="",previousWave=0;
-      if(isHorde()){
-        const runState=hordeState();resetRunTracking(runState);previousPhase=String(runState?.state||state.lastPhase||"");previousWave=Number(runState?.wave||state.lastWave||0);
-        capEnemyPacing();strengthenLocalWeapon();if(isAuthority())before=snapshotApproachSteps();
-      }
-      const result=original.apply(this,arguments);
-      if(isHorde()){
-        capEnemyPacing();strengthenLocalWeapon();if(isAuthority())filterRapidSideSteps(before,Date.now());processWaveTransition(previousPhase,previousWave);
-      }else if(state.runKey){state.runKey="";state.lastPhase="";state.lastWave=0;state.recoveredWave=0;state.nav.clear()}
-      return result;
-    };
-    state.wrapped=true;
-    return true;
+  function preHordeCombatFrame(){
+    if(!isHorde()){
+      if(state.runKey){state.runKey="";state.lastPhase="";state.lastWave=0;state.recoveredWave=0;state.nav.clear()}
+      return null
+    }
+    const runState=hordeState();
+    resetRunTracking(runState);
+    const context={previousPhase:String(runState?.state||state.lastPhase||""),previousWave:Number(runState?.wave||state.lastWave||0),before:null};
+    capEnemyPacing();strengthenLocalWeapon();
+    if(isAuthority())context.before=snapshotApproachSteps();
+    return context
+  }
+
+  function postHordeCombatFrame(context){
+    if(!isHorde())return false;
+    capEnemyPacing();strengthenLocalWeapon();
+    if(isAuthority())filterRapidSideSteps(context?.before||null,Date.now());
+    processWaveTransition(String(context?.previousPhase||""),Number(context?.previousWave||0));
+    return true
   }
 
   function install(){
@@ -178,7 +176,6 @@
     const gate=window.CCGLostSizzlerReleaseGate;
     if(gate&&!gate.state?.ready)return false;
     if(!window.CCGLostSizzlerV140?.state?.installed||!window.CCGLostSizzlerV139?.state?.installed||!window.CCGLostSizzlerV138||!window.CCGLostSizzlerHorde)return false;
-    if(!wrapUpdate())return false;
     state.installed=true;document.body.dataset.v141HordeCombatPolish="true";return true;
   }
 
@@ -188,6 +185,6 @@
 
   window.CCGLostSizzlerV141HordeCombatPolish={
     WAVE_RECOVERY_HP,MAX_ENEMY_SPEED,MAX_WARDEN_SPEED,SIDE_STEP_GRACE_MS,WAVE_POWER,
-    wavePower,strengthenLocalWeapon,capEnemyPacing,grantWaveRecovery,filterRapidSideSteps,get state(){return state}
+    wavePower,strengthenLocalWeapon,capEnemyPacing,grantWaveRecovery,filterRapidSideSteps,preHordeCombatFrame,postHordeCombatFrame,get state(){return state}
   };
 })();

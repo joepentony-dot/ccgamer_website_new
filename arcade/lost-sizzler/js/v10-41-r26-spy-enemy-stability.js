@@ -4,7 +4,8 @@
  * - Spy Vs Spy walking cannot be accelerated by the older movement fallback chain;
  * - r24 Solo population rehomes and V10.10 home-room containment share one room owner;
  * - large enemy relocation jumps snap render interpolation instead of smearing across rooms;
- * - horizontal enemy sprite facing remains stable when AI movement is vertical or rejected.
+ * - horizontal enemy sprite facing remains stable when AI movement is vertical or rejected;
+ * - visual stabilisation never rewrites live enemy alert/search AI state.
  */
 (()=>{
   "use strict";
@@ -15,6 +16,7 @@
   const ENEMY_VISUAL_SNAP_DISTANCE=3;
   const state={
     updateInstalled:false,moveInstalled:false,renderInstalled:false,
+    controllerOwnedUpdate:false,controllerOwnedMovement:false,controllerPreFrames:0,controllerPostFrames:0,
     spyMovesObserved:0,spyStepsBlocked:0,spyRoundKey:"",
     enemyHomeRepairs:0,enemyVisualSnaps:0,enemyFacingRepairs:0,timer:0
   };
@@ -76,18 +78,9 @@
   }
 
   function installMoveGuard(){
-    if(typeof window.movePlayer!=="function")return false;
-    if(window.movePlayer.__ccgV141R26SpyGovernor){state.moveInstalled=true;return true}
-    const current=window.movePlayer;
-    const wrapped=function movePlayerV141R26SpyGovernor(player,dx,dy,dash=false){
-      if(!spyActive()||dash)return current.apply(this,arguments);
-      syncSpyRound();const t=now(),remaining=spyRemaining(player,t);
-      if(remaining>0){state.spyStepsBlocked++;armSpyTimers(player,remaining,0);return false}
-      const ox=Number(player?.x),oy=Number(player?.y),result=current.apply(this,arguments);
-      if(player&&(Number(player.x)!==ox||Number(player.y)!==oy))noteSpyMove(player,t);
-      return result;
-    };
-    inheritMarkers(wrapped,current);wrapped.__ccgV141R26SpyGovernor=true;window.movePlayer=wrapped;state.moveInstalled=true;return true;
+    // Spy movement cadence is owned by the isolated r29 engine. Keep the r26
+    // diagnostic helpers available without wrapping shared movement.
+    state.controllerOwnedMovement=true;state.moveInstalled=true;return true;
   }
 
   function snapEnemyVisual(enemy){
@@ -140,11 +133,9 @@
         if(previous){
           const jump=Math.abs(x-Number(previous.x))+Math.abs(y-Number(previous.y));if(jump>ENEMY_VISUAL_SNAP_DISTANCE)snapEnemyVisual(enemy);
           if(previous.facingX!==facingX)changed++;
-          const home=Number(enemy._ccgHomeRoomId),current=roomAt(x,y);
-          if(!enemy.deathStalker&&!enemy.voidStalker&&home>=0&&current===home&&enemy.aiState==="chase"&&!sameRoomLivingPlayer(home)){
-            enemy.aiState="search";enemy.targetId=null;enemy.searchMs=Math.min(1200,Math.max(250,Number(enemy.searchMs)||600));
-            if(x===Number(previous.x)&&y===Number(previous.y)&&previous.rawFacing)enemy.facing={...previous.rawFacing};
-          }
+          // Visual/interpolation repair must never own idle/chase/search. The core
+          // AI is the sole alert-state owner; rewriting chase here caused a
+          // chase->search->chase loop, repeated !/? indicators and visible stutter.
         }
         enemyState.set(id,{x,y,facingX,rawFacing:enemy.facing?{x:Number(enemy.facing.x)||0,y:Number(enemy.facing.y)||0}:null});
       }
@@ -166,29 +157,20 @@
     inheritMarkers(wrapped,current);wrapped.__ccgV141R26EnemyFacing=true;window.drawPixelEnemySprite=wrapped;state.renderInstalled=true;return true;
   }
 
+  function preControllerFrame(controllerId){
+    if(String(controllerId||"")!=="dungeon-solo")return false;
+    syncEnemyHomeOwnership();state.controllerPreFrames++;return true;
+  }
+
+  function postControllerFrame(controllerId){
+    if(String(controllerId||"")!=="dungeon-solo")return false;
+    stabiliseEnemyVisualState();state.controllerPostFrames++;return true;
+  }
+
   function installUpdateGuard(){
-    if(typeof window.update!=="function")return false;
-    if(window.update.__ccgV141R26Stability){state.updateInstalled=true;return true}
-    const current=window.update;
-    const wrapped=function updateV141R26Stability(dt){
-      const delta=Math.max(0,Number(dt)||0);syncSpyRound();
-      let spy=null,before=null;
-      try{
-        if(spyActive()&&typeof p1!=="undefined"&&p1){spy=p1;before={x:Number(p1.x),y:Number(p1.y)};const remaining=spyRemaining(spy,now());if(remaining>0)armSpyTimers(spy,remaining,delta)}
-        syncEnemyHomeOwnership();
-      }catch(_){}
-      const result=current.apply(this,arguments);
-      try{
-        if(spy&&before){
-          const moved=Number(spy.x)!==before.x||Number(spy.y)!==before.y;
-          if(moved)noteSpyMove(spy,now());
-          else{const remaining=spyRemaining(spy,now());if(remaining>0)armSpyTimers(spy,remaining,0)}
-        }
-        stabiliseEnemyVisualState();
-      }catch(_){}
-      return result;
-    };
-    inheritMarkers(wrapped,current);wrapped.__ccgV141R26Stability=true;window.update=wrapped;state.updateInstalled=true;return true;
+    // Enemy compatibility work is dispatched by the Dungeon Solo controller.
+    // Spy rules and cadence are owned by the isolated Spy engine.
+    state.controllerOwnedUpdate=true;state.updateInstalled=true;return true;
   }
 
   function install(){
@@ -199,7 +181,7 @@
   install();state.timer=setInterval(install,250);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0;spyMoveAt.clear();enemyState.clear()},{once:true});
   window.CCGLostSizzlerV141R26SpyEnemyStability={
-    install,syncSpyRound,spyRemaining,armSpyTimers,noteSpyMove,syncEnemyHomeOwnership,stabiliseEnemyVisualState,snapEnemyVisual,
+    install,preControllerFrame,postControllerFrame,syncSpyRound,spyRemaining,armSpyTimers,noteSpyMove,syncEnemyHomeOwnership,stabiliseEnemyVisualState,snapEnemyVisual,
     constants:{SPY_MOVE_CADENCE_MS,ENEMY_VISUAL_SNAP_DISTANCE},get state(){return state}
   };
 })();

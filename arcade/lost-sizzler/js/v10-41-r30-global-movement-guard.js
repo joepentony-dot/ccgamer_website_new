@@ -13,9 +13,9 @@
   const state={
     timer:0,r29TimerStopped:false,r29InstallCooperative:false,spyTimerStopped:false,
     baselineUpdate:null,baselineMove:null,baselineHurt:null,
-    goldenUpdate:null,goldenMove:null,goldenHurt:null,goldenLocked:false,goldenLockedAt:0,
+    goldenUpdate:null,goldenMove:null,goldenHurt:null,goldenLocked:false,goldenLockedAt:0,goldenMovePromotions:0,
     spyOwnerUpdate:null,spyOwnerMove:null,spyOwnerHurt:null,
-    forcedRestores:0,ownershipRepairs:0,inputBridges:0,inputReassertions:0,
+    forcedRestores:0,ownershipRepairs:0,ownershipCooldownResets:0,inputBridges:0,inputReassertions:0,
     watchdogRecoveries:0,watchdogMisses:0,watchdogCooldownBreaks:0,lastWatchdogRecoveryAt:0,
     notificationOwnershipRepairs:0,notificationPostInstallRepairs:0,nestedOwnershipDetections:0,
     lastRestoreAt:0,lastRestoreReason:"",lastModeType:"",modeTransitions:0,lastRecoveryLogAt:0
@@ -57,6 +57,18 @@
     return false;
   }
   function spyContaminated(fn){return ISOLATED_MARKERS.some(marker=>chainHas(fn,marker))}
+  function topLevelSpyOwner(fn){
+    if(typeof fn!=="function")return false;
+    return ISOLATED_MARKERS.some(marker=>{try{return Boolean(fn[marker])}catch(_){return false}})
+  }
+  function controllerProtectedUpdate(fn){
+    if(typeof fn!=="function"||topLevelSpyOwner(fn))return false;
+    return chainHas(fn,"__ccgV141ModeFrameBoundary")
+  }
+  function authoritativeControllerUpdate(){
+    const boundary=window.CCGLostSizzlerModeRuntime?.state?.sharedFrameBoundary;
+    return typeof boundary==="function"&&boundary.__ccgV141ModeFrameBoundary===true?boundary:null
+  }
 
   function healthyBaseline(fn){return typeof fn==="function"&&!spyContaminated(fn)}
   function normalMovementStackReady(){
@@ -65,23 +77,27 @@
     const stability=window.CCGLostSizzlerV141BrowserStabilityGameplay?.state;
     return Boolean(tutorial?.installed&&spyFinal?.moveInstalled&&stability?.moveGuard);
   }
+  function adoptReleaseMoveOwner(fn=window.movePlayer){
+    if(!releaseReady()||!normalMovementStackReady()||!state.goldenLocked||!healthyBaseline(fn)||fn?.__ccgV141SpyFinal!==true)return false;
+    state.baselineMove=fn;
+    if(state.goldenMove!==fn){state.goldenMove=fn;state.goldenMovePromotions++;state.goldenLockedAt=Date.now()}
+    return true
+  }
   function captureBaseline(){
     if(spyActive()||spyEngine()?.state?.isolated)return false;
-    if(healthyBaseline(window.update))state.baselineUpdate=window.update;
+    const controllerUpdate=authoritativeControllerUpdate();
+    if(controllerUpdate)state.baselineUpdate=controllerUpdate;
+    else if(healthyBaseline(window.update))state.baselineUpdate=window.update;
     if(healthyBaseline(window.movePlayer))state.baselineMove=window.movePlayer;
     if(healthyBaseline(window.hurtPlayer))state.baselineHurt=window.hurtPlayer;
-    // Release readiness can resolve a few milliseconds before the final normal
-    // movement wrappers have installed. Locking the immutable r30 snapshot in
-    // that gap means a later Spy recovery can roll movement back to an older,
-    // incomplete owner chain. Wait until the known post-release movement
-    // finalizers are present, then freeze the settled normal runtime snapshot.
     if(releaseReady()&&normalMovementStackReady()&&!state.goldenLocked&&state.baselineUpdate&&state.baselineMove&&state.baselineHurt){
       state.goldenUpdate=state.baselineUpdate;state.goldenMove=state.baselineMove;state.goldenHurt=state.baselineHurt;
       state.goldenLocked=true;state.goldenLockedAt=Date.now();
     }
+    adoptReleaseMoveOwner(state.baselineMove);
     return Boolean(state.baselineMove&&state.baselineUpdate&&state.baselineHurt);
   }
-  const recoveryUpdate=()=>state.goldenUpdate||state.baselineUpdate;
+  const recoveryUpdate=()=>authoritativeControllerUpdate()||state.goldenUpdate||state.baselineUpdate;
   const recoveryMove=()=>state.goldenMove||state.baselineMove;
   const recoveryHurt=()=>state.goldenHurt||state.baselineHurt;
 
@@ -141,16 +157,27 @@
     state.spyOwnerUpdate=state.spyOwnerMove=state.spyOwnerHurt=null;noteRecovery(state.lastRestoreReason);return true;
   }
 
+  function resetRecoveredMovementCooldowns(){
+    let cleared=0;
+    try{if(typeof move1!=="undefined"&&Number(move1||0)>0){move1=0;cleared++}}catch(_){}
+    try{if(typeof move2!=="undefined"&&Number(move2||0)>0){move2=0;cleared++}}catch(_){}
+    state.ownershipCooldownResets+=cleared;
+    return cleared
+  }
+
   function assertNormalRuntimeOwnership(reason="periodic invariant"){
     if(spyActive()||spyEngine()?.state?.isolated)return false;
     const currentUpdate=window.update,currentMove=window.movePlayer,currentHurt=window.hurtPlayer;
-    const updateBad=typeof currentUpdate!=="function"||spyContaminated(currentUpdate);
-    const moveBad=typeof currentMove!=="function"||spyContaminated(currentMove);
+    const updateBad=typeof currentUpdate!=="function"||(!controllerProtectedUpdate(currentUpdate)&&spyContaminated(currentUpdate));
+    const moveBad=typeof currentMove!=="function"||spyContaminated(currentMove)||(state.goldenLocked&&normalMovementStackReady()&&typeof state.goldenMove==="function"&&currentMove!==state.goldenMove);
     const hurtBad=typeof currentHurt!=="function"||spyContaminated(currentHurt);
     if(!(updateBad||moveBad||hurtBad))return false;
     const u=updateBad?recoveryUpdate():currentUpdate,m=moveBad?recoveryMove():currentMove,h=hurtBad?recoveryHurt():currentHurt;
     if((updateBad&&typeof u!=="function")||(moveBad&&typeof m!=="function")||(hurtBad&&typeof h!=="function"))return false;
-    state.ownershipRepairs++;return forceRestore(u,m,h,reason);
+    state.ownershipRepairs++;
+    const repaired=forceRestore(u,m,h,reason);
+    if(repaired&&moveBad)resetRecoveredMovementCooldowns();
+    return repaired
   }
 
   function maintainSpyOwnership(){
@@ -158,10 +185,10 @@
     if(spyActive()){
       if(!engine.state?.isolated){
         engine.enterIsolation?.();
-        if(engine.state?.isolated){state.spyOwnerUpdate=window.update;state.spyOwnerMove=window.movePlayer;state.spyOwnerHurt=window.hurtPlayer}
+        if(engine.state?.isolated){state.spyOwnerUpdate=authoritativeControllerUpdate()||window.update;state.spyOwnerMove=window.movePlayer;state.spyOwnerHurt=window.hurtPlayer}
       }
       if(engine.state?.isolated){
-        if(!state.spyOwnerUpdate)state.spyOwnerUpdate=window.update;
+        state.spyOwnerUpdate=authoritativeControllerUpdate()||state.spyOwnerUpdate||window.update;
         if(!state.spyOwnerMove)state.spyOwnerMove=window.movePlayer;
         if(!state.spyOwnerHurt)state.spyOwnerHurt=window.hurtPlayer;
         if(typeof state.spyOwnerUpdate==="function"&&window.update!==state.spyOwnerUpdate)window.update=state.spyOwnerUpdate;
@@ -171,7 +198,7 @@
       return true;
     }
     if(engine.state?.isolated){
-      const baseUpdate=engine.state.baseUpdate||recoveryUpdate(),baseMove=engine.state.baseMove||recoveryMove(),baseHurt=engine.state.baseHurt||recoveryHurt();
+      const baseUpdate=authoritativeControllerUpdate()||engine.state.baseUpdate||recoveryUpdate(),baseMove=engine.state.baseMove||recoveryMove(),baseHurt=engine.state.baseHurt||recoveryHurt();
       try{engine.leaveIsolation?.()}catch(_){}
       forceRestore(baseUpdate,baseMove,baseHurt,"Spy runtime exit");captureBaseline();return true;
     }
@@ -288,7 +315,7 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);clearHeld()},{once:true});
 
   window.CCGLostSizzlerV141R30={
-    originalLink,originalLinks,chainHas,spyContaminated,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,reassertHeldInput,movementWatchdog,makeR29Cooperative,
+    originalLink,originalLinks,chainHas,spyContaminated,topLevelSpyOwner,controllerProtectedUpdate,adoptReleaseMoveOwner,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,resetRecoveredMovementCooldowns,reassertHeldInput,movementWatchdog,makeR29Cooperative,
     constants:{ORIGINAL_LINKS},get state(){return state}
   };
 })();

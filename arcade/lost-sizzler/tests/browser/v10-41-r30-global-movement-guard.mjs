@@ -28,16 +28,30 @@ const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usag
 
 const directionFor=async page=>page.evaluate(()=>{
   const dirs=[{dx:1,dy:0,code:"ArrowRight"},{dx:-1,dy:0,code:"ArrowLeft"},{dx:0,dy:1,code:"ArrowDown"},{dx:0,dy:-1,code:"ArrowUp"}];
-  const q=dirs.find(row=>window.CCGWorld?.walkable?.(world.map,p1.x+row.dx,p1.y+row.dy,host)&&!(host.enemies||[]).some(e=>e.alive&&e.x===p1.x+row.dx&&e.y===p1.y+row.dy));
+  const occupied=(x,y)=>{
+    if((host.enemies||[]).some(e=>e.alive&&e.x===x&&e.y===y))return true;
+    if(host.stalker?.awake&&host.stalker.x===x&&host.stalker.y===y)return true;
+    try{if(typeof allPlayers==="function"&&allPlayers().some(other=>other&&other!==p1&&other.x===x&&other.y===y))return true}catch(_){}
+    return false;
+  };
+  const q=dirs.find(row=>{
+    const x=p1.x+row.dx,y=p1.y+row.dy;
+    if(!window.CCGWorld?.walkable?.(world.map,x,y,host)||occupied(x,y))return false;
+    if(world?.exit&&world.exit.x===x&&world.exit.y===y)return false;
+    return true;
+  });
   return q?{...q,x:p1.x,y:p1.y}:null;
 });
 const prepareSolo=async(page,seed)=>page.evaluate(seed=>{
   run=PGR.makeRun({difficulty:"ARCADE",seed});playMode="solo";startWorld(PGR.floorSeed(run),false,false);mode="playing";
   document.body.dataset.runActive="true";document.body.dataset.specialMode="";UI.menu?.classList.add("hidden");
-  host.enemies=[];host.generators=[];move1=0;input.clear();return{x:p1.x,y:p1.y};
+  host.enemies=[];host.generators=[];host.traps=[];host.chests=[];host.weightBridge=null;
+  if(host.stalker)host.stalker.awake=false;
+  try{hazards.length=0}catch(_){}
+  p1.hitStunMs=0;move1=0;input.clear();return{x:p1.x,y:p1.y};
 },seed);
 const assertKeyboardMove=async(page,label,wait=320)=>{
-  const d=await directionFor(page);assert.ok(d,`${label}: a walkable adjacent tile is required`);
+  const d=await directionFor(page);assert.ok(d,`${label}: an immediately traversable adjacent tile is required`);
   await page.keyboard.down(d.code);await page.waitForTimeout(wait);await page.keyboard.up(d.code);await page.waitForTimeout(100);
   const after=await page.evaluate(()=>({x:p1.x,y:p1.y}));
   assert.notDeepEqual(after,{x:d.x,y:d.y},`${label}: held keyboard movement must change player coordinates`);
@@ -81,12 +95,21 @@ try{
 
   await prepareSolo(page,"R30-DEAD-WRAPPER");
   const deadDirection=await directionFor(page);assert.ok(deadDirection);
-  const beforeWatchdog=await page.evaluate(()=>window.CCGLostSizzlerV141R30.state.watchdogRecoveries);
+  const beforeDeadRecovery=await page.evaluate(()=>({
+    watchdog:window.CCGLostSizzlerV141R30.state.watchdogRecoveries,
+    ownership:window.CCGLostSizzlerV141R30.state.ownershipRepairs
+  }));
   await page.evaluate(()=>{const dead=function(){return false};dead.__ccgOriginal=window.movePlayer;window.movePlayer=dead;});
   await page.keyboard.down(deadDirection.code);await page.waitForTimeout(1050);await page.keyboard.up(deadDirection.code);await page.waitForTimeout(120);
-  const deadRecovery=await page.evaluate(()=>({x:p1.x,y:p1.y,watchdog:window.CCGLostSizzlerV141R30.state.watchdogRecoveries}));
-  assert.notDeepEqual({x:deadRecovery.x,y:deadRecovery.y},{x:deadDirection.x,y:deadDirection.y},"movement watchdog must recover from an unmarked wrapper that silently returns false");
-  assert.ok(deadRecovery.watchdog>beforeWatchdog,"movement watchdog recovery counter must advance");
+  const deadRecovery=await page.evaluate(()=>({
+    x:p1.x,y:p1.y,
+    watchdog:window.CCGLostSizzlerV141R30.state.watchdogRecoveries,
+    ownership:window.CCGLostSizzlerV141R30.state.ownershipRepairs,
+    golden:window.movePlayer===window.CCGLostSizzlerV141R30.state.goldenMove
+  }));
+  assert.notDeepEqual({x:deadRecovery.x,y:deadRecovery.y},{x:deadDirection.x,y:deadDirection.y},"normal ownership monitoring or the movement watchdog must recover from an unmarked wrapper that silently returns false");
+  assert.ok(deadRecovery.ownership>beforeDeadRecovery.ownership||deadRecovery.watchdog>beforeDeadRecovery.watchdog,"an unmarked dead movement wrapper must advance an ownership or watchdog recovery counter");
+  assert.equal(deadRecovery.golden,true,"unmarked dead-wrapper recovery must restore the locked known-good movement owner");
 
   const contaminatedRepair=await page.evaluate(()=>{
     const r30=window.CCGLostSizzlerV141R30,before=r30.state.ownershipRepairs;
@@ -101,16 +124,18 @@ try{
   assert.ok(contaminatedRepair.repairs>=1,"ownership repair counter must record contamination repair");
   assert.equal(contaminatedRepair.golden,true,"ownership repair must restore the locked known-good movement owner");
 
+  await prepareSolo(page,"R30-PERIODIC-REPAIR");
   const periodicRepair=await page.evaluate(async()=>{
     const r30=window.CCGLostSizzlerV141R30;
     const poisoned=function(){return false};poisoned.__ccgV141SpyIsolated=true;window.movePlayer=poisoned;
     const injected=r30.spyContaminated(window.movePlayer);
     await new Promise(r=>setTimeout(r,140));
-    return{injected,contaminated:r30.spyContaminated(window.movePlayer),functional:typeof window.movePlayer==="function"};
+    return{injected,contaminated:r30.spyContaminated(window.movePlayer),functional:typeof window.movePlayer==="function",golden:window.movePlayer===r30.state.goldenMove};
   });
   assert.equal(periodicRepair.injected,true,"periodic fault injection must install an isolated Spy owner before monitor recovery");
   assert.equal(periodicRepair.contaminated,false,"continuous normal-mode ownership monitoring must remove isolated Spy contamination");
   assert.equal(periodicRepair.functional,true,"continuous ownership recovery must leave a callable normal movement owner");
+  assert.equal(periodicRepair.golden,true,"continuous ownership recovery must restore the locked known-good movement owner");
   await assertKeyboardMove(page,"Solo after periodic ownership recovery");
 
   const spyCycles=await page.evaluate(async()=>{
