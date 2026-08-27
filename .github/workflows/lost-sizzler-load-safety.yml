@@ -69,65 +69,15 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.55.0
           npx playwright install --with-deps chromium
 
-      - name: Browser — v10-6
-        run: node arcade/lost-sizzler/tests/v10-6-browser.mjs
-
-      - name: Browser — v10-28 stability
-        run: node arcade/lost-sizzler/tests/v10-28-browser-stability.mjs
-
-      - name: Browser — v10-35 layout
-        run: node arcade/lost-sizzler/tests/browser/v10-35-layout.mjs
-
-      - name: Browser — v10-36 loading
-        run: node arcade/lost-sizzler/tests/browser/v10-36-loading.mjs
-
-      - name: Browser — v10-37 Horde focus
-        run: node arcade/lost-sizzler/tests/browser/v10-37-horde-focus.mjs
-
-      - name: Browser — Horde controller update ownership
-        run: node arcade/lost-sizzler/tests/browser/v10-41-horde-controller-update-ownership.mjs
-
-      - name: Browser — Horde frame performance
-        run: node arcade/lost-sizzler/tests/browser/v10-41-horde-frame-performance.mjs
-
-      - name: Browser — Horde traversal arena
-        run: node arcade/lost-sizzler/tests/browser/v10-41-horde-traversal-arena.mjs
-
-      - name: Browser — v10-41 load safety
-        run: node arcade/lost-sizzler/tests/browser/v10-41-load-safety.mjs
-
-      - name: Browser — menu leaderboard stability
-        run: node arcade/lost-sizzler/tests/browser/v10-41-menu-leaderboard-stability.mjs
-
-      - name: Browser — mode controller isolation
-        run: node arcade/lost-sizzler/tests/browser/v10-41-mode-controller-isolation.mjs
-
-      - name: Browser — post-playtest blockers
-        run: node arcade/lost-sizzler/tests/browser/v10-41-post-playtest-blockers.mjs
-
-      - name: Browser — r29 runtime repair
-        run: node arcade/lost-sizzler/tests/browser/v10-41-r29-runtime-repair.mjs
-
-      - name: Browser — r29 Spy engine isolation
-        run: node arcade/lost-sizzler/tests/browser/v10-41-r29-spy-engine-isolation.mjs
-
-      - name: Browser — r30 owner stability
-        run: node arcade/lost-sizzler/tests/browser/v10-41-r30-a-owner-stability.mjs
-
-      - name: Browser — r30 global movement guard
-        run: node arcade/lost-sizzler/tests/browser/v10-41-r30-global-movement-guard.mjs
-
-      - name: Browser — r30 selective owner recovery
-        run: node arcade/lost-sizzler/tests/browser/v10-41-r30-selective-owner-recovery.mjs
-
-      - name: Browser — r31 Solo Dungeon regressions
-        run: node arcade/lost-sizzler/tests/browser/v10-41-r31-solo-dungeon-regressions.mjs
-
-      - name: Browser — runtime recovery
-        run: node arcade/lost-sizzler/tests/browser/v10-41-runtime-recovery.mjs
-
-      - name: Browser — Solo combat load movement
-        run: node arcade/lost-sizzler/tests/browser/v10-41-solo-combat-load-movement.mjs
-
-      - name: Browser — UI Spy performance hardening
-        run: node arcade/lost-sizzler/tests/browser/v10-41-ui-spy-performance-hardening.mjs
+      - name: Run canonical Chromium load and layout suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          for test in \
+            arcade/lost-sizzler/tests/v10-6-browser.mjs \
+            arcade/lost-sizzler/tests/v10-28-browser-stability.mjs \
+            arcade/lost-sizzler/tests/browser/*.mjs; do
+            echo "::group::$test"
+            node "$test"
+            echo "::endgroup::"
+          done
