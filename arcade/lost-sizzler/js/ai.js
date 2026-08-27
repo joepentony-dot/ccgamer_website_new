@@ -45,8 +45,8 @@ window.CCGAI=(()=>{
   function roomDoors(host,roomId){return (host?.doors||[]).filter(door=>door.roomId===roomId)}
   function clearOfUnenteredDoor(host,roomId,x,y){return roomEntered(host,roomId)||roomDoors(host,roomId).every(door=>man({x,y},door)>3)}
   function stalkerDoor(e,host,x,y){const door=W.doorAt(host,x,y);return e?.deathStalker&&door?.type==="room"&&!door.locked?door:null}
-  function passable(e,host,map,x,y,world){
-    if((!W.walkable(map,x,y,host)&&!stalkerDoor(e,host,x,y))||occupied(host,x,y,e)||occupiedByPlayer(x,y))return false;
+  function passable(e,host,map,x,y,world,allowPlayerGoal=false){
+    if((!W.walkable(map,x,y,host)&&!stalkerDoor(e,host,x,y))||occupied(host,x,y,e)||(!allowPlayerGoal&&occupiedByPlayer(x,y)))return false;
     /* Sanctuary is an unconditional safe-zone boundary. This deliberately
      * includes roaming Stalkers: no monster may enter or spawn inside it. */
     if(window.CCGSystems?.inSanctuary(world,x,y)&&!window.CCGSystems.inSanctuary(world,e.x,e.y))return false;
@@ -81,7 +81,7 @@ window.CCGAI=(()=>{
       if(ck===goal){let c=goal,pkey=came.get(c);while(pkey&&pkey!==startKey){c=pkey;pkey=came.get(c)}const [x,y]=c.split(',').map(Number);return{x,y}}
       for(const [dx,dy] of DIRS){
         const x=cur.x+dx,y=cur.y+dy,nk=`${x},${y}`;
-        if(!passable(e,host,map,x,y,world))continue;
+        if(!passable(e,host,map,x,y,world,nk===goal&&occupiedByPlayer(x,y)))continue;
         const ng=cur.g+1;if(ng>=(best.get(nk)??Infinity))continue;best.set(nk,ng);came.set(nk,ck);push({x,y,g:ng,f:ng+Math.abs(x-target.x)+Math.abs(y-target.y)})
       }
     }
@@ -89,6 +89,7 @@ window.CCGAI=(()=>{
   }
   function moveToward(e,host,map,target,world=window.__CCG_WORLD){
     const p=nextStep(e,host,map,target,world);if(!p)return false;e.facing={x:Math.sign(p.x-e.x),y:Math.sign(p.y-e.y)};
+    if(p.x===target.x&&p.y===target.y&&occupiedByPlayer(p.x,p.y))return false;
     const door=stalkerDoor(e,host,p.x,p.y);
     if(door&&!door.open){const leaves=door.groupId?(host.doors||[]).filter(d=>d.groupId===door.groupId):[door];for(const leaf of leaves){leaf.open=true;leaf.opening=false;leaf.openingStart=0;leaf.openAt=0;leaf.openSoundDone=true}host.revision=(host.revision||0)+1;return true}
     e.x=p.x;e.y=p.y;return true
@@ -180,7 +181,12 @@ window.CCGAI=(()=>{
     if(seen){
       const was=e.aiState;e.aiState="chase";e.lastSeen={x:seen.x,y:seen.y};e.memoryMs=memory(e);e.searchMs=0;e.targetId=seen.id;
       if(was!=="chase")hooks.alert?.(e,"alert",reason);
-      if(e.tacticalDecisionMs<=0){
+      if(e.deathStalker){
+        // A Death Stalker is relentless unless a lit torch is actively
+        // frightening it. Ordinary cover and flank choices can send tactical
+        // enemies away from the player, which is the opposite of this role.
+        e.coverTarget=null;e.flankTarget=null;e.tacticalMode="pursuit";
+      }else if(e.tacticalDecisionMs<=0){
         const skill=tacticalSkill(e),wounded=Number(e.hp||0)<Number(e.maxHp||1)*.48,cover=range>=3&&skill>=.2?coverPoint(e,seen,host,map,world):null,coverChance=.12+skill*.66+(wounded?.12:0),flankChance=.12+skill*.58;
         e.coverTarget=null;e.flankTarget=null;
         if(cover&&Math.random()<coverChance){e.coverTarget=cover;e.tacticalHoldMs=420+skill*1050+Math.random()*520;e.tacticalMode="cover"}
@@ -203,20 +209,21 @@ window.CCGAI=(()=>{
     let moved=false,k=kind(e);
     if(seen){
       const skill=tacticalSkill(e),burstSteps=e.deathStalker?1:(!e.follower&&skill<.3&&Math.random()<.1?2:1);
-      if(e.coverTarget){
+      if(e.deathStalker)moved=moveToward(e,host,map,seen,world);
+      if(!e.deathStalker&&e.coverTarget){
         if(e.x!==e.coverTarget.x||e.y!==e.coverTarget.y)moved=moveBurst(e,host,map,e.coverTarget,world,Math.min(2,burstSteps));
         else if(e.tacticalHoldMs>0){e.facing=shotDirection(e,seen);e.moveCooldown=180+Math.random()*180;return changed}
         else{e.coverTarget=null;e.flankTarget=flankPoint(e,seen,host,map,world);e.tacticalMode="flank"}
       }
-      if(!moved&&e.flankTarget){moved=moveBurst(e,host,map,e.flankTarget,world,burstSteps);if(e.x===e.flankTarget.x&&e.y===e.flankTarget.y)e.flankTarget=null}
-      if(!moved&&["ranger","root","cook"].includes(k)){
+      if(!e.deathStalker&&!moved&&e.flankTarget){moved=moveBurst(e,host,map,e.flankTarget,world,burstSteps);if(e.x===e.flankTarget.x&&e.y===e.flankTarget.y)e.flankTarget=null}
+      if(!e.deathStalker&&!moved&&["ranger","root","cook"].includes(k)){
         if(range<4){const away={x:e.x+Math.sign(e.x-seen.x)*2,y:e.y+Math.sign(e.y-seen.y)*2};moved=passable(e,host,map,away.x,away.y,world)?moveToward(e,host,map,away,world):randomStep(e,host,map,world)}
         else if(range>7)moved=moveBurst(e,host,map,seen,world,Math.min(2,burstSteps));
         else moved=Math.random()<.65?randomStep(e,host,map,world):moveToward(e,host,map,flankPoint(e,seen,host,map,world),world);
-      }else if(!moved&&k==="firebreather"){
+      }else if(!e.deathStalker&&!moved&&k==="firebreather"){
         if(range>4)moved=moveBurst(e,host,map,flankPoint(e,seen,host,map,world),world,Math.min(2,burstSteps));else moved=randomStep(e,host,map,world);
-      }else if(!moved&&k==="ambusher")moved=moveBurst(e,host,map,predicted(seen,map,3),world,burstSteps);
-      else if(!moved){const flankChance=.18+skill*.58;moved=moveBurst(e,host,map,Math.random()<flankChance?flankPoint(e,seen,host,map,world):seen,world,burstSteps)}
+      }else if(!e.deathStalker&&!moved&&k==="ambusher")moved=moveBurst(e,host,map,predicted(seen,map,3),world,burstSteps);
+      else if(!e.deathStalker&&!moved){const flankChance=.18+skill*.58;moved=moveBurst(e,host,map,Math.random()<flankChance?flankPoint(e,seen,host,map,world):seen,world,burstSteps)}
       if(moved&&man(e,seen)<=1)changed=attack(e,map,seen,dist(e,seen),host,hooks)||changed;
     }else if(e.aiState==="chase"&&e.lastSeen){
       moved=moveToward(e,host,map,e.lastSeen,world);if(e.x===e.lastSeen.x&&e.y===e.lastSeen.y){e.aiState="search";e.searchMs=C.enemy.searchTime;hooks.alert?.(e,"search")}

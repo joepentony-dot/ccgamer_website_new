@@ -35,6 +35,17 @@ function validEmail(value: string) { return !value || /^[^\s@]+@[^\s@]+\.[^\s@]+
 function escapeHtml(value: string) {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#39;");
 }
+async function authenticatedUserId(req: Request, service: ReturnType<typeof createClient>) {
+  const authHeader = text(req.headers.get("authorization"));
+  const bearer = authHeader.match(/^Bearer\s+(.+)$/i)?.[1] || "";
+  if (!bearer) return null;
+  try {
+    const { data } = await service.auth.getUser(bearer);
+    return data?.user?.id || null;
+  } catch {
+    return null;
+  }
+}
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors(req) });
@@ -53,6 +64,21 @@ Deno.serve(async (req: Request) => {
   const service = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
   const action = text(payload.action).toLowerCase();
 
+  if (action === "rating_status") {
+    const authUserId = await authenticatedUserId(req, service);
+    if (!authUserId) return json(req, { success: true, authenticated: false, rated: false });
+    const { data: existing, error: ratingError } = await service
+      .from("game_play_events")
+      .select("id")
+      .eq("game_slug", "the-lost-sizzler")
+      .eq("event_type", "rating_submitted")
+      .eq("auth_user_id", authUserId)
+      .limit(1)
+      .maybeSingle();
+    if (ratingError) return json(req, { success: false, error: "Rating status could not be checked" }, 500);
+    return json(req, { success: true, authenticated: true, rated: Boolean(existing?.id) });
+  }
+
   if (action === "telemetry") {
     const eventType = text(payload.event_type).toLowerCase();
     const rawDevice = text(payload.device_type).toLowerCase();
@@ -68,17 +94,7 @@ Deno.serve(async (req: Request) => {
     if (!TELEMETRY_EVENTS.has(eventType)) return json(req, { success: false, error: "Unknown telemetry event" }, 400);
     if (eventType === "rating_submitted" && rating === null) return json(req, { success: false, error: "Rating must be between 1 and 5" }, 400);
 
-    let authUserId: string | null = null;
-    const authHeader = text(req.headers.get("authorization"));
-    const bearer = authHeader.match(/^Bearer\s+(.+)$/i)?.[1] || "";
-    if (bearer) {
-      try {
-        const { data } = await service.auth.getUser(bearer);
-        authUserId = data?.user?.id || null;
-      } catch {
-        authUserId = null;
-      }
-    }
+    const authUserId = await authenticatedUserId(req, service);
 
     const { data: row, error: insertError } = await service.from("game_play_events").insert({
       game_slug: "the-lost-sizzler",

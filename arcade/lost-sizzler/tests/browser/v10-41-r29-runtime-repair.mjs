@@ -34,7 +34,7 @@ try{
     r29:Boolean(window.CCGLostSizzlerV141R29),
     loop:Boolean(window.loop?.__ccgV141R29Stable)
   }));
-  assert.deepEqual(release,{build:"2026.08.26.30",cache:"20260826r30",r29:true,loop:true},"Chromium must run the r30 page while retaining the r29 stable-loop protections");
+  assert.deepEqual(release,{build:"2026.08.27.31",cache:"20260827r31",r29:true,loop:true},"Chromium must run the r30 page while retaining the r29 stable-loop protections");
 
   const geometry=await page.evaluate(async()=>{
     document.body.dataset.runActive="true";

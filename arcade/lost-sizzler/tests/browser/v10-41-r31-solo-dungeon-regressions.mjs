@@ -85,41 +85,72 @@ try{
   assert.ok(cpuAndHud.width>0&&cpuAndHud.height>0,"Solo score HUD must occupy visible space");
 
   const shopSetup=await page.evaluate(()=>{
-    score=6320;p1.armor=0;
+    score=100000;p1.armor=0;p1.inventorySlots=3;
     window.__r31Shop={id:"r31-browser-shop",active:true,sold:{},scorePurchases:0};
     const price=shopScorePrice(window.__r31Shop);openShop(window.__r31Shop,p1);
-    return{price,score:Number(score)};
+    return{price,score:Number(score),capacity:PGR.inventoryCapacity(p1)};
   });
-  assert.equal(shopSetup.score,6320,"browser shop fixture must begin at the reported score");
-  await page.waitForSelector('#shop-panel:not(.hidden) [data-shop-buy="armour"]');
-  await page.click('[data-shop-buy="armour"]');
-  await page.waitForTimeout(100);
+  assert.equal(shopSetup.score,100000,"browser shop fixture must have enough score to exercise four doubling prices");
+  assert.equal(shopSetup.price,1000,"the first normal purchase in a fresh shop must cost 1,000");
+  assert.equal(shopSetup.capacity,3,"the inventory expansion fixture must start with three slots");
+  await page.waitForSelector('#shop-panel:not(.hidden) [data-shop-buy="inventorySlot"]');
+  await page.click('[data-shop-buy="inventorySlot"]');
+  await page.waitForFunction(()=>window.__r31Shop.scorePurchases===1);
+  const firstSlot=await page.evaluate(()=>({capacity:PGR.inventoryCapacity(p1),next:shopScorePrice(window.__r31Shop),disabled:document.querySelector('[data-shop-buy="inventorySlot"]')?.disabled,sold:Boolean(window.__r31Shop.sold.inventorySlot)}));
+  assert.equal(firstSlot.capacity,4,"the first inventory expansion must open one slot");
+  assert.equal(firstSlot.next,2000,"the second normal purchase must cost 2,000");
+  assert.equal(firstSlot.disabled,false,"inventory expansion must remain purchasable below the six-slot cap");
+  assert.equal(firstSlot.sold,false,"repeatable inventory expansion must not enter sold state");
+  await page.click('[data-shop-buy="inventorySlot"]');
+  await page.waitForFunction(()=>window.__r31Shop.scorePurchases===2);
+  const secondSlot=await page.evaluate(()=>({capacity:PGR.inventoryCapacity(p1),next:shopScorePrice(window.__r31Shop),disabled:document.querySelector('[data-shop-buy="inventorySlot"]')?.disabled}));
+  assert.equal(secondSlot.capacity,5,"a second inventory expansion in the same shop must open another slot");
+  assert.equal(secondSlot.next,4000,"the third normal purchase must cost 4,000");
+  assert.equal(secondSlot.disabled,false,"the fifth slot must leave the final expansion available");
+  await page.click('[data-shop-buy="weapon"]');
+  await page.waitForFunction(()=>window.__r31Shop.scorePurchases===3);
+  const firstWeapon=await page.evaluate(()=>({next:shopScorePrice(window.__r31Shop),disabled:document.querySelector('[data-shop-buy="weapon"]')?.disabled,sold:Boolean(window.__r31Shop.sold.weapon)}));
+  assert.equal(firstWeapon.next,8000,"the fourth normal purchase must cost 8,000");
+  assert.equal(firstWeapon.disabled,false,"a weapon cache must remain available after buying one");
+  assert.equal(firstWeapon.sold,false,"repeatable weapon caches must not enter sold state");
+  await page.click('[data-shop-buy="weapon"]');
+  await page.waitForFunction(()=>window.__r31Shop.scorePurchases===4);
   const shopResult=await page.evaluate(()=>({
-    score:Number(score),scoreText:document.getElementById("shop-score")?.textContent||"",hudText:document.getElementById("hud-score")?.textContent||"",nextText:document.getElementById("shop-next-price")?.textContent||"",nextExpected:String(shopScorePrice(window.__r31Shop)),sold:Boolean(window.__r31Shop.sold.armour),purchases:Number(window.__r31Shop.scorePurchases||0),refreshes:window.CCGLostSizzlerV141R31SoloDungeon.state.shopWalletRefreshes
+    score:Number(score),scoreText:document.getElementById("shop-score")?.textContent||"",hudText:document.getElementById("hud-score")?.textContent||"",nextText:document.getElementById("shop-next-price")?.textContent||"",nextExpected:String(shopScorePrice(window.__r31Shop)),weaponDisabled:document.querySelector('[data-shop-buy="weapon"]')?.disabled,soldKeys:Object.keys(window.__r31Shop.sold).filter(key=>key!=="banishmentScore"),purchases:Number(window.__r31Shop.scorePurchases||0),capacity:PGR.inventoryCapacity(p1),refreshes:window.CCGLostSizzlerV141R31SoloDungeon.state.shopWalletRefreshes
   }));
-  assert.equal(shopResult.score,6320-shopSetup.price,"shop purchase must deduct score immediately");
+  assert.equal(shopResult.score,100000-1000-2000-4000-8000,"each repeated purchase must deduct its exact doubling price immediately");
   assert.equal(shopResult.scoreText,String(shopResult.score).padStart(6,"0"),"open shop score must update without a page refresh");
   assert.equal(shopResult.hudText,String(shopResult.score).padStart(6,"0"),"live Solo HUD score must agree with the purchase immediately");
   assert.equal(shopResult.nextText,shopResult.nextExpected,"open shop next-price ladder must update after a purchase");
-  assert.equal(shopResult.sold,true,"purchased shop item must enter sold state");
-  assert.equal(shopResult.purchases,1,"score purchase ladder must advance once");
-  assert.ok(shopResult.refreshes>=1,"r31 shop wallet refresh must have executed");
+  assert.equal(shopResult.nextExpected,"16000","the next same-shop price after four purchases must be 16,000");
+  assert.equal(shopResult.weaponDisabled,false,"weapons must still be purchasable after two same-shop weapon purchases");
+  assert.deepEqual(shopResult.soldKeys,[],"normal purchases must not write any sold flags");
+  assert.equal(shopResult.purchases,4,"the score purchase ladder must advance for every repeat purchase");
+  assert.equal(shopResult.capacity,5,"the two inventory expansion purchases must persist");
+  assert.ok(shopResult.refreshes>=4,"r31 shop wallet refresh must execute after every purchase");
   await page.evaluate(()=>closeShop());
   await page.waitForFunction(()=>typeof mode!=="undefined"&&mode==="playing");
 
   const chestResult=await page.evaluate(()=>{
     p1.armor=0;
+    const scoreBefore=Number(score),xpBefore=Number(p1.totalXp||0);
     const before=window.CCGLostSizzlerV141R31SoloDungeon.state.chestImmediateDeliveries;
     const chest={id:"r31-browser-chest",x:p1.x,y:p1.y,active:true,locked:false,mimic:false,depth:5,loot:{kind:"armour",amount:2,rarity:"SIZZLER",name:"SIZZLER Armour Plate"}};
     const result=openChest(p1,chest);
-    return{result,active:chest.active,opened:chest.opened,armour:Number(p1.armor||0),feedback:String(chest._v141R31Feedback||""),immediate:window.CCGLostSizzlerV141R31SoloDungeon.state.chestImmediateDeliveries-before,feedbackCount:window.CCGLostSizzlerV141R31SoloDungeon.state.chestFeedbacks};
+    return{result,active:chest.active,opened:chest.opened,armour:Number(p1.armor||0),scoreBefore,scoreAfter:Number(score),xpBefore,xpAfter:Number(p1.totalXp||0),rewardScore:Number(chest.rewardScore||0),rewardXp:Number(chest.rewardXp||0),feedback:String(chest._v141R31Feedback||""),immediate:window.CCGLostSizzlerV141R31SoloDungeon.state.chestImmediateDeliveries-before,feedbackCount:window.CCGLostSizzlerV141R31SoloDungeon.state.chestFeedbacks};
   });
   assert.equal(chestResult.result,true,"r31 browser chest must open through the mode-owned interaction gate");
   assert.equal(chestResult.active,false,"opened chest must become inactive");
   assert.equal(chestResult.opened,true,"opened chest must retain opened state");
   assert.ok(chestResult.armour>=2,"chest loot must be applied during the opening action rather than after the old delayed callback");
+  assert.ok(chestResult.rewardScore>0,"every chest must record a positive score reward");
+  assert.equal(chestResult.rewardXp,10,"every chest must record its 10 XP reward");
+  assert.equal(chestResult.scoreAfter-chestResult.scoreBefore,chestResult.rewardScore,"the recorded chest score must be added immediately");
+  assert.equal(chestResult.xpAfter-chestResult.xpBefore,chestResult.rewardXp,"the recorded chest XP must be added immediately");
   assert.match(chestResult.feedback,/SIZZLER/,"chest feedback above the chest must include its rarity");
   assert.match(chestResult.feedback,/ARMOUR PLATE/i,"chest feedback above the chest must identify the item");
+  assert.match(chestResult.feedback,/SCORE/,"chest feedback above the chest must show the score award");
+  assert.match(chestResult.feedback,/XP/,"chest feedback above the chest must show the XP award");
   assert.equal(chestResult.immediate,1,"exactly one legacy delayed chest delivery must be converted to immediate delivery");
   assert.ok(chestResult.feedbackCount>=1,"r31 must record visible chest feedback");
 
@@ -140,6 +171,20 @@ try{
   assert.ok(resumeState.resets>=4,"each repeated Solo resume must pass through the combat recovery boundary");
   assert.ok(resumeState.lastResumeAt>0,"Solo resume must arm the bounded first-attack safeguard");
 
+  await page.evaluate(()=>toggleInventory());await page.waitForFunction(()=>mode==="inventory"&&!document.getElementById("inventory-panel").classList.contains("hidden"));
+  await page.click("#inventory-close-top");await page.waitForFunction(()=>mode==="playing"&&document.getElementById("inventory-panel").classList.contains("hidden"));
+  await page.waitForTimeout(120);
+  const displayState=await page.evaluate(()=>{
+    const game=document.getElementById("game"),context=game.getContext("2d"),pixels=context.getImageData(0,0,game.width,game.height).data;
+    let visibleSamples=0;for(let i=0;i<pixels.length;i+=256)if(pixels[i]>4||pixels[i+1]>4||pixels[i+2]>4)visibleSamples++;
+    return{width:game.width,height:game.height,visibleSamples,recoveries:window.CCGLostSizzlerV141R31SoloDungeon.state.displayRecoveries,frames:window.CCGLostSizzlerV141R31SoloDungeon.state.displayFrames,mode};
+  });
+  assert.equal(displayState.mode,"playing","closing inventory must restore active play mode");
+  assert.ok(displayState.width>0&&displayState.height>0,"closing a panel must retain a sized canvas");
+  assert.ok(displayState.visibleSamples>0,"closing Pause or inventory must leave a visibly painted game frame rather than a black canvas");
+  assert.ok(displayState.recoveries>=5,"Pause and inventory returns must pass through the display recovery boundary");
+  assert.ok(displayState.frames>=5,"display recovery must paint verified canvas frames");
+
   const attackBefore=await page.evaluate(()=>({rearms:window.CCGLostSizzlerV141R31SoloDungeon.state.postResumeAttackRearms,swing:Number(p1._meleeSwingAt||0)}));
   await page.keyboard.press("Space");
   await page.waitForFunction(previous=>window.CCGLostSizzlerV141R31SoloDungeon.state.postResumeAttackRearms>previous.rearms&&Number(p1._meleeSwingAt||0)>previous.swing,attackBefore);
@@ -149,7 +194,7 @@ try{
   assert.ok(Number.isFinite(attackAfter.fire1),"post-resume attack cooldown must remain finite");
 
   assert.deepEqual(errors,[],`r31 Solo Dungeon browser regression must have no uncaught browser errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler r31 Solo Dungeon shop, chest, CPU Cook, pause-combat and score-HUD regressions passed in Chromium.");
+  console.log("Lost Sizzler r31 Solo Dungeon repeat-shop, chest-reward, panel-display, CPU Cook, pause-combat and score-HUD regressions passed in Chromium.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
