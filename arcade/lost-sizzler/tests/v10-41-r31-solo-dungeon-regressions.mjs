@@ -18,7 +18,8 @@ assert.match(source,/addEventListener\("click",onShopClick,true\)/,"shop refresh
 assert.match(source,/removeEventListener\("click",onShopClick,true\)/,"shop capture listener cleanup must use the same capture phase");
 assert.match(source,/queueMicrotask\(\(\)=>refreshShopWallet\(\)\)/,"shop wallet refresh must commit after the purchase handler finishes");
 
-assert.match(source,/ownedSystemState\?\.\("openChest"\)/,"chest repair must wrap the source below the mode-owned gate");
+assert.match(source,/ownedSystemState\?\.\(name\)/,"chest repair must be able to read the source below a mode-owned interaction gate");
+assert.match(source,/ownedSource\("openChest"\)/,"chest repair must request the openChest source below the mode-owned gate");
 assert.match(source,/ensureOwnedSystemGates\?\.\(\)/,"chest repair must reassert the six-mode interaction gate");
 assert.match(source,/Number\(delay\)===500/,"r31 must target the legacy delayed chest delivery narrowly");
 assert.match(source,/sourceText\.includes\("floatPickupText"\).*sourceText\.includes\("applyLoot"\)/,"only the known chest loot callback may be accelerated");
