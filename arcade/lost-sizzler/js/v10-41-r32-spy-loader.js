@@ -13,11 +13,12 @@
 
   const MODE_ID="sizzler-saboteurs",MONITOR_MS=20;
   const OWNER_ACTION_CODES=new Set(["KeyE","KeyT","KeyX"]);
-  const state={timer:0,loading:false,loaded:false,loads:0,lastError:"",uiLoading:false,uiLoaded:false,uiLoads:0,uiLastError:"",pendingActionCode:"",queuedActions:0,replayedActions:0,queuedSearchFeedbacks:0};
+  const state={timer:0,loading:false,loaded:false,loads:0,lastError:"",uiLoading:false,uiLoaded:false,uiLoads:0,uiLastError:"",pendingActionCode:"",queuedActions:0,replayedActions:0,queuedSearchFeedbacks:0,directSearchActions:0,searchTargetBridges:0};
   let loadPromise=null,uiPromise=null,pendingActionPromise=null;
 
   const spyActive=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type===MODE_ID||document.body?.dataset?.specialMode===MODE_ID}catch(_){return false}};
   const revision=()=>String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
+  const overhaul=()=>{try{return window.CCGLostSizzlerV141R32SpyOverhaul||null}catch(_){return null}};
 
   function loadScript(path,marker,ready){
     return new Promise((resolve,reject)=>{
@@ -76,6 +77,30 @@
     return false
   }
 
+  function bridgeSearchTarget(){
+    try{
+      const ui=window.CCGLostSizzlerV141UiSpyPerformance,target=ui?.nearSpyFurniture?.(),physical=target?.near;
+      if(!physical?.spyFurniture)return false;
+      let changed=false;
+      if(!physical.spyR32Furniture){physical.spyR32Furniture=true;changed=true}
+      if(!physical.logicalRoomId){
+        const match=window.CCGLostSizzlerSpecialModes?.active?.state,room=match?.map?.rooms?.find?.(row=>(row?.furniture||[]).some(item=>String(item?.id||"")===String(target?.id||physical.logicalFurnitureId||"")));
+        if(room?.id){physical.logicalRoomId=room.id;changed=true}
+      }
+      if(changed)state.searchTargetBridges++;
+      return true
+    }catch(_){return false}
+  }
+
+  function directSearchAction(){
+    if(!spyActive())return false;
+    const owner=overhaul();if(typeof owner?.beginSearch!=="function")return false;
+    bridgeSearchTarget();
+    const started=Boolean(owner.beginSearch());
+    if(started){state.directSearchActions++;return true}
+    return queueSearchFeedback()
+  }
+
   function queueOwnerAction(code){
     if(!OWNER_ACTION_CODES.has(code)||!spyActive())return false;
     if(!state.pendingActionCode){state.pendingActionCode=code;state.queuedActions++;if(code==="KeyE")queueSearchFeedback()}
@@ -90,7 +115,11 @@
   }
 
   function onKeyDown(event){
-    if(!spyActive()||state.loaded||event?.repeat)return;const code=String(event?.code||"");if(!OWNER_ACTION_CODES.has(code))return;
+    if(!spyActive()||event?.repeat)return;const code=String(event?.code||"");if(!OWNER_ACTION_CODES.has(code))return;
+    if(code==="KeyE"&&state.loaded&&typeof overhaul()?.beginSearch==="function"){
+      event.preventDefault?.();event.stopImmediatePropagation?.();directSearchAction();return
+    }
+    if(state.loaded)return;
     event.preventDefault?.();event.stopImmediatePropagation?.();queueOwnerAction(code)
   }
 
@@ -103,5 +132,5 @@
   monitor();state.timer=setInterval(monitor,MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0;state.pendingActionCode=""},{once:true});
 
-  window.CCGLostSizzlerV141R32SpyLoader={ensureLoaded,ensureSearchUi,queueOwnerAction,get state(){return state}};
+  window.CCGLostSizzlerV141R32SpyLoader={ensureLoaded,ensureSearchUi,queueOwnerAction,directSearchAction,bridgeSearchTarget,get state(){return state}};
 })();
