@@ -53,7 +53,7 @@
   }
   function installShopFix(){
     if(state.shopBound)return true;
-    document.addEventListener("click",onShopClick,false);state.shopBound=true;return true
+    document.addEventListener("click",onShopClick,true);state.shopBound=true;return true
   }
 
   function lootName(loot){return String(loot?.weapon?.displayName||loot?.name||loot?.kind||"CHEST LOOT").toUpperCase()}
@@ -206,7 +206,7 @@
   if(!install())state.timer=setInterval(()=>{if(install()){clearInterval(state.timer);state.timer=0}},INSTALL_MS);
   addEventListener("pagehide",()=>{
     if(state.timer)clearInterval(state.timer);if(state.monitorTimer)clearInterval(state.monitorTimer);state.timer=state.monitorTimer=0;
-    if(state.shopBound)document.removeEventListener("click",onShopClick,false);
+    if(state.shopBound)document.removeEventListener("click",onShopClick,true);
     removeEventListener("keydown",onPostResumeAttack,true)
   },{once:true});
 
