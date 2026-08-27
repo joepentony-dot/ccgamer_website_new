@@ -23,16 +23,19 @@ const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usag
 
 try{
   const context=await browser.newContext({viewport:{width:1600,height:1000}}),page=await context.newPage();page.setDefaultTimeout(45000);const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
+  console.log("[r33 Spy] load canonical page");
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R32SpyPacketOwner));
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R32SpyLoader));
 
+  console.log("[r33 Spy] start through special-mode adapter");
   const started=await page.evaluate(()=>{
     net.setSolo("Agent One");const id=String(net.sessionId);
     return window.CCGLostSizzlerSpecialModes.startOnline({roomMode:"sizzler-saboteurs",players:[{id,name:"Agent One"},{id:"TEST-SPY-B",name:"Agent Two"}],hostId:id,seed:"V141-R33-CLASSIC",roomCode:"R33SPY"});
   });
   assert.equal(started,true,"r33 Spy fixture must start through the real special-mode adapter");
-  await page.waitForFunction(()=>document.body.dataset.specialMode==="sizzler-saboteurs"&&Boolean(window.CCGLostSizzlerV141R32SpyOverhaul?.state?.worldBuilds)&&Boolean(document.getElementById("spy-classic-trapulators")));
+  await page.waitForFunction(()=>document.body.dataset.specialMode==="sizzler-saboteurs"&&Boolean(window.CCGLostSizzlerV141R32SpyLoader?.state?.loaded)&&Boolean(window.CCGLostSizzlerV141R32SpyPacketOwner)&&Boolean(window.CCGLostSizzlerV141R32SpyOverhaul?.state?.worldBuilds)&&Boolean(document.getElementById("spy-classic-trapulators")));
 
+  console.log("[r33 Spy] validate classic Trapulator and rooms-only maps");
   const classic=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R32SpyPacketOwner,match=window.CCGLostSizzlerSpecialModes.active.state,root=document.getElementById("spy-classic-trapulators"),panels=[...root.querySelectorAll(".spy-classic-trapulator")];
     return{loadout:[...(match.trapLoadout||[])],names:api.CLASSIC_TRAPS.map(row=>row.name),effects:api.CLASSIC_TRAPS.map(row=>row.effect),panelCount:panels.length,maps:panels.map(panel=>panel.querySelector(".spy-classic-map")?.dataset?.mapMode||""),split:Boolean(window.render?.__ccgV141R33SpySplit),display:getComputedStyle(root).display};
@@ -45,6 +48,7 @@ try{
   assert.equal(classic.split,true,"final renderer must own the simultaneous Spy split-screen path");
   assert.notEqual(classic.display,"none","Trapulator must be visible while Spy is active");
 
+  console.log("[r33 Spy] validate TAB inventory ownership");
   await page.keyboard.press("Tab");await page.waitForTimeout(80);
   const inventoryOpen=await page.evaluate(()=>({spyOpen:Boolean(window.CCGLostSizzlerV141R32SpyOverhaul.state.inventoryOpen),mode:String(mode),sharedHidden:UI.inventory.classList.contains("hidden"),dataset:document.body.dataset.spyR32Inventory||""}));
   assert.equal(inventoryOpen.spyOpen,true,"TAB must open the Spy item inventory");
@@ -56,9 +60,17 @@ try{
   assert.equal(inventoryClosed.spyOpen,false,"second TAB press must close Spy inventory");
   assert.equal(inventoryClosed.mode,"playing","closing Spy inventory must return immediately to playing mode");
 
-  const movementStart=await page.evaluate(()=>Number(p1.x));await page.keyboard.down("ArrowRight");await page.waitForTimeout(520);await page.keyboard.up("ArrowRight");await page.waitForTimeout(120);const movementEnd=await page.evaluate(()=>Number(p1.x));
-  assert.ok(movementEnd>movementStart,`player must still move after opening/closing inventory; ${movementStart} -> ${movementEnd}`);
+  console.log("[r33 Spy] validate movement after closing inventory");
+  const moveFixture=await page.evaluate(()=>{
+    const choices=[{code:"ArrowRight",dx:1,dy:0},{code:"ArrowLeft",dx:-1,dy:0},{code:"ArrowDown",dx:0,dy:1},{code:"ArrowUp",dx:0,dy:-1}];
+    const open=choices.find(row=>world.map?.[Number(p1.y)+row.dy]?.[Number(p1.x)+row.dx]===0&&!(host.blockingDecor||[]).some(item=>Number(item.x)===Number(p1.x)+row.dx&&Number(item.y)===Number(p1.y)+row.dy));
+    if(!open)throw new Error("no open movement direction after Spy inventory close");return{x:Number(p1.x),y:Number(p1.y),code:open.code}
+  });
+  await page.keyboard.down(moveFixture.code);await page.waitForTimeout(520);await page.keyboard.up(moveFixture.code);await page.waitForTimeout(120);
+  const movementEnd=await page.evaluate(()=>({x:Number(p1.x),y:Number(p1.y)}));
+  assert.ok(Math.abs(movementEnd.x-moveFixture.x)+Math.abs(movementEnd.y-moveFixture.y)>0,`player must still move after opening/closing inventory; ${JSON.stringify(moveFixture)} -> ${JSON.stringify(movementEnd)}`);
 
+  console.log("[r33 Spy] validate repeat-search state");
   const searchFixture=await page.evaluate(()=>{
     const active=window.CCGLostSizzlerSpecialModes.active,match=active.state,model=match.players.find(row=>String(row.id)===String(p1.id))||match.players[0],blocker=(host.blockingDecor||[]).find(item=>item?.spyR32Furniture);if(!blocker)throw new Error("no Spy furniture");
     const room=match.map.rooms.find(row=>(row.furniture||[]).some(item=>String(item.id)===String(blocker.logicalFurnitureId))),item=room?.furniture?.find(row=>String(row.id)===String(blocker.logicalFurnitureId));if(!room||!item)throw new Error("could not map Spy furniture");item.searched=false;item.contents=null;
@@ -68,17 +80,20 @@ try{
   await page.keyboard.press("KeyE");await page.waitForTimeout(850);
   const searched=await page.evaluate(id=>{const match=window.CCGLostSizzlerSpecialModes.active.state;for(const room of match.map.rooms){const item=(room.furniture||[]).find(row=>String(row.id)===String(id));if(item)return Boolean(item.searched)}return false},searchFixture.id);
   assert.equal(searched,true,"even empty furniture must become searched after the first completed search");
-  await page.keyboard.press("KeyE");await page.waitForTimeout(100);
+  await page.keyboard.press("KeyE");await page.waitForTimeout(180);
   const repeated=await page.evaluate(()=>({toast:document.getElementById("spy-r32-objective-toast")?.textContent||"",indicator:document.getElementById("spy-search-label")?.textContent||""}));
   assert.ok(repeated.toast.includes("YOU HAVE ALREADY SEARCHED")||repeated.indicator.includes("YOU HAVE ALREADY SEARCHED"),`second search must say YOU HAVE ALREADY SEARCHED; ${JSON.stringify(repeated)}`);
 
+  console.log("[r33 Spy] validate account-rated suppression");
   const rating=await page.evaluate(async()=>{
-    const api=window.CCGLostSizzlerV141R32SpyPacketOwner,original=window.ccgSupabase.getCurrentUserContext;window.ccgSupabase.getCurrentUserContext=async()=>({user:{id:"R33-RATED-USER"}});localStorage.setItem("ccg-lost-sizzler-rated:R33-RATED-USER","1");api.state.ratingChecked=false;await api.checkRatingEligibility(true);const panel=document.getElementById("ccg-rating-panel");panel?.classList?.remove("hidden");api.suppressRatingPrompt();window.ccgSupabase.getCurrentUserContext=original;return{rated:api.state.ratingAlreadySubmitted,hidden:Boolean(panel?.classList?.contains("hidden")),attr:document.body.dataset.ccgLostSizzlerRated||""};
+    const api=window.CCGLostSizzlerV141R32SpyPacketOwner,supabase=window.ccgSupabase||(window.ccgSupabase={}),original=supabase.getCurrentUserContext;
+    supabase.getCurrentUserContext=async()=>({user:{id:"R33-RATED-USER"}});localStorage.setItem("ccg-lost-sizzler-rated:R33-RATED-USER","1");api.state.ratingChecked=false;await api.checkRatingEligibility(true);const panel=document.getElementById("ccg-rating-panel");panel?.classList?.remove("hidden");api.suppressRatingPrompt();supabase.getCurrentUserContext=original;return{rated:api.state.ratingAlreadySubmitted,hidden:Boolean(panel?.classList?.contains("hidden")),attr:document.body.dataset.ccgLostSizzlerRated||""};
   });
   assert.equal(rating.rated,true,"account-rated guard must recognise an already-rated logged-in account");
   assert.equal(rating.hidden,true,"already-rated account must not be shown the rating popup again");
   assert.equal(rating.attr,"true","already-rated state must be exposed to the CSS suppression guard");
 
+  console.log("[r33 Spy] validate two-live-agent split render");
   const fakeRemote=await page.evaluate(()=>{
     const m=window.CCGLostSizzlerSpecialModes.active.state,model=m.players.find(row=>row.id==="TEST-SPY-B"),room=m.map.rooms.find(row=>row.id===model.roomId),physical=world.rooms[Number(room.dungeonRoomId)],x=Math.floor(physical.x+physical.w/2),y=Math.floor(physical.y+physical.h/2);remote.set(model.id,{...p1,id:model.id,name:model.name,x,y,rx:x,ry:y,lastSeen:performance.now(),health:model.hp,maxHealth:model.maxHp});window.render();return{remote:remote.has(model.id),panels:[...document.querySelectorAll(".spy-classic-trapulator")].map(node=>node.getBoundingClientRect().height)};
   });
