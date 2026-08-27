@@ -13,7 +13,7 @@
 
   const MODE_ID="sizzler-saboteurs",MONITOR_MS=20;
   const OWNER_ACTION_CODES=new Set(["KeyE","KeyT","KeyX"]);
-  const state={timer:0,loading:false,loaded:false,loads:0,lastError:"",uiLoading:false,uiLoaded:false,uiLoads:0,uiLastError:"",pendingActionCode:"",queuedActions:0,replayedActions:0};
+  const state={timer:0,loading:false,loaded:false,loads:0,lastError:"",uiLoading:false,uiLoaded:false,uiLoads:0,uiLastError:"",pendingActionCode:"",queuedActions:0,replayedActions:0,queuedSearchFeedbacks:0};
   let loadPromise=null,uiPromise=null,pendingActionPromise=null;
 
   const spyActive=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type===MODE_ID||document.body?.dataset?.specialMode===MODE_ID}catch(_){return false}};
@@ -68,9 +68,17 @@
     dispatchEvent(new KeyboardEvent("keyup",{code,key,bubbles:true,cancelable:true}));
   }
 
+  function queueSearchFeedback(){
+    try{
+      const api=window.CCGLostSizzlerV141UiSpyPerformance;
+      if(api?.beginSearchFeedback?.()){state.queuedSearchFeedbacks++;return true}
+    }catch(_){}
+    return false
+  }
+
   function queueOwnerAction(code){
     if(!OWNER_ACTION_CODES.has(code)||!spyActive())return false;
-    if(!state.pendingActionCode){state.pendingActionCode=code;state.queuedActions++}
+    if(!state.pendingActionCode){state.pendingActionCode=code;state.queuedActions++;if(code==="KeyE")queueSearchFeedback()}
     if(pendingActionPromise)return true;
     pendingActionPromise=(async()=>{
       const loaded=await ensureLoaded();await ensureSearchUi();
