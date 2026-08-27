@@ -13,7 +13,7 @@
   const state={
     timer:0,installed:false,
     radarWrapped:false,radarSource:null,lastRadarAt:0,radarDraws:0,radarSkips:0,
-    statusTimer:0,lastStatusSignature:"",statusRenders:0,
+    statusTimer:0,modeObserver:null,lastStatusSignature:"",statusRenders:0,statusStarts:0,statusStops:0,
     firstWavePrewarmStarted:false,firstWavePrewarmReady:false,firstWavePrewarmPromise:null,laterPrewarmStarted:false,imageDecodes:0,prewarmErrors:0
   };
 
@@ -123,19 +123,48 @@
     state.statusRenders++;return true
   }
 
+  function stopStatusTimer(){
+    if(state.statusTimer){clearInterval(state.statusTimer);state.statusTimer=0;state.statusStops++}
+    state.lastStatusSignature="";
+    return true
+  }
+
+  function startStatusTimer(){
+    if(!isHorde())return stopStatusTimer();
+    if(state.statusTimer)return true;
+    ensureStatusStrip();updateStatus();prewarmLaterWaves().catch(()=>{state.prewarmErrors++});
+    state.statusTimer=setInterval(()=>{
+      if(!isHorde()){stopStatusTimer();return}
+      try{updateStatus()}catch(_){}
+    },STATUS_REFRESH_MS);
+    state.statusStarts++;return true
+  }
+
+  function syncStatusTimer(){return isHorde()?startStatusTimer():stopStatusTimer()}
+
+  function installModeObserver(){
+    if(state.modeObserver)return true;
+    if(typeof MutationObserver!=="function"||!document.body)return false;
+    state.modeObserver=new MutationObserver(()=>syncStatusTimer());
+    state.modeObserver.observe(document.body,{attributes:true,attributeFilter:["data-special-mode"]});
+    syncStatusTimer();return true
+  }
+
   function install(){
-    ensureStyles();ensureStatusStrip();installRadarThrottle();
-    if(!state.statusTimer)state.statusTimer=setInterval(()=>{try{if(!isHorde()){state.lastStatusSignature="";return}updateStatus();prewarmLaterWaves()}catch(_){}},STATUS_REFRESH_MS);
-    if(state.radarWrapped){state.installed=true;document.body.dataset.v141HordeFramePerformance="true"}
+    ensureStyles();installRadarThrottle();installModeObserver();
+    if(state.radarWrapped&&state.modeObserver){state.installed=true;document.body.dataset.v141HordeFramePerformance="true"}
     return state.installed
   }
 
   schedulePrewarm();
   if(!install())state.timer=setInterval(()=>{if(install()){clearInterval(state.timer);state.timer=0}},INSTALL_MS);
-  addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);if(state.statusTimer)clearInterval(state.statusTimer);state.timer=state.statusTimer=0},{once:true});
+  addEventListener("pagehide",()=>{
+    if(state.timer)clearInterval(state.timer);state.timer=0;stopStatusTimer();
+    try{state.modeObserver?.disconnect?.()}catch(_){}state.modeObserver=null
+  },{once:true});
 
   window.CCGLostSizzlerV141HordeFramePerformance={
     RADAR_REFRESH_MS,STATUS_REFRESH_MS,FIRST_WAVE_TRACK,LATER_TRACKS,prewarmFirstWave,prewarmLaterWaves,decodeKnownImages,
-    installRadarThrottle,ensureStatusStrip,updateStatus,remaining,get state(){return state}
+    installRadarThrottle,ensureStatusStrip,updateStatus,startStatusTimer,stopStatusTimer,syncStatusTimer,installModeObserver,remaining,get state(){return state}
   };
 })();
