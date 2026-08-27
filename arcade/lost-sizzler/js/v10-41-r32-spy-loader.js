@@ -12,7 +12,7 @@
   window.__CCG_LOST_SIZZLER_V141_R32_SPY_LOADER__=true;
 
   const MODE_ID="sizzler-saboteurs",MONITOR_MS=20;
-  const state={timer:0,loading:false,loaded:false,loads:0,lastError:""};
+  const state={timer:0,loading:false,loaded:false,loads:0,lastError:"",uiLoading:false,uiLoaded:false,uiLoads:0,uiLastError:""};
 
   const spyActive=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type===MODE_ID||document.body?.dataset?.specialMode===MODE_ID}catch(_){return false}};
   const revision=()=>String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
@@ -34,16 +34,24 @@
     if(state.loaded||state.loading||!spyActive())return state.loaded;state.loading=true;
     try{
       await loadScript("v10-41-r32-spy-overhaul.js","data-ccg-r32-spy-overhaul",()=>Boolean(window.CCGLostSizzlerV141R32SpyOverhaul));
-      await loadScript("v10-41-r32-spy-search-ui-owner.js","data-ccg-r32-spy-search-ui-owner",()=>Boolean(window.CCGLostSizzlerV141R32SpySearchUiOwner));
       await loadScript("v10-41-r32-spy-packet-owner.js","data-ccg-r32-spy-packet-owner",()=>Boolean(window.CCGLostSizzlerV141R32SpyPacketOwner));
       state.loaded=true;state.loads++;state.lastError="";return true
     }catch(error){state.lastError=String(error?.message||error);console.warn("[Lost Sizzler r32] Spy lazy load failed safely",error);return false}
     finally{state.loading=false}
   }
 
-  function monitor(){if(spyActive())ensureLoaded()}
+  async function ensureSearchUi(){
+    if(state.uiLoaded||state.uiLoading||!spyActive())return state.uiLoaded;state.uiLoading=true;
+    try{
+      await loadScript("v10-41-r32-spy-search-ui-owner.js","data-ccg-r32-spy-search-ui-owner",()=>Boolean(window.CCGLostSizzlerV141R32SpySearchUiOwner));
+      state.uiLoaded=true;state.uiLoads++;state.uiLastError="";return true
+    }catch(error){state.uiLastError=String(error?.message||error);console.warn("[Lost Sizzler r32] Spy search UI bridge failed safely",error);return false}
+    finally{state.uiLoading=false}
+  }
+
+  function monitor(){if(spyActive()){ensureLoaded();ensureSearchUi()}}
   monitor();state.timer=setInterval(monitor,MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
-  window.CCGLostSizzlerV141R32SpyLoader={ensureLoaded,get state(){return state}};
+  window.CCGLostSizzlerV141R32SpyLoader={ensureLoaded,ensureSearchUi,get state(){return state}};
 })();
