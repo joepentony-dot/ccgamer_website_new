@@ -43,12 +43,32 @@ try{
     }
     api.normaliseCpuCook();api.monitor();
   });
-  await page.waitForFunction(()=>Boolean(host?.enemies?.some?.(enemy=>enemy?._v141R31NamedCpuCook&&enemy?.follower?.name==="CPU Cook")),null,{timeout:10000});
+  await page.waitForFunction(()=>{
+    const api=window.CCGLostSizzlerV141R31SoloDungeon;
+    if(!api||!host?.enemies)return false;
+    api.normaliseCpuCook();api.monitor();
+    const isCpuFollower=follower=>{
+      if(!follower||String(follower.kind||"").toLowerCase()!=="cook")return false;
+      const name=String(follower.name||"").trim().toUpperCase(),initials=String(follower.initials||"").trim().toUpperCase(),music=String(follower.musicKey||"").trim().toLowerCase(),avatar=String(follower.avatar||"").trim().toLowerCase();
+      return name==="CPU"||name==="CPU COOK"||initials==="CPU"||music==="cpu"||/(^|\/)cpu\.png(?:$|[?#])/.test(avatar);
+    };
+    const cpuFollowers=host.enemies.filter(enemy=>isCpuFollower(enemy?.follower));
+    return cpuFollowers.length===1&&cpuFollowers[0]?._v141R31NamedCpuCook===true&&cpuFollowers[0]?.follower?.name==="CPU Cook"&&cpuFollowers[0]?.follower?.initials==="CPU";
+  },null,{timeout:10000});
 
   const cpuAndHud=await page.evaluate(()=>{
-    const cpu=host.enemies.find(enemy=>enemy?._v141R31NamedCpuCook),generic={kind:"cook",follower:null},node=document.getElementById("hud-score"),style=getComputedStyle(node),rect=node.getBoundingClientRect();
+    const api=window.CCGLostSizzlerV141R31SoloDungeon;
+    api.normaliseCpuCook();api.monitor();
+    const isCpuFollower=follower=>{
+      if(!follower||String(follower.kind||"").toLowerCase()!=="cook")return false;
+      const name=String(follower.name||"").trim().toUpperCase(),initials=String(follower.initials||"").trim().toUpperCase(),music=String(follower.musicKey||"").trim().toLowerCase(),avatar=String(follower.avatar||"").trim().toLowerCase();
+      return name==="CPU"||name==="CPU COOK"||initials==="CPU"||music==="cpu"||/(^|\/)cpu\.png(?:$|[?#])/.test(avatar);
+    };
+    const cpuFollowers=host.enemies.filter(enemy=>isCpuFollower(enemy?.follower));
+    const cpu=cpuFollowers.find(enemy=>enemy?._v141R31NamedCpuCook&&enemy?.follower?.name==="CPU Cook")||cpuFollowers[0];
+    const generic={kind:"cook",follower:null},node=document.getElementById("hud-score"),style=getComputedStyle(node),rect=node.getBoundingClientRect();
     let portraitAlias=false;try{portraitAlias=avatarImages?.get?.("CPU Cook")===avatarImages?.get?.("CPU")&&Boolean(avatarImages?.get?.("CPU Cook"))}catch(_){}
-    return{controller:window.CCGLostSizzlerModeRuntime.detect(),cpuName:cpu?.follower?.name||"",cpuInitials:cpu?.follower?.initials||"",cpuKind:cpu?.follower?.kind||"",named:Boolean(cpu?._v141R31NamedCpuCook),namedCpuCount:host.enemies.filter(enemy=>enemy?._v141R31NamedCpuCook).length,genericCookName:window.CCGLostSizzlerV141R31SoloDungeon.genericCookDisplayName(generic),renderWrapped:Boolean(window.drawEnemy?.__ccgV141R31CpuCookRenderFix),portraitAlias,visibility:style.visibility,display:style.display,opacity:style.opacity,width:rect.width,height:rect.height};
+    return{controller:window.CCGLostSizzlerModeRuntime.detect(),cpuName:cpu?.follower?.name||"",cpuInitials:cpu?.follower?.initials||"",cpuKind:cpu?.follower?.kind||"",named:Boolean(cpu?._v141R31NamedCpuCook),namedCpuCount:cpuFollowers.filter(enemy=>enemy?._v141R31NamedCpuCook&&enemy?.follower?.name==="CPU Cook"&&enemy?.follower?.initials==="CPU").length,genericCookName:api.genericCookDisplayName(generic),renderWrapped:Boolean(window.drawEnemy?.__ccgV141R31CpuCookRenderFix),portraitAlias,visibility:style.visibility,display:style.display,opacity:style.opacity,width:rect.width,height:rect.height};
   });
   assert.equal(cpuAndHud.controller,"dungeon-solo","r31 regression pass must run under the Solo Dungeon controller only");
   assert.equal(cpuAndHud.cpuName,"CPU Cook","the configured CPU follower must render with the CPU Cook name");

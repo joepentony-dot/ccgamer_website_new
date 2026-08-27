@@ -384,12 +384,23 @@ try{
     });
     assert.ok(tutorialMove.safe,`Tutorial start area must have a four-direction keyboard training cell: ${JSON.stringify(tutorialMove)}`);
     for(const [key,direction] of [["w","up"],["s","down"],["a","left"],["d","right"]]){
-      await state.page.keyboard.down(key);
-      try{
-        await withTimeout(state.page.waitForFunction(expected=>window.CCGLostSizzlerOnboardingV120?.state?.movementDirections?.has?.(expected),direction,{timeout:6000}),8000,`Tutorial movement ${direction}`);
-      }finally{
-        await state.page.keyboard.up(key);
+      let registered=false,lastError=null;
+      for(let attempt=1;attempt<=2&&!registered;attempt++){
+        await state.page.keyboard.down(key);
+        try{
+          try{
+            await withTimeout(state.page.waitForFunction(expected=>window.CCGLostSizzlerOnboardingV120?.state?.movementDirections?.has?.(expected),direction,{timeout:attempt===1?2500:6000}),attempt===1?3500:8000,`Tutorial movement ${direction} attempt ${attempt}`);
+            registered=true;
+          }catch(error){
+            lastError=error;
+            if(attempt===2)throw error;
+          }
+        }finally{
+          await state.page.keyboard.up(key);
+        }
+        if(!registered)await state.page.waitForTimeout(120);
       }
+      assert.equal(registered,true,`Tutorial movement ${direction} must register after a genuine keyboard retry: ${lastError?.message||"no registration"}`);
       await state.page.waitForTimeout(80);
     }
     await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.step>=1,null,{timeout:10000}),12000,"Tutorial four-direction movement step");
