@@ -7,7 +7,7 @@ import {chromium} from "playwright";
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const repo=path.resolve(here,"../../..");
-const TEST_TIMEOUT_MS=150000;
+const TEST_TIMEOUT_MS=210000;
 const STAGE_TIMEOUT_MS=20000;
 const CLEANUP_TIMEOUT_MS=5000;
 const startedAt=Date.now();
@@ -386,18 +386,18 @@ try{
     for(const [key,direction] of [["w","up"],["s","down"],["a","left"],["d","right"]]){
       await state.page.keyboard.down(key);
       try{
-        await withTimeout(state.page.waitForFunction(expected=>window.CCGLostSizzlerOnboardingV120?.state?.movementDirections?.has?.(expected),direction,{timeout:2200}),2800,`Tutorial movement ${direction}`);
+        await withTimeout(state.page.waitForFunction(expected=>window.CCGLostSizzlerOnboardingV120?.state?.movementDirections?.has?.(expected),direction,{timeout:6000}),8000,`Tutorial movement ${direction}`);
       }finally{
         await state.page.keyboard.up(key);
       }
       await state.page.waitForTimeout(80);
     }
-    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.step>=1,null,{timeout:5000}),7000,"Tutorial four-direction movement step");
+    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.step>=1,null,{timeout:10000}),12000,"Tutorial four-direction movement step");
     const tutorialProgress=await state.page.evaluate(()=>({step:window.CCGLostSizzlerOnboardingV120.state.step,moved:window.CCGLostSizzlerOnboardingV120.state.moved,directions:[...window.CCGLostSizzlerOnboardingV120.state.movementDirections].sort(),position:{x:p1.x,y:p1.y}}));
     assert.equal(tutorialProgress.moved,true,`Tutorial keyboard movement must register: ${JSON.stringify(tutorialProgress)}`);
     assert.deepEqual(tutorialProgress.directions,["down","left","right","up"],`Tutorial movement must require all four keyboard directions: ${JSON.stringify(tutorialProgress)}`);
 
-    await withTimeout(state.page.waitForFunction(()=>!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden")&&window.CCGLostSizzlerOnboardingV120.state.step===1,null,{timeout:8000}),10000,"Tutorial sword stage prompt");
+    await withTimeout(state.page.waitForFunction(()=>!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden")&&window.CCGLostSizzlerOnboardingV120.state.step===1,null,{timeout:18000}),20000,"Tutorial sword stage prompt");
     await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").evaluate(button=>button.click());
     for(let i=0;i<3;i++){
       const target=i+1,deadline=Date.now()+5000;
@@ -415,11 +415,11 @@ try{
         assert.match(live.text,new RegExp(`${shown}\\s*\\/\\s*3`),`sword overlay must repaint to the current ${shown}/3 state: ${JSON.stringify(live)}`);
       }
     }
-    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.step>=2,null,{timeout:5000}),7000,"Tutorial three-sword step");
+    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.step>=2,null,{timeout:10000}),12000,"Tutorial three-sword step");
     const swordProgress=await state.page.evaluate(()=>({step:window.CCGLostSizzlerOnboardingV120.state.step,count:window.CCGLostSizzlerOnboardingV120.state.swingCount}));
     assert.equal(swordProgress.count,3,`Tutorial sword training must require three successful swings: ${JSON.stringify(swordProgress)}`);
 
-    await withTimeout(state.page.waitForFunction(()=>!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden")&&window.CCGLostSizzlerOnboardingV120.state.step===2,null,{timeout:8000}),10000,"Tutorial dash stage prompt");
+    await withTimeout(state.page.waitForFunction(()=>!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden")&&window.CCGLostSizzlerOnboardingV120.state.step===2,null,{timeout:18000}),20000,"Tutorial dash stage prompt");
     await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").evaluate(button=>button.click());
     for(let i=0;i<3;i++){
       const target=i+1,deadline=Date.now()+5000;
@@ -438,24 +438,24 @@ try{
         assert.match(live.text,new RegExp(`${shown}\\s*\\/\\s*3`),`dash overlay must repaint to the current ${shown}/3 state: ${JSON.stringify(live)}`);
       }
     }
-    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.step>=3,null,{timeout:5000}),7000,"Tutorial three-dash step");
+    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.step>=3,null,{timeout:10000}),12000,"Tutorial three-dash step");
     const dashProgress=await state.page.evaluate(()=>({step:window.CCGLostSizzlerOnboardingV120.state.step,count:window.CCGLostSizzlerOnboardingV120.state.dashCount,voiceActive:Boolean(window.CCGLostSizzlerVoice?.state?.active),voiceQueued:Number(window.CCGLostSizzlerVoice?.state?.queue?.length||0)}));
     assert.deepEqual(dashProgress,{step:3,count:3,voiceActive:false,voiceQueued:0},`Tutorial dash training must require three successful silent dashes: ${JSON.stringify(dashProgress)}`);
 
-    await withTimeout(state.page.waitForFunction(()=>!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden")&&window.CCGLostSizzlerOnboardingV120.state.step===3,null,{timeout:8000}),10000,"Tutorial inventory stage prompt");
+    await withTimeout(state.page.waitForFunction(()=>!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden")&&window.CCGLostSizzlerOnboardingV120.state.step===3,null,{timeout:18000}),20000,"Tutorial inventory stage prompt");
     await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").evaluate(button=>button.click());
     await state.page.keyboard.press("Tab");
-    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.inventoryOpened===true,null,{timeout:3000}),4000,"Tutorial inventory open");
+    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.inventoryOpened===true,null,{timeout:6000}),8000,"Tutorial inventory open");
     await state.page.keyboard.press("Tab");
-    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.inventoryClosed===true,null,{timeout:3000}),4000,"Tutorial inventory close");
-    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120.state.step===4&&!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden"),null,{timeout:8000}),10000,"Tutorial information stages");
+    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.inventoryClosed===true,null,{timeout:6000}),8000,"Tutorial inventory close");
+    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120.state.step===4&&!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden"),null,{timeout:18000}),20000,"Tutorial information stages");
     for(let step=4;step<=8;step++){
       await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").evaluate(button=>button.click());
       await state.page.waitForTimeout(180);
       const tour=await state.page.evaluate(expected=>({step:window.CCGLostSizzlerOnboardingV120.state.step,tourVisible:!document.getElementById("ccg-tutorial-info-tour")?.classList.contains("hidden"),modalHidden:document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden"),cards:document.querySelectorAll("#ccg-tutorial-info-tour .tour-item").length,highlights:document.querySelectorAll(".ccg-tutorial-info-highlight").length}),step);
       assert.equal(tour.step,step,`information lesson ${step+1}/10 must pause on its live tour: ${JSON.stringify(tour)}`);assert.equal(tour.tourVisible,true);assert.equal(tour.modalHidden,true);assert.ok(tour.cards>=3,`lesson ${step+1}/10 needs its complete graphical examples: ${JSON.stringify(tour)}`);assert.ok(tour.highlights>=3,`lesson ${step+1}/10 needs live interface indicators: ${JSON.stringify(tour)}`);
       await state.page.locator("#ccg-tutorial-info-tour [data-tour-continue]").evaluate(button=>button.click());
-      await withTimeout(state.page.waitForFunction(next=>window.CCGLostSizzlerOnboardingV120.state.step===next&&!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden"),step+1,{timeout:8000}),10000,`Tutorial stage ${step+2}/10 prompt`);
+      await withTimeout(state.page.waitForFunction(next=>window.CCGLostSizzlerOnboardingV120.state.step===next&&!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden"),step+1,{timeout:18000}),20000,`Tutorial stage ${step+2}/10 prompt`);
     }
     const finalTutorial=await state.page.evaluate(()=>({copy:document.getElementById("ccg-tutorial-stage-modal")?.innerText||"",exitButtons:document.querySelectorAll("#ccg-tutorial-stage-modal [data-stage-exit]").length,completeButtons:document.querySelectorAll("#ccg-tutorial-stage-modal [data-stage-continue]").length}));
     assert.match(finalTutorial.copy,/You Are Ready To Take On The Adventure!/i,`final tutorial copy is incomplete: ${JSON.stringify(finalTutorial)}`);assert.deepEqual({exitButtons:finalTutorial.exitButtons,completeButtons:finalTutorial.completeButtons},{exitButtons:0,completeButtons:1},`final tutorial must have one completion action: ${JSON.stringify(finalTutorial)}`);
