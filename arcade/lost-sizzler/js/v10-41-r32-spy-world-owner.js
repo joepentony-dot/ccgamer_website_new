@@ -24,7 +24,7 @@
     Object.freeze({name:"ARMOURY RECORDS",theme:"ARMOURY",types:["rack","bookcase","table","table","cabinet","desk","bookcase"]}),
     Object.freeze({name:"SID LAB",theme:"SID_REACTOR",types:["driveBench","table","rack","bookcase","bookcase","desk","table"]})
   ]);
-  const state={timer:0,installed:false,baseBuild:null,baseUpdate:null,engine:null,reassertions:0,controllerReassertions:0,updateGateInstalls:0,gatedFrames:0,gateStartedAt:0,handoffFallbacks:0,delegations:0,fallbacks:0,fallbackR32Builds:0,mirroredMoves:0,inputBaselines:0,lastX:null,lastY:null,lastMode:false,lastFallbackKey:""};
+  const state={timer:0,installed:false,baseBuild:null,baseUpdate:null,engine:null,reassertions:0,controllerReassertions:0,updateGateInstalls:0,gatedFrames:0,gateStartedAt:0,handoffFallbacks:0,delegations:0,fallbacks:0,fallbackR32Builds:0,mirroredMoves:0,inputBaselines:0,lastMirroredMoveAt:0,lastX:null,lastY:null,lastMode:false,lastFallbackKey:""};
 
   const spyActive=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type===MODE_ID||document.body?.dataset?.specialMode===MODE_ID}catch(_){return false}};
   const activeMatch=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.state||null}catch(_){return null}};
@@ -145,12 +145,12 @@
   }
 
   function mirrorLegacyMoveCounter(){
-    const current=engine();if(!current?.state)return false;let live=null;try{live=p1||null}catch(_){}if(!spyActive()||!live){state.lastX=state.lastY=null;state.lastMode=false;return false}
-    const x=Number(live.x),y=Number(live.y);if(!Number.isFinite(x)||!Number.isFinite(y))return false;
-    if(!state.lastMode||state.lastX==null||state.lastY==null){state.lastX=x;state.lastY=y;state.lastMode=true;return false}
+    const current=engine(),next=overhaul();if(!current?.state)return false;let live=null;try{live=p1||null}catch(_){}if(!spyActive()||!live){state.lastX=state.lastY=null;state.lastMode=false;state.lastMirroredMoveAt=0;return false}
+    const x=Number(live.x),y=Number(live.y),moveAt=Number(next?.state?.lastMoveAt||0);if(!Number.isFinite(x)||!Number.isFinite(y))return false;
+    if(!state.lastMode||state.lastX==null||state.lastY==null){state.lastX=x;state.lastY=y;state.lastMode=true;state.lastMirroredMoveAt=moveAt;return false}
     const distance=Math.abs(x-state.lastX)+Math.abs(y-state.lastY);state.lastX=x;state.lastY=y;
-    if(distance<=0||!r32ControllerOwnsMovement()||!movementInputHeld())return false;
-    const steps=Math.max(1,Math.round(distance));current.state.moves=Number(current.state.moves||0)+steps;state.mirroredMoves+=steps;return true
+    if(distance<=0||!r32ControllerOwnsMovement()||!movementInputHeld()||!Number.isFinite(moveAt)||moveAt<=0||moveAt===state.lastMirroredMoveAt)return false;
+    const steps=Math.max(1,Math.round(distance));current.state.moves=Number(current.state.moves||0)+steps;state.mirroredMoves+=steps;state.lastMirroredMoveAt=moveAt;return true
   }
 
   function monitor(){install();mirrorLegacyMoveCounter()}
