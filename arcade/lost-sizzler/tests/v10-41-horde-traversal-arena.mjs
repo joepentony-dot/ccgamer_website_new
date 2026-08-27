@@ -1,0 +1,17 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
+const here=path.dirname(fileURLToPath(import.meta.url)),root=path.resolve(here,"..");
+const source=fs.readFileSync(path.join(root,"js/v10-41-horde-mode-safety.js"),"utf8");
+assert.match(source,/function shapeHordeArena\(\)/,"Horde safety must own a dedicated traversal-arena builder");
+assert.match(source,/if\(!isHorde\(\)\)return false;/,"arena shaping must remain Horde-only");
+assert.match(source,/_v141CompactHordeArena/,"traversal shaping must build only on the existing compact Horde arena");
+assert.match(source,/const blocks=\[/,"Horde arenas must contain internal wall groups rather than remain an empty rectangle");
+assert.match(source,/openArenaLanes\(map,room\)/,"internal wall groups must preserve dedicated movement lanes");
+assert.match(source,/function arenaConnected\(map,room\)/,"arena shaping must validate traversability before accepting geometry");
+assert.match(source,/restoreMap\(map,snapshot\)/,"failed connectivity validation must restore the known-good rectangular arena");
+assert.match(source,/relocateBlockedHordeEnemies\(map,room\)/,"Horde enemies must not remain embedded in newly-created wall cells");
+assert.match(source,/world\._v141TraversalHordeArena=true/,"successful arena shaping must be idempotently marked on the Horde world");
+assert.doesNotMatch(source,/window\.update\s*=/,"Horde arena geometry must not reclaim shared frame ownership");
+console.log("Lost Sizzler Horde-only traversal arena isolation and connectivity contracts passed.");
