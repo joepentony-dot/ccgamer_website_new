@@ -54,14 +54,15 @@ try{
   console.log("[r33 Spy] validate classic Trapulator and rooms-only maps");
   const classic=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R32SpyPacketOwner,match=window.CCGLostSizzlerSpecialModes.active.state,root=document.getElementById("spy-classic-trapulators"),panels=[...root.querySelectorAll(".spy-classic-trapulator")];
-    return{loadout:[...(match.trapLoadout||[])],names:api.CLASSIC_TRAPS.map(row=>row.name),effects:api.CLASSIC_TRAPS.map(row=>row.effect),panelCount:panels.length,maps:panels.map(panel=>panel.querySelector(".spy-classic-map")?.dataset?.mapMode||""),split:Boolean(window.render?.__ccgV141R33SpySplit),display:getComputedStyle(root).display};
+    const split=(()=>{let fn=window.render,depth=0;while(typeof fn==="function"&&depth++<16){if(fn.__ccgV141R33SpySplit)return true;fn=fn.__ccgOriginal}return false})();
+    return{loadout:[...(match.trapLoadout||[])],names:api.CLASSIC_TRAPS.map(row=>row.name),effects:api.CLASSIC_TRAPS.map(row=>row.effect),panelCount:panels.length,maps:panels.map(panel=>panel.querySelector(".spy-classic-map")?.dataset?.mapMode||""),split,display:getComputedStyle(root).display};
   });
   assert.deepEqual(classic.loadout,["powerBrick","spring","custard"],"Spy must expose only the fixed Bomb, Spring and Water Bucket trap set");
   assert.deepEqual(classic.names,["BOMB","SPRING","WATER BUCKET"],"Trapulator must use understandable classic-style trap names");
   assert.ok(classic.effects.every(text=>text.length>5),"every trap must explain its victim penalty in the Trapulator");
   assert.equal(classic.panelCount,2,"Spy must mount one Trapulator panel for each player");
   assert.deepEqual(classic.maps,["rooms-only","rooms-only"],"both Spy maps must be rooms-only references with no player/trail mode");
-  assert.equal(classic.split,true,"final renderer must own the simultaneous Spy split-screen path");
+  assert.equal(classic.split,true,"active render chain must retain the simultaneous Spy split-screen owner");
   assert.notEqual(classic.display,"none","Trapulator must be visible while Spy is active");
 
   console.log("[r33 Spy] validate TAB inventory ownership");
