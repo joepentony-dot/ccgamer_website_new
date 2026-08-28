@@ -70,20 +70,24 @@ try{
   const pausedHealth=await page.evaluate(()=>Number(p1.health));
   assert.equal(pausedHealth,faulted.health,"the player must not keep taking damage behind a failed Solo renderer");
 
-  console.log("[r36 Solo] restore renderer and resume");
-  await page.evaluate(()=>{window.drawTile=window.__r36OriginalDrawTile;delete window.__r36OriginalDrawTile;window.CCGLostSizzlerV141R36SoloRenderRecovery.resumeAfterRecovery()});
+  console.log("[r36 Solo] restore renderer and use the normal Resume button");
+  await page.evaluate(()=>{window.drawTile=window.__r36OriginalDrawTile;delete window.__r36OriginalDrawTile});
+  await page.click("#resume-btn");
   await page.waitForFunction(()=>typeof mode!=="undefined"&&mode==="playing"&&window.CCGLostSizzlerV141R36SoloRenderRecovery?.canvasHasVisibleFrame?.()===true,null,{timeout:10000});
+  await page.waitForFunction(()=>window.CCGLostSizzlerV141R36SoloRenderRecovery?.state?.faultPaused===false,null,{timeout:5000});
 
   console.log("[r36 Solo] recover a pure black canvas without an exception");
-  const beforeBlank=await page.evaluate(()=>window.CCGLostSizzlerV141R36SoloRenderRecovery.state.blankRecoveries);
-  await page.evaluate(()=>{ctx.save();ctx.setTransform?.(1,0,0,1,0,0);ctx.fillStyle=P.black;ctx.fillRect(0,0,canvas.width,canvas.height);ctx.restore()});
-  const blackBeforeRecovery=await page.evaluate(()=>window.CCGLostSizzlerV141R36SoloRenderRecovery.canvasHasVisibleFrame());
-  assert.equal(blackBeforeRecovery,false,"the blank-canvas fixture must actually produce a black game frame");
-  await page.evaluate(()=>window.CCGLostSizzlerV141R36SoloRenderRecovery.recoverBlankCanvas(true));
-  await page.waitForFunction(()=>window.CCGLostSizzlerV141R36SoloRenderRecovery.canvasHasVisibleFrame()===true);
-  const blankRecovered=await page.evaluate(()=>({count:window.CCGLostSizzlerV141R36SoloRenderRecovery.state.blankRecoveries,visible:window.CCGLostSizzlerV141R36SoloRenderRecovery.canvasHasVisibleFrame()}));
-  assert.ok(blankRecovered.count>beforeBlank,"the watchdog recovery path must record a black-canvas restoration");
-  assert.equal(blankRecovered.visible,true,"a pure black Solo canvas must be restored from the last healthy frame");
+  const blankFixture=await page.evaluate(()=>{
+    const api=window.CCGLostSizzlerV141R36SoloRenderRecovery,before=api.state.blankRecoveries;
+    ctx.save();ctx.setTransform?.(1,0,0,1,0,0);ctx.fillStyle=P.black;ctx.fillRect(0,0,canvas.width,canvas.height);ctx.restore();
+    const black=!api.canvasHasVisibleFrame();
+    const recovered=api.recoverBlankCanvas(true),visibleAfter=api.canvasHasVisibleFrame();
+    return{before,after:api.state.blankRecoveries,black,recovered,visibleAfter};
+  });
+  assert.equal(blankFixture.black,true,"the blank-canvas fixture must actually produce a black game frame");
+  assert.equal(blankFixture.recovered,true,"the r36 blank-canvas boundary must accept the forced recovery");
+  assert.ok(blankFixture.after>blankFixture.before,"the watchdog recovery path must record a black-canvas restoration");
+  assert.equal(blankFixture.visibleAfter,true,"a pure black Solo canvas must be restored from the last healthy frame");
 
   console.log("[r36 Solo] repair invalid player coordinates");
   const coordinateRepair=await page.evaluate(()=>{
