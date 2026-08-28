@@ -99,8 +99,9 @@
 
   function safeRender(current,args,scope){
     if(!soloRun())return current.apply(scope,args);
-    const now=performance.now();
-    if(state.faultPaused&&(()=>{try{return mode==="paused"}catch(_){return false}})()&&now-state.lastRetryAt<RETRY_MS){restoreHealthyFrame();return false}
+    const now=performance.now(),paused=(()=>{try{return mode==="paused"}catch(_){return false}})();
+    if(state.faultPaused&&paused&&now-state.lastRetryAt<RETRY_MS){restoreHealthyFrame();return false}
+    if(state.faultPaused&&!paused){state.faultPaused=false;state.consecutiveFaults=0}
     if(state.faultPaused)state.lastRetryAt=now;
     repairSoloCoordinates();
     try{
