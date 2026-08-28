@@ -77,7 +77,10 @@
     if(!current?.__ccgV141R32SpyEnter)return false;
     const wrapped=function enterSpyR32Stable(){
       const result=base.apply(this,arguments);
-      if(spyActive())api.buildOverhaulWorld?.(false);
+      if(spyActive()){
+        api.buildOverhaulWorld?.(false);
+        enforceClassicTrapLoadout()
+      }
       return result
     };
     wrapped.__ccgV141R32SpyEnter=true;
@@ -308,6 +311,7 @@
       });
       state.classicUiMounted=true
     }
+    if(spyActive())enforceClassicTrapLoadout();
     return root
   }
 
