@@ -74,6 +74,7 @@
   load("js/v10-41-startup-freeze-guard.js","data-ccg-v141-startup-freeze-guard");
   load("js/v10-41-environment-transparency-hotfix.js","data-ccg-v141-environment-transparency-hotfix");
   load("js/v10-41-horde-mode-safety.js","data-ccg-v141-horde-mode-safety");
+  load("js/v10-41-horde-network-performance.js","data-ccg-v141-horde-network-performance");
   load("js/v10-41-multiplayer-no-pause.js","data-ccg-v141-multiplayer-no-pause");
   load("js/v10-41-browser-stability-gameplay-hotfix.js","data-ccg-v141-browser-stability-gameplay-hotfix");
   load("js/v10-41-spy-movement-finalizer.js","data-ccg-v141-spy-movement-finalizer");
