@@ -4,10 +4,10 @@
  * online Dungeon sessions. Keep those startup/network paths untouched and load
  * the Spy owners only after Sizzler Saboteurs is active. The r32 overhaul owns
  * the actual TAB inventory toggle; the r33 packet/final owner loads immediately
- * afterwards and seals TAB before r35 is installed. That prevents r35 from
- * toggling the same key a second time while still leaving F available for its
- * fullscreen owner. r34 presentation loads after the packet owner because it
- * consumes the final Trapulator panels.
+ * afterwards and seals TAB before r35 is installed. The shared game owner keeps
+ * F as fullscreen; this loader stops that same F event before any later Spy
+ * compatibility layer can reuse it. r34 presentation loads after the packet
+ * owner because it consumes the final Trapulator panels.
  */
 (()=>{
   "use strict";
@@ -141,7 +141,12 @@
   }
 
   function onKeyDown(event){
-    if(!spyActive()||event?.repeat)return;const code=String(event?.code||"");if(!OWNER_ACTION_CODES.has(code))return;
+    if(!spyActive()||event?.repeat)return;const code=String(event?.code||"");
+    if(code==="KeyF"){
+      // game-main has already handled F as fullscreen; stop later Spy compatibility handlers.
+      event.preventDefault?.();event.stopImmediatePropagation?.();return
+    }
+    if(!OWNER_ACTION_CODES.has(code))return;
     if(code==="KeyE"){
       event.preventDefault?.();event.stopPropagation?.();dispatchSearchAction();return
     }
