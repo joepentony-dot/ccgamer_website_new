@@ -35,7 +35,13 @@
     const hard=hardening();if(typeof hard?.installRenderGuard!=="function")return false;
     let before=null;try{before=window.render}catch(_){return false}
     const already=Boolean(before?.__ccgV141R35SpyBlackGuard),sealed=Boolean(hard.installRenderGuard(true));
-    if(sealed&&!already&&window.render?.__ccgV141R35SpyBlackGuard)state.renderSeals++;
+    if(sealed&&window.render?.__ccgV141R35SpyBlackGuard){
+      // The retained post-playtest renderer is already underneath this Spy
+      // watchdog. Carry its marker on the top-level function so its 40 ms
+      // monitor recognises the chain as preserved instead of wrapping us again.
+      try{window.render.__ccgV141PostPlaytestRender=true}catch(_){}
+      if(!already)state.renderSeals++
+    }
     return sealed
   }
 
