@@ -158,7 +158,12 @@
       const id=String(model?.id||""),current=String(model?.roomId||""),previous=state.lastRoomByPlayer.get(id);
       if(previous&&current&&previous!==current){
         const edge=edgeBetween(previous,current),armed=edge&&m.traps?.find?.(row=>row?.armed&&row.targetType==="door"&&String(row.targetId||"")===String(edge.id));
-        if(armed&&api.triggerTrapForPlayer?.(model,{type:"door",id:edge.id})){state.trapFallbacks++;changed=true}
+        if(armed){
+          const placedRoom=String(armed.roomId||"");
+          if(placedRoom!==current)armed.roomId=current;
+          if(api.triggerTrapForPlayer?.(model,{type:"door",id:edge.id})){state.trapFallbacks++;changed=true}
+          else if(placedRoom!==current)armed.roomId=placedRoom;
+        }
       }
       if(current)state.lastRoomByPlayer.set(id,current)
     }
