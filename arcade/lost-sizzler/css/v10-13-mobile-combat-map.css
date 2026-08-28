@@ -1,6 +1,7 @@
-/* The Lost Sizzler V10.13 — mobile minimap toggle styling. */
+/* The Lost Sizzler V10.13 — mobile minimap toggle and Solo score styling. */
 
 .ccg-mobile-minimap{display:none}
+.ccg-mobile-solo-score{display:none}
 
 @media (max-width:900px),(pointer:coarse){
   body[data-run-active="true"] .ccg-mobile-minimap{
@@ -87,6 +88,45 @@
     top:6px;
     right:6px;
     width:min(78vw,320px);
+  }
+  body[data-run-active="true"] #v104-touch-controls .ccg-mobile-solo-score{
+    grid-column:span 2;
+    display:flex;
+    min-width:0;
+    min-height:44px;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:5px 10px;
+    border:1px solid rgba(255,216,90,.58);
+    border-radius:8px;
+    background:linear-gradient(135deg,rgba(17,8,25,.92),rgba(8,4,13,.96));
+    box-shadow:inset 0 0 0 1px rgba(255,216,90,.06);
+    color:#f6edf9;
+    font-family:"Courier New",monospace;
+    text-align:center;
+    pointer-events:none;
+    box-sizing:border-box;
+  }
+  body[data-run-active="true"] #v104-touch-controls .ccg-mobile-solo-score.hidden{
+    display:none!important;
+  }
+  body[data-run-active="true"] #v104-touch-controls .ccg-mobile-solo-score span{
+    color:#d9c98e;
+    font-size:8px;
+    font-weight:900;
+    letter-spacing:.08em;
+  }
+  body[data-run-active="true"] #v104-touch-controls .ccg-mobile-solo-score strong{
+    min-width:0;
+    color:#ffd85a;
+    font-size:15px;
+    line-height:1;
+    font-weight:900;
+    letter-spacing:.03em;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
   }
 }
 
