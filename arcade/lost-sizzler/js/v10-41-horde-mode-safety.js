@@ -7,7 +7,8 @@
   if(window.__CCG_LOST_SIZZLER_V141_HORDE_MODE_SAFETY__)return;
   window.__CCG_LOST_SIZZLER_V141_HORDE_MODE_SAFETY__=true;
 
-  const state={installed:false,updateWrapped:false,voiceWrapped:false,toastWrapped:false,wasHorde:false,timer:0,purges:0,lastPurgeAt:0,arenaLayouts:0,arenaLayoutRejects:0,lastArenaLayoutAt:0};
+  const PURGE_FALLBACK_MS=500;
+  const state={installed:false,updateWrapped:false,voiceWrapped:false,toastWrapped:false,wasHorde:false,timer:0,purges:0,purgeSkips:0,lastPurgeAt:0,arenaLayouts:0,arenaLayoutRejects:0,lastArenaLayoutAt:0};
   const active=()=>window.CCGLostSizzlerSpecialModes?.active||null;
   const isHorde=()=>{
     try{return active()?.type==="horde-survivor"||document.body?.dataset?.specialMode==="horde-survivor"}catch(_){return false}
@@ -98,9 +99,11 @@
 
   function purgeDungeonRuntime(){
     if(!isHorde())return false;
+    const tick=performance.now();
+    if(state.lastPurgeAt&&tick-state.lastPurgeAt<PURGE_FALLBACK_MS){state.purgeSkips++;return false}
     const changed=Boolean(purgeRareDungeonState()|purgeSanctuaryState()|purgeHostDungeonObjects());
     hideDungeonNotifications();
-    state.lastPurgeAt=performance.now();
+    state.lastPurgeAt=tick;
     if(changed)state.purges++;
     return changed;
   }
@@ -237,6 +240,7 @@
     const now=isHorde();
     if(now&&!state.wasHorde){
       stopLegacyDungeonVoice();
+      state.lastPurgeAt=0;
       purgeDungeonRuntime();
       shapeHordeArena();
       try{S?.setRoomMood?.("normal")}catch(_){}
@@ -264,5 +268,5 @@
   },90);
   transitionGuard();install();
   window.addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
-  window.CCGLostSizzlerHordeModeSafety={purgeSanctuaryState,purgeRareDungeonState,purgeHostDungeonObjects,purgeDungeonRuntime,shapeHordeArena,arenaConnected,transitionGuard,isHorde,get state(){return state}};
+  window.CCGLostSizzlerHordeModeSafety={PURGE_FALLBACK_MS,purgeSanctuaryState,purgeRareDungeonState,purgeHostDungeonObjects,purgeDungeonRuntime,shapeHordeArena,arenaConnected,transitionGuard,isHorde,get state(){return state}};
 })();
