@@ -6,12 +6,12 @@ const here=path.dirname(fileURLToPath(import.meta.url)),root=path.resolve(here,"
 const read=file=>fs.readFileSync(path.join(root,file),"utf8");
 const index=read("index.html"),manifest=JSON.parse(read("version.json")),guard=read("js/v10-41-r30-global-movement-guard.js"),tutorialFinalizer=read("js/v10-41-tutorial-action-finalizer.js"),buglog=read("js/v10-41-r30-buglog.js");
 assert.equal(manifest.releaseVersion,"V10.41");
-assert.equal(manifest.build,"2026.08.26.30");
-assert.equal(manifest.cacheToken,"20260826r30");
-assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.26\.30"/);
-assert.match(index,/ccg-lost-sizzler-cache" content="20260826r30"/);
-assert.match(index,/v10-41-r30-global-movement-guard\.js\?v=20260826r30/);
-assert.match(index,/v10-41-r30-buglog\.js\?v=20260826r30/);
+assert.equal(manifest.build,"2026.08.27.31");
+assert.equal(manifest.cacheToken,"20260827r31");
+assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.27\.31"/);
+assert.match(index,/ccg-lost-sizzler-cache" content="20260827r31"/);
+assert.match(index,/v10-41-r30-global-movement-guard\.js\?v=20260827r31/);
+assert.match(index,/v10-41-r30-buglog\.js\?v=20260827r31/);
 assert.match(guard,/clearInterval\(api\.state\.timer\)/,"r30 must stop the competing r29 installer timer");
 assert.match(guard,/__ccgV141R30Cooperative/,"r30 must replace r29 maintenance with cooperative mode ownership");
 assert.match(guard,/goldenLocked/,"r30 must preserve a known-good post-release ownership snapshot");

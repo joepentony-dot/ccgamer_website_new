@@ -16,15 +16,15 @@ const checker=read("js/version-check.js");
 const changelog=read("js/v10-12-developer-changelog.js");
 const r29=read("js/v10-41-r29-runtime-repair.js");
 
-assert.equal(manifest.build,"2026.08.26.30");
-assert.equal(manifest.cacheToken,"20260826r30");
-assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.26\.30"/);
-assert.match(index,/ccg-lost-sizzler-cache" content="20260826r30"/);
-assert.match(index,/css\/v10-41-r28\.css\?v=20260826r30/);
-assert.match(index,/js\/v10-41-r28-special-mode-repair\.js\?v=20260826r30/);
-assert.match(index,/js\/v10-41-r29-runtime-repair\.js\?v=20260826r30/);
-assert.ok(index.indexOf("v10-41-r27-spy-isolation.js?v=20260826r30")<index.indexOf("v10-41-r28-special-mode-repair.js?v=20260826r30"),"retained r28 repair must execute after r27");
-assert.ok(index.indexOf("v10-41-r28-special-mode-repair.js?v=20260826r30")<index.indexOf("v10-41-r29-runtime-repair.js?v=20260826r30"),"r29 must execute after the retained r28 repair");
+assert.equal(manifest.build,"2026.08.27.31");
+assert.equal(manifest.cacheToken,"20260827r31");
+assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.27\.31"/);
+assert.match(index,/ccg-lost-sizzler-cache" content="20260827r31"/);
+assert.match(index,/css\/v10-41-r28\.css\?v=20260827r31/);
+assert.match(index,/js\/v10-41-r28-special-mode-repair\.js\?v=20260827r31/);
+assert.match(index,/js\/v10-41-r29-runtime-repair\.js\?v=20260827r31/);
+assert.ok(index.indexOf("v10-41-r27-spy-isolation.js?v=20260827r31")<index.indexOf("v10-41-r28-special-mode-repair.js?v=20260827r31"),"retained r28 repair must execute after r27");
+assert.ok(index.indexOf("v10-41-r28-special-mode-repair.js?v=20260827r31")<index.indexOf("v10-41-r29-runtime-repair.js?v=20260827r31"),"r29 must execute after the retained r28 repair");
 
 const forcePlaying=noPause.match(/function forcePlaying\(\)\{[\s\S]*?return true;\n  \}/)?.[0]||"";
 assert.ok(forcePlaying,"multiplayer no-pause must retain forcePlaying");

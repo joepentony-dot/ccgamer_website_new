@@ -33,6 +33,10 @@
   let activePlayedMs=0;
   let lastPlayTick=performance.now();
   let ratingShown=false;
+  let ratingCheckPending=false;
+  let accountRatingChecked=false;
+  let accountAlreadyRated=false;
+  let accountRatingPromise=null;
   let pausedByRating=false;
   let ratingTimer=null;
   let runObserver=null;
@@ -83,6 +87,29 @@
       console.warn("[Lost Sizzler] telemetry unavailable",error);
       return false;
     }
+  }
+
+  async function accountHasRating(force=false){
+    if(accountRatingChecked&&!force)return accountAlreadyRated;
+    if(accountRatingPromise)return accountRatingPromise;
+    accountRatingPromise=(async()=>{
+      try{
+        const client=await window.ccgSupabase?.getClient?.();
+        if(!client)return false;
+        const {data,error}=await client.functions.invoke(FUNCTION_NAME,{body:{action:"rating_status"}});
+        if(error||data?.success===false)return false;
+        accountRatingChecked=Boolean(data?.authenticated);
+        accountAlreadyRated=Boolean(data?.authenticated&&data?.rated);
+        return accountAlreadyRated;
+      }catch(_){return false}
+      finally{accountRatingPromise=null}
+    })();
+    return accountRatingPromise;
+  }
+
+  function rememberRatingShown(){
+    ratingShown=true;
+    try{sessionStorage.setItem("ccg-lost-sizzler-rating-shown","1")}catch(_){}
   }
 
   function messageRail(){return document.querySelector(".game-message-rail");}
@@ -186,6 +213,7 @@
       if(status)status.textContent="Saving your rating…";
       const saved=await sendTelemetry("rating_submitted",{rating,play_mode:(typeof playMode!=="undefined"?playMode:"unknown")});
       if(saved){
+        accountRatingChecked=true;accountAlreadyRated=true;
         if(status)status.textContent=`Thank you — ${rating}/5 recorded.`;
         setTimeout(finish,700);
       }else{
@@ -201,10 +229,18 @@
     return overlay;
   }
 
-  function showRating(){
-    if(ratingShown)return;
-    ratingShown=true;
-    try{sessionStorage.setItem("ccg-lost-sizzler-rating-shown","1");}catch(_){}
+  async function showRating(){
+    if(ratingShown||ratingCheckPending)return false;
+    ratingCheckPending=true;
+    try{
+      if(await accountHasRating()){
+        rememberRatingShown();
+        ensureRatingOverlay()?.classList.add("hidden");
+        return false;
+      }
+    }finally{ratingCheckPending=false}
+    if(ratingShown)return false;
+    rememberRatingShown();
     if(!isDesktopNotice()){
       try{
         if(typeof pause==="function"&&typeof mode!=="undefined"&&mode==="playing"){
@@ -217,6 +253,7 @@
     }
     ensureRatingOverlay()?.classList.remove("hidden");
     window.CCGLostSizzlerBrowserStability?.resize?.();
+    return true;
   }
 
   function ratingClock(){
@@ -279,8 +316,10 @@
     document.addEventListener("click",onStartClick,true);
     watchRunStarts();
     try{ratingShown=sessionStorage.getItem("ccg-lost-sizzler-rating-shown")==="1";}catch(_){}
+    accountHasRating().then(rated=>{if(rated)rememberRatingShown()});
     ratingTimer=setInterval(ratingClock,1000);
     window.addEventListener("pagehide",cleanup,{once:true});
+    window.CCGLostSizzlerPlayerInsights={showRating,accountHasRating,get state(){return{ratingShown,ratingCheckPending,accountRatingChecked,accountAlreadyRated,activePlayedMs}}};
   }
 
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});

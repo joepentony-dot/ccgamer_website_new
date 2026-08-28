@@ -26,6 +26,7 @@ assert.match(source,/ensureOwnedSystemGates\?\.\(\)/,"chest repair must reassert
 assert.match(source,/Number\(delay\)===500/,"r31 must target the legacy delayed chest delivery narrowly");
 assert.match(source,/sourceText\.includes\("floatPickupText"\).*sourceText\.includes\("applyLoot"\)/,"only the known chest loot callback may be accelerated");
 assert.match(source,/floatText\(chest\.x,chest\.y,text/,"chest reward feedback must appear at the opened chest");
+assert.match(source,/rewardText=\[scoreReward\?`\+\$\{scoreReward\.toLocaleString\(\)\} SCORE`.*xpReward\?`\+\$\{xpReward\} XP`/s,"chest feedback must preserve the exact score and XP awards");
 assert.match(source,/chestImmediateDeliveries/,"immediate chest deliveries must be observable for regression testing");
 
 assert.match(source,/avatarImages\.set\("CPU Cook",avatarImages\.get\("CPU"\)\)/,"CPU Cook must retain the configured CPU portrait");
@@ -44,6 +45,12 @@ assert.match(source,/p1\.controlsLocked=false/,"Solo resume must clear a stale p
 assert.match(source,/event\.code!=="Space"/,"post-resume attack recovery must be limited to the attack key");
 assert.match(source,/addEventListener\("keydown",onPostResumeAttack,true\)/,"post-resume attack recovery must see the key at capture phase");
 assert.match(source,/POST_RESUME_ATTACK_GRACE_MS=2600/,"post-resume attack rearm must be a bounded grace period");
+assert.match(source,/function recoverSoloDisplay\(reason="panel close"\)/,"Solo panel return must expose a dedicated display recovery boundary");
+assert.match(source,/resizeGameCanvas\(\)/,"display recovery must restore the canvas dimensions");
+assert.match(source,/if\(typeof render==="function"\)render\(\)/,"display recovery must paint a live frame immediately");
+assert.match(source,/requestAnimationFrame\(draw\)/,"display recovery must also repaint on the next browser frame");
+assert.match(source,/\["resume-btn","inventory-close","inventory-close-top","item-info-close","named-dossier-close","named-dossier-close-top","shop-close"\]/,"display recovery must cover Pause, inventory, item information, dossier and shop returns");
+assert.match(source,/addEventListener\("keydown",onPanelReturnKey,true\)/,"Escape and Tab panel returns must enter the same recovery boundary");
 
 assert.match(source,/ccg-v141-r31-solo-dungeon-style/,"Solo score visibility correction must be installed as a late isolated style");
 assert.match(source,/body\[data-mode-controller="dungeon-solo"\].*#hud-score/s,"score HUD visibility rules must be scoped to Solo Dungeon");

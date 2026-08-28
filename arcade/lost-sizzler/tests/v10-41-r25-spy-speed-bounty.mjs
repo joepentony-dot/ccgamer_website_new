@@ -14,7 +14,7 @@ const index=read("index.html");
 
 // Delivery: r25 remains part of the canonical runtime under the current r30
 // cache shell so browsers cannot retain an older copy of this compatibility layer.
-assert.match(index,/v10-41-r25-spy-speed-bounty-hotfix\.js\?v=20260826r30/,"canonical page must load the retained r25 Spy hotfix under the current r30 cache token");
+assert.match(index,/v10-41-r25-spy-speed-bounty-hotfix\.js\?v=20260827r31/,"canonical page must load the retained r25 Spy hotfix under the current r30 cache token");
 
 // Ownership: movement cadence belongs to the isolated Spy engine. The retained
 // r25 layer may isolate bounty/UI state, but it cannot own the global frame.
