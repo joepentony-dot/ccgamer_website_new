@@ -23,7 +23,8 @@ assert.doesNotMatch(insights,/stack\.appendChild\(notice\)/,"insights no longer 
 assert.match(layout,/grid-template-rows:auto minmax\(0,1fr\)/,"game area reserves a real row above the canvas for notifications");
 assert.match(layout,/\.game-message-rail:not\(:has\(#pickup-toast\.show\)/,"notification lane collapses when inactive");
 assert.match(layout,/position:relative!important;/,"notification layout overrides old absolute toast positioning");
-assert.match(audio,/audio\.preload="metadata"/,"inactive music categories do not eagerly buffer full audio files");
+assert.match(audio,/audio\.preload=meteredRemote\?"none":"metadata"/,"metered remote music avoids eager preload while bundled/local music remains metadata-only");
+assert.match(audio,/audio\.loop=meteredRemote/,"metered remote music loops within the run instead of downloading the next playlist file");
 assert.match(audio,/RETRY_MAX_MS=60000/,"audio failures use a bounded retry backoff");
 assert.doesNotMatch(audio,/setTimeout\(\(\)=>transition\(true,true\),250\)/,"the old 250ms infinite audio retry churn is gone");
 assert.match(stability,/canvasPixelBudget/,"canvas allocation has a pixel budget");

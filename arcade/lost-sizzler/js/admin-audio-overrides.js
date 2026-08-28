@@ -35,8 +35,29 @@
     return root.audio;
   }
 
+  function remoteMediaAllowed(){
+    if(window.__CCG_ALLOW_REMOTE_TEST_ASSETS__===true)return true;
+    let automated=false,local=false;
+    try{automated=navigator.webdriver===true||/HeadlessChrome/i.test(String(navigator.userAgent||""))}catch(_){}
+    try{local=["localhost","127.0.0.1","::1"].includes(String(location.hostname||"").toLowerCase())}catch(_){}
+    return !(automated||local);
+  }
+
+  function finishWithoutRemoteMedia(reason){
+    const target=audioRoot();
+    const playlists={normal:[],danger:[],sanctuary:[],named:[],stalker:[]};
+    const voicePlaylists={};
+    for(const state of Object.keys(playlists))target.music.playlists[state]=[];
+    const admin={playlists,voice:voicePlaylists,exploration:null,danger:null,sanctuary:null,named:null,stalker:null,remoteMediaSkipped:true,skipReason:String(reason||"automated-browser")};
+    window.CCG_ADMIN_AUDIO={...(window.CCG_ADMIN_AUDIO||{}),...admin};
+    window.CCG_ADMIN_AUDIO_READY=true;
+    window.dispatchEvent(new CustomEvent("ccg:admin-audio-ready",{detail:{applied:0,appliedMusic:0,appliedVoice:0,playlists,voice:voicePlaylists,remoteMediaSkipped:true,reason:admin.skipReason}}));
+    return true;
+  }
+
   async function load(){
     try{
+      if(!remoteMediaAllowed())return finishWithoutRemoteMedia("automation-or-localhost");
       const client=await window.ccgSupabase?.getClient?.();
       if(!client?.from)throw new Error("Supabase asset client unavailable");
       const {data,error}=await client.from("arcade_assets")
@@ -80,15 +101,17 @@
         danger:playlists.danger[0]||null,
         sanctuary:playlists.sanctuary[0]||null,
         named:playlists.named[0]||null,
-        stalker:playlists.stalker[0]||null
+        stalker:playlists.stalker[0]||null,
+        remoteMediaSkipped:false
       };
       window.CCG_ADMIN_AUDIO={...(window.CCG_ADMIN_AUDIO||{}),...admin,playlists,voice:voicePlaylists};
       window.CCG_ADMIN_AUDIO_READY=true;
-      window.dispatchEvent(new CustomEvent("ccg:admin-audio-ready",{detail:{applied:appliedMusic+appliedVoice,appliedMusic,appliedVoice,playlists,voice:voicePlaylists}}));
+      window.dispatchEvent(new CustomEvent("ccg:admin-audio-ready",{detail:{applied:appliedMusic+appliedVoice,appliedMusic,appliedVoice,playlists,voice:voicePlaylists,remoteMediaSkipped:false}}));
     }catch(error){
       console.warn("[Lost Sizzler] custom admin audio unavailable; bundled audio and browser voice remain active.",error);
     }
   }
 
+  window.CCGLostSizzlerRemoteMediaPolicy={remoteMediaAllowed,finishWithoutRemoteMedia};
   load();
 })();

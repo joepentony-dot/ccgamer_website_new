@@ -49,6 +49,12 @@
   const asList=value=>Array.isArray(value)?value.filter(Boolean):(value?[value]:[]);
   const unique=list=>[...new Set(list.map(String).filter(Boolean))];
   const normaliseState=value=>STATE_KEYS.includes(value)?value:"normal";
+  const isMeteredRemoteTrack=url=>{
+    try{
+      const parsed=new URL(String(url||""),location.href);
+      return /\.supabase\.co$/i.test(parsed.hostname)&&/\/storage\/v1\/object\//.test(parsed.pathname)&&/\/music\//.test(parsed.pathname)
+    }catch(_){return false}
+  };
 
   function categorySources(state){
     const override=window.CCG_ASSET_OVERRIDES?.audio?.music||{};
@@ -182,16 +188,18 @@
   function armAdvance(slot){
     if(slot.armed)return;
     slot.armed=true;
-    const advance=()=>{
-      if(slot.destroyed||current!==slot||slot.advancing||!Number.isFinite(slot.audio.duration))return;
-      if(slot.audio.duration-slot.audio.currentTime>TRANSITION_LEAD_SECONDS)return;
-      slot.advancing=true;
-      transition(true,true);
-    };
-    slot.audio.addEventListener("timeupdate",advance);
-    slot.audio.addEventListener("ended",()=>{
-      if(!slot.destroyed&&current===slot&&!slot.advancing){slot.advancing=true;transition(true,true)}
-    });
+    if(!slot.meteredRemote){
+      const advance=()=>{
+        if(slot.destroyed||current!==slot||slot.advancing||!Number.isFinite(slot.audio.duration))return;
+        if(slot.audio.duration-slot.audio.currentTime>TRANSITION_LEAD_SECONDS)return;
+        slot.advancing=true;
+        transition(true,true);
+      };
+      slot.audio.addEventListener("timeupdate",advance);
+      slot.audio.addEventListener("ended",()=>{
+        if(!slot.destroyed&&current===slot&&!slot.advancing){slot.advancing=true;transition(true,true)}
+      });
+    }
     slot.audio.addEventListener("error",()=>{
       if(slot.destroyed||current!==slot||slot.advancing)return;
       recordFailure(slot.url);
@@ -201,14 +209,15 @@
   }
 
   function makeSlot(state,url){
-    const audio=new Audio(url);
-    /* Metadata avoids eagerly buffering several full MP3s merely because their
-     * category was visited once. The active song still streams normally. */
-    audio.preload="metadata";
-    audio.loop=false;
+    const audio=new Audio(url),meteredRemote=isMeteredRemoteTrack(url);
+    /* Remote CDN songs are chosen once per state for this run and loop locally.
+     * That preserves soundtrack variety between runs without downloading another
+     * multi-megabyte Supabase MP3 every time a song reaches its end. */
+    audio.preload=meteredRemote?"none":"metadata";
+    audio.loop=meteredRemote;
     audio.volume=0;
     audio.playbackRate=1;
-    const slot={audio,state,url,advancing:false,armed:false,destroyed:false};
+    const slot={audio,state,url,meteredRemote,advancing:false,armed:false,destroyed:false};
     armAdvance(slot);
     return slot;
   }
@@ -416,11 +425,14 @@
           url:slot?.url||"",
           time:Number(slot?.audio?.currentTime||0),
           paused:Boolean(slot?.audio?.paused??true),
-          active:slot===current
+          active:slot===current,
+          meteredRemote:Boolean(slot?.meteredRemote),
+          looping:Boolean(slot?.audio?.loop)
         }];
       }))
     }),
     getPlaylist:state=>categorySources(normaliseState(state)),
+    isMeteredRemoteTrack,
     crossfadeMs:0,
     exclusive:true
   };
