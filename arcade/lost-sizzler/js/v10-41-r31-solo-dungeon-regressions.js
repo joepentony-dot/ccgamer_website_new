@@ -9,8 +9,8 @@
   const POST_RESUME_ATTACK_GRACE_MS=2600;
   const ACTIVE_SPECIAL_MODES=new Set(["horde-survivor","sizzler-saboteurs"]);
   const state={
-    timer:0,monitorTimer:0,installed:false,chestWrapped:false,pauseWrapped:false,shopBound:false,styleInstalled:false,cpuCookRenderWrapped:false,cpuCookSpawnWrapped:false,
-    shopWalletRefreshes:0,chestImmediateDeliveries:0,chestFeedbacks:0,cpuCookRepairs:0,genericCookRelabels:0,pauseCombatResets:0,postResumeAttackRearms:0,lastResumeAt:0,lastHost:null
+    timer:0,monitorTimer:0,installed:false,chestWrapped:false,pauseWrapped:false,panelBound:false,shopBound:false,styleInstalled:false,cpuCookRenderWrapped:false,cpuCookSpawnWrapped:false,
+    shopWalletRefreshes:0,chestImmediateDeliveries:0,chestFeedbacks:0,cpuCookRepairs:0,genericCookRelabels:0,pauseCombatResets:0,postResumeAttackRearms:0,displayRecoveries:0,displayFrames:0,lastResumeAt:0,lastHost:null
   };
 
   const specialType=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")}catch(_){return""}};
@@ -43,7 +43,7 @@
       if(scoreNode)scoreNode.textContent=formatScore(score);
       if(hudScore)hudScore.textContent=formatScore(score);
       if(artefactNode){let count=0;try{count=PGR?.inventoryKindCount?.(p1,"artefact")||0}catch(_){}artefactNode.textContent=String(Math.max(0,Number(count)||0))}
-      if(nextNode){let next=1000;try{next=typeof shopScorePrice==="function"?shopScorePrice(activeShop):1000*(1+Math.max(0,Number(activeShop.scorePurchases)||0))}catch(_){}nextNode.textContent=String(Math.max(0,Math.floor(Number(next)||0)))}
+      if(nextNode){let next=1000;try{next=typeof shopScorePrice==="function"?shopScorePrice(activeShop):1000*(2**Math.max(0,Math.floor(Number(activeShop.scorePurchases)||0)))}catch(_){}nextNode.textContent=String(Math.max(0,Math.floor(Number(next)||0)))}
       state.shopWalletRefreshes++;return true
     }catch(_){return false}
   }
@@ -66,7 +66,7 @@
   }
   function chestFeedback(chest,loot){
     if(!chest||!loot)return false;
-    const rarity=String(loot.rarity||"LOOT").toUpperCase(),name=lootName(loot),text=`${rarity} · ${name}`;
+    const rarity=String(loot.rarity||"LOOT").toUpperCase(),name=lootName(loot),scoreReward=Math.max(0,Math.floor(Number(chest.rewardScore)||0)),xpReward=Math.max(0,Math.floor(Number(chest.rewardXp)||0)),rewardText=[scoreReward?`+${scoreReward.toLocaleString()} SCORE`:"",xpReward?`+${xpReward} XP`:""].filter(Boolean).join(" · "),text=`${rarity} · ${name}${rewardText?` · ${rewardText}`:""}`;
     try{floatText(chest.x,chest.y,text,lootColour(loot),{life:2400})}catch(_){}
     chest._v141R31Feedback=text;state.chestFeedbacks++;return true
   }
@@ -179,16 +179,46 @@
     try{document.getElementById("game")?.focus?.({preventScroll:true})}catch(_){}
     return reason
   }
+  function visiblePanel(id){const node=document.getElementById(id);return Boolean(node&&!node.classList.contains("hidden"))}
+  function recoverSoloDisplay(reason="panel close"){
+    if(!dungeonSolo()||document.body?.dataset?.runActive!=="true")return false;
+    if(visiblePanel("pause")||visiblePanel("inventory-panel")||visiblePanel("item-info-panel")||visiblePanel("named-dossier-panel")||visiblePanel("shop-panel"))return false;
+    try{if(["paused","inventory","dossier"].includes(mode))mode="playing"}catch(_){}
+    try{input?.clear?.();last=performance.now();cameras?.clear?.()}catch(_){}
+    const draw=()=>{
+      try{
+        window.__CCG_LOST_SIZZLER_SCHEDULE_RESIZE__?.();
+        if(typeof resizeGameCanvas==="function")resizeGameCanvas();
+        if(typeof render==="function")render();
+        if(canvas&&canvas.width>0&&canvas.height>0)state.displayFrames++;
+      }catch(error){try{console.warn("[Lost Sizzler r31] Solo display recovery retry",error)}catch(_){}}
+    };
+    draw();try{requestAnimationFrame(draw)}catch(_){}setTimeout(draw,60);
+    state.displayRecoveries++;
+    try{document.getElementById("game")?.focus?.({preventScroll:true})}catch(_){}
+    return reason
+  }
+  function scheduleDisplayRecovery(reason){queueMicrotask(()=>recoverSoloDisplay(reason));setTimeout(()=>recoverSoloDisplay(reason),80)}
+  function onPanelReturn(event){
+    const id=String(event.target?.closest?.("button")?.id||"");
+    if(!["resume-btn","inventory-close","inventory-close-top","item-info-close","named-dossier-close","named-dossier-close-top","shop-close"].includes(id))return;
+    scheduleDisplayRecovery(id)
+  }
+  function onPanelReturnKey(event){if(!["Escape","Tab"].includes(event.code))return;scheduleDisplayRecovery(event.code)}
+  function installPanelReturnFix(){
+    if(state.panelBound)return true;
+    document.addEventListener("click",onPanelReturn,true);addEventListener("keydown",onPanelReturnKey,true);state.panelBound=true;return true
+  }
   function installPauseFix(){
     if(state.pauseWrapped)return true;
     const currentClose=window.closePauseMenu,currentPause=window.pause;
     if(typeof currentClose!=="function"||typeof currentPause!=="function")return false;
     if(!currentClose.__ccgV141R31PauseFix){
-      const wrappedClose=function closePauseMenuV141R31(){const wasSolo=dungeonSolo();const result=currentClose.apply(this,arguments);if(wasSolo)queueMicrotask(()=>resetSoloCombatAfterResume("close pause"));return result};
+      const wrappedClose=function closePauseMenuV141R31(){const wasSolo=dungeonSolo();const result=currentClose.apply(this,arguments);if(wasSolo){queueMicrotask(()=>resetSoloCombatAfterResume("close pause"));scheduleDisplayRecovery("close pause")}return result};
       wrappedClose.__ccgV141R31PauseFix=true;wrappedClose.__ccgOriginal=currentClose;window.closePauseMenu=wrappedClose;
     }
     if(!currentPause.__ccgV141R31PauseFix){
-      const wrappedPause=function pauseV141R31(){const wasSolo=dungeonSolo(),wasPaused=(()=>{try{return mode==="paused"}catch(_){return false}})();const result=currentPause.apply(this,arguments);if(wasSolo&&wasPaused)queueMicrotask(()=>resetSoloCombatAfterResume("pause toggle"));return result};
+      const wrappedPause=function pauseV141R31(){const wasSolo=dungeonSolo(),wasPaused=(()=>{try{return mode==="paused"}catch(_){return false}})();const result=currentPause.apply(this,arguments);if(wasSolo&&wasPaused){queueMicrotask(()=>resetSoloCombatAfterResume("pause toggle"));scheduleDisplayRecovery("pause toggle")}return result};
       wrappedPause.__ccgV141R31PauseFix=true;wrappedPause.__ccgOriginal=currentPause;window.pause=wrappedPause;
     }
     state.pauseWrapped=true;return true
@@ -204,7 +234,12 @@
     ["LS-0827-02","FIXED","Sizzler chest reward feedback","Chest loot is delivered on the opening action and the exact rarity/item name is announced at the chest, preventing a pause during the old delay from swallowing the reward."],
     ["LS-0827-03","FIXED","CPU Cook named presentation","The configured CPU follower is normalised to CPU Cook with its named portrait treatment, while ordinary cook enemies keep a separate Kitchen Cook identity."],
     ["LS-0827-04","FIXED","Solo attack loss after repeated pauses","Solo Dungeon resume now clears stale attack cooldown/buffer and transient control locks, with a short post-resume attack rearm safeguard."],
-    ["LS-0827-05","FIXED","Solo score HUD visibility","The Solo Dungeon score cell is kept above overlapping hub layers and its live value is refreshed alongside shop transactions."]
+    ["LS-0827-05","FIXED","Solo score HUD visibility","The Solo Dungeon score cell is kept above overlapping hub layers and its live value is refreshed alongside shop transactions."],
+    ["LS-0827-06","FIXED","Black screen after Pause or inventory","Returning from Pause, inventory, item information or the dossier now restores the live Solo render frame, canvas sizing, camera state and keyboard focus."],
+    ["LS-0827-07","FIXED","Repeat shop purchases","Normal shop stock no longer becomes Sold or Traded after one purchase. The shared price now doubles through 1,000, 2,000, 4,000 and onward for every purchase made at that shop."],
+    ["LS-0827-08","ADDED","Guaranteed chest score and XP","Every opened chest now awards 10 XP plus a depth-scaled score reward, with the exact amounts displayed at the chest and in the reward notice."],
+    ["LS-0827-09","FIXED","Death Stalker pursuit","Without a lit torch frightening it, the Death Stalker now clears ordinary cover and flank tactics and takes a direct pursuit route toward the player."],
+    ["LS-0827-10","FIXED","Repeat rating prompt for signed-in players","Before showing Rate This Game, the game now checks whether the verified signed-in account has already submitted a rating and suppresses the prompt when it has."]
   ];
   const escLog=value=>String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   function mountLog(){
@@ -221,7 +256,7 @@
 
   function monitor(){
     try{
-      installChestFix();installPauseFix();installCpuCookSpawnFix();installCpuCookRenderFix();
+      installChestFix();installPauseFix();installPanelReturnFix();installCpuCookSpawnFix();installCpuCookRenderFix();
       if(dungeonSolo()){
         if(host&&host!==state.lastHost){state.lastHost=host;normaliseCpuCook()}
         else normaliseCpuCook();
@@ -235,7 +270,7 @@
   function install(){
     const gate=window.CCGLostSizzlerReleaseGate;if(gate&&!gate.state?.ready)return false;
     if(!document.body||!window.CCGLostSizzlerModeRuntime||typeof window.openChest!=="function"||typeof window.pause!=="function")return false;
-    installScoreVisibilityStyle();installShopFix();installChestFix();installPauseFix();installCpuCookSpawnFix();installCpuCookRenderFix();
+    installScoreVisibilityStyle();installShopFix();installChestFix();installPauseFix();installPanelReturnFix();installCpuCookSpawnFix();installCpuCookRenderFix();
     addEventListener("keydown",onPostResumeAttack,true);
     monitor();state.monitorTimer=setInterval(monitor,MONITOR_MS);
     state.installed=true;document.body.dataset.v141R31SoloDungeon="true";return true
@@ -245,8 +280,9 @@
   addEventListener("pagehide",()=>{
     if(state.timer)clearInterval(state.timer);if(state.monitorTimer)clearInterval(state.monitorTimer);state.timer=state.monitorTimer=0;
     if(state.shopBound)document.removeEventListener("click",onShopClick,true);
+    if(state.panelBound){document.removeEventListener("click",onPanelReturn,true);removeEventListener("keydown",onPanelReturnKey,true)}
     removeEventListener("keydown",onPostResumeAttack,true)
   },{once:true});
 
-  window.CCGLostSizzlerV141R31SoloDungeon={refreshShopWallet,normaliseCpuCook,genericCookDisplayName,resetSoloCombatAfterResume,installChestFix,installPauseFix,installCpuCookSpawnFix,installCpuCookRenderFix,mountLog,monitor,logEntries,get state(){return state}};
+  window.CCGLostSizzlerV141R31SoloDungeon={refreshShopWallet,normaliseCpuCook,genericCookDisplayName,resetSoloCombatAfterResume,recoverSoloDisplay,installChestFix,installPauseFix,installPanelReturnFix,installCpuCookSpawnFix,installCpuCookRenderFix,mountLog,monitor,logEntries,get state(){return state}};
 })();

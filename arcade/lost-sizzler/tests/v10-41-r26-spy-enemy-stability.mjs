@@ -11,7 +11,7 @@ const hotfix=read("js/v10-41-r26-spy-enemy-stability.js");
 const controller=read("js/v10-41-mode-runtime.js");
 const index=read("index.html");
 
-assert.match(index,/v10-41-r26-spy-enemy-stability\.js\?v=20260826r30/,"canonical page must retain the r26 stability hotfix under the current r30 cache shell");
+assert.match(index,/v10-41-r26-spy-enemy-stability\.js\?v=20260827r31/,"canonical page must retain the r26 stability hotfix under the current r30 cache shell");
 assert.match(hotfix,/const SPY_MOVE_CADENCE_MS=220;/,"the retained r26 diagnostic API must preserve the historical 220ms value");
 assert.match(hotfix,/state\.controllerOwnedMovement=true/,"r26 must declare controller-owned Spy movement");
 assert.match(hotfix,/state\.controllerOwnedUpdate=true/,"r26 must declare controller-owned frame execution");

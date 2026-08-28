@@ -33,10 +33,10 @@
   let activePlayedMs=0;
   let lastPlayTick=performance.now();
   let ratingShown=false;
-  let ratingAlreadySubmitted=false;
-  let ratingEligibilityChecked=false;
-  let ratingUserId="";
-  let ratingCheckPromise=null;
+  let ratingCheckPending=false;
+  let accountRatingChecked=false;
+  let accountAlreadyRated=false;
+  let accountRatingPromise=null;
   let pausedByRating=false;
   let ratingTimer=null;
   let runObserver=null;
@@ -89,56 +89,28 @@
     }
   }
 
-  function ratingStorageKey(userId=ratingUserId){return userId?`ccg-lost-sizzler-rated:${userId}`:"";}
-  function markRatingKnown(userId=ratingUserId){
-    ratingAlreadySubmitted=true;
-    ratingShown=true;
-    ratingEligibilityChecked=true;
-    if(userId){ratingUserId=String(userId);try{localStorage.setItem(ratingStorageKey(ratingUserId),"1");}catch(_){}}
-    try{sessionStorage.setItem("ccg-lost-sizzler-rating-shown","1");}catch(_){}
-    document.body?.setAttribute?.("data-ccg-lost-sizzler-rated","true");
-    const panel=document.getElementById("ccg-rating-panel");
-    if(panel&&!panel.classList.contains("hidden"))panel.classList.add("hidden");
-    if(pausedByRating){
-      pausedByRating=false;
-      try{if(typeof pause==="function"&&typeof mode!=="undefined"&&mode==="paused")pause(true);}catch(_){}
-    }
-    return true;
-  }
-  function clearAccountRatingState(){
-    ratingAlreadySubmitted=false;
-    ratingEligibilityChecked=false;
-    ratingUserId="";
-    document.body?.removeAttribute?.("data-ccg-lost-sizzler-rated");
-  }
-  async function checkRatingEligibility(force=false){
-    if(ratingCheckPromise&&!force)return ratingCheckPromise;
-    ratingCheckPromise=(async()=>{
+  async function accountHasRating(force=false){
+    if(accountRatingChecked&&!force)return accountAlreadyRated;
+    if(accountRatingPromise)return accountRatingPromise;
+    accountRatingPromise=(async()=>{
       try{
-        const context=await window.ccgSupabase?.getCurrentUserContext?.(),user=context?.user||null;
-        if(!user){ratingUserId="";ratingAlreadySubmitted=false;ratingEligibilityChecked=true;document.body?.removeAttribute?.("data-ccg-lost-sizzler-rated");return false;}
-        ratingUserId=String(user.id||"");
-        const key=ratingStorageKey(ratingUserId);
-        if(key&&localStorage.getItem(key)==="1"){markRatingKnown(ratingUserId);return true;}
         const client=await window.ccgSupabase?.getClient?.();
-        if(!client?.functions?.invoke){ratingEligibilityChecked=true;return false;}
+        if(!client)return false;
         const {data,error}=await client.functions.invoke(FUNCTION_NAME,{body:{action:"rating_status"}});
-        if(error||data?.success===false)throw error||new Error(String(data?.error||"rating status unavailable"));
-        ratingEligibilityChecked=true;
-        if(data?.rated){markRatingKnown(ratingUserId);return true;}
-        ratingAlreadySubmitted=false;document.body?.removeAttribute?.("data-ccg-lost-sizzler-rated");return false;
-      }catch(error){
-        ratingEligibilityChecked=true;
-        console.warn("[Lost Sizzler] rating status could not be checked",error);
-        return false;
-      }finally{
-        ratingCheckPromise=null;
-      }
+        if(error||data?.success===false)return false;
+        accountRatingChecked=Boolean(data?.authenticated);
+        accountAlreadyRated=Boolean(data?.authenticated&&data?.rated);
+        return accountAlreadyRated;
+      }catch(_){return false}
+      finally{accountRatingPromise=null}
     })();
-    return ratingCheckPromise;
+    return accountRatingPromise;
   }
-  function onAuthReady(){checkRatingEligibility(true);}
-  function onAuthChanged(){clearAccountRatingState();checkRatingEligibility(true);}
+
+  function rememberRatingShown(){
+    ratingShown=true;
+    try{sessionStorage.setItem("ccg-lost-sizzler-rating-shown","1")}catch(_){}
+  }
 
   function messageRail(){return document.querySelector(".game-message-rail");}
 
@@ -241,7 +213,7 @@
       if(status)status.textContent="Saving your rating…";
       const saved=await sendTelemetry("rating_submitted",{rating,play_mode:(typeof playMode!=="undefined"?playMode:"unknown")});
       if(saved){
-        markRatingKnown(ratingUserId);
+        accountRatingChecked=true;accountAlreadyRated=true;
         if(status)status.textContent=`Thank you — ${rating}/5 recorded.`;
         setTimeout(finish,700);
       }else{
@@ -257,16 +229,18 @@
     return overlay;
   }
 
-  function showRating(){
-    if(ratingShown||ratingAlreadySubmitted)return;
-    if(!ratingEligibilityChecked){
-      checkRatingEligibility(true).then(()=>{
-        if(!ratingShown&&!ratingAlreadySubmitted&&activePlayedMs>=300000)showRating();
-      });
-      return;
-    }
-    ratingShown=true;
-    try{sessionStorage.setItem("ccg-lost-sizzler-rating-shown","1");}catch(_){}
+  async function showRating(){
+    if(ratingShown||ratingCheckPending)return false;
+    ratingCheckPending=true;
+    try{
+      if(await accountHasRating()){
+        rememberRatingShown();
+        ensureRatingOverlay()?.classList.add("hidden");
+        return false;
+      }
+    }finally{ratingCheckPending=false}
+    if(ratingShown)return false;
+    rememberRatingShown();
     if(!isDesktopNotice()){
       try{
         if(typeof pause==="function"&&typeof mode!=="undefined"&&mode==="playing"){
@@ -279,6 +253,7 @@
     }
     ensureRatingOverlay()?.classList.remove("hidden");
     window.CCGLostSizzlerBrowserStability?.resize?.();
+    return true;
   }
 
   function ratingClock(){
@@ -287,7 +262,7 @@
     lastPlayTick=now;
     if(document.hidden)return;
     if(currentRunActive())activePlayedMs+=delta;
-    if(activePlayedMs>=300000&&!ratingShown&&!ratingAlreadySubmitted)showRating();
+    if(activePlayedMs>=300000&&!ratingShown)showRating();
   }
 
   function watchRunStarts(){
@@ -316,7 +291,6 @@
     style.id="ccg-lost-sizzler-insight-styles";
     style.textContent=`
       #ccg-important-notices{display:none!important}
-      body[data-ccg-lost-sizzler-rated="true"] #ccg-rating-panel{display:none!important}
       .ccg-game .ccg-insight-overlay{z-index:190!important}.ccg-insight-card{width:min(600px,94vw)!important;text-align:center}.ccg-insight-kicker{margin:0 0 5px!important;color:#6cecff!important;font:700 10px/1.2 "Courier New",monospace;letter-spacing:1.4px}
       .ccg-rating-rail{width:100%;min-width:0}.ccg-rating-rail-card{padding:8px 10px;border:1px solid rgba(255,216,90,.75);background:rgba(8,5,14,.98);text-align:center;overflow-wrap:anywhere}.ccg-rating-rail-card h2{margin:2px 0 3px;font-size:13px;color:#fff}.ccg-rating-rail-card p{margin:2px 0;font-size:9px;line-height:1.25}.ccg-rating-rail-card .menu-buttons{display:flex;justify-content:center;gap:6px;margin:4px 0 0}.ccg-rating-rail-card .menu-buttons button{width:auto;font-size:8px;padding:5px 7px}
       .ccg-star-row{display:flex;justify-content:center;gap:4px;margin:5px 0}.ccg-star-row button{border:1px solid rgba(255,216,90,.5);background:#0b0710;color:#8d7c52;font-size:20px;line-height:1;padding:3px 5px;cursor:pointer}.ccg-star-row button:hover,.ccg-star-row button:focus,.ccg-star-row button.selected{color:#ffd85a;border-color:#ffd85a;transform:translateY(-1px)}.ccg-star-row button:disabled{cursor:wait;opacity:.75}
@@ -328,8 +302,6 @@
 
   function cleanup(){
     document.removeEventListener("click",onStartClick,true);
-    window.removeEventListener("ccg:auth-ready",onAuthReady);
-    window.removeEventListener("ccg:auth-changed",onAuthChanged);
     runObserver?.disconnect();
     runObserver=null;
     if(ratingTimer)clearInterval(ratingTimer);
@@ -342,17 +314,14 @@
     ensureMobileNotice();
     ensureRatingOverlay();
     document.addEventListener("click",onStartClick,true);
-    window.addEventListener("ccg:auth-ready",onAuthReady);
-    window.addEventListener("ccg:auth-changed",onAuthChanged);
     watchRunStarts();
     try{ratingShown=sessionStorage.getItem("ccg-lost-sizzler-rating-shown")==="1";}catch(_){}
-    checkRatingEligibility(true);
+    accountHasRating().then(rated=>{if(rated)rememberRatingShown()});
     ratingTimer=setInterval(ratingClock,1000);
     window.addEventListener("pagehide",cleanup,{once:true});
+    window.CCGLostSizzlerPlayerInsights={showRating,accountHasRating,get state(){return{ratingShown,ratingCheckPending,accountRatingChecked,accountAlreadyRated,activePlayedMs}}};
   }
 
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});
   else init();
-
-  window.CCGLostSizzlerPlayerInsights={checkRatingEligibility,markRatingKnown,get ratingAlreadySubmitted(){return ratingAlreadySubmitted},get ratingEligibilityChecked(){return ratingEligibilityChecked}};
 })();
