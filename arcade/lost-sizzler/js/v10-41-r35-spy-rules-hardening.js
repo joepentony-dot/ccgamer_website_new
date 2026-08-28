@@ -23,6 +23,7 @@
     trapSeedKey:"",trapPickupsSeeded:0,trapPickupsFound:0,objectsPurged:0,knockoutsProcessed:0,ghostRespawns:0,lootTransfers:0,
     inventorySnapshots:new Map(),seenEvents:new Set(),seenEventOrder:[],lastControlSignature:"",
     renderSource:null,renderGuard:null,renderGuardCalls:0,lastRenderCallAt:0,lastProbeAt:0,lastBackupAt:0,blackProbeStreak:0,blackRecoveries:0,renderErrors:0,
+    quarantinedRenderSource:null,blackSourceQuarantines:0,
     backupCanvas:null,backupCtx:null,probeCanvas:null,probeCtx:null,lastGoodReady:false,renderRecoveryQueued:false
   };
 
@@ -189,7 +190,12 @@
 
   function installRenderGuard(force=false){
     if(!spyActive()||!finalOwner())return false;let current=null;try{current=window.render}catch(_){return false}if(typeof current!=="function")return false;if(!force&&current===state.renderGuard)return true;if(!force&&state.renderGuard&&now()-state.lastRenderCallAt<650)return true;if(current?.__ccgV141R35SpyBlackGuard){state.renderGuard=current;return true}state.renderSource=current;
-    const wrapped=function renderSpyR35BlackGuard(){state.renderGuardCalls++;state.lastRenderCallAt=now();let result;try{result=current.apply(this,arguments)}catch(error){state.renderErrors++;if(spyActive()&&restoreGoodFrame()){queueRenderRecovery();return}queueRenderRecovery();return}if(!spyActive())return result;const t=now();if(t-state.lastProbeAt>=PROBE_MS){state.lastProbeAt=t;if(canvasLooksBlack()){state.blackProbeStreak++;if(state.blackProbeStreak>=2&&restoreGoodFrame())queueRenderRecovery()}else{state.blackProbeStreak=0;if(t-state.lastBackupAt>=BACKUP_MS)backupGoodFrame()}}return result};
+    const wrapped=function renderSpyR35BlackGuard(){
+      state.renderGuardCalls++;state.lastRenderCallAt=now();
+      if(spyActive()&&state.quarantinedRenderSource===current){if(restoreGoodFrame())queueRenderRecovery();return}
+      let result;try{result=current.apply(this,arguments)}catch(error){state.renderErrors++;if(spyActive()&&restoreGoodFrame()){state.quarantinedRenderSource=current;state.blackSourceQuarantines++;queueRenderRecovery();return}queueRenderRecovery();return}
+      if(!spyActive())return result;const t=now();if(t-state.lastProbeAt>=PROBE_MS){state.lastProbeAt=t;if(canvasLooksBlack()){state.blackProbeStreak++;if(state.blackProbeStreak>=2&&restoreGoodFrame()){if(state.quarantinedRenderSource!==current){state.quarantinedRenderSource=current;state.blackSourceQuarantines++}queueRenderRecovery()}}else{state.blackProbeStreak=0;if(t-state.lastBackupAt>=BACKUP_MS)backupGoodFrame()}}return result
+    };
     wrapped.__ccgV141R35SpyBlackGuard=true;wrapped.__ccgOriginal=current;window.render=wrapped;state.renderGuard=wrapped;state.lastRenderCallAt=now();return true
   }
 
