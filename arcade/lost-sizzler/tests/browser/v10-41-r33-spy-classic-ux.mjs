@@ -25,7 +25,24 @@ try{
   const context=await browser.newContext({viewport:{width:1600,height:1000}}),page=await context.newPage();page.setDefaultTimeout(45000);const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
   console.log("[r33 Spy] load canonical page");
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R32SpyLoader));
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R32SpyLoader)&&Boolean(window.CCGLostSizzlerPlayerInsights));
+
+  console.log("[r33 Spy] validate global account-rated suppression");
+  const globalRating=await page.evaluate(async()=>{
+    const insights=window.CCGLostSizzlerPlayerInsights,supabase=window.ccgSupabase||(window.ccgSupabase={}),original=supabase.getCurrentUserContext;
+    supabase.getCurrentUserContext=async()=>({user:{id:"R33-RATED-USER"}});
+    localStorage.setItem("ccg-lost-sizzler-rated:R33-RATED-USER","1");
+    await insights.checkRatingEligibility(true);
+    const panel=document.getElementById("ccg-rating-panel");panel?.classList?.remove("hidden");
+    // The global owner must suppress the prompt independently of Spy being active.
+    insights.markRatingKnown("R33-RATED-USER");
+    const result={rated:insights.ratingAlreadySubmitted,checked:insights.ratingEligibilityChecked,hidden:Boolean(panel?.classList?.contains("hidden")),attr:document.body.dataset.ccgLostSizzlerRated||""};
+    supabase.getCurrentUserContext=original;return result;
+  });
+  assert.equal(globalRating.checked,true,"global player-insights owner must complete the account rating eligibility check");
+  assert.equal(globalRating.rated,true,"global player-insights owner must recognise an already-rated logged-in account");
+  assert.equal(globalRating.hidden,true,"already-rated account must not be shown the rating popup again in any game mode");
+  assert.equal(globalRating.attr,"true","global account-rated state must expose the CSS suppression guard");
 
   console.log("[r33 Spy] start through special-mode adapter");
   const started=await page.evaluate(()=>{
@@ -84,14 +101,14 @@ try{
   const repeated=await page.evaluate(()=>({toast:document.getElementById("spy-r32-objective-toast")?.textContent||"",indicator:document.getElementById("spy-search-label")?.textContent||""}));
   assert.ok(repeated.toast.includes("YOU HAVE ALREADY SEARCHED")||repeated.indicator.includes("YOU HAVE ALREADY SEARCHED"),`second search must say YOU HAVE ALREADY SEARCHED; ${JSON.stringify(repeated)}`);
 
-  console.log("[r33 Spy] validate account-rated suppression");
+  console.log("[r33 Spy] validate lazy Spy rating guard agrees with global owner");
   const rating=await page.evaluate(async()=>{
     const api=window.CCGLostSizzlerV141R32SpyPacketOwner,supabase=window.ccgSupabase||(window.ccgSupabase={}),original=supabase.getCurrentUserContext;
     supabase.getCurrentUserContext=async()=>({user:{id:"R33-RATED-USER"}});localStorage.setItem("ccg-lost-sizzler-rated:R33-RATED-USER","1");api.state.ratingChecked=false;await api.checkRatingEligibility(true);const panel=document.getElementById("ccg-rating-panel");panel?.classList?.remove("hidden");api.suppressRatingPrompt();supabase.getCurrentUserContext=original;return{rated:api.state.ratingAlreadySubmitted,hidden:Boolean(panel?.classList?.contains("hidden")),attr:document.body.dataset.ccgLostSizzlerRated||""};
   });
-  assert.equal(rating.rated,true,"account-rated guard must recognise an already-rated logged-in account");
-  assert.equal(rating.hidden,true,"already-rated account must not be shown the rating popup again");
-  assert.equal(rating.attr,"true","already-rated state must be exposed to the CSS suppression guard");
+  assert.equal(rating.rated,true,"lazy Spy owner must agree that the logged-in account has already rated");
+  assert.equal(rating.hidden,true,"Spy must not reopen the global rating prompt for an already-rated account");
+  assert.equal(rating.attr,"true","already-rated state must remain exposed to the suppression guard in Spy");
 
   console.log("[r33 Spy] validate two-live-agent split render");
   const fakeRemote=await page.evaluate(()=>{
@@ -101,7 +118,7 @@ try{
   assert.ok(fakeRemote.panels.every(height=>height>50),"both split-screen Trapulator halves must remain visible after rendering two live agents");
 
   assert.deepEqual(errors,[],`r33 Spy classic UX browser regression must have no uncaught errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler r33 Spy split HUD, TAB inventory, rooms-only map, repeated-search and rating guards passed in Chromium.");
+  console.log("Lost Sizzler r33 Spy split HUD, TAB inventory, rooms-only map, repeated-search and account-rating guards passed in Chromium.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
