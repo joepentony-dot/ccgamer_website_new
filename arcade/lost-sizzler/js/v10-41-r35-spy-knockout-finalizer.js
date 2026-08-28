@@ -4,14 +4,17 @@
  * ghost/capture rules. A lethal weapon/trap hit must become the ten-second
  * ghost state in the same action that caused the knockout; the r35 event sweep
  * remains as a fallback for network/replayed knockout events.
+ *
+ * This finalizer also keeps the existing r35 black-canvas watchdog on the
+ * actual top-level Spy render chain if a later presentation owner replaces it.
  */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V141_R35_SPY_KNOCKOUT_FINALIZER__)return;
   window.__CCG_LOST_SIZZLER_V141_R35_SPY_KNOCKOUT_FINALIZER__=true;
 
-  const MODE_ID="sizzler-saboteurs";
-  const state={installed:false,weaponFinalizations:0,trapFinalizations:0,lastError:""};
+  const MODE_ID="sizzler-saboteurs",MONITOR_MS=40;
+  const state={installed:false,weaponFinalizations:0,trapFinalizations:0,renderSeals:0,renderTimer:0,lastError:""};
 
   const spyActive=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type===MODE_ID||document.body?.dataset?.specialMode===MODE_ID}catch(_){return false}};
   const hardening=()=>{try{return window.CCGLostSizzlerV141R35SpyRulesHardening||null}catch(_){return null}};
@@ -25,6 +28,15 @@
     const converted=target.status==="ghost";
     if(converted){if(kind==="trap")state.trapFinalizations++;else state.weaponFinalizations++}
     return converted
+  }
+
+  function sealRenderGuard(){
+    if(!spyActive())return false;
+    const hard=hardening();if(typeof hard?.installRenderGuard!=="function")return false;
+    let before=null;try{before=window.render}catch(_){return false}
+    const already=Boolean(before?.__ccgV141R35SpyBlackGuard),sealed=Boolean(hard.installRenderGuard(true));
+    if(sealed&&!already&&window.render?.__ccgV141R35SpyBlackGuard)state.renderSeals++;
+    return sealed
   }
 
   function install(){
@@ -62,10 +74,13 @@
     state.installed=true;state.lastError="";return true
   }
 
-  if(!install()){
-    const timer=setInterval(()=>{if(install())clearInterval(timer)},20);
-    setTimeout(()=>clearInterval(timer),5000)
+  function monitor(){
+    if(!state.installed)install();
+    if(spyActive())sealRenderGuard()
   }
 
-  window.CCGLostSizzlerV141R35SpyKnockoutFinalizer={install,finalizeKnockout,get state(){return state}};
+  monitor();state.renderTimer=setInterval(()=>{try{monitor()}catch(error){state.lastError=String(error?.message||error);console.warn("[Lost Sizzler r35] final Spy seal failed safely",error)}},MONITOR_MS);
+  addEventListener("pagehide",()=>{if(state.renderTimer)clearInterval(state.renderTimer);state.renderTimer=0},{once:true});
+
+  window.CCGLostSizzlerV141R35SpyKnockoutFinalizer={install,finalizeKnockout,sealRenderGuard,get state(){return state}};
 })();
