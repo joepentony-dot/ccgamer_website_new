@@ -1,10 +1,11 @@
-/* The Lost Sizzler V10.41 r32 — Spy-only lazy loader.
+/* The Lost Sizzler V10.41 r32/r35 — Spy-only lazy loader.
  *
  * The full overhaul has no reason to install during Solo, Horde or ordinary
  * online Dungeon sessions. Keep those startup/network paths untouched and load
- * the r32 overhaul/network owners only after Sizzler Saboteurs is active. The
- * lightweight world-owner bridge is preloaded separately so the first Spy world
- * build is already deterministic before these asynchronous owners arrive.
+ * the Spy owners only after Sizzler Saboteurs is active. r35 is deliberately
+ * loaded after the overhaul but before the final packet owner so TAB/F keyboard
+ * ownership is settled before the r33 guard installs. r34 presentation loads
+ * after the packet owner because it consumes the final Trapulator panels.
  */
 (()=>{
   "use strict";
@@ -13,7 +14,13 @@
 
   const MODE_ID="sizzler-saboteurs",MONITOR_MS=20;
   const OWNER_ACTION_CODES=new Set(["KeyE","KeyT","KeyX"]);
-  const state={timer:0,loading:false,loaded:false,loads:0,lastError:"",uiLoading:false,uiLoaded:false,uiLoads:0,uiLastError:"",pendingActionCode:"",queuedActions:0,replayedActions:0,queuedSearchFeedbacks:0,directSearchActions:0,searchTargetBridges:0,searchRoomBridges:0,searchKeyDowns:0,searchKeyUpFallbacks:0};
+  const state={
+    timer:0,loading:false,loaded:false,loads:0,lastError:"",
+    uiLoading:false,uiLoaded:false,uiLoads:0,uiLastError:"",
+    hardeningLoaded:false,fullscreenUiLoaded:false,
+    pendingActionCode:"",queuedActions:0,replayedActions:0,queuedSearchFeedbacks:0,directSearchActions:0,
+    searchTargetBridges:0,searchRoomBridges:0,searchKeyDowns:0,searchKeyUpFallbacks:0
+  };
   let loadPromise=null,uiPromise=null,pendingActionPromise=null,lastSearchDispatchAt=0;
 
   const spyActive=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type===MODE_ID||document.body?.dataset?.specialMode===MODE_ID}catch(_){return false}};
@@ -56,7 +63,11 @@
     loadPromise=(async()=>{
       try{
         await loadScript("v10-41-r32-spy-overhaul.js","data-ccg-r32-spy-overhaul",()=>Boolean(window.CCGLostSizzlerV141R32SpyOverhaul));
+        await loadScript("v10-41-r35-spy-rules-hardening.js","data-ccg-r35-spy-rules-hardening",()=>Boolean(window.CCGLostSizzlerV141R35SpyRulesHardening));
+        state.hardeningLoaded=true;
         await loadScript("v10-41-r32-spy-packet-owner.js","data-ccg-r32-spy-packet-owner",()=>Boolean(window.CCGLostSizzlerV141R32SpyPacketOwner));
+        await loadScript("v10-41-r34-spy-fullscreen-ui.js","data-ccg-r34-spy-fullscreen-ui",()=>Boolean(window.CCGLostSizzlerV141R34SpyFullscreenUi));
+        state.fullscreenUiLoaded=true;
         await ensureSearchUi();
         state.loaded=true;state.loads++;state.lastError="";return true
       }catch(error){state.lastError=String(error?.message||error);console.warn("[Lost Sizzler r32] Spy lazy load failed safely",error);return false}
