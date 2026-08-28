@@ -63,8 +63,18 @@ try{
 
   console.log("[r35 Spy] 0 HP becomes ten-second ghost and transfers carried kit");
   const knockoutSetup=await page.evaluate(()=>{
-    const m=window.CCGLostSizzlerSpecialModes.active.state,me=m.players.find(row=>String(row.id)===String(p1.id))||m.players[0],victim=m.players.find(row=>row.id==="R35-SPY-B");victim.roomId=me.roomId;victim.hp=1;victim.status="active";victim.hasCase=true;victim.objectives=["joystick"];victim.looseItem="tape";victim.weapon={...window.CCGLostSizzlerSaboteurs.WEAPONS.chicken};victim.counter="raincoat";victim.trapCharges=2;me.weapon=null;me.counter=null;me.trapCharges=0;me.hasCase=false;me.objectives=[];me.looseItem=null;window.CCGLostSizzlerV141R35SpyRulesHardening.refresh();return{beforeEvents:m.events.length}
+    const hard=window.CCGLostSizzlerV141R35SpyRulesHardening,m=window.CCGLostSizzlerSpecialModes.active.state,me=m.players.find(row=>String(row.id)===String(p1.id))||m.players[0],victim=m.players.find(row=>row.id==="R35-SPY-B"),logicalRoom=m.map.rooms.find(row=>row.id===me.roomId),physical=world.rooms[Number(logicalRoom?.dungeonRoomId)];
+    if(!physical)throw new Error("knockout fixture has no physical Spy room");
+    const blocked=(x,y)=>(host.blockingDecor||[]).some(row=>Number(row.x)===x&&Number(row.y)===y);
+    let pair=null;
+    for(let y=Math.ceil(physical.y+1);y<Math.floor(physical.y+physical.h-1)&&!pair;y++)for(let x=Math.ceil(physical.x+1);x<Math.floor(physical.x+physical.w-2)&&!pair;x++)if(world.map?.[y]?.[x]===0&&world.map?.[y]?.[x+1]===0&&!blocked(x,y)&&!blocked(x+1,y))pair=[{x,y},{x:x+1,y}];
+    if(!pair)throw new Error("knockout fixture has no adjacent open Spy cells");
+    const [attackerCell,victimCell]=pair,liveVictim=remote.get(victim.id)||{};
+    p1.x=p1.rx=attackerCell.x;p1.y=p1.ry=attackerCell.y;me.x=attackerCell.x;me.y=attackerCell.y;me.roomId=logicalRoom.id;me.status="active";
+    remote.set(victim.id,{...liveVictim,id:victim.id,name:victim.name,x:victimCell.x,y:victimCell.y,rx:victimCell.x,ry:victimCell.y,lastSeen:performance.now(),health:1,maxHealth:victim.maxHp});
+    victim.x=victimCell.x;victim.y=victimCell.y;victim.roomId=logicalRoom.id;victim.hp=1;victim.status="active";victim.invulnerableUntil=0;victim.hasCase=true;victim.objectives=["joystick"];victim.looseItem="tape";victim.weapon={...window.CCGLostSizzlerSaboteurs.WEAPONS.chicken};victim.counter="raincoat";victim.trapCharges=2;me.weapon=null;me.counter=null;me.trapCharges=0;me.hasCase=false;me.objectives=[];me.looseItem=null;hard.refresh();return{beforeEvents:m.events.length,room:logicalRoom.id,distance:Math.hypot(victimCell.x-attackerCell.x,victimCell.y-attackerCell.y)}
   });
+  assert.ok(knockoutSetup.distance<=3.15,`knockout fixture must place live agents in real attack range: ${JSON.stringify(knockoutSetup)}`);
   await page.waitForTimeout(100);
   const attacked=await page.evaluate(()=>{const m=window.CCGLostSizzlerSpecialModes.active.state,me=m.players.find(row=>String(row.id)===String(p1.id))||m.players[0],victim=m.players.find(row=>row.id==="R35-SPY-B");return window.CCGLostSizzlerSaboteurs.useWeapon(m,me.id,victim.id,Date.now())});
   assert.equal(attacked,true,"real Spy weapon rule must accept the knockout hit");await page.waitForTimeout(180);
