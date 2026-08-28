@@ -2,10 +2,12 @@
  *
  * The full overhaul has no reason to install during Solo, Horde or ordinary
  * online Dungeon sessions. Keep those startup/network paths untouched and load
- * the Spy owners only after Sizzler Saboteurs is active. r35 is deliberately
- * loaded after the overhaul but before the final packet owner so TAB/F keyboard
- * ownership is settled before the r33 guard installs. r34 presentation loads
- * after the packet owner because it consumes the final Trapulator panels.
+ * the Spy owners only after Sizzler Saboteurs is active. The r32 overhaul owns
+ * the actual TAB inventory toggle; the r33 packet/final owner loads immediately
+ * afterwards and seals TAB before r35 is installed. That prevents r35 from
+ * toggling the same key a second time while still leaving F available for its
+ * fullscreen owner. r34 presentation loads after the packet owner because it
+ * consumes the final Trapulator panels.
  */
 (()=>{
   "use strict";
@@ -63,9 +65,9 @@
     loadPromise=(async()=>{
       try{
         await loadScript("v10-41-r32-spy-overhaul.js","data-ccg-r32-spy-overhaul",()=>Boolean(window.CCGLostSizzlerV141R32SpyOverhaul));
+        await loadScript("v10-41-r32-spy-packet-owner.js","data-ccg-r32-spy-packet-owner",()=>Boolean(window.CCGLostSizzlerV141R32SpyPacketOwner));
         await loadScript("v10-41-r35-spy-rules-hardening.js","data-ccg-r35-spy-rules-hardening",()=>Boolean(window.CCGLostSizzlerV141R35SpyRulesHardening));
         state.hardeningLoaded=true;
-        await loadScript("v10-41-r32-spy-packet-owner.js","data-ccg-r32-spy-packet-owner",()=>Boolean(window.CCGLostSizzlerV141R32SpyPacketOwner));
         await loadScript("v10-41-r34-spy-fullscreen-ui.js","data-ccg-r34-spy-fullscreen-ui",()=>Boolean(window.CCGLostSizzlerV141R34SpyFullscreenUi));
         state.fullscreenUiLoaded=true;
         await ensureSearchUi();
