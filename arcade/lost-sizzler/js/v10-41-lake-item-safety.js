@@ -82,4 +82,5 @@
   load("js/v10-41-r24-live-regressions.js","data-ccg-v141-r24-live-regressions");
   load("js/v10-41-r29-loop-finalizer.js","data-ccg-v141-r29-loop-finalizer");
   load("js/v10-41-multimode-performance.js","data-ccg-v141-multimode-performance");
+  load("js/v10-41-r37-global-performance.js","data-ccg-v141-r37-global-performance");
 })();
