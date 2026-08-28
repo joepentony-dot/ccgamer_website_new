@@ -34,7 +34,7 @@ try{
   });
 
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:'domcontentloaded'});
-  await page.waitForFunction(()=>document.body.dataset.releaseReady==='true'&&window.CCG_ADMIN_AUDIO_READY===true&&Boolean(window.CCGLostSizzlerPlaylistAudio));
+  await page.waitForFunction(()=>document.body.dataset.gameReady==='true'&&document.body.dataset.releaseReady==='true'&&window.CCG_ADMIN_AUDIO_READY===true&&Boolean(window.CCGLostSizzlerPlaylistAudio));
 
   const policy=await page.evaluate(()=>({
     skipped:Boolean(window.CCG_ADMIN_AUDIO?.remoteMediaSkipped),
@@ -46,7 +46,7 @@ try{
   assert.equal(policy.skipped,true,`Headless canonical load must skip Supabase audio: ${JSON.stringify(policy)}`);
   assert.equal(policy.remoteAllowed,false,'Remote-media policy must remain closed in the canonical headless browser.');
 
-  await page.evaluate(()=>document.getElementById('solo-btn')?.click());
+  await page.locator('#solo-btn').click({noWaitAfter:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==='true'&&typeof p1!=='undefined'&&Boolean(p1));
   await page.waitForTimeout(1600);
 
