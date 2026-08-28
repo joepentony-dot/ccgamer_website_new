@@ -28,6 +28,11 @@ for(const required of ["id:player.id","name:player.name","x:player.x","y:player.
 for(const forbidden of ["inventory:","weapon:","meleeWeapon:","totalXp:","damageBonus:","potionBonus:"])assert.ok(!compactBody.includes(forbidden),`10 Hz compact Horde packets must not repeatedly send ${forbidden}`);
 
 assert.match(specialModes,/if\(!force&&t-lastStateSend<125\)return/,"Horde must retain its existing 125 ms dedicated authoritative state stream");
+const hordeUpdate=specialModes.match(/function updateHorde\(t\)\{([\s\S]*?)\n\n  function sabRoom/)?.[1]||"";
+assert.ok(hordeUpdate,"the authoritative Horde update function must be present");
+assert.ok(!hordeUpdate.includes("inputs.get"),"Horde authority must not consume the v133 special input map");
+assert.match(performance,/event==="v133_special_input"&&connectedHorde\(\)/,"the unused 75 ms special-input stream must be suppressed only while Horde is connected");
+assert.match(performance,/state\.suppressedHordeInputs\+\+;return Promise\.resolve\("ok"\)/,"suppressed Horde input packets must preserve the existing async send contract");
 assert.match(performance,/event==="v133_special_state"&&payload\?\.roomMode===HORDE/,"guest actors must consume the dedicated Horde state stream");
 assert.match(performance,/const result=original\?\.\(event,payload\);[\s\S]*syncGuestHordeActors\(payload\)/,"the established special-mode packet handler must hydrate logical state before the performance layer updates physical guest actors");
 assert.match(performance,/for\(const model of source\.activeEnemies\|\|\[\]\)/,"guest physical enemies must be driven from authoritative Horde active-enemy models");
