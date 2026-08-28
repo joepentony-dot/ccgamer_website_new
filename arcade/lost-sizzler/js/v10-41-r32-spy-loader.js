@@ -6,8 +6,9 @@
  * the actual TAB inventory toggle; the r33 packet/final owner loads immediately
  * afterwards and seals TAB before r35 is installed. The shared game owner keeps
  * F as fullscreen; this loader stops that same F event before any later Spy
- * compatibility layer can reuse it. r34 presentation loads after the packet
- * owner because it consumes the final Trapulator panels.
+ * compatibility layer can reuse it. The r35 knockout finalizer then binds the
+ * real combat/trap boundary to the ghost/capture rules before r34 presentation
+ * consumes the final Trapulator panels.
  */
 (()=>{
   "use strict";
@@ -68,6 +69,7 @@
         await loadScript("v10-41-r32-spy-packet-owner.js","data-ccg-r32-spy-packet-owner",()=>Boolean(window.CCGLostSizzlerV141R32SpyPacketOwner));
         await loadScript("v10-41-r35-spy-rules-hardening.js","data-ccg-r35-spy-rules-hardening",()=>Boolean(window.CCGLostSizzlerV141R35SpyRulesHardening));
         state.hardeningLoaded=true;
+        await loadScript("v10-41-r35-spy-knockout-finalizer.js","data-ccg-r35-spy-knockout-finalizer",()=>Boolean(window.CCGLostSizzlerV141R35SpyKnockoutFinalizer));
         await loadScript("v10-41-r34-spy-fullscreen-ui.js","data-ccg-r34-spy-fullscreen-ui",()=>Boolean(window.CCGLostSizzlerV141R34SpyFullscreenUi));
         state.fullscreenUiLoaded=true;
         await ensureSearchUi();
