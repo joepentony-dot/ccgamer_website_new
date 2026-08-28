@@ -1,4 +1,4 @@
-/* The Lost Sizzler V10.41 r32/r35 — Spy-only lazy loader.
+/* The Lost Sizzler V10.41 r32/r36 — Spy-only lazy loader.
  *
  * The full overhaul has no reason to install during Solo, Horde or ordinary
  * online Dungeon sessions. Keep those startup/network paths untouched and load
@@ -6,9 +6,9 @@
  * the actual TAB inventory toggle; the r33 packet/final owner loads immediately
  * afterwards and seals TAB before r35 is installed. The shared game owner keeps
  * F as fullscreen; this loader stops that same F event before any later Spy
- * compatibility layer can reuse it. The r35 knockout finalizer then binds the
- * real combat/trap boundary to the ghost/capture rules before r34 presentation
- * consumes the final Trapulator panels.
+ * compatibility layer can reuse it. The r35 knockout finalizer binds the real
+ * combat/trap boundary to the ghost/capture rules, r34 owns fullscreen panel
+ * presentation, and r36 then performs the final live-state/UI reconciliation.
  */
 (()=>{
   "use strict";
@@ -20,7 +20,7 @@
   const state={
     timer:0,loading:false,loaded:false,loads:0,lastError:"",
     uiLoading:false,uiLoaded:false,uiLoads:0,uiLastError:"",
-    hardeningLoaded:false,fullscreenUiLoaded:false,
+    hardeningLoaded:false,fullscreenUiLoaded:false,perfectionLoaded:false,
     pendingActionCode:"",queuedActions:0,replayedActions:0,queuedSearchFeedbacks:0,directSearchActions:0,
     searchTargetBridges:0,searchRoomBridges:0,searchKeyDowns:0,searchKeyUpFallbacks:0
   };
@@ -73,6 +73,8 @@
         await loadScript("v10-41-r34-spy-fullscreen-ui.js","data-ccg-r34-spy-fullscreen-ui",()=>Boolean(window.CCGLostSizzlerV141R34SpyFullscreenUi));
         state.fullscreenUiLoaded=true;
         await ensureSearchUi();
+        await loadScript("v10-41-r36-spy-perfection.js","data-ccg-r36-spy-perfection",()=>Boolean(window.CCGLostSizzlerV141R36SpyPerfection));
+        state.perfectionLoaded=true;
         state.loaded=true;state.loads++;state.lastError="";return true
       }catch(error){state.lastError=String(error?.message||error);console.warn("[Lost Sizzler r32] Spy lazy load failed safely",error);return false}
       finally{state.loading=false;loadPromise=null}
@@ -105,8 +107,8 @@
       if(!physical.spyR32Furniture){physical.spyR32Furniture=true;changed=true}
       if(String(physical.logicalFurnitureId||"")!==targetId){physical.logicalFurnitureId=targetId;changed=true}
       if(String(physical.logicalRoomId||"")!==String(room.id)){physical.logicalRoomId=room.id;changed=true}
-      const model=match?.players?.find?.(row=>String(row?.id||"")===actorId())||match?.players?.[0]||null;
-      if(model&&String(model.roomId||"")!==String(room.id)){model.roomId=room.id;state.searchRoomBridges++}
+      const matchPlayer=match?.players?.find?.(row=>String(row?.id||"")===actorId())||match?.players?.[0]||null;
+      if(matchPlayer&&String(matchPlayer.roomId||"")!==String(room.id)){matchPlayer.roomId=room.id;state.searchRoomBridges++}
       if(changed)state.searchTargetBridges++;
       return true
     }catch(_){return false}
