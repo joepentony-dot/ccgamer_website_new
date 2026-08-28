@@ -7,10 +7,13 @@
   const INSTALL_MS=80;
   const MONITOR_MS=120;
   const POST_RESUME_ATTACK_GRACE_MS=2600;
+  const CANVAS_WATCH_MS=650;
+  const CANVAS_BLANK_CONFIRMATIONS=2;
   const ACTIVE_SPECIAL_MODES=new Set(["horde-survivor","sizzler-saboteurs"]);
   const state={
     timer:0,monitorTimer:0,installed:false,chestWrapped:false,pauseWrapped:false,panelBound:false,shopBound:false,styleInstalled:false,cpuCookRenderWrapped:false,cpuCookSpawnWrapped:false,
-    shopWalletRefreshes:0,chestImmediateDeliveries:0,chestFeedbacks:0,cpuCookRepairs:0,genericCookRelabels:0,pauseCombatResets:0,postResumeAttackRearms:0,displayRecoveries:0,displayFrames:0,lastResumeAt:0,lastHost:null
+    shopWalletRefreshes:0,chestImmediateDeliveries:0,chestFeedbacks:0,cpuCookRepairs:0,genericCookRelabels:0,pauseCombatResets:0,postResumeAttackRearms:0,displayRecoveries:0,displayFrames:0,lastResumeAt:0,lastHost:null,
+    canvasBlankStreak:0,canvasRecoveries:0,canvasHealthyFrames:0,canvasFallbackRestores:0,lastCanvasCheckAt:0,backupCanvas:null
   };
 
   const specialType=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")}catch(_){return""}};
@@ -198,6 +201,51 @@
     try{document.getElementById("game")?.focus?.({preventScroll:true})}catch(_){}
     return reason
   }
+
+  function canvasFrameIsBlank(){
+    if(!dungeonSoloPlaying())return false;
+    try{
+      if(!canvas||canvas.width<8||canvas.height<8)return false;
+      const context=ctx||canvas.getContext("2d",{willReadFrequently:true});if(!context)return false;
+      const xs=[.16,.33,.5,.67,.84],ys=[.16,.33,.5,.67,.84];let visible=0,samples=0;
+      for(const yf of ys)for(const xf of xs){
+        const x=Math.max(0,Math.min(canvas.width-1,Math.floor(canvas.width*xf))),y=Math.max(0,Math.min(canvas.height-1,Math.floor(canvas.height*yf))),pixel=context.getImageData(x,y,1,1).data;samples++;
+        if(pixel[3]>12&&(pixel[0]+pixel[1]+pixel[2])>30)visible++;
+      }
+      return samples===25&&visible===0
+    }catch(_){return false}
+  }
+  function captureHealthyCanvas(){
+    try{
+      if(!canvas||canvas.width<8||canvas.height<8||canvasFrameIsBlank())return false;
+      let backup=state.backupCanvas;
+      if(!backup){backup=document.createElement("canvas");state.backupCanvas=backup}
+      if(backup.width!==canvas.width)backup.width=canvas.width;if(backup.height!==canvas.height)backup.height=canvas.height;
+      const context=backup.getContext("2d");if(!context)return false;context.setTransform(1,0,0,1,0,0);context.clearRect(0,0,backup.width,backup.height);context.drawImage(canvas,0,0);state.canvasHealthyFrames++;return true
+    }catch(_){return false}
+  }
+  function restoreHealthyCanvas(){
+    try{
+      const backup=state.backupCanvas;if(!backup||!canvas||backup.width!==canvas.width||backup.height!==canvas.height)return false;
+      const context=ctx||canvas.getContext("2d");if(!context)return false;context.save();context.setTransform(1,0,0,1,0,0);context.globalAlpha=1;context.globalCompositeOperation="source-over";context.clearRect(0,0,canvas.width,canvas.height);context.drawImage(backup,0,0);context.restore();state.canvasFallbackRestores++;return true
+    }catch(_){return false}
+  }
+  function watchSoloCanvas(force=false){
+    const now=performance.now();if(!force&&now-Number(state.lastCanvasCheckAt||0)<CANVAS_WATCH_MS)return false;state.lastCanvasCheckAt=now;
+    if(!dungeonSoloPlaying()||visiblePanel("pause")||visiblePanel("inventory-panel")||visiblePanel("item-info-panel")||visiblePanel("named-dossier-panel")||visiblePanel("shop-panel")){state.canvasBlankStreak=0;return false}
+    if(!canvasFrameIsBlank()){state.canvasBlankStreak=0;captureHealthyCanvas();return false}
+    state.canvasBlankStreak++;
+    if(state.canvasBlankStreak<CANVAS_BLANK_CONFIRMATIONS)return false;
+    state.canvasBlankStreak=0;state.canvasRecoveries++;recoverSoloDisplay("blank canvas watchdog");
+    requestAnimationFrame(()=>{
+      try{
+        if(canvasFrameIsBlank())restoreHealthyCanvas();else captureHealthyCanvas();
+        setTimeout(()=>{try{if(canvasFrameIsBlank())restoreHealthyCanvas();else captureHealthyCanvas()}catch(_){}},90)
+      }catch(_){}
+    });
+    return true
+  }
+
   function scheduleDisplayRecovery(reason){queueMicrotask(()=>recoverSoloDisplay(reason));setTimeout(()=>recoverSoloDisplay(reason),80)}
   function onPanelReturn(event){
     const id=String(event.target?.closest?.("button")?.id||"");
@@ -230,6 +278,7 @@
   }
 
   const logEntries=[
+    ["LS-0828-01","FIXED","Recurring Solo black canvas","Solo Dungeon now watches the live gameplay canvas during active play. Two consecutive blank-frame checks trigger a canvas/camera rebuild and, if the fresh render is still blank, the last healthy frame is restored while live rendering retries."],
     ["LS-0827-01","FIXED","Secret shop wallet refresh","Score, artefact count and the next score price now commit to the open shop immediately after a purchase instead of waiting for a later refresh."],
     ["LS-0827-02","FIXED","Sizzler chest reward feedback","Chest loot is delivered on the opening action and the exact rarity/item name is announced at the chest, preventing a pause during the old delay from swallowing the reward."],
     ["LS-0827-03","FIXED","CPU Cook named presentation","The configured CPU follower is normalised to CPU Cook with its named portrait treatment, while ordinary cook enemies keep a separate Kitchen Cook identity."],
@@ -244,8 +293,8 @@
   const escLog=value=>String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   function mountLog(){
     const tracker=document.getElementById("developer-changelog");if(!tracker)return false;
-    const latest=tracker.querySelector(".developer-changelog-latest");if(latest)latest.textContent="LATEST UPDATE · 27 AUG 2026 · V10.41 · r31";
-    const stamp=tracker.querySelector(".developer-changelog-intro time");if(stamp){stamp.dateTime="2026-08-27";stamp.textContent="Last updated 27 August 2026 · V10.41 · r31"}
+    const latest=tracker.querySelector(".developer-changelog-latest");if(latest)latest.textContent="LATEST UPDATE · 28 AUG 2026 · V10.41 · r31";
+    const stamp=tracker.querySelector(".developer-changelog-intro time");if(stamp){stamp.dateTime="2026-08-28";stamp.textContent="Last updated 28 August 2026 · V10.41 · r31"}
     const list=tracker.querySelector(".developer-log-day .developer-log-list");if(!list)return false;
     for(const [id,status,title,copy] of [...logEntries].reverse()){
       if(tracker.querySelector(`[data-r31-entry="${id}"]`))continue;
@@ -258,11 +307,12 @@
     try{
       installChestFix();installPauseFix();installPanelReturnFix();installCpuCookSpawnFix();installCpuCookRenderFix();
       if(dungeonSolo()){
-        if(host&&host!==state.lastHost){state.lastHost=host;normaliseCpuCook()}
+        if(host&&host!==state.lastHost){state.lastHost=host;state.canvasBlankStreak=0;state.backupCanvas=null;normaliseCpuCook()}
         else normaliseCpuCook();
         if(typeof mode!=="undefined"&&mode==="shop")refreshShopWallet();
         try{const hud=UI?.score||document.getElementById("hud-score");if(hud)hud.textContent=formatScore(score)}catch(_){}
-      }
+        watchSoloCanvas();
+      }else{state.canvasBlankStreak=0}
       mountLog()
     }catch(_){}
   }
@@ -281,8 +331,8 @@
     if(state.timer)clearInterval(state.timer);if(state.monitorTimer)clearInterval(state.monitorTimer);state.timer=state.monitorTimer=0;
     if(state.shopBound)document.removeEventListener("click",onShopClick,true);
     if(state.panelBound){document.removeEventListener("click",onPanelReturn,true);removeEventListener("keydown",onPanelReturnKey,true)}
-    removeEventListener("keydown",onPostResumeAttack,true)
+    removeEventListener("keydown",onPostResumeAttack,true);state.backupCanvas=null
   },{once:true});
 
-  window.CCGLostSizzlerV141R31SoloDungeon={refreshShopWallet,normaliseCpuCook,genericCookDisplayName,resetSoloCombatAfterResume,recoverSoloDisplay,installChestFix,installPauseFix,installPanelReturnFix,installCpuCookSpawnFix,installCpuCookRenderFix,mountLog,monitor,logEntries,get state(){return state}};
+  window.CCGLostSizzlerV141R31SoloDungeon={refreshShopWallet,normaliseCpuCook,genericCookDisplayName,resetSoloCombatAfterResume,recoverSoloDisplay,canvasFrameIsBlank,captureHealthyCanvas,restoreHealthyCanvas,watchSoloCanvas,installChestFix,installPauseFix,installPanelReturnFix,installCpuCookSpawnFix,installCpuCookRenderFix,mountLog,monitor,logEntries,get state(){return state}};
 })();
