@@ -8,12 +8,15 @@ const repo=path.resolve(here,'../../..');
 const read=relative=>fs.readFileSync(path.join(repo,relative),'utf8');
 const adminSource=read('arcade/lost-sizzler/js/admin-audio-overrides.js');
 const playlistSource=read('arcade/lost-sizzler/js/lost-sizzler-playlist-audio.js');
+const adminUploaderSource=read('admin/js/arcade-assets.js');
 const assert=(condition,message)=>{if(!condition)throw new Error(message)};
 
 assert(adminSource.includes('navigator.webdriver===true'),'Remote audio policy must identify automated browsers.');
 assert(adminSource.includes('__CCG_ALLOW_REMOTE_TEST_ASSETS__'),'Remote audio tests need an explicit opt-in escape hatch.');
 assert(playlistSource.includes('isMeteredRemoteTrack'),'Playlist must identify metered Supabase Storage music.');
 assert(playlistSource.includes('audio.loop=meteredRemote'),'Metered remote songs must loop within the current run instead of auto-advancing.');
+assert(adminUploaderSource.includes("LOST_SIZZLER_MUSIC_CACHE_SECONDS='31536000'"),'Future Lost Sizzler music uploads must use a one-year browser/CDN cache lifetime.');
+assert(adminUploaderSource.includes('cacheControl:LOST_SIZZLER_MUSIC_CACHE_SECONDS'),'Lost Sizzler playlist uploads must apply the long cache policy.');
 
 let clientCalls=0;
 const adminEvents=[];
