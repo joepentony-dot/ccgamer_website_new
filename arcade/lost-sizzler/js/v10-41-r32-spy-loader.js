@@ -1,4 +1,4 @@
-/* The Lost Sizzler V10.41 r32/r35 — Spy-only lazy loader.
+/* The Lost Sizzler V10.41 r32/r36 — Spy-only lazy loader.
  *
  * The full overhaul has no reason to install during Solo, Horde or ordinary
  * online Dungeon sessions. Keep those startup/network paths untouched and load
@@ -7,7 +7,8 @@
  * afterwards and seals TAB before r35 is installed. The shared game owner keeps
  * F as fullscreen; this loader stops that same F event before any later Spy
  * compatibility layer can reuse it. The r35 knockout finalizer then binds the
- * real combat/trap boundary to the ghost/capture rules before r34 presentation
+ * real combat/trap boundary to the ghost/capture rules. r36 reconciles the
+ * remaining live gameplay presentation/state gaps before r34 presentation
  * consumes the final Trapulator panels.
  */
 (()=>{
@@ -20,7 +21,7 @@
   const state={
     timer:0,loading:false,loaded:false,loads:0,lastError:"",
     uiLoading:false,uiLoaded:false,uiLoads:0,uiLastError:"",
-    hardeningLoaded:false,fullscreenUiLoaded:false,
+    hardeningLoaded:false,gameplayPolishLoaded:false,fullscreenUiLoaded:false,
     pendingActionCode:"",queuedActions:0,replayedActions:0,queuedSearchFeedbacks:0,directSearchActions:0,
     searchTargetBridges:0,searchRoomBridges:0,searchKeyDowns:0,searchKeyUpFallbacks:0
   };
@@ -70,6 +71,8 @@
         await loadScript("v10-41-r35-spy-rules-hardening.js","data-ccg-r35-spy-rules-hardening",()=>Boolean(window.CCGLostSizzlerV141R35SpyRulesHardening));
         state.hardeningLoaded=true;
         await loadScript("v10-41-r35-spy-knockout-finalizer.js","data-ccg-r35-spy-knockout-finalizer",()=>Boolean(window.CCGLostSizzlerV141R35SpyKnockoutFinalizer));
+        await loadScript("v10-41-r36-spy-gameplay-polish.js","data-ccg-r36-spy-gameplay-polish",()=>Boolean(window.CCGLostSizzlerV141R36SpyGameplayPolish));
+        state.gameplayPolishLoaded=true;
         await loadScript("v10-41-r34-spy-fullscreen-ui.js","data-ccg-r34-spy-fullscreen-ui",()=>Boolean(window.CCGLostSizzlerV141R34SpyFullscreenUi));
         state.fullscreenUiLoaded=true;
         await ensureSearchUi();
