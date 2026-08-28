@@ -3,6 +3,7 @@ import { initAdminNav } from './admin-nav.js';
 
 const BUCKET='ccg-arcade-assets';
 const MAX_FILE_BYTES=25*1024*1024;
+const LOST_SIZZLER_MUSIC_CACHE_SECONDS='31536000';
 const SCENES=['bedroom','beads','budget','fighter','invaders','christmas','maze','amiga','guru'];
 const LABELS={bedroom:'Bedroom',beads:'Electric Bead Run',budget:'Budget Rack',fighter:'36% Bout',invaders:'Alien Formation',christmas:'Christmas Morning',maze:'Dot-Maze',amiga:'Amiga Upgrade',guru:'Guru Meditation'};
 const LOST_SIZZLER_MUSIC=[
@@ -115,7 +116,7 @@ async function uploadPlaylistFile(slot,file,index){
   const stamp=Date.now(),stem=safeName(file.name.replace(/\.[^.]+$/,'')),ext=extension(file)||'mp3';
   const assetKey=`${slot.key}--${stamp}-${index}-${stem.slice(0,36)}`;
   const path=`music/${slot.key}/${stamp}-${index}-${safeName(file.name)}`;
-  let result=await supabase.storage.from(BUCKET).upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type||undefined});
+  let result=await supabase.storage.from(BUCKET).upload(path,file,{cacheControl:LOST_SIZZLER_MUSIC_CACHE_SECONDS,upsert:false,contentType:file.type||undefined});
   if(result.error)throw result.error;
   const publicUrl=supabase.storage.from(BUCKET).getPublicUrl(path).data?.publicUrl;
   if(!publicUrl){await supabase.storage.from(BUCKET).remove([path]);throw new Error(`Unable to resolve uploaded URL for ${file.name}.`);}
