@@ -13,9 +13,9 @@
   const HORDE_WORLD_RECOVERY_MS=900;
   const FULL_PLAYER_HEARTBEAT_MS=1200;
   const state={
-    installed:false,timer:0,playerWrapped:false,worldWrapped:false,packetWrapped:false,
+    installed:false,timer:0,playerWrapped:false,worldWrapped:false,packetWrapped:false,networkSendWrapped:false,
     runKey:"",lastFullPlayerAt:0,lastWorldAt:0,
-    compactPlayerSends:0,fullPlayerSends:0,worldSends:0,worldSkips:0,
+    compactPlayerSends:0,fullPlayerSends:0,worldSends:0,worldSkips:0,suppressedHordeInputs:0,
     guestActorUpdates:0,guestActorCreates:0,guestActorRemovals:0,lastSpecialStateAt:0
   };
 
@@ -71,6 +71,23 @@
     };
     wrapped.__ccgV141HordeNetworkPerformance=true;wrapped.__ccgOriginal=original;
     broadcastWorld=wrapped;state.worldWrapped=true;return true
+  }
+
+  function wrapNetworkSend(){
+    if(state.networkSendWrapped)return true;
+    if(!net||typeof net.send!=="function")return false;
+    const original=net.send;
+    net.send=function sendV141HordeNetworkPerformance(event,payload){
+      // v133_special_input is consumed by Spy Vs Spy. Horde movement is already
+      // represented by the normal player packet stream and updateHorde never
+      // reads the special input map, so sending it every 75 ms is duplicate work.
+      if(event==="v133_special_input"&&connectedHorde()){
+        state.suppressedHordeInputs++;return Promise.resolve("ok")
+      }
+      return original.apply(this,arguments)
+    };
+    net.send.__ccgV141HordeNetworkPerformance=true;net.send.__ccgOriginal=original;
+    state.networkSendWrapped=true;return true
   }
 
   const physicalKind=kind=>({bat:"ghost",fighter:"hunter",elite:"guardian",warden:"knight"}[String(kind||"")]||String(kind||"spider"));
@@ -142,10 +159,10 @@
 
   function install(){
     if(state.installed)return true;
-    const ready=Boolean(window.CCGLostSizzlerSpecialModes?.startOnline&&typeof sendPlayer==="function"&&typeof broadcastWorld==="function"&&net?.cb);
+    const ready=Boolean(window.CCGLostSizzlerSpecialModes?.startOnline&&typeof sendPlayer==="function"&&typeof broadcastWorld==="function"&&net?.cb&&typeof net.send==="function");
     if(!ready)return false;
-    wrapPlayerSend();wrapWorldBroadcast();wrapPacket();
-    if(!(state.playerWrapped&&state.worldWrapped&&state.packetWrapped))return false;
+    wrapPlayerSend();wrapWorldBroadcast();wrapNetworkSend();wrapPacket();
+    if(!(state.playerWrapped&&state.worldWrapped&&state.networkSendWrapped&&state.packetWrapped))return false;
     state.installed=true;document.body.dataset.v141HordeNetworkPerformance="true";return true
   }
 
