@@ -6,14 +6,13 @@
 
   const INSTALL_MS=80;
   const WATCHDOG_MS=280;
-  const BACKUP_MS=220;
   const RETRY_MS=520;
   const ACTIVE_SPECIAL_MODES=new Set(["horde-survivor","sizzler-saboteurs"]);
   const state={
     timer:0,watchdogTimer:0,installed:false,renderWrapped:false,backupReady:false,
     backupCaptures:0,backupRestores:0,renderFaults:0,renderFaultRecoveries:0,renderFaultPauses:0,
-    blankDetections:0,blankRecoveries:0,coordinateRepairs:0,consecutiveFaults:0,
-    lastBackupAt:0,lastRetryAt:0,lastFaultAt:0,lastFaultLogAt:0,lastRenderFault:"",faultPaused:false
+    blankDetections:0,blankRecoveries:0,coordinateRepairs:0,consecutiveFaults:0,watchdogChecks:0,
+    lastRetryAt:0,lastFaultAt:0,lastFaultLogAt:0,lastRenderFault:"",faultPaused:false
   };
 
   let backupCanvas=null,backupCtx=null,probeCanvas=null,probeCtx=null;
@@ -52,15 +51,15 @@
     return false
   }
 
-  function captureHealthyFrame(force=false){
+  function captureHealthyFrame(visibleConfirmed=false){
     if(!soloRun()||!ensureCanvases())return false;
-    const game=typeof canvas!=="undefined"?canvas:document.getElementById("game"),now=performance.now();
-    if(!game||game.width<2||game.height<2||(!force&&now-state.lastBackupAt<BACKUP_MS)||!canvasHasVisibleFrame())return false;
+    const game=typeof canvas!=="undefined"?canvas:document.getElementById("game");
+    if(!game||game.width<2||game.height<2||(!visibleConfirmed&&!canvasHasVisibleFrame()))return false;
     try{
       if(backupCanvas.width!==game.width)backupCanvas.width=game.width;
       if(backupCanvas.height!==game.height)backupCanvas.height=game.height;
       backupCtx.imageSmoothingEnabled=false;backupCtx.clearRect(0,0,backupCanvas.width,backupCanvas.height);backupCtx.drawImage(game,0,0);
-      state.backupReady=true;state.lastBackupAt=now;state.backupCaptures++;return true
+      state.backupReady=true;state.backupCaptures++;return true
     }catch(_){return false}
   }
 
@@ -105,14 +104,7 @@
     if(state.faultPaused)state.lastRetryAt=now;
     repairSoloCoordinates();
     try{
-      const result=current.apply(scope,args);state.consecutiveFaults=0;
-      if(canvasHasVisibleFrame()){
-        captureHealthyFrame(false);
-        if(state.faultPaused)state.faultPaused=false
-      }else if(state.backupReady){
-        state.blankDetections++;if(restoreHealthyFrame())state.blankRecoveries++
-      }
-      return result
+      const result=current.apply(scope,args);state.consecutiveFaults=0;return result
     }catch(error){
       noteFault(error);repairSoloCoordinates();if(restoreHealthyFrame())state.renderFaultRecoveries++;
       if(state.consecutiveFaults>=2)pauseInvisibleCombat();
@@ -133,8 +125,9 @@
 
   function recoverBlankCanvas(force=false){
     if(!soloPlaying()||blockingPanelVisible())return false;
-    if(!force&&canvasHasVisibleFrame()){captureHealthyFrame(false);return false}
-    if(canvasHasVisibleFrame()){captureHealthyFrame(false);return false}
+    const visible=canvasHasVisibleFrame();
+    if(visible){captureHealthyFrame(true);return false}
+    if(!force&&!state.backupReady)return false;
     state.blankDetections++;
     const restored=restoreHealthyFrame();if(restored)state.blankRecoveries++;
     repairSoloCoordinates();
@@ -157,15 +150,16 @@
 
   function watchdog(){
     if(!soloPlaying()||blockingPanelVisible())return false;
-    if(canvasHasVisibleFrame()){captureHealthyFrame(false);return true}
+    state.watchdogChecks++;
+    const visible=canvasHasVisibleFrame();
+    if(visible){captureHealthyFrame(true);return true}
     return recoverBlankCanvas(true)
   }
 
   function install(){
     const gate=window.CCGLostSizzlerReleaseGate;if(gate&&!gate.state?.ready)return false;
     if(!document.body||!window.CCGLostSizzlerV141R31SoloDungeon||!window.CCGLostSizzlerModeRuntime||typeof window.render!=="function")return false;
-    ensureCanvases();installRenderGuard();captureHealthyFrame(true);
-    state.watchdogTimer=setInterval(watchdog,WATCHDOG_MS);state.installed=true;document.body.dataset.v141R36SoloRenderRecovery="true";return true
+    ensureCanvases();installRenderGuard();state.watchdogTimer=setInterval(watchdog,WATCHDOG_MS);state.installed=true;document.body.dataset.v141R36SoloRenderRecovery="true";return true
   }
 
   if(!install())state.timer=setInterval(()=>{if(install()){clearInterval(state.timer);state.timer=0}},INSTALL_MS);
