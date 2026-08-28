@@ -152,7 +152,8 @@
         item.spySearchLabel=next==="driveBench"?"WORKBENCH":next==="tapeStack"?"TAPE SHELF":String(next).replace(/([a-z])([A-Z])/g,"$1 $2").toUpperCase()
       }
     }
-    const desired=SAB()?.trapLoadout?.(m.seed,Number(m.round)||1);if(Array.isArray(desired)&&desired.length){const old=(m.trapLoadout||[]).join("|"),next=desired.join("|");if(old!==next){m.trapLoadout=[...desired];changed=true}}
+    const finalOwner=window.CCGLostSizzlerV141R32SpyPacketOwner,classic=Array.isArray(finalOwner?.CLASSIC_TRAPS)?finalOwner.CLASSIC_TRAPS.map(row=>String(row?.id||"")).filter(Boolean):[];
+    const desired=classic.length?classic:SAB()?.trapLoadout?.(m.seed,Number(m.round)||1);if(Array.isArray(desired)&&desired.length){const old=(m.trapLoadout||[]).join("|"),next=desired.join("|");if(old!==next){m.trapLoadout=[...desired];changed=true}}
     m.map.spyRuntimeR32=true;return changed
   }
   function doorCell(a,b,physicalByLogical){
