@@ -1,4 +1,4 @@
-/* The Lost Sizzler V10.13 — mobile cardinal enemy fire and toggle minimap. */
+/* The Lost Sizzler V10.13 — mobile cardinal enemy fire, toggle minimap and Solo score HUD. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_MOBILE_COMBAT_MAP_V113__)return;
@@ -8,6 +8,7 @@
   const mobile=()=>window.matchMedia?.(MOBILE_QUERY)?.matches===true;
   let mapOpen=false;
   let mapTimer=0;
+  let scoreTimer=0;
 
   function activePlayers(){
     try{
@@ -54,6 +55,54 @@
 
   function mobileMapPanel(){return document.getElementById("ccg-mobile-minimap")}
   function mobileMapToggle(){return document.querySelector('[data-action="map"]')}
+  function mobileScorePanel(){return document.getElementById("ccg-mobile-solo-score")}
+
+  function soloDungeonActive(){
+    if(!mobile()||document.body.dataset.runActive!=="true")return false;
+    if(String(document.body.dataset.specialMode||"").trim())return false;
+    try{if(typeof net!=="undefined"&&net&&String(net.mode||"")!=="solo")return false}catch(_){return false}
+    try{if(typeof p2!=="undefined"&&p2)return false}catch(_){}
+    return true;
+  }
+
+  function currentScore(){
+    try{return Math.max(0,Math.floor(Number(score)||0))}catch(_){return 0}
+  }
+
+  function syncScore(){
+    const panel=mobileScorePanel();
+    if(!panel)return;
+    const active=soloDungeonActive();
+    panel.classList.toggle("hidden",!active);
+    panel.setAttribute("aria-hidden",active?"false":"true");
+    const value=panel.querySelector("strong");
+    if(value)value.textContent=currentScore().toLocaleString();
+  }
+
+  function ensureScorePanel(){
+    if(!mobile())return;
+    const actions=document.querySelector("#v104-touch-controls .v104-touch-actions");
+    if(!actions)return;
+    let panel=mobileScorePanel();
+    if(!panel){
+      panel=document.createElement("div");
+      panel.id="ccg-mobile-solo-score";
+      panel.className="ccg-mobile-solo-score hidden";
+      panel.setAttribute("role","status");
+      panel.setAttribute("aria-live","polite");
+      panel.setAttribute("aria-label","Current Solo Dungeon score");
+      panel.innerHTML='<span>SCORE</span><strong>0</strong>';
+      actions.appendChild(panel);
+    }
+    syncScore();
+  }
+
+  function startScoreTimer(){
+    if(scoreTimer||!mobile())return;
+    scoreTimer=setInterval(()=>{ensureScorePanel();syncScore()},250);
+  }
+
+  function stopScoreTimer(){if(scoreTimer){clearInterval(scoreTimer);scoreTimer=0}}
 
   function syncToggle(){
     const button=mobileMapToggle();
@@ -132,32 +181,36 @@
     syncToggle();
   }
 
-  function ensureMobileMap(){ensureMapPanel();ensureTouchMapButton()}
+  function ensureMobileMap(){ensureMapPanel();ensureTouchMapButton();ensureScorePanel()}
 
   const retry=setInterval(()=>{
     ensureMobileMap();
-    if(mobileMapPanel()&&mobileMapToggle())clearInterval(retry);
+    if(mobileMapPanel()&&mobileMapToggle()&&mobileScorePanel())clearInterval(retry);
   },250);
   setTimeout(()=>clearInterval(retry),5000);
   ensureMobileMap();
+  startScoreTimer();
 
   const bodyObserver=new MutationObserver(()=>{
     if(document.body.dataset.runActive!=="true")setMapOpen(false);
     else ensureMobileMap();
+    syncScore();
   });
-  bodyObserver.observe(document.body,{attributes:true,attributeFilter:["data-run-active"]});
+  bodyObserver.observe(document.body,{attributes:true,attributeFilter:["data-run-active","data-special-mode"]});
 
   window.matchMedia?.(MOBILE_QUERY)?.addEventListener?.("change",()=>{
-    if(!mobile())setMapOpen(false);
-    else ensureMobileMap();
+    if(!mobile()){setMapOpen(false);stopScoreTimer()}
+    else{ensureMobileMap();startScoreTimer()}
   });
   window.addEventListener("resize",()=>{if(mapOpen)requestAnimationFrame(copyRadar)},{passive:true});
-  window.addEventListener("pagehide",()=>{stopMapTimer();bodyObserver.disconnect()},{once:true});
+  window.addEventListener("pagehide",()=>{stopMapTimer();stopScoreTimer();bodyObserver.disconnect()},{once:true});
 
   window.CCGLostSizzlerMobileCombatMap={
     isMobile:mobile,
     cardinaliseEnemyShot,
     setMapOpen,
-    copyRadar
+    copyRadar,
+    soloDungeonActive,
+    syncScore
   };
 })();
