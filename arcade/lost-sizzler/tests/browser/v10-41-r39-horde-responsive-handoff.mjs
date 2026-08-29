@@ -66,7 +66,17 @@ try{
     document.body.dataset.specialMode="horde-survivor";
     document.body.dataset.runActive="true";
   });
-  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R39HordeResponsive?.state?.styleInstalled)&&Boolean(document.getElementById("horde-performance-status")));
+
+  // The r39 lazy-loader and the pre-existing Horde status observer are separate
+  // ownership paths. Prove r39 loaded first, then synchronise the status owner
+  // directly so this geometry test does not depend on MutationObserver ordering.
+  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R39HordeResponsive?.state?.styleInstalled));
+  await page.evaluate(()=>{
+    const frame=window.CCGLostSizzlerV141HordeFramePerformance;
+    frame?.ensureStatusStrip?.();
+    frame?.syncStatusTimer?.();
+  });
+  await page.waitForFunction(()=>Boolean(document.getElementById("horde-performance-status")));
   await page.waitForFunction(()=>window.CCGLostSizzlerV141R39HordeResponsive?.state?.rosterWatchActive===true);
   await page.evaluate(()=>{
     const gameArea=document.querySelector(".game-area");
