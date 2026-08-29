@@ -22,15 +22,18 @@
     const style=document.createElement("style");style.id=STYLE_ID;style.textContent=`
 body[data-special-mode="horde-survivor"][data-run-active="true"] .ccg-game{
   width:100vw!important;max-width:none!important;height:100dvh!important;max-height:100dvh!important;min-height:0!important;margin:0!important;
-  display:grid!important;grid-template-columns:minmax(0,1fr) clamp(220px,18vw,310px)!important;grid-template-rows:auto minmax(0,1fr) auto!important;
+  display:grid!important;grid-template-columns:minmax(0,1fr) clamp(220px,18vw,310px)!important;grid-template-rows:auto auto minmax(0,1fr) auto!important;
   overflow:hidden!important;background:#050307!important
 }
 body[data-special-mode="horde-survivor"][data-run-active="true"] .ccg-game>.topbar{grid-column:1/-1!important;grid-row:1!important;min-width:0!important}
+body[data-special-mode="horde-survivor"][data-run-active="true"] .ccg-game>#horde-performance-status{
+  grid-column:1/-1!important;grid-row:2!important;width:100%!important;min-width:0!important;margin:0!important;align-self:stretch!important
+}
 body[data-special-mode="horde-survivor"][data-run-active="true"] .ccg-game>.critical-strip,
 body[data-special-mode="horde-survivor"][data-run-active="true"] .ccg-game>.mission,
 body[data-special-mode="horde-survivor"][data-run-active="true"] .ccg-game>.fullscreen-hint{display:none!important}
 body[data-special-mode="horde-survivor"][data-run-active="true"] .v102-game-area{
-  grid-column:1!important;grid-row:2!important;display:block!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;
+  grid-column:1!important;grid-row:3!important;display:block!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;
   max-height:none!important;overflow:hidden!important;padding:4px!important;background:#020104!important
 }
 body[data-special-mode="horde-survivor"][data-run-active="true"] .v102-game-area .canvas-wrap{
@@ -41,7 +44,7 @@ body[data-special-mode="horde-survivor"][data-run-active="true"] .v102-game-area
 }
 body[data-special-mode="horde-survivor"][data-run-active="true"] .v102-game-area .game-message-rail{display:none!important}
 body[data-special-mode="horde-survivor"][data-run-active="true"] .tactical-zone{
-  grid-column:2!important;grid-row:2!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr) auto!important;
+  grid-column:2!important;grid-row:3!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr) auto!important;
   width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;max-height:none!important;padding:4px!important;gap:5px!important;overflow:hidden!important;background:#07040a!important
 }
 body[data-special-mode="horde-survivor"][data-run-active="true"] .tactical-zone>.dossier-card,
@@ -57,21 +60,22 @@ body[data-special-mode="horde-survivor"][data-run-active="true"] #horde-live-ros
   position:static!important;inset:auto!important;display:block!important;width:100%!important;max-width:none!important;max-height:150px!important;margin:0!important;padding:8px!important;overflow:auto!important;transform:none!important;z-index:auto!important
 }
 body[data-special-mode="horde-survivor"][data-run-active="true"] .player-hub{
-  grid-column:1/-1!important;grid-row:3!important;width:100%!important;min-width:0!important;min-height:70px!important;max-height:92px!important;height:auto!important;
+  grid-column:1/-1!important;grid-row:4!important;width:100%!important;min-width:0!important;min-height:70px!important;max-height:92px!important;height:auto!important;
   overflow:hidden!important;padding:5px 7px!important;gap:5px!important
 }
 body[data-special-mode="horde-survivor"][data-run-active="true"] .player-hub .core-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5px!important}
 body[data-special-mode="horde-survivor"][data-run-active="true"] .player-hub .hub-stat{min-height:44px!important;padding:5px 7px!important}
 @media(max-width:900px){
   body[data-special-mode="horde-survivor"][data-run-active="true"] .ccg-game{
-    grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto minmax(0,1fr) auto auto!important;height:100dvh!important;max-height:100dvh!important
+    grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto auto minmax(0,1fr) auto auto!important;height:100dvh!important;max-height:100dvh!important
   }
-  body[data-special-mode="horde-survivor"][data-run-active="true"] .v102-game-area{grid-column:1!important;grid-row:2!important;padding:2px 0!important;height:100%!important;min-height:0!important}
+  body[data-special-mode="horde-survivor"][data-run-active="true"] .ccg-game>#horde-performance-status{grid-column:1!important;grid-row:2!important}
+  body[data-special-mode="horde-survivor"][data-run-active="true"] .v102-game-area{grid-column:1!important;grid-row:3!important;padding:2px 0!important;height:100%!important;min-height:0!important}
   body[data-special-mode="horde-survivor"][data-run-active="true"] .v102-game-area .canvas-wrap{height:100%!important;min-height:0!important;border-left:0!important;border-right:0!important}
-  body[data-special-mode="horde-survivor"][data-run-active="true"] .player-hub{grid-column:1!important;grid-row:3!important;min-height:54px!important;max-height:70px!important;padding:3px 5px!important}
+  body[data-special-mode="horde-survivor"][data-run-active="true"] .player-hub{grid-column:1!important;grid-row:4!important;min-height:54px!important;max-height:70px!important;padding:3px 5px!important}
   body[data-special-mode="horde-survivor"][data-run-active="true"] .player-hub .hub-stat{min-height:38px!important;padding:3px 5px!important}
   body[data-special-mode="horde-survivor"][data-run-active="true"] .tactical-zone{
-    grid-column:1!important;grid-row:4!important;display:block!important;width:100%!important;height:auto!important;min-height:0!important;max-height:82px!important;padding:3px 5px!important;overflow:hidden!important
+    grid-column:1!important;grid-row:5!important;display:block!important;width:100%!important;height:auto!important;min-height:0!important;max-height:82px!important;padding:3px 5px!important;overflow:hidden!important
   }
   body[data-special-mode="horde-survivor"][data-run-active="true"] .tactical-zone>.radar-card{display:none!important}
   body[data-special-mode="horde-survivor"][data-run-active="true"] #horde-live-roster{display:block!important;max-height:76px!important;padding:5px!important;overflow:auto!important}
