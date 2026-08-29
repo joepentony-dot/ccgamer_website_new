@@ -4,7 +4,7 @@ import vm from "node:vm";
 
 export type HordeRulesApi = {
   ENEMIES: Record<string, { id: string; name: string; hp: number; damage: number; speed: number; score: number }>;
-  WAVES: Array<{ level: number; title: string; quota: number; timedMs?: number; weapon?: string; boss?: string }>;
+  WAVES: Array<{ level: number; title: string; quota: number; timedMs?: number; weapon?: string; boss?: string; groups?: Array<{ kind: string; weight: number }> }>;
   WEAPONS: Array<{ wave: number; id: string; name: string; role: string }>;
   createRun(options?: Record<string, unknown>): any;
   spawnNext(runState: any, now: number, random?: () => number): any;
@@ -13,7 +13,7 @@ export type HordeRulesApi = {
   applyDamage(runState: any, playerId: string, amount: number, now: number): boolean;
   startRevive(runState: any, reviverId: string, targetId: string, now: number): boolean;
   cancelRevive(runState: any, targetId: string, reason: string, now: number): boolean;
-  collectHealth(runState: any, playerId: string, pickupId: string, now: number): boolean;
+  collectHealth(runState: any, pickupId: string, playerId: string, now: number): boolean;
   tick(runState: any, now: number, options?: Record<string, unknown>): any;
   quotaFor(level: number, count: number): number;
   activeCapFor(count: number): number;
