@@ -63,7 +63,9 @@
 
 /* Late V10.41 runtime guards. Every late module inherits the same published
  * cache generation as the canonical core files, preventing mixed old/new
- * runtime chains after a release. */
+ * runtime chains after a release. Dedicated Horde networking is deliberately
+ * lazy so Solo, Dungeon lobbies, Spy and Split Screen never install its global
+ * compatibility wrappers before Horde has actually started. */
 (()=>{
   "use strict";
   const releaseRev=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
@@ -83,6 +85,19 @@
   load("js/v10-41-r29-loop-finalizer.js","data-ccg-v141-r29-loop-finalizer");
   load("js/v10-41-multimode-performance.js","data-ccg-v141-multimode-performance");
   load("js/v10-41-r37-global-performance.js","data-ccg-v141-r37-global-performance");
-  load("js/v10-41-r38-colyseus-horde.js","data-ccg-v141-r38-colyseus-horde");
   load("js/v10-41-release-overlay-safety.js","data-ccg-v141-release-overlay-safety");
+
+  let hordeLoaded=false,hordeObserver=null;
+  const loadHordeServer=()=>{
+    if(hordeLoaded||document.body?.dataset?.specialMode!=="horde-survivor")return false;
+    hordeLoaded=true;hordeObserver?.disconnect();hordeObserver=null;
+    load("js/v10-41-r38-colyseus-horde.js","data-ccg-v141-r38-colyseus-horde");
+    load("js/v10-41-r39-horde-responsive-handoff.js","data-ccg-v141-r39-horde-responsive-handoff");
+    return true
+  };
+  if(!loadHordeServer()&&window.MutationObserver&&document.body){
+    hordeObserver=new MutationObserver(records=>{if(records.some(record=>record.attributeName==="data-special-mode"))loadHordeServer()});
+    hordeObserver.observe(document.body,{attributes:true,attributeFilter:["data-special-mode"]});
+  }
+  addEventListener("pagehide",()=>hordeObserver?.disconnect(),{once:true});
 })();
