@@ -30,16 +30,15 @@ const axis = (value: unknown) => Math.max(-1, Math.min(1, Math.sign(Number(value
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
 export class HordeRoom extends Room<HordeState> {
+  state = new HordeState();
   maxClients = 4;
   patchRate = 50;
   maxMessagesPerSecond = 60;
 
   onCreate(options: HordeJoinOptions = {}) {
-    const state = new HordeState();
-    state.roomCode = cleanCode(options.roomCode) || cleanCode(this.roomId.slice(-6));
-    state.seed = String(options.seed || state.roomCode || this.roomId).slice(0, 64);
-    this.setState(state);
-    this.setMetadata({ mode: "horde-survivor", roomCode: state.roomCode, playerCap: 4 });
+    this.state.roomCode = cleanCode(options.roomCode) || cleanCode(this.roomId.slice(-6));
+    this.state.seed = String(options.seed || this.state.roomCode || this.roomId).slice(0, 64);
+    this.setMetadata({ mode: "horde-survivor", roomCode: this.state.roomCode, playerCap: 4 });
 
     this.onMessage("move", (client, message: MoveMessage) => this.applyMove(client, message));
     this.onMessage("face", (client, message: FaceMessage) => this.applyFacing(client, message));
