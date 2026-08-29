@@ -26,10 +26,11 @@ assert.match(responsive,/\.v102-game-area \.canvas-wrap\{[\s\S]*?height:100%!imp
 assert.match(responsive,/\.tactical-zone\{[\s\S]*?grid-row:3!important;[\s\S]*?grid-template-rows:minmax\(0,1fr\) auto!important;/,"desktop Horde side column must align with gameplay and use its height for radar plus the live player roster");
 assert.match(responsive,/\.player-hub\{[\s\S]*?grid-row:4!important;/,"desktop Horde HUD must sit immediately below the gameplay row");
 assert.match(responsive,/tactical\.appendChild\(roster\)/,"live Horde player roster must move into the useful side/compact tactical region");
-assert.match(responsive,/function watchRosterPlacement\(\)/,"r39 must explicitly handle a roster created after the Horde lazy module starts");
-assert.match(responsive,/rosterObserver\.observe\(root,\{childList:true,subtree:true\}\)/,"late roster recovery must use event-driven DOM observation rather than gameplay polling");
-assert.match(responsive,/if\(placeRoster\(\)\)requestResize\(\)/,"late roster observation must place the panel and resize immediately when it appears");
-assert.match(responsive,/stopRosterWatch\(\)/,"late roster observer must disconnect once placement is complete or Horde ends");
+assert.match(responsive,/function watchRosterPlacement\(\)/,"r39 must explicitly handle a roster created or re-parented after the Horde lazy module starts");
+assert.match(responsive,/rosterObserver\.observe\(root,\{childList:true,subtree:true\}\)/,"roster ownership must use event-driven DOM observation rather than gameplay polling");
+assert.match(responsive,/const before=state\.rosterMoves;[\s\S]*?if\(placeRoster\(\)&&state\.rosterMoves!==before\)requestResize\(\)/,"persistent roster observation must reassert tactical ownership only when a DOM change actually moves the roster");
+assert.doesNotMatch(responsive,/state\.rosterPlaced=true;stopRosterWatch\(\)/,"successful placement must not disable Horde roster ownership while the match is active");
+assert.match(responsive,/if\(!isHorde\(\)\)\{stopRosterWatch\(\);return\}/,"persistent roster observer must disconnect when Horde ends");
 assert.match(responsive,/function installBannerGuard\(\)/,"r39 must own final suppression of the obsolete large canvas Horde banner");
 assert.match(responsive,/legacyHordeBannerRect\(x,y,w,h\)/,"final Horde render owner must identify only the retained legacy banner rectangle geometry");
 assert.match(responsive,/ctx\.fillRect=function\(x,y,w,h\)\{if\(legacyHordeBannerRect\(x,y,w,h\)\)/,"final Horde render owner must suppress the obsolete filled banner rectangle before retained render wrappers can draw it");
@@ -42,4 +43,4 @@ assert.match(responsive,/live\.authoritative=false/,"dedicated Horde must reasse
 assert.match(responsive,/__CCG_LOST_SIZZLER_SCHEDULE_RESIZE__/,"Horde layout changes must reuse the canonical canvas resize scheduler");
 assert.doesNotMatch(responsive,/setInterval\(|setTimeout\(/,"r39 must add no permanent polling or timer workload to gameplay");
 
-console.log("Lost Sizzler V10.41 r39 Horde responsive viewport, late-roster observation, legacy-banner suppression, status-row and dedicated-handoff contracts passed.");
+console.log("Lost Sizzler V10.41 r39 Horde responsive viewport, persistent roster ownership, legacy-banner suppression, status-row and dedicated-handoff contracts passed.");
