@@ -11,7 +11,7 @@
   const HORDE="horde-survivor";
   const ENDPOINT="https://lost-sizzler-multiplayer.onrender.com";
   const SDK_URL="https://unpkg.com/@colyseus/sdk@0.18.2/dist/colyseus.js";
-  const TICK_MS=50,POSITION_HEARTBEAT_MS=250,PING_MS=2000,RETRY_MS=4500;
+  const ACTIVE_TICK_MS=50,IDLE_TICK_MS=500,POSITION_HEARTBEAT_MS=250,PING_MS=2000,RETRY_MS=4500;
   const state={installed:false,timer:0,client:null,room:null,connecting:false,connected:false,authorityLive:false,arenaSent:false,lastRunKey:"",lastPositionAt:0,lastPositionSig:"",lastPingAt:0,ping:0,lastStateAt:0,reconnectAt:0,connectAttempts:0,states:0,enemyCreates:0,enemyUpdates:0,enemyRemovals:0,suppressedSupabase:0,hitsSent:0,playerPackets:0,status:"OFFLINE",lastError:"",lastReviveHold:null};
 
   const special=()=>{try{return window.CCGLostSizzlerSpecialModes?.active||null}catch(_){return null}};
@@ -131,6 +131,10 @@
     const t=perfNow();sendPlayer(t);sendRevive();if(t-state.lastPingAt>=PING_MS){state.lastPingAt=t;state.room.send("ping",{sentAt:Date.now()})}if(state.authorityLive&&p1){p1.mana=p1.maxMana;const live=special();if(live)live.authoritative=false}
   }
 
-  install();state.timer=setInterval(tick,TICK_MS);addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0;try{state.room?.leave?.()}catch(_){}},{once:true});
+  function schedule(){
+    state.timer=setTimeout(()=>{tick();schedule()},onlineHorde()?ACTIVE_TICK_MS:IDLE_TICK_MS)
+  }
+
+  install();schedule();addEventListener("pagehide",()=>{if(state.timer)clearTimeout(state.timer);state.timer=0;try{state.room?.leave?.()}catch(_){}},{once:true});
   window.CCGLostSizzlerV141R38ColyseusHorde={ENDPOINT,SDK_URL,connect,disconnect,encodeArena,applyServerState,getDiagnostics(){return{connected:state.connected,authorityLive:state.authorityLive,status:state.status,ping:state.ping,states:state.states,enemyCreates:state.enemyCreates,enemyUpdates:state.enemyUpdates,enemyRemovals:state.enemyRemovals,suppressedSupabase:state.suppressedSupabase,hitsSent:state.hitsSent,playerPackets:state.playerPackets,lastError:state.lastError}},get state(){return state}};
 })();
