@@ -84,4 +84,5 @@
   load("js/v10-41-multimode-performance.js","data-ccg-v141-multimode-performance");
   load("js/v10-41-r37-global-performance.js","data-ccg-v141-r37-global-performance");
   load("js/v10-41-r38-colyseus-horde.js","data-ccg-v141-r38-colyseus-horde");
+  load("js/v10-41-release-overlay-safety.js","data-ccg-v141-release-overlay-safety");
 })();
