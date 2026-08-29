@@ -29,10 +29,12 @@ assert.match(adapter,/room\.send\("enemy_hit"/,"local projectile collision must 
 assert.match(adapter,/gameplay=new Set\(\["v133_special_state","v133_special_input","player","world","shot","hit","player_hit","enemy_shot","fx","notice"\]\)/,"old high-frequency Supabase Horde gameplay events must be silenced after handoff");
 assert.match(adapter,/live\.authoritative=Boolean\(net\?\.isHost\)/,"server disconnect must restore the previous browser-host authority fallback");
 assert.match(adapter,/HORDE SERVER · WAKING/,"free Render cold starts must have an explicit warming status instead of looking frozen");
+assert.match(adapter,/restore:Number\(row\.restoreAmount\|\|2\)/,"browser state must read the schema-safe health restore field");
 
 assert.match(appConfig,/defineRoom\(HordeRoom\)\.filterBy\(\["roomCode"\]\)/,"Colyseus matchmaking must filter Horde rooms by the existing CCG room code");
 assert.match(appConfig,/hordeAuthority: "server"/,"server health response must expose Horde authority mode");
 assert.match(rulesLoader,/horde-survivor\.js/,"dedicated server must load the canonical browser-independent Horde rules engine instead of maintaining a second divergent rule set");
+assert.match(rulesLoader,/collectHealth\(runState: any, pickupId: string, playerId: string, now: number\)/,"server wrapper must preserve the canonical pickup-before-player health contract");
 assert.match(serverRoom,/private readonly rules = getHordeRules\(\)/,"HordeRoom must use the canonical Horde rules engine");
 assert.match(serverRoom,/this\.onMessage\("arena_init"/,"server must receive the deterministic arena grid once");
 assert.match(serverRoom,/this\.onMessage\("player_state"/,"clients must publish compact player position state to the server");
@@ -40,11 +42,13 @@ assert.match(serverRoom,/this\.onMessage\("enemy_hit"/,"enemy damage must be pro
 assert.match(serverRoom,/this\.rules\.applyDamage\(this\.runState/,"enemy attacks must apply player damage through authoritative Horde rules");
 assert.match(serverRoom,/this\.rules\.defeatEnemy\(this\.runState/,"enemy defeats and score must be owned by authoritative Horde rules");
 assert.match(serverRoom,/this\.rules\.startRevive\(this\.runState/,"shared Horde revives must run on the server");
+assert.match(serverRoom,/this\.rules\.collectHealth\(this\.runState, String\(pickup\.id\), String\(player\.id\), now\)/,"server health collection must pass pickup and player IDs in canonical order");
 assert.match(serverRoom,/SINGLE_PLAYER_QUOTAS = \[36, 44, 52, 60, 70, 80, 90, 100, 112, 44\]/,"server must retain the current live-Horde reinforced wave quotas");
 assert.match(serverRoom,/ACTIVE_CAP: Record<number, number> = \{ 1: 18, 2: 24, 3: 30, 4: 36 \}/,"server must retain the current live-Horde active enemy caps");
 assert.match(serverRoom,/private simulateEnemies\(now: number\)/,"enemy movement and attacks must be simulated on the dedicated server rather than the host browser");
 assert.match(serverState,/@type\(\{ map: HordeEnemyState \}\) enemies/,"server state must publish delta-synchronised enemy models");
 assert.match(serverState,/@type\(\{ map: HordePickupState \}\) pickups/,"server state must publish Horde health pickups");
+assert.match(serverState,/@type\("number"\) restoreAmount = 2/,"pickup schema must avoid colliding with Schema.restore while retaining the heal amount");
 assert.match(serverState,/@type\("boolean"\) serverAuthoritative = true/,"clients must be able to verify that a state patch came from server authority before disabling the fallback");
 
 console.log("Lost Sizzler V10.41 r38 dedicated Colyseus Horde authority contract passed.");
