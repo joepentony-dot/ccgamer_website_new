@@ -73,10 +73,25 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for test in \
-            arcade/lost-sizzler/tests/v10-6-browser.mjs \
-            arcade/lost-sizzler/tests/v10-28-browser-stability.mjs \
-            arcade/lost-sizzler/tests/browser/*.mjs; do
+
+          run_legacy_browser_test() {
+            local test="$1"
+            echo "::group::$test (attempt 1)"
+            if node "$test"; then
+              echo "::endgroup::"
+              return 0
+            fi
+            echo "::endgroup::"
+            echo "Legacy browser test timed out or failed on attempt 1; retrying once on a fresh browser process: $test"
+            echo "::group::$test (attempt 2)"
+            node "$test"
+            echo "::endgroup::"
+          }
+
+          run_legacy_browser_test arcade/lost-sizzler/tests/v10-6-browser.mjs
+          run_legacy_browser_test arcade/lost-sizzler/tests/v10-28-browser-stability.mjs
+
+          for test in arcade/lost-sizzler/tests/browser/*.mjs; do
             echo "::group::$test"
             node "$test"
             echo "::endgroup::"

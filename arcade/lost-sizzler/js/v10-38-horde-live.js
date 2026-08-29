@@ -117,7 +117,6 @@
     try{cameras?.clear?.();resetCamp?.(p1,true);reveal?.(p1);markRoomVisit?.(p1);rememberTrail?.(p1)}catch(_){}
     state.localSpawnKey=key;return true
   }
-
   function cellOccupied(x,y,except=null){
     if((host?.enemies||[]).some(enemy=>enemy!==except&&enemy?.alive&&enemy.x===x&&enemy.y===y))return true;
     return alivePlayers().some(player=>player.x===x&&player.y===y)
@@ -183,8 +182,10 @@
   }
 
   function redrawHordeBanner(){
-    if(!isHorde()||!active()?.state||typeof ctx==="undefined"||typeof canvas==="undefined")return false;const runState=active().state,wave=Math.max(0,Number(runState.wave||0)),definition=H()?.WAVES?.[Math.max(0,wave-1)],quota=wave?desiredQuota(wave,runState.playerCount||playerCount()):0,width=Math.min(canvas.width-28,735),physical=(host?.enemies||[]).filter(enemy=>enemy?.alive&&enemy.hordeEnemy).length;
-    ctx.save();ctx.fillStyle="rgba(3,2,7,.9)";ctx.fillRect(14,14,width,70);ctx.strokeStyle="#ffd85a";ctx.strokeRect(14.5,14.5,width-1,69);ctx.textAlign="left";ctx.font='bold 16px "Courier New",monospace';ctx.fillStyle="#ffd85a";ctx.fillText(`HORDE SURVIVOR · WAVE ${wave}/10 · ${definition?.title||"BRIEFING"}`,27,38);ctx.font='bold 12px "Courier New",monospace';ctx.fillStyle="#6cecff";ctx.fillText(`DEFEATED ${Number(runState.defeated||0)}/${quota} · ACTIVE ${physical} · PLAYERS ${runState.playerCount||playerCount()}/4 · AMMO ∞`,27,62);ctx.restore();return true
+    // Retired in V10.41: the compact DOM Horde status strip owns wave, enemy
+    // and player status. Keeping this public no-op preserves older callers
+    // without ever painting the obsolete full-width canvas banner.
+    return false
   }
 
   function updateHordeLive(dt){

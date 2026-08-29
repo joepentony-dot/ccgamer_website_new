@@ -50,7 +50,8 @@ assert.match(finalGuard,/function ensureExpandedWaveReserve/,"final Horde layer 
 assert.match(finalGuard,/runState\.activeEnemies\.push\(\{id,kind:"reserve"/,"pre-tick reserve must keep the rules engine in the active wave until expanded reinforcements are deployed");
 assert.match(finalGuard,/\.tactical-zone \.shortcut-dock[\s\S]*display:none!important/,"final Horde CSS ownership must keep legacy shortcut UI hidden");
 assert.match(finalGuard,/\.player-hub \.health-stat[\s\S]*display:flex!important/,"final Horde CSS ownership must preserve health and weapon status");
-assert.match(source,/DEFEATED \$\{Number\(runState\.defeated\|\|0\)\}\/\$\{quota\}/,"Horde HUD must show the expanded wave target");
+assert.match(source,/function redrawHordeBanner\(\)[\s\S]*?return false[\s\S]*?\n  \}/,"legacy canvas Horde banner API must remain callable but retired so it cannot cover live gameplay");
+assert.doesNotMatch(source,/ctx\.fillRect\(14,14,width,70\)/,"V10.38 must no longer paint the obsolete full-width Horde canvas banner");
 assert.match(source,/They enter from the outer perimeter and converge on the centre/,"wave announcement must explain the new encroachment behaviour");
 
-console.log("Lost Sizzler V10.38–V10.40 live join, centre spawn, loadout, UI ownership and perimeter Horde pressure regression checks passed.");
+console.log("Lost Sizzler V10.38–V10.40 live join, centre spawn, loadout, retired canvas banner, UI ownership and perimeter Horde pressure regression checks passed.");

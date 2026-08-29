@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "multiplayer-server/**"
+      - "arcade/lost-sizzler/js/horde-survivor.js"
       - "render.yaml"
       - ".github/workflows/lost-sizzler-colyseus.yml"
   push:
@@ -11,6 +12,7 @@ on:
       - main
     paths:
       - "multiplayer-server/**"
+      - "arcade/lost-sizzler/js/horde-survivor.js"
       - "render.yaml"
       - ".github/workflows/lost-sizzler-colyseus.yml"
 
@@ -35,3 +37,30 @@ jobs:
         run: npm run typecheck
       - name: Build Colyseus server
         run: npm run build
+      - name: Boot server and exercise a real Horde room
+        shell: bash
+        run: |
+          set -euo pipefail
+          PORT=10000 npm start > /tmp/lost-sizzler-colyseus.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for attempt in {1..30}; do
+            if node -e 'fetch("http://127.0.0.1:10000/healthz").then(async r=>{const body=await r.json();if(!r.ok||body.ok!==true||body.hordeAuthority!=="server")process.exit(1)}).catch(()=>process.exit(1))'; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then
+            cat /tmp/lost-sizzler-colyseus.log
+            exit 1
+          fi
+          node -e 'fetch("http://127.0.0.1:10000/").then(async r=>{const body=await r.json();if(!r.ok||body.transport!=="colyseus"||body.hordeAuthority!=="server")process.exit(1)}).catch(()=>process.exit(1))'
+          npm run smoke:local || {
+            cat /tmp/lost-sizzler-colyseus.log
+            exit 1
+          }
+          kill "$server_pid" 2>/dev/null || true
+          wait "$server_pid" 2>/dev/null || true
+          trap - EXIT

@@ -29,14 +29,22 @@ try{
 
   await page.click("#horde-solo-btn");
   await page.waitForFunction(()=>document.body.dataset.specialMode==="horde-survivor"&&document.body.dataset.hordeSolo==="true"&&Boolean(window.CCGLostSizzlerSpecialModes?.active?.state));
-  await page.waitForFunction(()=>document.getElementById("horde-live-roster")?.parentElement?.classList?.contains("player-hub"));
+  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R39HordeResponsive?.state?.styleInstalled));
+  await page.evaluate(()=>{
+    const r39=window.CCGLostSizzlerV141R39HordeResponsive;
+    r39?.watchRosterPlacement?.();
+    r39?.placeRoster?.();
+  });
+  await page.waitForFunction(()=>document.getElementById("horde-live-roster")?.parentElement?.classList?.contains("tactical-zone")&&window.CCGLostSizzlerV141R39HordeResponsive?.state?.rosterWatchActive===true);
 
   const hordeUi=await page.evaluate(()=>{
-    const roster=document.getElementById("horde-live-roster"),api=window.CCGLostSizzlerV141UiSpyPerformance;
-    return{parent:roster?.parentElement?.className||"",position:roster?getComputedStyle(roster).position:"",top:roster?getComputedStyle(roster).top:"",focusWrapped:Boolean(window.CCGLostSizzlerV137?.updateHordeFocus?.__ccgV141UiPerformanceFocus),liveWrapped:Boolean(window.CCGLostSizzlerV138?.updateHordeLive?.__ccgV141UiPerformanceLive),moves:api?.state?.hordeRosterMoves||0};
+    const roster=document.getElementById("horde-live-roster"),api=window.CCGLostSizzlerV141UiSpyPerformance,r39=window.CCGLostSizzlerV141R39HordeResponsive;
+    return{parent:roster?.parentElement?.className||"",position:roster?getComputedStyle(roster).position:"",top:roster?getComputedStyle(roster).top:"",focusWrapped:Boolean(window.CCGLostSizzlerV137?.updateHordeFocus?.__ccgV141UiPerformanceFocus),liveWrapped:Boolean(window.CCGLostSizzlerV138?.updateHordeLive?.__ccgV141UiPerformanceLive),moves:api?.state?.hordeRosterMoves||0,ownerMoves:r39?.state?.rosterMoves||0,ownerWatching:r39?.state?.rosterWatchActive===true};
   });
-  assert.match(hordeUi.parent,/player-hub/,"Horde Players must live below the game canvas in the player hub");
+  assert.match(hordeUi.parent,/tactical-zone/,"Horde Players must use the r39 tactical side/lower region instead of floating over the game canvas");
   assert.equal(hordeUi.position,"static","Horde Players must not remain an absolute overlay over gameplay");
+  assert.equal(hordeUi.ownerWatching,true,"r39 must retain Horde roster ownership for the live session");
+  assert.ok(hordeUi.ownerMoves>=1,"r39 must have moved the Horde roster into its final tactical owner region");
   assert.equal(hordeUi.focusWrapped,true,"Horde focus maintenance must use the throttled hardening owner");
   assert.equal(hordeUi.liveWrapped,true,"Horde live maintenance must use the throttled hardening owner");
 
@@ -130,7 +138,7 @@ try{
   assert.equal(searchComplete.width,100,"completed Spy search feedback must fill the interaction bar");
 
   assert.deepEqual(errors,[],`Horde/Spy UI-performance browser regression must have no uncaught browser errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler Horde roster/health and independent Spy HUD/search regressions passed in Chromium.");
+  console.log("Lost Sizzler Horde tactical roster/health and independent Spy HUD/search regressions passed in Chromium.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
