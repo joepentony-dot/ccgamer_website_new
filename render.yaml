@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: lost-sizzler-multiplayer
+    runtime: node
+    region: frankfurt
+    plan: free
+    rootDir: multiplayer-server
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: 22.18.0
+      - key: ALLOWED_ORIGINS
+        value: https://www.cheekycommodoregamer.co.uk,https://cheekycommodoregamer.co.uk
