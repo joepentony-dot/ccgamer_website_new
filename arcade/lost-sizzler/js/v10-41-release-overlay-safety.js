@@ -48,16 +48,18 @@
     const overlay=document.getElementById("ccg-release-loading");
     if(!overlay)return false;
     if(fatalLoad()){
-      overlay.style.pointerEvents="";
-      overlay.removeAttribute("aria-hidden");
+      if(overlay.hidden)overlay.hidden=false;
+      if(overlay.getAttribute("aria-hidden")==="true")overlay.removeAttribute("aria-hidden");
+      if(overlay.style.pointerEvents)overlay.style.pointerEvents="";
       return false;
     }
     if(!playable())return false;
-    overlay.hidden=true;
-    overlay.setAttribute("aria-hidden","true");
-    overlay.style.pointerEvents="none";
-    state.releases++;
-    state.lastReleaseAt=Date.now();
+
+    let changed=false;
+    if(!overlay.hidden){overlay.hidden=true;changed=true}
+    if(overlay.getAttribute("aria-hidden")!=="true"){overlay.setAttribute("aria-hidden","true");changed=true}
+    if(overlay.style.pointerEvents!=="none"){overlay.style.pointerEvents="none";changed=true}
+    if(changed){state.releases++;state.lastReleaseAt=Date.now()}
     return true;
   }
 
@@ -67,7 +69,7 @@
     state.overlayObserver?.disconnect?.();
     state.overlay=overlay;
     state.overlayObserver=new MutationObserver(()=>releaseOverlay());
-    state.overlayObserver.observe(overlay,{attributes:true,attributeFilter:["hidden","class","style"]});
+    state.overlayObserver.observe(overlay,{attributes:true,attributeFilter:["hidden","class"]});
     releaseOverlay();
   }
 
@@ -84,7 +86,7 @@
       state.bodyObserver=new MutationObserver(()=>releaseOverlay());
       state.bodyObserver.observe(document.body,{attributes:true,attributeFilter:["data-release-ready","data-run-active","data-tutorial-active","data-special-mode"]});
     }
-    state.timer=setInterval(tick,160);
+    state.timer=setInterval(tick,250);
   }
 
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",install,{once:true});else install();
