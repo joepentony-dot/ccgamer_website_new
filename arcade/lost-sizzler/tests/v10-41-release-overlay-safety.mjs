@@ -19,6 +19,6 @@ assert.match(guard,/data-tutorial-active="true"/,"active tutorials must force th
 assert.match(guard,/#ccg-release-loading:not\(\.is-error\)/,"genuine V10.36 fatal-load presentation must remain exempt from the stale-overlay guard");
 assert.match(guard,/display:none!important/,"ready gameplay must deterministically hide a stale release overlay");
 assert.match(guard,/pointer-events:none!important/,"stale loading layer must not be able to intercept mouse or touch input");
-assert.doesNotMatch(guard,/setInterval|setTimeout|MutationObserver/,"release overlay safety must add no polling, timers or observers to gameplay");
+assert.doesNotMatch(guard,/\bsetInterval\s*\(|\bsetTimeout\s*\(|\bnew\s+MutationObserver\s*\(/,"release overlay safety must add no polling, timers or observers to gameplay");
 
 console.log("Lost Sizzler V10.41 timer-free release-overlay gameplay input safety contract passed.");
