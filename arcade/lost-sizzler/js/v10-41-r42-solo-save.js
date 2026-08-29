@@ -60,7 +60,7 @@
     copy.savedAt=Date.now();copy.reason=reason||copy.reason||"floor_entry";
     try{localStorage.setItem(STORAGE_KEY,JSON.stringify(copy))}catch(_){return false}
     state.entry=clone(copy);state.lastSavedAt=copy.savedAt;state.lastReason=copy.reason;refreshButton();
-    if(announce)try{showToast?.("SOLO RUN SAVED",`Floor ${copy.floor} entrance saved. Continue later from this checkpoint.`,"green",6500)}catch(_){}
+    if(announce)try{showToast?.("SOLO RUN AUTOSAVED",`Floor ${copy.floor} entrance saved. Continue later from this checkpoint.`,"green",6500)}catch(_){}
     return true
   }
   function capture(reason="floor_entry",announce=false){
@@ -142,7 +142,7 @@
     const saved=readRaw();if(!saved){refreshButton();return false}
     const snapshot=clone(saved);if(!snapshot)return false;
     try{
-      const audio=typeof S?.start==="function"?S.start():Promise.resolve(),fs=typeof requestPlayFullscreen==="function"?requestPlayFullscreen():Promise.resolve();
+      const audio=S&&typeof S.start==="function"?S.start():Promise.resolve(),fs=typeof requestPlayFullscreen==="function"?requestPlayFullscreen():Promise.resolve();
       await Promise.all([audio,fs]);
       await net?.leave?.();
       if(UI?.name&&snapshot.player?.name)UI.name.value=String(snapshot.player.name).slice(0,18);
@@ -195,7 +195,7 @@
   const legacyOffer=typeof offerFloorSave==="function"?offerFloorSave:null;
   if(legacyOffer){
     offerFloorSave=function(restPrompt=false){
-      if(soloRunActive()&&!restPrompt){capture("floor_entry",true);return false}
+      if(soloRunActive()&&!restPrompt)return false;
       return legacyOffer.apply(this,arguments)
     }
   }
@@ -208,8 +208,7 @@
 
   document.addEventListener("click",event=>{
     const button=event.target?.closest?.("button");if(!button)return;
-    if(button.id==="solo-btn")waitForFreshSolo();
-    if(button.id==="descend-btn"&&soloRunActive())setTimeout(()=>{if(soloRunActive())capture("floor_entry",true)},0);
+    if(button.id==="solo-btn")waitForFreshSolo()
   });
   document.addEventListener("click",event=>{
     const button=event.target?.closest?.("#continue-save-btn");if(!button||!readRaw())return;
