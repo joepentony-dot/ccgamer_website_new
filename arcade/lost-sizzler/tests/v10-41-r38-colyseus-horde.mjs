@@ -30,6 +30,9 @@ assert.match(adapter,/gameplay=new Set\(\["v133_special_state","v133_special_inp
 assert.match(adapter,/live\.authoritative=Boolean\(net\?\.isHost\)/,"server disconnect must restore the previous browser-host authority fallback");
 assert.match(adapter,/HORDE SERVER · WAKING/,"free Render cold starts must have an explicit warming status instead of looking frozen");
 assert.match(adapter,/restore:Number\(row\.restoreAmount\|\|2\)/,"browser state must read the schema-safe health restore field");
+assert.match(adapter,/const ACTIVE_TICK_MS=50,IDLE_TICK_MS=500/,"Horde transport must retain its responsive active cadence but sleep while other modes are running");
+assert.match(adapter,/onlineHorde\(\)\?ACTIVE_TICK_MS:IDLE_TICK_MS/,"scheduler cadence must depend on whether online Horde is actually active");
+assert.doesNotMatch(adapter,/setInterval\(tick,TICK_MS\)/,"Colyseus adapter must not run a permanent 20Hz timer across Solo, menus, Spy or Split Screen");
 
 assert.match(appConfig,/defineRoom\(HordeRoom\)\.filterBy\(\["roomCode"\]\)/,"Colyseus matchmaking must filter Horde rooms by the existing CCG room code");
 assert.match(appConfig,/hordeAuthority: "server"/,"server health response must expose Horde authority mode");
