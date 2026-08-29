@@ -1,0 +1,50 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
+
+const here=path.dirname(fileURLToPath(import.meta.url));
+const arcadeRoot=path.resolve(here,"..");
+const repoRoot=path.resolve(arcadeRoot,"..","..");
+const readArcade=relative=>fs.readFileSync(path.join(arcadeRoot,relative),"utf8");
+const readRepo=relative=>fs.readFileSync(path.join(repoRoot,relative),"utf8");
+
+const adapter=readArcade("js/v10-41-r38-colyseus-horde.js");
+const loader=readArcade("js/v10-41-lake-item-safety.js");
+const serverRoom=readRepo("multiplayer-server/src/rooms/HordeRoom.ts");
+const serverState=readRepo("multiplayer-server/src/state/HordeState.ts");
+const appConfig=readRepo("multiplayer-server/src/app.config.ts");
+const rulesLoader=readRepo("multiplayer-server/src/shared/HordeRules.ts");
+
+assert.doesNotThrow(()=>new Function(adapter),"r38 Colyseus Horde browser adapter must parse as valid JavaScript");
+assert.match(loader,/load\("js\/v10-41-r38-colyseus-horde\.js","data-ccg-v141-r38-colyseus-horde"\)/,"live late-module chain must load r38 after the existing performance layers");
+assert.ok(loader.indexOf("v10-41-r38-colyseus-horde.js")>loader.indexOf("v10-41-r37-global-performance.js"),"Colyseus ownership must install after the global performance finalizer");
+assert.match(adapter,/https:\/\/lost-sizzler-multiplayer\.onrender\.com/,"browser Horde transport must use the deployed Render service");
+assert.match(adapter,/@colyseus\/sdk@0\.18\.2\/dist\/colyseus\.js/,"browser SDK must be version-pinned to the Colyseus 0.18 protocol");
+assert.match(adapter,/joinOrCreate\("horde_v1",\{roomCode:code/,"all players with the same existing CCG room code must enter the same Horde server room");
+assert.match(adapter,/expectedPlayers:expectedPlayers\(\)/,"server handoff must wait for the existing lobby player count when possible");
+assert.match(adapter,/room\.send\("arena_init",arena\)/,"existing Horde arena walkability must be sent once to server authority");
+assert.match(adapter,/if\(state\.authorityLive&&isHorde\(\)\)return false/,"browser host enemy AI must stop only after dedicated authority is live");
+assert.match(adapter,/room\.send\("enemy_hit"/,"local projectile collision must report enemy hits to server authority");
+assert.match(adapter,/gameplay=new Set\(\["v133_special_state","v133_special_input","player","world","shot","hit","player_hit","enemy_shot","fx","notice"\]\)/,"old high-frequency Supabase Horde gameplay events must be silenced after handoff");
+assert.match(adapter,/live\.authoritative=Boolean\(net\?\.isHost\)/,"server disconnect must restore the previous browser-host authority fallback");
+assert.match(adapter,/HORDE SERVER · WAKING/,"free Render cold starts must have an explicit warming status instead of looking frozen");
+
+assert.match(appConfig,/defineRoom\(HordeRoom\)\.filterBy\(\["roomCode"\]\)/,"Colyseus matchmaking must filter Horde rooms by the existing CCG room code");
+assert.match(appConfig,/hordeAuthority: "server"/,"server health response must expose Horde authority mode");
+assert.match(rulesLoader,/horde-survivor\.js/,"dedicated server must load the canonical browser-independent Horde rules engine instead of maintaining a second divergent rule set");
+assert.match(serverRoom,/private readonly rules = getHordeRules\(\)/,"HordeRoom must use the canonical Horde rules engine");
+assert.match(serverRoom,/this\.onMessage\("arena_init"/,"server must receive the deterministic arena grid once");
+assert.match(serverRoom,/this\.onMessage\("player_state"/,"clients must publish compact player position state to the server");
+assert.match(serverRoom,/this\.onMessage\("enemy_hit"/,"enemy damage must be processed by the dedicated server");
+assert.match(serverRoom,/this\.rules\.applyDamage\(this\.runState/,"enemy attacks must apply player damage through authoritative Horde rules");
+assert.match(serverRoom,/this\.rules\.defeatEnemy\(this\.runState/,"enemy defeats and score must be owned by authoritative Horde rules");
+assert.match(serverRoom,/this\.rules\.startRevive\(this\.runState/,"shared Horde revives must run on the server");
+assert.match(serverRoom,/SINGLE_PLAYER_QUOTAS = \[36, 44, 52, 60, 70, 80, 90, 100, 112, 44\]/,"server must retain the current live-Horde reinforced wave quotas");
+assert.match(serverRoom,/ACTIVE_CAP: Record<number, number> = \{ 1: 18, 2: 24, 3: 30, 4: 36 \}/,"server must retain the current live-Horde active enemy caps");
+assert.match(serverRoom,/private simulateEnemies\(now: number\)/,"enemy movement and attacks must be simulated on the dedicated server rather than the host browser");
+assert.match(serverState,/@type\(\{ map: HordeEnemyState \}\) enemies/,"server state must publish delta-synchronised enemy models");
+assert.match(serverState,/@type\(\{ map: HordePickupState \}\) pickups/,"server state must publish Horde health pickups");
+assert.match(serverState,/@type\("boolean"\) serverAuthoritative = true/,"clients must be able to verify that a state patch came from server authority before disabling the fallback");
+
+console.log("Lost Sizzler V10.41 r38 dedicated Colyseus Horde authority contract passed.");
