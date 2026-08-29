@@ -1,6 +1,6 @@
 {
   "name": "ccg-lost-sizzler-multiplayer",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "description": "Authoritative and transport-safe Colyseus multiplayer server for The Lost Sizzler.",
@@ -14,7 +14,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "smoke:horde": "node tests/horde-room-smoke.mjs",
     "smoke:dungeon": "node tests/dungeon-room-smoke.mjs",
-    "smoke:local": "npm run smoke:horde && npm run smoke:dungeon"
+    "smoke:spy": "node tests/spy-room-smoke.mjs",
+    "smoke:local": "npm run smoke:horde && npm run smoke:dungeon && npm run smoke:spy"
   },
   "dependencies": {
     "@colyseus/schema": "5.0.23",
