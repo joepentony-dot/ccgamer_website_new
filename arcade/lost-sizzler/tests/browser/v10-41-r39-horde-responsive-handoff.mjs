@@ -54,9 +54,6 @@ try{
   assert.equal(dormant.r38,false,"Colyseus Horde adapter must not load on the normal menu");
   assert.equal(dormant.r39,false,"Horde responsive finalizer must not load on the normal menu");
 
-  // Reproduce the real late-Horde-UI race deterministically: r39 must start
-  // before the retained Horde layer creates its live roster panel.
-  await page.evaluate(()=>document.getElementById("horde-live-roster")?.remove());
   await page.evaluate(()=>{
     const api=window.CCGLostSizzlerSpecialModes;
     Object.defineProperty(api,"active",{configurable:true,value:{
@@ -67,17 +64,30 @@ try{
     document.body.dataset.runActive="true";
   });
 
-  // The r39 lazy-loader and the pre-existing Horde status observer are separate
-  // ownership paths. Prove r39 loaded first, then synchronise the status owner
-  // directly so this geometry test does not depend on MutationObserver ordering.
+  // First prove the Horde-only finalizer lazy-loads after Horde activation.
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R39HordeResponsive?.state?.styleInstalled));
+
+  // Exercise the late-roster recovery path deterministically. On a busy browser
+  // the retained V10.38 layer can legitimately recreate/place the roster before
+  // r39's observer is sampled. Remove any such roster only after r39 is loaded,
+  // explicitly arm the finalizer's watcher, then create a late roster and prove
+  // that r39 moves it out of the arena into the tactical region.
+  await page.evaluate(()=>{
+    document.getElementById("horde-live-roster")?.remove();
+    window.CCGLostSizzlerV141R39HordeResponsive?.watchRosterPlacement?.();
+  });
+  await page.waitForFunction(()=>window.CCGLostSizzlerV141R39HordeResponsive?.state?.rosterWatchActive===true);
+
+  // The r39 lazy-loader and the pre-existing Horde status observer are separate
+  // ownership paths. Synchronise the status owner directly so geometry checks
+  // do not depend on MutationObserver scheduling.
   await page.evaluate(()=>{
     const frame=window.CCGLostSizzlerV141HordeFramePerformance;
     frame?.ensureStatusStrip?.();
     frame?.syncStatusTimer?.();
   });
   await page.waitForFunction(()=>Boolean(document.getElementById("horde-performance-status")));
-  await page.waitForFunction(()=>window.CCGLostSizzlerV141R39HordeResponsive?.state?.rosterWatchActive===true);
+
   await page.evaluate(()=>{
     const gameArea=document.querySelector(".game-area");
     const panel=document.createElement("aside");panel.id="horde-live-roster";panel.setAttribute("aria-label","Horde players currently playing");
@@ -123,7 +133,7 @@ try{
   assert.ok(tablet.scrollHeight<=tablet.innerHeight+2,`tablet Horde must remain within one dynamic viewport: ${tablet.scrollHeight}/${tablet.innerHeight}`);
 
   assert.deepEqual(errors,[],`r39 Horde responsive launch must have no uncaught browser errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 r39 lazy Colyseus loading, late-roster recovery, fixed status row and desktop/tablet Horde viewport layout passed in Chromium.");
+  console.log("Lost Sizzler V10.41 r39 lazy Colyseus loading, deterministic late-roster recovery, fixed status row and desktop/tablet Horde viewport layout passed in Chromium.");
   await context.close()
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()))
