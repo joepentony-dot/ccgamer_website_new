@@ -9,7 +9,7 @@
 
   const HORDE="horde-survivor";
   const STYLE_ID="ccg-v141-r39-horde-responsive";
-  const state={styleInstalled:false,memberGuard:false,toastGuard:false,bannerGuard:false,authorityCorrections:0,legacyMigrationMessages:0,resizeRequests:0,rosterPlaced:false,rosterWatchActive:false,rosterMoves:0,bannerRectsSuppressed:0};
+  const state={styleInstalled:false,memberGuard:false,toastGuard:false,bannerGuard:false,authorityCorrections:0,legacyMigrationMessages:0,resizeRequests:0,rosterPlaced:false,rosterWatchActive:false,rosterMoves:0,bannerRectsSuppressed:0,compactViewport:false,radarVisibilityCorrections:0};
   let rosterObserver=null;
 
   const special=()=>{try{return window.CCGLostSizzlerSpecialModes?.active||null}catch(_){return null}};
@@ -115,8 +115,34 @@ body[data-special-mode="horde-survivor"][data-run-active="true"] .player-hub .hu
     rosterObserver.observe(root,{childList:true,subtree:true});state.rosterWatchActive=true;return true
   }
 
+  function enforceResponsiveVisibility(){
+    const radar=document.querySelector(".ccg-game>.tactical-zone>.radar-card");
+    if(!isHorde()){
+      state.compactViewport=false;
+      if(radar?.dataset?.ccgV141R39CompactHidden==="true"){
+        radar.style.removeProperty("display");delete radar.dataset.ccgV141R39CompactHidden;state.radarVisibilityCorrections++
+      }
+      return false
+    }
+    let compact=false;
+    try{compact=Boolean(window.matchMedia?.("(max-width: 900px)")?.matches)}catch(_){compact=Number(window.innerWidth||0)<=900}
+    if(!compact)compact=Number(window.innerWidth||0)<=900;
+    state.compactViewport=compact;
+    if(!radar)return false;
+    if(compact){
+      if(radar.style.getPropertyValue("display")!=="none"||radar.style.getPropertyPriority("display")!=="important"){
+        radar.style.setProperty("display","none","important");state.radarVisibilityCorrections++
+      }
+      radar.dataset.ccgV141R39CompactHidden="true";return true
+    }
+    if(radar.dataset.ccgV141R39CompactHidden==="true"){
+      radar.style.removeProperty("display");delete radar.dataset.ccgV141R39CompactHidden;state.radarVisibilityCorrections++
+    }
+    return true
+  }
+
   function requestResize(){
-    state.resizeRequests++;
+    state.resizeRequests++;enforceResponsiveVisibility();
     requestAnimationFrame(()=>{try{window.__CCG_LOST_SIZZLER_SCHEDULE_RESIZE__?.()}catch(_){try{resizeGameCanvas?.()}catch(__){}}})
   }
 
@@ -174,7 +200,7 @@ body[data-special-mode="horde-survivor"][data-run-active="true"] .player-hub .hu
   const transportObserver=new MutationObserver(records=>{
     if(!records.some(record=>record.attributeName==="data-horde-transport"||record.attributeName==="data-special-mode"))return;
     if(isHorde()){watchRosterPlacement();installBannerGuard();if(dedicatedPreferred())enforceDedicatedAuthority();requestResize()}
-    else stopRosterWatch()
+    else{stopRosterWatch();enforceResponsiveVisibility()}
   });
   transportObserver.observe(document.body,{attributes:true,attributeFilter:["data-horde-transport","data-special-mode"]});
 
@@ -183,7 +209,7 @@ body[data-special-mode="horde-survivor"][data-run-active="true"] .player-hub .hu
   addEventListener("pagehide",()=>{transportObserver.disconnect();stopRosterWatch()},{once:true});
 
   window.CCGLostSizzlerV141R39HordeResponsive={
-    enforceDedicatedAuthority,placeRoster,watchRosterPlacement,requestResize,installBannerGuard,
+    enforceDedicatedAuthority,enforceResponsiveVisibility,placeRoster,watchRosterPlacement,requestResize,installBannerGuard,
     getDiagnostics(){return{...state,dedicatedLive:dedicatedLive(),dedicatedPreferred:dedicatedPreferred()}},
     get state(){return state}
   };
