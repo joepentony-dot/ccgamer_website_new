@@ -86,6 +86,7 @@
   load("js/v10-41-multimode-performance.js","data-ccg-v141-multimode-performance");
   load("js/v10-41-r37-global-performance.js","data-ccg-v141-r37-global-performance");
   load("js/v10-41-release-overlay-safety.js","data-ccg-v141-release-overlay-safety");
+  load("js/v10-41-r42-solo-save.js","data-ccg-v141-r42-solo-save");
 
   let dungeonLoaded=false,dungeonTimer=0;
   const dungeonOnline=()=>{
