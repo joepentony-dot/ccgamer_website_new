@@ -94,13 +94,25 @@ try{
     panel.innerHTML='<div class="v138-head"><span>HORDE PLAYERS</span><span id="horde-live-count">1/4</span></div><span id="horde-live-room" class="v138-join">ROOM TEST · JOIN ANY TIME</span><ul id="horde-live-list"><li>CCG Player · YOU</li></ul>';
     gameArea?.appendChild(panel)
   });
-  await page.waitForFunction(()=>document.getElementById("horde-live-roster")?.parentElement?.classList?.contains("tactical-zone")&&window.CCGLostSizzlerV141R39HordeResponsive?.state?.rosterWatchActive===false);
+  await page.waitForFunction(()=>document.getElementById("horde-live-roster")?.parentElement?.classList?.contains("tactical-zone")&&window.CCGLostSizzlerV141R39HordeResponsive?.state?.rosterWatchActive===true);
+
+  // Retained Horde UI can re-parent the roster after initial placement. Force
+  // exactly that conflict and prove r39 keeps ownership for the whole Horde run.
+  const movesAfterFirstPlacement=await page.evaluate(()=>window.CCGLostSizzlerV141R39HordeResponsive?.state?.rosterMoves||0);
+  await page.evaluate(()=>{
+    const roster=document.getElementById("horde-live-roster"),gameArea=document.querySelector(".game-area");
+    if(roster&&gameArea)gameArea.appendChild(roster)
+  });
+  await page.waitForFunction(previous=>{
+    const api=window.CCGLostSizzlerV141R39HordeResponsive;
+    return document.getElementById("horde-live-roster")?.parentElement?.classList?.contains("tactical-zone")&&api?.state?.rosterWatchActive===true&&(api?.state?.rosterMoves||0)>previous
+  },movesAfterFirstPlacement);
   await page.waitForTimeout(100);
 
   const desktop=await page.evaluate(()=>{
     const rect=selector=>{const node=document.querySelector(selector);if(!node)return null;const r=node.getBoundingClientRect();return{left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height,display:getComputedStyle(node).display}};
     const status=rect("#horde-performance-status"),game=rect(".v102-game-area"),wrap=rect(".v102-game-area .canvas-wrap"),hub=rect(".player-hub"),tactical=rect(".tactical-zone"),radar=rect(".tactical-zone>.radar-card"),roster=document.getElementById("horde-live-roster");
-    return{innerHeight,scrollHeight:document.documentElement.scrollHeight,status,game,wrap,hub,tactical,radar,rosterParent:roster?.parentElement?.className||"",rosterDisplay:roster?getComputedStyle(roster).display:"missing",rosterMoves:window.CCGLostSizzlerV141R39HordeResponsive?.state?.rosterMoves||0}
+    return{innerHeight,scrollHeight:document.documentElement.scrollHeight,status,game,wrap,hub,tactical,radar,rosterParent:roster?.parentElement?.className||"",rosterDisplay:roster?getComputedStyle(roster).display:"missing",rosterMoves:window.CCGLostSizzlerV141R39HordeResponsive?.state?.rosterMoves||0,rosterWatchActive:window.CCGLostSizzlerV141R39HordeResponsive?.state?.rosterWatchActive===true}
   });
   assert.ok(desktop.status&&desktop.game&&desktop.wrap&&desktop.hub&&desktop.tactical&&desktop.radar,"desktop Horde layout elements must exist");
   assert.ok(desktop.status.height>=20&&desktop.status.height<=40,`desktop Horde wave/enemy strip must remain compact: ${desktop.status.height}px`);
@@ -111,7 +123,8 @@ try{
   assert.ok(desktop.tactical.left>=desktop.game.right-2,"desktop radar/tactical region must occupy the dedicated right column");
   assert.ok(Math.abs(desktop.tactical.height-desktop.game.height)<=10,"desktop radar column must use the same vertical gameplay row as the arena");
   assert.ok(desktop.rosterParent.includes("tactical-zone"),"Horde roster must use the tactical side region instead of floating over the arena");
-  assert.ok(desktop.rosterMoves>=1,"late Horde roster must be actively moved out of the arena by r39");
+  assert.ok(desktop.rosterMoves>=2,"persistent Horde roster ownership must recover both initial and forced re-parenting");
+  assert.equal(desktop.rosterWatchActive,true,"Horde roster ownership observer must remain active for the live Horde session");
   assert.equal(desktop.rosterDisplay,"block","Horde roster must remain visible on desktop");
   assert.ok(desktop.scrollHeight<=desktop.innerHeight+2,`desktop Horde must not create page scrolling: ${desktop.scrollHeight}/${desktop.innerHeight}`);
 
@@ -121,7 +134,7 @@ try{
     window.CCGLostSizzlerV141R39HordeResponsive?.requestResize?.();
     const rect=selector=>{const node=document.querySelector(selector);if(!node)return null;const r=node.getBoundingClientRect();return{top:r.top,bottom:r.bottom,width:r.width,height:r.height,display:getComputedStyle(node).display}};
     const status=rect("#horde-performance-status"),game=rect(".v102-game-area"),wrap=rect(".v102-game-area .canvas-wrap"),hub=rect(".player-hub"),tactical=rect(".tactical-zone"),radar=rect(".tactical-zone>.radar-card"),roster=rect("#horde-live-roster");
-    return{innerHeight,scrollHeight:document.documentElement.scrollHeight,status,game,wrap,hub,tactical,radar,roster}
+    return{innerHeight,scrollHeight:document.documentElement.scrollHeight,status,game,wrap,hub,tactical,radar,roster,rosterParent:document.getElementById("horde-live-roster")?.parentElement?.className||"",rosterWatchActive:window.CCGLostSizzlerV141R39HordeResponsive?.state?.rosterWatchActive===true}
   });
   assert.ok(tablet.status&&tablet.game&&tablet.wrap&&tablet.hub&&tablet.tactical&&tablet.roster,"tablet Horde layout elements must exist");
   assert.ok(tablet.status.bottom<=tablet.game.top+2,"tablet Horde wave/enemy strip must remain directly above gameplay");
@@ -130,10 +143,12 @@ try{
   assert.ok(Math.abs(tablet.hub.top-tablet.game.bottom)<=6,"tablet HUD must follow the arena directly");
   assert.equal(tablet.radar?.display,"none","tablet Horde must remove the desktop radar to preserve arena space");
   assert.equal(tablet.roster?.display,"block","tablet Horde player roster must remain available in the compact lower strip");
+  assert.ok(tablet.rosterParent.includes("tactical-zone"),"tablet Horde roster must remain in the tactical lower strip");
+  assert.equal(tablet.rosterWatchActive,true,"tablet Horde must retain roster ownership while the match is active");
   assert.ok(tablet.scrollHeight<=tablet.innerHeight+2,`tablet Horde must remain within one dynamic viewport: ${tablet.scrollHeight}/${tablet.innerHeight}`);
 
   assert.deepEqual(errors,[],`r39 Horde responsive launch must have no uncaught browser errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 r39 lazy Colyseus loading, deterministic late-roster recovery, fixed status row and desktop/tablet Horde viewport layout passed in Chromium.");
+  console.log("Lost Sizzler V10.41 r39 lazy Colyseus loading, persistent late-roster recovery, fixed status row and desktop/tablet Horde viewport layout passed in Chromium.");
   await context.close()
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()))
