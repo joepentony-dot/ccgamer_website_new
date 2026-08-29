@@ -29,6 +29,12 @@ try{
 
   await page.click("#horde-solo-btn");
   await page.waitForFunction(()=>document.body.dataset.specialMode==="horde-survivor"&&document.body.dataset.hordeSolo==="true"&&Boolean(window.CCGLostSizzlerSpecialModes?.active?.state));
+  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R39HordeResponsive?.state?.styleInstalled));
+  await page.evaluate(()=>{
+    const r39=window.CCGLostSizzlerV141R39HordeResponsive;
+    r39?.watchRosterPlacement?.();
+    r39?.placeRoster?.();
+  });
   await page.waitForFunction(()=>document.getElementById("horde-live-roster")?.parentElement?.classList?.contains("tactical-zone")&&window.CCGLostSizzlerV141R39HordeResponsive?.state?.rosterWatchActive===true);
 
   const hordeUi=await page.evaluate(()=>{
