@@ -1,11 +1,11 @@
 /* The Lost Sizzler V10.41 — release overlay gameplay-input safety.
  *
  * V10.36 owns the release/loading presentation. A late release-gate callback
- * can occasionally lag behind a game that has already reported itself ready,
- * leaving the full-screen loading layer above otherwise playable UI. This
- * final guard never masks a genuine fatal-load state, but once the canonical
- * page is ready (or a run is already active) the stale loading layer must not
- * remain visible or intercept pointer input.
+ * can occasionally lag behind a page that has already become playable, leaving
+ * the full-screen loading layer above otherwise usable controls. The body
+ * already exposes authoritative lifecycle flags, so this guard is deliberately
+ * CSS-only: no polling, no MutationObservers and no extra work in the game loop.
+ * Genuine fatal-load presentation remains visible via the .is-error exemption.
  */
 (()=>{
   "use strict";
@@ -13,10 +13,9 @@
   window.__CCG_LOST_SIZZLER_V141_RELEASE_OVERLAY_SAFETY__=true;
 
   const STYLE_ID="ccg-v141-release-overlay-safety-style";
-  const state={timer:0,bodyObserver:null,overlayObserver:null,overlay:null,releases:0,lastReleaseAt:0};
 
-  function ensureStyle(){
-    if(document.getElementById(STYLE_ID))return;
+  function install(){
+    if(document.getElementById(STYLE_ID))return false;
     const style=document.createElement("style");
     style.id=STYLE_ID;
     style.textContent=`
@@ -29,73 +28,9 @@
       }
     `;
     (document.head||document.documentElement).appendChild(style);
-  }
-
-  function fatalLoad(){
-    const overlay=document.getElementById("ccg-release-loading");
-    if(overlay?.classList?.contains("is-error"))return true;
-    try{return window.CCGLostSizzlerReleaseGate?.state?.failed===true}catch(_){return false}
-  }
-
-  function playable(){
-    const data=document.body?.dataset;
-    if(!data)return false;
-    if(data.releaseReady==="true"||data.runActive==="true"||data.tutorialActive==="true")return true;
-    try{return Boolean(window.CCGLostSizzlerSpecialModes?.active)}catch(_){return false}
-  }
-
-  function releaseOverlay(){
-    const overlay=document.getElementById("ccg-release-loading");
-    if(!overlay)return false;
-    if(fatalLoad()){
-      if(overlay.hidden)overlay.hidden=false;
-      if(overlay.getAttribute("aria-hidden")==="true")overlay.removeAttribute("aria-hidden");
-      if(overlay.style.pointerEvents)overlay.style.pointerEvents="";
-      return false;
-    }
-    if(!playable())return false;
-
-    let changed=false;
-    if(!overlay.hidden){overlay.hidden=true;changed=true}
-    if(overlay.getAttribute("aria-hidden")!=="true"){overlay.setAttribute("aria-hidden","true");changed=true}
-    if(overlay.style.pointerEvents!=="none"){overlay.style.pointerEvents="none";changed=true}
-    if(changed){state.releases++;state.lastReleaseAt=Date.now()}
     return true;
   }
 
-  function observeOverlay(){
-    const overlay=document.getElementById("ccg-release-loading");
-    if(!overlay||overlay===state.overlay)return;
-    state.overlayObserver?.disconnect?.();
-    state.overlay=overlay;
-    state.overlayObserver=new MutationObserver(()=>releaseOverlay());
-    state.overlayObserver.observe(overlay,{attributes:true,attributeFilter:["hidden","class"]});
-    releaseOverlay();
-  }
-
-  function tick(){
-    ensureStyle();
-    observeOverlay();
-    releaseOverlay();
-  }
-
-  function install(){
-    ensureStyle();
-    tick();
-    if(document.body){
-      state.bodyObserver=new MutationObserver(()=>releaseOverlay());
-      state.bodyObserver.observe(document.body,{attributes:true,attributeFilter:["data-release-ready","data-run-active","data-tutorial-active","data-special-mode"]});
-    }
-    state.timer=setInterval(tick,250);
-  }
-
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",install,{once:true});else install();
-  window.addEventListener("pagehide",()=>{
-    if(state.timer)clearInterval(state.timer);
-    state.timer=0;
-    state.bodyObserver?.disconnect?.();
-    state.overlayObserver?.disconnect?.();
-  },{once:true});
-
-  window.CCGLostSizzlerV141ReleaseOverlaySafety={releaseOverlay,playable,fatalLoad,get state(){return state}};
+  install();
+  window.CCGLostSizzlerV141ReleaseOverlaySafety={STYLE_ID,install};
 })();
