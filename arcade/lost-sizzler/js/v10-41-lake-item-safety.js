@@ -63,9 +63,9 @@
 
 /* Late V10.41 runtime guards. Every late module inherits the same published
  * cache generation as the canonical core files, preventing mixed old/new
- * runtime chains after a release. Dedicated Horde networking is deliberately
- * lazy so Solo, Dungeon lobbies, Spy and Split Screen never install its global
- * compatibility wrappers before Horde has actually started. */
+ * runtime chains after a release. Dedicated multiplayer networking is lazy so
+ * local-only modes never install its gameplay transport wrappers before the
+ * corresponding online mode has actually started. */
 (()=>{
   "use strict";
   const releaseRev=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
@@ -87,6 +87,21 @@
   load("js/v10-41-r37-global-performance.js","data-ccg-v141-r37-global-performance");
   load("js/v10-41-release-overlay-safety.js","data-ccg-v141-release-overlay-safety");
 
+  let dungeonLoaded=false,dungeonTimer=0;
+  const dungeonOnline=()=>{
+    try{
+      const special=String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"");
+      const roomMode=String(net?.getRoomMode?.()?.id||net?.roomMode||"dungeon");
+      return playMode==="online"&&Boolean(net?.connected)&&roomMode==="dungeon"&&!special
+    }catch(_){return false}
+  };
+  const loadDungeonServer=()=>{
+    if(dungeonLoaded||!dungeonOnline())return false;
+    dungeonLoaded=true;if(dungeonTimer)clearInterval(dungeonTimer);dungeonTimer=0;
+    load("js/v10-41-r40-colyseus-dungeon.js","data-ccg-v141-r40-colyseus-dungeon");return true
+  };
+  if(!loadDungeonServer())dungeonTimer=setInterval(loadDungeonServer,250);
+
   let hordeLoaded=false,hordeObserver=null;
   const loadHordeServer=()=>{
     if(hordeLoaded||document.body?.dataset?.specialMode!=="horde-survivor")return false;
@@ -99,5 +114,5 @@
     hordeObserver=new MutationObserver(records=>{if(records.some(record=>record.attributeName==="data-special-mode"))loadHordeServer()});
     hordeObserver.observe(document.body,{attributes:true,attributeFilter:["data-special-mode"]});
   }
-  addEventListener("pagehide",()=>hordeObserver?.disconnect(),{once:true});
+  addEventListener("pagehide",()=>{hordeObserver?.disconnect();if(dungeonTimer)clearInterval(dungeonTimer)},{once:true});
 })();
