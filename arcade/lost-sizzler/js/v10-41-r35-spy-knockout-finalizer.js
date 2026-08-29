@@ -34,12 +34,15 @@
     if(!spyActive())return false;
     const hard=hardening();if(typeof hard?.installRenderGuard!=="function")return false;
     let before=null;try{before=window.render}catch(_){return false}
-    const already=Boolean(before?.__ccgV141R35SpyBlackGuard),sealed=Boolean(hard.installRenderGuard(true));
+    const already=Boolean(before?.__ccgV141R35SpyBlackGuard),retainedR28=Boolean(before?.__ccgV141R28NoHordeBanner),sealed=Boolean(hard.installRenderGuard(true));
     if(sealed&&window.render?.__ccgV141R35SpyBlackGuard){
-      // The retained post-playtest renderer is already underneath this Spy
-      // watchdog. Carry its marker on the top-level function so its 40 ms
-      // monitor recognises the chain as preserved instead of wrapping us again.
-      try{window.render.__ccgV141PostPlaytestRender=true}catch(_){}
+      // Retain markers for presentation guards already underneath this Spy
+      // watchdog. Their monitors can then recognise that their behaviour is
+      // preserved instead of repeatedly replacing the top-level r35 owner.
+      try{
+        window.render.__ccgV141PostPlaytestRender=true;
+        if(retainedR28)window.render.__ccgV141R28NoHordeBanner=true
+      }catch(_){}
       if(!already)state.renderSeals++
     }
     return sealed

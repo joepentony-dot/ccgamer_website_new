@@ -14,7 +14,7 @@ const room=read("multiplayer-server/src/rooms/DungeonRoom.ts");
 const pkg=JSON.parse(read("multiplayer-server/package.json"));
 
 assert.match(app,/dungeon_v1:\s*defineRoom\(DungeonRoom\)\.filterBy\(\["roomCode"\]\)/,"Dungeon room must be matched by the existing CCG room code");
-assert.match(app,/rooms:\s*\["horde_v1",\s*"dungeon_v1"\]/,"service metadata must advertise both migrated multiplayer rooms");
+assert.match(app,/rooms:\s*\["horde_v1",\s*"dungeon_v1"(?:,\s*"[^"]+")*\]/,"service metadata must retain Horde and Dungeon while allowing later multiplayer rooms");
 assert.match(room,/maxClients\s*=\s*4/,"Dungeon transport must retain the four-player room cap");
 assert.match(room,/this\.broadcast\("game"[\s\S]*\{\s*except:\s*client\s*\}/,"Dungeon relay must preserve Supabase self:false behaviour and not echo a player's packet back to itself");
 assert.match(room,/transport:\s*"colyseus"/,"Dungeon room status must identify Colyseus transport");

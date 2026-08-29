@@ -102,6 +102,21 @@
   };
   if(!loadDungeonServer())dungeonTimer=setInterval(loadDungeonServer,250);
 
+  let spyLoaded=false,spyTimer=0;
+  const spyOnline=()=>{
+    try{
+      const special=String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"");
+      const code=String(net?.roomCode||"").toUpperCase();
+      return playMode==="online"&&Boolean(net?.connected)&&code.length>=4&&special==="sizzler-saboteurs"
+    }catch(_){return false}
+  };
+  const loadSpyServer=()=>{
+    if(spyLoaded||!spyOnline())return false;
+    spyLoaded=true;if(spyTimer)clearInterval(spyTimer);spyTimer=0;
+    load("js/v10-41-r41-colyseus-spy.js","data-ccg-v141-r41-colyseus-spy");return true
+  };
+  if(!loadSpyServer())spyTimer=setInterval(loadSpyServer,250);
+
   let hordeLoaded=false,hordeObserver=null;
   const loadHordeServer=()=>{
     if(hordeLoaded||document.body?.dataset?.specialMode!=="horde-survivor")return false;
@@ -114,5 +129,5 @@
     hordeObserver=new MutationObserver(records=>{if(records.some(record=>record.attributeName==="data-special-mode"))loadHordeServer()});
     hordeObserver.observe(document.body,{attributes:true,attributeFilter:["data-special-mode"]});
   }
-  addEventListener("pagehide",()=>{hordeObserver?.disconnect();if(dungeonTimer)clearInterval(dungeonTimer)},{once:true});
+  addEventListener("pagehide",()=>{hordeObserver?.disconnect();if(dungeonTimer)clearInterval(dungeonTimer);if(spyTimer)clearInterval(spyTimer)},{once:true});
 })();
