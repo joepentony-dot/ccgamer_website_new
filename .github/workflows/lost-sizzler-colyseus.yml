@@ -7,6 +7,7 @@ on:
       - "arcade/lost-sizzler/js/horde-survivor.js"
       - "arcade/lost-sizzler/js/v10-41-r38-colyseus-horde.js"
       - "arcade/lost-sizzler/js/v10-41-r40-colyseus-dungeon.js"
+      - "arcade/lost-sizzler/js/v10-41-r41-colyseus-spy.js"
       - "render.yaml"
       - ".github/workflows/lost-sizzler-colyseus.yml"
   push:
@@ -17,6 +18,7 @@ on:
       - "arcade/lost-sizzler/js/horde-survivor.js"
       - "arcade/lost-sizzler/js/v10-41-r38-colyseus-horde.js"
       - "arcade/lost-sizzler/js/v10-41-r40-colyseus-dungeon.js"
+      - "arcade/lost-sizzler/js/v10-41-r41-colyseus-spy.js"
       - "render.yaml"
       - ".github/workflows/lost-sizzler-colyseus.yml"
 
@@ -41,7 +43,7 @@ jobs:
         run: npm run typecheck
       - name: Build Colyseus server
         run: npm run build
-      - name: Boot server and exercise real Horde and Dungeon rooms
+      - name: Boot server and exercise real Horde, Dungeon and Spy rooms
         shell: bash
         run: |
           set -euo pipefail
@@ -50,7 +52,7 @@ jobs:
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           ready=0
           for attempt in {1..30}; do
-            if node -e 'fetch("http://127.0.0.1:10000/healthz").then(async r=>{const body=await r.json();if(!r.ok||body.ok!==true||body.hordeAuthority!=="server"||body.dungeonTransport!=="colyseus")process.exit(1)}).catch(()=>process.exit(1))'; then
+            if node -e 'fetch("http://127.0.0.1:10000/healthz").then(async r=>{const body=await r.json();if(!r.ok||body.ok!==true||body.hordeAuthority!=="server"||body.dungeonTransport!=="colyseus"||body.spyTransport!=="colyseus")process.exit(1)}).catch(()=>process.exit(1))'; then
               ready=1
               break
             fi
@@ -60,7 +62,7 @@ jobs:
             cat /tmp/lost-sizzler-colyseus.log
             exit 1
           fi
-          node -e 'fetch("http://127.0.0.1:10000/").then(async r=>{const body=await r.json();if(!r.ok||body.transport!=="colyseus"||body.hordeAuthority!=="server"||body.dungeonTransport!=="colyseus"||!body.rooms?.includes("dungeon_v1"))process.exit(1)}).catch(()=>process.exit(1))'
+          node -e 'fetch("http://127.0.0.1:10000/").then(async r=>{const body=await r.json();if(!r.ok||body.transport!=="colyseus"||body.hordeAuthority!=="server"||body.dungeonTransport!=="colyseus"||body.spyTransport!=="colyseus"||!body.rooms?.includes("dungeon_v1")||!body.rooms?.includes("spy_v1"))process.exit(1)}).catch(()=>process.exit(1))'
           npm run smoke:local || {
             cat /tmp/lost-sizzler-colyseus.log
             exit 1
