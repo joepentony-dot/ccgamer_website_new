@@ -17,8 +17,11 @@ const appConfig=readRepo("multiplayer-server/src/app.config.ts");
 const rulesLoader=readRepo("multiplayer-server/src/shared/HordeRules.ts");
 
 assert.doesNotThrow(()=>new Function(adapter),"r38 Colyseus Horde browser adapter must parse as valid JavaScript");
-assert.match(loader,/load\("js\/v10-41-r38-colyseus-horde\.js","data-ccg-v141-r38-colyseus-horde"\)/,"live late-module chain must load r38 after the existing performance layers");
-assert.ok(loader.indexOf("v10-41-r38-colyseus-horde.js")>loader.indexOf("v10-41-r37-global-performance.js"),"Colyseus ownership must install after the global performance finalizer");
+assert.match(loader,/const loadHordeServer=\(\)=>\{/,"dedicated Horde transport must be lazy rather than installing on every Lost Sizzler page load");
+assert.match(loader,/document\.body\?\.dataset\?\.specialMode!=="horde-survivor"/,"lazy Horde loader must refuse to run for Solo, Dungeon lobby, Spy or Split Screen");
+assert.match(loader,/attributeFilter:\["data-special-mode"\]/,"lazy Horde activation must observe only the special-mode transition rather than poll the game");
+assert.match(loader,/load\("js\/v10-41-r38-colyseus-horde\.js","data-ccg-v141-r38-colyseus-horde"\)/,"Horde activation must load r38 after the existing performance layers");
+assert.ok(loader.indexOf("v10-41-r38-colyseus-horde.js")>loader.indexOf("v10-41-r37-global-performance.js"),"Colyseus ownership must remain after the global performance finalizer in the late loader source");
 assert.match(adapter,/https:\/\/lost-sizzler-multiplayer\.onrender\.com/,"browser Horde transport must use the deployed Render service");
 assert.match(adapter,/@colyseus\/sdk@0\.18\.2\/dist\/colyseus\.js/,"browser SDK must be version-pinned to the Colyseus 0.18 protocol");
 assert.match(adapter,/joinOrCreate\("horde_v1",\{roomCode:code/,"all players with the same existing CCG room code must enter the same Horde server room");
@@ -27,12 +30,12 @@ assert.match(adapter,/room\.send\("arena_init",arena\)/,"existing Horde arena wa
 assert.match(adapter,/if\(state\.authorityLive&&isHorde\(\)\)return false/,"browser host enemy AI must stop only after dedicated authority is live");
 assert.match(adapter,/room\.send\("enemy_hit"/,"local projectile collision must report enemy hits to server authority");
 assert.match(adapter,/gameplay=new Set\(\["v133_special_state","v133_special_input","player","world","shot","hit","player_hit","enemy_shot","fx","notice"\]\)/,"old high-frequency Supabase Horde gameplay events must be silenced after handoff");
-assert.match(adapter,/live\.authoritative=Boolean\(net\?\.isHost\)/,"server disconnect must restore the previous browser-host authority fallback");
+assert.match(adapter,/live\.authoritative=Boolean\(net\?\.isHost\)/,"server disconnect must retain the previous browser-host fallback path during staged migration");
 assert.match(adapter,/HORDE SERVER · WAKING/,"free Render cold starts must have an explicit warming status instead of looking frozen");
 assert.match(adapter,/restore:Number\(row\.restoreAmount\|\|2\)/,"browser state must read the schema-safe health restore field");
-assert.match(adapter,/const ACTIVE_TICK_MS=50,IDLE_TICK_MS=500/,"Horde transport must retain its responsive active cadence but sleep while other modes are running");
+assert.match(adapter,/const ACTIVE_TICK_MS=50,IDLE_TICK_MS=500/,"Horde transport must retain its responsive active cadence but sleep while not actively connected");
 assert.match(adapter,/onlineHorde\(\)\?ACTIVE_TICK_MS:IDLE_TICK_MS/,"scheduler cadence must depend on whether online Horde is actually active");
-assert.doesNotMatch(adapter,/setInterval\(tick,TICK_MS\)/,"Colyseus adapter must not run a permanent 20Hz timer across Solo, menus, Spy or Split Screen");
+assert.doesNotMatch(adapter,/setInterval\(tick,TICK_MS\)/,"Colyseus adapter must not run a permanent 20Hz interval");
 
 assert.match(appConfig,/defineRoom\(HordeRoom\)\.filterBy\(\["roomCode"\]\)/,"Colyseus matchmaking must filter Horde rooms by the existing CCG room code");
 assert.match(appConfig,/hordeAuthority: "server"/,"server health response must expose Horde authority mode");
