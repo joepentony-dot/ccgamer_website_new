@@ -2,6 +2,7 @@ import { defineRoom, defineServer } from "colyseus";
 import type { NextFunction, Request, Response } from "express";
 import { DungeonRoom } from "./rooms/DungeonRoom.js";
 import { HordeRoom } from "./rooms/HordeRoom.js";
+import { SpyRoom } from "./rooms/SpyRoom.js";
 
 const port = Number.parseInt(process.env.PORT || "10000", 10) || 10000;
 const configuredOrigins = String(process.env.ALLOWED_ORIGINS || "https://www.cheekycommodoregamer.co.uk,https://cheekycommodoregamer.co.uk,http://localhost:8000,http://127.0.0.1:8000")
@@ -14,6 +15,7 @@ const server = defineServer({
   rooms: {
     horde_v1: defineRoom(HordeRoom).filterBy(["roomCode"]),
     dungeon_v1: defineRoom(DungeonRoom).filterBy(["roomCode"]),
+    spy_v1: defineRoom(SpyRoom).filterBy(["roomCode"]),
   },
   express: (app) => {
     app.use((req: Request, res: Response, next: NextFunction) => {
@@ -36,10 +38,11 @@ const server = defineServer({
       res.json({
         service: "The Lost Sizzler Multiplayer",
         transport: "colyseus",
-        version: "0.3.0",
-        rooms: ["horde_v1", "dungeon_v1"],
+        version: "0.4.0",
+        rooms: ["horde_v1", "dungeon_v1", "spy_v1"],
         hordeAuthority: "server",
         dungeonTransport: "colyseus",
+        spyTransport: "colyseus",
         status: "online",
       });
     });
@@ -48,9 +51,10 @@ const server = defineServer({
       res.status(200).json({
         ok: true,
         service: "lost-sizzler-multiplayer",
-        version: "0.3.0",
+        version: "0.4.0",
         hordeAuthority: "server",
         dungeonTransport: "colyseus",
+        spyTransport: "colyseus",
       });
     });
   },
