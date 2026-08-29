@@ -29,7 +29,7 @@ const cleanCode = (value: unknown) => String(value ?? "").toUpperCase().replace(
 const axis = (value: unknown) => Math.max(-1, Math.min(1, Math.sign(Number(value) || 0)));
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
-export class HordeRoom extends Room<HordeState> {
+export class HordeRoom extends Room {
   state = new HordeState();
   maxClients = 4;
   patchRate = 50;
