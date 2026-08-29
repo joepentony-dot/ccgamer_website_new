@@ -63,16 +63,18 @@ try{
     document.body.dataset.specialMode="horde-survivor";
     document.body.dataset.runActive="true";
   });
-  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R39HordeResponsive?.state?.styleInstalled));
+  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R39HordeResponsive?.state?.styleInstalled)&&Boolean(document.getElementById("horde-performance-status")));
   await page.waitForTimeout(100);
 
   const desktop=await page.evaluate(()=>{
     const rect=selector=>{const node=document.querySelector(selector);if(!node)return null;const r=node.getBoundingClientRect();return{left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height,display:getComputedStyle(node).display}};
-    const game=rect(".v102-game-area"),wrap=rect(".v102-game-area .canvas-wrap"),hub=rect(".player-hub"),tactical=rect(".tactical-zone"),radar=rect(".tactical-zone>.radar-card"),roster=document.getElementById("horde-live-roster");
-    return{innerHeight,scrollHeight:document.documentElement.scrollHeight,game,wrap,hub,tactical,radar,rosterParent:roster?.parentElement?.className||"",rosterDisplay:roster?getComputedStyle(roster).display:"missing"}
+    const status=rect("#horde-performance-status"),game=rect(".v102-game-area"),wrap=rect(".v102-game-area .canvas-wrap"),hub=rect(".player-hub"),tactical=rect(".tactical-zone"),radar=rect(".tactical-zone>.radar-card"),roster=document.getElementById("horde-live-roster");
+    return{innerHeight,scrollHeight:document.documentElement.scrollHeight,status,game,wrap,hub,tactical,radar,rosterParent:roster?.parentElement?.className||"",rosterDisplay:roster?getComputedStyle(roster).display:"missing"}
   });
-  assert.ok(desktop.game&&desktop.wrap&&desktop.hub&&desktop.tactical&&desktop.radar,"desktop Horde layout elements must exist");
-  assert.ok(desktop.game.height>desktop.innerHeight*.62,`desktop Horde arena row must use most of the viewport: ${desktop.game.height}/${desktop.innerHeight}`);
+  assert.ok(desktop.status&&desktop.game&&desktop.wrap&&desktop.hub&&desktop.tactical&&desktop.radar,"desktop Horde layout elements must exist");
+  assert.ok(desktop.status.height>=20&&desktop.status.height<=40,`desktop Horde wave/enemy strip must remain compact: ${desktop.status.height}px`);
+  assert.ok(desktop.status.bottom<=desktop.game.top+2,`desktop Horde wave/enemy strip must sit above the arena: status ${desktop.status.bottom}, game ${desktop.game.top}`);
+  assert.ok(desktop.game.height>desktop.innerHeight*.58,`desktop Horde arena row must use most of the viewport: ${desktop.game.height}/${desktop.innerHeight}`);
   assert.ok(Math.abs(desktop.wrap.height-desktop.game.height)<=10,`desktop canvas wrapper must fill game row instead of leaving a black band: game ${desktop.game.height}, wrap ${desktop.wrap.height}`);
   assert.ok(Math.abs(desktop.hub.top-desktop.game.bottom)<=8,`desktop HUD must meet the arena without a giant black gap: ${desktop.hub.top-desktop.game.bottom}px`);
   assert.ok(desktop.tactical.left>=desktop.game.right-2,"desktop radar/tactical region must occupy the dedicated right column");
@@ -86,11 +88,12 @@ try{
   const tablet=await page.evaluate(()=>{
     window.CCGLostSizzlerV141R39HordeResponsive?.requestResize?.();
     const rect=selector=>{const node=document.querySelector(selector);if(!node)return null;const r=node.getBoundingClientRect();return{top:r.top,bottom:r.bottom,width:r.width,height:r.height,display:getComputedStyle(node).display}};
-    const game=rect(".v102-game-area"),wrap=rect(".v102-game-area .canvas-wrap"),hub=rect(".player-hub"),tactical=rect(".tactical-zone"),radar=rect(".tactical-zone>.radar-card"),roster=rect("#horde-live-roster");
-    return{innerHeight,scrollHeight:document.documentElement.scrollHeight,game,wrap,hub,tactical,radar,roster}
+    const status=rect("#horde-performance-status"),game=rect(".v102-game-area"),wrap=rect(".v102-game-area .canvas-wrap"),hub=rect(".player-hub"),tactical=rect(".tactical-zone"),radar=rect(".tactical-zone>.radar-card"),roster=rect("#horde-live-roster");
+    return{innerHeight,scrollHeight:document.documentElement.scrollHeight,status,game,wrap,hub,tactical,radar,roster}
   });
-  assert.ok(tablet.game&&tablet.wrap&&tablet.hub&&tablet.tactical&&tablet.roster,"tablet Horde layout elements must exist");
-  assert.ok(tablet.game.height>tablet.innerHeight*.68,`tablet Horde arena must use the available screen rather than becoming an endless page: ${tablet.game.height}/${tablet.innerHeight}`);
+  assert.ok(tablet.status&&tablet.game&&tablet.wrap&&tablet.hub&&tablet.tactical&&tablet.roster,"tablet Horde layout elements must exist");
+  assert.ok(tablet.status.bottom<=tablet.game.top+2,"tablet Horde wave/enemy strip must remain directly above gameplay");
+  assert.ok(tablet.game.height>tablet.innerHeight*.64,`tablet Horde arena must use the available screen rather than becoming an endless page: ${tablet.game.height}/${tablet.innerHeight}`);
   assert.ok(Math.abs(tablet.wrap.height-tablet.game.height)<=8,"tablet canvas wrapper must fill the bounded gameplay row");
   assert.ok(Math.abs(tablet.hub.top-tablet.game.bottom)<=6,"tablet HUD must follow the arena directly");
   assert.equal(tablet.radar?.display,"none","tablet Horde must remove the desktop radar to preserve arena space");
@@ -98,7 +101,7 @@ try{
   assert.ok(tablet.scrollHeight<=tablet.innerHeight+2,`tablet Horde must remain within one dynamic viewport: ${tablet.scrollHeight}/${tablet.innerHeight}`);
 
   assert.deepEqual(errors,[],`r39 Horde responsive launch must have no uncaught browser errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 r39 lazy Colyseus loading and desktop/tablet Horde viewport layout passed in Chromium.");
+  console.log("Lost Sizzler V10.41 r39 lazy Colyseus loading, fixed status row and desktop/tablet Horde viewport layout passed in Chromium.");
   await context.close()
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()))
