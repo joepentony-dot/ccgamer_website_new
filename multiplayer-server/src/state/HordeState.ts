@@ -36,6 +36,13 @@ export class HordeEnemyState extends Schema {
   @type("string") targetId = "";
 }
 
+export class HordePickupState extends Schema {
+  @type("string") id = "";
+  @type("number") x = 0;
+  @type("number") y = 0;
+  @type("number") restore = 2;
+}
+
 export class HordeState extends Schema {
   @type("string") mode = "horde-survivor";
   @type("string") status = "lobby";
@@ -56,4 +63,5 @@ export class HordeState extends Schema {
   @type("boolean") serverAuthoritative = true;
   @type({ map: HordePlayerState }) players = new MapSchema<HordePlayerState>();
   @type({ map: HordeEnemyState }) enemies = new MapSchema<HordeEnemyState>();
+  @type({ map: HordePickupState }) pickups = new MapSchema<HordePickupState>();
 }
