@@ -34,7 +34,6 @@ type EnemyHitMessage = {
 };
 
 type ReviveHoldMessage = { holding?: boolean };
-
 type Point = { x: number; y: number };
 
 type ArenaGrid = {
@@ -59,7 +58,6 @@ const cleanActorId = (value: unknown, fallback: string) => String(value ?? fallb
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 const finite = (value: unknown, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
 const distance = (a: Point, b: Point) => Math.hypot(a.x - b.x, a.y - b.y);
-const key = (x: number, y: number) => `${Math.round(x)},${Math.round(y)}`;
 
 function hash32(value: unknown) {
   let hash = 2166136261 >>> 0;
@@ -83,7 +81,7 @@ function desiredActiveCap(players: number) {
 export class HordeRoom extends Room {
   state = new HordeState();
   maxClients = 4;
-  patchRate = 50;
+  patchRate = TICK_MS;
   maxMessagesPerSecond = 60;
 
   private readonly rules = getHordeRules();
@@ -115,8 +113,8 @@ export class HordeRoom extends Room {
     this.onMessage("revive_hold", (client, message: ReviveHoldMessage) => this.setReviveHold(client, message));
     this.onMessage("ping", (client, message) => client.send("pong", { sentAt: message?.sentAt ?? 0, serverAt: Date.now() }));
 
-    // Compatibility with the first deployment prototype. New clients publish
-    // complete local position snapshots through player_state instead.
+    // Compatibility with the first server prototype. New clients use
+    // player_state snapshots instead of relative movement commands.
     this.onMessage("move", (client, message: { dx?: number; dy?: number }) => {
       const player = this.playerFor(client);
       if (!player) return;
@@ -168,6 +166,7 @@ export class HordeRoom extends Room {
     this.sessionActors.delete(client.sessionId);
     this.reviveHolding.delete(actorId);
     if (!actorId) return;
+
     setTimeout(() => {
       const player = this.state.players.get(actorId);
       if (!player || player.sessionId !== client.sessionId) return;
@@ -176,7 +175,9 @@ export class HordeRoom extends Room {
         this.runState.players = (this.runState.players || []).filter((entry: any) => String(entry.id) !== actorId);
         this.runState.playerCount = Math.max(1, this.runState.players.length || 1);
         for (const [targetId, revive] of Object.entries<any>(this.runState.revives || {})) {
-          if (String(revive?.reviverId) === actorId || String(targetId) === actorId) this.rules.cancelRevive(this.runState, targetId, "disconnect", Date.now());
+          if (String(revive?.reviverId) === actorId || String(targetId) === actorId) {
+            this.rules.cancelRevive(this.runState, targetId, "disconnect", Date.now());
+          }
         }
       }
       this.state.playerCount = this.state.players.size;
@@ -209,6 +210,7 @@ export class HordeRoom extends Room {
   private installArena(client: Client, message: ArenaInitMessage) {
     if (this.lobbyHostSessionId && client.sessionId !== this.lobbyHostSessionId) return;
     if (!this.lobbyHostSessionId) this.lobbyHostSessionId = client.sessionId;
+
     const width = clamp(Math.floor(finite(message?.width)), 8, 220);
     const height = clamp(Math.floor(finite(message?.height)), 8, 160);
     const encoded = String(message?.walkable || "");
@@ -216,20 +218,24 @@ export class HordeRoom extends Room {
       client.send("server_error", { code: "arena-invalid", message: "Horde arena grid was rejected." });
       return;
     }
+
     const walkable = new Uint8Array(encoded.length);
     const cells: Point[] = [];
     let minX = width, maxX = 0, minY = height, maxY = 0;
     for (let i = 0; i < encoded.length; i += 1) {
       if (encoded.charCodeAt(i) !== 49) continue;
       walkable[i] = 1;
-      const x = i % width, y = Math.floor(i / width);
+      const x = i % width;
+      const y = Math.floor(i / width);
       cells.push({ x, y });
-      minX = Math.min(minX, x); maxX = Math.max(maxX, x); minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+      minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y); maxY = Math.max(maxY, y);
     }
     if (cells.length < 50) {
       client.send("server_error", { code: "arena-empty", message: "Horde arena contains too few walkable cells." });
       return;
     }
+
     const spawnCells = cells.filter((cell) => cell.x <= minX + 5 || cell.x >= maxX - 5 || cell.y <= minY + 5 || cell.y >= maxY - 5);
     this.arena = { width, height, walkable, cells, spawnCells: spawnCells.length ? spawnCells : cells };
     this.state.arenaReady = true;
@@ -272,10 +278,23 @@ export class HordeRoom extends Room {
     const weapons = this.rules.WEAPONS.slice(0, wave).map((row) => row.id);
     const currentWeapon = wave > 0 ? this.rules.WEAPONS[Math.min(wave - 1, this.rules.WEAPONS.length - 1)]?.id || null : null;
     this.runState.players.push({
-      id: player.actorId, name: player.name, x: player.x, y: player.y,
-      hp: STARTING_HP, maxHp: STARTING_HP, status: "active", downedAt: 0, downExpiresAt: 0,
-      invulnerableUntil: now + 1600, selfReviveAvailable: false, weapons, currentWeapon,
-      kills: 0, revives: 0, damageTaken: 0, lateJoinedAt: now,
+      id: player.actorId,
+      name: player.name,
+      x: player.x,
+      y: player.y,
+      hp: STARTING_HP,
+      maxHp: STARTING_HP,
+      status: "active",
+      downedAt: 0,
+      downExpiresAt: 0,
+      invulnerableUntil: now + 1600,
+      selfReviveAvailable: false,
+      weapons,
+      currentWeapon,
+      kills: 0,
+      revives: 0,
+      damageTaken: 0,
+      lateJoinedAt: now,
     });
     this.runState.playerCount = clamp(this.runState.players.length, 1, 4);
   }
@@ -292,7 +311,10 @@ export class HordeRoom extends Room {
     for (const model of this.runState.players || []) {
       const source = this.state.players.get(String(model.id));
       if (!source) continue;
-      model.x = source.x; model.y = source.y; model.hp = STARTING_HP; model.maxHp = STARTING_HP;
+      model.x = source.x;
+      model.y = source.y;
+      model.hp = STARTING_HP;
+      model.maxHp = STARTING_HP;
     }
     this.runState.playerCount = players.length;
     this.state.status = "briefing";
@@ -307,7 +329,9 @@ export class HordeRoom extends Room {
     this.reviveHolding.set(actorId, Boolean(message?.holding));
     if (!message?.holding && this.runState) {
       for (const [targetId, revive] of Object.entries<any>(this.runState.revives || {})) {
-        if (String(revive?.reviverId) === actorId) this.rules.cancelRevive(this.runState, targetId, "released", Date.now());
+        if (String(revive?.reviverId) === actorId) {
+          this.rules.cancelRevive(this.runState, targetId, "released", Date.now());
+        }
       }
     }
   }
@@ -322,8 +346,9 @@ export class HordeRoom extends Room {
         .filter((player: any) => player.status === "downed" && String(player.id) !== actorId)
         .sort((a: any, b: any) => distance(reviver, a) - distance(reviver, b))[0];
       if (!target || distance(reviver, target) > 1.15) continue;
-      const existing = this.runState.revives?.[target.id];
-      if (!existing) this.rules.startRevive(this.runState, actorId, String(target.id), now);
+      if (!this.runState.revives?.[target.id]) {
+        this.rules.startRevive(this.runState, actorId, String(target.id), now);
+      }
     }
   }
 
@@ -337,7 +362,10 @@ export class HordeRoom extends Room {
     for (let i = 0; i < Math.min(48, candidates.length); i += 1) {
       const candidate = candidates[(base + i * 97) % candidates.length];
       const nearest = activePlayers.length ? Math.min(...activePlayers.map((player: any) => distance(candidate, player))) : 999;
-      if (nearest > bestDistance && !this.enemyOccupied(candidate.x, candidate.y)) { best = candidate; bestDistance = nearest; }
+      if (nearest > bestDistance && !this.enemyOccupied(candidate.x, candidate.y)) {
+        best = candidate;
+        bestDistance = nearest;
+      }
     }
     return { x: best.x, y: best.y };
   }
@@ -353,12 +381,15 @@ export class HordeRoom extends Room {
   }
 
   private weightedKind(wave: number, serial: number) {
-    const def: any = this.rules.WAVES[Math.max(0, wave - 1)];
-    const groups: Array<{ kind: string; weight: number }> = def?.groups || [];
+    const def = this.rules.WAVES[Math.max(0, wave - 1)];
+    const groups = def?.groups || [];
     if (!groups.length) return "spider";
     const total = groups.reduce((sum, row) => sum + Number(row.weight || 0), 0) || 1;
     let roll = (hash32(`${this.state.seed}|EXTRA|${wave}|${serial}`) % 100000) / 100000 * total;
-    for (const group of groups) { roll -= Number(group.weight || 0); if (roll <= 0) return group.kind; }
+    for (const group of groups) {
+      roll -= Number(group.weight || 0);
+      if (roll <= 0) return group.kind;
+    }
     return groups[groups.length - 1].kind;
   }
 
@@ -371,9 +402,21 @@ export class HordeRoom extends Room {
     const cell = this.chooseSpawnCell(id);
     this.runState.nextEnemyId = serial + 1;
     const enemy = {
-      id, kind, name: base.name, hp: base.hp, maxHp: base.hp, damage: base.damage,
-      speed: base.speed, score: base.score, alive: true, spawnRoomId: "server-perimeter",
-      x: cell.x, y: cell.y, spawnedAt: now, targetId: null, _serverExtra: true,
+      id,
+      kind,
+      name: base.name,
+      hp: base.hp,
+      maxHp: base.hp,
+      damage: base.damage,
+      speed: base.speed,
+      score: base.score,
+      alive: true,
+      spawnRoomId: "server-perimeter",
+      x: cell.x,
+      y: cell.y,
+      spawnedAt: now,
+      targetId: null,
+      _serverExtra: true,
     };
     this.runState.spawned += 1;
     this.runState.activeEnemies.push(enemy);
@@ -404,11 +447,14 @@ export class HordeRoom extends Room {
     const interval = clamp(760 - Number(this.runState.wave || 1) * 35, 330, 760);
     if (now - this.lastSpawnAt < interval) return;
     this.lastSpawnAt = now;
+
     const baseQuota = this.rules.quotaFor(this.runState.wave, this.runState.playerCount);
     const enemy = this.runState.spawned < baseQuota ? this.rules.spawnNext(this.runState, now) : this.createExtraEnemy(now);
     if (!enemy) return;
     const cell = this.chooseSpawnCell(String(enemy.id));
-    enemy.x = cell.x; enemy.y = cell.y; enemy.spawnRoomId = "server-perimeter";
+    enemy.x = cell.x;
+    enemy.y = cell.y;
+    enemy.spawnRoomId = "server-perimeter";
   }
 
   private targetFor(enemy: any) {
@@ -428,17 +474,27 @@ export class HordeRoom extends Room {
     const ranged = String(enemy.kind) === "ranger";
     const attackRange = ranged ? 6.2 : boss ? 1.8 : 1.45;
     const attackDue = this.enemyAttackDue.get(String(enemy.id)) || 0;
+
     if (dist <= attackRange && now >= attackDue) {
       const cooldown = ranged ? 1050 : boss ? 650 : 820;
       this.enemyAttackDue.set(String(enemy.id), now + cooldown);
       const before = Number(target.hp || 0);
       this.rules.applyDamage(this.runState, String(target.id), Math.max(1, Number(enemy.damage || 1)), now);
       if (Number(target.hp || 0) < before) {
-        this.broadcast("enemy_attack", { enemyId: enemy.id, kind: enemy.kind, targetId: target.id, damage: Math.max(1, Number(enemy.damage || 1)), ranged, x: enemy.x, y: enemy.y });
+        this.broadcast("enemy_attack", {
+          enemyId: enemy.id,
+          kind: enemy.kind,
+          targetId: target.id,
+          damage: Math.max(1, Number(enemy.damage || 1)),
+          ranged,
+          x: enemy.x,
+          y: enemy.y,
+        });
       }
       return;
     }
     if (ranged && dist < 4.2) return;
+
     const due = this.enemyMoveDue.get(String(enemy.id)) || 0;
     if (now < due) return;
     const moveDelay = clamp(Math.round(430 / Math.max(0.5, Number(enemy.speed || 1))), 150, 620);
@@ -446,17 +502,25 @@ export class HordeRoom extends Room {
     const sx = Math.sign(Number(target.x) - Number(enemy.x));
     const sy = Math.sign(Number(target.y) - Number(enemy.y));
     const dirs = [
-      { x: sx, y: sy }, { x: sx, y: 0 }, { x: 0, y: sy },
-      { x: sx, y: -sy }, { x: -sx, y: sy },
-      { x: -sx, y: 0 }, { x: 0, y: -sy },
+      { x: sx, y: sy },
+      { x: sx, y: 0 },
+      { x: 0, y: sy },
+      { x: sx, y: -sy },
+      { x: -sx, y: sy },
+      { x: -sx, y: 0 },
+      { x: 0, y: -sy },
     ].filter((dir, index, list) => (dir.x || dir.y) && list.findIndex((other) => other.x === dir.x && other.y === dir.y) === index);
+
     let best: Point | null = null;
     let bestDistance = dist;
     for (const dir of dirs) {
       const candidate = { x: Math.round(enemy.x) + dir.x, y: Math.round(enemy.y) + dir.y };
       if (!this.isWalkable(candidate.x, candidate.y) || this.enemyOccupied(candidate.x, candidate.y, String(enemy.id))) continue;
       const nextDistance = distance(candidate, target);
-      if (nextDistance < bestDistance + 0.01) { best = candidate; bestDistance = nextDistance; }
+      if (nextDistance < bestDistance + 0.01) {
+        best = candidate;
+        bestDistance = nextDistance;
+      }
     }
     if (best) { enemy.x = best.x; enemy.y = best.y; }
   }
@@ -467,7 +531,9 @@ export class HordeRoom extends Room {
     if (this.runState.boss?.alive) {
       if (String(this.runState.boss.id) !== this.lastBossId || !this.isWalkable(this.runState.boss.x, this.runState.boss.y)) {
         const cell = this.chooseSpawnCell(String(this.runState.boss.id || "warden"));
-        this.runState.boss.x = cell.x; this.runState.boss.y = cell.y; this.lastBossId = String(this.runState.boss.id);
+        this.runState.boss.x = cell.x;
+        this.runState.boss.y = cell.y;
+        this.lastBossId = String(this.runState.boss.id);
       }
       this.moveEnemy(this.runState.boss, now, true);
     }
@@ -478,12 +544,14 @@ export class HordeRoom extends Room {
     const actorId = this.actorFor(client);
     const player = this.runPlayer(actorId);
     if (!player || player.status !== "active") return;
+
     const enemyId = String(message?.enemyId || "").slice(0, 100);
     const damage = clamp(Math.round(finite(message?.power, 1)), 1, 20);
     const debounceKey = `${actorId}|${enemyId}`;
     const now = Date.now();
     if (now < (this.hitDebounce.get(debounceKey) || 0)) return;
     this.hitDebounce.set(debounceKey, now + 35);
+
     let defeated = false;
     if (this.runState.boss?.alive && String(this.runState.boss.id) === enemyId) {
       const before = Number(this.runState.boss.hp || 0);
@@ -496,7 +564,7 @@ export class HordeRoom extends Room {
       if (enemy.hp <= 0) defeated = this.rules.defeatEnemy(this.runState, enemyId, actorId, now);
     }
     this.broadcast("horde_fx", { type: defeated ? "defeat" : "hit", enemyId, actorId, power: damage, element: String(message?.element || "energy") });
-    this.syncSchema(now);
+    this.syncSchema();
   }
 
   private placeHealthPickups() {
@@ -504,7 +572,9 @@ export class HordeRoom extends Room {
     for (const pickup of this.runState.health.active) {
       if (pickup._serverPlaced && this.isWalkable(pickup.x, pickup.y)) continue;
       const cell = this.arena.cells[hash32(`${this.state.seed}|HEALTH|${pickup.id}`) % this.arena.cells.length];
-      pickup.x = cell.x; pickup.y = cell.y; pickup._serverPlaced = true;
+      pickup.x = cell.x;
+      pickup.y = cell.y;
+      pickup._serverPlaced = true;
     }
   }
 
@@ -514,22 +584,24 @@ export class HordeRoom extends Room {
     for (const player of this.runState.players || []) {
       if (player.status !== "active" || Number(player.hp || 0) >= Number(player.maxHp || STARTING_HP)) continue;
       const pickup = this.runState.health.active.find((entry: any) => distance(player, entry) <= 0.75);
-      if (pickup) this.rules.collectHealth(this.runState, String(player.id), String(pickup.id), now);
+      if (pickup) this.rules.collectHealth(this.runState, String(pickup.id), String(player.id), now);
     }
   }
 
-  private drainAndBroadcastEvents(now: number) {
+  private drainAndBroadcastEvents() {
     if (!this.runState) return;
     const events = this.rules.drainEvents(this.runState) || [];
     for (const event of events) {
       const output = { ...event };
-      if (output.type === "wave-start") output.quota = desiredQuota(Number(output.wave || this.runState.wave || 1), this.runState.playerCount);
+      if (output.type === "wave-start") {
+        output.quota = desiredQuota(Number(output.wave || this.runState.wave || 1), this.runState.playerCount);
+      }
       this.broadcast("horde_event", output);
     }
-    if (events.length) this.syncSchema(now);
+    if (events.length) this.syncSchema();
   }
 
-  private syncSchema(_now: number) {
+  private syncSchema() {
     if (!this.runState) return;
     this.state.status = String(this.runState.state || "briefing");
     this.state.wave = Math.max(0, Number(this.runState.wave || 0));
@@ -542,41 +614,74 @@ export class HordeRoom extends Room {
     this.state.waveEndsAt = Math.max(0, Number(this.runState.waveEndsAt || 0));
     this.state.intermissionEndsAt = Math.max(0, Number(this.runState.intermissionEndsAt || 0));
 
-    const livePlayerIds = new Set<string>();
     for (const model of this.runState.players || []) {
-      const actorId = String(model.id); livePlayerIds.add(actorId);
+      const actorId = String(model.id);
       let player = this.state.players.get(actorId);
-      if (!player) { player = new HordePlayerState(); player.actorId = actorId; player.name = cleanName(model.name); this.state.players.set(actorId, player); }
-      player.x = finite(model.x, player.x); player.y = finite(model.y, player.y);
-      player.health = Math.max(0, Number(model.hp || 0)); player.maxHealth = Math.max(1, Number(model.maxHp || STARTING_HP));
-      player.status = String(model.status || "active"); player.currentWeapon = String(model.currentWeapon || "starter");
-      player.kills = Math.max(0, Number(model.kills || 0)); player.revives = Math.max(0, Number(model.revives || 0));
-      player.downExpiresAt = Math.max(0, Number(model.downExpiresAt || 0)); player.invulnerableUntil = Math.max(0, Number(model.invulnerableUntil || 0));
+      if (!player) {
+        player = new HordePlayerState();
+        player.actorId = actorId;
+        player.name = cleanName(model.name);
+        this.state.players.set(actorId, player);
+      }
+      player.x = finite(model.x, player.x);
+      player.y = finite(model.y, player.y);
+      player.health = Math.max(0, Number(model.hp || 0));
+      player.maxHealth = Math.max(1, Number(model.maxHp || STARTING_HP));
+      player.status = String(model.status || "active");
+      player.currentWeapon = String(model.currentWeapon || "starter");
+      player.kills = Math.max(0, Number(model.kills || 0));
+      player.revives = Math.max(0, Number(model.revives || 0));
+      player.downExpiresAt = Math.max(0, Number(model.downExpiresAt || 0));
+      player.invulnerableUntil = Math.max(0, Number(model.invulnerableUntil || 0));
     }
 
     const models = [...(this.runState.activeEnemies || []).filter((enemy: any) => enemy?.alive && enemy.kind !== "reserve")];
     if (this.runState.boss?.alive) models.push({ ...this.runState.boss, boss: true });
     const liveEnemyIds = new Set<string>();
     for (const model of models) {
-      const id = String(model.id); liveEnemyIds.add(id);
+      const id = String(model.id);
+      liveEnemyIds.add(id);
       let enemy = this.state.enemies.get(id);
-      if (!enemy) { enemy = new HordeEnemyState(); enemy.id = id; this.state.enemies.set(id, enemy); }
-      enemy.kind = String(model.kind || (model.boss ? "warden" : "spider")); enemy.name = String(model.name || "Enemy");
-      enemy.x = finite(model.x); enemy.y = finite(model.y); enemy.health = Math.max(0, Number(model.hp || 0)); enemy.maxHealth = Math.max(1, Number(model.maxHp || model.hp || 1));
-      enemy.damage = Math.max(0, Number(model.damage || 1)); enemy.speed = Math.max(0, Number(model.speed || 1)); enemy.score = Math.max(0, Number(model.score || 0));
-      enemy.alive = model.alive !== false && enemy.health > 0; enemy.boss = Boolean(model.boss || model === this.runState.boss); enemy.targetId = String(model.targetId || "");
+      if (!enemy) {
+        enemy = new HordeEnemyState();
+        enemy.id = id;
+        this.state.enemies.set(id, enemy);
+      }
+      enemy.kind = String(model.kind || (model.boss ? "warden" : "spider"));
+      enemy.name = String(model.name || "Enemy");
+      enemy.x = finite(model.x);
+      enemy.y = finite(model.y);
+      enemy.health = Math.max(0, Number(model.hp || 0));
+      enemy.maxHealth = Math.max(1, Number(model.maxHp || model.hp || 1));
+      enemy.damage = Math.max(0, Number(model.damage || 1));
+      enemy.speed = Math.max(0, Number(model.speed || 1));
+      enemy.score = Math.max(0, Number(model.score || 0));
+      enemy.alive = model.alive !== false && enemy.health > 0;
+      enemy.boss = Boolean(model.boss || model === this.runState.boss);
+      enemy.targetId = String(model.targetId || "");
     }
-    for (const id of [...this.state.enemies.keys()]) if (!liveEnemyIds.has(String(id))) this.state.enemies.delete(String(id));
+    for (const id of [...this.state.enemies.keys()]) {
+      if (!liveEnemyIds.has(String(id))) this.state.enemies.delete(String(id));
+    }
 
     this.placeHealthPickups();
     const livePickupIds = new Set<string>();
     for (const model of this.runState.health?.active || []) {
-      const id = String(model.id); livePickupIds.add(id);
+      const id = String(model.id);
+      livePickupIds.add(id);
       let pickup = this.state.pickups.get(id);
-      if (!pickup) { pickup = new HordePickupState(); pickup.id = id; this.state.pickups.set(id, pickup); }
-      pickup.x = finite(model.x); pickup.y = finite(model.y); pickup.restore = Math.max(1, Number(model.restore || 2));
+      if (!pickup) {
+        pickup = new HordePickupState();
+        pickup.id = id;
+        this.state.pickups.set(id, pickup);
+      }
+      pickup.x = finite(model.x);
+      pickup.y = finite(model.y);
+      pickup.restoreAmount = Math.max(1, Number(model.restore || 2));
     }
-    for (const id of [...this.state.pickups.keys()]) if (!livePickupIds.has(String(id))) this.state.pickups.delete(String(id));
+    for (const id of [...this.state.pickups.keys()]) {
+      if (!livePickupIds.has(String(id))) this.state.pickups.delete(String(id));
+    }
   }
 
   private serverStep(now: number) {
@@ -587,7 +692,11 @@ export class HordeRoom extends Room {
       if (this.state.arenaReady && this.state.players.size > 0 && (enoughPlayers || timedOut)) this.startRun(now);
       return;
     }
-    if (["victory", "defeat"].includes(this.runState.state)) { this.syncSchema(now); return; }
+    if (["victory", "defeat"].includes(this.runState.state)) {
+      this.syncSchema();
+      return;
+    }
+
     this.runState.playerCount = Math.max(1, Math.min(4, this.runState.players?.length || 1));
     this.processReviveHolds(now);
     this.ensureQuotaReserve();
@@ -597,7 +706,7 @@ export class HordeRoom extends Room {
     this.ensureQuotaReserve();
     this.rules.tick(this.runState, now);
     this.ensureQuotaReserve();
-    this.drainAndBroadcastEvents(now);
-    this.syncSchema(now);
+    this.drainAndBroadcastEvents();
+    this.syncSchema();
   }
 }
