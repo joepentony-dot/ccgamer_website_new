@@ -18,12 +18,16 @@
   const clone=value=>{try{return JSON.parse(JSON.stringify(value))}catch(_){return null}};
   const finiteInt=(value,fallback=0)=>Number.isFinite(Number(value))?Math.floor(Number(value)):fallback;
   const maxFloors=()=>Math.max(1,finiteInt(window.CCG_CONFIG?.maxFloors,5));
+  let freshSoloTimer=0;
 
   function specialMode(){
     try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")}catch(_){return""}
   }
+  function soloRunOwned(){
+    try{return Boolean(run&&!run.daily&&!p2&&playMode==="solo"&&!specialMode())}catch(_){return false}
+  }
   function soloRunActive(){
-    try{return Boolean(run&&p1&&!p2&&!run.daily&&playMode==="solo"&&!specialMode())}catch(_){return false}
+    try{return Boolean(soloRunOwned()&&p1&&document.body?.dataset?.runActive==="true")}catch(_){return false}
   }
   function valid(data){
     if(!data||data.schema!==SCHEMA||Number(data.version)!==VERSION)return false;
@@ -73,7 +77,7 @@
     return checkpoint
   }
   function sameRunAndFloor(data){
-    if(!valid(data)||!soloRunActive())return false;
+    if(!valid(data)||!soloRunOwned())return false;
     try{return String(data.run.seed)===String(run.seed)&&finiteInt(data.floor,0)===finiteInt(run.floor,0)}catch(_){return false}
   }
   function saveEntryForExit(){
@@ -142,7 +146,7 @@
     const saved=readRaw();if(!saved){refreshButton();return false}
     const snapshot=clone(saved);if(!snapshot)return false;
     try{
-      const audio=S&&typeof S.start==="function"?S.start():Promise.resolve(),fs=typeof requestPlayFullscreen==="function"?requestPlayFullscreen():Promise.resolve();
+      const audio=typeof S!=="undefined"&&typeof S.start==="function"?S.start():Promise.resolve(),fs=typeof requestPlayFullscreen==="function"?requestPlayFullscreen():Promise.resolve();
       await Promise.all([audio,fs]);
       await net?.leave?.();
       if(UI?.name&&snapshot.player?.name)UI.name.value=String(snapshot.player.name).slice(0,18);
@@ -171,12 +175,26 @@
     try{PGR?.clearCheckpoint?.()}catch(_){}
     refreshButton();state.lastReason=reason;return true
   }
-  function waitForFreshSolo(){
-    const started=performance.now();
-    const timer=setInterval(()=>{
-      if(soloRunActive()&&finiteInt(run?.floor,0)===1){clearInterval(timer);capture("new_run",true);refreshPause();return}
-      if(performance.now()-started>12000)clearInterval(timer)
-    },60)
+  function currentSaveMatchesActiveFloor(){
+    const data=readRaw();if(!data||!soloRunOwned())return false;
+    try{return String(data.run.seed)===String(run.seed)&&finiteInt(data.floor,0)===finiteInt(run.floor,0)}catch(_){return false}
+  }
+  function captureFreshSoloStart(){
+    if(document.body?.dataset?.runActive!=="true"||!soloRunActive()||finiteInt(run?.floor,0)!==1)return false;
+    if(currentSaveMatchesActiveFloor()){
+      state.entry=clone(readRaw());refreshPause();return true
+    }
+    const checkpoint=capture("new_run",true);refreshPause();return Boolean(checkpoint)
+  }
+  function scheduleFreshSoloCapture(){
+    if(freshSoloTimer){clearInterval(freshSoloTimer);freshSoloTimer=0}
+    let attempts=0;
+    const attempt=()=>{
+      attempts++;
+      if(captureFreshSoloStart()||attempts>=120){if(freshSoloTimer)clearInterval(freshSoloTimer);freshSoloTimer=0}
+    };
+    attempt();
+    if(!freshSoloTimer&&attempts<120)freshSoloTimer=setInterval(attempt,50)
   }
 
   /* Preserve the old checkpoint API for non-Solo modes while redirecting Solo
@@ -201,24 +219,23 @@
   }
   const legacyEndRun=typeof endRun==="function"?endRun:null;
   if(legacyEndRun){
-    endRun=function(){const shouldClear=soloRunActive();const result=legacyEndRun.apply(this,arguments);if(shouldClear)clear("run_ended");return result}
+    endRun=function(){const shouldClear=soloRunOwned();const result=legacyEndRun.apply(this,arguments);if(shouldClear)clear("run_ended");return result}
   }
   const legacyUpdateSavedRunButton=typeof updateSavedRunButton==="function"?updateSavedRunButton:null;
   if(legacyUpdateSavedRunButton){updateSavedRunButton=refreshButton}
 
   document.addEventListener("click",event=>{
-    const button=event.target?.closest?.("button");if(!button)return;
-    if(button.id==="solo-btn")waitForFreshSolo()
-  });
-  document.addEventListener("click",event=>{
     const button=event.target?.closest?.("#continue-save-btn");if(!button||!readRaw())return;
     event.preventDefault();event.stopImmediatePropagation();resume();
   },true);
 
-  const observer=new MutationObserver(()=>{refreshPause();refreshButton()});
+  const observer=new MutationObserver(records=>{
+    refreshPause();refreshButton();
+    if(records.some(record=>record.target===document.body&&record.attributeName==="data-run-active")&&document.body.dataset.runActive==="true")scheduleFreshSoloCapture()
+  });
   const pause=document.getElementById("pause");if(pause)observer.observe(pause,{attributes:true,attributeFilter:["class"]});
   observer.observe(document.body,{attributes:true,attributeFilter:["data-run-active","data-special-mode"]});
-  addEventListener("pagehide",()=>observer.disconnect(),{once:true});
+  addEventListener("pagehide",()=>{observer.disconnect();if(freshSoloTimer)clearInterval(freshSoloTimer);freshSoloTimer=0},{once:true});
 
   injectStyles();
   function injectStyles(){
@@ -227,10 +244,10 @@
       .solo-save-menu-note{display:block;width:100%;margin:-3px 0 5px;text-align:center;color:#bfb1cb;font:700 9px/1.35 "Courier New",monospace;letter-spacing:.25px}
       .solo-save-pause-note{display:block;margin:8px 0 0;color:#c9bbd3;font:700 10px/1.45 "Courier New",monospace;text-align:center}
       #solo-save-quit-btn{border-color:#72ff9b!important;box-shadow:0 0 16px rgba(114,255,155,.18)}
-      .hidden{display:none!important}
     `;document.head.appendChild(style)
   }
 
   migrateLegacy();ensurePauseSaveButton();refreshPause();refreshButton();
-  window.CCGLostSizzlerV141R42SoloSave={STORAGE_KEY,SCHEMA,VERSION,read:readRaw,capture,saveAndQuit,resume,clear,refresh:()=>{refreshButton();refreshPause()},get state(){return state}};
+  if(document.body?.dataset?.runActive==="true")scheduleFreshSoloCapture();
+  window.CCGLostSizzlerV141R42SoloSave={STORAGE_KEY,SCHEMA,VERSION,read:readRaw,capture,saveAndQuit,resume,clear,refresh:()=>{refreshButton();refreshPause()},captureFreshSoloStart,get state(){return state}};
 })();
