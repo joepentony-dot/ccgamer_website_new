@@ -1,4 +1,5 @@
 import { defineRoom, defineServer } from "colyseus";
+import type { NextFunction, Request, Response } from "express";
 import { HordeRoom } from "./rooms/HordeRoom.js";
 
 const port = Number.parseInt(process.env.PORT || "10000", 10) || 10000;
@@ -13,7 +14,7 @@ const server = defineServer({
     horde_v1: defineRoom(HordeRoom),
   },
   express: (app) => {
-    app.use((req, res, next) => {
+    app.use((req: Request, res: Response, next: NextFunction) => {
       const origin = String(req.headers.origin || "");
       if (origin && allowedOrigins.has(origin)) {
         res.setHeader("Access-Control-Allow-Origin", origin);
@@ -29,7 +30,7 @@ const server = defineServer({
       next();
     });
 
-    app.get("/", (_req, res) => {
+    app.get("/", (_req: Request, res: Response) => {
       res.json({
         service: "The Lost Sizzler Multiplayer",
         transport: "colyseus",
@@ -39,7 +40,7 @@ const server = defineServer({
       });
     });
 
-    app.get("/healthz", (_req, res) => {
+    app.get("/healthz", (_req: Request, res: Response) => {
       res.status(200).json({ ok: true, service: "lost-sizzler-multiplayer" });
     });
   },
