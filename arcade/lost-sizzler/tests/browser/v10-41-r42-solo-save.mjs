@@ -34,7 +34,7 @@ try{
 
   const initial=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R42SoloSave,data=api.read(),button=document.getElementById("continue-save-btn"),note=document.getElementById("solo-save-menu-note");
-    return{schema:data?.schema,version:data?.version,floor:data?.floor,score:data?.score,playMode:data?.playMode,daily:data?.run?.daily,player2:data?.player2,buttonHidden:button?.classList.contains("hidden"),buttonText:button?.textContent||"",noteText:note?.textContent||"",captures:api.state.captures};
+    return{schema:data?.schema,version:data?.version,floor:data?.floor,score:data?.score,playMode:data?.playMode,daily:data?.run?.daily,player2:data?.player2,playerHealth:data?.player?.health,buttonHidden:button?.classList.contains("hidden"),buttonText:button?.textContent||"",noteText:note?.textContent||"",captures:api.state.captures};
   });
   assert.equal(initial.schema,"ccg-lost-sizzler-solo-save","Floor 1 autosave must use the r42 schema");
   assert.equal(initial.version,1,"Floor 1 autosave must use schema version 1");
@@ -43,6 +43,7 @@ try{
   assert.equal(initial.playMode,"solo","checkpoint must be marked as Solo only");
   assert.equal(initial.daily,false,"ordinary Solo checkpoint must never masquerade as Weekly Vault");
   assert.equal(initial.player2,null,"ordinary Solo checkpoint must not contain Split Screen player state");
+  assert.ok(Number(initial.playerHealth)>1,"fixture must begin with more than one health so the live-state mutation is meaningful");
   assert.equal(initial.buttonHidden,false,"Continue Saved Run must become available immediately after the Floor 1 autosave");
   assert.match(initial.buttonText,/Continue Saved Run — Floor 1/,"Continue button must identify the saved floor");
   assert.match(initial.noteText,/resumes at the Floor 1 entrance/i,"menu must explain where the save resumes");
@@ -60,13 +61,14 @@ try{
   const afterQuit=await page.evaluate(()=>window.CCGLostSizzlerV141R42SoloSave.read());
   assert.equal(afterQuit.floor,1,"Save & Quit must retain the current floor entrance");
   assert.equal(afterQuit.score,0,"Save & Quit must not serialise mid-floor score gains into a replayable floor checkpoint");
-  assert.equal(afterQuit.player.health,initial?.playerHealth??afterQuit.player.health,"save must remain based on the entry snapshot rather than the mutated live player");
+  assert.equal(afterQuit.player.health,initial.playerHealth,"save must remain based on the entry snapshot rather than the mutated live player");
 
   await page.click("#continue-save-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof mode!=="undefined"&&mode==="playing"&&typeof playMode!=="undefined"&&playMode==="solo"&&Boolean(p1),null,{timeout:15000});
-  const resumed=await page.evaluate(()=>({floor:run?.floor,score:Number(score),playMode,p2:Boolean(p2),daily:Boolean(run?.daily),resumes:window.CCGLostSizzlerV141R42SoloSave.state.resumes,stored:window.CCGLostSizzlerV141R42SoloSave.read()}));
+  const resumed=await page.evaluate(()=>({floor:run?.floor,score:Number(score),health:Number(p1?.health),playMode,p2:Boolean(p2),daily:Boolean(run?.daily),resumes:window.CCGLostSizzlerV141R42SoloSave.state.resumes,stored:window.CCGLostSizzlerV141R42SoloSave.read()}));
   assert.equal(resumed.floor,1,"Continue Saved Run must restore the saved floor");
   assert.equal(resumed.score,0,"Continue Saved Run must restore the floor-entry score");
+  assert.equal(resumed.health,initial.playerHealth,"Continue Saved Run must restore the saved floor-entry player state");
   assert.equal(resumed.playMode,"solo","Continue Saved Run must restore Solo mode only");
   assert.equal(resumed.p2,false,"Continue Saved Run must never create a Split Screen player");
   assert.equal(resumed.daily,false,"Continue Saved Run must not enter Weekly Vault");
