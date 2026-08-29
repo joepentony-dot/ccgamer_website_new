@@ -11,7 +11,7 @@ const allowedOrigins = new Set(configuredOrigins);
 
 const server = defineServer({
   rooms: {
-    horde_v1: defineRoom(HordeRoom),
+    horde_v1: defineRoom(HordeRoom).filterBy(["roomCode"]),
   },
   express: (app) => {
     app.use((req: Request, res: Response, next: NextFunction) => {
@@ -34,14 +34,15 @@ const server = defineServer({
       res.json({
         service: "The Lost Sizzler Multiplayer",
         transport: "colyseus",
-        version: "0.1.0",
+        version: "0.2.0",
         rooms: ["horde_v1"],
+        hordeAuthority: "server",
         status: "online",
       });
     });
 
     app.get("/healthz", (_req: Request, res: Response) => {
-      res.status(200).json({ ok: true, service: "lost-sizzler-multiplayer" });
+      res.status(200).json({ ok: true, service: "lost-sizzler-multiplayer", version: "0.2.0", hordeAuthority: "server" });
     });
   },
 });
