@@ -40,7 +40,7 @@ export class HordePickupState extends Schema {
   @type("string") id = "";
   @type("number") x = 0;
   @type("number") y = 0;
-  @type("number") restore = 2;
+  @type("number") restoreAmount = 2;
 }
 
 export class HordeState extends Schema {
