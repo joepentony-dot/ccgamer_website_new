@@ -9,7 +9,7 @@
 
   const HORDE="horde-survivor";
   const STYLE_ID="ccg-v141-r39-horde-responsive";
-  const state={styleInstalled:false,memberGuard:false,toastGuard:false,authorityCorrections:0,legacyMigrationMessages:0,resizeRequests:0,rosterPlaced:false,rosterWatchActive:false,rosterMoves:0};
+  const state={styleInstalled:false,memberGuard:false,toastGuard:false,bannerGuard:false,authorityCorrections:0,legacyMigrationMessages:0,resizeRequests:0,rosterPlaced:false,rosterWatchActive:false,rosterMoves:0,bannerRectsSuppressed:0};
   let rosterObserver=null;
 
   const special=()=>{try{return window.CCGLostSizzlerSpecialModes?.active||null}catch(_){return null}};
@@ -118,6 +118,28 @@ body[data-special-mode="horde-survivor"][data-run-active="true"] .player-hub .hu
     requestAnimationFrame(()=>{try{window.__CCG_LOST_SIZZLER_SCHEDULE_RESIZE__?.()}catch(_){try{resizeGameCanvas?.()}catch(__){}}})
   }
 
+  function legacyHordeBannerRect(x,y,w,h){
+    if(!isHorde())return false;
+    const nx=Number(x),ny=Number(y),nw=Number(w),nh=Number(h);
+    return [nx,ny,nw,nh].every(Number.isFinite)&&nx>=13&&nx<=15&&ny>=13&&ny<=15&&nw>=300&&nh>=68&&nh<=71
+  }
+
+  function installBannerGuard(){
+    const current=window.render;if(typeof current!=="function")return false;
+    if(current.__ccgV141R39HordeBannerGuard){state.bannerGuard=true;return true}
+    const original=current;
+    const wrapped=function renderV141R39HordeBannerGuard(){
+      if(!isHorde()||typeof ctx==="undefined"||!ctx)return original.apply(this,arguments);
+      const baseFillRect=ctx.fillRect,baseStrokeRect=ctx.strokeRect;
+      try{
+        ctx.fillRect=function(x,y,w,h){if(legacyHordeBannerRect(x,y,w,h)){state.bannerRectsSuppressed++;return}return baseFillRect.apply(this,arguments)};
+        ctx.strokeRect=function(x,y,w,h){if(legacyHordeBannerRect(x,y,w,h)){state.bannerRectsSuppressed++;return}return baseStrokeRect.apply(this,arguments)};
+        return original.apply(this,arguments)
+      }finally{ctx.fillRect=baseFillRect;ctx.strokeRect=baseStrokeRect}
+    };
+    wrapped.__ccgV141R39HordeBannerGuard=true;wrapped.__ccgOriginal=original;window.render=wrapped;state.bannerGuard=true;return true
+  }
+
   function enforceDedicatedAuthority(){
     if(!dedicatedPreferred())return false;const live=special();if(!live)return false;
     if(live.authoritative!==false){live.authoritative=false;state.authorityCorrections++}
@@ -145,11 +167,11 @@ body[data-special-mode="horde-survivor"][data-run-active="true"] .player-hub .hu
     wrapped.__ccgV141R39HordeHandoff=true;wrapped.__ccgOriginal=current;window.showToast=wrapped;state.toastGuard=true;return true
   }
 
-  injectStyle();if(!placeRoster())watchRosterPlacement();wrapMembers();wrapToast();enforceDedicatedAuthority();requestResize();
+  injectStyle();if(!placeRoster())watchRosterPlacement();installBannerGuard();wrapMembers();wrapToast();enforceDedicatedAuthority();requestResize();
 
   const transportObserver=new MutationObserver(records=>{
     if(!records.some(record=>record.attributeName==="data-horde-transport"||record.attributeName==="data-special-mode"))return;
-    if(isHorde()){if(!placeRoster())watchRosterPlacement();if(dedicatedPreferred())enforceDedicatedAuthority();requestResize()}
+    if(isHorde()){if(!placeRoster())watchRosterPlacement();installBannerGuard();if(dedicatedPreferred())enforceDedicatedAuthority();requestResize()}
     else stopRosterWatch()
   });
   transportObserver.observe(document.body,{attributes:true,attributeFilter:["data-horde-transport","data-special-mode"]});
@@ -159,7 +181,7 @@ body[data-special-mode="horde-survivor"][data-run-active="true"] .player-hub .hu
   addEventListener("pagehide",()=>{transportObserver.disconnect();stopRosterWatch()},{once:true});
 
   window.CCGLostSizzlerV141R39HordeResponsive={
-    enforceDedicatedAuthority,placeRoster,watchRosterPlacement,requestResize,
+    enforceDedicatedAuthority,placeRoster,watchRosterPlacement,requestResize,installBannerGuard,
     getDiagnostics(){return{...state,dedicatedLive:dedicatedLive(),dedicatedPreferred:dedicatedPreferred()}},
     get state(){return state}
   };
