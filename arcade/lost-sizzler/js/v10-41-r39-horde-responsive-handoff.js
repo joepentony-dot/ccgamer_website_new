@@ -99,16 +99,18 @@ body[data-special-mode="horde-survivor"][data-run-active="true"] .player-hub .hu
     if(!isHorde())return false;const roster=document.getElementById("horde-live-roster"),tactical=document.querySelector(".ccg-game>.tactical-zone");
     if(!roster||!tactical)return false;
     if(roster.parentElement!==tactical){tactical.appendChild(roster);state.rosterMoves++}
-    state.rosterPlaced=true;stopRosterWatch();return true
+    state.rosterPlaced=true;return true
   }
 
   function watchRosterPlacement(){
-    if(placeRoster())return true;
-    if(rosterObserver||typeof MutationObserver!=="function")return Boolean(rosterObserver);
+    if(!isHorde()){stopRosterWatch();return false}
+    placeRoster();
+    if(rosterObserver||typeof MutationObserver!=="function"){state.rosterWatchActive=Boolean(rosterObserver);return Boolean(rosterObserver)}
     const root=document.querySelector(".ccg-game")||document.body;if(!root)return false;
     rosterObserver=new MutationObserver(()=>{
       if(!isHorde()){stopRosterWatch();return}
-      if(placeRoster())requestResize()
+      const before=state.rosterMoves;
+      if(placeRoster()&&state.rosterMoves!==before)requestResize()
     });
     rosterObserver.observe(root,{childList:true,subtree:true});state.rosterWatchActive=true;return true
   }
@@ -167,11 +169,11 @@ body[data-special-mode="horde-survivor"][data-run-active="true"] .player-hub .hu
     wrapped.__ccgV141R39HordeHandoff=true;wrapped.__ccgOriginal=current;window.showToast=wrapped;state.toastGuard=true;return true
   }
 
-  injectStyle();if(!placeRoster())watchRosterPlacement();installBannerGuard();wrapMembers();wrapToast();enforceDedicatedAuthority();requestResize();
+  injectStyle();watchRosterPlacement();installBannerGuard();wrapMembers();wrapToast();enforceDedicatedAuthority();requestResize();
 
   const transportObserver=new MutationObserver(records=>{
     if(!records.some(record=>record.attributeName==="data-horde-transport"||record.attributeName==="data-special-mode"))return;
-    if(isHorde()){if(!placeRoster())watchRosterPlacement();installBannerGuard();if(dedicatedPreferred())enforceDedicatedAuthority();requestResize()}
+    if(isHorde()){watchRosterPlacement();installBannerGuard();if(dedicatedPreferred())enforceDedicatedAuthority();requestResize()}
     else stopRosterWatch()
   });
   transportObserver.observe(document.body,{attributes:true,attributeFilter:["data-horde-transport","data-special-mode"]});
