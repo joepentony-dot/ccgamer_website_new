@@ -10,6 +10,7 @@ const readGame=relative=>fs.readFileSync(path.join(game,relative),"utf8");
 const readRepo=relative=>fs.readFileSync(path.join(repo,relative),"utf8");
 
 const loader=readGame("js/v10-41-lake-item-safety.js");
+const loadWatchdog=readGame("js/v10-41-load-watchdog.js");
 const r47=readGame("js/v10-41-r47-all-mode-optimisation.js");
 const weekly=readGame("js/weekly-challenge.js");
 const feedback=readRepo("supabase/functions/lost-sizzler-feedback/index.ts");
@@ -31,6 +32,14 @@ assert.match(r47,/unhandledrejection/);
 assert.match(r47,/client_error/);
 assert.match(r47,/MAX_ERRORS_PER_SESSION=6/);
 assert.match(r47,/ERROR_COOLDOWN_MS=60000/);
+
+console.log("[r47 static] pre-release Solo clicks are held and replayed exactly through the release gate");
+assert.match(loadWatchdog,/pendingSolo:false/);
+assert.match(loadWatchdog,/capturePreReleaseSolo/);
+assert.match(loadWatchdog,/event\.stopImmediatePropagation\(\)/);
+assert.match(loadWatchdog,/gate\?\.ready\)\{replayPendingSolo\(\);stopLoaderObservers\(\)\}/);
+assert.match(loadWatchdog,/state\.pendingSolo=false;state\.soloReplays\+\+;\s*button\.click\(\)/);
+assert.ok(!loadWatchdog.includes("startSolo("),"load watchdog must replay the owned button intent rather than taking startSolo gameplay ownership");
 
 console.log("[r47 static] Weekly Vault countdown no longer rebuilds leaderboard once per second");
 assert.match(weekly,/countdownTimer=setInterval\(renderCountdown,1000\)/);
