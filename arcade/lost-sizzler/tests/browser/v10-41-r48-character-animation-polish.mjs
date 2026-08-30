@@ -31,9 +31,13 @@ try{
   },null,{timeout:20000});
 
   const atlas=await page.evaluate(()=>{
-    const api=window.CCGLostSizzlerV141R48CharacterAnimation,check=api.verifyPaddedAtlas();
-    return{...check,cell:api.PLAYER_CELL,cols:api.PLAYER_COLS,rows:api.PLAYER_ROWS,pad:api.PLAYER_PAD,stride:api.PLAYER_STRIDE,walk:api.WALK_SEQUENCE.map(x=>x.label),attack:api.ATTACK_SEQUENCE.map(x=>x.label),builds:api.state.atlasBuilds}
+    const api=window.CCGLostSizzlerV141R48CharacterAnimation,source=api.verifySourceFrameMargins(),check=api.verifyPaddedAtlas();
+    return{...check,source,cell:api.PLAYER_CELL,cols:api.PLAYER_COLS,rows:api.PLAYER_ROWS,pad:api.PLAYER_PAD,stride:api.PLAYER_STRIDE,walk:api.WALK_SEQUENCE.map(x=>x.label),attack:api.ATTACK_SEQUENCE.map(x=>x.label),builds:api.state.atlasBuilds}
   });
+  assert.equal(atlas.source.ok,true,`every original explorer pose must have a transparent one-pixel perimeter; touching frames: ${JSON.stringify(atlas.source.framesTouchingEdges)}`);
+  assert.equal(atlas.source.edgeOpaquePixels,0,"no visible player pixel may already touch a 32x32 source-cell edge and risk being cut off");
+  assert.equal(atlas.source.frames,24,"source-margin audit must inspect all 24 directional/action cells");
+  assert.deepEqual(atlas.source.framesTouchingEdges,[],"no player source frame may touch its previous/next frame boundary");
   assert.equal(atlas.ok,true,"every explorer frame gutter must remain fully transparent");
   assert.equal(atlas.opaqueGutterPixels,0,"no pixel from any player frame may bleed into the previous/next frame gutter");
   assert.equal(atlas.cell,32,"player source cells must remain exactly 32x32");
@@ -74,10 +78,11 @@ try{
     const p2=clone(p1);p2.id="r48-p2";p2.name="R48 P2";
     const remote=clone(p1);remote.id="r48-remote";remote.name="R48 REMOTE";
     drawPlayer(p1,"p1");drawPlayer(p2,"p2");drawPlayer(remote,"remote");
-    const last=api.state.lastPlayerDraw,check=api.verifyPaddedAtlas();
-    return{delta:api.state.safePlayerDraws-before,last,check,playerDraws:api.state.playerDraws}
+    const last=api.state.lastPlayerDraw,check=api.verifyPaddedAtlas(),source=api.verifySourceFrameMargins();
+    return{delta:api.state.safePlayerDraws-before,last,check,source,playerDraws:api.state.playerDraws}
   });
   assert.ok(players.delta>=3,"P1, P2 and remote player rendering must all pass through the padded-cell safety path");
+  assert.equal(players.source.ok,true,"live player drawing must continue to use source poses with untouched transparent margins");
   assert.equal(players.check.ok,true,"runtime player drawing must not contaminate any neighbouring frame gutter");
   assert.ok(players.last.sourceX%36===0&&players.last.sourceY%36===0,"player source sampling must start exactly on padded-cell boundaries");
   assert.equal(players.last.sourceW,36,"player source sampling must include one whole padded cell and nothing from its neighbour");
@@ -110,7 +115,7 @@ try{
 
   await page.waitForTimeout(250);
   assert.deepEqual(errors,[],`r48 character animation regression must not produce page errors: ${errors.join("\n")}`);
-  console.log("V10.41 r48 player frame-gutter, expanded cadence and procedural-enemy smoothing browser regression passed.");
+  console.log("V10.41 r48 player source-margin, frame-gutter, expanded cadence and procedural-enemy smoothing browser regression passed.");
 }finally{
   await browser.close();
   for(const socket of sockets)socket.destroy();
