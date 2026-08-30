@@ -40,7 +40,11 @@
     }catch(_){return"unknown"}
   }
 
-  function floorNow(){try{return Math.max(1,Math.floor(num(run?.floor,1)))}catch(_){return Math.max(1,Math.floor(textNumber(document.getElementById("hud-room")?.textContent)||1))}}
+  function floorNow(){
+    try{const canonical=Math.floor(num(run?.floor,0));if(canonical>0)return canonical}catch(_){}
+    const hud=safe(document.getElementById("hud-room")?.textContent),match=hud.match(/\bF(?:LOOR)?\s*([1-9]\d*)\b/i);
+    return Math.max(1,Math.floor(num(match?.[1],1)))
+  }
   function scoreNow(){try{return Math.max(0,Math.floor(num(score,0)))}catch(_){return Math.max(0,Math.floor(textNumber(document.getElementById("hud-score")?.textContent)))}}
   function killsNow(){return Math.max(0,Math.floor(textNumber(document.getElementById("hud-kills")?.textContent)))}
   function levelNow(){try{return Math.max(1,Math.floor(num(p1?.level,1)))}catch(_){return Math.max(1,Math.floor(textNumber(document.getElementById("quick-level")?.textContent)||1))}}
