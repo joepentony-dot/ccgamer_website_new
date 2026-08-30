@@ -1,0 +1,33 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
+
+const here=path.dirname(fileURLToPath(import.meta.url));
+const root=path.resolve(here,"..");
+const loader=fs.readFileSync(path.join(root,"js/v10-41-lake-item-safety.js"),"utf8");
+const src=fs.readFileSync(path.join(root,"js/v10-41-r51-visual-ui-overhaul.js"),"utf8");
+const lighting=fs.readFileSync(path.join(root,"js/v10-41-r51-world-lighting-addendum.js"),"utf8");
+const css=fs.readFileSync(path.join(root,"css/v10-41-r51-visual-ui-overhaul.css"),"utf8");
+
+assert.match(loader,/v10-41-r51-visual-ui-overhaul\.js/);
+assert.match(loader,/v10-41-r51-world-lighting-addendum\.js/);
+assert.match(src,/r51-menu-panel/);
+assert.match(src,/CONTROLLER/);
+assert.match(src,/playerTransform/);
+assert.match(src,/enemyTransform/);
+assert.match(src,/drawPlayerBackdrop/);
+assert.match(src,/drawPlayerOverlay/);
+assert.match(src,/drawEnemyBackdrop/);
+assert.match(src,/drawEnemyOverlay/);
+assert.match(src,/r51-torch-live/);
+assert.match(src,/colourForTheme/);
+assert.match(lighting,/saturate\(1\.13\) contrast\(1\.055\)/);
+assert.match(lighting,/radial-gradient/);
+assert.match(css,/#menu \.game-mode-buttons/);
+assert.match(css,/button:focus-visible/);
+assert.match(css,/\.overlay:not\(\.hidden\)>\.panel/);
+assert.match(css,/\.online-lobby-card/);
+assert.match(css,/body\.ccg-reduced-motion/);
+for(const forbidden of [/p1\.x\s*=/,/p1\.y\s*=/,/e\.hp\s*=/,/health\s*[-+]=/,/score\s*=/,/net\.send\(/,/joinOrCreate\(/,/saveCheckpoint/,/Supabase/i])assert.doesNotMatch(src,forbidden,"R51 renderer/UI layer must not own gameplay, networking or persistence");
+console.log("Lost Sizzler V10.41 r51 visual/UI ownership and usability contract passed.");
