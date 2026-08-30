@@ -1,0 +1,47 @@
+name: Lost Sizzler Production Smoke
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'arcade/lost-sizzler/**'
+      - 'supabase/functions/lost-sizzler-feedback/**'
+      - 'supabase/functions/ccq-weekly-challenge/**'
+      - 'supabase/migrations/**lost_sizzler**'
+      - '.github/workflows/lost-sizzler-production-smoke.yml'
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lost-sizzler-production-smoke
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Chromium smoke runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Verify deployed Lost Sizzler browser and backend
+        shell: bash
+        run: |
+          set -euo pipefail
+          node arcade/lost-sizzler/tests/production/v10-41-r47-production-smoke.mjs
