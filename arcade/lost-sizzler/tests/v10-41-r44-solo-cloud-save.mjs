@@ -55,5 +55,11 @@ assert.match(migration,/function public\.guard_lost_sizzler_solo_save_revision\(
 assert.match(migration,/new\.client_revision_ms < old\.client_revision_ms[\s\S]*?return null/,"database must reject an older device revision before it can overwrite a newer cloud save");
 assert.match(migration,/new\.client_revision_ms = old\.client_revision_ms[\s\S]*?old\.deleted_at is null and new\.deleted_at is not null[\s\S]*?return new[\s\S]*?return null/,"equal cloud revisions must allow deletion to win while rejecting save resurrection or save-to-save flapping");
 assert.match(migration,/create trigger lost_sizzler_solo_saves_guard_revision[\s\S]*?before update on public\.lost_sizzler_solo_saves/,"revision guard must execute on every conflicting upsert update");
+for(const fn of ["guard_lost_sizzler_solo_save_revision","touch_lost_sizzler_solo_save_updated_at"]){
+  for(const role of ["public","anon","authenticated"]){
+    const re=new RegExp(`revoke all on function public\\.${fn}\\(\\) from ${role}`,'i');
+    assert.match(migration,re,`${fn} must not be directly executable by ${role}`);
+  }
+}
 
 console.log("V10.41 r44 Solo cloud-save static/RLS/revision-guard contract passed.");
