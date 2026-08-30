@@ -78,15 +78,20 @@ try{
   assert.equal(upload.meta.ownerUserId,USER_A,"local sync metadata must remember which account owns the browser save");
 
   // Simulate a brand-new browser/device by removing only local save state while
-  // leaving the authenticated cloud row intact. r44 must restore the cloud save
-  // into r43's local slot while the game is at the menu.
-  await page.evaluate(()=>{
-    const r43=window.CCGLostSizzlerV141R43SoloSave,r44=window.CCGLostSizzlerV141R44SoloCloudSave,user=r44.state.userId;
+  // leaving the authenticated cloud row intact. Freeze the actual cloud row at
+  // handoff time after any in-flight reconciliation has completed; the restore
+  // must reproduce this exact validated envelope rather than an earlier fixture.
+  await page.evaluate(async user=>{
+    const r43=window.CCGLostSizzlerV141R43SoloSave,r44=window.CCGLostSizzlerV141R44SoloCloudSave;
+    await r44.syncNow();
+    const row=window.__r44Mock.rows[user]||null,cloud=r44.cloudState(row);
+    if(cloud.kind!=="save"||!cloud.envelope)throw new Error("valid cloud-save fixture missing before clean-device restore");
+    window.__r44Mock.savedEnvelope=JSON.parse(JSON.stringify(cloud.envelope));
     document.body.dataset.runActive="false";mode="menu";UI.menu.classList.remove("hidden");
     localStorage.removeItem(r43.PRIMARY_KEY);localStorage.removeItem(r43.BACKUP_KEY);
     localStorage.setItem(r44.META_KEY,JSON.stringify({version:1,ownerUserId:user,localRevisionMs:0,tombstoneRevisionMs:0,lastFingerprint:"",lastSyncedFingerprint:"",lastCloudRevisionMs:0,lastSyncAt:0}));
     r44.observeLocal();
-  });
+  },USER_A);
   await page.evaluate(()=>window.CCGLostSizzlerV141R44SoloCloudSave.syncNow());
   await page.waitForFunction(()=>window.CCGLostSizzlerV141R43SoloSave?.readEnvelope?.()?.summary?.floor===1,null,{timeout:10000});
   const restored=await page.evaluate(()=>{
