@@ -30,7 +30,7 @@ assert.doesNotMatch(source,/window\.(?:run|p1|world|host)\s*=/,"r44 must never a
 assert.match(source,/tombstonePayload/,"cloud sync must support deletion tombstones");
 assert.match(source,/deleted_at:new Date\(rev\)\.toISOString\(\)/,"tombstones must carry their own revision timestamp");
 assert.match(source,/before&&!after&&!state\.suppressObservation\)noteLocalTombstone/,"canonical Solo save clearing must produce a local tombstone");
-assert.match(source,/Equal revision: a deletion wins to prevent resurrection/,"conflict resolution must prefer deletion on equal revisions");
+assert.match(source,/Equal revision: a deletion wins to prevent resurrection/,"browser conflict resolution must prefer deletion on equal revisions");
 assert.match(source,/current&&meta\.ownerUserId&&meta\.ownerUserId!==userId/,"cloud restore must refuse to overwrite a browser save owned by another account");
 assert.match(source,/envelope&&meta\.ownerUserId&&meta\.ownerUserId!==userId/,"cloud upload must refuse foreign-account local saves");
 assert.match(source,/if\(activeRun\(\)\)\{renderStatus\("deferred"\)/,"newer cloud state must wait while a run is active");
@@ -51,5 +51,9 @@ assert.match(migration,/save_envelope jsonb/,"validated r43 envelope must be sto
 assert.match(migration,/octet_length\(save_envelope::text\) <= 262144/,"cloud envelope must have a defensive size ceiling");
 assert.match(migration,/deleted_at is not null and save_envelope is null/,"tombstone rows must not retain stale save payloads");
 assert.match(migration,/save_envelope ->> 'checksum' = save_checksum/,"database row must duplicate/check the envelope checksum field");
+assert.match(migration,/function public\.guard_lost_sizzler_solo_save_revision\(\)/,"database must own a revision guard for concurrent device writes");
+assert.match(migration,/new\.client_revision_ms < old\.client_revision_ms[\s\S]*?return null/,"database must reject an older device revision before it can overwrite a newer cloud save");
+assert.match(migration,/new\.client_revision_ms = old\.client_revision_ms[\s\S]*?old\.deleted_at is null and new\.deleted_at is not null[\s\S]*?return new[\s\S]*?return null/,"equal cloud revisions must allow deletion to win while rejecting save resurrection or save-to-save flapping");
+assert.match(migration,/create trigger lost_sizzler_solo_saves_guard_revision[\s\S]*?before update on public\.lost_sizzler_solo_saves/,"revision guard must execute on every conflicting upsert update");
 
-console.log("V10.41 r44 Solo cloud-save static/RLS contract passed.");
+console.log("V10.41 r44 Solo cloud-save static/RLS/revision-guard contract passed.");
