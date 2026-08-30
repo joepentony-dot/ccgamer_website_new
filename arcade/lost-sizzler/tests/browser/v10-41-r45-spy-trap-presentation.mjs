@@ -60,7 +60,7 @@ try{
   assert.equal(placed.trap,"powerBrick","placement visual must identify the armed BOMB");
   assert.match(placed.title,/BOMB ARMED/,"placement visual must name the armed trap");
   assert.match(placed.detail,/opponent cannot see/i,"placement visual must explain that the trap remains hidden");
-  assert.match(placed.toast,/TRAP ARMED.*BOMB/i,"existing written Spy result must remain visible alongside r45 presentation");
+  assert.match(placed.toast,/TRAP ARMED.*EXPLODING POWER BRICK/i,"existing written Spy result must remain visible alongside r45 presentation");
   assert.ok(placed.placementVisuals>=1,"r45 diagnostics must record the placement visual");
 
   console.log("[r45 Spy traps] opponent placement remains secret");
