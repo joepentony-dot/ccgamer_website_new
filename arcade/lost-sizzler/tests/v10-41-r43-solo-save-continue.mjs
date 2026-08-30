@@ -16,10 +16,11 @@ assert.match(source,/checksum:hashText/,"save envelope must include an integrity
 assert.match(source,/hashText\(JSON\.stringify\(payload\)\)!==String\(checksum\)/,"load path must reject checksum mismatches");
 assert.match(source,/const primary=readSlot\(PRIMARY_KEY\);if\(primary\)return primary;[\s\S]*const backup=readSlot\(BACKUP_KEY\)/,"load path must prefer primary and fall back to backup");
 
-assert.match(source,/run&&!run\.daily&&p1&&!p2&&String\(playMode\|\|""\)==="solo"&&!net\?\.connected/,"r43 ownership must be standard Solo only");
+assert.match(source,/const soloSaveOwner=\(\)=>[\s\S]*run&&!run\.daily&&p1&&!p2&&String\(playMode\|\|""\)==="solo"&&!net\?\.connected/,"r43 ownership must be standard Solo only");
 assert.match(source,/tutorialOwned\(\)/,"Tutorial must be excluded from r43 ownership");
 assert.match(source,/ACTIVE_SPECIAL_MODES/,"special multiplayer modes must be excluded");
 assert.match(source,/document\.body\?\.dataset\?\.hordeSolo!=="true"/,"Horde Solo presentation must not be mistaken for Dungeon Solo");
+assert.match(source,/const standardSolo=\(\)=>[\s\S]*!run\?\.runComplete&&String\(mode\|\|""\)!=="ended"/,"completed or ended Solo runs must be excluded from autosave ownership");
 assert.doesNotMatch(source,/\.send\s*\(/,"save system must not send gameplay network packets");
 assert.doesNotMatch(source,/supabase/i,"local Solo save layer must not acquire Supabase ownership");
 
@@ -36,7 +37,7 @@ assert.doesNotMatch(source,/Number\(saved\.floor[^\n]*<=1/,"r43 Continue must su
 
 assert.match(source,/legacy_migration/,"legacy Solo checkpoints must be migratable");
 assert.match(source,/if\(checkpointIsSolo\(data\)\)return writeEnvelope[\s\S]*return original\.saveCheckpointData\(data\)/,"non-Solo legacy checkpoint writes must remain on their existing path");
-assert.match(source,/if\(standardSolo\(\)\)[\s\S]*clearSoloSave\(\)[\s\S]*return original\.clearCheckpoint\(\)/,"Solo completion must clear the v2 save while other modes retain legacy clearing behavior");
+assert.match(source,/if\(soloSaveOwner\(\)\)[\s\S]*clearSoloSave\(\)[\s\S]*return original\.clearCheckpoint\(\)/,"Solo completion must still clear the v2 save even after autosave ownership has ended");
 assert.match(source,/Continue Solo — Floor/,"Continue button must expose the saved floor");
 assert.match(source,/Saved run: Floor/,"menu must expose save metadata");
 
