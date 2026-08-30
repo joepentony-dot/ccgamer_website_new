@@ -91,6 +91,7 @@
   load("js/v10-41-r37-global-performance.js","data-ccg-v141-r37-global-performance");
   load("js/v10-41-release-overlay-safety.js","data-ccg-v141-release-overlay-safety");
   load("js/v10-41-r46-release-candidate-polish.js","data-ccg-v141-r46-release-candidate-polish");
+  load("js/v10-41-r47-all-mode-optimisation.js","data-ccg-v141-r47-all-mode-optimisation");
 
   let dungeonLoaded=false,dungeonTimer=0;
   const dungeonOnline=()=>{
