@@ -59,6 +59,24 @@
     }catch(error){state.lastError=String(error?.message||error);return null}
   }
 
+  function verifySourceFrameMargins(){
+    const sheet=explorerSheet();
+    if(!sheet?.complete||sheet.naturalWidth!==PLAYER_COLS*PLAYER_CELL||sheet.naturalHeight!==PLAYER_ROWS*PLAYER_CELL)return{ok:false,reason:"source-unavailable",edgeOpaquePixels:-1,framesTouchingEdges:[]};
+    try{
+      const canvas=document.createElement("canvas");canvas.width=sheet.naturalWidth;canvas.height=sheet.naturalHeight;
+      const out=canvas.getContext("2d",{alpha:true,willReadFrequently:true});if(!out)return{ok:false,reason:"context-unavailable",edgeOpaquePixels:-1,framesTouchingEdges:[]};
+      out.imageSmoothingEnabled=false;out.clearRect(0,0,canvas.width,canvas.height);out.drawImage(sheet,0,0);
+      let edgeOpaquePixels=0;const framesTouchingEdges=[];
+      for(let row=0;row<PLAYER_ROWS;row++)for(let column=0;column<PLAYER_COLS;column++){
+        const data=out.getImageData(column*PLAYER_CELL,row*PLAYER_CELL,PLAYER_CELL,PLAYER_CELL).data;let edgePixels=0;
+        for(let x=0;x<PLAYER_CELL;x++)for(const y of [0,PLAYER_CELL-1])if(data[(y*PLAYER_CELL+x)*4+3]!==0)edgePixels++;
+        for(let y=1;y<PLAYER_CELL-1;y++)for(const x of [0,PLAYER_CELL-1])if(data[(y*PLAYER_CELL+x)*4+3]!==0)edgePixels++;
+        if(edgePixels){edgeOpaquePixels+=edgePixels;framesTouchingEdges.push({row,column,edgePixels})}
+      }
+      return{ok:edgeOpaquePixels===0,edgeOpaquePixels,framesTouchingEdges,frames:PLAYER_COLS*PLAYER_ROWS}
+    }catch(error){state.lastError=String(error?.message||error);return{ok:false,reason:"source-margin-check-failed",edgeOpaquePixels:-1,framesTouchingEdges:[]}}
+  }
+
   function verifyPaddedAtlas(){
     const atlas=buildPaddedExplorerAtlas();if(!atlas)return{ok:false,reason:"atlas-unavailable",opaqueGutterPixels:-1,width:0,height:0,frames:0};
     try{
@@ -144,7 +162,7 @@
 
   window.CCGLostSizzlerV141R48CharacterAnimation={
     PLAYER_CELL,PLAYER_COLS,PLAYER_ROWS,PLAYER_PAD,PLAYER_STRIDE,WALK_FRAME_MS,WALK_SEQUENCE,ATTACK_SEQUENCE,
-    buildPaddedExplorerAtlas,verifyPaddedAtlas,playerPose,interpolationRate,install,
+    buildPaddedExplorerAtlas,verifySourceFrameMargins,verifyPaddedAtlas,playerPose,interpolationRate,install,
     get state(){return state}
   };
 })();
