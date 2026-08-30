@@ -80,6 +80,7 @@
   load("js/v10-41-multiplayer-no-pause.js","data-ccg-v141-multiplayer-no-pause");
   load("js/v10-41-browser-stability-gameplay-hotfix.js","data-ccg-v141-browser-stability-gameplay-hotfix");
   load("js/v10-41-r42-solo-live-recovery.js","data-ccg-v141-r42-solo-live-recovery");
+  load("js/v10-41-r43-solo-save.js","data-ccg-v141-r43-solo-save");
   load("js/v10-41-spy-movement-finalizer.js","data-ccg-v141-spy-movement-finalizer");
   load("js/v10-41-tutorial-action-finalizer.js","data-ccg-v141-tutorial-action-finalizer");
   load("js/v10-41-r24-live-regressions.js","data-ccg-v141-r24-live-regressions");
