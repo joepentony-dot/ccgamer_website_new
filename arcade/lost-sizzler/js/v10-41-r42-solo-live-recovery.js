@@ -19,7 +19,8 @@
     timer:0,renderInstalled:false,transitionInstalled:false,renderSource:null,renderGuard:null,
     renderCalls:0,renderErrors:0,lastProbeAt:0,lastBackupAt:0,blackProbeStreak:0,blackRecoveries:0,renderRecoveryQueued:false,lastRecoveryAt:0,
     backupCanvas:null,backupCtx:null,probeCanvas:null,probeCtx:null,lastGoodReady:false,
-    transitionRecoveries:0,lastTransitionFloor:0,attackIntents:0,lastAttackIntentAt:0,combatRepairs:0,orphanModeRepairs:0,
+    transitionRecoveries:0,lastTransitionFloor:0,observedFloor:0,transitionPendingFloor:0,
+    attackIntents:0,lastAttackIntentAt:0,combatRepairs:0,orphanModeRepairs:0,
     fireObserved:null,fireStallSince:0,stunObserved:null,stunStallSince:0,controlLockSince:0,lastError:""
   };
 
@@ -201,34 +202,61 @@
 
   function recoverFloorTransition(expectedFloor=0){
     if(!standardSoloRun())return false;
-    try{if(expectedFloor&&Number(run?.floor)!==Number(expectedFloor))return false}catch(_){return false}
-    if(blockingOverlayVisible())return false;
-    try{if(typeof mode!=="undefined")mode="playing"}catch(_){}
+    let currentFloor=0;try{currentFloor=Number(run?.floor)||0;if(expectedFloor&&currentFloor!==Number(expectedFloor))return false}catch(_){return false}
+    if(currentFloor&&state.lastTransitionFloor===currentFloor&&perfNow()-state.lastRecoveryAt<250)return false;
+
+    // Internal combat/frame state is safe to normalise even while the legitimate
+    // Floor checkpoint overlay is visible. Presentation ownership stays with the
+    // overlay until it closes; r42 never dismisses it or steals keyboard focus.
     try{if(typeof fire1!=="undefined")fire1=0;if(typeof fireBuffer1!=="undefined")fireBuffer1=0}catch(_){}
     try{if(p1){p1.hitStunMs=0;if("controlLocked" in p1)p1.controlLocked=false;if("controlsLocked" in p1)p1.controlsLocked=false}}catch(_){}
-    try{input?.clear?.()}catch(_){};resetFrameState();
-    try{if(typeof window.render==="function")window.render()}catch(error){state.lastError=String(error?.message||error)}
-    try{document.getElementById("game")?.focus?.({preventScroll:true})}catch(_){}
-    state.transitionRecoveries++;state.lastTransitionFloor=Number(run?.floor)||0;state.lastRecoveryAt=perfNow();return true
+    try{input?.clear?.()}catch(_){}
+    resetFrameState();
+
+    const blocked=blockingOverlayVisible();
+    if(!blocked){
+      try{if(typeof window.render==="function")window.render()}catch(error){state.lastError=String(error?.message||error)}
+      try{document.getElementById("game")?.focus?.({preventScroll:true})}catch(_){}
+    }
+    state.transitionRecoveries++;state.lastTransitionFloor=currentFloor;state.observedFloor=currentFloor;state.lastRecoveryAt=perfNow();return true
   }
 
   function scheduleTransitionRecovery(floor){
-    queueMicrotask(()=>recoverFloorTransition(floor));
-    try{requestAnimationFrame(()=>recoverFloorTransition(floor))}catch(_){}
-    setTimeout(()=>recoverFloorTransition(floor),80)
+    floor=Math.max(1,Math.floor(Number(floor)||0));if(!floor)return false;
+    if(state.transitionPendingFloor===floor)return false;
+    state.transitionPendingFloor=floor;
+    const recover=()=>recoverFloorTransition(floor);
+    queueMicrotask(recover);
+    try{requestAnimationFrame(recover)}catch(_){}
+    setTimeout(()=>{recover();if(state.transitionPendingFloor===floor)state.transitionPendingFloor=0},80);
+    return true
+  }
+
+  function onDescendIntent(event){
+    const button=event?.target?.closest?.("#descend-btn");if(!button||!standardSoloRun())return;
+    let before=0;try{before=Number(run?.floor)||0}catch(_){return}
+    queueMicrotask(()=>{
+      if(!standardSoloRun())return;
+      let after=before;try{after=Number(run?.floor)||before}catch(_){return}
+      if(after>before){state.observedFloor=after;scheduleTransitionRecovery(after)}
+    })
   }
 
   function installTransitionGuard(){
-    const current=window.descendFloor;if(typeof current!=="function")return false;
-    if(current.__ccgV141R42SoloTransitionGuard){state.transitionInstalled=true;return true}
-    const wrapped=function descendFloorV141R42SoloRecovery(){
-      let wasSolo=false,before=0;try{wasSolo=standardSoloRun();before=Number(run?.floor)||0}catch(_){}
-      const result=current.apply(this,arguments);
-      let after=before;try{after=Number(run?.floor)||before}catch(_){}
-      if(wasSolo&&after>before)scheduleTransitionRecovery(after);
-      return result
-    };
-    wrapped.__ccgV141R42SoloTransitionGuard=true;wrapped.__ccgOriginal=current;window.descendFloor=wrapped;state.transitionInstalled=true;return true
+    if(state.transitionInstalled)return true;
+    document.addEventListener("click",onDescendIntent,true);state.transitionInstalled=true;
+    try{state.observedFloor=standardSoloRun()?Number(run?.floor)||0:0}catch(_){state.observedFloor=0}
+    return true
+  }
+
+  function watchFloorAdvance(){
+    if(!standardSoloRun()){state.observedFloor=0;state.transitionPendingFloor=0;return false}
+    let current=0;try{current=Number(run?.floor)||0}catch(_){return false}
+    if(!current)return false;
+    if(!state.observedFloor){state.observedFloor=current;return false}
+    const advanced=current>state.observedFloor;state.observedFloor=current;
+    if(advanced)return scheduleTransitionRecovery(current);
+    return false
   }
 
   function onKeyDown(event){
@@ -238,19 +266,22 @@
 
   function monitor(){
     if(standardSoloRun()){
-      installRenderGuard();installTransitionGuard();repairOrphanMode();repairCombatLiveness();
+      installRenderGuard();installTransitionGuard();watchFloorAdvance();repairOrphanMode();repairCombatLiveness();
       if(standardSoloPlaying())inspectCanvas(false)
     }else{
-      state.fireObserved=null;state.fireStallSince=0;state.stunObserved=null;state.stunStallSince=0;state.controlLockSince=0;state.blackProbeStreak=0
+      state.fireObserved=null;state.fireStallSince=0;state.stunObserved=null;state.stunStallSince=0;state.controlLockSince=0;state.blackProbeStreak=0;state.observedFloor=0;state.transitionPendingFloor=0
     }
   }
 
   addEventListener("keydown",onKeyDown,true);
-  monitor();state.timer=setInterval(monitor,MONITOR_MS);
-  addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0;removeEventListener("keydown",onKeyDown,true)},{once:true});
+  installTransitionGuard();monitor();state.timer=setInterval(monitor,MONITOR_MS);
+  addEventListener("pagehide",()=>{
+    if(state.timer)clearInterval(state.timer);state.timer=0;
+    removeEventListener("keydown",onKeyDown,true);document.removeEventListener("click",onDescendIntent,true)
+  },{once:true});
 
   window.CCGLostSizzlerV141R42SoloLiveRecovery={
-    standardSoloRun,standardSoloPlaying,blockingOverlayVisible,installRenderGuard,installTransitionGuard,inspectCanvas,captureGoodFrame,restoreGoodFrame,
+    standardSoloRun,standardSoloPlaying,blockingOverlayVisible,installRenderGuard,installTransitionGuard,watchFloorAdvance,inspectCanvas,captureGoodFrame,restoreGoodFrame,
     repairOrphanMode,noteAttackIntent,repairCombatLiveness,recoverFloorTransition,monitor,get state(){return state}
   };
 })();
