@@ -1,4 +1,4 @@
-/* The Lost Sizzler V10.41 r32/r36 — Spy-only lazy loader.
+/* The Lost Sizzler V10.41 r32/r45 — Spy-only lazy loader.
  *
  * The full overhaul has no reason to install during Solo, Horde or ordinary
  * online Dungeon sessions. Keep those startup/network paths untouched and load
@@ -8,7 +8,8 @@
  * F as fullscreen; this loader stops that same F event before any later Spy
  * compatibility layer can reuse it. The r35 knockout finalizer binds the real
  * combat/trap boundary to the ghost/capture rules, r34 owns fullscreen panel
- * presentation, and r36 then performs the final live-state/UI reconciliation.
+ * presentation, r36 performs live-state/UI reconciliation, and r45 adds the
+ * final owner-only placement plus slot-specific triggered-trap presentation.
  */
 (()=>{
   "use strict";
@@ -20,7 +21,7 @@
   const state={
     timer:0,loading:false,loaded:false,loads:0,lastError:"",
     uiLoading:false,uiLoaded:false,uiLoads:0,uiLastError:"",
-    hardeningLoaded:false,fullscreenUiLoaded:false,perfectionLoaded:false,
+    hardeningLoaded:false,fullscreenUiLoaded:false,perfectionLoaded:false,trapPresentationLoaded:false,
     pendingActionCode:"",queuedActions:0,replayedActions:0,queuedSearchFeedbacks:0,directSearchActions:0,
     searchTargetBridges:0,searchRoomBridges:0,searchKeyDowns:0,searchKeyUpFallbacks:0
   };
@@ -75,6 +76,8 @@
         await ensureSearchUi();
         await loadScript("v10-41-r36-spy-perfection.js","data-ccg-r36-spy-perfection",()=>Boolean(window.CCGLostSizzlerV141R36SpyPerfection));
         state.perfectionLoaded=true;
+        await loadScript("v10-41-r45-spy-trap-presentation.js","data-ccg-r45-spy-trap-presentation",()=>Boolean(window.CCGLostSizzlerV141R45SpyTrapPresentation));
+        state.trapPresentationLoaded=true;
         state.loaded=true;state.loads++;state.lastError="";return true
       }catch(error){state.lastError=String(error?.message||error);console.warn("[Lost Sizzler r32] Spy lazy load failed safely",error);return false}
       finally{state.loading=false;loadPromise=null}
