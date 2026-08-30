@@ -295,14 +295,18 @@
   }
 
   function wrapCheckpointClear(){
-    if(state.clearWrapped||!window.PGR||typeof PGR.clearCheckpoint!=="function")return false;
-    const source=PGR.clearCheckpoint;
-    PGR.clearCheckpoint=function clearCheckpointV141R44CloudTombstone(){
+    const progression=window.CCGProgression;
+    if(state.clearWrapped||!progression||typeof progression.clearCheckpoint!=="function")return false;
+    const source=progression.clearCheckpoint;
+    progression.clearCheckpoint=function clearCheckpointV141R44CloudTombstone(){
       const before=localEnvelope(),metaBefore=readMeta(),result=source.apply(this,arguments),after=localEnvelope();
       if(before&&!after&&!state.suppressObservation)noteLocalTombstone(nowMs(),state.userId||metaBefore.ownerUserId);
       return result
     };
-    PGR.clearCheckpoint.__ccgV141R44CloudTombstone=true;PGR.clearCheckpoint.__ccgOriginal=source;state.clearWrapped=true;return true
+    progression.clearCheckpoint.__ccgV141R44CloudTombstone=true;
+    progression.clearCheckpoint.__ccgOriginal=source;
+    state.clearWrapped=true;
+    return true
   }
 
   function bootstrapObservation(){
