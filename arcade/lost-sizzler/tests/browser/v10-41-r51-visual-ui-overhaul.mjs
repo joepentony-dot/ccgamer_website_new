@@ -18,8 +18,8 @@ const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usag
 try{
   const context=await browser.newContext({viewport:{width:1600,height:900}}),page=await context.newPage();page.setDefaultTimeout(45000);const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&Boolean(window.CCGLostSizzlerV141R51VisualUIOverhaul)&&Boolean(window.CCGLostSizzlerV141R51WorldLighting));
-  await page.waitForFunction(()=>document.body.dataset.v141R51Menu==="true"&&document.body.dataset.v141R51Visual==="true"&&document.body.dataset.v141R51Lighting==="true");
+  await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&Boolean(window.CCGLostSizzlerV141R51VisualUIOverhaul)&&Boolean(window.CCGLostSizzlerV141R51WorldLighting)&&Boolean(window.CCGLostSizzlerV141R51MenuFocus));
+  await page.waitForFunction(()=>document.body.dataset.v141R51Menu==="true"&&document.body.dataset.v141R51Visual==="true"&&document.body.dataset.v141R51Lighting==="true"&&document.body.dataset.v141R51MenuFocus==="true");
 
   const menu=await page.evaluate(()=>({
     styled:Boolean(document.querySelector('link[data-ccg-v141-r51-style="true"]')),
@@ -55,9 +55,10 @@ try{
   assert.ok(visual.diag.enemyFrames>=0);
   assert.ok(visual.diag.lightingUpdates>0);
 
-  const focus=await page.evaluate(async()=>{await quitToMenu();const button=document.getElementById("create-btn");button.focus();const style=getComputedStyle(button);return{active:document.activeElement?.id,outline:style.outlineStyle,outlineWidth:style.outlineWidth}});
+  const focus=await page.evaluate(async()=>{await quitToMenu();const api=window.CCGLostSizzlerV141R51MenuFocus,before=api.state.focusMoves,button=document.getElementById("create-btn");button.focus();await new Promise(resolve=>setTimeout(resolve,40));const style=getComputedStyle(button);return{active:document.activeElement?.id,outline:style.outlineStyle,outlineWidth:style.outlineWidth,moves:api.state.focusMoves-before}});
   assert.equal(focus.active,"create-btn");
   assert.notEqual(focus.outline,"none","keyboard/controller focus must remain visually obvious");
+  assert.ok(focus.moves>=1,"menu focus helper must keep keyboard/controller focus visible");
   assert.deepEqual(errors,[],`r51 browser test must not raise page errors: ${errors.join("\n")}`);
   console.log("Lost Sizzler V10.41 r51 visual polish, renderer ownership, lighting and menu usability passed in Chromium.");
   await context.close();
