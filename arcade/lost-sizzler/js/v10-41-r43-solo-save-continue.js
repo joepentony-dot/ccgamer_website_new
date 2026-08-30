@@ -36,10 +36,14 @@
   const clone=value=>{try{return JSON.parse(JSON.stringify(value))}catch(_){return null}};
   const specialType=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")}catch(_){return""}};
   const tutorialOwned=()=>{try{const s=window.CCGLostSizzlerOnboardingV120?.state;return Boolean(s?.active||s?.tutorialRequested||s?.forceTutorial||document.body?.dataset?.tutorialActive==="true")}catch(_){return false}};
-  const standardSolo=()=>{
+  const soloSaveOwner=()=>{
     if(tutorialOwned())return false;
     const special=specialType();if(special||ACTIVE_SPECIAL_MODES.has(special))return false;
     try{return Boolean(run&&!run.daily&&p1&&!p2&&String(playMode||"")==="solo"&&!net?.connected&&document.body?.dataset?.hordeSolo!=="true")}catch(_){return false}
+  };
+  const standardSolo=()=>{
+    if(!soloSaveOwner())return false;
+    try{return !run?.runComplete&&String(mode||"")!=="ended"}catch(_){return false}
   };
   const floorKey=()=>{try{return `${safe(run?.seed)}|${Math.max(1,Number(run?.floor)||1)}`}catch(_){return""}};
 
@@ -251,7 +255,7 @@
     return original.loadCheckpoint()
   };
   PGR.clearCheckpoint=function clearCheckpointV141R43(){
-    if(standardSolo()){
+    if(soloSaveOwner()){
       clearSoloSave();try{original.clearCheckpoint()}catch(_){};return true
     }
     return original.clearCheckpoint()
