@@ -20,7 +20,7 @@ assert.match(source,/const VERSION=2/,"Solo save schema must be version 2");
 assert.match(source,/const RESUME_POLICY="floor_entry"/,"save records must declare floor-entry resume semantics");
 assert.match(source,/schema:SCHEMA,version:VERSION,resumePolicy:RESUME_POLICY/,"persisted saves must publish schema, version and resume policy");
 assert.match(source,/runFloor!==floor/,"validation must reject a save whose advertised floor disagrees with the run snapshot");
-assert.match(source,/!Number\.isFinite\(score\)\|\|score<0/,"validation must reject an invalid saved score");
+assert.match(source,/!Number\.isFinite\(savedScore\)\|\|savedScore<0/,"validation must reject an invalid saved score");
 assert.match(source,/removeInvalid:true/,"invalid or malformed current save records must be removed instead of retried forever");
 assert.match(source,/state\.corruptClears\+\+/,"corrupt-save cleanup must be diagnosable");
 
@@ -50,6 +50,7 @@ assert.match(source,/mode==="ended"/,"lifecycle monitor must provide fallback cl
 assert.match(source,/LEGACY_V1_KEY="ccg-lost-sizzler-v10-41-solo-save-v1"/,"r43 must recognise the interrupted v1 save slot");
 assert.match(source,/v1_migration/,"r43 must migrate compatible v1 saves");
 assert.match(source,/v10_3_migration/,"r43 must migrate compatible legacy V10.3 checkpoints");
+assert.match(source,/removeStorageKey\(STORAGE_KEY\);removeStorageKey\(LEGACY_V1_KEY\)/,"ending a run must retire both current and interrupted-development save slots");
 assert.match(source,/PGR\?\.clearCheckpoint\?\.\(\)/,"successful migration/end cleanup must retire the legacy V10.3 slot");
 
 assert.doesNotMatch(source,/ccgSupabase|functions\.invoke|\.from\(/,"local Solo saving must not add a Supabase dependency");
