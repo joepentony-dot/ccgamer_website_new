@@ -11,8 +11,8 @@
 
   const DEADZONE=.28,NAV_REPEAT_MS=210;
   const state={raf:0,connected:0,lastNavAt:0,held:[new Set(),new Set()],buttonLatch:[new Map(),new Map()],statusNode:null,frames:0,syntheticDown:0,syntheticUp:0,menuMoves:0,menuClicks:0};
-  const gameplay=()=>document.body?.dataset?.runActive==="true"&&String(window.mode||"")==="playing";
-  const split=()=>{try{return Boolean(window.p2)&&String(window.playMode||"")==="split"}catch(_){return false}};
+  const gameplay=()=>{try{return document.body?.dataset?.runActive==="true"&&String(mode||"")==="playing"}catch(_){return false}};
+  const split=()=>{try{return Boolean(p2)&&String(playMode||"")==="split"}catch(_){return false}};
   const editable=()=>{const el=document.activeElement;return Boolean(el?.matches?.("input,textarea,select,[contenteditable='true'],[contenteditable='']"))};
 
   function emit(code,down){
