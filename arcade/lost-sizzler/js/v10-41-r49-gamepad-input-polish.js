@@ -78,11 +78,14 @@
   }
 
   function processSnapshot(index,pad,now=performance.now()){
-    if(!pad||pad.connected===false){releaseSlot(index);return false}
     if(index>1)return false;
+    if(!pad||pad.connected===false){releaseSlot(index);return false}
     if(editable()){releaseSlot(index);return false}
-    if(gameplay()&&(index===0||(index===1&&split())))processGameplayPad(index,pad);else processMenuPad(index,pad,now);
-    return true
+    if(gameplay()){
+      if(index===1&&!split()){releaseSlot(index);return false}
+      processGameplayPad(index,pad);return true
+    }
+    processMenuPad(index,pad,now);return true
   }
   function tick(now){
     state.frames++;const pads=Array.from(navigator.getGamepads?.()||[]).filter(Boolean),usable=pads.filter(p=>p.connected!==false).slice(0,2);state.connected=usable.length;renderStatus(state.connected);
