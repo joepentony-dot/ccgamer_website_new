@@ -72,6 +72,12 @@ try{
   });
   assert.equal(spyStarted,true,"isolated Spy fixture must start through the real special-mode adapter");
   await page.waitForFunction(()=>document.body.dataset.specialMode==="sizzler-saboteurs"&&document.body.dataset.spyIndependentUi==="true"&&Boolean(window.CCGLostSizzlerV141R29SpyEngine?.state?.isolated));
+  const spyOwnersReady=await page.evaluate(async()=>{
+    const loader=window.CCGLostSizzlerV141R32SpyLoader;if(!loader)return false;
+    const loaded=await loader.ensureLoaded();const uiLoaded=await loader.ensureSearchUi();
+    return Boolean(loaded&&uiLoaded&&loader.state?.loaded&&loader.state?.uiLoaded);
+  });
+  assert.equal(spyOwnersReady,true,"Spy fixture must complete the published r32 loader and search-UI readiness path");
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R32SpyLoader?.state?.loaded&&window.CCGLostSizzlerV141R32SpyLoader?.state?.uiLoaded&&window.CCGLostSizzlerV141R32SpyOverhaul?.state?.worldBuilds>=1&&window.CCGLostSizzlerV141R32SpySearchUiOwner),null,{timeout:15000});
   await page.waitForFunction(()=>getComputedStyle(document.getElementById("spy-independent-hud")).display!=="none");
 
