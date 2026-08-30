@@ -9,6 +9,10 @@ const DESTINATION = "info@cheekycommodoregamer.co.uk";
 const TELEMETRY_EVENTS = new Set([
   "start_click",
   "run_started",
+  "run_started_detail",
+  "floor_reached",
+  "floor_cleared",
+  "run_ended",
   "mobile_pc_notice_accept",
   "rating_submitted",
   "rating_dismissed"
@@ -35,6 +39,32 @@ function validEmail(value: string) { return !value || /^[^\s@]+@[^\s@]+\.[^\s@]+
 function escapeHtml(value: string) {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#39;");
 }
+function boundedInteger(value: unknown, min: number, max: number) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return null;
+  return Math.max(min, Math.min(max, Math.floor(parsed)));
+}
+function telemetryMetadata(value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const source = value as Record<string, unknown>;
+  const metadata: Record<string, unknown> = {};
+  const floor = boundedInteger(source.floor, 1, 100);
+  const nextFloor = boundedInteger(source.next_floor, 1, 100);
+  const score = boundedInteger(source.score, 0, 2_000_000_000);
+  const kills = boundedInteger(source.kills, 0, 10_000_000);
+  const level = boundedInteger(source.level, 1, 10_000);
+  const durationMs = boundedInteger(source.duration_ms, 0, 604_800_000);
+  const outcome = text(source.outcome).toLowerCase().slice(0, 24);
+  if (floor !== null) metadata.floor = floor;
+  if (nextFloor !== null) metadata.next_floor = nextFloor;
+  if (score !== null) metadata.score = score;
+  if (kills !== null) metadata.kills = kills;
+  if (level !== null) metadata.level = level;
+  if (durationMs !== null) metadata.duration_ms = durationMs;
+  if (outcome) metadata.outcome = outcome;
+  return Object.keys(metadata).length ? metadata : null;
+}
+
 async function authenticatedUserId(req: Request, service: ReturnType<typeof createClient>) {
   const authHeader = text(req.headers.get("authorization"));
   const bearer = authHeader.match(/^Bearer\s+(.+)$/i)?.[1] || "";
@@ -90,6 +120,7 @@ Deno.serve(async (req: Request) => {
     const pageUrl = text(payload.page_url).slice(0, 500);
     const ratingValue = Number(payload.rating);
     const rating = Number.isInteger(ratingValue) && ratingValue >= 1 && ratingValue <= 5 ? ratingValue : null;
+    const metadata = telemetryMetadata(payload.metadata);
 
     if (!TELEMETRY_EVENTS.has(eventType)) return json(req, { success: false, error: "Unknown telemetry event" }, 400);
     if (eventType === "rating_submitted" && rating === null) return json(req, { success: false, error: "Rating must be between 1 and 5" }, 400);
@@ -107,7 +138,8 @@ Deno.serve(async (req: Request) => {
       auth_user_id: authUserId,
       build: build || null,
       page_url: pageUrl || null,
-      user_agent: text(req.headers.get("user-agent")).slice(0, 500)
+      user_agent: text(req.headers.get("user-agent")).slice(0, 500),
+      metadata
     }).select("id").single();
 
     if (insertError || !row?.id) return json(req, { success: false, error: "Play event could not be saved" }, 500);
