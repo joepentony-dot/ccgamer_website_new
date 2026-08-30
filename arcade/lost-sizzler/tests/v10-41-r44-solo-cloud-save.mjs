@@ -26,6 +26,9 @@ assert.match(source,/r43\?\.validateEnvelope\?\./,"every cloud save accepted by 
 assert.doesNotMatch(source,/PGR\.makeCheckpoint/,"r44 must never create or serialize checkpoints itself");
 assert.doesNotMatch(source,/service[_-]?role/i,"browser cloud sync must never contain a service-role credential/path");
 assert.doesNotMatch(source,/window\.(?:run|p1|world|host)\s*=/,"r44 must never acquire live dungeon state ownership");
+assert.match(source,/const progression=window\.CCGProgression/,"cloud tombstone wrapping must bind to the real shared progression API");
+assert.doesNotMatch(source,/window\.PGR/,"r44 must not depend on a nonexistent window.PGR alias");
+assert.match(source,/progression\.clearCheckpoint=function clearCheckpointV141R44CloudTombstone/,"canonical progression clear must be wrapped for cloud tombstone propagation");
 
 assert.match(source,/tombstonePayload/,"cloud sync must support deletion tombstones");
 assert.match(source,/deleted_at:new Date\(rev\)\.toISOString\(\)/,"tombstones must carry their own revision timestamp");
