@@ -17,14 +17,14 @@ assert.match(loader,/data-ccg-v141-r44-solo-cloud-save/,"late loader must publis
 
 assert.match(source,/const TABLE="lost_sizzler_solo_saves"/,"r44 must use the dedicated private cloud-save table");
 assert.match(source,/ccg-lost-sizzler-solo-cloud-sync-v1/,"r44 must keep versioned local cloud-sync metadata");
-assert.match(source,/window\.ccgSupabase/,"r44 must reuse the website Supabase/auth bridge");
+assert.match(source,/window\.ccgSupabase/,"r44 must reuse the website Supabase\/auth bridge");
 assert.match(source,/bridge\.getClient/,"r44 must obtain the shared authenticated Supabase client");
 assert.match(source,/waitForSessionReady| getCurrentUserContext/,"r44 must resolve website account identity before cloud access");
 assert.match(source,/client\.from\(TABLE\)\.select/,"cloud reads must use the authenticated table API");
 assert.match(source,/client\.from\(TABLE\)\.upsert/,"cloud writes must use owner-scoped upserts");
 assert.match(source,/r43\?\.validateEnvelope\?\./,"every cloud save accepted by r44 must pass r43 envelope validation");
 assert.doesNotMatch(source,/PGR\.makeCheckpoint/,"r44 must never create or serialize checkpoints itself");
-assert.doesNotMatch(source,/service[_-]?role/i,"browser cloud sync must never contain a service-role credential/path");
+assert.doesNotMatch(source,/service[_-]?role/i,"browser cloud sync must never contain a service-role credential\/path");
 assert.doesNotMatch(source,/window\.(?:run|p1|world|host)\s*=/,"r44 must never acquire live dungeon state ownership");
 assert.match(source,/const progression=window\.CCGProgression/,"cloud tombstone wrapping must bind to the real shared progression API");
 assert.doesNotMatch(source,/window\.PGR/,"r44 must not depend on a nonexistent window.PGR alias");
@@ -33,13 +33,15 @@ assert.match(source,/progression\.clearCheckpoint=function clearCheckpointV141R4
 assert.match(source,/tombstonePayload/,"cloud sync must support deletion tombstones");
 assert.match(source,/deleted_at:new Date\(rev\)\.toISOString\(\)/,"tombstones must carry their own revision timestamp");
 assert.match(source,/before&&!after&&!state\.suppressObservation\)noteLocalTombstone/,"canonical Solo save clearing must produce a local tombstone");
-assert.match(source,/Equal revision: a deletion wins to prevent resurrection/,"browser conflict resolution must prefer deletion on equal revisions");
+assert.match(source,/if\(local\.kind==="tombstone"\|\|cloud\.kind==="tombstone"\)[\s\S]*?local\.kind==="tombstone"&&cloud\.kind!=="tombstone"[\s\S]*?tie_upload_tombstone[\s\S]*?cloud\.kind==="tombstone"&&local\.kind!=="tombstone"[\s\S]*?tie_apply_tombstone/,"browser conflict resolution must make deletion win on equal revisions");
 assert.match(source,/current&&meta\.ownerUserId&&meta\.ownerUserId!==userId/,"cloud restore must refuse to overwrite a browser save owned by another account");
 assert.match(source,/envelope&&meta\.ownerUserId&&meta\.ownerUserId!==userId/,"cloud upload must refuse foreign-account local saves");
 assert.match(source,/if\(activeRun\(\)\)\{renderStatus\("deferred"\)/,"newer cloud state must wait while a run is active");
 assert.match(source,/Cloud save unavailable — the browser save remains safe on this device/,"network failure must explicitly preserve the browser save fallback");
 assert.match(source,/ccg:auth-ready/,"r44 must react to website auth readiness");
-assert.match(source,/ccg:auth-changed/,"r44 must react to sign-in/sign-out changes");
+assert.match(source,/ccg:auth-changed/,"r44 must react to sign-in\/sign-out changes");
+assert.match(source,/FRESH_DEVICE_WINDOW_MS/,"clean-device restoration must have an explicit short reconciliation guard");
+assert.match(source,/freshDevice&&cloud\.kind==="save"&&!activeRun\(\)/,"clean-device reconciliation must prefer an existing valid account cloud save before transient local observation can win");
 
 assert.match(migration,/create table if not exists public\.lost_sizzler_solo_saves/,"migration must create the cloud-save table");
 assert.match(migration,/user_id uuid primary key references auth\.users\(id\) on delete cascade/,"cloud saves must be one row per authenticated account");
@@ -53,7 +55,7 @@ for(const operation of ["select","insert","update","delete"]){
 assert.match(migration,/save_envelope jsonb/,"validated r43 envelope must be stored as JSONB");
 assert.match(migration,/octet_length\(save_envelope::text\) <= 262144/,"cloud envelope must have a defensive size ceiling");
 assert.match(migration,/deleted_at is not null and save_envelope is null/,"tombstone rows must not retain stale save payloads");
-assert.match(migration,/save_envelope ->> 'checksum' = save_checksum/,"database row must duplicate/check the envelope checksum field");
+assert.match(migration,/save_envelope ->> 'checksum' = save_checksum/,"database row must duplicate\/check the envelope checksum field");
 assert.match(migration,/function public\.guard_lost_sizzler_solo_save_revision\(\)/,"database must own a revision guard for concurrent device writes");
 assert.match(migration,/new\.client_revision_ms < old\.client_revision_ms[\s\S]*?return null/,"database must reject an older device revision before it can overwrite a newer cloud save");
 assert.match(migration,/new\.client_revision_ms = old\.client_revision_ms[\s\S]*?old\.deleted_at is null and new\.deleted_at is not null[\s\S]*?return new[\s\S]*?return null/,"equal cloud revisions must allow deletion to win while rejecting save resurrection or save-to-save flapping");
@@ -65,4 +67,4 @@ for(const fn of ["guard_lost_sizzler_solo_save_revision","touch_lost_sizzler_sol
   }
 }
 
-console.log("V10.41 r44 Solo cloud-save static/RLS/revision-guard contract passed.");
+console.log("V10.41 r44 Solo cloud-save static\/RLS\/revision-guard contract passed.");
