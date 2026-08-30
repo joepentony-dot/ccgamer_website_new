@@ -1,16 +1,34 @@
 import { createClient } from "npm:@supabase/supabase-js@2.95.0";
 
-const ORIGIN = "https://www.cheekycommodoregamer.co.uk";
+const ALLOWED_ORIGINS = new Set([
+  "https://www.cheekycommodoregamer.co.uk",
+  "https://cheekycommodoregamer.co.uk"
+]);
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "";
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 const MAX_GHOST_POINTS = 900;
 const LEADERBOARD_LIMIT = 5;
+const STATUS_LIMIT = 60;
+const STATUS_WINDOW_SECONDS = 300;
+const START_LIMIT = 10;
+const START_WINDOW_SECONDS = 3600;
+const FINISH_LIMIT = 20;
+const FINISH_WINDOW_SECONDS = 3600;
+const RESULT_CLOCK_GRACE_MS = 60_000;
+const GHOST_CLOCK_GRACE_MS = 15_000;
 
-function cors(req: Request) {
+type SupabaseService = ReturnType<typeof createClient>;
+
+function originFor(req: Request) {
   const origin = req.headers.get("origin") || "";
-  return {"Access-Control-Allow-Origin": origin === ORIGIN ? ORIGIN : ORIGIN,"Access-Control-Allow-Headers":"authorization, apikey, content-type, x-client-info","Access-Control-Allow-Methods":"POST, OPTIONS","Vary":"Origin"};
+  return ALLOWED_ORIGINS.has(origin) ? origin : "https://www.cheekycommodoregamer.co.uk";
 }
-function json(req: Request, body: unknown, status = 200) { return new Response(JSON.stringify(body), {status, headers:{...cors(req),"Content-Type":"application/json"}}) }
+function cors(req: Request) {
+  return {"Access-Control-Allow-Origin":originFor(req),"Access-Control-Allow-Headers":"authorization, apikey, content-type, x-client-info","Access-Control-Allow-Methods":"POST, OPTIONS","Vary":"Origin"};
+}
+function json(req: Request, body: unknown, status = 200, extraHeaders: Record<string,string> = {}) {
+  return new Response(JSON.stringify(body), {status, headers:{...cors(req),...extraHeaders,"Content-Type":"application/json"}})
+}
 function weekStart(now = new Date()) { const d=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate()));const day=d.getUTCDay();d.setUTCDate(d.getUTCDate()-((day+6)%7));return d.toISOString().slice(0,10) }
 function seedFor(week: string) { return `CCQ-WEEKLY-${week.replaceAll("-","")}` }
 function int(value: unknown, min: number, max: number) { return Math.max(min,Math.min(max,Math.floor(Number(value)||0))) }
@@ -27,17 +45,54 @@ function sanitiseGhostPath(value: unknown) {
   return out;
 }
 function ghostPath(value: unknown) { return sanitiseGhostPath(value) }
+async function sha256Short(value:string){
+  const digest=new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(value)));
+  return Array.from(digest.slice(0,12),byte=>byte.toString(16).padStart(2,"0")).join("");
+}
+async function requestFingerprint(req:Request){
+  const forwarded=String(req.headers.get("cf-connecting-ip")||req.headers.get("x-forwarded-for")||req.headers.get("x-real-ip")||"").split(",")[0].trim();
+  const agent=String(req.headers.get("user-agent")||"").slice(0,180);
+  return sha256Short(`${forwarded||"unknown"}|${agent||"unknown"}`);
+}
+async function consumeBudget(service:SupabaseService,bucketKey:string,limit:number,windowSeconds:number){
+  const {data,error}=await service.rpc("consume_lost_sizzler_request_budget",{p_bucket_key:bucketKey.slice(0,160),p_limit:limit,p_window_seconds:windowSeconds});
+  if(error)throw error;
+  const row=Array.isArray(data)?data[0]:data;
+  return{allowed:row?.allowed===true,retryAfter:Math.max(1,Math.min(windowSeconds,Number(row?.retry_after_seconds)||1))};
+}
+async function enforceBudget(req:Request,service:SupabaseService,bucketKey:string,limit:number,windowSeconds:number){
+  try{
+    const budget=await consumeBudget(service,bucketKey,limit,windowSeconds);
+    if(budget.allowed)return null;
+    return json(req,{ok:false,error:"Too many requests. Please try again shortly."},429,{"Retry-After":String(budget.retryAfter)});
+  }catch(error){
+    console.error("[CCG weekly] request budget unavailable",error);
+    return json(req,{ok:false,error:"Weekly challenge service temporarily unavailable"},503);
+  }
+}
 
 Deno.serve(async (req: Request) => {
   if(req.method==="OPTIONS")return new Response(null,{status:204,headers:cors(req)});
   if(req.method!=="POST")return json(req,{ok:false,error:"Method not allowed"},405);
+  const requestOrigin=String(req.headers.get("origin")||"").trim();
+  if(requestOrigin&&!ALLOWED_ORIGINS.has(requestOrigin))return json(req,{ok:false,error:"Origin not allowed"},403);
   if(!SUPABASE_URL||!SERVICE_KEY)return json(req,{ok:false,error:"Challenge service is not configured"},500);
 
-  const service=createClient(SUPABASE_URL,SERVICE_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
-  const currentWeek=weekStart(),seed=seedFor(currentWeek);
   let payload:Record<string,unknown>={};try{payload=await req.json()}catch{return json(req,{ok:false,error:"Invalid JSON"},400)}
+  const action=String(payload.action||"status").toLowerCase();
+  if(!["status","ghost","start","finish"].includes(action))return json(req,{ok:false,error:"Unknown action"},400);
+
+  const service=createClient(SUPABASE_URL,SERVICE_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+  const fingerprint=await requestFingerprint(req);
+  const budget=action==="finish"
+    ?await enforceBudget(req,service,`weekly:finish:${fingerprint}`,FINISH_LIMIT,FINISH_WINDOW_SECONDS)
+    :action==="start"
+      ?await enforceBudget(req,service,`weekly:start:${fingerprint}`,START_LIMIT,START_WINDOW_SECONDS)
+      :await enforceBudget(req,service,`weekly:read:${fingerprint}`,STATUS_LIMIT,STATUS_WINDOW_SECONDS);
+  if(budget)return budget;
+
+  const currentWeek=weekStart(),seed=seedFor(currentWeek);
   const auth=(req.headers.get("authorization")||"").replace(/^Bearer\s+/i,"");let user:any=null;if(auth){const result=await service.auth.getUser(auth);user=result.data?.user||null}
-  const action=String(payload.action||"status");
 
   async function leadersFor(week:string){
     const {data,error}=await service.from("ccq_weekly_leaderboard").select("player_name,score,deepest_floor,duration_ms,level,completed").eq("week_start",week).order("score",{ascending:false}).order("deepest_floor",{ascending:false}).order("duration_ms",{ascending:true}).limit(LEADERBOARD_LIMIT);
@@ -103,6 +158,13 @@ Deno.serve(async (req: Request) => {
     }
 
     const score=int(result.score,0,99999999),deepest=int(result.deepestFloor,1,5),duration=int(result.durationMs,0,86400000),level=int(result.level,1,99),completed=Boolean(result.completed),path=ghostPath(result.ghostPath),stats={kills:int(result.kills,0,99999),secrets:int(result.secrets,0,9999),ghostPath:path};
+    const startedAt=Date.parse(String(attempt.started_at||""));
+    const serverElapsed=Number.isFinite(startedAt)?Math.max(0,Date.now()-startedAt):null;
+    if(completed&&deepest!==5)return json(req,{ok:false,error:"Completed weekly runs must finish on Floor 5"},422);
+    if(serverElapsed!==null&&duration>serverElapsed+RESULT_CLOCK_GRACE_MS)return json(req,{ok:false,error:"Weekly run duration failed integrity validation"},422);
+    if(path.some(point=>point.f>deepest))return json(req,{ok:false,error:"Ghost replay floor exceeds the submitted run"},422);
+    if(path.length&&path[path.length-1].t>duration+GHOST_CLOCK_GRACE_MS)return json(req,{ok:false,error:"Ghost replay duration exceeds the submitted run"},422);
+
     const {data:updated,error:updateError}=await service.from("ccq_weekly_attempts").update({status:"finished",finished_at:new Date().toISOString(),score,deepest_floor:deepest,duration_ms:duration,level,completed,stats,ghost_path:path}).eq("id",attempt.id).eq("status","started").select("id").maybeSingle();
     if(updateError)return json(req,{ok:false,error:"Could not record the weekly result"},500);
 
