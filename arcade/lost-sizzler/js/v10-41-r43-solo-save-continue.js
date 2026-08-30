@@ -53,6 +53,11 @@
     return Boolean(data&&data.run&&data.player&&!data.run.daily&&!data.player2&&String(data.playMode||"solo")==="solo")
   }
 
+  function checkpointMatchesCurrentFloor(data){
+    if(!checkpointIsSolo(data)||!standardSolo())return false;
+    try{return Number(data.run?.floor||data.floor||0)===Number(run?.floor||0)&&safe(data.run?.seed)===safe(run?.seed)}catch(_){return false}
+  }
+
   function checkpointSummary(checkpoint){
     const savedAt=Math.max(0,Number(checkpoint?.savedAt)||Date.now());
     return{
@@ -125,10 +130,18 @@
     state.entryCheckpoint=null;state.entryFloorKey="";state.lastAutoSaveKey="";updateMenu();return true
   }
 
+  function canonicalEntryCheckpoint(){
+    if(!standardSolo())return null;
+    try{
+      if(Number(run?.floor||1)>1&&typeof floorEntryCheckpoint!=="undefined"&&checkpointMatchesCurrentFloor(floorEntryCheckpoint))return clone(floorEntryCheckpoint)
+    }catch(_){}
+    return null
+  }
+
   function captureEntry(reason="autosave"){
     if(!standardSolo())return null;
-    let checkpoint=null;
-    try{checkpoint=PGR.makeCheckpoint(run,p1,null,score,"solo")}catch(error){state.lastError=String(error?.message||error);return null}
+    let checkpoint=canonicalEntryCheckpoint();
+    try{if(!checkpoint)checkpoint=PGR.makeCheckpoint(run,p1,null,score,"solo")}catch(error){state.lastError=String(error?.message||error);return null}
     if(!checkpointIsSolo(checkpoint))return null;
     checkpoint.floor=Math.max(1,Number(run?.floor)||1);checkpoint.savedAt=Date.now();checkpoint.playMode="solo";
     state.entryCheckpoint=clone(checkpoint);state.entryFloorKey=floorKey();
@@ -244,6 +257,10 @@
     return original.clearCheckpoint()
   };
 
+  // Prevent the old Floor > 1-only menu refresher from briefly hiding a valid
+  // Floor 1 save after canonical menu cleanup calls refreshCollection().
+  try{if(typeof updateSavedRunButton==="function")updateSavedRunButton=function updateSavedRunButtonV141R43(){updateMenu()}}catch(_){}
+
   // Automatic floor saves replace the old voluntary entry prompt in standard
   // Solo. The five-death rest prompt remains available and writes the same
   // validated v2 checkpoint through the PGR adapter above.
@@ -266,7 +283,7 @@
   window.CCGLostSizzlerV141R43SoloSave={
     SCHEMA,SCHEMA_VERSION,PRIMARY_KEY,BACKUP_KEY,
     readEnvelope,currentSavedCheckpoint,captureEntry,saveAndQuit,resumeSolo,clearSoloSave,updateMenu,
-    validateEnvelope,makeEnvelope,hashText,
+    validateEnvelope,makeEnvelope,hashText,checkpointMatchesCurrentFloor,canonicalEntryCheckpoint,
     get state(){return state}
   };
 })();
