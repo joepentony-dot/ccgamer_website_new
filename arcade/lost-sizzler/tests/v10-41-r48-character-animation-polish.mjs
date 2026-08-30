@@ -28,6 +28,9 @@ assert.match(source,/const PLAYER_PAD=2/,"r48 must add transparent per-frame pad
 assert.match(source,/PLAYER_STRIDE=PLAYER_CELL\+PLAYER_PAD\*2/,"padded atlas stride must include both gutters");
 assert.match(source,/for\(let row=0;row<PLAYER_ROWS;row\+\+\)for\(let column=0;column<PLAYER_COLS;column\+\+\)/,"every player frame in every direction must be copied independently");
 assert.match(source,/column\*PLAYER_CELL,row\*PLAYER_CELL,PLAYER_CELL,PLAYER_CELL,column\*PLAYER_STRIDE\+PLAYER_PAD,row\*PLAYER_STRIDE\+PLAYER_PAD,PLAYER_CELL,PLAYER_CELL/,"each source frame must be copied whole into its own padded cell");
+assert.match(source,/verifySourceFrameMargins/,"r48 must inspect the original source-cell perimeter before trusting the padded copy");
+assert.match(source,/framesTouchingEdges/,"source-frame diagnostics must identify any exact row\/column whose visible pixels touch a cell edge");
+assert.match(source,/edgeOpaquePixels===0/,"source-margin audit must require a transparent perimeter around every player pose");
 assert.match(source,/verifyPaddedAtlas/,"r48 must expose a runtime gutter-integrity diagnostic");
 assert.match(source,/opaqueGutterPixels/,"runtime diagnostics must detect any accidental pixel bleed into frame gutters");
 
@@ -53,4 +56,4 @@ for(const forbidden of [/\.hp\s*=/,/\.health\s*=/,/\.damage\s*=/,/\.speed\s*=/,/
   assert.doesNotMatch(source,forbidden,`animation polish must remain visual-only: ${forbidden}`);
 }
 
-console.log("V10.41 r48 character animation, padded-frame and enemy interpolation contract passed.");
+console.log("V10.41 r48 character animation, source-margin, padded-frame and enemy interpolation contract passed.");
