@@ -24,6 +24,8 @@ assert.match(src,/r51-torch-live/);
 assert.match(src,/colourForTheme/);
 assert.match(lighting,/saturate\(1\.13\) contrast\(1\.055\)/);
 assert.match(lighting,/radial-gradient/);
+assert.match(lighting,/dataset\.r51LightingStyled/);
+assert.doesNotMatch(lighting,/cssText\s*\+=/,"lighting maintenance must not repeatedly append inline styles");
 assert.match(css,/#menu \.game-mode-buttons/);
 assert.match(css,/button:focus-visible/);
 assert.match(css,/\.overlay:not\(\.hidden\)>\.panel/);
