@@ -93,6 +93,7 @@
   load("js/v10-41-r46-release-candidate-polish.js","data-ccg-v141-r46-release-candidate-polish");
   load("js/v10-41-r47-all-mode-optimisation.js","data-ccg-v141-r47-all-mode-optimisation");
   load("js/v10-41-r48-character-animation-polish.js","data-ccg-v141-r48-character-animation-polish");
+  load("js/v10-41-r49-gamepad-input-polish.js","data-ccg-v141-r49-gamepad-input-polish");
 
   let dungeonLoaded=false,dungeonTimer=0;
   const dungeonOnline=()=>{
