@@ -22,8 +22,13 @@ assert.match(source,/restoreGoodFrame/,"watchdog must be able to restore the las
 assert.match(source,/__ccgV141R42SoloBlackGuard/,"render wrapper must carry a stable ownership marker");
 assert.match(source,/__ccgV141PostPlaytestRender/,"r42 must preserve the retained post-playtest render owner marker instead of fighting its monitor");
 assert.match(source,/__ccgV141R28NoHordeBanner/,"r42 must preserve the retained r28 render owner marker instead of fighting its monitor");
-assert.match(source,/descendFloorV141R42SoloRecovery/,"real floor descent must have a post-transition recovery boundary");
-assert.match(source,/scheduleTransitionRecovery\(after\)/,"recovery must be scheduled only after the floor number actually advances");
+assert.match(source,/function onDescendIntent\(event\)/,"real floor descent must be observed at the already-bound Descend button boundary");
+assert.match(source,/document\.addEventListener\("click",onDescendIntent,true\)/,"the Descend observer must run in capture phase before the original button callback");
+assert.match(source,/queueMicrotask\(\(\)=>\{[\s\S]*after>before[\s\S]*scheduleTransitionRecovery\(after\)/,"the Descend observer must verify that the real floor number advanced before recovery");
+assert.match(source,/function watchFloorAdvance\(\)/,"the monitor must provide a second floor-number advancement failsafe");
+assert.match(source,/state\.observedFloor=current/,"floor advancement tracking must commit the latest observed floor");
+assert.match(source,/const blocked=blockingOverlayVisible\(\)/,"floor recovery must distinguish internal state repair from presentation ownership");
+assert.match(source,/if\(!blocked\)\{[\s\S]*window\.render/,"legitimate overlays must retain presentation ownership while internal transition state is normalised");
 assert.match(source,/fire1=0/,"stale Solo fire cooldown must be recoverable");
 assert.match(source,/p1\.hitStunMs=0/,"stale Solo hit-stun must be recoverable");
 assert.match(source,/p1\.controlLocked=false/,"stale Solo control lock must be recoverable");
