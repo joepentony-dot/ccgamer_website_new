@@ -23,9 +23,13 @@ window.CCGWeeklyChallenge=(()=>{
   const PENDING_RESULT="ccg-weekly-pending-result-v1";
   let countdownTimer=0;
   let resetRefreshPending=false;
+  let lastLeaderboardSignature="";
 
   function safe(value){
     return String(value||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  }
+  function setText(element,value){
+    if(element&&element.textContent!==value)element.textContent=value;
   }
 
   function nextMondayUtc(from=new Date()){
@@ -57,6 +61,35 @@ window.CCGWeeklyChallenge=(()=>{
     return{resetAt,remaining,text:days>0?`${days}d ${clock}`:clock};
   }
 
+  function leaderboardSignature(rows=state.leaderboard||[]){
+    return rows.slice(0,5).map(r=>[r?.player_name||"",Number(r?.score||0),Number(r?.deepest_floor||1),Number(r?.duration_ms||0)].join("|")).join(";");
+  }
+  function renderLeaderboard(force=false){
+    const list=boardEl();if(!list)return false;
+    const signature=leaderboardSignature();
+    if(!force&&signature===lastLeaderboardSignature)return false;
+    lastLeaderboardSignature=signature;
+    list.innerHTML=(state.leaderboard||[]).slice(0,5).map((r,i)=>
+      `<li><b>${i+1}. ${safe(r.player_name||"Player")}</b><span>${Number(r.score||0).toLocaleString()} · F${r.deepest_floor||1}</span></li>`
+    ).join("")||"<li><span>No completed attempts yet this week — no winner will be declared.</span></li>";
+    return true;
+  }
+
+  function renderCountdown(){
+    if(!(state.ready&&state.signedIn&&state.locked))return false;
+    const countdown=countdownParts(),b=button(),s=statusEl();
+    if(countdown.remaining<=0){
+      if(!resetRefreshPending){
+        resetRefreshPending=true;stopCountdown();
+        refresh().finally(()=>{resetRefreshPending=false;syncCountdownTimer();});
+      }
+      return false;
+    }
+    setText(b,`Weekly Dungeon — Resets in ${countdown.text||"--:--:--"}`);
+    setText(s,`Your ranked attempt for week beginning ${state.weekStart} has already been used. You can play again in ${countdown.text||"--:--:--"}. The ranked challenge resets Monday at 00:00 UTC.`);
+    return true;
+  }
+
   function stopCountdown(){
     if(countdownTimer){clearInterval(countdownTimer);countdownTimer=0;}
   }
@@ -68,47 +101,33 @@ window.CCGWeeklyChallenge=(()=>{
       return;
     }
     if(countdownTimer)return;
-    countdownTimer=setInterval(()=>{
-      const countdown=countdownParts();
-      if(countdown.remaining<=0){
-        if(resetRefreshPending)return;
-        resetRefreshPending=true;
-        stopCountdown();
-        refresh().finally(()=>{resetRefreshPending=false;syncCountdownTimer();});
-        return;
-      }
-      render();
-    },1000);
+    countdownTimer=setInterval(renderCountdown,1000);
   }
 
   function render(){
-    const b=button(),s=statusEl(),actions=authActions(),list=boardEl();
+    const b=button(),s=statusEl(),actions=authActions();
     const countdown=state.ready&&state.signedIn&&state.locked?countdownParts():null;
     if(b){
       b.disabled=!state.ready||(state.signedIn&&state.locked);
-      b.textContent=!state.ready
+      setText(b,!state.ready
         ?"Weekly Dungeon — Checking…"
         :state.signedIn&&state.locked
           ?`Weekly Dungeon — Resets in ${countdown?.text||"--:--:--"}`
           :state.signedIn
             ?"Weekly Dungeon — Ranked Run"
-            :"Weekly Dungeon — Sign In Required";
+            :"Weekly Dungeon — Sign In Required");
     }
     if(s){
-      s.textContent=!state.ready
+      setText(s,!state.ready
         ?"Checking this week's dungeon…"
         :!state.signedIn
           ?"Sign in before entering the Weekly Dungeon. Your single attempt for the week is reserved at launch and its final score is submitted to the weekly leaderboard."
           :state.locked
             ?`Your ranked attempt for week beginning ${state.weekStart} has already been used. You can play again in ${countdown?.text||"--:--:--"}. The ranked challenge resets Monday at 00:00 UTC.`
-            :`Signed in as ${state.playerName}. Your next Weekly Dungeon run is your one ranked attempt for this week.`;
+            :`Signed in as ${state.playerName}. Your next Weekly Dungeon run is your one ranked attempt for this week.`);
     }
     actions?.classList.toggle("hidden",Boolean(state.signedIn));
-    if(list){
-      list.innerHTML=(state.leaderboard||[]).slice(0,5).map((r,i)=>
-        `<li><b>${i+1}. ${safe(r.player_name||"Player")}</b><span>${Number(r.score||0).toLocaleString()} · F${r.deepest_floor||1}</span></li>`
-      ).join("")||"<li><span>No completed attempts yet this week — no winner will be declared.</span></li>";
-    }
+    renderLeaderboard();
     syncCountdownTimer();
   }
 
@@ -208,5 +227,5 @@ window.CCGWeeklyChallenge=(()=>{
   });
   window.addEventListener("pagehide",stopCountdown,{once:true});
 
-  return{refresh,refreshGhost,claim,finish,get state(){return state}};
+  return{refresh,refreshGhost,claim,finish,render,renderCountdown,renderLeaderboard,get state(){return state}};
 })();
