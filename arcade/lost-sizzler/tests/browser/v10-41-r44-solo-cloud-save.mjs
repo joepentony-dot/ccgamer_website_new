@@ -77,10 +77,10 @@ try{
   assert.ok(upload.writes>=1,"Floor 1 autosave must reach the cloud mirror asynchronously");
   assert.equal(upload.meta.ownerUserId,USER_A,"local sync metadata must remember which account owns the browser save");
 
-  // Simulate a brand-new browser/device by removing only local save state while
-  // leaving the authenticated cloud row intact. Freeze the actual cloud row at
-  // handoff time after any in-flight reconciliation has completed; the restore
-  // must reproduce this exact validated envelope rather than an earlier fixture.
+  // Simulate a genuinely brand-new browser/device. Besides removing browser
+  // save slots, discard the previous page's in-memory run/player objects so r43
+  // cannot interpret the fixture as a still-live Solo session and autosave it.
+  // The authenticated cloud row is intentionally retained.
   await page.evaluate(async user=>{
     const r43=window.CCGLostSizzlerV141R43SoloSave,r44=window.CCGLostSizzlerV141R44SoloCloudSave;
     await r44.syncNow();
@@ -88,6 +88,7 @@ try{
     if(cloud.kind!=="save"||!cloud.envelope)throw new Error("valid cloud-save fixture missing before clean-device restore");
     window.__r44Mock.savedEnvelope=JSON.parse(JSON.stringify(cloud.envelope));
     document.body.dataset.runActive="false";mode="menu";UI.menu.classList.remove("hidden");
+    run=null;p1=null;p2=null;score=0;floorEntryCheckpoint=null;
     localStorage.removeItem(r43.PRIMARY_KEY);localStorage.removeItem(r43.BACKUP_KEY);
     localStorage.setItem(r44.META_KEY,JSON.stringify({version:1,ownerUserId:user,localRevisionMs:0,tombstoneRevisionMs:0,lastFingerprint:"",lastSyncedFingerprint:"",lastCloudRevisionMs:0,lastSyncAt:0}));
     r44.observeLocal();
