@@ -4,12 +4,18 @@ on:
   pull_request:
     paths:
       - 'arcade/lost-sizzler/**'
+      - 'supabase/functions/lost-sizzler-feedback/**'
+      - 'supabase/functions/ccq-weekly-challenge/**'
+      - 'supabase/migrations/**lost_sizzler**'
       - '.github/workflows/lost-sizzler-arcade-validation.yml'
   push:
     branches:
       - main
     paths:
       - 'arcade/lost-sizzler/**'
+      - 'supabase/functions/lost-sizzler-feedback/**'
+      - 'supabase/functions/ccq-weekly-challenge/**'
+      - 'supabase/migrations/**lost_sizzler**'
       - '.github/workflows/lost-sizzler-arcade-validation.yml'
 
 permissions:
@@ -74,6 +80,8 @@ jobs:
           node arcade/lost-sizzler/tests/browser/v10-41-runtime-recovery.mjs
           node arcade/lost-sizzler/tests/browser/v10-41-r29-spy-engine-isolation.mjs
           node arcade/lost-sizzler/tests/browser/v10-41-menu-leaderboard-stability.mjs
+          node arcade/lost-sizzler/tests/browser/v10-41-r46-release-candidate-polish.mjs
+          node arcade/lost-sizzler/tests/browser/v10-41-r47-all-mode-optimisation.mjs
 
   structure:
     runs-on: ubuntu-latest
@@ -90,6 +98,7 @@ jobs:
           test -f arcade/lost-sizzler/js/asset-overrides.js
           test -f arcade/lost-sizzler/js/game-main.js
           test -f arcade/lost-sizzler/js/v10-16-voice-director.js
+          test -f arcade/lost-sizzler/js/v10-41-r47-all-mode-optimisation.js
           test -d arcade/lost-sizzler/assets/audio/music
           test -d arcade/lost-sizzler/assets/audio/voice
           grep -q 'The Lost Sizzler' arcade/lost-sizzler/index.html
