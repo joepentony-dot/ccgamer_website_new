@@ -63,17 +63,17 @@
     if(!data||typeof data!=="object"||data.schema!==SCHEMA||Number(data.version)!==VERSION)return false;
     if(data.resumePolicy!==RESUME_POLICY||data.playMode!=="solo"||data.player2)return false;
     if(!data.run||!validPlayer(data.player)||data.run.daily)return false;
-    const floor=finiteInt(data.floor??data.run.floor,0),runFloor=finiteInt(data.run.floor,0),score=Number(data.score);
+    const floor=finiteInt(data.floor??data.run.floor,0),runFloor=finiteInt(data.run.floor,0),savedScore=Number(data.score);
     if(floor<1||floor>maxFloors()||runFloor!==floor)return false;
-    if(!safeText(data.run.seed)||!Number.isFinite(score)||score<0)return false;
+    if(!safeText(data.run.seed)||!Number.isFinite(savedScore)||savedScore<0)return false;
     if(!Number.isFinite(Number(data.savedAt))||Number(data.savedAt)<=0)return false;
     return true
   }
   function legacyV1Valid(data){
     if(!data||typeof data!=="object"||data.schema!==SCHEMA||Number(data.version)!==1)return false;
     if(data.playMode!=="solo"||data.player2||!data.run||!validPlayer(data.player)||data.run.daily)return false;
-    const floor=finiteInt(data.floor??data.run.floor,0),runFloor=finiteInt(data.run.floor,0),score=Number(data.score);
-    return floor>=1&&floor<=maxFloors()&&runFloor===floor&&Boolean(safeText(data.run.seed))&&Number.isFinite(score)&&score>=0
+    const floor=finiteInt(data.floor??data.run.floor,0),runFloor=finiteInt(data.run.floor,0),savedScore=Number(data.score);
+    return floor>=1&&floor<=maxFloors()&&runFloor===floor&&Boolean(safeText(data.run.seed))&&Number.isFinite(savedScore)&&savedScore>=0
   }
   function removeStorageKey(key){try{localStorage.removeItem(key);return true}catch(error){state.lastError=String(error?.message||error);return false}}
   function parseStorage(key,validator,{removeInvalid=false}={}){
@@ -94,6 +94,7 @@
   function readRaw(){
     const data=parseStorage(STORAGE_KEY,valid,{removeInvalid:true});
     if(data){state.entry=clone(data);state.lastSavedAt=Number(data.savedAt)||0;state.lastReason=String(data.reason||"")}
+    else state.entry=null;
     return data
   }
 
@@ -245,7 +246,7 @@
     if(readRaw())return false;
     const legacy=parseStorage(LEGACY_V1_KEY,legacyV1Valid,{removeInvalid:true});if(!legacy)return false;
     const migrated=checkpointToSave(legacy,"v1_migration");if(!migrated)return false;
-    if(!writeSave(migrated,{reason:"v1_migration",announce:false})){return false}
+    if(!writeSave(migrated,{reason:"v1_migration",announce:false}))return false;
     removeStorageKey(LEGACY_V1_KEY);state.migrations++;return true
   }
   function migrateLegacyCheckpoint(){
@@ -260,7 +261,7 @@
   }
   function migrateLegacy(){return migrateLegacyV1()||migrateLegacyCheckpoint()}
   function clear(reason="run_ended"){
-    removeStorageKey(STORAGE_KEY);state.entry=null;state.lastSavedAt=0;state.lastReason=reason;
+    removeStorageKey(STORAGE_KEY);removeStorageKey(LEGACY_V1_KEY);state.entry=null;state.lastSavedAt=0;state.lastReason=reason;
     try{PGR?.clearCheckpoint?.()}catch(_){}
     refreshUi();return true
   }
@@ -268,6 +269,7 @@
   function scheduleActivationCapture(){
     if(state.activationTimer){clearInterval(state.activationTimer);state.activationTimer=0}
     let attempts=0;
+    const stop=()=>{if(state.activationTimer)clearInterval(state.activationTimer);state.activationTimer=0};
     const attempt=()=>{
       attempts++;
       if(!document.body||document.body.dataset.runActive!=="true"){if(attempts>=80)stop();return}
@@ -278,7 +280,6 @@
       else ready=persistKnownFloorEntry("resume_or_floor_entry",false)||matchingActiveFloor(readRaw());
       refreshUi();if(ready||attempts>=80)stop()
     };
-    const stop=()=>{if(state.activationTimer)clearInterval(state.activationTimer);state.activationTimer=0};
     attempt();if(!state.activationTimer&&attempts<80)state.activationTimer=setInterval(attempt,50)
   }
   function lifecycleMonitor(){
@@ -305,7 +306,7 @@
   if(legacyCapture){
     captureFloorEntryCheckpoint=function(){
       const checkpoint=legacyCapture.apply(this,arguments);
-      if(soloRunActive()&&checkpoint){persistCheckpoint(checkpoint,"floor_entry",true)}
+      if(soloRunActive()&&checkpoint)persistCheckpoint(checkpoint,"floor_entry",true);
       return checkpoint
     }
   }
