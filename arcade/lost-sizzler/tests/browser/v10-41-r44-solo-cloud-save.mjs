@@ -149,9 +149,11 @@ try{
 
   console.log("[r44 cloud] completed/cleared run writes a tombstone and cannot resurrect");
   await page.evaluate(()=>{
-    const r43=window.CCGLostSizzlerV141R43SoloSave,saved=r43.readEnvelope();run=JSON.parse(JSON.stringify(saved.checkpoint.run));p1=JSON.parse(JSON.stringify(saved.checkpoint.player));p2=null;playMode="solo";document.body.dataset.runActive="true";mode="playing";
+    const r43=window.CCGLostSizzlerV141R43SoloSave,saved=r43.readEnvelope();
+    run=JSON.parse(JSON.stringify(saved.checkpoint.run));p1=JSON.parse(JSON.stringify(saved.checkpoint.player));p2=null;playMode="solo";document.body.dataset.runActive="true";mode="playing";
+    endRun("Cloud-save completion lifecycle regression");
   });
-  await page.evaluate(()=>PGR.clearCheckpoint());
+  await page.waitForFunction(()=>mode==="ended"&&run?.runComplete===true&&!window.CCGLostSizzlerV141R43SoloSave?.readEnvelope?.(),null,{timeout:10000});
   await page.waitForFunction(user=>Boolean(window.__r44Mock?.rows?.[user]?.deleted_at),USER_A,{timeout:10000});
   await page.evaluate(()=>quitToMenu());
   await page.waitForFunction(()=>mode==="menu"&&document.body.dataset.runActive!=="true"&&!run&&!p1,null,{timeout:10000});
