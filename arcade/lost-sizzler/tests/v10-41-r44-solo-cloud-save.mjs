@@ -7,13 +7,17 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const arcadeRoot=path.resolve(here,"..");
 const repoRoot=path.resolve(arcadeRoot,"../..");
 const source=fs.readFileSync(path.join(arcadeRoot,"js/v10-41-r44-solo-cloud-save.js"),"utf8");
+const clearGuard=fs.readFileSync(path.join(arcadeRoot,"js/v10-41-r44-cloud-clear-guard.js"),"utf8");
 const loader=fs.readFileSync(path.join(arcadeRoot,"js/v10-41-lake-item-safety.js"),"utf8");
 const migration=fs.readFileSync(path.join(repoRoot,"supabase/migrations/20260830152000_lost_sizzler_solo_cloud_saves.sql"),"utf8");
 
 const r43Index=loader.indexOf('v10-41-r43-solo-save-continue.js');
 const r44Index=loader.indexOf('v10-41-r44-solo-cloud-save.js');
+const r44GuardIndex=loader.indexOf('v10-41-r44-cloud-clear-guard.js');
 assert.ok(r43Index>=0&&r44Index>r43Index,"r44 cloud mirror must load after r43 local save ownership");
+assert.ok(r44GuardIndex>r44Index,"resilient cloud-clear guard must load after the r44 cloud owner");
 assert.match(loader,/data-ccg-v141-r44-solo-cloud-save/,"late loader must publish an explicit r44 marker");
+assert.match(loader,/data-ccg-v141-r44-cloud-clear-guard/,"late loader must publish an explicit resilient cloud-clear marker");
 
 assert.match(source,/const TABLE="lost_sizzler_solo_saves"/,"r44 must use the dedicated private cloud-save table");
 assert.match(source,/ccg-lost-sizzler-solo-cloud-sync-v1/,"r44 must keep versioned local cloud-sync metadata");
@@ -29,6 +33,14 @@ assert.doesNotMatch(source,/window\.(?:run|p1|world|host)\s*=/,"r44 must never a
 assert.match(source,/const progression=window\.CCGProgression/,"cloud tombstone wrapping must bind to the real shared progression API");
 assert.doesNotMatch(source,/window\.PGR/,"r44 must not depend on a nonexistent window.PGR alias");
 assert.match(source,/progression\.clearCheckpoint=function clearCheckpointV141R44CloudTombstone/,"canonical progression clear must be wrapped for cloud tombstone propagation");
+
+assert.match(clearGuard,/window\.CCGProgression/,"resilient clear guard must inspect the shared progression object");
+assert.match(clearGuard,/window\.CCGLostSizzlerV141R44SoloCloudSave/,"resilient clear guard must delegate tombstone ownership to r44");
+assert.match(clearGuard,/current\.__ccgV141R44CloudTombstone===true/,"resilient clear guard must avoid double-wrapping an intact r44 owner");
+assert.match(clearGuard,/setInterval\(install,200\)/,"resilient clear guard must continuously repair a displaced clear wrapper");
+assert.match(clearGuard,/before&&!after&&!cloud\.state\?\.suppressObservation/,"resilient clear guard must create tombstones only for a real local save clear");
+assert.match(clearGuard,/cloud\.noteLocalTombstone\?\./,"resilient clear guard must route deletion through r44 rather than owning cloud writes");
+assert.doesNotMatch(clearGuard,/from\(|upsert\(|saveCheckpoint|makeCheckpoint/,"resilient clear guard must not acquire database or checkpoint ownership");
 
 assert.match(source,/tombstonePayload/,"cloud sync must support deletion tombstones");
 assert.match(source,/deleted_at:new Date\(rev\)\.toISOString\(\)/,"tombstones must carry their own revision timestamp");
