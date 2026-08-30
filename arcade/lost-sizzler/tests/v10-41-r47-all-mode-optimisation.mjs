@@ -10,11 +10,13 @@ const readGame=relative=>fs.readFileSync(path.join(game,relative),"utf8");
 const readRepo=relative=>fs.readFileSync(path.join(repo,relative),"utf8");
 
 const loader=readGame("js/v10-41-lake-item-safety.js");
+const loadWatchdog=readGame("js/v10-41-load-watchdog.js");
 const r47=readGame("js/v10-41-r47-all-mode-optimisation.js");
 const weekly=readGame("js/weekly-challenge.js");
 const feedback=readRepo("supabase/functions/lost-sizzler-feedback/index.ts");
 const weeklyBackend=readRepo("supabase/functions/ccq-weekly-challenge/index.ts");
 const migration=readRepo("supabase/migrations/20260830215000_lost_sizzler_r47_reliability.sql");
+const limiterFix=readRepo("supabase/migrations/20260830221500_lost_sizzler_r47_request_budget_runtime_fix.sql");
 const smokeWorkflow=readRepo(".github/workflows/lost-sizzler-production-smoke.yml");
 
 console.log("[r47 static] late runtime load order");
@@ -30,6 +32,14 @@ assert.match(r47,/unhandledrejection/);
 assert.match(r47,/client_error/);
 assert.match(r47,/MAX_ERRORS_PER_SESSION=6/);
 assert.match(r47,/ERROR_COOLDOWN_MS=60000/);
+
+console.log("[r47 static] pre-release Solo clicks are held and replayed exactly through the release gate");
+assert.match(loadWatchdog,/pendingSolo:false/);
+assert.match(loadWatchdog,/capturePreReleaseSolo/);
+assert.match(loadWatchdog,/event\.stopImmediatePropagation\(\)/);
+assert.match(loadWatchdog,/gate\?\.ready\)\{replayPendingSolo\(\);stopLoaderObservers\(\)\}/);
+assert.match(loadWatchdog,/state\.pendingSolo=false;state\.soloReplays\+\+;\s*button\.click\(\)/);
+assert.ok(!loadWatchdog.includes("startSolo("),"load watchdog must replay the owned button intent rather than taking startSolo gameplay ownership");
 
 console.log("[r47 static] Weekly Vault countdown no longer rebuilds leaderboard once per second");
 assert.match(weekly,/countdownTimer=setInterval\(renderCountdown,1000\)/);
@@ -52,13 +62,17 @@ assert.match(weeklyBackend,/duration>serverElapsed\+RESULT_CLOCK_GRACE_MS/);
 assert.match(weeklyBackend,/point=>point\.f>deepest/);
 assert.match(weeklyBackend,/path\[path\.length-1\]\.t>duration\+GHOST_CLOCK_GRACE_MS/);
 
-console.log("[r47 static] database limiter is service-role only and retention is bounded");
+console.log("[r47 static] database limiter is service-role only, runtime-valid and retention is bounded");
 assert.match(migration,/enable row level security/i);
 assert.match(migration,/security invoker/i);
 assert.match(migration,/revoke all on table public\.lost_sizzler_request_buckets from public, anon, authenticated/i);
 assert.match(migration,/grant execute on function public\.consume_lost_sizzler_request_budget[\s\S]*to service_role/i);
 assert.match(migration,/greatest\(30, least\(coalesce\(p_days, 90\), 365\)\)/i);
 assert.match(migration,/game_play_events_lost_sizzler_retention_idx/);
+assert.match(limiterFix,/returning bucket\.window_started_at, bucket\.request_count/i);
+assert.ok(!limiterFix.includes("public.lost_sizzler_request_buckets.request_count"),"runtime fix must use the INSERT target alias in RETURNING");
+assert.match(limiterFix,/security invoker/i);
+assert.match(limiterFix,/grant execute on function public\.consume_lost_sizzler_request_budget[\s\S]*to service_role/i);
 
 console.log("[r47 static] post-deployment smoke workflow is present");
 assert.match(smokeWorkflow,/Lost Sizzler Production Smoke/);
