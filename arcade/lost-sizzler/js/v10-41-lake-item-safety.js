@@ -95,6 +95,8 @@
   load("js/v10-41-r48-character-animation-polish.js","data-ccg-v141-r48-character-animation-polish");
   load("js/v10-41-r49-gamepad-input-polish.js","data-ccg-v141-r49-gamepad-input-polish");
   load("js/v10-41-r50-multiplayer-recovery-ux.js","data-ccg-v141-r50-multiplayer-recovery-ux");
+  load("js/v10-41-r51-visual-ui-overhaul.js","data-ccg-v141-r51-visual-ui-overhaul");
+  load("js/v10-41-r51-world-lighting-addendum.js","data-ccg-v141-r51-world-lighting-addendum");
 
   let dungeonLoaded=false,dungeonTimer=0;
   const dungeonOnline=()=>{
