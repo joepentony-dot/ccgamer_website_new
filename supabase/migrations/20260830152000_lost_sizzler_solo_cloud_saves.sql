@@ -102,6 +102,10 @@ begin
 end;
 $$;
 
+revoke all on function public.guard_lost_sizzler_solo_save_revision() from public;
+revoke all on function public.guard_lost_sizzler_solo_save_revision() from anon;
+revoke all on function public.guard_lost_sizzler_solo_save_revision() from authenticated;
+
 drop trigger if exists lost_sizzler_solo_saves_guard_revision on public.lost_sizzler_solo_saves;
 create trigger lost_sizzler_solo_saves_guard_revision
 before update on public.lost_sizzler_solo_saves
@@ -117,6 +121,10 @@ begin
   return new;
 end;
 $$;
+
+revoke all on function public.touch_lost_sizzler_solo_save_updated_at() from public;
+revoke all on function public.touch_lost_sizzler_solo_save_updated_at() from anon;
+revoke all on function public.touch_lost_sizzler_solo_save_updated_at() from authenticated;
 
 drop trigger if exists lost_sizzler_solo_saves_touch_updated_at on public.lost_sizzler_solo_saves;
 create trigger lost_sizzler_solo_saves_touch_updated_at
