@@ -76,6 +76,37 @@ for delete
 to authenticated
 using ((select auth.uid()) = user_id);
 
+-- Device races are resolved in the database as well as in the browser. An
+-- older revision can never overwrite a newer row. Equal revisions are stable:
+-- a deletion tombstone may replace a save, but a save can never resurrect an
+-- equal-revision tombstone and two equal save revisions do not flap between
+-- competing devices.
+create or replace function public.guard_lost_sizzler_solo_save_revision()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  if new.client_revision_ms < old.client_revision_ms then
+    return null;
+  end if;
+
+  if new.client_revision_ms = old.client_revision_ms then
+    if old.deleted_at is null and new.deleted_at is not null then
+      return new;
+    end if;
+    return null;
+  end if;
+
+  return new;
+end;
+$$;
+
+drop trigger if exists lost_sizzler_solo_saves_guard_revision on public.lost_sizzler_solo_saves;
+create trigger lost_sizzler_solo_saves_guard_revision
+before update on public.lost_sizzler_solo_saves
+for each row execute function public.guard_lost_sizzler_solo_save_revision();
+
 create or replace function public.touch_lost_sizzler_solo_save_updated_at()
 returns trigger
 language plpgsql
