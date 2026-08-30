@@ -178,6 +178,9 @@
 
   function installRenderGuard(){
     const current=window.render;if(typeof current!=="function")return false;
+    // r35 owns the top-level Spy render chain so its black-frame watchdog is
+    // never displaced by this Horde-only presentation guard.
+    if(isSpy()&&current.__ccgV141R35SpyBlackGuard)return true;
     if(current.__ccgV141PostPlaytestRender){state.renderWrapped=true;return true}
     const original=current;
     const wrapped=function renderV141PostPlaytest(){
