@@ -47,11 +47,15 @@ try{
   const lifecycle=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R46ReleaseCandidatePolish;
     localStorage.removeItem(api.STATS_KEY);
+    score=12345;
+    if(run)run.floor=3;
+    if(p1)p1.level=4;
     document.getElementById("hud-score").textContent="012345";
     document.getElementById("hud-kills").textContent="17";
     document.getElementById("hud-room").textContent="F3";
     document.getElementById("quick-level").textContent="LEVEL 4";
     api.recordRunStart();
+    api.state.lastKills=17;
     api.state.runStartedAt=Date.now()-125000;
     document.getElementById("end-title").textContent="Citadel Complete";
     const snapshot=api.recordRunEnd("win");
@@ -60,8 +64,8 @@ try{
   });
   assert.equal(lifecycle.stats.runs,1,"one observed run must produce one lifetime run");
   assert.equal(lifecycle.stats.wins,1,"explicit winning end must produce one lifetime win");
-  assert.ok(lifecycle.stats.bestScore>=12345,"best score must retain the run score");
-  assert.ok(lifecycle.stats.deepestFloor>=3,"deepest floor must retain the observed floor");
+  assert.ok(lifecycle.stats.bestScore>=12345,"best score must retain the canonical run score");
+  assert.ok(lifecycle.stats.deepestFloor>=3,"deepest floor must retain the canonical run floor");
   assert.ok(lifecycle.stats.totalKills>=17,"lifetime kills must retain observed kills");
   assert.equal(lifecycle.reportAttached,true,"run report must enrich the existing canonical end text rather than replace the overlay");
   assert.match(lifecycle.reportText,/RUN REPORT/);assert.match(lifecycle.reportText,/BEST SCORE/);assert.match(lifecycle.reportText,/12,345/);
