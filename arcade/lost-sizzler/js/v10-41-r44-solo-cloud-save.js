@@ -16,13 +16,14 @@
   const META_VERSION=1;
   const POLL_MS=600;
   const RETRY_MS=5000;
+  const FRESH_DEVICE_WINDOW_MS=3000;
   const SELECT_COLUMNS="user_id,schema_name,schema_version,game_version,save_envelope,save_checksum,save_saved_at,client_revision_ms,deleted_at,updated_at";
 
   const state={
     timer:0,retryTimer:0,syncPromise:null,syncAgain:false,signedIn:false,userId:"",
     status:"boot",lastError:"",lastSyncAt:0,lastCloudCheckAt:0,lastObservedFingerprint:"",
     uploads:0,downloads:0,tombstones:0,cloudReads:0,cloudInvalid:0,authChecks:0,
-    statusNode:null,suppressObservation:0,clearWrapped:false
+    statusNode:null,suppressObservation:0,clearWrapped:false,freshDeviceUntil:0
   };
 
   const api=()=>window.CCGLostSizzlerV141R43SoloSave||null;
@@ -51,6 +52,14 @@
   }
   function fingerprint(envelope){return envelope?`${Math.max(0,Number(envelope.savedAt)||0)}:${text(envelope.checksum)}`:""}
   function revisionForEnvelope(envelope){const n=Number(envelope?.savedAt);return Number.isFinite(n)&&n>0?Math.floor(n):0}
+  function looksLikeFreshDevice(meta,envelope){
+    return Boolean(!envelope&&meta&&text(meta.ownerUserId)&&!Number(meta.localRevisionMs||0)&&!Number(meta.tombstoneRevisionMs||0)&&!text(meta.lastFingerprint)&&!text(meta.lastSyncedFingerprint)&&!Number(meta.lastCloudRevisionMs||0))
+  }
+  function markFreshDevice(meta,envelope){
+    if(looksLikeFreshDevice(meta,envelope))state.freshDeviceUntil=Math.max(state.freshDeviceUntil,nowMs()+FRESH_DEVICE_WINDOW_MS);
+    return state.freshDeviceUntil>nowMs()
+  }
+  function clearFreshDevice(){state.freshDeviceUntil=0}
 
   function ensureStatusNode(){
     if(state.statusNode?.isConnected)return state.statusNode;
@@ -133,19 +142,18 @@
   async function uploadSave(client,userId,envelope){
     const payload=savePayload(userId,envelope),{error}=await client.from(TABLE).upsert(payload,{onConflict:"user_id"});if(error)throw error;
     const meta=readMeta();writeMeta({...meta,ownerUserId:userId,localRevisionMs:payload.client_revision_ms,tombstoneRevisionMs:0,lastFingerprint:fingerprint(envelope),lastSyncedFingerprint:fingerprint(envelope),lastCloudRevisionMs:payload.client_revision_ms,lastSyncAt:nowMs()});
-    state.uploads++;state.lastSyncAt=nowMs();state.lastError="";renderStatus("synced");return payload
+    clearFreshDevice();state.uploads++;state.lastSyncAt=nowMs();state.lastError="";renderStatus("synced");return payload
   }
 
   async function uploadTombstone(client,userId,revision){
     const payload=tombstonePayload(userId,revision),{error}=await client.from(TABLE).upsert(payload,{onConflict:"user_id"});if(error)throw error;
     const meta=readMeta();writeMeta({...meta,ownerUserId:userId,localRevisionMs:0,tombstoneRevisionMs:payload.client_revision_ms,lastFingerprint:"",lastSyncedFingerprint:"",lastCloudRevisionMs:payload.client_revision_ms,lastSyncAt:nowMs()});
-    state.tombstones++;state.lastSyncAt=nowMs();state.lastError="";renderStatus("tombstoned");return payload
+    clearFreshDevice();state.tombstones++;state.lastSyncAt=nowMs();state.lastError="";renderStatus("tombstoned");return payload
   }
 
   function installCloudEnvelope(envelope,userId,revision){
     const r43=api(),validated=r43?.validateEnvelope?.(envelope)||null;if(!validated||activeRun())return false;
     const current=localEnvelope(),meta=readMeta();
-    // Never overwrite a browser save explicitly owned by a different account.
     if(current&&meta.ownerUserId&&meta.ownerUserId!==userId){renderStatus("account_conflict");return false}
     state.suppressObservation++;
     try{
@@ -153,7 +161,7 @@
       localStorage.setItem(r43.PRIMARY_KEY,JSON.stringify(validated));
       state.lastObservedFingerprint=fingerprint(validated);
       writeMeta({...meta,ownerUserId:userId,localRevisionMs:revisionForEnvelope(validated)||revision,tombstoneRevisionMs:0,lastFingerprint:fingerprint(validated),lastSyncedFingerprint:fingerprint(validated),lastCloudRevisionMs:revision,lastSyncAt:nowMs()});
-      r43.updateMenu?.();state.downloads++;state.lastSyncAt=nowMs();state.lastError="";renderStatus("restored");
+      clearFreshDevice();r43.updateMenu?.();state.downloads++;state.lastSyncAt=nowMs();state.lastError="";renderStatus("restored");
       try{showToast?.("CLOUD SAVE RESTORED",`Floor ${validated.summary?.floor||validated.checkpoint?.run?.floor||1} is ready to continue on this device.`,"green",6500)}catch(_){}
       return true
     }catch(error){state.lastError=text(error?.message||error);return false}
@@ -163,21 +171,20 @@
   function applyCloudTombstone(userId,revision){
     const r43=api(),meta=readMeta(),current=localEnvelope();if(activeRun())return false;
     if(current&&meta.ownerUserId&&meta.ownerUserId!==userId){renderStatus("account_conflict");return false}
-    // An unowned legacy browser save is never deleted solely by a cloud tombstone.
     if(current&&!meta.ownerUserId){renderStatus("account_conflict");return false}
     state.suppressObservation++;
     try{
       if(r43?.PRIMARY_KEY)localStorage.removeItem(r43.PRIMARY_KEY);if(r43?.BACKUP_KEY)localStorage.removeItem(r43.BACKUP_KEY);
       state.lastObservedFingerprint="";
       writeMeta({...meta,ownerUserId:userId,localRevisionMs:0,tombstoneRevisionMs:revision,lastFingerprint:"",lastSyncedFingerprint:"",lastCloudRevisionMs:revision,lastSyncAt:nowMs()});
-      r43?.updateMenu?.();state.lastSyncAt=nowMs();state.lastError="";renderStatus("tombstoned");return true
+      clearFreshDevice();r43?.updateMenu?.();state.lastSyncAt=nowMs();state.lastError="";renderStatus("tombstoned");return true
     }catch(error){state.lastError=text(error?.message||error);return false}
     finally{queueMicrotask(()=>{state.suppressObservation=Math.max(0,state.suppressObservation-1)})}
   }
 
   function noteLocalTombstone(revision=nowMs(),owner=""){
     const meta=readMeta(),rev=Math.max(1,Math.floor(Number(revision)||nowMs())),resolvedOwner=text(owner||state.userId||meta.ownerUserId);
-    writeMeta({...meta,ownerUserId:resolvedOwner,localRevisionMs:0,tombstoneRevisionMs:rev,lastFingerprint:"",lastSyncedFingerprint:""});
+    clearFreshDevice();writeMeta({...meta,ownerUserId:resolvedOwner,localRevisionMs:0,tombstoneRevisionMs:rev,lastFingerprint:"",lastSyncedFingerprint:""});
     state.lastObservedFingerprint="";scheduleSync(30);return rev
   }
 
@@ -192,12 +199,13 @@
   async function reconcile(){
     const r43=api();if(!r43)return{ok:false,reason:"r43_unavailable"};
     const userId=state.userId;if(!state.signedIn||!userId){renderStatus("local_only");return{ok:true,reason:"signed_out"}}
-    const client=await getClient(),row=await fetchCloudRow(client,userId),cloud=cloudState(row),envelope=localEnvelope(),meta=readMeta();
+    const client=await getClient(),row=await fetchCloudRow(client,userId),cloud=cloudState(row),envelope=localEnvelope(),meta=readMeta(),freshDevice=state.freshDeviceUntil>nowMs()&&meta.ownerUserId===userId;
 
     if(envelope&&meta.ownerUserId&&meta.ownerUserId!==userId){renderStatus("account_conflict");return{ok:true,reason:"foreign_local",cloud}}
+    if(freshDevice&&cloud.kind==="save"&&!activeRun())return{ok:installCloudEnvelope(cloud.envelope,userId,cloud.revision),action:"restore_initial_cloud_save"};
     const local=effectiveLocal(meta,envelope,userId);
     if(cloud.kind==="invalid"){
-      renderStatus("invalid_cloud");
+      clearFreshDevice();renderStatus("invalid_cloud");
       if(local.kind==="save"&&(meta.ownerUserId===userId||!meta.ownerUserId))await uploadSave(client,userId,local.envelope);
       else if(local.kind==="tombstone"&&meta.ownerUserId===userId)await uploadTombstone(client,userId,local.revision);
       return{ok:false,reason:"invalid_cloud"}
@@ -206,7 +214,7 @@
     if(cloud.kind==="none"){
       if(local.kind==="save")return{ok:true,action:"upload_save",value:await uploadSave(client,userId,local.envelope)};
       if(local.kind==="tombstone"&&meta.ownerUserId===userId)return{ok:true,action:"upload_tombstone",value:await uploadTombstone(client,userId,local.revision)};
-      renderStatus("synced");return{ok:true,action:"empty"}
+      clearFreshDevice();renderStatus("synced");return{ok:true,action:"empty"}
     }
 
     if(local.kind==="none"){
@@ -215,13 +223,11 @@
         return{ok:installCloudEnvelope(cloud.envelope,userId,cloud.revision),action:"restore_cloud_save"}
       }
       if(cloud.kind==="tombstone"){
-        writeMeta({...meta,ownerUserId:userId,localRevisionMs:0,tombstoneRevisionMs:cloud.revision,lastCloudRevisionMs:cloud.revision,lastSyncAt:nowMs()});renderStatus("tombstoned");return{ok:true,action:"accept_cloud_tombstone"}
+        clearFreshDevice();writeMeta({...meta,ownerUserId:userId,localRevisionMs:0,tombstoneRevisionMs:cloud.revision,lastCloudRevisionMs:cloud.revision,lastSyncAt:nowMs()});renderStatus("tombstoned");return{ok:true,action:"accept_cloud_tombstone"}
       }
     }
 
-    // An unowned legacy local save may be claimed by the current account, but a
-    // cloud deletion cannot silently erase it because its original owner is unknown.
-    if(local.kind==="save"&&!meta.ownerUserId&&cloud.kind==="tombstone"&&cloud.revision>=local.revision){renderStatus("account_conflict");return{ok:true,reason:"unowned_local_vs_cloud_tombstone"}}
+    if(local.kind==="save"&&!meta.ownerUserId&&cloud.kind==="tombstone"&&cloud.revision>=local.revision){clearFreshDevice();renderStatus("account_conflict");return{ok:true,reason:"unowned_local_vs_cloud_tombstone"}}
 
     if(local.revision>cloud.revision){
       if(local.kind==="save")return{ok:true,action:"upload_newer_save",value:await uploadSave(client,userId,local.envelope)};
@@ -233,24 +239,22 @@
       return{ok:applyCloudTombstone(userId,cloud.revision),action:"apply_newer_tombstone"}
     }
 
-    // Equal revision: a deletion wins to prevent resurrection. Otherwise a
-    // matching checksum is already synced; a differing cloud save wins only at menu.
     if(local.kind==="tombstone"||cloud.kind==="tombstone"){
       if(local.kind==="tombstone"&&cloud.kind!=="tombstone")return{ok:true,action:"tie_upload_tombstone",value:await uploadTombstone(client,userId,local.revision)};
       if(cloud.kind==="tombstone"&&local.kind!=="tombstone"){
         if(activeRun()){renderStatus("deferred");return{ok:true,action:"deferred_tie_tombstone"}}
         return{ok:applyCloudTombstone(userId,cloud.revision),action:"tie_apply_tombstone"}
       }
-      renderStatus("tombstoned");return{ok:true,action:"tombstone_synced"}
+      clearFreshDevice();renderStatus("tombstoned");return{ok:true,action:"tombstone_synced"}
     }
     if(local.kind==="save"&&cloud.kind==="save"){
       if(fingerprint(local.envelope)===fingerprint(cloud.envelope)){
-        writeMeta({...meta,ownerUserId:userId,localRevisionMs:local.revision,lastFingerprint:fingerprint(local.envelope),lastSyncedFingerprint:fingerprint(local.envelope),lastCloudRevisionMs:cloud.revision,lastSyncAt:nowMs()});renderStatus("synced");return{ok:true,action:"already_synced"}
+        clearFreshDevice();writeMeta({...meta,ownerUserId:userId,localRevisionMs:local.revision,lastFingerprint:fingerprint(local.envelope),lastSyncedFingerprint:fingerprint(local.envelope),lastCloudRevisionMs:cloud.revision,lastSyncAt:nowMs()});renderStatus("synced");return{ok:true,action:"already_synced"}
       }
       if(activeRun()){renderStatus("deferred");return{ok:true,action:"deferred_tie_conflict"}}
       return{ok:installCloudEnvelope(cloud.envelope,userId,cloud.revision),action:"tie_cloud_save"}
     }
-    renderStatus("synced");return{ok:true,action:"noop"}
+    clearFreshDevice();renderStatus("synced");return{ok:true,action:"noop"}
   }
 
   function scheduleRetry(){if(state.retryTimer)return;state.retryTimer=setTimeout(()=>{state.retryTimer=0;if(state.signedIn)syncNow().catch(()=>{})},RETRY_MS)}
@@ -276,16 +280,17 @@
   async function refreshAuthAndSync(){
     const context=await authContext(),userId=text(context?.user?.id||context?.session?.user?.id||"");
     state.signedIn=Boolean(context?.isAuthenticated??userId)&&Boolean(userId);state.userId=state.signedIn?userId:"";
-    if(!state.signedIn){renderStatus("local_only");return{signedIn:false}}
+    if(!state.signedIn){clearFreshDevice();renderStatus("local_only");return{signedIn:false}}
+    const envelope=localEnvelope(),meta=readMeta();if(meta.ownerUserId===state.userId)markFreshDevice(meta,envelope);
     await syncNow();return{signedIn:true,userId:state.userId}
   }
 
   function observeLocal(){
-    const envelope=localEnvelope(),fp=fingerprint(envelope);
+    const envelope=localEnvelope(),fp=fingerprint(envelope),meta=readMeta();
+    if(!envelope&&markFreshDevice(meta,envelope)){state.lastObservedFingerprint="";return false}
     if(fp===state.lastObservedFingerprint)return false;
     const previous=state.lastObservedFingerprint;state.lastObservedFingerprint=fp;
     if(state.suppressObservation)return false;
-    const meta=readMeta();
     if(envelope){
       const revision=revisionForEnvelope(envelope),owner=state.signedIn&&state.userId?state.userId:meta.ownerUserId;
       writeMeta({...meta,ownerUserId:owner,localRevisionMs:revision,tombstoneRevisionMs:revision>=Number(meta.tombstoneRevisionMs||0)?0:meta.tombstoneRevisionMs,lastFingerprint:fp});
@@ -312,6 +317,7 @@
   function bootstrapObservation(){
     const envelope=localEnvelope(),fp=fingerprint(envelope),meta=readMeta();state.lastObservedFingerprint=fp;
     if(envelope&&!meta.localRevisionMs)writeMeta({...meta,localRevisionMs:revisionForEnvelope(envelope),lastFingerprint:fp});
+    else markFreshDevice(meta,envelope);
     wrapCheckpointClear();renderStatus("boot")
   }
 
