@@ -5,9 +5,11 @@ import {fileURLToPath} from "node:url";
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,"..");
+const repo=path.resolve(root,"../..");
 const loader=fs.readFileSync(path.join(root,"js/v10-41-lake-item-safety.js"),"utf8");
 const src=fs.readFileSync(path.join(root,"js/v10-41-r46-release-candidate-polish.js"),"utf8");
-const migration=fs.readFileSync(path.resolve(root,"../../supabase/migrations/20260830203500_lost_sizzler_release_telemetry_metadata.sql"),"utf8");
+const migration=fs.readFileSync(path.join(repo,"supabase/migrations/20260830203500_lost_sizzler_release_telemetry_metadata.sql"),"utf8");
+const edge=fs.readFileSync(path.join(repo,"supabase/functions/lost-sizzler-feedback/index.ts"),"utf8");
 
 assert.match(loader,/v10-41-r46-release-candidate-polish\.js/,"late loader must publish r46");
 assert.match(src,/ccg-lost-sizzler-lifetime-stats-v1/,"r46 must use versioned local lifetime statistics");
@@ -26,5 +28,14 @@ assert.doesNotMatch(src,/\.send\s*\(/,"r46 must not own multiplayer transport");
 assert.doesNotMatch(src,/saveCheckpointData|startWorld\s*\(/,"r46 must not own save creation or world creation");
 assert.match(migration,/add column if not exists metadata jsonb/i,"release telemetry migration must add optional JSON metadata");
 assert.match(migration,/jsonb_typeof\(metadata\) = 'object'/i,"release telemetry metadata must be constrained to an object");
+assert.match(edge,/"run_started_detail"/,"existing telemetry function must accept detailed run starts");
+assert.match(edge,/"floor_reached"/,"existing telemetry function must accept floor reach events");
+assert.match(edge,/"floor_cleared"/,"existing telemetry function must accept floor clear events");
+assert.match(edge,/"run_ended"/,"existing telemetry function must accept run outcome events");
+assert.match(edge,/function telemetryMetadata/,"telemetry metadata must be allow-listed and bounded server-side");
+assert.match(edge,/metadata\n\s*\}\)\.select/,"sanitised metadata must be written through the existing game_play_events insert");
+assert.match(edge,/ALLOWED_ORIGINS/,"existing production origin restriction must remain intact");
+assert.match(edge,/authenticatedUserId/,"existing optional account attribution must remain intact");
+assert.match(edge,/game_feedback/,"existing bug and suggestion workflow must remain intact");
 
 console.log("Lost Sizzler V10.41 r46 release-candidate static contract passed.");
