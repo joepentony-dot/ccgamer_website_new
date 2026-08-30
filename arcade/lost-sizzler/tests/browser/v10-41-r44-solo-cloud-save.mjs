@@ -119,7 +119,10 @@ try{
   assert.match(newer.action,/deferred/,"active-run cloud conflict must be explicitly deferred");
   assert.equal(newer.status,"deferred","active-run conflict must expose deferred status");
 
-  await page.evaluate(()=>{document.body.dataset.runActive="false";mode="menu";UI.menu.classList.remove("hidden")});
+  // Use the real return-to-menu lifecycle. This clears the live run/player/world
+  // objects before cloud reconciliation, matching what a player actually does.
+  await page.evaluate(()=>quitToMenu());
+  await page.waitForFunction(()=>mode==="menu"&&document.body.dataset.runActive!=="true"&&!run&&!p1,null,{timeout:10000});
   await page.evaluate(()=>window.CCGLostSizzlerV141R44SoloCloudSave.syncNow());
   const afterDeferred=await page.evaluate(()=>{
     const r43=window.CCGLostSizzlerV141R43SoloSave,r44=window.CCGLostSizzlerV141R44SoloCloudSave,e=r43.readEnvelope();return{fingerprint:r44.fingerprint(e),expected:r44.fingerprint(window.__r44Mock.newerEnvelope),score:e?.checkpoint?.score||0,status:r44.state.status}
@@ -160,9 +163,11 @@ try{
   });
   await page.evaluate(()=>PGR.clearCheckpoint());
   await page.waitForFunction(user=>Boolean(window.__r44Mock?.rows?.[user]?.deleted_at),USER_A,{timeout:10000});
+  await page.evaluate(()=>quitToMenu());
+  await page.waitForFunction(()=>mode==="menu"&&document.body.dataset.runActive!=="true"&&!run&&!p1,null,{timeout:10000});
   const tombstone=await page.evaluate(async user=>{
     const r43=window.CCGLostSizzlerV141R43SoloSave,r44=window.CCGLostSizzlerV141R44SoloCloudSave,row=window.__r44Mock.rows[user];
-    document.body.dataset.runActive="false";mode="menu";await r44.syncNow();
+    await r44.syncNow();
     return{local:Boolean(r43.readEnvelope()),deletedAt:row.deleted_at,envelope:row.save_envelope,revision:Number(row.client_revision_ms)||0,meta:r44.readMeta(),status:r44.state.status,tombstones:r44.state.tombstones}
   },USER_A);
   assert.equal(tombstone.local,false,"cloud tombstone must not resurrect a cleared browser save");
