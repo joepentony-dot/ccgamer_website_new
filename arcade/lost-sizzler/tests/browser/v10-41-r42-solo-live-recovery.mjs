@@ -21,13 +21,6 @@ await new Promise((resolve,reject)=>{server.once("error",reject);server.listen(0
 const origin=`http://127.0.0.1:${server.address().port}`;
 const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage","--disable-background-networking","--autoplay-policy=no-user-gesture-required"]});
 
-function litPixelsScript(){
-  const probe=document.createElement("canvas");probe.width=20;probe.height=12;const pctx=probe.getContext("2d",{willReadFrequently:true});
-  pctx.drawImage(canvas,0,0,canvas.width,canvas.height,0,0,20,12);const data=pctx.getImageData(0,0,20,12).data;let lit=0;
-  for(let i=0;i<data.length;i+=4)if(data[i]>16||data[i+1]>16||data[i+2]>16)lit++;
-  return lit
-}
-
 try{
   const context=await browser.newContext({viewport:{width:1600,height:900}}),page=await context.newPage();page.setDefaultTimeout(45000);
   const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
@@ -60,7 +53,7 @@ try{
   await page.waitForFunction(()=>run?.floor===2&&Boolean(world)&&Boolean(host)&&Boolean(p1),null,{timeout:15000});
   await page.waitForTimeout(260);
   if(await page.locator("#save-panel").isVisible())await page.click("#save-continue-btn");
-  await page.waitForFunction(()=>mode==="playing"&&!document.getElementById("save-panel")?.classList.contains("hidden")===false,null,{timeout:10000});
+  await page.waitForFunction(()=>mode==="playing"&&document.getElementById("save-panel")?.classList.contains("hidden")===true,null,{timeout:10000});
   const transition=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R42SoloLiveRecovery;api.monitor();
     return{floor:run.floor,mode,active:document.body.dataset.runActive,world:Boolean(world),host:Boolean(host),player:Boolean(p1),recoveries:api.state.transitionRecoveries,lastFloor:api.state.lastTransitionFloor,width:canvas.width,height:canvas.height}
@@ -96,17 +89,25 @@ try{
   assert.ok(blackRecovery.recoveryDelta>=1,"black recovery counter must advance");
   assert.ok(blackRecovery.litAfter>=5,"restored Solo frame must contain visible gameplay pixels");
   assert.equal(blackRecovery.lastGood,true,"watchdog must retain a valid last-good frame");
+  await page.waitForFunction(()=>mode==="playing"&&window.CCGLostSizzlerV141R42SoloLiveRecovery?.state?.renderRecoveryQueued===false,null,{timeout:10000});
+  await page.waitForTimeout(120);
 
-  // Confirm ordinary attack input still reaches the real game after descent and
-  // after a black-frame recovery. No synthetic attack API is used here.
-  const ammoBefore=await page.evaluate(()=>{
-    p1.mana=50;p1.health=Math.max(3,Number(p1.maxHealth)||3);p1.hitStunMs=0;if("controlLocked" in p1)p1.controlLocked=false;if("controlsLocked" in p1)p1.controlsLocked=false;
-    fire1=0;fireBuffer1=0;bullets.length=0;for(const enemy of host.enemies||[]){enemy.alive=false;enemy.active=false}return Number(p1.mana)
+  // Confirm ordinary keyboard input reaches the real firearm path after descent
+  // and black-frame recovery. The deterministic Pulse Blaster fixture avoids a
+  // random Floor 2 sword/melee loadout making ammunition an invalid assertion.
+  const attackBefore=await page.evaluate(()=>{
+    p1.mana=50;p1.health=Math.max(3,Number(p1.maxHealth)||3);p1.hitStunMs=0;
+    if("controlLocked" in p1)p1.controlLocked=false;if("controlsLocked" in p1)p1.controlsLocked=false;
+    p1.firearmUnlocked=true;p1.weapon={id:"pulse",name:"Pulse Blaster",displayName:"Pulse Blaster",element:"energy",power:1,delay:1,shots:1,ammo:1};
+    fire1=0;fireBuffer1=0;bullets.length=0;for(const enemy of host.enemies||[]){enemy.alive=false;enemy.active=false}
+    try{canvas.focus({preventScroll:true})}catch(_){}
+    return{mana:Number(p1.mana),bullets:bullets.length}
   });
   await page.keyboard.press("Space");
-  await page.waitForFunction(before=>Number(p1?.mana)<before,ammoBefore,{timeout:10000});
-  const attack=await page.evaluate(()=>({mana:Number(p1.mana),mode,fire:Number(fire1),intents:window.CCGLostSizzlerV141R42SoloLiveRecovery.state.attackIntents}));
-  assert.ok(attack.mana<ammoBefore,"real Space attack must consume ammunition after Floor 2 recovery");
+  await page.waitForFunction(before=>Number(p1?.mana)<before.mana||bullets.length>before.bullets,attackBefore,{timeout:10000});
+  const attack=await page.evaluate(()=>({mana:Number(p1.mana),bullets:bullets.length,mode,fire:Number(fire1),intents:window.CCGLostSizzlerV141R42SoloLiveRecovery.state.attackIntents}));
+  assert.ok(attack.mana<attackBefore.mana,"real Space input must consume ammunition through the firearm path after Floor 2 recovery");
+  assert.ok(attack.bullets>attackBefore.bullets||attack.fire>0,"real Space input must create a live shot/cooldown state");
   assert.equal(attack.mode,"playing","successful post-transition attack must remain in live play");
   assert.ok(attack.intents>=1,"r42 must observe real attack intent without synthesizing the shot");
 
