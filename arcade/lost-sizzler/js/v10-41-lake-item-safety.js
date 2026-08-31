@@ -100,6 +100,7 @@
   load("js/v10-41-r51-menu-focus-polish.js","data-ccg-v141-r51-menu-focus-polish");
   load("js/v10-41-r51-render-ownership-finalizer.js","data-ccg-v141-r51-render-ownership-finalizer");
   load("js/v10-41-r52-audio-accessibility.js","data-ccg-v141-r52-audio-accessibility");
+  load("js/v10-41-r53-terminal-solo-end-recovery.js","data-ccg-v141-r53-terminal-solo-end-recovery");
 
   let dungeonLoaded=false,dungeonTimer=0;
   const dungeonOnline=()=>{
