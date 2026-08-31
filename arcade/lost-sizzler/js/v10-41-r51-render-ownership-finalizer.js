@@ -3,8 +3,9 @@
  * Late presentation modules may legitimately replace drawPlayer/drawEnemy after
  * the initial R51 gameplay install. Reassert R51 only when its wrapper is no
  * longer the active renderer, preserving the current late renderer underneath.
- * R48 character animation is deliberately retained as part of the composite
- * player renderer so its own maintenance timer does not wrap R51 again.
+ * R48 character animation and the r31 CPU Cook enemy identity renderer are
+ * deliberately retained as part of the composite renderers so their own
+ * maintenance timers do not wrap R51 again.
  */
 (()=>{
   "use strict";
@@ -12,7 +13,7 @@
   window.__CCG_LOST_SIZZLER_V141_R51_RENDER_OWNERSHIP_FINALIZER__=true;
 
   const CHECK_MS=400,MAX_CHAIN=12;
-  const state={timer:0,repairs:0,playerRepairs:0,enemyRepairs:0,playerCompatibilitySeals:0};
+  const state={timer:0,repairs:0,playerRepairs:0,enemyRepairs:0,playerCompatibilitySeals:0,enemyCompatibilitySeals:0};
   const active=()=>document.body?.dataset?.runActive==="true";
 
   function chainHas(fn,marker){
@@ -31,10 +32,24 @@
     current.__ccgV141R48CharacterAnimation=true;state.playerCompatibilitySeals++;return true
   }
 
+  function sealEnemyCompatibility(){
+    const current=window.drawEnemy;
+    if(typeof current!=="function"||!current.__ccgV141R51VisualPolish||current.__ccgV141R31CpuCookRenderFix)return false;
+    if(!chainHas(current.__ccgOriginal,"__ccgV141R31CpuCookRenderFix"))return false;
+    current.__ccgV141R31CpuCookRenderFix=true;state.enemyCompatibilitySeals++;return true
+  }
+
+  function sealCompatibility(){
+    let changed=false;
+    if(sealPlayerCompatibility())changed=true;
+    if(sealEnemyCompatibility())changed=true;
+    return changed
+  }
+
   function repair(){
     if(!active())return false;
     const api=window.CCGLostSizzlerV141R51VisualUIOverhaul;if(!api?.installGameplayVisuals)return false;
-    let changed=sealPlayerCompatibility();
+    let changed=sealCompatibility();
     const playerMissing=typeof window.drawPlayer==="function"&&!window.drawPlayer.__ccgV141R51VisualPolish;
     const enemyMissing=typeof window.drawEnemy==="function"&&!window.drawEnemy.__ccgV141R51VisualPolish;
     if(!playerMissing&&!enemyMissing)return changed;
@@ -47,7 +62,7 @@
     if(enemyMissing){api.state.enemySource=null;state.enemyRepairs++}
     const repaired=Boolean(api.installGameplayVisuals());
     if(repaired){state.repairs++;changed=true}
-    if(sealPlayerCompatibility())changed=true;
+    if(sealCompatibility())changed=true;
     return changed
   }
 
@@ -59,5 +74,5 @@
 
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
-  window.CCGLostSizzlerV141R51RenderOwnershipFinalizer={repair,chainHas,sealPlayerCompatibility,get state(){return state}};
+  window.CCGLostSizzlerV141R51RenderOwnershipFinalizer={repair,chainHas,sealPlayerCompatibility,sealEnemyCompatibility,sealCompatibility,get state(){return state}};
 })();
