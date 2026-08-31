@@ -23,8 +23,10 @@ assert.match(r52,/SFX LEVEL/,"Accessibility & Audio must expose an independent S
 assert.match(r52,/VOICE LEVEL/,"Accessibility & Audio must expose an independent voice slider");
 assert.match(r52,/active\.dungeonFx\?level:base\*level/,"recorded voices routed through dungeon FX must retain their existing cue gain while applying the user multiplier");
 assert.match(r52,/active\.speech\)active\.speech\.volume=clamp\(base\*level\)/,"speech fallback must obey the same voice level");
-assert.match(r52,/active\?\.audio===this/,"voice scaling must be applied before active recorded media starts");
-assert.match(r52,/active\?\.speech===utterance/,"voice scaling must be applied before active speech synthesis starts");
+assert.match(r52,/setVoiceLevel\(value\)\{state\.voiceLevel=clamp\(value\);applyActiveVoice\(\)/,"changing voice level must immediately rescale an active voice");
+assert.match(r52,/setInterval\(\(\)=>\{applyActiveVoice\(\);if\(!optionsReady\(\)\)enhanceOptions\(\)\},250\)/,"new voice playback must be kept aligned by a bounded local voice-state check");
+assert.doesNotMatch(r52,/HTMLMediaElement\.prototype\.play/,"R52 must not replace browser-wide media playback because lobby/music startup is outside its ownership");
+assert.doesNotMatch(r52,/speechSynthesis\.speak\s*=/,"R52 must not replace browser-wide speech synthesis playback");
 assert.match(r52,/node&&node\.textContent!==text\)node\.textContent=text/,"R52 must not rewrite unchanged percentage labels and retrigger its own child-list observer");
 assert.match(r52,/MutationObserver\(\(\)=>\{if\(!optionsReady\(\)\)enhanceOptions\(\)\}\)/,"the options observer must only re-enhance when an R52 control is actually missing");
 assert.match(r52,/observe\(document\.body,\{subtree:true,childList:true\}\)/,"the options observer must watch structural additions only");
