@@ -18,8 +18,8 @@ const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usag
 try{
   const context=await browser.newContext({viewport:{width:1600,height:900}}),page=await context.newPage();page.setDefaultTimeout(45000);const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&Boolean(window.CCGLostSizzlerV141R51VisualUIOverhaul)&&Boolean(window.CCGLostSizzlerV141R51WorldLighting)&&Boolean(window.CCGLostSizzlerV141R51MenuFocus));
-  await page.waitForFunction(()=>document.body.dataset.v141R51Menu==="true"&&document.body.dataset.v141R51Visual==="true"&&document.body.dataset.v141R51Lighting==="true"&&document.body.dataset.v141R51MenuFocus==="true");
+  await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&Boolean(window.CCGLostSizzlerV141R51VisualUIOverhaul)&&Boolean(window.CCGLostSizzlerV141R51WorldLighting)&&Boolean(window.CCGLostSizzlerV141R51MenuFocus)&&Boolean(window.CCGLostSizzlerV141R51RenderOwnershipFinalizer));
+  await page.waitForFunction(()=>document.body.dataset.v141R51Menu==="true"&&document.body.dataset.v141R51Visual==="true"&&document.body.dataset.v141R51Lighting==="true"&&document.body.dataset.v141R51MenuFocus==="true"&&document.body.dataset.v141R51RenderOwner==="true");
 
   const menu=await page.evaluate(()=>({
     styled:Boolean(document.querySelector('link[data-ccg-v141-r51-style="true"]')),
@@ -38,6 +38,24 @@ try{
 
   await page.locator("#solo-btn").click({noWaitAfter:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof p1!=="undefined"&&Boolean(p1));
+  await page.waitForFunction(()=>Boolean(window.drawPlayer?.__ccgV141R51VisualPolish)&&Boolean(window.drawEnemy?.__ccgV141R51VisualPolish));
+
+  const ownershipRecovery=await page.evaluate(()=>{
+    const owner=window.CCGLostSizzlerV141R51RenderOwnershipFinalizer;
+    const before=owner.state.enemyRepairs;
+    const wrapped=window.drawEnemy;
+    const underlying=wrapped?.__ccgOriginal;
+    if(typeof underlying==="function")window.drawEnemy=underlying;
+    const detached=Boolean(typeof window.drawEnemy==="function"&&!window.drawEnemy.__ccgV141R51VisualPolish);
+    owner.repair();
+    return{detached,repaired:Boolean(window.drawEnemy?.__ccgV141R51VisualPolish),repairDelta:owner.state.enemyRepairs-before,preservedCurrent:Boolean(window.drawEnemy?.__ccgOriginal===underlying)}
+  });
+  assert.equal(ownershipRecovery.detached,true,"fixture must reproduce a late renderer replacing R51");
+  assert.equal(ownershipRecovery.repaired,true,"R51 ownership finalizer must reattach visual polish");
+  assert.ok(ownershipRecovery.repairDelta>=1,"R51 ownership finalizer must record the enemy repair");
+  assert.equal(ownershipRecovery.preservedCurrent,true,"R51 must wrap the active late renderer rather than discard it");
+
+  await page.waitForTimeout(650);
   await page.waitForFunction(()=>Boolean(window.drawPlayer?.__ccgV141R51VisualPolish)&&Boolean(window.drawEnemy?.__ccgV141R51VisualPolish));
   const visual=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R51VisualUIOverhaul,before={x:p1.x,y:p1.y,health:p1.health,score:typeof score!=="undefined"?score:null},player=api.playerTransform(p1),enemy=(host?.enemies||[]).find(row=>row?.alive),enemyTransformValue=enemy?api.enemyTransform(enemy):null,layer=document.getElementById("ccg-r51-world-lighting"),canvas=document.getElementById("game");
@@ -70,7 +88,7 @@ try{
   assert.notEqual(focus.outline,"none","keyboard/controller focus must remain visually obvious");
   assert.ok(focus.moves>=1,"menu focus helper must keep keyboard/controller focus visible");
   assert.deepEqual(errors,[],`r51 browser test must not raise page errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 r51 visual polish, adaptive lighting, renderer ownership and menu usability passed in Chromium.");
+  console.log("Lost Sizzler V10.41 r51 visual polish, adaptive lighting, renderer recovery and menu usability passed in Chromium.");
   await context.close();
 }finally{
   await browser.close().catch(()=>{});for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
