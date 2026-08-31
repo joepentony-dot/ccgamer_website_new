@@ -13,7 +13,7 @@
 
   const MARKER="__ccgV141R53TerminalSoloEndRecovery";
   const state={wraps:0,recoveredThrows:0,recoveredHidden:0,handling:false,observer:null,lastError:""};
-  const esc=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;","&gt;":"&gt;",'"':"&quot;","'":"&#39;"}[char]||char));
+  const esc=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]||char));
   const safeNumber=(value,fallback=0)=>{const n=Number(value);return Number.isFinite(n)?n:fallback};
   const pad=value=>String(Math.max(0,Math.floor(safeNumber(value)))).padStart(6,"0");
 
