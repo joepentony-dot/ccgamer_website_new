@@ -9,6 +9,7 @@ const repo=path.resolve(root,"../..");
 const loader=fs.readFileSync(path.join(root,"js/v10-41-lake-item-safety.js"),"utf8");
 const src=fs.readFileSync(path.join(root,"js/v10-41-r46-release-candidate-polish.js"),"utf8");
 const migration=fs.readFileSync(path.join(repo,"supabase/migrations/20260830203500_lost_sizzler_release_telemetry_metadata.sql"),"utf8");
+const eventTypesMigration=fs.readFileSync(path.join(repo,"supabase/migrations/20260831145402_lost_sizzler_telemetry_event_types.sql"),"utf8");
 const edge=fs.readFileSync(path.join(repo,"supabase/functions/lost-sizzler-feedback/index.ts"),"utf8");
 
 assert.match(loader,/v10-41-r46-release-candidate-polish\.js/,"late loader must publish r46");
@@ -37,5 +38,24 @@ assert.match(edge,/metadata\n\s*\}\)\.select/,"sanitised metadata must be writte
 assert.match(edge,/ALLOWED_ORIGINS/,"existing production origin restriction must remain intact");
 assert.match(edge,/authenticatedUserId/,"existing optional account attribution must remain intact");
 assert.match(edge,/game_feedback/,"existing bug and suggestion workflow must remain intact");
+
+const acceptedEvents=[
+  "start_click",
+  "run_started",
+  "run_started_detail",
+  "floor_reached",
+  "floor_cleared",
+  "run_ended",
+  "mobile_pc_notice_accept",
+  "rating_submitted",
+  "rating_dismissed",
+  "client_error"
+];
+for(const eventType of acceptedEvents){
+  assert.match(edge,new RegExp(`"${eventType}"`),`Edge Function must allow ${eventType}`);
+  assert.match(eventTypesMigration,new RegExp(`'${eventType}'`),`database CHECK constraint must allow ${eventType}`);
+}
+assert.match(eventTypesMigration,/drop constraint if exists game_play_events_event_type_check/i,"telemetry event migration must replace the stale event allow-list");
+assert.match(eventTypesMigration,/validate constraint game_play_events_event_type_check/i,"replacement telemetry event constraint must be validated against existing rows");
 
 console.log("Lost Sizzler V10.41 r46 release-candidate static contract passed.");
