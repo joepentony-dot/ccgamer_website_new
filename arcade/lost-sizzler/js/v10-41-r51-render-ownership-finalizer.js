@@ -1,0 +1,43 @@
+/* The Lost Sizzler V10.41 r51 — renderer ownership finalizer.
+ *
+ * Late presentation modules may legitimately replace drawPlayer/drawEnemy after
+ * the initial R51 gameplay install. Reassert R51 only when its wrapper is no
+ * longer the active renderer, preserving the current late renderer underneath.
+ */
+(()=>{
+  "use strict";
+  if(window.__CCG_LOST_SIZZLER_V141_R51_RENDER_OWNERSHIP_FINALIZER__)return;
+  window.__CCG_LOST_SIZZLER_V141_R51_RENDER_OWNERSHIP_FINALIZER__=true;
+
+  const CHECK_MS=400;
+  const state={timer:0,repairs:0,playerRepairs:0,enemyRepairs:0};
+  const active=()=>document.body?.dataset?.runActive==="true";
+
+  function repair(){
+    if(!active())return false;
+    const api=window.CCGLostSizzlerV141R51VisualUIOverhaul;if(!api?.installGameplayVisuals)return false;
+    const playerMissing=typeof window.drawPlayer==="function"&&!window.drawPlayer.__ccgV141R51VisualPolish;
+    const enemyMissing=typeof window.drawEnemy==="function"&&!window.drawEnemy.__ccgV141R51VisualPolish;
+    if(!playerMissing&&!enemyMissing)return false;
+
+    // The R51 installer remembers the source it wrapped. If that exact source
+    // later becomes active again, clear only that diagnostic pointer so the
+    // installer treats the current renderer as needing a fresh presentation
+    // wrapper. No gameplay renderer is removed or bypassed.
+    if(playerMissing){api.state.playerSource=null;state.playerRepairs++}
+    if(enemyMissing){api.state.enemySource=null;state.enemyRepairs++}
+    const repaired=Boolean(api.installGameplayVisuals());
+    if(repaired)state.repairs++;
+    return repaired
+  }
+
+  function start(){
+    if(state.timer)return;
+    repair();state.timer=setInterval(repair,CHECK_MS);
+    document.body.dataset.v141R51RenderOwner="true"
+  }
+
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
+  addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
+  window.CCGLostSizzlerV141R51RenderOwnershipFinalizer={repair,get state(){return state}};
+})();
