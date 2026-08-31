@@ -28,6 +28,7 @@ assert.match(src,/v141R47PerformanceTier/,"R51 presentation must obey the establ
 assert.match(src,/STARTUP_DELAY_MS=2200/,"R51 cosmetic installation must not compete with the critical startup window");
 assert.match(src,/LIGHTING_POLL_MS=250/,"R51 lighting maintenance must remain bounded rather than polling every frame");
 assert.match(src,/if\(severePressure\(\)\)return/,"expensive R51 renderer effects must stand down under severe pressure");
+assert.match(src,/if\(activeGameplay\(\)\)updateLighting\(\)/,"periodic world-light maintenance must stand down while the game is at the menu");
 assert.match(lighting,/saturate\(1\.13\) contrast\(1\.055\)/);
 assert.match(lighting,/radial-gradient/);
 assert.match(lighting,/dataset\.r51LightingStyled/);
