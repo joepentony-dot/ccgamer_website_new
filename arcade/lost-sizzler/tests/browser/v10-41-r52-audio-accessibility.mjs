@@ -18,7 +18,7 @@ const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usag
 try{
   const context=await browser.newContext({viewport:{width:1440,height:900}}),page=await context.newPage();page.setDefaultTimeout(45000);const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&Boolean(window.CCGLostSizzlerV141R46ReleaseCandidatePolish)&&Boolean(window.CCGLostSizzlerV141R52AudioAccessibility)&&Boolean(window.CCGSound?.setSfxLevel));
+  await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&Boolean(window.CCGLostSizzlerV141R46ReleaseCandidatePolish)&&Boolean(window.CCGLostSizzlerV141R52AudioAccessibility)&&Boolean(window.CCGSound?.setSfxLevel)&&Boolean(window.CCGLostSizzlerVoice?.state));
 
   const defaults=await page.evaluate(()=>({prefs:window.CCGLostSizzlerV141R52AudioAccessibility.prefs(),sfx:window.CCGLostSizzlerV141R52AudioAccessibility.getSfxLevel(),voice:window.CCGLostSizzlerV141R52AudioAccessibility.getVoiceLevel()}));
   assert.equal(defaults.prefs.sfxPercent,100);
