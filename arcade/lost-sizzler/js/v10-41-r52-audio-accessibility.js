@@ -36,11 +36,11 @@
     const level=clamp(value);try{window.CCGSound?.setSfxLevel?.(level)}catch(_){}return level
   }
   function setVoiceLevel(value){state.voiceLevel=clamp(value);applyActiveVoice();return state.voiceLevel}
+  function setText(id,text){const node=document.getElementById(id);if(node&&node.textContent!==text)node.textContent=text}
   function applyPrefs(source=prefs()){
     const next={...source,sfxPercent:percent(source.sfxPercent??100),voicePercent:percent(source.voicePercent??100)};
     setSfxLevel(next.sfxPercent/100);setVoiceLevel(next.voicePercent/100);
-    const sfxValue=document.getElementById("ccg-r52-sfx-value");if(sfxValue)sfxValue.textContent=`${next.sfxPercent}%`;
-    const voiceValue=document.getElementById("ccg-r52-voice-value");if(voiceValue)voiceValue.textContent=`${next.voicePercent}%`;
+    setText("ccg-r52-sfx-value",`${next.sfxPercent}%`);setText("ccg-r52-voice-value",`${next.voicePercent}%`);
     state.applies++;return next
   }
 
@@ -55,12 +55,16 @@
     row.querySelector("input")?.addEventListener("input",event=>savePercent(key,event.currentTarget.value));return row
   }
 
+  function optionsReady(){
+    const grid=document.getElementById("ccg-r46-options")?.querySelector(".ccg-r46-options-grid");
+    return Boolean(grid?.querySelector('[data-r52-audio="sfxPercent"]')&&grid?.querySelector('[data-r52-audio="voicePercent"]'))
+  }
   function enhanceOptions(){
     const overlay=document.getElementById("ccg-r46-options"),grid=overlay?.querySelector(".ccg-r46-options-grid");if(!grid)return false;
-    const current=prefs();
-    if(!grid.querySelector('[data-r52-audio="sfxPercent"]'))grid.appendChild(slider("SFX LEVEL","Controls combat, pickup, door and environment effects without changing music.","sfxPercent",current.sfxPercent,"ccg-r52-sfx-value"));
-    if(!grid.querySelector('[data-r52-audio="voicePercent"]'))grid.appendChild(slider("VOICE LEVEL","Controls spoken dungeon prompts independently of music and sound effects.","voicePercent",current.voicePercent,"ccg-r52-voice-value"));
-    applyPrefs(current);state.optionsEnhancements++;return true
+    const current=prefs();let changed=false;
+    if(!grid.querySelector('[data-r52-audio="sfxPercent"]')){grid.appendChild(slider("SFX LEVEL","Controls combat, pickup, door and environment effects without changing music.","sfxPercent",current.sfxPercent,"ccg-r52-sfx-value"));changed=true}
+    if(!grid.querySelector('[data-r52-audio="voicePercent"]')){grid.appendChild(slider("VOICE LEVEL","Controls spoken dungeon prompts independently of music and sound effects.","voicePercent",current.voicePercent,"ccg-r52-voice-value"));changed=true}
+    applyPrefs(current);if(changed)state.optionsEnhancements++;return true
   }
 
   function installPlaybackHooks(){
@@ -79,8 +83,8 @@
 
   function install(){
     installPlaybackHooks();applyPrefs();enhanceOptions();
-    if(!state.observer&&document.body){state.observer=new MutationObserver(()=>enhanceOptions());state.observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:["class"]})}
-    if(!state.timer)state.timer=setInterval(()=>{installPlaybackHooks();applyActiveVoice();enhanceOptions()},250);
+    if(!state.observer&&document.body){state.observer=new MutationObserver(()=>{if(!optionsReady())enhanceOptions()});state.observer.observe(document.body,{subtree:true,childList:true})}
+    if(!state.timer)state.timer=setInterval(()=>{installPlaybackHooks();applyActiveVoice();if(!optionsReady())enhanceOptions()},250);
     document.body.dataset.v141R52AudioAccessibility="true";return true
   }
 
