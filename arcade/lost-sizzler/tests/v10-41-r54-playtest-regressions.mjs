@@ -16,7 +16,7 @@ assert.match(r53,/v10-41-r54-playtest-regressions\.js/,"R53 final edge must load
 assert.match(r54,/H\.tick\(a\.state,now\)/,"browser Horde fallback must advance the Horde rules state");
 assert.match(r54,/H\.spawnNext\(a\.state,now\)/,"browser Horde fallback must spawn base-wave models");
 assert.match(r54,/hordeLive\(\)\)return/,"browser fallback must stand down when dedicated authority is live");
-assert.match(horde,/state:"briefing"/,"Horde starts in briefing and therefore requires its rules tick to progress");
+assert.match(horde,/state\s*:\s*"briefing"/,"Horde starts in briefing and therefore requires its rules tick to progress");
 
 assert.match(r54,/Promise\.resolve\(S\.start\(\)\)\.catch/,"audio permission must be best-effort during Continue");
 assert.match(r54,/Promise\.resolve\(requestPlayFullscreen\(\)\)\.catch/,"fullscreen permission must be best-effort during Continue");
