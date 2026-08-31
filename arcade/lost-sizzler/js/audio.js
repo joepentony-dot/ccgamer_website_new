@@ -1,7 +1,7 @@
 window.CCGSound=(()=>{
   "use strict";
   const C=window.CCG_CONFIG,ASSETS=window.CCG_AUDIO_ASSETS||{sfx:{},music:{}};
-  let ctx=null,master=null,musicGain=null,sfxGain=null,dangerGain=null,stalkerGain=null,musicTimer=null,dangerTimer=null,stalkerTimer=null,step=0,enabled=true,started=false,danger=0,stalkerNear=false,stalkerSight=false,stalkerStep=0,roomMood="normal",musicLevel=.075,musicAsset=null,musicAssetState="",namedEnemy="",namedLockUntil=0;
+  let ctx=null,master=null,musicGain=null,sfxGain=null,dangerGain=null,stalkerGain=null,musicTimer=null,dangerTimer=null,stalkerTimer=null,step=0,enabled=true,started=false,danger=0,stalkerNear=false,stalkerSight=false,stalkerStep=0,roomMood="normal",musicLevel=.075,sfxLevel=1,musicAsset=null,musicAssetState="",namedEnemy="",namedLockUntil=0;
   const activeSfx=new Set(),useMusicAssets=Boolean(ASSETS.music&&ASSETS.music.normal);
   const melody=[262,0,330,392,0,330,294,0,262,330,0,440,392,330,294,0,220,0,262,330,0,294,262,0,196,247,0,294,330,294,247,0];
   const counter=[0,523,0,494,0,440,392,0,0,392,0,440,0,494,523,0];
@@ -29,13 +29,13 @@ window.CCGSound=(()=>{
   }
   function playAssetSfx(name,fallback){
     const url=window.CCG_ASSET_OVERRIDES?.audio?.sfx?.[name]||window.CCG_ADMIN_AUDIO?.sfx?.[name]||ASSETS.sfx?.[name];if(!url){if(fallback)fallback();return}
-    try{const a=new Audio(url);a.preload="auto";a.volume=.7;activeSfx.add(a);const done=()=>activeSfx.delete(a);a.addEventListener("ended",done,{once:true});a.addEventListener("error",()=>{done();if(fallback)fallback()},{once:true});a.play().catch(()=>{done();if(fallback)fallback()})}catch(_){if(fallback)fallback()}
+    try{const a=new Audio(url);a.preload="auto";a.volume=.7*sfxLevel;activeSfx.add(a);const done=()=>activeSfx.delete(a);a.addEventListener("ended",done,{once:true});a.addEventListener("error",()=>{done();if(fallback)fallback()},{once:true});a.play().catch(()=>{done();if(fallback)fallback()})}catch(_){if(fallback)fallback()}
   }
   function ensure(){
     if(ctx)return true;
     try{
       ctx=new (window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();musicGain=ctx.createGain();sfxGain=ctx.createGain();dangerGain=ctx.createGain();stalkerGain=ctx.createGain();
-      master.gain.value=.34;musicGain.gain.value=.08;sfxGain.gain.value=.46;dangerGain.gain.value=.08;stalkerGain.gain.value=0;
+      master.gain.value=.34;musicGain.gain.value=.08;sfxGain.gain.value=.46*sfxLevel;dangerGain.gain.value=.08;stalkerGain.gain.value=0;
       musicGain.connect(master);dangerGain.connect(master);stalkerGain.connect(master);sfxGain.connect(master);master.connect(ctx.destination);return true;
     }catch(_){return false}
   }
@@ -62,7 +62,7 @@ window.CCGSound=(()=>{
   function stalkerTick(){
     if(!enabled||!ctx||ctx.state!=="running"||!stalkerNear)return;
     const admin=window.CCG_ADMIN_AUDIO?.stalker||C.adminAudio?.stalker;
-    if(admin)return; // external track hook reserved for website admin integration.
+    if(admin)return;
     const n=stalkerNotes[stalkerStep++%stalkerNotes.length];if(n){tone(n,.42,"sawtooth",.20,-5,0,"stalker");tone(n*1.5,.24,"triangle",.08,-8,.08,"stalker")}
     if(stalkerStep%4===0)noise(.20,.024,"stalker");
   }
@@ -78,6 +78,7 @@ window.CCGSound=(()=>{
   function setRoomMood(v){const next=["normal","danger","sanctuary","named",...Object.keys(ASSETS.music?.rooms||{})].includes(v)?v:"normal";if(next===roomMood)return;roomMood=next;step=0;if(useMusicAssets)syncAssetMusic();else if(musicGain&&ctx)musicGain.gain.setTargetAtTime(next==="named"?.11:next==="danger"?.095:next==="sanctuary"?.065:.08,ctx.currentTime,.35)}
   function setNamedEnemy(name){const next=String(name||"");const now=performance.now();if(next===namedEnemy)return;if(next&&namedEnemy&&now<namedLockUntil)return;if(!next&&namedEnemy&&now<namedLockUntil)return;namedEnemy=next;if(next)namedLockUntil=now+2400;else namedLockUntil=0;if(roomMood==="named"&&useMusicAssets)syncAssetMusic()}
   function setMusicLevel(v){musicLevel=Math.max(0,Math.min(.25,v));if(useMusicAssets&&musicAsset)syncAssetMusic();else if(musicGain)musicGain.gain.value=musicLevel}
+  function setSfxLevel(v){sfxLevel=Math.max(0,Math.min(1,Number(v)||0));if(sfxGain)sfxGain.gain.value=.46*sfxLevel;for(const audio of activeSfx){try{audio.volume=.7*sfxLevel}catch(_){}}return sfxLevel}
   function setStalkerNear(v){stalkerNear=Boolean(v);if(useMusicAssets){syncAssetMusic();return}if(!ensure())return;if(stalkerGain)stalkerGain.gain.setTargetAtTime(stalkerNear?.17:0,ctx.currentTime,.18);if(musicGain)musicGain.gain.setTargetAtTime(stalkerNear?.012:.08,ctx.currentTime,.22);if(dangerGain)dangerGain.gain.setTargetAtTime(stalkerNear?0:.045+.07*danger,ctx.currentTime,.18)}
   function setStalkerSight(v){const next=Boolean(v);if(next===stalkerSight)return;stalkerSight=next;if(useMusicAssets)syncAssetMusic();else if(stalkerGain&&ctx)stalkerGain.gain.setTargetAtTime(stalkerSight?.25:stalkerNear?.17:0,ctx.currentTime,.12)}
   function sfx(name){if(!enabled)return;const f={
@@ -85,5 +86,5 @@ window.CCGSound=(()=>{
   }[name];playAssetSfx(name,f)}
   function windWhistle(){if(!enabled)return;start();[510,620,565,710,480].forEach((n,i)=>tone(n,.7,"sine",.025,i%2?85:-70,i*.18));noise(1.25,.022)}
   function toggle(){enabled=!enabled;if(enabled){start();startMusic()}else stopMusic();return enabled}
-  return{start,startMusic,stopMusic,stopAll,sfx,windWhistle,toggle,isEnabled:()=>enabled,setMusicLevel,setDanger,setStalkerNear,setStalkerSight,setRoomMood,setNamedEnemy};
+  return{start,startMusic,stopMusic,stopAll,sfx,windWhistle,toggle,isEnabled:()=>enabled,setMusicLevel,setSfxLevel,getSfxLevel:()=>sfxLevel,setDanger,setStalkerNear,setStalkerSight,setRoomMood,setNamedEnemy};
 })();
