@@ -29,5 +29,6 @@ assert.doesNotMatch(r52,/health|damage|score\s*=|host\.enemies|broadcastWorld|se
 
 assert.match(loader,/v10-41-r52-audio-accessibility\.js/,"the canonical late loader must install R52");
 assert.ok(loader.indexOf("v10-41-r51-menu-focus-polish.js")<loader.indexOf("v10-41-r52-audio-accessibility.js"),"R52 must load after the R51 menu/options presentation layer");
+assert.ok(loader.indexOf("v10-41-r51-render-ownership-finalizer.js")<loader.indexOf("v10-41-r52-audio-accessibility.js"),"R52 must load after the final R51 renderer ownership seal");
 
 console.log("Lost Sizzler V10.41 r52 independent SFX/voice accessibility contract passed.");
