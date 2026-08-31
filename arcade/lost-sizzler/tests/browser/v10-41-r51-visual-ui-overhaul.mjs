@@ -38,7 +38,7 @@ try{
 
   await page.locator("#solo-btn").click({noWaitAfter:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof p1!=="undefined"&&Boolean(p1));
-  await page.waitForTimeout(450);
+  await page.waitForFunction(()=>Boolean(window.drawPlayer?.__ccgV141R51VisualPolish)&&Boolean(window.drawEnemy?.__ccgV141R51VisualPolish));
   const visual=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R51VisualUIOverhaul,before={x:p1.x,y:p1.y,health:p1.health,score:typeof score!=="undefined"?score:null},player=api.playerTransform(p1),enemy=(host?.enemies||[]).find(row=>row?.alive),enemyTransformValue=enemy?api.enemyTransform(enemy):null,layer=document.getElementById("ccg-r51-world-lighting"),canvas=document.getElementById("game");
     document.body.dataset.v141R47PerformanceTier="normal";
