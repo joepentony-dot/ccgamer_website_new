@@ -41,14 +41,13 @@ try{
   await page.waitForFunction(()=>Boolean(window.drawPlayer?.__ccgV141R51VisualPolish)&&Boolean(window.drawEnemy?.__ccgV141R51VisualPolish));
 
   const ownershipRecovery=await page.evaluate(()=>{
-    const owner=window.CCGLostSizzlerV141R51RenderOwnershipFinalizer;
+    const owner=window.CCGLostSizzlerV141R51RenderOwnershipFinalizer,api=window.CCGLostSizzlerV141R51VisualUIOverhaul;
     const before=owner.state.enemyRepairs;
-    const wrapped=window.drawEnemy;
-    const underlying=wrapped?.__ccgOriginal;
-    if(typeof underlying==="function")window.drawEnemy=underlying;
+    const lateRenderer=function r51SyntheticLateEnemyRenderer(){return "synthetic-late-renderer"};
+    window.drawEnemy=lateRenderer;
     const detached=Boolean(typeof window.drawEnemy==="function"&&!window.drawEnemy.__ccgV141R51VisualPolish);
     owner.repair();
-    return{detached,repaired:Boolean(window.drawEnemy?.__ccgV141R51VisualPolish),repairDelta:owner.state.enemyRepairs-before,preservedCurrent:Boolean(window.drawEnemy?.__ccgOriginal===underlying)}
+    return{detached,repaired:Boolean(window.drawEnemy?.__ccgV141R51VisualPolish),repairDelta:owner.state.enemyRepairs-before,preservedCurrent:api.state.enemySource===lateRenderer}
   });
   assert.equal(ownershipRecovery.detached,true,"fixture must reproduce a late renderer replacing R51");
   assert.equal(ownershipRecovery.repaired,true,"R51 ownership finalizer must reattach visual polish");
