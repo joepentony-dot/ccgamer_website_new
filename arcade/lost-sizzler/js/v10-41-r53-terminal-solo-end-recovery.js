@@ -113,3 +113,17 @@
   document.body.dataset.v141R53TerminalSoloEndRecovery="true";
   window.CCGLostSizzlerV141R53TerminalSoloEndRecovery={terminalSolo,presentFallback,ensureTerminalVisible,install,get state(){return state}};
 })();
+
+/* R54 is loaded from the existing final recovery edge so it runs after every
+ * other V10.41 late guard without altering the canonical engine load order. */
+(()=>{
+  "use strict";
+  const marker="data-ccg-v141-r54-playtest-regressions";
+  if(document.querySelector(`script[${marker}="true"]`))return;
+  const rev=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
+  const script=document.createElement("script");
+  script.src=`js/v10-41-r54-playtest-regressions.js?v=${encodeURIComponent(rev)}`;
+  script.async=false;
+  script.setAttribute(marker,"true");
+  document.head.appendChild(script);
+})();
