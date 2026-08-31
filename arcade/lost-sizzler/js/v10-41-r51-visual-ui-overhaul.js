@@ -11,9 +11,10 @@
 
   const STYLE_PATH="css/v10-41-r51-visual-ui-overhaul.css";
   const STARTUP_DELAY_MS=2200;
+  const GAMEPLAY_INSTALL_DELAY_MS=300;
   const INSTALL_POLL_MS=1500;
   const LIGHTING_POLL_MS=250;
-  const state={startupTimer:0,installTimer:0,lightingTimer:0,playerSource:null,playerWrapper:null,enemySource:null,enemyWrapper:null,playerFrames:0,enemyFrames:0,attackFx:0,hitFx:0,menuEnhanced:false,lightingUpdates:0,lastTheme:"",lastError:""};
+  const state={startupTimer:0,gameplayTimer:0,installTimer:0,lightingTimer:0,runObserver:null,playerSource:null,playerWrapper:null,enemySource:null,enemyWrapper:null,playerFrames:0,enemyFrames:0,attackFx:0,hitFx:0,menuEnhanced:false,lightingUpdates:0,lastTheme:"",lastError:""};
   const num=(v,f=0)=>{const n=Number(v);return Number.isFinite(n)?n:f};
   const reduced=()=>document.body?.classList?.contains("ccg-reduced-motion")||(()=>{try{return matchMedia("(prefers-reduced-motion: reduce)").matches}catch(_){return false}})();
   const performanceTier=()=>String(document.body?.dataset?.v141R47PerformanceTier||"normal");
@@ -25,6 +26,14 @@
   function installStylesheet(){
     if(document.querySelector('link[data-ccg-v141-r51-style="true"]'))return true;
     const rev=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||"latest"),link=document.createElement("link");link.rel="stylesheet";link.href=`${STYLE_PATH}?v=${encodeURIComponent(rev)}`;link.dataset.ccgV141R51Style="true";document.head.appendChild(link);return true
+  }
+  function ensurePerformanceStyles(){
+    if(document.getElementById("ccg-r51-performance-safety"))return true;
+    const style=document.createElement("style");style.id="ccg-r51-performance-safety";style.textContent=`
+      .overlay{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+      body[data-v141-r47-performance-tier="reduced"] .panel,body[data-v141-r47-performance-tier="severe"] .panel{box-shadow:0 12px 32px rgba(0,0,0,.5)!important}
+      body[data-v141-r47-performance-tier="severe"] .game-area::before,body[data-v141-r47-performance-tier="severe"] .game-area::after{display:none!important}
+    `;document.head.appendChild(style);return true
   }
 
   function buttonMeta(id,kicker,desc){const el=document.getElementById(id);if(!el)return;el.dataset.r51Kicker=kicker;el.dataset.r51Desc=desc}
@@ -60,6 +69,7 @@
     let host=document.querySelector(".canvas-wrap");if(!host)return null;host.classList.add("r51-canvas-wrap");let layer=document.getElementById("ccg-r51-world-lighting");if(!layer){layer=document.createElement("div");layer.id="ccg-r51-world-lighting";layer.setAttribute("aria-hidden","true");host.appendChild(layer)}return layer
   }
   function updateLighting(){
+    if(!activeGameplay())return false;
     const layer=ensureLighting();if(!layer)return false;
     layer.classList.toggle("r51-performance-constrained",constrained());
     if(severePressure()){state.lightingUpdates++;return true}
@@ -135,14 +145,29 @@
     wrapped.__ccgV141R51VisualPolish=true;wrapped.__ccgOriginal=current;window.drawEnemy=wrapped;state.enemySource=current;state.enemyWrapper=wrapped;return true
   }
 
-  function install(){installStylesheet();enhanceMenu();ensureLighting();if(activeGameplay())updateLighting();const player=installPlayerWrapper(),enemy=installEnemyWrapper();document.body.dataset.v141R51Visual="true";return player&&enemy}
+  function installGameplayVisuals(){
+    state.gameplayTimer=0;if(!activeGameplay())return false;ensureLighting();updateLighting();const player=installPlayerWrapper(),enemy=installEnemyWrapper();return player&&enemy
+  }
+  function scheduleGameplayVisuals(){
+    if(!activeGameplay()||state.gameplayTimer)return false;
+    state.gameplayTimer=setTimeout(installGameplayVisuals,GAMEPLAY_INSTALL_DELAY_MS);return true
+  }
+  function install(){
+    installStylesheet();ensurePerformanceStyles();enhanceMenu();document.body.dataset.v141R51Visual="true";if(activeGameplay())scheduleGameplayVisuals();return true
+  }
+  function handleRunChange(){
+    if(activeGameplay()){scheduleGameplayVisuals();return}
+    if(state.gameplayTimer){clearTimeout(state.gameplayTimer);state.gameplayTimer=0}
+    const canvas=document.getElementById("game"),layer=document.getElementById("ccg-r51-world-lighting");if(canvas)canvas.style.filter="";if(layer)layer.style.opacity="0"
+  }
   function start(){
     if(state.startupTimer||state.installTimer)return;
     state.startupTimer=setTimeout(()=>{
-      state.startupTimer=0;install();state.installTimer=setInterval(install,INSTALL_POLL_MS);state.lightingTimer=setInterval(()=>{if(activeGameplay())updateLighting()},LIGHTING_POLL_MS)
+      state.startupTimer=0;install();state.installTimer=setInterval(install,INSTALL_POLL_MS);state.lightingTimer=setInterval(()=>{if(activeGameplay())updateLighting()},LIGHTING_POLL_MS);
+      state.runObserver=new MutationObserver(handleRunChange);state.runObserver.observe(document.body,{attributes:true,attributeFilter:["data-run-active"]});if(activeGameplay())scheduleGameplayVisuals()
     },STARTUP_DELAY_MS)
   }
-  window.CCGLostSizzlerV141R51VisualUIOverhaul={install,enhanceMenu,updateLighting,playerTransform,enemyTransform,performanceTier,get state(){return state}};
+  window.CCGLostSizzlerV141R51VisualUIOverhaul={install,installGameplayVisuals,scheduleGameplayVisuals,enhanceMenu,updateLighting,playerTransform,enemyTransform,performanceTier,get state(){return state}};
   start();
-  addEventListener("pagehide",()=>{if(state.startupTimer)clearTimeout(state.startupTimer);if(state.installTimer)clearInterval(state.installTimer);if(state.lightingTimer)clearInterval(state.lightingTimer);state.startupTimer=state.installTimer=state.lightingTimer=0},{once:true});
+  addEventListener("pagehide",()=>{if(state.startupTimer)clearTimeout(state.startupTimer);if(state.gameplayTimer)clearTimeout(state.gameplayTimer);if(state.installTimer)clearInterval(state.installTimer);if(state.lightingTimer)clearInterval(state.lightingTimer);state.runObserver?.disconnect();state.startupTimer=state.gameplayTimer=state.installTimer=state.lightingTimer=0},{once:true});
 })();
