@@ -41,13 +41,23 @@ try{
   await page.waitForTimeout(450);
   const visual=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R51VisualUIOverhaul,before={x:p1.x,y:p1.y,health:p1.health,score:typeof score!=="undefined"?score:null},player=api.playerTransform(p1),enemy=(host?.enemies||[]).find(row=>row?.alive),enemyTransformValue=enemy?api.enemyTransform(enemy):null,layer=document.getElementById("ccg-r51-world-lighting"),canvas=document.getElementById("game");
-    api.updateLighting();const after={x:p1.x,y:p1.y,health:p1.health,score:typeof score!=="undefined"?score:null};
-    return{before,after,player,enemyTransformValue,layer:Boolean(layer),ambient:layer?.style.getPropertyValue("--r51-ambient-rgb"),canvasFilter:canvas?.style.filter,playerWrapped:Boolean(window.drawPlayer?.__ccgV141R51VisualPolish),enemyWrapped:Boolean(window.drawEnemy?.__ccgV141R51VisualPolish),diag:{playerFrames:api.state.playerFrames,enemyFrames:api.state.enemyFrames,lightingUpdates:api.state.lightingUpdates}}
+    document.body.dataset.v141R47PerformanceTier="normal";
+    window.CCGLostSizzlerV141R51WorldLighting?.install?.();
+    api.updateLighting();
+    const normalFilter=canvas?.style.filter||"";
+    document.body.dataset.v141R47PerformanceTier="severe";
+    window.CCGLostSizzlerV141R51WorldLighting?.install?.();
+    const severeFilter=canvas?.style.filter||"";
+    document.body.dataset.v141R47PerformanceTier="normal";
+    window.CCGLostSizzlerV141R51WorldLighting?.install?.();
+    const after={x:p1.x,y:p1.y,health:p1.health,score:typeof score!=="undefined"?score:null};
+    return{before,after,player,enemyTransformValue,layer:Boolean(layer),ambient:layer?.style.getPropertyValue("--r51-ambient-rgb"),normalFilter,severeFilter,playerWrapped:Boolean(window.drawPlayer?.__ccgV141R51VisualPolish),enemyWrapped:Boolean(window.drawEnemy?.__ccgV141R51VisualPolish),diag:{playerFrames:api.state.playerFrames,enemyFrames:api.state.enemyFrames,lightingUpdates:api.state.lightingUpdates}}
   });
   assert.deepEqual(visual.after,visual.before,"visual polish must not mutate canonical gameplay state");
   assert.equal(visual.layer,true);
   assert.ok(visual.ambient.length>0);
-  assert.match(visual.canvasFilter,/saturate/);
+  assert.match(visual.normalFilter,/saturate/,"normal R47 performance tier must receive the bounded R51 canvas polish");
+  assert.equal(visual.severeFilter,"","severe R47 performance tier must shed the optional R51 canvas filter");
   assert.equal(visual.playerWrapped,true);
   assert.equal(visual.enemyWrapped,true);
   assert.ok(Number.isFinite(visual.player.sx)&&Number.isFinite(visual.player.sy));
@@ -60,7 +70,7 @@ try{
   assert.notEqual(focus.outline,"none","keyboard/controller focus must remain visually obvious");
   assert.ok(focus.moves>=1,"menu focus helper must keep keyboard/controller focus visible");
   assert.deepEqual(errors,[],`r51 browser test must not raise page errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 r51 visual polish, renderer ownership, lighting and menu usability passed in Chromium.");
+  console.log("Lost Sizzler V10.41 r51 visual polish, adaptive lighting, renderer ownership and menu usability passed in Chromium.");
   await context.close();
 }finally{
   await browser.close().catch(()=>{});for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
