@@ -10,7 +10,7 @@
   if(window.__CCG_LOST_SIZZLER_V141_R52_AUDIO_ACCESSIBILITY__)return;
   window.__CCG_LOST_SIZZLER_V141_R52_AUDIO_ACCESSIBILITY__=true;
 
-  const state={voiceLevel:1,applies:0,optionsEnhancements:0,activeVoiceAdjustments:0,timer:0,observer:null,mediaPlayWrapped:false,speechWrapped:false};
+  const state={voiceLevel:1,applies:0,optionsEnhancements:0,activeVoiceAdjustments:0,observer:null,mediaPlayWrapped:false,speechWrapped:false};
   const clamp=(value,min=0,max=1)=>Math.max(min,Math.min(max,Number(value)||0));
   const percent=value=>Math.round(clamp(value,0,100));
   const voiceBase=key=>String(key||"")==="hurt"?.56:.72;
@@ -26,7 +26,7 @@
     const active=voice()?.state?.active;if(!active)return false;
     const level=state.voiceLevel,base=voiceBase(active.key);
     try{
-      if(active.audio){active.audio.volume=clamp(active.dungeonFx?level:base*level)}
+      if(active.audio)active.audio.volume=clamp(active.dungeonFx?level:base*level);
       if(active.speech)active.speech.volume=clamp(base*level);
       state.activeVoiceAdjustments++;return true
     }catch(_){return false}
@@ -55,12 +55,16 @@
     row.querySelector("input")?.addEventListener("input",event=>savePercent(key,event.currentTarget.value));return row
   }
 
+  function optionsGrid(){return document.getElementById("ccg-r46-options")?.querySelector(".ccg-r46-options-grid")||null}
+  function optionsNeedEnhancement(){
+    const grid=optionsGrid();return Boolean(grid&&(!grid.querySelector('[data-r52-audio="sfxPercent"]')||!grid.querySelector('[data-r52-audio="voicePercent"]')))
+  }
   function enhanceOptions(){
-    const overlay=document.getElementById("ccg-r46-options"),grid=overlay?.querySelector(".ccg-r46-options-grid");if(!grid)return false;
-    const current=prefs();
-    if(!grid.querySelector('[data-r52-audio="sfxPercent"]'))grid.appendChild(slider("SFX LEVEL","Controls combat, pickup, door and environment effects without changing music.","sfxPercent",current.sfxPercent,"ccg-r52-sfx-value"));
-    if(!grid.querySelector('[data-r52-audio="voicePercent"]'))grid.appendChild(slider("VOICE LEVEL","Controls spoken dungeon prompts independently of music and sound effects.","voicePercent",current.voicePercent,"ccg-r52-voice-value"));
-    applyPrefs(current);state.optionsEnhancements++;return true
+    const grid=optionsGrid();if(!grid)return false;
+    const current=prefs();let changed=false;
+    if(!grid.querySelector('[data-r52-audio="sfxPercent"]')){grid.appendChild(slider("SFX LEVEL","Controls combat, pickup, door and environment effects without changing music.","sfxPercent",current.sfxPercent,"ccg-r52-sfx-value"));changed=true}
+    if(!grid.querySelector('[data-r52-audio="voicePercent"]')){grid.appendChild(slider("VOICE LEVEL","Controls spoken dungeon prompts independently of music and sound effects.","voicePercent",current.voicePercent,"ccg-r52-voice-value"));changed=true}
+    if(changed){applyPrefs(current);state.optionsEnhancements++}return changed
   }
 
   function installPlaybackHooks(){
@@ -77,14 +81,22 @@
     return state.mediaPlayWrapped||state.speechWrapped
   }
 
+  function observeOptions(){
+    if(state.observer||!document.body||!window.MutationObserver)return;
+    let queued=false;
+    state.observer=new MutationObserver(()=>{
+      if(queued||!optionsNeedEnhancement())return;queued=true;
+      queueMicrotask(()=>{queued=false;if(optionsNeedEnhancement())enhanceOptions()})
+    });
+    state.observer.observe(document.body,{subtree:true,childList:true})
+  }
+
   function install(){
-    installPlaybackHooks();applyPrefs();enhanceOptions();
-    if(!state.observer&&document.body){state.observer=new MutationObserver(()=>enhanceOptions());state.observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:["class"]})}
-    if(!state.timer)state.timer=setInterval(()=>{installPlaybackHooks();applyActiveVoice();enhanceOptions()},250);
+    installPlaybackHooks();applyPrefs();enhanceOptions();observeOptions();
     document.body.dataset.v141R52AudioAccessibility="true";return true
   }
 
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",install,{once:true});else install();
-  addEventListener("pagehide",()=>{state.observer?.disconnect();if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
+  addEventListener("pagehide",()=>state.observer?.disconnect(),{once:true});
   window.CCGLostSizzlerV141R52AudioAccessibility={prefs,applyPrefs,setSfxLevel,setVoiceLevel,enhanceOptions,applyActiveVoice,getSfxLevel:()=>Number(window.CCGSound?.getSfxLevel?.()??1),getVoiceLevel:()=>state.voiceLevel,get state(){return state}};
 })();
