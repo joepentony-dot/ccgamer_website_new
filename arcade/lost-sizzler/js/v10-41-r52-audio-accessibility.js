@@ -3,14 +3,15 @@
  * This layer extends the existing r46 Accessibility & Audio panel without
  * changing gameplay, scoring, multiplayer authority or the established
  * Sound/Voice on-off controls. SFX continues through CCGSound's existing bus;
- * voice output is scaled at the current voice director playback boundary.
+ * voice output is scaled only through the active voice-director state so R52
+ * never replaces browser-wide media or speech playback functions.
  */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V141_R52_AUDIO_ACCESSIBILITY__)return;
   window.__CCG_LOST_SIZZLER_V141_R52_AUDIO_ACCESSIBILITY__=true;
 
-  const state={voiceLevel:1,applies:0,optionsEnhancements:0,activeVoiceAdjustments:0,timer:0,observer:null,mediaPlayWrapped:false,speechWrapped:false};
+  const state={voiceLevel:1,applies:0,optionsEnhancements:0,activeVoiceAdjustments:0,timer:0,observer:null};
   const clamp=(value,min=0,max=1)=>Math.max(min,Math.min(max,Number(value)||0));
   const percent=value=>Math.round(clamp(value,0,100));
   const voiceBase=key=>String(key||"")==="hurt"?.56:.72;
@@ -67,24 +68,10 @@
     applyPrefs(current);if(changed)state.optionsEnhancements++;return true
   }
 
-  function installPlaybackHooks(){
-    if(!state.mediaPlayWrapped&&window.HTMLMediaElement?.prototype?.play){
-      const original=HTMLMediaElement.prototype.play;
-      HTMLMediaElement.prototype.play=function playV141R52VoiceScale(){try{const active=voice()?.state?.active;if(active?.audio===this){const base=voiceBase(active.key);this.volume=clamp(active.dungeonFx?state.voiceLevel:base*state.voiceLevel)}}catch(_){}return original.apply(this,arguments)};
-      HTMLMediaElement.prototype.play.__ccgV141R52VoiceScale=true;state.mediaPlayWrapped=true
-    }
-    if(!state.speechWrapped&&window.speechSynthesis?.speak){
-      const original=window.speechSynthesis.speak.bind(window.speechSynthesis);
-      window.speechSynthesis.speak=function speakV141R52VoiceScale(utterance){try{const active=voice()?.state?.active;if(active?.speech===utterance)utterance.volume=clamp(voiceBase(active.key)*state.voiceLevel)}catch(_){}return original(utterance)};
-      window.speechSynthesis.speak.__ccgV141R52VoiceScale=true;state.speechWrapped=true
-    }
-    return state.mediaPlayWrapped||state.speechWrapped
-  }
-
   function install(){
-    installPlaybackHooks();applyPrefs();enhanceOptions();
+    applyPrefs();enhanceOptions();
     if(!state.observer&&document.body){state.observer=new MutationObserver(()=>{if(!optionsReady())enhanceOptions()});state.observer.observe(document.body,{subtree:true,childList:true})}
-    if(!state.timer)state.timer=setInterval(()=>{installPlaybackHooks();applyActiveVoice();if(!optionsReady())enhanceOptions()},250);
+    if(!state.timer)state.timer=setInterval(()=>{applyActiveVoice();if(!optionsReady())enhanceOptions()},250);
     document.body.dataset.v141R52AudioAccessibility="true";return true
   }
 
