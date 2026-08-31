@@ -25,6 +25,10 @@ assert.match(r52,/active\.dungeonFx\?level:base\*level/,"recorded voices routed 
 assert.match(r52,/active\.speech\)active\.speech\.volume=clamp\(base\*level\)/,"speech fallback must obey the same voice level");
 assert.match(r52,/active\?\.audio===this/,"voice scaling must be applied before active recorded media starts");
 assert.match(r52,/active\?\.speech===utterance/,"voice scaling must be applied before active speech synthesis starts");
+assert.match(r52,/node&&node\.textContent!==text\)node\.textContent=text/,"R52 must not rewrite unchanged percentage labels and retrigger its own child-list observer");
+assert.match(r52,/MutationObserver\(\(\)=>\{if\(!optionsReady\(\)\)enhanceOptions\(\)\}\)/,"the options observer must only re-enhance when an R52 control is actually missing");
+assert.match(r52,/observe\(document\.body,\{subtree:true,childList:true\}\)/,"the options observer must watch structural additions only");
+assert.doesNotMatch(r52,/attributeFilter:\["class"\]/,"R52 must not observe menu class toggles because opening the options panel must remain independent of enhancement maintenance");
 assert.doesNotMatch(r52,/health|damage|score\s*=|host\.enemies|broadcastWorld|sendIntent/,"audio accessibility must not take gameplay or multiplayer authority");
 
 assert.match(loader,/v10-41-r52-audio-accessibility\.js/,"the canonical late loader must install R52");
