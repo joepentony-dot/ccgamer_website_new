@@ -138,9 +138,13 @@ try{
   assert.match(searchProgress.label,/SEARCHING/,"Spy search indicator must say what is being searched");
   assert.ok(searchProgress.width>0&&searchProgress.width<100,`Spy search progress bar must visibly advance, got ${searchProgress.width}%`);
   assert.ok(searchProgress.pulses>=1,"Spy search feedback must register the interaction pulse");
-  await page.waitForTimeout(430);
+
+  // The canonical r32 owner deliberately takes 680 ms to complete a furniture
+  // search. Wait on that semantic boundary instead of a shorter fixed sleep so
+  // CI/browser scheduling cannot race the real search completion.
+  await page.waitForFunction(()=>!window.CCGLostSizzlerV141R32SpyOverhaul?.state?.search,null,{timeout:2000});
   const searchComplete=await page.evaluate(()=>{window.CCGLostSizzlerV141UiSpyPerformance.renderSearchIndicator();const indicator=document.getElementById("spy-search-indicator");return{state:indicator.dataset.state,width:parseFloat(document.getElementById("spy-search-fill")?.style?.width||"0")}});
-  assert.equal(searchComplete.state,"complete","Spy search feedback must visibly complete after the interaction window");
+  assert.equal(searchComplete.state,"complete","Spy search feedback must visibly complete when the canonical r32 search owner completes");
   assert.equal(searchComplete.width,100,"completed Spy search feedback must fill the interaction bar");
 
   assert.deepEqual(errors,[],`Horde/Spy UI-performance browser regression must have no uncaught browser errors: ${errors.join("\n")}`);

@@ -6,18 +6,29 @@
  * remains as a fallback for network/replayed knockout events.
  *
  * This finalizer also keeps the existing r35 black-canvas watchdog on the
- * actual top-level Spy render chain if a later presentation owner replaces it.
+ * active Spy render chain if a later presentation owner replaces it. It does
+ * not create a second render implementation: it asks the existing r35 owner to
+ * wrap the current renderer and preserves the recognition markers of older
+ * pass-through presentation guards underneath it.
  */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V141_R35_SPY_KNOCKOUT_FINALIZER__)return;
   window.__CCG_LOST_SIZZLER_V141_R35_SPY_KNOCKOUT_FINALIZER__=true;
 
-  const MODE_ID="sizzler-saboteurs",MONITOR_MS=40;
-  const state={installed:false,weaponFinalizations:0,trapFinalizations:0,renderSeals:0,renderTimer:0,lastError:""};
+  const MODE_ID="sizzler-saboteurs",MONITOR_MS=24;
+  const state={installed:false,weaponFinalizations:0,trapFinalizations:0,renderSeals:0,renderRetries:0,renderTimer:0,lastError:""};
 
   const spyActive=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type===MODE_ID||document.body?.dataset?.specialMode===MODE_ID}catch(_){return false}};
   const hardening=()=>{try{return window.CCGLostSizzlerV141R35SpyRulesHardening||null}catch(_){return null}};
+  function sourceHasMarker(fn,marker){
+    let current=fn;
+    for(let depth=0;current&&depth<16;depth++){
+      if(current?.[marker])return true;
+      current=current.__ccgOriginal||current.__ccgV141ModeOwnedSource||current.__ccgV141R31Original||null
+    }
+    return false
+  }
 
   function finalizeKnockout(matchState,targetId,beforeStatus,kind){
     if(!spyActive()||beforeStatus!=="active")return false;
@@ -30,22 +41,42 @@
     return converted
   }
 
-  function sealRenderGuard(){
+  function preserveRetainedMarkers(target,source){
+    if(typeof target!=="function")return false;
+    try{
+      // Both older guards are pass-through outside their own Horde-specific
+      // work. Carrying their markers onto the r35 top owner tells their
+      // maintenance loops that their retained source chain is still present,
+      // preventing needless wrapper competition during Spy play.
+      target.__ccgV141PostPlaytestRender=true;
+      if(sourceHasMarker(source,"__ccgV141R28NoHordeBanner"))target.__ccgV141R28NoHordeBanner=true;
+      return true
+    }catch(_){return false}
+  }
+
+  function sealRenderGuard(allowRetry=true){
     if(!spyActive())return false;
     const hard=hardening();if(typeof hard?.installRenderGuard!=="function")return false;
     let before=null;try{before=window.render}catch(_){return false}
-    const already=Boolean(before?.__ccgV141R35SpyBlackGuard),retainedR28=Boolean(before?.__ccgV141R28NoHordeBanner),sealed=Boolean(hard.installRenderGuard(true));
-    if(sealed&&window.render?.__ccgV141R35SpyBlackGuard){
-      // Retain markers for presentation guards already underneath this Spy
-      // watchdog. Their monitors can then recognise that their behaviour is
-      // preserved instead of repeatedly replacing the top-level r35 owner.
-      try{
-        window.render.__ccgV141PostPlaytestRender=true;
-        if(retainedR28)window.render.__ccgV141R28NoHordeBanner=true
-      }catch(_){}
-      if(!already)state.renderSeals++
+    if(typeof before!=="function")return false;
+    if(before.__ccgV141R35SpyBlackGuard){preserveRetainedMarkers(before,before.__ccgOriginal||before);return true}
+
+    const sealed=Boolean(hard.installRenderGuard(true));
+    let current=null;try{current=window.render}catch(_){current=null}
+    if(sealed&&current?.__ccgV141R35SpyBlackGuard){
+      preserveRetainedMarkers(current,before);
+      state.renderSeals++;state.lastError="";return true
     }
-    return sealed
+
+    // A late owner can appear in the same turn that the Spy lazy stack settles.
+    // Retry at the two browser scheduling boundaries instead of waiting for an
+    // arbitrary long timeout. These retries are inert outside Spy.
+    if(allowRetry){
+      state.renderRetries++;
+      queueMicrotask(()=>{if(spyActive())try{sealRenderGuard(false)}catch(error){state.lastError=String(error?.message||error)}});
+      try{requestAnimationFrame(()=>{if(spyActive())try{sealRenderGuard(false)}catch(error){state.lastError=String(error?.message||error)}})}catch(_){}
+    }
+    return false
   }
 
   function install(){
@@ -88,8 +119,11 @@
     if(spyActive())sealRenderGuard()
   }
 
+  function reassert(){if(spyActive())try{sealRenderGuard()}catch(error){state.lastError=String(error?.message||error)}}
   monitor();state.renderTimer=setInterval(()=>{try{monitor()}catch(error){state.lastError=String(error?.message||error);console.warn("[Lost Sizzler r35] final Spy seal failed safely",error)}},MONITOR_MS);
-  addEventListener("pagehide",()=>{if(state.renderTimer)clearInterval(state.renderTimer);state.renderTimer=0},{once:true});
+  addEventListener("focus",reassert,{passive:true});
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)reassert()},{passive:true});
+  addEventListener("pagehide",()=>{if(state.renderTimer)clearInterval(state.renderTimer);state.renderTimer=0;removeEventListener("focus",reassert)},{once:true});
 
   window.CCGLostSizzlerV141R35SpyKnockoutFinalizer={install,finalizeKnockout,sealRenderGuard,get state(){return state}};
 })();
