@@ -52,9 +52,7 @@ assert.match(overrides,/release gate failed:/,"release-gate failures must expose
 
 assert.match(freezeGuard,/Object\.defineProperty\(gate,"__v136Hooked"/,"startup freeze guard must observe V10.36 gate ownership synchronously instead of relying only on a timer");
 assert.match(freezeGuard,/set\(value\)\{\s*v136Hooked=Boolean\(value\);\s*if\(!v136Hooked\)return;\s*markLegacyGutterHandled\(\);\s*if\(hookReleaseGate\(\)/s,"V10.36 ownership must mark the legacy gutter before synchronously wrapping release-gate finish");
-assert.match(freezeGuard,/let canonicalFinish=null/,"startup freeze guard must retain the untouched canonical release finisher");
-assert.match(freezeGuard,/if\(!v136Hooked&&typeof gate\.finish==="function"\)canonicalFinish=gate\.finish/,"the canonical finisher must be captured before V10.36 acquires release-gate ownership");
-assert.match(freezeGuard,/canonicalFinish\.apply\(this,arguments\);state\.baseCommits\+\+[\s\S]*current\.apply\(this,arguments\)/,"canonical release state must commit before V10.36 performs its synchronous post-load work");
+assert.match(freezeGuard,/gate\.finish=function finishV141StartupFreezeGuard\(\)\{\s*markLegacyGutterHandled\(\);\s*const result=current\.apply\(this,arguments\)/s,"the outer V10.41 gate wrapper must mark the atlas before V10.36 installRuntime runs");
 assert.match(freezeGuard,/state\.timer=setInterval\(tick,25\);tick\(\)/,"the historical timer must remain only as a compatibility fallback");
 
 assert.match(r57,/clearInterval\(api\.state\.timer\);api\.state\.timer=0/,"R57 must retire the flickering R56 periodic DOM icon pass");
