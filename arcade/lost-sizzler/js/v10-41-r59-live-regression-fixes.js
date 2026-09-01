@@ -1,16 +1,16 @@
 /* The Lost Sizzler V10.41 r59 — live pause-clock and Spy regression authority.
  *
- * This finalizer owns two release blockers reported after r58:
+ * This finalizer owns release blockers reported after r58:
  * - pause/resume must never turn paused wall-clock time into gameplay recovery or
  *   allow more than one accepted simulation frame for the same RAF timestamp;
  * - the r58 Spy rules must stay authoritative after older compatibility layers
- *   have finished installing.
+ *   have finished installing;
+ * - standard Solo floor-entry autosaves must be committed synchronously from
+ *   the canonical floor checkpoint transition rather than depend on click/timer
+ *   scheduling under a heavily loaded browser run.
  *
- * Keyboard ownership for TAB/F is established by the r32 Spy loader. This file
- * keeps the runtime clock and final r58 rules stable without changing Solo,
- * Horde, Dungeon or Split Screen gameplay rules. R29 remains the public fault
- * accounting surface so existing recovery diagnostics keep their contract even
- * while R59 owns the final RAF callback.
+ * Keyboard ownership for TAB/F is established by the r32 Spy loader. R29 remains
+ * the public fault-accounting surface while R59 owns the final RAF callback.
  */
 (()=>{
   "use strict";
@@ -21,11 +21,11 @@
   const LONG_GAP_MS=500;
   const PAUSE_GUARD_MS=1200;
   const state={
-    timer:0,installed:false,clockInstalled:false,pauseWrapped:false,
+    timer:0,installed:false,clockInstalled:false,pauseWrapped:false,soloSaveTransitionInstalled:false,
     acceptedFrames:0,duplicateFramesSkipped:0,longGaps:0,longGapRecoveries:0,
     pausedGapsDiscarded:0,pauseBoundaries:0,lastAcceptedRafTimestamp:null,
     lastMode:"",suppressRecoveryUntil:0,lastPauseReason:"",lastError:"",
-    faultBridges:0,r58Reassertions:0,r58Ticks:0
+    faultBridges:0,r58Reassertions:0,r58Ticks:0,soloSaveTransitionInstalls:0,soloFloorAutosaves:0
   };
 
   let basePayDownCombatGap=null;
@@ -154,6 +154,21 @@
     state.pauseWrapped=Boolean(a||b||c);return state.pauseWrapped
   }
 
+  function installSoloSaveTransitionOwner(){
+    const api=window.CCGLostSizzlerV141R43SoloSave,current=window.captureFloorEntryCheckpoint;
+    if(!api||typeof api.captureEntry!=="function"||typeof current!=="function")return false;
+    if(chainHas(current,"__ccgV141R59SoloAutosave")){state.soloSaveTransitionInstalled=true;return true}
+    const wrapped=function captureFloorEntryCheckpointV141R59(){
+      const checkpoint=current.apply(this,arguments);
+      if(checkpoint){
+        try{if(api.captureEntry("autosave")){state.soloFloorAutosaves++}}catch(error){noteFault("solo-floor-autosave",error)}
+      }
+      return checkpoint
+    };
+    wrapped.__ccgV141R59SoloAutosave=true;wrapped.__ccgOriginal=current;
+    window.captureFloorEntryCheckpoint=wrapped;state.soloSaveTransitionInstalled=true;state.soloSaveTransitionInstalls++;return true
+  }
+
   function reassertR58(){
     if(!spyActive())return false;
     const api=window.CCGLostSizzlerV141R58SpyOverhaul;if(!api)return false;
@@ -166,7 +181,7 @@
   }
 
   function ensure(){
-    installClockOwner();installPauseOwners();reassertR58();
+    installClockOwner();installPauseOwners();installSoloSaveTransitionOwner();reassertR58();
     state.installed=state.clockInstalled&&state.pauseWrapped;
     return state.installed
   }
@@ -177,7 +192,7 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
   window.CCGLostSizzlerV141R59LiveRegressionFixes={
-    MONITOR_MS,LONG_GAP_MS,PAUSE_GUARD_MS,stableLoopR59,markPauseBoundary,safeGapRecovery,noteFault,installClockOwner,installPauseOwners,reassertR58,normaliseAudioRate,ensure,
+    MONITOR_MS,LONG_GAP_MS,PAUSE_GUARD_MS,stableLoopR59,markPauseBoundary,safeGapRecovery,noteFault,installClockOwner,installPauseOwners,installSoloSaveTransitionOwner,reassertR58,normaliseAudioRate,ensure,
     get state(){return state}
   };
 })();
