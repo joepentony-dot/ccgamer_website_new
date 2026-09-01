@@ -144,12 +144,19 @@
   }
   function installTimedGuard(){
     const current=window.updateTimed;if(typeof current!=="function")return false;
-    if(current.__ccgV141R57TimedGuard){state.timedOwnerInstalled=true;return true}
+    const modeApi=window.CCGLostSizzlerModeRuntime||null;
+    if(chainHas(current,"__ccgV141R57TimedGuard")){
+      if(modeApi?.ownedSystemState?.("updateTimed")?.installed!==true)try{modeApi.ensureOwnedSystemGates?.()}catch(_){}
+      state.timedOwnerInstalled=modeApi?.ownedSystemState?.("updateTimed")?.installed!==false;return true
+    }
+    const source=current.__ccgV141ModeOwnedGate===true&&typeof current.__ccgV141ModeOwnedSource==="function"?current.__ccgV141ModeOwnedSource:current;
     const wrapped=function updateTimedV141R57Bounded(dt){
-      if(!ordinaryDungeon())return current.apply(this,arguments);
-      prepareTimedInterwaves();const elapsed=Math.min(MAX_TIMED_DT,Math.max(0,Number(dt)||0)),result=current.call(this,elapsed);finishTimedInterwaves();return result
+      if(!ordinaryDungeon())return source.apply(this,arguments);
+      prepareTimedInterwaves();const elapsed=Math.min(MAX_TIMED_DT,Math.max(0,Number(dt)||0)),result=source.call(this,elapsed);finishTimedInterwaves();return result
     };
-    wrapped.__ccgV141R57TimedGuard=true;wrapped.__ccgOriginal=current;state.timedBase=current;window.updateTimed=wrapped;state.timedOwnerInstalled=true;return true
+    wrapped.__ccgV141R57TimedGuard=true;wrapped.__ccgOriginal=source;state.timedBase=source;window.updateTimed=wrapped;
+    try{modeApi?.ensureOwnedSystemGates?.()}catch(_){}
+    state.timedOwnerInstalled=modeApi?.ownedSystemState?.("updateTimed")?.installed!==false;return true
   }
 
   function trimVisualArray(list,max){
