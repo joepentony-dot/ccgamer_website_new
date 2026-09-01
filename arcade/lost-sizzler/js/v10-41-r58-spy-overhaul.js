@@ -21,6 +21,7 @@
   const MATCH_MS=10*60*1000;
   const DEATH_PENALTY_MS=30*1000;
   const RESPAWN_BEAT_MS=2800;
+  const LEGACY_GHOST_MARKER_MS=10000;
   const EXTRACTION_MS=3000;
   const TICK_MS=40;
   const CLASSIC_TRAPS=Object.freeze(["powerBrick","spring","custard"]);
@@ -32,7 +33,7 @@
     timer:0,installed:false,rulesPatched:false,inputPatched:false,wasSpy:false,matchKey:"",lastTickAt:0,
     trapKeyPasses:0,trapPlacementsObserved:0,ownerTrapIgnores:0,trapKills:0,combatKills:0,timePenalties:0,
     lootTransfers:0,respawns:0,soloPurges:0,soloObjectsRemoved:0,clockCompletions:0,extractions:0,
-    deathSerial:0,seenDeaths:new Map(),lastError:""
+    inheritedClockPreserves:0,furnitureTrapRoutes:0,deathSerial:0,seenDeaths:new Map(),lastError:""
   };
 
   let nativeStopImmediate=null;
@@ -135,7 +136,7 @@
   function killAgent(m,victimId,killerId,at,{kind="combat",trapId="",trapName=""}={}){
     const victim=modelFor(m,victimId),killer=modelFor(m,killerId);if(!m||!victim||victim.status!=="active"||m.state==="match-complete")return false;
     const deathRoom=String(victim.roomId||"");if(killer&&String(killer.id)!==String(victim.id))transferAllCarried(victim,killer);
-    victim.hp=0;victim.status="ghost";victim.invulnerableUntil=Number.MAX_SAFE_INTEGER;victim.r58DeathRoomId=deathRoom;victim.r58RespawnAt=at+RESPAWN_BEAT_MS;victim.respawnAt=Number.MAX_SAFE_INTEGER;victim.ghostUntil=Number.MAX_SAFE_INTEGER;
+    victim.hp=0;victim.status="ghost";victim.invulnerableUntil=Number.MAX_SAFE_INTEGER;victim.r58DeathRoomId=deathRoom;victim.r58RespawnAt=at+RESPAWN_BEAT_MS;victim.respawnAt=at+LEGACY_GHOST_MARKER_MS;victim.ghostUntil=at+LEGACY_GHOST_MARKER_MS;
     const serial=++state.deathSerial;victim.r58Death={serial,kind,trapId,trapName,killerId:killer?.id||null,deathRoomId:deathRoom,at,respawnAt:victim.r58RespawnAt};
     penaliseClock(m,victim,at);if(killer&&String(killer.id)!==String(victim.id))killer.knockouts=Math.max(0,Number(killer.knockouts||0))+1;
     m.events?.push?.({type:"spy-r58-death",playerId:victim.id,victimId:victim.id,attackerId:killer?.id||null,ownerId:killer?.id||null,kind,trapId,trapType:trapId,deathSerial:serial,penaltyMs:DEATH_PENALTY_MS,at});
@@ -160,6 +161,16 @@
     return killAgent(m,victim.id,placed.ownerId,at,{kind:"trap",trapId:String(placed.trapId||""),trapName:String(trap?.name||placed.trapId||"TRAP")})
   }
 
+  function searchFurnitureR58(m,playerId,furnitureId,at=now()){
+    const player=modelFor(m,playerId),base=baseSaboteurs?.searchFurniture;if(!m||!player||player.status!=="active"||typeof base!=="function")return false;
+    const placed=(m.traps||[]).find(entry=>entry?.armed&&String(entry.roomId)===String(player.roomId)&&entry.targetType==="furniture"&&String(entry.targetId||"")===String(furnitureId||""));
+    if(!placed)return base(m,playerId,furnitureId,at);
+    state.furnitureTrapRoutes++;
+    if(String(placed.ownerId)!==String(player.id)){triggerTrapR58(m,playerId,{type:"furniture",id:furnitureId,roomId:player.roomId},at);return{trapped:true}}
+    state.ownerTrapIgnores++;placed.armed=false;
+    try{return base(m,playerId,furnitureId,at)}finally{if(m.state!=="match-complete")placed.armed=true}
+  }
+
   function useWeaponR58(m,attackerId,targetId,at=now()){
     if(!m||m.state==="match-complete")return false;const attacker=modelFor(m,attackerId),target=modelFor(m,targetId);if(!attacker||!target||attacker.status!=="active"||target.status!=="active"||String(attacker.roomId)!==String(target.roomId))return false;
     const weapon=attacker.weapon||{id:"melee",name:"Rolled-Up Rulebook",uses:Infinity,damage:1,knockback:1,effect:"bonk"};if(Number(weapon.uses)<=0)return false;if(Number.isFinite(Number(weapon.uses)))weapon.uses=Math.max(0,Number(weapon.uses)-1);
@@ -181,14 +192,18 @@
   function chooseRespawnRoom(m,player,at){
     const killer=modelFor(m,player?.r58Death?.killerId),deathRoom=String(player?.r58DeathRoomId||"");let rooms=(m?.map?.rooms||[]).filter(room=>String(room.id)!==deathRoom&&String(room.id)!==String(killer?.roomId||"")&&!room.extraction);
     const armedRooms=new Set((m?.traps||[]).filter(trap=>trap?.armed&&String(trap.ownerId)!==String(player?.id)).map(trap=>String(trap.roomId)));const safer=rooms.filter(room=>!armedRooms.has(String(room.id)));if(safer.length)rooms=safer;
-    if(!rooms.length)rooms=(m?.map?.rooms||[]).filter(room=>String(room.id)!==deathRoom);if(!rooms.length)return null;
+    if(!rooms.length)rooms=(m?.map?.rooms||[]).filter(room=>String(room.id)!==deathRoom&&String(room.id)!==String(killer?.roomId||""));if(!rooms.length)rooms=(m?.map?.rooms||[]).filter(room=>String(room.id)!==deathRoom);if(!rooms.length)return null;
     const graph=baseSaboteurs?.graphDistance||window.CCGLostSizzlerSaboteurs?.graphDistance;rooms.sort((a,b)=>{const da=typeof graph==="function"&&killer?Number(graph(m.map,killer.roomId,a.id)):0,db=typeof graph==="function"&&killer?Number(graph(m.map,killer.roomId,b.id)):0;return db-da||String(a.id).localeCompare(String(b.id))});
     const far=rooms.filter(room=>{if(typeof graph!=="function"||!killer)return true;return Number(graph(m.map,killer.roomId,room.id))>=2});const pool=far.length?far:rooms;const hash=baseSaboteurs?.hash32?.(`${m.seed}|${player.id}|${at}|R58-RESPAWN`)??0;return pool[Math.abs(Number(hash)||0)%pool.length]
   }
 
+  function syncRespawnPhysical(player,room){
+    try{const physical=world?.rooms?.[Number(room?.dungeonRoomId)],live=String(player?.id)===actorId()?p1:remote?.get?.(player?.id);if(!physical||!live)return false;const x=Math.floor(Number(physical.x)+Number(physical.w)/2),y=Math.floor(Number(physical.y)+Number(physical.h)/2);live.x=live.rx=x;live.y=live.ry=y;live.health=Math.max(1,Number(player.hp||1));live.maxHealth=Math.max(1,Number(player.maxHp||live.maxHealth||1));player.x=x;player.y=y;return true}catch(_){return false}
+  }
+
   function respawnR58(m,at){
     if(!authoritative()||!m||m.state==="match-complete")return false;let changed=false;
-    for(const player of m.players||[]){if(player?.status!=="ghost"||at<Number(player.r58RespawnAt||Infinity))continue;const room=chooseRespawnRoom(m,player,at);if(!room)continue;player.status="active";player.hp=Math.max(1,Number(player.maxHp||6));player.roomId=room.id;player.invulnerableUntil=at+1400;player.roomEnteredAt=at;player.respawnAt=0;player.ghostUntil=0;player.r58RespawnAt=0;m.events?.push?.({type:"ghost-respawn",playerId:player.id,roomId:room.id,r58:true,at});state.respawns++;changed=true}
+    for(const player of m.players||[]){if(player?.status!=="ghost"||at<Number(player.r58RespawnAt||Infinity))continue;const room=chooseRespawnRoom(m,player,at);if(!room)continue;player.status="active";player.hp=Math.max(1,Number(player.maxHp||6));player.roomId=room.id;player.invulnerableUntil=at+1400;player.roomEnteredAt=at;player.respawnAt=0;player.ghostUntil=0;player.r58RespawnAt=0;syncRespawnPhysical(player,room);m.events?.push?.({type:"ghost-respawn",playerId:player.id,roomId:room.id,r58:true,at});state.respawns++;changed=true}
     return changed
   }
 
@@ -206,9 +221,15 @@
   }
 
   function normaliseMatch(m,at=now()){
-    if(!m||!spyActive())return false;const key=`${String(m.seed||"")}|${String(active()?.hostId||"")}|R58`;if(m.r58Rules&&state.matchKey===key)return false;
+    if(!m||!spyActive())return false;const key=`${String(m.seed||"")}|${String(active()?.hostId||"")}|R58`;
+    if(m.r58Rules&&state.matchKey===key)return false;
+    if(m.r58Rules&&!authoritative()){
+      m.bestOf=1;m.roundsToWin=1;m.round=Math.max(1,Number(m.round||1));m.roundEndsAt=Number.MAX_SAFE_INTEGER;m.suddenDeathEndsAt=0;m.extraction=null;m.trapLoadout=[...CLASSIC_TRAPS];
+      for(const player of m.players||[])if(!finite(player.timeRemainingMs))player.timeRemainingMs=MATCH_MS;
+      state.matchKey=key;state.lastTickAt=at;state.inheritedClockPreserves++;return false
+    }
     m.r58Rules=true;m.r58Version=58;m.bestOf=1;m.roundsToWin=1;m.round=Math.max(1,Number(m.round||1));m.roundWinnerId=null;m.suddenDeathEndsAt=0;m.roundEndsAt=Number.MAX_SAFE_INTEGER;m.r58StartedAt=at;m.r58ClockAt=at;m.r58Extraction=null;m.extraction=null;m.trapLoadout=[...CLASSIC_TRAPS];m.state=m.state==="match-complete"?m.state:"playing";m.wins=m.wins||{};
-    for(const player of m.players||[]){player.timeRemainingMs=MATCH_MS;player.r58PenaltyCount=0;player.r58RespawnAt=0;player.r58Death=null;player.r58DeathRoomId="";player.status="active";player.hp=Math.max(1,Number(player.maxHp||player.hp||6));player.respawnAt=0;player.ghostUntil=0;player.invulnerableUntil=0;player.trapCharges=Math.max(3,Number(player.trapCharges||0))}
+    for(const player of m.players||[]){const inherited=Number(player.timeRemainingMs);player.timeRemainingMs=finite(inherited)&&inherited>=0&&inherited<=MATCH_MS?inherited:MATCH_MS;player.r58PenaltyCount=Math.max(0,Number(player.r58PenaltyCount||0));player.r58RespawnAt=Math.max(0,Number(player.r58RespawnAt||0));player.r58Death=player.r58Death||null;player.r58DeathRoomId=String(player.r58DeathRoomId||"");if(!player.status)player.status="active";player.hp=Math.max(0,Number(player.maxHp||player.hp||6),Number(player.hp||0));player.respawnAt=Number(player.respawnAt||0);player.ghostUntil=Number(player.ghostUntil||0);player.invulnerableUntil=Number(player.invulnerableUntil||0);player.trapCharges=Math.max(3,Number(player.trapCharges||0))}
     m.events?.push?.({type:"spy-r58-start",matchMs:MATCH_MS,deathPenaltyMs:DEATH_PENALTY_MS,trapLoadout:[...CLASSIC_TRAPS],at});state.matchKey=key;state.lastTickAt=at;return true
   }
 
@@ -242,7 +263,7 @@
     const current=window.CCGLostSizzlerSaboteurs;if(!current)return false;if(current.__ccgV141R58SpyRules){state.rulesPatched=true;return true}if(!baseSaboteurs)baseSaboteurs=current;
     const wrapped=Object.freeze({...current,
       MATCH_MS,DEATH_PENALTY_MS,R58_RESPAWN_MS:RESPAWN_BEAT_MS,
-      triggerTrap:triggerTrapR58,useWeapon:useWeaponR58,damagePlayer:damagePlayerR58,
+      triggerTrap:triggerTrapR58,searchFurniture:searchFurnitureR58,useWeapon:useWeaponR58,damagePlayer:damagePlayerR58,
       knockout:(m,playerId,attackerId,at,source)=>killAgent(m,playerId,attackerId,at,{kind:String(source||"").startsWith("trap:")?"trap":"combat",trapId:String(source||"").startsWith("trap:")?String(source).slice(5):""}),
       respawnPlayers:respawnR58,beginExtraction:beginExtractionR58,tickExtraction:tickExtractionR58,
       __ccgV141R58SpyRules:true
@@ -281,7 +302,7 @@
   window.CCGLostSizzlerV141R58SpyOverhaul={
     MATCH_MS,DEATH_PENALTY_MS,RESPAWN_BEAT_MS,EXTRACTION_MS,CLASSIC_TRAPS,
     install,tick,normaliseMatch,purgeSoloState,patchSaboteurRules,patchInputOwnership,
-    triggerTrapR58,useWeaponR58,damagePlayerR58,killAgent,transferAllCarried,respawnR58,chooseRespawnRoom,
+    triggerTrapR58,searchFurnitureR58,useWeaponR58,damagePlayerR58,killAgent,transferAllCarried,respawnR58,chooseRespawnRoom,syncRespawnPhysical,
     beginExtractionR58,tickExtractionR58,tickClocks,completeMatch,renderClocks,observeDeaths,
     get state(){return state}
   };
