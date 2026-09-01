@@ -19,7 +19,12 @@ assert.match(r60,/stepProjectiles\(\)/,"R60 must reuse canonical tile-by-tile pr
 assert.match(r60,/hostEnemyStep\(think\)/,"R60 must reuse canonical enemy AI/damage ownership");
 assert.match(r60,/pauseBoundary!==Number\(state\.lastPauseBoundary/,"R60 must detect R59 pause boundaries and discard paused wall-clock gaps");
 assert.match(r60,/document\.hidden/,"R60 must refuse hidden-page combat catch-up");
-assert.match(r60,/updateHordeLiveV141R60/,"R60 must feed real visible-play elapsed time into Horde perimeter movement");
+assert.match(r60,/updateHordeLiveV141R60Owned/,"R60 must feed real visible-play elapsed time into Horde perimeter movement through its exact owner");
+assert.match(r60,/current===state\.liveOwner\|\|originalChainContains\(current,state\.liveOwner\)/,"R60 must accept Horde live ownership only by exact function identity or ancestry");
+assert.match(r60,/unwrapLiveSource\(current\)/,"R60 must strip marker-only elapsed wrappers before synchronously reclaiming Horde live ownership");
+assert.match(r60,/wrapped\.__ccgV141R60RealElapsed=true;wrapped\.__ccgV141R60ExactLiveOwner=true/,"the synchronous Horde live owner must carry an explicit identity marker");
+assert.match(r60,/try\{wrapLiveController\(\)\}catch\(error\)\{recordError\(error\)\}/,"every active Horde pre-frame must synchronously reassert the exact live elapsed owner");
+assert.doesNotMatch(r60,/if\(current\.__ccgV141R60RealElapsed\)/,"R60 must never trust a copied elapsed marker as proof of Horde live ownership");
 assert.doesNotMatch(r60,/requestAnimationFrame\s*\(/,"R60 must never create a second RAF/game loop");
 assert.match(frame,/R60_SRC="js\/v10-41-r60-horde-combat-integrity\.js"/,"the established Horde performance layer must load R60 in production");
 assert.match(frame,/ensureR60\(\);schedulePrewarm\(\)/,"R60 must start loading without waiting for Horde gameplay");
@@ -48,4 +53,4 @@ assert.match(frame,/timingState\.liveElapsedFrames=Number\(timingState\.liveElap
 assert.match(frame,/wrapped\.__ccgV141R60RealElapsed=true;wrapped\.__ccgV141R60FinalLiveOwner=true/,"the final owner must retain R60 compatibility markers without relying on them for identity");
 assert.match(frame,/if\(isHorde\(\)\)return maintainR60HordeLiveOwner\(\)/,"the production monitor must route Horde to its own final live owner instead of the Solo owner");
 
-console.log("Lost Sizzler V10.41 r60 Horde timing plus Solo smoothing, pause cadence, Spy-safe ownership, final Horde live ownership, environment and named-enemy integrity contracts passed.");
+console.log("Lost Sizzler V10.41 r60 Horde timing plus Solo smoothing, pause cadence, Spy-safe ownership, synchronous exact Horde live ownership, environment and named-enemy integrity contracts passed.");
