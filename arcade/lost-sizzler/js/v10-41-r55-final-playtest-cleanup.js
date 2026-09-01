@@ -12,7 +12,7 @@
 
   const HORDE="horde-survivor";
   const STYLE_ID="ccg-v141-r55-final-playtest-cleanup";
-  const state={timer:0,menuPasses:0,authorityRepairs:0,phaseRepairs:0,bannerRepairs:0,lastAuthority:null,lastPhase:""};
+  const state={timer:0,menuPasses:0,menuRepairs:0,authorityRepairs:0,phaseRepairs:0,bannerRepairs:0,lastAuthority:null,lastPhase:""};
 
   const special=()=>{try{return window.CCGLostSizzlerSpecialModes?.active||null}catch(_){return null}};
   const isHorde=()=>String(special()?.type||document.body?.dataset?.specialMode||"")===HORDE;
@@ -63,8 +63,31 @@
     `;document.head.appendChild(style);return true
   }
 
+  function sealButtonLayout(button){
+    if(!button)return false;
+    const id=String(button.id||"");
+    let height="74px",font="9.5px";
+    if(id==="solo-btn"||id==="create-btn"){height="82px";font="10.5px"}
+    else if(id==="continue-save-btn"){height="78px";font="10px"}
+    else if(id==="tutorial-zone-btn"||id==="daily-btn"){height="70px";font="9px"}
+    const mobile=matchMedia?.("(max-width:760px)")?.matches===true;
+    if(mobile)height="78px";
+    const values={
+      "box-sizing":"border-box","position":"relative","display":"flex","align-items":"center","justify-content":"flex-start",
+      "min-height":height,"padding":mobile?"29px 12px 25px":"28px 12px 24px","overflow":"hidden","white-space":"normal","text-overflow":"clip",
+      "text-align":"left","line-height":"1.15","font-size":font,"text-shadow":"none","transform":"none","filter":"none","-webkit-filter":"none"
+    };
+    let repaired=false;
+    for(const [prop,value] of Object.entries(values)){
+      if(button.style.getPropertyValue(prop)!==value||button.style.getPropertyPriority(prop)!=="important"){button.style.setProperty(prop,value,"important");repaired=true}
+    }
+    if(repaired)state.menuRepairs++;
+    return true
+  }
+
   function markMenu(){
     const grid=document.querySelector("#menu .game-mode-buttons");if(!grid)return false;
+    for(const button of grid.querySelectorAll("button"))sealButtonLayout(button);
     grid.dataset.r55TextLayout="true";state.menuPasses++;return true
   }
 
@@ -111,5 +134,5 @@
   state.timer=setInterval(()=>{try{tick()}catch(error){console.warn("[Lost Sizzler r55] final cleanup tick failed",error)}},50);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
   document.body.dataset.v141R55FinalPlaytestCleanup="true";
-  window.CCGLostSizzlerV141R55FinalPlaytestCleanup={injectStyle,markMenu,expectedAuthority,repairHordeAuthority,updateBanner,get state(){return state}};
+  window.CCGLostSizzlerV141R55FinalPlaytestCleanup={injectStyle,sealButtonLayout,markMenu,expectedAuthority,repairHordeAuthority,updateBanner,get state(){return state}};
 })();
