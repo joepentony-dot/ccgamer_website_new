@@ -99,10 +99,6 @@
 
     state.currentElapsed=elapsed;state.currentFrameDt=frameDt;state.currentExtra=extra;state.frames++;
     try{projectileCD=SUPPRESS_TIMER_MS}catch(_){}try{enemyCD=SUPPRESS_TIMER_MS}catch(_){}
-    // The mode controller reads CCGLostSizzlerV138.updateHordeLive during its
-    // post-frame phase. Reassert the real-elapsed wrapper here, immediately
-    // before the shared source frame, so a late Horde compatibility installer
-    // cannot make this frame fall back to the clamped 45 ms delta.
     try{wrapLiveController()}catch(error){recordError(error)}
     return{active:true,elapsed,frameDt,extra,pauseBoundary}
   }
@@ -190,11 +186,7 @@
 
   function install(){
     const combat=wrapCombatController(),live=wrapLiveController();
-    if(combat&&live){
-      state.installed=true;
-      try{document.body.dataset.v141R60HordeCombatIntegrity="true"}catch(_){}
-      return true
-    }
+    if(combat&&live){state.installed=true;try{document.body.dataset.v141R60HordeCombatIntegrity="true"}catch(_){}return true}
     return false
   }
 
@@ -213,20 +205,7 @@
   };
 })();
 
-/* R60 live-play integrity addendum.
- *
- * Live playtesting after the first Horde timing pass exposed three separate
- * Dungeon defects that must be fixed before desktop packaging:
- * - the player/camera interpolation was frame-count based, making a low/uneven
- *   render rate feel as though the dungeon was dragging or sliding;
- * - legacy movement/watchdog calls could bypass the configured movement cadence,
- *   allowing repeated pause/resume cycles to present as accelerated movement;
- * - AZALEA had lost its portrait mapping and CCG remained a probabilistic boss,
- *   so the named-enemy roster could omit him entirely from a Solo floor.
- *
- * This addendum creates no render/game loop. It seals the existing owners and
- * reuses the canonical world, movement, damage and update functions.
- */
+/* R60 live-play integrity addendum. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V141_R60_LIVE_PLAY_INTEGRITY__)return;
@@ -304,22 +283,16 @@
     const wrapped=function updateV141R60TimeSmoothed(dt){
       syncPauseBoundary();
       if(!soloDungeonPlaying()){state.lastVisualNow=perfNow();return source.apply(this,arguments)}
-      const before=snapshotActors(),now=perfNow(),previous=state.lastVisualNow;
-      state.lastVisualNow=now;
-      const result=source.apply(this,arguments);
-      const wallElapsed=previous>0?Math.max(0,now-previous):Math.max(0,Number(dt)||FRAME_60);
-      applyTimeSmoothing(before,Math.max(Number(dt)||0,wallElapsed));
-      return result
+      const before=snapshotActors(),now=perfNow(),previous=state.lastVisualNow;state.lastVisualNow=now;
+      const result=source.apply(this,arguments),wallElapsed=previous>0?Math.max(0,now-previous):Math.max(0,Number(dt)||FRAME_60);
+      applyTimeSmoothing(before,Math.max(Number(dt)||0,wallElapsed));return result
     };
     wrapped.__ccgV141R60TimeSmoothing=true;wrapped.__ccgOriginal=source;
     window.update=wrapped;state.updateSource=source;state.updateWrapped=true;state.ownerReassertions++;return true
   }
 
   function movementHeldFor(player){
-    try{
-      const codes=player===p2?P2_MOVE:P1_MOVE;
-      for(const code of codes)if(input?.has?.(code))return true
-    }catch(_){}
+    try{const codes=player===p2?P2_MOVE:P1_MOVE;for(const code of codes)if(input?.has?.(code))return true}catch(_){}
     return false
   }
 
@@ -328,9 +301,15 @@
     return Math.max(45,base*mult)
   }
 
+  function adoptMovementOwner(owner){
+    if(typeof owner!=="function")return false;
+    try{owner.__ccgV141SpyFinal=true;window.CCGLostSizzlerV141R30?.adoptReleaseMoveOwner?.(owner)}catch(_){}
+    return true
+  }
+
   function wrapMovement(){
     const current=window.movePlayer;if(typeof current!=="function")return false;
-    if(current.__ccgV141R60CadenceSeal){state.moveWrapped=true;state.moveSource=current.__ccgOriginal||state.moveSource;return true}
+    if(current.__ccgV141R60CadenceSeal){adoptMovementOwner(current);state.moveWrapped=true;state.moveSource=current.__ccgOriginal||state.moveSource;return true}
     const source=current;
     const wrapped=function movePlayerV141R60CadenceSeal(player,dx,dy,dash=false){
       syncPauseBoundary();
@@ -341,25 +320,20 @@
       if(Number(player.x)!==bx||Number(player.y)!==by)movementTimes.set(player,now);
       return result
     };
-    wrapped.__ccgV141R60CadenceSeal=true;wrapped.__ccgOriginal=source;
+    wrapped.__ccgV141R60CadenceSeal=true;wrapped.__ccgOriginal=source;adoptMovementOwner(wrapped);
     window.movePlayer=wrapped;state.moveSource=source;state.moveWrapped=true;state.ownerReassertions++;return true
   }
 
   function patchAzalea(){
     const rows=window.CCG_CONFIG?.followerElites;if(!Array.isArray(rows))return false;
     const azalea=rows.find(row=>String(row?.name||"").toUpperCase()==="AZALEA");if(!azalea)return false;
-    let changed=false;
-    if(String(azalea.avatar||"")!==AZALEA_ASSET){azalea.avatar=AZALEA_ASSET;changed=true}
+    let changed=false;if(String(azalea.avatar||"")!==AZALEA_ASSET){azalea.avatar=AZALEA_ASSET;changed=true}
     const overrides=window.CCG_ASSET_OVERRIDES?.images?.namedEnemies;
     if(overrides&&typeof overrides==="object"){
       if(overrides.AZALEA==null&&overrides["Parsnip Celery"]!=null)overrides.AZALEA=overrides["Parsnip Celery"];
-      if(!Object.prototype.hasOwnProperty.call(overrides,"AZALEA"))overrides.AZALEA=null;
-      delete overrides["Parsnip Celery"]
+      if(!Object.prototype.hasOwnProperty.call(overrides,"AZALEA"))overrides.AZALEA=null;delete overrides["Parsnip Celery"]
     }
-    try{
-      const custom=overrides?.AZALEA||AZALEA_ASSET,existing=typeof avatarImages!=="undefined"?avatarImages.get("AZALEA"):null;
-      if(typeof avatarImages!=="undefined"&&(!existing||!String(existing.src||"").includes("parsnip-celery.png"))){const image=new Image();image.decoding="async";image.src=custom;avatarImages.set("AZALEA",image);changed=true}
-    }catch(_){}
+    try{const custom=overrides?.AZALEA||AZALEA_ASSET,existing=typeof avatarImages!=="undefined"?avatarImages.get("AZALEA"):null;if(typeof avatarImages!=="undefined"&&(!existing||!String(existing.src||"").includes("parsnip-celery.png"))){const image=new Image();image.decoding="async";image.src=custom;avatarImages.set("AZALEA",image);changed=true}}catch(_){}
     if(changed)state.azaleaRepairs++;return true
   }
 
@@ -368,8 +342,7 @@
     const occupied=new Set((hostState?.enemies||[]).filter(enemy=>enemy?.alive).map(enemy=>`${Number(enemy.x)},${Number(enemy.y)}`));
     const rooms=[...(worldState?.rooms||[])].filter(room=>room&&!room.sanctuary).sort((a,b)=>Number(b.depth||0)-Number(a.depth||0));
     for(const room of rooms)for(let y=Number(room.y)+1;y<Number(room.y)+Number(room.h);y++)for(let x=Number(room.x)+1;x<Number(room.x)+Number(room.w);x++){
-      if(occupied.has(`${x},${y}`))continue;
-      if(worldState?.start&&Math.abs(x-Number(worldState.start.x))+Math.abs(y-Number(worldState.start.y))<8)continue;
+      if(occupied.has(`${x},${y}`))continue;if(worldState?.start&&Math.abs(x-Number(worldState.start.x))+Math.abs(y-Number(worldState.start.y))<8)continue;
       try{if(window.CCGWorld?.walkable?.(worldState.map,x,y,hostState))return{x,y}}catch(_){}
     }
     return null
@@ -377,30 +350,19 @@
 
   function ensureCcgEnemy(){
     if(!soloDungeon()||!window.CCGWorld||!host||!world)return false;
-    if((host.enemies||[]).some(enemy=>enemy?.alive&&String(enemy?.follower?.name||"").toUpperCase()==="CCG"))return true;
+    if((host.enemies||[]).some(enemy=>String(enemy?.follower?.name||"").toUpperCase()==="CCG"))return true;
     const ccg=ccgDefinition(),cell=freeCcgCell(world,host);if(!ccg||!cell)return false;
     const floor=Math.max(1,Number(run?.floor||world?.floor||1));
-    const enemy={
-      id:`ccg-guaranteed-f${floor}-${Date.now()}`,...cell,kind:ccg.kind||"hunter",hp:18,maxHp:18,armor:4,maxArmor:4,alive:true,follower:ccg,ccgBoss:true,
-      moveSpeedScale:Number(ccg.moveSpeedScale||1.35),namedDamageScale:Number(ccg.namedDamageScale||2),
-      aiState:"idle",facing:{x:1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:900,attackCooldown:800,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0
-    };
-    host.enemies.push(enemy);host.revision=(Number(host.revision)||0)+1;
-    try{window.CCGAI?.stageUnenteredEnemies?.(host,world)}catch(_){}
-    state.ccgInsertions++;return true
+    const enemy={id:`ccg-guaranteed-f${floor}-${Date.now()}`,...cell,kind:ccg.kind||"hunter",hp:18,maxHp:18,armor:4,maxArmor:4,alive:true,follower:ccg,ccgBoss:true,moveSpeedScale:Number(ccg.moveSpeedScale||1.35),namedDamageScale:Number(ccg.namedDamageScale||2),aiState:"idle",facing:{x:1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:900,attackCooldown:800,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0};
+    host.enemies.push(enemy);host.revision=(Number(host.revision)||0)+1;try{window.CCGAI?.stageUnenteredEnemies?.(host,world)}catch(_){}state.ccgInsertions++;return true
   }
 
   function wrapStartWorld(){
     const current=window.startWorld;if(typeof current!=="function")return false;
     if(current.__ccgV141R60NamedRoster){state.startWrapped=true;state.startSource=current.__ccgOriginal||state.startSource;return true}
     const source=current;
-    const wrapped=function startWorldV141R60NamedRoster(){
-      const result=source.apply(this,arguments);
-      setTimeout(()=>{try{patchAzalea();ensureCcgEnemy()}catch(error){recordError(error)}},0);
-      return result
-    };
-    wrapped.__ccgV141R60NamedRoster=true;wrapped.__ccgOriginal=source;
-    window.startWorld=wrapped;state.startSource=source;state.startWrapped=true;state.ownerReassertions++;return true
+    const wrapped=function startWorldV141R60NamedRoster(){const result=source.apply(this,arguments);setTimeout(()=>{try{patchAzalea();ensureCcgEnemy()}catch(error){recordError(error)}},0);return result};
+    wrapped.__ccgV141R60NamedRoster=true;wrapped.__ccgOriginal=source;window.startWorld=wrapped;state.startSource=source;state.startWrapped=true;state.ownerReassertions++;return true
   }
 
   function wrapEnvironmentalDamage(){
@@ -409,37 +371,22 @@
     const source=current;
     const wrapped=function hurtPlayerV141R60EnvironmentSeal(player,amount,friendly=false,sourceName="enemy"){
       if(!soloDungeonPlaying()||!player||!ENVIRONMENT_SOURCE.test(String(sourceName||"")))return source.apply(this,arguments);
-      const before=durability(player),oldInv=Number(player.invuln||0);player.invuln=0;
-      let result=source.apply(this,arguments);
-      if(durability(player)>=before){
-        const golden=window.CCGLostSizzlerV141R30?.state?.goldenHurt;
-        if(typeof golden==="function"&&golden!==source&&golden!==wrapped){
-          player.invuln=0;try{result=golden.call(this,player,amount,friendly,sourceName)}catch(error){recordError(error)}
-        }
-      }
-      if(durability(player)>=before)player.invuln=oldInv;
-      else state.environmentRepairs++;
+      const before=durability(player),oldInv=Number(player.invuln||0);player.invuln=0;let result=source.apply(this,arguments),recovered=false;
+      if(durability(player)>=before){const golden=window.CCGLostSizzlerV141R30?.state?.goldenHurt;if(typeof golden==="function"&&golden!==source&&golden!==wrapped){player.invuln=0;try{result=golden.call(this,player,amount,friendly,sourceName);recovered=durability(player)<before}catch(error){recordError(error)}}}
+      if(durability(player)>=before)player.invuln=oldInv;else if(recovered)state.environmentRepairs++;
       return result
     };
-    wrapped.__ccgV141R60EnvironmentSeal=true;wrapped.__ccgV141R56EnvironmentDamage=true;wrapped.__ccgOriginal=source;
-    window.hurtPlayer=wrapped;state.hurtSource=source;state.hurtWrapped=true;state.ownerReassertions++;return true
+    wrapped.__ccgV141R60EnvironmentSeal=true;wrapped.__ccgV141R56EnvironmentDamage=true;wrapped.__ccgOriginal=source;window.hurtPlayer=wrapped;state.hurtSource=source;state.hurtWrapped=true;state.ownerReassertions++;return true
   }
 
   function install(){
-    syncPauseBoundary();patchAzalea();wrapStartWorld();wrapMovement();wrapEnvironmentalDamage();
-    if(specialType()!=="sizzler-saboteurs")wrapUpdate();
-    if(soloDungeon())ensureCcgEnemy();
-    state.installed=Boolean(state.moveWrapped&&state.startWrapped&&state.hurtWrapped);
-    if(state.installed)try{document.body.dataset.v141R60LivePlayIntegrity="true"}catch(_){}
-    return state.installed
+    syncPauseBoundary();patchAzalea();wrapStartWorld();wrapMovement();wrapEnvironmentalDamage();if(specialType()!=="sizzler-saboteurs")wrapUpdate();if(soloDungeon())ensureCcgEnemy();
+    state.installed=Boolean(state.moveWrapped&&state.startWrapped&&state.hurtWrapped);if(state.installed)try{document.body.dataset.v141R60LivePlayIntegrity="true"}catch(_){}return state.installed
   }
 
   install();state.timer=setInterval(()=>{try{install()}catch(error){recordError(error)}},INSTALL_MS);
   addEventListener("visibilitychange",()=>{if(document.hidden)resetPauseSensitiveState("hidden")},{passive:true});
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
-  window.CCGLostSizzlerV141R60LivePlayIntegrity={
-    AZALEA_ASSET,timeSmoothingAlpha,applyTimeSmoothing,movementCadence,patchAzalea,ensureCcgEnemy,wrapUpdate,wrapMovement,wrapStartWorld,wrapEnvironmentalDamage,install,
-    get state(){return state}
-  };
+  window.CCGLostSizzlerV141R60LivePlayIntegrity={AZALEA_ASSET,timeSmoothingAlpha,applyTimeSmoothing,movementCadence,patchAzalea,ensureCcgEnemy,wrapUpdate,wrapMovement,wrapStartWorld,wrapEnvironmentalDamage,install,get state(){return state}};
 })();
