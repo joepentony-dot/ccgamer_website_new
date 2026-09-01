@@ -1,4 +1,4 @@
-/* The Lost Sizzler V10.41 r32/r45 — Spy-only lazy loader.
+/* The Lost Sizzler V10.41 r32/r58 — Spy-only lazy loader.
  *
  * The full overhaul has no reason to install during Solo, Horde or ordinary
  * online Dungeon sessions. Keep those startup/network paths untouched and load
@@ -8,8 +8,9 @@
  * F as fullscreen; this loader stops that same F event before any later Spy
  * compatibility layer can reuse it. The r35 knockout finalizer binds the real
  * combat/trap boundary to the ghost/capture rules, r34 owns fullscreen panel
- * presentation, r36 performs live-state/UI reconciliation, and r45 adds the
- * final owner-only placement plus slot-specific triggered-trap presentation.
+ * presentation, r36 performs live-state/UI reconciliation, r45 adds hidden-trap
+ * presentation, and r58 is the final live Spy rules owner for lethal sabotage,
+ * personal clocks, respawns, item capture and Solo-system isolation.
  */
 (()=>{
   "use strict";
@@ -21,7 +22,8 @@
   const state={
     timer:0,loading:false,loaded:false,loads:0,lastError:"",
     uiLoading:false,uiLoaded:false,uiLoads:0,uiLastError:"",
-    hardeningLoaded:false,fullscreenUiLoaded:false,perfectionLoaded:false,trapPresentationLoaded:false,
+    hardeningLoaded:false,fullscreenUiLoaded:false,perfectionLoaded:false,trapPresentationLoaded:false,r58Loaded:false,
+    r56Guarded:false,r56GuardInstalls:0,r56OwnerSkips:0,
     pendingActionCode:"",queuedActions:0,replayedActions:0,queuedSearchFeedbacks:0,directSearchActions:0,
     searchTargetBridges:0,searchRoomBridges:0,searchKeyDowns:0,searchKeyUpFallbacks:0
   };
@@ -32,6 +34,19 @@
   const overhaul=()=>{try{return window.CCGLostSizzlerV141R32SpyOverhaul||null}catch(_){return null}};
   const actorId=()=>{try{return String(net?.sessionId||p1?.id||"P1")}catch(_){return"P1"}};
   const perfNow=()=>{try{return Number(performance.now())||Date.now()}catch(_){return Date.now()}};
+
+  function guardR56SpyOwnership(){
+    let api=null;try{api=window.CCGLostSizzlerV141R56PlaytestCompletion||null}catch(_){return false}
+    if(!api||typeof api.installOwners!=="function")return false;
+    const current=api.installOwners;
+    if(current.__ccgV141R58SpySafe){state.r56Guarded=true;return true}
+    const wrapped=function installOwnersR58SpySafe(){
+      if(spyActive()){state.r56OwnerSkips++;return true}
+      return current.apply(this,arguments)
+    };
+    wrapped.__ccgV141R58SpySafe=true;wrapped.__ccgOriginal=current;api.installOwners=wrapped;
+    state.r56Guarded=true;state.r56GuardInstalls++;return true
+  }
 
   function loadScript(path,marker,ready){
     return new Promise((resolve,reject)=>{
@@ -78,6 +93,8 @@
         state.perfectionLoaded=true;
         await loadScript("v10-41-r45-spy-trap-presentation.js","data-ccg-r45-spy-trap-presentation",()=>Boolean(window.CCGLostSizzlerV141R45SpyTrapPresentation));
         state.trapPresentationLoaded=true;
+        await loadScript("v10-41-r58-spy-overhaul.js","data-ccg-r58-spy-overhaul",()=>Boolean(window.CCGLostSizzlerV141R58SpyOverhaul));
+        state.r58Loaded=true;
         state.loaded=true;state.loads++;state.lastError="";return true
       }catch(error){state.lastError=String(error?.message||error);console.warn("[Lost Sizzler r32] Spy lazy load failed safely",error);return false}
       finally{state.loading=false;loadPromise=null}
@@ -170,6 +187,7 @@
   }
 
   function monitor(){
+    guardR56SpyOwnership();
     if(spyActive()){ensureSearchUi();ensureLoaded()}
     else{state.pendingActionCode="";lastSearchDispatchAt=0}
   }
@@ -178,5 +196,5 @@
   monitor();state.timer=setInterval(monitor,MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0;state.pendingActionCode="";lastSearchDispatchAt=0},{once:true});
 
-  window.CCGLostSizzlerV141R32SpyLoader={ensureLoaded,ensureSearchUi,queueOwnerAction,directSearchAction,bridgeSearchTarget,dispatchSearchAction,get state(){return state}};
+  window.CCGLostSizzlerV141R32SpyLoader={ensureLoaded,ensureSearchUi,queueOwnerAction,directSearchAction,bridgeSearchTarget,dispatchSearchAction,guardR56SpyOwnership,get state(){return state}};
 })();
