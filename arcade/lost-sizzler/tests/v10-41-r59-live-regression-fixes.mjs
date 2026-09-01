@@ -39,7 +39,9 @@ assert.match(loader,/v10-41-r59-live-regression-fixes\.js/,"r59 must be delivere
 assert.match(gamePlay,/if\(mode!=="playing"\)\{fireBuffer1=fireBuffer2=0;return\}/,"core update must continue refusing simulation while paused");
 assert.match(r59,/function markPauseBoundary\(reason="pause transition"\)/,"r59 must explicitly mark pause/resume timing boundaries");
 assert.match(r59,/setAcceptedRafTimestamp\(null\)/,'pause boundaries must discard the previous RAF timestamp through the shared diagnostic bridge');
-assert.match(r59,/if\(now<state\.suppressRecoveryUntil\|\|modeNow!=="playing"\|\|document\.hidden\)/,"paused/hidden wall-clock gaps must never be paid into combat recovery");
+assert.match(r59,/if\(modeNow!=="playing"\|\|document\.hidden\)\{state\.pausedGapsDiscarded\+\+;return false\}/,"paused/hidden wall-clock gaps must never be paid into combat recovery");
+assert.match(r59,/if\(modeChanged\|\|modeNow!=="playing"\|\|document\.hidden\)/,"only mode-transition, paused or hidden frames may use the discarded-gap path");
+assert.doesNotMatch(r59,/if\(now<state\.suppressRecoveryUntil\|\|modeNow!=="playing"\|\|document\.hidden\)/,"a recent focus/pause boundary must not suppress a genuine visible playing-state stall");
 assert.match(r59,/if\(hasTimestamp&&finite\(state\.lastAcceptedRafTimestamp\)&&t<=Number\(state\.lastAcceptedRafTimestamp\)\)/,"duplicate RAF callbacks must be rejected before simulation");
 assert.match(r59,/requestAnimationFrame\(stableLoopR59\)/,"the authoritative loop must schedule exactly its own singleton callback");
 assert.match(r59,/stableLoopR59\.__ccgV141R29Stable=true/,"r59 must retain the r29 stable-loop compatibility marker so older ownership guards accept the new clock owner");
@@ -71,4 +73,4 @@ assert.match(r59,/installClockOwner\(\);installPauseOwners\(\);installSoloSaveTr
 assert.match(r59,/api\.patchInputOwnership\?\.\(\);api\.patchSaboteurRules\?\.\(\)/,"r59 must reassert r58 input and Saboteur rules while Spy is active");
 assert.match(r59,/if\(api\.tick\?\.\(\)\)/,"r59 must keep the r58 live state reconciled after older compatibility monitors run");
 
-console.log("Lost Sizzler V10.41 r59 pause-clock, R29 duplicate/stall/fault diagnostics, synchronous Solo floor autosave, TAB field-kit, idempotent F fullscreen and r58 ownership regressions passed.");
+console.log("Lost Sizzler V10.41 r59 pause-clock, visible-play stall recovery, R29 duplicate/stall/fault diagnostics, synchronous Solo floor autosave, TAB field-kit, idempotent F fullscreen and r58 ownership regressions passed.");
