@@ -427,7 +427,7 @@
 
     .ccg-home-affiliate-spotlight__release {
         min-height: 300px;
-        background-size: min(620px, calc(100% - 24px)) auto, min(620px, calc(100% - 24px)) auto, auto;
+        background-size: auto, min(620px, calc(100% - 24px)) auto;
     }
 }
 
@@ -469,8 +469,8 @@
         min-height: 245px;
         border-radius: 16px;
         padding: 18px;
-        background-position: center top, center 12px, center;
-        background-size: auto, calc(100% - 18px) auto, auto;
+        background-position: center top, center 12px;
+        background-size: auto, calc(100% - 18px) auto;
     }
 
     .ccg-home-affiliate-spotlight__release-date {
