@@ -10,16 +10,28 @@
   const STATUS_REFRESH_MS=120;
   const FIRST_WAVE_TRACK="assets/audio/music/horde-survival-waves-1-4.ogg";
   const LATER_TRACKS=["assets/audio/music/horde-survival-waves-5-9.ogg","assets/audio/music/horde-survival-wave-10.ogg"];
+  const R60_SRC="js/v10-41-r60-horde-combat-integrity.js";
   const state={
     timer:0,installed:false,
     radarWrapped:false,radarSource:null,lastRadarAt:0,radarDraws:0,radarSkips:0,
     statusTimer:0,modeObserver:null,lastStatusSignature:"",statusRenders:0,statusStarts:0,statusStops:0,
-    firstWavePrewarmStarted:false,firstWavePrewarmReady:false,firstWavePrewarmPromise:null,laterPrewarmStarted:false,imageDecodes:0,prewarmErrors:0
+    firstWavePrewarmStarted:false,firstWavePrewarmReady:false,firstWavePrewarmPromise:null,laterPrewarmStarted:false,imageDecodes:0,prewarmErrors:0,
+    r60Loader:null,r60Ready:false,r60Loads:0,r60Errors:0
   };
 
   const special=()=>{try{return window.CCGLostSizzlerSpecialModes?.active||null}catch(_){return null}};
   const isHorde=()=>String(special()?.type||document.body?.dataset?.specialMode||"")===HORDE;
   const perfNow=()=>{try{return Number(performance.now())||Date.now()}catch(_){return Date.now()}};
+
+  function ensureR60(){
+    if(window.CCGLostSizzlerV141R60HordeCombatIntegrity){state.r60Ready=true;return true}
+    if(state.r60Loader)return false;
+    const script=document.createElement("script");state.r60Loader=script;state.r60Loads++;
+    script.src=`${R60_SRC}?v=${encodeURIComponent("20260901r60")}`;script.async=false;
+    script.onload=()=>{state.r60Loader=null;state.r60Ready=Boolean(window.CCGLostSizzlerV141R60HordeCombatIntegrity)};
+    script.onerror=()=>{state.r60Loader=null;state.r60Errors++;setTimeout(()=>{try{ensureR60()}catch(_){}},1000)};
+    document.head.appendChild(script);return false
+  }
 
   function fetchWarm(src){
     if(typeof fetch!=="function")return Promise.resolve(false);
@@ -151,12 +163,12 @@
   }
 
   function install(){
-    ensureStyles();installRadarThrottle();installModeObserver();
+    ensureR60();ensureStyles();installRadarThrottle();installModeObserver();
     if(state.radarWrapped&&state.modeObserver){state.installed=true;document.body.dataset.v141HordeFramePerformance="true"}
     return state.installed
   }
 
-  schedulePrewarm();
+  ensureR60();schedulePrewarm();
   if(!install())state.timer=setInterval(()=>{if(install()){clearInterval(state.timer);state.timer=0}},INSTALL_MS);
   addEventListener("pagehide",()=>{
     if(state.timer)clearInterval(state.timer);state.timer=0;stopStatusTimer();
@@ -164,7 +176,7 @@
   },{once:true});
 
   window.CCGLostSizzlerV141HordeFramePerformance={
-    RADAR_REFRESH_MS,STATUS_REFRESH_MS,FIRST_WAVE_TRACK,LATER_TRACKS,prewarmFirstWave,prewarmLaterWaves,decodeKnownImages,
+    RADAR_REFRESH_MS,STATUS_REFRESH_MS,FIRST_WAVE_TRACK,LATER_TRACKS,R60_SRC,prewarmFirstWave,prewarmLaterWaves,decodeKnownImages,ensureR60,
     installRadarThrottle,ensureStatusStrip,updateStatus,startStatusTimer,stopStatusTimer,syncStatusTimer,installModeObserver,remaining,get state(){return state}
   };
 })();
