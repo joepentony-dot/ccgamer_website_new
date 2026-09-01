@@ -13,7 +13,7 @@
     startedAt:performance.now(),lastTick:performance.now(),maxDelay:0,stalls:0,timer:0,finished:false,
     pendingSolo:false,soloReplayQueued:false,soloReplays:0,soloIntentSerial:0,soloRecoveries:0,soloRecoveryTimer:0,
     moduleObserver:null,loadingTimer:0,modulesReady:0,moduleKeys:new Set(),loadingStage:10,loadingStages:[10],
-    betaObserver:null,betaRunObserver:null,betaClosed:false,betaBlocks:0,
+    betaObserver:null,betaRunObserver:null,betaSyncTimer:0,betaClosed:false,betaBlocks:0,
     ownerAccess:false,ownerAuthChecked:false,ownerAuthPending:false,ownerAuthTimer:0,ownerAuthAttempts:0,ownerUsername:"",ownerRole:"",
     r57Timer:0,r57Loaded:false
   };
@@ -64,19 +64,21 @@
 
   function restoreOwnerControls(){
     if(!publicBetaClosed()||!ownerAccessGranted)return false;
+    const changed=state.betaClosed||!state.ownerAccess;
     state.betaClosed=false;state.ownerAccess=true;
-    document.body?.classList?.remove("ccg-public-beta-closed");
-    document.body?.setAttribute?.("data-public-beta","owner-preview");
-    document.getElementById("ccg-beta-ended-sash")?.remove();
+    const body=document.body;
+    if(body?.classList?.contains("ccg-public-beta-closed"))body.classList.remove("ccg-public-beta-closed");
+    if(body?.getAttribute?.("data-public-beta")!=="owner-preview")body?.setAttribute?.("data-public-beta","owner-preview");
+    const sash=document.getElementById("ccg-beta-ended-sash");if(sash)sash.remove();
     for(const id of PLAYABLE_IDS){
       const button=document.getElementById(id);if(!button||button.dataset.betaEnded!=="true")continue;
       const wasDisabled=button.dataset.betaPreviousDisabled==="true",previousTitle=button.dataset.betaPreviousTitle||"";
-      button.disabled=wasDisabled;
-      if(wasDisabled)button.setAttribute("aria-disabled","true");else button.removeAttribute("aria-disabled");
-      if(previousTitle)button.title=previousTitle;else button.removeAttribute("title");
+      if(button.disabled!==wasDisabled)button.disabled=wasDisabled;
+      if(wasDisabled){if(button.getAttribute("aria-disabled")!=="true")button.setAttribute("aria-disabled","true")}else if(button.hasAttribute("aria-disabled"))button.removeAttribute("aria-disabled");
+      if(previousTitle){if(button.title!==previousTitle)button.title=previousTitle}else if(button.hasAttribute("title"))button.removeAttribute("title");
       delete button.dataset.betaEnded;delete button.dataset.betaPreviousDisabled;delete button.dataset.betaPreviousTitle;
     }
-    try{window.CCGWeeklyChallenge?.render?.()}catch(_){}
+    if(changed){try{window.CCGWeeklyChallenge?.render?.()}catch(_){}}
     return true
   }
 
@@ -84,7 +86,9 @@
     if(!publicBetaClosed())return false;
     if(ownerAccessGranted)return restoreOwnerControls();
     state.betaClosed=true;state.ownerAccess=false;
-    document.body?.classList?.add("ccg-public-beta-closed");document.body?.setAttribute?.("data-public-beta","ended");
+    const body=document.body;
+    if(body&&!body.classList.contains("ccg-public-beta-closed"))body.classList.add("ccg-public-beta-closed");
+    if(body?.getAttribute?.("data-public-beta")!=="ended")body?.setAttribute?.("data-public-beta","ended");
     ensureBetaStyle();ensureBetaSash();
     for(const id of PLAYABLE_IDS){
       const button=document.getElementById(id);if(!button)continue;
@@ -92,9 +96,21 @@
         button.dataset.betaPreviousDisabled=button.disabled?"true":"false";
         button.dataset.betaPreviousTitle=button.getAttribute("title")||"";
       }
-      button.disabled=true;button.setAttribute("aria-disabled","true");button.dataset.betaEnded="true";
-      button.title="The browser beta has ended. The next Lost Sizzler release is coming soon.";
+      if(!button.disabled)button.disabled=true;
+      if(button.getAttribute("aria-disabled")!=="true")button.setAttribute("aria-disabled","true");
+      if(button.dataset.betaEnded!=="true")button.dataset.betaEnded="true";
+      const endedTitle="The browser beta has ended. The next Lost Sizzler release is coming soon.";
+      if(button.title!==endedTitle)button.title=endedTitle;
     }
+    return true
+  }
+
+  function scheduleBetaControlSync(){
+    if(!publicBetaClosed()||state.betaSyncTimer)return false;
+    state.betaSyncTimer=setTimeout(()=>{
+      state.betaSyncTimer=0;
+      if(ownerAccessGranted)restoreOwnerControls();else lockPlayableControls();
+    },0);
     return true
   }
 
@@ -143,8 +159,15 @@
     const start=()=>{
       lockPlayableControls();
       document.addEventListener("click",blockPublicPlay,true);
-      state.betaObserver=new MutationObserver(()=>lockPlayableControls());
-      state.betaObserver.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["class"]});
+      state.betaObserver=new MutationObserver(records=>{
+        const relevant=records.some(record=>{
+          if(record.type==="childList")return true;
+          const target=record.target;
+          return target===document.body||(target instanceof HTMLButtonElement&&PLAYABLE_IDS.has(target.id));
+        });
+        if(relevant)scheduleBetaControlSync();
+      });
+      state.betaObserver.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["class","disabled"]});
       state.betaRunObserver=new MutationObserver(()=>{
         if(!publicPlayLocked()||document.body?.dataset?.runActive!=="true")return;
         queueMicrotask(()=>{try{if(typeof quitToMenu==="function")quitToMenu()}catch(_){};lockPlayableControls()});
@@ -312,6 +335,7 @@
     document.removeEventListener("click",capturePreReleaseSolo,true);document.removeEventListener("click",blockPublicPlay,true);
     window.removeEventListener("ccg:auth-ready",onOwnerAuthSignal);window.removeEventListener("ccg:auth-changed",onOwnerAuthSignal);
     try{state.betaObserver?.disconnect?.();state.betaRunObserver?.disconnect?.();state.moduleObserver?.disconnect?.()}catch(_){}
+    if(state.betaSyncTimer)clearTimeout(state.betaSyncTimer);state.betaSyncTimer=0;
     if(state.ownerAuthTimer)clearInterval(state.ownerAuthTimer);state.ownerAuthTimer=0;
     if(state.r57Timer)clearInterval(state.r57Timer);state.r57Timer=0;
     stopLoaderObservers();
@@ -319,5 +343,5 @@
   state.timer=setInterval(tick,250);
   state.r57Timer=setInterval(ensureR57,100);
   tick();ensureR57();
-  window.CCGLostSizzlerLoadWatchdog={state,stop:stopLoaderObservers,replayPendingSolo,scheduleSoloLivenessCheck,syncLoadingStage,lockPlayableControls,restoreOwnerControls,resolveOwnerAccess,ownerProfileMatches,publicPlayLocked,publicBetaClosed,ensureR57};
+  window.CCGLostSizzlerLoadWatchdog={state,stop:stopLoaderObservers,replayPendingSolo,scheduleSoloLivenessCheck,syncLoadingStage,lockPlayableControls,restoreOwnerControls,resolveOwnerAccess,ownerProfileMatches,publicPlayLocked,publicBetaClosed,scheduleBetaControlSync,ensureR57};
 })();
