@@ -8,7 +8,9 @@
  *
  * Keyboard ownership for TAB/F is established by the r32 Spy loader. This file
  * keeps the runtime clock and final r58 rules stable without changing Solo,
- * Horde, Dungeon or Split Screen gameplay rules.
+ * Horde, Dungeon or Split Screen gameplay rules. R29 remains the public fault
+ * accounting surface so existing recovery diagnostics keep their contract even
+ * while R59 owns the final RAF callback.
  */
 (()=>{
   "use strict";
@@ -23,7 +25,7 @@
     acceptedFrames:0,duplicateFramesSkipped:0,longGaps:0,longGapRecoveries:0,
     pausedGapsDiscarded:0,pauseBoundaries:0,lastAcceptedRafTimestamp:null,
     lastMode:"",suppressRecoveryUntil:0,lastPauseReason:"",lastError:"",
-    r58Reassertions:0,r58Ticks:0
+    faultBridges:0,r58Reassertions:0,r58Ticks:0
   };
 
   let basePayDownCombatGap=null;
@@ -41,6 +43,22 @@
       depth++;
     }
     return false
+  }
+
+  function noteFault(phase,error){
+    const message=String(error?.message||error||"Unknown frame fault").slice(0,260),now=perfNow();
+    state.lastError=message;
+    try{
+      const r29=window.CCGLostSizzlerV141R29?.state;
+      if(r29){
+        r29.frameFaults=Number(r29.frameFaults||0)+1;
+        if(phase==="update")r29.updateFaults=Number(r29.updateFaults||0)+1;
+        if(phase==="render")r29.renderFaults=Number(r29.renderFaults||0)+1;
+        r29.lastFaultAt=now;r29.lastFaultMessage=message;state.faultBridges++;
+      }
+    }catch(_){}
+    try{console.error(`[Lost Sizzler r59] ${phase} fault contained`,error)}catch(_){}
+    return message
   }
 
   function normaliseAudioRate(){
@@ -72,7 +90,7 @@
     if(!finite(gap)||Number(gap)<LONG_GAP_MS)return false;
     if(now<state.suppressRecoveryUntil||modeNow!=="playing"||document.hidden){state.pausedGapsDiscarded++;return false}
     if(typeof basePayDownCombatGap!=="function")return false;
-    try{const recovered=Boolean(basePayDownCombatGap(gap));if(recovered)state.longGapRecoveries++;return recovered}catch(error){state.lastError=String(error?.message||error);return false}
+    try{const recovered=Boolean(basePayDownCombatGap(gap));if(recovered)state.longGapRecoveries++;return recovered}catch(error){noteFault("gap-recovery",error);return false}
   }
 
   function stableLoopR59(timestamp){
@@ -97,10 +115,10 @@
 
     state.lastAcceptedRafTimestamp=t;state.lastMode=modeNow;state.acceptedFrames++;
     try{last=t}catch(_){}
-    try{if(typeof damageFlash!=="undefined"&&damageFlash>0)damageFlash=Math.max(0,damageFlash-dt/500)}catch(_){}
-    try{if(typeof update==="function")update(dt)}catch(error){state.lastError=String(error?.message||error);try{console.error("[Lost Sizzler r59] update fault contained",error)}catch(_){}}
-    try{if(typeof render==="function")render()}catch(error){state.lastError=String(error?.message||error);try{console.error("[Lost Sizzler r59] render fault contained",error)}catch(_){}}
-    try{requestAnimationFrame(stableLoopR59)}catch(error){state.lastError=String(error?.message||error);setTimeout(()=>{try{requestAnimationFrame(stableLoopR59)}catch(_){}},16)}
+    try{if(typeof damageFlash!=="undefined"&&damageFlash>0)damageFlash=Math.max(0,damageFlash-dt/500)}catch(error){noteFault("frame-clock",error)}
+    try{if(typeof update==="function")update(dt)}catch(error){noteFault("update",error)}
+    try{if(typeof render==="function")render()}catch(error){noteFault("render",error)}
+    try{requestAnimationFrame(stableLoopR59)}catch(error){noteFault("raf",error);setTimeout(()=>{try{requestAnimationFrame(stableLoopR59)}catch(secondError){noteFault("raf-retry",secondError)}},16)}
   }
   stableLoopR59.__ccgV141R29Stable=true;
   stableLoopR59.__ccgV141R59PauseClock=true;
@@ -159,7 +177,7 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
   window.CCGLostSizzlerV141R59LiveRegressionFixes={
-    MONITOR_MS,LONG_GAP_MS,PAUSE_GUARD_MS,stableLoopR59,markPauseBoundary,safeGapRecovery,installClockOwner,installPauseOwners,reassertR58,normaliseAudioRate,ensure,
+    MONITOR_MS,LONG_GAP_MS,PAUSE_GUARD_MS,stableLoopR59,markPauseBoundary,safeGapRecovery,noteFault,installClockOwner,installPauseOwners,reassertR58,normaliseAudioRate,ensure,
     get state(){return state}
   };
 })();
