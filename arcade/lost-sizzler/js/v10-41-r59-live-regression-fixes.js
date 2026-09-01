@@ -10,7 +10,9 @@
  *   scheduling under a heavily loaded browser run.
  *
  * Keyboard ownership for TAB/F is established by the r32 Spy loader. R29 remains
- * the public fault-accounting surface while R59 owns the final RAF callback.
+ * the public runtime/fault diagnostic surface while R59 owns the final RAF
+ * callback, so R59 mirrors accepted-frame, duplicate-frame and stall accounting
+ * into R29 without handing simulation ownership back to the older loop.
  */
 (()=>{
   "use strict";
@@ -25,7 +27,7 @@
     acceptedFrames:0,duplicateFramesSkipped:0,longGaps:0,longGapRecoveries:0,
     pausedGapsDiscarded:0,pauseBoundaries:0,lastAcceptedRafTimestamp:null,
     lastMode:"",suppressRecoveryUntil:0,lastPauseReason:"",lastError:"",
-    faultBridges:0,r58Reassertions:0,r58Ticks:0,soloSaveTransitionInstalls:0,soloFloorAutosaves:0
+    faultBridges:0,diagnosticBridges:0,r58Reassertions:0,r58Ticks:0,soloSaveTransitionInstalls:0,soloFloorAutosaves:0
   };
 
   let basePayDownCombatGap=null;
@@ -34,6 +36,7 @@
   const perfNow=()=>{try{return Number(performance.now())||Date.now()}catch(_){return Date.now()}};
   const currentMode=()=>{try{return String(mode||"")}catch(_){return""}};
   const spyActive=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type==="sizzler-saboteurs"||document.body?.dataset?.specialMode==="sizzler-saboteurs"}catch(_){return false}};
+  const r29State=()=>{try{return window.CCGLostSizzlerV141R29?.state||null}catch(_){return null}};
 
   function chainHas(fn,marker){
     const seen=new Set();let current=fn,depth=0;
@@ -49,7 +52,7 @@
     const message=String(error?.message||error||"Unknown frame fault").slice(0,260),now=perfNow();
     state.lastError=message;
     try{
-      const r29=window.CCGLostSizzlerV141R29?.state;
+      const r29=r29State();
       if(r29){
         r29.frameFaults=Number(r29.frameFaults||0)+1;
         if(phase==="update")r29.updateFaults=Number(r29.updateFaults||0)+1;
@@ -59,6 +62,24 @@
     }catch(_){}
     try{console.error(`[Lost Sizzler r59] ${phase} fault contained`,error)}catch(_){}
     return message
+  }
+
+  function noteDuplicateFrame(){
+    state.duplicateFramesSkipped++;
+    try{const r29=r29State();if(r29){r29.duplicateFramesSkipped=Number(r29.duplicateFramesSkipped||0)+1;state.diagnosticBridges++}}catch(_){}
+    return true
+  }
+
+  function noteFrameStall(){
+    state.longGaps++;
+    try{const r29=r29State();if(r29){r29.frameStalls=Number(r29.frameStalls||0)+1;state.diagnosticBridges++}}catch(_){}
+    return true
+  }
+
+  function setAcceptedRafTimestamp(value){
+    state.lastAcceptedRafTimestamp=value;
+    try{const r29=r29State();if(r29)r29.lastAcceptedRafTimestamp=value}catch(_){}
+    return value
   }
 
   function normaliseAudioRate(){
@@ -78,7 +99,7 @@
     const now=perfNow();
     state.pauseBoundaries++;state.lastPauseReason=String(reason||"pause transition");
     state.suppressRecoveryUntil=Math.max(state.suppressRecoveryUntil,now+PAUSE_GUARD_MS);
-    state.lastAcceptedRafTimestamp=null;
+    setAcceptedRafTimestamp(null);
     state.lastMode=currentMode();
     try{last=now}catch(_){}
     normaliseAudioRate();
@@ -96,7 +117,7 @@
   function stableLoopR59(timestamp){
     const hasTimestamp=finite(timestamp),t=hasTimestamp?Number(timestamp):perfNow();
     if(hasTimestamp&&finite(state.lastAcceptedRafTimestamp)&&t<=Number(state.lastAcceptedRafTimestamp)){
-      state.duplicateFramesSkipped++;
+      noteDuplicateFrame();
       return
     }
 
@@ -109,11 +130,11 @@
       if(gap>=LONG_GAP_MS)state.pausedGapsDiscarded++;
       dt=modeNow==="playing"?Math.min(16,gap||16):0;
     }else{
-      if(gap>=LONG_GAP_MS){state.longGaps++;safeGapRecovery(gap)}
+      if(gap>=LONG_GAP_MS){noteFrameStall();safeGapRecovery(gap)}
       dt=Math.min(45,Math.max(0,gap));
     }
 
-    state.lastAcceptedRafTimestamp=t;state.lastMode=modeNow;state.acceptedFrames++;
+    setAcceptedRafTimestamp(t);state.lastMode=modeNow;state.acceptedFrames++;
     try{last=t}catch(_){}
     try{if(typeof damageFlash!=="undefined"&&damageFlash>0)damageFlash=Math.max(0,damageFlash-dt/500)}catch(error){noteFault("frame-clock",error)}
     try{if(typeof update==="function")update(dt)}catch(error){noteFault("update",error)}
@@ -192,7 +213,7 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
   window.CCGLostSizzlerV141R59LiveRegressionFixes={
-    MONITOR_MS,LONG_GAP_MS,PAUSE_GUARD_MS,stableLoopR59,markPauseBoundary,safeGapRecovery,noteFault,installClockOwner,installPauseOwners,installSoloSaveTransitionOwner,reassertR58,normaliseAudioRate,ensure,
+    MONITOR_MS,LONG_GAP_MS,PAUSE_GUARD_MS,stableLoopR59,markPauseBoundary,safeGapRecovery,noteFault,noteDuplicateFrame,noteFrameStall,setAcceptedRafTimestamp,installClockOwner,installPauseOwners,installSoloSaveTransitionOwner,reassertR58,normaliseAudioRate,ensure,
     get state(){return state}
   };
 })();
