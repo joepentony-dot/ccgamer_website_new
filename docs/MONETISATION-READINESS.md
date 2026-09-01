@@ -12,22 +12,53 @@ Last reviewed: 1 September 2026
 - Patreon, PayPal and YouTube support routes remain available.
 - Sponsorship and collaboration enquiries remain available through Work with CCG.
 - Rights-holder review and takedown processes remain available.
+- A new Amazon.co.uk Associates application is active provisionally and is awaiting the programme's post-sale review after the required qualifying orders.
 
-## Retailer commission links retired
+## Amazon.co.uk Associates reactivation
 
-The Amazon.co.uk Associates account previously used by the site was closed on 1 September 2026. The website must therefore remain in a fail-closed state for that programme unless a future, valid retailer programme is deliberately approved and implemented in a separate change.
+The previous Amazon.co.uk Associates account used by the site was closed on 1 September 2026 after failing to reach the programme's initial qualifying-sales requirement. A new application was created on the same date and the retailer programme has therefore been reintroduced as a separate, auditable implementation rather than restoring the old link set.
 
-Current safeguards:
+### Tracking-ID controls
 
-- the expandable game-page hardware/product panel renderer is disabled;
-- its product data source is disabled and contains no live retailer URLs;
-- the site-wide analytics/bootstrap layer no longer detects or labels Amazon links and no longer inserts retailer commission disclosures;
-- the old disclosure footer link has been removed;
-- legacy retailer commission links are defensively removed by the shared runtime guard where older static markup still contains them;
-- the old disclosure page is retired, `noindex,nofollow`, and removed from the commerce sitemap; and
-- Terms, Privacy, Cookies and Work with CCG no longer describe an active retailer commission-link programme.
+- active tracking ID: `cheekycomm00d-21`;
+- retired tracking ID: `cheekycommo0d-21`;
+- the retired ID must never be used by new product links;
+- the new product renderer validates every configured Amazon URL against the active ID before displaying it; and
+- direct Amazon.co.uk product URLs are used instead of shortened `amzn.to` links so the ASIN and tracking ID remain auditable.
 
-Do not restore old tracking IDs, shortened retailer URLs, paid-link labels, product buttons or retailer commission disclosures without confirming that a new programme is active and that its current terms have been reviewed.
+### Product catalogue and placement
+
+The active catalogue is centralised in `resources/data/affiliate-products.json`. It contains a deliberately small set of C64, Amiga, controller, emulation, book and wider-retro recommendations supplied for the new account.
+
+Game-page placement is contextual rather than generic:
+
+- C64 pages receive up to three C64-focused recommendations;
+- Amiga pages receive up to three Amiga-focused recommendations;
+- selected joystick-heavy games can receive a dedicated joystick group;
+- no game page should display more than three affiliate cards from the central renderer; and
+- the old expandable "Computer Peripherals" presentation is superseded by an always-visible, focused `CCG Picks` presentation once valid game-system data is available.
+
+The renderer deliberately does not mass-edit generated game HTML. Existing hidden product-section markup is reused as a mounting point, which reduces regression risk across the generated archive.
+
+### THEA1200 home spotlight
+
+THEA1200 is the main home-page commercial spotlight from 1 September through 31 December 2026. The product is listed as releasing on 4 December 2026. Before the release date the call to action is presented as a pre-order; after that date it becomes a standard Amazon product link.
+
+The spotlight explains that using the CCG Amazon link helps support the channel at no extra cost to the visitor. The renderer automatically stops displaying the spotlight after 31 December 2026, avoiding a stale permanent campaign.
+
+### Disclosure and link attributes
+
+Every rendered Amazon recommendation includes the required statement:
+
+> As an Amazon Associate I earn from qualifying purchases.
+
+Affiliate calls to action use `nofollow sponsored noopener`, open Amazon in a new tab and link to the site's dedicated `/affiliate-disclosure.html` page for further information. The disclosure page also explains editorial independence and avoids presenting Amazon prices as live or guaranteed.
+
+### Legacy link safeguards
+
+The existing shared runtime guard continues to remove old hardcoded Amazon Associates links from legacy static markup, including the retired tracking ID and old shortened links. New recommendations are rendered after that legacy cleanup pass and are independently validated against the new active ID.
+
+This means old emulation-page retailer buttons are not silently reactivated. They remain blocked unless they are deliberately migrated to the new catalogue in a later reviewed change.
 
 ## Deliberately not activated
 
@@ -43,13 +74,9 @@ After approval:
 4. Restrict ad placements to substantial editorial pages.
 5. Keep ads away from download controls, navigation, quizzes, authentication, account pages and admin pages.
 
-### Retailer commission programmes
-
-No retailer commission-link programme is currently enabled. Any future programme should be introduced as a separate, auditable change with verified account details, current disclosure wording, appropriate link attributes and a deliberate rollout plan. Never reuse the retired Amazon Associates tracking ID.
-
 ### Payment and tax accounts
 
-Patreon and PayPal links are connected to the public CCG destinations already used by the site. Account ownership, tax records, payment verification and payout settings remain external account responsibilities.
+Patreon and PayPal links are connected to the public CCG destinations already used by the site. Amazon, Patreon and PayPal account ownership, tax records, payment verification and payout settings remain external account responsibilities and should not be stored in the public repository.
 
 ## Required rights review before display advertising
 
@@ -70,7 +97,7 @@ The policy pages are practical website drafts based on the site's current featur
 
 - hosting, database, authentication or email provider;
 - analytics or advertising provider;
-- Patreon, PayPal, sponsorship or other commercial arrangements;
+- Patreon, PayPal, Amazon Associates, sponsorship or other commercial arrangements;
 - user accounts or community submissions;
 - download licensing position;
 - business identity or contact details; or
@@ -78,14 +105,18 @@ The policy pages are practical website drafts based on the site's current featur
 
 These pages do not replace advice from a qualified legal or tax professional.
 
-## Recommended launch sequence
+## Amazon reactivation validation sequence
 
-1. Merge and deploy the retailer-programme retirement change.
-2. Test public pages in a fresh browser profile on desktop and mobile.
-3. Confirm game pages do not display the expandable hardware/product panel.
-4. Confirm the emulation page contains no clickable legacy retailer commission buttons or visible disclosure note after page initialisation.
-5. Confirm public footers contain no retailer commission disclosure link.
-6. Verify Google Analytics remains absent from network requests before analytics consent.
-7. Complete and retain the download-rights register.
-8. Apply for AdSense only after the rights review and content-quality review.
-9. Add any approved advertising publisher ID and `ads.txt` record in a separate, auditable pull request.
+1. Confirm every configured product URL uses `tag=cheekycomm00d-21` and none uses the retired `cheekycommo0d-21` ID.
+2. Confirm configured product paths contain the expected ASINs.
+3. Confirm C64 game pages display no more than three C64-focused recommendations.
+4. Confirm Amiga game pages display no more than three Amiga-focused recommendations, with THEA1200 prominent in the group.
+5. Confirm joystick-heavy overrides display the joystick-focused group.
+6. Confirm the old accordion toggle is not required to see recommendations.
+7. Confirm the Amazon disclosure statement and disclosure-page link appear with every rendered recommendation unit.
+8. Confirm THEA1200 appears prominently below the home hero during the configured campaign window and automatically disappears after 31 December 2026.
+9. Confirm THEA1200's call to action changes from pre-order wording after the 4 December 2026 release date.
+10. Confirm legacy emulation-page affiliate buttons remain blocked rather than inheriting the new programme automatically.
+11. Test the recommendation layouts at desktop, tablet and mobile widths.
+12. Verify affiliate-click analytics only fires when analytics consent has been granted.
+13. Verify Google Analytics remains absent from network requests before analytics consent.
