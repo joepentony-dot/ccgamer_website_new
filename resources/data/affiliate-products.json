@@ -1,12 +1,184 @@
 {
-  "defaults": {
-    "enabled": false,
-    "heading": "",
-    "disclosure": ""
+  "account": {
+    "programme": "Amazon.co.uk Associates",
+    "activeTag": "cheekycomm00d-21",
+    "retiredTags": [
+      "cheekycommo0d-21"
+    ],
+    "disclosure": "As an Amazon Associate I earn from qualifying purchases.",
+    "disclosureUrl": "/affiliate-disclosure.html"
   },
-  "groups": {},
-  "gameOverrides": {},
+  "defaults": {
+    "enabled": true,
+    "maxProducts": 3
+  },
+  "products": {
+    "thec64-mini-black": {
+      "title": "THEC64 Mini - Black Edition",
+      "asin": "B0FKLZ8YNY",
+      "category": "C64 hardware",
+      "badge": "CCG C64 PICK",
+      "url": "https://www.amazon.co.uk/Retro-Games-THEC64-mini-Edition/dp/B0FKLZ8YNY?linkCode=ll2&tag=cheekycomm00d-21&linkId=3bd03d25bdcbaeb948af139261a928e8&ref_=as_li_ss_tl",
+      "description": "A compact modern C64 option for HDMI televisions, with a matching classic-style controller and built-in games.",
+      "buttonText": "View on Amazon"
+    },
+    "thec64-handheld": {
+      "title": "THEC64 Handheld",
+      "asin": "B0GYSLVC5K",
+      "category": "C64 hardware",
+      "badge": "PORTABLE C64",
+      "url": "https://www.amazon.co.uk/Blaze-Entertainment-THEC64-Handheld/dp/B0GYSLVC5K?linkCode=ll2&tag=cheekycomm00d-21&linkId=5a7e67c703788b60361c08d24dbb2cd9&ref_=as_li_ss_tl",
+      "description": "A portable way to revisit C64 games without setting up original hardware.",
+      "buttonText": "View on Amazon"
+    },
+    "c64-micro-switch-joystick": {
+      "title": "The C64 Micro Switch Joystick",
+      "asin": "B07WL4JFS9",
+      "category": "Controller",
+      "badge": "JOYSTICK PICK",
+      "url": "https://www.amazon.co.uk/C64-Micro-Switch-Joystick-Electronic/dp/B07WL4JFS9?linkCode=ll2&tag=cheekycomm00d-21&linkId=f1869766f5087361933bf4d628218763&ref_=as_li_ss_tl",
+      "description": "A modern micro-switch joystick suited to C64-style play and compatible retro setups.",
+      "buttonText": "View on Amazon"
+    },
+    "quickshot-ii": {
+      "title": "The Quickshot II",
+      "asin": "B0G4RRX7RY",
+      "category": "Controller",
+      "badge": "RETRO JOYSTICK",
+      "url": "https://www.amazon.co.uk/Retro-Games-The-Quickshot-II/dp/B0G4RRX7RY?linkCode=ll2&tag=cheekycomm00d-21&linkId=7b9c15cad94c5f3e941ff0357e14c3e2&ref_=as_li_ss_tl",
+      "description": "A modern take on a familiar joystick design for C64, Amiga and other retro-style play.",
+      "buttonText": "View on Amazon"
+    },
+    "8bitdo-m30": {
+      "title": "8BitDo M30 Bluetooth Gamepad",
+      "asin": "B07MSN1NPC",
+      "category": "Controller",
+      "badge": "EMULATION PICK",
+      "url": "https://www.amazon.co.uk/8BitDo-Bluetooth-Wireless-Gamepad-Nintendo/dp/B07MSN1NPC?linkCode=ll2&tag=cheekycomm00d-21&linkId=1e236193d7677627426a7ec069abd4bc&ref_=as_li_ss_tl",
+      "description": "A compact wireless pad that works well for emulation and pad-friendly retro games.",
+      "buttonText": "View on Amazon"
+    },
+    "8bitdo-ultimate-2": {
+      "title": "8BitDo Ultimate 2 Wireless Controller",
+      "asin": "B0DR8Y5W6Z",
+      "category": "Controller",
+      "badge": "MODERN RETRO SETUP",
+      "url": "https://www.amazon.co.uk/8Bitdo-Ultimate-Controller-Joysticks-Switchable/dp/B0DR8Y5W6Z?linkCode=ll2&tag=cheekycomm00d-21&linkId=509a64e47c15b6a20afcc281f0c94b67&ref_=as_li_ss_tl",
+      "description": "A feature-rich wireless controller for PC, Android and modern emulation setups.",
+      "buttonText": "View on Amazon"
+    },
+    "c64-visual-compendium": {
+      "title": "Commodore 64: A Visual Compendium",
+      "asin": "1838019103",
+      "category": "Bitmap Books",
+      "badge": "CCG BOOK PICK",
+      "url": "https://www.amazon.co.uk/Commodore-64-compendium-Bitmap-Books/dp/1838019103?linkCode=ll2&tag=cheekycomm00d-21&linkId=83db9fb25c1ff256edf0d63c77790e43&ref_=as_li_ss_tl",
+      "description": "Bitmap Books' substantial visual celebration of Commodore 64 games, artwork and memories.",
+      "buttonText": "View on Amazon"
+    },
+    "amiga-visual-compendium": {
+      "title": "Commodore Amiga: A Visual Compendium",
+      "asin": "0993012914",
+      "category": "Bitmap Books",
+      "badge": "CCG BOOK PICK",
+      "url": "https://www.amazon.co.uk/Commodore-Amiga-Visual-Commpendium-Compendium/dp/0993012914?linkCode=ll2&tag=cheekycomm00d-21&linkId=b3fc19e45ba58a8484f384d6a428bd37&ref_=as_li_ss_tl",
+      "description": "A large-format Bitmap Books celebration of Amiga games, artwork and the machine's distinctive era.",
+      "buttonText": "View on Amazon"
+    },
+    "thea1200": {
+      "title": "THEA1200",
+      "asin": "B0G1L9Q7WK",
+      "category": "Amiga hardware",
+      "badge": "NEW - 4 DEC 2026",
+      "url": "https://www.amazon.co.uk/Retro-Games-THE-A1200/dp/B0G1L9Q7WK?linkCode=ll2&tag=cheekycomm00d-21&linkId=215a465179e39bed0c29211064133c3c&ref_=as_li_ss_tl",
+      "description": "Retro Games' new A1200-inspired system, due for release on 4 December 2026.",
+      "releaseDate": "2026-12-04T00:00:00Z",
+      "preReleaseButtonText": "Pre-order on Amazon",
+      "buttonText": "View on Amazon"
+    },
+    "the-spectrum": {
+      "title": "The Spectrum",
+      "asin": "B0DF39DTX8",
+      "category": "Retro hardware",
+      "badge": "RETRO HARDWARE",
+      "url": "https://www.amazon.co.uk/Retro-Games-The-Spectrum/dp/B0DF39DTX8?linkCode=ll2&tag=cheekycomm00d-21&linkId=115811994bf717c1cfd37e4258398749&ref_=as_li_ss_tl",
+      "description": "A modern recreation of the Spectrum for visitors who also enjoy the wider 8-bit scene.",
+      "buttonText": "View on Amazon"
+    }
+  },
+  "groups": {
+    "c64-default": {
+      "heading": "CCG Recommended C64 Gear",
+      "intro": "Three relevant picks for C64 fans - useful hardware, a strong book choice and a joystick that fits the games you're browsing.",
+      "products": [
+        "thec64-mini-black",
+        "c64-visual-compendium",
+        "quickshot-ii"
+      ]
+    },
+    "amiga-default": {
+      "heading": "CCG Recommended Amiga Gear",
+      "intro": "A focused Amiga selection, led by THEA1200 and backed by two products that make sense for the games and hardware you're browsing.",
+      "products": [
+        "thea1200",
+        "amiga-visual-compendium",
+        "quickshot-ii"
+      ]
+    },
+    "joystick-heavy": {
+      "heading": "CCG Picks for Joystick Punishment",
+      "intro": "For games that ask rather a lot of your joystick, these are the three CCG picks I'd look at first.",
+      "products": [
+        "quickshot-ii",
+        "c64-micro-switch-joystick",
+        "thec64-mini-black"
+      ]
+    },
+    "emulation": {
+      "heading": "CCG Recommended Emulation Gear",
+      "intro": "Controllers chosen for modern emulation rather than a random wall of PC accessories.",
+      "products": [
+        "8bitdo-m30",
+        "8bitdo-ultimate-2",
+        "c64-micro-switch-joystick"
+      ]
+    },
+    "retro-general": {
+      "heading": "CCG Retro Hardware Picks",
+      "intro": "A small wider-retro selection for visitors who venture beyond Commodore from time to time.",
+      "products": [
+        "the-spectrum",
+        "thec64-handheld",
+        "8bitdo-m30"
+      ]
+    }
+  },
+  "gameOverrides": {
+    "decathlon": {
+      "group": "joystick-heavy"
+    },
+    "daley-thompsons-decathlon": {
+      "group": "joystick-heavy"
+    },
+    "hyper-sports": {
+      "group": "joystick-heavy"
+    }
+  },
   "genreGroups": {},
   "collectionGroups": {},
-  "systemGroups": {}
+  "systemGroups": {
+    "C64": "c64-default",
+    "AMIGA": "amiga-default",
+    "Amiga": "amiga-default"
+  },
+  "homepageSpotlight": {
+    "enabled": true,
+    "product": "thea1200",
+    "start": "2026-09-01T00:00:00Z",
+    "end": "2026-12-31T23:59:59Z",
+    "eyebrow": "NEW AMIGA HARDWARE",
+    "headline": "THEA1200 ARRIVES 4 DECEMBER 2026",
+    "copy": "THEA1200 is due on 4 December 2026. If you're planning to pick one up, using the CCG Amazon link helps support the channel at no extra cost to you.",
+    "releaseLabel": "RELEASES 4 DEC 2026"
+  }
 }

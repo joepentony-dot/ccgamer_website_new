@@ -1,0 +1,58 @@
+name: Amazon Associates Reactivation Audit
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "resources/data/affiliate-products.json"
+      - "js/affiliate-products.js"
+      - "js/ccg-livestream-status.js"
+      - "resources/css/ccg-affiliate-showcase.css"
+      - "affiliate-disclosure.html"
+      - "scripts/audit-amazon-associates-reactivation.js"
+      - ".github/workflows/amazon-associates-reactivation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "resources/data/affiliate-products.json"
+      - "js/affiliate-products.js"
+      - "js/ccg-livestream-status.js"
+      - "resources/css/ccg-affiliate-showcase.css"
+      - "affiliate-disclosure.html"
+      - "scripts/audit-amazon-associates-reactivation.js"
+      - ".github/workflows/amazon-associates-reactivation.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: amazon-associates-reactivation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check js/affiliate-products.js
+          node --check js/ccg-livestream-status.js
+          node --check scripts/audit-amazon-associates-reactivation.js
+
+      - name: Audit Amazon Associates reactivation
+        run: node scripts/audit-amazon-associates-reactivation.js
+
+      - name: Check whitespace errors
+        run: git diff --check HEAD^ HEAD || git diff --check
