@@ -194,6 +194,10 @@
 
   async function toggleSpyInventoryFromTab(){
     if(!spyActive()||state.tabTogglePending)return false;
+    const readyOwner=overhaul();
+    if(typeof readyOwner?.setInventory==="function"){
+      forceSharedPlaying();readyOwner.setInventory(!Boolean(readyOwner.state?.inventoryOpen));state.tabToggles++;return true
+    }
     state.tabTogglePending=true;state.tabLoadBridges++;
     try{
       const loaded=await ensureLoaded();if(!loaded||!spyActive())return false;
