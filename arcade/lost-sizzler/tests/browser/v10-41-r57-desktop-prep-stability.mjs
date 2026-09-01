@@ -76,7 +76,7 @@ try{
     api.state.spyHpPrevious.clear();api.state.spyHpUntil.clear();p1.health=6;api.trackSpyHealth(p1);p1.health=5;const visibleAfterHit=api.spyHealthBarVisibleFor(p1);api.state.spyHpUntil.set(String(p1.id),performance.now()-1);const hiddenAfterWindow=!api.spyHealthBarVisibleFor(p1);
     other.roomId=me.roomId;other.x=p1.x+12;other.y=p1.y;live.x=other.x;live.y=other.y;live.rx=live.x;live.ry=live.y;const far=api.spySwordAllowedFor(p1);
     other.x=p1.x+5;live.x=other.x;live.rx=live.x;const near=api.spySwordAllowedFor(p1);
-    return{visibleAfterHit,hiddenAfterWindow,far,near,hpWrapped:Boolean(window.drawPlayer?.__ccgV141R57SpyHp),swordWrapped:Boolean(window.drawPlayerWeapon?.__ccgV141R57SpySwordRange)}
+    return{visibleAfterHit,hiddenAfterWindow,far,near,hpWrapped:api.chainHas(window.drawPlayer,"__ccgV141R57SpyHp"),swordWrapped:api.chainHas(window.drawPlayerWeapon,"__ccgV141R57SpySwordRange")}
   });
   assert.equal(hpAndRange.visibleAfterHit,true,"Spy overhead HP window must open after health loss");assert.equal(hpAndRange.hiddenAfterWindow,true,"Spy overhead HP must disappear after its hit window");assert.equal(hpAndRange.far,false,"Spy sword must be disabled beyond ten tiles");assert.equal(hpAndRange.near,true,"Spy sword may be presented when the opponent is within ten tiles");assert.equal(hpAndRange.hpWrapped,true,"Spy player renderer must enforce transient HP");assert.equal(hpAndRange.swordWrapped,true,"Spy weapon renderer must enforce the ten-tile sword gate");
 
