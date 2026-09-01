@@ -1,9 +1,14 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { createRequire } from "node:module";
 import path from "node:path";
 import test from "node:test";
 
 const root = path.resolve(import.meta.dirname, "..");
+const require = createRequire(import.meta.url);
+const {
+  materializeMagazineReviewsHtml
+} = require(path.join(root, "scripts", "ensure-magazine-review-runtime.js"));
 
 test("Reliable Games Publishing imports local magazine metadata before rebuilding games", () => {
   const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "games-publishing.yml"), "utf8");
@@ -28,6 +33,40 @@ test("the magazine importer preserves support for existing C64 and Amiga Lemon c
   assert.match(importer, /\/amiga\|c64\/i/);
   assert.match(importer, /Magazine Reviews/i);
   assert.match(importer, /reviewsFromHtml/);
+});
+
+test("generated game HTML receives magazine reviews at build time instead of relying only on browser JavaScript", () => {
+  const source = `
+<section id="game-reading-section" class="game-section" hidden>
+  <article id="game-reading-card" class="ccg-utility-card" hidden>
+    <div id="gameMagazineReviews"><p class="game-review-empty">No verified review scan has been attached yet.</p></div>
+  </article>
+</section>`;
+  const rows = [
+    { magazine: "C&VG", issue: "69", date: "July 1987", page: 40, reviewer: "", score: "9/10", scorePercent: 90, url: "", language: "English", scanStatus: "missing", era: "contemporary" },
+    { magazine: "Commodore User", issue: "46", date: "July 1987", page: 42, reviewer: "Bill Scolding", score: "8/10", scorePercent: 80, url: "", language: "English", scanStatus: "missing", era: "contemporary" },
+    { magazine: "Your Commodore", issue: "35", date: "August 1987", page: 34, reviewer: "", score: "9/10", scorePercent: 90, url: "", language: "English", scanStatus: "missing", era: "contemporary" },
+    { magazine: "Zzap!64", issue: "28", date: "August 1987", page: 39, reviewer: "White Wizard", score: "70%", scorePercent: 70, url: "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=28&page=39", language: "English", scanStatus: "available", era: "contemporary" }
+  ];
+
+  const result = materializeMagazineReviewsHtml(source, rows);
+  const sectionTag = result.html.match(/<section\b[^>]*id="game-reading-section"[^>]*>/i)?.[0] || "";
+  const cardTag = result.html.match(/<article\b[^>]*id="game-reading-card"[^>]*>/i)?.[0] || "";
+
+  assert.equal(result.foundContainer, true);
+  assert.ok(sectionTag, "magazine review section disappeared during materialization");
+  assert.ok(cardTag, "magazine review card disappeared during materialization");
+  assert.doesNotMatch(sectionTag, /\shidden\b/i);
+  assert.doesNotMatch(cardTag, /\shidden\b/i);
+  assert.doesNotMatch(result.html, /game-review-empty/);
+  assert.match(result.html, /data-ccg-static-magazine-reviews="true"/);
+  assert.match(result.html, /Magazine Reviews · 4/);
+  assert.match(result.html, /C&amp;VG/);
+  assert.match(result.html, /Commodore User/);
+  assert.match(result.html, /Your Commodore/);
+  assert.match(result.html, /Zzap!64/);
+  assert.match(result.html, /70%/);
+  assert.match(result.html, /issue=28&amp;page=39/);
 });
 
 test("Mr Weems retains the three verified contemporary magazine scores", () => {
