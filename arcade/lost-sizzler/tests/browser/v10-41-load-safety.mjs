@@ -47,6 +47,16 @@ try{
     try{const url=new URL(request.url());if(url.origin===origin&&/\.(?:js|mjs)(?:\?|$)/i.test(url.pathname))failedScripts.push(`${url.pathname}: ${request.failure()?.errorText||"failed"}`)}catch(_){}
   });
 
+  /* Parallel release loading can legitimately finish before Playwright gets a
+   * chance to observe the transient loading overlay. Hold only the final
+   * enhancement response inside this browser test so the overlay lifecycle is
+   * deterministic without adding any delay to production startup. The delay is
+   * intentionally far below asset-overrides.js's 5s per-module timeout. */
+  await page.route("**/arcade/lost-sizzler/js/v10-35-quality.js*",async route=>{
+    await new Promise(resolve=>setTimeout(resolve,700));
+    await route.continue();
+  });
+
   await page.goto(`${origin}/__ccg_test_setup`,{waitUntil:"domcontentloaded"});
   await page.evaluate(async()=>{
     const cache=await caches.open("ccg-load-safety-test");
