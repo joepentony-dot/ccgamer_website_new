@@ -89,7 +89,7 @@ jobs:
           }
 
           run_legacy_browser_test arcade/lost-sizzler/tests/v10-6-browser.mjs
-          run_legacy_browser_test arcade/lost-sizzler/tests/v10-28-browser-stability.mjs
+          run_legacy_browser_test arcade/lost-sizzler/tests/support/v10-28-browser-stability-deterministic.mjs
 
           for test in arcade/lost-sizzler/tests/browser/*.mjs; do
             echo "::group::$test"

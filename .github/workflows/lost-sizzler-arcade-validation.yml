@@ -73,7 +73,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node arcade/lost-sizzler/tests/v10-28-browser-stability.mjs
+          node arcade/lost-sizzler/tests/support/v10-28-browser-stability-deterministic.mjs
           node arcade/lost-sizzler/tests/browser/v10-36-loading.mjs
           node arcade/lost-sizzler/tests/browser/v10-37-horde-focus.mjs
           node arcade/lost-sizzler/tests/browser/v10-35-layout.mjs
@@ -82,6 +82,7 @@ jobs:
           node arcade/lost-sizzler/tests/browser/v10-41-menu-leaderboard-stability.mjs
           node arcade/lost-sizzler/tests/browser/v10-41-r46-release-candidate-polish.mjs
           node arcade/lost-sizzler/tests/browser/v10-41-r47-all-mode-optimisation.mjs
+          node arcade/lost-sizzler/tests/browser/v10-41-r57-locked-chest-keys.mjs
 
   structure:
     runs-on: ubuntu-latest
