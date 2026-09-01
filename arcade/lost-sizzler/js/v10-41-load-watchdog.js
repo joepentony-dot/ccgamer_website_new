@@ -6,14 +6,22 @@
 
   const LIVE_HOSTS=new Set(["cheekycommodoregamer.co.uk","www.cheekycommodoregamer.co.uk"]);
   const PLAYABLE_IDS=new Set(["solo-btn","tutorial-zone-btn","create-btn","horde-solo-btn","horde-mode-btn","saboteurs-mode-btn","continue-save-btn","daily-btn","split-btn","join-btn","lobby-start-btn"]);
+  const OWNER_USERNAME="cheeky commodore gamer";
+  const OWNER_ROLE="admin";
+  let ownerAccessGranted=false;
   const state={
     startedAt:performance.now(),lastTick:performance.now(),maxDelay:0,stalls:0,timer:0,finished:false,
     pendingSolo:false,soloReplayQueued:false,soloReplays:0,soloIntentSerial:0,soloRecoveries:0,soloRecoveryTimer:0,
     moduleObserver:null,loadingTimer:0,modulesReady:0,moduleKeys:new Set(),loadingStage:10,loadingStages:[10],
-    betaObserver:null,betaClosed:false,betaBlocks:0,r57Timer:0,r57Loaded:false
+    betaObserver:null,betaRunObserver:null,betaClosed:false,betaBlocks:0,
+    ownerAccess:false,ownerAuthChecked:false,ownerAuthPending:false,ownerAuthTimer:0,ownerAuthAttempts:0,ownerUsername:"",ownerRole:"",
+    r57Timer:0,r57Loaded:false
   };
 
   const publicBetaClosed=()=>LIVE_HOSTS.has(String(location.hostname||"").toLowerCase());
+  const normalizeAccountName=value=>String(value||"").trim().replace(/\s+/g," ").toLowerCase();
+  const ownerProfileMatches=profile=>normalizeAccountName(profile?.username)===OWNER_USERNAME&&normalizeAccountName(profile?.role)===OWNER_ROLE;
+  const publicPlayLocked=()=>publicBetaClosed()&&!ownerAccessGranted;
 
   function loadingStatus(message){
     const node=document.getElementById("ccg-release-loading-status");
@@ -45,7 +53,7 @@
   }
 
   function ensureBetaSash(){
-    if(!publicBetaClosed()||document.getElementById("ccg-beta-ended-sash"))return;
+    if(!publicPlayLocked()||document.getElementById("ccg-beta-ended-sash"))return;
     const sash=document.createElement("div");
     sash.id="ccg-beta-ended-sash";
     sash.setAttribute("role","status");
@@ -54,20 +62,76 @@
     document.body.appendChild(sash);
   }
 
+  function restoreOwnerControls(){
+    if(!publicBetaClosed()||!ownerAccessGranted)return false;
+    state.betaClosed=false;state.ownerAccess=true;
+    document.body?.classList?.remove("ccg-public-beta-closed");
+    document.body?.setAttribute?.("data-public-beta","owner-preview");
+    document.getElementById("ccg-beta-ended-sash")?.remove();
+    for(const id of PLAYABLE_IDS){
+      const button=document.getElementById(id);if(!button||button.dataset.betaEnded!=="true")continue;
+      const wasDisabled=button.dataset.betaPreviousDisabled==="true",previousTitle=button.dataset.betaPreviousTitle||"";
+      button.disabled=wasDisabled;
+      if(wasDisabled)button.setAttribute("aria-disabled","true");else button.removeAttribute("aria-disabled");
+      if(previousTitle)button.title=previousTitle;else button.removeAttribute("title");
+      delete button.dataset.betaEnded;delete button.dataset.betaPreviousDisabled;delete button.dataset.betaPreviousTitle;
+    }
+    try{window.CCGWeeklyChallenge?.render?.()}catch(_){}
+    return true
+  }
+
   function lockPlayableControls(){
     if(!publicBetaClosed())return false;
-    state.betaClosed=true;document.body?.classList?.add("ccg-public-beta-closed");document.body?.setAttribute?.("data-public-beta","ended");
+    if(ownerAccessGranted)return restoreOwnerControls();
+    state.betaClosed=true;state.ownerAccess=false;
+    document.body?.classList?.add("ccg-public-beta-closed");document.body?.setAttribute?.("data-public-beta","ended");
     ensureBetaStyle();ensureBetaSash();
     for(const id of PLAYABLE_IDS){
       const button=document.getElementById(id);if(!button)continue;
+      if(button.dataset.betaEnded!=="true"){
+        button.dataset.betaPreviousDisabled=button.disabled?"true":"false";
+        button.dataset.betaPreviousTitle=button.getAttribute("title")||"";
+      }
       button.disabled=true;button.setAttribute("aria-disabled","true");button.dataset.betaEnded="true";
-      if(!button.title||!/beta/i.test(button.title))button.title="The browser beta has ended. The next Lost Sizzler release is coming soon.";
+      button.title="The browser beta has ended. The next Lost Sizzler release is coming soon.";
     }
     return true
   }
 
+  async function resolveOwnerAccess(){
+    if(!publicBetaClosed())return false;
+    const auth=window.ccgSupabase;
+    if(state.ownerAuthPending||!auth?.getCurrentUserContext||!auth?.getClient)return false;
+    state.ownerAuthPending=true;
+    try{
+      const context=await auth.getCurrentUserContext();
+      const user=context?.user;
+      if(!context?.isAuthenticated||!user?.id){
+        ownerAccessGranted=false;state.ownerAccess=false;state.ownerAuthChecked=true;state.ownerUsername="";state.ownerRole="";lockPlayableControls();return false
+      }
+      const client=await auth.getClient();
+      if(!client?.from)throw new Error("Website profile service unavailable");
+      const query=client.from("profiles").select("username,role").eq("id",user.id);
+      const result=typeof query?.maybeSingle==="function"?await query.maybeSingle():await query.single();
+      if(result?.error)throw result.error;
+      const profile=result?.data||null;
+      state.ownerUsername=String(profile?.username||"");state.ownerRole=String(profile?.role||"");
+      ownerAccessGranted=ownerProfileMatches(profile);state.ownerAccess=ownerAccessGranted;state.ownerAuthChecked=true;
+      if(ownerAccessGranted)restoreOwnerControls();else lockPlayableControls();
+      return ownerAccessGranted
+    }catch(error){
+      ownerAccessGranted=false;state.ownerAccess=false;state.ownerAuthChecked=true;lockPlayableControls();
+      console.warn("[Lost Sizzler] owner preview authentication unavailable; public beta remains locked",error);return false
+    }finally{state.ownerAuthPending=false}
+  }
+
+  function onOwnerAuthSignal(){
+    state.ownerAuthChecked=false;
+    resolveOwnerAccess().catch(()=>{});
+  }
+
   function blockPublicPlay(event){
-    if(!publicBetaClosed())return;
+    if(!publicPlayLocked())return;
     const button=event?.target?.closest?.("button");
     if(!button||!PLAYABLE_IDS.has(button.id))return;
     event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();state.betaBlocks++;
@@ -81,12 +145,19 @@
       document.addEventListener("click",blockPublicPlay,true);
       state.betaObserver=new MutationObserver(()=>lockPlayableControls());
       state.betaObserver.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["class"]});
-      const runObserver=new MutationObserver(()=>{
-        if(document.body?.dataset?.runActive!=="true")return;
+      state.betaRunObserver=new MutationObserver(()=>{
+        if(!publicPlayLocked()||document.body?.dataset?.runActive!=="true")return;
         queueMicrotask(()=>{try{if(typeof quitToMenu==="function")quitToMenu()}catch(_){};lockPlayableControls()});
       });
-      runObserver.observe(document.body,{attributes:true,attributeFilter:["data-run-active"]});
-      state.betaRunObserver=runObserver;
+      state.betaRunObserver.observe(document.body,{attributes:true,attributeFilter:["data-run-active"]});
+      window.addEventListener("ccg:auth-ready",onOwnerAuthSignal);
+      window.addEventListener("ccg:auth-changed",onOwnerAuthSignal);
+      state.ownerAuthTimer=setInterval(()=>{
+        state.ownerAuthAttempts++;
+        if(window.ccgSupabase?.getCurrentUserContext){clearInterval(state.ownerAuthTimer);state.ownerAuthTimer=0;onOwnerAuthSignal()}
+        else if(state.ownerAuthAttempts>=40){clearInterval(state.ownerAuthTimer);state.ownerAuthTimer=0}
+      },250);
+      onOwnerAuthSignal();
     };
     if(document.body)start();else document.addEventListener("DOMContentLoaded",start,{once:true});
     return true
@@ -152,7 +223,7 @@
     if(state.soloRecoveryTimer)clearTimeout(state.soloRecoveryTimer);
     state.soloRecoveryTimer=setTimeout(()=>{
       state.soloRecoveryTimer=0;
-      if(serial!==state.soloIntentSerial||publicBetaClosed()||document.body?.dataset?.runActive==="true"||!releaseReady())return;
+      if(serial!==state.soloIntentSerial||publicPlayLocked()||document.body?.dataset?.runActive==="true"||!releaseReady())return;
       const menu=document.getElementById("menu");if(!menu||menu.classList.contains("hidden"))return;
       try{window.CCGLostSizzlerModeRuntime?.resetModeTransient?.("Solo launch liveness recovery")}catch(_){}
       try{window.CCGLostSizzlerV141R30?.assertNormalRuntimeOwnership?.("Solo launch liveness recovery")}catch(_){}
@@ -166,7 +237,7 @@
   function capturePreReleaseSolo(event){
     cancelPendingSoloForAnotherChoice(event);
     const button=event?.target?.closest?.("#solo-btn");
-    if(!button||publicBetaClosed()||document.body?.dataset?.runActive==="true")return;
+    if(!button||publicPlayLocked()||document.body?.dataset?.runActive==="true")return;
     if(releaseReady()){scheduleSoloLivenessCheck();return}
 
     // A player can click Play Solo after the core page is interactive but while
@@ -182,7 +253,7 @@
   function replayPendingSolo(){
     if(!state.pendingSolo||state.soloReplayQueued)return false;
     if(document.body?.dataset?.runActive==="true"){state.pendingSolo=false;return false}
-    if(!releaseReady())return false;
+    if(!releaseReady()||publicPlayLocked())return false;
     const button=document.getElementById("solo-btn");if(!button)return false;
 
     state.soloReplayQueued=true;
@@ -190,7 +261,7 @@
       state.soloReplayQueued=false;
       if(!state.pendingSolo)return;
       if(document.body?.dataset?.runActive==="true"){state.pendingSolo=false;return}
-      if(!releaseReady())return;
+      if(!releaseReady()||publicPlayLocked())return;
       state.pendingSolo=false;state.soloReplays++;
       button.click();
       scheduleSoloLivenessCheck();
@@ -239,12 +310,14 @@
   window.addEventListener("pagehide",()=>{
     state.pendingSolo=false;if(state.soloRecoveryTimer)clearTimeout(state.soloRecoveryTimer);
     document.removeEventListener("click",capturePreReleaseSolo,true);document.removeEventListener("click",blockPublicPlay,true);
+    window.removeEventListener("ccg:auth-ready",onOwnerAuthSignal);window.removeEventListener("ccg:auth-changed",onOwnerAuthSignal);
     try{state.betaObserver?.disconnect?.();state.betaRunObserver?.disconnect?.();state.moduleObserver?.disconnect?.()}catch(_){}
+    if(state.ownerAuthTimer)clearInterval(state.ownerAuthTimer);state.ownerAuthTimer=0;
     if(state.r57Timer)clearInterval(state.r57Timer);state.r57Timer=0;
     stopLoaderObservers();
   },{once:true});
   state.timer=setInterval(tick,250);
   state.r57Timer=setInterval(ensureR57,100);
   tick();ensureR57();
-  window.CCGLostSizzlerLoadWatchdog={state,stop:stopLoaderObservers,replayPendingSolo,scheduleSoloLivenessCheck,syncLoadingStage,lockPlayableControls,publicBetaClosed,ensureR57};
+  window.CCGLostSizzlerLoadWatchdog={state,stop:stopLoaderObservers,replayPendingSolo,scheduleSoloLivenessCheck,syncLoadingStage,lockPlayableControls,restoreOwnerControls,resolveOwnerAccess,ownerProfileMatches,publicPlayLocked,publicBetaClosed,ensureR57};
 })();
