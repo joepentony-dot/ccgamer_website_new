@@ -41,6 +41,20 @@ function pageRobotsDirectives(html) {
   return directives;
 }
 
+function canonicalHrefs(html) {
+  const hrefs = [];
+  const tags = String(html || "").match(/<link\b[^>]*>/gi) || [];
+  for (const tag of tags) {
+    const relTokens = getAttribute(tag, "rel")
+      .toLowerCase()
+      .split(/\s+/)
+      .filter(Boolean);
+    if (!relTokens.includes("canonical")) continue;
+    hrefs.push(getAttribute(tag, "href"));
+  }
+  return hrefs;
+}
+
 function hasMetaRefresh(html) {
   const tags = String(html || "").match(/<meta\b[^>]*>/gi) || [];
   return tags.some((tag) => getAttribute(tag, "http-equiv").toLowerCase() === "refresh");
@@ -82,6 +96,48 @@ function resolveLocalHtml(url) {
   return null;
 }
 
+function validateSelfCanonical(html, url, sourceSitemap) {
+  const hrefs = canonicalHrefs(html);
+  if (hrefs.length === 0) {
+    problems.push(`${sourceSitemap} includes a page with no canonical link: ${url}`);
+    return;
+  }
+  if (hrefs.length > 1) {
+    problems.push(`${sourceSitemap} includes a page with multiple canonical links: ${url}`);
+    return;
+  }
+
+  const href = hrefs[0];
+  if (!href) {
+    problems.push(`${sourceSitemap} includes a page with an empty canonical href: ${url}`);
+    return;
+  }
+
+  let canonical;
+  let expected;
+  try {
+    canonical = new URL(href, url);
+    expected = new URL(url);
+  } catch (error) {
+    problems.push(`${sourceSitemap} includes a page with an invalid canonical URL (${href}): ${url}`);
+    return;
+  }
+
+  if (canonical.origin !== SITE_ORIGIN) {
+    problems.push(`${sourceSitemap} includes an off-origin canonical (${canonical.href}): ${url}`);
+    return;
+  }
+
+  if (canonical.search || canonical.hash) {
+    problems.push(`${sourceSitemap} includes a canonical with a query string or fragment (${canonical.href}): ${url}`);
+    return;
+  }
+
+  if (canonical.href !== expected.href) {
+    problems.push(`${sourceSitemap} canonical mismatch: ${url} declares ${canonical.href}`);
+  }
+}
+
 function validatePage(url, sourceSitemap) {
   const filePath = resolveLocalHtml(url);
   if (!filePath) return;
@@ -103,6 +159,8 @@ function validatePage(url, sourceSitemap) {
   if (hasMetaRefresh(html)) {
     problems.push(`${sourceSitemap} includes a meta-refresh redirect page: ${url}`);
   }
+
+  validateSelfCanonical(html, url, sourceSitemap);
 }
 
 function main() {
@@ -155,8 +213,10 @@ function main() {
 if (require.main === module) main();
 
 module.exports = {
+  canonicalHrefs,
   extractLocs,
   hasMetaRefresh,
   pageRobotsDirectives,
   resolveLocalHtml,
+  validateSelfCanonical,
 };

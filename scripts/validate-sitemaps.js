@@ -5,6 +5,8 @@ const SITEMAP_XMLNS = 'http://www.sitemaps.org/schemas/sitemap/0.9';
 const VIDEO_XMLNS = 'http://www.google.com/schemas/sitemap-video/1.1';
 const CORE_CHILD_SITEMAPS = ['sitemap-pages.xml', 'sitemap-games.xml'];
 const CHILD_SITEMAP_PATTERN = /^sitemap-[a-z0-9-]+\.xml$/i;
+const GAME_ROUTE_SITEMAPS = new Set(['sitemap-games.xml', 'sitemap-videos.xml']);
+const VIDEO_SITEMAPS = new Set(['sitemap-videos.xml', 'sitemap-retro-videos.xml']);
 
 function readFile(filePath) {
   return fs.readFileSync(filePath, 'utf8');
@@ -160,14 +162,14 @@ function validateUrlSitemap(filePath) {
 
   for (const loc of locs) {
     assertCanonicalSitemapUrl(loc, filePath);
-    if (filePath === 'sitemap-games.xml' || filePath === 'sitemap-videos.xml') {
+    if (GAME_ROUTE_SITEMAPS.has(filePath)) {
       const pathname = toUrl(loc, filePath).pathname;
       assert(!pathname.endsWith('.html'), `${filePath} game URLs must use canonical directory URLs: ${loc}`);
       assert(/^\/games\/[a-z0-9-]+\/$/.test(pathname), `${filePath} must contain canonical game routes only: ${loc}`);
     }
   }
 
-  if (filePath === 'sitemap-videos.xml') {
+  if (VIDEO_SITEMAPS.has(filePath)) {
     validateVideoSitemap(filePath, xml, locs);
   }
 
