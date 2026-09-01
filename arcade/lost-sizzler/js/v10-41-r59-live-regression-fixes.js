@@ -107,9 +107,14 @@
   }
 
   function safeGapRecovery(gap){
-    const now=perfNow(),modeNow=currentMode();
+    const modeNow=currentMode();
     if(!finite(gap)||Number(gap)<LONG_GAP_MS)return false;
-    if(now<state.suppressRecoveryUntil||modeNow!=="playing"||document.hidden){state.pausedGapsDiscarded++;return false}
+    // A genuine pause/hidden transition is made safe by markPauseBoundary()
+    // resetting the accepted RAF clock. Do not also suppress recovery merely
+    // because a recent focus/pause boundary happened: while the game is visibly
+    // playing, a real main-thread stall still has to pay down combat cooldowns,
+    // hit-stun and retained control locks.
+    if(modeNow!=="playing"||document.hidden){state.pausedGapsDiscarded++;return false}
     if(typeof basePayDownCombatGap!=="function")return false;
     try{const recovered=Boolean(basePayDownCombatGap(gap));if(recovered)state.longGapRecoveries++;return recovered}catch(error){noteFault("gap-recovery",error);return false}
   }
@@ -126,7 +131,10 @@
     let gap=previous==null?16:Math.max(0,t-previous),dt=16;
     if(!finite(gap))gap=16;
 
-    if(modeChanged||perfNow()<state.suppressRecoveryUntil){
+    // Paused/hidden frames never recover combat time. Active visible gameplay is
+    // different: a long accepted RAF gap is a browser/main-thread stall and must
+    // repair stale combat timing even if it occurs shortly after a focus event.
+    if(modeChanged||modeNow!=="playing"||document.hidden){
       if(gap>=LONG_GAP_MS)state.pausedGapsDiscarded++;
       dt=modeNow==="playing"?Math.min(16,gap||16):0;
     }else{
