@@ -28,21 +28,21 @@ try{
 
   console.log("[r57 video] load canonical Solo runtime");
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R29)&&Boolean(window.CCGLostSizzlerV141R56PlaytestCompletion)&&Boolean(document.getElementById("solo-btn")),null,{timeout:90000});
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R29)&&Boolean(window.CCGLostSizzlerV141R56PlaytestCompletion)&&Boolean(window.CCGLostSizzlerV141R59LiveRegressionFixes)&&Boolean(document.getElementById("solo-btn")),null,{timeout:90000});
   await page.click("#solo-btn");
-  await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(p1)&&Boolean(host)&&Boolean(window.loop?.__ccgV141R29Stable),null,{timeout:20000});
+  await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(p1)&&Boolean(host)&&Boolean(window.loop?.__ccgV141R29Stable)&&Boolean(window.loop?.__ccgV141R59PauseClock),null,{timeout:20000});
 
   console.log("[r57 video] duplicate RAF timestamp cannot accelerate simulation");
   const duplicate=await page.evaluate(()=>{
-    const api=window.CCGLostSizzlerV141R29,state=api.state;
-    const oldUpdate=window.update,oldRender=window.render,oldRaf=window.requestAnimationFrame,oldLoop=window.loop,oldLast=last,oldAccepted=state.lastAcceptedRafTimestamp;
+    const api=window.CCGLostSizzlerV141R29,state=api.state,r59=window.CCGLostSizzlerV141R59LiveRegressionFixes;
+    const oldUpdate=window.update,oldRender=window.render,oldRaf=window.requestAnimationFrame,oldLoop=window.loop,oldLast=last,oldAccepted=r59.state.lastAcceptedRafTimestamp;
     let updates=0,renders=0,rafs=0;const dts=[];
     try{
       window.update=dt=>{updates++;dts.push(Number(dt))};
       window.render=()=>{renders++};
       window.requestAnimationFrame=()=>{rafs++;return 1};
       window.loop=api.stableLoop;
-      const base=performance.now();last=base-16;state.lastAcceptedRafTimestamp=null;
+      const base=performance.now();last=base-16;r59.setAcceptedRafTimestamp(null);
       const skippedBefore=Number(state.duplicateFramesSkipped||0);
       api.stableLoop(base);
       api.stableLoop(base);
@@ -50,7 +50,7 @@ try{
       api.stableLoop(base+16);
       return{afterDuplicate,afterNext:{updates,renders,rafs},dts:[...dts]};
     }finally{
-      window.update=oldUpdate;window.render=oldRender;window.requestAnimationFrame=oldRaf;window.loop=oldLoop;last=oldLast;state.lastAcceptedRafTimestamp=oldAccepted;
+      window.update=oldUpdate;window.render=oldRender;window.requestAnimationFrame=oldRaf;window.loop=oldLoop;last=oldLast;r59.setAcceptedRafTimestamp(oldAccepted);
     }
   });
   assert.deepEqual(duplicate.afterDuplicate,{updates:1,renders:1,rafs:1,skipped:1},`same-timestamp duplicate RAF callback must not advance or perpetuate a second simulation chain: ${JSON.stringify(duplicate)}`);
