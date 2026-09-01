@@ -10,7 +10,7 @@
   if(window.__CCG_LOST_SIZZLER_V141_STARTUP_FREEZE_GUARD__)return;
   window.__CCG_LOST_SIZZLER_V141_STARTUP_FREEZE_GUARD__=true;
 
-  const state={timer:0,hooked:false,bypassed:false,deferred:false,source:null,canvas:null};
+  const state={timer:0,hooked:false,observerArmed:false,bypassed:false,deferred:false,source:null,canvas:null};
 
   function pixelAssets(){
     try{return typeof lostSizzlerPixelAssets!=="undefined"?lostSizzlerPixelAssets:null}catch(_){return null}
@@ -56,8 +56,8 @@
   function hookReleaseGate(){
     const gate=window.CCGLostSizzlerReleaseGate;
     if(!gate||gate.__v141StartupFreezeGuard)return false;
-    // Wait until V10.36 has installed its gate wrapper, then place this guard
-    // outside it so the marker is set immediately before installRuntime().
+    // V10.36 must own the inner wrapper. This guard is then placed outside it
+    // so the legacy atlas marker is set immediately before installRuntime().
     if(!gate.__v136Hooked)return false;
     const current=gate.finish;
     if(typeof current!=="function")return false;
@@ -71,8 +71,34 @@
     return true;
   }
 
+  function armV136HookObserver(){
+    const gate=window.CCGLostSizzlerReleaseGate;
+    if(!gate||state.observerArmed)return Boolean(gate);
+    let v136Hooked=Boolean(gate.__v136Hooked);
+    try{
+      Object.defineProperty(gate,"__v136Hooked",{
+        configurable:true,
+        enumerable:true,
+        get(){return v136Hooked},
+        set(value){
+          v136Hooked=Boolean(value);
+          if(!v136Hooked)return;
+          markLegacyGutterHandled();
+          if(hookReleaseGate()&&state.timer){clearInterval(state.timer);state.timer=0}
+        }
+      });
+      state.observerArmed=true;
+      if(v136Hooked)hookReleaseGate();
+      return true;
+    }catch(error){
+      console.warn("[Lost Sizzler V10.41] deterministic V10.36 gate hook unavailable; retaining timer fallback",error);
+      return false;
+    }
+  }
+
   function tick(){
     markLegacyGutterHandled();
+    armV136HookObserver();
     if(hookReleaseGate()){
       if(state.timer){clearInterval(state.timer);state.timer=0}
       return;
@@ -83,5 +109,5 @@
 
   state.timer=setInterval(tick,25);tick();
   window.addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
-  window.CCGLostSizzlerV141StartupFreezeGuard={markLegacyGutterHandled,buildSafeGutter,scheduleSafeGutter,get state(){return state}};
+  window.CCGLostSizzlerV141StartupFreezeGuard={markLegacyGutterHandled,buildSafeGutter,scheduleSafeGutter,hookReleaseGate,get state(){return state}};
 })();
