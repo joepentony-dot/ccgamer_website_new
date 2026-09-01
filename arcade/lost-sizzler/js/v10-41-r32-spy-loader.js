@@ -4,9 +4,9 @@
  * online Dungeon sessions. Keep those startup/network paths untouched and load
  * the Spy owners only after Sizzler Saboteurs is active. This loader owns TAB
  * from the first Spy keypress, detaches the stale r27 F/TAB keyboard owner and
- * guards Spy-mode F from later compatibility handlers without issuing a second
- * fullscreen command. r59 is loaded globally from here so pause/resume timing
- * is stabilised for every game mode before desktop packaging.
+ * provides one idempotent Spy-mode F fullscreen dispatch shared with game-main.
+ * r59 is loaded globally from here so pause/resume timing is stabilised for
+ * every game mode before desktop packaging.
  */
 (()=>{
   "use strict";
@@ -15,13 +15,14 @@
 
   const MODE_ID="sizzler-saboteurs",MONITOR_MS=20;
   const OWNER_ACTION_CODES=new Set(["KeyE","KeyT","KeyX"]);
+  const fullscreenEvents=new WeakSet();
   const state={
     timer:0,loading:false,loaded:false,loads:0,lastError:"",
     uiLoading:false,uiLoaded:false,uiLoads:0,uiLastError:"",
     hardeningLoaded:false,fullscreenUiLoaded:false,perfectionLoaded:false,trapPresentationLoaded:false,r58Loaded:false,
     r59Loading:false,r59Loaded:false,r59Loads:0,r59LastError:"",
     r56Guarded:false,r56GuardInstalls:0,r56OwnerSkips:0,r27KeyDetached:false,r27KeyDetachments:0,
-    tabTogglePending:false,tabToggles:0,tabLoadBridges:0,fullscreenKeyGuards:0,fieldKitLabelRepairs:0,
+    tabTogglePending:false,tabToggles:0,tabLoadBridges:0,fullscreenKeyCalls:0,fullscreenDuplicateGuards:0,fieldKitLabelRepairs:0,
     pendingActionCode:"",queuedActions:0,replayedActions:0,queuedSearchFeedbacks:0,directSearchActions:0,
     searchTargetBridges:0,searchRoomBridges:0,searchKeyDowns:0,searchKeyUpFallbacks:0
   };
@@ -219,17 +220,26 @@
     state.fieldKitLabelRepairs+=repaired;return repaired>0
   }
 
+  function handleSpyFullscreenKey(event){
+    if(!spyActive()||String(event?.code||"")!=="KeyF")return false;
+    event.preventDefault?.();
+    if(fullscreenEvents.has(event)){
+      state.fullscreenDuplicateGuards++;event.stopImmediatePropagation?.();return true
+    }
+    fullscreenEvents.add(event);
+    if(!event?.repeat){
+      try{if(typeof toggleFullscreen==="function"){toggleFullscreen();state.fullscreenKeyCalls++}}catch(error){state.lastError=String(error?.message||error)}
+    }
+    event.stopImmediatePropagation?.();return true
+  }
+
   function onKeyDown(event){
     if(!spyActive())return;const code=String(event?.code||"");
     if(code==="Tab"){
       event.preventDefault?.();event.stopImmediatePropagation?.();
       if(!event.repeat)toggleSpyInventoryFromTab();return
     }
-    if(code==="KeyF"){
-      event.preventDefault?.();event.stopImmediatePropagation?.();
-      if(!event.repeat)state.fullscreenKeyGuards++;
-      return
-    }
+    if(code==="KeyF"){handleSpyFullscreenKey(event);return}
     if(event?.repeat)return;
     if(!OWNER_ACTION_CODES.has(code))return;
     if(code==="KeyE"){
@@ -257,5 +267,5 @@
   monitor();state.timer=setInterval(monitor,MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0;state.pendingActionCode="";lastSearchDispatchAt=0},{once:true});
 
-  window.CCGLostSizzlerV141R32SpyLoader={ensureLoaded,ensureR59,ensureSearchUi,queueOwnerAction,directSearchAction,bridgeSearchTarget,dispatchSearchAction,toggleSpyInventoryFromTab,detachLegacyR27KeyOwner,repairFieldKitLabels,guardR56SpyOwnership,get state(){return state}};
+  window.CCGLostSizzlerV141R32SpyLoader={ensureLoaded,ensureR59,ensureSearchUi,queueOwnerAction,directSearchAction,bridgeSearchTarget,dispatchSearchAction,toggleSpyInventoryFromTab,handleSpyFullscreenKey,detachLegacyR27KeyOwner,repairFieldKitLabels,guardR56SpyOwnership,get state(){return state}};
 })();
