@@ -8,10 +8,12 @@ const root=path.resolve(here,"..");
 const read=file=>fs.readFileSync(path.join(root,file),"utf8");
 const watchdog=read("js/v10-41-load-watchdog.js");
 const overrides=read("js/asset-overrides.js");
+const freezeGuard=read("js/v10-41-startup-freeze-guard.js");
 const r57=read("js/v10-41-r57-desktop-prep-stability.js");
 
 assert.doesNotThrow(()=>new Function(watchdog),"R57 load-watchdog changes must parse");
 assert.doesNotThrow(()=>new Function(overrides),"R57 release-loader changes must parse");
+assert.doesNotThrow(()=>new Function(freezeGuard),"R57 startup freeze-guard changes must parse");
 assert.doesNotThrow(()=>new Function(r57),"R57 desktop-prep owner must parse");
 
 assert.match(watchdog,/cheekycommodoregamer\.co\.uk/,"public beta lockdown must be hostname-scoped");
@@ -46,6 +48,12 @@ assert.match(overrides,/Promise\.all\(loads\)\.then/,"releaseReady must wait unt
 assert.ok(!overrides.includes("const loadNext=index=>"),"the old one-request-at-a-time release waterfall must not return");
 assert.match(overrides,/criticalPaths\.has\(requestedPath\)/,"parallel loading must retain critical-module failure protection");
 assert.match(overrides,/CCGLostSizzlerReleaseGate\?\.finish\?\.\(criticalFailures\)/,"release gate must still finish through the canonical failure-aware owner");
+assert.match(overrides,/release gate failed:/,"release-gate failures must expose their concrete recorded cause in browser CI");
+
+assert.match(freezeGuard,/Object\.defineProperty\(gate,"__v136Hooked"/,"startup freeze guard must observe V10.36 gate ownership synchronously instead of relying only on a timer");
+assert.match(freezeGuard,/set\(value\)\{\s*v136Hooked=Boolean\(value\);\s*if\(!v136Hooked\)return;\s*markLegacyGutterHandled\(\);\s*if\(hookReleaseGate\(\)/s,"V10.36 ownership must mark the legacy gutter before synchronously wrapping release-gate finish");
+assert.match(freezeGuard,/gate\.finish=function finishV141StartupFreezeGuard\(\)\{\s*markLegacyGutterHandled\(\);\s*const result=current\.apply/s,"the outer V10.41 gate wrapper must mark the atlas before V10.36 installRuntime executes");
+assert.match(freezeGuard,/state\.timer=setInterval\(tick,25\);tick\(\)/,"the historical timer must remain only as a compatibility fallback");
 
 assert.match(r57,/clearInterval\(api\.state\.timer\);api\.state\.timer=0/,"R57 must retire the flickering R56 periodic DOM icon pass");
 assert.match(r57,/#quick-slots \.quick-slot>\.item-svg-wrap/,"canonical Quick Inventory SVG must become the only visible icon layer");
