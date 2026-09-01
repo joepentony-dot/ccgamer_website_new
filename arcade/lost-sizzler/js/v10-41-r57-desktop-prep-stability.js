@@ -268,22 +268,37 @@
     if(Number.isFinite(health))state.spyHpPrevious.set(id,health);return Number(state.spyHpUntil.get(id)||0)
   }
   function spyHealthBarVisibleFor(player){return trackSpyHealth(player)>nowPerf()}
+  function chainHas(fn,marker,maxDepth=12){
+    let current=fn;
+    for(let depth=0;depth<maxDepth&&typeof current==="function";depth++){
+      if(current?.[marker])return true;
+      const next=current?.__ccgOriginal;if(typeof next!=="function"||next===current)break;current=next
+    }
+    return false
+  }
   function installSpyDrawGuards(){
-    const currentPlayer=window.drawPlayer;if(typeof currentPlayer==="function"&&!currentPlayer.__ccgV141R57SpyHp){
+    const currentPlayer=window.drawPlayer;
+    if(typeof currentPlayer==="function"&&chainHas(currentPlayer,"__ccgV141R57SpyHp"))state.drawPlayerWrapped=true;
+    else if(typeof currentPlayer==="function"){
       const wrapped=function drawPlayerV141R57SpyHp(player,kind){
         if(!spyActive()||!player)return currentPlayer.apply(this,arguments);const old=Number(player.hpBarMs||0),until=trackSpyHealth(player),remaining=Math.max(0,until-nowPerf());player.hpBarMs=remaining>0?remaining:0;
         try{return currentPlayer.apply(this,arguments)}finally{player.hpBarMs=old}
       };
-      wrapped.__ccgV141R57SpyHp=true;wrapped.__ccgOriginal=currentPlayer;window.drawPlayer=wrapped;state.drawPlayerWrapped=true
-    }else if(currentPlayer?.__ccgV141R57SpyHp)state.drawPlayerWrapped=true;
+      wrapped.__ccgV141R57SpyHp=true;wrapped.__ccgOriginal=currentPlayer;
+      if(chainHas(currentPlayer,"__ccgV141R51VisualPolish"))wrapped.__ccgV141R51VisualPolish=true;
+      if(chainHas(currentPlayer,"__ccgV141R48CharacterAnimation"))wrapped.__ccgV141R48CharacterAnimation=true;
+      window.drawPlayer=wrapped;state.drawPlayerWrapped=true
+    }
 
-    const currentWeapon=window.drawPlayerWeapon;if(typeof currentWeapon==="function"&&!currentWeapon.__ccgV141R57SpySwordRange){
+    const currentWeapon=window.drawPlayerWeapon;
+    if(typeof currentWeapon==="function"&&chainHas(currentWeapon,"__ccgV141R57SpySwordRange"))state.drawWeaponWrapped=true;
+    else if(typeof currentWeapon==="function"){
       const wrappedWeapon=function drawPlayerWeaponV141R57Range(player){
         if(spyActive()&&player){const hasGun=Boolean(player.firearmUnlocked&&player.weapon&&Number(player.mana||0)>0);if(!hasGun&&!spySwordAllowedFor(player)){state.spySwordSuppressions++;return false}}
         return currentWeapon.apply(this,arguments)
       };
       wrappedWeapon.__ccgV141R57SpySwordRange=true;wrappedWeapon.__ccgOriginal=currentWeapon;window.drawPlayerWeapon=wrappedWeapon;state.drawWeaponWrapped=true
-    }else if(currentWeapon?.__ccgV141R57SpySwordRange)state.drawWeaponWrapped=true;
+    }
     return state.drawPlayerWrapped&&state.drawWeaponWrapped
   }
 
@@ -302,7 +317,7 @@
   document.body.dataset.v141R57DesktopPrepStability="true";
   window.CCGLostSizzlerV141R57DesktopPrepStability={
     installStyle,retireR56PeriodicTick,bridgeR56,trapIsActive,contactTick,pruneTimedEnemies,prepareTimedInterwaves,finishTimedInterwaves,installTimedGuard,clampMovementCooldown,recoverAfterStall,
-    repairSpyPresence,repairSpyLiveness,spyOpponentDistance,spySwordAllowedFor,repairSpySwordRange,trackSpyHealth,spyHealthBarVisibleFor,installSpyDrawGuards,onSpyTabKeyUp,
+    repairSpyPresence,repairSpyLiveness,spyOpponentDistance,spySwordAllowedFor,repairSpySwordRange,trackSpyHealth,spyHealthBarVisibleFor,chainHas,installSpyDrawGuards,onSpyTabKeyUp,
     constants:{MONITOR_MS,STALL_MS,MAX_TIMED_DT,INTERWAVE_MS,TIMED_ACTIVE_CAP,SPY_SWORD_TILES,SPY_HP_MS},get state(){return state}
   };
 })();
