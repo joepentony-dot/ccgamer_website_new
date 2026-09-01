@@ -136,3 +136,14 @@
   document.body.dataset.v141R55FinalPlaytestCleanup="true";
   window.CCGLostSizzlerV141R55FinalPlaytestCleanup={injectStyle,sealButtonLayout,markMenu,expectedAuthority,repairHordeAuthority,updateBanner,get state(){return state}};
 })();
+
+/* R56 late playtest completion owner. */
+(()=>{
+  if(document.querySelector('script[data-ccg-v141-r56-playtest-completion]'))return;
+  const script=document.createElement('script');
+  const rev=document.querySelector('meta[name="ccg-release"]')?.content||document.documentElement?.dataset?.releaseRev||Date.now();
+  script.src=`js/v10-41-r56-playtest-completion.js?v=${encodeURIComponent(rev)}`;
+  script.async=false;
+  script.dataset.ccgV141R56PlaytestCompletion='true';
+  document.head.appendChild(script);
+})();
