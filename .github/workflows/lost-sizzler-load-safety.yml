@@ -90,8 +90,14 @@ jobs:
 
           run_legacy_browser_test arcade/lost-sizzler/tests/v10-6-browser.mjs
           run_legacy_browser_test arcade/lost-sizzler/tests/support/v10-28-browser-stability-deterministic.mjs
+          node arcade/lost-sizzler/tests/support/v10-41-r44-solo-cloud-save-deterministic.mjs
 
           for test in arcade/lost-sizzler/tests/browser/*.mjs; do
+            case "$(basename "$test")" in
+              v10-41-r44-solo-cloud-save.mjs)
+                continue
+                ;;
+            esac
             echo "::group::$test"
             node "$test"
             echo "::endgroup::"
