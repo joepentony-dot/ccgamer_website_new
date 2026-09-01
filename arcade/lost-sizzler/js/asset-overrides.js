@@ -91,7 +91,7 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
   }
   function finish(errors=[]){
     state.errors=[...errors];state.failed=state.errors.length>0;
-    if(state.failed){setBodyState("failed");setMenuStatus("DUNGEON STARTUP FAILED — REFRESH THE PAGE TO RETRY");resolveReady(false);return false}
+    if(state.failed){console.error(`[Lost Sizzler] release gate failed: ${state.errors.join(" | ")}`);setBodyState("failed");setMenuStatus("DUNGEON STARTUP FAILED — REFRESH THE PAGE TO RETRY");resolveReady(false);return false}
     state.ready=true;setBodyState("true");setMenuStatus("");resolveReady(true);
     const id=state.pendingId;state.pendingId="";
     if(id)setTimeout(()=>document.getElementById(id)?.click(),0);
