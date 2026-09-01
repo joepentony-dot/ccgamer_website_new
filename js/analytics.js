@@ -5,8 +5,6 @@
    - Essential preferences remain available without consent.
    - Adds site-wide legal, shop and supporter links without
      editing every generated archive page.
-   - Labels Amazon affiliate links and adds the required
-     disclosure near affiliate content.
    - Adds restrained passive-revenue prompts to suitable pages.
    ========================================================= */
 
@@ -281,7 +279,6 @@
       '<a href="/supporters.html">Hall of Fame</a>',
       '<a href="/privacy.html">Privacy</a>',
       '<a href="/cookies.html">Cookies</a>',
-      '<a href="/affiliate-disclosure.html">Affiliate disclosure</a>',
       '<a href="/terms.html">Terms</a>',
       '<a href="/copyright.html">Copyright</a>',
       '<a href="/work-with-ccg.html">Work with CCG</a>',
@@ -290,49 +287,6 @@
 
     nav.querySelector('[data-ccg-open-consent]').addEventListener('click', showPreferences);
     footer.appendChild(nav);
-  }
-
-  function isAmazonAffiliateLink(link) {
-    try {
-      var host = new URL(link.href, window.location.href).hostname.toLowerCase();
-      return host === 'amzn.to' || host.indexOf('amazon.') !== -1;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  function labelAffiliateLinks() {
-    var links = Array.prototype.slice.call(document.querySelectorAll('a[href]')).filter(isAmazonAffiliateLink);
-    if (!links.length) return;
-
-    links.forEach(function (link) {
-      var rel = new Set((link.getAttribute('rel') || '').split(/\s+/).filter(Boolean));
-      rel.add('sponsored');
-      rel.add('nofollow');
-      rel.add('noopener');
-      link.setAttribute('rel', Array.from(rel).join(' '));
-      link.setAttribute('data-ccg-affiliate-link', 'amazon');
-      link.setAttribute('data-ccg-revenue-link', 'amazon-affiliate');
-      if (!link.getAttribute('target')) link.setAttribute('target', '_blank');
-
-      if (!link.nextElementSibling || !link.nextElementSibling.matches('.ccg-affiliate-label')) {
-        var label = document.createElement('span');
-        label.className = 'ccg-affiliate-label';
-        label.textContent = 'Paid link';
-        label.setAttribute('aria-label', 'Affiliate paid link');
-        link.insertAdjacentElement('afterend', label);
-      }
-    });
-
-    if (!document.querySelector('[data-ccg-affiliate-disclosure]')) {
-      var disclosure = document.createElement('aside');
-      disclosure.className = 'ccg-affiliate-disclosure';
-      disclosure.setAttribute('data-ccg-affiliate-disclosure', 'true');
-      disclosure.innerHTML = '<strong>Affiliate disclosure:</strong> As an Amazon Associate I earn from qualifying purchases. Affiliate links may earn the site a commission at no additional cost to you. <a href="/affiliate-disclosure.html">Read the full disclosure.</a>';
-      var first = links[0];
-      var container = first.closest('section, article, main, .ccg-info-panel, .ccg-info-card') || first.parentElement;
-      if (container) container.insertBefore(disclosure, container.firstChild);
-    }
   }
 
   function usePrivacyEnhancedYouTube() {
@@ -354,7 +308,7 @@
     var page = (document.documentElement.getAttribute('data-ccg-page') || '').toLowerCase();
     var excludedPages = new Set([
       'shop', 'supporters', 'support', 'privacy', 'cookies', 'terms',
-      'copyright', 'affiliate-disclosure', 'work-with-ccg', 'login',
+      'copyright', 'commercial-relationships', 'work-with-ccg', 'login',
       'register', 'member-hub', 'contact'
     ]);
     var excludedPrefixes = ['/admin/', '/auth/', '/community/', '/games/downloads/', '/quiz/'];
@@ -415,7 +369,6 @@
 
   function initDomFeatures() {
     appendFooterLinks();
-    labelAffiliateLinks();
     usePrivacyEnhancedYouTube();
     appendPassiveRevenuePanel();
     trackRevenueLinks();

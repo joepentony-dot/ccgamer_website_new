@@ -6,6 +6,48 @@
 (function () {
     const root = document.documentElement;
 
+    const retireLegacyRetailerCommissionUi = () => {
+        document.querySelectorAll("#affiliate-products-section").forEach((section) => {
+            section.hidden = true;
+            section.setAttribute("aria-hidden", "true");
+            section.classList.remove("is-hardware-open");
+        });
+
+        document.querySelectorAll(".ccg-affiliate-disclosure, .ccg-affiliate-label, .emu-affiliate-note").forEach((node) => {
+            node.remove();
+        });
+
+        document.querySelectorAll('a[href="/affiliate-disclosure.html"], a[href$="/affiliate-disclosure.html"]').forEach((link) => {
+            link.remove();
+        });
+
+        document.querySelectorAll("a[href]").forEach((link) => {
+            const rawHref = link.getAttribute("href") || "";
+            let url;
+
+            try {
+                url = new URL(rawHref, window.location.href);
+            } catch (error) {
+                return;
+            }
+
+            const host = url.hostname.toLowerCase();
+            const isAmazonHost = host === "amzn.to" || host === "amazon.co.uk" || host.endsWith(".amazon.co.uk") || host.startsWith("www.amazon.") || host.startsWith("amazon.");
+            if (!isAmazonHost) return;
+
+            const tag = (url.searchParams.get("tag") || "").toLowerCase();
+            const linkCode = (url.searchParams.get("linkCode") || url.searchParams.get("linkcode") || "").toLowerCase();
+            const markedLegacyLink = link.getAttribute("data-ccg-affiliate-link") === "amazon"
+                || link.getAttribute("data-ccg-revenue-link") === "amazon-affiliate";
+            const retiredAccountLink = tag === "cheekycommo0d-21";
+            const legacyAssociateLink = host === "amzn.to" || retiredAccountLink || markedLegacyLink || linkCode === "ll2";
+
+            if (legacyAssociateLink) {
+                link.remove();
+            }
+        });
+    };
+
     const revealPrefilledSingleGame = () => {
         if (root.getAttribute("data-ccg-page") !== "single-game") return;
 
@@ -212,9 +254,12 @@
     // single-game CSS hides pages until ccg-single-ready is present, so reveal
     // prefilled pages immediately. The dynamic game.html shell has an empty H1
     // and therefore keeps its existing loader-controlled reveal behaviour.
+    retireLegacyRetailerCommissionUi();
     revealPrefilledSingleGame();
     ensureSingleGameViewportModalRoot();
     bindDedicatedBoxDialog();
+
+    window.addEventListener("ccg:game-loaded", retireLegacyRetailerCommissionUi);
 
     const isMobile =
         window.matchMedia("(max-width: 900px)").matches ||
@@ -296,11 +341,13 @@
 
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", () => {
+            retireLegacyRetailerCommissionUi();
             ensureSingleGameViewportModalRoot();
             bindDedicatedBoxDialog();
             scheduleVisuals();
         }, { once: true });
     } else {
+        retireLegacyRetailerCommissionUi();
         ensureSingleGameViewportModalRoot();
         bindDedicatedBoxDialog();
         scheduleVisuals();
