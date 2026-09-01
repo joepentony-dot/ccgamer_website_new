@@ -155,11 +155,18 @@
   function trimVisualArray(list,max){
     if(!Array.isArray(list)||list.length<=max)return 0;const count=list.length-max;list.splice(0,count);return count
   }
+  function clampMovementCooldown(index,cadence){
+    let current=0;
+    try{current=Number(index===2?move2:move1)}catch(_){return 0}
+    const next=!Number.isFinite(current)||current<0?0:Math.min(current,cadence);
+    try{if(index===2)move2=next;else move1=next}catch(_){}
+    return next
+  }
   function restoreMovementTiming(player,index){
     if(!player||Number(player.health||0)<=0)return false;
     let mult=Number(player.moveMultiplier);if(!Number.isFinite(mult)||mult<=.25||mult>2){player.moveMultiplier=1;mult=1}
     const cadence=Math.max(70,Math.min(360,Number(C?.player?.moveDelay||140)*mult));
-    try{if(index===2)move2=cadence;else move1=cadence}catch(_){}
+    clampMovementCooldown(index,cadence);
     if(player.controlLocked)player.controlLocked=false;if(player.controlsLocked)player.controlsLocked=false;
     if(!Number.isFinite(Number(player.hitStunMs))||Number(player.hitStunMs)>5000||Number(player.hitStunMs)<0)player.hitStunMs=0;
     const gap=Math.abs(Number(player.x)-Number(player.rx))+Math.abs(Number(player.y)-Number(player.ry));if(Number.isFinite(gap)&&gap>1.5){player.rx=player.x;player.ry=player.y}
@@ -294,7 +301,7 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0;removeEventListener("keyup",onSpyTabKeyUp,true);try{state.spyInventoryObserver?.disconnect?.()}catch(_){}},{once:true});
   document.body.dataset.v141R57DesktopPrepStability="true";
   window.CCGLostSizzlerV141R57DesktopPrepStability={
-    installStyle,retireR56PeriodicTick,bridgeR56,trapIsActive,contactTick,pruneTimedEnemies,prepareTimedInterwaves,finishTimedInterwaves,installTimedGuard,recoverAfterStall,
+    installStyle,retireR56PeriodicTick,bridgeR56,trapIsActive,contactTick,pruneTimedEnemies,prepareTimedInterwaves,finishTimedInterwaves,installTimedGuard,clampMovementCooldown,recoverAfterStall,
     repairSpyPresence,repairSpyLiveness,spyOpponentDistance,spySwordAllowedFor,repairSpySwordRange,trackSpyHealth,spyHealthBarVisibleFor,installSpyDrawGuards,onSpyTabKeyUp,
     constants:{MONITOR_MS,STALL_MS,MAX_TIMED_DT,INTERWAVE_MS,TIMED_ACTIVE_CAP,SPY_SWORD_TILES,SPY_HP_MS},get state(){return state}
   };
