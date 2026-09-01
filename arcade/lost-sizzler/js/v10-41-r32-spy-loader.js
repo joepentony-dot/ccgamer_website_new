@@ -4,9 +4,9 @@
  * online Dungeon sessions. Keep those startup/network paths untouched and load
  * the Spy owners only after Sizzler Saboteurs is active. This loader owns TAB
  * from the first Spy keypress, detaches the stale r27 F/TAB keyboard owner and
- * owns Spy-mode F as a single fullscreen dispatch so retained core listeners
- * cannot invoke fullscreen twice. r59 is loaded globally from here so
- * pause/resume timing is stabilised for every game mode before desktop packaging.
+ * guards Spy-mode F from later compatibility handlers without issuing a second
+ * fullscreen command. r59 is loaded globally from here so pause/resume timing
+ * is stabilised for every game mode before desktop packaging.
  */
 (()=>{
   "use strict";
@@ -21,7 +21,7 @@
     hardeningLoaded:false,fullscreenUiLoaded:false,perfectionLoaded:false,trapPresentationLoaded:false,r58Loaded:false,
     r59Loading:false,r59Loaded:false,r59Loads:0,r59LastError:"",
     r56Guarded:false,r56GuardInstalls:0,r56OwnerSkips:0,r27KeyDetached:false,r27KeyDetachments:0,
-    tabTogglePending:false,tabToggles:0,tabLoadBridges:0,fullscreenKeyCalls:0,fieldKitLabelRepairs:0,
+    tabTogglePending:false,tabToggles:0,tabLoadBridges:0,fullscreenKeyGuards:0,fieldKitLabelRepairs:0,
     pendingActionCode:"",queuedActions:0,replayedActions:0,queuedSearchFeedbacks:0,directSearchActions:0,
     searchTargetBridges:0,searchRoomBridges:0,searchKeyDowns:0,searchKeyUpFallbacks:0
   };
@@ -227,8 +227,7 @@
     }
     if(code==="KeyF"){
       event.preventDefault?.();event.stopImmediatePropagation?.();
-      if(event.repeat)return;
-      try{if(typeof toggleFullscreen==="function"){toggleFullscreen();state.fullscreenKeyCalls++}}catch(error){state.lastError=String(error?.message||error)}
+      if(!event.repeat)state.fullscreenKeyGuards++;
       return
     }
     if(event?.repeat)return;
