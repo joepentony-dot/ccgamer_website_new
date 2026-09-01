@@ -64,5 +64,10 @@ assert.match(r57,/SPY_HP_MS=1500/,"Spy overhead HP must be transient after a hit
 assert.match(r57,/health<previous/,"Spy HP display window must be opened by actual health loss");
 assert.match(r57,/remote\?\.set\?\.\(id,live\)/,"active Player 2 must receive a short-lived physical presence proxy through network gaps");
 assert.match(r57,/live\.lastSeen=now/,"Spy split-screen presence must stay render-live while the rules model still says the player is active");
+assert.match(r57,/function chainHas\(fn,marker,maxDepth=12\)/,"R57 must inspect renderer ownership through the existing wrapper chain");
+assert.match(r57,/chainHas\(currentPlayer,"__ccgV141R57SpyHp"\)/,"R57 must reuse an existing Spy HP guard underneath a later visual wrapper instead of wrapping again");
+assert.match(r57,/chainHas\(currentWeapon,"__ccgV141R57SpySwordRange"\)/,"R57 must reuse an existing Spy sword guard underneath later render wrappers");
+assert.match(r57,/chainHas\(currentPlayer,"__ccgV141R51VisualPolish"\)\)wrapped\.__ccgV141R51VisualPolish=true/,"R57 must preserve the R51 visual-owner marker when R51 already exists in its player-render chain");
+assert.match(r57,/chainHas\(currentPlayer,"__ccgV141R48CharacterAnimation"\)\)wrapped\.__ccgV141R48CharacterAnimation=true/,"R57 must preserve the R48 character-animation compatibility marker through its player guard");
 
 console.log("R57 desktop-prep stability static contracts passed.");
