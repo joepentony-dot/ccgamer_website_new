@@ -184,10 +184,11 @@
       const result=current.apply(this,arguments);
       if(item.__r56PickupFeedback)return result;item.__r56PickupFeedback=true;
       queueMicrotask(()=>{
-        const scoreGain=Math.max(0,Number(score||0)-beforeScore),xpGain=Math.max(0,Number(player.totalXp||0)-beforeXp),parts=[];
-        if(scoreGain&&!recentFloaterHas(start,/\b(?:SCORE|GOLD)\b/i))parts.push(`+${Math.round(scoreGain).toLocaleString()} SCORE`);
-        if(String(item.kind||"")==="xpOrb"&&!recentFloaterHas(start,/\bXP\b/i))parts.push(xpGain?`+${Math.round(xpGain)} XP`:`+0 XP · FLOOR CAP`);
-        if(parts.length){const text=parts.join(" · ");try{floatText(player.x,player.y,text,xpGain&&!scoreGain?P.cyan:P.gold,{life:2200})}catch(_){}state.lastPickup=text;state.pickupFeedbacks++}
+        const scoreGain=Math.max(0,Number(score||0)-beforeScore),xpGain=Math.max(0,Number(player.totalXp||0)-beforeXp),feedback=[],visual=[];
+        if(scoreGain){const text=`+${Math.round(scoreGain).toLocaleString()} SCORE`;feedback.push(text);if(!recentFloaterHas(start,/\b(?:SCORE|GOLD)\b/i))visual.push(text)}
+        if(String(item.kind||"")==="xpOrb"){const text=xpGain?`+${Math.round(xpGain)} XP`:`+0 XP · FLOOR CAP`;feedback.push(text);if(!recentFloaterHas(start,/\bXP\b/i))visual.push(text)}
+        if(feedback.length){state.lastPickup=feedback.join(" · ");state.pickupFeedbacks++}
+        if(visual.length){try{floatText(player.x,player.y,visual.join(" · "),xpGain&&!scoreGain?P.cyan:P.gold,{life:2200})}catch(_){}}
       });
       return result
     };
