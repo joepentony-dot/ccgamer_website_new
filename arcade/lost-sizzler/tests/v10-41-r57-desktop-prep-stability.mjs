@@ -49,7 +49,9 @@ assert.match(r57,/INTERWAVE_MS=360/,"Timed Chamber waves must have a bounded int
 assert.match(r57,/TIMED_ACTIVE_CAP=3/,"Timed Chamber must never retain more than three active wave enemies");
 assert.match(r57,/host\.enemies\.splice\(i,1\)/,"dead Timed Chamber actors must be removed rather than accumulating for the whole room");
 assert.match(r57,/recoverAfterStall/,"main-thread stalls must trigger movement/runtime recovery");
-assert.match(r57,/move2=cadence;else move1=cadence/,"post-stall movement must restart at a normal cadence rather than a negative catch-up timer");
+assert.match(r57,/function clampMovementCooldown\(index,cadence\)/,"post-stall recovery must own movement cooldown normalization");
+assert.match(r57,/Math\.min\(current,cadence\)/,"post-stall recovery must clamp an existing cooldown instead of repeatedly rearming a full movement delay");
+assert.match(r57,/current<0\?0/,"negative catch-up movement cooldowns must be zeroed after a stall");
 assert.match(r57,/particles,420/,"visual-only particle backlog must be bounded after a stall");
 
 assert.match(r57,/addEventListener\("keyup",onSpyTabKeyUp,true\)/,"Spy Field Kit must have a TAB keyup fallback when legacy capture owners swallow keydown");
