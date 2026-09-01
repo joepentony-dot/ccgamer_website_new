@@ -6,6 +6,23 @@
     const API_KEY = window.CCG_YT_API_KEY || "";
     const CHANNEL_ID = window.CCG_YT_CHANNEL_ID || "";
 
+    const loadHomeAffiliateShowcase = () => {
+        if (document.documentElement.getAttribute("data-ccg-page") !== "home") {
+            return;
+        }
+        if (document.querySelector('script[data-ccg-home-affiliate-loader="true"]')) {
+            return;
+        }
+
+        const script = document.createElement("script");
+        script.src = "/js/affiliate-products.js";
+        script.defer = true;
+        script.setAttribute("data-ccg-home-affiliate-loader", "true");
+        document.head.appendChild(script);
+    };
+
+    loadHomeAffiliateShowcase();
+
     if (!API_KEY) {
         return;
     }
