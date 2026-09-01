@@ -364,8 +364,8 @@
       "2023": 2
     },
     "static_platform_links": {
-      "C64": 14,
-      "Amiga": 11
+      "Amiga": 12,
+      "C64": 14
     },
     "query_year_links": {},
     "query_platform_links": {
@@ -390,6 +390,7 @@
       "games/platforms/index.html": 2,
       "games/years/1982/index.html": 2,
       "games/years/2023/index.html": 2,
+      "thea1200/index.html": 1,
       "games/platforms/amiga/index.html": 1,
       "games/platforms/c64/index.html": 1
     }
