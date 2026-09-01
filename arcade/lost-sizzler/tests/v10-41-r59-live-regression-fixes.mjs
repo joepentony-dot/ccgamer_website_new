@@ -53,8 +53,18 @@ assert.match(r59,/if\(phase==="update"\)r29\.updateFaults=Number\(r29\.updateFau
 assert.match(r59,/r29\.lastFaultAt=now;r29\.lastFaultMessage=message/,"r59 must preserve R29's last-fault diagnostic message");
 assert.match(r59,/catch\(error\)\{noteFault\("update",error\)\}/,"the R59 update boundary must route contained exceptions through the compatibility accountant");
 
+// Floor-entry autosaves must be synchronous at the canonical transition. The
+// older click/microtask and 100 ms R43 monitor remain fallbacks, not the primary
+// mechanism that determines whether Floor 2 is persisted under load.
+assert.match(r59,/function installSoloSaveTransitionOwner\(\)/,"r59 must install a canonical Solo floor-save transition owner");
+assert.match(r59,/current=window\.captureFloorEntryCheckpoint/,"the autosave bridge must wrap the checkpoint function already called synchronously by descendFloor");
+assert.match(r59,/const checkpoint=current\.apply\(this,arguments\)/,"the canonical checkpoint must be created before the v2 envelope is captured");
+assert.match(r59,/if\(checkpoint\)[\s\S]*api\.captureEntry\("autosave"\)/,"a successful floor checkpoint must immediately commit the r43 Solo autosave");
+assert.match(r59,/wrapped\.__ccgV141R59SoloAutosave=true/,"the floor-save wrapper must carry an idempotent ownership marker");
+assert.match(r59,/installClockOwner\(\);installPauseOwners\(\);installSoloSaveTransitionOwner\(\);reassertR58\(\)/,"the monitor must retain the synchronous floor-save owner if older compatibility layers replace the function");
+
 // R58 remains the final Spy gameplay rules owner.
 assert.match(r59,/api\.patchInputOwnership\?\.\(\);api\.patchSaboteurRules\?\.\(\)/,"r59 must reassert r58 input and Saboteur rules while Spy is active");
 assert.match(r59,/if\(api\.tick\?\.\(\)\)/,"r59 must keep the r58 live state reconciled after older compatibility monitors run");
 
-console.log("Lost Sizzler V10.41 r59 pause-clock, R29 diagnostics, TAB field-kit, idempotent F fullscreen and r58 ownership regressions passed.");
+console.log("Lost Sizzler V10.41 r59 pause-clock, R29 diagnostics, synchronous Solo floor autosave, TAB field-kit, idempotent F fullscreen and r58 ownership regressions passed.");
