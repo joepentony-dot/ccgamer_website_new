@@ -14,10 +14,11 @@
   const ENVIRONMENT_SOURCE=/(?:\btrap\b|anti[- ]loitering blast)/i;
   const SPECIAL_BLOCK=new Set(["horde-survivor","sizzler-saboteurs"]);
   const BLOCKING_PANELS=["pause","inventory-panel","item-info-panel","named-dossier-panel","shop-panel","level-up","artefact-choice-panel","floor-complete","save-panel"];
+  const ATTACK_BUFFER_LIMIT=1400;
   const state={
     timer:0,trapCycles:new Map(),pendingChests:new Map(),deliveredChestLoot:new WeakSet(),chestLoot:new WeakSet(),
     trapHits:0,environmentHits:0,chestDeliveries:0,chestBlocks:0,shrineFeedbacks:0,pickupFeedbacks:0,quickIconPasses:0,
-    combatRearms:0,cooldownRepairs:0,stunRepairs:0,modeRepairs:0,lastMode:"",lastResumeAt:0,lastShrine:"",lastPickup:"",
+    combatRearms:0,cooldownRepairs:0,bufferRepairs:0,stunRepairs:0,modeRepairs:0,attackIntentRepairs:0,lastMode:"",lastResumeAt:0,lastShrine:"",lastPickup:"",
     cooldown:{p1:{value:0,changedAt:performance.now()},p2:{value:0,changedAt:performance.now()}},
     stun:{p1:{value:0,changedAt:performance.now()},p2:{value:0,changedAt:performance.now()}}
   };
@@ -201,8 +202,9 @@
   }
 
   function setFire(index,value){try{if(index===2)fire2=value;else fire1=value;return true}catch(_){return false}}
-  function getFire(index){try{return Number(index===2?fire2:fire1)||0}catch(_){return 0}}
+  function getFire(index){try{return Number(index===2?fire2:fire1)}catch(_){return 0}}
   function setBuffer(index,value){try{if(index===2)fireBuffer2=value;else fireBuffer1=value;return true}catch(_){return false}}
+  function getBuffer(index){try{return Number(index===2?fireBuffer2:fireBuffer1)}catch(_){return 0}}
   function getPlayer(index){try{return index===2?p2:p1}catch(_){return null}}
   function focusGame(){try{document.getElementById("game")?.focus?.({preventScroll:true})}catch(_){}}
   function recoverOrphanMode(){
@@ -210,13 +212,30 @@
     try{if(["paused","inventory","dossier"].includes(String(mode||""))){mode="playing";state.modeRepairs++;return true}}catch(_){}
     return false
   }
-  function rearmCombat(reason="runtime",queueIndex=0){
+  function repairBuffer(index){
+    const value=getBuffer(index);
+    if(!Number.isFinite(value)||value<0||value>ATTACK_BUFFER_LIMIT){setBuffer(index,0);state.bufferRepairs++;return true}
+    return false
+  }
+  function repairPlayerLocks(player){
+    if(!player)return false;let repaired=false;
+    if(player.controlLocked){player.controlLocked=false;repaired=true}
+    if(player.controlsLocked){player.controlsLocked=false;repaired=true}
+    if(repaired)state.combatRearms++;
+    return repaired
+  }
+  function rearmCombat(reason="runtime",queueIndex=0,forceCooldown=false){
     if(!ordinaryDungeon()||blocked())return false;recoverOrphanMode();
     try{if(mode!=="playing")return false}catch(_){return false}
-    for(const index of [1,2]){const p=getPlayer(index);if(!p)continue;p.hitStunMs=0;if("controlLocked" in p)p.controlLocked=false;if("controlsLocked" in p)p.controlsLocked=false;setFire(index,0);setBuffer(index,0)}
-    try{input?.delete?.("Space");input?.delete?.("Enter")}catch(_){}
+    for(const index of [1,2]){
+      const p=getPlayer(index);if(!p)continue;
+      repairPlayerLocks(p);
+      if(!Number.isFinite(Number(p.hitStunMs))||Number(p.hitStunMs)<0||Number(p.hitStunMs)>5000){p.hitStunMs=0;state.stunRepairs++}
+      const fire=getFire(index);if(forceCooldown||!Number.isFinite(fire)||fire<0||fire>2500){setFire(index,0);state.cooldownRepairs++}
+      repairBuffer(index)
+    }
     focusGame();state.combatRearms++;
-    if(queueIndex){const p=getPlayer(queueIndex);try{if(p&&typeof queueAttack==="function")queueAttack(p)}catch(_){} }
+    if(queueIndex){const p=getPlayer(queueIndex);try{if(p&&typeof queueAttack==="function"){queueAttack(p);state.attackIntentRepairs++}}catch(_){} }
     return reason
   }
   function watchValue(bucket,index,value,limit,repair){
@@ -232,7 +251,7 @@
     try{if(mode!=="playing")return false}catch(_){return false}
     for(const index of [1,2]){
       const p=getPlayer(index);if(!p)continue;
-      if(p.controlLocked||p.controlsLocked){p.controlLocked=false;p.controlsLocked=false;state.combatRearms++}
+      repairPlayerLocks(p);repairBuffer(index);
       const fire=getFire(index);watchValue(state.cooldown,index,fire,2500,()=>{setFire(index,0);state.cooldownRepairs++});
       const stun=Number(p.hitStunMs||0);watchValue(state.stun,index,stun,5000,()=>{p.hitStunMs=0;state.stunRepairs++});
     }
@@ -240,22 +259,27 @@
   }
   function onAttackIntent(event){
     if(event.repeat||event.ctrlKey||event.altKey||event.metaKey)return;
-    const index=event.code==="Space"?1:event.code==="Enter"?2:0;if(!index||!ordinaryDungeon())return;
-    const p=getPlayer(index);if(!p)return;const fire=getFire(index),now=performance.now(),recentResume=now-state.lastResumeAt<1800,stale=(!Number.isFinite(fire)||fire>2500||Number(p.hitStunMs||0)>5000||p.controlLocked||p.controlsLocked);
-    if(recentResume||stale)rearmCombat("attack intent",index)
+    const index=event.code==="Space"?1:event.code==="Enter"?2:0;if(!index||!ordinaryDungeon()||blocked())return;
+    const p=getPlayer(index);if(!p)return;
+    const fire=getFire(index),stun=Number(p.hitStunMs||0),now=performance.now(),recentResume=now-state.lastResumeAt<1800;
+    const stale=!Number.isFinite(fire)||fire<0||fire>2500||!Number.isFinite(stun)||stun<0||stun>5000||p.controlLocked||p.controlsLocked;
+    if(recentResume||stale)rearmCombat("attack intent",index,true)
   }
-  function onResumeClick(event){if(event.target?.closest?.("#resume-btn")){state.lastResumeAt=performance.now();setTimeout(()=>rearmCombat("resume click"),0);setTimeout(()=>rearmCombat("resume settle"),80)}}
-  function onVisibility(){if(document.visibilityState==="visible"){state.lastResumeAt=performance.now();setTimeout(()=>rearmCombat("visibility return"),40)}}
+  function onResumeClick(event){
+    if(!event.target?.closest?.("#resume-btn"))return;
+    state.lastResumeAt=performance.now();setTimeout(()=>rearmCombat("resume click",0,true),0);setTimeout(()=>rearmCombat("resume settle",0,false),80)
+  }
+  function onVisibility(){if(document.visibilityState==="visible"){state.lastResumeAt=performance.now();setTimeout(()=>rearmCombat("visibility return",0,true),40)}}
 
   function installOwners(){installStyle();installEnvironmentalDamage();installApplyLoot();installChestDelivery();installShrineFeedback();installPickupFeedback()}
   function tick(){
     installOwners();trapCycleTick();pendingChestTick();renderQuickIcons();
     let current="";try{current=String(mode||"")}catch(_){}
-    if(state.lastMode&&state.lastMode!=="playing"&&current==="playing"){state.lastResumeAt=performance.now();setTimeout(()=>rearmCombat("mode resumed"),0)}
+    if(state.lastMode&&state.lastMode!=="playing"&&current==="playing"){state.lastResumeAt=performance.now();setTimeout(()=>rearmCombat("mode resumed",0,true),0)}
     state.lastMode=current;combatTick()
   }
 
-  addEventListener("keydown",onAttackIntent,true);document.addEventListener("click",onResumeClick,true);document.addEventListener("visibilitychange",onVisibility);addEventListener("focus",()=>{if(running()){state.lastResumeAt=performance.now();setTimeout(()=>rearmCombat("window focus"),50)}});
+  addEventListener("keydown",onAttackIntent,true);document.addEventListener("click",onResumeClick,true);document.addEventListener("visibilitychange",onVisibility);addEventListener("focus",()=>{if(running()){state.lastResumeAt=performance.now();setTimeout(()=>rearmCombat("window focus",0,true),50)}});
   installOwners();tick();state.timer=setInterval(()=>{try{tick()}catch(error){console.warn("[Lost Sizzler r56] completion tick failed",error)}},80);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
   document.body.dataset.v141R56PlaytestCompletion="true";
