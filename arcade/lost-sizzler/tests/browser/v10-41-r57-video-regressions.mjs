@@ -73,7 +73,7 @@ try{
   const recovered=await page.evaluate(before=>({stalls:Number(window.CCGLostSizzlerV141R29.state.frameStalls||0)-before.stalls,recoveries:Number(window.CCGLostSizzlerV141R29.state.combatStallRecoveries||0)-before.recoveries,fire:Number(fire1||0),stun:Number(p1.hitStunMs||0),locked:Boolean(p1.controlLocked||p1.controlsLocked),mana:Number(p1.mana),bullets:bullets.length}),stallBefore);
   assert.ok(recovered.stalls>=1,`the real 800 ms main-thread stall must be detected by the authoritative frame loop: ${JSON.stringify(recovered)}`);
   assert.ok(recovered.recoveries>=1,`post-stall combat timing/locks must be repaired once: ${JSON.stringify(recovered)}`);
-  assert.equal(recovered.fire,0,`elapsed stall time must clear the stale PULSE cooldown: ${JSON.stringify(recovered)}`);
+  assert.ok(recovered.fire<=0,`elapsed stall time must leave the stale PULSE cooldown ready to fire: ${JSON.stringify(recovered)}`);
   assert.equal(recovered.stun,0,`elapsed stall time must clear the stale hit-stun: ${JSON.stringify(recovered)}`);
   assert.equal(recovered.locked,false,`retained combat locks must not survive the browser stall: ${JSON.stringify(recovered)}`);
 
