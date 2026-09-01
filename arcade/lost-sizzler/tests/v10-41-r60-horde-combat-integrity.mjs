@@ -7,6 +7,7 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,"..");
 const r60=fs.readFileSync(path.join(root,"js/v10-41-r60-horde-combat-integrity.js"),"utf8");
 const frame=fs.readFileSync(path.join(root,"js/v10-41-horde-frame-performance.js"),"utf8");
+const config=fs.readFileSync(path.join(root,"js/config.js"),"utf8");
 
 assert.match(r60,/PROJECTILE_STEP_MS=70/,"R60 must preserve the canonical 70 ms projectile cadence");
 assert.match(r60,/MAX_VISIBLE_FRAME_MS=210/,"R60 must bound active-play wall-clock catch-up");
@@ -23,4 +24,13 @@ assert.doesNotMatch(r60,/requestAnimationFrame\s*\(/,"R60 must never create a se
 assert.match(frame,/R60_SRC="js\/v10-41-r60-horde-combat-integrity\.js"/,"the established Horde performance layer must load R60 in production");
 assert.match(frame,/ensureR60\(\);schedulePrewarm\(\)/,"R60 must start loading without waiting for Horde gameplay");
 
-console.log("Lost Sizzler V10.41 r60 frame-rate-independent Horde projectile, enemy attack, movement and pause-safety contracts passed.");
+assert.match(r60,/function timeSmoothingAlpha\(base,elapsedMs\)/,"R60 live-play integrity must replace frame-count-only visual easing with elapsed-time smoothing");
+assert.match(r60,/Math\.pow\(1-baseAlpha,elapsed\/FRAME_60\)/,"Solo interpolation must preserve the old 60 Hz feel while scaling with actual elapsed time");
+assert.match(r60,/movePlayerV141R60CadenceSeal/,"Solo movement must have a hard cadence owner above legacy watchdog calls");
+assert.match(r60,/movementCadence\(player\)-8/,"the cadence seal must stay tied to the configured player movement delay");
+assert.match(r60,/r59PauseBoundary\(\)/,"Solo live-play integrity must reset pause-sensitive state from the authoritative R59 pause boundary");
+assert.match(r60,/ccg-guaranteed-f/ ,"Solo world startup must restore a missing CCG named enemy instead of relying on the old random spawn chance");
+assert.match(r60,/goldenHurt/,"environmental fallback must be able to recover through the normal Dungeon damage owner after stale special-mode ownership");
+assert.match(config,/name:"AZALEA"[^\n]+avatar:"assets\/parsnip-celery\.png"/,"AZALEA must use her dedicated portrait asset rather than the CCG fallback logo");
+
+console.log("Lost Sizzler V10.41 r60 Horde timing plus Solo smoothing, pause cadence, environment and named-enemy integrity contracts passed.");
