@@ -44,6 +44,17 @@
     "url": "/games/developers/binary-asylum/"
   },
   {
+    "name": "Binary Vision",
+    "slug": "binary-vision",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1987,
+    "lastYear": 1987,
+    "indexable": false,
+    "url": "/games/developers/binary-vision/"
+  },
+  {
     "name": "Broderbund",
     "slug": "broderbund",
     "count": 6,
