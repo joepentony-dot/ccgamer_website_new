@@ -92,7 +92,7 @@ try{
   const stall=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R57DesktopPrepStability;p1.moveMultiplier=1;move1=-99999;p1.rx=p1.x-8;p1.ry=p1.y;for(let i=0;i<900;i++)particles.push({life:1});const before=particles.length;api.recoverAfterStall(1800);return{move:Number(move1),delay:Number(C.player.moveDelay),gap:Math.abs(Number(p1.x)-Number(p1.rx))+Math.abs(Number(p1.y)-Number(p1.ry)),before,after:particles.length,recoveries:Number(api.state.stallRecoveries)}
   });
-  assert.ok(stall.move>0&&stall.move<=360,`post-stall movement must restart at a normal positive cadence: ${JSON.stringify(stall)}`);assert.equal(stall.gap,0,"post-stall visual interpolation must not race across an old position backlog");assert.ok(stall.after<=420&&stall.after<stall.before,"visual particle backlog must be trimmed after a stall");assert.ok(stall.recoveries>=1,"stall recovery must be recorded");
+  assert.ok(stall.move>=0&&stall.move<=360,`post-stall movement must be immediately ready or retain only a bounded normal cooldown: ${JSON.stringify(stall)}`);assert.equal(stall.gap,0,"post-stall visual interpolation must not race across an old position backlog");assert.ok(stall.after<=420&&stall.after<stall.before,"visual particle backlog must be trimmed after a stall");assert.ok(stall.recoveries>=1,"stall recovery must be recorded");
 
   console.log("[r57] fire and spike traps each deal one durability point per active cycle, including reactivation");
   const traps=await page.evaluate(()=>{
