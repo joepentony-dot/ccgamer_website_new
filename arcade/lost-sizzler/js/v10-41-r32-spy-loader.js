@@ -23,6 +23,7 @@
     timer:0,loading:false,loaded:false,loads:0,lastError:"",
     uiLoading:false,uiLoaded:false,uiLoads:0,uiLastError:"",
     hardeningLoaded:false,fullscreenUiLoaded:false,perfectionLoaded:false,trapPresentationLoaded:false,r58Loaded:false,
+    r56Guarded:false,r56GuardInstalls:0,r56OwnerSkips:0,
     pendingActionCode:"",queuedActions:0,replayedActions:0,queuedSearchFeedbacks:0,directSearchActions:0,
     searchTargetBridges:0,searchRoomBridges:0,searchKeyDowns:0,searchKeyUpFallbacks:0
   };
@@ -33,6 +34,19 @@
   const overhaul=()=>{try{return window.CCGLostSizzlerV141R32SpyOverhaul||null}catch(_){return null}};
   const actorId=()=>{try{return String(net?.sessionId||p1?.id||"P1")}catch(_){return"P1"}};
   const perfNow=()=>{try{return Number(performance.now())||Date.now()}catch(_){return Date.now()}};
+
+  function guardR56SpyOwnership(){
+    let api=null;try{api=window.CCGLostSizzlerV141R56PlaytestCompletion||null}catch(_){return false}
+    if(!api||typeof api.installOwners!=="function")return false;
+    const current=api.installOwners;
+    if(current.__ccgV141R58SpySafe){state.r56Guarded=true;return true}
+    const wrapped=function installOwnersR58SpySafe(){
+      if(spyActive()){state.r56OwnerSkips++;return true}
+      return current.apply(this,arguments)
+    };
+    wrapped.__ccgV141R58SpySafe=true;wrapped.__ccgOriginal=current;api.installOwners=wrapped;
+    state.r56Guarded=true;state.r56GuardInstalls++;return true
+  }
 
   function loadScript(path,marker,ready){
     return new Promise((resolve,reject)=>{
@@ -173,6 +187,7 @@
   }
 
   function monitor(){
+    guardR56SpyOwnership();
     if(spyActive()){ensureSearchUi();ensureLoaded()}
     else{state.pendingActionCode="";lastSearchDispatchAt=0}
   }
@@ -181,5 +196,5 @@
   monitor();state.timer=setInterval(monitor,MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0;state.pendingActionCode="";lastSearchDispatchAt=0},{once:true});
 
-  window.CCGLostSizzlerV141R32SpyLoader={ensureLoaded,ensureSearchUi,queueOwnerAction,directSearchAction,bridgeSearchTarget,dispatchSearchAction,get state(){return state}};
+  window.CCGLostSizzlerV141R32SpyLoader={ensureLoaded,ensureSearchUi,queueOwnerAction,directSearchAction,bridgeSearchTarget,dispatchSearchAction,guardR56SpyOwnership,get state(){return state}};
 })();
