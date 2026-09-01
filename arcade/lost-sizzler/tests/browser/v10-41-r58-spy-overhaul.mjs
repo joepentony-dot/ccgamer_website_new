@@ -76,10 +76,10 @@ try{
   console.log("[r58 Spy] owner cannot spring their own armed trap");
   const ownerSafe=await page.evaluate(trapId=>{
     const m=window.CCGLostSizzlerSpecialModes.active.state,r32=window.CCGLostSizzlerV141R32SpyOverhaul,r58=window.CCGLostSizzlerV141R58SpyOverhaul,me=m.players.find(row=>String(row.id)===String(p1.id))||m.players[0],trap=m.traps.find(row=>String(row.id)===String(trapId));
-    const time=Number(me.timeRemainingMs),before=Number(r58.state.ownerTrapIgnores||0),ok=r32.triggerTrapForPlayer(me,{type:trap.targetType,id:trap.targetId});
-    return{ok,armed:Boolean(trap.armed),status:String(me.status),time:Number(me.timeRemainingMs),before,after:Number(r58.state.ownerTrapIgnores||0)}
+    const timeBefore=Number(me.timeRemainingMs),before=Number(r58.state.ownerTrapIgnores||0),ok=r32.triggerTrapForPlayer(me,{type:trap.targetType,id:trap.targetId});
+    return{ok,armed:Boolean(trap.armed),status:String(me.status),timeBefore,timeAfter:Number(me.timeRemainingMs),before,after:Number(r58.state.ownerTrapIgnores||0)}
   },armed.trap.id);
-  assert.equal(ownerSafe.ok,false);assert.equal(ownerSafe.armed,true);assert.equal(ownerSafe.status,"active");assert.equal(ownerSafe.time,500000);assert.ok(ownerSafe.after>ownerSafe.before);
+  assert.equal(ownerSafe.ok,false);assert.equal(ownerSafe.armed,true);assert.equal(ownerSafe.status,"active");assert.equal(ownerSafe.timeAfter,ownerSafe.timeBefore,"own-trap immunity must not deduct the 30-second death penalty");assert.ok(ownerSafe.after>ownerSafe.before);
 
   console.log("[r58 Spy] opposing agent springs BOMB: instant death, -30 seconds, complete item capture and silhouette FX");
   const lethal=await page.evaluate(trapId=>{
