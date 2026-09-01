@@ -23,12 +23,12 @@
   const SUPPRESS_TIMER_MS=60000;
   const state={
     timer:0,installed:false,combatWrapped:false,liveWrapped:false,
-    preSource:null,postSource:null,liveSource:null,
+    preSource:null,postSource:null,liveSource:null,liveOwner:null,
     lastNow:0,lastPauseBoundary:0,lastMode:"",clockPrimed:false,
     projectileAccumulator:0,enemyAccumulator:0,currentElapsed:0,currentFrameDt:0,currentExtra:0,
     frames:0,clockResets:0,pauseGapsDiscarded:0,visibleGapClamps:0,discardedVisibleMs:0,
     projectileSteps:0,projectileCatchupSteps:0,enemySteps:0,enemyCatchupSteps:0,
-    playerTimerCatchupMs:0,liveElapsedFrames:0,hookReassertions:0,lastError:""
+    playerTimerCatchupMs:0,liveElapsedFrames:0,liveOwnerInstalls:0,liveOwnerReassertions:0,hookReassertions:0,lastError:""
   };
 
   const perfNow=()=>{try{return Number(performance.now())||Date.now()}catch(_){return Date.now()}};
@@ -169,17 +169,42 @@
     return state.combatWrapped
   }
 
+  function originalChainContains(fn,target){
+    if(typeof fn!=="function"||typeof target!=="function")return false;
+    const seen=new Set();let current=fn,depth=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth++<24){
+      if(current===target)return true;
+      seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null
+    }
+    return false
+  }
+
+  function unwrapLiveSource(fn){
+    if(typeof fn!=="function")return null;
+    const seen=new Set();let current=fn,depth=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth++<24&&current.__ccgV141R60RealElapsed===true&&typeof current.__ccgOriginal==="function"){
+      if(current===state.liveOwner)break;
+      seen.add(current);current=current.__ccgOriginal
+    }
+    return typeof current==="function"?current:null
+  }
+
   function wrapLiveController(){
     const api=window.CCGLostSizzlerV138;if(!api||typeof api.updateHordeLive!=="function")return false;
     const current=api.updateHordeLive;
-    if(current.__ccgV141R60RealElapsed){state.liveWrapped=true;state.liveSource=current.__ccgOriginal||state.liveSource;return true}
-    const source=current;
-    const wrapped=function updateHordeLiveV141R60(dt){
+    if(current===state.liveOwner||originalChainContains(current,state.liveOwner)){
+      state.liveWrapped=true;return true
+    }
+    const source=unwrapLiveSource(current);if(typeof source!=="function")return false;
+    const wrapped=function updateHordeLiveV141R60Owned(dt){
       const elapsed=playingVisible()&&state.currentElapsed>0?state.currentElapsed:Number(dt)||0;
       if(playingVisible())state.liveElapsedFrames++;
       return source.call(this,elapsed)
     };
-    wrapped.__ccgV141R60RealElapsed=true;wrapped.__ccgOriginal=source;api.updateHordeLive=wrapped;state.liveSource=source;state.liveWrapped=true;
+    wrapped.__ccgV141R60RealElapsed=true;wrapped.__ccgV141R60ExactLiveOwner=true;wrapped.__ccgOriginal=source;
+    const replacing=typeof state.liveOwner==="function";
+    state.liveOwner=wrapped;api.updateHordeLive=wrapped;state.liveSource=source;state.liveWrapped=true;state.liveOwnerInstalls++;
+    if(replacing)state.liveOwnerReassertions++;
     if(state.installed)state.hookReassertions++;
     return true
   }
