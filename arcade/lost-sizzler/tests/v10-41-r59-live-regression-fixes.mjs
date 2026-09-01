@@ -43,8 +43,15 @@ assert.match(r59,/stableLoopR59\.__ccgV141R29Stable=true/,"r59 must retain the r
 assert.match(r59,/api\.stableLoop=stableLoopR59/,"r59 must replace the r29 exported loop as well as the global loop to prevent an old recovery owner reclaiming it");
 assert.match(r59,/normaliseAudioRate\(\)/,"pause boundaries must also normalise any accidentally altered HTML audio playback rate");
 
+// R59 owns the callback but R29 remains the established diagnostic contract.
+assert.match(r59,/function noteFault\(phase,error\)/,"r59 must centralise contained-frame fault accounting");
+assert.match(r59,/r29\.frameFaults=Number\(r29\.frameFaults\|\|0\)\+1/,"r59 must preserve R29's public frame-fault counter");
+assert.match(r59,/if\(phase==="update"\)r29\.updateFaults=Number\(r29\.updateFaults\|\|0\)\+1/,"contained update faults must remain visible through R29 diagnostics");
+assert.match(r59,/r29\.lastFaultAt=now;r29\.lastFaultMessage=message/,"r59 must preserve R29's last-fault diagnostic message");
+assert.match(r59,/catch\(error\)\{noteFault\("update",error\)\}/,"the R59 update boundary must route contained exceptions through the compatibility accountant");
+
 // R58 remains the final Spy gameplay rules owner.
 assert.match(r59,/api\.patchInputOwnership\?\.\(\);api\.patchSaboteurRules\?\.\(\)/,"r59 must reassert r58 input and Saboteur rules while Spy is active");
 assert.match(r59,/if\(api\.tick\?\.\(\)\)/,"r59 must keep the r58 live state reconciled after older compatibility monitors run");
 
-console.log("Lost Sizzler V10.41 r59 pause-clock, TAB field-kit, F fullscreen and r58 ownership regressions passed.");
+console.log("Lost Sizzler V10.41 r59 pause-clock, R29 diagnostics, TAB field-kit, F fullscreen and r58 ownership regressions passed.");
