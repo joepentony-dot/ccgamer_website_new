@@ -33,4 +33,11 @@ assert.match(r60,/ccg-guaranteed-f/ ,"Solo world startup must restore a missing 
 assert.match(r60,/goldenHurt/,"environmental fallback must be able to recover through the normal Dungeon damage owner after stale special-mode ownership");
 assert.match(config,/name:"AZALEA"[^\n]+avatar:"assets\/parsnip-celery\.png"/,"AZALEA must use her dedicated portrait asset rather than the CCG fallback logo");
 
-console.log("Lost Sizzler V10.41 r60 Horde timing plus Solo smoothing, pause cadence, environment and named-enemy integrity contracts passed.");
+assert.match(frame,/function stopUnsafeR60LiveMonitor\(\)/,"the production loader must retire R60's original unconditional live-owner interval");
+assert.match(frame,/clearInterval\(live\.state\.timer\);live\.state\.timer=0/,"the unsafe R60 live monitor must be stopped before special-mode handoffs can race it");
+assert.match(frame,/if\(specialType\(\)\)return false/,"R60 Solo ownership must stay hands-off while any special mode is active");
+assert.match(frame,/R29SpyEngine\?\.state\?\.isolated/,"R60 must wait until Spy isolation has fully exited before reasserting Solo ownership");
+assert.match(frame,/r30\?\.spyContaminated\?\.\(current\)\|\|r30\?\.topLevelSpyOwner\?\.\(current\)/,"R60 must refuse to wrap a stale or active Spy movement owner");
+assert.match(frame,/maintainR60LiveOwner\(\)/,"R60 must reassert live ownership only through the guarded production monitor");
+
+console.log("Lost Sizzler V10.41 r60 Horde timing plus Solo smoothing, pause cadence, Spy-safe ownership, environment and named-enemy integrity contracts passed.");
