@@ -38,6 +38,14 @@ assert.match(frame,/clearInterval\(live\.state\.timer\);live\.state\.timer=0/,"t
 assert.match(frame,/if\(specialType\(\)\)return false/,"R60 Solo ownership must stay hands-off while any special mode is active");
 assert.match(frame,/R29SpyEngine\?\.state\?\.isolated/,"R60 must wait until Spy isolation has fully exited before reasserting Solo ownership");
 assert.match(frame,/r30\?\.spyContaminated\?\.\(current\)\|\|r30\?\.topLevelSpyOwner\?\.\(current\)/,"R60 must refuse to wrap a stale or active Spy movement owner");
-assert.match(frame,/maintainR60LiveOwner\(\)/,"R60 must reassert live ownership only through the guarded production monitor");
+assert.match(frame,/maintainR60LiveOwner\(\)/,"R60 must reassert Solo live ownership only through the guarded production monitor");
 
-console.log("Lost Sizzler V10.41 r60 Horde timing plus Solo smoothing, pause cadence, Spy-safe ownership, environment and named-enemy integrity contracts passed.");
+assert.match(frame,/function maintainR60HordeLiveOwner\(\)/,"R60 must have an explicit top-level owner for the Horde live elapsed path");
+assert.match(frame,/current===state\.r60HordeLiveOwner\|\|originalChainContains\(current,state\.r60HordeLiveOwner\)/,"the Horde live owner must verify function identity or ancestry rather than trusting a copied marker");
+assert.match(frame,/unwrapR60LiveSource\(current\)/,"a stale R60 live wrapper must be unwrapped before the final owner is reinstalled");
+assert.match(frame,/updateHordeLiveV141R60FinalOwner/,"the final Horde live owner must be a distinct production dispatcher");
+assert.match(frame,/timingState\.liveElapsedFrames=Number\(timingState\.liveElapsedFrames\|\|0\)\+1/,"the final owner must record every Horde live frame that actually receives elapsed-time ownership");
+assert.match(frame,/wrapped\.__ccgV141R60RealElapsed=true;wrapped\.__ccgV141R60FinalLiveOwner=true/,"the final owner must retain R60 compatibility markers without relying on them for identity");
+assert.match(frame,/if\(isHorde\(\)\)return maintainR60HordeLiveOwner\(\)/,"the production monitor must route Horde to its own final live owner instead of the Solo owner");
+
+console.log("Lost Sizzler V10.41 r60 Horde timing plus Solo smoothing, pause cadence, Spy-safe ownership, final Horde live ownership, environment and named-enemy integrity contracts passed.");
