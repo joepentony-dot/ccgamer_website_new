@@ -38,7 +38,7 @@ assert.match(loader,/v10-41-r59-live-regression-fixes\.js/,"r59 must be delivere
 // Core update already refuses paused simulation; r59 therefore owns the remaining clock boundary.
 assert.match(gamePlay,/if\(mode!=="playing"\)\{fireBuffer1=fireBuffer2=0;return\}/,"core update must continue refusing simulation while paused");
 assert.match(r59,/function markPauseBoundary\(reason="pause transition"\)/,"r59 must explicitly mark pause/resume timing boundaries");
-assert.match(r59,/state\.lastAcceptedRafTimestamp=null/,'pause boundaries must discard the previous RAF timestamp');
+assert.match(r59,/setAcceptedRafTimestamp\(null\)/,'pause boundaries must discard the previous RAF timestamp through the shared diagnostic bridge');
 assert.match(r59,/if\(now<state\.suppressRecoveryUntil\|\|modeNow!=="playing"\|\|document\.hidden\)/,"paused/hidden wall-clock gaps must never be paid into combat recovery");
 assert.match(r59,/if\(hasTimestamp&&finite\(state\.lastAcceptedRafTimestamp\)&&t<=Number\(state\.lastAcceptedRafTimestamp\)\)/,"duplicate RAF callbacks must be rejected before simulation");
 assert.match(r59,/requestAnimationFrame\(stableLoopR59\)/,"the authoritative loop must schedule exactly its own singleton callback");
@@ -46,12 +46,16 @@ assert.match(r59,/stableLoopR59\.__ccgV141R29Stable=true/,"r59 must retain the r
 assert.match(r59,/api\.stableLoop=stableLoopR59/,"r59 must replace the r29 exported loop as well as the global loop to prevent an old recovery owner reclaiming it");
 assert.match(r59,/normaliseAudioRate\(\)/,"pause boundaries must also normalise any accidentally altered HTML audio playback rate");
 
-// R59 owns the callback but R29 remains the established diagnostic contract.
+// R59 owns the callback but R29 remains the established public diagnostic contract.
 assert.match(r59,/function noteFault\(phase,error\)/,"r59 must centralise contained-frame fault accounting");
 assert.match(r59,/r29\.frameFaults=Number\(r29\.frameFaults\|\|0\)\+1/,"r59 must preserve R29's public frame-fault counter");
 assert.match(r59,/if\(phase==="update"\)r29\.updateFaults=Number\(r29\.updateFaults\|\|0\)\+1/,"contained update faults must remain visible through R29 diagnostics");
 assert.match(r59,/r29\.lastFaultAt=now;r29\.lastFaultMessage=message/,"r59 must preserve R29's last-fault diagnostic message");
 assert.match(r59,/catch\(error\)\{noteFault\("update",error\)\}/,"the R59 update boundary must route contained exceptions through the compatibility accountant");
+assert.match(r59,/function noteDuplicateFrame\(\)[\s\S]*r29\.duplicateFramesSkipped=Number\(r29\.duplicateFramesSkipped\|\|0\)\+1/,"duplicate RAF rejection must remain visible through R29's retained duplicate-frame counter");
+assert.match(r59,/function noteFrameStall\(\)[\s\S]*r29\.frameStalls=Number\(r29\.frameStalls\|\|0\)\+1/,"long accepted RAF gaps must remain visible through R29's retained frame-stall counter");
+assert.match(r59,/function setAcceptedRafTimestamp\(value\)[\s\S]*r29\.lastAcceptedRafTimestamp=value/,"R29's retained accepted-timestamp diagnostic must mirror the R59 clock owner");
+assert.match(r59,/if\(gap>=LONG_GAP_MS\)\{noteFrameStall\(\);safeGapRecovery\(gap\)\}/,"R59 must record a public R29 stall before performing the retained combat-gap recovery");
 
 // Floor-entry autosaves must be synchronous at the canonical transition. The
 // older click/microtask and 100 ms R43 monitor remain fallbacks, not the primary
@@ -67,4 +71,4 @@ assert.match(r59,/installClockOwner\(\);installPauseOwners\(\);installSoloSaveTr
 assert.match(r59,/api\.patchInputOwnership\?\.\(\);api\.patchSaboteurRules\?\.\(\)/,"r59 must reassert r58 input and Saboteur rules while Spy is active");
 assert.match(r59,/if\(api\.tick\?\.\(\)\)/,"r59 must keep the r58 live state reconciled after older compatibility monitors run");
 
-console.log("Lost Sizzler V10.41 r59 pause-clock, R29 diagnostics, synchronous Solo floor autosave, TAB field-kit, idempotent F fullscreen and r58 ownership regressions passed.");
+console.log("Lost Sizzler V10.41 r59 pause-clock, R29 duplicate/stall/fault diagnostics, synchronous Solo floor autosave, TAB field-kit, idempotent F fullscreen and r58 ownership regressions passed.");
