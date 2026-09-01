@@ -99,6 +99,11 @@
 
     state.currentElapsed=elapsed;state.currentFrameDt=frameDt;state.currentExtra=extra;state.frames++;
     try{projectileCD=SUPPRESS_TIMER_MS}catch(_){}try{enemyCD=SUPPRESS_TIMER_MS}catch(_){}
+    // The mode controller reads CCGLostSizzlerV138.updateHordeLive during its
+    // post-frame phase. Reassert the real-elapsed wrapper here, immediately
+    // before the shared source frame, so a late Horde compatibility installer
+    // cannot make this frame fall back to the clamped 45 ms delta.
+    try{wrapLiveController()}catch(error){recordError(error)}
     return{active:true,elapsed,frameDt,extra,pauseBoundary}
   }
 
@@ -171,7 +176,7 @@
   function wrapLiveController(){
     const api=window.CCGLostSizzlerV138;if(!api||typeof api.updateHordeLive!=="function")return false;
     const current=api.updateHordeLive;
-    if(current.__ccgV141R60RealElapsed){state.liveWrapped=true;return true}
+    if(current.__ccgV141R60RealElapsed){state.liveWrapped=true;state.liveSource=current.__ccgOriginal||state.liveSource;return true}
     const source=current;
     const wrapped=function updateHordeLiveV141R60(dt){
       const elapsed=playingVisible()&&state.currentElapsed>0?state.currentElapsed:Number(dt)||0;
