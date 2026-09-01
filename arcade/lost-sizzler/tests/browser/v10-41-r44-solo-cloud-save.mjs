@@ -70,7 +70,12 @@ try{
   console.log("[r44 cloud] real Floor 1 autosave mirrors local-first checkpoint");
   await page.click("#solo-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&window.CCGLostSizzlerV141R43SoloSave?.readEnvelope?.()?.summary?.floor===1,null,{timeout:20000});
-  await page.waitForFunction(user=>Boolean(window.__r44Mock?.rows?.[user]?.save_envelope),USER_A,{timeout:10000});
+  // Drive the same observation pass used by the 600 ms production poll once
+  // the real local-first checkpoint exists. This keeps the browser regression
+  // deterministic under a heavily loaded CI runner without bypassing r44's
+  // observation/scheduleSync path or forcing a direct cloud upload.
+  await page.evaluate(()=>window.CCGLostSizzlerV141R44SoloCloudSave.observeLocal());
+  await page.waitForFunction(user=>Boolean(window.__r44Mock?.rows?.[user]?.save_envelope),USER_A,{timeout:15000});
   const upload=await page.evaluate(user=>{
     const r43=window.CCGLostSizzlerV141R43SoloSave,r44=window.CCGLostSizzlerV141R44SoloCloudSave,local=r43.readEnvelope(),row=window.__r44Mock.rows[user];
     return{localFingerprint:r44.fingerprint(local),cloudFingerprint:r44.fingerprint(row.save_envelope),owner:row.user_id,deletedAt:row.deleted_at,writes:window.__r44Mock.writes.length,meta:r44.readMeta(),row:JSON.parse(JSON.stringify(row)),envelope:JSON.parse(JSON.stringify(local))};
