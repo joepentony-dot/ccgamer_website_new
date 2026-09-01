@@ -21992,6 +21992,53 @@
   },
   {
     "system": "C64",
+    "id": "stifflip_and_co",
+    "slug": "stifflip-and-co",
+    "title": "Stifflip & Co.",
+    "sorttitle": "Stifflip & Co.",
+    "year": 1987,
+    "genres": [
+      "adventure"
+    ],
+    "collections": [],
+    "videoid": "zqqIctCq73o",
+    "thumbnail": "resources/images/thumbnails/all/stifflip-and-co.webp",
+    "pdf": "https://drive.google.com/file/d/1hJoU1vz8QrvQktRN6lOT-eo8OaIxORRe/view?usp=drive_link",
+    "disk": [],
+    "download_status": "",
+    "lemon": [
+      "https://www.lemon64.com/game/stifflip-and-co"
+    ],
+    "zzap": [],
+    "description": "Stifflip & Co is a distinctive 1987 Commodore 64 graphic adventure from Palace Software and Binary Vision, mixing comic-strip presentation, icon-driven controls, puzzle solving and eccentric British humour. You switch between four characters as they attempt to stop Count Chameleon and his ridiculous Rubbertronic Ray, with conversation, exploration and even the occasional bout of fisticuffs thrown into the mix. It looks and sounds the part, with memorable presentation and music from Richard Joseph, although the interface can feel cumbersome and progress is sometimes more awkward than it needs to be. An unusual C64 adventure that is worth experiencing, even if it never quite reaches the heights of Palace Software's best games.",
+    "ccg_rating": 6,
+    "ccg_rating_reason": "I enjoyed the idea and presentation more than the actual process of playing it, so for me it lands at a respectable 6 out of 10.",
+    "credits": {
+      "publisher": [
+        "Palace Software"
+      ],
+      "producer": "",
+      "coder": [
+        "Paul Norris"
+      ],
+      "graphics": [
+        "Paul Norris",
+        "Rupert Bowater"
+      ],
+      "musician": [
+        "Richard Joseph"
+      ],
+      "re_releaser": [
+        "Kixx"
+      ],
+      "developer": "Binary Vision"
+    },
+    "developer": "Binary Vision",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+  {
+    "system": "C64",
     "id": "stormbringer",
     "slug": "stormbringer",
     "title": "Stormbringer",
