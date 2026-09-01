@@ -96,12 +96,12 @@ try{
 
   console.log("[r57] fire and spike traps each deal one durability point per active cycle, including reactivation");
   const traps=await page.evaluate(()=>{
-    const api=window.CCGLostSizzlerV141R57DesktopPrepStability;api.state.trapCycles.clear();p1.armor=0;p1.maxHealth=Math.max(12,p1.maxHealth);p1.health=12;p1.invuln=9999;
+    const api=window.CCGLostSizzlerV141R57DesktopPrepStability;api.bridgeR56();const environmentOwner=api.chainHas(window.hurtPlayer,"__ccgV141R56EnvironmentDamage");api.state.trapCycles.clear();p1.armor=0;p1.maxHealth=Math.max(12,p1.maxHealth);p1.health=12;p1.invuln=9999;
     const fire={id:"r57-fire",kind:"fire",x:p1.x,y:p1.y,active:true,period:10000000,phase:0};host.traps=[fire];const start=p1.health;api.contactTick();const fire1=p1.health;fire.phase=6000000;api.contactTick();fire.phase=0;p1.invuln=9999;api.contactTick();const fire2=p1.health;
     api.state.trapCycles.clear();const spike={id:"r57-spike",kind:"spike",x:p1.x,y:p1.y,active:true,period:10000000,phase:0};host.traps=[spike];p1.invuln=9999;api.contactTick();const spike1=p1.health;
-    return{start,fire1,fire2,spike1,hits:Number(api.state.trapHits),fallbacks:Number(api.state.trapFallbacks)}
+    return{start,fire1,fire2,spike1,hits:Number(api.state.trapHits),fallbacks:Number(api.state.trapFallbacks),environmentOwner}
   });
-  assert.equal(traps.start-traps.fire1,1,`active fire trap must deal exactly one point: ${JSON.stringify(traps)}`);assert.equal(traps.fire1-traps.fire2,1,"fire trap must deal one more point after a real inactive/reactivated cycle");assert.equal(traps.fire2-traps.spike1,1,"active spike trap must deal exactly one point");assert.ok(traps.hits>=3,"R57 must record all three successful trap cycles");
+  assert.equal(traps.environmentOwner,true,"R57 production bridge must restore R56 environmental damage ownership before contact recovery");assert.equal(traps.start-traps.fire1,1,`active fire trap must deal exactly one point: ${JSON.stringify(traps)}`);assert.equal(traps.fire1-traps.fire2,1,"fire trap must deal one more point after a real inactive/reactivated cycle");assert.equal(traps.fire2-traps.spike1,1,"active spike trap must deal exactly one point");assert.ok(traps.hits>=3,"R57 must record all three successful trap cycles");
 
   console.log("[r57] shrine contact still activates after the induced stall");
   const shrine=await page.evaluate(()=>{
