@@ -74,9 +74,9 @@ const CCG_SPECIAL_MODES_REV=CCG_RELEASE_REV;
 const CCG_MODE_POLISH_REV=CCG_RELEASE_REV;
 const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
 
-/* A run must not begin while the sequential enhancement queue is still
- * replacing the base combat, onboarding and balance functions. Keep the first
- * requested launch and replay it once the complete release runtime is ready. */
+/* A run must not begin while the ordered enhancement queue is still replacing
+ * the base combat, onboarding and balance functions. Keep the first requested
+ * launch and replay it once the complete release runtime is ready. */
 (()=>{
   const launchIds=new Set(["solo-btn","tutorial-zone-btn","continue-save-btn","daily-btn","split-btn","create-btn","horde-mode-btn","saboteurs-mode-btn","join-btn"]);
   let resolveReady;
@@ -280,42 +280,42 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
     const criticalFailures=[];
     const criticalPaths=new Set(["/arcade/lost-sizzler/js/v10-25-melee-ammo-balance.js","/arcade/lost-sizzler/js/v10-26-ammo-budget.js","/arcade/lost-sizzler/js/v10-29-achievements.js","/arcade/lost-sizzler/js/v10-30-polish.js","/arcade/lost-sizzler/js/v10-31-multiplayer-sync.js","/arcade/lost-sizzler/js/horde-survivor.js","/arcade/lost-sizzler/js/horde-survivor-audio.js","/arcade/lost-sizzler/js/sizzler-saboteurs.js","/arcade/lost-sizzler/js/sizzler-saboteurs-audio.js","/arcade/lost-sizzler/js/v10-33-special-modes.js","/arcade/lost-sizzler/js/v10-33-mode-polish.js","/arcade/lost-sizzler/js/v10-35-quality.js"]);
 
-    const loadNext=index=>{
-      if(index>=queue.length){
-        const runtimeErrors=window.CCGLostSizzlerCacheGuard?.runtimeErrors||[];
-        for(const row of runtimeErrors)criticalFailures.push(`runtime error${row.source?` in ${row.source}`:""}: ${row.message}`);
-        window.CCGLostSizzlerReleaseGate?.finish?.(criticalFailures);
-        return
-      }
-      const [src,key]=queue[index],selector=`script[data-${key.replace(/[A-Z]/g,m=>`-${m.toLowerCase()}`)}="true"]`;
+    /* Dynamic scripts with async=false execute in insertion order but may fetch
+     * in parallel. This keeps the long-established module ownership order while
+     * removing the serial network waterfall that could leave releaseReady=false
+     * for 15+ seconds and strand an early New Solo Run click. */
+    const loadEntry=([src,key])=>new Promise(resolve=>{
+      const selector=`script[data-${key.replace(/[A-Z]/g,m=>`-${m.toLowerCase()}`)}="true"]`;
       const requestedPath=(()=>{try{return new URL(src,location.href).pathname}catch(_){return src.split("?")[0]}})();
       const alreadyLoaded=[...document.scripts].some(node=>{const raw=node.getAttribute("src");if(!raw)return false;try{return new URL(raw,location.href).pathname===requestedPath}catch(_){return raw.split("?")[0]===requestedPath}});
-      if(document.querySelector(selector)||alreadyLoaded){loadNext(index+1);return}
+      if(document.querySelector(selector)||alreadyLoaded){resolve(true);return}
       const script=document.createElement("script");
-      script.src=src;
-      script.dataset[key]="true";
-      script.async=false;
+      script.src=src;script.dataset[key]="true";script.async=false;
       let settled=false;
-      const advance=()=>{
-        if(settled)return;
-        settled=true;
-        clearTimeout(timeout);
-        loadNext(index+1);
-      };
+      const settle=ok=>{if(settled)return;settled=true;clearTimeout(timeout);resolve(ok)};
       const timeout=setTimeout(()=>{
         console.warn(`[Lost Sizzler] optional enhancement timed out: ${src}`);
         if(criticalPaths.has(requestedPath))criticalFailures.push(`${requestedPath} timed out`);
-        advance();
+        settle(false);
       },5000);
-      script.onload=advance;
+      script.onload=()=>settle(true);
       script.onerror=()=>{
         console.warn(`[Lost Sizzler] optional enhancement failed to load: ${src}`);
         if(criticalPaths.has(requestedPath))criticalFailures.push(`${requestedPath} failed`);
-        advance();
+        settle(false);
       };
       document.body.appendChild(script);
-    };
-    loadNext(0);
+    });
+
+    const loads=queue.map(loadEntry);
+    Promise.all(loads).then(()=>{
+      const runtimeErrors=window.CCGLostSizzlerCacheGuard?.runtimeErrors||[];
+      for(const row of runtimeErrors)criticalFailures.push(`runtime error${row.source?` in ${row.source}`:""}: ${row.message}`);
+      window.CCGLostSizzlerReleaseGate?.finish?.(criticalFailures);
+    }).catch(error=>{
+      criticalFailures.push(`release queue failure: ${String(error?.message||error)}`);
+      window.CCGLostSizzlerReleaseGate?.finish?.(criticalFailures);
+    });
   }
 
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",startEnhancements,{once:true});
