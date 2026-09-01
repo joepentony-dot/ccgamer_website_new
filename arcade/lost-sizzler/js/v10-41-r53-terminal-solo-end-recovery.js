@@ -127,3 +127,16 @@
   script.setAttribute(marker,"true");
   document.head.appendChild(script);
 })();
+
+/* R55 closes the final live-playtest menu/Horde boundaries after R54. */
+(()=>{
+  "use strict";
+  const marker="data-ccg-v141-r55-final-playtest-cleanup";
+  if(document.querySelector(`script[${marker}="true"]`))return;
+  const rev=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
+  const script=document.createElement("script");
+  script.src=`js/v10-41-r55-final-playtest-cleanup.js?v=${encodeURIComponent(rev)}`;
+  script.async=false;
+  script.setAttribute(marker,"true");
+  document.head.appendChild(script);
+})();
