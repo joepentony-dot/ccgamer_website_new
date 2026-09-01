@@ -10,6 +10,7 @@
     timer:0,loopInstalled:false,quitInstalled:false,damageInstalled:false,packetInstalled:false,toastInstalled:false,
     spyMoveInstalled:false,lastLoopSource:null,lastQuitSource:null,lastDamageSource:null,lastPacketSource:null,lastToastSource:null,lastSpyMoveSource:null,
     frameFaults:0,updateFaults:0,renderFaults:0,lastFaultAt:0,lastFaultMessage:"",lastFaultLogAt:0,
+    duplicateFramesSkipped:0,frameStalls:0,combatStallRecoveries:0,lastAcceptedRafTimestamp:null,
     hordeFriendlyFireBlocked:0,hordeEnemyHitsRerouted:0,spyMoves:0,spyBlockedMoves:0,spyHintsSuppressed:0,lastSpyHintAt:0,
     lastRunActive:false,audioStops:0,lastRemaining:-1
   };
@@ -29,10 +30,34 @@
     if(now-state.lastFaultLogAt>2000){state.lastFaultLogAt=now;try{console.error(`[Lost Sizzler r29] ${phase} fault contained without clearing input, reallocating the canvas or throttling play.`,error)}catch(_){}}
   }
 
-  function stableLoop(timestamp){
-    const t=finite(timestamp)?Number(timestamp):performance.now();let dt=16;
+  function payDownCombatGap(gap){
+    if(!finite(gap)||Number(gap)<500||document.body?.dataset?.runActive!=="true")return false;
+    let repaired=false;const elapsed=Math.max(0,Number(gap)||0);
+    try{if(typeof fire1!=="undefined"&&finite(fire1)&&fire1>0){fire1=Math.max(0,Number(fire1)-elapsed);repaired=true}}catch(_){}
+    try{if(typeof fire2!=="undefined"&&finite(fire2)&&fire2>0){fire2=Math.max(0,Number(fire2)-elapsed);repaired=true}}catch(_){}
     try{
-      const previous=finite(last)?Number(last):t-16;dt=Math.min(45,Math.max(0,t-previous||16));last=t;
+      for(const player of [typeof p1!=="undefined"?p1:null,typeof p2!=="undefined"?p2:null]){
+        if(!player)continue;
+        const stun=Number(player.hitStunMs||0);if(Number.isFinite(stun)&&stun>0){player.hitStunMs=Math.max(0,stun-elapsed);repaired=true}
+      }
+    }catch(_){}
+    try{if(window.CCGLostSizzlerV141R56PlaytestCompletion?.rearmCombat?.("r29 frame-gap recovery",0,false))repaired=true}catch(_){}
+    if(repaired)state.combatStallRecoveries++;
+    return repaired
+  }
+
+  function stableLoop(timestamp){
+    const hasRafTimestamp=finite(timestamp),t=hasRafTimestamp?Number(timestamp):performance.now();let dt=16;
+    if(hasRafTimestamp&&finite(state.lastAcceptedRafTimestamp)&&t<=Number(state.lastAcceptedRafTimestamp)){
+      state.duplicateFramesSkipped++;
+      return;
+    }
+    if(hasRafTimestamp)state.lastAcceptedRafTimestamp=t;
+    try{
+      const previous=finite(last)?Number(last):t-16;
+      let gap=t-previous;if(!finite(gap)||gap<0)gap=0;
+      if(gap>=500){state.frameStalls++;payDownCombatGap(gap)}
+      dt=Math.min(45,Math.max(0,gap));last=t;
       if(typeof damageFlash!=="undefined"&&damageFlash>0)damageFlash=Math.max(0,damageFlash-dt/500);
     }catch(error){noteFault("frame-clock",error)}
     try{if(typeof update==="function")update(dt)}catch(error){noteFault("update",error)}
@@ -338,6 +363,6 @@
   install();state.timer=setInterval(install,INSTALL_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);silenceGameplayAudio()},{once:true});
   window.CCGLostSizzlerV141R29={
-    SPY_HINT_COOLDOWN_MS,stableLoop,silenceGameplayAudio,spyMove,spyStep,primeSpyDoor,hordeRemaining,updateRemainingHud,contactBlock,normaliseItemTitle,normaliseItemNames,sealRoomDoorBypasses,repairDungeonStructure,progressButtonFor,handleEnterProgress,drawEnhancedPickup,install,get state(){return state}
+    SPY_HINT_COOLDOWN_MS,stableLoop,payDownCombatGap,silenceGameplayAudio,spyMove,spyStep,primeSpyDoor,hordeRemaining,updateRemainingHud,contactBlock,normaliseItemTitle,normaliseItemNames,sealRoomDoorBypasses,repairDungeonStructure,progressButtonFor,handleEnterProgress,drawEnhancedPickup,install,get state(){return state}
   };
 })();
