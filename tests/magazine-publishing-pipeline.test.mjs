@@ -5,35 +5,25 @@ import test from "node:test";
 
 const root = path.resolve(import.meta.dirname, "..");
 
-test("Reliable Games Publishing caches and imports Lemon magazine reviews before rebuilding games", () => {
+test("Reliable Games Publishing imports local magazine metadata before rebuilding games", () => {
   const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "games-publishing.yml"), "utf8");
-  const cacheIndex = workflow.indexOf("node scripts/refresh-lemon-game-cache.js --base HEAD^");
-  const coverageIndex = workflow.indexOf("node scripts/refresh-lemon-game-cache.js --check --base HEAD^");
   const importIndex = workflow.indexOf("node scripts/import-amiga-magazine-reviews.js");
   const rebuildIndex = workflow.indexOf("node scripts/rebuild-games.js");
 
-  assert.ok(cacheIndex >= 0, "Reliable Games Publishing does not refresh changed Lemon game pages");
-  assert.ok(coverageIndex >= 0, "Reliable Games Publishing does not verify Lemon cache coverage for changed game pages");
-  assert.ok(importIndex >= 0, "Reliable Games Publishing does not import magazine reviews from the Lemon cache");
+  assert.ok(importIndex >= 0, "Reliable Games Publishing does not import locally cached/curated magazine reviews");
   assert.ok(rebuildIndex >= 0, "Reliable Games Publishing does not run the authoritative rebuild");
-  assert.ok(cacheIndex < coverageIndex, "Lemon pages must be fetched before cache coverage is checked");
-  assert.ok(coverageIndex < importIndex, "Lemon cache coverage must pass before magazine reviews are imported");
   assert.ok(importIndex < rebuildIndex, "magazine reviews must be imported before game pages are rebuilt");
 });
 
-test("a new or changed Lemon source is a publishing prerequisite rather than a silent fallback", () => {
+test("external Lemon availability is not a publishing prerequisite", () => {
   const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "games-publishing.yml"), "utf8");
-  const cacheStart = workflow.indexOf("- name: Cache required Lemon magazine sources");
-  const importStart = workflow.indexOf("- name: Import Lemon magazine reviews");
-  assert.ok(cacheStart >= 0, "required Lemon cache step is missing");
-  assert.ok(importStart > cacheStart, "magazine import must follow the required Lemon cache step");
-
-  const cacheStep = workflow.slice(cacheStart, importStart);
-  assert.doesNotMatch(cacheStep, /continue-on-error:\s*true/);
-  assert.match(cacheStep, /refresh-lemon-game-cache\.js --check --base HEAD\^/);
+  assert.doesNotMatch(workflow, /Cache required Lemon magazine sources/);
+  assert.doesNotMatch(workflow, /refresh-lemon-game-cache\.js --check --base HEAD\^/);
+  assert.doesNotMatch(workflow, /refresh-lemon-game-cache\.js --base HEAD\^/);
+  assert.match(workflow, /External Lemon64\/Lemon Amiga availability is optional/);
 });
 
-test("the magazine importer supports both C64 and Amiga Lemon catalogue pages", () => {
+test("the magazine importer preserves support for existing C64 and Amiga Lemon cache data", () => {
   const importer = fs.readFileSync(path.join(root, "scripts", "import-amiga-magazine-reviews.js"), "utf8");
   assert.match(importer, /\/amiga\|c64\/i/);
   assert.match(importer, /Magazine Reviews/i);
@@ -58,6 +48,28 @@ test("Mr Weems retains the three verified contemporary magazine scores", () => {
       ["Commodore User", "5/10", 50],
       ["Your Commodore", "8/10", 80],
       ["Zzap!64", "19%", 19]
+    ]
+  );
+});
+
+test("Stifflip & Co retains four independently curated contemporary magazine scores", () => {
+  const supplementPath = path.join(
+    root,
+    "data",
+    "magazine-review-records",
+    "supplements",
+    "stifflip-and-co.json"
+  );
+  const supplement = JSON.parse(fs.readFileSync(supplementPath, "utf8"));
+  const rows = supplement.games?.["c64:stifflip-and-co"] || [];
+
+  assert.deepEqual(
+    rows.map((row) => [row.magazine, row.score, row.scorePercent]),
+    [
+      ["C&VG", "9/10", 90],
+      ["Commodore User", "8/10", 80],
+      ["Your Commodore", "9/10", 90],
+      ["Zzap!64", "70%", 70]
     ]
   );
 });
