@@ -242,7 +242,7 @@
   }
 
   function monitor(){
-    detachLegacyR27KeyOwner();guardR56SpyOwnership();ensureR59();
+    guardR56SpyOwnership();detachLegacyR27KeyOwner();ensureR59();
     if(spyActive()){repairFieldKitLabels();ensureSearchUi();ensureLoaded()}
     else{state.pendingActionCode="";lastSearchDispatchAt=0}
   }
