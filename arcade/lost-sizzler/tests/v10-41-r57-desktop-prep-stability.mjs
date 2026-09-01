@@ -7,9 +7,11 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,"..");
 const read=file=>fs.readFileSync(path.join(root,file),"utf8");
 const watchdog=read("js/v10-41-load-watchdog.js");
+const overrides=read("js/asset-overrides.js");
 const r57=read("js/v10-41-r57-desktop-prep-stability.js");
 
 assert.doesNotThrow(()=>new Function(watchdog),"R57 load-watchdog changes must parse");
+assert.doesNotThrow(()=>new Function(overrides),"R57 release-loader changes must parse");
 assert.doesNotThrow(()=>new Function(r57),"R57 desktop-prep owner must parse");
 
 assert.match(watchdog,/cheekycommodoregamer\.co\.uk/,"public beta lockdown must be hostname-scoped");
@@ -36,6 +38,14 @@ assert.match(watchdog,/scheduleSoloLivenessCheck/,"Solo launch must gain a bound
 assert.match(watchdog,/resetModeTransient\?\.\("Solo launch liveness recovery"\)/,"a failed post-mode Solo start must reset stale mode transients before its one retry");
 assert.ok(!watchdog.includes("startSolo("),"watchdog must keep replaying canonical menu/tutorial ownership rather than directly owning startSolo");
 assert.match(watchdog,/v10-41-r57-desktop-prep-stability\.js/,"early watchdog must chain R57 only after R56 exists");
+
+assert.match(overrides,/const loadEntry=\(\[src,key\]\)=>new Promise/,"release enhancements must be scheduled together rather than loaded through a serial network waterfall");
+assert.match(overrides,/script\.async=false/,"parallel enhancement fetches must retain deterministic insertion-order execution");
+assert.match(overrides,/const loads=queue\.map\(loadEntry\)/,"the complete enhancement queue must begin fetching in one ordered pass");
+assert.match(overrides,/Promise\.all\(loads\)\.then/,"releaseReady must wait until every scheduled enhancement settles");
+assert.ok(!overrides.includes("const loadNext=index=>"),"the old one-request-at-a-time release waterfall must not return");
+assert.match(overrides,/criticalPaths\.has\(requestedPath\)/,"parallel loading must retain critical-module failure protection");
+assert.match(overrides,/CCGLostSizzlerReleaseGate\?\.finish\?\.\(criticalFailures\)/,"release gate must still finish through the canonical failure-aware owner");
 
 assert.match(r57,/clearInterval\(api\.state\.timer\);api\.state\.timer=0/,"R57 must retire the flickering R56 periodic DOM icon pass");
 assert.match(r57,/#quick-slots \.quick-slot>\.item-svg-wrap/,"canonical Quick Inventory SVG must become the only visible icon layer");
