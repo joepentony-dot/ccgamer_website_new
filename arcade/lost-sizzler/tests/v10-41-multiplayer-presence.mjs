@@ -29,6 +29,8 @@ assert.match(runtime,/if\(startHandled\|\|mode==="playing"\|\|document\.body\?\.
 assert.match(runtime,/v106_lobby_probe/,"guests must be able to request authoritative lobby or live-match state");
 assert.match(runtime,/v106_lobby_meta/,"hosts must answer join-state probes with authoritative room metadata");
 assert.match(runtime,/started:live,startMeta:live\?lastStartMeta:null/,"a late join must receive the active start metadata when the host is already playing");
+assert.match(runtime,/net\.setRuntimePresence\?\.\(true,meta\)/,"the host must persist the successful Start state immediately instead of waiting for a later recovery timer");
+assert.match(runtime,/runtime\?\.started&&runtime\?\.startMeta\)\{receiveStart\(runtime\.startMeta\);return\}/,"a waiting guest must consume persisted host Start state directly from the V10.6 lobby loop");
 assert.match(runtime,/if\(!specialApi\?\.startOnline\)throw new Error/,"a failed special-mode initialisation must report an error instead of silently falling back to Dungeon mode");
 assert.match(runtime,/url\.searchParams\.set\("mode"/,"shared invites must carry the intended room mode as useful pre-join context");
 assert.match(presence,/id="v141-invite-player-name"/,"shared invite links must present a dedicated player-name field before connecting");

@@ -20,7 +20,12 @@
   function showLobby(){lobbyOpen=true;mode="lobby";playMode="online";setRunPresentation(false);UI.menu?.classList.add("hidden");lobby?.classList.remove("hidden");updateLobby()}
   function hideLobby(){lobbyOpen=false;lobby?.classList.add("hidden")}
   function updateLobby(){
-    if(!lobbyOpen||!net)return;const members=net.getMembers(),code=net.roomCode||clean(UI.roomCode?.value);
+    if(!lobbyOpen||!net)return;
+    if(!net.isHost&&!startHandled){
+      const runtime=net.getHostRuntimePresence?.();
+      if(runtime?.started&&runtime?.startMeta){receiveStart(runtime.startMeta);return}
+    }
+    const members=net.getMembers(),code=net.roomCode||clean(UI.roomCode?.value);
     const definition=net.getRoomMode?.()||modeDefinition("dungeon"),capacity=net.getCapacity?.()||definition.maxPlayers||C.maxPlayers;
     if(roomLabel)roomLabel.textContent=code||"-----";if(status)status.textContent=`${definition.label.toUpperCase()} · ${members.length}/${capacity} players connected${net.isHost?" · YOU ARE HOST":" · WAITING FOR HOST"}`;if(invite)invite.value=code?inviteFor(code,definition.id):"";
     if(list)list.innerHTML=members.map((member,index)=>`<li class="${index===0?"host":""}">${esc(member.name||"Player")}${index===0?" — HOST":""}${member.id===net.sessionId?" — YOU":""}</li>`).join("")||"<li>Connecting…</li>";
@@ -71,8 +76,9 @@
     if(!lobbyOpen||!net.isHost||startHandled)return;const definition=net.getRoomMode?.()||modeDefinition("dungeon");if(definition.id==="sizzler-saboteurs"&&net.getMembers().length!==2){showToast("TWO AGENTS REQUIRED","Spy Vs Spy Multiplayer starts only when exactly two players are connected.","red",8000);return}
     try{
       startHandled=true;requestPlayFullscreen();const meta=runMeta();lastStartMeta=meta;prepareRun(meta);
+      Promise.resolve(net.setRuntimePresence?.(true,meta)).catch(error=>console.warn("[Lost Sizzler] live start presence publish failed",error));
       const announce=()=>net.sendRequired("v106_lobby_start",meta).catch(error=>{setNote(`Room ${net.roomCode}: ${error.message}`);console.warn("[Lost Sizzler] lobby start relay retry failed",error)});announce();setTimeout(announce,280);setTimeout(announce,850);if(definition.id==="dungeon")setTimeout(()=>broadcastWorld(),1000);showToast(`${definition.label.toUpperCase()} STARTED`,`${net.getMembers().length}/${net.getCapacity?.()||C.maxPlayers} players entered room ${net.roomCode}.`,"green",7500)
-    }catch(error){startHandled=false;lastStartMeta=null;onlineError("MULTIPLAYER MODE COULD NOT START",error);showLobby()}
+    }catch(error){startHandled=false;lastStartMeta=null;try{Promise.resolve(net.setRuntimePresence?.(false,null)).catch(()=>{})}catch(_){}onlineError("MULTIPLAYER MODE COULD NOT START",error);showLobby()}
   }
   function receiveStart(meta){
     if(net.isHost||startHandled)return;const definition=adoptRoomMode(meta?.roomMode||net.getRoomMode?.().id||"dungeon");

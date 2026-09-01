@@ -12,7 +12,7 @@
   window.__CCG_LOST_SIZZLER_V141_R32_SPY_SEARCH_UI_OWNER__=true;
 
   const MODE_ID="sizzler-saboteurs",MONITOR_MS=20,SEARCH_MS=520;
-  const state={timer:0,installed:false,baseRender:null,lastSearchKey:"",syncs:0,pulsesRecovered:0,timingBridges:0};
+  const state={timer:0,installed:false,baseRender:null,lastSearchKey:"",syncs:0,pulsesRecovered:0,timingBridges:0,completionSyncs:0};
 
   const spyActive=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type===MODE_ID||document.body?.dataset?.specialMode===MODE_ID}catch(_){return false}};
   const ui=()=>{try{return window.CCGLostSizzlerV141UiSpyPerformance||null}catch(_){return null}};
@@ -27,9 +27,22 @@
     }catch(_){return null}
   };
 
+  function finishCompletion(api){
+    if(!state.lastSearchKey)return false;
+    const shared=api?.state,node=document.getElementById("spy-search-indicator");
+    state.lastSearchKey="";
+    if(!shared||!node)return false;
+    const now=performance.now(),startedAt=Number(shared.searchStartedAt);
+    if(!Number.isFinite(startedAt)||startedAt<=0||now-startedAt<SEARCH_MS)shared.searchStartedAt=Math.max(0,now-SEARCH_MS);
+    shared.searchCompletedAt=now;shared.lastSearchRenderSignature="";
+    try{if(typeof state.baseRender==="function")state.baseRender.call(api)}catch(error){console.warn("[Lost Sizzler r32] Spy search completion render failed safely",error)}
+    state.completionSyncs++;return node.dataset.state==="complete"
+  }
+
   function sync(){
     if(!spyActive())return false;
-    const api=ui(),q=authoritativeSearch();if(!api||!q)return false;
+    const api=ui();if(!api)return false;
+    const q=authoritativeSearch();if(!q)return finishCompletion(api);
     const shared=api.state,key=`${q.targetId}|${q.startedAt}`;
     if(key!==state.lastSearchKey){
       state.lastSearchKey=key;
@@ -61,5 +74,5 @@
   monitor();state.timer=setInterval(()=>{try{monitor()}catch(error){console.warn("[Lost Sizzler r32] Spy search UI sync failed safely",error)}},MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
-  window.CCGLostSizzlerV141R32SpySearchUiOwner={install,sync,authoritativeSearch,get state(){return state}};
+  window.CCGLostSizzlerV141R32SpySearchUiOwner={install,sync,authoritativeSearch,finishCompletion,get state(){return state}};
 })();
