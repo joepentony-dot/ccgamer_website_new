@@ -105,7 +105,9 @@ try{
     if(!choice)throw new Error("no walkable Spy movement neighbour after F");
     p1.hitStunMs=0;move1=0;input.clear();return{code:choice.code,x:Number(p1.x),y:Number(p1.y)}
   });
-  await page.keyboard.press(movementFixture.code);
+  await page.keyboard.down(movementFixture.code);
+  await page.waitForTimeout(260);
+  await page.keyboard.up(movementFixture.code);
   await page.waitForFunction(before=>Number(p1?.x)!==before.x||Number(p1?.y)!==before.y,movementFixture,{timeout:3000});
   const movementAfter=await page.evaluate(()=>({x:Number(p1.x),y:Number(p1.y),mode:String(mode),inventoryOpen:Boolean(window.CCGLostSizzlerV141R32SpyOverhaul.state.inventoryOpen)}));
   assert.ok(movementAfter.x!==movementFixture.x||movementAfter.y!==movementFixture.y,"Spy movement must remain responsive after F fullscreen input");assert.equal(movementAfter.mode,"playing");assert.equal(movementAfter.inventoryOpen,false);
