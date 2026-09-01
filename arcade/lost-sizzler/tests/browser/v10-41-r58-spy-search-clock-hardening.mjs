@@ -37,7 +37,7 @@ try{
     if(!room||!physical||!victim)throw new Error("R58 hardening fixture unavailable");
     const cell=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>({x:Number(physical.x)+dx,y:Number(physical.y)+dy})).find(q=>world.map?.[q.y]?.[q.x]===0&&!(host.blockingDecor||[]).some(row=>Number(row.x)===q.x&&Number(row.y)===q.y)&&(host.doors||[]).every(row=>Number(row.x)!==q.x||Number(row.y)!==q.y));if(!cell)throw new Error("no open furniture neighbour");
     owner.roomId=room.id;owner.status="active";owner.hp=owner.maxHp=6;owner.trapCharges=5;owner.timeRemainingMs=500000;p1.x=p1.rx=cell.x;p1.y=p1.ry=cell.y;owner.x=cell.x;owner.y=cell.y;
-    victim.roomId=room.id;victim.status="active";victim.hp=victim.maxHp=6;victim.counter=null;victim.timeRemainingMs=500000;
+    victim.roomId=room.id;victim.status="active";victim.hp=victim.maxHp=6;victim.counter=null;victim.timeRemainingMs=500000;victim.x=cell.x;victim.y=cell.y;remote.set(victim.id,{...p1,id:victim.id,name:victim.name,x:cell.x,y:cell.y,rx:cell.x,ry:cell.y,lastSeen:performance.now(),health:victim.hp,maxHealth:victim.maxHp});
     r32.selectTrap(0);document.getElementById("game")?.focus?.();return{ownerId:String(owner.id),victimId:String(victim.id),furnitureId:String(physical.logicalFurnitureId),before:Number(m.traps?.length||0)}
   });
   await page.keyboard.press("KeyT");
