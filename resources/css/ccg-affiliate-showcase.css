@@ -1,0 +1,487 @@
+/* ============================================================
+   CCG AFFILIATE SHOWCASE
+   Focused Amazon recommendations for C64, Amiga and home promo
+============================================================ */
+
+/* ------------------------------------------------------------
+   GAME-PAGE RECOMMENDED GEAR
+------------------------------------------------------------ */
+
+.affiliate-products-section--showcase {
+    --ccg-affiliate-accent: var(--accent-rgb, 86, 210, 255);
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    margin-block: clamp(24px, 4vw, 46px);
+    border: 1px solid rgba(var(--ccg-affiliate-accent), 0.34);
+    border-radius: clamp(18px, 2vw, 26px);
+    background:
+        radial-gradient(circle at 12% 0%, rgba(var(--ccg-affiliate-accent), 0.17), transparent 38%),
+        radial-gradient(circle at 92% 100%, rgba(var(--ccg-affiliate-accent), 0.10), transparent 34%),
+        linear-gradient(145deg, rgba(7, 10, 20, 0.97), rgba(4, 7, 15, 0.94));
+    box-shadow:
+        0 26px 66px rgba(0, 0, 0, 0.54),
+        0 0 26px rgba(var(--ccg-affiliate-accent), 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.affiliate-products-section--showcase::before {
+    content: "CCG PICKS";
+    position: absolute;
+    top: clamp(14px, 2vw, 22px);
+    right: clamp(16px, 2.6vw, 30px);
+    color: rgba(255, 255, 255, 0.035);
+    font-size: clamp(2.4rem, 8vw, 7.2rem);
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    line-height: 0.9;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.affiliate-products-section--showcase .affiliate-products-inner {
+    position: relative;
+    padding: clamp(22px, 3.4vw, 40px);
+}
+
+.affiliate-products-section--showcase .ccg-hardware-accordion {
+    display: grid;
+    gap: clamp(18px, 2.4vw, 26px);
+}
+
+.affiliate-products-section--showcase .ccg-hardware-accordion__header {
+    display: grid;
+    gap: 8px;
+    max-width: 900px;
+}
+
+.affiliate-products-section--showcase .affiliate-products-title {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(1.45rem, 2.8vw, 2.15rem);
+    line-height: 1.08;
+    letter-spacing: 0.035em;
+    text-shadow: 0 0 18px rgba(var(--ccg-affiliate-accent), 0.24);
+}
+
+.affiliate-products-section--showcase .affiliate-products-title::before {
+    content: "CCG PICKS";
+    display: block;
+    width: max-content;
+    margin-bottom: 8px;
+    padding: 5px 9px;
+    border: 1px solid rgba(var(--ccg-affiliate-accent), 0.36);
+    border-radius: 999px;
+    background: rgba(var(--ccg-affiliate-accent), 0.09);
+    color: rgb(var(--ccg-affiliate-accent));
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    line-height: 1;
+}
+
+.affiliate-products-section--showcase .affiliate-products-disclosure {
+    max-width: 72ch;
+    margin: 0;
+    color: rgba(238, 244, 255, 0.76);
+    font-size: clamp(0.92rem, 1.6vw, 1rem);
+    line-height: 1.65;
+}
+
+.affiliate-products-section--showcase .ccg-hardware-toggle {
+    display: none !important;
+}
+
+.affiliate-products-section--showcase .ccg-hardware-panel {
+    display: block;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.affiliate-products-section--showcase .affiliate-products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(12px, 2vw, 20px);
+}
+
+.affiliate-products-section--showcase .affiliate-product-card {
+    position: relative;
+    min-width: 0;
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    padding: clamp(17px, 2vw, 23px);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 18px;
+    background:
+        linear-gradient(160deg, rgba(255, 255, 255, 0.045), transparent 42%),
+        linear-gradient(145deg, rgba(17, 23, 38, 0.95), rgba(8, 12, 24, 0.96));
+    box-shadow:
+        0 16px 34px rgba(0, 0, 0, 0.32),
+        inset 0 1px 0 rgba(255, 255, 255, 0.045);
+    transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.affiliate-products-section--showcase .affiliate-product-card::after {
+    content: "";
+    position: absolute;
+    inset: auto -18% -45% 26%;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(var(--ccg-affiliate-accent), 0.08);
+    filter: blur(24px);
+    pointer-events: none;
+}
+
+.affiliate-products-section--showcase .affiliate-product-card:hover,
+.affiliate-products-section--showcase .affiliate-product-card:focus-within {
+    transform: translateY(-3px);
+    border-color: rgba(var(--ccg-affiliate-accent), 0.34);
+    box-shadow:
+        0 20px 42px rgba(0, 0, 0, 0.42),
+        0 0 22px rgba(var(--ccg-affiliate-accent), 0.11),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.affiliate-product-card__topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.affiliate-product-card__badge,
+.affiliate-product-card__category {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 0.64rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.affiliate-product-card__badge {
+    border: 1px solid rgba(var(--ccg-affiliate-accent), 0.38);
+    background: rgba(var(--ccg-affiliate-accent), 0.11);
+    color: rgb(var(--ccg-affiliate-accent));
+}
+
+.affiliate-product-card__category {
+    color: rgba(238, 244, 255, 0.60);
+    background: rgba(255, 255, 255, 0.045);
+}
+
+.affiliate-products-section--showcase .affiliate-product-card__title {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(1.05rem, 1.7vw, 1.28rem);
+    line-height: 1.22;
+    letter-spacing: 0.015em;
+}
+
+.affiliate-products-section--showcase .affiliate-product-card__description {
+    margin: 0;
+    flex: 1 1 auto;
+    color: rgba(235, 241, 252, 0.72);
+    font-size: 0.91rem;
+    line-height: 1.58;
+}
+
+.affiliate-products-section--showcase .affiliate-product-card__cta {
+    width: 100%;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: auto;
+    text-align: center;
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 850;
+    letter-spacing: 0.075em;
+    text-transform: uppercase;
+}
+
+.affiliate-products-legal {
+    margin: clamp(14px, 2vw, 20px) 0 0;
+    color: rgba(227, 234, 247, 0.58);
+    font-size: 0.76rem;
+    line-height: 1.5;
+}
+
+.affiliate-products-legal a,
+.ccg-home-affiliate-spotlight__legal a {
+    color: rgba(255, 255, 255, 0.80);
+    text-underline-offset: 3px;
+}
+
+/* ------------------------------------------------------------
+   HOME — THEA1200 SPOTLIGHT (AUTO-EXPIRES VIA JS)
+------------------------------------------------------------ */
+
+.ccg-home-affiliate-spotlight {
+    --ccg-a1200-cyan: 80, 218, 255;
+    --ccg-a1200-magenta: 220, 87, 255;
+    position: relative;
+    width: min(1180px, calc(100% - clamp(24px, 5vw, 64px)));
+    margin: clamp(18px, 3vw, 36px) auto clamp(22px, 4vw, 46px);
+    overflow: hidden;
+    isolation: isolate;
+    border: 1px solid rgba(var(--ccg-a1200-magenta), 0.34);
+    border-radius: clamp(20px, 3vw, 32px);
+    background:
+        radial-gradient(circle at 8% 10%, rgba(var(--ccg-a1200-cyan), 0.18), transparent 36%),
+        radial-gradient(circle at 92% 88%, rgba(var(--ccg-a1200-magenta), 0.20), transparent 38%),
+        linear-gradient(128deg, rgba(5, 9, 20, 0.98), rgba(13, 8, 24, 0.96));
+    box-shadow:
+        0 30px 74px rgba(0, 0, 0, 0.58),
+        0 0 34px rgba(var(--ccg-a1200-magenta), 0.13),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.ccg-home-affiliate-spotlight::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(110deg, transparent 0 52%, rgba(255, 255, 255, 0.022) 52% 53%, transparent 53% 100%),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.014) 0 1px, transparent 1px 42px);
+    pointer-events: none;
+    z-index: -1;
+}
+
+.ccg-home-affiliate-spotlight::after {
+    content: "AMIGA";
+    position: absolute;
+    right: -0.03em;
+    bottom: -0.20em;
+    color: rgba(255, 255, 255, 0.026);
+    font-size: clamp(5rem, 18vw, 13rem);
+    font-weight: 950;
+    letter-spacing: -0.04em;
+    line-height: 0.8;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.ccg-home-affiliate-spotlight__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(250px, 0.65fr);
+    gap: clamp(22px, 4vw, 52px);
+    align-items: stretch;
+    padding: clamp(24px, 4.5vw, 52px);
+}
+
+.ccg-home-affiliate-spotlight__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    min-width: 0;
+}
+
+.ccg-home-affiliate-spotlight__eyebrow {
+    margin: 0 0 10px;
+    padding: 6px 10px;
+    border: 1px solid rgba(var(--ccg-a1200-cyan), 0.38);
+    border-radius: 999px;
+    background: rgba(var(--ccg-a1200-cyan), 0.08);
+    color: rgb(var(--ccg-a1200-cyan));
+    font-size: 0.69rem;
+    font-weight: 850;
+    letter-spacing: 0.17em;
+    line-height: 1;
+}
+
+.ccg-home-affiliate-spotlight__title {
+    max-width: 18ch;
+    margin: 0;
+    color: #fff;
+    font-size: clamp(2rem, 5vw, 4.35rem);
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+    text-shadow:
+        0 0 28px rgba(var(--ccg-a1200-magenta), 0.16),
+        0 0 16px rgba(var(--ccg-a1200-cyan), 0.12);
+}
+
+.ccg-home-affiliate-spotlight__text {
+    max-width: 66ch;
+    margin: clamp(15px, 2.2vw, 22px) 0 0;
+    color: rgba(239, 244, 255, 0.79);
+    font-size: clamp(0.98rem, 1.7vw, 1.08rem);
+    line-height: 1.7;
+}
+
+.ccg-home-affiliate-spotlight__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: clamp(18px, 2.8vw, 28px);
+}
+
+.ccg-home-affiliate-spotlight__cta {
+    min-height: 48px;
+    padding-inline: clamp(18px, 3vw, 30px);
+    text-decoration: none;
+    font-size: 0.83rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    box-shadow: 0 0 22px rgba(var(--ccg-a1200-magenta), 0.13);
+}
+
+.ccg-home-affiliate-spotlight__legal {
+    max-width: 70ch;
+    margin: 13px 0 0;
+    color: rgba(227, 234, 247, 0.56);
+    font-size: 0.73rem;
+    line-height: 1.5;
+}
+
+.ccg-home-affiliate-spotlight__release {
+    position: relative;
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 24px;
+    background:
+        linear-gradient(155deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.012)),
+        radial-gradient(circle at 50% 100%, rgba(var(--ccg-a1200-magenta), 0.18), transparent 60%),
+        rgba(2, 5, 13, 0.72);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        0 18px 34px rgba(0, 0, 0, 0.28);
+    text-align: center;
+}
+
+.ccg-home-affiliate-spotlight__machine {
+    position: absolute;
+    inset: 9% auto auto 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.055);
+    font-size: clamp(4.2rem, 8vw, 6.8rem);
+    font-weight: 950;
+    letter-spacing: -0.08em;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.ccg-home-affiliate-spotlight__release-kicker {
+    position: relative;
+    z-index: 1;
+    color: rgb(var(--ccg-a1200-cyan));
+    font-size: 0.69rem;
+    font-weight: 900;
+    letter-spacing: 0.20em;
+}
+
+.ccg-home-affiliate-spotlight__release-date {
+    position: relative;
+    z-index: 1;
+    margin-top: 10px;
+    color: #fff;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    line-height: 1;
+}
+
+.ccg-home-affiliate-spotlight__release-name {
+    position: relative;
+    z-index: 1;
+    margin-top: 12px;
+    color: rgba(255, 255, 255, 0.70);
+    font-size: 0.77rem;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVE SAFETY
+------------------------------------------------------------ */
+
+@media (max-width: 900px) {
+    .affiliate-products-section--showcase .affiliate-products-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .affiliate-products-section--showcase .affiliate-product-card {
+        min-height: 0;
+    }
+
+    .ccg-home-affiliate-spotlight__inner {
+        grid-template-columns: 1fr;
+    }
+
+    .ccg-home-affiliate-spotlight__release {
+        min-height: 180px;
+    }
+}
+
+@media (max-width: 620px) {
+    .affiliate-products-section--showcase {
+        margin-inline: 0;
+        border-radius: 16px;
+    }
+
+    .affiliate-products-section--showcase .affiliate-products-inner {
+        padding: 18px 14px;
+    }
+
+    .affiliate-products-section--showcase .affiliate-product-card {
+        padding: 16px;
+        border-radius: 14px;
+    }
+
+    .affiliate-product-card__topline {
+        align-items: flex-start;
+    }
+
+    .ccg-home-affiliate-spotlight {
+        width: calc(100% - 22px);
+        border-radius: 18px;
+    }
+
+    .ccg-home-affiliate-spotlight__inner {
+        padding: 20px 16px;
+        gap: 18px;
+    }
+
+    .ccg-home-affiliate-spotlight__title {
+        max-width: none;
+        font-size: clamp(1.75rem, 10vw, 2.55rem);
+    }
+
+    .ccg-home-affiliate-spotlight__release {
+        min-height: 154px;
+        border-radius: 16px;
+    }
+
+    .ccg-home-affiliate-spotlight__release-date {
+        font-size: clamp(1.6rem, 9vw, 2.2rem);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .affiliate-products-section--showcase .affiliate-product-card,
+    .ccg-home-affiliate-spotlight__cta {
+        transition: none;
+        transform: none;
+    }
+}
