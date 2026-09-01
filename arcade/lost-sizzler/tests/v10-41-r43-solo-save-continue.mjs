@@ -26,8 +26,20 @@ assert.doesNotMatch(source,/supabase/i,"local Solo save layer must not acquire S
 
 assert.match(source,/onRunPresentation[\s\S]*ensureEntryCaptured/,"new Solo runs must capture a Floor 1 entry checkpoint");
 assert.match(source,/interceptDescend[\s\S]*after<=before[\s\S]*captureEntry\("autosave"\)/,"real floor descent must autosave the new floor entry");
-assert.match(source,/offerFloorSaveV141R43[\s\S]*!restPrompt&&standardSolo\(\)/,"ordinary Solo floor-entry prompt must be retired after autosave");
-assert.match(source,/return original\.offerFloorSave\(restPrompt\)/,"five-death/rest prompt must retain legacy behavior");
+
+// Automatic Floor 2+ entry prompts are retired by the autosave model. R43 must
+// retain top-level ownership even if a later compatibility layer replaces the
+// global function, but the five-death/rest prompt must remain available.
+assert.match(source,/function installOfferFloorSaveOwner\(\)/,"r43 must expose an idempotent top-level offerFloorSave owner");
+assert.match(source,/if\(current\.__ccgV141R43AutoSaveOwner===true\)return true/,"r43 must avoid repeatedly wrapping its own current owner");
+assert.match(source,/wrapped=function offerFloorSaveV141R43Owned\(restPrompt=false\)/,"r43 must install a named automatic-floor-prompt owner");
+assert.match(source,/if\(!restPrompt&&standardSolo\(\)\)[\s\S]*ensureEntryCaptured\(\);suppressAutomaticFloorPrompt\(\);return false/,"ordinary Solo floor-entry prompt must be retired after autosave");
+assert.match(source,/return current\.apply\(this,arguments\)/,"five-death/rest prompt and non-Solo owners must retain the current underlying behavior");
+assert.match(source,/wrapped\.__ccgV141R43AutoSaveOwner=true;wrapped\.__ccgOriginal=current/,"r43 floor-prompt ownership must carry an idempotent ancestry marker");
+assert.match(source,/state\.timer=setInterval\(\(\)=>\{[\s\S]*installOfferFloorSaveOwner\(\)/,"the r43 monitor must reassert floor-prompt ownership after later compatibility installers");
+assert.match(source,/function automaticPromptActive\(\)[\s\S]*reason==="rest"\)return false/,"the stale-prompt repair must never dismiss the legitimate five-death/rest prompt");
+assert.match(source,/function suppressAutomaticFloorPrompt\(\)[\s\S]*savePromptReason=""[\s\S]*mode="playing"/,"a stale autosaved floor-entry prompt must return standard Solo to playing mode");
+assert.match(source,/savedCurrentFloor\(\)/,"automatic prompt cleanup must require a save for the current floor");
 
 assert.match(source,/save-quit-solo-btn/,"Pause must expose a dedicated Save & Quit action");
 assert.match(source,/writeEnvelope\(state\.entryCheckpoint,"save_quit"\)/,"Save & Quit must persist the floor-entry snapshot, not live mid-room state");
@@ -41,4 +53,4 @@ assert.match(source,/if\(soloSaveOwner\(\)\)[\s\S]*clearSoloSave\(\)[\s\S]*retur
 assert.match(source,/Continue Solo — Floor/,"Continue button must expose the saved floor");
 assert.match(source,/Saved run: Floor/,"menu must expose save metadata");
 
-console.log("V10.41 r43 Solo save/continue static contract passed.");
+console.log("V10.41 r43 Solo save/continue and automatic floor-prompt ownership contract passed.");

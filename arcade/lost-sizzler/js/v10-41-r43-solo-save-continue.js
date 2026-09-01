@@ -29,6 +29,7 @@
   const state={
     timer:0,observer:null,entryCheckpoint:null,entryFloorKey:"",lastAutoSaveKey:"",
     saves:0,autosaves:0,saveQuits:0,resumes:0,migrations:0,backupRecoveries:0,
+    offerOwnerInstalls:0,automaticPromptSuppressions:0,
     lastSavedAt:0,lastReason:"",lastError:"",pauseButton:null,summaryNode:null
   };
 
@@ -229,8 +230,49 @@
     queueMicrotask(()=>{
       if(!standardSolo())return;
       const after=Number(run?.floor)||0;if(after<=before)return;
-      captureEntry("autosave")
+      captureEntry("autosave");suppressAutomaticFloorPrompt()
     })
+  }
+
+  function savedCurrentFloor(){
+    if(!standardSolo())return false;
+    try{
+      const envelope=readEnvelope(),currentFloor=Math.max(1,Number(run?.floor)||1);
+      return Boolean(envelope&&Number(envelope.summary?.floor||envelope.checkpoint?.run?.floor||0)===currentFloor&&state.lastAutoSaveKey===floorKey())
+    }catch(_){return false}
+  }
+
+  function automaticPromptActive(){
+    if(!standardSolo()||!savedCurrentFloor())return false;
+    try{
+      const reason=typeof savePromptReason!=="undefined"?String(savePromptReason||""):"";
+      if(reason==="rest")return false;
+      const panelVisible=Boolean(UI?.savePanel&&!UI.savePanel.classList.contains("hidden"));
+      return String(mode||"")==="saveprompt"||panelVisible
+    }catch(_){return false}
+  }
+
+  function suppressAutomaticFloorPrompt(){
+    if(!automaticPromptActive())return false;
+    try{UI?.savePanel?.classList?.add?.("hidden")}catch(_){}
+    try{if(typeof savePromptReason!=="undefined"&&String(savePromptReason||"")!=="rest")savePromptReason=""}catch(_){}
+    try{if(String(mode||"")==="saveprompt")mode="playing"}catch(_){}
+    try{input?.clear?.()}catch(_){}
+    state.automaticPromptSuppressions++;
+    return true
+  }
+
+  function installOfferFloorSaveOwner(){
+    const current=window.offerFloorSave;if(typeof current!=="function")return false;
+    if(current.__ccgV141R43AutoSaveOwner===true)return true;
+    const wrapped=function offerFloorSaveV141R43Owned(restPrompt=false){
+      if(!restPrompt&&standardSolo()){
+        ensureEntryCaptured();suppressAutomaticFloorPrompt();return false
+      }
+      return current.apply(this,arguments)
+    };
+    wrapped.__ccgV141R43AutoSaveOwner=true;wrapped.__ccgOriginal=current;
+    window.offerFloorSave=wrapped;state.offerOwnerInstalls++;return true
   }
 
   function onRunPresentation(){
@@ -241,7 +283,7 @@
     }else if(document.body?.dataset?.runActive!=="true"){
       state.entryCheckpoint=null;state.entryFloorKey="";state.lastAutoSaveKey=""
     }
-    ensurePauseButton();updateMenu()
+    installOfferFloorSaveOwner();suppressAutomaticFloorPrompt();ensurePauseButton();updateMenu()
   }
 
   // Route legacy Solo checkpoint writes through the v2 envelope. Split Screen
@@ -266,20 +308,20 @@
   try{if(typeof updateSavedRunButton==="function")updateSavedRunButton=function updateSavedRunButtonV141R43(){updateMenu()}}catch(_){}
 
   // Automatic floor saves replace the old voluntary entry prompt in standard
-  // Solo. The five-death rest prompt remains available and writes the same
-  // validated v2 checkpoint through the PGR adapter above.
-  if(original.offerFloorSave){
-    offerFloorSave=function offerFloorSaveV141R43(restPrompt=false){
-      if(!restPrompt&&standardSolo()){ensureEntryCaptured();return false}
-      return original.offerFloorSave(restPrompt)
-    }
-  }
+  // Solo. Reassert this top-level owner because later compatibility layers may
+  // wrap offerFloorSave after r43. Five-death/rest prompts always delegate to
+  // the retained function and are never dismissed by the automatic-prompt guard.
+  installOfferFloorSaveOwner();
 
   document.addEventListener("click",interceptContinue,true);
   document.addEventListener("click",interceptDescend,true);
   state.observer=new MutationObserver(onRunPresentation);
   state.observer.observe(document.body,{attributes:true,attributeFilter:["data-run-active","data-special-mode","data-tutorial-active"]});
-  state.timer=setInterval(()=>{if(standardSolo())ensureEntryCaptured();ensurePauseButton();updateMenu()},MONITOR_MS);
+  state.timer=setInterval(()=>{
+    installOfferFloorSaveOwner();
+    if(standardSolo()){ensureEntryCaptured();suppressAutomaticFloorPrompt()}
+    ensurePauseButton();updateMenu()
+  },MONITOR_MS);
 
   migrateLegacyIfNeeded();updateMenu();ensurePauseButton();onRunPresentation();
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.observer?.disconnect?.()},{once:true});
@@ -288,6 +330,7 @@
     SCHEMA,SCHEMA_VERSION,PRIMARY_KEY,BACKUP_KEY,
     readEnvelope,currentSavedCheckpoint,captureEntry,saveAndQuit,resumeSolo,clearSoloSave,updateMenu,
     validateEnvelope,makeEnvelope,hashText,checkpointMatchesCurrentFloor,canonicalEntryCheckpoint,
+    installOfferFloorSaveOwner,suppressAutomaticFloorPrompt,automaticPromptActive,savedCurrentFloor,
     get state(){return state}
   };
 })();

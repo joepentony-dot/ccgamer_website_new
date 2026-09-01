@@ -1,16 +1,12 @@
-/* The Lost Sizzler V10.41 r32/r58 — Spy-only lazy loader.
+/* The Lost Sizzler V10.41 r32/r59 — Spy-only lazy loader.
  *
  * The full overhaul has no reason to install during Solo, Horde or ordinary
  * online Dungeon sessions. Keep those startup/network paths untouched and load
- * the Spy owners only after Sizzler Saboteurs is active. The r32 overhaul owns
- * the actual TAB inventory toggle; the r33 packet/final owner loads immediately
- * afterwards and seals TAB before r35 is installed. The shared game owner keeps
- * F as fullscreen; this loader stops that same F event before any later Spy
- * compatibility layer can reuse it. The r35 knockout finalizer binds the real
- * combat/trap boundary to the ghost/capture rules, r34 owns fullscreen panel
- * presentation, r36 performs live-state/UI reconciliation, r45 adds hidden-trap
- * presentation, and r58 is the final live Spy rules owner for lethal sabotage,
- * personal clocks, respawns, item capture and Solo-system isolation.
+ * the Spy owners only after Sizzler Saboteurs is active. This loader owns TAB
+ * from the first Spy keypress, detaches the stale r27 F/TAB keyboard owner and
+ * provides one idempotent Spy-mode F fullscreen dispatch shared with game-main.
+ * r59 is loaded globally from here so pause/resume timing is stabilised for
+ * every game mode before desktop packaging.
  */
 (()=>{
   "use strict";
@@ -19,15 +15,18 @@
 
   const MODE_ID="sizzler-saboteurs",MONITOR_MS=20;
   const OWNER_ACTION_CODES=new Set(["KeyE","KeyT","KeyX"]);
+  const fullscreenEvents=new WeakSet();
   const state={
     timer:0,loading:false,loaded:false,loads:0,lastError:"",
     uiLoading:false,uiLoaded:false,uiLoads:0,uiLastError:"",
     hardeningLoaded:false,fullscreenUiLoaded:false,perfectionLoaded:false,trapPresentationLoaded:false,r58Loaded:false,
-    r56Guarded:false,r56GuardInstalls:0,r56OwnerSkips:0,
+    r59Loading:false,r59Loaded:false,r59Loads:0,r59LastError:"",
+    r56Guarded:false,r56GuardInstalls:0,r56OwnerSkips:0,r27KeyDetached:false,r27KeyDetachments:0,
+    tabTogglePending:false,tabToggles:0,tabLoadBridges:0,fullscreenKeyCalls:0,fullscreenDuplicateGuards:0,fieldKitLabelRepairs:0,
     pendingActionCode:"",queuedActions:0,replayedActions:0,queuedSearchFeedbacks:0,directSearchActions:0,
     searchTargetBridges:0,searchRoomBridges:0,searchKeyDowns:0,searchKeyUpFallbacks:0
   };
-  let loadPromise=null,uiPromise=null,pendingActionPromise=null,lastSearchDispatchAt=0;
+  let loadPromise=null,uiPromise=null,r59Promise=null,pendingActionPromise=null,lastSearchDispatchAt=0;
 
   const spyActive=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type===MODE_ID||document.body?.dataset?.specialMode===MODE_ID}catch(_){return false}};
   const revision=()=>String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
@@ -48,6 +47,13 @@
     state.r56Guarded=true;state.r56GuardInstalls++;return true
   }
 
+  function detachLegacyR27KeyOwner(){
+    const api=window.CCGLostSizzlerV141R27SpyIsolation;
+    if(!api||typeof api.onSpyKeyDown!=="function")return false;
+    if(state.r27KeyDetached)return true;
+    try{removeEventListener("keydown",api.onSpyKeyDown,true);state.r27KeyDetached=true;state.r27KeyDetachments++;return true}catch(_){return false}
+  }
+
   function loadScript(path,marker,ready){
     return new Promise((resolve,reject)=>{
       if(ready?.()){resolve(true);return}
@@ -59,6 +65,20 @@
       const script=document.createElement("script");script.src=`js/${path}?v=${encodeURIComponent(revision())}`;script.setAttribute(marker,"true");
       script.addEventListener("load",()=>{script.dataset.ccgLoaded="true";resolve(true)},{once:true});script.addEventListener("error",()=>reject(new Error(`Failed to load ${path}`)),{once:true});document.head.appendChild(script)
     })
+  }
+
+  async function ensureR59(){
+    if(state.r59Loaded||window.CCGLostSizzlerV141R59LiveRegressionFixes){state.r59Loaded=true;return true}
+    if(r59Promise)return r59Promise;
+    state.r59Loading=true;
+    r59Promise=(async()=>{
+      try{
+        await loadScript("v10-41-r59-live-regression-fixes.js","data-ccg-r59-live-regression-fixes",()=>Boolean(window.CCGLostSizzlerV141R59LiveRegressionFixes));
+        state.r59Loaded=true;state.r59Loads++;state.r59LastError="";return true
+      }catch(error){state.r59LastError=String(error?.message||error);console.warn("[Lost Sizzler r32] r59 live regression authority failed safely",error);return false}
+      finally{state.r59Loading=false;r59Promise=null}
+    })();
+    return r59Promise
   }
 
   async function ensureSearchUi(){
@@ -81,6 +101,7 @@
     state.loading=true;
     loadPromise=(async()=>{
       try{
+        await ensureR59();
         await loadScript("v10-41-r32-spy-overhaul.js","data-ccg-r32-spy-overhaul",()=>Boolean(window.CCGLostSizzlerV141R32SpyOverhaul));
         await loadScript("v10-41-r32-spy-packet-owner.js","data-ccg-r32-spy-packet-owner",()=>Boolean(window.CCGLostSizzlerV141R32SpyPacketOwner));
         await loadScript("v10-41-r35-spy-rules-hardening.js","data-ccg-r35-spy-rules-hardening",()=>Boolean(window.CCGLostSizzlerV141R35SpyRulesHardening));
@@ -164,12 +185,66 @@
     return queueOwnerAction("KeyE")
   }
 
-  function onKeyDown(event){
-    if(!spyActive()||event?.repeat)return;const code=String(event?.code||"");
-    if(code==="KeyF"){
-      // game-main has already handled F as fullscreen; stop later Spy compatibility handlers.
-      event.preventDefault?.();event.stopImmediatePropagation?.();return
+  function forceSharedPlaying(){
+    if(!spyActive())return false;
+    try{if(typeof mode!=="undefined"&&["inventory","dossier"].includes(String(mode)))mode="playing"}catch(_){}
+    try{UI?.inventory?.classList?.add?.("hidden")}catch(_){}
+    return true
+  }
+
+  async function toggleSpyInventoryFromTab(){
+    if(!spyActive()||state.tabTogglePending)return false;
+    const readyOwner=overhaul();
+    if(typeof readyOwner?.setInventory==="function"){
+      forceSharedPlaying();readyOwner.setInventory(!Boolean(readyOwner.state?.inventoryOpen));state.tabToggles++;return true
     }
+    state.tabTogglePending=true;state.tabLoadBridges++;
+    try{
+      const loaded=await ensureLoaded();if(!loaded||!spyActive())return false;
+      forceSharedPlaying();
+      const owner=overhaul();if(typeof owner?.setInventory!=="function")return false;
+      owner.setInventory(!Boolean(owner.state?.inventoryOpen));state.tabToggles++;return true
+    }catch(error){state.lastError=String(error?.message||error);return false}
+    finally{state.tabTogglePending=false}
+  }
+
+  function repairFieldKitLabels(){
+    if(!spyActive())return false;let repaired=0;
+    try{
+      for(const key of document.querySelectorAll("kbd")){
+        if(String(key.textContent||"").trim().toUpperCase()!=="F")continue;
+        const text=String(key.parentElement?.textContent||key.closest?.("div")?.textContent||"").toUpperCase();
+        if(!text.includes("FIELD KIT"))continue;
+        key.textContent="TAB";repaired++;
+      }
+      const quick=document.getElementById("quick-specials");if(quick&&/\bF\s+FIELD KIT\b/i.test(quick.textContent||"")){quick.textContent=String(quick.textContent||"").replace(/\bF\s+FIELD KIT\b/gi,"TAB FIELD KIT");repaired++}
+      const hint=document.getElementById("fullscreen-hint");if(hint&&/<kbd>F<\/kbd>\s*FIELD KIT/i.test(hint.innerHTML)){hint.innerHTML=hint.innerHTML.replace(/<kbd>F<\/kbd>\s*FIELD KIT/gi,"<kbd>TAB</kbd> FIELD KIT");repaired++}
+      const notice=document.getElementById("inventory-mobile-notice");if(notice&&/\bF\s+FIELD KIT\b/i.test(notice.textContent||"")){notice.textContent=String(notice.textContent||"").replace(/\bF\s+FIELD KIT\b/gi,"TAB FIELD KIT");repaired++}
+    }catch(_){}
+    state.fieldKitLabelRepairs+=repaired;return repaired>0
+  }
+
+  function handleSpyFullscreenKey(event){
+    if(!spyActive()||String(event?.code||"")!=="KeyF")return false;
+    event.preventDefault?.();
+    if(fullscreenEvents.has(event)){
+      state.fullscreenDuplicateGuards++;event.stopImmediatePropagation?.();return true
+    }
+    fullscreenEvents.add(event);
+    if(!event?.repeat){
+      try{if(typeof toggleFullscreen==="function"){toggleFullscreen();state.fullscreenKeyCalls++}}catch(error){state.lastError=String(error?.message||error)}
+    }
+    event.stopImmediatePropagation?.();return true
+  }
+
+  function onKeyDown(event){
+    if(!spyActive())return;const code=String(event?.code||"");
+    if(code==="Tab"){
+      event.preventDefault?.();event.stopImmediatePropagation?.();
+      if(!event.repeat)toggleSpyInventoryFromTab();return
+    }
+    if(code==="KeyF"){handleSpyFullscreenKey(event);return}
+    if(event?.repeat)return;
     if(!OWNER_ACTION_CODES.has(code))return;
     if(code==="KeyE"){
       event.preventDefault?.();event.stopPropagation?.();dispatchSearchAction();return
@@ -187,8 +262,8 @@
   }
 
   function monitor(){
-    guardR56SpyOwnership();
-    if(spyActive()){ensureSearchUi();ensureLoaded()}
+    guardR56SpyOwnership();detachLegacyR27KeyOwner();ensureR59();
+    if(spyActive()){repairFieldKitLabels();ensureSearchUi();ensureLoaded()}
     else{state.pendingActionCode="";lastSearchDispatchAt=0}
   }
 
@@ -196,5 +271,5 @@
   monitor();state.timer=setInterval(monitor,MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0;state.pendingActionCode="";lastSearchDispatchAt=0},{once:true});
 
-  window.CCGLostSizzlerV141R32SpyLoader={ensureLoaded,ensureSearchUi,queueOwnerAction,directSearchAction,bridgeSearchTarget,dispatchSearchAction,guardR56SpyOwnership,get state(){return state}};
+  window.CCGLostSizzlerV141R32SpyLoader={ensureLoaded,ensureR59,ensureSearchUi,queueOwnerAction,directSearchAction,bridgeSearchTarget,dispatchSearchAction,toggleSpyInventoryFromTab,handleSpyFullscreenKey,detachLegacyR27KeyOwner,repairFieldKitLabels,guardR56SpyOwnership,get state(){return state}};
 })();

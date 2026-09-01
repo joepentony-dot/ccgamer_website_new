@@ -64,7 +64,7 @@ function handleHeaderQuit(){
   if(mode==="ended"){quitToMenu();return}
   openPauseMenu()
 }
-$("solo-btn").addEventListener("click",startSolo);$("continue-save-btn")?.addEventListener("click",resumeSavedRun);$("daily-btn")?.addEventListener("click",startDaily);$("split-btn").addEventListener("click",startSplit);$("create-btn").addEventListener("click",createRoom);$("join-btn").addEventListener("click",joinRoom);$("resume-btn").addEventListener("click",()=>pause(true));$("pause-quit-btn")?.addEventListener("click",quitToMenu);$("quit-btn")?.addEventListener("click",handleHeaderQuit);
+$("solo-btn").addEventListener("click",startSolo);$("continue-save-btn")?.addEventListener("click",resumeSavedRun);$("daily-btn")?.addEventListener("click",startDaily);$("split-btn").addEventListener("click",startSplit);$("create-btn").addEventListener("click",createRoom);$("join-btn").addEventListener("click",joinRoom);$("resume-btn")?.addEventListener("click",()=>pause(true));$("pause-quit-btn")?.addEventListener("click",quitToMenu);$("quit-btn")?.addEventListener("click",handleHeaderQuit);
 $("rulebook-btn")?.addEventListener("click",showRulebook);$("rulebook-close-btn")?.addEventListener("click",()=>UI.rulebook?.classList.add("hidden"));$("support-btn")?.addEventListener("click",showSupport);$("support-close-btn")?.addEventListener("click",()=>UI.support?.classList.add("hidden"));$("share-btn")?.addEventListener("click",shareQuest);$("item-info-close")?.addEventListener("click",hideItemInfo);$("named-dossier-btn")?.addEventListener("click",showNamedDossier);
 $("inventory-dossier-btn")?.addEventListener("click",showNamedDossier);$("named-dossier-close")?.addEventListener("click",hideNamedDossier);$("shop-close")?.addEventListener("click",closeShop);$("save-now-btn")?.addEventListener("click",()=>{saveFloorCheckpoint(false);closeSavePrompt()});$("save-continue-btn")?.addEventListener("click",()=>{if(savePromptReason==="rest"&&run)run.consecutiveDeaths=0;closeSavePrompt()});$("save-return-btn")?.addEventListener("click",()=>{if(run)run.consecutiveDeaths=0;saveFloorCheckpoint(true)});
 $("inventory-close-top")?.addEventListener("click",returnToGameFromPanel);$("named-dossier-close-top")?.addEventListener("click",returnToGameFromPanel);
@@ -96,7 +96,12 @@ addEventListener("keydown",e=>{
     if(mode==="playing"||mode==="paused"){pause();return}
   }
   if(e.code==="KeyP"&&(mode==="playing"||mode==="paused")){pause();return}
-  if(e.code==="KeyF"){toggleFullscreen();return}if(e.code==="Tab"&&["playing","inventory"].includes(mode)){toggleInventory();return}
+  if(e.code==="KeyF"){
+    const spyLoader=window.CCGLostSizzlerV141R32SpyLoader;
+    if(spyLoader?.handleSpyFullscreenKey?.(e))return;
+    toggleFullscreen();return
+  }
+  if(e.code==="Tab"&&["playing","inventory"].includes(mode)){toggleInventory();return}
   if(mode!=="playing")return;if(p1)setDir(p1,e.code);if(p2)setDir(p2,e.code);input.add(e.code);
   if(e.code==="Space"&&!e.repeat)queueAttack(p1);if(p2&&e.code==="Enter"&&!e.repeat)queueAttack(p2);if(e.code==="ShiftLeft"&&!e.repeat)dashPlayer(p1,d1()||p1.dir);if(p2&&e.code==="ControlRight"&&!e.repeat)dashPlayer(p2,d2()||p2.dir);if(e.code==="KeyE"&&!e.repeat)usePotion(p1);if(e.code==="KeyQ"&&!e.repeat)useUtility(p1);if(e.code==="KeyR"&&!e.repeat)useTeleport(p1);if(e.code==="KeyC"&&!e.repeat)closeNearbyDoor(p1);if(e.code==="KeyB"&&!e.repeat)useBanishment(p1);if(p2&&e.code==="KeyO"&&!e.repeat)usePotion(p2)
 },{passive:false});

@@ -83,6 +83,7 @@ jobs:
           node arcade/lost-sizzler/tests/browser/v10-41-r46-release-candidate-polish.mjs
           node arcade/lost-sizzler/tests/browser/v10-41-r47-all-mode-optimisation.mjs
           node arcade/lost-sizzler/tests/browser/v10-41-r57-locked-chest-keys.mjs
+          node arcade/lost-sizzler/tests/browser/v10-41-r59-live-regression-fixes.mjs
 
   structure:
     runs-on: ubuntu-latest
