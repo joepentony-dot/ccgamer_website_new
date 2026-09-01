@@ -1,5 +1,5 @@
 {
-  "gameCount": 655,
+  "gameCount": 656,
   "yearHub": "/games/years/",
   "platformHub": "/games/platforms/",
   "years": [
@@ -45,8 +45,8 @@
     },
     {
       "year": 1987,
-      "count": 86,
-      "c64Count": 84,
+      "count": 87,
+      "c64Count": 85,
       "amigaCount": 2,
       "indexable": true,
       "url": "/games/years/1987/"
@@ -128,7 +128,7 @@
     {
       "key": "c64",
       "name": "Commodore 64",
-      "count": 555,
+      "count": 556,
       "firstYear": 1982,
       "lastYear": 2023,
       "yearCount": 12,

@@ -4,7 +4,7 @@
 
 | Check | Count |
 |---|---:|
-| Game records scanned | **655** |
+| Game records scanned | **656** |
 | Credited composer entities | **270** |
 | Existing dedicated composer pages preserved | **20** |
 | Credited composers with an existing page | **20** |
@@ -12,7 +12,7 @@
 | Indexable generated routes | **63** |
 | Single-game generated noindex routes | **187** |
 | Total static composer routes | **270** |
-| Linked game-credit relationships | **574** |
+| Linked game-credit relationships | **575** |
 | Generated pages written in this run | **250** |
 | Stale generated pages removed | **0** |
 
@@ -27,8 +27,8 @@
 
 - Rob Hubbard: **32** games
 - David Whittaker: **22** games
+- Richard Joseph: **18** games
 - Martin Galway: **17** games
-- Richard Joseph: **17** games
 - Ben Daglish: **16** games
 - Fred Gray: **13** games
 - Allister Brimble: **12** games
