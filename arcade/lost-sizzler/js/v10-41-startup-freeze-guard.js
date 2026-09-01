@@ -10,7 +10,8 @@
   if(window.__CCG_LOST_SIZZLER_V141_STARTUP_FREEZE_GUARD__)return;
   window.__CCG_LOST_SIZZLER_V141_STARTUP_FREEZE_GUARD__=true;
 
-  const state={timer:0,hooked:false,observerArmed:false,bypassed:false,deferred:false,source:null,canvas:null};
+  const state={timer:0,hooked:false,observerArmed:false,bypassed:false,deferred:false,source:null,canvas:null,baseCommits:0};
+  let canonicalFinish=null;
 
   function pixelAssets(){
     try{return typeof lostSizzlerPixelAssets!=="undefined"?lostSizzlerPixelAssets:null}catch(_){return null}
@@ -63,7 +64,16 @@
     if(typeof current!=="function")return false;
     gate.finish=function finishV141StartupFreezeGuard(){
       markLegacyGutterHandled();
-      const result=current.apply(this,arguments);
+      // Commit the canonical release result before V10.36 performs any
+      // synchronous presentation/runtime work. The canonical finish only
+      // queues a pending launch with setTimeout(0), so V10.36 still completes
+      // in this same call stack before the queued game-mode click can execute.
+      // V10.36 will call the canonical finish again at the end of its wrapper;
+      // that second call is harmless because pendingId was already cleared.
+      let result;
+      if(typeof canonicalFinish==="function"&&canonicalFinish!==current){result=canonicalFinish.apply(this,arguments);state.baseCommits++}
+      else result=current.apply(this,arguments);
+      if(typeof canonicalFinish==="function"&&canonicalFinish!==current)current.apply(this,arguments);
       scheduleSafeGutter();
       return result;
     };
@@ -75,6 +85,7 @@
     const gate=window.CCGLostSizzlerReleaseGate;
     if(!gate||state.observerArmed)return Boolean(gate);
     let v136Hooked=Boolean(gate.__v136Hooked);
+    if(!v136Hooked&&typeof gate.finish==="function")canonicalFinish=gate.finish;
     try{
       Object.defineProperty(gate,"__v136Hooked",{
         configurable:true,
