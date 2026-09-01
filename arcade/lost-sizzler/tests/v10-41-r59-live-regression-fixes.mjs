@@ -20,13 +20,14 @@ assert.match(r27,/if\(code==="KeyF"\)/,"the historical r27 conflict must remain 
 assert.match(loader,/function detachLegacyR27KeyOwner\(\)/,"the live loader must explicitly retire the old r27 keyboard owner");
 assert.match(loader,/removeEventListener\("keydown",api\.onSpyKeyDown,true\)/,"the exact r27 capture listener must be removed without disabling its world-isolation timer");
 
-// TAB owns the private Spy field kit. Canonical game-main remains the sole F
-// fullscreen caller; the Spy loader only terminates retained compatibility paths.
-assert.match(gameMain,/if\(e\.code==="KeyF"\)\{toggleFullscreen\(\);return\}if\(e\.code==="Tab"/,"shared controls must retain canonical F fullscreen and TAB inventory semantics");
+// TAB owns the private Spy field kit. F is routed through one idempotent helper
+// so game-main and the Spy capture boundary cannot double-dispatch fullscreen.
+assert.match(gameMain,/if\(e\.code==="KeyF"\)\{[\s\S]*spyLoader\?\.handleSpyFullscreenKey\?\.\(e\)[\s\S]*toggleFullscreen\(\);return[\s\S]*\}/,"shared controls must delegate Spy F to the idempotent owner while preserving ordinary fullscreen fallback");
 assert.match(loader,/if\(code==="Tab"\)[\s\S]*stopImmediatePropagation[\s\S]*toggleSpyInventoryFromTab\(\)/,"Spy TAB must be synchronously captured by the loader and bridged to the private Spy inventory owner");
 assert.match(loader,/owner\.setInventory\(!Boolean\(owner\.state\?\.inventoryOpen\)\)/,"TAB must toggle the r32 private Spy field kit rather than the shared Dungeon inventory mode");
-assert.match(loader,/if\(code==="KeyF"\)[\s\S]*stopImmediatePropagation[\s\S]*state\.fullscreenKeyGuards\+\+/,"Spy F must terminate later compatibility handlers after the canonical fullscreen owner runs");
-assert.doesNotMatch(loader,/if\(code==="KeyF"\)[\s\S]{0,220}toggleFullscreen\(\)/,"the Spy loader must not issue a second fullscreen command");
+assert.match(loader,/const fullscreenEvents=new WeakSet\(\)/,"Spy F must track each keyboard event by identity instead of listener order");
+assert.match(loader,/function handleSpyFullscreenKey\(event\)[\s\S]*fullscreenEvents\.has\(event\)[\s\S]*fullscreenEvents\.add\(event\)[\s\S]*toggleFullscreen\(\);state\.fullscreenKeyCalls\+\+/,"Spy F must issue one fullscreen command and suppress duplicate handling of the same event");
+assert.match(loader,/if\(code==="KeyF"\)\{handleSpyFullscreenKey\(event\);return\}/,"the capture listener must use the same idempotent F owner as game-main");
 assert.match(loader,/repairFieldKitLabels\(\)/,"stale r27 F FIELD KIT labels must be corrected after its retained HUD render pass");
 assert.match(loader,/TAB FIELD KIT/,"live Spy UI repair must advertise TAB FIELD KIT");
 
@@ -56,4 +57,4 @@ assert.match(r59,/catch\(error\)\{noteFault\("update",error\)\}/,"the R59 update
 assert.match(r59,/api\.patchInputOwnership\?\.\(\);api\.patchSaboteurRules\?\.\(\)/,"r59 must reassert r58 input and Saboteur rules while Spy is active");
 assert.match(r59,/if\(api\.tick\?\.\(\)\)/,"r59 must keep the r58 live state reconciled after older compatibility monitors run");
 
-console.log("Lost Sizzler V10.41 r59 pause-clock, R29 diagnostics, TAB field-kit, canonical F fullscreen and r58 ownership regressions passed.");
+console.log("Lost Sizzler V10.41 r59 pause-clock, R29 diagnostics, TAB field-kit, idempotent F fullscreen and r58 ownership regressions passed.");
