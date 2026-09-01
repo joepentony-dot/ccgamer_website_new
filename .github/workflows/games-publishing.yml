@@ -139,13 +139,10 @@ jobs:
       - name: Repair historical Ruff N Tumble source
         run: node scripts/migrate-ruff-n-tumble-thumbnail.js
 
-      - name: Cache required Lemon magazine sources
+      - name: Import cached and curated magazine reviews
         run: |
-          node scripts/refresh-lemon-game-cache.js --base HEAD^
-          node scripts/refresh-lemon-game-cache.js --check --base HEAD^
-
-      - name: Import Lemon magazine reviews
-        run: node scripts/import-amiga-magazine-reviews.js
+          echo "[games-publishing] Importing locally cached and curated magazine metadata. External Lemon availability is not a publishing prerequisite."
+          node scripts/import-amiga-magazine-reviews.js
 
       - name: Sync verified YouTube metadata
         env:
@@ -232,7 +229,7 @@ jobs:
             --base main \
             --head "$OUTPUT_BRANCH" \
             --title "Publish generated game archive output" \
-            --body "Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, required Lemon magazine-source coverage, magazine-review import, YouTube metadata sync, publisher generation, manual-viewer materialization, download-index validation, video-library generation, sitemap checks, SEO validation, canonical shared-header validation and protected-file checks all passed before this PR was created. Any historical game-source migration is applied before the protected hashes are recorded.")
+            --body "Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, locally cached/curated magazine-review import, YouTube metadata sync, publisher generation, manual-viewer materialization, download-index validation, video-library generation, sitemap checks, SEO validation, canonical shared-header validation and protected-file checks all passed before this PR was created. External Lemon64/Lemon Amiga availability is optional and cannot block publishing. Any historical game-source migration is applied before the protected hashes are recorded.")
 
           echo "Created generated-output PR: $PR_URL"
           gh pr merge "$PR_URL" \
