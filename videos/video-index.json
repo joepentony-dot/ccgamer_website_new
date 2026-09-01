@@ -1,10 +1,10 @@
 {
   "version": 1,
   "counts": {
-    "total": 689,
-    "gameVideos": 655,
+    "total": 690,
+    "gameVideos": 656,
     "retroVideos": 34,
-    "c64GameVideos": 555,
+    "c64GameVideos": 556,
     "amigaGameVideos": 100
   },
   "items": [
@@ -8985,6 +8985,19 @@
       "year": "",
       "publisher": "",
       "collectionLabel": "Amiga Demo Music"
+    },
+    {
+      "id": "zqqIctCq73o",
+      "kind": "game",
+      "filter": "c64",
+      "badge": "C64 Game",
+      "title": "Stifflip & Co.",
+      "description": "Stifflip & Co is a distinctive 1987 Commodore 64 graphic adventure from Palace Software and Binary Vision, mixing comic-strip presentation, icon-driven controls, puzzle solving and eccentri…",
+      "url": "/games/stifflip-and-co/",
+      "thumbnail": "https://i.ytimg.com/vi/zqqIctCq73o/hqdefault.jpg",
+      "platform": "Commodore 64",
+      "year": 1987,
+      "publisher": "Palace Software"
     },
     {
       "id": "ght7u1k_tqw",
