@@ -27,6 +27,12 @@ async function waitReady(page){
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R43SoloSave)&&Boolean(window.CCGLostSizzlerV141R44SoloCloudSave)&&Boolean(document.getElementById("solo-btn")),null,{timeout:90000});
 }
 
+async function settleRealAuthBootstrap(page){
+  await page.evaluate(()=>window.CCGLostSizzlerV141R44SoloCloudSave.refreshAuthAndSync());
+  await page.waitForFunction(()=>!window.CCGLostSizzlerV141R44SoloCloudSave?.state?.syncPromise,null,{timeout:10000});
+  await page.waitForTimeout(120);
+}
+
 async function installMock(page,{user=USER_A,rows={}}={}){
   await page.evaluate(({user,rows})=>{
     const copy=value=>value==null?value:JSON.parse(JSON.stringify(value));
@@ -57,6 +63,7 @@ try{
   console.log("[r44 cloud] load canonical page and install authenticated Supabase mock");
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await waitReady(page);
+  await settleRealAuthBootstrap(page);
   await installMock(page,{user:USER_A});
   const clean=await page.evaluate(async()=>{
     const r43=window.CCGLostSizzlerV141R43SoloSave,r44=window.CCGLostSizzlerV141R44SoloCloudSave;
@@ -93,6 +100,7 @@ try{
   },{primary:"ccg-lost-sizzler-solo-save-v2",backup:"ccg-lost-sizzler-solo-save-v2-backup",meta:"ccg-lost-sizzler-solo-cloud-sync-v1"});
   await page.reload({waitUntil:"domcontentloaded"});
   await waitReady(page);
+  await settleRealAuthBootstrap(page);
   await installMock(page,{user:USER_A,rows:{[USER_A]:upload.row}});
   const restoredSync=await page.evaluate(()=>window.CCGLostSizzlerV141R44SoloCloudSave.refreshAuthAndSync());
   assert.equal(restoredSync.signedIn,true,"fresh page must resolve the authenticated account");
