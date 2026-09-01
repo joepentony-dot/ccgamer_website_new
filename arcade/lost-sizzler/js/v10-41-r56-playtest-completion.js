@@ -69,6 +69,14 @@
     if(!trap?.active)return false;
     try{return typeof SYS!=="undefined"&&typeof SYS?.trapActive==="function"?Boolean(SYS.trapActive(trap,now)):true}catch(_){return true}
   }
+  function rearmCanonicalTrapContact(player,trap){
+    const contact=window.CCGLostSizzlerRareEventsBalance?.trapRuntime?.contact;
+    if(!contact?.delete)return false;
+    const playerId=String(player?.id||player?.name||"player"),trapId=String(trap?.id||`${trap?.x},${trap?.y}`),suffix=`|${playerId}|${trapId}`;
+    let removed=false;
+    for(const key of [...contact])if(String(key).endsWith(suffix)){contact.delete(key);removed=true}
+    return removed
+  }
   function trapCycleTick(){
     if(!ordinaryDungeon()||typeof triggerTrap!=="function")return false;
     let players=[];try{players=typeof localPlayers==="function"?localPlayers():[p1,p2].filter(Boolean)}catch(_){return false}
@@ -81,7 +89,7 @@
           const before=durability(p);state.trapCycles.set(key,true);
           try{triggerTrap(p)}catch(error){console.warn("[Lost Sizzler r56] trap trigger recovery failed",error)}
           if(durability(p)<before)state.trapHits++
-        }else if(!active&&was)state.trapCycles.set(key,false)
+        }else if(!active&&was){state.trapCycles.set(key,false);rearmCanonicalTrapContact(p,t)}
       }
     }
     for(const key of [...state.trapCycles.keys()])if(!liveKeys.has(key))state.trapCycles.delete(key);
