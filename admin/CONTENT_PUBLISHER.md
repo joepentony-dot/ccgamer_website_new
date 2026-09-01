@@ -23,10 +23,11 @@ The game form collects the authoritative fields used by `games/games.json`:
 - description and CCG rating
 - YouTube URL / ID
 - thumbnail path and optional local thumbnail upload
-- manual/PDF and disk URLs
-- Lemon64 URL
-- music filenames
+- manual/PDF and authorised disk URLs
+- optional direct Zzap!64 review URL
 - publisher/developer/programmer/graphics/musician/producer/re-release credits
+
+Lemon64 and Lemon Amiga are no longer required publishing inputs. Historical locally cached Lemon metadata remains usable, but an external Lemon page being unavailable, Cloudflare-protected or absent cannot block a new game. Curated magazine records and official Zzap!64 sources are stored independently in the repository.
 
 The publisher refreshes the current GitHub `games/games.json` immediately before writing, rejects duplicate slug/ID values, rejects thumbnail path collisions and creates an atomic Git commit containing:
 
@@ -37,7 +38,7 @@ It does **not** write generated game pages or sitemap files itself.
 
 After a direct main commit, the existing workflows handle the rest:
 
-1. Reliable Games Publishing rebuilds canonical game routes, archives, search/index data and normal sitemap coverage.
+1. Reliable Games Publishing imports locally cached/curated magazine metadata and rebuilds canonical game routes, archives, search/index data and normal sitemap coverage.
 2. SEO Automation securely refreshes verified YouTube metadata.
 3. Video SEO generates verified `VideoObject` data where YouTube supplies an upload date.
 4. The Video Library and video sitemaps are regenerated.
