@@ -33,7 +33,7 @@
     timer:0,installed:false,rulesPatched:false,inputPatched:false,wasSpy:false,matchKey:"",lastTickAt:0,
     trapKeyPasses:0,trapPlacementsObserved:0,ownerTrapIgnores:0,trapKills:0,combatKills:0,timePenalties:0,
     lootTransfers:0,respawns:0,soloPurges:0,soloObjectsRemoved:0,clockCompletions:0,extractions:0,
-    inheritedClockPreserves:0,furnitureTrapRoutes:0,deathSerial:0,seenDeaths:new Map(),lastError:""
+    inheritedClockPreserves:0,furnitureTrapRoutes:0,legacyKnockoutAdoptions:0,deathSerial:0,seenDeaths:new Map(),lastError:""
   };
 
   let nativeStopImmediate=null;
@@ -133,13 +133,17 @@
     if(victim.timeRemainingMs<=0){const winner=opponentFor(m,victim.id);completeMatch(m,winner?.id||null,at,"timer",victim.id)}return true
   }
 
+  function adoptLegacyKnockoutCounter(){
+    try{const legacy=window.CCGLostSizzlerV141R35SpyRulesHardening?.state;if(!legacy)return false;legacy.knockoutsProcessed=Math.max(0,Number(legacy.knockoutsProcessed||0))+1;state.legacyKnockoutAdoptions++;return true}catch(_){return false}
+  }
+
   function killAgent(m,victimId,killerId,at,{kind="combat",trapId="",trapName=""}={}){
     const victim=modelFor(m,victimId),killer=modelFor(m,killerId);if(!m||!victim||victim.status!=="active"||m.state==="match-complete")return false;
     const deathRoom=String(victim.roomId||"");if(killer&&String(killer.id)!==String(victim.id))transferAllCarried(victim,killer);
     victim.hp=0;victim.status="ghost";victim.invulnerableUntil=Number.MAX_SAFE_INTEGER;victim.r58DeathRoomId=deathRoom;victim.r58RespawnAt=at+RESPAWN_BEAT_MS;victim.respawnAt=at+LEGACY_GHOST_MARKER_MS;victim.ghostUntil=at+LEGACY_GHOST_MARKER_MS;
     const serial=++state.deathSerial;victim.r58Death={serial,kind,trapId,trapName,killerId:killer?.id||null,deathRoomId:deathRoom,at,respawnAt:victim.r58RespawnAt};
     penaliseClock(m,victim,at);if(killer&&String(killer.id)!==String(victim.id))killer.knockouts=Math.max(0,Number(killer.knockouts||0))+1;
-    m.events?.push?.({type:"spy-r58-death",playerId:victim.id,victimId:victim.id,attackerId:killer?.id||null,ownerId:killer?.id||null,kind,trapId,trapType:trapId,deathSerial:serial,penaltyMs:DEATH_PENALTY_MS,at});
+    m.events?.push?.({type:"spy-r58-death",playerId:victim.id,victimId:victim.id,attackerId:killer?.id||null,ownerId:killer?.id||null,kind,trapId,trapType:trapId,deathSerial:serial,penaltyMs:DEATH_PENALTY_MS,at});adoptLegacyKnockoutCounter();
     if(kind==="trap")state.trapKills++;else state.combatKills++;return true
   }
 
