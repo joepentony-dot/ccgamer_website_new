@@ -251,7 +251,7 @@
   function repairSpySwordRange(){
     if(!spyActive())return false;let changed=false;
     const lives=[];try{if(p1)lives.push(p1);for(const model of spyMatch()?.players||[]){const live=spyLiveFor(model.id);if(live&&!lives.includes(live))lives.push(live)}}catch(_){}
-    for(const player of lives){if(spySwordAllowedFor(player))continue;if(Number(player?._meleeSwingAt||0)>0){player._meleeSwingAt=-Infinity;player._meleeSwingMs=0;delete player._meleeSwingDir;state.spySwordSuppressions++;changed=true}}
+    for(const player of lives){const allowed=spySwordAllowedFor(player);if(Boolean(player._r57SpySwordDisabled)===!allowed)continue;player._r57SpySwordDisabled=!allowed;if(!allowed)state.spySwordSuppressions++;changed=true}
     return changed
   }
 
