@@ -41,7 +41,7 @@
       #quick-slots .quick-slot{position:relative!important;padding-top:3px!important}
       #quick-slots .quick-slot .r56-quick-slot-icon{position:absolute!important;left:50%!important;top:4px!important;transform:translateX(-50%)!important;width:22px!important;height:22px!important;display:grid!important;place-items:center!important;pointer-events:none!important;z-index:3!important}
       #quick-slots .quick-slot .r56-quick-slot-icon .item-svg-wrap{width:22px!important;height:22px!important;display:grid!important;place-items:center!important;border:0!important;background:transparent!important;padding:0!important}
-      #quick-slots .quick-slot .r56-quick-slot-icon svg{width:20px!important;height:20px!important;display:block!important;filter:drop-shadow(0 0 3px currentColor)!important}
+      #quick-slots .quick-slot .r56-quick-slot-icon svg,#quick-slots .quick-slot .r56-quick-slot-icon img.item-art{width:20px!important;height:20px!important;max-width:20px!important;max-height:20px!important;display:block!important;object-fit:contain!important;filter:drop-shadow(0 0 3px currentColor)!important}
       #quick-slots .quick-slot .stack-name{left:2px!important;right:2px!important;bottom:1px!important;padding:0 2px!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;font-size:5px!important;z-index:4!important}
       #quick-slots .quick-slot .stack-count{z-index:6!important}
       #quick-slots .quick-slot.r56-has-icon .stack-name{background:rgba(3,2,5,.78)!important}
@@ -204,7 +204,7 @@
       if(!item){existing?.remove();slot.classList.remove("r56-has-icon");delete slot.dataset.r56IconKind;return}
       const kind=String(item.kind||"loot"),label=String(PGR?.inventoryLabel?.(item)||item.name||kind);
       let icon=existing;if(!icon){icon=document.createElement("span");icon.className="r56-quick-slot-icon";slot.appendChild(icon)}
-      if(slot.dataset.r56IconKind!==kind||!icon.querySelector("svg")){try{icon.innerHTML=typeof itemIconSVG==="function"?itemIconSVG(kind,label):""}catch(_){icon.innerHTML=""};slot.dataset.r56IconKind=kind}
+      if(slot.dataset.r56IconKind!==kind||!icon.querySelector("svg,img.item-art")){try{icon.innerHTML=typeof itemIconSVG==="function"?itemIconSVG(kind,label):""}catch(_){icon.innerHTML=""};slot.dataset.r56IconKind=kind}
       slot.classList.add("r56-has-icon");
     });
     state.quickIconPasses++;return true
