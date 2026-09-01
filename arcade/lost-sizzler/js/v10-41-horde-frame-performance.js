@@ -17,7 +17,8 @@
     radarWrapped:false,radarSource:null,lastRadarAt:0,radarDraws:0,radarSkips:0,
     statusTimer:0,modeObserver:null,lastStatusSignature:"",statusRenders:0,statusStarts:0,statusStops:0,
     firstWavePrewarmStarted:false,firstWavePrewarmReady:false,firstWavePrewarmPromise:null,laterPrewarmStarted:false,imageDecodes:0,prewarmErrors:0,
-    r60Loader:null,r60Ready:false,r60Loads:0,r60Errors:0,r60LiveTimer:0,r60LiveMonitorStops:0,r60LiveOwnerInstalls:0,r60LiveOwnerDeferrals:0,r60LiveOwnerErrors:0
+    r60Loader:null,r60Ready:false,r60Loads:0,r60Errors:0,r60LiveTimer:0,r60LiveMonitorStops:0,r60LiveOwnerInstalls:0,r60LiveOwnerDeferrals:0,r60LiveOwnerErrors:0,
+    r60HordeLiveOwner:null,r60HordeLiveOwnerInstalls:0,r60HordeLiveOwnerReassertions:0,r60HordeLiveOwnerErrors:0
   };
 
   const special=()=>{try{return window.CCGLostSizzlerSpecialModes?.active||null}catch(_){return null}};
@@ -30,6 +31,44 @@
     if(!live?.state)return false;
     if(live.state.timer){clearInterval(live.state.timer);live.state.timer=0;state.r60LiveMonitorStops++}
     return true
+  }
+
+  function originalChainContains(fn,target){
+    if(typeof fn!=="function"||typeof target!=="function")return false;
+    const seen=new Set();let current=fn,depth=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth++<24){
+      if(current===target)return true;
+      seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null
+    }
+    return false
+  }
+
+  function unwrapR60LiveSource(fn){
+    if(typeof fn!=="function")return null;
+    const seen=new Set();let current=fn,depth=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth++<24&&current.__ccgV141R60RealElapsed===true&&typeof current.__ccgOriginal==="function"){
+      seen.add(current);current=current.__ccgOriginal
+    }
+    return typeof current==="function"?current:null
+  }
+
+  function maintainR60HordeLiveOwner(){
+    const timing=window.CCGLostSizzlerV141R60HordeCombatIntegrity,live=window.CCGLostSizzlerV138;
+    if(!isHorde()||!timing?.state||!live||typeof live.updateHordeLive!=="function")return false;
+    const current=live.updateHordeLive;
+    if(current===state.r60HordeLiveOwner||originalChainContains(current,state.r60HordeLiveOwner))return true;
+    const source=unwrapR60LiveSource(current);if(typeof source!=="function")return false;
+    try{
+      const wrapped=function updateHordeLiveV141R60FinalOwner(dt){
+        const active=isHorde(),timingState=timing.state,elapsed=active&&Number(timingState?.currentElapsed||0)>0?Number(timingState.currentElapsed):Number(dt)||0;
+        if(active)timingState.liveElapsedFrames=Number(timingState.liveElapsedFrames||0)+1;
+        return source.call(this,elapsed)
+      };
+      wrapped.__ccgV141R60RealElapsed=true;wrapped.__ccgV141R60FinalLiveOwner=true;wrapped.__ccgOriginal=source;
+      const replacing=typeof state.r60HordeLiveOwner==="function";
+      state.r60HordeLiveOwner=wrapped;live.updateHordeLive=wrapped;state.r60HordeLiveOwnerInstalls++;if(replacing)state.r60HordeLiveOwnerReassertions++;
+      return true
+    }catch(_){state.r60HordeLiveOwnerErrors++;return false}
   }
 
   function r60LiveOwnerSafe(){
@@ -55,13 +94,19 @@
     }catch(_){state.r60LiveOwnerErrors++;return false}
   }
 
+  function maintainR60Owners(){
+    stopUnsafeR60LiveMonitor();
+    if(isHorde())return maintainR60HordeLiveOwner();
+    return maintainR60LiveOwner()
+  }
+
   function startR60LiveOwnerTimer(){
-    if(!window.CCGLostSizzlerV141R60LivePlayIntegrity)return false;
+    if(!window.CCGLostSizzlerV141R60LivePlayIntegrity||!window.CCGLostSizzlerV141R60HordeCombatIntegrity)return false;
     stopUnsafeR60LiveMonitor();
     if(!state.r60LiveTimer){
-      state.r60LiveTimer=setInterval(()=>{try{maintainR60LiveOwner()}catch(_){state.r60LiveOwnerErrors++}},R60_OWNER_MS)
+      state.r60LiveTimer=setInterval(()=>{try{maintainR60Owners()}catch(_){state.r60LiveOwnerErrors++}},R60_OWNER_MS)
     }
-    maintainR60LiveOwner();return true
+    maintainR60Owners();return true
   }
 
   function ensureR60(){
@@ -218,7 +263,7 @@
 
   window.CCGLostSizzlerV141HordeFramePerformance={
     RADAR_REFRESH_MS,STATUS_REFRESH_MS,R60_OWNER_MS,FIRST_WAVE_TRACK,LATER_TRACKS,R60_SRC,prewarmFirstWave,prewarmLaterWaves,decodeKnownImages,ensureR60,
-    stopUnsafeR60LiveMonitor,r60LiveOwnerSafe,maintainR60LiveOwner,startR60LiveOwnerTimer,
+    stopUnsafeR60LiveMonitor,originalChainContains,unwrapR60LiveSource,maintainR60HordeLiveOwner,r60LiveOwnerSafe,maintainR60LiveOwner,maintainR60Owners,startR60LiveOwnerTimer,
     installRadarThrottle,ensureStatusStrip,updateStatus,startStatusTimer,stopStatusTimer,syncStatusTimer,installModeObserver,remaining,get state(){return state}
   };
 })();
