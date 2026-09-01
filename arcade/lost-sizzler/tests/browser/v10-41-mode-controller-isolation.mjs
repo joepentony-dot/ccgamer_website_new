@@ -33,9 +33,10 @@ try{
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerModeRuntime));
-  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerModeRuntime?.ownedSystemState?.("updateCamping")?.installed));
+  const ownedGateNames=["updateCamping","updateHazards","updateDedicatedHazards","updateGenerators","updateArena","updateTimed","updateBoulder","updateMemoryPuzzle","updateRescue","updateBanishment","updateStalker","updateFloorObjective","updateAlert","updateRoomEvents","triggerTrap","triggerArena","triggerTimed","triggerBoulder","tryChest"];
+  await page.waitForFunction(names=>names.every(name=>Boolean(window.CCGLostSizzlerModeRuntime?.ownedSystemState?.(name)?.installed)),ownedGateNames);
 
-  const contract=await page.evaluate(()=>{
+  const contract=await page.evaluate(gateNames=>{
     const api=window.CCGLostSizzlerModeRuntime,ids=api.IDS,profiles=api.PROFILES;
     return{
       ids:Object.values(ids),
@@ -46,9 +47,9 @@ try{
       dungeonInteractions:[profiles[ids.DUNGEON_SOLO].dungeonInteractions,profiles[ids.DUNGEON_ONLINE].dungeonInteractions,profiles[ids.SPLIT_SCREEN].dungeonInteractions],
       specialCaps:[profiles[ids.HORDE_SOLO].dungeonSystems,profiles[ids.HORDE_ONLINE].dungeonSystems,profiles[ids.SPY_ONLINE].dungeonSystems],
       specialInteractions:[profiles[ids.HORDE_SOLO].dungeonInteractions,profiles[ids.HORDE_ONLINE].dungeonInteractions,profiles[ids.SPY_ONLINE].dungeonInteractions],
-      gates:["updateCamping","updateHazards","updateDedicatedHazards","updateGenerators","updateArena","updateTimed","updateBoulder","updateMemoryPuzzle","updateRescue","updateBanishment","updateStalker","updateFloorObjective","updateAlert","updateRoomEvents","triggerTrap","triggerArena","triggerTimed","triggerBoulder","tryChest"].map(name=>({name,state:api.ownedSystemState(name)}))
+      gates:gateNames.map(name=>({name,state:api.ownedSystemState(name)}))
     };
-  });
+  },ownedGateNames);
   assert.deepEqual(contract.ids.sort(),["dungeon-online","dungeon-solo","horde-online","horde-solo","split-screen","spy-online"].sort(),"the runtime must expose exactly six isolated mode controllers");
   assert.equal(contract.profileCount,6,"each mode must have its own capability profile");
   assert.equal(contract.uniqueStateCount,6,"each mode controller must own a distinct state object");
