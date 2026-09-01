@@ -216,7 +216,7 @@
       state.resumes++;state.lastError="";
       try{showToast("SAVED RUN RESTORED",`Floor ${run.floor}: ${PGR.floorInfo(run).name}. Resumed safely from the floor entrance.`,"green",9000)}catch(_){}
       sync();ensurePauseButton();return true
-    }catch(error){state.lastError=String(error?.message||error);try{console.warn("[Lost Sizzler r43] Solo resume failed safely",error)}catch(_){};return false
+    }catch(error){state.lastError=String(error?.message||error);try{console.warn("[Lost Sizzler r43] Solo resume failed safely",error)}catch(_){};return false}
   }
 
   function interceptContinue(event){
