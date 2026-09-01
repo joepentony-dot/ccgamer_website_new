@@ -171,8 +171,8 @@
         link.href = href;
         link.target = "_blank";
         link.rel = "nofollow sponsored noopener";
-        link.setAttribute("data-ccg-affiliate-link", "amazon");
-        link.setAttribute("data-ccg-revenue-link", "amazon-affiliate");
+        link.setAttribute("data-ccg-affiliate-link", "amazon-associates-2026");
+        link.setAttribute("data-ccg-revenue-link", "amazon-associates-2026");
         link.setAttribute("aria-label", `${getProductButtonText(product)} - ${toSafeString(product?.title)} (affiliate link)`);
         link.textContent = getProductButtonText(product);
         return link;
@@ -444,11 +444,12 @@
         window.setTimeout(renderAll, 0);
     }
 
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", scheduleRender, { once: true });
-    } else {
+    if (document.readyState === "complete") {
         scheduleRender();
+    } else {
+        document.addEventListener("DOMContentLoaded", scheduleRender, { once: true });
     }
 
+    window.addEventListener("load", scheduleRender, { once: true });
     window.addEventListener("ccg:game-loaded", scheduleRender);
 })();
