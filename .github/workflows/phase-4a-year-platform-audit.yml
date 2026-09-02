@@ -11,6 +11,7 @@ on:
       - "games/**/*.html"
       - "js/**/*.js"
       - "scripts/phase4a_year_platform_audit.py"
+      - "scripts/stabilize-phase4a-report.py"
       - "sitemap*.xml"
       - "tools/seo/static-pages.json"
       - ".github/workflows/phase-4a-year-platform-audit.yml"
@@ -25,6 +26,7 @@ on:
       - "games/**/*.html"
       - "js/**/*.js"
       - "scripts/phase4a_year_platform_audit.py"
+      - "scripts/stabilize-phase4a-report.py"
       - "sitemap*.xml"
       - "tools/seo/static-pages.json"
       - ".github/workflows/phase-4a-year-platform-audit.yml"
@@ -64,10 +66,20 @@ jobs:
           sha256sum index.html home.html resources/css/intro.css js/index-intro.js games/games.json > /tmp/phase4a-protected.sha256
 
       - name: Validate audit syntax
-        run: python -m py_compile scripts/phase4a_year_platform_audit.py
+        run: |
+          python -m py_compile scripts/phase4a_year_platform_audit.py
+          python -m py_compile scripts/stabilize-phase4a-report.py
 
       - name: Run read-only archive audit
         run: python scripts/phase4a_year_platform_audit.py
+
+      - name: Stabilize audit artifact ordering
+        shell: bash
+        run: |
+          python scripts/stabilize-phase4a-report.py
+          cp docs/seo-baseline/phase-4a-year-platform-archives.json /tmp/phase4a-stable-report.json
+          python scripts/stabilize-phase4a-report.py
+          cmp /tmp/phase4a-stable-report.json docs/seo-baseline/phase-4a-year-platform-archives.json
 
       - name: Verify audit results
         run: |
@@ -92,6 +104,14 @@ jobs:
               problems.append("Missing year-route recommendation list")
           if not Path("docs/seo-baseline/phase-4a-year-platform-archives.md").exists():
               problems.append("Markdown audit report is missing")
+
+          sources = data.get("links", {}).get("top_static_link_sources", {})
+          expected_sources = dict(sorted(
+              sources.items(),
+              key=lambda item: (-int(item[1]), str(item[0])),
+          ))
+          if sources != expected_sources:
+              problems.append("Top static link sources are not deterministically ordered")
 
           if problems:
               raise SystemExit("\n".join(problems))
