@@ -95,19 +95,33 @@ try{
   // Confirm ordinary keyboard input reaches the real firearm path after descent
   // and black-frame recovery. The deterministic Pulse Blaster fixture avoids a
   // random Floor 2 sword/melee loadout making ammunition an invalid assertion.
+  // Record the live projectile/cooldown synchronously at spawn time because both
+  // are intentionally transient and can expire before Playwright's next poll on
+  // a busy CI runner.
   const attackBefore=await page.evaluate(()=>{
     p1.mana=50;p1.health=Math.max(3,Number(p1.maxHealth)||3);p1.hitStunMs=0;
     if("controlLocked" in p1)p1.controlLocked=false;if("controlsLocked" in p1)p1.controlsLocked=false;
     p1.firearmUnlocked=true;p1.weapon={id:"pulse",name:"Pulse Blaster",displayName:"Pulse Blaster",element:"energy",power:1,delay:1,shots:1,ammo:1};
     fire1=0;fireBuffer1=0;bullets.length=0;for(const enemy of host.enemies||[]){enemy.alive=false;enemy.active=false}
+    const originalSpawn=window.spawnBullet;
+    window.__ccgR42AttackProbe={shots:0,fireMax:0,bulletMax:0,originalSpawn};
+    window.spawnBullet=function(){
+      const result=originalSpawn.apply(this,arguments),probe=window.__ccgR42AttackProbe;
+      probe.shots++;probe.fireMax=Math.max(probe.fireMax,Number(fire1||0));probe.bulletMax=Math.max(probe.bulletMax,Number(bullets.length||0));
+      return result
+    };
     try{canvas.focus({preventScroll:true})}catch(_){}
     return{mana:Number(p1.mana),bullets:bullets.length}
   });
   await page.keyboard.press("Space");
-  await page.waitForFunction(before=>Number(p1?.mana)<before.mana||bullets.length>before.bullets,attackBefore,{timeout:10000});
-  const attack=await page.evaluate(()=>({mana:Number(p1.mana),bullets:bullets.length,mode,fire:Number(fire1),intents:window.CCGLostSizzlerV141R42SoloLiveRecovery.state.attackIntents}));
+  await page.waitForFunction(before=>Number(p1?.mana)<before.mana&&Number(window.__ccgR42AttackProbe?.shots||0)>0,attackBefore,{timeout:10000});
+  const attack=await page.evaluate(()=>{
+    const probe=window.__ccgR42AttackProbe||{},originalSpawn=probe.originalSpawn;
+    const result={mana:Number(p1.mana),bullets:bullets.length,mode,fire:Number(fire1),intents:window.CCGLostSizzlerV141R42SoloLiveRecovery.state.attackIntents,shots:Number(probe.shots||0),fireObserved:Number(probe.fireMax||0),bulletObserved:Number(probe.bulletMax||0)};
+    if(typeof originalSpawn==="function")window.spawnBullet=originalSpawn;delete window.__ccgR42AttackProbe;return result
+  });
   assert.ok(attack.mana<attackBefore.mana,"real Space input must consume ammunition through the firearm path after Floor 2 recovery");
-  assert.ok(attack.bullets>attackBefore.bullets||attack.fire>0,"real Space input must create a live shot/cooldown state");
+  assert.ok(attack.shots>=1&&attack.fireObserved>0&&attack.bulletObserved>attackBefore.bullets,`real Space input must create a live projectile/cooldown state: ${JSON.stringify(attack)}`);
   assert.equal(attack.mode,"playing","successful post-transition attack must remain in live play");
   assert.ok(attack.intents>=1,"r42 must observe real attack intent without synthesizing the shot");
 
