@@ -70,14 +70,8 @@ try{
   await page.evaluate(()=>{
     window.__r43StalledUntrackCalls=0;
     window.__r43UnexpectedRemoveCalls=0;
-    const staleChannel={
-      untrack(){window.__r43StalledUntrackCalls++;return new Promise(()=>{})}
-    };
-    const staleClient={
-      removeChannel(){window.__r43UnexpectedRemoveCalls++;return Promise.resolve()}
-    };
-    net.channel=staleChannel;
-    net.client=staleClient;
+    net.channel={untrack(){window.__r43StalledUntrackCalls++;return new Promise(()=>{})}};
+    net.client={removeChannel(){window.__r43UnexpectedRemoveCalls++;return Promise.resolve()}};
   });
 
   const beforeContinue=await page.evaluate(()=>{
@@ -93,10 +87,14 @@ try{
   assert.equal(beforeContinue.clientPresent,true,"LS-SOLO-008 regression requires a stale remote client before Continue");
 
   await page.click("#continue-save-btn");
-  let resumed=false;
+  let resumed=false,remoteCleanup={stalledUntrackCalls:0,unexpectedRemoveCalls:0};
   try{
     await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&run?.floor===1&&Boolean(world)&&Boolean(host)&&Boolean(p1),null,{timeout:3000});
     resumed=true;
+    remoteCleanup=await page.evaluate(()=>({
+      stalledUntrackCalls:Number(window.__r43StalledUntrackCalls||0),
+      unexpectedRemoveCalls:Number(window.__r43UnexpectedRemoveCalls||0)
+    }));
   }finally{
     await page.evaluate(()=>{delete window.__r43StalledUntrackCalls;delete window.__r43UnexpectedRemoveCalls});
   }
@@ -112,14 +110,12 @@ try{
       memberCount:Number(net?.members?.size||0)
     };
   });
-  const remoteCleanup=await page.evaluate(()=>({
-    stalledUntrackCalls:Number(window.__r43StalledUntrackCalls||0),
-    unexpectedRemoveCalls:Number(window.__r43UnexpectedRemoveCalls||0)
-  })).catch(()=>({stalledUntrackCalls:0,unexpectedRemoveCalls:0}));
 
   const diagnostic={beforeQuit,afterQuit,beforeContinue,restored,remoteCleanup};
   assert.equal(afterQuit.envelopeSeed,beforeQuit.envelopeSeed,`Save & Quit must preserve the captured floor-entry seed: ${JSON.stringify(diagnostic)}`);
   assert.equal(beforeContinue.envelopeSeed,afterQuit.envelopeSeed,`the saved envelope must remain stable before Continue: ${JSON.stringify(diagnostic)}`);
+  assert.ok(remoteCleanup.stalledUntrackCalls>=1,`the regression must prove that real leave() reached a remote untrack promise that remained stalled: ${JSON.stringify(diagnostic)}`);
+  assert.equal(remoteCleanup.unexpectedRemoveCalls,0,`removeChannel must remain unreachable while the preceding untrack promise is stalled: ${JSON.stringify(diagnostic)}`);
   assert.equal(restored.seed,afterQuit.envelopeSeed,`stalled-cleanup recovery must restore the Save & Quit envelope seed: ${JSON.stringify(diagnostic)}`);
   assert.equal(restored.entrySeed,afterQuit.envelopeSeed,`r43 entry checkpoint must match the restored Save & Quit seed: ${JSON.stringify(diagnostic)}`);
   assert.equal(restored.envelopeSeed,afterQuit.envelopeSeed,`Continue must not replace the saved envelope while restoring: ${JSON.stringify(diagnostic)}`);
