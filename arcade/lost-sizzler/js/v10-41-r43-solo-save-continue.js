@@ -208,7 +208,10 @@
     const saved=currentSavedCheckpoint();if(!checkpointIsSolo(saved)){updateMenu();return false}
     try{
       const audio=S.start(),fs=requestPlayFullscreen();await Promise.all([audio,fs]);
-      await net.leave();net.setSolo(saved.player?.name||playerName());
+      // Continue is a local checkpoint restore. net.setSolo() already initiates
+      // best-effort transport teardown and resets local network state immediately,
+      // so do not block restoration behind a remote channel leave that may stall.
+      net.setSolo(saved.player?.name||playerName());
       run=clone(saved.run);score=Math.max(0,Number(saved.score)||0);p1=clone(saved.player);p2=null;playMode="solo";mode="playing";
       startWorld(PGR.floorSeed(run),false,true,true);
       floorEntryCheckpoint=clone(saved);state.entryCheckpoint=clone(saved);state.entryFloorKey=floorKey();state.lastAutoSaveKey=state.entryFloorKey;
