@@ -115,11 +115,12 @@ try{
 
   console.log("[r60 Solo] environmental damage must survive stale invulnerability/owner state");
   const environment=await page.evaluate(()=>{
+    const chainHasSeal=fn=>{const seen=new Set();let current=fn,depth=0;while(typeof current==="function"&&!seen.has(current)&&depth++<32){if(current.__ccgV141R60EnvironmentSeal===true)return true;seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null}return false};
     const before=Number(p1.health||0)+Number(p1.armor||0);p1.invuln=900;p1.hitStunMs=0;
     window.hurtPlayer(p1,1,false,"fire trap");
-    return{before,after:Number(p1.health||0)+Number(p1.armor||0),owner:Boolean(window.hurtPlayer?.__ccgV141R60EnvironmentSeal)};
+    return{before,after:Number(p1.health||0)+Number(p1.armor||0),owner:chainHasSeal(window.hurtPlayer)};
   });
-  assert.equal(environment.owner,true,"R60 environmental owner must remain installed in Solo Dungeon");
+  assert.equal(environment.owner,true,"R60 environmental seal must remain in the active Solo Dungeon damage-owner ancestry");
   assert.ok(environment.after<environment.before,`active trap damage must not be swallowed by stale invulnerability/owner state: ${JSON.stringify(environment)}`);
 
   const final=await page.evaluate(()=>({...window.CCGLostSizzlerV141R60LivePlayIntegrity.state}));
