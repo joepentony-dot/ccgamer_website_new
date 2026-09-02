@@ -1,14 +1,14 @@
 {
   "summary": {
-    "game_records": 655,
-    "games_with_year": 655,
+    "game_records": 656,
+    "games_with_year": 656,
     "games_missing_year": 0,
     "distinct_years": 15,
     "earliest_year": 1982,
     "latest_year": 2023
   },
   "platform_counts": {
-    "C64": 555,
+    "C64": 556,
     "Amiga": 100
   },
   "year_counts": [
@@ -49,8 +49,8 @@
     },
     {
       "year": 1987,
-      "total": 86,
-      "c64": 84,
+      "total": 87,
+      "c64": 85,
       "amiga": 2,
       "other": 0
     },
@@ -364,8 +364,8 @@
       "2023": 2
     },
     "static_platform_links": {
-      "Amiga": 12,
-      "C64": 14
+      "Amiga": 15,
+      "C64": 21
     },
     "query_year_links": {},
     "query_platform_links": {
@@ -387,12 +387,12 @@
       "games/years/1995/index.html": 3,
       "games/years/1986/index.html": 3,
       "games/years/1983/index.html": 3,
+      "retro-specials/zzap64-gold-medals-sizzlers-1988/index.html": 2,
+      "retro-specials/zzap64-gold-medals-sizzlers-1989/index.html": 2,
       "games/platforms/index.html": 2,
       "games/years/1982/index.html": 2,
       "games/years/2023/index.html": 2,
-      "thea1200/index.html": 1,
-      "games/platforms/amiga/index.html": 1,
-      "games/platforms/c64/index.html": 1
+      "thea1200/index.html": 1
     }
   },
   "filter_capabilities": {
