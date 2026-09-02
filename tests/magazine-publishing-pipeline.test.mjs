@@ -20,6 +20,19 @@ test("Reliable Games Publishing imports local magazine metadata before rebuildin
   assert.ok(importIndex < rebuildIndex, "magazine reviews must be imported before game pages are rebuilt");
 });
 
+test("magazine reviews are materialized after canonical SEO game routes are generated", () => {
+  const rebuild = fs.readFileSync(path.join(root, "scripts", "rebuild-games.js"), "utf8");
+  const routeIndex = rebuild.indexOf('["prepare-seo-game-routes.js", "--output-root", "."]');
+  const materializeIndex = rebuild.indexOf('["ensure-magazine-review-runtime.js"]');
+
+  assert.ok(routeIndex >= 0, "canonical SEO game route generation is missing from the rebuild chain");
+  assert.ok(materializeIndex >= 0, "magazine review materialization is missing from the rebuild chain");
+  assert.ok(
+    routeIndex < materializeIndex,
+    "magazine reviews must be materialized after canonical route generation so the route builder cannot wipe them"
+  );
+});
+
 test("external Lemon availability is not a publishing prerequisite", () => {
   const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "games-publishing.yml"), "utf8");
   assert.doesNotMatch(workflow, /Cache required Lemon magazine sources/);
