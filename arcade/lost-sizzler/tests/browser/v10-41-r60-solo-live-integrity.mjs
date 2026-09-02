@@ -104,7 +104,12 @@ try{
   assert.equal(movement.first.y,movement.choice.y+movement.choice.dy,"two immediate move calls may advance only one physical tile on Y");
   assert.ok(movement.first.blocks>=1,`the duplicate post-pause move must be rejected by the cadence owner: ${JSON.stringify(movement)}`);
   await page.waitForTimeout(Math.ceil(movement.first.cadence)+30);
-  const movementAfter=await page.evaluate(({choice})=>{input.add(choice.code);movePlayer(p1,choice.dx,choice.dy,false);input.delete(choice.code);return{x:Number(p1.x),y:Number(p1.y)}},movement);
+  const movementAfter=await page.evaluate(({choice})=>{
+    const targetX=choice.x+choice.dx*2,targetY=choice.y+choice.dy*2;
+    host.enemies=(host.enemies||[]).filter(row=>!(row?.alive&&Number(row.x)===targetX&&Number(row.y)===targetY));
+    p1.hitStunMs=0;move1=0;input.clear();input.add(choice.code);movePlayer(p1,choice.dx,choice.dy,false);input.delete(choice.code);
+    return{x:Number(p1.x),y:Number(p1.y)};
+  },movement);
   assert.equal(movementAfter.x,movement.choice.x+movement.choice.dx*2,"movement must resume normally after the configured cadence");
   assert.equal(movementAfter.y,movement.choice.y+movement.choice.dy*2,"movement must resume normally after the configured cadence");
 
