@@ -10,7 +10,7 @@ const r56=read("js/v10-41-r56-playtest-completion.js");
 const r60=read("js/v10-41-r60-horde-combat-integrity.js");
 
 // Keep this diagnostic tied to the production ownership rules it models.
-assert.match(r56,/if\(current\.__ccgV141R56EnvironmentDamage\)\{state\.environmentInstalled=true;return true\}/,"R56 diagnostic expects the current top-level-only environment-owner check");
+assert.match(r56,/if\(current\.__ccgV141R56EnvironmentDamage\)return true/,"R56 diagnostic expects the current top-level-only environment-owner check");
 assert.match(r60,/if\(current\.__ccgV141R60EnvironmentSeal\)\{state\.hurtWrapped=true;/,"R60 diagnostic expects the current top-level-only environment-owner check");
 assert.match(r60,/wrapped\.__ccgV141R60EnvironmentSeal=true;wrapped\.__ccgV141R56EnvironmentDamage=true;wrapped\.__ccgV141R29HordeFriendly=true/,"R60 environment seal must continue carrying the retained compatibility markers while this diagnostic applies");
 
