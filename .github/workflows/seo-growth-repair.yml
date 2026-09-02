@@ -5,7 +5,7 @@ on:
     branches:
       - codex/seo-growth-repair-2026-09-02
     paths:
-      - 'scripts/apply-seo-growth-repair-v2.js'
+      - 'scripts/apply-seo-growth-repair-v3.js'
       - 'scripts/generate-*.js'
       - 'admin/templates/**'
       - 'data/**'
@@ -41,11 +41,17 @@ jobs:
         with:
           node-version: '24'
 
+      - name: Restore category baselines
+        shell: bash
+        run: |
+          git fetch origin main --depth=1
+          git checkout origin/main -- games/genres games/publishers games/developers games/collections games/platforms
+
       - name: Apply SEO growth repairs
-        run: node scripts/apply-seo-growth-repair-v2.js
+        run: node scripts/apply-seo-growth-repair-v3.js
 
       - name: Validate repaired outputs
-        run: node scripts/apply-seo-growth-repair-v2.js --check
+        run: node scripts/apply-seo-growth-repair-v3.js --check
 
       - name: Commit generated SEO outputs
         shell: bash
@@ -57,5 +63,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html home.html sitemap-pages.xml games retro-specials
-          git commit -m "Materialize SEO growth repairs"
+          git commit -m "Materialize corrected SEO growth repairs"
           git push origin HEAD:codex/seo-growth-repair-2026-09-02
