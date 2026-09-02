@@ -17,7 +17,7 @@
     spyOwnerUpdate:null,spyOwnerMove:null,spyOwnerHurt:null,
     forcedRestores:0,ownershipRepairs:0,ownershipCooldownResets:0,inputBridges:0,inputReassertions:0,
     watchdogRecoveries:0,watchdogMisses:0,watchdogCooldownBreaks:0,lastWatchdogRecoveryAt:0,
-    notificationOwnershipRepairs:0,notificationPostInstallRepairs:0,nestedOwnershipDetections:0,
+    notificationOwnershipRepairs:0,notificationPostInstallRepairs:0,nestedOwnershipDetections:0,damageOwnershipRepairs:0,
     lastRestoreAt:0,lastRestoreReason:"",lastModeType:"",modeTransitions:0,lastRecoveryLogAt:0
   };
   const held=new Set();
@@ -71,6 +71,24 @@
   }
 
   function healthyBaseline(fn){return typeof fn==="function"&&!spyContaminated(fn)}
+  function modernDamageOwnersRequired(){
+    return Boolean(window.CCGLostSizzlerV141R56PlaytestCompletion||window.CCGLostSizzlerV141R60LivePlayIntegrity)
+  }
+  function modernDamageOwnershipPresent(fn=window.hurtPlayer){
+    if(typeof fn!=="function")return false;
+    if(window.CCGLostSizzlerV141R56PlaytestCompletion&&!chainHas(fn,"__ccgV141R56EnvironmentDamage"))return false;
+    if(window.CCGLostSizzlerV141R60LivePlayIntegrity&&!chainHas(fn,"__ccgV141R60EnvironmentSeal"))return false;
+    return true
+  }
+  function reinstallModernDamageOwners(){
+    if(spyActive()||spyEngine()?.state?.isolated)return false;
+    const required=modernDamageOwnersRequired();
+    if(!required)return healthyBaseline(window.hurtPlayer);
+    try{window.CCGLostSizzlerV141R56PlaytestCompletion?.installOwners?.()}catch(_){}
+    try{window.CCGLostSizzlerV141R60LivePlayIntegrity?.wrapEnvironmentalDamage?.()}catch(_){}
+    if(!modernDamageOwnershipPresent(window.hurtPlayer))return false;
+    state.baselineHurt=window.hurtPlayer;state.damageOwnershipRepairs++;return true
+  }
   function normalMovementStackReady(){
     const tutorial=window.CCGLostSizzlerV141TutorialActionFinalizer?.state;
     const spyFinal=window.CCGLostSizzlerV141SpyMovementFinalizer?.state;
@@ -89,7 +107,7 @@
     if(controllerUpdate)state.baselineUpdate=controllerUpdate;
     else if(healthyBaseline(window.update))state.baselineUpdate=window.update;
     if(healthyBaseline(window.movePlayer))state.baselineMove=window.movePlayer;
-    if(healthyBaseline(window.hurtPlayer))state.baselineHurt=window.hurtPlayer;
+    if(healthyBaseline(window.hurtPlayer)&&(!modernDamageOwnersRequired()||modernDamageOwnershipPresent(window.hurtPlayer)))state.baselineHurt=window.hurtPlayer;
     if(releaseReady()&&normalMovementStackReady()&&!state.goldenLocked&&state.baselineUpdate&&state.baselineMove&&state.baselineHurt){
       state.goldenUpdate=state.baselineUpdate;state.goldenMove=state.baselineMove;state.goldenHurt=state.baselineHurt;
       state.goldenLocked=true;state.goldenLockedAt=Date.now();
@@ -99,7 +117,7 @@
   }
   const recoveryUpdate=()=>authoritativeControllerUpdate()||state.goldenUpdate||state.baselineUpdate;
   const recoveryMove=()=>state.goldenMove||state.baselineMove;
-  const recoveryHurt=()=>state.goldenHurt||state.baselineHurt;
+  const recoveryHurt=()=>state.baselineHurt||state.goldenHurt;
 
   function noteRecovery(reason){
     const now=Date.now();
@@ -170,13 +188,15 @@
     const currentUpdate=window.update,currentMove=window.movePlayer,currentHurt=window.hurtPlayer;
     const updateBad=typeof currentUpdate!=="function"||(!controllerProtectedUpdate(currentUpdate)&&spyContaminated(currentUpdate));
     const moveBad=typeof currentMove!=="function"||spyContaminated(currentMove)||(state.goldenLocked&&normalMovementStackReady()&&typeof state.goldenMove==="function"&&currentMove!==state.goldenMove);
-    const hurtBad=typeof currentHurt!=="function"||spyContaminated(currentHurt);
+    const modernDamageMissing=modernDamageOwnersRequired()&&!modernDamageOwnershipPresent(currentHurt);
+    const hurtBad=typeof currentHurt!=="function"||spyContaminated(currentHurt)||modernDamageMissing;
     if(!(updateBad||moveBad||hurtBad))return false;
     const u=updateBad?recoveryUpdate():currentUpdate,m=moveBad?recoveryMove():currentMove,h=hurtBad?recoveryHurt():currentHurt;
     if((updateBad&&typeof u!=="function")||(moveBad&&typeof m!=="function")||(hurtBad&&typeof h!=="function"))return false;
     state.ownershipRepairs++;
     const repaired=forceRestore(u,m,h,reason);
     if(repaired&&moveBad)resetRecoveredMovementCooldowns();
+    if(repaired&&hurtBad&&modernDamageOwnersRequired()&&!modernDamageOwnershipPresent(window.hurtPlayer))return reinstallModernDamageOwners();
     return repaired
   }
 
@@ -200,7 +220,9 @@
     if(engine.state?.isolated){
       const baseUpdate=authoritativeControllerUpdate()||engine.state.baseUpdate||recoveryUpdate(),baseMove=engine.state.baseMove||recoveryMove(),baseHurt=engine.state.baseHurt||recoveryHurt();
       try{engine.leaveIsolation?.()}catch(_){}
-      forceRestore(baseUpdate,baseMove,baseHurt,"Spy runtime exit");captureBaseline();return true;
+      forceRestore(baseUpdate,baseMove,baseHurt,"Spy runtime exit");
+      if(modernDamageOwnersRequired()&&!modernDamageOwnershipPresent(window.hurtPlayer))reinstallModernDamageOwners();
+      captureBaseline();return true;
     }
     return assertNormalRuntimeOwnership("stale Spy owner outside Spy mode");
   }
@@ -315,7 +337,7 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);clearHeld()},{once:true});
 
   window.CCGLostSizzlerV141R30={
-    originalLink,originalLinks,chainHas,spyContaminated,topLevelSpyOwner,controllerProtectedUpdate,adoptReleaseMoveOwner,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,resetRecoveredMovementCooldowns,reassertHeldInput,movementWatchdog,makeR29Cooperative,
+    originalLink,originalLinks,chainHas,spyContaminated,topLevelSpyOwner,controllerProtectedUpdate,modernDamageOwnersRequired,modernDamageOwnershipPresent,reinstallModernDamageOwners,adoptReleaseMoveOwner,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,resetRecoveredMovementCooldowns,reassertHeldInput,movementWatchdog,makeR29Cooperative,
     constants:{ORIGINAL_LINKS},get state(){return state}
   };
 })();
