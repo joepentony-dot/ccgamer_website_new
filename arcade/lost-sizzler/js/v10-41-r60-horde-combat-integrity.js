@@ -267,7 +267,7 @@
 
   function stopCompetingHordeLiveOwner(){
     try{
-      const performanceLayer=window.CCGLostSizzlerV141HordeFramePerformance,ownerState=performanceLayer?.state;
+      const performanceLayer=window.CCGLostSizzlerHordeFramePerformance,ownerState=performanceLayer?.state;
       if(ownerState?.r60LiveTimer){clearInterval(ownerState.r60LiveTimer);ownerState.r60LiveTimer=0;state.liveOwnerMonitorStops++}
     }catch(error){recordError(error)}
     return true
