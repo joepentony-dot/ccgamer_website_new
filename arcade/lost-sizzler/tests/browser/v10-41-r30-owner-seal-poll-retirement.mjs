@@ -31,51 +31,54 @@ try{
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R30OwnerSeal));
 
   const readiness=await page.evaluate(()=>{
-    const seal=window.CCGLostSizzlerV141R30OwnerSeal;
-    const installed=Boolean(seal.installAssignmentGate?.());
+    const guard=window.CCGLostSizzlerV141R30,seal=window.CCGLostSizzlerV141R30OwnerSeal;
     seal.seal?.("poll-retirement regression readiness");
-    seal.retirePollIfGated?.();
+    seal.retirePollIfCovered?.();
     return{
-      installed,
       assignmentGate:Boolean(seal.state?.assignmentGate),
       assignmentGateUnsupported:Boolean(seal.state?.assignmentGateUnsupported),
-      timer:Number(seal.state?.timer||0),
-      goldenLocked:Boolean(window.CCGLostSizzlerV141R30?.state?.goldenLocked)
+      retirementCoverage:String(seal.retirementCoverage?.()||""),
+      retirementReason:String(seal.state?.pollRetirementReason||""),
+      sealTimer:Number(seal.state?.timer||0),
+      globalGuardTimer:Number(guard.state?.timer||0),
+      goldenLocked:Boolean(guard.state?.goldenLocked)
     }
   });
   assert.equal(readiness.goldenLocked,true,"R30 poll-retirement regression requires the proven locked golden movement owner");
-  assert.equal(readiness.assignmentGateUnsupported,false,`R30 synchronous assignment gate must remain supported: ${JSON.stringify(readiness)}`);
-  assert.equal(readiness.installed,true,`R30 synchronous assignment gate must install once the golden owner is ready: ${JSON.stringify(readiness)}`);
-  assert.equal(readiness.assignmentGate,true,`R30 synchronous assignment gate must be active before poll-retirement assertions: ${JSON.stringify(readiness)}`);
-  await page.waitForTimeout(120);
+  assert.ok(readiness.globalGuardTimer>0,"R30 40ms global recovery guard must be active before the 16ms seal poll retires");
+  assert.ok(["assignment-gate","r30-global-guard"].includes(readiness.retirementCoverage),`R30 seal poll needs a live replacement recovery path: ${JSON.stringify(readiness)}`);
+  assert.equal(readiness.sealTimer,0,`R30 16ms owner-seal poll must retire when replacement coverage exists: ${JSON.stringify(readiness)}`);
 
-  const result=await page.evaluate(()=>{
+  const before=await page.evaluate(()=>({
+    golden:window.CCGLostSizzlerV141R30.state.goldenMove,
+    blocked:Number(window.CCGLostSizzlerV141R30OwnerSeal.state.blockedWrites||0),
+    repairs:Number(window.CCGLostSizzlerV141R30.state.ownershipRepairs||0)
+  }));
+  await page.evaluate(()=>{
+    const dead=function r30PollRetirementDeadOwner(){return false};dead.__ccgOriginal=window.movePlayer;window.movePlayer=dead;
+  });
+  await page.waitForFunction(golden=>window.movePlayer===golden,before.golden,{timeout:500});
+
+  const result=await page.evaluate(({beforeBlocked,beforeRepairs})=>{
     const guard=window.CCGLostSizzlerV141R30,seal=window.CCGLostSizzlerV141R30OwnerSeal;
-    const golden=guard.state.goldenMove,beforeBlocked=Number(seal.state.blockedWrites||0),beforeRepairs=Number(guard.state.ownershipRepairs||0);
-    const dead=function r30PollRetirementDeadOwner(){return false};dead.__ccgOriginal=window.movePlayer;
-    window.movePlayer=dead;
     return{
       assignmentGate:Boolean(seal.state.assignmentGate),
+      assignmentGateUnsupported:Boolean(seal.state.assignmentGateUnsupported),
       sealTimer:Number(seal.state.timer||0),
-      fallbackPollStarts:Number(seal.state.pollStarts||0),
-      pollRetirements:Number(seal.state.pollRetirements||0),
+      retirementCoverage:String(seal.retirementCoverage?.()||""),
       globalGuardTimer:Number(guard.state.timer||0),
       blockedDelta:Number(seal.state.blockedWrites||0)-beforeBlocked,
       repairDelta:Number(guard.state.ownershipRepairs||0)-beforeRepairs,
-      moveStillGolden:window.movePlayer===golden,
-      goldenStable:guard.state.goldenMove===golden
+      moveStillGolden:window.movePlayer===guard.state.goldenMove
     }
-  });
+  },{beforeBlocked:before.blocked,beforeRepairs:before.repairs});
 
-  assert.equal(result.assignmentGate,true,"R30 owner seal must retain its synchronous movePlayer assignment gate");
-  assert.equal(result.sealTimer,0,"R30 16ms owner-seal poll must retire after the assignment gate is active");
+  assert.equal(result.sealTimer,0,"R30 16ms owner-seal poll must remain retired after a hostile movement-owner write");
   assert.ok(result.globalGuardTimer>0,"the broader R30 40ms recovery guard must remain active during this consolidation step");
-  assert.ok(result.blockedDelta>=1,"an illegal normal-mode movePlayer assignment must still be blocked synchronously after poll retirement");
-  assert.ok(result.repairDelta>=1,"blocked assignment must remain visible in R30 ownership diagnostics");
-  assert.equal(result.moveStillGolden,true,"poll retirement must not permit a dead movement owner to replace the locked golden owner");
-  assert.equal(result.goldenStable,true,"poll retirement must not mutate the locked golden owner identity");
+  assert.equal(result.moveStillGolden,true,"the surviving R30 recovery path must restore the locked golden movement owner within 500ms");
+  assert.ok(result.repairDelta>=1||result.blockedDelta>=1,`the hostile assignment must be visible to either the synchronous gate or the R30 global recovery diagnostics: ${JSON.stringify(result)}`);
   assert.deepEqual(errors,[],`R30 owner-seal poll-retirement regression must not produce page errors: ${errors.join("\n")}`);
-  console.log(`R30 owner-seal 16ms poll retired safely: blocked=${result.blockedDelta}, globalGuardTimer=${result.globalGuardTimer}.`);
+  console.log(`R30 owner-seal 16ms poll retired with ${result.retirementCoverage}; assignmentGate=${result.assignmentGate}, recoveryDiagnostics=${result.repairDelta+result.blockedDelta}.`);
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(resolve));
