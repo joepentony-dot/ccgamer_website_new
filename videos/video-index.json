@@ -9,6 +9,19 @@
   },
   "items": [
     {
+      "id": "zqqIctCq73o",
+      "kind": "game",
+      "filter": "c64",
+      "badge": "C64 Game",
+      "title": "Stifflip & Co – The Commodore 64’s Brilliantly British Adventure!",
+      "description": "Stifflip & Co is a distinctive 1987 Commodore 64 graphic adventure from Palace Software and Binary Vision, mixing comic-strip presentation, icon-driven controls, puzzle solving and eccentri…",
+      "url": "/games/stifflip-and-co/",
+      "thumbnail": "https://i.ytimg.com/vi/zqqIctCq73o/maxresdefault.jpg",
+      "platform": "Commodore 64",
+      "year": 1987,
+      "publisher": "Palace Software"
+    },
+    {
       "id": "dLZpRuG_NwA",
       "kind": "game",
       "filter": "amiga",
@@ -8291,7 +8304,7 @@
       "kind": "game",
       "filter": "amiga",
       "badge": "Amiga Game",
-      "title": "Rick Dangerous on Amiga – Traps, Deaths and That Smug Little Hero",
+      "title": "Rick Dangerous on the Amiga – Traps, Deaths and That Smug Little Hero",
       "description": "Rick Dangerous is a 1989 Amiga arcade platformer from Firebird that mixes precise jumping with deadly traps, drawing inspiration from cinematic adventure serials and rewarding careful memor…",
       "url": "/games/rick-dangerous/",
       "thumbnail": "https://i.ytimg.com/vi/zsESKovDEkQ/maxresdefault.jpg",
@@ -8985,19 +8998,6 @@
       "year": "",
       "publisher": "",
       "collectionLabel": "Amiga Demo Music"
-    },
-    {
-      "id": "zqqIctCq73o",
-      "kind": "game",
-      "filter": "c64",
-      "badge": "C64 Game",
-      "title": "Stifflip & Co.",
-      "description": "Stifflip & Co is a distinctive 1987 Commodore 64 graphic adventure from Palace Software and Binary Vision, mixing comic-strip presentation, icon-driven controls, puzzle solving and eccentri…",
-      "url": "/games/stifflip-and-co/",
-      "thumbnail": "https://i.ytimg.com/vi/zqqIctCq73o/hqdefault.jpg",
-      "platform": "Commodore 64",
-      "year": 1987,
-      "publisher": "Palace Software"
     },
     {
       "id": "ght7u1k_tqw",
