@@ -20,18 +20,33 @@ assert.match(loader,/loadSoloDiagnostics\(\)/,"Solo diagnostics loader must be i
 
 assert.match(diagnostics,/CCGLostSizzlerSoloDiagnostics/,"diagnostics API must be exported for browser/playtest inspection");
 assert.match(diagnostics,/simulationRatio/,"diagnostics must record simulated-time versus active-wall-time ratio");
+assert.match(diagnostics,/rafAcceptedRate/,"diagnostics must measure the accepted RAF cadence independently of update cadence");
+assert.match(diagnostics,/maxSampleGapMs/,"diagnostics must expose main-thread sampling stalls");
 assert.match(diagnostics,/ownerChangeLog/,"diagnostics must retain runtime ownership changes");
+assert.match(diagnostics,/lifecycleLog/,"diagnostics must retain focus and visibility transitions");
+assert.match(diagnostics,/loopOwnerDepth/,"diagnostics must expose RAF-owner wrapper depth");
+assert.match(diagnostics,/updateOwnerDepth/,"diagnostics must expose update-owner wrapper depth");
+assert.match(diagnostics,/moveOwnerDepth/,"diagnostics must expose movement-owner wrapper depth");
 assert.match(diagnostics,/sharedFrameBoundaryReassertions/,"diagnostics must record shared update-owner reassertions");
 assert.match(diagnostics,/ownedSystemReassertions/,"diagnostics must record mode-owned system reassertions");
 assert.match(diagnostics,/r29FrameStalls/,"diagnostics must correlate r29 frame stalls");
+assert.match(diagnostics,/r30OwnershipRepairs/,"diagnostics must correlate r30 ownership repairs");
+assert.match(diagnostics,/r30WatchdogRecoveries/,"diagnostics must correlate held-key watchdog recoveries");
+assert.match(diagnostics,/ownerSealRepairs/,"diagnostics must expose the 16 ms movement owner seal activity");
+assert.match(diagnostics,/ownerSealBlockedWrites/,"diagnostics must expose blocked movement-owner replacements");
+assert.match(diagnostics,/r59AcceptedFrames/,"diagnostics must correlate r59 accepted RAF frames");
+assert.match(diagnostics,/r59PauseBoundaries/,"diagnostics must correlate r59 pause boundaries");
+assert.match(diagnostics,/r59SuppressRecoveryUntil/,"diagnostics must expose the r59 pause recovery guard window");
 assert.match(diagnostics,/setInterval\(sample,SAMPLE_MS\)/,"diagnostics must use only its bounded passive sampling interval");
 
 const forbiddenMutations=[
+  /window\.loop\s*=/,
   /window\.update\s*=/,
   /window\.movePlayer\s*=/,
   /window\.hurtPlayer\s*=/,
   /window\.openChest\s*=/,
   /window\.tryChest\s*=/,
+  /Object\.defineProperty\s*\(\s*window/,
   /\bmove1\s*[+\-*/]?=/,
   /\bmove2\s*[+\-*/]?=/,
   /\bfire1\s*[+\-*/]?=/,
@@ -39,7 +54,8 @@ const forbiddenMutations=[
   /\bprojectileCD\s*[+\-*/]?=/,
   /\benemyCD\s*[+\-*/]?=/,
   /requestAnimationFrame\s*\(/,
-  /cancelAnimationFrame\s*\(/
+  /cancelAnimationFrame\s*\(/,
+  /setTimeout\s*\(/
 ];
 for(const pattern of forbiddenMutations){
   assert.doesNotMatch(diagnostics,pattern,`diagnostics must remain passive and must not match ${pattern}`);
