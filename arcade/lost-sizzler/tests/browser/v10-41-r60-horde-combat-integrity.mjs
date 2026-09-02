@@ -110,12 +110,16 @@ try{
 
   console.log("[r60 Horde] paused wall-clock time must never become Horde combat catch-up");
   await page.evaluate(()=>{host.enemies=[];bullets.length=0});
-  const pauseBefore=await page.evaluate(()=>{const api=window.CCGLostSizzlerV141R60HordeCombatIntegrity;return{discarded:Number(api.state.pauseGapsDiscarded||0),projectiles:Number(api.state.projectileSteps||0),enemies:Number(api.state.enemySteps||0)}});
   await page.keyboard.press("KeyP");await page.waitForFunction(()=>mode==="paused");
+  const pauseBefore=await page.evaluate(()=>{const api=window.CCGLostSizzlerV141R60HordeCombatIntegrity;return{discarded:Number(api.state.pauseGapsDiscarded||0),projectiles:Number(api.state.projectileSteps||0),enemies:Number(api.state.enemySteps||0)}});
   await page.evaluate(()=>{const until=performance.now()+650;while(performance.now()<until){}});await page.waitForTimeout(80);
+  const pauseHeld=await page.evaluate(before=>{const api=window.CCGLostSizzlerV141R60HordeCombatIntegrity;return{projectiles:Number(api.state.projectileSteps||0)-before.projectiles,enemies:Number(api.state.enemySteps||0)-before.enemies,mode:String(mode)}},pauseBefore);
+  assert.equal(pauseHeld.projectiles,0,`paused wall-clock time must not advance Horde projectiles: ${JSON.stringify(pauseHeld)}`);
+  assert.equal(pauseHeld.enemies,0,`paused wall-clock time must not advance Horde enemy simulation: ${JSON.stringify(pauseHeld)}`);
+  assert.equal(pauseHeld.mode,"paused");
   await page.keyboard.press("KeyP");await page.waitForFunction(()=>mode==="playing");await page.waitForTimeout(120);
   const pauseAfter=await page.evaluate(before=>{const api=window.CCGLostSizzlerV141R60HordeCombatIntegrity;return{discarded:Number(api.state.pauseGapsDiscarded||0)-before.discarded,projectiles:Number(api.state.projectileSteps||0)-before.projectiles,enemies:Number(api.state.enemySteps||0)-before.enemies,mode:String(mode),lastError:String(api.state.lastError||"")}},pauseBefore);
-  assert.ok(pauseAfter.discarded>=1,`R60 must explicitly discard at least one R59 pause boundary: ${JSON.stringify(pauseAfter)}`);
+  assert.ok(pauseAfter.discarded>=1,`R60 must explicitly discard at least one R59 resume boundary: ${JSON.stringify(pauseAfter)}`);
   assert.ok(pauseAfter.projectiles<=2&&pauseAfter.enemies<=2,`a 650 ms pause must not burst through accumulated projectile/enemy simulation on resume: ${JSON.stringify(pauseAfter)}`);
   assert.equal(pauseAfter.mode,"playing");assert.equal(pauseAfter.lastError,"",`R60 must not record combat timing faults: ${JSON.stringify(pauseAfter)}`);
 
