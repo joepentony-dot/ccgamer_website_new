@@ -31,6 +31,7 @@ try{
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R60LivePlayIntegrity)&&Boolean(window.CCGLostSizzlerV141R59LiveRegressionFixes),null,{timeout:90000});
   await page.click("#solo-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&playMode==="solo"&&Boolean(p1)&&Boolean(host)&&window.movePlayer?.__ccgV141R60CadenceSeal===true&&window.update?.__ccgV141R60TimeSmoothing===true,null,{timeout:30000});
+  // A one-tick sighting is not enough: the final Solo host must retain exactly one CCG across the guarded R60 owner cadence.
   await page.waitForFunction(()=>{
     const count=(host?.enemies||[]).filter(enemy=>String(enemy?.follower?.name||"").toUpperCase()==="CCG").length,now=performance.now();
     if(count!==1){window.__ccgR60StableCcgSince=0;return false}
