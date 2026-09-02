@@ -4800,7 +4800,7 @@
     <loc>https://www.cheekycommodoregamer.co.uk/games/rick-dangerous/</loc>
     <video:video>
       <video:thumbnail_loc>https://i.ytimg.com/vi/zsESKovDEkQ/maxresdefault.jpg</video:thumbnail_loc>
-      <video:title>Rick Dangerous on Amiga – Traps, Deaths and That Smug Little Hero</video:title>
+      <video:title>Rick Dangerous on the Amiga – Traps, Deaths and That Smug Little Hero</video:title>
       <video:description>Released in 1989 by Core Design for the Commodore Amiga, Rick Dangerous is a notoriously unforgiving platform adventure inspired by the spirit of Indiana Jones. You step into the boots of Rick, a British agent whose jungle expedition quickly turns into a deadly obstacle course packed with traps, enemies, and cruel surprises. Gameplay focuses on careful movement, memory, and restraint. Hidden spikes, collapsing floors, darts, and instant-death hazards are everywhere, forcing you to learn each level through trial and error. Rick’s limited ammo and dynamite mean every shot counts, and rushing forward without caution is almost always punished. Each location introduces new dangers and layouts, from the Amazon jungle to ancient Egyptian ruins, with level design that rewards patience and observation. Success comes from anticipating traps, mastering timing, and accepting that death is part of the learning process.</video:description>
       <video:player_loc>https://www.youtube.com/embed/zsESKovDEkQ</video:player_loc>
       <video:duration>323</video:duration>
@@ -5635,10 +5635,12 @@
   <url>
     <loc>https://www.cheekycommodoregamer.co.uk/games/stifflip-and-co/</loc>
     <video:video>
-      <video:thumbnail_loc>https://i.ytimg.com/vi/zqqIctCq73o/hqdefault.jpg</video:thumbnail_loc>
-      <video:title>Stifflip &amp; Co. – C64 Gameplay &amp; Review | Cheeky Commodore Gamer</video:title>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/zqqIctCq73o/maxresdefault.jpg</video:thumbnail_loc>
+      <video:title>Stifflip &amp; Co – The Commodore 64’s Brilliantly British Adventure!</video:title>
       <video:description>Stifflip &amp; Co is a distinctive 1987 Commodore 64 graphic adventure from Palace Software and Binary Vision, mixing comic-strip presentation, icon-driven controls, puzzle solving and eccentric British humour. You switch between four characters as they attempt to stop Count Chameleon and his ridiculous Rubbertronic Ray, with conversation, exploration and even the occasional bout of fisticuffs thrown into the mix. It looks and sounds the part, with memorable presentation and music from Richard Joseph, although the interface can feel cumbersome and progress is sometimes more awkward than it needs to be. An unusual C64 adventure that is worth experiencing, even if it never quite reaches the heights of Palace Software&apos;s best games.</video:description>
       <video:player_loc>https://www.youtube.com/embed/zqqIctCq73o</video:player_loc>
+      <video:duration>519</video:duration>
+      <video:publication_date>2026-09-02T18:03:14Z</video:publication_date>
     </video:video>
   </url>
   <url>
