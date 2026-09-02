@@ -329,6 +329,15 @@
   const durability=player=>Number(player?.health||0)+Number(player?.armor||0);
   const recordError=error=>{state.lastError=String(error?.message||error||"unknown").slice(0,260);return false};
 
+  function originalChainHasMarker(fn,marker,limit=64){
+    const seen=new Set();let current=fn,depth=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth++<limit){
+      try{if(current[marker])return true}catch(_){}
+      seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null
+    }
+    return false
+  }
+
   function resetPauseSensitiveState(reason="mode boundary"){
     movementTimes=new WeakMap();state.lastVisualNow=perfNow();state.lastPauseBoundary=r59PauseBoundary();state.pauseResets++;
     try{if(Number(move1||0)>Math.max(45,Number(window.CCG_CONFIG?.player?.moveDelay||138)*2))move1=0}catch(_){}
@@ -464,7 +473,7 @@
 
   function wrapEnvironmentalDamage(){
     const current=window.hurtPlayer;if(typeof current!=="function")return false;
-    if(current.__ccgV141R60EnvironmentSeal){state.hurtWrapped=true;state.hurtSource=current.__ccgOriginal||state.hurtSource;return true}
+    if(originalChainHasMarker(current,"__ccgV141R60EnvironmentSeal")){state.hurtWrapped=true;state.hurtSource=current;return true}
     const source=current;
     const wrapped=function hurtPlayerV141R60EnvironmentSeal(player,amount,friendly=false,sourceName="enemy"){
       if(!soloDungeonPlaying()||!player||!ENVIRONMENT_SOURCE.test(String(sourceName||"")))return source.apply(this,arguments);
@@ -485,5 +494,5 @@
   addEventListener("visibilitychange",()=>{if(document.hidden)resetPauseSensitiveState("hidden")},{passive:true});
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
-  window.CCGLostSizzlerV141R60LivePlayIntegrity={AZALEA_ASSET,timeSmoothingAlpha,applyTimeSmoothing,movementCadence,patchAzalea,ensureCcgEnemy,wrapUpdate,wrapMovement,wrapStartWorld,wrapEnvironmentalDamage,install,get state(){return state}};
+  window.CCGLostSizzlerV141R60LivePlayIntegrity={AZALEA_ASSET,originalChainHasMarker,timeSmoothingAlpha,applyTimeSmoothing,movementCadence,patchAzalea,ensureCcgEnemy,wrapUpdate,wrapMovement,wrapStartWorld,wrapEnvironmentalDamage,install,get state(){return state}};
 })();
