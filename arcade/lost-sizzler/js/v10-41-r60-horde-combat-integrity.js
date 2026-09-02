@@ -473,7 +473,7 @@
       if(durability(player)>=before)player.invuln=oldInv;else if(recovered)state.environmentRepairs++;
       return result
     };
-    wrapped.__ccgV141R60EnvironmentSeal=true;wrapped.__ccgV141R56EnvironmentDamage=true;wrapped.__ccgOriginal=source;window.hurtPlayer=wrapped;state.hurtSource=source;state.hurtWrapped=true;state.ownerReassertions++;return true
+    wrapped.__ccgV141R60EnvironmentSeal=true;wrapped.__ccgV141R56EnvironmentDamage=true;wrapped.__ccgV141R29HordeFriendly=true;wrapped.__ccgOriginal=source;window.hurtPlayer=wrapped;state.hurtSource=source;state.hurtWrapped=true;state.ownerReassertions++;return true
   }
 
   function install(){
