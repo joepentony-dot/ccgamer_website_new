@@ -24,9 +24,16 @@ assert.match(diagnostics,/rafAcceptedRate/,"diagnostics must measure the accepte
 assert.match(diagnostics,/maxSampleGapMs/,"diagnostics must expose main-thread sampling stalls");
 assert.match(diagnostics,/ownerChangeLog/,"diagnostics must retain runtime ownership changes");
 assert.match(diagnostics,/lifecycleLog/,"diagnostics must retain focus and visibility transitions");
+assert.match(diagnostics,/OWNER_DEPTH_LIMIT=128/,"diagnostics must observe wrapper depth well beyond the historical 32-layer truncation");
+assert.match(diagnostics,/OWNER_SIGNATURE_LIMIT=24/,"deep ownership signatures must remain bounded even while full depth is counted");
+assert.match(diagnostics,/ownerMarkerCount/,"diagnostics must count retained historical owner markers through the wrapper ancestry");
 assert.match(diagnostics,/loopOwnerDepth/,"diagnostics must expose RAF-owner wrapper depth");
 assert.match(diagnostics,/updateOwnerDepth/,"diagnostics must expose update-owner wrapper depth");
 assert.match(diagnostics,/moveOwnerDepth/,"diagnostics must expose movement-owner wrapper depth");
+assert.match(diagnostics,/damageOwnerDepth/,"diagnostics must expose damage-owner wrapper depth");
+assert.match(diagnostics,/damageR29Layers/,"diagnostics must count retained R29 damage-owner layers");
+assert.match(diagnostics,/damageR56Layers/,"diagnostics must count retained R56 damage-owner layers");
+assert.match(diagnostics,/damageR60Layers/,"diagnostics must count retained R60 damage-owner layers");
 assert.match(diagnostics,/sharedFrameBoundaryReassertions/,"diagnostics must record shared update-owner reassertions");
 assert.match(diagnostics,/ownedSystemReassertions/,"diagnostics must record mode-owned system reassertions");
 assert.match(diagnostics,/r29FrameStalls/,"diagnostics must correlate r29 frame stalls");
@@ -37,6 +44,10 @@ assert.match(diagnostics,/ownerSealBlockedWrites/,"diagnostics must expose block
 assert.match(diagnostics,/r59AcceptedFrames/,"diagnostics must correlate r59 accepted RAF frames");
 assert.match(diagnostics,/r59PauseBoundaries/,"diagnostics must correlate r59 pause boundaries");
 assert.match(diagnostics,/r59SuppressRecoveryUntil/,"diagnostics must expose the r59 pause recovery guard window");
+assert.match(diagnostics,/r59SoloSubsteps/,"diagnostics must expose bounded Solo simulation substeps");
+assert.match(diagnostics,/r59SoloCatchupFrames/,"diagnostics must expose how often Solo needs more than one simulation substep per render");
+assert.match(diagnostics,/r59SoloDiscardedVisibleMs/,"diagnostics must expose active visible wall time discarded by the Solo catch-up ceiling");
+assert.match(diagnostics,/r59SoloLastSteps/,"diagnostics must expose the most recent Solo substep count");
 assert.match(diagnostics,/setInterval\(sample,SAMPLE_MS\)/,"diagnostics must use only its bounded passive sampling interval");
 
 const forbiddenMutations=[
@@ -76,4 +87,4 @@ for(const pattern of gameplayCalls){
 const intervalCalls=[...diagnostics.matchAll(/setInterval\s*\(/g)];
 assert.equal(intervalCalls.length,1,"diagnostics must install exactly one passive sampling interval");
 
-console.log("Lost Sizzler Solo stability diagnostics passive-observer contract passed.");
+console.log("Lost Sizzler Solo stability diagnostics passive-observer contract passed with deep owner and bounded-clock telemetry.");
