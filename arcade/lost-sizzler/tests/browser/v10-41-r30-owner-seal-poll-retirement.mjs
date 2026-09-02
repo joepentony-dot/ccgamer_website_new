@@ -29,6 +29,9 @@ try{
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R30?.state?.goldenLocked));
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R30OwnerSeal));
+  // R30 can lock an initial release owner and then deliberately promote the
+  // final R60 cadence wrapper. Do not snapshot an obsolete pre-R60 golden owner.
+  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R30?.state?.goldenMove?.__ccgV141R60CadenceSeal),null,{timeout:15000});
 
   const readiness=await page.evaluate(()=>{
     const guard=window.CCGLostSizzlerV141R30,seal=window.CCGLostSizzlerV141R30OwnerSeal;
@@ -37,7 +40,8 @@ try{
     window.__r30PollRetirementGolden=guard.state.goldenMove;
     window.__r30PollRetirementBefore={
       blocked:Number(seal.state?.blockedWrites||0),
-      repairs:Number(guard.state?.ownershipRepairs||0)
+      repairs:Number(guard.state?.ownershipRepairs||0),
+      promotions:Number(guard.state?.goldenMovePromotions||0)
     };
     return{
       assignmentGate:Boolean(seal.state?.assignmentGate),
@@ -46,10 +50,14 @@ try{
       retirementReason:String(seal.state?.pollRetirementReason||""),
       sealTimer:Number(seal.state?.timer||0),
       globalGuardTimer:Number(guard.state?.timer||0),
-      goldenLocked:Boolean(guard.state?.goldenLocked)
+      goldenLocked:Boolean(guard.state?.goldenLocked),
+      r60Golden:Boolean(guard.state?.goldenMove?.__ccgV141R60CadenceSeal),
+      tutorialCompatible:Boolean(guard.state?.goldenMove?.__tutorial)
     }
   });
   assert.equal(readiness.goldenLocked,true,"R30 poll-retirement regression requires the proven locked golden movement owner");
+  assert.equal(readiness.r60Golden,true,"R30 poll-retirement regression must snapshot the final R60-promoted movement owner");
+  assert.equal(readiness.tutorialCompatible,true,"the final R30 golden movement owner must remain tutorial-compatible");
   assert.ok(readiness.globalGuardTimer>0,"R30 40ms global recovery guard must be active before the 16ms seal poll retires");
   assert.ok(["assignment-gate","r30-global-guard"].includes(readiness.retirementCoverage),`R30 seal poll needs a live replacement recovery path: ${JSON.stringify(readiness)}`);
   assert.equal(readiness.sealTimer,0,`R30 16ms owner-seal poll must retire when replacement coverage exists: ${JSON.stringify(readiness)}`);
@@ -96,6 +104,8 @@ try{
         goldenName:String(golden?.name||""),
         currentEqualsGolden:current===golden,
         guardGoldenEqualsExpected:guard.state?.goldenMove===golden,
+        goldenR60:Boolean(guard.state?.goldenMove?.__ccgV141R60CadenceSeal),
+        goldenPromotions:Number(guard.state?.goldenMovePromotions||0),
         baselineEqualsCurrent:guard.state?.baselineMove===current,
         baselineEqualsGolden:guard.state?.baselineMove===golden,
         currentOriginalEqualsGolden:current?.__ccgOriginal===golden,
@@ -121,18 +131,49 @@ try{
       globalGuardTimer:Number(guard.state.timer||0),
       blockedDelta:Number(seal.state.blockedWrites||0)-Number(before.blocked||0),
       repairDelta:Number(guard.state.ownershipRepairs||0)-Number(before.repairs||0),
+      promotionDelta:Number(guard.state.goldenMovePromotions||0)-Number(before.promotions||0),
       moveStillGolden:window.movePlayer===window.__r30PollRetirementGolden,
-      goldenStable:guard.state.goldenMove===window.__r30PollRetirementGolden
+      goldenStable:guard.state.goldenMove===window.__r30PollRetirementGolden,
+      tutorialCompatible:Boolean(window.movePlayer?.__tutorial)
     }
   });
 
   assert.equal(result.sealTimer,0,"R30 16ms owner-seal poll must remain retired after a hostile movement-owner write");
   assert.ok(result.globalGuardTimer>0,"the broader R30 40ms recovery guard must remain active during this consolidation step");
-  assert.equal(result.moveStillGolden,true,"the surviving R30 recovery path must restore the locked golden movement owner within 500ms");
-  assert.equal(result.goldenStable,true,"the surviving recovery path must not mutate the locked golden owner identity");
+  assert.equal(result.moveStillGolden,true,"the surviving R30 recovery path must restore the final locked golden movement owner within 500ms");
+  assert.equal(result.goldenStable,true,"the surviving recovery path must not mutate the final R60-promoted golden owner identity");
+  assert.equal(result.promotionDelta,0,"no further golden movement promotion should occur after the final R60 owner is snapshotted");
+  assert.equal(result.tutorialCompatible,true,"hostile-owner recovery must preserve the golden owner's tutorial compatibility marker");
   assert.ok(result.repairDelta>=1||result.blockedDelta>=1,`the hostile assignment must be visible to either the synchronous gate or the R30 global recovery diagnostics: ${JSON.stringify(result)}`);
+
+  const tutorialStability=await page.evaluate(async()=>{
+    const guard=window.CCGLostSizzlerV141R30,seal=window.CCGLostSizzlerV141R30OwnerSeal,ts=window.CCGLostSizzlerOnboardingV120?.state;
+    const original={active:Boolean(ts?.active),requested:Boolean(ts?.tutorialRequested),force:Boolean(ts?.forceTutorial),dataset:String(document.body?.dataset?.tutorialActive||"")};
+    const beforeRepairs=Number(guard.state?.ownershipRepairs||0),beforeBlocked=Number(seal.state?.blockedWrites||0),golden=guard.state.goldenMove;
+    if(ts){ts.tutorialRequested=true;ts.active=true;ts.forceTutorial=false}
+    document.body.dataset.tutorialActive="true";
+    seal.syncTutorialWindow?.();
+    await new Promise(resolve=>setTimeout(resolve,650));
+    const during={
+      sameOwner:window.movePlayer===golden,
+      goldenStable:guard.state.goldenMove===golden,
+      tutorialMarker:Boolean(golden?.__tutorial),
+      currentMarker:Boolean(window.movePlayer?.__tutorial),
+      repairs:Number(guard.state?.ownershipRepairs||0)-beforeRepairs,
+      blocked:Number(seal.state?.blockedWrites||0)-beforeBlocked
+    };
+    if(ts){ts.active=original.active;ts.tutorialRequested=original.requested;ts.forceTutorial=original.force}
+    if(original.dataset)document.body.dataset.tutorialActive=original.dataset;else delete document.body.dataset.tutorialActive;
+    seal.syncTutorialWindow?.();
+    return during
+  });
+  assert.equal(tutorialStability.sameOwner,true,`legacy onboarding must not rewrap the R30 golden movement owner during a 650ms Tutorial window: ${JSON.stringify(tutorialStability)}`);
+  assert.equal(tutorialStability.goldenStable,true,"Tutorial ownership compatibility must not promote or replace the final R30 golden movement owner");
+  assert.equal(tutorialStability.tutorialMarker,true,"R30 golden movement owner must retain __tutorial throughout Tutorial activity");
+  assert.equal(tutorialStability.currentMarker,true,"live movement owner must remain tutorial-compatible throughout Tutorial activity");
+
   assert.deepEqual(errors,[],`R30 owner-seal poll-retirement regression must not produce page errors: ${errors.join("\n")}`);
-  console.log(`R30 owner-seal 16ms poll retired with ${result.retirementCoverage}; assignmentGate=${result.assignmentGate}, recoveryDiagnostics=${result.repairDelta+result.blockedDelta}.`);
+  console.log(`R30 owner-seal 16ms poll retired with ${result.retirementCoverage}; assignmentGate=${result.assignmentGate}, recoveryDiagnostics=${result.repairDelta+result.blockedDelta}; Tutorial owner remained stable across legacy installer cadence.`);
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(resolve));
