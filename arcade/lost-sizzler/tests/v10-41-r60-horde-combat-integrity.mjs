@@ -14,6 +14,8 @@ assert.match(r60,/MAX_VISIBLE_FRAME_MS=210/,"R60 must bound active-play wall-clo
 assert.match(r60,/MAX_PROJECTILE_STEPS=3/,"R60 must bound projectile substeps per rendered frame");
 assert.match(r60,/MAX_ENEMY_STEPS=3/,"R60 must bound enemy AI substeps per rendered frame");
 assert.match(r60,/PAUSE_REENTRY_GUARD_MS=1200/,"R60 must retain the same 1.2 second pause-reentry protection window as R59");
+assert.match(r60,/PAUSE_COMBAT_SETTLE_MS=300/,"R60 must use a short explicit combat-settle window after resume");
+assert.match(r60,/PAUSE_COMBAT_STEP_BUDGET=2/,"R60 must cap post-resume projectile and enemy servicing to two canonical steps each");
 assert.match(r60,/projectileCD=SUPPRESS_TIMER_MS/,"R60 must suppress the old one-step-per-render projectile scheduler while Horde owns timing");
 assert.match(r60,/enemyCD=SUPPRESS_TIMER_MS/,"R60 must suppress the old one-step-per-render enemy scheduler while Horde owns timing");
 assert.match(r60,/stepProjectiles\(\)/,"R60 must reuse canonical tile-by-tile projectile collision rather than skip across cells");
@@ -27,7 +29,14 @@ assert.match(r60,/guarded=now<guardUntil/,"R60 must explicitly distinguish the p
 assert.match(r60,/if\(guarded\)state\.resumeGuardFrames\+\+/,"R60 must account guarded post-pause frames without replacing their real elapsed time");
 assert.match(r60,/let elapsed=guarded\?clamp\(raw\|\|16,1,45\):Math\.max\(frameDt\|\|0,raw\|\|frameDt\|\|16\)/,"post-pause combat must advance by real wall-clock frame time rather than the shared 45 ms simulation clamp");
 assert.doesNotMatch(r60,/if\(now<guardUntil\)\{raw=frameDt\|\|16/,"the pause guard must never inflate every rendered frame to the shared clamped game delta");
-assert.match(r60,/\(Number\(now\)\|\|0\)\+PAUSE_REENTRY_GUARD_MS/,"the R60 fallback resume guard must be measured forward from the current clock");
+assert.match(r60,/current\+PAUSE_REENTRY_GUARD_MS/,"the R60 fallback resume guard must be measured forward from the current clock");
+assert.match(r60,/state\.resumeCombatSettleUntil=current\+PAUSE_COMBAT_SETTLE_MS/,"each pause boundary must arm a fresh bounded combat-settle window");
+assert.match(r60,/state\.resumeProjectileSteps=0;state\.resumeEnemySteps=0/,"a fresh resume window must reset both scheduler step budgets");
+assert.match(r60,/PAUSE_COMBAT_STEP_BUDGET-Number\(state\.resumeProjectileSteps\|\|0\)/,"projectile service must consume a total post-resume step budget rather than a per-frame burst allowance");
+assert.match(r60,/PAUSE_COMBAT_STEP_BUDGET-Number\(state\.resumeEnemySteps\|\|0\)/,"enemy service must consume a total post-resume step budget rather than a per-frame burst allowance");
+assert.match(r60,/if\(state\.resumeProjectileSteps>=PAUSE_COMBAT_STEP_BUDGET\)discardProjectileDebt\(\)/,"excess projectile debt must be discarded once the settle budget is exhausted");
+assert.match(r60,/if\(state\.resumeEnemySteps>=PAUSE_COMBAT_STEP_BUDGET\)discardEnemyDebt\(\)/,"excess enemy debt must be discarded once the settle budget is exhausted");
+assert.match(r60,/state\.resumeSettleDiscardedMs\+=discarded/,"R60 must diagnose scheduler debt discarded during post-resume settling");
 assert.match(r60,/document\.hidden/,"R60 must refuse hidden-page combat catch-up");
 assert.match(r60,/const frame=Number\(window\.CCGLostSizzlerModeRuntime\?\.state\?\.sharedPreFrames\|\|0\)/,"R60 combat timing must bind to the authoritative mode-controller frame counter");
 assert.match(r60,/frameToken&&frameToken===state\.lastFrameToken&&state\.lastTiming/,"R60 must reuse one timing snapshot when a wrapper chain reaches beginFrame twice in one controller frame");
@@ -69,4 +78,4 @@ assert.match(frame,/timingState\.liveElapsedFrames=Number\(timingState\.liveElap
 assert.match(frame,/wrapped\.__ccgV141R60RealElapsed=true;wrapped\.__ccgV141R60FinalLiveOwner=true/,"the final owner must retain R60 compatibility markers without relying on them for identity");
 assert.match(frame,/if\(isHorde\(\)\)return maintainR60HordeLiveOwner\(\)/,"the production monitor must route Horde to its own final live owner instead of the Solo owner");
 
-console.log("Lost Sizzler V10.41 r60 Horde timing plus Solo smoothing, real-time pause recovery, controller-frame combat idempotency, Spy-safe ownership, synchronous exact Horde live ownership, environment and named-enemy integrity contracts passed.");
+console.log("Lost Sizzler V10.41 r60 Horde timing plus Solo smoothing, bounded pause settling, controller-frame combat idempotency, Spy-safe ownership, synchronous exact Horde live ownership, environment and named-enemy integrity contracts passed.");
