@@ -41,7 +41,8 @@ try{
     window.__r30PollRetirementBefore={
       blocked:Number(seal.state?.blockedWrites||0),
       repairs:Number(guard.state?.ownershipRepairs||0),
-      promotions:Number(guard.state?.goldenMovePromotions||0)
+      promotions:Number(guard.state?.goldenMovePromotions||0),
+      rejectedPromotions:Number(guard.state?.goldenMovePromotionRejects||0)
     };
     return{
       assignmentGate:Boolean(seal.state?.assignmentGate),
@@ -63,7 +64,7 @@ try{
   assert.equal(readiness.sealTimer,0,`R30 16ms owner-seal poll must retire when replacement coverage exists: ${JSON.stringify(readiness)}`);
 
   await page.evaluate(()=>{
-    const dead=function r30PollRetirementDeadOwner(){return false};dead.__ccgOriginal=window.movePlayer;window.movePlayer=dead;
+    const dead=function r30PollRetirementDeadOwner(){return false};dead.__r30PollRetirementHostile=true;dead.__ccgOriginal=window.movePlayer;window.movePlayer=dead;
   });
   let recoveryTimeout=null;
   try{
@@ -106,6 +107,9 @@ try{
         guardGoldenEqualsExpected:guard.state?.goldenMove===golden,
         goldenR60:Boolean(guard.state?.goldenMove?.__ccgV141R60CadenceSeal),
         goldenPromotions:Number(guard.state?.goldenMovePromotions||0),
+        rejectedPromotions:Number(guard.state?.goldenMovePromotionRejects||0),
+        currentContainsHostile:Boolean(guard.chainHas?.(current,"__r30PollRetirementHostile")),
+        goldenContainsHostile:Boolean(guard.chainHas?.(guard.state?.goldenMove,"__r30PollRetirementHostile")),
         baselineEqualsCurrent:guard.state?.baselineMove===current,
         baselineEqualsGolden:guard.state?.baselineMove===golden,
         currentOriginalEqualsGolden:current?.__ccgOriginal===golden,
@@ -132,8 +136,11 @@ try{
       blockedDelta:Number(seal.state.blockedWrites||0)-Number(before.blocked||0),
       repairDelta:Number(guard.state.ownershipRepairs||0)-Number(before.repairs||0),
       promotionDelta:Number(guard.state.goldenMovePromotions||0)-Number(before.promotions||0),
+      rejectedPromotionDelta:Number(guard.state.goldenMovePromotionRejects||0)-Number(before.rejectedPromotions||0),
       moveStillGolden:window.movePlayer===window.__r30PollRetirementGolden,
       goldenStable:guard.state.goldenMove===window.__r30PollRetirementGolden,
+      currentContainsHostile:Boolean(guard.chainHas?.(window.movePlayer,"__r30PollRetirementHostile")),
+      goldenContainsHostile:Boolean(guard.chainHas?.(guard.state.goldenMove,"__r30PollRetirementHostile")),
       tutorialCompatible:Boolean(window.movePlayer?.__tutorial)
     }
   });
@@ -142,7 +149,9 @@ try{
   assert.ok(result.globalGuardTimer>0,"the broader R30 40ms recovery guard must remain active during this consolidation step");
   assert.equal(result.moveStillGolden,true,"the surviving R30 recovery path must restore the final locked golden movement owner within 500ms");
   assert.equal(result.goldenStable,true,"the surviving recovery path must not mutate the final R60-promoted golden owner identity");
-  assert.equal(result.promotionDelta,0,"no further golden movement promotion should occur after the final R60 owner is snapshotted");
+  assert.equal(result.promotionDelta,0,"a hostile intermediary must never trigger a further golden movement promotion");
+  assert.equal(result.currentContainsHostile,false,"hostile movement ownership must not survive anywhere in the restored live movement chain");
+  assert.equal(result.goldenContainsHostile,false,"hostile movement ownership must never be admitted into the R30 golden movement chain");
   assert.equal(result.tutorialCompatible,true,"hostile-owner recovery must preserve the golden owner's tutorial compatibility marker");
   assert.ok(result.repairDelta>=1||result.blockedDelta>=1,`the hostile assignment must be visible to either the synchronous gate or the R30 global recovery diagnostics: ${JSON.stringify(result)}`);
 
@@ -173,7 +182,7 @@ try{
   assert.equal(tutorialStability.currentMarker,true,"live movement owner must remain tutorial-compatible throughout Tutorial activity");
 
   assert.deepEqual(errors,[],`R30 owner-seal poll-retirement regression must not produce page errors: ${errors.join("\n")}`);
-  console.log(`R30 owner-seal 16ms poll retired with ${result.retirementCoverage}; assignmentGate=${result.assignmentGate}, recoveryDiagnostics=${result.repairDelta+result.blockedDelta}; Tutorial owner remained stable across legacy installer cadence.`);
+  console.log(`R30 owner-seal 16ms poll retired with ${result.retirementCoverage}; assignmentGate=${result.assignmentGate}, recoveryDiagnostics=${result.repairDelta+result.blockedDelta}, rejectedPromotions=${result.rejectedPromotionDelta}; Tutorial owner remained stable across legacy installer cadence.`);
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(resolve));
