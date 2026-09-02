@@ -5,11 +5,20 @@
   window.__CCG_LOST_SIZZLER_V141_R30_OWNER_SEAL__=true;
 
   const SPY_MODE="sizzler-saboteurs",CHECK_MS=16;
-  const state={timer:0,repairs:0,blockedWrites:0,lastRepairAt:0,lastObserved:null,lastBlocked:null,assignmentGate:false,assignmentGateUnsupported:false,tutorialWindow:false,pollStarts:0,pollRetirements:0,pollRetirementReason:""};
-  let gatedMove=null;
+  const state={timer:0,repairs:0,blockedWrites:0,lastRepairAt:0,lastObserved:null,lastBlocked:null,assignmentGate:false,assignmentGateUnsupported:false,assignmentGateLosses:0,tutorialWindow:false,pollStarts:0,pollRetirements:0,pollRetirementReason:""};
+  let gatedMove=null,gateGetter=null,gateSetter=null;
 
   function r30(){return window.CCGLostSizzlerV141R30||null}
-  function broaderGuardActive(){return Boolean(Number(r30()?.state?.timer||0)>0)}
+  function finalMovementStackReady(){
+    const tutorial=window.CCGLostSizzlerV141TutorialActionFinalizer?.state;
+    const spyFinal=window.CCGLostSizzlerV141SpyMovementFinalizer?.state;
+    const stability=window.CCGLostSizzlerV141BrowserStabilityGameplay?.state;
+    return Boolean(tutorial?.installed&&spyFinal?.moveInstalled&&stability?.moveGuard)
+  }
+  function broaderGuardActive(){
+    const api=r30(),guard=api?.state;
+    return Boolean(Number(guard?.timer||0)>0&&guard?.goldenLocked&&typeof guard?.goldenMove==="function"&&finalMovementStackReady())
+  }
   function spyOwned(){
     try{
       const active=window.CCGLostSizzlerSpecialModes?.active?.type;
@@ -51,28 +60,39 @@
     state.blockedWrites++;state.lastBlocked=value;state.repairs++;state.lastRepairAt=Date.now();
     noteR30OwnershipRepair();
   }
+  function assignmentGateActive(){
+    if(!state.assignmentGate||typeof gateGetter!=="function"||typeof gateSetter!=="function")return false;
+    let descriptor;
+    try{descriptor=Object.getOwnPropertyDescriptor(window,"movePlayer")}catch(_){descriptor=null}
+    const live=Boolean(descriptor&&descriptor.get===gateGetter&&descriptor.set===gateSetter);
+    if(!live){state.assignmentGate=false;state.assignmentGateLosses++}
+    return live
+  }
   function installAssignmentGate(){
-    if(state.assignmentGate||state.assignmentGateUnsupported)return state.assignmentGate;
+    if(assignmentGateActive())return true;
+    if(state.assignmentGateUnsupported)return false;
     const target=golden();if(!target)return false;
     let descriptor;
     try{descriptor=Object.getOwnPropertyDescriptor(window,"movePlayer")}catch(_){descriptor=null}
     if(descriptor&&descriptor.configurable===false){state.assignmentGateUnsupported=true;return false}
     gatedMove=typeof window.movePlayer==="function"?window.movePlayer:target;
+    gateGetter=function getMovePlayerR30OwnerSeal(){return gatedMove};
+    gateSetter=function setMovePlayerR30OwnerSeal(value){
+      const locked=golden(),tutorial=syncTutorialWindow();
+      if(!locked||spyOwned()||tutorial||value===locked){gatedMove=value;return}
+      noteBlockedWrite(value);gatedMove=locked;
+    };
     try{
       Object.defineProperty(window,"movePlayer",{
         configurable:true,
         enumerable:descriptor?.enumerable!==false,
-        get(){return gatedMove},
-        set(value){
-          const locked=golden(),tutorial=syncTutorialWindow();
-          if(!locked||spyOwned()||tutorial||value===locked){gatedMove=value;return}
-          noteBlockedWrite(value);gatedMove=locked;
-        }
+        get:gateGetter,
+        set:gateSetter
       });
       state.assignmentGate=true;
       if(!spyOwned()&&!syncTutorialWindow())gatedMove=target;
       return true;
-    }catch(_){state.assignmentGateUnsupported=true;return false}
+    }catch(_){state.assignmentGateUnsupported=true;gateGetter=gateSetter=null;return false}
   }
   function seal(reason="normal-mode owner seal"){
     const tutorial=syncTutorialWindow();
@@ -90,7 +110,7 @@
   }
 
   function retirementCoverage(){
-    if(state.assignmentGate)return"assignment-gate";
+    if(assignmentGateActive())return"assignment-gate";
     if(broaderGuardActive())return"r30-global-guard";
     return""
   }
@@ -119,5 +139,5 @@
     removeEventListener("keydown",onMovementKey,true);removeEventListener("keyup",onMovementKey,true);
   },{once:true});
 
-  window.CCGLostSizzlerV141R30OwnerSeal={seal,installAssignmentGate,broaderGuardActive,retirementCoverage,retirePollIfCovered,ensureFallbackPoll,spyOwned,tutorialOwned,syncTutorialWindow,get state(){return state}};
+  window.CCGLostSizzlerV141R30OwnerSeal={seal,installAssignmentGate,assignmentGateActive,finalMovementStackReady,broaderGuardActive,retirementCoverage,retirePollIfCovered,ensureFallbackPoll,spyOwned,tutorialOwned,syncTutorialWindow,get state(){return state}};
 })();
