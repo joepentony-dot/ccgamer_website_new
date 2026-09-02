@@ -107,13 +107,13 @@
     state.lastNow=now;state.lastPauseBoundary=pauseBoundary;state.lastMode=modeNow;
 
     if(boundaryChanged||resumedFromPause){
-      state.pauseGapsDiscarded++;resetCombatAccumulators("pause resume");armResumeGuard(now);raw=frameDt||16
+      state.pauseGapsDiscarded++;resetCombatAccumulators("pause resume");armResumeGuard(now);raw=16
     }else if(modeChanged){
-      raw=frameDt||16
+      raw=16
     }
-    const r59GuardUntil=Math.max(0,Number(r59State()?.suppressRecoveryUntil)||0),guardUntil=Math.max(Number(state.resumeGuardUntil)||0,r59GuardUntil);
-    if(now<guardUntil){raw=frameDt||16;state.resumeGuardFrames++}
-    let elapsed=Math.max(frameDt||0,raw||frameDt||16);
+    const r59GuardUntil=Math.max(0,Number(r59State()?.suppressRecoveryUntil)||0),guardUntil=Math.max(Number(state.resumeGuardUntil)||0,r59GuardUntil),guarded=now<guardUntil;
+    if(guarded)state.resumeGuardFrames++;
+    let elapsed=guarded?clamp(raw||16,1,45):Math.max(frameDt||0,raw||frameDt||16);
     if(elapsed>MAX_VISIBLE_FRAME_MS){state.visibleGapClamps++;state.discardedVisibleMs+=elapsed-MAX_VISIBLE_FRAME_MS;elapsed=MAX_VISIBLE_FRAME_MS}
     const extra=Math.max(0,elapsed-frameDt);
     payDownPlayerTimers(extra);
