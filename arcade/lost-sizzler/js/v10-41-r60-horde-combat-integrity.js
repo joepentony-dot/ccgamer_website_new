@@ -22,10 +22,13 @@
   const MAX_ENEMY_STEPS=3;
   const SUPPRESS_TIMER_MS=60000;
   const PAUSE_REENTRY_GUARD_MS=1200;
+  const PAUSE_COMBAT_SETTLE_MS=300;
+  const PAUSE_COMBAT_STEP_BUDGET=2;
   const state={
     timer:0,installed:false,combatWrapped:false,liveWrapped:false,
     preSource:null,postSource:null,liveSource:null,liveOwner:null,
     lastNow:0,lastPauseBoundary:0,lastMode:"",clockPrimed:false,resumeGuardUntil:0,
+    resumeCombatSettleUntil:0,resumeProjectileSteps:0,resumeEnemySteps:0,resumeSettleDiscardedMs:0,
     lastFrameToken:"",lastTiming:null,lastServicedFrameToken:"",duplicateBeginFrames:0,duplicateCombatServices:0,
     projectileAccumulator:0,enemyAccumulator:0,currentElapsed:0,currentFrameDt:0,currentExtra:0,
     frames:0,clockResets:0,pauseGapsDiscarded:0,pauseAccumulatorResets:0,resumeGuardFrames:0,visibleGapClamps:0,discardedVisibleMs:0,
@@ -69,7 +72,10 @@
     state.lastPauseBoundary=Number(r59State()?.pauseBoundaries||0);
     state.currentElapsed=0;state.currentFrameDt=0;state.currentExtra=0;
     state.lastFrameToken="";state.lastTiming=null;state.lastServicedFrameToken="";
-    if(!keepRemainder){state.projectileAccumulator=0;state.enemyAccumulator=0;state.clockPrimed=false}
+    if(!keepRemainder){
+      state.projectileAccumulator=0;state.enemyAccumulator=0;state.clockPrimed=false;
+      state.resumeCombatSettleUntil=0;state.resumeProjectileSteps=0;state.resumeEnemySteps=0
+    }
     state.clockResets++;
     return reason
   }
@@ -82,8 +88,10 @@
   }
 
   function armResumeGuard(now=perfNow()){
-    const r59Until=Math.max(0,Number(r59State()?.suppressRecoveryUntil)||0);
-    state.resumeGuardUntil=Math.max(Number(state.resumeGuardUntil)||0,r59Until,(Number(now)||0)+PAUSE_REENTRY_GUARD_MS);
+    const current=Math.max(0,Number(now)||0),r59Until=Math.max(0,Number(r59State()?.suppressRecoveryUntil)||0);
+    state.resumeGuardUntil=Math.max(Number(state.resumeGuardUntil)||0,r59Until,current+PAUSE_REENTRY_GUARD_MS);
+    state.resumeCombatSettleUntil=current+PAUSE_COMBAT_SETTLE_MS;
+    state.resumeProjectileSteps=0;state.resumeEnemySteps=0;
     return state.resumeGuardUntil
   }
 
@@ -147,33 +155,42 @@
     return rememberTiming({active:true,elapsed,frameDt,extra,pauseBoundary,frameToken},frameToken)
   }
 
-  function runProjectileSteps(elapsed){
+  function discardProjectileDebt(){
+    if(state.projectileAccumulator<PROJECTILE_STEP_MS)return 0;
+    const excess=state.projectileAccumulator%PROJECTILE_STEP_MS,discarded=state.projectileAccumulator-excess;
+    state.projectileAccumulator=excess;state.discardedVisibleMs+=discarded;state.resumeSettleDiscardedMs+=discarded;
+    return discarded
+  }
+
+  function discardEnemyDebt(think=enemyThinkMs()){
+    if(state.enemyAccumulator<think)return 0;
+    const excess=state.enemyAccumulator%think,discarded=state.enemyAccumulator-excess;
+    state.enemyAccumulator=excess;state.discardedVisibleMs+=discarded;state.resumeSettleDiscardedMs+=discarded;
+    return discarded
+  }
+
+  function runProjectileSteps(elapsed,maxSteps=MAX_PROJECTILE_STEPS){
     state.projectileAccumulator+=Math.max(0,Number(elapsed)||0);
-    let steps=0;
-    while(state.projectileAccumulator>=PROJECTILE_STEP_MS&&steps<MAX_PROJECTILE_STEPS){
+    const limit=clamp(Math.floor(Number(maxSteps)||0),0,MAX_PROJECTILE_STEPS);let steps=0;
+    while(state.projectileAccumulator>=PROJECTILE_STEP_MS&&steps<limit){
       try{if(typeof stepProjectiles==="function")stepProjectiles()}catch(error){recordError(error);break}
       state.projectileAccumulator-=PROJECTILE_STEP_MS;steps++;state.projectileSteps++
     }
     if(steps>1)state.projectileCatchupSteps+=steps-1;
-    if(state.projectileAccumulator>=PROJECTILE_STEP_MS){
-      const excess=state.projectileAccumulator%PROJECTILE_STEP_MS;
-      state.discardedVisibleMs+=state.projectileAccumulator-excess;state.projectileAccumulator=excess
-    }
+    if(state.projectileAccumulator>=PROJECTILE_STEP_MS)discardProjectileDebt();
     try{projectileCD=Math.max(0,PROJECTILE_STEP_MS-state.projectileAccumulator)}catch(_){}
     return steps
   }
 
-  function runEnemySteps(elapsed){
-    const think=enemyThinkMs();state.enemyAccumulator+=Math.max(0,Number(elapsed)||0);let steps=0;
-    while(state.enemyAccumulator>=think&&steps<MAX_ENEMY_STEPS){
+  function runEnemySteps(elapsed,maxSteps=MAX_ENEMY_STEPS){
+    const think=enemyThinkMs();state.enemyAccumulator+=Math.max(0,Number(elapsed)||0);
+    const limit=clamp(Math.floor(Number(maxSteps)||0),0,MAX_ENEMY_STEPS);let steps=0;
+    while(state.enemyAccumulator>=think&&steps<limit){
       try{if(typeof hostEnemyStep==="function")hostEnemyStep(think)}catch(error){recordError(error);break}
       state.enemyAccumulator-=think;steps++;state.enemySteps++
     }
     if(steps>1)state.enemyCatchupSteps+=steps-1;
-    if(state.enemyAccumulator>=think){
-      const excess=state.enemyAccumulator%think;
-      state.discardedVisibleMs+=state.enemyAccumulator-excess;state.enemyAccumulator=excess
-    }
+    if(state.enemyAccumulator>=think)discardEnemyDebt(think);
     try{enemyCD=Math.max(0,think-state.enemyAccumulator)}catch(_){}
     return steps
   }
@@ -183,7 +200,15 @@
     const frameToken=String(timing.frameToken||"");
     if(frameToken&&frameToken===state.lastServicedFrameToken){state.duplicateCombatServices++;return{projectiles:0,enemies:0}}
     if(frameToken)state.lastServicedFrameToken=frameToken;
-    const projectiles=runProjectileSteps(timing.elapsed),enemies=runEnemySteps(timing.elapsed);
+    const settling=perfNow()<Number(state.resumeCombatSettleUntil||0);
+    const projectileLimit=settling?Math.max(0,PAUSE_COMBAT_STEP_BUDGET-Number(state.resumeProjectileSteps||0)):MAX_PROJECTILE_STEPS;
+    const enemyLimit=settling?Math.max(0,PAUSE_COMBAT_STEP_BUDGET-Number(state.resumeEnemySteps||0)):MAX_ENEMY_STEPS;
+    const projectiles=runProjectileSteps(timing.elapsed,projectileLimit),enemies=runEnemySteps(timing.elapsed,enemyLimit);
+    if(settling){
+      state.resumeProjectileSteps+=projectiles;state.resumeEnemySteps+=enemies;
+      if(state.resumeProjectileSteps>=PAUSE_COMBAT_STEP_BUDGET)discardProjectileDebt();
+      if(state.resumeEnemySteps>=PAUSE_COMBAT_STEP_BUDGET)discardEnemyDebt()
+    }
     return{projectiles,enemies}
   }
 
@@ -271,8 +296,8 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0;resetClock("pagehide",false)},{once:true});
 
   window.CCGLostSizzlerV141R60HordeCombatIntegrity={
-    PROJECTILE_STEP_MS,MAX_VISIBLE_FRAME_MS,MAX_PROJECTILE_STEPS,MAX_ENEMY_STEPS,SUPPRESS_TIMER_MS,PAUSE_REENTRY_GUARD_MS,
-    beginFrame,serviceCombat,runProjectileSteps,runEnemySteps,payDownPlayerTimers,resetClock,resetCombatAccumulators,armResumeGuard,primeAccumulators,controllerFrameToken,wrapCombatController,wrapLiveController,install,
+    PROJECTILE_STEP_MS,MAX_VISIBLE_FRAME_MS,MAX_PROJECTILE_STEPS,MAX_ENEMY_STEPS,SUPPRESS_TIMER_MS,PAUSE_REENTRY_GUARD_MS,PAUSE_COMBAT_SETTLE_MS,PAUSE_COMBAT_STEP_BUDGET,
+    beginFrame,serviceCombat,runProjectileSteps,runEnemySteps,discardProjectileDebt,discardEnemyDebt,payDownPlayerTimers,resetClock,resetCombatAccumulators,armResumeGuard,primeAccumulators,controllerFrameToken,wrapCombatController,wrapLiveController,install,
     get state(){return state}
   };
 })();
