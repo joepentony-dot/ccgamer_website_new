@@ -5,7 +5,7 @@ on:
     branches:
       - codex/seo-growth-repair-2026-09-02
     paths:
-      - 'scripts/apply-seo-growth-repair.js'
+      - 'scripts/apply-seo-growth-repair-v2.js'
       - 'scripts/generate-*.js'
       - 'admin/templates/**'
       - 'data/**'
@@ -39,13 +39,13 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Apply SEO growth repairs
-        run: node scripts/apply-seo-growth-repair.js
+        run: node scripts/apply-seo-growth-repair-v2.js
 
       - name: Validate repaired outputs
-        run: node scripts/apply-seo-growth-repair.js --check
+        run: node scripts/apply-seo-growth-repair-v2.js --check
 
       - name: Commit generated SEO outputs
         shell: bash
