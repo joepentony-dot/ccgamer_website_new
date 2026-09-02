@@ -38,6 +38,18 @@ try{
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(run)&&Boolean(p1)&&Boolean(world)&&Boolean(host),null,{timeout:20000});
   await page.waitForFunction(()=>window.CCGLostSizzlerV141R43SoloSave?.readEnvelope?.()?.summary?.floor===1,null,{timeout:10000});
 
+  const soloLivenessAfterStart=await page.evaluate(()=>{
+    const watchdog=window.CCGLostSizzlerLoadWatchdog?.state;
+    return{
+      recoveryTimerActive:Boolean(watchdog?.soloRecoveryTimer),
+      observerActive:Boolean(watchdog?.soloLivenessObserver),
+      recoveries:Number(watchdog?.soloRecoveries||0),
+      intentSerial:Number(watchdog?.soloIntentSerial||0)
+    };
+  });
+  assert.equal(soloLivenessAfterStart.recoveryTimerActive,false,"a successful Solo launch must retire its watchdog liveness timer before Save & Quit can return to the menu");
+  assert.equal(soloLivenessAfterStart.observerActive,false,"a successful Solo launch must retire its watchdog liveness observer");
+
   const beforeQuit=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R43SoloSave,envelope=api.readEnvelope(),entry=api.state?.entryCheckpoint;
     return{
@@ -75,16 +87,20 @@ try{
   });
 
   const beforeContinue=await page.evaluate(()=>{
-    const api=window.CCGLostSizzlerV141R43SoloSave,envelope=api.readEnvelope();
+    const api=window.CCGLostSizzlerV141R43SoloSave,envelope=api.readEnvelope(),watchdog=window.CCGLostSizzlerLoadWatchdog?.state;
     return{
       envelopeSeed:String(envelope?.checkpoint?.run?.seed||""),envelopeReason:String(envelope?.reason||""),
       resumes:Number(api.state?.resumes||0),mode:String(mode||""),playMode:String(playMode||""),connected:Boolean(net?.connected),
       transport:String(net?.transport||""),channelPresent:Boolean(net?.channel),clientPresent:Boolean(net?.client),
-      stalledUntrackCalls:Number(window.__r43StalledUntrackCalls||0),unexpectedRemoveCalls:Number(window.__r43UnexpectedRemoveCalls||0)
+      stalledUntrackCalls:Number(window.__r43StalledUntrackCalls||0),unexpectedRemoveCalls:Number(window.__r43UnexpectedRemoveCalls||0),
+      soloRecoveryTimerActive:Boolean(watchdog?.soloRecoveryTimer),soloLivenessObserverActive:Boolean(watchdog?.soloLivenessObserver),
+      soloRecoveries:Number(watchdog?.soloRecoveries||0)
     };
   });
   assert.equal(beforeContinue.channelPresent,true,"LS-SOLO-008 regression requires a stale remote channel before Continue");
   assert.equal(beforeContinue.clientPresent,true,"LS-SOLO-008 regression requires a stale remote client before Continue");
+  assert.equal(beforeContinue.soloRecoveryTimerActive,false,"Continue must not inherit a stale Play Solo liveness timer");
+  assert.equal(beforeContinue.soloLivenessObserverActive,false,"Continue must not inherit a stale Play Solo liveness observer");
 
   await page.click("#continue-save-btn");
   let resumed=false,remoteCleanup={stalledUntrackCalls:0,unexpectedRemoveCalls:0};
@@ -101,17 +117,18 @@ try{
 
   assert.equal(resumed,true,"LS-SOLO-008: Continue must not wait for stalled remote channel cleanup before restoring a local Solo save");
   const restored=await page.evaluate(()=>{
-    const api=window.CCGLostSizzlerV141R43SoloSave,envelope=api.readEnvelope(),entry=api.state?.entryCheckpoint;
+    const api=window.CCGLostSizzlerV141R43SoloSave,envelope=api.readEnvelope(),entry=api.state?.entryCheckpoint,watchdog=window.CCGLostSizzlerLoadWatchdog?.state;
     return{
       seed:String(run?.seed||""),entrySeed:String(entry?.run?.seed||""),envelopeSeed:String(envelope?.checkpoint?.run?.seed||""),envelopeReason:String(envelope?.reason||""),
       score:Number(score||0),health:Number(p1?.health||0),mana:Number(p1?.mana||0),x:Number(p1?.x||0),y:Number(p1?.y||0),
       playMode:String(playMode||""),connected:Boolean(net?.connected),transport:String(net?.transport||""),resumes:Number(api.state?.resumes||0),
       mode:String(mode||""),runActive:String(document.body.dataset.runActive||""),channelPresent:Boolean(net?.channel),clientPresent:Boolean(net?.client),
-      memberCount:Number(net?.members?.size||0)
+      memberCount:Number(net?.members?.size||0),soloRecoveryTimerActive:Boolean(watchdog?.soloRecoveryTimer),
+      soloLivenessObserverActive:Boolean(watchdog?.soloLivenessObserver),soloRecoveries:Number(watchdog?.soloRecoveries||0)
     };
   });
 
-  const diagnostic={beforeQuit,afterQuit,beforeContinue,restored,remoteCleanup};
+  const diagnostic={soloLivenessAfterStart,beforeQuit,afterQuit,beforeContinue,restored,remoteCleanup};
   assert.equal(afterQuit.envelopeSeed,beforeQuit.envelopeSeed,`Save & Quit must preserve the captured floor-entry seed: ${JSON.stringify(diagnostic)}`);
   assert.equal(beforeContinue.envelopeSeed,afterQuit.envelopeSeed,`the saved envelope must remain stable before Continue: ${JSON.stringify(diagnostic)}`);
   assert.ok(remoteCleanup.stalledUntrackCalls>=1,`the regression must prove that real leave() reached a remote untrack promise that remained stalled: ${JSON.stringify(diagnostic)}`);
@@ -130,6 +147,9 @@ try{
   assert.equal(restored.channelPresent,false,`leave() synchronous cleanup must detach the stale channel before its remote await stalls: ${JSON.stringify(diagnostic)}`);
   assert.equal(restored.clientPresent,false,`leave() synchronous cleanup must detach the stale client before its remote await stalls: ${JSON.stringify(diagnostic)}`);
   assert.equal(restored.memberCount,1,`net.setSolo() must rebuild exactly one local member while remote cleanup remains stalled: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.soloRecoveryTimerActive,false,`restored Continue must not arm a Play Solo liveness timer: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.soloLivenessObserverActive,false,`restored Continue must not arm a Play Solo liveness observer: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.soloRecoveries,beforeContinue.soloRecoveries,`Continue must not trigger a stale Play Solo liveness recovery: ${JSON.stringify(diagnostic)}`);
   assert.ok(restored.resumes>=1,`stalled-cleanup recovery must advance the r43 resume diagnostic: ${JSON.stringify(diagnostic)}`);
   assert.deepEqual(errors,[],`LS-SOLO-008 stalled-cleanup regression must not produce page errors: ${errors.join("\n")} diagnostic=${JSON.stringify(diagnostic)}`);
   console.log(`LS-SOLO-008 stalled remote-cleanup diagnostic passed: ${JSON.stringify(diagnostic)}`);
