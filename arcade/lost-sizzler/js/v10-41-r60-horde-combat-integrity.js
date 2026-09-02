@@ -20,6 +20,8 @@
   const MAX_VISIBLE_FRAME_MS=210;
   const MAX_PROJECTILE_STEPS=3;
   const MAX_ENEMY_STEPS=3;
+  const HORDE_LIVE_STEP_MS=80;
+  const MAX_HORDE_LIVE_STEPS=3;
   const SUPPRESS_TIMER_MS=60000;
   const PAUSE_REENTRY_GUARD_MS=1200;
   const PAUSE_COMBAT_SETTLE_MS=300;
@@ -33,7 +35,7 @@
     projectileAccumulator:0,enemyAccumulator:0,currentElapsed:0,currentFrameDt:0,currentExtra:0,
     frames:0,clockResets:0,pauseGapsDiscarded:0,pauseAccumulatorResets:0,resumeGuardFrames:0,visibleGapClamps:0,discardedVisibleMs:0,
     projectileSteps:0,projectileCatchupSteps:0,enemySteps:0,enemyCatchupSteps:0,
-    playerTimerCatchupMs:0,liveElapsedFrames:0,liveOwnerInstalls:0,liveOwnerReassertions:0,hookReassertions:0,lastError:""
+    playerTimerCatchupMs:0,liveElapsedFrames:0,liveOwnerInstalls:0,liveOwnerReassertions:0,liveOwnerMonitorStops:0,liveSubsteps:0,liveCatchupSubsteps:0,liveDiscardedMs:0,hookReassertions:0,lastError:""
   };
 
   const perfNow=()=>{try{return Number(performance.now())||Date.now()}catch(_){return Date.now()}};
@@ -263,17 +265,39 @@
     return typeof current==="function"?current:null
   }
 
+  function stopCompetingHordeLiveOwner(){
+    try{
+      const performanceLayer=window.CCGLostSizzlerV141HordeFramePerformance,ownerState=performanceLayer?.state;
+      if(ownerState?.r60LiveTimer){clearInterval(ownerState.r60LiveTimer);ownerState.r60LiveTimer=0;state.liveOwnerMonitorStops++}
+    }catch(error){recordError(error)}
+    return true
+  }
+
+  function runHordeLiveElapsed(source,receiver,elapsed){
+    if(typeof source!=="function")return false;
+    if(!playingVisible())return source.call(receiver,Number(elapsed)||0);
+    let remaining=clamp(elapsed,0,MAX_VISIBLE_FRAME_MS),steps=0,result=false;
+    while(remaining>0&&steps<MAX_HORDE_LIVE_STEPS){
+      const slice=Math.min(HORDE_LIVE_STEP_MS,remaining);
+      result=source.call(receiver,slice);remaining-=slice;steps++
+    }
+    state.liveSubsteps+=steps;if(steps>1)state.liveCatchupSubsteps+=steps-1;
+    if(remaining>0){state.liveDiscardedMs+=remaining;state.discardedVisibleMs+=remaining}
+    return result
+  }
+
   function wrapLiveController(){
     const api=window.CCGLostSizzlerV138;if(!api||typeof api.updateHordeLive!=="function")return false;
+    stopCompetingHordeLiveOwner();
     const current=api.updateHordeLive;
     if(current===state.liveOwner||originalChainContains(current,state.liveOwner)){
       state.liveWrapped=true;return true
     }
     const source=unwrapLiveSource(current);if(typeof source!=="function")return false;
     const wrapped=function updateHordeLiveV141R60Owned(dt){
-      const elapsed=playingVisible()&&state.currentElapsed>0?state.currentElapsed:Number(dt)||0;
-      if(playingVisible())state.liveElapsedFrames++;
-      return source.call(this,elapsed)
+      const active=playingVisible(),elapsed=active&&state.currentElapsed>0?state.currentElapsed:Number(dt)||0;
+      if(active)state.liveElapsedFrames++;
+      return runHordeLiveElapsed(source,this,elapsed)
     };
     wrapped.__ccgV141R60RealElapsed=true;wrapped.__ccgV141R60ExactLiveOwner=true;wrapped.__ccgOriginal=source;
     const replacing=typeof state.liveOwner==="function";
@@ -298,8 +322,8 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0;resetClock("pagehide",false)},{once:true});
 
   window.CCGLostSizzlerV141R60HordeCombatIntegrity={
-    PROJECTILE_STEP_MS,MAX_VISIBLE_FRAME_MS,MAX_PROJECTILE_STEPS,MAX_ENEMY_STEPS,SUPPRESS_TIMER_MS,PAUSE_REENTRY_GUARD_MS,PAUSE_COMBAT_SETTLE_MS,PAUSE_COMBAT_STEP_BUDGET,
-    beginFrame,serviceCombat,runProjectileSteps,runEnemySteps,discardProjectileDebt,discardEnemyDebt,payDownPlayerTimers,resetClock,resetCombatAccumulators,armResumeGuard,primeAccumulators,controllerFrameToken,wrapCombatController,wrapLiveController,install,
+    PROJECTILE_STEP_MS,MAX_VISIBLE_FRAME_MS,MAX_PROJECTILE_STEPS,MAX_ENEMY_STEPS,HORDE_LIVE_STEP_MS,MAX_HORDE_LIVE_STEPS,SUPPRESS_TIMER_MS,PAUSE_REENTRY_GUARD_MS,PAUSE_COMBAT_SETTLE_MS,PAUSE_COMBAT_STEP_BUDGET,
+    beginFrame,serviceCombat,runProjectileSteps,runEnemySteps,discardProjectileDebt,discardEnemyDebt,payDownPlayerTimers,resetClock,resetCombatAccumulators,armResumeGuard,primeAccumulators,controllerFrameToken,runHordeLiveElapsed,stopCompetingHordeLiveOwner,wrapCombatController,wrapLiveController,install,
     get state(){return state}
   };
 })();
