@@ -22,12 +22,16 @@
   const MONITOR_MS=40;
   const LONG_GAP_MS=500;
   const PAUSE_GUARD_MS=1200;
+  const SOLO_MAX_STEP_MS=45;
+  const SOLO_MAX_VISIBLE_FRAME_MS=180;
+  const SOLO_MAX_STEPS=4;
   const state={
     timer:0,installed:false,clockInstalled:false,pauseWrapped:false,soloSaveTransitionInstalled:false,
     acceptedFrames:0,duplicateFramesSkipped:0,longGaps:0,longGapRecoveries:0,
     pausedGapsDiscarded:0,pauseBoundaries:0,lastAcceptedRafTimestamp:null,
     lastMode:"",suppressRecoveryUntil:0,lastPauseReason:"",lastError:"",
-    faultBridges:0,diagnosticBridges:0,r58Reassertions:0,r58Ticks:0,soloSaveTransitionInstalls:0,soloFloorAutosaves:0
+    faultBridges:0,diagnosticBridges:0,r58Reassertions:0,r58Ticks:0,soloSaveTransitionInstalls:0,soloFloorAutosaves:0,
+    soloFrames:0,soloSubsteps:0,soloCatchupFrames:0,soloDiscardedVisibleMs:0,soloLastElapsed:0,soloLastSteps:0
   };
 
   let basePayDownCombatGap=null;
@@ -37,6 +41,13 @@
   const currentMode=()=>{try{return String(mode||"")}catch(_){return""}};
   const spyActive=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type==="sizzler-saboteurs"||document.body?.dataset?.specialMode==="sizzler-saboteurs"}catch(_){return false}};
   const r29State=()=>{try{return window.CCGLostSizzlerV141R29?.state||null}catch(_){return null}};
+  const soloDungeonPlaying=()=>{
+    try{
+      return currentMode()==="playing"&&!document.hidden&&document.body?.dataset?.runActive==="true"&&
+        window.CCGLostSizzlerModeRuntime?.state?.activeId==="dungeon-solo"&&
+        !window.CCGLostSizzlerSpecialModes?.active?.type&&!document.body?.dataset?.specialMode;
+    }catch(_){return false}
+  };
 
   function chainHas(fn,marker){
     const seen=new Set();let current=fn,depth=0;
@@ -101,6 +112,7 @@
     state.suppressRecoveryUntil=Math.max(state.suppressRecoveryUntil,now+PAUSE_GUARD_MS);
     setAcceptedRafTimestamp(null);
     state.lastMode=currentMode();
+    state.soloLastElapsed=0;state.soloLastSteps=0;
     try{last=now}catch(_){}
     normaliseAudioRate();
     return true
@@ -119,6 +131,20 @@
     try{const recovered=Boolean(basePayDownCombatGap(gap));if(recovered)state.longGapRecoveries++;return recovered}catch(error){noteFault("gap-recovery",error);return false}
   }
 
+  function runSoloUpdates(elapsed){
+    const raw=Math.max(0,Number(elapsed)||0),bounded=Math.min(SOLO_MAX_VISIBLE_FRAME_MS,raw);
+    if(raw>bounded)state.soloDiscardedVisibleMs+=raw-bounded;
+    let remaining=bounded,steps=0;
+    while(remaining>0&&steps<SOLO_MAX_STEPS){
+      const step=Math.min(SOLO_MAX_STEP_MS,remaining);
+      try{if(typeof update==="function")update(step)}catch(error){noteFault("update",error);break}
+      remaining-=step;steps++;state.soloSubsteps++;
+    }
+    state.soloFrames++;state.soloLastElapsed=bounded;state.soloLastSteps=steps;
+    if(steps>1)state.soloCatchupFrames++;
+    return{elapsed:bounded,steps,discarded:Math.max(0,raw-bounded)}
+  }
+
   function stableLoopR59(timestamp){
     const hasTimestamp=finite(timestamp),t=hasTimestamp?Number(timestamp):perfNow();
     if(hasTimestamp&&finite(state.lastAcceptedRafTimestamp)&&t<=Number(state.lastAcceptedRafTimestamp)){
@@ -128,24 +154,27 @@
 
     const previous=finite(state.lastAcceptedRafTimestamp)?Number(state.lastAcceptedRafTimestamp):null;
     const modeNow=currentMode(),modeChanged=Boolean(state.lastMode&&modeNow!==state.lastMode);
-    let gap=previous==null?16:Math.max(0,t-previous),dt=16;
+    let gap=previous==null?16:Math.max(0,t-previous),dt=16,soloHandled=false;
     if(!finite(gap))gap=16;
 
-    // Paused/hidden frames never recover combat time. Active visible gameplay is
-    // different: a long accepted RAF gap is a browser/main-thread stall and must
-    // repair stale combat timing even if it occurs shortly after a focus event.
+    // Paused/hidden frames never recover combat time. Active visible Solo uses
+    // bounded wall-time substeps so slow rendered frames do not permanently lose
+    // simulation time. Other modes retain their established single-step cadence.
     if(modeChanged||modeNow!=="playing"||document.hidden){
       if(gap>=LONG_GAP_MS)state.pausedGapsDiscarded++;
       dt=modeNow==="playing"?Math.min(16,gap||16):0;
     }else{
       if(gap>=LONG_GAP_MS){noteFrameStall();safeGapRecovery(gap)}
-      dt=Math.min(45,Math.max(0,gap));
+      if(soloDungeonPlaying()){
+        dt=Math.min(SOLO_MAX_VISIBLE_FRAME_MS,Math.max(0,gap));soloHandled=true;
+      }else dt=Math.min(SOLO_MAX_STEP_MS,Math.max(0,gap));
     }
 
     setAcceptedRafTimestamp(t);state.lastMode=modeNow;state.acceptedFrames++;
     try{last=t}catch(_){}
     try{if(typeof damageFlash!=="undefined"&&damageFlash>0)damageFlash=Math.max(0,damageFlash-dt/500)}catch(error){noteFault("frame-clock",error)}
-    try{if(typeof update==="function")update(dt)}catch(error){noteFault("update",error)}
+    if(soloHandled)runSoloUpdates(gap);
+    else try{if(typeof update==="function")update(dt)}catch(error){noteFault("update",error)}
     try{if(typeof render==="function")render()}catch(error){noteFault("render",error)}
     try{requestAnimationFrame(stableLoopR59)}catch(error){noteFault("raf",error);setTimeout(()=>{try{requestAnimationFrame(stableLoopR59)}catch(secondError){noteFault("raf-retry",secondError)}},16)}
   }
@@ -221,7 +250,8 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
   window.CCGLostSizzlerV141R59LiveRegressionFixes={
-    MONITOR_MS,LONG_GAP_MS,PAUSE_GUARD_MS,stableLoopR59,markPauseBoundary,safeGapRecovery,noteFault,noteDuplicateFrame,noteFrameStall,setAcceptedRafTimestamp,installClockOwner,installPauseOwners,installSoloSaveTransitionOwner,reassertR58,normaliseAudioRate,ensure,
+    MONITOR_MS,LONG_GAP_MS,PAUSE_GUARD_MS,SOLO_MAX_STEP_MS,SOLO_MAX_VISIBLE_FRAME_MS,SOLO_MAX_STEPS,
+    stableLoopR59,runSoloUpdates,soloDungeonPlaying,markPauseBoundary,safeGapRecovery,noteFault,noteDuplicateFrame,noteFrameStall,setAcceptedRafTimestamp,installClockOwner,installPauseOwners,installSoloSaveTransitionOwner,reassertR58,normaliseAudioRate,ensure,
     get state(){return state}
   };
 })();
