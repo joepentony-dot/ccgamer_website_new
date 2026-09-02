@@ -26,6 +26,7 @@
     timer:0,installed:false,combatWrapped:false,liveWrapped:false,
     preSource:null,postSource:null,liveSource:null,liveOwner:null,
     lastNow:0,lastPauseBoundary:0,lastMode:"",clockPrimed:false,resumeGuardUntil:0,
+    lastFrameToken:"",lastTiming:null,lastServicedFrameToken:"",duplicateBeginFrames:0,duplicateCombatServices:0,
     projectileAccumulator:0,enemyAccumulator:0,currentElapsed:0,currentFrameDt:0,currentExtra:0,
     frames:0,clockResets:0,pauseGapsDiscarded:0,pauseAccumulatorResets:0,resumeGuardFrames:0,visibleGapClamps:0,discardedVisibleMs:0,
     projectileSteps:0,projectileCatchupSteps:0,enemySteps:0,enemyCatchupSteps:0,
@@ -43,11 +44,31 @@
 
   function recordError(error){state.lastError=String(error?.message||error||"unknown").slice(0,260);return false}
 
+  function controllerFrameToken(){
+    try{
+      const frame=Number(window.CCGLostSizzlerModeRuntime?.state?.sharedPreFrames||0);
+      if(Number.isFinite(frame)&&frame>0)return `mode:${frame}`
+    }catch(_){}
+    try{
+      const raf=Number(r59State()?.lastAcceptedRafTimestamp);
+      if(Number.isFinite(raf)&&raf>=0)return `raf:${raf}`
+    }catch(_){}
+    return ""
+  }
+
+  function rememberTiming(timing,frameToken){
+    const token=String(frameToken||"");
+    if(token)state.lastFrameToken=token;
+    state.lastTiming=timing||null;
+    return timing
+  }
+
   function resetClock(reason="inactive",keepRemainder=true){
     state.lastNow=perfNow();
     state.lastMode=(()=>{try{return String(mode||"")}catch(_){return""}})();
     state.lastPauseBoundary=Number(r59State()?.pauseBoundaries||0);
     state.currentElapsed=0;state.currentFrameDt=0;state.currentExtra=0;
+    state.lastFrameToken="";state.lastTiming=null;state.lastServicedFrameToken="";
     if(!keepRemainder){state.projectileAccumulator=0;state.enemyAccumulator=0;state.clockPrimed=false}
     state.clockResets++;
     return reason
@@ -89,13 +110,15 @@
   }
 
   function beginFrame(dt){
+    const frameToken=controllerFrameToken();
+    if(frameToken&&frameToken===state.lastFrameToken&&state.lastTiming){state.duplicateBeginFrames++;return state.lastTiming}
     const now=perfNow(),frameDt=clamp(dt,0,45),pauseBoundary=Number(r59State()?.pauseBoundaries||0),modeNow=(()=>{try{return String(mode||"")}catch(_){return""}})();
     const previousMode=state.lastMode,previousBoundary=Number(state.lastPauseBoundary||0);
     if(!playingVisible()){
       const enteredPause=modeNow==="paused"&&previousMode!=="paused",boundaryChanged=pauseBoundary!==previousBoundary;
       if(enteredPause||boundaryChanged){state.pauseGapsDiscarded++;resetCombatAccumulators("pause entry");armResumeGuard(now)}
       resetClock("not-visible-playing",true);state.lastPauseBoundary=pauseBoundary;state.lastMode=modeNow;
-      return{active:false,elapsed:0,frameDt,extra:0,pauseBoundary}
+      return rememberTiming({active:false,elapsed:0,frameDt,extra:0,pauseBoundary,frameToken},frameToken)
     }
 
     primeAccumulators();
@@ -121,7 +144,7 @@
     state.currentElapsed=elapsed;state.currentFrameDt=frameDt;state.currentExtra=extra;state.frames++;
     try{projectileCD=SUPPRESS_TIMER_MS}catch(_){}try{enemyCD=SUPPRESS_TIMER_MS}catch(_){}
     try{wrapLiveController()}catch(error){recordError(error)}
-    return{active:true,elapsed,frameDt,extra,pauseBoundary}
+    return rememberTiming({active:true,elapsed,frameDt,extra,pauseBoundary,frameToken},frameToken)
   }
 
   function runProjectileSteps(elapsed){
@@ -157,6 +180,9 @@
 
   function serviceCombat(timing){
     if(!timing?.active||!playingVisible())return{projectiles:0,enemies:0};
+    const frameToken=String(timing.frameToken||"");
+    if(frameToken&&frameToken===state.lastServicedFrameToken){state.duplicateCombatServices++;return{projectiles:0,enemies:0}}
+    if(frameToken)state.lastServicedFrameToken=frameToken;
     const projectiles=runProjectileSteps(timing.elapsed),enemies=runEnemySteps(timing.elapsed);
     return{projectiles,enemies}
   }
@@ -169,7 +195,7 @@
       const source=currentPre;
       const wrapped=function preHordeCombatFrameV141R60(dt){
         const context=source.call(this,dt)||{};
-        try{context.r60Timing=beginFrame(dt)}catch(error){recordError(error);context.r60Timing={active:false,elapsed:0,frameDt:Number(dt)||0,extra:0}}
+        try{context.r60Timing=beginFrame(dt)}catch(error){recordError(error);context.r60Timing={active:false,elapsed:0,frameDt:Number(dt)||0,extra:0,frameToken:controllerFrameToken()}}
         return context
       };
       wrapped.__ccgV141R60HordeTiming=true;wrapped.__ccgOriginal=source;api.preHordeCombatFrame=wrapped;state.preSource=source;changed=true
@@ -246,7 +272,7 @@
 
   window.CCGLostSizzlerV141R60HordeCombatIntegrity={
     PROJECTILE_STEP_MS,MAX_VISIBLE_FRAME_MS,MAX_PROJECTILE_STEPS,MAX_ENEMY_STEPS,SUPPRESS_TIMER_MS,PAUSE_REENTRY_GUARD_MS,
-    beginFrame,serviceCombat,runProjectileSteps,runEnemySteps,payDownPlayerTimers,resetClock,resetCombatAccumulators,armResumeGuard,primeAccumulators,wrapCombatController,wrapLiveController,install,
+    beginFrame,serviceCombat,runProjectileSteps,runEnemySteps,payDownPlayerTimers,resetClock,resetCombatAccumulators,armResumeGuard,primeAccumulators,controllerFrameToken,wrapCombatController,wrapLiveController,install,
     get state(){return state}
   };
 })();
