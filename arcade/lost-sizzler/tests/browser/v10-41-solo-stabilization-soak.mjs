@@ -131,7 +131,15 @@ try{
   const pauseStateAfter=await page.evaluate(()=>Number(window.CCGLostSizzlerV141R59LiveRegressionFixes.state.pauseBoundaries||0));
   assert.ok(pauseStateAfter-pauseStateBefore>=PAUSE_CYCLES*2,`R59 must observe both sides of every pause cycle: before=${pauseStateBefore}, after=${pauseStateAfter}`);
 
-  console.log("[solo-soak] measure post-cycle active cadence without adding more lifecycle transitions");
+  // Preserve the transition window as evidence, but do not use it as the
+  // post-cycle cadence sample. Rapid pause/resume intentionally alternates
+  // active/inactive diagnostics windows and is not comparable with the
+  // uninterrupted five-second baseline.
+  const transitionSoak=await readTelemetry(page,"pause-transition-window");
+  assertDamageOwnerCeiling(transitionSoak,"pause-transition-window");
+
+  console.log("[solo-soak] measure uninterrupted post-cycle active cadence");
+  await page.evaluate(()=>window.CCGLostSizzlerSoloDiagnostics.reset());
   await page.waitForTimeout(ACTIVE_SAMPLE_MS);
   const stressed=await readTelemetry(page,"post-pause-soak");
   assertMeasurementHealthy(stressed,"post-pause-soak");
@@ -166,6 +174,7 @@ try{
   console.log("SOLO_STABILIZATION_SOAK_METRICS "+JSON.stringify({
     initial,
     baseline,
+    transitionSoak,
     stressed,
     pauseBoundariesAdded:pauseStateAfter-pauseStateBefore,
     depthGrowth,
