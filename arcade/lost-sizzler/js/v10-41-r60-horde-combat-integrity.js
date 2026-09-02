@@ -21,12 +21,13 @@
   const MAX_PROJECTILE_STEPS=3;
   const MAX_ENEMY_STEPS=3;
   const SUPPRESS_TIMER_MS=60000;
+  const PAUSE_REENTRY_GUARD_MS=1200;
   const state={
     timer:0,installed:false,combatWrapped:false,liveWrapped:false,
     preSource:null,postSource:null,liveSource:null,liveOwner:null,
-    lastNow:0,lastPauseBoundary:0,lastMode:"",clockPrimed:false,
+    lastNow:0,lastPauseBoundary:0,lastMode:"",clockPrimed:false,resumeGuardUntil:0,
     projectileAccumulator:0,enemyAccumulator:0,currentElapsed:0,currentFrameDt:0,currentExtra:0,
-    frames:0,clockResets:0,pauseGapsDiscarded:0,visibleGapClamps:0,discardedVisibleMs:0,
+    frames:0,clockResets:0,pauseGapsDiscarded:0,pauseAccumulatorResets:0,resumeGuardFrames:0,visibleGapClamps:0,discardedVisibleMs:0,
     projectileSteps:0,projectileCatchupSteps:0,enemySteps:0,enemyCatchupSteps:0,
     playerTimerCatchupMs:0,liveElapsedFrames:0,liveOwnerInstalls:0,liveOwnerReassertions:0,hookReassertions:0,lastError:""
   };
@@ -50,6 +51,19 @@
     if(!keepRemainder){state.projectileAccumulator=0;state.enemyAccumulator=0;state.clockPrimed=false}
     state.clockResets++;
     return reason
+  }
+
+  function resetCombatAccumulators(reason="pause boundary"){
+    state.projectileAccumulator=0;state.enemyAccumulator=0;state.clockPrimed=true;
+    try{projectileCD=PROJECTILE_STEP_MS}catch(_){}try{enemyCD=enemyThinkMs()}catch(_){}
+    state.pauseAccumulatorResets++;
+    return reason
+  }
+
+  function armResumeGuard(now=perfNow()){
+    const r59Until=Math.max(0,Number(r59State()?.suppressRecoveryUntil)||0);
+    state.resumeGuardUntil=Math.max(Number(state.resumeGuardUntil)||0,r59Until,Number(now)||0+PAUSE_REENTRY_GUARD_MS);
+    return state.resumeGuardUntil
   }
 
   function primeAccumulators(){
@@ -76,7 +90,10 @@
 
   function beginFrame(dt){
     const now=perfNow(),frameDt=clamp(dt,0,45),pauseBoundary=Number(r59State()?.pauseBoundaries||0),modeNow=(()=>{try{return String(mode||"")}catch(_){return""}})();
+    const previousMode=state.lastMode,previousBoundary=Number(state.lastPauseBoundary||0);
     if(!playingVisible()){
+      const enteredPause=modeNow==="paused"&&previousMode!=="paused",boundaryChanged=pauseBoundary!==previousBoundary;
+      if(enteredPause||boundaryChanged){state.pauseGapsDiscarded++;resetCombatAccumulators("pause entry");armResumeGuard(now)}
       resetClock("not-visible-playing",true);state.lastPauseBoundary=pauseBoundary;state.lastMode=modeNow;
       return{active:false,elapsed:0,frameDt,extra:0,pauseBoundary}
     }
@@ -84,14 +101,18 @@
     primeAccumulators();
     const first=!finite(state.lastNow)||Number(state.lastNow)<=0;
     let raw=first?(frameDt||16):Math.max(0,now-Number(state.lastNow));
-    const boundaryChanged=!first&&pauseBoundary!==Number(state.lastPauseBoundary||0);
-    const modeChanged=Boolean(state.lastMode&&modeNow!==state.lastMode);
+    const boundaryChanged=!first&&pauseBoundary!==previousBoundary;
+    const modeChanged=Boolean(previousMode&&modeNow!==previousMode);
+    const resumedFromPause=previousMode==="paused"&&modeNow==="playing";
     state.lastNow=now;state.lastPauseBoundary=pauseBoundary;state.lastMode=modeNow;
 
-    if(boundaryChanged||modeChanged){
-      state.pauseGapsDiscarded++;
+    if(boundaryChanged||resumedFromPause){
+      state.pauseGapsDiscarded++;resetCombatAccumulators("pause resume");armResumeGuard(now);raw=frameDt||16
+    }else if(modeChanged){
       raw=frameDt||16
     }
+    const r59GuardUntil=Math.max(0,Number(r59State()?.suppressRecoveryUntil)||0),guardUntil=Math.max(Number(state.resumeGuardUntil)||0,r59GuardUntil);
+    if(now<guardUntil){raw=frameDt||16;state.resumeGuardFrames++}
     let elapsed=Math.max(frameDt||0,raw||frameDt||16);
     if(elapsed>MAX_VISIBLE_FRAME_MS){state.visibleGapClamps++;state.discardedVisibleMs+=elapsed-MAX_VISIBLE_FRAME_MS;elapsed=MAX_VISIBLE_FRAME_MS}
     const extra=Math.max(0,elapsed-frameDt);
@@ -220,12 +241,12 @@
     if(!isHorde()&&state.clockPrimed)resetClock("left-horde",false)
   },INSTALL_MS);
   install();
-  addEventListener("visibilitychange",()=>{if(document.hidden)resetClock("hidden",true)},{passive:true});
+  addEventListener("visibilitychange",()=>{if(document.hidden){resetCombatAccumulators("hidden");armResumeGuard();resetClock("hidden",true)}},{passive:true});
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0;resetClock("pagehide",false)},{once:true});
 
   window.CCGLostSizzlerV141R60HordeCombatIntegrity={
-    PROJECTILE_STEP_MS,MAX_VISIBLE_FRAME_MS,MAX_PROJECTILE_STEPS,MAX_ENEMY_STEPS,SUPPRESS_TIMER_MS,
-    beginFrame,serviceCombat,runProjectileSteps,runEnemySteps,payDownPlayerTimers,resetClock,primeAccumulators,wrapCombatController,wrapLiveController,install,
+    PROJECTILE_STEP_MS,MAX_VISIBLE_FRAME_MS,MAX_PROJECTILE_STEPS,MAX_ENEMY_STEPS,SUPPRESS_TIMER_MS,PAUSE_REENTRY_GUARD_MS,
+    beginFrame,serviceCombat,runProjectileSteps,runEnemySteps,payDownPlayerTimers,resetClock,resetCombatAccumulators,armResumeGuard,primeAccumulators,wrapCombatController,wrapLiveController,install,
     get state(){return state}
   };
 })();
