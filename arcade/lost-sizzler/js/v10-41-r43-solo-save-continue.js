@@ -27,7 +27,7 @@
   };
 
   const state={
-    timer:0,observer:null,entryCheckpoint:null,entryFloorKey:"",lastAutoSaveKey:"",
+    timer:0,observer:null,entryCheckpoint:null,entryFloorKey:"",lastAutoSaveKey:"",resumeInProgress:false,
     saves:0,autosaves:0,saveQuits:0,resumes:0,migrations:0,backupRecoveries:0,
     offerOwnerInstalls:0,automaticPromptSuppressions:0,
     lastSavedAt:0,lastReason:"",lastError:"",pauseButton:null,summaryNode:null
@@ -144,6 +144,7 @@
   }
 
   function captureEntry(reason="autosave"){
+    if(state.resumeInProgress)return state.entryCheckpoint?clone(state.entryCheckpoint):null;
     if(!standardSolo())return null;
     let checkpoint=canonicalEntryCheckpoint();
     try{if(!checkpoint)checkpoint=PGR.makeCheckpoint(run,p1,null,score,"solo")}catch(error){state.lastError=String(error?.message||error);return null}
@@ -206,11 +207,17 @@
 
   async function resumeSolo(){
     const saved=currentSavedCheckpoint();if(!checkpointIsSolo(saved)){updateMenu();return false}
+    if(state.resumeInProgress)return false;
+    state.resumeInProgress=true;
+    let audio=null,fs=null;
     try{
-      const audio=S.start(),fs=requestPlayFullscreen();await Promise.all([audio,fs]);
-      // Continue is a local checkpoint restore. net.setSolo() already initiates
-      // best-effort transport teardown and resets local network state immediately,
-      // so do not block restoration behind a remote channel leave that may stall.
+      // Fullscreen/audio are user-gesture side effects, not restore ownership.
+      // Start them synchronously but never yield the Continue transaction to
+      // their promises before the saved checkpoint is authoritative again.
+      try{audio=S.start()}catch(_){}
+      try{fs=requestPlayFullscreen()}catch(_){}
+      // Continue is a local checkpoint restore. net.setSolo() initiates
+      // best-effort transport teardown and resets local network state immediately.
       net.setSolo(saved.player?.name||playerName());
       run=clone(saved.run);score=Math.max(0,Number(saved.score)||0);p1=clone(saved.player);p2=null;playMode="solo";mode="playing";
       startWorld(PGR.floorSeed(run),false,true,true);
@@ -218,8 +225,11 @@
       UI.menu.classList.add("hidden");setRunPresentation(true);S.startMusic();
       state.resumes++;state.lastError="";
       try{showToast("SAVED RUN RESTORED",`Floor ${run.floor}: ${PGR.floorInfo(run).name}. Resumed safely from the floor entrance.`,"green",9000)}catch(_){}
-      sync();ensurePauseButton();return true
+      sync();ensurePauseButton();
+      try{Promise.allSettled([audio,fs].filter(Boolean)).catch(()=>{})}catch(_){}
+      return true
     }catch(error){state.lastError=String(error?.message||error);try{console.warn("[Lost Sizzler r43] Solo resume failed safely",error)}catch(_){};return false}
+    finally{state.resumeInProgress=false}
   }
 
   function interceptContinue(event){
