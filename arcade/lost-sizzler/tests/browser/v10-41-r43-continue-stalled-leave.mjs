@@ -38,9 +38,13 @@ try{
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(run)&&Boolean(p1)&&Boolean(world)&&Boolean(host),null,{timeout:20000});
   await page.waitForFunction(()=>window.CCGLostSizzlerV141R43SoloSave?.readEnvelope?.()?.summary?.floor===1,null,{timeout:10000});
 
-  const saved=await page.evaluate(()=>{
-    const envelope=window.CCGLostSizzlerV141R43SoloSave.readEnvelope();
-    return{seed:envelope.checkpoint.run.seed,score:envelope.checkpoint.score,health:envelope.checkpoint.player.health,mana:envelope.checkpoint.player.mana,x:envelope.checkpoint.player.x,y:envelope.checkpoint.player.y};
+  const beforeQuit=await page.evaluate(()=>{
+    const api=window.CCGLostSizzlerV141R43SoloSave,envelope=api.readEnvelope(),entry=api.state?.entryCheckpoint;
+    return{
+      liveSeed:String(run?.seed||""),entrySeed:String(entry?.run?.seed||""),envelopeSeed:String(envelope?.checkpoint?.run?.seed||""),
+      envelopeReason:String(envelope?.reason||""),score:Number(envelope?.checkpoint?.score||0),health:Number(envelope?.checkpoint?.player?.health||0),mana:Number(envelope?.checkpoint?.player?.mana||0),
+      x:Number(envelope?.checkpoint?.player?.x||0),y:Number(envelope?.checkpoint?.player?.y||0),resumes:Number(api.state?.resumes||0),saves:Number(api.state?.saves||0)
+    };
   });
 
   await page.evaluate(()=>openPauseMenu());
@@ -49,9 +53,28 @@ try{
   await page.waitForFunction(()=>document.body.dataset.runActive==="false"&&mode==="menu"&&!document.getElementById("menu").classList.contains("hidden"),null,{timeout:10000});
   await page.waitForFunction(()=>!document.getElementById("continue-save-btn").classList.contains("hidden"),null,{timeout:10000});
 
+  const afterQuit=await page.evaluate(()=>{
+    const api=window.CCGLostSizzlerV141R43SoloSave,envelope=api.readEnvelope(),entry=api.state?.entryCheckpoint;
+    return{
+      liveSeed:String(run?.seed||""),entrySeed:String(entry?.run?.seed||""),envelopeSeed:String(envelope?.checkpoint?.run?.seed||""),
+      envelopeReason:String(envelope?.reason||""),score:Number(envelope?.checkpoint?.score||0),health:Number(envelope?.checkpoint?.player?.health||0),mana:Number(envelope?.checkpoint?.player?.mana||0),
+      x:Number(envelope?.checkpoint?.player?.x||0),y:Number(envelope?.checkpoint?.player?.y||0),resumes:Number(api.state?.resumes||0),saves:Number(api.state?.saves||0),
+      mode:String(mode||""),playMode:String(playMode||""),runActive:String(document.body.dataset.runActive||"")
+    };
+  });
+
   await page.evaluate(()=>{
     window.__r43OriginalLeave=net.leave;
     net.leave=function stalledLeaveForR43Regression(){return new Promise(()=>{})};
+  });
+
+  const beforeContinue=await page.evaluate(()=>{
+    const api=window.CCGLostSizzlerV141R43SoloSave,envelope=api.readEnvelope();
+    return{
+      envelopeSeed:String(envelope?.checkpoint?.run?.seed||""),envelopeReason:String(envelope?.reason||""),
+      resumes:Number(api.state?.resumes||0),mode:String(mode||""),playMode:String(playMode||""),connected:Boolean(net?.connected),
+      transport:String(net?.transport||""),channelPresent:Boolean(net?.channel),clientPresent:Boolean(net?.client)
+    };
   });
 
   await page.click("#continue-save-btn");
@@ -64,18 +87,32 @@ try{
   }
 
   assert.equal(resumed,true,"LS-SOLO-008: Continue must not wait for a stalled remote network leave before restoring a local Solo save");
-  const restored=await page.evaluate(()=>({seed:run?.seed,score,health:p1?.health,mana:p1?.mana,x:p1?.x,y:p1?.y,playMode:String(playMode||""),connected:Boolean(net?.connected),resumes:Number(window.CCGLostSizzlerV141R43SoloSave?.state?.resumes||0)}));
-  assert.equal(restored.seed,saved.seed,"stalled-leave recovery must restore the saved seed");
-  assert.equal(restored.score,saved.score,"stalled-leave recovery must restore floor-entry score");
-  assert.equal(restored.health,saved.health,"stalled-leave recovery must restore floor-entry health");
-  assert.equal(restored.mana,saved.mana,"stalled-leave recovery must restore floor-entry ammunition");
-  assert.equal(restored.x,saved.x,"stalled-leave recovery must restore entry X");
-  assert.equal(restored.y,saved.y,"stalled-leave recovery must restore entry Y");
-  assert.equal(restored.playMode,"solo","stalled-leave recovery must restore Solo ownership");
-  assert.equal(restored.connected,false,"stalled-leave recovery must leave the local runtime disconnected");
-  assert.ok(restored.resumes>=1,"stalled-leave recovery must advance the r43 resume diagnostic");
-  assert.deepEqual(errors,[],`LS-SOLO-008 stalled-leave regression must not produce page errors: ${errors.join("\n")}`);
-  console.log("LS-SOLO-008 Continue remains live when remote network leave never settles.");
+  const restored=await page.evaluate(()=>{
+    const api=window.CCGLostSizzlerV141R43SoloSave,envelope=api.readEnvelope(),entry=api.state?.entryCheckpoint;
+    return{
+      seed:String(run?.seed||""),entrySeed:String(entry?.run?.seed||""),envelopeSeed:String(envelope?.checkpoint?.run?.seed||""),envelopeReason:String(envelope?.reason||""),
+      score:Number(score||0),health:Number(p1?.health||0),mana:Number(p1?.mana||0),x:Number(p1?.x||0),y:Number(p1?.y||0),
+      playMode:String(playMode||""),connected:Boolean(net?.connected),transport:String(net?.transport||""),resumes:Number(api.state?.resumes||0),
+      mode:String(mode||""),runActive:String(document.body.dataset.runActive||"")
+    };
+  });
+
+  const diagnostic={beforeQuit,afterQuit,beforeContinue,restored};
+  assert.equal(afterQuit.envelopeSeed,beforeQuit.envelopeSeed,`Save & Quit must preserve the captured floor-entry seed: ${JSON.stringify(diagnostic)}`);
+  assert.equal(beforeContinue.envelopeSeed,afterQuit.envelopeSeed,`the saved envelope must remain stable before Continue: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.seed,afterQuit.envelopeSeed,`stalled-leave recovery must restore the Save & Quit envelope seed: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.entrySeed,afterQuit.envelopeSeed,`r43 entry checkpoint must match the restored Save & Quit seed: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.envelopeSeed,afterQuit.envelopeSeed,`Continue must not replace the saved envelope while restoring: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.score,afterQuit.score,`stalled-leave recovery must restore floor-entry score: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.health,afterQuit.health,`stalled-leave recovery must restore floor-entry health: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.mana,afterQuit.mana,`stalled-leave recovery must restore floor-entry ammunition: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.x,afterQuit.x,`stalled-leave recovery must restore entry X: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.y,afterQuit.y,`stalled-leave recovery must restore entry Y: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.playMode,"solo",`stalled-leave recovery must restore Solo ownership: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.connected,false,`stalled-leave recovery must leave the local runtime disconnected: ${JSON.stringify(diagnostic)}`);
+  assert.ok(restored.resumes>=1,`stalled-leave recovery must advance the r43 resume diagnostic: ${JSON.stringify(diagnostic)}`);
+  assert.deepEqual(errors,[],`LS-SOLO-008 stalled-leave regression must not produce page errors: ${errors.join("\n")} diagnostic=${JSON.stringify(diagnostic)}`);
+  console.log(`LS-SOLO-008 stalled-leave diagnostic passed: ${JSON.stringify(diagnostic)}`);
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(resolve));
