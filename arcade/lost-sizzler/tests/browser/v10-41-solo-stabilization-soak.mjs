@@ -80,6 +80,15 @@ function assertMeasurementHealthy(sample,label){
   assert.ok(sample.updateRate>0,`${label}: update cadence must remain live`);
 }
 
+function assertDamageOwnerCeiling(sample,label){
+  // R60 intentionally carries retained R56/R29 compatibility markers, so R29
+  // and R56 may each appear twice (their own layer plus R60). Anything above
+  // these ceilings means historical damage owners are multiplying again.
+  assert.ok(sample.damageR29Layers<=2,`${label}: retained R29-compatible damage layers multiplied to ${sample.damageR29Layers}`);
+  assert.ok(sample.damageR56Layers<=2,`${label}: retained R56-compatible damage layers multiplied to ${sample.damageR56Layers}`);
+  assert.ok(sample.damageR60Layers<=1,`${label}: R60 environmental damage layers multiplied to ${sample.damageR60Layers}`);
+}
+
 try{
   const context=await browser.newContext({viewport:{width:1800,height:1000}});
   const page=await context.newPage();
@@ -99,6 +108,7 @@ try{
   await page.waitForTimeout(ACTIVE_SAMPLE_MS);
   const baseline=await readTelemetry(page,"baseline");
   assertMeasurementHealthy(baseline,"baseline");
+  assertDamageOwnerCeiling(baseline,"baseline");
 
   const baselineDepths={
     loop:baseline.loopOwnerDepth,
@@ -125,6 +135,7 @@ try{
   await page.waitForTimeout(ACTIVE_SAMPLE_MS);
   const stressed=await readTelemetry(page,"post-pause-soak");
   assertMeasurementHealthy(stressed,"post-pause-soak");
+  assertDamageOwnerCeiling(stressed,"post-pause-soak");
 
   const depthGrowth={
     loop:stressed.loopOwnerDepth-baselineDepths.loop,
@@ -143,12 +154,22 @@ try{
   assert.equal(stressed.hidden,false,"accelerated soak must finish visible");
   assert.deepEqual(errors,[],`accelerated Solo soak produced page errors: ${errors.join("\n")}`);
 
+  const soloClockDeltas={
+    frames:stressed.r59SoloFrames-baseline.r59SoloFrames,
+    substeps:stressed.r59SoloSubsteps-baseline.r59SoloSubsteps,
+    catchupFrames:stressed.r59SoloCatchupFrames-baseline.r59SoloCatchupFrames,
+    discardedVisibleMs:stressed.r59SoloDiscardedVisibleMs-baseline.r59SoloDiscardedVisibleMs
+  };
+  assert.ok(soloClockDeltas.frames>0,"bounded Solo clock must continue accepting Solo frames after lifecycle stress");
+  assert.ok(soloClockDeltas.substeps>=soloClockDeltas.frames,"bounded Solo clock must execute at least one simulation substep for every active Solo frame it services");
+
   console.log("SOLO_STABILIZATION_SOAK_METRICS "+JSON.stringify({
     initial,
     baseline,
     stressed,
     pauseBoundariesAdded:pauseStateAfter-pauseStateBefore,
     depthGrowth,
+    soloClockDeltas,
     relativeSimulationCadence:Number(cadenceRatio.toFixed(4))
   }));
   console.log("Lost Sizzler accelerated Solo timing/ownership soak completed. This is diagnostic evidence, not long-session closure.");
