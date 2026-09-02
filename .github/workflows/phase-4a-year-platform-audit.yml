@@ -30,8 +30,11 @@ on:
       - ".github/workflows/phase-4a-year-platform-audit.yml"
   workflow_dispatch:
 
+# This workflow is an audit. It may regenerate report files in the runner
+# workspace and upload them as evidence, but it must never mutate a PR branch or
+# protected main. Publishing report updates belongs in an explicit PR/workflow.
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: phase-4a-year-platform-${{ github.ref }}
@@ -136,27 +139,11 @@ jobs:
           print(f"Validated read-only audit scope: {sorted(changed)}")
           PY
 
-      - name: Upload detailed audit artifact
+      - name: Upload detailed audit artifacts
         uses: actions/upload-artifact@v4
         with:
           name: phase-4a-year-platform-audit
-          path: docs/seo-baseline/phase-4a-year-platform-archives.json
+          path: |
+            docs/seo-baseline/phase-4a-year-platform-archives.json
+            docs/seo-baseline/phase-4a-year-platform-archives.md
           retention-days: 30
-
-      - name: Commit current audit reports
-        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
-        shell: bash
-        run: |
-          git add docs/seo-baseline/phase-4a-year-platform-archives.json docs/seo-baseline/phase-4a-year-platform-archives.md
-
-          if git diff --cached --quiet; then
-            echo "Phase 4A audit reports are already current."
-            exit 0
-          fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Record Phase 4A year and platform audit"
-
-          TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
-          git push origin "HEAD:${TARGET_BRANCH}"
