@@ -9,7 +9,7 @@
   if(window.__CCG_LOST_SIZZLER_SOLO_STABILITY_DIAGNOSTICS__)return;
   window.__CCG_LOST_SIZZLER_SOLO_STABILITY_DIAGNOSTICS__=true;
 
-  const SAMPLE_MS=250,REPORT_MS=5000,HISTORY_LIMIT=360,OWNER_NAMES=["loop","update","movePlayer","hurtPlayer","openChest","tryChest"];
+  const SAMPLE_MS=250,REPORT_MS=5000,HISTORY_LIMIT=360,OWNER_DEPTH_LIMIT=128,OWNER_SIGNATURE_LIMIT=24,OWNER_NAMES=["loop","update","movePlayer","hurtPlayer","openChest","tryChest"];
   const state={
     startedAt:performance.now(),timer:0,lastSampleAt:0,lastReportAt:0,lastRunElapsed:null,lastSharedFrames:null,lastR59AcceptedFrames:null,
     soloActiveWallMs:0,soloObservedSimulationMs:0,simulationRatio:1,updateRate:0,rafAcceptedRate:0,
@@ -29,16 +29,29 @@
     if(typeof fn!=="function")return[];
     try{return Object.keys(fn).filter(key=>key.startsWith("__ccg")&&fn[key]!==false&&fn[key]!=null).sort().slice(0,18)}catch(_){return[]}
   }
+  function nextOriginal(fn){
+    if(typeof fn!=="function")return null;
+    try{return typeof fn.__ccgOriginal==="function"?fn.__ccgOriginal:(typeof fn.__ccgV141Original==="function"?fn.__ccgV141Original:null)}catch(_){return null}
+  }
   function ownerInfo(fn){
-    if(typeof fn!=="function")return{signature:"missing",depth:0};
+    if(typeof fn!=="function")return{signature:"missing",depth:0,truncated:false};
     const parts=[],seen=new Set();let current=fn,depth=0;
-    while(typeof current==="function"&&!seen.has(current)&&depth<32){
-      seen.add(current);parts.push(`${current.name||"anonymous"}[${functionMarkers(current).join(",")}]`);depth++;
-      current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:(typeof current.__ccgV141Original==="function"?current.__ccgV141Original:null);
+    while(typeof current==="function"&&!seen.has(current)&&depth<OWNER_DEPTH_LIMIT){
+      seen.add(current);
+      if(parts.length<OWNER_SIGNATURE_LIMIT)parts.push(`${current.name||"anonymous"}[${functionMarkers(current).join(",")}]`);
+      depth++;current=nextOriginal(current);
     }
-    return{signature:`${depth}:${parts.join(" <- ")}`,depth}
+    const truncated=typeof current==="function"&&!seen.has(current),omitted=Math.max(0,depth-parts.length),suffix=omitted?` <- ...+${omitted} layer${omitted===1?"":"s"}`:"";
+    return{signature:`${depth}${truncated?"+":""}:${parts.join(" <- ")}${suffix}`,depth,truncated}
   }
   function ownerSignature(fn){return ownerInfo(fn).signature}
+  function ownerMarkerCount(fn,marker){
+    const seen=new Set();let current=fn,count=0,depth=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth++<OWNER_DEPTH_LIMIT){
+      seen.add(current);try{if(current[marker])count++}catch(_){}current=nextOriginal(current)
+    }
+    return count
+  }
   function sampleOwners(now){
     for(const name of OWNER_NAMES){
       const info=ownerInfo(window[name]),signature=info.signature,previous=state.ownerSignatures[name];
@@ -69,6 +82,7 @@
       maxSampleGapMs:Number(state.maxSampleGapMs.toFixed(2)),sampleOverruns:state.sampleOverruns,focusReturns:state.focusReturns,blurEvents:state.blurEvents,visibilityReturns:state.visibilityReturns,visibilityHides:state.visibilityHides,
       ownerChanges:state.ownerChanges,loopOwner:state.ownerSignatures.loop||"missing",updateOwner:state.ownerSignatures.update||"missing",moveOwner:state.ownerSignatures.movePlayer||"missing",damageOwner:state.ownerSignatures.hurtPlayer||"missing",
       loopOwnerDepth:Number(state.ownerDepths.loop||0),updateOwnerDepth:Number(state.ownerDepths.update||0),moveOwnerDepth:Number(state.ownerDepths.movePlayer||0),damageOwnerDepth:Number(state.ownerDepths.hurtPlayer||0),
+      damageR29Layers:ownerMarkerCount(window.hurtPlayer,"__ccgV141R29HordeFriendly"),damageR56Layers:ownerMarkerCount(window.hurtPlayer,"__ccgV141R56EnvironmentDamage"),damageR60Layers:ownerMarkerCount(window.hurtPlayer,"__ccgV141R60EnvironmentSeal"),
       sharedFrameBoundaryReassertions:Number(modeRuntime.sharedFrameBoundaryReassertions||0),ownedSystemReassertions:Number(modeRuntime.ownedSystemReassertions||0),ownedSystemCalls:Number(modeRuntime.ownedSystemCalls||0),modeRuntimeTransitions:Number(modeRuntime.transitions||0),
       r29FrameStalls:Number(r29.frameStalls||0),r29DuplicateFramesSkipped:Number(r29.duplicateFramesSkipped||0),r29CombatStallRecoveries:Number(r29.combatStallRecoveries||0),
       r30OwnershipRepairs:Number(r30.ownershipRepairs||0),r30ForcedRestores:Number(r30.forcedRestores||0),r30InputReassertions:Number(r30.inputReassertions||0),r30WatchdogRecoveries:Number(r30.watchdogRecoveries||0),r30WatchdogMisses:Number(r30.watchdogMisses||0),r30WatchdogCooldownBreaks:Number(r30.watchdogCooldownBreaks||0),r30ModeTransitions:Number(r30.modeTransitions||0),
@@ -76,6 +90,7 @@
       r59AcceptedFrames:Number(r59.acceptedFrames||0),r59DuplicateFramesSkipped:Number(r59.duplicateFramesSkipped||0),r59LongGaps:Number(r59.longGaps||0),r59LongGapRecoveries:Number(r59.longGapRecoveries||0),
       r59PausedGapsDiscarded:Number(r59.pausedGapsDiscarded||0),r59PauseBoundaries:Number(r59.pauseBoundaries||0),r59R58Reassertions:Number(r59.r58Reassertions||0),r59R58Ticks:Number(r59.r58Ticks||0),
       r59ClockInstalled:Boolean(r59.clockInstalled),r59PauseWrapped:Boolean(r59.pauseWrapped),r59SoloSaveTransitionInstalls:Number(r59.soloSaveTransitionInstalls||0),r59SoloFloorAutosaves:Number(r59.soloFloorAutosaves||0),r59SuppressRecoveryUntil:Number(r59.suppressRecoveryUntil||0),r59LastAcceptedRafTimestamp:Number(r59.lastAcceptedRafTimestamp||0),
+      r59SoloFrames:Number(r59.soloFrames||0),r59SoloSubsteps:Number(r59.soloSubsteps||0),r59SoloCatchupFrames:Number(r59.soloCatchupFrames||0),r59SoloDiscardedVisibleMs:Number(r59.soloDiscardedVisibleMs||0),r59SoloLastElapsed:Number(r59.soloLastElapsed||0),r59SoloLastSteps:Number(r59.soloLastSteps||0),
       r60VisibleGapClamps:Number(r60.visibleGapClamps||0),r60DiscardedVisibleMs:Number(r60.discardedVisibleMs||0)
     }
   }
@@ -126,5 +141,5 @@
   document.addEventListener("visibilitychange",()=>noteLifecycle(document.hidden?"hidden":"visible"),{passive:true});
   state.timer=setInterval(sample,SAMPLE_MS);sample();
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
-  window.CCGLostSizzlerSoloDiagnostics={SAMPLE_MS,REPORT_MS,HISTORY_LIMIT,state,ownerInfo,ownerSignature,snapshot,reset,get history(){return [...state.history]},get ownerChangeLog(){return [...state.ownerChangeLog]},get lifecycleLog(){return [...state.lifecycleLog]}};
+  window.CCGLostSizzlerSoloDiagnostics={SAMPLE_MS,REPORT_MS,HISTORY_LIMIT,OWNER_DEPTH_LIMIT,OWNER_SIGNATURE_LIMIT,state,ownerInfo,ownerSignature,ownerMarkerCount,snapshot,reset,get history(){return [...state.history]},get ownerChangeLog(){return [...state.ownerChangeLog]},get lifecycleLog(){return [...state.lifecycleLog]}};
 })();
