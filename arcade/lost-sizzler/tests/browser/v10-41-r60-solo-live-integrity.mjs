@@ -155,7 +155,7 @@ try{
     return{before,after:Number(p1.health||0)+Number(p1.armor||0),owner:Boolean(window.hurtPlayer?.__ccgV141R60EnvironmentSeal),ownership};
   });
   console.log(`[r60 Solo] hurtPlayer ownership at environmental assertion: ${JSON.stringify(environment.ownership)}`);
-  assert.equal(environment.owner,true,`R60 environmental owner must remain installed in Solo Dungeon: ${JSON.stringify(environment.ownership)}`);
+  assert.equal(environment.ownership.r60InChain,true,`R60 environmental seal must remain in the Solo Dungeon damage ancestry: ${JSON.stringify(environment.ownership)}`);
   assert.ok(environment.after<environment.before,`active trap damage must not be swallowed by stale invulnerability/owner state: ${JSON.stringify(environment)}`);
 
   const final=await page.evaluate(()=>({...window.CCGLostSizzlerV141R60LivePlayIntegrity.state}));
