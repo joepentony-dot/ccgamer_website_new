@@ -1,5 +1,6 @@
 name: Materialize public growth SEO fixes
 
+# One-shot branch workflow. It removes itself after the guarded materializer succeeds.
 on:
   push:
     branches:
