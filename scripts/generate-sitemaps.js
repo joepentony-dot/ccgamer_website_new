@@ -187,4 +187,5 @@ const additionalSitemaps = readAdditionalSitemaps();
 require("../tools/seo/generate-sitemap.js");
 pruneUnmaterializedRetroHubUrls();
 restoreAdditionalSitemaps(additionalSitemaps);
+runNodeScript("apply-seo-growth-repair-v3.js");
 runNodeScript("audit-sitemap-indexability.js");
