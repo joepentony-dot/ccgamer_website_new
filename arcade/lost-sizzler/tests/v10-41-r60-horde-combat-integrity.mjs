@@ -29,6 +29,12 @@ assert.match(r60,/let elapsed=guarded\?clamp\(raw\|\|16,1,45\):Math\.max\(frameD
 assert.doesNotMatch(r60,/if\(now<guardUntil\)\{raw=frameDt\|\|16/,"the pause guard must never inflate every rendered frame to the shared clamped game delta");
 assert.match(r60,/\(Number\(now\)\|\|0\)\+PAUSE_REENTRY_GUARD_MS/,"the R60 fallback resume guard must be measured forward from the current clock");
 assert.match(r60,/document\.hidden/,"R60 must refuse hidden-page combat catch-up");
+assert.match(r60,/const frame=Number\(window\.CCGLostSizzlerModeRuntime\?\.state\?\.sharedPreFrames\|\|0\)/,"R60 combat timing must bind to the authoritative mode-controller frame counter");
+assert.match(r60,/frameToken&&frameToken===state\.lastFrameToken&&state\.lastTiming/,"R60 must reuse one timing snapshot when a wrapper chain reaches beginFrame twice in one controller frame");
+assert.match(r60,/frameToken&&frameToken===state\.lastServicedFrameToken/,"R60 must service projectile and enemy accumulators at most once per controller frame");
+assert.match(r60,/state\.duplicateCombatServices\+\+/,"R60 must diagnose duplicate combat-service attempts instead of executing them");
+assert.match(r60,/state\.duplicateBeginFrames\+\+/,"R60 must diagnose duplicate timing-entry attempts instead of advancing its wall-clock twice");
+assert.match(r60,/state\.lastFrameToken="";state\.lastTiming=null;state\.lastServicedFrameToken=""/,"R60 must clear controller-frame ownership tokens whenever its combat clock is reset");
 assert.match(r60,/updateHordeLiveV141R60Owned/,"R60 must feed real visible-play elapsed time into Horde perimeter movement through its exact owner");
 assert.match(r60,/current===state\.liveOwner\|\|originalChainContains\(current,state\.liveOwner\)/,"R60 must accept Horde live ownership only by exact function identity or ancestry");
 assert.match(r60,/unwrapLiveSource\(current\)/,"R60 must strip marker-only elapsed wrappers before synchronously reclaiming Horde live ownership");
@@ -63,4 +69,4 @@ assert.match(frame,/timingState\.liveElapsedFrames=Number\(timingState\.liveElap
 assert.match(frame,/wrapped\.__ccgV141R60RealElapsed=true;wrapped\.__ccgV141R60FinalLiveOwner=true/,"the final owner must retain R60 compatibility markers without relying on them for identity");
 assert.match(frame,/if\(isHorde\(\)\)return maintainR60HordeLiveOwner\(\)/,"the production monitor must route Horde to its own final live owner instead of the Solo owner");
 
-console.log("Lost Sizzler V10.41 r60 Horde timing plus Solo smoothing, real-time pause recovery, Spy-safe ownership, synchronous exact Horde live ownership, environment and named-enemy integrity contracts passed.");
+console.log("Lost Sizzler V10.41 r60 Horde timing plus Solo smoothing, real-time pause recovery, controller-frame combat idempotency, Spy-safe ownership, synchronous exact Horde live ownership, environment and named-enemy integrity contracts passed.");
