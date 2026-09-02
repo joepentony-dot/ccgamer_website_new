@@ -89,29 +89,53 @@ try{
 
   console.log("[r60 Solo] duplicate movement calls after pause cycling must be cadence-blocked");
   const movement=await page.evaluate(()=>{
+    const inspectChain=fn=>{
+      const links=["__ccgOriginal","__ccgV141Original","__ccgV141TutorialOriginal","__ccgV141R27Original","__ccgV141R25Original"],seen=new Set(),chain=[];let current=fn,depth=0;
+      while(typeof current==="function"&&!seen.has(current)&&depth<48){
+        seen.add(current);
+        const markers=Object.getOwnPropertyNames(current).filter(name=>name.startsWith("__ccgV141")||name==="__tutorial"||name==="__ccgOriginal").sort();
+        chain.push({depth,name:String(current.name||"anonymous"),markers});
+        current=links.map(key=>current?.[key]).find(value=>typeof value==="function"&&value!==current&&!seen.has(value))||null;depth++;
+      }
+      return{depth:chain.length,r60Layers:chain.filter(row=>row.markers.includes("__ccgV141R60CadenceSeal")).length,spyFinalLayers:chain.filter(row=>row.markers.includes("__ccgV141SpyFinal")).length,chain};
+    };
     const dirs=[{dx:1,dy:0,code:"ArrowRight"},{dx:-1,dy:0,code:"ArrowLeft"},{dx:0,dy:1,code:"ArrowDown"},{dx:0,dy:-1,code:"ArrowUp"}],blocked=host.blockingDecor||[],enemies=host.enemies||[];
     const open=(x,y)=>window.CCGWorld.walkable(world.map,x,y,host)&&!blocked.some(row=>Number(row.x)===x&&Number(row.y)===y)&&!enemies.some(row=>row?.alive&&Number(row.x)===x&&Number(row.y)===y);
     let choice=null;
     for(let y=2;y<world.map.length-2&&!choice;y++)for(let x=2;x<world.map[y].length-2&&!choice;x++)for(const dir of dirs){if(open(x,y)&&open(x+dir.dx,y+dir.dy)&&open(x+dir.dx*2,y+dir.dy*2)){choice={x,y,...dir};break}}
     if(!choice)throw new Error("R60 Solo cadence fixture could not find a three-cell open lane");
     p1.x=choice.x;p1.y=choice.y;p1.rx=choice.x;p1.ry=choice.y;p1.hitStunMs=0;move1=0;input.clear();input.add(choice.code);
-    const blocksBefore=Number(window.CCGLostSizzlerV141R60LivePlayIntegrity.state.movementBlocks||0);
+    const api=window.CCGLostSizzlerV141R60LivePlayIntegrity,r30=window.CCGLostSizzlerV141R30,seal=window.CCGLostSizzlerV141R30OwnerSeal;
+    const blocksBefore=Number(api.state.movementBlocks||0),callAt=performance.now(),ownership=inspectChain(window.movePlayer);
     movePlayer(p1,choice.dx,choice.dy,false);movePlayer(p1,choice.dx,choice.dy,false);
-    const first={x:Number(p1.x),y:Number(p1.y),blocks:Number(window.CCGLostSizzlerV141R60LivePlayIntegrity.state.movementBlocks||0)-blocksBefore,cadence:Number(window.CCGLostSizzlerV141R60LivePlayIntegrity.movementCadence(p1))};
+    const first={x:Number(p1.x),y:Number(p1.y),blocks:Number(api.state.movementBlocks||0)-blocksBefore,cadence:Number(api.movementCadence(p1)),callAt,ownership,r30GoldenSame:Boolean(r30?.state?.goldenMove===window.movePlayer),r30GoldenPromotions:Number(r30?.state?.goldenMovePromotions||0),r30Repairs:Number(r30?.state?.ownershipRepairs||0),sealRepairs:Number(seal?.state?.repairs||0),sealBlockedWrites:Number(seal?.state?.blockedWrites||0)};
     input.delete(choice.code);return{choice,first};
   });
   assert.equal(movement.first.x,movement.choice.x+movement.choice.dx,"two immediate move calls may advance only one physical tile on X");
   assert.equal(movement.first.y,movement.choice.y+movement.choice.dy,"two immediate move calls may advance only one physical tile on Y");
   assert.ok(movement.first.blocks>=1,`the duplicate post-pause move must be rejected by the cadence owner: ${JSON.stringify(movement)}`);
   await page.waitForTimeout(Math.ceil(movement.first.cadence)+30);
-  const movementAfter=await page.evaluate(({choice})=>{
-    const targetX=choice.x+choice.dx*2,targetY=choice.y+choice.dy*2;
+  const movementAfter=await page.evaluate(({choice,first})=>{
+    const inspectChain=fn=>{
+      const links=["__ccgOriginal","__ccgV141Original","__ccgV141TutorialOriginal","__ccgV141R27Original","__ccgV141R25Original"],seen=new Set(),chain=[];let current=fn,depth=0;
+      while(typeof current==="function"&&!seen.has(current)&&depth<48){
+        seen.add(current);
+        const markers=Object.getOwnPropertyNames(current).filter(name=>name.startsWith("__ccgV141")||name==="__tutorial"||name==="__ccgOriginal").sort();
+        chain.push({depth,name:String(current.name||"anonymous"),markers});
+        current=links.map(key=>current?.[key]).find(value=>typeof value==="function"&&value!==current&&!seen.has(value))||null;depth++;
+      }
+      return{depth:chain.length,r60Layers:chain.filter(row=>row.markers.includes("__ccgV141R60CadenceSeal")).length,spyFinalLayers:chain.filter(row=>row.markers.includes("__ccgV141SpyFinal")).length,chain};
+    };
+    const targetX=choice.x+choice.dx*2,targetY=choice.y+choice.dy*2,api=window.CCGLostSizzlerV141R60LivePlayIntegrity,r30=window.CCGLostSizzlerV141R30,seal=window.CCGLostSizzlerV141R30OwnerSeal;
     host.enemies=(host.enemies||[]).filter(row=>!(row?.alive&&Number(row.x)===targetX&&Number(row.y)===targetY));
-    p1.hitStunMs=0;move1=0;input.clear();input.add(choice.code);movePlayer(p1,choice.dx,choice.dy,false);input.delete(choice.code);
-    return{x:Number(p1.x),y:Number(p1.y)};
+    p1.hitStunMs=0;move1=0;input.clear();input.add(choice.code);
+    const blocksBefore=Number(api.state.movementBlocks||0),before={x:Number(p1.x),y:Number(p1.y)},callAt=performance.now(),ownership=inspectChain(window.movePlayer);
+    movePlayer(p1,choice.dx,choice.dy,false);input.delete(choice.code);
+    return{x:Number(p1.x),y:Number(p1.y),before,elapsedSinceFirst:callAt-Number(first.callAt||0),blocksDelta:Number(api.state.movementBlocks||0)-blocksBefore,move1:Number(move1||0),hitStun:Number(p1.hitStunMs||0),mode:String(mode||""),held:Boolean(input.has(choice.code)),ownership,r30GoldenSame:Boolean(r30?.state?.goldenMove===window.movePlayer),r30GoldenPromotions:Number(r30?.state?.goldenMovePromotions||0),r30Repairs:Number(r30?.state?.ownershipRepairs||0),sealRepairs:Number(seal?.state?.repairs||0),sealBlockedWrites:Number(seal?.state?.blockedWrites||0)};
   },movement);
-  assert.equal(movementAfter.x,movement.choice.x+movement.choice.dx*2,"movement must resume normally after the configured cadence");
-  assert.equal(movementAfter.y,movement.choice.y+movement.choice.dy*2,"movement must resume normally after the configured cadence");
+  console.log(`[r60 Solo] movement ownership after cadence wait: ${JSON.stringify({first:movement.first,after:movementAfter})}`);
+  assert.equal(movementAfter.x,movement.choice.x+movement.choice.dx*2,`movement must resume normally after the configured cadence: ${JSON.stringify({first:movement.first,after:movementAfter})}`);
+  assert.equal(movementAfter.y,movement.choice.y+movement.choice.dy*2,`movement must resume normally after the configured cadence: ${JSON.stringify({first:movement.first,after:movementAfter})}`);
 
   console.log("[r60 Solo] environmental damage must survive stale invulnerability/owner state");
   const environment=await page.evaluate(()=>{
