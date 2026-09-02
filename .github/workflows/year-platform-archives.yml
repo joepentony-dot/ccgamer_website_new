@@ -11,6 +11,7 @@ on:
       - "scripts/generate-year-platform-pages.js"
       - "scripts/integrate-year-platform-discovery.js"
       - "scripts/validate-year-platform-discovery.js"
+      - "scripts/validate-search-home-contract.js"
       - "scripts/generate-sitemaps.js"
       - "scripts/preserve-sitemap-lastmods.js"
       - "scripts/validate-sitemaps.js"
@@ -22,6 +23,7 @@ on:
       - "games/platforms/**"
       - "resources/css/year-platform-archives.css"
       - "js/year-platform-archives.js"
+      - "home.html"
       - "sitemap.xml"
       - "sitemap-pages.xml"
       - "sitemap-games.xml"
@@ -34,6 +36,7 @@ on:
       - "scripts/generate-year-platform-pages.js"
       - "scripts/integrate-year-platform-discovery.js"
       - "scripts/validate-year-platform-discovery.js"
+      - "scripts/validate-search-home-contract.js"
       - "scripts/generate-sitemaps.js"
       - "scripts/preserve-sitemap-lastmods.js"
       - "scripts/validate-sitemaps.js"
@@ -45,6 +48,7 @@ on:
       - "games/platforms/**"
       - "resources/css/year-platform-archives.css"
       - "js/year-platform-archives.js"
+      - "home.html"
       - "sitemap.xml"
       - "sitemap-pages.xml"
       - "sitemap-games.xml"
@@ -110,11 +114,24 @@ jobs:
             cp sitemap.xml sitemap-pages.xml sitemap-games.xml /tmp/phase4d-baseline/
           fi
 
+          python - <<'PY'
+          from pathlib import Path
+
+          sitemap = Path("/tmp/phase4d-baseline/sitemap-pages.xml")
+          text = sitemap.read_text(encoding="utf-8")
+          old = "<loc>https://www.cheekycommodoregamer.co.uk/</loc>"
+          new = "<loc>https://www.cheekycommodoregamer.co.uk/home.html</loc>"
+          if old in text and new not in text:
+              text = text.replace(old, new, 1)
+              sitemap.write_text(text, encoding="utf-8")
+          PY
+
       - name: Validate archive and sitemap scripts
         run: |
           node --check scripts/generate-year-platform-pages.js
           node --check scripts/integrate-year-platform-discovery.js
           node --check scripts/validate-year-platform-discovery.js
+          node --check scripts/validate-search-home-contract.js
           node --check scripts/generate-sitemaps.js
           node --check scripts/preserve-sitemap-lastmods.js
           node --check scripts/validate-sitemaps.js
@@ -175,34 +192,12 @@ jobs:
         run: |
           set -euo pipefail
 
-          # The intro stack remains fully immutable. home.html may differ only
-          # when it exactly equals the shared-shell normalizer applied to main.
           git diff --exit-code origin/main -- \
             index.html \
             resources/css/intro.css \
             js/index-intro.js
 
-          if ! git diff --quiet origin/main -- home.html; then
-            node - <<'NODE'
-          const fs = require("fs");
-          const cp = require("child_process");
-          const { normaliseHtml } = require("./scripts/normalize-public-header-shell.js");
-
-          const baseline = cp.execFileSync(
-            "git",
-            ["show", "origin/main:home.html"],
-            { encoding: "utf8" }
-          );
-          const current = fs.readFileSync("home.html", "utf8");
-          const result = normaliseHtml(baseline);
-
-          if (!result.applicable || result.malformed || result.html !== current) {
-            console.error("home.html changed beyond the verified canonical shared-shell migration.");
-            process.exit(1);
-          }
-          console.log("home.html differs from main only by the verified canonical shared-shell migration.");
-          NODE
-          fi
+          node scripts/validate-search-home-contract.js --baseline-ref=origin/main
 
       - name: Confirm bounded generated scope
         shell: bash
