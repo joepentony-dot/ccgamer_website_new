@@ -37,4 +37,6 @@ jobs:
             exit 0
           fi
           git commit -m "Materialize public growth SEO fixes"
+          git fetch origin codex/seo-public-growth-fixes
+          git rebase origin/codex/seo-public-growth-fixes
           git push origin HEAD:codex/seo-public-growth-fixes
