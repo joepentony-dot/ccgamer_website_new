@@ -13,7 +13,7 @@
   const state={
     timer:0,r29TimerStopped:false,r29InstallCooperative:false,spyTimerStopped:false,
     baselineUpdate:null,baselineMove:null,baselineHurt:null,
-    goldenUpdate:null,goldenMove:null,goldenHurt:null,goldenLocked:false,goldenLockedAt:0,goldenMovePromotions:0,
+    goldenUpdate:null,goldenMove:null,goldenHurt:null,goldenLocked:false,goldenLockedAt:0,goldenMovePromotions:0,goldenMovePromotionRejects:0,
     spyOwnerUpdate:null,spyOwnerMove:null,spyOwnerHurt:null,
     forcedRestores:0,ownershipRepairs:0,ownershipCooldownResets:0,inputBridges:0,inputReassertions:0,
     watchdogRecoveries:0,watchdogMisses:0,watchdogCooldownBreaks:0,lastWatchdogRecoveryAt:0,
@@ -95,8 +95,16 @@
     const stability=window.CCGLostSizzlerV141BrowserStabilityGameplay?.state;
     return Boolean(tutorial?.installed&&spyFinal?.moveInstalled&&stability?.moveGuard);
   }
+  function safeGoldenMovePromotion(fn){
+    if(fn===state.goldenMove)return true;
+    if(typeof fn!=="function"||typeof state.goldenMove!=="function")return false;
+    if(fn?.__ccgV141R60CadenceSeal!==true)return false;
+    let direct=null;try{direct=fn.__ccgOriginal}catch(_){}
+    return direct===state.goldenMove
+  }
   function adoptReleaseMoveOwner(fn=window.movePlayer){
     if(!releaseReady()||!normalMovementStackReady()||!state.goldenLocked||!healthyBaseline(fn)||fn?.__ccgV141SpyFinal!==true)return false;
+    if(!safeGoldenMovePromotion(fn)){state.goldenMovePromotionRejects++;return false}
     state.baselineMove=fn;
     if(state.goldenMove!==fn){state.goldenMove=fn;state.goldenMovePromotions++;state.goldenLockedAt=Date.now()}
     return true
