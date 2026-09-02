@@ -63,9 +63,21 @@ try{
     };
   });
 
+  // Model the production defect precisely: leave() must still execute all of its
+  // synchronous local cleanup, but its remote channel cleanup never settles.
+  // Replacing leave() itself would remove those synchronous semantics and test a
+  // different lifecycle than the one Continue encounters in production.
   await page.evaluate(()=>{
-    window.__r43OriginalLeave=net.leave;
-    net.leave=function stalledLeaveForR43Regression(){return new Promise(()=>{})};
+    window.__r43StalledUntrackCalls=0;
+    window.__r43UnexpectedRemoveCalls=0;
+    const staleChannel={
+      untrack(){window.__r43StalledUntrackCalls++;return new Promise(()=>{})}
+    };
+    const staleClient={
+      removeChannel(){window.__r43UnexpectedRemoveCalls++;return Promise.resolve()}
+    };
+    net.channel=staleChannel;
+    net.client=staleClient;
   });
 
   const beforeContinue=await page.evaluate(()=>{
@@ -73,9 +85,12 @@ try{
     return{
       envelopeSeed:String(envelope?.checkpoint?.run?.seed||""),envelopeReason:String(envelope?.reason||""),
       resumes:Number(api.state?.resumes||0),mode:String(mode||""),playMode:String(playMode||""),connected:Boolean(net?.connected),
-      transport:String(net?.transport||""),channelPresent:Boolean(net?.channel),clientPresent:Boolean(net?.client)
+      transport:String(net?.transport||""),channelPresent:Boolean(net?.channel),clientPresent:Boolean(net?.client),
+      stalledUntrackCalls:Number(window.__r43StalledUntrackCalls||0),unexpectedRemoveCalls:Number(window.__r43UnexpectedRemoveCalls||0)
     };
   });
+  assert.equal(beforeContinue.channelPresent,true,"LS-SOLO-008 regression requires a stale remote channel before Continue");
+  assert.equal(beforeContinue.clientPresent,true,"LS-SOLO-008 regression requires a stale remote client before Continue");
 
   await page.click("#continue-save-btn");
   let resumed=false;
@@ -83,36 +98,45 @@ try{
     await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&run?.floor===1&&Boolean(world)&&Boolean(host)&&Boolean(p1),null,{timeout:3000});
     resumed=true;
   }finally{
-    await page.evaluate(()=>{if(window.__r43OriginalLeave)net.leave=window.__r43OriginalLeave;delete window.__r43OriginalLeave});
+    await page.evaluate(()=>{delete window.__r43StalledUntrackCalls;delete window.__r43UnexpectedRemoveCalls});
   }
 
-  assert.equal(resumed,true,"LS-SOLO-008: Continue must not wait for a stalled remote network leave before restoring a local Solo save");
+  assert.equal(resumed,true,"LS-SOLO-008: Continue must not wait for stalled remote channel cleanup before restoring a local Solo save");
   const restored=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R43SoloSave,envelope=api.readEnvelope(),entry=api.state?.entryCheckpoint;
     return{
       seed:String(run?.seed||""),entrySeed:String(entry?.run?.seed||""),envelopeSeed:String(envelope?.checkpoint?.run?.seed||""),envelopeReason:String(envelope?.reason||""),
       score:Number(score||0),health:Number(p1?.health||0),mana:Number(p1?.mana||0),x:Number(p1?.x||0),y:Number(p1?.y||0),
       playMode:String(playMode||""),connected:Boolean(net?.connected),transport:String(net?.transport||""),resumes:Number(api.state?.resumes||0),
-      mode:String(mode||""),runActive:String(document.body.dataset.runActive||"")
+      mode:String(mode||""),runActive:String(document.body.dataset.runActive||""),channelPresent:Boolean(net?.channel),clientPresent:Boolean(net?.client),
+      memberCount:Number(net?.members?.size||0)
     };
   });
+  const remoteCleanup=await page.evaluate(()=>({
+    stalledUntrackCalls:Number(window.__r43StalledUntrackCalls||0),
+    unexpectedRemoveCalls:Number(window.__r43UnexpectedRemoveCalls||0)
+  })).catch(()=>({stalledUntrackCalls:0,unexpectedRemoveCalls:0}));
 
-  const diagnostic={beforeQuit,afterQuit,beforeContinue,restored};
+  const diagnostic={beforeQuit,afterQuit,beforeContinue,restored,remoteCleanup};
   assert.equal(afterQuit.envelopeSeed,beforeQuit.envelopeSeed,`Save & Quit must preserve the captured floor-entry seed: ${JSON.stringify(diagnostic)}`);
   assert.equal(beforeContinue.envelopeSeed,afterQuit.envelopeSeed,`the saved envelope must remain stable before Continue: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.seed,afterQuit.envelopeSeed,`stalled-leave recovery must restore the Save & Quit envelope seed: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.seed,afterQuit.envelopeSeed,`stalled-cleanup recovery must restore the Save & Quit envelope seed: ${JSON.stringify(diagnostic)}`);
   assert.equal(restored.entrySeed,afterQuit.envelopeSeed,`r43 entry checkpoint must match the restored Save & Quit seed: ${JSON.stringify(diagnostic)}`);
   assert.equal(restored.envelopeSeed,afterQuit.envelopeSeed,`Continue must not replace the saved envelope while restoring: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.score,afterQuit.score,`stalled-leave recovery must restore floor-entry score: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.health,afterQuit.health,`stalled-leave recovery must restore floor-entry health: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.mana,afterQuit.mana,`stalled-leave recovery must restore floor-entry ammunition: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.x,afterQuit.x,`stalled-leave recovery must restore entry X: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.y,afterQuit.y,`stalled-leave recovery must restore entry Y: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.playMode,"solo",`stalled-leave recovery must restore Solo ownership: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.connected,false,`stalled-leave recovery must leave the local runtime disconnected: ${JSON.stringify(diagnostic)}`);
-  assert.ok(restored.resumes>=1,`stalled-leave recovery must advance the r43 resume diagnostic: ${JSON.stringify(diagnostic)}`);
-  assert.deepEqual(errors,[],`LS-SOLO-008 stalled-leave regression must not produce page errors: ${errors.join("\n")} diagnostic=${JSON.stringify(diagnostic)}`);
-  console.log(`LS-SOLO-008 stalled-leave diagnostic passed: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.score,afterQuit.score,`stalled-cleanup recovery must restore floor-entry score: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.health,afterQuit.health,`stalled-cleanup recovery must restore floor-entry health: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.mana,afterQuit.mana,`stalled-cleanup recovery must restore floor-entry ammunition: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.x,afterQuit.x,`stalled-cleanup recovery must restore entry X: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.y,afterQuit.y,`stalled-cleanup recovery must restore entry Y: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.playMode,"solo",`stalled-cleanup recovery must restore Solo ownership: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.connected,false,`stalled-cleanup recovery must leave the local runtime disconnected: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.transport,"solo",`stalled-cleanup recovery must leave the local transport in Solo mode: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.channelPresent,false,`leave() synchronous cleanup must detach the stale channel before its remote await stalls: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.clientPresent,false,`leave() synchronous cleanup must detach the stale client before its remote await stalls: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.memberCount,1,`net.setSolo() must rebuild exactly one local member while remote cleanup remains stalled: ${JSON.stringify(diagnostic)}`);
+  assert.ok(restored.resumes>=1,`stalled-cleanup recovery must advance the r43 resume diagnostic: ${JSON.stringify(diagnostic)}`);
+  assert.deepEqual(errors,[],`LS-SOLO-008 stalled-cleanup regression must not produce page errors: ${errors.join("\n")} diagnostic=${JSON.stringify(diagnostic)}`);
+  console.log(`LS-SOLO-008 stalled remote-cleanup diagnostic passed: ${JSON.stringify(diagnostic)}`);
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(resolve));
