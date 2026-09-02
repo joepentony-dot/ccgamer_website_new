@@ -1,0 +1,61 @@
+name: SEO growth repair
+
+on:
+  push:
+    branches:
+      - codex/seo-growth-repair-2026-09-02
+    paths:
+      - 'scripts/apply-seo-growth-repair.js'
+      - 'scripts/generate-*.js'
+      - 'admin/templates/**'
+      - 'data/**'
+      - 'games/**'
+      - 'retro-specials/**'
+      - 'home.html'
+      - 'index.html'
+      - 'sitemap-pages.xml'
+      - 'package.json'
+      - '.github/workflows/seo-growth-repair.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seo-growth-repair-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  repair-and-validate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repair branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: codex/seo-growth-repair-2026-09-02
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Apply SEO growth repairs
+        run: node scripts/apply-seo-growth-repair.js
+
+      - name: Validate repaired outputs
+        run: node scripts/apply-seo-growth-repair.js --check
+
+      - name: Commit generated SEO outputs
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No generated SEO changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html home.html sitemap-pages.xml games retro-specials
+          git commit -m "Materialize SEO growth repairs"
+          git push origin HEAD:codex/seo-growth-repair-2026-09-02
