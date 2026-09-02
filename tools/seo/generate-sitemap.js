@@ -317,7 +317,7 @@ function normalizeSitemapCanonicalUrl(loc, siteUrl) {
   const normalized = normalizeCanonicalUrl(loc);
   if (!normalized) return '';
 
-  if (normalized === `${siteUrl}/index.html` || normalized === `${siteUrl}/home.html`) {
+  if (normalized === `${siteUrl}/index.html`) {
     return `${siteUrl}/`;
   }
 
@@ -403,7 +403,10 @@ function resolveStaticPath(relPath) {
 
   if (normalized === 'home.html') {
     return {
-      locPath: '',
+      // The cinematic intro owns `/`; the content-rich homepage is intentionally
+      // indexable at /home.html so the two different documents do not compete
+      // for the same canonical URL.
+      locPath: 'home.html',
       filePath: path.join(repoRoot, normalized),
     };
   }
