@@ -77,11 +77,17 @@ try{
 
   // Model the production defect precisely: leave() must still execute all of its
   // synchronous local cleanup, but its remote channel cleanup never settles.
-  // Replacing leave() itself would remove those synchronous semantics and test a
-  // different lifecycle than the one Continue encounters in production.
+  // Record the caller stack as well so a failure identifies which lifecycle
+  // owner reached the stale channel before the v2 Continue transaction.
   await page.evaluate(()=>{
     window.__r43StalledUntrackCalls=0;
     window.__r43UnexpectedRemoveCalls=0;
+    window.__r43LeaveCalls=[];
+    window.__r43OriginalLeave=net.leave;
+    net.leave=function r43LeaveCallerProbe(...args){
+      window.__r43LeaveCalls.push(String(new Error("LS-SOLO-008 net.leave caller").stack||""));
+      return window.__r43OriginalLeave.apply(this,args)
+    };
     net.channel={untrack(){window.__r43StalledUntrackCalls++;return new Promise(()=>{})}};
     net.client={removeChannel(){window.__r43UnexpectedRemoveCalls++;return Promise.resolve()}};
   });
@@ -92,7 +98,7 @@ try{
       envelopeSeed:String(envelope?.checkpoint?.run?.seed||""),envelopeReason:String(envelope?.reason||""),
       resumes:Number(api.state?.resumes||0),mode:String(mode||""),playMode:String(playMode||""),connected:Boolean(net?.connected),
       transport:String(net?.transport||""),channelPresent:Boolean(net?.channel),clientPresent:Boolean(net?.client),
-      stalledUntrackCalls:Number(window.__r43StalledUntrackCalls||0),unexpectedRemoveCalls:Number(window.__r43UnexpectedRemoveCalls||0),
+      stalledUntrackCalls:Number(window.__r43StalledUntrackCalls||0),unexpectedRemoveCalls:Number(window.__r43UnexpectedRemoveCalls||0),leaveCalls:Number(window.__r43LeaveCalls?.length||0),
       soloRecoveryTimerActive:Boolean(watchdog?.soloRecoveryTimer),soloLivenessObserverActive:Boolean(watchdog?.soloLivenessObserver),
       soloRecoveries:Number(watchdog?.soloRecoveries||0)
     };
@@ -103,7 +109,7 @@ try{
   assert.equal(beforeContinue.soloLivenessObserverActive,false,"Continue must not inherit a stale Play Solo liveness observer");
 
   await page.click("#continue-save-btn");
-  let resumed=false,remoteCleanup={stalledUntrackCalls:0,unexpectedRemoveCalls:0},resumeFailure=null;
+  let resumed=false,remoteCleanup={stalledUntrackCalls:0,unexpectedRemoveCalls:0,leaveCalls:[]},resumeFailure=null;
   try{
     try{
       await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&run?.floor===1&&Boolean(world)&&Boolean(host)&&Boolean(p1),null,{timeout:3000});
@@ -118,6 +124,7 @@ try{
           p1Present:Boolean(p1),worldPresent:Boolean(world),hostPresent:Boolean(host),menuHidden:Boolean(document.getElementById("menu")?.classList.contains("hidden")),
           connected:Boolean(net?.connected),transport:String(net?.transport||""),channelPresent:Boolean(net?.channel),clientPresent:Boolean(net?.client),memberCount:Number(net?.members?.size||0),
           stalledUntrackCalls:Number(window.__r43StalledUntrackCalls||0),unexpectedRemoveCalls:Number(window.__r43UnexpectedRemoveCalls||0),
+          leaveCalls:(window.__r43LeaveCalls||[]).map(stack=>String(stack).slice(0,1800)),
           soloRecoveryTimerActive:Boolean(watchdog?.soloRecoveryTimer),soloLivenessObserverActive:Boolean(watchdog?.soloLivenessObserver),soloRecoveries:Number(watchdog?.soloRecoveries||0)
         };
       });
@@ -125,10 +132,14 @@ try{
     }
     remoteCleanup=await page.evaluate(()=>({
       stalledUntrackCalls:Number(window.__r43StalledUntrackCalls||0),
-      unexpectedRemoveCalls:Number(window.__r43UnexpectedRemoveCalls||0)
+      unexpectedRemoveCalls:Number(window.__r43UnexpectedRemoveCalls||0),
+      leaveCalls:(window.__r43LeaveCalls||[]).map(stack=>String(stack).slice(0,1800))
     }));
   }finally{
-    await page.evaluate(()=>{delete window.__r43StalledUntrackCalls;delete window.__r43UnexpectedRemoveCalls});
+    await page.evaluate(()=>{
+      if(window.__r43OriginalLeave)net.leave=window.__r43OriginalLeave;
+      delete window.__r43OriginalLeave;delete window.__r43LeaveCalls;delete window.__r43StalledUntrackCalls;delete window.__r43UnexpectedRemoveCalls
+    });
   }
 
   assert.equal(resumed,true,`LS-SOLO-008: Continue must not wait for stalled remote channel cleanup before restoring a local Solo save; diagnostic=${JSON.stringify({beforeContinue,resumeFailure,remoteCleanup})}`);
