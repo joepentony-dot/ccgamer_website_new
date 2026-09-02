@@ -30,6 +30,7 @@ const directionFor=async page=>page.evaluate(()=>{
   const dirs=[{dx:1,dy:0,code:"ArrowRight"},{dx:-1,dy:0,code:"ArrowLeft"},{dx:0,dy:1,code:"ArrowDown"},{dx:0,dy:-1,code:"ArrowUp"}];
   const occupied=(x,y)=>{
     if((host.enemies||[]).some(e=>e.alive&&e.x===x&&e.y===y))return true;
+    if((host.blockingDecor||[]).some(item=>Number(item.x)===x&&Number(item.y)===y))return true;
     if(host.stalker?.awake&&host.stalker.x===x&&host.stalker.y===y)return true;
     try{if(typeof allPlayers==="function"&&allPlayers().some(other=>other&&other!==p1&&other.x===x&&other.y===y))return true}catch(_){}
     return false;
