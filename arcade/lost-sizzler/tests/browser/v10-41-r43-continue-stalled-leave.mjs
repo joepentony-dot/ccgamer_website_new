@@ -103,10 +103,26 @@ try{
   assert.equal(beforeContinue.soloLivenessObserverActive,false,"Continue must not inherit a stale Play Solo liveness observer");
 
   await page.click("#continue-save-btn");
-  let resumed=false,remoteCleanup={stalledUntrackCalls:0,unexpectedRemoveCalls:0};
+  let resumed=false,remoteCleanup={stalledUntrackCalls:0,unexpectedRemoveCalls:0},resumeFailure=null;
   try{
-    await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&run?.floor===1&&Boolean(world)&&Boolean(host)&&Boolean(p1),null,{timeout:3000});
-    resumed=true;
+    try{
+      await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&run?.floor===1&&Boolean(world)&&Boolean(host)&&Boolean(p1),null,{timeout:3000});
+      resumed=true;
+    }catch(error){
+      resumeFailure=await page.evaluate(()=>{
+        const api=window.CCGLostSizzlerV141R43SoloSave,envelope=api?.readEnvelope?.(),watchdog=window.CCGLostSizzlerLoadWatchdog?.state;
+        return{
+          resumeInProgress:Boolean(api?.state?.resumeInProgress),resumes:Number(api?.state?.resumes||0),lastError:String(api?.state?.lastError||""),
+          mode:String(mode||""),playMode:String(playMode||""),runActive:String(document.body?.dataset?.runActive||""),
+          runSeed:String(run?.seed||""),runFloor:Number(run?.floor||0),envelopeSeed:String(envelope?.checkpoint?.run?.seed||""),envelopeReason:String(envelope?.reason||""),
+          p1Present:Boolean(p1),worldPresent:Boolean(world),hostPresent:Boolean(host),menuHidden:Boolean(document.getElementById("menu")?.classList.contains("hidden")),
+          connected:Boolean(net?.connected),transport:String(net?.transport||""),channelPresent:Boolean(net?.channel),clientPresent:Boolean(net?.client),memberCount:Number(net?.members?.size||0),
+          stalledUntrackCalls:Number(window.__r43StalledUntrackCalls||0),unexpectedRemoveCalls:Number(window.__r43UnexpectedRemoveCalls||0),
+          soloRecoveryTimerActive:Boolean(watchdog?.soloRecoveryTimer),soloLivenessObserverActive:Boolean(watchdog?.soloLivenessObserver),soloRecoveries:Number(watchdog?.soloRecoveries||0)
+        };
+      });
+      resumeFailure.waitError=String(error?.message||error);
+    }
     remoteCleanup=await page.evaluate(()=>({
       stalledUntrackCalls:Number(window.__r43StalledUntrackCalls||0),
       unexpectedRemoveCalls:Number(window.__r43UnexpectedRemoveCalls||0)
@@ -115,7 +131,7 @@ try{
     await page.evaluate(()=>{delete window.__r43StalledUntrackCalls;delete window.__r43UnexpectedRemoveCalls});
   }
 
-  assert.equal(resumed,true,"LS-SOLO-008: Continue must not wait for stalled remote channel cleanup before restoring a local Solo save");
+  assert.equal(resumed,true,`LS-SOLO-008: Continue must not wait for stalled remote channel cleanup before restoring a local Solo save; diagnostic=${JSON.stringify({beforeContinue,resumeFailure,remoteCleanup})}`);
   const restored=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R43SoloSave,envelope=api.readEnvelope(),entry=api.state?.entryCheckpoint,watchdog=window.CCGLostSizzlerLoadWatchdog?.state;
     return{
