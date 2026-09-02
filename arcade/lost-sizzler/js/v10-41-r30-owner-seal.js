@@ -46,7 +46,11 @@
   }
   function syncTutorialWindow(){
     const target=golden(),active=tutorialOwned();
-    if(target)setTutorialCompatibility(target,!active);
+    // R30 is the sole normal-mode movement owner once the golden stack locks.
+    // Keep that owner permanently marked tutorial-compatible so the legacy
+    // 500 ms onboarding installer never wraps movePlayer again while training
+    // is active. Tutorial progress can observe movement without owning it.
+    if(target)setTutorialCompatibility(target,true);
     state.tutorialWindow=active;
     return active;
   }
