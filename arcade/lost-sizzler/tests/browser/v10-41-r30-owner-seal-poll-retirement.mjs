@@ -34,6 +34,11 @@ try{
     const guard=window.CCGLostSizzlerV141R30,seal=window.CCGLostSizzlerV141R30OwnerSeal;
     seal.seal?.("poll-retirement regression readiness");
     seal.retirePollIfCovered?.();
+    window.__r30PollRetirementGolden=guard.state.goldenMove;
+    window.__r30PollRetirementBefore={
+      blocked:Number(seal.state?.blockedWrites||0),
+      repairs:Number(guard.state?.ownershipRepairs||0)
+    };
     return{
       assignmentGate:Boolean(seal.state?.assignmentGate),
       assignmentGateUnsupported:Boolean(seal.state?.assignmentGateUnsupported),
@@ -49,33 +54,30 @@ try{
   assert.ok(["assignment-gate","r30-global-guard"].includes(readiness.retirementCoverage),`R30 seal poll needs a live replacement recovery path: ${JSON.stringify(readiness)}`);
   assert.equal(readiness.sealTimer,0,`R30 16ms owner-seal poll must retire when replacement coverage exists: ${JSON.stringify(readiness)}`);
 
-  const before=await page.evaluate(()=>({
-    golden:window.CCGLostSizzlerV141R30.state.goldenMove,
-    blocked:Number(window.CCGLostSizzlerV141R30OwnerSeal.state.blockedWrites||0),
-    repairs:Number(window.CCGLostSizzlerV141R30.state.ownershipRepairs||0)
-  }));
   await page.evaluate(()=>{
     const dead=function r30PollRetirementDeadOwner(){return false};dead.__ccgOriginal=window.movePlayer;window.movePlayer=dead;
   });
-  await page.waitForFunction(golden=>window.movePlayer===golden,before.golden,{timeout:500});
+  await page.waitForFunction(()=>typeof window.__r30PollRetirementGolden==="function"&&window.movePlayer===window.__r30PollRetirementGolden,null,{timeout:500});
 
-  const result=await page.evaluate(({beforeBlocked,beforeRepairs})=>{
-    const guard=window.CCGLostSizzlerV141R30,seal=window.CCGLostSizzlerV141R30OwnerSeal;
+  const result=await page.evaluate(()=>{
+    const guard=window.CCGLostSizzlerV141R30,seal=window.CCGLostSizzlerV141R30OwnerSeal,before=window.__r30PollRetirementBefore||{};
     return{
       assignmentGate:Boolean(seal.state.assignmentGate),
       assignmentGateUnsupported:Boolean(seal.state.assignmentGateUnsupported),
       sealTimer:Number(seal.state.timer||0),
       retirementCoverage:String(seal.retirementCoverage?.()||""),
       globalGuardTimer:Number(guard.state.timer||0),
-      blockedDelta:Number(seal.state.blockedWrites||0)-beforeBlocked,
-      repairDelta:Number(guard.state.ownershipRepairs||0)-beforeRepairs,
-      moveStillGolden:window.movePlayer===guard.state.goldenMove
+      blockedDelta:Number(seal.state.blockedWrites||0)-Number(before.blocked||0),
+      repairDelta:Number(guard.state.ownershipRepairs||0)-Number(before.repairs||0),
+      moveStillGolden:window.movePlayer===window.__r30PollRetirementGolden,
+      goldenStable:guard.state.goldenMove===window.__r30PollRetirementGolden
     }
-  },{beforeBlocked:before.blocked,beforeRepairs:before.repairs});
+  });
 
   assert.equal(result.sealTimer,0,"R30 16ms owner-seal poll must remain retired after a hostile movement-owner write");
   assert.ok(result.globalGuardTimer>0,"the broader R30 40ms recovery guard must remain active during this consolidation step");
   assert.equal(result.moveStillGolden,true,"the surviving R30 recovery path must restore the locked golden movement owner within 500ms");
+  assert.equal(result.goldenStable,true,"the surviving recovery path must not mutate the locked golden owner identity");
   assert.ok(result.repairDelta>=1||result.blockedDelta>=1,`the hostile assignment must be visible to either the synchronous gate or the R30 global recovery diagnostics: ${JSON.stringify(result)}`);
   assert.deepEqual(errors,[],`R30 owner-seal poll-retirement regression must not produce page errors: ${errors.join("\n")}`);
   console.log(`R30 owner-seal 16ms poll retired with ${result.retirementCoverage}; assignmentGate=${result.assignmentGate}, recoveryDiagnostics=${result.repairDelta+result.blockedDelta}.`);
