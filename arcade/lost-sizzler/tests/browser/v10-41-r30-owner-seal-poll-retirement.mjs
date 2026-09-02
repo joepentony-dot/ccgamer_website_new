@@ -19,14 +19,34 @@ const server=http.createServer((req,res)=>{
 server.on("connection",socket=>{sockets.add(socket);socket.on("close",()=>sockets.delete(socket))});
 await new Promise((resolve,reject)=>{server.once("error",reject);server.listen(0,"127.0.0.1",resolve)});
 const origin=`http://127.0.0.1:${server.address().port}`;
-const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage","--disable-background-networking"]});
+const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage","--disable-background-networking","--autoplay-policy=no-user-gesture-required"]});
 
 try{
   const context=await browser.newContext({viewport:{width:1600,height:900}}),page=await context.newPage();
   page.setDefaultTimeout(60000);
   const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R30?.state?.goldenLocked)&&Boolean(window.CCGLostSizzlerV141R30OwnerSeal?.state?.assignmentGate),null,{timeout:90000});
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
+  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R30?.state?.goldenLocked));
+  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R30OwnerSeal));
+
+  const readiness=await page.evaluate(()=>{
+    const seal=window.CCGLostSizzlerV141R30OwnerSeal;
+    const installed=Boolean(seal.installAssignmentGate?.());
+    seal.seal?.("poll-retirement regression readiness");
+    seal.retirePollIfGated?.();
+    return{
+      installed,
+      assignmentGate:Boolean(seal.state?.assignmentGate),
+      assignmentGateUnsupported:Boolean(seal.state?.assignmentGateUnsupported),
+      timer:Number(seal.state?.timer||0),
+      goldenLocked:Boolean(window.CCGLostSizzlerV141R30?.state?.goldenLocked)
+    }
+  });
+  assert.equal(readiness.goldenLocked,true,"R30 poll-retirement regression requires the proven locked golden movement owner");
+  assert.equal(readiness.assignmentGateUnsupported,false,`R30 synchronous assignment gate must remain supported: ${JSON.stringify(readiness)}`);
+  assert.equal(readiness.installed,true,`R30 synchronous assignment gate must install once the golden owner is ready: ${JSON.stringify(readiness)}`);
+  assert.equal(readiness.assignmentGate,true,`R30 synchronous assignment gate must be active before poll-retirement assertions: ${JSON.stringify(readiness)}`);
   await page.waitForTimeout(120);
 
   const result=await page.evaluate(()=>{
@@ -47,7 +67,7 @@ try{
     }
   });
 
-  assert.equal(result.assignmentGate,true,"R30 owner seal must install its synchronous movePlayer assignment gate");
+  assert.equal(result.assignmentGate,true,"R30 owner seal must retain its synchronous movePlayer assignment gate");
   assert.equal(result.sealTimer,0,"R30 16ms owner-seal poll must retire after the assignment gate is active");
   assert.ok(result.globalGuardTimer>0,"the broader R30 40ms recovery guard must remain active during this consolidation step");
   assert.ok(result.blockedDelta>=1,"an illegal normal-mode movePlayer assignment must still be blocked synchronously after poll retirement");
