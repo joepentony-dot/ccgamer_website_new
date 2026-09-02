@@ -48,6 +48,22 @@ assert.match(r59,/stableLoopR59\.__ccgV141R29Stable=true/,"r59 must retain the r
 assert.match(r59,/api\.stableLoop=stableLoopR59/,"r59 must replace the r29 exported loop as well as the global loop to prevent an old recovery owner reclaiming it");
 assert.match(r59,/normaliseAudioRate\(\)/,"pause boundaries must also normalise any accidentally altered HTML audio playback rate");
 
+// Solo Dungeon alone consumes active visible wall time through bounded canonical
+// substeps. This replaces the old one-update 45 ms clamp that permanently lost
+// simulation time below ~22 rendered FPS, without changing Horde or Spy cadence.
+assert.match(r59,/const SOLO_MAX_STEP_MS=45;/,"Solo wall-time catch-up must preserve the established maximum canonical update step");
+assert.match(r59,/const SOLO_MAX_VISIBLE_FRAME_MS=180;/,"Solo catch-up must have a hard per-render wall-time budget");
+assert.match(r59,/const SOLO_MAX_STEPS=4;/,"Solo catch-up must have a hard substep-count budget");
+assert.match(r59,/window\.CCGLostSizzlerModeRuntime\?\.state\?\.activeId==="dungeon-solo"/,"bounded wall-time substeps must be isolated to the Solo Dungeon controller");
+assert.match(r59,/!window\.CCGLostSizzlerSpecialModes\?\.active\?\.type&&!document\.body\?\.dataset\?\.specialMode/,"special modes must be excluded from the Solo wall-time path");
+assert.match(r59,/function runSoloUpdates\(elapsed\)/,"r59 must expose one bounded Solo update service rather than install another RAF owner");
+assert.match(r59,/bounded=Math\.min\(SOLO_MAX_VISIBLE_FRAME_MS,raw\)/,"active Solo elapsed time must be bounded before catch-up");
+assert.match(r59,/while\(remaining>0&&steps<SOLO_MAX_STEPS\)/,"Solo catch-up must stop at its explicit substep budget");
+assert.match(r59,/const step=Math\.min\(SOLO_MAX_STEP_MS,remaining\)/,"each Solo substep must remain within the canonical 45 ms maximum");
+assert.match(r59,/if\(soloDungeonPlaying\(\)\)[\s\S]*soloHandled=true/,"the authoritative RAF owner must select bounded substeps only for active Solo Dungeon play");
+assert.match(r59,/if\(soloHandled\)runSoloUpdates\(gap\);[\s\S]*render\(\)/,"Solo may perform bounded simulation substeps but must still render only once at the RAF boundary");
+assert.doesNotMatch(r59,/soloAccumulator|soloDebt/i,"Solo wall-time recovery must not retain a debt accumulator across pause/hidden boundaries");
+
 // R59 owns the callback but R29 remains the established public diagnostic contract.
 assert.match(r59,/function noteFault\(phase,error\)/,"r59 must centralise contained-frame fault accounting");
 assert.match(r59,/r29\.frameFaults=Number\(r29\.frameFaults\|\|0\)\+1/,"r59 must preserve R29's public frame-fault counter");
@@ -73,4 +89,4 @@ assert.match(r59,/installClockOwner\(\);installPauseOwners\(\);installSoloSaveTr
 assert.match(r59,/api\.patchInputOwnership\?\.\(\);api\.patchSaboteurRules\?\.\(\)/,"r59 must reassert r58 input and Saboteur rules while Spy is active");
 assert.match(r59,/if\(api\.tick\?\.\(\)\)/,"r59 must keep the r58 live state reconciled after older compatibility monitors run");
 
-console.log("Lost Sizzler V10.41 r59 pause-clock, visible-play stall recovery, R29 duplicate/stall/fault diagnostics, synchronous Solo floor autosave, TAB field-kit, idempotent F fullscreen and r58 ownership regressions passed.");
+console.log("Lost Sizzler V10.41 r59 pause-clock, bounded Solo wall-time substeps, visible-play stall recovery, R29 duplicate/stall/fault diagnostics, synchronous Solo floor autosave, TAB field-kit, idempotent F fullscreen and r58 ownership regressions passed.");
