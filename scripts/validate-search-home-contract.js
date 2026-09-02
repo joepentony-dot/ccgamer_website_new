@@ -39,7 +39,10 @@ function findTag(html, type, name) {
     return tags.find((tag) => getAttribute(tag, "rel").toLowerCase() === name.toLowerCase()) || "";
   }
 
-  const [attribute, value] = name.split(":", 2);
+  const separatorIndex = name.indexOf(":");
+  if (separatorIndex < 1 || separatorIndex === name.length - 1) return "";
+  const attribute = name.slice(0, separatorIndex);
+  const value = name.slice(separatorIndex + 1);
   return tags.find((tag) => getAttribute(tag, attribute).toLowerCase() === value.toLowerCase()) || "";
 }
 
