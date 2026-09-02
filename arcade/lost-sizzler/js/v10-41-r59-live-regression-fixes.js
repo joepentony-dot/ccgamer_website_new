@@ -147,12 +147,13 @@
 
   function stableLoopR59(timestamp){
     const hasTimestamp=finite(timestamp),t=hasTimestamp?Number(timestamp):perfNow();
-    if(hasTimestamp&&finite(state.lastAcceptedRafTimestamp)&&t<=Number(state.lastAcceptedRafTimestamp)){
+    const accepted=state.lastAcceptedRafTimestamp,hasPreviousAccepted=accepted!==null&&accepted!==undefined&&finite(accepted);
+    if(hasTimestamp&&hasPreviousAccepted&&t<=Number(accepted)){
       noteDuplicateFrame();
       return
     }
 
-    const previous=finite(state.lastAcceptedRafTimestamp)?Number(state.lastAcceptedRafTimestamp):null;
+    const previous=hasPreviousAccepted?Number(accepted):null;
     const modeNow=currentMode(),modeChanged=Boolean(state.lastMode&&modeNow!==state.lastMode);
     let gap=previous==null?16:Math.max(0,t-previous),dt=16,soloHandled=false;
     if(!finite(gap))gap=16;
