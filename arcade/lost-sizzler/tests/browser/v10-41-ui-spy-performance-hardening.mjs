@@ -36,6 +36,7 @@ try{
     r39?.placeRoster?.();
   });
   await page.waitForFunction(()=>document.getElementById("horde-live-roster")?.parentElement?.classList?.contains("tactical-zone")&&window.CCGLostSizzlerV141R39HordeResponsive?.state?.rosterWatchActive===true);
+  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV137?.updateHordeFocus?.__ccgV141UiPerformanceFocus)&&Boolean(window.CCGLostSizzlerV138?.updateHordeLive?.__ccgV141UiPerformanceLive),null,{timeout:2000});
 
   const hordeUi=await page.evaluate(()=>{
     const roster=document.getElementById("horde-live-roster"),api=window.CCGLostSizzlerV141UiSpyPerformance,r39=window.CCGLostSizzlerV141R39HordeResponsive;
