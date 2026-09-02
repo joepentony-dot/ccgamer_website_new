@@ -5,7 +5,7 @@
   window.__CCG_LOST_SIZZLER_V141_R30_OWNER_SEAL__=true;
 
   const SPY_MODE="sizzler-saboteurs",CHECK_MS=16;
-  const state={timer:0,repairs:0,blockedWrites:0,lastRepairAt:0,lastObserved:null,lastBlocked:null,assignmentGate:false,assignmentGateUnsupported:false,tutorialWindow:false};
+  const state={timer:0,repairs:0,blockedWrites:0,lastRepairAt:0,lastObserved:null,lastBlocked:null,assignmentGate:false,assignmentGateUnsupported:false,tutorialWindow:false,pollStarts:0,pollRetirements:0};
   let gatedMove=null;
 
   function r30(){return window.CCGLostSizzlerV141R30||null}
@@ -88,20 +88,32 @@
     return true;
   }
 
+  function retirePollIfGated(){
+    if(!state.assignmentGate||!state.timer)return false;
+    clearInterval(state.timer);state.timer=0;state.pollRetirements++;return true
+  }
+  function monitorSeal(){
+    seal();retirePollIfGated()
+  }
+  function ensureFallbackPoll(){
+    if(state.assignmentGate||state.timer)return state.timer;
+    state.timer=setInterval(monitorSeal,CHECK_MS);state.pollStarts++;return state.timer
+  }
+
   function onMovementKey(event){
     const code=String(event?.code||"");
     if(!/^(ArrowLeft|ArrowRight|ArrowUp|ArrowDown|KeyA|KeyD|KeyW|KeyS|KeyI|KeyJ|KeyK|KeyL)$/.test(code))return;
-    seal("movement-key owner seal");
+    seal("movement-key owner seal");retirePollIfGated();
   }
 
   addEventListener("keydown",onMovementKey,true);
   addEventListener("keyup",onMovementKey,true);
-  state.timer=setInterval(()=>seal(),CHECK_MS);
   seal("owner seal install");
+  if(!state.assignmentGate)ensureFallbackPoll();
   addEventListener("pagehide",()=>{
     if(state.timer)clearInterval(state.timer);state.timer=0;
     removeEventListener("keydown",onMovementKey,true);removeEventListener("keyup",onMovementKey,true);
   },{once:true});
 
-  window.CCGLostSizzlerV141R30OwnerSeal={seal,installAssignmentGate,spyOwned,tutorialOwned,syncTutorialWindow,get state(){return state}};
+  window.CCGLostSizzlerV141R30OwnerSeal={seal,installAssignmentGate,retirePollIfGated,ensureFallbackPoll,spyOwned,tutorialOwned,syncTutorialWindow,get state(){return state}};
 })();
