@@ -115,11 +115,23 @@ try{
 
   console.log("[r60 Solo] environmental damage must survive stale invulnerability/owner state");
   const environment=await page.evaluate(()=>{
+    const inspectChain=fn=>{
+      const seen=new Set(),chain=[];let current=fn,depth=0;
+      while(typeof current==="function"&&!seen.has(current)&&depth<32){
+        seen.add(current);
+        const markers=Object.getOwnPropertyNames(current).filter(name=>name.startsWith("__ccgV141")||name==="__ccgOriginal").sort();
+        chain.push({depth,name:String(current.name||"anonymous"),markers});
+        current=current.__ccgOriginal||current.__ccgV141Original||null;depth++;
+      }
+      return{depth:chain.length,chain,r60InChain:chain.some(row=>row.markers.includes("__ccgV141R60EnvironmentSeal"))};
+    };
     const before=Number(p1.health||0)+Number(p1.armor||0);p1.invuln=900;p1.hitStunMs=0;
+    const ownership=inspectChain(window.hurtPlayer);
     window.hurtPlayer(p1,1,false,"fire trap");
-    return{before,after:Number(p1.health||0)+Number(p1.armor||0),owner:Boolean(window.hurtPlayer?.__ccgV141R60EnvironmentSeal)};
+    return{before,after:Number(p1.health||0)+Number(p1.armor||0),owner:Boolean(window.hurtPlayer?.__ccgV141R60EnvironmentSeal),ownership};
   });
-  assert.equal(environment.owner,true,"R60 environmental owner must remain installed in Solo Dungeon");
+  console.log(`[r60 Solo] hurtPlayer ownership at environmental assertion: ${JSON.stringify(environment.ownership)}`);
+  assert.equal(environment.owner,true,`R60 environmental owner must remain installed in Solo Dungeon: ${JSON.stringify(environment.ownership)}`);
   assert.ok(environment.after<environment.before,`active trap damage must not be swallowed by stale invulnerability/owner state: ${JSON.stringify(environment)}`);
 
   const final=await page.evaluate(()=>({...window.CCGLostSizzlerV141R60LivePlayIntegrity.state}));
