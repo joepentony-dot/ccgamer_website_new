@@ -62,7 +62,7 @@
 
   function armResumeGuard(now=perfNow()){
     const r59Until=Math.max(0,Number(r59State()?.suppressRecoveryUntil)||0);
-    state.resumeGuardUntil=Math.max(Number(state.resumeGuardUntil)||0,r59Until,Number(now)||0+PAUSE_REENTRY_GUARD_MS);
+    state.resumeGuardUntil=Math.max(Number(state.resumeGuardUntil)||0,r59Until,(Number(now)||0)+PAUSE_REENTRY_GUARD_MS);
     return state.resumeGuardUntil
   }
 
