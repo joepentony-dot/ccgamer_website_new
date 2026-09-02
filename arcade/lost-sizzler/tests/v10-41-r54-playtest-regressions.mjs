@@ -18,10 +18,10 @@ assert.match(r54,/H\.spawnNext\(a\.state,now\)/,"browser Horde fallback must spa
 assert.match(r54,/hordeLive\(\)\)return/,"browser fallback must stand down when dedicated authority is live");
 assert.match(horde,/state\s*:\s*"briefing"/,"Horde starts in briefing and therefore requires its rules tick to progress");
 
-assert.match(r54,/Promise\.resolve\(S\.start\(\)\)\.catch/,"audio permission must be best-effort during Continue");
-assert.match(r54,/Promise\.resolve\(requestPlayFullscreen\(\)\)\.catch/,"fullscreen permission must be best-effort during Continue");
-assert.doesNotMatch(r54,/Promise\.all\(\[.*S\.start/,"Continue must not fail because optional browser permissions reject");
-assert.match(r54,/window\.addEventListener\("click",clicks,true\)/,"R54 Continue capture must run before R43's document capture handler");
+assert.match(r54,/const a=window\.CCGLostSizzlerV141R43SoloSave;if\(typeof a\?\.resumeSolo!=="function"\)return false;st\.continues\+\+;const ok=await a\.resumeSolo\(\);if\(ok\)rearmSoon\(\);return ok/,"R54 compatibility resume must delegate to R43 instead of reconstructing Solo state");
+assert.doesNotMatch(r54,/net\.leave\(\)/,"R54 must never wait for transport leave during Solo Continue");
+assert.doesNotMatch(r54,/b\.id==="continue-save-btn"/,"R54 must not own the Continue button when R43 is authoritative");
+assert.match(r54,/window\.addEventListener\("click",clicks,true\)/,"R54 may retain capture only for non-Continue playtest rearm handling");
 
 assert.match(game,/triggerTrap\(p\)/,"canonical dungeon movement still owns normal trap triggering");
 assert.match(r54,/forceDamage\(p,"dungeon trap"\)/,"R54 must enforce trap damage when the canonical path is blocked by stale invulnerability");
