@@ -31,7 +31,12 @@ try{
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R60LivePlayIntegrity)&&Boolean(window.CCGLostSizzlerV141R59LiveRegressionFixes),null,{timeout:90000});
   await page.click("#solo-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&playMode==="solo"&&Boolean(p1)&&Boolean(host)&&window.movePlayer?.__ccgV141R60CadenceSeal===true&&window.update?.__ccgV141R60TimeSmoothing===true,null,{timeout:30000});
-  await page.waitForFunction(()=>(host?.enemies||[]).some(enemy=>String(enemy?.follower?.name||"").toUpperCase()==="CCG"),null,{timeout:5000});
+  await page.waitForFunction(()=>{
+    const count=(host?.enemies||[]).filter(enemy=>String(enemy?.follower?.name||"").toUpperCase()==="CCG").length,now=performance.now();
+    if(count!==1){window.__ccgR60StableCcgSince=0;return false}
+    if(!Number(window.__ccgR60StableCcgSince||0))window.__ccgR60StableCcgSince=now;
+    return now-Number(window.__ccgR60StableCcgSince||0)>=200
+  },null,{timeout:5000,polling:25});
 
   console.log("[r60 Solo] AZALEA portrait and CCG roster must be restored");
   const roster=await page.evaluate(()=>{
