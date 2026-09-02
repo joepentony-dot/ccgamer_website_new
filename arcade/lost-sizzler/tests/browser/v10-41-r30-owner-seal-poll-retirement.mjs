@@ -57,7 +57,59 @@ try{
   await page.evaluate(()=>{
     const dead=function r30PollRetirementDeadOwner(){return false};dead.__ccgOriginal=window.movePlayer;window.movePlayer=dead;
   });
-  await page.waitForFunction(()=>typeof window.__r30PollRetirementGolden==="function"&&window.movePlayer===window.__r30PollRetirementGolden,null,{timeout:500});
+  let recoveryTimeout=null;
+  try{
+    await page.waitForFunction(()=>typeof window.__r30PollRetirementGolden==="function"&&window.movePlayer===window.__r30PollRetirementGolden,null,{timeout:500});
+  }catch(error){recoveryTimeout=String(error?.message||error)}
+  if(recoveryTimeout){
+    const diagnostic=await page.evaluate(()=>{
+      const guard=window.CCGLostSizzlerV141R30,seal=window.CCGLostSizzlerV141R30OwnerSeal;
+      const current=window.movePlayer,golden=window.__r30PollRetirementGolden;
+      let descriptor=null;try{descriptor=Object.getOwnPropertyDescriptor(window,"movePlayer")}catch(_){}
+      const tutorial=window.CCGLostSizzlerOnboardingV120?.state||null;
+      const spyEngine=window.CCGLostSizzlerV141R29SpyEngine?.state||null;
+      const tutorialFinal=window.CCGLostSizzlerV141TutorialActionFinalizer?.state||null;
+      const spyFinal=window.CCGLostSizzlerV141SpyMovementFinalizer?.state||null;
+      const stability=window.CCGLostSizzlerV141BrowserStabilityGameplay?.state||null;
+      return{
+        mode:typeof mode!=="undefined"?String(mode||""):"<missing>",
+        runActive:String(document.body?.dataset?.runActive||""),
+        specialMode:String(document.body?.dataset?.specialMode||""),
+        specialActive:String(window.CCGLostSizzlerSpecialModes?.active?.type||""),
+        spyOwned:Boolean(seal.spyOwned?.()),
+        tutorialOwned:Boolean(seal.tutorialOwned?.()),
+        spyIsolated:Boolean(spyEngine?.isolated),
+        tutorialState:tutorial?{active:Boolean(tutorial.active),tutorialRequested:Boolean(tutorial.tutorialRequested),forceTutorial:Boolean(tutorial.forceTutorial)}:null,
+        tutorialFinalInstalled:Boolean(tutorialFinal?.installed),
+        spyFinalMoveInstalled:Boolean(spyFinal?.moveInstalled),
+        stabilityMoveGuard:Boolean(stability?.moveGuard),
+        assignmentGateState:Boolean(seal.state?.assignmentGate),
+        assignmentGateActive:Boolean(seal.assignmentGateActive?.()),
+        assignmentGateUnsupported:Boolean(seal.state?.assignmentGateUnsupported),
+        assignmentGateLosses:Number(seal.state?.assignmentGateLosses||0),
+        retirementCoverage:String(seal.retirementCoverage?.()||""),
+        retirementReason:String(seal.state?.pollRetirementReason||""),
+        sealTimer:Number(seal.state?.timer||0),
+        globalGuardTimer:Number(guard.state?.timer||0),
+        goldenLocked:Boolean(guard.state?.goldenLocked),
+        currentName:String(current?.name||""),
+        goldenName:String(golden?.name||""),
+        currentEqualsGolden:current===golden,
+        guardGoldenEqualsExpected:guard.state?.goldenMove===golden,
+        baselineEqualsCurrent:guard.state?.baselineMove===current,
+        baselineEqualsGolden:guard.state?.baselineMove===golden,
+        currentOriginalEqualsGolden:current?.__ccgOriginal===golden,
+        currentSpyContaminated:Boolean(guard.spyContaminated?.(current)),
+        ownershipRepairs:Number(guard.state?.ownershipRepairs||0),
+        forcedRestores:Number(guard.state?.forcedRestores||0),
+        descriptorKind:descriptor?.get||descriptor?.set?"accessor":"value",
+        descriptorGet:String(descriptor?.get?.name||""),
+        descriptorSet:String(descriptor?.set?.name||""),
+        descriptorValueName:String(descriptor?.value?.name||"")
+      }
+    });
+    assert.fail(`R30 owner-seal hostile movement-owner write was not recovered within 500ms. timeout=${recoveryTimeout} diagnostic=${JSON.stringify(diagnostic)}`)
+  }
 
   const result=await page.evaluate(()=>{
     const guard=window.CCGLostSizzlerV141R30,seal=window.CCGLostSizzlerV141R30OwnerSeal,before=window.__r30PollRetirementBefore||{};
