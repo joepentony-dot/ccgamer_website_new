@@ -28,7 +28,7 @@
     timer:0,installed:false,combatWrapped:false,liveWrapped:false,
     preSource:null,postSource:null,liveSource:null,liveOwner:null,
     lastNow:0,lastPauseBoundary:0,lastMode:"",clockPrimed:false,resumeGuardUntil:0,
-    resumeCombatSettleUntil:0,resumeProjectileSteps:0,resumeEnemySteps:0,resumeSettleDiscardedMs:0,
+    resumeCombatSettleUntil:0,resumeCombatSettleElapsed:0,resumeProjectileSteps:0,resumeEnemySteps:0,resumeSettleDiscardedMs:0,
     lastFrameToken:"",lastTiming:null,lastServicedFrameToken:"",duplicateBeginFrames:0,duplicateCombatServices:0,
     projectileAccumulator:0,enemyAccumulator:0,currentElapsed:0,currentFrameDt:0,currentExtra:0,
     frames:0,clockResets:0,pauseGapsDiscarded:0,pauseAccumulatorResets:0,resumeGuardFrames:0,visibleGapClamps:0,discardedVisibleMs:0,
@@ -74,7 +74,7 @@
     state.lastFrameToken="";state.lastTiming=null;state.lastServicedFrameToken="";
     if(!keepRemainder){
       state.projectileAccumulator=0;state.enemyAccumulator=0;state.clockPrimed=false;
-      state.resumeCombatSettleUntil=0;state.resumeProjectileSteps=0;state.resumeEnemySteps=0
+      state.resumeCombatSettleUntil=0;state.resumeCombatSettleElapsed=0;state.resumeProjectileSteps=0;state.resumeEnemySteps=0
     }
     state.clockResets++;
     return reason
@@ -91,7 +91,7 @@
     const current=Math.max(0,Number(now)||0),r59Until=Math.max(0,Number(r59State()?.suppressRecoveryUntil)||0);
     state.resumeGuardUntil=Math.max(Number(state.resumeGuardUntil)||0,r59Until,current+PAUSE_REENTRY_GUARD_MS);
     state.resumeCombatSettleUntil=current+PAUSE_COMBAT_SETTLE_MS;
-    state.resumeProjectileSteps=0;state.resumeEnemySteps=0;
+    state.resumeCombatSettleElapsed=0;state.resumeProjectileSteps=0;state.resumeEnemySteps=0;
     return state.resumeGuardUntil
   }
 
@@ -200,14 +200,16 @@
     const frameToken=String(timing.frameToken||"");
     if(frameToken&&frameToken===state.lastServicedFrameToken){state.duplicateCombatServices++;return{projectiles:0,enemies:0}}
     if(frameToken)state.lastServicedFrameToken=frameToken;
-    const settling=perfNow()<Number(state.resumeCombatSettleUntil||0);
+    const settleArmed=Number(state.resumeCombatSettleUntil||0)>0,settling=settleArmed&&Number(state.resumeCombatSettleElapsed||0)<PAUSE_COMBAT_SETTLE_MS;
     const projectileLimit=settling?Math.max(0,PAUSE_COMBAT_STEP_BUDGET-Number(state.resumeProjectileSteps||0)):MAX_PROJECTILE_STEPS;
     const enemyLimit=settling?Math.max(0,PAUSE_COMBAT_STEP_BUDGET-Number(state.resumeEnemySteps||0)):MAX_ENEMY_STEPS;
     const projectiles=runProjectileSteps(timing.elapsed,projectileLimit),enemies=runEnemySteps(timing.elapsed,enemyLimit);
     if(settling){
       state.resumeProjectileSteps+=projectiles;state.resumeEnemySteps+=enemies;
+      state.resumeCombatSettleElapsed=Math.min(PAUSE_COMBAT_SETTLE_MS,Number(state.resumeCombatSettleElapsed||0)+Math.max(0,Number(timing.elapsed)||0));
       if(state.resumeProjectileSteps>=PAUSE_COMBAT_STEP_BUDGET)discardProjectileDebt();
-      if(state.resumeEnemySteps>=PAUSE_COMBAT_STEP_BUDGET)discardEnemyDebt()
+      if(state.resumeEnemySteps>=PAUSE_COMBAT_STEP_BUDGET)discardEnemyDebt();
+      if(state.resumeCombatSettleElapsed>=PAUSE_COMBAT_SETTLE_MS)state.resumeCombatSettleUntil=0
     }
     return{projectiles,enemies}
   }
