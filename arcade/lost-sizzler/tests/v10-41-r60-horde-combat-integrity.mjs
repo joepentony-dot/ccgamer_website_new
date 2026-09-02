@@ -22,8 +22,11 @@ assert.match(r60,/pauseBoundary!==previousBoundary/,"R60 must detect R59 pause b
 assert.match(r60,/function resetCombatAccumulators\(reason="pause boundary"\)/,"R60 must explicitly discard projectile and enemy scheduler debt at a pause boundary");
 assert.match(r60,/state\.projectileAccumulator=0;state\.enemyAccumulator=0;state\.clockPrimed=true/,"pause-boundary reset must clear both Horde combat accumulators without reimporting stale timer debt");
 assert.match(r60,/enteredPause\|\|boundaryChanged\)\{state\.pauseGapsDiscarded\+\+;resetCombatAccumulators\("pause entry"\);armResumeGuard\(now\)/,"entering pause must synchronously discard retained combat debt and arm the resume guard");
-assert.match(r60,/boundaryChanged\|\|resumedFromPause\)\{[\s\S]*resetCombatAccumulators\("pause resume"\);armResumeGuard\(now\);raw=frameDt\|\|16/,"resume must rebase both accumulators before any active-play elapsed time is serviced");
-assert.match(r60,/if\(now<guardUntil\)\{raw=frameDt\|\|16;state\.resumeGuardFrames\+\+\}/,"the post-pause guard must refuse wall-clock catch-up and advance only by normal frame delta");
+assert.match(r60,/boundaryChanged\|\|resumedFromPause\)\{[\s\S]*resetCombatAccumulators\("pause resume"\);armResumeGuard\(now\);raw=16/,"resume must rebase both accumulators and discard the paused wall-clock gap before servicing active play");
+assert.match(r60,/guarded=now<guardUntil/,"R60 must explicitly distinguish the post-pause recovery window from normal active-play catch-up");
+assert.match(r60,/if\(guarded\)state\.resumeGuardFrames\+\+/,"R60 must account guarded post-pause frames without replacing their real elapsed time");
+assert.match(r60,/let elapsed=guarded\?clamp\(raw\|\|16,1,45\):Math\.max\(frameDt\|\|0,raw\|\|frameDt\|\|16\)/,"post-pause combat must advance by real wall-clock frame time rather than the shared 45 ms simulation clamp");
+assert.doesNotMatch(r60,/if\(now<guardUntil\)\{raw=frameDt\|\|16/,"the pause guard must never inflate every rendered frame to the shared clamped game delta");
 assert.match(r60,/\(Number\(now\)\|\|0\)\+PAUSE_REENTRY_GUARD_MS/,"the R60 fallback resume guard must be measured forward from the current clock");
 assert.match(r60,/document\.hidden/,"R60 must refuse hidden-page combat catch-up");
 assert.match(r60,/updateHordeLiveV141R60Owned/,"R60 must feed real visible-play elapsed time into Horde perimeter movement through its exact owner");
@@ -60,4 +63,4 @@ assert.match(frame,/timingState\.liveElapsedFrames=Number\(timingState\.liveElap
 assert.match(frame,/wrapped\.__ccgV141R60RealElapsed=true;wrapped\.__ccgV141R60FinalLiveOwner=true/,"the final owner must retain R60 compatibility markers without relying on them for identity");
 assert.match(frame,/if\(isHorde\(\)\)return maintainR60HordeLiveOwner\(\)/,"the production monitor must route Horde to its own final live owner instead of the Solo owner");
 
-console.log("Lost Sizzler V10.41 r60 Horde timing plus Solo smoothing, pause debt discard, Spy-safe ownership, synchronous exact Horde live ownership, environment and named-enemy integrity contracts passed.");
+console.log("Lost Sizzler V10.41 r60 Horde timing plus Solo smoothing, real-time pause recovery, Spy-safe ownership, synchronous exact Horde live ownership, environment and named-enemy integrity contracts passed.");
