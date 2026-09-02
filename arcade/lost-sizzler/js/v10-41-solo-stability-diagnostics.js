@@ -49,13 +49,16 @@
   }
 
   function runtimeSnapshot(now){
-    const modeRuntime=window.CCGLostSizzlerModeRuntime?.state||{},r29=window.CCGLostSizzlerV141R29?.state||{},r60=window.CCGLostSizzlerV141R60?.state||{};
+    const modeRuntime=window.CCGLostSizzlerModeRuntime?.state||{},r29=window.CCGLostSizzlerV141R29?.state||{},r59=window.CCGLostSizzlerV141R59LiveRegressionFixes?.state||{},r60=window.CCGLostSizzlerV141R60?.state||{};
     return{
       at:now,mode:safeMode(),controllerId:controllerId(),hidden:Boolean(document.hidden),runActive:document.body?.dataset?.runActive==="true",
       activeWallMs:Math.round(state.soloActiveWallMs),observedSimulationMs:Math.round(state.soloObservedSimulationMs),simulationRatio:Number(state.simulationRatio.toFixed(4)),updateRate:Number(state.updateRate.toFixed(2)),
       ownerChanges:state.ownerChanges,updateOwner:state.ownerSignatures.update||"missing",moveOwner:state.ownerSignatures.movePlayer||"missing",damageOwner:state.ownerSignatures.hurtPlayer||"missing",
       sharedFrameBoundaryReassertions:Number(modeRuntime.sharedFrameBoundaryReassertions||0),ownedSystemReassertions:Number(modeRuntime.ownedSystemReassertions||0),ownedSystemCalls:Number(modeRuntime.ownedSystemCalls||0),
       r29FrameStalls:Number(r29.frameStalls||0),r29DuplicateFramesSkipped:Number(r29.duplicateFramesSkipped||0),r29CombatStallRecoveries:Number(r29.combatStallRecoveries||0),
+      r59AcceptedFrames:Number(r59.acceptedFrames||0),r59DuplicateFramesSkipped:Number(r59.duplicateFramesSkipped||0),r59LongGaps:Number(r59.longGaps||0),r59LongGapRecoveries:Number(r59.longGapRecoveries||0),
+      r59PausedGapsDiscarded:Number(r59.pausedGapsDiscarded||0),r59PauseBoundaries:Number(r59.pauseBoundaries||0),r59R58Reassertions:Number(r59.r58Reassertions||0),r59R58Ticks:Number(r59.r58Ticks||0),
+      r59ClockInstalled:Boolean(r59.clockInstalled),r59PauseWrapped:Boolean(r59.pauseWrapped),r59SoloSaveTransitionInstalls:Number(r59.soloSaveTransitionInstalls||0),r59SoloFloorAutosaves:Number(r59.soloFloorAutosaves||0),
       r60VisibleGapClamps:Number(r60.visibleGapClamps||0),r60DiscardedVisibleMs:Number(r60.discardedVisibleMs||0)
     }
   }
