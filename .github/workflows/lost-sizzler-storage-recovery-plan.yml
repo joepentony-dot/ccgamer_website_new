@@ -36,6 +36,7 @@ jobs:
 
           node --check scripts/recover-lost-sizzler-enabled-storage.mjs
           node --check scripts/verify-lost-sizzler-storage-recovery.mjs
+          node scripts/recover-lost-sizzler-enabled-storage.mjs --self-test
           node scripts/verify-lost-sizzler-storage-recovery.mjs --manifest-check
           node scripts/verify-lost-sizzler-storage-recovery.mjs --self-test
 
