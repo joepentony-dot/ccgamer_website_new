@@ -127,8 +127,11 @@ jobs:
       - name: Validate Lost Sizzler Supabase containment contract
         run: node arcade/lost-sizzler/tests/supabase-containment-contract.mjs
 
-      - name: Validate Lost Sizzler Storage recovery manifest
-        run: node scripts/verify-lost-sizzler-storage-recovery.mjs --manifest-check
+      - name: Validate Lost Sizzler Storage recovery verifier
+        shell: bash
+        run: |
+          node scripts/verify-lost-sizzler-storage-recovery.mjs --self-test
+          node scripts/verify-lost-sizzler-storage-recovery.mjs --manifest-check
 
       - name: Validate Lost Sizzler dungeon structural variety
         run: node games/ccg-games/cheeky-commodore-quest/tests/v10-19-dungeon-variety.mjs
