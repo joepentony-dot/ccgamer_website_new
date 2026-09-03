@@ -17,7 +17,7 @@
     spyOwnerUpdate:null,spyOwnerMove:null,spyOwnerHurt:null,
     forcedRestores:0,ownershipRepairs:0,ownershipCooldownResets:0,inputBridges:0,inputReassertions:0,
     watchdogRecoveries:0,watchdogMisses:0,watchdogCooldownBreaks:0,lastWatchdogRecoveryAt:0,
-    notificationOwnershipRepairs:0,notificationPostInstallRepairs:0,nestedOwnershipDetections:0,damageOwnershipRepairs:0,
+    notificationOwnershipRepairs:0,notificationPostInstallRepairs:0,nestedOwnershipDetections:0,damageOwnershipRepairs:0,damageOwnershipPreservations:0,
     lastRestoreAt:0,lastRestoreReason:"",lastModeType:"",modeTransitions:0,lastRecoveryLogAt:0
   };
   const held=new Set();
@@ -125,7 +125,15 @@
   }
   const recoveryUpdate=()=>authoritativeControllerUpdate()||state.goldenUpdate||state.baselineUpdate;
   const recoveryMove=()=>state.goldenMove||state.baselineMove;
-  const recoveryHurt=()=>state.baselineHurt||state.goldenHurt;
+  function recoveryHurt(){
+    if(modernDamageOwnersRequired()){
+      if(healthyBaseline(window.hurtPlayer)&&modernDamageOwnershipPresent(window.hurtPlayer))return window.hurtPlayer;
+      if(healthyBaseline(state.baselineHurt)&&modernDamageOwnershipPresent(state.baselineHurt))return state.baselineHurt;
+      if(healthyBaseline(state.goldenHurt)&&modernDamageOwnershipPresent(state.goldenHurt))return state.goldenHurt;
+      return null
+    }
+    return state.baselineHurt||state.goldenHurt
+  }
 
   function noteRecovery(reason){
     const now=Date.now();
@@ -145,6 +153,7 @@
     try{
       const before=Boolean(window.showToast?.__ccgV141Priority);
       const stable=maintainNotificationOwnership();
+      if(!spyActive()&&modernDamageOwnersRequired()&&!modernDamageOwnershipPresent(window.hurtPlayer))reinstallModernDamageOwners();
       if(stable&&!before&&window.showToast?.__ccgV141Priority===true)state.notificationPostInstallRepairs++;
       return stable;
     }catch(_){return false}
@@ -176,9 +185,13 @@
   }
 
   function forceRestore(updateFn,moveFn,hurtFn,reason){
+    const preserveModernHurt=!spyActive()&&modernDamageOwnersRequired()&&healthyBaseline(window.hurtPlayer)&&modernDamageOwnershipPresent(window.hurtPlayer);
     if(typeof updateFn==="function")window.update=updateFn;
     if(typeof moveFn==="function")window.movePlayer=moveFn;
-    if(typeof hurtFn==="function")window.hurtPlayer=hurtFn;
+    if(typeof hurtFn==="function"){
+      if(!preserveModernHurt||modernDamageOwnershipPresent(hurtFn))window.hurtPlayer=hurtFn;
+      else state.damageOwnershipPreservations++;
+    }
     state.forcedRestores++;state.lastRestoreAt=Date.now();state.lastRestoreReason=String(reason||"runtime handoff");
     state.spyOwnerUpdate=state.spyOwnerMove=state.spyOwnerHurt=null;noteRecovery(state.lastRestoreReason);return true;
   }
@@ -199,7 +212,12 @@
     const modernDamageMissing=modernDamageOwnersRequired()&&!modernDamageOwnershipPresent(currentHurt);
     const hurtBad=typeof currentHurt!=="function"||spyContaminated(currentHurt)||modernDamageMissing;
     if(!(updateBad||moveBad||hurtBad))return false;
-    const u=updateBad?recoveryUpdate():currentUpdate,m=moveBad?recoveryMove():currentMove,h=hurtBad?recoveryHurt():currentHurt;
+    const u=updateBad?recoveryUpdate():currentUpdate,m=moveBad?recoveryMove():currentMove;
+    let h=hurtBad?recoveryHurt():currentHurt;
+    if(hurtBad&&modernDamageOwnersRequired()&&typeof h!=="function"){
+      reinstallModernDamageOwners();
+      h=modernDamageOwnershipPresent(window.hurtPlayer)?window.hurtPlayer:null;
+    }
     if((updateBad&&typeof u!=="function")||(moveBad&&typeof m!=="function")||(hurtBad&&typeof h!=="function"))return false;
     state.ownershipRepairs++;
     const repaired=forceRestore(u,m,h,reason);
