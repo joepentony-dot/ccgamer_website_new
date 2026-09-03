@@ -23,8 +23,15 @@
   const LONG_GAP_MS=500;
   const PAUSE_GUARD_MS=1200;
   const SOLO_MAX_STEP_MS=45;
-  const SOLO_MAX_VISIBLE_FRAME_MS=180;
-  const SOLO_MAX_STEPS=4;
+  // A visible Solo frame may legitimately arrive well below 22 FPS after a
+  // resize/focus/lifecycle transition. The previous 180 ms ceiling permanently
+  // discarded active play time and the sustained soak reproduced a 0.4721x
+  // simulation rate. Keep every canonical simulation slice at <=45 ms, but give
+  // one accepted RAF enough bounded capacity to service visible gaps down to
+  // roughly 2 FPS. Paused/hidden gaps never reach this path because the accepted
+  // timestamp is rebased at their lifecycle boundary.
+  const SOLO_MAX_VISIBLE_FRAME_MS=540;
+  const SOLO_MAX_STEPS=12;
   const state={
     timer:0,installed:false,clockInstalled:false,pauseWrapped:false,soloSaveTransitionInstalled:false,
     acceptedFrames:0,duplicateFramesSkipped:0,longGaps:0,longGapRecoveries:0,
