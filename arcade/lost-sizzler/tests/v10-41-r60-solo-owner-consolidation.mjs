@@ -8,7 +8,8 @@ const root=path.resolve(here,"..");
 const bridge=fs.readFileSync(path.join(root,"js/v10-41-r60-horde-owner-composition.js"),"utf8");
 
 assert.match(bridge,/function soloDungeon\(\)/,"R60 owner consolidation must have an explicit Solo Dungeon scope predicate");
-assert.match(bridge,/document\.body\?\.dataset\?\.runActive==="true"&&String\(window\.playMode\|\|""\)==="solo"&&!specialType\(\)/,"the consolidation predicate must exclude menus, multiplayer and every special mode");
+assert.match(bridge,/document\.body\?\.dataset\?\.runActive==="true"&&typeof playMode!=="undefined"&&String\(playMode\|\|""\)==="solo"&&!specialType\(\)/,"the consolidation predicate must read Lost Sizzler's lexical playMode owner while excluding menus, multiplayer and every special mode");
+assert.doesNotMatch(bridge,/window\.playMode/,"the R60 consolidation bridge must not assume top-level let playMode is exposed on window");
 assert.match(bridge,/function protectSoloInstall\(\)/,"R60 composition must protect the production Solo maintenance delegate");
 assert.match(bridge,/if\(!soloDungeon\(\)\)return source\.apply\(this,arguments\)/,"Horde, Spy and non-Solo lifecycle states must fall through to the untouched R60 installer");
 assert.match(bridge,/chainHasMarker\(moveCurrent,"__ccgV141R60CadenceSeal"\)/,"R60 Solo maintenance must recognise an existing cadence seal anywhere in movement ancestry");
