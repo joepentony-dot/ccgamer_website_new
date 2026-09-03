@@ -14,17 +14,29 @@ function canonicalRoot(value, label) {
   return path.resolve(value);
 }
 
+function pathIsInsideOrEqual(root, candidate) {
+  const relative = path.relative(root, candidate);
+  return relative === '' || (!relative.startsWith(`..${path.sep}`) && relative !== '..' && !path.isAbsolute(relative));
+}
+
 function assertDisjointRoots(packageRoot, userDataRoot) {
   const pkg = canonicalRoot(packageRoot, 'package root');
   const data = canonicalRoot(userDataRoot, 'user-data root');
-  const relativePkgToData = path.relative(pkg, data);
-  const relativeDataToPkg = path.relative(data, pkg);
-  const dataInsidePackage = relativePkgToData === '' || (!relativePkgToData.startsWith(`..${path.sep}`) && relativePkgToData !== '..' && !path.isAbsolute(relativePkgToData));
-  const packageInsideData = relativeDataToPkg === '' || (!relativeDataToPkg.startsWith(`..${path.sep}`) && relativeDataToPkg !== '..' && !path.isAbsolute(relativeDataToPkg));
+  const dataInsidePackage = pathIsInsideOrEqual(pkg, data);
+  const packageInsideData = pathIsInsideOrEqual(data, pkg);
   if (dataInsidePackage || packageInsideData) {
     fail(`Package root and user-data root must be disjoint: package=${pkg} userData=${data}`);
   }
   return { packageRoot: pkg, userDataRoot: data };
+}
+
+function assertEvidenceOutputPath(output, packageRoot, userDataRoot) {
+  if (!output) fail('snapshot output is required.');
+  const target = path.resolve(output);
+  if (pathIsInsideOrEqual(packageRoot, target)) fail(`Persistence evidence must not be written inside the package root: ${target}`);
+  if (pathIsInsideOrEqual(userDataRoot, target)) fail(`Persistence evidence must not be written inside the user-data root: ${target}`);
+  if (fs.existsSync(target)) fail(`Refusing to overwrite existing persistence evidence: ${target}`);
+  return target;
 }
 
 function sha256File(filePath) {
@@ -92,6 +104,12 @@ function verifySnapshot(userDataRoot, expected) {
   return actual;
 }
 
+function writeSnapshotEvidence(output, snapshot, packageRoot, userDataRoot) {
+  const target = assertEvidenceOutputPath(output, packageRoot, userDataRoot);
+  fs.writeFileSync(target, `${JSON.stringify(snapshot, null, 2)}\n`, { flag: 'wx' });
+  return target;
+}
+
 function parseArgs(argv) {
   const args = new Map();
   for (let i = 0; i < argv.length; i += 1) {
@@ -124,7 +142,31 @@ function runSelfTest() {
     fs.writeFileSync(path.join(userDataRoot, 'solo-save.json'), '{"floor":7}\n');
     fs.writeFileSync(path.join(userDataRoot, 'achievements.json'), '{"earned":["first"]}\n');
     const snapshot = snapshotUserData(userDataRoot);
-    assertDisjointRoots(packageRoot, userDataRoot);
+    const roots = assertDisjointRoots(packageRoot, userDataRoot);
+
+    const evidence = path.join(temp, 'persistence-evidence.json');
+    writeSnapshotEvidence(evidence, snapshot, roots.packageRoot, roots.userDataRoot);
+    const storedEvidence = JSON.parse(fs.readFileSync(evidence, 'utf8'));
+    validateSnapshot(storedEvidence);
+
+    let overwriteRejected = false;
+    try {
+      writeSnapshotEvidence(evidence, snapshot, roots.packageRoot, roots.userDataRoot);
+    } catch {
+      overwriteRejected = true;
+    }
+    if (!overwriteRejected) fail('Self-test expected existing persistence evidence to be protected from overwrite.');
+
+    for (const forbiddenEvidence of [path.join(packageRoot, 'snapshot.json'), path.join(userDataRoot, 'snapshot.json')]) {
+      let protectedRootRejected = false;
+      try {
+        writeSnapshotEvidence(forbiddenEvidence, snapshot, roots.packageRoot, roots.userDataRoot);
+      } catch {
+        protectedRootRejected = true;
+      }
+      if (!protectedRootRejected) fail(`Self-test expected persistence evidence inside a protected root to be rejected: ${forbiddenEvidence}`);
+      if (fs.existsSync(forbiddenEvidence)) fail(`Rejected persistence evidence path was unexpectedly created: ${forbiddenEvidence}`);
+    }
 
     fs.rmSync(packageRoot, { recursive: true, force: true });
     fs.mkdirSync(packageRoot);
@@ -153,7 +195,7 @@ function runSelfTest() {
       mutationRejected = true;
     }
     if (!mutationRejected) fail('Self-test expected changed user data to fail verification.');
-    console.log('Lost Sizzler update persistence boundary self-test passed: distinct Build A -> Build B replacement preserved external profile state.');
+    console.log('Lost Sizzler update persistence boundary self-test passed: distinct Build A -> Build B replacement preserved external profile state and protected snapshot evidence.');
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
@@ -167,20 +209,20 @@ if (args.get('--self-test')) {
 
 const packageRoot = args.get('--package-root');
 const userDataRoot = args.get('--user-data-root');
-assertDisjointRoots(packageRoot, userDataRoot);
+const roots = assertDisjointRoots(packageRoot, userDataRoot);
 
 if (args.has('--snapshot')) {
   const output = args.get('--snapshot');
-  const snapshot = snapshotUserData(userDataRoot);
-  fs.writeFileSync(output, `${JSON.stringify(snapshot, null, 2)}\n`);
-  console.log(`Lost Sizzler persistence snapshot written: ${snapshot.fileCount} files, ${snapshot.totalBytes} bytes.`);
+  const snapshot = snapshotUserData(roots.userDataRoot);
+  const target = writeSnapshotEvidence(output, snapshot, roots.packageRoot, roots.userDataRoot);
+  console.log(`Lost Sizzler persistence snapshot written: ${snapshot.fileCount} files, ${snapshot.totalBytes} bytes -> ${target}`);
   process.exit(0);
 }
 
 if (args.has('--verify')) {
   const snapshotPath = args.get('--verify');
   const expected = JSON.parse(fs.readFileSync(snapshotPath, 'utf8'));
-  const actual = verifySnapshot(userDataRoot, expected);
+  const actual = verifySnapshot(roots.userDataRoot, expected);
   console.log(`Lost Sizzler persistence boundary verified unchanged: ${actual.fileCount} files, ${actual.totalBytes} bytes.`);
   process.exit(0);
 }
