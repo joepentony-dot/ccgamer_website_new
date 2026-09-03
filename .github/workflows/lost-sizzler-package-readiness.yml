@@ -14,6 +14,7 @@ on:
       - 'scripts/verify-lost-sizzler-package-tree.mjs'
       - 'scripts/verify-lost-sizzler-update-persistence-boundary.mjs'
       - 'scripts/verify-lost-sizzler-uninstall-boundary.mjs'
+      - 'scripts/verify-lost-sizzler-activation-boundary.mjs'
       - '.github/workflows/lost-sizzler-package-readiness.yml'
   push:
     branches:
@@ -30,6 +31,7 @@ on:
       - 'scripts/verify-lost-sizzler-package-tree.mjs'
       - 'scripts/verify-lost-sizzler-update-persistence-boundary.mjs'
       - 'scripts/verify-lost-sizzler-uninstall-boundary.mjs'
+      - 'scripts/verify-lost-sizzler-activation-boundary.mjs'
       - '.github/workflows/lost-sizzler-package-readiness.yml'
 
 permissions:
@@ -54,6 +56,7 @@ jobs:
           node --check scripts/verify-lost-sizzler-package-tree.mjs
           node --check scripts/verify-lost-sizzler-update-persistence-boundary.mjs
           node --check scripts/verify-lost-sizzler-uninstall-boundary.mjs
+          node --check scripts/verify-lost-sizzler-activation-boundary.mjs
 
       - name: Verify package asset boundary and hashes
         run: node scripts/build-lost-sizzler-package-manifest.mjs --check
@@ -66,6 +69,9 @@ jobs:
 
       - name: Verify uninstall ownership boundary regressions
         run: node scripts/verify-lost-sizzler-uninstall-boundary.mjs --self-test
+
+      - name: Verify activation staging boundary regressions
+        run: node scripts/verify-lost-sizzler-activation-boundary.mjs --self-test
 
       - name: Build reproducible package manifest artifact
         run: |
@@ -119,6 +125,44 @@ jobs:
           }
           console.log(`Lost Sizzler package manifest reproducibility/structure passed: ${manifest.fileCount} files, ${manifest.totalBytes} bytes.`);
           NODE
+
+      - name: Prove unverified candidate cannot disturb active package or profile
+        env:
+          ACTIVE_ROOT: ${{ runner.temp }}/lost-sizzler-activation/active
+          CANDIDATE_ROOT: ${{ runner.temp }}/lost-sizzler-activation/candidate
+          USER_DATA_ROOT: ${{ runner.temp }}/lost-sizzler-activation-user-data
+          PERSISTENCE_SNAPSHOT: ${{ runner.temp }}/lost-sizzler-activation-user-data.snapshot.json
+        run: |
+          set -euo pipefail
+
+          node scripts/materialize-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --output "$ACTIVE_ROOT" --clean
+          node scripts/verify-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --root "$ACTIVE_ROOT"
+          mkdir -p "$USER_DATA_ROOT"
+          printf '%s\n' '{"schema":"fixture","floor":7}' > "$USER_DATA_ROOT/solo-save.json"
+          node scripts/verify-lost-sizzler-update-persistence-boundary.mjs --package-root "$ACTIVE_ROOT" --user-data-root "$USER_DATA_ROOT" --snapshot "$PERSISTENCE_SNAPSHOT"
+
+          node scripts/materialize-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --output "$CANDIDATE_ROOT" --clean
+          node scripts/verify-lost-sizzler-activation-boundary.mjs --active-root "$ACTIVE_ROOT" --candidate-root "$CANDIDATE_ROOT" --user-data-root "$USER_DATA_ROOT"
+
+          # Corrupt one candidate byte without changing file length. The package
+          # verifier must reject it by SHA-256 while the verified active package
+          # and external Tier-A profile remain untouched.
+          CANDIDATE_FILE="$CANDIDATE_ROOT/arcade/lost-sizzler/version.json" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file = process.env.CANDIDATE_FILE;
+          const data = fs.readFileSync(file);
+          if (data.length < 1) throw new Error('Candidate corruption fixture requires a non-empty file.');
+          data[0] = data[0] === 0x7b ? 0x5b : (data[0] ^ 0x01);
+          fs.writeFileSync(file, data);
+          NODE
+
+          if node scripts/verify-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --root "$CANDIDATE_ROOT"; then
+            echo 'ERROR: corrupted candidate unexpectedly passed cryptographic package verification.' >&2
+            exit 1
+          fi
+
+          node scripts/verify-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --root "$ACTIVE_ROOT"
+          node scripts/verify-lost-sizzler-update-persistence-boundary.mjs --package-root "$ACTIVE_ROOT" --user-data-root "$USER_DATA_ROOT" --verify "$PERSISTENCE_SNAPSHOT"
 
       - name: Materialize versioned packages and preserve stable external profile identity
         env:
