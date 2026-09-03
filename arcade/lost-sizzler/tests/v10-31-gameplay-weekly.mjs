@@ -7,7 +7,7 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const game=path.resolve(here,"..");
 const repo=path.resolve(game,"../..");
 const readGame=file=>fs.readFileSync(path.join(game,file),"utf8");
-const play=readGame("js/game-play.js"),render=readGame("js/game-render.js"),systems=readGame("js/systems.js"),audio=readGame("js/audio.js"),weekly=readGame("js/weekly-challenge.js"),core=readGame("js/game-core.js"),main=readGame("js/game-main.js"),network=readGame("js/network.js"),gameNetwork=readGame("js/game-network.js"),runtime=readGame("js/v10-6-runtime.js"),multiplayerSync=readGame("js/v10-31-multiplayer-sync.js"),assets=readGame("js/asset-overrides.js"),index=readGame("index.html");
+const play=readGame("js/game-play.js"),render=readGame("js/game-render.js"),systems=readGame("js/systems.js"),audio=readGame("js/audio.js"),weekly=readGame("js/weekly-challenge.js"),core=readGame("js/game-core.js"),main=readGame("js/game-main.js"),network=readGame("js/network.js"),gameNetwork=readGame("js/game-network.js"),runtime=readGame("js/v10-6-runtime.js"),multiplayerSync=readGame("js/v10-31-multiplayer-sync.js"),assets=readGame("js/asset-overrides.js"),gate=readGame("js/online-services-gate.js"),index=readGame("index.html");
 const supabaseClient=fs.readFileSync(path.join(repo,"js/ccg-supabase-client.js"),"utf8");
 const edge=fs.readFileSync(path.join(repo,"supabase/functions/ccq-weekly-challenge/index.ts"),"utf8");
 const migration=fs.readFileSync(path.join(repo,"supabase/migrations/20260821190000_ccq_weekly_high_score_vault.sql"),"utf8");
@@ -38,7 +38,9 @@ assert.match(core,/function submitWeeklyResultOnce\(\)/,"all weekly result exits
 assert.match(main,/if\(run\?\.daily\)await submitWeeklyResultOnce\(\)/,"quitting a weekly run must submit its current final score before clearing the run");
 
 assert.match(supabaseClient,/@supabase\/supabase-js@2\.95\.0/,"the shared browser client must pin the verified Supabase SDK version");
-assert.match(index,/ccg-supabase-client\.js\?v=20260827r31/,"the multiplayer client must ship with the current r30 release cache token");
+assert.match(index,/online-services-gate\.js\?v=20260827r31/,"the current release must ship the lazy online-services gate");
+assert.doesNotMatch(index,/src="\/js\/ccg-supabase-client\.js/,"the shared Supabase client must not boot unconditionally from the game page");
+assert.match(gate,/ccg-supabase-client\.js\?v=\$\{encodeURIComponent\(RELEASE\)\}/,"web-mode multiplayer must still load the shared client with the current release token when online play is requested");
 assert.match(network,/private:false/,"internet rooms must explicitly use public browser-accessible Realtime channels");
 assert.match(network,/broadcast:\{self:false,ack:true\}/,"room broadcasts must wait for relay acknowledgement");
 assert.match(network,/async sendRequired\(event,payload\)/,"start and join control messages must have a reliable failure path");
