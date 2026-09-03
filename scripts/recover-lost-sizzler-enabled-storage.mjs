@@ -35,7 +35,7 @@ function parseArgs(argv) {
   return out;
 }
 function usage() {
-  console.log(`Lost Sizzler enabled Storage recovery downloader\n\nUsage:\n  node scripts/recover-lost-sizzler-enabled-storage.mjs \\\n    --storage-base-url <public bucket root> \\\n    --output <directory> [--limit 1..16] [--probe] [--report <file>]\n\n  node scripts/recover-lost-sizzler-enabled-storage.mjs \\\n    --storage-base-url <public bucket root> --plan [--limit 1..16]\n\nSafety rules:\n  - reads only the 16 ENABLED objects frozen in SUPABASE-STORAGE-RECOVERY-MANIFEST.md;\n  - defaults to --limit 1 so availability can be tested before recovering all 16;\n  - --plan performs no network request and creates no output directory or report;\n  - never downloads disabled counterparts;\n  - refuses to overwrite an existing recovered file;\n  - verifies downloaded byte size and SHA-256 immediately;\n  - optional --probe runs ffprobe and requires an audio stream;\n  - performs no Supabase database or Storage mutation.`);
+  console.log(`Lost Sizzler enabled Storage recovery downloader\n\nUsage:\n  node scripts/recover-lost-sizzler-enabled-storage.mjs \\\n    --storage-base-url <public bucket root> \\\n    --output <directory> [--limit 1..16] [--probe] [--report <file>]\n\n  node scripts/recover-lost-sizzler-enabled-storage.mjs \\\n    --storage-base-url <public bucket root> --plan [--limit 1..16]\n\nSafety rules:\n  - reads only the 16 ENABLED objects frozen in SUPABASE-STORAGE-RECOVERY-MANIFEST.md;\n  - defaults to --limit 1 so availability can be tested before recovering all 16;\n  - --plan performs no network request and creates no output directory or report;\n  - never downloads disabled counterparts;\n  - refuses to overwrite an existing recovered or partial file;\n  - verifies downloaded byte size and SHA-256 before promoting the partial file;\n  - optional --probe runs ffprobe and requires an audio stream before promotion;\n  - performs no Supabase database or Storage mutation.`);
 }
 function parseManifest(file) {
   const text = fs.readFileSync(file, 'utf8');
@@ -135,8 +135,12 @@ async function downloadTo(url, destination) {
     bytes += buffer.length;
   }
   fs.writeFileSync(partial, Buffer.concat(chunks, bytes), { flag: 'wx' });
+  return { bytes, partial };
+}
+function promoteVerifiedDownload(partial, destination) {
+  if (!fs.existsSync(partial)) fail(`Verified recovery partial is missing: ${partial}`);
+  if (fs.existsSync(destination)) fail(`Refusing to overwrite existing recovery file: ${destination}`);
   fs.renameSync(partial, destination);
-  return bytes;
 }
 
 async function main() {
@@ -157,15 +161,16 @@ async function main() {
     const filename = path.basename(row.enabledPath);
     const destination = path.join(root, filename);
     const url = recoveryUrl(baseUrl, row.enabledPath);
-    const bytes = await downloadTo(url, destination);
-    const sha256 = sha256File(destination);
+    const { bytes, partial } = await downloadTo(url, destination);
+    const sha256 = sha256File(partial);
     const sizeMatches = bytes === row.expectedBytes;
-    const probe = args.probe ? probeFile(destination) : null;
+    const probe = args.probe ? probeFile(partial) : null;
     const result = { number: row.number, playlist: row.playlist, originalFile: row.originalFile, enabledRow: row.enabledRow, enabledPath: row.enabledPath, expectedBytes: row.expectedBytes, downloadedBytes: bytes, sizeMatches, sha256, probe };
     results.push(result);
     console.log(`${String(row.number).padStart(2, '0')} ${row.playlist}/${row.originalFile} | ${bytes} bytes | SHA-256 ${sha256}${args.probe ? ` | ffprobe ${probe?.ok ? 'OK' : 'FAIL'}` : ''}`);
-    if (!sizeMatches) fail(`Downloaded byte size mismatch for recovery row ${row.number}: ${bytes} != ${row.expectedBytes}.`);
-    if (args.probe && !probe?.ok) fail(`ffprobe/decode verification failed for recovery row ${row.number}: ${probe?.error || 'unknown error'}`);
+    if (!sizeMatches) fail(`Downloaded byte size mismatch for recovery row ${row.number}: ${bytes} != ${row.expectedBytes}. Unverified bytes remain at ${partial}.`);
+    if (args.probe && !probe?.ok) fail(`ffprobe/decode verification failed for recovery row ${row.number}: ${probe?.error || 'unknown error'}. Unverified bytes remain at ${partial}.`);
+    promoteVerifiedDownload(partial, destination);
   }
 
   const report = {
