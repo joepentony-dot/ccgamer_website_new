@@ -15,6 +15,7 @@ on:
       - 'scripts/verify-lost-sizzler-update-persistence-boundary.mjs'
       - 'scripts/verify-lost-sizzler-uninstall-boundary.mjs'
       - 'scripts/verify-lost-sizzler-activation-boundary.mjs'
+      - 'scripts/activate-lost-sizzler-package-tree.mjs'
       - '.github/workflows/lost-sizzler-package-readiness.yml'
   push:
     branches:
@@ -32,6 +33,7 @@ on:
       - 'scripts/verify-lost-sizzler-update-persistence-boundary.mjs'
       - 'scripts/verify-lost-sizzler-uninstall-boundary.mjs'
       - 'scripts/verify-lost-sizzler-activation-boundary.mjs'
+      - 'scripts/activate-lost-sizzler-package-tree.mjs'
       - '.github/workflows/lost-sizzler-package-readiness.yml'
 
 permissions:
@@ -57,6 +59,7 @@ jobs:
           node --check scripts/verify-lost-sizzler-update-persistence-boundary.mjs
           node --check scripts/verify-lost-sizzler-uninstall-boundary.mjs
           node --check scripts/verify-lost-sizzler-activation-boundary.mjs
+          node --check scripts/activate-lost-sizzler-package-tree.mjs
 
       - name: Verify package asset boundary and hashes
         run: node scripts/build-lost-sizzler-package-manifest.mjs --check
@@ -72,6 +75,9 @@ jobs:
 
       - name: Verify activation staging boundary regressions
         run: node scripts/verify-lost-sizzler-activation-boundary.mjs --self-test
+
+      - name: Verify atomic activation and rollback regressions
+        run: node scripts/activate-lost-sizzler-package-tree.mjs --self-test
 
       - name: Build reproducible package manifest artifact
         run: |
@@ -162,6 +168,31 @@ jobs:
           fi
 
           node scripts/verify-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --root "$ACTIVE_ROOT"
+          node scripts/verify-lost-sizzler-update-persistence-boundary.mjs --package-root "$ACTIVE_ROOT" --user-data-root "$USER_DATA_ROOT" --verify "$PERSISTENCE_SNAPSHOT"
+
+      - name: Prove verified candidate activates atomically with rollback backup
+        env:
+          ACTIVE_ROOT: ${{ runner.temp }}/lost-sizzler-atomic/active
+          CANDIDATE_ROOT: ${{ runner.temp }}/lost-sizzler-atomic/candidate
+          BACKUP_ROOT: ${{ runner.temp }}/lost-sizzler-atomic/previous
+          USER_DATA_ROOT: ${{ runner.temp }}/lost-sizzler-atomic-user-data
+          PERSISTENCE_SNAPSHOT: ${{ runner.temp }}/lost-sizzler-atomic-user-data.snapshot.json
+        run: |
+          set -euo pipefail
+
+          node scripts/materialize-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --output "$ACTIVE_ROOT" --clean
+          node scripts/verify-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --root "$ACTIVE_ROOT"
+          mkdir -p "$USER_DATA_ROOT"
+          printf '%s\n' '{"schema":"fixture","floor":7}' > "$USER_DATA_ROOT/solo-save.json"
+          node scripts/verify-lost-sizzler-update-persistence-boundary.mjs --package-root "$ACTIVE_ROOT" --user-data-root "$USER_DATA_ROOT" --snapshot "$PERSISTENCE_SNAPSHOT"
+
+          node scripts/materialize-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --output "$CANDIDATE_ROOT" --clean
+          node scripts/verify-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --root "$CANDIDATE_ROOT"
+          node scripts/verify-lost-sizzler-activation-boundary.mjs --active-root "$ACTIVE_ROOT" --candidate-root "$CANDIDATE_ROOT" --user-data-root "$USER_DATA_ROOT"
+          node scripts/activate-lost-sizzler-package-tree.mjs --active-root "$ACTIVE_ROOT" --candidate-root "$CANDIDATE_ROOT" --backup-root "$BACKUP_ROOT" --user-data-root "$USER_DATA_ROOT"
+
+          node scripts/verify-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --root "$ACTIVE_ROOT"
+          node scripts/verify-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --root "$BACKUP_ROOT"
           node scripts/verify-lost-sizzler-update-persistence-boundary.mjs --package-root "$ACTIVE_ROOT" --user-data-root "$USER_DATA_ROOT" --verify "$PERSISTENCE_SNAPSHOT"
 
       - name: Materialize versioned packages and preserve stable external profile identity
