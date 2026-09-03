@@ -165,6 +165,24 @@ jobs:
           set -euo pipefail
           node arcade/quest/tests/quest-2-browser.mjs
 
+  lost-sizzler-containment-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Chromium regression runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install --with-deps chromium
+
       - name: Exercise Lost Sizzler containment delivery modes in Chromium
         shell: bash
         run: |
