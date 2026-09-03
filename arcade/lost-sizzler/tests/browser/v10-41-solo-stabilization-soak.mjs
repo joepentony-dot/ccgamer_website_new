@@ -69,6 +69,65 @@ async function readTelemetry(page,label){
   },label);
 }
 
+
+async function readOwnershipDebug(page,label){
+  return page.evaluate(label=>{
+    const diagnostics=window.CCGLostSizzlerSoloDiagnostics;
+    const r30=window.CCGLostSizzlerV141R30;
+    const spy=window.CCGLostSizzlerV141R29SpyEngine;
+    const r60=window.CCGLostSizzlerV141R60LivePlayIntegrity;
+    const describe=fn=>{
+      if(typeof fn!=="function")return null;
+      const chain=[];
+      const seen=new Set();
+      let current=fn,depth=0;
+      while(typeof current==="function"&&!seen.has(current)&&depth++<12){
+        seen.add(current);
+        const markers=[];
+        for(const key of ["__ccgV141R60CadenceSeal","__ccgV141R29SpyOwner","__ccgV141SpyFinal","__ccgV141TutorialMoveFinal","__ccgV141SpyIsolated","__ccgV141R60EnvironmentSeal","__ccgV141R56EnvironmentDamage","__ccgV141R29HordeFriendly","__ccgV141PostPlaytestHurt"]){
+          try{if(current[key])markers.push(key)}catch(_){}
+        }
+        chain.push({name:String(current.name||"anonymous"),markers});
+        try{current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null}catch(_){current=null}
+      }
+      return{depth:chain.length,chain};
+    };
+    return{
+      label,
+      current:{move:describe(window.movePlayer),hurt:describe(window.hurtPlayer)},
+      r30:r30?{
+        forcedRestores:Number(r30.state?.forcedRestores||0),
+        ownershipRepairs:Number(r30.state?.ownershipRepairs||0),
+        movementRepairs:Number(r30.state?.movementRepairs||0),
+        goldenLocked:Boolean(r30.state?.goldenLocked),
+        goldenMovePromotions:Number(r30.state?.goldenMovePromotions||0),
+        goldenMovePromotionRejects:Number(r30.state?.goldenMovePromotionRejects||0),
+        lastRestoreReason:String(r30.state?.lastRestoreReason||""),
+        baselineMove:describe(r30.state?.baselineMove),
+        goldenMove:describe(r30.state?.goldenMove),
+        baselineHurt:describe(r30.state?.baselineHurt),
+        goldenHurt:describe(r30.state?.goldenHurt)
+      }:null,
+      spy:spy?{
+        isolated:Boolean(spy.state?.isolated),
+        timer:Number(spy.state?.timer||0),
+        moveReassertions:Number(spy.state?.moveReassertions||0),
+        baseMove:describe(spy.state?.baseMove),
+        baseHurt:describe(spy.state?.baseHurt)
+      }:null,
+      r60:r60?{
+        timer:Number(r60.state?.timer||0),
+        ownerReassertions:Number(r60.state?.ownerReassertions||0),
+        moveWrapped:Boolean(r60.state?.moveWrapped),
+        hurtWrapped:Boolean(r60.state?.hurtWrapped),
+        moveSource:describe(r60.state?.moveSource),
+        hurtSource:describe(r60.state?.hurtSource)
+      }:null,
+      recentOwnerChanges:diagnostics?.ownerChangeLog?.slice(-20)||[]
+    };
+  },label);
+}
+
 function assertMeasurementHealthy(sample,label){
   assert.ok(sample.activeWallMs>=ACTIVE_SAMPLE_MS*0.55,`${label}: diagnostics must observe a meaningful active wall-time sample, got ${sample.activeWallMs} ms`);
   assert.ok(sample.observedSimulationMs>0,`${label}: diagnostics must observe advancing Solo simulation time`);
@@ -107,6 +166,7 @@ try{
   const initial=await readTelemetry(page,"initial");
   await page.waitForTimeout(ACTIVE_SAMPLE_MS);
   const baseline=await readTelemetry(page,"baseline");
+  const baselineOwnership=await readOwnershipDebug(page,"baseline");
   assertMeasurementHealthy(baseline,"baseline");
   assertDamageOwnerCeiling(baseline,"baseline");
 
@@ -142,8 +202,14 @@ try{
   await page.evaluate(()=>window.CCGLostSizzlerSoloDiagnostics.reset());
   await page.waitForTimeout(ACTIVE_SAMPLE_MS);
   const stressed=await readTelemetry(page,"post-pause-soak");
+  const stressedOwnership=await readOwnershipDebug(page,"post-pause-soak");
   assertMeasurementHealthy(stressed,"post-pause-soak");
   assertDamageOwnerCeiling(stressed,"post-pause-soak");
+
+  console.log("SOLO_STABILIZATION_OWNERSHIP_DEBUG "+JSON.stringify({
+    baseline:baselineOwnership,
+    stressed:stressedOwnership
+  }));
 
   const depthGrowth={
     loop:stressed.loopOwnerDepth-baselineDepths.loop,
