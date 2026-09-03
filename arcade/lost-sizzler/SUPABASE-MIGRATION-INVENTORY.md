@@ -88,6 +88,18 @@ The database also contains the following non-music groups:
 
 Their current paths do not identify them as Lost Sizzler assets, and the audited Lost Sizzler runtime does not currently query these groups through `asset-overrides.js`. Treat them as **unattributed arcade assets** until a code/reference trace identifies their owner. Do not delete or relocate them as part of the Lost Sizzler migration without that proof.
 
+## Packaging and online-service boundaries
+
+The containment audit did not find a Supabase dependency required by ordinary Solo, Tutorial or 2P Split Screen startup. The remaining Supabase integrations are either explicitly requested online features or optional sync/telemetry paths.
+
+Before producing a Windows executable or portable ZIP, keep these boundaries explicit:
+
+- `js/network.js` still contains a legacy multiplayer-only fallback that can load the website Supabase scripts itself. It is reached only after an explicit online room create/join request, so it is not an emergency base-game egress leak. Before packaging, route this through `window.CCGLostSizzlerOnlineServices.activate()` so there is one online-services entry point.
+- `js/online-services-gate.js` currently uses website-root `/js/ccg-supabase-config.js` and `/js/ccg-supabase-client.js` paths. Those are valid for the website but must not be assumed to exist in a packaged build. The packaged build should either supply an explicit online-services adapter or keep those modules disabled until online support is deliberately configured.
+- Solo cloud saves and achievement profile sync must remain no-op/best-effort when no online client exists. Local save and local achievement state remain authoritative.
+- Weekly Vault, multiplayer, account login, profile achievement sync and cloud mirroring remain online enhancements; none may become a prerequisite for launching or completing the local game.
+- A packaged-build smoke test must be run with networking disabled from process launch, not merely after the title screen appears.
+
 ## 5 September Storage recovery procedure
 
 1. Confirm Storage object downloads are working again before changing runtime references.
