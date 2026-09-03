@@ -51,6 +51,11 @@ try{
   await page.click("#solo-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof mode!=="undefined"&&mode==="playing"&&Boolean(run)&&Boolean(p1)&&Boolean(world)&&Boolean(host),null,{timeout:20000});
   await page.waitForFunction(()=>window.CCGLostSizzlerV141R42SoloLiveRecovery?.standardSoloPlaying?.()===true,null,{timeout:10000});
+  // This regression specifically exercises the r43 autosave/prompt handoff.
+  // The production loader may publish r43 after r42, while this fixture can
+  // complete Floor 1 unrealistically quickly, so wait for that owner before
+  // forcing descent instead of accidentally testing late-loader scheduling.
+  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R43SoloSave)&&window.offerFloorSave?.__ccgV141R43AutoSaveOwner===true,null,{timeout:10000});
 
   const ownership=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R42SoloLiveRecovery;api.monitor();
@@ -67,14 +72,13 @@ try{
   assert.equal(ownership.controller,"dungeon-solo","browser regression must execute under the Solo Dungeon controller");
 
   // Exercise the real Floor 1 completion/descent path rather than mutating the
-  // floor number. Standard Solo now autosaves Floor 2 and deterministically
-  // settles any delayed legacy entry prompt after the core's 120 ms timer.
+  // floor number. Standard Solo must autosave Floor 2 and deterministically
+  // settle any delayed legacy entry prompt after the core's 120 ms timer.
   await page.evaluate(()=>floorComplete("R42 REGRESSION"));
   await page.waitForSelector("#floor-complete:not(.hidden)");
   await page.click("#descend-btn");
   await page.waitForFunction(()=>run?.floor===2&&Boolean(world)&&Boolean(host)&&Boolean(p1),null,{timeout:15000});
-  await page.waitForTimeout(260);
-  if(await page.locator("#save-panel").isVisible())await page.click("#save-continue-btn");
+  await page.waitForTimeout(420);
   await waitForFloorEntrySettled(page);
   const transition=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R42SoloLiveRecovery,r43=window.CCGLostSizzlerV141R43SoloSave?.state||{};api.monitor();
