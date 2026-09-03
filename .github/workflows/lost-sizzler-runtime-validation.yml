@@ -1,24 +1,7 @@
 name: Lost Sizzler Runtime Validation
 
 on:
-  pull_request:
-    paths:
-      - 'arcade/lost-sizzler/**'
-      - 'games/ccg-games/cheeky-commodore-quest/index.html'
-      - 'games/the-lost-sizzler/index.html'
-      - 'js/ccg-home-community.js'
-      - 'resources/css/home-lost-sizzler-cta.css'
-      - '.github/workflows/lost-sizzler-runtime-validation.yml'
-  push:
-    branches:
-      - main
-    paths:
-      - 'arcade/lost-sizzler/**'
-      - 'games/ccg-games/cheeky-commodore-quest/index.html'
-      - 'games/the-lost-sizzler/index.html'
-      - 'js/ccg-home-community.js'
-      - 'resources/css/home-lost-sizzler-cta.css'
-      - '.github/workflows/lost-sizzler-runtime-validation.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -62,4 +45,4 @@ jobs:
           grep -q '/arcade/lost-sizzler/' games/ccg-games/cheeky-commodore-quest/index.html
           grep -q '/arcade/lost-sizzler/' games/the-lost-sizzler/index.html
           grep -q 'isEditableKeyboardTarget' arcade/lost-sizzler/js/game-main.js
-          echo 'Real Chromium startup/crash coverage is owned by Lost Sizzler Arcade Validation.'
+          echo 'Automatic canonical coverage is owned by Lost Sizzler Load Safety; this workflow is retained as a manual diagnostic fallback.'
