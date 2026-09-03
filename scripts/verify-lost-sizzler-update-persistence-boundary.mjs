@@ -19,9 +19,24 @@ function pathIsInsideOrEqual(root, candidate) {
   return relative === '' || (!relative.startsWith(`..${path.sep}`) && relative !== '..' && !path.isAbsolute(relative));
 }
 
+function assertNoSymlinkComponents(root, label) {
+  let current = root;
+  const parsed = path.parse(root);
+  while (current !== parsed.root) {
+    if (fs.existsSync(current) && fs.lstatSync(current).isSymbolicLink()) {
+      fail(`${label} must not traverse a symbolic link: ${current}`);
+    }
+    const parent = path.dirname(current);
+    if (parent === current) break;
+    current = parent;
+  }
+}
+
 function assertDisjointRoots(packageRoot, userDataRoot) {
   const pkg = canonicalRoot(packageRoot, 'package root');
   const data = canonicalRoot(userDataRoot, 'user-data root');
+  assertNoSymlinkComponents(pkg, 'package root');
+  assertNoSymlinkComponents(data, 'user-data root');
   const dataInsidePackage = pathIsInsideOrEqual(pkg, data);
   const packageInsideData = pathIsInsideOrEqual(data, pkg);
   if (dataInsidePackage || packageInsideData) {
@@ -33,6 +48,7 @@ function assertDisjointRoots(packageRoot, userDataRoot) {
 function assertEvidenceOutputPath(output, packageRoot, userDataRoot) {
   if (!output) fail('snapshot output is required.');
   const target = path.resolve(output);
+  assertNoSymlinkComponents(target, 'persistence evidence output');
   if (pathIsInsideOrEqual(packageRoot, target)) fail(`Persistence evidence must not be written inside the package root: ${target}`);
   if (pathIsInsideOrEqual(userDataRoot, target)) fail(`Persistence evidence must not be written inside the user-data root: ${target}`);
   if (fs.existsSync(target)) fail(`Refusing to overwrite existing persistence evidence: ${target}`);
@@ -63,8 +79,9 @@ function walkFiles(root, current = root, output = []) {
 
 function snapshotUserData(userDataRoot) {
   const root = canonicalRoot(userDataRoot, 'user-data root');
+  assertNoSymlinkComponents(root, 'user-data root');
   if (!fs.existsSync(root)) fail(`User-data root does not exist: ${root}`);
-  if (!fs.statSync(root).isDirectory()) fail(`User-data root is not a directory: ${root}`);
+  if (!fs.lstatSync(root).isDirectory()) fail(`User-data root is not a directory: ${root}`);
   const files = walkFiles(root).sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
   return {
     schema: 'ccg-lost-sizzler-update-persistence-snapshot-v1',
@@ -168,6 +185,40 @@ function runSelfTest() {
       if (fs.existsSync(forbiddenEvidence)) fail(`Rejected persistence evidence path was unexpectedly created: ${forbiddenEvidence}`);
     }
 
+    if (process.platform !== 'win32') {
+      const packageLink = path.join(temp, 'package-link');
+      fs.symlinkSync(packageRoot, packageLink, 'dir');
+      let packageSymlinkRejected = false;
+      try {
+        assertDisjointRoots(packageLink, userDataRoot);
+      } catch {
+        packageSymlinkRejected = true;
+      }
+      if (!packageSymlinkRejected) fail('Self-test expected a symlinked package root to be rejected.');
+
+      const userDataLink = path.join(temp, 'profile-link');
+      fs.symlinkSync(userDataRoot, userDataLink, 'dir');
+      let userDataSymlinkRejected = false;
+      try {
+        assertDisjointRoots(packageRoot, userDataLink);
+      } catch {
+        userDataSymlinkRejected = true;
+      }
+      if (!userDataSymlinkRejected) fail('Self-test expected a symlinked Tier-A user-data root to be rejected.');
+
+      const evidenceParentLink = path.join(temp, 'evidence-parent-link');
+      fs.symlinkSync(userDataRoot, evidenceParentLink, 'dir');
+      const redirectedEvidence = path.join(evidenceParentLink, 'redirected-snapshot.json');
+      let redirectedEvidenceRejected = false;
+      try {
+        writeSnapshotEvidence(redirectedEvidence, snapshot, roots.packageRoot, roots.userDataRoot);
+      } catch {
+        redirectedEvidenceRejected = true;
+      }
+      if (!redirectedEvidenceRejected) fail('Self-test expected persistence evidence traversing a symlinked parent to be rejected.');
+      if (fs.existsSync(path.join(userDataRoot, 'redirected-snapshot.json'))) fail('Rejected redirected persistence evidence was unexpectedly written into Tier-A user data.');
+    }
+
     fs.rmSync(packageRoot, { recursive: true, force: true });
     fs.mkdirSync(packageRoot);
     fs.writeFileSync(path.join(packageRoot, 'runtime.js'), 'build-b-with-different-runtime\n');
@@ -195,7 +246,7 @@ function runSelfTest() {
       mutationRejected = true;
     }
     if (!mutationRejected) fail('Self-test expected changed user data to fail verification.');
-    console.log('Lost Sizzler update persistence boundary self-test passed: distinct Build A -> Build B replacement preserved external profile state and protected snapshot evidence.');
+    console.log('Lost Sizzler update persistence boundary self-test passed: distinct Build A -> Build B replacement preserved a non-symlinked external profile and protected snapshot evidence.');
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
