@@ -6,14 +6,15 @@
  * from the first Spy keypress, detaches the stale r27 F/TAB keyboard owner and
  * provides one idempotent Spy-mode F fullscreen dispatch shared with game-main.
  * r59 is loaded globally from here so pause/resume timing is stabilised for
- * every game mode before desktop packaging.
+ * every game mode before desktop packaging. Spy activation is observed from the
+ * authoritative mode attributes instead of waking a cross-mode polling timer.
  */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V141_R32_SPY_LOADER__)return;
   window.__CCG_LOST_SIZZLER_V141_R32_SPY_LOADER__=true;
 
-  const MODE_ID="sizzler-saboteurs",MONITOR_MS=20;
+  const MODE_ID="sizzler-saboteurs";
   const OWNER_ACTION_CODES=new Set(["KeyE","KeyT","KeyX"]);
   const fullscreenEvents=new WeakSet();
   const state={
@@ -22,11 +23,12 @@
     hardeningLoaded:false,fullscreenUiLoaded:false,perfectionLoaded:false,trapPresentationLoaded:false,r58Loaded:false,
     r59Loading:false,r59Loaded:false,r59Loads:0,r59LastError:"",
     r56Guarded:false,r56GuardInstalls:0,r56OwnerSkips:0,r27KeyDetached:false,r27KeyDetachments:0,
+    modeObserverInstalled:false,modeObserverUnsupported:false,modeSignals:0,spyActivationSignals:0,
     tabTogglePending:false,tabToggles:0,tabLoadBridges:0,fullscreenKeyCalls:0,fullscreenDuplicateGuards:0,fieldKitLabelRepairs:0,
     pendingActionCode:"",queuedActions:0,replayedActions:0,queuedSearchFeedbacks:0,directSearchActions:0,
     searchTargetBridges:0,searchRoomBridges:0,searchKeyDowns:0,searchKeyUpFallbacks:0
   };
-  let loadPromise=null,uiPromise=null,r59Promise=null,pendingActionPromise=null,lastSearchDispatchAt=0;
+  let loadPromise=null,uiPromise=null,r59Promise=null,pendingActionPromise=null,lastSearchDispatchAt=0,modeObserver=null;
 
   const spyActive=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type===MODE_ID||document.body?.dataset?.specialMode===MODE_ID}catch(_){return false}};
   const revision=()=>String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
@@ -224,6 +226,43 @@
     state.fieldKitLabelRepairs+=repaired;return repaired>0
   }
 
+  function clearPendingActionState(){state.pendingActionCode="";lastSearchDispatchAt=0;return true}
+
+  function ensureSpyOwners(reason="Spy activation"){
+    if(!spyActive())return false;
+    state.spyActivationSignals++;
+    guardR56SpyOwnership();detachLegacyR27KeyOwner();ensureR59();
+    repairFieldKitLabels();ensureSearchUi();ensureLoaded();
+    return Boolean(reason)
+  }
+
+  function handleModeSignal(reason="mode attribute transition"){
+    state.modeSignals++;
+    if(spyActive())return ensureSpyOwners(reason);
+    clearPendingActionState();return false
+  }
+
+  function installModeObserver(){
+    if(modeObserver){state.modeObserverInstalled=true;return true}
+    if(typeof MutationObserver!=="function"||!document.body){state.modeObserverUnsupported=true;return false}
+    modeObserver=new MutationObserver(records=>{
+      for(const record of records){
+        if(record?.type!=="attributes")continue;
+        const name=String(record.attributeName||"");
+        if(name!=="data-special-mode"&&name!=="data-mode-controller")continue;
+        handleModeSignal(`attribute:${name}`);break
+      }
+    });
+    modeObserver.observe(document.body,{attributes:true,attributeFilter:["data-special-mode","data-mode-controller"]});
+    state.modeObserverInstalled=true;return true
+  }
+
+  function prime(){
+    guardR56SpyOwnership();detachLegacyR27KeyOwner();ensureR59();installModeObserver();
+    if(spyActive())ensureSpyOwners("initial Spy state");else clearPendingActionState();
+    return true
+  }
+
   function handleSpyFullscreenKey(event){
     if(!spyActive()||String(event?.code||"")!=="KeyF")return false;
     event.preventDefault?.();
@@ -239,6 +278,7 @@
 
   function onKeyDown(event){
     if(!spyActive())return;const code=String(event?.code||"");
+    if(code==="Tab"||code==="KeyF"||OWNER_ACTION_CODES.has(code))ensureSpyOwners(`key:${code}`);
     if(code==="Tab"){
       event.preventDefault?.();event.stopImmediatePropagation?.();
       if(!event.repeat)toggleSpyInventoryFromTab();return
@@ -255,21 +295,22 @@
 
   function onKeyUp(event){
     if(!spyActive()||String(event?.code||"")!=="KeyE")return;
+    ensureSpyOwners("key:KeyE-up");
     const owner=overhaul(),recent=perfNow()-lastSearchDispatchAt<140,searchActive=Boolean(owner?.state?.search),searchQueued=state.pendingActionCode==="KeyE";
     if(recent&&(searchActive||searchQueued))return;
     event.preventDefault?.();event.stopPropagation?.();state.searchKeyUpFallbacks++;
     if(state.loaded&&typeof owner?.beginSearch==="function")directSearchAction();else queueOwnerAction("KeyE")
   }
 
-  function monitor(){
-    guardR56SpyOwnership();detachLegacyR27KeyOwner();ensureR59();
-    if(spyActive()){repairFieldKitLabels();ensureSearchUi();ensureLoaded()}
-    else{state.pendingActionCode="";lastSearchDispatchAt=0}
-  }
-
   addEventListener("keydown",onKeyDown,true);addEventListener("keyup",onKeyUp,true);
-  monitor();state.timer=setInterval(monitor,MONITOR_MS);
-  addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0;state.pendingActionCode="";lastSearchDispatchAt=0},{once:true});
+  prime();
+  addEventListener("pagehide",()=>{
+    if(modeObserver){modeObserver.disconnect();modeObserver=null}
+    state.modeObserverInstalled=false;state.timer=0;clearPendingActionState()
+  },{once:true});
 
-  window.CCGLostSizzlerV141R32SpyLoader={ensureLoaded,ensureR59,ensureSearchUi,queueOwnerAction,directSearchAction,bridgeSearchTarget,dispatchSearchAction,toggleSpyInventoryFromTab,handleSpyFullscreenKey,detachLegacyR27KeyOwner,repairFieldKitLabels,guardR56SpyOwnership,get state(){return state}};
+  window.CCGLostSizzlerV141R32SpyLoader={
+    ensureLoaded,ensureR59,ensureSearchUi,queueOwnerAction,directSearchAction,bridgeSearchTarget,dispatchSearchAction,toggleSpyInventoryFromTab,handleSpyFullscreenKey,
+    detachLegacyR27KeyOwner,repairFieldKitLabels,guardR56SpyOwnership,ensureSpyOwners,handleModeSignal,installModeObserver,prime,get state(){return state}
+  };
 })();
