@@ -1,0 +1,72 @@
+name: Lost Sizzler Storage Recovery Plan
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/recover-lost-sizzler-enabled-storage.mjs'
+      - 'scripts/verify-lost-sizzler-storage-recovery.mjs'
+      - 'arcade/lost-sizzler/SUPABASE-STORAGE-RECOVERY-MANIFEST.md'
+      - '.github/workflows/lost-sizzler-storage-recovery-plan.yml'
+      - '.github/workflows/lost-sizzler-storage-recovery-manual.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    name: Prove frozen enabled-only request plan without network
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate frozen recovery plan
+        run: |
+          set -euo pipefail
+          BASE='https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/'
+          ONE="$RUNNER_TEMP/lost-sizzler-recovery-plan-one.txt"
+          ALL="$RUNNER_TEMP/lost-sizzler-recovery-plan-all.txt"
+
+          node --check scripts/recover-lost-sizzler-enabled-storage.mjs
+          node --check scripts/verify-lost-sizzler-storage-recovery.mjs
+          node scripts/verify-lost-sizzler-storage-recovery.mjs --manifest-check
+
+          node scripts/recover-lost-sizzler-enabled-storage.mjs \
+            --storage-base-url "$BASE" \
+            --plan \
+            --limit 1 > "$ONE"
+
+          grep -Fqx 'Lost Sizzler enabled Storage recovery plan: 1/16 objects, 3360888 expected bytes.' "$ONE"
+          grep -Fqx 'PLAN 01 | row 62 | lostSizzlerDanger/combat-01.mp3 | 3360888 | https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerDanger/1787411621547-0-combat-01.mp3' "$ONE"
+          grep -Fqx 'PLAN ONLY: zero network requests; zero files created; enabled generation only.' "$ONE"
+          test "$(grep -Ec '^PLAN [0-9]{2} \|' "$ONE")" -eq 1
+
+          node scripts/recover-lost-sizzler-enabled-storage.mjs \
+            --storage-base-url "$BASE" \
+            --plan \
+            --limit 16 > "$ALL"
+
+          grep -Fqx 'Lost Sizzler enabled Storage recovery plan: 16/16 objects, 72233137 expected bytes.' "$ALL"
+          grep -Fqx 'PLAN 01 | row 62 | lostSizzlerDanger/combat-01.mp3 | 3360888 | https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerDanger/1787411621547-0-combat-01.mp3' "$ALL"
+          grep -Fqx 'PLAN 16 | row 77 | lostSizzlerNamed/named-03.mp3 | 5134967 | https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerNamed/1787411637581-15-named-03.mp3' "$ALL"
+          grep -Fqx 'PLAN ONLY: zero network requests; zero files created; enabled generation only.' "$ALL"
+          test "$(grep -Ec '^PLAN [0-9]{2} \|' "$ALL")" -eq 16
+          test "$(grep -Ec 'https://[^ ]+\.supabase\.co/storage/v1/object/public/ccg-arcade-assets/music/' "$ALL")" -eq 16
+
+          if node scripts/recover-lost-sizzler-enabled-storage.mjs \
+            --storage-base-url "$BASE" \
+            --plan \
+            --output "$RUNNER_TEMP/forbidden-plan-output" >/dev/null 2>&1; then
+            echo '--plan unexpectedly accepted an output directory' >&2
+            exit 1
+          fi
+          test ! -e "$RUNNER_TEMP/forbidden-plan-output"
+
+          echo 'Lost Sizzler enabled Storage recovery plan is frozen, enabled-only and no-network.'
