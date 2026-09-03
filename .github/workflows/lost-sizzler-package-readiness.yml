@@ -1,0 +1,57 @@
+name: Lost Sizzler Package Readiness
+
+on:
+  pull_request:
+    paths:
+      - 'arcade/lost-sizzler/index.html'
+      - 'arcade/lost-sizzler/version.json'
+      - 'arcade/lost-sizzler/css/**'
+      - 'arcade/lost-sizzler/js/**'
+      - 'arcade/lost-sizzler/assets/**'
+      - 'games/games.json'
+      - 'scripts/build-lost-sizzler-package-manifest.mjs'
+      - '.github/workflows/lost-sizzler-package-readiness.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'arcade/lost-sizzler/index.html'
+      - 'arcade/lost-sizzler/version.json'
+      - 'arcade/lost-sizzler/css/**'
+      - 'arcade/lost-sizzler/js/**'
+      - 'arcade/lost-sizzler/assets/**'
+      - 'games/games.json'
+      - 'scripts/build-lost-sizzler-package-manifest.mjs'
+      - '.github/workflows/lost-sizzler-package-readiness.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate package manifest builder syntax
+        run: node --check scripts/build-lost-sizzler-package-manifest.mjs
+
+      - name: Verify package asset boundary and hashes
+        run: node scripts/build-lost-sizzler-package-manifest.mjs --check
+
+      - name: Build reproducible package manifest artifact
+        run: node scripts/build-lost-sizzler-package-manifest.mjs --output lost-sizzler-package-manifest.json
+
+      - name: Upload package manifest evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: lost-sizzler-package-manifest
+          path: lost-sizzler-package-manifest.json
+          if-no-files-found: error
+          retention-days: 7
