@@ -41,6 +41,14 @@ assert.match(source,/function automaticPromptActive\(\)[\s\S]*reason==="rest"\)r
 assert.match(source,/function suppressAutomaticFloorPrompt\(\)[\s\S]*savePromptReason=""[\s\S]*mode="playing"/,"a stale autosaved floor-entry prompt must return standard Solo to playing mode");
 assert.match(source,/savedCurrentFloor\(\)/,"automatic prompt cleanup must require a save for the current floor");
 
+// The core still owns a delayed legacy entry-prompt timer. The capture-phase
+// descent bridge must therefore perform a bounded post-click settle after that
+// timer's 120 ms deadline rather than depend solely on the 100 ms monitor.
+assert.match(source,/const FLOOR_ENTRY_SETTLE_DELAYS=\[0,140,320\]/,"r43 must schedule a bounded settle pass after the core 120 ms entry-prompt timer");
+assert.match(source,/function settleFloorEntryPrompt\(\)[\s\S]*installOfferFloorSaveOwner\(\);ensureEntryCaptured\(\);[\s\S]*suppressAutomaticFloorPrompt\(\)/,"each floor-entry settle must restore autosave ownership before suppressing a stale prompt");
+assert.match(source,/function scheduleFloorEntryPromptSettle\(\)[\s\S]*for\(const delay of FLOOR_ENTRY_SETTLE_DELAYS\)[\s\S]*setTimeout/,"floor-entry settling must be bounded to the declared delay list");
+assert.match(source,/interceptDescend[\s\S]*captureEntry\("autosave"\);installOfferFloorSaveOwner\(\);suppressAutomaticFloorPrompt\(\);scheduleFloorEntryPromptSettle\(\)/,"real Solo descent must arm deterministic post-timer prompt settling");
+
 assert.match(source,/save-quit-solo-btn/,"Pause must expose a dedicated Save & Quit action");
 assert.match(source,/writeEnvelope\(state\.entryCheckpoint,"save_quit"\)/,"Save & Quit must persist the floor-entry snapshot, not live mid-room state");
 assert.match(source,/setTimeout\(\(\)=>\{try\{quitToMenu\?\.\(\)/,"Save & Quit must return through the canonical menu cleanup path only after save succeeds");
@@ -53,4 +61,4 @@ assert.match(source,/if\(soloSaveOwner\(\)\)[\s\S]*clearSoloSave\(\)[\s\S]*retur
 assert.match(source,/Continue Solo — Floor/,"Continue button must expose the saved floor");
 assert.match(source,/Saved run: Floor/,"menu must expose save metadata");
 
-console.log("V10.41 r43 Solo save/continue and automatic floor-prompt ownership contract passed.");
+console.log("V10.41 r43 Solo save/continue and deterministic automatic floor-prompt ownership contract passed.");
