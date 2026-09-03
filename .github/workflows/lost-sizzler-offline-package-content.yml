@@ -6,6 +6,9 @@ on:
       - 'arcade/lost-sizzler/assets/audio/**'
       - 'arcade/lost-sizzler/js/audio-assets.js'
       - 'arcade/lost-sizzler/js/config.js'
+      - 'arcade/lost-sizzler/js/online-services-gate.js'
+      - 'arcade/lost-sizzler/js/v10-4-patch.js'
+      - 'arcade/lost-sizzler/tests/desktop-catalogue-delivery-contract.mjs'
       - 'games/games.json'
       - 'scripts/build-lost-sizzler-package-manifest.mjs'
       - 'scripts/verify-lost-sizzler-offline-package-content.mjs'
@@ -18,6 +21,9 @@ on:
       - 'arcade/lost-sizzler/assets/audio/**'
       - 'arcade/lost-sizzler/js/audio-assets.js'
       - 'arcade/lost-sizzler/js/config.js'
+      - 'arcade/lost-sizzler/js/online-services-gate.js'
+      - 'arcade/lost-sizzler/js/v10-4-patch.js'
+      - 'arcade/lost-sizzler/tests/desktop-catalogue-delivery-contract.mjs'
       - 'games/games.json'
       - 'scripts/build-lost-sizzler-package-manifest.mjs'
       - 'scripts/verify-lost-sizzler-offline-package-content.mjs'
@@ -44,11 +50,13 @@ jobs:
           node --check scripts/build-lost-sizzler-package-manifest.mjs
           node --check scripts/verify-lost-sizzler-offline-package-content.mjs
           node --check scripts/verify-lost-sizzler-offline-catalogue.mjs
+          node --check arcade/lost-sizzler/tests/desktop-catalogue-delivery-contract.mjs
 
       - name: Run offline package content self-tests
         run: |
           node scripts/verify-lost-sizzler-offline-package-content.mjs --self-test
           node scripts/verify-lost-sizzler-offline-catalogue.mjs --self-test
+          node arcade/lost-sizzler/tests/desktop-catalogue-delivery-contract.mjs
 
       - name: Build desktop package manifest
         run: node scripts/build-lost-sizzler-package-manifest.mjs --output lost-sizzler-package-manifest.json
