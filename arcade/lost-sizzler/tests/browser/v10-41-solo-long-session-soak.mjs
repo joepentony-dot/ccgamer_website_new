@@ -82,6 +82,22 @@ async function waitForLifecycleMode(page,expected,cycle,edge){
       for(const [key,value] of Object.entries(r59)){
         if(value===null||["string","number","boolean"].includes(typeof value))primitiveR59[key]=value;
       }
+      const player=typeof p1!=="undefined"&&p1?{
+        health:Number(p1.health),
+        maxHealth:Number(p1.maxHealth),
+        armor:Number(p1.armor||0),
+        dead:Boolean(p1.dead),
+        down:Boolean(p1.down),
+        hitStunMs:Number(p1.hitStunMs||0),
+        controlLocked:Boolean(p1.controlLocked||p1.controlsLocked)
+      }:null;
+      const runState=typeof run!=="undefined"&&run?{
+        floor:Number(run.floor||0),
+        alert:Number(run.alert||0),
+        complete:Boolean(run.complete),
+        ended:Boolean(run.ended),
+        gameOver:Boolean(run.gameOver)
+      }:null;
       return{
         mode:typeof mode==="string"?mode:null,
         playMode:typeof playMode==="string"?playMode:null,
@@ -92,6 +108,9 @@ async function waitForLifecycleMode(page,expected,cycle,edge){
         visibilityState:document.visibilityState,
         hasFocus:document.hasFocus(),
         activeElement:document.activeElement?.id||document.activeElement?.tagName||"",
+        player,
+        run:runState,
+        endText:String(document.querySelector("#game-over,#death-screen,#run-end,#end-screen")?.textContent||"").trim().slice(0,300),
         r59:primitiveR59,
         recentLifecycle:window.CCGLostSizzlerSoloDiagnostics?.lifecycleLog?.slice(-20)||[]
       };
