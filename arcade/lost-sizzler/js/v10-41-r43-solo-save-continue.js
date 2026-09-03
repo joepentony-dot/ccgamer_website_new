@@ -17,6 +17,7 @@
   const PRIMARY_KEY="ccg-lost-sizzler-solo-save-v2";
   const BACKUP_KEY="ccg-lost-sizzler-solo-save-v2-backup";
   const MONITOR_MS=100;
+  const FLOOR_ENTRY_SETTLE_DELAYS=[0,140,320];
   const ACTIVE_SPECIAL_MODES=new Set(["horde-survivor","sizzler-saboteurs"]);
 
   const original={
@@ -29,7 +30,7 @@
   const state={
     timer:0,observer:null,entryCheckpoint:null,entryFloorKey:"",lastAutoSaveKey:"",resumeInProgress:false,
     saves:0,autosaves:0,saveQuits:0,resumes:0,migrations:0,backupRecoveries:0,
-    offerOwnerInstalls:0,automaticPromptSuppressions:0,
+    offerOwnerInstalls:0,automaticPromptSuppressions:0,floorEntrySettleSchedules:0,floorEntrySettles:0,
     lastSavedAt:0,lastReason:"",lastError:"",pauseButton:null,summaryNode:null
   };
 
@@ -237,13 +238,29 @@
     event.preventDefault();event.stopImmediatePropagation();resumeSolo()
   }
 
+  function settleFloorEntryPrompt(){
+    if(!standardSolo())return false;
+    installOfferFloorSaveOwner();ensureEntryCaptured();
+    const suppressed=suppressAutomaticFloorPrompt();state.floorEntrySettles++;
+    return suppressed
+  }
+
+  function scheduleFloorEntryPromptSettle(){
+    if(!standardSolo())return false;
+    state.floorEntrySettleSchedules++;
+    for(const delay of FLOOR_ENTRY_SETTLE_DELAYS){
+      setTimeout(()=>{try{settleFloorEntryPrompt()}catch(error){state.lastError=String(error?.message||error)}},delay)
+    }
+    return true
+  }
+
   function interceptDescend(event){
     const button=event?.target?.closest?.("#descend-btn");if(!button||!standardSolo())return;
     let before=0;try{before=Number(run?.floor)||0}catch(_){return}
     queueMicrotask(()=>{
       if(!standardSolo())return;
       const after=Number(run?.floor)||0;if(after<=before)return;
-      captureEntry("autosave");suppressAutomaticFloorPrompt()
+      captureEntry("autosave");installOfferFloorSaveOwner();suppressAutomaticFloorPrompt();scheduleFloorEntryPromptSettle()
     })
   }
 
@@ -340,10 +357,10 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.observer?.disconnect?.()},{once:true});
 
   window.CCGLostSizzlerV141R43SoloSave={
-    SCHEMA,SCHEMA_VERSION,PRIMARY_KEY,BACKUP_KEY,
+    SCHEMA,SCHEMA_VERSION,PRIMARY_KEY,BACKUP_KEY,FLOOR_ENTRY_SETTLE_DELAYS,
     readEnvelope,currentSavedCheckpoint,captureEntry,saveAndQuit,resumeSolo,clearSoloSave,updateMenu,
     validateEnvelope,makeEnvelope,hashText,checkpointMatchesCurrentFloor,canonicalEntryCheckpoint,
-    installOfferFloorSaveOwner,suppressAutomaticFloorPrompt,automaticPromptActive,savedCurrentFloor,
+    installOfferFloorSaveOwner,suppressAutomaticFloorPrompt,automaticPromptActive,savedCurrentFloor,settleFloorEntryPrompt,scheduleFloorEntryPromptSettle,
     get state(){return state}
   };
 })();
