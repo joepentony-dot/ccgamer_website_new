@@ -144,6 +144,35 @@
 
   function applyDeliveryUi(){
     if(!delivery.isDesktop)return;
+    let scheduled=0,observer=null;
+    const needsReassertion=()=>{
+      if(onlineServicesConfigured())return false;
+      for(const id of ONLINE_BUTTONS){
+        const button=document.getElementById(id);
+        if(button&&(!button.disabled||button.getAttribute("aria-disabled")!=="true"))return true
+      }
+      const roomCode=document.getElementById("room-code");
+      if(roomCode&&!roomCode.disabled)return true;
+      const howto=document.querySelector(".online-howto");
+      if(howto&&(!howto.hidden||!howto.classList.contains("hidden")))return true;
+      const authActions=document.getElementById("weekly-auth-actions");
+      if(authActions&&(!authActions.hidden||!authActions.classList.contains("hidden")))return true;
+      return false
+    };
+    const schedule=()=>{
+      if(scheduled)return;
+      scheduled=setTimeout(()=>{scheduled=0;apply()},0)
+    };
+    const installObserver=()=>{
+      if(observer||typeof MutationObserver!=="function"||onlineServicesConfigured())return;
+      const targets=[...ONLINE_BUTTONS].map(id=>document.getElementById(id)).filter(Boolean);
+      const roomCode=document.getElementById("room-code"),howto=document.querySelector(".online-howto"),authActions=document.getElementById("weekly-auth-actions");
+      if(roomCode)targets.push(roomCode);if(howto)targets.push(howto);if(authActions)targets.push(authActions);
+      if(!targets.length)return;
+      observer=new MutationObserver(()=>{if(needsReassertion())schedule()});
+      for(const target of targets)observer.observe(target,{attributes:true,attributeFilter:["disabled","aria-disabled","hidden","class"]});
+      window.addEventListener("pagehide",()=>{observer?.disconnect();observer=null;if(scheduled)clearTimeout(scheduled)},{once:true})
+    };
     const apply=()=>{
       if(onlineServicesConfigured())return;
       const message=delivery.mode==="desktop-offline"?"Online services are disabled in this offline desktop build.":"Online services are not configured in this desktop build.";
@@ -165,9 +194,9 @@
       if(authActions){authActions.hidden=true;authActions.classList.add("hidden")}
       const note=document.getElementById("menu-note");
       const offlineNote="Offline desktop mode: Solo, Tutorial, 2P Split Screen, local saves, achievements and bundled game content remain available. Online multiplayer, account services and Weekly Vault are disabled.";
-      if(note&&delivery.mode==="desktop-offline"&&note.textContent!==offlineNote)note.textContent=offlineNote
+      if(note&&delivery.mode==="desktop-offline"&&note.textContent!==offlineNote)note.textContent=offlineNote;
+      installObserver()
     };
-    const schedule=()=>setTimeout(apply,0);
     apply();
     if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",schedule,{once:true});
     window.addEventListener("focus",schedule);
