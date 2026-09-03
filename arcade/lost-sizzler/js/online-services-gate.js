@@ -19,6 +19,13 @@
   const requestedMode=String(rawDelivery.mode||window.__CCG_LOST_SIZZLER_DELIVERY_MODE__||"web").trim().toLowerCase();
   const deliveryMode=VALID_DELIVERY_MODES.has(requestedMode)?requestedMode:"web";
   const state={active:false,activating:false,promise:null,reason:"",lastError:"",activatedAt:0};
+  const OFFLINE_BRIDGE=Object.freeze({
+    __ccgLostSizzlerOfflineStub:true,
+    getClient:async()=>null,
+    getUser:async()=>null,
+    waitForAuth:async()=>null,
+    waitForSessionReady:async()=>null
+  });
 
   function websiteUrl(path){
     try{return new URL(String(path||"/"),`${WEBSITE_ORIGIN}/`).toString()}
@@ -64,8 +71,24 @@
     versionManifestUrl
   });
 
+  function quarantineOfflineBridge(){
+    if(delivery.onlineEnabled)return false;
+    try{
+      Object.defineProperty(window,"ccgSupabase",{configurable:true,enumerable:false,writable:false,value:OFFLINE_BRIDGE});
+      return window.ccgSupabase===OFFLINE_BRIDGE
+    }catch(error){
+      try{
+        window.ccgSupabase=OFFLINE_BRIDGE;
+        return window.ccgSupabase===OFFLINE_BRIDGE
+      }catch(_){
+        console.warn("[Lost Sizzler] desktop-offline could not quarantine an injected online-services bridge",error);
+        return false
+      }
+    }
+  }
+
   function sanitizeClient(client){
-    if(!delivery.isDesktop||!client)return client;
+    if(!delivery.isDesktop||!delivery.onlineEnabled||!client)return client;
     if(client.__ccgLostSizzlerDesktopPayloadGuard===true)return client;
     let functions=null;
     try{functions=client.functions}catch(error){console.warn("[Lost Sizzler] desktop online payload guard could not read client functions",error);return client}
@@ -88,7 +111,7 @@
   }
 
   function installClientSanitizer(){
-    if(!delivery.isDesktop)return false;
+    if(!delivery.isDesktop||!delivery.onlineEnabled)return false;
     const bridge=window.ccgSupabase;
     if(!bridge||typeof bridge.getClient!=="function")return false;
     if(bridge.__ccgLostSizzlerDesktopClientGuard===true)return true;
@@ -271,6 +294,7 @@
       if(!proto)return false;
       if(proto.__ccgOnlineServicesGateBridge===true)return true;
       proto.getSupabase=async function(){
+        if(!delivery.onlineEnabled)return null;
         if(window.ccgSupabase?.getClient)return window.ccgSupabase.getClient();
         const gate=window.CCGLostSizzlerOnlineServices;
         if(!gate?.activate)return null;
@@ -312,9 +336,9 @@
   }
 
   async function activate(reason="online-feature"){
+    if(!delivery.onlineEnabled)throw new Error("Online services are disabled in this desktop build.");
     if(state.active&&window.ccgSupabase?.getClient)return window.ccgSupabase.getClient();
     if(state.promise)return state.promise;
-    if(!delivery.onlineEnabled)throw new Error("Online services are disabled in this desktop build.");
     state.activating=true;state.reason=String(reason||"online-feature");state.lastError="";
     state.promise=(async()=>{
       let bridge=window.ccgSupabase;
@@ -399,6 +423,11 @@
     if(event.type==="submit"){
       const form=event.target;
       if(!(form instanceof HTMLFormElement)||form.id!=="v104-feedback-form")return;
+      if(!delivery.onlineEnabled){
+        event.preventDefault();event.stopImmediatePropagation();
+        showActivationError(new Error("Online services are disabled in this desktop build."));
+        return
+      }
       if(form.dataset.ccgOnlineGateReplay==="true"){
         delete form.dataset.ccgOnlineGateReplay;
         return
@@ -412,6 +441,11 @@
     if(event.type!=="click")return;
     const ratingButton=event.target?.closest?.("#ccg-rating-panel [data-rating]");
     if(!ratingButton)return;
+    if(!delivery.onlineEnabled){
+      event.preventDefault();event.stopImmediatePropagation();
+      showActivationError(new Error("Online services are disabled in this desktop build."));
+      return
+    }
     if(ratingButton.dataset.ccgOnlineGateReplay==="true"){
       delete ratingButton.dataset.ccgOnlineGateReplay;
       return
@@ -422,6 +456,7 @@
     catch(error){showActivationError(error)}
   }
 
+  quarantineOfflineBridge();
   installClientSanitizer();
   installNavigationBoundary();
   installVersionManifestBoundary();
