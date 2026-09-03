@@ -79,9 +79,18 @@ async function mockFullscreen(page){
   });
 }
 
+function installShareCapture(context){
+  return context.addInitScript(()=>{
+    const share=async data=>{window.__ccgSharedData={title:String(data?.title||""),text:String(data?.text||""),url:String(data?.url||"")}};
+    try{Object.defineProperty(navigator,"share",{configurable:true,value:share})}
+    catch(_){try{navigator.share=share}catch(_){}}
+  });
+}
+
 try{
   {
     const context=await browser.newContext({viewport:{width:1440,height:900}});
+    await installShareCapture(context);
     const page=await context.newPage();
     const audit=await auditPage(page,"web local-first boot");
     assert.deepEqual(audit.remoteRequests,[],`web local-first boot must not request Supabase before an explicit online feature: ${audit.remoteRequests.join("\n")}`);
@@ -90,11 +99,20 @@ try{
     assert.ok(await page.locator("#solo-btn").isEnabled(),"web local-first boot must keep Solo available");
     assert.ok(await page.locator("#tutorial-zone-btn").isEnabled(),"web local-first boot must keep Tutorial available");
     assert.ok(await page.locator("#split-btn").isEnabled(),"web local-first boot must keep 2P Split Screen available");
+
+    const webSharePage=page.url();
+    await page.locator("#support-btn").click();
+    await page.locator("#share-btn").click();
+    await page.waitForFunction(()=>Boolean(window.__ccgSharedData?.url));
+    const webShare=await page.evaluate(()=>window.__ccgSharedData);
+    assert.equal(webShare.url,webSharePage,"web sharing must keep using the live website page URL");
+    assert.equal(page.url(),webSharePage,"web sharing must not navigate the game page");
     await context.close();
   }
 
   {
     const context=await browser.newContext({viewport:{width:1440,height:900}});
+    await installShareCapture(context);
     await context.addInitScript(()=>{
       window.__CCG_LOST_SIZZLER_DELIVERY__={
         mode:"desktop-offline",
@@ -152,6 +170,16 @@ try{
     assert.equal(reassertion.dailyAria,"true",`desktop-offline must restore Weekly Vault aria-disabled after auth refresh: ${JSON.stringify(reassertion)}`);
     assert.equal(reassertion.authHidden,true,`desktop-offline must restore auth hidden state after auth refresh: ${JSON.stringify(reassertion)}`);
     assert.equal(reassertion.authClassHidden,true,`desktop-offline must restore auth hidden class after auth refresh: ${JSON.stringify(reassertion)}`);
+
+    const beforeShare=page.url();
+    await page.locator("#support-btn").click();
+    await page.locator("#share-btn").click();
+    await page.waitForFunction(()=>Boolean(window.__ccgSharedData?.url));
+    const desktopShare=await page.evaluate(()=>window.__ccgSharedData);
+    assert.equal(desktopShare.url,"https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/","desktop sharing must expose the public CCG Lost Sizzler URL, never the packaged page URL");
+    assert.notEqual(desktopShare.url,beforeShare,"desktop sharing must not expose the internal packaged origin");
+    assert.equal(page.url(),beforeShare,"desktop sharing must not navigate the packaged game page");
+    await page.locator("#support-close-btn").click();
 
     const beforeExit=page.url();
     await page.locator(".menu-exit-link").first().click();
