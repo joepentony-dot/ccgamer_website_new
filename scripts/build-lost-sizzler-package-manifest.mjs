@@ -18,6 +18,14 @@ const REQUIRED_INPUTS = Object.freeze([
   { source: 'games/games.json', classification: 'catalogue' },
 ]);
 
+const REQUIRED_OFFLINE_AUDIO = Object.freeze([
+  'arcade/lost-sizzler/assets/audio/music/exploration.wav',
+  'arcade/lost-sizzler/assets/audio/music/danger.wav',
+  'arcade/lost-sizzler/assets/audio/music/sanctuary.wav',
+  'arcade/lost-sizzler/assets/audio/music/named-enemy.wav',
+  'arcade/lost-sizzler/assets/audio/music/count-loadula.wav',
+]);
+
 const FORBIDDEN_PACKAGE_BASENAMES = new Set([
   'ccg-supabase-config.js',
   'ccg-supabase-client.js',
@@ -219,11 +227,23 @@ async function buildManifest() {
     releaseIdentifier: await readReleaseIdentifier(),
     sourceRoot: '.',
     requiredInputs: REQUIRED_INPUTS.map(({ source }) => source),
+    requiredOfflineAudio: [...REQUIRED_OFFLINE_AUDIO],
     fileCount: entries.length,
     totalBytes,
     classificationCounts,
     files: entries,
   };
+}
+
+function assertOfflineAudioCompleteness(manifest) {
+  const byPath = new Map(manifest.files.map((entry) => [entry.path, entry]));
+  for (const requiredPath of REQUIRED_OFFLINE_AUDIO) {
+    const entry = byPath.get(requiredPath);
+    if (!entry) throw new Error(`Desktop package is missing required offline music: ${requiredPath}`);
+    if (entry.classification !== 'audio') throw new Error(`Required offline music is not classified as audio: ${requiredPath}`);
+    if (!Number.isSafeInteger(entry.bytes) || entry.bytes < 1) throw new Error(`Required offline music is empty: ${requiredPath}`);
+    if (!/^[0-9a-f]{64}$/.test(entry.sha256 ?? '')) throw new Error(`Required offline music is missing SHA-256 provenance: ${requiredPath}`);
+  }
 }
 
 async function main() {
@@ -250,12 +270,13 @@ async function main() {
     if (!version) {
       throw new Error('Package manifest must include arcade/lost-sizzler/version.json');
     }
+    assertOfflineAudioCompleteness(manifest);
     for (let index = 1; index < manifest.files.length; index += 1) {
       if (comparePortablePath(manifest.files[index - 1].path, manifest.files[index].path) > 0) {
         throw new Error(`Package manifest paths are not portably sorted at: ${manifest.files[index].path}`);
       }
     }
-    console.log(`Lost Sizzler desktop package manifest OK: ${manifest.fileCount} files, ${manifest.totalBytes} bytes, release ${manifest.releaseIdentifier}.`);
+    console.log(`Lost Sizzler desktop package manifest OK: ${manifest.fileCount} files, ${manifest.totalBytes} bytes, ${REQUIRED_OFFLINE_AUDIO.length} required offline music roles, release ${manifest.releaseIdentifier}.`);
     return;
   }
 
