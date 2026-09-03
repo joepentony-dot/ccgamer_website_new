@@ -142,6 +142,21 @@ try{
     });
     assert.match(activationError,/disabled in this desktop build/i,"desktop-offline must refuse direct online-service activation");
 
+    const feedbackBoundary=await page.evaluate(async()=>{
+      const form=document.createElement("form");
+      form.id="v104-feedback-form";
+      let underlying=false;
+      form.addEventListener("submit",event=>{event.preventDefault();underlying=true});
+      document.body.appendChild(form);
+      form.dispatchEvent(new Event("submit",{bubbles:true,cancelable:true}));
+      await new Promise(resolve=>setTimeout(resolve,80));
+      form.remove();
+      return{underlying,active:Boolean(window.CCGLostSizzlerOnlineServices?.state?.active)}
+    });
+    assert.equal(feedbackBoundary.underlying,false,"desktop-offline Feedback Submit must be stopped before the legacy direct-client handler runs");
+    assert.equal(feedbackBoundary.active,false,"desktop-offline Feedback Submit must not activate online services");
+    assert.deepEqual(audit.remoteRequests,[],`desktop-offline Feedback Submit must make no Supabase request: ${audit.remoteRequests.join("\n")}`);
+
     await page.evaluate(()=>{
       const daily=document.getElementById("daily-btn");
       const auth=document.getElementById("weekly-auth-actions");
@@ -197,7 +212,7 @@ try{
     const context=await browser.newContext({viewport:{width:1440,height:900}});
     await context.addInitScript(()=>{
       const client={
-        functions:{invoke:async()=>({data:{ok:false,error:"browser containment offline stub"},error:null})}
+        functions:{invoke:async(name,options)=>{window.__ccgInvokeCapture={name:String(name||""),body:options?.body?JSON.parse(JSON.stringify(options.body)):null};return{data:{ok:false,error:"browser containment offline stub"},error:null}}}
       };
       window.__ccgInjectedClient=client;
       window.ccgSupabase={getClient:async()=>client};
@@ -222,6 +237,17 @@ try{
     assert.equal(activated.same,true,"desktop-online activation must reuse the injected service client");
     assert.equal(activated.state.active,true,"desktop-online injected bridge must mark online services active");
     assert.deepEqual(audit.remoteRequests,[],`activating an injected bridge must not load Supabase scripts: ${audit.remoteRequests.join("\n")}`);
+
+    const sanitizedPayload=await page.evaluate(async()=>{
+      window.__ccgInvokeCapture=null;
+      const client=await window.ccgSupabase.getClient();
+      const internal=location.href;
+      await client.functions.invoke("lost-sizzler-feedback",{body:{action:"telemetry",event_type:"browser_contract",page_url:internal}});
+      return{internal,capture:window.__ccgInvokeCapture,publicUrl:window.CCGLostSizzlerDelivery?.publicGameUrl?.()||""}
+    });
+    assert.notEqual(sanitizedPayload.internal,"https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/","the Chromium fixture must use an internal non-public origin for the payload sanitation proof");
+    assert.equal(sanitizedPayload.publicUrl,"https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/","desktop delivery must expose the canonical public game URL");
+    assert.equal(sanitizedPayload.capture?.body?.page_url,sanitizedPayload.publicUrl,`desktop online function payloads must not disclose the packaged page URL: ${JSON.stringify(sanitizedPayload)}`);
 
     const beforeAuth=page.url();
     await page.locator("#weekly-auth-actions a").first().click();
