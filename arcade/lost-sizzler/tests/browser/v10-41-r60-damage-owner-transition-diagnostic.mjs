@@ -97,10 +97,16 @@ try{
     return{timeline:window.__ccgR60DamageTransitionTimeline||[],modern:Boolean(r30?.modernDamageOwnershipPresent?.(window.hurtPlayer)),gateActive:Boolean(composition?.soloHurtGateActive?.()),r30:{repairs:Number(r30?.state?.ownershipRepairs||0),forced:Number(r30?.state?.forcedRestores||0),reason:String(r30?.state?.lastRestoreReason||"")},composition:{...(composition?.state||{})}}
   });
   result.writerCandidates=writerCandidates;
+  result.transientLosses=result.timeline.filter(row=>!row.modern);
   console.log(`[r60 damage transition] ${JSON.stringify(result)}`);
   assert.equal(errors.length,0,`damage-owner transition diagnostic must not raise page errors: ${JSON.stringify(errors)}`);
-  assert.equal(result.gateActive,true,`R60 Solo damage property gate must survive repeated pause/resume: ${JSON.stringify(result)}`);
+  if(result.composition?.soloHurtGateUnsupported){
+    assert.equal(result.timeline.some(row=>row.descriptor?.configurable===false),true,`an unsupported R60 property gate must correspond to a non-configurable hurtPlayer global: ${JSON.stringify(result)}`)
+  }
+  assert.equal(result.transientLosses.length,0,`R56/R60 environmental damage ancestry must never disappear during repeated pause/resume: ${JSON.stringify(result)}`);
   assert.equal(result.modern,true,`R56/R60 environmental damage ancestry must survive repeated pause/resume: ${JSON.stringify(result)}`);
+  assert.equal(result.composition?.stable,true,`R60 owner composition must reach a stable state even when the optional hurtPlayer property gate is unavailable: ${JSON.stringify(result)}`);
+  assert.equal(result.composition?.retired,true,`R60 owner composition must retire its bounded installer after reaching a stable state: ${JSON.stringify(result)}`);
   console.log("Lost Sizzler R60 damage-owner transition diagnostic passed.")
 } finally {
   await browser.close();
