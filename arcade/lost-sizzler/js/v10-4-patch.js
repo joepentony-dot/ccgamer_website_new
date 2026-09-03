@@ -88,7 +88,10 @@
     const oldNote = note?.textContent || "";
     if (note) note.textContent = "Loading the full CCG game archive for dungeon collectibles…";
     try {
-      const response = await fetch("/games/games.json", { cache: "no-cache" });
+      const delivery = window.CCGLostSizzlerDelivery;
+      const target = typeof delivery?.catalogueUrl === "function" ? delivery.catalogueUrl() : "/games/games.json";
+      if (!target) throw new Error("Desktop collectible catalogue is not configured.");
+      const response = await fetch(target, { cache: "no-cache" });
       if (!response.ok) throw new Error(`games.json returned ${response.status}`);
       const titles = catalogueTitles(await response.json());
       if (!titles.length) throw new Error("No game titles were found in games.json");
