@@ -53,6 +53,7 @@ const PAUSE_CYCLES=12;
 const MIN_RATIO=0.90;
 const MAX_RATIO=1.10;
 const LIFECYCLE_EDGE_TIMEOUT_MS=10000;
+const SOAK_HEALTH_RESERVE=1000000;
 
 async function snapshot(page,label){
   return page.evaluate(label=>{
@@ -120,6 +121,26 @@ async function waitForLifecycleMode(page,expected,cycle,edge){
   }
 }
 
+async function isolateTimingSoakFromNaturalDeath(page){
+  const state=await page.evaluate(reserve=>{
+    if(typeof p1==="undefined"||!p1)return null;
+    const before={health:Number(p1.health),maxHealth:Number(p1.maxHealth)};
+    p1.maxHealth=Math.max(reserve,Number(p1.maxHealth)||0);
+    p1.health=p1.maxHealth;
+    return{
+      before,
+      after:{health:Number(p1.health),maxHealth:Number(p1.maxHealth)},
+      mode:typeof mode==="string"?mode:null,
+      controllerId:window.CCGLostSizzlerModeRuntime?.state?.activeId||""
+    };
+  },SOAK_HEALTH_RESERVE);
+  assert.ok(state,"timing soak requires a live Solo player");
+  assert.equal(state.mode,"playing","timing soak survivability fixture must be installed during active play");
+  assert.equal(state.controllerId,"dungeon-solo","timing soak survivability fixture must remain inside the Solo controller");
+  assert.ok(state.after.health>=SOAK_HEALTH_RESERVE&&state.after.maxHealth>=SOAK_HEALTH_RESERVE,"timing soak survivability reserve was not applied");
+  console.log(`[solo-long-soak] fixture-only survivability reserve ${state.before.health}/${state.before.maxHealth} -> ${state.after.health}/${state.after.maxHealth}; canonical AI, hazards, hurtPlayer and runtime owners remain untouched`);
+}
+
 function assertSustainedWindow(sample,label){
   assert.ok(sample.activeWallMs>=ACTIVE_WINDOW_MS*0.80,`${label}: expected sustained active wall-time evidence, got ${sample.activeWallMs} ms`);
   assert.ok(sample.observedSimulationMs>0,`${label}: Solo simulation did not advance`);
@@ -147,6 +168,7 @@ try{
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerSoloDiagnostics)&&Boolean(window.CCGLostSizzlerV141R59LiveRegressionFixes),null,{timeout:90000});
   await page.click("#solo-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&window.CCGLostSizzlerModeRuntime?.state?.activeId==="dungeon-solo",null,{timeout:20000});
+  await isolateTimingSoakFromNaturalDeath(page);
 
   console.log("[solo-long-soak] sustained baseline window");
   await page.evaluate(()=>window.CCGLostSizzlerSoloDiagnostics.reset());
