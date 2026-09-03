@@ -1,10 +1,10 @@
-/* The Lost Sizzler — local-first online services gate.
+/* The Lost Sizzler — local-first online services and delivery gate.
  *
  * The base game must remain playable without Supabase. Website account,
  * Weekly Vault and multiplayer services are loaded only after the player
- * deliberately enters an online feature. This also keeps Solo, Tutorial,
- * Split Screen, local saves and local achievements independent of third-party
- * availability and egress quotas.
+ * deliberately enters an online feature. The same gate also owns the small
+ * delivery boundary used by future packaged builds so website navigation and
+ * website-root service scripts cannot silently take over a desktop webview.
  */
 (()=>{
   "use strict";
@@ -12,14 +12,93 @@
   window.__CCG_LOST_SIZZLER_ONLINE_SERVICES_GATE__=true;
 
   const RELEASE=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||"latest").trim();
-  const CONFIG_SRC=`/js/ccg-supabase-config.js?v=${encodeURIComponent(RELEASE)}`;
-  const CLIENT_SRC=`/js/ccg-supabase-client.js?v=${encodeURIComponent(RELEASE)}`;
+  const WEBSITE_ORIGIN="https://www.cheekycommodoregamer.co.uk";
   const ONLINE_BUTTONS=new Set(["daily-btn","create-btn","horde-mode-btn","saboteurs-mode-btn","join-btn"]);
+  const VALID_DELIVERY_MODES=new Set(["web","desktop-online","desktop-offline"]);
+  const rawDelivery=window.__CCG_LOST_SIZZLER_DELIVERY__&&typeof window.__CCG_LOST_SIZZLER_DELIVERY__==="object"?window.__CCG_LOST_SIZZLER_DELIVERY__:{};
+  const requestedMode=String(rawDelivery.mode||window.__CCG_LOST_SIZZLER_DELIVERY_MODE__||"web").trim().toLowerCase();
+  const deliveryMode=VALID_DELIVERY_MODES.has(requestedMode)?requestedMode:"web";
   const state={active:false,activating:false,promise:null,reason:"",lastError:"",activatedAt:0};
+
+  function websiteUrl(path){
+    try{return new URL(String(path||"/"),`${WEBSITE_ORIGIN}/`).toString()}
+    catch(_){return WEBSITE_ORIGIN}
+  }
+
+  function onlineScriptSources(){
+    if(deliveryMode==="web")return{
+      config:`/js/ccg-supabase-config.js?v=${encodeURIComponent(RELEASE)}`,
+      client:`/js/ccg-supabase-client.js?v=${encodeURIComponent(RELEASE)}`
+    };
+    if(deliveryMode==="desktop-offline")return null;
+    const supplied=rawDelivery.onlineScripts&&typeof rawDelivery.onlineScripts==="object"?rawDelivery.onlineScripts:{};
+    const config=String(supplied.config||"").trim();
+    const client=String(supplied.client||"").trim();
+    return config&&client?{config,client}:null
+  }
+
+  const delivery=Object.freeze({
+    mode:deliveryMode,
+    isDesktop:deliveryMode!=="web",
+    onlineEnabled:deliveryMode!=="desktop-offline",
+    websiteUrl,
+    onlineScriptSources
+  });
+
+  function deliveryMessage(message){
+    const text=String(message||"This action is unavailable in this build.");
+    const note=document.getElementById("menu-note");
+    if(note)note.textContent=text;
+    try{window.showToast?.("ACTION UNAVAILABLE",text,"red",8000)}catch(_){}
+  }
+
+  function openExternal(url,reason="external-link"){
+    const target=websiteUrl(url);
+    if(!delivery.isDesktop){
+      window.location.assign(target);
+      return true
+    }
+    if(delivery.mode==="desktop-offline"){
+      deliveryMessage("This desktop build is running in offline mode. Website links are disabled.");
+      return false
+    }
+    if(typeof rawDelivery.openExternal==="function"){
+      try{rawDelivery.openExternal(target,{reason:String(reason||"external-link")});return true}
+      catch(error){console.warn("[Lost Sizzler] desktop external navigation failed",error)}
+    }
+    deliveryMessage("This desktop build has not provided a safe system-browser link handler.");
+    return false
+  }
+
+  function exitDelivery(){
+    if(!delivery.isDesktop){window.location.assign(websiteUrl("/games/ccg-games/"));return true}
+    if(typeof rawDelivery.exitGame==="function"){
+      try{rawDelivery.exitGame();return true}
+      catch(error){console.warn("[Lost Sizzler] desktop exit action failed",error)}
+    }
+    deliveryMessage("This desktop build has not provided an application Exit action.");
+    return false
+  }
+
+  function installNavigationBoundary(){
+    if(!delivery.isDesktop)return;
+    document.addEventListener("click",event=>{
+      const anchor=event.target?.closest?.("a[href]");
+      if(!anchor)return;
+      const href=String(anchor.getAttribute("href")||"").trim();
+      if(!href||href.startsWith("#")||/^javascript:/i.test(href))return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      if(anchor.classList.contains("menu-exit-link")){exitDelivery();return}
+      openExternal(href,anchor.closest("#weekly-auth-actions")?"account-auth":"external-link");
+    },true);
+    document.documentElement.dataset.ccgDeliveryMode=delivery.mode;
+  }
 
   function loadScript(src,marker){
     return new Promise((resolve,reject)=>{
-      const existing=document.querySelector(`script[data-ccg-online-service="${marker}"]`)||document.querySelector(`script[src^="${src.split("?")[0]}"]`);
+      const base=String(src||"").split("?")[0];
+      const existing=document.querySelector(`script[data-ccg-online-service="${marker}"]`)||document.querySelector(`script[src^="${base}"]`);
       if(existing){
         if(marker==="config"&&window.CCG_SUPABASE_URL&&window.CCG_SUPABASE_ANON_KEY){resolve(existing);return}
         if(marker==="client"&&window.ccgSupabase?.getClient){resolve(existing);return}
@@ -42,10 +121,13 @@
   async function activate(reason="online-feature"){
     if(state.active&&window.ccgSupabase?.getClient)return window.ccgSupabase.getClient();
     if(state.promise)return state.promise;
+    if(!delivery.onlineEnabled)throw new Error("Online services are disabled in this desktop build.");
+    const sources=onlineScriptSources();
+    if(!sources)throw new Error("This desktop build has not configured its online-services adapter.");
     state.activating=true;state.reason=String(reason||"online-feature");state.lastError="";
     state.promise=(async()=>{
-      await loadScript(CONFIG_SRC,"config");
-      await loadScript(CLIENT_SRC,"client");
+      await loadScript(sources.config,"config");
+      await loadScript(sources.client,"client");
       const bridge=window.ccgSupabase;
       if(!bridge?.getClient)throw new Error("CCG online services did not initialise.");
       const client=await bridge.getClient();
@@ -59,7 +141,7 @@
         console.warn("[Lost Sizzler] account session hydration unavailable; continuing with requested online feature.",error)
       }
       state.active=true;state.activating=false;state.activatedAt=Date.now();
-      window.dispatchEvent(new CustomEvent("ccg:lost-sizzler-online-services-ready",{detail:{reason:state.reason,activatedAt:state.activatedAt}}));
+      window.dispatchEvent(new CustomEvent("ccg:lost-sizzler-online-services-ready",{detail:{reason:state.reason,activatedAt:state.activatedAt,deliveryMode:delivery.mode}}));
       return client
     })().catch(error=>{
       state.active=false;state.activating=false;state.lastError=String(error?.message||error||"Online services unavailable");
@@ -106,6 +188,7 @@
     finally{button.disabled=false}
   }
 
+  installNavigationBoundary();
   document.addEventListener("click",intercept,true);
   window.addEventListener("pagehide",()=>document.removeEventListener("click",intercept,true),{once:true});
 
@@ -116,5 +199,14 @@
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",activateWeeklyReturn,{once:true});
   else activateWeeklyReturn();
 
-  window.CCGLostSizzlerOnlineServices={activate,refreshWeekly,get state(){return{...state,promise:Boolean(state.promise)}}};
+  window.CCGLostSizzlerDelivery={
+    mode:delivery.mode,
+    isDesktop:delivery.isDesktop,
+    onlineEnabled:delivery.onlineEnabled,
+    websiteUrl,
+    openExternal,
+    exit:exitDelivery,
+    onlineScriptSources
+  };
+  window.CCGLostSizzlerOnlineServices={activate,refreshWeekly,get state(){return{...state,promise:Boolean(state.promise),deliveryMode:delivery.mode,onlineEnabled:delivery.onlineEnabled}}};
 })();
