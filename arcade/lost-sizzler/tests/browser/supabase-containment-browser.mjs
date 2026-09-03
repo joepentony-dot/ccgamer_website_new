@@ -133,10 +133,25 @@ try{
       auth.classList.remove("hidden");
       window.dispatchEvent(new Event("ccg:auth-changed"));
     });
-    await page.waitForFunction(()=>{
+    await page.waitForTimeout(1500);
+    const reassertion=await page.evaluate(()=>{
       const daily=document.getElementById("daily-btn"),auth=document.getElementById("weekly-auth-actions");
-      return daily?.disabled===true&&auth?.hidden===true&&auth?.classList.contains("hidden")===true
+      return{
+        dailyDisabled:Boolean(daily?.disabled),
+        dailyAria:daily?.getAttribute("aria-disabled")||"",
+        authHidden:Boolean(auth?.hidden),
+        authClassHidden:Boolean(auth?.classList.contains("hidden")),
+        authClassName:auth?.className||"",
+        deliveryMode:window.CCGLostSizzlerDelivery?.mode||"",
+        onlineEnabled:window.CCGLostSizzlerDelivery?.onlineEnabled,
+        onlineState:window.CCGLostSizzlerOnlineServices?.state||null,
+        weeklyState:window.CCGWeeklyChallenge?.state||null
+      }
     });
+    assert.equal(reassertion.dailyDisabled,true,`desktop-offline must re-disable Weekly Vault after auth refresh: ${JSON.stringify(reassertion)}`);
+    assert.equal(reassertion.dailyAria,"true",`desktop-offline must restore Weekly Vault aria-disabled after auth refresh: ${JSON.stringify(reassertion)}`);
+    assert.equal(reassertion.authHidden,true,`desktop-offline must restore auth hidden state after auth refresh: ${JSON.stringify(reassertion)}`);
+    assert.equal(reassertion.authClassHidden,true,`desktop-offline must restore auth hidden class after auth refresh: ${JSON.stringify(reassertion)}`);
 
     const beforeExit=page.url();
     await page.locator(".menu-exit-link").first().click();
