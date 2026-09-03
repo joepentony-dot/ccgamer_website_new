@@ -38,6 +38,30 @@ jobs:
           node --check scripts/verify-lost-sizzler-storage-recovery.mjs
           node scripts/verify-lost-sizzler-storage-recovery.mjs --manifest-check
 
+          node <<'NODE'
+          const fs = require('node:fs');
+          const assert = require('node:assert/strict');
+
+          const path = '.github/workflows/lost-sizzler-storage-recovery-manual.yml';
+          const source = fs.readFileSync(path, 'utf8').replace(/\r\n/g, '\n');
+          const match = source.match(/^on:\n([\s\S]*?)\npermissions:/m);
+          assert.ok(match, `${path} must contain an on: block followed by permissions:`);
+
+          const events = match[1]
+            .split('\n')
+            .map((line) => line.match(/^  ([A-Za-z0-9_-]+):(?:\s.*)?$/))
+            .filter(Boolean)
+            .map((entry) => entry[1]);
+
+          assert.deepEqual(
+            events,
+            ['workflow_dispatch'],
+            `${path} must remain manual-only; top-level workflow events were: ${events.join(', ') || '(none)'}`
+          );
+
+          console.log('Lost Sizzler Storage recovery workflow is locked to workflow_dispatch only.');
+          NODE
+
           node scripts/recover-lost-sizzler-enabled-storage.mjs \
             --storage-base-url "$BASE" \
             --plan \
