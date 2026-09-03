@@ -46,7 +46,57 @@ jobs:
         run: node scripts/build-lost-sizzler-package-manifest.mjs --check
 
       - name: Build reproducible package manifest artifact
-        run: node scripts/build-lost-sizzler-package-manifest.mjs --output lost-sizzler-package-manifest.json
+        run: |
+          set -euo pipefail
+          node scripts/build-lost-sizzler-package-manifest.mjs --output lost-sizzler-package-manifest.json
+          node scripts/build-lost-sizzler-package-manifest.mjs --output lost-sizzler-package-manifest.repeat.json
+          cmp --silent lost-sizzler-package-manifest.json lost-sizzler-package-manifest.repeat.json
+
+      - name: Validate manifest structure and cryptographic fields
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+
+          const manifest = JSON.parse(fs.readFileSync('lost-sizzler-package-manifest.json', 'utf8'));
+          if (manifest.schema !== 'ccg-lost-sizzler-desktop-package-manifest-v1') {
+            throw new Error(`Unexpected package manifest schema: ${manifest.schema}`);
+          }
+          if (!Number.isInteger(manifest.fileCount) || manifest.fileCount !== manifest.files?.length || manifest.fileCount < 1) {
+            throw new Error('Package manifest fileCount must exactly match a non-empty files array.');
+          }
+          if (!Number.isSafeInteger(manifest.totalBytes) || manifest.totalBytes < 1) {
+            throw new Error('Package manifest totalBytes must be a positive safe integer.');
+          }
+
+          const allowedClassifications = new Set(['runtime', 'audio', 'catalogue', 'online-optional']);
+          const seen = new Set();
+          let computedBytes = 0;
+          let previousPath = '';
+          for (const entry of manifest.files) {
+            if (!entry || typeof entry.path !== 'string' || !entry.path) throw new Error('Manifest entry is missing a path.');
+            if (entry.path.startsWith('/') || entry.path.includes('\\') || entry.path.split('/').includes('..')) {
+              throw new Error(`Unsafe or non-portable package path: ${entry.path}`);
+            }
+            if (entry.path < previousPath) throw new Error(`Manifest paths are not deterministically sorted at: ${entry.path}`);
+            previousPath = entry.path;
+            if (seen.has(entry.path)) throw new Error(`Duplicate manifest path: ${entry.path}`);
+            seen.add(entry.path);
+            if (!Number.isSafeInteger(entry.bytes) || entry.bytes < 0) throw new Error(`Invalid byte count for ${entry.path}`);
+            if (!/^[0-9a-f]{64}$/.test(entry.sha256 ?? '')) throw new Error(`Invalid SHA-256 for ${entry.path}`);
+            if (!allowedClassifications.has(entry.classification)) throw new Error(`Unknown classification for ${entry.path}: ${entry.classification}`);
+            if (entry.sourceRepositoryPath !== entry.path) throw new Error(`Source/package path mismatch before wrapper transformation: ${entry.path}`);
+            computedBytes += entry.bytes;
+          }
+          if (computedBytes !== manifest.totalBytes) {
+            throw new Error(`Manifest byte total mismatch: declared ${manifest.totalBytes}, computed ${computedBytes}`);
+          }
+
+          const catalogue = manifest.files.filter((entry) => entry.classification === 'catalogue');
+          if (catalogue.length !== 1 || catalogue[0].path !== 'games/games.json') {
+            throw new Error('Pre-wrapper package manifest must contain exactly one catalogue input: games/games.json.');
+          }
+          console.log(`Lost Sizzler package manifest reproducibility/structure passed: ${manifest.fileCount} files, ${manifest.totalBytes} bytes.`);
+          NODE
 
       - name: Upload package manifest evidence
         uses: actions/upload-artifact@v4
