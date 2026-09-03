@@ -45,9 +45,10 @@ try{
         at:Number(performance.now().toFixed(1)),mode:String(mode||""),runActive:String(document.body.dataset.runActive||""),
         owner:String(window.hurtPlayer?.name||""),chain,
         modern:Boolean(r30?.modernDamageOwnershipPresent?.(window.hurtPlayer)),spyContaminated:Boolean(r30?.spyContaminated?.(window.hurtPlayer)),
-        gateActive:Boolean(composition?.soloHurtGateActive?.()),gate:Boolean(composition?.state?.soloHurtGate),gateLosses:Number(composition?.state?.soloHurtGateLosses||0),
+        gateActive:Boolean(composition?.soloHurtGateActive?.()),gate:Boolean(composition?.state?.soloHurtGate),gateUnsupported:Boolean(composition?.state?.soloHurtGateUnsupported),gateLosses:Number(composition?.state?.soloHurtGateLosses||0),
         gateBlocked:Number(composition?.state?.soloHurtBlockedWrites||0),gateAccepted:Number(composition?.state?.soloHurtAcceptedWrites||0),
-        accessor:Boolean(descriptor?.get||descriptor?.set),r30Repairs:Number(r30?.state?.ownershipRepairs||0),r30Forced:Number(r30?.state?.forcedRestores||0),
+        descriptor:{configurable:Boolean(descriptor?.configurable),enumerable:Boolean(descriptor?.enumerable),writable:Boolean(descriptor?.writable),accessor:Boolean(descriptor?.get||descriptor?.set)},
+        r30Repairs:Number(r30?.state?.ownershipRepairs||0),r30Forced:Number(r30?.state?.forcedRestores||0),
         r30Reason:String(r30?.state?.lastRestoreReason||""),r60Reassertions:Number(window.CCGLostSizzlerV141R60LivePlayIntegrity?.state?.ownerReassertions||0),
         postPlaytestWrapped:Boolean(window.CCGLostSizzlerV141PostPlaytestStability?.state?.hurtWrapped)
       }
@@ -72,11 +73,30 @@ try{
   }
   await page.waitForTimeout(500);
 
+  const writerCandidates=await page.evaluate(async()=>{
+    const urls=[...new Set(performance.getEntriesByType("resource").map(entry=>String(entry.name||"")).filter(url=>/\.js(?:\?|$)/.test(url)&&url.startsWith(location.origin)))];
+    const matches=[];
+    for(const url of urls){
+      try{
+        const text=await fetch(url,{cache:"no-store"}).then(response=>response.ok?response.text():"");
+        if(!text)continue;
+        const lines=text.split(/\r?\n/);
+        lines.forEach((line,index)=>{
+          if(/(?:window\.|globalThis\.)?hurtPlayer\s*=/.test(line)||/Object\.defineProperty\s*\(\s*(?:window|globalThis)\s*,\s*["']hurtPlayer["']/.test(line)){
+            matches.push({url:new URL(url).pathname,line:index+1,source:line.trim().slice(0,280)})
+          }
+        })
+      }catch(_){}
+    }
+    return matches
+  });
+
   const result=await page.evaluate(()=>{
     if(window.__ccgR60DamageTransitionSampler)clearInterval(window.__ccgR60DamageTransitionSampler);
     const r30=window.CCGLostSizzlerV141R30,composition=window.CCGLostSizzlerV141R60HordeOwnerComposition;
     return{timeline:window.__ccgR60DamageTransitionTimeline||[],modern:Boolean(r30?.modernDamageOwnershipPresent?.(window.hurtPlayer)),gateActive:Boolean(composition?.soloHurtGateActive?.()),r30:{repairs:Number(r30?.state?.ownershipRepairs||0),forced:Number(r30?.state?.forcedRestores||0),reason:String(r30?.state?.lastRestoreReason||"")},composition:{...(composition?.state||{})}}
   });
+  result.writerCandidates=writerCandidates;
   console.log(`[r60 damage transition] ${JSON.stringify(result)}`);
   assert.equal(errors.length,0,`damage-owner transition diagnostic must not raise page errors: ${JSON.stringify(errors)}`);
   assert.equal(result.gateActive,true,`R60 Solo damage property gate must survive repeated pause/resume: ${JSON.stringify(result)}`);
