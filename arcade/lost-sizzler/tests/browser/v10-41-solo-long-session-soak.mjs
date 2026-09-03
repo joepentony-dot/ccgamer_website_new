@@ -73,6 +73,66 @@ async function snapshot(page,label){
   },label);
 }
 
+async function r59Counters(page,label){
+  return page.evaluate(label=>{
+    const state=window.CCGLostSizzlerV141R59LiveRegressionFixes?.state||{};
+    return{
+      label,
+      at:Number(performance.now()),
+      acceptedFrames:Number(state.acceptedFrames||0),
+      duplicateFramesSkipped:Number(state.duplicateFramesSkipped||0),
+      longGaps:Number(state.longGaps||0),
+      longGapRecoveries:Number(state.longGapRecoveries||0),
+      pausedGapsDiscarded:Number(state.pausedGapsDiscarded||0),
+      pauseBoundaries:Number(state.pauseBoundaries||0),
+      soloFrames:Number(state.soloFrames||0),
+      soloSubsteps:Number(state.soloSubsteps||0),
+      soloCatchupFrames:Number(state.soloCatchupFrames||0),
+      soloDiscardedVisibleMs:Number(state.soloDiscardedVisibleMs||0),
+      soloLastElapsed:Number(state.soloLastElapsed||0),
+      soloLastSteps:Number(state.soloLastSteps||0)
+    };
+  },label);
+}
+
+function counterDelta(start,end){
+  const delta={};
+  for(const key of ["acceptedFrames","duplicateFramesSkipped","longGaps","longGapRecoveries","pausedGapsDiscarded","pauseBoundaries","soloFrames","soloSubsteps","soloCatchupFrames","soloDiscardedVisibleMs"]){
+    delta[key]=Number(end[key]||0)-Number(start[key]||0);
+  }
+  delta.wallMs=Number((Number(end.at||0)-Number(start.at||0)).toFixed(2));
+  return delta;
+}
+
+function compactWindow(sample,counters){
+  return{
+    activeWallMs:sample.activeWallMs,
+    observedSimulationMs:sample.observedSimulationMs,
+    simulationRatio:sample.simulationRatio,
+    rafAcceptedRate:sample.rafAcceptedRate,
+    updateRate:sample.updateRate,
+    maxSampleGapMs:sample.maxSampleGapMs,
+    sampleOverruns:sample.sampleOverruns,
+    r59LongGaps:sample.r59LongGaps,
+    r59PausedGapsDiscarded:sample.r59PausedGapsDiscarded,
+    r59SoloDiscardedVisibleMs:sample.r59SoloDiscardedVisibleMs,
+    r59SoloFrames:sample.r59SoloFrames,
+    r59SoloSubsteps:sample.r59SoloSubsteps,
+    r59SoloCatchupFrames:sample.r59SoloCatchupFrames,
+    r59SoloLastElapsed:sample.r59SoloLastElapsed,
+    r59SoloLastSteps:sample.r59SoloLastSteps,
+    loopOwnerDepth:sample.loopOwnerDepth,
+    updateOwnerDepth:sample.updateOwnerDepth,
+    moveOwnerDepth:sample.moveOwnerDepth,
+    damageOwnerDepth:sample.damageOwnerDepth,
+    ownerChanges:sample.ownerChanges,
+    r30OwnershipRepairs:sample.r30OwnershipRepairs,
+    r30MovementRepairs:sample.r30MovementRepairs,
+    sealRepairs:sample.sealRepairs,
+    counters
+  };
+}
+
 async function waitForLifecycleMode(page,expected,cycle,edge){
   try{
     await page.waitForFunction(expectedMode=>mode===expectedMode,expected,{timeout:LIFECYCLE_EDGE_TIMEOUT_MS});
@@ -171,9 +231,12 @@ try{
   await isolateTimingSoakFromNaturalDeath(page);
 
   console.log("[solo-long-soak] sustained baseline window");
+  const baselineCountersStart=await r59Counters(page,"baseline-start");
   await page.evaluate(()=>window.CCGLostSizzlerSoloDiagnostics.reset());
   await page.waitForTimeout(ACTIVE_WINDOW_MS);
   const baseline=await snapshot(page,"sustained-baseline");
+  const baselineCountersEnd=await r59Counters(page,"baseline-end");
+  const baselineCounterDelta=counterDelta(baselineCountersStart,baselineCountersEnd);
   assertSustainedWindow(baseline,"sustained-baseline");
 
   const ownerDepths={
@@ -206,12 +269,37 @@ try{
   assert.ok(pauseAfter-pauseBefore>=PAUSE_CYCLES*2,`R59 must observe both sides of each pause cycle: before=${pauseBefore}, after=${pauseAfter}`);
 
   console.log("[solo-long-soak] sustained post-lifecycle window");
+  const stressedCountersStart=await r59Counters(page,"post-lifecycle-start");
   await page.evaluate(()=>window.CCGLostSizzlerSoloDiagnostics.reset());
   await page.waitForTimeout(ACTIVE_WINDOW_MS);
   const stressed=await snapshot(page,"sustained-post-lifecycle");
+  const stressedCountersEnd=await r59Counters(page,"post-lifecycle-end");
+  const stressedCounterDelta=counterDelta(stressedCountersStart,stressedCountersEnd);
   assertSustainedWindow(stressed,"sustained-post-lifecycle");
 
   const relative=stressed.simulationRatio/Math.max(0.0001,baseline.simulationRatio);
+  const timingEvidence={
+    activeWindowMs:ACTIVE_WINDOW_MS,
+    pauseCycles:PAUSE_CYCLES,
+    pauseBoundariesAdded:pauseAfter-pauseBefore,
+    relativeSimulationCadence:Number(relative.toFixed(4)),
+    baseline:compactWindow(baseline,baselineCounterDelta),
+    stressed:compactWindow(stressed,stressedCounterDelta),
+    delta:{
+      simulationRatio:Number((stressed.simulationRatio-baseline.simulationRatio).toFixed(4)),
+      activeWallMs:Number(stressed.activeWallMs)-Number(baseline.activeWallMs),
+      observedSimulationMs:Number(stressed.observedSimulationMs)-Number(baseline.observedSimulationMs),
+      maxSampleGapMs:Number((Number(stressed.maxSampleGapMs)-Number(baseline.maxSampleGapMs)).toFixed(2)),
+      sampleOverruns:Number(stressed.sampleOverruns)-Number(baseline.sampleOverruns),
+      r30OwnershipRepairs:Number(stressed.r30OwnershipRepairs)-Number(baseline.r30OwnershipRepairs),
+      r30MovementRepairs:Number(stressed.r30MovementRepairs)-Number(baseline.r30MovementRepairs),
+      sealRepairs:Number(stressed.sealRepairs)-Number(baseline.sealRepairs),
+      windowDiscardedVisibleMs:Number((stressedCounterDelta.soloDiscardedVisibleMs-baselineCounterDelta.soloDiscardedVisibleMs).toFixed(2)),
+      windowLongGaps:Number(stressedCounterDelta.longGaps)-Number(baselineCounterDelta.longGaps)
+    }
+  };
+  console.log("SOLO_LONG_SESSION_WINDOW_METRICS "+JSON.stringify(timingEvidence));
+
   assert.ok(relative>=0.95&&relative<=1.05,`lifecycle stress must not materially change Solo cadence: baseline=${baseline.simulationRatio}, post=${stressed.simulationRatio}, relative=${relative.toFixed(4)}`);
 
   for(const [owner,before] of Object.entries(ownerDepths)){
@@ -230,6 +318,8 @@ try{
     pauseCycles:PAUSE_CYCLES,
     baseline,
     stressed,
+    baselineCounterDelta,
+    stressedCounterDelta,
     pauseBoundariesAdded:pauseAfter-pauseBefore,
     relativeSimulationCadence:Number(relative.toFixed(4))
   }));
