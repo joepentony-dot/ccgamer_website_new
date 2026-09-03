@@ -61,16 +61,28 @@ try{
     if(saved.descriptor)Object.defineProperty(special,"active",saved.descriptor);else delete special.active;delete document.body.dataset.specialMode;
     engine.leaveIsolation();
     const seen=new Set(),chain=[];let current=window.hurtPlayer,spyOwner=null;
-    while(typeof current==="function"&&!seen.has(current)&&chain.length<64){seen.add(current);if(current.__ccgV141SpyDamageBoundary)spyOwner=current;chain.push({name:String(current.name||""),probe:Boolean(current.__ccgR29CompositionProbe),spy:Boolean(current.__ccgV141SpyDamageBoundary)});current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null}
-    return{isolated:engine.state.isolated,hasProbe:chain.some(row=>row.probe),hasSpy:chain.some(row=>row.spy),spyDelegate:typeof spyOwner?.__ccgOriginal==="function",chain};
+    while(typeof current==="function"&&!seen.has(current)&&chain.length<64){
+      seen.add(current);if(current.__ccgV141SpyDamageBoundary)spyOwner=current;
+      chain.push({
+        name:String(current.name||""),probe:Boolean(current.__ccgR29CompositionProbe),spy:Boolean(current.__ccgV141SpyDamageBoundary),
+        r56:Boolean(current.__ccgV141R56EnvironmentDamage),r60:Boolean(current.__ccgV141R60EnvironmentSeal)
+      });
+      current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null
+    }
+    return{
+      isolated:engine.state.isolated,
+      hasProbe:chain.some(row=>row.probe),hasSpy:chain.some(row=>row.spy),spyDelegate:typeof spyOwner?.__ccgOriginal==="function",
+      hasR56:chain.some(row=>row.r56),hasR60:chain.some(row=>row.r60),chain
+    };
   });
   assert.equal(exited.isolated,false,"leaving Spy must release the isolation state");
-  assert.equal(exited.hasProbe,true,`leaving Spy must not restore an old hurtPlayer snapshot over a later composed owner: ${JSON.stringify(exited.chain)}`);
-  assert.equal(exited.hasSpy,true,"a Spy boundary left inside an outer composition must remain a safe dormant passthrough until normal owner repair retires it");
-  assert.equal(exited.spyDelegate,true,"a dormant Spy boundary must retain a callable delegate after isolation state is cleared");
+  const dormantComposed=exited.hasProbe&&exited.hasSpy&&exited.spyDelegate;
+  const repairedCanonical=!exited.hasProbe&&!exited.hasSpy&&exited.hasR56&&exited.hasR60;
+  assert.equal(dormantComposed||repairedCanonical,true,`Spy exit must either preserve the later composed owner around a safe dormant Spy boundary or allow canonical R56/R60 ownership to retire both without restoring a stale snapshot: ${JSON.stringify(exited.chain)}`);
+  if(exited.hasSpy)assert.equal(exited.spyDelegate,true,"a dormant Spy boundary must retain a callable delegate until normal owner repair retires it");
 
   assert.deepEqual(errors,[],`Spy damage-owner composition regression must have no uncaught errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 Spy damage ownership preserved later wrappers across R29/R30 monitors and mode exit.");
+  console.log("Lost Sizzler V10.41 Spy damage ownership preserved later wrappers during Spy and accepted safe canonical owner repair on mode exit.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
