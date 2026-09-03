@@ -58,6 +58,12 @@
     versionManifestUrl
   });
 
+  function onlineServicesConfigured(){
+    if(!delivery.onlineEnabled)return false;
+    const sources=onlineScriptSources();
+    return Boolean(window.ccgSupabase?.getClient||sources)
+  }
+
   function deliveryMessage(message){
     const text=String(message||"This action is unavailable in this build.");
     const note=document.getElementById("menu-note");
@@ -139,30 +145,34 @@
   function applyDeliveryUi(){
     if(!delivery.isDesktop)return;
     const apply=()=>{
-      const sources=onlineScriptSources();
-      const onlineAvailable=delivery.onlineEnabled&&Boolean(window.ccgSupabase?.getClient||sources);
-      if(onlineAvailable)return;
+      if(onlineServicesConfigured())return;
       const message=delivery.mode==="desktop-offline"?"Online services are disabled in this offline desktop build.":"Online services are not configured in this desktop build.";
       for(const id of ONLINE_BUTTONS){
         const button=document.getElementById(id);
         if(!button)continue;
-        button.disabled=true;
+        if(!button.disabled)button.disabled=true;
         button.setAttribute("aria-disabled","true");
-        button.title=message;
+        if(button.title!==message)button.title=message;
         button.dataset.ccgOnlineUnavailable="true"
       }
       const roomCode=document.getElementById("room-code");
-      if(roomCode){roomCode.disabled=true;roomCode.title=message}
+      if(roomCode){if(!roomCode.disabled)roomCode.disabled=true;if(roomCode.title!==message)roomCode.title=message}
       const howto=document.querySelector(".online-howto");
-      if(howto)howto.hidden=true;
+      if(howto&&!howto.hidden)howto.hidden=true;
       const weeklyStatus=document.getElementById("weekly-status");
-      if(weeklyStatus)weeklyStatus.textContent=message;
+      if(weeklyStatus&&weeklyStatus.textContent!==message)weeklyStatus.textContent=message;
       const authActions=document.getElementById("weekly-auth-actions");
-      if(authActions)authActions.hidden=true;
+      if(authActions&&!authActions.hidden)authActions.hidden=true;
       const note=document.getElementById("menu-note");
-      if(note&&delivery.mode==="desktop-offline")note.textContent="Offline desktop mode: Solo, Tutorial, 2P Split Screen, local saves, achievements and bundled game content remain available. Online multiplayer, account services and Weekly Vault are disabled."
+      const offlineNote="Offline desktop mode: Solo, Tutorial, 2P Split Screen, local saves, achievements and bundled game content remain available. Online multiplayer, account services and Weekly Vault are disabled.";
+      if(note&&delivery.mode==="desktop-offline"&&note.textContent!==offlineNote)note.textContent=offlineNote
     };
-    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",apply,{once:true});else apply()
+    const schedule=()=>setTimeout(apply,0);
+    apply();
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",schedule,{once:true});
+    window.addEventListener("focus",schedule);
+    window.addEventListener("ccg:auth-changed",schedule);
+    document.addEventListener("visibilitychange",()=>{if(!document.hidden)schedule()});
   }
 
   function installNetworkGateBridge(){
@@ -282,7 +292,7 @@
       if(button.id==="daily-btn")await refreshWeekly();
       replay(button)
     }catch(error){showActivationError(error)}
-    finally{button.disabled=false}
+    finally{button.disabled=delivery.isDesktop&&!onlineServicesConfigured()}
   }
 
   installNavigationBoundary();
