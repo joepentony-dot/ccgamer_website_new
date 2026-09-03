@@ -64,6 +64,20 @@ jobs:
       - name: Verify package asset boundary and hashes
         run: node scripts/build-lost-sizzler-package-manifest.mjs --check
 
+      - name: Prove website Supabase bootstrap cannot enter desktop package
+        run: |
+          set -euo pipefail
+          FIXTURE='arcade/lost-sizzler/js/ccg-supabase-config.js'
+          trap 'rm -f "$FIXTURE"' EXIT
+          printf '%s\n' '// package-boundary rejection fixture' > "$FIXTURE"
+          if node scripts/build-lost-sizzler-package-manifest.mjs --check; then
+            echo 'ERROR: desktop package unexpectedly accepted website Supabase bootstrap fixture.' >&2
+            exit 1
+          fi
+          rm -f "$FIXTURE"
+          trap - EXIT
+          node scripts/build-lost-sizzler-package-manifest.mjs --check
+
       - name: Verify staged package verifier regressions
         run: node scripts/verify-lost-sizzler-package-tree.mjs --self-test
 
