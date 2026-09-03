@@ -6,14 +6,15 @@ import {fileURLToPath} from "node:url";
 import {chromium} from "playwright";
 
 /*
- * Focused LS-SOLO-002 diagnostic.
+ * Focused LS-SOLO-002 retirement regression.
  *
- * R32 is a Spy lazy-loader, but its legacy monitor currently wakes every 20 ms
- * in every mode and calls ensureR59() globally. This contract proves the
- * monitor is still alive during ordinary Solo while Spy remains completely
- * inactive. It is observational only: no owner is replaced and no timer is
- * stopped here. The result is the evidence gate for retiring that cross-mode
- * poll in a later bounded change.
+ * R32 is a Spy lazy-loader. Its historical 20 ms monitor used to wake in every
+ * mode merely to keep global R59 available and notice a future Spy transition.
+ * The loader now performs one initial prerequisite pass and observes the
+ * authoritative mode attributes instead. This contract proves sustained Solo
+ * keeps that observer armed with no recurring R32 timer and no Spy owners loaded.
+ * The real Spy movement regression separately proves an actual Spy transition
+ * still triggers the complete lazy-load path.
  */
 
 const here=path.dirname(fileURLToPath(import.meta.url));
@@ -69,6 +70,10 @@ try{
       controllerId:String(window.CCGLostSizzlerModeRuntime?.state?.activeId||""),
       specialMode:String(document.body.dataset.specialMode||""),
       timer:Number(state.timer||0),
+      modeObserverInstalled:Boolean(state.modeObserverInstalled),
+      modeObserverUnsupported:Boolean(state.modeObserverUnsupported),
+      modeSignals:Number(state.modeSignals||0),
+      spyActivationSignals:Number(state.spyActivationSignals||0),
       r59Loaded:Boolean(state.r59Loaded),
       r59Loading:Boolean(state.r59Loading),
       r59Loads:Number(state.r59Loads||0),
@@ -89,10 +94,15 @@ try{
 
   console.log("R32_SOLO_MONITOR_DIAGNOSTIC "+JSON.stringify({baseline,sustained}));
 
-  assert.equal(baseline.controllerId,"dungeon-solo","R32 monitor diagnostic requires canonical Solo ownership");
-  assert.equal(sustained.controllerId,"dungeon-solo","R32 monitor diagnostic must remain in canonical Solo ownership");
+  assert.equal(baseline.controllerId,"dungeon-solo","R32 retirement diagnostic requires canonical Solo ownership");
+  assert.equal(sustained.controllerId,"dungeon-solo","R32 retirement diagnostic must remain in canonical Solo ownership");
   assert.equal(sustained.mode,"playing","Solo must remain actively playing during the observation window");
-  assert.ok(baseline.timer>0&&sustained.timer>0,"R32 legacy 20 ms monitor should be observable as continuously active before retirement");
+  assert.equal(baseline.timer,0,"R32 must not retain its historical 20 ms timer after installation");
+  assert.equal(sustained.timer,0,"R32 must remain timer-free throughout sustained ordinary Solo play");
+  assert.equal(baseline.modeObserverInstalled,true,"R32 mode-entry observer must be armed before sustained Solo observation");
+  assert.equal(sustained.modeObserverInstalled,true,"R32 mode-entry observer must remain armed while Solo runs without polling");
+  assert.equal(sustained.modeObserverUnsupported,false,"supported Chromium must not fall back from event-driven R32 mode observation");
+  assert.equal(sustained.spyActivationSignals,0,"ordinary Solo must not signal or activate Spy lazy owners");
   assert.equal(sustained.r59Loaded,true,"global R59 authority must already be loaded during Solo");
   assert.equal(sustained.r59Loading,false,"R59 must not be pending while Solo is stable");
   assert.equal(sustained.spyLoaded,false,"ordinary Solo must not load the Spy overhaul");
@@ -102,7 +112,7 @@ try{
   assert.equal(sustained.spyUiLoads,0,"ordinary Solo must not perform a Spy UI load");
   assert.equal(sustained.r58Loaded,false,"ordinary Solo must not load the R58 Spy overhaul");
 
-  console.log("Lost Sizzler R32 Solo monitor diagnostic passed: global 20 ms Spy-loader poll remains active while Spy owners stay unloaded.");
+  console.log("Lost Sizzler R32 Solo retirement regression passed: event-driven Spy loading stays armed with no cross-mode polling timer or Spy owner leakage.");
   await context.close();
 }finally{
   await browser.close().catch(()=>{});
