@@ -50,7 +50,7 @@
   }
 
   function soloDungeon(){
-    try{return document.body?.dataset?.runActive==="true"&&String(window.playMode||"")==="solo"&&!specialType()}catch(_){return false}
+    try{return document.body?.dataset?.runActive==="true"&&typeof playMode!=="undefined"&&String(playMode||"")==="solo"&&!specialType()}catch(_){return false}
   }
 
   function protectSoloInstall(){
