@@ -63,6 +63,7 @@ jobs:
           node --check arcade/lost-sizzler/js/version-check.js
           node --check arcade/lost-sizzler/js/network.js
           node --check arcade/lost-sizzler/tests/supabase-containment-contract.mjs
+          node --check arcade/lost-sizzler/tests/browser/supabase-containment-browser.mjs
           node --check admin/js/arcade-assets.js
           node --check games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js
           node --check games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js
@@ -163,3 +164,9 @@ jobs:
         run: |
           set -euo pipefail
           node arcade/quest/tests/quest-2-browser.mjs
+
+      - name: Exercise Lost Sizzler containment delivery modes in Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          node arcade/lost-sizzler/tests/browser/supabase-containment-browser.mjs
