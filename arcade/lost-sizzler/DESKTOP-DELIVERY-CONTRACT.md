@@ -111,24 +111,34 @@ Recommended for packaged builds.
 Purpose:
 
 - resolve release metadata such as `version.json` without assuming website hosting;
-- provide a stable packaged URL that the renderer can fetch;
+- resolve the packaged C64 collectible catalogue without assuming website-root `/games/` routing;
+- provide stable packaged URLs that the renderer can fetch;
 - keep asset resolution independent from the application installation directory.
 
-Current required call:
+Current required calls:
 
 ```text
 resolveLocalAsset("version.json", { kind: "version-manifest" })
+resolveLocalAsset("games/games.json", { kind: "collectible-catalogue" })
 ```
 
-The returned value must be fetchable by the renderer under the wrapper's security model.
+The returned values must be fetchable by the renderer under the wrapper's security model.
 
-If this function is not supplied, `versionManifestUrl` may be provided instead.
+If this function is not supplied, `versionManifestUrl` and `catalogueUrl` may be provided separately for their respective resources.
 
 ### `versionManifestUrl`
 
 Optional explicit packaged URL for `version.json`.
 
 A desktop build with neither `resolveLocalAsset()` nor `versionManifestUrl` must treat version-manifest fetching as unconfigured rather than falling back to an accidental website or `file://` assumption.
+
+### `catalogueUrl`
+
+Optional explicit packaged URL for the Lost Sizzler collectible catalogue when `resolveLocalAsset()` is not supplied.
+
+The URL must resolve to the packaged C64 catalogue input (normally `games/games.json`, or an approved generated C64-only derivative). It must not turn the downloadable build into a hidden dependency on the live website catalogue.
+
+A desktop build with neither `resolveLocalAsset()` nor `catalogueUrl` may continue running with the built-in C64 fallback pool, but that state is **not downloadable-build release acceptance**: the intended full packaged collectible catalogue is unavailable and must be treated as a release defect before distribution.
 
 ### `openExternal(url, meta)`
 
@@ -225,6 +235,7 @@ Offline launch must prove:
 - no Supabase bootstrap request;
 - no Supabase API request;
 - no remote Lost Sizzler media request;
+- the full intended C64 collectible catalogue resolves from the packaged/local asset boundary rather than the live website;
 - a deliberately pre-injected fake `window.ccgSupabase` bridge is quarantined before ordinary runtime use, its original `getClient()` is never called, and `RoomNetwork.getSupabase()` still resolves to `null`;
 - Feedback Submit and rating submission remain blocked before legacy direct-client handlers even when such a bridge was injected before boot;
 - Solo launch works;
@@ -277,20 +288,21 @@ Before a downloadable build can be called release-ready, test at least two packa
 
 1. Install/launch build A offline.
 2. Verify the delivery mode reports `desktop-offline`.
-3. Start Solo and create a later-floor save.
-4. Save & Quit, close the application completely and reopen it.
-5. Continue the saved run.
-6. Earn/persist a local achievement, C64 collection entry and dossier entry.
-7. Upgrade/replace with build B without manually copying browser/profile data.
-8. Launch build B offline and prove all Tier A state survived.
-9. Exercise generic Share and prove only the public CCG Lost Sizzler URL is exposed.
-10. Exercise every account/support/Exit link and prove none can replace the game renderer.
-11. Run build B in `desktop-online` with the intended online adapter.
-12. Create a multiplayer room and prove its invite points to the public CCG URL and retains room/mode parameters.
-13. Disable networking during an established desktop-online session and prove local Solo remains usable after returning to the menu/restarting as appropriate.
-14. Re-enable networking and separately regression-test account hydration, Weekly Vault, cloud-save reconciliation and supported multiplayer modes.
+3. Verify the full packaged C64 collectible catalogue resolves locally and explicit non-C64 catalogue rows cannot enter the collectible pool.
+4. Start Solo and create a later-floor save.
+5. Save & Quit, close the application completely and reopen it.
+6. Continue the saved run.
+7. Earn/persist a local achievement, C64 collection entry and dossier entry.
+8. Upgrade/replace with build B without manually copying browser/profile data.
+9. Launch build B offline and prove all Tier A state survived.
+10. Exercise generic Share and prove only the public CCG Lost Sizzler URL is exposed.
+11. Exercise every account/support/Exit link and prove none can replace the game renderer.
+12. Run build B in `desktop-online` with the intended online adapter.
+13. Create a multiplayer room and prove its invite points to the public CCG URL and retains room/mode parameters.
+14. Disable networking during an established desktop-online session and prove local Solo remains usable after returning to the menu/restarting as appropriate.
+15. Re-enable networking and separately regression-test account hydration, Weekly Vault, cloud-save reconciliation and supported multiplayer modes.
 
-Any loss of Tier A state, internal-URL disclosure, renderer escape through ordinary links, or offline dependency on Supabase is a **desktop release blocker**.
+Any loss of Tier A state, missing intended C64 catalogue, non-C64 collectible leakage, internal-URL disclosure, renderer escape through ordinary links, or offline dependency on Supabase is a **desktop release blocker**.
 
 ## Out of scope for this containment PR
 
@@ -311,4 +323,5 @@ Re-audit this contract when any of the following changes:
 - multiplayer invite/deep-link format;
 - local save/achievement/progression keys;
 - version-manifest loading;
+- collectible-catalogue loading or filtering;
 - the final integration of PR #1852 and PR #1860.
