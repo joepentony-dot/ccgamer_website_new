@@ -100,6 +100,64 @@ Before producing a Windows executable or portable ZIP, keep these boundaries exp
 - Weekly Vault, multiplayer, account login, profile achievement sync and cloud mirroring remain online enhancements; none may become a prerequisite for launching or completing the local game.
 - A packaged-build smoke test must be run with networking disabled from process launch, not merely after the title screen appears.
 
+## Desktop packaging readiness audit
+
+The current browser build is already well suited to sharing its core files with a desktop package: the game stylesheet, scripts, favicon, logo and normal Lost Sizzler assets are referenced with paths relative to the Lost Sizzler directory. The remaining blockers are delivery-shell and online-service assumptions rather than a need to fork the game engine.
+
+| Area | Current browser behaviour | Desktop requirement | Priority |
+| --- | --- | --- | --- |
+| Local game files | CSS/JS/assets use relative Lost Sizzler paths | Bundle unchanged where practical | Ready |
+| Website account links | `/auth/register.html` and `/auth/login.html` root-relative links | Open the real CCG website in the system browser, or hide when online services are disabled | Before desktop beta |
+| Exit links | `/games/ccg-games/` assumes website root | Desktop shell should close/return to launcher or open the website deliberately | Before desktop beta |
+| Supabase service loader | `/js/ccg-supabase-config.js` and `/js/ccg-supabase-client.js` assume website root | Delivery-aware online-services adapter | Before online desktop features |
+| Multiplayer fallback loader | `js/network.js` can independently load website Supabase scripts | Centralise through `CCGLostSizzlerOnlineServices.activate()` | Before online desktop features |
+| Weekly Vault startup | Module renders/refreshes at startup but does not load Supabase itself | Keep offline-safe; optionally hide/mark online-only until services are activated | Before desktop polish |
+| Solo cloud mirror | Local-first; observes browser save state and only syncs if Supabase exists | Preserve no-op behaviour offline; activate cloud service only after explicit online/account availability | Ready with persistence requirement |
+| Save/achievement persistence | Browser `localStorage` is authoritative for several local systems | Desktop runtime must use a stable application origin/profile across upgrades, or provide a controlled native persistence bridge/migration | Release blocker |
+| Weekly transient/pending state | Uses `sessionStorage`/`localStorage` | Preserve stable storage semantics if Weekly Vault is enabled in desktop build | Before online desktop features |
+| Version check | `fetch('version.json?...')` with cache bypass | Package must resolve `version.json` through its local asset scheme/server; do not rely on arbitrary `file://` fetch behaviour | Before desktop beta |
+| Browser deep links | Query/hash state such as `?mode=tutorial` and `#weekly-vault` is supported | Desktop launcher/protocol should preserve supported launch state if exposed | Later/optional |
+| External navigation | Browser can follow ordinary anchors naturally | Desktop webview must prevent accidental navigation away from the game and send approved external URLs to the system browser | Release blocker |
+| Network-offline launch | Browser naturally remains on the local page if assets are bundled | Desktop build must boot and complete Solo with all network access denied from process start | Release blocker |
+
+### Desktop persistence rule
+
+Do not ship a desktop build that merely relies on whatever origin a wrapper happens to assign on each install. The Lost Sizzler currently stores important local state in browser storage, including Solo save metadata, achievements, collected-game progress and other local records. The desktop runtime must therefore provide a stable, version-independent storage identity.
+
+Acceptable approaches include:
+
+1. host the packaged game under a fixed application origin/custom protocol whose storage partition remains stable across updates; or
+2. bridge critical saves/progression to an application-owned user-data directory and migrate existing web-storage records in a controlled way.
+
+Whichever packaging technology is chosen, installer upgrades and portable-build updates must be tested to prove that an existing Solo checkpoint, achievement set and permanent collection survive the update.
+
+### Delivery-aware navigation rule
+
+The web and desktop builds should share the same game code while the delivery layer decides what website-oriented controls do. Do not hard-code a second set of game screens for the executable.
+
+Recommended delivery modes:
+
+- `web` — existing website navigation/account behaviour;
+- `desktop-online` — local game plus explicitly enabled website account, Weekly Vault, cloud sync and multiplayer services;
+- `desktop-offline` — complete local game with online controls hidden, disabled or labelled as requiring a connection.
+
+The delivery mode should be established before game UI initialisation and exposed through one small adapter/config object. Game systems should query that adapter instead of detecting Electron/Tauri/browser brands throughout gameplay code.
+
+### Packaging regression gates
+
+A downloadable build is not release-ready until all of the following pass:
+
+- launch with the network adapter disabled before process start;
+- start and complete a fresh Solo run without any remote dependency;
+- Save & Quit, close the executable, reopen it and Continue successfully;
+- update/replace the packaged application and verify the save still exists;
+- verify local achievements and permanent C64 collection survive restart and update;
+- launch Tutorial and 2P Split Screen offline;
+- exercise all bundled music transitions and voice/SFX paths offline;
+- confirm no broken account/login/Exit navigation can replace the game page inside the desktop window;
+- when online services are enabled, confirm sign-in, Weekly Vault, cloud save and each multiplayer mode independently;
+- disable connectivity during an online feature and verify the base game/menu remains recoverable without corrupting local state.
+
 ## 5 September Storage recovery procedure
 
 1. Confirm Storage object downloads are working again before changing runtime references.
