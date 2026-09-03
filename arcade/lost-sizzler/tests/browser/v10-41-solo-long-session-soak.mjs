@@ -52,6 +52,7 @@ const ACTIVE_WINDOW_MS=60000;
 const PAUSE_CYCLES=12;
 const MIN_RATIO=0.90;
 const MAX_RATIO=1.10;
+const LIFECYCLE_EDGE_TIMEOUT_MS=10000;
 
 async function snapshot(page,label){
   return page.evaluate(label=>{
@@ -69,6 +70,35 @@ async function snapshot(page,label){
       recentLifecycle:api.lifecycleLog.slice(-16)
     };
   },label);
+}
+
+async function waitForLifecycleMode(page,expected,cycle,edge){
+  try{
+    await page.waitForFunction(expectedMode=>mode===expectedMode,expected,{timeout:LIFECYCLE_EDGE_TIMEOUT_MS});
+  }catch(error){
+    const state=await page.evaluate(()=>{
+      const r59=window.CCGLostSizzlerV141R59LiveRegressionFixes?.state||{};
+      const primitiveR59={};
+      for(const [key,value] of Object.entries(r59)){
+        if(value===null||["string","number","boolean"].includes(typeof value))primitiveR59[key]=value;
+      }
+      return{
+        mode:typeof mode==="string"?mode:null,
+        playMode:typeof playMode==="string"?playMode:null,
+        runActive:document.body.dataset.runActive||"",
+        releaseReady:document.body.dataset.releaseReady||"",
+        controllerId:window.CCGLostSizzlerModeRuntime?.state?.activeId||"",
+        hidden:document.hidden,
+        visibilityState:document.visibilityState,
+        hasFocus:document.hasFocus(),
+        activeElement:document.activeElement?.id||document.activeElement?.tagName||"",
+        r59:primitiveR59,
+        recentLifecycle:window.CCGLostSizzlerSoloDiagnostics?.lifecycleLog?.slice(-20)||[]
+      };
+    });
+    console.error("SOLO_LONG_SESSION_LIFECYCLE_TIMEOUT "+JSON.stringify({cycle:cycle+1,totalCycles:PAUSE_CYCLES,edge,expected,state}));
+    throw error;
+  }
 }
 
 function assertSustainedWindow(sample,label){
@@ -120,13 +150,15 @@ try{
   console.log(`[solo-long-soak] cross ${PAUSE_CYCLES} pause/focus lifecycle cycles`);
   const pauseBefore=await page.evaluate(()=>Number(window.CCGLostSizzlerV141R59LiveRegressionFixes.state.pauseBoundaries||0));
   for(let cycle=0;cycle<PAUSE_CYCLES;cycle++){
+    console.log(`[solo-long-soak] lifecycle cycle ${cycle+1}/${PAUSE_CYCLES}: enter pause`);
     await page.keyboard.press("KeyP");
-    await page.waitForFunction(()=>mode==="paused");
+    await waitForLifecycleMode(page,"paused",cycle,"enter-pause");
     await page.evaluate(()=>window.dispatchEvent(new Event("blur")));
     await page.waitForTimeout(120);
     await page.evaluate(()=>window.dispatchEvent(new Event("focus")));
+    console.log(`[solo-long-soak] lifecycle cycle ${cycle+1}/${PAUSE_CYCLES}: resume`);
     await page.keyboard.press("KeyP");
-    await page.waitForFunction(()=>mode==="playing");
+    await waitForLifecycleMode(page,"playing",cycle,"resume-play");
     await page.waitForTimeout(180);
   }
   const pauseAfter=await page.evaluate(()=>Number(window.CCGLostSizzlerV141R59LiveRegressionFixes.state.pauseBoundaries||0));
