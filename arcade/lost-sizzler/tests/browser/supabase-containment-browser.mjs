@@ -130,9 +130,13 @@ try{
       daily.disabled=false;
       daily.removeAttribute("aria-disabled");
       auth.hidden=false;
+      auth.classList.remove("hidden");
       window.dispatchEvent(new Event("ccg:auth-changed"));
     });
-    await page.waitForFunction(()=>document.getElementById("daily-btn")?.disabled===true&&document.getElementById("weekly-auth-actions")?.hidden===true);
+    await page.waitForFunction(()=>{
+      const daily=document.getElementById("daily-btn"),auth=document.getElementById("weekly-auth-actions");
+      return daily?.disabled===true&&auth?.hidden===true&&auth?.classList.contains("hidden")===true
+    });
 
     const beforeExit=page.url();
     await page.locator(".menu-exit-link").first().click();
