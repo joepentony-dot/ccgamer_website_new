@@ -76,22 +76,47 @@ function verifyPackageTree(manifestValue, root, label) {
   }
 }
 
+function restoreAfterPromotionFailure(roots) {
+  if (!fs.existsSync(roots.activeRoot) || !fs.existsSync(roots.backupRoot)) fail('Cannot restore the previous package after failed promotion because the active or backup package root is missing.');
+  if (fs.existsSync(roots.candidateRoot)) fail(`Cannot preserve the failed promoted package because candidate root already exists: ${roots.candidateRoot}`);
+  fs.renameSync(roots.activeRoot, roots.candidateRoot);
+  try {
+    fs.renameSync(roots.backupRoot, roots.activeRoot);
+  } catch (error) {
+    if (!fs.existsSync(roots.activeRoot) && fs.existsSync(roots.candidateRoot)) fs.renameSync(roots.candidateRoot, roots.activeRoot);
+    throw error;
+  }
+}
+
 function activateTransition(roots, activeManifest, candidateManifest, hooks = {}) {
   verifyPackageTree(activeManifest, roots.activeRoot, 'Active package');
   verifyPackageTree(candidateManifest, roots.candidateRoot, 'Candidate package');
   let activeMoved = false;
+  let candidatePromoted = false;
   try {
     fs.renameSync(roots.activeRoot, roots.backupRoot);
     activeMoved = true;
     hooks.afterActiveBackup?.();
     fs.renameSync(roots.candidateRoot, roots.activeRoot);
+    candidatePromoted = true;
     hooks.afterCandidatePromotion?.();
   } catch (error) {
-    if (activeMoved && !fs.existsSync(roots.activeRoot) && fs.existsSync(roots.backupRoot)) fs.renameSync(roots.backupRoot, roots.activeRoot);
+    if (candidatePromoted && fs.existsSync(roots.activeRoot) && fs.existsSync(roots.backupRoot) && !fs.existsSync(roots.candidateRoot)) {
+      restoreAfterPromotionFailure(roots);
+    } else if (activeMoved && !fs.existsSync(roots.activeRoot) && fs.existsSync(roots.backupRoot)) {
+      fs.renameSync(roots.backupRoot, roots.activeRoot);
+    }
     throw error;
   }
-  verifyPackageTree(candidateManifest, roots.activeRoot, 'Promoted active package');
-  verifyPackageTree(activeManifest, roots.backupRoot, 'Rollback backup package');
+
+  try {
+    verifyPackageTree(candidateManifest, roots.activeRoot, 'Promoted active package');
+    verifyPackageTree(activeManifest, roots.backupRoot, 'Rollback backup package');
+  } catch (error) {
+    restoreAfterPromotionFailure(roots);
+    verifyPackageTree(activeManifest, roots.activeRoot, 'Restored active package');
+    throw error;
+  }
 }
 
 function writeFixtureManifest(packageRoot, manifestPath) {
@@ -102,31 +127,62 @@ function writeFixtureManifest(packageRoot, manifestPath) {
   fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 }
 
+function createFixture(temp, name) {
+  const packages = path.join(temp, name, 'packages');
+  const activeRoot = path.join(packages, 'active');
+  const candidateRoot = path.join(packages, 'candidate');
+  const backupRoot = path.join(packages, 'previous');
+  const userDataRoot = path.join(temp, name, 'user-data');
+  fs.mkdirSync(activeRoot, { recursive: true });
+  fs.mkdirSync(candidateRoot, { recursive: true });
+  fs.mkdirSync(userDataRoot, { recursive: true });
+  fs.writeFileSync(path.join(activeRoot, 'runtime.txt'), 'build-a\n');
+  fs.writeFileSync(path.join(candidateRoot, 'runtime.txt'), 'build-b-different\n');
+  fs.writeFileSync(path.join(userDataRoot, 'solo-save.json'), '{"floor":7}\n');
+  const activeManifest = path.join(temp, name, 'build-a.manifest.json');
+  const candidateManifest = path.join(temp, name, 'build-b.manifest.json');
+  writeFixtureManifest(activeRoot, activeManifest);
+  writeFixtureManifest(candidateRoot, candidateManifest);
+  return {
+    roots: validateRoots(activeRoot, candidateRoot, backupRoot, userDataRoot),
+    activeManifest,
+    candidateManifest,
+    profileBefore: fs.readFileSync(path.join(userDataRoot, 'solo-save.json')),
+  };
+}
+
+function assertProfileUnchanged(fixture, label) {
+  const current = fs.readFileSync(path.join(fixture.roots.userDataRoot, 'solo-save.json'));
+  if (!current.equals(fixture.profileBefore)) fail(`Tier-A profile changed during ${label}.`);
+}
+
 function runSelfTest() {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'lost-sizzler-package-transition-'));
   try {
-    const packages = path.join(temp, 'packages');
-    const activeRoot = path.join(packages, 'active');
-    const candidateRoot = path.join(packages, 'candidate');
-    const backupRoot = path.join(packages, 'previous');
-    const userDataRoot = path.join(temp, 'user-data');
-    fs.mkdirSync(activeRoot, { recursive: true });
-    fs.mkdirSync(candidateRoot, { recursive: true });
-    fs.mkdirSync(userDataRoot, { recursive: true });
-    fs.writeFileSync(path.join(activeRoot, 'runtime.txt'), 'build-a\n');
-    fs.writeFileSync(path.join(candidateRoot, 'runtime.txt'), 'build-b-different\n');
-    fs.writeFileSync(path.join(userDataRoot, 'solo-save.json'), '{"floor":7}\n');
-    const profileBefore = fs.readFileSync(path.join(userDataRoot, 'solo-save.json'));
-    const activeManifest = path.join(temp, 'build-a.manifest.json');
-    const candidateManifest = path.join(temp, 'build-b.manifest.json');
-    writeFixtureManifest(activeRoot, activeManifest);
-    writeFixtureManifest(candidateRoot, candidateManifest);
-    const roots = validateRoots(activeRoot, candidateRoot, backupRoot, userDataRoot);
-    activateTransition(roots, activeManifest, candidateManifest);
-    if (fs.readFileSync(path.join(activeRoot, 'runtime.txt'), 'utf8') !== 'build-b-different\n') fail('Build B was not promoted.');
-    if (fs.readFileSync(path.join(backupRoot, 'runtime.txt'), 'utf8') !== 'build-a\n') fail('Build A was not retained as rollback backup.');
-    if (!fs.readFileSync(path.join(userDataRoot, 'solo-save.json')).equals(profileBefore)) fail('Tier-A profile changed during Build A to Build B transition.');
-    console.log('Lost Sizzler package transition self-test passed: distinct manifests activate atomically while Tier-A profile remains outside the transaction.');
+    const success = createFixture(temp, 'success');
+    activateTransition(success.roots, success.activeManifest, success.candidateManifest);
+    if (fs.readFileSync(path.join(success.roots.activeRoot, 'runtime.txt'), 'utf8') !== 'build-b-different\n') fail('Build B was not promoted.');
+    if (fs.readFileSync(path.join(success.roots.backupRoot, 'runtime.txt'), 'utf8') !== 'build-a\n') fail('Build A was not retained as rollback backup.');
+    assertProfileUnchanged(success, 'Build A to Build B transition');
+
+    const failed = createFixture(temp, 'post-verify-failure');
+    let rejected = false;
+    try {
+      activateTransition(failed.roots, failed.activeManifest, failed.candidateManifest, {
+        afterCandidatePromotion() {
+          fs.appendFileSync(path.join(failed.roots.activeRoot, 'runtime.txt'), 'corrupt-after-promotion\n');
+        },
+      });
+    } catch (error) {
+      rejected = /Promoted active package failed cryptographic package verification/.test(String(error?.message || error));
+    }
+    if (!rejected) fail('A post-promotion cryptographic failure was not rejected.');
+    if (fs.readFileSync(path.join(failed.roots.activeRoot, 'runtime.txt'), 'utf8') !== 'build-a\n') fail('Build A was not restored after post-promotion verification failed.');
+    if (!fs.existsSync(failed.roots.candidateRoot)) fail('Failed Build B was not preserved in the candidate slot for diagnosis.');
+    if (fs.existsSync(failed.roots.backupRoot)) fail('Rollback backup should be consumed when Build A is restored.');
+    assertProfileUnchanged(failed, 'post-promotion verification rollback');
+
+    console.log('Lost Sizzler package transition self-test passed: distinct manifests activate atomically, failed promoted builds restore Build A, and Tier-A profile remains outside the transaction.');
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
