@@ -13,7 +13,9 @@
  * cooperative owner may legitimately sit above R60 after a pause boundary, so
  * re-running an outermost-marker-only installer would otherwise add another R60
  * movement/update wrapper every few transitions. The protected delegate keeps
- * the existing R60 owner when it is already present anywhere in the ancestry.
+ * the existing R60 owner when it is already present anywhere in the ancestry,
+ * but only while a real Solo Dungeon run is active. Every special mode and all
+ * non-Solo lifecycle states fall straight through to the original R60 installer.
  */
 (()=>{
   "use strict";
@@ -47,12 +49,17 @@
     try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")}catch(_){return""}
   }
 
+  function soloDungeon(){
+    try{return document.body?.dataset?.runActive==="true"&&String(window.playMode||"")==="solo"&&!specialType()}catch(_){return false}
+  }
+
   function protectSoloInstall(){
     const live=window.CCGLostSizzlerV141R60LivePlayIntegrity;
     if(!live||typeof live.install!=="function")return false;
     if(live.install.__ccgV141R60ChainAwareMaintenance===true){state.soloInstallProtected=true;return true}
     const source=live.install;
     const protectedInstall=function installV141R60ChainAwareMaintenance(){
+      if(!soloDungeon())return source.apply(this,arguments);
       const moveCurrent=window.movePlayer,updateCurrent=window.update;
       const moveOwned=chainHasMarker(moveCurrent,"__ccgV141R60CadenceSeal");
       const updateOwned=chainHasMarker(updateCurrent,"__ccgV141R60TimeSmoothing");
@@ -63,9 +70,7 @@
         live.wrapStartWorld?.();
         if(moveOwned){state.soloMoveReuse++;if(live.state)live.state.moveWrapped=true}else live.wrapMovement?.();
         live.wrapEnvironmentalDamage?.();
-        if(!specialType()){
-          if(updateOwned){state.soloUpdateReuse++;if(live.state)live.state.updateWrapped=true}else live.wrapUpdate?.()
-        }
+        if(updateOwned){state.soloUpdateReuse++;if(live.state)live.state.updateWrapped=true}else live.wrapUpdate?.();
         live.ensureCcgEnemy?.();
         if(live.state){
           live.state.installed=Boolean(live.state.moveWrapped&&live.state.startWrapped&&live.state.hurtWrapped);
@@ -118,5 +123,5 @@
   if(!state.retired)state.timer=setInterval(tick,INSTALL_MS);
   addEventListener("pagehide",retire,{once:true});
 
-  window.CCGLostSizzlerV141R60HordeOwnerComposition={compose,chainContains,chainHasMarker,protectSoloInstall,retire,get state(){return state}};
+  window.CCGLostSizzlerV141R60HordeOwnerComposition={compose,chainContains,chainHasMarker,soloDungeon,protectSoloInstall,retire,get state(){return state}};
 })();
