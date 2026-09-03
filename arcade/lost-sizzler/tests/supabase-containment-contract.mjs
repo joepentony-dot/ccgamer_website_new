@@ -7,6 +7,7 @@ const assert=(condition,message)=>{if(!condition)throw new Error(`Containment co
 
 const index=read("arcade/lost-sizzler/index.html");
 const gate=read("arcade/lost-sizzler/js/online-services-gate.js");
+const main=read("arcade/lost-sizzler/js/game-main.js");
 const weeklyPresentation=read("arcade/lost-sizzler/js/v10-6-menu-runtime-fix.js");
 const audio=read("arcade/lost-sizzler/js/admin-audio-overrides.js");
 const inventory=read("arcade/lost-sizzler/SUPABASE-MIGRATION-INVENTORY.md");
@@ -42,6 +43,12 @@ assert(gate.includes('new MutationObserver(()=>{if(needsReassertion())schedule()
 assert(gate.includes('window.addEventListener("ccg:auth-changed",scheduleSettled)'),"desktop unavailable state must be reasserted after asynchronous auth refreshes");
 assert(gate.includes('anchor.classList.contains("menu-exit-link")'),"desktop Exit links must remain under the delivery boundary");
 assert(gate.includes('headerQuit&&menuVisible'),"title-screen QUIT must remain under the desktop delivery boundary");
+
+assert(main.includes('function questShareUrl()'),"generic game sharing must have a delivery-aware URL helper");
+assert(main.includes('delivery?.isDesktop&&typeof delivery.websiteUrl==="function"'),"desktop sharing must use the delivery adapter instead of the packaged page URL");
+assert(main.includes('delivery.websiteUrl("/arcade/lost-sizzler/")'),"desktop sharing must resolve to the public Lost Sizzler website URL");
+assert(main.includes('const url=questShareUrl();'),"shareQuest must consume the delivery-aware public URL");
+assert(main.includes('navigator.clipboard.writeText(url)'),"clipboard sharing must use the delivery-aware share URL");
 
 assert(weeklyPresentation.includes('node?.dataset?.ccgOnlineUnavailable==="true"'),"Weekly presentation must recognise the delivery gate unavailable marker");
 assert(weeklyPresentation.includes('const next=deliveryUnavailable(node)||Boolean(value)'),"Weekly presentation must not re-enable a delivery-disabled Weekly control");
