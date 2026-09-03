@@ -137,12 +137,14 @@ function verifyIntegrity(roots, integrityPath) {
   if (JSON.stringify(actual.files) !== JSON.stringify(expected.files)) fail('Handoff integrity file inventory does not match the current handoff tree.');
   return expected;
 }
-function writeJson(file, value, handoffRoot) {
+function writeIntegrityRecord(file, value, roots) {
   const absolute = path.resolve(file);
-  if (isInside(handoffRoot, absolute)) fail(`Integrity record must remain outside the handoff tree to avoid recursive self-inclusion: ${absolute}`);
+  if (isInside(roots.handoffRoot, absolute)) fail(`Integrity record must remain outside the handoff tree to avoid recursive self-inclusion: ${absolute}`);
+  if (isInside(roots.userDataRoot, absolute)) fail(`Integrity record must remain outside the Tier-A user-data root: ${absolute}`);
   assertNoSymlinkComponents(absolute, 'integrity output');
+  if (fs.existsSync(absolute)) fail(`Refusing to overwrite existing handoff integrity evidence: ${absolute}`);
   fs.mkdirSync(path.dirname(absolute), { recursive: true });
-  fs.writeFileSync(absolute, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
+  fs.writeFileSync(absolute, `${JSON.stringify(value, null, 2)}\n`, { encoding: 'utf8', flag: 'wx' });
 }
 function parseArgs(argv) {
   const args = new Map();
@@ -183,24 +185,35 @@ function runSelfTest() {
     const roots = validateHandoff(handoff, userData);
     const integrity = buildIntegrity(roots);
     const record = path.join(temp, 'handoff-integrity.json');
-    writeJson(record, integrity, roots.handoffRoot);
+    writeIntegrityRecord(record, integrity, roots);
     verifyIntegrity(roots, record);
     if (sha256(fs.readFileSync(path.join(userData, 'solo-save.json'))) !== profileBefore) fail('Tier-A profile changed during integrity generation or verification.');
+
+    let overwriteRejected = false;
+    try { writeIntegrityRecord(record, integrity, roots); } catch { overwriteRejected = true; }
+    if (!overwriteRejected) fail('Existing handoff integrity evidence must not be overwritten.');
+
+    let recursiveOutputRejected = false;
+    try { writeIntegrityRecord(path.join(handoff, 'integrity.json'), integrity, roots); } catch { recursiveOutputRejected = true; }
+    if (!recursiveOutputRejected) fail('Integrity record output inside the handoff must be rejected.');
+
+    let profileOutputRejected = false;
+    const profileOutput = path.join(userData, 'integrity.json');
+    try { writeIntegrityRecord(profileOutput, integrity, roots); } catch { profileOutputRejected = true; }
+    if (!profileOutputRejected) fail('Integrity record output inside Tier-A user data must be rejected.');
+    if (fs.existsSync(profileOutput)) fail('Rejected Tier-A integrity output was unexpectedly created.');
+    if (sha256(fs.readFileSync(path.join(userData, 'solo-save.json'))) !== profileBefore) fail('Tier-A profile changed while rejecting an unsafe integrity output path.');
 
     fs.appendFileSync(path.join(application, 'runtime.txt'), 'tamper');
     let tamperRejected = false;
     try { verifyIntegrity(roots, record); } catch { tamperRejected = true; }
     if (!tamperRejected) fail('Handoff byte mutation must invalidate the integrity record.');
 
-    let recursiveOutputRejected = false;
-    try { writeJson(path.join(handoff, 'integrity.json'), integrity, roots.handoffRoot); } catch { recursiveOutputRejected = true; }
-    if (!recursiveOutputRejected) fail('Integrity record output inside the handoff must be rejected.');
-
     let overlapRejected = false;
     try { validateHandoff(handoff, path.join(handoff, 'user-data')); } catch { overlapRejected = true; }
     if (!overlapRejected) fail('Handoff/Tier-A profile overlap must be rejected.');
 
-    console.log('Lost Sizzler handoff integrity self-test passed: every handoff file is SHA-256 bound, tampering is rejected, and Tier-A persistence remains external.');
+    console.log('Lost Sizzler handoff integrity self-test passed: every handoff file is SHA-256 bound, evidence cannot overwrite or enter Tier-A persistence, tampering is rejected, and Tier-A persistence remains external.');
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
@@ -217,7 +230,7 @@ try {
     } else {
       const integrity = buildIntegrity(roots);
       const output = args.get('--output');
-      if (output) writeJson(output, integrity, roots.handoffRoot);
+      if (output) writeIntegrityRecord(output, integrity, roots);
       else process.stdout.write(`${JSON.stringify(integrity, null, 2)}\n`);
     }
   }
