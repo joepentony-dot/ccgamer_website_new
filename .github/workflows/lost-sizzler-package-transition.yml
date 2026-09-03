@@ -1,0 +1,38 @@
+name: Lost Sizzler Package Transition
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/activate-lost-sizzler-package-transition.mjs'
+      - 'scripts/verify-lost-sizzler-package-tree.mjs'
+      - '.github/workflows/lost-sizzler-package-transition.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/activate-lost-sizzler-package-transition.mjs'
+      - 'scripts/verify-lost-sizzler-package-tree.mjs'
+      - '.github/workflows/lost-sizzler-package-transition.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  distinct-manifest-transition:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate transition tooling syntax
+        run: |
+          node --check scripts/activate-lost-sizzler-package-transition.mjs
+          node --check scripts/verify-lost-sizzler-package-tree.mjs
+
+      - name: Prove distinct-manifest atomic transition
+        run: node scripts/activate-lost-sizzler-package-transition.mjs --self-test
