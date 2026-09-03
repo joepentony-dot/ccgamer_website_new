@@ -116,11 +116,25 @@ function runSelfTest() {
     const userDataRoot = path.join(temp, 'profile');
     fs.mkdirSync(packageRoot);
     fs.mkdirSync(userDataRoot);
+
+    fs.writeFileSync(path.join(packageRoot, 'runtime.js'), 'build-a\n');
+    fs.writeFileSync(path.join(packageRoot, 'removed-in-build-b.txt'), 'only-build-a\n');
+    const buildAHash = sha256File(path.join(packageRoot, 'runtime.js'));
+
     fs.writeFileSync(path.join(userDataRoot, 'solo-save.json'), '{"floor":7}\n');
     fs.writeFileSync(path.join(userDataRoot, 'achievements.json'), '{"earned":["first"]}\n');
     const snapshot = snapshotUserData(userDataRoot);
     assertDisjointRoots(packageRoot, userDataRoot);
-    fs.writeFileSync(path.join(packageRoot, 'runtime.js'), 'build-b\n');
+
+    fs.rmSync(packageRoot, { recursive: true, force: true });
+    fs.mkdirSync(packageRoot);
+    fs.writeFileSync(path.join(packageRoot, 'runtime.js'), 'build-b-with-different-runtime\n');
+    fs.writeFileSync(path.join(packageRoot, 'added-in-build-b.txt'), 'only-build-b\n');
+    const buildBHash = sha256File(path.join(packageRoot, 'runtime.js'));
+
+    if (buildAHash === buildBHash) fail('Self-test expected Build A and Build B runtime hashes to differ.');
+    if (fs.existsSync(path.join(packageRoot, 'removed-in-build-b.txt'))) fail('Self-test expected Build A-only package content to be removed.');
+    if (!fs.existsSync(path.join(packageRoot, 'added-in-build-b.txt'))) fail('Self-test expected Build B-only package content to exist.');
     verifySnapshot(userDataRoot, snapshot);
 
     let overlapRejected = false;
@@ -139,7 +153,7 @@ function runSelfTest() {
       mutationRejected = true;
     }
     if (!mutationRejected) fail('Self-test expected changed user data to fail verification.');
-    console.log('Lost Sizzler update persistence boundary self-test passed.');
+    console.log('Lost Sizzler update persistence boundary self-test passed: distinct Build A -> Build B replacement preserved external profile state.');
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
