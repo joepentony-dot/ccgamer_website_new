@@ -140,7 +140,7 @@
     if(!delivery.isDesktop)return;
     const apply=()=>{
       const sources=onlineScriptSources();
-      const onlineAvailable=delivery.onlineEnabled&&Boolean(sources);
+      const onlineAvailable=delivery.onlineEnabled&&Boolean(window.ccgSupabase?.getClient||sources);
       if(onlineAvailable)return;
       const message=delivery.mode==="desktop-offline"?"Online services are disabled in this offline desktop build.":"Online services are not configured in this desktop build.";
       for(const id of ONLINE_BUTTONS){
@@ -216,13 +216,16 @@
     if(state.active&&window.ccgSupabase?.getClient)return window.ccgSupabase.getClient();
     if(state.promise)return state.promise;
     if(!delivery.onlineEnabled)throw new Error("Online services are disabled in this desktop build.");
-    const sources=onlineScriptSources();
-    if(!sources)throw new Error("This desktop build has not configured its online-services adapter.");
     state.activating=true;state.reason=String(reason||"online-feature");state.lastError="";
     state.promise=(async()=>{
-      await loadScript(sources.config,"config");
-      await loadScript(sources.client,"client");
-      const bridge=window.ccgSupabase;
+      let bridge=window.ccgSupabase;
+      if(!bridge?.getClient){
+        const sources=onlineScriptSources();
+        if(!sources)throw new Error("This desktop build has not configured its online-services adapter.");
+        await loadScript(sources.config,"config");
+        await loadScript(sources.client,"client");
+        bridge=window.ccgSupabase
+      }
       if(!bridge?.getClient)throw new Error("CCG online services did not initialise.");
       const client=await bridge.getClient();
       if(!client)throw new Error("CCG online services are unavailable.");
