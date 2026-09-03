@@ -25,6 +25,11 @@
     catch(_){return WEBSITE_ORIGIN}
   }
 
+  function publicGameUrl(){
+    if(deliveryMode!=="web")return websiteUrl("/arcade/lost-sizzler/");
+    return String(window.location?.href||websiteUrl("/arcade/lost-sizzler/"))
+  }
+
   function onlineScriptSources(){
     if(deliveryMode==="web")return{
       config:`/js/ccg-supabase-config.js?v=${encodeURIComponent(RELEASE)}`,
@@ -54,9 +59,42 @@
     isDesktop:deliveryMode!=="web",
     onlineEnabled:deliveryMode!=="desktop-offline",
     websiteUrl,
+    publicGameUrl,
     onlineScriptSources,
     versionManifestUrl
   });
+
+  function sanitizeClient(client){
+    if(!delivery.isDesktop||!client?.functions||typeof client.functions.invoke!=="function")return client;
+    const functions=client.functions;
+    if(functions.__ccgLostSizzlerDesktopPayloadGuard===true)return client;
+    try{
+      const originalInvoke=functions.invoke.bind(functions);
+      functions.invoke=function(name,options){
+        let next=options;
+        const body=options?.body;
+        if(body&&typeof body==="object"&&!Array.isArray(body)&&Object.prototype.hasOwnProperty.call(body,"page_url")){
+          next={...options,body:{...body,page_url:publicGameUrl()}}
+        }
+        return originalInvoke(name,next)
+      };
+      Object.defineProperty(functions,"__ccgLostSizzlerDesktopPayloadGuard",{value:true,configurable:true});
+    }catch(error){console.warn("[Lost Sizzler] desktop online payload guard could not wrap client functions",error)}
+    return client
+  }
+
+  function installClientSanitizer(){
+    if(!delivery.isDesktop)return false;
+    const bridge=window.ccgSupabase;
+    if(!bridge||typeof bridge.getClient!=="function")return false;
+    if(bridge.__ccgLostSizzlerDesktopClientGuard===true)return true;
+    try{
+      const originalGetClient=bridge.getClient.bind(bridge);
+      bridge.getClient=async function(){return sanitizeClient(await originalGetClient())};
+      Object.defineProperty(bridge,"__ccgLostSizzlerDesktopClientGuard",{value:true,configurable:true});
+      return true
+    }catch(error){console.warn("[Lost Sizzler] desktop online client guard could not wrap getClient",error);return false}
+  }
 
   function onlineServicesConfigured(){
     if(!delivery.onlineEnabled)return false;
@@ -284,7 +322,9 @@
         bridge=window.ccgSupabase
       }
       if(!bridge?.getClient)throw new Error("CCG online services did not initialise.");
-      const client=await bridge.getClient();
+      installClientSanitizer();
+      bridge=window.ccgSupabase;
+      const client=sanitizeClient(await bridge.getClient());
       if(!client)throw new Error("CCG online services are unavailable.");
       try{
         if(typeof bridge.waitForSessionReady==="function")await bridge.waitForSessionReady({timeoutMs:5000});
@@ -323,6 +363,15 @@
     setTimeout(()=>button.click(),0)
   }
 
+  function replaySubmit(form){
+    if(!form?.isConnected)return;
+    form.dataset.ccgOnlineGateReplay="true";
+    setTimeout(()=>{
+      if(typeof form.requestSubmit==="function")form.requestSubmit();
+      else form.dispatchEvent(new Event("submit",{bubbles:true,cancelable:true}))
+    },0)
+  }
+
   async function intercept(event){
     const button=event.target?.closest?.("button");
     if(!button||!ONLINE_BUTTONS.has(button.id))return;
@@ -342,12 +391,46 @@
     finally{button.disabled=delivery.isDesktop&&!onlineServicesConfigured()}
   }
 
+  async function interceptExplicitOnlineAction(event){
+    if(event.type==="submit"){
+      const form=event.target;
+      if(!(form instanceof HTMLFormElement)||form.id!=="v104-feedback-form")return;
+      if(form.dataset.ccgOnlineGateReplay==="true"){
+        delete form.dataset.ccgOnlineGateReplay;
+        return
+      }
+      if(window.ccgSupabase?.getClient)return;
+      event.preventDefault();event.stopImmediatePropagation();
+      try{await activate("feedback-submit");replaySubmit(form)}
+      catch(error){showActivationError(error)}
+      return
+    }
+    if(event.type!=="click")return;
+    const ratingButton=event.target?.closest?.("#ccg-rating-panel [data-rating]");
+    if(!ratingButton)return;
+    if(ratingButton.dataset.ccgOnlineGateReplay==="true"){
+      delete ratingButton.dataset.ccgOnlineGateReplay;
+      return
+    }
+    if(window.ccgSupabase?.getClient)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    try{await activate("rating-submit");replay(ratingButton)}
+    catch(error){showActivationError(error)}
+  }
+
+  installClientSanitizer();
   installNavigationBoundary();
   installVersionManifestBoundary();
   applyDeliveryUi();
   installNetworkGateBridge();
   document.addEventListener("click",intercept,true);
-  window.addEventListener("pagehide",()=>document.removeEventListener("click",intercept,true),{once:true});
+  document.addEventListener("click",interceptExplicitOnlineAction,true);
+  document.addEventListener("submit",interceptExplicitOnlineAction,true);
+  window.addEventListener("pagehide",()=>{
+    document.removeEventListener("click",intercept,true);
+    document.removeEventListener("click",interceptExplicitOnlineAction,true);
+    document.removeEventListener("submit",interceptExplicitOnlineAction,true)
+  },{once:true});
 
   function activateWeeklyReturn(){
     if(location.hash!=="#weekly-vault")return;
@@ -361,6 +444,7 @@
     isDesktop:delivery.isDesktop,
     onlineEnabled:delivery.onlineEnabled,
     websiteUrl,
+    publicGameUrl,
     openExternal,
     exit:exitDelivery,
     onlineScriptSources,
