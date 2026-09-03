@@ -19,7 +19,7 @@ function stripTicks(value) {
   return text.startsWith('`') && text.endsWith('`') ? text.slice(1, -1) : text;
 }
 function parseArgs(argv) {
-  const out = { manifest: defaultManifest, output: '', storageBaseUrl: '', limit: 1, probe: false, report: '', help: false };
+  const out = { manifest: defaultManifest, output: '', storageBaseUrl: '', limit: 1, probe: false, report: '', plan: false, help: false };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === '--manifest') out.manifest = path.resolve(argv[++i] || '');
@@ -28,13 +28,14 @@ function parseArgs(argv) {
     else if (arg === '--limit') out.limit = Number(argv[++i]);
     else if (arg === '--probe') out.probe = true;
     else if (arg === '--report') out.report = path.resolve(argv[++i] || '');
+    else if (arg === '--plan') out.plan = true;
     else if (arg === '--help' || arg === '-h') out.help = true;
     else fail(`Unknown argument: ${arg}`);
   }
   return out;
 }
 function usage() {
-  console.log(`Lost Sizzler enabled Storage recovery downloader\n\nUsage:\n  node scripts/recover-lost-sizzler-enabled-storage.mjs \\\n    --storage-base-url <public bucket root> \\\n    --output <directory> [--limit 1..16] [--probe] [--report <file>]\n\nSafety rules:\n  - reads only the 16 ENABLED objects frozen in SUPABASE-STORAGE-RECOVERY-MANIFEST.md;\n  - defaults to --limit 1 so availability can be tested before recovering all 16;\n  - never downloads disabled counterparts;\n  - refuses to overwrite an existing recovered file;\n  - verifies downloaded byte size and SHA-256 immediately;\n  - optional --probe runs ffprobe and requires an audio stream;\n  - performs no Supabase database or Storage mutation.`);
+  console.log(`Lost Sizzler enabled Storage recovery downloader\n\nUsage:\n  node scripts/recover-lost-sizzler-enabled-storage.mjs \\\n    --storage-base-url <public bucket root> \\\n    --output <directory> [--limit 1..16] [--probe] [--report <file>]\n\n  node scripts/recover-lost-sizzler-enabled-storage.mjs \\\n    --storage-base-url <public bucket root> --plan [--limit 1..16]\n\nSafety rules:\n  - reads only the 16 ENABLED objects frozen in SUPABASE-STORAGE-RECOVERY-MANIFEST.md;\n  - defaults to --limit 1 so availability can be tested before recovering all 16;\n  - --plan performs no network request and creates no output directory or report;\n  - never downloads disabled counterparts;\n  - refuses to overwrite an existing recovered file;\n  - verifies downloaded byte size and SHA-256 immediately;\n  - optional --probe runs ffprobe and requires an audio stream;\n  - performs no Supabase database or Storage mutation.`);
 }
 function parseManifest(file) {
   const text = fs.readFileSync(file, 'utf8');
@@ -86,6 +87,17 @@ function normalizeBaseUrl(value) {
   if (parsed.search || parsed.hash) fail('Storage base URL must not contain query or fragment data.');
   return parsed.href.endsWith('/') ? parsed.href : `${parsed.href}/`;
 }
+function recoveryUrl(baseUrl, storagePath) {
+  return new URL(storagePath.split('/').map(segment => encodeURIComponent(segment)).join('/'), baseUrl).href;
+}
+function printPlan(rows, baseUrl) {
+  const selectedBytes = rows.reduce((sum, row) => sum + row.expectedBytes, 0);
+  console.log(`Lost Sizzler enabled Storage recovery plan: ${rows.length}/${EXPECTED_COUNT} objects, ${selectedBytes} expected bytes.`);
+  for (const row of rows) {
+    console.log(`PLAN ${String(row.number).padStart(2, '0')} | row ${row.enabledRow} | ${row.playlist}/${row.originalFile} | ${row.expectedBytes} | ${recoveryUrl(baseUrl, row.enabledPath)}`);
+  }
+  console.log('PLAN ONLY: zero network requests; zero files created; enabled generation only.');
+}
 function sha256File(file) {
   const hash = crypto.createHash('sha256');
   hash.update(fs.readFileSync(file));
@@ -132,14 +144,19 @@ async function main() {
   if (args.help) { usage(); return; }
   if (!Number.isInteger(args.limit) || args.limit < 1 || args.limit > EXPECTED_COUNT) fail(`--limit must be an integer from 1 to ${EXPECTED_COUNT}.`);
   const rows = parseManifest(args.manifest).slice(0, args.limit);
-  const root = safeOutputRoot(args.output);
   const baseUrl = normalizeBaseUrl(args.storageBaseUrl);
+  if (args.plan) {
+    if (args.output || args.report || args.probe) fail('--plan cannot be combined with --output, --report or --probe.');
+    printPlan(rows, baseUrl);
+    return;
+  }
+  const root = safeOutputRoot(args.output);
   const results = [];
 
   for (const row of rows) {
     const filename = path.basename(row.enabledPath);
     const destination = path.join(root, filename);
-    const url = new URL(row.enabledPath.split('/').map(segment => encodeURIComponent(segment)).join('/'), baseUrl).href;
+    const url = recoveryUrl(baseUrl, row.enabledPath);
     const bytes = await downloadTo(url, destination);
     const sha256 = sha256File(destination);
     const sizeMatches = bytes === row.expectedBytes;
