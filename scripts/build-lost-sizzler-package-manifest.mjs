@@ -48,6 +48,11 @@ function toPosix(relativePath) {
   return relativePath.split(path.sep).join('/');
 }
 
+function comparePortablePath(a, b) {
+  if (a === b) return 0;
+  return a < b ? -1 : 1;
+}
+
 function classify(relativePath, fallback) {
   const normalized = toPosix(relativePath).toLowerCase();
   if (normalized.startsWith('arcade/lost-sizzler/assets/audio/')) return 'audio';
@@ -84,7 +89,7 @@ async function collectFiles(source, fallbackClassification) {
   const results = [];
   async function walk(directory, relativeDirectory) {
     const dirents = await fs.readdir(directory, { withFileTypes: true });
-    dirents.sort((a, b) => a.name.localeCompare(b.name));
+    dirents.sort((a, b) => comparePortablePath(a.name, b.name));
     for (const dirent of dirents) {
       const childAbsolute = path.join(directory, dirent.name);
       const childRelative = toPosix(path.join(relativeDirectory, dirent.name));
@@ -144,7 +149,7 @@ async function buildManifest() {
   }
 
   const entries = [];
-  for (const file of [...unique.values()].sort((a, b) => a.relative.localeCompare(b.relative))) {
+  for (const file of [...unique.values()].sort((a, b) => comparePortablePath(a.relative, b.relative))) {
     entries.push(await hashFile(file));
   }
 
@@ -188,6 +193,11 @@ async function main() {
     const version = manifest.files.find((entry) => entry.path === 'arcade/lost-sizzler/version.json');
     if (!version) {
       throw new Error('Package manifest must include arcade/lost-sizzler/version.json');
+    }
+    for (let index = 1; index < manifest.files.length; index += 1) {
+      if (comparePortablePath(manifest.files[index - 1].path, manifest.files[index].path) > 0) {
+        throw new Error(`Package manifest paths are not portably sorted at: ${manifest.files[index].path}`);
+      }
     }
     console.log(`Lost Sizzler desktop package manifest OK: ${manifest.fileCount} files, ${manifest.totalBytes} bytes, release ${manifest.releaseIdentifier}.`);
     return;
