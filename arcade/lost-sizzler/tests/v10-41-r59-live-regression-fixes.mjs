@@ -52,11 +52,11 @@ assert.match(r59,/api\.stableLoop=stableLoopR59/,"r59 must replace the r29 expor
 assert.match(r59,/normaliseAudioRate\(\)/,"pause boundaries must also normalise any accidentally altered HTML audio playback rate");
 
 // Solo Dungeon alone consumes active visible wall time through bounded canonical
-// substeps. This replaces the old one-update 45 ms clamp that permanently lost
-// simulation time below ~22 rendered FPS, without changing Horde or Spy cadence.
+// substeps. The expanded 1080 ms / 24-step budget covers the reproduced ~1 s
+// visible stalls while retaining a hard ceiling and 45 ms canonical slices.
 assert.match(r59,/const SOLO_MAX_STEP_MS=45;/,"Solo wall-time catch-up must preserve the established maximum canonical update step");
-assert.match(r59,/const SOLO_MAX_VISIBLE_FRAME_MS=540;/,"Solo catch-up must have a hard per-render wall-time budget large enough for reproduced low-FPS visible gaps");
-assert.match(r59,/const SOLO_MAX_STEPS=12;/,"Solo catch-up must have a hard substep-count budget while preserving 45 ms canonical slices");
+assert.match(r59,/const SOLO_MAX_VISIBLE_FRAME_MS=1080;/,"Solo catch-up must have a hard per-render wall-time budget covering the reproduced post-lifecycle visible gaps");
+assert.match(r59,/const SOLO_MAX_STEPS=24;/,"Solo catch-up must retain a hard substep-count budget while preserving 45 ms canonical slices");
 assert.match(r59,/window\.CCGLostSizzlerModeRuntime\?\.state\?\.activeId==="dungeon-solo"/,"bounded wall-time substeps must be isolated to the Solo Dungeon controller");
 assert.match(r59,/!window\.CCGLostSizzlerSpecialModes\?\.active\?\.type&&!document\.body\?\.dataset\?\.specialMode/,"special modes must be excluded from the Solo wall-time path");
 assert.match(r59,/function runSoloUpdates\(elapsed\)/,"r59 must expose one bounded Solo update service rather than install another RAF owner");
@@ -92,4 +92,4 @@ assert.match(r59,/installClockOwner\(\);installPauseOwners\(\);installSoloSaveTr
 assert.match(r59,/api\.patchInputOwnership\?\.\(\);api\.patchSaboteurRules\?\.\(\)/,"r59 must reassert r58 input and Saboteur rules while Spy is active");
 assert.match(r59,/if\(api\.tick\?\.\(\)\)/,"r59 must keep the r58 live state reconciled after older compatibility monitors run");
 
-console.log("Lost Sizzler V10.41 r59 pause-clock, null RAF rebasing, bounded Solo wall-time substeps, visible-play stall recovery, R29 duplicate/stall/fault diagnostics, synchronous Solo floor autosave, TAB field-kit, idempotent F fullscreen and r58 ownership regressions passed.");
+console.log("Lost Sizzler V10.41 r59 pause-clock, null RAF rebasing, expanded bounded Solo wall-time substeps, visible-play stall recovery, R29 duplicate/stall/fault diagnostics, synchronous Solo floor autosave, TAB field-kit, idempotent F fullscreen and r58 ownership regressions passed.");
