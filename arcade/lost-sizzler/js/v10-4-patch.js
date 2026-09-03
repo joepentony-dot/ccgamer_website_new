@@ -61,6 +61,8 @@
     const seen = new Set();
     const out = [];
     for (const row of rows) {
+      const system = safeText(row?.system).toUpperCase();
+      if (system && system !== "C64") continue;
       const title = safeText(row?.title);
       if (!title) continue;
       const key = title.toLocaleLowerCase("en-GB");
