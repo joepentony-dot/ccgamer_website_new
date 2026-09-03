@@ -36,7 +36,7 @@
     if(!state.ready)setText(s,"Checking this week's shared dungeon seed…");
     else if(!state.signedIn)setText(s,"Play without an account. Sign in only if you want one ranked leaderboard attempt this week.");
     else if(state.locked)setText(s,`Ranked attempt already used for week beginning ${state.weekStart}. You can still play the Weekly Dungeon unranked.`);
-    else setText(s,`Signed in as ${state.playerName}. Your next Weekly Dungeon run can be your one ranked attempt this week.`);
+    else setText(s,`Signed in as ${state.playerName}. Your next Weekly Dungeon run can be your ranked attempt.`);
   }
 
   async function startUnrankedAfterRankedAttempt(event){
