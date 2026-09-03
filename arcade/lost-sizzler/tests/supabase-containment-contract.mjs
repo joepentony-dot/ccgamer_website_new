@@ -16,6 +16,7 @@ const inventory=read("arcade/lost-sizzler/SUPABASE-MIGRATION-INVENTORY.md");
 const recovery=read("arcade/lost-sizzler/SUPABASE-STORAGE-RECOVERY-MANIFEST.md");
 const persistence=read("arcade/lost-sizzler/DESKTOP-PERSISTENCE-INVENTORY.md");
 const deliveryContract=read("arcade/lost-sizzler/DESKTOP-DELIVERY-CONTRACT.md");
+const packageAssets=read("arcade/lost-sizzler/DESKTOP-PACKAGE-ASSET-INVENTORY.md");
 
 const gateIndex=index.indexOf('src="js/online-services-gate.js');
 const versionIndex=index.indexOf('src="js/version-check.js');
@@ -108,5 +109,15 @@ assert(deliveryContract.includes("Never embed a Supabase service-role key"),"des
 assert(deliveryContract.includes("Networking must be disabled **before process start**"),"offline desktop acceptance must begin with networking disabled before launch");
 assert(deliveryContract.includes("two packaged versions, A and B"),"desktop update acceptance must remain a two-build persistence test");
 assert(deliveryContract.includes("internal-URL disclosure"),"internal packaged URL disclosure must remain a desktop release blocker");
+
+assert(packageAssets.includes("/games/games.json"),"desktop package inventory must retain the master collectible-catalogue dependency");
+assert(packageAssets.includes("generated Lost Sizzler catalogue containing only the fields and C64 records"),"desktop packaging must retain the option to generate a deterministic C64-only catalogue derivative");
+assert(packageAssets.includes("Do not recursively package website media"),"catalogue packaging must not drag the full website media tree into the executable");
+assert(packageAssets.includes("arcade/lost-sizzler/css/"),"desktop package inventory must include the Lost Sizzler CSS runtime");
+assert(packageAssets.includes("arcade/lost-sizzler/js/"),"desktop package inventory must include the Lost Sizzler JavaScript runtime");
+assert(packageAssets.includes("arcade/lost-sizzler/assets/"),"desktop package inventory must include bundled Lost Sizzler assets");
+assert(packageAssets.includes("no Lost Sizzler music is requested from Supabase Storage"),"desktop offline package acceptance must prohibit remote Supabase music");
+assert(packageAssets.includes("SHA-256"),"desktop package inventory must retain a build-time cryptographic manifest recommendation");
+assert(packageAssets.includes("silent loss of the intended collectible catalogue is a **desktop release blocker**"),"full intended collectible catalogue must remain a desktop release gate");
 
 console.log("Lost Sizzler Supabase containment contract: PASS");
