@@ -7,6 +7,13 @@ import path from 'node:path';
 import process from 'node:process';
 
 const MANIFEST_SCHEMA = 'ccg-lost-sizzler-desktop-package-manifest-v1';
+const FORBIDDEN_PACKAGE_BASENAMES = new Set([
+  'ccg-supabase-config.js',
+  'ccg-supabase-client.js',
+  'service-account.json',
+  'service_account.json',
+]);
+const FORBIDDEN_CREDENTIAL_SUFFIXES = Object.freeze(['.pem', '.key', '.p12', '.pfx']);
 
 function parseArgs(argv) {
   const options = { manifest: null, root: null, selfTest: false };
@@ -40,6 +47,19 @@ function parseArgs(argv) {
   return options;
 }
 
+function assertAllowedPackagePath(value) {
+  const basename = path.posix.basename(value).toLowerCase();
+  if (FORBIDDEN_PACKAGE_BASENAMES.has(basename)) {
+    throw new Error(`Package manifest contains forbidden bootstrap or credential file: ${value}`);
+  }
+  if (basename === '.env' || basename.startsWith('.env.')) {
+    throw new Error(`Package manifest contains forbidden environment credential file: ${value}`);
+  }
+  if (FORBIDDEN_CREDENTIAL_SUFFIXES.some((suffix) => basename.endsWith(suffix))) {
+    throw new Error(`Package manifest contains forbidden private credential material: ${value}`);
+  }
+}
+
 function assertSafeRelativePath(value) {
   if (typeof value !== 'string' || !value) throw new Error('Package manifest entry is missing a path.');
   if (value.startsWith('/') || value.includes('\\') || value.split('/').includes('..') || path.posix.isAbsolute(value)) {
@@ -49,7 +69,8 @@ function assertSafeRelativePath(value) {
   if (normalized !== value || normalized === '.' || normalized.startsWith('../')) {
     throw new Error(`Non-canonical package manifest path: ${value}`);
   }
-  return value;
+  assertAllowedPackagePath(normalized);
+  return normalized;
 }
 
 async function hashFile(absolutePath) {
@@ -194,6 +215,17 @@ async function runSelfTest() {
 
     await verifyPackageTree(manifestPath, root);
 
+    for (const forbidden of [
+      'arcade/lost-sizzler/js/ccg-supabase-config.js',
+      'arcade/lost-sizzler/.env',
+      'arcade/lost-sizzler/assets/service-account.json',
+      'arcade/lost-sizzler/assets/private-key.pem',
+      'arcade/lost-sizzler/assets/signing.key',
+    ]) {
+      await expectFailure(async () => assertSafeRelativePath(forbidden), 'forbidden');
+    }
+    assertSafeRelativePath('arcade/lost-sizzler/js/game-main.js');
+
     await fs.writeFile(path.join(root, 'arcade/lost-sizzler/index.html'), 'WXYZ', 'utf8');
     await expectFailure(() => verifyPackageTree(manifestPath, root), 'SHA-256 mismatch');
     await fs.writeFile(path.join(root, 'arcade/lost-sizzler/index.html'), 'ABCD', 'utf8');
@@ -201,7 +233,7 @@ async function runSelfTest() {
     await fs.writeFile(path.join(root, 'unexpected.txt'), 'extra', 'utf8');
     await expectFailure(() => verifyPackageTree(manifestPath, root), 'file-set mismatch');
 
-    console.log('Lost Sizzler staged package verifier self-test passed: exact hashes and exact file set are enforced.');
+    console.log('Lost Sizzler staged package verifier self-test passed: exact hashes, exact file set and credential exclusions are enforced.');
   } finally {
     await fs.rm(temp, { recursive: true, force: true });
   }
