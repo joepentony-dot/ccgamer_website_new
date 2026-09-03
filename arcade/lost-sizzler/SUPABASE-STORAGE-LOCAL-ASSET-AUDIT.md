@@ -88,3 +88,32 @@ Read-only Supabase inspection on 3 September 2026 found the frozen database tota
 - row range: 62–93.
 
 Storage logs returned no recent entries at that checkpoint, so no successful recovery download is inferred from the absence of errors or from project health alone.
+
+## Live Storage recovery probe — 3 September 2026
+
+A deliberately one-shot, read-only GitHub Actions probe was run from PR #1860 after the frozen manifest had passed validation. The probe was hard-limited to the first enabled object and had ffprobe requested only if a binary was successfully recovered.
+
+Requested frozen object:
+
+`music/lostSizzlerDanger/1787411621547-0-combat-01.mp3`
+
+Expected database byte size:
+
+`3,360,888`
+
+The GitHub-hosted runner successfully reached the Supabase Storage public-object endpoint but received **HTTP 402** before any object bytes were recovered.
+
+Consequences:
+
+- this is not a DNS or local execution-environment failure;
+- no recovered binary exists from this probe;
+- no actual-byte-size measurement can yet be compared with the database size;
+- no SHA-256 value can yet be recorded;
+- no ffprobe/decode evidence can yet be recorded;
+- the remaining 15 enabled objects must not be requested while this 402 recovery blocker remains;
+- the disabled generation remains out of scope;
+- no reference migration or duplicate decision is authorised.
+
+The one-shot PR label that armed the probe was removed immediately after the result, so ordinary PR activity cannot repeat the Storage request.
+
+A read-only Supabase Storage log query immediately afterwards returned no recent log entries. The absence of a Storage log entry does not override the GitHub runner's observed HTTP 402 response.
