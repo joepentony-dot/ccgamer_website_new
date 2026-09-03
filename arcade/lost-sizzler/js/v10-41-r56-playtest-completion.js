@@ -123,7 +123,7 @@
   }
   function installChestDelivery(){
     const current=window.openChest;if(typeof current!=="function")return false;
-    if(current.__ccgV141R56ChestDelivery)return true;
+    if(originalChainHasMarker(current,"__ccgV141R56ChestDelivery"))return true;
     const wrapped=function openChestV141R56Guaranteed(player,chest){
       if(!ordinaryDungeon()||!chest?.active)return current.apply(this,arguments);
       let loot=chest.loot||null;
@@ -166,7 +166,7 @@
   }
   function installShrineFeedback(){
     const current=window.triggerShrine;if(typeof current!=="function")return false;
-    if(current.__ccgV141R56ShrineFeedback)return true;
+    if(originalChainHasMarker(current,"__ccgV141R56ShrineFeedback"))return true;
     const wrapped=function triggerShrineV141R56Feedback(player){
       if(!ordinaryDungeon()||!player)return current.apply(this,arguments);
       const shrine=(host?.shrines||[]).find(s=>s?.active&&s.x===player.x&&s.y===player.y),before={maxHealth:Number(player.maxHealth||0),health:Number(player.health||0),damageBonus:Number(player.damageBonus||0),maxMana:Number(player.maxMana||0),armour:Number(player.armor||0),alert:Number(run?.alert||0)};
