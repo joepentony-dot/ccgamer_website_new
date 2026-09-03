@@ -14,6 +14,7 @@ const audio=read("arcade/lost-sizzler/js/admin-audio-overrides.js");
 const inventory=read("arcade/lost-sizzler/SUPABASE-MIGRATION-INVENTORY.md");
 const recovery=read("arcade/lost-sizzler/SUPABASE-STORAGE-RECOVERY-MANIFEST.md");
 const persistence=read("arcade/lost-sizzler/DESKTOP-PERSISTENCE-INVENTORY.md");
+const deliveryContract=read("arcade/lost-sizzler/DESKTOP-DELIVERY-CONTRACT.md");
 
 const gateIndex=index.indexOf('src="js/online-services-gate.js');
 const versionIndex=index.indexOf('src="js/version-check.js');
@@ -87,5 +88,15 @@ assert(persistence.includes("Any loss of Tier A state is a **release blocker**")
 assert(persistence.includes("ccg-lost-sizzler-solo-cloud-sync-v1"),"desktop-online persistence must document cloud reconciliation metadata");
 assert(persistence.includes("ccg-weekly-pending-result-v1"),"desktop-online persistence must preserve pending Weekly submissions");
 assert(persistence.includes("sessionStorage: ccg-weekly-ghost-preview"),"disposable Weekly session cache must remain distinguished from persistent state");
+
+assert(deliveryContract.includes('window.__CCG_LOST_SIZZLER_DELIVERY__` **before**'),"desktop delivery configuration must be injected before the online-services gate executes");
+assert(deliveryContract.includes("stable, version-independent storage identity"),"desktop delivery contract must retain the stable storage-profile requirement");
+assert(deliveryContract.includes("accept only approved `https:` destinations"),"desktop wrapper must retain the HTTPS external-link allowlist rule");
+assert(deliveryContract.includes("must never expose `file://`, localhost, custom-protocol"),"desktop sharing must explicitly forbid internal packaged URLs");
+assert(deliveryContract.includes("room=<ROOM>&mode=<MODE>"),"desktop multiplayer invite contract must preserve room and mode parameters on the public CCG URL");
+assert(deliveryContract.includes("Never embed a Supabase service-role key"),"desktop package must never contain a Supabase service-role key");
+assert(deliveryContract.includes("Networking must be disabled **before process start**"),"offline desktop acceptance must begin with networking disabled before launch");
+assert(deliveryContract.includes("two packaged versions, A and B"),"desktop update acceptance must remain a two-build persistence test");
+assert(deliveryContract.includes("internal-URL disclosure"),"internal packaged URL disclosure must remain a desktop release blocker");
 
 console.log("Lost Sizzler Supabase containment contract: PASS");
