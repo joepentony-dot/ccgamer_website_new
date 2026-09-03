@@ -62,7 +62,28 @@ function verifyPackageTree(manifestValue, root, label) {
   if (label) process.stderr.write(`${label} is not cryptographically verified and will not be selected.\n`);
   return false;
 }
-function recover(roots, manifests) {
+function restoreFailedRemnant(activeRoot, remnantRoot, label) {
+  if (!fs.existsSync(activeRoot)) fail(`Cannot restore failed ${label} because the active package root is missing.`);
+  if (fs.existsSync(remnantRoot)) fail(`Cannot restore failed ${label} because its diagnostic remnant slot already exists: ${remnantRoot}`);
+  fs.renameSync(activeRoot, remnantRoot);
+}
+function promoteVerifiedRemnant(remnantRoot, activeRoot, manifest, label, afterPromotion) {
+  fs.renameSync(remnantRoot, activeRoot);
+  try {
+    afterPromotion?.();
+    if (!verifyPackageTree(manifest, activeRoot, `Promoted ${label}`)) fail(`Promoted ${label.toLowerCase()} failed verification after rename.`);
+  } catch (error) {
+    try {
+      restoreFailedRemnant(activeRoot, remnantRoot, label.toLowerCase());
+    } catch (restoreError) {
+      const combined = new Error(`${error.message || error} Failed to restore diagnostic remnant: ${restoreError.message || restoreError}`);
+      combined.cause = error;
+      throw combined;
+    }
+    throw error;
+  }
+}
+function recover(roots, manifests, hooks = {}) {
   if (fs.existsSync(roots.activeRoot)) {
     const activeVerified = verifyPackageTree(manifests.activeManifest, roots.activeRoot, 'Active package');
     if (!activeVerified) fail('Active package exists but is not verified. Recovery fails closed without moving or deleting diagnostic remnants.');
@@ -71,13 +92,11 @@ function recover(roots, manifests) {
   const previousVerified = verifyPackageTree(manifests.previousManifest, roots.previousRoot, 'Previous package');
   const candidateVerified = verifyPackageTree(manifests.candidateManifest, roots.candidateRoot, 'Candidate package');
   if (previousVerified) {
-    fs.renameSync(roots.previousRoot, roots.activeRoot);
-    if (!verifyPackageTree(manifests.previousManifest, roots.activeRoot, 'Restored previous package')) fail('Restored previous package failed verification after rename.');
+    promoteVerifiedRemnant(roots.previousRoot, roots.activeRoot, manifests.previousManifest, 'previous package', hooks.afterPreviousRestore);
     return 'RESTORED_PREVIOUS';
   }
   if (candidateVerified) {
-    fs.renameSync(roots.candidateRoot, roots.activeRoot);
-    if (!verifyPackageTree(manifests.candidateManifest, roots.activeRoot, 'Promoted candidate package')) fail('Promoted candidate package failed verification after rename.');
+    promoteVerifiedRemnant(roots.candidateRoot, roots.activeRoot, manifests.candidateManifest, 'candidate package', hooks.afterCandidatePromotion);
     return 'PROMOTED_CANDIDATE';
   }
   fail('No verified package is available for interrupted activation recovery. No package remnant was deleted or overwritten.');
@@ -121,7 +140,26 @@ function runSelfTest() {
     let failedClosed = false;
     try { recover(thirdRoots, { ...third.manifests, activeManifest: third.manifests.previousManifest }); } catch { failedClosed = true; }
     if (!failedClosed || !fs.existsSync(third.roots.previousRoot)) fail('Invalid existing active package must fail closed and preserve previous remnant.');
-    console.log('Lost Sizzler interrupted activation recovery self-test passed: only verified packages are selected, remnants are preserved, and Tier-A data stays outside recovery.');
+
+    const fourth = fixture(path.join(temp, 'post-rename-verification-failure'), true, false);
+    const fourthBefore = fs.readFileSync(path.join(fourth.roots.userDataRoot, 'solo-save.json'));
+    const fourthRoots = validateRoots(fourth.roots.activeRoot, fourth.roots.candidateRoot, fourth.roots.previousRoot, fourth.roots.userDataRoot);
+    let postRenameRejected = false;
+    try {
+      recover(fourthRoots, fourth.manifests, {
+        afterPreviousRestore() {
+          fs.appendFileSync(path.join(fourth.roots.activeRoot, 'runtime.txt'), 'corrupt-after-rename\n');
+        },
+      });
+    } catch {
+      postRenameRejected = true;
+    }
+    if (!postRenameRejected) fail('Post-rename recovery corruption was not rejected.');
+    if (fs.existsSync(fourth.roots.activeRoot)) fail('Failed post-rename recovery must not leave an unverified active package.');
+    if (!fs.existsSync(fourth.roots.previousRoot)) fail('Failed post-rename recovery did not restore the diagnostic previous-package remnant.');
+    if (!fs.readFileSync(path.join(fourth.roots.userDataRoot, 'solo-save.json')).equals(fourthBefore)) fail('Tier-A profile changed during failed post-rename recovery verification.');
+
+    console.log('Lost Sizzler interrupted activation recovery self-test passed: only verified packages are selected, failed post-rename verification restores diagnostic remnants, and Tier-A data stays outside recovery.');
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
