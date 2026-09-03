@@ -16,14 +16,27 @@
  * the existing R60 owner when it is already present anywhere in the ancestry,
  * but only while a real Solo Dungeon run is active. Every special mode and all
  * non-Solo lifecycle states fall straight through to the original R60 installer.
+ *
+ * Once the final R56 + R60 damage stack exists, this bridge also seals that
+ * complete ancestry behind the hurtPlayer property during ordinary Solo play.
+ * Retired compatibility polls can therefore no longer expose a transient R56-
+ * only owner between maintenance passes. Spy isolation is still allowed to own
+ * hurtPlayer temporarily, and later normal-mode wrappers are accepted whenever
+ * their ancestry preserves both modern damage owners.
  */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V141_R60_HORDE_OWNER_COMPOSITION__)return;
   window.__CCG_LOST_SIZZLER_V141_R60_HORDE_OWNER_COMPOSITION__=true;
 
-  const INSTALL_MS=25,MAX_ATTEMPTS=320;
-  const state={timer:0,attempts:0,adoptions:0,stable:false,retired:false,soloInstallProtected:false,soloInstallSkips:0,soloMoveReuse:0,soloUpdateReuse:0,lastError:""};
+  const INSTALL_MS=25,MAX_ATTEMPTS=320,SPY_MODE="sizzler-saboteurs";
+  const state={
+    timer:0,attempts:0,adoptions:0,stable:false,retired:false,
+    soloInstallProtected:false,soloInstallSkips:0,soloMoveReuse:0,soloUpdateReuse:0,
+    soloHurtGate:false,soloHurtGateUnsupported:false,soloHurtGateLosses:0,soloHurtBlockedWrites:0,soloHurtAcceptedWrites:0,soloHurtFallbackReads:0,
+    lastBlockedHurtName:"",lastError:""
+  };
+  let gatedHurt=null,sealedSoloHurt=null,hurtGateGetter=null,hurtGateSetter=null;
 
   function chainContains(fn,target){
     if(typeof fn!=="function"||typeof target!=="function")return false;
@@ -53,23 +66,89 @@
     try{return document.body?.dataset?.runActive==="true"&&typeof playMode!=="undefined"&&String(playMode||"")==="solo"&&!specialType()}catch(_){return false}
   }
 
+  function spyDamageOwned(){
+    try{return specialType()===SPY_MODE||Boolean(window.CCGLostSizzlerV141R29SpyEngine?.state?.isolated)}catch(_){return false}
+  }
+
+  function completeSoloDamageOwner(fn){
+    return typeof fn==="function"&&chainHasMarker(fn,"__ccgV141R56EnvironmentDamage")&&chainHasMarker(fn,"__ccgV141R60EnvironmentSeal")
+  }
+
+  function soloHurtGateActive(){
+    if(!state.soloHurtGate||typeof hurtGateGetter!=="function"||typeof hurtGateSetter!=="function")return false;
+    let descriptor=null;
+    try{descriptor=Object.getOwnPropertyDescriptor(window,"hurtPlayer")}catch(_){descriptor=null}
+    const live=Boolean(descriptor&&descriptor.get===hurtGateGetter&&descriptor.set===hurtGateSetter);
+    if(!live){state.soloHurtGate=false;state.soloHurtGateLosses++}
+    return live
+  }
+
+  function installSoloHurtGate(){
+    if(soloHurtGateActive())return true;
+    if(state.soloHurtGateUnsupported)return false;
+    const current=window.hurtPlayer;
+    if(!completeSoloDamageOwner(current))return false;
+    let descriptor=null;
+    try{descriptor=Object.getOwnPropertyDescriptor(window,"hurtPlayer")}catch(_){descriptor=null}
+    if(descriptor&&descriptor.configurable===false){state.soloHurtGateUnsupported=true;return false}
+    gatedHurt=current;sealedSoloHurt=current;
+    hurtGateGetter=function getHurtPlayerV141R60SoloDamageSeal(){
+      if(soloDungeon()&&!spyDamageOwned()&&completeSoloDamageOwner(sealedSoloHurt)){
+        if(!completeSoloDamageOwner(gatedHurt))state.soloHurtFallbackReads++;
+        return sealedSoloHurt
+      }
+      return gatedHurt
+    };
+    hurtGateSetter=function setHurtPlayerV141R60SoloDamageSeal(value){
+      if(!soloDungeon()||spyDamageOwned()){
+        gatedHurt=value;
+        if(completeSoloDamageOwner(value))sealedSoloHurt=value;
+        return
+      }
+      if(completeSoloDamageOwner(value)){
+        gatedHurt=value;sealedSoloHurt=value;state.soloHurtAcceptedWrites++;return
+      }
+      state.soloHurtBlockedWrites++;
+      state.lastBlockedHurtName=typeof value==="function"?String(value.name||"anonymous"):String(typeof value)
+    };
+    try{
+      Object.defineProperty(window,"hurtPlayer",{
+        configurable:true,
+        enumerable:descriptor?.enumerable!==false,
+        get:hurtGateGetter,
+        set:hurtGateSetter
+      });
+      state.soloHurtGate=true;return true
+    }catch(error){
+      state.soloHurtGateUnsupported=true;state.lastError=String(error?.message||error||"unknown").slice(0,260);
+      hurtGateGetter=hurtGateSetter=null;return false
+    }
+  }
+
   function protectSoloInstall(){
     const live=window.CCGLostSizzlerV141R60LivePlayIntegrity;
     if(!live||typeof live.install!=="function")return false;
-    if(live.install.__ccgV141R60ChainAwareMaintenance===true){state.soloInstallProtected=true;return true}
+    if(live.install.__ccgV141R60ChainAwareMaintenance===true){
+      state.soloInstallProtected=true;installSoloHurtGate();return true
+    }
     const source=live.install;
     const protectedInstall=function installV141R60ChainAwareMaintenance(){
-      if(!soloDungeon())return source.apply(this,arguments);
+      if(!soloDungeon()){
+        const result=source.apply(this,arguments);installSoloHurtGate();return result
+      }
       const moveCurrent=window.movePlayer,updateCurrent=window.update;
       const moveOwned=chainHasMarker(moveCurrent,"__ccgV141R60CadenceSeal");
       const updateOwned=chainHasMarker(updateCurrent,"__ccgV141R60TimeSmoothing");
-      if(!moveOwned&&!updateOwned)return source.apply(this,arguments);
+      if(!moveOwned&&!updateOwned){
+        const result=source.apply(this,arguments);installSoloHurtGate();return result
+      }
       state.soloInstallSkips++;
       try{
         live.patchAzalea?.();
         live.wrapStartWorld?.();
         if(moveOwned){state.soloMoveReuse++;if(live.state)live.state.moveWrapped=true}else live.wrapMovement?.();
         live.wrapEnvironmentalDamage?.();
+        installSoloHurtGate();
         if(updateOwned){state.soloUpdateReuse++;if(live.state)live.state.updateWrapped=true}else live.wrapUpdate?.();
         live.ensureCcgEnemy?.();
         if(live.state){
@@ -82,7 +161,7 @@
     };
     protectedInstall.__ccgV141R60ChainAwareMaintenance=true;
     protectedInstall.__ccgOriginal=source;
-    live.install=protectedInstall;state.soloInstallProtected=true;return true
+    live.install=protectedInstall;state.soloInstallProtected=true;installSoloHurtGate();return true
   }
 
   function retire(){
@@ -91,7 +170,7 @@
   }
 
   function compose(){
-    state.attempts++;protectSoloInstall();
+    state.attempts++;protectSoloInstall();installSoloHurtGate();
     try{
       const api=window.CCGLostSizzlerV138,r60=window.CCGLostSizzlerV141R60HordeCombatIntegrity;
       const current=api?.updateHordeLive,owner=r60?.state?.liveOwner;
@@ -99,6 +178,7 @@
 
       /* Ideal steady state: the hardening owner is outermost and retains R60. */
       if(current.__ccgV141UiPerformanceLive===true&&chainContains(current,owner)){
+        if(!installSoloHurtGate())return false;
         state.stable=true;retire();return true
       }
 
@@ -107,6 +187,7 @@
          preserved capability on the composed function instead of forcing the
          50 ms hardening monitor to wrap it again. */
       if(current===owner&&chainHasMarker(current.__ccgOriginal,"__ccgV141UiPerformanceLive")){
+        if(!installSoloHurtGate())return false;
         current.__ccgV141UiPerformanceLive=true;
         state.adoptions++;state.stable=true;retire();return true
       }
@@ -123,5 +204,8 @@
   if(!state.retired)state.timer=setInterval(tick,INSTALL_MS);
   addEventListener("pagehide",retire,{once:true});
 
-  window.CCGLostSizzlerV141R60HordeOwnerComposition={compose,chainContains,chainHasMarker,soloDungeon,protectSoloInstall,retire,get state(){return state}};
+  window.CCGLostSizzlerV141R60HordeOwnerComposition={
+    compose,chainContains,chainHasMarker,soloDungeon,spyDamageOwned,completeSoloDamageOwner,soloHurtGateActive,installSoloHurtGate,protectSoloInstall,retire,
+    get state(){return state}
+  };
 })();
