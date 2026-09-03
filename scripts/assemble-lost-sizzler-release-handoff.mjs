@@ -77,7 +77,7 @@ function validateRoots(packageValue, outputValue, userDataValue) {
   if (fs.existsSync(outputRoot)) fail(`Handoff output root must not already exist; existing release evidence is never overwritten: ${outputRoot}`);
   return { packageRoot, outputRoot, userDataRoot };
 }
-function assemble({ packageRoot, outputRoot, userDataRoot }, manifestValue, provenanceValue) {
+function assemble({ packageRoot, outputRoot, userDataRoot }, manifestValue, provenanceValue, hooks = {}) {
   const manifest = requireRegularFile(manifestValue, 'package manifest');
   const provenance = requireRegularFile(provenanceValue, 'package provenance');
   const verifyTree = fileURLToPath(new URL('./verify-lost-sizzler-package-tree.mjs', import.meta.url));
@@ -90,23 +90,38 @@ function assemble({ packageRoot, outputRoot, userDataRoot }, manifestValue, prov
     ? snapshotTree(userDataRoot)
     : null;
 
-  fs.mkdirSync(outputRoot, { recursive: false });
-  const applicationRoot = path.join(outputRoot, 'application');
-  const metadataRoot = path.join(outputRoot, 'metadata');
-  copyDirectory(packageRoot, applicationRoot);
-  fs.mkdirSync(metadataRoot, { recursive: false });
-  const copiedManifest = path.join(metadataRoot, 'package-manifest.json');
-  const copiedProvenance = path.join(metadataRoot, 'package-provenance.json');
-  fs.copyFileSync(manifest, copiedManifest);
-  fs.copyFileSync(provenance, copiedProvenance);
+  const outputParent = path.dirname(outputRoot);
+  requireDirectory(outputParent, 'handoff output parent');
+  const stagingRoot = fs.mkdtempSync(path.join(outputParent, `.${path.basename(outputRoot)}.partial-`));
+  let published = false;
+  try {
+    const applicationRoot = path.join(stagingRoot, 'application');
+    const metadataRoot = path.join(stagingRoot, 'metadata');
+    copyDirectory(packageRoot, applicationRoot);
+    hooks.afterApplicationCopy?.({ stagingRoot, applicationRoot, metadataRoot });
+    fs.mkdirSync(metadataRoot, { recursive: false });
+    const copiedManifest = path.join(metadataRoot, 'package-manifest.json');
+    const copiedProvenance = path.join(metadataRoot, 'package-provenance.json');
+    fs.copyFileSync(manifest, copiedManifest);
+    fs.copyFileSync(provenance, copiedProvenance);
 
-  if (sha256File(manifest) !== sha256File(copiedManifest)) fail('Copied package manifest bytes differ from source manifest.');
-  if (sha256File(provenance) !== sha256File(copiedProvenance)) fail('Copied package provenance bytes differ from source provenance.');
-  runNode(verifyTree, ['--manifest', copiedManifest, '--root', applicationRoot], 'Handoff package verification');
-  runNode(verifyProvenance, ['--manifest', copiedManifest, '--verify', copiedProvenance], 'Handoff provenance verification');
+    if (sha256File(manifest) !== sha256File(copiedManifest)) fail('Copied package manifest bytes differ from source manifest.');
+    if (sha256File(provenance) !== sha256File(copiedProvenance)) fail('Copied package provenance bytes differ from source provenance.');
+    runNode(verifyTree, ['--manifest', copiedManifest, '--root', applicationRoot], 'Handoff package verification');
+    runNode(verifyProvenance, ['--manifest', copiedManifest, '--verify', copiedProvenance], 'Handoff provenance verification');
 
-  if (profileSnapshot !== null && snapshotTree(userDataRoot) !== profileSnapshot) fail('Tier-A user data changed while assembling release handoff.');
-  return { applicationRoot, copiedManifest, copiedProvenance };
+    if (profileSnapshot !== null && snapshotTree(userDataRoot) !== profileSnapshot) fail('Tier-A user data changed while assembling release handoff.');
+    if (fs.existsSync(outputRoot)) fail(`Handoff output appeared during assembly; refusing to replace existing release evidence: ${outputRoot}`);
+    fs.renameSync(stagingRoot, outputRoot);
+    published = true;
+    return {
+      applicationRoot: path.join(outputRoot, 'application'),
+      copiedManifest: path.join(outputRoot, 'metadata', 'package-manifest.json'),
+      copiedProvenance: path.join(outputRoot, 'metadata', 'package-provenance.json'),
+    };
+  } finally {
+    if (!published && fs.existsSync(stagingRoot)) fs.rmSync(stagingRoot, { recursive: true, force: true });
+  }
 }
 function snapshotTree(root) {
   const hash = createHash('sha256');
@@ -161,7 +176,26 @@ function runSelfTest() {
     let existingRejected = false;
     try { validateRoots(packageRoot, outputRoot, userDataRoot); } catch { existingRejected = true; }
     if (!existingRejected) fail('Existing handoff output must never be overwritten.');
-    console.log('Lost Sizzler release handoff self-test passed: verified application + manifest + provenance are assembled without Tier-A persistence or overwrite behavior.');
+
+    const failedOutput = path.join(temp, 'failed-handoff');
+    const failedRoots = validateRoots(packageRoot, failedOutput, userDataRoot);
+    let failedAssemblyRejected = false;
+    try {
+      assemble(failedRoots, manifest, provenance, {
+        afterApplicationCopy({ applicationRoot }) {
+          fs.appendFileSync(path.join(applicationRoot, 'runtime.txt'), 'corrupt-staged-copy\n');
+        },
+      });
+    } catch {
+      failedAssemblyRejected = true;
+    }
+    if (!failedAssemblyRejected) fail('Corrupted staged handoff unexpectedly passed verification.');
+    if (fs.existsSync(failedOutput)) fail('Failed handoff assembly must not publish a partial release handoff.');
+    const partialPrefix = `.${path.basename(failedOutput)}.partial-`;
+    if (fs.readdirSync(path.dirname(failedOutput)).some(name => name.startsWith(partialPrefix))) fail('Failed handoff assembly left a partial staging directory behind.');
+    if (snapshotTree(userDataRoot) !== before) fail('Tier-A profile changed during failed release handoff assembly.');
+
+    console.log('Lost Sizzler release handoff self-test passed: verified application + manifest + provenance publish atomically without Tier-A persistence, overwrite behavior or partial failed handoffs.');
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
