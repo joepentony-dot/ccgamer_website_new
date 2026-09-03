@@ -158,11 +158,11 @@
       const roomCode=document.getElementById("room-code");
       if(roomCode){if(!roomCode.disabled)roomCode.disabled=true;if(roomCode.title!==message)roomCode.title=message}
       const howto=document.querySelector(".online-howto");
-      if(howto&&!howto.hidden)howto.hidden=true;
+      if(howto){howto.hidden=true;howto.classList.add("hidden")}
       const weeklyStatus=document.getElementById("weekly-status");
       if(weeklyStatus&&weeklyStatus.textContent!==message)weeklyStatus.textContent=message;
       const authActions=document.getElementById("weekly-auth-actions");
-      if(authActions&&!authActions.hidden)authActions.hidden=true;
+      if(authActions){authActions.hidden=true;authActions.classList.add("hidden")}
       const note=document.getElementById("menu-note");
       const offlineNote="Offline desktop mode: Solo, Tutorial, 2P Split Screen, local saves, achievements and bundled game content remain available. Online multiplayer, account services and Weekly Vault are disabled.";
       if(note&&delivery.mode==="desktop-offline"&&note.textContent!==offlineNote)note.textContent=offlineNote
