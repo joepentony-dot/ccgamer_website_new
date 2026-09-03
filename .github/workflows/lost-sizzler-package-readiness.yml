@@ -114,24 +114,29 @@ jobs:
           console.log(`Lost Sizzler package manifest reproducibility/structure passed: ${manifest.fileCount} files, ${manifest.totalBytes} bytes.`);
           NODE
 
-      - name: Materialize, replace and preserve external persistence
+      - name: Materialize versioned packages and preserve stable external profile identity
         env:
-          STAGE_ROOT: ${{ runner.temp }}/lost-sizzler-package-stage
+          STAGE_ROOT_A: ${{ runner.temp }}/lost-sizzler-packages/1.0.0
+          STAGE_ROOT_B: ${{ runner.temp }}/lost-sizzler-packages/1.1.0
           USER_DATA_ROOT: ${{ runner.temp }}/lost-sizzler-user-data
           PERSISTENCE_SNAPSHOT: ${{ runner.temp }}/lost-sizzler-user-data.snapshot.json
         run: |
           set -euo pipefail
-          node scripts/materialize-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --output "$STAGE_ROOT" --clean
-          node scripts/verify-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --root "$STAGE_ROOT"
+
+          node scripts/materialize-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --output "$STAGE_ROOT_A" --clean
+          node scripts/verify-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --root "$STAGE_ROOT_A"
 
           mkdir -p "$USER_DATA_ROOT"
           printf '%s\n' '{"schema":"fixture","floor":7}' > "$USER_DATA_ROOT/solo-save.json"
           printf '%s\n' '{"earned":["package-readiness-fixture"]}' > "$USER_DATA_ROOT/achievements.json"
-          node scripts/verify-lost-sizzler-update-persistence-boundary.mjs --package-root "$STAGE_ROOT" --user-data-root "$USER_DATA_ROOT" --snapshot "$PERSISTENCE_SNAPSHOT"
+          node scripts/verify-lost-sizzler-update-persistence-boundary.mjs --package-root "$STAGE_ROOT_A" --user-data-root "$USER_DATA_ROOT" --snapshot "$PERSISTENCE_SNAPSHOT"
 
-          node scripts/materialize-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --output "$STAGE_ROOT" --clean
-          node scripts/verify-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --root "$STAGE_ROOT"
-          node scripts/verify-lost-sizzler-update-persistence-boundary.mjs --package-root "$STAGE_ROOT" --user-data-root "$USER_DATA_ROOT" --verify "$PERSISTENCE_SNAPSHOT"
+          rm -rf "$STAGE_ROOT_A"
+          node scripts/verify-lost-sizzler-update-persistence-boundary.mjs --package-root "$STAGE_ROOT_B" --user-data-root "$USER_DATA_ROOT" --verify "$PERSISTENCE_SNAPSHOT"
+
+          node scripts/materialize-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --output "$STAGE_ROOT_B" --clean
+          node scripts/verify-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --root "$STAGE_ROOT_B"
+          node scripts/verify-lost-sizzler-update-persistence-boundary.mjs --package-root "$STAGE_ROOT_B" --user-data-root "$USER_DATA_ROOT" --verify "$PERSISTENCE_SNAPSHOT"
 
       - name: Upload package manifest evidence
         uses: actions/upload-artifact@v4
