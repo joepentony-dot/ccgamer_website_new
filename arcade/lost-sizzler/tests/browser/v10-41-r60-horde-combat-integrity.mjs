@@ -63,7 +63,7 @@ try{
     const api=window.CCGLostSizzlerV141R60HordeCombatIntegrity;api.resetClock("movement fixture",false);enemyCD=90;projectileCD=70;
     return{x:Number(host.enemies[0].x),y:Number(host.enemies[0].y),liveElapsed:Number(api.state.liveElapsedFrames||0),catchup:Number(api.state.playerTimerCatchupMs||0)}
   },fixture);
-  await stressedFrames(page,2,145);
+  await stressedFrames(page,3,145);
   const movementAfter=await page.evaluate(before=>{
     const enemy=host.enemies.find(row=>row.id==="r60-mover"),api=window.CCGLostSizzlerV141R60HordeCombatIntegrity;
     return{x:Number(enemy?.x),y:Number(enemy?.y),liveElapsed:Number(api.state.liveElapsedFrames||0)-before.liveElapsed,catchup:Number(api.state.playerTimerCatchupMs||0)-before.catchup}
