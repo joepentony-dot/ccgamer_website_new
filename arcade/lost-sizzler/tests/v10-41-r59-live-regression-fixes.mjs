@@ -55,8 +55,8 @@ assert.match(r59,/normaliseAudioRate\(\)/,"pause boundaries must also normalise 
 // substeps. This replaces the old one-update 45 ms clamp that permanently lost
 // simulation time below ~22 rendered FPS, without changing Horde or Spy cadence.
 assert.match(r59,/const SOLO_MAX_STEP_MS=45;/,"Solo wall-time catch-up must preserve the established maximum canonical update step");
-assert.match(r59,/const SOLO_MAX_VISIBLE_FRAME_MS=180;/,"Solo catch-up must have a hard per-render wall-time budget");
-assert.match(r59,/const SOLO_MAX_STEPS=4;/,"Solo catch-up must have a hard substep-count budget");
+assert.match(r59,/const SOLO_MAX_VISIBLE_FRAME_MS=540;/,"Solo catch-up must have a hard per-render wall-time budget large enough for reproduced low-FPS visible gaps");
+assert.match(r59,/const SOLO_MAX_STEPS=12;/,"Solo catch-up must have a hard substep-count budget while preserving 45 ms canonical slices");
 assert.match(r59,/window\.CCGLostSizzlerModeRuntime\?\.state\?\.activeId==="dungeon-solo"/,"bounded wall-time substeps must be isolated to the Solo Dungeon controller");
 assert.match(r59,/!window\.CCGLostSizzlerSpecialModes\?\.active\?\.type&&!document\.body\?\.dataset\?\.specialMode/,"special modes must be excluded from the Solo wall-time path");
 assert.match(r59,/function runSoloUpdates\(elapsed\)/,"r59 must expose one bounded Solo update service rather than install another RAF owner");
