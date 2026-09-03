@@ -40,6 +40,8 @@ For a packaged build the wrapper can inject `window.__CCG_LOST_SIZZLER_DELIVERY_
 - `desktop-online` requires explicitly supplied online-service script locations plus safe `openExternal` and `exitGame` hooks from the desktop shell;
 - `desktop-offline` refuses Supabase activation and blocks website navigation rather than allowing the game webview to leave the local game;
 - desktop modes intercept account/support/Exit anchors and the title-screen `QUIT` action before ordinary browser navigation can replace the game page;
+- desktop builds can provide `resolveLocalAsset("version.json")` or an explicit `versionManifestUrl`; without either, the gate rejects the packaged `version.json` request instead of allowing an arbitrary `file://`-style fetch;
+- when online services are unavailable in a desktop delivery, Weekly Vault, room creation/join controls, room-code input and website-auth actions are disabled or hidden while Solo, Tutorial and 2P Split Screen remain available;
 - the gate installs a runtime bridge over `RoomNetwork.prototype.getSupabase()` so multiplayer requests are routed through `CCGLostSizzlerOnlineServices.activate()` rather than normally reaching the legacy network fallback.
 
 The old loader code still physically exists in `js/network.js`. The runtime bridge contains it for this branch, but the source fallback should still be removed once the multiplayer file can be changed and regression-tested safely.
@@ -61,7 +63,7 @@ The old loader code still physically exists in `js/network.js`. The runtime brid
 | Player telemetry / five-minute rating | Edge Function `lost-sizzler-feedback` | Optional online | No base-game requirement. |
 | Developer Vault owner verification | Website account auth | Online/private | Owner-only tooling; leave server-backed. |
 | Horde local Hall of Fame | Browser local storage | Local | Already local. |
-| Version check | local `version.json` fetch | Local/site file | No Supabase dependency. |
+| Version check | local `version.json` fetch | Local/site file | Web remains relative; desktop now requires an explicit local resolver/URL. |
 
 ## Supabase Storage recovery inventory
 
@@ -84,7 +86,11 @@ The catalogue contains two 16-file generations. Their per-playlist byte totals m
 | `lostSizzlerStalker` | 3 | 7,930,749 | 3 | 7,930,749 |
 | **Total** | **16** | **72,233,137** | **16** | **72,233,137** |
 
-Recovery priority: download and hash the 16 enabled files first. Then compare the disabled counterparts by size and cryptographic hash before deciding whether the disabled generation is redundant.
+On 3 September the database rows were paired by `asset_meta.playlist_category + asset_meta.original_name`. All 16 enabled rows have exactly one disabled counterpart with the same recorded byte size. This is pairing evidence only; cryptographic equality remains unverified until the binaries can be downloaded and hashed.
+
+The exact 16-pair recovery order, row IDs, Storage paths and empty SHA-256 fields are frozen in `SUPABASE-STORAGE-RECOVERY-MANIFEST.md`.
+
+Recovery priority: download and hash the 16 enabled files first. Then compare the disabled counterparts by cryptographic hash before deciding whether the disabled generation is redundant.
 
 ### Other `arcade_assets` graphics
 
@@ -108,8 +114,10 @@ The containment audit did not find a Supabase dependency required by ordinary So
 Before producing a Windows executable or portable ZIP, keep these boundaries explicit:
 
 - `js/network.js` still physically contains a legacy multiplayer-only fallback that can load the website Supabase scripts itself. PR #1860 now installs a runtime bridge over `RoomNetwork.prototype.getSupabase()` so normal multiplayer requests are routed through `window.CCGLostSizzlerOnlineServices.activate()`. Remove the dead/legacy loader from `network.js` later when that larger file can be changed and tested without increasing containment risk.
-- `js/online-services-gate.js` still uses website-root `/js/ccg-supabase-config.js` and `/js/ccg-supabase-client.js` paths in `web` mode. Desktop builds no longer inherit those paths automatically: `desktop-online` must receive explicit service script locations from the wrapper, while `desktop-offline` refuses online activation.
+- `js/online-services-gate.js` uses website-root `/js/ccg-supabase-config.js` and `/js/ccg-supabase-client.js` paths only in `web` mode. Desktop builds do not inherit those paths automatically: `desktop-online` must receive explicit service script locations from the wrapper, while `desktop-offline` refuses online activation.
 - Desktop website/account/support navigation is intercepted by the gate. `desktop-online` requires a wrapper-supplied system-browser handler; `desktop-offline` blocks those links. Title-screen Exit/QUIT requires a wrapper-supplied application exit action.
+- Desktop `version.json` resolution is delivery-aware. The wrapper must provide `resolveLocalAsset()` or `versionManifestUrl`; otherwise the check fails safely rather than relying on package-origin fetch behaviour.
+- Desktop deliveries with no configured online services disable the online UI instead of presenting controls that can never succeed.
 - Solo cloud saves and achievement profile sync must remain no-op/best-effort when no online client exists. Local save and local achievement state remain authoritative.
 - Weekly Vault, multiplayer, account login, profile achievement sync and cloud mirroring remain online enhancements; none may become a prerequisite for launching or completing the local game.
 - A packaged-build smoke test must be run with networking disabled from process launch, not merely after the title screen appears.
@@ -125,11 +133,11 @@ The current browser build is already well suited to sharing its core files with 
 | Exit links | `/games/ccg-games/` assumes website root | Delivery gate routes desktop Exit/QUIT through the wrapper instead of navigating the game webview | Implemented in game; wrapper hook required |
 | Supabase service loader | Website mode uses `/js/ccg-supabase-config.js` and `/js/ccg-supabase-client.js` | `desktop-online` must supply explicit service script locations; `desktop-offline` refuses activation | Implemented in game; desktop config required |
 | Multiplayer fallback loader | `js/network.js` still contains legacy loader source | Runtime bridge now routes `getSupabase()` through `CCGLostSizzlerOnlineServices.activate()`; remove legacy source after safe multiplayer regression testing | Contained; source cleanup later |
-| Weekly Vault startup | Module renders/refreshes at startup but does not load Supabase itself | Keep offline-safe; optionally hide/mark online-only until services are activated | Before desktop polish |
+| Weekly Vault / multiplayer UI | Website exposes online controls normally | Desktop delivery disables/hides online controls and auth actions when services are unavailable | Implemented in game |
 | Solo cloud mirror | Local-first; observes browser save state and only syncs if Supabase exists | Preserve no-op behaviour offline; activate cloud service only after explicit online/account availability | Ready with persistence requirement |
 | Save/achievement persistence | Browser `localStorage` is authoritative for several local systems | Desktop runtime must use a stable application origin/profile across upgrades, or provide a controlled native persistence bridge/migration | Release blocker |
 | Weekly transient/pending state | Uses `sessionStorage`/`localStorage` | Preserve stable storage semantics if Weekly Vault is enabled in desktop build | Before online desktop features |
-| Version check | `fetch('version.json?...')` with cache bypass | Package must resolve `version.json` through its local asset scheme/server; do not rely on arbitrary `file://` fetch behaviour | Before desktop beta |
+| Version check | `fetch('version.json?...')` with cache bypass | Delivery gate rewrites the request through a wrapper-supplied local resolver/URL; no resolver means safe failure | Implemented in game; wrapper resolver required |
 | Browser deep links | Query/hash state such as `?mode=tutorial` and `#weekly-vault` is supported | Desktop launcher/protocol should preserve supported launch state if exposed | Later/optional |
 | External navigation | Browser can follow ordinary anchors naturally | Desktop gate prevents ordinary anchors/title QUIT from replacing the game page; wrapper must provide approved external/exit handlers | Implemented in game; wrapper hook required |
 | Network-offline launch | Browser naturally remains on the local page if assets are bundled | Desktop build must boot and complete Solo with all network access denied from process start | Release blocker |
@@ -175,16 +183,17 @@ A downloadable build is not release-ready until all of the following pass:
 ## 5 September Storage recovery procedure
 
 1. Confirm Storage object downloads are working again before changing runtime references.
-2. Export the current `arcade_assets` metadata used by Lost Sizzler.
-3. Download the 16 enabled Lost Sizzler music objects first.
+2. Re-read the current Lost Sizzler `arcade_assets` rows and compare them with `SUPABASE-STORAGE-RECOVERY-MANIFEST.md`. Stop if paths, enablement or byte sizes have changed unexpectedly.
+3. Download the 16 enabled Lost Sizzler music objects first in manifest order.
 4. Record for every recovered object:
    - Supabase bucket
    - original object path
-   - byte size
+   - expected and downloaded byte size
    - SHA-256 hash
-   - intended local destination
+   - decode/playback result
+   - intended local destination once reference tracing identifies it
 5. Verify each local file opens/decodes successfully.
-6. Compare the 16 disabled music objects against the enabled generation by size and SHA-256 before downloading/retaining duplicates unnecessarily.
+6. Compare the 16 disabled music objects against the enabled generation by SHA-256 before downloading/retaining duplicates unnecessarily. Equal database byte size alone is not sufficient.
 7. Search the repository for every recovered Supabase URL/object path and replace only references confirmed to belong to Lost Sizzler.
 8. Run Solo regression checks with network access blocked:
    - fresh Solo run
