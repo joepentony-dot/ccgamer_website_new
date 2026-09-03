@@ -17,12 +17,12 @@
  * but only while a real Solo Dungeon run is active. Every special mode and all
  * non-Solo lifecycle states fall straight through to the original R60 installer.
  *
- * Once the final R56 + R60 damage stack exists, this bridge also seals that
- * complete ancestry behind the hurtPlayer property during ordinary Solo play.
- * Retired compatibility polls can therefore no longer expose a transient R56-
- * only owner between maintenance passes. Spy isolation is still allowed to own
- * hurtPlayer temporarily, and later normal-mode wrappers are accepted whenever
- * their ancestry preserves both modern damage owners.
+ * Where the host global is configurable, this bridge can additionally seal the
+ * complete R56 + R60 damage ancestry behind a hurtPlayer property gate during
+ * ordinary Solo play. The canonical browser exposes hurtPlayer as a legacy
+ * non-configurable global, so correctness must not depend on that optional gate:
+ * ancestry-aware installers remain authoritative and an unsupported property
+ * seal must not prevent the composition bridge from becoming stable and retiring.
  */
 (()=>{
   "use strict";
@@ -176,8 +176,7 @@
 
       /* Ideal steady state: the hardening owner is outermost and retains R60. */
       if(current.__ccgV141UiPerformanceLive===true&&chainContains(current,owner)){
-        if(!installSoloHurtGate())return false;
-        state.stable=true;retire();return true
+        installSoloHurtGate();state.stable=true;retire();return true
       }
 
       /* R60 may legitimately be outermost after its 60 ms ownership pass. Its
@@ -185,7 +184,7 @@
          preserved capability on the composed function instead of forcing the
          50 ms hardening monitor to wrap it again. */
       if(current===owner&&chainHasMarker(current.__ccgOriginal,"__ccgV141UiPerformanceLive")){
-        if(!installSoloHurtGate())return false;
+        installSoloHurtGate();
         current.__ccgV141UiPerformanceLive=true;
         state.adoptions++;state.stable=true;retire();return true
       }
