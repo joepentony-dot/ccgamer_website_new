@@ -10,6 +10,7 @@ on:
       - 'arcade/lost-sizzler/assets/**'
       - 'games/games.json'
       - 'scripts/build-lost-sizzler-package-manifest.mjs'
+      - 'scripts/verify-lost-sizzler-package-tree.mjs'
       - '.github/workflows/lost-sizzler-package-readiness.yml'
   push:
     branches:
@@ -22,6 +23,7 @@ on:
       - 'arcade/lost-sizzler/assets/**'
       - 'games/games.json'
       - 'scripts/build-lost-sizzler-package-manifest.mjs'
+      - 'scripts/verify-lost-sizzler-package-tree.mjs'
       - '.github/workflows/lost-sizzler-package-readiness.yml'
 
 permissions:
@@ -39,11 +41,16 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Validate package manifest builder syntax
-        run: node --check scripts/build-lost-sizzler-package-manifest.mjs
+      - name: Validate package tooling syntax
+        run: |
+          node --check scripts/build-lost-sizzler-package-manifest.mjs
+          node --check scripts/verify-lost-sizzler-package-tree.mjs
 
       - name: Verify package asset boundary and hashes
         run: node scripts/build-lost-sizzler-package-manifest.mjs --check
+
+      - name: Verify staged package verifier regressions
+        run: node scripts/verify-lost-sizzler-package-tree.mjs --self-test
 
       - name: Build reproducible package manifest artifact
         run: |
@@ -97,6 +104,28 @@ jobs:
           }
           console.log(`Lost Sizzler package manifest reproducibility/structure passed: ${manifest.fileCount} files, ${manifest.totalBytes} bytes.`);
           NODE
+
+      - name: Materialize and verify exact package tree
+        env:
+          STAGE_ROOT: ${{ runner.temp }}/lost-sizzler-package-stage
+        run: |
+          set -euo pipefail
+          rm -rf "$STAGE_ROOT"
+          mkdir -p "$STAGE_ROOT"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs/promises';
+          import path from 'node:path';
+
+          const manifest = JSON.parse(await fs.readFile('lost-sizzler-package-manifest.json', 'utf8'));
+          const root = process.env.STAGE_ROOT;
+          for (const entry of manifest.files) {
+            const source = path.resolve(entry.sourceRepositoryPath);
+            const destination = path.join(root, ...entry.path.split('/'));
+            await fs.mkdir(path.dirname(destination), { recursive: true });
+            await fs.copyFile(source, destination);
+          }
+          NODE
+          node scripts/verify-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --root "$STAGE_ROOT"
 
       - name: Upload package manifest evidence
         uses: actions/upload-artifact@v4
