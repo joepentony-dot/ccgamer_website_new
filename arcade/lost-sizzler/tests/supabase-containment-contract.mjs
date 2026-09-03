@@ -7,6 +7,7 @@ const assert=(condition,message)=>{if(!condition)throw new Error(`Containment co
 
 const index=read("arcade/lost-sizzler/index.html");
 const gate=read("arcade/lost-sizzler/js/online-services-gate.js");
+const weeklyPresentation=read("arcade/lost-sizzler/js/v10-6-menu-runtime-fix.js");
 const audio=read("arcade/lost-sizzler/js/admin-audio-overrides.js");
 const inventory=read("arcade/lost-sizzler/SUPABASE-MIGRATION-INVENTORY.md");
 const recovery=read("arcade/lost-sizzler/SUPABASE-STORAGE-RECOVERY-MANIFEST.md");
@@ -32,13 +33,19 @@ assert(gate.includes('if(!bridge?.getClient){'),"online scripts must be a fallba
 assert(gate.includes('Boolean(window.ccgSupabase?.getClient||sources)'),"desktop online UI must recognise an injected service bridge as configured");
 assert(gate.includes('proto.getSupabase=async function()'),"multiplayer must remain routed through the central online-services gate");
 assert(gate.includes('gate.activate("multiplayer-network")'),"multiplayer bridge must activate online services explicitly");
-assert(gate.includes('button.dataset.ccgOnlineUnavailable="true"'),"unavailable desktop online controls must be marked and disabled");
+assert(gate.includes('button.dataset.ccgOnlineUnavailable'),"unavailable desktop online controls must be marked and disabled");
 assert(gate.includes('roomCode.disabled=true'),"desktop room-code input must be disabled when online services are unavailable");
 assert(gate.includes('authActions.hidden=true'),"desktop account actions must retain the semantic hidden state when online services are unavailable");
 assert(gate.includes('authActions.classList.add("hidden")'),"desktop account actions must also use the site hidden class so author CSS cannot expose them");
 assert(gate.includes('howto.classList.add("hidden")'),"desktop offline multiplayer instructions must use the site hidden class as well as the hidden attribute");
+assert(gate.includes('new MutationObserver(()=>{if(needsReassertion())schedule()})'),"desktop unavailable controls must remain guarded against later renderer mutations");
+assert(gate.includes('window.addEventListener("ccg:auth-changed",scheduleSettled)'),"desktop unavailable state must be reasserted after asynchronous auth refreshes");
 assert(gate.includes('anchor.classList.contains("menu-exit-link")'),"desktop Exit links must remain under the delivery boundary");
 assert(gate.includes('headerQuit&&menuVisible'),"title-screen QUIT must remain under the desktop delivery boundary");
+
+assert(weeklyPresentation.includes('node?.dataset?.ccgOnlineUnavailable==="true"'),"Weekly presentation must recognise the delivery gate unavailable marker");
+assert(weeklyPresentation.includes('const next=deliveryUnavailable(node)||Boolean(value)'),"Weekly presentation must not re-enable a delivery-disabled Weekly control");
+assert(weeklyPresentation.includes('if(deliveryUnavailable(b))return;'),"Weekly presentation and unranked launch paths must yield to the desktop delivery gate");
 
 assert(audio.includes('window.__CCG_ALLOW_REMOTE_MEDIA__===true'),"remote admin media must require explicit opt-in");
 assert(!audio.includes('return !(automated||local)'),"remote media must not revert to default-on browser detection");
