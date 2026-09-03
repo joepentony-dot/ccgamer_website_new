@@ -21,6 +21,15 @@ const REQUIRED_INPUTS = Object.freeze([
 const FORBIDDEN_PACKAGE_BASENAMES = new Set([
   'ccg-supabase-config.js',
   'ccg-supabase-client.js',
+  'service-account.json',
+  'service_account.json',
+]);
+
+const FORBIDDEN_CREDENTIAL_SUFFIXES = Object.freeze([
+  '.pem',
+  '.key',
+  '.p12',
+  '.pfx',
 ]);
 
 function parseArgs(argv) {
@@ -68,8 +77,39 @@ function assertAllowedPackagePath(relativePath) {
   const normalized = toPosix(relativePath);
   const basename = path.posix.basename(normalized).toLowerCase();
   if (FORBIDDEN_PACKAGE_BASENAMES.has(basename)) {
-    throw new Error(`Desktop package must not contain website Supabase bootstrap file: ${normalized}`);
+    throw new Error(`Desktop package must not contain website bootstrap or credential file: ${normalized}`);
   }
+  if (basename === '.env' || basename.startsWith('.env.')) {
+    throw new Error(`Desktop package must not contain environment credential file: ${normalized}`);
+  }
+  if (FORBIDDEN_CREDENTIAL_SUFFIXES.some((suffix) => basename.endsWith(suffix))) {
+    throw new Error(`Desktop package must not contain private credential material: ${normalized}`);
+  }
+}
+
+function assertPackagePolicyExamples() {
+  const rejected = [
+    'arcade/lost-sizzler/js/ccg-supabase-config.js',
+    'arcade/lost-sizzler/js/ccg-supabase-client.js',
+    'arcade/lost-sizzler/.env',
+    'arcade/lost-sizzler/assets/.env.production',
+    'arcade/lost-sizzler/assets/service-account.json',
+    'arcade/lost-sizzler/assets/private-key.pem',
+    'arcade/lost-sizzler/assets/signing.key',
+    'arcade/lost-sizzler/assets/certificate.p12',
+    'arcade/lost-sizzler/assets/certificate.pfx',
+  ];
+  for (const candidate of rejected) {
+    let failed = false;
+    try {
+      assertAllowedPackagePath(candidate);
+    } catch {
+      failed = true;
+    }
+    if (!failed) throw new Error(`Package credential policy self-check unexpectedly accepted: ${candidate}`);
+  }
+  assertAllowedPackagePath('arcade/lost-sizzler/assets/audio/music/example.mp3');
+  assertAllowedPackagePath('arcade/lost-sizzler/js/game-main.js');
 }
 
 async function statRequired(absolutePath, sourcePath) {
@@ -188,6 +228,7 @@ async function buildManifest() {
 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
+  if (options.check) assertPackagePolicyExamples();
   const manifest = await buildManifest();
   const json = `${JSON.stringify(manifest, null, 2)}\n`;
 
