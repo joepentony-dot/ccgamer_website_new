@@ -21,6 +21,28 @@ await new Promise((resolve,reject)=>{server.once("error",reject);server.listen(0
 const origin=`http://127.0.0.1:${server.address().port}`;
 const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage","--disable-background-networking","--autoplay-policy=no-user-gesture-required"]});
 
+async function waitForFloorEntrySettled(page){
+  try{
+    await page.waitForFunction(()=>mode==="playing"&&document.getElementById("save-panel")?.classList.contains("hidden")===true,null,{timeout:10000})
+  }catch(error){
+    const state=await page.evaluate(()=>{
+      const r43=window.CCGLostSizzlerV141R43SoloSave?.state||{},r59=window.CCGLostSizzlerV141R59LiveRegressionFixes?.state||{};
+      return{
+        floor:Number(run?.floor||0),mode:typeof mode==="string"?mode:null,playMode:typeof playMode==="string"?playMode:null,
+        runActive:document.body.dataset.runActive||"",savePromptReason:typeof savePromptReason==="string"?savePromptReason:null,
+        savePanelVisible:Boolean(UI?.savePanel&&!UI.savePanel.classList.contains("hidden")),
+        savedFloor:Number(window.CCGLostSizzlerV141R43SoloSave?.readEnvelope?.()?.summary?.floor||0),
+        r43:{autosaves:Number(r43.autosaves||0),lastAutoSaveKey:String(r43.lastAutoSaveKey||""),entryFloorKey:String(r43.entryFloorKey||""),offerOwnerInstalls:Number(r43.offerOwnerInstalls||0),automaticPromptSuppressions:Number(r43.automaticPromptSuppressions||0),floorEntrySettleSchedules:Number(r43.floorEntrySettleSchedules||0),floorEntrySettles:Number(r43.floorEntrySettles||0),lastError:String(r43.lastError||"")},
+        r59:{soloFloorAutosaves:Number(r59.soloFloorAutosaves||0),soloSaveTransitionInstalls:Number(r59.soloSaveTransitionInstalls||0),lastError:String(r59.lastError||"")},
+        offerOwner:Boolean(window.offerFloorSave?.__ccgV141R43AutoSaveOwner),
+        captureOwner:Boolean(window.captureFloorEntryCheckpoint?.__ccgV141R59SoloAutosave)
+      }
+    });
+    console.error("R42_FLOOR_ENTRY_SETTLE_TIMEOUT "+JSON.stringify(state));
+    throw error
+  }
+}
+
 try{
   const context=await browser.newContext({viewport:{width:1600,height:900}}),page=await context.newPage();page.setDefaultTimeout(45000);
   const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
@@ -45,21 +67,21 @@ try{
   assert.equal(ownership.controller,"dungeon-solo","browser regression must execute under the Solo Dungeon controller");
 
   // Exercise the real Floor 1 completion/descent path rather than mutating the
-  // floor number. The existing Floor 2 checkpoint prompt is intentionally left
-  // intact and is dismissed only after the transition recovery has run.
+  // floor number. Standard Solo now autosaves Floor 2 and deterministically
+  // settles any delayed legacy entry prompt after the core's 120 ms timer.
   await page.evaluate(()=>floorComplete("R42 REGRESSION"));
   await page.waitForSelector("#floor-complete:not(.hidden)");
   await page.click("#descend-btn");
   await page.waitForFunction(()=>run?.floor===2&&Boolean(world)&&Boolean(host)&&Boolean(p1),null,{timeout:15000});
   await page.waitForTimeout(260);
   if(await page.locator("#save-panel").isVisible())await page.click("#save-continue-btn");
-  await page.waitForFunction(()=>mode==="playing"&&document.getElementById("save-panel")?.classList.contains("hidden")===true,null,{timeout:10000});
+  await waitForFloorEntrySettled(page);
   const transition=await page.evaluate(()=>{
-    const api=window.CCGLostSizzlerV141R42SoloLiveRecovery;api.monitor();
-    return{floor:run.floor,mode,active:document.body.dataset.runActive,world:Boolean(world),host:Boolean(host),player:Boolean(p1),recoveries:api.state.transitionRecoveries,lastFloor:api.state.lastTransitionFloor,width:canvas.width,height:canvas.height}
+    const api=window.CCGLostSizzlerV141R42SoloLiveRecovery,r43=window.CCGLostSizzlerV141R43SoloSave?.state||{};api.monitor();
+    return{floor:run.floor,mode,active:document.body.dataset.runActive,world:Boolean(world),host:Boolean(host),player:Boolean(p1),recoveries:api.state.transitionRecoveries,lastFloor:api.state.lastTransitionFloor,width:canvas.width,height:canvas.height,r43SettleSchedules:Number(r43.floorEntrySettleSchedules||0),r43Settles:Number(r43.floorEntrySettles||0),r43PromptSuppressions:Number(r43.automaticPromptSuppressions||0),savedFloor:Number(window.CCGLostSizzlerV141R43SoloSave?.readEnvelope?.()?.summary?.floor||0)}
   });
   assert.equal(transition.floor,2,"real Solo descent must reach Floor 2");
-  assert.equal(transition.mode,"playing","Floor 2 must return to live gameplay after the checkpoint prompt is dismissed");
+  assert.equal(transition.mode,"playing","Floor 2 must return to live gameplay after autosave prompt settling");
   assert.equal(transition.active,"true","Floor 2 must keep the run active");
   assert.equal(transition.world,true,"Floor 2 must own a generated world");
   assert.equal(transition.host,true,"Floor 2 must own a host simulation");
@@ -67,6 +89,8 @@ try{
   assert.ok(transition.recoveries>=1,"r42 must run a post-descent live-state recovery");
   assert.equal(transition.lastFloor,2,"r42 must record the recovered floor");
   assert.ok(transition.width>0&&transition.height>0,"Floor 2 canvas must retain a valid backing size");
+  assert.equal(transition.savedFloor,2,"Floor 2 entry autosave must exist before live gameplay continues");
+  assert.ok(transition.r43SettleSchedules>=1&&transition.r43Settles>=1,"real Floor 2 descent must execute the deterministic r43 post-timer settle path");
 
   // Capture a known lit frame, paint a silent black frame without throwing an
   // exception, then force two watchdog probes synchronously. The second probe
@@ -150,7 +174,7 @@ try{
 
   await page.waitForTimeout(300);
   assert.deepEqual(errors,[],`r42 Solo floor/render/combat regression must not produce page errors: ${errors.join("\n")}`);
-  console.log("V10.41 r42 Solo Floor 1→2, black-frame and combat-liveness browser regression passed.");
+  console.log("V10.41 r42 Solo Floor 1→2, autosave settle, black-frame and combat-liveness browser regression passed.");
 }finally{
   await browser.close();
   for(const socket of sockets)socket.destroy();
