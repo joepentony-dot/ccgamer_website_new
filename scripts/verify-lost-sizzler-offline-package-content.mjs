@@ -151,8 +151,8 @@ function runSelfTest() {
 
   const validRuntime = runtimeFixtureSource();
   validateRuntimeAudioMap(validRuntime);
-  expectRuntimeFailure(validRuntime.replace('assets/audio/music/exploration.wav', 'assets/audio/music/missing.wav'), 'music role normal');
-  expectRuntimeFailure(validRuntime.replace('[\"assets/audio/music/danger.wav\"]', '[]'), 'playlist danger');
+  expectRuntimeFailure(validRuntime.replace('"normal":"assets/audio/music/exploration.wav"', '"normal":"assets/audio/music/missing.wav"'), 'music role normal');
+  expectRuntimeFailure(validRuntime.replace('["assets/audio/music/danger.wav"]', '[]'), 'playlist danger');
 
   console.log(`Lost Sizzler offline package content self-test passed: ${REQUIRED_OFFLINE_AUDIO.length} minimum local music roles and runtime bindings are independently enforced.`);
 }
