@@ -83,6 +83,15 @@
   function installNavigationBoundary(){
     if(!delivery.isDesktop)return;
     document.addEventListener("click",event=>{
+      const headerQuit=event.target?.closest?.("#quit-btn");
+      const menu=document.getElementById("menu");
+      const menuVisible=Boolean(menu&&!menu.classList.contains("hidden")&&document.body?.dataset?.runActive!=="true");
+      if(headerQuit&&menuVisible){
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        exitDelivery();
+        return
+      }
       const anchor=event.target?.closest?.("a[href]");
       if(!anchor)return;
       const href=String(anchor.getAttribute("href")||"").trim();
@@ -93,6 +102,30 @@
       openExternal(href,anchor.closest("#weekly-auth-actions")?"account-auth":"external-link");
     },true);
     document.documentElement.dataset.ccgDeliveryMode=delivery.mode;
+  }
+
+  function installNetworkGateBridge(){
+    let attempts=0;
+    const install=()=>{
+      const proto=window.CCGNetwork?.RoomNetwork?.prototype;
+      if(!proto)return false;
+      if(proto.__ccgOnlineServicesGateBridge===true)return true;
+      proto.getSupabase=async function(){
+        if(window.ccgSupabase?.getClient)return window.ccgSupabase.getClient();
+        const gate=window.CCGLostSizzlerOnlineServices;
+        if(!gate?.activate)return null;
+        try{return await gate.activate("multiplayer-network")}
+        catch(error){console.warn("[Lost Sizzler] multiplayer online-services activation failed",error);return null}
+      };
+      proto.__ccgOnlineServicesGateBridge=true;
+      return true
+    };
+    if(install())return;
+    const timer=setInterval(()=>{
+      attempts++;
+      if(install()||attempts>=400)clearInterval(timer)
+    },25);
+    window.addEventListener("pagehide",()=>clearInterval(timer),{once:true});
   }
 
   function loadScript(src,marker){
@@ -189,6 +222,7 @@
   }
 
   installNavigationBoundary();
+  installNetworkGateBridge();
   document.addEventListener("click",intercept,true);
   window.addEventListener("pagehide",()=>document.removeEventListener("click",intercept,true),{once:true});
 
