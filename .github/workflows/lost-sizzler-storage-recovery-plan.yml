@@ -62,6 +62,32 @@ jobs:
           console.log('Lost Sizzler Storage recovery workflow is locked to workflow_dispatch only.');
           NODE
 
+          node <<'NODE'
+          const fs = require('node:fs');
+          const assert = require('node:assert/strict');
+
+          const path = 'scripts/recover-lost-sizzler-enabled-storage.mjs';
+          const source = fs.readFileSync(path, 'utf8').replace(/\r\n/g, '\n');
+          const downloadStart = source.indexOf('async function downloadTo(url, destination) {');
+          const promotionFunction = source.indexOf('function promoteVerifiedDownload(partial, destination) {');
+          const hashIndex = source.indexOf('const sha256 = sha256File(partial);');
+          const sizeGuard = source.indexOf('if (!sizeMatches) fail(');
+          const probeGuard = source.indexOf('if (args.probe && !probe?.ok) fail(');
+          const promoteIndex = source.indexOf('promoteVerifiedDownload(partial, destination);');
+
+          assert.ok(downloadStart >= 0 && promotionFunction > downloadStart, 'recovery downloader must retain a distinct download and promotion boundary');
+          const downloadBody = source.slice(downloadStart, promotionFunction);
+          assert.ok(downloadBody.includes("fs.writeFileSync(partial, Buffer.concat(chunks, bytes), { flag: 'wx' });"), 'download must land in an exclusive .partial file');
+          assert.ok(!downloadBody.includes('fs.renameSync('), 'download phase must not promote bytes before verification');
+          assert.ok(hashIndex > promotionFunction, 'SHA-256 must be calculated from the partial file after download');
+          assert.ok(sizeGuard > hashIndex, 'byte-size verification must follow SHA-256 collection');
+          assert.ok(probeGuard > sizeGuard, 'optional ffprobe verification must remain after byte-size verification');
+          assert.ok(promoteIndex > probeGuard, 'final filename promotion must occur only after size and optional ffprobe guards');
+          assert.ok(source.includes('if (fs.existsSync(destination)) fail(`Refusing to overwrite existing recovery file: ${destination}`);'), 'promotion must continue refusing an existing final recovery file');
+
+          console.log('Lost Sizzler recovered objects are promoted only after verification.');
+          NODE
+
           node scripts/recover-lost-sizzler-enabled-storage.mjs \
             --storage-base-url "$BASE" \
             --plan \
