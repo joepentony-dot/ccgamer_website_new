@@ -133,9 +133,7 @@
     }
     const source=live.install;
     const protectedInstall=function installV141R60ChainAwareMaintenance(){
-      if(!soloDungeon()){
-        const result=source.apply(this,arguments);installSoloHurtGate();return result
-      }
+      if(!soloDungeon())return source.apply(this,arguments);
       const moveCurrent=window.movePlayer,updateCurrent=window.update;
       const moveOwned=chainHasMarker(moveCurrent,"__ccgV141R60CadenceSeal");
       const updateOwned=chainHasMarker(updateCurrent,"__ccgV141R60TimeSmoothing");
