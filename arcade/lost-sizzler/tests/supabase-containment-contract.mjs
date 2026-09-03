@@ -9,6 +9,7 @@ const index=read("arcade/lost-sizzler/index.html");
 const gate=read("arcade/lost-sizzler/js/online-services-gate.js");
 const main=read("arcade/lost-sizzler/js/game-main.js");
 const runtime=read("arcade/lost-sizzler/js/v10-6-runtime.js");
+const insights=read("arcade/lost-sizzler/js/v10-8-player-insights.js");
 const weeklyPresentation=read("arcade/lost-sizzler/js/v10-6-menu-runtime-fix.js");
 const audio=read("arcade/lost-sizzler/js/admin-audio-overrides.js");
 const inventory=read("arcade/lost-sizzler/SUPABASE-MIGRATION-INVENTORY.md");
@@ -45,6 +46,15 @@ assert(gate.includes('new MutationObserver(()=>{if(needsReassertion())schedule()
 assert(gate.includes('window.addEventListener("ccg:auth-changed",scheduleSettled)'),"desktop unavailable state must be reasserted after asynchronous auth refreshes");
 assert(gate.includes('anchor.classList.contains("menu-exit-link")'),"desktop Exit links must remain under the delivery boundary");
 assert(gate.includes('headerQuit&&menuVisible'),"title-screen QUIT must remain under the desktop delivery boundary");
+assert(gate.includes('function publicGameUrl()'),"delivery gate must expose one public Lost Sizzler URL authority");
+assert(gate.includes('page_url:publicGameUrl()'),"desktop online payloads carrying page_url must be rewritten to the public Lost Sizzler URL");
+assert(gate.includes('__ccgLostSizzlerDesktopPayloadGuard'),"desktop online client payload sanitation must remain idempotent");
+assert(gate.includes('form.id!=="v104-feedback-form"'),"explicit feedback submission must remain under the central online-services boundary");
+assert(gate.includes('await activate("feedback-submit")'),"Feedback Submit must be able to lazily activate online services");
+assert(gate.includes('#ccg-rating-panel [data-rating]'),"rating-star submission must remain under the central online-services boundary");
+assert(gate.includes('await activate("rating-submit")'),"rating submission must be able to lazily activate online services");
+assert(gate.includes('publicGameUrl,'),"public game URL must be exposed through the desktop delivery API");
+assert(!insights.includes('CCGLostSizzlerOnlineServices.activate'),"background player-insight telemetry must remain passive and must not self-activate online services");
 
 assert(main.includes('function questShareUrl()'),"generic game sharing must have a delivery-aware URL helper");
 assert(main.includes('delivery?.isDesktop&&typeof delivery.websiteUrl==="function"'),"desktop sharing must use the delivery adapter instead of the packaged page URL");
