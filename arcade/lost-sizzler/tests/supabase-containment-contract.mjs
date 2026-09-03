@@ -8,6 +8,7 @@ const assert=(condition,message)=>{if(!condition)throw new Error(`Containment co
 const index=read("arcade/lost-sizzler/index.html");
 const gate=read("arcade/lost-sizzler/js/online-services-gate.js");
 const main=read("arcade/lost-sizzler/js/game-main.js");
+const runtime=read("arcade/lost-sizzler/js/v10-6-runtime.js");
 const weeklyPresentation=read("arcade/lost-sizzler/js/v10-6-menu-runtime-fix.js");
 const audio=read("arcade/lost-sizzler/js/admin-audio-overrides.js");
 const inventory=read("arcade/lost-sizzler/SUPABASE-MIGRATION-INVENTORY.md");
@@ -49,6 +50,12 @@ assert(main.includes('delivery?.isDesktop&&typeof delivery.websiteUrl==="functio
 assert(main.includes('delivery.websiteUrl("/arcade/lost-sizzler/")'),"desktop sharing must resolve to the public Lost Sizzler website URL");
 assert(main.includes('const url=questShareUrl();'),"shareQuest must consume the delivery-aware public URL");
 assert(main.includes('navigator.clipboard.writeText(url)'),"clipboard sharing must use the delivery-aware share URL");
+
+assert(runtime.includes('delivery?.isDesktop&&typeof delivery.websiteUrl==="function"?delivery.websiteUrl("/arcade/lost-sizzler/"):location.href'),"desktop multiplayer invites must use the public CCG Lost Sizzler base URL while web invitations keep the live page URL");
+assert(runtime.includes('url.searchParams.set("room",code)'),"multiplayer invites must retain the room code");
+assert(runtime.includes('url.searchParams.set("mode",String(roomMode||"dungeon"))'),"multiplayer invites must retain the room mode");
+assert(runtime.includes('navigator.clipboard.writeText(invite.value)'),"Copy Invite must use the delivery-aware invite field");
+assert(runtime.includes('url:invite.value'),"Share Invite must use the same delivery-aware invite field");
 
 assert(weeklyPresentation.includes('node?.dataset?.ccgOnlineUnavailable==="true"'),"Weekly presentation must recognise the delivery gate unavailable marker");
 assert(weeklyPresentation.includes('const next=deliveryUnavailable(node)||Boolean(value)'),"Weekly presentation must not re-enable a delivery-disabled Weekly control");
