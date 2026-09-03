@@ -49,6 +49,7 @@ assert.match(runtime,/X — EXTRACT COMPLETE SIZZLER CASE/,"completed-case extra
 assert.match(runtime,/for\(const key of \["enemies","generators","traps","hazardRooms","arenas","timedRooms"/,"Spy boundary must continuously remove ordinary Dungeon combat and hazard collections");
 assert.match(runtime,/campStates\?\.clear/,"ordinary Dungeon idle/camping state must not survive inside Spy");
 assert.match(runtime,/function spyHurtOwner[\s\S]*if\(spyActive\(\)\)\{state\.dungeonDamageBlocked\+\+;return false\}/,"ordinary Dungeon hurtPlayer damage must be rejected while Spy owns combat");
+assert.match(runtime,/const delegate=typeof spyHurtOwner\.__ccgOriginal==="function"\?spyHurtOwner\.__ccgOriginal:state\.baseHurt/,"Spy damage boundary must retain a durable passthrough delegate outside Spy mode");
 assert.doesNotMatch(runtime,/window\.update=spyUpdateOwner/,"Spy engine must not replace the authoritative controller update boundary");
 assert.doesNotMatch(runtime,/function spyUpdateOwner/,"obsolete Spy global-update owner must be removed");
 
@@ -66,7 +67,10 @@ assert.match(controller,/window\.CCGLostSizzlerV141R29SpyEngine\?\.leaveIsolatio
 assert.match(runtime,/window\.CCGLostSizzlerModeRuntime=runtimeRegistry/,"mode runtime registry must expose the isolation boundary");
 assert.match(runtime,/isolatedRules:true,sharedRenderer:true/,"Spy must own rules while deliberately sharing only the renderer");
 assert.match(runtime,/state\.timer=setInterval\(monitor,MONITOR_MS\)/,"Spy movement/damage ownership must still be monitored while the mode is active");
-assert.match(runtime,/window\.movePlayer=spyMoveOwner;window\.hurtPlayer=spyHurtOwner/,"entering Spy must atomically own only movement and damage, not the global update frame");
+assert.match(runtime,/const currentHurt=window\.hurtPlayer,hurtAlreadyComposed=ownerChainHas\(currentHurt,spyHurtOwner\)/,"Spy entry must inspect the live damage-owner ancestry before installing its boundary");
+assert.match(runtime,/if\(!hurtAlreadyComposed\)\{state\.baseHurt=currentHurt;spyHurtOwner\.__ccgOriginal=currentHurt;window\.hurtPlayer=spyHurtOwner\}/,"Spy entry must install its damage boundary with the current owner as its delegate");
+assert.match(runtime,/window\.movePlayer=spyMoveOwner;suppressLegacyPhysicalBuilder\(\)/,"entering Spy must still synchronously own movement without replacing the global update frame");
+assert.match(runtime,/if\(state\.isolated&&!ownerChainHas\(window\.hurtPlayer,spyHurtOwner\)\)/,"Spy monitor must preserve later damage wrappers that already compose around its boundary");
 assert.doesNotMatch(movementFinalizer,/window\.update=function updateV141SpyRespawnFinal/,"Spy respawn finalizer must not add another global update wrapper");
 assert.match(movementFinalizer,/controllerOwnedRespawns:true/,"Spy respawns must declare controller-owned execution");
 
