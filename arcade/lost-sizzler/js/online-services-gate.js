@@ -61,6 +61,18 @@
     return explicit||null
   }
 
+  function catalogueUrl(){
+    if(deliveryMode==="web")return "/games/games.json";
+    if(typeof rawDelivery.resolveLocalAsset==="function"){
+      try{
+        const resolved=rawDelivery.resolveLocalAsset("games/games.json",{kind:"collectible-catalogue"});
+        if(resolved)return String(resolved)
+      }catch(error){console.warn("[Lost Sizzler] desktop local-asset resolver failed for games/games.json",error)}
+    }
+    const explicit=String(rawDelivery.catalogueUrl||"").trim();
+    return explicit||null
+  }
+
   const delivery=Object.freeze({
     mode:deliveryMode,
     isDesktop:deliveryMode!=="web",
@@ -68,7 +80,8 @@
     websiteUrl,
     publicGameUrl,
     onlineScriptSources,
-    versionManifestUrl
+    versionManifestUrl,
+    catalogueUrl
   });
 
   function quarantineOfflineBridge(){
@@ -219,9 +232,9 @@
       const roomCode=document.getElementById("room-code");
       if(roomCode&&!roomCode.disabled)return true;
       const howto=document.querySelector(".online-howto");
-      if(howto&&(!howto.hidden||!howto.classList.contains("hidden")))return true;
+      if(howto&&(!howto.hidden||!howto.classList.contains("hidden")))return true
       const authActions=document.getElementById("weekly-auth-actions");
-      if(authActions&&(!authActions.hidden||!authActions.classList.contains("hidden")))return true;
+      if(authActions&&(!authActions.hidden||!authActions.classList.contains("hidden")))return true
       return false
     };
     const schedule=()=>{
@@ -487,7 +500,8 @@
     openExternal,
     exit:exitDelivery,
     onlineScriptSources,
-    versionManifestUrl
+    versionManifestUrl,
+    catalogueUrl
   };
   window.CCGLostSizzlerOnlineServices={activate,refreshWeekly,get state(){return{...state,promise:Boolean(state.promise),deliveryMode:delivery.mode,onlineEnabled:delivery.onlineEnabled}}};
 })();
