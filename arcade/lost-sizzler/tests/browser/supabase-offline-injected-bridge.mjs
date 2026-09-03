@@ -68,11 +68,16 @@ try{
   const page=await context.newPage();
   page.setDefaultTimeout(45000);
   const pageErrors=[];
-  const remoteRequests=[];
+  const supabaseRequests=[];
+  const nonLocalRequests=[];
   page.on("pageerror",error=>pageErrors.push(String(error?.stack||error)));
   page.on("request",request=>{
     const url=request.url();
-    if(/\/js\/ccg-supabase-(?:config|client)\.js(?:\?|$)/i.test(url)||/\.supabase\.co(?:\/|$)/i.test(url))remoteRequests.push(url)
+    if(/\/js\/ccg-supabase-(?:config|client)\.js(?:\?|$)/i.test(url)||/\.supabase\.co(?:\/|$)/i.test(url))supabaseRequests.push(url);
+    try{
+      const parsed=new URL(url);
+      if(/^https?:$/i.test(parsed.protocol)&&parsed.origin!==origin)nonLocalRequests.push(url)
+    }catch(_){}
   });
 
   await page.goto(gameUrl,{waitUntil:"domcontentloaded"});
@@ -125,7 +130,7 @@ try{
   });
 
   assert.deepEqual(pageErrors,[],`desktop-offline injected-bridge regression must have no page errors: ${pageErrors.join("\n")}`);
-  assert.deepEqual(remoteRequests,[],`desktop-offline injected-bridge regression must make no Supabase request: ${remoteRequests.join("\n")}`);
+  assert.deepEqual(supabaseRequests,[],`desktop-offline injected-bridge regression must make no Supabase request: ${supabaseRequests.join("\n")}`);
   assert.equal(contract.onlineEnabled,false,"desktop-offline must expose onlineEnabled=false");
   assert.equal(contract.bridgeReplaced,true,"desktop-offline must replace a pre-injected online-services bridge");
   assert.equal(contract.offlineStub,true,"desktop-offline replacement bridge must be the containment offline stub");
@@ -137,7 +142,14 @@ try{
   assert.equal(contract.originalGetClientCalls,0,"the quarantined pre-injected bridge must never be consulted in desktop-offline");
   assert.equal(contract.active,false,"desktop-offline must remain inactive after all blocked online actions");
 
-  console.log("Lost Sizzler desktop-offline injected Supabase bridge quarantine passed in Chromium.");
+  await page.locator("#solo-btn").click();
+  await page.waitForFunction(()=>document.body.dataset.runActive==="true");
+  await page.waitForTimeout(1200);
+  assert.equal(await page.evaluate(()=>window.CCGLostSizzlerOnlineServices?.state?.active),false,"desktop-offline Solo must not activate online services");
+  assert.deepEqual(supabaseRequests,[],`desktop-offline Solo must make no Supabase request: ${supabaseRequests.join("\n")}`);
+  assert.deepEqual(nonLocalRequests,[],`desktop-offline boot and Solo must make no HTTP(S) request outside the packaged/local origin: ${nonLocalRequests.join("\n")}`);
+
+  console.log("Lost Sizzler desktop-offline injected bridge and non-local network quarantine passed in Chromium.");
   await context.close();
 }finally{
   await browser.close();
