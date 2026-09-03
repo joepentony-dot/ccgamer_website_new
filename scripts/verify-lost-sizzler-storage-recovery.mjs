@@ -11,15 +11,16 @@ const EXPECTED_PAIR_COUNT=16;
 const EXPECTED_ENABLED_BYTES=72_233_137;
 
 function usage(){
-  console.log(`Lost Sizzler Storage recovery verifier (read-only)\n\nUsage:\n  node scripts/verify-lost-sizzler-storage-recovery.mjs --manifest-check\n  node scripts/verify-lost-sizzler-storage-recovery.mjs --enabled-dir <dir> [--disabled-dir <dir>] [--probe] [--report <file>]\n\nOptions:\n  --manifest <file>      Override the frozen Markdown manifest path.\n  --manifest-check       Validate the frozen 16-pair manifest without requiring downloads.\n  --enabled-dir <dir>    Directory containing the 16 enabled downloads.\n  --disabled-dir <dir>   Optional directory containing the 16 disabled counterparts.\n  --probe                Run ffprobe against recovered files and fail on decode/probe errors.\n  --report <file>        Write a JSON verification report. Source files and manifest stay unchanged.\n  --help                 Show this help.\n\nFile lookup accepts each Storage basename, the original filename, or a mirrored Storage path beneath the supplied directory.\nNo network, upload, delete, rename, overwrite or Supabase mutation is performed.`)
+  console.log(`Lost Sizzler Storage recovery verifier (read-only)\n\nUsage:\n  node scripts/verify-lost-sizzler-storage-recovery.mjs --manifest-check\n  node scripts/verify-lost-sizzler-storage-recovery.mjs --self-test\n  node scripts/verify-lost-sizzler-storage-recovery.mjs --enabled-dir <dir> [--disabled-dir <dir>] [--probe] [--report <file>]\n\nOptions:\n  --manifest <file>      Override the frozen Markdown manifest path.\n  --manifest-check       Validate the frozen 16-pair manifest without requiring downloads.\n  --self-test            Prove equal byte size cannot override differing SHA-256 values.\n  --enabled-dir <dir>    Directory containing the 16 enabled downloads.\n  --disabled-dir <dir>   Optional directory containing the 16 disabled counterparts.\n  --probe                Run ffprobe against recovered files and fail on decode/probe errors.\n  --report <file>        Write a JSON verification report. Source files and manifest stay unchanged.\n  --help                 Show this help.\n\nFile lookup accepts each Storage basename, the original filename, or a mirrored Storage path beneath the supplied directory.\nNo network, upload, delete, rename, overwrite or Supabase mutation is performed.`)
 }
 
 function parseArgs(argv){
-  const out={manifest:defaultManifest,manifestCheck:false,enabledDir:"",disabledDir:"",probe:false,report:"",help:false};
+  const out={manifest:defaultManifest,manifestCheck:false,selfTest:false,enabledDir:"",disabledDir:"",probe:false,report:"",help:false};
   for(let i=0;i<argv.length;i++){
     const arg=argv[i];
     if(arg==="--manifest")out.manifest=path.resolve(argv[++i]||"");
     else if(arg==="--manifest-check")out.manifestCheck=true;
+    else if(arg==="--self-test")out.selfTest=true;
     else if(arg==="--enabled-dir")out.enabledDir=path.resolve(argv[++i]||"");
     else if(arg==="--disabled-dir")out.disabledDir=path.resolve(argv[++i]||"");
     else if(arg==="--probe")out.probe=true;
@@ -98,6 +99,31 @@ function sha256(file){
   })
 }
 
+function hashBytes(value){
+  return crypto.createHash("sha256").update(value).digest("hex")
+}
+
+function classifyPair(enabled,disabled){
+  if(!enabled?.present||!disabled?.present)return"ENABLED ONLY";
+  return enabled.sha256===disabled.sha256?"HASH IDENTICAL":"HASH DIFFERENT"
+}
+
+function runSelfTest(){
+  const left=Buffer.from("AAAA","utf8");
+  const right=Buffer.from("BBBB","utf8");
+  if(left.length!==right.length)throw new Error("Self-test fixture must use equal byte sizes.");
+  const leftHash=hashBytes(left);
+  const rightHash=hashBytes(right);
+  if(leftHash===rightHash)throw new Error("Self-test fixture unexpectedly produced equal SHA-256 values.");
+  const different=classifyPair({present:true,bytes:left.length,sha256:leftHash},{present:true,bytes:right.length,sha256:rightHash});
+  if(different!=="HASH DIFFERENT")throw new Error(`Equal-size/different-hash self-test misclassified pair as ${different}.`);
+  const identical=classifyPair({present:true,bytes:left.length,sha256:leftHash},{present:true,bytes:left.length,sha256:leftHash});
+  if(identical!=="HASH IDENTICAL")throw new Error(`Equal-hash self-test misclassified pair as ${identical}.`);
+  const missing=classifyPair({present:true,bytes:left.length,sha256:leftHash},null);
+  if(missing!=="ENABLED ONLY")throw new Error(`Missing-counterpart self-test misclassified pair as ${missing}.`);
+  console.log("Lost Sizzler recovery verifier self-test passed: equal byte size cannot override differing SHA-256 values.")
+}
+
 function probeFile(file){
   const result=spawnSync("ffprobe",["-v","error","-show_entries","format=duration","-show_entries","stream=codec_name,codec_type","-of","json",file],{encoding:"utf8"});
   if(result.error){
@@ -137,12 +163,13 @@ function displayPath(file){
 async function main(){
   const args=parseArgs(process.argv.slice(2));
   if(args.help){usage();return}
+  if(args.selfTest){runSelfTest();return}
   const {rows,total}=parseManifest(args.manifest);
   if(args.manifestCheck){
     console.log(`Lost Sizzler recovery manifest OK: ${rows.length} pairs, ${total.toLocaleString("en-GB")} enabled bytes.`);
     return
   }
-  if(!args.enabledDir){usage();throw new Error("--enabled-dir is required unless --manifest-check is used.")}
+  if(!args.enabledDir){usage();throw new Error("--enabled-dir is required unless --manifest-check or --self-test is used.")}
   if(!fs.existsSync(args.enabledDir)||!fs.statSync(args.enabledDir).isDirectory())throw new Error(`Enabled recovery directory not found: ${args.enabledDir}`);
   if(args.disabledDir&&(!fs.existsSync(args.disabledDir)||!fs.statSync(args.disabledDir).isDirectory()))throw new Error(`Disabled recovery directory not found: ${args.disabledDir}`);
 
@@ -163,8 +190,7 @@ async function main(){
         if(args.probe&&!disabled.probe?.ok)failures.push(`#${row.number} disabled decode/probe failed: ${disabled.probe?.error||"unknown"}`)
       }
     }
-    let pairStatus="ENABLED ONLY";
-    if(disabled?.present&&enabled.present)pairStatus=enabled.sha256===disabled.sha256?"HASH IDENTICAL":"HASH DIFFERENT";
+    const pairStatus=classifyPair(enabled,disabled);
     results.push({manifest:row,enabled,disabled,pairStatus});
     console.log(`${String(row.number).padStart(2,"0")} ${row.playlist}/${row.originalFile} | enabled ${enabled.present?(enabled.sizeMatches?"SIZE OK":"SIZE BAD"):"MISSING"} | ${args.disabledDir?`disabled ${disabled?.present?(disabled.sizeMatches?"SIZE OK":"SIZE BAD"):"MISSING"} | ${pairStatus}`:"disabled NOT CHECKED"}`)
   }
