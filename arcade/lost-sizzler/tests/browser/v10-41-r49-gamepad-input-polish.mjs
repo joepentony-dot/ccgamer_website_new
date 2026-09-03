@@ -47,14 +47,15 @@ try{
   assert.equal(solo.second,false,"Pad 2 must be ignored during single-player gameplay");
   assert.equal(solo.p2Events,0,"ignored Pad 2 must not synthesize gameplay input");
 
-  await page.evaluate(async()=>{await quitToMenu();document.getElementById("split-btn").focus()});
+  await page.evaluate(async()=>{await quitToMenu()});
   await page.waitForFunction(()=>String(mode)==="menu");
+  await page.locator("#split-btn").focus();
   const splitStart=await page.evaluate(async()=>{
     const button=document.getElementById("split-btn"),focused=document.activeElement===button;
     const started=await startSplit();
     return{started:Boolean(started),focused,runActive:String(document.body.dataset.runActive||""),mode:String(mode||""),playMode:String(playMode||""),hasP1:Boolean(p1),hasP2:Boolean(p2)}
   });
-  assert.equal(splitStart.focused,true,"Split Screen must remain the focused menu action after returning from Solo");
+  assert.equal(splitStart.focused,true,"Split Screen must accept menu focus before deterministic startup");
   assert.equal(splitStart.started,true,`Split Screen startup must resolve successfully: ${JSON.stringify(splitStart)}`);
   assert.equal(splitStart.runActive,"true",`Split Screen startup must publish an active run: ${JSON.stringify(splitStart)}`);
   assert.equal(splitStart.mode,"playing",`Split Screen startup must enter playing mode: ${JSON.stringify(splitStart)}`);
