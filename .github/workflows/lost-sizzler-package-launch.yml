@@ -1,0 +1,38 @@
+name: Lost Sizzler Package Launch
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/select-lost-sizzler-launch-package.mjs'
+      - 'scripts/verify-lost-sizzler-package-tree.mjs'
+      - '.github/workflows/lost-sizzler-package-launch.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/select-lost-sizzler-launch-package.mjs'
+      - 'scripts/verify-lost-sizzler-package-tree.mjs'
+      - '.github/workflows/lost-sizzler-package-launch.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verified-launch-selection:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate launch-selection tooling syntax
+        run: |
+          node --check scripts/select-lost-sizzler-launch-package.mjs
+          node --check scripts/verify-lost-sizzler-package-tree.mjs
+
+      - name: Prove cryptographically gated package launch
+        run: node scripts/select-lost-sizzler-launch-package.mjs --self-test
