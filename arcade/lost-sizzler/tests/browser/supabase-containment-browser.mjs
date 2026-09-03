@@ -211,9 +211,18 @@ try{
   {
     const context=await browser.newContext({viewport:{width:1440,height:900}});
     await context.addInitScript(()=>{
-      const client={
-        functions:{invoke:async(name,options)=>{window.__ccgInvokeCapture={name:String(name||""),body:options?.body?JSON.parse(JSON.stringify(options.body)):null};return{data:{ok:false,error:"browser containment offline stub"},error:null}}}
-      };
+      const client={};
+      Object.defineProperty(client,"functions",{
+        configurable:true,
+        get(){
+          return{
+            invoke:async(name,options)=>{
+              window.__ccgInvokeCapture={name:String(name||""),body:options?.body?JSON.parse(JSON.stringify(options.body)):null};
+              return{data:{ok:false,error:"browser containment offline stub"},error:null}
+            }
+          }
+        }
+      });
       window.__ccgInjectedClient=client;
       window.ccgSupabase={getClient:async()=>client};
       window.__CCG_LOST_SIZZLER_DELIVERY__={
