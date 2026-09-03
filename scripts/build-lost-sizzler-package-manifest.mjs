@@ -18,6 +18,11 @@ const REQUIRED_INPUTS = Object.freeze([
   { source: 'games/games.json', classification: 'catalogue' },
 ]);
 
+const FORBIDDEN_PACKAGE_BASENAMES = new Set([
+  'ccg-supabase-config.js',
+  'ccg-supabase-client.js',
+]);
+
 function parseArgs(argv) {
   const options = { check: false, output: null };
   for (let i = 0; i < argv.length; i += 1) {
@@ -59,6 +64,14 @@ function classify(relativePath, fallback) {
   return fallback;
 }
 
+function assertAllowedPackagePath(relativePath) {
+  const normalized = toPosix(relativePath);
+  const basename = path.posix.basename(normalized).toLowerCase();
+  if (FORBIDDEN_PACKAGE_BASENAMES.has(basename)) {
+    throw new Error(`Desktop package must not contain website Supabase bootstrap file: ${normalized}`);
+  }
+}
+
 async function statRequired(absolutePath, sourcePath) {
   let stat;
   try {
@@ -80,6 +93,7 @@ async function collectFiles(source, fallbackClassification) {
   const stat = await statRequired(absolute, source);
 
   if (stat.isFile()) {
+    assertAllowedPackagePath(source);
     return [{ absolute, relative: source, classification: classify(source, fallbackClassification) }];
   }
   if (!stat.isDirectory()) {
@@ -99,6 +113,7 @@ async function collectFiles(source, fallbackClassification) {
       if (dirent.isDirectory()) {
         await walk(childAbsolute, childRelative);
       } else if (dirent.isFile()) {
+        assertAllowedPackagePath(childRelative);
         results.push({
           absolute: childAbsolute,
           relative: childRelative,
