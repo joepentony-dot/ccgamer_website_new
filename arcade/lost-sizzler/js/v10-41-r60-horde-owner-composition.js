@@ -6,6 +6,14 @@
  * This bridge adds no gameplay wrapper: it waits for the two existing owners to
  * be composed, records that the outer R60 owner preserves the throttled owner in
  * its __ccgOriginal chain, then retires its own bounded installer timer.
+ *
+ * LS-SOLO-002 also uses this bridge to make the production R60 maintenance
+ * delegate ancestry-aware. The original R60 40 ms installer is retired by the
+ * Horde performance layer; that layer calls the exported install() method. A
+ * cooperative owner may legitimately sit above R60 after a pause boundary, so
+ * re-running an outermost-marker-only installer would otherwise add another R60
+ * movement/update wrapper every few transitions. The protected delegate keeps
+ * the existing R60 owner when it is already present anywhere in the ancestry.
  */
 (()=>{
   "use strict";
@@ -13,7 +21,7 @@
   window.__CCG_LOST_SIZZLER_V141_R60_HORDE_OWNER_COMPOSITION__=true;
 
   const INSTALL_MS=25,MAX_ATTEMPTS=320;
-  const state={timer:0,attempts:0,adoptions:0,stable:false,retired:false,lastError:""};
+  const state={timer:0,attempts:0,adoptions:0,stable:false,retired:false,soloInstallProtected:false,soloInstallSkips:0,soloMoveReuse:0,soloUpdateReuse:0,lastError:""};
 
   function chainContains(fn,target){
     if(typeof fn!=="function"||typeof target!=="function")return false;
@@ -35,13 +43,50 @@
     return false
   }
 
+  function specialType(){
+    try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")}catch(_){return""}
+  }
+
+  function protectSoloInstall(){
+    const live=window.CCGLostSizzlerV141R60LivePlayIntegrity;
+    if(!live||typeof live.install!=="function")return false;
+    if(live.install.__ccgV141R60ChainAwareMaintenance===true){state.soloInstallProtected=true;return true}
+    const source=live.install;
+    const protectedInstall=function installV141R60ChainAwareMaintenance(){
+      const moveCurrent=window.movePlayer,updateCurrent=window.update;
+      const moveOwned=chainHasMarker(moveCurrent,"__ccgV141R60CadenceSeal");
+      const updateOwned=chainHasMarker(updateCurrent,"__ccgV141R60TimeSmoothing");
+      if(!moveOwned&&!updateOwned)return source.apply(this,arguments);
+      state.soloInstallSkips++;
+      try{
+        live.patchAzalea?.();
+        live.wrapStartWorld?.();
+        if(moveOwned){state.soloMoveReuse++;if(live.state)live.state.moveWrapped=true}else live.wrapMovement?.();
+        live.wrapEnvironmentalDamage?.();
+        if(!specialType()){
+          if(updateOwned){state.soloUpdateReuse++;if(live.state)live.state.updateWrapped=true}else live.wrapUpdate?.()
+        }
+        live.ensureCcgEnemy?.();
+        if(live.state){
+          live.state.installed=Boolean(live.state.moveWrapped&&live.state.startWrapped&&live.state.hurtWrapped);
+          if(live.state.installed)try{document.body.dataset.v141R60LivePlayIntegrity="true"}catch(_){}
+          return live.state.installed
+        }
+        return true
+      }catch(error){state.lastError=String(error?.message||error||"unknown").slice(0,260);return false}
+    };
+    protectedInstall.__ccgV141R60ChainAwareMaintenance=true;
+    protectedInstall.__ccgOriginal=source;
+    live.install=protectedInstall;state.soloInstallProtected=true;return true
+  }
+
   function retire(){
     if(state.timer){clearInterval(state.timer);state.timer=0}
     state.retired=true;return true
   }
 
   function compose(){
-    state.attempts++;
+    state.attempts++;protectSoloInstall();
     try{
       const api=window.CCGLostSizzlerV138,r60=window.CCGLostSizzlerV141R60HordeCombatIntegrity;
       const current=api?.updateHordeLive,owner=r60?.state?.liveOwner;
@@ -73,5 +118,5 @@
   if(!state.retired)state.timer=setInterval(tick,INSTALL_MS);
   addEventListener("pagehide",retire,{once:true});
 
-  window.CCGLostSizzlerV141R60HordeOwnerComposition={compose,chainContains,chainHasMarker,retire,get state(){return state}};
+  window.CCGLostSizzlerV141R60HordeOwnerComposition={compose,chainContains,chainHasMarker,protectSoloInstall,retire,get state(){return state}};
 })();
