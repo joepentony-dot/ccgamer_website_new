@@ -31,6 +31,19 @@ This document tracks the emergency Supabase egress-containment and the longer-te
 
 Solo, Tutorial, 2P Split Screen, local saves and local achievements therefore do not need a Supabase client during ordinary game boot/play.
 
+### Delivery boundary
+
+`js/online-services-gate.js` now owns the initial shared delivery boundary as well as Supabase activation. Its default remains `web`, so the normal website does not require a second code path.
+
+For a packaged build the wrapper can inject `window.__CCG_LOST_SIZZLER_DELIVERY__` before game initialisation:
+
+- `desktop-online` requires explicitly supplied online-service script locations plus safe `openExternal` and `exitGame` hooks from the desktop shell;
+- `desktop-offline` refuses Supabase activation and blocks website navigation rather than allowing the game webview to leave the local game;
+- desktop modes intercept account/support/Exit anchors and the title-screen `QUIT` action before ordinary browser navigation can replace the game page;
+- the gate installs a runtime bridge over `RoomNetwork.prototype.getSupabase()` so multiplayer requests are routed through `CCGLostSizzlerOnlineServices.activate()` rather than normally reaching the legacy network fallback.
+
+The old loader code still physically exists in `js/network.js`. The runtime bridge contains it for this branch, but the source fallback should still be removed once the multiplayer file can be changed and regression-tested safely.
+
 ## Confirmed dependency map
 
 | Area | Current dependency | Target | Notes |
@@ -94,8 +107,9 @@ The containment audit did not find a Supabase dependency required by ordinary So
 
 Before producing a Windows executable or portable ZIP, keep these boundaries explicit:
 
-- `js/network.js` still contains a legacy multiplayer-only fallback that can load the website Supabase scripts itself. It is reached only after an explicit online room create/join request, so it is not an emergency base-game egress leak. Before packaging, route this through `window.CCGLostSizzlerOnlineServices.activate()` so there is one online-services entry point.
-- `js/online-services-gate.js` currently uses website-root `/js/ccg-supabase-config.js` and `/js/ccg-supabase-client.js` paths. Those are valid for the website but must not be assumed to exist in a packaged build. The packaged build should either supply an explicit online-services adapter or keep those modules disabled until online support is deliberately configured.
+- `js/network.js` still physically contains a legacy multiplayer-only fallback that can load the website Supabase scripts itself. PR #1860 now installs a runtime bridge over `RoomNetwork.prototype.getSupabase()` so normal multiplayer requests are routed through `window.CCGLostSizzlerOnlineServices.activate()`. Remove the dead/legacy loader from `network.js` later when that larger file can be changed and tested without increasing containment risk.
+- `js/online-services-gate.js` still uses website-root `/js/ccg-supabase-config.js` and `/js/ccg-supabase-client.js` paths in `web` mode. Desktop builds no longer inherit those paths automatically: `desktop-online` must receive explicit service script locations from the wrapper, while `desktop-offline` refuses online activation.
+- Desktop website/account/support navigation is intercepted by the gate. `desktop-online` requires a wrapper-supplied system-browser handler; `desktop-offline` blocks those links. Title-screen Exit/QUIT requires a wrapper-supplied application exit action.
 - Solo cloud saves and achievement profile sync must remain no-op/best-effort when no online client exists. Local save and local achievement state remain authoritative.
 - Weekly Vault, multiplayer, account login, profile achievement sync and cloud mirroring remain online enhancements; none may become a prerequisite for launching or completing the local game.
 - A packaged-build smoke test must be run with networking disabled from process launch, not merely after the title screen appears.
@@ -107,17 +121,17 @@ The current browser build is already well suited to sharing its core files with 
 | Area | Current browser behaviour | Desktop requirement | Priority |
 | --- | --- | --- | --- |
 | Local game files | CSS/JS/assets use relative Lost Sizzler paths | Bundle unchanged where practical | Ready |
-| Website account links | `/auth/register.html` and `/auth/login.html` root-relative links | Open the real CCG website in the system browser, or hide when online services are disabled | Before desktop beta |
-| Exit links | `/games/ccg-games/` assumes website root | Desktop shell should close/return to launcher or open the website deliberately | Before desktop beta |
-| Supabase service loader | `/js/ccg-supabase-config.js` and `/js/ccg-supabase-client.js` assume website root | Delivery-aware online-services adapter | Before online desktop features |
-| Multiplayer fallback loader | `js/network.js` can independently load website Supabase scripts | Centralise through `CCGLostSizzlerOnlineServices.activate()` | Before online desktop features |
+| Website account links | `/auth/register.html` and `/auth/login.html` root-relative links | Delivery gate opens them only through a wrapper-supplied system-browser hook in `desktop-online`; blocks them in `desktop-offline` | Implemented in game; wrapper hook required |
+| Exit links | `/games/ccg-games/` assumes website root | Delivery gate routes desktop Exit/QUIT through the wrapper instead of navigating the game webview | Implemented in game; wrapper hook required |
+| Supabase service loader | Website mode uses `/js/ccg-supabase-config.js` and `/js/ccg-supabase-client.js` | `desktop-online` must supply explicit service script locations; `desktop-offline` refuses activation | Implemented in game; desktop config required |
+| Multiplayer fallback loader | `js/network.js` still contains legacy loader source | Runtime bridge now routes `getSupabase()` through `CCGLostSizzlerOnlineServices.activate()`; remove legacy source after safe multiplayer regression testing | Contained; source cleanup later |
 | Weekly Vault startup | Module renders/refreshes at startup but does not load Supabase itself | Keep offline-safe; optionally hide/mark online-only until services are activated | Before desktop polish |
 | Solo cloud mirror | Local-first; observes browser save state and only syncs if Supabase exists | Preserve no-op behaviour offline; activate cloud service only after explicit online/account availability | Ready with persistence requirement |
 | Save/achievement persistence | Browser `localStorage` is authoritative for several local systems | Desktop runtime must use a stable application origin/profile across upgrades, or provide a controlled native persistence bridge/migration | Release blocker |
 | Weekly transient/pending state | Uses `sessionStorage`/`localStorage` | Preserve stable storage semantics if Weekly Vault is enabled in desktop build | Before online desktop features |
 | Version check | `fetch('version.json?...')` with cache bypass | Package must resolve `version.json` through its local asset scheme/server; do not rely on arbitrary `file://` fetch behaviour | Before desktop beta |
 | Browser deep links | Query/hash state such as `?mode=tutorial` and `#weekly-vault` is supported | Desktop launcher/protocol should preserve supported launch state if exposed | Later/optional |
-| External navigation | Browser can follow ordinary anchors naturally | Desktop webview must prevent accidental navigation away from the game and send approved external URLs to the system browser | Release blocker |
+| External navigation | Browser can follow ordinary anchors naturally | Desktop gate prevents ordinary anchors/title QUIT from replacing the game page; wrapper must provide approved external/exit handlers | Implemented in game; wrapper hook required |
 | Network-offline launch | Browser naturally remains on the local page if assets are bundled | Desktop build must boot and complete Solo with all network access denied from process start | Release blocker |
 
 ### Desktop persistence rule
