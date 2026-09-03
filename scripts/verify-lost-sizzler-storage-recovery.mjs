@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
@@ -11,7 +12,7 @@ const EXPECTED_PAIR_COUNT=16;
 const EXPECTED_ENABLED_BYTES=72_233_137;
 
 function usage(){
-  console.log(`Lost Sizzler Storage recovery verifier (read-only)\n\nUsage:\n  node scripts/verify-lost-sizzler-storage-recovery.mjs --manifest-check\n  node scripts/verify-lost-sizzler-storage-recovery.mjs --self-test\n  node scripts/verify-lost-sizzler-storage-recovery.mjs --enabled-dir <dir> [--disabled-dir <dir>] [--probe] [--report <file>]\n\nOptions:\n  --manifest <file>      Override the frozen Markdown manifest path.\n  --manifest-check       Validate the frozen 16-pair manifest without requiring downloads.\n  --self-test            Prove equal byte size cannot override differing SHA-256 values.\n  --enabled-dir <dir>    Directory containing the 16 enabled downloads.\n  --disabled-dir <dir>   Optional directory containing the 16 disabled counterparts.\n  --probe                Run ffprobe against recovered files and fail on decode/probe errors.\n  --report <file>        Write a JSON verification report. Source files and manifest stay unchanged.\n  --help                 Show this help.\n\nFile lookup accepts each Storage basename, the original filename, or a mirrored Storage path beneath the supplied directory.\nNo network, upload, delete, rename, overwrite or Supabase mutation is performed.`)
+  console.log(`Lost Sizzler Storage recovery verifier (read-only)\n\nUsage:\n  node scripts/verify-lost-sizzler-storage-recovery.mjs --manifest-check\n  node scripts/verify-lost-sizzler-storage-recovery.mjs --self-test\n  node scripts/verify-lost-sizzler-storage-recovery.mjs --enabled-dir <dir> [--disabled-dir <dir>] [--probe] [--report <file>]\n\nOptions:\n  --manifest <file>      Override the frozen Markdown manifest path.\n  --manifest-check       Validate the frozen 16-pair manifest without requiring downloads.\n  --self-test            Prove hash classification plus recovery-root/report filesystem safety.\n  --enabled-dir <dir>    Directory containing the 16 enabled downloads.\n  --disabled-dir <dir>   Optional directory containing the 16 disabled counterparts.\n  --probe                Run ffprobe against recovered files and fail on decode/probe errors.\n  --report <file>        Write a new JSON verification report outside recovered binary trees.\n  --help                 Show this help.\n\nFile lookup accepts each Storage basename, the original filename, or a mirrored Storage path beneath the supplied directory.\nNo network, upload, delete, rename, overwrite or Supabase mutation is performed.`)
 }
 
 function parseArgs(argv){
@@ -36,24 +37,97 @@ function stripTicks(value){
   return text.startsWith("`")&&text.endsWith("`")?text.slice(1,-1):text
 }
 
+function isInside(root,candidate){
+  const relative=path.relative(root,candidate);
+  return relative===""||(!relative.startsWith(`..${path.sep}`)&&relative!==".."&&!path.isAbsolute(relative))
+}
+
+function assertNoSymlinkComponents(target,label){
+  const resolved=path.resolve(target);
+  const parsed=path.parse(resolved);
+  let current=resolved;
+  while(true){
+    if(fs.existsSync(current)&&fs.lstatSync(current).isSymbolicLink())throw new Error(`${label} must not traverse a symbolic link: ${current}`);
+    if(current===parsed.root)break;
+    const parent=path.dirname(current);
+    if(parent===current)break;
+    current=parent
+  }
+  return resolved
+}
+
+function safeStorageRelativePath(value,label){
+  const text=String(value||"").trim();
+  if(!text||text.startsWith("/")||text.includes("\\")||path.posix.isAbsolute(text))throw new Error(`${label} is not a safe relative Storage path: ${text||"<empty>"}`);
+  const normalized=path.posix.normalize(text);
+  if(normalized!==text||normalized==="."||normalized.startsWith("../")||normalized.split("/").includes(".."))throw new Error(`${label} is not a canonical relative Storage path: ${text}`);
+  return normalized
+}
+
+function safeOriginalFilename(value,label){
+  const text=String(value||"").trim();
+  if(!text||text==="."||text===".."||text.includes("/")||text.includes("\\")||path.basename(text)!==text)throw new Error(`${label} is not a safe filename: ${text||"<empty>"}`);
+  return text
+}
+
+function safeRecoveryRoot(value,label){
+  const root=path.resolve(value||"");
+  if(!value||root===path.parse(root).root)throw new Error(`${label} must be a non-root directory: ${root}`);
+  assertNoSymlinkComponents(root,label);
+  if(!fs.existsSync(root))throw new Error(`${label} not found: ${root}`);
+  const stat=fs.lstatSync(root);
+  if(stat.isSymbolicLink()||!stat.isDirectory())throw new Error(`${label} must be a real directory: ${root}`);
+  return root
+}
+
+function resolveInside(root,relative,label){
+  const candidate=path.resolve(root,...relative.split("/"));
+  if(!isInside(root,candidate))throw new Error(`${label} escapes recovery root: ${relative}`);
+  return candidate
+}
+
+function safeReportPath(value,enabledRoot,disabledRoot=""){
+  if(!value)throw new Error("Recovery verification report path is required.");
+  const target=path.resolve(value);
+  if(target===path.parse(target).root)throw new Error(`Recovery verification report must not be a filesystem root: ${target}`);
+  for(const [label,root] of [["enabled",enabledRoot],["disabled",disabledRoot]]){
+    if(root&&isInside(root,target))throw new Error(`Recovery verification report must remain outside the ${label} recovery tree: ${target}`)
+  }
+  assertNoSymlinkComponents(path.dirname(target),"Recovery verification report parent");
+  if(fs.existsSync(target))throw new Error(`Refusing to overwrite existing recovery verification report: ${target}`);
+  return target
+}
+
+function writeReport(value,report,enabledRoot,disabledRoot=""){
+  const target=safeReportPath(report,enabledRoot,disabledRoot);
+  fs.mkdirSync(path.dirname(target),{recursive:true});
+  assertNoSymlinkComponents(path.dirname(target),"Recovery verification report parent");
+  fs.writeFileSync(target,`${JSON.stringify(value,null,2)}\n`,{encoding:"utf8",flag:"wx"});
+  return target
+}
+
 function parseManifest(file){
-  const text=fs.readFileSync(file,"utf8");
+  const manifestPath=path.resolve(file);
+  assertNoSymlinkComponents(manifestPath,"Recovery manifest");
+  if(!fs.existsSync(manifestPath)||!fs.lstatSync(manifestPath).isFile())throw new Error(`Recovery manifest must be a regular file: ${manifestPath}`);
+  const text=fs.readFileSync(manifestPath,"utf8");
   const rows=[];
   for(const line of text.split(/\r?\n/)){
     if(!/^\|\s*\d+\s*\|/.test(line))continue;
     const cells=line.split("|").slice(1,-1).map(cell=>cell.trim());
     if(cells.length!==12)throw new Error(`Unexpected manifest table shape on row: ${line}`);
     const [number,playlist,originalFile,enabledRow,enabledPath,expectedBytes,enabledSha,disabledRow,disabledPath,disabledSha,pairStatus,localDestination]=cells;
+    const parsedNumber=Number(number);
     rows.push({
-      number:Number(number),
+      number:parsedNumber,
       playlist:stripTicks(playlist),
-      originalFile:stripTicks(originalFile),
+      originalFile:safeOriginalFilename(stripTicks(originalFile),`Recovery manifest row ${parsedNumber} original filename`),
       enabledRow:Number(enabledRow),
-      enabledPath:stripTicks(enabledPath),
+      enabledPath:safeStorageRelativePath(stripTicks(enabledPath),`Recovery manifest row ${parsedNumber} enabled path`),
       expectedBytes:Number(String(expectedBytes).replaceAll(",","")),
       recordedEnabledSha:stripTicks(enabledSha),
       disabledRow:Number(disabledRow),
-      disabledPath:stripTicks(disabledPath),
+      disabledPath:safeStorageRelativePath(stripTicks(disabledPath),`Recovery manifest row ${parsedNumber} disabled path`),
       recordedDisabledSha:stripTicks(disabledSha),
       recordedPairStatus:stripTicks(pairStatus),
       recordedLocalDestination:stripTicks(localDestination)
@@ -76,15 +150,22 @@ function parseManifest(file){
 
 function candidateFiles(root,storagePath,originalFile){
   if(!root)return[];
-  const mirrored=path.join(root,...storagePath.split("/"));
-  const storageBasename=path.join(root,path.basename(storagePath));
-  const original=path.join(root,originalFile);
+  const safeStorage=safeStorageRelativePath(storagePath,"Recovered Storage path");
+  const safeOriginal=safeOriginalFilename(originalFile,"Recovered original filename");
+  const mirrored=resolveInside(root,safeStorage,"Mirrored recovered file");
+  const storageBasename=resolveInside(root,path.posix.basename(safeStorage),"Recovered Storage basename");
+  const original=resolveInside(root,safeOriginal,"Recovered original filename");
   return[mirrored,storageBasename,original].filter((value,index,list)=>list.indexOf(value)===index)
 }
 
 function findRecoveredFile(root,storagePath,originalFile){
   for(const candidate of candidateFiles(root,storagePath,originalFile)){
-    try{if(fs.statSync(candidate).isFile())return candidate}catch(_){}
+    if(!fs.existsSync(candidate))continue;
+    assertNoSymlinkComponents(candidate,"Recovered file");
+    const stat=fs.lstatSync(candidate);
+    if(stat.isSymbolicLink())throw new Error(`Recovered file must not be a symbolic link: ${candidate}`);
+    if(!stat.isFile())throw new Error(`Recovered candidate must be a regular file: ${candidate}`);
+    return candidate
   }
   return null
 }
@@ -108,6 +189,12 @@ function classifyPair(enabled,disabled){
   return enabled.sha256===disabled.sha256?"HASH IDENTICAL":"HASH DIFFERENT"
 }
 
+function expectFailure(action,label){
+  let failed=false;
+  try{action()}catch(_){failed=true}
+  if(!failed)throw new Error(`Self-test expected failure: ${label}`)
+}
+
 function runSelfTest(){
   const left=Buffer.from("AAAA","utf8");
   const right=Buffer.from("BBBB","utf8");
@@ -121,7 +208,48 @@ function runSelfTest(){
   if(identical!=="HASH IDENTICAL")throw new Error(`Equal-hash self-test misclassified pair as ${identical}.`);
   const missing=classifyPair({present:true,bytes:left.length,sha256:leftHash},null);
   if(missing!=="ENABLED ONLY")throw new Error(`Missing-counterpart self-test misclassified pair as ${missing}.`);
-  console.log("Lost Sizzler recovery verifier self-test passed: equal byte size cannot override differing SHA-256 values.")
+
+  expectFailure(()=>safeStorageRelativePath("../escape.mp3","self-test Storage path"),"Storage traversal must be rejected");
+  expectFailure(()=>safeOriginalFilename("nested/file.mp3","self-test filename"),"nested original filename must be rejected");
+
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),"lost-sizzler-storage-verifier-"));
+  try{
+    const enabled=path.join(temp,"enabled");
+    const outside=path.join(temp,"outside");
+    fs.mkdirSync(enabled,{recursive:true});
+    fs.mkdirSync(outside,{recursive:true});
+    fs.writeFileSync(path.join(enabled,"test.mp3"),left);
+    const safeRoot=safeRecoveryRoot(enabled,"Self-test enabled recovery directory");
+    const found=findRecoveredFile(safeRoot,"ccg-arcade-assets/lost-sizzler/enabled/test.mp3","test.mp3");
+    if(found!==path.join(enabled,"test.mp3"))throw new Error("Self-test failed to resolve safe recovered basename.");
+
+    fs.rmSync(path.join(enabled,"test.mp3"));
+    const outsideFile=path.join(outside,"outside.mp3");
+    fs.writeFileSync(outsideFile,left);
+    fs.symlinkSync(outsideFile,path.join(enabled,"test.mp3"));
+    expectFailure(()=>findRecoveredFile(safeRoot,"ccg-arcade-assets/lost-sizzler/enabled/test.mp3","test.mp3"),"symlinked recovered file must be rejected");
+    fs.rmSync(path.join(enabled,"test.mp3"));
+
+    const linkedRoot=path.join(temp,"enabled-link");
+    fs.symlinkSync(enabled,linkedRoot,"dir");
+    expectFailure(()=>safeRecoveryRoot(linkedRoot,"Self-test linked recovery root"),"symlinked recovery root must be rejected");
+
+    const report=path.join(temp,"reports","verification.json");
+    const reportValue={schema:"self-test",readOnly:true};
+    writeReport(reportValue,report,safeRoot);
+    if(!fs.existsSync(report))throw new Error("Self-test report was not written.");
+    expectFailure(()=>writeReport(reportValue,report,safeRoot),"existing report must not be overwritten");
+    expectFailure(()=>writeReport(reportValue,path.join(enabled,"verification.json"),safeRoot),"report inside recovery root must be rejected");
+
+    const redirectedParent=path.join(temp,"redirected-report-parent");
+    fs.symlinkSync(enabled,redirectedParent,"dir");
+    expectFailure(()=>writeReport(reportValue,path.join(redirectedParent,"verification.json"),safeRoot),"symlinked report parent must be rejected");
+    if(fs.existsSync(path.join(enabled,"verification.json")))throw new Error("Rejected redirected report unexpectedly wrote inside recovery tree.")
+  }finally{
+    fs.rmSync(temp,{recursive:true,force:true})
+  }
+
+  console.log("Lost Sizzler recovery verifier self-test passed: hash identity, safe relative paths, real recovery roots/files and immutable external report evidence are enforced.")
 }
 
 function probeFile(file){
@@ -142,7 +270,9 @@ async function inspectRecovered(root,row,kind,probe){
   const storagePath=kind==="enabled"?row.enabledPath:row.disabledPath;
   const file=findRecoveredFile(root,storagePath,row.originalFile);
   if(!file)return{present:false,file:null,bytes:null,expectedBytes:row.expectedBytes,sizeMatches:false,sha256:null,probe:null};
-  const stat=fs.statSync(file);
+  assertNoSymlinkComponents(file,"Recovered file");
+  const stat=fs.lstatSync(file);
+  if(stat.isSymbolicLink()||!stat.isFile())throw new Error(`Recovered file must remain a real regular file: ${file}`);
   return{
     present:true,
     file,
@@ -170,20 +300,20 @@ async function main(){
     return
   }
   if(!args.enabledDir){usage();throw new Error("--enabled-dir is required unless --manifest-check or --self-test is used.")}
-  if(!fs.existsSync(args.enabledDir)||!fs.statSync(args.enabledDir).isDirectory())throw new Error(`Enabled recovery directory not found: ${args.enabledDir}`);
-  if(args.disabledDir&&(!fs.existsSync(args.disabledDir)||!fs.statSync(args.disabledDir).isDirectory()))throw new Error(`Disabled recovery directory not found: ${args.disabledDir}`);
+  const enabledRoot=safeRecoveryRoot(args.enabledDir,"Enabled recovery directory");
+  const disabledRoot=args.disabledDir?safeRecoveryRoot(args.disabledDir,"Disabled recovery directory"):"";
 
   const failures=[];
   const results=[];
   for(const row of rows){
-    const enabled=await inspectRecovered(args.enabledDir,row,"enabled",args.probe);
-    const disabled=args.disabledDir?await inspectRecovered(args.disabledDir,row,"disabled",args.probe):null;
+    const enabled=await inspectRecovered(enabledRoot,row,"enabled",args.probe);
+    const disabled=disabledRoot?await inspectRecovered(disabledRoot,row,"disabled",args.probe):null;
     if(!enabled.present)failures.push(`#${row.number} enabled file missing`);
     else{
       if(!enabled.sizeMatches)failures.push(`#${row.number} enabled size mismatch (${enabled.bytes} != ${row.expectedBytes})`);
       if(args.probe&&!enabled.probe?.ok)failures.push(`#${row.number} enabled decode/probe failed: ${enabled.probe?.error||"unknown"}`)
     }
-    if(args.disabledDir){
+    if(disabledRoot){
       if(!disabled.present)failures.push(`#${row.number} disabled counterpart missing`);
       else{
         if(!disabled.sizeMatches)failures.push(`#${row.number} disabled size mismatch (${disabled.bytes} != ${row.expectedBytes})`);
@@ -192,7 +322,7 @@ async function main(){
     }
     const pairStatus=classifyPair(enabled,disabled);
     results.push({manifest:row,enabled,disabled,pairStatus});
-    console.log(`${String(row.number).padStart(2,"0")} ${row.playlist}/${row.originalFile} | enabled ${enabled.present?(enabled.sizeMatches?"SIZE OK":"SIZE BAD"):"MISSING"} | ${args.disabledDir?`disabled ${disabled?.present?(disabled.sizeMatches?"SIZE OK":"SIZE BAD"):"MISSING"} | ${pairStatus}`:"disabled NOT CHECKED"}`)
+    console.log(`${String(row.number).padStart(2,"0")} ${row.playlist}/${row.originalFile} | enabled ${enabled.present?(enabled.sizeMatches?"SIZE OK":"SIZE BAD"):"MISSING"} | ${disabledRoot?`disabled ${disabled?.present?(disabled.sizeMatches?"SIZE OK":"SIZE BAD"):"MISSING"} | ${pairStatus}`:"disabled NOT CHECKED"}`)
   }
 
   const enabledPresent=results.filter(result=>result.enabled.present).length;
@@ -202,8 +332,8 @@ async function main(){
     generatedAt:new Date().toISOString(),
     readOnly:true,
     manifest:path.resolve(args.manifest),
-    enabledDir:args.enabledDir,
-    disabledDir:args.disabledDir||null,
+    enabledDir:enabledRoot,
+    disabledDir:disabledRoot||null,
     probeRequested:args.probe,
     expectedPairs:EXPECTED_PAIR_COUNT,
     expectedEnabledBytes:EXPECTED_ENABLED_BYTES,
@@ -227,9 +357,8 @@ async function main(){
   };
 
   if(args.report){
-    fs.mkdirSync(path.dirname(args.report),{recursive:true});
-    fs.writeFileSync(args.report,`${JSON.stringify(report,null,2)}\n`,"utf8");
-    console.log(`Report written: ${displayPath(args.report)}`)
+    const target=writeReport(report,args.report,enabledRoot,disabledRoot);
+    console.log(`Report written: ${displayPath(target)}`)
   }
 
   console.log(`Summary: enabled ${enabledPresent}/${EXPECTED_PAIR_COUNT}; hash-identical ${hashIdentical}; hash-different ${hashDifferent}; failures ${failures.length}.`);
