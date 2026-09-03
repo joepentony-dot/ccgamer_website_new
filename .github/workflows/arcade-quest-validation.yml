@@ -12,6 +12,7 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/**'
       - 'supabase/migrations/20260820_arcade_asset_manager.sql'
       - 'scripts/generate-lost-sizzler-audio.mjs'
+      - 'scripts/verify-lost-sizzler-storage-recovery.mjs'
       - 'scripts/validate-arcade-quest.js'
       - '.github/workflows/arcade-quest-validation.yml'
   push:
@@ -27,6 +28,7 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/**'
       - 'supabase/migrations/20260820_arcade_asset_manager.sql'
       - 'scripts/generate-lost-sizzler-audio.mjs'
+      - 'scripts/verify-lost-sizzler-storage-recovery.mjs'
       - 'scripts/validate-arcade-quest.js'
       - '.github/workflows/arcade-quest-validation.yml'
 
@@ -83,6 +85,7 @@ jobs:
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-6-stalker-shop-balance.mjs
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-6-sidebar-layout.mjs
           node --check scripts/generate-lost-sizzler-audio.mjs
+          node --check scripts/verify-lost-sizzler-storage-recovery.mjs
           node --check scripts/validate-arcade-quest.js
 
       - name: Validate Quest 2.0 contracts
@@ -123,6 +126,9 @@ jobs:
 
       - name: Validate Lost Sizzler Supabase containment contract
         run: node arcade/lost-sizzler/tests/supabase-containment-contract.mjs
+
+      - name: Validate Lost Sizzler Storage recovery manifest
+        run: node scripts/verify-lost-sizzler-storage-recovery.mjs --manifest-check
 
       - name: Validate Lost Sizzler dungeon structural variety
         run: node games/ccg-games/cheeky-commodore-quest/tests/v10-19-dungeon-variety.mjs
