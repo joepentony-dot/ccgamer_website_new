@@ -37,12 +37,25 @@
     return config&&client?{config,client}:null
   }
 
+  function versionManifestUrl(){
+    if(deliveryMode==="web")return "version.json";
+    if(typeof rawDelivery.resolveLocalAsset==="function"){
+      try{
+        const resolved=rawDelivery.resolveLocalAsset("version.json",{kind:"version-manifest"});
+        if(resolved)return String(resolved)
+      }catch(error){console.warn("[Lost Sizzler] desktop local-asset resolver failed for version.json",error)}
+    }
+    const explicit=String(rawDelivery.versionManifestUrl||"").trim();
+    return explicit||null
+  }
+
   const delivery=Object.freeze({
     mode:deliveryMode,
     isDesktop:deliveryMode!=="web",
     onlineEnabled:deliveryMode!=="desktop-offline",
     websiteUrl,
-    onlineScriptSources
+    onlineScriptSources,
+    versionManifestUrl
   });
 
   function deliveryMessage(message){
@@ -102,6 +115,54 @@
       openExternal(href,anchor.closest("#weekly-auth-actions")?"account-auth":"external-link");
     },true);
     document.documentElement.dataset.ccgDeliveryMode=delivery.mode;
+  }
+
+  function installVersionManifestBoundary(){
+    if(!delivery.isDesktop||typeof window.fetch!=="function")return;
+    const nativeFetch=window.fetch.bind(window);
+    window.fetch=function(input,init){
+      const requestText=typeof input==="string"?input:input instanceof URL?input.toString():"";
+      if(!/^version\.json(?:[?#]|$)/i.test(requestText))return nativeFetch(input,init);
+      const target=versionManifestUrl();
+      if(!target)return Promise.reject(new Error("Desktop version manifest is not configured."));
+      let resolved=String(target);
+      try{
+        const source=new URL(requestText,window.location.href);
+        const destination=new URL(resolved,window.location.href);
+        if(source.searchParams.has("check"))destination.searchParams.set("check",source.searchParams.get("check"));
+        resolved=destination.toString()
+      }catch(_){}
+      return nativeFetch(resolved,init)
+    };
+  }
+
+  function applyDeliveryUi(){
+    if(!delivery.isDesktop)return;
+    const apply=()=>{
+      const sources=onlineScriptSources();
+      const onlineAvailable=delivery.onlineEnabled&&Boolean(sources);
+      if(onlineAvailable)return;
+      const message=delivery.mode==="desktop-offline"?"Online services are disabled in this offline desktop build.":"Online services are not configured in this desktop build.";
+      for(const id of ONLINE_BUTTONS){
+        const button=document.getElementById(id);
+        if(!button)continue;
+        button.disabled=true;
+        button.setAttribute("aria-disabled","true");
+        button.title=message;
+        button.dataset.ccgOnlineUnavailable="true"
+      }
+      const roomCode=document.getElementById("room-code");
+      if(roomCode){roomCode.disabled=true;roomCode.title=message}
+      const howto=document.querySelector(".online-howto");
+      if(howto)howto.hidden=true;
+      const weeklyStatus=document.getElementById("weekly-status");
+      if(weeklyStatus)weeklyStatus.textContent=message;
+      const authActions=document.getElementById("weekly-auth-actions");
+      if(authActions)authActions.hidden=true;
+      const note=document.getElementById("menu-note");
+      if(note&&delivery.mode==="desktop-offline")note.textContent="Offline desktop mode: Solo, Tutorial, 2P Split Screen, local saves, achievements and bundled game content remain available. Online multiplayer, account services and Weekly Vault are disabled."
+    };
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",apply,{once:true});else apply()
   }
 
   function installNetworkGateBridge(){
@@ -222,6 +283,8 @@
   }
 
   installNavigationBoundary();
+  installVersionManifestBoundary();
+  applyDeliveryUi();
   installNetworkGateBridge();
   document.addEventListener("click",intercept,true);
   window.addEventListener("pagehide",()=>document.removeEventListener("click",intercept,true),{once:true});
@@ -240,7 +303,8 @@
     websiteUrl,
     openExternal,
     exit:exitDelivery,
-    onlineScriptSources
+    onlineScriptSources,
+    versionManifestUrl
   };
   window.CCGLostSizzlerOnlineServices={activate,refreshWeekly,get state(){return{...state,promise:Boolean(state.promise),deliveryMode:delivery.mode,onlineEnabled:delivery.onlineEnabled}}};
 })();
