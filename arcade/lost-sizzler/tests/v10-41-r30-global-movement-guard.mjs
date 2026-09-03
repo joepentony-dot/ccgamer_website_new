@@ -24,6 +24,11 @@ assert.match(guard,/function authoritativeControllerUpdate\(\)/,"r30 recovery mu
 assert.match(guard,/const recoveryUpdate=\(\)=>authoritativeControllerUpdate\(\)\|\|state\.goldenUpdate\|\|state\.baselineUpdate/,"update recovery must prefer the live controller boundary over a historical snapshot");
 assert.match(guard,/if\(controllerUpdate\)state\.baselineUpdate=controllerUpdate/,"normal-mode recovery snapshots must retain the controller boundary without suppressing unrelated one-shot fault containment");
 assert.match(guard,/function topLevelSpyOwner\(fn\)/,"a genuinely top-level Spy owner must remain distinguishable from harmless historical markers beneath the controller boundary");
+assert.match(guard,/function recoveryHurt\(\)/,"damage recovery must resolve a live modern owner instead of blindly trusting an early golden snapshot");
+assert.match(guard,/modernDamageOwnershipPresent\(state\.baselineHurt\)/,"R30 must prefer a baseline that still contains all required late damage owners");
+assert.match(guard,/const preserveModernHurt=!spyActive\(\)&&modernDamageOwnersRequired\(\)&&healthyBaseline\(window\.hurtPlayer\)&&modernDamageOwnershipPresent\(window\.hurtPlayer\)/,"unrelated ownership repairs must preserve an already-valid R56\/R60 damage ancestry");
+assert.match(guard,/damageOwnershipPreservations\+\+/,"preservation of the final damage owner must remain diagnosable");
+assert.match(guard,/if\(!spyActive\(\)&&modernDamageOwnersRequired\(\)&&!modernDamageOwnershipPresent\(window\.hurtPlayer\)\)reinstallModernDamageOwners\(\)/,"every cooperative R29 reinstall must synchronously restore the late R56\/R60 damage owners before returning");
 assert.match(guard,/assertNormalRuntimeOwnership/,"normal modes must continuously validate runtime ownership");
 assert.match(guard,/STALL_RECOVERY_MS=700/,"a held-key movement watchdog must recover silent movement stalls");
 assert.match(guard,/watchdogRecoveries/,"movement watchdog self-heals must be measurable");
