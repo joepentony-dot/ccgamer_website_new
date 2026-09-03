@@ -72,8 +72,8 @@ try{
   assert.equal(ownership.controller,"dungeon-solo","browser regression must execute under the Solo Dungeon controller");
 
   // Exercise the real Floor 1 completion/descent path rather than mutating the
-  // floor number. Standard Solo must autosave Floor 2 and deterministically
-  // settle any delayed legacy entry prompt after the core's 120 ms timer.
+  // floor number. Standard Solo must autosave Floor 2 and leave no delayed
+  // legacy floor-entry prompt active after the core's 120 ms timer.
   await page.evaluate(()=>floorComplete("R42 REGRESSION"));
   await page.waitForSelector("#floor-complete:not(.hidden)");
   await page.click("#descend-btn");
@@ -82,10 +82,18 @@ try{
   await waitForFloorEntrySettled(page);
   const transition=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R42SoloLiveRecovery,r43=window.CCGLostSizzlerV141R43SoloSave?.state||{};api.monitor();
-    return{floor:run.floor,mode,active:document.body.dataset.runActive,world:Boolean(world),host:Boolean(host),player:Boolean(p1),recoveries:api.state.transitionRecoveries,lastFloor:api.state.lastTransitionFloor,width:canvas.width,height:canvas.height,r43SettleSchedules:Number(r43.floorEntrySettleSchedules||0),r43Settles:Number(r43.floorEntrySettles||0),r43PromptSuppressions:Number(r43.automaticPromptSuppressions||0),savedFloor:Number(window.CCGLostSizzlerV141R43SoloSave?.readEnvelope?.()?.summary?.floor||0)}
+    return{
+      floor:run.floor,mode,active:document.body.dataset.runActive,world:Boolean(world),host:Boolean(host),player:Boolean(p1),
+      recoveries:api.state.transitionRecoveries,lastFloor:api.state.lastTransitionFloor,width:canvas.width,height:canvas.height,
+      r43SettleSchedules:Number(r43.floorEntrySettleSchedules||0),r43Settles:Number(r43.floorEntrySettles||0),r43PromptSuppressions:Number(r43.automaticPromptSuppressions||0),
+      savedFloor:Number(window.CCGLostSizzlerV141R43SoloSave?.readEnvelope?.()?.summary?.floor||0),
+      savePanelHidden:document.getElementById("save-panel")?.classList.contains("hidden")===true,
+      savePromptReason:typeof savePromptReason==="string"?savePromptReason:"",
+      offerOwner:Boolean(window.offerFloorSave?.__ccgV141R43AutoSaveOwner)
+    }
   });
   assert.equal(transition.floor,2,"real Solo descent must reach Floor 2");
-  assert.equal(transition.mode,"playing","Floor 2 must return to live gameplay after autosave prompt settling");
+  assert.equal(transition.mode,"playing","Floor 2 must return to live gameplay after autosave prompt handling");
   assert.equal(transition.active,"true","Floor 2 must keep the run active");
   assert.equal(transition.world,true,"Floor 2 must own a generated world");
   assert.equal(transition.host,true,"Floor 2 must own a host simulation");
@@ -94,7 +102,9 @@ try{
   assert.equal(transition.lastFloor,2,"r42 must record the recovered floor");
   assert.ok(transition.width>0&&transition.height>0,"Floor 2 canvas must retain a valid backing size");
   assert.equal(transition.savedFloor,2,"Floor 2 entry autosave must exist before live gameplay continues");
-  assert.ok(transition.r43SettleSchedules>=1&&transition.r43Settles>=1,"real Floor 2 descent must execute the deterministic r43 post-timer settle path");
+  assert.equal(transition.savePanelHidden,true,"Floor 2 autosave must leave the legacy save panel hidden");
+  assert.notEqual(transition.savePromptReason,"entry","Floor 2 autosave must not leave an ordinary floor-entry prompt active");
+  assert.equal(transition.offerOwner,true,"r43 automatic floor-prompt ownership must remain installed after descent");
 
   // Capture a known lit frame, paint a silent black frame without throwing an
   // exception, then force two watchdog probes synchronously. The second probe
@@ -178,7 +188,7 @@ try{
 
   await page.waitForTimeout(300);
   assert.deepEqual(errors,[],`r42 Solo floor/render/combat regression must not produce page errors: ${errors.join("\n")}`);
-  console.log("V10.41 r42 Solo Floor 1→2, autosave settle, black-frame and combat-liveness browser regression passed.");
+  console.log("V10.41 r42 Solo Floor 1→2 autosave outcome, black-frame and combat-liveness browser regression passed.");
 }finally{
   await browser.close();
   for(const socket of sockets)socket.destroy();
