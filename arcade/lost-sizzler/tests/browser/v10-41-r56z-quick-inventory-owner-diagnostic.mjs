@@ -26,19 +26,45 @@ try{
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R56PlaytestCompletion)&&Boolean(window.CCGLostSizzlerV141R57DesktopPrepStability));
 
+  await page.evaluate(()=>{
+    const chain=fn=>{const rows=[],seen=new Set();let current=fn;while(typeof current==="function"&&!seen.has(current)&&rows.length<48){seen.add(current);rows.push({name:String(current.name||"anonymous"),markers:Object.keys(current).filter(key=>key.startsWith("__ccg")).sort()});current=current.__ccgV141ModeOwnedSource||current.__ccgOriginal||current.__ccgV141R31Original||null}return rows};
+    window.__r56zSyncTimeline=[];
+    window.__r56zSyncEntry=window.sync;
+    window.__r56zSyncLast=window.sync;
+    window.__r56zCaptureSync=(label)=>{
+      const fn=window.sync;
+      window.__r56zSyncTimeline.push({
+        label:String(label||"sample"),at:Math.round(performance.now()),sameAsEntry:fn===window.__r56zSyncEntry,
+        name:String(fn?.name||""),chain:chain(fn),source:typeof fn==="function"?Function.prototype.toString.call(fn).slice(0,900):String(fn),
+        mode:typeof mode==="undefined"?"undefined":String(mode),playMode:typeof playMode==="undefined"?"undefined":String(playMode),runActive:String(document.body?.dataset?.runActive||""),special:String(document.body?.dataset?.specialMode||"")
+      });
+      window.__r56zSyncLast=fn;
+    };
+    window.__r56zCaptureSync("release-ready");
+    window.__r56zSyncPoll=setInterval(()=>{if(window.sync!==window.__r56zSyncLast)window.__r56zCaptureSync("owner-change")},10);
+  });
+
   const started=await page.evaluate(()=>{
     net.setSolo("Agent One");const id=String(net.sessionId);
-    return window.CCGLostSizzlerSpecialModes.startOnline({roomMode:"sizzler-saboteurs",players:[{id,name:"Agent One"},{id:"R56Z-SPY-B",name:"Agent Two"}],hostId:id,seed:"V141-R56Z-QUICK-OWNER",roomCode:"R56ZSPY"});
+    window.__r56zCaptureSync?.("before-spy-start");
+    const result=window.CCGLostSizzlerSpecialModes.startOnline({roomMode:"sizzler-saboteurs",players:[{id,name:"Agent One"},{id:"R56Z-SPY-B",name:"Agent Two"}],hostId:id,seed:"V141-R56Z-QUICK-OWNER",roomCode:"R56ZSPY"});
+    window.__r56zCaptureSync?.("after-spy-start-call");
+    return result;
   });
   assert.equal(started,true,"diagnostic Spy fixture must start");
   await page.waitForFunction(()=>document.body.dataset.specialMode==="sizzler-saboteurs"&&Boolean(window.CCGLostSizzlerV141R32SpyOverhaul));
   await page.waitForTimeout(250);
-  await page.evaluate(async()=>{await Promise.resolve(quitToMenu())});
+  await page.evaluate(()=>window.__r56zCaptureSync?.("spy-settled"));
+  await page.evaluate(async()=>{window.__r56zCaptureSync?.("before-quit-to-menu");await Promise.resolve(quitToMenu());window.__r56zCaptureSync?.("after-quit-to-menu")});
   await page.waitForFunction(()=>document.body.dataset.runActive!=="true"&&!document.getElementById("menu").classList.contains("hidden"));
+  await page.evaluate(()=>window.__r56zCaptureSync?.("menu-settled"));
   await page.locator("#solo-btn").click();
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&String(playMode)==="solo"&&Boolean(p1),null,{timeout:10000});
+  await page.waitForTimeout(100);
+  await page.evaluate(()=>window.__r56zCaptureSync?.("solo-returned"));
 
   const evidence=await page.evaluate(()=>{
+    if(window.__r56zSyncPoll){clearInterval(window.__r56zSyncPoll);window.__r56zSyncPoll=0}
     const describe=()=>[...document.querySelectorAll("#quick-slots .quick-slot")].slice(0,3).map((slot,index)=>({
       index,
       html:slot.innerHTML,
@@ -54,7 +80,7 @@ try{
     window.CCGLostSizzlerV141R56PlaytestCompletion.renderQuickIcons();
     const afterOverlay=describe();
     return{
-      afterSync,afterOverlay,directIconSamples,
+      afterSync,afterOverlay,directIconSamples,syncTimeline:[...(window.__r56zSyncTimeline||[])],
       syncChain:chain(sync),itemIconChain:chain(itemIconSVG),
       syncSource:Function.prototype.toString.call(sync).slice(0,1400),
       itemIconSource:Function.prototype.toString.call(itemIconSVG).slice(0,1400),
