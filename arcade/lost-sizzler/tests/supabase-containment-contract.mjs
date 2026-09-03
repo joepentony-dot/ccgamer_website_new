@@ -10,6 +10,7 @@ const gate=read("arcade/lost-sizzler/js/online-services-gate.js");
 const audio=read("arcade/lost-sizzler/js/admin-audio-overrides.js");
 const inventory=read("arcade/lost-sizzler/SUPABASE-MIGRATION-INVENTORY.md");
 const recovery=read("arcade/lost-sizzler/SUPABASE-STORAGE-RECOVERY-MANIFEST.md");
+const persistence=read("arcade/lost-sizzler/DESKTOP-PERSISTENCE-INVENTORY.md");
 
 const gateIndex=index.indexOf('src="js/online-services-gate.js');
 const versionIndex=index.indexOf('src="js/version-check.js');
@@ -26,6 +27,9 @@ assert(gate.includes('window.__CCG_LOST_SIZZLER_DELIVERY__'),"desktop wrapper de
 assert(gate.includes('resolveLocalAsset("version.json"'),"desktop version manifest must support a local-asset resolver");
 assert(gate.includes('versionManifestUrl'),"desktop version manifest URL seam must remain available");
 assert(gate.includes('Desktop version manifest is not configured.'),"unconfigured desktop version fetch must fail closed");
+assert(gate.includes('let bridge=window.ccgSupabase;'),"online activation must accept an already-injected service bridge");
+assert(gate.includes('if(!bridge?.getClient){'),"online scripts must be a fallback rather than replacing an injected bridge");
+assert(gate.includes('Boolean(window.ccgSupabase?.getClient||sources)'),"desktop online UI must recognise an injected service bridge as configured");
 assert(gate.includes('proto.getSupabase=async function()'),"multiplayer must remain routed through the central online-services gate");
 assert(gate.includes('gate.activate("multiplayer-network")'),"multiplayer bridge must activate online services explicitly");
 assert(gate.includes('button.dataset.ccgOnlineUnavailable="true"'),"unavailable desktop online controls must be marked and disabled");
@@ -48,5 +52,17 @@ assert(recovery.includes("SIZE MATCH ONLY"),"manifest must distinguish byte-size
 assert(inventory.includes("Do not delete Supabase files or database rows"),"migration inventory must retain the no-delete safety rule");
 assert(inventory.includes("SUPABASE-STORAGE-RECOVERY-MANIFEST.md"),"migration inventory must point to the frozen recovery manifest");
 assert(inventory.includes("offline game first; online enhancements second"),"downloadable-build architecture rule must remain documented");
+
+for(const key of [
+  "ccg-lost-sizzler-solo-save-v2",
+  "ccg-lost-sizzler-solo-save-v2-backup",
+  "ccg-lost-sizzler-achievements-v1",
+  "ccg-quest-collection",
+  "ccg-named-enemy-dossier-v1"
+])assert(persistence.includes(`\`${key}\``),`desktop persistence inventory must retain Tier A key ${key}`);
+assert(persistence.includes("Any loss of Tier A state is a **release blocker**"),"desktop update persistence must remain a release gate");
+assert(persistence.includes("ccg-lost-sizzler-solo-cloud-sync-v1"),"desktop-online persistence must document cloud reconciliation metadata");
+assert(persistence.includes("ccg-weekly-pending-result-v1"),"desktop-online persistence must preserve pending Weekly submissions");
+assert(persistence.includes("sessionStorage: ccg-weekly-ghost-preview"),"disposable Weekly session cache must remain distinguished from persistent state");
 
 console.log("Lost Sizzler Supabase containment contract: PASS");
