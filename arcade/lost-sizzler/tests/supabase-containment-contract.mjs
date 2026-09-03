@@ -34,7 +34,9 @@ assert(gate.includes('proto.getSupabase=async function()'),"multiplayer must rem
 assert(gate.includes('gate.activate("multiplayer-network")'),"multiplayer bridge must activate online services explicitly");
 assert(gate.includes('button.dataset.ccgOnlineUnavailable="true"'),"unavailable desktop online controls must be marked and disabled");
 assert(gate.includes('roomCode.disabled=true'),"desktop room-code input must be disabled when online services are unavailable");
-assert(gate.includes('authActions.hidden=true'),"desktop account actions must be hidden when online services are unavailable");
+assert(gate.includes('authActions.hidden=true'),"desktop account actions must retain the semantic hidden state when online services are unavailable");
+assert(gate.includes('authActions.classList.add("hidden")'),"desktop account actions must also use the site hidden class so author CSS cannot expose them");
+assert(gate.includes('howto.classList.add("hidden")'),"desktop offline multiplayer instructions must use the site hidden class as well as the hidden attribute");
 assert(gate.includes('anchor.classList.contains("menu-exit-link")'),"desktop Exit links must remain under the delivery boundary");
 assert(gate.includes('headerQuit&&menuVisible'),"title-screen QUIT must remain under the desktop delivery boundary");
 
