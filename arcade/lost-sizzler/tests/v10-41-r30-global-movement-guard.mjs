@@ -26,7 +26,9 @@ assert.match(guard,/if\(controllerUpdate\)state\.baselineUpdate=controllerUpdate
 assert.match(guard,/function topLevelSpyOwner\(fn\)/,"a genuinely top-level Spy owner must remain distinguishable from harmless historical markers beneath the controller boundary");
 assert.match(guard,/function recoveryHurt\(\)/,"damage recovery must resolve a live modern owner instead of blindly trusting an early golden snapshot");
 assert.match(guard,/modernDamageOwnershipPresent\(state\.baselineHurt\)/,"R30 must prefer a baseline that still contains all required late damage owners");
-assert.match(guard,/const preserveModernHurt=!spyActive\(\)&&modernDamageOwnersRequired\(\)&&healthyBaseline\(window\.hurtPlayer\)&&modernDamageOwnershipPresent\(window\.hurtPlayer\)/,"unrelated ownership repairs must preserve an already-valid R56\/R60 damage ancestry");
+assert.match(guard,/const enforceModernHurt=!spyActive\(\)&&modernDamageOwnersRequired\(\)/,"normal-mode restores must reject historical damage owners whenever R56\/R60 semantics are required");
+assert.match(guard,/if\(!enforceModernHurt\|\|modernDamageOwnershipPresent\(hurtFn\)\)window\.hurtPlayer=hurtFn/,"R30 must never write a stale Spy or historical hurt owner over the modern Solo damage chain");
+assert.match(guard,/if\(enforceModernHurt&&!modernDamageOwnershipPresent\(window\.hurtPlayer\)\)reinstallModernDamageOwners\(\)/,"R30 restores must synchronously rebuild R56\/R60 damage ownership if the live chain is already bare");
 assert.match(guard,/damageOwnershipPreservations\+\+/,"preservation of the final damage owner must remain diagnosable");
 assert.match(guard,/if\(!spyActive\(\)&&modernDamageOwnersRequired\(\)&&!modernDamageOwnershipPresent\(window\.hurtPlayer\)\)reinstallModernDamageOwners\(\)/,"every cooperative R29 reinstall must synchronously restore the late R56\/R60 damage owners before returning");
 assert.match(guard,/assertNormalRuntimeOwnership/,"normal modes must continuously validate runtime ownership");
