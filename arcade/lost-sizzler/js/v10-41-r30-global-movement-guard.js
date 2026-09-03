@@ -185,13 +185,14 @@
   }
 
   function forceRestore(updateFn,moveFn,hurtFn,reason){
-    const preserveModernHurt=!spyActive()&&modernDamageOwnersRequired()&&healthyBaseline(window.hurtPlayer)&&modernDamageOwnershipPresent(window.hurtPlayer);
+    const enforceModernHurt=!spyActive()&&modernDamageOwnersRequired();
     if(typeof updateFn==="function")window.update=updateFn;
     if(typeof moveFn==="function")window.movePlayer=moveFn;
     if(typeof hurtFn==="function"){
-      if(!preserveModernHurt||modernDamageOwnershipPresent(hurtFn))window.hurtPlayer=hurtFn;
+      if(!enforceModernHurt||modernDamageOwnershipPresent(hurtFn))window.hurtPlayer=hurtFn;
       else state.damageOwnershipPreservations++;
     }
+    if(enforceModernHurt&&!modernDamageOwnershipPresent(window.hurtPlayer))reinstallModernDamageOwners();
     state.forcedRestores++;state.lastRestoreAt=Date.now();state.lastRestoreReason=String(reason||"runtime handoff");
     state.spyOwnerUpdate=state.spyOwnerMove=state.spyOwnerHurt=null;noteRecovery(state.lastRestoreReason);return true;
   }
