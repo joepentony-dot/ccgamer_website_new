@@ -144,7 +144,7 @@
 
   function applyDeliveryUi(){
     if(!delivery.isDesktop)return;
-    let scheduled=0,observer=null;
+    let scheduled=0,observer=null,observerInstallTimer=0,observerAttempts=0;
     const needsReassertion=()=>{
       if(onlineServicesConfigured())return false;
       for(const id of ONLINE_BUTTONS){
@@ -164,14 +164,21 @@
       scheduled=setTimeout(()=>{scheduled=0;apply()},0)
     };
     const installObserver=()=>{
-      if(observer||typeof MutationObserver!=="function"||onlineServicesConfigured())return;
+      if(observer||typeof MutationObserver!=="function"||onlineServicesConfigured())return Boolean(observer);
       const targets=[...ONLINE_BUTTONS].map(id=>document.getElementById(id)).filter(Boolean);
       const roomCode=document.getElementById("room-code"),howto=document.querySelector(".online-howto"),authActions=document.getElementById("weekly-auth-actions");
       if(roomCode)targets.push(roomCode);if(howto)targets.push(howto);if(authActions)targets.push(authActions);
-      if(!targets.length)return;
+      if(!targets.length)return false;
       observer=new MutationObserver(()=>{if(needsReassertion())schedule()});
       for(const target of targets)observer.observe(target,{attributes:true,attributeFilter:["disabled","aria-disabled","hidden","class"]});
-      window.addEventListener("pagehide",()=>{observer?.disconnect();observer=null;if(scheduled)clearTimeout(scheduled)},{once:true})
+      return true
+    };
+    const ensureObserver=()=>{
+      if(observer||onlineServicesConfigured())return;
+      if(installObserver())return;
+      if(observerInstallTimer||observerAttempts>=200)return;
+      observerAttempts++;
+      observerInstallTimer=setTimeout(()=>{observerInstallTimer=0;ensureObserver()},25)
     };
     const apply=()=>{
       if(onlineServicesConfigured())return;
@@ -180,28 +187,39 @@
         const button=document.getElementById(id);
         if(!button)continue;
         if(!button.disabled)button.disabled=true;
-        button.setAttribute("aria-disabled","true");
+        if(button.getAttribute("aria-disabled")!=="true")button.setAttribute("aria-disabled","true");
         if(button.title!==message)button.title=message;
-        button.dataset.ccgOnlineUnavailable="true"
+        if(button.dataset.ccgOnlineUnavailable!=="true")button.dataset.ccgOnlineUnavailable="true"
       }
       const roomCode=document.getElementById("room-code");
       if(roomCode){if(!roomCode.disabled)roomCode.disabled=true;if(roomCode.title!==message)roomCode.title=message}
       const howto=document.querySelector(".online-howto");
-      if(howto){howto.hidden=true;howto.classList.add("hidden")}
+      if(howto){if(!howto.hidden)howto.hidden=true;if(!howto.classList.contains("hidden"))howto.classList.add("hidden")}
       const weeklyStatus=document.getElementById("weekly-status");
       if(weeklyStatus&&weeklyStatus.textContent!==message)weeklyStatus.textContent=message;
       const authActions=document.getElementById("weekly-auth-actions");
-      if(authActions){authActions.hidden=true;authActions.classList.add("hidden")}
+      if(authActions){if(!authActions.hidden)authActions.hidden=true;if(!authActions.classList.contains("hidden"))authActions.classList.add("hidden")}
       const note=document.getElementById("menu-note");
       const offlineNote="Offline desktop mode: Solo, Tutorial, 2P Split Screen, local saves, achievements and bundled game content remain available. Online multiplayer, account services and Weekly Vault are disabled.";
       if(note&&delivery.mode==="desktop-offline"&&note.textContent!==offlineNote)note.textContent=offlineNote;
-      installObserver()
+      ensureObserver()
+    };
+    const scheduleSettled=()=>{
+      schedule();
+      setTimeout(schedule,50);
+      setTimeout(schedule,500)
     };
     apply();
-    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",schedule,{once:true});
-    window.addEventListener("focus",schedule);
-    window.addEventListener("ccg:auth-changed",schedule);
-    document.addEventListener("visibilitychange",()=>{if(!document.hidden)schedule()});
+    ensureObserver();
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>{schedule();ensureObserver()},{once:true});
+    window.addEventListener("focus",scheduleSettled);
+    window.addEventListener("ccg:auth-changed",scheduleSettled);
+    document.addEventListener("visibilitychange",()=>{if(!document.hidden)scheduleSettled()});
+    window.addEventListener("pagehide",()=>{
+      observer?.disconnect();observer=null;
+      if(scheduled)clearTimeout(scheduled);
+      if(observerInstallTimer)clearTimeout(observerInstallTimer)
+    },{once:true});
   }
 
   function installNetworkGateBridge(){
