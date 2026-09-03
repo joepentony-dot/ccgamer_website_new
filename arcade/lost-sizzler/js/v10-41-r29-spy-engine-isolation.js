@@ -287,12 +287,22 @@
     compactLogicalMap();buildCompactWorld();sanitiseSharedDungeonState();processMovement();processAttack();callSpyRules();syncLocalStatus();updatePrompt();return true;
   }
 
+  function ownerChainHas(fn,target,limit=64){
+    const seen=new Set();let current=fn,depth=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth++<limit){
+      if(current===target)return true;
+      seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null;
+    }
+    return false;
+  }
+
   function spyMoveOwner(player,dx,dy,dash=false){if(spyActive())return attemptMove(player,dx,dy,dash);return typeof state.baseMove==="function"?state.baseMove.apply(this,arguments):false}
   spyMoveOwner.__ccgV141R29SpyOwner=true;spyMoveOwner.__ccgV141R27SpyDoorIsolation=true;spyMoveOwner.__ccgV141SpyIsolated=true;
 
   function spyHurtOwner(player,amount,friendly=false,source="enemy"){
     if(spyActive()){state.dungeonDamageBlocked++;return false}
-    return typeof state.baseHurt==="function"?state.baseHurt.apply(this,arguments):false;
+    const delegate=typeof spyHurtOwner.__ccgOriginal==="function"?spyHurtOwner.__ccgOriginal:state.baseHurt;
+    return typeof delegate==="function"?delegate.apply(this,arguments):false;
   }
   spyHurtOwner.__ccgV141R29HordeFriendly=true;spyHurtOwner.__ccgV141SpyDamageBoundary=true;
 
@@ -310,8 +320,11 @@
 
   function enterIsolation(){
     if(state.isolated||!spyActive())return state.isolated;
-    ensureModeStyles();state.baseMove=window.movePlayer;state.baseHurt=window.hurtPlayer;
-    window.movePlayer=spyMoveOwner;window.hurtPlayer=spyHurtOwner;suppressLegacyPhysicalBuilder();
+    ensureModeStyles();state.baseMove=window.movePlayer;
+    const currentHurt=window.hurtPlayer,hurtAlreadyComposed=ownerChainHas(currentHurt,spyHurtOwner);
+    if(!hurtAlreadyComposed){state.baseHurt=currentHurt;spyHurtOwner.__ccgOriginal=currentHurt;window.hurtPlayer=spyHurtOwner}
+    else state.baseHurt=typeof spyHurtOwner.__ccgOriginal==="function"?spyHurtOwner.__ccgOriginal:null;
+    window.movePlayer=spyMoveOwner;suppressLegacyPhysicalBuilder();
     document.body.dataset.spyRuntimeIsolated="true";state.isolated=true;state.lastMode=MODE_ID;state.lastMoveAt=0;state.lastAttackAt=0;state.statusById.clear();
     compactLogicalMap();buildCompactWorld(true);sanitiseSharedDungeonState();updatePrompt();return true;
   }
@@ -319,7 +332,10 @@
   function leaveIsolation(){
     if(!state.isolated)return false;
     if(window.movePlayer===spyMoveOwner&&typeof state.baseMove==="function")window.movePlayer=state.baseMove;
-    if(window.hurtPlayer===spyHurtOwner&&typeof state.baseHurt==="function")window.hurtPlayer=state.baseHurt;
+    if(window.hurtPlayer===spyHurtOwner){
+      const delegate=typeof spyHurtOwner.__ccgOriginal==="function"?spyHurtOwner.__ccgOriginal:state.baseHurt;
+      if(typeof delegate==="function")window.hurtPlayer=delegate;
+    }
     restoreLegacyPhysicalBuilder();delete document.body.dataset.spyRuntimeIsolated;setPrompt("");keys.clear();state.trapPulse=false;state.trapHeld=false;state.statusById.clear();state.isolated=false;state.baseMove=state.baseHurt=null;state.lastWorldSignature="";return true;
   }
 
@@ -327,7 +343,11 @@
     if(spyActive()){
       if(!state.isolated)enterIsolation();
       if(state.isolated&&window.movePlayer!==spyMoveOwner){window.movePlayer=spyMoveOwner;state.moveReassertions++}
-      if(state.isolated&&window.hurtPlayer!==spyHurtOwner)window.hurtPlayer=spyHurtOwner;
+      if(state.isolated&&!ownerChainHas(window.hurtPlayer,spyHurtOwner)){
+        const current=window.hurtPlayer;
+        if(typeof current==="function"&&current!==spyHurtOwner){state.baseHurt=current;spyHurtOwner.__ccgOriginal=current}
+        window.hurtPlayer=spyHurtOwner;
+      }
       suppressLegacyPhysicalBuilder();return;
     }
     if(state.isolated)leaveIsolation();
