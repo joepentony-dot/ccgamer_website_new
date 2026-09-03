@@ -91,6 +91,39 @@
     strip.classList.toggle("hidden",chips.length===0);
   }
 
+  function renderQuickSlotArtwork(slot,item){
+    const existing=slot.querySelector(":scope > .item-svg-wrap.quick-slot-canonical-icon");
+    if(!item){
+      existing?.remove();
+      delete slot.dataset.quickIconKind;
+      delete slot.dataset.r56IconKind;
+      slot.classList.remove("r56-has-icon");
+      return;
+    }
+    const kind=String(item.kind||"loot"),label=String(PGR?.inventoryLabel?.(item)||item.name||kind);
+    if(existing&&slot.dataset.quickIconKind===kind&&existing.querySelector("svg,img.item-art")){
+      existing.classList.add("r56-quick-slot-icon");
+      slot.dataset.r56IconKind=kind;
+      slot.classList.add("r56-has-icon");
+      return;
+    }
+    existing?.remove();
+    const template=document.createElement("template");
+    try{template.innerHTML=icon(kind,label)}catch(_){template.innerHTML=""}
+    const artwork=template.content.firstElementChild;
+    if(!artwork?.classList?.contains("item-svg-wrap")){
+      delete slot.dataset.quickIconKind;
+      delete slot.dataset.r56IconKind;
+      slot.classList.remove("r56-has-icon");
+      return;
+    }
+    artwork.classList.add("quick-slot-canonical-icon","r56-quick-slot-icon");
+    slot.appendChild(artwork);
+    slot.dataset.quickIconKind=kind;
+    slot.dataset.r56IconKind=kind;
+    slot.classList.add("r56-has-icon");
+  }
+
   function annotateQuickSlots(){
     if(typeof p1==="undefined"||!p1)return;
     const slots=document.querySelectorAll?.("#quick-slots .quick-slot")||[];
@@ -101,6 +134,7 @@
     slots.forEach((slot,index)=>{
       const slotNumber=index+1,item=p1.inventory?.[index],usable=Boolean(item&&QUICK_USE.has(item.kind)),number=slot.querySelector("b");
       if(number){number.classList.add("quick-slot-number");number.textContent=String(slotNumber)}
+      renderQuickSlotArtwork(slot,item);
       slot.classList.toggle("number-usable",usable);
       slot.dataset.slotHotkey=String(slotNumber);
       slot.setAttribute("aria-keyshortcuts",String(slotNumber));
