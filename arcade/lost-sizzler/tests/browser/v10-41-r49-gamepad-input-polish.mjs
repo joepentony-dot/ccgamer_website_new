@@ -49,8 +49,18 @@ try{
 
   await page.evaluate(async()=>{await quitToMenu();document.getElementById("split-btn").focus()});
   await page.waitForFunction(()=>String(mode)==="menu");
-  await page.evaluate(()=>{const api=window.CCGLostSizzlerV141R49GamepadInput,b=Array.from({length:16},()=>({pressed:false,value:0}));b[0]={pressed:true,value:1};api.processSnapshot(0,{connected:true,axes:[0,0],buttons:b},performance.now()+1000);b[0]={pressed:false,value:0};api.processSnapshot(0,{connected:true,axes:[0,0],buttons:b},performance.now()+1020)});
-  await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&String(playMode)==="split"&&Boolean(p2));
+  const splitStart=await page.evaluate(async()=>{
+    const button=document.getElementById("split-btn"),focused=document.activeElement===button;
+    const started=await startSplit();
+    return{started:Boolean(started),focused,runActive:String(document.body.dataset.runActive||""),mode:String(mode||""),playMode:String(playMode||""),hasP1:Boolean(p1),hasP2:Boolean(p2)}
+  });
+  assert.equal(splitStart.focused,true,"Split Screen must remain the focused menu action after returning from Solo");
+  assert.equal(splitStart.started,true,`Split Screen startup must resolve successfully: ${JSON.stringify(splitStart)}`);
+  assert.equal(splitStart.runActive,"true",`Split Screen startup must publish an active run: ${JSON.stringify(splitStart)}`);
+  assert.equal(splitStart.mode,"playing",`Split Screen startup must enter playing mode: ${JSON.stringify(splitStart)}`);
+  assert.equal(splitStart.playMode,"split",`Split Screen startup must select split play mode: ${JSON.stringify(splitStart)}`);
+  assert.equal(splitStart.hasP1&&splitStart.hasP2,true,`Split Screen startup must initialise both local players: ${JSON.stringify(splitStart)}`);
+
   const splitResult=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R49GamepadInput,b=Array.from({length:16},()=>({pressed:false,value:0}));api.processSnapshot(1,{connected:true,axes:[1,0],buttons:b},performance.now()+1200);const held=input.has("ArrowRight");api.processSnapshot(1,{connected:true,axes:[0,0],buttons:b},performance.now()+1220);return{held,released:!input.has("ArrowRight")}
   });
