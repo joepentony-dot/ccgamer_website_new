@@ -49,11 +49,12 @@ try{
   const retained=await page.evaluate(()=>{
     const seen=new Set(),chain=[];let current=window.hurtPlayer;
     while(typeof current==="function"&&!seen.has(current)&&chain.length<64){seen.add(current);chain.push({name:String(current.name||""),probe:Boolean(current.__ccgR29CompositionProbe),spy:Boolean(current.__ccgV141SpyDamageBoundary)});current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null}
-    return{topProbe:Boolean(window.hurtPlayer?.__ccgR29CompositionProbe),hasProbe:chain.some(row=>row.probe),hasSpy:chain.some(row=>row.spy),chain};
+    const probeIndex=chain.findIndex(row=>row.probe),spyIndex=chain.findIndex(row=>row.spy);
+    return{hasProbe:probeIndex>=0,hasSpy:spyIndex>=0,probeIndex,spyIndex,chain};
   });
-  assert.equal(retained.topProbe,true,`R29/R30 monitors must not discard a later owner that composes around the Spy boundary: ${JSON.stringify(retained.chain)}`);
-  assert.equal(retained.hasProbe,true,"the later damage owner must remain in the live ancestry while Spy is active");
+  assert.equal(retained.hasProbe,true,`R29/R30 monitors must not discard a later owner that composes around the Spy boundary: ${JSON.stringify(retained.chain)}`);
   assert.equal(retained.hasSpy,true,"the Spy damage boundary must remain in the live ancestry while the later owner stays installed");
+  assert.equal(retained.spyIndex>retained.probeIndex,true,`the saved Spy damage owner must remain beneath the later composed owner even when another legitimate owner becomes outermost: ${JSON.stringify(retained.chain)}`);
 
   const exited=await page.evaluate(()=>{
     const special=window.CCGLostSizzlerSpecialModes,engine=window.CCGLostSizzlerV141R29SpyEngine,saved=window.__CCG_R29_DAMAGE_COMPOSITION__;
