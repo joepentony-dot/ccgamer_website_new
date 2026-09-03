@@ -73,9 +73,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          marker="$RUNNER_TEMP/lost-sizzler-browser-current.txt"
+          rm -f "$marker"
+
+          run_browser_test() {
+            local test="$1"
+            printf '%s\n' "$test" > "$marker"
+            echo "::group::$test"
+            node "$test"
+            echo "::endgroup::"
+          }
 
           run_legacy_browser_test() {
             local test="$1"
+            printf '%s (attempt 1)\n' "$test" > "$marker"
             echo "::group::$test (attempt 1)"
             if node "$test"; then
               echo "::endgroup::"
@@ -83,6 +94,7 @@ jobs:
             fi
             echo "::endgroup::"
             echo "Legacy browser test timed out or failed on attempt 1; retrying once on a fresh browser process: $test"
+            printf '%s (attempt 2)\n' "$test" > "$marker"
             echo "::group::$test (attempt 2)"
             node "$test"
             echo "::endgroup::"
@@ -92,7 +104,15 @@ jobs:
           run_legacy_browser_test arcade/lost-sizzler/tests/support/v10-28-browser-stability-deterministic.mjs
 
           for test in arcade/lost-sizzler/tests/browser/*.mjs; do
-            echo "::group::$test"
-            node "$test"
-            echo "::endgroup::"
+            run_browser_test "$test"
           done
+          rm -f "$marker"
+
+      - name: Upload failing Chromium contract marker
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lost-sizzler-failing-browser-contract
+          path: ${{ runner.temp }}/lost-sizzler-browser-current.txt
+          if-no-files-found: ignore
+          retention-days: 1
