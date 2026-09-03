@@ -74,6 +74,7 @@ Normal website behaviour.
 Guaranteed offline-capable desktop mode.
 
 - Supabase activation is refused.
+- Any `window.ccgSupabase` bridge that was accidentally injected before game boot must be quarantined and replaced by the offline null-client boundary; the injected bridge's original `getClient()` must not be consulted.
 - Weekly Vault, online multiplayer and website-account controls remain unavailable.
 - Solo, Tutorial, 2P Split Screen, local saves, achievements, permanent collection and dossier state remain available.
 - No website-root Supabase scripts may be loaded.
@@ -224,6 +225,8 @@ Offline launch must prove:
 - no Supabase bootstrap request;
 - no Supabase API request;
 - no remote Lost Sizzler media request;
+- a deliberately pre-injected fake `window.ccgSupabase` bridge is quarantined before ordinary runtime use, its original `getClient()` is never called, and `RoomNetwork.getSupabase()` still resolves to `null`;
+- Feedback Submit and rating submission remain blocked before legacy direct-client handlers even when such a bridge was injected before boot;
 - Solo launch works;
 - Tutorial works;
 - 2P Split Screen works;
@@ -264,6 +267,7 @@ If the chosen framework supports renderer isolation/sandboxing, use it. Framewor
 - Never embed a Supabase service-role key in the desktop application.
 - Browser/desktop client access must remain limited to credentials and policies suitable for an untrusted client.
 - `desktop-offline` must not initialise Supabase.
+- `desktop-offline` must fail closed even if a preload/wrapper accidentally injects `window.ccgSupabase`; the game boundary must quarantine that bridge rather than trusting its presence as authorization for online access.
 - `desktop-online` must initialise Supabase only after an explicit online feature requires it, unless a wrapper-injected client is already present for the session.
 - Local Solo save data remains authoritative; cloud save is a mirror/reconciliation layer.
 
