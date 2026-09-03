@@ -4,16 +4,24 @@ on:
   pull_request:
     paths:
       - 'arcade/lost-sizzler/assets/audio/**'
+      - 'arcade/lost-sizzler/js/audio-assets.js'
+      - 'arcade/lost-sizzler/js/config.js'
+      - 'games/games.json'
       - 'scripts/build-lost-sizzler-package-manifest.mjs'
       - 'scripts/verify-lost-sizzler-offline-package-content.mjs'
+      - 'scripts/verify-lost-sizzler-offline-catalogue.mjs'
       - '.github/workflows/lost-sizzler-offline-package-content.yml'
   push:
     branches:
       - main
     paths:
       - 'arcade/lost-sizzler/assets/audio/**'
+      - 'arcade/lost-sizzler/js/audio-assets.js'
+      - 'arcade/lost-sizzler/js/config.js'
+      - 'games/games.json'
       - 'scripts/build-lost-sizzler-package-manifest.mjs'
       - 'scripts/verify-lost-sizzler-offline-package-content.mjs'
+      - 'scripts/verify-lost-sizzler-offline-catalogue.mjs'
       - '.github/workflows/lost-sizzler-offline-package-content.yml'
 
 permissions:
@@ -35,12 +43,18 @@ jobs:
         run: |
           node --check scripts/build-lost-sizzler-package-manifest.mjs
           node --check scripts/verify-lost-sizzler-offline-package-content.mjs
+          node --check scripts/verify-lost-sizzler-offline-catalogue.mjs
 
       - name: Run offline package content self-tests
-        run: node scripts/verify-lost-sizzler-offline-package-content.mjs --self-test
+        run: |
+          node scripts/verify-lost-sizzler-offline-package-content.mjs --self-test
+          node scripts/verify-lost-sizzler-offline-catalogue.mjs --self-test
 
       - name: Build desktop package manifest
         run: node scripts/build-lost-sizzler-package-manifest.mjs --output lost-sizzler-package-manifest.json
 
       - name: Verify minimum offline package content
         run: node scripts/verify-lost-sizzler-offline-package-content.mjs --manifest lost-sizzler-package-manifest.json
+
+      - name: Verify packaged C64 collectible catalogue
+        run: node scripts/verify-lost-sizzler-offline-catalogue.mjs --manifest lost-sizzler-package-manifest.json
