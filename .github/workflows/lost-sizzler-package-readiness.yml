@@ -149,6 +149,16 @@ jobs:
           rm -rf "$STAGE_ROOT_B"
           node scripts/verify-lost-sizzler-update-persistence-boundary.mjs --package-root "${STAGE_ROOT_B}.removed" --user-data-root "$USER_DATA_ROOT" --verify "$PERSISTENCE_SNAPSHOT"
 
+          # Roll back from the removed 1.1.0 package to 1.0.0 while preserving
+          # the exact same external Tier-A profile. The reinstall target must
+          # still satisfy the same owned-package uninstall boundary afterwards.
+          node scripts/materialize-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --output "$STAGE_ROOT_A" --clean
+          node scripts/verify-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --root "$STAGE_ROOT_A"
+          node scripts/verify-lost-sizzler-update-persistence-boundary.mjs --package-root "$STAGE_ROOT_A" --user-data-root "$USER_DATA_ROOT" --verify "$PERSISTENCE_SNAPSHOT"
+          node scripts/verify-lost-sizzler-uninstall-boundary.mjs --package-root "$STAGE_ROOT_A" --user-data-root "$USER_DATA_ROOT" --target "$STAGE_ROOT_A"
+          rm -rf "$STAGE_ROOT_A"
+          node scripts/verify-lost-sizzler-update-persistence-boundary.mjs --package-root "${STAGE_ROOT_A}.removed" --user-data-root "$USER_DATA_ROOT" --verify "$PERSISTENCE_SNAPSHOT"
+
       - name: Upload package manifest evidence
         uses: actions/upload-artifact@v4
         with:
