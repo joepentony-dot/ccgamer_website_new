@@ -12,6 +12,7 @@ on:
       - 'scripts/build-lost-sizzler-package-manifest.mjs'
       - 'scripts/materialize-lost-sizzler-package-tree.mjs'
       - 'scripts/verify-lost-sizzler-package-tree.mjs'
+      - 'scripts/verify-lost-sizzler-update-persistence-boundary.mjs'
       - '.github/workflows/lost-sizzler-package-readiness.yml'
   push:
     branches:
@@ -26,6 +27,7 @@ on:
       - 'scripts/build-lost-sizzler-package-manifest.mjs'
       - 'scripts/materialize-lost-sizzler-package-tree.mjs'
       - 'scripts/verify-lost-sizzler-package-tree.mjs'
+      - 'scripts/verify-lost-sizzler-update-persistence-boundary.mjs'
       - '.github/workflows/lost-sizzler-package-readiness.yml'
 
 permissions:
@@ -48,12 +50,16 @@ jobs:
           node --check scripts/build-lost-sizzler-package-manifest.mjs
           node --check scripts/materialize-lost-sizzler-package-tree.mjs
           node --check scripts/verify-lost-sizzler-package-tree.mjs
+          node --check scripts/verify-lost-sizzler-update-persistence-boundary.mjs
 
       - name: Verify package asset boundary and hashes
         run: node scripts/build-lost-sizzler-package-manifest.mjs --check
 
       - name: Verify staged package verifier regressions
         run: node scripts/verify-lost-sizzler-package-tree.mjs --self-test
+
+      - name: Verify update persistence boundary regressions
+        run: node scripts/verify-lost-sizzler-update-persistence-boundary.mjs --self-test
 
       - name: Build reproducible package manifest artifact
         run: |
@@ -108,13 +114,24 @@ jobs:
           console.log(`Lost Sizzler package manifest reproducibility/structure passed: ${manifest.fileCount} files, ${manifest.totalBytes} bytes.`);
           NODE
 
-      - name: Materialize and verify exact package tree
+      - name: Materialize, replace and preserve external persistence
         env:
           STAGE_ROOT: ${{ runner.temp }}/lost-sizzler-package-stage
+          USER_DATA_ROOT: ${{ runner.temp }}/lost-sizzler-user-data
+          PERSISTENCE_SNAPSHOT: ${{ runner.temp }}/lost-sizzler-user-data.snapshot.json
         run: |
           set -euo pipefail
           node scripts/materialize-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --output "$STAGE_ROOT" --clean
           node scripts/verify-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --root "$STAGE_ROOT"
+
+          mkdir -p "$USER_DATA_ROOT"
+          printf '%s\n' '{"schema":"fixture","floor":7}' > "$USER_DATA_ROOT/solo-save.json"
+          printf '%s\n' '{"earned":["package-readiness-fixture"]}' > "$USER_DATA_ROOT/achievements.json"
+          node scripts/verify-lost-sizzler-update-persistence-boundary.mjs --package-root "$STAGE_ROOT" --user-data-root "$USER_DATA_ROOT" --snapshot "$PERSISTENCE_SNAPSHOT"
+
+          node scripts/materialize-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --output "$STAGE_ROOT" --clean
+          node scripts/verify-lost-sizzler-package-tree.mjs --manifest lost-sizzler-package-manifest.json --root "$STAGE_ROOT"
+          node scripts/verify-lost-sizzler-update-persistence-boundary.mjs --package-root "$STAGE_ROOT" --user-data-root "$USER_DATA_ROOT" --verify "$PERSISTENCE_SNAPSHOT"
 
       - name: Upload package manifest evidence
         uses: actions/upload-artifact@v4
