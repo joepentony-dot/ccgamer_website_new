@@ -1,0 +1,46 @@
+name: Lost Sizzler Offline Package Content
+
+on:
+  pull_request:
+    paths:
+      - 'arcade/lost-sizzler/assets/audio/**'
+      - 'scripts/build-lost-sizzler-package-manifest.mjs'
+      - 'scripts/verify-lost-sizzler-offline-package-content.mjs'
+      - '.github/workflows/lost-sizzler-offline-package-content.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'arcade/lost-sizzler/assets/audio/**'
+      - 'scripts/build-lost-sizzler-package-manifest.mjs'
+      - 'scripts/verify-lost-sizzler-offline-package-content.mjs'
+      - '.github/workflows/lost-sizzler-offline-package-content.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate offline package content tooling syntax
+        run: |
+          node --check scripts/build-lost-sizzler-package-manifest.mjs
+          node --check scripts/verify-lost-sizzler-offline-package-content.mjs
+
+      - name: Run offline package content self-tests
+        run: node scripts/verify-lost-sizzler-offline-package-content.mjs --self-test
+
+      - name: Build desktop package manifest
+        run: node scripts/build-lost-sizzler-package-manifest.mjs --output lost-sizzler-package-manifest.json
+
+      - name: Verify minimum offline package content
+        run: node scripts/verify-lost-sizzler-offline-package-content.mjs --manifest lost-sizzler-package-manifest.json
