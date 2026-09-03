@@ -56,6 +56,19 @@
     }
     return false;
   }
+  function chainContains(fn,target){
+    if(typeof fn!=="function"||typeof target!=="function")return false;
+    const queue=[{fn,depth:0}],seen=new Set();
+    while(queue.length){
+      const entry=queue.shift(),current=entry?.fn,depth=Number(entry?.depth||0);
+      if(typeof current!=="function"||seen.has(current))continue;
+      if(current===target){if(depth>0)state.nestedOwnershipDetections++;return true}
+      seen.add(current);
+      if(depth>=47)continue;
+      for(const linked of originalLinks(current))queue.push({fn:linked,depth:depth+1});
+    }
+    return false;
+  }
   function spyContaminated(fn){return ISOLATED_MARKERS.some(marker=>chainHas(fn,marker))}
   function topLevelSpyOwner(fn){
     if(typeof fn!=="function")return false;
@@ -240,7 +253,7 @@
         if(!state.spyOwnerHurt)state.spyOwnerHurt=window.hurtPlayer;
         if(typeof state.spyOwnerUpdate==="function"&&window.update!==state.spyOwnerUpdate)window.update=state.spyOwnerUpdate;
         if(typeof state.spyOwnerMove==="function"&&window.movePlayer!==state.spyOwnerMove)window.movePlayer=state.spyOwnerMove;
-        if(typeof state.spyOwnerHurt==="function"&&window.hurtPlayer!==state.spyOwnerHurt)window.hurtPlayer=state.spyOwnerHurt;
+        if(typeof state.spyOwnerHurt==="function"&&!chainContains(window.hurtPlayer,state.spyOwnerHurt))window.hurtPlayer=state.spyOwnerHurt;
       }
       return true;
     }
@@ -364,7 +377,7 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);clearHeld()},{once:true});
 
   window.CCGLostSizzlerV141R30={
-    originalLink,originalLinks,chainHas,spyContaminated,topLevelSpyOwner,controllerProtectedUpdate,modernDamageOwnersRequired,modernDamageOwnershipPresent,reinstallModernDamageOwners,adoptReleaseMoveOwner,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,resetRecoveredMovementCooldowns,reassertHeldInput,movementWatchdog,makeR29Cooperative,
+    originalLink,originalLinks,chainHas,chainContains,spyContaminated,topLevelSpyOwner,controllerProtectedUpdate,modernDamageOwnersRequired,modernDamageOwnershipPresent,reinstallModernDamageOwners,adoptReleaseMoveOwner,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,resetRecoveredMovementCooldowns,reassertHeldInput,movementWatchdog,makeR29Cooperative,
     constants:{ORIGINAL_LINKS},get state(){return state}
   };
 })();
