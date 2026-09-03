@@ -65,9 +65,11 @@
   });
 
   function sanitizeClient(client){
-    if(!delivery.isDesktop||!client?.functions||typeof client.functions.invoke!=="function")return client;
-    const functions=client.functions;
-    if(functions.__ccgLostSizzlerDesktopPayloadGuard===true)return client;
+    if(!delivery.isDesktop||!client)return client;
+    if(client.__ccgLostSizzlerDesktopPayloadGuard===true)return client;
+    let functions=null;
+    try{functions=client.functions}catch(error){console.warn("[Lost Sizzler] desktop online payload guard could not read client functions",error);return client}
+    if(!functions||typeof functions.invoke!=="function")return client;
     try{
       const originalInvoke=functions.invoke.bind(functions);
       functions.invoke=function(name,options){
@@ -79,7 +81,9 @@
         return originalInvoke(name,next)
       };
       Object.defineProperty(functions,"__ccgLostSizzlerDesktopPayloadGuard",{value:true,configurable:true});
-    }catch(error){console.warn("[Lost Sizzler] desktop online payload guard could not wrap client functions",error)}
+      Object.defineProperty(client,"functions",{configurable:true,enumerable:true,get(){return functions}});
+      Object.defineProperty(client,"__ccgLostSizzlerDesktopPayloadGuard",{value:true,configurable:true});
+    }catch(error){console.warn("[Lost Sizzler] desktop online payload guard could not stabilise client functions",error)}
     return client
   }
 
