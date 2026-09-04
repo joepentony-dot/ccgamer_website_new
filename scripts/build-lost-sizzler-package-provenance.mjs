@@ -32,8 +32,8 @@ function validateManifest(manifest) {
   if (manifest.schema !== 'ccg-lost-sizzler-desktop-package-manifest-v1') fail(`Unsupported package manifest schema: ${manifest.schema ?? 'missing'}`);
   const releaseIdentifier = String(manifest.releaseIdentifier ?? '').trim();
   if (!releaseIdentifier || releaseIdentifier === 'unknown') fail('Package manifest requires a non-empty, non-unknown releaseIdentifier.');
-  if (!Number.isInteger(manifest.fileCount) || manifest.fileCount < 1) fail('Package manifest fileCount must be a positive integer.');
-  if (!Number.isInteger(manifest.totalBytes) || manifest.totalBytes < 1) fail('Package manifest totalBytes must be a positive integer.');
+  if (!Number.isSafeInteger(manifest.fileCount) || manifest.fileCount < 1) fail('Package manifest fileCount must be a positive safe integer.');
+  if (!Number.isSafeInteger(manifest.totalBytes) || manifest.totalBytes < 1) fail('Package manifest totalBytes must be a positive safe integer.');
   if (!Array.isArray(manifest.files) || manifest.files.length !== manifest.fileCount) fail('Package manifest files array must match fileCount.');
   return releaseIdentifier;
 }
@@ -125,6 +125,11 @@ function runSelfTest() {
     try { verifyProvenance(readJson(manifestPath, 'package manifest'), readJson(provenancePath, 'package provenance')); } catch { releaseMismatchRejected = true; }
     if (!releaseMismatchRejected) fail('Changed release identifier must invalidate package provenance.');
 
+    writeJson(manifestPath, { ...manifest, fileCount: Number.MAX_SAFE_INTEGER + 1 });
+    expectFailure(() => buildProvenance(readJson(manifestPath, 'package manifest')), 'fileCount must be a positive safe integer');
+    writeJson(manifestPath, { ...manifest, totalBytes: Number.MAX_SAFE_INTEGER + 1 });
+    expectFailure(() => buildProvenance(readJson(manifestPath, 'package manifest')), 'totalBytes must be a positive safe integer');
+
     external = fs.mkdtempSync(path.join(os.tmpdir(), 'lost-sizzler-provenance-external-'));
     const externalManifest = path.join(external, 'manifest.json');
     writeJson(externalManifest, manifest);
@@ -140,7 +145,7 @@ function runSelfTest() {
     if (fs.readFileSync(sentinel, 'utf8') !== 'preserve\n') fail('Rejected provenance output changed external sentinel content.');
     if (fs.existsSync(path.join(external, 'provenance-through-link.json'))) fail('Rejected provenance output was written through symbolic-link ancestry.');
 
-    console.log('Lost Sizzler package provenance self-test passed: release identity and exact manifest bytes are SHA-256 bound, evidence is immutable, and manifest/output symlink ancestry is rejected.');
+    console.log('Lost Sizzler package provenance self-test passed: release identity and exact manifest bytes are SHA-256 bound, manifest counters are safe integers, evidence is immutable, and manifest/output symlink ancestry is rejected.');
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
     if (external) fs.rmSync(external, { recursive: true, force: true });
