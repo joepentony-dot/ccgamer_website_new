@@ -2,6 +2,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import os from 'node:os';
 import process from 'node:process';
 
 const SCHEMA = 'ccg-lost-sizzler-desktop-package-manifest-v1';
@@ -84,6 +85,7 @@ async function materialize({ manifestPath, outputRoot, clean }) {
 
   const root = path.resolve(outputRoot);
   const cwd = path.resolve(process.cwd());
+  const realCwd = await fs.realpath(cwd);
   if (root === cwd || root === path.parse(root).root) throw new Error(`Refusing unsafe package output root: ${root}`);
 
   if (clean) await fs.rm(root, { recursive: true, force: true });
@@ -110,6 +112,11 @@ async function materialize({ manifestPath, outputRoot, clean }) {
     }
 
     const sourceStat = await ensureOrdinaryFile(source, 'Package source');
+    const realSource = await fs.realpath(source);
+    const relativeRealSource = path.relative(realCwd, realSource);
+    if (!relativeRealSource || relativeRealSource.startsWith('..') || path.isAbsolute(relativeRealSource)) {
+      throw new Error(`Source resolves outside repository root through symbolic-link ancestry: ${entry.sourceRepositoryPath}`);
+    }
     if (!Number.isSafeInteger(entry.bytes) || sourceStat.size !== entry.bytes) {
       throw new Error(`Source byte mismatch for ${entry.path}: manifest ${entry.bytes}, source ${sourceStat.size}`);
     }
@@ -161,6 +168,7 @@ async function assertDirectoryEmpty(directory) {
 async function runSelfTest() {
   const cwd = path.resolve(process.cwd());
   const temp = await fs.mkdtemp(path.join(cwd, '.lost-sizzler-materializer-self-test-'));
+  let externalRoot = null;
   try {
     const sourceRoot = path.join(temp, 'sources');
     const outputRoot = path.join(temp, 'output');
@@ -223,6 +231,28 @@ async function runSelfTest() {
     await assertDirectoryEmpty(symlinkTarget);
     await fs.rm(outputRoot, { force: true });
 
+    externalRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'lost-sizzler-materializer-external-'));
+    const outsideSource = path.join(externalRoot, 'outside.txt');
+    await fs.writeFile(outsideSource, 'outside repository fixture\n', 'utf8');
+    const symlinkSourceRoot = path.join(temp, 'linked-external');
+    await fs.symlink(externalRoot, symlinkSourceRoot, 'dir');
+    const symlinkedSource = path.join(symlinkSourceRoot, 'outside.txt');
+    const symlinkedRelative = path.relative(cwd, symlinkedSource).split(path.sep).join('/');
+    const outsideBytes = (await fs.lstat(outsideSource)).size;
+    const outsideHash = await sha256(outsideSource);
+    await writeManifest({
+      path: 'arcade/lost-sizzler/assets/symlink-escape.txt',
+      sourceRepositoryPath: symlinkedRelative,
+      bytes: outsideBytes,
+      sha256: outsideHash,
+      classification: 'runtime',
+    });
+    await expectFailure(
+      () => materialize({ manifestPath, outputRoot, clean: true }),
+      'Source resolves outside repository root through symbolic-link ancestry'
+    );
+    await assertDirectoryEmpty(outputRoot);
+
     const forbiddenDestinations = [
       'arcade/lost-sizzler/js/ccg-supabase-config.js',
       'arcade/lost-sizzler/.env.production',
@@ -257,9 +287,10 @@ async function runSelfTest() {
     );
     await assertDirectoryEmpty(outputRoot);
 
-    console.log('Lost Sizzler package materializer self-test passed: malformed manifests, symbolic-link output roots and forbidden bootstrap/credential paths are rejected before package copying.');
+    console.log('Lost Sizzler package materializer self-test passed: malformed manifests, symbolic-link output roots, source ancestry escapes and forbidden bootstrap/credential paths are rejected before package copying.');
   } finally {
     await fs.rm(temp, { recursive: true, force: true });
+    if (externalRoot) await fs.rm(externalRoot, { recursive: true, force: true });
   }
 }
 
