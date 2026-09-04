@@ -21,25 +21,62 @@ await new Promise((resolve,reject)=>{server.once("error",reject);server.listen(0
 const origin=`http://127.0.0.1:${server.address().port}`;
 const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage","--disable-background-networking","--autoplay-policy=no-user-gesture-required"]});
 
+async function floorEntryState(page,extra={}){
+  return await page.evaluate(extra=>{
+    const r43=window.CCGLostSizzlerV141R43SoloSave?.state||{},r59=window.CCGLostSizzlerV141R59LiveRegressionFixes?.state||{};
+    const dossierPanel=document.getElementById("named-dossier-panel");
+    return{
+      floor:Number(run?.floor||0),mode:typeof mode==="string"?mode:null,playMode:typeof playMode==="string"?playMode:null,
+      runActive:document.body.dataset.runActive||"",savePromptReason:typeof savePromptReason==="string"?savePromptReason:null,
+      savePanelVisible:Boolean(UI?.savePanel&&!UI.savePanel.classList.contains("hidden")),
+      namedDossierVisible:Boolean(dossierPanel&&!dossierPanel.classList.contains("hidden")),
+      savedFloor:Number(window.CCGLostSizzlerV141R43SoloSave?.readEnvelope?.()?.summary?.floor||0),
+      r43:{autosaves:Number(r43.autosaves||0),lastAutoSaveKey:String(r43.lastAutoSaveKey||""),entryFloorKey:String(r43.entryFloorKey||""),offerOwnerInstalls:Number(r43.offerOwnerInstalls||0),automaticPromptSuppressions:Number(r43.automaticPromptSuppressions||0),floorEntrySettleSchedules:Number(r43.floorEntrySettleSchedules||0),floorEntrySettles:Number(r43.floorEntrySettles||0),lastError:String(r43.lastError||"")},
+      r59:{soloFloorAutosaves:Number(r59.soloFloorAutosaves||0),soloSaveTransitionInstalls:Number(r59.soloSaveTransitionInstalls||0),lastError:String(r59.lastError||"")},
+      offerOwner:Boolean(window.offerFloorSave?.__ccgV141R43AutoSaveOwner),
+      captureOwner:Boolean(window.captureFloorEntryCheckpoint?.__ccgV141R59SoloAutosave),
+      ...extra
+    }
+  },extra)
+}
+
+async function dismissVisibleDossierBoundary(page){
+  const boundary=await page.evaluate(()=>{
+    const panel=document.getElementById("named-dossier-panel");
+    const before=typeof mode==="string"?mode:null,visible=Boolean(panel&&!panel.classList.contains("hidden"));
+    if(!(before==="dossier"&&visible))return{dismissed:false,before,visible,after:before,visibleAfter:visible};
+    if(typeof hideNamedDossier!=="function")return{dismissed:false,before,visible,after:before,visibleAfter:visible,missingHide:true};
+    hideNamedDossier();
+    return{dismissed:true,before,visible,after:typeof mode==="string"?mode:null,visibleAfter:Boolean(panel&&!panel.classList.contains("hidden"))}
+  });
+  assert.notEqual(boundary.missingHide,true,"visible dossier boundary must retain the normal close path");
+  if(!boundary.dismissed)return boundary;
+  assert.equal(boundary.before,"dossier","only a named-dossier modal may be dismissed during the floor-entry boundary");
+  assert.equal(boundary.visible,true,"dismissed dossier boundary must have been visibly open");
+  assert.equal(boundary.visibleAfter,false,"dossier boundary dismissal must hide the named-dossier panel");
+  assert.equal(boundary.after,"playing","dossier boundary dismissal must return to live Solo play");
+  return boundary
+}
+
 async function waitForFloorEntrySettled(page){
+  const waitForSettled=()=>page.waitForFunction(()=>mode==="playing"&&document.getElementById("save-panel")?.classList.contains("hidden")===true,null,{timeout:10000});
   try{
-    await page.waitForFunction(()=>mode==="playing"&&document.getElementById("save-panel")?.classList.contains("hidden")===true,null,{timeout:10000})
-  }catch(error){
-    const state=await page.evaluate(()=>{
-      const r43=window.CCGLostSizzlerV141R43SoloSave?.state||{},r59=window.CCGLostSizzlerV141R59LiveRegressionFixes?.state||{};
-      return{
-        floor:Number(run?.floor||0),mode:typeof mode==="string"?mode:null,playMode:typeof playMode==="string"?playMode:null,
-        runActive:document.body.dataset.runActive||"",savePromptReason:typeof savePromptReason==="string"?savePromptReason:null,
-        savePanelVisible:Boolean(UI?.savePanel&&!UI.savePanel.classList.contains("hidden")),
-        savedFloor:Number(window.CCGLostSizzlerV141R43SoloSave?.readEnvelope?.()?.summary?.floor||0),
-        r43:{autosaves:Number(r43.autosaves||0),lastAutoSaveKey:String(r43.lastAutoSaveKey||""),entryFloorKey:String(r43.entryFloorKey||""),offerOwnerInstalls:Number(r43.offerOwnerInstalls||0),automaticPromptSuppressions:Number(r43.automaticPromptSuppressions||0),floorEntrySettleSchedules:Number(r43.floorEntrySettleSchedules||0),floorEntrySettles:Number(r43.floorEntrySettles||0),lastError:String(r43.lastError||"")},
-        r59:{soloFloorAutosaves:Number(r59.soloFloorAutosaves||0),soloSaveTransitionInstalls:Number(r59.soloSaveTransitionInstalls||0),lastError:String(r59.lastError||"")},
-        offerOwner:Boolean(window.offerFloorSave?.__ccgV141R43AutoSaveOwner),
-        captureOwner:Boolean(window.captureFloorEntryCheckpoint?.__ccgV141R59SoloAutosave)
+    await waitForSettled()
+  }catch(firstError){
+    const boundary=await dismissVisibleDossierBoundary(page);
+    if(boundary.dismissed){
+      try{
+        await waitForSettled();
+        return
+      }catch(error){
+        const state=await floorEntryState(page,{dossierBoundary:boundary});
+        console.error("R42_FLOOR_ENTRY_SETTLE_TIMEOUT "+JSON.stringify(state));
+        throw error
       }
-    });
+    }
+    const state=await floorEntryState(page,{dossierBoundary:boundary});
     console.error("R42_FLOOR_ENTRY_SETTLE_TIMEOUT "+JSON.stringify(state));
-    throw error
+    throw firstError
   }
 }
 
