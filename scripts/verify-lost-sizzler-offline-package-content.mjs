@@ -61,7 +61,14 @@ function validateManifest(manifest) {
     'Package manifest requiredOfflineAudio must exactly match the frozen minimum offline music roles.'
   );
 
-  const byPath = new Map(manifest.files.map((entry) => [entry?.path, entry]));
+  const seenPaths = new Set();
+  for (const entry of manifest.files) {
+    assert(entry && typeof entry.path === 'string' && entry.path.length > 0, 'Package manifest file entries must declare a path.');
+    assert(!seenPaths.has(entry.path), `Package manifest contains duplicate file path: ${entry.path}`);
+    seenPaths.add(entry.path);
+  }
+
+  const byPath = new Map(manifest.files.map((entry) => [entry.path, entry]));
   for (const requiredPath of REQUIRED_OFFLINE_AUDIO) {
     const entry = byPath.get(requiredPath);
     assert(entry, `Desktop package is missing required offline music: ${requiredPath}`);
@@ -144,6 +151,7 @@ function expectRuntimeFailure(source, expectedText) {
 function runSelfTest() {
   validateManifest(fixtureManifest());
   expectManifestFailure((manifest) => manifest.requiredOfflineAudio.pop(), 'must exactly match');
+  expectManifestFailure((manifest) => { manifest.files.push({ ...manifest.files[0] }); }, 'duplicate file path');
   expectManifestFailure((manifest) => { manifest.files = manifest.files.filter((entry) => entry.path !== REQUIRED_OFFLINE_AUDIO[0]); }, 'missing required offline music');
   expectManifestFailure((manifest) => { manifest.files[0].classification = 'runtime'; }, 'not classified as audio');
   expectManifestFailure((manifest) => { manifest.files[0].bytes = 0; }, 'is empty');
