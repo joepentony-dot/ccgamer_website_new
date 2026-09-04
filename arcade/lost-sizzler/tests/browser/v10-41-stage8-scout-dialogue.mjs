@@ -64,15 +64,15 @@ try{
     const assignmentGateSupported=Boolean(descriptor?.configurable&&!descriptor?.get&&!descriptor?.set);
     const ownerBeforeInjection=window.triggerRescue;
     const canonical=sourceBelowMarker(ownerBeforeInjection,"__ccgStage8NpcDialogue");
-    assert.equal(typeof canonical,"function","focused regression must locate the canonical rescue source beneath the Stage 8 wrapper");
-    assert.equal(markerDepth(ownerBeforeInjection,"__ccgStage8NpcDialogue"),1,"pre-injection Scout rescue ownership must contain exactly one Stage 8 wrapper");
+    if(typeof canonical!=="function")throw new Error("focused regression must locate the canonical rescue source beneath the Stage 8 wrapper");
+    if(markerDepth(ownerBeforeInjection,"__ccgStage8NpcDialogue")!==1)throw new Error("pre-injection Scout rescue ownership must contain exactly one Stage 8 wrapper");
     const lateCanonicalOwner=function stage8LateCanonicalRescueOwner(){return canonical.apply(this,arguments)};
     lateCanonicalOwner.__ccgOriginal=canonical;
     const reAdoptionsBefore=api.state.reAdoptions;
     window.triggerRescue=lateCanonicalOwner;
     const ownerAfterInjection=window.triggerRescue;
     const immediateReAdopted=hasMarker(window.triggerRescue,"__ccgStage8NpcDialogue")&&window.triggerRescue!==lateCanonicalOwner;
-    if(!assignmentGateSupported)assert.equal(markerDepth(ownerAfterInjection,"__ccgStage8NpcDialogue"),0,"non-configurable writable triggerRescue must allow the focused regression to reproduce a genuine late Stage 8 ownership loss");
+    if(!assignmentGateSupported&&markerDepth(ownerAfterInjection,"__ccgStage8NpcDialogue")!==0)throw new Error("non-configurable writable triggerRescue must allow the focused regression to reproduce a genuine late Stage 8 ownership loss");
     host.rescue={id:"stage8-browser-scout",x:Number(p1.x)+1,y:Number(p1.y),rescued:false,following:false,found:false};
     const before=api.state.presentations;
     triggerRescue(p1);
