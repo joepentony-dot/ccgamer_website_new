@@ -143,7 +143,11 @@ function writeIntegrityRecord(file, value, roots) {
   if (isInside(roots.userDataRoot, absolute)) fail(`Integrity record must remain outside the Tier-A user-data root: ${absolute}`);
   assertNoSymlinkComponents(absolute, 'integrity output');
   if (fs.existsSync(absolute)) fail(`Refusing to overwrite existing handoff integrity evidence: ${absolute}`);
-  fs.mkdirSync(path.dirname(absolute), { recursive: true });
+  const parent = path.dirname(absolute);
+  assertNoSymlinkComponents(parent, 'integrity output parent');
+  fs.mkdirSync(parent, { recursive: true });
+  assertNoSymlinkComponents(parent, 'integrity output parent');
+  assertNoSymlinkComponents(absolute, 'integrity output');
   fs.writeFileSync(absolute, `${JSON.stringify(value, null, 2)}\n`, { encoding: 'utf8', flag: 'wx' });
 }
 function parseArgs(argv) {
@@ -165,6 +169,7 @@ function writeFixtureManifest(packageRoot, manifestPath) {
 }
 function runSelfTest() {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'lost-sizzler-handoff-integrity-'));
+  let external = null;
   try {
     const handoff = path.join(temp, 'handoff');
     const application = path.join(handoff, 'application');
@@ -204,6 +209,17 @@ function runSelfTest() {
     if (fs.existsSync(profileOutput)) fail('Rejected Tier-A integrity output was unexpectedly created.');
     if (sha256(fs.readFileSync(path.join(userData, 'solo-save.json'))) !== profileBefore) fail('Tier-A profile changed while rejecting an unsafe integrity output path.');
 
+    external = fs.mkdtempSync(path.join(os.tmpdir(), 'lost-sizzler-handoff-integrity-external-'));
+    const linkedOutputParent = path.join(temp, 'linked-integrity-output');
+    fs.symlinkSync(external, linkedOutputParent, 'dir');
+    const sentinel = path.join(external, 'sentinel.txt');
+    fs.writeFileSync(sentinel, 'preserve\n');
+    let symlinkOutputRejected = false;
+    try { writeIntegrityRecord(path.join(linkedOutputParent, 'integrity.json'), integrity, roots); } catch { symlinkOutputRejected = true; }
+    if (!symlinkOutputRejected) fail('Integrity output through symbolic-link ancestry must be rejected.');
+    if (fs.readFileSync(sentinel, 'utf8') !== 'preserve\n') fail('Rejected integrity output changed external sentinel content.');
+    if (fs.existsSync(path.join(external, 'integrity.json'))) fail('Rejected integrity output was written through symbolic-link ancestry.');
+
     fs.appendFileSync(path.join(application, 'runtime.txt'), 'tamper');
     let tamperRejected = false;
     try { verifyIntegrity(roots, record); } catch { tamperRejected = true; }
@@ -213,9 +229,10 @@ function runSelfTest() {
     try { validateHandoff(handoff, path.join(handoff, 'user-data')); } catch { overlapRejected = true; }
     if (!overlapRejected) fail('Handoff/Tier-A profile overlap must be rejected.');
 
-    console.log('Lost Sizzler handoff integrity self-test passed: every handoff file is SHA-256 bound, evidence cannot overwrite or enter Tier-A persistence, tampering is rejected, and Tier-A persistence remains external.');
+    console.log('Lost Sizzler handoff integrity self-test passed: every handoff file is SHA-256 bound, evidence cannot overwrite, traverse symlink ancestry or enter Tier-A persistence, tampering is rejected, and Tier-A persistence remains external.');
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
+    if (external) fs.rmSync(external, { recursive: true, force: true });
   }
 }
 
