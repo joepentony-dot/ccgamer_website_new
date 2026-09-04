@@ -92,7 +92,7 @@ function validateHandoff(handoffValue, userDataValue) {
   const handoffRoot = canonicalRoot(handoffValue, 'handoff root');
   const userDataRoot = canonicalRoot(userDataValue, 'user-data root');
   requireDirectory(handoffRoot, 'handoff root');
-  assertNoSymlinkComponents(userDataRoot, 'user-data root');
+  requireDirectory(userDataRoot, 'user-data root');
   assertDisjoint(handoffRoot, 'handoff root', userDataRoot, 'user-data root');
 
   const applicationRoot = path.join(handoffRoot, 'application');
@@ -194,6 +194,10 @@ function runSelfTest() {
     verifyIntegrity(roots, record);
     if (sha256(fs.readFileSync(path.join(userData, 'solo-save.json'))) !== profileBefore) fail('Tier-A profile changed during integrity generation or verification.');
 
+    let missingProfileRejected = false;
+    try { validateHandoff(handoff, path.join(temp, 'missing-user-data')); } catch { missingProfileRejected = true; }
+    if (!missingProfileRejected) fail('Missing Tier-A user-data root must be rejected by handoff integrity validation.');
+
     let overwriteRejected = false;
     try { writeIntegrityRecord(record, integrity, roots); } catch { overwriteRejected = true; }
     if (!overwriteRejected) fail('Existing handoff integrity evidence must not be overwritten.');
@@ -229,7 +233,7 @@ function runSelfTest() {
     try { validateHandoff(handoff, path.join(handoff, 'user-data')); } catch { overlapRejected = true; }
     if (!overlapRejected) fail('Handoff/Tier-A profile overlap must be rejected.');
 
-    console.log('Lost Sizzler handoff integrity self-test passed: every handoff file is SHA-256 bound, evidence cannot overwrite, traverse symlink ancestry or enter Tier-A persistence, tampering is rejected, and Tier-A persistence remains external.');
+    console.log('Lost Sizzler handoff integrity self-test passed: every handoff file is SHA-256 bound, Tier-A persistence must exist as a real external directory, evidence cannot overwrite, traverse symlink ancestry or enter Tier-A persistence, and tampering is rejected.');
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
     if (external) fs.rmSync(external, { recursive: true, force: true });
