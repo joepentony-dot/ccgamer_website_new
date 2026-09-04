@@ -37,7 +37,7 @@
     acceptedFrames:0,duplicateFramesSkipped:0,longGaps:0,longGapRecoveries:0,
     pausedGapsDiscarded:0,pauseBoundaries:0,lastAcceptedRafTimestamp:null,
     lastMode:"",suppressRecoveryUntil:0,lastPauseReason:"",lastError:"",
-    faultBridges:0,diagnosticBridges:0,r58Reassertions:0,r58Ticks:0,soloSaveTransitionInstalls:0,soloFloorAutosaves:0,
+    faultBridges:0,diagnosticBridges:0,clockOwnerReassertions:0,r58Reassertions:0,r58Ticks:0,soloSaveTransitionInstalls:0,soloFloorAutosaves:0,
     soloFrames:0,soloSubsteps:0,soloCatchupFrames:0,soloDiscardedVisibleMs:0,soloLastElapsed:0,soloLastSteps:0
   };
 
@@ -193,8 +193,8 @@
   function installClockOwner(){
     const api=window.CCGLostSizzlerV141R29;if(!api)return false;
     if(!basePayDownCombatGap&&typeof api.payDownCombatGap==="function")basePayDownCombatGap=api.payDownCombatGap.bind(api);
-    try{api.stableLoop=stableLoopR59}catch(_){}
-    if(window.loop!==stableLoopR59)window.loop=stableLoopR59;
+    try{if(api.stableLoop!==stableLoopR59){api.stableLoop=stableLoopR59;state.clockOwnerReassertions++}}catch(_){}
+    if(window.loop!==stableLoopR59){window.loop=stableLoopR59;state.clockOwnerReassertions++}
     state.clockInstalled=true;return true
   }
 

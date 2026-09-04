@@ -48,7 +48,9 @@ assert.match(r59,/const previous=hasPreviousAccepted\?Number\(accepted\):null/,"
 assert.doesNotMatch(r59,/finite\(state\.lastAcceptedRafTimestamp\)/,"R59 must never use Number(null) semantics to decide whether an accepted RAF timestamp exists");
 assert.match(r59,/requestAnimationFrame\(stableLoopR59\)/,"the authoritative loop must schedule exactly its own singleton callback");
 assert.match(r59,/stableLoopR59\.__ccgV141R29Stable=true/,"r59 must retain the r29 stable-loop compatibility marker so older ownership guards accept the new clock owner");
-assert.match(r59,/api\.stableLoop=stableLoopR59/,"r59 must replace the r29 exported loop as well as the global loop to prevent an old recovery owner reclaiming it");
+assert.match(r59,/if\(api\.stableLoop!==stableLoopR59\)\{api\.stableLoop=stableLoopR59;state\.clockOwnerReassertions\+\+\}/,"r59 must replace the r29 exported loop only when it drifted from the final clock owner");
+assert.match(r59,/if\(window\.loop!==stableLoopR59\)\{window\.loop=stableLoopR59;state\.clockOwnerReassertions\+\+\}/,"r59 must replace the global loop only when an old recovery owner reclaimed it");
+assert.doesNotMatch(r59,/try\{api\.stableLoop=stableLoopR59\}/,"stable Solo must not reassign the exported r29 clock owner on every 40 ms ensure pass");
 assert.match(r59,/normaliseAudioRate\(\)/,"pause boundaries must also normalise any accidentally altered HTML audio playback rate");
 
 // Solo Dungeon alone consumes active visible wall time through bounded canonical
