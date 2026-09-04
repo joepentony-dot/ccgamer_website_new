@@ -73,6 +73,23 @@ function assertSafeRelativePath(value) {
   return normalized;
 }
 
+async function assertNoSymlinkComponents(target, label) {
+  const resolved = path.resolve(target);
+  const parsed = path.parse(resolved);
+  const components = resolved.slice(parsed.root.length).split(path.sep).filter(Boolean);
+  let current = parsed.root;
+  for (const component of components) {
+    current = path.join(current, component);
+    try {
+      const stat = await fs.lstat(current);
+      if (stat.isSymbolicLink()) throw new Error(`${label} must not traverse a symbolic link: ${current}`);
+    } catch (error) {
+      if (error?.code === 'ENOENT') return;
+      throw error;
+    }
+  }
+}
+
 async function hashFile(absolutePath) {
   const data = await fs.readFile(absolutePath);
   return {
@@ -104,6 +121,7 @@ async function walkPackageTree(root) {
 }
 
 async function loadManifest(manifestPath) {
+  await assertNoSymlinkComponents(manifestPath, 'Package manifest');
   const manifest = JSON.parse(await fs.readFile(manifestPath, 'utf8'));
   if (manifest.schema !== MANIFEST_SCHEMA) throw new Error(`Unexpected package manifest schema: ${manifest.schema}`);
   if (!Array.isArray(manifest.files) || manifest.files.length < 1) throw new Error('Package manifest must contain a non-empty files array.');
@@ -116,6 +134,7 @@ async function loadManifest(manifestPath) {
 
 async function verifyPackageTree(manifestPath, packageRoot) {
   const manifest = await loadManifest(manifestPath);
+  await assertNoSymlinkComponents(packageRoot, 'Package root');
   const rootStat = await fs.lstat(packageRoot);
   if (rootStat.isSymbolicLink() || !rootStat.isDirectory()) throw new Error('Package root must be a real directory, not a symbolic link.');
 
@@ -209,6 +228,7 @@ async function expectFailure(action, expectedText) {
 
 async function runSelfTest() {
   const temp = await fs.mkdtemp(path.join(os.tmpdir(), 'lost-sizzler-package-tree-'));
+  let externalRoot = null;
   try {
     const root = path.join(temp, 'package');
     await fs.mkdir(path.join(root, 'arcade/lost-sizzler'), { recursive: true });
@@ -242,10 +262,32 @@ async function runSelfTest() {
 
     await fs.writeFile(path.join(root, 'unexpected.txt'), 'extra', 'utf8');
     await expectFailure(() => verifyPackageTree(manifestPath, root), 'file-set mismatch');
+    await fs.rm(path.join(root, 'unexpected.txt'));
 
-    console.log('Lost Sizzler staged package verifier self-test passed: exact hashes, exact file set, mandatory aggregate byte totals and credential exclusions are enforced.');
+    externalRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'lost-sizzler-package-tree-external-'));
+    const externalPackage = path.join(externalRoot, 'package');
+    await fs.mkdir(path.join(externalPackage, 'arcade/lost-sizzler'), { recursive: true });
+    await fs.writeFile(path.join(externalPackage, 'arcade/lost-sizzler/index.html'), 'ABCD', 'utf8');
+    await fs.writeFile(path.join(externalPackage, 'arcade/lost-sizzler/version.json'), '{}\n', 'utf8');
+    const externalManifest = await writeFixtureManifest(externalPackage, ['arcade/lost-sizzler/index.html', 'arcade/lost-sizzler/version.json']);
+    const linkedContainer = path.join(temp, 'linked-container');
+    await fs.symlink(externalRoot, linkedContainer, 'dir');
+    await expectFailure(
+      () => verifyPackageTree(externalManifest, path.join(linkedContainer, 'package')),
+      'Package root must not traverse a symbolic link'
+    );
+
+    const manifestLink = path.join(temp, 'manifest-link.json');
+    await fs.symlink(manifestPath, manifestLink, 'file');
+    await expectFailure(
+      () => verifyPackageTree(manifestLink, root),
+      'Package manifest must not traverse a symbolic link'
+    );
+
+    console.log('Lost Sizzler staged package verifier self-test passed: exact hashes, exact file set, mandatory aggregate byte totals, credential exclusions and symlink-free root/manifest ancestry are enforced.');
   } finally {
     await fs.rm(temp, { recursive: true, force: true });
+    if (externalRoot) await fs.rm(externalRoot, { recursive: true, force: true });
   }
 }
 
