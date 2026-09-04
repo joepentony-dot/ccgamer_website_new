@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import crypto from 'node:crypto';
 import { promises as fs } from 'node:fs';
 import process from 'node:process';
 import vm from 'node:vm';
@@ -55,6 +56,10 @@ function normalizedTitle(value) {
   return String(value ?? '').trim();
 }
 
+function sha256Text(value) {
+  return crypto.createHash('sha256').update(Buffer.from(String(value), 'utf8')).digest('hex');
+}
+
 function deriveC64Titles(rows) {
   assert(Array.isArray(rows), 'Master game catalogue must be a top-level array.');
   const seen = new Set();
@@ -92,7 +97,16 @@ function validateManifest(manifest) {
   assert(entry.classification === 'catalogue', `${CATALOGUE_PATH} must be classified as catalogue data.`);
   assert(Number.isSafeInteger(entry.bytes) && entry.bytes > 0, `${CATALOGUE_PATH} must have a positive byte size.`);
   assert(/^[0-9a-f]{64}$/.test(entry.sha256 ?? ''), `${CATALOGUE_PATH} must retain SHA-256 provenance.`);
+  assert(entry.sourceRepositoryPath === CATALOGUE_PATH, `${CATALOGUE_PATH} must be sourced from the master catalogue itself.`);
   return entry;
+}
+
+function validateCatalogueProvenance(entry, catalogueText) {
+  const bytes = Buffer.byteLength(catalogueText, 'utf8');
+  const sha256 = sha256Text(catalogueText);
+  assert(entry.bytes === bytes, `Packaged ${CATALOGUE_PATH} byte size does not match the checked master catalogue.`);
+  assert(entry.sha256 === sha256, `Packaged ${CATALOGUE_PATH} SHA-256 does not match the checked master catalogue.`);
+  return { bytes, sha256 };
 }
 
 function validateCatalogue(rows, fallbackTitles) {
@@ -101,10 +115,16 @@ function validateCatalogue(rows, fallbackTitles) {
   return { c64Titles };
 }
 
-function fixtureManifest() {
+function fixtureManifest(catalogueText = '[{"system":"C64","title":"Paradroid"}]\n') {
   return {
     schema: MANIFEST_SCHEMA,
-    files: [{ path: CATALOGUE_PATH, classification: 'catalogue', bytes: 10, sha256: 'a'.repeat(64), sourceRepositoryPath: CATALOGUE_PATH }],
+    files: [{
+      path: CATALOGUE_PATH,
+      classification: 'catalogue',
+      bytes: Buffer.byteLength(catalogueText, 'utf8'),
+      sha256: sha256Text(catalogueText),
+      sourceRepositoryPath: CATALOGUE_PATH,
+    }],
   };
 }
 
@@ -121,7 +141,10 @@ function expectFailure(action, expectedText) {
 }
 
 function runSelfTest() {
-  validateManifest(fixtureManifest());
+  const fixtureCatalogue = '[{"system":"C64","title":"Paradroid"}]\n';
+  const validEntry = validateManifest(fixtureManifest(fixtureCatalogue));
+  validateCatalogueProvenance(validEntry, fixtureCatalogue);
+
   const mixed = [
     { system: 'C64', title: 'Paradroid' },
     { system: 'amiga', title: 'Lemmings' },
@@ -138,11 +161,14 @@ function runSelfTest() {
   expectFailure(() => validateManifest({ ...fixtureManifest(), files: [{ ...fixtureManifest().files[0], classification: 'runtime' }] }), 'classified as catalogue');
   expectFailure(() => validateManifest({ ...fixtureManifest(), files: [{ ...fixtureManifest().files[0], bytes: 0 }] }), 'positive byte size');
   expectFailure(() => validateManifest({ ...fixtureManifest(), files: [{ ...fixtureManifest().files[0], sha256: 'pending' }] }), 'SHA-256 provenance');
+  expectFailure(() => validateManifest({ ...fixtureManifest(), files: [{ ...fixtureManifest().files[0], sourceRepositoryPath: 'arcade/lost-sizzler/config.json' }] }), 'sourced from the master catalogue');
+  expectFailure(() => validateCatalogueProvenance({ ...validEntry, bytes: validEntry.bytes + 1 }, fixtureCatalogue), 'byte size does not match');
+  expectFailure(() => validateCatalogueProvenance({ ...validEntry, sha256: 'b'.repeat(64) }, fixtureCatalogue), 'SHA-256 does not match');
   expectFailure(() => deriveC64Titles({ games: mixed }), 'top-level array');
   expectFailure(() => validateCatalogue([{ system: 'AMIGA', title: 'Lemmings' }], ['Fallback']), 'broaden the built-in fallback pool');
   expectFailure(() => validateCatalogue([{ system: 'C64', title: 'Only One' }], ['A', 'B']), 'broaden the built-in fallback pool');
 
-  console.log('Lost Sizzler offline catalogue self-test passed: package provenance and C64-only title derivation are enforced.');
+  console.log('Lost Sizzler offline catalogue self-test passed: package provenance, source binding and C64-only title derivation are enforced.');
 }
 
 async function main() {
@@ -159,10 +185,11 @@ async function main() {
     fs.readFile(options.catalogue, 'utf8'),
     fs.readFile(options.config, 'utf8'),
   ]);
-  validateManifest(JSON.parse(manifestText));
+  const entry = validateManifest(JSON.parse(manifestText));
+  validateCatalogueProvenance(entry, catalogueText);
   const fallbackTitles = readFallbackTitles(configSource);
   const { c64Titles } = validateCatalogue(JSON.parse(catalogueText), fallbackTitles);
-  console.log(`Lost Sizzler offline catalogue verified: ${c64Titles.length} unique C64 titles broaden the ${fallbackTitles.length}-title built-in fallback pool.`);
+  console.log(`Lost Sizzler offline catalogue verified: ${c64Titles.length} unique C64 titles broaden the ${fallbackTitles.length}-title built-in fallback pool with manifest-bound byte/SHA-256 provenance.`);
 }
 
 main().catch((error) => {
