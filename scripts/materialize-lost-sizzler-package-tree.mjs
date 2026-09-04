@@ -71,6 +71,22 @@ async function ensureOrdinaryDirectory(directory, label) {
   return stat;
 }
 
+async function assertNoSymlinkComponents(target, label) {
+  let current = path.resolve(target);
+  const root = path.parse(current).root;
+  while (current !== root) {
+    try {
+      const stat = await fs.lstat(current);
+      if (stat.isSymbolicLink()) throw new Error(`${label} must not traverse a symbolic link: ${current}`);
+    } catch (error) {
+      if (error?.code !== 'ENOENT') throw error;
+    }
+    const parent = path.dirname(current);
+    if (parent === current) break;
+    current = parent;
+  }
+}
+
 async function materialize({ manifestPath, outputRoot, clean }) {
   const manifestFile = path.resolve(manifestPath);
   const manifest = JSON.parse(await fs.readFile(manifestFile, 'utf8'));
@@ -88,8 +104,10 @@ async function materialize({ manifestPath, outputRoot, clean }) {
   const realCwd = await fs.realpath(cwd);
   if (root === cwd || root === path.parse(root).root) throw new Error(`Refusing unsafe package output root: ${root}`);
 
+  await assertNoSymlinkComponents(root, 'Package output root');
   if (clean) await fs.rm(root, { recursive: true, force: true });
   await fs.mkdir(root, { recursive: true });
+  await assertNoSymlinkComponents(root, 'Package output root');
   await ensureOrdinaryDirectory(root, 'Package output root');
 
   const existing = await fs.readdir(root);
@@ -226,12 +244,27 @@ async function runSelfTest() {
     await fs.symlink(symlinkTarget, outputRoot, 'dir');
     await expectFailure(
       () => materialize({ manifestPath, outputRoot, clean: false }),
-      'Package output root must not be a symbolic link'
+      'Package output root must not traverse a symbolic link'
     );
     await assertDirectoryEmpty(symlinkTarget);
     await fs.rm(outputRoot, { force: true });
 
     externalRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'lost-sizzler-materializer-external-'));
+    const externalPackageParent = path.join(externalRoot, 'package-parent');
+    const externalPackageRoot = path.join(externalPackageParent, 'staged-package');
+    await fs.mkdir(externalPackageRoot, { recursive: true });
+    await fs.writeFile(path.join(externalPackageRoot, 'sentinel.txt'), 'must survive rejected clean\n', 'utf8');
+    const linkedOutputParent = path.join(temp, 'linked-output-parent');
+    await fs.symlink(externalPackageParent, linkedOutputParent, 'dir');
+    const linkedOutputRoot = path.join(linkedOutputParent, 'staged-package');
+    await expectFailure(
+      () => materialize({ manifestPath, outputRoot: linkedOutputRoot, clean: true }),
+      'Package output root must not traverse a symbolic link'
+    );
+    if (!await fs.readFile(path.join(externalPackageRoot, 'sentinel.txt'), 'utf8')) {
+      throw new Error('Rejected --clean traversal removed external package content.');
+    }
+
     const outsideSource = path.join(externalRoot, 'outside.txt');
     await fs.writeFile(outsideSource, 'outside repository fixture\n', 'utf8');
     const symlinkSourceRoot = path.join(temp, 'linked-external');
@@ -287,7 +320,7 @@ async function runSelfTest() {
     );
     await assertDirectoryEmpty(outputRoot);
 
-    console.log('Lost Sizzler package materializer self-test passed: malformed manifests, symbolic-link output roots, source ancestry escapes and forbidden bootstrap/credential paths are rejected before package copying.');
+    console.log('Lost Sizzler package materializer self-test passed: malformed manifests, symbolic-link output roots/ancestry, source ancestry escapes and forbidden bootstrap/credential paths are rejected before package copying or cleanup traversal.');
   } finally {
     await fs.rm(temp, { recursive: true, force: true });
     if (externalRoot) await fs.rm(externalRoot, { recursive: true, force: true });
