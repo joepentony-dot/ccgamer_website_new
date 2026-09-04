@@ -41,13 +41,23 @@ try{
 
   const first=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerStage8NpcDialogue;
+    const markerDepth=(source,marker)=>{
+      const seen=new Set();let current=source,depth=0;
+      while(typeof current==="function"&&!seen.has(current)){
+        if(current[marker])depth++;
+        seen.add(current);current=current.__ccgOriginal;
+      }
+      return depth;
+    };
     host.rescue={id:"stage8-browser-scout",x:Number(p1.x)+1,y:Number(p1.y),rescued:false,following:false,found:false};
     const before=api.state.presentations;
     triggerRescue(p1);
-    return{controller:window.CCGLostSizzlerModeRuntime.detect(),installed:Boolean(triggerRescue.__ccgStage8NpcDialogue),following:Boolean(host.rescue.following),found:Boolean(host.rescue.found),rescued:Boolean(host.rescue.rescued),presented:api.state.presentations-before,last:{...api.state.last},toastTitle:document.getElementById("pickup-title")?.textContent||"",toastText:document.getElementById("pickup-text")?.textContent||"",voiceKey:api.lines.scout.trapped.voiceKey};
+    return{controller:window.CCGLostSizzlerModeRuntime.detect(),installed:Boolean(triggerRescue.__ccgStage8NpcDialogue),rescueDialogueDepth:markerDepth(triggerRescue,"__ccgStage8NpcDialogue"),toastBridgeDepth:markerDepth(showToast,"__ccgStage8ScoutToastBridge"),following:Boolean(host.rescue.following),found:Boolean(host.rescue.found),rescued:Boolean(host.rescue.rescued),presented:api.state.presentations-before,last:{...api.state.last},toastTitle:document.getElementById("pickup-title")?.textContent||"",toastText:document.getElementById("pickup-text")?.textContent||"",voiceKey:api.lines.scout.trapped.voiceKey};
   });
   assert.equal(first.controller,"dungeon-solo","Scout dialogue regression must run under the Solo Dungeon controller");
   assert.equal(first.installed,true,"Stage 8 must own only the Scout rescue dialogue wrapper");
+  assert.equal(first.rescueDialogueDepth,1,"Stage 8 must not self-nest its Scout rescue dialogue wrapper ancestry");
+  assert.equal(first.toastBridgeDepth,1,"Stage 8 must not self-nest its Scout notification bridge ancestry");
   assert.equal(first.following,true,"first Scout contact must preserve the canonical following transition");
   assert.equal(first.found,true,"first Scout contact must preserve the canonical found state");
   assert.equal(first.rescued,false,"finding the Scout must not mark the rescue complete");
