@@ -5,6 +5,13 @@ import crypto from 'node:crypto';
 import process from 'node:process';
 
 const SCHEMA = 'ccg-lost-sizzler-desktop-package-manifest-v1';
+const FORBIDDEN_PACKAGE_BASENAMES = new Set([
+  'ccg-supabase-config.js',
+  'ccg-supabase-client.js',
+  'service-account.json',
+  'service_account.json',
+]);
+const FORBIDDEN_CREDENTIAL_SUFFIXES = Object.freeze(['.pem', '.key', '.p12', '.pfx']);
 
 function usage() {
   console.log('Usage: node scripts/materialize-lost-sizzler-package-tree.mjs --manifest <manifest.json> --output <directory> [--clean]');
@@ -27,6 +34,19 @@ function safeRelativePath(value) {
   if (typeof value !== 'string' || !value || value.startsWith('/') || value.includes('\\')) return false;
   const parts = value.split('/');
   return parts.every((part) => part && part !== '.' && part !== '..');
+}
+
+function assertAllowedPackagePath(value, label) {
+  const basename = path.posix.basename(value).toLowerCase();
+  if (FORBIDDEN_PACKAGE_BASENAMES.has(basename)) {
+    throw new Error(`${label} contains forbidden bootstrap or credential file: ${value}`);
+  }
+  if (basename === '.env' || basename.startsWith('.env.')) {
+    throw new Error(`${label} contains forbidden environment credential file: ${value}`);
+  }
+  if (FORBIDDEN_CREDENTIAL_SUFFIXES.some((suffix) => basename.endsWith(suffix))) {
+    throw new Error(`${label} contains forbidden private credential material: ${value}`);
+  }
 }
 
 async function sha256(file) {
@@ -62,6 +82,8 @@ async function materialize({ manifestPath, outputRoot, clean }) {
   for (const entry of manifest.files) {
     if (!entry || !safeRelativePath(entry.path)) throw new Error(`Unsafe package path: ${entry?.path}`);
     if (!safeRelativePath(entry.sourceRepositoryPath)) throw new Error(`Unsafe source repository path: ${entry?.sourceRepositoryPath}`);
+    assertAllowedPackagePath(entry.path, 'Package manifest');
+    assertAllowedPackagePath(entry.sourceRepositoryPath, 'Package source');
     if (seen.has(entry.path)) throw new Error(`Duplicate package path: ${entry.path}`);
     seen.add(entry.path);
 
