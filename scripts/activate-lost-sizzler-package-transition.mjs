@@ -64,10 +64,12 @@ function validateRoots(activeValue, candidateValue, backupValue, userDataValue) 
   return { activeRoot, candidateRoot, backupRoot, userDataRoot };
 }
 
-function verifyPackageTree(manifestValue, root, label) {
+function verifyPackageTree(manifestValue, root, label, roots) {
   if (!manifestValue) fail(`${label} manifest is required.`);
   const manifest = path.resolve(manifestValue);
   if (!fs.existsSync(manifest) || !fs.lstatSync(manifest).isFile()) fail(`${label} manifest does not exist: ${manifest}`);
+  assertNoSymlinkComponents(manifest, `${label} manifest`);
+  if (isInside(roots.userDataRoot, manifest)) fail(`${label} manifest must remain outside the Tier-A user-data root: ${manifest}`);
   const verifier = fileURLToPath(new URL('./verify-lost-sizzler-package-tree.mjs', import.meta.url));
   const result = spawnSync(process.execPath, [verifier, '--manifest', manifest, '--root', root], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
   if (result.status !== 0) {
@@ -89,8 +91,8 @@ function restoreAfterPromotionFailure(roots) {
 }
 
 function activateTransition(roots, activeManifest, candidateManifest, hooks = {}) {
-  verifyPackageTree(activeManifest, roots.activeRoot, 'Active package');
-  verifyPackageTree(candidateManifest, roots.candidateRoot, 'Candidate package');
+  verifyPackageTree(activeManifest, roots.activeRoot, 'Active package', roots);
+  verifyPackageTree(candidateManifest, roots.candidateRoot, 'Candidate package', roots);
   let activeMoved = false;
   let candidatePromoted = false;
   try {
@@ -110,11 +112,11 @@ function activateTransition(roots, activeManifest, candidateManifest, hooks = {}
   }
 
   try {
-    verifyPackageTree(candidateManifest, roots.activeRoot, 'Promoted active package');
-    verifyPackageTree(activeManifest, roots.backupRoot, 'Rollback backup package');
+    verifyPackageTree(candidateManifest, roots.activeRoot, 'Promoted active package', roots);
+    verifyPackageTree(activeManifest, roots.backupRoot, 'Rollback backup package', roots);
   } catch (error) {
     restoreAfterPromotionFailure(roots);
-    verifyPackageTree(activeManifest, roots.activeRoot, 'Restored active package');
+    verifyPackageTree(activeManifest, roots.activeRoot, 'Restored active package', roots);
     throw error;
   }
 }
@@ -159,6 +161,21 @@ function assertProfileUnchanged(fixture, label) {
 function runSelfTest() {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'lost-sizzler-package-transition-'));
   try {
+    const userDataManifest = createFixture(temp, 'user-data-manifest');
+    const persistedManifest = path.join(userDataManifest.roots.userDataRoot, 'active.manifest.json');
+    fs.copyFileSync(userDataManifest.activeManifest, persistedManifest);
+    let persistedManifestRejected = false;
+    try {
+      activateTransition(userDataManifest.roots, persistedManifest, userDataManifest.candidateManifest);
+    } catch (error) {
+      persistedManifestRejected = /manifest must remain outside the Tier-A user-data root/.test(String(error?.message || error));
+    }
+    if (!persistedManifestRejected) fail('A package manifest sourced from Tier-A user data must be rejected before activation.');
+    if (fs.readFileSync(path.join(userDataManifest.roots.activeRoot, 'runtime.txt'), 'utf8') !== 'build-a\n') fail('Rejecting a Tier-A manifest changed the active package.');
+    if (fs.readFileSync(path.join(userDataManifest.roots.candidateRoot, 'runtime.txt'), 'utf8') !== 'build-b-different\n') fail('Rejecting a Tier-A manifest changed the candidate package.');
+    if (fs.existsSync(userDataManifest.roots.backupRoot)) fail('Rejecting a Tier-A manifest unexpectedly created a rollback backup.');
+    assertProfileUnchanged(userDataManifest, 'Tier-A manifest rejection');
+
     const success = createFixture(temp, 'success');
     activateTransition(success.roots, success.activeManifest, success.candidateManifest);
     if (fs.readFileSync(path.join(success.roots.activeRoot, 'runtime.txt'), 'utf8') !== 'build-b-different\n') fail('Build B was not promoted.');
@@ -182,7 +199,7 @@ function runSelfTest() {
     if (fs.existsSync(failed.roots.backupRoot)) fail('Rollback backup should be consumed when Build A is restored.');
     assertProfileUnchanged(failed, 'post-promotion verification rollback');
 
-    console.log('Lost Sizzler package transition self-test passed: distinct manifests activate atomically, failed promoted builds restore Build A, and Tier-A profile remains outside the transaction.');
+    console.log('Lost Sizzler package transition self-test passed: manifests stay outside Tier-A persistence, distinct manifests activate atomically, failed promoted builds restore Build A, and Tier-A profile remains outside the transaction.');
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
