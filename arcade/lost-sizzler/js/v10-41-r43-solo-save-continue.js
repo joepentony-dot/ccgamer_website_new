@@ -31,6 +31,7 @@
     timer:0,observer:null,entryCheckpoint:null,entryFloorKey:"",lastAutoSaveKey:"",resumeInProgress:false,
     saves:0,autosaves:0,saveQuits:0,resumes:0,migrations:0,backupRecoveries:0,
     offerOwnerInstalls:0,automaticPromptSuppressions:0,floorEntrySettleSchedules:0,floorEntrySettles:0,
+    entryPositionRestores:0,entryPositionFallbacks:0,
     lastSavedAt:0,lastReason:"",lastError:"",pauseButton:null,summaryNode:null
   };
 
@@ -207,6 +208,19 @@
     button.classList.toggle("hidden",!standardSolo());state.pauseButton=button;return button
   }
 
+  function restoreCheckpointEntryPosition(savedPlayer){
+    const x=Number(savedPlayer?.x),y=Number(savedPlayer?.y);
+    if(!p1||!world?.map||!host||!Number.isInteger(x)||!Number.isInteger(y)||!W.walkable(world.map,x,y,host)){state.entryPositionFallbacks++;return false}
+    p1.x=p1.rx=x;p1.y=p1.ry=y;p1.lastRoom=-99;
+    try{
+      explored.set(p1.id,new Set());reveal(p1);
+      const roomId=W.roomAt(world,x,y),visits=new Set();host.enteredRoomIds=[];
+      if(roomId>=0){visits.add(roomId);host.enteredRoomIds.push(roomId)}
+      roomVisits.set(p1.id,visits);playerTrails.set(p1.id,[]);rememberTrail(p1);updateRoomMessage(p1,true)
+    }catch(error){state.lastError=String(error?.message||error)}
+    state.entryPositionRestores++;return true
+  }
+
   async function saveAndQuit(){
     if(!standardSolo())return false;
     if(!ensureEntryCaptured())return false;
@@ -234,6 +248,7 @@
       net.setSolo(saved.player?.name||playerName());
       run=clone(saved.run);score=Math.max(0,Number(saved.score)||0);p1=clone(saved.player);p2=null;playMode="solo";mode="playing";
       startWorld(PGR.floorSeed(run),false,true,true);
+      restoreCheckpointEntryPosition(saved.player);
       if(saved.stage8Rescue&&host)host.rescue=clone(saved.stage8Rescue);
       floorEntryCheckpoint=clone(saved);state.entryCheckpoint=clone(saved);state.entryFloorKey=floorKey();state.lastAutoSaveKey=state.entryFloorKey;
       UI.menu.classList.add("hidden");setRunPresentation(true);S.startMusic();
@@ -371,7 +386,7 @@
 
   window.CCGLostSizzlerV141R43SoloSave={
     SCHEMA,SCHEMA_VERSION,PRIMARY_KEY,BACKUP_KEY,FLOOR_ENTRY_SETTLE_DELAYS,
-    readEnvelope,currentSavedCheckpoint,captureEntry,saveAndQuit,resumeSolo,clearSoloSave,updateMenu,
+    readEnvelope,currentSavedCheckpoint,captureEntry,saveAndQuit,resumeSolo,restoreCheckpointEntryPosition,clearSoloSave,updateMenu,
     validateEnvelope,makeEnvelope,hashText,checkpointMatchesCurrentFloor,canonicalEntryCheckpoint,
     installOfferFloorSaveOwner,suppressAutomaticFloorPrompt,automaticPromptActive,savedCurrentFloor,settleFloorEntryPrompt,scheduleFloorEntryPromptSettle,
     get state(){return state}

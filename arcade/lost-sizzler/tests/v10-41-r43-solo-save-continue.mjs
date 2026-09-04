@@ -53,6 +53,11 @@ assert.match(source,/save-quit-solo-btn/,"Pause must expose a dedicated Save & Q
 assert.match(source,/writeEnvelope\(state\.entryCheckpoint,"save_quit"\)/,"Save & Quit must persist the floor-entry snapshot, not live mid-room state");
 assert.match(source,/setTimeout\(\(\)=>\{try\{quitToMenu\?\.\(\)/,"Save & Quit must return through the canonical menu cleanup path only after save succeeds");
 assert.match(source,/resumeSolo[\s\S]*startWorld\(PGR\.floorSeed\(run\),false,true,true\)/,"Continue must rebuild the deterministic floor in checkpoint-restore mode");
+assert.match(source,/function restoreCheckpointEntryPosition\(savedPlayer\)/,"Continue must expose one synchronous saved-entry position restore boundary");
+assert.match(source,/!Number\.isInteger\(x\)\|\|!Number\.isInteger\(y\)\|\|!W\.walkable\(world\.map,x,y,host\)/,"saved entry coordinates must be validated against the rebuilt authoritative floor");
+assert.match(source,/p1\.x=p1\.rx=x;p1\.y=p1\.ry=y;p1\.lastRoom=-99/,"a valid saved entry must restore exact logical and rendered coordinates before play resumes");
+assert.match(source,/roomVisits\.set\(p1\.id,visits\);playerTrails\.set\(p1\.id,\[\]\);rememberTrail\(p1\);updateRoomMessage\(p1,true\)/,"entry-position restore must realign visit, trail and room-presentation state");
+assert.match(source,/startWorld\(PGR\.floorSeed\(run\),false,true,true\);[\s\S]*restoreCheckpointEntryPosition\(saved\.player\);[\s\S]*setRunPresentation\(true\)/,"saved entry coordinates must become authoritative before the live-run presentation resumes");
 assert.doesNotMatch(source,/Number\(saved\.floor[^\n]*<=1/,"r43 Continue must support Floor 1 saves");
 
 assert.match(source,/legacy_migration/,"legacy Solo checkpoints must be migratable");
