@@ -245,6 +245,7 @@ function updateRoomMessage(p,force){
   else if(room?.skeletonHorde){host.skeletonHorde.revealed=true;showToast("THE BONE HORDE RISES",`${host.enemies.filter(e=>e.alive&&e.skeletonHordeId===host.skeletonHorde.id).length} low-HP skeletons have animated in this floor's single horde room.`,"red",9000)}
   else if(room?.dedicatedHazard){const hazard=(host.hazardRooms||[]).find(h=>h.roomId===r);showToast(hazard?.title||"HAZARD CHAMBER","Amber floor signals warn which lane is about to activate; red means move now. Each hit costs 1 HP.","red",9500)}
   else if(room?.dangerous)showToast(`DANGER — ${th.name}`,"This room contains an active hazard, challenge or major threat. Watch the floor before charging in.","red",8500);
+  try{window.CCGLostSizzlerStage8NpcDialogue?.onRoomEntered?.(p,r,room,{force:false})}catch(_){}
 }
 
 function updateDedicatedHazards(dt){for(const p of localPlayers()){p.hazardHitCooldown=Math.max(0,(p.hazardHitCooldown||0)-dt);if(p.hazardHitCooldown>0)continue;for(const hazard of host.hazardRooms||[]){if(W.roomAt(world,p.x,p.y)!==hazard.roomId)continue;const state=SYS.hazardCellState(hazard,p.x,p.y,host.floorElapsed||run.elapsed);if(!state.active)continue;p.hazardHitCooldown=1050;S.sfx("trap");burst(p.x,p.y,hazard.type==="embers"?P.orange:P.red,18,1.3);floatText(p.x,p.y,"HAZARD -1",P.red);hurtPlayer(p,1,false,hazard.title||"hazard chamber");break}}}

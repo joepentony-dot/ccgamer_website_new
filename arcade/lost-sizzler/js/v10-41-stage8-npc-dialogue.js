@@ -5,9 +5,12 @@
   window.__CCG_LOST_SIZZLER_STAGE8_NPC_DIALOGUE__=true;
 
   const REPEAT_MS=7000;
+  const ENVIRONMENTAL_STORY_BUDGET=3;
   const SPECIAL_MODES=new Set(["horde-survivor","sizzler-saboteurs"]);
   const memory=new WeakMap();
-  const state={installed:false,merchantInstalled:false,sanctuaryInstalled:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,scoutEventObserver:false,last:null};
+  const environmentalSeen=new WeakSet();
+  const environmentalFloors=new WeakMap();
+  const state={installed:false,merchantInstalled:false,sanctuaryInstalled:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,environmentalPresentations:0,environmentalBudgetSkips:0,scoutEventObserver:false,last:null};
   const lines=Object.freeze({
     scout:Object.freeze({
       trapped:Object.freeze({key:"scout.trapped",title:"CCG SCOUT — FOUND",speaker:"Scout",text:"There you are. Get me to one of the permanently lit sanctuary rooms and I’ll stay close.",tone:"green",duration:7600,voiceKey:"npc.scout.found"}),
@@ -20,6 +23,21 @@
     }),
     sanctuary:Object.freeze({
       keeper:Object.freeze({key:"sanctuary.keeper",title:"SANCTUARY KEEPER",speaker:"Keeper",text:"You’re safe while you’re in here. Use the green square if you need patching up, then get back to it.",tone:"green",duration:9000,voiceKey:"npc.sanctuary.keeper"})
+    }),
+    environment:Object.freeze({
+      C64_ARCHIVE:Object.freeze({key:"environment.c64-archive",title:"ARCHIVE MAINTENANCE CARD",text:"The catalogue marks cracked masonry separately from ordinary doors. Hidden routes are optional, but their shelves usually hold better supplies.",tone:"cyan",duration:8200,voiceKey:"environment.c64-archive"}),
+      "1541_WORKSHOP":Object.freeze({key:"environment.1541-workshop",title:"1541 SERVICE LOG",text:"A grease-stained note warns that illuminated generators can keep producing reinforcements. Breaking the machine stops them.",tone:"green",duration:8200,voiceKey:"environment.1541-workshop"}),
+      BUDGET_BIN:Object.freeze({key:"environment.budget-bin",title:"FADED PRICE CARD",text:"The old stock list mentions two currencies: score at the quartermaster, rare artefacts at the hidden trader.",tone:"gold",duration:8000,voiceKey:"environment.budget-bin"}),
+      DEMO_LOUNGE:Object.freeze({key:"environment.demo-lounge",title:"SCENE NOTICE",text:"The raster display maps lit chambers in green. Permanent sanctuary light keeps monsters outside and restores health on the marked square.",tone:"purple",duration:8400,voiceKey:"environment.demo-lounge"}),
+      SID_REACTOR:Object.freeze({key:"environment.sid-reactor",title:"REACTOR WARNING",text:"A low-frequency alarm repeats one instruction: watch the floor signal before crossing an active chamber.",tone:"red",duration:7800,voiceKey:"environment.sid-reactor"}),
+      WARP_GALLERY:Object.freeze({key:"environment.warp-gallery",title:"TRANSIT PLAQUE",text:"Scratched arrows point toward explored rooms. Teleport spells need a known chamber to lock onto.",tone:"purple",duration:7600,voiceKey:"environment.warp-gallery"}),
+      ZZAP_LIBRARY:Object.freeze({key:"environment.zzap-library",title:"REVIEWER’S MARGIN NOTE",text:"The floor objective opens the reinforced hall, but the exit still needs the Sigil carried by its Warden.",tone:"gold",duration:8400,voiceKey:"environment.zzap-library"}),
+      TAPE_STORE:Object.freeze({key:"environment.tape-store",title:"LOADER INSTRUCTION CARD",text:"A handwritten warning says strong draughts extinguish an active torch. Spares in your inventory remain safe.",tone:"cyan",duration:8000,voiceKey:"environment.tape-store"}),
+      CARTRIDGE_BAY:Object.freeze({key:"environment.cartridge-bay",title:"BAY INVENTORY NOTE",text:"A stamped card lists bronze keys as floor equipment. They open matching locks and are never required for secret routes.",tone:"green",duration:8200,voiceKey:"environment.cartridge-bay"}),
+      PIXEL_FOUNDRY:Object.freeze({key:"environment.pixel-foundry",title:"FOUNDRY SAFETY SHEET",text:"Ordinary furniture can be broken to open a firing lane. Structural pillars and sealed mechanisms cannot.",tone:"orange",duration:8000,voiceKey:"environment.pixel-foundry"}),
+      MODEM_EXCHANGE:Object.freeze({key:"environment.modem-exchange",title:"TERMINAL MESSAGE",text:"The last transmission says wandering threats can follow through open rooms. Sanctuary doors remain the reliable boundary.",tone:"cyan",duration:8000,voiceKey:"environment.modem-exchange"}),
+      HIGH_SCORE_CRYPT:Object.freeze({key:"environment.high-score-crypt",title:"SCOREKEEPER’S INSCRIPTION",text:"Banked floor XP survives. Carried loot and part of the current score stay exposed in one death cache until recovered.",tone:"gold",duration:8600,voiceKey:"environment.high-score-crypt"}),
+      CRT_MAZE:Object.freeze({key:"environment.crt-maze",title:"CRT CALIBRATION NOTE",text:"The radar records rooms you have reached, not every corridor beyond them. Unexplored branches remain dark.",tone:"green",duration:8000,voiceKey:"environment.crt-maze"})
     })
   });
 
@@ -79,6 +97,34 @@
     state.presentations++;
     state.last={key:line.key,title:line.title,text:line.text,voiceKey:line.voiceKey,at:now};
     return args
+  }
+  function environmentalEligible(room){
+    if(!room||room.sanctuary||room.sigilRoom||room.sigilGreatHall||room.dangerous||room.spiderNest||room.skeletonHorde||room.dedicatedHazard)return false;
+    if(room.arenaRoom||room.timedRoom||room.boulderRoom||room.weightBridgeRoom||room.memoryPuzzleRoom||room.sequenceTorchRoom||room.bloodClueRoom)return false;
+    if(room.traderRoom||room.developerRoom||room.goldenRoom||room.rareVortexPit)return false;
+    return Boolean(lines.environment[room.theme])
+  }
+  function environmentalFloorState(){
+    let currentWorld=null;try{currentWorld=world||null}catch(_){return null}
+    if(!currentWorld||typeof currentWorld!=="object")return null;
+    let record=environmentalFloors.get(currentWorld);
+    if(!record){record={presented:0};environmentalFloors.set(currentWorld,record)}
+    return record
+  }
+  function presentEnvironmentalStory(player,room,{force=false}={}){
+    if(force||!soloDungeon()||!room||environmentalSeen.has(room)||!environmentalEligible(room))return false;
+    try{if(typeof p1!=="undefined"&&player!==p1)return false}catch(_){return false}
+    const floorState=environmentalFloorState();if(!floorState)return false;
+    if(floorState.presented>=ENVIRONMENTAL_STORY_BUDGET){state.environmentalBudgetSkips++;return false}
+    const line=lines.environment[room.theme];
+    try{showToast(line.title,line.text,line.tone,line.duration)}catch(_){return false}
+    environmentalSeen.add(room);floorState.presented++;state.presentations++;state.environmentalPresentations++;
+    state.last={key:line.key,title:line.title,text:line.text,voiceKey:line.voiceKey,at:clockNow()};
+    return true
+  }
+  function onRoomEntered(player,roomId,room,{force=false}={}){
+    if(!Number.isFinite(Number(roomId))||Number(roomId)<0)return false;
+    return presentEnvironmentalStory(player,room,{force})
   }
   function ancestryHasMarker(source,marker){
     const seen=new Set();
@@ -242,5 +288,5 @@
   installWhenReady();
   queueMicrotask(installWhenReady);
   if(document.readyState!=="complete")addEventListener("load",installWhenReady,{once:true});
-  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,lineForMerchant,present,presentScout,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
+  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,lineForMerchant,present,presentScout,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,environmentalEligible,presentEnvironmentalStory,onRoomEntered,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
 })();
