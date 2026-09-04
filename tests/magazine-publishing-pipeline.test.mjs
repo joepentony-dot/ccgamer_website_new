@@ -9,6 +9,7 @@ const require = createRequire(import.meta.url);
 const {
   materializeMagazineReviewsHtml
 } = require(path.join(root, "scripts", "ensure-magazine-review-runtime.js"));
+const { steps: rebuildSteps } = require(path.join(root, "scripts", "rebuild-games.js"));
 
 test("Reliable Games Publishing imports local magazine metadata before rebuilding games", () => {
   const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "games-publishing.yml"), "utf8");
@@ -46,6 +47,24 @@ test("the magazine importer preserves support for existing C64 and Amiga Lemon c
   assert.match(importer, /\/amiga\|c64\/i/);
   assert.match(importer, /Magazine Reviews/i);
   assert.match(importer, /reviewsFromHtml/);
+});
+
+test("final magazine review materialization runs after canonical page writers and is validated", () => {
+  const prepareIndex = rebuildSteps.findIndex(([script]) => script === "prepare-seo-game-routes.js");
+  const seoPlanIndex = rebuildSteps.findIndex(([script, ...args]) => script === "apply-seo-opportunity-plan.js" && !args.includes("--check"));
+  const normalMaterializers = rebuildSteps
+    .map(([script, ...args], index) => ({ script, args, index }))
+    .filter(({ script, args }) => script === "ensure-magazine-review-runtime.js" && !args.includes("--check"));
+  const finalMaterializerIndex = normalMaterializers.at(-1)?.index ?? -1;
+  const validatorIndex = rebuildSteps.findIndex(([script]) => script === "validate-materialized-magazine-reviews.js");
+  const runtimeCheckIndex = rebuildSteps.findIndex(([script, ...args]) => script === "ensure-magazine-review-runtime.js" && args.includes("--check"));
+
+  assert.ok(prepareIndex >= 0, "canonical game route generation step is missing");
+  assert.ok(seoPlanIndex >= 0, "SEO opportunity materialization step is missing");
+  assert.ok(finalMaterializerIndex > prepareIndex, "magazine reviews must be materialized after canonical game pages are rebuilt");
+  assert.ok(finalMaterializerIndex > seoPlanIndex, "final magazine review materialization must run after all page-writing SEO work");
+  assert.ok(validatorIndex > finalMaterializerIndex, "final magazine review HTML must be validated after materialization");
+  assert.ok(runtimeCheckIndex > validatorIndex, "runtime coverage check must not replace final static review validation");
 });
 
 test("generated game HTML receives magazine reviews at build time instead of relying only on browser JavaScript", () => {
