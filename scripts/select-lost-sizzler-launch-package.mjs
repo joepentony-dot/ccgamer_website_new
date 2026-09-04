@@ -48,9 +48,10 @@ function validateRoots(activeValue, userDataValue) {
   return { activeRoot, userDataRoot };
 }
 
-function verifyActivePackage(manifestValue, activeRoot) {
+function verifyActivePackage(manifestValue, activeRoot, userDataRoot) {
   if (!manifestValue) fail('active package manifest is required.');
   const manifest = path.resolve(manifestValue);
+  if (isInside(userDataRoot, manifest)) fail(`Active package manifest must remain outside Tier-A user-data: ${manifest}`);
   if (!fs.existsSync(manifest) || !fs.lstatSync(manifest).isFile()) fail(`Active package manifest does not exist: ${manifest}`);
   assertNoSymlinkComponents(manifest, 'active package manifest');
   const verifier = fileURLToPath(new URL('./verify-lost-sizzler-package-tree.mjs', import.meta.url));
@@ -64,7 +65,7 @@ function verifyActivePackage(manifestValue, activeRoot) {
 
 function selectLaunchPackage(activeValue, manifestValue, userDataValue) {
   const roots = validateRoots(activeValue, userDataValue);
-  const manifest = verifyActivePackage(manifestValue, roots.activeRoot);
+  const manifest = verifyActivePackage(manifestValue, roots.activeRoot, roots.userDataRoot);
   return { ...roots, manifest };
 }
 
@@ -93,11 +94,18 @@ function runSelfTest() {
     fs.writeFileSync(path.join(activeRoot, 'runtime.txt'), 'verified-build\n');
     fs.writeFileSync(path.join(userDataRoot, 'solo-save.json'), '{"floor":12}\n');
     const profileBefore = fs.readFileSync(path.join(userDataRoot, 'solo-save.json'));
+    const packageBefore = fs.readFileSync(path.join(activeRoot, 'runtime.txt'));
     writeFixtureManifest(activeRoot, manifest);
 
     const selected = selectLaunchPackage(activeRoot, manifest, userDataRoot);
     if (selected.activeRoot !== path.resolve(activeRoot)) fail('Verified active package was not selected.');
     if (!fs.readFileSync(path.join(userDataRoot, 'solo-save.json')).equals(profileBefore)) fail('Tier-A profile changed during launch selection.');
+
+    const tierAManifest = path.join(userDataRoot, 'active.manifest.json');
+    fs.copyFileSync(manifest, tierAManifest);
+    expectFailure(() => selectLaunchPackage(activeRoot, tierAManifest, userDataRoot), 'Launch manifest inside Tier-A user-data must be refused.');
+    if (!fs.readFileSync(path.join(userDataRoot, 'solo-save.json')).equals(profileBefore)) fail('Tier-A profile changed after refused Tier-A launch manifest.');
+    if (!fs.readFileSync(path.join(activeRoot, 'runtime.txt')).equals(packageBefore)) fail('Active package changed after refused Tier-A launch manifest.');
 
     fs.writeFileSync(path.join(activeRoot, 'runtime.txt'), 'damaged-build!\n');
     expectFailure(() => selectLaunchPackage(activeRoot, manifest, userDataRoot), 'Damaged active package must be refused before launch.');
@@ -107,7 +115,7 @@ function runSelfTest() {
     expectFailure(() => selectLaunchPackage(activeRoot, manifest, userDataRoot), 'Missing active package must be refused until recovery runs.');
     if (!fs.readFileSync(path.join(userDataRoot, 'solo-save.json')).equals(profileBefore)) fail('Tier-A profile changed after refused missing-package launch.');
 
-    console.log('Lost Sizzler launch-selection self-test passed: only a cryptographically verified active package is launchable and Tier-A data remains outside selection.');
+    console.log('Lost Sizzler launch-selection self-test passed: only a cryptographically verified active package is launchable and launch metadata remains outside Tier-A data.');
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
