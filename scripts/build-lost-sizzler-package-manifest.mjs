@@ -2,6 +2,7 @@
 
 import { createHash } from 'node:crypto';
 import { promises as fs } from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -75,6 +76,24 @@ function comparePortablePath(a, b) {
   return a < b ? -1 : 1;
 }
 
+async function assertNoSymlinkComponents(absolutePath, label) {
+  let current = path.resolve(absolutePath);
+  const root = path.parse(current).root;
+  while (current !== root) {
+    try {
+      const stat = await fs.lstat(current);
+      if (stat.isSymbolicLink()) {
+        throw new Error(`${label} must not traverse a symbolic link: ${current}`);
+      }
+    } catch (error) {
+      if (!(error && error.code === 'ENOENT')) throw error;
+    }
+    const parent = path.dirname(current);
+    if (parent === current) break;
+    current = parent;
+  }
+}
+
 function classify(relativePath, fallback) {
   const normalized = toPosix(relativePath).toLowerCase();
   if (normalized.startsWith('arcade/lost-sizzler/assets/audio/')) return 'audio';
@@ -121,6 +140,7 @@ function assertPackagePolicyExamples() {
 }
 
 async function statRequired(absolutePath, sourcePath) {
+  await assertNoSymlinkComponents(absolutePath, `Required package input ${sourcePath}`);
   let stat;
   try {
     stat = await fs.lstat(absolutePath);
@@ -150,6 +170,7 @@ async function collectFiles(source, fallbackClassification) {
 
   const results = [];
   async function walk(directory, relativeDirectory) {
+    await assertNoSymlinkComponents(directory, `Package directory ${relativeDirectory}`);
     const dirents = await fs.readdir(directory, { withFileTypes: true });
     dirents.sort((a, b) => comparePortablePath(a.name, b.name));
     for (const dirent of dirents) {
@@ -161,6 +182,7 @@ async function collectFiles(source, fallbackClassification) {
       if (dirent.isDirectory()) {
         await walk(childAbsolute, childRelative);
       } else if (dirent.isFile()) {
+        await assertNoSymlinkComponents(childAbsolute, `Package file ${childRelative}`);
         assertAllowedPackagePath(childRelative);
         results.push({
           absolute: childAbsolute,
@@ -181,6 +203,7 @@ async function collectFiles(source, fallbackClassification) {
 }
 
 async function hashFile(file) {
+  await assertNoSymlinkComponents(file.absolute, `Package file ${file.relative}`);
   const data = await fs.readFile(file.absolute);
   return {
     path: toPosix(file.relative),
@@ -193,6 +216,7 @@ async function hashFile(file) {
 
 async function readReleaseIdentifier() {
   const versionPath = path.join(REPO_ROOT, 'arcade/lost-sizzler/version.json');
+  await assertNoSymlinkComponents(versionPath, 'Release version input');
   const parsed = JSON.parse(await fs.readFile(versionPath, 'utf8'));
   return String(parsed.version ?? parsed.build ?? parsed.release ?? 'unknown');
 }
@@ -246,16 +270,75 @@ function assertOfflineAudioCompleteness(manifest) {
   }
 }
 
+async function writeManifestOutput(outputPathValue, json) {
+  const outputPath = path.resolve(process.cwd(), outputPathValue);
+  await assertNoSymlinkComponents(outputPath, 'Package manifest output');
+  try {
+    await fs.lstat(outputPath);
+    throw new Error(`Refusing to overwrite existing package manifest evidence: ${outputPath}`);
+  } catch (error) {
+    if (!(error && error.code === 'ENOENT')) throw error;
+  }
+  const parent = path.dirname(outputPath);
+  await assertNoSymlinkComponents(parent, 'Package manifest output parent');
+  await fs.mkdir(parent, { recursive: true });
+  await assertNoSymlinkComponents(parent, 'Package manifest output parent');
+  await fs.writeFile(outputPath, json, { encoding: 'utf8', flag: 'wx' });
+}
+
+async function assertManifestOutputPolicyExamples() {
+  const temp = await fs.mkdtemp(path.join(os.tmpdir(), 'lost-sizzler-manifest-boundary-'));
+  try {
+    const safeRoot = path.join(temp, 'safe');
+    const externalRoot = path.join(temp, 'external');
+    await fs.mkdir(safeRoot, { recursive: true });
+    await fs.mkdir(externalRoot, { recursive: true });
+    const sentinel = path.join(externalRoot, 'sentinel.txt');
+    await fs.writeFile(sentinel, 'preserve-me\n', 'utf8');
+
+    const existing = path.join(safeRoot, 'existing.json');
+    await fs.writeFile(existing, 'existing\n', 'utf8');
+    let overwriteRejected = false;
+    try {
+      await writeManifestOutput(existing, '{}\n');
+    } catch {
+      overwriteRejected = true;
+    }
+    if (!overwriteRejected) throw new Error('Package manifest output self-check unexpectedly allowed overwrite.');
+    if (await fs.readFile(existing, 'utf8') !== 'existing\n') throw new Error('Rejected package manifest overwrite changed existing evidence.');
+
+    const linkedParent = path.join(safeRoot, 'linked-parent');
+    await fs.symlink(externalRoot, linkedParent, 'dir');
+    let symlinkRejected = false;
+    try {
+      await writeManifestOutput(path.join(linkedParent, 'manifest.json'), '{}\n');
+    } catch {
+      symlinkRejected = true;
+    }
+    if (!symlinkRejected) throw new Error('Package manifest output self-check unexpectedly accepted symlink ancestry.');
+    if (await fs.readFile(sentinel, 'utf8') !== 'preserve-me\n') throw new Error('Rejected package manifest symlink output changed external data.');
+    try {
+      await fs.lstat(path.join(externalRoot, 'manifest.json'));
+      throw new Error('Rejected package manifest symlink output unexpectedly created external evidence.');
+    } catch (error) {
+      if (!(error && error.code === 'ENOENT')) throw error;
+    }
+  } finally {
+    await fs.rm(temp, { recursive: true, force: true });
+  }
+}
+
 async function main() {
   const options = parseArgs(process.argv.slice(2));
-  if (options.check) assertPackagePolicyExamples();
+  if (options.check) {
+    assertPackagePolicyExamples();
+    await assertManifestOutputPolicyExamples();
+  }
   const manifest = await buildManifest();
   const json = `${JSON.stringify(manifest, null, 2)}\n`;
 
   if (options.output) {
-    const outputPath = path.resolve(process.cwd(), options.output);
-    await fs.mkdir(path.dirname(outputPath), { recursive: true });
-    await fs.writeFile(outputPath, json, 'utf8');
+    await writeManifestOutput(options.output, json);
   }
 
   if (options.check) {
