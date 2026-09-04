@@ -7,7 +7,7 @@
   const REPEAT_MS=7000;
   const SPECIAL_MODES=new Set(["horde-survivor","sizzler-saboteurs"]);
   const memory=new WeakMap();
-  const state={installed:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,last:null};
+  const state={installed:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,scoutEventObserver:false,last:null};
   const lines=Object.freeze({
     scout:Object.freeze({
       trapped:Object.freeze({key:"scout.trapped",title:"CCG SCOUT — FOUND",speaker:"Scout",text:"There you are. Get me to one of the permanently lit sanctuary rooms and I’ll stay close.",tone:"green",duration:7600,voiceKey:"npc.scout.found"}),
@@ -116,21 +116,26 @@
     return state.installed
   }
 
+  function handleScoutFoundBoundary(){
+    if(!soloDungeon())return false;
+    const hadDialogueOwner=ancestryHasMarker(window.triggerRescue,"__ccgStage8NpcDialogue");
+    install();
+    if(hadDialogueOwner)return true;
+    try{
+      const rescue=host?.rescue||null,player=typeof p1!=="undefined"?p1:null;
+      if(rescue?.following&&rescue?.found&&!rescue?.rescued)present(rescue,lines.scout.trapped,{player});
+    }catch(_){}
+    return ancestryHasMarker(window.triggerRescue,"__ccgStage8NpcDialogue")
+  }
+
   function installScoutToastBridge(){
     const source=window.showToast;
     if(typeof source!=="function")return false;
     if(ancestryHasMarker(source,"__ccgStage8ScoutToastBridge"))return true;
     const wrapped=function stage8ScoutToastBridge(title){
       const scoutFound=String(title||"").toUpperCase()==="CCG SCOUT FOUND";
-      const hadDialogueOwner=ancestryHasMarker(window.triggerRescue,"__ccgStage8NpcDialogue");
       const result=source.apply(this,arguments);
-      if(!scoutFound||!soloDungeon())return result;
-      install();
-      if(hadDialogueOwner)return result;
-      try{
-        const rescue=host?.rescue||null,player=typeof p1!=="undefined"?p1:null;
-        if(rescue?.following&&rescue?.found&&!rescue?.rescued)present(rescue,lines.scout.trapped,{player});
-      }catch(_){}
+      if(scoutFound)handleScoutFoundBoundary();
       return result
     };
     wrapped.__ccgStage8ScoutToastBridge=true;
@@ -139,16 +144,30 @@
     return true
   }
 
+  let scoutToastObserver=null;
+  function ensureScoutToastObserver(){
+    if(scoutToastObserver||typeof MutationObserver!=="function")return Boolean(scoutToastObserver);
+    const title=document.getElementById("pickup-title");
+    if(!title)return false;
+    scoutToastObserver=new MutationObserver(()=>{
+      if(String(title.textContent||"").trim().toUpperCase()==="CCG SCOUT FOUND")handleScoutFoundBoundary()
+    });
+    scoutToastObserver.observe(title,{childList:true,characterData:true,subtree:true});
+    state.scoutEventObserver=true;
+    return true
+  }
+
   let installObserver=null;
   function ensureInstallObserver(){
     if(installObserver||typeof MutationObserver!=="function"||!document.body)return false;
-    installObserver=new MutationObserver(()=>{install();installScoutToastBridge()});
+    installObserver=new MutationObserver(()=>{install();installScoutToastBridge();ensureScoutToastObserver()});
     installObserver.observe(document.body,{attributes:true,attributeFilter:["data-release-ready","data-run-active","data-mode-controller"]});
     return true
   }
   function installWhenReady(){
     const installed=install();
     installScoutToastBridge();
+    ensureScoutToastObserver();
     ensureInstallObserver();
     return installed
   }
@@ -156,5 +175,5 @@
   installWhenReady();
   queueMicrotask(installWhenReady);
   if(document.readyState!=="complete")addEventListener("load",installWhenReady,{once:true});
-  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,present,presentScout,install,installWhenReady,installScoutToastBridge,installRescueAssignmentGate,ancestryHasMarker};
+  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,present,presentScout,install,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
 })();
