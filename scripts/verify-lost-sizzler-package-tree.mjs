@@ -108,6 +108,9 @@ async function loadManifest(manifestPath) {
   if (manifest.schema !== MANIFEST_SCHEMA) throw new Error(`Unexpected package manifest schema: ${manifest.schema}`);
   if (!Array.isArray(manifest.files) || manifest.files.length < 1) throw new Error('Package manifest must contain a non-empty files array.');
   if (manifest.fileCount !== manifest.files.length) throw new Error('Package manifest fileCount does not match files array.');
+  if (!Number.isSafeInteger(manifest.totalBytes) || manifest.totalBytes < 1) {
+    throw new Error(`Package manifest totalBytes must be a positive safe integer: ${manifest.totalBytes}`);
+  }
   return manifest;
 }
 
@@ -164,7 +167,7 @@ async function verifyPackageTree(manifestPath, packageRoot) {
       throw new Error(`Package tree contains an unexpected file: ${actualPaths[index] ?? '<missing>'}; expected ${expectedPaths[index] ?? '<none>'}`);
     }
   }
-  if (Number.isSafeInteger(manifest.totalBytes) && manifest.totalBytes !== verifiedBytes) {
+  if (manifest.totalBytes !== verifiedBytes) {
     throw new Error(`Verified package byte total mismatch: expected ${manifest.totalBytes}, got ${verifiedBytes}`);
   }
 
@@ -215,6 +218,13 @@ async function runSelfTest() {
 
     await verifyPackageTree(manifestPath, root);
 
+    const validManifestText = await fs.readFile(manifestPath, 'utf8');
+    const malformedTotalManifest = JSON.parse(validManifestText);
+    malformedTotalManifest.totalBytes = null;
+    await fs.writeFile(manifestPath, `${JSON.stringify(malformedTotalManifest, null, 2)}\n`, 'utf8');
+    await expectFailure(() => verifyPackageTree(manifestPath, root), 'totalBytes must be a positive safe integer');
+    await fs.writeFile(manifestPath, validManifestText, 'utf8');
+
     for (const forbidden of [
       'arcade/lost-sizzler/js/ccg-supabase-config.js',
       'arcade/lost-sizzler/.env',
@@ -233,7 +243,7 @@ async function runSelfTest() {
     await fs.writeFile(path.join(root, 'unexpected.txt'), 'extra', 'utf8');
     await expectFailure(() => verifyPackageTree(manifestPath, root), 'file-set mismatch');
 
-    console.log('Lost Sizzler staged package verifier self-test passed: exact hashes, exact file set and credential exclusions are enforced.');
+    console.log('Lost Sizzler staged package verifier self-test passed: exact hashes, exact file set, mandatory aggregate byte totals and credential exclusions are enforced.');
   } finally {
     await fs.rm(temp, { recursive: true, force: true });
   }
