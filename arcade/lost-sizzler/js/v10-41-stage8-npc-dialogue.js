@@ -73,6 +73,20 @@
     return true
   }
 
-  install()||queueMicrotask(install);
-  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,present,presentScout,install};
+  let installObserver=null;
+  function installWhenReady(){
+    if(install()){
+      if(installObserver){installObserver.disconnect();installObserver=null}
+      return true
+    }
+    if(installObserver||typeof MutationObserver!=="function"||!document.body)return false;
+    installObserver=new MutationObserver(()=>{if(install()&&installObserver){installObserver.disconnect();installObserver=null}});
+    installObserver.observe(document.body,{attributes:true,attributeFilter:["data-release-ready","data-run-active","data-mode-controller"]});
+    return false
+  }
+
+  installWhenReady();
+  queueMicrotask(installWhenReady);
+  if(document.readyState!=="complete")addEventListener("load",installWhenReady,{once:true});
+  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,present,presentScout,install,installWhenReady};
 })();
