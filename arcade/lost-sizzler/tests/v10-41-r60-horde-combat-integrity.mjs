@@ -72,6 +72,10 @@ assert.match(frame,/if\(specialType\(\)\)return false/,"R60 Solo ownership must 
 assert.match(frame,/R29SpyEngine\?\.state\?\.isolated/,"R60 must wait until Spy isolation has fully exited before reasserting Solo ownership");
 assert.match(frame,/r30\?\.spyContaminated\?\.\(current\)\|\|r30\?\.topLevelSpyOwner\?\.\(current\)/,"R60 must refuse to wrap a stale or active Spy movement owner");
 assert.match(frame,/maintainR60LiveOwner\(\)/,"R60 must reassert Solo live ownership only through the guarded production monitor");
+assert.match(frame,/function stopR60LiveOwnerTimer\(\)/,"the production loader must expose an explicit owner-timer stop path");
+assert.match(frame,/if\(!isHorde\(\)\)\{stopR60LiveOwnerTimer\(\);return maintainR60LiveOwner\(\)\}/,"the 40 ms R60 owner timer must be Horde-only and fall back to one-shot Solo ownership");
+assert.match(frame,/if\(!isHorde\(\)\)\{stopR60LiveOwnerTimer\(\);maintainR60LiveOwner\(\);return\}/,"a Horde-to-Solo transition must stop the polling interval before reasserting Solo ownership");
+assert.match(frame,/attributeFilter:\["data-special-mode","data-run-active","data-mode-controller"\]/,"R60 ownership must be checked from lifecycle and mode-controller transitions instead of Solo polling");
 
 assert.match(frame,/function maintainR60HordeLiveOwner\(\)/,"R60 must have an explicit top-level owner for the Horde live elapsed path");
 assert.match(frame,/current===state\.r60HordeLiveOwner\|\|originalChainContains\(current,state\.r60HordeLiveOwner\)/,"the Horde live owner must verify function identity or ancestry rather than trusting a copied marker");

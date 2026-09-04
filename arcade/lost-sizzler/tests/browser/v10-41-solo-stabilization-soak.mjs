@@ -76,6 +76,7 @@ async function readOwnershipDebug(page,label){
     const r30=window.CCGLostSizzlerV141R30;
     const spy=window.CCGLostSizzlerV141R29SpyEngine;
     const r60=window.CCGLostSizzlerV141R60LivePlayIntegrity;
+    const framePerformance=window.CCGLostSizzlerV141HordeFramePerformance;
     const describe=fn=>{
       if(typeof fn!=="function")return null;
       const chain=[];
@@ -123,6 +124,12 @@ async function readOwnershipDebug(page,label){
         moveSource:describe(r60.state?.moveSource),
         hurtSource:describe(r60.state?.hurtSource)
       }:null,
+      framePerformance:framePerformance?{
+        r60LiveTimer:Number(framePerformance.state?.r60LiveTimer||0),
+        r60LiveOwnerInstalls:Number(framePerformance.state?.r60LiveOwnerInstalls||0),
+        r60LiveOwnerDeferrals:Number(framePerformance.state?.r60LiveOwnerDeferrals||0),
+        r60HordeLiveOwnerInstalls:Number(framePerformance.state?.r60HordeLiveOwnerInstalls||0)
+      }:null,
       recentOwnerChanges:diagnostics?.ownerChangeLog?.slice(-20)||[]
     };
   },label);
@@ -169,6 +176,7 @@ try{
   const baselineOwnership=await readOwnershipDebug(page,"baseline");
   assertMeasurementHealthy(baseline,"baseline");
   assertDamageOwnerCeiling(baseline,"baseline");
+  assert.equal(baselineOwnership.framePerformance?.r60LiveTimer,0,"baseline Solo must not run the Horde-only R60 owner polling timer");
 
   const baselineDepths={
     loop:baseline.loopOwnerDepth,
@@ -205,6 +213,7 @@ try{
   const stressedOwnership=await readOwnershipDebug(page,"post-pause-soak");
   assertMeasurementHealthy(stressed,"post-pause-soak");
   assertDamageOwnerCeiling(stressed,"post-pause-soak");
+  assert.equal(stressedOwnership.framePerformance?.r60LiveTimer,0,"post-pause Solo must not run the Horde-only R60 owner polling timer");
 
   console.log("SOLO_STABILIZATION_OWNERSHIP_DEBUG "+JSON.stringify({
     baseline:baselineOwnership,
