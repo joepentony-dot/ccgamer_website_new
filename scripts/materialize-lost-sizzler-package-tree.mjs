@@ -75,6 +75,12 @@ async function materialize({ manifestPath, outputRoot, clean }) {
   const manifest = JSON.parse(await fs.readFile(manifestFile, 'utf8'));
   if (manifest.schema !== SCHEMA) throw new Error(`Unexpected package manifest schema: ${manifest.schema}`);
   if (!Array.isArray(manifest.files) || manifest.files.length < 1) throw new Error('Package manifest must contain files.');
+  if (!Number.isSafeInteger(manifest.fileCount) || manifest.fileCount !== manifest.files.length) {
+    throw new Error(`Package manifest fileCount must exactly match files array: declared ${manifest.fileCount}, actual ${manifest.files.length}`);
+  }
+  if (!Number.isSafeInteger(manifest.totalBytes) || manifest.totalBytes < 1) {
+    throw new Error(`Package manifest totalBytes must be a positive safe integer: ${manifest.totalBytes}`);
+  }
 
   const root = path.resolve(outputRoot);
   const cwd = path.resolve(process.cwd());
@@ -125,7 +131,7 @@ async function materialize({ manifestPath, outputRoot, clean }) {
     copiedBytes += destinationStat.size;
   }
 
-  if (Number.isSafeInteger(manifest.totalBytes) && copiedBytes !== manifest.totalBytes) {
+  if (copiedBytes !== manifest.totalBytes) {
     throw new Error(`Materialized byte total mismatch: manifest ${manifest.totalBytes}, copied ${copiedBytes}`);
   }
 
@@ -173,25 +179,39 @@ async function runSelfTest() {
     const forbiddenHash = await sha256(forbiddenSource);
     const manifestPath = path.join(temp, 'manifest.json');
 
-    async function writeManifest(entry) {
+    async function writeManifest(entry, overrides = {}) {
       const manifest = {
         schema: SCHEMA,
         fileCount: 1,
         totalBytes: entry.bytes,
         files: [entry],
+        ...overrides,
       };
       await fs.writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
     }
 
-    await writeManifest({
+    const safeEntry = {
       path: 'arcade/lost-sizzler/assets/self-test.txt',
       sourceRepositoryPath: safeRelative,
       bytes: safeBytes,
       sha256: safeHash,
       classification: 'runtime',
-    });
+    };
+    await writeManifest(safeEntry);
     await materialize({ manifestPath, outputRoot, clean: true });
     await fs.rm(outputRoot, { recursive: true, force: true });
+
+    await writeManifest(safeEntry, { fileCount: 2 });
+    await expectFailure(
+      () => materialize({ manifestPath, outputRoot, clean: true }),
+      'fileCount must exactly match files array'
+    );
+    await writeManifest(safeEntry, { totalBytes: null });
+    await expectFailure(
+      () => materialize({ manifestPath, outputRoot, clean: true }),
+      'totalBytes must be a positive safe integer'
+    );
+    await writeManifest(safeEntry);
 
     const symlinkTarget = path.join(temp, 'symlink-target');
     await fs.mkdir(symlinkTarget, { recursive: true });
@@ -237,7 +257,7 @@ async function runSelfTest() {
     );
     await assertDirectoryEmpty(outputRoot);
 
-    console.log('Lost Sizzler package materializer self-test passed: symbolic-link output roots and forbidden bootstrap/credential paths are rejected before package copying.');
+    console.log('Lost Sizzler package materializer self-test passed: malformed manifests, symbolic-link output roots and forbidden bootstrap/credential paths are rejected before package copying.');
   } finally {
     await fs.rm(temp, { recursive: true, force: true });
   }
