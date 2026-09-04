@@ -210,10 +210,9 @@
   async function saveAndQuit(){
     if(!standardSolo())return false;
     if(!ensureEntryCaptured())return false;
-    const checkpoint=clone(state.entryCheckpoint),rescue=stage8RescueSnapshot();
-    if(rescue)checkpoint.stage8Rescue=rescue;else delete checkpoint.stage8Rescue;
-    const ok=writeEnvelope(checkpoint,"save_quit");
-    if(ok)state.entryCheckpoint=clone(checkpoint);
+    const rescue=stage8RescueSnapshot();
+    if(rescue)state.entryCheckpoint.stage8Rescue=rescue;else delete state.entryCheckpoint.stage8Rescue;
+    const ok=writeEnvelope(state.entryCheckpoint,"save_quit");
     if(!ok){try{showToast?.("SAVE FAILED","The run could not be written to this browser. Your current game is still active.","red",7000)}catch(_){}return false}
     try{showToast?.("RUN SAVED",`Floor ${run.floor} entrance saved. Returning to the main menu.`,"green",3200)}catch(_){}
     setTimeout(()=>{try{quitToMenu?.()}catch(error){state.lastError=String(error?.message||error)}},120);return true
