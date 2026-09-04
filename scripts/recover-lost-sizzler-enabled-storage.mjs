@@ -13,6 +13,7 @@ const repo = path.resolve(here, '..');
 const defaultManifest = path.join(repo, 'arcade/lost-sizzler/SUPABASE-STORAGE-RECOVERY-MANIFEST.md');
 const EXPECTED_COUNT = 16;
 const EXPECTED_BYTES = 72_233_137;
+const MAX_REDIRECTS = 5;
 
 function fail(message) { throw new Error(message); }
 function stripTicks(value) {
@@ -37,7 +38,7 @@ function parseArgs(argv) {
   return out;
 }
 function usage() {
-  console.log(`Lost Sizzler enabled Storage recovery downloader\n\nUsage:\n  node scripts/recover-lost-sizzler-enabled-storage.mjs \\\n    --storage-base-url <public bucket root> \\\n    --output <directory> [--limit 1..16] [--probe] [--report <file>]\n\n  node scripts/recover-lost-sizzler-enabled-storage.mjs \\\n    --storage-base-url <public bucket root> --plan [--limit 1..16]\n\n  node scripts/recover-lost-sizzler-enabled-storage.mjs --self-test\n\nSafety rules:\n  - reads only the 16 ENABLED objects frozen in SUPABASE-STORAGE-RECOVERY-MANIFEST.md;\n  - validates every frozen Storage path as a canonical relative path before URL construction;\n  - defaults to --limit 1 so availability can be tested before recovering all 16;\n  - --plan and --self-test perform no network request;\n  - never downloads disabled counterparts;\n  - refuses symlinked recovery roots and refuses to overwrite an existing recovered or partial file;\n  - verifies downloaded byte size and SHA-256 before promoting the partial file;\n  - optional --probe runs ffprobe and requires an audio stream before promotion;\n  - report evidence must remain outside recovered binaries, cannot traverse symlinked parents, and cannot overwrite existing evidence;\n  - performs no Supabase database or Storage mutation.`);
+  console.log(`Lost Sizzler enabled Storage recovery downloader\n\nUsage:\n  node scripts/recover-lost-sizzler-enabled-storage.mjs \\\n    --storage-base-url <public bucket root> \\\n    --output <directory> [--limit 1..16] [--probe] [--report <file>]\n\n  node scripts/recover-lost-sizzler-enabled-storage.mjs \\\n    --storage-base-url <public bucket root> --plan [--limit 1..16]\n\n  node scripts/recover-lost-sizzler-enabled-storage.mjs --self-test\n\nSafety rules:\n  - reads only the 16 ENABLED objects frozen in SUPABASE-STORAGE-RECOVERY-MANIFEST.md;\n  - validates every frozen Storage path as a canonical relative path before URL construction;\n  - defaults to --limit 1 so availability can be tested before recovering all 16;\n  - --plan and --self-test perform no network request;\n  - never downloads disabled counterparts;\n  - every HTTP redirect must remain on the approved Supabase origin and inside the same public bucket root;\n  - refuses symlinked recovery roots and refuses to overwrite an existing recovered or partial file;\n  - verifies downloaded byte size and SHA-256 before promoting the partial file;\n  - optional --probe runs ffprobe and requires an audio stream before promotion;\n  - report evidence must remain outside recovered binaries, cannot traverse symlinked parents, and cannot overwrite existing evidence;\n  - performs no Supabase database or Storage mutation.`);
 }
 function isInside(root, candidate) {
   const relative = path.relative(root, candidate);
@@ -137,13 +138,30 @@ function normalizeBaseUrl(value) {
   if (parsed.search || parsed.hash) fail('Storage base URL must not contain query or fragment data.');
   return parsed.href.endsWith('/') ? parsed.href : `${parsed.href}/`;
 }
+function assertRecoveryHttpTarget(baseUrl, value, label = 'Recovery HTTP target') {
+  const base = new URL(baseUrl);
+  const target = new URL(value, baseUrl);
+  if (target.protocol !== 'https:') fail(`${label} must use https: ${target.href}`);
+  if (target.origin !== base.origin) fail(`${label} escaped the approved Supabase origin: ${target.href}`);
+  if (!target.pathname.startsWith(base.pathname)) fail(`${label} escaped the approved public bucket root: ${target.href}`);
+  return target.href;
+}
 function recoveryUrl(baseUrl, storagePath) {
   const safePath = safeStorageRelativePath(storagePath, 'Recovery Storage path');
   const encoded = safePath.split('/').map(segment => encodeURIComponent(segment)).join('/');
-  const resolved = new URL(encoded, baseUrl);
-  const base = new URL(baseUrl);
-  if (resolved.origin !== base.origin || !resolved.pathname.startsWith(base.pathname)) fail(`Recovery Storage path escaped the public bucket root: ${safePath}`);
-  return resolved.href;
+  return assertRecoveryHttpTarget(baseUrl, new URL(encoded, baseUrl).href, 'Recovery Storage path');
+}
+async function fetchRecoveryResponse(url, baseUrl) {
+  let current = assertRecoveryHttpTarget(baseUrl, url);
+  for (let redirectCount = 0; redirectCount <= MAX_REDIRECTS; redirectCount += 1) {
+    const response = await fetch(current, { redirect: 'manual', cache: 'no-store' });
+    if (response.status < 300 || response.status >= 400) return { response, finalUrl: current };
+    const location = response.headers.get('location');
+    if (!location) fail(`Storage redirect ${response.status} did not provide a Location header for ${current}`);
+    if (redirectCount === MAX_REDIRECTS) fail(`Storage download exceeded ${MAX_REDIRECTS} redirects for ${url}`);
+    current = assertRecoveryHttpTarget(baseUrl, new URL(location, current).href, 'Storage redirect');
+  }
+  fail(`Storage download exceeded ${MAX_REDIRECTS} redirects for ${url}`);
 }
 function printPlan(rows, baseUrl) {
   const selectedBytes = rows.reduce((sum, row) => sum + row.expectedBytes, 0);
@@ -175,14 +193,14 @@ function probeFile(file) {
     return { ok: false, error: `invalid ffprobe JSON: ${error.message}` };
   }
 }
-async function downloadTo(url, destination) {
+async function downloadTo(url, destination, baseUrl) {
   if (fs.existsSync(destination)) fail(`Refusing to overwrite existing recovery file: ${destination}`);
   const partial = `${destination}.partial`;
   if (fs.existsSync(partial)) fail(`Refusing to overwrite existing partial recovery file: ${partial}`);
   assertNoSymlinkComponents(path.dirname(destination), 'Recovery destination parent');
-  const response = await fetch(url, { redirect: 'follow', cache: 'no-store' });
-  if (!response.ok) fail(`Storage download failed with HTTP ${response.status} for ${url}`);
-  if (!response.body) fail(`Storage download returned no body for ${url}`);
+  const { response, finalUrl } = await fetchRecoveryResponse(url, baseUrl);
+  if (!response.ok) fail(`Storage download failed with HTTP ${response.status} for ${finalUrl}`);
+  if (!response.body) fail(`Storage download returned no body for ${finalUrl}`);
   const chunks = [];
   let bytes = 0;
   for await (const chunk of response.body) {
@@ -212,6 +230,10 @@ function runSelfTest() {
   const safeUrl = recoveryUrl(base, 'music/lostSizzlerDanger/example.mp3');
   if (safeUrl !== 'https://example.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerDanger/example.mp3') fail(`Self-test safe Storage URL changed unexpectedly: ${safeUrl}`);
   expectFailure(() => recoveryUrl(base, '../escape.mp3'), 'Storage traversal must be rejected');
+  expectFailure(() => assertRecoveryHttpTarget(base, 'https://other.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/example.mp3', 'self-test redirect'), 'cross-origin redirect must be rejected');
+  expectFailure(() => assertRecoveryHttpTarget(base, 'https://example.supabase.co/storage/v1/object/public/other-bucket/example.mp3', 'self-test redirect'), 'cross-bucket redirect must be rejected');
+  expectFailure(() => assertRecoveryHttpTarget(base, 'http://example.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/example.mp3', 'self-test redirect'), 'non-HTTPS redirect must be rejected');
+  safeStorageRelativePath('music/lostSizzlerDanger/example.mp3', 'self-test Storage path');
   expectFailure(() => safeStorageRelativePath('music\\escape.mp3', 'self-test Storage path'), 'backslash Storage path must be rejected');
   expectFailure(() => safeOriginalFilename('nested/file.mp3', 'self-test filename'), 'nested original filename must be rejected');
 
@@ -236,7 +258,7 @@ function runSelfTest() {
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
-  console.log('Lost Sizzler enabled recovery self-test passed: Storage paths stay inside the frozen bucket, recovery roots are real directories, and report evidence is external, symlink-safe and immutable.');
+  console.log('Lost Sizzler enabled recovery self-test passed: Storage paths and redirects stay inside the frozen bucket, recovery roots are real directories, and report evidence is external, symlink-safe and immutable.');
 }
 
 async function main() {
@@ -263,7 +285,7 @@ async function main() {
     const destination = path.join(root, filename);
     if (!isInside(root, destination)) fail(`Recovery destination escaped output root: ${destination}`);
     const url = recoveryUrl(baseUrl, row.enabledPath);
-    const { bytes, partial } = await downloadTo(url, destination);
+    const { bytes, partial } = await downloadTo(url, destination, baseUrl);
     const sha256 = sha256File(partial);
     const sizeMatches = bytes === row.expectedBytes;
     const probe = args.probe ? probeFile(partial) : null;
