@@ -472,7 +472,15 @@
   function ccgDefinition(){return window.CCG_CONFIG?.followerElites?.find?.(row=>row?.ccgBoss||String(row?.name||"").toUpperCase()==="CCG")||null}
   function freeCcgCell(worldState,hostState){
     const occupied=new Set((hostState?.enemies||[]).filter(enemy=>enemy?.alive).map(enemy=>`${Number(enemy.x)},${Number(enemy.y)}`));
-    const rooms=[...(worldState?.rooms||[])].filter(room=>room&&!room.sanctuary).sort((a,b)=>Number(b.depth||0)-Number(a.depth||0));
+    const namedRooms=new Set((hostState?.enemies||[])
+      .filter(enemy=>enemy?.alive&&(enemy.follower||enemy.championName||enemy.namedEnemy||enemy.ccgBoss))
+      .map(enemy=>window.CCGWorld?.roomAt?.(worldState,Number(enemy.x),Number(enemy.y)))
+      .filter(roomId=>Number.isFinite(Number(roomId))&&Number(roomId)>=0)
+      .map(Number));
+    const floor=Math.max(1,Number(run?.floor||worldState?.floor||1)),gentleDepth=floor===1?2:1;
+    const rooms=[...(worldState?.rooms||[])]
+      .filter(room=>room&&!room.sanctuary&&!namedRooms.has(Number(room.id))&&Number(room.depth||0)>gentleDepth)
+      .sort((a,b)=>Number(b.depth||0)-Number(a.depth||0));
     for(const room of rooms)for(let y=Number(room.y)+1;y<Number(room.y)+Number(room.h);y++)for(let x=Number(room.x)+1;x<Number(room.x)+Number(room.w);x++){
       if(occupied.has(`${x},${y}`))continue;if(worldState?.start&&Math.abs(x-Number(worldState.start.x))+Math.abs(y-Number(worldState.start.y))<8)continue;
       try{if(window.CCGWorld?.walkable?.(worldState.map,x,y,hostState))return{x,y}}catch(_){}
