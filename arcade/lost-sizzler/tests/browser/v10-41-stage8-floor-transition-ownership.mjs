@@ -27,6 +27,19 @@ await new Promise((resolve,reject)=>{server.once("error",reject);server.listen(0
 const origin=`http://127.0.0.1:${server.address().port}`;
 const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage","--disable-background-networking","--autoplay-policy=no-user-gesture-required"]});
 
+async function settleFloorEntry(page){
+  await page.waitForTimeout(420);
+  const dossier=await page.evaluate(()=>{
+    const panel=document.getElementById("named-dossier-panel");
+    const visible=Boolean(panel&&!panel.classList.contains("hidden"));
+    if(mode!=="dossier"||!visible)return{dismissed:false};
+    if(typeof hideNamedDossier!=="function")return{dismissed:false,missingHide:true};
+    hideNamedDossier();return{dismissed:true};
+  });
+  assert.notEqual(dossier.missingHide,true,"visible floor-entry dossier must retain its canonical close path");
+  await page.waitForFunction(()=>mode==="playing"&&document.body.dataset.runActive==="true"&&document.getElementById("save-panel")?.classList.contains("hidden")===true&&window.CCGLostSizzlerModeRuntime?.detect?.()==="dungeon-solo",null,{timeout:10000});
+}
+
 try{
   const context=await browser.newContext({viewport:{width:1600,height:900}}),page=await context.newPage();
   page.setDefaultTimeout(45000);
@@ -68,14 +81,11 @@ try{
   await page.waitForFunction(()=>mode==="floorcomplete"&&!document.getElementById("floor-complete").classList.contains("hidden"));
   await page.evaluate(()=>descendFloor());
   await page.waitForFunction(()=>Number(run?.floor||0)===2&&Boolean(host)&&Boolean(p1),null,{timeout:10000});
-  await page.waitForFunction(()=>mode==="saveprompt",null,{timeout:5000});
-  await page.evaluate(()=>closeSavePrompt());
-  await page.waitForFunction(()=>mode==="playing"&&document.body.dataset.runActive==="true"&&window.CCGLostSizzlerModeRuntime?.detect?.()==="dungeon-solo",null,{timeout:5000});
-  await page.waitForTimeout(260);
+  await settleFloorEntry(page);
 
   const after=await snapshot();
   assert.equal(after.floor,2,"canonical descent must advance the Solo run to floor 2");
-  assert.equal(after.mode,"playing","closing the canonical floor-entry save prompt must restore playing mode");
+  assert.equal(after.mode,"playing","canonical Floor 2 autosave handling must restore playing mode");
   assert.equal(after.controller,"dungeon-solo","floor descent must retain the Solo Dungeon controller");
   assert.equal(after.stage8.rescueDepth,1,"floor descent must not grow or lose the Stage 8 rescue wrapper");
   assert.equal(after.stage8.toastDepth,1,"floor descent must not grow or lose the Stage 8 Scout toast bridge");
