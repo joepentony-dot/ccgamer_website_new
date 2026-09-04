@@ -47,10 +47,20 @@
     if(!rescue)return false;
     return present(rescue,lineForScout(rescue,stateKey),{player,force})
   }
+  function ancestryHasMarker(source,marker){
+    const seen=new Set();
+    let current=source;
+    while(typeof current==="function"&&!seen.has(current)){
+      if(current[marker])return true;
+      seen.add(current);
+      current=current.__ccgOriginal;
+    }
+    return false
+  }
   function install(){
     const source=window.triggerRescue;
     if(typeof source!=="function")return false;
-    if(source.__ccgStage8NpcDialogue){state.installed=true;return true}
+    if(ancestryHasMarker(source,"__ccgStage8NpcDialogue")){state.installed=true;return true}
     const wrapped=function triggerRescueStage8Dialogue(player){
       let before=null;
       if(soloDungeon()){
@@ -60,7 +70,7 @@
       if(!before||!soloDungeon())return result;
       try{
         const rescue=host?.rescue;if(!rescue)return result;
-        if(!before.rescued&&!before.following&&rescue.following&&rescue.found)present(rescue,lines.scout.trapped,{player,force:true});
+        if(!before.rescued&&!before.following&&rescue.following&&rescue.found)present(rescue,lines.scout.trapped,{player});
         else if(rescue.rescued&&withinReach(player,rescue))present(rescue,lines.scout.rescued,{player});
         else if(rescue.following&&withinReach(player,rescue))present(rescue,lines.scout.following,{player});
       }catch(_){}
@@ -76,17 +86,17 @@
   function installScoutToastBridge(){
     const source=window.showToast;
     if(typeof source!=="function")return false;
-    if(source.__ccgStage8ScoutToastBridge)return true;
+    if(ancestryHasMarker(source,"__ccgStage8ScoutToastBridge"))return true;
     const wrapped=function stage8ScoutToastBridge(title){
       const scoutFound=String(title||"").toUpperCase()==="CCG SCOUT FOUND";
-      const hadDialogueOwner=Boolean(window.triggerRescue?.__ccgStage8NpcDialogue);
+      const hadDialogueOwner=ancestryHasMarker(window.triggerRescue,"__ccgStage8NpcDialogue");
       const result=source.apply(this,arguments);
       if(!scoutFound||!soloDungeon())return result;
       install();
       if(hadDialogueOwner)return result;
       try{
         const rescue=host?.rescue||null,player=typeof p1!=="undefined"?p1:null;
-        if(rescue?.following&&rescue?.found&&!rescue?.rescued)present(rescue,lines.scout.trapped,{player,force:true});
+        if(rescue?.following&&rescue?.found&&!rescue?.rescued)present(rescue,lines.scout.trapped,{player});
       }catch(_){}
       return result
     };
@@ -113,5 +123,5 @@
   installWhenReady();
   queueMicrotask(installWhenReady);
   if(document.readyState!=="complete")addEventListener("load",installWhenReady,{once:true});
-  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,present,presentScout,install,installWhenReady,installScoutToastBridge};
+  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,present,presentScout,install,installWhenReady,installScoutToastBridge,ancestryHasMarker};
 })();
