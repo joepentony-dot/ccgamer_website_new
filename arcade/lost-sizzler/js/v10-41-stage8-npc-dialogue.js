@@ -6,11 +6,13 @@
 
   const REPEAT_MS=7000;
   const ENVIRONMENTAL_STORY_BUDGET=3;
+  const EXPLORATION_INTERACTION_BUDGET=2;
   const SPECIAL_MODES=new Set(["horde-survivor","sizzler-saboteurs"]);
   const memory=new WeakMap();
   const environmentalSeen=new WeakSet();
   const environmentalFloors=new WeakMap();
-  const state={installed:false,merchantInstalled:false,sanctuaryInstalled:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,environmentalPresentations:0,environmentalBudgetSkips:0,scoutEventObserver:false,last:null};
+  const explorationFloors=new WeakMap();
+  const state={installed:false,merchantInstalled:false,sanctuaryInstalled:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,environmentalPresentations:0,environmentalBudgetSkips:0,explorationPresentations:0,explorationBudgetSkips:0,scoutEventObserver:false,last:null};
   const lines=Object.freeze({
     scout:Object.freeze({
       trapped:Object.freeze({key:"scout.trapped",title:"CCG SCOUT — FOUND",speaker:"Scout",text:"There you are. Get me to one of the permanently lit sanctuary rooms and I’ll stay close.",tone:"green",duration:7600,voiceKey:"npc.scout.found"}),
@@ -38,6 +40,13 @@
       MODEM_EXCHANGE:Object.freeze({key:"environment.modem-exchange",title:"TERMINAL MESSAGE",text:"The last transmission says wandering threats can follow through open rooms. Sanctuary doors remain the reliable boundary.",tone:"cyan",duration:8000,voiceKey:"environment.modem-exchange"}),
       HIGH_SCORE_CRYPT:Object.freeze({key:"environment.high-score-crypt",title:"SCOREKEEPER’S INSCRIPTION",text:"Banked floor XP survives. Carried loot and part of the current score stay exposed in one death cache until recovered.",tone:"gold",duration:8600,voiceKey:"environment.high-score-crypt"}),
       CRT_MAZE:Object.freeze({key:"environment.crt-maze",title:"CRT CALIBRATION NOTE",text:"The radar records rooms you have reached, not every corridor beyond them. Unexplored branches remain dark.",tone:"green",duration:8000,voiceKey:"environment.crt-maze"})
+    }),
+    exploration:Object.freeze({
+      deadEnd:Object.freeze({key:"exploration.dead-end",title:"SIDE ALCOVE SEARCHED",text:"This branch ends here. Its small cache is an exploration reward; the main floor route continues elsewhere.",tone:"gold",duration:7600,voiceKey:"exploration.dead-end"}),
+      shortcut:Object.freeze({key:"exploration.shortcut",title:"DUNGEON SHORTCUT FOUND",text:"This passage reconnects two explored routes without opening or bypassing a locked objective room.",tone:"green",duration:7800,voiceKey:"exploration.shortcut"}),
+      gallery:Object.freeze({key:"exploration.gallery",title:"WIDE GALLERY",text:"The corridor opens into a broader firing lane. Furniture and corners still break line of sight.",tone:"cyan",duration:7400,voiceKey:"exploration.gallery"}),
+      junction:Object.freeze({key:"exploration.junction",title:"JUNCTION POCKET",text:"Several corridor lines meet here. Check the radar before committing to the darker branch.",tone:"purple",duration:7400,voiceKey:"exploration.junction"}),
+      parallelLoop:Object.freeze({key:"exploration.parallel-loop",title:"PARALLEL PASSAGE",text:"This side route rejoins the same corridor farther on and leaves progression locks untouched.",tone:"cyan",duration:7600,voiceKey:"exploration.parallel-loop"})
     })
   });
 
@@ -125,6 +134,40 @@
   function onRoomEntered(player,roomId,room,{force=false}={}){
     if(!Number.isFinite(Number(roomId))||Number(roomId)<0)return false;
     return presentEnvironmentalStory(player,room,{force})
+  }
+  function explorationFloorState(){
+    let currentWorld=null;try{currentWorld=world||null}catch(_){return null}
+    if(!currentWorld||typeof currentWorld!=="object")return null;
+    let record=explorationFloors.get(currentWorld);
+    if(!record){record={presented:0,seen:new Set()};explorationFloors.set(currentWorld,record)}
+    return record
+  }
+  const featureContains=(feature,x,y)=>Array.isArray(feature?.cells)&&feature.cells.some(cell=>Number(cell?.x)===x&&Number(cell?.y)===y);
+  function explorationFeatureAt(player){
+    if(!player)return null;
+    let meta=null;try{meta=world?.dungeonVariety||null}catch(_){return null}
+    if(!meta)return null;
+    const x=Number(player.x),y=Number(player.y);
+    const deadEnd=(meta.deadEnds||[]).findIndex(point=>Number(point?.x)===x&&Number(point?.y)===y);
+    if(deadEnd>=0)return{id:`dead-end:${deadEnd}`,kind:"deadEnd"};
+    const groups=[["shortcut",meta.shortcuts],["gallery",meta.galleries],["junction",meta.junctions],["parallelLoop",meta.parallelLoops]];
+    for(const [kind,features] of groups){const index=(features||[]).findIndex(feature=>featureContains(feature,x,y));if(index>=0)return{id:`${kind}:${index}`,kind}}
+    return null
+  }
+  function presentExplorationFeature(player,feature){
+    if(!soloDungeon()||!player||!feature||!lines.exploration[feature.kind])return false;
+    try{if(typeof p1!=="undefined"&&player!==p1)return false}catch(_){return false}
+    const floorState=explorationFloorState();if(!floorState||floorState.seen.has(feature.id))return false;
+    if(floorState.presented>=EXPLORATION_INTERACTION_BUDGET){state.explorationBudgetSkips++;return false}
+    const line=lines.exploration[feature.kind];
+    try{showToast(line.title,line.text,line.tone,line.duration)}catch(_){return false}
+    floorState.seen.add(feature.id);floorState.presented++;state.presentations++;state.explorationPresentations++;
+    state.last={key:line.key,title:line.title,text:line.text,voiceKey:line.voiceKey,at:clockNow()};
+    return true
+  }
+  function onMovementBoundary(player){
+    if(!soloDungeon())return false;
+    return presentExplorationFeature(player,explorationFeatureAt(player))
   }
   function ancestryHasMarker(source,marker){
     const seen=new Set();
@@ -288,5 +331,5 @@
   installWhenReady();
   queueMicrotask(installWhenReady);
   if(document.readyState!=="complete")addEventListener("load",installWhenReady,{once:true});
-  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,lineForMerchant,present,presentScout,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,environmentalEligible,presentEnvironmentalStory,onRoomEntered,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
+  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,lineForMerchant,present,presentScout,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,environmentalEligible,presentEnvironmentalStory,onRoomEntered,explorationFeatureAt,presentExplorationFeature,onMovementBoundary,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
 })();
