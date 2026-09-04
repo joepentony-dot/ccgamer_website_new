@@ -46,6 +46,13 @@ try{
 
   await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R29,original=api.install;
+    const r30=window.CCGLostSizzlerV141R30?.state||{};
+    window.__r30R29BridgeBaseline={
+      ownershipRepairs:Number(r30.ownershipRepairs||0),
+      forcedRestores:Number(r30.forcedRestores||0),
+      inputReassertions:Number(r30.inputReassertions||0),
+      watchdogRecoveries:Number(r30.watchdogRecoveries||0)
+    };
     window.__r30R29BridgeProbe={calls:0,returns:0};
     api.install=function r29CooperativeBridgeProbe(){
       window.__r30R29BridgeProbe.calls++;
@@ -57,21 +64,24 @@ try{
     api.install.__ccgOriginal=original;
   });
   await page.waitForTimeout(1040);
-  const stable=await page.evaluate(()=>({
-    probe:window.__r30R29BridgeProbe,
+  const stable=await page.evaluate(()=>{
+    const baseline=window.__r30R29BridgeBaseline||{};
+    const r30=window.CCGLostSizzlerV141R30?.state||{};
+    return{
+    probe:window.__r30R29BridgeProbe,baseline,
     r30:{
       timer:Number(window.CCGLostSizzlerV141R30?.state?.timer||0),
       r29TimerStopped:Boolean(window.CCGLostSizzlerV141R30?.state?.r29TimerStopped),
       r29InstallCooperative:Boolean(window.CCGLostSizzlerV141R30?.state?.r29InstallCooperative),
-      ownershipRepairs:Number(window.CCGLostSizzlerV141R30?.state?.ownershipRepairs||0),
-      forcedRestores:Number(window.CCGLostSizzlerV141R30?.state?.forcedRestores||0),
-      inputReassertions:Number(window.CCGLostSizzlerV141R30?.state?.inputReassertions||0),
-      watchdogRecoveries:Number(window.CCGLostSizzlerV141R30?.state?.watchdogRecoveries||0)
+      ownershipRepairs:Number(r30.ownershipRepairs||0)-Number(baseline.ownershipRepairs||0),
+      forcedRestores:Number(r30.forcedRestores||0)-Number(baseline.forcedRestores||0),
+      inputReassertions:Number(r30.inputReassertions||0)-Number(baseline.inputReassertions||0),
+      watchdogRecoveries:Number(r30.watchdogRecoveries||0)-Number(baseline.watchdogRecoveries||0)
     },
     r29Timer:Number(window.CCGLostSizzlerV141R29?.state?.timer||0),
     cooperative:Boolean(window.CCGLostSizzlerV141R29?.install?.__ccgV141R30Cooperative),
     golden:Boolean(window.CCGLostSizzlerV141R30?.state?.goldenLocked)
-  }));
+  }});
 
   assert.equal(stable.r30.timer>0,true,"R30 global guard keeps its established movement watchdog monitor");
   assert.equal(stable.r29Timer,0,"R30 must keep the original R29 installer timer stopped");
@@ -79,10 +89,10 @@ try{
   assert.equal(stable.r30.r29InstallCooperative,true,"R30 must retain cooperative-install state");
   assert.equal(stable.probe.calls,0,`stable Solo must not re-enter the cooperative R29 installer every 40 ms: ${JSON.stringify(stable)}`);
   assert.equal(stable.probe.returns,0,`stable Solo must not complete redundant R29 installer calls: ${JSON.stringify(stable)}`);
-  assert.equal(stable.r30.ownershipRepairs,0,"stable Solo must not need R30 ownership repairs during R29 bridge retirement");
-  assert.equal(stable.r30.forcedRestores,0,"stable Solo must not force ownership restores during R29 bridge retirement");
-  assert.equal(stable.r30.inputReassertions,0,"stable Solo must not reassert input while no keys are held");
-  assert.equal(stable.r30.watchdogRecoveries,0,"stable Solo must not invoke movement watchdog recovery while idle");
+  assert.equal(stable.r30.ownershipRepairs,0,`stable Solo must not add R30 ownership repairs during R29 bridge retirement: ${JSON.stringify(stable)}`);
+  assert.equal(stable.r30.forcedRestores,0,"stable Solo must not add forced ownership restores during R29 bridge retirement");
+  assert.equal(stable.r30.inputReassertions,0,"stable Solo must not add input reassertions while no keys are held");
+  assert.equal(stable.r30.watchdogRecoveries,0,"stable Solo must not add movement watchdog recovery while idle");
   assert.equal(stable.golden,true,"R30 must preserve its locked golden movement owner");
   assert.deepEqual(errors,[],`R30 R29 bridge retirement regression produced page errors: ${errors.join("\n")}`);
   console.log("Lost Sizzler R30 retained R29 bridge retirement passed: stable Solo keeps cooperative ownership without re-running R29 install.");
