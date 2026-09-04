@@ -86,10 +86,21 @@ function validateRoots(activeValue, candidateValue, backupValue, userDataValue) 
   return { activeRoot, candidateRoot, backupRoot, userDataRoot, packageContainer };
 }
 
-function verifyPackageTree(manifestValue, root, label) {
+function validateManifest(manifestValue, userDataRoot) {
   if (!manifestValue) fail('package manifest is required before activation.');
   const manifest = path.resolve(manifestValue);
-  if (!fs.existsSync(manifest) || !fs.lstatSync(manifest).isFile()) fail(`Package manifest does not exist: ${manifest}`);
+  if (isInside(userDataRoot, manifest)) {
+    fail(`Package manifest must stay outside Tier-A user-data: ${manifest}`);
+  }
+  assertNoSymlinkComponents(manifest, 'package manifest');
+  if (!fs.existsSync(manifest)) fail(`Package manifest does not exist: ${manifest}`);
+  const stat = fs.lstatSync(manifest);
+  if (stat.isSymbolicLink() || !stat.isFile()) fail(`Package manifest must be a real file: ${manifest}`);
+  return manifest;
+}
+
+function verifyPackageTree(manifestValue, root, label, userDataRoot) {
+  const manifest = validateManifest(manifestValue, userDataRoot);
   const verifier = fileURLToPath(new URL('./verify-lost-sizzler-package-tree.mjs', import.meta.url));
   const result = spawnSync(process.execPath, [verifier, '--manifest', manifest, '--root', root], {
     encoding: 'utf8',
@@ -165,7 +176,32 @@ function runSelfTest() {
     if (fs.readFileSync(path.join(activeRoot, 'runtime.txt'), 'utf8') !== activeBeforeFailure) fail('Failed activation restored the wrong active package content.');
     if (fs.readFileSync(path.join(userDataRoot, 'solo-save.json'), 'utf8') !== profileBefore) fail('Tier-A profile changed during failed activation rollback.');
 
-    console.log('Lost Sizzler atomic activation self-test passed: sibling packages swap with rollback while Tier-A profile stays outside the transaction.');
+    const unsafeManifest = path.join(userDataRoot, 'activation.manifest.json');
+    fs.writeFileSync(unsafeManifest, '{"fixture":true}\n');
+    const activeBeforeUnsafeManifest = fs.readFileSync(path.join(activeRoot, 'runtime.txt'), 'utf8');
+    const candidateBeforeUnsafeManifest = fs.readFileSync(path.join(candidateRoot, 'runtime.txt'), 'utf8');
+    const profileBeforeUnsafeManifest = fs.readFileSync(path.join(userDataRoot, 'solo-save.json'), 'utf8');
+    const unsafeRoots = validateRoots(activeRoot, candidateRoot, backupRoot, userDataRoot);
+    let unsafeManifestRejected = false;
+    try {
+      validateManifest(unsafeManifest, unsafeRoots.userDataRoot);
+      activatePackage(unsafeRoots);
+    } catch {
+      unsafeManifestRejected = true;
+    }
+    if (!unsafeManifestRejected) fail('Activation manifest inside Tier-A user-data was not rejected.');
+    if (!fs.existsSync(activeRoot) || fs.readFileSync(path.join(activeRoot, 'runtime.txt'), 'utf8') !== activeBeforeUnsafeManifest) {
+      fail('Unsafe activation manifest disturbed the active package before rejection.');
+    }
+    if (!fs.existsSync(candidateRoot) || fs.readFileSync(path.join(candidateRoot, 'runtime.txt'), 'utf8') !== candidateBeforeUnsafeManifest) {
+      fail('Unsafe activation manifest disturbed the candidate package before rejection.');
+    }
+    if (fs.existsSync(backupRoot)) fail('Unsafe activation manifest created a rollback package before rejection.');
+    if (fs.readFileSync(path.join(userDataRoot, 'solo-save.json'), 'utf8') !== profileBeforeUnsafeManifest) {
+      fail('Tier-A profile changed while rejecting an unsafe activation manifest.');
+    }
+
+    console.log('Lost Sizzler atomic activation self-test passed: sibling packages swap with rollback, activation metadata stays outside Tier-A persistence, and the profile stays outside the transaction.');
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
@@ -200,9 +236,10 @@ const roots = validateRoots(
   args.get('--backup-root'),
   args.get('--user-data-root'),
 );
-verifyPackageTree(args.get('--manifest'), roots.activeRoot, 'Active package');
-verifyPackageTree(args.get('--manifest'), roots.candidateRoot, 'Candidate package');
+const manifest = validateManifest(args.get('--manifest'), roots.userDataRoot);
+verifyPackageTree(manifest, roots.activeRoot, 'Active package', roots.userDataRoot);
+verifyPackageTree(manifest, roots.candidateRoot, 'Candidate package', roots.userDataRoot);
 activatePackage(roots);
-verifyPackageTree(args.get('--manifest'), roots.activeRoot, 'Promoted active package');
-verifyPackageTree(args.get('--manifest'), roots.backupRoot, 'Rollback backup package');
+verifyPackageTree(manifest, roots.activeRoot, 'Promoted active package', roots.userDataRoot);
+verifyPackageTree(manifest, roots.backupRoot, 'Rollback backup package', roots.userDataRoot);
 console.log(`Lost Sizzler package activation completed: active=${roots.activeRoot} previous=${roots.backupRoot} userData=${roots.userDataRoot}`);
