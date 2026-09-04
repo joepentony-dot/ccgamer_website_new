@@ -26,6 +26,24 @@ await new Promise((resolve,reject)=>{server.once("error",reject);server.listen(0
 const origin=`http://127.0.0.1:${server.address().port}`;
 const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage","--disable-background-networking","--autoplay-policy=no-user-gesture-required"]});
 
+async function dismissVisibleDossierBoundary(page){
+  const boundary=await page.evaluate(()=>{
+    const panel=document.getElementById("named-dossier-panel");
+    const before=typeof mode==="string"?mode:null,visible=Boolean(panel&&!panel.classList.contains("hidden"));
+    if(!(before==="dossier"&&visible))return{dismissed:false,before,visible,after:before,visibleAfter:visible};
+    if(typeof hideNamedDossier!=="function")return{dismissed:false,before,visible,after:before,visibleAfter:visible,missingHide:true};
+    hideNamedDossier();
+    return{dismissed:true,before,visible,after:typeof mode==="string"?mode:null,visibleAfter:Boolean(panel&&!panel.classList.contains("hidden"))}
+  });
+  assert.notEqual(boundary.missingHide,true,"visible dossier boundary must retain the normal close path");
+  if(!boundary.dismissed)return boundary;
+  assert.equal(boundary.before,"dossier","only a named-dossier modal may be dismissed while validating Continue restoration");
+  assert.equal(boundary.visible,true,"dismissed Continue boundary must have been visibly open");
+  assert.equal(boundary.visibleAfter,false,"Continue boundary dismissal must hide the named-dossier panel");
+  assert.equal(boundary.after,"playing","Continue boundary dismissal must return to live Solo play");
+  return boundary
+}
+
 try{
   const context=await browser.newContext({viewport:{width:1600,height:900}});
   const page=await context.newPage();page.setDefaultTimeout(45000);
@@ -109,7 +127,7 @@ try{
   assert.equal(beforeContinue.soloLivenessObserverActive,false,"Continue must not inherit a stale Play Solo liveness observer");
 
   await page.click("#continue-save-btn");
-  let resumed=false,remoteCleanup={stalledUntrackCalls:0,unexpectedRemoveCalls:0,leaveCalls:[]},resumeFailure=null;
+  let resumed=false,remoteCleanup={stalledUntrackCalls:0,unexpectedRemoveCalls:0,leaveCalls:[]},resumeFailure=null,continueDossierBoundary=null;
   try{
     try{
       await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&run?.floor===1&&Boolean(world)&&Boolean(host)&&Boolean(p1),null,{timeout:3000});
@@ -122,6 +140,7 @@ try{
           mode:String(mode||""),playMode:String(playMode||""),runActive:String(document.body?.dataset?.runActive||""),
           runSeed:String(run?.seed||""),runFloor:Number(run?.floor||0),envelopeSeed:String(envelope?.checkpoint?.run?.seed||""),envelopeReason:String(envelope?.reason||""),
           p1Present:Boolean(p1),worldPresent:Boolean(world),hostPresent:Boolean(host),menuHidden:Boolean(document.getElementById("menu")?.classList.contains("hidden")),
+          namedDossierVisible:Boolean(document.getElementById("named-dossier-panel")&&!document.getElementById("named-dossier-panel").classList.contains("hidden")),
           connected:Boolean(net?.connected),transport:String(net?.transport||""),channelPresent:Boolean(net?.channel),clientPresent:Boolean(net?.client),memberCount:Number(net?.members?.size||0),
           stalledUntrackCalls:Number(window.__r43StalledUntrackCalls||0),unexpectedRemoveCalls:Number(window.__r43UnexpectedRemoveCalls||0),
           leaveCalls:(window.__r43LeaveCalls||[]).map(stack=>String(stack).slice(0,1800)),
@@ -129,6 +148,11 @@ try{
         };
       });
       resumeFailure.waitError=String(error?.message||error);
+      continueDossierBoundary=await dismissVisibleDossierBoundary(page);
+      if(continueDossierBoundary.dismissed){
+        await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&run?.floor===1&&Boolean(world)&&Boolean(host)&&Boolean(p1),null,{timeout:3000});
+        resumed=true;
+      }
     }
     remoteCleanup=await page.evaluate(()=>({
       stalledUntrackCalls:Number(window.__r43StalledUntrackCalls||0),
@@ -142,7 +166,7 @@ try{
     });
   }
 
-  assert.equal(resumed,true,`LS-SOLO-008: Continue must not wait for stalled remote channel cleanup before restoring a local Solo save; diagnostic=${JSON.stringify({beforeContinue,resumeFailure,remoteCleanup})}`);
+  assert.equal(resumed,true,`LS-SOLO-008: Continue must not wait for stalled remote channel cleanup before restoring a local Solo save; diagnostic=${JSON.stringify({beforeContinue,resumeFailure,continueDossierBoundary,remoteCleanup})}`);
   const restored=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R43SoloSave,envelope=api.readEnvelope(),entry=api.state?.entryCheckpoint,watchdog=window.CCGLostSizzlerLoadWatchdog?.state;
     return{
@@ -155,7 +179,7 @@ try{
     };
   });
 
-  const diagnostic={soloLivenessAfterStart,beforeQuit,afterQuit,beforeContinue,restored,remoteCleanup};
+  const diagnostic={soloLivenessAfterStart,beforeQuit,afterQuit,beforeContinue,continueDossierBoundary,restored,remoteCleanup};
   assert.equal(afterQuit.envelopeSeed,beforeQuit.envelopeSeed,`Save & Quit must preserve the captured floor-entry seed: ${JSON.stringify(diagnostic)}`);
   assert.equal(beforeContinue.envelopeSeed,afterQuit.envelopeSeed,`the saved envelope must remain stable before Continue: ${JSON.stringify(diagnostic)}`);
   assert.ok(remoteCleanup.stalledUntrackCalls>=1,`the regression must prove that real leave() reached a remote untrack promise that remained stalled: ${JSON.stringify(diagnostic)}`);
