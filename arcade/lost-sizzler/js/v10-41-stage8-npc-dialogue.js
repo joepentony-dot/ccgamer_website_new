@@ -144,13 +144,24 @@
     return true
   }
 
+  function mutationContainsScoutFound(records,title){
+    if(String(title?.textContent||"").trim().toUpperCase()==="CCG SCOUT FOUND")return true;
+    for(const record of records||[]){
+      if(record.type==="characterData"&&String(record.target?.data||"").trim().toUpperCase()==="CCG SCOUT FOUND")return true;
+      for(const node of record.addedNodes||[]){
+        if(String(node?.textContent||node?.data||"").trim().toUpperCase()==="CCG SCOUT FOUND")return true
+      }
+    }
+    return false
+  }
+
   let scoutToastObserver=null;
   function ensureScoutToastObserver(){
     if(scoutToastObserver||typeof MutationObserver!=="function")return Boolean(scoutToastObserver);
     const title=document.getElementById("pickup-title");
     if(!title)return false;
-    scoutToastObserver=new MutationObserver(()=>{
-      if(String(title.textContent||"").trim().toUpperCase()==="CCG SCOUT FOUND")handleScoutFoundBoundary()
+    scoutToastObserver=new MutationObserver(records=>{
+      if(mutationContainsScoutFound(records,title))handleScoutFoundBoundary()
     });
     scoutToastObserver.observe(title,{childList:true,characterData:true,subtree:true});
     state.scoutEventObserver=true;
