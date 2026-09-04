@@ -39,7 +39,7 @@ try{
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof mode!=="undefined"&&mode==="playing"&&window.CCGLostSizzlerModeRuntime?.detect?.()==="dungeon-solo");
   await page.waitForFunction(()=>Boolean(host)&&Boolean(p1)&&typeof triggerRescue==="function"&&typeof movePlayer==="function",null,{timeout:15000});
 
-  const first=await page.evaluate(()=>{
+  const first=await page.evaluate(async()=>{
     const api=window.CCGLostSizzlerStage8NpcDialogue;
     const markerDepth=(source,marker)=>{
       const seen=new Set();let current=source,depth=0;
@@ -61,13 +61,15 @@ try{
     host.rescue={id:"stage8-browser-scout",x:Number(p1.x)+1,y:Number(p1.y),rescued:false,following:false,found:false};
     const before=api.state.presentations;
     triggerRescue(p1);
+    await Promise.resolve();
     const eventReAdopted=Boolean(window.triggerRescue?.__ccgStage8NpcDialogue)&&window.triggerRescue!==lateCanonicalOwner;
-    return{controller:window.CCGLostSizzlerModeRuntime.detect(),descriptorConfigurable:Boolean(descriptor?.configurable),descriptorAccessor:Boolean(descriptor?.get||descriptor?.set),assignmentGateSupported,assignmentGate:Boolean(api.state.assignmentGate),immediateReAdopted,eventReAdopted,installed:Boolean(triggerRescue.__ccgStage8NpcDialogue),rescueDialogueDepth:markerDepth(triggerRescue,"__ccgStage8NpcDialogue"),toastBridgeDepth:markerDepth(showToast,"__ccgStage8ScoutToastBridge"),following:Boolean(host.rescue.following),found:Boolean(host.rescue.found),rescued:Boolean(host.rescue.rescued),presented:api.state.presentations-before,last:{...api.state.last},toastTitle:document.getElementById("pickup-title")?.textContent||"",toastText:document.getElementById("pickup-text")?.textContent||"",voiceKey:api.lines.scout.trapped.voiceKey};
+    return{controller:window.CCGLostSizzlerModeRuntime.detect(),descriptorConfigurable:Boolean(descriptor?.configurable),descriptorAccessor:Boolean(descriptor?.get||descriptor?.set),assignmentGateSupported,assignmentGate:Boolean(api.state.assignmentGate),scoutEventObserver:Boolean(api.state.scoutEventObserver),immediateReAdopted,eventReAdopted,installed:Boolean(triggerRescue.__ccgStage8NpcDialogue),rescueDialogueDepth:markerDepth(triggerRescue,"__ccgStage8NpcDialogue"),toastBridgeDepth:markerDepth(showToast,"__ccgStage8ScoutToastBridge"),following:Boolean(host.rescue.following),found:Boolean(host.rescue.found),rescued:Boolean(host.rescue.rescued),presented:api.state.presentations-before,last:{...api.state.last},toastTitle:document.getElementById("pickup-title")?.textContent||"",toastText:document.getElementById("pickup-text")?.textContent||"",voiceKey:api.lines.scout.trapped.voiceKey};
   });
   assert.equal(first.controller,"dungeon-solo","Scout dialogue regression must run under the Solo Dungeon controller");
   assert.equal(first.assignmentGate,first.assignmentGateSupported,"Stage 8 must use an assignment gate only when the canonical triggerRescue descriptor can legally support one");
+  assert.equal(first.scoutEventObserver,true,"Stage 8 must maintain an event-driven rendered Scout notification observer without polling");
   if(first.assignmentGateSupported)assert.equal(first.immediateReAdopted,true,"a writable configurable triggerRescue owner must be composed immediately without polling");
-  assert.equal(first.eventReAdopted,true,"when a late canonical triggerRescue replacement survives assignment, the canonical Scout-found event must re-adopt Stage 8 without polling");
+  assert.equal(first.eventReAdopted,true,"when a late canonical triggerRescue replacement survives assignment, the rendered canonical Scout-found event must re-adopt Stage 8 without polling");
   assert.equal(first.installed,true,"Stage 8 must own the Scout rescue dialogue wrapper after the first canonical Scout interaction");
   assert.equal(first.rescueDialogueDepth,1,"Stage 8 must not self-nest its Scout rescue dialogue wrapper ancestry");
   assert.equal(first.toastBridgeDepth,1,"Stage 8 must not self-nest its Scout notification bridge ancestry");
