@@ -70,7 +70,7 @@ assert.match(noPause,/if\(readPlayMode\(\)==="online"\)return true/,"online Dung
 assert.match(noPause,/if\(hasSecondLocalPlayer\(\)\)return true/,"2P split screen must never pause");
 assert.match(noPause,/event\.code!=="Escape"&&event\.code!=="KeyP"/,"Escape and P must be intercepted in multiplayer");
 assert.match(noPause,/window\.pause=function pauseV141MultiplayerLock/,"direct pause calls must also be blocked in multiplayer");
-const forcePlaying=noPause.match(/function forcePlaying\(\)\{[\s\S]*?return true;\n  \}/)?.[0]||"";
+const forcePlaying=noPause.match(/function forcePlaying\(\)\{[\s\S]*?return true;\r?\n  \}/)?.[0]||"";
 assert.ok(forcePlaying,"multiplayer no-pause layer must expose forcePlaying");
 assert.doesNotMatch(forcePlaying,/input\?*\.?clear|input\.clear/,"forcePlaying must never erase held movement/fire input on frame updates");
 

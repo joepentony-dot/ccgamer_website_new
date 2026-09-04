@@ -11,7 +11,7 @@ const spritePath=path.join(root,"assets/audio/voice/lost-sizzler-voices.ogg");
 const sprite=fs.readFileSync(spritePath);
 
 assert.match(voiceCode,/src:"assets\/audio\/voice\/lost-sizzler-voices\.ogg"/,"runtime must load the completed Ogg voice sprite");
-const cueBlock=voiceCode.match(/cues:\{([\s\S]*?)\n    \}\n  \};/)?.[1]||"";
+const cueBlock=voiceCode.match(/cues:\{([\s\S]*?)\r?\n    \}\r?\n  \};/)?.[1]||"";
 const cues=[...cueBlock.matchAll(/([A-Za-z][A-Za-z0-9]*):\{start:([\d.]+),duration:([\d.]+)\}/g)].map(match=>({key:match[1],start:Number(match[2]),duration:Number(match[3])}));
 const expectedOrder=["welcome","welcomeRare","hurt","lowHealth","noAmmo","objectiveNear","floorClear","gameOver","playerDeath","respawn","rareLoot","levelUp","shop","sanctuary","secret","trap","boulder","merchantGone","adventurerSaved","cabinet","cabinetFail","cabinetWin","bounty","buriedCache","loadula","cursed","deathStalker","developerRoom","bountyStart","tremor","mutation","gildedElf","gildedCaught","gildedEscaped","gildedFive","goldenRoom","adventurer","mysteryPotion","namedEnemy","objectiveHint","taxman","treasureBat","treasureMap","merchant","weeklyGhost","weeklyReset","weeklyDeath","weeklyWelcome","mimic"];
 assert.equal(cues.length,49,"recorded voice sprite must expose all 49 cues");

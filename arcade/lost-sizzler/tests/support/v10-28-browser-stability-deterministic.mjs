@@ -6,7 +6,7 @@ import {fileURLToPath,pathToFileURL} from "node:url";
 const here=path.dirname(fileURLToPath(import.meta.url));
 const sourcePath=path.resolve(here,"../v10-28-browser-stability.mjs");
 const tempPath=path.resolve(here,"../.v10-28-browser-stability-deterministic.tmp.mjs");
-let source=fs.readFileSync(sourcePath,"utf8");
+let source=fs.readFileSync(sourcePath,"utf8").replace(/\r\n/g,"\n");
 
 const immediateSoloTarget=`    const state=await newGamePage();
     await withTimeout(state.page.goto(canonical,{waitUntil:"domcontentloaded",timeout:15000}),STAGE_TIMEOUT_MS,"immediate Solo navigation");`;
