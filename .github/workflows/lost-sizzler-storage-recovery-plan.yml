@@ -70,7 +70,7 @@ jobs:
 
           const path = 'scripts/recover-lost-sizzler-enabled-storage.mjs';
           const source = fs.readFileSync(path, 'utf8').replace(/\r\n/g, '\n');
-          const downloadStart = source.indexOf('async function downloadTo(url, destination) {');
+          const downloadStart = source.indexOf('async function downloadTo(url, destination, baseUrl) {');
           const promotionFunction = source.indexOf('function promoteVerifiedDownload(partial, destination) {');
           const hashIndex = source.indexOf('const sha256 = sha256File(partial);');
           const sizeGuard = source.indexOf('if (!sizeMatches) fail(');
@@ -79,6 +79,9 @@ jobs:
 
           assert.ok(downloadStart >= 0 && promotionFunction > downloadStart, 'recovery downloader must retain a distinct download and promotion boundary');
           const downloadBody = source.slice(downloadStart, promotionFunction);
+          assert.ok(downloadBody.includes("const { response, finalUrl } = await fetchRecoveryResponse(url, baseUrl);"), 'download must pass through constrained recovery redirect handling');
+          assert.ok(source.includes("const response = await fetch(current, { redirect: 'manual', cache: 'no-store' });"), 'recovery redirects must remain manual so every hop can be validated');
+          assert.ok(source.includes("current = assertRecoveryHttpTarget(baseUrl, new URL(location, current).href, 'Storage redirect');"), 'every Storage redirect must remain inside the approved Supabase bucket root');
           assert.ok(downloadBody.includes("fs.writeFileSync(partial, Buffer.concat(chunks, bytes), { flag: 'wx' });"), 'download must land in an exclusive .partial file');
           assert.ok(!downloadBody.includes('fs.renameSync('), 'download phase must not promote bytes before verification');
           assert.ok(hashIndex > promotionFunction, 'SHA-256 must be calculated from the partial file after download');
@@ -87,7 +90,7 @@ jobs:
           assert.ok(promoteIndex > probeGuard, 'final filename promotion must occur only after size and optional ffprobe guards');
           assert.ok(source.includes('if (fs.existsSync(destination)) fail(`Refusing to overwrite existing recovery file: ${destination}`);'), 'promotion must continue refusing an existing final recovery file');
 
-          console.log('Lost Sizzler recovered objects are promoted only after verification.');
+          console.log('Lost Sizzler recovered objects stay inside the approved Storage bucket and are promoted only after verification.');
           NODE
 
           node scripts/recover-lost-sizzler-enabled-storage.mjs \
