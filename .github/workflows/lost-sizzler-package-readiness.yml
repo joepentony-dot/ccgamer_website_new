@@ -78,6 +78,9 @@ jobs:
           trap - EXIT
           node scripts/build-lost-sizzler-package-manifest.mjs --check
 
+      - name: Verify package materializer security regressions
+        run: node scripts/materialize-lost-sizzler-package-tree.mjs --self-test
+
       - name: Verify staged package verifier regressions
         run: node scripts/verify-lost-sizzler-package-tree.mjs --self-test
 
