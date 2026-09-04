@@ -58,11 +58,10 @@ try{
 
     const priorSpecial=document.body.dataset.specialMode||"";
     document.body.dataset.specialMode="horde-survivor";
-    showToast("SANCTUARY — ISOLATION TEST","Canonical sanctuary text.","green",1000);
-    const isolated=String(document.getElementById("pickup-text")?.textContent||"");
+    const isolatedArgs=api.augmentSanctuaryToast(["SANCTUARY — ISOLATION TEST","Canonical sanctuary text.","green",1000]);
     if(priorSpecial)document.body.dataset.specialMode=priorSpecial;else delete document.body.dataset.specialMode;
 
-    return{roomId:room.id,before,first,second,after,isolated,toastDepth:depth(window.showToast,"__ccgStage8ScoutToastBridge"),sanctuaryDepth:depth(window.showToast,"__ccgStage8SanctuaryDialogue"),controller:window.CCGLostSizzlerModeRuntime?.detect?.()||""};
+    return{roomId:room.id,before,first,second,after,isolated:String(isolatedArgs[1]||""),toastDepth:depth(window.showToast,"__ccgStage8ScoutToastBridge"),sanctuaryDepth:depth(window.showToast,"__ccgStage8SanctuaryDialogue"),controller:window.CCGLostSizzlerModeRuntime?.detect?.()||""};
   });
 
   assert.notEqual(result.missingSanctuary,true,"generated Solo floor must expose the existing sanctuary-room contract");
