@@ -12,7 +12,7 @@
   const environmentalSeen=new WeakSet();
   const environmentalFloors=new WeakMap();
   const explorationFloors=new WeakMap();
-  const state={installed:false,merchantInstalled:false,sanctuaryInstalled:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,environmentalPresentations:0,environmentalBudgetSkips:0,explorationPresentations:0,explorationBudgetSkips:0,scoutEventObserver:false,last:null};
+  const state={installed:false,merchantInstalled:false,sanctuaryInstalled:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,merchantTaskBriefings:0,environmentalPresentations:0,environmentalBudgetSkips:0,explorationPresentations:0,explorationBudgetSkips:0,scoutEventObserver:false,last:null,lastMerchantTask:null};
   const lines=Object.freeze({
     scout:Object.freeze({
       trapped:Object.freeze({key:"scout.trapped",title:"CCG SCOUT — FOUND",speaker:"Scout",text:"There you are. Get me to one of the permanently lit sanctuary rooms and I’ll stay close.",tone:"green",duration:7600,voiceKey:"npc.scout.found"}),
@@ -65,7 +65,23 @@
   }
   function scoutState(rescue){if(rescue?.rescued)return"rescued";if(rescue?.following)return"following";return"trapped"}
   function lineForScout(rescue,stateKey=""){const key=stateKey||scoutState(rescue);return lines.scout[key]||lines.scout.trapped}
-  function lineForMerchant(shop){return shop?.shopType==="hidden"?lines.merchant.hidden:lines.merchant.entrance}
+  function fieldTaskSnapshot(){
+    let games=0,secrets=0,champions=0;
+    try{games=Math.max(0,Number(stats?.games||0));secrets=Math.max(0,Number(stats?.secrets||0));champions=Math.max(0,Number(run?.stats?.champions||0))}catch(_){}
+    const tasks=[
+      {id:"games",label:"Rescue 1 C64 game",progress:Math.min(1,games),target:1},
+      {id:"secrets",label:"Find 2 secret rooms",progress:Math.min(2,secrets),target:2},
+      {id:"champions",label:"Defeat 2 champions",progress:Math.min(2,champions),target:2}
+    ];
+    return tasks.find(task=>task.progress<task.target)||{id:"complete",label:"All field commissions complete",progress:3,target:3,complete:true}
+  }
+  function lineForMerchant(shop,task=fieldTaskSnapshot()){
+    const base=shop?.shopType==="hidden"?lines.merchant.hidden:lines.merchant.entrance;
+    const briefing=task.complete
+      ?"Field board: all three commissions are complete; their normal +350 score reward path remains unchanged."
+      :`Field commission: ${task.label} (${task.progress}/${task.target}). The existing +350 score reward is handled automatically.`;
+    return{...base,text:`${base.text} ${briefing}`}
+  }
   function present(entity,line,{player=null,force=false}={}){
     if(!soloDungeon()||!entity||!line)return false;
     if(player&&!withinReach(player,entity))return false;
@@ -84,7 +100,9 @@
   }
   function presentMerchant(shop,{force=false}={}){
     if(!shop?.active)return false;
-    return present(shop,lineForMerchant(shop),{force})
+    const task=fieldTaskSnapshot(),shown=present(shop,lineForMerchant(shop,task),{force});
+    if(shown){state.merchantTaskBriefings++;state.lastMerchantTask={...task,at:clockNow()}}
+    return shown
   }
   function sanctuaryRoom(){
     if(!soloDungeon())return null;
@@ -331,5 +349,5 @@
   installWhenReady();
   queueMicrotask(installWhenReady);
   if(document.readyState!=="complete")addEventListener("load",installWhenReady,{once:true});
-  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,lineForMerchant,present,presentScout,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,environmentalEligible,presentEnvironmentalStory,onRoomEntered,explorationFeatureAt,presentExplorationFeature,onMovementBoundary,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
+  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,lineForMerchant,fieldTaskSnapshot,present,presentScout,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,environmentalEligible,presentEnvironmentalStory,onRoomEntered,explorationFeatureAt,presentExplorationFeature,onMovementBoundary,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
 })();
