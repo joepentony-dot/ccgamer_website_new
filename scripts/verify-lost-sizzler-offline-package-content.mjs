@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import crypto from 'node:crypto';
 import { promises as fs } from 'node:fs';
 import process from 'node:process';
 import vm from 'node:vm';
@@ -44,6 +45,10 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+function sha256Buffer(value) {
+  return crypto.createHash('sha256').update(value).digest('hex');
+}
+
 function repositoryToRuntimePath(value) {
   const prefix = 'arcade/lost-sizzler/';
   assert(value.startsWith(prefix), `Offline package path is outside Lost Sizzler runtime root: ${value}`);
@@ -69,15 +74,26 @@ function validateManifest(manifest) {
   }
 
   const byPath = new Map(manifest.files.map((entry) => [entry.path, entry]));
+  const requiredEntries = [];
   for (const requiredPath of REQUIRED_OFFLINE_AUDIO) {
     const entry = byPath.get(requiredPath);
     assert(entry, `Desktop package is missing required offline music: ${requiredPath}`);
     assert(entry.classification === 'audio', `Required offline music is not classified as audio: ${requiredPath}`);
     assert(Number.isSafeInteger(entry.bytes) && entry.bytes > 0, `Required offline music is empty: ${requiredPath}`);
     assert(/^[0-9a-f]{64}$/.test(entry.sha256 ?? ''), `Required offline music is missing SHA-256 provenance: ${requiredPath}`);
+    assert(entry.sourceRepositoryPath === requiredPath, `Required offline music must be sourced from its packaged local asset: ${requiredPath}`);
+    requiredEntries.push({ requiredPath, entry });
   }
 
-  return { requiredOfflineAudio: REQUIRED_OFFLINE_AUDIO.length };
+  return { requiredOfflineAudio: REQUIRED_OFFLINE_AUDIO.length, requiredEntries };
+}
+
+function validateAudioProvenance(requiredPath, entry, data) {
+  const bytes = data.length;
+  const sha256 = sha256Buffer(data);
+  assert(entry.bytes === bytes, `Required offline music byte size does not match bundled asset: ${requiredPath}`);
+  assert(entry.sha256 === sha256, `Required offline music SHA-256 does not match bundled asset: ${requiredPath}`);
+  return { bytes, sha256 };
 }
 
 function validateRuntimeAudioMap(source) {
@@ -98,14 +114,19 @@ function validateRuntimeAudioMap(source) {
   return { runtimeRoles: Object.keys(OFFLINE_MUSIC_ROLES).length };
 }
 
+function fixtureAudio() {
+  return Buffer.from('x', 'utf8');
+}
+
 function fixtureManifest() {
+  const audio = fixtureAudio();
   return {
     schema: MANIFEST_SCHEMA,
     requiredOfflineAudio: [...REQUIRED_OFFLINE_AUDIO],
     files: REQUIRED_OFFLINE_AUDIO.map((path) => ({
       path,
-      bytes: 1,
-      sha256: 'a'.repeat(64),
+      bytes: audio.length,
+      sha256: sha256Buffer(audio),
       classification: 'audio',
       sourceRepositoryPath: path,
     })),
@@ -136,6 +157,22 @@ function expectManifestFailure(mutator, expectedText) {
   throw new Error(`Self-test expected failure containing ${JSON.stringify(expectedText)} but validation passed.`);
 }
 
+function expectProvenanceFailure(entryMutator, expectedText) {
+  const manifest = fixtureManifest();
+  const { requiredEntries } = validateManifest(manifest);
+  const target = { ...requiredEntries[0].entry };
+  entryMutator(target);
+  try {
+    validateAudioProvenance(requiredEntries[0].requiredPath, target, fixtureAudio());
+  } catch (error) {
+    if (!String(error?.message || error).includes(expectedText)) {
+      throw new Error(`Self-test expected provenance failure containing ${JSON.stringify(expectedText)}, got: ${error?.message || error}`);
+    }
+    return;
+  }
+  throw new Error(`Self-test expected provenance failure containing ${JSON.stringify(expectedText)} but validation passed.`);
+}
+
 function expectRuntimeFailure(source, expectedText) {
   try {
     validateRuntimeAudioMap(source);
@@ -149,20 +186,24 @@ function expectRuntimeFailure(source, expectedText) {
 }
 
 function runSelfTest() {
-  validateManifest(fixtureManifest());
+  const manifestResult = validateManifest(fixtureManifest());
+  for (const { requiredPath, entry } of manifestResult.requiredEntries) validateAudioProvenance(requiredPath, entry, fixtureAudio());
   expectManifestFailure((manifest) => manifest.requiredOfflineAudio.pop(), 'must exactly match');
   expectManifestFailure((manifest) => { manifest.files.push({ ...manifest.files[0] }); }, 'duplicate file path');
   expectManifestFailure((manifest) => { manifest.files = manifest.files.filter((entry) => entry.path !== REQUIRED_OFFLINE_AUDIO[0]); }, 'missing required offline music');
   expectManifestFailure((manifest) => { manifest.files[0].classification = 'runtime'; }, 'not classified as audio');
   expectManifestFailure((manifest) => { manifest.files[0].bytes = 0; }, 'is empty');
   expectManifestFailure((manifest) => { manifest.files[0].sha256 = 'pending'; }, 'missing SHA-256 provenance');
+  expectManifestFailure((manifest) => { manifest.files[0].sourceRepositoryPath = 'arcade/lost-sizzler/assets/audio/music/other.wav'; }, 'sourced from its packaged local asset');
+  expectProvenanceFailure((entry) => { entry.bytes += 1; }, 'byte size does not match bundled asset');
+  expectProvenanceFailure((entry) => { entry.sha256 = 'b'.repeat(64); }, 'SHA-256 does not match bundled asset');
 
   const validRuntime = runtimeFixtureSource();
   validateRuntimeAudioMap(validRuntime);
   expectRuntimeFailure(validRuntime.replace('"normal":"assets/audio/music/exploration.wav"', '"normal":"assets/audio/music/missing.wav"'), 'music role normal');
   expectRuntimeFailure(validRuntime.replace('["assets/audio/music/danger.wav"]', '[]'), 'playlist danger');
 
-  console.log(`Lost Sizzler offline package content self-test passed: ${REQUIRED_OFFLINE_AUDIO.length} minimum local music roles and runtime bindings are independently enforced.`);
+  console.log(`Lost Sizzler offline package content self-test passed: ${REQUIRED_OFFLINE_AUDIO.length} minimum local music roles, source bindings, byte/SHA-256 provenance and runtime bindings are independently enforced.`);
 }
 
 async function main() {
@@ -178,8 +219,12 @@ async function main() {
     fs.readFile(AUDIO_MAP_PATH, 'utf8'),
   ]);
   const manifestResult = validateManifest(JSON.parse(manifestText));
+  for (const { requiredPath, entry } of manifestResult.requiredEntries) {
+    const data = await fs.readFile(requiredPath);
+    validateAudioProvenance(requiredPath, entry, data);
+  }
   const runtimeResult = validateRuntimeAudioMap(audioMapSource);
-  console.log(`Lost Sizzler offline package content verified: ${manifestResult.requiredOfflineAudio} required local music files bound to ${runtimeResult.runtimeRoles} offline runtime roles.`);
+  console.log(`Lost Sizzler offline package content verified: ${manifestResult.requiredOfflineAudio} required local music files are byte/SHA-256 bound to bundled assets and ${runtimeResult.runtimeRoles} offline runtime roles.`);
 }
 
 main().catch((error) => {
