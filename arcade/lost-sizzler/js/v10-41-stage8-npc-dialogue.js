@@ -7,12 +7,16 @@
   const REPEAT_MS=7000;
   const SPECIAL_MODES=new Set(["horde-survivor","sizzler-saboteurs"]);
   const memory=new WeakMap();
-  const state={installed:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,scoutEventObserver:false,last:null};
+  const state={installed:false,merchantInstalled:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,scoutEventObserver:false,last:null};
   const lines=Object.freeze({
     scout:Object.freeze({
       trapped:Object.freeze({key:"scout.trapped",title:"CCG SCOUT — FOUND",speaker:"Scout",text:"There you are. Get me to one of the permanently lit sanctuary rooms and I’ll stay close.",tone:"green",duration:7600,voiceKey:"npc.scout.found"}),
       following:Object.freeze({key:"scout.following",title:"CCG SCOUT — FOLLOWING",speaker:"Scout",text:"Still here. Keep heading for the lights; I’m right behind you.",tone:"cyan",duration:6000,voiceKey:"npc.scout.following"}),
       rescued:Object.freeze({key:"scout.rescued",title:"CCG SCOUT — SAFE",speaker:"Scout",text:"Made it. I’m staying with the lights. If you find anyone else down here, send them this way.",tone:"green",duration:7000,voiceKey:"npc.scout.safe"})
+    }),
+    merchant:Object.freeze({
+      entrance:Object.freeze({key:"merchant.entrance",title:"DUNGEON QUARTERMASTER",speaker:"Quartermaster",text:"Stock’s on the counter. Score buys supplies; rare artefacts buy the Flask. Take what you need and keep moving.",tone:"gold",duration:7200,voiceKey:"npc.merchant.entrance"}),
+      hidden:Object.freeze({key:"merchant.hidden",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"You found me. Bring enough rare artefacts and I’ll exchange them for a Banishment Flask. Score works too.",tone:"purple",duration:7600,voiceKey:"npc.merchant.hidden"})
     })
   });
 
@@ -31,6 +35,7 @@
   }
   function scoutState(rescue){if(rescue?.rescued)return"rescued";if(rescue?.following)return"following";return"trapped"}
   function lineForScout(rescue,stateKey=""){const key=stateKey||scoutState(rescue);return lines.scout[key]||lines.scout.trapped}
+  function lineForMerchant(shop){return shop?.shopType==="hidden"?lines.merchant.hidden:lines.merchant.entrance}
   function present(entity,line,{player=null,force=false}={}){
     if(!soloDungeon()||!entity||!line)return false;
     if(player&&!withinReach(player,entity))return false;
@@ -46,6 +51,10 @@
     let rescue=null;try{rescue=host?.rescue||null}catch(_){return false}
     if(!rescue)return false;
     return present(rescue,lineForScout(rescue,stateKey),{player,force})
+  }
+  function presentMerchant(shop,{force=false}={}){
+    if(!shop?.active)return false;
+    return present(shop,lineForMerchant(shop),{force})
   }
   function ancestryHasMarker(source,marker){
     const seen=new Set();
@@ -79,6 +88,17 @@
     wrapped.__ccgOriginal=source;
     return wrapped
   }
+  function wrapShopOwner(source){
+    if(typeof source!=="function")return source;
+    if(ancestryHasMarker(source,"__ccgStage8MerchantDialogue"))return source;
+    const wrapped=function openShopStage8MerchantDialogue(shop,player){
+      if(soloDungeon()&&shop?.active&&(player||typeof p1!=="undefined"&&p1))presentMerchant(shop);
+      return source.apply(this,arguments)
+    };
+    wrapped.__ccgStage8MerchantDialogue=true;
+    wrapped.__ccgOriginal=source;
+    return wrapped
+  }
 
   let rescueAssignmentGate=null;
   function installRescueAssignmentGate(){
@@ -105,6 +125,14 @@
     state.assignmentGate=true;
     state.installed=ancestryHasMarker(current,"__ccgStage8NpcDialogue");
     return true
+  }
+  function installMerchantDialogue(){
+    const source=window.openShop;
+    if(typeof source!=="function")return false;
+    if(ancestryHasMarker(source,"__ccgStage8MerchantDialogue")){state.merchantInstalled=true;return true}
+    window.openShop=wrapShopOwner(source);
+    state.merchantInstalled=ancestryHasMarker(window.openShop,"__ccgStage8MerchantDialogue");
+    return state.merchantInstalled
   }
   function install(){
     const source=window.triggerRescue;
@@ -171,12 +199,13 @@
   let installObserver=null;
   function ensureInstallObserver(){
     if(installObserver||typeof MutationObserver!=="function"||!document.body)return false;
-    installObserver=new MutationObserver(()=>{install();installScoutToastBridge();ensureScoutToastObserver()});
+    installObserver=new MutationObserver(()=>{install();installMerchantDialogue();installScoutToastBridge();ensureScoutToastObserver()});
     installObserver.observe(document.body,{attributes:true,attributeFilter:["data-release-ready","data-run-active","data-mode-controller"]});
     return true
   }
   function installWhenReady(){
     const installed=install();
+    installMerchantDialogue();
     installScoutToastBridge();
     ensureScoutToastObserver();
     ensureInstallObserver();
@@ -186,5 +215,5 @@
   installWhenReady();
   queueMicrotask(installWhenReady);
   if(document.readyState!=="complete")addEventListener("load",installWhenReady,{once:true});
-  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,present,presentScout,install,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
+  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,lineForMerchant,present,presentScout,presentMerchant,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
 })();
