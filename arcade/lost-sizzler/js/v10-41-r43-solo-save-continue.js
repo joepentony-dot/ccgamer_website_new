@@ -165,6 +165,16 @@
     return Boolean(captureEntry("autosave"))
   }
 
+  function stage8RescueSnapshot(){
+    try{
+      const rescue=host?.rescue;if(!rescue)return null;
+      return{
+        id:safe(rescue.id),x:Number(rescue.x)||0,y:Number(rescue.y)||0,
+        rescued:Boolean(rescue.rescued),following:Boolean(rescue.following),found:Boolean(rescue.found)
+      }
+    }catch(_){return null}
+  }
+
   function formatWhen(savedAt){
     const d=new Date(Number(savedAt)||Date.now());
     if(!Number.isFinite(d.getTime()))return "saved earlier";
@@ -200,7 +210,10 @@
   async function saveAndQuit(){
     if(!standardSolo())return false;
     if(!ensureEntryCaptured())return false;
-    const ok=writeEnvelope(state.entryCheckpoint,"save_quit");
+    const checkpoint=clone(state.entryCheckpoint),rescue=stage8RescueSnapshot();
+    if(rescue)checkpoint.stage8Rescue=rescue;else delete checkpoint.stage8Rescue;
+    const ok=writeEnvelope(checkpoint,"save_quit");
+    if(ok)state.entryCheckpoint=clone(checkpoint);
     if(!ok){try{showToast?.("SAVE FAILED","The run could not be written to this browser. Your current game is still active.","red",7000)}catch(_){}return false}
     try{showToast?.("RUN SAVED",`Floor ${run.floor} entrance saved. Returning to the main menu.`,"green",3200)}catch(_){}
     setTimeout(()=>{try{quitToMenu?.()}catch(error){state.lastError=String(error?.message||error)}},120);return true
@@ -222,6 +235,7 @@
       net.setSolo(saved.player?.name||playerName());
       run=clone(saved.run);score=Math.max(0,Number(saved.score)||0);p1=clone(saved.player);p2=null;playMode="solo";mode="playing";
       startWorld(PGR.floorSeed(run),false,true,true);
+      if(saved.stage8Rescue&&host)host.rescue=clone(saved.stage8Rescue);
       floorEntryCheckpoint=clone(saved);state.entryCheckpoint=clone(saved);state.entryFloorKey=floorKey();state.lastAutoSaveKey=state.entryFloorKey;
       UI.menu.classList.add("hidden");setRunPresentation(true);S.startMusic();
       state.resumes++;state.lastError="";
