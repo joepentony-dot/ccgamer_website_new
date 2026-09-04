@@ -7,7 +7,7 @@
   const REPEAT_MS=7000;
   const SPECIAL_MODES=new Set(["horde-survivor","sizzler-saboteurs"]);
   const memory=new WeakMap();
-  const state={installed:false,presentations:0,suppressed:0,last:null};
+  const state={installed:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,last:null};
   const lines=Object.freeze({
     scout:Object.freeze({
       trapped:Object.freeze({key:"scout.trapped",title:"CCG SCOUT — FOUND",speaker:"Scout",text:"There you are. Get me to one of the permanently lit sanctuary rooms and I’ll stay close.",tone:"green",duration:7600,voiceKey:"npc.scout.found"}),
@@ -57,10 +57,9 @@
     }
     return false
   }
-  function install(){
-    const source=window.triggerRescue;
-    if(typeof source!=="function")return false;
-    if(ancestryHasMarker(source,"__ccgStage8NpcDialogue")){state.installed=true;return true}
+  function wrapRescueOwner(source){
+    if(typeof source!=="function")return source;
+    if(ancestryHasMarker(source,"__ccgStage8NpcDialogue"))return source;
     const wrapped=function triggerRescueStage8Dialogue(player){
       let before=null;
       if(soloDungeon()){
@@ -78,9 +77,43 @@
     };
     wrapped.__ccgStage8NpcDialogue=true;
     wrapped.__ccgOriginal=source;
-    window.triggerRescue=wrapped;
-    state.installed=true;
+    return wrapped
+  }
+
+  let rescueAssignmentGate=null;
+  function installRescueAssignmentGate(){
+    if(rescueAssignmentGate)return true;
+    const descriptor=Object.getOwnPropertyDescriptor(window,"triggerRescue");
+    if(descriptor&&!descriptor.configurable)return false;
+    if(descriptor&&(descriptor.get||descriptor.set))return false;
+    let current=wrapRescueOwner(window.triggerRescue);
+    try{
+      Object.defineProperty(window,"triggerRescue",{
+        configurable:true,
+        enumerable:descriptor?.enumerable??true,
+        get(){return current},
+        set(next){
+          if(typeof next!=="function"){current=next;state.installed=false;return}
+          const alreadyOwned=ancestryHasMarker(next,"__ccgStage8NpcDialogue");
+          current=alreadyOwned?next:wrapRescueOwner(next);
+          if(!alreadyOwned)state.reAdoptions++;
+          state.installed=ancestryHasMarker(current,"__ccgStage8NpcDialogue")
+        }
+      });
+    }catch(_){return false}
+    rescueAssignmentGate={descriptor};
+    state.assignmentGate=true;
+    state.installed=ancestryHasMarker(current,"__ccgStage8NpcDialogue");
     return true
+  }
+  function install(){
+    const source=window.triggerRescue;
+    if(typeof source!=="function")return false;
+    if(!rescueAssignmentGate&&installRescueAssignmentGate())return Boolean(window.triggerRescue?.__ccgStage8NpcDialogue);
+    if(ancestryHasMarker(source,"__ccgStage8NpcDialogue")){state.installed=true;return true}
+    window.triggerRescue=wrapRescueOwner(source);
+    state.installed=ancestryHasMarker(window.triggerRescue,"__ccgStage8NpcDialogue");
+    return state.installed
   }
 
   function installScoutToastBridge(){
@@ -123,5 +156,5 @@
   installWhenReady();
   queueMicrotask(installWhenReady);
   if(document.readyState!=="complete")addEventListener("load",installWhenReady,{once:true});
-  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,present,presentScout,install,installWhenReady,installScoutToastBridge,ancestryHasMarker};
+  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,present,presentScout,install,installWhenReady,installScoutToastBridge,installRescueAssignmentGate,ancestryHasMarker};
 })();
