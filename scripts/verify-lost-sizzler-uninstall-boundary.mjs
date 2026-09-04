@@ -34,6 +34,12 @@ function assertNoSymlinkComponents(root, label) {
   }
 }
 
+function assertRealDirectory(root, label) {
+  if (!fs.existsSync(root)) fail(`${label} does not exist: ${root}`);
+  const stat = fs.lstatSync(root);
+  if (stat.isSymbolicLink() || !stat.isDirectory()) fail(`${label} must be a real directory: ${root}`);
+}
+
 function assertUninstallBoundary(packageRootValue, userDataRootValue, targetValue) {
   const packageRoot = canonicalRoot(packageRootValue, 'package root');
   const userDataRoot = canonicalRoot(userDataRootValue, 'user-data root');
@@ -42,6 +48,8 @@ function assertUninstallBoundary(packageRootValue, userDataRootValue, targetValu
   assertNoSymlinkComponents(packageRoot, 'package root');
   assertNoSymlinkComponents(userDataRoot, 'user-data root');
   assertNoSymlinkComponents(target, 'uninstall target');
+  assertRealDirectory(packageRoot, 'package root');
+  assertRealDirectory(userDataRoot, 'user-data root');
 
   if (isInside(packageRoot, userDataRoot) || isInside(userDataRoot, packageRoot)) {
     fail(`Package root and user-data root must be disjoint: package=${packageRoot} userData=${userDataRoot}`);
@@ -87,6 +95,44 @@ function runSelfTest() {
       if (!rejected) fail(`Self-test expected unsafe uninstall target to be rejected: ${target}`);
     }
 
+    const missingPackageRoot = path.join(packagesRoot, 'missing-build');
+    let missingPackageRejected = false;
+    try {
+      assertUninstallBoundary(missingPackageRoot, userDataRoot, missingPackageRoot);
+    } catch {
+      missingPackageRejected = true;
+    }
+    if (!missingPackageRejected) fail('Self-test expected a nonexistent package root to be rejected.');
+
+    const missingUserDataRoot = path.join(temp, 'missing-user-data');
+    let missingUserDataRejected = false;
+    try {
+      assertUninstallBoundary(packageRoot, missingUserDataRoot, packageRoot);
+    } catch {
+      missingUserDataRejected = true;
+    }
+    if (!missingUserDataRejected) fail('Self-test expected a nonexistent Tier-A user-data root to be rejected.');
+
+    const packageFile = path.join(temp, 'package-file');
+    fs.writeFileSync(packageFile, 'not-a-package-directory\n');
+    let packageFileRejected = false;
+    try {
+      assertUninstallBoundary(packageFile, userDataRoot, packageFile);
+    } catch {
+      packageFileRejected = true;
+    }
+    if (!packageFileRejected) fail('Self-test expected a non-directory package root to be rejected.');
+
+    const userDataFile = path.join(temp, 'user-data-file');
+    fs.writeFileSync(userDataFile, 'not-a-user-data-directory\n');
+    let userDataFileRejected = false;
+    try {
+      assertUninstallBoundary(packageRoot, userDataFile, packageRoot);
+    } catch {
+      userDataFileRejected = true;
+    }
+    if (!userDataFileRejected) fail('Self-test expected a non-directory Tier-A user-data root to be rejected.');
+
     if (process.platform !== 'win32') {
       const packageLink = path.join(temp, 'package-link');
       fs.symlinkSync(packageRoot, packageLink, 'dir');
@@ -126,7 +172,7 @@ function runSelfTest() {
     const saveAfter = fs.readFileSync(path.join(userDataRoot, 'solo-save.json'), 'utf8');
     if (saveAfter !== saveBefore) fail('Self-test detected user-data mutation during package removal.');
 
-    console.log('Lost Sizzler uninstall boundary self-test passed: only the exact non-symlinked package root is removable and external Tier-A data is preserved.');
+    console.log('Lost Sizzler uninstall boundary self-test passed: only the exact existing non-symlinked package directory is removable and the existing external Tier-A directory is preserved.');
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
