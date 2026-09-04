@@ -105,6 +105,8 @@ function snapshotUserData(userDataRoot) {
 
 function validateSnapshot(snapshot) {
   if (!snapshot || snapshot.schema !== 'ccg-lost-sizzler-update-persistence-snapshot-v1') fail('Unexpected persistence snapshot schema.');
+  if (!Number.isSafeInteger(snapshot.fileCount) || snapshot.fileCount < 0) fail('Persistence snapshot fileCount must be a non-negative safe integer.');
+  if (!Number.isSafeInteger(snapshot.totalBytes) || snapshot.totalBytes < 0) fail('Persistence snapshot totalBytes must be a non-negative safe integer.');
   if (!Array.isArray(snapshot.files) || snapshot.fileCount !== snapshot.files.length) fail('Persistence snapshot fileCount mismatch.');
   const seen = new Set();
   let previous = '';
@@ -118,6 +120,7 @@ function validateSnapshot(snapshot) {
     if (!Number.isSafeInteger(entry.bytes) || entry.bytes < 0) fail(`Invalid persistence byte count: ${entry.path}`);
     if (!/^[0-9a-f]{64}$/.test(entry.sha256 ?? '')) fail(`Invalid persistence SHA-256: ${entry.path}`);
     total += entry.bytes;
+    if (!Number.isSafeInteger(total)) fail('Persistence snapshot aggregate byte count exceeds the safe integer range.');
   }
   if (snapshot.totalBytes !== total) fail('Persistence snapshot totalBytes mismatch.');
 }
@@ -182,6 +185,22 @@ function runSelfTest() {
     writeSnapshotEvidence(evidence, snapshot, roots.packageRoot, roots.userDataRoot);
     const storedEvidence = readSnapshotEvidence(evidence, roots.packageRoot, roots.userDataRoot);
     validateSnapshot(storedEvidence);
+
+    for (const [field, value, expectedMessage] of [
+      ['fileCount', Number.MAX_SAFE_INTEGER + 1, 'fileCount must be a non-negative safe integer'],
+      ['totalBytes', Number.MAX_SAFE_INTEGER + 1, 'totalBytes must be a non-negative safe integer'],
+    ]) {
+      const malformedSnapshot = { ...storedEvidence, [field]: value };
+      let validationError = null;
+      try {
+        validateSnapshot(malformedSnapshot);
+      } catch (error) {
+        validationError = error;
+      }
+      if (!validationError || !String(validationError.message).includes(expectedMessage)) {
+        fail(`Self-test expected unsafe persistence ${field} to be rejected by its safe-integer contract.`);
+      }
+    }
 
     let overwriteRejected = false;
     try {
@@ -293,7 +312,7 @@ function runSelfTest() {
       mutationRejected = true;
     }
     if (!mutationRejected) fail('Self-test expected changed user data to fail verification.');
-    console.log('Lost Sizzler update persistence boundary self-test passed: distinct Build A -> Build B replacement preserved a non-symlinked external profile and protected snapshot evidence for both writes and verification reads.');
+    console.log('Lost Sizzler update persistence boundary self-test passed: distinct Build A -> Build B replacement preserved a non-symlinked external profile and protected snapshot evidence for writes, verification reads and safe aggregate counters.');
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
