@@ -63,6 +63,13 @@ async function ensureOrdinaryFile(file, label) {
   return stat;
 }
 
+async function ensureOrdinaryDirectory(directory, label) {
+  const stat = await fs.lstat(directory);
+  if (stat.isSymbolicLink()) throw new Error(`${label} must not be a symbolic link: ${directory}`);
+  if (!stat.isDirectory()) throw new Error(`${label} must be a real directory: ${directory}`);
+  return stat;
+}
+
 async function materialize({ manifestPath, outputRoot, clean }) {
   const manifestFile = path.resolve(manifestPath);
   const manifest = JSON.parse(await fs.readFile(manifestFile, 'utf8'));
@@ -75,6 +82,7 @@ async function materialize({ manifestPath, outputRoot, clean }) {
 
   if (clean) await fs.rm(root, { recursive: true, force: true });
   await fs.mkdir(root, { recursive: true });
+  await ensureOrdinaryDirectory(root, 'Package output root');
 
   const existing = await fs.readdir(root);
   if (existing.length) throw new Error('Package output directory must be empty before materialization. Use --clean for an explicitly disposable staging directory.');
@@ -185,6 +193,16 @@ async function runSelfTest() {
     await materialize({ manifestPath, outputRoot, clean: true });
     await fs.rm(outputRoot, { recursive: true, force: true });
 
+    const symlinkTarget = path.join(temp, 'symlink-target');
+    await fs.mkdir(symlinkTarget, { recursive: true });
+    await fs.symlink(symlinkTarget, outputRoot, 'dir');
+    await expectFailure(
+      () => materialize({ manifestPath, outputRoot, clean: false }),
+      'Package output root must not be a symbolic link'
+    );
+    await assertDirectoryEmpty(symlinkTarget);
+    await fs.rm(outputRoot, { force: true });
+
     const forbiddenDestinations = [
       'arcade/lost-sizzler/js/ccg-supabase-config.js',
       'arcade/lost-sizzler/.env.production',
@@ -219,7 +237,7 @@ async function runSelfTest() {
     );
     await assertDirectoryEmpty(outputRoot);
 
-    console.log('Lost Sizzler package materializer self-test passed: forbidden bootstrap and credential paths are rejected before any package file is copied.');
+    console.log('Lost Sizzler package materializer self-test passed: symbolic-link output roots and forbidden bootstrap/credential paths are rejected before package copying.');
   } finally {
     await fs.rm(temp, { recursive: true, force: true });
   }
