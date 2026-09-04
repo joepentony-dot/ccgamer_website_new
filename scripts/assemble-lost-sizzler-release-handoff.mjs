@@ -80,6 +80,8 @@ function validateRoots(packageValue, outputValue, userDataValue) {
 function assemble({ packageRoot, outputRoot, userDataRoot }, manifestValue, provenanceValue, hooks = {}) {
   const manifest = requireRegularFile(manifestValue, 'package manifest');
   const provenance = requireRegularFile(provenanceValue, 'package provenance');
+  assertDisjoint(userDataRoot, 'user-data root', manifest, 'package manifest');
+  assertDisjoint(userDataRoot, 'user-data root', provenance, 'package provenance');
   const verifyTree = fileURLToPath(new URL('./verify-lost-sizzler-package-tree.mjs', import.meta.url));
   const verifyProvenance = fileURLToPath(new URL('./build-lost-sizzler-package-provenance.mjs', import.meta.url));
 
@@ -177,6 +179,23 @@ function runSelfTest() {
     try { validateRoots(packageRoot, outputRoot, userDataRoot); } catch { existingRejected = true; }
     if (!existingRejected) fail('Existing handoff output must never be overwritten.');
 
+    const profileManifest = path.join(userDataRoot, 'package-manifest.json');
+    const profileProvenance = path.join(userDataRoot, 'package-provenance.json');
+    writeFixtureManifest(packageRoot, profileManifest);
+    writeFixtureProvenance(profileManifest, profileProvenance);
+    let profileMetadataRejected = false;
+    try {
+      const profileMetadataRoots = validateRoots(packageRoot, path.join(temp, 'profile-metadata-handoff'), userDataRoot);
+      assemble(profileMetadataRoots, profileManifest, profileProvenance);
+    } catch {
+      profileMetadataRejected = true;
+    }
+    if (!profileMetadataRejected) fail('Release metadata sourced from Tier-A user data must be rejected.');
+    if (fs.existsSync(path.join(temp, 'profile-metadata-handoff'))) fail('Rejected Tier-A metadata input unexpectedly published a release handoff.');
+    fs.rmSync(profileManifest, { force: true });
+    fs.rmSync(profileProvenance, { force: true });
+    if (snapshotTree(userDataRoot) !== before) fail('Tier-A profile changed while rejecting metadata sourced from user data.');
+
     const failedOutput = path.join(temp, 'failed-handoff');
     const failedRoots = validateRoots(packageRoot, failedOutput, userDataRoot);
     let failedAssemblyRejected = false;
@@ -195,7 +214,7 @@ function runSelfTest() {
     if (fs.readdirSync(path.dirname(failedOutput)).some(name => name.startsWith(partialPrefix))) fail('Failed handoff assembly left a partial staging directory behind.');
     if (snapshotTree(userDataRoot) !== before) fail('Tier-A profile changed during failed release handoff assembly.');
 
-    console.log('Lost Sizzler release handoff self-test passed: verified application + manifest + provenance publish atomically without Tier-A persistence, overwrite behavior or partial failed handoffs.');
+    console.log('Lost Sizzler release handoff self-test passed: verified application + manifest + provenance publish atomically without Tier-A persistence, Tier-A-sourced metadata, overwrite behavior or partial failed handoffs.');
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
