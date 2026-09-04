@@ -49,6 +49,7 @@ try{
       }
       return depth;
     };
+    const ownerName=source=>typeof source==="function"?(source.name||"<anonymous>"):String(typeof source);
     const descriptor=Object.getOwnPropertyDescriptor(window,"triggerRescue");
     const assignmentGateSupported=Boolean(descriptor?.configurable&&!descriptor?.get&&!descriptor?.set);
     const ownerBeforeInjection=window.triggerRescue;
@@ -57,17 +58,16 @@ try{
     lateCanonicalOwner.__ccgOriginal=canonical;
     const reAdoptionsBefore=api.state.reAdoptions;
     window.triggerRescue=lateCanonicalOwner;
+    const ownerAfterInjection=window.triggerRescue;
     const immediateReAdopted=Boolean(window.triggerRescue?.__ccgStage8NpcDialogue)&&window.triggerRescue!==lateCanonicalOwner&&api.state.reAdoptions===reAdoptionsBefore+1;
     host.rescue={id:"stage8-browser-scout",x:Number(p1.x)+1,y:Number(p1.y),rescued:false,following:false,found:false};
     const before=api.state.presentations;
     triggerRescue(p1);
-    // MutationObserver delivery is microtask-driven but is not ordered ahead of a
-    // Promise reaction queued in the same task. Cross the next animation-frame
-    // boundary so the rendered Scout notification observer has actually run.
     await new Promise(resolve=>requestAnimationFrame(()=>resolve()));
     const eventReAdopted=Boolean(window.triggerRescue?.__ccgStage8NpcDialogue)&&window.triggerRescue!==lateCanonicalOwner;
-    return{controller:window.CCGLostSizzlerModeRuntime.detect(),descriptorConfigurable:Boolean(descriptor?.configurable),descriptorAccessor:Boolean(descriptor?.get||descriptor?.set),assignmentGateSupported,assignmentGate:Boolean(api.state.assignmentGate),scoutEventObserver:Boolean(api.state.scoutEventObserver),immediateReAdopted,eventReAdopted,installed:Boolean(triggerRescue.__ccgStage8NpcDialogue),rescueDialogueDepth:markerDepth(triggerRescue,"__ccgStage8NpcDialogue"),toastBridgeDepth:markerDepth(showToast,"__ccgStage8ScoutToastBridge"),following:Boolean(host.rescue.following),found:Boolean(host.rescue.found),rescued:Boolean(host.rescue.rescued),presented:api.state.presentations-before,last:{...api.state.last},toastTitle:document.getElementById("pickup-title")?.textContent||"",toastText:document.getElementById("pickup-text")?.textContent||"",voiceKey:api.lines.scout.trapped.voiceKey};
+    return{controller:window.CCGLostSizzlerModeRuntime.detect(),descriptorConfigurable:Boolean(descriptor?.configurable),descriptorWritable:Boolean(descriptor?.writable),descriptorAccessor:Boolean(descriptor?.get||descriptor?.set),descriptorGetter:ownerName(descriptor?.get),descriptorSetter:ownerName(descriptor?.set),assignmentGateSupported,assignmentGate:Boolean(api.state.assignmentGate),scoutEventObserver:Boolean(api.state.scoutEventObserver),reAdoptionsBefore,reAdoptionsAfter:api.state.reAdoptions,ownerBeforeInjection:ownerName(ownerBeforeInjection),canonicalOwner:ownerName(canonical),ownerAfterInjection:ownerName(ownerAfterInjection),ownerAfterEvent:ownerName(window.triggerRescue),immediateReAdopted,eventReAdopted,installed:Boolean(triggerRescue.__ccgStage8NpcDialogue),rescueDialogueDepth:markerDepth(triggerRescue,"__ccgStage8NpcDialogue"),toastBridgeDepth:markerDepth(showToast,"__ccgStage8ScoutToastBridge"),following:Boolean(host.rescue.following),found:Boolean(host.rescue.found),rescued:Boolean(host.rescue.rescued),presented:api.state.presentations-before,last:{...api.state.last},toastTitle:document.getElementById("pickup-title")?.textContent||"",toastText:document.getElementById("pickup-text")?.textContent||"",voiceKey:api.lines.scout.trapped.voiceKey};
   });
+  console.log("Stage 8 Scout first-contact diagnostics",JSON.stringify(first));
   assert.equal(first.controller,"dungeon-solo","Scout dialogue regression must run under the Solo Dungeon controller");
   assert.equal(first.assignmentGate,first.assignmentGateSupported,"Stage 8 must use an assignment gate only when the canonical triggerRescue descriptor can legally support one");
   assert.equal(first.scoutEventObserver,true,"Stage 8 must maintain an event-driven rendered Scout notification observer without polling");
