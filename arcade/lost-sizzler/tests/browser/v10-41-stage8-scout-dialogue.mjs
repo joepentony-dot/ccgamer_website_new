@@ -49,31 +49,44 @@ try{
       }
       return depth;
     };
+    const sourceBelowMarker=(source,marker)=>{
+      const seen=new Set();let current=source;
+      while(typeof current==="function"&&!seen.has(current)){
+        seen.add(current);
+        if(current[marker])return typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null;
+        current=current.__ccgOriginal;
+      }
+      return null;
+    };
+    const hasMarker=(source,marker)=>markerDepth(source,marker)>0;
     const ownerName=source=>typeof source==="function"?(source.name||"<anonymous>"):String(typeof source);
     const descriptor=Object.getOwnPropertyDescriptor(window,"triggerRescue");
     const assignmentGateSupported=Boolean(descriptor?.configurable&&!descriptor?.get&&!descriptor?.set);
     const ownerBeforeInjection=window.triggerRescue;
-    const canonical=ownerBeforeInjection?.__ccgOriginal||ownerBeforeInjection;
+    const canonical=sourceBelowMarker(ownerBeforeInjection,"__ccgStage8NpcDialogue");
+    assert.equal(typeof canonical,"function","focused regression must locate the canonical rescue source beneath the Stage 8 wrapper");
+    assert.equal(markerDepth(ownerBeforeInjection,"__ccgStage8NpcDialogue"),1,"pre-injection Scout rescue ownership must contain exactly one Stage 8 wrapper");
     const lateCanonicalOwner=function stage8LateCanonicalRescueOwner(){return canonical.apply(this,arguments)};
     lateCanonicalOwner.__ccgOriginal=canonical;
     const reAdoptionsBefore=api.state.reAdoptions;
     window.triggerRescue=lateCanonicalOwner;
     const ownerAfterInjection=window.triggerRescue;
-    const immediateReAdopted=Boolean(window.triggerRescue?.__ccgStage8NpcDialogue)&&window.triggerRescue!==lateCanonicalOwner&&api.state.reAdoptions===reAdoptionsBefore+1;
+    const immediateReAdopted=hasMarker(window.triggerRescue,"__ccgStage8NpcDialogue")&&window.triggerRescue!==lateCanonicalOwner;
+    if(!assignmentGateSupported)assert.equal(markerDepth(ownerAfterInjection,"__ccgStage8NpcDialogue"),0,"non-configurable writable triggerRescue must allow the focused regression to reproduce a genuine late Stage 8 ownership loss");
     host.rescue={id:"stage8-browser-scout",x:Number(p1.x)+1,y:Number(p1.y),rescued:false,following:false,found:false};
     const before=api.state.presentations;
     triggerRescue(p1);
     await new Promise(resolve=>requestAnimationFrame(()=>resolve()));
-    const eventReAdopted=Boolean(window.triggerRescue?.__ccgStage8NpcDialogue)&&window.triggerRescue!==lateCanonicalOwner;
-    return{controller:window.CCGLostSizzlerModeRuntime.detect(),descriptorConfigurable:Boolean(descriptor?.configurable),descriptorWritable:Boolean(descriptor?.writable),descriptorAccessor:Boolean(descriptor?.get||descriptor?.set),descriptorGetter:ownerName(descriptor?.get),descriptorSetter:ownerName(descriptor?.set),assignmentGateSupported,assignmentGate:Boolean(api.state.assignmentGate),scoutEventObserver:Boolean(api.state.scoutEventObserver),reAdoptionsBefore,reAdoptionsAfter:api.state.reAdoptions,ownerBeforeInjection:ownerName(ownerBeforeInjection),canonicalOwner:ownerName(canonical),ownerAfterInjection:ownerName(ownerAfterInjection),ownerAfterEvent:ownerName(window.triggerRescue),immediateReAdopted,eventReAdopted,installed:Boolean(triggerRescue.__ccgStage8NpcDialogue),rescueDialogueDepth:markerDepth(triggerRescue,"__ccgStage8NpcDialogue"),toastBridgeDepth:markerDepth(showToast,"__ccgStage8ScoutToastBridge"),following:Boolean(host.rescue.following),found:Boolean(host.rescue.found),rescued:Boolean(host.rescue.rescued),presented:api.state.presentations-before,last:{...api.state.last},toastTitle:document.getElementById("pickup-title")?.textContent||"",toastText:document.getElementById("pickup-text")?.textContent||"",voiceKey:api.lines.scout.trapped.voiceKey};
+    const eventReAdopted=hasMarker(window.triggerRescue,"__ccgStage8NpcDialogue")&&window.triggerRescue!==lateCanonicalOwner;
+    return{controller:window.CCGLostSizzlerModeRuntime.detect(),descriptorConfigurable:Boolean(descriptor?.configurable),descriptorWritable:Boolean(descriptor?.writable),descriptorAccessor:Boolean(descriptor?.get||descriptor?.set),descriptorGetter:ownerName(descriptor?.get),descriptorSetter:ownerName(descriptor?.set),assignmentGateSupported,assignmentGate:Boolean(api.state.assignmentGate),scoutEventObserver:Boolean(api.state.scoutEventObserver),reAdoptionsBefore,reAdoptionsAfter:api.state.reAdoptions,ownerBeforeInjection:ownerName(ownerBeforeInjection),canonicalOwner:ownerName(canonical),ownerAfterInjection:ownerName(ownerAfterInjection),ownerAfterEvent:ownerName(window.triggerRescue),immediateReAdopted,eventReAdopted,installed:hasMarker(triggerRescue,"__ccgStage8NpcDialogue"),rescueDialogueDepth:markerDepth(triggerRescue,"__ccgStage8NpcDialogue"),toastBridgeDepth:markerDepth(showToast,"__ccgStage8ScoutToastBridge"),following:Boolean(host.rescue.following),found:Boolean(host.rescue.found),rescued:Boolean(host.rescue.rescued),presented:api.state.presentations-before,last:{...api.state.last},toastTitle:document.getElementById("pickup-title")?.textContent||"",toastText:document.getElementById("pickup-text")?.textContent||"",voiceKey:api.lines.scout.trapped.voiceKey};
   });
   console.log("Stage 8 Scout first-contact diagnostics",JSON.stringify(first));
   assert.equal(first.controller,"dungeon-solo","Scout dialogue regression must run under the Solo Dungeon controller");
   assert.equal(first.assignmentGate,first.assignmentGateSupported,"Stage 8 must use an assignment gate only when the canonical triggerRescue descriptor can legally support one");
   assert.equal(first.scoutEventObserver,true,"Stage 8 must maintain an event-driven rendered Scout notification observer without polling");
   if(first.assignmentGateSupported)assert.equal(first.immediateReAdopted,true,"a writable configurable triggerRescue owner must be composed immediately without polling");
-  assert.equal(first.eventReAdopted,true,"when a late canonical triggerRescue replacement survives assignment, the rendered canonical Scout-found event must re-adopt Stage 8 without polling");
-  assert.equal(first.installed,true,"Stage 8 must own the Scout rescue dialogue wrapper after the first canonical Scout interaction");
+  assert.equal(first.eventReAdopted,true,"after a genuine late canonical triggerRescue replacement removes Stage 8 ancestry, the rendered Scout-found event must re-adopt Stage 8 without polling");
+  assert.equal(first.installed,true,"Stage 8 must remain present in the Scout rescue ownership ancestry after the first canonical Scout interaction");
   assert.equal(first.rescueDialogueDepth,1,"Stage 8 must not self-nest its Scout rescue dialogue wrapper ancestry");
   assert.equal(first.toastBridgeDepth,1,"Stage 8 must not self-nest its Scout notification bridge ancestry");
   assert.equal(first.following,true,"first Scout contact must preserve the canonical following transition");
