@@ -52,6 +52,24 @@ function validateRoots(activeValue, candidateValue, previousValue, userDataValue
   }
   return { activeRoot, candidateRoot, previousRoot, userDataRoot };
 }
+function validateManifestPath(manifestValue, userDataRoot, label) {
+  if (!manifestValue) return null;
+  const manifest = path.resolve(manifestValue);
+  if (isInside(userDataRoot, manifest)) fail(`${label} must remain outside Tier-A user-data: ${manifest}`);
+  assertNoSymlinkComponents(manifest, label);
+  if (fs.existsSync(manifest)) {
+    const stat = fs.lstatSync(manifest);
+    if (stat.isSymbolicLink() || !stat.isFile()) fail(`${label} must be a real file: ${manifest}`);
+  }
+  return manifest;
+}
+function validateManifests(manifests, userDataRoot) {
+  return {
+    activeManifest: validateManifestPath(manifests.activeManifest, userDataRoot, 'active package manifest'),
+    candidateManifest: validateManifestPath(manifests.candidateManifest, userDataRoot, 'candidate package manifest'),
+    previousManifest: validateManifestPath(manifests.previousManifest, userDataRoot, 'previous package manifest'),
+  };
+}
 function verifyPackageTree(manifestValue, root, label) {
   if (!manifestValue) return false;
   const manifest = path.resolve(manifestValue);
@@ -84,19 +102,20 @@ function promoteVerifiedRemnant(remnantRoot, activeRoot, manifest, label, afterP
   }
 }
 function recover(roots, manifests, hooks = {}) {
+  const safeManifests = validateManifests(manifests, roots.userDataRoot);
   if (fs.existsSync(roots.activeRoot)) {
-    const activeVerified = verifyPackageTree(manifests.activeManifest, roots.activeRoot, 'Active package');
+    const activeVerified = verifyPackageTree(safeManifests.activeManifest, roots.activeRoot, 'Active package');
     if (!activeVerified) fail('Active package exists but is not verified. Recovery fails closed without moving or deleting diagnostic remnants.');
     return 'ACTIVE_ALREADY_VERIFIED';
   }
-  const previousVerified = verifyPackageTree(manifests.previousManifest, roots.previousRoot, 'Previous package');
-  const candidateVerified = verifyPackageTree(manifests.candidateManifest, roots.candidateRoot, 'Candidate package');
+  const previousVerified = verifyPackageTree(safeManifests.previousManifest, roots.previousRoot, 'Previous package');
+  const candidateVerified = verifyPackageTree(safeManifests.candidateManifest, roots.candidateRoot, 'Candidate package');
   if (previousVerified) {
-    promoteVerifiedRemnant(roots.previousRoot, roots.activeRoot, manifests.previousManifest, 'previous package', hooks.afterPreviousRestore);
+    promoteVerifiedRemnant(roots.previousRoot, roots.activeRoot, safeManifests.previousManifest, 'previous package', hooks.afterPreviousRestore);
     return 'RESTORED_PREVIOUS';
   }
   if (candidateVerified) {
-    promoteVerifiedRemnant(roots.candidateRoot, roots.activeRoot, manifests.candidateManifest, 'candidate package', hooks.afterCandidatePromotion);
+    promoteVerifiedRemnant(roots.candidateRoot, roots.activeRoot, safeManifests.candidateManifest, 'candidate package', hooks.afterCandidatePromotion);
     return 'PROMOTED_CANDIDATE';
   }
   fail('No verified package is available for interrupted activation recovery. No package remnant was deleted or overwritten.');
@@ -159,7 +178,26 @@ function runSelfTest() {
     if (!fs.existsSync(fourth.roots.previousRoot)) fail('Failed post-rename recovery did not restore the diagnostic previous-package remnant.');
     if (!fs.readFileSync(path.join(fourth.roots.userDataRoot, 'solo-save.json')).equals(fourthBefore)) fail('Tier-A profile changed during failed post-rename recovery verification.');
 
-    console.log('Lost Sizzler interrupted activation recovery self-test passed: only verified packages are selected, failed post-rename verification restores diagnostic remnants, and Tier-A data stays outside recovery.');
+    const fifth = fixture(path.join(temp, 'tier-a-manifest-rejected'), true, true);
+    const fifthRoots = validateRoots(fifth.roots.activeRoot, fifth.roots.candidateRoot, fifth.roots.previousRoot, fifth.roots.userDataRoot);
+    const fifthProfileBefore = fs.readFileSync(path.join(fifth.roots.userDataRoot, 'solo-save.json'));
+    const previousBefore = fs.readFileSync(path.join(fifth.roots.previousRoot, 'runtime.txt'));
+    const candidateBefore = fs.readFileSync(path.join(fifth.roots.candidateRoot, 'runtime.txt'));
+    const tierAManifest = path.join(fifth.roots.userDataRoot, 'previous.manifest.json');
+    fs.copyFileSync(fifth.manifests.previousManifest, tierAManifest);
+    let tierARejected = false;
+    try {
+      recover(fifthRoots, { ...fifth.manifests, previousManifest: tierAManifest });
+    } catch (error) {
+      tierARejected = /must remain outside Tier-A user-data/.test(String(error?.message || error));
+    }
+    if (!tierARejected) fail('Recovery accepted package-control manifest metadata from Tier-A user-data.');
+    if (fs.existsSync(fifth.roots.activeRoot)) fail('Tier-A manifest rejection must occur before any package is promoted to active.');
+    if (!fs.readFileSync(path.join(fifth.roots.previousRoot, 'runtime.txt')).equals(previousBefore)) fail('Previous package remnant changed during Tier-A manifest rejection.');
+    if (!fs.readFileSync(path.join(fifth.roots.candidateRoot, 'runtime.txt')).equals(candidateBefore)) fail('Candidate package remnant changed during Tier-A manifest rejection.');
+    if (!fs.readFileSync(path.join(fifth.roots.userDataRoot, 'solo-save.json')).equals(fifthProfileBefore)) fail('Tier-A profile changed while rejecting Tier-A manifest metadata.');
+
+    console.log('Lost Sizzler interrupted activation recovery self-test passed: only verified packages are selected, recovery manifests stay outside Tier-A data, failed post-rename verification restores diagnostic remnants, and Tier-A data stays outside recovery.');
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
