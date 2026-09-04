@@ -115,6 +115,15 @@ try{
   assert.equal(movement.first.y,movement.choice.y+movement.choice.dy,"two immediate move calls may advance only one physical tile on Y");
   assert.ok(movement.first.blocks>=1,`the duplicate post-pause move must be rejected by the cadence owner: ${JSON.stringify(movement)}`);
   await page.waitForTimeout(Math.ceil(movement.first.cadence)+30);
+  const dossierBoundary=await page.evaluate(()=>{
+    const before=String(mode||""),panel=document.getElementById("named-dossier-panel"),visible=Boolean(panel&&!panel.classList.contains("hidden"));
+    if(before==="dossier")hideNamedDossier();
+    return{before,visible,after:String(mode||""),runActive:document.body.dataset.runActive==="true"};
+  });
+  assert.ok(dossierBoundary.before==="playing"||(dossierBoundary.before==="dossier"&&dossierBoundary.visible),`movement cadence fixture encountered an unexpected non-gameplay mode: ${JSON.stringify(dossierBoundary)}`);
+  assert.equal(dossierBoundary.after,"playing",`closing a legitimate named dossier must return the Solo run to playing mode: ${JSON.stringify(dossierBoundary)}`);
+  assert.equal(dossierBoundary.runActive,true,`closing a legitimate named dossier must preserve the active Solo run: ${JSON.stringify(dossierBoundary)}`);
+  if(dossierBoundary.before==="dossier")await page.waitForTimeout(Math.ceil(movement.first.cadence)+30);
   const movementAfter=await page.evaluate(({choice,first})=>{
     const inspectChain=fn=>{
       const links=["__ccgOriginal","__ccgV141Original","__ccgV141TutorialOriginal","__ccgV141R27Original","__ccgV141R25Original"],seen=new Set(),chain=[];let current=fn,depth=0;
@@ -133,9 +142,9 @@ try{
     movePlayer(p1,choice.dx,choice.dy,false);input.delete(choice.code);
     return{x:Number(p1.x),y:Number(p1.y),before,elapsedSinceFirst:callAt-Number(first.callAt||0),blocksDelta:Number(api.state.movementBlocks||0)-blocksBefore,move1:Number(move1||0),hitStun:Number(p1.hitStunMs||0),mode:String(mode||""),held:Boolean(input.has(choice.code)),ownership,r30GoldenSame:Boolean(r30?.state?.goldenMove===window.movePlayer),r30GoldenPromotions:Number(r30?.state?.goldenMovePromotions||0),r30Repairs:Number(r30?.state?.ownershipRepairs||0),sealRepairs:Number(seal?.state?.repairs||0),sealBlockedWrites:Number(seal?.state?.blockedWrites||0)};
   },movement);
-  console.log(`[r60 Solo] movement ownership after cadence wait: ${JSON.stringify({first:movement.first,after:movementAfter})}`);
-  assert.equal(movementAfter.x,movement.choice.x+movement.choice.dx*2,`movement must resume normally after the configured cadence: ${JSON.stringify({first:movement.first,after:movementAfter})}`);
-  assert.equal(movementAfter.y,movement.choice.y+movement.choice.dy*2,`movement must resume normally after the configured cadence: ${JSON.stringify({first:movement.first,after:movementAfter})}`);
+  console.log(`[r60 Solo] movement ownership after cadence wait: ${JSON.stringify({first:movement.first,after:movementAfter,dossierBoundary})}`);
+  assert.equal(movementAfter.x,movement.choice.x+movement.choice.dx*2,`movement must resume normally after the configured cadence: ${JSON.stringify({first:movement.first,after:movementAfter,dossierBoundary})}`);
+  assert.equal(movementAfter.y,movement.choice.y+movement.choice.dy*2,`movement must resume normally after the configured cadence: ${JSON.stringify({first:movement.first,after:movementAfter,dossierBoundary})}`);
 
   console.log("[r60 Solo] environmental damage must survive stale invulnerability/owner state");
   const environment=await page.evaluate(()=>{
