@@ -73,15 +73,39 @@
     return true
   }
 
+  function installScoutToastBridge(){
+    const source=window.showToast;
+    if(typeof source!=="function")return false;
+    if(source.__ccgStage8ScoutToastBridge)return true;
+    const wrapped=function stage8ScoutToastBridge(title){
+      const scoutFound=String(title||"").toUpperCase()==="CCG SCOUT FOUND";
+      const hadDialogueOwner=Boolean(window.triggerRescue?.__ccgStage8NpcDialogue);
+      const result=source.apply(this,arguments);
+      if(!scoutFound||!soloDungeon())return result;
+      install();
+      if(hadDialogueOwner)return result;
+      try{
+        const rescue=host?.rescue||null,player=typeof p1!=="undefined"?p1:null;
+        if(rescue?.following&&rescue?.found&&!rescue?.rescued)present(rescue,lines.scout.trapped,{player,force:true});
+      }catch(_){}
+      return result
+    };
+    wrapped.__ccgStage8ScoutToastBridge=true;
+    wrapped.__ccgOriginal=source;
+    window.showToast=wrapped;
+    return true
+  }
+
   let installObserver=null;
   function ensureInstallObserver(){
     if(installObserver||typeof MutationObserver!=="function"||!document.body)return false;
-    installObserver=new MutationObserver(()=>{install()});
+    installObserver=new MutationObserver(()=>{install();installScoutToastBridge()});
     installObserver.observe(document.body,{attributes:true,attributeFilter:["data-release-ready","data-run-active","data-mode-controller"]});
     return true
   }
   function installWhenReady(){
     const installed=install();
+    installScoutToastBridge();
     ensureInstallObserver();
     return installed
   }
@@ -89,5 +113,5 @@
   installWhenReady();
   queueMicrotask(installWhenReady);
   if(document.readyState!=="complete")addEventListener("load",installWhenReady,{once:true});
-  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,present,presentScout,install,installWhenReady};
+  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,present,presentScout,install,installWhenReady,installScoutToastBridge};
 })();
