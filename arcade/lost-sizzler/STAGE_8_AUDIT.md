@@ -8,6 +8,12 @@ Stage 7 is complete. The Solo runtime, ownership model and timing contracts acce
 
 PR #1852 remains a draft and must not be merged. PR #1860 is outside this programme and must not be touched.
 
+## Stage 8 defect ledger
+
+| ID | Status | Defect | Evidence / current finding | Exit criterion |
+| --- | --- | --- | --- | --- |
+| STAGE8-NPC-001 | VERIFYING | Scout dialogue ownership can be lost after an initially successful Stage 8 install | Exact head `75bfd4ff6a7ba10ac53cedaa4d30e2bb4677a65b` passed structure, syntax and all canonical Node contracts but failed the focused Chromium Scout dialogue contract because the live `triggerRescue` owner no longer carried `__ccgStage8NpcDialogue`. The first installation-race repair disconnected its `MutationObserver` immediately after a successful install, so a later canonical owner replacement could survive into Solo. Candidate `fbf4c52c619b18ce1fe30ae87bf6ec09f48f0022` keeps the existing lifecycle-only observer active across `data-release-ready`, `data-run-active` and `data-mode-controller` changes, allowing Stage 8 to re-adopt a replaced rescue owner without polling, RAF ownership or protected update/movement/damage changes. | Focused Scout Chromium contract and full canonical Lost Sizzler Load Safety pass on the lifecycle-guard candidate; Scout progression and movement remain unchanged; Horde/Spy remain inert; no recurring timer/frame owner is added. |
+
 ## Stage 8 purpose
 
 Stage 8 expands the Solo dungeon without reopening the stabilization programme unless new evidence demonstrates a genuine regression. The focus is playable content and world depth:
