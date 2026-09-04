@@ -17,7 +17,8 @@
   function loadSpyR32WorldOwner(){if(!window.CCGLostSizzlerV141R32SpyWorldOwner)loadScript("v10-41-r32-spy-world-owner.js","data-ccg-r32-spy-world-owner")}
   function loadSpyR32Loader(){if(!window.CCGLostSizzlerV141R32SpyLoader)loadScript("v10-41-r32-spy-loader.js","data-ccg-r32-spy-loader")}
   function loadHordeOwnerComposition(){if(!window.CCGLostSizzlerV141R60HordeOwnerComposition)loadScript("v10-41-r60-horde-owner-composition.js","data-ccg-r60-horde-owner-composition")}
-  loadOwnerSeal();loadModeRuntime();loadSoloDiagnostics();loadSpyExitControlReset();loadSoloDungeonR31();loadSpyR32WorldOwner();loadSpyR32Loader();loadHordeOwnerComposition();
+  function loadStage8NpcDialogue(){if(!window.CCGLostSizzlerStage8NpcDialogue)loadScript("v10-41-stage8-npc-dialogue.js","data-ccg-stage8-npc-dialogue")}
+  loadOwnerSeal();loadModeRuntime();loadSoloDiagnostics();loadSpyExitControlReset();loadSoloDungeonR31();loadSpyR32WorldOwner();loadSpyR32Loader();loadHordeOwnerComposition();loadStage8NpcDialogue();
 
   const entries=[
     ["LS-0826-09","FIXED","Global movement freeze after Spy mode","A Spy runtime ownership race could leave ordinary movement routed through the isolated Spy owner after the mode ended. Because the Spy owner had already released its saved base function, later Solo or Horde movement could return false forever. r30 restores the pre-Spy update, movement and damage owners unconditionally when Spy exits."],
