@@ -76,6 +76,20 @@ function comparePortablePath(a, b) {
   return a < b ? -1 : 1;
 }
 
+function isInside(parent, child) {
+  const relative = path.relative(parent, child);
+  return relative === '' || (!relative.startsWith(`..${path.sep}`) && relative !== '..' && !path.isAbsolute(relative));
+}
+
+function assertManifestOutputOutsidePackageInputs(outputPath) {
+  for (const input of REQUIRED_INPUTS) {
+    const inputPath = path.resolve(REPO_ROOT, input.source);
+    if (isInside(inputPath, outputPath)) {
+      throw new Error(`Package manifest evidence must remain outside declared package input ${input.source}: ${outputPath}`);
+    }
+  }
+}
+
 async function assertNoSymlinkComponents(absolutePath, label) {
   let current = path.resolve(absolutePath);
   const root = path.parse(current).root;
@@ -272,6 +286,7 @@ function assertOfflineAudioCompleteness(manifest) {
 
 async function writeManifestOutput(outputPathValue, json) {
   const outputPath = path.resolve(process.cwd(), outputPathValue);
+  assertManifestOutputOutsidePackageInputs(outputPath);
   await assertNoSymlinkComponents(outputPath, 'Package manifest output');
   try {
     await fs.lstat(outputPath);
@@ -283,6 +298,7 @@ async function writeManifestOutput(outputPathValue, json) {
   await assertNoSymlinkComponents(parent, 'Package manifest output parent');
   await fs.mkdir(parent, { recursive: true });
   await assertNoSymlinkComponents(parent, 'Package manifest output parent');
+  assertManifestOutputOutsidePackageInputs(outputPath);
   await fs.writeFile(outputPath, json, { encoding: 'utf8', flag: 'wx' });
 }
 
@@ -320,6 +336,22 @@ async function assertManifestOutputPolicyExamples() {
     try {
       await fs.lstat(path.join(externalRoot, 'manifest.json'));
       throw new Error('Rejected package manifest symlink output unexpectedly created external evidence.');
+    } catch (error) {
+      if (!(error && error.code === 'ENOENT')) throw error;
+    }
+
+    const packageInputOutput = path.join(REPO_ROOT, 'arcade/lost-sizzler/assets/package-manifest-boundary-fixture.json');
+    let packageInputRejected = false;
+    try {
+      await writeManifestOutput(packageInputOutput, '{}\n');
+    } catch (error) {
+      packageInputRejected = String(error?.message || error).includes('must remain outside declared package input');
+      if (!packageInputRejected) throw error;
+    }
+    if (!packageInputRejected) throw new Error('Package manifest output self-check unexpectedly accepted evidence inside a package input tree.');
+    try {
+      await fs.lstat(packageInputOutput);
+      throw new Error('Rejected package manifest output unexpectedly contaminated a package input tree.');
     } catch (error) {
       if (!(error && error.code === 'ENOENT')) throw error;
     }
