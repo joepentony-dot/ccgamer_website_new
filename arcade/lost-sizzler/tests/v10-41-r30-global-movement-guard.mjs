@@ -14,6 +14,8 @@ assert.match(index,/v10-41-r30-global-movement-guard\.js\?v=20260827r31/);
 assert.match(index,/v10-41-r30-buglog\.js\?v=20260827r31/);
 assert.match(guard,/clearInterval\(api\.state\.timer\)/,"r30 must stop the competing r29 installer timer");
 assert.match(guard,/__ccgV141R30Cooperative/,"r30 must replace r29 maintenance with cooperative mode ownership");
+assert.match(guard,/if\(api\.install\.__ccgV141R30Cooperative\)\{[\s\S]*return true[\s\S]*\}/,"r30 must keep an already-cooperative r29 installer without re-running it every monitor tick");
+assert.doesNotMatch(guard,/if\(api\.install\.__ccgV141R30Cooperative\)\{[\s\S]*return api\.install\(\)/,"stable Solo must not bridge into the cooperative r29 installer every 40 ms");
 assert.match(guard,/goldenLocked/,"r30 must preserve a known-good post-release ownership snapshot");
 assert.match(guard,/const recoveryMove=\(\)=>state\.goldenMove\|\|state\.baselineMove/,"watchdog recovery must prefer the locked golden movement owner over later mutable wrappers");
 assert.match(tutorialFinalizer,/function movementOwnedByR30\(\)/,"tutorial action maintenance must recognise when r30 owns the sealed movement stack");

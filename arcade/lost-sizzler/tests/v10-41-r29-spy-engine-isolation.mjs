@@ -21,6 +21,8 @@ assert.match(finalizer,/data-ccg-r29-spy-network|ccgR29SpyNetwork/,"Spy network 
 assert.match(finalizer,/spyNetworkReady/,"release diagnostics must expose whether the Spy network transport registered");
 assert.match(finalizer,/rail\.style\.setProperty\("display",live\?"contents":"none","important"\)/,"late r29 runtime must own live/idle notification rail geometry above legacy CSS");
 assert.match(finalizer,/new MutationObserver\(syncNotificationRail\)/,"notification rail ownership must react immediately to toast visibility changes");
+assert.match(finalizer,/if\(typeof before==="function"&&before\.__ccgV141R29Stable\)\{[\s\S]*state\.stableLoopSkips\+\+[\s\S]*return true[\s\S]*\}/,"r29 finalizer must not re-run the runtime installer when R59/R29 already owns the stable loop");
+assert.doesNotMatch(finalizer,/const before=window\.loop;\s*try\{api\.install\(\)\}/,"r29 finalizer must guard stable-loop ownership before calling the installer");
 
 assert.match(network,/PACKET="v141_spy_position"/,"Spy movement must use a dedicated packet instead of Dungeon player movement packets");
 assert.match(network,/net\.send\(PACKET,payload\)/,"local Spy movement must publish through the dedicated position transport");

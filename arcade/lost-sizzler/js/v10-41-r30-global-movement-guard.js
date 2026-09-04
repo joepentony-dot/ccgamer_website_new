@@ -177,7 +177,7 @@
     try{if(api.state?.timer){clearInterval(api.state.timer);api.state.timer=0;state.r29TimerStopped=true}}catch(_){}
     if(api.install.__ccgV141R30Cooperative){
       state.r29InstallCooperative=true;
-      try{return api.install()}catch(_){return false}
+      return true
     }
     const original=api.install.bind(api);
     const cooperative=function installV141R30Cooperative(){
