@@ -7,7 +7,7 @@
   const REPEAT_MS=7000;
   const SPECIAL_MODES=new Set(["horde-survivor","sizzler-saboteurs"]);
   const memory=new WeakMap();
-  const state={installed:false,merchantInstalled:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,scoutEventObserver:false,last:null};
+  const state={installed:false,merchantInstalled:false,sanctuaryInstalled:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,scoutEventObserver:false,last:null};
   const lines=Object.freeze({
     scout:Object.freeze({
       trapped:Object.freeze({key:"scout.trapped",title:"CCG SCOUT — FOUND",speaker:"Scout",text:"There you are. Get me to one of the permanently lit sanctuary rooms and I’ll stay close.",tone:"green",duration:7600,voiceKey:"npc.scout.found"}),
@@ -17,6 +17,9 @@
     merchant:Object.freeze({
       entrance:Object.freeze({key:"merchant.entrance",title:"DUNGEON QUARTERMASTER",speaker:"Quartermaster",text:"Stock’s on the counter. Score buys supplies; rare artefacts buy the Flask. Take what you need and keep moving.",tone:"gold",duration:7200,voiceKey:"npc.merchant.entrance"}),
       hidden:Object.freeze({key:"merchant.hidden",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"You found me. Bring enough rare artefacts and I’ll exchange them for a Banishment Flask. Score works too.",tone:"purple",duration:7600,voiceKey:"npc.merchant.hidden"})
+    }),
+    sanctuary:Object.freeze({
+      keeper:Object.freeze({key:"sanctuary.keeper",title:"SANCTUARY KEEPER",speaker:"Keeper",text:"You’re safe while you’re in here. Use the green square if you need patching up, then get back to it.",tone:"green",duration:9000,voiceKey:"npc.sanctuary.keeper"})
     })
   });
 
@@ -55,6 +58,27 @@
   function presentMerchant(shop,{force=false}={}){
     if(!shop?.active)return false;
     return present(shop,lineForMerchant(shop),{force})
+  }
+  function sanctuaryRoom(){
+    if(!soloDungeon())return null;
+    try{
+      if(typeof W?.roomAt!=="function"||!world||!p1)return null;
+      const roomId=W.roomAt(world,p1.x,p1.y),room=world.rooms?.[roomId]||null;
+      return room?.sanctuary?room:null
+    }catch(_){return null}
+  }
+  function augmentSanctuaryToast(callArgs){
+    const args=[...callArgs];
+    if(!soloDungeon()||!String(args[0]||"").toUpperCase().startsWith("SANCTUARY —"))return args;
+    const room=sanctuaryRoom(),line=lines.sanctuary.keeper;
+    if(!room)return args;
+    const now=clockNow(),previous=memory.get(room);
+    if(previous?.key===line.key&&now-previous.at<REPEAT_MS){state.suppressed++;return args}
+    args[1]=`${String(args[1]||"")} ${line.speaker}: ${line.text}`.trim();
+    memory.set(room,{key:line.key,at:now});
+    state.presentations++;
+    state.last={key:line.key,title:line.title,text:line.text,voiceKey:line.voiceKey,at:now};
+    return args
   }
   function ancestryHasMarker(source,marker){
     const seen=new Set();
@@ -159,16 +183,19 @@
   function installScoutToastBridge(){
     const source=window.showToast;
     if(typeof source!=="function")return false;
-    if(ancestryHasMarker(source,"__ccgStage8ScoutToastBridge"))return true;
+    if(ancestryHasMarker(source,"__ccgStage8ScoutToastBridge")){state.sanctuaryInstalled=true;return true}
     const wrapped=function stage8ScoutToastBridge(title){
       const scoutFound=String(title||"").toUpperCase()==="CCG SCOUT FOUND";
-      const result=source.apply(this,arguments);
+      const args=augmentSanctuaryToast(arguments);
+      const result=source.apply(this,args);
       if(scoutFound)handleScoutFoundBoundary();
       return result
     };
     wrapped.__ccgStage8ScoutToastBridge=true;
+    wrapped.__ccgStage8SanctuaryDialogue=true;
     wrapped.__ccgOriginal=source;
     window.showToast=wrapped;
+    state.sanctuaryInstalled=true;
     return true
   }
 
@@ -215,5 +242,5 @@
   installWhenReady();
   queueMicrotask(installWhenReady);
   if(document.readyState!=="complete")addEventListener("load",installWhenReady,{once:true});
-  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,lineForMerchant,present,presentScout,presentMerchant,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
+  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,lineForMerchant,present,presentScout,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
 })();
