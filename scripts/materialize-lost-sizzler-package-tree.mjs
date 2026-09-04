@@ -15,15 +15,17 @@ const FORBIDDEN_CREDENTIAL_SUFFIXES = Object.freeze(['.pem', '.key', '.p12', '.p
 
 function usage() {
   console.log('Usage: node scripts/materialize-lost-sizzler-package-tree.mjs --manifest <manifest.json> --output <directory> [--clean]');
+  console.log('       node scripts/materialize-lost-sizzler-package-tree.mjs --self-test');
 }
 
 function parseArgs(argv) {
-  const out = { clean: false };
+  const out = { clean: false, selfTest: false };
   for (let i = 2; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === '--clean') out.clean = true;
     else if (arg === '--manifest') out.manifest = argv[++i];
     else if (arg === '--output') out.output = argv[++i];
+    else if (arg === '--self-test') out.selfTest = true;
     else if (arg === '--help' || arg === '-h') out.help = true;
     else throw new Error(`Unknown argument: ${arg}`);
   }
@@ -122,17 +124,123 @@ async function materialize({ manifestPath, outputRoot, clean }) {
   console.log(`Lost Sizzler package tree materialized: ${seen.size} files, ${copiedBytes} bytes -> ${root}`);
 }
 
+async function expectFailure(action, expectedText) {
+  try {
+    await action();
+  } catch (error) {
+    const message = String(error?.message || error);
+    if (!message.includes(expectedText)) {
+      throw new Error(`Self-test expected failure containing ${JSON.stringify(expectedText)}, got: ${message}`);
+    }
+    return;
+  }
+  throw new Error(`Self-test expected failure containing ${JSON.stringify(expectedText)} but materialization passed.`);
+}
+
+async function assertDirectoryEmpty(directory) {
+  const entries = await fs.readdir(directory);
+  if (entries.length !== 0) {
+    throw new Error(`Rejected manifest copied package content before failure: ${entries.join(', ')}`);
+  }
+}
+
+async function runSelfTest() {
+  const cwd = path.resolve(process.cwd());
+  const temp = await fs.mkdtemp(path.join(cwd, '.lost-sizzler-materializer-self-test-'));
+  try {
+    const sourceRoot = path.join(temp, 'sources');
+    const outputRoot = path.join(temp, 'output');
+    await fs.mkdir(sourceRoot, { recursive: true });
+
+    const safeSource = path.join(sourceRoot, 'safe.txt');
+    const forbiddenSource = path.join(sourceRoot, 'private.key');
+    await fs.writeFile(safeSource, 'safe package fixture\n', 'utf8');
+    await fs.writeFile(forbiddenSource, 'credential fixture\n', 'utf8');
+
+    const safeRelative = path.relative(cwd, safeSource).split(path.sep).join('/');
+    const forbiddenRelative = path.relative(cwd, forbiddenSource).split(path.sep).join('/');
+    const safeBytes = (await fs.lstat(safeSource)).size;
+    const safeHash = await sha256(safeSource);
+    const forbiddenBytes = (await fs.lstat(forbiddenSource)).size;
+    const forbiddenHash = await sha256(forbiddenSource);
+    const manifestPath = path.join(temp, 'manifest.json');
+
+    async function writeManifest(entry) {
+      const manifest = {
+        schema: SCHEMA,
+        fileCount: 1,
+        totalBytes: entry.bytes,
+        files: [entry],
+      };
+      await fs.writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
+    }
+
+    await writeManifest({
+      path: 'arcade/lost-sizzler/assets/self-test.txt',
+      sourceRepositoryPath: safeRelative,
+      bytes: safeBytes,
+      sha256: safeHash,
+      classification: 'runtime',
+    });
+    await materialize({ manifestPath, outputRoot, clean: true });
+    await fs.rm(outputRoot, { recursive: true, force: true });
+
+    const forbiddenDestinations = [
+      'arcade/lost-sizzler/js/ccg-supabase-config.js',
+      'arcade/lost-sizzler/.env.production',
+      'arcade/lost-sizzler/assets/service-account.json',
+      'arcade/lost-sizzler/assets/private.pem',
+    ];
+    for (const destination of forbiddenDestinations) {
+      await writeManifest({
+        path: destination,
+        sourceRepositoryPath: safeRelative,
+        bytes: safeBytes,
+        sha256: safeHash,
+        classification: 'runtime',
+      });
+      await expectFailure(
+        () => materialize({ manifestPath, outputRoot, clean: true }),
+        'forbidden'
+      );
+      await assertDirectoryEmpty(outputRoot);
+    }
+
+    await writeManifest({
+      path: 'arcade/lost-sizzler/assets/renamed-safe.txt',
+      sourceRepositoryPath: forbiddenRelative,
+      bytes: forbiddenBytes,
+      sha256: forbiddenHash,
+      classification: 'runtime',
+    });
+    await expectFailure(
+      () => materialize({ manifestPath, outputRoot, clean: true }),
+      'forbidden private credential material'
+    );
+    await assertDirectoryEmpty(outputRoot);
+
+    console.log('Lost Sizzler package materializer self-test passed: forbidden bootstrap and credential paths are rejected before any package file is copied.');
+  } finally {
+    await fs.rm(temp, { recursive: true, force: true });
+  }
+}
+
 try {
   const args = parseArgs(process.argv);
   if (args.help) {
     usage();
     process.exit(0);
   }
-  if (!args.manifest || !args.output) {
-    usage();
-    throw new Error('--manifest and --output are required.');
+  if (args.selfTest) {
+    if (args.manifest || args.output || args.clean) throw new Error('--self-test cannot be combined with --manifest, --output or --clean.');
+    await runSelfTest();
+  } else {
+    if (!args.manifest || !args.output) {
+      usage();
+      throw new Error('--manifest and --output are required.');
+    }
+    await materialize({ manifestPath: args.manifest, outputRoot: args.output, clean: args.clean });
   }
-  await materialize({ manifestPath: args.manifest, outputRoot: args.output, clean: args.clean });
 } catch (error) {
   console.error(`Lost Sizzler package materialization failed: ${error?.message || error}`);
   process.exit(1);
