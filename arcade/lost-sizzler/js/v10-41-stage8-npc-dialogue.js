@@ -74,15 +74,16 @@
   }
 
   let installObserver=null;
-  function installWhenReady(){
-    if(install()){
-      if(installObserver){installObserver.disconnect();installObserver=null}
-      return true
-    }
+  function ensureInstallObserver(){
     if(installObserver||typeof MutationObserver!=="function"||!document.body)return false;
-    installObserver=new MutationObserver(()=>{if(install()&&installObserver){installObserver.disconnect();installObserver=null}});
+    installObserver=new MutationObserver(()=>{install()});
     installObserver.observe(document.body,{attributes:true,attributeFilter:["data-release-ready","data-run-active","data-mode-controller"]});
-    return false
+    return true
+  }
+  function installWhenReady(){
+    const installed=install();
+    ensureInstallObserver();
+    return installed
   }
 
   installWhenReady();
