@@ -61,7 +61,10 @@ try{
     host.rescue={id:"stage8-browser-scout",x:Number(p1.x)+1,y:Number(p1.y),rescued:false,following:false,found:false};
     const before=api.state.presentations;
     triggerRescue(p1);
-    await Promise.resolve();
+    // MutationObserver delivery is microtask-driven but is not ordered ahead of a
+    // Promise reaction queued in the same task. Cross the next animation-frame
+    // boundary so the rendered Scout notification observer has actually run.
+    await new Promise(resolve=>requestAnimationFrame(()=>resolve()));
     const eventReAdopted=Boolean(window.triggerRescue?.__ccgStage8NpcDialogue)&&window.triggerRescue!==lateCanonicalOwner;
     return{controller:window.CCGLostSizzlerModeRuntime.detect(),descriptorConfigurable:Boolean(descriptor?.configurable),descriptorAccessor:Boolean(descriptor?.get||descriptor?.set),assignmentGateSupported,assignmentGate:Boolean(api.state.assignmentGate),scoutEventObserver:Boolean(api.state.scoutEventObserver),immediateReAdopted,eventReAdopted,installed:Boolean(triggerRescue.__ccgStage8NpcDialogue),rescueDialogueDepth:markerDepth(triggerRescue,"__ccgStage8NpcDialogue"),toastBridgeDepth:markerDepth(showToast,"__ccgStage8ScoutToastBridge"),following:Boolean(host.rescue.following),found:Boolean(host.rescue.found),rescued:Boolean(host.rescue.rescued),presented:api.state.presentations-before,last:{...api.state.last},toastTitle:document.getElementById("pickup-title")?.textContent||"",toastText:document.getElementById("pickup-text")?.textContent||"",voiceKey:api.lines.scout.trapped.voiceKey};
   });
