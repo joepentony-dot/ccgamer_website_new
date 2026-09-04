@@ -21,7 +21,7 @@
   const STYLE_ID="ccg-v141-r57-desktop-prep-stability";
   const MONITOR_MS=80,STALL_MS=280,MAX_TIMED_DT=50,INTERWAVE_MS=360,TIMED_ACTIVE_CAP=3,SPY_SWORD_TILES=10,SPY_HP_MS=1500;
   const state={
-    timer:0,lastTick:performance.now(),lastMode:"",r56TimerRetired:0,r56Bridges:0,
+    timer:0,lastTick:performance.now(),lastMode:"",r56TimerRetired:0,r56Bridges:0,r56BridgeDirty:true,r56BridgeSkips:0,r56BridgeObserver:null,r56BridgeQueue:0,
     trapCycles:new Map(),trapHits:0,trapFallbacks:0,shrinesActivated:0,
     timedOwnerInstalled:false,timedBase:null,timedPruned:0,timedInterwaves:0,timedSpawns:0,maxTimedEnemies:0,
     stallRecoveries:0,movementRepairs:0,visualTrims:0,
@@ -55,19 +55,38 @@
   }
 
   function r56(){return window.CCGLostSizzlerV141R56PlaytestCompletion||null}
+  function readMode(){try{return String(mode||"")}catch(_){return""}}
   function retireR56PeriodicTick(){
     const api=r56();if(!api?.state)return false;
     if(api.state.timer){clearInterval(api.state.timer);api.state.timer=0;state.r56TimerRetired++}
     return true
   }
-  function bridgeR56(){
+  function bridgeR56(reason="manual"){
+    void reason;
     const api=r56();if(!api)return false;retireR56PeriodicTick();
     try{api.installOwners?.()}catch(_){}
     try{api.pendingChestTick?.()}catch(_){}
-    try{api.combatTick?.()}catch(_){}
-    let current="";try{current=String(mode||"")}catch(_){}
+    const current=readMode();
     if(state.lastMode&&state.lastMode!=="playing"&&current==="playing")try{api.rearmCombat?.("r57 mode resume",0,true)}catch(_){}
-    state.lastMode=current;state.r56Bridges++;return true
+    state.lastMode=current;state.r56BridgeDirty=false;state.r56Bridges++;return true
+  }
+  function syncR56Bridge(reason="runtime"){
+    const api=r56();if(!api)return false;retireR56PeriodicTick();
+    const current=readMode();if(state.lastMode&&state.lastMode!==current)state.r56BridgeDirty=true;
+    const pending=Number(api.state?.pendingChests?.size||0)>0;
+    if(!state.r56BridgeDirty&&!pending){state.lastMode=current;state.r56BridgeSkips++;return false}
+    return bridgeR56(reason)
+  }
+  function queueR56Bridge(reason="lifecycle"){
+    state.r56BridgeDirty=true;
+    if(state.r56BridgeQueue)return true;
+    state.r56BridgeQueue=setTimeout(()=>{state.r56BridgeQueue=0;syncR56Bridge(reason)},0);
+    return true
+  }
+  function installR56BridgeObserver(){
+    if(state.r56BridgeObserver||!document.body)return false;
+    state.r56BridgeObserver=new MutationObserver(()=>queueR56Bridge("body lifecycle mutation"));
+    state.r56BridgeObserver.observe(document.body,{attributes:true,attributeFilter:["data-special-mode","data-run-active","data-mode-controller"]});return true
   }
 
   function trapIsActive(trap,now=nowPerf()){
@@ -310,20 +329,20 @@
   }
 
   function tick(){
-    installStyle();retireR56PeriodicTick();bridgeR56();installTimedGuard();installSpyInventoryObserver();installSpyDrawGuards();
+    installStyle();retireR56PeriodicTick();syncR56Bridge("tick");installTimedGuard();installSpyInventoryObserver();installSpyDrawGuards();
     const now=nowPerf(),delay=now-state.lastTick;state.lastTick=now;
     if(delay>STALL_MS&&!document.hidden)recoverAfterStall(delay);
     contactTick();
     if(spyActive()){repairSpyPresence();repairSpyLiveness();repairSpySwordRange()}else{state.spyHpPrevious.clear();state.spyHpUntil.clear()}
   }
 
-  installStyle();installSpyInventoryObserver();installSpyDrawGuards();retireR56PeriodicTick();installTimedGuard();
+  installStyle();installSpyInventoryObserver();installSpyDrawGuards();installR56BridgeObserver();retireR56PeriodicTick();installTimedGuard();bridgeR56("startup");
   addEventListener("keyup",onSpyTabKeyUp,true);
   tick();state.timer=setInterval(()=>{try{tick()}catch(error){console.warn("[Lost Sizzler r57] desktop-prep stability tick failed safely",error)}},MONITOR_MS);
-  addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0;removeEventListener("keyup",onSpyTabKeyUp,true);try{state.spyInventoryObserver?.disconnect?.()}catch(_){}},{once:true});
+  addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);if(state.r56BridgeQueue)clearTimeout(state.r56BridgeQueue);state.timer=0;state.r56BridgeQueue=0;removeEventListener("keyup",onSpyTabKeyUp,true);try{state.spyInventoryObserver?.disconnect?.()}catch(_){}try{state.r56BridgeObserver?.disconnect?.()}catch(_){}},{once:true});
   document.body.dataset.v141R57DesktopPrepStability="true";
   window.CCGLostSizzlerV141R57DesktopPrepStability={
-    installStyle,retireR56PeriodicTick,bridgeR56,trapIsActive,contactTick,pruneTimedEnemies,prepareTimedInterwaves,finishTimedInterwaves,installTimedGuard,clampMovementCooldown,recoverAfterStall,
+    installStyle,retireR56PeriodicTick,bridgeR56,syncR56Bridge,queueR56Bridge,installR56BridgeObserver,trapIsActive,contactTick,pruneTimedEnemies,prepareTimedInterwaves,finishTimedInterwaves,installTimedGuard,clampMovementCooldown,recoverAfterStall,
     repairSpyPresence,repairSpyLiveness,spyOpponentDistance,spySwordAllowedFor,repairSpySwordRange,trackSpyHealth,spyHealthBarVisibleFor,chainHas,installSpyDrawGuards,onSpyTabKeyUp,
     constants:{MONITOR_MS,STALL_MS,MAX_TIMED_DT,INTERWAVE_MS,TIMED_ACTIVE_CAP,SPY_SWORD_TILES,SPY_HP_MS},get state(){return state}
   };
