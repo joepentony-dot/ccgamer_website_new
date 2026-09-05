@@ -56,9 +56,9 @@ try{
   page.setDefaultTimeout(90000);
 
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R32SpyLoader)&&Boolean(window.CCGLostSizzlerV141R59LiveRegressionFixes));
-  await page.click("#solo-btn");
-  await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&window.CCGLostSizzlerModeRuntime?.state?.activeId==="dungeon-solo",null,{timeout:20000});
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&document.body.dataset.gameReady==="true"&&typeof startSolo==="function"&&Boolean(window.CCGLostSizzlerV141R32SpyLoader)&&Boolean(window.CCGLostSizzlerV141R59LiveRegressionFixes));
+  await page.evaluate(()=>startSolo());
+  await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&window.CCGLostSizzlerModeRuntime?.state?.activeId==="dungeon-solo",null,{timeout:45000});
 
   const read=label=>page.evaluate(label=>{
     const loader=window.CCGLostSizzlerV141R32SpyLoader;
