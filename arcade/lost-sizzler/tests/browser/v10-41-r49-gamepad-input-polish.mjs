@@ -50,8 +50,10 @@ try{
   await page.evaluate(async()=>{await quitToMenu()});
   await page.waitForFunction(()=>String(mode)==="menu");
   await page.waitForFunction(()=>{const menu=document.getElementById("menu"),button=document.getElementById("split-btn");if(!menu||!button||button.disabled)return false;const menuStyle=getComputedStyle(menu),buttonStyle=getComputedStyle(button),rect=button.getBoundingClientRect();return menuStyle.display!=="none"&&menuStyle.visibility!=="hidden"&&buttonStyle.display!=="none"&&buttonStyle.visibility!=="hidden"&&rect.width>1&&rect.height>1});
+  await page.bringToFront();
+  await page.locator("#split-btn").focus();
   const splitStart=await page.evaluate(async()=>{
-    const button=document.getElementById("split-btn");button.focus();const focused=document.activeElement===button;
+    const button=document.getElementById("split-btn");const focused=document.hasFocus()&&document.activeElement===button;
     const started=await startSplit();
     return{started:Boolean(started),focused,runActive:String(document.body.dataset.runActive||""),mode:String(mode||""),playMode:String(playMode||""),hasP1:Boolean(p1),hasP2:Boolean(p2)}
   });
