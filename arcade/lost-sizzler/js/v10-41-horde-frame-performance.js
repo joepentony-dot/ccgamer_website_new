@@ -48,6 +48,16 @@
     return false
   }
 
+  function originalChainHasMarker(fn,marker){
+    if(typeof fn!=="function")return false;
+    const seen=new Set();let current=fn,depth=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth++<24){
+      try{if(current[marker]===true)return true}catch(_){}
+      seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null
+    }
+    return false
+  }
+
   function unwrapR60LiveSource(fn){
     if(typeof fn!=="function")return null;
     const seen=new Set();let current=fn,depth=0;
@@ -62,14 +72,16 @@
     if(!isHorde()||!timing?.state||!live||typeof live.updateHordeLive!=="function")return false;
     const current=live.updateHordeLive;
     if(current===state.r60HordeLiveOwner||originalChainContains(current,state.r60HordeLiveOwner))return true;
-    const source=unwrapR60LiveSource(current);if(typeof source!=="function")return false;
+    const timingOwner=timing.state.liveOwner,retainsTimingOwner=typeof timingOwner==="function"&&originalChainContains(current,timingOwner);
+    const source=retainsTimingOwner?current:unwrapR60LiveSource(current);if(typeof source!=="function")return false;
     try{
       const wrapped=function updateHordeLiveV141R60FinalOwner(dt){
         const active=isHorde(),timingState=timing.state,elapsed=active&&Number(timingState?.currentElapsed||0)>0?Number(timingState.currentElapsed):Number(dt)||0;
-        if(active)timingState.liveElapsedFrames=Number(timingState.liveElapsedFrames||0)+1;
+        if(active&&!retainsTimingOwner)timingState.liveElapsedFrames=Number(timingState.liveElapsedFrames||0)+1;
         return source.call(this,elapsed)
       };
       wrapped.__ccgV141R60RealElapsed=true;wrapped.__ccgV141R60FinalLiveOwner=true;wrapped.__ccgOriginal=source;
+      if(originalChainHasMarker(source,"__ccgV141UiPerformanceLive"))wrapped.__ccgV141UiPerformanceLive=true;
       const replacing=typeof state.r60HordeLiveOwner==="function";
       state.r60HordeLiveOwner=wrapped;live.updateHordeLive=wrapped;state.r60HordeLiveOwnerInstalls++;if(replacing)state.r60HordeLiveOwnerReassertions++;
       return true
