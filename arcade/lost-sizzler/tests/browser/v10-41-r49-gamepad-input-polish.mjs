@@ -49,9 +49,8 @@ try{
 
   await page.evaluate(async()=>{await quitToMenu()});
   await page.waitForFunction(()=>String(mode)==="menu");
-  await page.locator("#split-btn").focus();
   const splitStart=await page.evaluate(async()=>{
-    const button=document.getElementById("split-btn"),focused=document.activeElement===button;
+    const button=document.getElementById("split-btn");button.focus();const focused=document.activeElement===button;
     const started=await startSplit();
     return{started:Boolean(started),focused,runActive:String(document.body.dataset.runActive||""),mode:String(mode||""),playMode:String(playMode||""),hasP1:Boolean(p1),hasP2:Boolean(p2)}
   });
