@@ -21,7 +21,7 @@ The accepted Stage 7-9 architecture remains fixed while Stage 10 proceeds:
 
 - R59 remains the authoritative shared RAF owner and Solo simulation owner.
 - R60 Horde ownership and bounded catch-up remain unchanged.
-- Spy runs through the authoritative `spy` mode-controller boundary and its isolated update path.
+- Spy runs through the authoritative `spy-online` mode-controller boundary and its isolated update path.
 - Stage 10 must not introduce a new shared RAF, global gameplay poll, parallel damage owner or replacement Solo/Horde clock.
 
 ## Stage 10 reconstruction order
@@ -45,7 +45,7 @@ The safest next unit is a focused browser contract for **real Spy launch + lazy-
 
 It should measure the existing runtime before changing it and require:
 
-- the authoritative controller to report `spy`;
+- the authoritative controller to report `spy-online`;
 - r29 isolation and r32 loader/search-owner readiness;
 - no r32 polling timer;
 - one stable isolated update/movement/damage composition;
