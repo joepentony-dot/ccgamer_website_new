@@ -41,6 +41,35 @@ const splitActivationMatches=source.split(splitActivationTarget).length-1;
 assert.equal(splitActivationMatches,1,"the deterministic browser harness must find exactly one split-screen activation timeout target");
 source=source.replace(splitActivationTarget,splitActivationReplacement);
 
+const stationaryGunSetupTarget=`      input.clear();bullets.length=0;p1.firearmUnlocked=true;p1.weapon={id:"browser-facing-gun",shots:1,power:1,ttl:40,delay:1,element:"energy"};p1.mana=5;p1.maxMana=Math.max(5,Number(p1.maxMana||5));p1.dir={...dir};p1.hitStunMs=0;fire1=0;fireBuffer1=0;
+      return{position:{x:p1.x,y:p1.y},dir:{...p1.dir},mode};`;
+const stationaryGunSetupReplacement=`      input.clear();bullets.length=0;p1.firearmUnlocked=true;p1.weapon={id:"browser-facing-gun",shots:1,power:1,ttl:40,delay:1,element:"energy"};p1.mana=5;p1.maxMana=Math.max(5,Number(p1.maxMana||5));p1.dir={...dir};p1.hitStunMs=0;fire1=0;fireBuffer1=0;
+      window.__browserStationaryGunShot=null;
+      window.__browserStationaryGunSpawnBullet=spawnBullet;
+      spawnBullet=(bullet,remoteShot)=>{
+        if(!window.__browserStationaryGunShot&&bullet?.owner===p1.id&&bullet?.style==="browser-facing-gun")window.__browserStationaryGunShot={dx:bullet.dx,dy:bullet.dy};
+        return window.__browserStationaryGunSpawnBullet(bullet,remoteShot);
+      };
+      return{position:{x:p1.x,y:p1.y},dir:{...p1.dir},mode};`;
+const stationaryGunSetupMatches=source.split(stationaryGunSetupTarget).length-1;
+assert.equal(stationaryGunSetupMatches,1,"the deterministic browser harness must find exactly one stationary-gun setup target");
+source=source.replace(stationaryGunSetupTarget,stationaryGunSetupReplacement);
+
+const stationaryGunSampleTarget=`    await state.page.keyboard.press("Space",{delay:20});
+    await state.page.waitForTimeout(45);
+    const stationaryGun=await state.page.evaluate(()=>{const shot=bullets.find(b=>b.owner===p1.id&&b.style==="browser-facing-gun");return{shot:shot?{dx:shot.dx,dy:shot.dy}:null,playerDir:{...p1.dir},mana:p1.mana,moving:Boolean(d1()),mode,fire1,fireBuffer1}});`;
+const stationaryGunSampleReplacement=`    await state.page.keyboard.press("Space",{delay:20});
+    try{await state.page.waitForFunction(()=>Boolean(window.__browserStationaryGunShot),null,{timeout:2500})}catch(_){}
+    const stationaryGun=await state.page.evaluate(()=>{
+      const shot=window.__browserStationaryGunShot?{...window.__browserStationaryGunShot}:null;
+      if(window.__browserStationaryGunSpawnBullet){spawnBullet=window.__browserStationaryGunSpawnBullet;delete window.__browserStationaryGunSpawnBullet}
+      delete window.__browserStationaryGunShot;
+      return{shot,playerDir:{...p1.dir},mana:p1.mana,moving:Boolean(d1()),mode,fire1,fireBuffer1};
+    });`;
+const stationaryGunSampleMatches=source.split(stationaryGunSampleTarget).length-1;
+assert.equal(stationaryGunSampleMatches,1,"the deterministic browser harness must find exactly one stationary-gun sampling target");
+source=source.replace(stationaryGunSampleTarget,stationaryGunSampleReplacement);
+
 const readyHelperTarget=`async function waitForReady(state,label){
   await withTimeout(state.page.waitForFunction(()=>document.body.dataset.gameReady==="true",null,{timeout:15000}),STAGE_TIMEOUT_MS,\`${"${label}"} gameReady\`);
 }`;
