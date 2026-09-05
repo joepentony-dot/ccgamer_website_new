@@ -77,7 +77,10 @@
     try{
       const wrapped=function updateHordeLiveV141R60FinalOwner(dt){
         const active=isHorde(),timingState=timing.state,elapsed=active&&Number(timingState?.currentElapsed||0)>0?Number(timingState.currentElapsed):Number(dt)||0;
-        if(active&&!retainsTimingOwner)timingState.liveElapsedFrames=Number(timingState.liveElapsedFrames||0)+1;
+        if(active&&!retainsTimingOwner){
+          timingState.liveElapsedFrames=Number(timingState.liveElapsedFrames||0)+1;
+          if(typeof timing.runHordeLiveElapsed==="function")return timing.runHordeLiveElapsed(source,this,elapsed)
+        }
         return source.call(this,elapsed)
       };
       wrapped.__ccgV141R60RealElapsed=true;wrapped.__ccgV141R60FinalLiveOwner=true;wrapped.__ccgOriginal=source;
