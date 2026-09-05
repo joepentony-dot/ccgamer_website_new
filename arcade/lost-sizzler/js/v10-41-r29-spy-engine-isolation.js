@@ -373,5 +373,5 @@
   runtimeRegistry.runtimes[MODE_ID]={id:MODE_ID,isolatedRules:true,sharedRenderer:true,update:isolatedUpdate,buildWorld:buildCompactWorld};
   runtimeRegistry.current=()=>spyActive()?MODE_ID:String(document.body?.dataset?.specialMode||"dungeon");
   window.CCGLostSizzlerModeRuntime=runtimeRegistry;
-  window.CCGLostSizzlerV141R29SpyEngine={enterIsolation,leaveIsolation,isolatedUpdate,attemptMove,buildCompactWorld,compactLogicalMap,sanitiseSharedDungeonState,updatePrompt,get state(){return state}};
+  window.CCGLostSizzlerV141R29SpyEngine={enterIsolation,leaveIsolation,isolatedUpdate,attemptMove,buildCompactWorld,compactLogicalMap,sanitiseSharedDungeonState,updatePrompt,moveOwner:spyMoveOwner,get state(){return state}};
 })();
