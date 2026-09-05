@@ -53,8 +53,8 @@ try{
 
   console.log("[Stage 10 Spy combat] establish deterministic co-room opponent and damage-owner baseline");
   const fixture=await page.evaluate(()=>{
-    const active=window.CCGLostSizzlerSpecialModes.active,m=active.state,r29=window.CCGLostSizzlerV141R29SpyEngine,r58=window.CCGLostSizzlerV141R58SpyOverhaul;
-    window.CCGLostSizzlerV141R32SpyOverhaul?.buildOverhaulWorld?.(false);
+    const active=window.CCGLostSizzlerSpecialModes.active,m=active.state,r29=window.CCGLostSizzlerV141R29SpyEngine,r32=window.CCGLostSizzlerV141R32SpyOverhaul,r58=window.CCGLostSizzlerV141R58SpyOverhaul;
+    r32?.buildOverhaulWorld?.(false);
     r58.tick();
     const me=m.players.find(row=>String(row.id)===String(p1.id))||m.players[0],other=m.players.find(row=>row!==me);
     if(!me||!other)throw new Error("Stage 10 Spy combat requires two agents");
@@ -74,7 +74,7 @@ try{
     return{
       meId:String(me.id),otherId:String(other.id),roomId:String(room.id),deathX:cx+1,deathY:cy,
       otherHp:Number(other.hp),otherTime:Number(other.timeRemainingMs),meKnockouts:Number(me.knockouts||0),
-      attacks:Number(r29.state.attacks||0),blocked:Number(r29.state.dungeonDamageBlocked||0),
+      attacks:Number(r32?.state?.attacks||0),blocked:Number(r29.state.dungeonDamageBlocked||0),
       combatKills:Number(r58.state.combatKills||0),penalties:Number(r58.state.timePenalties||0),lootTransfers:Number(r58.state.lootTransfers||0),respawns:Number(r58.state.respawns||0),
       chain:chain(),
       r56:compact(window.CCGLostSizzlerV141R56PlaytestCompletion?.state),
@@ -85,12 +85,12 @@ try{
 
   console.log("[Stage 10 Spy combat] held Space produces a non-lethal opponent-only hit through isolated runtime");
   await page.keyboard.down("Space");
-  await page.waitForFunction(before=>Number(window.CCGLostSizzlerV141R29SpyEngine.state.attacks||0)>before,fixture.attacks);
+  await page.waitForFunction(before=>Number(window.CCGLostSizzlerV141R32SpyOverhaul?.state?.attacks||0)>before,fixture.attacks);
   await page.keyboard.up("Space");
   const first=await page.evaluate(({meId,otherId})=>{
-    const m=window.CCGLostSizzlerSpecialModes.active.state,r29=window.CCGLostSizzlerV141R29SpyEngine;
+    const m=window.CCGLostSizzlerSpecialModes.active.state,r29=window.CCGLostSizzlerV141R29SpyEngine,r32=window.CCGLostSizzlerV141R32SpyOverhaul;
     const me=m.players.find(row=>String(row.id)===meId),other=m.players.find(row=>String(row.id)===otherId);
-    return{meHp:Number(me?.hp),otherHp:Number(other?.hp),otherStatus:String(other?.status),otherTime:Number(other?.timeRemainingMs),knockouts:Number(me?.knockouts||0),weaponUses:Number(me?.weapon?.uses),attacks:Number(r29.state.attacks||0),blocked:Number(r29.state.dungeonDamageBlocked||0)}
+    return{meHp:Number(me?.hp),otherHp:Number(other?.hp),otherStatus:String(other?.status),otherTime:Number(other?.timeRemainingMs),knockouts:Number(me?.knockouts||0),weaponUses:Number(me?.weapon?.uses),attacks:Number(r32?.state?.attacks||0),blocked:Number(r29.state.dungeonDamageBlocked||0)}
   },fixture);
   assert.equal(first.meHp,6,"Spy attack must not damage the attacker");
   assert.equal(first.otherHp,1,"first Stage 10 baton hit must apply only its two points of Spy damage");
@@ -105,18 +105,18 @@ try{
   await page.keyboard.down("Space");
   await page.waitForFunction(({before,id})=>{
     const m=window.CCGLostSizzlerSpecialModes.active?.state,other=m?.players?.find(row=>String(row.id)===String(id));
-    return Number(window.CCGLostSizzlerV141R29SpyEngine.state.attacks||0)>before&&String(other?.status)==="ghost";
+    return Number(window.CCGLostSizzlerV141R32SpyOverhaul?.state?.attacks||0)>before&&String(other?.status)==="ghost";
   },{before:first.attacks,id:fixture.otherId});
   await page.keyboard.up("Space");
   const lethal=await page.evaluate(({meId,otherId})=>{
-    const m=window.CCGLostSizzlerSpecialModes.active.state,r29=window.CCGLostSizzlerV141R29SpyEngine,r58=window.CCGLostSizzlerV141R58SpyOverhaul;
+    const m=window.CCGLostSizzlerSpecialModes.active.state,r29=window.CCGLostSizzlerV141R29SpyEngine,r32=window.CCGLostSizzlerV141R32SpyOverhaul,r58=window.CCGLostSizzlerV141R58SpyOverhaul;
     const me=m.players.find(row=>String(row.id)===meId),other=m.players.find(row=>String(row.id)===otherId);
     const chain=()=>{const seen=new Set(),rows=[];let fn=window.hurtPlayer;while(typeof fn==="function"&&!seen.has(fn)&&rows.length<64){seen.add(fn);rows.push({name:String(fn.name||""),spy:Boolean(fn.__ccgV141SpyDamageBoundary),r56:Boolean(fn.__ccgV141R56EnvironmentDamage),r60:Boolean(fn.__ccgV141R60EnvironmentSeal)});fn=typeof fn.__ccgOriginal==="function"?fn.__ccgOriginal:null}return rows};
     return{
       state:String(m.state),round:Number(m.round),winner:m.matchWinnerId??null,
       me:{hp:Number(me?.hp),knockouts:Number(me?.knockouts||0),objectives:[...(me?.objectives||[])],counter:me?.counter||null,charges:Number(me?.trapCharges||0),weaponUses:Number(me?.weapon?.uses)},
       other:{hp:Number(other?.hp),status:String(other?.status),time:Number(other?.timeRemainingMs),deathRoom:String(other?.r58DeathRoomId||""),respawnAt:Number(other?.r58RespawnAt||0),invulnerableUntil:Number(other?.invulnerableUntil||0),loose:other?.looseItem??null,counter:other?.counter??null,charges:Number(other?.trapCharges||0),deathKind:String(other?.r58Death?.kind||"")},
-      attacks:Number(r29.state.attacks||0),blocked:Number(r29.state.dungeonDamageBlocked||0),
+      attacks:Number(r32?.state?.attacks||0),blocked:Number(r29.state.dungeonDamageBlocked||0),
       combatKills:Number(r58.state.combatKills||0),penalties:Number(r58.state.timePenalties||0),lootTransfers:Number(r58.state.lootTransfers||0),chain:chain()
     }
   },fixture);
