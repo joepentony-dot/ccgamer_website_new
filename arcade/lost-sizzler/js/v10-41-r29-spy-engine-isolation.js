@@ -320,7 +320,7 @@
 
   function enterIsolation(){
     if(state.isolated){
-      if(spyActive()&&window.movePlayer!==spyMoveOwner){window.movePlayer=spyMoveOwner;state.moveReassertions++}
+      if(spyActive()&&!ownerChainHas(window.movePlayer,spyMoveOwner)){window.movePlayer=spyMoveOwner;state.moveReassertions++}
       return true
     }
     if(!spyActive())return false;
