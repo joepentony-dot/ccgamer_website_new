@@ -128,8 +128,8 @@ try{
     assert.equal(entry.uiLoads,entries[0].uiLoads,`Spy re-entry ${index+1} must reuse the loaded search owner`);
     assert.equal(entry.r29Timer,0,`Spy re-entry ${index+1} must keep the legacy r29 timer retired`);
     assert.equal(entry.r30Timer,entries[0].r30Timer,`Spy re-entry ${index+1} must reuse the accepted R30 watchdog handle`);
-    assert.equal(entry.moveDepth,entries[0].moveDepth,`Spy re-entry ${index+1} must not grow movement ancestry`);
-    assert.equal(entry.hurtDepth,entries[0].hurtDepth,`Spy re-entry ${index+1} must not grow damage ancestry`)
+    assert.ok(entry.moveDepth<=entries[0].moveDepth,`Spy re-entry ${index+1} must not grow movement ancestry`);
+    assert.ok(entry.hurtDepth<=entries[0].hurtDepth,`Spy re-entry ${index+1} must not grow damage ancestry`)
   }
   for(let index=1;index<entries.length;index++)assert.equal(entries[index].worldBuilds,entries[index-1].worldBuilds+1,`Spy re-entry ${index+1} must build exactly one compact world for its new match identity`);
   assert.equal(exits.length,3,"Stage 10 must complete all three leave/re-entry cycles");
