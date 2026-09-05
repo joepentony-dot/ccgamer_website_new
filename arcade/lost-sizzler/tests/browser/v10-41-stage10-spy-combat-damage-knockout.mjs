@@ -65,7 +65,7 @@ try{
     me.status="active";me.hp=me.maxHp=6;me.roomId=room.id;me.x=cx;me.y=cy;me.timeRemainingMs=500000;me.invulnerableUntil=0;me.knockouts=0;
     me.weapon={id:"stage10-baton",name:"Stage 10 Baton",uses:4,damage:2,knockback:0,effect:"bonk",effectMs:100};
     me.hasCase=false;me.objectives=[];me.looseItem=null;me.counter=null;me.trapCharges=1;
-    other.status="active";other.hp=3;other.maxHp=6;other.roomId=room.id;other.x=cx+1;other.y=cy;other.timeRemainingMs=500000;other.invulnerableUntil=0;other.knockouts=0;
+    other.status="active";other.hp=3;other.maxHp=6;other.roomId=room.id;other.x=cx+1;other.y=cy;other.timeRemainingMs=500000;other.invulnerableUntil=0;other.knockouts=0;other.r58PenaltyCount=0;
     other.hasCase=false;other.objectives=[];other.looseItem="key";other.weapon={id:"captured-tool",name:"Captured Tool",uses:2,damage:1};other.counter="scanner";other.trapCharges=2;
     p1.x=p1.rx=cx;p1.y=p1.ry=cy;p1.health=6;p1.maxHealth=6;
     remote.set(other.id,{...p1,id:other.id,name:other.name,x:cx+1,y:cy,rx:cx+1,ry:cy,health:3,maxHealth:6,lastSeen:performance.now()});
@@ -73,7 +73,7 @@ try{
     const compact=s=>s?JSON.parse(JSON.stringify(s)):null;
     return{
       meId:String(me.id),otherId:String(other.id),roomId:String(room.id),deathX:cx+1,deathY:cy,
-      otherHp:Number(other.hp),otherTime:Number(other.timeRemainingMs),meKnockouts:Number(me.knockouts||0),
+      otherHp:Number(other.hp),otherTime:Number(other.timeRemainingMs),otherPenaltyCount:Number(other.r58PenaltyCount||0),meKnockouts:Number(me.knockouts||0),
       attacks:Number(r32?.state?.attacks||0),blocked:Number(r29.state.dungeonDamageBlocked||0),
       combatKills:Number(r58.state.combatKills||0),penalties:Number(r58.state.timePenalties||0),lootTransfers:Number(r58.state.lootTransfers||0),respawns:Number(r58.state.respawns||0),
       chain:chain(),
@@ -88,20 +88,26 @@ try{
   await page.waitForFunction(before=>Number(window.CCGLostSizzlerV141R32SpyOverhaul?.state?.attacks||0)>before,fixture.attacks);
   await page.keyboard.up("Space");
   const first=await page.evaluate(({meId,otherId})=>{
-    const m=window.CCGLostSizzlerSpecialModes.active.state,r29=window.CCGLostSizzlerV141R29SpyEngine,r32=window.CCGLostSizzlerV141R32SpyOverhaul;
+    const m=window.CCGLostSizzlerSpecialModes.active.state,r29=window.CCGLostSizzlerV141R29SpyEngine,r32=window.CCGLostSizzlerV141R32SpyOverhaul,r58=window.CCGLostSizzlerV141R58SpyOverhaul;
     const me=m.players.find(row=>String(row.id)===meId),other=m.players.find(row=>String(row.id)===otherId);
-    return{meHp:Number(me?.hp),otherHp:Number(other?.hp),otherStatus:String(other?.status),otherTime:Number(other?.timeRemainingMs),knockouts:Number(me?.knockouts||0),weaponUses:Number(me?.weapon?.uses),attacks:Number(r32?.state?.attacks||0),blocked:Number(r29.state.dungeonDamageBlocked||0)}
+    return{meHp:Number(me?.hp),otherHp:Number(other?.hp),otherStatus:String(other?.status),otherTime:Number(other?.timeRemainingMs),otherPenaltyCount:Number(other?.r58PenaltyCount||0),knockouts:Number(me?.knockouts||0),weaponUses:Number(me?.weapon?.uses),attacks:Number(r32?.state?.attacks||0),penalties:Number(r58.state.timePenalties||0),blocked:Number(r29.state.dungeonDamageBlocked||0)}
   },fixture);
   assert.equal(first.meHp,6,"Spy attack must not damage the attacker");
   assert.equal(first.otherHp,1,"first Stage 10 baton hit must apply only its two points of Spy damage");
   assert.equal(first.otherStatus,"active","non-lethal Spy damage must leave the opponent active");
-  assert.equal(first.otherTime,fixture.otherTime,"non-lethal Spy damage must not deduct the knockout clock penalty");
+  assert.ok(first.otherTime<=fixture.otherTime&&first.otherTime>fixture.otherTime-2000,"non-lethal Spy damage may only show ordinary live-clock progression");
+  assert.equal(first.otherPenaltyCount,fixture.otherPenaltyCount,"non-lethal Spy damage must not increment the victim penalty count");
+  assert.equal(first.penalties,fixture.penalties,"non-lethal Spy damage must not increment the R58 penalty counter");
   assert.equal(first.knockouts,fixture.meKnockouts,"non-lethal Spy damage must not increment knockout count");
   assert.equal(first.weaponUses,3,"real Space attack must consume one finite weapon use");
   assert.equal(first.blocked,fixture.blocked,"Spy-vs-Spy combat must not route through the shared Dungeon hurtPlayer boundary");
 
   console.log("[Stage 10 Spy combat] second real Space hit uses R58 knockout, penalty and loot-transfer lifecycle");
   await page.waitForTimeout(470);
+  const beforeLethal=await page.evaluate(otherId=>{
+    const m=window.CCGLostSizzlerSpecialModes.active.state,r58=window.CCGLostSizzlerV141R58SpyOverhaul,other=m.players.find(row=>String(row.id)===String(otherId));
+    return{time:Number(other?.timeRemainingMs),penaltyCount:Number(other?.r58PenaltyCount||0),penalties:Number(r58.state.timePenalties||0)}
+  },fixture.otherId);
   await page.keyboard.down("Space");
   await page.waitForFunction(({before,id})=>{
     const m=window.CCGLostSizzlerSpecialModes.active?.state,other=m?.players?.find(row=>String(row.id)===String(id));
@@ -115,14 +121,17 @@ try{
     return{
       state:String(m.state),round:Number(m.round),winner:m.matchWinnerId??null,
       me:{hp:Number(me?.hp),knockouts:Number(me?.knockouts||0),objectives:[...(me?.objectives||[])],counter:me?.counter||null,charges:Number(me?.trapCharges||0),weaponUses:Number(me?.weapon?.uses)},
-      other:{hp:Number(other?.hp),status:String(other?.status),time:Number(other?.timeRemainingMs),deathRoom:String(other?.r58DeathRoomId||""),respawnAt:Number(other?.r58RespawnAt||0),invulnerableUntil:Number(other?.invulnerableUntil||0),loose:other?.looseItem??null,counter:other?.counter??null,charges:Number(other?.trapCharges||0),deathKind:String(other?.r58Death?.kind||"")},
+      other:{hp:Number(other?.hp),status:String(other?.status),time:Number(other?.timeRemainingMs),penaltyCount:Number(other?.r58PenaltyCount||0),deathRoom:String(other?.r58DeathRoomId||""),respawnAt:Number(other?.r58RespawnAt||0),invulnerableUntil:Number(other?.invulnerableUntil||0),loose:other?.looseItem??null,counter:other?.counter??null,charges:Number(other?.trapCharges||0),deathKind:String(other?.r58Death?.kind||"")},
       attacks:Number(r32?.state?.attacks||0),blocked:Number(r29.state.dungeonDamageBlocked||0),
       combatKills:Number(r58.state.combatKills||0),penalties:Number(r58.state.timePenalties||0),lootTransfers:Number(r58.state.lootTransfers||0),chain:chain()
     }
   },fixture);
   assert.equal(lethal.other.hp,0);
   assert.equal(lethal.other.status,"ghost");
-  assert.equal(lethal.other.time,fixture.otherTime-30000,"lethal Spy combat must deduct exactly 30 seconds");
+  const lethalClockDrop=beforeLethal.time-lethal.other.time;
+  assert.ok(lethalClockDrop>=30000&&lethalClockDrop<32000,`lethal Spy combat must apply the 30-second penalty plus only ordinary live-clock progression (observed ${lethalClockDrop}ms)`);
+  assert.equal(lethal.other.penaltyCount,beforeLethal.penaltyCount+1,"lethal Spy combat must increment the victim penalty count exactly once");
+  assert.equal(lethal.penalties,beforeLethal.penalties+1,"lethal Spy combat must increment the R58 penalty counter exactly once");
   assert.equal(lethal.other.deathRoom,fixture.roomId);
   assert.ok(lethal.other.respawnAt>Date.now(),"lethal Spy combat must schedule the R58 respawn beat");
   assert.equal(lethal.other.deathKind,"combat");
