@@ -83,7 +83,7 @@ try{
     }
     if(!line)throw new Error("Stage 10 Spy movement fixture requires a clear two-step room line");
     setPlayer(line.x,line.y,line.logicalRoomId);
-    const cadenceNow=performance.now();engine.state.lastMoveAt=cadenceNow;r32.state.lastMoveAt=cadenceNow+60000;
+    const cadenceNow=performance.now();engine.state.lastMoveAt=cadenceNow+60000;r32.state.lastMoveAt=cadenceNow+60000;
     const cadence={startX:Number(p1.x),startY:Number(p1.y),dx:line.dx,dy:line.dy,code:line.code,moves:Number(engine.state.moves||0),retiredLastMoveAt:Number(engine.state.lastMoveAt||0),ownerLastMoveAt:Number(r32.state.lastMoveAt||0)};
     return{furnitureBefore,furnitureMoved,furnitureAfter,doorBefore,atDoor,doorAfter,cadence,beforeCounters,afterDirectCounters:counters(),activeId:window.CCGLostSizzlerModeRuntime?.snapshot?.().activeId||"",specialMode:document.body.dataset.specialMode||""}
   });
@@ -126,7 +126,7 @@ try{
     return result
   });
   await page.keyboard.up(direct.cadence.code);
-  await page.evaluate(()=>{window.CCGLostSizzlerV141R32SpyOverhaul.state.lastMoveAt=performance.now()});
+  await page.evaluate(()=>{const now=performance.now();window.CCGLostSizzlerV141R29SpyEngine.state.lastMoveAt=now;window.CCGLostSizzlerV141R32SpyOverhaul.state.lastMoveAt=now});
   await page.waitForTimeout(80);
   assert.deepEqual({x:paced.x,y:paced.y},{x:direct.cadence.startX+direct.cadence.dx,y:direct.cadence.startY+direct.cadence.dy},"held Spy movement must make exactly one tile step after the 220 ms walk governor expires");
   assert.equal(paced.retiredMovesAfter,paced.retiredMovesBefore,"the paced R32 keyboard step must remain outside the retired R29 movement counter");
