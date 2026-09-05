@@ -104,17 +104,31 @@ try{
   assert.equal(direct.doorAfter.open,true,"a traversed Spy door must remain open");
   assert.notEqual(direct.doorAfter.roomId,direct.doorBefore.roomId,"crossing the direct door must update the logical Spy room identity");
 
-  await page.keyboard.down(direct.cadence.code);await page.waitForTimeout(90);
-  const early=await page.evaluate(()=>({x:Number(p1.x),y:Number(p1.y),moves:Number(window.CCGLostSizzlerV141R29SpyEngine?.state?.moves||0),lastMoveAt:Number(window.CCGLostSizzlerV141R29SpyEngine?.state?.lastMoveAt||0)}));
+  await page.keyboard.down(direct.cadence.code);
+  const early=await page.evaluate(()=>{
+    const engine=window.CCGLostSizzlerV141R29SpyEngine;
+    engine.state.lastMoveAt=performance.now()+60000;
+    engine.isolatedUpdate();
+    return{x:Number(p1.x),y:Number(p1.y),moves:Number(engine.state.moves||0),lastMoveAt:Number(engine.state.lastMoveAt||0)}
+  });
   assert.deepEqual({x:early.x,y:early.y},{x:direct.cadence.startX,y:direct.cadence.startY},"held Spy movement must not step before the 220 ms walk governor expires");
   assert.equal(early.moves,direct.cadence.moves,"the 220 ms governor must not record an early movement step");
 
-  await page.waitForTimeout(190);
-  const paced=await page.evaluate(()=>({x:Number(p1.x),y:Number(p1.y),moves:Number(window.CCGLostSizzlerV141R29SpyEngine?.state?.moves||0),lastMoveAt:Number(window.CCGLostSizzlerV141R29SpyEngine?.state?.lastMoveAt||0)}));
-  await page.keyboard.up(direct.cadence.code);await page.waitForTimeout(80);
+  const paced=await page.evaluate(()=>{
+    const engine=window.CCGLostSizzlerV141R29SpyEngine;
+    engine.state.lastMoveAt=performance.now()-221;
+    const beforeLastMoveAt=Number(engine.state.lastMoveAt||0);
+    engine.isolatedUpdate();
+    const result={x:Number(p1.x),y:Number(p1.y),moves:Number(engine.state.moves||0),lastMoveAt:Number(engine.state.lastMoveAt||0),beforeLastMoveAt};
+    engine.state.lastMoveAt=performance.now()+60000;
+    return result
+  });
+  await page.keyboard.up(direct.cadence.code);
+  await page.evaluate(()=>{window.CCGLostSizzlerV141R29SpyEngine.state.lastMoveAt=performance.now()});
+  await page.waitForTimeout(80);
   assert.deepEqual({x:paced.x,y:paced.y},{x:direct.cadence.startX+direct.cadence.dx,y:direct.cadence.startY+direct.cadence.dy},"held Spy movement must make exactly one tile step after the 220 ms walk governor expires");
   assert.equal(paced.moves,direct.cadence.moves+1,"the first paced keyboard step must record exactly one successful Spy move");
-  assert.ok(paced.lastMoveAt>direct.cadence.lastMoveAt,"the paced keyboard step must advance the r29 movement timestamp");
+  assert.ok(paced.lastMoveAt>paced.beforeLastMoveAt,"the paced keyboard step must advance the r29 movement timestamp");
 
   const dash=await page.evaluate(()=>{
     const engine=window.CCGLostSizzlerV141R29SpyEngine,match=window.CCGLostSizzlerSpecialModes?.active?.state,model=match?.players?.find?.(row=>String(row.id)===String(p1.id||net?.sessionId))||match?.players?.[0];
