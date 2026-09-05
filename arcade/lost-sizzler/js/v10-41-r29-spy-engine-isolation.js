@@ -319,10 +319,7 @@
   }
 
   function enterIsolation(){
-    if(state.isolated){
-      if(spyActive()&&!ownerChainHas(window.movePlayer,spyMoveOwner)){window.movePlayer=spyMoveOwner;state.moveReassertions++}
-      return true
-    }
+    if(state.isolated)return true;
     if(!spyActive())return false;
     ensureModeStyles();state.baseMove=window.movePlayer;
     const currentHurt=window.hurtPlayer,hurtAlreadyComposed=ownerChainHas(currentHurt,spyHurtOwner);
