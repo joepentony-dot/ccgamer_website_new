@@ -107,14 +107,16 @@ try{
 
   await page.keyboard.down(direct.cadence.code);
   const early=await page.evaluate(()=>{
-    const engine=window.CCGLostSizzlerV141R29SpyEngine,owner=window.CCGLostSizzlerV141R32SpyOverhaul;
-    const ownerBefore=Number(owner.state.lastMoveAt||0),retiredMovesBefore=Number(engine.state.moves||0);
+    const engine=window.CCGLostSizzlerV141R29SpyEngine,owner=window.CCGLostSizzlerV141R32SpyOverhaul,runtime=window.CCGLostSizzlerModeRuntime;
+    const before={x:Number(p1.x),y:Number(p1.y),ownerLastMoveAt:Number(owner.state.lastMoveAt||0),retiredLastMoveAt:Number(engine.state.lastMoveAt||0),retiredMoves:Number(engine.state.moves||0),spyRuleFrames:Number(runtime?.state?.spyRuleFrames||0)};
     engine.isolatedUpdate();
-    return{x:Number(p1.x),y:Number(p1.y),ownerBefore,ownerAfter:Number(owner.state.lastMoveAt||0),retiredMovesBefore,retiredMovesAfter:Number(engine.state.moves||0)}
+    return{before,x:Number(p1.x),y:Number(p1.y),ownerAfter:Number(owner.state.lastMoveAt||0),retiredMovesAfter:Number(engine.state.moves||0),spyRuleFramesAfter:Number(runtime?.state?.spyRuleFrames||0)}
   });
+  console.log("STAGE10_SPY_EARLY_MOVEMENT_DIAGNOSTIC "+JSON.stringify({cadence:direct.cadence,early}));
+  assert.deepEqual({x:early.before.x,y:early.before.y},{x:direct.cadence.startX,y:direct.cadence.startY},"held Spy movement must not step between keydown and the explicit controller sample");
   assert.deepEqual({x:early.x,y:early.y},{x:direct.cadence.startX,y:direct.cadence.startY},"held Spy movement must not step before the 220 ms walk governor expires");
-  assert.equal(early.ownerAfter,early.ownerBefore,"the final R32 movement owner must not advance its cadence timestamp before the walk governor expires");
-  assert.equal(early.retiredMovesAfter,early.retiredMovesBefore,"R32-owned keyboard cadence must not revive the retired R29 movement counter");
+  assert.equal(early.ownerAfter,early.before.ownerLastMoveAt,"the final R32 movement owner must not advance its cadence timestamp before the walk governor expires");
+  assert.equal(early.retiredMovesAfter,early.before.retiredMoves,"R32-owned keyboard cadence must not revive the retired R29 movement counter");
 
   const paced=await page.evaluate(()=>{
     const engine=window.CCGLostSizzlerV141R29SpyEngine,owner=window.CCGLostSizzlerV141R32SpyOverhaul;
