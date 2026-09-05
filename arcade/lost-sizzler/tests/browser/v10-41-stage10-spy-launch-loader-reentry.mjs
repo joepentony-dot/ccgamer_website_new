@@ -94,6 +94,7 @@ try{
     assert.equal(entry.loaderError,"",`Spy entry ${cycle} must have no lazy-loader error`);
     assert.equal(entry.uiError,"",`Spy entry ${cycle} must have no search-owner loader error`);
 
+    await page.waitForFunction(startFrames=>Number(window.CCGLostSizzlerV141R29SpyEngine?.state?.controllerFrames||0)>startFrames,entry.controllerFrames,{polling:50,timeout:5000});
     await page.waitForTimeout(650);const stable=await snapshot();
     assert.ok(stable.controllerFrames>entry.controllerFrames,`Spy entry ${cycle} must advance isolated controller frames`);
     assert.equal(stable.worldBuilds,entry.worldBuilds,`Spy entry ${cycle} must not rebuild the compact world on ordinary frames`);
