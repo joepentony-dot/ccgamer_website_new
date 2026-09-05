@@ -36,7 +36,7 @@ The accepted Stage 7-9 architecture remains fixed while Stage 10 proceeds:
 8. **Packet and authority isolation** — qualify host/guest state ownership and ensure Spy packets cannot contaminate Dungeon or Horde network/runtime state.
 9. **Lifecycle transitions** — verify leave-to-menu and repeated Spy re-entry clear held keys, queued actions, modal/UI state and mode-owned timers/listeners without accumulating owners.
 10. **Sustained-session soak** — require stable owner depths, bounded world builds/reassertions, no recurring cross-mode polling and no uncaught browser errors through active play and lifecycle stress.
-11. **Gameplay reconstruction only where evidence requires it** — repair concrete concrete Spy defects one at a time while preserving accepted Solo and Horde contracts.
+11. **Gameplay reconstruction only where evidence requires it** — repair concrete Spy defects one at a time while preserving accepted Solo and Horde contracts.
 12. **Stage 10 acceptance gate** — record exact-head canonical CI and only then proceed to Stage 11 full regression and release review.
 
 ## First implementation slice
