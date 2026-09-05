@@ -253,7 +253,10 @@
         if(!state.spyOwnerHurt)state.spyOwnerHurt=window.hurtPlayer;
         if(typeof state.spyOwnerUpdate==="function"&&window.update!==state.spyOwnerUpdate)window.update=state.spyOwnerUpdate;
         if(typeof state.spyOwnerMove==="function"&&window.movePlayer!==state.spyOwnerMove)window.movePlayer=state.spyOwnerMove;
-        if(typeof state.spyOwnerHurt==="function"&&!chainContains(window.hurtPlayer,state.spyOwnerHurt))window.hurtPlayer=state.spyOwnerHurt;
+        if(typeof state.spyOwnerHurt==="function"){
+          if(chainContains(window.hurtPlayer,state.spyOwnerHurt)){if(window.hurtPlayer!==state.spyOwnerHurt)state.spyOwnerHurt=window.hurtPlayer}
+          else window.hurtPlayer=state.spyOwnerHurt
+        }
       }
       return true;
     }
