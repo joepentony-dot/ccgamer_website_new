@@ -321,7 +321,7 @@
   function enterIsolation(){
     if(state.isolated)return true;
     if(!spyActive())return false;
-    ensureModeStyles();state.baseMove=window.movePlayer;
+    ensureModeStyles();state.baseMove=window.movePlayer;spyMoveOwner.__ccgOriginal=state.baseMove;
     const currentHurt=window.hurtPlayer,hurtAlreadyComposed=ownerChainHas(currentHurt,spyHurtOwner);
     if(!hurtAlreadyComposed){state.baseHurt=currentHurt;spyHurtOwner.__ccgOriginal=currentHurt;window.hurtPlayer=spyHurtOwner}
     else state.baseHurt=typeof spyHurtOwner.__ccgOriginal==="function"?spyHurtOwner.__ccgOriginal:null;
@@ -337,7 +337,7 @@
       const delegate=typeof spyHurtOwner.__ccgOriginal==="function"?spyHurtOwner.__ccgOriginal:state.baseHurt;
       if(typeof delegate==="function")window.hurtPlayer=delegate;
     }
-    restoreLegacyPhysicalBuilder();delete document.body.dataset.spyRuntimeIsolated;setPrompt("");keys.clear();state.trapPulse=false;state.trapHeld=false;state.statusById.clear();state.isolated=false;state.baseMove=state.baseHurt=null;state.lastWorldSignature="";return true;
+    restoreLegacyPhysicalBuilder();delete document.body.dataset.spyRuntimeIsolated;setPrompt("");keys.clear();state.trapPulse=false;state.trapHeld=false;state.statusById.clear();state.isolated=false;spyMoveOwner.__ccgOriginal=null;state.baseMove=state.baseHurt=null;state.lastWorldSignature="";return true;
   }
 
   function monitor(){
