@@ -440,6 +440,7 @@
   }
 
   function wrapMovement(){
+    if(specialType()==="sizzler-saboteurs")return false;
     const current=window.movePlayer;if(typeof current!=="function")return false;
     if(current.__ccgV141R60CadenceSeal){adoptMovementOwner(current);state.moveWrapped=true;state.moveSource=current.__ccgOriginal||state.moveSource;return true}
     const source=current;
