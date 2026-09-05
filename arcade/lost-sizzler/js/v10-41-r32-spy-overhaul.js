@@ -146,7 +146,7 @@
       const archetype=archetypeFor(room,m);room.spyArchetype=archetype.name;room.spyTheme=archetype.theme;
       room.furniture=Array.isArray(room.furniture)?room.furniture:[];
       while(room.furniture.length<7){room.furniture.push({id:`${room.id}-r32-f${room.furniture.length+1}`,type:"table",searched:false,trappedBy:null,contents:null});changed=true}
-      room.furniture=room.furniture.slice(0,8);
+      if(room.furniture.length>8){room.furniture.splice(8);changed=true}
       for(const [index,item] of room.furniture.entries()){
         const next=archetype.types[index%archetype.types.length];if(item.type!==next){item.type=next;changed=true}
         item.spySearchLabel=next==="driveBench"?"WORKBENCH":next==="tapeStack"?"TAPE SHELF":String(next).replace(/([a-z])([A-Z])/g,"$1 $2").toUpperCase()
