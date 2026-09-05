@@ -306,6 +306,25 @@
   }
   spyHurtOwner.__ccgV141R29HordeFriendly=true;spyHurtOwner.__ccgV141SpyDamageBoundary=true;
 
+  function ensureMovementOwner(countRecovery=false){
+    const current=window.movePlayer;
+    if(ownerChainHas(current,spyMoveOwner))return true;
+    if(typeof current==="function"&&current!==spyMoveOwner){state.baseMove=current;spyMoveOwner.__ccgOriginal=current}
+    window.movePlayer=spyMoveOwner;
+    if(countRecovery)state.moveReassertions++;
+    return true;
+  }
+
+  function ensureDamageBoundary(){
+    const current=window.hurtPlayer;
+    if(ownerChainHas(current,spyHurtOwner)){
+      if(typeof state.baseHurt!=="function"&&typeof spyHurtOwner.__ccgOriginal==="function")state.baseHurt=spyHurtOwner.__ccgOriginal;
+      return true;
+    }
+    if(typeof current==="function"&&current!==spyHurtOwner){state.baseHurt=current;spyHurtOwner.__ccgOriginal=current}
+    window.hurtPlayer=spyHurtOwner;return true;
+  }
+
   function suppressLegacyPhysicalBuilder(){
     const polish=window.CCGLostSizzlerModePolishV133;if(!polish||typeof polish.buildSpyPhysical!=="function")return false;
     if(polish.buildSpyPhysical.__ccgV141R29SpyRuntimeNoop)return true;
@@ -319,13 +338,9 @@
   }
 
   function enterIsolation(){
-    if(state.isolated)return true;
     if(!spyActive())return false;
-    ensureModeStyles();state.baseMove=window.movePlayer;spyMoveOwner.__ccgOriginal=state.baseMove;
-    const currentHurt=window.hurtPlayer,hurtAlreadyComposed=ownerChainHas(currentHurt,spyHurtOwner);
-    if(!hurtAlreadyComposed){state.baseHurt=currentHurt;spyHurtOwner.__ccgOriginal=currentHurt;window.hurtPlayer=spyHurtOwner}
-    else state.baseHurt=typeof spyHurtOwner.__ccgOriginal==="function"?spyHurtOwner.__ccgOriginal:null;
-    window.movePlayer=spyMoveOwner;suppressLegacyPhysicalBuilder();
+    if(state.isolated){ensureMovementOwner(true);ensureDamageBoundary();suppressLegacyPhysicalBuilder();return true}
+    ensureModeStyles();ensureMovementOwner(false);ensureDamageBoundary();suppressLegacyPhysicalBuilder();
     document.body.dataset.spyRuntimeIsolated="true";state.isolated=true;state.lastMode=MODE_ID;state.lastMoveAt=0;state.lastAttackAt=0;state.statusById.clear();
     compactLogicalMap();buildCompactWorld(true);sanitiseSharedDungeonState();updatePrompt();return true;
   }
@@ -343,12 +358,7 @@
   function monitor(){
     if(spyActive()){
       if(!state.isolated)enterIsolation();
-      if(state.isolated&&window.movePlayer!==spyMoveOwner){window.movePlayer=spyMoveOwner;state.moveReassertions++}
-      if(state.isolated&&!ownerChainHas(window.hurtPlayer,spyHurtOwner)){
-        const current=window.hurtPlayer;
-        if(typeof current==="function"&&current!==spyHurtOwner){state.baseHurt=current;spyHurtOwner.__ccgOriginal=current}
-        window.hurtPlayer=spyHurtOwner;
-      }
+      else{ensureMovementOwner(true);ensureDamageBoundary()}
       suppressLegacyPhysicalBuilder();return;
     }
     if(state.isolated)leaveIsolation();
