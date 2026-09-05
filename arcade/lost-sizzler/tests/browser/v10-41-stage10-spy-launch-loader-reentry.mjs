@@ -10,6 +10,7 @@ const repo=path.resolve(here,"../../../..");
 const r29Source=fs.readFileSync(path.join(repo,"arcade/lost-sizzler/js/v10-41-r29-spy-engine-isolation.js"),"utf8");
 const r30Source=fs.readFileSync(path.join(repo,"arcade/lost-sizzler/js/v10-41-r30-global-movement-guard.js"),"utf8");
 const r32Source=fs.readFileSync(path.join(repo,"arcade/lost-sizzler/js/v10-41-r32-spy-loader.js"),"utf8");
+const MAX_OBSERVABLE_MOVE_DEPTH=8;
 assert.doesNotMatch(r29Source,/window\.update\s*=/,"Stage 10 must keep Spy on the authoritative mode-controller update boundary");
 assert.match(r30Source,/function stopLegacySpyMonitor\(\)/,"Stage 10 must retain R30 retirement of the legacy r29 Spy monitor");
 assert.match(r30Source,/engine\.state\.timer=0;state\.spyTimerStopped=true/,"R30 must record retirement of the legacy r29 Spy monitor");
@@ -94,6 +95,7 @@ try{
     assert.equal(entry.uiReady,true,`Spy entry ${cycle} must retain the loaded search owner`);
     assert.equal(entry.modeObserverInstalled,true,`Spy entry ${cycle} must retain event-driven loader activation`);
     assert.equal(entry.moveOwners,1,`Spy entry ${cycle} must contain exactly one r29 movement owner: ${JSON.stringify(entry.moveChain)}`);
+    assert.ok(entry.moveDepth<=MAX_OBSERVABLE_MOVE_DEPTH,`Spy entry ${cycle} must keep observable movement ancestry within the accepted ${MAX_OBSERVABLE_MOVE_DEPTH}-function ceiling: ${JSON.stringify(entry.moveChain)}`);
     assert.equal(entry.damageBoundaries,1,`Spy entry ${cycle} must contain exactly one Spy damage boundary`);
     assert.equal(entry.loaderError,"",`Spy entry ${cycle} must have no lazy-loader error`);
     assert.equal(entry.uiError,"",`Spy entry ${cycle} must have no search-owner loader error`);
@@ -106,7 +108,7 @@ try{
     for(const key of ["mapIdentity","playersIdentity","firstPlayerIdentity","roomsIdentity","firstRoomIdentity","firstFurnitureListIdentity","firstFurnitureIdentity","trapsIdentity","extractionIdentity"]){
       assert.equal(stable[key],entry[key],`Spy entry ${cycle} must preserve ${key} through ordinary controller frames`)
     }
-    assert.equal(stable.moveDepth,entry.moveDepth,`Spy entry ${cycle} must keep movement ancestry depth bounded`);
+    assert.equal(stable.moveDepth,entry.moveDepth,`Spy entry ${cycle} must keep movement ancestry depth stable during active play`);
     assert.equal(stable.hurtDepth,entry.hurtDepth,`Spy entry ${cycle} must keep damage ancestry depth bounded`);
     assert.equal(stable.moveReassertions,entry.moveReassertions,`Spy entry ${cycle} must not reassert movement ownership during stable play`);
     assert.equal(stable.updateReassertions,entry.updateReassertions,`Spy entry ${cycle} must not replace shared update ownership`);
@@ -128,7 +130,8 @@ try{
     assert.equal(entry.uiLoads,entries[0].uiLoads,`Spy re-entry ${index+1} must reuse the loaded search owner`);
     assert.equal(entry.r29Timer,0,`Spy re-entry ${index+1} must keep the legacy r29 timer retired`);
     assert.equal(entry.r30Timer,entries[0].r30Timer,`Spy re-entry ${index+1} must reuse the accepted R30 watchdog handle`);
-    assert.ok(entry.moveDepth<=entries[0].moveDepth,`Spy re-entry ${index+1} must not grow movement ancestry`);
+    assert.ok(entry.moveDepth<=MAX_OBSERVABLE_MOVE_DEPTH,`Spy re-entry ${index+1} must keep observable movement ancestry bounded despite accepted opaque finalizers`);
+    assert.equal(entry.moveOwners,1,`Spy re-entry ${index+1} must retain exactly one r29 movement owner`);
     assert.ok(entry.hurtDepth<=entries[0].hurtDepth,`Spy re-entry ${index+1} must not grow damage ancestry`)
   }
   for(let index=1;index<entries.length;index++)assert.equal(entries[index].worldBuilds,entries[index-1].worldBuilds+1,`Spy re-entry ${index+1} must build exactly one compact world for its new match identity`);
