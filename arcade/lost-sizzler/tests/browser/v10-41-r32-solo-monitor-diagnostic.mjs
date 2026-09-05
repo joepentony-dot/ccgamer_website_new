@@ -56,9 +56,19 @@ try{
   page.setDefaultTimeout(90000);
 
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&document.body.dataset.gameReady==="true"&&typeof startSolo==="function"&&Boolean(window.CCGLostSizzlerV141R32SpyLoader)&&Boolean(window.CCGLostSizzlerV141R59LiveRegressionFixes));
-  await page.evaluate(()=>startSolo());
-  await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&window.CCGLostSizzlerModeRuntime?.state?.activeId==="dungeon-solo",null,{timeout:45000});
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&document.body.dataset.gameReady==="true"&&Boolean(document.getElementById("solo-btn"))&&Boolean(window.CCGLostSizzlerV141R32SpyLoader)&&Boolean(window.CCGLostSizzlerV141R59LiveRegressionFixes));
+  await page.click("#solo-btn");
+  await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&playMode==="solo"&&Boolean(p1)&&Boolean(host)&&window.CCGLostSizzlerModeRuntime?.state?.activeId==="dungeon-solo",null,{timeout:45000});
+  const startupBoundary=await page.evaluate(()=>{
+    const before=String(mode||""),panel=document.getElementById("named-dossier-panel"),visible=Boolean(panel&&!panel.classList.contains("hidden"));
+    if(before==="dossier"&&visible)hideNamedDossier();
+    return{before,visible,after:String(mode||""),runActive:document.body.dataset.runActive==="true",controllerId:String(window.CCGLostSizzlerModeRuntime?.state?.activeId||"")};
+  });
+  assert.ok(startupBoundary.before==="playing"||(startupBoundary.before==="dossier"&&startupBoundary.visible),`R32 retirement diagnostic encountered an unexpected Solo startup mode: ${JSON.stringify(startupBoundary)}`);
+  assert.equal(startupBoundary.after,"playing",`R32 retirement diagnostic must begin its sustained sample in active play: ${JSON.stringify(startupBoundary)}`);
+  assert.equal(startupBoundary.runActive,true,"normalising a legitimate startup dossier must preserve the active Solo run");
+  assert.equal(startupBoundary.controllerId,"dungeon-solo","normalising a legitimate startup dossier must preserve canonical Solo ownership");
+  await page.waitForTimeout(120);
 
   const read=label=>page.evaluate(label=>{
     const loader=window.CCGLostSizzlerV141R32SpyLoader;
@@ -92,7 +102,7 @@ try{
   await page.waitForTimeout(5000);
   const sustained=await read("sustained-solo");
 
-  console.log("R32_SOLO_MONITOR_DIAGNOSTIC "+JSON.stringify({baseline,sustained}));
+  console.log("R32_SOLO_MONITOR_DIAGNOSTIC "+JSON.stringify({startupBoundary,baseline,sustained}));
 
   assert.equal(baseline.controllerId,"dungeon-solo","R32 retirement diagnostic requires canonical Solo ownership");
   assert.equal(sustained.controllerId,"dungeon-solo","R32 retirement diagnostic must remain in canonical Solo ownership");
