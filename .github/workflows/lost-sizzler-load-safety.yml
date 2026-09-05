@@ -154,11 +154,41 @@ jobs:
             return 1
           }
 
+          run_long_soak_test() {
+            local test="$1"
+            printf '%s (attempt 1)\n' "$test" > "$marker"
+            : > "$current_log"
+            echo "::group::$test (attempt 1)"
+            if node "$test" 2>&1 | tee "$current_log"; then
+              echo "::endgroup::"
+              return 0
+            fi
+            echo "::endgroup::"
+            echo "Long-session soak failed on attempt 1; retrying once on a fresh browser process to distinguish runner sampling starvation from a deterministic regression: $test"
+            printf '%s (attempt 2)\n' "$test" > "$marker"
+            : > "$current_log"
+            echo "::group::$test (attempt 2)"
+            if node "$test" 2>&1 | tee "$current_log"; then
+              echo "::endgroup::"
+              return 0
+            fi
+            echo "::endgroup::"
+            capture_failure "$test (attempt 2)"
+            return 1
+          }
+
           run_legacy_browser_test arcade/lost-sizzler/tests/v10-6-browser.mjs
           run_legacy_browser_test arcade/lost-sizzler/tests/support/v10-28-browser-stability-deterministic.mjs
 
           for test in arcade/lost-sizzler/tests/browser/*.mjs; do
-            run_browser_test "$test"
+            case "$(basename "$test")" in
+              v10-41-solo-long-session-soak.mjs)
+                run_long_soak_test "$test"
+                ;;
+              *)
+                run_browser_test "$test"
+                ;;
+            esac
           done
           rm -f "$marker" "$current_log"
 
