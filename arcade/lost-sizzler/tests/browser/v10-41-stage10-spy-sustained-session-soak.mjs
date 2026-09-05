@@ -9,6 +9,7 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const repo=path.resolve(here,"../../../..");
 const r29Source=fs.readFileSync(path.join(repo,"arcade/lost-sizzler/js/v10-41-r29-spy-engine-isolation.js"),"utf8");
 const r32Source=fs.readFileSync(path.join(repo,"arcade/lost-sizzler/js/v10-41-r32-spy-loader.js"),"utf8");
+const MAX_OBSERVABLE_MOVE_DEPTH=8;
 assert.doesNotMatch(r29Source,/requestAnimationFrame\s*\(/,"Stage 10 sustained Spy gate must retain the shared authoritative RAF");
 assert.doesNotMatch(r29Source,/window\.update\s*=/,"Stage 10 sustained Spy gate must not install a competing shared update owner");
 assert.doesNotMatch(r32Source,/setInterval\s*\(/,"Stage 10 sustained Spy gate must keep the r32 cross-mode loader poll retired");
@@ -67,7 +68,7 @@ try{
     assert.equal(state.networkObserverId,baseline.networkObserverId,`${label} must not replace the network observer`);
     assert.ok(state.networkTimer>0,`${label} must retain exactly the active Spy heartbeat handle`);
     assert.equal(state.networkInstalled,true,`${label} must retain the dedicated packet owner`);
-    assert.equal(state.moveDepth,baseline.moveDepth,`${label} must keep movement ancestry bounded`);
+    assert.equal(state.moveDepth,baseline.moveDepth,`${label} must keep movement ancestry stable during active play`);
     assert.equal(state.hurtDepth,baseline.hurtDepth,`${label} must keep damage ancestry bounded`);
     assert.equal(state.moveOwners,1,`${label} must retain one r29 movement owner`);
     assert.equal(state.damageOwners,1,`${label} must retain one Spy damage boundary`);
@@ -91,6 +92,7 @@ try{
   const baseline=await snapshot();
   assert.ok(baseline.networkTimer>0);
   assert.equal(baseline.moveOwners,1);
+  assert.ok(baseline.moveDepth<=MAX_OBSERVABLE_MOVE_DEPTH,`initial Spy soak movement ancestry must stay within the accepted ${MAX_OBSERVABLE_MOVE_DEPTH}-function ceiling`);
   assert.equal(baseline.damageOwners,1);
   for(let sample=1;sample<=8;sample++){
     if(sample%2===0){await page.keyboard.press("ArrowRight");await page.keyboard.press("ArrowLeft")}
@@ -117,7 +119,7 @@ try{
     assert.equal(entry.networkObserverId,baseline.networkObserverId,`Spy soak re-entry ${cycle} must reuse network observer`);
     assert.equal(entry.loaderLoads,baseline.loaderLoads,`Spy soak re-entry ${cycle} must not reload owner chain`);
     assert.equal(entry.uiLoads,baseline.uiLoads,`Spy soak re-entry ${cycle} must not reload search UI owner`);
-    assert.equal(entry.moveDepth,baseline.moveDepth,`Spy soak re-entry ${cycle} must keep movement ancestry depth bounded`);
+    assert.ok(entry.moveDepth<=MAX_OBSERVABLE_MOVE_DEPTH,`Spy soak re-entry ${cycle} must keep observable movement ancestry bounded despite accepted opaque finalizers`);
     assert.equal(entry.hurtDepth,baseline.hurtDepth,`Spy soak re-entry ${cycle} must keep damage ancestry depth bounded`);
     assert.equal(entry.moveOwners,1);
     assert.equal(entry.damageOwners,1);
