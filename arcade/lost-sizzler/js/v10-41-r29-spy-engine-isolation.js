@@ -319,7 +319,11 @@
   }
 
   function enterIsolation(){
-    if(state.isolated||!spyActive())return state.isolated;
+    if(state.isolated){
+      if(spyActive()&&window.movePlayer!==spyMoveOwner){window.movePlayer=spyMoveOwner;state.moveReassertions++}
+      return true
+    }
+    if(!spyActive())return false;
     ensureModeStyles();state.baseMove=window.movePlayer;
     const currentHurt=window.hurtPlayer,hurtAlreadyComposed=ownerChainHas(currentHurt,spyHurtOwner);
     if(!hurtAlreadyComposed){state.baseHurt=currentHurt;spyHurtOwner.__ccgOriginal=currentHurt;window.hurtPlayer=spyHurtOwner}
