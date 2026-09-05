@@ -32,6 +32,9 @@ try{
 
   const snapshot=()=>page.evaluate(()=>{
     const runtime=window.CCGLostSizzlerModeRuntime,r29=window.CCGLostSizzlerV141R29SpyEngine,r30=window.CCGLostSizzlerV141R30,r32=window.CCGLostSizzlerV141R32SpyLoader,r56=window.CCGLostSizzlerV141R56PlaytestCompletion,r59=window.CCGLostSizzlerV141R59LiveRegressionFixes,r60=window.CCGLostSizzlerV141R60HordeCombatIntegrity;
+    const match=window.CCGLostSizzlerSpecialModes?.active?.state||null,identityRegistry=window.__CCG_STAGE10_SPY_IDENTITIES__||(window.__CCG_STAGE10_SPY_IDENTITIES__={next:1,refs:new WeakMap()});
+    const identity=value=>{if(!value||!(typeof value==="object"||typeof value==="function"))return 0;if(!identityRegistry.refs.has(value))identityRegistry.refs.set(value,identityRegistry.next++);return identityRegistry.refs.get(value)};
+    const firstRoom=match?.map?.rooms?.[0]||null,firstFurniture=firstRoom?.furniture?.[0]||null;
     const chain=fn=>{const seen=new Set(),owners=[];let current=fn,depth=0,moveOwners=0,damageBoundaries=0;while(typeof current==="function"&&!seen.has(current)&&depth<64){const r29Move=current.__ccgV141R29SpyOwner===true,spyDamage=current.__ccgV141SpyDamageBoundary===true;if(r29Move)moveOwners++;if(spyDamage)damageBoundaries++;owners.push({name:String(current.name||"anonymous"),r29Move,spyDamage,r60Move:current.__ccgV141R60CadenceSeal===true});seen.add(current);depth++;current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null}return{depth,moveOwners,damageBoundaries,owners}};
     const move=chain(window.movePlayer),hurt=chain(window.hurtPlayer),overhaul=window.CCGLostSizzlerV141R32SpyOverhaul;
     return{
@@ -39,6 +42,7 @@ try{
       r29Timer:Number(r29?.state?.timer||0),r30Timer:Number(r30?.state?.timer||0),r30SpyTimerStopped:Boolean(r30?.state?.spyTimerStopped),worldBuilds:Number(r29?.state?.worldBuilds||0),logicalCompactions:Number(r29?.state?.logicalCompactions||0),controllerFrames:Number(r29?.state?.controllerFrames||0),spyRuleFrames:Number(runtime?.snapshot?.().spyRuleFrames||0),moveReassertions:Number(r29?.state?.moveReassertions||0),updateReassertions:Number(r29?.state?.updateReassertions||0),
       loaderTimer:Number(r32?.state?.timer||0),loaderLoads:Number(r32?.state?.loads||0),uiLoads:Number(r32?.state?.uiLoads||0),loaderReady:Boolean(r32?.state?.loaded),uiReady:Boolean(r32?.state?.uiLoaded),modeObserverInstalled:Boolean(r32?.state?.modeObserverInstalled),pendingActionCode:String(r32?.state?.pendingActionCode||""),tabTogglePending:Boolean(r32?.state?.tabTogglePending),loaderError:String(r32?.state?.lastError||""),uiError:String(r32?.state?.uiLastError||""),
       moveDepth:move.depth,moveOwners:move.moveOwners,moveChain:move.owners,hurtDepth:hurt.depth,damageBoundaries:hurt.damageBoundaries,hurtChain:hurt.owners,inventoryOpen:Boolean(overhaul?.state?.inventoryOpen),searchPending:Boolean(overhaul?.state?.search),
+      mapIdentity:identity(match?.map),playersIdentity:identity(match?.players),firstPlayerIdentity:identity(match?.players?.[0]),roomsIdentity:identity(match?.map?.rooms),firstRoomIdentity:identity(firstRoom),firstFurnitureListIdentity:identity(firstRoom?.furniture),firstFurnitureIdentity:identity(firstFurniture),trapsIdentity:identity(match?.traps),extractionIdentity:identity(match?.extraction),
       r56TrapHits:Number(r56?.state?.trapHits||0),r56EnvironmentHits:Number(r56?.state?.environmentHits||0),r56CombatRearms:Number(r56?.state?.combatRearms||0),r59SoloFrames:Number(r59?.state?.soloFrames||0),r59SoloSubsteps:Number(r59?.state?.soloSubsteps||0),r60HordeFrames:Number(r60?.state?.frames||0)
     }
   });
@@ -99,6 +103,9 @@ try{
     assert.ok(stable.spyRuleFrames>entry.spyRuleFrames,`Spy entry ${cycle} must advance authoritative isolated controller frames`);
     assert.equal(stable.worldBuilds,entry.worldBuilds,`Spy entry ${cycle} must not rebuild the compact world on ordinary frames`);
     assert.equal(stable.logicalCompactions,entry.logicalCompactions,`Spy entry ${cycle} must not compact the logical map repeatedly`);
+    for(const key of ["mapIdentity","playersIdentity","firstPlayerIdentity","roomsIdentity","firstRoomIdentity","firstFurnitureListIdentity","firstFurnitureIdentity","trapsIdentity","extractionIdentity"]){
+      assert.equal(stable[key],entry[key],`Spy entry ${cycle} must preserve ${key} through ordinary controller frames`)
+    }
     assert.equal(stable.moveDepth,entry.moveDepth,`Spy entry ${cycle} must keep movement ancestry depth bounded`);
     assert.equal(stable.hurtDepth,entry.hurtDepth,`Spy entry ${cycle} must keep damage ancestry depth bounded`);
     assert.equal(stable.moveReassertions,entry.moveReassertions,`Spy entry ${cycle} must not reassert movement ownership during stable play`);
