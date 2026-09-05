@@ -29,6 +29,12 @@ assert.match(network,/net\.send\(PACKET,payload\)/,"local Spy movement must publ
 assert.match(network,/remote\?\.set\?\.\(id,next\)/,"received Spy positions must update the remote agent directly");
 assert.doesNotMatch(network,/processRemoteMovement\s*\(/,"dedicated Spy positions must never invoke Dungeon remote-movement room triggers");
 assert.match(network,/if\(moved\)sendPosition\(true\)/,"successful Spy movement must publish immediately as well as via the heartbeat");
+assert.doesNotMatch(network,/MONITOR_MS=40/,"Spy position transport must not retain the retired cross-mode 40 ms monitor");
+assert.match(network,/new MutationObserver\(syncMode\)/,"Spy position transport mode entry must be event-driven");
+assert.match(network,/attributeFilter:\["data-special-mode","data-mode-controller","data-run-active"\]/,"Spy position transport must observe only bounded mode lifecycle attributes");
+assert.match(network,/state\.timer=setInterval\(heartbeat,SEND_MS\)/,"Spy position heartbeat must exist only as the active-mode 85 ms transport cadence");
+assert.match(network,/clearInterval\(state\.timer\);state\.timer=0/,"Spy position heartbeat must be fully stopped on mode exit");
+assert.match(network,/return spyActive\(\)\?startHeartbeat\(\):stopHeartbeat\(\)/,"Spy transport lifecycle signals must start or stop the heartbeat from actual mode state");
 
 assert.match(runtime,/MODE_ID="sizzler-saboteurs"/,"isolated runtime must be scoped to Spy Vs Spy only");
 assert.match(runtime,/ROOM_STEP_X=11,ROOM_STEP_Y=11,ROOM_W=9,ROOM_H=9/,"Spy physical rooms must be materially smaller than the old 13x13 grid");
@@ -77,4 +83,4 @@ assert.match(runtime,/else\{ensureMovementOwner\(true\);ensureDamageBoundary\(\)
 assert.doesNotMatch(movementFinalizer,/window\.update=function updateV141SpyRespawnFinal/,"Spy respawn finalizer must not add another global update wrapper");
 assert.match(movementFinalizer,/controllerOwnedRespawns:true/,"Spy respawns must declare controller-owned execution");
 
-console.log("Lost Sizzler V10.41 controller-owned Spy engine, stable compact map, ancestry-aware re-entry recovery, dedicated position transport, furniture collision and respawn ownership checks passed.");
+console.log("Lost Sizzler V10.41 controller-owned Spy engine, stable compact map, ancestry-aware re-entry recovery, active-only dedicated position transport, furniture collision and respawn ownership checks passed.");
