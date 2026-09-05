@@ -69,11 +69,12 @@ assert.match(controller,/window\.CCGLostSizzlerV141R29SpyEngine\?\.leaveIsolatio
 assert.match(runtime,/window\.CCGLostSizzlerModeRuntime=runtimeRegistry/,"mode runtime registry must expose the isolation boundary");
 assert.match(runtime,/isolatedRules:true,sharedRenderer:true/,"Spy must own rules while deliberately sharing only the renderer");
 assert.match(runtime,/state\.timer=setInterval\(monitor,MONITOR_MS\)/,"Spy movement/damage ownership must still be monitored while the mode is active");
-assert.match(runtime,/const currentHurt=window\.hurtPlayer,hurtAlreadyComposed=ownerChainHas\(currentHurt,spyHurtOwner\)/,"Spy entry must inspect the live damage-owner ancestry before installing its boundary");
-assert.match(runtime,/if\(!hurtAlreadyComposed\)\{state\.baseHurt=currentHurt;spyHurtOwner\.__ccgOriginal=currentHurt;window\.hurtPlayer=spyHurtOwner\}/,"Spy entry must install its damage boundary with the current owner as its delegate");
-assert.match(runtime,/window\.movePlayer=spyMoveOwner;suppressLegacyPhysicalBuilder\(\)/,"entering Spy must still synchronously own movement without replacing the global update frame");
-assert.match(runtime,/if\(state\.isolated&&!ownerChainHas\(window\.hurtPlayer,spyHurtOwner\)\)/,"Spy monitor must preserve later damage wrappers that already compose around its boundary");
+assert.match(runtime,/function ensureDamageBoundary\(\)[\s\S]*const current=window\.hurtPlayer;[\s\S]*ownerChainHas\(current,spyHurtOwner\)/,"Spy damage ownership must inspect the live damage-owner ancestry before installing or repairing its boundary");
+assert.match(runtime,/if\(typeof current==="function"&&current!==spyHurtOwner\)\{state\.baseHurt=current;spyHurtOwner\.__ccgOriginal=current\}[\s\S]*window\.hurtPlayer=spyHurtOwner/,"Spy damage repair must preserve the displaced live owner as its delegate before restoring the boundary");
+assert.match(runtime,/function ensureMovementOwner\(countRecovery=false\)[\s\S]*ownerChainHas\(current,spyMoveOwner\)[\s\S]*window\.movePlayer=spyMoveOwner/,"Spy movement ownership must be ancestry-aware and able to restore the canonical r29 owner");
+assert.match(runtime,/if\(state\.isolated\)\{ensureMovementOwner\(true\);ensureDamageBoundary\(\);suppressLegacyPhysicalBuilder\(\);return true\}/,"authoritative Spy controller re-entry must self-heal displaced movement and damage ownership without requiring a polling timer");
+assert.match(runtime,/else\{ensureMovementOwner\(true\);ensureDamageBoundary\(\)\}/,"legacy monitor compatibility must use the same ancestry-aware owner repair helpers");
 assert.doesNotMatch(movementFinalizer,/window\.update=function updateV141SpyRespawnFinal/,"Spy respawn finalizer must not add another global update wrapper");
 assert.match(movementFinalizer,/controllerOwnedRespawns:true/,"Spy respawns must declare controller-owned execution");
 
-console.log("Lost Sizzler V10.41 controller-owned Spy engine, stable compact map, bounded movement, dedicated position transport, furniture collision and respawn ownership checks passed.");
+console.log("Lost Sizzler V10.41 controller-owned Spy engine, stable compact map, ancestry-aware re-entry recovery, dedicated position transport, furniture collision and respawn ownership checks passed.");
