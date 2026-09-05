@@ -23,12 +23,12 @@ try{
 
   const started=await page.evaluate(()=>{net.setSolo("Stage 10 Movement Agent");const id=String(net.sessionId);return window.CCGLostSizzlerSpecialModes.startOnline({roomMode:"sizzler-saboteurs",players:[{id,name:"Stage 10 Movement Agent"},{id:"STAGE10-MOVE-RIVAL",name:"Stage 10 Rival"}],hostId:id,seed:"STAGE10-SPY-MOVEMENT",roomCode:"S10M"})});
   assert.equal(started,true,"Stage 10 movement qualification must start through the canonical Spy adapter");
-  await page.waitForFunction(()=>mode==="playing"&&document.body.dataset.specialMode==="sizzler-saboteurs"&&window.CCGLostSizzlerModeRuntime?.snapshot?.().activeId==="spy-online"&&Boolean(window.CCGLostSizzlerV141R29SpyEngine?.state?.isolated)&&Boolean(p1)&&Boolean(world)&&Boolean(host),null,{timeout:30000});
+  await page.waitForFunction(()=>mode==="playing"&&document.body.dataset.specialMode==="sizzler-saboteurs"&&window.CCGLostSizzlerModeRuntime?.snapshot?.().activeId==="spy-online"&&Boolean(window.CCGLostSizzlerV141R29SpyEngine?.state?.isolated)&&Boolean(window.CCGLostSizzlerV141R32SpyOverhaul)&&Boolean(p1)&&Boolean(world)&&Boolean(host),null,{timeout:30000});
   await page.waitForTimeout(500);
 
   const direct=await page.evaluate(()=>{
-    const engine=window.CCGLostSizzlerV141R29SpyEngine,match=window.CCGLostSizzlerSpecialModes?.active?.state,r30=window.CCGLostSizzlerV141R30,r56=window.CCGLostSizzlerV141R56PlaytestCompletion,r59=window.CCGLostSizzlerV141R59LiveRegressionFixes,r60=window.CCGLostSizzlerV141R60HordeCombatIntegrity;
-    const model=match?.players?.find?.(row=>String(row.id)===String(p1.id||net?.sessionId))||match?.players?.[0];if(!engine||!match||!model)throw new Error("Stage 10 Spy movement fixture is missing its isolated model");
+    const engine=window.CCGLostSizzlerV141R29SpyEngine,r32=window.CCGLostSizzlerV141R32SpyOverhaul,match=window.CCGLostSizzlerSpecialModes?.active?.state,r30=window.CCGLostSizzlerV141R30,r56=window.CCGLostSizzlerV141R56PlaytestCompletion,r59=window.CCGLostSizzlerV141R59LiveRegressionFixes,r60=window.CCGLostSizzlerV141R60HordeCombatIntegrity;
+    const model=match?.players?.find?.(row=>String(row.id)===String(p1.id||net?.sessionId))||match?.players?.[0];if(!engine||!r32||!match||!model)throw new Error("Stage 10 Spy movement fixture is missing its isolated model");
     model.status="active";model.hp=Math.max(1,Number(model.hp||model.maxHp||1));
     const occupied=(x,y)=>(typeof allPlayers==="function"?allPlayers():[p1]).some(other=>other&&other!==p1&&Number(other.x)===x&&Number(other.y)===y);
     const blocked=(x,y)=>(host.blockingDecor||[]).some(item=>Number(item.x)===x&&Number(item.y)===y);
@@ -75,15 +75,16 @@ try{
       for(let y=Number(room.y)+1;y<Number(room.y)+Number(room.h);y++){
         for(let x=Number(room.x)+1;x<Number(room.x)+Number(room.w);x++){
           const found=dirs.find(dir=>free(x,y)&&free(x+dir.dx,y+dir.dy)&&free(x+dir.dx*2,y+dir.dy*2)&&!(host.doors||[]).some(door=>[[x,y],[x+dir.dx,y+dir.dy],[x+dir.dx*2,y+dir.dy*2]].some(([cx,cy])=>Number(door.x)===cx&&Number(door.y)===cy)));
-          if(found){line={x,y,logicalRoomId:room.logicalRoomId,dx:found.dx,dy:found.dy,code:found.code};break}
+          if(found){line={x,y,logicalRoomId:room.logicalRoomId,dx:found.dx,dy:found.dy,code:found.code};break
         }
         if(line)break
       }
       if(line)break
     }
     if(!line)throw new Error("Stage 10 Spy movement fixture requires a clear two-step room line");
-    setPlayer(line.x,line.y,line.logicalRoomId);engine.state.lastMoveAt=performance.now();
-    const cadence={startX:Number(p1.x),startY:Number(p1.y),dx:line.dx,dy:line.dy,code:line.code,moves:Number(engine.state.moves||0),lastMoveAt:Number(engine.state.lastMoveAt||0)};
+    setPlayer(line.x,line.y,line.logicalRoomId);
+    const cadenceNow=performance.now();engine.state.lastMoveAt=cadenceNow;r32.state.lastMoveAt=cadenceNow+60000;
+    const cadence={startX:Number(p1.x),startY:Number(p1.y),dx:line.dx,dy:line.dy,code:line.code,moves:Number(engine.state.moves||0),retiredLastMoveAt:Number(engine.state.lastMoveAt||0),ownerLastMoveAt:Number(r32.state.lastMoveAt||0)};
     return{furnitureBefore,furnitureMoved,furnitureAfter,doorBefore,atDoor,doorAfter,cadence,beforeCounters,afterDirectCounters:counters(),activeId:window.CCGLostSizzlerModeRuntime?.snapshot?.().activeId||"",specialMode:document.body.dataset.specialMode||""}
   });
 
@@ -106,29 +107,30 @@ try{
 
   await page.keyboard.down(direct.cadence.code);
   const early=await page.evaluate(()=>{
-    const engine=window.CCGLostSizzlerV141R29SpyEngine;
-    engine.state.lastMoveAt=performance.now()+60000;
+    const engine=window.CCGLostSizzlerV141R29SpyEngine,owner=window.CCGLostSizzlerV141R32SpyOverhaul;
+    const ownerBefore=Number(owner.state.lastMoveAt||0),retiredMovesBefore=Number(engine.state.moves||0);
     engine.isolatedUpdate();
-    return{x:Number(p1.x),y:Number(p1.y),moves:Number(engine.state.moves||0),lastMoveAt:Number(engine.state.lastMoveAt||0)}
+    return{x:Number(p1.x),y:Number(p1.y),ownerBefore,ownerAfter:Number(owner.state.lastMoveAt||0),retiredMovesBefore,retiredMovesAfter:Number(engine.state.moves||0)}
   });
   assert.deepEqual({x:early.x,y:early.y},{x:direct.cadence.startX,y:direct.cadence.startY},"held Spy movement must not step before the 220 ms walk governor expires");
-  assert.equal(early.moves,direct.cadence.moves,"the 220 ms governor must not record an early movement step");
+  assert.equal(early.ownerAfter,early.ownerBefore,"the final R32 movement owner must not advance its cadence timestamp before the walk governor expires");
+  assert.equal(early.retiredMovesAfter,early.retiredMovesBefore,"R32-owned keyboard cadence must not revive the retired R29 movement counter");
 
   const paced=await page.evaluate(()=>{
-    const engine=window.CCGLostSizzlerV141R29SpyEngine;
-    engine.state.lastMoveAt=performance.now()-221;
-    const beforeLastMoveAt=Number(engine.state.lastMoveAt||0);
+    const engine=window.CCGLostSizzlerV141R29SpyEngine,owner=window.CCGLostSizzlerV141R32SpyOverhaul;
+    owner.state.lastMoveAt=performance.now()-221;
+    const beforeLastMoveAt=Number(owner.state.lastMoveAt||0),retiredMovesBefore=Number(engine.state.moves||0);
     engine.isolatedUpdate();
-    const result={x:Number(p1.x),y:Number(p1.y),moves:Number(engine.state.moves||0),lastMoveAt:Number(engine.state.lastMoveAt||0),beforeLastMoveAt};
-    engine.state.lastMoveAt=performance.now()+60000;
+    const result={x:Number(p1.x),y:Number(p1.y),retiredMovesBefore,retiredMovesAfter:Number(engine.state.moves||0),lastMoveAt:Number(owner.state.lastMoveAt||0),beforeLastMoveAt};
+    owner.state.lastMoveAt=performance.now()+60000;
     return result
   });
   await page.keyboard.up(direct.cadence.code);
-  await page.evaluate(()=>{window.CCGLostSizzlerV141R29SpyEngine.state.lastMoveAt=performance.now()});
+  await page.evaluate(()=>{window.CCGLostSizzlerV141R32SpyOverhaul.state.lastMoveAt=performance.now()});
   await page.waitForTimeout(80);
   assert.deepEqual({x:paced.x,y:paced.y},{x:direct.cadence.startX+direct.cadence.dx,y:direct.cadence.startY+direct.cadence.dy},"held Spy movement must make exactly one tile step after the 220 ms walk governor expires");
-  assert.equal(paced.moves,direct.cadence.moves+1,"the first paced keyboard step must record exactly one successful Spy move");
-  assert.ok(paced.lastMoveAt>paced.beforeLastMoveAt,"the paced keyboard step must advance the r29 movement timestamp");
+  assert.equal(paced.retiredMovesAfter,paced.retiredMovesBefore,"the paced R32 keyboard step must remain outside the retired R29 movement counter");
+  assert.ok(paced.lastMoveAt>paced.beforeLastMoveAt,"the paced keyboard step must advance the final R32 movement timestamp");
 
   const dash=await page.evaluate(()=>{
     const engine=window.CCGLostSizzlerV141R29SpyEngine,match=window.CCGLostSizzlerSpecialModes?.active?.state,model=match?.players?.find?.(row=>String(row.id)===String(p1.id||net?.sessionId))||match?.players?.[0];
