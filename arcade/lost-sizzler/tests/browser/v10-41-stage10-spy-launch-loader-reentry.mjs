@@ -36,7 +36,7 @@ try{
     const move=chain(window.movePlayer),hurt=chain(window.hurtPlayer),overhaul=window.CCGLostSizzlerV141R32SpyOverhaul;
     return{
       mode:String(typeof mode!=="undefined"?mode:""),activeId:String(runtime?.snapshot?.().activeId||""),specialMode:String(document.body.dataset.specialMode||""),isolated:Boolean(r29?.state?.isolated),
-      r29Timer:Number(r29?.state?.timer||0),r30Timer:Number(r30?.state?.timer||0),r30SpyTimerStopped:Boolean(r30?.state?.spyTimerStopped),worldBuilds:Number(r29?.state?.worldBuilds||0),logicalCompactions:Number(r29?.state?.logicalCompactions||0),controllerFrames:Number(r29?.state?.controllerFrames||0),moveReassertions:Number(r29?.state?.moveReassertions||0),updateReassertions:Number(r29?.state?.updateReassertions||0),
+      r29Timer:Number(r29?.state?.timer||0),r30Timer:Number(r30?.state?.timer||0),r30SpyTimerStopped:Boolean(r30?.state?.spyTimerStopped),worldBuilds:Number(r29?.state?.worldBuilds||0),logicalCompactions:Number(r29?.state?.logicalCompactions||0),controllerFrames:Number(r29?.state?.controllerFrames||0),spyRuleFrames:Number(runtime?.snapshot?.().spyRuleFrames||0),moveReassertions:Number(r29?.state?.moveReassertions||0),updateReassertions:Number(r29?.state?.updateReassertions||0),
       loaderTimer:Number(r32?.state?.timer||0),loaderLoads:Number(r32?.state?.loads||0),uiLoads:Number(r32?.state?.uiLoads||0),loaderReady:Boolean(r32?.state?.loaded),uiReady:Boolean(r32?.state?.uiLoaded),modeObserverInstalled:Boolean(r32?.state?.modeObserverInstalled),pendingActionCode:String(r32?.state?.pendingActionCode||""),tabTogglePending:Boolean(r32?.state?.tabTogglePending),loaderError:String(r32?.state?.lastError||""),uiError:String(r32?.state?.uiLastError||""),
       moveDepth:move.depth,moveOwners:move.moveOwners,hurtDepth:hurt.depth,damageBoundaries:hurt.damageBoundaries,inventoryOpen:Boolean(overhaul?.state?.inventoryOpen),searchPending:Boolean(overhaul?.state?.search),
       r56TrapHits:Number(r56?.state?.trapHits||0),r56EnvironmentHits:Number(r56?.state?.environmentHits||0),r56CombatRearms:Number(r56?.state?.combatRearms||0),r59SoloFrames:Number(r59?.state?.soloFrames||0),r59SoloSubsteps:Number(r59?.state?.soloSubsteps||0),r60HordeFrames:Number(r60?.state?.frames||0)
@@ -94,9 +94,9 @@ try{
     assert.equal(entry.loaderError,"",`Spy entry ${cycle} must have no lazy-loader error`);
     assert.equal(entry.uiError,"",`Spy entry ${cycle} must have no search-owner loader error`);
 
-    await page.waitForFunction(startFrames=>Number(window.CCGLostSizzlerV141R29SpyEngine?.state?.controllerFrames||0)>startFrames,entry.controllerFrames,{polling:50,timeout:5000});
+    await page.waitForFunction(startFrames=>Number(window.CCGLostSizzlerModeRuntime?.snapshot?.().spyRuleFrames||0)>startFrames,entry.spyRuleFrames,{polling:50,timeout:5000});
     await page.waitForTimeout(650);const stable=await snapshot();
-    assert.ok(stable.controllerFrames>entry.controllerFrames,`Spy entry ${cycle} must advance isolated controller frames`);
+    assert.ok(stable.spyRuleFrames>entry.spyRuleFrames,`Spy entry ${cycle} must advance authoritative isolated controller frames`);
     assert.equal(stable.worldBuilds,entry.worldBuilds,`Spy entry ${cycle} must not rebuild the compact world on ordinary frames`);
     assert.equal(stable.logicalCompactions,entry.logicalCompactions,`Spy entry ${cycle} must not compact the logical map repeatedly`);
     assert.equal(stable.moveDepth,entry.moveDepth,`Spy entry ${cycle} must keep movement ancestry depth bounded`);
