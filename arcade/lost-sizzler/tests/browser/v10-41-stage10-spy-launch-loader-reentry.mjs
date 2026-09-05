@@ -32,13 +32,13 @@ try{
 
   const snapshot=()=>page.evaluate(()=>{
     const runtime=window.CCGLostSizzlerModeRuntime,r29=window.CCGLostSizzlerV141R29SpyEngine,r30=window.CCGLostSizzlerV141R30,r32=window.CCGLostSizzlerV141R32SpyLoader,r56=window.CCGLostSizzlerV141R56PlaytestCompletion,r59=window.CCGLostSizzlerV141R59LiveRegressionFixes,r60=window.CCGLostSizzlerV141R60HordeCombatIntegrity;
-    const chain=fn=>{const seen=new Set();let current=fn,depth=0,moveOwners=0,damageBoundaries=0;while(typeof current==="function"&&!seen.has(current)&&depth<64){if(current.__ccgV141R29SpyOwner===true)moveOwners++;if(current.__ccgV141SpyDamageBoundary===true)damageBoundaries++;seen.add(current);depth++;current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null}return{depth,moveOwners,damageBoundaries}};
+    const chain=fn=>{const seen=new Set(),owners=[];let current=fn,depth=0,moveOwners=0,damageBoundaries=0;while(typeof current==="function"&&!seen.has(current)&&depth<64){const r29Move=current.__ccgV141R29SpyOwner===true,spyDamage=current.__ccgV141SpyDamageBoundary===true;if(r29Move)moveOwners++;if(spyDamage)damageBoundaries++;owners.push({name:String(current.name||"anonymous"),r29Move,spyDamage,r60Move:current.__ccgV141R60CadenceSeal===true});seen.add(current);depth++;current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null}return{depth,moveOwners,damageBoundaries,owners}};
     const move=chain(window.movePlayer),hurt=chain(window.hurtPlayer),overhaul=window.CCGLostSizzlerV141R32SpyOverhaul;
     return{
       mode:String(typeof mode!=="undefined"?mode:""),activeId:String(runtime?.snapshot?.().activeId||""),specialMode:String(document.body.dataset.specialMode||""),isolated:Boolean(r29?.state?.isolated),
       r29Timer:Number(r29?.state?.timer||0),r30Timer:Number(r30?.state?.timer||0),r30SpyTimerStopped:Boolean(r30?.state?.spyTimerStopped),worldBuilds:Number(r29?.state?.worldBuilds||0),logicalCompactions:Number(r29?.state?.logicalCompactions||0),controllerFrames:Number(r29?.state?.controllerFrames||0),spyRuleFrames:Number(runtime?.snapshot?.().spyRuleFrames||0),moveReassertions:Number(r29?.state?.moveReassertions||0),updateReassertions:Number(r29?.state?.updateReassertions||0),
       loaderTimer:Number(r32?.state?.timer||0),loaderLoads:Number(r32?.state?.loads||0),uiLoads:Number(r32?.state?.uiLoads||0),loaderReady:Boolean(r32?.state?.loaded),uiReady:Boolean(r32?.state?.uiLoaded),modeObserverInstalled:Boolean(r32?.state?.modeObserverInstalled),pendingActionCode:String(r32?.state?.pendingActionCode||""),tabTogglePending:Boolean(r32?.state?.tabTogglePending),loaderError:String(r32?.state?.lastError||""),uiError:String(r32?.state?.uiLastError||""),
-      moveDepth:move.depth,moveOwners:move.moveOwners,hurtDepth:hurt.depth,damageBoundaries:hurt.damageBoundaries,inventoryOpen:Boolean(overhaul?.state?.inventoryOpen),searchPending:Boolean(overhaul?.state?.search),
+      moveDepth:move.depth,moveOwners:move.moveOwners,moveChain:move.owners,hurtDepth:hurt.depth,damageBoundaries:hurt.damageBoundaries,hurtChain:hurt.owners,inventoryOpen:Boolean(overhaul?.state?.inventoryOpen),searchPending:Boolean(overhaul?.state?.search),
       r56TrapHits:Number(r56?.state?.trapHits||0),r56EnvironmentHits:Number(r56?.state?.environmentHits||0),r56CombatRearms:Number(r56?.state?.combatRearms||0),r59SoloFrames:Number(r59?.state?.soloFrames||0),r59SoloSubsteps:Number(r59?.state?.soloSubsteps||0),r60HordeFrames:Number(r60?.state?.frames||0)
     }
   });
@@ -89,7 +89,7 @@ try{
     assert.equal(entry.loaderReady,true,`Spy entry ${cycle} must retain the loaded Spy owner chain`);
     assert.equal(entry.uiReady,true,`Spy entry ${cycle} must retain the loaded search owner`);
     assert.equal(entry.modeObserverInstalled,true,`Spy entry ${cycle} must retain event-driven loader activation`);
-    assert.equal(entry.moveOwners,1,`Spy entry ${cycle} must contain exactly one r29 movement owner`);
+    assert.equal(entry.moveOwners,1,`Spy entry ${cycle} must contain exactly one r29 movement owner: ${JSON.stringify(entry.moveChain)}`);
     assert.equal(entry.damageBoundaries,1,`Spy entry ${cycle} must contain exactly one Spy damage boundary`);
     assert.equal(entry.loaderError,"",`Spy entry ${cycle} must have no lazy-loader error`);
     assert.equal(entry.uiError,"",`Spy entry ${cycle} must have no search-owner loader error`);
