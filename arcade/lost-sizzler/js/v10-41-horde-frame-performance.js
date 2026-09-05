@@ -72,8 +72,14 @@
     if(!isHorde()||!timing?.state||!live||typeof live.updateHordeLive!=="function")return false;
     const current=live.updateHordeLive;
     if(current===state.r60HordeLiveOwner||originalChainContains(current,state.r60HordeLiveOwner))return true;
-    const timingOwner=timing.state.liveOwner,retainsTimingOwner=typeof timingOwner==="function"&&originalChainContains(current,timingOwner);
-    const source=retainsTimingOwner?current:unwrapR60LiveSource(current);if(typeof source!=="function")return false;
+    const timingOwner=timing.state.liveOwner,timingOwnerInChain=typeof timingOwner==="function"&&originalChainContains(current,timingOwner);
+    /* The UI-performance owner is terminal during Horde play: it intentionally
+       replaces its source rather than delegating. A buried R60 marker therefore
+       does not mean the elapsed-time owner will run. Keep the UI owner as the
+       bounded source and let this final owner account for real elapsed time. */
+    const terminalUiOwner=timingOwnerInChain&&current.__ccgV141UiPerformanceLive===true;
+    const retainsTimingOwner=timingOwnerInChain&&!terminalUiOwner;
+    const source=terminalUiOwner||retainsTimingOwner?current:unwrapR60LiveSource(current);if(typeof source!=="function")return false;
     try{
       const wrapped=function updateHordeLiveV141R60FinalOwner(dt){
         const active=isHorde(),timingState=timing.state,elapsed=active&&Number(timingState?.currentElapsed||0)>0?Number(timingState.currentElapsed):Number(dt)||0;
