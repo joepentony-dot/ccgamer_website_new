@@ -75,7 +75,7 @@ try{
       for(let y=Number(room.y)+1;y<Number(room.y)+Number(room.h);y++){
         for(let x=Number(room.x)+1;x<Number(room.x)+Number(room.w);x++){
           const found=dirs.find(dir=>free(x,y)&&free(x+dir.dx,y+dir.dy)&&free(x+dir.dx*2,y+dir.dy*2)&&!(host.doors||[]).some(door=>[[x,y],[x+dir.dx,y+dir.dy],[x+dir.dx*2,y+dir.dy*2]].some(([cx,cy])=>Number(door.x)===cx&&Number(door.y)===cy)));
-          if(found){line={x,y,logicalRoomId:room.logicalRoomId,dx:found.dx,dy:found.dy,code:found.code};break
+          if(found){line={x,y,logicalRoomId:room.logicalRoomId,dx:found.dx,dy:found.dy,code:found.code};break}
         }
         if(line)break
       }
