@@ -249,7 +249,7 @@
       }
       if(engine.state?.isolated){
         state.spyOwnerUpdate=authoritativeControllerUpdate()||state.spyOwnerUpdate||window.update;
-        if(!state.spyOwnerMove)state.spyOwnerMove=window.movePlayer;
+        if(!state.spyOwnerMove)state.spyOwnerMove=typeof engine.moveOwner==="function"?engine.moveOwner:window.movePlayer;
         if(!state.spyOwnerHurt)state.spyOwnerHurt=window.hurtPlayer;
         if(typeof state.spyOwnerUpdate==="function"&&window.update!==state.spyOwnerUpdate)window.update=state.spyOwnerUpdate;
         if(typeof state.spyOwnerMove==="function"&&window.movePlayer!==state.spyOwnerMove)window.movePlayer=state.spyOwnerMove;
