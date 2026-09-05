@@ -22,7 +22,7 @@
     uiLoading:false,uiLoaded:false,uiLoads:0,uiLastError:"",
     hardeningLoaded:false,fullscreenUiLoaded:false,perfectionLoaded:false,trapPresentationLoaded:false,r58Loaded:false,
     r59Loading:false,r59Loaded:false,r59Loads:0,r59LastError:"",
-    r56Guarded:false,r56GuardInstalls:0,r56OwnerSkips:0,r27KeyDetached:false,r27KeyDetachments:0,
+    r56Guarded:false,r56GuardInstalls:0,r56OwnerSkips:0,r27KeyDetached:false,r27KeyDetachments:0,r27TimerStopped:false,r27TimerStops:0,
     modeObserverInstalled:false,modeObserverUnsupported:false,modeSignals:0,spyActivationSignals:0,
     tabTogglePending:false,tabToggles:0,tabLoadBridges:0,fullscreenKeyCalls:0,fullscreenDuplicateGuards:0,fieldKitLabelRepairs:0,
     pendingActionCode:"",queuedActions:0,replayedActions:0,queuedSearchFeedbacks:0,directSearchActions:0,
@@ -52,8 +52,12 @@
   function detachLegacyR27KeyOwner(){
     const api=window.CCGLostSizzlerV141R27SpyIsolation;
     if(!api||typeof api.onSpyKeyDown!=="function")return false;
-    if(state.r27KeyDetached)return true;
-    try{removeEventListener("keydown",api.onSpyKeyDown,true);state.r27KeyDetached=true;state.r27KeyDetachments++;return true}catch(_){return false}
+    try{
+      if(api.state?.timer){clearInterval(api.state.timer);api.state.timer=0;state.r27TimerStops++}
+      state.r27TimerStopped=Number(api.state?.timer||0)===0;
+      if(!state.r27KeyDetached){removeEventListener("keydown",api.onSpyKeyDown,true);state.r27KeyDetached=true;state.r27KeyDetachments++}
+      return state.r27KeyDetached&&state.r27TimerStopped
+    }catch(_){return false}
   }
 
   function loadScript(path,marker,ready){
