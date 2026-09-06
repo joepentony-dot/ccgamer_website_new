@@ -16,6 +16,15 @@ function readBooleanEnv(name, defaultValue = false) {
   throw new Error(`Invalid ${name}: expected true or false.`);
 }
 
+function readIntegerEnv(name, defaultValue, min, max) {
+  const raw = optionalEnv(name);
+  const value = raw ? Number(raw) : defaultValue;
+  if (!Number.isSafeInteger(value) || value < min || value > max) {
+    throw new Error(`Invalid ${name}: expected an integer between ${min} and ${max}.`);
+  }
+  return value;
+}
+
 function validEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
 }
@@ -95,6 +104,7 @@ export function loadConfig() {
     serviceName: 'ccg-backend',
     feedbackEmail: readFeedbackEmail(),
     lostSizzlerRealtimeEnabled: readBooleanEnv('CCG_LOST_SIZZLER_REALTIME_ENABLED', false),
+    lostSizzlerRealtimeMaxSockets: readIntegerEnv('CCG_LOST_SIZZLER_REALTIME_MAX_SOCKETS', 128, 1, 10_000),
   };
 
   if (authMode === 'external') {
