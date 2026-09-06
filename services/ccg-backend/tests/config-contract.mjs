@@ -64,6 +64,27 @@ try {
   assert.throws(() => loadConfig(), /CCG_ALLOWED_ORIGINS/);
 
   withBaseEnv();
+  process.env.CCG_ALLOWED_ORIGINS = '*';
+  assert.throws(() => loadConfig(), /Wildcard CORS origins/);
+
+  withBaseEnv();
+  process.env.CCG_ALLOWED_ORIGINS = 'https://www.cheekycommodoregamer.co.uk/account';
+  assert.throws(() => loadConfig(), /must be origins without credentials, paths, queries or fragments/);
+
+  withBaseEnv();
+  process.env.CCG_ALLOWED_ORIGINS = 'http://example.invalid';
+  assert.throws(() => loadConfig(), /requires HTTPS/);
+
+  withBaseEnv();
+  process.env.CCG_ALLOWED_ORIGINS = 'http://localhost:8080';
+  const localDevCors = loadConfig();
+  assert.equal(localDevCors.allowedOrigins.has('http://localhost:8080'), true);
+
+  withBaseEnv();
+  process.env.CCG_ALLOWED_ORIGINS = 'https://www.cheekycommodoregamer.co.uk/';
+  assert.throws(() => loadConfig(), /canonical origin form/);
+
+  withBaseEnv();
   process.env.PORT = '0';
   assert.throws(() => loadConfig(), /Invalid PORT/);
 
@@ -91,7 +112,7 @@ try {
   process.env.CCG_LOCAL_AUTH_KEY_ID = 'x'.repeat(129);
   assert.throws(() => loadConfig(), /CCG_LOCAL_AUTH_KEY_ID is too long/);
 
-  console.log('CCG backend configuration contract passed for fail-closed external and opt-in local authentication modes.');
+  console.log('CCG backend configuration contract passed for fail-closed CORS, external auth and opt-in local authentication modes.');
 } finally {
   restore();
 }

@@ -4,13 +4,42 @@ function requireEnv(name) {
   return value;
 }
 
+function validateAllowedOrigin(entry) {
+  if (entry === '*') throw new Error('Wildcard CORS origins are not supported.');
+
+  let url;
+  try {
+    url = new URL(entry);
+  } catch {
+    throw new Error(`Invalid CCG_ALLOWED_ORIGINS entry: ${entry}`);
+  }
+
+  if (url.username || url.password || url.search || url.hash || url.pathname !== '/') {
+    throw new Error(`CCG_ALLOWED_ORIGINS entries must be origins without credentials, paths, queries or fragments: ${entry}`);
+  }
+
+  const hostname = url.hostname.toLowerCase();
+  const localHttp = url.protocol === 'http:' && ['localhost', '127.0.0.1', '::1'].includes(hostname);
+  if (url.protocol !== 'https:' && !localHttp) {
+    throw new Error(`CCG_ALLOWED_ORIGINS requires HTTPS except for loopback development origins: ${entry}`);
+  }
+
+  if (entry !== url.origin) {
+    throw new Error(`CCG_ALLOWED_ORIGINS entry must use canonical origin form: ${entry}`);
+  }
+
+  return url.origin;
+}
+
 function parseOrigins(value) {
-  return new Set(
-    String(value || '')
-      .split(',')
-      .map((entry) => entry.trim())
-      .filter(Boolean)
-  );
+  const origins = new Set();
+  for (const entry of String(value || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)) {
+    origins.add(validateAllowedOrigin(entry));
+  }
+  return origins;
 }
 
 function readAuthMode() {
