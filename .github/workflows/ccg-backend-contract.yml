@@ -74,7 +74,19 @@ jobs:
 
       - name: Prove source-compatible online-service state on PostgreSQL
         working-directory: services/ccg-backend
-        run: node tests/online-service-database-contract.mjs
+        shell: bash
+        run: |
+          set -o pipefail
+          node tests/online-service-database-contract.mjs 2>&1 | tee "$RUNNER_TEMP/ccg-online-service-contract.log"
+
+      - name: Upload online-service contract failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ccg-online-service-contract-failure
+          path: ${{ runner.temp }}/ccg-online-service-contract.log
+          if-no-files-found: ignore
+          retention-days: 3
 
       - name: Check migration policy markers
         shell: bash
