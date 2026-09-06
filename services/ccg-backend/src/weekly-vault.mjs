@@ -48,6 +48,18 @@ function normalizePlayerName(profile) {
   return String(profile?.username || profile?.display_name || '').trim().slice(0, 64);
 }
 
+function normalizeWeekStart(value) {
+  if (value instanceof Date) {
+    if (!Number.isFinite(value.getTime())) throw new Error('Invalid stored Weekly Vault week.');
+    return value.toISOString().slice(0, 10);
+  }
+  const text = String(value || '').trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(text)) return text;
+  const parsed = new Date(value);
+  if (!Number.isFinite(parsed.getTime())) throw new Error('Invalid stored Weekly Vault week.');
+  return parsed.toISOString().slice(0, 10);
+}
+
 function normalizeLeaderboardRow(row) {
   return Object.freeze({
     player_name: String(row.player_name || '').slice(0, 64),
@@ -236,19 +248,21 @@ export function createWeeklyVaultService({
   }
 
   async function leadersFor(week) {
+    const normalizedWeek = normalizeWeekStart(week);
     const result = await database.query(
       `select player_name, score, deepest_floor, duration_ms, level, completed
          from ccq_weekly_leaderboard
         where week_start = $1
         order by score desc, deepest_floor desc, duration_ms asc
         limit $2`,
-      [week, maxLeaders]
+      [normalizedWeek, maxLeaders]
     );
     return (result.rows || []).map(normalizeLeaderboardRow);
   }
 
   async function ghostFor(week, excludeUserId = null) {
-    const params = excludeUserId ? [week, excludeUserId] : [week];
+    const normalizedWeek = normalizeWeekStart(week);
+    const params = excludeUserId ? [normalizedWeek, excludeUserId] : [normalizedWeek];
     const exclusion = excludeUserId ? 'and user_id <> $2' : '';
     const result = await database.query(
       `select user_id, player_name, score, deepest_floor, stats, ghost_path
@@ -291,7 +305,7 @@ export function createWeeklyVaultService({
              recorded_at = now()`,
       [
         attempt.id,
-        attempt.week_start,
+        normalizeWeekStart(attempt.week_start),
         attempt.player_name,
         persisted.score,
         persisted.deepestFloor,
@@ -355,16 +369,18 @@ export function createWeeklyVaultService({
     const normalizedUserId = normalizeUserId(userId);
     const weekStart = weekStartUtc(now());
     const seed = seedForWeek(weekStart);
+    const startedAt = new Date(now());
+    if (!Number.isFinite(startedAt.getTime())) throw new Error('Invalid Weekly Vault clock.');
 
     const attempt = await database.transaction(async (tx) => {
       const { playerName } = await requireUsableProfile(normalizedUserId, tx.query.bind(tx));
       const inserted = await tx.query(
         `insert into ccq_weekly_attempts
-          (week_start, user_id, player_name, seed)
-         values ($1, $2, $3, $4)
+          (week_start, user_id, player_name, seed, started_at)
+         values ($1, $2, $3, $4, $5)
          on conflict (week_start, user_id) do nothing
          returning id, status, started_at`,
-        [weekStart, normalizedUserId, playerName, seed]
+        [weekStart, normalizedUserId, playerName, seed, startedAt]
       );
       const row = inserted.rows?.[0] ?? null;
       if (!row) throw httpError(409, 'weekly_attempt_already_used');
@@ -409,7 +425,7 @@ export function createWeeklyVaultService({
       if (attempt.status === 'finished') {
         const persisted = normalizePersistedAttempt(attempt);
         await upsertLeaderboard(tx, attempt, persisted);
-        return Object.freeze({ weekStart: String(attempt.week_start), idempotent: true });
+        return Object.freeze({ weekStart: normalizeWeekStart(attempt.week_start), idempotent: true });
       }
       if (attempt.status !== 'started') throw httpError(409, 'weekly_attempt_invalid_state');
 
@@ -445,7 +461,7 @@ export function createWeeklyVaultService({
       const stored = updated.rows?.[0] ?? null;
       if (!stored) throw httpError(409, 'weekly_attempt_finalization_conflict');
       await upsertLeaderboard(tx, stored, validated);
-      return Object.freeze({ weekStart: String(stored.week_start), idempotent: false });
+      return Object.freeze({ weekStart: normalizeWeekStart(stored.week_start), idempotent: false });
     });
 
     const [leaderboard, ghostReplay] = await Promise.all([
