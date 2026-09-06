@@ -24,15 +24,16 @@
   function loadV142TutorialCampaign(){if(!window.CCGLostSizzlerV142TutorialCampaign)loadScript("v10-42-tutorial-campaign.js","data-ccg-v142-tutorial-campaign")}
   function loadV142DemoPaywall(){if(!window.CCGLostSizzlerV142DemoPaywall)loadScript("v10-42-demo-paywall.js","data-ccg-v142-demo-paywall")}
   function loadV142MultiplayerState(){if(!window.CCGLostSizzlerV142MultiplayerState)loadScript("v10-42-multiplayer-state.js","data-ccg-v142-multiplayer-state")}
+  function loadV142MultiplayerCollectAuthority(){if(!window.CCGLostSizzlerV142MultiplayerCollectAuthority)loadScript("v10-42-multiplayer-collect-authority.js","data-ccg-v142-multiplayer-collect-authority")}
   function loadStage8AfterInitialRuntime(){
-    const loadV142=()=>{loadV142ProceduralOverhaul();loadV142FiveDepthCampaign();loadV142FloorBalance();loadV142TutorialCampaign();loadV142DemoPaywall();loadV142MultiplayerState()};
+    const loadV142=()=>{loadV142ProceduralOverhaul();loadV142FiveDepthCampaign();loadV142FloorBalance();loadV142TutorialCampaign();loadV142DemoPaywall();loadV142MultiplayerState();loadV142MultiplayerCollectAuthority()};
     if(document.readyState==="complete"){queueMicrotask(loadStage8NpcDialogue);setTimeout(loadV142,0);return}
     addEventListener("load",()=>{loadStage8NpcDialogue();setTimeout(loadV142,0)},{once:true})
   }
   loadOwnerSeal();loadModeRuntime();loadSoloDiagnostics();loadSpyExitControlReset();loadSoloDungeonR31();loadSpyR32WorldOwner();loadSpyR32Loader();loadHordeOwnerComposition();loadStage8AfterInitialRuntime();
 
   const entries=[
-    ["LS-0906-09","ADDED","V10.42 multiplayer campaign authority","Dungeon Multiplayer now carries V10.42 RPG attributes, relics, Banishment Essence, Sigil powers and global Key progress through the stabilized host-authoritative network path. Remote Key recovery no longer opens the relic chooser on the host, while split-screen characters receive their own campaign rewards."],
+    ["LS-0906-09","ADDED","V10.42 multiplayer campaign authority","Dungeon Multiplayer now carries V10.42 RPG attributes, relics, Banishment Essence, Sigil powers and global Key progress through the stabilized host-authoritative network path. Remote Key recovery is bridged into the host campaign state without opening the remote player's relic chooser on the host, while each local or online character receives the campaign reward on the correct machine."],
     ["LS-0906-08","ADDED","Campaign-aware Tutorial language","The stabilized Tutorial runtime is preserved, but its V10.42 presentation now teaches the five-depth campaign, persistent RPG attributes, global Iron/Bone/Ash Keys, the Vessel and Banishment Essence system, relic choices and the campaign-wide A–Z C64 rescue deck instead of explaining retired artefact-for-Flask progression."],
     ["LS-0906-07","ADDED","Tutorial-completion permanent unlock screen","Completing the free Tutorial can now present the V10.42 permanent-unlock screen. The screen explains the one-off £1.99 launch target, account-tied ownership, cross-device restore, continued-development support and free future game updates. The browser cannot self-authorize payment; final unlock requires a verified CCG commerce entitlement and PayPal server bridge."],
     ["LS-0906-06","ADDED","Progressive combat damage curve","Enemy damage now scales alongside durability and pursuit tempo: the opening floor is deliberately gentler, mid-campaign reaches the stabilized baseline, and Floors 4–5 apply progressively stronger damage. Named threats receive a modest extra late-game multiplier so four floors of RPG growth do not make the final depth trivial."],
