@@ -35,6 +35,7 @@ try{
   const audit=await page.evaluate(()=>{
     const overhaul=window.CCGLostSizzlerV142ProceduralOverhaul;
     const campaign=window.CCGLostSizzlerV142FiveDepthCampaign;
+    const progression=window.CCGProgression;
     const config=window.CCG_CONFIG?.proceduralDungeon;
     const seed="V10.42-BROWSER-CAMPAIGN-CONTRACT";
     const slices=[1,2,3,4,5].map(floor=>campaign.floorPickupSlice(seed,floor));
@@ -42,6 +43,63 @@ try{
     const letters=combined.map(row=>row.letter);
     const player={};
     overhaul.initRpg(player);
+
+    const run=progression.makeRun({seed:"V142-CHECKPOINT-BROWSER"});
+    run.floor=4;
+    run.deepest=4;
+    run.v142Campaign=true;
+    run.v142ClaimedDomains=["iron","bone","ash"];
+    run.v142AllKeysAnnounced=true;
+    run.bankedGames=["Boulder Dash","Bruce Lee"];
+    run.floorGames=["Commando"];
+    const savedPlayer={
+      id:"P1",
+      level:17,
+      rpgStats:{might:8,vitality:7,agility:6,endurance:9,luck:7,arcana:8},
+      relics:["sid-capacitor","ward-amplifier"],
+      banishmentVessel:true,
+      banishmentEssence:4,
+      banishmentEssenceCost:2,
+      sigilReveal:true,
+      sigilWard:true,
+      sigilBind:true,
+      health:8,
+      maxHealth:10,
+      mana:120,
+      maxMana:160,
+      armor:5,
+      inventory:[]
+    };
+    const savedPlayer2={
+      id:"P2",
+      level:12,
+      rpgStats:{might:6,vitality:6,agility:7,endurance:6,luck:8,arcana:5},
+      relics:["archive-plate"],
+      banishmentVessel:true,
+      banishmentEssence:2,
+      banishmentEssenceCost:3,
+      health:6,
+      maxHealth:8,
+      mana:90,
+      maxMana:120,
+      armor:3,
+      inventory:[]
+    };
+    progression.clearCheckpoint();
+    localStorage.removeItem("ccg-quest-collection");
+    const checkpoint=progression.makeCheckpoint(run,savedPlayer,savedPlayer2,43210,"split");
+    const checkpointSaved=progression.saveCheckpointData(checkpoint);
+    const loaded=progression.loadCheckpoint();
+
+    const bankingRun=progression.makeRun({seed:"V142-BANKING-BROWSER"});
+    bankingRun.floor=2;
+    bankingRun.floorGames=["Archon","Bruce Lee","Commando"];
+    bankingRun.bankedGames=["Boulder Dash"];
+    const persistentCollection=progression.bankFloor(bankingRun);
+
+    progression.clearCheckpoint();
+    localStorage.removeItem("ccg-quest-collection");
+
     return {
       overhaulVersion:overhaul.version,
       campaignVersion:campaign.version,
@@ -58,6 +116,22 @@ try{
       vessel:player.banishmentVessel,
       essence:player.banishmentEssence,
       essenceCost:player.banishmentEssenceCost,
+      checkpointSaved,
+      checkpointFloor:loaded?.run?.floor,
+      checkpointKeys:[...(loaded?.run?.v142ClaimedDomains||[])],
+      checkpointBankedGames:[...(loaded?.run?.bankedGames||[])],
+      checkpointFloorGames:[...(loaded?.run?.floorGames||[])],
+      checkpointRpgStats:{...(loaded?.player?.rpgStats||{})},
+      checkpointRelics:[...(loaded?.player?.relics||[])],
+      checkpointEssence:loaded?.player?.banishmentEssence,
+      checkpointSigilBind:loaded?.player?.sigilBind,
+      checkpointPlayer2RpgStats:{...(loaded?.player2?.rpgStats||{})},
+      checkpointPlayer2Relics:[...(loaded?.player2?.relics||[])],
+      checkpointScore:loaded?.score,
+      checkpointPlayMode:loaded?.playMode,
+      bankedAfterFloor:[...bankingRun.bankedGames],
+      floorGamesAfterBank:[...bankingRun.floorGames],
+      persistentCollection:[...persistentCollection],
       menuNote:document.getElementById("menu-note")?.textContent||""
     };
   });
@@ -77,12 +151,31 @@ try{
   assert.equal(audit.vessel,true,"A new V10.42 character must begin with the persistent Banishment Vessel.");
   assert.equal(audit.essence,0,"A new V10.42 character must begin with zero Banishment Essence.");
   assert.equal(audit.essenceCost,3,"The default Banishment Essence cost must match the campaign configuration.");
+
+  assert.equal(audit.checkpointSaved,true,"The browser checkpoint store must accept a V10.42 campaign checkpoint.");
+  assert.equal(audit.checkpointFloor,4,"Checkpoint round-trip must retain the active campaign floor.");
+  assert.deepEqual(audit.checkpointKeys,["iron","bone","ash"],"Checkpoint round-trip must retain all three global Key domains.");
+  assert.deepEqual(audit.checkpointBankedGames,["Boulder Dash","Bruce Lee"],"Checkpoint round-trip must retain already rescued C64 games.");
+  assert.deepEqual(audit.checkpointFloorGames,["Commando"],"Checkpoint round-trip must retain rescued games still belonging to the current depth.");
+  assert.deepEqual(audit.checkpointRpgStats,{might:8,vitality:7,agility:6,endurance:9,luck:7,arcana:8},"Checkpoint round-trip must retain Player 1 RPG attributes.");
+  assert.deepEqual(audit.checkpointRelics,["sid-capacitor","ward-amplifier"],"Checkpoint round-trip must retain Player 1 relics.");
+  assert.equal(audit.checkpointEssence,4,"Checkpoint round-trip must retain Banishment Essence.");
+  assert.equal(audit.checkpointSigilBind,true,"Checkpoint round-trip must retain awakened Sigil powers.");
+  assert.deepEqual(audit.checkpointPlayer2RpgStats,{might:6,vitality:6,agility:7,endurance:6,luck:8,arcana:5},"Checkpoint round-trip must retain Player 2 RPG attributes in split play.");
+  assert.deepEqual(audit.checkpointPlayer2Relics,["archive-plate"],"Checkpoint round-trip must retain Player 2 relics in split play.");
+  assert.equal(audit.checkpointScore,43210,"Checkpoint round-trip must retain campaign score.");
+  assert.equal(audit.checkpointPlayMode,"split","Checkpoint round-trip must retain the saved play mode.");
+
+  assert.deepEqual(audit.bankedAfterFloor,["Boulder Dash","Archon","Bruce Lee","Commando"],"Floor banking must move all current-depth rescued games into campaign-wide rescued state.");
+  assert.deepEqual(audit.floorGamesAfterBank,[],"Floor banking must empty the current-depth rescued-game buffer after committing it.");
+  assert.deepEqual(audit.persistentCollection,["Boulder Dash","Archon","Bruce Lee","Commando"],"Floor banking must mirror campaign rescues into the persistent local C64 collection without dropping prior games.");
+
   assert.match(audit.menuNote,/five new dungeon floors/i,"Canonical menu copy must describe the five-floor campaign.");
   assert.match(audit.menuNote,/persist/i,"Canonical menu copy must tell players that campaign progression persists between depths.");
   assert.deepEqual(pageErrors,[],`Canonical V10.42 campaign startup must not raise page errors: ${pageErrors.join("\n")}`);
   assert.deepEqual(failedScripts,[],`Canonical V10.42 campaign scripts must load without same-origin request failures: ${failedScripts.join("\n")}`);
 
-  console.log("Lost Sizzler V10.42 canonical campaign browser integration contract passed.");
+  console.log("Lost Sizzler V10.42 canonical campaign, banking and checkpoint browser integration contract passed.");
   await context.close();
 }finally{
   await browser.close();
