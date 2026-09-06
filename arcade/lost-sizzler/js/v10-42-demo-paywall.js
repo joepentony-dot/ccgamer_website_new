@@ -86,6 +86,7 @@
   }
   let completionQueued=false;
   function watchTutorialCompletion(){
+    if(!DEMO_MODE)return;
     const complete=tutorialCompleted();if(!complete){completionQueued=false;return}
     if(completionQueued||state.entitled)return;completionQueued=true;setTimeout(()=>showPaywall({reason:"tutorial-complete"}),350)
   }
