@@ -80,11 +80,13 @@ jobs:
           account_migration='services/ccg-backend/migrations/002_account_profiles.sql'
           session_migration='services/ccg-backend/migrations/003_auth_sessions.sql'
           profile_state_migration='services/ccg-backend/migrations/004_profile_owned_state.sql'
+          service_state_migration='services/ccg-backend/migrations/005_online_service_state.sql'
           snapshot='services/ccg-backend/migration/source-snapshot-2026-09-06.json'
           test -f "$migration"
           test -f "$account_migration"
           test -f "$session_migration"
           test -f "$profile_state_migration"
+          test -f "$service_state_migration"
           test -f "$snapshot"
           test -f services/ccg-backend/src/auth-http.mjs
           test -f services/ccg-backend/src/password-recovery.mjs
@@ -92,6 +94,10 @@ jobs:
           test -f services/ccg-backend/scripts/verify-migration-snapshot.mjs
           test -f services/ccg-backend/scripts/import-migration-bundle.mjs
           test -f services/ccg-backend/scripts/export-supabase-migration-bundle.mjs
+          test -f services/ccg-backend/client/ccg-auth-client.mjs
+          test -f services/ccg-backend/client/ccg-online-client.mjs
+          test -f services/ccg-backend/tests/auth-client-contract.mjs
+          test -f services/ccg-backend/tests/online-client-contract.mjs
           test -f services/ccg-backend/tests/password-recovery-database-contract.mjs
           test -f services/ccg-backend/tests/migration-runner-contract.mjs
           test -f services/ccg-backend/tests/migration-snapshot-contract.mjs
@@ -128,6 +134,12 @@ jobs:
           grep -q 'email_subscriptions' "$profile_state_migration"
           grep -q 'comments' "$profile_state_migration"
           grep -q 'ccq_weekly_attempts' "$profile_state_migration"
+          grep -q 'ccq_weekly_leaderboard' "$service_state_migration"
+          grep -q 'ccq_weekly_result_deliveries' "$service_state_migration"
+          grep -q 'game_feedback' "$service_state_migration"
+          grep -q 'game_feedback_replies' "$service_state_migration"
+          grep -q 'game_play_events' "$service_state_migration"
+          grep -q 'lost_sizzler_request_buckets' "$service_state_migration"
           grep -q 'Never expose `password_hash`' services/ccg-backend/AUTH-PROFILE-MIGRATION-PLAN.md
           if grep -Eiq '(SUPABASE_SERVICE_ROLE|service[_-]?role|-----BEGIN ([A-Z0-9 ]+)?PRIVATE KEY-----)' services/ccg-backend/src/*; then
             echo 'Backend source contains forbidden embedded privileged credential material.' >&2
