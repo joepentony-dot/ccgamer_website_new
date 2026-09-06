@@ -85,18 +85,29 @@ Read-only function inventory on the same date:
 
 | Function | Current role in retirement plan |
 | --- | --- |
-| `ccq-weekly-challenge` | replace with CCG Weekly Vault API before Supabase retirement |
+| `ccq-weekly-challenge` | CCG Weekly Vault API and passive Lost Sizzler compatibility mapping now exist; production remains on Supabase until pilot/regression acceptance |
 | `ccq-weekly-results` | replace result/delivery path before Supabase retirement |
-| `lost-sizzler-feedback` | replace feedback/rating path before Supabase retirement |
+| `lost-sizzler-feedback` | CCG feedback API/client exists; preserve/migrate history and verify the runtime call path before production cut-over |
 | `lost-sizzler-admin-feedback` | replace admin reply/moderation path if retained |
 | `send-new-game-notification` | website publishing/notification service; separate from Lost Sizzler login migration |
 | `search-console-opportunities` | website/search tooling; separate from Lost Sizzler and account cut-over |
 
-No Edge Function was changed or redeployed during this inventory.
+No Supabase Edge Function was changed or redeployed during this inventory/migration checkpoint.
+
+## Lost Sizzler compatibility checkpoint
+
+The CCG backend now includes:
+
+- `client/lost-sizzler-supabase-compat.mjs`, a passive compatibility bridge that maps the current Weekly Vault function shape and multiplayer channel shape onto CCG-owned services;
+- `client/lost-sizzler-ccg-pilot.mjs`, an explicit installer for controlled pilots only;
+- exact rollback behavior that restores any prior `ccgSupabase` property descriptor when a deliberate replacement pilot is uninstalled;
+- local failure for unsupported legacy Edge Function names rather than accidental forwarding.
+
+Neither module installs itself on import. The live website still defaults to the existing Supabase path, and normal Solo/offline operation remains independent of both providers.
 
 ## Authentication cut-over boundary
 
-The CCG backend now has an independent local-auth core and a passive browser client, but production remains on the existing source system.
+The CCG backend now has an independent local-auth core, provider-neutral browser auth client, Lost Sizzler compatibility bridge and explicit pilot installer, but production remains on the existing source system.
 
 A safe account cut-over requires all of the following before changing the live website:
 
@@ -106,9 +117,10 @@ A safe account cut-over requires all of the following before changing the live w
 4. Verify the six auth-only accounts remain valid without fabricated profile rows.
 5. Verify member-owned rows remain attached to the same user UUIDs.
 6. Select and configure a CCG-controlled recovery-email delivery path before exposing password recovery.
-7. Run an opt-in CCG browser provider in parallel with existing production auth; do not silently switch users.
+7. Run the explicit CCG pilot in parallel with existing production auth; do not silently switch users.
 8. Verify `/v1/me`, refresh rotation, logout/revocation and relevant member-owned reads/writes against the non-production destination.
-9. Perform a deliberate production cut-over only after human approval.
+9. Run Lost Sizzler Weekly Vault and multiplayer regressions through the CCG compatibility bridge while preserving the Supabase rollback route.
+10. Perform a deliberate production cut-over only after human approval.
 
 ## Storage remains independent
 
