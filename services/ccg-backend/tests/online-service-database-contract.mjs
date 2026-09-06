@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { createDatabase } from '../src/db.mjs';
+import { createWeeklyVaultService, weekStartUtc } from '../src/weekly-vault.mjs';
 
 const databaseUrl = String(process.env.DATABASE_URL || '').trim();
 if (!databaseUrl) throw new Error('DATABASE_URL is required for the online-service database contract.');
@@ -127,7 +128,146 @@ try {
     (error) => error?.code === '23514'
   );
 
-  console.log('CCG online-service PostgreSQL contract passed: Weekly Vault projections/deliveries, feedback/replies, telemetry/rating history and one-way request-budget state are source-compatible and constraint-checked.');
+  let weeklyNowMs = Date.UTC(2035, 4, 9, 12, 0, 0);
+  const weeklyUserA = 'weekly-service-contract-user-a';
+  const weeklyUserB = 'weekly-service-contract-user-b';
+  const weeklyWeekStart = weekStartUtc(weeklyNowMs);
+  await database.query(
+    `insert into ccg_users (user_id) values ($1), ($2)
+     on conflict (user_id) do nothing`,
+    [weeklyUserA, weeklyUserB]
+  );
+  await database.query(
+    `insert into ccg_profiles (user_id, username, display_name, banned)
+     values ($1, 'weekly-alpha', 'Weekly Alpha', false),
+            ($2, 'weekly-bravo', 'Weekly Bravo', false)
+     on conflict (user_id) do update
+       set username = excluded.username,
+           display_name = excluded.display_name,
+           banned = false`,
+    [weeklyUserA, weeklyUserB]
+  );
+
+  const weeklyVault = createWeeklyVaultService({
+    database,
+    now: () => weeklyNowMs,
+    readLimit: 20,
+    startLimit: 10,
+    finishLimit: 20,
+  });
+
+  const anonymousWeekly = await weeklyVault.status({ fingerprint: 'weekly-anonymous-contract' });
+  assert.equal(anonymousWeekly.weekStart, weeklyWeekStart);
+  assert.equal(anonymousWeekly.signedIn, false);
+  assert.equal(anonymousWeekly.locked, false);
+
+  const beforeWeekly = await weeklyVault.status({ userId: weeklyUserA, fingerprint: 'weekly-alpha-before' });
+  assert.equal(beforeWeekly.signedIn, true);
+  assert.equal(beforeWeekly.locked, false);
+  assert.equal(beforeWeekly.playerName, 'weekly-alpha');
+
+  const startedA = await weeklyVault.start({ userId: weeklyUserA, fingerprint: 'weekly-alpha-start' });
+  assert.equal(startedA.locked, true);
+  assert.match(startedA.attempt.id, /^[0-9a-f-]{36}$/i);
+  await assert.rejects(
+    weeklyVault.start({ userId: weeklyUserA, fingerprint: 'weekly-alpha-start-again' }),
+    (error) => error?.statusCode === 409 && error?.code === 'weekly_attempt_already_used'
+  );
+
+  weeklyNowMs += 180_000;
+  await assert.rejects(
+    weeklyVault.finish({
+      userId: weeklyUserA,
+      attemptId: startedA.attempt.id,
+      fingerprint: 'weekly-alpha-invalid-finish',
+      result: { completed: true, deepestFloor: 4, durationMs: 120_000 },
+    }),
+    (error) => error?.statusCode === 422 && error?.code === 'weekly_completed_floor_mismatch'
+  );
+
+  const finishedA = await weeklyVault.finish({
+    userId: weeklyUserA,
+    attemptId: startedA.attempt.id,
+    fingerprint: 'weekly-alpha-finish',
+    result: {
+      score: 25_000,
+      deepestFloor: 3,
+      durationMs: 120_000,
+      level: 6,
+      completed: false,
+      kills: 22,
+      secrets: 3,
+      ghostPath: [
+        { f: 1, x: 20, y: 20, t: 0 },
+        { f: 2, x: 40, y: 40, t: 60_000 },
+        { f: 3, x: 60, y: 60, t: 119_000 },
+      ],
+    },
+  });
+  assert.equal(finishedA.idempotent, false);
+
+  const retryA = await weeklyVault.finish({
+    userId: weeklyUserA,
+    attemptId: startedA.attempt.id,
+    fingerprint: 'weekly-alpha-retry',
+    result: { completed: true, deepestFloor: 1, durationMs: 1 },
+  });
+  assert.equal(retryA.idempotent, true, 'Repeated finish must return the persisted result instead of rewriting it.');
+
+  const startedB = await weeklyVault.start({ userId: weeklyUserB, fingerprint: 'weekly-bravo-start' });
+  weeklyNowMs += 180_000;
+  const finishedB = await weeklyVault.finish({
+    userId: weeklyUserB,
+    attemptId: startedB.attempt.id,
+    fingerprint: 'weekly-bravo-finish',
+    result: {
+      score: 40_000,
+      deepestFloor: 4,
+      durationMs: 150_000,
+      level: 8,
+      completed: false,
+      kills: 30,
+      secrets: 4,
+      ghostPath: [
+        { f: 1, x: 10, y: 10, t: 0 },
+        { f: 2, x: 30, y: 30, t: 50_000 },
+        { f: 4, x: 70, y: 70, t: 149_000 },
+      ],
+    },
+  });
+  assert.equal(finishedB.idempotent, false);
+
+  const afterWeekly = await weeklyVault.status({ userId: weeklyUserA, fingerprint: 'weekly-alpha-after' });
+  assert.equal(afterWeekly.locked, true);
+  assert.equal(afterWeekly.leaderboard.length, 2);
+  assert.equal(afterWeekly.leaderboard[0].player_name, 'weekly-bravo');
+  assert.equal(afterWeekly.leaderboard[1].player_name, 'weekly-alpha');
+  assert.equal(afterWeekly.ghostReplay.playerName, 'weekly-bravo');
+
+  const weeklyGhost = await weeklyVault.ghost({ userId: weeklyUserA, fingerprint: 'weekly-alpha-ghost' });
+  assert.equal(weeklyGhost.ghost.playerName, 'weekly-bravo');
+
+  const weeklyCounts = await database.query(
+    `select
+       (select count(*) from ccq_weekly_attempts where week_start = $1 and user_id in ($2, $3))::int as attempts,
+       (select count(*) from ccq_weekly_leaderboard where week_start = $1 and player_name in ('weekly-alpha', 'weekly-bravo'))::int as leaderboard_rows`,
+    [weeklyWeekStart, weeklyUserA, weeklyUserB]
+  );
+  assert.deepEqual(weeklyCounts.rows[0], { attempts: 2, leaderboard_rows: 2 });
+
+  const rateLimitedWeeklyVault = createWeeklyVaultService({
+    database,
+    now: () => weeklyNowMs,
+    readLimit: 1,
+    readWindowSeconds: 300,
+  });
+  await rateLimitedWeeklyVault.status({ fingerprint: 'weekly-rate-limit-contract' });
+  await assert.rejects(
+    rateLimitedWeeklyVault.status({ fingerprint: 'weekly-rate-limit-contract' }),
+    (error) => error?.statusCode === 429 && error?.code === 'weekly_rate_limited' && error?.retryAfterSeconds > 0
+  );
+
+  console.log('CCG online-service PostgreSQL contract passed: source-compatible service tables plus the CCG Weekly Vault one-attempt lock, result integrity, idempotent finish, leaderboard projection, ghost selection and request budgets work without Supabase.');
 } finally {
   await database.close();
 }
