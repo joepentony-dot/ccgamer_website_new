@@ -48,6 +48,10 @@ jobs:
         working-directory: services/ccg-backend
         run: npm run check
 
+      - name: Validate sanitized source migration snapshot
+        working-directory: services/ccg-backend
+        run: npm run migration:snapshot:check
+
       - name: Prove backend schema and cloud-save transactions on PostgreSQL
         working-directory: services/ccg-backend
         run: node tests/database-contract.mjs
@@ -72,18 +76,28 @@ jobs:
           account_migration='services/ccg-backend/migrations/002_account_profiles.sql'
           session_migration='services/ccg-backend/migrations/003_auth_sessions.sql'
           profile_state_migration='services/ccg-backend/migrations/004_profile_owned_state.sql'
+          snapshot='services/ccg-backend/migration/source-snapshot-2026-09-06.json'
           test -f "$migration"
           test -f "$account_migration"
           test -f "$session_migration"
           test -f "$profile_state_migration"
+          test -f "$snapshot"
           test -f services/ccg-backend/src/auth-http.mjs
           test -f services/ccg-backend/src/password-recovery.mjs
           test -f services/ccg-backend/scripts/migrate.mjs
+          test -f services/ccg-backend/scripts/verify-migration-snapshot.mjs
           test -f services/ccg-backend/tests/password-recovery-database-contract.mjs
           test -f services/ccg-backend/tests/migration-runner-contract.mjs
+          test -f services/ccg-backend/tests/migration-snapshot-contract.mjs
           grep -q 'offline game first' services/ccg-backend/README.md
           grep -q 'CCG_AUTH_MODE=local' services/ccg-backend/README.md
           grep -q 'migrate:apply' services/ccg-backend/package.json
+          grep -q 'migration:verify' services/ccg-backend/package.json
+          grep -q '"auth_accounts": 33' "$snapshot"
+          grep -q '"profiles": 27' "$snapshot"
+          grep -q '"contains_password_hashes": false' "$snapshot"
+          grep -q '"contains_session_tokens": false' "$snapshot"
+          grep -q '"contains_unsubscribe_tokens": false' "$snapshot"
           grep -q 'lost_sizzler_cloud_saves' "$migration"
           grep -q 'client_revision_ms' "$migration"
           grep -q 'deleted_at' "$migration"
