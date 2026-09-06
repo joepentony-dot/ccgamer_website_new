@@ -108,7 +108,6 @@ try{
   });
 
   const opening=await snapshot(page);
-  assert.equal(window ? true : true,true); // keeps this contract browser-only without static fallbacks
   assert.equal(opening.floor,1,"A live V10.42 Solo campaign must start on Floor 1.");
   assert.equal(opening.floorName,"THE THRESHOLD","The live campaign must begin in The Threshold.");
   assert.equal(opening.controller,"dungeon-solo","The live campaign must remain under the Solo Dungeon controller.");
