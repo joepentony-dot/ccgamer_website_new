@@ -2,12 +2,13 @@ import { createCcgAuthClient } from './ccg-auth-client.mjs';
 import { createLostSizzlerCloudSync } from './lost-sizzler-cloud-sync.mjs';
 import { createLostSizzlerWeeklyVault } from './lost-sizzler-weekly-vault.mjs';
 import { createLostSizzlerFeedbackClient } from './lost-sizzler-feedback.mjs';
+import { createLostSizzlerProgressClient } from './lost-sizzler-progress.mjs';
 
 /**
  * Compose the future CCG-owned browser services without activating any network
  * request during construction. The caller must explicitly invoke auth/cloud/
- * Weekly Vault/feedback operations. This module is intentionally not loaded by
- * the live website or Lost Sizzler runtime yet.
+ * Weekly Vault/feedback/progress operations. This module is intentionally not
+ * loaded by the live website or Lost Sizzler runtime yet.
  */
 export function createCcgOnlineClient({
   baseUrl,
@@ -31,6 +32,11 @@ export function createCcgOnlineClient({
     fetchImpl,
     getAccessToken: () => auth.getAccessToken(),
   });
+  const lostSizzlerProgress = createLostSizzlerProgressClient({
+    baseUrl,
+    fetchImpl,
+    getAccessToken: () => auth.getAccessToken(),
+  });
 
   return Object.freeze({
     auth,
@@ -38,6 +44,7 @@ export function createCcgOnlineClient({
       cloudSave: lostSizzlerCloudSave,
       weeklyVault: lostSizzlerWeeklyVault,
       feedback: lostSizzlerFeedback,
+      progress: lostSizzlerProgress,
     }),
   });
 }
