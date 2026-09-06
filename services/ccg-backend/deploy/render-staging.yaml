@@ -59,6 +59,6 @@ databases:
     plan: free
     region: frankfurt
     postgresMajorVersion: "17"
-    databaseName: ccg_backend_staging
-    user: ccg_backend_staging
+    databaseName: ccg_backend_staging_db
+    user: ccg_backend_staging_db_user
     ipAllowList: []
