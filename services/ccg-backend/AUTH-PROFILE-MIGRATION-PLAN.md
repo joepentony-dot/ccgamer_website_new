@@ -24,6 +24,23 @@ The current Supabase project was inspected read-only.
 
 The 6 auth-only users must be preserved as accounts. Migration must **not** invent profile records for them merely to make row counts match.
 
+## Current implementation checkpoint — 6 September 2026
+
+The repository now contains the passive Lost Sizzler compatibility bridge `client/lost-sizzler-supabase-compat.mjs`.
+
+It deliberately does **not** install itself into the live website and does not change the default provider. Its purpose is to let an explicit pilot or packaged build provide the narrow Supabase-shaped interface the existing Lost Sizzler runtime expects while the underlying work is performed by CCG-owned services.
+
+Current bridge coverage:
+
+- CCG login, refresh, logout and current-session/user shape;
+- profile hydration through the CCG `/v1/me` endpoint;
+- the existing `ccq-weekly-challenge` call shape mapped to CCG Weekly Vault `status`, `ghost`, `start` and `finish` operations;
+- Supabase-shaped `channel`, `removeChannel` and `removeAllChannels` methods backed by the CCG Lost Sizzler realtime adapter;
+- anonymous online use remains valid when no CCG refresh session exists;
+- bridge construction and `getClient()` are network-passive and do not open a WebSocket.
+
+The bridge fails unsupported legacy Edge Function names locally rather than silently sending them to an unintended service. Production cut-over remains blocked on the wider account/profile migration and regression gates below.
+
 ## Existing password compatibility
 
 Supabase Auth stores password hashes in `auth.users.encrypted_password`. Supabase documents these hashes as bcrypt. The CCG migration must copy hashes only through a privileged server-side migration path and must never expose them to browser code, logs, support output or client diagnostics.
