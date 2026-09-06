@@ -51,6 +51,11 @@ async function auditPage(context,label){
   return{page,pageErrors,failedScripts};
 }
 
+async function closeDemoOffer(page){
+  await page.evaluate(()=>document.querySelector("#v142-demo-paywall [data-later]")?.click());
+  await page.waitForFunction(()=>document.getElementById("v142-demo-paywall")?.classList.contains("hidden")===true);
+}
+
 try{
   const normalContext=await browser.newContext({viewport:{width:1280,height:800}});
   const normal=await auditPage(normalContext,"normal");
@@ -75,20 +80,24 @@ try{
   const demoContext=await browser.newContext({viewport:{width:1280,height:800}});
   await demoContext.addInitScript(()=>{window.CCG_LOST_SIZZLER_DEMO_MODE=true});
   const demo=await auditPage(demoContext,"demo");
-  await demo.page.waitForFunction(()=>document.body.dataset.v142DemoLocked==="true"&&window.CCGLostSizzlerV142DemoPaywall.state.guarded.size===6);
+  await demo.page.waitForFunction(()=>document.body.dataset.v142DemoLocked==="true"&&window.CCGLostSizzlerV142DemoPaywall.state.guarded.size===8);
   const lockedAudit=await demo.page.evaluate(()=>({
     demoMode:window.CCGLostSizzlerV142DemoPaywall.demoMode,
     locked:document.body.dataset.v142DemoLocked,
     badges:document.querySelectorAll(".v142-demo-lock-badge").length,
     guarded:window.CCGLostSizzlerV142DemoPaywall.state.guarded.size,
     tutorialBadge:Boolean(document.querySelector("#tutorial-zone-btn .v142-demo-lock-badge")),
+    resumeBadge:Boolean(document.querySelector("#continue-save-btn .v142-demo-lock-badge")),
+    joinBadge:Boolean(document.querySelector("#join-btn .v142-demo-lock-badge")),
     runActive:document.body.dataset.runActive
   }));
   assert.equal(lockedAudit.demoMode,true,"Explicit demo mode must activate the V10.42 permanent-unlock boundary.");
   assert.equal(lockedAudit.locked,"true","Demo mode must mark the full-game runtime as locked.");
-  assert.equal(lockedAudit.guarded,6,"All six paid full-game entry controls must be guarded in demo mode.");
-  assert.equal(lockedAudit.badges,6,"Every guarded full-game entry control must carry one FULL GAME badge.");
+  assert.equal(lockedAudit.guarded,8,"All eight direct paid-game entry controls must be guarded in demo mode, including saved-run resume and room-code join.");
+  assert.equal(lockedAudit.badges,8,"Every guarded full-game entry control must carry one FULL GAME badge.");
   assert.equal(lockedAudit.tutorialBadge,false,"The free Tutorial must remain outside the paid-control guard set.");
+  assert.equal(lockedAudit.resumeBadge,true,"A visible saved-run Resume control must remain behind the demo entitlement boundary.");
+  assert.equal(lockedAudit.joinBadge,true,"Room-code Join must remain behind the demo entitlement boundary.");
 
   await demo.page.evaluate(()=>document.getElementById("solo-btn").click());
   await demo.page.waitForFunction(()=>!document.getElementById("v142-demo-paywall")?.classList.contains("hidden"));
@@ -110,9 +119,18 @@ try{
   assert.match(offerAudit.loginHref,/^\/auth\/login\.html\?returnTo=/,"Demo sign-in must preserve the Lost Sizzler purchase return target.");
   assert.match(offerAudit.registerHref,/^\/auth\/register\.html\?returnTo=/,"Demo registration must preserve the Lost Sizzler purchase return target.");
   assert.notEqual(offerAudit.runActive,"true","The intercepted Solo click must not start paid gameplay underneath the unlock screen.");
+  await closeDemoOffer(demo.page);
 
-  await demo.page.evaluate(()=>document.querySelector("#v142-demo-paywall [data-later]")?.click());
-  await demo.page.waitForFunction(()=>document.getElementById("v142-demo-paywall")?.classList.contains("hidden")===true);
+  await demo.page.evaluate(()=>document.getElementById("join-btn").click());
+  await demo.page.waitForFunction(()=>!document.getElementById("v142-demo-paywall")?.classList.contains("hidden"));
+  assert.notEqual(await demo.page.evaluate(()=>document.body.dataset.runActive),"true","Room-code Join must be intercepted before paid online gameplay can start in demo mode.");
+  await closeDemoOffer(demo.page);
+
+  await demo.page.evaluate(()=>{const button=document.getElementById("continue-save-btn");button.classList.remove("hidden");button.click()});
+  await demo.page.waitForFunction(()=>!document.getElementById("v142-demo-paywall")?.classList.contains("hidden"));
+  assert.notEqual(await demo.page.evaluate(()=>document.body.dataset.runActive),"true","Saved-run Resume must be intercepted before paid gameplay can start in demo mode.");
+  await closeDemoOffer(demo.page);
+
   const entitlementAudit=await demo.page.evaluate(()=>{
     const api=window.CCGLostSizzlerV142DemoPaywall;
     const rejected=api.unlockRuntime({kind:"subscription",active:true});
@@ -137,7 +155,7 @@ try{
   assert.equal(entitlementAudit.badges,0,"Accepted permanent ownership must remove FULL GAME badges.");
   assert.deepEqual(demo.pageErrors,[],`Demo-mode V10.42 paywall flow must not raise page errors: ${demo.pageErrors.join("\n")}`);
   assert.deepEqual(demo.failedScripts,[],`Demo-mode V10.42 paywall scripts must load without same-origin failures: ${demo.failedScripts.join("\n")}`);
-  console.log("Lost Sizzler V10.42 explicit demo lock and permanent-entitlement browser contract passed.");
+  console.log("Lost Sizzler V10.42 explicit demo lock, resume/join guard and permanent-entitlement browser contract passed.");
   await demoContext.close();
 }finally{
   await browser.close();
