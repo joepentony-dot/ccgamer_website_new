@@ -122,7 +122,7 @@
     };
 
     function authorizeInterimExit(hostState){
-      hostState.sigilLockdown=false;hostState.sigilResolved=true;hostState.exitSigilCollected=true;hostState.exitOpen=true;
+      hostState.sigilLockdown=false;hostState.sigilResolved=true;hostState.exitSigilCollected=false;hostState.exitOpen=true;
       for(const door of hostState.doors||[])if(door.sigilGate){door.locked=false;door.open=true;door.opening=false;door.openAt=0;door.openingStart=0}
     }
     const baseUpdateObjective=SYSTEMS.updateObjective.bind(SYSTEMS),baseObjectiveText=SYSTEMS.objectiveText.bind(SYSTEMS);
