@@ -21,13 +21,15 @@
   function loadV142ProceduralOverhaul(){if(!window.CCGLostSizzlerV142ProceduralOverhaul)loadScript("v10-42-procedural-overhaul.js","data-ccg-v142-procedural-overhaul")}
   function loadV142FiveDepthCampaign(){if(!window.CCGLostSizzlerV142FiveDepthCampaign)loadScript("v10-42-five-depth-campaign.js","data-ccg-v142-five-depth-campaign")}
   function loadV142FloorBalance(){if(!window.CCGLostSizzlerV142FloorBalance)loadScript("v10-42-floor-balance.js","data-ccg-v142-floor-balance")}
+  function loadV142DemoPaywall(){if(!window.CCGLostSizzlerV142DemoPaywall)loadScript("v10-42-demo-paywall.js","data-ccg-v142-demo-paywall")}
   function loadStage8AfterInitialRuntime(){
-    if(document.readyState==="complete"){queueMicrotask(loadStage8NpcDialogue);setTimeout(()=>{loadV142ProceduralOverhaul();loadV142FiveDepthCampaign();loadV142FloorBalance()},0);return}
-    addEventListener("load",()=>{loadStage8NpcDialogue();setTimeout(()=>{loadV142ProceduralOverhaul();loadV142FiveDepthCampaign();loadV142FloorBalance()},0)},{once:true})
+    if(document.readyState==="complete"){queueMicrotask(loadStage8NpcDialogue);setTimeout(()=>{loadV142ProceduralOverhaul();loadV142FiveDepthCampaign();loadV142FloorBalance();loadV142DemoPaywall()},0);return}
+    addEventListener("load",()=>{loadStage8NpcDialogue();setTimeout(()=>{loadV142ProceduralOverhaul();loadV142FiveDepthCampaign();loadV142FloorBalance();loadV142DemoPaywall()},0)},{once:true})
   }
   loadOwnerSeal();loadModeRuntime();loadSoloDiagnostics();loadSpyExitControlReset();loadSoloDungeonR31();loadSpyR32WorldOwner();loadSpyR32Loader();loadHordeOwnerComposition();loadStage8AfterInitialRuntime();
 
   const entries=[
+    ["LS-0906-07","ADDED","Tutorial-completion permanent unlock screen","Completing the free Tutorial can now present the V10.42 permanent-unlock screen. The screen explains the one-off £1.99 launch target, account-tied ownership, cross-device restore, continued-development support and free future game updates. The browser cannot self-authorize payment; final unlock requires a verified CCG commerce entitlement and PayPal server bridge."],
     ["LS-0906-06","ADDED","Progressive combat damage curve","Enemy damage now scales alongside durability and pursuit tempo: the opening floor is deliberately gentler, mid-campaign reaches the stabilized baseline, and Floors 4–5 apply progressively stronger damage. Named threats receive a modest extra late-game multiplier so four floors of RPG growth do not make the final depth trivial."],
     ["LS-0906-05","ADDED","Five-depth campaign and floor balance","V10.42 now targets a roughly 55–75 minute successful run across The Threshold, Iron Keep, Moss Crypt, Ember Depths and the Sigil Sanctum. Enemy durability, pursuit tempo, Stalker pressure and ammunition availability ramp by floor while RPG stats, relics, Banishment Essence and global Key progress persist downward."],
     ["LS-0906-01","ADDED","Procedural RPG campaign overhaul","The stabilized five-floor structure is being rebuilt as five substantially richer generated depths. The Keys of Iron, Bone and Ash are global campaign objectives, followed by the completed Sigil and a final escape phase."],
