@@ -11,10 +11,18 @@ create table if not exists ccg_users (
 create table if not exists lost_sizzler_cloud_saves (
   user_id text primary key references ccg_users(user_id) on delete cascade,
   revision bigint not null default 1 check (revision > 0),
-  save_payload jsonb not null,
-  payload_sha256 text not null check (payload_sha256 ~ '^[0-9a-f]{64}$'),
-  saved_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  schema_name text not null default 'ccg-lost-sizzler-solo-save',
+  schema_version smallint not null default 2 check (schema_version > 0),
+  game_version text not null default 'V10.41',
+  save_envelope jsonb,
+  save_checksum text,
+  payload_sha256 text,
+  save_saved_at timestamptz,
+  client_revision_ms bigint not null default 0 check (client_revision_ms >= 0),
+  deleted_at timestamptz,
+  updated_at timestamptz not null default now(),
+  check (save_envelope is not null or deleted_at is not null),
+  check (payload_sha256 is null or payload_sha256 ~ '^[0-9a-f]{64}$')
 );
 
 create table if not exists lost_sizzler_achievements (
@@ -81,7 +89,9 @@ create index if not exists lost_sizzler_multiplayer_rooms_expires_idx
   on lost_sizzler_multiplayer_rooms(expires_at);
 
 comment on table lost_sizzler_cloud_saves is
-  'Optional online mirror only. Local Lost Sizzler save state remains authoritative for offline play.';
+  'Optional online mirror only. Local Lost Sizzler save state remains authoritative for offline play. Source-compatible schema/checksum/revision/tombstone fields are retained for verified Supabase migration.';
+comment on column lost_sizzler_cloud_saves.payload_sha256 is
+  'CCG-backend canonical SHA-256 integrity proof. This is separate from the existing 8-character Lost Sizzler envelope save_checksum.';
 comment on table lost_sizzler_achievements is
   'Optional account synchronization. Local achievement state must remain usable without this service.';
 comment on table lost_sizzler_collection_state is
