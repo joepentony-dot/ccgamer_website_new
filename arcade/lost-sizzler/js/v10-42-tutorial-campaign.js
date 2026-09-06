@@ -32,7 +32,7 @@
     }],
     ["TUTORIAL COMPLETE",{
       title:"FREE INTRODUCTION COMPLETE",
-      copy:"You have completed the free introduction and learned the controls and core dungeon language.",
+      copy:"You Are Ready To Take On The Adventure! You have completed the free introduction and learned the controls and core dungeon language.",
       detail:"The full game continues across five procedural depths with persistent RPG growth, Iron, Bone and Ash, the awakened Sigil, A–Z C64 rescues and the final escape."
     }]
   ]);
