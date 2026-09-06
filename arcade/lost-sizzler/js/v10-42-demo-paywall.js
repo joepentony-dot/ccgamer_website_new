@@ -29,6 +29,7 @@
     const offer=value?.offer||value||{};const currency=safeOfferText(offer.currency||"GBP").toUpperCase()||"GBP",amount=safeOfferText(offer.display_price||offer.displayPrice||offer.price_display||"");
     return{currency,display:amount||FALLBACK_PRICE,product:String(offer.product_slug||offer.product||PRODUCT_SLUG)};
   }
+  function diagnostics(){return Object.freeze({shown:state.shown,checking:state.checking,entitled:state.entitled,providerReady:state.providerReady,lastError:state.lastError,guardedCount:state.guarded.size})}
 
   function ensureStyle(){
     if(document.getElementById("v142-demo-paywall-style"))return;
@@ -102,5 +103,5 @@
   ensureOverlay();guardFullGameButtons();refreshEntitlement();
   const observer=new MutationObserver(()=>{watchTutorialCompletion();guardFullGameButtons()});observer.observe(document.documentElement,{childList:true,subtree:true});
   addEventListener("pagehide",()=>observer.disconnect(),{once:true});
-  window.CCGLostSizzlerV142DemoPaywall=Object.freeze({productSlug:PRODUCT_SLUG,demoMode:DEMO_MODE,state,showPaywall,closePaywall,refreshEntitlement,unlockRuntime});
+  window.CCGLostSizzlerV142DemoPaywall=Object.freeze({productSlug:PRODUCT_SLUG,demoMode:DEMO_MODE,showPaywall,closePaywall,refreshEntitlement,diagnostics});
 })();
