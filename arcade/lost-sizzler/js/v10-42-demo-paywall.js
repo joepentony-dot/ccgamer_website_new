@@ -60,7 +60,7 @@
     if(!(await signedIn())){status("Sign in or create a CCG account first. The permanent unlock must be attached to an account you can recover.",true);return}
     const button=state.overlay?.querySelector?.(".v142-paypal");if(button)button.disabled=true;status("Opening PayPal Checkout…");
     try{
-      const result=await start({product:PRODUCT_SLUG});const value=result?.entitlement||await entitlement();
+      await start({product:PRODUCT_SLUG});status("Verifying permanent entitlement…");const value=await entitlement();
       if(!unlockRuntime(value))throw new Error("purchase_not_verified");
       renderOwned();
     }catch(error){status(error?.code==="checkout_cancelled"?"Purchase cancelled. Nothing has been charged.":"Purchase was not verified. The full game remains locked; no browser callback alone can grant access.",true)}finally{if(button)button.disabled=false}
