@@ -21,6 +21,7 @@ function clearAuthEnv() {
     'CCG_LOCAL_AUTH_PRIVATE_JWK_FILE',
     'CCG_LOCAL_AUTH_PUBLIC_JWK_FILE',
     'CCG_LOCAL_AUTH_KEY_ID',
+    'CCG_LOST_SIZZLER_REALTIME_ENABLED',
     'RESEND_API_KEY',
     'EMAIL_FROM',
     'EMAIL_REPLY_TO',
@@ -56,6 +57,7 @@ try {
   assert.equal(config.port, 8787);
   assert.equal(config.authMode, 'external');
   assert.equal(config.localAuth, null);
+  assert.equal(config.lostSizzlerRealtimeEnabled, false, 'Realtime must be disabled unless explicitly enabled.');
   assert.equal(config.allowedOrigins.has('https://www.cheekycommodoregamer.co.uk'), true);
   assert.equal(config.allowedOrigins.has('*'), false);
   assert.deepEqual(config.feedbackEmail, {
@@ -64,6 +66,18 @@ try {
     replyTo: '',
     destination: 'info@cheekycommodoregamer.co.uk',
   });
+
+  withBaseEnv();
+  process.env.CCG_LOST_SIZZLER_REALTIME_ENABLED = 'true';
+  assert.equal(loadConfig().lostSizzlerRealtimeEnabled, true);
+
+  withBaseEnv();
+  process.env.CCG_LOST_SIZZLER_REALTIME_ENABLED = 'false';
+  assert.equal(loadConfig().lostSizzlerRealtimeEnabled, false);
+
+  withBaseEnv();
+  process.env.CCG_LOST_SIZZLER_REALTIME_ENABLED = '1';
+  assert.throws(() => loadConfig(), /CCG_LOST_SIZZLER_REALTIME_ENABLED: expected true or false/);
 
   withBaseEnv();
   process.env.RESEND_API_KEY = 'test-resend-key';
@@ -127,6 +141,7 @@ try {
   assert.equal(local.authMode, 'local');
   assert.equal(local.jwtIssuer, null);
   assert.equal(local.jwtJwksUrl, null);
+  assert.equal(local.lostSizzlerRealtimeEnabled, false);
   assert.equal(local.localAuth.issuer, 'https://auth.cheekycommodoregamer.co.uk/');
   assert.equal(local.localAuth.keyId, 'ccg-ed25519-1');
   assert.equal(local.localAuth.privateJwkFile, '/run/secrets/ccg-auth-private.jwk');
@@ -138,7 +153,7 @@ try {
   process.env.CCG_LOCAL_AUTH_KEY_ID = 'x'.repeat(129);
   assert.throws(() => loadConfig(), /CCG_LOCAL_AUTH_KEY_ID is too long/);
 
-  console.log('CCG backend configuration contract passed for fail-closed CORS, optional feedback mail delivery, external auth and opt-in local authentication modes.');
+  console.log('CCG backend configuration contract passed for fail-closed CORS, disabled-by-default Lost Sizzler realtime, optional feedback mail delivery, external auth and opt-in local authentication modes.');
 } finally {
   restore();
 }
