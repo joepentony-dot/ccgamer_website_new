@@ -18,13 +18,18 @@
   function loadSpyR32Loader(){if(!window.CCGLostSizzlerV141R32SpyLoader)loadScript("v10-41-r32-spy-loader.js","data-ccg-r32-spy-loader")}
   function loadHordeOwnerComposition(){if(!window.CCGLostSizzlerV141R60HordeOwnerComposition)loadScript("v10-41-r60-horde-owner-composition.js","data-ccg-r60-horde-owner-composition")}
   function loadStage8NpcDialogue(){if(!window.CCGLostSizzlerStage8NpcDialogue)loadScript("v10-41-stage8-npc-dialogue.js","data-ccg-stage8-npc-dialogue")}
+  function loadV142ProceduralOverhaul(){if(!window.CCGLostSizzlerV142ProceduralOverhaul)loadScript("v10-42-procedural-overhaul.js","data-ccg-v142-procedural-overhaul")}
   function loadStage8AfterInitialRuntime(){
-    if(document.readyState==="complete"){queueMicrotask(loadStage8NpcDialogue);return}
-    addEventListener("load",loadStage8NpcDialogue,{once:true})
+    if(document.readyState==="complete"){queueMicrotask(loadStage8NpcDialogue);setTimeout(loadV142ProceduralOverhaul,0);return}
+    addEventListener("load",()=>{loadStage8NpcDialogue();setTimeout(loadV142ProceduralOverhaul,0)},{once:true})
   }
   loadOwnerSeal();loadModeRuntime();loadSoloDiagnostics();loadSpyExitControlReset();loadSoloDungeonR31();loadSpyR32WorldOwner();loadSpyR32Loader();loadHordeOwnerComposition();loadStage8AfterInitialRuntime();
 
   const entries=[
+    ["LS-0906-01","ADDED","Single procedural dungeon overhaul","The old five-floor campaign is replaced on the V10.42 overhaul branch by one substantially larger generated dungeon. Three domain Keys, their guardians, the awakened Sigil and a final escape phase form the new main run structure."],
+    ["LS-0906-02","ADDED","RPG character attributes","Levelling now develops Might, Vitality, Agility, Endurance, Luck and Arcana. Attributes change combat power, health, movement, ammunition, loot quality, Sigil behaviour and Banishment alchemy rather than relying only on generic upgrade cards."],
+    ["LS-0906-03","ADDED","A–Z randomized C64 collectible deck","Every generated run builds a shuffled collectible deck with one randomly selected C64 title for each available letter A through Z, then scatters that deck around the procedural dungeon."],
+    ["LS-0906-04","ADDED","Banishment Essence and relic builds","Rare artefact trading is replaced by a Vessel and Banishment Essence economy. Major threats and cleansed dungeon events provide Essence, Alchemists distil charges, and each Key domain offers a relic choice that changes the character build."],
     ["LS-0826-09","FIXED","Global movement freeze after Spy mode","A Spy runtime ownership race could leave ordinary movement routed through the isolated Spy owner after the mode ended. Because the Spy owner had already released its saved base function, later Solo or Horde movement could return false forever. r30 restores the pre-Spy update, movement and damage owners unconditionally when Spy exits."],
     ["LS-0826-10","FIXED","Cross-mode runtime wrapper contention","The r29 background installer no longer competes with the isolated Spy engine while Spy is active. Its maintenance timer is replaced by a cooperative r30 owner that preserves the stable animation loop without repeatedly wrapping Spy movement, damage or packet ownership."],
     ["LS-0826-11","ADDED","Gameplay key-capture resilience","Movement keys are mirrored at capture phase while gameplay is active and are reasserted if another layer accidentally drops the shared held-key set. Hidden menu or lobby inputs can no longer leave a live run unable to receive movement controls."],
@@ -41,8 +46,8 @@
   const entryHtml=([id,status,title,copy])=>`<article class="developer-log-entry" data-r30-entry="${id}"><code class="developer-log-id">${id}</code><span class="developer-log-status ${statusClass(status)}">${status}</span><div class="developer-log-copy"><b>${title}</b><span>${copy}</span></div></article>`;
   function mount(){
     const tracker=document.getElementById("developer-changelog");if(!tracker)return false;
-    const latest=tracker.querySelector(".developer-changelog-latest");if(latest)latest.textContent="LATEST UPDATE · 26 AUG 2026 · V10.41 · r30";
-    const stamp=tracker.querySelector(".developer-changelog-intro time");if(stamp){stamp.dateTime="2026-08-26";stamp.textContent="Last updated 26 August 2026 · V10.41 · build 2026.08.26.30"}
+    const latest=tracker.querySelector(".developer-changelog-latest");if(latest)latest.textContent="LATEST UPDATE · 6 SEP 2026 · V10.42 OVERHAUL BRANCH";
+    const stamp=tracker.querySelector(".developer-changelog-intro time");if(stamp){stamp.dateTime="2026-09-06";stamp.textContent="Last updated 6 September 2026 · V10.42 overhaul branch"}
     const firstList=tracker.querySelector(".developer-log-day .developer-log-list");if(!firstList)return false;
     for(const entry of [...entries].reverse()){
       if(tracker.querySelector(`[data-r30-entry="${entry[0]}"]`))continue;
