@@ -2,6 +2,7 @@ import { createCcgOnlineClient } from './ccg-online-client.mjs';
 import { createLostSizzlerRealtimeSupabaseAdapter } from './lost-sizzler-realtime-supabase-adapter.mjs';
 
 const WEEKLY_FUNCTION = 'ccq-weekly-challenge';
+const FEEDBACK_FUNCTION = 'lost-sizzler-feedback';
 
 function resultError(result, fallback = 'ccg_online_request_failed') {
   const code = String(result?.error || result?.kind || fallback);
@@ -162,6 +163,22 @@ export function createLostSizzlerSupabaseCompat({
     return supabaseResult(result, value => ({ ...value }));
   }
 
+  async function invokeFeedback(body = {}) {
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      return Object.freeze({
+        data: null,
+        error: resultError({ ok: false, kind: 'invalid_request', error: 'invalid_feedback_payload' }),
+      });
+    }
+
+    const action = String(body.action || '').trim();
+    let result;
+    if (action === 'rating_status') result = await online.lostSizzler.feedback.ratingStatus();
+    else if (action === 'telemetry') result = await online.lostSizzler.feedback.telemetry(body);
+    else result = await online.lostSizzler.feedback.submit(body);
+    return supabaseResult(result, value => ({ ...value }));
+  }
+
   const auth = Object.freeze({
     async getSession() {
       return Object.freeze({ data: Object.freeze({ session: session() }), error: null });
@@ -217,7 +234,9 @@ export function createLostSizzlerSupabaseCompat({
     auth,
     functions: Object.freeze({
       async invoke(name, options = {}) {
-        if (String(name || '').trim() === WEEKLY_FUNCTION) return invokeWeekly(options?.body);
+        const functionName = String(name || '').trim();
+        if (functionName === WEEKLY_FUNCTION) return invokeWeekly(options?.body);
+        if (functionName === FEEDBACK_FUNCTION) return invokeFeedback(options?.body);
         return Object.freeze({
           data: null,
           error: resultError({ ok: false, kind: 'unsupported', error: 'unsupported_edge_function' }),
