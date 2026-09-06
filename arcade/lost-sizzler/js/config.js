@@ -1,11 +1,11 @@
 window.CCG_CONFIG=Object.freeze({
   tile:42,
-  worldWidth:160,
-  worldHeight:104,
+  worldWidth:136,
+  worldHeight:90,
   keyTarget:3,
   maxPlayers:4,
-  maxFloors:1,
-  levelCaps:[25],
+  maxFloors:5,
+  levelCaps:[5,10,15,20,25],
   logoAsset:"assets/ccgamer-logo-fallback.svg",
   logoFallback:"assets/ccgamer-logo-fallback.svg",
   player:{
@@ -21,32 +21,42 @@ window.CCG_CONFIG=Object.freeze({
     chaseStep:{spider:720,skeleton:820,knight:980,scout:940,hunter:780,ambusher:765,guard:999999,charger:530,ranger:940,root:1010,cook:1060,firebreather:840,ghost:890,guardian:690,champion:765,treasure:640}
   },
   stalker:{
-    enabled:true,name:"Count Loadula",startFloor:1,moveMs:850,nearDistance:18,attackDistance:1.25,drainDistance:6,drainPerSecond:10,
-    hitDamage:3,stunOnShotMs:500,spawnDelayMs:60000,musicKey:"count-loadula-default",
+    enabled:true,name:"Count Loadula",startFloor:2,moveMs:850,nearDistance:18,attackDistance:1.25,drainDistance:6,drainPerSecond:10,
+    hitDamage:3,stunOnShotMs:500,spawnDelayMs:90000,musicKey:"count-loadula-default",
     banishVulnerableMs:12000,banishHpBase:8,flaskArtefacts:3,essenceRequired:3,banishedRespawnMs:30000,banishPromptDistance:8
   },
   camping:{graceMs:60000,warningMs:650,blastIntervalMs:650,resetDistance:6,zoneRadius:3,blastRadius:.35,damage:1,directBlastEvery:2},
-  dungeon:{minLeaf:15,maxLeaf:27,roomMargin:2,targetRooms:46,maxLockedBranches:10,chestCount:14,secretRooms:4,secretPassages:3,sanctuaryRooms:3,wallTorchRooms:7,trapCount:24,generatorCount:4,generatorSpawnCap:3,sigilDefendersMin:4,standardEnemyTarget:58,ammoPacks:16,furnitureMin:5,furnitureMax:10,grandHallCount:1,boulderFloor:1,clueFloor:1,memoryPuzzleFloor:0,torchPuzzleFloor:0,weightBridgeFloor:1},
+  dungeon:{minLeaf:16,maxLeaf:29,roomMargin:2,targetRooms:32,maxLockedBranches:9,chestCount:11,secretRooms:3,secretPassages:3,sanctuaryRooms:2,wallTorchRooms:6,trapCount:18,generatorCount:3,generatorSpawnCap:3,sigilDefendersMin:4,standardEnemyTarget:34,ammoPacks:12,furnitureMin:5,furnitureMax:10,grandHallCount:1,boulderFloor:4,clueFloor:2,memoryPuzzleFloor:3,torchPuzzleFloor:4,weightBridgeFloor:5},
   proceduralDungeon:{
     enabled:true,
     version:"V10.42",
-    name:"The Lost Sizzler Dungeon",
+    name:"The Lost Sizzler — Five Depths",
+    targetRunMinutesMin:55,
+    targetRunMinutesMax:75,
     gamePickupCount:26,
+    pickupDistribution:[6,5,5,5,5],
     essenceRequired:3,
-    escapeAlert:78,
+    escapeAlert:82,
+    campaignFloors:[
+      {floor:1,id:"threshold",name:"THE THRESHOLD",objective:"explore_guardian",targetMinutes:9,hpScale:.82,tempo:.88,ammoTarget:12,stalkerDelayMs:999999,deathStalkerSpeed:1.25,domain:null},
+      {floor:2,id:"iron",name:"IRON KEEP",objective:"keys",targetMinutes:11,hpScale:.94,tempo:.96,ammoTarget:11,stalkerDelayMs:90000,deathStalkerSpeed:1.12,domain:"iron"},
+      {floor:3,id:"bone",name:"MOSS CRYPT",objective:"keys",targetMinutes:12,hpScale:1.00,tempo:1.02,ammoTarget:10,stalkerDelayMs:75000,deathStalkerSpeed:1.00,domain:"bone"},
+      {floor:4,id:"ash",name:"EMBER DEPTHS",objective:"keys",targetMinutes:13,hpScale:1.08,tempo:1.09,ammoTarget:9,stalkerDelayMs:60000,deathStalkerSpeed:.90,domain:"ash"},
+      {floor:5,id:"sigil",name:"SIGIL SANCTUM",objective:"guardian",targetMinutes:15,hpScale:1.18,tempo:1.16,ammoTarget:8,stalkerDelayMs:45000,deathStalkerSpeed:.82,domain:null}
+    ],
     keyDomains:[
-      {id:"iron",name:"KEY OF IRON",guardian:"Iron Warden",theme:"IRON_KEEP",weakness:"shock",sigilPower:"REVEAL"},
-      {id:"bone",name:"KEY OF BONE",guardian:"Bone Keeper",theme:"MOSS_CRYPT",weakness:"fire",sigilPower:"WARD"},
-      {id:"ash",name:"KEY OF ASH",guardian:"Ash Castellan",theme:"EMBER_DUNGEON",weakness:"energy",sigilPower:"BIND"}
+      {id:"iron",floor:2,name:"KEY OF IRON",guardian:"Iron Warden",theme:"IRON_KEEP",weakness:"shock",sigilPower:"REVEAL"},
+      {id:"bone",floor:3,name:"KEY OF BONE",guardian:"Bone Keeper",theme:"MOSS_CRYPT",weakness:"fire",sigilPower:"WARD"},
+      {id:"ash",floor:4,name:"KEY OF ASH",guardian:"Ash Castellan",theme:"EMBER_DUNGEON",weakness:"energy",sigilPower:"BIND"}
     ],
     sigilPowers:[
       {id:"reveal",name:"REVEAL",desc:"The Sigil extends normal sight and exposes more of the dungeon around you."},
       {id:"ward",name:"WARD",desc:"The Sigil periodically absorbs one point of incoming damage."},
       {id:"bind",name:"BIND",desc:"The Sigil suppresses supernatural pursuers and slows their immediate pressure."},
-      {id:"banish",name:"BANISH",desc:"Claiming the Exit Sigil grants one final Banishment charge for the escape."}
+      {id:"banish",name:"BANISH",desc:"Completing the Sigil grants one final Banishment charge for the escape."}
     ],
     relicChoices:3,
-    developmentCopy:"The dungeon is generated anew for every run. Find the three Keys, awaken the Sigil, survive the escape phase and get out alive."
+    developmentCopy:"Descend through five generated depths. Build your character, recover the Keys of Iron, Bone and Ash, complete the Sigil and survive the final escape."
   },
   loot:{rarities:["COMMON","UNCOMMON","SIZZLER","GOLD MEDAL","ZZAP! 97%"]},
   difficulty:{
@@ -56,7 +66,11 @@ window.CCG_CONFIG=Object.freeze({
     "GOLD MEDAL":{enemyHp:1.45,enemyDamage:1.35,loot:1.28,ammo:.82,stalker:1.28}
   },
   floors:[
-    {name:"The Lost Sizzler Dungeon",objective:"keys",theme:"C64_ARCHIVE"}
+    {name:"The Threshold",objective:"explore_guardian",theme:"C64_ARCHIVE"},
+    {name:"Iron Keep",objective:"keys",theme:"IRON_KEEP"},
+    {name:"Moss Crypt",objective:"keys",theme:"MOSS_CRYPT"},
+    {name:"Ember Depths",objective:"keys",theme:"EMBER_DUNGEON"},
+    {name:"Sigil Sanctum",objective:"guardian",theme:"ZZAP_LIBRARY"}
   ],
   followerElites:[
     {name:"Peter Cortens",initials:"PC",kind:"hunter",hp:8,armor:4,avatar:"assets/peter-cortens.png",musicKey:"peter-cortens",strength:"Relentless close-range pressure and flanking.",weakness:"Short reach — kite him through cover and fire from range."},
