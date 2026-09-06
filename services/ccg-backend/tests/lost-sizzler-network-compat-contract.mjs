@@ -171,19 +171,25 @@ assert.equal(peer.getHostRuntimePresence().hostId, host.sessionId);
 assert.equal(peer.getHostRuntimePresence().startMeta.seed, 7777);
 assert.equal(peer.getHostRuntimePresence().startMeta.floor, 3);
 
+const hostInboundBeforeHostSend = hostPackets.length;
+const peerInboundBeforeHostSend = peerPackets.length;
 await host.sendRequired('runtime:start', { seed: 7777, floor: 3 });
-await waitFor(() => peerPackets.length === 1, 'host-to-peer game packet');
-assert.equal(peerPackets[0].event, 'runtime:start');
-assert.equal(peerPackets[0].payload.seed, 7777);
-assert.equal(peerPackets[0].payload.floor, 3);
-assert.equal(hostPackets.length, 0, 'broadcast-self-false must remain intact through unchanged RoomNetwork.');
+await waitFor(() => peerPackets.length === peerInboundBeforeHostSend + 1, 'host-to-peer game packet');
+const hostToPeerPacket = peerPackets.at(-1);
+assert.equal(hostToPeerPacket.event, 'runtime:start');
+assert.equal(hostToPeerPacket.payload.seed, 7777);
+assert.equal(hostToPeerPacket.payload.floor, 3);
+assert.equal(hostPackets.length, hostInboundBeforeHostSend, 'broadcast-self-false must not add a host echo through unchanged RoomNetwork.');
 
+const hostInboundBeforePeerSend = hostPackets.length;
+const peerInboundBeforePeerSend = peerPackets.length;
 await peer.sendRequired('player:move', { x: 9, y: 14, facing: 'left' });
-await waitFor(() => hostPackets.length === 1, 'peer-to-host game packet');
-assert.equal(hostPackets[0].event, 'player:move');
-assert.equal(hostPackets[0].payload.x, 9);
-assert.equal(hostPackets[0].payload.y, 14);
-assert.equal(peerPackets.length, 1, 'Peer must not receive its own outbound packet.');
+await waitFor(() => hostPackets.length === hostInboundBeforePeerSend + 1, 'peer-to-host game packet');
+const peerToHostPacket = hostPackets.at(-1);
+assert.equal(peerToHostPacket.event, 'player:move');
+assert.equal(peerToHostPacket.payload.x, 9);
+assert.equal(peerToHostPacket.payload.y, 14);
+assert.equal(peerPackets.length, peerInboundBeforePeerSend, 'Peer must not receive its own outbound packet.');
 
 await host.leave();
 await waitFor(() => peer.isHost === true && peer.getMembers().length === 1, 'peer host promotion through unchanged RoomNetwork');
