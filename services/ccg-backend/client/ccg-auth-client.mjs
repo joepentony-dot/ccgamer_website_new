@@ -38,12 +38,24 @@ function normalizeLoginInput({ email, password } = {}) {
   return Object.freeze({ email: normalizedEmail, password });
 }
 
-function normalizeRegistrationInput({ email, password } = {}) {
+function normalizeRegistrationPreferences(value = {}) {
+  const input = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  return Object.freeze({
+    notify_new_games: input.notifyNewGames === true || input.notify_new_games === true,
+    notify_newsletter: input.notifyNewsletter === true || input.notify_newsletter === true,
+    choice_recorded: input.choiceRecorded === true || input.choice_recorded === true,
+  });
+}
+
+function normalizeRegistrationInput({ email, password, notificationPreferences } = {}) {
   const normalized = normalizeLoginInput({ email, password });
   if (password.length < MIN_REGISTRATION_PASSWORD_LENGTH || password.length > 128 || /^\s+$/.test(password)) {
     throw new Error('invalid_password');
   }
-  return normalized;
+  return Object.freeze({
+    ...normalized,
+    notification_preferences: normalizeRegistrationPreferences(notificationPreferences),
+  });
 }
 
 function normalizeVerificationToken(value) {
