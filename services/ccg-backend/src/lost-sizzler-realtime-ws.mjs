@@ -5,6 +5,7 @@ import { createLostSizzlerRealtimeHub } from './lost-sizzler-realtime.mjs';
 const DEFAULT_PATH = '/v1/lost-sizzler/realtime';
 const DEFAULT_MAX_FRAME_BYTES = 80 * 1024;
 const DEFAULT_PING_INTERVAL_MS = 5_000;
+const DEFAULT_MAX_SOCKETS = 128;
 
 function transportError(statusCode, code, message = code) {
   const error = new Error(message);
@@ -84,6 +85,7 @@ export function createLostSizzlerRealtimeWebSocketTransport({
   hub = createLostSizzlerRealtimeHub(),
   maxFrameBytes = DEFAULT_MAX_FRAME_BYTES,
   pingIntervalMs = DEFAULT_PING_INTERVAL_MS,
+  maxSockets = DEFAULT_MAX_SOCKETS,
   randomBytesImpl = randomBytes,
 } = {}) {
   const origins = validateOrigins(allowedOrigins);
@@ -94,6 +96,9 @@ export function createLostSizzlerRealtimeWebSocketTransport({
   if (!Number.isSafeInteger(pingIntervalMs) || pingIntervalMs < 1_000 || pingIntervalMs > 60_000) {
     throw new Error('Realtime ping interval must be between 1000 and 60000 ms.');
   }
+  if (!Number.isSafeInteger(maxSockets) || maxSockets < 1 || maxSockets > 10_000) {
+    throw new Error('Realtime max sockets must be between 1 and 10000.');
+  }
   if (typeof randomBytesImpl !== 'function') throw new Error('Realtime transport requires a random byte source.');
 
   const wss = new WebSocketServer({ noServer: true, maxPayload: maxFrameBytes });
@@ -101,6 +106,7 @@ export function createLostSizzlerRealtimeWebSocketTransport({
   const roomBySession = new Map();
   let attachedServer = null;
   let closed = false;
+  let pendingUpgrades = 0;
 
   function send(socket, body) {
     if (socket.readyState !== WebSocket.OPEN) return false;
@@ -209,6 +215,11 @@ export function createLostSizzlerRealtimeWebSocketTransport({
   }
 
   wss.on('connection', (socket) => {
+    if (sessions.size >= maxSockets) {
+      socket.close(1013, 'server_capacity');
+      return;
+    }
+
     let sessionId;
     try {
       sessionId = createSessionId(randomBytesImpl);
@@ -287,9 +298,34 @@ export function createLostSizzlerRealtimeWebSocketTransport({
       return;
     }
 
-    wss.handleUpgrade(request, socket, head, (webSocket) => {
-      wss.emit('connection', webSocket, request);
-    });
+    if (closed || sessions.size + pendingUpgrades >= maxSockets) {
+      writeUpgradeRejection(socket, 503, 'Service Unavailable');
+      return;
+    }
+
+    pendingUpgrades += 1;
+    let reservationReleased = false;
+    const releaseReservation = () => {
+      if (reservationReleased) return;
+      reservationReleased = true;
+      pendingUpgrades = Math.max(0, pendingUpgrades - 1);
+      socket.off?.('close', releaseReservation);
+    };
+    socket.once?.('close', releaseReservation);
+
+    try {
+      wss.handleUpgrade(request, socket, head, (webSocket) => {
+        releaseReservation();
+        if (closed) {
+          webSocket.close(1012, 'service_restart');
+          return;
+        }
+        wss.emit('connection', webSocket, request);
+      });
+    } catch {
+      releaseReservation();
+      writeUpgradeRejection(socket, 400, 'Bad Request');
+    }
   }
 
   return Object.freeze({
