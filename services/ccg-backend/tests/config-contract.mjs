@@ -21,6 +21,11 @@ function clearAuthEnv() {
     'CCG_LOCAL_AUTH_PRIVATE_JWK_FILE',
     'CCG_LOCAL_AUTH_PUBLIC_JWK_FILE',
     'CCG_LOCAL_AUTH_KEY_ID',
+    'CCG_LOCAL_AUTH_REGISTRATION_ENABLED',
+    'CCG_LOCAL_AUTH_RECOVERY_ENABLED',
+    'CCG_AUTH_EMAIL_FROM',
+    'CCG_AUTH_VERIFY_URL',
+    'CCG_AUTH_RECOVERY_URL',
     'CCG_LOST_SIZZLER_REALTIME_ENABLED',
     'CCG_LOST_SIZZLER_REALTIME_MAX_SOCKETS',
     'CCG_LOST_SIZZLER_COMMERCE_ENABLED',
@@ -65,12 +70,40 @@ function enableSandboxCommerce() {
   process.env.PAYPAL_WEBHOOK_ID = 'sandbox-webhook-id';
 }
 
+function enableRegistrationEmail() {
+  process.env.CCG_LOCAL_AUTH_REGISTRATION_ENABLED = 'true';
+  process.env.CCG_AUTH_EMAIL_FROM = 'CCG Accounts <accounts@example.test>';
+  process.env.CCG_AUTH_VERIFY_URL = 'https://www.cheekycommodoregamer.co.uk/account/verify-email';
+  process.env.RESEND_API_KEY = 'registration-resend-key';
+}
+
+function enableRecoveryEmail() {
+  process.env.CCG_LOCAL_AUTH_RECOVERY_ENABLED = 'true';
+  process.env.CCG_AUTH_EMAIL_FROM = 'CCG Accounts <accounts@example.test>';
+  process.env.CCG_AUTH_RECOVERY_URL = 'https://www.cheekycommodoregamer.co.uk/account/reset-password';
+  process.env.RESEND_API_KEY = 'recovery-resend-key';
+}
+
 try {
   withBaseEnv();
   const config = loadConfig();
   assert.equal(config.port, 8787);
   assert.equal(config.authMode, 'external');
   assert.equal(config.localAuth, null);
+  assert.equal(config.registrationEnabled, false, 'Local registration must be disabled unless explicitly enabled.');
+  assert.deepEqual(config.registrationEmail, {
+    enabled: false,
+    resendApiKey: '',
+    from: '',
+    verifyUrl: '',
+  });
+  assert.equal(config.recoveryEnabled, false, 'Local password recovery must be disabled unless explicitly enabled.');
+  assert.deepEqual(config.recoveryEmail, {
+    enabled: false,
+    resendApiKey: '',
+    from: '',
+    recoveryUrl: '',
+  });
   assert.equal(config.lostSizzlerRealtimeEnabled, false, 'Realtime must be disabled unless explicitly enabled.');
   assert.equal(config.lostSizzlerRealtimeMaxSockets, 128, 'Anonymous realtime must have a bounded default socket ceiling.');
   assert.equal(config.lostSizzlerCommerceEnabled, false, 'Commerce must be disabled unless explicitly enabled.');
@@ -89,6 +122,18 @@ try {
     replyTo: '',
     destination: 'info@cheekycommodoregamer.co.uk',
   });
+
+  withBaseEnv();
+  process.env.CCG_LOCAL_AUTH_REGISTRATION_ENABLED = 'true';
+  assert.throws(() => loadConfig(), /requires CCG_AUTH_MODE=local/);
+
+  withBaseEnv();
+  process.env.CCG_LOCAL_AUTH_RECOVERY_ENABLED = 'true';
+  assert.throws(() => loadConfig(), /requires CCG_AUTH_MODE=local/);
+
+  withBaseEnv();
+  process.env.CCG_LOCAL_AUTH_RECOVERY_ENABLED = '1';
+  assert.throws(() => loadConfig(), /CCG_LOCAL_AUTH_RECOVERY_ENABLED: expected true or false/);
 
   withBaseEnv();
   process.env.CCG_LOST_SIZZLER_REALTIME_ENABLED = 'true';
@@ -220,6 +265,8 @@ try {
   assert.equal(local.authMode, 'local');
   assert.equal(local.jwtIssuer, null);
   assert.equal(local.jwtJwksUrl, null);
+  assert.equal(local.registrationEnabled, false);
+  assert.equal(local.recoveryEnabled, false);
   assert.equal(local.lostSizzlerRealtimeEnabled, false);
   assert.equal(local.lostSizzlerRealtimeMaxSockets, 128);
   assert.equal(local.lostSizzlerCommerceEnabled, false);
@@ -228,6 +275,47 @@ try {
   assert.equal(local.localAuth.keyId, 'ccg-ed25519-1');
   assert.equal(local.localAuth.privateJwkFile, '/run/secrets/ccg-auth-private.jwk');
 
+  withLocalAuthEnv();
+  enableRegistrationEmail();
+  const registration = loadConfig();
+  assert.equal(registration.registrationEnabled, true);
+  assert.deepEqual(registration.registrationEmail, {
+    enabled: true,
+    resendApiKey: 'registration-resend-key',
+    from: 'CCG Accounts <accounts@example.test>',
+    verifyUrl: 'https://www.cheekycommodoregamer.co.uk/account/verify-email',
+  });
+  assert.equal(registration.recoveryEnabled, false, 'Enabling registration must not implicitly enable password recovery.');
+
+  withLocalAuthEnv();
+  enableRecoveryEmail();
+  const recovery = loadConfig();
+  assert.equal(recovery.recoveryEnabled, true);
+  assert.deepEqual(recovery.recoveryEmail, {
+    enabled: true,
+    resendApiKey: 'recovery-resend-key',
+    from: 'CCG Accounts <accounts@example.test>',
+    recoveryUrl: 'https://www.cheekycommodoregamer.co.uk/account/reset-password',
+  });
+  assert.equal(recovery.registrationEnabled, false, 'Enabling password recovery must not implicitly enable registration.');
+
+  withLocalAuthEnv();
+  process.env.CCG_LOCAL_AUTH_RECOVERY_ENABLED = 'true';
+  process.env.CCG_AUTH_RECOVERY_URL = 'https://www.cheekycommodoregamer.co.uk/account/reset-password';
+  process.env.RESEND_API_KEY = 'recovery-resend-key';
+  assert.throws(() => loadConfig(), /CCG_AUTH_EMAIL_FROM/);
+
+  withLocalAuthEnv();
+  enableRecoveryEmail();
+  process.env.CCG_AUTH_RECOVERY_URL = 'http://www.cheekycommodoregamer.co.uk/account/reset-password';
+  assert.throws(() => loadConfig(), /CCG_AUTH_RECOVERY_URL must be HTTPS/);
+
+  withLocalAuthEnv();
+  enableRecoveryEmail();
+  process.env.CCG_AUTH_RECOVERY_URL = 'https://www.cheekycommodoregamer.co.uk/account/reset-password?token=preloaded';
+  assert.throws(() => loadConfig(), /without query or fragment/);
+
+  withLocalAuthEnv();
   delete process.env.CCG_LOCAL_AUTH_PRIVATE_JWK_FILE;
   assert.throws(() => loadConfig(), /CCG_LOCAL_AUTH_PRIVATE_JWK_FILE/);
 
@@ -235,7 +323,7 @@ try {
   process.env.CCG_LOCAL_AUTH_KEY_ID = 'x'.repeat(129);
   assert.throws(() => loadConfig(), /CCG_LOCAL_AUTH_KEY_ID is too long/);
 
-  console.log('CCG backend configuration contract passed for fail-closed CORS, disabled-by-default realtime and PayPal commerce, bounded anonymous socket capacity, protected payment credentials, optional feedback mail delivery, external auth and opt-in local authentication modes.');
+  console.log('CCG backend configuration contract passed for fail-closed CORS, disabled-by-default local registration and recovery, HTTPS-only auth mail actions, bounded realtime, protected PayPal credentials, optional feedback mail delivery, external auth and opt-in local authentication modes.');
 } finally {
   restore();
 }
