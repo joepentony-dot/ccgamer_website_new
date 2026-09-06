@@ -151,12 +151,16 @@
   function installMovementAuthority(){
     if(typeof movementTriggers!=="function"||movementTriggers.__v142CampaignAuthority)return false;
     const base=movementTriggers;const wrapped=function movementTriggersV142Authority(player){
-      const runState=currentRun(),beforeCampaign=campaignSnapshot(runState),beforePlayer=playerV142Snapshot(player),beforeInventory=clone(player?.inventory||[]),beforeDomains=new Set(beforeCampaign?.v142ClaimedDomains||[]),guest=onlineGuest(),remoteActor=onlineHost()&&!isLocalPlayer(player);
+      const runState=currentRun(),beforeCampaign=campaignSnapshot(runState),beforePlayer=playerV142Snapshot(player),beforeInventory=clone(player?.inventory||[]),beforeDomains=new Set(beforeCampaign?.v142ClaimedDomains||[]),guest=onlineGuest(),remoteActor=onlineHost()&&!isLocalPlayer(player),locals=localRoster();
       const result=base.apply(this,arguments),afterDomains=[...new Set(currentRun()?.v142ClaimedDomains||[])],added=afterDomains.filter(id=>!beforeDomains.has(id));
       if(guest&&added.length){restoreCampaign(runState,beforeCampaign);restorePlayerV142(player,beforePlayer);if(player)player.inventory=beforeInventory;suppressScheduledRemoteRelic();return result}
       if(added.length){
-        if(remoteActor)suppressScheduledRemoteRelic();
-        for(const id of added){const domain=domainById(id);if(!domain)continue;for(const local of localRoster())if(local!==player)queueDomainReward(local,domain)}
+        const takeRelicAuthority=remoteActor||locals.length>1;if(takeRelicAuthority)suppressScheduledRemoteRelic();
+        for(const id of added){
+          const domain=domainById(id);if(!domain)continue;
+          if(takeRelicAuthority){for(const local of locals)queueDomainReward(local,domain)}
+          else for(const local of locals)if(local!==player)queueDomainReward(local,domain)
+        }
       }
       return result;
     };wrapped.__v142CampaignAuthority=true;wrapped.__ccgOriginal=base;movementTriggers=wrapped;return true;
