@@ -30,19 +30,19 @@ const database = createDatabase(databaseUrl);
 try {
   const primaryUserId = 'recovery-contract-primary';
   const unconfirmedUserId = 'recovery-contract-unconfirmed';
+  const fixtureUserIds = [primaryUserId, unconfirmedUserId];
   const oldPassword = 'Old-contract-password-42!';
   const newPassword = 'New-contract-password-84!';
   const oldHash = await bcrypt.hash(oldPassword, 4);
 
-  await database.query(
-    `delete from ccg_auth_login_buckets where bucket_key is not null;
-     delete from ccg_auth_recovery_tokens where user_id = any($1::text[]);
-     delete from ccg_auth_sessions where user_id = any($1::text[]);
-     delete from ccg_profiles where user_id = any($1::text[]);
-     delete from ccg_auth_accounts where user_id = any($1::text[]);
-     delete from ccg_users where user_id = any($1::text[]);`,
-    [[primaryUserId, unconfirmedUserId]]
-  );
+  await database.transaction(async (tx) => {
+    await tx.query('delete from ccg_auth_login_buckets where bucket_key is not null');
+    await tx.query('delete from ccg_auth_recovery_tokens where user_id = any($1::text[])', [fixtureUserIds]);
+    await tx.query('delete from ccg_auth_sessions where user_id = any($1::text[])', [fixtureUserIds]);
+    await tx.query('delete from ccg_profiles where user_id = any($1::text[])', [fixtureUserIds]);
+    await tx.query('delete from ccg_auth_accounts where user_id = any($1::text[])', [fixtureUserIds]);
+    await tx.query('delete from ccg_users where user_id = any($1::text[])', [fixtureUserIds]);
+  });
 
   await database.query(
     `insert into ccg_users (user_id) values ($1), ($2)`,
