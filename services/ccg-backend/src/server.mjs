@@ -293,12 +293,12 @@ async function main() {
   process.on('SIGINT', shutdown);
   process.on('SIGTERM', shutdown);
 
-  server.listen(config.port, '127.0.0.1', () => {
+  server.listen(config.port, config.bindHost, () => {
     const realtimeStatus = config.lostSizzlerRealtimeEnabled ? 'realtime enabled' : 'realtime disabled';
     const commerceStatus = config.lostSizzlerCommerceEnabled ? 'commerce enabled' : 'commerce disabled';
     const registrationStatus = config.registrationEnabled ? 'registration enabled' : 'registration disabled';
     const recoveryStatus = config.recoveryEnabled ? 'password recovery enabled' : 'password recovery disabled';
-    console.log(`${config.serviceName} listening on 127.0.0.1:${config.port} (${config.authMode} auth; ${registrationStatus}; ${recoveryStatus}; ${realtimeStatus}; ${commerceStatus})`);
+    console.log(`${config.serviceName} listening on ${config.bindHost}:${config.port} (${config.authMode} auth; ${registrationStatus}; ${recoveryStatus}; ${realtimeStatus}; ${commerceStatus})`);
   });
 }
 

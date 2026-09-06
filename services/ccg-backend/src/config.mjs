@@ -25,6 +25,14 @@ function readIntegerEnv(name, defaultValue, min, max) {
   return value;
 }
 
+function readBindHost() {
+  const host = optionalEnv('CCG_BIND_HOST') || '127.0.0.1';
+  if (!['127.0.0.1', '0.0.0.0', '::1', '::'].includes(host)) {
+    throw new Error('Invalid CCG_BIND_HOST: use 127.0.0.1, 0.0.0.0, ::1 or ::.');
+  }
+  return host;
+}
+
 function validEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
 }
@@ -186,6 +194,7 @@ export function loadConfig() {
   const lostSizzlerCommerceEnabled = readBooleanEnv('CCG_LOST_SIZZLER_COMMERCE_ENABLED', false);
   const base = {
     port,
+    bindHost: readBindHost(),
     databaseUrl: requireEnv('DATABASE_URL'),
     allowedOrigins,
     authMode,
