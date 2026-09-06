@@ -18,13 +18,30 @@
   function loadSpyR32Loader(){if(!window.CCGLostSizzlerV141R32SpyLoader)loadScript("v10-41-r32-spy-loader.js","data-ccg-r32-spy-loader")}
   function loadHordeOwnerComposition(){if(!window.CCGLostSizzlerV141R60HordeOwnerComposition)loadScript("v10-41-r60-horde-owner-composition.js","data-ccg-r60-horde-owner-composition")}
   function loadStage8NpcDialogue(){if(!window.CCGLostSizzlerStage8NpcDialogue)loadScript("v10-41-stage8-npc-dialogue.js","data-ccg-stage8-npc-dialogue")}
+  function loadV142ProceduralOverhaul(){if(!window.CCGLostSizzlerV142ProceduralOverhaul)loadScript("v10-42-procedural-overhaul.js","data-ccg-v142-procedural-overhaul")}
+  function loadV142FiveDepthCampaign(){if(!window.CCGLostSizzlerV142FiveDepthCampaign)loadScript("v10-42-five-depth-campaign.js","data-ccg-v142-five-depth-campaign")}
+  function loadV142FloorBalance(){if(!window.CCGLostSizzlerV142FloorBalance)loadScript("v10-42-floor-balance.js","data-ccg-v142-floor-balance")}
+  function loadV142TutorialCampaign(){if(!window.CCGLostSizzlerV142TutorialCampaign)loadScript("v10-42-tutorial-campaign.js","data-ccg-v142-tutorial-campaign")}
+  function loadV142DemoPaywall(){if(!window.CCGLostSizzlerV142DemoPaywall)loadScript("v10-42-demo-paywall.js","data-ccg-v142-demo-paywall")}
+  function loadV142MultiplayerState(){if(!window.CCGLostSizzlerV142MultiplayerState)loadScript("v10-42-multiplayer-state.js","data-ccg-v142-multiplayer-state")}
+  function loadV142MultiplayerCollectAuthority(){if(!window.CCGLostSizzlerV142MultiplayerCollectAuthority)loadScript("v10-42-multiplayer-collect-authority.js","data-ccg-v142-multiplayer-collect-authority")}
   function loadStage8AfterInitialRuntime(){
-    if(document.readyState==="complete"){queueMicrotask(loadStage8NpcDialogue);return}
-    addEventListener("load",loadStage8NpcDialogue,{once:true})
+    const loadV142=()=>{loadV142ProceduralOverhaul();loadV142FiveDepthCampaign();loadV142FloorBalance();loadV142TutorialCampaign();loadV142DemoPaywall();loadV142MultiplayerState();loadV142MultiplayerCollectAuthority()};
+    if(document.readyState==="complete"){queueMicrotask(loadStage8NpcDialogue);setTimeout(loadV142,0);return}
+    addEventListener("load",()=>{loadStage8NpcDialogue();setTimeout(loadV142,0)},{once:true})
   }
   loadOwnerSeal();loadModeRuntime();loadSoloDiagnostics();loadSpyExitControlReset();loadSoloDungeonR31();loadSpyR32WorldOwner();loadSpyR32Loader();loadHordeOwnerComposition();loadStage8AfterInitialRuntime();
 
   const entries=[
+    ["LS-0906-09","ADDED","V10.42 multiplayer campaign authority","Dungeon Multiplayer now carries V10.42 RPG attributes, relics, Banishment Essence, Sigil powers and global Key progress through the stabilized host-authoritative network path. Remote Key recovery is bridged into the host campaign state without opening the remote player's relic chooser on the host, while each local or online character receives the campaign reward on the correct machine."],
+    ["LS-0906-08","ADDED","Campaign-aware Tutorial language","The stabilized Tutorial runtime is preserved, but its V10.42 presentation now teaches the five-depth campaign, persistent RPG attributes, global Iron/Bone/Ash Keys, the Vessel and Banishment Essence system, relic choices and the campaign-wide A–Z C64 rescue deck instead of explaining retired artefact-for-Flask progression."],
+    ["LS-0906-07","ADDED","Tutorial-completion permanent unlock screen","Completing the free Tutorial can now present the V10.42 permanent-unlock screen. The screen explains the one-off £1.99 launch target, account-tied ownership, cross-device restore, continued-development support and free future game updates. The browser cannot self-authorize payment; final unlock requires a verified CCG commerce entitlement and PayPal server bridge."],
+    ["LS-0906-06","ADDED","Progressive combat damage curve","Enemy damage now scales alongside durability and pursuit tempo: the opening floor is deliberately gentler, mid-campaign reaches the stabilized baseline, and Floors 4–5 apply progressively stronger damage. Named threats receive a modest extra late-game multiplier so four floors of RPG growth do not make the final depth trivial."],
+    ["LS-0906-05","ADDED","Five-depth campaign and floor balance","V10.42 now targets a roughly 55–75 minute successful run across The Threshold, Iron Keep, Moss Crypt, Ember Depths and the Sigil Sanctum. Enemy durability, pursuit tempo, Stalker pressure and ammunition availability ramp by floor while RPG stats, relics, Banishment Essence and global Key progress persist downward."],
+    ["LS-0906-01","ADDED","Procedural RPG campaign overhaul","The stabilized five-floor structure is being rebuilt as five substantially richer generated depths. The Keys of Iron, Bone and Ash are global campaign objectives, followed by the completed Sigil and a final escape phase."],
+    ["LS-0906-02","ADDED","RPG character attributes","Levelling now develops Might, Vitality, Agility, Endurance, Luck and Arcana. Attributes change combat power, health, movement, ammunition, loot quality, Sigil behaviour and Banishment alchemy rather than relying only on generic upgrade cards."],
+    ["LS-0906-03","ADDED","A–Z randomized C64 collectible deck","Every campaign builds one shuffled collectible deck with one randomly selected C64 title for each available letter A through Z, then distributes that 26-game deck across all five depths."],
+    ["LS-0906-04","ADDED","Banishment Essence and relic builds","Rare artefact trading is replaced by a Vessel and Banishment Essence economy. Major threats and cleansed dungeon events provide Essence, Alchemists distil charges, and each Key domain offers a relic choice that changes the character build."],
     ["LS-0826-09","FIXED","Global movement freeze after Spy mode","A Spy runtime ownership race could leave ordinary movement routed through the isolated Spy owner after the mode ended. Because the Spy owner had already released its saved base function, later Solo or Horde movement could return false forever. r30 restores the pre-Spy update, movement and damage owners unconditionally when Spy exits."],
     ["LS-0826-10","FIXED","Cross-mode runtime wrapper contention","The r29 background installer no longer competes with the isolated Spy engine while Spy is active. Its maintenance timer is replaced by a cooperative r30 owner that preserves the stable animation loop without repeatedly wrapping Spy movement, damage or packet ownership."],
     ["LS-0826-11","ADDED","Gameplay key-capture resilience","Movement keys are mirrored at capture phase while gameplay is active and are reasserted if another layer accidentally drops the shared held-key set. Hidden menu or lobby inputs can no longer leave a live run unable to receive movement controls."],
@@ -41,8 +58,8 @@
   const entryHtml=([id,status,title,copy])=>`<article class="developer-log-entry" data-r30-entry="${id}"><code class="developer-log-id">${id}</code><span class="developer-log-status ${statusClass(status)}">${status}</span><div class="developer-log-copy"><b>${title}</b><span>${copy}</span></div></article>`;
   function mount(){
     const tracker=document.getElementById("developer-changelog");if(!tracker)return false;
-    const latest=tracker.querySelector(".developer-changelog-latest");if(latest)latest.textContent="LATEST UPDATE · 26 AUG 2026 · V10.41 · r30";
-    const stamp=tracker.querySelector(".developer-changelog-intro time");if(stamp){stamp.dateTime="2026-08-26";stamp.textContent="Last updated 26 August 2026 · V10.41 · build 2026.08.26.30"}
+    const latest=tracker.querySelector(".developer-changelog-latest");if(latest)latest.textContent="LATEST UPDATE · 6 SEP 2026 · V10.42 OVERHAUL BRANCH";
+    const stamp=tracker.querySelector(".developer-changelog-intro time");if(stamp){stamp.dateTime="2026-09-06";stamp.textContent="Last updated 6 September 2026 · V10.42 overhaul branch"}
     const firstList=tracker.querySelector(".developer-log-day .developer-log-list");if(!firstList)return false;
     for(const entry of [...entries].reverse()){
       if(tracker.querySelector(`[data-r30-entry="${entry[0]}"]`))continue;
