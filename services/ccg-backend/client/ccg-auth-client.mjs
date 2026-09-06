@@ -1,9 +1,12 @@
 const LOGIN_PATH = '/v1/auth/login';
 const REFRESH_PATH = '/v1/auth/refresh';
 const LOGOUT_PATH = '/v1/auth/logout';
+const REGISTER_PATH = '/v1/auth/register';
+const CONFIRM_EMAIL_PATH = '/v1/auth/confirm-email';
 const ME_PATH = '/v1/me';
 const MAX_EMAIL_LENGTH = 320;
 const MAX_PASSWORD_LENGTH = 1024;
+const MIN_REGISTRATION_PASSWORD_LENGTH = 10;
 
 function normalizeBaseUrl(value) {
   const url = new URL(String(value || ''));
@@ -25,6 +28,20 @@ function normalizeLoginInput({ email, password } = {}) {
     throw new Error('invalid_password');
   }
   return Object.freeze({ email: normalizedEmail, password });
+}
+
+function normalizeRegistrationInput({ email, password } = {}) {
+  const normalized = normalizeLoginInput({ email, password });
+  if (password.length < MIN_REGISTRATION_PASSWORD_LENGTH || password.length > 128 || /^\s+$/.test(password)) {
+    throw new Error('invalid_password');
+  }
+  return normalized;
+}
+
+function normalizeVerificationToken(value) {
+  const token = String(value || '').trim();
+  if (!/^[A-Za-z0-9_-]{32,256}$/.test(token)) throw new Error('invalid_verification_token');
+  return token;
 }
 
 async function decodeJson(response) {
@@ -120,6 +137,42 @@ export function createCcgAuthClient({ baseUrl, fetchImpl = globalThis.fetch } = 
   }
 
   return Object.freeze({
+    async register(input) {
+      let registration;
+      try {
+        registration = normalizeRegistrationInput(input);
+      } catch (error) {
+        return Object.freeze({ ok: false, kind: 'invalid_request', status: 0, error: String(error?.message || error) });
+      }
+      const result = await request(REGISTER_PATH, { method: 'POST', body: registration });
+      if (!result.ok) return result;
+      return Object.freeze({
+        ok: true,
+        kind: 'success',
+        status: result.status,
+        accepted: Boolean(result.body?.accepted),
+        verification_required: Boolean(result.body?.verification_required),
+      });
+    },
+
+    async confirmEmail(tokenValue) {
+      let token;
+      try {
+        token = normalizeVerificationToken(tokenValue);
+      } catch (error) {
+        return Object.freeze({ ok: false, kind: 'invalid_request', status: 0, error: String(error?.message || error) });
+      }
+      const result = await request(CONFIRM_EMAIL_PATH, { method: 'POST', body: { token } });
+      if (!result.ok) return result;
+      return Object.freeze({
+        ok: true,
+        kind: 'success',
+        status: result.status,
+        confirmed: Boolean(result.body?.confirmed),
+        user_id: result.body?.user_id ?? null,
+      });
+    },
+
     async login(input) {
       let credentials;
       try {
