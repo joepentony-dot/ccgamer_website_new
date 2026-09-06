@@ -57,6 +57,7 @@ export function createAuthRegistrationHttp(registration) {
         const result = await registration.register({
           email: body.email,
           password: body.password,
+          notificationPreferences: body.notification_preferences,
           fingerprint: requestFingerprint(request),
         });
         return Object.freeze({ statusCode: 202, body: result, headers: {} });
