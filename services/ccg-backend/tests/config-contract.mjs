@@ -23,6 +23,11 @@ function clearAuthEnv() {
     'CCG_LOCAL_AUTH_KEY_ID',
     'CCG_LOST_SIZZLER_REALTIME_ENABLED',
     'CCG_LOST_SIZZLER_REALTIME_MAX_SOCKETS',
+    'CCG_LOST_SIZZLER_COMMERCE_ENABLED',
+    'CCG_PAYPAL_ENVIRONMENT',
+    'PAYPAL_CLIENT_ID',
+    'PAYPAL_CLIENT_SECRET',
+    'PAYPAL_WEBHOOK_ID',
     'RESEND_API_KEY',
     'EMAIL_FROM',
     'EMAIL_REPLY_TO',
@@ -52,6 +57,14 @@ function withLocalAuthEnv() {
   process.env.PORT = '8787';
 }
 
+function enableSandboxCommerce() {
+  process.env.CCG_LOST_SIZZLER_COMMERCE_ENABLED = 'true';
+  process.env.CCG_PAYPAL_ENVIRONMENT = 'sandbox';
+  process.env.PAYPAL_CLIENT_ID = 'sandbox-client-id';
+  process.env.PAYPAL_CLIENT_SECRET = 'sandbox-client-secret';
+  process.env.PAYPAL_WEBHOOK_ID = 'sandbox-webhook-id';
+}
+
 try {
   withBaseEnv();
   const config = loadConfig();
@@ -60,6 +73,14 @@ try {
   assert.equal(config.localAuth, null);
   assert.equal(config.lostSizzlerRealtimeEnabled, false, 'Realtime must be disabled unless explicitly enabled.');
   assert.equal(config.lostSizzlerRealtimeMaxSockets, 128, 'Anonymous realtime must have a bounded default socket ceiling.');
+  assert.equal(config.lostSizzlerCommerceEnabled, false, 'Commerce must be disabled unless explicitly enabled.');
+  assert.deepEqual(config.paypal, {
+    enabled: false,
+    environment: 'sandbox',
+    clientId: '',
+    clientSecret: '',
+    webhookId: '',
+  });
   assert.equal(config.allowedOrigins.has('https://www.cheekycommodoregamer.co.uk'), true);
   assert.equal(config.allowedOrigins.has('*'), false);
   assert.deepEqual(config.feedbackEmail, {
@@ -96,6 +117,46 @@ try {
   withBaseEnv();
   process.env.CCG_LOST_SIZZLER_REALTIME_MAX_SOCKETS = '1.5';
   assert.throws(() => loadConfig(), /CCG_LOST_SIZZLER_REALTIME_MAX_SOCKETS: expected an integer between 1 and 10000/);
+
+  withBaseEnv();
+  enableSandboxCommerce();
+  const commerce = loadConfig();
+  assert.equal(commerce.lostSizzlerCommerceEnabled, true);
+  assert.deepEqual(commerce.paypal, {
+    enabled: true,
+    environment: 'sandbox',
+    clientId: 'sandbox-client-id',
+    clientSecret: 'sandbox-client-secret',
+    webhookId: 'sandbox-webhook-id',
+  });
+
+  withBaseEnv();
+  enableSandboxCommerce();
+  process.env.CCG_PAYPAL_ENVIRONMENT = 'live';
+  assert.equal(loadConfig().paypal.environment, 'live');
+
+  withBaseEnv();
+  process.env.CCG_LOST_SIZZLER_COMMERCE_ENABLED = 'true';
+  assert.throws(() => loadConfig(), /PAYPAL_CLIENT_ID/);
+
+  withBaseEnv();
+  enableSandboxCommerce();
+  delete process.env.PAYPAL_CLIENT_SECRET;
+  assert.throws(() => loadConfig(), /PAYPAL_CLIENT_SECRET/);
+
+  withBaseEnv();
+  enableSandboxCommerce();
+  delete process.env.PAYPAL_WEBHOOK_ID;
+  assert.throws(() => loadConfig(), /PAYPAL_WEBHOOK_ID/);
+
+  withBaseEnv();
+  enableSandboxCommerce();
+  process.env.CCG_PAYPAL_ENVIRONMENT = 'not-paypal';
+  assert.throws(() => loadConfig(), /Invalid CCG_PAYPAL_ENVIRONMENT/);
+
+  withBaseEnv();
+  process.env.CCG_LOST_SIZZLER_COMMERCE_ENABLED = '1';
+  assert.throws(() => loadConfig(), /CCG_LOST_SIZZLER_COMMERCE_ENABLED: expected true or false/);
 
   withBaseEnv();
   process.env.RESEND_API_KEY = 'test-resend-key';
@@ -161,6 +222,8 @@ try {
   assert.equal(local.jwtJwksUrl, null);
   assert.equal(local.lostSizzlerRealtimeEnabled, false);
   assert.equal(local.lostSizzlerRealtimeMaxSockets, 128);
+  assert.equal(local.lostSizzlerCommerceEnabled, false);
+  assert.equal(local.paypal.enabled, false);
   assert.equal(local.localAuth.issuer, 'https://auth.cheekycommodoregamer.co.uk/');
   assert.equal(local.localAuth.keyId, 'ccg-ed25519-1');
   assert.equal(local.localAuth.privateJwkFile, '/run/secrets/ccg-auth-private.jwk');
@@ -172,7 +235,7 @@ try {
   process.env.CCG_LOCAL_AUTH_KEY_ID = 'x'.repeat(129);
   assert.throws(() => loadConfig(), /CCG_LOCAL_AUTH_KEY_ID is too long/);
 
-  console.log('CCG backend configuration contract passed for fail-closed CORS, disabled-by-default Lost Sizzler realtime, bounded anonymous socket capacity, optional feedback mail delivery, external auth and opt-in local authentication modes.');
+  console.log('CCG backend configuration contract passed for fail-closed CORS, disabled-by-default realtime and PayPal commerce, bounded anonymous socket capacity, protected payment credentials, optional feedback mail delivery, external auth and opt-in local authentication modes.');
 } finally {
   restore();
 }
