@@ -2,6 +2,9 @@ import crypto from 'node:crypto';
 
 export const MAX_SAVE_BYTES = 512 * 1024;
 export const MAX_REQUEST_BYTES = MAX_SAVE_BYTES + 64 * 1024;
+const DEFAULT_SCHEMA_NAME = 'ccg-lost-sizzler-solo-save';
+const DEFAULT_SCHEMA_VERSION = 2;
+const DEFAULT_GAME_VERSION = 'V10.41';
 
 function httpError(statusCode, code, message = code) {
   const error = new Error(message);
@@ -43,11 +46,39 @@ export function hashSavePayload(payload) {
   });
 }
 
+function readEnvelopeMetadata(payload, body) {
+  const schemaName = String(payload?.schema || DEFAULT_SCHEMA_NAME).slice(0, 80);
+  const rawSchemaVersion = Number(payload?.schemaVersion ?? DEFAULT_SCHEMA_VERSION);
+  const schemaVersion = Number.isSafeInteger(rawSchemaVersion) && rawSchemaVersion > 0
+    ? rawSchemaVersion
+    : DEFAULT_SCHEMA_VERSION;
+  const gameVersion = String(payload?.gameVersion || DEFAULT_GAME_VERSION).slice(0, 80);
+  const saveChecksum = typeof payload?.checksum === 'string' ? payload.checksum.slice(0, 128) : null;
+  const savedAtMs = Number(payload?.savedAt || 0);
+  const explicitClientRevision = Number(body?.client_revision_ms);
+  const clientRevisionMs = Number.isSafeInteger(explicitClientRevision) && explicitClientRevision >= 0
+    ? explicitClientRevision
+    : (Number.isSafeInteger(savedAtMs) && savedAtMs >= 0 ? savedAtMs : 0);
+  const saveSavedAt = Number.isSafeInteger(savedAtMs) && savedAtMs > 0 ? new Date(savedAtMs) : null;
+
+  return Object.freeze({
+    schemaName,
+    schemaVersion,
+    gameVersion,
+    saveChecksum,
+    saveSavedAt,
+    clientRevisionMs,
+  });
+}
+
 export function validateCloudSaveWrite(body) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) throw httpError(400, 'invalid_request');
   const expectedRevision = body.expected_revision;
   if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0) {
     throw httpError(400, 'invalid_expected_revision');
+  }
+  if (body.client_revision_ms !== undefined && (!Number.isSafeInteger(body.client_revision_ms) || body.client_revision_ms < 0)) {
+    throw httpError(400, 'invalid_client_revision_ms');
   }
   if (!/^[0-9a-f]{64}$/.test(body.payload_sha256 ?? '')) {
     throw httpError(400, 'invalid_payload_sha256');
@@ -59,11 +90,12 @@ export function validateCloudSaveWrite(body) {
     payload: body.payload,
     payloadSha256: payloadProof.sha256,
     payloadBytes: payloadProof.bytes,
+    metadata: readEnvelopeMetadata(body.payload, body),
   });
 }
 
 export function decideSaveWrite(current, input) {
-  if (current && current.payload_sha256 === input.payloadSha256) {
+  if (current && current.payload_sha256 === input.payloadSha256 && current.deleted_at == null) {
     return Object.freeze({ kind: 'idempotent', revision: Number(current.revision) });
   }
   if (!current) {
@@ -105,19 +137,29 @@ function normalizeSaveRow(row, idempotent = false) {
   if (!row) return null;
   return Object.freeze({
     revision: Number(row.revision),
-    payload: row.save_payload,
+    payload: row.save_envelope,
     payload_sha256: row.payload_sha256,
-    saved_at: row.saved_at,
+    schema_name: row.schema_name,
+    schema_version: Number(row.schema_version),
+    game_version: row.game_version,
+    save_checksum: row.save_checksum,
+    save_saved_at: row.save_saved_at,
+    client_revision_ms: Number(row.client_revision_ms || 0),
+    deleted_at: row.deleted_at,
     updated_at: row.updated_at,
     idempotent,
   });
 }
 
+const RETURNING_FIELDS = `revision, schema_name, schema_version, game_version,
+  save_envelope, save_checksum, payload_sha256, save_saved_at,
+  client_revision_ms, deleted_at, updated_at`;
+
 export function createCloudSaveStore(database) {
   return Object.freeze({
     async get(userId) {
       const result = await database.query(
-        `select revision, save_payload, payload_sha256, saved_at, updated_at
+        `select ${RETURNING_FIELDS}
            from lost_sizzler_cloud_saves
           where user_id = $1`,
         [userId]
@@ -131,13 +173,13 @@ export function createCloudSaveStore(database) {
         await tx.query(
           `insert into ccg_users (user_id)
            values ($1)
-           on conflict (user_id) do update set updated_at = now()`,
+           on conflict (user_id) do nothing`,
           [userId]
         );
         await tx.query('select user_id from ccg_users where user_id = $1 for update', [userId]);
 
         const currentResult = await tx.query(
-          `select revision, save_payload, payload_sha256, saved_at, updated_at
+          `select ${RETURNING_FIELDS}
              from lost_sizzler_cloud_saves
             where user_id = $1`,
           [userId]
@@ -147,13 +189,26 @@ export function createCloudSaveStore(database) {
 
         if (decision.kind === 'idempotent') return normalizeSaveRow(current, true);
 
+        const metadata = input.metadata;
         if (decision.kind === 'create') {
           const created = await tx.query(
             `insert into lost_sizzler_cloud_saves
-              (user_id, revision, save_payload, payload_sha256, saved_at, updated_at)
-             values ($1, 1, $2::jsonb, $3, now(), now())
-             returning revision, save_payload, payload_sha256, saved_at, updated_at`,
-            [userId, JSON.stringify(input.payload), input.payloadSha256]
+              (user_id, revision, schema_name, schema_version, game_version,
+               save_envelope, save_checksum, payload_sha256, save_saved_at,
+               client_revision_ms, deleted_at, updated_at)
+             values ($1, 1, $2, $3, $4, $5::jsonb, $6, $7, $8, $9, null, now())
+             returning ${RETURNING_FIELDS}`,
+            [
+              userId,
+              metadata.schemaName,
+              metadata.schemaVersion,
+              metadata.gameVersion,
+              JSON.stringify(input.payload),
+              metadata.saveChecksum,
+              input.payloadSha256,
+              metadata.saveSavedAt,
+              metadata.clientRevisionMs,
+            ]
           );
           return normalizeSaveRow(created.rows[0]);
         }
@@ -161,13 +216,30 @@ export function createCloudSaveStore(database) {
         const updated = await tx.query(
           `update lost_sizzler_cloud_saves
               set revision = $2,
-                  save_payload = $3::jsonb,
-                  payload_sha256 = $4,
-                  saved_at = now(),
+                  schema_name = $3,
+                  schema_version = $4,
+                  game_version = $5,
+                  save_envelope = $6::jsonb,
+                  save_checksum = $7,
+                  payload_sha256 = $8,
+                  save_saved_at = $9,
+                  client_revision_ms = $10,
+                  deleted_at = null,
                   updated_at = now()
             where user_id = $1
-            returning revision, save_payload, payload_sha256, saved_at, updated_at`,
-          [userId, decision.revision, JSON.stringify(input.payload), input.payloadSha256]
+            returning ${RETURNING_FIELDS}`,
+          [
+            userId,
+            decision.revision,
+            metadata.schemaName,
+            metadata.schemaVersion,
+            metadata.gameVersion,
+            JSON.stringify(input.payload),
+            metadata.saveChecksum,
+            input.payloadSha256,
+            metadata.saveSavedAt,
+            metadata.clientRevisionMs,
+          ]
         );
         return normalizeSaveRow(updated.rows[0]);
       });
