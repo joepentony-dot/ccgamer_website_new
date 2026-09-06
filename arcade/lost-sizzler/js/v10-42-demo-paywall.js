@@ -66,14 +66,16 @@
     const overlay=ensureOverlay();overlay.innerHTML=`<div class="v142-paywall-card"><span class="v142-paywall-kicker">FULL GAME OWNED</span><h2 id="v142-paywall-title">The Lost Sizzler is permanently unlocked</h2><div class="v142-owned">This CCG account owns the full game. All future The Lost Sizzler game updates remain included at no extra charge.</div><div class="v142-actions"><button class="v142-paypal" type="button" data-owned-continue>ENTER THE DUNGEON</button></div></div>`;overlay.querySelector("[data-owned-continue]")?.addEventListener("click",closePaywall);overlay.classList.remove("hidden");state.shown=true
   }
   async function showPaywall({reason="tutorial-complete"}={}){
-    if(state.checking)return;state.checking=true;
+    if(state.checking)return false;state.checking=true;
     try{
-      const owned=await entitlement();if(unlockRuntime(owned)){renderOwned();return}
-    }catch(_){/* Presentation must still work if the optional backend is unavailable. */}
-    const overlay=ensureOverlay(),p=provider(),authenticated=await signedIn();state.providerReady=Boolean(p);
-    let offer={display:FALLBACK_PRICE,currency:"GBP",product:PRODUCT_SLUG};const offerFn=providerMethod(["getOffer","offer"]);if(offerFn)try{offer=authoritativeOffer(await offerFn(PRODUCT_SLUG))}catch(_){}
-    overlay.innerHTML=`<div class="v142-paywall-card"><span class="v142-paywall-kicker">${reason==="tutorial-complete"?"TUTORIAL COMPLETE · THE DUNGEON GOES DEEPER":"FULL GAME"}</span><h2 id="v142-paywall-title">Unlock The Lost Sizzler permanently</h2><div class="v142-price">${offer.display} ONE-OFF</div><p>You have completed the free introduction. The full game expands into five procedural depths, RPG character builds, the Keys of Iron, Bone and Ash, the awakened Sigil and the final escape.</p><div class="v142-promise"><span><b>PERMANENT ACCOUNT UNLOCK</b>Buy once. The entitlement remains tied to your CCG account and can be restored when you sign in on another device.</span><span><b>ALL FUTURE GAME UPDATES INCLUDED</b>Future The Lost Sizzler game updates are included at no extra charge.</span><span><b>SUPPORTS THE GAME</b>Your purchase helps fund continued development and support of The Lost Sizzler.</span><span><b>PAYPAL CHECKOUT</b>Payment is verified by the CCG server before the game entitlement is granted.</span></div><div class="v142-account-note"><b>${authenticated?"CCG ACCOUNT DETECTED":"SIGN IN OR CREATE A CCG ACCOUNT TO CONTINUE"}</b><br>${authenticated?"Your permanent purchase will be attached to the signed-in account.":"Your purchase must be attached to a recoverable CCG account before PayPal Checkout opens."}</div><div class="v142-actions">${authenticated?'<button class="v142-paypal" type="button" data-paypal>BUY WITH PAYPAL</button>':`<a class="v142-login" href="${LOGIN_URL}">SIGN IN</a><a class="v142-register" href="${REGISTER_URL}">CREATE ACCOUNT</a>`}<button class="v142-later" type="button" data-later>NOT NOW</button></div><div class="v142-status" aria-live="polite">${p?"":"Checkout is intentionally inactive until the CCG commerce backend is connected and PayPal Sandbox release gates pass."}</div></div>`;
-    overlay.querySelector("[data-paypal]")?.addEventListener("click",checkout);overlay.querySelector("[data-later]")?.addEventListener("click",closePaywall);overlay.classList.remove("hidden");state.shown=true
+      try{
+        const owned=await entitlement();if(unlockRuntime(owned)){renderOwned();return true}
+      }catch(_){/* Presentation must still work if the optional backend is unavailable. */}
+      const overlay=ensureOverlay(),p=provider(),authenticated=await signedIn();state.providerReady=Boolean(p);
+      let offer={display:FALLBACK_PRICE,currency:"GBP",product:PRODUCT_SLUG};const offerFn=providerMethod(["getOffer","offer"]);if(offerFn)try{offer=authoritativeOffer(await offerFn(PRODUCT_SLUG))}catch(_){}
+      overlay.innerHTML=`<div class="v142-paywall-card"><span class="v142-paywall-kicker">${reason==="tutorial-complete"?"TUTORIAL COMPLETE · THE DUNGEON GOES DEEPER":"FULL GAME"}</span><h2 id="v142-paywall-title">Unlock The Lost Sizzler permanently</h2><div class="v142-price">${offer.display} ONE-OFF</div><p>You have completed the free introduction. The full game expands into five procedural depths, RPG character builds, the Keys of Iron, Bone and Ash, the awakened Sigil and the final escape.</p><div class="v142-promise"><span><b>PERMANENT ACCOUNT UNLOCK</b>Buy once. The entitlement remains tied to your CCG account and can be restored when you sign in on another device.</span><span><b>ALL FUTURE GAME UPDATES INCLUDED</b>Future The Lost Sizzler game updates are included at no extra charge.</span><span><b>SUPPORTS THE GAME</b>Your purchase helps fund continued development and support of The Lost Sizzler.</span><span><b>PAYPAL CHECKOUT</b>Payment is verified by the CCG server before the game entitlement is granted.</span></div><div class="v142-account-note"><b>${authenticated?"CCG ACCOUNT DETECTED":"SIGN IN OR CREATE A CCG ACCOUNT TO CONTINUE"}</b><br>${authenticated?"Your permanent purchase will be attached to the signed-in account.":"Your purchase must be attached to a recoverable CCG account before PayPal Checkout opens."}</div><div class="v142-actions">${authenticated?'<button class="v142-paypal" type="button" data-paypal>BUY WITH PAYPAL</button>':`<a class="v142-login" href="${LOGIN_URL}">SIGN IN</a><a class="v142-register" href="${REGISTER_URL}">CREATE ACCOUNT</a>`}<button class="v142-later" type="button" data-later>NOT NOW</button></div><div class="v142-status" aria-live="polite">${p?"":"Checkout is intentionally inactive until the CCG commerce backend is connected and PayPal Sandbox release gates pass."}</div></div>`;
+      overlay.querySelector("[data-paypal]")?.addEventListener("click",checkout);overlay.querySelector("[data-later]")?.addEventListener("click",closePaywall);overlay.classList.remove("hidden");state.shown=true;return true
+    }finally{state.checking=false}
   }
 
   function tutorialCompleted(){
@@ -81,7 +83,8 @@
   }
   let completionQueued=false;
   function watchTutorialCompletion(){
-    if(completionQueued||state.entitled||!tutorialCompleted())return;completionQueued=true;setTimeout(()=>showPaywall({reason:"tutorial-complete"}),350)
+    const complete=tutorialCompleted();if(!complete){completionQueued=false;return}
+    if(completionQueued||state.entitled)return;completionQueued=true;setTimeout(()=>showPaywall({reason:"tutorial-complete"}),350)
   }
 
   const FULL_GAME_BUTTONS=["solo-btn","create-btn","horde-mode-btn","saboteurs-mode-btn","split-btn","daily-btn"];
