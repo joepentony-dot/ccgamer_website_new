@@ -5,6 +5,8 @@ import { createLostSizzlerRealtimeWebSocketTransport } from '../src/lost-sizzler
 import { createLostSizzlerRealtimeClient } from '../client/lost-sizzler-realtime.mjs';
 
 const BROWSER_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
+const HOST_PRESENCE_ID = 'legacyHost01';
+const PEER_PRESENCE_ID = 'legacyPeer01';
 
 class BrowserLikeWebSocket extends WebSocket {
   constructor(url) {
@@ -84,10 +86,12 @@ assert.equal(peer.getState().connected, false);
 const hostConnected = await host.connect();
 assert.equal(hostConnected.ok, true);
 assert.match(hostConnected.sessionId, /^[A-Za-z0-9_-]{16}$/);
+assert.notEqual(hostConnected.sessionId, HOST_PRESENCE_ID, 'Server transport identity must remain separate from the Lost Sizzler presence ID.');
 assert.equal(transport.diagnostics().socketCount, 1);
 
 const created = await host.createRoom({
   roomCode: 'CCG42',
+  presenceId: HOST_PRESENCE_ID,
   name: 'Host Player',
   mode: 'horde-survivor',
   build: 'V10.41',
@@ -96,23 +100,33 @@ assert.equal(created.ok, true);
 assert.equal(created.room.roomCode, 'CCG42');
 assert.equal(created.room.roomMode, 'horde-survivor');
 assert.equal(created.room.roomCapacity, 4);
-assert.equal(created.room.hostId, hostConnected.sessionId);
+assert.equal(created.room.hostId, HOST_PRESENCE_ID);
+assert.equal(created.room.members[0].id, HOST_PRESENCE_ID);
+assert.equal(created.room.members.some((member) => member.id === hostConnected.sessionId), false);
 assert.equal(transport.diagnostics().roomCount, 1);
 assert.equal(transport.diagnostics().memberCount, 1);
 
 const peerConnected = await peer.connect();
 assert.equal(peerConnected.ok, true);
 assert.notEqual(peerConnected.sessionId, hostConnected.sessionId);
-const joined = await peer.joinRoom({ roomCode: 'CCG42', name: 'Peer Player', build: 'V10.41' });
+assert.notEqual(peerConnected.sessionId, PEER_PRESENCE_ID);
+const joined = await peer.joinRoom({
+  roomCode: 'CCG42',
+  presenceId: PEER_PRESENCE_ID,
+  name: 'Peer Player',
+  build: 'V10.41',
+});
 assert.equal(joined.ok, true);
 assert.equal(joined.room.memberCount, 2);
-assert.equal(joined.room.hostId, hostConnected.sessionId);
+assert.equal(joined.room.hostId, HOST_PRESENCE_ID);
 assert.equal(joined.room.roomMode, 'horde-survivor');
+assert.deepEqual(joined.room.members.map((member) => member.id), [HOST_PRESENCE_ID, PEER_PRESENCE_ID]);
 
 await waitFor(
   () => host.getState().room?.memberCount === 2 && host.getState().room,
   'host room snapshot after peer join'
 );
+assert.deepEqual(host.getState().room.members.map((member) => member.id), [HOST_PRESENCE_ID, PEER_PRESENCE_ID]);
 assert.equal(transport.diagnostics().socketCount, 2);
 assert.equal(transport.diagnostics().memberCount, 2);
 
@@ -121,7 +135,7 @@ assert.deepEqual(hostPacket, { ok: true, kind: 'success' });
 await waitFor(() => peerPackets.length === 1 && peerPackets[0], 'peer game packet');
 assert.equal(peerPackets[0].event, 'player:move');
 assert.deepEqual(peerPackets[0].payload, { x: 12, y: 9, facing: 'left' });
-assert.equal(peerPackets[0].senderId, hostConnected.sessionId);
+assert.equal(peerPackets[0].senderId, HOST_PRESENCE_ID);
 assert.equal(hostPackets.length, 0, 'broadcast-self-false must not echo the packet back to the host client.');
 
 const peerPacket = await peer.sendPacket('player:fire', { projectile: 7 });
@@ -129,7 +143,7 @@ assert.deepEqual(peerPacket, { ok: true, kind: 'success' });
 await waitFor(() => hostPackets.length === 1 && hostPackets[0], 'host game packet');
 assert.equal(hostPackets[0].event, 'player:fire');
 assert.deepEqual(hostPackets[0].payload, { projectile: 7 });
-assert.equal(hostPackets[0].senderId, peerConnected.sessionId);
+assert.equal(hostPackets[0].senderId, PEER_PRESENCE_ID);
 assert.equal(peerPackets.length, 1, 'peer must not receive its own outbound packet.');
 
 const presence = await host.updatePresence({
@@ -138,12 +152,13 @@ const presence = await host.updatePresence({
 });
 assert.equal(presence.ok, true);
 assert.equal(presence.room.runtime.started, true);
-assert.equal(presence.room.runtime.hostId, hostConnected.sessionId);
+assert.equal(presence.room.runtime.hostId, HOST_PRESENCE_ID);
 assert.deepEqual(presence.room.runtime.startMeta, { seed: 9876, floor: 2 });
 await waitFor(
   () => peer.getState().room?.runtime?.started === true && peer.getState().room,
   'peer runtime presence'
 );
+assert.equal(peer.getState().room.runtime.hostId, HOST_PRESENCE_ID);
 assert.deepEqual(peer.getState().room.runtime.startMeta, { seed: 9876, floor: 2 });
 
 const heartbeat = await peer.heartbeat();
@@ -151,10 +166,11 @@ assert.deepEqual(heartbeat, { ok: true, kind: 'success', roomCode: 'CCG42' });
 
 host.disconnect();
 const promoted = await waitFor(
-  () => peer.getState().room?.hostId === peerConnected.sessionId && peer.getState().room,
+  () => peer.getState().room?.hostId === PEER_PRESENCE_ID && peer.getState().room,
   'peer host promotion after host disconnect'
 );
 assert.equal(promoted.memberCount, 1);
+assert.equal(promoted.runtime.hostId, PEER_PRESENCE_ID);
 assert.equal(promoted.runtime.started, false, 'Departed host runtime state must not transfer to the promoted peer.');
 await waitFor(() => transport.diagnostics().socketCount === 1, 'host socket cleanup');
 assert.equal(transport.diagnostics().memberCount, 1);
@@ -175,4 +191,4 @@ assert.equal(peerRooms.some((entry) => entry.reason === 'disconnected'), true);
 await transport.close();
 await new Promise((resolve) => server.close(resolve));
 
-console.log('Lost Sizzler realtime integration contract passed: the passive CCG browser client interoperates with the CCG WebSocket transport for rooms, packets, presence, heartbeat, host promotion and cleanup without Supabase.');
+console.log('Lost Sizzler realtime integration contract passed: the CCG browser client and WebSocket transport preserve separate server session and game presence identities, rooms, packets, presence, heartbeat, host promotion and cleanup without Supabase.');
