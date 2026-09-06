@@ -60,6 +60,10 @@ jobs:
         working-directory: services/ccg-backend
         run: node tests/password-recovery-database-contract.mjs
 
+      - name: Prove checksum-locked migration execution on PostgreSQL
+        working-directory: services/ccg-backend
+        run: node tests/migration-runner-contract.mjs
+
       - name: Check migration policy markers
         shell: bash
         run: |
@@ -72,9 +76,12 @@ jobs:
           test -f "$session_migration"
           test -f services/ccg-backend/src/auth-http.mjs
           test -f services/ccg-backend/src/password-recovery.mjs
+          test -f services/ccg-backend/scripts/migrate.mjs
           test -f services/ccg-backend/tests/password-recovery-database-contract.mjs
+          test -f services/ccg-backend/tests/migration-runner-contract.mjs
           grep -q 'offline game first' services/ccg-backend/README.md
           grep -q 'CCG_AUTH_MODE=local' services/ccg-backend/README.md
+          grep -q 'migrate:apply' services/ccg-backend/package.json
           grep -q 'lost_sizzler_cloud_saves' "$migration"
           grep -q 'client_revision_ms' "$migration"
           grep -q 'deleted_at' "$migration"
