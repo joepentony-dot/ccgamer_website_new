@@ -55,6 +55,12 @@ function repositoryToRuntimePath(value) {
   return value.slice(prefix.length);
 }
 
+function runtimeToRepositoryPath(value) {
+  assert(typeof value === 'string' && value.startsWith('assets/audio/music/'), `Offline playlist asset must remain package-local: ${value}`);
+  assert(!value.includes('..') && !/^[a-z][a-z0-9+.-]*:/i.test(value), `Offline playlist asset must not escape the package-local music root: ${value}`);
+  return `arcade/lost-sizzler/${value}`;
+}
+
 function validateManifest(manifest) {
   assert(manifest && typeof manifest === 'object', 'Offline package manifest must be an object.');
   assert(manifest.schema === MANIFEST_SCHEMA, `Unexpected package manifest schema: ${manifest.schema}`);
@@ -85,7 +91,7 @@ function validateManifest(manifest) {
     requiredEntries.push({ requiredPath, entry });
   }
 
-  return { requiredOfflineAudio: REQUIRED_OFFLINE_AUDIO.length, requiredEntries };
+  return { requiredOfflineAudio: REQUIRED_OFFLINE_AUDIO.length, requiredEntries, byPath };
 }
 
 function validateAudioProvenance(requiredPath, entry, data) {
@@ -103,15 +109,34 @@ function validateRuntimeAudioMap(source) {
   assert(music && typeof music === 'object', 'Offline runtime audio map must expose CCG_AUDIO_ASSETS.music.');
   assert(music.playlists && typeof music.playlists === 'object', 'Offline runtime audio map must expose local music playlists.');
 
+  const playlistRepositoryPaths = [];
+  const seenPlaylistPaths = new Set();
   for (const [role, repositoryPath] of Object.entries(OFFLINE_MUSIC_ROLES)) {
     const runtimePath = repositoryToRuntimePath(repositoryPath);
-    assert(music[role] === runtimePath, `Offline runtime music role ${role} must resolve to packaged file ${runtimePath}.`);
+    assert(music[role] === runtimePath, `Offline runtime music role ${role} must resolve to packaged fallback ${runtimePath}.`);
     const playlist = music.playlists[role];
-    assert(Array.isArray(playlist), `Offline runtime music role ${role} must retain a local playlist fallback.`);
-    assert(playlist.length === 1 && playlist[0] === runtimePath, `Offline runtime music playlist ${role} must contain exactly packaged fallback ${runtimePath}.`);
+    assert(Array.isArray(playlist) && playlist.length > 0, `Offline runtime music role ${role} must retain at least one local playlist asset.`);
+    for (const playlistPath of playlist) {
+      const repositoryPlaylistPath = runtimeToRepositoryPath(playlistPath);
+      assert(!seenPlaylistPaths.has(repositoryPlaylistPath), `Offline runtime music playlists contain duplicate asset ${playlistPath}.`);
+      seenPlaylistPaths.add(repositoryPlaylistPath);
+      playlistRepositoryPaths.push(repositoryPlaylistPath);
+    }
   }
 
-  return { runtimeRoles: Object.keys(OFFLINE_MUSIC_ROLES).length };
+  return { runtimeRoles: Object.keys(OFFLINE_MUSIC_ROLES).length, playlistRepositoryPaths };
+}
+
+function validatePlaylistManifestEntries(byPath, playlistRepositoryPaths) {
+  for (const playlistPath of playlistRepositoryPaths) {
+    const entry = byPath.get(playlistPath);
+    assert(entry, `Desktop package is missing runtime playlist music: ${playlistPath}`);
+    assert(entry.classification === 'audio', `Runtime playlist music is not classified as audio: ${playlistPath}`);
+    assert(Number.isSafeInteger(entry.bytes) && entry.bytes > 0, `Runtime playlist music is empty: ${playlistPath}`);
+    assert(/^[0-9a-f]{64}$/.test(entry.sha256 ?? ''), `Runtime playlist music is missing SHA-256 provenance: ${playlistPath}`);
+    assert(entry.sourceRepositoryPath === playlistPath, `Runtime playlist music must be sourced from its packaged local asset: ${playlistPath}`);
+  }
+  return { playlistAssets: playlistRepositoryPaths.length };
 }
 
 function fixtureAudio() {
@@ -182,7 +207,7 @@ function expectRuntimeFailure(source, expectedText) {
     }
     return;
   }
-  throw new Error(`Self-test expected runtime failure containing ${JSON.stringify(expectedText)} but validation passed.`);
+  throw new Error(`Self-test expected failure containing ${JSON.stringify(expectedText)} but validation passed.`);
 }
 
 function runSelfTest() {
@@ -201,9 +226,10 @@ function runSelfTest() {
   const validRuntime = runtimeFixtureSource();
   validateRuntimeAudioMap(validRuntime);
   expectRuntimeFailure(validRuntime.replace('"normal":"assets/audio/music/exploration.wav"', '"normal":"assets/audio/music/missing.wav"'), 'music role normal');
-  expectRuntimeFailure(validRuntime.replace('["assets/audio/music/danger.wav"]', '[]'), 'playlist danger');
+  expectRuntimeFailure(validRuntime.replace('["assets/audio/music/danger.wav"]', '[]'), 'role danger');
+  expectRuntimeFailure(validRuntime.replace('"assets/audio/music/danger.wav"]', '"https://example.invalid/danger.mp3"]'), 'package-local');
 
-  console.log(`Lost Sizzler offline package content self-test passed: ${REQUIRED_OFFLINE_AUDIO.length} minimum local music roles, source bindings, byte/SHA-256 provenance and runtime bindings are independently enforced.`);
+  console.log(`Lost Sizzler offline package content self-test passed: ${REQUIRED_OFFLINE_AUDIO.length} minimum local music roles, source bindings, byte/SHA-256 provenance and runtime playlist locality are independently enforced.`);
 }
 
 async function main() {
@@ -224,7 +250,8 @@ async function main() {
     validateAudioProvenance(requiredPath, entry, data);
   }
   const runtimeResult = validateRuntimeAudioMap(audioMapSource);
-  console.log(`Lost Sizzler offline package content verified: ${manifestResult.requiredOfflineAudio} required local music files are byte/SHA-256 bound to bundled assets and ${runtimeResult.runtimeRoles} offline runtime roles.`);
+  const playlistResult = validatePlaylistManifestEntries(manifestResult.byPath, runtimeResult.playlistRepositoryPaths);
+  console.log(`Lost Sizzler offline package content verified: ${manifestResult.requiredOfflineAudio} fail-safe local music roles and ${playlistResult.playlistAssets} runtime playlist assets are package-local with manifest provenance across ${runtimeResult.runtimeRoles} offline runtime roles.`);
 }
 
 main().catch((error) => {
