@@ -16,6 +16,10 @@ function failure(provider, kind, error, status = 0) {
   return Object.freeze({ ok: false, kind, provider, status, error: String(error || kind) });
 }
 
+function withProvider(result, provider) {
+  return Object.freeze({ ...(result || {}), provider });
+}
+
 function supabaseFailure(error) {
   const status = Number(error?.status || 0);
   const code = String(error?.code || error?.name || 'supabase_error');
@@ -71,7 +75,7 @@ export function createCcgAuthProvider({
       lastAccessToken = localCcgClient.getAccessToken();
       lastUserId = localCcgClient.getUserId();
     }
-    return result;
+    return withProvider(result, 'ccg');
   }
 
   async function signIn(credentials) {
@@ -127,7 +131,9 @@ export function createCcgAuthProvider({
       const result = await localCcgClient.logout();
       lastAccessToken = null;
       lastUserId = null;
-      return result.ok ? success('ccg', { status: result.status, revoked: Boolean(result.revoked) }) : { ...result, provider: 'ccg' };
+      return result.ok
+        ? success('ccg', { status: result.status, revoked: Boolean(result.revoked) })
+        : withProvider(result, 'ccg');
     }
 
     try {
@@ -148,7 +154,7 @@ export function createCcgAuthProvider({
   async function currentUser() {
     if (selectedProvider === 'ccg') {
       const result = await localCcgClient.me();
-      if (!result.ok) return { ...result, provider: 'ccg' };
+      if (!result.ok) return withProvider(result, 'ccg');
       lastAccessToken = localCcgClient.getAccessToken();
       lastUserId = localCcgClient.getUserId();
       return success('ccg', {
