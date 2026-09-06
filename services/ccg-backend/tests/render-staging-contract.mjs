@@ -33,10 +33,12 @@ for (const feature of [
 }
 
 assert.match(blueprint, /postgresMajorVersion:\s+"17"/);
+assert.match(blueprint, /databaseName:\s+ccg_backend_staging_db\b/, 'Blueprint must adopt the provisioned staging database name without trying to mutate it.');
+assert.match(blueprint, /user:\s+ccg_backend_staging_db_user\b/, 'Blueprint must preserve the provisioned staging database user.');
 assert.match(blueprint, /ipAllowList:\s+\[\]/, 'Staging PostgreSQL must not expose a public database allowlist by default.');
 assert.doesNotMatch(blueprint, /preDeployCommand:/, 'Free staging must not rely on paid-only pre-deploy commands.');
 assert.doesNotMatch(blueprint, /RESEND_API_KEY|PAYPAL_CLIENT_SECRET|PAYPAL_CLIENT_ID|PAYPAL_WEBHOOK_ID/);
 assert.doesNotMatch(blueprint, /"d"\s*:/, 'No private JWK material may be committed in the Blueprint.');
 assert.doesNotMatch(rootRender, /ccg-backend-staging/, 'The staging backend must remain outside the existing root Render Blueprint.');
 
-console.log('CCG Render staging contract passed: deployment is isolated, manual, local-auth capable, database-private, secret-file based, and all write/commerce/realtime feature switches remain disabled initially.');
+console.log('CCG Render staging contract passed: deployment is isolated, manual, local-auth capable, adopts the provisioned private database, is secret-file based, and all write/commerce/realtime feature switches remain disabled initially.');
