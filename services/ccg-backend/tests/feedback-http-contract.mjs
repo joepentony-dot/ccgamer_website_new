@@ -3,7 +3,7 @@ import { Readable } from 'node:stream';
 import { createLostSizzlerFeedbackHttp } from '../src/lost-sizzler-feedback-http.mjs';
 
 function request(method, body, headers = {}) {
-  const stream = Readable.from(body === undefined ? [] : [body]);
+  const stream = Readable.from(body === undefined ? [] : [Buffer.from(body, 'utf8')]);
   stream.method = method;
   stream.headers = {
     'content-type': 'application/json',
