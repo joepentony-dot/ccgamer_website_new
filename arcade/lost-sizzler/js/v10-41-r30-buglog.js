@@ -19,16 +19,18 @@
   function loadHordeOwnerComposition(){if(!window.CCGLostSizzlerV141R60HordeOwnerComposition)loadScript("v10-41-r60-horde-owner-composition.js","data-ccg-r60-horde-owner-composition")}
   function loadStage8NpcDialogue(){if(!window.CCGLostSizzlerStage8NpcDialogue)loadScript("v10-41-stage8-npc-dialogue.js","data-ccg-stage8-npc-dialogue")}
   function loadV142ProceduralOverhaul(){if(!window.CCGLostSizzlerV142ProceduralOverhaul)loadScript("v10-42-procedural-overhaul.js","data-ccg-v142-procedural-overhaul")}
+  function loadV142FiveDepthCampaign(){if(!window.CCGLostSizzlerV142FiveDepthCampaign)loadScript("v10-42-five-depth-campaign.js","data-ccg-v142-five-depth-campaign")}
   function loadStage8AfterInitialRuntime(){
-    if(document.readyState==="complete"){queueMicrotask(loadStage8NpcDialogue);setTimeout(loadV142ProceduralOverhaul,0);return}
-    addEventListener("load",()=>{loadStage8NpcDialogue();setTimeout(loadV142ProceduralOverhaul,0)},{once:true})
+    if(document.readyState==="complete"){queueMicrotask(loadStage8NpcDialogue);setTimeout(()=>{loadV142ProceduralOverhaul();loadV142FiveDepthCampaign()},0);return}
+    addEventListener("load",()=>{loadStage8NpcDialogue();setTimeout(()=>{loadV142ProceduralOverhaul();loadV142FiveDepthCampaign()},0)},{once:true})
   }
   loadOwnerSeal();loadModeRuntime();loadSoloDiagnostics();loadSpyExitControlReset();loadSoloDungeonR31();loadSpyR32WorldOwner();loadSpyR32Loader();loadHordeOwnerComposition();loadStage8AfterInitialRuntime();
 
   const entries=[
-    ["LS-0906-01","ADDED","Single procedural dungeon overhaul","The old five-floor campaign is replaced on the V10.42 overhaul branch by one substantially larger generated dungeon. Three domain Keys, their guardians, the awakened Sigil and a final escape phase form the new main run structure."],
+    ["LS-0906-05","ADDED","Five-depth campaign and floor balance","V10.42 now targets a roughly 55–75 minute successful run across The Threshold, Iron Keep, Moss Crypt, Ember Depths and the Sigil Sanctum. Enemy durability, pursuit tempo, Stalker pressure and ammunition availability ramp by floor while RPG stats, relics, Banishment Essence and global Key progress persist downward."],
+    ["LS-0906-01","ADDED","Procedural RPG campaign overhaul","The stabilized five-floor structure is being rebuilt as five substantially richer generated depths. The Keys of Iron, Bone and Ash are global campaign objectives, followed by the completed Sigil and a final escape phase."],
     ["LS-0906-02","ADDED","RPG character attributes","Levelling now develops Might, Vitality, Agility, Endurance, Luck and Arcana. Attributes change combat power, health, movement, ammunition, loot quality, Sigil behaviour and Banishment alchemy rather than relying only on generic upgrade cards."],
-    ["LS-0906-03","ADDED","A–Z randomized C64 collectible deck","Every generated run builds a shuffled collectible deck with one randomly selected C64 title for each available letter A through Z, then scatters that deck around the procedural dungeon."],
+    ["LS-0906-03","ADDED","A–Z randomized C64 collectible deck","Every campaign builds one shuffled collectible deck with one randomly selected C64 title for each available letter A through Z, then distributes that 26-game deck across all five depths."],
     ["LS-0906-04","ADDED","Banishment Essence and relic builds","Rare artefact trading is replaced by a Vessel and Banishment Essence economy. Major threats and cleansed dungeon events provide Essence, Alchemists distil charges, and each Key domain offers a relic choice that changes the character build."],
     ["LS-0826-09","FIXED","Global movement freeze after Spy mode","A Spy runtime ownership race could leave ordinary movement routed through the isolated Spy owner after the mode ended. Because the Spy owner had already released its saved base function, later Solo or Horde movement could return false forever. r30 restores the pre-Spy update, movement and damage owners unconditionally when Spy exits."],
     ["LS-0826-10","FIXED","Cross-mode runtime wrapper contention","The r29 background installer no longer competes with the isolated Spy engine while Spy is active. Its maintenance timer is replaced by a cooperative r30 owner that preserves the stable animation loop without repeatedly wrapping Spy movement, damage or packet ownership."],
