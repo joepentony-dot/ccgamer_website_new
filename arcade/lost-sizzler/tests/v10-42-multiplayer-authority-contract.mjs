@@ -13,7 +13,7 @@ const state=read('arcade/lost-sizzler/js/v10-42-multiplayer-state.js');
 const collect=read('arcade/lost-sizzler/js/v10-42-multiplayer-collect-authority.js');
 
 assert(loader.includes('v10-42-multiplayer-state.js'),'Canonical Lost Sizzler loader must request the V10.42 multiplayer state adapter.');
-assert(loader.includes('v10-42-multiplayer-collect-authority.js'),'Canonical Lost Sizzler loader must request the V10.42 remote Key collection authority bridge.');
+assert(loader.includes('v10-42-multiplayer-collect-authority.js'),'Canonical Lost Sizzler loader must request the V10.42 remote campaign collection authority bridge.');
 assert(loader.includes('loadV142MultiplayerState();loadV142MultiplayerCollectAuthority()'),'V10.42 loader must request character-state authority before the remote collection bridge.');
 
 for(const marker of ['rpgStats','relics','banishmentEssence','banishmentEssenceCost','sigilReveal','sigilWard','sigilBind','sigilBanish']){
@@ -34,14 +34,24 @@ assert(guestRewardIndex>baseWorldIndex,'Guest domain powers and relic choices mu
 
 assert(network.includes('if(!p){if(i.kind==="key")'),'The stabilized network path still treats a remote collector as non-local on the host.');
 assert(network.includes('function onCollectRequest(p)'),'The stabilized host owns online collection requests.');
-assert(collect.includes('onCollectRequestV142Authority'),'Remote Key collection must be bridged at the authoritative host collection boundary.');
+assert(network.includes('if(i.kind==="exitSigil"){host.exitSigilCollected=true'),'The stabilized host marks the final Sigil as collected before the V10.42 remote escape bridge runs.');
+assert(collect.includes('onCollectRequestV142Authority'),'Remote campaign collection must be bridged at the authoritative host collection boundary.');
 assert(collect.includes('playMode==="online"&&net?.connected&&net.isHost'),'The collection bridge must be active only on an online host.');
 assert(collect.includes('!localRoster().some(player=>player.id===payload.collector)'),'Local and split-screen collectors must stay on the original V10.42 movement/reward path.');
-assert(collect.includes('item?.kind==="key"&&item.domainId'),'Only V10.42 domain Keys should enter the campaign-domain bridge.');
-assert(collect.includes('item?.active!==false'),'The bridge must require the authoritative collection request to deactivate the Key before granting campaign progress.');
+assert(collect.includes('item?.kind==="key"&&item.domainId'),'Only V10.42 domain Keys should enter the campaign-domain Key bridge.');
+assert(collect.includes('item?.active!==false'),'The bridge must require the authoritative collection request to deactivate a campaign item before granting progression.');
 assert(collect.includes('runState.v142ClaimedDomains.push(domain.id)'),'The host must record a newly collected remote domain Key on the persistent run.');
-assert(collect.includes('campaignApi.queueDomainReward?.(player,domain)'),'Host-local characters must receive the shared domain reward after a remote collection.');
-assert(collect.includes('broadcastWorld()'),'Remote Key collection must publish the updated campaign snapshot to guests.');
+assert(collect.includes('campaignApi.queueDomainReward?.(player,domain)'),'Host-local characters must receive the shared domain reward after a remote Key collection.');
+
+assert(collect.includes('if(item.kind==="exitSigil")'),'Remote final-Sigil collection must have an explicit V10.42 authority path.');
+assert(collect.includes('beginRemoteEscape(remotePlayer(payload.collector))'),'The host must start the V10.42 escape against the remote character that actually claimed the final Sigil.');
+assert(collect.includes('runState.v142EscapePhase=true'),'Remote final-Sigil collection must advance the persistent campaign into escape phase.');
+assert(collect.includes('player.sigilBanish=true'),'The remote final-Sigil collector must receive the awakened Banish Sigil power.');
+assert(collect.includes('name:"Sigil Banishment Charge"'),'The remote final-Sigil collector must receive the same final Banishment Charge as a local collector when inventory permits.');
+assert(collect.includes('hostState.stalker.v142EscapeAwakened=true'),'Remote final-Sigil collection must awaken the final Stalker pressure on the host simulation.');
+assert(collect.includes('enemy.aiState="chase"'),'Remote final-Sigil collection must place living Death Stalkers into final pursuit.');
+assert(collect.includes('sendRemotePlayerState(player)'),'The host must push the remote collector\'s Banish power and charge through the authoritative player-state channel.');
+assert(collect.includes('broadcastWorld()'),'Remote campaign collection must publish the updated campaign snapshot to guests.');
 
 const representative={
   rpgStats:{might:8,vitality:7,agility:6,endurance:9,luck:7,arcana:8},
@@ -58,4 +68,4 @@ const wire=JSON.parse(JSON.stringify(representative));
 assert(wire.rpgStats.arcana===8&&wire.relics.length===2,'Representative V10.42 RPG/relic state must survive network-safe JSON cloning.');
 assert(wire.banishmentEssence===4&&wire.sigilBind===true,'Representative alchemy and Sigil state must survive network-safe JSON cloning.');
 
-console.log('Lost Sizzler V10.42 multiplayer authority and guest floor-transition ordering contract passed.');
+console.log('Lost Sizzler V10.42 multiplayer authority, final-Sigil escape and guest floor-transition ordering contract passed.');
