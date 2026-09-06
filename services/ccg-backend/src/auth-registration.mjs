@@ -27,6 +27,33 @@ function normalizeNewPassword(value) {
   return value;
 }
 
+function normalizeNotificationPreferences(value) {
+  if (value === undefined || value === null) return null;
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw authError(400, 'invalid_notification_preferences');
+  }
+
+  const required = [
+    'notify_new_games',
+    'notify_newsletter',
+    'notify_new_games_choice_recorded',
+    'notify_newsletter_choice_recorded',
+  ];
+  for (const key of required) {
+    if (typeof value[key] !== 'boolean') throw authError(400, 'invalid_notification_preferences');
+  }
+  if (!value.notify_new_games_choice_recorded || !value.notify_newsletter_choice_recorded) {
+    throw authError(400, 'invalid_notification_preferences');
+  }
+
+  return Object.freeze({
+    notify_new_games: value.notify_new_games,
+    notify_newsletter: value.notify_newsletter,
+    notify_new_games_choice_recorded: true,
+    notify_newsletter_choice_recorded: true,
+  });
+}
+
 function sha256(value) {
   return crypto.createHash('sha256').update(value).digest('hex');
 }
@@ -63,6 +90,31 @@ export function createAuthRegistrationService({
   }
   if (!Number.isSafeInteger(bcryptCost) || bcryptCost < 10 || bcryptCost > 14) {
     throw new Error('Invalid registration bcrypt cost.');
+  }
+
+  async function upsertPendingPreferences(tx, userId, preferences, updatedAt) {
+    if (!preferences) return;
+    await tx.query(
+      `insert into ccg_auth_pending_registration_preferences
+        (user_id, notify_new_games, notify_newsletter,
+         notify_new_games_choice_recorded, notify_newsletter_choice_recorded,
+         created_at, updated_at)
+       values ($1, $2, $3, $4, $5, $6, $6)
+       on conflict (user_id) do update set
+         notify_new_games = excluded.notify_new_games,
+         notify_newsletter = excluded.notify_newsletter,
+         notify_new_games_choice_recorded = excluded.notify_new_games_choice_recorded,
+         notify_newsletter_choice_recorded = excluded.notify_newsletter_choice_recorded,
+         updated_at = excluded.updated_at`,
+      [
+        userId,
+        preferences.notify_new_games,
+        preferences.notify_newsletter,
+        preferences.notify_new_games_choice_recorded,
+        preferences.notify_newsletter_choice_recorded,
+        updatedAt,
+      ]
+    );
   }
 
   async function consumeBudget(email, fingerprint) {
@@ -124,9 +176,15 @@ export function createAuthRegistrationService({
     await emailSender.sendVerification({ email, token: rawToken, expiresAt: expiresAt.toISOString() });
   }
 
-  async function register({ email: emailValue, password: passwordValue, fingerprint = '' }) {
+  async function register({
+    email: emailValue,
+    password: passwordValue,
+    notificationPreferences: notificationPreferencesValue = null,
+    fingerprint = '',
+  }) {
     const email = normalizeEmail(emailValue);
     const password = normalizeNewPassword(passwordValue);
+    const notificationPreferences = normalizeNotificationPreferences(notificationPreferencesValue);
     if (!(await consumeBudget(email, fingerprint))) throw authError(429, 'too_many_registration_attempts');
 
     const existing = await database.query(
@@ -139,6 +197,12 @@ export function createAuthRegistrationService({
     const existingAccount = existing.rows?.[0] || null;
     if (existingAccount) {
       if (!existingAccount.email_confirmed_at && String(existingAccount.source_provider) === 'ccg') {
+        if (notificationPreferences) {
+          const updatedAt = new Date(now());
+          await database.transaction(async (tx) => {
+            await upsertPendingPreferences(tx, String(existingAccount.user_id), notificationPreferences, updatedAt);
+          });
+        }
         await issueVerification(String(existingAccount.user_id), email, fingerprint);
       }
       return Object.freeze({ accepted: true, verification_required: true });
@@ -167,6 +231,7 @@ export function createAuthRegistrationService({
            values ($1, 'email', $1, $2, $3, $3)`,
           [userId, email, createdAt]
         );
+        await upsertPendingPreferences(tx, userId, notificationPreferences, createdAt);
       });
     } catch (error) {
       if (error?.code === '23505') {
@@ -202,6 +267,16 @@ export function createAuthRegistrationService({
         throw authError(400, 'invalid_verification_token');
       }
 
+      const pendingResult = await tx.query(
+        `select notify_new_games, notify_newsletter,
+                notify_new_games_choice_recorded, notify_newsletter_choice_recorded
+           from ccg_auth_pending_registration_preferences
+          where user_id = $1
+          for update`,
+        [row.user_id]
+      );
+      const preferences = pendingResult.rows?.[0] || null;
+
       await tx.query(
         `update ccg_auth_email_verification_tokens set used_at = $2 where token_id = $1`,
         [row.token_id, nowDate]
@@ -212,11 +287,45 @@ export function createAuthRegistrationService({
           where user_id = $1`,
         [row.user_id, nowDate]
       );
+
+      if (preferences) {
+        await tx.query(
+          `insert into ccg_profiles
+            (user_id, email, created_at, last_seen, updated_at,
+             notify_new_games, notify_newsletter,
+             notify_new_games_choice_recorded, notify_newsletter_choice_recorded,
+             notification_preferences_updated_at)
+           values ($1, $2, $3, $3, $3, $4, $5, $6, $7, $3)
+           on conflict (user_id) do update set
+             email = coalesce(ccg_profiles.email, excluded.email),
+             notify_new_games = excluded.notify_new_games,
+             notify_newsletter = excluded.notify_newsletter,
+             notify_new_games_choice_recorded = excluded.notify_new_games_choice_recorded,
+             notify_newsletter_choice_recorded = excluded.notify_newsletter_choice_recorded,
+             notification_preferences_updated_at = excluded.notification_preferences_updated_at,
+             updated_at = excluded.updated_at`,
+          [
+            row.user_id,
+            row.email,
+            nowDate,
+            preferences.notify_new_games,
+            preferences.notify_newsletter,
+            preferences.notify_new_games_choice_recorded,
+            preferences.notify_newsletter_choice_recorded,
+          ]
+        );
+      } else {
+        await tx.query(
+          `insert into ccg_profiles (user_id, email, created_at, last_seen, updated_at)
+           values ($1, $2, $3, $3, $3)
+           on conflict (user_id) do nothing`,
+          [row.user_id, row.email, nowDate]
+        );
+      }
+
       await tx.query(
-        `insert into ccg_profiles (user_id, email, created_at, last_seen, updated_at)
-         values ($1, $2, $3, $3, $3)
-         on conflict (user_id) do nothing`,
-        [row.user_id, row.email, nowDate]
+        `delete from ccg_auth_pending_registration_preferences where user_id = $1`,
+        [row.user_id]
       );
       await tx.query(
         `update ccg_auth_email_verification_tokens
