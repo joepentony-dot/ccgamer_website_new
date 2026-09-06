@@ -22,6 +22,7 @@ function clearAuthEnv() {
     'CCG_LOCAL_AUTH_PUBLIC_JWK_FILE',
     'CCG_LOCAL_AUTH_KEY_ID',
     'CCG_LOST_SIZZLER_REALTIME_ENABLED',
+    'CCG_LOST_SIZZLER_REALTIME_MAX_SOCKETS',
     'RESEND_API_KEY',
     'EMAIL_FROM',
     'EMAIL_REPLY_TO',
@@ -58,6 +59,7 @@ try {
   assert.equal(config.authMode, 'external');
   assert.equal(config.localAuth, null);
   assert.equal(config.lostSizzlerRealtimeEnabled, false, 'Realtime must be disabled unless explicitly enabled.');
+  assert.equal(config.lostSizzlerRealtimeMaxSockets, 128, 'Anonymous realtime must have a bounded default socket ceiling.');
   assert.equal(config.allowedOrigins.has('https://www.cheekycommodoregamer.co.uk'), true);
   assert.equal(config.allowedOrigins.has('*'), false);
   assert.deepEqual(config.feedbackEmail, {
@@ -78,6 +80,22 @@ try {
   withBaseEnv();
   process.env.CCG_LOST_SIZZLER_REALTIME_ENABLED = '1';
   assert.throws(() => loadConfig(), /CCG_LOST_SIZZLER_REALTIME_ENABLED: expected true or false/);
+
+  withBaseEnv();
+  process.env.CCG_LOST_SIZZLER_REALTIME_MAX_SOCKETS = '256';
+  assert.equal(loadConfig().lostSizzlerRealtimeMaxSockets, 256);
+
+  withBaseEnv();
+  process.env.CCG_LOST_SIZZLER_REALTIME_MAX_SOCKETS = '0';
+  assert.throws(() => loadConfig(), /CCG_LOST_SIZZLER_REALTIME_MAX_SOCKETS: expected an integer between 1 and 10000/);
+
+  withBaseEnv();
+  process.env.CCG_LOST_SIZZLER_REALTIME_MAX_SOCKETS = '10001';
+  assert.throws(() => loadConfig(), /CCG_LOST_SIZZLER_REALTIME_MAX_SOCKETS: expected an integer between 1 and 10000/);
+
+  withBaseEnv();
+  process.env.CCG_LOST_SIZZLER_REALTIME_MAX_SOCKETS = '1.5';
+  assert.throws(() => loadConfig(), /CCG_LOST_SIZZLER_REALTIME_MAX_SOCKETS: expected an integer between 1 and 10000/);
 
   withBaseEnv();
   process.env.RESEND_API_KEY = 'test-resend-key';
@@ -142,6 +160,7 @@ try {
   assert.equal(local.jwtIssuer, null);
   assert.equal(local.jwtJwksUrl, null);
   assert.equal(local.lostSizzlerRealtimeEnabled, false);
+  assert.equal(local.lostSizzlerRealtimeMaxSockets, 128);
   assert.equal(local.localAuth.issuer, 'https://auth.cheekycommodoregamer.co.uk/');
   assert.equal(local.localAuth.keyId, 'ccg-ed25519-1');
   assert.equal(local.localAuth.privateJwkFile, '/run/secrets/ccg-auth-private.jwk');
@@ -153,7 +172,7 @@ try {
   process.env.CCG_LOCAL_AUTH_KEY_ID = 'x'.repeat(129);
   assert.throws(() => loadConfig(), /CCG_LOCAL_AUTH_KEY_ID is too long/);
 
-  console.log('CCG backend configuration contract passed for fail-closed CORS, disabled-by-default Lost Sizzler realtime, optional feedback mail delivery, external auth and opt-in local authentication modes.');
+  console.log('CCG backend configuration contract passed for fail-closed CORS, disabled-by-default Lost Sizzler realtime, bounded anonymous socket capacity, optional feedback mail delivery, external auth and opt-in local authentication modes.');
 } finally {
   restore();
 }
