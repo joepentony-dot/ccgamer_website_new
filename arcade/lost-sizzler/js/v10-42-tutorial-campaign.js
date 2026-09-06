@@ -78,13 +78,21 @@
     const data=STEP_COPY.get(String(heading.textContent||"").trim().toUpperCase());if(!data)return false;
     heading.textContent=data.title;replaceParagraphs(rail,data);rail.dataset.v142CampaignCopy="true";return true;
   }
-  function tourItemHtml([symbol,title,copy]){return `<article class="tour-item"><span class="tour-symbol">${symbol}</span><span><b>${title}</b><span>${copy}</span></span></article>`}
   function patchTour(){
     const tour=document.getElementById("ccg-tutorial-info-tour");if(!tour||tour.classList.contains("hidden"))return false;
     const heading=tour.querySelector("h3");if(!heading)return false;
     const data=TOUR_COPY.get(String(heading.textContent||"").trim().toUpperCase());if(!data)return false;
-    heading.textContent=data.title;const p=tour.querySelector(".tour-head p");if(p)p.textContent=data.copy;
-    const grid=tour.querySelector(".tour-grid");if(grid)grid.innerHTML=data.items.map(tourItemHtml).join("");tour.dataset.v142CampaignCopy="true";return true;
+    heading.textContent=data.title;
+    const p=tour.querySelector(".tour-head p");if(p)p.textContent=data.copy;
+    /*
+      Do not replace .tour-grid or any of its children here. The stabilized
+      Tutorial runtime owns those live nodes and associates them with the HUD,
+      mission strip and Dungeon Radar targets highlighted during lesson 5.
+      Rebuilding the grid with innerHTML destroys that identity and leaves the
+      information tour with fewer live highlights. V10.42 therefore changes
+      campaign explanation copy only and leaves the interactive tour DOM intact.
+    */
+    tour.dataset.v142CampaignCopy="true";return true;
   }
   function patchCompletionBanner(){
     const banner=document.getElementById("ccg-tutorial-complete-banner");if(!banner)return false;
