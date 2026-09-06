@@ -13,6 +13,15 @@ function response(status, body) {
   };
 }
 
+class PassiveWebSocket {
+  static OPEN = 1;
+  static instances = 0;
+
+  constructor() {
+    PassiveWebSocket.instances += 1;
+  }
+}
+
 const calls = [];
 const queue = [];
 const fetchImpl = async (url, options) => {
@@ -27,13 +36,23 @@ const client = createCcgOnlineClient({
   baseUrl: 'https://auth.cheekycommodoregamer.co.uk',
   fetchImpl,
   cryptoImpl: crypto.webcrypto,
+  WebSocketImpl: PassiveWebSocket,
 });
 
-assert.equal(calls.length, 0, 'Composing the CCG client must perform zero network requests.');
+assert.equal(calls.length, 0, 'Composing the CCG client must perform zero HTTP requests.');
+assert.equal(PassiveWebSocket.instances, 0, 'Composing the CCG client must perform zero WebSocket connections.');
 assert.equal(client.auth.getAccessToken(), null);
 assert.equal(typeof client.lostSizzler.weeklyVault.status, 'function');
 assert.equal(typeof client.lostSizzler.progress.achievements.list, 'function');
 assert.equal(typeof client.lostSizzler.progress.collection.pull, 'function');
+assert.equal(typeof client.lostSizzler.realtime.connect, 'function');
+assert.equal(client.lostSizzler.realtime.endpoint, 'wss://auth.cheekycommodoregamer.co.uk/v1/lost-sizzler/realtime');
+assert.deepEqual(client.lostSizzler.realtime.getState(), {
+  connected: false,
+  sessionId: '',
+  protocol: '',
+  room: null,
+});
 
 const beforeLoginPull = await client.lostSizzler.cloudSave.pull();
 assert.equal(beforeLoginPull.ok, false);
@@ -48,6 +67,7 @@ const beforeLoginCollection = await client.lostSizzler.progress.collection.pull(
 assert.equal(beforeLoginCollection.ok, false);
 assert.equal(beforeLoginCollection.kind, 'unauthenticated');
 assert.equal(calls.length, 0, 'Authenticated Lost Sizzler services without login must fail before a network request.');
+assert.equal(PassiveWebSocket.instances, 0, 'Non-realtime service calls must not activate realtime.');
 
 queue.push(response(200, {
   ready: true,
@@ -134,5 +154,17 @@ const afterLogoutCollection = await client.lostSizzler.progress.collection.pull(
 assert.equal(afterLogoutCollection.ok, false);
 assert.equal(afterLogoutCollection.kind, 'unauthenticated');
 assert.equal(calls.length, 6, 'Logged-out authenticated services must again fail locally without a request.');
+assert.equal(PassiveWebSocket.instances, 0, 'Account lifecycle must not activate realtime unless multiplayer is explicitly requested.');
 
-console.log('CCG online client contract passed: composition is passive, migrated login supplies bearer auth to optional cloud save, Weekly Vault and progress sync, public Weekly status remains available, and logout disables authenticated remote services locally.');
+assert.throws(
+  () => createCcgOnlineClient({
+    baseUrl: 'https://auth.cheekycommodoregamer.co.uk',
+    fetchImpl,
+    cryptoImpl: crypto.webcrypto,
+    WebSocketImpl: PassiveWebSocket,
+    realtimeOptions: null,
+  }),
+  /realtimeOptions must be an object/
+);
+
+console.log('CCG online client contract passed: composition is passive for HTTP and WebSocket, migrated login supplies bearer auth to optional cloud save, Weekly Vault and progress sync, realtime remains explicit, and logout disables authenticated remote services locally.');
