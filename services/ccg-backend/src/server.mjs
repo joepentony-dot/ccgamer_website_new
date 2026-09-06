@@ -1,7 +1,10 @@
 import http from 'node:http';
+import { promises as fs } from 'node:fs';
 import { loadConfig } from './config.mjs';
 import { createDatabase } from './db.mjs';
 import { createAuth } from './auth.mjs';
+import { createLocalAuthService } from './local-auth.mjs';
+import { createAuthHttp } from './auth-http.mjs';
 import { createProfileStore } from './profile-store.mjs';
 import { createCloudSaveStore, readJsonBody } from './cloud-save.mjs';
 
@@ -27,10 +30,40 @@ function corsHeaders(request, config) {
   };
 }
 
+async function readJwkFile(filePath, label) {
+  const bytes = await fs.readFile(filePath);
+  if (bytes.length < 2 || bytes.length > 64 * 1024) throw new Error(`Invalid ${label} file size.`);
+  try {
+    const parsed = JSON.parse(bytes.toString('utf8'));
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('JWK object required');
+    return parsed;
+  } catch {
+    throw new Error(`Invalid ${label} JSON.`);
+  }
+}
+
+async function createAuthentication(config, database) {
+  if (config.authMode !== 'local') {
+    return Object.freeze({ auth: createAuth(config), authHttp: null });
+  }
+
+  const privateJwk = await readJwkFile(config.localAuth.privateJwkFile, 'local-auth signing JWK');
+  const publicJwk = await readJwkFile(config.localAuth.publicJwkFile, 'local-auth public JWK');
+  const auth = createLocalAuthService({
+    database,
+    issuer: config.localAuth.issuer,
+    audience: config.localAuth.audience,
+    privateJwk,
+    publicJwk,
+    keyId: config.localAuth.keyId,
+  });
+  return Object.freeze({ auth, authHttp: createAuthHttp(auth) });
+}
+
 async function main() {
   const config = loadConfig();
   const database = createDatabase(config.databaseUrl);
-  const auth = createAuth(config);
+  const { auth, authHttp } = await createAuthentication(config, database);
   const profiles = createProfileStore(database);
   const cloudSaves = createCloudSaveStore(database);
 
@@ -44,7 +77,7 @@ async function main() {
     if (request.method === 'OPTIONS') {
       response.writeHead(204, {
         ...cors,
-        'access-control-allow-methods': 'GET,PUT,OPTIONS',
+        'access-control-allow-methods': 'GET,POST,PUT,OPTIONS',
         'access-control-allow-headers': 'authorization,content-type',
         'access-control-max-age': '600',
       });
@@ -56,13 +89,19 @@ async function main() {
       const url = new URL(request.url || '/', 'http://localhost');
 
       if (request.method === 'GET' && url.pathname === '/health') {
-        writeJson(response, 200, { ok: true, service: config.serviceName }, cors);
+        writeJson(response, 200, { ok: true, service: config.serviceName, auth_mode: config.authMode }, cors);
         return;
       }
 
       if (request.method === 'GET' && url.pathname === '/ready') {
         const databaseOk = await database.ping();
         writeJson(response, databaseOk ? 200 : 503, { ok: databaseOk, database: databaseOk }, cors);
+        return;
+      }
+
+      if (authHttp?.handles(request.method, url.pathname)) {
+        const result = await authHttp.handle(request, url.pathname);
+        writeJson(response, result.statusCode, result.body, { ...cors, ...result.headers });
         return;
       }
 
@@ -109,7 +148,7 @@ async function main() {
   process.on('SIGTERM', shutdown);
 
   server.listen(config.port, '127.0.0.1', () => {
-    console.log(`${config.serviceName} listening on 127.0.0.1:${config.port}`);
+    console.log(`${config.serviceName} listening on 127.0.0.1:${config.port} (${config.authMode} auth)`);
   });
 }
 
