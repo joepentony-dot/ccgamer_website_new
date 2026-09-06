@@ -286,6 +286,8 @@ export function createCcgAuthClient({ baseUrl, fetchImpl = globalThis.fetch } = 
         kind: 'success',
         status: result.status,
         user_id: result.body?.user_id ?? null,
+        email: result.body?.email ?? null,
+        email_confirmed_at: result.body?.email_confirmed_at ?? null,
         profile: result.body?.profile ?? null,
       });
     },
