@@ -258,16 +258,16 @@ export function createLostSizzlerRealtimeClient({
   return Object.freeze({
     endpoint,
     connect,
-    async createRoom({ roomCode, name, mode = 'dungeon', build = 'V10.41' } = {}) {
+    async createRoom({ roomCode, presenceId, name, mode = 'dungeon', build = 'V10.41' } = {}) {
       const result = await command(
-        { type: 'create', roomCode, name, mode, build },
+        { type: 'create', roomCode, presenceId, name, mode, build },
         (frame) => frame.type === 'room' && frame.reason === 'created'
       );
       return result.ok ? Object.freeze({ ...result, room: cloneRoom(result.response.room) }) : result;
     },
-    async joinRoom({ roomCode, name, build = 'V10.41' } = {}) {
+    async joinRoom({ roomCode, presenceId, name, build = 'V10.41' } = {}) {
       const result = await command(
-        { type: 'join', roomCode, name, build },
+        { type: 'join', roomCode, presenceId, name, build },
         (frame) => frame.type === 'room' && frame.reason === 'joined'
       );
       return result.ok ? Object.freeze({ ...result, room: cloneRoom(result.response.room) }) : result;
