@@ -77,6 +77,25 @@ try{
   assert.deepEqual(normal.failedScripts,[],`Normal V10.42 paywall scripts must load without same-origin failures: ${normal.failedScripts.join("\n")}`);
   await normalContext.close();
 
+  const hostileOfferContext=await browser.newContext({viewport:{width:1280,height:800}});
+  await hostileOfferContext.addInitScript(()=>{
+    window.CCG_LOST_SIZZLER_DEMO_MODE=true;
+    window.CCGLostSizzlerCommerce={isAuthenticated:async()=>false,getOffer:async()=>({display_price:'£1<img id="v142-offer-xss">'})};
+  });
+  const hostile=await auditPage(hostileOfferContext,"hostile-offer");
+  await hostile.page.waitForFunction(()=>window.CCGLostSizzlerV142DemoPaywall.state.guarded.size===8);
+  await hostile.page.evaluate(()=>document.getElementById("solo-btn").click());
+  await hostile.page.waitForFunction(()=>!document.getElementById("v142-demo-paywall")?.classList.contains("hidden"));
+  const hostileAudit=await hostile.page.evaluate(()=>({
+    price:document.querySelector("#v142-demo-paywall .v142-price")?.textContent||"",
+    injected:Boolean(document.querySelector("#v142-demo-paywall #v142-offer-xss"))
+  }));
+  assert.match(hostileAudit.price,/£1<img id="v142-offer-xss"> ONE-OFF/,"Commerce offer text should remain visible as literal text after sanitization.");
+  assert.equal(hostileAudit.injected,false,"Commerce-controlled offer text must not create HTML elements inside the paywall.");
+  assert.deepEqual(hostile.pageErrors,[],`Hostile-offer rendering must not raise page errors: ${hostile.pageErrors.join("\n")}`);
+  assert.deepEqual(hostile.failedScripts,[],`Hostile-offer rendering must not create same-origin script load failures: ${hostile.failedScripts.join("\n")}`);
+  await hostileOfferContext.close();
+
   const demoContext=await browser.newContext({viewport:{width:1280,height:800}});
   await demoContext.addInitScript(()=>{window.CCG_LOST_SIZZLER_DEMO_MODE=true});
   const demo=await auditPage(demoContext,"demo");
@@ -155,7 +174,7 @@ try{
   assert.equal(entitlementAudit.badges,0,"Accepted permanent ownership must remove FULL GAME badges.");
   assert.deepEqual(demo.pageErrors,[],`Demo-mode V10.42 paywall flow must not raise page errors: ${demo.pageErrors.join("\n")}`);
   assert.deepEqual(demo.failedScripts,[],`Demo-mode V10.42 paywall scripts must load without same-origin failures: ${demo.failedScripts.join("\n")}`);
-  console.log("Lost Sizzler V10.42 explicit demo lock, resume/join guard and permanent-entitlement browser contract passed.");
+  console.log("Lost Sizzler V10.42 explicit demo lock, safe offer rendering, resume/join guard and permanent-entitlement browser contract passed.");
   await demoContext.close();
 }finally{
   await browser.close();
