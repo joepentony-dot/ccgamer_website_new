@@ -94,10 +94,12 @@ try{
   assert.equal(baseline.moveOwners,1);
   assert.ok(baseline.moveDepth<=MAX_OBSERVABLE_MOVE_DEPTH,`initial Spy soak movement ancestry must stay within the accepted ${MAX_OBSERVABLE_MOVE_DEPTH}-function ceiling`);
   assert.equal(baseline.damageOwners,1);
+  let previousFrames=baseline.controllerFrames;
   for(let sample=1;sample<=8;sample++){
     if(sample%2===0){await page.keyboard.press("ArrowRight");await page.keyboard.press("ArrowLeft")}
-    await page.waitForTimeout(650);
-    const current=await snapshot();assertActiveStable(current,baseline,`active Spy soak sample ${sample}`);assert.ok(current.controllerFrames>baseline.controllerFrames,`active Spy soak sample ${sample} must advance isolated controller frames`)
+    await page.waitForFunction(before=>Number(window.CCGLostSizzlerV141R29SpyEngine?.state?.controllerFrames||0)>before,previousFrames,{polling:50,timeout:5000});
+    await page.waitForTimeout(250);
+    const current=await snapshot();assertActiveStable(current,baseline,`active Spy soak sample ${sample}`);assert.ok(current.controllerFrames>previousFrames,`active Spy soak sample ${sample} must advance isolated controller frames`);previousFrames=current.controllerFrames
   }
 
   console.log("[Stage 10 Spy soak] repeated leave/re-entry keeps observers singular and owner depth bounded");
