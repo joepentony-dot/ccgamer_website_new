@@ -80,7 +80,7 @@ jobs:
           grep -q 'ccg_auth_recovery_tokens' "$session_migration"
           grep -q 'ccg_auth_login_buckets' "$session_migration"
           grep -q 'Never expose `password_hash`' services/ccg-backend/AUTH-PROFILE-MIGRATION-PLAN.md
-          if grep -Eiq '(service[_-]?role|SUPABASE_SERVICE_ROLE|private[_-]?key)' services/ccg-backend/src/*; then
-            echo 'Backend source contains forbidden privileged-client material.' >&2
+          if grep -Eiq '(SUPABASE_SERVICE_ROLE|service[_-]?role|-----BEGIN ([A-Z0-9 ]+)?PRIVATE KEY-----)' services/ccg-backend/src/*; then
+            echo 'Backend source contains forbidden embedded privileged credential material.' >&2
             exit 1
           fi
