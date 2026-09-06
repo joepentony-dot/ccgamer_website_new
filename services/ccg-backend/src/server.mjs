@@ -186,7 +186,10 @@ async function main() {
   });
 
   const realtimeTransport = config.lostSizzlerRealtimeEnabled
-    ? createLostSizzlerRealtimeWebSocketTransport({ allowedOrigins: config.allowedOrigins })
+    ? createLostSizzlerRealtimeWebSocketTransport({
+        allowedOrigins: config.allowedOrigins,
+        maxSockets: config.lostSizzlerRealtimeMaxSockets,
+      })
     : null;
   realtimeTransport?.attach(server);
 
