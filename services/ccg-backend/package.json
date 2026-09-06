@@ -10,7 +10,9 @@
     "start": "node src/server.mjs",
     "migrate:check": "node scripts/migrate.mjs --check",
     "migrate:apply": "node scripts/migrate.mjs --apply",
-    "check": "node --check src/server.mjs && node --check src/config.mjs && node --check src/db.mjs && node --check src/auth.mjs && node --check src/local-auth.mjs && node --check src/auth-http.mjs && node --check src/password-recovery.mjs && node --check src/profile-store.mjs && node --check src/cloud-save.mjs && node --check scripts/migrate.mjs && node --check client/lost-sizzler-cloud-sync.mjs && node tests/config-contract.mjs && node tests/auth-http-contract.mjs && node tests/cloud-save-contract.mjs && node tests/cloud-sync-client-contract.mjs"
+    "migration:snapshot:check": "node scripts/verify-migration-snapshot.mjs --check-manifest",
+    "migration:verify": "node scripts/verify-migration-snapshot.mjs --check-destination",
+    "check": "node --check src/server.mjs && node --check src/config.mjs && node --check src/db.mjs && node --check src/auth.mjs && node --check src/local-auth.mjs && node --check src/auth-http.mjs && node --check src/password-recovery.mjs && node --check src/profile-store.mjs && node --check src/cloud-save.mjs && node --check scripts/migrate.mjs && node --check scripts/verify-migration-snapshot.mjs && node --check client/lost-sizzler-cloud-sync.mjs && node tests/config-contract.mjs && node tests/auth-http-contract.mjs && node tests/migration-snapshot-contract.mjs && node tests/cloud-save-contract.mjs && node tests/cloud-sync-client-contract.mjs"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
