@@ -1,0 +1,106 @@
+{
+  "preflight_version": 1,
+  "captured_date": "2026-09-06",
+  "source_system": "supabase-read-only",
+  "migration_critical_match": true,
+  "identity": {
+    "auth_accounts": 33,
+    "email_identities": 33,
+    "password_backed_accounts": 33,
+    "email_confirmed_accounts": 31,
+    "profiles": 27,
+    "auth_only_accounts": 6
+  },
+  "password_structure": {
+    "password_backed_accounts": 33,
+    "bcrypt_2a_accounts": 33,
+    "min_hash_length": 60,
+    "max_hash_length": 60,
+    "hash_values_recorded": false
+  },
+  "cutover_data": {
+    "profile_favourites": 15,
+    "profile_game_library": 3,
+    "profile_top_picks": 7,
+    "user_badges": 101,
+    "user_roles": 1,
+    "email_subscriptions": 5,
+    "ccq_weekly_attempts": 6,
+    "lost_sizzler_cloud_saves": 2,
+    "comments": 2
+  },
+  "ownership": {
+    "orphan_auth_identities": 0,
+    "orphan_profiles": 0,
+    "orphan_profile_favourites_for_importer": 0,
+    "profile_favourites_without_profile": 0,
+    "orphan_profile_game_library": 0,
+    "orphan_profile_top_picks_for_importer": 0,
+    "profile_top_picks_without_profile": 0,
+    "orphan_user_badges": 0,
+    "null_owner_user_badges": 0,
+    "orphan_user_roles": 0,
+    "orphan_email_subscriptions": 0,
+    "orphan_ccq_weekly_attempts": 0,
+    "orphan_lost_sizzler_cloud_saves": 0,
+    "orphan_comments": 0,
+    "null_owner_comments": 0
+  },
+  "uniqueness": {
+    "duplicate_email_groups": 0,
+    "duplicate_identity_subject_groups": 0,
+    "duplicate_profile_ids": 0
+  },
+  "currently_empty_user_tables": {
+    "supporter_links": 0,
+    "user_soft_bans": 0,
+    "achievements": 0,
+    "quiz_scores": 0,
+    "stats": 0,
+    "user_challenge_progress": 0,
+    "game_comments": 0,
+    "game_ratings": 0,
+    "member_submissions": 0,
+    "legacy_favourites": 0,
+    "legacy_ratings": 0
+  },
+  "retirement_followup": {
+    "legacy_old_game_ratings": {
+      "rows": 2,
+      "rows_with_user_id": 2,
+      "distinct_linked_users": 2,
+      "orphans": 0,
+      "frozen_rows": 2,
+      "delta_from_frozen": 0,
+      "classification": "preserve-before-full-supabase-retirement"
+    },
+    "content_announcements": {
+      "rows": 16,
+      "rows_with_actor_user_id": 16,
+      "distinct_linked_users": 1,
+      "orphans": 0,
+      "frozen_rows": 16,
+      "delta_from_frozen": 0,
+      "classification": "operational-history-not-login-critical"
+    },
+    "game_play_events": {
+      "rows": 930,
+      "rows_with_auth_user_id": 691,
+      "distinct_linked_users": 5,
+      "orphans": 0,
+      "frozen_rows": 926,
+      "frozen_rows_with_auth_user_id": 687,
+      "delta_from_frozen": 4,
+      "authenticated_delta_from_frozen": 4,
+      "classification": "telemetry-history-not-login-critical"
+    }
+  },
+  "security": {
+    "contains_user_ids": false,
+    "contains_emails": false,
+    "contains_password_hashes": false,
+    "contains_session_tokens": false,
+    "contains_recovery_tokens": false,
+    "contains_unsubscribe_tokens": false
+  }
+}
