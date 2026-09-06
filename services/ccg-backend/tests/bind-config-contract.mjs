@@ -46,7 +46,7 @@ try {
   assert.match(serverSource, /server\.listen\(config\.port,\s*config\.bindHost,/);
   assert.doesNotMatch(
     serverSource,
-    /server\.listen\(config\.port,\s*['"]127\.0\.0\.1['"]/, 
+    /server\.listen\(config\.port,\s*['"]127\.0\.0\.1['"]/,
     'Server startup must not bypass the validated bind-host configuration.'
   );
 
