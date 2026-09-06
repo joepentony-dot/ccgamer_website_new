@@ -6,7 +6,10 @@ import { loadMigrations } from '../scripts/migrate.mjs';
 
 const { Pool } = pg;
 const databaseUrl = String(process.env.DATABASE_URL || '').trim();
-if (!databaseUrl) throw new Error('DATABASE_URL is required for the registration preferences database contract.');
+if (!databaseUrl) {
+  console.log('CCG registration preference database contract skipped: DATABASE_URL is not configured.');
+  process.exit(0);
+}
 
 const bootstrap = new Pool({ connectionString: databaseUrl, ssl: false, max: 1 });
 try {
