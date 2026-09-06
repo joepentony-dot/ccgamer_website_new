@@ -45,7 +45,7 @@ try{
     const match=window.CCGLostSizzlerSpecialModes?.active?.state||null;
     return{
       mode:String(typeof mode!=="undefined"?mode:""),activeId:String(runtime?.snapshot?.().activeId||""),specialMode:String(document.body.dataset.specialMode||""),
-      controllerFrames:Number(r29?.state?.controllerFrames||0),worldBuilds:Number(r29?.state?.worldBuilds||0),logicalCompactions:Number(r29?.state?.logicalCompactions||0),moveReassertions:Number(r29?.state?.moveReassertions||0),updateReassertions:Number(r29?.state?.updateReassertions||0),r29Timer:Number(r29?.state?.timer||0),
+      controllerFrames:Number(r29?.state?.controllerFrames||0),spyRuleFrames:Number(runtime?.snapshot?.().spyRuleFrames||0),worldBuilds:Number(r29?.state?.worldBuilds||0),logicalCompactions:Number(r29?.state?.logicalCompactions||0),moveReassertions:Number(r29?.state?.moveReassertions||0),updateReassertions:Number(r29?.state?.updateReassertions||0),r29Timer:Number(r29?.state?.timer||0),
       moveDepth:move.depth,moveOwners:move.r29Move,hurtDepth:hurt.depth,damageOwners:hurt.spyDamage,
       networkTimer:Number(network?.state?.timer||0),networkInstalled:Boolean(network?.state?.installed),networkObserver:Boolean(network?.state?.modeObserverInstalled),networkObserverId:identity(network?.state?.modeObserver),heartbeatsStarted:Number(network?.state?.heartbeatsStarted||0),heartbeatsStopped:Number(network?.state?.heartbeatsStopped||0),networkReassertions:Number(network?.state?.reassertions||0),
       r30Timer:Number(r30?.state?.timer||0),r30SpyTimerStopped:Boolean(r30?.state?.spyTimerStopped),loaderTimer:Number(r32?.state?.timer||0),loaderObserver:Boolean(r32?.state?.modeObserverInstalled),loaderObserverId:identity(r32?.state?.modeObserver),loaderLoads:Number(r32?.state?.loads||0),uiLoads:Number(r32?.state?.uiLoads||0),
@@ -72,6 +72,7 @@ try{
     assert.equal(state.hurtDepth,baseline.hurtDepth,`${label} must keep damage ancestry bounded`);
     assert.equal(state.moveOwners,1,`${label} must retain one r29 movement owner`);
     assert.equal(state.damageOwners,1,`${label} must retain one Spy damage boundary`);
+    assert.equal(state.controllerFrames,baseline.controllerFrames,`${label} must keep the retired pre-r32 r29 frame counter stable`);
     assert.equal(state.worldBuilds,baseline.worldBuilds,`${label} must not rebuild the compact world during ordinary frames`);
     assert.equal(state.logicalCompactions,baseline.logicalCompactions,`${label} must not repeatedly compact the logical map`);
     assert.equal(state.moveReassertions,baseline.moveReassertions,`${label} must not reassert movement ownership during stable play`);
@@ -94,12 +95,12 @@ try{
   assert.equal(baseline.moveOwners,1);
   assert.ok(baseline.moveDepth<=MAX_OBSERVABLE_MOVE_DEPTH,`initial Spy soak movement ancestry must stay within the accepted ${MAX_OBSERVABLE_MOVE_DEPTH}-function ceiling`);
   assert.equal(baseline.damageOwners,1);
-  let previousFrames=baseline.controllerFrames;
+  let previousFrames=baseline.spyRuleFrames;
   for(let sample=1;sample<=8;sample++){
     if(sample%2===0){await page.keyboard.press("ArrowRight");await page.keyboard.press("ArrowLeft")}
-    await page.waitForFunction(before=>Number(window.CCGLostSizzlerV141R29SpyEngine?.state?.controllerFrames||0)>before,previousFrames,{polling:50,timeout:5000});
+    await page.waitForFunction(before=>Number(window.CCGLostSizzlerModeRuntime?.snapshot?.().spyRuleFrames||0)>before,previousFrames,{polling:50,timeout:5000});
     await page.waitForTimeout(250);
-    const current=await snapshot();assertActiveStable(current,baseline,`active Spy soak sample ${sample}`);assert.ok(current.controllerFrames>previousFrames,`active Spy soak sample ${sample} must advance isolated controller frames`);previousFrames=current.controllerFrames
+    const current=await snapshot();assertActiveStable(current,baseline,`active Spy soak sample ${sample}`);assert.ok(current.spyRuleFrames>previousFrames,`active Spy soak sample ${sample} must advance authoritative Spy controller frames`);previousFrames=current.spyRuleFrames
   }
 
   console.log("[Stage 10 Spy soak] repeated leave/re-entry keeps observers singular and owner depth bounded");
@@ -128,8 +129,11 @@ try{
     assert.equal(entry.worldBuilds,previous.worldBuilds+1,`Spy soak re-entry ${cycle} must build exactly one compact world for the new match identity`);
     assert.equal(entry.heartbeatsStarted,previous.heartbeatsStarted+1,`Spy soak re-entry ${cycle} must start exactly one active heartbeat`);
     const cycleBaseline=entry;
-    await page.waitForTimeout(700);
-    assertActiveStable(await snapshot(),cycleBaseline,`Spy soak stable re-entry ${cycle}`);
+    await page.waitForFunction(before=>Number(window.CCGLostSizzlerModeRuntime?.snapshot?.().spyRuleFrames||0)>before,cycleBaseline.spyRuleFrames,{polling:50,timeout:5000});
+    await page.waitForTimeout(250);
+    const stableEntry=await snapshot();
+    assertActiveStable(stableEntry,cycleBaseline,`Spy soak stable re-entry ${cycle}`);
+    assert.ok(stableEntry.spyRuleFrames>cycleBaseline.spyRuleFrames,`Spy soak re-entry ${cycle} must resume authoritative Spy controller frames`);
     previous=entry
   }
 
