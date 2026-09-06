@@ -55,7 +55,7 @@ try{
     })
   });
   assert.equal(started,true,"Stage 10 packet fixture must start through the real special-mode adapter");
-  await page.waitForFunction(()=>document.body.dataset.specialMode==="sizzler-saboteurs"&&document.body.dataset.modeController==="spy-online"&&Boolean(window.CCGLostSizzlerV141R29SpyEngine?.state?.isolated)&&Boolean(window.CCGLostSizzlerV141R29SpyNetwork));
+  await page.waitForFunction(()=>document.body.dataset.specialMode==="sizzler-saboteurs"&&document.body.dataset.modeController==="spy-online"&&Boolean(window.CCGLostSizzlerV141R29SpyEngine?.state?.isolated)&&Boolean(window.CCGLostSizzlerV141R29SpyNetwork)&&window.CCGLostSizzlerV141R32SpyLoader?.state?.loaded===true&&Boolean(window.CCGLostSizzlerV141R32SpyOverhaul)&&Boolean(window.CCGLostSizzlerV141R32SpyPacketOwner)&&world?._v141r32SpyOverhaul===true);
 
   const baseline=await page.evaluate(()=>{
     const active=window.CCGLostSizzlerSpecialModes.active,m=active.state,network=window.CCGLostSizzlerV141R29SpyNetwork;
