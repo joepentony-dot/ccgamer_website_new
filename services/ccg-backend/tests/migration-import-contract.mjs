@@ -213,6 +213,26 @@ try {
     /Destination is not pristine/
   );
 } finally {
+  await database.query(`
+    truncate table
+      ccg_auth_login_buckets,
+      ccg_auth_recovery_tokens,
+      ccg_auth_sessions,
+      comments,
+      ccq_weekly_attempts,
+      email_subscriptions,
+      user_roles,
+      user_badges,
+      profile_top_picks,
+      profile_game_library,
+      profile_favourites,
+      lost_sizzler_cloud_saves,
+      ccg_profiles,
+      ccg_auth_identities,
+      ccg_auth_accounts,
+      ccg_users
+    restart identity cascade
+  `);
   await database.close();
 }
 
