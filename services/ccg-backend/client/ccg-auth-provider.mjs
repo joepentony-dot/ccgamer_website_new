@@ -39,7 +39,7 @@ function normalizeSupabaseSession(data) {
 }
 
 /**
- * Provider-neutral login/session boundary for staged CCG auth cut-over.
+ * Provider-neutral account/auth boundary for staged CCG auth cut-over.
  *
  * Construction is passive: it performs no fetch, Supabase client load or
  * session hydration. Supabase remains the default and the CCG provider can be
@@ -76,6 +76,29 @@ export function createCcgAuthProvider({
       lastUserId = localCcgClient.getUserId();
     }
     return withProvider(result, 'ccg');
+  }
+
+  async function signUp(credentials) {
+    if (selectedProvider === 'ccg') return withProvider(await localCcgClient.register(credentials), 'ccg');
+
+    try {
+      const auth = await getSupabaseAuth();
+      if (typeof auth.signUp !== 'function') return failure('supabase', 'unsupported', 'supabase_sign_up_unavailable');
+      const { data, error } = await auth.signUp(credentials || {});
+      if (error) return supabaseFailure(error);
+      const session = normalizeSupabaseSession(data);
+      lastAccessToken = session.access_token;
+      lastUserId = session.user_id;
+      return success('supabase', {
+        status: 200,
+        accepted: Boolean(session.user),
+        verification_required: Boolean(session.user && !session.access_token),
+        user_id: session.user_id,
+        user: session.user,
+      });
+    } catch (error) {
+      return failure('supabase', 'provider_error', error?.message || error);
+    }
   }
 
   async function signIn(credentials) {
@@ -183,14 +206,54 @@ export function createCcgAuthProvider({
     }
   }
 
+  async function requestPasswordReset({ email, redirectTo } = {}) {
+    if (selectedProvider === 'ccg') return withProvider(await localCcgClient.requestPasswordReset({ email }), 'ccg');
+
+    try {
+      const auth = await getSupabaseAuth();
+      if (typeof auth.resetPasswordForEmail !== 'function') {
+        return failure('supabase', 'unsupported', 'supabase_password_recovery_unavailable');
+      }
+      const { data, error } = await auth.resetPasswordForEmail(email, {
+        redirectTo: redirectTo || undefined,
+      });
+      if (error) return supabaseFailure(error);
+      return success('supabase', { status: 200, accepted: true, data: data ?? null });
+    } catch (error) {
+      return failure('supabase', 'provider_error', error?.message || error);
+    }
+  }
+
+  async function resetPassword({ token, newPassword } = {}) {
+    if (selectedProvider === 'ccg') {
+      const result = await localCcgClient.resetPassword({ token, newPassword });
+      lastAccessToken = null;
+      lastUserId = null;
+      return withProvider(result, 'ccg');
+    }
+
+    try {
+      const auth = await getSupabaseAuth();
+      if (typeof auth.updateUser !== 'function') return failure('supabase', 'unsupported', 'supabase_password_update_unavailable');
+      const { data, error } = await auth.updateUser({ password: newPassword });
+      if (error) return supabaseFailure(error);
+      return success('supabase', { status: 200, reset: true, data: data ?? null });
+    } catch (error) {
+      return failure('supabase', 'provider_error', error?.message || error);
+    }
+  }
+
   return Object.freeze({
     provider: selectedProvider,
     isCcg: selectedProvider === 'ccg',
     isSupabase: selectedProvider === 'supabase',
+    signUp,
     signIn,
     refresh,
     signOut,
     currentUser,
+    requestPasswordReset,
+    resetPassword,
     getAccessToken() {
       return selectedProvider === 'ccg' ? localCcgClient.getAccessToken() : lastAccessToken;
     },
