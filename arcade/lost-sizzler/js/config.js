@@ -1,11 +1,11 @@
 window.CCG_CONFIG=Object.freeze({
   tile:42,
-  worldWidth:128,
-  worldHeight:84,
+  worldWidth:160,
+  worldHeight:104,
   keyTarget:3,
   maxPlayers:4,
-  maxFloors:5,
-  levelCaps:[5,10,15,20,25],
+  maxFloors:1,
+  levelCaps:[25],
   logoAsset:"assets/ccgamer-logo-fallback.svg",
   logoFallback:"assets/ccgamer-logo-fallback.svg",
   player:{
@@ -21,12 +21,33 @@ window.CCG_CONFIG=Object.freeze({
     chaseStep:{spider:720,skeleton:820,knight:980,scout:940,hunter:780,ambusher:765,guard:999999,charger:530,ranger:940,root:1010,cook:1060,firebreather:840,ghost:890,guardian:690,champion:765,treasure:640}
   },
   stalker:{
-    enabled:true,name:"Count Loadula",startFloor:2,moveMs:850,nearDistance:18,attackDistance:1.25,drainDistance:6,drainPerSecond:10,
-    hitDamage:3,stunOnShotMs:500,spawnDelayMs:42000,musicKey:"count-loadula-default",
-    banishVulnerableMs:12000,banishHpBase:8,flaskArtefacts:3,banishedRespawnMs:30000,banishPromptDistance:8
+    enabled:true,name:"Count Loadula",startFloor:1,moveMs:850,nearDistance:18,attackDistance:1.25,drainDistance:6,drainPerSecond:10,
+    hitDamage:3,stunOnShotMs:500,spawnDelayMs:60000,musicKey:"count-loadula-default",
+    banishVulnerableMs:12000,banishHpBase:8,flaskArtefacts:3,essenceRequired:3,banishedRespawnMs:30000,banishPromptDistance:8
   },
   camping:{graceMs:60000,warningMs:650,blastIntervalMs:650,resetDistance:6,zoneRadius:3,blastRadius:.35,damage:1,directBlastEvery:2},
-  dungeon:{minLeaf:18,maxLeaf:32,roomMargin:3,targetRooms:34,maxLockedBranches:8,chestCount:10,secretRooms:3,secretPassages:2,sanctuaryRooms:2,wallTorchRooms:5,trapCount:20,generatorCount:3,generatorSpawnCap:3,sigilDefendersMin:3,standardEnemyTarget:44,ammoPacks:12,furnitureMin:5,furnitureMax:9,grandHallCount:1,boulderFloor:4,clueFloor:2,memoryPuzzleFloor:3,torchPuzzleFloor:4,weightBridgeFloor:5},
+  dungeon:{minLeaf:15,maxLeaf:27,roomMargin:2,targetRooms:46,maxLockedBranches:10,chestCount:14,secretRooms:4,secretPassages:3,sanctuaryRooms:3,wallTorchRooms:7,trapCount:24,generatorCount:4,generatorSpawnCap:3,sigilDefendersMin:4,standardEnemyTarget:58,ammoPacks:16,furnitureMin:5,furnitureMax:10,grandHallCount:1,boulderFloor:1,clueFloor:1,memoryPuzzleFloor:0,torchPuzzleFloor:0,weightBridgeFloor:1},
+  proceduralDungeon:{
+    enabled:true,
+    version:"V10.42",
+    name:"The Lost Sizzler Dungeon",
+    gamePickupCount:26,
+    essenceRequired:3,
+    escapeAlert:78,
+    keyDomains:[
+      {id:"iron",name:"KEY OF IRON",guardian:"Iron Warden",theme:"IRON_KEEP",weakness:"shock",sigilPower:"REVEAL"},
+      {id:"bone",name:"KEY OF BONE",guardian:"Bone Keeper",theme:"MOSS_CRYPT",weakness:"fire",sigilPower:"WARD"},
+      {id:"ash",name:"KEY OF ASH",guardian:"Ash Castellan",theme:"EMBER_DUNGEON",weakness:"energy",sigilPower:"BIND"}
+    ],
+    sigilPowers:[
+      {id:"reveal",name:"REVEAL",desc:"The Sigil extends normal sight and exposes more of the dungeon around you."},
+      {id:"ward",name:"WARD",desc:"The Sigil periodically absorbs one point of incoming damage."},
+      {id:"bind",name:"BIND",desc:"The Sigil suppresses supernatural pursuers and slows their immediate pressure."},
+      {id:"banish",name:"BANISH",desc:"Claiming the Exit Sigil grants one final Banishment charge for the escape."}
+    ],
+    relicChoices:3,
+    developmentCopy:"The dungeon is generated anew for every run. Find the three Keys, awaken the Sigil, survive the escape phase and get out alive."
+  },
   loot:{rarities:["COMMON","UNCOMMON","SIZZLER","GOLD MEDAL","ZZAP! 97%"]},
   difficulty:{
     CASUAL:{enemyHp:.8,enemyDamage:.75,loot:1.15,ammo:1.25,stalker:.8},
@@ -35,11 +56,7 @@ window.CCG_CONFIG=Object.freeze({
     "GOLD MEDAL":{enemyHp:1.45,enemyDamage:1.35,loot:1.28,ammo:.82,stalker:1.28}
   },
   floors:[
-    {name:"Tape Vault",objective:"keys",theme:"C64_ARCHIVE"},
-    {name:"1541 Catacombs",objective:"generators",theme:"1541_WORKSHOP"},
-    {name:"Budget Bin Depths",objective:"rescue",theme:"BUDGET_BIN"},
-    {name:"SID Reactor",objective:"explore_guardian",theme:"SID_REACTOR"},
-    {name:"Zzap! Citadel",objective:"guardian",theme:"ZZAP_LIBRARY"}
+    {name:"The Lost Sizzler Dungeon",objective:"keys",theme:"C64_ARCHIVE"}
   ],
   followerElites:[
     {name:"Peter Cortens",initials:"PC",kind:"hunter",hp:8,armor:4,avatar:"assets/peter-cortens.png",musicKey:"peter-cortens",strength:"Relentless close-range pressure and flanking.",weakness:"Short reach — kite him through cover and fire from range."},
@@ -50,7 +67,45 @@ window.CCG_CONFIG=Object.freeze({
     {name:"Yoshi Yoshi",initials:"YY",kind:"firebreather",hp:7,armor:4,avatar:"assets/yoshi-yoshi.png",musicKey:"yoshi-yoshi",strength:"Powerful fire breath dominates a long, straight lane.",weakness:"Move sideways or use walls — the flame cannot pass solid cover."},
     {name:"CCG",initials:"CCG",kind:"hunter",hp:18,armor:4,avatar:"",musicKey:"ccg",ccgBoss:true,moveSpeedScale:1.35,namedDamageScale:2,strength:"Heavy armour, high health and double named-enemy damage.",weakness:"Deliberately slow — maintain range and keep moving around cover."}
   ],
-  c64Loot:["Impossible Mission","Wizball","Paradroid","Boulder Dash","Bruce Lee","Uridium","The Last Ninja","Bubble Bobble","IK+","Turrican","Armalyte","Mayhem in Monsterland","Monty on the Run","Creatures","The Great Giana Sisters","Dropzone","Delta","Hawkeye","R-Type","Ghouls 'n Ghosts","California Games","World Games","Summer Games II","Winter Games","Pitstop II","Spy vs Spy","Nebulus","Cybernoid","Ghosts 'n Goblins","The Sentinel","International Karate","Elite"],
+  c64LootByLetter:{
+    A:["Airborne Ranger","Archon","Armalyte","Auf Wiedersehen Monty"],
+    B:["Bard's Tale","Boulder Dash","Bruce Lee","Bubble Bobble"],
+    C:["California Games","Commando","Creatures","Cybernoid"],
+    D:["Defender of the Crown","Delta","Dizzy","Dropzone"],
+    E:["Elite","Emlyn Hughes International Soccer","Exile"],
+    F:["Fantasy World Dizzy","Firelord","Flimbo's Quest","Fort Apocalypse"],
+    G:["Gauntlet","Ghosts 'n Goblins","Ghouls 'n Ghosts","Great Giana Sisters"],
+    H:["Hawkeye","Head Over Heels","Hunter's Moon","Hyper Sports"],
+    I:["IK+","Impossible Mission","International Karate","IO"],
+    J:["Jet Set Willy","Jumpman","Jupiter Lander"],
+    K:["Katakis","Kikstart II","Krakout"],
+    L:["Leaderboard","Last Ninja","Last Ninja 2","Lode Runner"],
+    M:["Maniac Mansion","Mayhem in Monsterland","Monty on the Run","Myth"],
+    N:["Nebulus","Netherworld","New Zealand Story","North & South"],
+    O:["Ocean Ranger","Oids","Operation Wolf","Out Run"],
+    P:["Paradroid","Pirates!","Pitstop II","Project Firestart"],
+    Q:["Q-Bert","Qix","Quake Minus One","Quedex"],
+    R:["R-Type","Raid Over Moscow","Rainbow Islands","Rick Dangerous"],
+    S:["Sam's Journey","Sentinel","Spy vs Spy","Summer Games II"],
+    T:["Turrican","Turrican II","Tusker","Turbo Outrun"],
+    U:["Ultima IV","Underwurlde","Uridium","Usagi Yojimbo"],
+    V:["Vendetta","Vigilante","Volfied"],
+    W:["Winter Games","Wizball","World Games","Wonder Boy"],
+    X:["X-Out","Xenon","Xenon Ranger"],
+    Y:["Yie Ar Kung-Fu","Yie Ar Kung-Fu II","Yogi's Great Escape"],
+    Z:["Zak McKracken and the Alien Mindbenders","Zamzara","Zaxxon","Zynaps"]
+  },
+  c64Loot:[
+    "Airborne Ranger","Archon","Armalyte","Auf Wiedersehen Monty","Bard's Tale","Boulder Dash","Bruce Lee","Bubble Bobble",
+    "California Games","Commando","Creatures","Cybernoid","Defender of the Crown","Delta","Dizzy","Dropzone","Elite","Emlyn Hughes International Soccer","Exile",
+    "Fantasy World Dizzy","Firelord","Flimbo's Quest","Fort Apocalypse","Gauntlet","Ghosts 'n Goblins","Ghouls 'n Ghosts","Great Giana Sisters","Hawkeye","Head Over Heels","Hunter's Moon","Hyper Sports",
+    "IK+","Impossible Mission","International Karate","IO","Jet Set Willy","Jumpman","Jupiter Lander","Katakis","Kikstart II","Krakout","Leaderboard","Last Ninja","Last Ninja 2","Lode Runner",
+    "Maniac Mansion","Mayhem in Monsterland","Monty on the Run","Myth","Nebulus","Netherworld","New Zealand Story","North & South","Ocean Ranger","Oids","Operation Wolf","Out Run",
+    "Paradroid","Pirates!","Pitstop II","Project Firestart","Q-Bert","Qix","Quake Minus One","Quedex","R-Type","Raid Over Moscow","Rainbow Islands","Rick Dangerous",
+    "Sam's Journey","Sentinel","Spy vs Spy","Summer Games II","Turrican","Turrican II","Tusker","Turbo Outrun","Ultima IV","Underwurlde","Uridium","Usagi Yojimbo",
+    "Vendetta","Vigilante","Volfied","Winter Games","Wizball","World Games","Wonder Boy","X-Out","Xenon","Xenon Ranger","Yie Ar Kung-Fu","Yie Ar Kung-Fu II","Yogi's Great Escape",
+    "Zak McKracken and the Alien Mindbenders","Zamzara","Zaxxon","Zynaps"
+  ],
   roomThemes:["C64_ARCHIVE","1541_WORKSHOP","BUDGET_BIN","DEMO_LOUNGE","ARMOURY","CPU_KITCHEN","SID_REACTOR","WARP_GALLERY","ZZAP_LIBRARY","TAPE_STORE","CARTRIDGE_BAY","CRACKED_INTRO","PIXEL_FOUNDRY","MODEM_EXCHANGE","HIGH_SCORE_CRYPT","CRT_MAZE","IRON_KEEP","MOSS_CRYPT","EMBER_DUNGEON"],
   adminAudio:{stalker:null,dangerRoom:null,sanctuary:null,namedEnemies:{}}
 });
