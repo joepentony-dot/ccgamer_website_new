@@ -199,7 +199,7 @@ export function createLocalAuthService({
 
     return database.transaction(async (tx) => {
       const locked = await tx.query(
-        `select a.user_id, a.banned_until, a.disabled_at, a.deleted_at,
+        `select a.user_id, a.password_hash, a.banned_until, a.disabled_at, a.deleted_at,
                 coalesce(p.banned, false) as profile_banned
            from ccg_auth_accounts a
            left join ccg_profiles p on p.user_id = a.user_id
@@ -233,7 +233,7 @@ export function createLocalAuthService({
     return database.transaction(async (tx) => {
       const result = await tx.query(
         `select s.session_id, s.user_id, s.expires_at, s.revoked_at,
-                a.banned_until, a.disabled_at, a.deleted_at,
+                a.password_hash, a.banned_until, a.disabled_at, a.deleted_at,
                 coalesce(p.banned, false) as profile_banned
            from ccg_auth_sessions s
            join ccg_auth_accounts a on a.user_id = s.user_id
