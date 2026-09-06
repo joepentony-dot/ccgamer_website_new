@@ -57,7 +57,7 @@ assert.deepEqual(started.runtime.startMeta, { seed: 1234, floor: 1 });
 const packet = hub.publish('host_0001', 'runtime:start', { seed: 1234 });
 assert.equal(packet.senderId, 'host_0001');
 assert.equal(packet.recipientIds.includes('host_0001'), false, 'Broadcast self=false semantics must exclude sender.');
-assert.deepEqual(packet.recipientIds.sort(), ['peer_0001', 'peer_0002', 'peer_0003']);
+assert.deepEqual([...packet.recipientIds].sort(), ['peer_0001', 'peer_0002', 'peer_0003']);
 
 assert.throws(
   () => hub.publish('host_0001', 'bad event name', {}),
