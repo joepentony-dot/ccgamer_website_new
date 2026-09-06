@@ -72,6 +72,10 @@ jobs:
         working-directory: services/ccg-backend
         run: node tests/migration-runner-contract.mjs
 
+      - name: Prove source-compatible online-service state on PostgreSQL
+        working-directory: services/ccg-backend
+        run: node tests/online-service-database-contract.mjs
+
       - name: Check migration policy markers
         shell: bash
         run: |
@@ -98,6 +102,7 @@ jobs:
           test -f services/ccg-backend/client/ccg-online-client.mjs
           test -f services/ccg-backend/tests/auth-client-contract.mjs
           test -f services/ccg-backend/tests/online-client-contract.mjs
+          test -f services/ccg-backend/tests/online-service-database-contract.mjs
           test -f services/ccg-backend/tests/password-recovery-database-contract.mjs
           test -f services/ccg-backend/tests/migration-runner-contract.mjs
           test -f services/ccg-backend/tests/migration-snapshot-contract.mjs
