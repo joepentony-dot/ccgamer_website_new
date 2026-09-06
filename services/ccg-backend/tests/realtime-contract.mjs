@@ -99,6 +99,54 @@ assert.throws(
   (error) => error?.statusCode === 409 && error?.code === 'runtime_not_started'
 );
 
+const compatHub = createLostSizzlerRealtimeHub({ now: () => nowMs, memberTtlMs: 5_000 });
+const compatCreated = compatHub.create({
+  roomCode: 'LEG42',
+  sessionId: 'transport_host_01',
+  presenceId: 'legacyHost01',
+  name: 'Legacy Host',
+  mode: 'dungeon',
+});
+assert.equal(compatCreated.hostId, 'legacyHost01');
+assert.equal(compatCreated.members[0].id, 'legacyHost01');
+assert.equal(compatCreated.members.some((member) => member.id === 'transport_host_01'), false, 'Transport session IDs must not replace Lost Sizzler presence IDs.');
+
+nowMs += 10;
+const compatJoined = compatHub.join({
+  roomCode: 'LEG42',
+  sessionId: 'transport_peer_01',
+  presenceId: 'legacyPeer01',
+  name: 'Legacy Peer',
+});
+assert.equal(compatJoined.hostId, 'legacyHost01');
+assert.deepEqual(compatJoined.members.map((member) => member.id), ['legacyHost01', 'legacyPeer01']);
+
+const compatPacket = compatHub.publish('transport_host_01', 'legacy:event', { value: 1 });
+assert.equal(compatPacket.senderId, 'legacyHost01', 'Game packets expose the bounded game presence ID, not the transport session ID.');
+assert.deepEqual(compatPacket.recipientIds, ['transport_peer_01'], 'Packet routing remains keyed by server-owned transport sessions.');
+
+assert.throws(
+  () => compatHub.join({
+    roomCode: 'LEG42',
+    sessionId: 'transport_peer_02',
+    presenceId: 'legacyPeer01',
+    name: 'Duplicate Presence',
+  }),
+  (error) => error?.statusCode === 409 && error?.code === 'presence_id_in_use'
+);
+assert.throws(
+  () => compatHub.join({
+    roomCode: 'LEG42',
+    sessionId: 'transport_peer_03',
+    presenceId: 'tiny',
+    name: 'Bad Presence',
+  }),
+  (error) => error?.statusCode === 400 && error?.code === 'invalid_presence_id'
+);
+
+const compatPromoted = compatHub.leave('transport_host_01');
+assert.equal(compatPromoted.hostId, 'legacyPeer01');
+
 hub.heartbeat('spypeer01');
 nowMs += 5_001;
 const swept = hub.sweep();
@@ -106,4 +154,4 @@ assert.equal(swept.removedMembers, 5);
 assert.equal(swept.removedRooms, 2);
 assert.deepEqual(hub.diagnostics(), { roomCount: 0, memberCount: 0 });
 
-console.log('Lost Sizzler realtime contract passed: CCG room semantics preserve capacities, host promotion, runtime presence, bounded broadcasts and stale-member cleanup without Supabase.');
+console.log('Lost Sizzler realtime contract passed: CCG room semantics preserve capacities, host promotion, runtime presence, bounded broadcasts, separate transport/presence identity and stale-member cleanup without Supabase.');
