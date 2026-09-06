@@ -5,9 +5,11 @@ import { createDatabase } from './db.mjs';
 import { createAuth } from './auth.mjs';
 import { createLocalAuthService } from './local-auth.mjs';
 import { createAuthHttp } from './auth-http.mjs';
-import { createAuthEmailSender } from './auth-email.mjs';
+import { createAuthEmailSender, createAuthRecoveryEmailSender } from './auth-email.mjs';
 import { createAuthRegistrationService } from './auth-registration.mjs';
 import { createAuthRegistrationHttp } from './auth-registration-http.mjs';
+import { createPasswordRecoveryService } from './password-recovery.mjs';
+import { createAuthRecoveryHttp } from './auth-recovery-http.mjs';
 import { createProfileStore } from './profile-store.mjs';
 import { createCloudSaveStore, readJsonBody } from './cloud-save.mjs';
 import { createWeeklyVaultService } from './weekly-vault.mjs';
@@ -84,11 +86,26 @@ function createRegistration(config, database) {
   return createAuthRegistrationHttp(registration);
 }
 
+function createRecovery(config, database) {
+  if (!config.recoveryEnabled) return null;
+  const emailSender = createAuthRecoveryEmailSender({
+    apiKey: config.recoveryEmail.resendApiKey,
+    from: config.recoveryEmail.from,
+    recoveryUrl: config.recoveryEmail.recoveryUrl,
+  });
+  const recovery = createPasswordRecoveryService({
+    database,
+    sendRecovery: (payload) => emailSender.sendRecovery(payload),
+  });
+  return createAuthRecoveryHttp(recovery);
+}
+
 async function main() {
   const config = loadConfig();
   const database = createDatabase(config.databaseUrl);
   const { auth, authHttp } = await createAuthentication(config, database);
   const registrationHttp = createRegistration(config, database);
+  const recoveryHttp = createRecovery(config, database);
   const profiles = createProfileStore(database);
   const cloudSaves = createCloudSaveStore(database);
   const weeklyVault = createWeeklyVaultService({ database });
@@ -150,6 +167,7 @@ async function main() {
           service: config.serviceName,
           auth_mode: config.authMode,
           registration: config.registrationEnabled,
+          password_recovery: config.recoveryEnabled,
           lost_sizzler_realtime: config.lostSizzlerRealtimeEnabled,
           lost_sizzler_commerce: config.lostSizzlerCommerceEnabled,
         }, cors);
@@ -164,6 +182,12 @@ async function main() {
 
       if (registrationHttp?.handles(request.method, url.pathname)) {
         const result = await registrationHttp.handle(request, url.pathname);
+        writeJson(response, result.statusCode, result.body, { ...cors, ...result.headers });
+        return;
+      }
+
+      if (recoveryHttp?.handles(request.method, url.pathname)) {
+        const result = await recoveryHttp.handle(request, url.pathname);
         writeJson(response, result.statusCode, result.body, { ...cors, ...result.headers });
         return;
       }
@@ -263,7 +287,8 @@ async function main() {
     const realtimeStatus = config.lostSizzlerRealtimeEnabled ? 'realtime enabled' : 'realtime disabled';
     const commerceStatus = config.lostSizzlerCommerceEnabled ? 'commerce enabled' : 'commerce disabled';
     const registrationStatus = config.registrationEnabled ? 'registration enabled' : 'registration disabled';
-    console.log(`${config.serviceName} listening on 127.0.0.1:${config.port} (${config.authMode} auth; ${registrationStatus}; ${realtimeStatus}; ${commerceStatus})`);
+    const recoveryStatus = config.recoveryEnabled ? 'password recovery enabled' : 'password recovery disabled';
+    console.log(`${config.serviceName} listening on 127.0.0.1:${config.port} (${config.authMode} auth; ${registrationStatus}; ${recoveryStatus}; ${realtimeStatus}; ${commerceStatus})`);
   });
 }
 
