@@ -13,7 +13,7 @@ permissions:
 jobs:
   contract:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
     services:
       postgres:
         image: postgres:17
@@ -51,6 +51,10 @@ jobs:
       - name: Prove backend schema and cloud-save transactions on PostgreSQL
         working-directory: services/ccg-backend
         run: node tests/database-contract.mjs
+
+      - name: Prove migrated login and CCG session lifecycle on PostgreSQL
+        working-directory: services/ccg-backend
+        run: node tests/local-auth-database-contract.mjs
 
       - name: Check migration policy markers
         shell: bash
