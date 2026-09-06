@@ -228,28 +228,31 @@ export function createLostSizzlerRealtimeClient({
 
   async function command(frame, predicate) {
     if (commandPending) return Object.freeze({ ok: false, kind: 'busy', status: 0, error: 'realtime_command_pending' });
-    const ready = await connect();
-    if (!ready.ok) return ready;
-    if (!socketIsOpen()) return Object.freeze({ ok: false, kind: 'network_error', status: 0, error: 'connection_closed' });
-
     commandPending = true;
-    const responsePromise = waitFor(
-      (candidate) => candidate.type === 'error' || candidate.type === 'client_failure' || predicate(candidate)
-    );
     try {
-      socket.send(JSON.stringify(frame));
-    } catch {
-      commandPending = false;
-      return Object.freeze({ ok: false, kind: 'network_error', status: 0, error: 'network_error' });
-    }
+      const ready = await connect();
+      if (!ready.ok) return ready;
+      if (!socketIsOpen()) return Object.freeze({ ok: false, kind: 'network_error', status: 0, error: 'connection_closed' });
 
-    const response = await responsePromise;
-    commandPending = false;
-    if (response.type === 'error') return classifyError(response);
-    if (response.type === 'client_failure') {
-      return Object.freeze({ ok: false, kind: response.error === 'realtime_timeout' ? 'timeout' : 'network_error', status: 0, error: response.error });
+      const responsePromise = waitFor(
+        (candidate) => candidate.type === 'error' || candidate.type === 'client_failure' || predicate(candidate)
+      );
+      try {
+        socket.send(JSON.stringify(frame));
+      } catch {
+        cancelWaiters('network_error');
+        return Object.freeze({ ok: false, kind: 'network_error', status: 0, error: 'network_error' });
+      }
+
+      const response = await responsePromise;
+      if (response.type === 'error') return classifyError(response);
+      if (response.type === 'client_failure') {
+        return Object.freeze({ ok: false, kind: response.error === 'realtime_timeout' ? 'timeout' : 'network_error', status: 0, error: response.error });
+      }
+      return Object.freeze({ ok: true, kind: 'success', response });
+    } finally {
+      commandPending = false;
     }
-    return Object.freeze({ ok: true, kind: 'success', response });
   }
 
   return Object.freeze({
