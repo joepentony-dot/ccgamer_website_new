@@ -91,15 +91,18 @@ jobs:
           test -f services/ccg-backend/scripts/migrate.mjs
           test -f services/ccg-backend/scripts/verify-migration-snapshot.mjs
           test -f services/ccg-backend/scripts/import-migration-bundle.mjs
+          test -f services/ccg-backend/scripts/export-supabase-migration-bundle.mjs
           test -f services/ccg-backend/tests/password-recovery-database-contract.mjs
           test -f services/ccg-backend/tests/migration-runner-contract.mjs
           test -f services/ccg-backend/tests/migration-snapshot-contract.mjs
           test -f services/ccg-backend/tests/migration-import-contract.mjs
+          test -f services/ccg-backend/tests/migration-export-contract.mjs
           grep -q 'offline game first' services/ccg-backend/README.md
           grep -q 'CCG_AUTH_MODE=local' services/ccg-backend/README.md
           grep -q 'migrate:apply' services/ccg-backend/package.json
           grep -q 'migration:verify' services/ccg-backend/package.json
           grep -q 'migration:import' services/ccg-backend/package.json
+          grep -q 'migration:export' services/ccg-backend/package.json
           grep -q '"auth_accounts": 33' "$snapshot"
           grep -q '"profiles": 27' "$snapshot"
           grep -q '"contains_password_hashes": false' "$snapshot"
