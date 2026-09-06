@@ -3,10 +3,13 @@ const REFRESH_PATH = '/v1/auth/refresh';
 const LOGOUT_PATH = '/v1/auth/logout';
 const REGISTER_PATH = '/v1/auth/register';
 const CONFIRM_EMAIL_PATH = '/v1/auth/confirm-email';
+const RECOVER_PATH = '/v1/auth/recover';
+const RESET_PASSWORD_PATH = '/v1/auth/reset-password';
 const ME_PATH = '/v1/me';
 const MAX_EMAIL_LENGTH = 320;
 const MAX_PASSWORD_LENGTH = 1024;
 const MIN_REGISTRATION_PASSWORD_LENGTH = 10;
+const MIN_RESET_PASSWORD_LENGTH = 12;
 
 function normalizeBaseUrl(value) {
   const url = new URL(String(value || ''));
@@ -19,11 +22,16 @@ function normalizeBaseUrl(value) {
   return url.toString().replace(/\/$/, '');
 }
 
-function normalizeLoginInput({ email, password } = {}) {
-  const normalizedEmail = String(email || '').trim();
-  if (normalizedEmail.length < 3 || normalizedEmail.length > MAX_EMAIL_LENGTH || !normalizedEmail.includes('@')) {
+function normalizeEmail(value) {
+  const email = String(value || '').trim();
+  if (email.length < 3 || email.length > MAX_EMAIL_LENGTH || !email.includes('@')) {
     throw new Error('invalid_email');
   }
+  return email;
+}
+
+function normalizeLoginInput({ email, password } = {}) {
+  const normalizedEmail = normalizeEmail(email);
   if (typeof password !== 'string' || password.length < 1 || password.length > MAX_PASSWORD_LENGTH) {
     throw new Error('invalid_password');
   }
@@ -42,6 +50,25 @@ function normalizeVerificationToken(value) {
   const token = String(value || '').trim();
   if (!/^[A-Za-z0-9_-]{32,256}$/.test(token)) throw new Error('invalid_verification_token');
   return token;
+}
+
+function normalizeRecoveryToken(value) {
+  const token = String(value || '').trim();
+  if (!/^[A-Za-z0-9_-]{32,512}$/.test(token)) throw new Error('invalid_recovery_token');
+  return token;
+}
+
+function normalizeResetInput({ token, newPassword } = {}) {
+  const normalizedToken = normalizeRecoveryToken(token);
+  if (
+    typeof newPassword !== 'string' ||
+    newPassword.length < MIN_RESET_PASSWORD_LENGTH ||
+    newPassword.length > 128 ||
+    /^\s+$/.test(newPassword)
+  ) {
+    throw new Error('invalid_new_password');
+  }
+  return Object.freeze({ token: normalizedToken, new_password: newPassword });
 }
 
 async function decodeJson(response) {
@@ -170,6 +197,41 @@ export function createCcgAuthClient({ baseUrl, fetchImpl = globalThis.fetch } = 
         status: result.status,
         confirmed: Boolean(result.body?.confirmed),
         user_id: result.body?.user_id ?? null,
+      });
+    },
+
+    async requestPasswordReset({ email } = {}) {
+      let normalizedEmail;
+      try {
+        normalizedEmail = normalizeEmail(email);
+      } catch (error) {
+        return Object.freeze({ ok: false, kind: 'invalid_request', status: 0, error: String(error?.message || error) });
+      }
+      const result = await request(RECOVER_PATH, { method: 'POST', body: { email: normalizedEmail } });
+      if (!result.ok) return result;
+      return Object.freeze({
+        ok: true,
+        kind: 'success',
+        status: result.status,
+        accepted: Boolean(result.body?.accepted),
+      });
+    },
+
+    async resetPassword(input) {
+      let reset;
+      try {
+        reset = normalizeResetInput(input);
+      } catch (error) {
+        return Object.freeze({ ok: false, kind: 'invalid_request', status: 0, error: String(error?.message || error) });
+      }
+      const result = await request(RESET_PASSWORD_PATH, { method: 'POST', body: reset });
+      if (!result.ok) return result;
+      clearLocalSession();
+      return Object.freeze({
+        ok: true,
+        kind: 'success',
+        status: result.status,
+        reset: Boolean(result.body?.reset),
       });
     },
 
