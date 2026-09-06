@@ -1,5 +1,6 @@
 const ROOM_CODE = /^[A-Z0-9]{4,6}$/;
 const SESSION_ID = /^[A-Za-z0-9_-]{8,64}$/;
+const PRESENCE_ID = /^[A-Za-z0-9_-]{8,64}$/;
 const MAX_PLAYER_NAME = 18;
 const MAX_EVENT_NAME = 64;
 const MAX_PACKET_BYTES = 64 * 1024;
@@ -42,6 +43,12 @@ function normalizeSessionId(value) {
   return sessionId;
 }
 
+function normalizePresenceId(value, fallbackSessionId) {
+  const presenceId = String(value || fallbackSessionId || '').trim();
+  if (!PRESENCE_ID.test(presenceId)) throw realtimeError(400, 'invalid_presence_id');
+  return presenceId;
+}
+
 function normalizePlayerName(value) {
   const name = String(value || '').trim().replace(/\s+/g, ' ').slice(0, MAX_PLAYER_NAME);
   if (!name) throw realtimeError(400, 'invalid_player_name');
@@ -67,12 +74,12 @@ function memberOrder(a, b) {
   const aRole = a.roomRole === 'create' ? 0 : 1;
   const bRole = b.roomRole === 'create' ? 0 : 1;
   if (aRole !== bRole) return aRole - bRole;
-  return (a.joinedAt - b.joinedAt) || a.sessionId.localeCompare(b.sessionId);
+  return (a.joinedAt - b.joinedAt) || a.presenceId.localeCompare(b.presenceId);
 }
 
 function publicMember(member) {
   return Object.freeze({
-    id: member.sessionId,
+    id: member.presenceId,
     name: member.name,
     joinedAt: member.joinedAt,
     roomRole: member.roomRole,
@@ -113,20 +120,22 @@ export function createLostSizzlerRealtimeHub({
       roomMode: room.roomMode,
       roomCapacity: room.roomCapacity,
       memberCount: members.length,
-      hostId: host?.sessionId || '',
+      hostId: host?.presenceId || '',
       runtime: Object.freeze({
         started: Boolean(host?.runtimeStarted),
         startMeta: host?.runtimeStartMeta ? { ...host.runtimeStartMeta } : null,
-        hostId: host?.sessionId || '',
+        hostId: host?.presenceId || '',
       }),
       members: Object.freeze(members.map(publicMember)),
     });
   }
 
-  function createMember({ sessionId, name, role, roomMode, build }) {
+  function createMember({ sessionId, presenceId, name, role, roomMode, build }) {
+    const normalizedSession = normalizeSessionId(sessionId);
     const timestamp = now();
     return {
-      sessionId: normalizeSessionId(sessionId),
+      sessionId: normalizedSession,
+      presenceId: normalizePresenceId(presenceId, normalizedSession),
       name: normalizePlayerName(name),
       joinedAt: timestamp,
       lastSeenAt: timestamp,
@@ -137,6 +146,13 @@ export function createLostSizzlerRealtimeHub({
       runtimeStarted: false,
       runtimeStartMeta: null,
     };
+  }
+
+  function presenceIdInUse(room, presenceId) {
+    for (const member of room.members.values()) {
+      if (member.presenceId === presenceId) return true;
+    }
+    return false;
   }
 
   function detach(sessionId) {
@@ -151,7 +167,7 @@ export function createLostSizzlerRealtimeHub({
   }
 
   return Object.freeze({
-    create({ roomCode, sessionId, name, mode = 'dungeon', build = 'V10.41' } = {}) {
+    create({ roomCode, sessionId, presenceId, name, mode = 'dungeon', build = 'V10.41' } = {}) {
       const normalizedCode = normalizeRoomCode(roomCode);
       const normalizedSession = normalizeSessionId(sessionId);
       if (rooms.has(normalizedCode)) throw realtimeError(409, 'room_code_in_use');
@@ -165,14 +181,21 @@ export function createLostSizzlerRealtimeHub({
         createdAt: now(),
         members: new Map(),
       };
-      const member = createMember({ sessionId: normalizedSession, name, role: 'create', roomMode, build });
+      const member = createMember({
+        sessionId: normalizedSession,
+        presenceId,
+        name,
+        role: 'create',
+        roomMode,
+        build,
+      });
       room.members.set(member.sessionId, member);
       rooms.set(normalizedCode, room);
       membership.set(member.sessionId, normalizedCode);
       return roomSnapshot(room);
     },
 
-    join({ roomCode, sessionId, name, build = 'V10.41' } = {}) {
+    join({ roomCode, sessionId, presenceId, name, build = 'V10.41' } = {}) {
       const { normalized, room } = getRoom(roomCode);
       if (!room) throw realtimeError(404, 'room_not_found');
       const normalizedSession = normalizeSessionId(sessionId);
@@ -181,11 +204,13 @@ export function createLostSizzlerRealtimeHub({
 
       const member = createMember({
         sessionId: normalizedSession,
+        presenceId,
         name,
         role: 'join',
         roomMode: room.roomMode,
         build,
       });
+      if (presenceIdInUse(room, member.presenceId)) throw realtimeError(409, 'presence_id_in_use');
       room.members.set(member.sessionId, member);
       membership.set(member.sessionId, normalized);
       return roomSnapshot(room);
@@ -237,7 +262,7 @@ export function createLostSizzlerRealtimeHub({
         roomCode,
         event: eventName,
         payload,
-        senderId: normalizedSession,
+        senderId: member.presenceId,
         recipientIds: Object.freeze([...room.members.keys()].filter((id) => id !== normalizedSession)),
       });
     },
