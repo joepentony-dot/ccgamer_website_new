@@ -51,11 +51,32 @@ window.CCG_AUDIO_ASSETS=Object.freeze({
     named:"assets/audio/music/named-enemy.wav",
     stalker:"assets/audio/music/count-loadula.wav",
     playlists:Object.freeze({
-      normal:Object.freeze(["assets/audio/music/exploration.wav"]),
-      danger:Object.freeze(["assets/audio/music/danger.wav"]),
-      sanctuary:Object.freeze(["assets/audio/music/sanctuary.wav"]),
-      named:Object.freeze(["assets/audio/music/named-enemy.wav"]),
-      stalker:Object.freeze(["assets/audio/music/count-loadula.wav"])
+      normal:Object.freeze([
+        "assets/audio/music/exploration-01.mp3",
+        "assets/audio/music/exploration-02.mp3",
+        "assets/audio/music/exploration-03.mp3",
+        "assets/audio/music/exploration-04.mp3",
+        "assets/audio/music/exploration-05.mp3"
+      ]),
+      danger:Object.freeze([
+        "assets/audio/music/combat-01.mp3",
+        "assets/audio/music/combat-02.mp3",
+        "assets/audio/music/combat-03.mp3"
+      ]),
+      sanctuary:Object.freeze([
+        "assets/audio/music/sanctuary-01.mp3",
+        "assets/audio/music/sanctuary-02.mp3"
+      ]),
+      named:Object.freeze([
+        "assets/audio/music/named-01.mp3",
+        "assets/audio/music/named-02.mp3",
+        "assets/audio/music/named-03.mp3"
+      ]),
+      stalker:Object.freeze([
+        "assets/audio/music/count-loadula-01.mp3",
+        "assets/audio/music/count-loadula-02.mp3",
+        "assets/audio/music/count-loadula-03.mp3"
+      ])
     })
   })
 });
