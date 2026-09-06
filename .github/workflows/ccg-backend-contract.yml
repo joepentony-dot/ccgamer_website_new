@@ -1,0 +1,42 @@
+name: CCG Backend Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/**'
+      - '.github/workflows/ccg-backend-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Check backend source and fail-closed configuration
+        working-directory: services/ccg-backend
+        run: npm run check
+
+      - name: Check migration policy markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          migration='services/ccg-backend/migrations/001_initial.sql'
+          test -f "$migration"
+          grep -q 'offline game first' services/ccg-backend/README.md
+          grep -q 'lost_sizzler_cloud_saves' "$migration"
+          grep -q 'lost_sizzler_multiplayer_rooms' "$migration"
+          if grep -Eiq '(service[_-]?role|SUPABASE_SERVICE_ROLE|private[_-]?key)' services/ccg-backend/src/*; then
+            echo 'Backend source contains forbidden privileged-client material.' >&2
+            exit 1
+          fi
