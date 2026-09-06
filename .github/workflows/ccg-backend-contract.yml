@@ -71,9 +71,11 @@ jobs:
           migration='services/ccg-backend/migrations/001_initial.sql'
           account_migration='services/ccg-backend/migrations/002_account_profiles.sql'
           session_migration='services/ccg-backend/migrations/003_auth_sessions.sql'
+          profile_state_migration='services/ccg-backend/migrations/004_profile_owned_state.sql'
           test -f "$migration"
           test -f "$account_migration"
           test -f "$session_migration"
+          test -f "$profile_state_migration"
           test -f services/ccg-backend/src/auth-http.mjs
           test -f services/ccg-backend/src/password-recovery.mjs
           test -f services/ccg-backend/scripts/migrate.mjs
@@ -94,6 +96,14 @@ jobs:
           grep -q 'refresh_token_sha256' "$session_migration"
           grep -q 'ccg_auth_recovery_tokens' "$session_migration"
           grep -q 'ccg_auth_login_buckets' "$session_migration"
+          grep -q 'profile_favourites' "$profile_state_migration"
+          grep -q 'profile_game_library' "$profile_state_migration"
+          grep -q 'profile_top_picks' "$profile_state_migration"
+          grep -q 'user_badges' "$profile_state_migration"
+          grep -q 'user_roles' "$profile_state_migration"
+          grep -q 'email_subscriptions' "$profile_state_migration"
+          grep -q 'comments' "$profile_state_migration"
+          grep -q 'ccq_weekly_attempts' "$profile_state_migration"
           grep -q 'Never expose `password_hash`' services/ccg-backend/AUTH-PROFILE-MIGRATION-PLAN.md
           if grep -Eiq '(SUPABASE_SERVICE_ROLE|service[_-]?role|-----BEGIN ([A-Z0-9 ]+)?PRIVATE KEY-----)' services/ccg-backend/src/*; then
             echo 'Backend source contains forbidden embedded privileged credential material.' >&2
