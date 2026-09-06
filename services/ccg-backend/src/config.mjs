@@ -67,6 +67,36 @@ function readPayPalConfig(enabled) {
   });
 }
 
+function readRegistrationEmail(enabled, authMode) {
+  if (!enabled) {
+    return Object.freeze({ enabled: false, resendApiKey: '', from: '', verifyUrl: '' });
+  }
+  if (authMode !== 'local') throw new Error('CCG local registration requires CCG_AUTH_MODE=local.');
+
+  const rawFrom = requireEnv('CCG_AUTH_EMAIL_FROM');
+  const bracketed = rawFrom.match(/<([^<>]+)>/);
+  const fromAddress = String(bracketed?.[1] || rawFrom).trim();
+  if (!validEmail(fromAddress)) throw new Error('Invalid CCG_AUTH_EMAIL_FROM.');
+
+  const verifyUrlRaw = requireEnv('CCG_AUTH_VERIFY_URL');
+  let verifyUrl;
+  try {
+    verifyUrl = new URL(verifyUrlRaw);
+  } catch {
+    throw new Error('Invalid CCG_AUTH_VERIFY_URL.');
+  }
+  if (verifyUrl.protocol !== 'https:' || verifyUrl.search || verifyUrl.hash) {
+    throw new Error('CCG_AUTH_VERIFY_URL must be HTTPS without query or fragment.');
+  }
+
+  return Object.freeze({
+    enabled: true,
+    resendApiKey: requireEnv('RESEND_API_KEY'),
+    from: rawFrom,
+    verifyUrl: verifyUrl.toString(),
+  });
+}
+
 function validateAllowedOrigin(entry) {
   if (entry === '*') throw new Error('Wildcard CORS origins are not supported.');
 
@@ -121,6 +151,7 @@ export function loadConfig() {
   if (allowedOrigins.size < 1) throw new Error('CCG_ALLOWED_ORIGINS must contain at least one origin.');
 
   const authMode = readAuthMode();
+  const registrationEnabled = readBooleanEnv('CCG_LOCAL_AUTH_REGISTRATION_ENABLED', false);
   const lostSizzlerCommerceEnabled = readBooleanEnv('CCG_LOST_SIZZLER_COMMERCE_ENABLED', false);
   const base = {
     port,
@@ -129,6 +160,8 @@ export function loadConfig() {
     authMode,
     serviceName: 'ccg-backend',
     feedbackEmail: readFeedbackEmail(),
+    registrationEnabled,
+    registrationEmail: readRegistrationEmail(registrationEnabled, authMode),
     lostSizzlerRealtimeEnabled: readBooleanEnv('CCG_LOST_SIZZLER_REALTIME_ENABLED', false),
     lostSizzlerRealtimeMaxSockets: readIntegerEnv('CCG_LOST_SIZZLER_REALTIME_MAX_SOCKETS', 128, 1, 10_000),
     lostSizzlerCommerceEnabled,
