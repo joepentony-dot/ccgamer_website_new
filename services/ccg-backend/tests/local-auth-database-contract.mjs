@@ -30,17 +30,15 @@ try {
   const primaryUserId = 'local-auth-contract-primary';
   const limitedUserId = 'local-auth-contract-limited';
   const unconfirmedUserId = 'local-auth-contract-unconfirmed';
+  const userIds = [primaryUserId, limitedUserId, unconfirmedUserId];
   const password = 'Contract-password-42!';
   const passwordHash = await bcrypt.hash(password, 4);
 
-  await database.query(
-    `delete from ccg_auth_login_buckets where bucket_key is not null;
-     delete from ccg_auth_sessions where user_id = any($1::text[]);
-     delete from ccg_profiles where user_id = any($1::text[]);
-     delete from ccg_auth_accounts where user_id = any($1::text[]);
-     delete from ccg_users where user_id = any($1::text[]);`,
-    [[primaryUserId, limitedUserId, unconfirmedUserId]]
-  );
+  await database.query('delete from ccg_auth_login_buckets');
+  await database.query('delete from ccg_auth_sessions where user_id = any($1::text[])', [userIds]);
+  await database.query('delete from ccg_profiles where user_id = any($1::text[])', [userIds]);
+  await database.query('delete from ccg_auth_accounts where user_id = any($1::text[])', [userIds]);
+  await database.query('delete from ccg_users where user_id = any($1::text[])', [userIds]);
 
   await database.query(
     `insert into ccg_users (user_id) values ($1), ($2), ($3)`,
