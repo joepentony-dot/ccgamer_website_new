@@ -24,17 +24,28 @@ function normalizeProfile(value) {
   return value && typeof value === 'object' && !Array.isArray(value) ? { ...value } : null;
 }
 
+function normalizeAccount(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  return Object.freeze({
+    email: value.email ? String(value.email) : null,
+    email_confirmed_at: value.email_confirmed_at ? String(value.email_confirmed_at) : null,
+  });
+}
+
 function roleFor(profile) {
   return String(profile?.role || 'member').trim() || 'member';
 }
 
-function userFrom(auth, profile) {
+function userFrom(auth, profile, account) {
   const id = String(auth.getUserId() || '').trim();
   if (!id) return null;
   const safeProfile = normalizeProfile(profile);
+  const safeAccount = normalizeAccount(account);
   const displayName = String(safeProfile?.display_name || safeProfile?.username || '').trim();
   return Object.freeze({
     id,
+    email: safeAccount?.email || null,
+    email_confirmed_at: safeAccount?.email_confirmed_at || null,
     user_metadata: Object.freeze({
       ...(safeProfile || {}),
       ...(displayName ? { display_name: displayName } : {}),
@@ -86,13 +97,14 @@ export function createLostSizzlerSupabaseCompat({
     timeoutMs: realtimeOptions?.timeoutMs,
   });
 
+  let account = null;
   let profile = null;
   let hydrationPromise = null;
   let expiresAt = 0;
 
   function session() {
     const accessToken = online.auth.getAccessToken();
-    const user = userFrom(online.auth, profile);
+    const user = userFrom(online.auth, profile, account);
     if (!accessToken || !user) return null;
     return Object.freeze({
       access_token: accessToken,
@@ -104,21 +116,26 @@ export function createLostSizzlerSupabaseCompat({
 
   async function hydrateProfile() {
     if (!online.auth.getAccessToken()) {
+      account = null;
       profile = null;
       return null;
     }
     const result = await online.auth.me();
     if (!result?.ok) {
-      if (['unauthorized', 'unauthenticated'].includes(result?.kind)) profile = null;
+      if (['unauthorized', 'unauthenticated'].includes(result?.kind)) {
+        account = null;
+        profile = null;
+      }
       return null;
     }
+    account = normalizeAccount(result);
     profile = normalizeProfile(result.profile);
     return profile;
   }
 
   async function hydrate({ force = false } = {}) {
     if (!force && online.auth.getAccessToken() && online.auth.getUserId()) {
-      if (profile === null) await hydrateProfile();
+      if (account === null && profile === null) await hydrateProfile();
       return session();
     }
     if (hydrationPromise) return hydrationPromise;
@@ -128,6 +145,7 @@ export function createLostSizzlerSupabaseCompat({
       if (!refreshed?.ok) {
         if (['unauthorized', 'unauthenticated'].includes(refreshed?.kind)) {
           online.auth.clearLocalSession();
+          account = null;
           profile = null;
           expiresAt = 0;
           return null;
@@ -222,6 +240,7 @@ export function createLostSizzlerSupabaseCompat({
 
     async signOut() {
       const result = await online.auth.logout();
+      account = null;
       profile = null;
       expiresAt = 0;
       return result?.ok
@@ -252,9 +271,11 @@ export function createLostSizzlerSupabaseCompat({
     const current = session() || await hydrate();
     const user = current?.user || null;
     const safeProfile = normalizeProfile(profile);
+    const safeAccount = normalizeAccount(account);
     const role = roleFor(safeProfile);
     return Object.freeze({
       user,
+      account: safeAccount,
       profile: safeProfile,
       session: current,
       role,
@@ -279,6 +300,7 @@ export function createLostSizzlerSupabaseCompat({
       return Object.freeze({
         provider: 'ccg',
         authenticated: Boolean(online.auth.getAccessToken() && online.auth.getUserId()),
+        accountLoaded: account !== null,
         profileLoaded: profile !== null,
         realtime: realtime.getDiagnostics(),
       });
