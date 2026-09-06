@@ -42,6 +42,31 @@ function readFeedbackEmail() {
   });
 }
 
+function readPayPalConfig(enabled) {
+  if (!enabled) {
+    return Object.freeze({
+      enabled: false,
+      environment: 'sandbox',
+      clientId: '',
+      clientSecret: '',
+      webhookId: '',
+    });
+  }
+
+  const environment = String(process.env.CCG_PAYPAL_ENVIRONMENT || 'sandbox').trim().toLowerCase();
+  if (!['sandbox', 'live'].includes(environment)) {
+    throw new Error(`Invalid CCG_PAYPAL_ENVIRONMENT: ${environment}`);
+  }
+
+  return Object.freeze({
+    enabled: true,
+    environment,
+    clientId: requireEnv('PAYPAL_CLIENT_ID'),
+    clientSecret: requireEnv('PAYPAL_CLIENT_SECRET'),
+    webhookId: requireEnv('PAYPAL_WEBHOOK_ID'),
+  });
+}
+
 function validateAllowedOrigin(entry) {
   if (entry === '*') throw new Error('Wildcard CORS origins are not supported.');
 
@@ -96,6 +121,7 @@ export function loadConfig() {
   if (allowedOrigins.size < 1) throw new Error('CCG_ALLOWED_ORIGINS must contain at least one origin.');
 
   const authMode = readAuthMode();
+  const lostSizzlerCommerceEnabled = readBooleanEnv('CCG_LOST_SIZZLER_COMMERCE_ENABLED', false);
   const base = {
     port,
     databaseUrl: requireEnv('DATABASE_URL'),
@@ -105,6 +131,8 @@ export function loadConfig() {
     feedbackEmail: readFeedbackEmail(),
     lostSizzlerRealtimeEnabled: readBooleanEnv('CCG_LOST_SIZZLER_REALTIME_ENABLED', false),
     lostSizzlerRealtimeMaxSockets: readIntegerEnv('CCG_LOST_SIZZLER_REALTIME_MAX_SOCKETS', 128, 1, 10_000),
+    lostSizzlerCommerceEnabled,
+    paypal: readPayPalConfig(lostSizzlerCommerceEnabled),
   };
 
   if (authMode === 'external') {
