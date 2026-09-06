@@ -58,8 +58,10 @@ jobs:
           set -euo pipefail
           migration='services/ccg-backend/migrations/001_initial.sql'
           account_migration='services/ccg-backend/migrations/002_account_profiles.sql'
+          session_migration='services/ccg-backend/migrations/003_auth_sessions.sql'
           test -f "$migration"
           test -f "$account_migration"
+          test -f "$session_migration"
           grep -q 'offline game first' services/ccg-backend/README.md
           grep -q 'lost_sizzler_cloud_saves' "$migration"
           grep -q 'client_revision_ms' "$migration"
@@ -69,6 +71,10 @@ jobs:
           grep -q 'ccg_auth_identities' "$account_migration"
           grep -q 'ccg_profiles' "$account_migration"
           grep -q 'password_hash' "$account_migration"
+          grep -q 'ccg_auth_sessions' "$session_migration"
+          grep -q 'refresh_token_sha256' "$session_migration"
+          grep -q 'ccg_auth_recovery_tokens' "$session_migration"
+          grep -q 'ccg_auth_login_buckets' "$session_migration"
           grep -q 'Never expose `password_hash`' services/ccg-backend/AUTH-PROFILE-MIGRATION-PLAN.md
           if grep -Eiq '(service[_-]?role|SUPABASE_SERVICE_ROLE|private[_-]?key)' services/ccg-backend/src/*; then
             echo 'Backend source contains forbidden privileged-client material.' >&2
