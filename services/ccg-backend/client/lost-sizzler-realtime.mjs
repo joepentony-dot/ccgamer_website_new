@@ -124,9 +124,10 @@ export function createLostSizzlerRealtimeClient({
   }
 
   function decodeMessage(eventOrData) {
-    const raw = eventOrData && Object.prototype.hasOwnProperty.call(eventOrData, 'data')
-      ? eventOrData.data
-      : eventOrData;
+    const eventLike = eventOrData !== null
+      && (typeof eventOrData === 'object' || typeof eventOrData === 'function')
+      && 'data' in eventOrData;
+    const raw = eventLike ? eventOrData.data : eventOrData;
     if (typeof raw !== 'string') return null;
     try {
       const parsed = JSON.parse(raw);
