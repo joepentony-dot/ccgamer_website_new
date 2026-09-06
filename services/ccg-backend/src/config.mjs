@@ -67,33 +67,63 @@ function readPayPalConfig(enabled) {
   });
 }
 
-function readRegistrationEmail(enabled, authMode) {
+function readAuthActionEmail({ enabled, authMode, urlEnv, urlLabel }) {
   if (!enabled) {
-    return Object.freeze({ enabled: false, resendApiKey: '', from: '', verifyUrl: '' });
+    return Object.freeze({ enabled: false, resendApiKey: '', from: '', actionUrl: '' });
   }
-  if (authMode !== 'local') throw new Error('CCG local registration requires CCG_AUTH_MODE=local.');
+  if (authMode !== 'local') throw new Error(`${urlLabel} requires CCG_AUTH_MODE=local.`);
 
   const rawFrom = requireEnv('CCG_AUTH_EMAIL_FROM');
   const bracketed = rawFrom.match(/<([^<>]+)>/);
   const fromAddress = String(bracketed?.[1] || rawFrom).trim();
   if (!validEmail(fromAddress)) throw new Error('Invalid CCG_AUTH_EMAIL_FROM.');
 
-  const verifyUrlRaw = requireEnv('CCG_AUTH_VERIFY_URL');
-  let verifyUrl;
+  const actionUrlRaw = requireEnv(urlEnv);
+  let actionUrl;
   try {
-    verifyUrl = new URL(verifyUrlRaw);
+    actionUrl = new URL(actionUrlRaw);
   } catch {
-    throw new Error('Invalid CCG_AUTH_VERIFY_URL.');
+    throw new Error(`Invalid ${urlEnv}.`);
   }
-  if (verifyUrl.protocol !== 'https:' || verifyUrl.search || verifyUrl.hash) {
-    throw new Error('CCG_AUTH_VERIFY_URL must be HTTPS without query or fragment.');
+  if (actionUrl.protocol !== 'https:' || actionUrl.search || actionUrl.hash) {
+    throw new Error(`${urlEnv} must be HTTPS without query or fragment.`);
   }
 
   return Object.freeze({
     enabled: true,
     resendApiKey: requireEnv('RESEND_API_KEY'),
     from: rawFrom,
-    verifyUrl: verifyUrl.toString(),
+    actionUrl: actionUrl.toString(),
+  });
+}
+
+function readRegistrationEmail(enabled, authMode) {
+  const email = readAuthActionEmail({
+    enabled,
+    authMode,
+    urlEnv: 'CCG_AUTH_VERIFY_URL',
+    urlLabel: 'CCG local registration',
+  });
+  return Object.freeze({
+    enabled: email.enabled,
+    resendApiKey: email.resendApiKey,
+    from: email.from,
+    verifyUrl: email.actionUrl,
+  });
+}
+
+function readRecoveryEmail(enabled, authMode) {
+  const email = readAuthActionEmail({
+    enabled,
+    authMode,
+    urlEnv: 'CCG_AUTH_RECOVERY_URL',
+    urlLabel: 'CCG local password recovery',
+  });
+  return Object.freeze({
+    enabled: email.enabled,
+    resendApiKey: email.resendApiKey,
+    from: email.from,
+    recoveryUrl: email.actionUrl,
   });
 }
 
@@ -152,6 +182,7 @@ export function loadConfig() {
 
   const authMode = readAuthMode();
   const registrationEnabled = readBooleanEnv('CCG_LOCAL_AUTH_REGISTRATION_ENABLED', false);
+  const recoveryEnabled = readBooleanEnv('CCG_LOCAL_AUTH_RECOVERY_ENABLED', false);
   const lostSizzlerCommerceEnabled = readBooleanEnv('CCG_LOST_SIZZLER_COMMERCE_ENABLED', false);
   const base = {
     port,
@@ -162,6 +193,8 @@ export function loadConfig() {
     feedbackEmail: readFeedbackEmail(),
     registrationEnabled,
     registrationEmail: readRegistrationEmail(registrationEnabled, authMode),
+    recoveryEnabled,
+    recoveryEmail: readRecoveryEmail(recoveryEnabled, authMode),
     lostSizzlerRealtimeEnabled: readBooleanEnv('CCG_LOST_SIZZLER_REALTIME_ENABLED', false),
     lostSizzlerRealtimeMaxSockets: readIntegerEnv('CCG_LOST_SIZZLER_REALTIME_MAX_SOCKETS', 128, 1, 10_000),
     lostSizzlerCommerceEnabled,
