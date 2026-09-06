@@ -122,6 +122,57 @@ assert.equal(context.permissions.canModerate, false);
 assert.equal(calls.length, 4, 'Resolved account context must be served from the hydrated CCG session/profile.');
 
 queue.push(response(200, {
+  success: true,
+  already_rated: false,
+}));
+const ratingStatus = await client.functions.invoke('lost-sizzler-feedback', {
+  body: { action: 'rating_status' },
+});
+assert.equal(ratingStatus.error, null);
+assert.equal(ratingStatus.data.success, true);
+assert.equal(ratingStatus.data.already_rated, false);
+assert.equal(calls[4].url, 'https://auth.cheekycommodoregamer.co.uk/v1/lost-sizzler/feedback');
+assert.equal(calls[4].options.headers.authorization, 'Bearer ccg-access-1');
+assert.deepEqual(JSON.parse(calls[4].options.body), { action: 'rating_status' });
+
+queue.push(response(200, { success: true }));
+const telemetry = await client.functions.invoke('lost-sizzler-feedback', {
+  body: {
+    action: 'telemetry',
+    event: 'pilot-check',
+    page_url: 'https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/',
+  },
+});
+assert.equal(telemetry.error, null);
+assert.equal(telemetry.data.success, true);
+assert.equal(calls[5].url, 'https://auth.cheekycommodoregamer.co.uk/v1/lost-sizzler/feedback');
+assert.equal(calls[5].options.headers.authorization, 'Bearer ccg-access-1');
+assert.deepEqual(JSON.parse(calls[5].options.body), {
+  action: 'telemetry',
+  event: 'pilot-check',
+  page_url: 'https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/',
+});
+
+queue.push(response(200, { success: true, feedback_id: 'feedback-1' }));
+const feedbackSubmit = await client.functions.invoke('lost-sizzler-feedback', {
+  body: {
+    email: 'player@example.test',
+    message: 'Compatibility bridge feedback test',
+    page_url: 'https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/',
+  },
+});
+assert.equal(feedbackSubmit.error, null);
+assert.equal(feedbackSubmit.data.success, true);
+assert.equal(feedbackSubmit.data.feedback_id, 'feedback-1');
+assert.equal(calls[6].url, 'https://auth.cheekycommodoregamer.co.uk/v1/lost-sizzler/feedback');
+assert.equal(calls[6].options.headers.authorization, undefined, 'Ordinary feedback remains anonymous by default.');
+assert.deepEqual(JSON.parse(calls[6].options.body), {
+  email: 'player@example.test',
+  message: 'Compatibility bridge feedback test',
+  page_url: 'https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/',
+});
+
+queue.push(response(200, {
   ready: true,
   signedIn: true,
   locked: true,
@@ -135,14 +186,21 @@ const weeklyStart = await client.functions.invoke('ccq-weekly-challenge', {
 });
 assert.equal(weeklyStart.error, null);
 assert.equal(weeklyStart.data.attempt.id, 'attempt-1');
-assert.equal(calls[4].options.headers.authorization, 'Bearer ccg-access-1');
+assert.equal(calls[7].options.headers.authorization, 'Bearer ccg-access-1');
 
 const badWeekly = await client.functions.invoke('ccq-weekly-challenge', {
   body: { action: 'delete-everything' },
 });
 assert.equal(badWeekly.data, null);
 assert.equal(badWeekly.error.code, 'unsupported_weekly_action');
-assert.equal(calls.length, 5, 'Unsupported Weekly Vault actions must fail before a request.');
+assert.equal(calls.length, 8, 'Unsupported Weekly Vault actions must fail before a request.');
+
+const invalidFeedback = await client.functions.invoke('lost-sizzler-feedback', {
+  body: ['not-an-object'],
+});
+assert.equal(invalidFeedback.data, null);
+assert.equal(invalidFeedback.error.code, 'invalid_feedback_payload');
+assert.equal(calls.length, 8, 'Invalid feedback payloads must fail locally before a request.');
 
 const channel = client.channel('ccg-quest:AB12', {
   config: { presence: { key: 'player_1234' } },
@@ -159,10 +217,10 @@ assert.equal(PassiveWebSocket.instances, 0, 'Closing an unused channel must not 
 queue.push(response(200, { revoked: true }));
 const signedOut = await client.auth.signOut();
 assert.equal(signedOut.error, null);
-assert.equal(calls[5].url, 'https://auth.cheekycommodoregamer.co.uk/v1/auth/logout');
-assert.equal(calls[5].options.credentials, 'include');
+assert.equal(calls[8].url, 'https://auth.cheekycommodoregamer.co.uk/v1/auth/logout');
+assert.equal(calls[8].options.credentials, 'include');
 const afterLogout = await client.auth.getSession();
 assert.equal(afterLogout.data.session, null);
 assert.equal(bridge.getDiagnostics().authenticated, false);
 
-console.log('Lost Sizzler CCG compatibility contract passed: construction stays passive, legacy Weekly Vault calls map onto the CCG backend, migrated auth/profile state hydrates through first-party endpoints, and Supabase-shaped realtime remains opt-in.');
+console.log('Lost Sizzler CCG compatibility contract passed: construction stays passive, legacy Weekly Vault and feedback Function calls map onto the CCG backend, migrated auth/profile state hydrates through first-party endpoints, and Supabase-shaped realtime remains opt-in.');
