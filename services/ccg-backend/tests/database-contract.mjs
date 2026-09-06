@@ -14,6 +14,7 @@ try {
     '../migrations/001_initial.sql',
     '../migrations/002_account_profiles.sql',
     '../migrations/003_auth_sessions.sql',
+    '../migrations/004_profile_owned_state.sql',
   ];
   for (const relativePath of migrations) {
     const migration = await fs.readFile(new URL(relativePath, import.meta.url), 'utf8');
@@ -102,7 +103,19 @@ try {
     assert.equal(profileColumnNames.has(required), true, `Missing profile migration column: ${required}`);
   }
 
-  for (const tableName of ['ccg_auth_sessions', 'ccg_auth_login_buckets', 'ccg_auth_recovery_tokens']) {
+  for (const tableName of [
+    'ccg_auth_sessions',
+    'ccg_auth_login_buckets',
+    'ccg_auth_recovery_tokens',
+    'profile_favourites',
+    'profile_game_library',
+    'profile_top_picks',
+    'user_badges',
+    'user_roles',
+    'email_subscriptions',
+    'comments',
+    'ccq_weekly_attempts',
+  ]) {
     const exists = await database.query(
       `select exists(
          select 1 from information_schema.tables
@@ -110,7 +123,7 @@ try {
        ) as present`,
       [tableName]
     );
-    assert.equal(exists.rows[0].present, true, `Missing auth-service table: ${tableName}`);
+    assert.equal(exists.rows[0].present, true, `Missing CCG migration table: ${tableName}`);
   }
 
   const accountUserId = 'account-contract-user';
@@ -172,6 +185,81 @@ try {
        values ('duplicate-email-contract-user', 'profile@EXAMPLE.com', '$2b$12$duplicateplaceholder', 'bcrypt')`
     ),
     (error) => error?.code === '23505'
+  );
+
+  await database.query(
+    `insert into profile_favourites (profile_id, game_slug)
+     values ($1, 'favourite-contract-game')`,
+    [profileUserId]
+  );
+  await database.query(
+    `insert into profile_game_library
+      (profile_id, game_slug, title, system, release_year, lists, custom_lists, rating, note)
+     values ($1, 'library-contract-game', 'Library Contract Game', 'c64', '1987', array['played','owned'], array['contract-list'], 9, 'contract note')`,
+    [profileUserId]
+  );
+  await database.query(
+    `insert into profile_top_picks (profile_id, game_slug)
+     values ($1, 'top-pick-contract-game')`,
+    [profileUserId]
+  );
+  await database.query(
+    `insert into user_badges (user_id, badge_code)
+     values ($1, 'contract-badge')`,
+    [profileUserId]
+  );
+  await database.query(
+    `insert into user_roles (user_id, role)
+     values ($1, 'member')`,
+    [profileUserId]
+  );
+  await database.query(
+    `insert into email_subscriptions (profile_id, email, status, unsubscribe_token)
+     values ($1, 'profile@example.com', 'subscribed', 'contract-unsubscribe-token')`,
+    [profileUserId]
+  );
+  await database.query(
+    `insert into comments (user_id, game_key, body, page_type, page_id)
+     values ($1, 'contract-game', 'Contract comment', 'game', 'contract-game')`,
+    [accountUserId]
+  );
+  await database.query(
+    `insert into ccq_weekly_attempts
+      (week_start, user_id, player_name, seed, status, score, deepest_floor, duration_ms, level, completed, stats, ghost_path)
+     values (date '2026-09-01', $1, 'Contract Player', 'contract-seed', 'finished', 12345, 3, 60000, 4, false, '{"kills":2}'::jsonb, '[]'::jsonb)`,
+    [profileUserId]
+  );
+
+  const ownedCounts = await database.query(
+    `select
+       (select count(*) from profile_favourites where profile_id = $1)::int as favourites,
+       (select count(*) from profile_game_library where profile_id = $1)::int as library,
+       (select count(*) from profile_top_picks where profile_id = $1)::int as top_picks,
+       (select count(*) from user_badges where user_id = $1)::int as badges,
+       (select count(*) from user_roles where user_id = $1)::int as roles,
+       (select count(*) from email_subscriptions where profile_id = $1)::int as subscriptions,
+       (select count(*) from comments where user_id = $2)::int as comments,
+       (select count(*) from ccq_weekly_attempts where user_id = $1)::int as weekly_attempts`,
+    [profileUserId, accountUserId]
+  );
+  assert.deepEqual(ownedCounts.rows[0], {
+    favourites: 1,
+    library: 1,
+    top_picks: 1,
+    badges: 1,
+    roles: 1,
+    subscriptions: 1,
+    comments: 1,
+    weekly_attempts: 1,
+  });
+
+  await assert.rejects(
+    database.query(
+      `insert into profile_game_library (profile_id, game_slug, lists, rating)
+       values ($1, 'invalid-library-contract', array['not-a-real-list'], 11)`,
+      [profileUserId]
+    ),
+    (error) => error?.code === '23514'
   );
 
   const refreshTokenSha = 'a'.repeat(64);
@@ -268,7 +356,7 @@ try {
   assert.equal(stored.revision, 2);
   assert.deepEqual(stored.payload.summary, changed.summary);
 
-  console.log('CCG PostgreSQL contract passed: account/profile separation, auth-session and recovery-token proof storage, case-insensitive account uniqueness, source-compatible Solo saves, transaction serialization, idempotent retry and stale-write rejection work on PostgreSQL 17.');
+  console.log('CCG PostgreSQL contract passed: account/profile separation, active profile-owned state, auth-session/recovery proof storage, case-insensitive account uniqueness, source-compatible Solo saves and transaction safety work on PostgreSQL 17.');
 } finally {
   await database.close();
 }
