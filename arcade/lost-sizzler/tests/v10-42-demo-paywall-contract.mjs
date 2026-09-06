@@ -21,6 +21,7 @@ assert(!source.includes('const result=await start({product:PRODUCT_SLUG})'),'Che
 assert(source.includes('purchase_not_verified'),'A browser checkout callback alone must never be enough to unlock the game.');
 assert(source.includes('if(!activePermanent(entitlementValue))return false'),'Only a permanent entitlement returned through the commerce-provider path may unlock the runtime.');
 assert(source.includes('finally{state.checking=false}'),'Paywall presentation mutex must always release so Not Now and later full-game attempts can reopen it.');
+assert(source.includes('function watchTutorialCompletion(){\n    if(!DEMO_MODE)return;'),'Tutorial-completion purchase presentation must be disabled outside the explicit demo wrapper.');
 assert(source.includes('if(!complete){completionQueued=false;return}'),'Tutorial completion detection must re-arm after the completion banner disappears so replayed training can trigger the offer again.');
 assert(source.includes('event.stopImmediatePropagation()'),'Demo lock must stop the underlying full-game action before presenting the entitlement screen.');
 assert(source.includes('"continue-save-btn","join-btn"'),'Demo mode must also guard saved-run resume and room-code join entry paths.');
@@ -35,4 +36,4 @@ assert(!source.includes('refreshEntitlement,unlockRuntime})'),'Direct browser ac
 assert(!source.includes('refreshEntitlement,state,')&&!source.includes('state,showPaywall'),'Mutable entitlement state must not be exported through the public paywall API.');
 assert(source.includes('credentials:')===false,'The presentation layer must not embed its own privileged network credentials.');
 
-console.log('Lost Sizzler V10.42 Tutorial completion, full entry-path guard, safe offer rendering and server-refresh permanent-unlock contract passed.');
+console.log('Lost Sizzler V10.42 Tutorial completion, demo-only purchase presentation, full entry-path guard, safe offer rendering and server-refresh permanent-unlock contract passed.');
