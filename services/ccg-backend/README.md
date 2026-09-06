@@ -42,9 +42,12 @@ The service remains deliberately small and fail-closed:
 - deterministic save-payload SHA-256 verification;
 - 512 KiB canonical save-payload limit;
 - compare-and-swap revision protection;
-- idempotent exact retry handling.
+- idempotent exact retry handling;
+- a passive browser-compatible cloud-sync provider in `client/lost-sizzler-cloud-sync.mjs`.
 
 The game client is **not** pointed at this service yet. Supabase remains selectable/source-of-record until later migration and cut-over gates are deliberately satisfied.
+
+The passive provider performs **zero network requests when constructed**. It has no local-storage, IndexedDB or game-state write capability: `pull()` returns a remote candidate and `push()` returns a remote result. The eventual Lost Sizzler integration must make any local-state decision separately and must never treat a failed remote call as authority to alter the local save.
 
 ## Required environment
 
@@ -112,6 +115,28 @@ Rules:
 
 This API is an optional remote mirror. A failed PUT must never be interpreted by the eventual game adapter as permission to discard or replace the authoritative local save.
 
+## Passive cloud-sync provider
+
+`client/lost-sizzler-cloud-sync.mjs` is intentionally not loaded by the current Lost Sizzler runtime. It is the future CCG-backend provider boundary and requires explicit construction with:
+
+- the backend base URL;
+- an access-token callback;
+- `fetch`;
+- Web Crypto SHA-256 support.
+
+It enforces HTTPS for remote deployments, with plain HTTP accepted only for localhost development. It does not persist credentials and sends bearer tokens only when `pull()` or `push()` is explicitly called.
+
+Its contract tests prove:
+
+- construction causes zero requests;
+- browser-side canonical SHA-256 matches the server's canonical save hash;
+- missing authentication fails before a request;
+- network failure leaves caller-owned local save data unchanged;
+- revision conflict leaves caller-owned local save data unchanged;
+- successful mirroring also does not mutate the caller-owned local object.
+
+This is deliberately separate from the current Supabase-shaped `online-services-gate.js`. Existing multiplayer, Weekly Vault, feedback and rating code still expects a Supabase client and is therefore not redirected to this provider prematurely.
+
 ## Migration programme
 
 Migration away from Supabase must remain staged:
@@ -147,10 +172,10 @@ This backend work does not change the existing recovery rule. The prior one-shot
 
 ## Next implementation slice
 
-After the cloud-save contract is green, the next safe slice is the provider/client boundary and account-state synchronization:
+After the backend/client cloud-save contracts are green, the next safe slice is account-state synchronization and deployment readiness:
 
-- add an isolated CCG-backend provider without changing the default production provider;
-- prove offline startup never constructs or contacts it;
-- prove failed cloud synchronization cannot mutate local Save & Quit / Continue state;
 - add achievement and permanent-collection synchronization with idempotent ownership rules;
+- add database migration execution/checksum tooling for a fresh CCG PostgreSQL deployment;
+- define the reverse-proxy/health/deployment contract without committing credentials;
+- only then add an opt-in Lost Sizzler runtime hook for the CCG provider, leaving the production/default provider unchanged;
 - keep multiplayer, Weekly Vault, ratings and feedback behind later explicit online-only slices.
