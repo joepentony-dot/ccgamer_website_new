@@ -16,7 +16,7 @@ The staging PostgreSQL resource was provisioned on Render on 6 September 2026 be
 
 The staging resources are:
 
-- `ccg-backend-staging` — free Node.js web service in Frankfurt, to be created by the Blueprint;
+- `ccg-backend-staging` — free Node.js web service in Frankfurt, created by the Blueprint;
 - `ccg-backend-staging-db` — existing free PostgreSQL 17 database in Frankfurt;
 - database name `ccg_backend_staging_db` and database user `ccg_backend_staging_db_user`, matching the immutable values Render assigned when the database was provisioned;
 - an internal `DATABASE_URL` connection from the service to that database through `fromDatabase`;
@@ -90,6 +90,39 @@ Before importing any migrated account data, confirm:
 3. all eight repository migrations are present in `ccg_schema_migrations` with their expected checksums.
 4. no production website configuration points at the staging URL.
 5. the service can publish its public-only JWKS endpoint without exposing private JWK material.
+
+## One-time staging migration transfer
+
+The staging service supports a deliberately guarded one-time migration import through `scripts/import-staging-env-once.mjs`. The importer is passive by default and runs before the normal server only when all staging gates are satisfied.
+
+The transfer exists solely to move the frozen, authorised 12-table migration bundle into the isolated Render staging database without committing user data to GitHub or exposing the Render database publicly. Each table is supplied temporarily as a base64-encoded JSON array in a dedicated Render environment value.
+
+The importer requires:
+
+```text
+CCG_STAGING_MIGRATION_ENABLED=true
+CCG_STAGING_MIGRATION_ACK=I_ACCEPT_NON_PRODUCTION_WRITE
+CCG_LOCAL_AUTH_ISSUER=https://ccg-backend-staging.onrender.com/
+CCG_AUTH_MODE=local
+```
+
+It also refuses to run unless registration, password recovery, realtime and commerce remain disabled.
+
+The existing migration importer still provides the substantive safety boundary: the destination must be empty, all 12 table counts must match the frozen 6 September snapshot, bcrypt account hashes and ownership relationships must validate, and all writes occur in one transaction. A successful import must therefore retain 33 accounts, 27 profiles and six auth-only accounts without fabricating profiles.
+
+The temporary payload variables are staging transport only. They must never be copied into Git, logs, issues, PR comments or chat.
+
+### Mandatory cleanup after a successful import
+
+Immediately after the staging import succeeds:
+
+1. set `CCG_STAGING_MIGRATION_ENABLED=false`;
+2. blank `CCG_STAGING_MIGRATION_ACK`;
+3. blank all 12 `CCG_STAGING_MIGRATION_*_B64` payload values;
+4. trigger a fresh manual deploy;
+5. confirm prestart reports the migration import is disabled and the already-imported database remains healthy.
+
+Do not leave the sensitive transfer payloads resident in Render after validation. Do not attempt a second import into the populated database; the importer is designed to refuse a non-empty destination.
 
 ## Migration validation gate
 
