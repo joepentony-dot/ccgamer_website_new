@@ -20,7 +20,9 @@ assert(core.includes('startWorld(PGR.floorSeed(run),Boolean(p2),true,true)'),'Ch
 
 assert(progression.includes('player2:checkpointClone(player2)'),'Checkpoint payload must store the complete dynamic Player 2 object.');
 assert(state.includes('const localRoster=()=>{try{return typeof localPlayers==="function"?localPlayers().filter(Boolean):[p1,p2].filter(Boolean)}'),'V10.42 campaign reward routing must enumerate both local split-screen players.');
-assert(state.includes('for(const local of localRoster())if(local!==player)queueDomainReward(local,domain)'),'When one local player claims a domain Key, the other local character must receive its own campaign reward.');
+assert(state.includes('const takeRelicAuthority=remoteActor||locals.length>1'),'Split-screen domain recovery must move relic-modal ownership into the serialized V10.42 reward queue.');
+assert(state.includes('if(takeRelicAuthority)suppressScheduledRemoteRelic()'),'Split-screen domain recovery must suppress the original competing delayed relic modal before queued choices are shown.');
+assert(state.includes('if(takeRelicAuthority){for(const local of locals)queueDomainReward(local,domain)}'),'When either split-screen player claims a domain Key, both local characters must receive their own serialized campaign reward.');
 assert(state.includes('copyPlayerV142(result,old)'),'The V10.42 preservation wrapper must copy extended character state for either local player.');
 
 for(const marker of ['rpgStats','relics','banishmentVessel','banishmentEssence','banishmentEssenceCost','sigilReveal','sigilWard','sigilBind','sigilBanish']){
@@ -37,4 +39,4 @@ assert(cloned.player2.rpgStats.vitality===9&&cloned.player2.relics.length===2,'P
 assert(cloned.player2.banishmentEssence===5&&cloned.player2.sigilBind===true,'Player 2 alchemy and Sigil state must survive checkpoint cloning.');
 assert(cloned.run.v142ClaimedDomains.length===3,'Split-screen checkpoint must retain the shared three-Key campaign state.');
 
-console.log('Lost Sizzler V10.42 split-screen persistence contract passed.');
+console.log('Lost Sizzler V10.42 split-screen persistence and serialized relic-choice contract passed.');
