@@ -43,6 +43,7 @@ const sandbox={
 vm.runInNewContext(source,sandbox,{filename:'v10-42-five-depth-campaign.js'});
 const api=windowObject.CCGLostSizzlerV142FiveDepthCampaign;
 assert(api,'Campaign runtime must install once its dependencies are available.');
+assert(source.includes('hostState.exitSigilCollected=false;hostState.exitOpen=true'),'Floors 1–4 must open stairs without pretending the final Sigil has been collected.');
 
 const expected=[6,5,5,5,5],seen=[];
 for(let floor=1;floor<=5;floor++){
