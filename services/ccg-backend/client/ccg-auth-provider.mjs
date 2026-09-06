@@ -180,10 +180,17 @@ export function createCcgAuthProvider({
       if (!result.ok) return withProvider(result, 'ccg');
       lastAccessToken = localCcgClient.getAccessToken();
       lastUserId = localCcgClient.getUserId();
+      const user = result.user_id
+        ? Object.freeze({
+            id: result.user_id,
+            email: result.email ?? null,
+            email_confirmed_at: result.email_confirmed_at ?? null,
+          })
+        : null;
       return success('ccg', {
         status: result.status,
         user_id: result.user_id,
-        user: result.user_id ? Object.freeze({ id: result.user_id }) : null,
+        user,
         profile: result.profile ?? null,
       });
     }
