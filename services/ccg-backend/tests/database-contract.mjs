@@ -13,6 +13,7 @@ try {
   const migrations = [
     '../migrations/001_initial.sql',
     '../migrations/002_account_profiles.sql',
+    '../migrations/003_auth_sessions.sql',
   ];
   for (const relativePath of migrations) {
     const migration = await fs.readFile(new URL(relativePath, import.meta.url), 'utf8');
@@ -101,6 +102,17 @@ try {
     assert.equal(profileColumnNames.has(required), true, `Missing profile migration column: ${required}`);
   }
 
+  for (const tableName of ['ccg_auth_sessions', 'ccg_auth_login_buckets', 'ccg_auth_recovery_tokens']) {
+    const exists = await database.query(
+      `select exists(
+         select 1 from information_schema.tables
+          where table_schema = 'public' and table_name = $1
+       ) as present`,
+      [tableName]
+    );
+    assert.equal(exists.rows[0].present, true, `Missing auth-service table: ${tableName}`);
+  }
+
   const accountUserId = 'account-contract-user';
   const profileUserId = 'profile-contract-user';
   await database.query(
@@ -161,6 +173,33 @@ try {
     ),
     (error) => error?.code === '23505'
   );
+
+  const refreshTokenSha = 'a'.repeat(64);
+  const recoveryTokenSha = 'b'.repeat(64);
+  const session = await database.query(
+    `insert into ccg_auth_sessions
+      (user_id, refresh_token_sha256, expires_at)
+     values ($1, $2, now() + interval '30 days')
+     returning session_id, revoked_at`,
+    [profileUserId, refreshTokenSha]
+  );
+  assert.equal(Boolean(session.rows[0].session_id), true);
+  assert.equal(session.rows[0].revoked_at, null);
+
+  await database.query(
+    `insert into ccg_auth_recovery_tokens
+      (user_id, token_sha256, expires_at)
+     values ($1, $2, now() + interval '1 hour')`,
+    [profileUserId, recoveryTokenSha]
+  );
+  const storedSecretProofs = await database.query(
+    `select
+       (select count(*) from ccg_auth_sessions where refresh_token_sha256 = $1)::int as sessions,
+       (select count(*) from ccg_auth_recovery_tokens where token_sha256 = $2)::int as recovery_tokens`,
+    [refreshTokenSha, recoveryTokenSha]
+  );
+  assert.equal(storedSecretProofs.rows[0].sessions, 1);
+  assert.equal(storedSecretProofs.rows[0].recovery_tokens, 1);
 
   const store = createCloudSaveStore(database);
   const userId = 'database-contract-user';
@@ -229,7 +268,7 @@ try {
   assert.equal(stored.revision, 2);
   assert.deepEqual(stored.payload.summary, changed.summary);
 
-  console.log('CCG PostgreSQL contract passed: account/profile separation, case-insensitive account uniqueness, source-compatible Solo saves, transaction serialization, idempotent retry and stale-write rejection work on PostgreSQL 17.');
+  console.log('CCG PostgreSQL contract passed: account/profile separation, auth-session and recovery-token proof storage, case-insensitive account uniqueness, source-compatible Solo saves, transaction serialization, idempotent retry and stale-write rejection work on PostgreSQL 17.');
 } finally {
   await database.close();
 }
