@@ -12,17 +12,20 @@ Use the custom Blueprint path:
 services/ccg-backend/deploy/render-staging.yaml
 ```
 
-The Blueprint creates:
+The staging PostgreSQL resource was provisioned on Render on 6 September 2026 before the web service. The Blueprint is therefore aligned to adopt that existing resource by its Render name rather than creating a second database.
 
-- `ccg-backend-staging` — free Node.js web service in Frankfurt;
-- `ccg-backend-staging-db` — free PostgreSQL 17 database in Frankfurt;
-- an internal `DATABASE_URL` connection between the service and database;
+The staging resources are:
+
+- `ccg-backend-staging` — free Node.js web service in Frankfurt, to be created by the Blueprint;
+- `ccg-backend-staging-db` — existing free PostgreSQL 17 database in Frankfurt;
+- database name `ccg_backend_staging_db` and database user `ccg_backend_staging_db_user`, matching the immutable values Render assigned when the database was provisioned;
+- an internal `DATABASE_URL` connection from the service to that database through `fromDatabase`;
 - explicit `0.0.0.0` service binding for Render only;
 - local CCG authentication capability with registration/recovery disabled;
 - manual deploys (`autoDeployTrigger: off`);
 - no public PostgreSQL allowlist by default.
 
-The free PostgreSQL tier is suitable only for temporary validation. It has provider-imposed lifetime/capacity limits and must not be treated as the production database.
+The free PostgreSQL tier is suitable only for temporary validation. This staging database is currently provider-expiring in October 2026 and must not be treated as the production database.
 
 ## Signing keys
 
