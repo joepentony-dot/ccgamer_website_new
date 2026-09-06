@@ -8,10 +8,9 @@
   },
   "scripts": {
     "start": "node src/server.mjs",
-    "check": "node --check src/server.mjs && node --check src/config.mjs && node --check src/db.mjs && node --check src/auth.mjs && node --check src/account-store.mjs && node --check src/cloud-save.mjs && node --check client/lost-sizzler-cloud-sync.mjs && node tests/config-contract.mjs && node tests/account-store-contract.mjs && node tests/cloud-save-contract.mjs && node tests/cloud-sync-client-contract.mjs"
+    "check": "node --check src/server.mjs && node --check src/config.mjs && node --check src/db.mjs && node --check src/auth.mjs && node --check src/cloud-save.mjs && node --check client/lost-sizzler-cloud-sync.mjs && node tests/config-contract.mjs && node tests/cloud-save-contract.mjs && node tests/cloud-sync-client-contract.mjs"
   },
   "dependencies": {
-    "bcryptjs": "^2.4.3",
     "jose": "^5.9.6",
     "pg": "^8.13.1"
   }
