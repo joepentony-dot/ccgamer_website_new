@@ -137,7 +137,11 @@ jobs:
           test -f "$service_state_migration"
           test -f "$snapshot"
           test -f services/ccg-backend/src/auth-http.mjs
+          test -f services/ccg-backend/src/auth-email.mjs
+          test -f services/ccg-backend/src/auth-registration.mjs
+          test -f services/ccg-backend/src/auth-registration-http.mjs
           test -f services/ccg-backend/src/password-recovery.mjs
+          test -f services/ccg-backend/src/auth-recovery-http.mjs
           test -f services/ccg-backend/src/lost-sizzler-feedback.mjs
           test -f services/ccg-backend/src/lost-sizzler-feedback-http.mjs
           test -f services/ccg-backend/src/lost-sizzler-progress.mjs
@@ -150,6 +154,8 @@ jobs:
           test -f services/ccg-backend/client/ccg-online-client.mjs
           test -f services/ccg-backend/client/lost-sizzler-feedback.mjs
           test -f services/ccg-backend/client/lost-sizzler-progress.mjs
+          test -f services/ccg-backend/tests/auth-email-contract.mjs
+          test -f services/ccg-backend/tests/auth-recovery-http-contract.mjs
           test -f services/ccg-backend/tests/auth-client-contract.mjs
           test -f services/ccg-backend/tests/online-client-contract.mjs
           test -f services/ccg-backend/tests/online-service-database-contract.mjs
