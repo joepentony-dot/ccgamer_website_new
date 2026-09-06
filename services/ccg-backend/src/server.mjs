@@ -2,6 +2,7 @@ import http from 'node:http';
 import { loadConfig } from './config.mjs';
 import { createDatabase } from './db.mjs';
 import { createAuth } from './auth.mjs';
+import { createProfileStore } from './profile-store.mjs';
 import { createCloudSaveStore, readJsonBody } from './cloud-save.mjs';
 
 function writeJson(response, statusCode, body, headers = {}) {
@@ -30,6 +31,7 @@ async function main() {
   const config = loadConfig();
   const database = createDatabase(config.databaseUrl);
   const auth = createAuth(config);
+  const profiles = createProfileStore(database);
   const cloudSaves = createCloudSaveStore(database);
 
   const server = http.createServer(async (request, response) => {
@@ -66,7 +68,8 @@ async function main() {
 
       if (request.method === 'GET' && url.pathname === '/v1/me') {
         const identity = await auth.verifyBearer(request.headers.authorization);
-        writeJson(response, 200, { user_id: identity.userId }, cors);
+        const profile = await profiles.get(identity.userId);
+        writeJson(response, 200, { user_id: identity.userId, profile }, cors);
         return;
       }
 
