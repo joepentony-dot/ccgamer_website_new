@@ -5,6 +5,9 @@ import { createDatabase } from './db.mjs';
 import { createAuth } from './auth.mjs';
 import { createLocalAuthService } from './local-auth.mjs';
 import { createAuthHttp } from './auth-http.mjs';
+import { createAuthEmailSender } from './auth-email.mjs';
+import { createAuthRegistrationService } from './auth-registration.mjs';
+import { createAuthRegistrationHttp } from './auth-registration-http.mjs';
 import { createProfileStore } from './profile-store.mjs';
 import { createCloudSaveStore, readJsonBody } from './cloud-save.mjs';
 import { createWeeklyVaultService } from './weekly-vault.mjs';
@@ -70,10 +73,22 @@ async function createAuthentication(config, database) {
   return Object.freeze({ auth, authHttp: createAuthHttp(auth) });
 }
 
+function createRegistration(config, database) {
+  if (!config.registrationEnabled) return null;
+  const emailSender = createAuthEmailSender({
+    apiKey: config.registrationEmail.resendApiKey,
+    from: config.registrationEmail.from,
+    verifyUrl: config.registrationEmail.verifyUrl,
+  });
+  const registration = createAuthRegistrationService({ database, emailSender });
+  return createAuthRegistrationHttp(registration);
+}
+
 async function main() {
   const config = loadConfig();
   const database = createDatabase(config.databaseUrl);
   const { auth, authHttp } = await createAuthentication(config, database);
+  const registrationHttp = createRegistration(config, database);
   const profiles = createProfileStore(database);
   const cloudSaves = createCloudSaveStore(database);
   const weeklyVault = createWeeklyVaultService({ database });
@@ -134,6 +149,7 @@ async function main() {
           ok: true,
           service: config.serviceName,
           auth_mode: config.authMode,
+          registration: config.registrationEnabled,
           lost_sizzler_realtime: config.lostSizzlerRealtimeEnabled,
           lost_sizzler_commerce: config.lostSizzlerCommerceEnabled,
         }, cors);
@@ -143,6 +159,12 @@ async function main() {
       if (request.method === 'GET' && url.pathname === '/ready') {
         const databaseOk = await database.ping();
         writeJson(response, databaseOk ? 200 : 503, { ok: databaseOk, database: databaseOk }, cors);
+        return;
+      }
+
+      if (registrationHttp?.handles(request.method, url.pathname)) {
+        const result = await registrationHttp.handle(request, url.pathname);
+        writeJson(response, result.statusCode, result.body, { ...cors, ...result.headers });
         return;
       }
 
@@ -240,7 +262,8 @@ async function main() {
   server.listen(config.port, '127.0.0.1', () => {
     const realtimeStatus = config.lostSizzlerRealtimeEnabled ? 'realtime enabled' : 'realtime disabled';
     const commerceStatus = config.lostSizzlerCommerceEnabled ? 'commerce enabled' : 'commerce disabled';
-    console.log(`${config.serviceName} listening on 127.0.0.1:${config.port} (${config.authMode} auth; ${realtimeStatus}; ${commerceStatus})`);
+    const registrationStatus = config.registrationEnabled ? 'registration enabled' : 'registration disabled';
+    console.log(`${config.serviceName} listening on 127.0.0.1:${config.port} (${config.authMode} auth; ${registrationStatus}; ${realtimeStatus}; ${commerceStatus})`);
   });
 }
 
