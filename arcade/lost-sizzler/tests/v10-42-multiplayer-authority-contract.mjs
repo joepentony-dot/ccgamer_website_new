@@ -26,6 +26,12 @@ assert(state.includes('applyCampaign(snapshot._v142Campaign)'),'Guests must cons
 assert(state.includes('preservePlayerV142CampaignState'),'Floor descent must preserve V10.42 multiplayer character state.');
 assert(state.includes('movementTriggersV142Authority'),'Local movement-triggered Key transitions must remain behind the V10.42 authority wrapper.');
 
+const guestCampaignIndex=state.indexOf('added=applyCampaign(snapshot._v142Campaign)');
+const baseWorldIndex=state.indexOf('const result=base.apply(this,arguments),player=currentPlayer();');
+const guestRewardIndex=state.indexOf('for(const id of added){const domain=domainById(id);if(domain&&player)queueDomainReward(player,domain)}');
+assert(guestCampaignIndex>=0&&baseWorldIndex>guestCampaignIndex,'Guest world handling must apply authoritative campaign run state before the stabilized world/floor rebuild.');
+assert(guestRewardIndex>baseWorldIndex,'Guest domain powers and relic choices must be queued only after the stabilized world handler has rebuilt the current-floor player.');
+
 assert(network.includes('if(!p){if(i.kind==="key")'),'The stabilized network path still treats a remote collector as non-local on the host.');
 assert(network.includes('function onCollectRequest(p)'),'The stabilized host owns online collection requests.');
 assert(collect.includes('onCollectRequestV142Authority'),'Remote Key collection must be bridged at the authoritative host collection boundary.');
@@ -52,4 +58,4 @@ const wire=JSON.parse(JSON.stringify(representative));
 assert(wire.rpgStats.arcana===8&&wire.relics.length===2,'Representative V10.42 RPG/relic state must survive network-safe JSON cloning.');
 assert(wire.banishmentEssence===4&&wire.sigilBind===true,'Representative alchemy and Sigil state must survive network-safe JSON cloning.');
 
-console.log('Lost Sizzler V10.42 multiplayer authority contract passed.');
+console.log('Lost Sizzler V10.42 multiplayer authority and guest floor-transition ordering contract passed.');
