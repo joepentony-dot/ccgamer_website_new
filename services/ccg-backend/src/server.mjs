@@ -13,6 +13,7 @@ import { createLostSizzlerFeedbackService } from './lost-sizzler-feedback.mjs';
 import { createLostSizzlerFeedbackHttp } from './lost-sizzler-feedback-http.mjs';
 import { createLostSizzlerProgressStore } from './lost-sizzler-progress.mjs';
 import { createLostSizzlerProgressHttp } from './lost-sizzler-progress-http.mjs';
+import { createLostSizzlerRealtimeWebSocketTransport } from './lost-sizzler-realtime-ws.mjs';
 
 function writeJson(response, statusCode, body, headers = {}) {
   const payload = Buffer.from(`${JSON.stringify(body)}\n`, 'utf8');
@@ -110,7 +111,12 @@ async function main() {
       const url = new URL(request.url || '/', 'http://localhost');
 
       if (request.method === 'GET' && url.pathname === '/health') {
-        writeJson(response, 200, { ok: true, service: config.serviceName, auth_mode: config.authMode }, cors);
+        writeJson(response, 200, {
+          ok: true,
+          service: config.serviceName,
+          auth_mode: config.authMode,
+          lost_sizzler_realtime: config.lostSizzlerRealtimeEnabled,
+        }, cors);
         return;
       }
 
@@ -179,7 +185,20 @@ async function main() {
     }
   });
 
+  const realtimeTransport = config.lostSizzlerRealtimeEnabled
+    ? createLostSizzlerRealtimeWebSocketTransport({ allowedOrigins: config.allowedOrigins })
+    : null;
+  realtimeTransport?.attach(server);
+
+  let shuttingDown = false;
   const shutdown = async () => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    try {
+      await realtimeTransport?.close();
+    } catch (error) {
+      console.error(`CCG realtime shutdown failed: ${error.message}`);
+    }
     server.close(async () => {
       await database.close();
       process.exit(0);
@@ -190,7 +209,8 @@ async function main() {
   process.on('SIGTERM', shutdown);
 
   server.listen(config.port, '127.0.0.1', () => {
-    console.log(`${config.serviceName} listening on 127.0.0.1:${config.port} (${config.authMode} auth)`);
+    const realtimeStatus = config.lostSizzlerRealtimeEnabled ? 'realtime enabled' : 'realtime disabled';
+    console.log(`${config.serviceName} listening on 127.0.0.1:${config.port} (${config.authMode} auth; ${realtimeStatus})`);
   });
 }
 
