@@ -26,18 +26,21 @@ assert(overhaul.includes('if(Array.isArray(old?.relics))result.relics=[...old.re
 assert(campaign.includes('runState.v142ClaimedDomains=Array.isArray(runState.v142ClaimedDomains)?runState.v142ClaimedDomains:[]'),'Global Iron/Bone/Ash progress must live on the persistent run object.');
 assert(campaign.includes('globalKeyCount'),'Campaign HUD/objectives must derive key progress from the persistent run state.');
 
+assert(progression.includes('run.bankedGames.push(...run.floorGames);run.floorGames=[]'),'Completing a floor must move rescued C64 games into the persistent campaign collection before the next depth.');
+assert(progression.includes('for(const g of run.bankedGames)if(!saved.includes(g))saved.push(g)'),'Banked rescue games must also continue into the persistent local C64 collection.');
 assert(progression.includes('function checkpointClone(value){try{return JSON.parse(JSON.stringify(value))}'),'Checkpoint storage must clone the complete dynamic run/player objects rather than a narrow legacy whitelist.');
 assert(progression.includes('run:checkpointClone(run),player:checkpointClone(player),player2:checkpointClone(player2)'),'Checkpoint payload must retain the complete V10.42 run and character state.');
 assert(core.includes('run=saved.run;score=Math.max(0,Number(saved.score)||0);p1=saved.player'),'Resume must restore the saved run and player before rebuilding the current floor.');
 assert(core.includes('startWorld(PGR.floorSeed(run),Boolean(p2),true,true)'),'Resume must preserve the restored player while regenerating the deterministic floor entrance.');
 
 const representative={
-  run:{floor:4,v142ClaimedDomains:['iron','bone','ash'],v142AllKeysAnnounced:true},
+  run:{floor:4,v142ClaimedDomains:['iron','bone','ash'],v142AllKeysAnnounced:true,bankedGames:['Boulder Dash','Bruce Lee'],floorGames:['Commando']},
   player:{level:17,rpgStats:{might:8,vitality:7,agility:6,endurance:9,luck:7,arcana:8},relics:['sid-capacitor','ward-amplifier'],banishmentVessel:true,banishmentEssence:4,banishmentEssenceCost:2,sigilReveal:true,sigilWard:true,sigilBind:true}
 };
 const cloned=JSON.parse(JSON.stringify(representative));
 assert(cloned.run.v142ClaimedDomains.join(',')==='iron,bone,ash','JSON checkpoint semantics must retain all three global Keys.');
+assert(cloned.run.bankedGames.join(',')==='Boulder Dash,Bruce Lee'&&cloned.run.floorGames[0]==='Commando','JSON checkpoint semantics must retain both previously banked and current-floor rescued C64 games.');
 assert(cloned.player.rpgStats.endurance===9&&cloned.player.relics.length===2,'JSON checkpoint semantics must retain RPG stats and relics.');
 assert(cloned.player.banishmentEssence===4&&cloned.player.sigilBind===true,'JSON checkpoint semantics must retain alchemy and Sigil state.');
 
-console.log('Lost Sizzler V10.42 campaign descent and checkpoint persistence contract passed.');
+console.log('Lost Sizzler V10.42 campaign descent, rescued-game and checkpoint persistence contract passed.');
