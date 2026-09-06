@@ -29,10 +29,12 @@ assert(state.includes('movementTriggersV142Authority'),'Local movement-triggered
 assert(network.includes('if(!p){if(i.kind==="key")'),'The stabilized network path still treats a remote collector as non-local on the host.');
 assert(network.includes('function onCollectRequest(p)'),'The stabilized host owns online collection requests.');
 assert(collect.includes('onCollectRequestV142Authority'),'Remote Key collection must be bridged at the authoritative host collection boundary.');
+assert(collect.includes('playMode==="online"&&net?.connected&&net.isHost'),'The collection bridge must be active only on an online host.');
+assert(collect.includes('!localRoster().some(player=>player.id===payload.collector)'),'Local and split-screen collectors must stay on the original V10.42 movement/reward path.');
 assert(collect.includes('item?.kind==="key"&&item.domainId'),'Only V10.42 domain Keys should enter the campaign-domain bridge.');
 assert(collect.includes('item?.active!==false'),'The bridge must require the authoritative collection request to deactivate the Key before granting campaign progress.');
 assert(collect.includes('runState.v142ClaimedDomains.push(domain.id)'),'The host must record a newly collected remote domain Key on the persistent run.');
-assert(collect.includes('campaignApi.queueDomainReward?.(player,domain)'),'Host-local/split characters must receive the newly shared domain reward after remote collection.');
+assert(collect.includes('campaignApi.queueDomainReward?.(player,domain)'),'Host-local characters must receive the shared domain reward after a remote collection.');
 assert(collect.includes('broadcastWorld()'),'Remote Key collection must publish the updated campaign snapshot to guests.');
 
 const representative={
