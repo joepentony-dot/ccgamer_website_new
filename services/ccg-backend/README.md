@@ -8,7 +8,7 @@ Nothing in this service changes or deletes Supabase data. The existing Supabase 
 
 ## Scope
 
-The first service boundary covers only online features:
+The service boundary covers only online features:
 
 - account identity verification;
 - optional cloud-save synchronization;
@@ -29,7 +29,7 @@ The following must remain local/package responsibilities and must not be routed 
 
 ## Current implementation
 
-The initial service is deliberately small and fail-closed:
+The service remains deliberately small and fail-closed:
 
 - Node.js HTTP service;
 - PostgreSQL persistence boundary;
@@ -38,9 +38,13 @@ The initial service is deliberately small and fail-closed:
 - `/health` for process liveness;
 - `/ready` for database readiness;
 - authenticated `/v1/me` identity proof;
-- no gameplay data mutation routes yet.
+- authenticated Lost Sizzler cloud-save GET/PUT;
+- deterministic save-payload SHA-256 verification;
+- 512 KiB canonical save-payload limit;
+- compare-and-swap revision protection;
+- idempotent exact retry handling.
 
-This lets infrastructure, authentication and database ownership be tested before any Lost Sizzler client is pointed at the new backend.
+The game client is **not** pointed at this service yet. Supabase remains selectable/source-of-record until later migration and cut-over gates are deliberately satisfied.
 
 ## Required environment
 
@@ -64,7 +68,49 @@ Apply `migrations/001_initial.sql` only to a new CCG-owned PostgreSQL database. 
 
 The schema deliberately stores no game music/media blobs. Large downloadable assets belong in the website/package asset pipeline, not in the transactional database.
 
-Cloud saves include a revision and SHA-256 field so later synchronization can use compare-and-swap/idempotent rules instead of blindly overwriting newer local state.
+Cloud saves include a revision and SHA-256 field so synchronization uses compare-and-swap/idempotent rules instead of blindly overwriting newer local state.
+
+## Cloud-save API
+
+### GET `/v1/lost-sizzler/cloud-save`
+
+Requires a valid bearer JWT. Identity is derived only from the verified JWT subject; clients cannot supply another user's ID.
+
+The response is:
+
+```json
+{
+  "save": null
+}
+```
+
+when no remote save exists, or a save record containing `revision`, `payload`, `payload_sha256`, timestamps and an `idempotent` flag.
+
+### PUT `/v1/lost-sizzler/cloud-save`
+
+Requires `Content-Type: application/json` and a valid bearer JWT.
+
+The body contract is:
+
+```json
+{
+  "expected_revision": 0,
+  "payload": {},
+  "payload_sha256": "64 lowercase hex characters"
+}
+```
+
+Rules:
+
+- `expected_revision: 0` means the caller expects no remote save yet;
+- a changed save must match the current remote revision before it can replace it;
+- a stale revision returns HTTP 409 and cannot overwrite the newer remote state;
+- an exact retry whose payload hash already matches the remote save is returned idempotently even if the first write already advanced the revision;
+- the backend canonicalizes JSON object keys before hashing, so equivalent object key ordering has the same SHA-256;
+- canonical payloads over 512 KiB are refused;
+- malformed JSON, invalid hashes and non-object save payloads are refused before database mutation.
+
+This API is an optional remote mirror. A failed PUT must never be interpreted by the eventual game adapter as permission to discard or replace the authoritative local save.
 
 ## Migration programme
 
@@ -93,18 +139,18 @@ The backend must never receive or ship:
 
 JWT verification is performed server-side using public JWKS material. Database credentials remain server-only.
 
+Cloud-save writes additionally serialize against the authenticated user's database row before evaluating the current save revision. This prevents two concurrent writers for one user from both treating the same revision as current.
+
 ## Supabase recovery lock
 
 This backend work does not change the existing recovery rule. The prior one-shot Storage request for frozen enabled row 62 returned HTTP 402 before any bytes were downloaded. Do not retry that recovery merely because this service now exists. Recovery resumes only after concrete evidence that the restriction has cleared.
 
 ## Next implementation slice
 
-The next safe slice is authenticated cloud-save read/write with:
+After the cloud-save contract is green, the next safe slice is the provider/client boundary and account-state synchronization:
 
-- ownership by JWT subject;
-- explicit revision matching;
-- request-size limits;
-- SHA-256 verification;
-- idempotency;
-- no remote write during ordinary offline gameplay;
-- contract tests proving a failed online call cannot damage local state.
+- add an isolated CCG-backend provider without changing the default production provider;
+- prove offline startup never constructs or contacts it;
+- prove failed cloud synchronization cannot mutate local Save & Quit / Continue state;
+- add achievement and permanent-collection synchronization with idempotent ownership rules;
+- keep multiplayer, Weekly Vault, ratings and feedback behind later explicit online-only slices.
