@@ -11,7 +11,7 @@ Nothing in this service changes or deletes Supabase data. The existing Supabase 
 The service boundary covers only online features:
 
 - account authentication and identity verification;
-- website profile reads;
+- website profile and member-owned state;
 - optional cloud-save synchronization;
 - optional achievement synchronization;
 - optional permanent collection/dossier synchronization;
@@ -41,6 +41,8 @@ The service is deliberately small and fail-closed:
 - rotating refresh sessions whose raw refresh tokens are never stored in PostgreSQL;
 - Secure, HttpOnly, SameSite=Strict refresh-token cookie boundary for the web login API;
 - server-side login throttling;
+- password-recovery core with one-way token proofs and whole-account session revocation after reset;
+- checksum-locked database migration runner with explicit `--apply` writes;
 - `/health` for process liveness;
 - `/ready` for database readiness;
 - authenticated `/v1/me` identity/profile proof;
@@ -121,6 +123,8 @@ Publishes only the CCG public Ed25519 signing key. The private JWK component is 
 
 Uses whichever authentication mode the deployment selected. In local mode, a valid CCG access token must map to a currently active, non-revoked CCG session and a usable account before the profile is returned.
 
+Password recovery is deliberately **not exposed as a live HTTP route yet**. The server-side request/confirm core is tested independently, but production exposure waits for a selected CCG-controlled mail delivery provider so recovery tokens cannot be issued without a real delivery path.
+
 ## Database
 
 Apply migrations in numeric order to a new CCG-owned PostgreSQL database:
@@ -128,12 +132,75 @@ Apply migrations in numeric order to a new CCG-owned PostgreSQL database:
 1. `migrations/001_initial.sql`
 2. `migrations/002_account_profiles.sql`
 3. `migrations/003_auth_sessions.sql`
+4. `migrations/004_profile_owned_state.sql`
 
 The schema stores no game music/media blobs. Large downloadable assets belong in the website/package asset pipeline, not in the transactional database.
 
 Authentication and profile state remain separate. This preserves valid auth-only accounts that have no profile row instead of inventing profile data during migration.
 
+Migration `004_profile_owned_state.sql` mirrors the currently active member-owned Supabase structures needed to avoid losing account data at cut-over:
+
+- profile favourites;
+- game-library/list state, including soft-deleted rows;
+- profile top picks;
+- badges;
+- user roles;
+- email-subscription state;
+- existing legacy account comments;
+- Weekly Vault attempts.
+
+The initial CCG user ID remains the existing Supabase Auth UUID represented as text. That stable ownership key allows these rows and Lost Sizzler saves to remain attached to the same account after authentication moves away from Supabase.
+
 Cloud saves include a revision and SHA-256 field so synchronization uses compare-and-swap/idempotent rules instead of blindly overwriting newer local state.
+
+## Read-only source inventory — 6 September 2026
+
+The Supabase source was inspected read-only before defining the destination schema. No source row was changed.
+
+Current account/profile snapshot:
+
+- 33 Auth users / 33 email identities;
+- 33 password-backed accounts;
+- 31 confirmed-email accounts;
+- 27 profile rows;
+- 6 valid auth-only accounts with no profile row.
+
+Currently populated member-owned tables include:
+
+- `profile_favourites`: 15 rows;
+- `profile_game_library`: 3 rows;
+- `profile_top_picks`: 7 rows;
+- `user_badges`: 101 rows;
+- `user_roles`: 1 row;
+- `email_subscriptions`: 5 rows;
+- `ccq_weekly_attempts`: 6 rows;
+- `lost_sizzler_solo_saves`: 2 rows;
+- legacy `comments`: 2 rows.
+
+Several other user-owned source tables currently contain zero rows. They still need to be classified before final migration, but zero-row tables are not a reason to invent destination data.
+
+## Migration runner
+
+`scripts/migrate.mjs` provides two explicit modes:
+
+```text
+npm run migrate:check
+npm run migrate:apply
+```
+
+`migrate:check` performs no schema writes and reports repository migrations that have not been recorded in `ccg_schema_migrations`.
+
+`migrate:apply` is the explicit write path. It:
+
+- requires the numbered migration sequence to be contiguous;
+- calculates SHA-256 for every migration file;
+- serializes migration execution with a PostgreSQL advisory lock;
+- records each filename and SHA-256 in `ccg_schema_migrations`;
+- refuses checksum drift for an already-applied migration;
+- refuses unknown migration-ledger entries;
+- treats an unchanged replay as a no-op.
+
+This runner is for the new CCG PostgreSQL deployment. It does not apply anything to the existing Supabase database.
 
 ## Cloud-save API
 
@@ -205,10 +272,10 @@ Migration away from Supabase remains staged:
 
 1. Build and validate this service independently.
 2. Keep external-JWKS mode as the default while CCG local-auth mode is tested separately.
-3. Export source account/profile data read-only and verify account/profile counts without printing credential material.
+3. Inventory source account/profile/member-owned data read-only and verify counts without printing credential or bearer-token material.
 4. Import into a non-production CCG PostgreSQL database first.
 5. Verify migrated bcrypt login and fresh CCG session issuance.
-6. Add password recovery/email confirmation before production account cut-over.
+6. Select/configure CCG-controlled recovery-email delivery, then expose the already-tested password-recovery core.
 7. Add a second provider implementation behind the website/Lost Sizzler online-service boundaries.
 8. Keep Supabase and the CCG backend selectable during verification; never silently switch production users.
 9. Once the Supabase Storage restriction has cleared, complete the frozen enabled-object recovery first: actual bytes, SHA-256 and decode/ffprobe evidence.
@@ -223,11 +290,15 @@ The backend must never receive or ship:
 - database superuser credentials in the game client;
 - private JWT signing keys in the repository;
 - raw refresh tokens in PostgreSQL;
+- raw password-recovery tokens in PostgreSQL;
 - password hashes in API responses or logs;
+- unsubscribe bearer tokens in migration diagnostics/logs;
 - packaged media as database payloads;
 - unauthenticated save/achievement mutation access.
 
 Local CCG access tokens are signed server-side. Refresh tokens are stored only as SHA-256 proofs and are rotated on refresh. Logout revokes the active refresh session, and bearer verification also checks that the underlying session remains active.
+
+Password recovery stores only SHA-256 token proofs. A successful password reset replaces the bcrypt password hash and revokes all existing CCG refresh sessions for that user.
 
 Cloud-save writes additionally serialize against the authenticated user's database row before evaluating the current save revision. This prevents two concurrent writers for one user from both treating the same revision as current.
 
@@ -237,11 +308,11 @@ This backend work does not change the existing recovery rule. The prior one-shot
 
 ## Next implementation slice
 
-After the local-auth HTTP contract is green, the next safe slice is account recovery and migration verification:
+After the four-migration PostgreSQL contract is green, the next safe slice is migration verification rather than production cut-over:
 
-- add one-time password-recovery issuance/consumption contracts without committing SMTP credentials;
-- revoke existing CCG refresh sessions after password reset;
-- add a dry-run source/destination account-count verifier for the current 33-account / 27-profile snapshot;
-- add deployment migration/checksum tooling for a fresh CCG PostgreSQL instance;
+- add a sanitized source/destination verifier for the current 33-account / 27-profile snapshot and populated member-owned table counts;
+- ensure the verifier reports counts/ownership mismatches without printing password hashes, recovery tokens or unsubscribe tokens;
+- classify remaining currently-empty user-owned Supabase tables before deciding whether they need destination structures;
+- select a CCG-controlled mail-delivery provider before exposing password recovery over HTTP;
 - only after those gates are green, add an opt-in website client provider while leaving current production login unchanged;
-- keep multiplayer, Weekly Vault, ratings and feedback behind later explicit online-only slices.
+- keep multiplayer, Weekly Vault API implementation, ratings and feedback behind later explicit online-only slices.
