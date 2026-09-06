@@ -235,6 +235,11 @@ try{
     const m=window.CCGLostSizzlerSpecialModes.active.state,r32=window.CCGLostSizzlerV141R32SpyOverhaul,me=m.players.find(row=>String(row.id)===String(p1.id))||m.players[0],other=m.players.find(row=>row!==me);
     m.state="playing";m.matchWinnerId=null;m.completedAt=0;m.r58Extraction=null;m.r58ClockAt=Date.now();
     me.status="active";me.hp=me.maxHp;me.hasCase=true;me.objectives=["joystick","tape","key"];me.looseItem=null;me.roomId=m.map.extractionRoomId;me.timeRemainingMs=300000;
+    const logicalRoom=(m.map.rooms||[]).find(row=>String(row.id)===String(m.map.extractionRoomId));
+    const physicalRoom=world?.rooms?.[Number(logicalRoom?.dungeonRoomId)];
+    if(!logicalRoom||!physicalRoom)throw new Error("no physical Spy extraction room");
+    const cell={x:Math.floor(Number(physicalRoom.x)+Number(physicalRoom.w)/2),y:Math.floor(Number(physicalRoom.y)+Number(physicalRoom.h)/2)};
+    me.x=cell.x;me.y=cell.y;p1.x=p1.rx=cell.x;p1.y=p1.ry=cell.y;
     if(other){other.status="active";other.timeRemainingMs=300000}
     return{ownerId:String(me.id),actionsSent:Number(r32.state.actionsSent||0)}
   });
