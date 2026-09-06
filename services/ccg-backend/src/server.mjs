@@ -230,16 +230,10 @@ async function main() {
           accounts.getPublic(identity.userId),
           profiles.get(identity.userId),
         ]);
-        if (!account) {
-          const error = new Error('account_not_found');
-          error.statusCode = 404;
-          error.code = 'account_not_found';
-          throw error;
-        }
         writeJson(response, 200, {
           user_id: identity.userId,
-          email: account.email,
-          email_confirmed_at: account.email_confirmed_at,
+          email: account?.email ?? null,
+          email_confirmed_at: account?.email_confirmed_at ?? null,
           profile,
         }, cors);
         return;
