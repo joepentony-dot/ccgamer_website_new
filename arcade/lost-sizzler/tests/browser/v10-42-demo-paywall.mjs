@@ -63,7 +63,10 @@ try{
     demoMode:window.CCGLostSizzlerV142DemoPaywall.demoMode,
     locked:document.body.dataset.v142DemoLocked||"",
     badges:document.querySelectorAll(".v142-demo-lock-badge").length,
-    guarded:window.CCGLostSizzlerV142DemoPaywall.state.guarded.size,
+    guarded:window.CCGLostSizzlerV142DemoPaywall.diagnostics().guardedCount,
+    diagnosticsFrozen:Object.isFrozen(window.CCGLostSizzlerV142DemoPaywall.diagnostics()),
+    directUnlock:typeof window.CCGLostSizzlerV142DemoPaywall.unlockRuntime,
+    mutableState:typeof window.CCGLostSizzlerV142DemoPaywall.state,
     overlayHidden:document.getElementById("v142-demo-paywall")?.classList.contains("hidden")===true,
     tutorialBadge:Boolean(document.querySelector("#tutorial-zone-btn .v142-demo-lock-badge"))
   }));
@@ -71,6 +74,9 @@ try{
   assert.notEqual(normalAudit.locked,"true","Normal canonical play must leave full-game controls unlocked.");
   assert.equal(normalAudit.guarded,0,"Normal canonical play must not install demo interception handlers on full-game buttons.");
   assert.equal(normalAudit.badges,0,"Normal canonical play must not add FULL GAME badges to controls.");
+  assert.equal(normalAudit.diagnosticsFrozen,true,"Public paywall diagnostics must be immutable snapshots.");
+  assert.equal(normalAudit.directUnlock,"undefined","The internal entitlement unlock function must not be browser-callable.");
+  assert.equal(normalAudit.mutableState,"undefined","Mutable entitlement state must not be exported to browser callers.");
   assert.equal(normalAudit.overlayHidden,true,"Permanent-unlock overlay must remain hidden during an ordinary full-game boot.");
   assert.equal(normalAudit.tutorialBadge,false,"Tutorial must never be presented as a paid full-game control.");
   assert.deepEqual(normal.pageErrors,[],`Normal V10.42 paywall boot must not raise page errors: ${normal.pageErrors.join("\n")}`);
@@ -83,7 +89,7 @@ try{
     window.CCGLostSizzlerCommerce={isAuthenticated:async()=>false,getOffer:async()=>({display_price:'£1<img id="v142-offer-xss">'})};
   });
   const hostile=await auditPage(hostileOfferContext,"hostile-offer");
-  await hostile.page.waitForFunction(()=>window.CCGLostSizzlerV142DemoPaywall.state.guarded.size===8);
+  await hostile.page.waitForFunction(()=>window.CCGLostSizzlerV142DemoPaywall.diagnostics().guardedCount===8);
   await hostile.page.evaluate(()=>document.getElementById("solo-btn").click());
   await hostile.page.waitForFunction(()=>!document.getElementById("v142-demo-paywall")?.classList.contains("hidden"));
   const hostileAudit=await hostile.page.evaluate(()=>({
@@ -99,12 +105,12 @@ try{
   const demoContext=await browser.newContext({viewport:{width:1280,height:800}});
   await demoContext.addInitScript(()=>{window.CCG_LOST_SIZZLER_DEMO_MODE=true});
   const demo=await auditPage(demoContext,"demo");
-  await demo.page.waitForFunction(()=>document.body.dataset.v142DemoLocked==="true"&&window.CCGLostSizzlerV142DemoPaywall.state.guarded.size===8);
+  await demo.page.waitForFunction(()=>document.body.dataset.v142DemoLocked==="true"&&window.CCGLostSizzlerV142DemoPaywall.diagnostics().guardedCount===8);
   const lockedAudit=await demo.page.evaluate(()=>({
     demoMode:window.CCGLostSizzlerV142DemoPaywall.demoMode,
     locked:document.body.dataset.v142DemoLocked,
     badges:document.querySelectorAll(".v142-demo-lock-badge").length,
-    guarded:window.CCGLostSizzlerV142DemoPaywall.state.guarded.size,
+    guarded:window.CCGLostSizzlerV142DemoPaywall.diagnostics().guardedCount,
     tutorialBadge:Boolean(document.querySelector("#tutorial-zone-btn .v142-demo-lock-badge")),
     resumeBadge:Boolean(document.querySelector("#continue-save-btn .v142-demo-lock-badge")),
     joinBadge:Boolean(document.querySelector("#join-btn .v142-demo-lock-badge")),
@@ -121,7 +127,7 @@ try{
   await demo.page.evaluate(()=>document.getElementById("solo-btn").click());
   await demo.page.waitForFunction(()=>!document.getElementById("v142-demo-paywall")?.classList.contains("hidden"));
   const offerAudit=await demo.page.evaluate(()=>({
-    shown:window.CCGLostSizzlerV142DemoPaywall.state.shown,
+    shown:window.CCGLostSizzlerV142DemoPaywall.diagnostics().shown,
     title:document.querySelector("#v142-demo-paywall h2")?.textContent||"",
     price:document.querySelector("#v142-demo-paywall .v142-price")?.textContent||"",
     account:document.querySelector("#v142-demo-paywall .v142-account-note")?.textContent||"",
@@ -150,31 +156,40 @@ try{
   assert.notEqual(await demo.page.evaluate(()=>document.body.dataset.runActive),"true","Saved-run Resume must be intercepted before paid gameplay can start in demo mode.");
   await closeDemoOffer(demo.page);
 
-  const entitlementAudit=await demo.page.evaluate(()=>{
+  const entitlementAudit=await demo.page.evaluate(async()=>{
     const api=window.CCGLostSizzlerV142DemoPaywall;
-    const rejected=api.unlockRuntime({kind:"subscription",active:true});
-    const stillLocked=document.body.dataset.v142DemoLocked;
-    const accepted=api.unlockRuntime({kind:"permanent",active:true});
+    window.CCGLostSizzlerCommerce={getEntitlement:async()=>({kind:"subscription",active:true})};
+    const rejected=await api.refreshEntitlement(),rejectedSnapshot=api.diagnostics(),stillLocked=document.body.dataset.v142DemoLocked;
+    window.CCGLostSizzlerCommerce={getEntitlement:async()=>({kind:"permanent",active:true})};
+    const accepted=await api.refreshEntitlement(),acceptedSnapshot=api.diagnostics();
     return{
       rejected,stillLocked,accepted,
-      entitled:api.state.entitled,
+      rejectedEntitled:rejectedSnapshot.entitled,
+      entitled:acceptedSnapshot.entitled,
+      diagnosticsFrozen:Object.isFrozen(acceptedSnapshot),
+      directUnlock:typeof api.unlockRuntime,
+      mutableState:typeof api.state,
       fullGameEntitled:document.body.dataset.fullGameEntitled,
       locked:document.body.dataset.v142DemoLocked,
-      guarded:api.state.guarded.size,
+      guarded:acceptedSnapshot.guardedCount,
       badges:document.querySelectorAll(".v142-demo-lock-badge").length
     };
   });
-  assert.equal(entitlementAudit.rejected,false,"A non-permanent entitlement must not unlock the full game.");
-  assert.equal(entitlementAudit.stillLocked,"true","Rejected entitlement data must leave the demo runtime locked.");
-  assert.equal(entitlementAudit.accepted,true,"A verified permanent entitlement shape must unlock the runtime.");
-  assert.equal(entitlementAudit.entitled,true,"Accepted permanent ownership must be retained by the paywall state.");
+  assert.equal(entitlementAudit.rejected,false,"A non-permanent commerce-provider entitlement must not unlock the full game.");
+  assert.equal(entitlementAudit.rejectedEntitled,false,"Rejected provider entitlement data must leave internal ownership false.");
+  assert.equal(entitlementAudit.stillLocked,"true","Rejected provider entitlement data must leave the demo runtime locked.");
+  assert.equal(entitlementAudit.accepted,true,"A permanent entitlement returned through the commerce-provider path must unlock the runtime.");
+  assert.equal(entitlementAudit.entitled,true,"Accepted provider ownership must be retained by internal paywall state.");
+  assert.equal(entitlementAudit.diagnosticsFrozen,true,"Entitlement diagnostics must remain immutable after ownership changes.");
+  assert.equal(entitlementAudit.directUnlock,"undefined","Browser callers must not receive a direct unlockRuntime function.");
+  assert.equal(entitlementAudit.mutableState,"undefined","Browser callers must not receive the mutable entitlement state object.");
   assert.equal(entitlementAudit.fullGameEntitled,"true","Accepted permanent ownership must mark the canonical runtime as entitled.");
   assert.equal(entitlementAudit.locked,"false","Accepted permanent ownership must release the demo lock.");
   assert.equal(entitlementAudit.guarded,0,"Accepted permanent ownership must remove demo interception handlers.");
   assert.equal(entitlementAudit.badges,0,"Accepted permanent ownership must remove FULL GAME badges.");
   assert.deepEqual(demo.pageErrors,[],`Demo-mode V10.42 paywall flow must not raise page errors: ${demo.pageErrors.join("\n")}`);
   assert.deepEqual(demo.failedScripts,[],`Demo-mode V10.42 paywall scripts must load without same-origin failures: ${demo.failedScripts.join("\n")}`);
-  console.log("Lost Sizzler V10.42 explicit demo lock, safe offer rendering, resume/join guard and permanent-entitlement browser contract passed.");
+  console.log("Lost Sizzler V10.42 explicit demo lock, safe offer rendering, provider-bound entitlement and resume/join guard browser contract passed.");
   await demoContext.close();
 }finally{
   await browser.close();
