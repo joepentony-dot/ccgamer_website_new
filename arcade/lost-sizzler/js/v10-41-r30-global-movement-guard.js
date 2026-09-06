@@ -13,11 +13,11 @@
   const state={
     timer:0,r29TimerStopped:false,r29InstallCooperative:false,spyTimerStopped:false,
     baselineUpdate:null,baselineMove:null,baselineHurt:null,
-    goldenUpdate:null,goldenMove:null,goldenHurt:null,goldenLocked:false,goldenLockedAt:0,goldenMovePromotions:0,
+    goldenUpdate:null,goldenMove:null,goldenHurt:null,goldenLocked:false,goldenLockedAt:0,goldenMovePromotions:0,goldenMovePromotionRejects:0,
     spyOwnerUpdate:null,spyOwnerMove:null,spyOwnerHurt:null,
     forcedRestores:0,ownershipRepairs:0,ownershipCooldownResets:0,inputBridges:0,inputReassertions:0,
     watchdogRecoveries:0,watchdogMisses:0,watchdogCooldownBreaks:0,lastWatchdogRecoveryAt:0,
-    notificationOwnershipRepairs:0,notificationPostInstallRepairs:0,nestedOwnershipDetections:0,
+    notificationOwnershipRepairs:0,notificationPostInstallRepairs:0,nestedOwnershipDetections:0,damageOwnershipRepairs:0,damageOwnershipPreservations:0,
     lastRestoreAt:0,lastRestoreReason:"",lastModeType:"",modeTransitions:0,lastRecoveryLogAt:0
   };
   const held=new Set();
@@ -56,6 +56,19 @@
     }
     return false;
   }
+  function chainContains(fn,target){
+    if(typeof fn!=="function"||typeof target!=="function")return false;
+    const queue=[{fn,depth:0}],seen=new Set();
+    while(queue.length){
+      const entry=queue.shift(),current=entry?.fn,depth=Number(entry?.depth||0);
+      if(typeof current!=="function"||seen.has(current))continue;
+      if(current===target){if(depth>0)state.nestedOwnershipDetections++;return true}
+      seen.add(current);
+      if(depth>=47)continue;
+      for(const linked of originalLinks(current))queue.push({fn:linked,depth:depth+1});
+    }
+    return false;
+  }
   function spyContaminated(fn){return ISOLATED_MARKERS.some(marker=>chainHas(fn,marker))}
   function topLevelSpyOwner(fn){
     if(typeof fn!=="function")return false;
@@ -71,14 +84,40 @@
   }
 
   function healthyBaseline(fn){return typeof fn==="function"&&!spyContaminated(fn)}
+  function modernDamageOwnersRequired(){
+    return Boolean(window.CCGLostSizzlerV141R56PlaytestCompletion||window.CCGLostSizzlerV141R60LivePlayIntegrity)
+  }
+  function modernDamageOwnershipPresent(fn=window.hurtPlayer){
+    if(typeof fn!=="function")return false;
+    if(window.CCGLostSizzlerV141R56PlaytestCompletion&&!chainHas(fn,"__ccgV141R56EnvironmentDamage"))return false;
+    if(window.CCGLostSizzlerV141R60LivePlayIntegrity&&!chainHas(fn,"__ccgV141R60EnvironmentSeal"))return false;
+    return true
+  }
+  function reinstallModernDamageOwners(){
+    if(spyActive()||spyEngine()?.state?.isolated)return false;
+    const required=modernDamageOwnersRequired();
+    if(!required)return healthyBaseline(window.hurtPlayer);
+    try{window.CCGLostSizzlerV141R56PlaytestCompletion?.installOwners?.()}catch(_){}
+    try{window.CCGLostSizzlerV141R60LivePlayIntegrity?.wrapEnvironmentalDamage?.()}catch(_){}
+    if(!modernDamageOwnershipPresent(window.hurtPlayer))return false;
+    state.baselineHurt=window.hurtPlayer;state.damageOwnershipRepairs++;return true
+  }
   function normalMovementStackReady(){
     const tutorial=window.CCGLostSizzlerV141TutorialActionFinalizer?.state;
     const spyFinal=window.CCGLostSizzlerV141SpyMovementFinalizer?.state;
     const stability=window.CCGLostSizzlerV141BrowserStabilityGameplay?.state;
     return Boolean(tutorial?.installed&&spyFinal?.moveInstalled&&stability?.moveGuard);
   }
+  function safeGoldenMovePromotion(fn){
+    if(fn===state.goldenMove)return true;
+    if(typeof fn!=="function"||typeof state.goldenMove!=="function")return false;
+    if(fn?.__ccgV141R60CadenceSeal!==true)return false;
+    let direct=null;try{direct=fn.__ccgOriginal}catch(_){}
+    return direct===state.goldenMove
+  }
   function adoptReleaseMoveOwner(fn=window.movePlayer){
     if(!releaseReady()||!normalMovementStackReady()||!state.goldenLocked||!healthyBaseline(fn)||fn?.__ccgV141SpyFinal!==true)return false;
+    if(!safeGoldenMovePromotion(fn)){state.goldenMovePromotionRejects++;return false}
     state.baselineMove=fn;
     if(state.goldenMove!==fn){state.goldenMove=fn;state.goldenMovePromotions++;state.goldenLockedAt=Date.now()}
     return true
@@ -89,7 +128,7 @@
     if(controllerUpdate)state.baselineUpdate=controllerUpdate;
     else if(healthyBaseline(window.update))state.baselineUpdate=window.update;
     if(healthyBaseline(window.movePlayer))state.baselineMove=window.movePlayer;
-    if(healthyBaseline(window.hurtPlayer))state.baselineHurt=window.hurtPlayer;
+    if(healthyBaseline(window.hurtPlayer)&&(!modernDamageOwnersRequired()||modernDamageOwnershipPresent(window.hurtPlayer)))state.baselineHurt=window.hurtPlayer;
     if(releaseReady()&&normalMovementStackReady()&&!state.goldenLocked&&state.baselineUpdate&&state.baselineMove&&state.baselineHurt){
       state.goldenUpdate=state.baselineUpdate;state.goldenMove=state.baselineMove;state.goldenHurt=state.baselineHurt;
       state.goldenLocked=true;state.goldenLockedAt=Date.now();
@@ -99,7 +138,15 @@
   }
   const recoveryUpdate=()=>authoritativeControllerUpdate()||state.goldenUpdate||state.baselineUpdate;
   const recoveryMove=()=>state.goldenMove||state.baselineMove;
-  const recoveryHurt=()=>state.goldenHurt||state.baselineHurt;
+  function recoveryHurt(){
+    if(modernDamageOwnersRequired()){
+      if(healthyBaseline(window.hurtPlayer)&&modernDamageOwnershipPresent(window.hurtPlayer))return window.hurtPlayer;
+      if(healthyBaseline(state.baselineHurt)&&modernDamageOwnershipPresent(state.baselineHurt))return state.baselineHurt;
+      if(healthyBaseline(state.goldenHurt)&&modernDamageOwnershipPresent(state.goldenHurt))return state.goldenHurt;
+      return null
+    }
+    return state.baselineHurt||state.goldenHurt
+  }
 
   function noteRecovery(reason){
     const now=Date.now();
@@ -119,6 +166,7 @@
     try{
       const before=Boolean(window.showToast?.__ccgV141Priority);
       const stable=maintainNotificationOwnership();
+      if(!spyActive()&&modernDamageOwnersRequired()&&!modernDamageOwnershipPresent(window.hurtPlayer))reinstallModernDamageOwners();
       if(stable&&!before&&window.showToast?.__ccgV141Priority===true)state.notificationPostInstallRepairs++;
       return stable;
     }catch(_){return false}
@@ -129,7 +177,7 @@
     try{if(api.state?.timer){clearInterval(api.state.timer);api.state.timer=0;state.r29TimerStopped=true}}catch(_){}
     if(api.install.__ccgV141R30Cooperative){
       state.r29InstallCooperative=true;
-      try{return api.install()}catch(_){return false}
+      return true
     }
     const original=api.install.bind(api);
     const cooperative=function installV141R30Cooperative(){
@@ -150,9 +198,14 @@
   }
 
   function forceRestore(updateFn,moveFn,hurtFn,reason){
+    const enforceModernHurt=!spyActive()&&modernDamageOwnersRequired();
     if(typeof updateFn==="function")window.update=updateFn;
     if(typeof moveFn==="function")window.movePlayer=moveFn;
-    if(typeof hurtFn==="function")window.hurtPlayer=hurtFn;
+    if(typeof hurtFn==="function"){
+      if(!enforceModernHurt||modernDamageOwnershipPresent(hurtFn))window.hurtPlayer=hurtFn;
+      else state.damageOwnershipPreservations++;
+    }
+    if(enforceModernHurt&&!modernDamageOwnershipPresent(window.hurtPlayer))reinstallModernDamageOwners();
     state.forcedRestores++;state.lastRestoreAt=Date.now();state.lastRestoreReason=String(reason||"runtime handoff");
     state.spyOwnerUpdate=state.spyOwnerMove=state.spyOwnerHurt=null;noteRecovery(state.lastRestoreReason);return true;
   }
@@ -170,13 +223,20 @@
     const currentUpdate=window.update,currentMove=window.movePlayer,currentHurt=window.hurtPlayer;
     const updateBad=typeof currentUpdate!=="function"||(!controllerProtectedUpdate(currentUpdate)&&spyContaminated(currentUpdate));
     const moveBad=typeof currentMove!=="function"||spyContaminated(currentMove)||(state.goldenLocked&&normalMovementStackReady()&&typeof state.goldenMove==="function"&&currentMove!==state.goldenMove);
-    const hurtBad=typeof currentHurt!=="function"||spyContaminated(currentHurt);
+    const modernDamageMissing=modernDamageOwnersRequired()&&!modernDamageOwnershipPresent(currentHurt);
+    const hurtBad=typeof currentHurt!=="function"||spyContaminated(currentHurt)||modernDamageMissing;
     if(!(updateBad||moveBad||hurtBad))return false;
-    const u=updateBad?recoveryUpdate():currentUpdate,m=moveBad?recoveryMove():currentMove,h=hurtBad?recoveryHurt():currentHurt;
+    const u=updateBad?recoveryUpdate():currentUpdate,m=moveBad?recoveryMove():currentMove;
+    let h=hurtBad?recoveryHurt():currentHurt;
+    if(hurtBad&&modernDamageOwnersRequired()&&typeof h!=="function"){
+      reinstallModernDamageOwners();
+      h=modernDamageOwnershipPresent(window.hurtPlayer)?window.hurtPlayer:null;
+    }
     if((updateBad&&typeof u!=="function")||(moveBad&&typeof m!=="function")||(hurtBad&&typeof h!=="function"))return false;
     state.ownershipRepairs++;
     const repaired=forceRestore(u,m,h,reason);
     if(repaired&&moveBad)resetRecoveredMovementCooldowns();
+    if(repaired&&hurtBad&&modernDamageOwnersRequired()&&!modernDamageOwnershipPresent(window.hurtPlayer))return reinstallModernDamageOwners();
     return repaired
   }
 
@@ -189,18 +249,25 @@
       }
       if(engine.state?.isolated){
         state.spyOwnerUpdate=authoritativeControllerUpdate()||state.spyOwnerUpdate||window.update;
-        if(!state.spyOwnerMove)state.spyOwnerMove=window.movePlayer;
+        const canonicalSpyMove=typeof engine.moveOwner==="function"?engine.moveOwner:null;
+        if(canonicalSpyMove)state.spyOwnerMove=canonicalSpyMove;
+        else if(!state.spyOwnerMove)state.spyOwnerMove=window.movePlayer;
         if(!state.spyOwnerHurt)state.spyOwnerHurt=window.hurtPlayer;
         if(typeof state.spyOwnerUpdate==="function"&&window.update!==state.spyOwnerUpdate)window.update=state.spyOwnerUpdate;
-        if(typeof state.spyOwnerMove==="function"&&window.movePlayer!==state.spyOwnerMove)window.movePlayer=state.spyOwnerMove;
-        if(typeof state.spyOwnerHurt==="function"&&window.hurtPlayer!==state.spyOwnerHurt)window.hurtPlayer=state.spyOwnerHurt;
+        if(typeof state.spyOwnerMove==="function"&&!chainContains(window.movePlayer,state.spyOwnerMove))window.movePlayer=state.spyOwnerMove;
+        if(typeof state.spyOwnerHurt==="function"){
+          if(chainContains(window.hurtPlayer,state.spyOwnerHurt)){if(window.hurtPlayer!==state.spyOwnerHurt)state.spyOwnerHurt=window.hurtPlayer}
+          else window.hurtPlayer=state.spyOwnerHurt
+        }
       }
       return true;
     }
     if(engine.state?.isolated){
       const baseUpdate=authoritativeControllerUpdate()||engine.state.baseUpdate||recoveryUpdate(),baseMove=engine.state.baseMove||recoveryMove(),baseHurt=engine.state.baseHurt||recoveryHurt();
       try{engine.leaveIsolation?.()}catch(_){}
-      forceRestore(baseUpdate,baseMove,baseHurt,"Spy runtime exit");captureBaseline();return true;
+      forceRestore(baseUpdate,baseMove,baseHurt,"Spy runtime exit");
+      if(modernDamageOwnersRequired()&&!modernDamageOwnershipPresent(window.hurtPlayer))reinstallModernDamageOwners();
+      captureBaseline();return true;
     }
     return assertNormalRuntimeOwnership("stale Spy owner outside Spy mode");
   }
@@ -315,7 +382,7 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);clearHeld()},{once:true});
 
   window.CCGLostSizzlerV141R30={
-    originalLink,originalLinks,chainHas,spyContaminated,topLevelSpyOwner,controllerProtectedUpdate,adoptReleaseMoveOwner,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,resetRecoveredMovementCooldowns,reassertHeldInput,movementWatchdog,makeR29Cooperative,
+    originalLink,originalLinks,chainHas,chainContains,spyContaminated,topLevelSpyOwner,controllerProtectedUpdate,modernDamageOwnersRequired,modernDamageOwnershipPresent,reinstallModernDamageOwners,adoptReleaseMoveOwner,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,resetRecoveredMovementCooldowns,reassertHeldInput,movementWatchdog,makeR29Cooperative,
     constants:{ORIGINAL_LINKS},get state(){return state}
   };
 })();

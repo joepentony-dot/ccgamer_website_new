@@ -228,7 +228,9 @@
   }
 
   function ownedSystemState(name){
-    const entry=ownedSystems.get(String(name||""));
+    const key=String(name||"");
+    if(OWNED_SYSTEMS[key])installOwnedSystemGate(key);
+    const entry=ownedSystems.get(key);
     if(!entry)return null;
     return{name:entry.name,capability:entry.capability,installed:window[entry.name]===entry.gate,gate:entry.gate,source:entry.source}
   }

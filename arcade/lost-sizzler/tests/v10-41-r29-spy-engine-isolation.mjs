@@ -21,12 +21,20 @@ assert.match(finalizer,/data-ccg-r29-spy-network|ccgR29SpyNetwork/,"Spy network 
 assert.match(finalizer,/spyNetworkReady/,"release diagnostics must expose whether the Spy network transport registered");
 assert.match(finalizer,/rail\.style\.setProperty\("display",live\?"contents":"none","important"\)/,"late r29 runtime must own live/idle notification rail geometry above legacy CSS");
 assert.match(finalizer,/new MutationObserver\(syncNotificationRail\)/,"notification rail ownership must react immediately to toast visibility changes");
+assert.match(finalizer,/if\(typeof before==="function"&&before\.__ccgV141R29Stable\)\{[\s\S]*state\.stableLoopSkips\+\+[\s\S]*return true[\s\S]*\}/,"r29 finalizer must not re-run the runtime installer when R59/R29 already owns the stable loop");
+assert.doesNotMatch(finalizer,/const before=window\.loop;\s*try\{api\.install\(\)\}/,"r29 finalizer must guard stable-loop ownership before calling the installer");
 
 assert.match(network,/PACKET="v141_spy_position"/,"Spy movement must use a dedicated packet instead of Dungeon player movement packets");
 assert.match(network,/net\.send\(PACKET,payload\)/,"local Spy movement must publish through the dedicated position transport");
 assert.match(network,/remote\?\.set\?\.\(id,next\)/,"received Spy positions must update the remote agent directly");
 assert.doesNotMatch(network,/processRemoteMovement\s*\(/,"dedicated Spy positions must never invoke Dungeon remote-movement room triggers");
 assert.match(network,/if\(moved\)sendPosition\(true\)/,"successful Spy movement must publish immediately as well as via the heartbeat");
+assert.doesNotMatch(network,/MONITOR_MS=40/,"Spy position transport must not retain the retired cross-mode 40 ms monitor");
+assert.match(network,/new MutationObserver\(syncMode\)/,"Spy position transport mode entry must be event-driven");
+assert.match(network,/attributeFilter:\["data-special-mode","data-mode-controller","data-run-active"\]/,"Spy position transport must observe only bounded mode lifecycle attributes");
+assert.match(network,/state\.timer=setInterval\(heartbeat,SEND_MS\)/,"Spy position heartbeat must exist only as the active-mode 85 ms transport cadence");
+assert.match(network,/clearInterval\(state\.timer\);state\.timer=0/,"Spy position heartbeat must be fully stopped on mode exit");
+assert.match(network,/return spyActive\(\)\?startHeartbeat\(\):stopHeartbeat\(\)/,"Spy transport lifecycle signals must start or stop the heartbeat from actual mode state");
 
 assert.match(runtime,/MODE_ID="sizzler-saboteurs"/,"isolated runtime must be scoped to Spy Vs Spy only");
 assert.match(runtime,/ROOM_STEP_X=11,ROOM_STEP_Y=11,ROOM_W=9,ROOM_H=9/,"Spy physical rooms must be materially smaller than the old 13x13 grid");
@@ -49,6 +57,7 @@ assert.match(runtime,/X — EXTRACT COMPLETE SIZZLER CASE/,"completed-case extra
 assert.match(runtime,/for\(const key of \["enemies","generators","traps","hazardRooms","arenas","timedRooms"/,"Spy boundary must continuously remove ordinary Dungeon combat and hazard collections");
 assert.match(runtime,/campStates\?\.clear/,"ordinary Dungeon idle/camping state must not survive inside Spy");
 assert.match(runtime,/function spyHurtOwner[\s\S]*if\(spyActive\(\)\)\{state\.dungeonDamageBlocked\+\+;return false\}/,"ordinary Dungeon hurtPlayer damage must be rejected while Spy owns combat");
+assert.match(runtime,/const delegate=typeof spyHurtOwner\.__ccgOriginal==="function"\?spyHurtOwner\.__ccgOriginal:state\.baseHurt/,"Spy damage boundary must retain a durable passthrough delegate outside Spy mode");
 assert.doesNotMatch(runtime,/window\.update=spyUpdateOwner/,"Spy engine must not replace the authoritative controller update boundary");
 assert.doesNotMatch(runtime,/function spyUpdateOwner/,"obsolete Spy global-update owner must be removed");
 
@@ -66,8 +75,12 @@ assert.match(controller,/window\.CCGLostSizzlerV141R29SpyEngine\?\.leaveIsolatio
 assert.match(runtime,/window\.CCGLostSizzlerModeRuntime=runtimeRegistry/,"mode runtime registry must expose the isolation boundary");
 assert.match(runtime,/isolatedRules:true,sharedRenderer:true/,"Spy must own rules while deliberately sharing only the renderer");
 assert.match(runtime,/state\.timer=setInterval\(monitor,MONITOR_MS\)/,"Spy movement/damage ownership must still be monitored while the mode is active");
-assert.match(runtime,/window\.movePlayer=spyMoveOwner;window\.hurtPlayer=spyHurtOwner/,"entering Spy must atomically own only movement and damage, not the global update frame");
+assert.match(runtime,/function ensureDamageBoundary\(\)[\s\S]*const current=window\.hurtPlayer;[\s\S]*ownerChainHas\(current,spyHurtOwner\)/,"Spy damage ownership must inspect the live damage-owner ancestry before installing or repairing its boundary");
+assert.match(runtime,/if\(typeof current==="function"&&current!==spyHurtOwner\)\{state\.baseHurt=current;spyHurtOwner\.__ccgOriginal=current\}[\s\S]*window\.hurtPlayer=spyHurtOwner/,"Spy damage repair must preserve the displaced live owner as its delegate before restoring the boundary");
+assert.match(runtime,/function ensureMovementOwner\(countRecovery=false\)[\s\S]*ownerChainHas\(current,spyMoveOwner\)[\s\S]*window\.movePlayer=spyMoveOwner/,"Spy movement ownership must be ancestry-aware and able to restore the canonical r29 owner");
+assert.match(runtime,/if\(state\.isolated\)\{ensureMovementOwner\(true\);ensureDamageBoundary\(\);suppressLegacyPhysicalBuilder\(\);return true\}/,"authoritative Spy controller re-entry must self-heal displaced movement and damage ownership without requiring a polling timer");
+assert.match(runtime,/else\{ensureMovementOwner\(true\);ensureDamageBoundary\(\)\}/,"legacy monitor compatibility must use the same ancestry-aware owner repair helpers");
 assert.doesNotMatch(movementFinalizer,/window\.update=function updateV141SpyRespawnFinal/,"Spy respawn finalizer must not add another global update wrapper");
 assert.match(movementFinalizer,/controllerOwnedRespawns:true/,"Spy respawns must declare controller-owned execution");
 
-console.log("Lost Sizzler V10.41 controller-owned Spy engine, stable compact map, bounded movement, dedicated position transport, furniture collision and respawn ownership checks passed.");
+console.log("Lost Sizzler V10.41 controller-owned Spy engine, stable compact map, ancestry-aware re-entry recovery, active-only dedicated position transport, furniture collision and respawn ownership checks passed.");

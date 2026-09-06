@@ -21,6 +21,65 @@ await new Promise((resolve,reject)=>{server.once("error",reject);server.listen(0
 const origin=`http://127.0.0.1:${server.address().port}`;
 const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage","--disable-background-networking","--autoplay-policy=no-user-gesture-required"]});
 
+async function floorEntryState(page,extra={}){
+  return await page.evaluate(extra=>{
+    const r43=window.CCGLostSizzlerV141R43SoloSave?.state||{},r59=window.CCGLostSizzlerV141R59LiveRegressionFixes?.state||{};
+    const dossierPanel=document.getElementById("named-dossier-panel");
+    return{
+      floor:Number(run?.floor||0),mode:typeof mode==="string"?mode:null,playMode:typeof playMode==="string"?playMode:null,
+      runActive:document.body.dataset.runActive||"",savePromptReason:typeof savePromptReason==="string"?savePromptReason:null,
+      savePanelVisible:Boolean(UI?.savePanel&&!UI.savePanel.classList.contains("hidden")),
+      namedDossierVisible:Boolean(dossierPanel&&!dossierPanel.classList.contains("hidden")),
+      savedFloor:Number(window.CCGLostSizzlerV141R43SoloSave?.readEnvelope?.()?.summary?.floor||0),
+      r43:{autosaves:Number(r43.autosaves||0),lastAutoSaveKey:String(r43.lastAutoSaveKey||""),entryFloorKey:String(r43.entryFloorKey||""),offerOwnerInstalls:Number(r43.offerOwnerInstalls||0),automaticPromptSuppressions:Number(r43.automaticPromptSuppressions||0),floorEntrySettleSchedules:Number(r43.floorEntrySettleSchedules||0),floorEntrySettles:Number(r43.floorEntrySettles||0),lastError:String(r43.lastError||"")},
+      r59:{soloFloorAutosaves:Number(r59.soloFloorAutosaves||0),soloSaveTransitionInstalls:Number(r59.soloSaveTransitionInstalls||0),lastError:String(r59.lastError||"")},
+      offerOwner:Boolean(window.offerFloorSave?.__ccgV141R43AutoSaveOwner),
+      captureOwner:Boolean(window.captureFloorEntryCheckpoint?.__ccgV141R59SoloAutosave),
+      ...extra
+    }
+  },extra)
+}
+
+async function dismissVisibleDossierBoundary(page){
+  const boundary=await page.evaluate(()=>{
+    const panel=document.getElementById("named-dossier-panel");
+    const before=typeof mode==="string"?mode:null,visible=Boolean(panel&&!panel.classList.contains("hidden"));
+    if(!(before==="dossier"&&visible))return{dismissed:false,before,visible,after:before,visibleAfter:visible};
+    if(typeof hideNamedDossier!=="function")return{dismissed:false,before,visible,after:before,visibleAfter:visible,missingHide:true};
+    hideNamedDossier();
+    return{dismissed:true,before,visible,after:typeof mode==="string"?mode:null,visibleAfter:Boolean(panel&&!panel.classList.contains("hidden"))}
+  });
+  assert.notEqual(boundary.missingHide,true,"visible dossier boundary must retain the normal close path");
+  if(!boundary.dismissed)return boundary;
+  assert.equal(boundary.before,"dossier","only a named-dossier modal may be dismissed during the floor-entry boundary");
+  assert.equal(boundary.visible,true,"dismissed dossier boundary must have been visibly open");
+  assert.equal(boundary.visibleAfter,false,"dossier boundary dismissal must hide the named-dossier panel");
+  assert.equal(boundary.after,"playing","dossier boundary dismissal must return to live Solo play");
+  return boundary
+}
+
+async function waitForFloorEntrySettled(page){
+  const waitForSettled=()=>page.waitForFunction(()=>mode==="playing"&&document.getElementById("save-panel")?.classList.contains("hidden")===true,null,{timeout:10000});
+  try{
+    await waitForSettled()
+  }catch(firstError){
+    const boundary=await dismissVisibleDossierBoundary(page);
+    if(boundary.dismissed){
+      try{
+        await waitForSettled();
+        return
+      }catch(error){
+        const state=await floorEntryState(page,{dossierBoundary:boundary});
+        console.error("R42_FLOOR_ENTRY_SETTLE_TIMEOUT "+JSON.stringify(state));
+        throw error
+      }
+    }
+    const state=await floorEntryState(page,{dossierBoundary:boundary});
+    console.error("R42_FLOOR_ENTRY_SETTLE_TIMEOUT "+JSON.stringify(state));
+    throw firstError
+  }
+}
+
 try{
   const context=await browser.newContext({viewport:{width:1600,height:900}}),page=await context.newPage();page.setDefaultTimeout(45000);
   const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
@@ -29,6 +88,11 @@ try{
   await page.click("#solo-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof mode!=="undefined"&&mode==="playing"&&Boolean(run)&&Boolean(p1)&&Boolean(world)&&Boolean(host),null,{timeout:20000});
   await page.waitForFunction(()=>window.CCGLostSizzlerV141R42SoloLiveRecovery?.standardSoloPlaying?.()===true,null,{timeout:10000});
+  // This regression specifically exercises the r43 autosave/prompt handoff.
+  // The production loader may publish r43 after r42, while this fixture can
+  // complete Floor 1 unrealistically quickly, so wait for that owner before
+  // forcing descent instead of accidentally testing late-loader scheduling.
+  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R43SoloSave)&&window.offerFloorSave?.__ccgV141R43AutoSaveOwner===true,null,{timeout:10000});
 
   const ownership=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R42SoloLiveRecovery;api.monitor();
@@ -45,21 +109,28 @@ try{
   assert.equal(ownership.controller,"dungeon-solo","browser regression must execute under the Solo Dungeon controller");
 
   // Exercise the real Floor 1 completion/descent path rather than mutating the
-  // floor number. The existing Floor 2 checkpoint prompt is intentionally left
-  // intact and is dismissed only after the transition recovery has run.
+  // floor number. Standard Solo must autosave Floor 2 and leave no delayed
+  // legacy floor-entry prompt active after the core's 120 ms timer.
   await page.evaluate(()=>floorComplete("R42 REGRESSION"));
   await page.waitForSelector("#floor-complete:not(.hidden)");
   await page.click("#descend-btn");
   await page.waitForFunction(()=>run?.floor===2&&Boolean(world)&&Boolean(host)&&Boolean(p1),null,{timeout:15000});
-  await page.waitForTimeout(260);
-  if(await page.locator("#save-panel").isVisible())await page.click("#save-continue-btn");
-  await page.waitForFunction(()=>mode==="playing"&&document.getElementById("save-panel")?.classList.contains("hidden")===true,null,{timeout:10000});
+  await page.waitForTimeout(420);
+  await waitForFloorEntrySettled(page);
   const transition=await page.evaluate(()=>{
-    const api=window.CCGLostSizzlerV141R42SoloLiveRecovery;api.monitor();
-    return{floor:run.floor,mode,active:document.body.dataset.runActive,world:Boolean(world),host:Boolean(host),player:Boolean(p1),recoveries:api.state.transitionRecoveries,lastFloor:api.state.lastTransitionFloor,width:canvas.width,height:canvas.height}
+    const api=window.CCGLostSizzlerV141R42SoloLiveRecovery,r43=window.CCGLostSizzlerV141R43SoloSave?.state||{};api.monitor();
+    return{
+      floor:run.floor,mode,active:document.body.dataset.runActive,world:Boolean(world),host:Boolean(host),player:Boolean(p1),
+      recoveries:api.state.transitionRecoveries,lastFloor:api.state.lastTransitionFloor,width:canvas.width,height:canvas.height,
+      r43SettleSchedules:Number(r43.floorEntrySettleSchedules||0),r43Settles:Number(r43.floorEntrySettles||0),r43PromptSuppressions:Number(r43.automaticPromptSuppressions||0),
+      savedFloor:Number(window.CCGLostSizzlerV141R43SoloSave?.readEnvelope?.()?.summary?.floor||0),
+      savePanelHidden:document.getElementById("save-panel")?.classList.contains("hidden")===true,
+      savePromptReason:typeof savePromptReason==="string"?savePromptReason:"",
+      offerOwner:Boolean(window.offerFloorSave?.__ccgV141R43AutoSaveOwner)
+    }
   });
   assert.equal(transition.floor,2,"real Solo descent must reach Floor 2");
-  assert.equal(transition.mode,"playing","Floor 2 must return to live gameplay after the checkpoint prompt is dismissed");
+  assert.equal(transition.mode,"playing","Floor 2 must return to live gameplay after autosave prompt handling");
   assert.equal(transition.active,"true","Floor 2 must keep the run active");
   assert.equal(transition.world,true,"Floor 2 must own a generated world");
   assert.equal(transition.host,true,"Floor 2 must own a host simulation");
@@ -67,6 +138,10 @@ try{
   assert.ok(transition.recoveries>=1,"r42 must run a post-descent live-state recovery");
   assert.equal(transition.lastFloor,2,"r42 must record the recovered floor");
   assert.ok(transition.width>0&&transition.height>0,"Floor 2 canvas must retain a valid backing size");
+  assert.equal(transition.savedFloor,2,"Floor 2 entry autosave must exist before live gameplay continues");
+  assert.equal(transition.savePanelHidden,true,"Floor 2 autosave must leave the legacy save panel hidden");
+  assert.notEqual(transition.savePromptReason,"entry","Floor 2 autosave must not leave an ordinary floor-entry prompt active");
+  assert.equal(transition.offerOwner,true,"r43 automatic floor-prompt ownership must remain installed after descent");
 
   // Capture a known lit frame, paint a silent black frame without throwing an
   // exception, then force two watchdog probes synchronously. The second probe
@@ -95,19 +170,33 @@ try{
   // Confirm ordinary keyboard input reaches the real firearm path after descent
   // and black-frame recovery. The deterministic Pulse Blaster fixture avoids a
   // random Floor 2 sword/melee loadout making ammunition an invalid assertion.
+  // Record the live projectile/cooldown synchronously at spawn time because both
+  // are intentionally transient and can expire before Playwright's next poll on
+  // a busy CI runner.
   const attackBefore=await page.evaluate(()=>{
     p1.mana=50;p1.health=Math.max(3,Number(p1.maxHealth)||3);p1.hitStunMs=0;
     if("controlLocked" in p1)p1.controlLocked=false;if("controlsLocked" in p1)p1.controlsLocked=false;
     p1.firearmUnlocked=true;p1.weapon={id:"pulse",name:"Pulse Blaster",displayName:"Pulse Blaster",element:"energy",power:1,delay:1,shots:1,ammo:1};
     fire1=0;fireBuffer1=0;bullets.length=0;for(const enemy of host.enemies||[]){enemy.alive=false;enemy.active=false}
+    const originalSpawn=window.spawnBullet;
+    window.__ccgR42AttackProbe={shots:0,fireMax:0,bulletMax:0,originalSpawn};
+    window.spawnBullet=function(){
+      const result=originalSpawn.apply(this,arguments),probe=window.__ccgR42AttackProbe;
+      probe.shots++;probe.fireMax=Math.max(probe.fireMax,Number(fire1||0));probe.bulletMax=Math.max(probe.bulletMax,Number(bullets.length||0));
+      return result
+    };
     try{canvas.focus({preventScroll:true})}catch(_){}
     return{mana:Number(p1.mana),bullets:bullets.length}
   });
   await page.keyboard.press("Space");
-  await page.waitForFunction(before=>Number(p1?.mana)<before.mana||bullets.length>before.bullets,attackBefore,{timeout:10000});
-  const attack=await page.evaluate(()=>({mana:Number(p1.mana),bullets:bullets.length,mode,fire:Number(fire1),intents:window.CCGLostSizzlerV141R42SoloLiveRecovery.state.attackIntents}));
+  await page.waitForFunction(before=>Number(p1?.mana)<before.mana&&Number(window.__ccgR42AttackProbe?.shots||0)>0,attackBefore,{timeout:10000});
+  const attack=await page.evaluate(()=>{
+    const probe=window.__ccgR42AttackProbe||{},originalSpawn=probe.originalSpawn;
+    const result={mana:Number(p1.mana),bullets:bullets.length,mode,fire:Number(fire1),intents:window.CCGLostSizzlerV141R42SoloLiveRecovery.state.attackIntents,shots:Number(probe.shots||0),fireObserved:Number(probe.fireMax||0),bulletObserved:Number(probe.bulletMax||0)};
+    if(typeof originalSpawn==="function")window.spawnBullet=originalSpawn;delete window.__ccgR42AttackProbe;return result
+  });
   assert.ok(attack.mana<attackBefore.mana,"real Space input must consume ammunition through the firearm path after Floor 2 recovery");
-  assert.ok(attack.bullets>attackBefore.bullets||attack.fire>0,"real Space input must create a live shot/cooldown state");
+  assert.ok(attack.shots>=1&&attack.fireObserved>0&&attack.bulletObserved>attackBefore.bullets,`real Space input must create a live projectile/cooldown state: ${JSON.stringify(attack)}`);
   assert.equal(attack.mode,"playing","successful post-transition attack must remain in live play");
   assert.ok(attack.intents>=1,"r42 must observe real attack intent without synthesizing the shot");
 
@@ -136,7 +225,7 @@ try{
 
   await page.waitForTimeout(300);
   assert.deepEqual(errors,[],`r42 Solo floor/render/combat regression must not produce page errors: ${errors.join("\n")}`);
-  console.log("V10.41 r42 Solo Floor 1→2, black-frame and combat-liveness browser regression passed.");
+  console.log("V10.41 r42 Solo Floor 1→2 autosave outcome, black-frame and combat-liveness browser regression passed.");
 }finally{
   await browser.close();
   for(const socket of sockets)socket.destroy();

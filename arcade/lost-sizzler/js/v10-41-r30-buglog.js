@@ -11,11 +11,18 @@
   }
   function loadOwnerSeal(){if(!window.CCGLostSizzlerV141R30OwnerSeal)loadScript("v10-41-r30-owner-seal.js","data-ccg-r30-owner-seal")}
   function loadModeRuntime(){if(!window.CCGLostSizzlerModeRuntime)loadScript("v10-41-mode-runtime.js","data-ccg-mode-runtime")}
+  function loadSoloDiagnostics(){if(!window.CCGLostSizzlerSoloDiagnostics)loadScript("v10-41-solo-stability-diagnostics.js","data-ccg-solo-stability-diagnostics")}
   function loadSpyExitControlReset(){if(!window.CCGLostSizzlerV141R30SpyExitControlReset)loadScript("v10-41-r30-spy-exit-control-reset.js","data-ccg-r30-spy-exit-reset")}
   function loadSoloDungeonR31(){if(!window.CCGLostSizzlerV141R31SoloDungeon)loadScript("v10-41-r31-solo-dungeon-regressions.js","data-ccg-r31-solo-dungeon")}
   function loadSpyR32WorldOwner(){if(!window.CCGLostSizzlerV141R32SpyWorldOwner)loadScript("v10-41-r32-spy-world-owner.js","data-ccg-r32-spy-world-owner")}
   function loadSpyR32Loader(){if(!window.CCGLostSizzlerV141R32SpyLoader)loadScript("v10-41-r32-spy-loader.js","data-ccg-r32-spy-loader")}
-  loadOwnerSeal();loadModeRuntime();loadSpyExitControlReset();loadSoloDungeonR31();loadSpyR32WorldOwner();loadSpyR32Loader();
+  function loadHordeOwnerComposition(){if(!window.CCGLostSizzlerV141R60HordeOwnerComposition)loadScript("v10-41-r60-horde-owner-composition.js","data-ccg-r60-horde-owner-composition")}
+  function loadStage8NpcDialogue(){if(!window.CCGLostSizzlerStage8NpcDialogue)loadScript("v10-41-stage8-npc-dialogue.js","data-ccg-stage8-npc-dialogue")}
+  function loadStage8AfterInitialRuntime(){
+    if(document.readyState==="complete"){queueMicrotask(loadStage8NpcDialogue);return}
+    addEventListener("load",loadStage8NpcDialogue,{once:true})
+  }
+  loadOwnerSeal();loadModeRuntime();loadSoloDiagnostics();loadSpyExitControlReset();loadSoloDungeonR31();loadSpyR32WorldOwner();loadSpyR32Loader();loadHordeOwnerComposition();loadStage8AfterInitialRuntime();
 
   const entries=[
     ["LS-0826-09","FIXED","Global movement freeze after Spy mode","A Spy runtime ownership race could leave ordinary movement routed through the isolated Spy owner after the mode ended. Because the Spy owner had already released its saved base function, later Solo or Horde movement could return false forever. r30 restores the pre-Spy update, movement and damage owners unconditionally when Spy exits."],

@@ -36,17 +36,36 @@ try{
     r39?.placeRoster?.();
   });
   await page.waitForFunction(()=>document.getElementById("horde-live-roster")?.parentElement?.classList?.contains("tactical-zone")&&window.CCGLostSizzlerV141R39HordeResponsive?.state?.rosterWatchActive===true);
+  await page.waitForFunction(()=>{
+    const chainHasMarker=(fn,marker)=>{
+      const seen=new Set();let current=fn,depth=0;
+      while(typeof current==="function"&&!seen.has(current)&&depth++<32){
+        if(current[marker]===true)return true;
+        seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null
+      }
+      return false
+    };
+    return Boolean(window.CCGLostSizzlerV137?.updateHordeFocus?.__ccgV141UiPerformanceFocus)&&chainHasMarker(window.CCGLostSizzlerV138?.updateHordeLive,"__ccgV141UiPerformanceLive")
+  },null,{timeout:2000});
 
   const hordeUi=await page.evaluate(()=>{
+    const chainHasMarker=(fn,marker)=>{
+      const seen=new Set();let current=fn,depth=0;
+      while(typeof current==="function"&&!seen.has(current)&&depth++<32){
+        if(current[marker]===true)return true;
+        seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null
+      }
+      return false
+    };
     const roster=document.getElementById("horde-live-roster"),api=window.CCGLostSizzlerV141UiSpyPerformance,r39=window.CCGLostSizzlerV141R39HordeResponsive;
-    return{parent:roster?.parentElement?.className||"",position:roster?getComputedStyle(roster).position:"",top:roster?getComputedStyle(roster).top:"",focusWrapped:Boolean(window.CCGLostSizzlerV137?.updateHordeFocus?.__ccgV141UiPerformanceFocus),liveWrapped:Boolean(window.CCGLostSizzlerV138?.updateHordeLive?.__ccgV141UiPerformanceLive),moves:api?.state?.hordeRosterMoves||0,ownerMoves:r39?.state?.rosterMoves||0,ownerWatching:r39?.state?.rosterWatchActive===true};
+    return{parent:roster?.parentElement?.className||"",position:roster?getComputedStyle(roster).position:"",top:roster?getComputedStyle(roster).top:"",focusWrapped:Boolean(window.CCGLostSizzlerV137?.updateHordeFocus?.__ccgV141UiPerformanceFocus),liveWrapped:chainHasMarker(window.CCGLostSizzlerV138?.updateHordeLive,"__ccgV141UiPerformanceLive"),moves:api?.state?.hordeRosterMoves||0,ownerMoves:r39?.state?.rosterMoves||0,ownerWatching:r39?.state?.rosterWatchActive===true};
   });
   assert.match(hordeUi.parent,/tactical-zone/,"Horde Players must use the r39 tactical side/lower region instead of floating over the game canvas");
   assert.equal(hordeUi.position,"static","Horde Players must not remain an absolute overlay over gameplay");
   assert.equal(hordeUi.ownerWatching,true,"r39 must retain Horde roster ownership for the live session");
   assert.ok(hordeUi.ownerMoves>=1,"r39 must have moved the Horde roster into its final tactical owner region");
   assert.equal(hordeUi.focusWrapped,true,"Horde focus maintenance must use the throttled hardening owner");
-  assert.equal(hordeUi.liveWrapped,true,"Horde live maintenance must use the throttled hardening owner");
+  assert.equal(hordeUi.liveWrapped,true,"Horde live maintenance must retain the throttled hardening owner in its live ancestry");
 
   const healed=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141UiSpyPerformance,active=window.CCGLostSizzlerSpecialModes.active,runState=active.state,model=runState.players?.find(row=>String(row.id)===String(p1.id))||runState.players?.[0];

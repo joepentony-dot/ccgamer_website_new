@@ -4,9 +4,19 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'arcade/lost-sizzler/js/**'
+      - 'arcade/lost-sizzler/tests/**'
+      - 'arcade/lost-sizzler/STABILIZATION_DEFECTS.md'
+      - '.github/workflows/lost-sizzler-*.yml'
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - 'arcade/lost-sizzler/js/**'
+      - 'arcade/lost-sizzler/tests/**'
+      - 'arcade/lost-sizzler/STABILIZATION_DEFECTS.md'
+      - '.github/workflows/lost-sizzler-*.yml'
   workflow_dispatch:
 
 permissions:

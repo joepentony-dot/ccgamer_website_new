@@ -20,6 +20,8 @@
   const MAX_VISIBLE_FRAME_MS=210;
   const MAX_PROJECTILE_STEPS=3;
   const MAX_ENEMY_STEPS=3;
+  const HORDE_LIVE_STEP_MS=80;
+  const MAX_HORDE_LIVE_STEPS=3;
   const SUPPRESS_TIMER_MS=60000;
   const PAUSE_REENTRY_GUARD_MS=1200;
   const PAUSE_COMBAT_SETTLE_MS=300;
@@ -28,12 +30,12 @@
     timer:0,installed:false,combatWrapped:false,liveWrapped:false,
     preSource:null,postSource:null,liveSource:null,liveOwner:null,
     lastNow:0,lastPauseBoundary:0,lastMode:"",clockPrimed:false,resumeGuardUntil:0,
-    resumeCombatSettleUntil:0,resumeProjectileSteps:0,resumeEnemySteps:0,resumeSettleDiscardedMs:0,
+    resumeCombatSettleUntil:0,resumeCombatSettleElapsed:0,resumeProjectileSteps:0,resumeEnemySteps:0,resumeSettleDiscardedMs:0,
     lastFrameToken:"",lastTiming:null,lastServicedFrameToken:"",duplicateBeginFrames:0,duplicateCombatServices:0,
     projectileAccumulator:0,enemyAccumulator:0,currentElapsed:0,currentFrameDt:0,currentExtra:0,
     frames:0,clockResets:0,pauseGapsDiscarded:0,pauseAccumulatorResets:0,resumeGuardFrames:0,visibleGapClamps:0,discardedVisibleMs:0,
     projectileSteps:0,projectileCatchupSteps:0,enemySteps:0,enemyCatchupSteps:0,
-    playerTimerCatchupMs:0,liveElapsedFrames:0,liveOwnerInstalls:0,liveOwnerReassertions:0,hookReassertions:0,lastError:""
+    playerTimerCatchupMs:0,liveElapsedFrames:0,liveOwnerInstalls:0,liveOwnerReassertions:0,liveOwnerMonitorStops:0,liveSubsteps:0,liveCatchupSubsteps:0,liveDiscardedMs:0,hookReassertions:0,lastError:""
   };
 
   const perfNow=()=>{try{return Number(performance.now())||Date.now()}catch(_){return Date.now()}};
@@ -74,7 +76,7 @@
     state.lastFrameToken="";state.lastTiming=null;state.lastServicedFrameToken="";
     if(!keepRemainder){
       state.projectileAccumulator=0;state.enemyAccumulator=0;state.clockPrimed=false;
-      state.resumeCombatSettleUntil=0;state.resumeProjectileSteps=0;state.resumeEnemySteps=0
+      state.resumeCombatSettleUntil=0;state.resumeCombatSettleElapsed=0;state.resumeProjectileSteps=0;state.resumeEnemySteps=0
     }
     state.clockResets++;
     return reason
@@ -91,7 +93,7 @@
     const current=Math.max(0,Number(now)||0),r59Until=Math.max(0,Number(r59State()?.suppressRecoveryUntil)||0);
     state.resumeGuardUntil=Math.max(Number(state.resumeGuardUntil)||0,r59Until,current+PAUSE_REENTRY_GUARD_MS);
     state.resumeCombatSettleUntil=current+PAUSE_COMBAT_SETTLE_MS;
-    state.resumeProjectileSteps=0;state.resumeEnemySteps=0;
+    state.resumeCombatSettleElapsed=0;state.resumeProjectileSteps=0;state.resumeEnemySteps=0;
     return state.resumeGuardUntil
   }
 
@@ -200,14 +202,16 @@
     const frameToken=String(timing.frameToken||"");
     if(frameToken&&frameToken===state.lastServicedFrameToken){state.duplicateCombatServices++;return{projectiles:0,enemies:0}}
     if(frameToken)state.lastServicedFrameToken=frameToken;
-    const settling=perfNow()<Number(state.resumeCombatSettleUntil||0);
+    const settleArmed=Number(state.resumeCombatSettleUntil||0)>0,settling=settleArmed&&Number(state.resumeCombatSettleElapsed||0)<PAUSE_COMBAT_SETTLE_MS;
     const projectileLimit=settling?Math.max(0,PAUSE_COMBAT_STEP_BUDGET-Number(state.resumeProjectileSteps||0)):MAX_PROJECTILE_STEPS;
     const enemyLimit=settling?Math.max(0,PAUSE_COMBAT_STEP_BUDGET-Number(state.resumeEnemySteps||0)):MAX_ENEMY_STEPS;
     const projectiles=runProjectileSteps(timing.elapsed,projectileLimit),enemies=runEnemySteps(timing.elapsed,enemyLimit);
     if(settling){
       state.resumeProjectileSteps+=projectiles;state.resumeEnemySteps+=enemies;
+      state.resumeCombatSettleElapsed=Math.min(PAUSE_COMBAT_SETTLE_MS,Number(state.resumeCombatSettleElapsed||0)+Math.max(0,Number(timing.elapsed)||0));
       if(state.resumeProjectileSteps>=PAUSE_COMBAT_STEP_BUDGET)discardProjectileDebt();
-      if(state.resumeEnemySteps>=PAUSE_COMBAT_STEP_BUDGET)discardEnemyDebt()
+      if(state.resumeEnemySteps>=PAUSE_COMBAT_STEP_BUDGET)discardEnemyDebt();
+      if(state.resumeCombatSettleElapsed>=PAUSE_COMBAT_SETTLE_MS)state.resumeCombatSettleUntil=0
     }
     return{projectiles,enemies}
   }
@@ -261,17 +265,39 @@
     return typeof current==="function"?current:null
   }
 
+  function stopCompetingHordeLiveOwner(){
+    try{
+      const performanceLayer=window.CCGLostSizzlerHordeFramePerformance,ownerState=performanceLayer?.state;
+      if(ownerState?.r60LiveTimer){clearInterval(ownerState.r60LiveTimer);ownerState.r60LiveTimer=0;state.liveOwnerMonitorStops++}
+    }catch(error){recordError(error)}
+    return true
+  }
+
+  function runHordeLiveElapsed(source,receiver,elapsed){
+    if(typeof source!=="function")return false;
+    if(!playingVisible())return source.call(receiver,Number(elapsed)||0);
+    let remaining=clamp(elapsed,0,MAX_VISIBLE_FRAME_MS),steps=0,result=false;
+    while(remaining>0&&steps<MAX_HORDE_LIVE_STEPS){
+      const slice=Math.min(HORDE_LIVE_STEP_MS,remaining);
+      result=source.call(receiver,slice);remaining-=slice;steps++
+    }
+    state.liveSubsteps+=steps;if(steps>1)state.liveCatchupSubsteps+=steps-1;
+    if(remaining>0){state.liveDiscardedMs+=remaining;state.discardedVisibleMs+=remaining}
+    return result
+  }
+
   function wrapLiveController(){
     const api=window.CCGLostSizzlerV138;if(!api||typeof api.updateHordeLive!=="function")return false;
+    stopCompetingHordeLiveOwner();
     const current=api.updateHordeLive;
     if(current===state.liveOwner||originalChainContains(current,state.liveOwner)){
       state.liveWrapped=true;return true
     }
     const source=unwrapLiveSource(current);if(typeof source!=="function")return false;
     const wrapped=function updateHordeLiveV141R60Owned(dt){
-      const elapsed=playingVisible()&&state.currentElapsed>0?state.currentElapsed:Number(dt)||0;
-      if(playingVisible())state.liveElapsedFrames++;
-      return source.call(this,elapsed)
+      const active=playingVisible(),elapsed=active&&state.currentElapsed>0?state.currentElapsed:Number(dt)||0;
+      if(active)state.liveElapsedFrames++;
+      return runHordeLiveElapsed(source,this,elapsed)
     };
     wrapped.__ccgV141R60RealElapsed=true;wrapped.__ccgV141R60ExactLiveOwner=true;wrapped.__ccgOriginal=source;
     const replacing=typeof state.liveOwner==="function";
@@ -296,8 +322,8 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0;resetClock("pagehide",false)},{once:true});
 
   window.CCGLostSizzlerV141R60HordeCombatIntegrity={
-    PROJECTILE_STEP_MS,MAX_VISIBLE_FRAME_MS,MAX_PROJECTILE_STEPS,MAX_ENEMY_STEPS,SUPPRESS_TIMER_MS,PAUSE_REENTRY_GUARD_MS,PAUSE_COMBAT_SETTLE_MS,PAUSE_COMBAT_STEP_BUDGET,
-    beginFrame,serviceCombat,runProjectileSteps,runEnemySteps,discardProjectileDebt,discardEnemyDebt,payDownPlayerTimers,resetClock,resetCombatAccumulators,armResumeGuard,primeAccumulators,controllerFrameToken,wrapCombatController,wrapLiveController,install,
+    PROJECTILE_STEP_MS,MAX_VISIBLE_FRAME_MS,MAX_PROJECTILE_STEPS,MAX_ENEMY_STEPS,HORDE_LIVE_STEP_MS,MAX_HORDE_LIVE_STEPS,SUPPRESS_TIMER_MS,PAUSE_REENTRY_GUARD_MS,PAUSE_COMBAT_SETTLE_MS,PAUSE_COMBAT_STEP_BUDGET,
+    beginFrame,serviceCombat,runProjectileSteps,runEnemySteps,discardProjectileDebt,discardEnemyDebt,payDownPlayerTimers,resetClock,resetCombatAccumulators,armResumeGuard,primeAccumulators,controllerFrameToken,runHordeLiveElapsed,stopCompetingHordeLiveOwner,wrapCombatController,wrapLiveController,install,
     get state(){return state}
   };
 })();
@@ -328,6 +354,15 @@
   const r59PauseBoundary=()=>{try{return Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.pauseBoundaries||window.CCGLostSizzlerV141R59?.state?.pauseBoundaries||0)}catch(_){return 0}};
   const durability=player=>Number(player?.health||0)+Number(player?.armor||0);
   const recordError=error=>{state.lastError=String(error?.message||error||"unknown").slice(0,260);return false};
+
+  function originalChainHasMarker(fn,marker,limit=64){
+    const seen=new Set();let current=fn,depth=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth++<limit){
+      try{if(current[marker])return true}catch(_){}
+      seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null
+    }
+    return false
+  }
 
   function resetPauseSensitiveState(reason="mode boundary"){
     movementTimes=new WeakMap();state.lastVisualNow=perfNow();state.lastPauseBoundary=r59PauseBoundary();state.pauseResets++;
@@ -405,6 +440,7 @@
   }
 
   function wrapMovement(){
+    if(specialType()==="sizzler-saboteurs")return false;
     const current=window.movePlayer;if(typeof current!=="function")return false;
     if(current.__ccgV141R60CadenceSeal){adoptMovementOwner(current);state.moveWrapped=true;state.moveSource=current.__ccgOriginal||state.moveSource;return true}
     const source=current;
@@ -437,7 +473,15 @@
   function ccgDefinition(){return window.CCG_CONFIG?.followerElites?.find?.(row=>row?.ccgBoss||String(row?.name||"").toUpperCase()==="CCG")||null}
   function freeCcgCell(worldState,hostState){
     const occupied=new Set((hostState?.enemies||[]).filter(enemy=>enemy?.alive).map(enemy=>`${Number(enemy.x)},${Number(enemy.y)}`));
-    const rooms=[...(worldState?.rooms||[])].filter(room=>room&&!room.sanctuary).sort((a,b)=>Number(b.depth||0)-Number(a.depth||0));
+    const namedRooms=new Set((hostState?.enemies||[])
+      .filter(enemy=>enemy?.alive&&(enemy.follower||enemy.championName||enemy.namedEnemy||enemy.ccgBoss))
+      .map(enemy=>window.CCGWorld?.roomAt?.(worldState,Number(enemy.x),Number(enemy.y)))
+      .filter(roomId=>Number.isFinite(Number(roomId))&&Number(roomId)>=0)
+      .map(Number));
+    const floor=Math.max(1,Number(run?.floor||worldState?.floor||1)),gentleDepth=floor===1?2:1;
+    const rooms=[...(worldState?.rooms||[])]
+      .filter(room=>room&&!room.sanctuary&&!namedRooms.has(Number(room.id))&&Number(room.depth||0)>gentleDepth)
+      .sort((a,b)=>Number(b.depth||0)-Number(a.depth||0));
     for(const room of rooms)for(let y=Number(room.y)+1;y<Number(room.y)+Number(room.h);y++)for(let x=Number(room.x)+1;x<Number(room.x)+Number(room.w);x++){
       if(occupied.has(`${x},${y}`))continue;if(worldState?.start&&Math.abs(x-Number(worldState.start.x))+Math.abs(y-Number(worldState.start.y))<8)continue;
       try{if(window.CCGWorld?.walkable?.(worldState.map,x,y,hostState))return{x,y}}catch(_){}
@@ -464,7 +508,7 @@
 
   function wrapEnvironmentalDamage(){
     const current=window.hurtPlayer;if(typeof current!=="function")return false;
-    if(current.__ccgV141R60EnvironmentSeal){state.hurtWrapped=true;state.hurtSource=current.__ccgOriginal||state.hurtSource;return true}
+    if(originalChainHasMarker(current,"__ccgV141R60EnvironmentSeal")){state.hurtWrapped=true;state.hurtSource=current;return true}
     const source=current;
     const wrapped=function hurtPlayerV141R60EnvironmentSeal(player,amount,friendly=false,sourceName="enemy"){
       if(!soloDungeonPlaying()||!player||!ENVIRONMENT_SOURCE.test(String(sourceName||"")))return source.apply(this,arguments);
@@ -485,5 +529,5 @@
   addEventListener("visibilitychange",()=>{if(document.hidden)resetPauseSensitiveState("hidden")},{passive:true});
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
-  window.CCGLostSizzlerV141R60LivePlayIntegrity={AZALEA_ASSET,timeSmoothingAlpha,applyTimeSmoothing,movementCadence,patchAzalea,ensureCcgEnemy,wrapUpdate,wrapMovement,wrapStartWorld,wrapEnvironmentalDamage,install,get state(){return state}};
+  window.CCGLostSizzlerV141R60LivePlayIntegrity={AZALEA_ASSET,originalChainHasMarker,timeSmoothingAlpha,applyTimeSmoothing,movementCadence,patchAzalea,ensureCcgEnemy,wrapUpdate,wrapMovement,wrapStartWorld,wrapEnvironmentalDamage,install,get state(){return state}};
 })();

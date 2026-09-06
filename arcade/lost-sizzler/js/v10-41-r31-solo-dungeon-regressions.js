@@ -75,10 +75,11 @@
     const current=window[name];if(current?.__ccgV141ModeOwnedGate&&typeof current.__ccgV141ModeOwnedSource==="function")return current.__ccgV141ModeOwnedSource;
     return typeof current==="function"?current:null
   }
-  function sourceHasMarker(fn,marker){
-    let current=fn;for(let depth=0;current&&depth<8;depth++){
-      if(current[marker])return true;
-      current=current.__ccgV141ModeOwnedSource||current.__ccgOriginal||current.__ccgV141R31Original||null;
+  function sourceHasMarker(fn,marker,limit=256){
+    const seen=new Set();let current=fn,depth=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth++<limit){
+      try{if(current[marker])return true}catch(_){}
+      seen.add(current);current=current.__ccgV141ModeOwnedSource||current.__ccgOriginal||current.__ccgV141R31Original||null
     }
     return false
   }
@@ -284,5 +285,5 @@
     removeEventListener("keydown",onPostResumeAttack,true)
   },{once:true});
 
-  window.CCGLostSizzlerV141R31SoloDungeon={refreshShopWallet,normaliseCpuCook,genericCookDisplayName,resetSoloCombatAfterResume,recoverSoloDisplay,installChestFix,installPauseFix,installPanelReturnFix,installCpuCookSpawnFix,installCpuCookRenderFix,mountLog,monitor,logEntries,get state(){return state}};
+  window.CCGLostSizzlerV141R31SoloDungeon={refreshShopWallet,normaliseCpuCook,genericCookDisplayName,resetSoloCombatAfterResume,recoverSoloDisplay,sourceHasMarker,installChestFix,installPauseFix,installPanelReturnFix,installCpuCookSpawnFix,installCpuCookRenderFix,mountLog,monitor,logEntries,get state(){return state}};
 })();

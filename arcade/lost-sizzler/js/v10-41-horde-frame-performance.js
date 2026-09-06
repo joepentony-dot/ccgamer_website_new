@@ -33,11 +33,26 @@
     return true
   }
 
+  function stopR60LiveOwnerTimer(){
+    if(state.r60LiveTimer){clearInterval(state.r60LiveTimer);state.r60LiveTimer=0}
+    return true
+  }
+
   function originalChainContains(fn,target){
     if(typeof fn!=="function"||typeof target!=="function")return false;
     const seen=new Set();let current=fn,depth=0;
     while(typeof current==="function"&&!seen.has(current)&&depth++<24){
       if(current===target)return true;
+      seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null
+    }
+    return false
+  }
+
+  function originalChainHasMarker(fn,marker){
+    if(typeof fn!=="function")return false;
+    const seen=new Set();let current=fn,depth=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth++<24){
+      try{if(current[marker]===true)return true}catch(_){}
       seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null
     }
     return false
@@ -57,14 +72,25 @@
     if(!isHorde()||!timing?.state||!live||typeof live.updateHordeLive!=="function")return false;
     const current=live.updateHordeLive;
     if(current===state.r60HordeLiveOwner||originalChainContains(current,state.r60HordeLiveOwner))return true;
-    const source=unwrapR60LiveSource(current);if(typeof source!=="function")return false;
+    const timingOwner=timing.state.liveOwner,timingOwnerInChain=typeof timingOwner==="function"&&originalChainContains(current,timingOwner);
+    /* The UI-performance owner is terminal during Horde play: it intentionally
+       replaces its source rather than delegating. A buried R60 marker therefore
+       does not mean the elapsed-time owner will run. Keep the UI owner as the
+       bounded source and let this final owner account for real elapsed time. */
+    const terminalUiOwner=timingOwnerInChain&&current.__ccgV141UiPerformanceLive===true;
+    const retainsTimingOwner=timingOwnerInChain&&!terminalUiOwner;
+    const source=terminalUiOwner||retainsTimingOwner?current:unwrapR60LiveSource(current);if(typeof source!=="function")return false;
     try{
       const wrapped=function updateHordeLiveV141R60FinalOwner(dt){
         const active=isHorde(),timingState=timing.state,elapsed=active&&Number(timingState?.currentElapsed||0)>0?Number(timingState.currentElapsed):Number(dt)||0;
-        if(active)timingState.liveElapsedFrames=Number(timingState.liveElapsedFrames||0)+1;
+        if(active&&!retainsTimingOwner){
+          timingState.liveElapsedFrames=Number(timingState.liveElapsedFrames||0)+1;
+          if(typeof timing.runHordeLiveElapsed==="function")return timing.runHordeLiveElapsed(source,this,elapsed)
+        }
         return source.call(this,elapsed)
       };
       wrapped.__ccgV141R60RealElapsed=true;wrapped.__ccgV141R60FinalLiveOwner=true;wrapped.__ccgOriginal=source;
+      if(originalChainHasMarker(source,"__ccgV141UiPerformanceLive"))wrapped.__ccgV141UiPerformanceLive=true;
       const replacing=typeof state.r60HordeLiveOwner==="function";
       state.r60HordeLiveOwner=wrapped;live.updateHordeLive=wrapped;state.r60HordeLiveOwnerInstalls++;if(replacing)state.r60HordeLiveOwnerReassertions++;
       return true
@@ -103,10 +129,19 @@
   function startR60LiveOwnerTimer(){
     if(!window.CCGLostSizzlerV141R60LivePlayIntegrity||!window.CCGLostSizzlerV141R60HordeCombatIntegrity)return false;
     stopUnsafeR60LiveMonitor();
+    if(!isHorde()){stopR60LiveOwnerTimer();return maintainR60LiveOwner()}
     if(!state.r60LiveTimer){
-      state.r60LiveTimer=setInterval(()=>{try{maintainR60Owners()}catch(_){state.r60LiveOwnerErrors++}},R60_OWNER_MS)
+      state.r60LiveTimer=setInterval(()=>{try{
+        if(!isHorde()){stopR60LiveOwnerTimer();maintainR60LiveOwner();return}
+        maintainR60Owners()
+      }catch(_){state.r60LiveOwnerErrors++}},R60_OWNER_MS)
     }
     maintainR60Owners();return true
+  }
+
+  function syncR60LiveOwner(){
+    if(!state.r60Ready&&!window.CCGLostSizzlerV141R60HordeCombatIntegrity)return false;
+    return isHorde()?startR60LiveOwnerTimer():(stopR60LiveOwnerTimer()&&maintainR60LiveOwner())
   }
 
   function ensureR60(){
@@ -243,9 +278,12 @@
   function installModeObserver(){
     if(state.modeObserver)return true;
     if(typeof MutationObserver!=="function"||!document.body)return false;
-    state.modeObserver=new MutationObserver(()=>syncStatusTimer());
-    state.modeObserver.observe(document.body,{attributes:true,attributeFilter:["data-special-mode"]});
-    syncStatusTimer();return true
+    state.modeObserver=new MutationObserver(()=>{syncStatusTimer();syncR60LiveOwner()});
+    state.modeObserver.observe(document.body,{attributes:true,attributeFilter:["data-special-mode","data-run-active","data-mode-controller"]});
+    addEventListener("focus",syncR60LiveOwner,{passive:true});
+    addEventListener("pageshow",syncR60LiveOwner,{passive:true});
+    document.addEventListener("visibilitychange",syncR60LiveOwner,{passive:true});
+    syncStatusTimer();syncR60LiveOwner();return true
   }
 
   function install(){
@@ -263,7 +301,7 @@
 
   window.CCGLostSizzlerV141HordeFramePerformance={
     RADAR_REFRESH_MS,STATUS_REFRESH_MS,R60_OWNER_MS,FIRST_WAVE_TRACK,LATER_TRACKS,R60_SRC,prewarmFirstWave,prewarmLaterWaves,decodeKnownImages,ensureR60,
-    stopUnsafeR60LiveMonitor,originalChainContains,unwrapR60LiveSource,maintainR60HordeLiveOwner,r60LiveOwnerSafe,maintainR60LiveOwner,maintainR60Owners,startR60LiveOwnerTimer,
+    stopUnsafeR60LiveMonitor,stopR60LiveOwnerTimer,originalChainContains,unwrapR60LiveSource,maintainR60HordeLiveOwner,r60LiveOwnerSafe,maintainR60LiveOwner,maintainR60Owners,startR60LiveOwnerTimer,syncR60LiveOwner,
     installRadarThrottle,ensureStatusStrip,updateStatus,startStatusTimer,stopStatusTimer,syncStatusTimer,installModeObserver,remaining,get state(){return state}
   };
 })();

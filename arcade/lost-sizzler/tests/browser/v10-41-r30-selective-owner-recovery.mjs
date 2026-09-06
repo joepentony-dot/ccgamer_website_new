@@ -49,9 +49,15 @@ try{
     document.body.dataset.runActive="true";document.body.dataset.specialMode="";UI.menu?.classList.add("hidden");
     host.enemies=[];host.generators=[];move1=0;input.clear();
   });
+  await page.waitForFunction(()=>Boolean(
+    window.CCGLostSizzlerV141R56PlaytestCompletion&&
+    window.CCGLostSizzlerV141R60LivePlayIntegrity&&
+    window.CCGLostSizzlerV141R30?.modernDamageOwnershipPresent?.(window.hurtPlayer)
+  ));
 
   const selective=await page.evaluate(()=>{
     const r30=window.CCGLostSizzlerV141R30,updateBefore=window.update,hurtBefore=window.hurtPlayer;
+    const hurtModernBefore=r30.modernDamageOwnershipPresent(hurtBefore);
     const poisoned=function poisonedMoveOnly(){return false};poisoned.__ccgV141SpyIsolated=true;window.movePlayer=poisoned;
     const repaired=r30.assertNormalRuntimeOwnership("browser selective move-only repair");
     return{
@@ -59,10 +65,12 @@ try{
       contaminated:r30.spyContaminated(window.movePlayer),
       moveGolden:window.movePlayer===r30.state.goldenMove,
       updatePreserved:window.update===updateBefore,
-      hurtPreserved:window.hurtPlayer===hurtBefore
+      hurtPreserved:window.hurtPlayer===hurtBefore,
+      hurtModernBefore,
+      hurtModernAfter:r30.modernDamageOwnershipPresent(window.hurtPlayer)
     };
   });
-  assert.deepEqual(selective,{repaired:true,contaminated:false,moveGolden:true,updatePreserved:true,hurtPreserved:true},`move-only ownership repair must not roll back healthy runtime owners: ${JSON.stringify(selective)}`);
+  assert.deepEqual(selective,{repaired:true,contaminated:false,moveGolden:true,updatePreserved:true,hurtPreserved:true,hurtModernBefore:true,hurtModernAfter:true},`move-only ownership repair must preserve an already healthy modern damage owner: ${JSON.stringify(selective)}`);
 
   const direction=await page.evaluate(()=>{
     const dirs=[{dx:1,dy:0,code:"ArrowRight"},{dx:-1,dy:0,code:"ArrowLeft"},{dx:0,dy:1,code:"ArrowDown"},{dx:0,dy:-1,code:"ArrowUp"}];

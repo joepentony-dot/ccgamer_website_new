@@ -287,14 +287,43 @@
     compactLogicalMap();buildCompactWorld();sanitiseSharedDungeonState();processMovement();processAttack();callSpyRules();syncLocalStatus();updatePrompt();return true;
   }
 
+  function ownerChainHas(fn,target,limit=64){
+    const seen=new Set();let current=fn,depth=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth++<limit){
+      if(current===target)return true;
+      seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null;
+    }
+    return false;
+  }
+
   function spyMoveOwner(player,dx,dy,dash=false){if(spyActive())return attemptMove(player,dx,dy,dash);return typeof state.baseMove==="function"?state.baseMove.apply(this,arguments):false}
   spyMoveOwner.__ccgV141R29SpyOwner=true;spyMoveOwner.__ccgV141R27SpyDoorIsolation=true;spyMoveOwner.__ccgV141SpyIsolated=true;
 
   function spyHurtOwner(player,amount,friendly=false,source="enemy"){
     if(spyActive()){state.dungeonDamageBlocked++;return false}
-    return typeof state.baseHurt==="function"?state.baseHurt.apply(this,arguments):false;
+    const delegate=typeof spyHurtOwner.__ccgOriginal==="function"?spyHurtOwner.__ccgOriginal:state.baseHurt;
+    return typeof delegate==="function"?delegate.apply(this,arguments):false;
   }
   spyHurtOwner.__ccgV141R29HordeFriendly=true;spyHurtOwner.__ccgV141SpyDamageBoundary=true;
+
+  function ensureMovementOwner(countRecovery=false){
+    const current=window.movePlayer;
+    if(ownerChainHas(current,spyMoveOwner))return true;
+    if(typeof current==="function"&&current!==spyMoveOwner){state.baseMove=current;spyMoveOwner.__ccgOriginal=current}
+    window.movePlayer=spyMoveOwner;
+    if(countRecovery)state.moveReassertions++;
+    return true;
+  }
+
+  function ensureDamageBoundary(){
+    const current=window.hurtPlayer;
+    if(ownerChainHas(current,spyHurtOwner)){
+      if(typeof state.baseHurt!=="function"&&typeof spyHurtOwner.__ccgOriginal==="function")state.baseHurt=spyHurtOwner.__ccgOriginal;
+      return true;
+    }
+    if(typeof current==="function"&&current!==spyHurtOwner){state.baseHurt=current;spyHurtOwner.__ccgOriginal=current}
+    window.hurtPlayer=spyHurtOwner;return true;
+  }
 
   function suppressLegacyPhysicalBuilder(){
     const polish=window.CCGLostSizzlerModePolishV133;if(!polish||typeof polish.buildSpyPhysical!=="function")return false;
@@ -309,9 +338,9 @@
   }
 
   function enterIsolation(){
-    if(state.isolated||!spyActive())return state.isolated;
-    ensureModeStyles();state.baseMove=window.movePlayer;state.baseHurt=window.hurtPlayer;
-    window.movePlayer=spyMoveOwner;window.hurtPlayer=spyHurtOwner;suppressLegacyPhysicalBuilder();
+    if(!spyActive())return false;
+    if(state.isolated){ensureMovementOwner(true);ensureDamageBoundary();suppressLegacyPhysicalBuilder();return true}
+    ensureModeStyles();ensureMovementOwner(false);ensureDamageBoundary();suppressLegacyPhysicalBuilder();
     document.body.dataset.spyRuntimeIsolated="true";state.isolated=true;state.lastMode=MODE_ID;state.lastMoveAt=0;state.lastAttackAt=0;state.statusById.clear();
     compactLogicalMap();buildCompactWorld(true);sanitiseSharedDungeonState();updatePrompt();return true;
   }
@@ -319,15 +348,17 @@
   function leaveIsolation(){
     if(!state.isolated)return false;
     if(window.movePlayer===spyMoveOwner&&typeof state.baseMove==="function")window.movePlayer=state.baseMove;
-    if(window.hurtPlayer===spyHurtOwner&&typeof state.baseHurt==="function")window.hurtPlayer=state.baseHurt;
-    restoreLegacyPhysicalBuilder();delete document.body.dataset.spyRuntimeIsolated;setPrompt("");keys.clear();state.trapPulse=false;state.trapHeld=false;state.statusById.clear();state.isolated=false;state.baseMove=state.baseHurt=null;state.lastWorldSignature="";return true;
+    if(window.hurtPlayer===spyHurtOwner){
+      const delegate=typeof spyHurtOwner.__ccgOriginal==="function"?spyHurtOwner.__ccgOriginal:state.baseHurt;
+      if(typeof delegate==="function")window.hurtPlayer=delegate;
+    }
+    restoreLegacyPhysicalBuilder();delete document.body.dataset.spyRuntimeIsolated;setPrompt("");keys.clear();state.trapPulse=false;state.trapHeld=false;state.statusById.clear();state.isolated=false;spyMoveOwner.__ccgOriginal=null;state.baseMove=state.baseHurt=null;state.lastWorldSignature="";return true;
   }
 
   function monitor(){
     if(spyActive()){
       if(!state.isolated)enterIsolation();
-      if(state.isolated&&window.movePlayer!==spyMoveOwner){window.movePlayer=spyMoveOwner;state.moveReassertions++}
-      if(state.isolated&&window.hurtPlayer!==spyHurtOwner)window.hurtPlayer=spyHurtOwner;
+      else{ensureMovementOwner(true);ensureDamageBoundary()}
       suppressLegacyPhysicalBuilder();return;
     }
     if(state.isolated)leaveIsolation();
@@ -352,5 +383,5 @@
   runtimeRegistry.runtimes[MODE_ID]={id:MODE_ID,isolatedRules:true,sharedRenderer:true,update:isolatedUpdate,buildWorld:buildCompactWorld};
   runtimeRegistry.current=()=>spyActive()?MODE_ID:String(document.body?.dataset?.specialMode||"dungeon");
   window.CCGLostSizzlerModeRuntime=runtimeRegistry;
-  window.CCGLostSizzlerV141R29SpyEngine={enterIsolation,leaveIsolation,isolatedUpdate,attemptMove,buildCompactWorld,compactLogicalMap,sanitiseSharedDungeonState,updatePrompt,get state(){return state}};
+  window.CCGLostSizzlerV141R29SpyEngine={enterIsolation,leaveIsolation,isolatedUpdate,attemptMove,buildCompactWorld,compactLogicalMap,sanitiseSharedDungeonState,updatePrompt,moveOwner:spyMoveOwner,get state(){return state}};
 })();

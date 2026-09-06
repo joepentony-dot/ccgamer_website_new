@@ -19,6 +19,8 @@ assert.match(dossier,/const knownNames=new Set\(Object\.entries\(stored\)/,"pers
 assert.match(dossier,/if\(firstEver&&!discoveryQueue\.includes\(name\)\)discoveryQueue\.push\(name\)/,"each enemy type enters the discovery queue only once");
 assert.match(dossier,/const name=discoveryQueue\.shift\(\)/,"queued discoveries are shown one at a time");
 assert.match(dossier,/showNamedDossier\(name,true\)/,"the first encounter opens the focused dossier panel");
+assert.match(dossier,/let autoOpeningDiscovery=false/,"dossier discovery distinguishes automatic first-encounter opens from explicit dossier views");
+assert.match(dossier,/if\(!autoOpeningDiscovery&&discoveryQueue\.length\)\{discoveryQueue\.length=0;discoveryOpenScheduled=false\}/,"explicit dossier views cancel stale queued auto-opens before they can pause live play");
 assert.match(dossier,/named-dossier-close.*scheduleNextDiscovery/s,"closing one dossier advances a simultaneous second discovery");
 
 assert.match(loader,/DOMContentLoaded.*startEnhancements/s,"direct-link enhancements start at DOM ready rather than full window load");

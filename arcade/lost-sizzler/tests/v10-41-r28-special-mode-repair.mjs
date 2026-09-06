@@ -26,7 +26,7 @@ assert.match(index,/js\/v10-41-r29-runtime-repair\.js\?v=20260827r31/);
 assert.ok(index.indexOf("v10-41-r27-spy-isolation.js?v=20260827r31")<index.indexOf("v10-41-r28-special-mode-repair.js?v=20260827r31"),"retained r28 repair must execute after r27");
 assert.ok(index.indexOf("v10-41-r28-special-mode-repair.js?v=20260827r31")<index.indexOf("v10-41-r29-runtime-repair.js?v=20260827r31"),"r29 must execute after the retained r28 repair");
 
-const forcePlaying=noPause.match(/function forcePlaying\(\)\{[\s\S]*?return true;\n  \}/)?.[0]||"";
+const forcePlaying=noPause.match(/function forcePlaying\(\)\{[\s\S]*?return true;\r?\n  \}/)?.[0]||"";
 assert.ok(forcePlaying,"multiplayer no-pause must retain forcePlaying");
 assert.doesNotMatch(forcePlaying,/input\.clear|input\?\.clear/,"multiplayer pause recovery must never clear held input");
 assert.doesNotMatch(noPause,/window\.update\s*=/,"multiplayer no-pause must not own the shared update loop after controller isolation");
