@@ -104,6 +104,22 @@ jobs:
           if-no-files-found: ignore
           retention-days: 3
 
+      - name: Prove Lost Sizzler achievement and collection sync on PostgreSQL
+        working-directory: services/ccg-backend
+        shell: bash
+        run: |
+          set -o pipefail
+          node tests/progress-database-contract.mjs 2>&1 | tee "$RUNNER_TEMP/ccg-progress-contract.log"
+
+      - name: Upload progress contract failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ccg-progress-contract-failure
+          path: ${{ runner.temp }}/ccg-progress-contract.log
+          if-no-files-found: ignore
+          retention-days: 3
+
       - name: Check migration policy markers
         shell: bash
         run: |
@@ -124,6 +140,8 @@ jobs:
           test -f services/ccg-backend/src/password-recovery.mjs
           test -f services/ccg-backend/src/lost-sizzler-feedback.mjs
           test -f services/ccg-backend/src/lost-sizzler-feedback-http.mjs
+          test -f services/ccg-backend/src/lost-sizzler-progress.mjs
+          test -f services/ccg-backend/src/lost-sizzler-progress-http.mjs
           test -f services/ccg-backend/scripts/migrate.mjs
           test -f services/ccg-backend/scripts/verify-migration-snapshot.mjs
           test -f services/ccg-backend/scripts/import-migration-bundle.mjs
@@ -131,6 +149,7 @@ jobs:
           test -f services/ccg-backend/client/ccg-auth-client.mjs
           test -f services/ccg-backend/client/ccg-online-client.mjs
           test -f services/ccg-backend/client/lost-sizzler-feedback.mjs
+          test -f services/ccg-backend/client/lost-sizzler-progress.mjs
           test -f services/ccg-backend/tests/auth-client-contract.mjs
           test -f services/ccg-backend/tests/online-client-contract.mjs
           test -f services/ccg-backend/tests/online-service-database-contract.mjs
@@ -138,6 +157,10 @@ jobs:
           test -f services/ccg-backend/tests/feedback-http-contract.mjs
           test -f services/ccg-backend/tests/feedback-client-contract.mjs
           test -f services/ccg-backend/tests/feedback-database-contract.mjs
+          test -f services/ccg-backend/tests/progress-contract.mjs
+          test -f services/ccg-backend/tests/progress-http-contract.mjs
+          test -f services/ccg-backend/tests/progress-client-contract.mjs
+          test -f services/ccg-backend/tests/progress-database-contract.mjs
           test -f services/ccg-backend/tests/password-recovery-database-contract.mjs
           test -f services/ccg-backend/tests/migration-runner-contract.mjs
           test -f services/ccg-backend/tests/migration-snapshot-contract.mjs
@@ -157,6 +180,8 @@ jobs:
           grep -q 'lost_sizzler_cloud_saves' "$migration"
           grep -q 'client_revision_ms' "$migration"
           grep -q 'deleted_at' "$migration"
+          grep -q 'lost_sizzler_achievements' "$migration"
+          grep -q 'lost_sizzler_collection_state' "$migration"
           grep -q 'lost_sizzler_multiplayer_rooms' "$migration"
           grep -q 'ccg_auth_accounts' "$account_migration"
           grep -q 'ccg_auth_identities' "$account_migration"
