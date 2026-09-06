@@ -43,21 +43,52 @@ function nextJson(socket, predicate = () => true, timeoutMs = 2_000) {
   });
 }
 
-function connect(url, origin = ALLOWED_ORIGIN) {
+function connectWithHello(url, origin = ALLOWED_ORIGIN) {
   return new Promise((resolve, reject) => {
     const socket = new WebSocket(url, { origin });
+    let opened = false;
+    let hello = null;
     const timer = setTimeout(() => {
+      cleanup();
       socket.terminate();
-      reject(new Error('Timed out opening realtime socket.'));
+      reject(new Error('Timed out opening realtime socket and receiving hello.'));
     }, 2_000);
-    socket.once('open', () => {
-      clearTimeout(timer);
-      resolve(socket);
-    });
-    socket.once('error', (error) => {
-      clearTimeout(timer);
+
+    const maybeResolve = () => {
+      if (!opened || !hello) return;
+      cleanup();
+      resolve({ socket, hello });
+    };
+
+    const onOpen = () => {
+      opened = true;
+      maybeResolve();
+    };
+    const onMessage = (data, isBinary) => {
+      if (isBinary) return;
+      try {
+        const frame = JSON.parse(Buffer.from(data).toString('utf8'));
+        if (frame?.type === 'hello') {
+          hello = frame;
+          maybeResolve();
+        }
+      } catch {}
+    };
+    const onError = (error) => {
+      cleanup();
       reject(error);
-    });
+    };
+
+    function cleanup() {
+      clearTimeout(timer);
+      socket.off('open', onOpen);
+      socket.off('message', onMessage);
+      socket.off('error', onError);
+    }
+
+    socket.on('open', onOpen);
+    socket.on('message', onMessage);
+    socket.on('error', onError);
   });
 }
 
@@ -122,8 +153,7 @@ await new Promise((resolve, reject) => {
   denied.once('error', () => {});
 });
 
-const host = await connect(url);
-const hostHello = await nextJson(host, (frame) => frame.type === 'hello');
+const { socket: host, hello: hostHello } = await connectWithHello(url);
 assert.match(hostHello.sessionId, /^[A-Za-z0-9_-]{16}$/);
 assert.notEqual(hostHello.sessionId, 'client-chosen-id');
 assert.equal(hostHello.protocol, 'ccg-lost-sizzler-realtime-v1');
@@ -143,8 +173,7 @@ assert.equal(created.room.roomCapacity, 2);
 assert.equal(created.room.hostId, hostHello.sessionId);
 assert.equal(created.room.members[0].id, hostHello.sessionId);
 
-const peer = await connect(url);
-const peerHello = await nextJson(peer, (frame) => frame.type === 'hello');
+const { socket: peer, hello: peerHello } = await connectWithHello(url);
 assert.notEqual(peerHello.sessionId, hostHello.sessionId);
 const hostJoined = nextJson(host, (frame) => frame.type === 'room' && frame.reason === 'joined' && frame.room.memberCount === 2);
 const peerJoined = nextJson(peer, (frame) => frame.type === 'room' && frame.reason === 'joined' && frame.room.memberCount === 2);
@@ -153,20 +182,17 @@ const [hostRoom, peerRoom] = await Promise.all([hostJoined, peerJoined]);
 assert.equal(hostRoom.room.hostId, hostHello.sessionId);
 assert.equal(peerRoom.room.roomMode, 'sizzler-saboteurs');
 
-const collision = await connect(url);
-await nextJson(collision, (frame) => frame.type === 'hello');
+const { socket: collision } = await connectWithHello(url);
 const collisionError = nextJson(collision, (frame) => frame.type === 'error');
 collision.send(JSON.stringify({ type: 'create', roomCode: 'SPY22', name: 'Collision', mode: 'dungeon' }));
 assert.equal((await collisionError).code, 'room_code_in_use');
 
-const third = await connect(url);
-await nextJson(third, (frame) => frame.type === 'hello');
+const { socket: third } = await connectWithHello(url);
 const fullError = nextJson(third, (frame) => frame.type === 'error');
 third.send(JSON.stringify({ type: 'join', roomCode: 'SPY22', name: 'Third Player' }));
 assert.equal((await fullError).code, 'room_full');
 
-const missing = await connect(url);
-await nextJson(missing, (frame) => frame.type === 'hello');
+const { socket: missing } = await connectWithHello(url);
 const missingError = nextJson(missing, (frame) => frame.type === 'error');
 missing.send(JSON.stringify({ type: 'join', roomCode: 'MISS1', name: 'Missing Room' }));
 assert.equal((await missingError).code, 'room_not_found');
@@ -205,8 +231,7 @@ const binaryError = nextJson(peer, (frame) => frame.type === 'error' && frame.co
 peer.send(Buffer.from([1, 2, 3]));
 assert.equal((await binaryError).statusCode, 400);
 
-const oversized = await connect(url);
-await nextJson(oversized, (frame) => frame.type === 'hello');
+const { socket: oversized } = await connectWithHello(url);
 const oversizedClosed = new Promise((resolve, reject) => {
   const timer = setTimeout(() => reject(new Error('Oversized realtime frame was not rejected.')), 2_000);
   oversized.once('close', (code) => {
