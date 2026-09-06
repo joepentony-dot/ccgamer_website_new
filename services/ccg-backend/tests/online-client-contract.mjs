@@ -32,6 +32,8 @@ const client = createCcgOnlineClient({
 assert.equal(calls.length, 0, 'Composing the CCG client must perform zero network requests.');
 assert.equal(client.auth.getAccessToken(), null);
 assert.equal(typeof client.lostSizzler.weeklyVault.status, 'function');
+assert.equal(typeof client.lostSizzler.progress.achievements.list, 'function');
+assert.equal(typeof client.lostSizzler.progress.collection.pull, 'function');
 
 const beforeLoginPull = await client.lostSizzler.cloudSave.pull();
 assert.equal(beforeLoginPull.ok, false);
@@ -39,6 +41,12 @@ assert.equal(beforeLoginPull.kind, 'unauthenticated');
 const beforeLoginWeeklyStart = await client.lostSizzler.weeklyVault.start();
 assert.equal(beforeLoginWeeklyStart.ok, false);
 assert.equal(beforeLoginWeeklyStart.kind, 'unauthenticated');
+const beforeLoginAchievements = await client.lostSizzler.progress.achievements.list();
+assert.equal(beforeLoginAchievements.ok, false);
+assert.equal(beforeLoginAchievements.kind, 'unauthenticated');
+const beforeLoginCollection = await client.lostSizzler.progress.collection.pull();
+assert.equal(beforeLoginCollection.ok, false);
+assert.equal(beforeLoginCollection.kind, 'unauthenticated');
 assert.equal(calls.length, 0, 'Authenticated Lost Sizzler services without login must fail before a network request.');
 
 queue.push(response(200, {
@@ -87,21 +95,31 @@ assert.equal(signedWeekly.ok, true);
 assert.equal(signedWeekly.signedIn, true);
 assert.equal(calls[2].options.headers.authorization, 'Bearer ccg-access-1');
 
+queue.push(response(200, {
+  achievements: [{ achievement_key: 'solo.floor-5', unlocked_at: '2030-01-07T20:00:00.000Z', metadata: {} }],
+}));
+const achievements = await client.lostSizzler.progress.achievements.list();
+assert.equal(achievements.ok, true);
+assert.equal(achievements.achievements[0].achievement_key, 'solo.floor-5');
+assert.equal(calls[3].url, 'https://auth.cheekycommodoregamer.co.uk/v1/lost-sizzler/achievements');
+assert.equal(calls[3].options.credentials, 'omit');
+assert.equal(calls[3].options.headers.authorization, 'Bearer ccg-access-1');
+
 queue.push(response(200, { save: null }));
 const cloudPull = await client.lostSizzler.cloudSave.pull();
 assert.equal(cloudPull.ok, true);
 assert.equal(cloudPull.save, null);
-assert.equal(calls.length, 4);
-assert.equal(calls[3].url, 'https://auth.cheekycommodoregamer.co.uk/v1/lost-sizzler/cloud-save');
-assert.equal(calls[3].options.credentials, 'omit');
-assert.equal(calls[3].options.headers.authorization, 'Bearer ccg-access-1');
+assert.equal(calls.length, 5);
+assert.equal(calls[4].url, 'https://auth.cheekycommodoregamer.co.uk/v1/lost-sizzler/cloud-save');
+assert.equal(calls[4].options.credentials, 'omit');
+assert.equal(calls[4].options.headers.authorization, 'Bearer ccg-access-1');
 
 queue.push(response(200, { revoked: true }));
 const logout = await client.auth.logout();
 assert.equal(logout.ok, true);
 assert.equal(client.auth.getAccessToken(), null);
-assert.equal(calls[4].url, 'https://auth.cheekycommodoregamer.co.uk/v1/auth/logout');
-assert.equal(calls[4].options.credentials, 'include');
+assert.equal(calls[5].url, 'https://auth.cheekycommodoregamer.co.uk/v1/auth/logout');
+assert.equal(calls[5].options.credentials, 'include');
 
 const afterLogoutPull = await client.lostSizzler.cloudSave.pull();
 assert.equal(afterLogoutPull.ok, false);
@@ -109,6 +127,12 @@ assert.equal(afterLogoutPull.kind, 'unauthenticated');
 const afterLogoutWeeklyStart = await client.lostSizzler.weeklyVault.start();
 assert.equal(afterLogoutWeeklyStart.ok, false);
 assert.equal(afterLogoutWeeklyStart.kind, 'unauthenticated');
-assert.equal(calls.length, 5, 'Logged-out authenticated services must again fail locally without a request.');
+const afterLogoutAchievements = await client.lostSizzler.progress.achievements.list();
+assert.equal(afterLogoutAchievements.ok, false);
+assert.equal(afterLogoutAchievements.kind, 'unauthenticated');
+const afterLogoutCollection = await client.lostSizzler.progress.collection.pull();
+assert.equal(afterLogoutCollection.ok, false);
+assert.equal(afterLogoutCollection.kind, 'unauthenticated');
+assert.equal(calls.length, 6, 'Logged-out authenticated services must again fail locally without a request.');
 
-console.log('CCG online client contract passed: composition is passive, migrated login supplies bearer auth to optional cloud save and Weekly Vault, public Weekly status remains available, and logout disables authenticated remote services locally.');
+console.log('CCG online client contract passed: composition is passive, migrated login supplies bearer auth to optional cloud save, Weekly Vault and progress sync, public Weekly status remains available, and logout disables authenticated remote services locally.');
