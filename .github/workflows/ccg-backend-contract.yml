@@ -13,7 +13,24 @@ permissions:
 jobs:
   contract:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: ccg_backend_contract
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ccg_contract_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d ccg_backend_contract"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:ccg_contract_password@127.0.0.1:5432/ccg_backend_contract
+      CCG_DB_SSL: disable
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,9 +40,17 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install backend dependencies
+        working-directory: services/ccg-backend
+        run: npm install --ignore-scripts --no-audit --no-fund
+
       - name: Check backend source and fail-closed configuration
         working-directory: services/ccg-backend
         run: npm run check
+
+      - name: Prove backend schema and cloud-save transactions on PostgreSQL
+        working-directory: services/ccg-backend
+        run: node tests/database-contract.mjs
 
       - name: Check migration policy markers
         shell: bash
@@ -35,6 +60,8 @@ jobs:
           test -f "$migration"
           grep -q 'offline game first' services/ccg-backend/README.md
           grep -q 'lost_sizzler_cloud_saves' "$migration"
+          grep -q 'client_revision_ms' "$migration"
+          grep -q 'deleted_at' "$migration"
           grep -q 'lost_sizzler_multiplayer_rooms' "$migration"
           if grep -Eiq '(service[_-]?role|SUPABASE_SERVICE_ROLE|private[_-]?key)' services/ccg-backend/src/*; then
             echo 'Backend source contains forbidden privileged-client material.' >&2
