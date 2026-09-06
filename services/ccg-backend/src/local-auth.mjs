@@ -98,6 +98,13 @@ export function createLocalAuthService({
   async function consumeLoginBudget(email, fingerprint = '') {
     const bucketKey = sha256(`login|${email}|${String(fingerprint || '').slice(0, 256)}`);
     return database.transaction(async (tx) => {
+      const nowDate = new Date(now());
+      await tx.query(
+        `insert into ccg_auth_login_buckets (bucket_key, window_started_at, request_count, updated_at)
+         values ($1, $2, 0, $2)
+         on conflict (bucket_key) do nothing`,
+        [bucketKey, nowDate]
+      );
       const existing = await tx.query(
         `select bucket_key, window_started_at, request_count
            from ccg_auth_login_buckets
@@ -106,17 +113,9 @@ export function createLocalAuthService({
         [bucketKey]
       );
       const row = existing.rows?.[0] ?? null;
-      const nowDate = new Date(now());
-      const windowMs = loginWindow * 1000;
-      if (!row) {
-        await tx.query(
-          `insert into ccg_auth_login_buckets (bucket_key, window_started_at, request_count, updated_at)
-           values ($1, $2, 1, $2)`,
-          [bucketKey, nowDate]
-        );
-        return true;
-      }
+      if (!row) throw new Error('Login budget row was not available after initialization.');
 
+      const windowMs = loginWindow * 1000;
       const startedMs = new Date(row.window_started_at).getTime();
       if (!Number.isFinite(startedMs) || nowDate.getTime() - startedMs >= windowMs) {
         await tx.query(
@@ -187,7 +186,7 @@ export function createLocalAuthService({
               coalesce(p.banned, false) as profile_banned
          from ccg_auth_accounts a
          left join ccg_profiles p on p.user_id = a.user_id
-        where lower(a.email) = $1
+        where lower(a.email) = $1 and a.deleted_at is null
         limit 1`,
       [normalizedEmail]
     );
