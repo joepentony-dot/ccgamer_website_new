@@ -67,9 +67,16 @@ assert.deepEqual(JSON.parse(calls[0].options.body), {
   password: 'contract-password',
 });
 
-queue.push(response(200, { user_id: 'user-1', profile: { display_name: 'Player One' } }));
+queue.push(response(200, {
+  user_id: 'user-1',
+  email: 'Player@Example.test',
+  email_confirmed_at: '2026-09-01T12:00:00.000Z',
+  profile: { display_name: 'Player One' },
+}));
 const me = await client.me();
 assert.equal(me.ok, true);
+assert.equal(me.email, 'Player@Example.test');
+assert.equal(me.email_confirmed_at, '2026-09-01T12:00:00.000Z');
 assert.equal(me.profile.display_name, 'Player One');
 assert.equal(calls[1].url, 'https://auth.cheekycommodoregamer.co.uk/v1/me');
 assert.equal(calls[1].options.method, 'GET');
@@ -192,4 +199,4 @@ const source = await fs.readFile(new URL('../client/ccg-auth-client.mjs', import
 assert.doesNotMatch(source, /localStorage|sessionStorage|document\.cookie/, 'The passive auth client must not persist or inspect browser credential storage.');
 assert.doesNotMatch(source, /refresh_token/, 'The browser client must never expect a raw refresh token in JSON.');
 
-console.log('CCG auth client contract passed: construction is passive, refresh cookies remain browser-managed, bearer tokens stay in memory, recovery/reset stay unauthenticated, and logout/401/password reset clear local session state.');
+console.log('CCG auth client contract passed: construction is passive, current-user exposes only safe account identity/profile fields, refresh cookies remain browser-managed, bearer tokens stay in memory, recovery/reset stay unauthenticated, and logout/401/password reset clear local session state.');
