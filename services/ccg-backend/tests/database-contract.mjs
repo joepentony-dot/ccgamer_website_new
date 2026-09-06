@@ -10,8 +10,14 @@ if (!databaseUrl) throw new Error('DATABASE_URL is required for the database con
 
 const bootstrap = new Pool({ connectionString: databaseUrl, ssl: false, max: 1 });
 try {
-  const migration = await fs.readFile(new URL('../migrations/001_initial.sql', import.meta.url), 'utf8');
-  await bootstrap.query(migration);
+  const migrations = [
+    '../migrations/001_initial.sql',
+    '../migrations/002_account_profiles.sql',
+  ];
+  for (const relativePath of migrations) {
+    const migration = await fs.readFile(new URL(relativePath, import.meta.url), 'utf8');
+    await bootstrap.query(migration);
+  }
 } finally {
   await bootstrap.end();
 }
@@ -44,6 +50,117 @@ try {
   ]) {
     assert.equal(columnNames.has(required), true, `Missing source-compatible cloud-save column: ${required}`);
   }
+
+  const authColumns = await database.query(
+    `select column_name
+       from information_schema.columns
+      where table_schema = 'public'
+        and table_name = 'ccg_auth_accounts'
+      order by ordinal_position`
+  );
+  const authColumnNames = new Set(authColumns.rows.map((row) => row.column_name));
+  for (const required of [
+    'user_id',
+    'email',
+    'password_hash',
+    'password_hash_algorithm',
+    'email_confirmed_at',
+    'last_sign_in_at',
+    'banned_until',
+    'disabled_at',
+    'deleted_at',
+    'source_provider',
+    'source_app_metadata',
+    'source_user_metadata',
+  ]) {
+    assert.equal(authColumnNames.has(required), true, `Missing auth-account migration column: ${required}`);
+  }
+
+  const profileColumns = await database.query(
+    `select column_name
+       from information_schema.columns
+      where table_schema = 'public'
+        and table_name = 'ccg_profiles'
+      order by ordinal_position`
+  );
+  const profileColumnNames = new Set(profileColumns.rows.map((row) => row.column_name));
+  for (const required of [
+    'user_id',
+    'username',
+    'display_name',
+    'mode_pref',
+    'role',
+    'is_admin',
+    'banned',
+    'preferred_system',
+    'public_list_key',
+    'supporter_verified',
+    'supporter_tier',
+    'notify_weekly_challenge',
+  ]) {
+    assert.equal(profileColumnNames.has(required), true, `Missing profile migration column: ${required}`);
+  }
+
+  const accountUserId = 'account-contract-user';
+  const profileUserId = 'profile-contract-user';
+  await database.query(
+    `insert into ccg_users (user_id) values ($1), ($2)`,
+    [accountUserId, profileUserId]
+  );
+  await database.query(
+    `insert into ccg_auth_accounts
+      (user_id, email, password_hash, password_hash_algorithm, email_confirmed_at, source_provider)
+     values
+      ($1, $2, $3, 'bcrypt', now(), 'supabase'),
+      ($4, $5, $6, 'bcrypt', now(), 'supabase')`,
+    [
+      accountUserId,
+      'AuthOnly@example.com',
+      '$2b$12$contracthashplaceholder',
+      profileUserId,
+      'Profile@example.com',
+      '$2b$12$contracthashplaceholder2',
+    ]
+  );
+  await database.query(
+    `insert into ccg_auth_identities
+      (user_id, provider, provider_subject, email)
+     values ($1, 'email', $2, $3), ($4, 'email', $5, $6)`,
+    [
+      accountUserId,
+      'auth-only-subject',
+      'AuthOnly@example.com',
+      profileUserId,
+      'profile-subject',
+      'Profile@example.com',
+    ]
+  );
+  await database.query(
+    `insert into ccg_profiles
+      (user_id, username, display_name, preferred_system, public_list_key, supporter_tier)
+     values ($1, 'contract-player', 'Contract Player', 'both', 'played', 'supporter')`,
+    [profileUserId]
+  );
+
+  const accountCounts = await database.query(
+    `select
+       (select count(*) from ccg_auth_accounts)::int as accounts,
+       (select count(*) from ccg_profiles)::int as profiles,
+       (select count(*) from ccg_auth_accounts a left join ccg_profiles p on p.user_id = a.user_id where p.user_id is null)::int as auth_only`
+  );
+  assert.equal(accountCounts.rows[0].accounts, 2);
+  assert.equal(accountCounts.rows[0].profiles, 1);
+  assert.equal(accountCounts.rows[0].auth_only, 1, 'Auth-only accounts must remain valid without invented profile rows.');
+
+  await database.query(`insert into ccg_users (user_id) values ('duplicate-email-contract-user')`);
+  await assert.rejects(
+    database.query(
+      `insert into ccg_auth_accounts
+        (user_id, email, password_hash, password_hash_algorithm)
+       values ('duplicate-email-contract-user', 'profile@EXAMPLE.com', '$2b$12$duplicateplaceholder', 'bcrypt')`
+    ),
+    (error) => error?.code === '23505'
+  );
 
   const store = createCloudSaveStore(database);
   const userId = 'database-contract-user';
@@ -112,7 +229,7 @@ try {
   assert.equal(stored.revision, 2);
   assert.deepEqual(stored.payload.summary, changed.summary);
 
-  console.log('CCG PostgreSQL contract passed: source-compatible Solo save fields, transaction serialization, idempotent retry and stale-write rejection work on a real PostgreSQL database.');
+  console.log('CCG PostgreSQL contract passed: account/profile separation, case-insensitive account uniqueness, source-compatible Solo saves, transaction serialization, idempotent retry and stale-write rejection work on PostgreSQL 17.');
 } finally {
   await database.close();
 }
