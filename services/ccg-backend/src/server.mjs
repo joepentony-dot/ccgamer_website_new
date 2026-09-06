@@ -7,6 +7,8 @@ import { createLocalAuthService } from './local-auth.mjs';
 import { createAuthHttp } from './auth-http.mjs';
 import { createProfileStore } from './profile-store.mjs';
 import { createCloudSaveStore, readJsonBody } from './cloud-save.mjs';
+import { createWeeklyVaultService } from './weekly-vault.mjs';
+import { createWeeklyVaultHttp } from './weekly-vault-http.mjs';
 
 function writeJson(response, statusCode, body, headers = {}) {
   const payload = Buffer.from(`${JSON.stringify(body)}\n`, 'utf8');
@@ -66,6 +68,8 @@ async function main() {
   const { auth, authHttp } = await createAuthentication(config, database);
   const profiles = createProfileStore(database);
   const cloudSaves = createCloudSaveStore(database);
+  const weeklyVault = createWeeklyVaultService({ database });
+  const weeklyVaultHttp = createWeeklyVaultHttp({ auth, weeklyVault });
 
   const server = http.createServer(async (request, response) => {
     const cors = corsHeaders(request, config);
@@ -105,6 +109,12 @@ async function main() {
         return;
       }
 
+      if (weeklyVaultHttp.handles(request.method, url.pathname)) {
+        const result = await weeklyVaultHttp.handle(request, url.pathname);
+        writeJson(response, result.statusCode, result.body, { ...cors, ...result.headers });
+        return;
+      }
+
       if (request.method === 'GET' && url.pathname === '/v1/me') {
         const identity = await auth.verifyBearer(request.headers.authorization);
         const profile = await profiles.get(identity.userId);
@@ -133,7 +143,10 @@ async function main() {
     } catch (error) {
       const statusCode = Number.isInteger(error?.statusCode) ? error.statusCode : 500;
       const errorCode = statusCode === 500 ? 'internal_error' : (error.code || error.message);
-      writeJson(response, statusCode, { error: errorCode }, cors || {});
+      const retryAfter = Number.isSafeInteger(error?.retryAfterSeconds) && error.retryAfterSeconds > 0
+        ? { 'retry-after': String(error.retryAfterSeconds) }
+        : {};
+      writeJson(response, statusCode, { error: errorCode }, { ...(cors || {}), ...retryAfter });
     }
   });
 
