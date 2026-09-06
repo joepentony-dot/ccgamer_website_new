@@ -117,9 +117,8 @@ export function createLostSizzlerRealtimeWebSocketTransport({
   function broadcastSnapshot(snapshot, reason) {
     if (!snapshot) return;
     const frame = { type: 'room', reason, room: snapshot };
-    for (const member of snapshot.members) {
-      const socket = sessions.get(member.id);
-      if (socket) send(socket, frame);
+    for (const [sessionId, socket] of sessions) {
+      if (roomBySession.get(sessionId) === snapshot.roomCode) send(socket, frame);
     }
   }
 
@@ -143,6 +142,7 @@ export function createLostSizzlerRealtimeWebSocketTransport({
       const snapshot = hub.create({
         roomCode: frame.roomCode,
         sessionId,
+        presenceId: frame.presenceId,
         name: frame.name,
         mode: frame.mode,
         build: frame.build,
@@ -157,6 +157,7 @@ export function createLostSizzlerRealtimeWebSocketTransport({
       const snapshot = hub.join({
         roomCode: frame.roomCode,
         sessionId,
+        presenceId: frame.presenceId,
         name: frame.name,
         build: frame.build,
       });
