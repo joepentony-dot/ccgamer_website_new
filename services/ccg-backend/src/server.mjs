@@ -2,6 +2,7 @@ import http from 'node:http';
 import { loadConfig } from './config.mjs';
 import { createDatabase } from './db.mjs';
 import { createAuth } from './auth.mjs';
+import { createCloudSaveStore, readJsonBody } from './cloud-save.mjs';
 
 function writeJson(response, statusCode, body, headers = {}) {
   const payload = Buffer.from(`${JSON.stringify(body)}\n`, 'utf8');
@@ -29,6 +30,7 @@ async function main() {
   const config = loadConfig();
   const database = createDatabase(config.databaseUrl);
   const auth = createAuth(config);
+  const cloudSaves = createCloudSaveStore(database);
 
   const server = http.createServer(async (request, response) => {
     const cors = corsHeaders(request, config);
@@ -40,7 +42,7 @@ async function main() {
     if (request.method === 'OPTIONS') {
       response.writeHead(204, {
         ...cors,
-        'access-control-allow-methods': 'GET,OPTIONS',
+        'access-control-allow-methods': 'GET,PUT,OPTIONS',
         'access-control-allow-headers': 'authorization,content-type',
         'access-control-max-age': '600',
       });
@@ -68,10 +70,28 @@ async function main() {
         return;
       }
 
+      if (url.pathname === '/v1/lost-sizzler/cloud-save') {
+        const identity = await auth.verifyBearer(request.headers.authorization);
+
+        if (request.method === 'GET') {
+          const save = await cloudSaves.get(identity.userId);
+          writeJson(response, 200, { save }, cors);
+          return;
+        }
+
+        if (request.method === 'PUT') {
+          const body = await readJsonBody(request);
+          const save = await cloudSaves.put(identity.userId, body);
+          writeJson(response, 200, { save }, cors);
+          return;
+        }
+      }
+
       writeJson(response, 404, { error: 'not_found' }, cors);
     } catch (error) {
       const statusCode = Number.isInteger(error?.statusCode) ? error.statusCode : 500;
-      writeJson(response, statusCode, { error: statusCode === 500 ? 'internal_error' : error.message }, cors || {});
+      const errorCode = statusCode === 500 ? 'internal_error' : (error.code || error.message);
+      writeJson(response, statusCode, { error: errorCode }, cors || {});
     }
   });
 
