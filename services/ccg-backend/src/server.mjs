@@ -14,6 +14,9 @@ import { createLostSizzlerFeedbackHttp } from './lost-sizzler-feedback-http.mjs'
 import { createLostSizzlerProgressStore } from './lost-sizzler-progress.mjs';
 import { createLostSizzlerProgressHttp } from './lost-sizzler-progress-http.mjs';
 import { createLostSizzlerRealtimeWebSocketTransport } from './lost-sizzler-realtime-ws.mjs';
+import { createPayPalOrdersGateway } from './paypal-orders.mjs';
+import { createLostSizzlerCommerceService } from './lost-sizzler-commerce.mjs';
+import { createLostSizzlerCommerceHttp } from './lost-sizzler-commerce-http.mjs';
 
 function writeJson(response, statusCode, body, headers = {}) {
   const payload = Buffer.from(`${JSON.stringify(body)}\n`, 'utf8');
@@ -88,6 +91,22 @@ async function main() {
     auth,
     progress: lostSizzlerProgress,
   });
+  const paypalGateway = config.lostSizzlerCommerceEnabled
+    ? createPayPalOrdersGateway({
+        environment: config.paypal.environment,
+        clientId: config.paypal.clientId,
+        clientSecret: config.paypal.clientSecret,
+      })
+    : null;
+  const lostSizzlerCommerce = createLostSizzlerCommerceService({
+    database,
+    gateway: paypalGateway,
+    commerceEnabled: config.lostSizzlerCommerceEnabled,
+  });
+  const lostSizzlerCommerceHttp = createLostSizzlerCommerceHttp({
+    auth,
+    commerce: lostSizzlerCommerce,
+  });
 
   const server = http.createServer(async (request, response) => {
     const cors = corsHeaders(request, config);
@@ -116,6 +135,7 @@ async function main() {
           service: config.serviceName,
           auth_mode: config.authMode,
           lost_sizzler_realtime: config.lostSizzlerRealtimeEnabled,
+          lost_sizzler_commerce: config.lostSizzlerCommerceEnabled,
         }, cors);
         return;
       }
@@ -146,6 +166,12 @@ async function main() {
 
       if (lostSizzlerProgressHttp.handles(request.method, url.pathname)) {
         const result = await lostSizzlerProgressHttp.handle(request, url.pathname);
+        writeJson(response, result.statusCode, result.body, { ...cors, ...result.headers });
+        return;
+      }
+
+      if (lostSizzlerCommerceHttp.handles(request.method, url.pathname)) {
+        const result = await lostSizzlerCommerceHttp.handle(request, url.pathname);
         writeJson(response, result.statusCode, result.body, { ...cors, ...result.headers });
         return;
       }
@@ -213,7 +239,8 @@ async function main() {
 
   server.listen(config.port, '127.0.0.1', () => {
     const realtimeStatus = config.lostSizzlerRealtimeEnabled ? 'realtime enabled' : 'realtime disabled';
-    console.log(`${config.serviceName} listening on 127.0.0.1:${config.port} (${config.authMode} auth; ${realtimeStatus})`);
+    const commerceStatus = config.lostSizzlerCommerceEnabled ? 'commerce enabled' : 'commerce disabled';
+    console.log(`${config.serviceName} listening on 127.0.0.1:${config.port} (${config.authMode} auth; ${realtimeStatus}; ${commerceStatus})`);
   });
 }
 
