@@ -81,8 +81,10 @@ const recoveryRows=recovery.split(/\r?\n/).filter(line=>/^\|\s*\d+\s*\|/.test(li
 assert(recoveryRows.length===16,`recovery manifest must contain exactly 16 enabled/disabled pairs; found ${recoveryRows.length}`);
 assert(recovery.includes("Enabled objects: **16**"),"recovery manifest must preserve the enabled object count");
 assert(recovery.includes("Enabled bytes: **72,233,137**"),"recovery manifest must preserve the enabled byte total");
-assert(recovery.includes("Cryptographic equality: **NOT YET VERIFIED**"),"manifest must not imply hash equality before recovery");
-assert(recovery.includes("SIZE MATCH ONLY"),"manifest must distinguish byte-size pairing from cryptographic proof");
+assert(recovery.includes("Enabled objects recovered: **16 / 16**"),"manifest must retain verified enabled-object recovery evidence");
+assert(recovery.includes("Enabled/disabled pairs with identical SHA-256: **16 / 16**"),"manifest must retain pairwise SHA-256 verification evidence");
+assert(recovery.includes("Cryptographic equality: **16 / 16 HASH IDENTICAL**"),"manifest must record cryptographic equality only after verified recovery");
+assert(recovery.includes("does **not** authorise deletion of any Supabase object"),"verified recovery must not imply Storage deletion authority");
 
 assert(inventory.includes("Do not delete Supabase files or database rows"),"migration inventory must retain the no-delete safety rule");
 assert(inventory.includes("SUPABASE-STORAGE-RECOVERY-MANIFEST.md"),"migration inventory must point to the frozen recovery manifest");
