@@ -37,9 +37,9 @@ try{
     collectInstalled:Boolean(window.CCGLostSizzlerV142MultiplayerCollectAuthority?.installed),
     stateScript:Boolean(document.querySelector('script[data-ccg-v142-multiplayer-state="true"]')),
     collectScript:Boolean(document.querySelector('script[data-ccg-v142-multiplayer-collect-authority="true"]')),
-    playerNetworkWrapped:Boolean(globalThis.playerStateForNetwork?.__v142CampaignState),
-    worldSendWrapped:Boolean(globalThis.net?.send?.__v142CampaignState),
-    collectWrapped:Boolean(globalThis.onCollectRequest?.__v142CollectAuthority)
+    playerNetworkWrapped:typeof playerStateForNetwork==="function"&&Boolean(playerStateForNetwork.__v142CampaignState),
+    worldSendWrapped:typeof net!=="undefined"&&Boolean(net?.send?.__v142CampaignState),
+    collectWrapped:typeof onCollectRequest==="function"&&Boolean(onCollectRequest.__v142CollectAuthority)
   }));
 
   assert.equal(audit.stateInstalled,true,"V10.42 multiplayer character/campaign adapter must install on canonical page load.");
