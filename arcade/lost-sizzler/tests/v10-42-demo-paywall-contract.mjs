@@ -17,7 +17,7 @@ assert(source.includes('ALL FUTURE GAME UPDATES INCLUDED'),'Purchase presentatio
 assert(source.includes('SIGN IN OR CREATE A CCG ACCOUNT TO CONTINUE'),'Signed-out players must be directed to account access before checkout.');
 assert(source.includes('if(!(await signedIn()))'),'Checkout must verify account authentication before invoking PayPal.');
 assert(source.includes('purchase_not_verified'),'A browser checkout callback alone must never be enough to unlock the game.');
-assert(source.includes('if(!activePermanent(entitlementValue))return false'),'Only a verified permanent entitlement may unlock the runtime.');
+assert(source.includes('if(!activePermanent(entitlementValue))return false'),'Only a permanent entitlement returned through the commerce-provider path may unlock the runtime.');
 assert(source.includes('finally{state.checking=false}'),'Paywall presentation mutex must always release so Not Now and later full-game attempts can reopen it.');
 assert(source.includes('if(!complete){completionQueued=false;return}'),'Tutorial completion detection must re-arm after the completion banner disappears so replayed training can trigger the offer again.');
 assert(source.includes('event.stopImmediatePropagation()'),'Demo lock must stop the underlying full-game action before presenting the entitlement screen.');
@@ -27,6 +27,10 @@ assert(!source.includes('"tutorial-zone-btn"'),'The free Tutorial must remain ou
 assert(source.includes('const safeOfferText=')&&source.includes('.trim().slice(0,32)'),'Commerce-controlled offer text must be normalized and length-bounded before presentation.');
 assert(source.includes('${esc(offer.display)} ONE-OFF'),'Commerce-controlled display-price text must be HTML-escaped before entering the paywall template.');
 assert(!source.includes('${offer.display} ONE-OFF'),'Raw commerce display-price text must never be interpolated directly into paywall HTML.');
+assert(source.includes('function diagnostics(){return Object.freeze({'),'Public diagnostics must expose only an immutable snapshot rather than the mutable entitlement state object.');
+assert(source.includes('Object.freeze({productSlug:PRODUCT_SLUG,demoMode:DEMO_MODE,showPaywall,closePaywall,refreshEntitlement,diagnostics})'),'The browser-facing paywall API must not export the internal unlock function or mutable state object.');
+assert(!source.includes('refreshEntitlement,unlockRuntime})'),'Direct browser access to unlockRuntime must remain unavailable.');
+assert(!source.includes('refreshEntitlement,state,')&&!source.includes('state,showPaywall'),'Mutable entitlement state must not be exported through the public paywall API.');
 assert(source.includes('credentials:')===false,'The presentation layer must not embed its own privileged network credentials.');
 
-console.log('Lost Sizzler V10.42 Tutorial completion, full entry-path guard, safe offer rendering and permanent-unlock contract passed.');
+console.log('Lost Sizzler V10.42 Tutorial completion, full entry-path guard, safe offer rendering and provider-bound permanent-unlock contract passed.');
