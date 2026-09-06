@@ -8,6 +8,34 @@ function normalizeProvider(value) {
   return normalized;
 }
 
+function bool(value) {
+  return value === true || String(value ?? '').toLowerCase() === 'true';
+}
+
+function normalizeCcgRegistrationPreferences(credentials = {}) {
+  const direct = credentials?.notificationPreferences;
+  if (direct && typeof direct === 'object' && !Array.isArray(direct) && bool(direct.choiceRecorded)) {
+    return Object.freeze({
+      notify_new_games: bool(direct.notifyNewGames),
+      notify_newsletter: bool(direct.notifyNewsletter),
+      notify_new_games_choice_recorded: true,
+      notify_newsletter_choice_recorded: true,
+    });
+  }
+
+  const metadata = credentials?.options?.data;
+  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata) || !bool(metadata.notification_preferences_presented)) {
+    return null;
+  }
+
+  return Object.freeze({
+    notify_new_games: bool(metadata.notify_new_games),
+    notify_newsletter: bool(metadata.notify_newsletter),
+    notify_new_games_choice_recorded: true,
+    notify_newsletter_choice_recorded: true,
+  });
+}
+
 function success(provider, fields = {}) {
   return Object.freeze({ ok: true, kind: 'success', provider, ...fields });
 }
@@ -79,7 +107,15 @@ export function createCcgAuthProvider({
   }
 
   async function signUp(credentials) {
-    if (selectedProvider === 'ccg') return withProvider(await localCcgClient.register(credentials), 'ccg');
+    if (selectedProvider === 'ccg') {
+      const preferences = normalizeCcgRegistrationPreferences(credentials);
+      const registration = {
+        email: credentials?.email,
+        password: credentials?.password,
+        ...(preferences ? { notification_preferences: preferences } : {}),
+      };
+      return withProvider(await localCcgClient.register(registration), 'ccg');
+    }
 
     try {
       const auth = await getSupabaseAuth();
