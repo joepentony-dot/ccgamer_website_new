@@ -16,6 +16,8 @@ assert(source.includes('PERMANENT ACCOUNT UNLOCK'),'Purchase presentation must e
 assert(source.includes('ALL FUTURE GAME UPDATES INCLUDED'),'Purchase presentation must state that future Lost Sizzler updates are included.');
 assert(source.includes('SIGN IN OR CREATE A CCG ACCOUNT TO CONTINUE'),'Signed-out players must be directed to account access before checkout.');
 assert(source.includes('if(!(await signedIn()))'),'Checkout must verify account authentication before invoking PayPal.');
+assert(source.includes('await start({product:PRODUCT_SLUG});status("Verifying permanent entitlement…");const value=await entitlement();'),'Checkout completion must be followed by a fresh provider entitlement read before the runtime can unlock.');
+assert(!source.includes('result?.entitlement'),'A checkout callback result must never self-authorize the permanent entitlement.');
 assert(source.includes('purchase_not_verified'),'A browser checkout callback alone must never be enough to unlock the game.');
 assert(source.includes('if(!activePermanent(entitlementValue))return false'),'Only a permanent entitlement returned through the commerce-provider path may unlock the runtime.');
 assert(source.includes('finally{state.checking=false}'),'Paywall presentation mutex must always release so Not Now and later full-game attempts can reopen it.');
@@ -33,4 +35,4 @@ assert(!source.includes('refreshEntitlement,unlockRuntime})'),'Direct browser ac
 assert(!source.includes('refreshEntitlement,state,')&&!source.includes('state,showPaywall'),'Mutable entitlement state must not be exported through the public paywall API.');
 assert(source.includes('credentials:')===false,'The presentation layer must not embed its own privileged network credentials.');
 
-console.log('Lost Sizzler V10.42 Tutorial completion, full entry-path guard, safe offer rendering and provider-bound permanent-unlock contract passed.');
+console.log('Lost Sizzler V10.42 Tutorial completion, full entry-path guard, safe offer rendering and server-refresh permanent-unlock contract passed.');
