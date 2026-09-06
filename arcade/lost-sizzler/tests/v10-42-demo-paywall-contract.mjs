@@ -21,6 +21,9 @@ assert(source.includes('if(!activePermanent(entitlementValue))return false'),'On
 assert(source.includes('finally{state.checking=false}'),'Paywall presentation mutex must always release so Not Now and later full-game attempts can reopen it.');
 assert(source.includes('if(!complete){completionQueued=false;return}'),'Tutorial completion detection must re-arm after the completion banner disappears so replayed training can trigger the offer again.');
 assert(source.includes('event.stopImmediatePropagation()'),'Demo lock must stop the underlying full-game action before presenting the entitlement screen.');
+assert(source.includes('"continue-save-btn","join-btn"'),'Demo mode must also guard saved-run resume and room-code join entry paths.');
+assert(source.includes('#continue-save-btn')&&source.includes('#join-btn'),'Saved-run resume and room-code join controls must receive the same visible demo-lock treatment as the main paid modes.');
+assert(!source.includes('"tutorial-zone-btn"'),'The free Tutorial must remain outside the paid full-game guard set.');
 assert(source.includes('credentials:')===false,'The presentation layer must not embed its own privileged network credentials.');
 
-console.log('Lost Sizzler V10.42 Tutorial completion and permanent-unlock contract passed.');
+console.log('Lost Sizzler V10.42 Tutorial completion, full entry-path guard and permanent-unlock contract passed.');
