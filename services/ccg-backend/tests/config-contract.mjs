@@ -10,7 +10,22 @@ function restore() {
   Object.assign(process.env, ORIGINAL);
 }
 
+function clearAuthEnv() {
+  for (const key of [
+    'CCG_AUTH_MODE',
+    'CCG_JWT_ISSUER',
+    'CCG_JWT_AUDIENCE',
+    'CCG_JWT_JWKS_URL',
+    'CCG_LOCAL_AUTH_ISSUER',
+    'CCG_LOCAL_AUTH_AUDIENCE',
+    'CCG_LOCAL_AUTH_PRIVATE_JWK_FILE',
+    'CCG_LOCAL_AUTH_PUBLIC_JWK_FILE',
+    'CCG_LOCAL_AUTH_KEY_ID',
+  ]) delete process.env[key];
+}
+
 function withBaseEnv() {
+  clearAuthEnv();
   process.env.DATABASE_URL = 'postgresql://example.invalid/ccg';
   process.env.CCG_ALLOWED_ORIGINS = 'https://www.cheekycommodoregamer.co.uk';
   process.env.CCG_JWT_ISSUER = 'https://identity.example.invalid/';
@@ -19,10 +34,25 @@ function withBaseEnv() {
   process.env.PORT = '8787';
 }
 
+function withLocalAuthEnv() {
+  clearAuthEnv();
+  process.env.DATABASE_URL = 'postgresql://example.invalid/ccg';
+  process.env.CCG_ALLOWED_ORIGINS = 'https://www.cheekycommodoregamer.co.uk';
+  process.env.CCG_AUTH_MODE = 'local';
+  process.env.CCG_LOCAL_AUTH_ISSUER = 'https://auth.cheekycommodoregamer.co.uk/';
+  process.env.CCG_LOCAL_AUTH_AUDIENCE = 'ccg-backend';
+  process.env.CCG_LOCAL_AUTH_PRIVATE_JWK_FILE = '/run/secrets/ccg-auth-private.jwk';
+  process.env.CCG_LOCAL_AUTH_PUBLIC_JWK_FILE = '/etc/ccg/ccg-auth-public.jwk';
+  process.env.CCG_LOCAL_AUTH_KEY_ID = 'ccg-ed25519-1';
+  process.env.PORT = '8787';
+}
+
 try {
   withBaseEnv();
   const config = loadConfig();
   assert.equal(config.port, 8787);
+  assert.equal(config.authMode, 'external');
+  assert.equal(config.localAuth, null);
   assert.equal(config.allowedOrigins.has('https://www.cheekycommodoregamer.co.uk'), true);
   assert.equal(config.allowedOrigins.has('*'), false);
 
@@ -41,7 +71,27 @@ try {
   process.env.PORT = '70000';
   assert.throws(() => loadConfig(), /Invalid PORT/);
 
-  console.log('CCG backend configuration contract passed.');
+  withBaseEnv();
+  process.env.CCG_AUTH_MODE = 'anything-else';
+  assert.throws(() => loadConfig(), /Invalid CCG_AUTH_MODE/);
+
+  withLocalAuthEnv();
+  const local = loadConfig();
+  assert.equal(local.authMode, 'local');
+  assert.equal(local.jwtIssuer, null);
+  assert.equal(local.jwtJwksUrl, null);
+  assert.equal(local.localAuth.issuer, 'https://auth.cheekycommodoregamer.co.uk/');
+  assert.equal(local.localAuth.keyId, 'ccg-ed25519-1');
+  assert.equal(local.localAuth.privateJwkFile, '/run/secrets/ccg-auth-private.jwk');
+
+  delete process.env.CCG_LOCAL_AUTH_PRIVATE_JWK_FILE;
+  assert.throws(() => loadConfig(), /CCG_LOCAL_AUTH_PRIVATE_JWK_FILE/);
+
+  withLocalAuthEnv();
+  process.env.CCG_LOCAL_AUTH_KEY_ID = 'x'.repeat(129);
+  assert.throws(() => loadConfig(), /CCG_LOCAL_AUTH_KEY_ID is too long/);
+
+  console.log('CCG backend configuration contract passed for fail-closed external and opt-in local authentication modes.');
 } finally {
   restore();
 }
