@@ -8,6 +8,14 @@ function optionalEnv(name) {
   return String(process.env[name] || '').trim();
 }
 
+function readBooleanEnv(name, defaultValue = false) {
+  const value = optionalEnv(name).toLowerCase();
+  if (!value) return defaultValue;
+  if (value === 'true') return true;
+  if (value === 'false') return false;
+  throw new Error(`Invalid ${name}: expected true or false.`);
+}
+
 function validEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
 }
@@ -86,6 +94,7 @@ export function loadConfig() {
     authMode,
     serviceName: 'ccg-backend',
     feedbackEmail: readFeedbackEmail(),
+    lostSizzlerRealtimeEnabled: readBooleanEnv('CCG_LOST_SIZZLER_REALTIME_ENABLED', false),
   };
 
   if (authMode === 'external') {
