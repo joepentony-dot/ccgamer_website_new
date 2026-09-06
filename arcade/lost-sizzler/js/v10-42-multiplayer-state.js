@@ -137,7 +137,12 @@
   }
   function installWorldReceive(){
     if(typeof onWorld!=="function"||onWorld.__v142CampaignState)return false;
-    const base=onWorld;const wrapped=function onWorldV142CampaignState(snapshot){if(snapshot?._v142Campaign&&onlineGuest()){const added=applyCampaign(snapshot._v142Campaign);for(const id of added){const domain=domainById(id);if(domain)queueDomainReward(currentPlayer(),domain)}}return base.apply(this,arguments)};wrapped.__v142CampaignState=true;wrapped.__ccgOriginal=base;onWorld=wrapped;return true;
+    const base=onWorld;const wrapped=function onWorldV142CampaignState(snapshot){
+      let added=[];if(snapshot?._v142Campaign&&onlineGuest())added=applyCampaign(snapshot._v142Campaign);
+      const result=base.apply(this,arguments),player=currentPlayer();
+      for(const id of added){const domain=domainById(id);if(domain&&player)queueDomainReward(player,domain)}
+      return result
+    };wrapped.__v142CampaignState=true;wrapped.__ccgOriginal=base;onWorld=wrapped;return true;
   }
   function installPreserve(){
     if(typeof preservePlayer!=="function"||preservePlayer.__v142CampaignState)return false;
