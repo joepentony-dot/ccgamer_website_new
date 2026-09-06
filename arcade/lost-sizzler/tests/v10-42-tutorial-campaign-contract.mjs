@@ -22,6 +22,8 @@ assert(source.includes('artefact-for-Flask loop is replaced'),'Tutorial must exp
 assert(source.includes('Floor 1 gives you more reaction time; Floor 5 expects a developed character'),'Tutorial must communicate progressive enemy pressure instead of implying flat difficulty.');
 assert(source.includes('if(banner.dataset.v142CampaignCopy==="true")return true'),'Completion banner patch must be idempotent to avoid MutationObserver feedback loops.');
 assert(!source.includes('label.textContent="FREE INTRODUCTION COMPLETE"'),'Campaign copy must preserve the established TUTORIAL COMPLETE banner signal used by the paywall handoff.');
+assert(!/\.tour-grid[\s\S]{0,240}innerHTML|grid\.innerHTML/.test(source),'V10.42 campaign copy must never rebuild the stabilized information-tour grid; its live child nodes carry HUD highlight ownership.');
+assert(source.includes('interactive tour DOM intact'),'V10.42 Tutorial source must document the live-node preservation boundary that protects lesson 5 highlighting.');
 assert(source.includes('window.CCGLostSizzlerV142TutorialCampaign=Object.freeze'),'Tutorial campaign layer must expose a stable diagnostic API.');
 
-console.log('Lost Sizzler V10.42 campaign-aware Tutorial contract passed.');
+console.log('Lost Sizzler V10.42 campaign-aware Tutorial contract passed with live information-tour node preservation.');
