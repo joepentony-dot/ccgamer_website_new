@@ -89,7 +89,8 @@
   function patchCompletionBanner(){
     const banner=document.getElementById("ccg-tutorial-complete-banner");if(!banner)return false;
     const title=String(banner.querySelector("b")?.textContent||"").trim().toUpperCase();if(title!=="TUTORIAL COMPLETE")return false;
-    const label=banner.querySelector("b"),copy=banner.querySelector("span");if(label)label.textContent="FREE INTRODUCTION COMPLETE";
+    if(banner.dataset.v142CampaignCopy==="true")return true;
+    const copy=banner.querySelector("span");
     if(copy)copy.textContent="You have finished the free Tutorial. The full five-depth campaign continues with RPG progression, global Keys, relics, Banishment Essence, A–Z C64 rescues and the final Sigil escape.";
     banner.dataset.v142CampaignCopy="true";return true;
   }
