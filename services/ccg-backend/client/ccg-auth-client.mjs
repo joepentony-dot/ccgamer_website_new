@@ -38,12 +38,40 @@ function normalizeLoginInput({ email, password } = {}) {
   return Object.freeze({ email: normalizedEmail, password });
 }
 
-function normalizeRegistrationInput({ email, password } = {}) {
+function normalizeRegistrationPreferences(value) {
+  if (value === undefined || value === null) return null;
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error('invalid_notification_preferences');
+  }
+  const required = [
+    'notify_new_games',
+    'notify_newsletter',
+    'notify_new_games_choice_recorded',
+    'notify_newsletter_choice_recorded',
+  ];
+  for (const key of required) {
+    if (typeof value[key] !== 'boolean') throw new Error('invalid_notification_preferences');
+  }
+  if (!value.notify_new_games_choice_recorded || !value.notify_newsletter_choice_recorded) {
+    throw new Error('invalid_notification_preferences');
+  }
+  return Object.freeze({
+    notify_new_games: value.notify_new_games,
+    notify_newsletter: value.notify_newsletter,
+    notify_new_games_choice_recorded: true,
+    notify_newsletter_choice_recorded: true,
+  });
+}
+
+function normalizeRegistrationInput({ email, password, notification_preferences: notificationPreferences } = {}) {
   const normalized = normalizeLoginInput({ email, password });
   if (password.length < MIN_REGISTRATION_PASSWORD_LENGTH || password.length > 128 || /^\s+$/.test(password)) {
     throw new Error('invalid_password');
   }
-  return normalized;
+  const preferences = normalizeRegistrationPreferences(notificationPreferences);
+  return Object.freeze(preferences
+    ? { ...normalized, notification_preferences: preferences }
+    : normalized);
 }
 
 function normalizeVerificationToken(value) {
