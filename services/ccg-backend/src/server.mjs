@@ -10,6 +10,7 @@ import { createAuthRegistrationService } from './auth-registration.mjs';
 import { createAuthRegistrationHttp } from './auth-registration-http.mjs';
 import { createPasswordRecoveryService } from './password-recovery.mjs';
 import { createAuthRecoveryHttp } from './auth-recovery-http.mjs';
+import { createAccountStore } from './account-store.mjs';
 import { createProfileStore } from './profile-store.mjs';
 import { createCloudSaveStore, readJsonBody } from './cloud-save.mjs';
 import { createWeeklyVaultService } from './weekly-vault.mjs';
@@ -106,6 +107,7 @@ async function main() {
   const { auth, authHttp } = await createAuthentication(config, database);
   const registrationHttp = createRegistration(config, database);
   const recoveryHttp = createRecovery(config, database);
+  const accounts = createAccountStore(database);
   const profiles = createProfileStore(database);
   const cloudSaves = createCloudSaveStore(database);
   const weeklyVault = createWeeklyVaultService({ database });
@@ -224,8 +226,22 @@ async function main() {
 
       if (request.method === 'GET' && url.pathname === '/v1/me') {
         const identity = await auth.verifyBearer(request.headers.authorization);
-        const profile = await profiles.get(identity.userId);
-        writeJson(response, 200, { user_id: identity.userId, profile }, cors);
+        const [account, profile] = await Promise.all([
+          accounts.getPublic(identity.userId),
+          profiles.get(identity.userId),
+        ]);
+        if (!account) {
+          const error = new Error('account_not_found');
+          error.statusCode = 404;
+          error.code = 'account_not_found';
+          throw error;
+        }
+        writeJson(response, 200, {
+          user_id: identity.userId,
+          email: account.email,
+          email_confirmed_at: account.email_confirmed_at,
+          profile,
+        }, cors);
         return;
       }
 
