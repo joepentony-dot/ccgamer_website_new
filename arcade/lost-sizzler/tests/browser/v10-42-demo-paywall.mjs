@@ -102,6 +102,37 @@ try{
   assert.deepEqual(hostile.failedScripts,[],`Hostile-offer rendering must not create same-origin script load failures: ${hostile.failedScripts.join("\n")}`);
   await hostileOfferContext.close();
 
+  const callbackContext=await browser.newContext({viewport:{width:1280,height:800}});
+  await callbackContext.addInitScript(()=>{
+    window.CCG_LOST_SIZZLER_DEMO_MODE=true;
+    window.CCGLostSizzlerCommerce={
+      isAuthenticated:async()=>true,
+      openPayPalCheckout:async()=>({entitlement:{kind:"permanent",active:true}}),
+      getEntitlement:async()=>null
+    };
+  });
+  const callback=await auditPage(callbackContext,"callback-only");
+  await callback.page.waitForFunction(()=>window.CCGLostSizzlerV142DemoPaywall.diagnostics().guardedCount===8);
+  await callback.page.evaluate(()=>document.getElementById("solo-btn").click());
+  await callback.page.waitForFunction(()=>Boolean(document.querySelector("#v142-demo-paywall [data-paypal]")));
+  await callback.page.evaluate(()=>document.querySelector("#v142-demo-paywall [data-paypal]")?.click());
+  await callback.page.waitForFunction(()=>/Purchase was not verified/i.test(document.querySelector("#v142-demo-paywall .v142-status")?.textContent||""));
+  const callbackAudit=await callback.page.evaluate(()=>({
+    entitled:window.CCGLostSizzlerV142DemoPaywall.diagnostics().entitled,
+    locked:document.body.dataset.v142DemoLocked,
+    guarded:window.CCGLostSizzlerV142DemoPaywall.diagnostics().guardedCount,
+    owned:Boolean(document.querySelector("#v142-demo-paywall .v142-owned")),
+    status:document.querySelector("#v142-demo-paywall .v142-status")?.textContent||""
+  }));
+  assert.equal(callbackAudit.entitled,false,"A checkout callback claiming permanent ownership must not set entitlement without a fresh provider read.");
+  assert.equal(callbackAudit.locked,"true","Callback-only purchase data must leave demo mode locked.");
+  assert.equal(callbackAudit.guarded,8,"Callback-only purchase data must leave every paid entry guard installed.");
+  assert.equal(callbackAudit.owned,false,"Callback-only purchase data must not render the full-game-owned state.");
+  assert.match(callbackAudit.status,/Purchase was not verified/i,"Callback-only purchase data must report verification failure.");
+  assert.deepEqual(callback.pageErrors,[],`Callback-only checkout verification must not raise page errors: ${callback.pageErrors.join("\n")}`);
+  assert.deepEqual(callback.failedScripts,[],`Callback-only checkout verification must not create same-origin script load failures: ${callback.failedScripts.join("\n")}`);
+  await callbackContext.close();
+
   const demoContext=await browser.newContext({viewport:{width:1280,height:800}});
   await demoContext.addInitScript(()=>{window.CCG_LOST_SIZZLER_DEMO_MODE=true});
   const demo=await auditPage(demoContext,"demo");
@@ -189,7 +220,7 @@ try{
   assert.equal(entitlementAudit.badges,0,"Accepted permanent ownership must remove FULL GAME badges.");
   assert.deepEqual(demo.pageErrors,[],`Demo-mode V10.42 paywall flow must not raise page errors: ${demo.pageErrors.join("\n")}`);
   assert.deepEqual(demo.failedScripts,[],`Demo-mode V10.42 paywall scripts must load without same-origin failures: ${demo.failedScripts.join("\n")}`);
-  console.log("Lost Sizzler V10.42 explicit demo lock, safe offer rendering, provider-bound entitlement and resume/join guard browser contract passed.");
+  console.log("Lost Sizzler V10.42 explicit demo lock, safe offer rendering, post-checkout verification, provider-bound entitlement and resume/join guard browser contract passed.");
   await demoContext.close();
 }finally{
   await browser.close();
