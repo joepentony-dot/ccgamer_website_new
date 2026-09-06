@@ -133,8 +133,63 @@ assert.equal(logout.revoked, true);
 assert.equal(client.getAccessToken(), null);
 assert.equal(client.getUserId(), null);
 
+const callsBeforeInvalidRecovery = calls.length;
+const invalidRecovery = await client.requestPasswordReset({ email: 'not-an-email' });
+assert.equal(invalidRecovery.ok, false);
+assert.equal(invalidRecovery.kind, 'invalid_request');
+assert.equal(calls.length, callsBeforeInvalidRecovery, 'Invalid recovery email must fail before any network request.');
+
+queue.push(response(202, { accepted: true }));
+const recoveryRequest = await client.requestPasswordReset({ email: 'player@example.test' });
+assert.equal(recoveryRequest.ok, true);
+assert.equal(recoveryRequest.accepted, true);
+const recoveryCall = calls.at(-1);
+assert.equal(recoveryCall.url, 'https://auth.cheekycommodoregamer.co.uk/v1/auth/recover');
+assert.equal(recoveryCall.options.method, 'POST');
+assert.equal(recoveryCall.options.credentials, 'omit', 'Recovery requests must not send refresh cookies.');
+assert.equal(recoveryCall.options.headers.authorization, undefined, 'Recovery requests must not require a bearer token.');
+assert.deepEqual(JSON.parse(recoveryCall.options.body), { email: 'player@example.test' });
+
+const callsBeforeInvalidReset = calls.length;
+const invalidResetToken = await client.resetPassword({ token: 'short', newPassword: 'replacement-password' });
+assert.equal(invalidResetToken.ok, false);
+assert.equal(invalidResetToken.kind, 'invalid_request');
+const invalidResetPassword = await client.resetPassword({ token: 'A'.repeat(43), newPassword: 'too-short' });
+assert.equal(invalidResetPassword.ok, false);
+assert.equal(invalidResetPassword.kind, 'invalid_request');
+assert.equal(calls.length, callsBeforeInvalidReset, 'Invalid reset input must fail before any network request.');
+
+queue.push(response(200, {
+  user_id: 'user-4',
+  access_token: 'access-token-before-reset',
+  expires_in: 900,
+  refresh_expires_at: '2030-05-01T00:00:00.000Z',
+}));
+await client.login({ email: 'reset@example.test', password: 'current-password' });
+assert.equal(client.getAccessToken(), 'access-token-before-reset');
+assert.equal(client.getUserId(), 'user-4');
+
+queue.push(response(200, { reset: true }));
+const reset = await client.resetPassword({
+  token: 'A'.repeat(43),
+  newPassword: 'replacement-password',
+});
+assert.equal(reset.ok, true);
+assert.equal(reset.reset, true);
+const resetCall = calls.at(-1);
+assert.equal(resetCall.url, 'https://auth.cheekycommodoregamer.co.uk/v1/auth/reset-password');
+assert.equal(resetCall.options.method, 'POST');
+assert.equal(resetCall.options.credentials, 'omit', 'Password reset confirmation must not rely on an existing refresh cookie.');
+assert.equal(resetCall.options.headers.authorization, undefined, 'Password reset confirmation must not require an existing bearer token.');
+assert.deepEqual(JSON.parse(resetCall.options.body), {
+  token: 'A'.repeat(43),
+  new_password: 'replacement-password',
+});
+assert.equal(client.getAccessToken(), null, 'Successful password reset must clear any in-memory access token.');
+assert.equal(client.getUserId(), null, 'Successful password reset must clear any in-memory user identity.');
+
 const source = await fs.readFile(new URL('../client/ccg-auth-client.mjs', import.meta.url), 'utf8');
 assert.doesNotMatch(source, /localStorage|sessionStorage|document\.cookie/, 'The passive auth client must not persist or inspect browser credential storage.');
 assert.doesNotMatch(source, /refresh_token/, 'The browser client must never expect a raw refresh token in JSON.');
 
-console.log('CCG auth client contract passed: construction is passive, refresh cookies remain browser-managed, bearer tokens stay in memory, and logout/401 clear local session state.');
+console.log('CCG auth client contract passed: construction is passive, refresh cookies remain browser-managed, bearer tokens stay in memory, recovery/reset stay unauthenticated, and logout/401/password reset clear local session state.');
