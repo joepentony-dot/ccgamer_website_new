@@ -9,6 +9,8 @@ import { createProfileStore } from './profile-store.mjs';
 import { createCloudSaveStore, readJsonBody } from './cloud-save.mjs';
 import { createWeeklyVaultService } from './weekly-vault.mjs';
 import { createWeeklyVaultHttp } from './weekly-vault-http.mjs';
+import { createLostSizzlerFeedbackService } from './lost-sizzler-feedback.mjs';
+import { createLostSizzlerFeedbackHttp } from './lost-sizzler-feedback-http.mjs';
 
 function writeJson(response, statusCode, body, headers = {}) {
   const payload = Buffer.from(`${JSON.stringify(body)}\n`, 'utf8');
@@ -70,6 +72,14 @@ async function main() {
   const cloudSaves = createCloudSaveStore(database);
   const weeklyVault = createWeeklyVaultService({ database });
   const weeklyVaultHttp = createWeeklyVaultHttp({ auth, weeklyVault });
+  const lostSizzlerFeedback = createLostSizzlerFeedbackService({
+    database,
+    email: config.feedbackEmail,
+  });
+  const lostSizzlerFeedbackHttp = createLostSizzlerFeedbackHttp({
+    auth,
+    service: lostSizzlerFeedback,
+  });
 
   const server = http.createServer(async (request, response) => {
     const cors = corsHeaders(request, config);
@@ -111,6 +121,12 @@ async function main() {
 
       if (weeklyVaultHttp.handles(request.method, url.pathname)) {
         const result = await weeklyVaultHttp.handle(request, url.pathname);
+        writeJson(response, result.statusCode, result.body, { ...cors, ...result.headers });
+        return;
+      }
+
+      if (lostSizzlerFeedbackHttp.handles(request.method, url.pathname)) {
+        const result = await lostSizzlerFeedbackHttp.handle(request);
         writeJson(response, result.statusCode, result.body, { ...cors, ...result.headers });
         return;
       }

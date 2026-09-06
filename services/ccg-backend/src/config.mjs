@@ -4,6 +4,27 @@ function requireEnv(name) {
   return value;
 }
 
+function optionalEnv(name) {
+  return String(process.env[name] || '').trim();
+}
+
+function validEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
+}
+
+function readFeedbackEmail() {
+  const rawFrom = optionalEnv('EMAIL_FROM');
+  const bracketed = rawFrom.match(/<([^<>]+)>/);
+  const fromAddress = String(bracketed?.[1] || rawFrom).trim();
+  const replyTo = optionalEnv('EMAIL_REPLY_TO');
+  return Object.freeze({
+    resendApiKey: optionalEnv('RESEND_API_KEY'),
+    from: validEmail(fromAddress) ? `CCG <${fromAddress}>` : '',
+    replyTo: validEmail(replyTo) ? replyTo : '',
+    destination: 'info@cheekycommodoregamer.co.uk',
+  });
+}
+
 function validateAllowedOrigin(entry) {
   if (entry === '*') throw new Error('Wildcard CORS origins are not supported.');
 
@@ -64,6 +85,7 @@ export function loadConfig() {
     allowedOrigins,
     authMode,
     serviceName: 'ccg-backend',
+    feedbackEmail: readFeedbackEmail(),
   };
 
   if (authMode === 'external') {

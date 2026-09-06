@@ -21,6 +21,9 @@ function clearAuthEnv() {
     'CCG_LOCAL_AUTH_PRIVATE_JWK_FILE',
     'CCG_LOCAL_AUTH_PUBLIC_JWK_FILE',
     'CCG_LOCAL_AUTH_KEY_ID',
+    'RESEND_API_KEY',
+    'EMAIL_FROM',
+    'EMAIL_REPLY_TO',
   ]) delete process.env[key];
 }
 
@@ -55,7 +58,30 @@ try {
   assert.equal(config.localAuth, null);
   assert.equal(config.allowedOrigins.has('https://www.cheekycommodoregamer.co.uk'), true);
   assert.equal(config.allowedOrigins.has('*'), false);
+  assert.deepEqual(config.feedbackEmail, {
+    resendApiKey: '',
+    from: '',
+    replyTo: '',
+    destination: 'info@cheekycommodoregamer.co.uk',
+  });
 
+  withBaseEnv();
+  process.env.RESEND_API_KEY = 'test-resend-key';
+  process.env.EMAIL_FROM = 'Lost Sizzler <feedback@example.test>';
+  process.env.EMAIL_REPLY_TO = 'reply@example.test';
+  const feedbackEmail = loadConfig().feedbackEmail;
+  assert.deepEqual(feedbackEmail, {
+    resendApiKey: 'test-resend-key',
+    from: 'CCG <feedback@example.test>',
+    replyTo: 'reply@example.test',
+    destination: 'info@cheekycommodoregamer.co.uk',
+  });
+
+  withBaseEnv();
+  process.env.EMAIL_FROM = 'not-an-email';
+  assert.equal(loadConfig().feedbackEmail.from, '');
+
+  withBaseEnv();
   delete process.env.DATABASE_URL;
   assert.throws(() => loadConfig(), /DATABASE_URL/);
 
@@ -112,7 +138,7 @@ try {
   process.env.CCG_LOCAL_AUTH_KEY_ID = 'x'.repeat(129);
   assert.throws(() => loadConfig(), /CCG_LOCAL_AUTH_KEY_ID is too long/);
 
-  console.log('CCG backend configuration contract passed for fail-closed CORS, external auth and opt-in local authentication modes.');
+  console.log('CCG backend configuration contract passed for fail-closed CORS, optional feedback mail delivery, external auth and opt-in local authentication modes.');
 } finally {
   restore();
 }
