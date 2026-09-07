@@ -23,6 +23,7 @@ import { createLostSizzlerRealtimeWebSocketTransport } from './lost-sizzler-real
 import { createPayPalOrdersGateway } from './paypal-orders.mjs';
 import { createLostSizzlerCommerceService } from './lost-sizzler-commerce.mjs';
 import { createLostSizzlerCommerceHttp } from './lost-sizzler-commerce-http.mjs';
+import { createStagingBrowserPilot, readStagingBrowserPilotEnabled } from './staging-browser-pilot.mjs';
 
 function writeJson(response, statusCode, body, headers = {}) {
   const payload = Buffer.from(`${JSON.stringify(body)}\n`, 'utf8');
@@ -105,6 +106,9 @@ async function main() {
   const config = loadConfig();
   const database = createDatabase(config.databaseUrl);
   const { auth, authHttp } = await createAuthentication(config, database);
+  const stagingBrowserPilot = createStagingBrowserPilot({
+    enabled: readStagingBrowserPilotEnabled(process.env.CCG_STAGING_BROWSER_PILOT_ENABLED, config.authMode),
+  });
   const registrationHttp = createRegistration(config, database);
   const recoveryHttp = createRecovery(config, database);
   const accounts = createAccountStore(database);
@@ -162,6 +166,11 @@ async function main() {
 
     try {
       const url = new URL(request.url || '/', 'http://localhost');
+
+      if (stagingBrowserPilot?.handles(request.method, url.pathname)) {
+        stagingBrowserPilot.handle(request, response);
+        return;
+      }
 
       if (request.method === 'GET' && url.pathname === '/health') {
         writeJson(response, 200, {
