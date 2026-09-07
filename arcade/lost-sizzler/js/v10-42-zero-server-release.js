@@ -99,9 +99,10 @@
     try{
       if(!net)return false;
       const hadOnlinePresentation=hasActiveOnlinePresentation();
-      if(hadOnlinePresentation){try{net.leave?.()}catch(_){}}
-      else state.localBootTeardownsSkipped+=1;
-      try{net.setSolo?.("TITLE")}catch(_){}
+      if(hadOnlinePresentation){
+        try{net.setSolo?.("TITLE")}catch(_){try{net.leave?.()}catch(__){}}
+        state.onlineTeardowns+=1;
+      }else state.localBootTeardownsSkipped+=1;
       for(const method of ["join","createOnlineRoom","joinExistingRoom"]){
         if(typeof net[method]!=="function")continue;
         if(net[method].__ccgV142ZeroServer)continue;
