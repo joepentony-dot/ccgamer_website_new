@@ -26,12 +26,30 @@ try{
   const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerSpecialModes)&&Boolean(window.CCGLostSizzlerModeRuntime));
+  await page.waitForFunction(()=>!window.CCGLostSizzlerV142Bootstrap||window.CCGLostSizzlerV142Bootstrap.ready===true||window.CCGLostSizzlerV142Bootstrap.failed===true);
+
+  const releaseBoundary=await page.evaluate(()=>{
+    const bootstrap=window.CCGLostSizzlerV142Bootstrap||null,zeroServer=window.CCGLostSizzlerV142ZeroServerRelease||null,button=document.getElementById("saboteurs-mode-btn"),style=button?getComputedStyle(button):null;
+    return{
+      bootstrapFailed:Boolean(bootstrap?.failed),
+      bootstrapReady:Boolean(bootstrap?.ready),
+      zeroServer:Boolean(zeroServer?.enabled&&zeroServer?.onlineMultiplayer===false),
+      spyEntryHidden:Boolean(button&&(button.hidden||button.classList.contains("hidden")||style?.display==="none")),
+      spyAriaHidden:button?.getAttribute("aria-hidden")||""
+    };
+  });
+  assert.equal(releaseBoundary.bootstrapFailed,false,"V10.42 ordered bootstrap must not fail before the retained Spy engine regression begins");
+  if(releaseBoundary.zeroServer){
+    assert.equal(releaseBoundary.bootstrapReady,true,"V10.42 zero-server policy must finish loading before the retained Spy engine is exercised directly");
+    assert.equal(releaseBoundary.spyEntryHidden,true,"V10.42 production must keep the public Spy entry inaccessible while its preserved engine is regression-tested directly");
+    assert.equal(releaseBoundary.spyAriaHidden,"true","V10.42 production must keep the retired Spy entry hidden from accessibility navigation");
+  }
 
   const started=await page.evaluate(()=>{
     net.setSolo("Movement Host");const id=String(net.sessionId);
     return window.CCGLostSizzlerSpecialModes.startOnline({roomMode:"sizzler-saboteurs",players:[{id,name:"Movement Host"},{id:"MOVEMENT-GUEST",name:"Movement Guest"}],hostId:id,seed:"R32-MOVEMENT-STABILITY",roomCode:"MOVE32"});
   });
-  assert.equal(started,true,"Spy movement fixture must start through the real online special-mode adapter");
+  assert.equal(started,true,"Spy movement fixture must start through the retained real online special-mode adapter after release policy bootstrap has settled");
   await page.waitForFunction(()=>document.body.dataset.specialMode==="sizzler-saboteurs"&&Boolean(window.CCGLostSizzlerV141R29SpyEngine?.state?.isolated));
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R32SpyLoader?.state?.loaded&&window.CCGLostSizzlerV141R32SpyOverhaul?.state?.worldBuilds>=1&&window.CCGLostSizzlerV141R32SpyPacketOwner?.state?.stableEnterSeals>=1&&window.CCGLostSizzlerV141R32SpyPacketOwner?.state?.visualSmoothingSeals>=1),null,{timeout:15000});
 
@@ -111,7 +129,7 @@ try{
   assert.ok((remoteLogical-remoteRendered)*fixture.sign>0,"remote Spy render position must interpolate instead of snapping directly to the received network tile");
 
   assert.deepEqual(errors,[],`Spy movement smoothing regression must have no uncaught browser errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler r32 Spy controller-entry, held-movement and local/remote visual smoothing regressions passed in Chromium.");
+  console.log(releaseBoundary.zeroServer?"Lost Sizzler r32 retained Spy engine movement/smoothing regressions passed after V10.42 zero-server bootstrap while the public Spy entry remained retired.":"Lost Sizzler r32 Spy controller-entry, held-movement and local/remote visual smoothing regressions passed in Chromium.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
