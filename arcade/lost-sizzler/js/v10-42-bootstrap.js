@@ -5,7 +5,7 @@
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
   const BUILD="V10.42 r3";
-  const CACHE="20260907r12";
+  const CACHE="20260907r13";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-five-depth-campaign.js","CCGLostSizzlerV142FiveDepthCampaign"],
