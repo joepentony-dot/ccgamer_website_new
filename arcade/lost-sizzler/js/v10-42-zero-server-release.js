@@ -10,7 +10,7 @@
   const RELEASE_BLURB="A five-floor pixel dungeon crawl filled with shifting objectives, rare loot, hidden routes, dangerous events and things in the dark that ordinary weapons cannot finish.";
   const RELEASE_MODE_LABEL_HTML="<span>✦</span> CHOOSE YOUR ADVENTURE <span>✦</span>";
   const RELEASE_NOTE="V10.42 uses a zero-server-cost release model: Solo, Tutorial and 2P Split Screen run locally in your browser. Supabase remains available for CCG account features such as the Weekly High-Score Vault, but core gameplay never requires an online multiplayer server.";
-  const state={enabled:true,removedButtons:[],hiddenPanels:[],networkLocked:false,lastReason:"",enforcementPasses:0,releaseStyleReady:false};
+  const state={enabled:true,removedButtons:[],hiddenPanels:[],networkLocked:false,lastReason:"",enforcementPasses:0,releaseStyleReady:false,onlineTeardowns:0,localBootTeardownsSkipped:0};
 
   function ensureReleaseStyle(){
     let style=document.getElementById(RELEASE_STYLE_ID);
@@ -83,10 +83,24 @@
     return Promise.reject(error);
   }
 
+  function hasActiveOnlinePresentation(){
+    try{if(typeof mode!=="undefined"&&mode==="lobby")return true}catch(_){}
+    try{if(window.CCGLostSizzlerSpecialModes?.active)return true}catch(_){}
+    try{
+      if(!net)return false;
+      if(net.connected===true)return true;
+      const transport=String(net.transport||"").toLowerCase();
+      if(transport&&transport!=="solo"&&transport!=="local"&&transport!=="offline"&&transport!=="title")return true;
+    }catch(_){}
+    return false;
+  }
+
   function lockExistingNetwork(){
     try{
       if(!net)return false;
-      try{net.leave?.()}catch(_){}
+      const hadOnlinePresentation=hasActiveOnlinePresentation();
+      if(hadOnlinePresentation){try{net.leave?.()}catch(_){}}
+      else state.localBootTeardownsSkipped+=1;
       try{net.setSolo?.("TITLE")}catch(_){}
       for(const method of ["join","createOnlineRoom","joinExistingRoom"]){
         if(typeof net[method]!=="function")continue;
@@ -122,10 +136,14 @@
   }
 
   function leaveAnyOnlinePresentation(){
+    const hadOnlinePresentation=hasActiveOnlinePresentation();
     try{
-      if(mode==="lobby")mode="menu";
+      if(typeof mode!=="undefined"&&mode==="lobby")mode="menu";
       document.getElementById("online-lobby")?.classList.add("hidden");
-      window.CCGLostSizzlerSpecialModes?.stop?.(undefined,true);
+      if(hadOnlinePresentation){
+        window.CCGLostSizzlerSpecialModes?.stop?.(undefined,true);
+        state.onlineTeardowns+=1;
+      }else state.localBootTeardownsSkipped+=1;
     }catch(_){}
   }
 
