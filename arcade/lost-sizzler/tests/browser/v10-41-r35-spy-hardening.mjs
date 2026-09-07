@@ -26,6 +26,12 @@ try{
   console.log("[r35 Spy] load canonical page and start real Spy adapter");
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R32SpyLoader));
+  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142Bootstrap));
+  await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap.ready===true||window.CCGLostSizzlerV142Bootstrap.failed===true);
+  const releaseBoundary=await page.evaluate(()=>({bootstrapReady:Boolean(window.CCGLostSizzlerV142Bootstrap?.ready),bootstrapFailed:Boolean(window.CCGLostSizzlerV142Bootstrap?.failed),zeroServer:Boolean(window.CCGLostSizzlerV142ZeroServerRelease?.enabled&&window.CCGLostSizzlerV142ZeroServerRelease?.onlineMultiplayer===false)}));
+  assert.equal(releaseBoundary.bootstrapFailed,false,"V10.42 ordered bootstrap must settle successfully before the retained r35 Spy fixture begins");
+  assert.equal(releaseBoundary.bootstrapReady,true,"V10.42 ordered bootstrap must be ready before the retained r35 Spy fixture begins");
+  assert.equal(releaseBoundary.zeroServer,true,"r35 must exercise the preserved Spy engine only after the production zero-server policy has settled");
   const started=await page.evaluate(()=>{net.setSolo("Agent One");const id=String(net.sessionId);return window.CCGLostSizzlerSpecialModes.startOnline({roomMode:"sizzler-saboteurs",players:[{id,name:"Agent One"},{id:"R35-SPY-B",name:"Agent Two"}],hostId:id,seed:"V141-R35-HARDEN",roomCode:"R35SPY"})});
   assert.equal(started,true,"r35 Spy fixture must start through the canonical adapter");
   await page.waitForFunction(()=>document.body.dataset.specialMode==="sizzler-saboteurs"&&Boolean(window.CCGLostSizzlerV141R35SpyRulesHardening)&&Boolean(window.CCGLostSizzlerV141R32SpyPacketOwner)&&Boolean(window.CCGLostSizzlerV141R34SpyFullscreenUi)&&Boolean(document.getElementById("spy-classic-trapulators")));
@@ -90,7 +96,7 @@ try{
   assert.ok(recovery.recoveries>=1,`a late all-black renderer must be caught and restored: ${JSON.stringify(recovery)}`);assert.equal(recovery.black,false,"the visible Spy canvas must not remain black after watchdog recovery");
 
   assert.deepEqual(errors,[],`r35 Spy regression must have no uncaught browser errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler r35 Spy controls, pickups, self maps, ghost capture, object purge and black-screen recovery passed in Chromium.");
+  console.log("Lost Sizzler r35 Spy controls, pickups, self maps, ghost capture, object purge and black-screen recovery passed in Chromium after the V10.42 zero-server bootstrap settled.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
