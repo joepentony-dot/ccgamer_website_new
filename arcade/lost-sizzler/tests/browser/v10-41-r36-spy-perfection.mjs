@@ -13,7 +13,7 @@ const server=http.createServer((req,res)=>{
   try{
     const pathname=decodeURIComponent(new URL(req.url,"http://local").pathname),relative=pathname.endsWith("/")?`${pathname}index.html`:pathname,file=path.resolve(repo,`.${relative}`);
     if(!file.startsWith(`${repo}${path.sep}`)&&file!==repo){res.writeHead(403).end("forbidden");return}
-    fs.readFile(file,(error,data)=>{if(error){res.writeHead(404,{connection:"close"}).end("not found");return}res.writeHead(200,{"content-type":mime[path.extname(file).toLowerCase()]||"application/octet-stream","cache-control":"no-store",connection:"close"});res.end(data)});
+    fs.readFile(file,(error,data)=>{if(error){res.writeHead(404,{"connection":"close"}).end("not found");return}res.writeHead(200,{"content-type":mime[path.extname(file).toLowerCase()]||"application/octet-stream","cache-control":"no-store",connection:"close"});res.end(data)});
   }catch(error){res.writeHead(500,{connection:"close"}).end(String(error))}
 });
 server.on("connection",socket=>{sockets.add(socket);socket.on("close",()=>sockets.delete(socket))});
@@ -27,12 +27,17 @@ try{
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R32SpyLoader));
 
-  console.log("[r36 Spy] start real Spy adapter fixture");
+  console.log("[r36 Spy] start retained Spy adapter fixture");
   const started=await page.evaluate(()=>{
-    net.setSolo("Agent One");const id=String(net.sessionId);
-    return window.CCGLostSizzlerSpecialModes.startOnline({roomMode:"sizzler-saboteurs",players:[{id,name:"Agent One"},{id:"R36-SPY-B",name:"Agent Two"}],hostId:id,seed:"V141-R36-PERFECTION",roomCode:"R36SPY"});
+    net.setSolo("Agent One");const id=String(net.sessionId),special=window.CCGLostSizzlerSpecialModes;
+    const ok=special.startOnline({roomMode:"sizzler-saboteurs",players:[{id,name:"Agent One"},{id:"R36-SPY-B",name:"Agent Two"}],hostId:id,seed:"V141-R36-PERFECTION",roomCode:"R36SPY"});
+    if(ok&&special.active?.type==="sizzler-saboteurs"){
+      const held=special.active;window.__CCG_R36_SPY_ACTIVE__=held;
+      Object.defineProperty(special,"active",{configurable:true,get:()=>held,set:()=>{}});
+    }
+    return ok;
   });
-  assert.equal(started,true,"r36 Spy fixture must start through the real special-mode adapter");
+  assert.equal(started,true,"r36 retained Spy fixture must start through the real special-mode adapter while production entry remains retired");
   await page.waitForFunction(()=>document.body.dataset.specialMode==="sizzler-saboteurs"&&Boolean(window.CCGLostSizzlerV141R32SpyLoader?.state?.perfectionLoaded)&&Boolean(window.CCGLostSizzlerV141R36SpyPerfection)&&document.body.dataset.spyR36Perfection==="true");
 
   console.log("[r36 Spy] inventory has an explicit exit and cannot strand play");
@@ -145,7 +150,7 @@ try{
   if(rail.visible){assert.ok(rail.gap>=210,"desktop rail may only appear when genuine spare width exists");assert.ok(rail.railLeft>=rail.canvasRight-1,"desktop rail must begin outside the rendered game canvas");assert.ok(rail.railRight<=rail.areaRight+1,"desktop rail must remain inside game-area spare width");assert.ok(rail.text.includes("SPY COMMAND")&&rail.text.includes("ARMED TRAPS"),"desktop rail must contain useful Spy status rather than empty black space")}
 
   assert.deepEqual(errors,[],`r36 Spy perfection browser regression must have no uncaught errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler r36 Spy inventory exit, movement recovery, melee animation, respawn HP, doors, traps and HUD passed in Chromium.");
+  console.log("Lost Sizzler r36 retained Spy inventory exit, movement recovery, melee animation, respawn HP, doors, traps and HUD passed in Chromium.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
