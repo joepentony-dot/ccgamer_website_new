@@ -192,6 +192,21 @@ jobs:
           done
           rm -f "$marker" "$current_log"
 
+      - name: Summarise failing Chromium contract
+        if: failure()
+        shell: bash
+        run: |
+          marker="$RUNNER_TEMP/lost-sizzler-browser-current.txt"
+          if [ -f "$marker" ]; then
+            {
+              echo '## Lost Sizzler failing Chromium contract'
+              echo
+              echo '```text'
+              cat "$marker"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Upload failing Chromium contract marker
         if: failure()
         uses: actions/upload-artifact@v4
