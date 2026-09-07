@@ -5,7 +5,7 @@
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
   const BUILD="V10.42 r2";
-  const CACHE="20260907r8";
+  const CACHE="20260907r9";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-five-depth-campaign.js","CCGLostSizzlerV142FiveDepthCampaign"],
@@ -16,7 +16,7 @@
     ["v10-42-r2-controller-owner-seal.js","CCGLostSizzlerV142R2ControllerOwnerSeal"],
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"]
   ];
-  const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],pendingStartId:"",identityRestamps:0,identityTimers:[]};
+  const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],pendingStartId:"",identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0};
   window.CCGLostSizzlerV142Bootstrap=state;
 
   function setReleaseReady(value){
@@ -102,10 +102,27 @@
     })
   }
 
+  function delay(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
+  async function awaitControllerSeal(){
+    const seal=window.CCGLostSizzlerV142R2ControllerOwnerSeal;
+    if(!seal||typeof seal.install!=="function"||typeof seal.gateActive!=="function")throw new Error("V10.42 controller owner seal is unavailable");
+    for(const wait of [0,0,16,48,96,160]){
+      if(wait)await delay(wait);else await Promise.resolve();
+      state.controllerSealAttempts+=1;
+      try{seal.install()}catch(_){}
+      if(seal.gateActive()&&window.update===seal.authoritativeBoundary()){
+        state.controllerSealReady=true;
+        return true;
+      }
+    }
+    throw new Error("V10.42 controller owner seal did not become authoritative")
+  }
+
   async function boot(){
     setReleaseReady(false);stampBuild();
     try{
       for(const [file,marker] of modules)await loadOne(file,marker);
+      await awaitControllerSeal();
       state.ready=true;setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
       const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five new dungeon floors are loaded in verified order. Solo, Tutorial and 2P Split Screen run locally; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
