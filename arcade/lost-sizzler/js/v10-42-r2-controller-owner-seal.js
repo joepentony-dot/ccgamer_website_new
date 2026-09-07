@@ -1,4 +1,4 @@
-/* The Lost Sizzler V10.42 r2 — preserve authoritative controller ownership. */
+/* The Lost Sizzler V10.42 r2 — observe controller ownership without writing it. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V142_R2_CONTROLLER_OWNER_SEAL__)return;
@@ -9,8 +9,6 @@
   const state={
     installed:false,
     inheritedGate:false,
-    inheritedGateProbes:0,
-    inheritedGateRejects:0,
     unsupported:false,
     blockedWrites:0,
     maintenanceTicks:0,
@@ -47,26 +45,6 @@
     return Boolean(descriptor&&descriptor.get===getter&&descriptor.set===setter&&descriptor.configurable===false)
   }
 
-  function acceptInheritedGate(descriptor,boundary){
-    if(!descriptor||descriptor.configurable!==false||typeof boundary!=="function"||window.update!==boundary)return false;
-    state.inheritedGateProbes++;
-    const probe=function lostSizzlerV142InheritedSealProbe(){};
-    let after=null;
-    try{window.update=probe}catch(_){}
-    try{after=window.update}catch(_){after=null}
-    if(after===boundary){
-      controllerBoundary=boundary;
-      state.inheritedGate=true;
-      state.installed=true;
-      state.unsupported=false;
-      clearStartupTimers();
-      return true
-    }
-    state.inheritedGateRejects++;
-    try{if(after===probe)window.update=boundary}catch(_){}
-    return false
-  }
-
   function install(){
     state.installAttempts++;
     if(gateActive())return true;
@@ -76,8 +54,15 @@
     try{descriptor=Object.getOwnPropertyDescriptor(window,"update")}catch(_){}
     if(descriptor&&descriptor.configurable===false){
       if(descriptor.get===getter&&descriptor.set===setter){state.installed=true;return true}
-      if(acceptInheritedGate(descriptor,controllerBoundary))return true;
-      state.unsupported=true;return false
+      // A legacy non-configurable accessor cannot safely be replaced or probed.
+      // V10.42 never writes through it. If it is currently exposing the
+      // authoritative controller boundary, record that fact for diagnostics;
+      // otherwise leave ownership to the established V10.41 recovery layers.
+      state.inheritedGate=window.update===controllerBoundary;
+      state.installed=state.inheritedGate;
+      state.unsupported=!state.inheritedGate;
+      if(state.installed)clearStartupTimers();
+      return state.installed
     }
 
     getter=function getLostSizzlerAuthoritativeUpdate(){
@@ -116,7 +101,7 @@
   }
 
   function deferredInstall(){
-    if(state.installed||state.unsupported)return;
+    if(state.installed)return;
     state.deferredInstallAttempts++;
     install()
   }
