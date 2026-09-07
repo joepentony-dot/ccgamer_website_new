@@ -7,7 +7,7 @@
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V141_SPY_MOVEMENT_FINALIZER__)return;
   window.__CCG_LOST_SIZZLER_V141_SPY_MOVEMENT_FINALIZER__=true;
-  const state={installed:false,moveInstalled:false,updateInstalled:true,controllerOwnedRespawns:true,fallbackMoves:0,respawns:0,statusById:new Map(),timer:0};
+  const state={installed:false,moveInstalled:false,updateInstalled:true,controllerOwnedRespawns:true,fallbackMoves:0,respawns:0,statusById:new Map(),timer:0,isolatedOwnerAdoptions:0,modeObserver:null};
   const spyActive=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type==="sizzler-saboteurs"||document.body?.dataset?.specialMode==="sizzler-saboteurs"}catch(_){return false}};
   const spyModelFor=player=>{try{return window.CCGLostSizzlerSpecialModes?.active?.state?.players?.find(entry=>String(entry?.id||"")===String(player?.id||""))||null}catch(_){return null}};
   const canSpyMove=player=>{const model=spyModelFor(player);return !model||model.status==="active"};
@@ -65,16 +65,32 @@
     };
     window.movePlayer.__ccgV141SpyFinal=true;state.moveInstalled=true;return true;
   }
+  function adoptIsolatedMovementOwner(){
+    const engine=window.CCGLostSizzlerV141R29SpyEngine,owner=engine?.moveOwner;
+    if(typeof owner!=="function")return false;
+    if(owner.__ccgV141R29SpyOwner===true)return true;
+    owner.__ccgV141R29SpyOwner=true;state.isolatedOwnerAdoptions++;return true;
+  }
+  function installModeBridge(){
+    if(state.modeObserver||typeof MutationObserver!=="function"||!document.body)return Boolean(state.modeObserver);
+    state.modeObserver=new MutationObserver(records=>{
+      if(!records.some(record=>record.type==="attributes"&&record.attributeName==="data-special-mode"))return;
+      if(spyActive())adoptIsolatedMovementOwner();
+    });
+    state.modeObserver.observe(document.body,{attributes:true,attributeFilter:["data-special-mode"]});
+    adoptIsolatedMovementOwner();return true;
+  }
   function install(){
     const moveReady=installMove();state.installed=Boolean(moveReady);
     if(state.installed)try{window.CCGLostSizzlerV141BrowserStabilityGameplay?.repairSpySpawn?.()}catch(_){}
     return state.installed;
   }
   function ready(){return document.body?.dataset?.releaseReady==="true"||window.CCGLostSizzlerReleaseGate?.state?.ready===true}
+  installModeBridge();
   const gate=window.CCGLostSizzlerReleaseGate?.state?.promise;
   if(gate&&typeof gate.then==="function")gate.then(ok=>{if(ok!==false)install()}).catch(()=>{});
   state.timer=setInterval(()=>{if(ready()&&install()){clearInterval(state.timer);state.timer=0}},80);
   if(ready())install();
-  addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
-  window.CCGLostSizzlerV141SpyMovementFinalizer={install,validStep,canSpyMove,syncRespawns,materialiseRespawn,get state(){return state}};
+  addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.modeObserver?.disconnect?.();state.modeObserver=null},{once:true});
+  window.CCGLostSizzlerV141SpyMovementFinalizer={install,validStep,canSpyMove,syncRespawns,materialiseRespawn,adoptIsolatedMovementOwner,installModeBridge,get state(){return state}};
 })();
