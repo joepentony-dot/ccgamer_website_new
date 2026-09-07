@@ -12,7 +12,14 @@
   const environmentalSeen=new WeakSet();
   const environmentalFloors=new WeakMap();
   const explorationFloors=new WeakMap();
-  const state={installed:false,merchantInstalled:false,sanctuaryInstalled:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,merchantTaskBriefings:0,environmentalPresentations:0,environmentalBudgetSkips:0,explorationPresentations:0,explorationBudgetSkips:0,scoutEventObserver:false,last:null,lastMerchantTask:null};
+  const directedEncounterFloors=new WeakMap();
+  const LEVEL_PROFILES=Object.freeze([
+    Object.freeze({id:"search-routes",min:1,max:2,cadence:4,maxEncounters:1,squad:1,hpBonus:0,kinds:Object.freeze(["scout"]),label:"Search Routes"}),
+    Object.freeze({id:"split-patrols",min:3,max:5,cadence:3,maxEncounters:2,squad:1,hpBonus:0,kinds:Object.freeze(["scout","ambusher"]),label:"Split Patrols"}),
+    Object.freeze({id:"crossfire-routes",min:6,max:8,cadence:3,maxEncounters:3,squad:2,hpBonus:1,kinds:Object.freeze(["ambusher","scout"]),label:"Crossfire Routes"}),
+    Object.freeze({id:"lockdown-depths",min:9,max:Infinity,cadence:2,maxEncounters:4,squad:2,hpBonus:1,kinds:Object.freeze(["ambusher","scout","ambusher"]),label:"Lockdown Depths"})
+  ]);
+  const state={installed:false,merchantInstalled:false,sanctuaryInstalled:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,merchantTaskBriefings:0,environmentalPresentations:0,environmentalBudgetSkips:0,explorationPresentations:0,explorationBudgetSkips:0,scoutEventObserver:false,levelDirectorEncounters:0,levelDirectorEnemies:0,levelDirectorSkips:0,lastLevelProfile:null,last:null,lastMerchantTask:null};
   const lines=Object.freeze({
     scout:Object.freeze({
       trapped:Object.freeze({key:"scout.trapped",title:"CCG SCOUT — FOUND",speaker:"Scout",text:"There you are. Get me to one of the permanently lit sanctuary rooms and I’ll stay close.",tone:"green",duration:7600,voiceKey:"npc.scout.found"}),
@@ -131,6 +138,71 @@
     if(room.traderRoom||room.developerRoom||room.goldenRoom||room.rareVortexPit)return false;
     return Boolean(lines.environment[room.theme])
   }
+  function currentFloorNumber(){
+    try{return Math.max(1,Math.floor(Number(run?.floor||host?.floor||1)||1))}catch(_){return 1}
+  }
+  function levelProfile(floor=currentFloorNumber()){
+    const value=Math.max(1,Math.floor(Number(floor)||1));
+    return LEVEL_PROFILES.find(profile=>value>=profile.min&&value<=profile.max)||LEVEL_PROFILES[LEVEL_PROFILES.length-1]
+  }
+  function directedEncounterEligible(room,roomId){
+    if(!room||Number(roomId)<=0)return false;
+    if(room.sanctuary||room.sigilRoom||room.sigilGreatHall||room.dangerous||room.spiderNest||room.skeletonHorde||room.dedicatedHazard)return false;
+    if(room.arenaRoom||room.timedRoom||room.boulderRoom||room.weightBridgeRoom||room.memoryPuzzleRoom||room.sequenceTorchRoom||room.bloodClueRoom)return false;
+    if(room.traderRoom||room.developerRoom||room.goldenRoom||room.rareVortexPit)return false;
+    return Number(room.w||0)>=4&&Number(room.h||0)>=4
+  }
+  function directedEncounterFloorState(){
+    let currentWorld=null;try{currentWorld=world||null}catch(_){return null}
+    if(!currentWorld||typeof currentWorld!=="object")return null;
+    let record=directedEncounterFloors.get(currentWorld);
+    if(!record){record={seen:new Set(),encounters:0,enemies:0};directedEncounterFloors.set(currentWorld,record)}
+    return record
+  }
+  function directedSpawnCells(room,player,limit){
+    const left=Math.floor(Number(room.x||0))+1,top=Math.floor(Number(room.y||0))+1;
+    const right=Math.max(left,Math.floor(Number(room.x||0)+Number(room.w||0))-2),bottom=Math.max(top,Math.floor(Number(room.y||0)+Number(room.h||0))-2);
+    const cx=Math.floor((left+right)/2),cy=Math.floor((top+bottom)/2);
+    const candidates=[[right,bottom],[left,bottom],[right,top],[left,top],[cx,bottom],[right,cy],[cx,top],[left,cy],[cx,cy]];
+    const cells=[];
+    for(const [x,y] of candidates){
+      if(cells.length>=limit)break;
+      if(player&&Number(player.x)===x&&Number(player.y)===y)continue;
+      try{if(world?.exit&&Number(world.exit.x)===x&&Number(world.exit.y)===y)continue}catch(_){}
+      try{if(typeof W?.walkable==="function"&&!W.walkable(world.map,x,y,host))continue}catch(_){continue}
+      try{if((host?.enemies||[]).some(enemy=>enemy?.alive&&Number(enemy.x)===x&&Number(enemy.y)===y))continue}catch(_){continue}
+      if(!cells.some(cell=>cell.x===x&&cell.y===y))cells.push({x,y})
+    }
+    return cells
+  }
+  function spawnDirectedEnemy(profile,floor,roomId,slot,cell,player){
+    if(!cell)return null;
+    const kind=profile.kinds[(floor+Number(roomId)+slot)%profile.kinds.length]||"scout";
+    const hp=2+Math.min(5,Math.floor((floor-1)/3))+Number(profile.hpBonus||0);
+    const enemy={id:`stage12-${floor}-${roomId}-${slot}`,x:cell.x,y:cell.y,kind,hp,maxHp:hp,alive:true,aiState:"chase",facing:{x:1,y:0},lastSeen:player?{x:Number(player.x),y:Number(player.y)}:null,memoryMs:7000,searchMs:0,moveCooldown:kind==="scout"?470:540,attackCooldown:kind==="scout"?820:900,chargeCooldown:999999,healCooldown:999999,flash:0,hpBarMs:0,levelDirectorEnemy:true,levelDirectorProfile:profile.id};
+    try{host.enemies.push(enemy)}catch(_){return null}
+    return enemy
+  }
+  function applyDirectedEncounter(player,roomId,room){
+    if(!soloDungeon()||!player||!directedEncounterEligible(room,roomId))return false;
+    try{if(typeof p1!=="undefined"&&player!==p1)return false}catch(_){return false}
+    const floor=currentFloorNumber(),profile=levelProfile(floor),floorState=directedEncounterFloorState();
+    if(!floorState)return false;
+    const key=String(roomId);if(floorState.seen.has(key))return false;floorState.seen.add(key);
+    state.lastLevelProfile={id:profile.id,label:profile.label,floor,cadence:profile.cadence,squad:profile.squad,maxEncounters:profile.maxEncounters};
+    if(floorState.encounters>=profile.maxEncounters||((Number(roomId)+floor*3)%profile.cadence)!==0){state.levelDirectorSkips++;return false}
+    let existing=0;try{existing=(host.enemies||[]).filter(enemy=>enemy?.alive&&typeof W?.roomAt==="function"&&W.roomAt(world,enemy.x,enemy.y)===Number(roomId)).length}catch(_){}
+    if(existing>=2){state.levelDirectorSkips++;return false}
+    const cells=directedSpawnCells(room,player,Math.max(1,profile.squad-existing));
+    if(!cells.length){state.levelDirectorSkips++;return false}
+    const spawned=[];for(let slot=0;slot<cells.length;slot++){const enemy=spawnDirectedEnemy(profile,floor,roomId,slot,cells[slot],player);if(enemy)spawned.push(enemy)}
+    if(!spawned.length){state.levelDirectorSkips++;return false}
+    floorState.encounters++;floorState.enemies+=spawned.length;state.levelDirectorEncounters++;state.levelDirectorEnemies+=spawned.length;
+    room.stage12EncounterProfile=profile.id;room.stage12EncounterCount=spawned.length;
+    try{host.revision=Number(host.revision||0)+1}catch(_){}
+    try{floatText(spawned[0].x,spawned[0].y,profile.label.toUpperCase(),"#ff6b6b",{life:1800})}catch(_){}
+    return true
+  }
   function environmentalFloorState(){
     let currentWorld=null;try{currentWorld=world||null}catch(_){return null}
     if(!currentWorld||typeof currentWorld!=="object")return null;
@@ -151,7 +223,9 @@
   }
   function onRoomEntered(player,roomId,room,{force=false}={}){
     if(!Number.isFinite(Number(roomId))||Number(roomId)<0)return false;
-    return presentEnvironmentalStory(player,room,{force})
+    const story=presentEnvironmentalStory(player,room,{force});
+    const encounter=applyDirectedEncounter(player,roomId,room);
+    return story||encounter
   }
   function explorationFloorState(){
     let currentWorld=null;try{currentWorld=world||null}catch(_){return null}
@@ -349,5 +423,5 @@
   installWhenReady();
   queueMicrotask(installWhenReady);
   if(document.readyState!=="complete")addEventListener("load",installWhenReady,{once:true});
-  window.CCGLostSizzlerStage8NpcDialogue={state,lines,soloDungeon,lineForScout,lineForMerchant,fieldTaskSnapshot,present,presentScout,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,environmentalEligible,presentEnvironmentalStory,onRoomEntered,explorationFeatureAt,presentExplorationFeature,onMovementBoundary,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
+  window.CCGLostSizzlerStage8NpcDialogue={state,lines,LEVEL_PROFILES,soloDungeon,lineForScout,lineForMerchant,fieldTaskSnapshot,present,presentScout,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,environmentalEligible,currentFloorNumber,levelProfile,directedEncounterEligible,directedSpawnCells,spawnDirectedEnemy,applyDirectedEncounter,presentEnvironmentalStory,onRoomEntered,explorationFeatureAt,presentExplorationFeature,onMovementBoundary,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
 })();
