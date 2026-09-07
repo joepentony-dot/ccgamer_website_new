@@ -29,6 +29,10 @@ services:
           property: connectionString
       - key: CCG_DB_SSL
         value: disable
+      - key: CCG_DB_POOL_MAX
+        value: "4"
+      - key: CCG_DB_IDLE_TIMEOUT_MS
+        value: "10000"
       - key: CCG_BIND_HOST
         value: 0.0.0.0
       - key: CCG_ALLOWED_ORIGINS
