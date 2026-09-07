@@ -73,26 +73,31 @@ run.v142WardenFloors["4"]={resolved:true};
 tick();
 assert.equal(run.v142WardChargeRoutes["4"].resolvedWarningShown,true,"A reserved reward should remain tracked even if the floor Warden is cleansed first");
 
-player.forceFull=false;
-tick();
-assert.equal(player.inventory.length,1,"Freeing an inventory slot should automatically deliver the reserved Floor 4 charge");
-assert.equal(run.v142WardChargeRoutes["4"].delivered,true,"Delayed Floor 4 delivery should persist");
-
 run.floor=5;
 run.v142SealFragments=5;
 context.host={generators:[],arenas:[],shrines:[]};
-player.inventory=[];
 tick();
+assert.equal(run.v142WardChargeRoutes["4"].pending,true,"A full-inventory Floor 4 reward should stay reserved after descending");
+assert.equal(run.v142WardChargeRoutes["4"].delivered,false,"Descending must not silently discard or mark the reserved reward delivered");
+assert.equal(api.reservedStatus(run,5),"RESERVED F4","Later-floor HUD should identify a carried pending route reward");
+assert.match(UI.quickSpecials.textContent,/RESERVED F4/,"Later-floor quick status should expose the carried reservation");
 assert.equal(api.conditionMet(5,context.host,run),false,"Five Seal Fragments must not unlock the Floor 5 Seal Forge");
 assert.equal(run.v142WardChargeRoutes["5"].delivered,false,"Floor 5 should not deliver before Ward Temper is active");
 assert.equal(api.routeStatus(5,run),"WARD ROUTE: SEALS 5/6","Floor 5 HUD should show Seal progress before the forge unlocks");
 
+player.forceFull=false;
+tick();
+assert.equal(player.inventory.length,1,"Freeing an inventory slot on a later floor should automatically deliver the reserved Floor 4 charge");
+assert.equal(run.v142WardChargeRoutes["4"].delivered,true,"Cross-floor delayed delivery should persist in run state");
+assert.equal(run.v142WardChargeRoutes["4"].pending,false,"Cross-floor delayed delivery should clear the reservation");
+assert.equal(api.reservedStatus(run,5),"","Delivered prior-floor rewards should disappear from reserved status");
+
 run.v142SealFragments=6;
 tick();
 assert.equal(api.conditionMet(5,context.host,run),true,"Six Seal Fragments should unlock the Floor 5 Seal Forge");
-assert.equal(player.inventory.length,1,"The six-fragment Seal Forge should award one field-ready charge without spending Essence");
-assert.equal(player.banishmentEssence,1,"Seal Forge must not consume previously banked Essence");
-assert.equal(run.v142WardChargeRoutes["5"].rewardType,"charge","Floor 5 should persist charge delivery");
+assert.equal(player.inventory.length,1,"The Seal Forge should not stockpile a second free charge when a carried charge already exists");
+assert.equal(player.banishmentEssence,2,"The Seal Forge should convert to +1 Essence when a carried charge already exists, without spending banked Essence");
+assert.equal(run.v142WardChargeRoutes["5"].rewardType,"essence","Floor 5 should persist the converted reward type when a charge is already carried");
 assert.match(api.routes[5].objective,/Floor 5 carrying at least 6 Seal Fragments/,"Floor 5 route copy should match its actual trigger");
 
 assert.equal(api.routeStatus(1,run),"WARD ROUTE: ALCHEMIST","Floor 1 should remain the baseline Alchemist route");
