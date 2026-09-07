@@ -45,13 +45,26 @@ try{
     assert.equal(releaseBoundary.spyAriaHidden,"true","V10.42 production must keep the retired Spy entry hidden from accessibility navigation");
   }
 
-  const started=await page.evaluate(()=>{
+  const startRetainedFixture=()=>page.evaluate(()=>{
     net.setSolo("Movement Host");const id=String(net.sessionId);
     return window.CCGLostSizzlerSpecialModes.startOnline({roomMode:"sizzler-saboteurs",players:[{id,name:"Movement Host"},{id:"MOVEMENT-GUEST",name:"Movement Guest"}],hostId:id,seed:"R32-MOVEMENT-STABILITY",roomCode:"MOVE32"});
   });
+  const started=await startRetainedFixture();
   assert.equal(started,true,"Spy movement fixture must start through the retained real online special-mode adapter after release policy bootstrap has settled");
   await page.waitForFunction(()=>document.body.dataset.specialMode==="sizzler-saboteurs"&&Boolean(window.CCGLostSizzlerV141R29SpyEngine?.state?.isolated));
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R32SpyLoader?.state?.loaded&&window.CCGLostSizzlerV141R32SpyOverhaul?.state?.worldBuilds>=1&&window.CCGLostSizzlerV141R32SpyPacketOwner?.state?.stableEnterSeals>=1&&window.CCGLostSizzlerV141R32SpyPacketOwner?.state?.visualSmoothingSeals>=1),null,{timeout:15000});
+
+  if(releaseBoundary.zeroServer){
+    // Production owns and retires the online lifecycle. Once the lazy Spy owners
+    // are loaded, restart only the preserved engine fixture so movement/smoothing
+    // coverage remains independent from retired server/room lifecycle behaviour.
+    const restarted=await startRetainedFixture();
+    assert.equal(restarted,true,"zero-server regression must be able to reseed the preserved Spy engine after its lazy owners have loaded");
+    await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerSpecialModes?.active?.state)&&document.body.dataset.specialMode==="sizzler-saboteurs");
+    await page.waitForTimeout(120);
+    const retainedState=await page.evaluate(()=>({active:Boolean(window.CCGLostSizzlerSpecialModes?.active?.state),specialMode:document.body.dataset.specialMode||"",controller:document.body.dataset.modeController||"",playMode:typeof playMode==="undefined"?"":String(playMode)}));
+    assert.equal(retainedState.active,true,`preserved Spy engine fixture must remain active after zero-server lifecycle settles: ${JSON.stringify(retainedState)}`);
+  }
 
   const fixture=await page.evaluate(()=>{
     const match=window.CCGLostSizzlerSpecialModes.active.state,model=match.players.find(row=>String(row.id)===String(p1.id))||match.players[0],dirs=[{dx:1,dy:0,code:"ArrowRight",axis:"x",sign:1},{dx:-1,dy:0,code:"ArrowLeft",axis:"x",sign:-1},{dx:0,dy:1,code:"ArrowDown",axis:"y",sign:1},{dx:0,dy:-1,code:"ArrowUp",axis:"y",sign:-1}],blocked=(x,y)=>(host.blockingDecor||[]).some(item=>Number(item.x)===x&&Number(item.y)===y);
