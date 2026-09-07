@@ -74,4 +74,10 @@ host.v142WardenAftershock={until:30000};tick();
 assert.equal(host.v142WardenAftershock.v142Tempered,true,"Ward Temper should mark the active Aftershock as shortened");
 assert.equal(host.v142WardenAftershock.until,22000,"Ward Temper should shorten a future Aftershock by eight seconds");
 
+run.floor=5;run.floorComplete=false;delete host.v142WardenDomain;death.alive=true;boss.hp=boss.maxHp=20;boss.armor=boss.maxArmor=4;run.v142SealFragments=10;
+context.startWorld();tick();
+assert.equal(boss.maxHp,19,"Master Seal should counter one prior debt stack plus the live Floor 5 corruption stack");
+assert.equal(boss.maxArmor,3,"Master Seal should strip three armour after live corruption is applied");
+assert.equal(context.window.CCGProgression.effectiveSight(player,run),8,"Seal Sense should add one sight tile outside Static Veil");
+
 console.log("PASS v10-42 Warden domain + Seal progression contract");
