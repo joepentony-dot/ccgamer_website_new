@@ -8,6 +8,9 @@
   const STARTUP_RETRY_DELAYS=[0,16,64,160];
   const state={
     installed:false,
+    inheritedGate:false,
+    inheritedGateProbes:0,
+    inheritedGateRejects:0,
     unsupported:false,
     blockedWrites:0,
     maintenanceTicks:0,
@@ -26,11 +29,42 @@
     return typeof boundary==="function"&&boundary.__ccgV141ModeFrameBoundary===true?boundary:null
   }
 
+  function inheritedGateActive(){
+    if(!state.inheritedGate)return false;
+    const boundary=authoritativeBoundary();
+    let descriptor=null;
+    try{descriptor=Object.getOwnPropertyDescriptor(window,"update")}catch(_){}
+    const live=Boolean(boundary&&descriptor&&descriptor.configurable===false&&window.update===boundary);
+    if(!live)state.inheritedGate=false;
+    return live
+  }
+
   function gateActive(){
+    if(inheritedGateActive())return true;
     if(!state.installed||typeof getter!=="function"||typeof setter!=="function")return false;
     let descriptor=null;
     try{descriptor=Object.getOwnPropertyDescriptor(window,"update")}catch(_){}
     return Boolean(descriptor&&descriptor.get===getter&&descriptor.set===setter&&descriptor.configurable===false)
+  }
+
+  function acceptInheritedGate(descriptor,boundary){
+    if(!descriptor||descriptor.configurable!==false||typeof boundary!=="function"||window.update!==boundary)return false;
+    state.inheritedGateProbes++;
+    const probe=function lostSizzlerV142InheritedSealProbe(){};
+    let after=null;
+    try{window.update=probe}catch(_){}
+    try{after=window.update}catch(_){after=null}
+    if(after===boundary){
+      controllerBoundary=boundary;
+      state.inheritedGate=true;
+      state.installed=true;
+      state.unsupported=false;
+      clearStartupTimers();
+      return true
+    }
+    state.inheritedGateRejects++;
+    try{if(after===probe)window.update=boundary}catch(_){}
+    return false
   }
 
   function install(){
@@ -42,6 +76,7 @@
     try{descriptor=Object.getOwnPropertyDescriptor(window,"update")}catch(_){}
     if(descriptor&&descriptor.configurable===false){
       if(descriptor.get===getter&&descriptor.set===setter){state.installed=true;return true}
+      if(acceptInheritedGate(descriptor,controllerBoundary))return true;
       state.unsupported=true;return false
     }
 
@@ -117,7 +152,7 @@
   },{once:true});
 
   window.CCGLostSizzlerV142R2ControllerOwnerSeal={
-    install,gateActive,authoritativeBoundary,maintainCombatIntegrity,
+    install,gateActive,inheritedGateActive,authoritativeBoundary,maintainCombatIntegrity,
     get state(){return state}
   };
 })();
