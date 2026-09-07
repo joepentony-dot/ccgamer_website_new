@@ -57,7 +57,7 @@
     try{
       for(const [file,marker] of modules)await loadOne(file,marker);
       state.ready=true;document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
-      const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five-depth campaign systems loaded in verified order. Collectible games are shuffled into a seeded random order for every run.";
+      const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five new dungeon floors are loaded in verified order. RPG attributes, relics, global Keys, Banishment Essence and rescued C64 games persist between depths; collectible games are shuffled into a seeded random order for every run.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
     }catch(error){
       state.failed=true;state.error=String(error?.message||error);document.body.dataset.v142BootstrapReady="failed";
