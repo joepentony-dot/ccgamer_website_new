@@ -26,7 +26,7 @@ try{
   const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141PostPlaytestStability)&&Boolean(document.getElementById("solo-btn")));
-  await page.waitForFunction(()=>!window.CCGLostSizzlerV142Bootstrap||window.CCGLostSizzlerV142Bootstrap.ready===true||window.CCGLostSizzlerV142Bootstrap.failed===true);
+  await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true);
 
   const zeroServer=await page.evaluate(()=>Boolean(window.CCGLostSizzlerV142ZeroServerRelease?.enabled&&window.CCGLostSizzlerV142ZeroServerRelease?.onlineMultiplayer===false));
 
@@ -94,7 +94,7 @@ try{
 
   await page.reload({waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141PostPlaytestStability)&&Boolean(document.getElementById("solo-btn")));
-  await page.waitForFunction(()=>!window.CCGLostSizzlerV142Bootstrap||window.CCGLostSizzlerV142Bootstrap.ready===true||window.CCGLostSizzlerV142Bootstrap.failed===true);
+  await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true);
   await page.click("#solo-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof mode!=="undefined"&&mode==="playing");
   const fireRecovery=await page.evaluate(()=>{
