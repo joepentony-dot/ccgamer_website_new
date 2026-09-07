@@ -6,18 +6,32 @@
 
   const ONLINE_BUTTON_IDS=["create-btn","horde-mode-btn","saboteurs-mode-btn","join-btn"];
   const ONLINE_ONLY_SELECTORS=[".online-howto",".join-row","#online-lobby"];
+  const RELEASE_STYLE_ID="v142-zero-server-release-style";
   const RELEASE_BLURB="A five-floor pixel dungeon crawl filled with shifting objectives, rare loot, hidden routes, dangerous events and things in the dark that ordinary weapons cannot finish.";
   const RELEASE_MODE_LABEL_HTML="<span>✦</span> CHOOSE YOUR ADVENTURE <span>✦</span>";
   const RELEASE_NOTE="V10.42 uses a zero-server-cost release model: Solo, Tutorial and 2P Split Screen run locally in your browser. Supabase remains available for CCG account features such as the Weekly High-Score Vault, but core gameplay never requires an online multiplayer server.";
-  const state={enabled:true,removedButtons:[],hiddenPanels:[],networkLocked:false,lastReason:"",enforcementPasses:0};
+  const state={enabled:true,removedButtons:[],hiddenPanels:[],networkLocked:false,lastReason:"",enforcementPasses:0,releaseStyleReady:false};
+
+  function ensureReleaseStyle(){
+    let style=document.getElementById(RELEASE_STYLE_ID);
+    if(!style){
+      style=document.createElement("style");
+      style.id=RELEASE_STYLE_ID;
+      style.textContent="#create-btn,#horde-mode-btn,#saboteurs-mode-btn,#join-btn,.online-howto,.join-row,#online-lobby{display:none!important;}";
+      (document.head||document.documentElement).appendChild(style);
+    }
+    state.releaseStyleReady=true;
+    return style;
+  }
 
   function hideNode(node){
     if(!node)return false;
-    node.hidden=true;
-    node.classList?.add?.("hidden");
-    node.setAttribute?.("aria-hidden","true");
-    node.style.display="none";
-    return true;
+    let changed=false;
+    if(!node.hidden){node.hidden=true;changed=true}
+    if(!node.classList?.contains?.("hidden")){node.classList?.add?.("hidden");changed=true}
+    if(node.getAttribute?.("aria-hidden")!=="true"){node.setAttribute?.("aria-hidden","true");changed=true}
+    if(node.style.display!=="none"){node.style.display="none";changed=true}
+    return changed;
   }
 
   function setTextIfChanged(node,value){
@@ -34,13 +48,20 @@
 
   function retireOnlineEntryPoints(){
     state.enforcementPasses+=1;
+    ensureReleaseStyle();
     for(const id of ONLINE_BUTTON_IDS){
       const node=document.getElementById(id);
-      if(node&&hideNode(node)&&!state.removedButtons.includes(id))state.removedButtons.push(id);
+      if(node){
+        hideNode(node);
+        if(!state.removedButtons.includes(id))state.removedButtons.push(id);
+      }
     }
     for(const selector of ONLINE_ONLY_SELECTORS){
       const node=document.querySelector(selector);
-      if(node&&hideNode(node)&&!state.hiddenPanels.includes(selector))state.hiddenPanels.push(selector);
+      if(node){
+        hideNode(node);
+        if(!state.hiddenPanels.includes(selector))state.hiddenPanels.push(selector);
+      }
     }
 
     setTextIfChanged(document.querySelector(".menu-blurb"),RELEASE_BLURB);
