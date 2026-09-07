@@ -1,0 +1,77 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import vm from "node:vm";
+
+const source=fs.readFileSync(new URL("../js/v10-42-warden-domain-progression.js",import.meta.url),"utf8");
+let tick=null;
+const rooms=[
+  {id:0,x:0,y:0,w:4,h:4,depth:0},
+  {id:1,x:10,y:10,w:8,h:8,depth:5},
+  {id:2,x:25,y:10,w:8,h:8,depth:9},
+  {id:3,x:40,y:10,w:8,h:8,depth:12}
+];
+const map=Array.from({length:60},()=>Array(60).fill(0));
+const world={rooms,map,startRoomId:0,exitRoomId:3};
+const roomAt=(w,x,y)=>{const room=w.rooms.find(q=>x>=q.x&&x<=q.x+q.w&&y>=q.y&&y<=q.y+q.h);return room?room.id:-1};
+const player={id:"p1",x:1,y:1,health:8,maxHealth:10,armor:2};
+const count={id:"count",x:13,y:13,x0:13,y0:13,awake:true};
+const death={id:"death",x:14,y:14,x0:14,y0:14,alive:true,deathStalker:true};
+const generator={id:"gen1",x:15,y:15,roomId:1,alive:true,powered:true,spawnCooldown:5000};
+const boss={id:"boss",x:28,y:13,alive:true,keyGuardian:true,hp:20,maxHp:20,armor:4,maxArmor:4};
+const host={enemies:[death,boss],stalker:count,generators:[generator],doors:[{id:"secret",x:18,y:13,roomId:1,locked:true,type:"secret",hidden:true}],chests:[],blockingDecor:[],revision:0};
+const run={floor:2,stats:{deaths:0},alert:0,floorComplete:false};
+const UI={quickKeyring:{textContent:"KEYS 0/3"},quickSpecials:{textContent:"WARD BREAK 1"},floorSummary:{innerHTML:""}};
+const context={
+  console,window:{},document:{querySelector:()=>null,querySelectorAll:()=>[]},performance:{now:()=>10000},
+  setInterval:fn=>(tick=fn,1),clearInterval:()=>{},addEventListener:()=>{},host,world,run,p1:player,mode:"playing",UI,
+  S:{sfx:()=>{}},showToast:()=>{},broadcastWorld:()=>{},sync:()=>{},resetCamp:()=>{},reveal:()=>{},markRoomVisit:()=>{},
+  damageEnemy:(enemy,power)=>{enemy.hp-=power;return power},hitStalker:()=>true,openChest:(p,chest)=>{chest.active=false;return true},
+  hurtPlayer:(p)=>{run.stats.deaths++;p.health=p.maxHealth;p.x=1;p.y=1;return true},floorComplete:()=>{run.floorComplete=true;return true},startWorld:()=>true
+};
+context.window.CCG_CONFIG={maxFloors:5,stalker:{name:"Count Loadula"}};
+context.window.CCGProgression={effectiveSight:()=>7};
+context.window.CCGWorld={roomAt};
+vm.createContext(context);
+vm.runInContext(source,context,{filename:"v10-42-warden-domain-progression.js"});
+
+assert.equal(host.v142WardenDomain?.roomId,1,"Warden corruption should install around the supernatural threat");
+assert.equal(host.v142WardenDomain?.profileId,"iron-surge","Floor 2 should use Iron Surge corruption");
+
+death.alive=false;death.v142WardenRewarded=true;death.v142WardenDefeated=true;
+host.chests.push({id:"cache",active:true,v142WardenCache:true,v142WardenSource:"death"});
+tick();
+assert.equal(run.v142SealFragments,1,"First floor Warden kill should award the first Seal Fragment");
+assert.equal(generator.v142WardenSuppressed,true,"Cleansing should suppress the bound generator");
+assert.ok(generator.spawnCooldown>=1e11,"Suppressed generator should use a finite long cooldown");
+assert.equal(host.doors[0].locked,false,"Cleansing should unlock an eligible optional shortcut");
+assert.equal(host.v142WardenCheckpoint?.active,true,"Cleansing should create an in-floor recovery anchor");
+
+context.openChest(player,host.chests[0]);
+assert.equal(run.v142SealFragments,2,"Warden Cache should award the second floor Seal Fragment");
+assert.equal(run.v142WardenFloors["2"].cacheFragmentAwarded,true,"Cache fragment claim should persist in run state");
+
+const checkpoint={...host.v142WardenCheckpoint};
+player.x=1;player.y=1;
+context.hurtPlayer(player,99);
+assert.deepEqual({x:player.x,y:player.y},{x:checkpoint.x,y:checkpoint.y},"Normal death should relocate the respawn to the cleansed Warden anchor");
+
+run.floor=3;run.floorComplete=false;delete host.v142WardenDomain;
+death.alive=true;death.v142WardenRewarded=false;death.v142WardenDefeated=false;
+context.floorComplete("contract");
+assert.deepEqual([...run.v142SkippedWardenFloors],[3],"Leaving an available Warden unresolved should record one debt floor");
+
+run.floor=4;run.floorComplete=false;delete host.v142WardenDomain;
+death.alive=true;boss.hp=boss.maxHp=20;boss.armor=boss.maxArmor=4;
+context.startWorld();tick();
+assert.equal(boss.maxHp,22,"One skipped Warden floor should add 10% boss maximum HP");
+assert.equal(boss.maxArmor,5,"One skipped Warden floor should add one boss armour");
+
+run.v142SealFragments=6;
+const testGuardian={id:"guardian-test",alive:true,keyGuardian:true,hp:20,maxHp:20,armor:0,maxArmor:0};
+host.enemies.push(testGuardian);
+assert.equal(context.damageEnemy(testGuardian,2),3,"Ward Temper should add +1 damage to major guardians at six fragments");
+host.v142WardenAftershock={until:30000};tick();
+assert.equal(host.v142WardenAftershock.v142Tempered,true,"Ward Temper should mark the active Aftershock as shortened");
+assert.equal(host.v142WardenAftershock.until,22000,"Ward Temper should shorten a future Aftershock by eight seconds");
+
+console.log("PASS v10-42 Warden domain + Seal progression contract");
