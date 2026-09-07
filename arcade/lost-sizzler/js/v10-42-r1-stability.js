@@ -8,6 +8,7 @@
     combatTimerRepairs:0,
     staleProjectilesCleared:0,
     invalidProjectilesCleared:0,
+    controllerBoundaryPreserved:0,
     shopCounterRepairs:0,
     chestRewardRepairs:0,
     chestLootRecoveries:0,
@@ -17,6 +18,15 @@
   const now=()=>performance.now();
   const safeNumber=value=>Number.isFinite(Number(value))?Number(value):0;
   const appliedChestLoot=new WeakSet();
+
+  function authoritativeControllerBoundary(){
+    try{
+      const seal=window.CCGLostSizzlerV142R2ControllerOwnerSeal,locked=seal?.runtimeBoundaryStatus?.().locked;
+      if(typeof locked==="function"&&locked.__ccgV141ModeFrameBoundary===true)return locked;
+    }catch(_){}
+    const boundary=window.CCGLostSizzlerModeRuntime?.state?.sharedFrameBoundary;
+    return typeof boundary==="function"&&boundary.__ccgV141ModeFrameBoundary===true?boundary:null
+  }
 
   function repairCpuCookIdentity(){
     try{
@@ -80,7 +90,13 @@
   }catch(_){}
 
   try{
-    if(typeof update==="function"&&!update.__ccgV142R1CombatIntegrity){
+    const controllerBoundary=authoritativeControllerBoundary();
+    if(controllerBoundary){
+      const seal=window.CCGLostSizzlerV142R2ControllerOwnerSeal;
+      if(window.update!==controllerBoundary)seal?.restoreOwnership?.();
+      if(window.update!==controllerBoundary)window.update=controllerBoundary;
+      if(window.update===controllerBoundary)diagnostics.controllerBoundaryPreserved++;
+    }else if(typeof update==="function"&&!update.__ccgV142R1CombatIntegrity){
       const baseUpdate=update;
       update=function(dt){repairCombatTimers();repairProjectilePool();return baseUpdate(dt)};
       update.__ccgV142R1CombatIntegrity=true;update.__ccgOriginal=baseUpdate;
@@ -198,5 +214,5 @@
   }catch(_){}
 
   repairCpuCookIdentity();
-  window.CCGLostSizzlerV142R1Stability={diagnostics,repairCombatTimers,repairProjectilePool,repairAlphabetOrder,shopPurchaseCount};
+  window.CCGLostSizzlerV142R1Stability={diagnostics,repairCombatTimers,repairProjectilePool,repairAlphabetOrder,shopPurchaseCount,authoritativeControllerBoundary};
 })();
