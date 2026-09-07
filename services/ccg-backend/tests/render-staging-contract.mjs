@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { promises as fs } from 'node:fs';
 
 const blueprint = await fs.readFile(new URL('../deploy/render-staging.yaml', import.meta.url), 'utf8');
+const databaseSource = await fs.readFile(new URL('../src/db.mjs', import.meta.url), 'utf8');
 const rootRender = await fs.readFile(new URL('../../../render.yaml', import.meta.url), 'utf8');
 
 assert.match(blueprint, /name:\s+ccg-backend-staging\b/);
@@ -14,6 +15,11 @@ assert.match(blueprint, /healthCheckPath:\s+\/ready\b/);
 assert.match(blueprint, /key:\s+CCG_BIND_HOST\s+value:\s+0\.0\.0\.0/m);
 assert.match(blueprint, /key:\s+DATABASE_URL\s+fromDatabase:\s+name:\s+ccg-backend-staging-db\s+property:\s+connectionString/m);
 assert.match(blueprint, /key:\s+CCG_DB_SSL\s+value:\s+disable/m);
+assert.match(blueprint, /key:\s+CCG_DB_POOL_MAX\s+value:\s+"4"/m, 'Free staging must cap the backend Postgres pool at four clients.');
+assert.match(blueprint, /key:\s+CCG_DB_IDLE_TIMEOUT_MS\s+value:\s+"10000"/m, 'Free staging must release idle Postgres clients quickly.');
+assert.match(databaseSource, /process\.env\.CCG_DB_POOL_MAX/, 'Database pool size must be configurable without code changes.');
+assert.match(databaseSource, /Math\.min\(20, Math\.max\(1, parsed\)\)/, 'Database pool configuration must be bounded to a safe finite range.');
+assert.match(databaseSource, /poolMax,/, 'Database diagnostics must expose the configured client cap.');
 assert.match(blueprint, /key:\s+CCG_AUTH_MODE\s+value:\s+local/m);
 assert.match(blueprint, /CCG_LOCAL_AUTH_PRIVATE_JWK_FILE[\s\S]*\/etc\/secrets\/ccg-auth-private\.jwk/);
 assert.match(blueprint, /CCG_LOCAL_AUTH_PUBLIC_JWK_FILE[\s\S]*\/etc\/secrets\/ccg-auth-public\.jwk/);
@@ -41,4 +47,4 @@ assert.doesNotMatch(blueprint, /RESEND_API_KEY|PAYPAL_CLIENT_SECRET|PAYPAL_CLIEN
 assert.doesNotMatch(blueprint, /"d"\s*:/, 'No private JWK material may be committed in the Blueprint.');
 assert.doesNotMatch(rootRender, /ccg-backend-staging/, 'The staging backend must remain outside the existing root Render Blueprint.');
 
-console.log('CCG Render staging contract passed: deployment is isolated, manual, local-auth capable, adopts the provisioned private database, is secret-file based, and all write/commerce/realtime feature switches remain disabled initially.');
+console.log('CCG Render staging contract passed: deployment is isolated, manual, local-auth capable, adopts the provisioned private free database, caps client pressure, is secret-file based, and all write/commerce/realtime feature switches remain disabled initially.');
