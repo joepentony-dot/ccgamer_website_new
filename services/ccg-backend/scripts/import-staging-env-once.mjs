@@ -73,10 +73,30 @@ function decodeTable(value, label) {
   return rows;
 }
 
+function prepareTableRows(table, rows) {
+  if (table !== 'ccq_weekly_attempts') return rows;
+
+  return rows.map((row, index) => {
+    if (!row || typeof row !== 'object' || Array.isArray(row)) {
+      throw new Error(`Staging migration payload ccq_weekly_attempts[${index}] must be an object.`);
+    }
+    if (!Array.isArray(row.ghost_path)) {
+      throw new Error(`Staging migration payload ccq_weekly_attempts[${index}].ghost_path must be a JSON array.`);
+    }
+
+    return Object.freeze({
+      ...row,
+      // node-postgres treats JavaScript arrays as PostgreSQL arrays. Serialize this JSONB
+      // array explicitly so PostgreSQL receives an actual JSON array, not a PG array literal.
+      ghost_path: JSON.stringify(row.ghost_path),
+    });
+  });
+}
+
 export function buildMigrationBundleFromEnvironment(env = process.env) {
   const tables = {};
   for (const [table, envName] of Object.entries(TABLE_ENV)) {
-    tables[table] = decodeTable(env[envName], envName);
+    tables[table] = prepareTableRows(table, decodeTable(env[envName], envName));
   }
   return Object.freeze({
     bundle_version: 1,
