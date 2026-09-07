@@ -1,44 +1,6 @@
 (function () {
-  const CCG_PROVIDER = 'ccg';
   const SUPABASE_CONFIG_FILE = 'ccg-supabase-config.js';
   const SUPABASE_CLIENT_FILE = 'ccg-supabase-client.js';
-
-  function clean(value) {
-    return String(value ?? '').trim();
-  }
-
-  function isLoopbackHost(hostname) {
-    const host = clean(hostname).toLowerCase();
-    return host === 'localhost' || host === '127.0.0.1' || host === '::1';
-  }
-
-  function readLocalPilotConfig() {
-    try {
-      const url = new URL(window.location.href);
-      if (!isLoopbackHost(url.hostname)) return null;
-      if (clean(url.searchParams.get('ccgAuthProvider')).toLowerCase() !== CCG_PROVIDER) return null;
-
-      return {
-        provider: CCG_PROVIDER,
-        ccgBaseUrl: clean(url.searchParams.get('ccgAuthBaseUrl'))
-      };
-    } catch (_error) {
-      return null;
-    }
-  }
-
-  function readAuthRuntimeConfig() {
-    const explicit = window.ccgAuthRuntimeConfig &&
-      typeof window.ccgAuthRuntimeConfig === 'object' &&
-      !Array.isArray(window.ccgAuthRuntimeConfig)
-      ? window.ccgAuthRuntimeConfig
-      : null;
-
-    const source = explicit || readLocalPilotConfig() || {};
-    return {
-      provider: clean(source.provider).toLowerCase() === CCG_PROVIDER ? CCG_PROVIDER : 'supabase'
-    };
-  }
 
   function currentScriptBaseUrl() {
     const source = document.currentScript?.src || '/js/ccg-auth-supabase-loader.js';
@@ -71,12 +33,12 @@
     });
   }
 
-  const runtime = readAuthRuntimeConfig();
-  if (runtime.provider === CCG_PROVIDER) {
-    window.__ccgAuthSupabaseBootstrapSuppressed = true;
-    window.CCG_AUTH_SUPABASE_READY = Promise.resolve(false);
-    return;
-  }
+  // Production account authority is Supabase. The temporary CCG/Render auth
+  // pilot is deliberately retired from browser selection so runtime config or
+  // query parameters cannot redirect login, registration or password recovery
+  // away from the existing Supabase project.
+  window.__ccgAuthProviderLocked = 'supabase';
+  window.__ccgAuthSupabaseBootstrapSuppressed = false;
 
   const baseUrl = currentScriptBaseUrl();
   const configUrl = new URL(SUPABASE_CONFIG_FILE, baseUrl).href;
