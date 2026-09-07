@@ -42,13 +42,21 @@
     const subtitle=document.querySelector(".v102-brand p"),badge=document.querySelector(".build-badge");
     if(!subtitle&&!badge)return;
     window.__CCG_LOST_SIZZLER_V142_BUILD_GUARD__=true;
-    const observer=new MutationObserver(()=>{
+    let frame=0;
+    const enforce=()=>{
+      frame=0;
       const currentSubtitle=document.querySelector(".v102-brand p"),currentBadge=document.querySelector(".build-badge");
       if((currentSubtitle&&currentSubtitle.textContent!=="THE LOST SIZZLER — V10.42")||(currentBadge&&currentBadge.textContent!==`BUILD ${BUILD.toUpperCase()}`))stampBuild();
-    });
+    };
+    const schedule=()=>{
+      if(frame)return;
+      frame=requestAnimationFrame(enforce);
+    };
+    const observer=new MutationObserver(schedule);
     if(subtitle)observer.observe(subtitle,{childList:true,characterData:true,subtree:true});
     if(badge)observer.observe(badge,{childList:true,characterData:true,subtree:true});
     state.buildIdentityGuard=observer;
+    window.addEventListener("pagehide",()=>{observer.disconnect();if(frame)cancelAnimationFrame(frame)},{once:true});
   }
 
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>{stampBuild();installBuildIdentityGuard();queueMicrotask(stampBuild)},{once:true});
