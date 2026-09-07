@@ -19,6 +19,16 @@ try{
   const context=await browser.newContext({viewport:{width:1600,height:900}}),page=await context.newPage();page.setDefaultTimeout(45000);const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&Boolean(window.CCGLostSizzlerV141R50MultiplayerRecoveryUX));
+  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142Bootstrap));
+  await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap.ready===true||window.CCGLostSizzlerV142Bootstrap.failed===true);
+  const releaseBoundary=await page.evaluate(()=>({
+    bootstrapReady:Boolean(window.CCGLostSizzlerV142Bootstrap?.ready),
+    bootstrapFailed:Boolean(window.CCGLostSizzlerV142Bootstrap?.failed),
+    zeroServer:Boolean(window.CCGLostSizzlerV142ZeroServerRelease?.enabled&&window.CCGLostSizzlerV142ZeroServerRelease?.onlineMultiplayer===false)
+  }));
+  assert.equal(releaseBoundary.bootstrapFailed,false,"V10.42 ordered bootstrap must settle successfully before the retained r50 multiplayer recovery fixture begins");
+  assert.equal(releaseBoundary.bootstrapReady,true,"V10.42 ordered bootstrap must be ready before the retained r50 multiplayer recovery fixture begins");
+  assert.equal(releaseBoundary.zeroServer,true,"r50 must exercise the preserved multiplayer recovery UX only after the production zero-server policy has settled");
   await page.locator("#solo-btn").click({noWaitAfter:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof p1!=="undefined"&&Boolean(p1));
 
@@ -55,12 +65,23 @@ try{
   await page.evaluate(async()=>{const api=window.CCGLostSizzlerV141R50MultiplayerRecoveryUX;await api.returnToOnlineMenu()});
   await page.waitForFunction(()=>typeof mode!=="undefined"&&mode==="menu");
   await page.waitForTimeout(150);
-  const returned=await page.evaluate(()=>({code:document.getElementById("room-code")?.value,active:document.activeElement?.id,endAction:Boolean(document.getElementById("ccg-r50-online-return"))}));
+  const returned=await page.evaluate(()=>{
+    const join=document.getElementById("join-btn");
+    return{
+      code:document.getElementById("room-code")?.value,
+      active:document.activeElement?.id,
+      endAction:Boolean(document.getElementById("ccg-r50-online-return")),
+      joinVisible:Boolean(join&&!join.hidden&&getComputedStyle(join).display!=="none"),
+      zeroServer:Boolean(window.CCGLostSizzlerV142ZeroServerRelease?.enabled&&window.CCGLostSizzlerV142ZeroServerRelease?.onlineMultiplayer===false)
+    }
+  });
   assert.equal(returned.code,"R50UX","room code must survive the canonical return-to-menu path");
-  assert.equal(returned.active,"join-btn","rejoin action should receive focus");
+  assert.equal(returned.zeroServer,true,"V10.42 zero-server policy must remain active after the legacy recovery return path");
+  assert.equal(returned.joinVisible,false,"retired Join Online Room control must remain hidden in the V10.42 zero-server release");
+  assert.notEqual(returned.active,"join-btn","the hidden retired Join Online Room control must not steal focus in V10.42");
   assert.equal(returned.endAction,true,"online result action must be installed");
   assert.deepEqual(errors,[],`r50 browser test must not raise page errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 r50 multiplayer fallback, recovery and room-preserving return UX passed in Chromium.");
+  console.log("Lost Sizzler V10.41 r50 multiplayer fallback and recovery UX remains safely preserved under the V10.42 zero-server release.");
   await context.close();
 }finally{
   await browser.close().catch(()=>{});for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
