@@ -72,9 +72,17 @@
       toast("FIELD WARD-BREAK CHARGE EARNED",`${profile.name}: ${profile.reward} No Essence was spent. Press B near a sealed Warden to break its immunity, then finish it with normal weapons.`,"gold",10500);sfx("shrine");broadcast();syncNow();return true;
     }
     row.pending=true;
-    if(!row.inventoryWarningShown){row.inventoryWarningShown=true;toast(`${profile.name} READY — INVENTORY FULL`,`The field charge has been earned but cannot be stored yet. Free an inventory slot; the reward will be delivered automatically once there is room.`,"red",9000)}
-    if(wardenResolved(n,r)&&!row.resolvedWarningShown){row.resolvedWarningShown=true;toast("FIELD CHARGE STILL RESERVED","This floor's Warden is already cleansed, but the earned route reward is still reserved for the run. Free a slot before leaving if you want the charge carried forward.","cyan",8000)}
+    if(!row.inventoryWarningShown){row.inventoryWarningShown=true;toast(`${profile.name} READY — INVENTORY FULL`,`The field charge has been earned but cannot be stored yet. Free an inventory slot; the reward stays reserved in run state and will be delivered automatically on this or a later floor once there is room.`,"red",9500)}
+    if(wardenResolved(n,r)&&!row.resolvedWarningShown){row.resolvedWarningShown=true;toast("FIELD CHARGE STILL RESERVED","This floor's Warden is already cleansed, but the earned route reward remains reserved for the run and will carry into later depths until it can be delivered.","cyan",8500)}
     return false;
+  }
+  function pendingRows(r=R()){
+    r=init(r);if(!r)return[];return Object.values(r.v142WardChargeRoutes||{}).filter(row=>row&&Number(row.floor)>1&&row.unlocked&&row.pending&&!row.delivered).sort((a,b)=>Number(a.floor)-Number(b.floor));
+  }
+  function deliverPendingRoutes(p=P(),r=R()){
+    if(!p||!r)return 0;let delivered=0;
+    for(const row of pendingRows(r))if(deliverRoute(Number(row.floor),p,r))delivered++;
+    return delivered;
   }
 
   function routeStatus(n=floor(),r=R()){
@@ -87,18 +95,22 @@
     if(n===4)return"WARD ROUTE: INVOKE SHRINE";
     return`WARD ROUTE: SEALS ${sealCount(r)}/6`;
   }
+  function reservedStatus(r=R(),current=floor(r)){
+    const floors=pendingRows(r).map(row=>Number(row.floor)).filter(n=>n!==Number(current));return floors.length?`RESERVED F${floors.join("/")}`:"";
+  }
   function refreshReadout(){
     try{
-      if(!UI?.quickSpecials)return;let text=String(UI.quickSpecials.textContent||"").replace(/\s*•\s*WARD ROUTE:[^•]*/g,"").trim(),status=routeStatus();if(status)text+=`${text?" • ":""}${status}`;UI.quickSpecials.textContent=text;
+      if(!UI?.quickSpecials)return;let text=String(UI.quickSpecials.textContent||"").replace(/\s*•\s*WARD ROUTE:[^•]*/g,"").replace(/\s*•\s*RESERVED F[0-9/]+/g,"").trim(),status=routeStatus(),reserved=reservedStatus();
+      if(status)text+=`${text?" • ":""}${status}`;if(reserved)text+=`${text?" • ":""}${reserved}`;UI.quickSpecials.textContent=text;
     }catch(_){}
   }
   function scan(){
     const r=init(),h=H(),p=P(),n=floor(r);if(!r||!h||!p||!["playing","inventory","paused"].includes(M())){refreshReadout();return}
-    try{unlockRoute(n,h,r);deliverRoute(n,p,r);refreshReadout()}catch(error){console.warn("[Lost Sizzler V10.42] Warden charge route tick failed safely",error)}
+    try{deliverPendingRoutes(p,r);unlockRoute(n,h,r);deliverRoute(n,p,r);refreshReadout()}catch(error){console.warn("[Lost Sizzler V10.42] Warden charge route tick failed safely",error)}
   }
 
   if(baseSync)sync=function(...args){const result=baseSync(...args);refreshReadout();return result};
   scan();const timer=setInterval(scan,250);addEventListener("pagehide",()=>clearInterval(timer),{once:true});
 
-  window.CCGLostSizzlerV142WardenChargeRoutes={version:"V10.42 r3",routes:ROUTES,state,conditionMet,unlockRoute,deliverRoute,routeStatus};
+  window.CCGLostSizzlerV142WardenChargeRoutes={version:"V10.42 r3",routes:ROUTES,state,conditionMet,unlockRoute,deliverRoute,deliverPendingRoutes,routeStatus,reservedStatus};
 })();
