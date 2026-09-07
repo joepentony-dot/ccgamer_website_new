@@ -1,0 +1,51 @@
+/* The Lost Sizzler V10.42 r3 — retained Spy inventory presentation seal.
+ *
+ * Public online multiplayer remains retired in V10.42. The retained local Spy
+ * engine is still exercised by internal regression fixtures, and its r32 state
+ * remains the authoritative owner of whether the Spy inventory is open.
+ *
+ * This compatibility seal only reconciles DOM presentation while that retained
+ * mode is internally active. It does not create a network path, acquire the
+ * global update/render loop, or affect Solo, Tutorial or local Split Screen.
+ */
+(()=>{
+  "use strict";
+  if(window.__CCG_LOST_SIZZLER_V142_R3_RETAINED_SPY_INVENTORY_SEAL__)return;
+  window.__CCG_LOST_SIZZLER_V142_R3_RETAINED_SPY_INVENTORY_SEAL__=true;
+
+  const MODE_ID="sizzler-saboteurs";
+  const TICK_MS=40;
+  const state={timer:0,repairs:0,lastOpen:false};
+
+  function retainedSpyActive(){
+    try{return window.CCGLostSizzlerSpecialModes?.active?.type===MODE_ID}catch(_){return false}
+  }
+
+  function reconcile(){
+    const api=window.CCGLostSizzlerV141R32SpyOverhaul;
+    if(!api?.state||!retainedSpyActive())return false;
+    const body=document.body,root=document.getElementById("spy-r32-inventory"),open=Boolean(api.state.inventoryOpen);
+    if(!body||!root)return false;
+    let changed=false;
+    if(open){
+      if(body.dataset.specialMode!==MODE_ID){body.dataset.specialMode=MODE_ID;changed=true}
+      if(body.dataset.spyR32Inventory!=="true"){body.dataset.spyR32Inventory="true";changed=true}
+      if(root.hidden){root.hidden=false;changed=true}
+      if(root.classList.contains("hidden")){root.classList.remove("hidden");changed=true}
+      if(root.getAttribute("aria-hidden")==="true"){root.setAttribute("aria-hidden","false");changed=true}
+    }else if(body.dataset.spyR32Inventory!=="false"){
+      body.dataset.spyR32Inventory="false";changed=true
+    }
+    if(changed)state.repairs+=1;
+    state.lastOpen=open;
+    return changed
+  }
+
+  state.timer=setInterval(()=>{try{reconcile()}catch(error){console.warn("[Lost Sizzler V10.42 r3] retained Spy inventory reconciliation failed safely",error)}},TICK_MS);
+  addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
+
+  window.CCGLostSizzlerV142R3RetainedSpyInventorySeal=Object.freeze({
+    reconcile,
+    diagnostics:()=>Object.freeze({repairs:state.repairs,lastOpen:state.lastOpen,timerActive:Boolean(state.timer)})
+  });
+})();
