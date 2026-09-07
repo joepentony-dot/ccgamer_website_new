@@ -50,7 +50,7 @@ assert.equal(toasts.filter(row=>/OPTIONAL WARDEN CONTRACT/.test(row.title)).leng
 player.inventory=[{kind:"banishment"}];
 context.updateQuests();
 assert.match(UI.quests.innerHTML,/WARD BREAK READY/,"Carrying a charge should move the contract to Ward Break ready");
-assert.match(UI.quests.innerHTML,/press B in range/i,"Ward Break ready copy should explain the two-stage fight");
+assert.match(UI.quests.innerHTML,/break its immunity with B, then kill it normally/i,"Ward Break ready copy should explain the two-stage fight");
 
 player.inventory=[];
 run.v142WardChargeRoutes["2"].unlocked=true;
