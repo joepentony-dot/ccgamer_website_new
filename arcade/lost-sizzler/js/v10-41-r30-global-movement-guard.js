@@ -254,7 +254,7 @@
         else if(!state.spyOwnerMove)state.spyOwnerMove=window.movePlayer;
         if(!state.spyOwnerHurt)state.spyOwnerHurt=window.hurtPlayer;
         if(typeof state.spyOwnerUpdate==="function"&&window.update!==state.spyOwnerUpdate)window.update=state.spyOwnerUpdate;
-        if(typeof state.spyOwnerMove==="function"&&!chainContains(window.movePlayer,state.spyOwnerMove))window.movePlayer=state.spyOwnerMove;
+        if(typeof state.spyOwnerMove==="function"&&window.movePlayer!==state.spyOwnerMove){window.movePlayer=state.spyOwnerMove;state.ownershipRepairs++}
         if(typeof state.spyOwnerHurt==="function"){
           if(chainContains(window.hurtPlayer,state.spyOwnerHurt)){if(window.hurtPlayer!==state.spyOwnerHurt)state.spyOwnerHurt=window.hurtPlayer}
           else window.hurtPlayer=state.spyOwnerHurt
