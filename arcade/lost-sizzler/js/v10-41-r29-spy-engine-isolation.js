@@ -308,8 +308,18 @@
 
   function ensureMovementOwner(countRecovery=false){
     const current=window.movePlayer;
-    if(ownerChainHas(current,spyMoveOwner))return true;
-    if(typeof current==="function"&&current!==spyMoveOwner){state.baseMove=current;spyMoveOwner.__ccgOriginal=current}
+    if(current===spyMoveOwner)return true;
+    if(!state.isolated){
+      if(ownerChainHas(current,spyMoveOwner)){
+        window.movePlayer=spyMoveOwner;
+        if(countRecovery)state.moveReassertions++;
+        return true;
+      }
+      if(typeof current==="function"){
+        state.baseMove=current;
+        spyMoveOwner.__ccgOriginal=current;
+      }
+    }
     window.movePlayer=spyMoveOwner;
     if(countRecovery)state.moveReassertions++;
     return true;
