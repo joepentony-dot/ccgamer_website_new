@@ -5,7 +5,7 @@
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
   const BUILD="V10.42 r2";
-  const CACHE="20260907r7";
+  const CACHE="20260907r8";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-five-depth-campaign.js","CCGLostSizzlerV142FiveDepthCampaign"],
@@ -18,6 +18,11 @@
   ];
   const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],pendingStartId:"",identityRestamps:0,identityTimers:[]};
   window.CCGLostSizzlerV142Bootstrap=state;
+
+  function setReleaseReady(value){
+    if(document.body)document.body.dataset.releaseReady=value?"true":"false";
+  }
+  setReleaseReady(false);
 
   function stampBuild(){
     const buildMeta=document.querySelector('meta[name="ccg-lost-sizzler-build"]'),cacheMeta=document.querySelector('meta[name="ccg-lost-sizzler-cache"]');
@@ -45,7 +50,7 @@
     for(const timer of state.identityTimers.splice(0))clearTimeout(timer);
   }
 
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>{stampBuild();scheduleIdentityRestamps()},{once:true});
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>{setReleaseReady(false);stampBuild();scheduleIdentityRestamps()},{once:true});
   else{stampBuild();scheduleIdentityRestamps()}
   addEventListener("load",()=>scheduleIdentityRestamps(),{once:true});
   addEventListener("pagehide",clearIdentityRestamps,{once:true});
@@ -98,15 +103,15 @@
   }
 
   async function boot(){
-    stampBuild();
+    setReleaseReady(false);stampBuild();
     try{
       for(const [file,marker] of modules)await loadOne(file,marker);
-      state.ready=true;stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
+      state.ready=true;setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
       const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five new dungeon floors are loaded in verified order. Solo, Tutorial and 2P Split Screen run locally; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
       replayPendingStart();
     }catch(error){
-      state.failed=true;state.error=String(error?.message||error);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="failed";
+      state.failed=true;state.error=String(error?.message||error);setReleaseReady(false);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="failed";
       clearPendingBusy();state.pendingStartId="";
       const note=document.getElementById("menu-note");if(note)note.textContent=`V10.42 startup failed safely: ${state.error}. Refresh before starting a run.`;
       console.error("[Lost Sizzler V10.42] ordered bootstrap failed",error);
