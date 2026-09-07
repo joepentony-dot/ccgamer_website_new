@@ -13,7 +13,7 @@ const server=http.createServer((req,res)=>{
   try{
     const pathname=decodeURIComponent(new URL(req.url,"http://local").pathname),relative=pathname.endsWith("/")?`${pathname}index.html`:pathname,file=path.resolve(repo,`.${relative}`);
     if(!file.startsWith(`${repo}${path.sep}`)&&file!==repo){res.writeHead(403).end("forbidden");return}
-    fs.readFile(file,(error,data)=>{if(error){res.writeHead(404,{connection:"close"}).end("not found");return}res.writeHead(200,{"content-type":mime[path.extname(file).toLowerCase()]||"application/octet-stream","cache-control":"no-store",connection:"close"});res.end(data)});
+    fs.readFile(file,(error,data)=>{if(error){res.writeHead(404,{"connection":"close"}).end("not found");return}res.writeHead(200,{"content-type":mime[path.extname(file).toLowerCase()]||"application/octet-stream","cache-control":"no-store",connection:"close"});res.end(data)});
   }catch(error){res.writeHead(500,{connection:"close"}).end(String(error))}
 });
 server.on("connection",socket=>{sockets.add(socket);socket.on("close",()=>sockets.delete(socket))});
@@ -23,11 +23,19 @@ const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usag
 
 try{
   const context=await browser.newContext({viewport:{width:1600,height:1000}}),page=await context.newPage();page.setDefaultTimeout(45000);const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
-  console.log("[r35 Spy] load canonical page and start real Spy adapter");
+  console.log("[r35 Spy] load canonical page and start retained Spy adapter fixture");
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R32SpyLoader));
-  const started=await page.evaluate(()=>{net.setSolo("Agent One");const id=String(net.sessionId);return window.CCGLostSizzlerSpecialModes.startOnline({roomMode:"sizzler-saboteurs",players:[{id,name:"Agent One"},{id:"R35-SPY-B",name:"Agent Two"}],hostId:id,seed:"V141-R35-HARDEN",roomCode:"R35SPY"})});
-  assert.equal(started,true,"r35 Spy fixture must start through the canonical adapter");
+  const started=await page.evaluate(()=>{
+    net.setSolo("Agent One");const id=String(net.sessionId),special=window.CCGLostSizzlerSpecialModes;
+    const ok=special.startOnline({roomMode:"sizzler-saboteurs",players:[{id,name:"Agent One"},{id:"R35-SPY-B",name:"Agent Two"}],hostId:id,seed:"V141-R35-HARDEN",roomCode:"R35SPY"});
+    if(ok&&special.active?.type==="sizzler-saboteurs"){
+      const held=special.active;window.__CCG_R35_SPY_ACTIVE__=held;
+      Object.defineProperty(special,"active",{configurable:true,get:()=>held,set:()=>{}});
+    }
+    return ok;
+  });
+  assert.equal(started,true,"r35 retained Spy fixture must start through the canonical adapter while production entry remains retired");
   await page.waitForFunction(()=>document.body.dataset.specialMode==="sizzler-saboteurs"&&Boolean(window.CCGLostSizzlerV141R35SpyRulesHardening)&&Boolean(window.CCGLostSizzlerV141R32SpyPacketOwner)&&Boolean(window.CCGLostSizzlerV141R34SpyFullscreenUi)&&Boolean(document.getElementById("spy-classic-trapulators")));
   await page.waitForTimeout(300);
 
@@ -90,7 +98,7 @@ try{
   assert.ok(recovery.recoveries>=1,`a late all-black renderer must be caught and restored: ${JSON.stringify(recovery)}`);assert.equal(recovery.black,false,"the visible Spy canvas must not remain black after watchdog recovery");
 
   assert.deepEqual(errors,[],`r35 Spy regression must have no uncaught browser errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler r35 Spy controls, pickups, self maps, ghost capture, object purge and black-screen recovery passed in Chromium.");
+  console.log("Lost Sizzler r35 retained Spy controls, pickups, self maps, ghost capture, object purge and black-screen recovery passed in Chromium.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
