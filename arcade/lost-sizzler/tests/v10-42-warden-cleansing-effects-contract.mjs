@@ -20,7 +20,7 @@ const makeHost=(floor,{enemySet=[],hazards=[]}={})=>({
   v142WardenCheckpoint:{floor,roomId:1,x:14,y:14,active:true},
   revision:0
 });
-const makeRun=floor=>({floor,alert:60,v142WardenFloors:{[String(floor)]:{cleansed:true}},stats:{}});
+const makeRun=floor=>({floor,alert:60,v142WardenFloors:{[String(floor)]:{resolved:true}},stats:{}});
 
 const context={
   console,
@@ -46,10 +46,30 @@ assert.equal(context.p1.mana,35,"Iron Surge cleansing should restore 25% maximum
 assert.equal(context.world.rooms[1].wardenRefuge,true,"The Warden room should become a refuge landmark");
 assert.equal(context.world.rooms[1].dangerous,false,"The cleansed room should no longer be marked dangerous");
 assert.equal(context.run.v142WardenFloors["2"].refugeEstablished,true,"Refuge state should be recorded in persistent run data");
+assert.equal(context.run.v142WardenFloors["2"].refugeInitialBenefitClaimed,true,"Initial cleansing recovery should be persisted separately from environmental refuge state");
 const floor2LightCount=context.world.wallLights.length,floor2Mana=context.p1.mana;
 tick();
 assert.equal(context.world.wallLights.length,floor2LightCount,"Repeated scans must not duplicate restored lights");
-assert.equal(context.p1.mana,floor2Mana,"Repeated scans must not grant repeated ammunition");
+assert.equal(context.p1.mana,floor2Mana,"Repeated scans must not grant repeated initial ammunition");
+
+// Leaving and later returning gives one useful recovery without consuming it at establishment.
+assert.equal(context.run.v142WardenFloors["2"].refugeRestUsed,undefined,"The return-rest must not be consumed when the refuge is first created");
+context.p1.health=6;context.p1.mana=20;context.p1.x=27;context.p1.y=12;tick();
+assert.equal(context.host.v142RefugeSeenLeaving,true,"Leaving the refuge should arm the one-use return-rest");
+context.p1.x=13;context.p1.y=13;tick();
+assert.equal(context.p1.health,8,"Returning to the refuge should restore two health");
+assert.equal(context.p1.mana,35,"Returning to the refuge should restore 15% maximum ammunition");
+assert.equal(context.run.v142WardenFloors["2"].refugeRestUsed,true,"The return-rest should persist as spent after a useful recovery");
+const spentHealth=5,spentMana=10;context.p1.health=spentHealth;context.p1.mana=spentMana;context.p1.x=27;context.p1.y=12;tick();context.p1.x=13;context.p1.y=13;tick();
+assert.equal(context.p1.health,spentHealth,"A spent refuge must not heal again on a later return");
+assert.equal(context.p1.mana,spentMana,"A spent refuge must not refill ammunition again on a later return");
+
+// A same-floor host/world rebuild recreates environmental refuge state but cannot replay the initial reward.
+context.world=makeWorld();context.host=makeHost(2);context.p1.x=13;context.p1.y=13;context.p1.health=5;context.p1.mana=10;tick();
+assert.equal(context.host.v142CleansedRefuge?.active,true,"Resolved run state should recreate the refuge after a host/world rebuild");
+assert.equal(context.world.wallLights.filter(light=>light.kind==="warden-cleansed").length,2,"A rebuilt resolved floor should restore its environmental lights");
+assert.equal(context.host.traps[0].active,false,"A rebuilt resolved floor should reapply environmental trap suppression");
+assert.equal(context.p1.mana,10,"Persistent initial-benefit state must prevent duplicate Floor 2 ammunition after a rebuild");
 
 // Floor 3: the supernatural pursuit is removed from ordinary enemies only.
 context.world=makeWorld();context.p1=makePlayer();context.run=makeRun(3);context.run.alert=70;
@@ -84,4 +104,4 @@ assert.equal(context.world.wallLights.filter(light=>light.kind==="warden-cleanse
 assert.ok(revealCount>revealsBefore,"Static Veil cleansing should immediately refresh player visibility");
 assert.match(context.host.v142CleansedRefuge.benefit,/stays illuminated/i,"Floor 1 refuge should describe its lasting restored-light benefit");
 
-console.log("PASS v10-42 visible Warden cleansing + refuge effects contract");
+console.log("PASS v10-42 visible Warden cleansing + refuge return-rest contract");
