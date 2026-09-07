@@ -46,6 +46,19 @@ assert.equal(run.v142SealFragments,0,"Defeating an unbound supernatural enemy mu
 assert.equal(run.v142WardenFloors["2"].resolved,false,"Defeating Count Loadula must not resolve a Death-Stalker-owned domain");
 assert.equal(host.v142WardenDomain.active,true,"The bound corruption must remain active when the wrong supernatural enemy dies");
 
+host.enemies=host.enemies.filter(enemy=>enemy!==death);
+delete host.v142WardenDomain;
+context.startWorld();
+assert.equal(host.v142WardenDomain,undefined,"A temporary host rebuild without the bound Warden must not create a replacement domain");
+assert.equal(run.v142WardenFloors["2"].sourceId,"death","A host rebuild must preserve the original Warden source ID");
+assert.equal(run.v142WardenFloors["2"].noWarden,false,"A temporarily absent bound Warden must not be reclassified as a no-Warden floor");
+assert.notEqual(run.v142WardenFloors["2"].sourceId,"count","Count Loadula must never inherit a Death-Stalker-owned domain during rebuild recovery");
+
+host.enemies.unshift(death);
+tick();
+assert.equal(host.v142WardenDomain?.sourceId,"death","When the bound Warden returns after rebuild, its exact domain ownership should be restored");
+assert.equal(host.v142WardenDomain?.roomId,1,"Restored exact-source ownership should recover the original Warden room");
+
 death.alive=false;death.v142WardenRewarded=true;death.v142WardenDefeated=true;
 host.chests.push({id:"cache",active:true,v142WardenCache:true,v142WardenSource:"death"});
 tick();
@@ -91,4 +104,4 @@ assert.equal(boss.maxHp,19,"Master Seal should counter one prior debt stack plus
 assert.equal(boss.maxArmor,3,"Master Seal should strip three armour after live corruption is applied");
 assert.equal(context.window.CCGProgression.effectiveSight(player,run),8,"Seal Sense should add one sight tile outside Static Veil");
 
-console.log("PASS v10-42 Warden domain + exact source ownership + Seal progression contract");
+console.log("PASS v10-42 Warden exact-source persistence + domain + Seal progression contract");
