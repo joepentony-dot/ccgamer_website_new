@@ -16,6 +16,7 @@
 
   const baseIsDeathStalkerEnemy=typeof isDeathStalkerEnemy==="function"?isDeathStalkerEnemy:null;
   const baseHitStalker=typeof hitStalker==="function"?hitStalker:null;
+  const baseDamageEnemy=typeof damageEnemy==="function"?damageEnemy:null;
   const baseItemHelp=typeof itemHelp==="function"?itemHelp:null;
   const baseSync=typeof sync==="function"?sync:null;
   const baseRenderShop=typeof renderShop==="function"?renderShop:null;
@@ -142,8 +143,17 @@
     if(target.hp<=0)finaliseWarden(target,player||currentPlayer(),{baseKill:false});return true;
   }
 
-  if(baseIsDeathStalkerEnemy){
-    isDeathStalkerEnemy=function(enemy){return Boolean(baseIsDeathStalkerEnemy(enemy)&&!broken(enemy)&&!enemy?.v142WardenDefeated)};
+  if(baseDamageEnemy&&baseIsDeathStalkerEnemy){
+    damageEnemy=function(enemy,power,element="energy",attacker=currentPlayer()){
+      if(!enemy?.alive||!baseIsDeathStalkerEnemy(enemy)||!broken(enemy))return baseDamageEnemy(enemy,power,element,attacker);
+      const livePredicate=isDeathStalkerEnemy;
+      try{
+        isDeathStalkerEnemy=function(candidate){return candidate===enemy?false:baseIsDeathStalkerEnemy(candidate)};
+        return baseDamageEnemy(enemy,power,element,attacker);
+      }finally{
+        isDeathStalkerEnemy=livePredicate;
+      }
+    };
   }
 
   banishmentState=function(player){return banishmentStateV142(player)};
