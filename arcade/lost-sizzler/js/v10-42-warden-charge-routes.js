@@ -12,7 +12,7 @@
     2:{id:"capacitor-core",name:"CAPACITOR CORE",objective:"Destroy any monster generator on this depth.",reward:"A ruptured generator yields one field-ready Ward-Break Charge."},
     3:{id:"arena-seal",name:"ARENA SEAL",objective:"Clear both waves of the sealed arena.",reward:"The arena seal condenses into one field-ready Ward-Break Charge."},
     4:{id:"ashen-catalyst",name:"ASHEN CATALYST",objective:"Invoke any shrine on this depth.",reward:"The spent shrine leaves enough residue for one field-ready Ward-Break Charge."},
-    5:{id:"seal-forge",name:"SEAL FORGE",objective:"Reach the Sigil Sanctum with at least 6 Seal Fragments.",reward:"Ward Temper forges one field-ready Ward-Break Charge without consuming Essence."}
+    5:{id:"seal-forge",name:"SEAL FORGE",objective:"Enter Floor 5 carrying at least 6 Seal Fragments.",reward:"Ward Temper forges one field-ready Ward-Break Charge without consuming Essence."}
   };
 
   const baseSync=typeof sync==="function"?sync:null;
@@ -41,7 +41,7 @@
     if(n===2){const g=(h?.generators||[]).find(x=>x&&x.alive===false);return g?.id?`Generator ${g.id} destroyed`:"Monster generator destroyed"}
     if(n===3)return"Sealed arena cleared";
     if(n===4)return"Shrine invoked";
-    if(n===5)return`${sealCount()} Seal Fragments carried into the Sanctum`;
+    if(n===5)return`${sealCount()} Seal Fragments carried into Floor 5`;
     return"Sanctuary Alchemist";
   }
   function wardenResolved(n=floor(),r=R()){
