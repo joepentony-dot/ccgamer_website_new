@@ -26,7 +26,8 @@ try{
   const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerSpecialModes)&&Boolean(window.CCGLostSizzlerModeRuntime));
-  await page.waitForFunction(()=>!window.CCGLostSizzlerV142Bootstrap||window.CCGLostSizzlerV142Bootstrap.ready===true||window.CCGLostSizzlerV142Bootstrap.failed===true);
+  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142Bootstrap));
+  await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap.ready===true||window.CCGLostSizzlerV142Bootstrap.failed===true);
 
   const releaseBoundary=await page.evaluate(()=>{
     const bootstrap=window.CCGLostSizzlerV142Bootstrap||null,zeroServer=window.CCGLostSizzlerV142ZeroServerRelease||null,button=document.getElementById("saboteurs-mode-btn"),style=button?getComputedStyle(button):null;
