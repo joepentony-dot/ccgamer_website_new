@@ -145,6 +145,16 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.55.0
           npx playwright install --with-deps chromium
 
+      - name: Prepare failure artifact name
+        id: artifact
+        shell: bash
+        env:
+          TEST_FILE: ${{ matrix.test }}
+        run: |
+          set -euo pipefail
+          base="$(basename "$TEST_FILE" .mjs)"
+          echo "name=$base" >> "$GITHUB_OUTPUT"
+
       - name: Run browser contract
         shell: bash
         env:
@@ -152,6 +162,8 @@ jobs:
         run: |
           set -euo pipefail
           name="$(basename "$TEST_FILE")"
+          log="$RUNNER_TEMP/lost-sizzler-browser-contract.log"
+          : > "$log"
           attempts=1
           case "$name" in
             v10-6-browser.mjs|v10-28-browser-stability-deterministic.mjs|v10-41-solo-long-session-soak.mjs)
@@ -160,14 +172,25 @@ jobs:
           esac
           for attempt in $(seq 1 "$attempts"); do
             echo "::group::$TEST_FILE (attempt $attempt/$attempts)"
-            if node "$TEST_FILE"; then
+            echo "=== $TEST_FILE attempt $attempt/$attempts ===" >> "$log"
+            if node "$TEST_FILE" 2>&1 | tee -a "$log"; then
               echo "::endgroup::"
               exit 0
             fi
             echo "::endgroup::"
             if [ "$attempt" -lt "$attempts" ]; then
               echo "Browser contract failed on attempt $attempt; retrying on a fresh process: $TEST_FILE"
+              echo >> "$log"
             fi
           done
           echo "::error title=Lost Sizzler browser regression::$TEST_FILE failed after $attempts attempt(s)"
           exit 1
+
+      - name: Upload failing Chromium contract log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lost-sizzler-${{ steps.artifact.outputs.name }}-failure
+          path: ${{ runner.temp }}/lost-sizzler-browser-contract.log
+          if-no-files-found: error
+          retention-days: 7
