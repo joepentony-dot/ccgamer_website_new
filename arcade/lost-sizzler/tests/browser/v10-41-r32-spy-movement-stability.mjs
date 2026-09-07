@@ -63,6 +63,7 @@ try{
       playMode="online";mode="playing";p1.id=id;p1.name="Movement Host";document.body.dataset.runActive="true";
       const match=SAB.createMatch({players:[{id,name:"Movement Host"},{id:"MOVEMENT-GUEST",name:"Movement Guest"}],hostId:id,seed:"R32-MOVEMENT-STABILITY",now:t});
       SAB.beginRound(match,t);
+      window.__CCG_R32_SPY_MATCH__=match;
       Object.defineProperty(special,"active",{configurable:true,writable:true,value:{type:"sizzler-saboteurs",state:match,authoritative:true,cooldowns:new Map(),seed:match.seed}});
       document.body.dataset.specialMode="sizzler-saboteurs";
       runtime.sync("r32 retained zero-server fixture");engine.enterIsolation();
@@ -73,7 +74,7 @@ try{
   }
 
   const fixture=await page.evaluate(()=>{
-    const match=window.CCGLostSizzlerSpecialModes.active.state,model=match.players.find(row=>String(row.id)===String(p1.id))||match.players[0],dirs=[{dx:1,dy:0,code:"ArrowRight",axis:"x",sign:1},{dx:-1,dy:0,code:"ArrowLeft",axis:"x",sign:-1},{dx:0,dy:1,code:"ArrowDown",axis:"y",sign:1},{dx:0,dy:-1,code:"ArrowUp",axis:"y",sign:-1}],blocked=(x,y)=>(host.blockingDecor||[]).some(item=>Number(item.x)===x&&Number(item.y)===y);
+    const match=window.__CCG_R32_SPY_MATCH__||window.CCGLostSizzlerSpecialModes.active?.state,model=match.players.find(row=>String(row.id)===String(p1.id))||match.players[0],dirs=[{dx:1,dy:0,code:"ArrowRight",axis:"x",sign:1},{dx:-1,dy:0,code:"ArrowLeft",axis:"x",sign:-1},{dx:0,dy:1,code:"ArrowDown",axis:"y",sign:1},{dx:0,dy:-1,code:"ArrowUp",axis:"y",sign:-1}],blocked=(x,y)=>(host.blockingDecor||[]).some(item=>Number(item.x)===x&&Number(item.y)===y);
     for(const room of world.rooms||[]){
       for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++){
         for(const d of dirs){
@@ -114,7 +115,7 @@ try{
   await page.keyboard.up(fixture.code);
   await page.waitForTimeout(360);
   const finalState=await page.evaluate(()=>{
-    const match=window.CCGLostSizzlerSpecialModes.active.state,model=match.players.find(row=>String(row.id)===String(p1.id))||match.players[0],owner=window.CCGLostSizzlerV141R32SpyOverhaul,seal=window.CCGLostSizzlerV141R32SpyPacketOwner;
+    const match=window.__CCG_R32_SPY_MATCH__||window.CCGLostSizzlerSpecialModes.active?.state,model=match.players.find(row=>String(row.id)===String(p1.id))||match.players[0],owner=window.CCGLostSizzlerV141R32SpyOverhaul,seal=window.CCGLostSizzlerV141R32SpyPacketOwner;
     return{x:Number(p1.x),y:Number(p1.y),rx:Number(p1.rx),ry:Number(p1.ry),modelX:Number(model.x),modelY:Number(model.y),worldBuilds:Number(owner.state.worldBuilds),moves:Number(owner.state.lastMoveAt||0),visualStepRestores:Number(seal?.state?.visualStepRestores||0),visualFrames:Number(seal?.state?.visualFrames||0)};
   });
 
