@@ -5,15 +5,14 @@
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
   const BUILD="V10.42 r1";
-  const CACHE="20260907r1";
+  const CACHE="20260907r2";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-five-depth-campaign.js","CCGLostSizzlerV142FiveDepthCampaign"],
     ["v10-42-floor-balance.js","CCGLostSizzlerV142FloorBalance"],
     ["v10-42-tutorial-campaign.js","CCGLostSizzlerV142TutorialCampaign"],
     ["v10-42-demo-paywall.js","CCGLostSizzlerV142DemoPaywall"],
-    ["v10-42-multiplayer-state.js","CCGLostSizzlerV142MultiplayerState"],
-    ["v10-42-multiplayer-collect-authority.js","CCGLostSizzlerV142MultiplayerCollectAuthority"],
+    ["v10-42-zero-server-release.js","CCGLostSizzlerV142ZeroServerRelease"],
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"]
   ];
   const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[]};
@@ -29,7 +28,7 @@
 
   function blockedStart(event){
     if(state.ready||state.failed)return;
-    const target=event.target instanceof Element?event.target.closest("#solo-btn,#continue-save-btn,#daily-btn,#split-btn,#create-btn,#join-btn,#horde-mode-btn,#saboteurs-mode-btn,#tutorial-zone-btn"):null;
+    const target=event.target instanceof Element?event.target.closest("#solo-btn,#continue-save-btn,#daily-btn,#split-btn,#tutorial-zone-btn"):null;
     if(!target)return;
     event.preventDefault();event.stopImmediatePropagation();
     const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 systems are finishing their ordered startup. Start controls will unlock automatically when the build is ready.";
@@ -57,7 +56,7 @@
     try{
       for(const [file,marker] of modules)await loadOne(file,marker);
       state.ready=true;document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
-      const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five new dungeon floors are loaded in verified order. RPG attributes, relics, global Keys, Banishment Essence and rescued C64 games persist between depths; collectible games are shuffled into a seeded random order for every run.";
+      const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five new dungeon floors are loaded in verified order. Solo, Tutorial and 2P Split Screen run locally; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
     }catch(error){
       state.failed=true;state.error=String(error?.message||error);document.body.dataset.v142BootstrapReady="failed";
