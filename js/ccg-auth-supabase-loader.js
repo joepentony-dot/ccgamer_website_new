@@ -1,6 +1,7 @@
 (function () {
   const SUPABASE_CONFIG_FILE = 'ccg-supabase-config.js';
   const SUPABASE_CLIENT_FILE = 'ccg-supabase-client.js';
+  const SUPABASE_RUNTIME_CONFIG = Object.freeze({ provider: 'supabase' });
 
   function currentScriptBaseUrl() {
     const source = document.currentScript?.src || '/js/ccg-auth-supabase-loader.js';
@@ -34,11 +35,25 @@
   }
 
   // Production account authority is Supabase. The temporary CCG/Render auth
-  // pilot is deliberately retired from browser selection so runtime config or
-  // query parameters cannot redirect login, registration or password recovery
-  // away from the existing Supabase project.
+  // pilot is retired from browser selection so neither runtime config nor URL
+  // parameters can redirect login, registration or password recovery away from
+  // the existing Supabase project.
   window.__ccgAuthProviderLocked = 'supabase';
   window.__ccgAuthSupabaseBootstrapSuppressed = false;
+  try {
+    Object.defineProperty(window, 'ccgAuthRuntimeConfig', {
+      value: SUPABASE_RUNTIME_CONFIG,
+      enumerable: true,
+      writable: false,
+      configurable: false
+    });
+  } catch (_error) {
+    try {
+      window.ccgAuthRuntimeConfig = SUPABASE_RUNTIME_CONFIG;
+    } catch (_ignored) {
+      // A pre-existing non-configurable property cannot suppress Supabase boot.
+    }
+  }
 
   const baseUrl = currentScriptBaseUrl();
   const configUrl = new URL(SUPABASE_CONFIG_FILE, baseUrl).href;
