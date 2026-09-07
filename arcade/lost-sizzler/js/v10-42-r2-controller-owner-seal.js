@@ -5,13 +5,17 @@
   window.__CCG_LOST_SIZZLER_V142_R2_CONTROLLER_OWNER_SEAL__=true;
 
   const MAINTENANCE_MS=200;
+  const STARTUP_RETRY_DELAYS=[0,16,64,160];
   const state={
     installed:false,
     unsupported:false,
     blockedWrites:0,
     maintenanceTicks:0,
+    installAttempts:0,
+    deferredInstallAttempts:0,
     lastBlocked:null,
-    timer:0
+    timer:0,
+    startupTimers:[]
   };
   let controllerBoundary=null,getter=null,setter=null;
 
@@ -30,6 +34,7 @@
   }
 
   function install(){
+    state.installAttempts++;
     if(gateActive())return true;
     controllerBoundary=authoritativeBoundary();
     if(!controllerBoundary)return false;
@@ -61,12 +66,34 @@
         set:setter
       });
       state.installed=true;
+      clearStartupTimers();
       return window.update===controllerBoundary
     }catch(_){
       state.unsupported=true;
       getter=setter=null;
       return false
     }
+  }
+
+  function clearStartupTimers(){
+    for(const timer of state.startupTimers)clearTimeout(timer);
+    state.startupTimers.length=0;
+  }
+
+  function deferredInstall(){
+    if(state.installed||state.unsupported)return;
+    state.deferredInstallAttempts++;
+    install()
+  }
+
+  function armStartupInstall(){
+    queueMicrotask(deferredInstall);
+    for(const delay of STARTUP_RETRY_DELAYS){
+      const timer=setTimeout(deferredInstall,delay);
+      state.startupTimers.push(timer)
+    }
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",deferredInstall,{once:true});
+    if(document.readyState!=="complete")addEventListener("load",deferredInstall,{once:true});
   }
 
   function maintainCombatIntegrity(){
@@ -79,11 +106,12 @@
     return true
   }
 
-  install();
+  if(!install())armStartupInstall();
   maintainCombatIntegrity();
   state.timer=setInterval(maintainCombatIntegrity,MAINTENANCE_MS);
 
   addEventListener("pagehide",()=>{
+    clearStartupTimers();
     if(state.timer)clearInterval(state.timer);
     state.timer=0;
   },{once:true});
