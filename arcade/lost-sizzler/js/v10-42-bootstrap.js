@@ -5,7 +5,7 @@
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
   const BUILD="V10.42 r2";
-  const CACHE="20260907r4";
+  const CACHE="20260907r5";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-five-depth-campaign.js","CCGLostSizzlerV142FiveDepthCampaign"],
@@ -24,8 +24,10 @@
     if(buildMeta)buildMeta.content=BUILD;if(cacheMeta)cacheMeta.content=CACHE;
     const subtitle=document.querySelector(".v102-brand p");if(subtitle)subtitle.textContent="THE LOST SIZZLER — V10.42";
     const badge=document.querySelector(".build-badge");if(badge)badge.textContent=`BUILD ${BUILD.toUpperCase()}`;
-    document.body.dataset.v142Build=BUILD;document.body.dataset.v142BootstrapReady="false";
+    if(document.body){document.body.dataset.v142Build=BUILD;document.body.dataset.v142BootstrapReady=state.ready?"true":state.failed?"failed":"false"}
   }
+
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",stampBuild,{once:true});
 
   function clearPendingBusy(){
     if(!state.pendingStartId)return;
@@ -78,12 +80,12 @@
     stampBuild();
     try{
       for(const [file,marker] of modules)await loadOne(file,marker);
-      state.ready=true;document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
+      state.ready=true;stampBuild();document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
       const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five new dungeon floors are loaded in verified order. Solo, Tutorial and 2P Split Screen run locally; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
       replayPendingStart();
     }catch(error){
-      state.failed=true;state.error=String(error?.message||error);document.body.dataset.v142BootstrapReady="failed";
+      state.failed=true;state.error=String(error?.message||error);stampBuild();document.body.dataset.v142BootstrapReady="failed";
       clearPendingBusy();state.pendingStartId="";
       const note=document.getElementById("menu-note");if(note)note.textContent=`V10.42 startup failed safely: ${state.error}. Refresh before starting a run.`;
       console.error("[Lost Sizzler V10.42] ordered bootstrap failed",error);
