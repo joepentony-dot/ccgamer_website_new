@@ -3,7 +3,7 @@ import fs from "node:fs";
 import vm from "node:vm";
 
 const source=fs.readFileSync(new URL("../js/v10-42-warden-cleansing-effects.js",import.meta.url),"utf8");
-let tick=null,revealCount=0;
+let tick=null,revealCount=0,baseFloorCompletions=0;
 const makeRooms=()=>[
   {id:0,x:0,y:0,w:5,h:5,depth:0},
   {id:1,x:10,y:10,w:8,h:8,depth:6,dangerous:true,dedicatedHazard:false},
@@ -29,8 +29,8 @@ const context={
   performance:{now:()=>10000},
   setInterval:fn=>(tick=fn,1),clearInterval:()=>{},addEventListener:()=>{},
   showToast:()=>{},broadcastWorld:()=>{},sync:()=>{},
-  S:{sfx:()=>{}},UI:{surroundings:{textContent:""}},
-  reveal:()=>{revealCount++},mode:"playing"
+  S:{sfx:()=>{}},UI:{surroundings:{textContent:""},floorSummary:{innerHTML:"BASE FLOOR SUMMARY"}},
+  reveal:()=>{revealCount++},floorComplete:()=>{baseFloorCompletions++;return true},mode:"playing"
 };
 context.world=makeWorld();context.p1=makePlayer();context.run=makeRun(2);context.host=makeHost(2);context.localPlayers=()=>[context.p1];
 vm.createContext(context);
@@ -64,6 +64,16 @@ const spentHealth=5,spentMana=10;context.p1.health=spentHealth;context.p1.mana=s
 assert.equal(context.p1.health,spentHealth,"A spent refuge must not heal again on a later return");
 assert.equal(context.p1.mana,spentMana,"A spent refuge must not refill ammunition again on a later return");
 
+// Floor-clear feedback exposes the Warden result, both fragments, cache and refuge state.
+context.run.v142WardenFloors["2"].fragmentAwarded=true;context.run.v142WardenFloors["2"].cacheFragmentAwarded=true;context.UI.floorSummary.innerHTML="BASE FLOOR SUMMARY";
+context.floorComplete("contract");
+assert.equal(baseFloorCompletions,1,"The Warden summary wrapper must preserve the existing floor-complete handler");
+assert.match(context.UI.floorSummary.innerHTML,/WARDEN LEGACY/,"Floor clear should include a Warden legacy section");
+assert.match(context.UI.floorSummary.innerHTML,/WARDEN CLEANSED/,"Floor clear should state that the Warden was cleansed");
+assert.match(context.UI.floorSummary.innerHTML,/SEAL FRAGMENTS 2\/2/,"Floor clear should show both floor Seal Fragments when claimed");
+assert.match(context.UI.floorSummary.innerHTML,/WARDEN CACHE CLAIMED/,"Floor clear should report a claimed Warden Cache fragment");
+assert.match(context.UI.floorSummary.innerHTML,/RETURN-REST SPENT/,"Floor clear should report the refuge rest state");
+
 // A same-floor host/world rebuild recreates environmental refuge state but cannot replay the initial reward.
 context.world=makeWorld();context.host=makeHost(2);context.p1.x=13;context.p1.y=13;context.p1.health=5;context.p1.mana=10;tick();
 assert.equal(context.host.v142CleansedRefuge?.active,true,"Resolved run state should recreate the refuge after a host/world rebuild");
@@ -81,6 +91,12 @@ assert.equal(ordinary.lastSeen,null,"Grave Call should erase ordinary-enemy purs
 assert.equal(ordinary.targetId,null,"Grave Call should clear the ordinary-enemy target");
 assert.equal(major.aiState,"chase","Major guardians must not be pacified by Grave Call cleansing");
 assert.equal(context.run.alert,58,"Generic cleansing should reduce ambient alert by 12");
+
+// An unresolved floor reports the debt consequence instead of pretending it was cleansed.
+context.run.v142WardenFloors["3"].resolved=false;context.run.v142SkippedWardenFloors=[3];context.UI.floorSummary.innerHTML="BASE FLOOR SUMMARY";context.floorComplete("skip-contract");
+assert.equal(baseFloorCompletions,2,"Unresolved Warden feedback must still preserve the base floor-complete handler");
+assert.match(context.UI.floorSummary.innerHTML,/WARDEN UNRESOLVED/,"Floor clear should state when the Warden was left alive");
+assert.match(context.UI.floorSummary.innerHTML,/WARDEN DEBT \+1/,"Floor clear should expose the future guardian penalty from a skipped Warden");
 
 // Floor 4: dedicated hazard cells are extinguished and armour is restored once.
 context.world=makeWorld();context.world.rooms[1].dedicatedHazard=true;context.world.rooms[1].hazardType="embers";context.p1=makePlayer();context.p1.armor=1;context.run=makeRun(4);
@@ -104,4 +120,4 @@ assert.equal(context.world.wallLights.filter(light=>light.kind==="warden-cleanse
 assert.ok(revealCount>revealsBefore,"Static Veil cleansing should immediately refresh player visibility");
 assert.match(context.host.v142CleansedRefuge.benefit,/stays illuminated/i,"Floor 1 refuge should describe its lasting restored-light benefit");
 
-console.log("PASS v10-42 visible Warden cleansing + refuge return-rest contract");
+console.log("PASS v10-42 visible Warden cleansing + refuge return-rest + floor-clear feedback contract");
