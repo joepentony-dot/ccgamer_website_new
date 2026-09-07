@@ -3,7 +3,7 @@ import fs from "node:fs";
 import vm from "node:vm";
 
 const source=fs.readFileSync(new URL("../js/v10-42-warden-domain-progression.js",import.meta.url),"utf8");
-let tick=null;
+let tick=null,now=10000;
 const rooms=[
   {id:0,x:0,y:0,w:4,h:4,depth:0},
   {id:1,x:10,y:10,w:8,h:8,depth:5},
@@ -14,6 +14,7 @@ const map=Array.from({length:60},()=>Array(60).fill(0));
 const world={rooms,map,startRoomId:0,exitRoomId:3};
 const roomAt=(w,x,y)=>{const room=w.rooms.find(q=>x>=q.x&&x<=q.x+q.w&&y>=q.y&&y<=q.y+q.h);return room?room.id:-1};
 const player={id:"p1",x:1,y:1,health:8,maxHealth:10,armor:2};
+const player2={id:"p2",x:1,y:1,health:7,maxHealth:9,armor:1};
 const count={id:"count",x:28,y:13,x0:28,y0:13,awake:true};
 const death={id:"death",x:14,y:14,x0:14,y0:14,alive:true,deathStalker:true};
 const generator={id:"gen1",x:15,y:15,roomId:1,alive:true,powered:true,spawnCooldown:5000};
@@ -22,9 +23,9 @@ const host={enemies:[death,boss],stalker:count,generators:[generator],doors:[{id
 const run={floor:2,stats:{deaths:0},alert:0,floorComplete:false};
 const UI={quickKeyring:{textContent:"KEYS 0/3"},quickSpecials:{textContent:"WARD BREAK 1"},floorSummary:{innerHTML:""}};
 const context={
-  console,window:{},document:{querySelector:()=>null,querySelectorAll:()=>[]},performance:{now:()=>10000},
-  setInterval:fn=>(tick=fn,1),clearInterval:()=>{},addEventListener:()=>{},host,world,run,p1:player,mode:"playing",UI,
-  S:{sfx:()=>{}},showToast:()=>{},broadcastWorld:()=>{},sync:()=>{},resetCamp:()=>{},reveal:()=>{},markRoomVisit:()=>{},
+  console,window:{},document:{querySelector:()=>null,querySelectorAll:()=>[]},performance:{now:()=>now},
+  setInterval:fn=>(tick=fn,1),clearInterval:()=>{},addEventListener:()=>{},host,world,run,p1:player,p2:player2,mode:"playing",UI,
+  localPlayers:()=>[player,player2],S:{sfx:()=>{}},showToast:()=>{},broadcastWorld:()=>{},sync:()=>{},resetCamp:()=>{},reveal:()=>{},markRoomVisit:()=>{},
   damageEnemy:(enemy,power)=>{enemy.hp-=power;return power},hitStalker:()=>true,openChest:(p,chest)=>{chest.active=false;return true},
   hurtPlayer:(p)=>{run.stats.deaths++;p.health=p.maxHealth;p.x=1;p.y=1;return true},floorComplete:()=>{run.floorComplete=true;return true},startWorld:()=>true
 };
@@ -90,6 +91,12 @@ context.startWorld();tick();
 assert.equal(boss.maxHp,22,"One skipped Warden floor should add 10% boss maximum HP");
 assert.equal(boss.maxArmor,5,"One skipped Warden floor should add one boss armour");
 
+player.x=1;player.y=1;player2.x=14;player2.y=14;player2.armor=2;const p1ArmorBefore=player.armor;
+now=10000;delete host.v142WardenDomain;context.startWorld();tick();now=17001;tick();
+assert.equal(player2.armor,1,"Floor 4 Ember Drain should affect Player 2 when P2 is the local player inside the corruption domain");
+assert.equal(player.armor,p1ArmorBefore,"Floor 4 Ember Drain should not damage Player 1 while only Player 2 is inside the corruption domain");
+player2.x=1;player2.y=1;now=10000;
+
 run.v142SealFragments=6;
 const testGuardian={id:"guardian-test",alive:true,keyGuardian:true,hp:20,maxHp:20,armor:0,maxArmor:0};
 host.enemies.push(testGuardian);
@@ -99,9 +106,14 @@ assert.equal(host.v142WardenAftershock.v142Tempered,true,"Ward Temper should mar
 assert.equal(host.v142WardenAftershock.until,22000,"Ward Temper should shorten a future Aftershock by eight seconds");
 
 run.floor=5;run.floorComplete=false;delete host.v142WardenDomain;death.alive=true;boss.hp=boss.maxHp=20;boss.armor=boss.maxArmor=4;run.v142SealFragments=10;
+player.health=6;player.armor=1;player2.health=5;player2.armor=2;
 context.startWorld();tick();
 assert.equal(boss.maxHp,19,"Master Seal should counter one prior debt stack plus the live Floor 5 corruption stack");
 assert.equal(boss.maxArmor,3,"Master Seal should strip three armour after live corruption is applied");
+assert.equal(player.health,8,"Master Seal should grant its immediate health reward to Player 1");
+assert.equal(player.armor,3,"Master Seal should grant its immediate armour reward to Player 1");
+assert.equal(player2.health,7,"Master Seal should grant its immediate health reward to Player 2 in split-screen");
+assert.equal(player2.armor,4,"Master Seal should grant its immediate armour reward to Player 2 in split-screen");
 assert.equal(context.window.CCGProgression.effectiveSight(player,run),8,"Seal Sense should add one sight tile outside Static Veil");
 
-console.log("PASS v10-42 Warden exact-source persistence + domain + Seal progression contract");
+console.log("PASS v10-42 Warden exact-source persistence + split-safe domain + Seal progression contract");
