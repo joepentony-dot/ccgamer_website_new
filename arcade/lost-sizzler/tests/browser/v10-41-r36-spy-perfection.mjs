@@ -26,6 +26,16 @@ try{
   console.log("[r36 Spy] load canonical page");
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R32SpyLoader));
+  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142Bootstrap));
+  await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap.ready===true||window.CCGLostSizzlerV142Bootstrap.failed===true);
+  const releaseBoundary=await page.evaluate(()=>({
+    bootstrapReady:Boolean(window.CCGLostSizzlerV142Bootstrap?.ready),
+    bootstrapFailed:Boolean(window.CCGLostSizzlerV142Bootstrap?.failed),
+    zeroServer:Boolean(window.CCGLostSizzlerV142ZeroServerRelease?.enabled&&window.CCGLostSizzlerV142ZeroServerRelease?.onlineMultiplayer===false)
+  }));
+  assert.equal(releaseBoundary.bootstrapFailed,false,"V10.42 ordered bootstrap must settle successfully before the retained r36 Spy fixture begins");
+  assert.equal(releaseBoundary.bootstrapReady,true,"V10.42 ordered bootstrap must be ready before the retained r36 Spy fixture begins");
+  assert.equal(releaseBoundary.zeroServer,true,"r36 must exercise the preserved Spy engine only after the production zero-server policy has settled");
 
   console.log("[r36 Spy] start real Spy adapter fixture");
   const started=await page.evaluate(()=>{
@@ -145,7 +155,7 @@ try{
   if(rail.visible){assert.ok(rail.gap>=210,"desktop rail may only appear when genuine spare width exists");assert.ok(rail.railLeft>=rail.canvasRight-1,"desktop rail must begin outside the rendered game canvas");assert.ok(rail.railRight<=rail.areaRight+1,"desktop rail must remain inside game-area spare width");assert.ok(rail.text.includes("SPY COMMAND")&&rail.text.includes("ARMED TRAPS"),"desktop rail must contain useful Spy status rather than empty black space")}
 
   assert.deepEqual(errors,[],`r36 Spy perfection browser regression must have no uncaught errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler r36 Spy inventory exit, movement recovery, melee animation, respawn HP, doors, traps and HUD passed in Chromium.");
+  console.log("Lost Sizzler r36 Spy inventory exit, movement recovery, melee animation, respawn HP, doors, traps and HUD passed in Chromium after the V10.42 zero-server bootstrap settled.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
