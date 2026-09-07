@@ -59,7 +59,7 @@
 
   function rewardText(n=floor(),r=R()){
     const profile=PROFILES[n]||PROFILES[5],row=record(n,r),fragments=fragmentsOnFloor(row);
-    return`${profile.cleanse} Floor legacy: ${fragments}/2 Seal Fragments. Leaving an available Warden alive adds Warden Debt: later major guardians gain +10% maximum HP and +1 armour per skipped floor.`;
+    return`Threat: ${profile.threat} Cleansing: ${profile.cleanse} Floor legacy: ${fragments}/2 Seal Fragments. Leaving an available Warden alive adds Warden Debt: later major guardians gain +10% maximum HP and +1 armour per skipped floor.`;
   }
 
   function questHtml(n=floor(),r=R(),p=P()){
