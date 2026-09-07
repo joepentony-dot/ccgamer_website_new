@@ -70,7 +70,7 @@
   if(baseItemInfoDetails){
     itemInfoDetails=function(it,...args){const result=baseItemInfoDetails(it,...args)||{};
       if(it?.kind==="banishment")return{...result,name:"WARD-BREAK CHARGE",desc:wardBreakHelp(),why:`WARD BREAK MATTERS: move within ${range()} tiles of a sealed Warden and press B. Its immunity drops, but you still have to win the fight.`};
-      if(it?.kind==="artefact")return{...result,desc:essenceHelp(),why:"ESSENCE MATTERS: V10.42 stores spectral residue in the Vessel and uses it for Alchemist distillation rather than an instant-kill Flask trade."};
+      if(it?.kind==="artefact")return{...result,desc:essenceHelp(),why:"ESSENCE MATTERS: V10.42 stores spectral residue in the Vessel for Alchemist distillation into Ward-Break Charges."};
       return result;
     };
   }
