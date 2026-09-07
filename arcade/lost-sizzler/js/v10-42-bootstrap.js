@@ -28,13 +28,31 @@
 
   function stampBuild(){
     const buildMeta=document.querySelector('meta[name="ccg-lost-sizzler-build"]'),cacheMeta=document.querySelector('meta[name="ccg-lost-sizzler-cache"]');
-    if(buildMeta)buildMeta.content=BUILD;if(cacheMeta)cacheMeta.content=CACHE;
-    const subtitle=document.querySelector(".v102-brand p");if(subtitle)subtitle.textContent="THE LOST SIZZLER — V10.42";
-    const badge=document.querySelector(".build-badge");if(badge)badge.textContent=`BUILD ${BUILD.toUpperCase()}`;
+    if(buildMeta&&buildMeta.content!==BUILD)buildMeta.content=BUILD;
+    if(cacheMeta&&cacheMeta.content!==CACHE)cacheMeta.content=CACHE;
+    const subtitle=document.querySelector(".v102-brand p"),expectedSubtitle="THE LOST SIZZLER — V10.42";
+    if(subtitle&&subtitle.textContent!==expectedSubtitle)subtitle.textContent=expectedSubtitle;
+    const badge=document.querySelector(".build-badge"),expectedBadge=`BUILD ${BUILD.toUpperCase()}`;
+    if(badge&&badge.textContent!==expectedBadge)badge.textContent=expectedBadge;
     if(document.body){document.body.dataset.v142Build=BUILD;document.body.dataset.v142BootstrapReady=state.ready?"true":state.failed?"failed":"false"}
   }
 
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",stampBuild,{once:true});
+  function installBuildIdentityGuard(){
+    if(window.__CCG_LOST_SIZZLER_V142_BUILD_GUARD__)return;
+    const subtitle=document.querySelector(".v102-brand p"),badge=document.querySelector(".build-badge");
+    if(!subtitle&&!badge)return;
+    window.__CCG_LOST_SIZZLER_V142_BUILD_GUARD__=true;
+    const observer=new MutationObserver(()=>{
+      const currentSubtitle=document.querySelector(".v102-brand p"),currentBadge=document.querySelector(".build-badge");
+      if((currentSubtitle&&currentSubtitle.textContent!=="THE LOST SIZZLER — V10.42")||(currentBadge&&currentBadge.textContent!==`BUILD ${BUILD.toUpperCase()}`))stampBuild();
+    });
+    if(subtitle)observer.observe(subtitle,{childList:true,characterData:true,subtree:true});
+    if(badge)observer.observe(badge,{childList:true,characterData:true,subtree:true});
+    state.buildIdentityGuard=observer;
+  }
+
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>{stampBuild();installBuildIdentityGuard();queueMicrotask(stampBuild)},{once:true});
+  else{stampBuild();installBuildIdentityGuard()}
 
   function clearPendingBusy(){
     if(!state.pendingStartId)return;
@@ -87,12 +105,12 @@
     stampBuild();
     try{
       for(const [file,marker] of modules)await loadOne(file,marker);
-      state.ready=true;stampBuild();document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
+      state.ready=true;stampBuild();installBuildIdentityGuard();document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
       const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five new dungeon floors are loaded in verified order. Solo, Tutorial and 2P Split Screen run locally; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
       replayPendingStart();
     }catch(error){
-      state.failed=true;state.error=String(error?.message||error);stampBuild();document.body.dataset.v142BootstrapReady="failed";
+      state.failed=true;state.error=String(error?.message||error);stampBuild();installBuildIdentityGuard();document.body.dataset.v142BootstrapReady="failed";
       clearPendingBusy();state.pendingStartId="";
       const note=document.getElementById("menu-note");if(note)note.textContent=`V10.42 startup failed safely: ${state.error}. Refresh before starting a run.`;
       console.error("[Lost Sizzler V10.42] ordered bootstrap failed",error);
