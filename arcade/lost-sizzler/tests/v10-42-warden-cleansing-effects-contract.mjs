@@ -82,6 +82,6 @@ assert.match(context.host.v142CleansedRefuge.benefit,/final defenders lose corru
 context.world=makeWorld();context.p1=makePlayer();context.run=makeRun(1);context.host=makeHost(1);const revealsBefore=revealCount;tick();
 assert.equal(context.world.wallLights.filter(light=>light.kind==="warden-cleansed").length,3,"Static Veil cleansing should restore three permanent lights");
 assert.ok(revealCount>revealsBefore,"Static Veil cleansing should immediately refresh player visibility");
-assert.match(context.host.v142CleansedRefuge.benefit,/permanently illuminated/i,"Floor 1 refuge should describe its restored-light benefit");
+assert.match(context.host.v142CleansedRefuge.benefit,/stays illuminated/i,"Floor 1 refuge should describe its lasting restored-light benefit");
 
 console.log("PASS v10-42 visible Warden cleansing + refuge effects contract");
