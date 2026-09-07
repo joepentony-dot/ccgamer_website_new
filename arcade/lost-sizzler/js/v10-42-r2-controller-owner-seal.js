@@ -26,7 +26,7 @@
     if(!state.installed||typeof getter!=="function"||typeof setter!=="function")return false;
     let descriptor=null;
     try{descriptor=Object.getOwnPropertyDescriptor(window,"update")}catch(_){}
-    return Boolean(descriptor&&descriptor.get===getter&&descriptor.set===setter)
+    return Boolean(descriptor&&descriptor.get===getter&&descriptor.set===setter&&descriptor.configurable===false)
   }
 
   function install(){
@@ -35,9 +35,16 @@
     if(!controllerBoundary)return false;
     let descriptor=null;
     try{descriptor=Object.getOwnPropertyDescriptor(window,"update")}catch(_){}
-    if(descriptor&&descriptor.configurable===false){state.unsupported=true;return false}
+    if(descriptor&&descriptor.configurable===false){
+      if(descriptor.get===getter&&descriptor.set===setter){state.installed=true;return true}
+      state.unsupported=true;return false
+    }
 
-    getter=function getLostSizzlerAuthoritativeUpdate(){return controllerBoundary};
+    getter=function getLostSizzlerAuthoritativeUpdate(){
+      const latest=authoritativeBoundary();
+      if(latest)controllerBoundary=latest;
+      return controllerBoundary
+    };
     setter=function setLostSizzlerAuthoritativeUpdate(value){
       const latest=authoritativeBoundary();
       if(latest)controllerBoundary=latest;
@@ -48,7 +55,7 @@
 
     try{
       Object.defineProperty(window,"update",{
-        configurable:true,
+        configurable:false,
         enumerable:descriptor?.enumerable!==false,
         get:getter,
         set:setter
@@ -74,10 +81,7 @@
 
   install();
   maintainCombatIntegrity();
-  state.timer=setInterval(()=>{
-    if(!gateActive())install();
-    maintainCombatIntegrity();
-  },MAINTENANCE_MS);
+  state.timer=setInterval(maintainCombatIntegrity,MAINTENANCE_MS);
 
   addEventListener("pagehide",()=>{
     if(state.timer)clearInterval(state.timer);
