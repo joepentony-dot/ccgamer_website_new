@@ -170,8 +170,34 @@
     try{if(UI?.surroundings)UI.surroundings.textContent=`${refuge.title} — ${refuge.benefit} ${rest}` }catch(_){}
   }
 
+  function fragmentCount(record){return Number(Boolean(record?.fragmentAwarded))+Number(Boolean(record?.cacheFragmentAwarded))}
+  function wardenLegacyHtml(r,floor){
+    const record=recordFor(r,floor),skipped=Array.isArray(r?.v142SkippedWardenFloors)&&r.v142SkippedWardenFloors.includes(floor);
+    if(!record&&!skipped)return"";
+    const resolved=Boolean(record?.resolved||record?.cleansed);
+    if(!resolved){
+      return `<br><br><b data-v142-warden-legacy="true">WARDEN LEGACY</b><br>WARDEN UNRESOLVED${skipped?" · WARDEN DEBT +1":""} · Later major guardians retain this floor's corruption.`;
+    }
+    const fragments=fragmentCount(record),cache=record?.cacheFragmentAwarded?"WARDEN CACHE CLAIMED":"WARDEN CACHE UNCLAIMED — SECOND SEAL FRAGMENT MISSED",refuge=record?.refugeEstablished?`REFUGE ESTABLISHED · RETURN-REST ${record?.refugeRestUsed?"SPENT":"AVAILABLE"}`:"REFUGE NOT ESTABLISHED";
+    return `<br><br><b data-v142-warden-legacy="true">WARDEN LEGACY</b><br>WARDEN CLEANSED · SEAL FRAGMENTS ${fragments}/2 · ${cache} · ${refuge}.`;
+  }
+  function appendWardenLegacySummary(r,floor){
+    try{
+      if(!UI?.floorSummary)return false;const html=wardenLegacyHtml(r,floor);if(!html)return false;
+      const existing=String(UI.floorSummary.innerHTML||"");if(existing.includes('data-v142-warden-legacy="true"'))return false;
+      UI.floorSummary.innerHTML=existing+html;return true;
+    }catch(_){return false}
+  }
+
+  const baseFloorComplete=typeof floorComplete==="function"?floorComplete:null;
+  if(baseFloorComplete){
+    floorComplete=function(by){
+      const r=currentRun(),floor=floorNo(r),result=baseFloorComplete(by);appendWardenLegacySummary(r,floor);return result;
+    };
+  }
+
   function scan(){try{applyCleansingEffects();updateRefugeReturn();refreshRefugeReadout()}catch(error){console.warn("[Lost Sizzler V10.42] Warden cleansing tick failed safely",error)}}
   scan();const timer=setInterval(scan,SCAN_MS);addEventListener("pagehide",()=>clearInterval(timer),{once:true});
 
-  window.CCGLostSizzlerV142WardenCleansingEffects={version:"V10.42 r3",profiles:PROFILES,apply:applyCleansingEffects,updateRefugeReturn};
+  window.CCGLostSizzlerV142WardenCleansingEffects={version:"V10.42 r3",profiles:PROFILES,apply:applyCleansingEffects,updateRefugeReturn,wardenLegacyHtml,appendWardenLegacySummary};
 })();
