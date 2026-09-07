@@ -5,7 +5,7 @@
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
   const BUILD="V10.42 r3";
-  const CACHE="20260907r8";
+  const CACHE="20260907r9";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-five-depth-campaign.js","CCGLostSizzlerV142FiveDepthCampaign"],
@@ -17,7 +17,8 @@
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
     ["v10-42-warden-purpose-overhaul.js","CCGLostSizzlerV142WardenPurposeOverhaul"],
     ["v10-42-warden-domain-progression.js","CCGLostSizzlerV142WardenDomainProgression"],
-    ["v10-42-warden-cleansing-effects.js","CCGLostSizzlerV142WardenCleansingEffects"]
+    ["v10-42-warden-cleansing-effects.js","CCGLostSizzlerV142WardenCleansingEffects"],
+    ["v10-42-warden-charge-routes.js","CCGLostSizzlerV142WardenChargeRoutes"]
   ];
   const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],pendingStartId:""};
   window.CCGLostSizzlerV142Bootstrap=state;
