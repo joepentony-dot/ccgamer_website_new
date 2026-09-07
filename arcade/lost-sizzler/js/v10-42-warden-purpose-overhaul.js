@@ -111,6 +111,10 @@
     if(!player)return 0;player.banishmentEssence=Math.max(0,Math.floor(Number(player.banishmentEssence)||0))+1;return player.banishmentEssence;
   }
 
+  function wardBreakOwner(fallback=null){
+    return currentPlayer()||fallback;
+  }
+
   function finaliseWarden(target,player,{baseScore=0,baseXp=0}={}){
     const h=currentHost(),r=currentRun();if(!target||!player||!h||!r||target.v142WardenRewarded)return false;
     target.v142WardenRewarded=true;target.v142WardenDefeated=true;target.v142WardState="defeated";target.v142WardBroken=false;
@@ -128,7 +132,7 @@
     const scoreBonus=Math.max(0,SCORE_REWARD-baseScore),xpBonus=Math.max(0,XP_REWARD-baseXp);
     try{score+=scoreBonus}catch(_){}
     try{if(xpBonus>0)awardXP(player,xpBonus,`${name} defeated after its ward was broken`)}catch(_){}
-    const essence=grantEssence(player),cache=spawnWardenCache(target);startAftershock(target,player);
+    const essenceOwner=wardBreakOwner(player),essence=grantEssence(essenceOwner),cache=spawnWardenCache(target);startAftershock(target,player);
     h.revision=(Number(h.revision)||0)+1;sfx("elite");fxBurst(target.x,target.y);
     try{floatText(target.x,target.y,`WARDEN DOWN! +${SCORE_REWARD.toLocaleString()} SCORE`,P.gold,{life:3200})}catch(_){}
     announce(`${name.toUpperCase()} DEFEATED`,`Warden kill secured: ${SCORE_REWARD.toLocaleString()} total score, ${XP_REWARD} total XP, +1 Banishment Essence, +2 armour and an ammo refill. ${cache?"A high-tier Warden Cache has appeared at the kill site. ":""}The kill has also triggered a ${Math.round(AFTERSHOCK_MS/1000)}-second dungeon aftershock at ${AFTERSHOCK_ALERT}%+ alert, so taking the reward still carries risk. Vessel Essence: ${essence}.`,"green",12500);
