@@ -10,11 +10,13 @@
     invalidProjectilesCleared:0,
     shopCounterRepairs:0,
     chestRewardRepairs:0,
+    chestLootRecoveries:0,
     dossierSpaceCloses:0,
     alphabetOrderRepairs:0
   };
   const now=()=>performance.now();
   const safeNumber=value=>Number.isFinite(Number(value))?Number(value):0;
+  const appliedChestLoot=new WeakSet();
 
   function repairCpuCookIdentity(){
     try{
@@ -116,7 +118,18 @@
   }catch(_){}
 
   function chestLootName(loot){return loot?.weapon?.displayName||loot?.name||String(loot?.kind||"CHEST REWARD").toUpperCase()}
+  function chestPlayerStillActive(player){
+    try{return Boolean(player&&typeof localPlayers==="function"&&localPlayers().includes(player)&&run&&host)}catch(_){return false}
+  }
   try{
+    if(typeof applyLoot==="function"&&!applyLoot.__ccgV142R1ChestTracking){
+      const baseApplyLoot=applyLoot;
+      applyLoot=function(loot,player){
+        if(loot&&typeof loot==="object")appliedChestLoot.add(loot);
+        return baseApplyLoot(loot,player);
+      };
+      applyLoot.__ccgV142R1ChestTracking=true;applyLoot.__ccgOriginal=baseApplyLoot;
+    }
     if(typeof openChest==="function"&&!openChest.__ccgV142R1){
       const baseOpenChest=openChest;
       openChest=function(player,chest){
@@ -128,7 +141,11 @@
           const loot=chest.loot,name=chestLootName(loot),scoreReward=Math.max(0,safeNumber(chest.rewardScore)),xpReward=Math.max(0,safeNumber(chest.rewardXp));
           setTimeout(()=>{
             try{
-              if(!loot)return;
+              if(!loot||typeof loot!=="object")return;
+              if(!appliedChestLoot.has(loot)&&chestPlayerStillActive(player)){
+                applyLoot(loot,player);diagnostics.chestLootRecoveries++;
+                try{floatPickupText(player,name,loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan)}catch(_){}
+              }
               showToast("CHEST REWARD CONFIRMED",`${name} · +${scoreReward.toLocaleString()} score · +${xpReward} XP.`,"gold",6500);
               diagnostics.chestRewardRepairs++;
             }catch(_){}
