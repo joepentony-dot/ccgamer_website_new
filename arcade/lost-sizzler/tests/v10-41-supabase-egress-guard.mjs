@@ -11,8 +11,9 @@ const playlistSource=read('arcade/lost-sizzler/js/lost-sizzler-playlist-audio.js
 const adminUploaderSource=read('admin/js/arcade-assets.js');
 const assert=(condition,message)=>{if(!condition)throw new Error(message)};
 
-assert(adminSource.includes('navigator.webdriver===true'),'Remote audio policy must identify automated browsers.');
-assert(adminSource.includes('__CCG_ALLOW_REMOTE_TEST_ASSETS__'),'Remote audio tests need an explicit opt-in escape hatch.');
+assert(adminSource.includes('window.__CCG_ALLOW_REMOTE_MEDIA__===true'),'Remote audio policy must require an explicit production opt-in.');
+assert(adminSource.includes('__CCG_ALLOW_REMOTE_TEST_ASSETS__===true'),'Remote audio tests need an explicit opt-in escape hatch.');
+assert(!adminSource.includes('return !(automated||local)'),'Remote audio must not revert to default-on browser/environment detection.');
 assert(playlistSource.includes('isMeteredRemoteTrack'),'Playlist must identify metered Supabase Storage music.');
 assert(playlistSource.includes('audio.loop=meteredRemote'),'Metered remote songs must loop within the current run instead of auto-advancing.');
 assert(adminUploaderSource.includes("LOST_SIZZLER_MUSIC_CACHE_SECONDS='31536000'"),'Future Lost Sizzler music uploads must use a one-year browser/CDN cache lifetime.');
@@ -23,23 +24,49 @@ const adminEvents=[];
 class FakeCustomEvent{constructor(type,init={}){this.type=type;this.detail=init.detail}}
 const adminWindow={
   CCG_ASSET_OVERRIDES:{audio:{music:{playlists:{}},voice:{}}},
-  ccgSupabase:{getClient:async()=>{clientCalls++;throw new Error('Supabase must not be contacted by webdriver tests')}},
+  ccgSupabase:{getClient:async()=>{clientCalls++;throw new Error('Supabase must not be contacted without explicit remote-media opt-in')}},
   addEventListener(){},
   dispatchEvent:event=>adminEvents.push(event)
 };
 const adminSandbox={
   window:adminWindow,
-  navigator:{webdriver:true,userAgent:'HeadlessChrome/140'},
-  location:{hostname:'127.0.0.1'},
+  navigator:{webdriver:false,userAgent:'Chrome/140'},
+  location:{hostname:'www.cheekycommodoregamer.co.uk'},
   CustomEvent:FakeCustomEvent,
   console
 };
 vm.runInNewContext(adminSource,adminSandbox,{filename:'admin-audio-overrides.js'});
 await new Promise(resolve=>setImmediate(resolve));
-assert(clientCalls===0,'Headless/local validation must not query the remote arcade audio catalogue.');
+assert(clientCalls===0,'Normal production browsing must not query the remote arcade audio catalogue unless explicitly opted in.');
 assert(adminWindow.CCG_ADMIN_AUDIO_READY===true,'Skipping remote audio must still complete the admin-audio readiness contract.');
-assert(adminWindow.CCG_ADMIN_AUDIO?.remoteMediaSkipped===true,'Automated browser must expose that remote media was deliberately skipped.');
+assert(adminWindow.CCG_ADMIN_AUDIO?.remoteMediaSkipped===true,'Default local-first mode must expose that remote media was deliberately skipped.');
 assert(adminEvents.some(event=>event.type==='ccg:admin-audio-ready'&&event.detail?.remoteMediaSkipped===true),'Remote-media skip must dispatch the normal readiness event.');
+
+let optedInClientCalls=0;
+const optedInWindow={
+  __CCG_ALLOW_REMOTE_MEDIA__:true,
+  CCG_ASSET_OVERRIDES:{audio:{music:{playlists:{}},voice:{}}},
+  ccgSupabase:{
+    getClient:async()=>{
+      optedInClientCalls++;
+      return{
+        from(){return{
+          select(){return this},
+          in(){return this},
+          eq(){return this},
+          order:async()=>({data:[],error:null})
+        }}
+      }
+    }
+  },
+  addEventListener(){},
+  dispatchEvent(){}
+};
+vm.runInNewContext(adminSource,{window:optedInWindow,navigator:{webdriver:false,userAgent:'Chrome/140'},location:{hostname:'www.cheekycommodoregamer.co.uk'},CustomEvent:FakeCustomEvent,console},{filename:'admin-audio-overrides-opt-in.js'});
+await new Promise(resolve=>setImmediate(resolve));
+assert(optedInClientCalls===1,'Explicit remote-media opt-in must still permit the remote catalogue path when deliberately enabled.');
+assert(optedInWindow.CCG_ADMIN_AUDIO_READY===true,'Explicit remote-media opt-in must preserve the admin-audio readiness contract.');
+assert(optedInWindow.CCG_ADMIN_AUDIO?.remoteMediaSkipped===false,'Explicit opt-in must be distinguishable from the default local-first skip path.');
 
 class FakeAudio{
   static instances=[];
@@ -77,9 +104,9 @@ const playlistSandbox={
 vm.runInNewContext(playlistSource,playlistSandbox,{filename:'lost-sizzler-playlist-audio.js'});
 await playlistWindow.CCGSound.start();
 await Promise.resolve();
-assert(FakeAudio.instances.length===1,'Starting remote Exploration should create one Audio element.');
+assert(FakeAudio.instances.length===1,'Starting an explicitly supplied remote Exploration track should create one Audio element.');
 const remote=FakeAudio.instances[0];
-assert(remote.url===remoteTrack,'The enabled admin track must remain the selected production soundtrack.');
+assert(remote.url===remoteTrack,'An explicitly supplied admin track must remain selectable when remote media has deliberately been enabled upstream.');
 assert(remote.loop===true,'Supabase-hosted music must loop for the session instead of downloading another playlist file on completion.');
 assert(remote.preload==='none','Metered remote music must not be eagerly preloaded.');
 assert(!(remote.listeners.timeupdate||[]).length,'Metered remote music must not arm near-end auto-advance.');

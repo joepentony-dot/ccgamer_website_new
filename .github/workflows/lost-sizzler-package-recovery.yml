@@ -1,0 +1,38 @@
+name: Lost Sizzler Package Recovery
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/recover-lost-sizzler-package-activation.mjs'
+      - 'scripts/verify-lost-sizzler-package-tree.mjs'
+      - '.github/workflows/lost-sizzler-package-recovery.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/recover-lost-sizzler-package-activation.mjs'
+      - 'scripts/verify-lost-sizzler-package-tree.mjs'
+      - '.github/workflows/lost-sizzler-package-recovery.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  interrupted-activation-recovery:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate recovery tooling syntax
+        run: |
+          node --check scripts/recover-lost-sizzler-package-activation.mjs
+          node --check scripts/verify-lost-sizzler-package-tree.mjs
+
+      - name: Prove interrupted activation recovery
+        run: node scripts/recover-lost-sizzler-package-activation.mjs --self-test

@@ -8,11 +8,12 @@
   const button=()=>document.getElementById("daily-btn");
   const status=()=>document.getElementById("weekly-status");
   const challenge=()=>window.CCGWeeklyChallenge;
+  const deliveryUnavailable=node=>Boolean(node?.dataset?.ccgOnlineUnavailable==="true"&&window.CCGLostSizzlerDelivery?.isDesktop);
 
   function setText(node,value){if(node&&node.textContent!==value)node.textContent=value;}
   function setDisabled(node,value){
     if(!node)return;
-    const next=Boolean(value);
+    const next=deliveryUnavailable(node)||Boolean(value);
     if(node.disabled!==next)node.disabled=next;
   }
 
@@ -22,8 +23,11 @@
 
     /* MutationObserver below watches the disabled attribute. Never write the
        same value back into it: doing so can continuously retrigger the observer
-       and starve the browser's main thread. */
+       and starve the browser's main thread. The desktop delivery gate owns the
+       unavailable marker, so this presentation layer must never re-enable a
+       Weekly control that the packaged build has deliberately disabled. */
     setDisabled(b,!state.ready);
+    if(deliveryUnavailable(b))return;
     if(!state.ready)setText(b,"Weekly Dungeon — Checking…");
     else if(state.signedIn&&!state.locked)setText(b,"Weekly Dungeon — Ranked Attempt");
     else setText(b,"Weekly Dungeon");
@@ -36,6 +40,8 @@
   }
 
   async function startUnrankedAfterRankedAttempt(event){
+    const b=button();
+    if(deliveryUnavailable(b))return;
     const state=challenge()?.state;
     if(!state?.ready||!state?.signedIn||!state?.locked)return;
     event.preventDefault();
