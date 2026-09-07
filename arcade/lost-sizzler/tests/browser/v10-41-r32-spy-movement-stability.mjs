@@ -55,15 +55,21 @@ try{
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R32SpyLoader?.state?.loaded&&window.CCGLostSizzlerV141R32SpyOverhaul?.state?.worldBuilds>=1&&window.CCGLostSizzlerV141R32SpyPacketOwner?.state?.stableEnterSeals>=1&&window.CCGLostSizzlerV141R32SpyPacketOwner?.state?.visualSmoothingSeals>=1),null,{timeout:15000});
 
   if(releaseBoundary.zeroServer){
-    // Production owns and retires the online lifecycle. Once the lazy Spy owners
-    // are loaded, restart only the preserved engine fixture so movement/smoothing
-    // coverage remains independent from retired server/room lifecycle behaviour.
-    const restarted=await startRetainedFixture();
-    assert.equal(restarted,true,"zero-server regression must be able to reseed the preserved Spy engine after its lazy owners have loaded");
-    await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerSpecialModes?.active?.state)&&document.body.dataset.specialMode==="sizzler-saboteurs");
-    await page.waitForTimeout(120);
-    const retainedState=await page.evaluate(()=>({active:Boolean(window.CCGLostSizzlerSpecialModes?.active?.state),specialMode:document.body.dataset.specialMode||"",controller:document.body.dataset.modeController||"",playMode:typeof playMode==="undefined"?"":String(playMode)}));
-    assert.equal(retainedState.active,true,`preserved Spy engine fixture must remain active after zero-server lifecycle settles: ${JSON.stringify(retainedState)}`);
+    const retainedState=await page.evaluate(()=>{
+      const special=window.CCGLostSizzlerSpecialModes,SAB=window.CCGLostSizzlerSaboteurs,runtime=window.CCGLostSizzlerModeRuntime,engine=window.CCGLostSizzlerV141R29SpyEngine;
+      const id=String(net.sessionId||p1?.id||"MOVEMENT-HOST"),t=Date.now();
+      if(!run)run=PGR.makeRun({difficulty:"ARCADE",seed:"R32-MOVEMENT-STABILITY"});
+      if(!world||!host)startWorld(PGR.floorSeed(run),false,false);
+      playMode="online";mode="playing";p1.id=id;p1.name="Movement Host";document.body.dataset.runActive="true";
+      const match=SAB.createMatch({players:[{id,name:"Movement Host"},{id:"MOVEMENT-GUEST",name:"Movement Guest"}],hostId:id,seed:"R32-MOVEMENT-STABILITY",now:t});
+      SAB.beginRound(match,t);
+      Object.defineProperty(special,"active",{configurable:true,writable:true,value:{type:"sizzler-saboteurs",state:match,authoritative:true,cooldowns:new Map(),seed:match.seed}});
+      document.body.dataset.specialMode="sizzler-saboteurs";
+      runtime.sync("r32 retained zero-server fixture");engine.enterIsolation();
+      return{active:Boolean(special.active?.state),specialMode:document.body.dataset.specialMode||"",controller:document.body.dataset.modeController||"",playMode:String(playMode),isolated:Boolean(engine.state?.isolated)};
+    });
+    assert.equal(retainedState.active,true,`preserved Spy engine fixture must remain active after direct zero-server reseed: ${JSON.stringify(retainedState)}`);
+    assert.equal(retainedState.isolated,true,`preserved Spy engine must re-enter isolation after direct zero-server reseed: ${JSON.stringify(retainedState)}`);
   }
 
   const fixture=await page.evaluate(()=>{
