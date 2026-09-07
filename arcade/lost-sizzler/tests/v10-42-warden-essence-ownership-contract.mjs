@@ -4,12 +4,14 @@ import vm from "node:vm";
 
 const source=fs.readFileSync(new URL("../js/v10-42-warden-purpose-overhaul.js",import.meta.url),"utf8");
 let timer=null;
-const p1={id:"p1",x:2,y:2,level:2,health:8,maxHealth:10,armor:1,mana:20,maxMana:100,totalXp:0,banishmentEssence:0};
+const p1={id:"p1",x:22,y:2,level:2,health:8,maxHealth:10,armor:1,mana:20,maxMana:100,totalXp:0,banishmentEssence:0};
 const p2={id:"p2",x:3,y:2,level:2,health:7,maxHealth:9,armor:1,mana:0,maxMana:100,totalXp:0,banishmentEssence:0};
 const death={id:"death-stalker-test",x:4,y:2,alive:true,deathStalker:true,armor:3,maxArmor:3};
-const host={enemies:[death],stalker:null,chests:[],timedRooms:[],revision:0};
+const pursuer={id:"ordinary-pursuer",x:5,y:2,alive:true,armor:2,moveCooldown:700};
+const host={enemies:[death,pursuer],stalker:null,chests:[],timedRooms:[],revision:0};
 const run={floor:3,alert:0,stats:{kills:0}};
-const world={rooms:[{id:1,x:0,y:0,w:12,h:12,depth:6}]};
+const world={rooms:[null,{id:1,x:0,y:0,w:11,h:11,depth:6},{id:2,x:20,y:0,w:11,h:11,depth:7}]};
+const roomAt=(w,x)=>Number(x)<12?1:Number(x)>=20?2:-1;
 const context={
   console,
   window:{
@@ -24,8 +26,9 @@ const context={
   performance:{now:()=>10000},
   setInterval:fn=>(timer=fn,1),clearInterval:()=>{},addEventListener:()=>{},
   host,run,world,p1,p2,mode:"playing",score:0,shake:0,
+  localPlayers:()=>[p1,p2],
   P:{purple:"purple",gold:"gold",white:"white"},
-  W:{roomAt:()=>1},
+  W:{roomAt},
   S:{sfx:()=>{},setStalkerNear:()=>{}},
   showToast:()=>{},broadcastWorld:()=>{},burst:()=>{},ring:()=>{},floatText:()=>{},
   isDeathStalkerEnemy:enemy=>Boolean(enemy?.deathStalker),
@@ -62,4 +65,10 @@ assert.equal(host.v142WardenAftershock?.sourceId,"death-stalker-test","The Warde
 assert.equal(run.alert,82,"The Warden aftershock should raise alert to the configured floor");
 assert.equal(typeof timer,"function","The normal Warden maintenance timer should still install");
 
-console.log("PASS v10-42 Warden P2 kill keeps operational Essence on the Ward-Break owner");
+timer();
+assert.equal(pursuer.aiState,"chase","The Warden Aftershock should push an ordinary enemy into pursuit");
+assert.deepEqual(pursuer.lastSeen,{x:p2.x,y:p2.y},"A P2-room Aftershock pursuer should target P2 rather than remote P1");
+assert.equal(pursuer.memoryMs,2800,"Aftershock pursuit should keep the existing pursuit-memory floor");
+assert.equal(pursuer.moveCooldown,500,"Aftershock pursuit should keep the existing movement-pressure ceiling");
+
+console.log("PASS v10-42 Warden P2 kill keeps operational Essence on P1 and Aftershock pursuit split-safe");

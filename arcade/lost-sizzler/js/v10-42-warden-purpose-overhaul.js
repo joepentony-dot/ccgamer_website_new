@@ -27,6 +27,7 @@
   function currentRun(){try{return typeof run!=="undefined"?run:null}catch(_){return null}}
   function currentWorld(){try{return typeof world!=="undefined"?world:null}catch(_){return null}}
   function currentPlayer(){try{return typeof p1!=="undefined"?p1:null}catch(_){return null}}
+  function localRoster(){try{const players=typeof localPlayers==="function"?localPlayers():[currentPlayer(),typeof p2!=="undefined"?p2:null];return[...new Set((players||[]).filter(Boolean))]}catch(_){return[currentPlayer()].filter(Boolean)}}
   function currentMode(){try{return typeof mode!=="undefined"?mode:"menu"}catch(_){return"menu"}}
   function dist(a,b){return Math.abs(Number(a?.x||0)-Number(b?.x||0))+Math.abs(Number(a?.y||0)-Number(b?.y||0))}
   function announce(title,text,tone="gold",duration=9000){try{showToast(title,text,tone,duration)}catch(_){} }
@@ -232,15 +233,16 @@
   }
 
   function updateAftershock(){
-    const h=currentHost(),r=currentRun(),w=currentWorld(),player=currentPlayer();if(!h||!r||!h.v142WardenAftershock)return;
+    const h=currentHost(),r=currentRun(),w=currentWorld(),players=localRoster();if(!h||!r||!h.v142WardenAftershock)return;
     const state=h.v142WardenAftershock,now=performance.now();if(now>=Number(state.until||0)){delete h.v142WardenAftershock;if(!h.v142AftershockFadedShown){h.v142AftershockFadedShown=true;announce("WARDEN AFTERSHOCK FADES","The dungeon pressure has settled. The Warden Cache remains if you have not opened it yet.","cyan",6500)}return}
     r.alert=Math.max(Number(r.alert)||0,AFTERSHOCK_ALERT);if(now-Number(state.lastTick||0)<600)return;state.lastTick=now;
-    let playerRoom=-2;try{if(w&&player&&typeof W!=="undefined"&&W?.roomAt)playerRoom=W.roomAt(w,player.x,player.y)}catch(_){}
+    const playerRooms=players.map(player=>{let room=-2;try{if(w&&typeof W!=="undefined"&&W?.roomAt)room=W.roomAt(w,player.x,player.y)}catch(_){}return{player,room}});
     for(const enemy of h.enemies||[]){
       if(!enemy?.alive||enemy.v142WardenDefeated||recognisedEnemy(enemy))continue;
       let enemyRoom=-3;try{if(w&&typeof W!=="undefined"&&W?.roomAt)enemyRoom=W.roomAt(w,enemy.x,enemy.y)}catch(_){}
-      if(state.roomId>=0&&enemyRoom!==state.roomId&&enemyRoom!==playerRoom)continue;
-      if(player){enemy.aiState="chase";enemy.lastSeen={x:player.x,y:player.y};enemy.memoryMs=Math.max(Number(enemy.memoryMs)||0,2800);enemy.moveCooldown=Math.min(Number(enemy.moveCooldown)||650,500)}
+      if(state.roomId>=0&&enemyRoom!==state.roomId&&!playerRooms.some(entry=>entry.room===enemyRoom))continue;
+      const sameRoom=playerRooms.filter(entry=>entry.room===enemyRoom),candidates=sameRoom.length?sameRoom:playerRooms,target=candidates.sort((a,b)=>dist(a.player,enemy)-dist(b.player,enemy))[0]?.player||null;
+      if(target){enemy.aiState="chase";enemy.lastSeen={x:target.x,y:target.y};enemy.memoryMs=Math.max(Number(enemy.memoryMs)||0,2800);enemy.moveCooldown=Math.min(Number(enemy.moveCooldown)||650,500)}
     }
   }
 
