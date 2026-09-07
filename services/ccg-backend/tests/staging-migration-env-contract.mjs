@@ -46,8 +46,11 @@ assert.throws(
 );
 
 const payloadEnv = { ...safeEnv };
-for (const [index, envName] of Object.values(TABLE_ENV).entries()) {
-  payloadEnv[envName] = Buffer.from(JSON.stringify([{ marker: index }]), 'utf8').toString('base64');
+for (const [index, [table, envName]] of Object.entries(TABLE_ENV).entries()) {
+  const row = table === 'ccq_weekly_attempts'
+    ? { marker: index, ghost_path: [] }
+    : { marker: index };
+  payloadEnv[envName] = Buffer.from(JSON.stringify([row]), 'utf8').toString('base64');
 }
 
 const bundle = buildMigrationBundleFromEnvironment(payloadEnv);
@@ -56,8 +59,33 @@ assert.equal(bundle.source_system, 'supabase-read-only-export');
 assert.equal(bundle.captured_date, '2026-09-06');
 assert.equal(Object.keys(bundle.tables).length, 12);
 for (const [index, table] of Object.keys(TABLE_ENV).entries()) {
-  assert.deepEqual(bundle.tables[table], [{ marker: index }]);
+  const expected = table === 'ccq_weekly_attempts'
+    ? [{ marker: index, ghost_path: '[]' }]
+    : [{ marker: index }];
+  assert.deepEqual(bundle.tables[table], expected);
 }
+
+const weeklyPayloadName = TABLE_ENV.ccq_weekly_attempts;
+const ghostPath = [
+  { f: 1, t: 17, x: 11, y: 10 },
+  { f: 1, t: 529, x: 12, y: 10 },
+];
+const populatedWeeklyEnv = {
+  ...payloadEnv,
+  [weeklyPayloadName]: Buffer.from(JSON.stringify([{ marker: 9, ghost_path: ghostPath }]), 'utf8').toString('base64'),
+};
+const populatedBundle = buildMigrationBundleFromEnvironment(populatedWeeklyEnv);
+assert.equal(typeof populatedBundle.tables.ccq_weekly_attempts[0].ghost_path, 'string');
+assert.deepEqual(JSON.parse(populatedBundle.tables.ccq_weekly_attempts[0].ghost_path), ghostPath);
+
+const invalidWeeklyEnv = {
+  ...payloadEnv,
+  [weeklyPayloadName]: Buffer.from(JSON.stringify([{ marker: 9, ghost_path: {} }]), 'utf8').toString('base64'),
+};
+assert.throws(
+  () => buildMigrationBundleFromEnvironment(invalidWeeklyEnv),
+  /ghost_path must be a JSON array/
+);
 
 const firstPayloadName = Object.values(TABLE_ENV)[0];
 assert.throws(
@@ -69,4 +97,4 @@ assert.throws(
   /Invalid JSON staging migration payload/
 );
 
-console.log('CCG staging migration env contract passed: import is staging-only, fail-closed, feature-locked, and reconstructs only the frozen 12-table bundle.');
+console.log('CCG staging migration env contract passed: import is staging-only, fail-closed, feature-locked, preserves Weekly Vault ghost paths as JSONB arrays, and reconstructs only the frozen 12-table bundle.');
