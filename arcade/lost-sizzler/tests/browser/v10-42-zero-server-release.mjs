@@ -64,6 +64,11 @@ try{
   assert.ok(!state.bootstrap.includes('v10-42-multiplayer-collect-authority.js'),'Online collection authority bridge must not load in production V10.42.');
   assert.ok(state.bootstrap.includes('v10-42-zero-server-release.js'),'Zero-server release policy must load in production V10.42.');
 
+  const schedulerAdvanced=await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve(true)))));
+  assert.equal(schedulerAdvanced,true,'Zero-server menu enforcement must not starve animation/layout scheduling.');
+  const menuBox=await page.locator('#menu').boundingBox({timeout:5000});
+  assert.ok(menuBox&&menuBox.width>1500&&menuBox.height>900,`Zero-server start menu must complete viewport layout: ${JSON.stringify(menuBox)}`);
+
   const blocked=await page.evaluate(async()=>{
     try{await net.createOnlineRoom('ABCDE','TEST',{mode:'dungeon'});return{blocked:false}}catch(error){return{blocked:true,code:error?.code||'',message:String(error?.message||error)}}
   });
