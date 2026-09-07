@@ -8,13 +8,15 @@ const read=relative=>fs.readFileSync(path.join(root,relative),'utf8');
 const assert=(condition,message)=>{if(!condition)throw new Error(message)};
 
 const loader=read('arcade/lost-sizzler/js/v10-41-r30-buglog.js');
+const bootstrap=read('arcade/lost-sizzler/js/v10-42-bootstrap.js');
 const network=read('arcade/lost-sizzler/js/game-network.js');
 const state=read('arcade/lost-sizzler/js/v10-42-multiplayer-state.js');
 const collect=read('arcade/lost-sizzler/js/v10-42-multiplayer-collect-authority.js');
 
-assert(loader.includes('v10-42-multiplayer-state.js'),'Canonical Lost Sizzler loader must request the V10.42 multiplayer state adapter.');
-assert(loader.includes('v10-42-multiplayer-collect-authority.js'),'Canonical Lost Sizzler loader must request the V10.42 remote campaign collection authority bridge.');
-assert(loader.includes('loadV142MultiplayerState();loadV142MultiplayerCollectAuthority()'),'V10.42 loader must request character-state authority before the remote collection bridge.');
+assert(loader.includes('v10-42-bootstrap.js'),'Canonical late loader must hand V10.42 activation to the ordered bootstrap.');
+assert(bootstrap.includes('v10-42-multiplayer-state.js'),'Authoritative V10.42 bootstrap must request the multiplayer state adapter.');
+assert(bootstrap.includes('v10-42-multiplayer-collect-authority.js'),'Authoritative V10.42 bootstrap must request the remote campaign collection authority bridge.');
+assert(bootstrap.indexOf('v10-42-multiplayer-state.js')<bootstrap.indexOf('v10-42-multiplayer-collect-authority.js'),'V10.42 bootstrap must request character-state authority before the remote collection bridge.');
 
 for(const marker of ['rpgStats','relics','banishmentEssence','banishmentEssenceCost','sigilReveal','sigilWard','sigilBind','sigilBanish']){
   assert(state.includes(marker),`V10.42 multiplayer state must carry ${marker}.`);

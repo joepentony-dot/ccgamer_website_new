@@ -6,9 +6,11 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,'../../..');
 const source=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/v10-42-tutorial-campaign.js'),'utf8');
 const loader=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/v10-41-r30-buglog.js'),'utf8');
+const bootstrap=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/v10-42-bootstrap.js'),'utf8');
 const assert=(condition,message)=>{if(!condition)throw new Error(message)};
 
-assert(loader.includes('v10-42-tutorial-campaign.js'),'Canonical V10.42 loader must activate the campaign-aware Tutorial layer.');
+assert(loader.includes('v10-42-bootstrap.js'),'Canonical late loader must hand V10.42 activation to the ordered bootstrap.');
+assert(bootstrap.includes('v10-42-tutorial-campaign.js'),'Authoritative V10.42 bootstrap must activate the campaign-aware Tutorial layer.');
 assert(source.includes('without rewriting the stabilized training runtime'),'V10.42 Tutorial work must remain a presentation layer over the stabilized training mechanics.');
 assert(source.includes('THE FIVE-DEPTH CAMPAIGN'),'Tutorial must explain the five-depth campaign.');
 for(const name of ['The Threshold','Iron Keep','Moss Crypt','Ember Depths','Sigil Sanctum'])assert(source.includes(name),`Tutorial must name ${name}.`);
