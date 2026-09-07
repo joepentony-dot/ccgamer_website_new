@@ -9,13 +9,14 @@
   const state={
     installed:false,
     unsupported:false,
-    blockedWrites:0,
+    ownershipRepairs:0,
     maintenanceTicks:0,
     installAttempts:0,
     deferredInstallAttempts:0,
     runtimeBoundaryDrifts:0,
+    globalBoundaryDrifts:0,
     lockMode:"",
-    lastBlocked:null,
+    lastDisplaced:null,
     lastRuntimeBoundary:null,
     timer:0,
     startupTimers:[]
@@ -37,50 +38,41 @@
   }
 
   function gateActive(){
-    if(!state.installed||typeof controllerBoundary!=="function")return false;
-    let descriptor=null;
-    try{descriptor=Object.getOwnPropertyDescriptor(window,"update")}catch(_){}
-    return Boolean(
-      descriptor&&
-      Object.prototype.hasOwnProperty.call(descriptor,"value")&&
-      descriptor.value===controllerBoundary&&
-      descriptor.writable===false&&
-      descriptor.configurable===false
-    )
+    return Boolean(state.installed&&typeof controllerBoundary==="function"&&window.update===controllerBoundary)
+  }
+
+  function restoreOwnership(){
+    if(!controllerBoundary)controllerBoundary=authoritativeBoundary();
+    if(!controllerBoundary)return false;
+    if(window.update===controllerBoundary)return true;
+    state.globalBoundaryDrifts++;
+    state.lastDisplaced=window.update||null;
+    try{window.update=controllerBoundary}catch(_){return false}
+    if(window.update===controllerBoundary){state.ownershipRepairs++;return true}
+    return false
   }
 
   function install(){
     state.installAttempts++;
-    if(gateActive()){runtimeBoundaryStatus();return true}
     if(!controllerBoundary)controllerBoundary=authoritativeBoundary();
     if(!controllerBoundary)return false;
 
     let descriptor=null;
     try{descriptor=Object.getOwnPropertyDescriptor(window,"update")}catch(_){}
+    if(descriptor&&Object.prototype.hasOwnProperty.call(descriptor,"value")&&descriptor.writable===false&&descriptor.value!==controllerBoundary){
+      state.unsupported=true;state.lockMode="unsupported-fixed-owner";return false
+    }
     if(descriptor&&!Object.prototype.hasOwnProperty.call(descriptor,"value")&&descriptor.configurable===false){
       state.unsupported=true;state.lockMode="unsupported-accessor";return false
     }
-    if(descriptor&&descriptor.configurable===false&&descriptor.writable===false&&descriptor.value!==controllerBoundary){
-      state.unsupported=true;state.lockMode="unsupported-fixed-owner";return false
-    }
 
-    try{
-      Object.defineProperty(window,"update",{
-        configurable:false,
-        enumerable:descriptor?.enumerable!==false,
-        writable:false,
-        value:controllerBoundary
-      });
-      state.installed=true;
-      state.unsupported=false;
-      state.lockMode="frozen-data";
-      clearStartupTimers();
-      runtimeBoundaryStatus();
-      return gateActive()
-    }catch(_){
-      state.unsupported=true;state.lockMode="define-failed";
-      return false
-    }
+    if(!restoreOwnership())return false;
+    state.installed=true;
+    state.unsupported=false;
+    state.lockMode="cooperative-data";
+    clearStartupTimers();
+    runtimeBoundaryStatus();
+    return gateActive()
   }
 
   function clearStartupTimers(){
@@ -106,6 +98,7 @@
 
   function maintainCombatIntegrity(){
     runtimeBoundaryStatus();
+    if(state.installed)restoreOwnership();
     if(document.hidden)return false;
     try{if(typeof mode!=="undefined"&&mode!=="playing")return false}catch(_){}
     const api=stability();
@@ -126,7 +119,7 @@
   },{once:true});
 
   window.CCGLostSizzlerV142R2ControllerOwnerSeal={
-    install,gateActive,authoritativeBoundary,runtimeBoundaryStatus,maintainCombatIntegrity,
+    install,gateActive,restoreOwnership,authoritativeBoundary,runtimeBoundaryStatus,maintainCombatIntegrity,
     get state(){return state}
   };
 })();
