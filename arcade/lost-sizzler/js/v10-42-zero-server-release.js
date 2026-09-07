@@ -30,7 +30,10 @@
     if(!node.hidden){node.hidden=true;changed=true}
     if(!node.classList?.contains?.("hidden")){node.classList?.add?.("hidden");changed=true}
     if(node.getAttribute?.("aria-hidden")!=="true"){node.setAttribute?.("aria-hidden","true");changed=true}
-    if(node.style.display!=="none"){node.style.display="none";changed=true}
+    if(node.style.getPropertyValue("display")!=="none"||node.style.getPropertyPriority("display")!=="important"){
+      node.style.setProperty("display","none","important");
+      changed=true;
+    }
     return changed;
   }
 
@@ -142,7 +145,7 @@
   },true);
 
   const observer=new MutationObserver(()=>retireOnlineEntryPoints());
-  observer.observe(document.documentElement,{subtree:true,childList:true});
+  observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:["style","class","hidden","aria-hidden"]});
   addEventListener("pagehide",()=>observer.disconnect(),{once:true});
 
   enforce();
