@@ -11,17 +11,12 @@ for (const page of ['login.html', 'register.html', 'forgot.html', 'reset.html'])
   assert.match(
     html,
     /<script src="\.\.\/js\/ccg-auth-supabase-loader\.js" defer><\/script>/,
-    `${page} must use the provider-aware auth Supabase loader.`
+    `${page} must use the Supabase auth bootstrap.`
   );
   assert.doesNotMatch(
     html,
-    /<script src="\.\.\/js\/ccg-supabase-config\.js" defer><\/script>/,
-    `${page} must not load Supabase config directly.`
-  );
-  assert.doesNotMatch(
-    html,
-    /<script src="\.\.\/js\/ccg-supabase-client\.js" defer><\/script>/,
-    `${page} must not load the auto-bootstrapping Supabase client directly.`
+    /ccgAuthProvider=ccg|ccgAuthBaseUrl=/,
+    `${page} must not advertise the retired CCG/Render auth provider.`
   );
 }
 
@@ -65,9 +60,7 @@ async function executeLoader({ href, runtimeConfig = null }) {
     }
   };
 
-  const window = {
-    location: { href }
-  };
+  const window = { location: { href } };
   if (runtimeConfig) window.ccgAuthRuntimeConfig = runtimeConfig;
 
   const errors = [];
@@ -76,6 +69,7 @@ async function executeLoader({ href, runtimeConfig = null }) {
     document,
     URL,
     Array,
+    Object,
     Promise,
     queueMicrotask,
     console: {
@@ -85,55 +79,52 @@ async function executeLoader({ href, runtimeConfig = null }) {
     }
   });
 
-  vm.runInContext(loaderSource, context, {
-    filename: 'ccg-auth-supabase-loader.js'
-  });
-
+  vm.runInContext(loaderSource, context, { filename: 'ccg-auth-supabase-loader.js' });
   const ready = await window.CCG_AUTH_SUPABASE_READY;
   return {
     appended,
     ready,
     errors,
-    suppressed: window.__ccgAuthSupabaseBootstrapSuppressed === true
+    suppressed: window.__ccgAuthSupabaseBootstrapSuppressed === true,
+    providerLock: window.__ccgAuthProviderLocked,
+    runtimeProvider: window.ccgAuthRuntimeConfig?.provider,
+    descriptor: Object.getOwnPropertyDescriptor(window, 'ccgAuthRuntimeConfig')
   };
 }
 
-const defaultResult = await executeLoader({
-  href: 'https://www.cheekycommodoregamer.co.uk/auth/login.html'
-});
-assert.equal(defaultResult.suppressed, false);
-assert.equal(defaultResult.ready, true);
-assert.deepEqual(defaultResult.appended, [
-  'https://www.cheekycommodoregamer.co.uk/js/ccg-supabase-config.js',
-  'https://www.cheekycommodoregamer.co.uk/js/ccg-supabase-client.js'
-]);
-assert.equal(defaultResult.errors.length, 0);
-
-const explicitCcg = await executeLoader({
-  href: 'https://www.cheekycommodoregamer.co.uk/auth/login.html',
-  runtimeConfig: {
-    provider: 'ccg',
-    ccgBaseUrl: 'https://auth.cheekycommodoregamer.co.uk'
+for (const scenario of [
+  {
+    name: 'default production login',
+    href: 'https://www.cheekycommodoregamer.co.uk/auth/login.html'
+  },
+  {
+    name: 'former explicit CCG runtime config',
+    href: 'https://www.cheekycommodoregamer.co.uk/auth/login.html',
+    runtimeConfig: { provider: 'ccg', ccgBaseUrl: 'https://staging-auth.cheekycommodoregamer.co.uk' }
+  },
+  {
+    name: 'former localhost CCG pilot query',
+    href: 'http://localhost:8080/auth/login.html?ccgAuthProvider=ccg&ccgAuthBaseUrl=http%3A%2F%2Flocalhost%3A8787'
+  },
+  {
+    name: 'live hostile provider query',
+    href: 'https://www.cheekycommodoregamer.co.uk/auth/login.html?ccgAuthProvider=ccg&ccgAuthBaseUrl=https%3A%2F%2Fevil.example'
   }
-});
-assert.equal(explicitCcg.suppressed, true);
-assert.equal(explicitCcg.ready, false);
-assert.deepEqual(explicitCcg.appended, [], 'Explicit CCG auth must load zero Supabase scripts.');
-
-const localhostCcg = await executeLoader({
-  href: 'http://localhost:8080/auth/login.html?ccgAuthProvider=ccg&ccgAuthBaseUrl=http%3A%2F%2Flocalhost%3A8787'
-});
-assert.equal(localhostCcg.suppressed, true);
-assert.equal(localhostCcg.ready, false);
-assert.deepEqual(localhostCcg.appended, [], 'Local CCG pilot selection must load zero Supabase scripts.');
-
-const liveQueryOnly = await executeLoader({
-  href: 'https://www.cheekycommodoregamer.co.uk/auth/login.html?ccgAuthProvider=ccg&ccgAuthBaseUrl=https%3A%2F%2Fevil.example'
-});
-assert.equal(liveQueryOnly.suppressed, false, 'Live query parameters alone must never switch the auth provider.');
-assert.equal(liveQueryOnly.ready, true);
-assert.equal(liveQueryOnly.appended.length, 2);
+]) {
+  const result = await executeLoader(scenario);
+  assert.equal(result.suppressed, false, `${scenario.name}: Supabase bootstrap must never be suppressed.`);
+  assert.equal(result.ready, true, `${scenario.name}: Supabase bootstrap must complete.`);
+  assert.equal(result.providerLock, 'supabase', `${scenario.name}: provider lock must be Supabase.`);
+  assert.equal(result.runtimeProvider, 'supabase', `${scenario.name}: runtime config must be forced to Supabase.`);
+  assert.equal(result.descriptor?.writable, false, `${scenario.name}: runtime provider lock must not be writable.`);
+  assert.equal(result.descriptor?.configurable, false, `${scenario.name}: runtime provider lock must not be configurable.`);
+  assert.deepEqual(result.appended, [
+    'https://www.cheekycommodoregamer.co.uk/js/ccg-supabase-config.js',
+    'https://www.cheekycommodoregamer.co.uk/js/ccg-supabase-client.js'
+  ]);
+  assert.equal(result.errors.length, 0);
+}
 
 console.log(
-  'Browser auth Supabase-loader contract passed: production defaults remain Supabase, explicit/local CCG auth loads zero Supabase scripts, and live query parameters cannot switch providers.'
+  'Browser auth Supabase-loader contract passed: login, registration and recovery always load Supabase and the retired CCG/Render provider cannot be selected by runtime config or URL parameters.'
 );
