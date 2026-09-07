@@ -102,7 +102,7 @@
   function startAftershock(target,player){
     const h=currentHost(),r=currentRun(),w=currentWorld();if(!h||!r)return;
     let roomId=-1;try{if(w&&typeof W!=="undefined"&&W?.roomAt)roomId=W.roomAt(w,target.x,target.y)}catch(_){}
-    h.v142WardenAftershock={roomId,sourceId:target.id||"count-loadula",sourceName:label(target),until:performance.now()+AFTERSHOCK_MS,lastTick:0};
+    h.v142WardenAftershock={roomId,sourceId:target.id||"count-loadula",sourceName:label(target),until:performance.now()+AFTERSHOCK_MS,lastTick:0};h.v142AftershockFadedShown=false;
     r.alert=Math.min(100,Math.max(Number(r.alert)||0,AFTERSHOCK_ALERT));
     if(player){player.armor=Math.min(12,(Number(player.armor)||0)+2);const ammo=Math.max(12,Math.ceil((Number(player.maxMana)||100)*.18));player.mana=Math.min(Number(player.maxMana)||100,(Number(player.mana)||0)+ammo)}
   }
@@ -111,10 +111,10 @@
     if(!player)return 0;player.banishmentEssence=Math.max(0,Math.floor(Number(player.banishmentEssence)||0))+1;return player.banishmentEssence;
   }
 
-  function finaliseWarden(target,player,{baseKill=false}={}){
+  function finaliseWarden(target,player,{baseScore=0,baseXp=0}={}){
     const h=currentHost(),r=currentRun();if(!target||!player||!h||!r||target.v142WardenRewarded)return false;
     target.v142WardenRewarded=true;target.v142WardenDefeated=true;target.v142WardState="defeated";target.v142WardBroken=false;
-    const name=label(target),baseScore=baseKill?120:0,baseXp=baseKill?100:0;
+    const name=label(target);
     if(isCount(target)){
       target.awake=false;target.near=false;target.permanentlyBanished=true;target.spawnTimer=Number.POSITIVE_INFINITY;target.hp=0;target.stunMs=0;
       try{S?.setStalkerNear?.(false)}catch(_){}
@@ -140,19 +140,21 @@
     if(!broken(target))return false;
     const damage=Math.max(1,Math.floor(Number(power)||1));target.hp=Math.max(0,(Number(target.hp)||wardHp(target,player))-damage);target.flash=180;target.hpBarMs=3600;target.stunMs=Math.max(Number(target.stunMs)||0,120);
     sfx("hit");try{burst(target.x,target.y,P.purple,12,1.2);ring(target.x,target.y,P.purple,24);floatText(target.x,target.y,`-${damage} · ${target.hp} HP`,P.white)}catch(_){}
-    if(target.hp<=0)finaliseWarden(target,player||currentPlayer(),{baseKill:false});return true;
+    if(target.hp<=0)finaliseWarden(target,player||currentPlayer(),{baseScore:0,baseXp:0});return true;
   }
 
   if(baseDamageEnemy&&baseIsDeathStalkerEnemy){
     damageEnemy=function(enemy,power,element="energy",attacker=currentPlayer()){
       if(!enemy?.alive||!baseIsDeathStalkerEnemy(enemy)||!broken(enemy))return baseDamageEnemy(enemy,power,element,attacker);
-      const livePredicate=isDeathStalkerEnemy;
+      const livePredicate=isDeathStalkerEnemy,scoreBefore=(()=>{try{return Number(score)||0}catch(_){return 0}})(),xpBefore=Number(attacker?.totalXp)||0;let result;
       try{
         isDeathStalkerEnemy=function(candidate){return candidate===enemy?false:baseIsDeathStalkerEnemy(candidate)};
-        return baseDamageEnemy(enemy,power,element,attacker);
+        result=baseDamageEnemy(enemy,power,element,attacker);
       }finally{
         isDeathStalkerEnemy=livePredicate;
       }
+      if(!enemy.alive&&!enemy.v142WardenRewarded){const scoreAfter=(()=>{try{return Number(score)||0}catch(_){return scoreBefore}})(),xpAfter=Number(attacker?.totalXp)||xpBefore;finaliseWarden(enemy,attacker||currentPlayer(),{baseScore:Math.max(0,scoreAfter-scoreBefore),baseXp:Math.max(0,xpAfter-xpBefore)})}
+      return result;
     };
   }
 
@@ -221,7 +223,7 @@
     const h=currentHost(),player=currentPlayer();if(!h||!player)return;
     for(const enemy of h.enemies||[]){
       if(enemy?.alive||!enemy?.v142WardBroken||enemy.v142WardenRewarded||!baseIsDeathStalkerEnemy?.(enemy))continue;
-      finaliseWarden(enemy,player,{baseKill:true});
+      finaliseWarden(enemy,player,{baseScore:120,baseXp:100});
     }
   }
 
