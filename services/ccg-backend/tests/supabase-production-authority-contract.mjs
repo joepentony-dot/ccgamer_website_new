@@ -11,7 +11,8 @@ assert.match(authority, /No production browser page may select the experimental 
 assert.match(authority, /core game playability must not depend on Supabase being reachable at run time\./);
 assert.match(loader, /window\.__ccgAuthProviderLocked = 'supabase'/);
 assert.match(loader, /Object\.defineProperty\(window, 'ccgAuthRuntimeConfig'/);
-assert.doesNotMatch(loader, /ccgAuthProvider/);
-assert.doesNotMatch(loader, /ccgAuthBaseUrl/);
+assert.doesNotMatch(loader, /searchParams\.get\(['"]ccgAuthProvider['"]\)/);
+assert.doesNotMatch(loader, /searchParams\.get\(['"]ccgAuthBaseUrl['"]\)/);
+assert.doesNotMatch(loader, /provider:\s*['"]ccg['"]/);
 
 console.log('Supabase production authority contract passed: browser auth is locked to Supabase while core Lost Sizzler play remains backend-independent.');
