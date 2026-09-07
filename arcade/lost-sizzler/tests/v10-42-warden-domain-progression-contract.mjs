@@ -14,7 +14,7 @@ const map=Array.from({length:60},()=>Array(60).fill(0));
 const world={rooms,map,startRoomId:0,exitRoomId:3};
 const roomAt=(w,x,y)=>{const room=w.rooms.find(q=>x>=q.x&&x<=q.x+q.w&&y>=q.y&&y<=q.y+q.h);return room?room.id:-1};
 const player={id:"p1",x:1,y:1,health:8,maxHealth:10,armor:2};
-const count={id:"count",x:13,y:13,x0:13,y0:13,awake:true};
+const count={id:"count",x:28,y:13,x0:28,y0:13,awake:true};
 const death={id:"death",x:14,y:14,x0:14,y0:14,alive:true,deathStalker:true};
 const generator={id:"gen1",x:15,y:15,roomId:1,alive:true,powered:true,spawnCooldown:5000};
 const boss={id:"boss",x:28,y:13,alive:true,keyGuardian:true,hp:20,maxHp:20,armor:4,maxArmor:4};
@@ -34,17 +34,28 @@ context.window.CCGWorld={roomAt};
 vm.createContext(context);
 vm.runInContext(source,context,{filename:"v10-42-warden-domain-progression.js"});
 
-assert.equal(host.v142WardenDomain?.roomId,1,"Warden corruption should install around the supernatural threat");
+assert.equal(host.v142WardenDomain?.roomId,1,"Warden corruption should install around the selected supernatural threat");
 assert.equal(host.v142WardenDomain?.profileId,"iron-surge","Floor 2 should use Iron Surge corruption");
+assert.equal(host.v142WardenDomain?.sourceId,"death","The domain should bind permanently to the Death Stalker that owns its room");
+assert.equal(run.v142WardenFloors["2"].sourceId,"death","Campaign floor state should persist the bound Warden source ID");
+assert.equal(context.window.CCGLostSizzlerV142WardenDomainProgression.boundSourceId(),"death","The progression API should expose the exact bound source for diagnostics");
+
+count.v142WardenRewarded=true;count.v142WardenDefeated=true;
+tick();
+assert.equal(run.v142SealFragments,0,"Defeating an unbound supernatural enemy must not award the floor Warden Seal Fragment");
+assert.equal(run.v142WardenFloors["2"].resolved,false,"Defeating Count Loadula must not resolve a Death-Stalker-owned domain");
+assert.equal(host.v142WardenDomain.active,true,"The bound corruption must remain active when the wrong supernatural enemy dies");
 
 death.alive=false;death.v142WardenRewarded=true;death.v142WardenDefeated=true;
 host.chests.push({id:"cache",active:true,v142WardenCache:true,v142WardenSource:"death"});
 tick();
-assert.equal(run.v142SealFragments,1,"First floor Warden kill should award the first Seal Fragment");
+assert.equal(run.v142SealFragments,1,"The exact bound floor Warden kill should award the first Seal Fragment");
+assert.equal(run.v142WardenFloors["2"].resolvedSourceId,"death","Resolution should record the same exact Warden source ID");
 assert.equal(generator.v142WardenSuppressed,true,"Cleansing should suppress the bound generator");
 assert.ok(generator.spawnCooldown>=1e11,"Suppressed generator should use a finite long cooldown");
 assert.equal(host.doors[0].locked,false,"Cleansing should unlock an eligible optional shortcut");
 assert.equal(host.v142WardenCheckpoint?.active,true,"Cleansing should create an in-floor recovery anchor");
+assert.equal(host.v142WardenCheckpoint?.sourceId,"death","The recovery anchor should retain the Warden source that created it");
 
 context.openChest(player,host.chests[0]);
 assert.equal(run.v142SealFragments,2,"Warden Cache should award the second floor Seal Fragment");
@@ -80,4 +91,4 @@ assert.equal(boss.maxHp,19,"Master Seal should counter one prior debt stack plus
 assert.equal(boss.maxArmor,3,"Master Seal should strip three armour after live corruption is applied");
 assert.equal(context.window.CCGProgression.effectiveSight(player,run),8,"Seal Sense should add one sight tile outside Static Veil");
 
-console.log("PASS v10-42 Warden domain + Seal progression contract");
+console.log("PASS v10-42 Warden domain + exact source ownership + Seal progression contract");
