@@ -42,6 +42,8 @@ assert.match(guard,/inputReassertions/,"held movement must survive accidental sh
 assert.match(guard,/P2_CODES=new Set\(\["KeyI","KeyJ","KeyK","KeyL"\]\)/,"split-screen Player 2 movement keys must also use the input resilience path");
 assert.match(guard,/post-Spy mode-transition invariant/,"Spy exit must trigger a dedicated post-mode ownership invariant");
 assert.match(guard,/stale Spy owner outside Spy mode/,"r30 must recover already-contaminated non-Spy movement");
+assert.match(guard,/if\(typeof state\.spyOwnerMove==="function"&&window\.movePlayer!==state\.spyOwnerMove\)\{window\.movePlayer=state\.spyOwnerMove;state\.ownershipRepairs\+\+\}/,"active Spy play must keep the canonical movement owner at the top level instead of accepting wrapper ancestry growth");
+assert.doesNotMatch(guard,/typeof state\.spyOwnerMove==="function"&&!chainContains\(window\.movePlayer,state\.spyOwnerMove\)/,"active Spy movement ownership must not treat a nested canonical owner as healthy");
 assert.match(guard,/document\.body\.dataset\.movementRecovery/,"automatic runtime recoveries must leave a lightweight diagnostic marker");
 assert.match(guard,/maintainNotificationOwnership/,"r30 must stabilise retained notification ownership alongside movement ownership");
 assert.match(guard,/ensureNotificationToastOwner/,"r30 notification ownership must delegate to the final r29 rail/toast owner rather than create another competing wrapper stack");
