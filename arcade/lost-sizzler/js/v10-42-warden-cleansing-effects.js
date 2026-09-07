@@ -1,4 +1,4 @@
-/* The Lost Sizzler V10.42 r3 — visible Warden cleansing and refuge effects. */
+/* The Lost Sizzler V10.42 r3 — visible Warden cleansing, refuges and return-rest effects. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V142_WARDEN_CLEANSING_EFFECTS__)return;
@@ -37,7 +37,7 @@
   function domainFor(h){return h?.v142WardenDomain||null}
   function isCleansed(r,h,floor=floorNo(r)){
     const record=recordFor(r,floor),domain=domainFor(h);
-    return Boolean(record?.cleansed||domain?.cleansed);
+    return Boolean(record?.resolved||record?.cleansed||domain?.cleansed);
   }
 
   function validLightCell(w,room,q){
@@ -91,56 +91,87 @@
   function restoreArmour(players){let total=0;for(const player of players){const before=Math.max(0,Number(player.armor)||0);player.armor=Math.min(12,before+2);total+=Math.max(0,player.armor-before)}return total}
   function revealRefuge(players){for(const player of players)try{if(typeof reveal==="function")reveal(player)}catch(_){} }
 
-  function applyFloorBenefit(floor,h,w,roomId,players,r){
-    const result={detail:"",amount:0};
-    if(floor===1){
-      revealRefuge(players);result.detail="Restored lights permanently expose the cleansed chamber.";return result;
-    }
-    if(floor===2){
-      result.amount=restoreAmmo(players);result.detail=`Local reinforcement power is cut and ${result.amount} ammunition restored across the party.`;return result;
-    }
-    if(floor===3){
-      result.amount=calmOrdinaryEnemies(h,w,roomId);result.detail=`The Grave Call releases ${result.amount} ordinary enem${result.amount===1?"y":"ies"} from forced pursuit.`;return result;
-    }
+  function prepareEnvironmentalBenefit(floor,h,w,roomId,players){
+    const result={detail:"",hazards:0};
+    if(floor===1){revealRefuge(players);result.detail="Restored lights expose the cleansed chamber."}
     if(floor===4){
-      const hazards=suppressDedicatedHazards(h,roomId),room=roomFor(w,roomId);if(room&&hazards.count){room.dedicatedHazard=false;room.hazardType=null}
-      result.amount=restoreArmour(players);result.detail=`${hazards.count?`${hazards.count} chamber hazard${hazards.count===1?"":"s"} extinguished; `:""}${result.amount} armour restored across the party.`;return result;
+      const hazards=suppressDedicatedHazards(h,roomId),room=roomFor(w,roomId);result.hazards=hazards.count;
+      if(room&&hazards.count){room.dedicatedHazard=false;room.hazardType=null}
+      if(hazards.count)result.detail=`${hazards.count} chamber hazard${hazards.count===1?"":"s"} extinguished.`;
     }
+    return result;
+  }
+
+  function applyInitialFloorBenefit(floor,h,w,roomId,players,r){
+    const result={detail:"",amount:0};
+    if(floor===1){result.detail="The restored Archive beacon now provides a lasting lit refuge.";return result}
+    if(floor===2){result.amount=restoreAmmo(players);result.detail=`Local reinforcement power is cut and ${result.amount} ammunition restored across the party.`;return result}
+    if(floor===3){result.amount=calmOrdinaryEnemies(h,w,roomId);result.detail=`The Grave Call releases ${result.amount} ordinary enem${result.amount===1?"y":"ies"} from forced pursuit.`;return result}
+    if(floor===4){result.amount=restoreArmour(players);result.detail=`${result.amount} armour restored across the party.`;return result}
     if(floor===5){
       const before=Math.max(0,Number(r.alert)||0);r.alert=Math.min(before,Math.max(0,before-25),35);result.amount=Math.max(0,before-r.alert);result.detail=`Ambient alert pressure drops by ${result.amount}% and the live Sigil corruption stack is gone.`;return result;
     }
     return result;
   }
 
+  function restoreRefugeRest(players){
+    let hp=0,ammo=0;
+    for(const player of players){
+      const maxHealth=Math.max(1,Number(player.maxHealth)||1),beforeHealth=Math.max(0,Number(player.health)||0);player.health=Math.min(maxHealth,beforeHealth+2);hp+=Math.max(0,player.health-beforeHealth);
+      const maxMana=Math.max(1,Number(player.maxMana)||100),beforeMana=Math.max(0,Number(player.mana)||0),gain=Math.max(12,Math.ceil(maxMana*.15));player.mana=Math.min(maxMana,beforeMana+gain);ammo+=Math.max(0,player.mana-beforeMana);
+      if(player.health>beforeHealth)player.hpBarMs=Math.max(2200,Number(player.hpBarMs)||0);
+    }
+    return{hp,ammo,total:hp+ammo};
+  }
+
   function applyCleansingEffects(){
     const r=currentRun(),h=currentHost(),w=currentWorld();if(!r||!h||!w)return false;
     const floor=floorNo(r),record=recordFor(r,floor),domain=domainFor(h);if(!isCleansed(r,h,floor))return false;
     if(h.v142CleansingEffectsApplied&&Number(h.v142CleansingEffectsFloor)===floor)return true;
-    const roomId=domain?.roomId??record?.domainRoomId??record?.roomId??h.v142WardenCheckpoint?.roomId;if(roomId==null)return false;
+    const roomId=domain?.roomId??record?.domainRoomId??record?.refugeRoomId??record?.roomId??h.v142WardenCheckpoint?.roomId;if(roomId==null)return false;
     const room=roomFor(w,roomId);if(!room)return false;
     const players=localPlayerList(),profile=PROFILES[floor]||{id:`floor-${floor}`,name:`FLOOR ${floor}`,benefit:"The corruption has been cleansed."};
-    const lights=addRestoredLights(w,room,floor),traps=suppressRegularTraps(h,roomId),beforeAlert=Math.max(0,Number(r.alert)||0);r.alert=Math.max(0,beforeAlert-12);
-    const floorBenefit=applyFloorBenefit(floor,h,w,roomId,players,r),anchor=h.v142WardenCheckpoint,centre={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)};
+    const lights=addRestoredLights(w,room,floor),traps=suppressRegularTraps(h,roomId),environment=prepareEnvironmentalBenefit(floor,h,w,roomId,players),initialClaimed=Boolean(record?.refugeInitialBenefitClaimed);
+    let initial={detail:"The refuge's initial cleansing surge was already claimed.",amount:0};
+    if(!initialClaimed){
+      r.alert=Math.max(0,(Number(r.alert)||0)-12);initial=applyInitialFloorBenefit(floor,h,w,roomId,players,r);if(record)record.refugeInitialBenefitClaimed=true;
+    }
+    const anchor=h.v142WardenCheckpoint,centre={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)};
     room.wardenCleansed=true;room.wardenRefuge=true;room.dangerous=false;
     w.v142CleansedRooms=Array.isArray(w.v142CleansedRooms)?w.v142CleansedRooms:[];if(!w.v142CleansedRooms.some(id=>sameId(id,roomId)))w.v142CleansedRooms.push(roomId);
-    h.v142CleansedRefuge={floor,roomId,x:Number(anchor?.x??centre.x),y:Number(anchor?.y??centre.y),profileId:profile.id,title:`${profile.name} REFUGE`,benefit:profile.benefit,active:true,recoveryAnchor:Boolean(anchor?.active),restoredLights:lights,suppressedTraps:traps};
-    h.v142CleansingEffectsApplied=true;h.v142CleansingEffectsFloor=floor;h.revision=(Number(h.revision)||0)+1;
+    h.v142CleansedRefuge={floor,roomId,x:Number(anchor?.x??centre.x),y:Number(anchor?.y??centre.y),profileId:profile.id,title:`${profile.name} REFUGE`,benefit:profile.benefit,active:true,recoveryAnchor:Boolean(anchor?.active),restoredLights:lights,suppressedTraps:traps,restUsed:Boolean(record?.refugeRestUsed)};
+    h.v142CleansingEffectsApplied=true;h.v142CleansingEffectsFloor=floor;h.v142RefugePlayerInside=players.some(player=>sameId(roomAt(w,player.x,player.y),roomId));h.v142RefugeSeenLeaving=false;h.revision=(Number(h.revision)||0)+1;
     r.v142WardenRefugeFloors=Array.isArray(r.v142WardenRefugeFloors)?r.v142WardenRefugeFloors:[];if(!r.v142WardenRefugeFloors.includes(floor))r.v142WardenRefugeFloors.push(floor);
     if(record){record.refugeEstablished=true;record.refugeBenefit=profile.benefit;record.refugeRoomId=roomId}
     revealRefuge(players);sfx("open");
-    const extra=[lights?`${lights} permanent light${lights===1?"":"s"} restored`:"chamber lighting restored",traps?`${traps} trap${traps===1?"":"s"} disabled`:"local traps neutralised",floorBenefit.detail].filter(Boolean).join(" ");
-    if(["playing","inventory","paused"].includes(currentMode()))announce("WARDEN REFUGE ESTABLISHED",`${profile.benefit} ${extra}`,"green",12000);
+    const extra=[lights?`${lights} permanent light${lights===1?"":"s"} restored`:"chamber lighting restored",traps?`${traps} trap${traps===1?"":"s"} disabled`:"local traps neutralised",environment.detail,!initialClaimed?initial.detail:""].filter(Boolean).join(" ");
+    if(!initialClaimed&&["playing","inventory","paused"].includes(currentMode()))announce("WARDEN REFUGE ESTABLISHED",`${profile.benefit} ${extra}`,"green",12000);
     broadcast();syncNow();return true;
+  }
+
+  function updateRefugeReturn(){
+    const r=currentRun(),h=currentHost(),w=currentWorld(),refuge=h?.v142CleansedRefuge;if(!r||!h||!w||!refuge?.active)return false;
+    const players=localPlayerList(),inside=players.some(player=>sameId(roomAt(w,player.x,player.y),refuge.roomId)),previous=Boolean(h.v142RefugePlayerInside),record=recordFor(r,refuge.floor);
+    if(previous&&!inside)h.v142RefugeSeenLeaving=true;
+    if(inside&&!previous&&h.v142RefugeSeenLeaving&&!record?.refugeRestUsed){
+      const restored=restoreRefugeRest(players);
+      if(restored.total>0){
+        if(record)record.refugeRestUsed=true;refuge.restUsed=true;h.revision=(Number(h.revision)||0)+1;sfx("shrine");
+        announce("WARDEN REFUGE REST",`Returning to the cleansed chamber restores ${restored.hp} health and ${restored.ammo} ammunition across the local party. This refuge recovery is now spent for Floor ${refuge.floor}.`,"green",10500);broadcast();syncNow();
+      }else if(["playing","inventory"].includes(currentMode()))announce("WARDEN REFUGE READY","You are already fully supplied. The refuge's one return-rest remains available until you actually need it.","cyan",6500);
+    }
+    h.v142RefugePlayerInside=inside;return inside;
   }
 
   function refreshRefugeReadout(){
     const h=currentHost(),w=currentWorld(),player=currentPlayer(),refuge=h?.v142CleansedRefuge;if(!h||!w||!player||!refuge?.active)return;
     if(!sameId(roomAt(w,player.x,player.y),refuge.roomId))return;
-    try{if(UI?.surroundings)UI.surroundings.textContent=`${refuge.title} — ${refuge.benefit}` }catch(_){}
+    const rest=refuge.restUsed?"Return-rest spent.":"Leave and return once for a recovery rest.";
+    try{if(UI?.surroundings)UI.surroundings.textContent=`${refuge.title} — ${refuge.benefit} ${rest}` }catch(_){}
   }
 
-  function scan(){try{applyCleansingEffects();refreshRefugeReadout()}catch(error){console.warn("[Lost Sizzler V10.42] Warden cleansing tick failed safely",error)}}
+  function scan(){try{applyCleansingEffects();updateRefugeReturn();refreshRefugeReadout()}catch(error){console.warn("[Lost Sizzler V10.42] Warden cleansing tick failed safely",error)}}
   scan();const timer=setInterval(scan,SCAN_MS);addEventListener("pagehide",()=>clearInterval(timer),{once:true});
 
-  window.CCGLostSizzlerV142WardenCleansingEffects={version:"V10.42 r3",profiles:PROFILES,apply:applyCleansingEffects};
+  window.CCGLostSizzlerV142WardenCleansingEffects={version:"V10.42 r3",profiles:PROFILES,apply:applyCleansingEffects,updateRefugeReturn};
 })();
