@@ -13,11 +13,14 @@
     maintenanceTicks:0,
     installAttempts:0,
     deferredInstallAttempts:0,
+    runtimeBoundaryDrifts:0,
+    lockMode:"",
     lastBlocked:null,
+    lastRuntimeBoundary:null,
     timer:0,
     startupTimers:[]
   };
-  let controllerBoundary=null,getter=null,setter=null;
+  let controllerBoundary=null;
 
   function runtime(){return window.CCGLostSizzlerModeRuntime||null}
   function stability(){return window.CCGLostSizzlerV142R1Stability||null}
@@ -26,51 +29,56 @@
     return typeof boundary==="function"&&boundary.__ccgV141ModeFrameBoundary===true?boundary:null
   }
 
+  function runtimeBoundaryStatus(){
+    const latest=authoritativeBoundary(),drift=Boolean(controllerBoundary&&latest&&latest!==controllerBoundary);
+    if(drift&&state.lastRuntimeBoundary!==latest)state.runtimeBoundaryDrifts++;
+    state.lastRuntimeBoundary=latest||null;
+    return{locked:controllerBoundary,current:latest,drift}
+  }
+
   function gateActive(){
-    if(!state.installed||typeof getter!=="function"||typeof setter!=="function")return false;
+    if(!state.installed||typeof controllerBoundary!=="function")return false;
     let descriptor=null;
     try{descriptor=Object.getOwnPropertyDescriptor(window,"update")}catch(_){}
-    return Boolean(descriptor&&descriptor.get===getter&&descriptor.set===setter&&descriptor.configurable===false)
+    return Boolean(
+      descriptor&&
+      Object.prototype.hasOwnProperty.call(descriptor,"value")&&
+      descriptor.value===controllerBoundary&&
+      descriptor.writable===false&&
+      descriptor.configurable===false
+    )
   }
 
   function install(){
     state.installAttempts++;
-    if(gateActive())return true;
-    controllerBoundary=authoritativeBoundary();
+    if(gateActive()){runtimeBoundaryStatus();return true}
+    if(!controllerBoundary)controllerBoundary=authoritativeBoundary();
     if(!controllerBoundary)return false;
+
     let descriptor=null;
     try{descriptor=Object.getOwnPropertyDescriptor(window,"update")}catch(_){}
-    if(descriptor&&descriptor.configurable===false){
-      if(descriptor.get===getter&&descriptor.set===setter){state.installed=true;return true}
-      state.unsupported=true;return false
+    if(descriptor&&!Object.prototype.hasOwnProperty.call(descriptor,"value")&&descriptor.configurable===false){
+      state.unsupported=true;state.lockMode="unsupported-accessor";return false
     }
-
-    getter=function getLostSizzlerAuthoritativeUpdate(){
-      const latest=authoritativeBoundary();
-      if(latest)controllerBoundary=latest;
-      return controllerBoundary
-    };
-    setter=function setLostSizzlerAuthoritativeUpdate(value){
-      const latest=authoritativeBoundary();
-      if(latest)controllerBoundary=latest;
-      if(value===controllerBoundary)return;
-      state.blockedWrites++;
-      state.lastBlocked=value;
-    };
+    if(descriptor&&descriptor.configurable===false&&descriptor.writable===false&&descriptor.value!==controllerBoundary){
+      state.unsupported=true;state.lockMode="unsupported-fixed-owner";return false
+    }
 
     try{
       Object.defineProperty(window,"update",{
         configurable:false,
         enumerable:descriptor?.enumerable!==false,
-        get:getter,
-        set:setter
+        writable:false,
+        value:controllerBoundary
       });
       state.installed=true;
+      state.unsupported=false;
+      state.lockMode="frozen-data";
       clearStartupTimers();
-      return window.update===controllerBoundary
+      runtimeBoundaryStatus();
+      return gateActive()
     }catch(_){
-      state.unsupported=true;
-      getter=setter=null;
+      state.unsupported=true;state.lockMode="define-failed";
       return false
     }
   }
@@ -97,6 +105,7 @@
   }
 
   function maintainCombatIntegrity(){
+    runtimeBoundaryStatus();
     if(document.hidden)return false;
     try{if(typeof mode!=="undefined"&&mode!=="playing")return false}catch(_){}
     const api=stability();
@@ -117,7 +126,7 @@
   },{once:true});
 
   window.CCGLostSizzlerV142R2ControllerOwnerSeal={
-    install,gateActive,authoritativeBoundary,maintainCombatIntegrity,
+    install,gateActive,authoritativeBoundary,runtimeBoundaryStatus,maintainCombatIntegrity,
     get state(){return state}
   };
 })();
