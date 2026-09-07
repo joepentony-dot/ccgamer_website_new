@@ -7,6 +7,7 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,'../../..');
 const source=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/v10-42-floor-balance.js'),'utf8');
 const loader=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/v10-41-r30-buglog.js'),'utf8');
+const bootstrap=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/v10-42-bootstrap.js'),'utf8');
 const assert=(condition,message)=>{if(!condition)throw new Error(message)};
 
 const systems={decorate(_world,host){return host}};
@@ -24,7 +25,12 @@ const sandbox={
 vm.runInNewContext(source,sandbox,{filename:'v10-42-floor-balance.js'});
 const api=sandbox.window.CCGLostSizzlerV142FloorBalance;
 assert(api,'Progressive floor balance API must install.');
-assert(loader.includes('v10-42-floor-balance.js'),'Canonical V10.42 loader must activate progressive combat balance.');
+assert(loader.includes('v10-42-bootstrap.js'),'Canonical late loader must hand V10.42 activation to the ordered bootstrap.');
+assert(bootstrap.includes('v10-42-floor-balance.js'),'Authoritative V10.42 bootstrap must activate progressive combat balance.');
+assert(bootstrap.indexOf('v10-42-five-depth-campaign.js')<bootstrap.indexOf('v10-42-floor-balance.js'),'Five-depth campaign state must exist before the floor-balance wrapper installs.');
+assert(bootstrap.indexOf('v10-42-floor-balance.js')<bootstrap.indexOf('v10-42-tutorial-campaign.js'),'Floor combat balance must install before presentation-only Tutorial copy.');
+assert(bootstrap.indexOf('v10-42-floor-balance.js')<bootstrap.indexOf('v10-42-zero-server-release.js'),'Floor combat balance must install before the production release-policy guard.');
+assert(bootstrap.indexOf('v10-42-floor-balance.js')<bootstrap.indexOf('v10-42-r1-stability.js'),'Floor combat balance must install before final V10.42 stability protection.');
 
 const expectedDamage=[.80,.90,1,1.10,1.20];
 for(let floor=1;floor<=5;floor++){
@@ -55,4 +61,4 @@ assert(boss.maxHp===22,'Named Floor 5 threats should gain only a controlled 10% 
 assert(boss.maxArmor===5,'Named Floor 5 threats should receive one additional armour point.');
 assert(finalNamed.v142CombatBalance.floor===5,'Runtime diagnostics must expose the active combat-balance floor.');
 
-console.log('Lost Sizzler V10.42 progressive floor combat balance contract passed.');
+console.log('Lost Sizzler V10.42 progressive floor combat balance contract passed through the ordered bootstrap.');
