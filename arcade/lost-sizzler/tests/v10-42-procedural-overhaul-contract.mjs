@@ -12,6 +12,7 @@ const configSource=read('arcade/lost-sizzler/js/config.js');
 const overhaulSource=read('arcade/lost-sizzler/js/v10-42-procedural-overhaul.js');
 const campaignSource=read('arcade/lost-sizzler/js/v10-42-five-depth-campaign.js');
 const loaderSource=read('arcade/lost-sizzler/js/v10-41-r30-buglog.js');
+const bootstrapSource=read('arcade/lost-sizzler/js/v10-42-bootstrap.js');
 
 const sandbox={window:{},console};
 vm.runInNewContext(configSource,sandbox,{filename:'config.js'});
@@ -71,7 +72,13 @@ assert(campaignSource.includes('applyFloorBalance'),'Five-depth layer must apply
 assert(campaignSource.includes('AI.stepEnemies=function'),'Enemy pursuit/combat tempo must scale through the campaign.');
 assert(campaignSource.includes('authorizeInterimExit'),'Floors 1–4 must use progression stairs without falsely completing the final Sigil escape.');
 assert(campaignSource.includes('55–75 minutes'),'Menu copy must describe the intended substantial campaign length.');
-assert(loaderSource.includes('v10-42-procedural-overhaul.js'),'Canonical game loader must activate the V10.42 RPG overhaul.');
-assert(loaderSource.includes('v10-42-five-depth-campaign.js'),'Canonical game loader must activate the five-depth campaign layer.');
+
+assert(loaderSource.includes('v10-42-bootstrap.js'),'Canonical late loader must hand V10.42 to the authoritative ordered bootstrap.');
+assert(!loaderSource.includes('function loadV142ProceduralOverhaul'),'Legacy independent V10.42 module insertion must not remain active.');
+assert(bootstrapSource.includes('v10-42-procedural-overhaul.js'),'Ordered bootstrap must activate the V10.42 RPG overhaul.');
+assert(bootstrapSource.includes('v10-42-five-depth-campaign.js'),'Ordered bootstrap must activate the five-depth campaign layer.');
+assert(bootstrapSource.includes('v10-42-r1-stability.js'),'Ordered bootstrap must finish with the V10.42 stability layer.');
+assert(bootstrapSource.indexOf('v10-42-procedural-overhaul.js')<bootstrapSource.indexOf('v10-42-five-depth-campaign.js'),'Procedural overhaul must load before the five-depth campaign wrapper.');
+assert(bootstrapSource.indexOf('v10-42-five-depth-campaign.js')<bootstrapSource.indexOf('v10-42-r1-stability.js'),'Stability layer must load after campaign wrappers are installed.');
 
 console.log('Lost Sizzler V10.42 five-depth procedural RPG overhaul contract passed.');
