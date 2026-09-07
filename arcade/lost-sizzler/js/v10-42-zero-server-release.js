@@ -6,7 +6,10 @@
 
   const ONLINE_BUTTON_IDS=["create-btn","horde-mode-btn","saboteurs-mode-btn","join-btn"];
   const ONLINE_ONLY_SELECTORS=[".online-howto",".join-row","#online-lobby"];
-  const state={enabled:true,removedButtons:[],hiddenPanels:[],networkLocked:false,lastReason:""};
+  const RELEASE_BLURB="A five-floor pixel dungeon crawl filled with shifting objectives, rare loot, hidden routes, dangerous events and things in the dark that ordinary weapons cannot finish.";
+  const RELEASE_MODE_LABEL_HTML="<span>✦</span> CHOOSE YOUR ADVENTURE <span>✦</span>";
+  const RELEASE_NOTE="V10.42 uses a zero-server-cost release model: Solo, Tutorial and 2P Split Screen run locally in your browser. Supabase remains available for CCG account features such as the Weekly High-Score Vault, but core gameplay never requires an online multiplayer server.";
+  const state={enabled:true,removedButtons:[],hiddenPanels:[],networkLocked:false,lastReason:"",enforcementPasses:0};
 
   function hideNode(node){
     if(!node)return false;
@@ -17,7 +20,20 @@
     return true;
   }
 
+  function setTextIfChanged(node,value){
+    if(!node||node.textContent===value)return false;
+    node.textContent=value;
+    return true;
+  }
+
+  function setHtmlIfChanged(node,value){
+    if(!node||node.innerHTML===value)return false;
+    node.innerHTML=value;
+    return true;
+  }
+
   function retireOnlineEntryPoints(){
+    state.enforcementPasses+=1;
     for(const id of ONLINE_BUTTON_IDS){
       const node=document.getElementById(id);
       if(node&&hideNode(node)&&!state.removedButtons.includes(id))state.removedButtons.push(id);
@@ -27,14 +43,9 @@
       if(node&&hideNode(node)&&!state.hiddenPanels.includes(selector))state.hiddenPanels.push(selector);
     }
 
-    const blurb=document.querySelector(".menu-blurb");
-    if(blurb)blurb.textContent="A five-floor pixel dungeon crawl filled with shifting objectives, rare loot, hidden routes, dangerous events and things in the dark that ordinary weapons cannot finish.";
-
-    const label=document.querySelector(".mode-select-label");
-    if(label)label.innerHTML="<span>✦</span> CHOOSE YOUR ADVENTURE <span>✦</span>";
-
-    const note=document.getElementById("menu-note");
-    if(note)note.textContent="V10.42 uses a zero-server-cost release model: Solo, Tutorial and 2P Split Screen run locally in your browser. Supabase remains available for CCG account features such as the Weekly High-Score Vault, but core gameplay never requires an online multiplayer server.";
+    setTextIfChanged(document.querySelector(".menu-blurb"),RELEASE_BLURB);
+    setHtmlIfChanged(document.querySelector(".mode-select-label"),RELEASE_MODE_LABEL_HTML);
+    setTextIfChanged(document.getElementById("menu-note"),RELEASE_NOTE);
 
     document.body.dataset.onlineMultiplayer="disabled";
     document.body.dataset.releaseModel="zero-server-cost";
@@ -55,6 +66,7 @@
       try{net.setSolo?.("TITLE")}catch(_){}
       for(const method of ["join","createOnlineRoom","joinExistingRoom"]){
         if(typeof net[method]!=="function")continue;
+        if(net[method].__ccgV142ZeroServer)continue;
         const original=net[method].bind(net);
         const blocked=function(){return unavailable()};
         blocked.__ccgV142ZeroServer=true;
