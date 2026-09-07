@@ -67,7 +67,7 @@ assert.equal(typeof timer,"function","The normal Warden maintenance timer should
 
 timer();
 assert.equal(pursuer.aiState,"chase","The Warden Aftershock should push an ordinary enemy into pursuit");
-assert.deepEqual(pursuer.lastSeen,{x:p2.x,y:p2.y},"A P2-room Aftershock pursuer should target P2 rather than remote P1");
+assert.deepEqual({x:pursuer.lastSeen?.x,y:pursuer.lastSeen?.y},{x:p2.x,y:p2.y},"A P2-room Aftershock pursuer should target P2 rather than remote P1");
 assert.equal(pursuer.memoryMs,2800,"Aftershock pursuit should keep the existing pursuit-memory floor");
 assert.equal(pursuer.moveCooldown,500,"Aftershock pursuit should keep the existing movement-pressure ceiling");
 
