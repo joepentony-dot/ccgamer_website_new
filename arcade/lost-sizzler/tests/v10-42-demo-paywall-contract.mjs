@@ -6,9 +6,12 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,'../../..');
 const source=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/v10-42-demo-paywall.js'),'utf8');
 const loader=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/v10-41-r30-buglog.js'),'utf8');
+const bootstrap=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/v10-42-bootstrap.js'),'utf8');
 const assert=(condition,message)=>{if(!condition)throw new Error(message)};
 
-assert(loader.includes('v10-42-demo-paywall.js'),'Canonical V10.42 loader must activate the Tutorial completion/paywall layer.');
+assert(loader.includes('v10-42-bootstrap.js'),'Canonical late loader must hand V10.42 activation to the ordered bootstrap.');
+assert(bootstrap.includes('v10-42-demo-paywall.js'),'Authoritative V10.42 bootstrap must activate the Tutorial completion/paywall layer.');
+assert(bootstrap.indexOf('v10-42-tutorial-campaign.js')<bootstrap.indexOf('v10-42-demo-paywall.js'),'Tutorial campaign layer must load before its completion/paywall handoff.');
 assert(source.includes('const FALLBACK_PRICE="£1.99"'),'The draft launch price must remain £1.99 until the server-authoritative offer deliberately changes.');
 assert(source.includes('const PRODUCT_SLUG="the-lost-sizzler-full-game"'),'The permanent entitlement must use the fixed Lost Sizzler product slug.');
 assert(source.includes('window.CCG_LOST_SIZZLER_DEMO_MODE===true'),'Full-game button interception must remain explicit demo-mode opt-in.');
