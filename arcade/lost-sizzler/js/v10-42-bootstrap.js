@@ -5,7 +5,7 @@
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
   const BUILD="V10.42 r2";
-  const CACHE="20260908r15";
+  const CACHE="20260908r16";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-five-depth-campaign.js","CCGLostSizzlerV142FiveDepthCampaign"],
@@ -13,7 +13,6 @@
     ["v10-42-tutorial-campaign.js","CCGLostSizzlerV142TutorialCampaign"],
     ["v10-42-demo-paywall.js","CCGLostSizzlerV142DemoPaywall"],
     ["v10-42-zero-server-release.js","CCGLostSizzlerV142ZeroServerRelease"],
-    ["v10-42-r4-stage8-merchant-owner-seal.js","CCGLostSizzlerV142R4Stage8MerchantOwnerSeal"],
     ["v10-42-r3-retained-spy-inventory-seal.js","CCGLostSizzlerV142R3RetainedSpyInventorySeal"],
     ["v10-42-r2-controller-owner-seal.js","CCGLostSizzlerV142R2ControllerOwnerSeal"],
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"]
@@ -126,10 +125,29 @@
     return state.controllerSealReady;
   }
 
+  function promoteStage8MerchantOwner(){
+    const top=window.openShop;
+    if(typeof top!=="function")return false;
+    if(top.__ccgStage8MerchantDialogue===true)return true;
+    const seen=new Set();let owner=top;
+    while(typeof owner==="function"&&!seen.has(owner)){
+      if(owner.__ccgStage8MerchantDialogue===true){
+        try{delete owner.__ccgStage8MerchantDialogue}catch(_){try{owner.__ccgStage8MerchantDialogue=false}catch(__){}}
+        try{top.__ccgStage8MerchantDialogue=true;return true}catch(_){return false}
+      }
+      seen.add(owner);owner=owner.__ccgOriginal;
+    }
+    try{return Boolean(window.CCGLostSizzlerStage8NpcDialogue?.installMerchantDialogue?.())}catch(_){return false}
+  }
+
   async function boot(){
     setReleaseReady(false);stampBuild();ensureIdentityObserver();
     try{
       for(const [file,marker] of modules)await loadOne(file,marker);
+      // Stage 8 owns merchant presentation while r1 owns the shop price ladder.
+      // Promote the existing presentation marker only after r1 has finished its
+      // normal wrapper construction so neither owner needs an accessor or poll.
+      promoteStage8MerchantOwner();
       // V10.42 r1/r2 no longer assign global window.update. Controller ownership
       // remains with the established V10.41 mode runtime and its recovery tests;
       // r2 observes/seals where the descriptor permits, but cannot block release
