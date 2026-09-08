@@ -166,7 +166,7 @@
       diagnostics.dossierSpaceCloses++;return;
     }
     try{
-      if(mode==="playing"&&!event.repeat&&p1){queueAttack(p1);if(!Number.isFinite(fire1)||fire1>5000)fire1=0}
+      if(mode==="playing"&&!event.repeat&&p1){repairCombatTimers();repairProjectilePool();queueAttack(p1)}
     }catch(_){}
   },true);
 
