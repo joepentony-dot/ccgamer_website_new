@@ -5,13 +5,14 @@
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
   const BUILD="V10.42 r2";
-  const CACHE="20260908r23";
+  const CACHE="20260908r24";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-five-depth-campaign.js","CCGLostSizzlerV142FiveDepthCampaign"],
     ["v10-42-floor-balance.js","CCGLostSizzlerV142FloorBalance"],
     ["v10-42-r6-biome-environment-director.js","CCGLostSizzlerV142R6BiomeEnvironmentDirector"],
     ["v10-42-r7-room-objective-director.js","CCGLostSizzlerV142R7RoomObjectiveDirector"],
+    ["v10-42-r8-breakable-interaction-director.js","CCGLostSizzlerV142R8BreakableInteractionDirector"],
     ["v10-42-tutorial-campaign.js","CCGLostSizzlerV142TutorialCampaign"],
     ["v10-42-demo-paywall.js","CCGLostSizzlerV142DemoPaywall"],
     ["v10-42-zero-server-release.js","CCGLostSizzlerV142ZeroServerRelease"],
@@ -140,14 +141,7 @@
     setReleaseReady(false);stampBuild();
     try{
       for(const [file,marker] of modules)await loadOne(file,marker);
-      // Stage 8 owns merchant presentation while r1 owns the shop price ladder.
-      // Promote the existing presentation marker only after r1 has finished its
-      // normal wrapper construction so neither owner needs an accessor or poll.
       promoteStage8MerchantOwner();
-      // V10.42 r1/r2 no longer assign global window.update. Controller ownership
-      // remains with the established V10.41 mode runtime and its recovery tests;
-      // r2 observes/seals where the descriptor permits, but cannot block release
-      // merely because an older non-configurable accessor cannot be replaced.
       observeControllerSeal();
       state.ready=true;setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
       const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five new dungeon floors are loaded in verified order. Solo, Tutorial and 2P Split Screen run locally; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
