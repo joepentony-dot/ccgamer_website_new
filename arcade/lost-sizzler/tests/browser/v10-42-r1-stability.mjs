@@ -61,7 +61,7 @@ try{
   assert.equal(shop.shadow,5,"V10.42 stability counter must stay synchronized with the shop counter.");
 
   const combatRepair=await page.evaluate(()=>{
-    p1.mana=100;fire1=Number.NaN;projectileCD=Number.NaN;fireBuffer1=Number.NaN;
+    p1.firearmUnlocked=true;p1.weapon=baseWeapon();p1.mana=100;fire1=Number.NaN;projectileCD=Number.NaN;fireBuffer1=Number.NaN;
     const stale={id:"v142-stale",owner:p1.id,x:p1.x,y:p1.y,dx:1,dy:0,ttl:99,__v142BornAt:performance.now()-6000};bullets.push(stale);
     window.CCGLostSizzlerV142R1Stability.repairCombatTimers();window.CCGLostSizzlerV142R1Stability.repairProjectilePool();
     return{fire1,projectileCD,fireBuffer1,staleTtl:stale.ttl,diagnostics:{...window.CCGLostSizzlerV142R1Stability.diagnostics}};
@@ -105,13 +105,16 @@ try{
     const fake={id:"v142-r1-chest-contract",x:p1.x,y:p1.y,active:true,locked:false,depth:2,loot:{kind:"ammo",amount:5,rarity:"COMMON",name:"TEST AMMO CACHE"}};
     openChest(p1,fake);
     mode="levelup";
-    return{active:fake.active,rewardScore:fake.rewardScore,rewardXp:fake.rewardXp,beforeMana};
+    return{active:fake.active,rewardScore:fake.rewardScore,rewardXp:fake.rewardXp,beforeMana,afterMana:p1.mana};
   });
   assert.equal(chest.active,false,"Opening an unlocked chest must consume the chest.");
   assert.ok(chest.rewardScore>0,"Every opened chest must record a score reward.");
   assert.ok(chest.rewardXp>0,"Every opened chest must record an XP reward.");
-  await page.waitForFunction(()=>window.CCGLostSizzlerV142R1Stability.diagnostics.chestLootRecoveries>=1&&p1.mana>1,null,{timeout:5000});
+  assert.equal(chest.beforeMana,1,"Synthetic chest qualification must begin with exactly one ammunition unit.");
+  assert.equal(chest.afterMana,6,"Established chest ownership must deliver the +5 ammo reward synchronously and exactly once.");
   await page.waitForFunction(()=>document.getElementById("pickup-title")?.textContent==="CHEST REWARD CONFIRMED",null,{timeout:5000});
+  const confirmedMana=await page.evaluate(()=>p1.mana);
+  assert.equal(confirmedMana,6,"V10.42 chest confirmation must not duplicate loot already delivered by the established chest owner.");
   await page.evaluate(()=>{mode="playing"});
 
   const alphabet=await page.evaluate(()=>{
