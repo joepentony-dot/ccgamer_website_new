@@ -15,7 +15,7 @@
 
   const MODE_ID="sizzler-saboteurs";
   const TICK_MS=40;
-  const state={timer:0,repairs:0,lastOpen:false,displayOverrides:0};
+  const state={timer:0,observer:null,observedRoot:null,observerQueued:false,repairs:0,lastOpen:false,displayOverrides:0,mutationRepairs:0};
 
   function retainedSpyActive(){
     try{return window.CCGLostSizzlerSpecialModes?.active?.type===MODE_ID}catch(_){return false}
@@ -28,9 +28,32 @@
     return changed
   }
 
+  function queueMutationReconcile(){
+    if(state.observerQueued)return;
+    state.observerQueued=true;
+    queueMicrotask(()=>{
+      state.observerQueued=false;
+      try{if(reconcile())state.mutationRepairs+=1}catch(error){console.warn("[Lost Sizzler V10.42 r3] retained Spy mutation reconciliation failed safely",error)}
+    })
+  }
+
+  function ensureObserver(root,body){
+    if(!body)return false;
+    if(state.observer&&state.observedRoot===root)return true;
+    try{state.observer?.disconnect?.()}catch(_){}
+    state.observer=new MutationObserver(queueMutationReconcile);
+    state.observer.observe(body,{attributes:true,attributeFilter:["data-special-mode","data-spy-r32-inventory"]});
+    if(root){
+      state.observer.observe(root,{attributes:true,attributeFilter:["style","class","hidden","aria-hidden"]});
+      state.observedRoot=root;
+    }else state.observedRoot=null;
+    return true
+  }
+
   function reconcile(){
     const api=window.CCGLostSizzlerV141R32SpyOverhaul;
     const body=document.body,root=document.getElementById("spy-r32-inventory");
+    ensureObserver(root,body);
     if(!api?.state||!body||!root)return false;
     if(!retainedSpyActive()){
       const changed=clearPresentation(root,body);
@@ -59,11 +82,12 @@
     return changed
   }
 
+  ensureObserver(document.getElementById("spy-r32-inventory"),document.body);
   state.timer=setInterval(()=>{try{reconcile()}catch(error){console.warn("[Lost Sizzler V10.42 r3] retained Spy inventory reconciliation failed safely",error)}},TICK_MS);
-  addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
+  addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0;try{state.observer?.disconnect?.()}catch(_){};state.observer=null;state.observedRoot=null},{once:true});
 
   window.CCGLostSizzlerV142R3RetainedSpyInventorySeal=Object.freeze({
     reconcile,
-    diagnostics:()=>Object.freeze({repairs:state.repairs,lastOpen:state.lastOpen,displayOverrides:state.displayOverrides,timerActive:Boolean(state.timer)})
+    diagnostics:()=>Object.freeze({repairs:state.repairs,lastOpen:state.lastOpen,displayOverrides:state.displayOverrides,mutationRepairs:state.mutationRepairs,timerActive:Boolean(state.timer),observerActive:Boolean(state.observer)})
   });
 })();
