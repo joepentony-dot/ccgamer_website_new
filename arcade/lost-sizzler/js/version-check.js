@@ -3,7 +3,7 @@
   if(window.__CCG_LOST_SIZZLER_VERSION_CHECK__)return;
   window.__CCG_LOST_SIZZLER_VERSION_CHECK__=true;
 
-  const RELEASE_VERSION="V10.41";
+  const RELEASE_VERSION="V10.42";
   const RELEASE_CACHE=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
   const meta=document.querySelector('meta[name="ccg-lost-sizzler-build"]');
   const current=String(meta?.content||"unknown").trim();
@@ -245,11 +245,23 @@
     return Boolean(menu&&!menu.classList.contains("hidden")&&document.body?.dataset?.runActive!=="true");
   }
 
+  function activeReleaseBuild(){
+    const build=String(window.CCGLostSizzlerV142Bootstrap?.build||RELEASE_VERSION).trim();
+    return build||RELEASE_VERSION;
+  }
+
+  function activeReleaseFamily(){
+    const build=activeReleaseBuild();
+    const match=build.match(/^V\d+(?:\.\d+)+/i);
+    return match?match[0].toUpperCase():RELEASE_VERSION;
+  }
+
   function setReleaseLabels(){
+    const releaseBuild=activeReleaseBuild(),releaseFamily=activeReleaseFamily();
     const subtitle=document.querySelector(".brand p");
-    if(subtitle)subtitle.textContent=`THE LOST SIZZLER — ${RELEASE_VERSION}`;
-    const badge=document.querySelector(".build-badge");
-    if(badge&&!state.outdated){badge.textContent=`BUILD ${RELEASE_VERSION}`;badge.title=`${RELEASE_VERSION} · Lost Sizzler build ${current}`}
+    if(subtitle&&subtitle.textContent!==`THE LOST SIZZLER — ${releaseFamily}`)subtitle.textContent=`THE LOST SIZZLER — ${releaseFamily}`;
+    const badge=document.querySelector(".build-badge"),expectedBadge=`BUILD ${releaseBuild.toUpperCase()}`;
+    if(badge&&!state.outdated&&badge.textContent!==expectedBadge){badge.textContent=expectedBadge;badge.title=`${releaseBuild} · Lost Sizzler build ${current}`}
   }
 
   function ensureButton(){

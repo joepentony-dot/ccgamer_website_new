@@ -376,7 +376,11 @@
   function clearKeys(){keys.clear();state.trapHeld=false;state.trapPulse=false}
 
   addEventListener("keydown",onKeyDown,true);addEventListener("keyup",onKeyUp,true);addEventListener("blur",clearKeys,true);
-  state.timer=setInterval(monitor,MONITOR_MS);monitor();
+  // The authoritative mode controller owns Spy lifecycle frames. Retaining a
+  // second 40 ms monitor here races the controller and can appear after R30's
+  // retirement pass, so initialise once and leave subsequent transitions to
+  // the established controller/R30 boundary.
+  monitor();
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);leaveIsolation()},{once:true});
 
   const runtimeRegistry=window.CCGLostSizzlerModeRuntime||{runtimes:{}};runtimeRegistry.runtimes=runtimeRegistry.runtimes||{};

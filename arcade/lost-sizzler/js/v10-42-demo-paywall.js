@@ -92,8 +92,13 @@
   }
 
   const FULL_GAME_BUTTONS=["solo-btn","create-btn","horde-mode-btn","saboteurs-mode-btn","split-btn","daily-btn","continue-save-btn","join-btn"];
+  function ensureBadge(button){if(!button||button.querySelector?.(".v142-demo-lock-badge"))return;const badge=document.createElement("span");badge.className="v142-demo-lock-badge";badge.textContent="FULL GAME";button.appendChild(badge)}
   function guardButton(button){
-    if(!button||state.guarded.has(button))return;const handler=event=>{if(!DEMO_MODE||state.entitled)return;event.preventDefault();event.stopImmediatePropagation();showPaywall({reason:"full-game"})};button.addEventListener("click",handler,true);state.guarded.set(button,handler);if(!button.querySelector?.(".v142-demo-lock-badge")){const badge=document.createElement("span");badge.className="v142-demo-lock-badge";badge.textContent="FULL GAME";button.appendChild(badge)}}
+    if(!button)return;
+    ensureBadge(button);
+    if(state.guarded.has(button))return;
+    const handler=event=>{if(!DEMO_MODE||state.entitled)return;event.preventDefault();event.stopImmediatePropagation();showPaywall({reason:"full-game"})};button.addEventListener("click",handler,true);state.guarded.set(button,handler)
+  }
   function guardFullGameButtons(){if(!DEMO_MODE||state.entitled)return;document.body.dataset.v142DemoLocked="true";for(const id of FULL_GAME_BUTTONS)guardButton(document.getElementById(id))}
   function restoreGuardedButtons(){for(const [button,handler] of state.guarded){button.removeEventListener("click",handler,true);button.querySelector?.(".v142-demo-lock-badge")?.remove()}state.guarded.clear()}
 
