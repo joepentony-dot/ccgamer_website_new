@@ -112,7 +112,6 @@
 
   function hasActiveOnlinePresentation(){
     try{if(typeof mode!=="undefined"&&mode==="lobby")return true}catch(_){}
-    try{if(window.CCGLostSizzlerSpecialModes?.active)return true}catch(_){}
     try{
       if(!net)return false;
       if(net.connected===true)return true;
