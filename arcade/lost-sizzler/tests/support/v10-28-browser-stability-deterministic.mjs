@@ -8,6 +8,14 @@ const sourcePath=path.resolve(here,"../v10-28-browser-stability.mjs");
 const tempPath=path.resolve(here,"../.v10-28-browser-stability-deterministic.tmp.mjs");
 let source=fs.readFileSync(sourcePath,"utf8").replace(/\r\n/g,"\n");
 
+const releaseSubtitleTarget=`    const buildSubtitle=await state.page.locator(".brand p").textContent();
+    assert.equal(buildSubtitle?.trim(),"THE LOST SIZZLER — V10.41","the current build subtitle must survive older deferred UI initialisers");`;
+const releaseSubtitleReplacement=`    const buildSubtitle=await state.page.locator(".brand p").textContent();
+    assert.equal(buildSubtitle?.trim(),"THE LOST SIZZLER — V10.42","the current V10.42 build subtitle must survive older deferred UI initialisers");`;
+const releaseSubtitleMatches=source.split(releaseSubtitleTarget).length-1;
+assert.equal(releaseSubtitleMatches,1,"the deterministic browser harness must find exactly one legacy V10.41 subtitle assertion");
+source=source.replace(releaseSubtitleTarget,releaseSubtitleReplacement);
+
 const immediateSoloTarget=`    const state=await newGamePage();
     await withTimeout(state.page.goto(canonical,{waitUntil:"domcontentloaded",timeout:15000}),STAGE_TIMEOUT_MS,"immediate Solo navigation");`;
 const immediateSoloReplacement=`    const state=await newGamePage();
