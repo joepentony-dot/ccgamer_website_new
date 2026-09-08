@@ -207,11 +207,25 @@
     return source.apply(thisArg,args)
   }
 
+  function findOwnedSystemGate(name,start){
+    let current=start,depth=0;
+    const seen=new Set();
+    while(typeof current==="function"&&depth<64&&!seen.has(current)){
+      seen.add(current);
+      if(current.__ccgV141ModeOwnedGate===true&&current.__ccgV141ModeOwnedName===name)return current;
+      const next=current.__ccgV141ModeOwnedSource||current.__ccgOriginal||null;
+      if(typeof next!=="function"||next===current)break;
+      current=next;depth++;
+    }
+    return null
+  }
+
   function installOwnedSystemGate(name){
     const definition=OWNED_SYSTEMS[name],current=window[name];
     if(!definition||typeof current!=="function")return false;
-    if(current.__ccgV141ModeOwnedGate===true&&current.__ccgV141ModeOwnedName===name){
-      ownedSystems.set(name,{name,capability:definition.capability,gate:current,source:current.__ccgV141ModeOwnedSource||current.__ccgOriginal||null});return true
+    const existing=findOwnedSystemGate(name,current);
+    if(existing){
+      ownedSystems.set(name,{name,capability:definition.capability,gate:existing,source:existing.__ccgV141ModeOwnedSource||existing.__ccgOriginal||null});return true
     }
     const source=current;
     const gate=function modeOwnedSystemGate(){return dispatchOwnedSystem(name,source,this,arguments)};
@@ -232,7 +246,7 @@
     if(OWNED_SYSTEMS[key])installOwnedSystemGate(key);
     const entry=ownedSystems.get(key);
     if(!entry)return null;
-    return{name:entry.name,capability:entry.capability,installed:window[entry.name]===entry.gate,gate:entry.gate,source:entry.source}
+    return{name:entry.name,capability:entry.capability,installed:findOwnedSystemGate(entry.name,window[entry.name])===entry.gate,gate:entry.gate,source:entry.source}
   }
 
   function monitorHordeLifecycle(){
