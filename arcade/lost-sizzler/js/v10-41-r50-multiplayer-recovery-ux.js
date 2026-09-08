@@ -57,15 +57,22 @@
   function hideBanner(){state.banner?.classList.add("hidden");state.returnBtn?.classList.add("hidden")}
 
   function preserveRoom(){const code=roomCode(),mode=roomMode();if(code)state.lastRoomCode=code;if(mode)state.lastRoomMode=mode}
+  function usableMenuControl(node){
+    if(!node||!node.isConnected||node.disabled||node.hidden)return false;
+    if(node.getAttribute?.("aria-hidden")==="true"||node.getAttribute?.("aria-disabled")==="true")return false;
+    try{if(getComputedStyle(node).display==="none"||getComputedStyle(node).visibility==="hidden")return false}catch(_){}
+    return true
+  }
   async function returnToOnlineMenu(){
     preserveRoom();const code=state.lastRoomCode;
     try{await Promise.resolve(quitToMenu?.())}catch(_){try{document.getElementById("again-btn")?.click?.()}catch(__){}}
     setTimeout(()=>{
       const input=document.getElementById("room-code");if(input&&code){input.value=code;input.dispatchEvent(new Event("input",{bubbles:true}))}
       const zeroServer=Boolean(window.CCGLostSizzlerV142ZeroServerRelease?.enabled||document.body?.dataset?.releaseModel==="zero-server-cost");
-      const focusTarget=zeroServer?document.getElementById("solo-btn"):document.getElementById("join-btn");focusTarget?.focus?.({preventScroll:true});
+      const join=document.getElementById("join-btn"),localCandidates=[document.getElementById("solo-btn"),document.getElementById("tutorial-zone-btn"),document.getElementById("split-btn")];
+      const focusTarget=zeroServer||!usableMenuControl(join)?localCandidates.find(usableMenuControl):join;focusTarget?.focus?.({preventScroll:true});
       try{
-        if(zeroServer)showToast?.("LOCAL MODES READY","Online rooms are retired in V10.42. Solo, Tutorial and 2P Split Screen remain available without a multiplayer server.","cyan",6500);
+        if(zeroServer||!usableMenuControl(join))showToast?.("LOCAL MODES READY","Online rooms are retired in V10.42. Solo, Tutorial and 2P Split Screen remain available without a multiplayer server.","cyan",6500);
         else showToast?.("ONLINE ROOM READY",code?`Room ${code} is ready to rejoin. Press Join Online Room when you are ready.`:"Choose an online mode or enter a room code to continue.","cyan",6500)
       }catch(_){}
     },80)
