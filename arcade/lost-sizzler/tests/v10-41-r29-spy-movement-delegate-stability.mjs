@@ -17,12 +17,21 @@ assert.match(owner,/if\(!state\.isolated\)\{[\s\S]*state\.baseMove=current;[\s\S
 assert.match(owner,/if\(!state\.isolated\)\{[\s\S]*ownerChainHas\(current,spyMoveOwner\)[\s\S]*window\.movePlayer=spyMoveOwner/,
   "fresh entry must still collapse stale ancestry back to the canonical Spy owner");
 assert.match(owner,/\}\s*window\.movePlayer=spyMoveOwner;\s*if\(countRecovery\)state\.moveReassertions\+\+;/,
-  "active-session recovery must reassert the canonical owner after the fresh-entry capture block");
+  "the retained legacy recovery helper must still be capable of restoring the canonical owner when explicitly invoked");
 assert.equal((owner.match(/state\.baseMove=current/g)||[]).length,1,"movement delegate capture must have exactly one assignment site");
 assert.equal((owner.match(/spyMoveOwner\.__ccgOriginal=current/g)||[]).length,1,"Spy owner ancestry delegate must have exactly one assignment site");
-assert.match(runtime,/if\(state\.isolated\)\{ensureMovementOwner\(true\);ensureDamageBoundary\(\);suppressLegacyPhysicalBuilder\(\);return true\}/,
-  "controller re-entry must use the non-rebasing active-isolation recovery path");
-assert.match(runtime,/if\(!state\.isolated\)enterIsolation\(\);\s*else\{ensureMovementOwner\(true\);ensureDamageBoundary\(\)\}/,
-  "legacy monitor recovery must use the same non-rebasing active-isolation path");
 
-console.log("Lost Sizzler V10.41 Spy movement delegate capture-on-entry and active-session ancestry stability checks passed.");
+const entryStart=runtime.indexOf("function enterIsolation()");
+const entryEnd=runtime.indexOf("\n\n  function leaveIsolation()",entryStart);
+assert.ok(entryStart>=0&&entryEnd>entryStart,"R29 Spy entry lifecycle must remain present");
+const entry=runtime.slice(entryStart,entryEnd);
+assert.match(entry,/if\(state\.isolated\)\{ensureDamageBoundary\(\);suppressLegacyPhysicalBuilder\(\);return true\}/,
+  "controller re-entry must remain idempotent and leave movement recovery to the accepted R30 watchdog");
+assert.doesNotMatch(entry,/if\(state\.isolated\)\{[^}]*ensureMovementOwner\(/,
+  "active controller re-entry must not act as a second Spy movement watchdog");
+assert.match(entry,/ensureModeStyles\(\);ensureMovementOwner\(false\);ensureDamageBoundary\(\);suppressLegacyPhysicalBuilder\(\);/,
+  "fresh Spy entry must still capture and install its movement delegate exactly once");
+assert.match(runtime,/if\(!state\.isolated\)enterIsolation\(\);\s*else\{ensureMovementOwner\(true\);ensureDamageBoundary\(\)\}/,
+  "the retired legacy monitor may retain its explicit recovery path for pre-R30 fallback compatibility");
+
+console.log("Lost Sizzler V10.41 Spy movement delegate capture-on-entry and passive controller re-entry checks passed.");
