@@ -81,9 +81,12 @@ try{
   console.log("[Stage 10 Spy packet isolation] reject non-Spy and unadmitted packets without runtime contamination");
   const rejected=await page.evaluate(base=>{
     const network=window.CCGLostSizzlerV141R29SpyNetwork;
+    remote.delete(base.otherId);
+    remote.delete("STAGE10-NOT-A-MEMBER");
     const wrongMode=network.applyPosition({roomMode:"dungeon",actorId:base.otherId,player:{id:base.otherId,x:base.x+2,y:base.y}});
+    const otherPresent=remote.has(base.otherId);
     const unknown=network.applyPosition({roomMode:"sizzler-saboteurs",actorId:"STAGE10-NOT-A-MEMBER",player:{id:"STAGE10-NOT-A-MEMBER",x:base.x+2,y:base.y},sentAt:Date.now()});
-    return{wrongMode,unknown,unknownPresent:remote.has("STAGE10-NOT-A-MEMBER"),otherPresent:remote.has(base.otherId),dropped:Number(network.state.dropped||0),localX:Number(p1.x),localY:Number(p1.y),entered:JSON.stringify(host.enteredRoomIds||[])}
+    return{wrongMode,unknown,unknownPresent:remote.has("STAGE10-NOT-A-MEMBER"),otherPresent,dropped:Number(network.state.dropped||0),localX:Number(p1.x),localY:Number(p1.y),entered:JSON.stringify(host.enteredRoomIds||[])}
   },baseline);
   assert.equal(rejected.wrongMode,false,"non-Spy room packet must be rejected");
   assert.equal(rejected.unknown,false,"unadmitted Spy actor must be rejected");

@@ -111,6 +111,7 @@ jobs:
           const fs=require('fs');
           const tests=[
             'arcade/lost-sizzler/tests/v10-6-browser.mjs',
+            'arcade/lost-sizzler/tests/v10-9-stability.mjs',
             'arcade/lost-sizzler/tests/support/v10-28-browser-stability-deterministic.mjs',
             ...fs.readdirSync('arcade/lost-sizzler/tests/browser')
               .filter(name=>name.endsWith('.mjs'))

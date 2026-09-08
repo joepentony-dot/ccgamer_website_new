@@ -15,7 +15,7 @@
     baselineUpdate:null,baselineMove:null,baselineHurt:null,
     goldenUpdate:null,goldenMove:null,goldenHurt:null,goldenLocked:false,goldenLockedAt:0,goldenMovePromotions:0,goldenMovePromotionRejects:0,
     spyOwnerUpdate:null,spyOwnerMove:null,spyOwnerHurt:null,
-    forcedRestores:0,ownershipRepairs:0,ownershipCooldownResets:0,inputBridges:0,inputReassertions:0,
+    forcedRestores:0,ownershipRepairs:0,spyMovementReassertions:0,ownershipCooldownResets:0,inputBridges:0,inputReassertions:0,
     watchdogRecoveries:0,watchdogMisses:0,watchdogCooldownBreaks:0,lastWatchdogRecoveryAt:0,
     notificationOwnershipRepairs:0,notificationPostInstallRepairs:0,nestedOwnershipDetections:0,damageOwnershipRepairs:0,damageOwnershipPreservations:0,
     lastRestoreAt:0,lastRestoreReason:"",lastModeType:"",modeTransitions:0,lastRecoveryLogAt:0
@@ -254,7 +254,7 @@
         else if(!state.spyOwnerMove)state.spyOwnerMove=window.movePlayer;
         if(!state.spyOwnerHurt)state.spyOwnerHurt=window.hurtPlayer;
         if(typeof state.spyOwnerUpdate==="function"&&window.update!==state.spyOwnerUpdate)window.update=state.spyOwnerUpdate;
-        if(typeof state.spyOwnerMove==="function"&&!chainContains(window.movePlayer,state.spyOwnerMove))window.movePlayer=state.spyOwnerMove;
+        if(typeof state.spyOwnerMove==="function"&&window.movePlayer!==state.spyOwnerMove){window.movePlayer=state.spyOwnerMove;state.spyMovementReassertions++}
         if(typeof state.spyOwnerHurt==="function"){
           if(chainContains(window.hurtPlayer,state.spyOwnerHurt)){if(window.hurtPlayer!==state.spyOwnerHurt)state.spyOwnerHurt=window.hurtPlayer}
           else window.hurtPlayer=state.spyOwnerHurt

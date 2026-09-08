@@ -308,8 +308,18 @@
 
   function ensureMovementOwner(countRecovery=false){
     const current=window.movePlayer;
-    if(ownerChainHas(current,spyMoveOwner))return true;
-    if(typeof current==="function"&&current!==spyMoveOwner){state.baseMove=current;spyMoveOwner.__ccgOriginal=current}
+    if(current===spyMoveOwner)return true;
+    if(!state.isolated){
+      if(ownerChainHas(current,spyMoveOwner)){
+        window.movePlayer=spyMoveOwner;
+        if(countRecovery)state.moveReassertions++;
+        return true;
+      }
+      if(typeof current==="function"){
+        state.baseMove=current;
+        spyMoveOwner.__ccgOriginal=current;
+      }
+    }
     window.movePlayer=spyMoveOwner;
     if(countRecovery)state.moveReassertions++;
     return true;
@@ -339,7 +349,7 @@
 
   function enterIsolation(){
     if(!spyActive())return false;
-    if(state.isolated){ensureMovementOwner(true);ensureDamageBoundary();suppressLegacyPhysicalBuilder();return true}
+    if(state.isolated){ensureDamageBoundary();suppressLegacyPhysicalBuilder();return true}
     ensureModeStyles();ensureMovementOwner(false);ensureDamageBoundary();suppressLegacyPhysicalBuilder();
     document.body.dataset.spyRuntimeIsolated="true";state.isolated=true;state.lastMode=MODE_ID;state.lastMoveAt=0;state.lastAttackAt=0;state.statusById.clear();
     compactLogicalMap();buildCompactWorld(true);sanitiseSharedDungeonState();updatePrompt();return true;
