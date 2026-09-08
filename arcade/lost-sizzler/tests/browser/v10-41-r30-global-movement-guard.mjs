@@ -75,7 +75,7 @@ try{
     cooperative:Boolean(window.CCGLostSizzlerV141R29?.install?.__ccgV141R30Cooperative),
     golden:Boolean(window.CCGLostSizzlerV141R30?.state?.goldenLocked)
   }));
-  assert.deepEqual({build:release.build,cache:release.cache},{build:"2026.08.27.31",cache:"20260827r31"});
+  assert.deepEqual({build:release.build,cache:release.cache},{build:"2026.08.27.31",cache:"20260827r31"},"release-ready meta identity must match the generic R30 release gate baseline");
   assert.equal(release.r29Timer,0,"r30 must stop the competing r29 installer interval");
   assert.equal(release.cooperative,true,"r29 maintenance must be cooperative before gameplay starts");
   assert.equal(release.golden,true,"r30 must lock a known-good normal runtime ownership snapshot after release readiness");

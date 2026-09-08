@@ -7,6 +7,16 @@
   const RELEASE="V10.41";
   const state={installed:false,toastWrapped:false,majorTimer:0,majorUntil:0,pendingImportant:null,observer:null,modeObserver:null};
 
+  function newerReleaseOwnsIdentity(){
+    return Boolean(window.CCGLostSizzlerV142Bootstrap);
+  }
+
+  function retireVersionObserver(){
+    if(!newerReleaseOwnsIdentity())return false;
+    state.observer?.disconnect?.();state.observer=null;
+    return true;
+  }
+
   function ensureStyle(){
     if(document.getElementById("ccg-v141-landing-notification-style"))return;
     const style=document.createElement("style");
@@ -100,10 +110,12 @@
   }
 
   function syncVersion(){
+    if(retireVersionObserver())return false;
     const subtitle=document.querySelector(".brand p");
     if(subtitle&&subtitle.textContent!==`THE LOST SIZZLER — ${RELEASE}`)subtitle.textContent=`THE LOST SIZZLER — ${RELEASE}`;
     const badge=document.querySelector(".build-badge");
     if(badge&&!/UPDATE AVAILABLE/i.test(badge.textContent||"")&&badge.textContent!==`BUILD ${RELEASE}`)badge.textContent=`BUILD ${RELEASE}`;
+    return true;
   }
 
   function ensureModeLabels(){
@@ -184,7 +196,7 @@
 
   function install(){
     ensureStyle();syncVersion();ensureModeLabels();ensureMajorPanel();wrapToast();
-    if(!state.observer){
+    if(!state.observer&&!newerReleaseOwnsIdentity()){
       const brand=document.querySelector(".brand");if(brand){state.observer=new MutationObserver(syncVersion);state.observer.observe(brand,{subtree:true,childList:true,characterData:true})}
     }
     if(!state.modeObserver){
@@ -195,6 +207,7 @@
 
   const timer=setInterval(()=>{install();if(state.toastWrapped&&document.querySelector("#menu .game-mode-buttons")){clearInterval(timer)}},100);
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",install,{once:true});else install();
+  window.addEventListener("ccg:v142-ready",retireVersionObserver,{once:true});
   window.addEventListener("pagehide",()=>{clearInterval(timer);clearTimeout(state.majorTimer);state.observer?.disconnect?.();state.modeObserver?.disconnect?.()},{once:true});
   window.CCGLostSizzlerV141LandingNotificationPolish={showMajor,majorPriority,get state(){return state}};
 })();

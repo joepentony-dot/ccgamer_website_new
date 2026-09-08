@@ -61,7 +61,7 @@ try{
   assert.equal(shop.shadow,5,"V10.42 stability counter must stay synchronized with the shop counter.");
 
   const combatRepair=await page.evaluate(()=>{
-    p1.mana=100;fire1=Number.NaN;projectileCD=Number.NaN;fireBuffer1=Number.NaN;
+    p1.firearmUnlocked=true;p1.weapon=baseWeapon();p1.mana=100;fire1=Number.NaN;projectileCD=Number.NaN;fireBuffer1=Number.NaN;
     const stale={id:"v142-stale",owner:p1.id,x:p1.x,y:p1.y,dx:1,dy:0,ttl:99,__v142BornAt:performance.now()-6000};bullets.push(stale);
     window.CCGLostSizzlerV142R1Stability.repairCombatTimers();window.CCGLostSizzlerV142R1Stability.repairProjectilePool();
     return{fire1,projectileCD,fireBuffer1,staleTtl:stale.ttl,diagnostics:{...window.CCGLostSizzlerV142R1Stability.diagnostics}};
@@ -102,17 +102,46 @@ try{
   const chest=await page.evaluate(()=>{
     p1.mana=1;
     const beforeMana=p1.mana;
-    const fake={id:"v142-r1-chest-contract",x:p1.x,y:p1.y,active:true,locked:false,depth:2,loot:{kind:"ammo",amount:5,rarity:"COMMON",name:"TEST AMMO CACHE"}};
+    const fakeLoot={kind:"ammo",amount:5,rarity:"COMMON",name:"TEST AMMO CACHE"};
+    const originalApplyLoot=applyLoot;
+    let lootCalls=0;
+    applyLoot=function(loot,player){
+      if(loot===fakeLoot)lootCalls++;
+      return originalApplyLoot(loot,player);
+    };
+    window.__v142R1ChestProbe={originalApplyLoot,get calls(){return lootCalls}};
+    const recoveriesBefore=window.CCGLostSizzlerV142R1Stability?.diagnostics?.chestLootRecoveries||0;
+    const fake={id:"v142-r1-chest-contract",x:p1.x,y:p1.y,active:true,locked:false,depth:2,loot:fakeLoot};
     openChest(p1,fake);
     mode="levelup";
-    return{active:fake.active,rewardScore:fake.rewardScore,rewardXp:fake.rewardXp,beforeMana};
+    return{active:fake.active,rewardScore:fake.rewardScore,rewardXp:fake.rewardXp,beforeMana,afterOpenMana:p1.mana,recoveriesBefore};
   });
   assert.equal(chest.active,false,"Opening an unlocked chest must consume the chest.");
   assert.ok(chest.rewardScore>0,"Every opened chest must record a score reward.");
   assert.ok(chest.rewardXp>0,"Every opened chest must record an XP reward.");
-  await page.waitForFunction(()=>window.CCGLostSizzlerV142R1Stability.diagnostics.chestLootRecoveries>=1&&p1.mana>1,null,{timeout:5000});
+  assert.equal(chest.beforeMana,1,"Synthetic chest qualification must begin with exactly one ammunition unit.");
   await page.waitForFunction(()=>document.getElementById("pickup-title")?.textContent==="CHEST REWARD CONFIRMED",null,{timeout:5000});
-  await page.evaluate(()=>{mode="playing"});
+  const confirmedChest=await page.evaluate(()=>({
+    mana:p1.mana,
+    calls:window.__v142R1ChestProbe?.calls||0,
+    recoveries:window.CCGLostSizzlerV142R1Stability?.diagnostics?.chestLootRecoveries||0
+  }));
+  assert.ok(confirmedChest.mana>chest.beforeMana,"The synthetic chest reward must be delivered by the established owner or the V10.42 recovery owner.");
+  assert.equal(confirmedChest.calls,1,"The synthetic chest loot object must cross the active applyLoot boundary exactly once.");
+  if(chest.afterOpenMana===chest.beforeMana){
+    assert.ok(confirmedChest.recoveries>chest.recoveriesBefore,"V10.42 must recover chest loot when the established owner has not delivered it.");
+  }else{
+    assert.equal(confirmedChest.recoveries,chest.recoveriesBefore,"V10.42 must not recover chest loot that the established owner already delivered.");
+  }
+  await page.waitForTimeout(900);
+  const settledChest=await page.evaluate(()=>({mana:p1.mana,calls:window.__v142R1ChestProbe?.calls||0}));
+  assert.deepEqual(settledChest,{mana:confirmedChest.mana,calls:1},"Chest loot must remain exactly-once after all established and V10.42 recovery timers have settled.");
+  await page.evaluate(()=>{
+    const probe=window.__v142R1ChestProbe;
+    if(probe?.originalApplyLoot)applyLoot=probe.originalApplyLoot;
+    delete window.__v142R1ChestProbe;
+    mode="playing";
+  });
 
   const alphabet=await page.evaluate(()=>{
     const fake={items:"ABCDEF".split("").map((letter,index)=>({kind:"game",active:true,alphabetLetter:letter,title:`${letter} GAME ${index}`}))};

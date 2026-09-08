@@ -62,8 +62,12 @@
     try{await Promise.resolve(quitToMenu?.())}catch(_){try{document.getElementById("again-btn")?.click?.()}catch(__){}}
     setTimeout(()=>{
       const input=document.getElementById("room-code");if(input&&code){input.value=code;input.dispatchEvent(new Event("input",{bubbles:true}))}
-      document.getElementById("join-btn")?.focus?.({preventScroll:true});
-      try{showToast?.("ONLINE ROOM READY",code?`Room ${code} is ready to rejoin. Press Join Online Room when you are ready.`:"Choose an online mode or enter a room code to continue.","cyan",6500)}catch(_){}
+      const zeroServer=Boolean(window.CCGLostSizzlerV142ZeroServerRelease?.enabled||document.body?.dataset?.releaseModel==="zero-server-cost");
+      const focusTarget=zeroServer?document.getElementById("solo-btn"):document.getElementById("join-btn");focusTarget?.focus?.({preventScroll:true});
+      try{
+        if(zeroServer)showToast?.("LOCAL MODES READY","Online rooms are retired in V10.42. Solo, Tutorial and 2P Split Screen remain available without a multiplayer server.","cyan",6500);
+        else showToast?.("ONLINE ROOM READY",code?`Room ${code} is ready to rejoin. Press Join Online Room when you are ready.`:"Choose an online mode or enter a room code to continue.","cyan",6500)
+      }catch(_){}
     },80)
   }
 

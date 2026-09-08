@@ -29,29 +29,48 @@ try{
   page.on("requestfailed",request=>{try{const url=new URL(request.url());if(url.origin===origin&&/\.js(?:\?|$)/i.test(url.pathname))failedScripts.push(`${url.pathname}: ${request.failure()?.errorText||"failed"}`)}catch(_){}});
 
   await page.goto(`${origin}/arcade/lost-sizzler/?v142-multiplayer-loader=1`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142MultiplayerState?.state?.installed));
-  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142MultiplayerCollectAuthority?.installed));
+  await page.waitForFunction(()=>document.body.dataset.v142BootstrapReady==="true"&&Boolean(window.CCGLostSizzlerV142ZeroServerRelease),null,{timeout:90000});
 
   const audit=await page.evaluate(()=>({
+    bootstrap:[...(window.CCGLostSizzlerV142Bootstrap?.loaded||[])],
+    releaseModel:document.body.dataset.releaseModel,
+    onlineFlag:document.body.dataset.onlineMultiplayer,
+    zeroServer:Boolean(window.CCGLostSizzlerV142ZeroServerRelease?.enabled),
+    onlineMultiplayer:window.CCGLostSizzlerV142ZeroServerRelease?.onlineMultiplayer,
     stateInstalled:Boolean(window.CCGLostSizzlerV142MultiplayerState?.state?.installed),
     collectInstalled:Boolean(window.CCGLostSizzlerV142MultiplayerCollectAuthority?.installed),
     stateScript:Boolean(document.querySelector('script[data-ccg-v142-multiplayer-state="true"]')),
     collectScript:Boolean(document.querySelector('script[data-ccg-v142-multiplayer-collect-authority="true"]')),
-    playerNetworkWrapped:typeof playerStateForNetwork==="function"&&Boolean(playerStateForNetwork.__v142CampaignState),
-    worldSendWrapped:typeof net!=="undefined"&&Boolean(net?.send?.__v142CampaignState),
-    collectWrapped:typeof onCollectRequest==="function"&&Boolean(onCollectRequest.__v142CollectAuthority)
+    localModes:[...(window.CCGLostSizzlerV142ZeroServerRelease?.localModes||[])],
+    networkConnected:Boolean(net?.connected),
+    networkTransport:String(net?.transport||""),
+    onlineButtons:Object.fromEntries(["create-btn","horde-mode-btn","saboteurs-mode-btn","join-btn"].map(id=>{
+      const node=document.getElementById(id);return[id,Boolean(node&&!node.hidden&&getComputedStyle(node).display!=="none")]
+    })),
+    localButtons:Object.fromEntries(["solo-btn","tutorial-zone-btn","split-btn"].map(id=>{
+      const node=document.getElementById(id);return[id,Boolean(node&&!node.hidden&&getComputedStyle(node).display!=="none")]
+    }))
   }));
 
-  assert.equal(audit.stateInstalled,true,"V10.42 multiplayer character/campaign adapter must install on canonical page load.");
-  assert.equal(audit.collectInstalled,true,"V10.42 remote Key collection authority bridge must install on canonical page load.");
-  assert.equal(audit.stateScript,true,"Canonical dynamic loader must mount the multiplayer state script.");
-  assert.equal(audit.collectScript,true,"Canonical dynamic loader must mount the remote Key collection bridge script.");
-  assert.equal(audit.playerNetworkWrapped,true,"Outgoing player-state serializer must be wrapped for V10.42 state.");
-  assert.equal(audit.worldSendWrapped,true,"World sender must be wrapped for V10.42 campaign state.");
-  assert.equal(audit.collectWrapped,true,"Authoritative collection handler must be wrapped for remote V10.42 domain Keys.");
-  assert.deepEqual(pageErrors,[],`Canonical V10.42 multiplayer adapter startup must not raise page errors: ${pageErrors.join("\n")}`);
-  assert.deepEqual(failedScripts,[],`Canonical V10.42 multiplayer adapter scripts must load without same-origin request failures: ${failedScripts.join("\n")}`);
-  console.log("Lost Sizzler V10.42 multiplayer canonical loader browser contract passed.");
+  assert.equal(audit.zeroServer,true,"Canonical V10.42 page must install the zero-server release policy.");
+  assert.equal(audit.releaseModel,"zero-server-cost","Canonical runtime must identify the zero-server-cost release model.");
+  assert.equal(audit.onlineFlag,"disabled","Canonical runtime must mark online multiplayer disabled.");
+  assert.equal(audit.onlineMultiplayer,false,"Release diagnostics must keep online multiplayer disabled.");
+  assert.deepEqual(audit.localModes,["solo","tutorial","split-screen"],"Solo, Tutorial and local 2P Split Screen must remain the supported release modes.");
+  assert.equal(audit.stateInstalled,false,"Production V10.42 must not install the retired online multiplayer state adapter.");
+  assert.equal(audit.collectInstalled,false,"Production V10.42 must not install the retired online collection authority bridge.");
+  assert.equal(audit.stateScript,false,"Canonical dynamic loader must not mount the retired multiplayer state script.");
+  assert.equal(audit.collectScript,false,"Canonical dynamic loader must not mount the retired multiplayer collection bridge script.");
+  assert.ok(!audit.bootstrap.includes("v10-42-multiplayer-state.js"),"Ordered V10.42 bootstrap must exclude the online multiplayer state adapter.");
+  assert.ok(!audit.bootstrap.includes("v10-42-multiplayer-collect-authority.js"),"Ordered V10.42 bootstrap must exclude the online collection authority bridge.");
+  assert.ok(audit.bootstrap.includes("v10-42-zero-server-release.js"),"Ordered V10.42 bootstrap must include the zero-server release policy.");
+  assert.equal(audit.networkConnected,false,"Canonical zero-server page must not connect to an online room.");
+  assert.equal(audit.networkTransport,"solo","Canonical network object must remain in inert Solo transport state.");
+  for(const id of ["create-btn","horde-mode-btn","saboteurs-mode-btn","join-btn"])assert.equal(audit.onlineButtons[id],false,`${id} must remain unavailable in production.`);
+  for(const id of ["solo-btn","tutorial-zone-btn","split-btn"])assert.equal(audit.localButtons[id],true,`${id} must remain available in production.`);
+  assert.deepEqual(pageErrors,[],`Canonical V10.42 zero-server startup must not raise page errors: ${pageErrors.join("\n")}`);
+  assert.deepEqual(failedScripts,[],`Canonical V10.42 ordered scripts must load without same-origin request failures: ${failedScripts.join("\n")}`);
+  console.log("Lost Sizzler V10.42 zero-server canonical loader browser contract passed.");
   await context.close();
 }finally{
   await browser.close();

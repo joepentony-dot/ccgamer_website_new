@@ -79,13 +79,9 @@
     }
   }catch(_){}
 
-  try{
-    if(typeof update==="function"&&!update.__ccgV142R1CombatIntegrity){
-      const baseUpdate=update;
-      update=function(dt){repairCombatTimers();repairProjectilePool();return baseUpdate(dt)};
-      update.__ccgV142R1CombatIntegrity=true;update.__ccgOriginal=baseUpdate;
-    }
-  }catch(_){}
+  // Global window.update is owned by the V10.41 mode controller boundary.
+  // V10.42 deliberately does not wrap or assign it. Combat/projectile integrity
+  // is maintained by the r2 maintenance path and by the firePlayer boundary.
 
   function shopPurchaseCount(shop){
     const a=Math.max(0,Math.floor(safeNumber(shop?.scorePurchases))),b=Math.max(0,Math.floor(safeNumber(shop?.__v142ScorePurchases)));
@@ -170,7 +166,7 @@
       diagnostics.dossierSpaceCloses++;return;
     }
     try{
-      if(mode==="playing"&&!event.repeat&&p1){queueAttack(p1);if(!Number.isFinite(fire1)||fire1>5000)fire1=0}
+      if(mode==="playing"&&!event.repeat&&p1){repairCombatTimers();repairProjectilePool();queueAttack(p1)}
     }catch(_){}
   },true);
 
