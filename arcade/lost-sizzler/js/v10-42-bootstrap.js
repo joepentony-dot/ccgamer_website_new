@@ -15,8 +15,7 @@
     ["v10-42-zero-server-release.js","CCGLostSizzlerV142ZeroServerRelease"],
     ["v10-42-r3-retained-spy-inventory-seal.js","CCGLostSizzlerV142R3RetainedSpyInventorySeal"],
     ["v10-42-r2-controller-owner-seal.js","CCGLostSizzlerV142R2ControllerOwnerSeal"],
-    ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
-    ["v10-42-r4-release-identity-owner.js","CCGLostSizzlerV142R4ReleaseIdentityOwner"]
+    ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"]
   ];
   const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],pendingStartId:"",identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0};
   window.CCGLostSizzlerV142Bootstrap=state;
