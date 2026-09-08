@@ -31,6 +31,23 @@
   }
   setReleaseReady(false);
 
+  let releaseReadyObserver=null;
+  function enforceReleaseReadyOwnership(){
+    if(state.ready)return;
+    if(document.body?.dataset?.releaseReady==="true")setReleaseReady(false);
+  }
+  function startReleaseReadyGuard(){
+    if(releaseReadyObserver||typeof MutationObserver!=="function")return;
+    releaseReadyObserver=new MutationObserver(enforceReleaseReadyOwnership);
+    releaseReadyObserver.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:["data-release-ready"]});
+    enforceReleaseReadyOwnership();
+  }
+  function stopReleaseReadyGuard(){
+    releaseReadyObserver?.disconnect();
+    releaseReadyObserver=null;
+  }
+  startReleaseReadyGuard();
+
   function stampBuild(){
     const buildMeta=document.querySelector('meta[name="ccg-lost-sizzler-build"]'),cacheMeta=document.querySelector('meta[name="ccg-lost-sizzler-cache"]');
     if(buildMeta&&buildMeta.content!==BUILD)buildMeta.content=BUILD;
@@ -57,10 +74,10 @@
     for(const timer of state.identityTimers.splice(0))clearTimeout(timer);
   }
 
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>{setReleaseReady(false);stampBuild();scheduleIdentityRestamps()},{once:true});
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>{setReleaseReady(false);enforceReleaseReadyOwnership();stampBuild();scheduleIdentityRestamps()},{once:true});
   else{stampBuild();scheduleIdentityRestamps()}
   addEventListener("load",scheduleIdentityRestamps,{once:true});
-  addEventListener("pagehide",clearIdentityRestamps,{once:true});
+  addEventListener("pagehide",()=>{clearIdentityRestamps();stopReleaseReadyGuard()},{once:true});
 
   function clearPendingBusy(){
     if(!state.pendingStartId)return;
@@ -145,7 +162,7 @@
       for(const [file,marker] of modules)await loadOne(file,marker);
       promoteStage8MerchantOwner();
       observeControllerSeal();
-      state.ready=true;setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
+      state.ready=true;stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
       const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five new dungeon floors are loaded in verified order. Solo, Tutorial and 2P Split Screen run locally; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
       replayPendingStart();
