@@ -5,12 +5,13 @@
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
   const BUILD="V10.42 r2";
-  const CACHE="20260908r22";
+  const CACHE="20260908r23";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-five-depth-campaign.js","CCGLostSizzlerV142FiveDepthCampaign"],
     ["v10-42-floor-balance.js","CCGLostSizzlerV142FloorBalance"],
     ["v10-42-r6-biome-environment-director.js","CCGLostSizzlerV142R6BiomeEnvironmentDirector"],
+    ["v10-42-r7-room-objective-director.js","CCGLostSizzlerV142R7RoomObjectiveDirector"],
     ["v10-42-tutorial-campaign.js","CCGLostSizzlerV142TutorialCampaign"],
     ["v10-42-demo-paywall.js","CCGLostSizzlerV142DemoPaywall"],
     ["v10-42-zero-server-release.js","CCGLostSizzlerV142ZeroServerRelease"],
