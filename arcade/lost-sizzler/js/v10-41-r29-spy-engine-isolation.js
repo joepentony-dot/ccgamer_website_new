@@ -349,7 +349,7 @@
 
   function enterIsolation(){
     if(!spyActive())return false;
-    if(state.isolated){ensureMovementOwner(true);ensureDamageBoundary();suppressLegacyPhysicalBuilder();return true}
+    if(state.isolated){ensureDamageBoundary();suppressLegacyPhysicalBuilder();return true}
     ensureModeStyles();ensureMovementOwner(false);ensureDamageBoundary();suppressLegacyPhysicalBuilder();
     document.body.dataset.spyRuntimeIsolated="true";state.isolated=true;state.lastMode=MODE_ID;state.lastMoveAt=0;state.lastAttackAt=0;state.statusById.clear();
     compactLogicalMap();buildCompactWorld(true);sanitiseSharedDungeonState();updatePrompt();return true;
