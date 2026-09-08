@@ -6,9 +6,12 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,'../../..');
 const source=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/v10-42-demo-paywall.js'),'utf8');
 const loader=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/v10-41-r30-buglog.js'),'utf8');
+const bootstrap=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/v10-42-bootstrap.js'),'utf8');
 const assert=(condition,message)=>{if(!condition)throw new Error(message)};
 
-assert(loader.includes('v10-42-demo-paywall.js'),'Canonical V10.42 loader must activate the Tutorial completion/paywall layer.');
+assert(loader.includes('v10-42-bootstrap.js'),'Canonical late loader must hand V10.42 activation to the ordered bootstrap.');
+assert(bootstrap.includes('v10-42-demo-paywall.js'),'Authoritative V10.42 bootstrap must activate the Tutorial completion/paywall layer.');
+assert(bootstrap.indexOf('v10-42-tutorial-campaign.js')<bootstrap.indexOf('v10-42-demo-paywall.js'),'Tutorial campaign layer must load before its completion/paywall handoff.');
 assert(source.includes('const FALLBACK_PRICE="£1.99"'),'The draft launch price must remain £1.99 until the server-authoritative offer deliberately changes.');
 assert(source.includes('const PRODUCT_SLUG="the-lost-sizzler-full-game"'),'The permanent entitlement must use the fixed Lost Sizzler product slug.');
 assert(source.includes('window.CCG_LOST_SIZZLER_DEMO_MODE===true'),'Full-game button interception must remain explicit demo-mode opt-in.');
@@ -21,7 +24,7 @@ assert(!source.includes('const result=await start({product:PRODUCT_SLUG})'),'Che
 assert(source.includes('purchase_not_verified'),'A browser checkout callback alone must never be enough to unlock the game.');
 assert(source.includes('if(!activePermanent(entitlementValue))return false'),'Only a permanent entitlement returned through the commerce-provider path may unlock the runtime.');
 assert(source.includes('finally{state.checking=false}'),'Paywall presentation mutex must always release so Not Now and later full-game attempts can reopen it.');
-assert(source.includes('function watchTutorialCompletion(){\n    if(!DEMO_MODE)return;'),'Tutorial-completion purchase presentation must be disabled outside the explicit demo wrapper.');
+assert(/function watchTutorialCompletion\(\)\{\s*if\(!DEMO_MODE\)return;/.test(source),'Tutorial-completion purchase presentation must be disabled outside the explicit demo wrapper.');
 assert(source.includes('if(!complete){completionQueued=false;return}'),'Tutorial completion detection must re-arm after the completion banner disappears so replayed training can trigger the offer again.');
 assert(source.includes('event.stopImmediatePropagation()'),'Demo lock must stop the underlying full-game action before presenting the entitlement screen.');
 assert(source.includes('"continue-save-btn","join-btn"'),'Demo mode must also guard saved-run resume and room-code join entry paths.');

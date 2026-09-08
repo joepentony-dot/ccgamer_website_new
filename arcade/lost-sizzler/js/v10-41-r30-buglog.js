@@ -1,4 +1,4 @@
-/* The Lost Sizzler V10.41 r30 — developer changelog additions. */
+/* The Lost Sizzler V10.41 r30 — developer changelog additions and V10.42 ordered bootstrap handoff. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V141_R30_BUGLOG__)return;
@@ -7,7 +7,7 @@
   function revision(){return String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim()}
   function loadScript(path,marker){
     if(document.querySelector(`script[${marker}="true"]`))return;
-    const script=document.createElement("script");script.src=`js/${path}?v=${encodeURIComponent(revision())}`;script.setAttribute(marker,"true");document.head.appendChild(script);
+    const script=document.createElement("script");script.async=false;script.src=`js/${path}?v=${encodeURIComponent(revision())}`;script.setAttribute(marker,"true");document.head.appendChild(script);
   }
   function loadOwnerSeal(){if(!window.CCGLostSizzlerV141R30OwnerSeal)loadScript("v10-41-r30-owner-seal.js","data-ccg-r30-owner-seal")}
   function loadModeRuntime(){if(!window.CCGLostSizzlerModeRuntime)loadScript("v10-41-mode-runtime.js","data-ccg-mode-runtime")}
@@ -18,21 +18,17 @@
   function loadSpyR32Loader(){if(!window.CCGLostSizzlerV141R32SpyLoader)loadScript("v10-41-r32-spy-loader.js","data-ccg-r32-spy-loader")}
   function loadHordeOwnerComposition(){if(!window.CCGLostSizzlerV141R60HordeOwnerComposition)loadScript("v10-41-r60-horde-owner-composition.js","data-ccg-r60-horde-owner-composition")}
   function loadStage8NpcDialogue(){if(!window.CCGLostSizzlerStage8NpcDialogue)loadScript("v10-41-stage8-npc-dialogue.js","data-ccg-stage8-npc-dialogue")}
-  function loadV142ProceduralOverhaul(){if(!window.CCGLostSizzlerV142ProceduralOverhaul)loadScript("v10-42-procedural-overhaul.js","data-ccg-v142-procedural-overhaul")}
-  function loadV142FiveDepthCampaign(){if(!window.CCGLostSizzlerV142FiveDepthCampaign)loadScript("v10-42-five-depth-campaign.js","data-ccg-v142-five-depth-campaign")}
-  function loadV142FloorBalance(){if(!window.CCGLostSizzlerV142FloorBalance)loadScript("v10-42-floor-balance.js","data-ccg-v142-floor-balance")}
-  function loadV142TutorialCampaign(){if(!window.CCGLostSizzlerV142TutorialCampaign)loadScript("v10-42-tutorial-campaign.js","data-ccg-v142-tutorial-campaign")}
-  function loadV142DemoPaywall(){if(!window.CCGLostSizzlerV142DemoPaywall)loadScript("v10-42-demo-paywall.js","data-ccg-v142-demo-paywall")}
-  function loadV142MultiplayerState(){if(!window.CCGLostSizzlerV142MultiplayerState)loadScript("v10-42-multiplayer-state.js","data-ccg-v142-multiplayer-state")}
-  function loadV142MultiplayerCollectAuthority(){if(!window.CCGLostSizzlerV142MultiplayerCollectAuthority)loadScript("v10-42-multiplayer-collect-authority.js","data-ccg-v142-multiplayer-collect-authority")}
+  function loadV142Bootstrap(){if(!window.CCGLostSizzlerV142Bootstrap)loadScript("v10-42-bootstrap.js","data-ccg-v142-bootstrap")}
   function loadStage8AfterInitialRuntime(){
-    const loadV142=()=>{loadV142ProceduralOverhaul();loadV142FiveDepthCampaign();loadV142FloorBalance();loadV142TutorialCampaign();loadV142DemoPaywall();loadV142MultiplayerState();loadV142MultiplayerCollectAuthority()};
-    if(document.readyState==="complete"){queueMicrotask(loadStage8NpcDialogue);setTimeout(loadV142,0);return}
-    addEventListener("load",()=>{loadStage8NpcDialogue();setTimeout(loadV142,0)},{once:true})
+    if(document.readyState==="complete"){queueMicrotask(loadStage8NpcDialogue);setTimeout(loadV142Bootstrap,0);return}
+    addEventListener("load",()=>{loadStage8NpcDialogue();setTimeout(loadV142Bootstrap,0)},{once:true})
   }
   loadOwnerSeal();loadModeRuntime();loadSoloDiagnostics();loadSpyExitControlReset();loadSoloDungeonR31();loadSpyR32WorldOwner();loadSpyR32Loader();loadHordeOwnerComposition();loadStage8AfterInitialRuntime();
 
   const entries=[
+    ["LS-0907-03","FIXED","V10.42 acceptance-play blockers","The consolidated playtest layer now protects the shop price ladder, CPU Cook dossier identity, Space-to-close dossier control, chest reward confirmation and the A–Z anti-alphabet safeguard before another manual acceptance build is issued."],
+    ["LS-0907-02","FIXED","Attack and projectile-state lock recovery","V10.42 now repairs poisoned fire and projectile cooldowns, clears invalid or stale player projectiles and mirrors Space attack capture so a long Solo run cannot silently leave movement alive while attack remains disabled."],
+    ["LS-0907-01","FIXED","Authoritative ordered V10.42 bootstrap","The V10.42 modules are now loaded through one ordered bootstrap instead of seven independent dynamically inserted scripts. The bootstrap stamps the visible V10.42 build identity, blocks run entry until the campaign layers are ready and fails closed if a required module cannot load."],
     ["LS-0906-09","ADDED","V10.42 multiplayer campaign authority","Dungeon Multiplayer now carries V10.42 RPG attributes, relics, Banishment Essence, Sigil powers and global Key progress through the stabilized host-authoritative network path. Remote Key recovery is bridged into the host campaign state without opening the remote player's relic chooser on the host, while each local or online character receives the campaign reward on the correct machine."],
     ["LS-0906-08","ADDED","Campaign-aware Tutorial language","The stabilized Tutorial runtime is preserved, but its V10.42 presentation now teaches the five-depth campaign, persistent RPG attributes, global Iron/Bone/Ash Keys, the Vessel and Banishment Essence system, relic choices and the campaign-wide A–Z C64 rescue deck instead of explaining retired artefact-for-Flask progression."],
     ["LS-0906-07","ADDED","Tutorial-completion permanent unlock screen","Completing the free Tutorial can now present the V10.42 permanent-unlock screen. The screen explains the one-off £1.99 launch target, account-tied ownership, cross-device restore, continued-development support and free future game updates. The browser cannot self-authorize payment; final unlock requires a verified CCG commerce entitlement and PayPal server bridge."],
@@ -58,8 +54,8 @@
   const entryHtml=([id,status,title,copy])=>`<article class="developer-log-entry" data-r30-entry="${id}"><code class="developer-log-id">${id}</code><span class="developer-log-status ${statusClass(status)}">${status}</span><div class="developer-log-copy"><b>${title}</b><span>${copy}</span></div></article>`;
   function mount(){
     const tracker=document.getElementById("developer-changelog");if(!tracker)return false;
-    const latest=tracker.querySelector(".developer-changelog-latest");if(latest)latest.textContent="LATEST UPDATE · 6 SEP 2026 · V10.42 OVERHAUL BRANCH";
-    const stamp=tracker.querySelector(".developer-changelog-intro time");if(stamp){stamp.dateTime="2026-09-06";stamp.textContent="Last updated 6 September 2026 · V10.42 overhaul branch"}
+    const latest=tracker.querySelector(".developer-changelog-latest");if(latest)latest.textContent="LATEST UPDATE · 7 SEP 2026 · V10.42 STABILITY CONSOLIDATION";
+    const stamp=tracker.querySelector(".developer-changelog-intro time");if(stamp){stamp.dateTime="2026-09-07";stamp.textContent="Last updated 7 September 2026 · V10.42 stability consolidation"}
     const firstList=tracker.querySelector(".developer-log-day .developer-log-list");if(!firstList)return false;
     for(const entry of [...entries].reverse()){
       if(tracker.querySelector(`[data-r30-entry="${entry[0]}"]`))continue;

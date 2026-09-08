@@ -149,11 +149,11 @@ try{
   }));
   assert.equal(lockedAudit.demoMode,true,"Explicit demo mode must activate the V10.42 permanent-unlock boundary.");
   assert.equal(lockedAudit.locked,"true","Demo mode must mark the full-game runtime as locked.");
-  assert.equal(lockedAudit.guarded,8,"All eight direct paid-game entry controls must be guarded in demo mode, including saved-run resume and room-code join.");
-  assert.equal(lockedAudit.badges,8,"Every guarded full-game entry control must carry one FULL GAME badge.");
+  assert.equal(lockedAudit.guarded,8,"Demo guard registry must retain all eight historical entry controls until entitlement is verified; zero-server separately retires online routes.");
+  assert.equal(lockedAudit.badges,8,"Every registered demo guard must retain one FULL GAME badge until entitlement is verified.");
   assert.equal(lockedAudit.tutorialBadge,false,"The free Tutorial must remain outside the paid-control guard set.");
   assert.equal(lockedAudit.resumeBadge,true,"A visible saved-run Resume control must remain behind the demo entitlement boundary.");
-  assert.equal(lockedAudit.joinBadge,true,"Room-code Join must remain behind the demo entitlement boundary.");
+  assert.equal(lockedAudit.joinBadge,true,"Room-code Join may remain registered with the demo guard before the zero-server release retires the online route.");
 
   await demo.page.evaluate(()=>document.getElementById("solo-btn").click());
   await demo.page.waitForFunction(()=>!document.getElementById("v142-demo-paywall")?.classList.contains("hidden"));
@@ -177,10 +177,32 @@ try{
   assert.notEqual(offerAudit.runActive,"true","The intercepted Solo click must not start paid gameplay underneath the unlock screen.");
   await closeDemoOffer(demo.page);
 
-  await demo.page.evaluate(()=>document.getElementById("join-btn").click());
-  await demo.page.waitForFunction(()=>!document.getElementById("v142-demo-paywall")?.classList.contains("hidden"));
-  assert.notEqual(await demo.page.evaluate(()=>document.body.dataset.runActive),"true","Room-code Join must be intercepted before paid online gameplay can start in demo mode.");
-  await closeDemoOffer(demo.page);
+  await demo.page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142ZeroServerRelease));
+  await demo.page.evaluate(()=>document.getElementById("join-btn")?.click());
+  await demo.page.waitForTimeout(120);
+  const joinAudit=await demo.page.evaluate(()=>{
+    const button=document.getElementById("join-btn"),zero=window.CCGLostSizzlerV142ZeroServerRelease,diagnostics=zero?.diagnostics?.();
+    return{
+      zeroServer:Boolean(zero?.enabled),
+      releaseModel:document.body.dataset.releaseModel||"",
+      onlineMultiplayer:document.body.dataset.onlineMultiplayer||"",
+      hidden:Boolean(button?.hidden||button?.classList.contains("hidden")),
+      ariaHidden:button?.getAttribute("aria-hidden")||"",
+      display:button?getComputedStyle(button).display:"",
+      retired:Boolean(diagnostics?.removedButtons?.includes("join-btn")),
+      overlayHidden:document.getElementById("v142-demo-paywall")?.classList.contains("hidden")===true,
+      runActive:document.body.dataset.runActive
+    };
+  });
+  assert.equal(joinAudit.zeroServer,true,"V10.42 zero-server release must remain authoritative for retired online entry points.");
+  assert.equal(joinAudit.releaseModel,"zero-server-cost","Join retirement must remain part of the zero-server-cost release model.");
+  assert.equal(joinAudit.onlineMultiplayer,"disabled","Online multiplayer must remain disabled in the zero-server release.");
+  assert.equal(joinAudit.hidden,true,"Room-code Join must remain hidden after the zero-server release retires online multiplayer.");
+  assert.equal(joinAudit.ariaHidden,"true","Retired Room-code Join must remain unavailable to assistive navigation.");
+  assert.equal(joinAudit.display,"none","Retired Room-code Join must remain absent from the rendered release UI.");
+  assert.equal(joinAudit.retired,true,"Zero-server diagnostics must record Room-code Join as a retired online entry point.");
+  assert.equal(joinAudit.overlayHidden,true,"A retired zero-server Join route must not open the permanent-unlock overlay.");
+  assert.notEqual(joinAudit.runActive,"true","A retired Room-code Join attempt must never start online gameplay.");
 
   await demo.page.evaluate(()=>{const button=document.getElementById("continue-save-btn");button.classList.remove("hidden");button.click()});
   await demo.page.waitForFunction(()=>!document.getElementById("v142-demo-paywall")?.classList.contains("hidden"));
@@ -220,7 +242,7 @@ try{
   assert.equal(entitlementAudit.badges,0,"Accepted permanent ownership must remove FULL GAME badges.");
   assert.deepEqual(demo.pageErrors,[],`Demo-mode V10.42 paywall flow must not raise page errors: ${demo.pageErrors.join("\n")}`);
   assert.deepEqual(demo.failedScripts,[],`Demo-mode V10.42 paywall scripts must load without same-origin failures: ${demo.failedScripts.join("\n")}`);
-  console.log("Lost Sizzler V10.42 explicit demo lock, safe offer rendering, post-checkout verification, provider-bound entitlement and resume/join guard browser contract passed.");
+  console.log("Lost Sizzler V10.42 explicit demo lock, safe offer rendering, post-checkout verification, provider-bound entitlement, resume guard and zero-server Join retirement browser contract passed.");
   await demoContext.close();
 }finally{
   await browser.close();

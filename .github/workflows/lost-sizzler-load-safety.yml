@@ -33,11 +33,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  validate:
-    name: Canonical game load safety
+  core:
+    name: Canonical structure and Node contracts
     runs-on: ubuntu-latest
-    timeout-minutes: 25
-
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -93,6 +92,52 @@ jobs:
             echo "::endgroup::"
           done
 
+  browser-manifest:
+    name: Discover Chromium contracts
+    needs: core
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.manifest.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build browser contract matrix
+        id: manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs=require('fs');
+          const tests=[
+            'arcade/lost-sizzler/tests/v10-6-browser.mjs',
+            'arcade/lost-sizzler/tests/support/v10-28-browser-stability-deterministic.mjs',
+            ...fs.readdirSync('arcade/lost-sizzler/tests/browser')
+              .filter(name=>name.endsWith('.mjs'))
+              .sort()
+              .map(name=>`arcade/lost-sizzler/tests/browser/${name}`)
+          ];
+          process.stdout.write(`matrix=${JSON.stringify({test:tests})}\n`);
+          NODE
+
+  browser-contract:
+    name: Chromium · ${{ matrix.test }}
+    needs: browser-manifest
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix: ${{ fromJSON(needs.browser-manifest.outputs.matrix) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
       - name: Install Chromium test runtime
         shell: bash
         run: |
@@ -100,103 +145,52 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.55.0
           npx playwright install --with-deps chromium
 
-      - name: Run canonical Chromium load and layout suite
+      - name: Prepare failure artifact name
+        id: artifact
         shell: bash
+        env:
+          TEST_FILE: ${{ matrix.test }}
         run: |
           set -euo pipefail
-          marker="$RUNNER_TEMP/lost-sizzler-browser-current.txt"
-          current_log="$RUNNER_TEMP/lost-sizzler-browser-current.log"
-          rm -f "$marker" "$current_log"
+          base="$(basename "$TEST_FILE" .mjs)"
+          echo "name=$base" >> "$GITHUB_OUTPUT"
 
-          capture_failure() {
-            local test="$1"
-            {
-              printf '%s\n\n' "$test"
-              echo '--- failure output tail ---'
-              tail -n 160 "$current_log" 2>/dev/null || true
-            } > "$marker"
-          }
-
-          run_browser_test() {
-            local test="$1"
-            printf '%s\n' "$test" > "$marker"
-            : > "$current_log"
-            echo "::group::$test"
-            if node "$test" 2>&1 | tee "$current_log"; then
+      - name: Run browser contract
+        shell: bash
+        env:
+          TEST_FILE: ${{ matrix.test }}
+        run: |
+          set -euo pipefail
+          name="$(basename "$TEST_FILE")"
+          log="$RUNNER_TEMP/lost-sizzler-browser-contract.log"
+          : > "$log"
+          attempts=1
+          case "$name" in
+            v10-6-browser.mjs|v10-28-browser-stability-deterministic.mjs|v10-41-solo-long-session-soak.mjs)
+              attempts=2
+              ;;
+          esac
+          for attempt in $(seq 1 "$attempts"); do
+            echo "::group::$TEST_FILE (attempt $attempt/$attempts)"
+            echo "=== $TEST_FILE attempt $attempt/$attempts ===" >> "$log"
+            if node "$TEST_FILE" 2>&1 | tee -a "$log"; then
               echo "::endgroup::"
-              return 0
+              exit 0
             fi
             echo "::endgroup::"
-            capture_failure "$test"
-            return 1
-          }
-
-          run_legacy_browser_test() {
-            local test="$1"
-            printf '%s (attempt 1)\n' "$test" > "$marker"
-            : > "$current_log"
-            echo "::group::$test (attempt 1)"
-            if node "$test" 2>&1 | tee "$current_log"; then
-              echo "::endgroup::"
-              return 0
+            if [ "$attempt" -lt "$attempts" ]; then
+              echo "Browser contract failed on attempt $attempt; retrying on a fresh process: $TEST_FILE"
+              echo >> "$log"
             fi
-            echo "::endgroup::"
-            echo "Legacy browser test timed out or failed on attempt 1; retrying once on a fresh browser process: $test"
-            printf '%s (attempt 2)\n' "$test" > "$marker"
-            : > "$current_log"
-            echo "::group::$test (attempt 2)"
-            if node "$test" 2>&1 | tee "$current_log"; then
-              echo "::endgroup::"
-              return 0
-            fi
-            echo "::endgroup::"
-            capture_failure "$test (attempt 2)"
-            return 1
-          }
-
-          run_long_soak_test() {
-            local test="$1"
-            printf '%s (attempt 1)\n' "$test" > "$marker"
-            : > "$current_log"
-            echo "::group::$test (attempt 1)"
-            if node "$test" 2>&1 | tee "$current_log"; then
-              echo "::endgroup::"
-              return 0
-            fi
-            echo "::endgroup::"
-            echo "Long-session soak failed on attempt 1; retrying once on a fresh browser process to distinguish runner sampling starvation from a deterministic regression: $test"
-            printf '%s (attempt 2)\n' "$test" > "$marker"
-            : > "$current_log"
-            echo "::group::$test (attempt 2)"
-            if node "$test" 2>&1 | tee "$current_log"; then
-              echo "::endgroup::"
-              return 0
-            fi
-            echo "::endgroup::"
-            capture_failure "$test (attempt 2)"
-            return 1
-          }
-
-          run_legacy_browser_test arcade/lost-sizzler/tests/v10-6-browser.mjs
-          run_legacy_browser_test arcade/lost-sizzler/tests/support/v10-28-browser-stability-deterministic.mjs
-
-          for test in arcade/lost-sizzler/tests/browser/*.mjs; do
-            case "$(basename "$test")" in
-              v10-41-solo-long-session-soak.mjs)
-                run_long_soak_test "$test"
-                ;;
-              *)
-                run_browser_test "$test"
-                ;;
-            esac
           done
-          rm -f "$marker" "$current_log"
+          echo "::error title=Lost Sizzler browser regression::$TEST_FILE failed after $attempts attempt(s)"
+          exit 1
 
-      - name: Upload failing Chromium contract marker
+      - name: Upload failing Chromium contract log
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: lost-sizzler-failing-browser-contract
-          path: ${{ runner.temp }}/lost-sizzler-browser-current.txt
-          if-no-files-found: ignore
-          retention-days: 1
+          name: lost-sizzler-${{ steps.artifact.outputs.name }}-failure
+          path: ${{ runner.temp }}/lost-sizzler-browser-contract.log
+          if-no-files-found: error
+          retention-days: 7

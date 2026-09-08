@@ -27,10 +27,20 @@ try{
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R32SpyLoader)&&Boolean(window.CCGLostSizzlerPlayerInsights));
 
+  const releaseBoundary=await page.evaluate(()=>{
+    const zeroServer=window.CCGLostSizzlerV142ZeroServerRelease||null,button=document.getElementById("saboteurs-mode-btn"),style=button?getComputedStyle(button):null;
+    return{zeroServer:Boolean(zeroServer?.enabled&&zeroServer?.onlineMultiplayer===false),spyEntryHidden:Boolean(button&&(button.hidden||button.classList.contains("hidden")||style?.display==="none")),spyAriaHidden:button?.getAttribute("aria-hidden")||""};
+  });
+  if(releaseBoundary.zeroServer){
+    assert.equal(releaseBoundary.spyEntryHidden,true,"V10.42 production must keep the public Spy entry inaccessible while retained classic UX is tested internally");
+    assert.equal(releaseBoundary.spyAriaHidden,"true","V10.42 production must keep the retired Spy entry hidden from accessibility navigation");
+  }
+
   console.log("[r33 Spy] validate merged global account-rated suppression");
-  await page.waitForTimeout(500);
   const globalRating=await page.evaluate(async()=>{
-    const insights=window.CCGLostSizzlerPlayerInsights,supabase=window.ccgSupabase||(window.ccgSupabase={}),original=supabase.getClient;
+    const insights=window.CCGLostSizzlerPlayerInsights,supabase=window.ccgSupabase||(window.ccgSupabase={});
+    await insights.accountHasRating(true);
+    const original=supabase.getClient;
     supabase.getClient=async()=>({functions:{invoke:async(_name,{body}={})=>body?.action==="rating_status"?{data:{success:true,authenticated:true,rated:true},error:null}:{data:{success:true},error:null}}});
     const rated=await insights.accountHasRating(true);
     const panel=document.getElementById("ccg-rating-panel");panel?.classList?.remove("hidden");
@@ -48,7 +58,7 @@ try{
     net.setSolo("Agent One");const id=String(net.sessionId);
     return window.CCGLostSizzlerSpecialModes.startOnline({roomMode:"sizzler-saboteurs",players:[{id,name:"Agent One"},{id:"TEST-SPY-B",name:"Agent Two"}],hostId:id,seed:"V141-R33-CLASSIC",roomCode:"R33SPY"});
   });
-  assert.equal(started,true,"r33 Spy fixture must start through the real special-mode adapter");
+  assert.equal(started,true,"r33 Spy fixture must start through the retained internal special-mode adapter");
   await page.waitForFunction(()=>document.body.dataset.specialMode==="sizzler-saboteurs"&&Boolean(window.CCGLostSizzlerV141R32SpyLoader?.state?.loaded)&&Boolean(window.CCGLostSizzlerV141R32SpyPacketOwner)&&Boolean(window.CCGLostSizzlerV141R32SpyOverhaul?.state?.worldBuilds)&&Boolean(document.getElementById("spy-classic-trapulators")));
 
   console.log("[r33 Spy] validate classic Trapulator and rooms-only maps");
