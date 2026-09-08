@@ -5,7 +5,7 @@
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
   const BUILD="V10.42 r2";
-  const CACHE="20260908r17";
+  const CACHE="20260908r18";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-five-depth-campaign.js","CCGLostSizzlerV142FiveDepthCampaign"],
@@ -17,7 +17,7 @@
     ["v10-42-r2-controller-owner-seal.js","CCGLostSizzlerV142R2ControllerOwnerSeal"],
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"]
   ];
-  const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],pendingStartId:"",identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0};
+  const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],pendingStartId:"",identityRestamps:0,identityTimers:[],identityObserver:null,controllerSealReady:false,controllerSealAttempts:0};
   window.CCGLostSizzlerV142Bootstrap=state;
 
   function setReleaseReady(value){
@@ -47,13 +47,26 @@
     }
   }
 
-  function clearIdentityRestamps(){
-    for(const timer of state.identityTimers.splice(0))clearTimeout(timer);
+  function observeReleaseIdentity(){
+    if(state.identityObserver)return;
+    const root=document.querySelector(".v102-brand")||document.querySelector(".brand");
+    if(!root)return;
+    state.identityObserver=new MutationObserver(records=>{
+      if(state.failed)return;
+      if(!records.some(record=>record.target instanceof Node))return;
+      queueMicrotask(stampBuild);
+    });
+    state.identityObserver.observe(root,{childList:true,subtree:true,characterData:true});
   }
 
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>{setReleaseReady(false);stampBuild();scheduleIdentityRestamps()},{once:true});
-  else{stampBuild();scheduleIdentityRestamps()}
-  addEventListener("load",()=>scheduleIdentityRestamps(),{once:true});
+  function clearIdentityRestamps(){
+    for(const timer of state.identityTimers.splice(0))clearTimeout(timer);
+    state.identityObserver?.disconnect();state.identityObserver=null;
+  }
+
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>{setReleaseReady(false);stampBuild();scheduleIdentityRestamps();observeReleaseIdentity()},{once:true});
+  else{stampBuild();scheduleIdentityRestamps();observeReleaseIdentity()}
+  addEventListener("load",()=>{scheduleIdentityRestamps();observeReleaseIdentity()},{once:true});
   addEventListener("pagehide",clearIdentityRestamps,{once:true});
 
   function clearPendingBusy(){
@@ -66,7 +79,11 @@
     const target=event.target instanceof Element?event.target.closest("#solo-btn,#continue-save-btn,#daily-btn,#split-btn,#tutorial-zone-btn"):null;
     if(!target)return;
     const paywall=window.CCGLostSizzlerV142DemoPaywall;
-    if(paywall?.demoMode&&document.body?.dataset?.fullGameEntitled!=="true"&&target.id!=="tutorial-zone-btn")return;
+    if(paywall?.demoMode&&document.body?.dataset?.fullGameEntitled!=="true"&&target.id!=="tutorial-zone-btn"){
+      event.preventDefault();event.stopImmediatePropagation();
+      paywall.showPaywall?.({reason:"full-game"});
+      return;
+    }
     event.preventDefault();event.stopImmediatePropagation();
     clearPendingBusy();
     state.pendingStartId=target.id;
@@ -142,7 +159,7 @@
       // r2 observes/seals where the descriptor permits, but cannot block release
       // merely because an older non-configurable accessor cannot be replaced.
       observeControllerSeal();
-      state.ready=true;setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
+      state.ready=true;setReleaseReady(true);stampBuild();scheduleIdentityRestamps();observeReleaseIdentity();document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
       const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five new dungeon floors are loaded in verified order. Solo, Tutorial and 2P Split Screen run locally; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
       replayPendingStart();
