@@ -74,7 +74,7 @@ assert.match(controller,/if\(next\.id===IDS\.SPY_ONLINE\)[\s\S]*installSharedFra
 assert.match(controller,/window\.CCGLostSizzlerV141R29SpyEngine\?\.leaveIsolation\?\.\(\);installSharedFrameBoundary\(\)/,"Spy controller exit must release mode-owned movement/damage state and retain the controller boundary");
 assert.match(runtime,/window\.CCGLostSizzlerModeRuntime=runtimeRegistry/,"mode runtime registry must expose the isolation boundary");
 assert.match(runtime,/isolatedRules:true,sharedRenderer:true/,"Spy must own rules while deliberately sharing only the renderer");
-assert.match(runtime,/state\.timer=setInterval\(monitor,MONITOR_MS\)/,"Spy movement/damage ownership must still be monitored while the mode is active");
+assert.doesNotMatch(runtime,/state\.timer=setInterval\(monitor,MONITOR_MS\)/,"the retired r29 polling timer must not compete with the controller-owned Spy lifecycle");
 assert.match(runtime,/function ensureDamageBoundary\(\)[\s\S]*const current=window\.hurtPlayer;[\s\S]*ownerChainHas\(current,spyHurtOwner\)/,"Spy damage ownership must inspect the live damage-owner ancestry before installing or repairing its boundary");
 assert.match(runtime,/if\(typeof current==="function"&&current!==spyHurtOwner\)\{state\.baseHurt=current;spyHurtOwner\.__ccgOriginal=current\}[\s\S]*window\.hurtPlayer=spyHurtOwner/,"Spy damage repair must preserve the displaced live owner as its delegate before restoring the boundary");
 assert.match(runtime,/function ensureMovementOwner\(countRecovery=false\)[\s\S]*ownerChainHas\(current,spyMoveOwner\)[\s\S]*window\.movePlayer=spyMoveOwner/,"Spy movement ownership must be ancestry-aware and able to restore the canonical r29 owner");
