@@ -15,17 +15,30 @@
 
   const MODE_ID="sizzler-saboteurs";
   const TICK_MS=40;
-  const state={timer:0,repairs:0,lastOpen:false};
+  const state={timer:0,repairs:0,lastOpen:false,displayOverrides:0};
 
   function retainedSpyActive(){
     try{return window.CCGLostSizzlerSpecialModes?.active?.type===MODE_ID}catch(_){return false}
   }
 
+  function clearPresentation(root,body){
+    let changed=false;
+    if(root?.style?.getPropertyValue("display")){root.style.removeProperty("display");changed=true}
+    if(body?.dataset?.spyR32Inventory!=="false"){body.dataset.spyR32Inventory="false";changed=true}
+    return changed
+  }
+
   function reconcile(){
     const api=window.CCGLostSizzlerV141R32SpyOverhaul;
-    if(!api?.state||!retainedSpyActive())return false;
-    const body=document.body,root=document.getElementById("spy-r32-inventory"),open=Boolean(api.state.inventoryOpen);
-    if(!body||!root)return false;
+    const body=document.body,root=document.getElementById("spy-r32-inventory");
+    if(!api?.state||!body||!root)return false;
+    if(!retainedSpyActive()){
+      const changed=clearPresentation(root,body);
+      state.lastOpen=false;
+      if(changed)state.repairs+=1;
+      return changed
+    }
+    const open=Boolean(api.state.inventoryOpen);
     let changed=false;
     if(open){
       if(body.dataset.specialMode!==MODE_ID){body.dataset.specialMode=MODE_ID;changed=true}
@@ -33,8 +46,13 @@
       if(root.hidden){root.hidden=false;changed=true}
       if(root.classList.contains("hidden")){root.classList.remove("hidden");changed=true}
       if(root.getAttribute("aria-hidden")==="true"){root.setAttribute("aria-hidden","false");changed=true}
-    }else if(body.dataset.spyR32Inventory!=="false"){
-      body.dataset.spyR32Inventory="false";changed=true
+      if(root.style.getPropertyValue("display")!=="grid"||root.style.getPropertyPriority("display")!=="important"){
+        root.style.setProperty("display","grid","important");
+        state.displayOverrides+=1;
+        changed=true
+      }
+    }else{
+      changed=clearPresentation(root,body)||changed;
     }
     if(changed)state.repairs+=1;
     state.lastOpen=open;
@@ -46,6 +64,6 @@
 
   window.CCGLostSizzlerV142R3RetainedSpyInventorySeal=Object.freeze({
     reconcile,
-    diagnostics:()=>Object.freeze({repairs:state.repairs,lastOpen:state.lastOpen,timerActive:Boolean(state.timer)})
+    diagnostics:()=>Object.freeze({repairs:state.repairs,lastOpen:state.lastOpen,displayOverrides:state.displayOverrides,timerActive:Boolean(state.timer)})
   });
 })();
