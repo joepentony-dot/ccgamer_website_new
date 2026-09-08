@@ -5,7 +5,7 @@
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
   const BUILD="V10.42 r2";
-  const CACHE="20260908r26";
+  const CACHE="20260908r27";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-five-depth-campaign.js","CCGLostSizzlerV142FiveDepthCampaign"],
@@ -21,6 +21,7 @@
     ["v10-42-r3-retained-spy-inventory-seal.js","CCGLostSizzlerV142R3RetainedSpyInventorySeal"],
     ["v10-42-r2-controller-owner-seal.js","CCGLostSizzlerV142R2ControllerOwnerSeal"],
     ["v10-42-r5-spy-exit-movement-seal.js","CCGLostSizzlerV142R5SpyExitMovementSeal"],
+    ["v10-42-r11-spy-packet-rejection-seal.js","CCGLostSizzlerV142R11SpyPacketRejectionSeal"],
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"]
   ];
   const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],pendingStartId:"",identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0};
