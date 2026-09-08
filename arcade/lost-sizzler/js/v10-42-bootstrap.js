@@ -5,7 +5,7 @@
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
   const BUILD="V10.42 r2";
-  const CACHE="20260908r14";
+  const CACHE="20260908r15";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-five-depth-campaign.js","CCGLostSizzlerV142FiveDepthCampaign"],
@@ -38,11 +38,21 @@
     state.identityRestamps+=1;
   }
 
+  let identityObserver=null;
+  function ensureIdentityObserver(){
+    if(identityObserver||typeof MutationObserver!=="function")return Boolean(identityObserver);
+    const badge=document.querySelector(".build-badge"),subtitle=document.querySelector(".v102-brand p");
+    if(!badge&&!subtitle)return false;
+    identityObserver=new MutationObserver(()=>stampBuild());
+    for(const node of [badge,subtitle].filter(Boolean))identityObserver.observe(node,{childList:true,characterData:true,subtree:true});
+    return true;
+  }
+
   function scheduleIdentityRestamps(){
     for(const delay of [0,32,120,360,900,1800]){
       const timer=setTimeout(()=>{
         const index=state.identityTimers.indexOf(timer);if(index>=0)state.identityTimers.splice(index,1);
-        stampBuild();
+        stampBuild();ensureIdentityObserver();
       },delay);
       state.identityTimers.push(timer);
     }
@@ -50,11 +60,12 @@
 
   function clearIdentityRestamps(){
     for(const timer of state.identityTimers.splice(0))clearTimeout(timer);
+    identityObserver?.disconnect();identityObserver=null;
   }
 
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>{setReleaseReady(false);stampBuild();scheduleIdentityRestamps()},{once:true});
-  else{stampBuild();scheduleIdentityRestamps()}
-  addEventListener("load",()=>scheduleIdentityRestamps(),{once:true});
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>{setReleaseReady(false);stampBuild();ensureIdentityObserver();scheduleIdentityRestamps()},{once:true});
+  else{stampBuild();ensureIdentityObserver();scheduleIdentityRestamps()}
+  addEventListener("load",()=>{ensureIdentityObserver();scheduleIdentityRestamps()},{once:true});
   addEventListener("pagehide",clearIdentityRestamps,{once:true});
 
   function clearPendingBusy(){
@@ -66,6 +77,8 @@
     if(state.ready||state.failed)return;
     const target=event.target instanceof Element?event.target.closest("#solo-btn,#continue-save-btn,#daily-btn,#split-btn,#tutorial-zone-btn"):null;
     if(!target)return;
+    const paywall=window.CCGLostSizzlerV142DemoPaywall;
+    if(paywall?.demoMode&&document.body?.dataset?.fullGameEntitled!=="true"&&target.id!=="tutorial-zone-btn")return;
     event.preventDefault();event.stopImmediatePropagation();
     clearPendingBusy();
     state.pendingStartId=target.id;
@@ -114,7 +127,7 @@
   }
 
   async function boot(){
-    setReleaseReady(false);stampBuild();
+    setReleaseReady(false);stampBuild();ensureIdentityObserver();
     try{
       for(const [file,marker] of modules)await loadOne(file,marker);
       // V10.42 r1/r2 no longer assign global window.update. Controller ownership
@@ -122,12 +135,12 @@
       // r2 observes/seals where the descriptor permits, but cannot block release
       // merely because an older non-configurable accessor cannot be replaced.
       observeControllerSeal();
-      state.ready=true;setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
+      state.ready=true;setReleaseReady(true);stampBuild();ensureIdentityObserver();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
       const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five new dungeon floors are loaded in verified order. Solo, Tutorial and 2P Split Screen run locally; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
       replayPendingStart();
     }catch(error){
-      state.failed=true;state.error=String(error?.message||error);setReleaseReady(false);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="failed";
+      state.failed=true;state.error=String(error?.message||error);setReleaseReady(false);stampBuild();ensureIdentityObserver();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="failed";
       clearPendingBusy();state.pendingStartId="";
       const note=document.getElementById("menu-note");if(note)note.textContent=`V10.42 startup failed safely: ${state.error}. Refresh before starting a run.`;
       console.error("[Lost Sizzler V10.42] ordered bootstrap failed",error);
