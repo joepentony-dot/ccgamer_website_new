@@ -120,7 +120,35 @@ try{
   assert.ok(chest.rewardScore>0,"Every opened chest must record a score reward.");
   assert.ok(chest.rewardXp>0,"Every opened chest must record an XP reward.");
   assert.equal(chest.beforeMana,1,"Synthetic chest qualification must begin with exactly one ammunition unit.");
-  await page.waitForFunction(()=>document.getElementById("pickup-title")?.textContent==="CHEST REWARD CONFIRMED",null,{timeout:5000});
+  try{
+    await page.waitForFunction(()=>document.getElementById("pickup-title")?.textContent==="CHEST REWARD CONFIRMED",null,{timeout:5000});
+  }catch(error){
+    const diagnostic=await page.evaluate(({pageErrors})=>{
+      const stability=window.CCGLostSizzlerV142R1Stability;
+      const diagnostics=stability?.diagnostics||{};
+      const player=typeof p1!=="undefined"?p1:null;
+      let local=false;
+      try{local=Boolean(player&&typeof localPlayers==="function"&&localPlayers().includes(player))}catch(_){ }
+      return{
+        mode:typeof mode!=="undefined"?mode:undefined,
+        pickupTitle:document.getElementById("pickup-title")?.textContent||"",
+        pickupBody:document.querySelector("#pickup, #pickup-toast, .pickup, .toast")?.textContent||"",
+        p1Mana:player?.mana,
+        probeCalls:window.__v142R1ChestProbe?.calls,
+        chestLootRecoveries:diagnostics.chestLootRecoveries,
+        chestLootRecoveryFailures:diagnostics.chestLootRecoveryFailures,
+        chestConfirmationFailures:diagnostics.chestConfirmationFailures,
+        chestLastRecoveryError:diagnostics.chestLastRecoveryError,
+        runExists:typeof run!=="undefined"&&Boolean(run),
+        hostExists:typeof host!=="undefined"&&Boolean(host),
+        p1InLocalPlayers:local,
+        visibilityState:document.visibilityState,
+        pageErrors
+      };
+    },{pageErrors:errors});
+    console.error(`V142_R1_CHEST_DIAGNOSTIC ${JSON.stringify(diagnostic)}`);
+    throw error;
+  }
   const confirmedChest=await page.evaluate(()=>({
     mana:p1.mana,
     calls:window.__v142R1ChestProbe?.calls||0,
