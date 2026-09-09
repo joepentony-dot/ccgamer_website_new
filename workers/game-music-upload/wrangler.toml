@@ -1,0 +1,12 @@
+name = "ccg-game-music-upload"
+main = "src/worker.mjs"
+compatibility_date = "2026-09-09"
+
+[[r2_buckets]]
+binding = "GAME_MUSIC"
+bucket_name = "game-music"
+
+# Configure these outside the repository with `wrangler secret put` or in the
+# Cloudflare dashboard: SUPABASE_SERVICE_ROLE_KEY.
+# Non-secret variables required by the Worker: SUPABASE_URL,
+# SUPABASE_PUBLISHABLE_KEY and ALLOWED_ADMIN_ORIGIN.
