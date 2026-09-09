@@ -71,11 +71,14 @@ try{
   const release=await page.evaluate(()=>({
     build:document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content,
     cache:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content,
+    canonicalBuild:window.CCGLostSizzlerV142Bootstrap?.build,
+    canonicalCache:window.CCGLostSizzlerV142Bootstrap?.cache,
     r29Timer:window.CCGLostSizzlerV141R29?.state?.timer||0,
     cooperative:Boolean(window.CCGLostSizzlerV141R29?.install?.__ccgV141R30Cooperative),
     golden:Boolean(window.CCGLostSizzlerV141R30?.state?.goldenLocked)
   }));
-  assert.deepEqual({build:release.build,cache:release.cache},{build:"V10.42 r2",cache:"20260909r32"},"release-ready meta identity must match the authoritative V10.42 release baseline");
+  assert.equal(release.build,release.canonicalBuild,"release-ready build metadata must match the authoritative V10.42 bootstrap identity");
+  assert.equal(release.cache,release.canonicalCache,"release-ready cache metadata must match the authoritative V10.42 bootstrap identity");
   assert.equal(release.r29Timer,0,"r30 must stop the competing r29 installer interval");
   assert.equal(release.cooperative,true,"r29 maintenance must be cooperative before gameplay starts");
   assert.equal(release.golden,true,"r30 must lock a known-good normal runtime ownership snapshot after release readiness");

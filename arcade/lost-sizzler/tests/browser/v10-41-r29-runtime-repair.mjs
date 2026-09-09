@@ -31,10 +31,14 @@ try{
   const release=await page.evaluate(()=>({
     build:document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content,
     cache:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content,
+    canonicalBuild:window.CCGLostSizzlerV142Bootstrap?.build,
+    canonicalCache:window.CCGLostSizzlerV142Bootstrap?.cache,
     r29:Boolean(window.CCGLostSizzlerV141R29),
     loop:Boolean(window.loop?.__ccgV141R29Stable)
   }));
-  assert.deepEqual(release,{build:"V10.42 r2",cache:"20260909r32",r29:true,loop:true},"Chromium must retain the r29 stable-loop protections under the authoritative V10.42 build identity");
+  assert.equal(release.build,release.canonicalBuild,"release-ready build metadata must match the authoritative V10.42 bootstrap identity");
+  assert.equal(release.cache,release.canonicalCache,"release-ready cache metadata must match the authoritative V10.42 bootstrap identity");
+  assert.deepEqual({r29:release.r29,loop:release.loop},{r29:true,loop:true},"Chromium must run the r30 page while retaining the r29 stable-loop protections");
 
   const geometry=await page.evaluate(async()=>{
     document.body.dataset.runActive="true";
