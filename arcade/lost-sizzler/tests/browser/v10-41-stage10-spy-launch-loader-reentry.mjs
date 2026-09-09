@@ -142,6 +142,13 @@ try{
 
   assert.equal(entries[0].loaderLoads,1,"first Spy activation must load the r32 owner chain exactly once");
   assert.equal(entries[0].uiLoads,1,"first Spy activation must load the search owner exactly once");
+  const damageAncestryDiagnostic=index=>JSON.stringify({
+    baseline:{entry:1,hurtDepth:entries[0].hurtDepth,damageBoundaries:entries[0].damageBoundaries,hurtChain:entries[0].hurtChain},
+    current:{entry:index+1,hurtDepth:entries[index].hurtDepth,damageBoundaries:entries[index].damageBoundaries,hurtChain:entries[index].hurtChain},
+    priorExit:index>0?{exit:index,hurtDepth:exits[index-1].hurtDepth,damageBoundaries:exits[index-1].damageBoundaries,hurtChain:exits[index-1].hurtChain}:null,
+    entries:entries.map((entry,entryIndex)=>({entry:entryIndex+1,hurtDepth:entry.hurtDepth,damageBoundaries:entry.damageBoundaries,hurtChain:entry.hurtChain})),
+    exits:exits.map((exit,exitIndex)=>({exit:exitIndex+1,hurtDepth:exit.hurtDepth,damageBoundaries:exit.damageBoundaries,hurtChain:exit.hurtChain}))
+  });
   for(const [index,entry] of entries.entries()){
     assert.equal(entry.loaderLoads,entries[0].loaderLoads,`Spy re-entry ${index+1} must reuse the loaded owner chain`);
     assert.equal(entry.uiLoads,entries[0].uiLoads,`Spy re-entry ${index+1} must reuse the loaded search owner`);
@@ -149,7 +156,7 @@ try{
     assert.equal(entry.r30Timer,entries[0].r30Timer,`Spy re-entry ${index+1} must reuse the accepted R30 watchdog handle`);
     assert.ok(entry.moveDepth<=MAX_OBSERVABLE_MOVE_DEPTH,`Spy re-entry ${index+1} must keep observable movement ancestry bounded despite accepted opaque finalizers`);
     assert.equal(entry.moveOwners,1,`Spy re-entry ${index+1} must retain exactly one r29 movement owner`);
-    assert.ok(entry.hurtDepth<=entries[0].hurtDepth,`Spy re-entry ${index+1} must not grow damage ancestry`)
+    assert.ok(entry.hurtDepth<=entries[0].hurtDepth,`Spy re-entry ${index+1} must not grow damage ancestry: ${damageAncestryDiagnostic(index)}`)
   }
   for(let index=1;index<entries.length;index++)assert.equal(entries[index].worldBuilds,entries[index-1].worldBuilds+1,`Spy re-entry ${index+1} must build exactly one compact world for its new match identity`);
   assert.equal(exits.length,3,"Stage 10 must complete all three leave/re-entry cycles");
