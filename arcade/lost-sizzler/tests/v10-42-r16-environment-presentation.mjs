@@ -39,7 +39,7 @@ for(const [input,expectedBiome,expectedWeather] of cases){
   assert.equal(first.readability.enemyRimLight,true);
   assert.equal(first.renderOwnership,false);
   assert.equal(first.simulationOwnership,false);
-  assert.deepEqual(first.runtimeDependencies,[]);
+  assert.deepEqual(Array.from(first.runtimeDependencies),[]);
 }
 
 const rare=api.recipe({floor:4,roomKey:"rare-7",biome:"crypt",roomRole:"rare",route:"alternate-east"});
