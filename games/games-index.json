@@ -2598,6 +2598,12 @@
     "thumbnail": "resources/images/thumbnails/all/predator.jpg"
   },
   {
+    "slug": "premiere",
+    "title": "Premiere",
+    "year": 1992,
+    "thumbnail": "resources/images/thumbnails/all/premiere.webp"
+  },
+  {
     "slug": "the-prince",
     "title": "The Prince",
     "year": 1986,

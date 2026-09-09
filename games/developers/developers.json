@@ -374,6 +374,17 @@
     "url": "/games/developers/teque-software/"
   },
   {
+    "name": "The 8th Day",
+    "slug": "the-8th-day",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1992,
+    "lastYear": 1992,
+    "indexable": false,
+    "url": "/games/developers/the-8th-day/"
+  },
+  {
     "name": "The Edge",
     "slug": "the-edge",
     "count": 1,
