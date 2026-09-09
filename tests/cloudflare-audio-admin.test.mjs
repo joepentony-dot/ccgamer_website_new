@@ -43,3 +43,14 @@ test('Archive Quality separates Cloudflare music from local resource findings', 
   const runtimeBase = musicConfig.match(/DEFAULT_MUSIC_BASE_URL = "([^"]+)"/)?.[1];
   assert.equal(archiveBase, runtimeBase, 'Archive Quality and public music runtime must use the same Cloudflare base URL');
 });
+
+test('music upload Worker keeps R2 credentials and role enforcement server-side', () => {
+  const worker = read('workers/game-music-upload/src/handler.mjs');
+  const config = read('workers/game-music-upload/wrangler.toml');
+  assert.match(config, /binding = "GAME_MUSIC"/);
+  assert.match(worker, /SUPABASE_SERVICE_ROLE_KEY/);
+  assert.match(worker, /user_roles/);
+  assert.match(worker, /editor.*admin.*superadmin/);
+  assert.match(worker, /\$\{normalized\}\.mp3/);
+  assert.doesNotMatch(read('admin/js/content-publisher.js'), /SUPABASE_SERVICE_ROLE_KEY/);
+});

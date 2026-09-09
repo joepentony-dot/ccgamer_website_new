@@ -10,12 +10,17 @@ const SECONDARY_QUALITY = 0.84;
 const FINAL_QUALITY = 0.8;
 const ALLOWED_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp']);
 const THUMBNAIL_PREFIX = 'resources/images/thumbnails/all/';
+const BOX3D_PREFIX = 'resources/images/games/boxes-3d/';
+const BOX3D_MAX_WIDTH = 960;
+const BOX3D_MAX_HEIGHT = 1440;
+const BOX3D_HARD_BYTES = 900 * 1024;
 
 const fileInput = document.querySelector('[data-game-thumbnail-file]');
 const pathInput = document.querySelector('[data-game-field="thumbnail"]');
 const slugInput = document.querySelector('[data-game-field="slug"]');
 const publishButton = document.querySelector('[data-publish-game]');
 const gameForm = document.querySelector('[data-game-form]');
+const boxFileInput = document.querySelector('[data-game-box3d-file]');
 
 if (fileInput && pathInput && publishButton) {
   const status = document.createElement('small');
@@ -35,6 +40,43 @@ if (fileInput && pathInput && publishButton) {
       updateThumbnailPathToWebp(selected.name);
     }
   }, { capture: true });
+}
+
+if (boxFileInput && publishButton) {
+  const status = document.createElement('small');
+  status.dataset.box3dOptimizationStatus = 'true';
+  status.setAttribute('aria-live', 'polite');
+  status.textContent = 'Optional 3D boxes are converted locally to WebP before the Git commit.';
+  boxFileInput.insertAdjacentElement('afterend', status);
+  boxFileInput.addEventListener('change', () => { void optimiseBox3dSelectedImage(status); });
+}
+
+async function optimiseBox3dSelectedImage(status) {
+  const original = boxFileInput?.files?.[0] || null;
+  if (!original) return;
+  if (!ALLOWED_TYPES.has(original.type)) {
+    status.textContent = '3D box must be PNG, JPEG or WebP.';
+    return;
+  }
+  try {
+    const source = await loadImage(original);
+    const width = Number(source.width || source.naturalWidth || 0);
+    const height = Number(source.height || source.naturalHeight || 0);
+    if (!width || !height) throw new Error('Image dimensions could not be read.');
+    const scale = Math.min(1, BOX3D_MAX_WIDTH / width, BOX3D_MAX_HEIGHT / height);
+    let output = await encodeWebp(source, Math.max(1, Math.round(width * scale)), Math.max(1, Math.round(height * scale)), PRIMARY_QUALITY);
+    if (output.size > BOX3D_HARD_BYTES) output = await encodeWebp(source, Math.max(1, Math.round(width * scale)), Math.max(1, Math.round(height * scale)), 0.78);
+    if (output.size > BOX3D_HARD_BYTES) throw new Error(`optimised image is ${formatBytes(output.size)}, above the ${formatBytes(BOX3D_HARD_BYTES)} limit.`);
+    const slug = String(slugInput?.value || '').trim().toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
+    if (!slug) throw new Error('Enter the game slug before selecting a 3D box.');
+    const file = new File([output], `${slug}.webp`, { type: 'image/webp', lastModified: Date.now() });
+    const transfer = new DataTransfer();
+    transfer.items.add(file);
+    boxFileInput.files = transfer.files;
+    status.textContent = `3D box ready: ${BOX3D_PREFIX}${slug}.webp · ${formatBytes(file.size)}.`;
+  } catch (error) {
+    status.textContent = `3D box optimisation stopped safely: ${error.message || error}`;
+  }
 }
 
 async function optimiseSelectedImage() {

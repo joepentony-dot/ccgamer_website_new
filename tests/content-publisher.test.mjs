@@ -53,6 +53,25 @@ test('game publishing writes authoritative source data and optional thumbnail on
   }
 });
 
+test('publisher keeps the established 3D-box path and separate authenticated music upload', () => {
+  assert.match(html, /data-game-box3d-file/);
+  assert.match(html, /data-game-music-file/);
+  assert.match(js, /resources\/images\/games\/boxes-3d\//);
+  assert.match(js, /\$\{slugify\(slug\)\}\.webp/);
+  assert.match(js, /\/api\/admin\/game-music/);
+  assert.match(js, /getSession/);
+  assert.match(js, /\$\{slugify\(slug\)\}\.mp3/);
+  assert.doesNotMatch(js, /gameValue\(['"]music['"]\)/);
+});
+
+test('image optimiser preserves thumbnail handling while adding a box3d role', () => {
+  const optimiser = fs.readFileSync('admin/js/content-publisher-image-optimizer.js', 'utf8');
+  assert.match(optimiser, /THUMBNAIL_PREFIX/);
+  assert.match(optimiser, /BOX3D_PREFIX/);
+  assert.match(optimiser, /data-game-box3d-file/);
+  assert.match(optimiser, /resources\/images\/games\/boxes-3d\//);
+});
+
 test('video publishing supports all three authoritative video datasets', () => {
   assert.match(js, /data\/retro-specials\.json/);
   assert.match(js, /data\/retro-events\.json/);
