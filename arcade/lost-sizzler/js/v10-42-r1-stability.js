@@ -11,6 +11,9 @@
     shopCounterRepairs:0,
     chestRewardRepairs:0,
     chestLootRecoveries:0,
+    chestLootRecoveryFailures:0,
+    chestConfirmationFailures:0,
+    chestLastRecoveryError:"",
     dossierSpaceCloses:0,
     alphabetOrderRepairs:0
   };
@@ -121,8 +124,9 @@
     if(typeof applyLoot==="function"&&!applyLoot.__ccgV142R1ChestTracking){
       const baseApplyLoot=applyLoot;
       applyLoot=function(loot,player){
-        if(loot&&typeof loot==="object")appliedChestLoot.add(loot);
-        return baseApplyLoot(loot,player);
+        const result=baseApplyLoot(loot,player);
+        if(loot&&typeof loot==="object"&&result!==false)appliedChestLoot.add(loot);
+        return result;
       };
       applyLoot.__ccgV142R1ChestTracking=true;applyLoot.__ccgOriginal=baseApplyLoot;
     }
@@ -136,15 +140,26 @@
         if(beforeActive&&chest.active===false){
           const loot=chest.loot,name=chestLootName(loot),scoreReward=Math.max(0,safeNumber(chest.rewardScore)),xpReward=Math.max(0,safeNumber(chest.rewardXp));
           setTimeout(()=>{
-            try{
-              if(!loot||typeof loot!=="object")return;
-              if(!appliedChestLoot.has(loot)&&chestPlayerStillActive(player)){
-                applyLoot(loot,player);diagnostics.chestLootRecoveries++;
-                try{floatPickupText(player,name,loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan)}catch(_){}
+            if(!loot||typeof loot!=="object")return;
+            let delivered=appliedChestLoot.has(loot);
+            if(!delivered&&chestPlayerStillActive(player)){
+              try{
+                const result=applyLoot(loot,player);
+                delivered=result!==false&&appliedChestLoot.has(loot);
+                if(delivered)diagnostics.chestLootRecoveries++;
+                else diagnostics.chestLootRecoveryFailures++;
+              }catch(error){
+                diagnostics.chestLootRecoveryFailures++;
+                diagnostics.chestLastRecoveryError=String(error?.message||error||"unknown recovery error");
               }
-              showToast("CHEST REWARD CONFIRMED",`${name} · +${scoreReward.toLocaleString()} score · +${xpReward} XP.`,"gold",6500);
-              diagnostics.chestRewardRepairs++;
-            }catch(_){}
+              try{floatPickupText(player,name,loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan)}catch(_){ }
+            }
+            if(delivered){
+              try{
+                showToast("CHEST REWARD CONFIRMED",`${name} · +${scoreReward.toLocaleString()} score · +${xpReward} XP.`,"gold",6500);
+                diagnostics.chestRewardRepairs++;
+              }catch(_){diagnostics.chestConfirmationFailures++}
+            }
           },650);
         }
         return result;
