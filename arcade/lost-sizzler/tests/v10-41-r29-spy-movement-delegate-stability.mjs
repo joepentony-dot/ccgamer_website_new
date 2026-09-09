@@ -5,7 +5,9 @@ import {fileURLToPath} from "node:url";
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,"..");
-const runtime=fs.readFileSync(path.join(root,"js/v10-41-r29-spy-engine-isolation.js"),"utf8");
+const normaliseSource=source=>String(source).replace(/\r\n?/g,"\n");
+assert.equal(normaliseSource("first\r\nsecond\rthird\nfourth"),"first\nsecond\nthird\nfourth","source inspection must treat LF and CRLF-equivalent input identically");
+const runtime=normaliseSource(fs.readFileSync(path.join(root,"js/v10-41-r29-spy-engine-isolation.js"),"utf8"));
 
 const start=runtime.indexOf("function ensureMovementOwner(countRecovery=false)");
 const end=runtime.indexOf("\n\n  function ensureDamageBoundary()",start);

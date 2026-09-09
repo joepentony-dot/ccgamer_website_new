@@ -35,23 +35,24 @@ try{
     const originalFloor=Number(run.floor||1),enemyArray=host.enemies,originalEnemies=enemyArray.slice();
     const originalScore=Number(score||0),originalRevision=Number(host.revision||0);
     enemyArray.length=0;
+    const floor=10,profile=director.levelProfile(floor),fixtureCandidates=[];
+    run.floor=floor;
     let selected=null;
     try{
       for(let roomId=1;roomId<(world.rooms||[]).length;roomId++){
         const room=world.rooms[roomId];
-        if(!director.directedEncounterEligible(room,roomId))continue;
-        const cells=director.directedSpawnCells(room,p1,2);
-        if(cells.length<2)continue;
+        if(!director.directedEncounterEligible(room,roomId)){fixtureCandidates.push({roomId,reason:"ineligible"});continue}
+        if((roomId+floor*3)%profile.cadence!==0){fixtureCandidates.push({roomId,reason:"cadence"});continue}
+        const cells=director.directedSpawnCells(room,p1,profile.squad);
+        if(cells.length<profile.squad){fixtureCandidates.push({roomId,reason:"spawn-cells",cells:cells.length});continue}
         selected={roomId,room};break;
       }
-      if(!selected)return{candidate:false,installed:completion?.state?.installed===true};
-      const floor=10;
-      run.floor=floor;
+      if(!selected)return{candidate:false,installed:completion?.state?.installed===true,fixtureReady:false,fixtureError:`No eligible ${profile.id} room supplied ${profile.squad} canonical spawn cells at floor ${floor}.`,fixtureCandidates};
       const rewardBefore=Number(completion.state.rewardScore||0),clearsBefore=Number(completion.state.clears||0),pendingBefore=Number(completion.state.pendingKills||0),duplicateBefore=Number(completion.state.duplicateSuppressions||0);
       const spawnedOk=director.applyDirectedEncounter(p1,selected.roomId,selected.room);
       const enemies=enemyArray.filter(enemy=>enemy?.alive&&enemy?.levelDirectorEnemy&&String(enemy.id||"").startsWith(`stage12-${floor}-${selected.roomId}-`));
       const identities=enemies.map(enemy=>completion.encounterIdentity(enemy));
-      if(enemies.length!==2)return{candidate:true,spawnedOk,enemyCount:enemies.length,identities};
+      if(enemies.length!==profile.squad)return{candidate:true,installed:completion?.state?.installed===true,fixtureReady:false,fixtureError:`Canonical Stage 12 application did not create ${profile.squad} ${profile.id} enemies.`,fixtureCandidates,spawnedOk,enemyCount:enemies.length,identities};
 
       const scoreBeforeKills=Number(score||0),revisionBeforeKills=Number(host.revision||0);
       damageEnemy(enemies[0],999,"energy",p1);
@@ -69,7 +70,7 @@ try{
       };
       const duplicateResult=completion.onEnemyDefeated(enemies[1],p1),scoreAfterDuplicate=Number(score||0),duplicateAfter=Number(completion.state.duplicateSuppressions||0);
       return{
-        candidate:true,installed:completion.state.installed===true,spawnedOk,enemyCount:enemies.length,identities,
+        candidate:true,installed:completion.state.installed===true,fixtureReady:true,fixtureCandidates,spawnedOk,enemyCount:enemies.length,identities,
         floor,roomId:selected.roomId,profile:director.levelProfile(floor).id,
         scoreBeforeKills,revisionBeforeKills,rewardBefore,clearsBefore,pendingBefore,duplicateBefore,
         afterFirst,afterSecond,duplicateResult,scoreAfterDuplicate,duplicateAfter,
@@ -87,8 +88,9 @@ try{
     }
   });
 
-  assert.equal(result.candidate,true,"Stage 13 qualification requires an ordinary room with two deterministic spawn cells");
   assert.equal(result.installed,true,"Stage 13 must be installed on the authoritative defeat transaction before Solo begins");
+  assert.equal(result.fixtureReady,true,`Stage 13 deterministic fixture precondition failed: ${result.fixtureError||"unknown"} ${JSON.stringify(result.fixtureCandidates||[])}`);
+  assert.equal(result.candidate,true,"Stage 13 qualification requires an ordinary room with two deterministic spawn cells");
   assert.equal(result.spawnedOk,true,"Stage 12 must create the deep-floor directed encounter used by Stage 13");
   assert.equal(result.enemyCount,2,"Stage 13 qualification must exercise a two-enemy Lockdown Depths patrol");
   assert.ok(result.identities.every(identity=>identity?.key===`${result.floor}:${result.roomId}`),"both directed enemies must resolve to one stable Stage 13 encounter identity");

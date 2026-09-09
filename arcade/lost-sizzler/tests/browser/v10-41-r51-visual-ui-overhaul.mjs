@@ -82,12 +82,13 @@ try{
   assert.ok(visual.diag.enemyFrames>=0);
   assert.ok(visual.diag.lightingUpdates>0);
 
-  const focus=await page.evaluate(async()=>{await quitToMenu();const api=window.CCGLostSizzlerV141R51MenuFocus,before=api.state.focusMoves,button=document.getElementById("create-btn");button.focus();await new Promise(resolve=>setTimeout(resolve,40));const style=getComputedStyle(button);return{active:document.activeElement?.id,outline:style.outlineStyle,outlineWidth:style.outlineWidth,moves:api.state.focusMoves-before}});
-  assert.equal(focus.active,"create-btn");
+  const focus=await page.evaluate(async()=>{await quitToMenu();const api=window.CCGLostSizzlerV141R51MenuFocus,before=api.state.focusMoves,button=document.getElementById("split-btn");button.focus();await new Promise(resolve=>setTimeout(resolve,40));const style=getComputedStyle(button);return{active:document.activeElement?.id,outline:style.outlineStyle,outlineWidth:style.outlineWidth,moves:api.state.focusMoves-before,createHidden:document.getElementById("create-btn")?.hidden}});
+  assert.equal(focus.createHidden,true,"zero-server release must keep retired Create Online hidden");
+  assert.equal(focus.active,"split-btn","focus helper must work on a supported local gameplay action");
   assert.notEqual(focus.outline,"none","keyboard/controller focus must remain visually obvious");
   assert.ok(focus.moves>=1,"menu focus helper must keep keyboard/controller focus visible");
   assert.deepEqual(errors,[],`r51 browser test must not raise page errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 r51 visual polish, adaptive lighting, renderer recovery and menu usability passed in Chromium.");
+  console.log("Lost Sizzler V10.41 r51 visual polish, adaptive lighting, renderer recovery and local-menu usability passed in Chromium.");
   await context.close();
 }finally{
   await browser.close().catch(()=>{});for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));

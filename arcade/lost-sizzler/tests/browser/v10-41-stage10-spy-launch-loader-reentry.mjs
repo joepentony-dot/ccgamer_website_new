@@ -7,11 +7,15 @@ import {chromium} from "playwright";
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const repo=path.resolve(here,"../../../..");
+const r27Source=fs.readFileSync(path.join(repo,"arcade/lost-sizzler/js/v10-41-r27-spy-isolation.js"),"utf8");
+const splitSource=fs.readFileSync(path.join(repo,"arcade/lost-sizzler/js/v10-41-split-friendly-fire.js"),"utf8");
 const r29Source=fs.readFileSync(path.join(repo,"arcade/lost-sizzler/js/v10-41-r29-spy-engine-isolation.js"),"utf8");
 const r30Source=fs.readFileSync(path.join(repo,"arcade/lost-sizzler/js/v10-41-r30-global-movement-guard.js"),"utf8");
 const r32Source=fs.readFileSync(path.join(repo,"arcade/lost-sizzler/js/v10-41-r32-spy-loader.js"),"utf8");
 const MAX_OBSERVABLE_MOVE_DEPTH=8;
 assert.doesNotMatch(r29Source,/window\.update\s*=/,"Stage 10 must keep Spy on the authoritative mode-controller update boundary");
+assert.match(r27Source,/if\(spyActive\(\)&&current===canonicalSpyMove\(\)\)\{state\.moveSource=current;state\.moveInstalled=true;return true\}/,"r27 must stand down when r29's canonical Spy movement owner is active");
+assert.match(splitSource,/if\(spyOwnsMovement\(current\)\)\{state\.moveWrapped=current;state\.movementOwnershipYields\+\+;return true\}/,"the split collision installer must stand down when r29's canonical Spy movement owner is active");
 assert.match(r30Source,/function stopLegacySpyMonitor\(\)/,"Stage 10 must retain R30 retirement of the legacy r29 Spy monitor");
 assert.match(r30Source,/engine\.state\.timer=0;state\.spyTimerStopped=true/,"R30 must record retirement of the legacy r29 Spy monitor");
 assert.match(r32Source,/new MutationObserver\(/,"Stage 10 must retain event-driven Spy loader activation");
@@ -32,7 +36,7 @@ try{
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerModeRuntime)&&Boolean(window.CCGLostSizzlerSpecialModes)&&Boolean(window.CCGLostSizzlerV141R29SpyEngine)&&Boolean(window.CCGLostSizzlerV141R30)&&Boolean(window.CCGLostSizzlerV141R32SpyLoader)&&typeof quitToMenu==="function",null,{timeout:90000});
 
   const snapshot=()=>page.evaluate(()=>{
-    const runtime=window.CCGLostSizzlerModeRuntime,r29=window.CCGLostSizzlerV141R29SpyEngine,r30=window.CCGLostSizzlerV141R30,r32=window.CCGLostSizzlerV141R32SpyLoader,r56=window.CCGLostSizzlerV141R56PlaytestCompletion,r59=window.CCGLostSizzlerV141R59LiveRegressionFixes,r60=window.CCGLostSizzlerV141R60HordeCombatIntegrity;
+    const runtime=window.CCGLostSizzlerModeRuntime,r27=window.CCGLostSizzlerV141R27SpyIsolation,r29Legacy=window.CCGLostSizzlerV141R29,r29=window.CCGLostSizzlerV141R29SpyEngine,r30=window.CCGLostSizzlerV141R30,r32=window.CCGLostSizzlerV141R32SpyLoader,r56=window.CCGLostSizzlerV141R56PlaytestCompletion,r59=window.CCGLostSizzlerV141R59LiveRegressionFixes,r60=window.CCGLostSizzlerV141R60HordeCombatIntegrity;
     const match=window.CCGLostSizzlerSpecialModes?.active?.state||null,identityRegistry=window.__CCG_STAGE10_SPY_IDENTITIES__||(window.__CCG_STAGE10_SPY_IDENTITIES__={next:1,refs:new WeakMap()});
     const identity=value=>{if(!value||!(typeof value==="object"||typeof value==="function"))return 0;if(!identityRegistry.refs.has(value))identityRegistry.refs.set(value,identityRegistry.next++);return identityRegistry.refs.get(value)};
     const firstRoom=match?.map?.rooms?.[0]||null,firstFurniture=firstRoom?.furniture?.[0]||null;
@@ -42,7 +46,7 @@ try{
       mode:String(typeof mode!=="undefined"?mode:""),activeId:String(runtime?.snapshot?.().activeId||""),specialMode:String(document.body.dataset.specialMode||""),isolated:Boolean(r29?.state?.isolated),
       r29Timer:Number(r29?.state?.timer||0),r30Timer:Number(r30?.state?.timer||0),r30SpyTimerStopped:Boolean(r30?.state?.spyTimerStopped),r30SpyMovementReassertions:Number(r30?.state?.spyMovementReassertions||0),worldBuilds:Number(r29?.state?.worldBuilds||0),logicalCompactions:Number(r29?.state?.logicalCompactions||0),controllerFrames:Number(r29?.state?.controllerFrames||0),spyRuleFrames:Number(runtime?.snapshot?.().spyRuleFrames||0),moveReassertions:Number(r29?.state?.moveReassertions||0),updateReassertions:Number(r29?.state?.updateReassertions||0),
       loaderTimer:Number(r32?.state?.timer||0),loaderLoads:Number(r32?.state?.loads||0),uiLoads:Number(r32?.state?.uiLoads||0),loaderReady:Boolean(r32?.state?.loaded),uiReady:Boolean(r32?.state?.uiLoaded),modeObserverInstalled:Boolean(r32?.state?.modeObserverInstalled),pendingActionCode:String(r32?.state?.pendingActionCode||""),tabTogglePending:Boolean(r32?.state?.tabTogglePending),loaderError:String(r32?.state?.lastError||""),uiError:String(r32?.state?.uiLastError||""),
-      moveDepth:move.depth,moveOwners:move.moveOwners,moveChain:move.owners,hurtDepth:hurt.depth,damageBoundaries:hurt.damageBoundaries,hurtChain:hurt.owners,inventoryOpen:Boolean(overhaul?.state?.inventoryOpen),searchPending:Boolean(overhaul?.state?.search),
+      moveDepth:move.depth,moveOwners:move.moveOwners,moveChain:move.owners,liveMoveIdentity:identity(window.movePlayer),canonicalMoveIdentity:identity(r29?.moveOwner),r27MoveIdentity:identity(r27?.state?.moveSource),r27Timer:Number(r27?.state?.timer||0),r29LegacyMoveIdentity:identity(r29Legacy?.state?.lastSpyMoveSource),r29LegacyTimer:Number(r29Legacy?.state?.timer||0),controllerUpdateIdentity:identity(window.update),hurtDepth:hurt.depth,damageBoundaries:hurt.damageBoundaries,hurtChain:hurt.owners,inventoryOpen:Boolean(overhaul?.state?.inventoryOpen),searchPending:Boolean(overhaul?.state?.search),
       mapIdentity:identity(match?.map),playersIdentity:identity(match?.players),firstPlayerIdentity:identity(match?.players?.[0]),roomsIdentity:identity(match?.map?.rooms),firstRoomIdentity:identity(firstRoom),firstFurnitureListIdentity:identity(firstRoom?.furniture),firstFurnitureIdentity:identity(firstFurniture),trapsIdentity:identity(match?.traps),extractionIdentity:identity(match?.extraction),
       r56TrapHits:Number(r56?.state?.trapHits||0),r56EnvironmentHits:Number(r56?.state?.environmentHits||0),r56CombatRearms:Number(r56?.state?.combatRearms||0),r59SoloFrames:Number(r59?.state?.soloFrames||0),r59SoloSubsteps:Number(r59?.state?.soloSubsteps||0),r60HordeFrames:Number(r60?.state?.frames||0)
     }
@@ -108,10 +112,13 @@ try{
     for(const key of ["mapIdentity","playersIdentity","firstPlayerIdentity","roomsIdentity","firstRoomIdentity","firstFurnitureListIdentity","firstFurnitureIdentity","trapsIdentity","extractionIdentity"]){
       assert.equal(stable[key],entry[key],`Spy entry ${cycle} must preserve ${key} through ordinary controller frames`)
     }
-    assert.equal(stable.moveDepth,entry.moveDepth,`Spy entry ${cycle} must keep movement ancestry depth stable during active play`);
+    assert.equal(stable.moveOwners,1,`Spy entry ${cycle} must retain exactly one accepted r29 movement owner after R30 maintenance`)
+    assert.equal(stable.liveMoveIdentity,stable.canonicalMoveIdentity,`Spy entry ${cycle} must settle on R30's exact canonical Spy movement owner`)
+    assert.ok(stable.moveDepth<=entry.moveDepth,`Spy entry ${cycle} may canonicalise a pre-existing wrapper chain but must not grow it during active play`)
+    assert.ok(stable.r30SpyMovementReassertions>=entry.r30SpyMovementReassertions,`Spy entry ${cycle} must make an initial R30 canonicalisation observable when maintenance is required`)
+    if(entry.liveMoveIdentity!==entry.canonicalMoveIdentity)assert.ok(stable.r30SpyMovementReassertions>entry.r30SpyMovementReassertions,`Spy entry ${cycle} must record the required initial canonicalisation`)
     assert.equal(stable.hurtDepth,entry.hurtDepth,`Spy entry ${cycle} must keep damage ancestry depth bounded`);
     assert.equal(stable.moveReassertions,entry.moveReassertions,`Spy entry ${cycle} must not reassert movement ownership during stable play`);
-    assert.equal(stable.r30SpyMovementReassertions,entry.r30SpyMovementReassertions,`Spy entry ${cycle} must not transfer stable-play movement churn to the accepted R30 watchdog`);
     assert.equal(stable.updateReassertions,entry.updateReassertions,`Spy entry ${cycle} must not replace shared update ownership`);
     assert.equal(stable.r29Timer,0,`Spy entry ${cycle} must not resurrect the legacy r29 interval during stable play`);
     assert.equal(stable.r30Timer,entry.r30Timer,`Spy entry ${cycle} must not replace the accepted R30 watchdog timer`);
@@ -121,6 +128,15 @@ try{
     assert.equal(stable.r59SoloFrames,entry.r59SoloFrames,`Spy entry ${cycle} must keep R59 Solo frames dormant`);
     assert.equal(stable.r59SoloSubsteps,entry.r59SoloSubsteps,`Spy entry ${cycle} must keep R59 Solo substeps dormant`);
     assert.equal(stable.r60HordeFrames,entry.r60HordeFrames,`Spy entry ${cycle} must keep R60 Horde frames dormant`);
+    await page.waitForTimeout(320);const settled=await snapshot();
+    assert.equal(settled.liveMoveIdentity,stable.liveMoveIdentity,`Spy entry ${cycle} must keep the canonical movement-owner identity stable after settling`)
+    assert.equal(settled.liveMoveIdentity,settled.canonicalMoveIdentity,`Spy entry ${cycle} must retain R30's exact canonical movement owner after settling`)
+    assert.equal(settled.moveDepth,stable.moveDepth,`Spy entry ${cycle} must not oscillate or grow movement ancestry after canonicalisation`)
+    assert.equal(settled.r30SpyMovementReassertions,stable.r30SpyMovementReassertions,`Spy entry ${cycle} must not continue reasserting movement ownership after settling: ${JSON.stringify({stable,settled})}`)
+    assert.equal(settled.controllerUpdateIdentity,stable.controllerUpdateIdentity,`Spy entry ${cycle} must retain authoritative controller update ownership after settling`)
+    assert.equal(settled.hurtDepth,stable.hurtDepth,`Spy entry ${cycle} must retain bounded damage ownership after settling`)
+    assert.equal(settled.r29Timer,0,`Spy entry ${cycle} must keep the r29 timer retired after settling`)
+    assert.equal(settled.r30Timer,stable.r30Timer,`Spy entry ${cycle} must retain the single R30 watchdog handle after settling`)
     exits.push(await leaveSpy(cycle))
   }
 

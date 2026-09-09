@@ -5,8 +5,10 @@ import {fileURLToPath} from "node:url";
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,"..");
-const finalizer=fs.readFileSync(path.join(root,"js/v10-41-spy-movement-finalizer.js"),"utf8");
-const legacy=fs.readFileSync(path.join(root,"js/v10-41-r29-runtime-repair.js"),"utf8");
+const normaliseSource=source=>String(source).replace(/\r\n?/g,"\n");
+assert.equal(normaliseSource("first\r\nsecond\rthird\nfourth"),"first\nsecond\nthird\nfourth","source inspection must treat LF and CRLF-equivalent input identically");
+const finalizer=normaliseSource(fs.readFileSync(path.join(root,"js/v10-41-spy-movement-finalizer.js"),"utf8"));
+const legacy=normaliseSource(fs.readFileSync(path.join(root,"js/v10-41-r29-runtime-repair.js"),"utf8"));
 
 const adoptStart=finalizer.indexOf("function adoptIsolatedMovementOwner()");
 const adoptEnd=finalizer.indexOf("\n  function installModeBridge()",adoptStart);

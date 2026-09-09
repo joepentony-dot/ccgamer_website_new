@@ -193,7 +193,7 @@
 
   function stopLegacySpyMonitor(){
     const engine=spyEngine();if(!engine?.state)return false;
-    try{if(engine.state.timer){clearInterval(engine.state.timer);engine.state.timer=0;state.spyTimerStopped=true}}catch(_){}
+    try{if(engine.state.timer)clearInterval(engine.state.timer);engine.state.timer=0;state.spyTimerStopped=true}catch(_){}
     return true;
   }
 
