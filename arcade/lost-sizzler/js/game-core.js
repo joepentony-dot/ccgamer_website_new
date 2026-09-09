@@ -24,7 +24,7 @@ const avatarImages=new Map();for(const f of C.followerElites){const custom=OVERR
 const pickupOverrideImages=new Map();for(const [kind,src] of Object.entries(OVERRIDES.images?.items||{}))if(src){const im=new Image();im.src=src;pickupOverrideImages.set(kind,im)}
 const P={purple:"#b978ff",gold:"#ffd85a",cyan:"#6cecff",green:"#72ff9b",pink:"#ff5bae",red:"#ff6868",orange:"#ff9950",white:"#faf4ff",blue:"#6aa9ff",brown:"#9b6134",black:"#030205",grey:"#9b8daa"};
 const input=new Set(),remote=new Map(),bullets=[],enemyBullets=[],particles=[],rings=[],floaters=[],hazards=[],pendingItems=new Set(),enemyVisuals=new Map(),cameras=new Map(),explored=new Map(),campStates=new Map(),roomVisits=new Map(),playerTrails=new Map();
-let mode="menu",playMode="solo",world=null,host=null,p1=null,p2=null,run=null,score=0,last=0,enemyCD=0,projectileCD=0,sendCD=0,worldCD=0,surroundCD=0,move1=0,move2=0,fire1=0,fire2=0,fireBuffer1=0,fireBuffer2=0,won=false,shake=0,damageFlash=0,renderShake={x:0,y:0},toastTimer=0,retainedToast=false,lowHealthCD=0,inventoryReminderMs=300000,levelQueue=[],toastQueue=[],lastAmbientMessage="";
+let mode="menu",playMode="solo",world=null,host=null,p1=null,p2=null,run=null,score=0,last=0,enemyCD=0,projectileCD=0,sendCD=0,worldCD=0,surroundCD=0,specialCD=0,move1=0,move2=0,fire1=0,fire2=0,fireBuffer1=0,fireBuffer2=0,won=false,shake=0,damageFlash=0,renderShake={x:0,y:0},toastTimer=0,retainedToast=false,lowHealthCD=0,inventoryReminderMs=300000,levelQueue=[],toastQueue=[],lastAmbientMessage="";
 let view={x:0,y:0,w:canvas.width,h:canvas.height},focus=null,cam={x:0,y:0};
 let activeShop=null,floorEntryCheckpoint=null,savePromptReason="",pendingBanishmentReward=null;
 const stats={games:0,elites:0,doors:0,weapons:0,secrets:0,generators:0},questDone=new Set();
