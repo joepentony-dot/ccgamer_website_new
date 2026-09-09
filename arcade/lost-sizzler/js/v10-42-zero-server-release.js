@@ -11,7 +11,7 @@
   const RELEASE_BLURB="A five-floor pixel dungeon crawl filled with shifting objectives, rare loot, hidden routes, dangerous events and things in the dark that ordinary weapons cannot finish.";
   const RELEASE_MODE_LABEL_HTML="<span>✦</span> CHOOSE YOUR ADVENTURE <span>✦</span>";
   const RELEASE_NOTE="V10.42 uses a zero-server-cost release model: Solo, Tutorial and 2P Split Screen run locally in your browser. Supabase remains available for CCG account features such as the Weekly High-Score Vault, but core gameplay never requires an online multiplayer server.";
-  const state={enabled:true,removedButtons:[],hiddenPanels:[],networkLocked:false,lastReason:"",enforcementPasses:0,releaseStyleReady:false,onlineTeardowns:0,localBootTeardownsSkipped:0,localMenuRecoveries:0,localButtonRecoveries:0,observerSkips:0};
+  const state={enabled:true,removedButtons:[],hiddenPanels:[],networkLocked:false,lastReason:"",enforcementPasses:0,releaseStyleReady:false,onlineTeardowns:0,localBootTeardownsSkipped:0,localMenuRecoveries:0,localButtonRecoveries:0,observerSkips:0,localFocusRequests:0,localFocusAssignments:0};
 
   function ensureReleaseStyle(){
     let style=document.getElementById(RELEASE_STYLE_ID);
@@ -72,8 +72,24 @@
       if(button.disabled){button.disabled=false;state.localButtonRecoveries++;changed=true}
       if(button.getAttribute("aria-disabled")==="true"){button.removeAttribute("aria-disabled");changed=true}
     }
+    settleRecoveredLocalFocus();
     return changed;
   }
+
+  function settleRecoveredLocalFocus(){
+    if(!state.localFocusRequests)return false;
+    const body=document.body;if(!body||body.dataset.runActive==="true")return false;
+    let currentMode="";try{currentMode=String(typeof mode!=="undefined"?mode:"").toLowerCase()}catch(_){}
+    if(currentMode!=="menu")return false;
+    const menu=document.getElementById("menu"),button=document.getElementById("solo-btn");
+    if(!menu||menu.classList.contains("hidden")||!button||!button.isConnected||button.disabled)return false;
+    const style=window.getComputedStyle(button);
+    if(style.display==="none"||style.visibility==="hidden"||style.pointerEvents==="none")return false;
+    state.localFocusRequests=0;
+    try{button.focus({preventScroll:true});state.localFocusAssignments++;return document.activeElement===button}catch(error){try{console.warn("[Lost Sizzler V10.42] local recovery focus failed",error)}catch(_){};return false}
+  }
+
+  function focusRecoveredLocalMenu(){state.localFocusRequests++;return settleRecoveredLocalFocus()}
 
   function retireOnlineEntryPoints(){
     state.enforcementPasses+=1;
@@ -211,6 +227,7 @@
   const observer=new MutationObserver(records=>{
     if(!records.some(mutationTouchesReleaseSurface)){state.observerSkips+=records.length;return}
     retireOnlineEntryPoints();
+    settleRecoveredLocalFocus();
   });
   observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:["style","class","hidden","aria-hidden","disabled"]});
   addEventListener("pagehide",()=>observer.disconnect(),{once:true});
@@ -224,6 +241,7 @@
     onlineMultiplayer:false,
     localModes:Object.freeze(["solo","tutorial","split-screen"]),
     supabaseAccountFeatures:true,
+    focusRecoveredLocalMenu,
     diagnostics:()=>Object.freeze({...state,removedButtons:[...state.removedButtons],hiddenPanels:[...state.hiddenPanels]})
   });
 })();
