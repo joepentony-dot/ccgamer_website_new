@@ -2479,9 +2479,9 @@
   {
     "name": "Martin Iveson",
     "slug": "martin-iveson",
-    "count": 2,
+    "count": 3,
     "c64Count": 0,
-    "amigaCount": 2,
+    "amigaCount": 3,
     "firstYear": 1991,
     "lastYear": 1992,
     "existing": false,
@@ -2493,7 +2493,8 @@
     ],
     "games": [
       "agony",
-      "heimdall"
+      "heimdall",
+      "premiere"
     ]
   },
   {
