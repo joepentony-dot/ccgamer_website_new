@@ -156,7 +156,7 @@
             }
             if(delivered){
               try{
-                showToast("CHEST REWARD CONFIRMED",`${name} · +${scoreReward.toLocaleString()} score · +${xpReward} XP.`,"gold",6500);
+                showToast("CHEST REWARD CONFIRMED",`${name} · +${scoreReward.toLocaleString()} score · +${xpReward} XP.`,"gold",6500,{retain:true});
                 diagnostics.chestRewardRepairs++;
               }catch(_){diagnostics.chestConfirmationFailures++}
             }
