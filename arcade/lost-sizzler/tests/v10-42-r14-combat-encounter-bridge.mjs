@@ -15,6 +15,10 @@ const windowObject={CCGLostSizzlerV142R13EncounterProgressionRuntime:{}};
 vm.runInNewContext(source,{window:windowObject,console,JSON,Math,Set,Map,Object},{filename:'v10-42-r14-combat-encounter-bridge.js'});
 const api=windowObject.CCGLostSizzlerV142R14CombatEncounterBridge;
 assert(api,'R14 combat encounter bridge must export its API.');
+assert(bootstrapSource.includes('["v10-42-r14-combat-encounter-bridge.js","CCGLostSizzlerV142R14CombatEncounterBridge"]'),'Bootstrap must load R14 combat encounter bridge.');
+assert(bootstrapSource.indexOf('v10-42-r13-encounter-progression-runtime.js')<bootstrapSource.indexOf('v10-42-r14-combat-encounter-bridge.js'),'R14 must load after r13 encounter progression.');
+assert(bootstrapSource.indexOf('v10-42-r14-combat-encounter-bridge.js')<bootstrapSource.indexOf('v10-42-r1-stability.js'),'R14 must remain before final stability ownership.');
+
 const host={v142EncounterRuntime:runtime};
 assert(api.activate(host,4,'room-entry')===true,'Room-entry combat signal must activate the matching r13 encounter.');
 let directive=api.nextDirective(host,4);
@@ -25,7 +29,7 @@ assert(api.reportEnemyDefeat(host,{roomId:4,enemyId:'skeleton-a',wave:1})===fals
 assert(api.reportEnemyDefeat(host,{roomId:4,enemyId:'skeleton-b',wave:1})===true,'Second unique defeat must clear the wave.');
 directive=api.nextDirective(host,4);
 assert(directive.eliteReady===true&&directive.eliteSpec?.id==='bone-marshal','Cleared waves must expose the planned biome elite through the bridge.');
-assert(api.reportEnemyDefeat(host,{roomId:4,enemyId:'premature-elite',elite:true})===true,'Ready elite defeat must resolve through r13 elite authority.');
+assert(api.reportEnemyDefeat(host,{roomId:4,enemyId:'bone-marshal',elite:true})===true,'Ready elite defeat must resolve through r13 elite authority.');
 assert(room.completed===true&&room.eliteDefeated===true,'Elite defeat must complete the encounter without a parallel combat state owner.');
 
 const saved=api.snapshot(host);
