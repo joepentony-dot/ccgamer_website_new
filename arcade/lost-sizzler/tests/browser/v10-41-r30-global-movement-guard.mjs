@@ -65,17 +65,20 @@ try{
   const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
+  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142Bootstrap?.ready));
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R30?.state?.goldenLocked));
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R29SpyEngine));
 
   const release=await page.evaluate(()=>({
     build:document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content,
     cache:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content,
+    bootstrapBuild:window.CCGLostSizzlerV142Bootstrap?.build,
+    bootstrapCache:window.CCGLostSizzlerV142Bootstrap?.cache,
     r29Timer:window.CCGLostSizzlerV141R29?.state?.timer||0,
     cooperative:Boolean(window.CCGLostSizzlerV141R29?.install?.__ccgV141R30Cooperative),
     golden:Boolean(window.CCGLostSizzlerV141R30?.state?.goldenLocked)
   }));
-  assert.deepEqual({build:release.build,cache:release.cache},{build:"2026.08.27.31",cache:"20260827r31"},"release-ready meta identity must match the generic R30 release gate baseline");
+  assert.deepEqual({build:release.build,cache:release.cache},{build:release.bootstrapBuild,cache:release.bootstrapCache},"release-ready meta identity must match the authoritative V10.42 bootstrap");
   assert.equal(release.r29Timer,0,"r30 must stop the competing r29 installer interval");
   assert.equal(release.cooperative,true,"r29 maintenance must be cooperative before gameplay starts");
   assert.equal(release.golden,true,"r30 must lock a known-good normal runtime ownership snapshot after release readiness");
