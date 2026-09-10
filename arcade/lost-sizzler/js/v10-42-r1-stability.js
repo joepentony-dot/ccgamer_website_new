@@ -121,11 +121,24 @@
   function stopChestConfirmationGuard(){
     chestConfirmationObserver?.disconnect?.();chestConfirmationObserver=null;activeChestConfirmation=null;
   }
+  function chestToastOwner(){
+    let owner=window.showToast;
+    const seen=new Set();
+    while(typeof owner==="function"&&!seen.has(owner)){
+      seen.add(owner);
+      const next=owner.__ccgV141Original;
+      if(typeof next!=="function")break;
+      owner=next;
+    }
+    return typeof owner==="function"?owner:null;
+  }
   function showChestConfirmation(player,name,scoreReward,xpReward){
     try{
       if(!chestPlayerStillActive(player))return false;
       if(document.getElementById("pickup-title")?.textContent==="CHEST REWARD CONFIRMED")return true;
-      showToast("CHEST REWARD CONFIRMED",`${name} · +${scoreReward.toLocaleString()} score · +${xpReward} XP.`,"gold",6500,{retain:true});
+      const toast=chestToastOwner();
+      if(!toast)return false;
+      toast.call(window,"CHEST REWARD CONFIRMED",`${name} · +${scoreReward.toLocaleString()} score · +${xpReward} XP.`,"gold",6500,{retain:true});
       diagnostics.chestRewardRepairs++;
       return true;
     }catch(_){return false}
