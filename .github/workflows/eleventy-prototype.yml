@@ -41,3 +41,6 @@ jobs:
           test -f _site/games/720-degrees/index.html
           test -f _site/games/genres/index.html
           test -f _site/games/genres/arcade/index.html
+          test -f _site/games/publishers/index.html
+          test -f _site/games/collections/index.html
+          test -f _site/games/collections/cartridge-games/index.html
