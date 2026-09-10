@@ -5,6 +5,11 @@ import test from 'node:test';
 const html = fs.readFileSync('admin/content-publisher.html', 'utf8');
 const adminIndex = fs.readFileSync('admin/index.html', 'utf8');
 const js = fs.readFileSync('admin/js/content-publisher.js', 'utf8');
+const editJs = fs.readFileSync('admin/js/content-publisher-existing-game-update.js', 'utf8');
+const optimiser = fs.readFileSync('admin/js/content-publisher-image-optimizer.js', 'utf8');
+const announceJs = fs.readFileSync('admin/js/announce.js', 'utf8');
+const retroLoader = fs.readFileSync('js/retro-specials-loader.js', 'utf8');
+const retroSpecials = JSON.parse(fs.readFileSync('data/retro-specials.json', 'utf8'));
 const css = fs.readFileSync('resources/css/ccg-content-publisher.css', 'utf8');
 
 test('publisher is a private role-gated admin page', () => {
@@ -64,12 +69,32 @@ test('publisher keeps the established 3D-box path and separate authenticated mus
   assert.doesNotMatch(js, /gameValue\(['"]music['"]\)/);
 });
 
+test('existing-game updates can add 3D boxes and music without creating empty commits', () => {
+  assert.match(optimiser, /content-publisher-existing-game-update\.js/);
+  assert.match(editJs, /data-game-box3d-file/);
+  assert.match(editJs, /resources\/images\/games\/boxes-3d\//);
+  assert.match(editJs, /data-game-music-file/);
+  assert.match(editJs, /\/api\/admin\/game-music/);
+  assert.match(editJs, /tree\?\.sha === baseTree/);
+  assert.match(editJs, /No empty Git commit was created/);
+  assert.match(editJs, /if \(!sourceChanged\)/);
+  assert.match(editJs, /Asset confirmed live/);
+});
+
 test('image optimiser preserves thumbnail handling while adding a box3d role', () => {
-  const optimiser = fs.readFileSync('admin/js/content-publisher-image-optimizer.js', 'utf8');
   assert.match(optimiser, /THUMBNAIL_PREFIX/);
   assert.match(optimiser, /BOX3D_PREFIX/);
   assert.match(optimiser, /data-game-box3d-file/);
   assert.match(optimiser, /resources\/images\/games\/boxes-3d\//);
+});
+
+test('Light Fantastic is in the canonical Retro Specials feed used by announcements', () => {
+  const lightFantastic = retroSpecials.find((item) => item.slug === 'light-fantastic-toolbox');
+  assert.ok(lightFantastic, 'Light Fantastic must be present in data/retro-specials.json');
+  assert.equal(lightFantastic.youtubeId, '6GiJ3iYTEPg');
+  assert.match(announceJs, /RETRO_SPECIALS_DATA_PATH = '\/data\/retro-specials\.json'/);
+  assert.match(retroLoader, /'\/data\/retro-specials\.json'/);
+  assert.doesNotMatch(retroLoader, /retro-specials-light-fantastic\.json/);
 });
 
 test('video publishing supports all three authoritative video datasets', () => {
