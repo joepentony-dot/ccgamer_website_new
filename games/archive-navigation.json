@@ -1,5 +1,5 @@
 {
-  "gameCount": 656,
+  "gameCount": 657,
   "yearHub": "/games/years/",
   "platformHub": "/games/platforms/",
   "years": [
@@ -85,9 +85,9 @@
     },
     {
       "year": 1992,
-      "count": 29,
+      "count": 30,
       "c64Count": 8,
-      "amigaCount": 21,
+      "amigaCount": 22,
       "indexable": true,
       "url": "/games/years/1992/"
     },
@@ -137,7 +137,7 @@
     {
       "key": "amiga",
       "name": "Amiga",
-      "count": 100,
+      "count": 101,
       "firstYear": 1987,
       "lastYear": 1995,
       "yearCount": 9,

@@ -1,6 +1,8 @@
 const fs = require('fs');
 
 const SITE_URL = 'https://www.cheekycommodoregamer.co.uk';
+const SEARCH_HOME_URL = `${SITE_URL}/home.html`;
+const ROOT_INTRO_URL = `${SITE_URL}/`;
 const SITEMAP_XMLNS = 'http://www.sitemaps.org/schemas/sitemap/0.9';
 const VIDEO_XMLNS = 'http://www.google.com/schemas/sitemap-video/1.1';
 const CORE_CHILD_SITEMAPS = ['sitemap-pages.xml', 'sitemap-games.xml'];
@@ -65,8 +67,24 @@ function assertCanonicalSitemapUrl(loc, filePath) {
   assert(url.origin === SITE_URL, `${filePath} URL must use ${SITE_URL}: ${loc}`);
   assert(!url.search && !url.hash, `${filePath} URL must not include query strings or fragments: ${loc}`);
   assert(!url.pathname.endsWith('/index.html'), `${filePath} must not include /index.html URLs: ${loc}`);
-  assert(url.pathname !== '/home.html', `${filePath} must not include the home.html duplicate: ${loc}`);
   assert(url.pathname !== '/games/game.html', `${filePath} must not include the dynamic game shell: ${loc}`);
+}
+
+function assertSearchHomepageContract(locs, filePath) {
+  if (filePath !== 'sitemap-pages.xml') return;
+
+  assert(
+    locs.includes(SEARCH_HOME_URL),
+    `${filePath} must include the indexable search homepage: ${SEARCH_HOME_URL}`
+  );
+  assert(
+    !locs.includes(ROOT_INTRO_URL),
+    `${filePath} must not include the noindex cinematic intro root: ${ROOT_INTRO_URL}`
+  );
+  assert(
+    !locs.includes(`${SITE_URL}/index.html`),
+    `${filePath} must not include the noindex intro file: ${SITE_URL}/index.html`
+  );
 }
 
 function sitemapFileFromLoc(loc, filePath) {
@@ -159,6 +177,7 @@ function validateUrlSitemap(filePath) {
   const locs = extractLocs(xml);
   assert(locs.length > 0, `${filePath} must contain at least one URL.`);
   assertNoDuplicates(locs, filePath);
+  assertSearchHomepageContract(locs, filePath);
 
   for (const loc of locs) {
     assertCanonicalSitemapUrl(loc, filePath);

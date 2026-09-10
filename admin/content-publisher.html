@@ -161,6 +161,14 @@
             <input type="file" accept="image/png,image/jpeg,image/webp" data-game-thumbnail-file />
             <small>If selected, it is committed atomically with games.json at the path above.</small>
           </label>
+          <label>3D box file (optional)
+            <input type="file" accept="image/png,image/jpeg,image/webp" data-game-box3d-file />
+            <small>Optimised to <code>resources/images/games/boxes-3d/&lt;slug&gt;.webp</code>. The public game page already discovers this path.</small>
+          </label>
+          <label>Game music file (optional)
+            <input type="file" accept="audio/mpeg,.mp3" data-game-music-file />
+            <small>After the GitHub game commit succeeds, the authenticated uploader writes <code>&lt;slug&gt;.mp3</code> to game-music R2. It is never stored in games.json.</small>
+          </label>
           <label>PDF / manual URL
             <input type="url" data-game-field="pdf" />
           </label>

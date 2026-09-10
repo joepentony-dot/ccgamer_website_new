@@ -8,6 +8,9 @@ const WORKFLOW_POLL_INTERVAL_MS = 6000;
 const WORKFLOW_POLL_TIMEOUT_MS = 240000;
 const RETRO_SPECIAL_MAX_SLUG_LENGTH = 55;
 const ALLOWED_THUMBNAIL_PREFIX = 'resources/images/thumbnails/all/';
+const BOX3D_PREFIX = 'resources/images/games/boxes-3d/';
+const MUSIC_UPLOAD_URL = '/api/admin/game-music';
+const MAX_MUSIC_BYTES = 25 * 1024 * 1024;
 const ZZAP_MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'
@@ -80,6 +83,8 @@ const el = {
   gameCollections: document.querySelector('[data-game-collections]'),
   gameCanonicalPreview: document.querySelector('[data-game-canonical-preview]'),
   gameThumbnailFile: document.querySelector('[data-game-thumbnail-file]'),
+  gameBox3dFile: document.querySelector('[data-game-box3d-file]'),
+  gameMusicFile: document.querySelector('[data-game-music-file]'),
   gameValidation: document.querySelector('[data-game-validation]'),
   featureValidation: document.querySelector('[data-feature-validation]'),
   resetGame: document.querySelector('[data-action="reset-game"]'),
@@ -444,6 +449,8 @@ function resetGameForm() {
   state.gameIdTouched = false;
   setGameValue('ccg_rating', '6');
   if (el.gameThumbnailFile) el.gameThumbnailFile.value = '';
+  if (el.gameBox3dFile) el.gameBox3dFile.value = '';
+  if (el.gameMusicFile) el.gameMusicFile.value = '';
   el.gameGenres?.querySelectorAll('input').forEach((input) => { input.checked = false; });
   el.gameCollections?.querySelectorAll('input').forEach((input) => { input.checked = false; });
   clearValidation(el.gameValidation);
@@ -770,6 +777,15 @@ async function publishGame(event) {
       }
     }
 
+    const box3dFile = el.gameBox3dFile?.files?.[0] || null;
+    if (box3dFile) {
+      if (box3dFile.type !== 'image/webp') throw new Error('3D box optimisation is still running or did not produce WebP. Select the image again and wait for the ready message.');
+      files.push({ path: box3dPathForSlug(entry.slug), base64: await fileToBase64(box3dFile) });
+    }
+    const musicFile = el.gameMusicFile?.files?.[0] || null;
+    const musicError = validateMusicFile(musicFile);
+    if (musicError) throw new Error(musicError);
+
     const result = await commitFiles(config, files, `Add ${entry.title} via CCG Content Publisher`, entry.slug);
     state.lastPublish = { type: 'game', entry, result };
     setPipelineStep('source', 'ok', result.mode === 'direct' ? 'Committed' : 'PR opened');
@@ -780,6 +796,15 @@ async function publishGame(event) {
     if (result.mode === 'pr') {
       markPipelineWaitingForMerge();
       return;
+    }
+
+    if (musicFile) {
+      try {
+        const upload = await uploadGameMusic(entry.slug, musicFile);
+        writeLog(`Game music uploaded securely: ${upload.key}`);
+      } catch (error) {
+        writeLog(`Game source was committed, but music upload can be retried: ${error.message}`, true);
+      }
     }
 
     void monitorPublish(config, {
@@ -794,6 +819,31 @@ async function publishGame(event) {
   } finally {
     setButtonBusy(publishButton, false, 'Publish Game');
   }
+}
+
+function box3dPathForSlug(slug) {
+  return `${BOX3D_PREFIX}${slugify(slug)}.webp`;
+}
+
+function validateMusicFile(file) {
+  if (!file) return '';
+  if (file.type !== 'audio/mpeg' || !/\.mp3$/i.test(file.name || '')) return 'Game music must be an MP3 file.';
+  if (!file.size || file.size > MAX_MUSIC_BYTES) return 'Game music must be between 1 byte and 25 MiB.';
+  return '';
+}
+
+async function uploadGameMusic(slug, file) {
+  const client = await window.ccgSupabase?.getClient?.();
+  const { data, error } = await client?.auth?.getSession?.() || {};
+  const token = data?.session?.access_token;
+  if (error || !token) throw new Error('Your admin session has expired. Sign in again before retrying music upload.');
+  const body = new FormData();
+  body.set('slug', slug);
+  body.set('file', file, `${slugify(slug)}.mp3`);
+  const response = await fetch(MUSIC_UPLOAD_URL, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok || !payload.ok) throw new Error(payload.error || `Music upload failed (${response.status}).`);
+  return payload;
 }
 
 async function publishFeature(event) {

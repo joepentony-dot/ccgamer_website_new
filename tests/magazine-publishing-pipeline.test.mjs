@@ -41,6 +41,16 @@ test("external Lemon availability is not a publishing prerequisite", () => {
   assert.match(workflow, /External Lemon64\/Lemon Amiga availability is optional/);
 });
 
+test("Premiere has no fabricated Amiga review record and therefore remains hidden", () => {
+  const sourceRoot = path.join(root, "data", "magazine-review-records");
+  const keys = fs.readdirSync(sourceRoot)
+    .filter((name) => name.endsWith('.json'))
+    .flatMap((name) => Object.keys(JSON.parse(fs.readFileSync(path.join(sourceRoot, name), 'utf8')).games || {}));
+  assert.equal(keys.includes('amiga:premiere'), false);
+  const runtime = fs.readFileSync(path.join(root, 'js', 'magazine-game-reviews-runtime.js'), 'utf8');
+  assert.match(runtime, /if \(!rows\.length\)/);
+});
+
 test("the magazine importer preserves support for existing C64 and Amiga Lemon cache data", () => {
   const importer = fs.readFileSync(path.join(root, "scripts", "import-amiga-magazine-reviews.js"), "utf8");
   assert.match(importer, /\/amiga\|c64\/i/);

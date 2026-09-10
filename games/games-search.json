@@ -8050,6 +8050,24 @@
     "year": 1988
   },
   {
+    "title": "Premiere",
+    "slug": "premiere",
+    "publisher": [
+      "Core Design"
+    ],
+    "genre": [
+      "platform"
+    ],
+    "genres": [
+      "platform"
+    ],
+    "composer": [
+      "Martin Iveson"
+    ],
+    "music": [],
+    "year": 1992
+  },
+  {
     "title": "The Prince",
     "slug": "the-prince",
     "publisher": [
