@@ -1,0 +1,45 @@
+---
+layout: layouts/base.njk
+pagination:
+  data: games
+  size: 1
+  alias: game
+permalink: "/games/{{ game.slug }}/index.html"
+eleventyComputed:
+  title: "{{ game.title }} | CCG Eleventy Prototype"
+  description: "{{ game.description }}"
+---
+<article class="game-detail">
+  <p class="eyebrow">{{ game.system }}{% if game.year %} · {{ game.year }}{% endif %}</p>
+  <h1>{{ game.title }}</h1>
+
+  <div class="game-detail__grid">
+    {% if game.thumbnail %}
+      <figure class="game-detail__media">
+        <img src="/{{ game.thumbnail }}" alt="{{ game.title }}" decoding="async">
+      </figure>
+    {% endif %}
+
+    <div class="game-detail__content">
+      {% if game.description %}<p class="lede">{{ game.description }}</p>{% endif %}
+
+      <dl class="game-facts">
+        {% if game.publishers.length %}
+          <div><dt>Publisher</dt><dd>{{ game.publishers | join(", ") }}</dd></div>
+        {% endif %}
+        {% if game.genres.length %}
+          <div><dt>Genres</dt><dd>{{ game.genres | join(", ") }}</dd></div>
+        {% endif %}
+        {% if game.rating %}
+          <div><dt>CCG rating</dt><dd>{{ game.rating }}/10{% if game.ratingReason %} — {{ game.ratingReason }}{% endif %}</dd></div>
+        {% endif %}
+      </dl>
+
+      {% if game.videoId %}
+        <p><a class="button" href="https://www.youtube.com/watch?v={{ game.videoId }}">Watch on YouTube</a></p>
+      {% endif %}
+    </div>
+  </div>
+
+  <p class="back-link"><a href="/games/">← Back to games</a></p>
+</article>
