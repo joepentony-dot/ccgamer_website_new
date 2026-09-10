@@ -39,6 +39,7 @@ try{
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R60HordeCombatIntegrity),null,{timeout:15000});
   await page.click("#horde-solo-btn");
   await page.waitForFunction(()=>document.body.dataset.specialMode==="horde-survivor"&&document.body.dataset.hordeSolo==="true"&&mode==="playing"&&Boolean(window.CCGLostSizzlerV141R60HordeCombatIntegrity?.state?.installed)&&Boolean(p1)&&Boolean(host),null,{timeout:30000});
+  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R60HordeOwnerComposition?.state?.stable)&&Boolean(window.CCGLostSizzlerV141R60HordeCombatIntegrity?.state?.liveWrapped),null,{timeout:15000});
 
   const fixture=await page.evaluate(()=>{
     const dirs=[{dx:1,dy:0},{dx:-1,dy:0},{dx:0,dy:1},{dx:0,dy:-1}],blocking=host.blockingDecor||[];
@@ -63,7 +64,7 @@ try{
     const api=window.CCGLostSizzlerV141R60HordeCombatIntegrity;api.resetClock("movement fixture",false);enemyCD=90;projectileCD=70;
     return{x:Number(host.enemies[0].x),y:Number(host.enemies[0].y),liveElapsed:Number(api.state.liveElapsedFrames||0),catchup:Number(api.state.playerTimerCatchupMs||0)}
   },fixture);
-  await stressedFrames(page,2,145);
+  await stressedFrames(page,3,145);
   const movementAfter=await page.evaluate(before=>{
     const enemy=host.enemies.find(row=>row.id==="r60-mover"),api=window.CCGLostSizzlerV141R60HordeCombatIntegrity;
     return{x:Number(enemy?.x),y:Number(enemy?.y),liveElapsed:Number(api.state.liveElapsedFrames||0)-before.liveElapsed,catchup:Number(api.state.playerTimerCatchupMs||0)-before.catchup}

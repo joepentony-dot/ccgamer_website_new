@@ -14,15 +14,17 @@ const loader=read("js/asset-overrides.js");
 const insights=read("js/v10-8-player-insights.js");
 const audio=read("js/lost-sizzler-playlist-audio.js");
 const layout=read("css/v10-9-stability-layout.css");
+const r29Layout=read("css/v10-41-r29.css");
 const stability=read("js/v10-9-browser-stability.js");
 
 assert.match(loader,/v10-9-stability-layout\.css\?v=/,"final non-overlap CSS is cache-busted and loaded");
 assert.match(loader,/v10-9-browser-stability\.js\?v=/,"browser stability guard is cache-busted and loaded last");
 assert.match(insights,/showToast\(title,text,tone,duration\)/,"desktop insight notices use the existing single toast channel");
 assert.doesNotMatch(insights,/stack\.appendChild\(notice\)/,"insights no longer creates a second stacked notification system");
-assert.match(layout,/grid-template-rows:auto minmax\(0,1fr\)/,"game area reserves a real row above the canvas for notifications");
+assert.match(layout,/grid-template-rows:auto minmax\(0,1fr\)/,"v10.9 fallback layout still reserves a real notification row above the canvas");
 assert.match(layout,/\.game-message-rail:not\(:has\(#pickup-toast\.show\)/,"notification lane collapses when inactive");
-assert.match(layout,/position:relative!important;/,"notification layout overrides old absolute toast positioning");
+assert.match(r29Layout,/game-message-rail\{[\s\S]*display:contents!important/,"retained r29 gameplay notifications must not reserve or release canvas height");
+assert.match(r29Layout,/body\[data-run-active="true"\] \.ccg-game>\.game-area #pickup-toast\{[\s\S]*position:absolute!important/,"retained r29 gameplay toasts must overlay without canvas reflow");
 assert.match(audio,/audio\.preload=meteredRemote\?"none":"metadata"/,"metered remote music avoids eager preload while bundled/local music remains metadata-only");
 assert.match(audio,/audio\.loop=meteredRemote/,"metered remote music loops within the run instead of downloading the next playlist file");
 assert.match(audio,/RETRY_MAX_MS=60000/,"audio failures use a bounded retry backoff");
@@ -85,14 +87,30 @@ try{
   await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&window.__CCG_LOST_SIZZLER_PLAYER_INSIGHTS__&&window.__CCG_LOST_SIZZLER_BROWSER_STABILITY__,null,{timeout:15000});
   await page.locator("#solo-btn").click();
   await page.waitForFunction(()=>document.body.dataset.runActive==="true");
+  await page.evaluate(()=>document.getElementById("pickup-toast")?.classList.remove("show"));
+  await page.waitForFunction(()=>getComputedStyle(document.querySelector(".game-message-rail")).display==="none",null,{timeout:3000});
+  const baseGeometry=await page.evaluate(()=>{
+    const wrap=document.querySelector(".canvas-wrap"),canvas=document.getElementById("game"),rail=document.querySelector(".game-message-rail");
+    const box=element=>{const rect=element.getBoundingClientRect();return{x:rect.x,y:rect.y,width:rect.width,height:rect.height,bottom:rect.bottom}};
+    return{canvas:box(wrap),backing:{width:canvas.width,height:canvas.height},railDisplay:getComputedStyle(rail).display}
+  });
+  assert.equal(baseGeometry.railDisplay,"none","idle retained r29 notification rail collapses completely");
 
-  await page.evaluate(()=>showToast("STABILITY TEST","This banner must stay above the playfield.","cyan",9000));
+  await page.evaluate(()=>showToast("STABILITY TEST","This banner must overlay without resizing the playfield.","cyan",9000));
   await page.locator("#pickup-toast.show").waitFor();
   await page.waitForTimeout(80);
-  let toast=await page.locator("#pickup-toast").boundingBox();
-  let canvas=await page.locator(".canvas-wrap").boundingBox();
-  assert.ok(toast&&canvas,"toast and canvas have measurable boxes");
-  assert.ok(toast.y+toast.height<=canvas.y+2,`notification stays above canvas: ${JSON.stringify({toast,canvas})}`);
+  const toastGeometry=await page.evaluate(()=>{
+    const wrap=document.querySelector(".canvas-wrap"),canvas=document.getElementById("game"),rail=document.querySelector(".game-message-rail"),toast=document.getElementById("pickup-toast");
+    const box=element=>{const rect=element.getBoundingClientRect();return{x:rect.x,y:rect.y,width:rect.width,height:rect.height,bottom:rect.bottom}};
+    return{toast:box(toast),canvas:box(wrap),backing:{width:canvas.width,height:canvas.height},railDisplay:getComputedStyle(rail).display,toastPosition:getComputedStyle(toast).position}
+  });
+  assert.ok(toastGeometry.toast&&toastGeometry.canvas,"toast and canvas have measurable boxes");
+  assert.equal(toastGeometry.railDisplay,"contents","visible retained r29 notification rail uses contents-only geometry");
+  assert.equal(toastGeometry.toastPosition,"absolute","retained r29 gameplay toast overlays instead of resizing the canvas row");
+  assert.equal(toastGeometry.backing.width,baseGeometry.backing.width,"toast appearance must not change canvas backing width");
+  assert.equal(toastGeometry.backing.height,baseGeometry.backing.height,"toast appearance must not change canvas backing height");
+  assert.ok(Math.abs(toastGeometry.canvas.width-baseGeometry.canvas.width)<1&&Math.abs(toastGeometry.canvas.height-baseGeometry.canvas.height)<1,`toast appearance must not resize the canvas host: ${JSON.stringify({before:baseGeometry,after:toastGeometry})}`);
+  assert.ok(toastGeometry.toast.y>=toastGeometry.canvas.y-2&&toastGeometry.toast.bottom<=toastGeometry.canvas.bottom+2,`toast overlay must stay inside the canvas host bounds: ${JSON.stringify(toastGeometry)}`);
   assert.equal(await page.locator("#ccg-important-notices").count(),0,"legacy stacked notice container is absent");
 
   await page.evaluate(()=>{for(let i=0;i<40;i++)showToast(`NOTICE ${i}`,"Burst replacement test.","gold",9000)});
@@ -106,10 +124,18 @@ try{
     window.CCGLostSizzlerBrowserStability?.resize?.();
   });
   await page.waitForTimeout(80);
-  const rail=await page.locator(".game-message-rail").boundingBox();
-  canvas=await page.locator(".canvas-wrap").boundingBox();
-  assert.ok(rail&&canvas,"rating rail and canvas have measurable boxes");
-  assert.ok(rail.y+rail.height<=canvas.y+2,`rating prompt also stays outside canvas: ${JSON.stringify({rail,canvas})}`);
+  const ratingGeometry=await page.evaluate(()=>{
+    const wrap=document.querySelector(".canvas-wrap"),canvas=document.getElementById("game"),rail=document.querySelector(".game-message-rail"),rating=document.getElementById("ccg-rating-panel");
+    const box=element=>{const rect=element.getBoundingClientRect();return{x:rect.x,y:rect.y,width:rect.width,height:rect.height,bottom:rect.bottom}};
+    return{rating:box(rating),canvas:box(wrap),backing:{width:canvas.width,height:canvas.height},railDisplay:getComputedStyle(rail).display,ratingPosition:getComputedStyle(rating).position}
+  });
+  assert.ok(ratingGeometry.rating&&ratingGeometry.canvas,"rating prompt and canvas have measurable boxes");
+  assert.equal(ratingGeometry.railDisplay,"contents","visible retained r29 rating rail uses contents-only geometry");
+  assert.ok(["absolute","fixed"].includes(ratingGeometry.ratingPosition),`retained r29 rating prompt overlays instead of resizing the canvas row: ${JSON.stringify(ratingGeometry)}`);
+  assert.equal(ratingGeometry.backing.width,baseGeometry.backing.width,"rating prompt must not change canvas backing width");
+  assert.equal(ratingGeometry.backing.height,baseGeometry.backing.height,"rating prompt must not change canvas backing height");
+  assert.ok(Math.abs(ratingGeometry.canvas.width-baseGeometry.canvas.width)<1&&Math.abs(ratingGeometry.canvas.height-baseGeometry.canvas.height)<1,`rating prompt must not resize the canvas host: ${JSON.stringify({before:baseGeometry,after:ratingGeometry})}`);
+  assert.ok(ratingGeometry.rating.y>=ratingGeometry.canvas.y-2&&ratingGeometry.rating.bottom<=ratingGeometry.canvas.bottom+2,`rating prompt overlay must stay inside the canvas host bounds: ${JSON.stringify(ratingGeometry)}`);
   await page.evaluate(()=>document.getElementById("ccg-rating-panel")?.classList.add("hidden"));
 
   for(const [width,height] of [[1920,1080],[1280,720],[2560,1440],[1366,768],[1600,900],[2560,1440],[1600,900]]){

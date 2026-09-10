@@ -46,6 +46,7 @@ function clearAbandonedRun(){
 }
 async function quitToMenu(){
   if(run?.daily)await submitWeeklyResultOnce();
+  try{window.CCGLostSizzlerSpecialModes?.stop?.(undefined,true)}catch(_){}
   hideStaticPanels();closeInventoryForMenu();UI.pause.classList.add("hidden");UI.floorComplete?.classList.add("hidden");UI.levelUp?.classList.add("hidden");UI.end.classList.add("hidden");
   await net.leave();mode="menu";clearAbandonedRun();setRunPresentation(false);net.setSolo(playerName());S.setStalkerNear(false);S.setNamedEnemy?.(null);S.startMusic();UI.menu.classList.remove("hidden");refreshCollection();syncFullscreenState()
 }

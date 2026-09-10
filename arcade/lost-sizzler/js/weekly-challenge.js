@@ -18,6 +18,7 @@ window.CCGWeeklyChallenge=(()=>{
   const boardEl=()=>document.getElementById("weekly-leaderboard");
   const authActions=()=>document.getElementById("weekly-auth-actions");
   const button=()=>document.getElementById("daily-btn");
+  const BUTTON_LABEL_CLASS="ccg-weekly-button-label";
   const WEEK_MS=7*24*60*60*1000;
   const GHOST_CACHE="ccg-weekly-ghost-preview";
   const PENDING_RESULT="ccg-weekly-pending-result-v1";
@@ -31,6 +32,18 @@ window.CCGWeeklyChallenge=(()=>{
   function setText(element,value){
     if(element&&element.textContent!==value)element.textContent=value;
   }
+  function buttonLabel(element=button()){
+    if(!element)return null;
+    let label=element.querySelector(`.${BUTTON_LABEL_CLASS}`);
+    if(label)return label;
+    const badge=element.querySelector(".v142-demo-lock-badge");
+    const existing=[...element.childNodes].filter(node=>node!==badge).map(node=>node.textContent||"").join("").trim();
+    label=document.createElement("span");label.className=BUTTON_LABEL_CLASS;label.textContent=existing;
+    for(const node of [...element.childNodes])if(node!==badge)node.remove();
+    element.insertBefore(label,badge||null);
+    return label;
+  }
+  function setButtonText(value){const label=buttonLabel();if(label&&label.textContent!==value)label.textContent=value;}
 
   function nextMondayUtc(from=new Date()){
     const now=new Date(from);
@@ -77,7 +90,7 @@ window.CCGWeeklyChallenge=(()=>{
 
   function renderCountdown(){
     if(!(state.ready&&state.signedIn&&state.locked))return false;
-    const countdown=countdownParts(),b=button(),s=statusEl();
+    const countdown=countdownParts(),s=statusEl();
     if(countdown.remaining<=0){
       if(!resetRefreshPending){
         resetRefreshPending=true;stopCountdown();
@@ -85,7 +98,7 @@ window.CCGWeeklyChallenge=(()=>{
       }
       return false;
     }
-    setText(b,`Weekly Dungeon — Resets in ${countdown.text||"--:--:--"}`);
+    setButtonText(`Weekly Dungeon — Resets in ${countdown.text||"--:--:--"}`);
     setText(s,`Your ranked attempt for week beginning ${state.weekStart} has already been used. You can play again in ${countdown.text||"--:--:--"}. The ranked challenge resets Monday at 00:00 UTC.`);
     return true;
   }
@@ -109,7 +122,7 @@ window.CCGWeeklyChallenge=(()=>{
     const countdown=state.ready&&state.signedIn&&state.locked?countdownParts():null;
     if(b){
       b.disabled=!state.ready||(state.signedIn&&state.locked);
-      setText(b,!state.ready
+      setButtonText(!state.ready
         ?"Weekly Dungeon — Checking…"
         :state.signedIn&&state.locked
           ?`Weekly Dungeon — Resets in ${countdown?.text||"--:--:--"}`

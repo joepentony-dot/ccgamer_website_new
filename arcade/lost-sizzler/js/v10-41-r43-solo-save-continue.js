@@ -17,6 +17,7 @@
   const PRIMARY_KEY="ccg-lost-sizzler-solo-save-v2";
   const BACKUP_KEY="ccg-lost-sizzler-solo-save-v2-backup";
   const MONITOR_MS=100;
+  const FLOOR_ENTRY_SETTLE_DELAYS=[0,140,320];
   const ACTIVE_SPECIAL_MODES=new Set(["horde-survivor","sizzler-saboteurs"]);
 
   const original={
@@ -27,9 +28,10 @@
   };
 
   const state={
-    timer:0,observer:null,entryCheckpoint:null,entryFloorKey:"",lastAutoSaveKey:"",
+    timer:0,observer:null,entryCheckpoint:null,entryFloorKey:"",lastAutoSaveKey:"",resumeInProgress:false,
     saves:0,autosaves:0,saveQuits:0,resumes:0,migrations:0,backupRecoveries:0,
-    offerOwnerInstalls:0,automaticPromptSuppressions:0,
+    offerOwnerInstalls:0,automaticPromptSuppressions:0,floorEntrySettleSchedules:0,floorEntrySettles:0,
+    entryPositionRestores:0,entryPositionFallbacks:0,
     lastSavedAt:0,lastReason:"",lastError:"",pauseButton:null,summaryNode:null
   };
 
@@ -144,6 +146,7 @@
   }
 
   function captureEntry(reason="autosave"){
+    if(state.resumeInProgress)return state.entryCheckpoint?clone(state.entryCheckpoint):null;
     if(!standardSolo())return null;
     let checkpoint=canonicalEntryCheckpoint();
     try{if(!checkpoint)checkpoint=PGR.makeCheckpoint(run,p1,null,score,"solo")}catch(error){state.lastError=String(error?.message||error);return null}
@@ -161,6 +164,16 @@
     const key=floorKey();if(!key)return false;
     if(state.entryCheckpoint&&state.entryFloorKey===key)return true;
     return Boolean(captureEntry("autosave"))
+  }
+
+  function stage8RescueSnapshot(){
+    try{
+      const rescue=host?.rescue;if(!rescue)return null;
+      return{
+        id:safe(rescue.id),x:Number(rescue.x)||0,y:Number(rescue.y)||0,
+        rescued:Boolean(rescue.rescued),following:Boolean(rescue.following),found:Boolean(rescue.found)
+      }
+    }catch(_){return null}
   }
 
   function formatWhen(savedAt){
@@ -195,9 +208,24 @@
     button.classList.toggle("hidden",!standardSolo());state.pauseButton=button;return button
   }
 
+  function restoreCheckpointEntryPosition(savedPlayer){
+    const x=Number(savedPlayer?.x),y=Number(savedPlayer?.y);
+    if(!p1||!world?.map||!host||!Number.isInteger(x)||!Number.isInteger(y)||!W.walkable(world.map,x,y,host)){state.entryPositionFallbacks++;return false}
+    p1.x=p1.rx=x;p1.y=p1.ry=y;p1.lastRoom=-99;
+    try{
+      explored.set(p1.id,new Set());reveal(p1);
+      const roomId=W.roomAt(world,x,y),visits=new Set();host.enteredRoomIds=[];
+      if(roomId>=0){visits.add(roomId);host.enteredRoomIds.push(roomId)}
+      roomVisits.set(p1.id,visits);playerTrails.set(p1.id,[]);rememberTrail(p1);updateRoomMessage(p1,true)
+    }catch(error){state.lastError=String(error?.message||error)}
+    state.entryPositionRestores++;return true
+  }
+
   async function saveAndQuit(){
     if(!standardSolo())return false;
     if(!ensureEntryCaptured())return false;
+    const rescue=stage8RescueSnapshot();
+    if(rescue)state.entryCheckpoint.stage8Rescue=rescue;else delete state.entryCheckpoint.stage8Rescue;
     const ok=writeEnvelope(state.entryCheckpoint,"save_quit");
     if(!ok){try{showToast?.("SAVE FAILED","The run could not be written to this browser. Your current game is still active.","red",7000)}catch(_){}return false}
     try{showToast?.("RUN SAVED",`Floor ${run.floor} entrance saved. Returning to the main menu.`,"green",3200)}catch(_){}
@@ -206,22 +234,52 @@
 
   async function resumeSolo(){
     const saved=currentSavedCheckpoint();if(!checkpointIsSolo(saved)){updateMenu();return false}
+    if(state.resumeInProgress)return false;
+    state.resumeInProgress=true;
+    let audio=null,fs=null;
     try{
-      const audio=S.start(),fs=requestPlayFullscreen();await Promise.all([audio,fs]);
-      await net.leave();net.setSolo(saved.player?.name||playerName());
+      // Fullscreen/audio are user-gesture side effects, not restore ownership.
+      // Start them synchronously but never yield the Continue transaction to
+      // their promises before the saved checkpoint is authoritative again.
+      try{audio=S.start()}catch(_){}
+      try{fs=requestPlayFullscreen()}catch(_){}
+      // Continue is a local checkpoint restore. net.setSolo() initiates
+      // best-effort transport teardown and resets local network state immediately.
+      net.setSolo(saved.player?.name||playerName());
       run=clone(saved.run);score=Math.max(0,Number(saved.score)||0);p1=clone(saved.player);p2=null;playMode="solo";mode="playing";
       startWorld(PGR.floorSeed(run),false,true,true);
+      restoreCheckpointEntryPosition(saved.player);
+      if(saved.stage8Rescue&&host)host.rescue=clone(saved.stage8Rescue);
       floorEntryCheckpoint=clone(saved);state.entryCheckpoint=clone(saved);state.entryFloorKey=floorKey();state.lastAutoSaveKey=state.entryFloorKey;
       UI.menu.classList.add("hidden");setRunPresentation(true);S.startMusic();
       state.resumes++;state.lastError="";
       try{showToast("SAVED RUN RESTORED",`Floor ${run.floor}: ${PGR.floorInfo(run).name}. Resumed safely from the floor entrance.`,"green",9000)}catch(_){}
-      sync();ensurePauseButton();return true
+      sync();ensurePauseButton();
+      try{Promise.allSettled([audio,fs].filter(Boolean)).catch(()=>{})}catch(_){}
+      return true
     }catch(error){state.lastError=String(error?.message||error);try{console.warn("[Lost Sizzler r43] Solo resume failed safely",error)}catch(_){};return false}
+    finally{state.resumeInProgress=false}
   }
 
   function interceptContinue(event){
     const button=event?.target?.closest?.("#continue-save-btn");if(!button||!readEnvelope())return;
     event.preventDefault();event.stopImmediatePropagation();resumeSolo()
+  }
+
+  function settleFloorEntryPrompt(){
+    if(!standardSolo())return false;
+    installOfferFloorSaveOwner();ensureEntryCaptured();
+    const suppressed=suppressAutomaticFloorPrompt();state.floorEntrySettles++;
+    return suppressed
+  }
+
+  function scheduleFloorEntryPromptSettle(){
+    if(!standardSolo())return false;
+    state.floorEntrySettleSchedules++;
+    for(const delay of FLOOR_ENTRY_SETTLE_DELAYS){
+      setTimeout(()=>{try{settleFloorEntryPrompt()}catch(error){state.lastError=String(error?.message||error)}},delay)
+    }
+    return true
   }
 
   function interceptDescend(event){
@@ -230,7 +288,7 @@
     queueMicrotask(()=>{
       if(!standardSolo())return;
       const after=Number(run?.floor)||0;if(after<=before)return;
-      captureEntry("autosave");suppressAutomaticFloorPrompt()
+      captureEntry("autosave");installOfferFloorSaveOwner();suppressAutomaticFloorPrompt();scheduleFloorEntryPromptSettle()
     })
   }
 
@@ -327,10 +385,10 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.observer?.disconnect?.()},{once:true});
 
   window.CCGLostSizzlerV141R43SoloSave={
-    SCHEMA,SCHEMA_VERSION,PRIMARY_KEY,BACKUP_KEY,
-    readEnvelope,currentSavedCheckpoint,captureEntry,saveAndQuit,resumeSolo,clearSoloSave,updateMenu,
+    SCHEMA,SCHEMA_VERSION,PRIMARY_KEY,BACKUP_KEY,FLOOR_ENTRY_SETTLE_DELAYS,
+    readEnvelope,currentSavedCheckpoint,captureEntry,saveAndQuit,resumeSolo,restoreCheckpointEntryPosition,clearSoloSave,updateMenu,
     validateEnvelope,makeEnvelope,hashText,checkpointMatchesCurrentFloor,canonicalEntryCheckpoint,
-    installOfferFloorSaveOwner,suppressAutomaticFloorPrompt,automaticPromptActive,savedCurrentFloor,
+    installOfferFloorSaveOwner,suppressAutomaticFloorPrompt,automaticPromptActive,savedCurrentFloor,settleFloorEntryPrompt,scheduleFloorEntryPromptSettle,
     get state(){return state}
   };
 })();

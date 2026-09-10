@@ -6,15 +6,24 @@ on:
       - main
     paths:
       - 'arcade/lost-sizzler/**'
+      - 'games/ccg-games/cheeky-commodore-quest/index.html'
+      - 'games/the-lost-sizzler/index.html'
+      - 'js/ccg-home-community.js'
+      - 'resources/css/home-lost-sizzler-cta.css'
       - 'service-worker.js'
       - 'js/ccg-pwa.js'
       - '.github/workflows/lost-sizzler-load-safety.yml'
   pull_request:
     paths:
       - 'arcade/lost-sizzler/**'
+      - 'games/ccg-games/cheeky-commodore-quest/index.html'
+      - 'games/the-lost-sizzler/index.html'
+      - 'js/ccg-home-community.js'
+      - 'resources/css/home-lost-sizzler-cta.css'
       - 'service-worker.js'
       - 'js/ccg-pwa.js'
       - '.github/workflows/lost-sizzler-load-safety.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -24,11 +33,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  validate:
-    name: Canonical game load safety
+  core:
+    name: Canonical structure and Node contracts
     runs-on: ubuntu-latest
-    timeout-minutes: 25
-
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -36,7 +44,29 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
+
+      - name: Validate canonical Lost Sizzler structure
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f arcade/lost-sizzler/index.html
+          test -f arcade/lost-sizzler/version.json
+          test -f arcade/lost-sizzler/js/asset-overrides.js
+          test -f arcade/lost-sizzler/js/game-main.js
+          test -f arcade/lost-sizzler/js/v10-16-voice-director.js
+          test -f arcade/lost-sizzler/js/v10-41-r47-all-mode-optimisation.js
+          test -d arcade/lost-sizzler/assets/audio/music
+          test -d arcade/lost-sizzler/assets/audio/voice
+          grep -q 'The Lost Sizzler' arcade/lost-sizzler/index.html
+          grep -q 'https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/' arcade/lost-sizzler/index.html
+          grep -q '/arcade/lost-sizzler/' games/ccg-games/cheeky-commodore-quest/index.html
+          grep -q '/arcade/lost-sizzler/' games/the-lost-sizzler/index.html
+          grep -q 'isEditableKeyboardTarget' arcade/lost-sizzler/js/game-main.js
+          if grep -R --line-number --fixed-strings '/games/ccg-games/cheeky-commodore-quest/' arcade/lost-sizzler/js arcade/lost-sizzler/index.html arcade/lost-sizzler/version.json --include='*.html' --include='*.js' --include='*.json' --exclude='v10-41-cache-guard.js'; then
+            echo 'Stale Lost Sizzler self-reference found inside canonical arcade runtime.' >&2
+            exit 1
+          fi
 
       - name: Syntax check every canonical Lost Sizzler JavaScript file
         shell: bash
@@ -62,37 +92,110 @@ jobs:
             echo "::endgroup::"
           done
 
+  browser-manifest:
+    name: Discover Chromium contracts
+    needs: core
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.manifest.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build browser contract matrix
+        id: manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs=require('fs');
+          const tests=[
+            'arcade/lost-sizzler/tests/v10-6-browser.mjs',
+            'arcade/lost-sizzler/tests/v10-9-stability.mjs',
+            'arcade/lost-sizzler/tests/support/v10-28-browser-stability-deterministic.mjs',
+            ...fs.readdirSync('arcade/lost-sizzler/tests/browser')
+              .filter(name=>name.endsWith('.mjs'))
+              .sort()
+              .map(name=>`arcade/lost-sizzler/tests/browser/${name}`)
+          ];
+          process.stdout.write(`matrix=${JSON.stringify({test:tests})}\n`);
+          NODE
+
+  browser-contract:
+    name: Chromium · ${{ matrix.test }}
+    needs: browser-manifest
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix: ${{ fromJSON(needs.browser-manifest.outputs.matrix) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
       - name: Install Chromium test runtime
         shell: bash
         run: |
           set -euo pipefail
           npm install --no-save --no-package-lock playwright@1.55.0
+          # Playwright downloads its own Chromium; the preinstalled Google Chrome
+          # repository is not required for its Ubuntu dependency installation.
+          sudo rm -f /etc/apt/sources.list.d/google-chrome.list
+          sudo apt-get update
           npx playwright install --with-deps chromium
 
-      - name: Run canonical Chromium load and layout suite
+      - name: Prepare failure artifact name
+        id: artifact
         shell: bash
+        env:
+          TEST_FILE: ${{ matrix.test }}
         run: |
           set -euo pipefail
+          base="$(basename "$TEST_FILE" .mjs)"
+          echo "name=$base" >> "$GITHUB_OUTPUT"
 
-          run_legacy_browser_test() {
-            local test="$1"
-            echo "::group::$test (attempt 1)"
-            if node "$test"; then
+      - name: Run browser contract
+        shell: bash
+        env:
+          TEST_FILE: ${{ matrix.test }}
+        run: |
+          set -euo pipefail
+          name="$(basename "$TEST_FILE")"
+          log="$RUNNER_TEMP/lost-sizzler-browser-contract.log"
+          : > "$log"
+          attempts=1
+          case "$name" in
+            v10-6-browser.mjs|v10-28-browser-stability-deterministic.mjs|v10-41-solo-long-session-soak.mjs)
+              attempts=2
+              ;;
+          esac
+          for attempt in $(seq 1 "$attempts"); do
+            echo "::group::$TEST_FILE (attempt $attempt/$attempts)"
+            echo "=== $TEST_FILE attempt $attempt/$attempts ===" >> "$log"
+            if node "$TEST_FILE" 2>&1 | tee -a "$log"; then
               echo "::endgroup::"
-              return 0
+              exit 0
             fi
             echo "::endgroup::"
-            echo "Legacy browser test timed out or failed on attempt 1; retrying once on a fresh browser process: $test"
-            echo "::group::$test (attempt 2)"
-            node "$test"
-            echo "::endgroup::"
-          }
-
-          run_legacy_browser_test arcade/lost-sizzler/tests/v10-6-browser.mjs
-          run_legacy_browser_test arcade/lost-sizzler/tests/support/v10-28-browser-stability-deterministic.mjs
-
-          for test in arcade/lost-sizzler/tests/browser/*.mjs; do
-            echo "::group::$test"
-            node "$test"
-            echo "::endgroup::"
+            if [ "$attempt" -lt "$attempts" ]; then
+              echo "Browser contract failed on attempt $attempt; retrying on a fresh process: $TEST_FILE"
+              echo >> "$log"
+            fi
           done
+          echo "::error title=Lost Sizzler browser regression::$TEST_FILE failed after $attempts attempt(s)"
+          exit 1
+
+      - name: Upload failing Chromium contract log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lost-sizzler-${{ steps.artifact.outputs.name }}-failure
+          path: ${{ runner.temp }}/lost-sizzler-browser-contract.log
+          if-no-files-found: error
+          retention-days: 7

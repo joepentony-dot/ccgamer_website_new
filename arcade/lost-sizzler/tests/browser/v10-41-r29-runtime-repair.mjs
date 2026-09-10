@@ -31,10 +31,14 @@ try{
   const release=await page.evaluate(()=>({
     build:document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content,
     cache:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content,
+    canonicalBuild:window.CCGLostSizzlerV142Bootstrap?.build,
+    canonicalCache:window.CCGLostSizzlerV142Bootstrap?.cache,
     r29:Boolean(window.CCGLostSizzlerV141R29),
     loop:Boolean(window.loop?.__ccgV141R29Stable)
   }));
-  assert.deepEqual(release,{build:"2026.08.27.31",cache:"20260827r31",r29:true,loop:true},"Chromium must run the r30 page while retaining the r29 stable-loop protections");
+  assert.equal(release.build,release.canonicalBuild,"release-ready build metadata must match the authoritative V10.42 bootstrap identity");
+  assert.equal(release.cache,release.canonicalCache,"release-ready cache metadata must match the authoritative V10.42 bootstrap identity");
+  assert.deepEqual({r29:release.r29,loop:release.loop},{r29:true,loop:true},"Chromium must run the r30 page while retaining the r29 stable-loop protections");
 
   const geometry=await page.evaluate(async()=>{
     document.body.dataset.runActive="true";
@@ -101,8 +105,8 @@ try{
   });
   assert.equal(friendly.result,false,"Horde player-v-player damage must be rejected");assert.equal(friendly.delta,1,"Horde friendly-fire rejection must execute exactly once");
 
-  assert.deepEqual(errors,[],`retained r29 Chromium runtime regression must have no uncaught errors under r30: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 retained r29 geometry, notification, audio, Spy hint and Horde friendly-fire protections passed under r30 in Chromium.");
+  assert.deepEqual(errors,[],`retained r29 Chromium runtime regression must have no uncaught errors under V10.42: ${errors.join("\n")}`);
+  console.log("Lost Sizzler V10.41 retained r29 geometry, notification, audio, Spy hint and Horde friendly-fire protections passed under V10.42 in Chromium.");
   await context.close()
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()))

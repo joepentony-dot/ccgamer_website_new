@@ -23,13 +23,13 @@ assert.match(performanceSource,/net\.send\("player",compactPlayerState\(p1\)\)/,
 assert.match(performanceSource,/if\(!connectedHorde\(\)\|\|typeof p1==="undefined"\|\|!p1\)return original\.apply/,"player packet optimisation must be Horde-only and leave every other mode unchanged");
 assert.match(performanceSource,/if\(!connectedHorde\(\)\|\|!net\?\.isHost\)return original\.apply/,"world snapshot throttling must affect only an online Horde host");
 
-const compactBody=performanceSource.match(/function compactPlayerState\(player\)\{([\s\S]*?)\n  \}/)?.[1]||"";
+const compactBody=performanceSource.match(/function compactPlayerState\(player\)\{([\s\S]*?)\r?\n  \}/)?.[1]||"";
 assert.ok(compactBody,"compact Horde player state helper must exist");
 for(const required of ["id:player.id","name:player.name","x:player.x","y:player.y","health:player.health","dir:player.dir"])assert.ok(compactBody.includes(required),`compact player packet must retain ${required}`);
 for(const forbidden of ["inventory:","weapon:","meleeWeapon:","totalXp:","damageBonus:","potionBonus:"])assert.ok(!compactBody.includes(forbidden),`10 Hz compact Horde packets must not repeatedly send ${forbidden}`);
 
 assert.match(specialModes,/if\(!force&&t-lastStateSend<125\)return/,"Horde must retain its existing 125 ms dedicated authoritative state stream");
-const hordeUpdate=specialModes.match(/function updateHorde\(t\)\{([\s\S]*?)\n\n  function sabRoom/)?.[1]||"";
+const hordeUpdate=specialModes.match(/function updateHorde\(t\)\{([\s\S]*?)\r?\n\r?\n  function sabRoom/)?.[1]||"";
 assert.ok(hordeUpdate,"the authoritative Horde update function must be present");
 assert.ok(!hordeUpdate.includes("inputs.get"),"Horde authority must not consume the v133 special input map");
 assert.match(performanceSource,/event==="v133_special_input"&&connectedHorde\(\)/,"the unused 75 ms special-input stream must be suppressed only while Horde is connected");

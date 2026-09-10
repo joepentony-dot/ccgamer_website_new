@@ -42,6 +42,8 @@ on:
       - "scripts/audit-responsive-browser.js"
       - "scripts/audit-scroll-reachability.js"
       - ".github/workflows/ccg-site-safety.yml"
+      - "!arcade/lost-sizzler/js/**"
+      - "!arcade/lost-sizzler/tests/**"
   workflow_dispatch:
 
 permissions:

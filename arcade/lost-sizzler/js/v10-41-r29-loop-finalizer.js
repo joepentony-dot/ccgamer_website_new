@@ -5,7 +5,7 @@
   window.__CCG_LOST_SIZZLER_V141_R29_LOOP_FINALIZER__=true;
 
   const state={
-    timer:0,reassertions:0,lastLoop:null,
+    timer:0,reassertions:0,stableLoopSkips:0,lastLoop:null,
     spyRuntimeRequested:false,spyRuntimeReady:false,spyRuntimeError:"",
     spyNetworkRequested:false,spyNetworkReady:false,spyNetworkError:"",
     notificationRail:null,notificationObserver:null,notificationRailReady:false,notificationLive:false,
@@ -19,6 +19,9 @@
     const api=window.CCGLostSizzlerV141R29;
     if(!api?.install)return false;
     const before=window.loop;
+    if(typeof before==="function"&&before.__ccgV141R29Stable){
+      before.__ccgV141CrashContained=true;state.stableLoopSkips++;state.lastLoop=before;return true
+    }
     try{api.install()}catch(error){try{console.error("[Lost Sizzler r29] final loop ownership install failed safely",error)}catch(_){}return false}
     const current=window.loop;
     if(typeof current!=="function"||!current.__ccgV141R29Stable)return false;

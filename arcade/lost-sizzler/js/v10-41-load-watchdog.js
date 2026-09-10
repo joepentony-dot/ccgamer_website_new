@@ -11,7 +11,7 @@
   let ownerAccessGranted=false;
   const state={
     startedAt:performance.now(),lastTick:performance.now(),maxDelay:0,stalls:0,timer:0,finished:false,
-    pendingSolo:false,soloReplayQueued:false,soloReplays:0,soloIntentSerial:0,soloRecoveries:0,soloRecoveryTimer:0,
+    pendingSolo:false,soloReplayQueued:false,soloReplays:0,soloIntentSerial:0,soloRecoveries:0,soloRecoveryTimer:0,soloLivenessObserver:null,
     moduleObserver:null,loadingTimer:0,modulesReady:0,moduleKeys:new Set(),loadingStage:10,loadingStages:[10],
     betaObserver:null,betaRunObserver:null,betaSyncTimer:0,betaClosed:false,betaBlocks:0,
     ownerAccess:false,ownerAuthChecked:false,ownerAuthPending:false,ownerAuthTimer:0,ownerAuthAttempts:0,ownerUsername:"",ownerRole:"",
@@ -235,17 +235,39 @@
     if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
   }
 
+  function clearSoloLiveness(invalidate=true){
+    if(invalidate)state.soloIntentSerial++;
+    if(state.soloRecoveryTimer)clearTimeout(state.soloRecoveryTimer);
+    state.soloRecoveryTimer=0;
+    try{state.soloLivenessObserver?.disconnect?.()}catch(_){}
+    state.soloLivenessObserver=null;
+  }
+
   function cancelPendingSoloForAnotherChoice(event){
-    if(!state.pendingSolo)return;
     const target=event?.target?.closest?.("#tutorial-zone-btn,#create-btn,#horde-mode-btn,#saboteurs-mode-btn,#daily-btn,#split-btn,#join-btn,#continue-save-btn");
-    if(target)state.pendingSolo=false;
+    if(!target)return;
+    state.pendingSolo=false;
+    clearSoloLiveness(true);
   }
 
   function scheduleSoloLivenessCheck(){
+    clearSoloLiveness(false);
     const serial=++state.soloIntentSerial;
-    if(state.soloRecoveryTimer)clearTimeout(state.soloRecoveryTimer);
+    if(document.body){
+      const observer=new MutationObserver(()=>{
+        if(serial!==state.soloIntentSerial){observer.disconnect();if(state.soloLivenessObserver===observer)state.soloLivenessObserver=null;return}
+        if(document.body?.dataset?.runActive!=="true")return;
+        if(state.soloRecoveryTimer)clearTimeout(state.soloRecoveryTimer);
+        state.soloRecoveryTimer=0;
+        observer.disconnect();if(state.soloLivenessObserver===observer)state.soloLivenessObserver=null;
+        state.soloIntentSerial++;
+      });
+      observer.observe(document.body,{attributes:true,attributeFilter:["data-run-active"]});
+      state.soloLivenessObserver=observer;
+    }
     state.soloRecoveryTimer=setTimeout(()=>{
       state.soloRecoveryTimer=0;
+      try{state.soloLivenessObserver?.disconnect?.()}catch(_){}state.soloLivenessObserver=null;
       if(serial!==state.soloIntentSerial||publicPlayLocked()||document.body?.dataset?.runActive==="true"||!releaseReady())return;
       const menu=document.getElementById("menu");if(!menu||menu.classList.contains("hidden"))return;
       try{window.CCGLostSizzlerModeRuntime?.resetModeTransient?.("Solo launch liveness recovery")}catch(_){}
@@ -331,7 +353,7 @@
   document.addEventListener("click",capturePreReleaseSolo,true);
   window.addEventListener("ccg-lost-sizzler-cache-status",()=>queueMicrotask(syncCacheStatus));
   window.addEventListener("pagehide",()=>{
-    state.pendingSolo=false;if(state.soloRecoveryTimer)clearTimeout(state.soloRecoveryTimer);
+    state.pendingSolo=false;clearSoloLiveness(true);
     document.removeEventListener("click",capturePreReleaseSolo,true);document.removeEventListener("click",blockPublicPlay,true);
     window.removeEventListener("ccg:auth-ready",onOwnerAuthSignal);window.removeEventListener("ccg:auth-changed",onOwnerAuthSignal);
     try{state.betaObserver?.disconnect?.();state.betaRunObserver?.disconnect?.();state.moduleObserver?.disconnect?.()}catch(_){}
@@ -343,5 +365,5 @@
   state.timer=setInterval(tick,250);
   state.r57Timer=setInterval(ensureR57,100);
   tick();ensureR57();
-  window.CCGLostSizzlerLoadWatchdog={state,stop:stopLoaderObservers,replayPendingSolo,scheduleSoloLivenessCheck,syncLoadingStage,lockPlayableControls,restoreOwnerControls,resolveOwnerAccess,ownerProfileMatches,publicPlayLocked,publicBetaClosed,scheduleBetaControlSync,ensureR57};
+  window.CCGLostSizzlerLoadWatchdog={state,stop:stopLoaderObservers,replayPendingSolo,scheduleSoloLivenessCheck,clearSoloLiveness,syncLoadingStage,lockPlayableControls,restoreOwnerControls,resolveOwnerAccess,ownerProfileMatches,publicPlayLocked,publicBetaClosed,scheduleBetaControlSync,ensureR57};
 })();

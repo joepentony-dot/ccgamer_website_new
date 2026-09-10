@@ -8,7 +8,43 @@
   const CACHE_TOKEN=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||BUILD||"latest").trim();
   const STORAGE_KEY="ccg-lost-sizzler:last-sanitised-cache";
   const GAME_PREFIXES=["/arcade/lost-sizzler/","/games/ccg-games/cheeky-commodore-quest/"];
-  const state={build:BUILD,cacheToken:CACHE_TOKEN,previous:"",needed:false,running:false,done:false,timedOut:false,deletedEntries:0,checkedCaches:0,serviceWorkersChecked:0,runtimeErrors:[],errors:[],startedAt:performance.now(),finishedAt:0};
+  const state={build:BUILD,cacheToken:CACHE_TOKEN,previous:"",needed:false,running:false,done:false,timedOut:false,deletedEntries:0,checkedCaches:0,serviceWorkersChecked:0,runtimeErrors:[],errors:[],startedAt:performance.now(),finishedAt:0,v142ReleaseHeld:false,v142ReleaseReleased:false};
+
+  /* V10.42 production is zero-server-cost, but this guard is the first static
+   * script on the game page. Hold the public release-ready bit here so legacy
+   * startup layers cannot briefly advertise their retired online menu before
+   * the authoritative V10.42 ordered bootstrap and zero-server policy exist. */
+  let v142ReleaseObserver=null;
+  function setV142ReleaseReady(value){if(document.body)document.body.dataset.releaseReady=value?"true":"false"}
+  function holdV142ReleaseReady(){
+    if(state.v142ReleaseReleased)return;
+    state.v142ReleaseHeld=true;
+    if(document.body?.dataset?.releaseReady==="true")setV142ReleaseReady(false);
+  }
+  function releaseV142Ready(){
+    const bootstrap=window.CCGLostSizzlerV142Bootstrap;
+    const zeroServer=window.CCGLostSizzlerV142ZeroServerRelease;
+    if(bootstrap?.ready!==true||zeroServer?.enabled!==true||zeroServer?.onlineMultiplayer!==false){
+      holdV142ReleaseReady();
+      return false;
+    }
+    state.v142ReleaseReleased=true;
+    state.v142ReleaseHeld=false;
+    v142ReleaseObserver?.disconnect();
+    v142ReleaseObserver=null;
+    setV142ReleaseReady(true);
+    return true;
+  }
+  function startV142ReleaseGuard(){
+    holdV142ReleaseReady();
+    if(typeof MutationObserver==="function"&&!v142ReleaseObserver){
+      v142ReleaseObserver=new MutationObserver(holdV142ReleaseReady);
+      v142ReleaseObserver.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:["data-release-ready"]});
+    }
+    addEventListener("ccg:v142-ready",releaseV142Ready,{once:true});
+    addEventListener("pagehide",()=>{v142ReleaseObserver?.disconnect();v142ReleaseObserver=null},{once:true});
+  }
+  startV142ReleaseGuard();
 
   /* Start the 92%-freeze protection before version-check can inject V10.36.
    * The guard itself waits for the release gate/V10.36 hook, so loading it this
@@ -35,12 +71,16 @@
     const status=document.getElementById("ccg-release-loading-status");if(status&&message)status.textContent=message;
   }
   function errorText(value){return String(value?.stack||value?.message||value||"Unknown startup error").slice(0,1200)}
-  function sourceLooksLocal(source=""){return !source||gamePath(source)||/lost-sizzler|v10-|horde-survivor|sizzler-saboteurs/i.test(String(source))}
+  function sourceLooksLocal(source="",message=""){
+    const raw=String(source||"");
+    if(raw)return gamePath(raw)||/lost-sizzler|v10-|horde-survivor|sizzler-saboteurs/i.test(raw);
+    return /lost-sizzler|v10-|horde-survivor|sizzler-saboteurs/i.test(String(message||""));
+  }
 
   function recordRuntimeError(error,source=""){
     if(document.body?.dataset?.releaseReady==="true")return;
-    if(!sourceLooksLocal(source))return;
     const text=errorText(error),signature=`${String(source||"")}|${text}`;
+    if(!sourceLooksLocal(source,text))return;
     if(state.runtimeErrors.some(row=>row.signature===signature))return;
     state.runtimeErrors.push({signature,source:String(source||""),message:text,at:Date.now()});
     if(state.runtimeErrors.length>12)state.runtimeErrors.splice(0,state.runtimeErrors.length-12);

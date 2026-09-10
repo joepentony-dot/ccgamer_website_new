@@ -164,13 +164,36 @@
 
   function installBegin(){if(state.installed.begin||typeof beginRun!=="function")return;const original=beginRun;beginRun=function(opts={}){const daily=Boolean(opts?.daily),online=Boolean(opts?.online),split=Boolean(opts?.split);if(!state.choiceAccepted&&!daily&&!online&&!split){showChoice(Array.from(arguments));return false}const result=original.apply(this,arguments);afterRunStarted(daily);return result};state.installed.begin=true}
   function installWorld(){if(state.installed.startWorld||typeof startWorld!=="function")return;const original=startWorld;startWorld=function(){const result=original.apply(this,arguments);try{applyGentleOpening();setTimeout(softenRareOpening,0)}catch(e){console.warn("[Lost Sizzler] gentle opening pass failed",e)}return result};state.installed.startWorld=true}
+  function actionChainHasMarker(fn,marker,limit=64){
+    const seen=new Set();let current=fn,depth=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth++<limit){
+      try{if(current[marker])return true}catch(_){}
+      seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null
+    }
+    return false
+  }
   function installActions(){
     let n=0;
-    if(typeof movePlayer==="function"){if(!movePlayer.__tutorial){const o=movePlayer;movePlayer=function(p){const before=p?{x:p.x,y:p.y}:null,r=o.apply(this,arguments);recordMovement(p,before);return r};movePlayer.__tutorial=true}if(movePlayer.__tutorial)n++}
-    if(typeof firePlayer==="function"){if(!firePlayer.__tutorial){const o=firePlayer;firePlayer=function(){const r=o.apply(this,arguments);if(r!==false)note("fire");return r};firePlayer.__tutorial=true}if(firePlayer.__tutorial)n++}
-    if(typeof dashPlayer==="function"){if(!dashPlayer.__tutorial){const o=dashPlayer;dashPlayer=function(){const r=o.apply(this,arguments);if(r!==false)note("dash");return r};dashPlayer.__tutorial=true}if(dashPlayer.__tutorial)n++}
-    if(typeof toggleInventory==="function"){if(!toggleInventory.__tutorial){const o=toggleInventory;toggleInventory=function(){const r=o.apply(this,arguments);setTimeout(syncInventoryTutorial,0);return r};toggleInventory.__tutorial=true}if(toggleInventory.__tutorial)n++}
-    if(typeof hurtPlayer==="function"){if(!hurtPlayer.__tutorial){const o=hurtPlayer;hurtPlayer=function(){if(state.active)return false;return o.apply(this,arguments)};hurtPlayer.__tutorial=true}if(hurtPlayer.__tutorial)n++}
+    if(typeof movePlayer==="function"){
+      if(!actionChainHasMarker(movePlayer,"__tutorial")){const o=movePlayer,wrapped=function movePlayerV120Tutorial(p){const before=p?{x:p.x,y:p.y}:null,r=o.apply(this,arguments);recordMovement(p,before);return r};wrapped.__tutorial=true;wrapped.__ccgOriginal=o;movePlayer=wrapped}
+      if(actionChainHasMarker(movePlayer,"__tutorial"))n++
+    }
+    if(typeof firePlayer==="function"){
+      if(!actionChainHasMarker(firePlayer,"__tutorial")){const o=firePlayer,wrapped=function firePlayerV120Tutorial(){const r=o.apply(this,arguments);if(r!==false)note("fire");return r};wrapped.__tutorial=true;wrapped.__ccgOriginal=o;firePlayer=wrapped}
+      if(actionChainHasMarker(firePlayer,"__tutorial"))n++
+    }
+    if(typeof dashPlayer==="function"){
+      if(!actionChainHasMarker(dashPlayer,"__tutorial")){const o=dashPlayer,wrapped=function dashPlayerV120Tutorial(){const r=o.apply(this,arguments);if(r!==false)note("dash");return r};wrapped.__tutorial=true;wrapped.__ccgOriginal=o;dashPlayer=wrapped}
+      if(actionChainHasMarker(dashPlayer,"__tutorial"))n++
+    }
+    if(typeof toggleInventory==="function"){
+      if(!actionChainHasMarker(toggleInventory,"__tutorial")){const o=toggleInventory,wrapped=function toggleInventoryV120Tutorial(){const r=o.apply(this,arguments);setTimeout(syncInventoryTutorial,0);return r};wrapped.__tutorial=true;wrapped.__ccgOriginal=o;toggleInventory=wrapped}
+      if(actionChainHasMarker(toggleInventory,"__tutorial"))n++
+    }
+    if(typeof hurtPlayer==="function"){
+      if(!actionChainHasMarker(hurtPlayer,"__tutorial")){const o=hurtPlayer,wrapped=function hurtPlayerV120Tutorial(){if(state.active)return false;return o.apply(this,arguments)};wrapped.__tutorial=true;wrapped.__ccgOriginal=o;hurtPlayer=wrapped}
+      if(actionChainHasMarker(hurtPlayer,"__tutorial"))n++
+    }
     state.installed.actions=n>=5;
   }
 
@@ -183,5 +206,5 @@
   function install(){ensureStyle();ensureChoice();ensureMenuButton();installBegin();installWorld();installActions();installDossier()}
   document.addEventListener("keydown",handleTutorialKeydown,true);document.addEventListener("pointerdown",handleTutorialPointer,true);
   const installTimer=setInterval(install,500);const progressTimer=setInterval(watchTutorialProgress,80);if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",install,{once:true});else install();window.addEventListener("pagehide",()=>{clearInterval(installTimer);clearInterval(progressTimer);document.removeEventListener("keydown",handleTutorialKeydown,true);document.removeEventListener("pointerdown",handleTutorialPointer,true)},{once:true});
-  window.CCGLostSizzlerOnboardingV120={state,replay:()=>{state.forceTutorial=true;state.tutorialRequested=true;state.choiceAccepted=true;try{return typeof startSolo==="function"?startSolo():false}finally{state.choiceAccepted=false}},isTutorialComplete:()=>readFlag(COMPLETE),markVerifiedEnemy:markVerified,stepReadyForTest:stepReady,completeInteractiveForTest:completeInteractive};
+  window.CCGLostSizzlerOnboardingV120={state,replay:()=>{state.forceTutorial=true;state.tutorialRequested=true;state.choiceAccepted=true;try{return typeof startSolo==="function"?startSolo():false}finally{state.choiceAccepted=false}},isTutorialComplete:()=>readFlag(COMPLETE),markVerifiedEnemy:markVerified,stepReadyForTest:stepReady,completeInteractiveForTest:completeInteractive,actionChainHasMarker};
 })();

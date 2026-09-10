@@ -9,7 +9,7 @@ const repo=path.resolve(gameDir,"../..");
 const readGame=relative=>fs.readFileSync(path.join(gameDir,relative),"utf8");
 const readRepo=relative=>fs.readFileSync(path.join(repo,relative),"utf8");
 const achievements=readGame("js/v10-29-achievements.js");
-const rows=JSON.parse(achievements.match(/const rows=(\[[\s\S]*?\]);\n  const catalog/)[1]);
+const rows=JSON.parse(achievements.match(/const rows=(\[[\s\S]*?\]);\r?\n  const catalog/)[1]);
 const migration=readRepo("supabase/migrations/20260824120000_lost_sizzler_achievements.sql");
 const grants=readRepo("supabase/migrations/20260824123000_lost_sizzler_badge_grants.sql");
 const invoker=readRepo("supabase/migrations/20260824124500_lost_sizzler_catalog_invoker.sql");
