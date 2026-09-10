@@ -146,7 +146,7 @@
   function guardChestConfirmation(player,name,scoreReward,xpReward){
     stopChestConfirmationGuard();
     activeChestConfirmation={player,name,scoreReward,xpReward,until:now()+6500};
-    const pickupRoot=document.getElementById("pickup")||document.getElementById("pickup-toast")||document.querySelector(".pickup,.toast")||document.body;
+    const pickupRoot=document.body||document.documentElement;
     if(typeof MutationObserver==="function"&&pickupRoot){
       chestConfirmationObserver=new MutationObserver(()=>{
         const active=activeChestConfirmation;
