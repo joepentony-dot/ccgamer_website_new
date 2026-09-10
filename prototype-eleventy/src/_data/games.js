@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const sourcePath = path.resolve(here, "../../../../games/games.json");
+const sourcePath = path.resolve(here, "../../../games/games.json");
 const source = JSON.parse(fs.readFileSync(sourcePath, "utf8"));
 
 // Prototype safety boundary: read only from the canonical game database and expose
