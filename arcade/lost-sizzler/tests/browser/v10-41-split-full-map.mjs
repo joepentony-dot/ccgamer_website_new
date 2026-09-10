@@ -37,20 +37,18 @@ try{
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerFullMapV141));
 
-  const initial=await page.evaluate(()=>{
-    run=PGR.makeRun({difficulty:"ARCADE",seed:"SPLIT-FULL-MAP-CONTRACT"});
-    playMode="split";
-    startWorld(PGR.floorSeed(run),false,false);
-    mode="playing";
-    document.body.dataset.runActive="true";
+  const initial=await page.evaluate(async()=>{
+    const started=await startSplit();
     input.clear();
     move1=0;move2=0;
-    return{playMode,mode,hasP1:Boolean(p1),hasP2:Boolean(p2),mapOpen:window.CCGLostSizzlerFullMapV141.state.open};
+    return{started,playMode,mode,hasP1:Boolean(p1),hasP2:Boolean(p2),runActive:document.body.dataset.runActive,mapOpen:window.CCGLostSizzlerFullMapV141.state.open};
   });
+  assert.equal(initial.started,true,"real split-screen startup must succeed before testing the map");
   assert.equal(initial.playMode,"split","browser contract must execute in split-screen mode");
   assert.equal(initial.mode,"playing","split run must begin in playing mode");
   assert.equal(initial.hasP1,true,"split run must initialize P1");
   assert.equal(initial.hasP2,true,"split run must initialize P2");
+  assert.equal(initial.runActive,"true","real split-screen startup must activate the run presentation");
   assert.equal(initial.mapOpen,false,"full map must begin closed");
 
   await page.keyboard.press("m");
