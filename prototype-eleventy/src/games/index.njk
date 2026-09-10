@@ -1,16 +1,36 @@
 ---
 layout: layouts/base.njk
 title: Games | CCG Eleventy Prototype
-description: Prototype games index for the Cheeky Commodore Gamer archive.
+description: Lightweight prototype games index generated from the existing Cheeky Commodore Gamer database.
 permalink: /games/index.html
 ---
 <section class="hero hero--compact">
-  <p class="eyebrow">ARCHIVE</p>
+  <p class="eyebrow">ARCHIVE PROTOTYPE</p>
   <h1>Games</h1>
-  <p class="lede">This page will be generated from the existing CCG game data in the next milestone.</p>
+  <p class="lede">This page is generated at build time from the existing CCG games database. The prototype currently exposes a small read-only slice while templates and URL behaviour are validated.</p>
 </section>
 
-<section>
-  <h2>Migration status</h2>
-  <p>The route exists now so prototype navigation remains valid while data integration is developed and tested.</p>
+<section aria-labelledby="prototype-games-heading">
+  <div class="section-heading">
+    <h2 id="prototype-games-heading">Prototype game pages</h2>
+    <p>{{ games | length }} records generated from <code>games/games.json</code>.</p>
+  </div>
+
+  <div class="game-grid">
+    {% for game in games %}
+      <article class="game-card">
+        {% if game.thumbnail %}
+          <a href="/games/{{ game.slug }}/" class="game-card__image-link" aria-label="View {{ game.title }}">
+            <img class="game-card__image" src="/{{ game.thumbnail }}" alt="{{ game.title }}" loading="lazy" decoding="async">
+          </a>
+        {% endif %}
+        <div class="game-card__body">
+          <p class="game-card__meta">{{ game.system }}{% if game.year %} · {{ game.year }}{% endif %}</p>
+          <h3><a href="/games/{{ game.slug }}/">{{ game.title }}</a></h3>
+          {% if game.publishers.length %}<p>{{ game.publishers | join(", ") }}</p>{% endif %}
+          {% if game.rating %}<p class="game-card__rating">CCG rating: {{ game.rating }}/10</p>{% endif %}
+        </div>
+      </article>
+    {% endfor %}
+  </div>
 </section>
