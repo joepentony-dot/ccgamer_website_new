@@ -57,7 +57,7 @@ for (const game of source) {
   if (!normalized.slug || !normalized.title) continue;
 
   // Duplicate slugs would generate the same output route. Keep the first canonical
-  // record during prototype validation rather than allowing duplicate page writes.
+  // record rather than allowing duplicate page writes in the prototype build.
   if (seenSlugs.has(normalized.slug)) {
     console.warn(`[ccg-eleventy] Skipping duplicate game slug: ${normalized.slug}`);
     continue;
@@ -67,7 +67,6 @@ for (const game of source) {
   normalizedGames.push(normalized);
 }
 
-// Prototype safety boundary: read only from the canonical database. The validation
-// sample is deliberately broader than the initial 12 records, but still bounded
-// before the complete archive is enabled.
-export default normalizedGames.slice(0, 100);
+// Prototype safety boundary: the complete normalized archive is now enabled, but
+// this adapter remains read-only and never modifies the canonical games database.
+export default normalizedGames;
