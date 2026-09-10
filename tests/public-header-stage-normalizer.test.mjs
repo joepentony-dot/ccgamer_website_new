@@ -15,8 +15,10 @@ const {
   PUBLIC_HEADER_FOUNDATION_STYLES,
   PUBLIC_HEADER_FIRST_PAINT_STYLES,
   AUTH_SNAPSHOT_KEY,
+  isImmediateRedirectShell,
   normaliseHtml,
   processRoot,
+  rootAbsoluteUrl,
   shouldExclude,
   shouldInjectPublicHeader
 } = require('../scripts/normalize-public-header-shell.js');
@@ -56,6 +58,18 @@ function headerlessPage(content = 'Hello') {
 <html lang="en" data-ccg-page="plain">
 <head><meta charset="utf-8"></head>
 <body><main>${content}</main></body>
+</html>`;
+}
+
+function redirectShell() {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex,follow">
+  <meta http-equiv="refresh" content="0; url=/retro-specials/example/">
+</head>
+<body></body>
 </html>`;
 }
 
@@ -165,6 +179,24 @@ test('site-wide header injection preserves technical shell exclusions only', () 
   assert.equal(shouldInjectPublicHeader('auth/login.html', html), false);
 });
 
+test('instant redirect stubs stay lightweight and outside the visible navigation contract', () => {
+  const html = redirectShell();
+  assert.equal(isImmediateRedirectShell(html), true);
+  assert.equal(shouldInjectPublicHeader('retro-specials/example.html', html), false);
+
+  const result = normaliseHtml(html, { root: path.resolve('.'), relativePath: 'retro-specials/example.html' });
+  assert.equal(result.applicable, false);
+  assert.equal(result.changed, false);
+  assert.equal(result.html, html);
+});
+
+test('canonical header paths are root-absolute even when source markup uses parent-relative paths', () => {
+  assert.equal(rootAbsoluteUrl('../home.html'), '/home.html');
+  assert.equal(rootAbsoluteUrl('../../resources/images/ccgamer-logo.png'), '/resources/images/ccgamer-logo.png');
+  assert.equal(rootAbsoluteUrl('./games/'), '/games/');
+  assert.equal(rootAbsoluteUrl('/quiz/quiz.html'), '/quiz/quiz.html');
+});
+
 test('non-Music public pages without a header receive the master navigation shell', () => {
   const root = path.resolve('.');
   const result = normaliseHtml(headerlessPage('Public page'), { root, relativePath: 'terms.html' });
@@ -194,10 +226,12 @@ test('root processor writes site-wide staged navigation then passes check mode',
   try {
     fs.mkdirSync(path.join(root, 'games'), { recursive: true });
     fs.mkdirSync(path.join(root, 'admin'), { recursive: true });
+    fs.mkdirSync(path.join(root, 'retro-specials'), { recursive: true });
     fs.writeFileSync(path.join(root, 'home.html'), oldHeaderPage(), 'utf8');
     fs.writeFileSync(path.join(root, 'games', 'index.html'), oldHeaderPage(), 'utf8');
     fs.writeFileSync(path.join(root, 'terms.html'), headerlessPage('Terms'), 'utf8');
     fs.writeFileSync(path.join(root, 'admin', 'index.html'), oldHeaderPage(), 'utf8');
+    fs.writeFileSync(path.join(root, 'retro-specials', 'example.html'), redirectShell(), 'utf8');
 
     const written = processRoot(root, { check: false });
     assert.equal(written.applicable, 3);
@@ -210,6 +244,9 @@ test('root processor writes site-wide staged navigation then passes check mode',
     assert.match(terms, />Browse Games<\/a>/);
     assert.match(terms, /href="\/resources\/css\/ccg-master\.css"/);
     assert.match(terms, /href="\/resources\/css\/ccg-nav-labelled-bridge\.css"/);
+
+    const redirect = fs.readFileSync(path.join(root, 'retro-specials', 'example.html'), 'utf8');
+    assert.doesNotMatch(redirect, /data-ccg-header/);
 
     const checked = processRoot(root, { check: true });
     assert.equal(checked.applicable, 3);
