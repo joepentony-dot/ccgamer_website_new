@@ -22,6 +22,11 @@ const rating = (value) => {
   return Number.isFinite(numeric) && numeric > 0 ? numeric : null;
 };
 
+const year = (value) => {
+  const numeric = Number(value);
+  return Number.isInteger(numeric) && numeric > 0 ? numeric : null;
+};
+
 const normalizeThumbnail = (value) => text(value).replace(/^\/+/, "");
 
 const normalizeGame = (game) => {
@@ -31,7 +36,7 @@ const normalizeGame = (game) => {
     systemLabel: system.toUpperCase(),
     slug: text(game.slug),
     title: text(game.title, "Untitled game"),
-    year: game.year || null,
+    year: year(game.year),
     genres: list(game.genres),
     thumbnail: normalizeThumbnail(game.thumbnail),
     description: text(game.description, "Game information is being prepared for the lightweight prototype."),
@@ -42,9 +47,27 @@ const normalizeGame = (game) => {
   };
 };
 
-// Prototype safety boundary: read only from the canonical game database and expose
-// a small deterministic slice while templates and URLs are validated.
-export default source
-  .filter((game) => game && text(game.slug) && text(game.title))
-  .slice(0, 12)
-  .map(normalizeGame);
+const seenSlugs = new Set();
+const normalizedGames = [];
+
+for (const game of source) {
+  if (!game || typeof game !== "object") continue;
+
+  const normalized = normalizeGame(game);
+  if (!normalized.slug || !normalized.title) continue;
+
+  // Duplicate slugs would generate the same output route. Keep the first canonical
+  // record during prototype validation rather than allowing duplicate page writes.
+  if (seenSlugs.has(normalized.slug)) {
+    console.warn(`[ccg-eleventy] Skipping duplicate game slug: ${normalized.slug}`);
+    continue;
+  }
+
+  seenSlugs.add(normalized.slug);
+  normalizedGames.push(normalized);
+}
+
+// Prototype safety boundary: read only from the canonical database. The validation
+// sample is deliberately broader than the initial 12 records, but still bounded
+// before the complete archive is enabled.
+export default normalizedGames.slice(0, 100);
