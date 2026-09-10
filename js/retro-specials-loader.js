@@ -7,8 +7,7 @@
 
 const CCG_RETRO_SPECIALS_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
 const CCG_RETRO_SPECIALS_DATASETS = [
-  '/data/retro-specials.json',
-  '/data/retro-specials-light-fantastic.json'
+  '/data/retro-specials.json'
 ];
 
 function ccgEscapeHtml(value) {
