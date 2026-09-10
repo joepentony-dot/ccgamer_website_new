@@ -17,6 +17,7 @@
   const now=()=>performance.now();
   const safeNumber=value=>Number.isFinite(Number(value))?Number(value):0;
   const appliedChestLoot=new WeakSet();
+  let activeChestConfirmation=null,chestConfirmationObserver=null;
 
   function repairCpuCookIdentity(){
     try{
@@ -117,6 +118,9 @@
   function chestPlayerStillActive(player){
     try{return Boolean(player&&typeof localPlayers==="function"&&localPlayers().includes(player)&&run&&host)}catch(_){return false}
   }
+  function stopChestConfirmationGuard(){
+    chestConfirmationObserver?.disconnect?.();chestConfirmationObserver=null;activeChestConfirmation=null;
+  }
   function showChestConfirmation(player,name,scoreReward,xpReward){
     try{
       if(!chestPlayerStillActive(player))return false;
@@ -125,6 +129,26 @@
       diagnostics.chestRewardRepairs++;
       return true;
     }catch(_){return false}
+  }
+  function guardChestConfirmation(player,name,scoreReward,xpReward){
+    stopChestConfirmationGuard();
+    activeChestConfirmation={player,name,scoreReward,xpReward,until:now()+6500};
+    const title=document.getElementById("pickup-title"),text=document.getElementById("pickup-text");
+    if(typeof MutationObserver==="function"&&(title||text)){
+      chestConfirmationObserver=new MutationObserver(()=>{
+        const active=activeChestConfirmation;
+        if(!active)return;
+        if(now()>=active.until||!chestPlayerStillActive(active.player)){stopChestConfirmationGuard();return}
+        if(document.getElementById("pickup-title")?.textContent!=="CHEST REWARD CONFIRMED")queueMicrotask(()=>{
+          const current=activeChestConfirmation;
+          if(current&&now()<current.until)showChestConfirmation(current.player,current.name,current.scoreReward,current.xpReward);
+        });
+      });
+      if(title)chestConfirmationObserver.observe(title,{subtree:true,childList:true,characterData:true});
+      if(text)chestConfirmationObserver.observe(text,{subtree:true,childList:true,characterData:true});
+    }
+    showChestConfirmation(player,name,scoreReward,xpReward);
+    setTimeout(()=>{if(activeChestConfirmation?.player===player)stopChestConfirmationGuard()},6600);
   }
   try{
     if(typeof applyLoot==="function"&&!applyLoot.__ccgV142R1ChestTracking){
@@ -151,14 +175,9 @@
                 applyLoot(loot,player);diagnostics.chestLootRecoveries++;
                 try{floatPickupText(player,name,loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan)}catch(_){}
               }
-              showChestConfirmation(player,name,scoreReward,xpReward);
+              guardChestConfirmation(player,name,scoreReward,xpReward);
             }catch(_){}
           },650);
-          // Achievement/level-up notifications use the same pickup surface and can
-          // arrive after the chest callback. Reassert this specific confirmation
-          // only when another notification has displaced it; reward application is
-          // still single-shot and remains tracked independently above.
-          for(const delay of [1800,3200])setTimeout(()=>showChestConfirmation(player,name,scoreReward,xpReward),delay);
         }
         return result;
       };
@@ -206,6 +225,7 @@
     }
   }catch(_){}
 
+  addEventListener("pagehide",stopChestConfirmationGuard,{once:true});
   repairCpuCookIdentity();
   window.CCGLostSizzlerV142R1Stability={diagnostics,repairCombatTimers,repairProjectilePool,repairAlphabetOrder,shopPurchaseCount};
 })();
