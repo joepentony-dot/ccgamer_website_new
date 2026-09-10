@@ -104,12 +104,17 @@ try{
     const beforeMana=p1.mana;
     const fakeLoot={kind:"ammo",amount:5,rarity:"COMMON",name:"TEST AMMO CACHE"};
     const originalApplyLoot=applyLoot;
-    let lootCalls=0;
+    const originalShowToast=window.showToast;
+    let lootCalls=0,confirmationCalls=0;
     applyLoot=function(loot,player){
       if(loot===fakeLoot)lootCalls++;
       return originalApplyLoot(loot,player);
     };
-    window.__v142R1ChestProbe={originalApplyLoot,get calls(){return lootCalls}};
+    window.showToast=function(...args){
+      if(args[0]==="CHEST REWARD CONFIRMED")confirmationCalls++;
+      return originalShowToast.apply(this,args);
+    };
+    window.__v142R1ChestProbe={originalApplyLoot,originalShowToast,get calls(){return lootCalls},get confirmationCalls(){return confirmationCalls}};
     const recoveriesBefore=window.CCGLostSizzlerV142R1Stability?.diagnostics?.chestLootRecoveries||0;
     const fake={id:"v142-r1-chest-contract",x:p1.x,y:p1.y,active:true,locked:false,depth:2,loot:fakeLoot};
     openChest(p1,fake);
@@ -121,7 +126,7 @@ try{
   assert.ok(chest.rewardXp>0,"Every opened chest must record an XP reward.");
   assert.equal(chest.beforeMana,1,"Synthetic chest qualification must begin with exactly one ammunition unit.");
   try{
-    await page.waitForFunction(()=>document.getElementById("pickup-title")?.textContent==="CHEST REWARD CONFIRMED",null,{timeout:5000});
+    await page.waitForFunction(beforeMana=>Boolean(window.__v142R1ChestProbe?.confirmationCalls>0&&window.__v142R1ChestProbe?.calls===1&&p1?.mana>beforeMana),chest.beforeMana,{timeout:7000});
   }catch(error){
     const diagnostic=await page.evaluate(({pageErrors})=>{
       const stability=window.CCGLostSizzlerV142R1Stability;
@@ -135,6 +140,8 @@ try{
         pickupBody:document.querySelector("#pickup, #pickup-toast, .pickup, .toast")?.textContent||"",
         p1Mana:player?.mana,
         probeCalls:window.__v142R1ChestProbe?.calls,
+        confirmationCalls:window.__v142R1ChestProbe?.confirmationCalls,
+        chestRewardRepairs:diagnostics.chestRewardRepairs,
         chestLootRecoveries:diagnostics.chestLootRecoveries,
         chestLootRecoveryFailures:diagnostics.chestLootRecoveryFailures,
         chestConfirmationFailures:diagnostics.chestConfirmationFailures,
@@ -152,10 +159,12 @@ try{
   const confirmedChest=await page.evaluate(()=>({
     mana:p1.mana,
     calls:window.__v142R1ChestProbe?.calls||0,
+    confirmationCalls:window.__v142R1ChestProbe?.confirmationCalls||0,
     recoveries:window.CCGLostSizzlerV142R1Stability?.diagnostics?.chestLootRecoveries||0
   }));
   assert.ok(confirmedChest.mana>chest.beforeMana,"The synthetic chest reward must be delivered by the established owner or the V10.42 recovery owner.");
   assert.equal(confirmedChest.calls,1,"The synthetic chest loot object must cross the active applyLoot boundary exactly once.");
+  assert.ok(confirmedChest.confirmationCalls>0,"V10.42 must issue its retained chest reward confirmation even when another toast is competing for the shared banner.");
   if(chest.afterOpenMana===chest.beforeMana){
     assert.ok(confirmedChest.recoveries>chest.recoveriesBefore,"V10.42 must recover chest loot when the established owner has not delivered it.");
   }else{
@@ -167,6 +176,7 @@ try{
   await page.evaluate(()=>{
     const probe=window.__v142R1ChestProbe;
     if(probe?.originalApplyLoot)applyLoot=probe.originalApplyLoot;
+    if(probe?.originalShowToast)window.showToast=probe.originalShowToast;
     delete window.__v142R1ChestProbe;
     mode="playing";
   });
