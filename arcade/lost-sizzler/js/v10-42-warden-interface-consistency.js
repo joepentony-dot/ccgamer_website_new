@@ -31,7 +31,8 @@
     if(nextTitle==="TIMED CHAMBER — STALKER BANISHED"){
       nextTitle="TIMED CHAMBER — WARDEN DEFEATED";nextText="This floor's Death Stalker has already been defeated and its Warden domain cleansed. Survive the remaining chamber trial for the reward.";
     }
-    nextText=nextText.replace(/Banishment Flask/gi,"Ward-Break Charge").replace(/the Flask/gi,"the Ward-Break Charge");
+    const traderCopy=/Trader:|rare artefacts/i.test(nextText);
+    nextText=traderCopy?nextText.replace(/Banishment Flask/gi,"Banishment Flask / Ward-Break Charge").replace(/the Flask/gi,"the Ward-Break Charge"):nextText.replace(/Banishment Flask/gi,"Ward-Break Charge").replace(/the Flask/gi,"the Ward-Break Charge");
     return{title:nextTitle,text:nextText};
   }
 
