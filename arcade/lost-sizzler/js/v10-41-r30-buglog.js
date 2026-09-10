@@ -18,10 +18,12 @@
   function loadSpyR32Loader(){if(!window.CCGLostSizzlerV141R32SpyLoader)loadScript("v10-41-r32-spy-loader.js","data-ccg-r32-spy-loader")}
   function loadHordeOwnerComposition(){if(!window.CCGLostSizzlerV141R60HordeOwnerComposition)loadScript("v10-41-r60-horde-owner-composition.js","data-ccg-r60-horde-owner-composition")}
   function loadStage8NpcDialogue(){if(!window.CCGLostSizzlerStage8NpcDialogue)loadScript("v10-41-stage8-npc-dialogue.js","data-ccg-stage8-npc-dialogue")}
+  function loadStage13EncounterCompletion(){if(!window.CCGLostSizzlerStage13EncounterCompletion)loadScript("v10-41-stage13-encounter-completion.js","data-ccg-stage13-encounter-completion")}
   function loadV142Bootstrap(){if(!window.CCGLostSizzlerV142Bootstrap)loadScript("v10-42-bootstrap.js","data-ccg-v142-bootstrap")}
   function loadStage8AfterInitialRuntime(){
-    if(document.readyState==="complete"){queueMicrotask(loadStage8NpcDialogue);setTimeout(loadV142Bootstrap,0);return}
-    addEventListener("load",()=>{loadStage8NpcDialogue();setTimeout(loadV142Bootstrap,0)},{once:true})
+    const loadProgression=()=>{loadStage8NpcDialogue();loadStage13EncounterCompletion()};
+    if(document.readyState==="complete"){queueMicrotask(loadProgression);setTimeout(loadV142Bootstrap,0);return}
+    addEventListener("load",()=>{loadProgression();setTimeout(loadV142Bootstrap,0)},{once:true})
   }
   loadOwnerSeal();loadModeRuntime();loadSoloDiagnostics();loadSpyExitControlReset();loadSoloDungeonR31();loadSpyR32WorldOwner();loadSpyR32Loader();loadHordeOwnerComposition();loadStage8AfterInitialRuntime();
 
