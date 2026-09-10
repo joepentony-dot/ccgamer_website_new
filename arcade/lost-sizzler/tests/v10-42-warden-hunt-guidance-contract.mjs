@@ -4,9 +4,10 @@ import vm from "node:vm";
 
 const source=fs.readFileSync(new URL("../js/v10-42-warden-hunt-guidance.js",import.meta.url),"utf8");
 const toasts=[];
-const player={inventory:[]};
+const player={name:"TESTER",x:9,y:9,inventory:[]};
 const run={floor:2,v142SealFragments:2,v142WardenFloors:{"2":{floor:2,available:true,resolved:false,killFragmentAwarded:false,cacheFragmentAwarded:false}},v142WardChargeRoutes:{"2":{floor:2,routeId:"capacitor-core",unlocked:false,delivered:false,pending:false}}};
-const host={v142WardenDomain:{floor:2,profileName:"IRON SURGE",active:true}};
+const host={exitOpen:true,v142WardenDomain:{floor:2,profileName:"IRON SURGE",active:true}};
+const world={exit:{x:9,y:9}};
 const UI={quests:{innerHTML:""},floorSummary:{innerHTML:"BASE FLOOR SUMMARY"}};
 const routeApi={routes:{
   1:{name:"ALCHEMIST ROUTE",objective:"Distil Banishment Essence at the sanctuary Alchemist."},
@@ -18,7 +19,7 @@ const routeApi={routes:{
 const progression={firstInventory:(p,kind)=>(p.inventory||[]).findIndex(item=>item?.kind===kind)};
 let startCalls=0,questCalls=0,floorCalls=0;
 const context={
-  console,window:{},run,host,p1:player,mode:"playing",UI,S:{sfx:()=>{}},
+  console,window:{},run,host,world,p1:player,p2:null,mode:"playing",UI,S:{sfx:()=>{}},
   showToast:(title,text,tone,duration)=>toasts.push({title,text,tone,duration}),
   updateQuests:()=>{questCalls++;UI.quests.innerHTML="<div>BASE QUEST</div>"},
   startWorld:()=>{startCalls++;return true},
@@ -39,6 +40,7 @@ assert.match(UI.quests.innerHTML,/OPTIONAL WARDEN — IRON SURGE/,"Floor 2 shoul
 assert.match(UI.quests.innerHTML,/PREPARE WARD BREAK/,"A player without a charge should see the preparation state");
 assert.match(UI.quests.innerHTML,/Destroy any monster generator on this depth/,"The optional quest should expose the floor-specific field route");
 assert.match(UI.quests.innerHTML,/\+10% maximum HP and \+1 armour/,"The optional quest should state the persistent Warden Debt penalty before the player skips it");
+assert.equal(api.playerExitContact("TESTER"),true,"A named local player standing on the open floor exit should own Warden exit confirmation");
 
 const unresolvedFirst=context.floorComplete("TESTER");
 assert.equal(unresolvedFirst,false,"First exit contact with an unresolved Warden should stop floor completion");
@@ -124,5 +126,14 @@ assert.match(UI.quests.innerHTML,/quest-done/,"A no-Warden floor should render t
 const noWardenExit=context.floorComplete("TESTER");
 assert.equal(noWardenExit,"BASE FLOOR COMPLETE:TESTER","A no-Warden floor should never be blocked by Warden exit confirmation");
 assert.equal(floorCalls,5,"No-Warden floor should pass directly to the underlying completion handler");
+
+run.floor=2;
+run.v142WardenFloors["2"]={floor:2,available:true,resolved:false,killFragmentAwarded:false,cacheFragmentAwarded:false};
+player.x=8;player.y=9;
+assert.equal(api.playerExitContact("TESTER"),false,"Off-exit lifecycle completion must not be treated as player exit contact");
+const lifecycleExit=context.floorComplete("R42 REGRESSION");
+assert.equal(lifecycleExit,"BASE FLOOR COMPLETE:R42 REGRESSION","Non-exit lifecycle completion must pass through the Warden confirmation wrapper");
+assert.equal(floorCalls,6,"Lifecycle passthrough should call the underlying floor completion exactly once");
+assert.equal(host.v142WardenExitConfirm,undefined,"Lifecycle passthrough must not arm Warden exit confirmation");
 
 console.log("PASS v10-42 Warden hunt guidance + safe exit confirmation contract");
