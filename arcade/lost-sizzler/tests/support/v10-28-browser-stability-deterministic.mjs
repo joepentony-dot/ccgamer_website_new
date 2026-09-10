@@ -16,31 +16,18 @@ const releaseSubtitleMatches=source.split(releaseSubtitleTarget).length-1;
 assert.equal(releaseSubtitleMatches,1,"the deterministic browser harness must find exactly one legacy V10.41 subtitle assertion");
 source=source.replace(releaseSubtitleTarget,releaseSubtitleReplacement);
 
-const immediateSoloTarget=`    const state=await newGamePage();
-    await withTimeout(state.page.goto(canonical,{waitUntil:"domcontentloaded",timeout:15000}),STAGE_TIMEOUT_MS,"immediate Solo navigation");`;
-const immediateSoloReplacement=`    const state=await newGamePage();
-    await state.page.addInitScript(()=>{
-      document.addEventListener("DOMContentLoaded",()=>{
-        const button=document.getElementById("solo-btn");
-        window.__ccgImmediateSoloReleaseAtClick=document.body?.dataset?.releaseReady||"";
-        window.__ccgImmediateSoloClicked=Boolean(button);
-        button?.click();
-      },{once:true});
-    });
-    await withTimeout(state.page.goto(canonical,{waitUntil:"domcontentloaded",timeout:15000}),STAGE_TIMEOUT_MS,"immediate Solo navigation");`;
-
-const immediateSoloMatches=source.split(immediateSoloTarget).length-1;
-assert.equal(immediateSoloMatches,1,"the deterministic browser harness must find exactly one immediate-Solo navigation target");
-source=source.replace(immediateSoloTarget,immediateSoloReplacement);
-
 const immediateClickTarget=`    const releaseAtClick=await state.page.evaluate(()=>document.body.dataset.releaseReady);
     assert.equal(releaseAtClick,"false","the immediate-click test must act before the enhancement queue is release-ready");
     await withTimeout(state.page.locator("#solo-btn").click({timeout:8000,noWaitAfter:true}),10000,"immediate Solo button click");`;
-const immediateClickReplacement=`    const immediateClick=await state.page.evaluate(()=>({releaseAtClick:String(window.__ccgImmediateSoloReleaseAtClick||""),clicked:Boolean(window.__ccgImmediateSoloClicked)}));
-    assert.equal(immediateClick.releaseAtClick,"false","the immediate-click test must act before the enhancement queue is release-ready");
-    assert.equal(immediateClick.clicked,true,"the immediate-click harness must click Solo from the page's first DOMContentLoaded turn");`;
+const immediateClickReplacement=`    await withTimeout(state.page.waitForFunction(()=>{
+      const bootstrap=window.CCGLostSizzlerV142Bootstrap;
+      return Boolean(bootstrap&&bootstrap.ready===false&&document.body.dataset.releaseReady==="false");
+    },null,{timeout:15000}),STAGE_TIMEOUT_MS,"V10.42 early Solo gate");
+    const releaseAtClick=await state.page.evaluate(()=>document.body.dataset.releaseReady);
+    assert.equal(releaseAtClick,"false","the immediate-click test must act before the V10.42 enhancement queue is release-ready");
+    await withTimeout(state.page.locator("#solo-btn").click({timeout:8000,noWaitAfter:true}),10000,"immediate Solo button click");`;
 const immediateClickMatches=source.split(immediateClickTarget).length-1;
-assert.equal(immediateClickMatches,1,"the deterministic browser harness must find exactly one immediate-Solo Playwright click block");
+assert.equal(immediateClickMatches,1,"the deterministic browser harness must find exactly one immediate-Solo click block");
 source=source.replace(immediateClickTarget,immediateClickReplacement);
 
 const splitActivationTarget=`    await withTimeout(state.page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof p2!=="undefined"&&Boolean(p2)&&playMode==="split"&&mode==="playing",null,{timeout:15000}),STAGE_TIMEOUT_MS,"split-screen activation");`;
