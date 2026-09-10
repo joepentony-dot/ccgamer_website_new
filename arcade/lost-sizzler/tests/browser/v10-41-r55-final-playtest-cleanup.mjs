@@ -32,16 +32,27 @@ try{
     const continueButton=document.getElementById("continue-save-btn");
     continueButton?.classList.remove("hidden");
     if(continueButton)continueButton.textContent="Continue Solo — Floor 1";
-    const ids=["solo-btn","create-btn","continue-save-btn","horde-solo-btn","horde-mode-btn","saboteurs-mode-btn","split-btn","tutorial-zone-btn","daily-btn"];
-    return ids.map(id=>{
+    const visibleIds=["solo-btn","continue-save-btn","horde-solo-btn","split-btn","tutorial-zone-btn","daily-btn"];
+    const retiredOnlineIds=["create-btn","horde-mode-btn","saboteurs-mode-btn"];
+    const retiredOnline=retiredOnlineIds.map(id=>{
+      const button=document.getElementById(id);if(!button)return{id,missing:true};
+      return{id,missing:false,hidden:button.hidden,display:getComputedStyle(button).display,ariaHidden:button.getAttribute("aria-hidden")};
+    });
+    const visible=visibleIds.map(id=>{
       const button=document.getElementById(id);if(!button)return{id,missing:true};
       const rect=button.getBoundingClientRect(),style=getComputedStyle(button),before=getComputedStyle(button,"::before"),after=getComputedStyle(button,"::after"),range=document.createRange();
       range.selectNodeContents(button);const text=range.getBoundingClientRect();
       return{id,missing:false,height:rect.height,paddingTop:parseFloat(style.paddingTop)||0,paddingBottom:parseFloat(style.paddingBottom)||0,titleTop:text.top-rect.top,titleBottom:rect.bottom-text.bottom,beforePosition:before.position,afterPosition:after.position,beforeContent:before.content,afterContent:after.content,beforeTop:parseFloat(before.top)||0,afterBottom:parseFloat(after.bottom)||0,beforeLine:parseFloat(before.lineHeight)||parseFloat(before.fontSize)||0,afterLine:parseFloat(after.lineHeight)||parseFloat(after.fontSize)||0};
-    })
+    });
+    return{retiredOnline,visible};
   });
 
-  for(const row of menuLayout){
+  for(const row of menuLayout.retiredOnline){
+    assert.equal(row.missing,false,`retired online control ${row.id} must exist`);
+    assert.equal(row.hidden,true,`${row.id} must remain hidden in the zero-server menu`);
+    assert.equal(row.display,"none",`${row.id} must not occupy a zero-server menu card`);
+  }
+  for(const row of menuLayout.visible){
     assert.equal(row.missing,false,`menu mode card ${row.id} must exist`);
     assert.ok(row.height>=68,`${row.id} is too short for its title/kicker/description rows: ${JSON.stringify(row)}`);
     assert.ok(row.paddingTop>=27,`${row.id} must reserve a top kicker band: ${JSON.stringify(row)}`);

@@ -132,6 +132,7 @@
     if(releaseReady()&&normalMovementStackReady()&&!state.goldenLocked&&state.baselineUpdate&&state.baselineMove&&state.baselineHurt){
       state.goldenUpdate=state.baselineUpdate;state.goldenMove=state.baselineMove;state.goldenHurt=state.baselineHurt;
       state.goldenLocked=true;state.goldenLockedAt=Date.now();
+      try{window.CCGLostSizzlerV141R60LivePlayIntegrity?.wrapMovement?.()}catch(_){}
     }
     adoptReleaseMoveOwner(state.baselineMove);
     return Boolean(state.baselineMove&&state.baselineUpdate&&state.baselineHurt);

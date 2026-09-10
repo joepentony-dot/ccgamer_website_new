@@ -5,17 +5,28 @@
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
   const BUILD="V10.42 r2";
-  const CACHE="20260908r21";
+  const CACHE="20260909r32";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-five-depth-campaign.js","CCGLostSizzlerV142FiveDepthCampaign"],
     ["v10-42-floor-balance.js","CCGLostSizzlerV142FloorBalance"],
+    ["v10-42-r6-biome-environment-director.js","CCGLostSizzlerV142R6BiomeEnvironmentDirector"],
+    ["v10-42-r7-room-objective-director.js","CCGLostSizzlerV142R7RoomObjectiveDirector"],
+    ["v10-42-r8-breakable-interaction-director.js","CCGLostSizzlerV142R8BreakableInteractionDirector"],
+    ["v10-42-r9-breakable-presentation-director.js","CCGLostSizzlerV142R9BreakablePresentationDirector"],
+    ["v10-42-r10-breakable-objective-runtime.js","CCGLostSizzlerV142R10BreakableObjectiveRuntime"],
+    ["v10-42-r12-dynamic-encounter-director.js","CCGLostSizzlerV142R12DynamicEncounterDirector"],
+    ["v10-42-r13-encounter-progression-runtime.js","CCGLostSizzlerV142R13EncounterProgressionRuntime"],
+    ["v10-42-r14-combat-encounter-bridge.js","CCGLostSizzlerV142R14CombatEncounterBridge"],
+    ["v10-42-r15-npc-expansion.js","CCGLostSizzlerV142R15NpcExpansion"],
+    ["v10-42-r16-environment-presentation.js","CCGLostSizzlerV142R16EnvironmentPresentation"],
     ["v10-42-tutorial-campaign.js","CCGLostSizzlerV142TutorialCampaign"],
     ["v10-42-demo-paywall.js","CCGLostSizzlerV142DemoPaywall"],
     ["v10-42-zero-server-release.js","CCGLostSizzlerV142ZeroServerRelease"],
     ["v10-42-r3-retained-spy-inventory-seal.js","CCGLostSizzlerV142R3RetainedSpyInventorySeal"],
     ["v10-42-r2-controller-owner-seal.js","CCGLostSizzlerV142R2ControllerOwnerSeal"],
     ["v10-42-r5-spy-exit-movement-seal.js","CCGLostSizzlerV142R5SpyExitMovementSeal"],
+    ["v10-42-r11-spy-packet-rejection-seal.js","CCGLostSizzlerV142R11SpyPacketRejectionSeal"],
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"]
   ];
   const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],pendingStartId:"",identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0};
@@ -25,6 +36,23 @@
     if(document.body)document.body.dataset.releaseReady=value?"true":"false";
   }
   setReleaseReady(false);
+
+  let releaseReadyObserver=null;
+  function enforceReleaseReadyOwnership(){
+    if(state.ready)return;
+    if(document.body?.dataset?.releaseReady==="true")setReleaseReady(false);
+  }
+  function startReleaseReadyGuard(){
+    if(releaseReadyObserver||typeof MutationObserver!=="function")return;
+    releaseReadyObserver=new MutationObserver(enforceReleaseReadyOwnership);
+    releaseReadyObserver.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:["data-release-ready"]});
+    enforceReleaseReadyOwnership();
+  }
+  function stopReleaseReadyGuard(){
+    releaseReadyObserver?.disconnect();
+    releaseReadyObserver=null;
+  }
+  startReleaseReadyGuard();
 
   function stampBuild(){
     const buildMeta=document.querySelector('meta[name="ccg-lost-sizzler-build"]'),cacheMeta=document.querySelector('meta[name="ccg-lost-sizzler-cache"]');
@@ -52,10 +80,10 @@
     for(const timer of state.identityTimers.splice(0))clearTimeout(timer);
   }
 
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>{setReleaseReady(false);stampBuild();scheduleIdentityRestamps()},{once:true});
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>{setReleaseReady(false);enforceReleaseReadyOwnership();stampBuild();scheduleIdentityRestamps()},{once:true});
   else{stampBuild();scheduleIdentityRestamps()}
   addEventListener("load",scheduleIdentityRestamps,{once:true});
-  addEventListener("pagehide",clearIdentityRestamps,{once:true});
+  addEventListener("pagehide",()=>{clearIdentityRestamps();stopReleaseReadyGuard()},{once:true});
 
   function clearPendingBusy(){
     if(!state.pendingStartId)return;
@@ -138,16 +166,9 @@
     setReleaseReady(false);stampBuild();
     try{
       for(const [file,marker] of modules)await loadOne(file,marker);
-      // Stage 8 owns merchant presentation while r1 owns the shop price ladder.
-      // Promote the existing presentation marker only after r1 has finished its
-      // normal wrapper construction so neither owner needs an accessor or poll.
       promoteStage8MerchantOwner();
-      // V10.42 r1/r2 no longer assign global window.update. Controller ownership
-      // remains with the established V10.41 mode runtime and its recovery tests;
-      // r2 observes/seals where the descriptor permits, but cannot block release
-      // merely because an older non-configurable accessor cannot be replaced.
       observeControllerSeal();
-      state.ready=true;setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
+      state.ready=true;stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
       const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five new dungeon floors are loaded in verified order. Solo, Tutorial and 2P Split Screen run locally; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
       replayPendingStart();
