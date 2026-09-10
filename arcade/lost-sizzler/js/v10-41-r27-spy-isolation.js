@@ -184,9 +184,21 @@
   }
 
   function inheritMarkers(wrapped,current){try{Object.assign(wrapped,current)}catch(_){}return wrapped}
+  function hasSpyDoorIsolation(fn,limit=64){
+    const seen=new Set(),pending=[fn];let count=0;
+    while(pending.length&&count++<limit){
+      const current=pending.shift();if(typeof current!=="function"||seen.has(current))continue;
+      if(current.__ccgV141R27SpyDoorIsolation)return true;
+      seen.add(current);
+      const original=current.__ccgOriginal,previous=current.__ccgPreviousMovePlayer;
+      if(typeof original==="function")pending.push(original);
+      if(typeof previous==="function"&&previous!==original)pending.push(previous);
+    }
+    return false;
+  }
   function installMoveGuard(){
     const current=window.movePlayer;if(typeof current!=="function")return false;
-    if(current.__ccgV141R27SpyDoorIsolation){state.moveSource=current;state.moveInstalled=true;return true}
+    if(hasSpyDoorIsolation(current)){state.moveSource=current;state.moveInstalled=true;return true}
     if(current===state.moveSource)return true;
     const wrapped=inheritMarkers(function movePlayerV141R27SpyDoorIsolation(player,dx,dy){if(spyActive())primeSpyDoorsForStep(player,Number(dx)||0,Number(dy)||0);return current.apply(this,arguments)},current);
     wrapped.__ccgV141R27SpyDoorIsolation=true;wrapped.__ccgV141R27Original=current;wrapped.__ccgOriginal=current;window.movePlayer=wrapped;state.moveSource=wrapped;state.moveInstalled=true;return true;

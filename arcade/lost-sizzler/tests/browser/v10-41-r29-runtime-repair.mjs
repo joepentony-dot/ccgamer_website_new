@@ -105,8 +105,8 @@ try{
   });
   assert.equal(friendly.result,false,"Horde player-v-player damage must be rejected");assert.equal(friendly.delta,1,"Horde friendly-fire rejection must execute exactly once");
 
-  assert.deepEqual(errors,[],`retained r29 Chromium runtime regression must have no uncaught errors under r30: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 retained r29 geometry, notification, audio, Spy hint and Horde friendly-fire protections passed under r30 in Chromium.");
+  assert.deepEqual(errors,[],`retained r29 Chromium runtime regression must have no uncaught errors under V10.42: ${errors.join("\n")}`);
+  console.log("Lost Sizzler V10.41 retained r29 geometry, notification, audio, Spy hint and Horde friendly-fire protections passed under V10.42 in Chromium.");
   await context.close()
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()))
