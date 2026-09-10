@@ -8,17 +8,16 @@
   <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
   <header class="site-header">
     <div class="wrap site-header__inner">
       <a class="brand" href="/">Cheeky Commodore Gamer</a>
-      <nav aria-label="Primary navigation">
-        <a href="/">Home</a>
-        <a href="/games/">Games</a>
-      </nav>
+      {% include "components/site-nav.njk" %}
     </div>
   </header>
 
-  <main class="wrap">
+  <main class="wrap" id="main-content" tabindex="-1">
     {{ content | safe }}
   </main>
 
