@@ -121,7 +121,7 @@
     try{
       if(!chestPlayerStillActive(player))return false;
       if(document.getElementById("pickup-title")?.textContent==="CHEST REWARD CONFIRMED")return true;
-      showToast("CHEST REWARD CONFIRMED",`${name} · +${scoreReward.toLocaleString()} score · +${xpReward} XP.`,"gold",6500);
+      showToast("CHEST REWARD CONFIRMED",`${name} · +${scoreReward.toLocaleString()} score · +${xpReward} XP.`,"gold",6500,{retain:true});
       diagnostics.chestRewardRepairs++;
       return true;
     }catch(_){return false}
