@@ -66,7 +66,7 @@ assert.ok(index.indexOf(`js/v10-41-r27-spy-isolation.js?v=${token}`)<index.index
 assert.ok(index.indexOf(`js/v10-41-r28-special-mode-repair.js?v=${token}`)<index.indexOf(`js/v10-41-r29-runtime-repair.js?v=${token}`),"r29 runtime repair must remain after r28");
 assert.ok(index.indexOf(`js/v10-41-r29-runtime-repair.js?v=${token}`)<index.indexOf(`js/v10-41-r30-global-movement-guard.js?v=${token}`),"r30 movement ownership must load after r29 runtime repair");
 assert.ok(index.indexOf(`js/v10-41-r30-global-movement-guard.js?v=${token}`)<index.indexOf(`js/v10-41-r30-buglog.js?v=${token}`),"r30 buglog must load after its movement ownership repair");
-assert.match(index,/THE LOST SIZZLER — V10\.42/,"static title bar must identify V10.42 before runtime label correction");
+assert.match(index,/C64 DUNGEON CARNAGE/,"static title bar must identify C64 Dungeon Carnage before runtime label correction");
 assert.match(index,/BUILD V10\.42/,"static build badge must identify V10.42 before runtime label correction");
 assert.match(index,/id="hud-mana">0\/120</,"static HUD must reflect the sword-first 120-round ammunition model");
 assert.match(index,/id="hud-weapon">SWORD</,"static HUD must show the starting melee weapon before runtime sync");
