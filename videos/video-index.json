@@ -1,13 +1,40 @@
 {
   "version": 1,
   "counts": {
-    "total": 691,
-    "gameVideos": 657,
-    "retroVideos": 34,
-    "c64GameVideos": 556,
+    "total": 693,
+    "gameVideos": 658,
+    "retroVideos": 35,
+    "c64GameVideos": 557,
     "amigaGameVideos": 101
   },
   "items": [
+    {
+      "id": "6GiJ3iYTEPg",
+      "kind": "retro",
+      "filter": "retro-specials",
+      "badge": "Retro Special",
+      "title": "I Ignored These C64C Tapes for 37 Years… | The Light Fantastic Toolbox",
+      "description": "Revisiting the forgotten Commodore 64C Toolbox tapes from the Light Fantastic pack: The Image System, The Music System, SEUCK, Typing Tutor and the Toolbox Audio Tape.",
+      "url": "/retro-specials/light-fantastic-toolbox/",
+      "thumbnail": "https://i.ytimg.com/vi/6GiJ3iYTEPg/maxresdefault.jpg",
+      "platform": "",
+      "year": "",
+      "publisher": "",
+      "collectionLabel": "Retro Specials"
+    },
+    {
+      "id": "PS2noS9kzoQ",
+      "kind": "game",
+      "filter": "c64",
+      "badge": "C64 Game",
+      "title": "Speed King – Mastertronic’s £1.99 C64 Motorcycle Racer! | Commodore 64",
+      "description": "Speed King is a fast-paced motorcycle racing game released for the Commodore 64 by Digital Integration in 1985. Programmed by Mervyn J. Estcourt, this C64 racer delivers a convincing sense…",
+      "url": "/games/speed-king/",
+      "thumbnail": "https://i.ytimg.com/vi/PS2noS9kzoQ/maxresdefault.jpg",
+      "platform": "Commodore 64",
+      "year": 1986,
+      "publisher": "Mastertronic"
+    },
     {
       "id": "Xoqib5u0nkA",
       "kind": "game",
