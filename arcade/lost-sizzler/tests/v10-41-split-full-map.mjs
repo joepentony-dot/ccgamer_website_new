@@ -53,12 +53,13 @@ assert.match(
   "undiscovered map cells must remain hidden"
 );
 
-const p2ControlSet=splitInputSource.match(/const P2_CONTROL_CODES=new Set\(\[([^\]]+)\]\)/)?.[1]??"";
+const p2ControlDeclaration=splitInputSource.match(/const P2_CONTROL_CODES=[^\n]+/)?.[0]??"";
+assert.notEqual(p2ControlDeclaration,"","P2 control ownership declaration must remain present");
 for(const code of ["KeyI","KeyJ","KeyK","KeyL","KeyO"]){
-  assert.match(p2ControlSet,new RegExp(`"${code}"`),`P2 must retain ${code}`);
+  assert.match(p2ControlDeclaration,new RegExp(`"${code}"`),`P2 must retain ${code}`);
 }
 assert.doesNotMatch(
-  p2ControlSet,
+  p2ControlDeclaration,
   /"KeyM"/,
   "KeyM must remain independent from P2 movement/action ownership"
 );
