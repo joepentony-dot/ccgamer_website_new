@@ -2,9 +2,9 @@
 
 ## Status
 
-Overall completion estimate: **10%**
+Overall completion estimate: **14%**
 
-Current milestone: **Read-only game data integration and generated game pages**
+Current milestone: **Hardened read-only game pipeline and reusable card component**
 
 ## Completed
 
@@ -21,31 +21,33 @@ Current milestone: **Read-only game data integration and generated game pages**
 - Added existing thumbnail passthrough support so generated cards/details can reuse canonical CCG artwork without copying or altering source images.
 - Added responsive game-card and game-detail styling.
 - Added an isolated GitHub Actions workflow intended to run `npm install`, build the prototype, and verify representative generated routes.
-- Corrected the canonical game-data relative path during validation review before checkpointing this milestone.
+- Corrected the canonical game-data relative path during validation review before checkpointing the initial integration milestone.
 - Added prototype README with safety boundary and local build commands.
+- Added reusable `_includes/components/game-card.njk` so game-list presentation is no longer duplicated in the Games index.
+- Hardened game metadata normalization with trimmed text values, array/single-value normalization for genres and publishers, numeric rating validation, thumbnail path normalization, system labels, and safe description fallbacks.
+- Updated the Games index to render through the reusable game-card include.
 
 ## Validation
 
 - Branch isolation verified; all writes remain on `codex/eleventy-ccg-prototype`.
 - Existing production files on `main` were not updated, deleted, renamed, or merged.
 - Canonical `games/games.json` remains read-only and unchanged.
-- The data adapter path now resolves from `prototype-eleventy/src/_data/` back to repository-root `games/games.json` using `../../../games/games.json`.
+- The data adapter resolves from `prototype-eleventy/src/_data/` back to repository-root `games/games.json` using `../../../games/games.json`.
 - Generated permalink pattern preserves a simple `/games/<slug>/` route shape for the prototype.
-- Representative source records (`20-tons`, `720-degrees`) contain the fields required by the new templates.
-- Existing thumbnail URLs are retained and the matching source thumbnail directory is configured as passthrough content.
-- Template/CSS/config structure reviewed after the data-path correction.
-- A dedicated build-validation workflow now exists on the prototype branch, but a completed remote workflow result has not yet been observed through the available connector.
-- A local clone/build attempt from the automation container could not run because that environment cannot resolve github.com; this is an environment/network limitation rather than an Eleventy build failure.
+- Metadata normalization now tolerates missing/blank strings, publisher data represented as either arrays or single values, missing descriptions, invalid/empty ratings, and thumbnails with a leading slash.
+- Reusable card include only consumes normalized fields from the adapter, reducing template coupling to the canonical JSON shape.
+- Existing thumbnail URLs remain source-backed and no canonical artwork was copied or altered.
+- A workflow-run lookup for the latest prototype commit returned no associated run yet, so completed remote build confirmation remains pending rather than failed.
 
 ## Blockers
 
 - No critical implementation blocker.
-- End-to-end runtime build confirmation is still pending until the prototype GitHub Actions workflow produces an observable result or another build-capable runner is available.
+- End-to-end runtime build confirmation is still pending until the isolated prototype workflow produces an observable result or another build-capable runner is available.
 - No preview deployment has been configured yet; this remains intentionally deferred until the core routes are stable.
 
 ## Next task
 
-Harden the generated-game pipeline before widening it: add reusable game-card include(s), improve metadata normalization/fallback handling, then expand from the 12-record validation slice toward the complete games archive once build validation is confirmed.
+Validate the hardened pipeline against a broader sample of canonical game records and inspect edge cases in the full database shape. If the normalized fields remain safe, widen the generated Games archive beyond the 12-record validation slice while retaining build-time generation and stable `/games/<slug>/` URLs.
 
 ## Completion criteria still outstanding
 
