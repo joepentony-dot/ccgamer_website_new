@@ -173,10 +173,11 @@
         <label>Thumbnail Path (string only)<input data-field="thumbnail" placeholder="southern-belle.jpg or resources/images/thumbnails/all/southern-belle.jpg" /></label>
         <label>3D Box Path (string only)<input data-field="box3d" placeholder="southern-belle or resources/images/games/boxes-3d/southern-belle.webp" /></label>
         <div class="full thumbnail-option-panel">
-          <label>Local thumbnail file (optional)
+          <label>Local box art / thumbnail file (optional)
             <input type="file" data-thumbnail-file accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" />
           </label>
-          <p class="hint">Selected files stay in browser memory only and are bundled into the ZIP at the final thumbnail path.</p>
+          <p class="hint">The selected image stays in browser memory, is resized to a maximum 1200px edge, converted to WebP, and then bundled into the deployment ZIP.</p>
+          <p class="hint" data-thumbnail-optimiser-status>PNG, JPEG and WebP artwork can be selected.</p>
         </div>
         <label class="full radio-option thumbnail-option-panel">
           <input type="checkbox" data-field="manualThumbnailUpload" />
@@ -270,6 +271,7 @@ https://www.mobygames.com/..."></textarea></label>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
+  <script type="module" src="/admin/js/games-editor-image-optimizer.js?v=admin-game-automation-20260910"></script>
   <script type="module" src="/admin/js/games-editor.js?v=builder-preview-fix-20260724"></script>
 </body>
 </html>
