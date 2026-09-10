@@ -184,12 +184,14 @@
   }
 
   function inheritMarkers(wrapped,current){try{Object.assign(wrapped,current)}catch(_){}return wrapped}
+  const canonicalSpyMove=()=>window.CCGLostSizzlerV141R29SpyEngine?.moveOwner||null;
   function installMoveGuard(){
     const current=window.movePlayer;if(typeof current!=="function")return false;
+    if(spyActive()&&current===canonicalSpyMove()){state.moveSource=current;state.moveInstalled=true;return true}
     if(current.__ccgV141R27SpyDoorIsolation){state.moveSource=current;state.moveInstalled=true;return true}
     if(current===state.moveSource)return true;
     const wrapped=inheritMarkers(function movePlayerV141R27SpyDoorIsolation(player,dx,dy){if(spyActive())primeSpyDoorsForStep(player,Number(dx)||0,Number(dy)||0);return current.apply(this,arguments)},current);
-    wrapped.__ccgV141R27SpyDoorIsolation=true;wrapped.__ccgV141R27Original=current;window.movePlayer=wrapped;state.moveSource=wrapped;state.moveInstalled=true;return true;
+    wrapped.__ccgV141R27SpyDoorIsolation=true;wrapped.__ccgV141R27Original=current;wrapped.__ccgOriginal=current;window.movePlayer=wrapped;state.moveSource=wrapped;state.moveInstalled=true;return true;
   }
   function installFurnitureGuard(){
     const current=window.damageFurnitureAt;if(typeof current!=="function")return false;

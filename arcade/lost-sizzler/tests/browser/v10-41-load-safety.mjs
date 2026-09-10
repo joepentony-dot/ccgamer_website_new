@@ -71,6 +71,7 @@ try{
     await page.waitForFunction(()=>window.CCGLostSizzlerCacheGuard?.state?.done===true);
     await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
     await page.waitForFunction(()=>document.getElementById("ccg-release-loading")?.hidden===true);
+    await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true);
 
     const audit=await page.evaluate(async()=>{
       const cache=await caches.open("ccg-load-safety-test");
@@ -82,6 +83,12 @@ try{
         cacheToken:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||"",
         storedToken:localStorage.getItem("ccg-lost-sizzler:last-sanitised-cache")||"",
         cacheGuard:{...window.CCGLostSizzlerCacheGuard.state,runtimeErrors:window.CCGLostSizzlerCacheGuard.runtimeErrors},
+        v142:window.CCGLostSizzlerV142Bootstrap?{
+          build:window.CCGLostSizzlerV142Bootstrap.build,
+          cache:window.CCGLostSizzlerV142Bootstrap.cache,
+          ready:window.CCGLostSizzlerV142Bootstrap.ready,
+          failed:window.CCGLostSizzlerV142Bootstrap.failed
+        }:null,
         watchdog:window.CCGLostSizzlerLoadWatchdog?{...window.CCGLostSizzlerLoadWatchdog.state}:null,
         staleStillCached:Boolean(stale),unrelatedStillCached:Boolean(unrelated),delay,
         loadingHidden:Boolean(document.getElementById("ccg-release-loading")?.hidden)
@@ -89,8 +96,13 @@ try{
     });
 
     assert.equal(audit.releaseReady,"true",`iteration ${iteration}: release gate must complete`);
-    assert.equal(audit.cacheToken,"20260827r31",`iteration ${iteration}: current cache token must be r29`);
-    assert.equal(audit.storedToken,"20260827r31",`iteration ${iteration}: successful sanitation must record r29`);
+    assert.ok(audit.v142,`iteration ${iteration}: V10.42 ordered bootstrap must be present`);
+    assert.equal(audit.v142.failed,false,`iteration ${iteration}: V10.42 ordered bootstrap must not fail`);
+    assert.equal(audit.v142.ready,true,`iteration ${iteration}: V10.42 ordered bootstrap must finish`);
+    assert.match(audit.cacheToken,/^\d{8}r\d+$/,`iteration ${iteration}: active cache token must use the published cache format`);
+    assert.equal(audit.cacheToken,audit.v142.cache,`iteration ${iteration}: page cache meta must match the authoritative V10.42 module cache token`);
+    assert.match(audit.cacheGuard.cacheToken,/^\d{8}r\d+$/,`iteration ${iteration}: sanitation cache token must use the published cache format`);
+    assert.equal(audit.storedToken,audit.cacheGuard.cacheToken,`iteration ${iteration}: successful sanitation must record the token used by the cache guard`);
     assert.equal(audit.staleStillCached,false,`iteration ${iteration}: stale Lost Sizzler cache entry must be removed`);
     assert.equal(audit.unrelatedStillCached,true,`iteration ${iteration}: unrelated cached data must not be deleted`);
     assert.equal(audit.loadingHidden,true,`iteration ${iteration}: loading overlay must close after successful startup`);
@@ -102,11 +114,12 @@ try{
   }
 
   const first=await loadAndAudit(1);
-  assert.equal(first.cacheGuard.needed,true,"first visit from r28 must perform r29 game-cache sanitation");
+  assert.equal(first.cacheGuard.previous,"20260825r28","first visit must observe the seeded older sanitation token");
+  assert.equal(first.cacheGuard.needed,true,"first visit from the older token must perform game-cache sanitation");
   assert.ok(first.cacheGuard.deletedEntries>=1,"first sanitation pass must remove the seeded stale Lost Sizzler entry");
 
   const second=await loadAndAudit(2);
-  assert.equal(second.cacheGuard.needed,false,"second r29 visit must not repeatedly purge caches");
+  assert.equal(second.cacheGuard.needed,false,"second current-cache visit must not repeatedly purge caches");
 
   const third=await loadAndAudit(3);
   assert.equal(third.cacheGuard.needed,false,"repeated current-build visits must stay out of cache-clean loops");
@@ -114,7 +127,7 @@ try{
   assert.deepEqual(crashes,[],`Chromium must not crash while repeatedly loading The Lost Sizzler: ${crashes.join("\n")}`);
   assert.deepEqual(pageErrors,[],`The Lost Sizzler must have no uncaught page errors during repeated startup: ${pageErrors.join("\n")}`);
   assert.deepEqual(failedScripts,[],`All same-origin game JavaScript must load successfully: ${failedScripts.join("\n")}`);
-  console.log("Lost Sizzler V10.41 r29 repeated Chromium load, r28-to-r29 cache sanitation and main-thread responsiveness checks passed.");
+  console.log("Lost Sizzler repeated Chromium load, cache sanitation, V10.42 cache-token handoff and main-thread responsiveness checks passed.");
   await context.close();
 }finally{
   await browser.close();

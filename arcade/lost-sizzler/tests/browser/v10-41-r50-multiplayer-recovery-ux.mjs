@@ -55,12 +55,14 @@ try{
   await page.evaluate(async()=>{const api=window.CCGLostSizzlerV141R50MultiplayerRecoveryUX;await api.returnToOnlineMenu()});
   await page.waitForFunction(()=>typeof mode!=="undefined"&&mode==="menu");
   await page.waitForTimeout(150);
-  const returned=await page.evaluate(()=>({code:document.getElementById("room-code")?.value,active:document.activeElement?.id,endAction:Boolean(document.getElementById("ccg-r50-online-return"))}));
-  assert.equal(returned.code,"R50UX","room code must survive the canonical return-to-menu path");
-  assert.equal(returned.active,"join-btn","rejoin action should receive focus");
-  assert.equal(returned.endAction,true,"online result action must be installed");
+  const returned=await page.evaluate(()=>({code:document.getElementById("room-code")?.value,active:document.activeElement?.id,endAction:Boolean(document.getElementById("ccg-r50-online-return")),joinHidden:document.getElementById("join-btn")?.hidden,soloDisabled:document.getElementById("solo-btn")?.disabled}));
+  assert.equal(returned.code,"R50UX","room code must survive the canonical return-to-menu path even though online entry is retired");
+  assert.equal(returned.joinHidden,true,"zero-server release must keep the retired Join action hidden");
+  assert.equal(returned.soloDisabled,false,"a supported local action must remain available after recovery returns to menu");
+  assert.equal(returned.active,"solo-btn","zero-server recovery must focus a supported local action rather than a retired online control");
+  assert.equal(returned.endAction,true,"recovery result action must remain installed for retained-session teardown paths");
   assert.deepEqual(errors,[],`r50 browser test must not raise page errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 r50 multiplayer fallback, recovery and room-preserving return UX passed in Chromium.");
+  console.log("Lost Sizzler V10.41 r50 recovery, room preservation and zero-server local-menu focus passed in Chromium.");
   await context.close();
 }finally{
   await browser.close().catch(()=>{});for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));

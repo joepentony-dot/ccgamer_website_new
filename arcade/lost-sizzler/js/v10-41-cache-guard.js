@@ -35,12 +35,16 @@
     const status=document.getElementById("ccg-release-loading-status");if(status&&message)status.textContent=message;
   }
   function errorText(value){return String(value?.stack||value?.message||value||"Unknown startup error").slice(0,1200)}
-  function sourceLooksLocal(source=""){return !source||gamePath(source)||/lost-sizzler|v10-|horde-survivor|sizzler-saboteurs/i.test(String(source))}
+  function sourceLooksLocal(source="",message=""){
+    const raw=String(source||"");
+    if(raw)return gamePath(raw)||/lost-sizzler|v10-|horde-survivor|sizzler-saboteurs/i.test(raw);
+    return /lost-sizzler|v10-|horde-survivor|sizzler-saboteurs/i.test(String(message||""));
+  }
 
   function recordRuntimeError(error,source=""){
     if(document.body?.dataset?.releaseReady==="true")return;
-    if(!sourceLooksLocal(source))return;
     const text=errorText(error),signature=`${String(source||"")}|${text}`;
+    if(!sourceLooksLocal(source,text))return;
     if(state.runtimeErrors.some(row=>row.signature===signature))return;
     state.runtimeErrors.push({signature,source:String(source||""),message:text,at:Date.now()});
     if(state.runtimeErrors.length>12)state.runtimeErrors.splice(0,state.runtimeErrors.length-12);

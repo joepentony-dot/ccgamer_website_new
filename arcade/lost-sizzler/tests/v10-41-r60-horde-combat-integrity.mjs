@@ -31,7 +31,10 @@ assert.match(r60,/let elapsed=guarded\?clamp\(raw\|\|16,1,45\):Math\.max\(frameD
 assert.doesNotMatch(r60,/if\(now<guardUntil\)\{raw=frameDt\|\|16/,"the pause guard must never inflate every rendered frame to the shared clamped game delta");
 assert.match(r60,/current\+PAUSE_REENTRY_GUARD_MS/,"the R60 fallback resume guard must be measured forward from the current clock");
 assert.match(r60,/state\.resumeCombatSettleUntil=current\+PAUSE_COMBAT_SETTLE_MS/,"each pause boundary must arm a fresh bounded combat-settle window");
-assert.match(r60,/state\.resumeProjectileSteps=0;state\.resumeEnemySteps=0/,"a fresh resume window must reset both scheduler step budgets");
+assert.match(r60,/state\.resumeCombatSettleElapsed=0;state\.resumeProjectileSteps=0;state\.resumeEnemySteps=0/,"a fresh resume window must reset active settle elapsed and both scheduler step budgets");
+assert.match(r60,/settleArmed&&Number\(state\.resumeCombatSettleElapsed\|\|0\)<PAUSE_COMBAT_SETTLE_MS/,"post-resume combat settling must be measured by serviced active elapsed time rather than scheduler wall-clock delay");
+assert.match(r60,/state\.resumeCombatSettleElapsed=Math\.min\(PAUSE_COMBAT_SETTLE_MS,Number\(state\.resumeCombatSettleElapsed\|\|0\)\+Math\.max\(0,Number\(timing\.elapsed\)\|\|0\)\)/,"the settle window must consume only active R60 combat elapsed");
+assert.doesNotMatch(r60,/const settling=perfNow\(\)<Number\(state\.resumeCombatSettleUntil\|\|0\)/,"scheduler delay must not expire the Horde post-resume combat budget");
 assert.match(r60,/PAUSE_COMBAT_STEP_BUDGET-Number\(state\.resumeProjectileSteps\|\|0\)/,"projectile service must consume a total post-resume step budget rather than a per-frame burst allowance");
 assert.match(r60,/PAUSE_COMBAT_STEP_BUDGET-Number\(state\.resumeEnemySteps\|\|0\)/,"enemy service must consume a total post-resume step budget rather than a per-frame burst allowance");
 assert.match(r60,/if\(state\.resumeProjectileSteps>=PAUSE_COMBAT_STEP_BUDGET\)discardProjectileDebt\(\)/,"excess projectile debt must be discarded once the settle budget is exhausted");
@@ -69,6 +72,10 @@ assert.match(frame,/if\(specialType\(\)\)return false/,"R60 Solo ownership must 
 assert.match(frame,/R29SpyEngine\?\.state\?\.isolated/,"R60 must wait until Spy isolation has fully exited before reasserting Solo ownership");
 assert.match(frame,/r30\?\.spyContaminated\?\.\(current\)\|\|r30\?\.topLevelSpyOwner\?\.\(current\)/,"R60 must refuse to wrap a stale or active Spy movement owner");
 assert.match(frame,/maintainR60LiveOwner\(\)/,"R60 must reassert Solo live ownership only through the guarded production monitor");
+assert.match(frame,/function stopR60LiveOwnerTimer\(\)/,"the production loader must expose an explicit owner-timer stop path");
+assert.match(frame,/if\(!isHorde\(\)\)\{stopR60LiveOwnerTimer\(\);return maintainR60LiveOwner\(\)\}/,"the 40 ms R60 owner timer must be Horde-only and fall back to one-shot Solo ownership");
+assert.match(frame,/if\(!isHorde\(\)\)\{stopR60LiveOwnerTimer\(\);maintainR60LiveOwner\(\);return\}/,"a Horde-to-Solo transition must stop the polling interval before reasserting Solo ownership");
+assert.match(frame,/attributeFilter:\["data-special-mode","data-run-active","data-mode-controller"\]/,"R60 ownership must be checked from lifecycle and mode-controller transitions instead of Solo polling");
 
 assert.match(frame,/function maintainR60HordeLiveOwner\(\)/,"R60 must have an explicit top-level owner for the Horde live elapsed path");
 assert.match(frame,/current===state\.r60HordeLiveOwner\|\|originalChainContains\(current,state\.r60HordeLiveOwner\)/,"the Horde live owner must verify function identity or ancestry rather than trusting a copied marker");

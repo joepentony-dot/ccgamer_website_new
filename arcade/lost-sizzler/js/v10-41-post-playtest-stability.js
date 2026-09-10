@@ -32,6 +32,15 @@
   const finite=value=>Number.isFinite(Number(value));
   const now=()=>Date.now();
 
+  function originalChainHasMarker(fn,marker,limit=64){
+    const seen=new Set();let current=fn,depth=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth++<limit){
+      try{if(current[marker])return true}catch(_){}
+      seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null
+    }
+    return false
+  }
+
   function physicalPlayers(){
     const out=[];
     try{if(typeof p1!=="undefined"&&p1)out.push(p1)}catch(_){}
@@ -114,11 +123,13 @@
 
   function installHurtGuard(){
     const current=window.hurtPlayer;if(typeof current!=="function")return false;
-    if(current.__ccgV141PostPlaytestHurt){state.hurtWrapped=true;return true}
+    if(originalChainHasMarker(current,"__ccgV141PostPlaytestHurt")){state.hurtWrapped=true;return true}
     // Spy intentionally owns hurtPlayer while its isolated runtime is active.
     // Do not compete with that owner; the monitor installs/reinstalls only when
-    // the shared/Horde damage stack is visible.
-    if(isSpy()||current.__ccgV141SpyDamageBoundary)return false;
+    // the shared/Horde damage stack is visible. Search ancestry as well as the
+    // top level so a stale isolated owner is repaired by r30 instead of being
+    // buried under another compatibility wrapper.
+    if(isSpy()||originalChainHasMarker(current,"__ccgV141SpyDamageBoundary"))return false;
     const original=current;
     const wrapped=function hurtPlayerV141PostPlaytest(){
       const result=original.apply(this,arguments);
@@ -273,6 +284,6 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
   window.CCGLostSizzlerV141PostPlaytestStability={
     monitor,ensureHordeArena,hordeTraversalGeometryHealthy,invalidateHordeTraversalGeometry,syncHordePhysicalState,resolveSoloHordeDefeat,repairSoloFireState,trimVisualBacklog,
-    installHurtGuard,installRenderGuard,installSpySmoothing,get state(){return state}
+    originalChainHasMarker,installHurtGuard,installRenderGuard,installSpySmoothing,get state(){return state}
   };
 })();

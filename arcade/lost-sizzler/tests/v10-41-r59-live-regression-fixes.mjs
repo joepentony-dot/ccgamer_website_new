@@ -42,11 +42,32 @@ assert.match(r59,/setAcceptedRafTimestamp\(null\)/,'pause boundaries must discar
 assert.match(r59,/if\(modeNow!=="playing"\|\|document\.hidden\)\{state\.pausedGapsDiscarded\+\+;return false\}/,"paused/hidden wall-clock gaps must never be paid into combat recovery");
 assert.match(r59,/if\(modeChanged\|\|modeNow!=="playing"\|\|document\.hidden\)/,"only mode-transition, paused or hidden frames may use the discarded-gap path");
 assert.doesNotMatch(r59,/if\(now<state\.suppressRecoveryUntil\|\|modeNow!=="playing"\|\|document\.hidden\)/,"a recent focus/pause boundary must not suppress a genuine visible playing-state stall");
-assert.match(r59,/if\(hasTimestamp&&finite\(state\.lastAcceptedRafTimestamp\)&&t<=Number\(state\.lastAcceptedRafTimestamp\)\)/,"duplicate RAF callbacks must be rejected before simulation");
+assert.match(r59,/const accepted=state\.lastAcceptedRafTimestamp,hasPreviousAccepted=accepted!==null&&accepted!==undefined&&finite\(accepted\)/,"a null pause-reset timestamp must be treated as no previous RAF rather than timestamp zero");
+assert.match(r59,/if\(hasTimestamp&&hasPreviousAccepted&&t<=Number\(accepted\)\)/,"duplicate RAF callbacks must be rejected only when a real previous timestamp exists");
+assert.match(r59,/const previous=hasPreviousAccepted\?Number\(accepted\):null/,"the first RAF after a pause/reset must rebase from a fresh 16 ms frame");
+assert.doesNotMatch(r59,/finite\(state\.lastAcceptedRafTimestamp\)/,"R59 must never use Number(null) semantics to decide whether an accepted RAF timestamp exists");
 assert.match(r59,/requestAnimationFrame\(stableLoopR59\)/,"the authoritative loop must schedule exactly its own singleton callback");
 assert.match(r59,/stableLoopR59\.__ccgV141R29Stable=true/,"r59 must retain the r29 stable-loop compatibility marker so older ownership guards accept the new clock owner");
-assert.match(r59,/api\.stableLoop=stableLoopR59/,"r59 must replace the r29 exported loop as well as the global loop to prevent an old recovery owner reclaiming it");
+assert.match(r59,/if\(api\.stableLoop!==stableLoopR59\)\{api\.stableLoop=stableLoopR59;state\.clockOwnerReassertions\+\+\}/,"r59 must replace the r29 exported loop only when it drifted from the final clock owner");
+assert.match(r59,/if\(window\.loop!==stableLoopR59\)\{window\.loop=stableLoopR59;state\.clockOwnerReassertions\+\+\}/,"r59 must replace the global loop only when an old recovery owner reclaimed it");
+assert.doesNotMatch(r59,/try\{api\.stableLoop=stableLoopR59\}/,"stable Solo must not reassign the exported r29 clock owner on every 40 ms ensure pass");
 assert.match(r59,/normaliseAudioRate\(\)/,"pause boundaries must also normalise any accidentally altered HTML audio playback rate");
+
+// Solo Dungeon alone consumes active visible wall time through bounded canonical
+// substeps. The expanded 1080 ms / 24-step budget covers the reproduced ~1 s
+// visible stalls while retaining a hard ceiling and 45 ms canonical slices.
+assert.match(r59,/const SOLO_MAX_STEP_MS=45;/,"Solo wall-time catch-up must preserve the established maximum canonical update step");
+assert.match(r59,/const SOLO_MAX_VISIBLE_FRAME_MS=1080;/,"Solo catch-up must have a hard per-render wall-time budget covering the reproduced post-lifecycle visible gaps");
+assert.match(r59,/const SOLO_MAX_STEPS=24;/,"Solo catch-up must retain a hard substep-count budget while preserving 45 ms canonical slices");
+assert.match(r59,/window\.CCGLostSizzlerModeRuntime\?\.state\?\.activeId==="dungeon-solo"/,"bounded wall-time substeps must be isolated to the Solo Dungeon controller");
+assert.match(r59,/!window\.CCGLostSizzlerSpecialModes\?\.active\?\.type&&!document\.body\?\.dataset\?\.specialMode/,"special modes must be excluded from the Solo wall-time path");
+assert.match(r59,/function runSoloUpdates\(elapsed\)/,"r59 must expose one bounded Solo update service rather than install another RAF owner");
+assert.match(r59,/bounded=Math\.min\(SOLO_MAX_VISIBLE_FRAME_MS,raw\)/,"active Solo elapsed time must be bounded before catch-up");
+assert.match(r59,/while\(remaining>0&&steps<SOLO_MAX_STEPS\)/,"Solo catch-up must stop at its explicit substep budget");
+assert.match(r59,/const step=Math\.min\(SOLO_MAX_STEP_MS,remaining\)/,"each Solo substep must remain within the canonical 45 ms maximum");
+assert.match(r59,/if\(soloDungeonPlaying\(\)\)[\s\S]*soloHandled=true/,"the authoritative RAF owner must select bounded substeps only for active Solo Dungeon play");
+assert.match(r59,/if\(soloHandled\)runSoloUpdates\(gap\);[\s\S]*render\(\)/,"Solo may perform bounded simulation substeps but must still render only once at the RAF boundary");
+assert.doesNotMatch(r59,/soloAccumulator|soloDebt/i,"Solo wall-time recovery must not retain a debt accumulator across pause/hidden boundaries");
 
 // R59 owns the callback but R29 remains the established public diagnostic contract.
 assert.match(r59,/function noteFault\(phase,error\)/,"r59 must centralise contained-frame fault accounting");
@@ -73,4 +94,4 @@ assert.match(r59,/installClockOwner\(\);installPauseOwners\(\);installSoloSaveTr
 assert.match(r59,/api\.patchInputOwnership\?\.\(\);api\.patchSaboteurRules\?\.\(\)/,"r59 must reassert r58 input and Saboteur rules while Spy is active");
 assert.match(r59,/if\(api\.tick\?\.\(\)\)/,"r59 must keep the r58 live state reconciled after older compatibility monitors run");
 
-console.log("Lost Sizzler V10.41 r59 pause-clock, visible-play stall recovery, R29 duplicate/stall/fault diagnostics, synchronous Solo floor autosave, TAB field-kit, idempotent F fullscreen and r58 ownership regressions passed.");
+console.log("Lost Sizzler V10.41 r59 pause-clock, null RAF rebasing, expanded bounded Solo wall-time substeps, visible-play stall recovery, R29 duplicate/stall/fault diagnostics, synchronous Solo floor autosave, TAB field-kit, idempotent F fullscreen and r58 ownership regressions passed.");

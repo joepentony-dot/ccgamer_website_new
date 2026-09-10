@@ -8,8 +8,21 @@
   const button=()=>document.getElementById("daily-btn");
   const status=()=>document.getElementById("weekly-status");
   const challenge=()=>window.CCGWeeklyChallenge;
+  const BUTTON_LABEL_CLASS="ccg-weekly-button-label";
 
   function setText(node,value){if(node&&node.textContent!==value)node.textContent=value;}
+  function buttonLabel(node=button()){
+    if(!node)return null;
+    let label=node.querySelector(`.${BUTTON_LABEL_CLASS}`);
+    if(label)return label;
+    const badge=node.querySelector(".v142-demo-lock-badge");
+    const existing=[...node.childNodes].filter(child=>child!==badge).map(child=>child.textContent||"").join("").trim();
+    label=document.createElement("span");label.className=BUTTON_LABEL_CLASS;label.textContent=existing;
+    for(const child of [...node.childNodes])if(child!==badge)child.remove();
+    node.insertBefore(label,badge||null);
+    return label;
+  }
+  function setButtonText(value){const label=buttonLabel();if(label&&label.textContent!==value)label.textContent=value;}
   function setDisabled(node,value){
     if(!node)return;
     const next=Boolean(value);
@@ -24,9 +37,9 @@
        same value back into it: doing so can continuously retrigger the observer
        and starve the browser's main thread. */
     setDisabled(b,!state.ready);
-    if(!state.ready)setText(b,"Weekly Dungeon — Checking…");
-    else if(state.signedIn&&!state.locked)setText(b,"Weekly Dungeon — Ranked Attempt");
-    else setText(b,"Weekly Dungeon");
+    if(!state.ready)setButtonText("Weekly Dungeon — Checking…");
+    else if(state.signedIn&&!state.locked)setButtonText("Weekly Dungeon — Ranked Attempt");
+    else setButtonText("Weekly Dungeon");
 
     if(!s)return;
     if(!state.ready)setText(s,"Checking this week's shared dungeon seed…");

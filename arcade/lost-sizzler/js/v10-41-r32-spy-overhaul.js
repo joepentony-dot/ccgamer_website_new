@@ -15,7 +15,8 @@
   const LEGACY_HIT_PACKET="v133_special_hit";
   const ROOM_W=7,ROOM_H=7,ROOM_STEP_X=9,ROOM_STEP_Y=9,MAP_X=5,MAP_Y=5;
   const MOVE_MS=220,SLOW_MOVE_MS=350,DASH_MOVE_MS=105,ATTACK_MS=430,SEARCH_MS=680,DOOR_MS=360,MONITOR_MS=50;
-  const MOVE_CODES=new Set(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","KeyA","KeyD","KeyW","KeyS","ShiftLeft","ShiftRight"]);
+  const DIRECTION_CODES=new Set(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","KeyA","KeyD","KeyW","KeyS"]);
+  const MOVE_CODES=new Set([...DIRECTION_CODES,"ShiftLeft","ShiftRight"]);
   const ROOM_ARCHETYPES=Object.freeze([
     Object.freeze({name:"ARCHIVE STACKS",theme:"ZZAP_LIBRARY",types:["bookcase","bookcase","bookcase","table","table","cabinet","bookcase"]}),
     Object.freeze({name:"READING ROOM",theme:"C64_ARCHIVE",types:["table","table","bookcase","bookcase","desk","cabinet","bookcase"]}),
@@ -146,7 +147,7 @@
       const archetype=archetypeFor(room,m);room.spyArchetype=archetype.name;room.spyTheme=archetype.theme;
       room.furniture=Array.isArray(room.furniture)?room.furniture:[];
       while(room.furniture.length<7){room.furniture.push({id:`${room.id}-r32-f${room.furniture.length+1}`,type:"table",searched:false,trappedBy:null,contents:null});changed=true}
-      room.furniture=room.furniture.slice(0,8);
+      if(room.furniture.length>8){room.furniture.splice(8);changed=true}
       for(const [index,item] of room.furniture.entries()){
         const next=archetype.types[index%archetype.types.length];if(item.type!==next){item.type=next;changed=true}
         item.spySearchLabel=next==="driveBench"?"WORKBENCH":next==="tapeStack"?"TAPE SHELF":String(next).replace(/([a-z])([A-Z])/g,"$1 $2").toUpperCase()
@@ -456,7 +457,10 @@
     if(code==="Tab"){event.preventDefault?.();event.stopPropagation?.();setInventory(!state.inventoryOpen);return}
     if(["Digit1","Digit2","Digit3","Numpad1","Numpad2","Numpad3"].includes(code)){const n=Number(code.slice(-1));if(n>=1&&n<=3){event.preventDefault?.();selectTrap(n-1)}return}
     if(state.inventoryOpen){if(MOVE_CODES.has(code)||["Space","KeyE","KeyT","KeyX"].includes(code)){event.preventDefault?.();event.stopPropagation?.()}return}
-    if(MOVE_CODES.has(code)){keys.add(code);event.preventDefault?.()}
+    if(MOVE_CODES.has(code)){
+      if(DIRECTION_CODES.has(code)&&!event.repeat&&![...keys].some(held=>DIRECTION_CODES.has(held)))state.lastMoveAt=nowPerf();
+      keys.add(code);event.preventDefault?.()
+    }
     if(code==="Space"){keys.add(code);event.preventDefault?.()}
     if(code==="KeyE"&&!event.repeat){event.preventDefault?.();beginSearch()}
     if(code==="KeyT"&&!event.repeat){event.preventDefault?.();try{const old=window.CCGLostSizzlerV141R29SpyEngine?.state;if(old){old.trapPulse=false;old.trapHeld=false}}catch(_){};placeTrapLocal()}

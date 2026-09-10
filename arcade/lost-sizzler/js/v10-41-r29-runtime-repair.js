@@ -24,6 +24,15 @@
   const spyCanMove=player=>{const model=liveSpyModel(player);return !model||model.status==="active"};
   const r30OwnsNormalMovement=()=>{try{return !spyActive()&&Boolean(window.CCGLostSizzlerV141R30?.state?.goldenLocked&&typeof window.CCGLostSizzlerV141R30?.state?.goldenMove==="function")}catch(_){return false}};
 
+  function originalChainHasMarker(fn,marker,limit=64){
+    const seen=new Set();let current=fn,depth=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth++<limit){
+      try{if(current[marker])return true}catch(_){}
+      seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null
+    }
+    return false
+  }
+
   function noteFault(phase,error){
     const now=performance.now();state.frameFaults++;if(phase==="update")state.updateFaults++;if(phase==="render")state.renderFaults++;
     state.lastFaultAt=now;state.lastFaultMessage=String(error?.message||error||"Unknown frame fault").slice(0,260);
@@ -103,7 +112,7 @@
 
   function installHordeFriendlyFireGuard(){
     const current=window.hurtPlayer;if(typeof current!=="function")return false;
-    if(current.__ccgV141R29HordeFriendly){state.damageInstalled=true;state.lastDamageSource=current;return true}
+    if(originalChainHasMarker(current,"__ccgV141R29HordeFriendly")){state.damageInstalled=true;state.lastDamageSource=current;return true}
     if(current===state.lastDamageSource)return state.damageInstalled;
     const wrapped=function hurtPlayerV141R29NoHordeFriendly(player,amount,friendly=false){
       if(hordeActive()&&friendly){state.hordeFriendlyFireBlocked++;return false}
@@ -363,6 +372,6 @@
   install();state.timer=setInterval(install,INSTALL_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);silenceGameplayAudio()},{once:true});
   window.CCGLostSizzlerV141R29={
-    SPY_HINT_COOLDOWN_MS,stableLoop,payDownCombatGap,silenceGameplayAudio,spyMove,spyStep,primeSpyDoor,hordeRemaining,updateRemainingHud,contactBlock,normaliseItemTitle,normaliseItemNames,sealRoomDoorBypasses,repairDungeonStructure,progressButtonFor,handleEnterProgress,drawEnhancedPickup,install,get state(){return state}
+    SPY_HINT_COOLDOWN_MS,originalChainHasMarker,stableLoop,payDownCombatGap,silenceGameplayAudio,spyMove,spyStep,primeSpyDoor,hordeRemaining,updateRemainingHud,contactBlock,normaliseItemTitle,normaliseItemNames,sealRoomDoorBypasses,repairDungeonStructure,progressButtonFor,handleEnterProgress,drawEnhancedPickup,install,get state(){return state}
   };
 })();

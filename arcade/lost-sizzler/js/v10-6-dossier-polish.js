@@ -11,6 +11,7 @@
   const onPhone=()=>window.matchMedia?.(PHONE_QUERY)?.matches;
   const discoveryQueue=[];
   let discoveryOpenScheduled=false;
+  let autoOpeningDiscovery=false;
 
   function ensureCss(){
     if(document.querySelector('link[data-ccg-dossier-polish="true"]'))return;
@@ -97,6 +98,7 @@
   if(originalShow){
     try{
       showNamedDossier=function(){
+        if(!autoOpeningDiscovery&&discoveryQueue.length){discoveryQueue.length=0;discoveryOpenScheduled=false}
         const result=originalShow.apply(this,arguments);
         requestAnimationFrame(polishDossier);
         return result;
@@ -109,7 +111,8 @@
     if(!discoveryQueue.length||mode!=="playing"||!wrap||!wrap.classList.contains("hidden"))return;
     const name=discoveryQueue.shift();
     showToast(`NEW DOSSIER ENTRY — ${name.toUpperCase()}`,"First encounter recorded. Opening this enemy's dossier entry now.","gold",5200);
-    showNamedDossier(name,true);
+    autoOpeningDiscovery=true;
+    try{showNamedDossier(name,true)}finally{autoOpeningDiscovery=false}
   }
 
   function scheduleNextDiscovery(){

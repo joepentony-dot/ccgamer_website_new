@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'arcade/**'
+      - '!arcade/lost-sizzler/**'
       - '.github/workflows/arcade-test-package.yml'
 
 permissions:

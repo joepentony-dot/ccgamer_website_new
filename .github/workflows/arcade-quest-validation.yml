@@ -3,7 +3,7 @@ name: Arcade Quest Validation
 on:
   pull_request:
     paths:
-      - 'arcade/**'
+      - 'arcade/quest/**'
       - 'games/commodore-quest/index.html'
       - 'admin/arcade-assets.html'
       - 'admin/js/arcade-assets.js'
@@ -18,7 +18,7 @@ on:
     branches:
       - main
     paths:
-      - 'arcade/**'
+      - 'arcade/quest/**'
       - 'games/commodore-quest/index.html'
       - 'admin/arcade-assets.html'
       - 'admin/js/arcade-assets.js'

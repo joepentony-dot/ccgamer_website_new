@@ -29,8 +29,10 @@ assert.match(perf,/pointerenter/,"Horde prewarm must begin from explicit Horde p
 assert.match(perf,/pointerdown/,"touch/mouse Horde launch intent must begin prewarm");
 assert.match(perf,/button\.addEventListener\("focus"/,"keyboard Horde launch intent must begin prewarm");
 assert.doesNotMatch(perf,/requestIdleCallback\(begin/,"Horde image decoding must not run during unrelated Tutorial/Solo page idle time");
-assert.match(perf,/new MutationObserver\(\(\)=>syncStatusTimer\(\)\)/,"Horde status lifecycle must react to mode transitions without a polling timer");
-assert.match(perf,/attributeFilter:\["data-special-mode"\]/,"mode observer must watch only the special-mode attribute");
+assert.match(perf,/new MutationObserver\(\(\)=>\{syncStatusTimer\(\);syncR60LiveOwner\(\)\}\)/,"Horde status and R60 ownership lifecycle must react to mode transitions without a polling timer");
+assert.match(perf,/attributeFilter:\["data-special-mode","data-run-active","data-mode-controller"\]/,"mode observer must watch special-mode, run-active and mode-controller transitions");
+assert.match(perf,/function startR60LiveOwnerTimer\(\)[\s\S]*if\(!isHorde\(\)\)\{stopR60LiveOwnerTimer\(\);return maintainR60LiveOwner\(\)\}/,"the R60 owner polling timer must refuse to start in Solo and use one-shot ownership maintenance instead");
+assert.match(perf,/if\(!isHorde\(\)\)\{stopR60LiveOwnerTimer\(\);maintainR60LiveOwner\(\);return\}/,"an existing R60 owner polling timer must stop itself as soon as Horde exits");
 assert.match(perf,/function startStatusTimer\(\)[\s\S]*if\(!isHorde\(\)\)return stopStatusTimer\(\)/,"hot status timer must refuse to start outside Horde");
 assert.match(perf,/function stopStatusTimer\(\)[\s\S]*clearInterval\(state\.statusTimer\)/,"Horde status timer must be cleared on mode exit");
 assert.doesNotMatch(perf,/if\(!state\.statusTimer\)state\.statusTimer=setInterval/,"install must not create a permanent status interval on every game mode");

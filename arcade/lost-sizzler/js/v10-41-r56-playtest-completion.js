@@ -35,6 +35,15 @@
   const lootTone=loot=>String(loot?.rarity||"").toUpperCase()==="GOLD MEDAL"?"gold":String(loot?.rarity||"").toUpperCase()==="ZZAP! 97%"?"red":"cyan";
   const lootColour=loot=>{try{return String(loot?.rarity||"").toUpperCase()==="GOLD MEDAL"?P.gold:String(loot?.rarity||"").toUpperCase()==="ZZAP! 97%"?P.pink:P.cyan}catch(_){return"#6cecff"}};
 
+  function originalChainHasMarker(fn,marker,limit=64){
+    const seen=new Set();let current=fn,depth=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth++<limit){
+      try{if(current[marker])return true}catch(_){}
+      seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null
+    }
+    return false
+  }
+
   function installStyle(){
     if(document.getElementById(STYLE_ID))return true;
     const style=document.createElement("style");style.id=STYLE_ID;style.textContent=`
@@ -51,7 +60,7 @@
   function environmentalSource(source){return ENVIRONMENT_SOURCE.test(String(source||""))}
   function installEnvironmentalDamage(){
     const current=window.hurtPlayer;if(typeof current!=="function")return false;
-    if(current.__ccgV141R56EnvironmentDamage)return true;
+    if(originalChainHasMarker(current,"__ccgV141R56EnvironmentDamage"))return true;
     const wrapped=function hurtPlayerV141R56EnvironmentDamage(player,amount,friendly=false,source="enemy"){
       if(!ordinaryDungeon()||!environmentalSource(source)||!player)return current.apply(this,arguments);
       const before=durability(player),oldInv=Number(player.invuln||0);
@@ -114,7 +123,7 @@
   }
   function installChestDelivery(){
     const current=window.openChest;if(typeof current!=="function")return false;
-    if(current.__ccgV141R56ChestDelivery)return true;
+    if(originalChainHasMarker(current,"__ccgV141R56ChestDelivery"))return true;
     const wrapped=function openChestV141R56Guaranteed(player,chest){
       if(!ordinaryDungeon()||!chest?.active)return current.apply(this,arguments);
       let loot=chest.loot||null;
@@ -157,7 +166,7 @@
   }
   function installShrineFeedback(){
     const current=window.triggerShrine;if(typeof current!=="function")return false;
-    if(current.__ccgV141R56ShrineFeedback)return true;
+    if(originalChainHasMarker(current,"__ccgV141R56ShrineFeedback"))return true;
     const wrapped=function triggerShrineV141R56Feedback(player){
       if(!ordinaryDungeon()||!player)return current.apply(this,arguments);
       const shrine=(host?.shrines||[]).find(s=>s?.active&&s.x===player.x&&s.y===player.y),before={maxHealth:Number(player.maxHealth||0),health:Number(player.health||0),damageBonus:Number(player.damageBonus||0),maxMana:Number(player.maxMana||0),armour:Number(player.armor||0),alert:Number(run?.alert||0)};
@@ -292,5 +301,5 @@
   installOwners();tick();state.timer=setInterval(()=>{try{tick()}catch(error){console.warn("[Lost Sizzler r56] completion tick failed",error)}},80);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
   document.body.dataset.v141R56PlaytestCompletion="true";
-  window.CCGLostSizzlerV141R56PlaytestCompletion={installOwners,trapIsActive,trapCycleTick,pendingChestTick,renderQuickIcons,rearmCombat,combatTick,get state(){return state}};
+  window.CCGLostSizzlerV141R56PlaytestCompletion={originalChainHasMarker,installOwners,trapIsActive,trapCycleTick,pendingChestTick,renderQuickIcons,rearmCombat,combatTick,get state(){return state}};
 })();

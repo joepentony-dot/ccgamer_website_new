@@ -77,12 +77,29 @@ try{
   assert.equal(recovered.stun,0,`elapsed stall time must clear the stale hit-stun: ${JSON.stringify(recovered)}`);
   assert.equal(recovered.locked,false,`retained combat locks must not survive the browser stall: ${JSON.stringify(recovered)}`);
 
-  const attackBefore=await page.evaluate(()=>({mana:Number(p1.mana),bullets:bullets.length}));
+  // Projectile lifetime and the one-frame fire cooldown are deliberately short.
+  // On a busy CI runner they can both expire between the successful Space input
+  // and Playwright's next polling/evaluation turn. Latch the real spawn-time
+  // firearm state rather than weakening the requirement to ammunition loss alone.
+  const attackBefore=await page.evaluate(()=>{
+    const originalSpawn=window.spawnBullet;
+    window.__ccgR57AttackProbe={shots:0,fireMax:0,bulletMax:bullets.length,originalSpawn};
+    window.spawnBullet=function(){
+      const result=originalSpawn.apply(this,arguments),probe=window.__ccgR57AttackProbe;
+      probe.shots++;probe.fireMax=Math.max(probe.fireMax,Number(fire1||0));probe.bulletMax=Math.max(probe.bulletMax,Number(bullets.length||0));
+      return result
+    };
+    return{mana:Number(p1.mana),bullets:bullets.length}
+  });
   await page.keyboard.press("Space");
-  await page.waitForFunction(before=>Number(p1?.mana)<before.mana||bullets.length>before.bullets,attackBefore,{timeout:3000});
-  const attackAfter=await page.evaluate(()=>({mana:Number(p1.mana),bullets:bullets.length,fire:Number(fire1||0),mode}));
+  await page.waitForFunction(before=>Number(p1?.mana)<before.mana&&Number(window.__ccgR57AttackProbe?.shots||0)>0,attackBefore,{timeout:3000});
+  const attackAfter=await page.evaluate(()=>{
+    const probe=window.__ccgR57AttackProbe||{},originalSpawn=probe.originalSpawn;
+    const result={mana:Number(p1.mana),bullets:bullets.length,fire:Number(fire1||0),mode,shots:Number(probe.shots||0),fireObserved:Number(probe.fireMax||0),bulletObserved:Number(probe.bulletMax||0)};
+    if(typeof originalSpawn==="function")window.spawnBullet=originalSpawn;delete window.__ccgR57AttackProbe;return result
+  });
   assert.ok(attackAfter.mana<attackBefore.mana,`PULSE with ammunition must fire after stall recovery instead of becoming unresponsive: before=${JSON.stringify(attackBefore)} after=${JSON.stringify(attackAfter)}`);
-  assert.ok(attackAfter.bullets>attackBefore.bullets||attackAfter.fire>0,`post-stall PULSE input must create live firearm state: ${JSON.stringify(attackAfter)}`);
+  assert.ok(attackAfter.shots>=1&&attackAfter.fireObserved>0&&attackAfter.bulletObserved>attackBefore.bullets,`post-stall PULSE input must create live firearm state at spawn time: ${JSON.stringify(attackAfter)}`);
   assert.equal(attackAfter.mode,"playing","combat recovery must not change the active game mode");
 
   assert.deepEqual(errors,[],`video-regression browser test produced page errors: ${errors.join("\n")}`);

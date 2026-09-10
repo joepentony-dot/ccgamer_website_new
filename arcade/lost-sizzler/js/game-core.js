@@ -24,7 +24,7 @@ const avatarImages=new Map();for(const f of C.followerElites){const custom=OVERR
 const pickupOverrideImages=new Map();for(const [kind,src] of Object.entries(OVERRIDES.images?.items||{}))if(src){const im=new Image();im.src=src;pickupOverrideImages.set(kind,im)}
 const P={purple:"#b978ff",gold:"#ffd85a",cyan:"#6cecff",green:"#72ff9b",pink:"#ff5bae",red:"#ff6868",orange:"#ff9950",white:"#faf4ff",blue:"#6aa9ff",brown:"#9b6134",black:"#030205",grey:"#9b8daa"};
 const input=new Set(),remote=new Map(),bullets=[],enemyBullets=[],particles=[],rings=[],floaters=[],hazards=[],pendingItems=new Set(),enemyVisuals=new Map(),cameras=new Map(),explored=new Map(),campStates=new Map(),roomVisits=new Map(),playerTrails=new Map();
-let mode="menu",playMode="solo",world=null,host=null,p1=null,p2=null,run=null,score=0,last=0,enemyCD=0,projectileCD=0,sendCD=0,worldCD=0,surroundCD=0,specialCD=0,move1=0,move2=0,fire1=0,fire2=0,fireBuffer1=0,fireBuffer2=0,won=false,shake=0,damageFlash=0,renderShake={x:0,y:0},toastTimer=0,lowHealthCD=0,inventoryReminderMs=300000,levelQueue=[],toastQueue=[],lastAmbientMessage="";
+let mode="menu",playMode="solo",world=null,host=null,p1=null,p2=null,run=null,score=0,last=0,enemyCD=0,projectileCD=0,sendCD=0,worldCD=0,surroundCD=0,specialCD=0,move1=0,move2=0,fire1=0,fire2=0,fireBuffer1=0,fireBuffer2=0,won=false,shake=0,damageFlash=0,renderShake={x:0,y:0},toastTimer=0,retainedToast=false,lowHealthCD=0,inventoryReminderMs=300000,levelQueue=[],toastQueue=[],lastAmbientMessage="";
 let view={x:0,y:0,w:canvas.width,h:canvas.height},focus=null,cam={x:0,y:0};
 let activeShop=null,floorEntryCheckpoint=null,savePromptReason="",pendingBanishmentReward=null;
 const stats={games:0,elites:0,doors:0,weapons:0,secrets:0,generators:0},questDone=new Set();
@@ -54,14 +54,16 @@ function logEvent(){/* The old chat-style event stream is intentionally disabled
 function displayToast(entry){
   UI.toast.className=`pickup-toast ${entry.tone||"gold"}`;UI.toastTitle.textContent=entry.title;UI.toastText.textContent=entry.text;
   if(UI.toastIcon){const words=`${entry.title} ${entry.text}`.toLowerCase(),kind=words.includes("torch")?"torch":words.includes("potion")||words.includes("health")?"potion":words.includes("ammo")?"ammo":words.includes("banish")||words.includes("death stalker")?"banishment":words.includes("teleport")||words.includes("warp")?"teleport":words.includes("key")||words.includes("sigil")?"exitSigil":words.includes("game")?"game":words.includes("armour")?"armour":words.includes("weapon")?"weapon":words.includes("xp")||words.includes("level")?"xpOrb":"shrine";UI.toastIcon.innerHTML=itemIconSVG(kind,entry.title)}
-  UI.toast.classList.remove("show");requestAnimationFrame(()=>UI.toast.classList.add("show"));toastTimer=entry.duration||9000;
+  UI.toast.classList.remove("show");requestAnimationFrame(()=>UI.toast.classList.add("show"));toastTimer=entry.duration||9000;retainedToast=Boolean(entry.retain);
 }
-function showToast(title,text,tone="gold",duration=9000){
-  // Important information is interrupt-driven: the newest event always replaces the previous banner immediately.
-  toastQueue.length=0;displayToast({title:String(title),text:String(text),tone,duration:Math.max(5200,duration||9000)});
+function showToast(title,text,tone="gold",duration=9000,options={}){
+  // Ordinary information is interrupt-driven; an explicitly retained confirmation owns the banner until it has been visible.
+  const entry={title:String(title),text:String(text),tone,duration:Math.max(5200,duration||9000),retain:Boolean(options?.retain)};
+  if(retainedToast&&toastTimer>0&&!entry.retain){toastQueue.push(entry);return true}
+  toastQueue.length=0;displayToast(entry);return true;
 }
 function updateToast(dt){
-  if(toastTimer<=0)return;toastTimer-=dt;if(toastTimer>0)return;UI.toast.classList.remove("show");
+  if(toastTimer<=0)return;toastTimer-=dt;if(toastTimer>0)return;UI.toast.classList.remove("show");retainedToast=false;const next=toastQueue.shift();if(next)displayToast(next);
 }
 function rememberTrail(p){let a=playerTrails.get(p.id);if(!a){a=[];playerTrails.set(p.id,a)}const last=a[a.length-1];if(!last||last.x!==p.x||last.y!==p.y){a.push({x:p.x,y:p.y});if(a.length>900)a.splice(0,a.length-900)}}
 function baseWeapon(){return{id:"pulse",name:"Pulse Blaster",displayName:"COMMON Pulse Blaster",rarity:"COMMON",power:1,delay:1,shots:1,ammo:1,element:"energy",ttl:18,mods:[],rating:1,desc:"Reliable single-shot blaster."}}

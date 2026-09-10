@@ -212,6 +212,14 @@
     }catch(_){return false}
   }
 
+  function canonicalSpyMove(){
+    try{return window.CCGLostSizzlerV141R29SpyEngine?.moveOwner||null}catch(_){return null}
+  }
+
+  function spyOwnsMovement(current=window.movePlayer){
+    try{return String(document.body?.dataset?.specialMode||"")==="sizzler-saboteurs"&&current===canonicalSpyMove()}catch(_){return false}
+  }
+
   function installPlayerCollision(){
     const current=window.movePlayer;if(typeof current!=="function")return false;
     // The split collision layer is installed before the final release owners and
@@ -219,6 +227,9 @@
     // mistake a later outer finalizer for a missing split owner and wrap the
     // golden function every 90 ms. That created a short ownership race in Solo.
     if(movementChainHasSplitOwner(current)){state.moveWrapped=current;return true}
+    // R29 owns the active Spy movement path, including its door-opening contract.
+    // Do not place the split-only collision wrapper around that canonical owner.
+    if(spyOwnsMovement(current)){state.moveWrapped=current;state.movementOwnershipYields++;return true}
     if(r30OwnsNormalMovement()&&String(playMode)!=="split"){state.movementOwnershipYields++;return true}
     const previous=current;
     const wrapped=function movePlayerV141SplitBudge(player,dx,dy,dash=false){

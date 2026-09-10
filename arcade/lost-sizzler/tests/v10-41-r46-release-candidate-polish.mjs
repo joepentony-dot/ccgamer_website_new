@@ -34,7 +34,7 @@ assert.match(edge,/"floor_reached"/,"existing telemetry function must accept flo
 assert.match(edge,/"floor_cleared"/,"existing telemetry function must accept floor clear events");
 assert.match(edge,/"run_ended"/,"existing telemetry function must accept run outcome events");
 assert.match(edge,/function telemetryMetadata/,"telemetry metadata must be allow-listed and bounded server-side");
-assert.match(edge,/metadata\n\s*\}\)\.select/,"sanitised metadata must be written through the existing game_play_events insert");
+assert.match(edge,/metadata\r?\n\s*\}\)\.select/,"sanitised metadata must be written through the existing game_play_events insert");
 assert.match(edge,/ALLOWED_ORIGINS/,"existing production origin restriction must remain intact");
 assert.match(edge,/authenticatedUserId/,"existing optional account attribution must remain intact");
 assert.match(edge,/game_feedback/,"existing bug and suggestion workflow must remain intact");
