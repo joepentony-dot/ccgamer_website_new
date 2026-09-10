@@ -1,0 +1,38 @@
+---
+layout: layouts/base.njk
+title: Collections | CCG Eleventy Prototype
+description: Browse established Cheeky Commodore Gamer collections in the lightweight Eleventy prototype.
+permalink: /games/collections/index.html
+---
+<section class="hero hero--compact">
+  <p class="eyebrow">ARCHIVE PROTOTYPE</p>
+  <h1>Collections</h1>
+  <p class="lede">Browse the established CCG collection routes. Collections are migrated only when their existing membership can be preserved from repository sources.</p>
+</section>
+
+<section class="archive-browser" aria-labelledby="collection-list-heading">
+  <div class="section-heading">
+    <h2 id="collection-list-heading">Browse collections</h2>
+    <p>{{ collectionArchive.count }} established collection routes retained; {{ collectionArchive.migratedCount }} currently generated inside the prototype.</p>
+  </div>
+
+  <div class="collection-list">
+    {% for collection in collectionArchive.items %}
+      <article class="collection-summary">
+        <h3>
+          {% if collection.migrated %}
+            <a href="/games/collections/{{ collection.slug }}/">{{ collection.name }}</a>
+          {% else %}
+            <span>{{ collection.name }}</span>
+          {% endif %}
+        </h3>
+        {% if collection.description %}<p>{{ collection.description }}</p>{% endif %}
+        {% if collection.migrated %}
+          <p>{{ collection.games | length }} source-backed games migrated.</p>
+        {% else %}
+          <p>Membership migration pending source verification. Existing route retained as <code>{{ collection.legacyUrl }}</code>.</p>
+        {% endif %}
+      </article>
+    {% endfor %}
+  </div>
+</section>
