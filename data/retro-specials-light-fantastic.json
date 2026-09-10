@@ -1,0 +1,36 @@
+[
+  {
+    "id": "light-fantastic-toolbox",
+    "slug": "light-fantastic-toolbox",
+    "type": "retro-specials",
+    "title": "I Ignored These C64C Tapes for 37 Years… | The Light Fantastic Toolbox",
+    "youtubeId": "6GiJ3iYTEPg",
+    "thumbnail": "https://img.youtube.com/vi/6GiJ3iYTEPg/hqdefault.jpg",
+    "membersOnly": false,
+    "order": 20,
+    "summary": "Revisiting the forgotten Commodore 64C Toolbox tapes from the Light Fantastic pack: The Image System, The Music System, SEUCK, Typing Tutor and the Toolbox Audio Tape.",
+    "description": "In 1989 a brand-new Commodore 64C Light Fantastic pack came loaded with games, a Datasette, joystick, 3D glasses and the Cheetah Defender light gun, but also five easy-to-overlook yellow Toolbox cassettes. This Retro Special goes back to The Image System, The Music System, Shoot ’Em Up Construction Kit (SEUCK), Typing Tutor and the Toolbox Audio Tape to see what they actually offered. The Image System provides drawing and picture-manipulation tools; The Music System combines keyboard, multitrack and synthesiser features; SEUCK lets users build playable shoot-’em-ups; Typing Tutor covers keyboard accuracy and finger positioning; and the Toolbox Audio Tape guides a new C64C owner through connecting and starting the computer. The feature also revisits the people attached to the software and audio, including Gareth Jones in The Music System demonstration and Jonathan Kydd narrating the Toolbox Audio Tape.",
+    "collection": "retro-specials",
+    "seo": {
+      "title": "Commodore 64C Light Fantastic Toolbox Tapes | Retro Special | Cheeky Commodore Gamer",
+      "description": "Revisit the Commodore 64C Light Fantastic Toolbox tapes: The Image System, The Music System, SEUCK, Typing Tutor and the original C64C audio setup guide."
+    },
+    "created_at": "2026-09-10T00:00:00.000Z",
+    "relatedSlugs": [
+      "commodore-64-memories-1982",
+      "sid-chip-story",
+      "50-essential-commodore-64-games",
+      "zzap64-gold-medals-sizzlers-1987"
+    ],
+    "manuals": [
+      {
+        "title": "The Image System User’s Guide",
+        "path": "/resources/manuals/The_Image_System.pdf"
+      },
+      {
+        "title": "The Music System User Manual",
+        "path": "/resources/manuals/The_Music_System_User.pdf"
+      }
+    ]
+  }
+]
