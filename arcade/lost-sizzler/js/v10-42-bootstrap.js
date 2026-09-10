@@ -27,7 +27,14 @@
     ["v10-42-r2-controller-owner-seal.js","CCGLostSizzlerV142R2ControllerOwnerSeal"],
     ["v10-42-r5-spy-exit-movement-seal.js","CCGLostSizzlerV142R5SpyExitMovementSeal"],
     ["v10-42-r11-spy-packet-rejection-seal.js","CCGLostSizzlerV142R11SpyPacketRejectionSeal"],
-    ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"]
+    ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
+    ["v10-42-warden-purpose-overhaul.js","CCGLostSizzlerV142WardenPurposeOverhaul"],
+    ["v10-42-warden-domain-progression.js","CCGLostSizzlerV142WardenDomainProgression"],
+    ["v10-42-warden-cleansing-effects.js","CCGLostSizzlerV142WardenCleansingEffects"],
+    ["v10-42-warden-charge-routes.js","CCGLostSizzlerV142WardenChargeRoutes"],
+    ["v10-42-warden-hunt-guidance.js","CCGLostSizzlerV142WardenHuntGuidance"],
+    ["v10-42-warden-navigation-cues.js","CCGLostSizzlerV142WardenNavigationCues"],
+    ["v10-42-warden-interface-consistency.js","CCGLostSizzlerV142WardenInterfaceConsistency"]
   ];
   const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],pendingStartId:"",identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0};
   window.CCGLostSizzlerV142Bootstrap=state;
