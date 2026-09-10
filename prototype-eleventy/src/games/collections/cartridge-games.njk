@@ -1,0 +1,24 @@
+---
+layout: layouts/base.njk
+title: Cartridge Games | CCG Eleventy Prototype
+description: Browse the source-backed cartridge collection from the existing Cheeky Commodore Gamer archive.
+permalink: /games/collections/cartridge-games/index.html
+---
+<section class="hero hero--compact">
+  <p class="eyebrow">COLLECTION PROTOTYPE</p>
+  <h1>{{ collectionArchive.cartridge.name }}</h1>
+  <p class="lede">{{ collectionArchive.cartridge.description }}</p>
+</section>
+
+<section class="archive-browser" aria-labelledby="cartridge-games-heading">
+  <div class="section-heading">
+    <h2 id="cartridge-games-heading">Games in this collection</h2>
+    <p>{{ collectionArchive.cartridge.games | length }} entries preserved from the existing collection fallback markup.</p>
+  </div>
+
+  <div class="game-grid">
+    {% for game in collectionArchive.cartridge.games %}
+      {% include "components/game-card.njk" %}
+    {% endfor %}
+  </div>
+</section>
