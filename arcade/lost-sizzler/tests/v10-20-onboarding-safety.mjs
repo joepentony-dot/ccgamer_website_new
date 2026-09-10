@@ -12,10 +12,13 @@ const guidance=read("js/v10-23-tutorial-guidance.js");
 const assets=read("js/asset-overrides.js");
 const config=read("js/config.js");
 const index=read("index.html");
+const release=JSON.parse(read("version.json"));
+const escapeRegExp=value=>String(value).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+const releaseToken=escapeRegExp(release.cacheToken);
 
 assert.match(assets,/CCG_ONBOARDING_SAFETY_REV=CCG_RELEASE_REV;/,"onboarding safety must inherit the current published release token");
 assert.match(assets,/CCG_TUTORIAL_GUIDANCE_REV=CCG_RELEASE_REV;/,"fullscreen-safe tutorial launcher must inherit the current published release token");
-assert.match(index,/v10-23-tutorial-guidance\.js\?v=20260827r31/,"the release must directly load the fullscreen-safe tutorial launcher with the current r29 token");
+assert.match(index,new RegExp(`v10-23-tutorial-guidance\\.js\\?v=${releaseToken}`),"the release must directly load the fullscreen-safe tutorial launcher with the current published cache token");
 assert.match(guidance,/const mount=document\.querySelector\("\.ccg-game"\)\|\|document\.body/,"tutorial cards must mount inside the element that enters fullscreen so the canvas cannot intercept them");
 
 assert.match(source,/floor===1\|\|depth\(host\.spiderNest\?\.roomId\)<=safeDepth\)clearSpiderNest\(\)/,"floor one must suppress the Dustweb spider nest");
