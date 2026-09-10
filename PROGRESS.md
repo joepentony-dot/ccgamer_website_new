@@ -2,9 +2,9 @@
 
 ## Status
 
-Overall completion estimate: **22%**
+Overall completion estimate: **26%**
 
-Current milestone: **Complete normalized game archive enabled in the isolated Eleventy build**
+Current milestone: **Shared accessible navigation and server-rendered A–Z game archive browsing implemented**
 
 ## Completed
 
@@ -29,6 +29,11 @@ Current milestone: **Complete normalized game archive enabled in the isolated El
 - Removed the remaining 100-record validation cap after the broader sample showed the adapter assumptions were safe enough to proceed.
 - Enabled the complete normalized game archive for Eleventy generation while keeping the canonical database read-only.
 - Updated the Games index copy so the prototype now reports the full normalized archive rather than a bounded sample.
+- Added reusable `_includes/components/site-nav.njk` and moved primary navigation out of the base layout markup.
+- Added an accessible skip link and visible keyboard-focus treatment to the shared layout/style layer.
+- Added build-time `gameArchive` grouping derived from the normalized game data, with deterministic A–Z groups plus a fallback `#` group for non-letter titles.
+- Reworked `/games/` into a server-rendered A–Z archive with lightweight jump links, per-letter headings and back-to-A–Z links, avoiding a client-side filtering dependency.
+- Added responsive archive-navigation styling and reduced-motion handling for smooth-scroll behaviour.
 
 ## Validation
 
@@ -42,18 +47,21 @@ Current milestone: **Complete normalized game archive enabled in the isolated El
 - The Games index and individual pagination template consume normalized records only.
 - Existing thumbnail URLs remain source-backed and no canonical artwork was copied or altered.
 - Full-archive enablement changes only removed the artificial `.slice(0, 100)` cap; normalization and duplicate-route safeguards remain intact.
-- Latest prototype commit `ee7c178a6251f5177540b0956a745b7bf24a6dbd` currently has no reported commit-status checks and no observable associated workflow run, so remote runtime build confirmation remains pending rather than failed.
+- Shared navigation uses semantic `<nav>` markup with a primary-navigation label, and the layout now provides a skip target at `#main-content`.
+- A–Z archive grouping is computed at build time from normalized titles and does not mutate the source dataset or add runtime JavaScript.
+- Archive anchors are deterministic (`games-a` through `games-z`, with `games-other` for non-letter titles), and only initials that actually exist in the normalized archive are emitted.
+- Latest prototype head is `a654e2d68b4bacaf2a7cd703e2f5fd68f17560f2`; no associated GitHub Actions workflow run is currently observable, so remote runtime build confirmation remains pending rather than failed.
 
 ## Blockers
 
 - No critical implementation blocker.
 - End-to-end runtime build confirmation is still pending until the isolated prototype workflow produces an observable result or another build-capable runner is available.
-- No preview deployment has been configured yet; this remains intentionally deferred until the core routes and shared navigation are more mature.
+- No preview deployment has been configured yet; this remains intentionally deferred until the core generated routes and archive taxonomy are more mature.
 
 ## Next task
 
-Begin production-quality shared navigation and archive usability work now that the complete game archive is enabled. Prioritise lightweight server-generated grouping/browsing aids and accessible navigation rather than large client-side filtering bundles. Then begin generated genre and publisher archive routes from the normalized game dataset.
+Begin generated genre archive routes from the normalized game dataset, reusing the same server-rendered approach and existing game-card component. Validate slug generation for genre names before adding publisher routes, because both taxonomies must avoid route collisions and preserve predictable URLs.
 
 ## Completion criteria still outstanding
 
-Shared production-quality navigation; complete home migration; genres; publishers; collections; Zzap!64; retro specials; music; SEO/structured data/sitemaps/redirect compatibility; accessibility review; image/performance work; regression testing; and an isolated browseable preview deployment.
+Complete home migration; genres; publishers; collections; Zzap!64; retro specials; music; SEO/structured data/sitemaps/redirect compatibility; accessibility review; image/performance work; regression testing; and an isolated browseable preview deployment.
