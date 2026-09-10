@@ -2,9 +2,9 @@
 
 ## Status
 
-Overall completion estimate: **42%**
+Overall completion estimate: **46%**
 
-Current milestone: **Licensed Games collection route implemented from repository-backed fallback membership**
+Current milestone: **BPjS and BPjM Indexed Games collection route implemented from repository-backed fallback membership**
 
 ## Completed
 
@@ -19,19 +19,18 @@ Current milestone: **Licensed Games collection route implemented from repository
 - Added a prototype `/games/collections/` index preserving the seven established collection names and legacy URLs from the existing site.
 - Added `/games/collections/cartridge-games/` using the 24 game entries present in the existing Cartridge Games fallback markup; no additional collection membership was inferred.
 - Added `/games/collections/licensed-games/` using the 24 game entries present in the existing Licensed Games fallback markup; licensed status was not inferred from titles, publishers or external knowledge.
+- Added `/games/collections/bpjs-indexed-games/` using the 24 game entries present in the existing BPjS/BPjM collection fallback markup; no BPjS/BPjM membership was inferred beyond those entries.
 - Added Collections to the shared primary navigation.
-- Extended isolated CI route checks to cover publisher index, collections index, Cartridge Games and Licensed Games.
+- Extended isolated CI route checks to cover publisher index and all three migrated game collections.
 - Added skip-to-content support, semantic navigation, visible keyboard focus treatment and reduced-motion handling.
 
 ## Validation
 
 - Branch isolation remains intact; no merge or write to `main` was performed.
 - Canonical `games/games.json` remains unchanged and is only read by the prototype adapter.
-- The Licensed Games membership was taken directly from the existing repository page fallback markup, which exposes 24 concrete game links from Action Biker through Dan Dare III - The Escape.
-- The collection adapter resolves both migrated collection memberships against normalized canonical game slugs and throws a build error if any referenced game is missing.
-- `node --check` passes locally for the updated `collectionArchive.js` candidate.
-- Only Cartridge Games and Licensed Games are marked migrated at this checkpoint; the remaining five collection identities stay explicitly pending rather than receiving invented membership.
-- The isolated GitHub Actions workflow now verifies `_site/games/collections/licensed-games/index.html` in addition to the existing representative routes.
+- The BPjS/BPjM membership was taken directly from the existing repository page fallback grid, which exposes 24 concrete game links from 1942 through Joe Blade.
+- The collection adapter resolves all three migrated collection memberships against normalized canonical game slugs and throws a build error if any referenced game is missing.
+- The isolated GitHub Actions workflow now verifies `_site/games/collections/bpjs-indexed-games/index.html` in addition to the existing representative routes.
 - End-to-end remote build confirmation for this checkpoint is pending until the branch workflow reports the new commit.
 
 ## Blockers
@@ -41,7 +40,7 @@ Current milestone: **Licensed Games collection route implemented from repository
 
 ## Next task
 
-Inspect the existing BPjS and BPjM Indexed Games collection source and determine whether its membership can be generated safely from explicit repository data. Prefer an existing canonical collection field if it has a stable documented mapping; otherwise use only concrete fallback membership from the existing collection page. Do not infer membership.
+Inspect the existing Top Picks collection source and migrate its membership only if concrete repository-backed entries can be mapped safely to normalized game slugs. Do not infer editorial picks or rankings from ratings or external knowledge.
 
 ## Completion criteria still outstanding
 

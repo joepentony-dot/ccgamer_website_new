@@ -1,0 +1,24 @@
+---
+layout: layouts/base.njk
+title: BPjS & BPjM Indexed Games | CCG Eleventy Prototype
+description: Browse the source-backed BPjS and BPjM indexed games collection from the existing Cheeky Commodore Gamer archive.
+permalink: /games/collections/bpjs-indexed-games/index.html
+---
+<section class="hero hero--compact">
+  <p class="eyebrow">COLLECTION PROTOTYPE</p>
+  <h1>{{ collectionArchive.bpjs.name }}</h1>
+  <p class="lede">{{ collectionArchive.bpjs.description }}</p>
+</section>
+
+<section class="archive-browser" aria-labelledby="bpjs-games-heading">
+  <div class="section-heading">
+    <h2 id="bpjs-games-heading">Games in this collection</h2>
+    <p>{{ collectionArchive.bpjs.games | length }} entries preserved from the existing collection fallback markup.</p>
+  </div>
+
+  <div class="game-grid">
+    {% for game in collectionArchive.bpjs.games %}
+      {% include "components/game-card.njk" %}
+    {% endfor %}
+  </div>
+</section>

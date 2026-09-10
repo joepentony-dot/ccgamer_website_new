@@ -28,7 +28,19 @@ const collections = [
       "dan-dare-pilot-of-the-future", "dan-dare-2-mekons-revenge", "dan-dare-iii-the-escape"
     ]
   },
-  { name: "BPjS and BPjM Indexed Games", slug: "bpjs-indexed-games", legacyUrl: "/games/collections/bpjs-indexed-games.html" },
+  {
+    name: "BPjS and BPjM Indexed Games",
+    slug: "bpjs-indexed-games",
+    legacyUrl: "/games/collections/bpjs-indexed-games.html",
+    description: "BPjS and BPjM indexed C64 and Amiga games preserved from the existing CCG collection fallback markup.",
+    gameSlugs: [
+      "1942", "airborne-ranger", "army-moves", "barbarian-the-ultimate-warrior", "battle-chess",
+      "beach-head", "beach-head-2", "blood-n-guts", "blue-max", "brutal-sports-football",
+      "cannon-fodder", "cobra", "commando", "falcon-patrol", "fernandez-must-die",
+      "friday-the-13th", "golden-axe", "green-beret", "gryzor", "highlander", "ikari-warriors",
+      "infernal-runner", "into-the-eagles-nest", "joe-blade"
+    ]
+  },
   { name: "Top Picks", slug: "top-picks", legacyUrl: "/games/collections/top-picks.html" },
   { name: "Amiga Demo Music", slug: "amiga-demo-music", legacyUrl: "/games/collections/amiga-demo-music.html" },
   { name: "Retro Events", slug: "retro-events", legacyUrl: "/games/collections/retro-events.html" },
@@ -59,5 +71,6 @@ export default {
   migratedCount: items.filter((item) => item.migrated).length,
   items,
   cartridge: items.find((item) => item.slug === "cartridge-games"),
-  licensed: items.find((item) => item.slug === "licensed-games")
+  licensed: items.find((item) => item.slug === "licensed-games"),
+  bpjs: items.find((item) => item.slug === "bpjs-indexed-games")
 };
