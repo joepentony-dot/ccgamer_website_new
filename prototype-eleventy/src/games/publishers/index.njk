@@ -1,0 +1,24 @@
+---
+layout: layouts/base.njk
+title: Publishers | CCG Eleventy Prototype
+description: Browse Cheeky Commodore Gamer titles by publisher in the lightweight Eleventy prototype.
+permalink: /games/publishers/index.html
+---
+<section class="hero hero--compact">
+  <p class="eyebrow">ARCHIVE PROTOTYPE</p>
+  <h1>Publishers</h1>
+  <p class="lede">Browse the normalized CCG game archive by publisher. These routes are generated at build time from the existing game data.</p>
+</section>
+
+<section class="archive-browser" aria-labelledby="publisher-list-heading">
+  <div class="section-heading">
+    <h2 id="publisher-list-heading">Browse publishers</h2>
+    <p>{{ publisherArchive.count }} publisher routes generated from the canonical archive.</p>
+  </div>
+
+  <nav class="archive-jumps" aria-label="Browse game publishers">
+    {% for publisher in publisherArchive.items %}
+      <a href="/games/publishers/{{ publisher.slug }}/">{{ publisher.name }} <span aria-hidden="true">({{ publisher.games | length }})</span></a>
+    {% endfor %}
+  </nav>
+</section>
