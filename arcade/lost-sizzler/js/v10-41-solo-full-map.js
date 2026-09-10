@@ -4,6 +4,7 @@
   if(window.__CCG_LOST_SIZZLER_V141_SOLO_FULL_MAP__)return;
   window.__CCG_LOST_SIZZLER_V141_SOLO_FULL_MAP__=true;
 
+  const MAP_MODE="fullmap";
   const state={open:false,previousMode:"playing",pausedByMap:false,timer:0,renderedAt:0};
   const CELL=8;
 
@@ -168,7 +169,10 @@
     document.body.dataset.ccgSoloMapOpen="true";
     panel.classList.remove("hidden");
     clearMovementState();
-    try{mode="paused"}catch(_){}
+    // Use a dedicated non-playing state. The game loop pauses for every mode
+    // other than "playing", while R56's orphan recovery only repairs legacy
+    // paused/inventory/dossier states when their own panels disappear.
+    try{mode=MAP_MODE}catch(_){}
     panel.querySelector("#ccg-solo-full-map-close")?.focus?.({preventScroll:true});
     startTimer();
     return true;
@@ -180,7 +184,7 @@
     document.getElementById("ccg-solo-full-map")?.classList.add("hidden");
     document.body.dataset.ccgSoloMapOpen="false";
     if(restore&&state.pausedByMap){
-      try{if(mode==="paused"&&document.body.dataset.runActive==="true")mode=state.previousMode||"playing"}catch(_){}
+      try{if(mode===MAP_MODE&&document.body.dataset.runActive==="true")mode=state.previousMode||"playing"}catch(_){}
     }
     state.pausedByMap=false;
     clearMovementState();
