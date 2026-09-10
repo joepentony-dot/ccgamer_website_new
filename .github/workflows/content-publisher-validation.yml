@@ -10,6 +10,7 @@ on:
       - "admin/help.html"
       - "admin/js/content-publisher.js"
       - "admin/js/content-publisher-image-optimizer.js"
+      - "admin/js/content-publisher-existing-game-update.js"
       - "admin/js/content-publisher-status-reconciler.js"
       - "admin/js/content-publisher-source-preflight.mjs"
       - "admin/js/collection-values.js"
@@ -19,6 +20,8 @@ on:
       - "js/collection-loader.js"
       - "js/ccg-zzap64-matcher.js"
       - "data/zzap64-review-links.json"
+      - "data/retro-specials.json"
+      - "js/retro-specials-loader.js"
       - "scripts/audit-admin-runtime-bootstrap.js"
       - "tests/content-publisher.test.mjs"
       - "tests/content-publisher-source-preflight.test.mjs"
@@ -34,6 +37,7 @@ on:
       - "admin/help.html"
       - "admin/js/content-publisher.js"
       - "admin/js/content-publisher-image-optimizer.js"
+      - "admin/js/content-publisher-existing-game-update.js"
       - "admin/js/content-publisher-status-reconciler.js"
       - "admin/js/content-publisher-source-preflight.mjs"
       - "admin/js/collection-values.js"
@@ -43,6 +47,8 @@ on:
       - "js/collection-loader.js"
       - "js/ccg-zzap64-matcher.js"
       - "data/zzap64-review-links.json"
+      - "data/retro-specials.json"
+      - "js/retro-specials-loader.js"
       - "scripts/audit-admin-runtime-bootstrap.js"
       - "tests/content-publisher.test.mjs"
       - "tests/content-publisher-source-preflight.test.mjs"
@@ -71,6 +77,7 @@ jobs:
         run: |
           node --check admin/js/content-publisher.js
           node --check admin/js/content-publisher-image-optimizer.js
+          node --check admin/js/content-publisher-existing-game-update.js
           node --check admin/js/content-publisher-status-reconciler.js
           node --check admin/js/content-publisher-source-preflight.mjs
           node --check admin/js/collection-values.js
@@ -79,6 +86,7 @@ jobs:
           node --check js/load-single-game.js
           node --check js/collection-loader.js
           node --check js/ccg-zzap64-matcher.js
+          node --check js/retro-specials-loader.js
 
       - name: Run publisher and collection regression tests
         run: |
