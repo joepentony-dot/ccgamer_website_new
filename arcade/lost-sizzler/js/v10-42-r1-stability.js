@@ -133,8 +133,8 @@
   function guardChestConfirmation(player,name,scoreReward,xpReward){
     stopChestConfirmationGuard();
     activeChestConfirmation={player,name,scoreReward,xpReward,until:now()+6500};
-    const title=document.getElementById("pickup-title"),text=document.getElementById("pickup-text");
-    if(typeof MutationObserver==="function"&&(title||text)){
+    const pickupRoot=document.getElementById("pickup")||document.getElementById("pickup-toast")||document.querySelector(".pickup,.toast")||document.body;
+    if(typeof MutationObserver==="function"&&pickupRoot){
       chestConfirmationObserver=new MutationObserver(()=>{
         const active=activeChestConfirmation;
         if(!active)return;
@@ -144,8 +144,7 @@
           if(current&&now()<current.until)showChestConfirmation(current.player,current.name,current.scoreReward,current.xpReward);
         });
       });
-      if(title)chestConfirmationObserver.observe(title,{subtree:true,childList:true,characterData:true});
-      if(text)chestConfirmationObserver.observe(text,{subtree:true,childList:true,characterData:true});
+      chestConfirmationObserver.observe(pickupRoot,{subtree:true,childList:true,characterData:true});
     }
     showChestConfirmation(player,name,scoreReward,xpReward);
     setTimeout(()=>{if(activeChestConfirmation?.player===player)stopChestConfirmationGuard()},6600);
