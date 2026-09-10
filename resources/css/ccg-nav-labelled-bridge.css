@@ -1,0 +1,91 @@
+/* ============================================================
+   CCG LABELLED NAVIGATION BRIDGE — 901–1199PX
+   ------------------------------------------------------------
+   Keeps the real navigation labels visible on laptops and
+   narrower desktop windows. The established mobile drawer remains
+   authoritative at 900px and below; the existing adaptive desktop
+   navigation remains authoritative at 1200px and above.
+
+   This file is intentionally loaded last by ccg-responsive-safety.js
+   so older 901–1199px hamburger rules cannot hide the static nav.
+============================================================ */
+
+@media (min-width: 901px) and (max-width: 1199px) {
+    .ccg-header .ccg-header-inner {
+        grid-template-columns: minmax(0, 1fr) !important;
+        grid-template-areas:
+            "brand"
+            "actions"
+            "nav" !important;
+        row-gap: 8px !important;
+    }
+
+    .ccg-header .ccg-brand {
+        grid-area: brand !important;
+        justify-self: start !important;
+        max-width: min(680px, 100%) !important;
+    }
+
+    /* Hamburger is the final narrow-screen fallback, not the default
+       navigation for an ordinary laptop/desktop viewport. */
+    .ccg-header .ccg-nav-toggle {
+        display: none !important;
+    }
+
+    .ccg-header .ccg-nav {
+        grid-area: nav !important;
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 5px 7px !important;
+        justify-self: stretch !important;
+        overflow: visible !important;
+        contain: none !important;
+    }
+
+    .ccg-header .ccg-nav__bar {
+        display: flex !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        align-items: center !important;
+        justify-content: center !important;
+        overflow: visible !important;
+        contain: none !important;
+    }
+
+    .ccg-header .ccg-nav__list,
+    .ccg-header .ccg-nav__list--primary,
+    .ccg-header .ccg-nav__list--secondary {
+        display: flex !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 4px !important;
+        margin-inline: 0 !important;
+    }
+
+    .ccg-header .ccg-nav__list--secondary {
+        margin-top: 4px !important;
+    }
+
+    .ccg-header .ccg-nav__link {
+        display: inline-flex !important;
+        min-height: 36px !important;
+        padding: 6px 8px !important;
+        font-size: clamp(0.60rem, 0.82vw, 0.70rem) !important;
+        line-height: 1.15 !important;
+        letter-spacing: 0.035em !important;
+        white-space: nowrap !important;
+    }
+
+    /* ccg-nav-fit.js deliberately treats this bridge range as compact
+       rather than adaptive-desktop, so its More control stays out of the
+       way and every real navigation label remains available in the rows. */
+    .ccg-header .ccg-nav__more {
+        display: none !important;
+    }
+}
