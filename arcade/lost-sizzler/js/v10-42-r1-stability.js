@@ -130,9 +130,13 @@
       if(document.getElementById("pickup-title")?.textContent==="CHEST REWARD CONFIRMED")return true;
       const toast=chestToastOwner();
       if(!toast)return false;
-      toast.call(window,"CHEST REWARD CONFIRMED",`${name} · +${scoreReward.toLocaleString()} score · +${xpReward} XP.`,"gold",6500,{retain:true});
+      const args=["CHEST REWARD CONFIRMED",`${name} · +${scoreReward.toLocaleString()} score · +${xpReward} XP.`,"gold",6500,{retain:true}];
+      const shown=toast.call(window,...args);
+      if(shown===false&&toast.__ccgV141NotificationWrapper&&typeof toast.__ccgV141Original==="function"){
+        toast.__ccgV141Original.call(window,...args);
+      }
       diagnostics.chestRewardRepairs++;
-      return true;
+      return document.getElementById("pickup-title")?.textContent==="CHEST REWARD CONFIRMED";
     }catch(_){return false}
   }
   function guardChestConfirmation(player,name,scoreReward,xpReward){
