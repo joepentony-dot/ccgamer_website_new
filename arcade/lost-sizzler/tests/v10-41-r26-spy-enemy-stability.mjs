@@ -10,8 +10,9 @@ const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const hotfix=read("js/v10-41-r26-spy-enemy-stability.js");
 const controller=read("js/v10-41-mode-runtime.js");
 const index=read("index.html");
+const release=JSON.parse(read("version.json"));
 
-assert.match(index,/v10-41-r26-spy-enemy-stability\.js\?v=20260827r31/,"canonical page must retain the r26 stability hotfix under the current r30 cache shell");
+assert.ok(index.includes(`v10-41-r26-spy-enemy-stability.js?v=${release.cacheToken}`),"canonical page must retain the r26 stability hotfix under the current published cache shell");
 assert.match(hotfix,/const SPY_MOVE_CADENCE_MS=220;/,"the retained r26 diagnostic API must preserve the historical 220ms value");
 assert.match(hotfix,/state\.controllerOwnedMovement=true/,"r26 must declare controller-owned Spy movement");
 assert.match(hotfix,/state\.controllerOwnedUpdate=true/,"r26 must declare controller-owned frame execution");
@@ -102,4 +103,4 @@ api.install();api.install();
 assert.equal(context.update,stableUpdate,"repeated installs must not grow the update wrapper chain");
 assert.equal(context.movePlayer,stableMove,"repeated installs must not grow the move wrapper chain");
 assert.equal(context.drawPixelEnemySprite,stableRender,"repeated installs must not grow the render wrapper chain");
-console.log("Lost Sizzler r26 controller-owned Dungeon Solo enemy compatibility and non-owner Spy checks passed under the r30 cache shell.");
+console.log("Lost Sizzler r26 controller-owned Dungeon Solo enemy compatibility and non-owner Spy checks passed under the current release shell.");
