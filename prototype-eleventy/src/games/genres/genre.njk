@@ -1,0 +1,30 @@
+---
+layout: layouts/base.njk
+pagination:
+  data: genreArchive.items
+  size: 1
+  alias: genre
+permalink: "/games/genres/{{ genre.slug }}/index.html"
+eleventyComputed:
+  title: "{{ genre.name }} Games | CCG Eleventy Prototype"
+  description: "Browse {{ genre.games | length }} {{ genre.name }} games from the Cheeky Commodore Gamer archive."
+---
+<section class="hero hero--compact">
+  <p class="eyebrow">GENRE ARCHIVE</p>
+  <h1>{{ genre.name }}</h1>
+  <p class="lede">{{ genre.games | length }} {% if genre.games | length == 1 %}game{% else %}games{% endif %} in this build-time generated genre archive.</p>
+</section>
+
+<section class="archive-browser" aria-labelledby="genre-games-heading">
+  <div class="section-heading">
+    <h2 id="genre-games-heading">{{ genre.name }} games</h2>
+    <p><a href="/games/genres/">Browse all genres</a> · <a href="/games/">Browse all games</a></p>
+  </div>
+
+  <div class="game-grid">
+    {% for item in genre.games %}
+      {% set game = item %}
+      {% include "components/game-card.njk" %}
+    {% endfor %}
+  </div>
+</section>

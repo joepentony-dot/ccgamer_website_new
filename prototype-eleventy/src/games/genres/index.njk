@@ -1,0 +1,24 @@
+---
+layout: layouts/base.njk
+title: Genres | CCG Eleventy Prototype
+description: Browse Cheeky Commodore Gamer titles by genre in the lightweight Eleventy prototype.
+permalink: /games/genres/index.html
+---
+<section class="hero hero--compact">
+  <p class="eyebrow">ARCHIVE PROTOTYPE</p>
+  <h1>Genres</h1>
+  <p class="lede">Browse the normalized CCG game archive by genre. These routes are generated at build time from the existing game data.</p>
+</section>
+
+<section class="archive-browser" aria-labelledby="genre-list-heading">
+  <div class="section-heading">
+    <h2 id="genre-list-heading">Browse genres</h2>
+    <p>{{ genreArchive.count }} genre routes generated from the canonical archive.</p>
+  </div>
+
+  <nav class="archive-jumps" aria-label="Browse game genres">
+    {% for genre in genreArchive.items %}
+      <a href="/games/genres/{{ genre.slug }}/">{{ genre.name }} <span aria-hidden="true">({{ genre.games | length }})</span></a>
+    {% endfor %}
+  </nav>
+</section>

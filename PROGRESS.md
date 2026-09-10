@@ -2,9 +2,9 @@
 
 ## Status
 
-Overall completion estimate: **26%**
+Overall completion estimate: **30%**
 
-Current milestone: **Shared accessible navigation and server-rendered A–Z game archive browsing implemented**
+Current milestone: **Generated genre archive routes implemented with deterministic collision-safe slugs**
 
 ## Completed
 
@@ -34,6 +34,13 @@ Current milestone: **Shared accessible navigation and server-rendered A–Z game
 - Added build-time `gameArchive` grouping derived from the normalized game data, with deterministic A–Z groups plus a fallback `#` group for non-letter titles.
 - Reworked `/games/` into a server-rendered A–Z archive with lightweight jump links, per-letter headings and back-to-A–Z links, avoiding a client-side filtering dependency.
 - Added responsive archive-navigation styling and reduced-motion handling for smooth-scroll behaviour.
+- Added build-time `genreArchive` taxonomy data derived only from normalized game records.
+- Added deterministic genre slug generation with normalization for punctuation, accents and ampersands.
+- Added explicit build-time collision protection so two distinct genre labels cannot silently emit the same genre route.
+- Added `/games/genres/` as a server-rendered genre index with per-genre game counts.
+- Added pagination-driven `/games/genres/<slug>/` pages that reuse the existing game-card component.
+- Added Genres to the shared primary navigation.
+- Extended the isolated workflow route checks to include the genre index and representative `/games/genres/arcade/` route.
 
 ## Validation
 
@@ -47,21 +54,25 @@ Current milestone: **Shared accessible navigation and server-rendered A–Z game
 - The Games index and individual pagination template consume normalized records only.
 - Existing thumbnail URLs remain source-backed and no canonical artwork was copied or altered.
 - Full-archive enablement changes only removed the artificial `.slice(0, 100)` cap; normalization and duplicate-route safeguards remain intact.
-- Shared navigation uses semantic `<nav>` markup with a primary-navigation label, and the layout now provides a skip target at `#main-content`.
+- Shared navigation uses semantic `<nav>` markup with a primary-navigation label, and the layout provides a skip target at `#main-content`.
 - A–Z archive grouping is computed at build time from normalized titles and does not mutate the source dataset or add runtime JavaScript.
 - Archive anchors are deterministic (`games-a` through `games-z`, with `games-other` for non-letter titles), and only initials that actually exist in the normalized archive are emitted.
-- Latest prototype head is `a654e2d68b4bacaf2a7cd703e2f5fd68f17560f2`; no associated GitHub Actions workflow run is currently observable, so remote runtime build confirmation remains pending rather than failed.
+- Genre taxonomy generation uses the normalized `genres` arrays only and does not alter source records.
+- Genre labels are consolidated case-insensitively before route generation; generated slugs are deterministic and a collision between distinct labels fails the build instead of overwriting output.
+- `node --check` passes for the new genre taxonomy data module.
+- Canonical source data confirms `arcade` is present, so the representative workflow route assertion has a valid source genre.
+- Remote GitHub Actions runtime confirmation remains pending until a run is observable after this checkpoint.
 
 ## Blockers
 
 - No critical implementation blocker.
-- End-to-end runtime build confirmation is still pending until the isolated prototype workflow produces an observable result or another build-capable runner is available.
+- End-to-end runtime build confirmation remains pending until the isolated prototype workflow produces an observable result or another build-capable runner is available.
 - No preview deployment has been configured yet; this remains intentionally deferred until the core generated routes and archive taxonomy are more mature.
 
 ## Next task
 
-Begin generated genre archive routes from the normalized game dataset, reusing the same server-rendered approach and existing game-card component. Validate slug generation for genre names before adding publisher routes, because both taxonomies must avoid route collisions and preserve predictable URLs.
+Generate publisher archive data and `/games/publishers/` routes using the same deterministic taxonomy pattern. Validate publisher normalization and slug collisions against the full normalized archive before extending shared navigation.
 
 ## Completion criteria still outstanding
 
-Complete home migration; genres; publishers; collections; Zzap!64; retro specials; music; SEO/structured data/sitemaps/redirect compatibility; accessibility review; image/performance work; regression testing; and an isolated browseable preview deployment.
+Complete home migration; publishers; collections; Zzap!64; retro specials; music; SEO/structured data/sitemaps/redirect compatibility; accessibility review; image/performance work; regression testing; and an isolated browseable preview deployment.
