@@ -6,6 +6,10 @@
 ============================================================ */
 
 const CCG_RETRO_SPECIALS_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
+const CCG_RETRO_SPECIALS_DATASETS = [
+  '/data/retro-specials.json',
+  '/data/retro-specials-light-fantastic.json'
+];
 
 function ccgEscapeHtml(value) {
   return String(value ?? '')
@@ -160,12 +164,25 @@ function ccgInjectRetroSpecialStructuredData(items) {
   document.head.appendChild(script);
 }
 
-async function ccgLoadRetroSpecials() {
-  const response = await fetch('/data/retro-specials.json', { cache: 'default' });
-  if (!response.ok) throw new Error(`Failed to load retro-specials.json (${response.status})`);
+async function ccgFetchRetroSpecialDataset(url, required = false) {
+  try {
+    const response = await fetch(url, { cache: 'default' });
+    if (!response.ok) throw new Error(`Failed to load ${url} (${response.status})`);
+    const data = await response.json();
+    if (!Array.isArray(data)) throw new Error(`${url} must contain an array.`);
+    return data;
+  } catch (error) {
+    if (required) throw error;
+    console.warn('[CCG RETRO SPECIALS] Optional dataset unavailable:', url, error);
+    return [];
+  }
+}
 
-  const data = await response.json();
-  if (!Array.isArray(data)) throw new Error('Retro Specials data must be an array.');
+async function ccgLoadRetroSpecials() {
+  const datasets = await Promise.all(
+    CCG_RETRO_SPECIALS_DATASETS.map((url, index) => ccgFetchRetroSpecialDataset(url, index === 0))
+  );
+  const data = datasets.flat();
 
   return data
     .map((item, index) => ({
