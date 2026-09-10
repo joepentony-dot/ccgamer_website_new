@@ -178,14 +178,15 @@
     if(window.showToast.__ccgV141Priority===true){state.toastWrapped=true;return true}
     const original=window.showToast;state.originalToast=original;
     const wrapped=function showToastV141Priority(title,text,tone,duration){
-      const priority=majorPriority(title),now=performance.now();
+      const priority=majorPriority(title),now=performance.now(),retain=Boolean(arguments[4]?.retain);
       if(priority>=100){
         // Major events bypass the ordinary pickup queue and immediately own the top notification area.
         return showMajor(title,text,tone,duration||8000);
       }
       if(state.majorUntil>now){
-        // Do not let ammo, coins, health or other routine pickups cover a major event.
-        // Keep only the latest genuinely useful secondary message for after the alert.
+        // Retained confirmations may update the hidden pickup state while the major banner stays visually dominant.
+        // They are replayed after the major alert; routine low-priority pickups remain suppressed.
+        if(retain){state.pendingImportant=Array.from(arguments);return original.apply(this,arguments)}
         if(priority>=70)state.pendingImportant=Array.from(arguments);
         return false;
       }
