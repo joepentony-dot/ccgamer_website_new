@@ -186,7 +186,7 @@
       if(state.majorUntil>now){
         // Do not let ammo, coins, health or other routine pickups cover a major event.
         // Keep only the latest genuinely useful secondary message for after the alert.
-        if(priority>=70)state.pendingImportant=[title,text,tone,duration];
+        if(priority>=70)state.pendingImportant=Array.from(arguments);
         return false;
       }
       return original.apply(this,arguments);
