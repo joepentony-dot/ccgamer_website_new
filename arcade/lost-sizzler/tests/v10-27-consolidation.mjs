@@ -18,7 +18,7 @@ assert.ok(
 );
 assert.match(inputFixes,/CANONICAL_PATH="\/arcade\/lost-sizzler\/"/,'canonical arcade path must be declared');
 assert.match(inputFixes,/returnTo/,'weekly auth return path must be migrated at runtime');
-assert.match(index,/The Lost Sizzler/,'canonical runtime must contain the live game');
+assert.match(index,/C64 Dungeon Carnage/,'canonical runtime must contain the live game name');
 assert.match(oldPrimary,/location\.replace\(destination\.href\)/,'previous production URL must redirect');
 assert.match(oldTest,/location\.replace\(destination\.href\)/,'obsolete test URL must redirect');
 assert.match(oldPrimary,/\/arcade\/lost-sizzler\//,'previous production URL must target canonical arcade path');
@@ -29,4 +29,4 @@ assert.match(voice,/playSprite/,'bundled recorded voice fallback must be present
 assert.match(voice,/src=!forceTts\?assetFor\(key\):""/,'admin voice override must be checked before bundled fallback');
 assert.doesNotMatch(voice,/state\.queue\.push\(/,'voice cues must never accumulate into a playback backlog');
 
-console.log('Lost Sizzler consolidation regression checks passed.');
+console.log('C64 Dungeon Carnage consolidation regression checks passed.');

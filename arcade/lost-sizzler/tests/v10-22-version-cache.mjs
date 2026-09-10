@@ -66,7 +66,7 @@ assert.ok(index.indexOf(`js/v10-41-r27-spy-isolation.js?v=${token}`)<index.index
 assert.ok(index.indexOf(`js/v10-41-r28-special-mode-repair.js?v=${token}`)<index.indexOf(`js/v10-41-r29-runtime-repair.js?v=${token}`),"r29 runtime repair must remain after r28");
 assert.ok(index.indexOf(`js/v10-41-r29-runtime-repair.js?v=${token}`)<index.indexOf(`js/v10-41-r30-global-movement-guard.js?v=${token}`),"r30 movement ownership must load after r29 runtime repair");
 assert.ok(index.indexOf(`js/v10-41-r30-global-movement-guard.js?v=${token}`)<index.indexOf(`js/v10-41-r30-buglog.js?v=${token}`),"r30 buglog must load after its movement ownership repair");
-assert.match(index,/THE LOST SIZZLER — V10\.42/,"static title bar must identify V10.42 before runtime label correction");
+assert.ok(index.includes('<h1>C64 Dungeon Carnage</h1>'),"static title bar must identify C64 Dungeon Carnage before runtime label correction");
 assert.match(index,/BUILD V10\.42/,"static build badge must identify V10.42 before runtime label correction");
 assert.match(index,/id="hud-mana">0\/120</,"static HUD must reflect the sword-first 120-round ammunition model");
 assert.match(index,/id="hud-weapon">SWORD</,"static HUD must show the starting melee weapon before runtime sync");
@@ -142,7 +142,7 @@ assert.match(checker,/Check \/ Refresh Game/,"main menu must expose the update-c
 assert.match(checker,/fetch\(`version\.json\?check=\$\{Date\.now\(\)\}`/,"version manifest request must use a unique no-cache URL");
 assert.match(checker,/cache:"no-store"/,"version manifest fetch must explicitly bypass the browser cache");
 assert.match(checker,/state\.latest!==current/,"version checker must compare the cached page build with the live build");
-assert.match(checker,/older cached version of The Lost Sizzler/,"outdated players must be told that their browser has an older cached build");
+assert.match(checker,/older cached version of C64 Dungeon Carnage/,"outdated players must be told that their browser has an older cached build");
 assert.match(checker,/Refresh to Latest Version/,"outdated-build warning must provide a direct refresh action");
 assert.match(checker,/if\(menuVisible\(\)\)renderPanel\("outdated"\)/,"background version checks must automatically open the update panel when the menu is visible");
 assert.match(checker,/url\.searchParams\.set\("ccg-build"/,"forced refresh must navigate to a build-specific page URL");

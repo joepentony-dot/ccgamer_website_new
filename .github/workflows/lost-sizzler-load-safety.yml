@@ -58,7 +58,7 @@ jobs:
           test -f arcade/lost-sizzler/js/v10-41-r47-all-mode-optimisation.js
           test -d arcade/lost-sizzler/assets/audio/music
           test -d arcade/lost-sizzler/assets/audio/voice
-          grep -q 'The Lost Sizzler' arcade/lost-sizzler/index.html
+          grep -q 'C64 Dungeon Carnage' arcade/lost-sizzler/index.html
           grep -q 'https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/' arcade/lost-sizzler/index.html
           grep -q '/arcade/lost-sizzler/' games/ccg-games/cheeky-commodore-quest/index.html
           grep -q '/arcade/lost-sizzler/' games/the-lost-sizzler/index.html

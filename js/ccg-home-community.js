@@ -21,6 +21,16 @@
     const target = document.querySelector(".home-hero__beta-cta");
     if (!target) return;
     target.href = lostSizzlerUrl;
+    target.setAttribute("aria-label", "Beta test C64 Dungeon Carnage, the new Cheeky Commodore Gamer browser game");
+    const targetName = target.querySelector("span");
+    if (targetName) targetName.textContent = "C64 DUNGEON CARNAGE";
+
+    const leaderboard = document.querySelector(".home-hero__leaderboard-cta");
+    if (leaderboard) {
+      leaderboard.href = lostSizzlerUrl + "#weekly-vault";
+      leaderboard.setAttribute("aria-label", "View the C64 Dungeon Carnage weekly challenge leaderboard");
+    }
+
     if (document.querySelector(".home-hero__sizzler-mark")) return;
     ensureLostSizzlerCtaStyle();
 

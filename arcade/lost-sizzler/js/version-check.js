@@ -75,7 +75,7 @@
     if(document.body?.dataset?.runActive==="true")return;
     const gate=document.createElement("div");
     gate.id="ccg-tutorial-deeplink-gate";
-    gate.innerHTML=`<div class="ccg-tutorial-deeplink-card"><small>THE LOST SIZZLER · TRAINING ARCHIVE</small><h2>Tutorial Ready</h2><p>Your browser needs one click before it can begin the game session. This still bypasses the main menu and goes directly into training.</p><button type="button" class="primary" data-start-tutorial>START TUTORIAL</button></div>`;
+    gate.innerHTML=`<div class="ccg-tutorial-deeplink-card"><small>C64 DUNGEON CARNAGE · TRAINING ARCHIVE</small><h2>Tutorial Ready</h2><p>Your browser needs one click before it can begin the game session. This still bypasses the main menu and goes directly into training.</p><button type="button" class="primary" data-start-tutorial>START TUTORIAL</button></div>`;
     gate.querySelector("[data-start-tutorial]")?.addEventListener("click",()=>{
       dismissTutorialDeepLinkGate();
       tutorialDeepLinkState.attempts=0;
@@ -259,9 +259,9 @@
   function setReleaseLabels(){
     const releaseBuild=activeReleaseBuild(),releaseFamily=activeReleaseFamily();
     const subtitle=document.querySelector(".brand p");
-    if(subtitle&&subtitle.textContent!==`THE LOST SIZZLER — ${releaseFamily}`)subtitle.textContent=`THE LOST SIZZLER — ${releaseFamily}`;
+    if(subtitle&&subtitle.textContent!==`C64 DUNGEON CARNAGE — ${releaseFamily}`)subtitle.textContent=`C64 DUNGEON CARNAGE — ${releaseFamily}`;
     const badge=document.querySelector(".build-badge"),expectedBadge=`BUILD ${releaseBuild.toUpperCase()}`;
-    if(badge&&!state.outdated&&badge.textContent!==expectedBadge){badge.textContent=expectedBadge;badge.title=`${releaseBuild} · Lost Sizzler build ${current}`}
+    if(badge&&!state.outdated&&badge.textContent!==expectedBadge){badge.textContent=expectedBadge;badge.title=`${releaseBuild} · C64 Dungeon Carnage build ${current}`}
   }
 
   function ensureButton(){
@@ -299,13 +299,13 @@
     const title=panel.querySelector("#version-check-title"),copy=panel.querySelector("#version-check-copy"),detail=panel.querySelector("#version-check-detail"),update=panel.querySelector("#version-check-update");
     if(mode==="outdated"){
       title.textContent="Update Available";
-      copy.textContent="Your browser is running an older cached version of The Lost Sizzler. Refresh now to load the latest game files.";
+      copy.textContent="Your browser is running an older cached version of C64 Dungeon Carnage. Refresh now to load the latest game files.";
       detail.textContent=`${RELEASE_VERSION} · Loaded: ${current} · Latest: ${state.latest||"unknown"}`;
       update.textContent="Refresh to Latest Version";
       update.classList.remove("hidden");
     }else if(mode==="current"){
       title.textContent="Game Is Up To Date";
-      copy.textContent=message||`You are running ${RELEASE_VERSION}, the latest published Lost Sizzler build.`;
+      copy.textContent=message||`You are running ${RELEASE_VERSION}, the latest published C64 Dungeon Carnage build.`;
       detail.textContent=`${RELEASE_VERSION} · Loaded: ${current} · Latest: ${state.latest||current}`;
       update.textContent="Reload Anyway";
       update.classList.remove("hidden");
@@ -325,7 +325,7 @@
     if(button){button.textContent="Update Available — Refresh";button.title=`Loaded ${current}; latest ${state.latest}`}
     const badge=document.querySelector(".build-badge");
     if(badge){badge.textContent="UPDATE AVAILABLE";badge.title=`Loaded ${current}; latest ${state.latest}`}
-    const subtitle=document.querySelector(".brand p");if(subtitle)subtitle.textContent=`THE LOST SIZZLER — ${RELEASE_VERSION}`;
+    const subtitle=document.querySelector(".brand p");if(subtitle)subtitle.textContent=`C64 DUNGEON CARNAGE — ${RELEASE_VERSION}`;
     if(menuVisible())renderPanel("outdated");
   }
 
