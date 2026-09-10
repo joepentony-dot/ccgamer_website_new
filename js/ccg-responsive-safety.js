@@ -29,6 +29,10 @@
         {
             href: "/resources/css/ccg-sitewide-layout-optimization.css",
             attr: "data-ccg-sitewide-layout-optimization"
+        },
+        {
+            href: "/resources/css/ccg-nav-labelled-bridge.css",
+            attr: "data-ccg-nav-labelled-bridge"
         }
     ]);
 
