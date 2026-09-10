@@ -142,7 +142,7 @@ assert.match(checker,/Check \/ Refresh Game/,"main menu must expose the update-c
 assert.match(checker,/fetch\(`version\.json\?check=\$\{Date\.now\(\)\}`/,"version manifest request must use a unique no-cache URL");
 assert.match(checker,/cache:"no-store"/,"version manifest fetch must explicitly bypass the browser cache");
 assert.match(checker,/state\.latest!==current/,"version checker must compare the cached page build with the live build");
-assert.match(checker,/older cached version of The Lost Sizzler/,"outdated players must be told that their browser has an older cached build");
+assert.match(checker,/older cached version of C64 Dungeon Carnage/,"outdated players must be told that their browser has an older cached build");
 assert.match(checker,/Refresh to Latest Version/,"outdated-build warning must provide a direct refresh action");
 assert.match(checker,/if\(menuVisible\(\)\)renderPanel\("outdated"\)/,"background version checks must automatically open the update panel when the menu is visible");
 assert.match(checker,/url\.searchParams\.set\("ccg-build"/,"forced refresh must navigate to a build-specific page URL");
