@@ -11,10 +11,11 @@ const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const hotfix=read("js/v10-41-r25-spy-speed-bounty-hotfix.js");
 const controller=read("js/v10-41-mode-runtime.js");
 const index=read("index.html");
+const release=JSON.parse(read("version.json"));
 
-// Delivery: r25 remains part of the canonical runtime under the current r30
+// Delivery: r25 remains part of the canonical runtime under the current
 // cache shell so browsers cannot retain an older copy of this compatibility layer.
-assert.match(index,/v10-41-r25-spy-speed-bounty-hotfix\.js\?v=20260827r31/,"canonical page must load the retained r25 Spy hotfix under the current r30 cache token");
+assert.ok(index.includes(`v10-41-r25-spy-speed-bounty-hotfix.js?v=${release.cacheToken}`),"canonical page must load the retained r25 Spy hotfix under the current published cache token");
 
 // Ownership: movement cadence belongs to the isolated Spy engine. The retained
 // r25 layer may isolate bounty/UI state, but it cannot own the global frame.
@@ -103,4 +104,4 @@ context.CCGLostSizzlerRareEvents.state.bounty={type:"KILL 3 HUNTERS"};
 assert.equal(api.purgeSpecialDungeonState(),false,"ordinary dungeon bounty behaviour must remain untouched");
 assert.deepEqual(context.CCGLostSizzlerRareEvents.state.bounty,{type:"KILL 3 HUNTERS"});
 
-console.log("Lost Sizzler r25 controller-owned Dungeon Bounty isolation and non-update wrapper stability checks passed under r30.");
+console.log("Lost Sizzler r25 controller-owned Dungeon Bounty isolation and non-update wrapper stability checks passed under the current release shell.");
