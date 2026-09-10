@@ -2,9 +2,9 @@
 
 ## Status
 
-Overall completion estimate: **18%**
+Overall completion estimate: **22%**
 
-Current milestone: **Broader bounded game archive validation with duplicate-route protection**
+Current milestone: **Complete normalized game archive enabled in the isolated Eleventy build**
 
 ## Completed
 
@@ -26,7 +26,9 @@ Current milestone: **Broader bounded game archive validation with duplicate-rout
 - Hardened game metadata normalization with trimmed text values, array/single-value normalization for genres and publishers, numeric rating validation, thumbnail path normalization, system labels, safe description fallbacks, and numeric year validation.
 - Added build-time duplicate-slug protection so multiple canonical records cannot attempt to emit the same `/games/<slug>/` route during prototype validation.
 - Expanded the deterministic validation archive from 12 records to a bounded 100-record sample.
-- Updated Games index copy to reflect the broader build-time validation sample.
+- Removed the remaining 100-record validation cap after the broader sample showed the adapter assumptions were safe enough to proceed.
+- Enabled the complete normalized game archive for Eleventy generation while keeping the canonical database read-only.
+- Updated the Games index copy so the prototype now reports the full normalized archive rather than a bounded sample.
 
 ## Validation
 
@@ -39,18 +41,19 @@ Current milestone: **Broader bounded game archive validation with duplicate-rout
 - Duplicate game slugs are prevented from producing conflicting output pages; the first normalized canonical record is retained and later duplicates are logged and skipped in the prototype build.
 - The Games index and individual pagination template consume normalized records only.
 - Existing thumbnail URLs remain source-backed and no canonical artwork was copied or altered.
-- Workflow-run lookup for latest prototype commit `d8f6fe948748134b3f6c4a3b98dd1adc3a840673` returned no associated run yet, so remote runtime build confirmation remains pending rather than failed.
+- Full-archive enablement changes only removed the artificial `.slice(0, 100)` cap; normalization and duplicate-route safeguards remain intact.
+- Latest prototype commit `ee7c178a6251f5177540b0956a745b7bf24a6dbd` currently has no reported commit-status checks and no observable associated workflow run, so remote runtime build confirmation remains pending rather than failed.
 
 ## Blockers
 
 - No critical implementation blocker.
 - End-to-end runtime build confirmation is still pending until the isolated prototype workflow produces an observable result or another build-capable runner is available.
-- No preview deployment has been configured yet; this remains intentionally deferred until the core routes are stable.
+- No preview deployment has been configured yet; this remains intentionally deferred until the core routes and shared navigation are more mature.
 
 ## Next task
 
-Inspect the broader 100-record output path assumptions and then remove the remaining validation cap if the archive remains structurally safe. After the full game archive is enabled, begin shared production-quality navigation and game archive usability work such as lightweight grouping/filtering without reintroducing heavy client-side runtime work.
+Begin production-quality shared navigation and archive usability work now that the complete game archive is enabled. Prioritise lightweight server-generated grouping/browsing aids and accessible navigation rather than large client-side filtering bundles. Then begin generated genre and publisher archive routes from the normalized game dataset.
 
 ## Completion criteria still outstanding
 
-Shared production-quality navigation; complete home migration; complete generated game archive; genres; publishers; collections; Zzap!64; retro specials; music; SEO/structured data/sitemaps/redirect compatibility; accessibility review; image/performance work; regression testing; and an isolated browseable preview deployment.
+Shared production-quality navigation; complete home migration; genres; publishers; collections; Zzap!64; retro specials; music; SEO/structured data/sitemaps/redirect compatibility; accessibility review; image/performance work; regression testing; and an isolated browseable preview deployment.
