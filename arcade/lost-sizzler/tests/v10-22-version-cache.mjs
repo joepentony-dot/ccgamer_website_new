@@ -33,9 +33,9 @@ const metaCache=index.match(/<meta name="ccg-lost-sizzler-cache" content="([^"]+
 assert.ok(metaBuild,"game HTML must publish its loaded Lost Sizzler build number");
 assert.equal(metaBuild,manifest.build,"HTML build number and live version manifest must match");
 assert.equal(metaCache,manifest.cacheToken,"HTML cache token and live version manifest must match");
-assert.equal(manifest.releaseVersion,"V10.41","current semantic release must remain V10.41");
-assert.equal(manifest.build,"2026.08.27.31","current published build must be explicit in the regression check");
-assert.equal(manifest.cacheToken,"20260827r31","current release cache token must be explicit in the live manifest");
+assert.equal(manifest.releaseVersion,"V10.42","current semantic release must be V10.42");
+assert.equal(manifest.build,"2026.09.10.1","current published build must be explicit in the regression check");
+assert.equal(manifest.cacheToken,"20260910r1","current release cache token must be explicit in the live manifest");
 
 for(const asset of [
   "css/game.css","css/v10-6-gameplay.css","css/v10-41-r28.css","css/v10-41-r29.css","js/v10-41-cache-guard.js","js/v10-41-load-watchdog.js",
@@ -66,8 +66,8 @@ assert.ok(index.indexOf(`js/v10-41-r27-spy-isolation.js?v=${token}`)<index.index
 assert.ok(index.indexOf(`js/v10-41-r28-special-mode-repair.js?v=${token}`)<index.indexOf(`js/v10-41-r29-runtime-repair.js?v=${token}`),"r29 runtime repair must remain after r28");
 assert.ok(index.indexOf(`js/v10-41-r29-runtime-repair.js?v=${token}`)<index.indexOf(`js/v10-41-r30-global-movement-guard.js?v=${token}`),"r30 movement ownership must load after r29 runtime repair");
 assert.ok(index.indexOf(`js/v10-41-r30-global-movement-guard.js?v=${token}`)<index.indexOf(`js/v10-41-r30-buglog.js?v=${token}`),"r30 buglog must load after its movement ownership repair");
-assert.match(index,/THE LOST SIZZLER — V10\.41/,"static title bar must identify V10.41 before runtime label correction");
-assert.match(index,/BUILD V10\.41/,"static build badge must identify V10.41 before runtime label correction");
+assert.match(index,/THE LOST SIZZLER — V10\.42/,"static title bar must identify V10.42 before runtime label correction");
+assert.match(index,/BUILD V10\.42/,"static build badge must identify V10.42 before runtime label correction");
 assert.match(index,/id="hud-mana">0\/120</,"static HUD must reflect the sword-first 120-round ammunition model");
 assert.match(index,/id="hud-weapon">SWORD</,"static HUD must show the starting melee weapon before runtime sync");
 assert.match(index,/SPACE ATTACK/,"keyboard help must describe the shared firearm/melee attack action");

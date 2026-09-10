@@ -13,15 +13,16 @@ const repair=read("js/v10-41-r29-runtime-repair.js");
 const css=read("css/v10-41-r29.css");
 const buglog=read("js/v10-41-r29-buglog.js");
 
-assert.equal(manifest.build,"2026.08.27.31","current manifest must publish r30 build .30 while retaining r29 runtime protections");
-assert.equal(manifest.cacheToken,"20260827r31","current manifest must publish the r30 cache generation");
-assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.27\.31"/,"canonical page must expose build .31");
-assert.match(index,/ccg-lost-sizzler-cache" content="20260827r31"/,"canonical page must expose r29 cache generation");
+assert.equal(manifest.releaseVersion,"V10.42","current manifest must publish V10.42 while retaining r29 runtime protections");
+assert.ok(index.includes(`ccg-lost-sizzler-build" content="${manifest.build}"`),"canonical page must expose the published build");
+assert.ok(index.includes(`ccg-lost-sizzler-cache" content="${manifest.cacheToken}"`),"canonical page must expose the published cache generation");
 assert.doesNotMatch(index,/\?v=20260825r28/,"canonical page must not request stale r28 runtime assets");
-assert.match(index,/css\/v10-41-r29\.css\?v=20260827r31/,"r29 stable geometry CSS must load");
-assert.match(index,/js\/v10-41-r29-buglog\.js\?v=20260827r31/,"r29 developer buglog additions must load");
-assert.match(index,/js\/v10-41-r29-runtime-repair\.js\?v=20260827r31/,"r29 runtime repair must load");
-assert.ok(index.indexOf("v10-41-r28-special-mode-repair.js?v=20260827r31")<index.indexOf("v10-41-r29-runtime-repair.js?v=20260827r31"),"retained r29 runtime protections must execute after r28 before the r30 ownership failsafe");
+assert.ok(index.includes(`css/v10-41-r29.css?v=${manifest.cacheToken}`),"r29 stable geometry CSS must load under the current cache generation");
+assert.ok(index.includes(`js/v10-41-r29-buglog.js?v=${manifest.cacheToken}`),"r29 developer buglog additions must load under the current cache generation");
+assert.ok(index.includes(`js/v10-41-r29-runtime-repair.js?v=${manifest.cacheToken}`),"r29 runtime repair must load under the current cache generation");
+const r28Url=`v10-41-r28-special-mode-repair.js?v=${manifest.cacheToken}`;
+const r29Url=`v10-41-r29-runtime-repair.js?v=${manifest.cacheToken}`;
+assert.ok(index.indexOf(r28Url)<index.indexOf(r29Url),"retained r29 runtime protections must execute after r28 before the later ownership failsafe");
 
 assert.match(repair,/stableLoop\.__ccgV141R29Stable=true/,"r29 must publish a final stable frame-loop owner");
 assert.doesNotMatch(repair,/canvas\.width\s*=|canvas\.height\s*=/,"r29 frame recovery must never recreate the canvas backing store");
@@ -78,4 +79,4 @@ assert.match(buglog,/LATEST UPDATE · 26 AUG 2026/,"r29 bug tracker must identif
 assert.match(buglog,/build 2026\.08\.25\.29/,"r29 bug tracker must identify the r29 build");
 assert.match(buglog,/20260825r29/,"r29 bug tracker must identify the r29 cache generation");
 
-console.log("Lost Sizzler V10.41 r29 runtime, flicker, Horde, isolated Spy, audio, combat, dungeon structure, keyboard UX, pickup and release regression checks passed.");
+console.log("Lost Sizzler V10.41 r29 runtime, flicker, Horde, isolated Spy, audio, combat, dungeon structure, keyboard UX, pickup and current-release regression checks passed.");
