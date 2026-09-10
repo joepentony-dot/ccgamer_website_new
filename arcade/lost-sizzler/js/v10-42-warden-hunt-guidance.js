@@ -19,7 +19,7 @@
   const baseUpdateQuests=typeof updateQuests==="function"?updateQuests:null;
   const baseStartWorld=typeof startWorld==="function"?startWorld:null;
   const baseFloorComplete=typeof floorComplete==="function"?floorComplete:null;
-  const R=()=>{try{return typeof run!=="undefined"?run:null}catch(_){return null}},H=()=>{try{return typeof host!=="undefined"?host:null}catch(_){return null}},P=()=>{try{return typeof p1!=="undefined"?p1:null}catch(_){return null}},M=()=>{try{return typeof mode!=="undefined"?mode:"menu"}catch(_){return"menu"}};
+  const R=()=>{try{return typeof run!=="undefined"?run:null}catch(_){return null}},H=()=>{try{return typeof host!=="undefined"?host:null}catch(_){return null}},P=()=>{try{return typeof p1!=="undefined"?p1:null}catch(_){return null}},P2=()=>{try{return typeof p2!=="undefined"?p2:null}catch(_){return null}},WLD=()=>{try{return typeof world!=="undefined"?world:null}catch(_){return null}},M=()=>{try{return typeof mode!=="undefined"?mode:"menu"}catch(_){return"menu"}};
   const floor=(r=R())=>Math.max(1,Math.min(Number(C.maxFloors)||5,Math.floor(Number(r?.floor)||1)));
   const esc=value=>String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const toast=(title,text,tone="cyan",duration=11500)=>{try{showToast(title,text,tone,duration)}catch(_){} };
@@ -93,6 +93,10 @@
     return issues;
   }
   function exitIssueKey(issues){return issues.filter(issue=>issue.blocking).map(issue=>issue.kind).sort().join("|")}
+  function playerExitContact(by,h=H()){
+    const w=WLD(),exit=w?.exit;if(!h?.exitOpen||!exit)return false;const name=String(by??"");
+    return[P(),P2()].some(player=>Boolean(player)&&Number(player.x)===Number(exit.x)&&Number(player.y)===Number(exit.y)&&String(player.name??"")===name);
+  }
   function appendReservationSummary(r=R()){
     const pending=pendingRouteRows(r);if(!pending.length||!UI?.floorSummary)return false;const floors=pending.map(x=>`F${Number(x.floor)}`).join(", ");
     if(String(UI.floorSummary.innerHTML||"").includes("data-v142-reserved-ward-route"))return false;
@@ -100,6 +104,7 @@
   }
   function guardedFloorComplete(by){
     if(!baseFloorComplete)return false;const r=R(),h=H(),n=floor(r);if(!r||!h||r.floorComplete||M()!=="playing")return baseFloorComplete(by);
+    if(!playerExitContact(by,h)){const result=baseFloorComplete(by);appendReservationSummary(r);return result}
     const issues=exitIssues(n,r,h),blocking=issues.filter(issue=>issue.blocking),key=exitIssueKey(issues),now=Date.now(),armed=h.v142WardenExitConfirm;
     if(blocking.length&&(!armed||Number(armed.floor)!==n||armed.key!==key||now>Number(armed.until||0))){
       h.v142WardenExitConfirm={floor:n,key,until:now+EXIT_CONFIRM_MS};sfx("locked");
@@ -113,5 +118,5 @@
   if(baseFloorComplete)floorComplete=function(by){try{return guardedFloorComplete(by)}catch(error){console.warn("[Lost Sizzler V10.42] Warden exit guard failed safely",error);return baseFloorComplete(by)}};
 
   try{renderWardenQuest();briefFloor(false)}catch(_){}
-  window.CCGLostSizzlerV142WardenHuntGuidance={version:"V10.42 r3",profiles:PROFILES,huntState,routeInstruction,rewardText,questHtml,renderWardenQuest,floorBriefText,briefFloor,exitIssues,guardedFloorComplete,appendReservationSummary};
+  window.CCGLostSizzlerV142WardenHuntGuidance={version:"V10.42 r3",profiles:PROFILES,huntState,routeInstruction,rewardText,questHtml,renderWardenQuest,floorBriefText,briefFloor,exitIssues,playerExitContact,guardedFloorComplete,appendReservationSummary};
 })();
