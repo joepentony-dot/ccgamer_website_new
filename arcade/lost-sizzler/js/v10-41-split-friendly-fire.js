@@ -212,6 +212,13 @@
     }catch(_){return false}
   }
 
+  function spyOwnsMovement(current=window.movePlayer){
+    try{
+      const engine=window.CCGLostSizzlerV141R29SpyEngine;
+      return Boolean(String(document.body?.dataset?.specialMode||"")==="sizzler-saboteurs"&&engine?.state?.isolated&&typeof engine.moveOwner==="function"&&current===engine.moveOwner);
+    }catch(_){return false}
+  }
+
   function installPlayerCollision(){
     const current=window.movePlayer;if(typeof current!=="function")return false;
     // The split collision layer is installed before the final release owners and
@@ -219,6 +226,7 @@
     // mistake a later outer finalizer for a missing split owner and wrap the
     // golden function every 90 ms. That created a short ownership race in Solo.
     if(movementChainHasSplitOwner(current)){state.moveWrapped=current;return true}
+    if(spyOwnsMovement(current)){state.moveWrapped=current;state.movementOwnershipYields++;return true}
     if(r30OwnsNormalMovement()&&String(playMode)!=="split"){state.movementOwnershipYields++;return true}
     const previous=current;
     const wrapped=function movePlayerV141SplitBudge(player,dx,dy,dash=false){

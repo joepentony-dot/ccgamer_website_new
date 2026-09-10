@@ -146,7 +146,10 @@
   function guardChestConfirmation(player,name,scoreReward,xpReward){
     stopChestConfirmationGuard();
     activeChestConfirmation={player,name,scoreReward,xpReward,until:now()+6500};
-    const pickupRoot=document.body||document.documentElement;
+    // Only the shared pickup title can displace this retained confirmation.
+    // Watching document.body made the guard react to every live HUD/render
+    // mutation, which let unrelated UI activity contend with the toast owner.
+    const pickupRoot=document.getElementById("pickup-title");
     if(typeof MutationObserver==="function"&&pickupRoot){
       chestConfirmationObserver=new MutationObserver(()=>{
         const active=activeChestConfirmation;
