@@ -117,6 +117,15 @@
   function chestPlayerStillActive(player){
     try{return Boolean(player&&typeof localPlayers==="function"&&localPlayers().includes(player)&&run&&host)}catch(_){return false}
   }
+  function showChestConfirmation(player,name,scoreReward,xpReward){
+    try{
+      if(!chestPlayerStillActive(player))return false;
+      if(document.getElementById("pickup-title")?.textContent==="CHEST REWARD CONFIRMED")return true;
+      showToast("CHEST REWARD CONFIRMED",`${name} · +${scoreReward.toLocaleString()} score · +${xpReward} XP.`,"gold",6500);
+      diagnostics.chestRewardRepairs++;
+      return true;
+    }catch(_){return false}
+  }
   try{
     if(typeof applyLoot==="function"&&!applyLoot.__ccgV142R1ChestTracking){
       const baseApplyLoot=applyLoot;
@@ -142,10 +151,14 @@
                 applyLoot(loot,player);diagnostics.chestLootRecoveries++;
                 try{floatPickupText(player,name,loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan)}catch(_){}
               }
-              showToast("CHEST REWARD CONFIRMED",`${name} · +${scoreReward.toLocaleString()} score · +${xpReward} XP.`,"gold",6500);
-              diagnostics.chestRewardRepairs++;
+              showChestConfirmation(player,name,scoreReward,xpReward);
             }catch(_){}
           },650);
+          // Achievement/level-up notifications use the same pickup surface and can
+          // arrive after the chest callback. Reassert this specific confirmation
+          // only when another notification has displaced it; reward application is
+          // still single-shot and remains tracked independently above.
+          for(const delay of [1800,3200])setTimeout(()=>showChestConfirmation(player,name,scoreReward,xpReward),delay);
         }
         return result;
       };
