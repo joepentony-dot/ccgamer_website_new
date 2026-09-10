@@ -122,15 +122,7 @@
     chestConfirmationObserver?.disconnect?.();chestConfirmationObserver=null;activeChestConfirmation=null;
   }
   function chestToastOwner(){
-    let owner=window.showToast;
-    const seen=new Set();
-    while(typeof owner==="function"&&!seen.has(owner)){
-      seen.add(owner);
-      const next=owner.__ccgV141Original;
-      if(typeof next!=="function")break;
-      owner=next;
-    }
-    return typeof owner==="function"?owner:null;
+    return typeof window.showToast==="function"?window.showToast:null;
   }
   function showChestConfirmation(player,name,scoreReward,xpReward){
     try{
