@@ -1,0 +1,13 @@
+<article class="game-card">
+  {% if game.thumbnail %}
+    <a href="/games/{{ game.slug }}/" class="game-card__image-link" aria-label="View {{ game.title }}">
+      <img class="game-card__image" src="/{{ game.thumbnail }}" alt="{{ game.title }}" loading="lazy" decoding="async">
+    </a>
+  {% endif %}
+  <div class="game-card__body">
+    <p class="game-card__meta">{{ game.systemLabel }}{% if game.year %} · {{ game.year }}{% endif %}</p>
+    <h3><a href="/games/{{ game.slug }}/">{{ game.title }}</a></h3>
+    {% if game.publishers.length %}<p>{{ game.publishers | join(", ") }}</p>{% endif %}
+    {% if game.rating %}<p class="game-card__rating">CCG rating: {{ game.rating }}/10</p>{% endif %}
+  </div>
+</article>
