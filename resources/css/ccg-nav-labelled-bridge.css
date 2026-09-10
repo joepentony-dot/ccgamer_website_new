@@ -1,16 +1,17 @@
 /* ============================================================
-   CCG LABELLED NAVIGATION BRIDGE — 901–1199PX
+   CCG LABELLED NAVIGATION BRIDGE — 960–1199PX
    ------------------------------------------------------------
    Keeps the real navigation labels visible on laptops and
-   narrower desktop windows. The established mobile drawer remains
-   authoritative at 900px and below; the existing adaptive desktop
+   narrower desktop windows. The established responsive drawer
+   remains authoritative below 960px; the existing adaptive desktop
    navigation remains authoritative at 1200px and above.
 
    This file is intentionally loaded last by ccg-responsive-safety.js
-   so older 901–1199px hamburger rules cannot hide the static nav.
+   so older 901–1199px hamburger rules cannot hide the static nav
+   throughout the useful compact-desktop range.
 ============================================================ */
 
-@media (min-width: 901px) and (max-width: 1199px) {
+@media (min-width: 960px) and (max-width: 1199px) {
     .ccg-header .ccg-header-inner {
         grid-template-columns: minmax(0, 1fr) !important;
         grid-template-areas:
