@@ -16,6 +16,11 @@ body {
 
 a { color: inherit; }
 
+img {
+  display: block;
+  max-width: 100%;
+}
+
 .wrap {
   width: min(1120px, calc(100% - 2rem));
   margin-inline: auto;
@@ -74,6 +79,8 @@ h1 {
   font-size: clamp(2.6rem, 8vw, 5.5rem);
 }
 
+h2 { margin-top: 0; }
+
 .lede {
   font-size: clamp(1.05rem, 2vw, 1.3rem);
   max-width: 66ch;
@@ -90,18 +97,102 @@ h1 {
   font-weight: 700;
 }
 
-.cards {
+.cards,
+.game-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
 }
 
-.card {
+.card,
+.game-card {
   border: 1px solid #333;
   border-radius: .5rem;
-  padding: 1.25rem;
   background: #181818;
 }
+
+.card { padding: 1.25rem; }
+
+.section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.section-heading p { margin: 0; color: #bbb; }
+
+.game-card {
+  overflow: hidden;
+}
+
+.game-card__image-link {
+  display: block;
+  aspect-ratio: 16 / 10;
+  background: #0c0c0c;
+}
+
+.game-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.game-card__body { padding: 1rem; }
+
+.game-card__body h3 { margin: .15rem 0 .5rem; }
+
+.game-card__body h3 a { text-decoration: none; }
+
+.game-card__body p { margin: .35rem 0 0; }
+
+.game-card__meta,
+.game-card__rating {
+  color: #bbb;
+  font-size: .92rem;
+}
+
+.game-detail { padding-top: 2rem; }
+
+.game-detail__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 2rem;
+  align-items: start;
+  margin-top: 2rem;
+}
+
+.game-detail__media {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid #333;
+  border-radius: .5rem;
+  background: #0c0c0c;
+}
+
+.game-detail__media img {
+  width: 100%;
+  height: auto;
+}
+
+.game-facts {
+  display: grid;
+  gap: .75rem;
+  margin: 2rem 0;
+}
+
+.game-facts div {
+  display: grid;
+  grid-template-columns: 9rem 1fr;
+  gap: 1rem;
+  border-top: 1px solid #333;
+  padding-top: .75rem;
+}
+
+.game-facts dt { font-weight: 700; }
+.game-facts dd { margin: 0; color: #ddd; }
+.back-link { margin-top: 2rem; }
 
 .site-footer {
   border-top: 1px solid #333;
@@ -116,6 +207,17 @@ h1 {
     padding-block: 1rem;
   }
 
-  .cards { grid-template-columns: 1fr; }
+  .cards,
+  .game-grid,
+  .game-detail__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-heading {
+    display: block;
+  }
+
+  .section-heading p { margin-top: .5rem; }
+  .game-facts div { grid-template-columns: 1fr; gap: .15rem; }
   .hero { padding-top: 2rem; }
 }
