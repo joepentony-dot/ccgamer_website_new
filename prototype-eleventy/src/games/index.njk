@@ -7,18 +7,32 @@ permalink: /games/index.html
 <section class="hero hero--compact">
   <p class="eyebrow">ARCHIVE PROTOTYPE</p>
   <h1>Games</h1>
-  <p class="lede">This page is generated at build time from the existing CCG games database. The complete normalized archive is now enabled in the isolated Eleventy prototype.</p>
+  <p class="lede">This page is generated at build time from the existing CCG games database. The complete normalized archive is available without requiring a client-side filtering bundle.</p>
 </section>
 
-<section aria-labelledby="prototype-games-heading">
+<section class="archive-browser" id="browse-a-z" aria-labelledby="browse-a-z-heading">
   <div class="section-heading">
-    <h2 id="prototype-games-heading">Generated game pages</h2>
+    <h2 id="browse-a-z-heading">Browse A–Z</h2>
     <p>{{ games | length }} records generated from <code>games/games.json</code>.</p>
   </div>
 
-  <div class="game-grid">
-    {% for game in games %}
-      {% include "components/game-card.njk" %}
+  <nav class="archive-jumps" aria-label="Browse games by title">
+    {% for initial in gameArchive.initials %}
+      <a href="#{% if initial == '#' %}games-other{% else %}games-{{ initial | lower }}{% endif %}">{{ initial }}</a>
     {% endfor %}
-  </div>
+  </nav>
+
+  {% for group in gameArchive.groups %}
+    <section class="archive-group" aria-labelledby="{{ group.id }}">
+      <div class="archive-group__heading">
+        <h2 id="{{ group.id }}">{{ group.initial }}</h2>
+        <a href="#browse-a-z">Back to A–Z</a>
+      </div>
+      <div class="game-grid">
+        {% for game in group.games %}
+          {% include "components/game-card.njk" %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endfor %}
 </section>
