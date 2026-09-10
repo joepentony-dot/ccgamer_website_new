@@ -240,6 +240,7 @@
     };
     wrapped.__ccgV141SplitBudge=true;
     wrapped.__ccgPreviousMovePlayer=previous;
+    wrapped.__ccgOriginal=previous;
     movePlayer=wrapped;state.moveWrapped=wrapped;
     return true;
   }

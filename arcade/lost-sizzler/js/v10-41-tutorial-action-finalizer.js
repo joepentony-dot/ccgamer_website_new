@@ -42,6 +42,14 @@
       return Boolean(r30?.goldenLocked&&typeof r30.goldenMove==="function");
     }catch(_){return false}
   }
+  function chainHasTutorialFinal(fn,limit=64){
+    const seen=new Set();let current=fn,depth=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth++<limit){
+      if(current.__ccgV141TutorialMoveFinal)return true;
+      seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null;
+    }
+    return false;
+  }
 
   function installMove(){
     // Once r30 has sealed the known-good movement stack it is the sole normal-
@@ -50,7 +58,7 @@
     // sampled between recovery passes. Fire/dash finalisation remains live.
     if(movementOwnedByR30())return true;
     const current=window.movePlayer;if(typeof current!=="function")return false;
-    if(current.__ccgV141TutorialMoveFinal)return true;
+    if(chainHasTutorialFinal(current))return true;
     const original=current;
     const wrapped=function movePlayerV141TutorialFinal(player,dx,dy,dash=false){
       const ts=tutorial(),tracking=Boolean(ts?.active&&Number(ts.step)===0),before=tracking&&player?{x:Number(player.x),y:Number(player.y)}:null;
@@ -69,6 +77,7 @@
     wrapped.__ccgV141TutorialMoveFinal=true;
     wrapped.__tutorial=true;
     wrapped.__ccgV141TutorialOriginal=original;
+    wrapped.__ccgOriginal=original;
     window.movePlayer=wrapped;state.wraps++;return true;
   }
 
