@@ -13,6 +13,14 @@ const MUSIC_GLOBAL_FIRST_PAINT_STYLES = Object.freeze([
   "/resources/css/ccg-responsive-page-polish.css",
   "/resources/css/ccg-sitewide-layout-optimization.css"
 ]);
+const PUBLIC_HEADER_FOUNDATION_STYLES = Object.freeze([
+  "/resources/css/ccg-master.css"
+]);
+const PUBLIC_HEADER_FIRST_PAINT_STYLES = Object.freeze([
+  "/resources/css/ccg-nav-labelled-bridge.css"
+]);
+const PUBLIC_HEADER_EXCLUDED_TOP_LEVEL = new Set(["arcade"]);
+const PUBLIC_HEADER_EXCLUDED_FILES = new Set(["index.html", "app-launch.html", "offline.html"]);
 
 function parseArgs(argv) {
   const args = { root: ".", check: false };
@@ -56,6 +64,27 @@ function isSourceRepositoryRoot(root) {
   return fs.existsSync(path.join(absoluteRoot, ".git"))
     && fs.existsSync(path.join(absoluteRoot, "scripts", "normalize-public-header-shell-core.js"))
     && fs.existsSync(path.join(absoluteRoot, "js", "ccg-music-navigation.js"));
+}
+
+function normaliseRelativePath(relativePath) {
+  return String(relativePath || "")
+    .replace(/\\/g, "/")
+    .replace(/^\.\//, "")
+    .replace(/^\/+/, "");
+}
+
+function shouldInjectPublicHeader(relativePath, html) {
+  if (hasPublicHeader(html)) return false;
+  if (!/<body\b[^>]*>/i.test(String(html || ""))) return false;
+  if (/\bdata-ccg-no-public-header\b/i.test(String(html || ""))) return false;
+
+  const relative = normaliseRelativePath(relativePath);
+  if (!relative) return true;
+  if (core.shouldExclude(relative)) return false;
+  if (PUBLIC_HEADER_EXCLUDED_FILES.has(relative.toLowerCase())) return false;
+
+  const topLevel = relative.split("/", 1)[0].toLowerCase();
+  return !PUBLIC_HEADER_EXCLUDED_TOP_LEVEL.has(topLevel);
 }
 
 function resolveMusicHeaderSource(root) {
@@ -104,6 +133,49 @@ function extractMusicStylePaths(root) {
   return Array.from(new Set(styles));
 }
 
+function rootAbsoluteUrl(value) {
+  const raw = String(value || "").trim();
+  if (!raw || /^(?:[a-z][a-z0-9+.-]*:|\/\/|\/|#|\?)/i.test(raw)) return raw;
+  return `/${raw.replace(/^\.\//, "")}`;
+}
+
+function rootAbsoluteSrcset(value) {
+  return String(value || "")
+    .split(",")
+    .map((candidate) => {
+      const trimmed = candidate.trim();
+      if (!trimmed) return trimmed;
+      const parts = trimmed.split(/\s+/);
+      parts[0] = rootAbsoluteUrl(parts[0]);
+      return parts.join(" ");
+    })
+    .join(", ");
+}
+
+function absolutiseMasterHeaderMarkup(markup) {
+  return String(markup || "")
+    .replace(/\b(href|src)\s*=\s*(["'])([^"']*)\2/gi, (_match, attribute, quote, value) => {
+      return `${attribute}=${quote}${rootAbsoluteUrl(value)}${quote}`;
+    })
+    .replace(/\bsrcset\s*=\s*(["'])([^"']*)\1/gi, (_match, quote, value) => {
+      return `srcset=${quote}${rootAbsoluteSrcset(value)}${quote}`;
+    });
+}
+
+function extractMasterHeaderMarkup(root) {
+  const sourcePath = path.join(path.resolve(root), "home.html");
+  if (!fs.existsSync(sourcePath)) {
+    throw new Error(`Canonical home header source is missing for staged root: ${sourcePath}`);
+  }
+
+  const source = fs.readFileSync(sourcePath, "utf8");
+  const match = source.match(/<header\b[^>]*\bdata-ccg-header\b[^>]*>[\s\S]*?<\/header\s*>/i);
+  if (!match) {
+    throw new Error("Could not extract the canonical public header from home.html.");
+  }
+  return absolutiseMasterHeaderMarkup(match[0]);
+}
+
 function buildModeIdentityMarkup() {
   return `<aside id="ccgModeIdentityBar" class="ccg-mode-identity" role="status" aria-live="polite" aria-label="Current Commodore display mode" data-mode="c64" data-ccg-music-static-mode-identity="true">
   <div class="ccg-mode-identity__inner">
@@ -131,6 +203,14 @@ function insertAfterBodyOpen(html, markup) {
   return `${html.slice(0, insertAt)}\n${markup}\n${html.slice(insertAt)}`;
 }
 
+function insertIntoPageShellOrAfterBody(html, markup) {
+  const source = String(html || "");
+  const shell = source.match(/<div\b(?=[^>]*\bclass\s*=\s*(["'])[^"']*\bccg-page\b[^"']*\1)[^>]*>/i);
+  if (!shell || typeof shell.index !== "number") return insertAfterBodyOpen(source, markup);
+  const insertAt = shell.index + shell[0].length;
+  return `${source.slice(0, insertAt)}\n${markup}\n${source.slice(insertAt)}`;
+}
+
 function insertAfterPublicHeader(html, markup) {
   const source = String(html || "");
   const headerStart = source.search(/<header\b[^>]*\bdata-ccg-header\b[^>]*>/i);
@@ -153,16 +233,29 @@ function hasDirectStylesheet(html, href) {
   return pattern.test(String(html || ""));
 }
 
-function ensureMusicFirstPaintStyles(html, stylePaths) {
+function ensureStyles(html, stylePaths, marker) {
   let output = html;
   stylePaths.forEach((href) => {
     if (hasDirectStylesheet(output, href)) return;
     output = insertBeforeHeadClose(
       output,
-      `<link rel="stylesheet" href="${href}" data-ccg-music-first-paint-style="true">`
+      `<link rel="stylesheet" href="${href}" ${marker}="true">`
     );
   });
   return output;
+}
+
+function ensureMusicFirstPaintStyles(html, stylePaths) {
+  return ensureStyles(html, stylePaths, "data-ccg-music-first-paint-style");
+}
+
+function ensurePublicHeaderFoundationStyles(html) {
+  return ensureStyles(html, PUBLIC_HEADER_FOUNDATION_STYLES, "data-ccg-public-header-foundation-style");
+}
+
+function ensurePublicHeaderFirstPaintStyles(html) {
+  if (!hasPublicHeader(html)) return html;
+  return ensureStyles(html, PUBLIC_HEADER_FIRST_PAINT_STYLES, "data-ccg-public-header-first-paint-style");
 }
 
 function prepareMusicFirstPaintShell(html, options = {}) {
@@ -211,17 +304,53 @@ function prepareMusicFirstPaintShell(html, options = {}) {
   };
 }
 
+function preparePublicFirstPaintShell(html, options = {}) {
+  const relativePath = options.relativePath || "";
+  if (!shouldInjectPublicHeader(relativePath, html)) {
+    return {
+      html,
+      applicable: hasPublicHeader(html),
+      changed: false,
+      headerInserted: false
+    };
+  }
+
+  const root = options.root || path.resolve(__dirname, "..");
+  const headerMarkup = options.masterHeaderMarkup || extractMasterHeaderMarkup(root);
+  let output = ensurePublicHeaderFoundationStyles(html);
+  output = insertIntoPageShellOrAfterBody(output, headerMarkup);
+
+  if (!hasPublicHeader(output)) {
+    throw new Error(`Public page has no usable insertion point for the canonical header: ${relativePath || "<inline HTML>"}`);
+  }
+
+  return {
+    html: output,
+    applicable: true,
+    changed: output !== html,
+    headerInserted: true
+  };
+}
+
 function normaliseHtml(html, options = {}) {
-  const staged = prepareMusicFirstPaintShell(html, options);
-  const output = staged.changed ? staged.html : html;
+  const stagedMusic = prepareMusicFirstPaintShell(html, options);
+  let output = stagedMusic.changed ? stagedMusic.html : html;
+  const stagedPublic = preparePublicFirstPaintShell(output, options);
+  if (stagedPublic.changed) output = stagedPublic.html;
+
   const result = core.normaliseHtml(output);
+  let finalHtml = result.html;
+  if (result.applicable && hasPublicHeader(finalHtml)) {
+    finalHtml = ensurePublicHeaderFirstPaintStyles(finalHtml);
+  }
 
   return {
     ...result,
-    html: result.html,
-    changed: result.html !== html,
-    musicStaticHeaderInserted: staged.headerInserted,
-    musicStaticModeIdentityInserted: staged.modeIdentityInserted
+    html: finalHtml,
+    changed: finalHtml !== html,
+    musicStaticHeaderInserted: stagedMusic.headerInserted,
+    musicStaticModeIdentityInserted: stagedMusic.modeIdentityInserted,
+    publicHeaderInserted: stagedPublic.headerInserted
   };
 }
 
@@ -253,12 +382,14 @@ function processRoot(root, { check = false } = {}) {
     changed: 0,
     musicHeadersInserted: 0,
     musicModeIdentitiesInserted: 0,
+    publicHeadersInserted: 0,
     malformed: [],
     excluded: 0
   };
 
   let musicHeaderMarkup = "";
   let musicStylePaths = null;
+  let masterHeaderMarkup = "";
   walkHtmlFiles(absoluteRoot).forEach((filePath) => {
     const relative = path.relative(absoluteRoot, filePath).replace(/\\/g, "/");
     summary.scanned += 1;
@@ -274,10 +405,19 @@ function processRoot(root, { check = false } = {}) {
       musicHeaderMarkup = extractMusicHeaderMarkup(absoluteRoot);
     }
 
+    const stagedGenericPage = !sourceRepositoryRoot
+      && !stagedMusicPage
+      && shouldInjectPublicHeader(relative, original);
+    if (stagedGenericPage && !masterHeaderMarkup) {
+      masterHeaderMarkup = extractMasterHeaderMarkup(absoluteRoot);
+    }
+
     const result = sourceRepositoryRoot
       ? core.normaliseHtml(original)
       : normaliseHtml(original, {
           root: absoluteRoot,
+          relativePath: relative,
+          masterHeaderMarkup: stagedGenericPage ? masterHeaderMarkup : undefined,
           musicHeaderMarkup: stagedMusicPage ? musicHeaderMarkup : undefined,
           musicStylePaths: stagedMusicPage ? musicStylePaths : undefined
         });
@@ -291,6 +431,7 @@ function processRoot(root, { check = false } = {}) {
     summary.applicable += 1;
     if (result.musicStaticHeaderInserted) summary.musicHeadersInserted += 1;
     if (result.musicStaticModeIdentityInserted) summary.musicModeIdentitiesInserted += 1;
+    if (result.publicHeaderInserted) summary.publicHeadersInserted += 1;
     if (!result.changed) return;
     summary.changed += 1;
     if (!check) fs.writeFileSync(filePath, result.html, "utf8");
@@ -307,6 +448,7 @@ function printSummary(summary, check) {
   const mode = check ? "check" : "normalise";
   console.log(
     `Public header shell ${mode}: scanned ${summary.scanned} HTML files; ${summary.applicable} shared-header pages; ` +
+    `${summary.publicHeadersInserted} site-wide public header insertions; ` +
     `${summary.musicHeadersInserted} Music first-paint header insertions; ` +
     `${summary.musicModeIdentitiesInserted} Music first-paint mode identity insertions; ` +
     `${summary.changed} ${check ? "would change" : "changed"}; ${summary.excluded} excluded.`
@@ -331,17 +473,30 @@ function main() {
 module.exports = {
   ...core,
   MUSIC_GLOBAL_FIRST_PAINT_STYLES,
+  PUBLIC_HEADER_FOUNDATION_STYLES,
+  PUBLIC_HEADER_FIRST_PAINT_STYLES,
+  PUBLIC_HEADER_EXCLUDED_TOP_LEVEL,
+  PUBLIC_HEADER_EXCLUDED_FILES,
   isMusicPage,
   hasPublicHeader,
   hasModeIdentityBar,
   isSourceRepositoryRoot,
+  normaliseRelativePath,
+  shouldInjectPublicHeader,
   resolveMusicHeaderSource,
   readMusicNavigationSource,
   extractMusicHeaderMarkup,
   extractMusicStylePaths,
+  rootAbsoluteUrl,
+  rootAbsoluteSrcset,
+  absolutiseMasterHeaderMarkup,
+  extractMasterHeaderMarkup,
   buildModeIdentityMarkup,
   ensureMusicFirstPaintStyles,
+  ensurePublicHeaderFoundationStyles,
+  ensurePublicHeaderFirstPaintStyles,
   prepareMusicFirstPaintShell,
+  preparePublicFirstPaintShell,
   normaliseHtml,
   processRoot
 };
