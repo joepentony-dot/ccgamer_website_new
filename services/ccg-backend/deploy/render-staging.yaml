@@ -1,0 +1,64 @@
+# Non-production CCG backend validation environment.
+# Create this as a Render Blueprint using this custom file path.
+# Do not point production website auth at this service.
+#
+# Before the first deploy, upload these Render Secret Files to the web service:
+#   ccg-auth-private.jwk -> /etc/secrets/ccg-auth-private.jwk
+#   ccg-auth-public.jwk  -> /etc/secrets/ccg-auth-public.jwk
+# Generate them outside Git with:
+#   npm run auth:keygen -- --out-dir <private-directory> --key-id ccg-staging-ed25519-1
+
+services:
+  - type: web
+    name: ccg-backend-staging
+    runtime: node
+    region: frankfurt
+    plan: free
+    branch: codex/supabase-egress-containment
+    rootDir: services/ccg-backend
+    autoDeployTrigger: off
+    buildCommand: npm install --ignore-scripts --no-audit --no-fund
+    startCommand: npm run migrate:apply && npm start
+    healthCheckPath: /ready
+    envVars:
+      - key: NODE_VERSION
+        value: 22.18.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ccg-backend-staging-db
+          property: connectionString
+      - key: CCG_DB_SSL
+        value: disable
+      - key: CCG_BIND_HOST
+        value: 0.0.0.0
+      - key: CCG_ALLOWED_ORIGINS
+        value: https://www.cheekycommodoregamer.co.uk,https://cheekycommodoregamer.co.uk
+      - key: CCG_AUTH_MODE
+        value: local
+      - key: CCG_LOCAL_AUTH_ISSUER
+        value: https://ccg-backend-staging.onrender.com/
+      - key: CCG_LOCAL_AUTH_AUDIENCE
+        value: ccg-backend
+      - key: CCG_LOCAL_AUTH_PRIVATE_JWK_FILE
+        value: /etc/secrets/ccg-auth-private.jwk
+      - key: CCG_LOCAL_AUTH_PUBLIC_JWK_FILE
+        value: /etc/secrets/ccg-auth-public.jwk
+      - key: CCG_LOCAL_AUTH_KEY_ID
+        value: ccg-staging-ed25519-1
+      - key: CCG_LOCAL_AUTH_REGISTRATION_ENABLED
+        value: "false"
+      - key: CCG_LOCAL_AUTH_RECOVERY_ENABLED
+        value: "false"
+      - key: CCG_LOST_SIZZLER_REALTIME_ENABLED
+        value: "false"
+      - key: CCG_LOST_SIZZLER_COMMERCE_ENABLED
+        value: "false"
+
+databases:
+  - name: ccg-backend-staging-db
+    plan: free
+    region: frankfurt
+    postgresMajorVersion: "17"
+    databaseName: ccg_backend_staging_db
+    user: ccg_backend_staging_db_user
+    ipAllowList: []

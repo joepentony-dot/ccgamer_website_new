@@ -1,0 +1,109 @@
+name: Lost Sizzler Handoff Integrity
+
+on:
+  pull_request:
+    paths:
+      - 'arcade/lost-sizzler/**'
+      - 'games/games.json'
+      - 'scripts/build-lost-sizzler-package-manifest.mjs'
+      - 'scripts/build-lost-sizzler-package-provenance.mjs'
+      - 'scripts/materialize-lost-sizzler-package-tree.mjs'
+      - 'scripts/verify-lost-sizzler-package-tree.mjs'
+      - 'scripts/assemble-lost-sizzler-release-handoff.mjs'
+      - 'scripts/build-lost-sizzler-handoff-integrity.mjs'
+      - '.github/workflows/lost-sizzler-handoff-integrity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  handoff-integrity:
+    name: Final handoff integrity
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Syntax-check handoff integrity tooling
+        run: |
+          set -euo pipefail
+          node --check scripts/build-lost-sizzler-package-manifest.mjs
+          node --check scripts/build-lost-sizzler-package-provenance.mjs
+          node --check scripts/materialize-lost-sizzler-package-tree.mjs
+          node --check scripts/verify-lost-sizzler-package-tree.mjs
+          node --check scripts/assemble-lost-sizzler-release-handoff.mjs
+          node --check scripts/build-lost-sizzler-handoff-integrity.mjs
+
+      - name: Run handoff integrity self-test
+        run: |
+          set -euo pipefail
+          node scripts/build-lost-sizzler-handoff-integrity.mjs --self-test
+
+      - name: Build and verify final repository handoff integrity
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/lost-sizzler-handoff-integrity"
+          MANIFEST="$ROOT/package-manifest.json"
+          PROVENANCE="$ROOT/package-provenance.json"
+          PACKAGE="$ROOT/package"
+          PROFILE="$ROOT/user-data"
+          HANDOFF="$ROOT/release-handoff"
+          INTEGRITY="$ROOT/release-handoff.integrity.json"
+          INTEGRITY_2="$ROOT/release-handoff.integrity.second.json"
+          TAMPERED="$ROOT/release-handoff-tampered"
+
+          mkdir -p "$ROOT" "$PROFILE"
+          printf '%s\n' '{"floor":34,"source":"external-tier-a"}' > "$PROFILE/solo-save.json"
+          PROFILE_BEFORE="$(sha256sum "$PROFILE/solo-save.json" | awk '{print $1}')"
+
+          node scripts/build-lost-sizzler-package-manifest.mjs --output "$MANIFEST"
+          node scripts/build-lost-sizzler-package-provenance.mjs --manifest "$MANIFEST" --output "$PROVENANCE"
+          node scripts/build-lost-sizzler-package-provenance.mjs --manifest "$MANIFEST" --verify "$PROVENANCE"
+          node scripts/materialize-lost-sizzler-package-tree.mjs --manifest "$MANIFEST" --output "$PACKAGE"
+          node scripts/verify-lost-sizzler-package-tree.mjs --manifest "$MANIFEST" --root "$PACKAGE"
+
+          node scripts/assemble-lost-sizzler-release-handoff.mjs \
+            --package-root "$PACKAGE" \
+            --manifest "$MANIFEST" \
+            --provenance "$PROVENANCE" \
+            --user-data-root "$PROFILE" \
+            --output "$HANDOFF"
+
+          node scripts/build-lost-sizzler-handoff-integrity.mjs \
+            --handoff "$HANDOFF" \
+            --user-data-root "$PROFILE" \
+            --output "$INTEGRITY"
+          node scripts/build-lost-sizzler-handoff-integrity.mjs \
+            --handoff "$HANDOFF" \
+            --user-data-root "$PROFILE" \
+            --verify "$INTEGRITY"
+
+          node scripts/build-lost-sizzler-handoff-integrity.mjs \
+            --handoff "$HANDOFF" \
+            --user-data-root "$PROFILE" \
+            --output "$INTEGRITY_2"
+          cmp "$INTEGRITY" "$INTEGRITY_2"
+
+          test "$(sha256sum "$PROFILE/solo-save.json" | awk '{print $1}')" = "$PROFILE_BEFORE"
+          test ! -e "$HANDOFF/user-data"
+          test ! -e "$HANDOFF/solo-save.json"
+          test ! -e "$HANDOFF/$(basename "$INTEGRITY")"
+
+          cp -a "$HANDOFF" "$TAMPERED"
+          printf '\nTAMPER\n' >> "$TAMPERED/application/arcade/lost-sizzler/version.json"
+          if node scripts/build-lost-sizzler-handoff-integrity.mjs \
+            --handoff "$TAMPERED" \
+            --user-data-root "$PROFILE" \
+            --verify "$INTEGRITY"; then
+            echo 'Tampered handoff unexpectedly passed integrity verification.' >&2
+            exit 1
+          fi
+
+          echo "Lost Sizzler final handoff integrity record is deterministic, tamper-sensitive, and excludes Tier-A persistence."

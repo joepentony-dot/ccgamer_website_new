@@ -52,10 +52,16 @@ async function quitToMenu(){
 function showRulebook(){UI.support?.classList.add("hidden");UI.rulebook?.classList.remove("hidden")}
 function showSupport(){UI.rulebook?.classList.add("hidden");UI.support?.classList.remove("hidden")}
 function returnToGameFromPanel(){hideItemInfo();hideNamedDossier();UI.inventory?.classList.add("hidden");if(["inventory","dossier"].includes(mode))mode="playing";input.clear()}
+function questShareUrl(){
+  const delivery=window.CCGLostSizzlerDelivery;
+  if(delivery?.isDesktop&&typeof delivery.websiteUrl==="function")return delivery.websiteUrl("/arcade/lost-sizzler/");
+  return String(location.href||"https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/")
+}
 async function shareQuest(){
-  const data={title:"Cheeky's Commodore Quest",text:"Cheeky's Commodore Quest — a CCG dungeon crawl.",url:location.href};
-  try{if(navigator.share){await navigator.share(data);return}if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(location.href);showToast("LINK COPIED","Cheeky's Commodore Quest link copied to the clipboard.","green");return}}catch(_){}
-  showToast("SHARE LINK",String(location.href||"Cheeky's Commodore Quest"),"cyan")
+  const url=questShareUrl();
+  const data={title:"Cheeky's Commodore Quest",text:"Cheeky's Commodore Quest — a CCG dungeon crawl.",url};
+  try{if(navigator.share){await navigator.share(data);return}if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(url);showToast("LINK COPIED","Cheeky's Commodore Quest link copied to the clipboard.","green");return}}catch(_){}
+  showToast("SHARE LINK",url||"Cheeky's Commodore Quest","cyan")
 }
 
 function handleHeaderQuit(){

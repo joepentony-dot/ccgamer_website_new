@@ -1,0 +1,83 @@
+name: CCG Lost Sizzler Commerce Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/**'
+      - '.github/workflows/ccg-lost-sizzler-commerce-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  commerce-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: ccg_commerce_contract
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ccg_commerce_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d ccg_commerce_contract"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:ccg_commerce_password@127.0.0.1:5432/ccg_commerce_contract
+      CCG_DB_SSL: disable
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install backend dependencies
+        working-directory: services/ccg-backend
+        run: npm install --ignore-scripts --no-audit --no-fund
+
+      - name: Prove pure PayPal and browser purchase boundaries
+        working-directory: services/ccg-backend
+        run: |
+          node tests/paypal-orders-contract.mjs
+          node tests/commerce-http-contract.mjs
+          node tests/purchase-client-contract.mjs
+
+      - name: Apply checksum-locked backend migrations
+        working-directory: services/ccg-backend
+        run: npm run migrate:apply
+
+      - name: Prove permanent account entitlement on PostgreSQL
+        working-directory: services/ccg-backend
+        run: node tests/commerce-database-contract.mjs
+
+      - name: Check purchase deployment locks
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f services/ccg-backend/migrations/006_game_commerce.sql
+          test -f services/ccg-backend/src/paypal-orders.mjs
+          test -f services/ccg-backend/src/lost-sizzler-commerce.mjs
+          test -f services/ccg-backend/src/lost-sizzler-commerce-http.mjs
+          test -f services/ccg-backend/client/lost-sizzler-purchase.mjs
+          test -f services/ccg-backend/LOST-SIZZLER-COMMERCE-CONTRACT.md
+          grep -q "CCG_LOST_SIZZLER_COMMERCE_ENABLED', false" services/ccg-backend/src/config.mjs
+          grep -q "'the-lost-sizzler-full-game'" services/ccg-backend/migrations/006_game_commerce.sql
+          grep -q "'GBP'" services/ccg-backend/migrations/006_game_commerce.sql
+          grep -q '^  199,$' services/ccg-backend/migrations/006_game_commerce.sql
+          grep -q 'includes_all_updates' services/ccg-backend/migrations/006_game_commerce.sql
+          grep -q 'permanent' services/ccg-backend/LOST-SIZZLER-COMMERCE-CONTRACT.md
+          grep -q 'all future game updates' services/ccg-backend/LOST-SIZZLER-COMMERCE-CONTRACT.md
+          grep -q 'Sign in or create a CCG account' services/ccg-backend/LOST-SIZZLER-COMMERCE-CONTRACT.md
+          if grep -R -Eiq 'PAYPAL_CLIENT_SECRET[[:space:]]*=[[:space:]]*[^$[:space:]]+' services/ccg-backend --exclude='*.md' --exclude='config-contract.mjs'; then
+            echo 'Possible hard-coded PayPal client secret detected.' >&2
+            exit 1
+          fi

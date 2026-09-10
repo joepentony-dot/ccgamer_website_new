@@ -12,6 +12,7 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/**'
       - 'supabase/migrations/20260820_arcade_asset_manager.sql'
       - 'scripts/generate-lost-sizzler-audio.mjs'
+      - 'scripts/verify-lost-sizzler-storage-recovery.mjs'
       - 'scripts/validate-arcade-quest.js'
       - '.github/workflows/arcade-quest-validation.yml'
   push:
@@ -27,6 +28,7 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/**'
       - 'supabase/migrations/20260820_arcade_asset_manager.sql'
       - 'scripts/generate-lost-sizzler-audio.mjs'
+      - 'scripts/verify-lost-sizzler-storage-recovery.mjs'
       - 'scripts/validate-arcade-quest.js'
       - '.github/workflows/arcade-quest-validation.yml'
 
@@ -58,6 +60,13 @@ jobs:
           node --check arcade/quest/game/achievements.js
           node --check arcade/quest/game/main-v3.js
           node --check arcade/quest/tests/quest-2-browser.mjs
+          node --check arcade/lost-sizzler/js/online-services-gate.js
+          node --check arcade/lost-sizzler/js/admin-audio-overrides.js
+          node --check arcade/lost-sizzler/js/version-check.js
+          node --check arcade/lost-sizzler/js/network.js
+          node --check arcade/lost-sizzler/tests/supabase-containment-contract.mjs
+          node --check arcade/lost-sizzler/tests/browser/supabase-containment-browser.mjs
+          node --check arcade/lost-sizzler/tests/browser/supabase-offline-injected-bridge.mjs
           node --check admin/js/arcade-assets.js
           node --check games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js
           node --check games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js
@@ -76,6 +85,7 @@ jobs:
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-6-stalker-shop-balance.mjs
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-6-sidebar-layout.mjs
           node --check scripts/generate-lost-sizzler-audio.mjs
+          node --check scripts/verify-lost-sizzler-storage-recovery.mjs
           node --check scripts/validate-arcade-quest.js
 
       - name: Validate Quest 2.0 contracts
@@ -113,6 +123,15 @@ jobs:
           grep -F "Weekly Dungeon" games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js
           grep -F "Weekly Dungeon" games/ccg-games/cheeky-commodore-quest/js/v10-6-menu-runtime-fix.js
           grep -F "dossier-scroll-cue" games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js
+
+      - name: Validate Lost Sizzler Supabase containment contract
+        run: node arcade/lost-sizzler/tests/supabase-containment-contract.mjs
+
+      - name: Validate Lost Sizzler Storage recovery verifier
+        shell: bash
+        run: |
+          node scripts/verify-lost-sizzler-storage-recovery.mjs --self-test
+          node scripts/verify-lost-sizzler-storage-recovery.mjs --manifest-check
 
       - name: Validate Lost Sizzler dungeon structural variety
         run: node games/ccg-games/cheeky-commodore-quest/tests/v10-19-dungeon-variety.mjs
@@ -155,3 +174,28 @@ jobs:
         run: |
           set -euo pipefail
           node arcade/quest/tests/quest-2-browser.mjs
+
+  lost-sizzler-containment-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Chromium regression runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Exercise Lost Sizzler containment delivery modes in Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          node arcade/lost-sizzler/tests/browser/supabase-containment-browser.mjs
+          node arcade/lost-sizzler/tests/browser/supabase-offline-injected-bridge.mjs

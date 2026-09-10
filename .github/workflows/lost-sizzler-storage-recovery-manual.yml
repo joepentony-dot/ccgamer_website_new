@@ -1,0 +1,83 @@
+name: Lost Sizzler Storage Recovery Manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      count:
+        description: 'Number of ENABLED frozen Storage objects to recover, in manifest order (1-16). Start with 1.'
+        required: true
+        default: '1'
+      probe:
+        description: 'Run ffprobe/decode verification on recovered files.'
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  recover-enabled:
+    name: Recover frozen enabled Storage objects
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout containment branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/supabase-egress-containment
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate manual recovery request
+        env:
+          RECOVERY_COUNT: ${{ inputs.count }}
+        run: |
+          set -euo pipefail
+          case "$RECOVERY_COUNT" in
+            ''|*[!0-9]*) echo 'count must be an integer from 1 to 16' >&2; exit 1 ;;
+          esac
+          test "$RECOVERY_COUNT" -ge 1 -a "$RECOVERY_COUNT" -le 16
+          node --check scripts/recover-lost-sizzler-enabled-storage.mjs
+          node --check scripts/verify-lost-sizzler-storage-recovery.mjs
+          node scripts/verify-lost-sizzler-storage-recovery.mjs --manifest-check
+
+      - name: Recover enabled objects read-only
+        env:
+          RECOVERY_COUNT: ${{ inputs.count }}
+          RECOVERY_PROBE: ${{ inputs.probe }}
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/lost-sizzler-storage-recovery"
+          ENABLED="$ROOT/enabled"
+          REPORT="$ROOT/enabled-recovery-report.json"
+          mkdir -p "$ENABLED"
+
+          ARGS=(
+            --storage-base-url 'https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/'
+            --output "$ENABLED"
+            --limit "$RECOVERY_COUNT"
+            --report "$REPORT"
+          )
+          if [ "$RECOVERY_PROBE" = 'true' ]; then
+            ARGS+=(--probe)
+          fi
+
+          node scripts/recover-lost-sizzler-enabled-storage.mjs "${ARGS[@]}"
+
+          if [ "$RECOVERY_COUNT" = '16' ]; then
+            VERIFY_ARGS=(--enabled-dir "$ENABLED" --report "$ROOT/full-enabled-verification.json")
+            if [ "$RECOVERY_PROBE" = 'true' ]; then VERIFY_ARGS+=(--probe); fi
+            node scripts/verify-lost-sizzler-storage-recovery.mjs "${VERIFY_ARGS[@]}"
+          fi
+
+      - name: Upload recovery evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: lost-sizzler-enabled-storage-recovery-${{ inputs.count }}
+          path: ${{ runner.temp }}/lost-sizzler-storage-recovery/
+          if-no-files-found: error
+          retention-days: 7

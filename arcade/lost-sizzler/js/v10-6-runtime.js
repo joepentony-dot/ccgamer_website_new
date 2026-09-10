@@ -10,7 +10,7 @@
   const clean=value=>window.CCGNetwork.cleanCode(value);
   const setNote=text=>{if(UI?.note)UI.note.textContent=text};
   const modeDefinition=value=>window.CCGNetwork?.ROOM_MODES?.[String(value||"")]||window.CCGNetwork?.ROOM_MODES?.dungeon||{id:"dungeon",label:"Dungeon Multiplayer",maxPlayers:C.maxPlayers};
-  const inviteFor=(code,roomMode=net?.getRoomMode?.().id||"dungeon")=>{const url=new URL(location.href);url.searchParams.set("room",code);url.searchParams.set("mode",String(roomMode||"dungeon"));url.hash="";return url.toString()};
+  const inviteFor=(code,roomMode=net?.getRoomMode?.().id||"dungeon")=>{const delivery=window.CCGLostSizzlerDelivery,base=delivery?.isDesktop&&typeof delivery.websiteUrl==="function"?delivery.websiteUrl("/arcade/lost-sizzler/"):location.href,url=new URL(base);url.searchParams.set("room",code);url.searchParams.set("mode",String(roomMode||"dungeon"));url.hash="";return url.toString()};
 
   function adoptRoomMode(value){
     const definition=modeDefinition(value);if(!net||!definition)return definition;

@@ -36,11 +36,7 @@
   }
 
   function remoteMediaAllowed(){
-    if(window.__CCG_ALLOW_REMOTE_TEST_ASSETS__===true)return true;
-    let automated=false,local=false;
-    try{automated=navigator.webdriver===true||/HeadlessChrome/i.test(String(navigator.userAgent||""))}catch(_){}
-    try{local=["localhost","127.0.0.1","::1"].includes(String(location.hostname||"").toLowerCase())}catch(_){}
-    return !(automated||local);
+    return window.__CCG_ALLOW_REMOTE_MEDIA__===true||window.__CCG_ALLOW_REMOTE_TEST_ASSETS__===true;
   }
 
   function finishWithoutRemoteMedia(reason){
@@ -48,7 +44,7 @@
     const playlists={normal:[],danger:[],sanctuary:[],named:[],stalker:[]};
     const voicePlaylists={};
     for(const state of Object.keys(playlists))target.music.playlists[state]=[];
-    const admin={playlists,voice:voicePlaylists,exploration:null,danger:null,sanctuary:null,named:null,stalker:null,remoteMediaSkipped:true,skipReason:String(reason||"automated-browser")};
+    const admin={playlists,voice:voicePlaylists,exploration:null,danger:null,sanctuary:null,named:null,stalker:null,remoteMediaSkipped:true,skipReason:String(reason||"remote-media-disabled")};
     window.CCG_ADMIN_AUDIO={...(window.CCG_ADMIN_AUDIO||{}),...admin};
     window.CCG_ADMIN_AUDIO_READY=true;
     window.dispatchEvent(new CustomEvent("ccg:admin-audio-ready",{detail:{applied:0,appliedMusic:0,appliedVoice:0,playlists,voice:voicePlaylists,remoteMediaSkipped:true,reason:admin.skipReason}}));
@@ -57,7 +53,7 @@
 
   async function load(){
     try{
-      if(!remoteMediaAllowed())return finishWithoutRemoteMedia("automation-or-localhost");
+      if(!remoteMediaAllowed())return finishWithoutRemoteMedia("remote-media-disabled");
       const client=await window.ccgSupabase?.getClient?.();
       if(!client?.from)throw new Error("Supabase asset client unavailable");
       const {data,error}=await client.from("arcade_assets")
