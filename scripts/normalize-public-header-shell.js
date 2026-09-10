@@ -59,6 +59,10 @@ function hasModeIdentityBar(html) {
   return /\bid\s*=\s*(["'])ccgModeIdentityBar\1/i.test(String(html || ""));
 }
 
+function isImmediateRedirectShell(html) {
+  return /<meta\b(?=[^>]*\bhttp-equiv\s*=\s*(["'])refresh\1)[^>]*>/i.test(String(html || ""));
+}
+
 function isSourceRepositoryRoot(root) {
   const absoluteRoot = path.resolve(root);
   return fs.existsSync(path.join(absoluteRoot, ".git"))
@@ -77,6 +81,7 @@ function shouldInjectPublicHeader(relativePath, html) {
   if (hasPublicHeader(html)) return false;
   if (!/<body\b[^>]*>/i.test(String(html || ""))) return false;
   if (/\bdata-ccg-no-public-header\b/i.test(String(html || ""))) return false;
+  if (isImmediateRedirectShell(html)) return false;
 
   const relative = normaliseRelativePath(relativePath);
   if (!relative) return true;
@@ -136,7 +141,7 @@ function extractMusicStylePaths(root) {
 function rootAbsoluteUrl(value) {
   const raw = String(value || "").trim();
   if (!raw || /^(?:[a-z][a-z0-9+.-]*:|\/\/|\/|#|\?)/i.test(raw)) return raw;
-  return `/${raw.replace(/^\.\//, "")}`;
+  return `/${raw.replace(/^(?:(?:\.\.\/)+|\.\/)/, "")}`;
 }
 
 function rootAbsoluteSrcset(value) {
@@ -480,6 +485,7 @@ module.exports = {
   isMusicPage,
   hasPublicHeader,
   hasModeIdentityBar,
+  isImmediateRedirectShell,
   isSourceRepositoryRoot,
   normaliseRelativePath,
   shouldInjectPublicHeader,
