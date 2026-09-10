@@ -1,0 +1,24 @@
+---
+layout: layouts/base.njk
+title: Licensed Games | CCG Eleventy Prototype
+description: Browse the source-backed licensed games collection from the existing Cheeky Commodore Gamer archive.
+permalink: /games/collections/licensed-games/index.html
+---
+<section class="hero hero--compact">
+  <p class="eyebrow">COLLECTION PROTOTYPE</p>
+  <h1>{{ collectionArchive.licensed.name }}</h1>
+  <p class="lede">{{ collectionArchive.licensed.description }}</p>
+</section>
+
+<section class="archive-browser" aria-labelledby="licensed-games-heading">
+  <div class="section-heading">
+    <h2 id="licensed-games-heading">Games in this collection</h2>
+    <p>{{ collectionArchive.licensed.games | length }} entries preserved from the existing collection fallback markup.</p>
+  </div>
+
+  <div class="game-grid">
+    {% for game in collectionArchive.licensed.games %}
+      {% include "components/game-card.njk" %}
+    {% endfor %}
+  </div>
+</section>

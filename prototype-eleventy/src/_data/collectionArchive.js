@@ -14,7 +14,20 @@ const collections = [
       "international-soccer", "jumpman", "jungle-hunt", "jupiter-lander", "kickman", "klax"
     ]
   },
-  { name: "Licensed Games", slug: "licensed-games", legacyUrl: "/games/collections/licensed-games.html" },
+  {
+    name: "Licensed Games",
+    slug: "licensed-games",
+    legacyUrl: "/games/collections/licensed-games.html",
+    description: "Licensed C64 and Amiga games preserved from the existing CCG Licensed Games fallback markup.",
+    gameSlugs: [
+      "action-biker", "after-burner", "airwolf", "aladdin", "alien", "aliens-the-computer-game",
+      "arachnophobia", "asterix-and-the-magic-cauldron", "back-to-the-future",
+      "barry-mcguigan-world-championship-boxing", "batman-the-caped-crusader", "batman-the-movie",
+      "bcs-quest-for-tires", "bc2-grogs-revenge", "below-the-root", "big-trouble-in-little-china",
+      "blade-runner", "blockbusters", "brian-jacks-superstar-challenge", "bruce-lee", "cobra",
+      "dan-dare-pilot-of-the-future", "dan-dare-2-mekons-revenge", "dan-dare-iii-the-escape"
+    ]
+  },
   { name: "BPjS and BPjM Indexed Games", slug: "bpjs-indexed-games", legacyUrl: "/games/collections/bpjs-indexed-games.html" },
   { name: "Top Picks", slug: "top-picks", legacyUrl: "/games/collections/top-picks.html" },
   { name: "Amiga Demo Music", slug: "amiga-demo-music", legacyUrl: "/games/collections/amiga-demo-music.html" },
@@ -45,5 +58,6 @@ export default {
   count: items.length,
   migratedCount: items.filter((item) => item.migrated).length,
   items,
-  cartridge: items.find((item) => item.slug === "cartridge-games")
+  cartridge: items.find((item) => item.slug === "cartridge-games"),
+  licensed: items.find((item) => item.slug === "licensed-games")
 };
