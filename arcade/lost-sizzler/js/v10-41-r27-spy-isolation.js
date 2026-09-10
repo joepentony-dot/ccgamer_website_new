@@ -184,6 +184,7 @@
   }
 
   function inheritMarkers(wrapped,current){try{Object.assign(wrapped,current)}catch(_){}return wrapped}
+  const canonicalSpyMove=()=>window.CCGLostSizzlerV141R29SpyEngine?.moveOwner||null;
   function hasSpyDoorIsolation(fn,limit=64){
     const seen=new Set(),pending=[fn];let count=0;
     while(pending.length&&count++<limit){
@@ -198,6 +199,7 @@
   }
   function installMoveGuard(){
     const current=window.movePlayer;if(typeof current!=="function")return false;
+    if(spyActive()&&current===canonicalSpyMove()){state.moveSource=current;state.moveInstalled=true;return true}
     if(hasSpyDoorIsolation(current)){state.moveSource=current;state.moveInstalled=true;return true}
     if(current===state.moveSource)return true;
     const wrapped=inheritMarkers(function movePlayerV141R27SpyDoorIsolation(player,dx,dy){if(spyActive())primeSpyDoorsForStep(player,Number(dx)||0,Number(dy)||0);return current.apply(this,arguments)},current);
