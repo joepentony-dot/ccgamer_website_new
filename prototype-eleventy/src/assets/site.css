@@ -7,6 +7,8 @@
 
 * { box-sizing: border-box; }
 
+html { scroll-behavior: smooth; }
+
 body {
   margin: 0;
   background: #111;
@@ -15,6 +17,13 @@ body {
 }
 
 a { color: inherit; }
+
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+}
 
 img {
   display: block;
@@ -25,6 +34,21 @@ img {
   width: min(1120px, calc(100% - 2rem));
   margin-inline: auto;
 }
+
+.skip-link {
+  position: fixed;
+  top: .75rem;
+  left: .75rem;
+  z-index: 10;
+  padding: .65rem .85rem;
+  background: #f5f5f5;
+  color: #111;
+  text-decoration: none;
+  font-weight: 800;
+  transform: translateY(-160%);
+}
+
+.skip-link:focus { transform: translateY(0); }
 
 .site-header {
   border-bottom: 1px solid #333;
@@ -45,13 +69,21 @@ img {
   letter-spacing: .02em;
 }
 
-nav {
+.site-nav {
   display: flex;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: .35rem;
 }
 
-nav a {
+.site-nav a {
+  padding: .5rem .65rem;
+  border-radius: .3rem;
   text-decoration: none;
+}
+
+.site-nav a:hover,
+.site-nav a:focus-visible {
+  background: #262626;
 }
 
 main {
@@ -122,6 +154,53 @@ h2 { margin-top: 0; }
 }
 
 .section-heading p { margin: 0; color: #bbb; }
+
+.archive-jumps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  margin-bottom: 2.5rem;
+}
+
+.archive-jumps a {
+  min-width: 2.35rem;
+  padding: .45rem .6rem;
+  border: 1px solid #444;
+  border-radius: .35rem;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.archive-jumps a:hover,
+.archive-jumps a:focus-visible {
+  background: #252525;
+}
+
+.archive-group {
+  padding-top: 1rem;
+  margin-top: 2.25rem;
+  scroll-margin-top: 1rem;
+}
+
+.archive-group__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid #333;
+  margin-bottom: 1rem;
+}
+
+.archive-group__heading h2 {
+  margin-bottom: .65rem;
+  font-size: 2rem;
+}
+
+.archive-group__heading a {
+  color: #bbb;
+  font-size: .92rem;
+}
 
 .game-card {
   overflow: hidden;
@@ -213,11 +292,17 @@ h2 { margin-top: 0; }
     grid-template-columns: 1fr;
   }
 
-  .section-heading {
+  .section-heading,
+  .archive-group__heading {
     display: block;
   }
 
   .section-heading p { margin-top: .5rem; }
+  .archive-group__heading a { display: inline-block; margin-bottom: .65rem; }
   .game-facts div { grid-template-columns: 1fr; gap: .15rem; }
   .hero { padding-top: 2rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
