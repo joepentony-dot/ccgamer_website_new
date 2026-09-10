@@ -2,9 +2,9 @@
 
 ## Status
 
-Overall completion estimate: **14%**
+Overall completion estimate: **18%**
 
-Current milestone: **Hardened read-only game pipeline and reusable card component**
+Current milestone: **Broader bounded game archive validation with duplicate-route protection**
 
 ## Completed
 
@@ -16,7 +16,6 @@ Current milestone: **Hardened read-only game pipeline and reusable card componen
 - Added a static prototype home page.
 - Replaced the Games placeholder with a build-time generated Games index.
 - Added a read-only Eleventy data adapter that reads the canonical `games/games.json` without modifying it.
-- Limited the first integration pass to a deterministic 12-game slice while templates and URL behaviour are validated.
 - Added pagination-driven individual game pages at `/games/<slug>/`.
 - Added existing thumbnail passthrough support so generated cards/details can reuse canonical CCG artwork without copying or altering source images.
 - Added responsive game-card and game-detail styling.
@@ -24,8 +23,10 @@ Current milestone: **Hardened read-only game pipeline and reusable card componen
 - Corrected the canonical game-data relative path during validation review before checkpointing the initial integration milestone.
 - Added prototype README with safety boundary and local build commands.
 - Added reusable `_includes/components/game-card.njk` so game-list presentation is no longer duplicated in the Games index.
-- Hardened game metadata normalization with trimmed text values, array/single-value normalization for genres and publishers, numeric rating validation, thumbnail path normalization, system labels, and safe description fallbacks.
-- Updated the Games index to render through the reusable game-card include.
+- Hardened game metadata normalization with trimmed text values, array/single-value normalization for genres and publishers, numeric rating validation, thumbnail path normalization, system labels, safe description fallbacks, and numeric year validation.
+- Added build-time duplicate-slug protection so multiple canonical records cannot attempt to emit the same `/games/<slug>/` route during prototype validation.
+- Expanded the deterministic validation archive from 12 records to a bounded 100-record sample.
+- Updated Games index copy to reflect the broader build-time validation sample.
 
 ## Validation
 
@@ -33,11 +34,12 @@ Current milestone: **Hardened read-only game pipeline and reusable card componen
 - Existing production files on `main` were not updated, deleted, renamed, or merged.
 - Canonical `games/games.json` remains read-only and unchanged.
 - The data adapter resolves from `prototype-eleventy/src/_data/` back to repository-root `games/games.json` using `../../../games/games.json`.
-- Generated permalink pattern preserves a simple `/games/<slug>/` route shape for the prototype.
-- Metadata normalization now tolerates missing/blank strings, publisher data represented as either arrays or single values, missing descriptions, invalid/empty ratings, and thumbnails with a leading slash.
-- Reusable card include only consumes normalized fields from the adapter, reducing template coupling to the canonical JSON shape.
+- Generated permalink pattern preserves `/games/<slug>/` for individual prototype pages.
+- Metadata normalization tolerates missing/blank strings, publisher data represented as arrays or single values, missing descriptions, invalid/empty ratings, invalid years, and thumbnails with a leading slash.
+- Duplicate game slugs are prevented from producing conflicting output pages; the first normalized canonical record is retained and later duplicates are logged and skipped in the prototype build.
+- The Games index and individual pagination template consume normalized records only.
 - Existing thumbnail URLs remain source-backed and no canonical artwork was copied or altered.
-- A workflow-run lookup for the latest prototype commit returned no associated run yet, so completed remote build confirmation remains pending rather than failed.
+- Workflow-run lookup for latest prototype commit `d8f6fe948748134b3f6c4a3b98dd1adc3a840673` returned no associated run yet, so remote runtime build confirmation remains pending rather than failed.
 
 ## Blockers
 
@@ -47,7 +49,7 @@ Current milestone: **Hardened read-only game pipeline and reusable card componen
 
 ## Next task
 
-Validate the hardened pipeline against a broader sample of canonical game records and inspect edge cases in the full database shape. If the normalized fields remain safe, widen the generated Games archive beyond the 12-record validation slice while retaining build-time generation and stable `/games/<slug>/` URLs.
+Inspect the broader 100-record output path assumptions and then remove the remaining validation cap if the archive remains structurally safe. After the full game archive is enabled, begin shared production-quality navigation and game archive usability work such as lightweight grouping/filtering without reintroducing heavy client-side runtime work.
 
 ## Completion criteria still outstanding
 
