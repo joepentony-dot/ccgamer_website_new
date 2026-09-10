@@ -1,0 +1,43 @@
+name: Eleventy Prototype Validation
+
+on:
+  push:
+    branches:
+      - codex/eleventy-ccg-prototype
+    paths:
+      - "prototype-eleventy/**"
+      - ".github/workflows/eleventy-prototype.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: prototype-eleventy
+    steps:
+      - name: Checkout prototype branch
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: prototype-eleventy/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Eleventy prototype
+        run: npm run build
+
+      - name: Verify generated routes
+        run: |
+          test -f _site/index.html
+          test -f _site/games/index.html
+          test -f _site/games/20-tons/index.html
+          test -f _site/games/720-degrees/index.html
