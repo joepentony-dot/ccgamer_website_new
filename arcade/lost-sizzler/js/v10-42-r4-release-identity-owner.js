@@ -1,4 +1,4 @@
-/* The Lost Sizzler V10.42 r4 — narrow release-identity presentation owner. */
+/* C64 Dungeon Carnage V10.42 r4 — narrow release-identity presentation owner. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V142_R4_RELEASE_IDENTITY_OWNER__)return;
@@ -24,7 +24,7 @@
     if(versionCheckOutdated())return false;
     const subtitle=document.querySelector(".v102-brand p,.brand p");
     const badge=document.querySelector(".build-badge");
-    const expectedSubtitle=`THE LOST SIZZLER — ${activeFamily()}`;
+    const expectedSubtitle=`C64 DUNGEON CARNAGE — ${activeFamily()}`;
     const expectedBadge=`BUILD ${activeBuild().toUpperCase()}`;
     let changed=false;
     if(subtitle&&subtitle.textContent!==expectedSubtitle){subtitle.textContent=expectedSubtitle;changed=true}
