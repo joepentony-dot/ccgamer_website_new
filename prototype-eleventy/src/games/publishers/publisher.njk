@@ -1,0 +1,30 @@
+---
+layout: layouts/base.njk
+pagination:
+  data: publisherArchive.items
+  size: 1
+  alias: publisher
+permalink: "/games/publishers/{{ publisher.slug }}/index.html"
+eleventyComputed:
+  title: "{{ publisher.name }} Games | CCG Eleventy Prototype"
+  description: "Browse {{ publisher.games | length }} {{ publisher.name }} games from the Cheeky Commodore Gamer archive."
+---
+<section class="hero hero--compact">
+  <p class="eyebrow">PUBLISHER ARCHIVE</p>
+  <h1>{{ publisher.name }}</h1>
+  <p class="lede">{{ publisher.games | length }} {% if publisher.games | length == 1 %}game{% else %}games{% endif %} in this build-time generated publisher archive.</p>
+</section>
+
+<section class="archive-browser" aria-labelledby="publisher-games-heading">
+  <div class="section-heading">
+    <h2 id="publisher-games-heading">{{ publisher.name }} games</h2>
+    <p><a href="/games/publishers/">Browse all publishers</a> · <a href="/games/">Browse all games</a></p>
+  </div>
+
+  <div class="game-grid">
+    {% for item in publisher.games %}
+      {% set game = item %}
+      {% include "components/game-card.njk" %}
+    {% endfor %}
+  </div>
+</section>
