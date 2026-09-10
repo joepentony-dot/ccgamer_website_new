@@ -54,7 +54,7 @@ try{
   await page.keyboard.press("m");
   const opened=await page.evaluate(()=>({open:window.CCGLostSizzlerFullMapV141.state.open,mode,panelHidden:document.getElementById("ccg-solo-full-map")?.classList.contains("hidden")}));
   assert.equal(opened.open,true,"M must open the explored full map in split-screen");
-  assert.equal(opened.mode,"paused","opening the map must pause active split play");
+  assert.equal(opened.mode,"fullmap","opening the map must enter its dedicated non-playing map mode");
   assert.equal(opened.panelHidden,false,"map panel must be visible after M opens it");
 
   const exploredOnly=await page.evaluate(()=>{
