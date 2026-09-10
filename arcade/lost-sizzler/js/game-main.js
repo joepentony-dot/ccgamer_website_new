@@ -54,9 +54,9 @@ function showRulebook(){UI.support?.classList.add("hidden");UI.rulebook?.classLi
 function showSupport(){UI.rulebook?.classList.add("hidden");UI.support?.classList.remove("hidden")}
 function returnToGameFromPanel(){hideItemInfo();hideNamedDossier();UI.inventory?.classList.add("hidden");if(["inventory","dossier"].includes(mode))mode="playing";input.clear()}
 async function shareQuest(){
-  const data={title:"C64 Dungeon Carnage",text:"C64 Dungeon Carnage — a retro C64 dungeon crawler from Cheeky Commodore Gamer.",url:location.href};
-  try{if(navigator.share){await navigator.share(data);return}if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(location.href);showToast("LINK COPIED","C64 Dungeon Carnage link copied to the clipboard.","green");return}}catch(_){}
-  showToast("SHARE LINK",String(location.href||"C64 Dungeon Carnage"),"cyan")
+  const data={title:"Cheeky's Commodore Quest",text:"Cheeky's Commodore Quest — a CCG dungeon crawl.",url:location.href};
+  try{if(navigator.share){await navigator.share(data);return}if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(location.href);showToast("LINK COPIED","Cheeky's Commodore Quest link copied to the clipboard.","green");return}}catch(_){}
+  showToast("SHARE LINK",String(location.href||"Cheeky's Commodore Quest"),"cyan")
 }
 
 function handleHeaderQuit(){
