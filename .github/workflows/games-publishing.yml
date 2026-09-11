@@ -143,11 +143,11 @@ jobs:
       - name: Repair Speed King release identity
         run: node scripts/migrate-speed-king-release.js
 
-      - name: Refresh changed Lemon reference pages (best effort)
+      - name: Refresh missing Lemon reference pages (best effort)
         continue-on-error: true
         run: |
-          echo "[games-publishing] Refreshing new or changed Lemon reference pages before magazine import. External Lemon64/Lemon Amiga availability is optional and cannot block publishing."
-          node scripts/refresh-lemon-game-cache.js --base HEAD^
+          echo "[games-publishing] Refreshing uncached Lemon reference pages before magazine import. Existing cache files are reused. External Lemon64/Lemon Amiga availability is optional and cannot block publishing."
+          node scripts/refresh-lemon-game-cache.js --all-missing
 
       - name: Import cached and curated magazine reviews
         run: |
