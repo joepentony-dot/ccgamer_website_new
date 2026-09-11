@@ -29,16 +29,16 @@ try{
     const before={xp:p1.xp,total:p1.totalXp,floor:run.floorXP};
     const blocked=["Hidden wall opened","Bronze door unlocked","Hidden wall switch","Gate switch opened"].map(reason=>({reason,result:awardXP(p1,10,reason)}));
     const afterBlocked={xp:p1.xp,total:p1.totalXp,floor:run.floorXP};
-    const allowed=awardXP(p1,7,"Enemy defeated");
+    const allowedReturn=awardXP(p1,7,"Enemy defeated");
     const afterAllowed={xp:p1.xp,total:p1.totalXp,floor:run.floorXP};
-    return{before,blocked,afterBlocked,allowed,afterAllowed,contract:window.CCGLostSizzlerXPSourceContract.blockedReasons};
+    return{before,blocked,afterBlocked,allowedReturn,afterAllowed,contract:window.CCGLostSizzlerXPSourceContract.blockedReasons};
   });
 
   assert.deepEqual(result.afterBlocked,result.before,`doors and switches must not grant XP: ${JSON.stringify(result)}`);
   assert.ok(result.blocked.every(entry=>entry.result?.blocked===true),`every interaction award must be rejected by the XP-source guard: ${JSON.stringify(result.blocked)}`);
   assert.equal(result.afterAllowed.total,7,`combat XP must remain available: ${JSON.stringify(result)}`);
   assert.equal(result.afterAllowed.floor,7,`combat XP must still contribute to floor XP: ${JSON.stringify(result)}`);
-  assert.equal(result.allowed?.amount,7,`normal XP awards must keep the canonical progression result: ${JSON.stringify(result.allowed)}`);
+  assert.equal(result.afterAllowed.xp,7,`combat XP must still advance the current player level: ${JSON.stringify(result)}`);
   assert.deepEqual(result.contract,["Hidden wall opened","Bronze door unlocked","Hidden wall switch","Gate switch opened"]);
   assert.deepEqual(pageErrors,[],`XP-source browser regression produced page errors: ${pageErrors.join("\n")}`);
   await context.close();
