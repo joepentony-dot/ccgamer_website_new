@@ -21374,7 +21374,7 @@
     "slug": "speed-king",
     "title": "Speed King",
     "sorttitle": "Speed King",
-    "year": 1986,
+    "year": 1985,
     "genres": [
       "racing"
     ],
@@ -21384,14 +21384,16 @@
     "pdf": "https://drive.google.com/file/d/1AGx_V4pbE8XnLJ-cmlG4Wkcw9JhY2kNP/view?usp=drive_link",
     "disk": [],
     "download_status": "",
-    "lemon": [],
+    "lemon": [
+      "https://www.lemon64.com/game/speed-king"
+    ],
     "zzap": [],
     "description": "Speed King is a fast-paced motorcycle racing game released for the Commodore 64 by Digital Integration in 1985. Programmed by Mervyn J. Estcourt, this C64 racer delivers a convincing sense of speed as you battle through the pack, tackle sweeping corners and push for the lead. Simple to pick up but demanding at higher speeds, Speed King remains an entertaining slice of classic Commodore 64 racing.",
     "ccg_rating": 4,
     "ccg_rating_reason": "A fast and enjoyable C64 racer with a great sense of speed and plenty of arcade appeal. I always preferred Super Cycle, which felt a little more polished and varied, but Speed King is still great fun and well worth a 7/10.",
     "credits": {
       "publisher": [
-        "Mastertronic"
+        "Digital Integration"
       ],
       "producer": "",
       "coder": [
@@ -21403,7 +21405,9 @@
       "musician": [
         "Mervyn J. Estcourt"
       ],
-      "re_releaser": [],
+      "re_releaser": [
+        "Mastertronic"
+      ],
       "developer": ""
     },
     "developer": "",
