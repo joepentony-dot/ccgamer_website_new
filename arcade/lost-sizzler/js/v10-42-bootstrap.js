@@ -19,7 +19,7 @@
     ["v10-42-r13-encounter-progression-runtime.js","CCGLostSizzlerV142R13EncounterProgressionRuntime"],
     ["v10-42-r14-combat-encounter-bridge.js","CCGLostSizzlerV142R14CombatEncounterBridge"],
     ["v10-42-r15-npc-expansion.js","CCGLostSizzlerV142R15NpcExpansion"],
-    ["v10-42-r16-environment-presentation.js","CCGLostSizzlerV142R16EnvironmentPresentation"],
+    ["v10-42-r16-environment-presentation.js","CCGLostSizzlerV142EnvironmentPresentation"],
     ["v10-42-tutorial-campaign.js","CCGLostSizzlerV142TutorialCampaign"],
     ["v10-42-demo-paywall.js","CCGLostSizzlerV142DemoPaywall"],
     ["v10-42-zero-server-release.js","CCGLostSizzlerV142ZeroServerRelease"],
@@ -34,7 +34,8 @@
     ["v10-42-warden-hunt-guidance.js","CCGLostSizzlerV142WardenHuntGuidance"],
     ["v10-42-warden-navigation-cues.js","CCGLostSizzlerV142WardenNavigationCues"],
     ["v10-42-warden-interface-consistency.js","CCGLostSizzlerV142WardenInterfaceConsistency"],
-    ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"]
+    ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
+    ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"]
   ];
   const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],pendingStartId:"",identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0};
   window.CCGLostSizzlerV142Bootstrap=state;
