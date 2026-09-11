@@ -4,11 +4,43 @@ eleventyExcludeFromCollections: true
 ---
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-{% for item in collections.all %}
-  {% if item.url %}
+  {% set staticRoutes = [
+    "/",
+    "/games/",
+    "/games/genres/",
+    "/games/publishers/",
+    "/games/collections/",
+    "/zzap64/",
+    "/amiga-demo-music/"
+  ] %}
+  {% for route in staticRoutes %}
   <url>
-    <loc>https://www.cheekycommodoregamer.co.uk{{ item.url | replace("index.html", "") }}</loc>
+    <loc>https://www.cheekycommodoregamer.co.uk{{ route }}</loc>
   </url>
-  {% endif %}
-{% endfor %}
+  {% endfor %}
+  {% for game in games %}
+  <url>
+    <loc>https://www.cheekycommodoregamer.co.uk/games/{{ game.slug }}/</loc>
+  </url>
+  {% endfor %}
+  {% for genre in genreArchive.items %}
+  <url>
+    <loc>https://www.cheekycommodoregamer.co.uk/games/genres/{{ genre.slug }}/</loc>
+  </url>
+  {% endfor %}
+  {% for publisher in publisherArchive.items %}
+  <url>
+    <loc>https://www.cheekycommodoregamer.co.uk/games/publishers/{{ publisher.slug }}/</loc>
+  </url>
+  {% endfor %}
+  {% for collection in collectionArchive.items %}
+  <url>
+    <loc>https://www.cheekycommodoregamer.co.uk/games/collections/{{ collection.slug }}/</loc>
+  </url>
+  {% endfor %}
+  {% for music in amigaMusicArchive.entries %}
+  <url>
+    <loc>{{ music.canonical }}</loc>
+  </url>
+  {% endfor %}
 </urlset>
