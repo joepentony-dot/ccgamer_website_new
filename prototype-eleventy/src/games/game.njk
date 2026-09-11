@@ -17,7 +17,7 @@ eleventyComputed:
   <div class="game-detail__grid">
     {% if game.thumbnail %}
       <figure class="game-detail__media">
-        <img src="/{{ game.thumbnail }}" alt="{{ game.title }}" decoding="async">
+        <img src="/{{ game.thumbnail }}" alt="{{ game.title }}" decoding="async" fetchpriority="high">
       </figure>
     {% endif %}
 
