@@ -27,6 +27,7 @@ on:
       - "scripts/audit-global-shell-browser.js"
       - "scripts/normalize-public-header-shell.js"
       - "tests/nav-discovery-scroll.test.mjs"
+      - "tests/navigation-active-state.test.mjs"
       - "tests/global-shell-auth.test.mjs"
       - "tests/public-header-stage-normalizer.test.mjs"
       - ".github/workflows/nav-discovery-scroll-validation.yml"
@@ -56,6 +57,7 @@ on:
       - "scripts/audit-global-shell-browser.js"
       - "scripts/normalize-public-header-shell.js"
       - "tests/nav-discovery-scroll.test.mjs"
+      - "tests/navigation-active-state.test.mjs"
       - "tests/global-shell-auth.test.mjs"
       - "tests/public-header-stage-normalizer.test.mjs"
       - ".github/workflows/nav-discovery-scroll-validation.yml"
@@ -98,8 +100,8 @@ jobs:
       - name: Confirm committed public HTML is canonical
         run: node scripts/normalize-public-header-shell.js --root . --check
 
-      - name: Run navigation discovery and scroll regressions
-        run: node --test tests/nav-discovery-scroll.test.mjs
+      - name: Run navigation discovery, active-state and scroll regressions
+        run: node --test tests/nav-discovery-scroll.test.mjs tests/navigation-active-state.test.mjs
 
       - name: Run global shell auth and parity regressions
         run: node --test tests/global-shell-auth.test.mjs
