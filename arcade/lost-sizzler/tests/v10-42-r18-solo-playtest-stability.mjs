@@ -16,7 +16,7 @@ assert.match(fix,/CCGLostSizzlerXPSourceContract/,"r18 composition must expose t
 assert.match(fix,/hurtPlayer=function\(player,\.\.\.args\)\{repairPlayer\(player\)/,"player damage must repair stale invulnerability at the damage boundary");
 assert.match(fix,/queueAttack=function\(player,\.\.\.args\)/,"gun and melee attacks must pass through the combat repair boundary");
 assert.match(fix,/repairAttackLiveness/,"pause/resume recovery must own an explicit attack-liveness repair boundary");
-assert.match(fix,/fire1!==0[\s\S]*fireBuffer1!==0[\s\S]*projectileCD!==0/,"resume repair must clear finite stuck P1 cadence, buffer and projectile timers");
+assert.match(fix,/fire1!==0[\s\S]*projectileCD!==0[\s\S]*fireBuffer1!==0/,"resume repair must clear finite stuck P1 cadence, projectile and buffer timers");
 assert.match(fix,/event\.code!=="KeyP"[\s\S]*schedulePauseResumeRepair/,"keyboard pause/resume must schedule attack-liveness repair on resume");
 assert.match(fix,/#resume-btn[\s\S]*schedulePauseResumeRepair/,"pause overlay Continue must schedule the same attack-liveness repair");
 assert.match(fix,/ai\.stepEnemy=wrapped/,"enemy attack stepping must repair stale attack cooldowns");
