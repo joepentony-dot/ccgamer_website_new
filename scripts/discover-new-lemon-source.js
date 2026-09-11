@@ -18,6 +18,7 @@ const {
 const ROOT = path.resolve(__dirname, "..");
 const GAMES_PATH = path.join(ROOT, "games", "games.json");
 const CACHE_DIR = path.join(ROOT, "data", "lemon-cache");
+const PENDING_PATH = path.join(ROOT, "data", "lemon-source-pending.json");
 const USER_AGENT = "CheekyCommodoreGamer-MagazineSourceDiscovery/1.0 (+https://www.cheekycommodoregamer.co.uk/)";
 const FETCH_TIMEOUT_MS = 12000;
 const RETRIES = 2;
@@ -62,6 +63,40 @@ function newlyAddedGames(previousGames, currentGames) {
     const identity = gameIdentity(game);
     return identity && !previous.has(identity);
   });
+}
+
+function readPendingIdentities() {
+  if (!fs.existsSync(PENDING_PATH)) return [];
+  try {
+    const parsed = JSON.parse(fs.readFileSync(PENDING_PATH, "utf8"));
+    return Array.isArray(parsed) ? parsed.map((value) => String(value || "").trim().toLowerCase()).filter(Boolean) : [];
+  } catch (error) {
+    throw new Error(`Could not read ${path.relative(ROOT, PENDING_PATH)}: ${error.message}`);
+  }
+}
+
+function writePendingIdentities(identities) {
+  const values = [...new Set(toArray(identities).map((value) => String(value || "").trim().toLowerCase()).filter(Boolean))].sort();
+  if (!values.length) {
+    if (fs.existsSync(PENDING_PATH)) fs.unlinkSync(PENDING_PATH);
+    return;
+  }
+  fs.writeFileSync(PENDING_PATH, `${JSON.stringify(values, null, 2)}\n`, "utf8");
+}
+
+function gamesForDiscovery(previousGames, currentGames, pendingIdentities = []) {
+  const current = Array.isArray(currentGames) ? currentGames : [];
+  const byIdentity = new Map(current.map((game) => [gameIdentity(game), game]).filter(([identity]) => Boolean(identity)));
+  const selected = new Map();
+
+  newlyAddedGames(previousGames, current).forEach((game) => selected.set(gameIdentity(game), game));
+  toArray(pendingIdentities).forEach((identity) => {
+    const key = String(identity || "").trim().toLowerCase();
+    const game = byIdentity.get(key);
+    if (game) selected.set(key, game);
+  });
+
+  return [...selected.values()];
 }
 
 function lemonHostForGame(game) {
@@ -238,10 +273,13 @@ async function main() {
   const args = process.argv.slice(2);
   const currentGames = readCurrentGames();
   const previousGames = readGamesAtRef(requestedBaseRef(args));
-  const added = newlyAddedGames(previousGames, currentGames);
+  const currentIdentities = new Set(currentGames.map(gameIdentity).filter(Boolean));
+  const pending = new Set(readPendingIdentities().filter((identity) => currentIdentities.has(identity)));
+  const selected = gamesForDiscovery(previousGames, currentGames, [...pending]);
 
-  if (!added.length) {
-    console.log("No newly added games require Lemon source discovery.");
+  if (!selected.length) {
+    writePendingIdentities([...pending]);
+    console.log("No newly added or pending games require Lemon source discovery.");
     return;
   }
 
@@ -249,14 +287,23 @@ async function main() {
   let unmatched = 0;
   let skipped = 0;
 
-  for (const game of added) {
+  for (const game of selected) {
+    const identity = gameIdentity(game);
     const result = await discoverGame(game);
-    if (result.status === "matched") matched += 1;
-    else if (result.status === "unmatched") unmatched += 1;
-    else skipped += 1;
+    if (result.status === "matched") {
+      matched += 1;
+      pending.delete(identity);
+    } else if (result.status === "unmatched") {
+      unmatched += 1;
+      pending.add(identity);
+    } else {
+      skipped += 1;
+      pending.delete(identity);
+    }
   }
 
-  console.log(`Lemon source discovery complete: ${matched} verified, ${unmatched} unmatched, ${skipped} skipped.`);
+  writePendingIdentities([...pending]);
+  console.log(`Lemon source discovery complete: ${matched} verified, ${unmatched} pending retry, ${skipped} skipped.`);
 }
 
 if (require.main === module) {
@@ -270,6 +317,7 @@ module.exports = {
   candidateUrlsForGame,
   canonicalFromHtml,
   gameIdentity,
+  gamesForDiscovery,
   hasManualLemonSource,
   lemonHostForGame,
   newlyAddedGames,
