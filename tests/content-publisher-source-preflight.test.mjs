@@ -2,7 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   detectReleaseYear,
-  validateGamePublisherSource
+  generateGameSourceDescription,
+  validateGamePublisherSource,
+  validateLemonSourceUrl,
+  wordCount
 } from '../admin/js/content-publisher-source-preflight.mjs';
 
 const validBase = {
@@ -29,4 +32,54 @@ test('does not require a Lemon64 or Lemon Amiga URL', () => {
 
 test('Ruff n Tumble canonical source passes preflight without an external Lemon dependency', () => {
   assert.deepEqual(validateGamePublisherSource(validBase), []);
+});
+
+test('generates a factual C64 fallback from entered release metadata', () => {
+  const description = generateGameSourceDescription({
+    title: 'Speed King',
+    system: 'C64',
+    year: 1985,
+    publisher: 'Digital Integration',
+    genres: ['Racing'],
+    developer: 'Digital Integration'
+  });
+
+  assert.match(description, /Speed King/);
+  assert.match(description, /1985/);
+  assert.match(description, /Commodore 64 \(C64\)/);
+  assert.match(description, /Digital Integration/);
+  assert.match(description, /Racing/);
+  assert.ok(wordCount(description) >= 40);
+  assert.ok(wordCount(description) <= 165);
+  assert.match(description, /[.!?]$/);
+});
+
+test('generates an Amiga fallback without inventing a developer', () => {
+  const description = generateGameSourceDescription({
+    title: 'Premiere',
+    system: 'AMIGA',
+    year: 1992,
+    publisher: 'Core Design',
+    genres: ['Platform']
+  });
+
+  assert.match(description, /Commodore Amiga/);
+  assert.match(description, /Core Design/);
+  assert.doesNotMatch(description, /recorded as the developer/i);
+  assert.ok(wordCount(description) >= 40);
+});
+
+test('accepts only the platform-matching direct Lemon game source', () => {
+  assert.equal(validateLemonSourceUrl('https://www.lemon64.com/game/speed-king', 'C64'), '');
+  assert.equal(validateLemonSourceUrl('https://www.lemonamiga.com/game/premiere', 'AMIGA'), '');
+  assert.match(validateLemonSourceUrl('https://www.lemonamiga.com/game/premiere', 'C64'), /must use the matching lemon64\.com/i);
+  assert.match(validateLemonSourceUrl('https://www.lemon64.com/games/details.php?id=1', 'C64'), /direct \/game\//i);
+});
+
+test('preflight rejects a mismatched Lemon platform source before publishing', () => {
+  const errors = validateGamePublisherSource({
+    ...validBase,
+    lemonUrl: 'https://www.lemon64.com/game/ruff-n-tumble'
+  });
+  assert.ok(errors.some((error) => /lemonamiga\.com/i.test(error)));
 });
