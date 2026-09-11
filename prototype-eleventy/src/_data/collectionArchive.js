@@ -1,4 +1,37 @@
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import games from "./games.js";
+
+const here = path.dirname(fileURLToPath(import.meta.url));
+const retroEventsPath = path.resolve(here, "../../../games/collections/retro-events.json");
+const retroEventsSource = JSON.parse(fs.readFileSync(retroEventsPath, "utf8"));
+
+if (!Array.isArray(retroEventsSource)) {
+  throw new Error("[ccg-eleventy] Retro Events source must be an array.");
+}
+
+const retroEventEntries = retroEventsSource
+  .filter((entry) => entry && typeof entry === "object" && entry.type !== "demo_music")
+  .map((entry) => ({
+    id: typeof entry.id === "string" ? entry.id.trim() : "",
+    title: typeof entry.title === "string" ? entry.title.trim() : "",
+    youtubeId: typeof entry.youtubeId === "string" ? entry.youtubeId.trim() : "",
+    url: typeof entry.url === "string" ? entry.url.trim() : "",
+    membersOnly: entry.membersOnly === true,
+    badge: typeof entry.badge === "string" ? entry.badge.trim() : "",
+    order: Number.isFinite(Number(entry.order)) ? Number(entry.order) : null
+  }))
+  .filter((entry) => entry.id && entry.title && entry.url)
+  .sort((a, b) => (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER));
+
+const duplicateEventUrls = retroEventEntries
+  .map((entry) => entry.url)
+  .filter((url, index, urls) => urls.indexOf(url) !== index);
+
+if (duplicateEventUrls.length) {
+  throw new Error(`[ccg-eleventy] Retro Events source contains duplicate URLs: ${[...new Set(duplicateEventUrls)].join(", ")}`);
+}
 
 const collections = [
   {
@@ -59,6 +92,7 @@ const collections = [
     slug: "amiga-demo-music",
     legacyUrl: "/games/collections/amiga-demo-music.html",
     description: "A lightweight gateway to the existing Amiga demo music archive, preserving the ten entries exposed by the current collection page.",
+    itemLabel: "source-backed music entries",
     entries: [
       { title: "9 Fingers - Spaceballs", url: "/amiga-demo-music/9-fingers-spaceballs/" },
       { title: "Hardwired - Crionics", url: "/amiga-demo-music/crionics-hardwired/" },
@@ -72,7 +106,14 @@ const collections = [
       { title: "State of the Art", url: "/amiga-demo-music/state-of-the-art/" }
     ]
   },
-  { name: "Retro Events", slug: "retro-events", legacyUrl: "/games/collections/retro-events.html" },
+  {
+    name: "Retro Events",
+    slug: "retro-events",
+    legacyUrl: "/games/collections/retro-events.html",
+    description: "Retro gaming events, visits and related CCG features preserved from the existing Retro Events JSON source.",
+    itemLabel: "source-backed event entries",
+    entries: retroEventEntries
+  },
   { name: "Retro Specials", slug: "retro-specials", legacyUrl: "/games/collections/retro-specials.html" }
 ];
 
@@ -85,7 +126,7 @@ const items = collections.map((collection) => {
       migrated: true,
       games: [],
       itemCount: collection.entries.length,
-      itemLabel: "source-backed music entries"
+      itemLabel: collection.itemLabel || "source-backed entries"
     };
   }
 
@@ -117,5 +158,6 @@ export default {
   licensed: items.find((item) => item.slug === "licensed-games"),
   bpjs: items.find((item) => item.slug === "bpjs-indexed-games"),
   topPicks: items.find((item) => item.slug === "top-picks"),
-  amigaDemoMusic: items.find((item) => item.slug === "amiga-demo-music")
+  amigaDemoMusic: items.find((item) => item.slug === "amiga-demo-music"),
+  retroEvents: items.find((item) => item.slug === "retro-events")
 };
