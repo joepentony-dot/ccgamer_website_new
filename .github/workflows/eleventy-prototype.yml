@@ -68,12 +68,19 @@ jobs:
 
       - name: Verify XML sitemap
         run: |
-          grep -Fq '<?xml version="1.0" encoding="UTF-8"?>' _site/sitemap.xml
-          grep -Fq '<loc>https://www.cheekycommodoregamer.co.uk/</loc>' _site/sitemap.xml
-          grep -Fq '<loc>https://www.cheekycommodoregamer.co.uk/games/20-tons/</loc>' _site/sitemap.xml
-          grep -Fq '<loc>https://www.cheekycommodoregamer.co.uk/games/genres/arcade/</loc>' _site/sitemap.xml
-          grep -Fq '<loc>https://www.cheekycommodoregamer.co.uk/games/collections/top-picks/</loc>' _site/sitemap.xml
-          grep -Fq '<loc>https://www.cheekycommodoregamer.co.uk/amiga-demo-music/state-of-the-art/</loc>' _site/sitemap.xml
+          assert_contains() {
+            needle="$1"
+            if ! grep -Fq "$needle" _site/sitemap.xml; then
+              echo "Missing sitemap entry: $needle"
+              exit 1
+            fi
+          }
+          assert_contains '<?xml version="1.0" encoding="UTF-8"?>'
+          assert_contains '<loc>https://www.cheekycommodoregamer.co.uk/</loc>'
+          assert_contains '<loc>https://www.cheekycommodoregamer.co.uk/games/20-tons/</loc>'
+          assert_contains '<loc>https://www.cheekycommodoregamer.co.uk/games/genres/arcade/</loc>'
+          assert_contains '<loc>https://www.cheekycommodoregamer.co.uk/games/collections/top-picks/</loc>'
+          assert_contains '<loc>https://www.cheekycommodoregamer.co.uk/amiga-demo-music/state-of-the-art/</loc>'
           if grep -Fq '<loc>https://www.cheekycommodoregamer.co.uk/sitemap.xml</loc>' _site/sitemap.xml; then
             echo 'sitemap.xml must not list itself'
             exit 1
