@@ -7,6 +7,7 @@
     staleInvulnerabilityRepairs:0,
     staleEnemyCooldownRepairs:0,
     attackBoundaryRepairs:0,
+    pauseResumeAttackRepairs:0,
     suppressedSfxRetriggers:0,
     wardenHudRepairs:0
   };
@@ -62,6 +63,24 @@
     return changed;
   }
 
+  function repairAttackLiveness(reason="runtime"){
+    if(!activeRun()||currentMode()!=="playing")return false;
+    let changed=false;
+    try{if(fire1!==0){fire1=0;changed=true}}catch(_){}
+    try{if(fire2!==0){fire2=0;changed=true}}catch(_){}
+    try{if(projectileCD!==0){projectileCD=0;changed=true}}catch(_){}
+    try{if(fireBuffer1!==0){fireBuffer1=0;changed=true}}catch(_){}
+    try{if(fireBuffer2!==0){fireBuffer2=0;changed=true}}catch(_){}
+    try{input?.delete?.("Space");input?.delete?.("Enter")}catch(_){}
+    if(changed&&reason==="pause-resume")diagnostics.pauseResumeAttackRepairs++;
+    try{
+      const r1=window.CCGLostSizzlerV142R1Stability;
+      r1?.repairCombatTimers?.();
+      r1?.repairProjectilePool?.();
+    }catch(_){}
+    return changed;
+  }
+
   function repairCombatState(){
     if(!activeRun()||currentMode()!=="playing")return false;
     let changed=false;
@@ -74,6 +93,23 @@
     }catch(_){}
     return changed;
   }
+
+  function schedulePauseResumeRepair(beforeMode){
+    if(beforeMode!=="paused")return;
+    queueMicrotask(()=>{
+      try{if(currentMode()==="playing"&&activeRun())repairAttackLiveness("pause-resume")}catch(_){}
+    });
+  }
+
+  addEventListener("keydown",event=>{
+    if(event.code!=="KeyP")return;
+    schedulePauseResumeRepair(currentMode());
+  },true);
+  document.addEventListener("click",event=>{
+    const target=event.target instanceof Element?event.target.closest("#resume-btn"):null;
+    if(!target)return;
+    schedulePauseResumeRepair(currentMode());
+  },true);
 
   try{
     if(typeof hurtPlayer==="function"&&!hurtPlayer.__ccgV142R18){
@@ -195,6 +231,7 @@
     version:"V10.42-r18",
     diagnostics,
     repairCombatState,
+    repairAttackLiveness,
     repairPlayer,
     repairEnemy,
     syncWardenHud,
