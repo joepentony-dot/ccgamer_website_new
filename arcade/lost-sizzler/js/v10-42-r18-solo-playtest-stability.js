@@ -94,22 +94,30 @@
     return changed;
   }
 
-  function schedulePauseResumeRepair(beforeMode){
+  function repairAfterPauseTransition(beforeMode){
     if(beforeMode!=="paused")return;
-    queueMicrotask(()=>{
-      try{if(currentMode()==="playing"&&activeRun())repairAttackLiveness("pause-resume")}catch(_){}
-    });
+    const attempt=()=>{
+      try{
+        if(currentMode()==="playing"&&activeRun()){repairAttackLiveness("pause-resume");return true}
+      }catch(_){}
+      return false;
+    };
+    if(attempt())return;
+    setTimeout(()=>{if(attempt())return;requestAnimationFrame(()=>attempt())},0);
   }
 
-  addEventListener("keydown",event=>{
-    if(event.code!=="KeyP")return;
-    schedulePauseResumeRepair(currentMode());
-  },true);
-  document.addEventListener("click",event=>{
-    const target=event.target instanceof Element?event.target.closest("#resume-btn"):null;
-    if(!target)return;
-    schedulePauseResumeRepair(currentMode());
-  },true);
+  try{
+    if(typeof pause==="function"&&!pause.__ccgV142R18){
+      const basePause=pause;
+      pause=function(...args){
+        const before=currentMode();
+        const result=basePause(...args);
+        repairAfterPauseTransition(before);
+        return result;
+      };
+      pause.__ccgV142R18=true;pause.__ccgOriginal=basePause;
+    }
+  }catch(_){}
 
   try{
     if(typeof hurtPlayer==="function"&&!hurtPlayer.__ccgV142R18){
