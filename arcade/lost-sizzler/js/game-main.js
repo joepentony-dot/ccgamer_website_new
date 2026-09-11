@@ -35,6 +35,20 @@ function installEarlyStableResize(){
 }
 installEarlyStableResize();
 
+function installXPSourceContract(){
+  const blockedReasons=new Set(["Hidden wall opened","Bronze door unlocked","Hidden wall switch","Gate switch opened"]);
+  const grantXP=awardXP;
+  awardXP=function(player,amount,reason=""){
+    if(blockedReasons.has(String(reason)))return{amount:0,gross:Math.max(0,Math.round(Number(amount)||0)),debtPaid:0,discarded:0,capped:false,reason,levels:[],blocked:true};
+    return grantXP(player,amount,reason);
+  };
+  window.CCGLostSizzlerXPSourceContract={
+    blockedReasons:Object.freeze([...blockedReasons]),
+    isBlocked:reason=>blockedReasons.has(String(reason))
+  };
+}
+installXPSourceContract();
+
 function hideStaticPanels(){UI.rulebook?.classList.add("hidden");UI.support?.classList.add("hidden");UI.shop?.classList.add("hidden");UI.savePanel?.classList.add("hidden");UI.artefactChoice?.classList.add("hidden");pendingBanishmentReward=null;activeShop=null;hideItemInfo();hideNamedDossier()}
 function closeInventoryForMenu(){if(UI.inventory&&!UI.inventory.classList.contains("hidden"))UI.inventory.classList.add("hidden");if(mode==="inventory")mode="playing"}
 function clearAbandonedRun(){
