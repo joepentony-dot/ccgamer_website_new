@@ -46,7 +46,7 @@ try{
     host.v142WardenDomain={...(host.v142WardenDomain||{}),active:true,cleansed:false,profileName:"TEST DOMAIN"};
     sync();
     const first={effects:document.getElementById("quick-specials")?.textContent||"",warden:document.getElementById("quick-warden-status")?.textContent||""};
-    syncQuickHud();sync();
+    sync();sync();
     const second={effects:document.getElementById("quick-specials")?.textContent||"",warden:document.getElementById("quick-warden-status")?.textContent||""};
     return{first,second};
   });
