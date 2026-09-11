@@ -5,6 +5,7 @@
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
+const { cleanRecord } = require("./build-magazine-review-chunks.js");
 
 const ROOT = path.resolve(__dirname, "..");
 const CACHE_DIR = path.join(ROOT, "data", "lemon-cache");
@@ -51,6 +52,10 @@ function normalTitle(value) {
     .trim();
 }
 
+function exactTitleKey(value) {
+  return stripTags(value).normalize("NFKC").replace(/\s+/g, " ").trim().toLowerCase();
+}
+
 function canonicalFromHtml(html) {
   const match = String(html).match(/<link[^>]+rel=["']canonical["'][^>]+href=["']([^"']+)/i)
     || String(html).match(/<link[^>]+href=["']([^"']+)["'][^>]+rel=["']canonical["']/i);
@@ -60,6 +65,12 @@ function canonicalFromHtml(html) {
 function titleFromHtml(html) {
   const match = String(html).match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']*)/i)
     || String(html).match(/<meta[^>]+content=["']([^"']*)["'][^>]+property=["']og:title["']/i);
+  return stripTags(match?.[1] || "");
+}
+
+function descriptionFromHtml(html) {
+  const match = String(html).match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)/i)
+    || String(html).match(/<meta[^>]+content=["']([^"']*)["'][^>]+name=["']description["']/i);
   return stripTags(match?.[1] || "");
 }
 
@@ -119,7 +130,7 @@ function parseReviewRow(row) {
     || row.match(/alt=["']([^"']+)["'][^>]*class=["'][^"']*magazine-country-flag/i) || [])[1] || "").toUpperCase();
   const missing = /scan missing/i.test(row);
 
-  return {
+  return cleanRecord({
     magazine,
     issue,
     date,
@@ -131,7 +142,7 @@ function parseReviewRow(row) {
     language: LANGUAGE_BY_FLAG[flag] || "English",
     scanStatus: missing ? "missing" : "available",
     era: /Amiga Addict/i.test(magazine) && /202\d/.test(date) ? "retrospective" : "contemporary"
-  };
+  });
 }
 
 function reviewsFromHtml(html) {
@@ -146,6 +157,88 @@ function reviewsFromHtml(html) {
     .filter(Boolean);
 }
 
+function creditValueHtml(html, label) {
+  const escaped = String(label || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = String(html || "").match(new RegExp(`<td\\b[^>]*>\\s*${escaped}:\\s*<\\/td>\\s*<td\\b[^>]*>([\\s\\S]*?)<\\/td>`, "i"));
+  return match?.[1] || "";
+}
+
+function releaseFromHtml(html) {
+  const releasedHtml = creditValueHtml(html, "Released") || creditValueHtml(html, "Year") || creditValueHtml(html, "Release Year");
+  const releasedText = stripTags(releasedHtml);
+  const description = descriptionFromHtml(html);
+  const descriptionMatch = description.match(/\breleased\s+in\s+((?:19|20)\d{2})\s+by\s+([^.!?]+)/i);
+  const yearMatch = releasedText.match(/\b((?:19|20)\d{2})\b/) || descriptionMatch;
+  const year = yearMatch ? Number(yearMatch[1]) : null;
+
+  const publisherHtml = creditValueHtml(html, "Publisher");
+  let publishers = [...publisherHtml.matchAll(/<a\b[^>]*href=["'][^"']*(?:list_company|list_publisher|publisher=)[^"']*["'][^>]*>([\s\S]*?)<\/a>/gi)]
+    .map((match) => stripTags(match[1]))
+    .filter(Boolean);
+  if (!publishers.length && publisherHtml) {
+    const firstAnchor = publisherHtml.match(/<a\b[^>]*>([\s\S]*?)<\/a>/i);
+    const fallback = stripTags(firstAnchor?.[1] || publisherHtml.replace(/<span\b[\s\S]*$/i, ""));
+    if (fallback) publishers = [fallback];
+  }
+  if (!publishers.length && descriptionMatch?.[2]) {
+    publishers = [stripTags(descriptionMatch[2])].filter(Boolean);
+  }
+
+  const seen = new Set();
+  publishers = publishers.filter((publisher) => {
+    const key = publisherKey(publisher);
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  return { year, publishers };
+}
+
+function publisherKey(value) {
+  return stripTags(value)
+    .normalize("NFKC")
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function toArray(value) {
+  if (Array.isArray(value)) return value;
+  return value === undefined || value === null || value === "" ? [] : [value];
+}
+
+function gamePublishers(game) {
+  const values = [
+    ...toArray(game?.publisher),
+    ...toArray(game?.credits?.publisher)
+  ];
+  const seen = new Set();
+  return values.map(stripTags).filter((publisher) => {
+    const key = publisherKey(publisher);
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function gamePlatform(game) {
+  const system = String(game?.system || "").toLowerCase();
+  if (system.includes("amiga")) return "amiga";
+  if (system.includes("c64") || system.includes("commodore 64")) return "c64";
+  return "";
+}
+
+function releaseMatchesGame(game, release) {
+  const gameYear = Number(game?.year);
+  if (!Number.isInteger(gameYear) || !Number.isInteger(release?.year) || gameYear !== release.year) return false;
+  const gamePublisherKeys = new Set(gamePublishers(game).map(publisherKey));
+  const sourcePublisherKeys = toArray(release?.publishers).map(publisherKey).filter(Boolean);
+  if (!gamePublisherKeys.size || !sourcePublisherKeys.length) return false;
+  return sourcePublisherKeys.some((publisher) => gamePublisherKeys.has(publisher));
+}
+
 function cachePages() {
   return fs.readdirSync(CACHE_DIR)
     .filter((name) => name.endsWith(".html"))
@@ -156,19 +249,74 @@ function cachePages() {
         ? "amiga"
         : (/https:\/\/www\.lemon64\.com\/game\//i.test(canonical) ? "c64" : "");
       if (!platform) return null;
-      return { cacheName: name, canonical: normalizedLemonUrl(canonical), platform, title: titleFromHtml(html), reviews: reviewsFromHtml(html) };
+      return {
+        cacheName: name,
+        canonical: normalizedLemonUrl(canonical),
+        platform,
+        title: titleFromHtml(html),
+        release: releaseFromHtml(html),
+        reviews: reviewsFromHtml(html)
+      };
     })
     .filter(Boolean);
 }
 
+function sourceIndex(pages) {
+  return {
+    byUrl: new Map(pages.map((page) => [page.canonical, page]).filter(([url]) => Boolean(url))),
+    byCacheName: new Map(pages.map((page) => [page.cacheName, page]).filter(([name]) => Boolean(name)))
+  };
+}
+
+function uniqueSourceCandidates(pages) {
+  const candidates = new Map();
+  pages.forEach((page) => {
+    const key = page.canonical || page.cacheName;
+    if (key && !candidates.has(key)) candidates.set(key, page);
+  });
+  return [...candidates.values()];
+}
+
+function resolveSourcePage(game, pages, index = sourceIndex(pages)) {
+  const platform = gamePlatform(game);
+  if (!platform) return { page: null, resolution: "unsupported-platform", candidates: 0 };
+
+  const lemonUrls = toArray(game?.lemon).map(normalizedLemonUrl).filter(Boolean);
+  if (lemonUrls.length) {
+    let page = lemonUrls.map((url) => index.byUrl.get(url)).find(Boolean);
+    if (!page) page = lemonUrls.map((url) => index.byCacheName.get(cacheNameForUrl(url))).find(Boolean);
+    if (page?.platform === platform) return { page, resolution: "manual", candidates: 1 };
+    return { page: null, resolution: "manual-unresolved", candidates: 0 };
+  }
+
+  const title = exactTitleKey(game?.title);
+  if (!title) return { page: null, resolution: "unmatched", candidates: 0 };
+  const candidates = uniqueSourceCandidates(pages.filter((page) => (
+    page?.platform === platform
+    && exactTitleKey(page?.title) === title
+    && releaseMatchesGame(game, page?.release)
+  )));
+
+  if (candidates.length === 1) return { page: candidates[0], resolution: "inferred", candidates: 1 };
+  return {
+    page: null,
+    resolution: candidates.length > 1 ? "ambiguous" : "unmatched",
+    candidates: candidates.length
+  };
+}
+
 function uniqueReviews(rows) {
   const seen = new Set();
-  return rows.map(stabilizeReviewUrl).filter((row) => {
-    const key = [row.magazine, row.issue, row.date, row.page, row.score].join("|").toLowerCase();
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
+  return rows
+    .map(stabilizeReviewUrl)
+    .map(cleanRecord)
+    .filter(Boolean)
+    .filter((row) => {
+      const key = [row.magazine, row.issue, row.date, row.page, row.score].join("|").toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
 }
 
 function stabilizeReviewUrl(row) {
@@ -223,35 +371,40 @@ function importReviews() {
   const source = readRecords();
   const overrides = JSON.parse(fs.readFileSync(OVERRIDES_PATH, "utf8"));
   const pages = cachePages();
-  const byUrl = new Map(pages.map((page) => [page.canonical, page]));
-  const byCacheName = new Map(pages.map((page) => [page.cacheName, page]));
+  const index = sourceIndex(pages);
   const catalogueGames = games.filter((game) => /amiga|c64/i.test(String(game.system || "")));
   const unmatched = [];
+  const ambiguous = [];
   const withoutReviews = [];
   let importedGames = 0;
   let importedReviews = 0;
 
   catalogueGames.forEach((game) => {
-    const platform = String(game.system || "").toLowerCase().includes("amiga") ? "amiga" : "c64";
+    const platform = gamePlatform(game);
     const key = `${platform}:${game.slug}`;
     if (CACHE_IMPORT_EXCLUSIONS.has(key)) return;
-    const lemonUrls = (Array.isArray(game.lemon) ? game.lemon : [game.lemon]).map(normalizedLemonUrl).filter(Boolean);
-    let page = lemonUrls.map((url) => byUrl.get(url)).find(Boolean);
-    if (!page) page = lemonUrls.map((url) => byCacheName.get(cacheNameForUrl(url))).find(Boolean);
-    if (page?.platform !== platform) page = null;
+
+    const resolved = resolveSourcePage(game, pages, index);
+    const page = resolved.page;
+    if (!page && resolved.resolution === "ambiguous" && !overrides.games?.[key]?.length) {
+      ambiguous.push(`${game.slug}: ${game.title}`);
+      return;
+    }
     if (!page && !overrides.games?.[key]?.length) {
       unmatched.push(`${game.slug}: ${game.title}`);
       return;
     }
     if (!page && overrides.games?.[key]?.length) return;
-    if (!page.reviews.length && !overrides.games?.[key]?.length) {
+
+    const reviews = uniqueReviews(page.reviews || []);
+    if (!reviews.length && !overrides.games?.[key]?.length) {
       withoutReviews.push(`${game.slug}: ${game.title}`);
       return;
     }
 
-    source.games[key] = uniqueReviews([...(source.games[key] || []), ...page.reviews]);
+    source.games[key] = uniqueReviews([...(source.games[key] || []), ...reviews]);
     importedGames += 1;
-    importedReviews += page.reviews.length;
+    importedReviews += reviews.length;
   });
 
   Object.entries(overrides.games || {}).forEach(([key, rows]) => {
@@ -260,7 +413,7 @@ function importReviews() {
 
   source.description = "Verified magazine review metadata for CCG game pages, imported from locally cached reference pages. Store facts and outbound archive links only; do not copy review text.";
   writeRecords(source);
-  return { totalGames: catalogueGames.length, importedGames, importedReviews, unmatched, withoutReviews };
+  return { totalGames: catalogueGames.length, importedGames, importedReviews, unmatched, ambiguous, withoutReviews };
 }
 
 function main() {
@@ -270,4 +423,16 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { importReviews, parseReviewRow, reviewsFromHtml, scorePercent, stabilizeReviewUrl };
+module.exports = {
+  exactTitleKey,
+  gamePublishers,
+  importReviews,
+  parseReviewRow,
+  releaseFromHtml,
+  releaseMatchesGame,
+  resolveSourcePage,
+  reviewsFromHtml,
+  scorePercent,
+  stabilizeReviewUrl,
+  uniqueReviews
+};
