@@ -76,6 +76,7 @@ on:
       - "scripts/validate-video-seo.js"
       - "scripts/normalize-public-header-shell.js"
       - "tests/magazine-publishing-pipeline.test.mjs"
+      - "tests/lemon-refresh-publishing.test.mjs"
       - "tests/cloudflare-audio-admin.test.mjs"
       - "tests/manual-viewer-polish.test.mjs"
       - "tests/seo-opportunity-plan.test.mjs"
@@ -123,7 +124,7 @@ jobs:
         run: node --test tests/game-description-enrichment-fallback.test.mjs
 
       - name: Validate magazine publishing pipeline
-        run: node --test tests/magazine-publishing-pipeline.test.mjs
+        run: node --test tests/magazine-publishing-pipeline.test.mjs tests/lemon-refresh-publishing.test.mjs
 
       - name: Validate Cloudflare audio admin integration
         run: node --test tests/cloudflare-audio-admin.test.mjs
@@ -143,10 +144,16 @@ jobs:
       - name: Repair Speed King release identity
         run: node scripts/migrate-speed-king-release.js
 
+      - name: Refresh changed Lemon reference pages (best effort)
+        continue-on-error: true
+        run: |
+          echo "[games-publishing] Force-refreshing Lemon pages whose source URL is new or changed in this publishing revision so stale cached HTML cannot suppress current magazine reviews. External Lemon64/Lemon Amiga availability is optional and cannot block publishing."
+          node scripts/refresh-lemon-game-cache.js --base HEAD^ --refresh
+
       - name: Refresh missing Lemon reference pages (best effort)
         continue-on-error: true
         run: |
-          echo "[games-publishing] Refreshing uncached Lemon reference pages before magazine import. Existing cache files are reused. External Lemon64/Lemon Amiga availability is optional and cannot block publishing."
+          echo "[games-publishing] Retrying uncached Lemon reference pages before magazine import. Existing cache files are reused. External Lemon64/Lemon Amiga availability is optional and cannot block publishing."
           node scripts/refresh-lemon-game-cache.js --all-missing
 
       - name: Import cached and curated magazine reviews
