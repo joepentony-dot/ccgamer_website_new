@@ -48,7 +48,7 @@ try{
   const keyboardBefore=await page.evaluate(()=>({mana:p1.mana,diag:{...window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics}}));
   assert.ok(keyboardBefore.diag.pauseResumeAttackRepairs>=1,`finite stuck attack timers must be repaired after repeated P-key pauses: ${JSON.stringify(keyboardBefore)}`);
   await page.keyboard.press("Space");
-  await page.waitForFunction(before=>p1.mana<before,before=keyboardBefore.mana,{timeout:4000});
+  await page.waitForFunction(before=>p1.mana<before,keyboardBefore.mana,{timeout:4000});
 
   await page.keyboard.press("KeyP");
   await page.waitForFunction(()=>mode==="paused");
