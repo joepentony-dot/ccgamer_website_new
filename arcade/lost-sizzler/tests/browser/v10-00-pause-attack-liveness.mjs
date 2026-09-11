@@ -33,7 +33,7 @@ try{
   await page.evaluate(()=>{
     host.enemies=[];enemyBullets.length=0;hazards.length=0;bullets.length=0;
     p1.firearmUnlocked=true;p1.weapon=baseWeapon();p1.mana=220;p1.maxMana=Math.max(p1.maxMana,220);
-    fire1=0;fireBuffer1=0;projectileCD=0;
+    fire1=0;fireBuffer1=0;projectileCD=0;window.__CCG_PAUSE_ATTACK_RESETS__=0;
   });
 
   for(let i=0;i<12;i++){
@@ -45,8 +45,8 @@ try{
   }
 
   await page.waitForFunction(()=>fire1===0&&fireBuffer1===0&&projectileCD===0);
-  const keyboardBefore=await page.evaluate(()=>({mana:p1.mana,diag:{...window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics}}));
-  assert.ok(keyboardBefore.diag.pauseResumeAttackRepairs>=1,`finite stuck attack timers must be repaired after repeated P-key pauses: ${JSON.stringify(keyboardBefore)}`);
+  const keyboardBefore=await page.evaluate(()=>({mana:p1.mana,resets:Number(window.__CCG_PAUSE_ATTACK_RESETS__||0)}));
+  assert.ok(keyboardBefore.resets>=12,`every P-key resume must pass through the canonical attack reset: ${JSON.stringify(keyboardBefore)}`);
   await page.keyboard.press("Space");
   await page.waitForFunction(before=>p1.mana<before,keyboardBefore.mana,{timeout:4000});
 
@@ -55,14 +55,16 @@ try{
   await page.evaluate(()=>{fire1=850;fireBuffer1=650;projectileCD=400});
   await page.click("#resume-btn");
   await page.waitForFunction(()=>mode==="playing"&&fire1===0&&fireBuffer1===0&&projectileCD===0);
-  const buttonBefore=await page.evaluate(()=>p1.mana);
+  const buttonBefore=await page.evaluate(()=>({mana:p1.mana,resets:Number(window.__CCG_PAUSE_ATTACK_RESETS__||0)}));
+  assert.ok(buttonBefore.resets>=13,`Continue-button resume must use the same canonical attack reset: ${JSON.stringify(buttonBefore)}`);
   await page.keyboard.press("Space");
-  await page.waitForFunction(before=>p1.mana<before,buttonBefore,{timeout:4000});
+  await page.waitForFunction(before=>p1.mana<before,buttonBefore.mana,{timeout:4000});
 
-  const finalState=await page.evaluate(()=>({mode,runActive:document.body.dataset.runActive,mana:p1.mana,diag:{...window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics}}));
+  const finalState=await page.evaluate(()=>({mode,runActive:document.body.dataset.runActive,mana:p1.mana,resets:Number(window.__CCG_PAUSE_ATTACK_RESETS__||0)}));
   assert.equal(finalState.mode,"playing");
   assert.equal(finalState.runActive,"true");
   assert.ok(finalState.mana<keyboardBefore.mana,"attacks must remain live after keyboard and Continue-button pause/resume paths");
+  assert.ok(finalState.resets>=13,"all tested resume paths must have crossed the canonical reset boundary");
   assert.deepEqual(errors,[],`pause attack-liveness regression produced page errors: ${JSON.stringify(errors,null,2)}`);
   console.log("Repeated pause/resume attack liveness browser regression passed");
   await context.close();
