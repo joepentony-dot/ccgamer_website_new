@@ -23,7 +23,8 @@
 
     .ccg-header .ccg-brand {
         grid-area: brand !important;
-        justify-self: start !important;
+        justify-self: center !important;
+        justify-content: center !important;
         max-width: min(680px, 100%) !important;
     }
 

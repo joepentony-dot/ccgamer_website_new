@@ -31,6 +31,7 @@ function assertStaticMusicShell(html, label) {
   assert.match(html, /href="\/resources\/css\/ccg-nav-fit\.css"/);
   assert.match(html, /href="\/resources\/css\/ccg-mode-identity\.css"/);
   assert.match(html, /href="\/resources\/css\/ccg-responsive-page-polish\.css"/);
+  assert.match(html, /href="\/resources\/css\/ccg-nav-labelled-bridge\.css"/);
   assert.doesNotMatch(html, /ccg-header--music-injected/);
 
   for (const href of completeFirstPaintStyles) {
@@ -43,13 +44,13 @@ test('Music hub receives the complete canonical shell before first visible conte
   assert.doesNotMatch(source, /data-ccg-header/);
   assert.doesNotMatch(source, /ccgModeIdentityBar/);
 
-  const result = normalizer.normaliseHtml(source, { root });
+  const result = normalizer.normaliseHtml(source, { root, relativePath: 'music/index.html' });
   assert.equal(result.applicable, true);
   assert.equal(result.musicStaticHeaderInserted, true);
   assert.equal(result.musicStaticModeIdentityInserted, true);
   assertStaticMusicShell(result.html, 'Music hub');
 
-  const second = normalizer.normaliseHtml(result.html, { root });
+  const second = normalizer.normaliseHtml(result.html, { root, relativePath: 'music/index.html' });
   assert.equal(second.changed, false, 'Music first-paint normalization must be idempotent');
 });
 
@@ -74,6 +75,9 @@ test('Music first-paint styles include maintained Music and global final-layout 
     '/resources/css/ccg-responsive-page-polish.css',
     '/resources/css/ccg-sitewide-layout-optimization.css'
   ]);
+  assert.deepEqual(normalizer.PUBLIC_HEADER_FIRST_PAINT_STYLES, [
+    '/resources/css/ccg-nav-labelled-bridge.css'
+  ]);
 });
 
 test('staged mode identity matches the runtime element contract so runtime updates instead of inserting', () => {
@@ -95,7 +99,7 @@ test('staged mode identity matches the runtime element contract so runtime updat
 test('generated and curated composer routes receive the same static first-paint shell', () => {
   for (const file of ['music/ivan-allan/index.html', 'music/allister-brimble/index.html', 'music/composers/index.html']) {
     const source = fs.readFileSync(file, 'utf8');
-    const result = normalizer.normaliseHtml(source, { root });
+    const result = normalizer.normaliseHtml(source, { root, relativePath: file });
     assert.equal(result.applicable, true, `${file} should be part of the public shell contract`);
     assertStaticMusicShell(result.html, file);
   }
@@ -109,12 +113,15 @@ test('Music header markup is sourced from the maintained fallback rather than a 
   assert.match(extracted, /data-ccg-nav-secondary/);
 });
 
-test('non-Music pages without a public header are not force-wrapped', () => {
+test('non-Music public pages without a public header now receive the shared shell', () => {
   const html = '<!doctype html><html lang="en" data-ccg-page="plain"><head></head><body><main>Hello</main></body></html>';
-  const result = normalizer.normaliseHtml(html, { root });
-  assert.equal(result.applicable, false);
-  assert.equal(result.changed, false);
-  assert.equal(result.html, html);
+  const result = normalizer.normaliseHtml(html, { root, relativePath: 'plain.html' });
+  assert.equal(result.applicable, true);
+  assert.equal(result.changed, true);
+  assert.equal(result.publicHeaderInserted, true);
+  assert.match(result.html, /data-ccg-header/);
+  assert.match(result.html, />Browse Games<\/a>/);
+  assert.match(result.html, />Music Hub<\/a>/);
 });
 
 test('root processing writes the complete Music first-paint shell then passes check mode', () => {
@@ -128,6 +135,7 @@ test('root processing writes the complete Music first-paint shell then passes ch
     const written = normalizer.processRoot(temp, { check: false });
     assert.equal(written.musicHeadersInserted, 1);
     assert.equal(written.musicModeIdentitiesInserted, 1);
+    assert.equal(written.publicHeadersInserted, 0);
     assert.equal(written.changed, 1);
 
     const staged = fs.readFileSync(path.join(temp, 'music', 'index.html'), 'utf8');
@@ -137,6 +145,7 @@ test('root processing writes the complete Music first-paint shell then passes ch
     assert.equal(checked.changed, 0);
     assert.equal(checked.musicHeadersInserted, 0);
     assert.equal(checked.musicModeIdentitiesInserted, 0);
+    assert.equal(checked.publicHeadersInserted, 0);
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
