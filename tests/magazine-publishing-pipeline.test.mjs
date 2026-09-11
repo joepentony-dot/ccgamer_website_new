@@ -73,15 +73,23 @@ test("Speed King migration establishes the original Digital Integration release 
   assert.ok(migrationIndex >= 0 && migrationIndex < refreshIndex, "Speed King release identity must be corrected before Lemon cache refresh");
 });
 
-test("Premiere remains unfabricated while queued for verified automatic magazine-source retry", () => {
+test("Premiere uses the verified local Lemon Amiga cache without fabricated curated review rows", () => {
   const sourceRoot = path.join(root, "data", "magazine-review-records");
   const keys = fs.readdirSync(sourceRoot)
     .filter((name) => name.endsWith('.json'))
     .flatMap((name) => Object.keys(JSON.parse(fs.readFileSync(path.join(sourceRoot, name), 'utf8')).games || {}));
-  assert.equal(keys.includes('amiga:premiere'), false, 'Premiere must not receive fabricated review rows before a source validates');
+  assert.equal(keys.includes('amiga:premiere'), false, 'Premiere must not receive fabricated curated review rows');
 
   const pending = JSON.parse(fs.readFileSync(path.join(root, 'data', 'lemon-source-pending.json'), 'utf8'));
-  assert.ok(pending.includes('premiere'), 'Premiere must remain queued until a verified Lemon Amiga source resolves');
+  assert.equal(pending.includes('premiere'), false, 'Premiere must leave the retry queue once a verified local Lemon Amiga source is cached');
+
+  const cachePath = path.join(root, 'data', 'lemon-cache', 'f07fdfee4a82e132398c03c281fb48fa1a81e0c2.html');
+  assert.equal(fs.existsSync(cachePath), true, 'Premiere verified Lemon Amiga cache snapshot is missing');
+  const cache = fs.readFileSync(cachePath, 'utf8');
+  assert.match(cache, /<link rel="canonical" href="https:\/\/www\.lemonamiga\.com\/game\/premiere">/);
+  assert.match(cache, /<tr><td>Released:<\/td><td>1992<\/td><\/tr>/);
+  assert.match(cache, /Core Design/);
+  assert.equal((cache.match(/class="magazine-rating"/g) || []).length, 15, 'Premiere cache must retain all 15 verified magazine reviews');
 
   const runtime = fs.readFileSync(path.join(root, 'js', 'magazine-game-reviews-runtime.js'), 'utf8');
   assert.match(runtime, /if \(!rows\.length\)/);
