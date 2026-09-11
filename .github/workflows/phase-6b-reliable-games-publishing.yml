@@ -20,6 +20,13 @@ on:
       - "scripts/build-magazine-review-chunks.js"
       - "scripts/audit-magazine-review-coverage.js"
       - "scripts/ensure-magazine-review-runtime.js"
+      - "scripts/import-amiga-magazine-reviews.js"
+      - "scripts/refresh-lemon-game-cache.js"
+      - "js/magazine-game-reviews-runtime.js"
+      - "tests/magazine-publishing-pipeline.test.mjs"
+      - "data/magazine-review-records/**"
+      - "data/lemon-cache/**"
+      - "data/lemon-source-pending.json"
       - "scripts/mark-rerelease-publishers.js"
       - "scripts/link-publisher-strength-genres.js"
       - "scripts/generate-composer-pages.js"
@@ -125,6 +132,9 @@ jobs:
 
       - name: Run editor package regression
         run: node --test tests/games-editor-package.test.mjs
+
+      - name: Run magazine publishing regression
+        run: node --test tests/magazine-publishing-pipeline.test.mjs
 
       - name: Run current catalogue publishing chain unchanged
         run: |
