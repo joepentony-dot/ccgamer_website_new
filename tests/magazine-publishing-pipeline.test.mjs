@@ -105,7 +105,10 @@ test("Premiere materializes the 15 verified reviews from its local Lemon Amiga c
     'Premiere materialized rows must remain the verified Lemon-derived review set'
   );
 
-  const pending = JSON.parse(fs.readFileSync(path.join(root, 'data', 'lemon-source-pending.json'), 'utf8'));
+  const pendingPath = path.join(root, 'data', 'lemon-source-pending.json');
+  const pending = fs.existsSync(pendingPath)
+    ? JSON.parse(fs.readFileSync(pendingPath, 'utf8'))
+    : [];
   assert.equal(pending.includes('premiere'), false, 'Premiere must leave the retry queue once a verified local Lemon Amiga source is cached');
 
   const cachePath = path.join(root, 'data', 'lemon-cache', 'f07fdfee4a82e132398c03c281fb48fa1a81e0c2.html');
