@@ -2,9 +2,9 @@
 
 ## Status
 
-Overall completion estimate: **89%**
+Overall completion estimate: **91%**
 
-Current milestone: **Dedicated responsive/mobile usability and accessibility review completed across the shared shell and representative generated routes. Remote Eleventy validation is green.**
+Current milestone: **Image/performance optimisation pass completed with bounded, source-safe improvements. Remote Eleventy validation is pending for the newest commits.**
 
 ## Completed
 
@@ -20,50 +20,42 @@ Current milestone: **Dedicated responsive/mobile usability and accessibility rev
 - Added a prototype-only `_redirects` manifest for the seven explicit historical collection `.html` aliases already evidenced in repository data.
 - Preserved the established individual game structured-data contract: `VideoGame + BreadcrumbList` in a schema.org graph, sourced from canonical game data.
 - Corrected the Nunjucks JSON-LD handoff so game schema is emitted as parseable JSON rather than HTML-escaped entities.
-- Completed the primary archive-hub schema ownership review against production source:
-  - `/games/` preserves the existing `CollectionPage + BreadcrumbList` contract.
-  - `/games/publishers/` preserves the existing `CollectionPage + BreadcrumbList + ItemList` contract, with the ItemList generated from the normalized publisher archive instead of a stale hard-coded count.
-  - `/games/collections/` preserves the existing `CollectionPage + BreadcrumbList + ItemList` contract, using the prototype canonical trailing-slash collection routes while retaining the proven legacy `.html` aliases through redirects.
-  - `/zzap64/` preserves the existing `CollectionPage` contract.
-  - Home and `/games/genres/` intentionally receive no invented hub schema because the inspected production sources do not establish equivalent JSON-LD ownership there.
-- Added build-time consistency guards for publisher and collection hub schema counts.
-- Extended isolated CI with archive-hub JSON-LD parse/ownership assertions and regression checks ensuring Home/Genres remain free of invented hub-schema markers.
-- Completed the dedicated responsive/mobile and accessibility shell review:
-  - retained the visible skip link, semantic `<main>` target, labelled primary navigation, visible keyboard focus and reduced-motion handling;
-  - added `aria-current="page"` to the relevant primary navigation entry on the homepage and principal archive hubs;
-  - retained a lightweight label-based navigation on small screens rather than adding a JavaScript-only hamburger dependency;
-  - raised primary navigation, brand, archive-jump and button targets to a minimum 44px height;
-  - improved small-screen navigation wrapping and width use while keeping all primary destinations visible;
-  - hardened long-text and grid-item overflow behaviour to reduce horizontal scrolling risk;
-  - tightened small-screen `h1` scaling while retaining fluid typography;
-  - added CI regression checks across representative home, archive, game, genre, publisher, collection, Zzap!64 and Amiga Demo Music outputs.
+- Completed archive-hub structured-data ownership review and preserved only repository-established schema contracts.
+- Completed the dedicated responsive/mobile and accessibility shell review, including current-page navigation semantics, 44px minimum interactive targets, resilient small-screen layout, skip navigation, keyboard focus and reduced-motion handling.
+- Completed the bounded image/performance pass:
+  - retained native lazy loading and asynchronous decoding for game-card images so archive grids do not eagerly request every thumbnail;
+  - retained lazy loading for embedded Amiga Demo Music YouTube players;
+  - marked the primary individual-game artwork as high fetch priority because it is the principal above-the-fold visual rather than deferring it behind archive media;
+  - added connection warming only on Amiga Demo Music detail pages for the privacy-enhanced YouTube embed/image origins, avoiding site-wide third-party connection overhead;
+  - retained the single local stylesheet and dependency-light static shell; no client-side framework, font bundle, animation library or unnecessary JavaScript was introduced;
+  - left canonical source images untouched rather than destructively recompressing or rewriting production assets during the prototype phase.
 
 ## Validation
 
 - Branch isolation remains intact; no merge, push or write to `main` was performed.
 - Canonical production data/pages, live redirect configuration and deployment settings remain unchanged.
-- Static pre-write checks confirmed the intended accessibility/mobile invariants before repository changes.
-- Navigation accessibility commit `1e8c4f44e6912e60af3786b70d5a4d79ac85fc8b` added current-page semantics only on `codex/eleventy-ccg-prototype`.
-- Responsive shell commit `8836e0d137ca07a5e0ae191766883abc2ff0a0f9` added bounded CSS resilience and touch-target improvements only inside the prototype.
-- Validation commit `0b05a47f30d9b6192dd4323b659135c1a566552a` extended the isolated Eleventy workflow with responsive/accessibility regression assertions.
-- GitHub Actions run `34599055789` passed end to end.
-- Remote validation passed: dependency install, Eleventy build, generated-route checks, responsive/accessibility shell checks, shared SEO checks, individual game schema checks, archive-hub schema checks, XML sitemap checks and all seven proven legacy redirect assertions.
-- The new accessibility stage verified representative homepage, games index, game detail, genre hub/detail, publisher hub, collections hub, Zzap!64 hub and Amiga Demo Music hub/detail outputs.
-- A full local checkout/build is still unavailable in this connector execution environment, so GitHub Actions remains the end-to-end build authority.
+- GitHub Actions run `34599055789` previously passed the full responsive/accessibility milestone end to end.
+- Existing generated game cards already use `loading="lazy" decoding="async"`; the performance pass preserved this behaviour.
+- Existing Amiga Demo Music embeds already use `loading="lazy"`; the performance pass preserved this behaviour and scoped preconnects to those detail pages only.
+- Game-detail performance commit `e4a3da228af474093cc5d7442a211fb75ca2540f` adds `fetchpriority="high"` to the principal game image without changing its source asset.
+- Music-detail performance commit `91a5b06c7d1b492979d84a9b8ab4a54571e29e7a` adds page-scoped YouTube connection warming without changing the lazy iframe or SEO metadata.
+- Eleventy validation run `34604086776` for the first performance commit was in progress at checkpoint time; the newest end-to-end result is therefore recorded as pending rather than assumed successful.
+- A full local checkout/build remains unavailable in this connector execution environment, so GitHub Actions remains the end-to-end build authority.
 
 ## Blockers
 
 - No critical implementation blocker.
-- No isolated browseable preview deployment has been configured yet; this remains deferred until the performance and broader regression pass is stable.
+- Remote validation for the newest performance commits is still pending.
+- No isolated browseable preview deployment has been configured yet; this remains deferred until broader regression and home-content parity checks are complete.
 - Redirect compatibility continues to cover only aliases explicitly evidenced by repository data; broader redirect rules will not be invented.
 
 ## Next task
 
-Perform the image/performance optimisation pass across representative generated pages. Audit image loading/decoding, avoid unnecessary eager media, confirm the static shell remains dependency-light, and add bounded regression checks for performance-sensitive markup without changing canonical source assets or degrading visual/content fidelity.
+Confirm the newest remote Eleventy validation result, then perform the home migration/content-parity review against the existing CCG homepage. Preserve important branding, archive entry points and content while keeping the prototype static and lightweight. Do not reintroduce unnecessary cinematic effects or client-side dependencies.
 
 ## Completion criteria still outstanding
 
+- Confirm remote validation for the performance pass.
 - Complete home migration/content parity review.
-- Image/performance optimisation pass.
 - Broader regression testing.
 - Configure a browseable isolated preview deployment that cannot replace `www.cheekycommodoregamer.co.uk`.
