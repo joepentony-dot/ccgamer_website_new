@@ -55,6 +55,7 @@ jobs:
           test -f _site/amiga-demo-music/9-fingers-spaceballs/index.html
           test -f _site/amiga-demo-music/jesus-on-es/index.html
           test -f _site/amiga-demo-music/state-of-the-art/index.html
+          test -f _site/sitemap.xml
 
       - name: Verify shared SEO metadata
         run: |
@@ -64,3 +65,16 @@ jobs:
           grep -Fq '<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/collections/top-picks/">' _site/games/collections/top-picks/index.html
           grep -Fq '<meta property="og:site_name" content="Cheeky Commodore Gamer">' _site/games/20-tons/index.html
           grep -Fq '<meta name="twitter:site" content="@CheekyC64Gamer">' _site/games/20-tons/index.html
+
+      - name: Verify XML sitemap
+        run: |
+          grep -Fq '<?xml version="1.0" encoding="UTF-8"?>' _site/sitemap.xml
+          grep -Fq '<loc>https://www.cheekycommodoregamer.co.uk/</loc>' _site/sitemap.xml
+          grep -Fq '<loc>https://www.cheekycommodoregamer.co.uk/games/20-tons/</loc>' _site/sitemap.xml
+          grep -Fq '<loc>https://www.cheekycommodoregamer.co.uk/games/genres/arcade/</loc>' _site/sitemap.xml
+          grep -Fq '<loc>https://www.cheekycommodoregamer.co.uk/games/collections/top-picks/</loc>' _site/sitemap.xml
+          grep -Fq '<loc>https://www.cheekycommodoregamer.co.uk/amiga-demo-music/state-of-the-art/</loc>' _site/sitemap.xml
+          if grep -Fq '<loc>https://www.cheekycommodoregamer.co.uk/sitemap.xml</loc>' _site/sitemap.xml; then
+            echo 'sitemap.xml must not list itself'
+            exit 1
+          fi
