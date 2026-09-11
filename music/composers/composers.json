@@ -1355,6 +1355,25 @@
     ]
   },
   {
+    "name": "Mervyn J. Estcourt",
+    "slug": "mervyn-j-estcourt",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Mervyn J. Estcourt"
+    ],
+    "games": [
+      "speed-king"
+    ]
+  },
+  {
     "name": "Scott T. Etherton",
     "slug": "scott-t-etherton",
     "count": 1,
