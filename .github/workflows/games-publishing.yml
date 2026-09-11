@@ -16,6 +16,7 @@ on:
       - "resources/css/ccg-games-index-omega.css"
       - "resources/css/ccg-manual-viewer-polish.css"
       - "data/lemon-cache/**"
+      - "data/lemon-source-pending.json"
       - "data/magazine-review-records/**"
       - "data/publisher-secondary-credits.json"
       - "data/publisher-histories*.json"
@@ -152,10 +153,10 @@ jobs:
           echo "[games-publishing] Force-refreshing Lemon pages whose source URL is new or changed in this publishing revision so stale cached HTML cannot suppress current magazine reviews. External Lemon64/Lemon Amiga availability is optional and cannot block publishing."
           node scripts/refresh-lemon-game-cache.js --base HEAD^ --refresh
 
-      - name: Discover Lemon source for newly added games (best effort)
+      - name: Discover or retry automatic Lemon sources (best effort)
         continue-on-error: true
         run: |
-          echo "[games-publishing] Trying conservative Lemon source candidates for newly added games that have no explicit source. Candidates are cached only after exact title, platform, release-year and original-publisher validation."
+          echo "[games-publishing] Trying conservative Lemon source candidates for newly added games and retrying only previously unresolved games. Candidates are cached only after exact title, platform, release-year and original-publisher validation, with exactly one valid inferred candidate required."
           node scripts/discover-new-lemon-source.js --base HEAD^
 
       - name: Refresh missing Lemon reference pages (best effort)
