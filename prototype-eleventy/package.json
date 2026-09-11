@@ -2,8 +2,9 @@
   "name": "ccg-eleventy-prototype",
   "private": true,
   "scripts": {
-    "build": "eleventy && node tests/site-regression.mjs",
+    "build": "eleventy && node tests/site-regression.mjs && node --check scripts/preview-server.mjs",
     "test:regression": "node tests/site-regression.mjs",
+    "test:preview-server": "node --check scripts/preview-server.mjs",
     "serve": "eleventy --serve"
   },
   "devDependencies": {
