@@ -58,6 +58,14 @@ test('game publishing writes authoritative source data and optional thumbnail on
   }
 });
 
+test('game publisher presents magazine reviews as automatic with Lemon as an optional override', () => {
+  assert.match(html, /automatic magazine-review coverage/i);
+  assert.match(html, /Lemon source URL \(optional override\)/i);
+  assert.match(html, /exact title, platform, original release year and publisher/i);
+  assert.doesNotMatch(html, /data-game-field="zzapUrl"/i);
+  assert.doesNotMatch(html, /Zzap!64 review URL \(optional\)/i);
+});
+
 test('publisher keeps the established 3D-box path and separate authenticated music upload', () => {
   assert.match(html, /data-game-box3d-file/);
   assert.match(html, /data-game-music-file/);
