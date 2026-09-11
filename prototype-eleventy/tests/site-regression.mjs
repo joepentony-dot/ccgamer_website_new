@@ -111,8 +111,10 @@ for (const url of urls) {
 const homeAlias = path.join(outputRoot, "home.html");
 if (!fs.existsSync(homeAlias)) fail("Established /home.html compatibility route is missing.");
 const homeAliasHtml = fs.readFileSync(homeAlias, "utf8");
-if (!homeAliasHtml.includes('<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/">')) {
-  fail("/home.html must retain the production homepage canonical.");
+const homeCanonicalTag = (homeAliasHtml.match(/<link\b[^>]*rel=["']canonical["'][^>]*>/i) || [])[0] ||
+  (homeAliasHtml.match(/<link\b[^>]*href=["'][^"']+["'][^>]*rel=["']canonical["'][^>]*>/i) || [])[0];
+if (!homeCanonicalTag || extractAttribute(homeCanonicalTag, "href") !== `${productionOrigin}/home.html`) {
+  fail("/home.html must retain the established production /home.html canonical.");
 }
 
 const redirectsPath = path.join(outputRoot, "_redirects");
