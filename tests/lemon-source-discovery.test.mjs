@@ -4,6 +4,7 @@ import discovery from '../scripts/discover-new-lemon-source.js';
 
 const {
   candidateUrlsForGame,
+  gamesForDiscovery,
   newlyAddedGames,
   sourceMatchesGame,
   uniqueCandidateMatch
@@ -50,6 +51,31 @@ test('discovers only records newly added relative to the base revision', () => {
     { id: 'premiere', slug: 'premiere', title: 'Premiere' }
   ];
   assert.deepEqual(newlyAddedGames(previous, current).map((game) => game.slug), ['premiere']);
+});
+
+test('retries unresolved games on later publishing runs without broadening discovery', () => {
+  const previous = [
+    { id: 'speed_king', slug: 'speed-king', title: 'Speed King' },
+    { id: 'premiere', slug: 'premiere', title: 'Premiere' }
+  ];
+  const current = [...previous];
+  assert.deepEqual(
+    gamesForDiscovery(previous, current, ['premiere']).map((game) => game.slug),
+    ['premiere']
+  );
+  assert.deepEqual(gamesForDiscovery(previous, current, []).map((game) => game.slug), []);
+});
+
+test('combines new games and pending retries without duplicate discovery', () => {
+  const previous = [
+    { id: 'speed_king', slug: 'speed-king', title: 'Speed King' }
+  ];
+  const premiere = { id: 'premiere', slug: 'premiere', title: 'Premiere' };
+  const current = [...previous, premiere];
+  assert.deepEqual(
+    gamesForDiscovery(previous, current, ['premiere']).map((game) => game.slug),
+    ['premiere']
+  );
 });
 
 test('accepts a fetched source only when title, platform, year and publisher match', () => {
