@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - ".github/workflows/games-publishing.yml"
+      - ".github/workflows/phase-6b-reliable-games-publishing.yml"
       - "games/index.html"
       - "games/game.html"
       - "games/games.json"
