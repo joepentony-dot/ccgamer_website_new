@@ -27,8 +27,16 @@
 
   {% if game and game.schemaJson %}
     <script type="application/ld+json" data-ccg-schema="game-graph">{{ game.schemaJson | safe }}</script>
+  {% elif page.url == "/games/" %}
+    <script type="application/ld+json" data-ccg-schema="hub-games">{{ hubSchemas.games | safe }}</script>
+  {% elif page.url == "/games/publishers/" %}
+    <script type="application/ld+json" data-ccg-schema="hub-publishers">{{ hubSchemas.publishers | safe }}</script>
+  {% elif page.url == "/games/collections/" %}
+    <script type="application/ld+json" data-ccg-schema="hub-collections">{{ hubSchemas.collections | safe }}</script>
+  {% elif page.url == "/zzap64/" %}
+    <script type="application/ld+json" data-ccg-schema="hub-zzap64">{{ hubSchemas.zzap64 | safe }}</script>
   {% elif structuredDataJson %}
-    <script type="application/ld+json" data-ccg-schema="game-graph">{{ structuredDataJson | safe }}</script>
+    <script type="application/ld+json" data-ccg-schema="page-graph">{{ structuredDataJson | safe }}</script>
   {% endif %}
 
   <link rel="stylesheet" href="/assets/site.css">

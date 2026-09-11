@@ -114,6 +114,64 @@ jobs:
           }
           NODE
 
+      - name: Verify archive hub structured data
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from "node:fs";
+
+          const readSchema = (path, marker) => {
+            const html = fs.readFileSync(path, "utf8");
+            const match = html.match(
+              new RegExp(`<script\\b(?=[^>]*type="application\\/ld\\+json")(?=[^>]*data-ccg-schema="${marker}")[^>]*>([\\s\\S]*?)<\\/script>`, "i")
+            );
+            if (!match) throw new Error(`Missing ${marker} JSON-LD in ${path}.`);
+            return JSON.parse(match[1]);
+          };
+
+          const games = readSchema("_site/games/index.html", "hub-games");
+          const gamesTypes = games["@graph"]?.map((item) => item?.["@type"]) || [];
+          if (!gamesTypes.includes("CollectionPage") || !gamesTypes.includes("BreadcrumbList")) {
+            throw new Error(`Games hub schema contract changed: ${JSON.stringify(games)}`);
+          }
+
+          const publishers = readSchema("_site/games/publishers/index.html", "hub-publishers");
+          const publisherList = publishers["@graph"]?.find((item) => item?.["@type"] === "ItemList");
+          if (
+            !publisherList ||
+            publisherList.numberOfItems !== publisherList.itemListElement?.length ||
+            publisherList.numberOfItems < 100 ||
+            publisherList.itemListElement?.[0]?.position !== 1
+          ) {
+            throw new Error(`Publisher hub ItemList is incomplete: ${JSON.stringify(publisherList)}`);
+          }
+
+          const collections = readSchema("_site/games/collections/index.html", "hub-collections");
+          const collectionList = collections["@graph"]?.find((item) => item?.["@type"] === "ItemList");
+          if (
+            !collectionList ||
+            collectionList.numberOfItems !== 7 ||
+            collectionList.itemListElement?.length !== 7 ||
+            collectionList.itemListElement.some((item) => !item.url?.endsWith("/"))
+          ) {
+            throw new Error(`Collections hub ItemList is unexpected: ${JSON.stringify(collectionList)}`);
+          }
+
+          const zzap = readSchema("_site/zzap64/index.html", "hub-zzap64");
+          if (
+            zzap["@type"] !== "CollectionPage" ||
+            zzap.url !== "https://www.cheekycommodoregamer.co.uk/zzap64/"
+          ) {
+            throw new Error(`Zzap!64 hub schema contract changed: ${JSON.stringify(zzap)}`);
+          }
+
+          for (const schemaFreePath of ["_site/index.html", "_site/games/genres/index.html"]) {
+            const html = fs.readFileSync(schemaFreePath, "utf8");
+            if (/data-ccg-schema="hub-/.test(html)) {
+              throw new Error(`Unexpected invented hub schema in ${schemaFreePath}.`);
+            }
+          }
+          NODE
+
       - name: Verify XML sitemap
         run: |
           assert_contains() {
