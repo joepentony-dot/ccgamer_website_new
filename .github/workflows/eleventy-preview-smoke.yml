@@ -1,0 +1,86 @@
+name: Eleventy Prototype Preview Smoke
+
+on:
+  push:
+    branches:
+      - codex/eleventy-ccg-prototype
+    paths:
+      - "prototype-eleventy/**"
+      - ".github/workflows/eleventy-preview-smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Wait for matching isolated Render preview
+        shell: bash
+        env:
+          PREVIEW_URL: https://ccg-eleventy-preview.onrender.com
+        run: |
+          set -euo pipefail
+
+          health=""
+          for attempt in $(seq 1 30); do
+            health="$(curl --fail --silent --show-error --max-time 20 "${PREVIEW_URL}/__preview-health?sha=${GITHUB_SHA}" || true)"
+            if grep -Fq '"ok":true' <<< "$health" && grep -Fq "\"commit\":\"${GITHUB_SHA}\"" <<< "$health"; then
+              echo "Preview is serving ${GITHUB_SHA}."
+              break
+            fi
+
+            if [ "$attempt" -eq 30 ]; then
+              echo "Preview did not reach ${GITHUB_SHA}. Last health payload: ${health}" >&2
+              exit 1
+            fi
+            sleep 10
+          done
+
+      - name: Smoke representative public routes
+        shell: bash
+        env:
+          PREVIEW_URL: https://ccg-eleventy-preview.onrender.com
+        run: |
+          set -euo pipefail
+
+          routes=(
+            "/"
+            "/home.html"
+            "/games/"
+            "/games/20-tons/"
+            "/games/genres/arcade/"
+            "/games/publishers/"
+            "/games/collections/"
+            "/zzap64/"
+            "/retro-specials/"
+            "/amiga-demo-music/"
+            "/amiga-demo-music/state-of-the-art/"
+            "/sitemap.xml"
+          )
+
+          for route in "${routes[@]}"; do
+            headers="$(mktemp)"
+            body="$(mktemp)"
+            curl --fail --silent --show-error --location --max-time 30 \
+              --dump-header "$headers" \
+              --output "$body" \
+              "${PREVIEW_URL}${route}?smoke=${GITHUB_SHA}"
+
+            grep -Eiq '^x-robots-tag:.*noindex' "$headers"
+            test -s "$body"
+
+            case "$route" in
+              *.xml)
+                grep -Fq '<urlset' "$body"
+                ;;
+              *)
+                grep -Fq 'Cheeky Commodore Gamer' "$body"
+                ;;
+            esac
+
+            rm -f "$headers" "$body"
+            echo "OK ${route}"
+          done
