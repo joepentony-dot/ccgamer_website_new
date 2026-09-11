@@ -62,22 +62,49 @@ jobs:
           )
 
           for route in "${routes[@]}"; do
+            echo "Checking ${route}"
             headers="$(mktemp)"
             body="$(mktemp)"
-            curl --fail --silent --show-error --location --max-time 30 \
+
+            if ! curl --fail --silent --show-error --location --max-time 30 \
               --dump-header "$headers" \
               --output "$body" \
-              "${PREVIEW_URL}${route}?smoke=${GITHUB_SHA}"
+              "${PREVIEW_URL}${route}?smoke=${GITHUB_SHA}"; then
+              echo "HTTP request failed for ${route}." >&2
+              cat "$headers" >&2 || true
+              rm -f "$headers" "$body"
+              exit 1
+            fi
 
-            grep -Eiq '^x-robots-tag:.*noindex' "$headers"
-            test -s "$body"
+            if ! grep -Eiq '^x-robots-tag:.*noindex' "$headers"; then
+              echo "Missing preview noindex header for ${route}." >&2
+              cat "$headers" >&2
+              rm -f "$headers" "$body"
+              exit 1
+            fi
+
+            if [ ! -s "$body" ]; then
+              echo "Empty response body for ${route}." >&2
+              rm -f "$headers" "$body"
+              exit 1
+            fi
 
             case "$route" in
               *.xml)
-                grep -Fq '<urlset' "$body"
+                if ! grep -Fq '<urlset' "$body"; then
+                  echo "Sitemap marker missing for ${route}." >&2
+                  head -c 500 "$body" >&2 || true
+                  rm -f "$headers" "$body"
+                  exit 1
+                fi
                 ;;
               *)
-                grep -Fq 'Cheeky Commodore Gamer' "$body"
+                if ! grep -Fq 'Cheeky Commodore Gamer' "$body"; then
+                  echo "CCG page marker missing for ${route}." >&2
+                  head -c 500 "$body" >&2 || true
+                  rm -f "$headers" "$body"
+                  exit 1
+                fi
                 ;;
             esac
 
