@@ -1,22 +1,7 @@
 ---
 layout: layouts/base.njk
-title: Cheeky Commodore Gamer Prototype
-description: Lightweight Eleventy prototype for the Cheeky Commodore Gamer archive.
+title: Commodore 64 & Amiga Games, Reviews & Retro Archive | Cheeky Commodore Gamer
+description: Explore Cheeky Commodore Gamer's Commodore 64 and Amiga archive: games, reviews, videos, Zzap!64 features, publishers, genres, collections, music and retro specials.
+ogImage: https://www.cheekycommodoregamer.co.uk/resources/images/og/ccg-og-home.jpg
 ---
-<section class="hero">
-  <p class="eyebrow">C64 • AMIGA • RETRO GAMING</p>
-  <h1>Cheeky Commodore Gamer</h1>
-  <p class="lede">A faster, static-first prototype of the existing archive, retaining the CCG identity while reducing browser-side work.</p>
-  <div class="actions">
-    <a class="button" href="/games/">Browse Games</a>
-  </div>
-</section>
-
-<section>
-  <h2>Prototype goals</h2>
-  <div class="cards">
-    <article class="card"><h3>Fast by default</h3><p>Pre-render content to finished HTML and keep client-side JavaScript to features that genuinely require it.</p></article>
-    <article class="card"><h3>Preserve the archive</h3><p>Reuse the existing CCG data, URLs, imagery, videos and editorial content rather than rebuilding the archive by hand.</p></article>
-    <article class="card"><h3>Keep the identity</h3><p>Retain C64 and Amiga character without reproducing performance-heavy decoration everywhere.</p></article>
-  </div>
-</section>
+{% include "components/home-content.njk" %}
