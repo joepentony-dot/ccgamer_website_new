@@ -22,9 +22,11 @@ on:
       - "data/zzap64-review-links.json"
       - "data/retro-specials.json"
       - "js/retro-specials-loader.js"
+      - "scripts/discover-new-lemon-source.js"
       - "scripts/audit-admin-runtime-bootstrap.js"
       - "tests/content-publisher.test.mjs"
       - "tests/content-publisher-source-preflight.test.mjs"
+      - "tests/lemon-source-discovery.test.mjs"
       - "tests/admin-collection-values.test.mjs"
       - "tests/game-zzap-links.test.mjs"
       - ".github/workflows/content-publisher-validation.yml"
@@ -49,9 +51,11 @@ on:
       - "data/zzap64-review-links.json"
       - "data/retro-specials.json"
       - "js/retro-specials-loader.js"
+      - "scripts/discover-new-lemon-source.js"
       - "scripts/audit-admin-runtime-bootstrap.js"
       - "tests/content-publisher.test.mjs"
       - "tests/content-publisher-source-preflight.test.mjs"
+      - "tests/lemon-source-discovery.test.mjs"
       - "tests/admin-collection-values.test.mjs"
       - "tests/game-zzap-links.test.mjs"
       - ".github/workflows/content-publisher-validation.yml"
@@ -82,6 +86,7 @@ jobs:
           node --check admin/js/content-publisher-source-preflight.mjs
           node --check admin/js/collection-values.js
           node --check admin/js/guard.js
+          node --check scripts/discover-new-lemon-source.js
           node --check scripts/audit-admin-runtime-bootstrap.js
           node --check js/load-single-game.js
           node --check js/collection-loader.js
@@ -92,6 +97,7 @@ jobs:
         run: |
           node --test tests/content-publisher.test.mjs
           node --test tests/content-publisher-source-preflight.test.mjs
+          node --test tests/lemon-source-discovery.test.mjs
           node --test tests/admin-collection-values.test.mjs
           node --test tests/game-zzap-links.test.mjs
 
