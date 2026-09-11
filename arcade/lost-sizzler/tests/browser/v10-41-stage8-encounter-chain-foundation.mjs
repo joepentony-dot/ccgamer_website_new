@@ -52,16 +52,16 @@ try{
   assert.equal(result.afterDoor.opening,true,"canonical secret-door interaction must enter the established opening lifecycle");
   assert.equal(result.afterDoor.secrets,result.secretsBefore+1,"secret discovery must advance the canonical secret statistic exactly once");
   assert.equal(result.afterDoor.score,result.scoreBefore,"revealing an optional branch must not mint score by itself");
-  assert.ok(result.afterDoor.xp>=result.xpBefore,"secret discovery may use the existing XP reward but must not reduce XP");
+  assert.equal(result.afterDoor.xp,result.xpBefore,"secret discovery must not mint progression XP");
   assert.ok(result.afterDoor.revision>result.revisionBefore,"secret discovery must advance canonical world revision");
 
   assert.equal(result.afterChest.active,false,"canonical reward chest must become inactive after collection");
   assert.equal(result.afterChest.opened,true,"canonical reward chest must record its opened state");
   assert.equal(result.afterChest.chests,result.chestsBefore+1,"reward collection must advance the canonical chest statistic exactly once");
   assert.ok(result.afterChest.rewardScore>=100,"encounter reward foundation must retain the existing bounded score reward");
-  assert.equal(result.afterChest.rewardXp,10,"encounter reward foundation must retain the existing chest XP reward");
+  assert.equal(result.afterChest.rewardXp,0,"encounter reward foundation must not advertise or grant chest progression XP");
   assert.equal(result.afterChest.score,result.afterDoor.score+result.afterChest.rewardScore,"reward score must be applied through the existing chest transaction");
-  assert.ok(result.afterChest.xp>=result.afterDoor.xp,"reward collection must not reduce player XP");
+  assert.equal(result.afterChest.xp,result.afterDoor.xp,"reward collection must not mint progression XP");
   assert.ok(result.afterChest.revision>result.afterDoor.revision,"reward collection must advance canonical world revision");
   assert.equal(result.afterChest.mode,"playing","encounter-chain qualification must leave normal Solo play active");
   assert.equal(result.afterChest.controller,"dungeon-solo","encounter-chain qualification must retain the Solo Dungeon controller");
