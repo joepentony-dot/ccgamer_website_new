@@ -55,3 +55,12 @@ jobs:
           test -f _site/amiga-demo-music/9-fingers-spaceballs/index.html
           test -f _site/amiga-demo-music/jesus-on-es/index.html
           test -f _site/amiga-demo-music/state-of-the-art/index.html
+
+      - name: Verify shared SEO metadata
+        run: |
+          grep -Fq '<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/">' _site/index.html
+          grep -Fq '<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/20-tons/">' _site/games/20-tons/index.html
+          grep -Fq '<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/genres/arcade/">' _site/games/genres/arcade/index.html
+          grep -Fq '<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/collections/top-picks/">' _site/games/collections/top-picks/index.html
+          grep -Fq '<meta property="og:site_name" content="Cheeky Commodore Gamer">' _site/games/20-tons/index.html
+          grep -Fq '<meta name="twitter:site" content="@CheekyC64Gamer">' _site/games/20-tons/index.html
