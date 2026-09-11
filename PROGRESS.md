@@ -2,9 +2,9 @@
 
 ## Status
 
-Overall completion estimate: **86%**
+Overall completion estimate: **89%**
 
-Current milestone: **Primary archive-hub structured-data ownership has been reviewed against the existing site and preserved only where repository-backed semantics already exist. Remote Eleventy validation is green.**
+Current milestone: **Dedicated responsive/mobile usability and accessibility review completed across the shared shell and representative generated routes. Remote Eleventy validation is green.**
 
 ## Completed
 
@@ -28,33 +28,42 @@ Current milestone: **Primary archive-hub structured-data ownership has been revi
   - Home and `/games/genres/` intentionally receive no invented hub schema because the inspected production sources do not establish equivalent JSON-LD ownership there.
 - Added build-time consistency guards for publisher and collection hub schema counts.
 - Extended isolated CI with archive-hub JSON-LD parse/ownership assertions and regression checks ensuring Home/Genres remain free of invented hub-schema markers.
-- Existing skip-to-content support, semantic navigation, visible keyboard focus treatment and reduced-motion handling remain in place.
+- Completed the dedicated responsive/mobile and accessibility shell review:
+  - retained the visible skip link, semantic `<main>` target, labelled primary navigation, visible keyboard focus and reduced-motion handling;
+  - added `aria-current="page"` to the relevant primary navigation entry on the homepage and principal archive hubs;
+  - retained a lightweight label-based navigation on small screens rather than adding a JavaScript-only hamburger dependency;
+  - raised primary navigation, brand, archive-jump and button targets to a minimum 44px height;
+  - improved small-screen navigation wrapping and width use while keeping all primary destinations visible;
+  - hardened long-text and grid-item overflow behaviour to reduce horizontal scrolling risk;
+  - tightened small-screen `h1` scaling while retaining fluid typography;
+  - added CI regression checks across representative home, archive, game, genre, publisher, collection, Zzap!64 and Amiga Demo Music outputs.
 
 ## Validation
 
 - Branch isolation remains intact; no merge, push or write to `main` was performed.
 - Canonical production data/pages, live redirect configuration and deployment settings remain unchanged.
-- Local static validation passed for the new `hubSchemas.js` module and workflow YAML before the implementation commit.
-- Implementation commit `53d54c72f911f9d1a01969492819841e6a4f3596` (`prototype: preserve archive hub structured data`) passed GitHub Actions run `34594019621` end to end.
-- Remote validation passed: dependency install, Eleventy build, generated-route checks, shared SEO checks, individual game schema checks, archive-hub schema checks, XML sitemap checks and all seven proven legacy redirect assertions.
-- The new CI assertions successfully parsed the Games, Publishers, Collections and Zzap!64 JSON-LD payloads and verified the publisher/collection ItemLists are internally consistent.
+- Static pre-write checks confirmed the intended accessibility/mobile invariants before repository changes.
+- Navigation accessibility commit `1e8c4f44e6912e60af3786b70d5a4d79ac85fc8b` added current-page semantics only on `codex/eleventy-ccg-prototype`.
+- Responsive shell commit `8836e0d137ca07a5e0ae191766883abc2ff0a0f9` added bounded CSS resilience and touch-target improvements only inside the prototype.
+- Validation commit `0b05a47f30d9b6192dd4323b659135c1a566552a` extended the isolated Eleventy workflow with responsive/accessibility regression assertions.
+- GitHub Actions run `34599055789` passed end to end.
+- Remote validation passed: dependency install, Eleventy build, generated-route checks, responsive/accessibility shell checks, shared SEO checks, individual game schema checks, archive-hub schema checks, XML sitemap checks and all seven proven legacy redirect assertions.
+- The new accessibility stage verified representative homepage, games index, game detail, genre hub/detail, publisher hub, collections hub, Zzap!64 hub and Amiga Demo Music hub/detail outputs.
 - A full local checkout/build is still unavailable in this connector execution environment, so GitHub Actions remains the end-to-end build authority.
 
 ## Blockers
 
 - No critical implementation blocker.
-- No isolated browseable preview deployment has been configured yet; this remains deferred until responsive/accessibility, performance and regression work is stable.
+- No isolated browseable preview deployment has been configured yet; this remains deferred until the performance and broader regression pass is stable.
 - Redirect compatibility continues to cover only aliases explicitly evidenced by repository data; broader redirect rules will not be invented.
 
 ## Next task
 
-Perform the dedicated responsive/mobile usability and accessibility review across the shared shell and representative homepage, games index, game detail, genre, publisher, collection, Zzap!64 and Amiga Demo Music outputs. Make only bounded fixes supported by the current prototype, extend regression assertions where practical, and preserve the lightweight static-first approach.
+Perform the image/performance optimisation pass across representative generated pages. Audit image loading/decoding, avoid unnecessary eager media, confirm the static shell remains dependency-light, and add bounded regression checks for performance-sensitive markup without changing canonical source assets or degrading visual/content fidelity.
 
 ## Completion criteria still outstanding
 
 - Complete home migration/content parity review.
-- Dedicated responsive/mobile usability review.
-- Dedicated accessibility review.
 - Image/performance optimisation pass.
 - Broader regression testing.
 - Configure a browseable isolated preview deployment that cannot replace `www.cheekycommodoregamer.co.uk`.
