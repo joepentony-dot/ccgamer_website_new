@@ -12,7 +12,6 @@ const reviewIndex = enricher.enrich(JSON.parse(JSON.stringify(baseReviewIndex)))
 const gameJs = fs.readFileSync('js/load-single-game.js', 'utf8');
 const magazineReviewJs = fs.readFileSync('js/magazine-game-reviews-runtime.js', 'utf8');
 const publisherHtml = fs.readFileSync('admin/content-publisher.html', 'utf8');
-const publisherJs = fs.readFileSync('admin/js/content-publisher.js', 'utf8');
 
 function reviewEntries() {
   return Object.entries(reviewIndex.entries || {}).map(([key, row]) => {
@@ -69,7 +68,7 @@ test('Rambo uses its archive title while retaining both Zzap review links', () =
   assert.ok(destinations.has('53|58'));
 });
 
-test('game runtime supports automatic, lightweight and optional Zzap review links', () => {
+test('game runtime supports automatic, lightweight Zzap review links', () => {
   assert.match(magazineReviewJs, /\/data\/zzap64-game-reviews\//);
   assert.match(magazineReviewJs, /loadZzapRows/);
   assert.match(magazineReviewJs, /Magazine Reviews/);
@@ -77,10 +76,9 @@ test('game runtime supports automatic, lightweight and optional Zzap review link
   assert.match(gameJs, /magazine-game-reviews-runtime\.js/);
 });
 
-test('Content Publisher offers an optional direct Zzap review URL', () => {
-  assert.match(publisherHtml, /data-game-field="zzapUrl"/);
-  assert.match(publisherHtml, /Zzap!64 review URL \(optional\)/i);
-  assert.match(publisherHtml, /Leave blank if Zzap!64 did not review the game/i);
-  assert.match(publisherJs, /zzap:\s*gameValue\('zzapUrl'\)/);
-  assert.match(publisherJs, /isValidZzapReviewUrl/);
+test('Content Publisher relies on automatic magazine resolution instead of a manual Zzap URL', () => {
+  assert.doesNotMatch(publisherHtml, /data-game-field="zzapUrl"/);
+  assert.doesNotMatch(publisherHtml, /Zzap!64 review URL \(optional\)/i);
+  assert.match(publisherHtml, /automatic magazine-review coverage/i);
+  assert.match(publisherHtml, /Lemon source URL \(optional override\)/i);
 });
