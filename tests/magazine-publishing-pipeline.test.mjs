@@ -73,12 +73,37 @@ test("Speed King migration establishes the original Digital Integration release 
   assert.ok(migrationIndex >= 0 && migrationIndex < refreshIndex, "Speed King release identity must be corrected before Lemon cache refresh");
 });
 
-test("Premiere uses the verified local Lemon Amiga cache without fabricated curated review rows", () => {
+test("Premiere materializes the 15 verified reviews from its local Lemon Amiga cache", () => {
   const sourceRoot = path.join(root, "data", "magazine-review-records");
-  const keys = fs.readdirSync(sourceRoot)
+  const reviewRows = fs.readdirSync(sourceRoot)
     .filter((name) => name.endsWith('.json'))
-    .flatMap((name) => Object.keys(JSON.parse(fs.readFileSync(path.join(sourceRoot, name), 'utf8')).games || {}));
-  assert.equal(keys.includes('amiga:premiere'), false, 'Premiere must not receive fabricated curated review rows');
+    .flatMap((name) => {
+      const games = JSON.parse(fs.readFileSync(path.join(sourceRoot, name), 'utf8')).games || {};
+      return games['amiga:premiere'] || [];
+    });
+
+  assert.equal(reviewRows.length, 15, 'Premiere must materialize all 15 verified Lemon Amiga magazine reviews');
+  assert.deepEqual(
+    reviewRows.map((row) => [row.magazine, row.score, row.scorePercent]),
+    [
+      ["Amiga Action", "92%", 92],
+      ["Amiga Format", "89%", 89],
+      ["Amiga Format", "8/10", 80],
+      ["Amiga Games", "75%", 75],
+      ["Amiga Joker", "78%", 78],
+      ["Amiga Magazine", "8/10", 80],
+      ["Amiga Mania", "83%", 83],
+      ["Amiga Power", "84%", 84],
+      ["Amiga Power", "70%", 70],
+      ["CU Amiga", "85%", 85],
+      ["CU Amiga", "84%", 84],
+      ["Datormagazin", "95%", 95],
+      ["The One", "81%", 81],
+      ["The One", "67%", 67],
+      ["Zero", "88%", 88]
+    ],
+    'Premiere materialized rows must remain the verified Lemon-derived review set'
+  );
 
   const pending = JSON.parse(fs.readFileSync(path.join(root, 'data', 'lemon-source-pending.json'), 'utf8'));
   assert.equal(pending.includes('premiere'), false, 'Premiere must leave the retry queue once a verified local Lemon Amiga source is cached');
