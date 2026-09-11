@@ -1,10 +1,10 @@
 <nav class="site-nav" aria-label="Primary navigation">
-  <a href="/">Home</a>
-  <a href="/games/">Games</a>
+  <a href="/" {% if page.url == "/" %}aria-current="page"{% endif %}>Home</a>
+  <a href="/games/" {% if page.url == "/games/" %}aria-current="page"{% endif %}>Games</a>
   <a href="/games/#browse-a-z">A–Z</a>
-  <a href="/games/genres/">Genres</a>
-  <a href="/games/publishers/">Publishers</a>
-  <a href="/games/collections/">Collections</a>
-  <a href="/zzap64/">Zzap!64</a>
-  <a href="/amiga-demo-music/">Music</a>
+  <a href="/games/genres/" {% if page.url == "/games/genres/" %}aria-current="page"{% endif %}>Genres</a>
+  <a href="/games/publishers/" {% if page.url == "/games/publishers/" %}aria-current="page"{% endif %}>Publishers</a>
+  <a href="/games/collections/" {% if page.url == "/games/collections/" %}aria-current="page"{% endif %}>Collections</a>
+  <a href="/zzap64/" {% if page.url == "/zzap64/" %}aria-current="page"{% endif %}>Zzap!64</a>
+  <a href="/amiga-demo-music/" {% if page.url == "/amiga-demo-music/" %}aria-current="page"{% endif %}>Music</a>
 </nav>
