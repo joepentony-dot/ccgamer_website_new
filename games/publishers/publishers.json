@@ -660,6 +660,18 @@
     "url": "/games/publishers/design-design/"
   },
   {
+    "name": "Digital Integration",
+    "slug": "digital-integration",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/digital-integration/"
+  },
+  {
     "name": "Digital Magic Software",
     "slug": "digital-magic-software",
     "count": 1,
