@@ -52,3 +52,6 @@ jobs:
           test -f _site/games/collections/retro-specials/index.html
           test -f _site/zzap64/index.html
           test -f _site/amiga-demo-music/index.html
+          test -f _site/amiga-demo-music/9-fingers-spaceballs/index.html
+          test -f _site/amiga-demo-music/jesus-on-es/index.html
+          test -f _site/amiga-demo-music/state-of-the-art/index.html
