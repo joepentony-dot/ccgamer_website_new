@@ -144,13 +144,13 @@ try{
   assert.equal(chestResult.opened,true,"opened chest must retain opened state");
   assert.ok(chestResult.armour>=2,"chest loot must be applied during the opening action rather than after the old delayed callback");
   assert.ok(chestResult.rewardScore>0,"every chest must record a positive score reward");
-  assert.equal(chestResult.rewardXp,10,"legacy chest metadata may still record the former 10 XP reward while the central XP contract rejects it");
+  assert.equal(chestResult.rewardXp,0,"chest metadata must not advertise progression XP");
   assert.equal(chestResult.scoreAfter-chestResult.scoreBefore,chestResult.rewardScore,"the recorded chest score must be added immediately");
   assert.equal(chestResult.xpAfter-chestResult.xpBefore,0,"opening a chest must not advance progression XP");
   assert.match(chestResult.feedback,/SIZZLER/,"chest feedback above the chest must include its rarity");
   assert.match(chestResult.feedback,/ARMOUR PLATE/i,"chest feedback above the chest must identify the item");
   assert.match(chestResult.feedback,/SCORE/,"chest feedback above the chest must show the score award");
-  assert.match(chestResult.feedback,/XP/,"legacy chest feedback remains covered here until its display text is migrated away from the retired XP reward");
+  assert.doesNotMatch(chestResult.feedback,/\bXP\b/i,"chest feedback must not advertise progression XP");
   assert.equal(chestResult.immediate,1,"exactly one legacy delayed chest delivery must be converted to immediate delivery");
   assert.ok(chestResult.feedbackCount>=1,"r31 must record visible chest feedback");
 
