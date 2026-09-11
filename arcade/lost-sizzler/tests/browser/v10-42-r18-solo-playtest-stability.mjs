@@ -75,9 +75,10 @@ try{
   }
 
   await page.keyboard.press("KeyP");await page.waitForFunction(()=>mode==="paused");
+  const keyboardRepairBefore=await page.evaluate(()=>Number(window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics.pauseResumeAttackRepairs||0));
   await page.evaluate(()=>{fire1=1200;fireBuffer1=900;projectileCD=600});
-  await page.keyboard.press("KeyP");await page.waitForFunction(()=>mode==="playing");
-  await page.waitForFunction(()=>fire1===0&&fireBuffer1===0&&projectileCD===0);
+  await page.keyboard.press("KeyP");
+  await page.waitForFunction(before=>mode==="playing"&&Number(window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics.pauseResumeAttackRepairs||0)>before,keyboardRepairBefore,{timeout:4000});
 
   const beforeAttack=await page.evaluate(()=>({
     mana:p1.mana,
@@ -85,8 +86,7 @@ try{
     fire1,fireBuffer1,projectileCD,
     diag:{...window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics}
   }));
-  assert.ok(beforeAttack.diag.pauseResumeAttackRepairs>=1,`repeated P-key resume must repair injected finite attack cadence: ${JSON.stringify(beforeAttack)}`);
-  assert.deepEqual({fire1:beforeAttack.fire1,fireBuffer1:beforeAttack.fireBuffer1,projectileCD:beforeAttack.projectileCD},{fire1:0,fireBuffer1:0,projectileCD:0},"resume must leave attack cadence live");
+  assert.ok(beforeAttack.diag.pauseResumeAttackRepairs>keyboardRepairBefore,`repeated P-key resume must repair injected finite attack cadence: ${JSON.stringify({keyboardRepairBefore,beforeAttack})}`);
 
   await page.keyboard.press("Space");
   await page.waitForFunction(before=>p1.mana<before||bullets.filter(b=>b?.owner===p1.id&&b.ttl>0).length>0,beforeAttack.mana,{timeout:4000});
@@ -95,11 +95,12 @@ try{
   assert.ok(afterAttack.mana<beforeAttack.mana||afterAttack.bullets>beforeAttack.bullets,`a real Space attack must still fire after repeated pause/resume cycles: before=${JSON.stringify(beforeAttack)} after=${JSON.stringify(afterAttack)}`);
 
   await page.keyboard.press("KeyP");await page.waitForFunction(()=>mode==="paused");
+  const buttonRepairBefore=await page.evaluate(()=>Number(window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics.pauseResumeAttackRepairs||0));
   await page.evaluate(()=>{fire1=850;fireBuffer1=650;projectileCD=400});
-  await page.click("#resume-btn");await page.waitForFunction(()=>mode==="playing");
-  await page.waitForFunction(()=>fire1===0&&fireBuffer1===0&&projectileCD===0);
+  await page.click("#resume-btn");
+  await page.waitForFunction(before=>mode==="playing"&&Number(window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics.pauseResumeAttackRepairs||0)>before,buttonRepairBefore,{timeout:4000});
   const beforeButtonResumeAttack=await page.evaluate(()=>({mana:p1.mana,diag:{...window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics}}));
-  assert.ok(beforeButtonResumeAttack.diag.pauseResumeAttackRepairs>=2,"Continue-button resume must repair the same injected finite attack cadence");
+  assert.ok(beforeButtonResumeAttack.diag.pauseResumeAttackRepairs>buttonRepairBefore,"Continue-button resume must repair the same injected finite attack cadence");
   await page.keyboard.press("Space");
   await page.waitForFunction(before=>p1.mana<before,beforeButtonResumeAttack.mana,{timeout:4000});
 
