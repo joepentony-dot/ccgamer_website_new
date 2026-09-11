@@ -41,7 +41,19 @@ const collections = [
       "infernal-runner", "into-the-eagles-nest", "joe-blade"
     ]
   },
-  { name: "Top Picks", slug: "top-picks", legacyUrl: "/games/collections/top-picks.html" },
+  {
+    name: "Top Picks",
+    slug: "top-picks",
+    legacyUrl: "/games/collections/top-picks.html",
+    description: "Cheeky Commodore Gamer favourites preserved from the existing Top Picks fallback markup.",
+    gameSlugs: [
+      "ace-of-aces", "airborne-ranger", "aliens-the-computer-game", "alter-ego", "american-3d-pool",
+      "another-world", "apollo-18-mission-to-the-moon", "arcade-pool", "archon-the-light-and-the-dark",
+      "arkanoid", "aztec-challenge", "bangkok-knights", "barbarian-the-ultimate-warrior",
+      "bcs-quest-for-tires", "beach-head", "black-hawk", "bloodwych", "bruce-lee", "bubble-bobble",
+      "bullys-sporting-darts", "cannon-fodder", "choplifter", "civilization", "commando"
+    ]
+  },
   { name: "Amiga Demo Music", slug: "amiga-demo-music", legacyUrl: "/games/collections/amiga-demo-music.html" },
   { name: "Retro Events", slug: "retro-events", legacyUrl: "/games/collections/retro-events.html" },
   { name: "Retro Specials", slug: "retro-specials", legacyUrl: "/games/collections/retro-specials.html" }
@@ -72,5 +84,6 @@ export default {
   items,
   cartridge: items.find((item) => item.slug === "cartridge-games"),
   licensed: items.find((item) => item.slug === "licensed-games"),
-  bpjs: items.find((item) => item.slug === "bpjs-indexed-games")
+  bpjs: items.find((item) => item.slug === "bpjs-indexed-games"),
+  topPicks: items.find((item) => item.slug === "top-picks")
 };

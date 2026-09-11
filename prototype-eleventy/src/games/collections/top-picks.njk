@@ -1,0 +1,24 @@
+---
+layout: layouts/base.njk
+title: Top Picks | CCG Eleventy Prototype
+description: Browse Cheeky Commodore Gamer favourites preserved from the existing Top Picks collection.
+permalink: /games/collections/top-picks/index.html
+---
+<section class="hero hero--compact">
+  <p class="eyebrow">COLLECTION PROTOTYPE</p>
+  <h1>{{ collectionArchive.topPicks.name }}</h1>
+  <p class="lede">{{ collectionArchive.topPicks.description }}</p>
+</section>
+
+<section class="archive-browser" aria-labelledby="top-picks-heading">
+  <div class="section-heading">
+    <h2 id="top-picks-heading">Games in this collection</h2>
+    <p>{{ collectionArchive.topPicks.games | length }} entries preserved from the existing collection fallback markup.</p>
+  </div>
+
+  <div class="game-grid">
+    {% for game in collectionArchive.topPicks.games %}
+      {% include "components/game-card.njk" %}
+    {% endfor %}
+  </div>
+</section>

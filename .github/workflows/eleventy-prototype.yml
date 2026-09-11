@@ -46,3 +46,4 @@ jobs:
           test -f _site/games/collections/cartridge-games/index.html
           test -f _site/games/collections/licensed-games/index.html
           test -f _site/games/collections/bpjs-indexed-games/index.html
+          test -f _site/games/collections/top-picks/index.html
