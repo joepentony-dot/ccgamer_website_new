@@ -19,6 +19,21 @@
   });
   const lastSfxAt=new Map();
 
+  function installInteractionXPSourceContract(){
+    if(window.CCGLostSizzlerXPSourceContract)return;
+    const blockedReasons=new Set(["Hidden wall opened","Bronze door unlocked","Hidden wall switch","Gate switch opened"]);
+    const grantXP=awardXP;
+    awardXP=function(player,amount,reason=""){
+      if(blockedReasons.has(String(reason)))return{amount:0,gross:Math.max(0,Math.round(Number(amount)||0)),debtPaid:0,discarded:0,capped:false,reason,levels:[],blocked:true};
+      return grantXP(player,amount,reason);
+    };
+    window.CCGLostSizzlerXPSourceContract=Object.freeze({
+      blockedReasons:Object.freeze([...blockedReasons]),
+      isBlocked:reason=>blockedReasons.has(String(reason))
+    });
+  }
+  installInteractionXPSourceContract();
+
   function currentMode(){try{return typeof mode!=="undefined"?String(mode):""}catch(_){return""}}
   function activeRun(){return document.body?.dataset?.runActive==="true"}
   function localRoster(){
