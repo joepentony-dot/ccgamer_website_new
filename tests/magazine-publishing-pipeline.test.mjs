@@ -9,6 +9,10 @@ const require = createRequire(import.meta.url);
 const {
   materializeMagazineReviewsHtml
 } = require(path.join(root, "scripts", "ensure-magazine-review-runtime.js"));
+const {
+  CANONICAL_LEMON_URL,
+  correctSpeedKing
+} = require(path.join(root, "scripts", "migrate-speed-king-release.js"));
 
 test("Reliable Games Publishing imports local magazine metadata before rebuilding games", () => {
   const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "games-publishing.yml"), "utf8");
@@ -33,12 +37,40 @@ test("magazine reviews are materialized after canonical SEO game routes are gene
   );
 });
 
-test("external Lemon availability is not a publishing prerequisite", () => {
+test("changed Lemon sources refresh before magazine import without becoming a publishing prerequisite", () => {
   const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "games-publishing.yml"), "utf8");
-  assert.doesNotMatch(workflow, /Cache required Lemon magazine sources/);
+  const refreshIndex = workflow.indexOf("node scripts/refresh-lemon-game-cache.js --base HEAD^");
+  const importIndex = workflow.indexOf("node scripts/import-amiga-magazine-reviews.js");
+  const refreshStep = workflow.match(/- name: Refresh changed Lemon reference pages \(best effort\)[\s\S]*?continue-on-error:\s*true[\s\S]*?node scripts\/refresh-lemon-game-cache\.js --base HEAD\^/);
+
+  assert.ok(refreshIndex >= 0, "new or changed Lemon sources are not refreshed before magazine import");
+  assert.ok(importIndex >= 0 && refreshIndex < importIndex, "Lemon source refresh must run before magazine import");
+  assert.ok(refreshStep, "Lemon refresh must be explicitly best-effort so an external outage cannot block publishing");
   assert.doesNotMatch(workflow, /refresh-lemon-game-cache\.js --check --base HEAD\^/);
-  assert.doesNotMatch(workflow, /refresh-lemon-game-cache\.js --base HEAD\^/);
-  assert.match(workflow, /External Lemon64\/Lemon Amiga availability is optional/);
+  assert.match(workflow, /External Lemon64\/Lemon Amiga availability is optional and cannot block publishing/);
+});
+
+test("Speed King migration establishes the original Digital Integration release before source refresh", () => {
+  const game = {
+    system: "C64",
+    slug: "speed-king",
+    year: 1986,
+    credits: {
+      publisher: ["Mastertronic"],
+      re_releaser: []
+    }
+  };
+
+  assert.equal(correctSpeedKing(game), true);
+  assert.equal(game.year, 1985);
+  assert.deepEqual(game.credits.publisher, ["Digital Integration"]);
+  assert.deepEqual(game.credits.re_releaser, ["Mastertronic"]);
+  assert.deepEqual(game.lemon, [CANONICAL_LEMON_URL]);
+
+  const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "games-publishing.yml"), "utf8");
+  const migrationIndex = workflow.indexOf("node scripts/migrate-speed-king-release.js");
+  const refreshIndex = workflow.indexOf("node scripts/refresh-lemon-game-cache.js --base HEAD^");
+  assert.ok(migrationIndex >= 0 && migrationIndex < refreshIndex, "Speed King release identity must be corrected before Lemon cache refresh");
 });
 
 test("Premiere has no fabricated Amiga review record and therefore remains hidden", () => {
