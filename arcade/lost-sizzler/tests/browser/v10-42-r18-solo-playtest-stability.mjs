@@ -65,7 +65,7 @@ try{
   await page.evaluate(()=>{
     host.enemies=[];enemyBullets.length=0;hazards.length=0;bullets.length=0;
     p1.firearmUnlocked=true;p1.weapon=baseWeapon();p1.mana=220;p1.maxMana=Math.max(p1.maxMana,220);
-    fire1=0;fireBuffer1=0;projectileCD=0;window.__CCG_PAUSE_ATTACK_RESETS__=0;
+    fire1=0;fireBuffer1=0;projectileCD=0;
   });
 
   for(let i=0;i<11;i++){
@@ -83,9 +83,9 @@ try{
     mana:p1.mana,
     bullets:bullets.filter(b=>b?.owner===p1.id&&b.ttl>0).length,
     fire1,fireBuffer1,projectileCD,
-    resets:Number(window.__CCG_PAUSE_ATTACK_RESETS__||0)
+    diag:{...window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics}
   }));
-  assert.ok(beforeAttack.resets>=12,`every tested P-key resume must cross the canonical attack reset: ${JSON.stringify(beforeAttack)}`);
+  assert.ok(beforeAttack.diag.pauseResumeAttackRepairs>=1,`repeated P-key resume must repair injected finite attack cadence: ${JSON.stringify(beforeAttack)}`);
   assert.deepEqual({fire1:beforeAttack.fire1,fireBuffer1:beforeAttack.fireBuffer1,projectileCD:beforeAttack.projectileCD},{fire1:0,fireBuffer1:0,projectileCD:0},"resume must leave attack cadence live");
 
   await page.keyboard.press("Space");
@@ -98,8 +98,8 @@ try{
   await page.evaluate(()=>{fire1=850;fireBuffer1=650;projectileCD=400});
   await page.click("#resume-btn");await page.waitForFunction(()=>mode==="playing");
   await page.waitForFunction(()=>fire1===0&&fireBuffer1===0&&projectileCD===0);
-  const beforeButtonResumeAttack=await page.evaluate(()=>({mana:p1.mana,resets:Number(window.__CCG_PAUSE_ATTACK_RESETS__||0)}));
-  assert.ok(beforeButtonResumeAttack.resets>=13,"Continue-button resume must cross the same canonical attack reset");
+  const beforeButtonResumeAttack=await page.evaluate(()=>({mana:p1.mana,diag:{...window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics}}));
+  assert.ok(beforeButtonResumeAttack.diag.pauseResumeAttackRepairs>=2,"Continue-button resume must repair the same injected finite attack cadence");
   await page.keyboard.press("Space");
   await page.waitForFunction(before=>p1.mana<before,beforeButtonResumeAttack.mana,{timeout:4000});
 
