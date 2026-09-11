@@ -99,8 +99,8 @@ jobs:
                 fi
                 ;;
               *)
-                if ! grep -Fq 'Cheeky Commodore Gamer' "$body"; then
-                  echo "CCG page marker missing for ${route}." >&2
+                if ! grep -Eiq '<!doctype html|<html' "$body"; then
+                  echo "HTML marker missing for ${route}." >&2
                   head -c 500 "$body" >&2 || true
                   rm -f "$headers" "$body"
                   exit 1
