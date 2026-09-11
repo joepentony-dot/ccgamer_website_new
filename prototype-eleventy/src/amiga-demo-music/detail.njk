@@ -1,0 +1,78 @@
+---
+pagination:
+  data: amigaMusicArchive.entries
+  size: 1
+  alias: music
+permalink: "/amiga-demo-music/{{ music.slug }}/index.html"
+eleventyComputed:
+  title: "{{ music.pageTitle }}"
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ music.pageTitle }}</title>
+  <meta name="description" content="{{ music.description }}">
+  <meta name="robots" content="{{ music.robots }}">
+  <link rel="canonical" href="{{ music.canonical }}">
+
+  <meta property="og:type" content="{{ music.ogType }}">
+  <meta property="og:site_name" content="Cheeky Commodore Gamer">
+  <meta property="og:title" content="{{ music.pageTitle }}">
+  <meta property="og:description" content="{{ music.description }}">
+  <meta property="og:url" content="{{ music.canonical }}">
+  <meta property="og:image" content="{{ music.ogImage }}">
+  <meta property="og:video" content="{{ music.ogVideo }}">
+  <meta property="og:video:secure_url" content="{{ music.ogVideo }}">
+  <meta property="og:video:type" content="text/html">
+  <meta property="og:video:width" content="1280">
+  <meta property="og:video:height" content="720">
+
+  <meta name="twitter:card" content="{{ music.twitterCard }}">
+  <meta name="twitter:title" content="{{ music.pageTitle }}">
+  <meta name="twitter:description" content="{{ music.description }}">
+  <meta name="twitter:image" content="{{ music.ogImage }}">
+  <meta name="twitter:url" content="{{ music.canonical }}">
+  <meta name="twitter:site" content="{{ music.twitterSite }}">
+
+  <script type="application/ld+json">{{ music.videoSchemaJson | safe }}</script>
+  <script type="application/ld+json">{{ music.breadcrumbSchemaJson | safe }}</script>
+
+  <link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="wrap site-header__inner">
+      <a class="brand" href="/">Cheeky Commodore Gamer</a>
+      {% include "components/site-nav.njk" %}
+    </div>
+  </header>
+
+  <main class="wrap" id="main-content" tabindex="-1">
+    <article class="music-detail">
+      <p class="eyebrow">Amiga Demo Music</p>
+      <h1>{{ music.title }}</h1>
+      <p class="lede">{{ music.description }}</p>
+
+      <div class="video-frame">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/{{ music.youtubeId }}"
+          title="{{ music.videoSchema.name }}"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen></iframe>
+      </div>
+
+      <p class="actions"><a class="button" href="{{ music.youtubeUrl }}">Watch on YouTube</a></p>
+      <p class="back-link"><a href="/amiga-demo-music/">← Back to Amiga Demo Music</a></p>
+    </article>
+  </main>
+
+  <footer class="wrap site-footer">
+    <p>Commodore 64 &amp; Amiga archive prototype.</p>
+  </footer>
+</body>
+</html>
