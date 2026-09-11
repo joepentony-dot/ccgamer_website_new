@@ -26,7 +26,7 @@
       <div>
         <p class="publisher-kicker">CHEEKY COMMODORE GAMER · ADMIN</p>
         <h1>CCG Content Publisher</h1>
-        <p class="publisher-intro">Add a game, video or Zzap!64 award year once. The existing GitHub publishing chain then regenerates pages, verified YouTube metadata, VideoObject markup, chapters, the video library, original Zzap review links, sitemaps and validation.</p>
+        <p class="publisher-intro">Add a game, video or Zzap!64 award year once. The existing GitHub publishing chain then regenerates pages, automatic magazine-review coverage, verified YouTube metadata, VideoObject markup, chapters, the video library, sitemaps and validation.</p>
       </div>
       <div class="publisher-header-actions">
         <a class="ccg-btn ccg-btn--ghost" href="/admin/admin.html">Admin Home</a>
@@ -85,7 +85,7 @@
       <div class="publisher-section-heading">
         <div>
           <h2>Add a C64 or Amiga game</h2>
-          <p>The publisher commits the source record only. Existing workflows build the canonical page, archives, search data, video SEO and sitemaps.</p>
+          <p>The publisher commits the source record only. Existing workflows automatically resolve verified Lemon sources, import available magazine reviews and build the canonical page, archives, search data, video SEO and sitemaps.</p>
         </div>
         <button class="ccg-btn ccg-btn--ghost" type="button" data-action="reset-game">Reset Game Form</button>
       </div>
@@ -172,12 +172,9 @@
           <label>PDF / manual URL
             <input type="url" data-game-field="pdf" />
           </label>
-          <label>Lemon64 URL
+          <label>Lemon source URL (optional override)
             <input type="url" data-game-field="lemonUrl" />
-          </label>
-          <label>Zzap!64 review URL (optional)
-            <input type="url" data-game-field="zzapUrl" placeholder="https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=43&amp;page=24" />
-            <small>Leave blank if Zzap!64 did not review the game. Use the direct original review scan URL when one is available; games already covered by the Zzap awards archive can also be linked automatically.</small>
+            <small>Normally leave blank. C64 and Amiga sources are resolved automatically using exact title, platform, original release year and publisher. Use this only when an explicit verified Lemon URL is needed.</small>
           </label>
           <label>Download permission
             <select data-game-field="downloadStatus">
@@ -228,7 +225,7 @@
         <div class="publisher-submit-row">
           <div>
             <strong>After publish:</strong>
-            <span>game page → verified video metadata → VideoObject → video library → sitemaps → validation</span>
+            <span>game page → automatic magazine reviews → verified video metadata → VideoObject → video library → sitemaps → validation</span>
           </div>
           <button class="ccg-btn ccg-btn--primary publisher-primary-action" type="submit" data-publish-game>Publish Game</button>
         </div>
