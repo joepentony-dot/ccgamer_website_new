@@ -2,9 +2,9 @@
 
 ## Status
 
-Overall completion estimate: **58%**
+Overall completion estimate: **62%**
 
-Current milestone: **Retro Events collection preserved as a source-backed gateway without duplicating Amiga Demo Music records**
+Current milestone: **Retro Specials collection preserved as a source-backed gateway while retaining established `/retro-specials/.../` detail ownership**
 
 ## Completed
 
@@ -23,35 +23,39 @@ Current milestone: **Retro Events collection preserved as a source-backed gatewa
 - Added `/games/collections/top-picks/` using the 24 game entries present in the existing Top Picks fallback markup; no additional editorial picks or rankings were inferred.
 - Added `/games/collections/amiga-demo-music/` as a lightweight gateway preserving the ten explicit links in the existing collection fallback markup. The entries continue to point at their established `/amiga-demo-music/.../` URLs so the later dedicated Music migration remains the single owner of music detail pages.
 - Added `/games/collections/retro-events/` as a lightweight gateway driven directly from the existing `games/collections/retro-events.json` source.
-- Retro Events now preserves the 17 source records not marked `demo_music`, including original titles, YouTube URLs, membership flags, ordering and optional Play Expo badges.
+- Retro Events preserves the 17 source records not marked `demo_music`, including original titles, YouTube URLs, membership flags, ordering and optional Play Expo badges.
 - Explicitly excludes the 10 `demo_music` records embedded in `retro-events.json` so the Retro Events and Amiga Demo Music areas do not duplicate archive ownership.
-- Added duplicate-URL protection for source-backed Retro Events entries.
+- Added `/games/collections/retro-specials/` as a lightweight gateway preserving the 20 explicit feature links exposed by the existing Retro Specials collection page.
+- Retro Specials preserves the established `/retro-specials/.../` URLs, titles, concise source descriptions and the three entries explicitly marked members-only; it does not create duplicate feature detail pages.
+- Added duplicate-URL protection for source-backed Retro Events and Retro Specials entries.
 - Generalized collection-index labels so non-game gateway collections can report their source-backed entry type accurately.
 - Added Collections to the shared primary navigation.
-- Extended isolated CI route checks to cover publisher index and all six migrated collection routes, including Retro Events.
+- Extended isolated CI route checks to cover publisher index and all seven migrated collection routes, including Retro Events and Retro Specials.
 - Added skip-to-content support, semantic navigation, visible keyboard focus treatment and reduced-motion handling.
 
 ## Validation
 
 - Branch isolation remains intact; no merge or write to `main` was performed.
-- Canonical `games/games.json`, `games/collections/retro-events.json` and production pages remain unchanged and are only read by the prototype.
-- The existing Retro Events JSON contains 27 records: 17 event/feature records plus 10 records explicitly marked `type: "demo_music"`; only the 17 non-demo-music records are surfaced by the Retro Events prototype gateway.
-- Retro Events entries are read at Eleventy build time from the repository source, sorted by their existing `order` field and rejected if duplicate URLs are detected.
-- Updated `collectionArchive.js` passed local `node --check` syntax validation.
-- The new Retro Events Nunjucks page passed static front-matter/permalink checks.
-- The isolated GitHub Actions workflow verifies `_site/games/collections/retro-events/index.html` in addition to the existing representative routes.
-- Remote Eleventy validation for commit `1302f5698de0e36558dbed1afac60b972d8dafc1` completed successfully on GitHub Actions.
-- A full local checkout/build remains unavailable in the execution container because outbound DNS access to GitHub is blocked; remote CI provides the end-to-end build confirmation.
+- Canonical `games/games.json`, `games/collections/retro-events.json`, the existing Retro Specials page and production pages remain unchanged and are only read/referenced by the prototype.
+- The existing Retro Specials page exposes 20 explicit `/retro-specials/.../` feature links; these are represented as gateway entries rather than inferred taxonomy.
+- Existing members-only markers were retained for `commodore-64-memories-1982`, `retro-games-day-family-gaming` and `zx-spectrum-memories-hodgy`.
+- Shared duplicate-URL validation now rejects collisions in both Retro Events and Retro Specials source-backed gateway entries.
+- The isolated GitHub Actions workflow now verifies `_site/games/collections/retro-specials/index.html` in addition to the existing representative routes.
+- Implementation commit: `4147711d92b99656f2487819fef1eb9376f4d4ff` (`prototype: add Retro Specials gateway`).
+- Post-commit repository reads confirm the new Nunjucks route exists on `codex/eleventy-ccg-prototype` with the expected permalink and gateway behavior.
+- Remote GitHub Actions status for the new implementation commit has not surfaced through the available run/status lookup yet; this is recorded as pending rather than assumed successful.
+- A full local checkout/build remains unavailable in the execution container because outbound DNS access to GitHub is blocked; remote CI remains the end-to-end build authority when the run becomes observable.
 
 ## Blockers
 
 - No critical implementation blocker.
+- Remote end-to-end validation for the latest Retro Specials commit is pending visibility.
 - No isolated preview deployment has been configured yet; this remains deferred until more principal content sections are migrated.
 
 ## Next task
 
-Inspect the existing Retro Specials collection and any repository-backed data or generated page inputs, then migrate only explicit source-backed entries and established URLs without inventing membership or duplicating detail-page ownership.
+Inspect the existing Zzap!64 hub, data sources and URL structure, then migrate the hub/index layer first using only repository-backed content while avoiding duplication with Retro Specials feature routes.
 
 ## Completion criteria still outstanding
 
-Complete home migration; Retro Specials and remaining collection/hub compatibility; Zzap!64; dedicated music detail/archive migration; SEO metadata/structured data/sitemaps/redirect compatibility; accessibility review; image/performance work; regression testing; and an isolated browseable preview deployment.
+Complete home migration; Zzap!64; dedicated music detail/archive migration; SEO metadata/structured data/sitemaps/redirect compatibility; accessibility review; image/performance work; regression testing; and an isolated browseable preview deployment.
