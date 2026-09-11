@@ -73,12 +73,16 @@ test("Speed King migration establishes the original Digital Integration release 
   assert.ok(migrationIndex >= 0 && migrationIndex < refreshIndex, "Speed King release identity must be corrected before Lemon cache refresh");
 });
 
-test("Premiere has no fabricated Amiga review record and therefore remains hidden", () => {
+test("Premiere remains unfabricated while queued for verified automatic magazine-source retry", () => {
   const sourceRoot = path.join(root, "data", "magazine-review-records");
   const keys = fs.readdirSync(sourceRoot)
     .filter((name) => name.endsWith('.json'))
     .flatMap((name) => Object.keys(JSON.parse(fs.readFileSync(path.join(sourceRoot, name), 'utf8')).games || {}));
-  assert.equal(keys.includes('amiga:premiere'), false);
+  assert.equal(keys.includes('amiga:premiere'), false, 'Premiere must not receive fabricated review rows before a source validates');
+
+  const pending = JSON.parse(fs.readFileSync(path.join(root, 'data', 'lemon-source-pending.json'), 'utf8'));
+  assert.ok(pending.includes('premiere'), 'Premiere must remain queued until a verified Lemon Amiga source resolves');
+
   const runtime = fs.readFileSync(path.join(root, 'js', 'magazine-game-reviews-runtime.js'), 'utf8');
   assert.match(runtime, /if \(!rows\.length\)/);
 });
