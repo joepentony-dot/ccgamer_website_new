@@ -45,13 +45,16 @@ function extractTitle(html, sourceFile) {
   return decodeHtml(match[1].trim());
 }
 
+function extractQuotedAttribute(tag, attribute) {
+  const match = tag.match(new RegExp(`\\b${attribute}=(['"])([\\s\\S]*?)\\1`, "i"));
+  return match ? decodeHtml(match[2].trim()) : "";
+}
+
 function extractMeta(html, attribute, key) {
   const tags = html.match(/<meta\b[^>]*>/gi) || [];
   for (const tag of tags) {
-    const attrMatch = tag.match(new RegExp(`\\b${attribute}=["']([^"']+)["']`, "i"));
-    if (!attrMatch || attrMatch[1] !== key) continue;
-    const contentMatch = tag.match(/\bcontent=["']([^"']*)["']/i);
-    return contentMatch ? decodeHtml(contentMatch[1].trim()) : "";
+    if (extractQuotedAttribute(tag, attribute) !== key) continue;
+    return extractQuotedAttribute(tag, "content");
   }
   return "";
 }
@@ -59,9 +62,8 @@ function extractMeta(html, attribute, key) {
 function extractCanonical(html) {
   const links = html.match(/<link\b[^>]*>/gi) || [];
   for (const tag of links) {
-    if (!/\brel=["']canonical["']/i.test(tag)) continue;
-    const match = tag.match(/\bhref=["']([^"']+)["']/i);
-    if (match) return decodeHtml(match[1].trim());
+    if (extractQuotedAttribute(tag, "rel") !== "canonical") continue;
+    return extractQuotedAttribute(tag, "href");
   }
   return "";
 }
@@ -86,6 +88,11 @@ function extractSchemas(html, sourceFile) {
   return { video, breadcrumb };
 }
 
+function youtubeIdFromEmbedUrl(embedUrl = "") {
+  const match = embedUrl.match(/\/embed\/([^?&#/]+)/i);
+  return match ? match[1] : "";
+}
+
 function assertSourceSeo(entry, sourceFile) {
   const required = [
     ["page title", entry.pageTitle],
@@ -104,8 +111,9 @@ function assertSourceSeo(entry, sourceFile) {
   }
 }
 
-const entries = gatewayEntries.map((entry, index) => {
-  const record = musicRecords[index];
+const recordsByYoutubeId = new Map(musicRecords.map((record) => [record.youtubeId, record]));
+
+const entries = gatewayEntries.map((entry) => {
   const routeMatch = entry.url.match(/^\/amiga-demo-music\/([^/]+)\/$/);
 
   if (!routeMatch) {
@@ -120,11 +128,11 @@ const entries = gatewayEntries.map((entry, index) => {
 
   const html = fs.readFileSync(sourceFile, "utf8");
   const { video, breadcrumb } = extractSchemas(html, sourceFile);
+  const youtubeId = youtubeIdFromEmbedUrl(video.embedUrl);
+  const record = recordsByYoutubeId.get(youtubeId);
 
-  if (video.embedUrl && !video.embedUrl.includes(record.youtubeId)) {
-    throw new Error(
-      `[ccg-eleventy] YouTube ID mismatch for ${slug}: archive has ${record.youtubeId}, source schema has ${video.embedUrl}.`
-    );
+  if (!youtubeId || !record) {
+    throw new Error(`[ccg-eleventy] No demo_music record matches source VideoObject for ${slug}: ${video.embedUrl || "missing embedUrl"}.`);
   }
 
   const detail = {
@@ -172,6 +180,10 @@ function assertUnique(label, values) {
 assertUnique("routes", entries.map((entry) => entry.url));
 assertUnique("canonicals", entries.map((entry) => entry.canonical));
 assertUnique("YouTube IDs", entries.map((entry) => entry.youtubeId));
+
+if (entries.length !== musicRecords.length) {
+  throw new Error(`[ccg-eleventy] Not all demo_music records were matched to detail pages: ${entries.length}/${musicRecords.length}.`);
+}
 
 export default {
   name: "Amiga Demo Music",
