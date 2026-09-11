@@ -121,8 +121,20 @@
     };
     wrapped.__ccgV141R56ChestDelivery=true;wrapped.__ccgOriginal=current;window.applyLoot=wrapped;return true
   }
+  function retireSupersededChestDelivery(){
+    const current=window.openChest;
+    if(typeof current!=="function"||current.__ccgV141R56ChestDelivery!==true)return false;
+    const next=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null;
+    if(!next||!originalChainHasMarker(next,"__ccgV142R1"))return false;
+    window.openChest=next;
+    return true
+  }
   function installChestDelivery(){
     const current=window.openChest;if(typeof current!=="function")return false;
+    if(originalChainHasMarker(current,"__ccgV142R1")){
+      retireSupersededChestDelivery();
+      return true
+    }
     if(originalChainHasMarker(current,"__ccgV141R56ChestDelivery"))return true;
     const wrapped=function openChestV141R56Guaranteed(player,chest){
       if(!ordinaryDungeon()||!chest?.active)return current.apply(this,arguments);
