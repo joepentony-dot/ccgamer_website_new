@@ -66,6 +66,11 @@ test('game publisher presents magazine reviews as automatic with Lemon as an opt
   assert.doesNotMatch(html, /Zzap!64 review URL \(optional\)/i);
 });
 
+test('publisher loads source preflight automation through the image optimiser bootstrap', () => {
+  assert.match(html, /admin\/js\/content-publisher-image-optimizer\.js/);
+  assert.match(optimiser, /import ['"]\.\/content-publisher-source-preflight\.mjs['"]/);
+});
+
 test('publisher keeps the established 3D-box path and separate authenticated music upload', () => {
   assert.match(html, /data-game-box3d-file/);
   assert.match(html, /data-game-music-file/);
