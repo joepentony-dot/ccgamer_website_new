@@ -1,0 +1,28 @@
+---
+layout: layouts/base.njk
+title: Amiga Demo Music | CCG Eleventy Prototype
+description: Browse Cheeky Commodore Gamer Amiga demoscene music features through a lightweight static archive that preserves the established music URLs.
+permalink: /amiga-demo-music/index.html
+---
+<section class="hero hero--compact">
+  <p class="eyebrow">AMIGA MUSIC ARCHIVE PROTOTYPE</p>
+  <h1>{{ amigaMusicArchive.name }}</h1>
+  <p class="lede">{{ amigaMusicArchive.description }}</p>
+</section>
+
+<section class="archive-browser" aria-labelledby="music-heading">
+  <div class="section-heading">
+    <h2 id="music-heading">Demo music features</h2>
+    <p>{{ amigaMusicArchive.count }} source-backed entries are indexed here. Established <code>/amiga-demo-music/...</code> detail URLs are preserved while their richer page migration remains a separate validation milestone.</p>
+  </div>
+
+  <div class="collection-list">
+    {% for entry in amigaMusicArchive.entries %}
+      <article class="collection-summary">
+        <h3><a href="{{ entry.url }}">{{ entry.title }}</a></h3>
+        <p><a href="{{ entry.youtubeUrl }}">Watch on YouTube</a></p>
+        {% if entry.membersOnly %}<p><strong>Members-only video</strong></p>{% endif %}
+      </article>
+    {% endfor %}
+  </div>
+</section>

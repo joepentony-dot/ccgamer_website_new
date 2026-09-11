@@ -51,3 +51,4 @@ jobs:
           test -f _site/games/collections/retro-events/index.html
           test -f _site/games/collections/retro-specials/index.html
           test -f _site/zzap64/index.html
+          test -f _site/amiga-demo-music/index.html
