@@ -75,7 +75,18 @@ function handleHeaderQuit(){
   if(mode==="ended"){quitToMenu();return}
   openPauseMenu()
 }
-$("solo-btn").addEventListener("click",startSolo);$("continue-save-btn")?.addEventListener("click",resumeSavedRun);$("daily-btn")?.addEventListener("click",startDaily);$("split-btn").addEventListener("click",startSplit);$("create-btn").addEventListener("click",createRoom);$("join-btn").addEventListener("click",joinRoom);$("resume-btn")?.addEventListener("click",()=>pause(true));$("pause-quit-btn")?.addEventListener("click",quitToMenu);$("quit-btn")?.addEventListener("click",handleHeaderQuit);
+function clearPauseAttackCadence(){
+  fire1=0;fire2=0;fireBuffer1=0;fireBuffer2=0;projectileCD=0;
+  input.delete("Space");input.delete("Enter");
+  window.__CCG_PAUSE_ATTACK_RESETS__=Math.max(0,Number(window.__CCG_PAUSE_ATTACK_RESETS__)||0)+1;
+}
+function resumePausedRun(){
+  if(mode!=="paused")return false;
+  const resumed=pause(true);
+  if(mode!=="paused"){clearPauseAttackCadence();return true}
+  return Boolean(resumed)
+}
+$("solo-btn").addEventListener("click",startSolo);$("continue-save-btn")?.addEventListener("click",resumeSavedRun);$("daily-btn")?.addEventListener("click",startDaily);$("split-btn").addEventListener("click",startSplit);$("create-btn").addEventListener("click",createRoom);$("join-btn").addEventListener("click",joinRoom);$("resume-btn")?.addEventListener("click",resumePausedRun);$("pause-quit-btn")?.addEventListener("click",quitToMenu);$("quit-btn")?.addEventListener("click",handleHeaderQuit);
 $("rulebook-btn")?.addEventListener("click",showRulebook);$("rulebook-close-btn")?.addEventListener("click",()=>UI.rulebook?.classList.add("hidden"));$("support-btn")?.addEventListener("click",showSupport);$("support-close-btn")?.addEventListener("click",()=>UI.support?.classList.add("hidden"));$("share-btn")?.addEventListener("click",shareQuest);$("item-info-close")?.addEventListener("click",hideItemInfo);$("named-dossier-btn")?.addEventListener("click",showNamedDossier);
 $("inventory-dossier-btn")?.addEventListener("click",showNamedDossier);$("named-dossier-close")?.addEventListener("click",hideNamedDossier);$("shop-close")?.addEventListener("click",closeShop);$("save-now-btn")?.addEventListener("click",()=>{saveFloorCheckpoint(false);closeSavePrompt()});$("save-continue-btn")?.addEventListener("click",()=>{if(savePromptReason==="rest"&&run)run.consecutiveDeaths=0;closeSavePrompt()});$("save-return-btn")?.addEventListener("click",()=>{if(run)run.consecutiveDeaths=0;saveFloorCheckpoint(true)});
 $("inventory-close-top")?.addEventListener("click",returnToGameFromPanel);$("named-dossier-close-top")?.addEventListener("click",returnToGameFromPanel);
@@ -96,7 +107,7 @@ addEventListener("keydown",e=>{
   if(isEditableKeyboardTarget(e.target))return;
   if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space","Tab"].includes(e.code))e.preventDefault();
   if(e.code==="Escape"){
-    if(mode==="paused"){pause();return}
+    if(mode==="paused"){resumePausedRun();return}
     if(UI.itemInfo&&!UI.itemInfo.classList.contains("hidden")){hideItemInfo();return}
     if(UI.namedDossier&&!UI.namedDossier.classList.contains("hidden")){hideNamedDossier();return}
     if(UI.rulebook&&!UI.rulebook.classList.contains("hidden")){UI.rulebook.classList.add("hidden");return}
@@ -106,7 +117,7 @@ addEventListener("keydown",e=>{
     if(mode==="inventory"){toggleInventory();pause();return}
     if(mode==="playing"||mode==="paused"){pause();return}
   }
-  if(e.code==="KeyP"&&(mode==="playing"||mode==="paused")){pause();return}
+  if(e.code==="KeyP"&&(mode==="playing"||mode==="paused")){if(mode==="paused")resumePausedRun();else pause();return}
   if(e.code==="KeyF"){
     const spyLoader=window.CCGLostSizzlerV141R32SpyLoader;
     if(spyLoader?.handleSpyFullscreenKey?.(e))return;
