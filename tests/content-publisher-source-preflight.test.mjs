@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  defaultThumbnailPathForSlug,
   detectReleaseYear,
   generateGameSourceDescription,
   validateGamePublisherSource,
@@ -32,6 +33,18 @@ test('does not require a Lemon64 or Lemon Amiga URL', () => {
 
 test('Ruff n Tumble canonical source passes preflight without an external Lemon dependency', () => {
   assert.deepEqual(validateGamePublisherSource(validBase), []);
+});
+
+test('defaults a new game thumbnail to the canonical WebP path', () => {
+  assert.equal(
+    defaultThumbnailPathForSlug('Dungeon Carnage'),
+    'resources/images/thumbnails/all/dungeon-carnage.webp'
+  );
+  assert.equal(
+    defaultThumbnailPathForSlug('  Premiere  '),
+    'resources/images/thumbnails/all/premiere.webp'
+  );
+  assert.equal(defaultThumbnailPathForSlug(''), '');
 });
 
 test('generates a factual C64 fallback from entered release metadata', () => {

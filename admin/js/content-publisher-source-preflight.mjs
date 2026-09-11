@@ -28,6 +28,23 @@ function platformDetails(system) {
     : { long: 'Commodore 64 (C64)', short: 'C64' };
 }
 
+function slugify(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .replace(/-+/g, '-');
+}
+
+export function defaultThumbnailPathForSlug(value) {
+  const slug = slugify(value);
+  return slug ? `${THUMBNAIL_PREFIX}${slug}.webp` : '';
+}
+
 export function generateGameSourceDescription(source) {
   const title = String(source?.title || '').trim();
   const system = String(source?.system || '').toUpperCase();
@@ -183,6 +200,11 @@ function installDescriptionAutomation() {
   const label = description?.closest('label');
   if (!description || !label || document.querySelector('[data-generate-game-description]')) return;
 
+  description.required = false;
+  description.removeAttribute('required');
+  const textNode = Array.from(label.childNodes).find((node) => node.nodeType === 3 && String(node.textContent || '').trim());
+  if (textNode) textNode.nodeValue = 'Description (optional — generated if blank)\n          ';
+
   const controls = document.createElement('div');
   controls.className = 'publisher-header-actions';
   controls.dataset.gameDescriptionAutomation = 'true';
@@ -197,10 +219,44 @@ function installDescriptionAutomation() {
   const status = document.createElement('small');
   status.dataset.gameDescriptionGeneratorStatus = 'true';
   status.setAttribute('aria-live', 'polite');
-  status.textContent = 'Leave the description blank and publishing will generate a factual SEO fallback from the release details you enter.';
+  status.textContent = 'Leave this blank and publishing will generate a factual fallback from the release details you enter; verified YouTube copy can still enrich the public archive later.';
 
   controls.append(button, status);
   label.insertAdjacentElement('afterend', controls);
+}
+
+function installThumbnailPathAutomation() {
+  const title = field('title');
+  const slug = field('slug');
+  const thumbnail = field('thumbnail');
+  if (!slug || !thumbnail || thumbnail.dataset.webpDefaultInstalled === 'true') return;
+
+  thumbnail.dataset.webpDefaultInstalled = 'true';
+  let lastAutoPath = '';
+  let writing = false;
+
+  const sync = () => {
+    const desired = defaultThumbnailPathForSlug(slug.value);
+    const current = String(thumbnail.value || '').trim();
+    if (!desired) return;
+    if (current && current !== lastAutoPath) return;
+
+    writing = true;
+    thumbnail.value = desired;
+    lastAutoPath = desired;
+    thumbnail.dispatchEvent(new Event('input', { bubbles: true }));
+    thumbnail.dispatchEvent(new Event('change', { bubbles: true }));
+    writing = false;
+  };
+
+  thumbnail.addEventListener('input', () => {
+    if (writing) return;
+    const current = String(thumbnail.value || '').trim();
+    if (current !== lastAutoPath) lastAutoPath = '';
+  });
+  slug.addEventListener('input', sync);
+  title?.addEventListener('input', () => queueMicrotask(sync));
+  sync();
 }
 
 function installLemonSourceAutomationHint() {
@@ -248,6 +304,7 @@ function installPreflight() {
 
   removeLegacyLemonOverrides();
   installDescriptionAutomation();
+  installThumbnailPathAutomation();
   installLemonSourceAutomationHint();
 
   form.addEventListener('submit', (event) => {
