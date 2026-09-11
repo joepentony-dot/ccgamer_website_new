@@ -106,6 +106,20 @@
     setTimeout(()=>{if(attempt())return;requestAnimationFrame(()=>attempt())},0);
   }
 
+  function observeResumeIntent(){
+    if(currentMode()!=="paused"||!activeRun())return;
+    setTimeout(()=>repairAfterPauseTransition("paused"),0);
+  }
+
+  addEventListener("keydown",event=>{
+    if(event.code!=="KeyP"&&event.code!=="Escape")return;
+    observeResumeIntent();
+  },true);
+  document.addEventListener("click",event=>{
+    const target=event.target instanceof Element?event.target.closest("#resume-btn"):null;
+    if(target)observeResumeIntent();
+  },true);
+
   try{
     if(typeof pause==="function"&&!pause.__ccgV142R18){
       const basePause=pause;
