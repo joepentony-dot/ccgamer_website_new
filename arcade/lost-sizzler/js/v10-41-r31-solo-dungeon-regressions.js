@@ -84,7 +84,7 @@
     return false
   }
   function installChestFix(){
-    const source=ownedSource("openChest");if(typeof source!=="function")return false;
+    const source=window.openChest;if(typeof source!=="function")return false;
     if(sourceHasMarker(source,"__ccgV141R31ChestFix")){state.chestWrapped=true;return true}
     const wrapped=function openChestV141R31ImmediateLoot(player,chest){
       if(!dungeonSolo()||!chest?.active)return source.apply(this,arguments);
