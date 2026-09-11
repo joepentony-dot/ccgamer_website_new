@@ -1,6 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import path from 'node:path';
+import { createRequire } from 'node:module';
 import discovery from '../scripts/discover-new-lemon-source.js';
+
+const require = createRequire(import.meta.url);
+const root = path.resolve(import.meta.dirname, '..');
+const { resolveSourcePage } = require(path.join(root, 'scripts', 'import-amiga-magazine-reviews.js'));
 
 const {
   candidateUrlsForGame,
@@ -109,4 +115,65 @@ test('accepts inferred discovery only when exactly one verified candidate remain
   assert.equal(uniqueCandidateMatch([one]), one);
   assert.equal(uniqueCandidateMatch([]), null);
   assert.equal(uniqueCandidateMatch([one, { canonical: 'https://www.lemon64.com/game/example-alt' }]), null);
+});
+
+test('manual Lemon source keeps priority only when it matches the original release identity', () => {
+  const game = {
+    title: 'Premiere',
+    slug: 'premiere',
+    system: 'AMIGA',
+    year: 1992,
+    credits: { publisher: ['Core Design'], re_releaser: ['Budget Reissue'] },
+    lemon: ['https://www.lemonamiga.com/game/premiere']
+  };
+  const manual = {
+    cacheName: 'premiere.html',
+    canonical: 'https://www.lemonamiga.com/game/premiere',
+    platform: 'amiga',
+    title: 'Premiere',
+    release: { year: 1992, publishers: ['Core Design'] },
+    reviews: []
+  };
+  const inferred = {
+    cacheName: 'premiere-alt.html',
+    canonical: 'https://www.lemonamiga.com/game/premiere-alt',
+    platform: 'amiga',
+    title: 'Premiere',
+    release: { year: 1992, publishers: ['Core Design'] },
+    reviews: []
+  };
+  const result = resolveSourcePage(game, [manual, inferred]);
+  assert.equal(result.resolution, 'manual');
+  assert.equal(result.page, manual);
+});
+
+test('manual Lemon source rejects a re-release identity and never falls back to inference', () => {
+  const game = {
+    title: 'Speed King',
+    slug: 'speed-king',
+    system: 'C64',
+    year: 1985,
+    credits: { publisher: ['Digital Integration'], re_releaser: ['Mastertronic'] },
+    lemon: ['https://www.lemon64.com/game/speed-king-reissue']
+  };
+  const reissue = {
+    cacheName: 'speed-king-reissue.html',
+    canonical: 'https://www.lemon64.com/game/speed-king-reissue',
+    platform: 'c64',
+    title: 'Speed King',
+    release: { year: 1986, publishers: ['Mastertronic'] },
+    reviews: []
+  };
+  const original = {
+    cacheName: 'speed-king-original.html',
+    canonical: 'https://www.lemon64.com/game/speed-king-original',
+    platform: 'c64',
+    title: 'Speed King',
+    release: { year: 1985, publishers: ['Digital Integration'] },
+    reviews: []
+  };
+  const result = resolveSourcePage(game, [reissue, original]);
+  assert.equal(result.resolution, 'manual-mismatch');
+  assert.equal(result.page, null);
+  assert.equal(result.candidates, 1);
 });

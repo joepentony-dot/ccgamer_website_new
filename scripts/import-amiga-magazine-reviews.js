@@ -277,6 +277,18 @@ function uniqueSourceCandidates(pages) {
   return [...candidates.values()];
 }
 
+function sourcePageMatchesGame(game, page, platform = gamePlatform(game)) {
+  const title = exactTitleKey(game?.title);
+  return Boolean(
+    page
+    && platform
+    && page.platform === platform
+    && title
+    && exactTitleKey(page.title) === title
+    && releaseMatchesGame(game, page.release)
+  );
+}
+
 function resolveSourcePage(game, pages, index = sourceIndex(pages)) {
   const platform = gamePlatform(game);
   if (!platform) return { page: null, resolution: "unsupported-platform", candidates: 0 };
@@ -285,17 +297,14 @@ function resolveSourcePage(game, pages, index = sourceIndex(pages)) {
   if (lemonUrls.length) {
     let page = lemonUrls.map((url) => index.byUrl.get(url)).find(Boolean);
     if (!page) page = lemonUrls.map((url) => index.byCacheName.get(cacheNameForUrl(url))).find(Boolean);
-    if (page?.platform === platform) return { page, resolution: "manual", candidates: 1 };
-    return { page: null, resolution: "manual-unresolved", candidates: 0 };
+    if (!page) return { page: null, resolution: "manual-unresolved", candidates: 0 };
+    if (sourcePageMatchesGame(game, page, platform)) return { page, resolution: "manual", candidates: 1 };
+    return { page: null, resolution: "manual-mismatch", candidates: 1 };
   }
 
   const title = exactTitleKey(game?.title);
   if (!title) return { page: null, resolution: "unmatched", candidates: 0 };
-  const candidates = uniqueSourceCandidates(pages.filter((page) => (
-    page?.platform === platform
-    && exactTitleKey(page?.title) === title
-    && releaseMatchesGame(game, page?.release)
-  )));
+  const candidates = uniqueSourceCandidates(pages.filter((page) => sourcePageMatchesGame(game, page, platform)));
 
   if (candidates.length === 1) return { page: candidates[0], resolution: "inferred", candidates: 1 };
   return {
@@ -433,6 +442,7 @@ module.exports = {
   resolveSourcePage,
   reviewsFromHtml,
   scorePercent,
+  sourcePageMatchesGame,
   stabilizeReviewUrl,
   uniqueReviews
 };
