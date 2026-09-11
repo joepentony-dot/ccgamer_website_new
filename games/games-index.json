@@ -3198,6 +3198,12 @@
     "thumbnail": "resources/images/thumbnails/all/spartacus_the_swordslayer_europe.jpg"
   },
   {
+    "slug": "speed-king",
+    "title": "Speed King",
+    "year": 1986,
+    "thumbnail": "resources/images/thumbnails/all/speed-king.webp"
+  },
+  {
     "slug": "speedball-2-brutal-deluxe",
     "title": "Speedball 2: Brutal Deluxe",
     "year": 1990,
