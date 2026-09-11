@@ -1,0 +1,28 @@
+---
+layout: layouts/base.njk
+title: Zzap!64 | CCG Eleventy Prototype
+description: Browse Cheeky Commodore Gamer Zzap!64 award and review features through a lightweight static index that preserves the established Retro Specials URLs.
+permalink: /zzap64/index.html
+---
+<section class="hero hero--compact">
+  <p class="eyebrow">MAGAZINE ARCHIVE PROTOTYPE</p>
+  <h1>{{ zzapArchive.name }}</h1>
+  <p class="lede">{{ zzapArchive.description }}</p>
+</section>
+
+<section class="archive-browser" aria-labelledby="zzap-heading">
+  <div class="section-heading">
+    <h2 id="zzap-heading">Zzap!64 features</h2>
+    <p>{{ zzapArchive.entries | length }} source-backed features are indexed here. The existing <code>/retro-specials/...</code> pages remain the detail routes, so this hub adds navigation without duplicating content.</p>
+  </div>
+
+  <div class="collection-list">
+    {% for entry in zzapArchive.entries %}
+      <article class="collection-summary">
+        <h3><a href="{{ entry.url }}">{{ entry.title }}</a></h3>
+        {% if entry.description %}<p>{{ entry.description }}</p>{% endif %}
+        {% if entry.membersOnly %}<p><strong>Members-only video</strong></p>{% endif %}
+      </article>
+    {% endfor %}
+  </div>
+</section>
