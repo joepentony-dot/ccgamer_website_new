@@ -1,0 +1,28 @@
+---
+layout: layouts/base.njk
+title: Retro Specials | CCG Eleventy Prototype
+description: Browse C64, Amiga and wider retro feature videos from Cheeky Commodore Gamer in the lightweight Eleventy prototype.
+permalink: /games/collections/retro-specials/index.html
+---
+<section class="hero hero--compact">
+  <p class="eyebrow">COLLECTION PROTOTYPE</p>
+  <h1>{{ collectionArchive.retroSpecials.name }}</h1>
+  <p class="lede">{{ collectionArchive.retroSpecials.description }}</p>
+</section>
+
+<section class="archive-browser" aria-labelledby="retro-specials-heading">
+  <div class="section-heading">
+    <h2 id="retro-specials-heading">Retro specials</h2>
+    <p>{{ collectionArchive.retroSpecials.entries | length }} entries preserved from the existing Retro Specials collection page. Detail ownership remains with the established <code>/retro-specials/...</code> routes.</p>
+  </div>
+
+  <div class="collection-list">
+    {% for entry in collectionArchive.retroSpecials.entries %}
+      <article class="collection-summary">
+        <h3><a href="{{ entry.url }}">{{ entry.title }}</a></h3>
+        {% if entry.description %}<p>{{ entry.description }}</p>{% endif %}
+        {% if entry.membersOnly %}<p><strong>Members-only video</strong></p>{% endif %}
+      </article>
+    {% endfor %}
+  </div>
+</section>
