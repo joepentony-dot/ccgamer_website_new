@@ -48,7 +48,7 @@ try{
     const result=openChest(p1,row),count=(p1.inventory||[]).filter(item=>item.kind==="potion").reduce((n,item)=>n+Math.max(1,Number(item.qty)||1),0);PGR.lootForChest=oldLoot;
     return{result,opened:row.opened,active:row.active,lootKind:row.loot?.kind,count,scoreGain:Number(score)-scoreBefore,xpGain:Number(p1.totalXp||0)-xpBefore};
   });
-  assert.equal(chest.opened,true,`generated chest must open: ${JSON.stringify(chest)}`);assert.equal(chest.active,false);assert.equal(chest.lootKind,"potion");assert.equal(chest.count,1,`generated chest contents must be delivered immediately: ${JSON.stringify(chest)}`);assert.ok(chest.scoreGain>0&&chest.xpGain>0,`chest score and XP awards must remain intact: ${JSON.stringify(chest)}`);
+  assert.equal(chest.opened,true,`generated chest must open: ${JSON.stringify(chest)}`);assert.equal(chest.active,false);assert.equal(chest.lootKind,"potion");assert.equal(chest.count,1,`generated chest contents must be delivered immediately: ${JSON.stringify(chest)}`);assert.ok(chest.scoreGain>0,`chest score award must remain intact: ${JSON.stringify(chest)}`);assert.equal(chest.xpGain,0,`chests must not grant progression XP: ${JSON.stringify(chest)}`);
   await page.waitForTimeout(700);
   const chestAfterDelay=await page.evaluate(()=>(p1.inventory||[]).filter(item=>item.kind==="potion").reduce((n,item)=>n+Math.max(1,Number(item.qty)||1),0));
   assert.equal(chestAfterDelay,1,"the legacy delayed chest callback must not duplicate R56 delivery");

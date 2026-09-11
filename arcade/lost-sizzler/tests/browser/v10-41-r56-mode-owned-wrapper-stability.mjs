@@ -33,6 +33,7 @@ try{
         rows.push({
           name:String(current.name||"anonymous"),
           r56:Boolean(current[r56Marker]),
+          r1:Boolean(current.__ccgV142R1),
           modeGate:Boolean(current.__ccgV141ModeOwnedGate&&current.__ccgV141ModeOwnedName===name)
         });
         current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null;
@@ -41,8 +42,9 @@ try{
         depth:rows.length,
         cycle,
         r56Layers:rows.filter(row=>row.r56).length,
+        r1Layers:rows.filter(row=>row.r1).length,
         modeGateLayers:rows.filter(row=>row.modeGate).length,
-        signature:rows.map(row=>`${row.name}${row.r56?"[R56]":""}${row.modeGate?"[MODE]":""}`).join(" <- ")
+        signature:rows.map(row=>`${row.name}${row.r56?"[R56]":""}${row.r1?"[R1]":""}${row.modeGate?"[MODE]":""}`).join(" <- ")
       };
     };
     return{
@@ -60,14 +62,19 @@ try{
     const before=baseline[name],after=stressed[name];
     assert.equal(before.cycle,false,`${name} ownership chain must not contain a cycle: ${JSON.stringify(baseline)}`);
     assert.equal(after.cycle,false,`${name} ownership chain must remain acyclic: ${JSON.stringify(stressed)}`);
-    assert.equal(before.r56Layers,1,`${name} must contain exactly one R56 compatibility layer after settle: ${JSON.stringify(baseline)}`);
-    assert.equal(after.r56Layers,1,`${name} must retain exactly one R56 compatibility layer: ${JSON.stringify(stressed)}`);
     assert.ok(before.modeGateLayers<=2,`${name} must not accumulate mode-owned gates during initial settle: ${JSON.stringify(baseline)}`);
     assert.ok(after.modeGateLayers<=2,`${name} must not accumulate mode-owned gates across monitor cycles: ${JSON.stringify(stressed)}`);
     assert.ok(before.depth<=6,`${name} ownership ancestry must remain bounded after initial settle: ${JSON.stringify(baseline)}`);
     assert.ok(after.depth<=6,`${name} ownership ancestry must remain bounded after repeated 40/80 ms monitor cycles: ${JSON.stringify(stressed)}`);
     assert.ok(after.depth<=before.depth,`${name} ownership ancestry must not grow after the settled baseline: before=${before.signature}; after=${after.signature}`);
   }
+
+  assert.equal(baseline.openChest.r56Layers,0,`openChest must not retain the superseded R56 chest-delivery layer: ${JSON.stringify(baseline)}`);
+  assert.equal(stressed.openChest.r56Layers,0,`openChest must keep the superseded R56 chest-delivery layer retired: ${JSON.stringify(stressed)}`);
+  assert.equal(baseline.openChest.r1Layers,1,`openChest must expose exactly one final R1 chest-confirmation owner after bootstrap settle: ${JSON.stringify(baseline)}`);
+  assert.equal(stressed.openChest.r1Layers,1,`openChest must retain exactly one final R1 chest-confirmation owner across monitor cycles: ${JSON.stringify(stressed)}`);
+  assert.equal(baseline.triggerShrine.r56Layers,1,`triggerShrine must contain exactly one R56 shrine-feedback compatibility layer: ${JSON.stringify(baseline)}`);
+  assert.equal(stressed.triggerShrine.r56Layers,1,`triggerShrine must retain exactly one R56 shrine-feedback compatibility layer: ${JSON.stringify(stressed)}`);
 
   assert.deepEqual(pageErrors,[],`R56 mode-owned wrapper stability regression produced page errors: ${pageErrors.join("\n")}`);
   await context.close();
