@@ -8,6 +8,7 @@ permalink: "/games/{{ game.slug }}/index.html"
 eleventyComputed:
   title: "{{ game.title }} | CCG Eleventy Prototype"
   description: "{{ game.description }}"
+  structuredDataJson: "{{ game.schemaJson }}"
 ---
 <article class="game-detail">
   <p class="eyebrow">{{ game.system }}{% if game.year %} · {{ game.year }}{% endif %}</p>

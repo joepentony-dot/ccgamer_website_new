@@ -25,6 +25,8 @@
   <meta name="twitter:site" content="@CheekyC64Gamer">
   {% if ogImage %}<meta name="twitter:image" content="{{ ogImage }}">{% endif %}
 
+  {% if structuredDataJson %}<script type="application/ld+json" data-ccg-schema="game-graph">{{ structuredDataJson | safe }}</script>{% endif %}
+
   <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>

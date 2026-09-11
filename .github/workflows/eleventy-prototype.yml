@@ -67,6 +67,53 @@ jobs:
           grep -Fq '<meta property="og:site_name" content="Cheeky Commodore Gamer">' _site/games/20-tons/index.html
           grep -Fq '<meta name="twitter:site" content="@CheekyC64Gamer">' _site/games/20-tons/index.html
 
+      - name: Verify game structured data
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from "node:fs";
+
+          const html = fs.readFileSync("_site/games/20-tons/index.html", "utf8");
+          const match = html.match(
+            /<script\b(?=[^>]*type="application\/ld\+json")(?=[^>]*data-ccg-schema="game-graph")[^>]*>([\s\S]*?)<\/script>/i
+          );
+          if (!match) throw new Error("Missing game-graph JSON-LD on representative game page.");
+
+          const payload = JSON.parse(match[1]);
+          if (payload["@context"] !== "https://schema.org" || !Array.isArray(payload["@graph"])) {
+            throw new Error("Game schema must be a schema.org @graph.");
+          }
+
+          const videoGame = payload["@graph"].find((item) => item?.["@type"] === "VideoGame");
+          const breadcrumb = payload["@graph"].find((item) => item?.["@type"] === "BreadcrumbList");
+
+          if (!videoGame || !breadcrumb) {
+            throw new Error("Representative game page must own VideoGame and BreadcrumbList schema.");
+          }
+
+          const canonical = "https://www.cheekycommodoregamer.co.uk/games/20-tons/";
+          if (
+            videoGame["@id"] !== `${canonical}#game` ||
+            videoGame.name !== "20 Tons" ||
+            videoGame.url !== canonical ||
+            videoGame.gamePlatform !== "Commodore 64" ||
+            videoGame.datePublished !== "1985" ||
+            videoGame.publisher?.name !== "64 Tape Computing"
+          ) {
+            throw new Error(`Unexpected VideoGame schema: ${JSON.stringify(videoGame)}`);
+          }
+
+          const crumbs = breadcrumb.itemListElement || [];
+          if (
+            breadcrumb["@id"] !== `${canonical}#breadcrumb` ||
+            crumbs.length !== 3 ||
+            crumbs[0]?.item !== "https://www.cheekycommodoregamer.co.uk" ||
+            crumbs[1]?.item !== "https://www.cheekycommodoregamer.co.uk/games/" ||
+            crumbs[2]?.item !== canonical
+          ) {
+            throw new Error(`Unexpected BreadcrumbList schema: ${JSON.stringify(breadcrumb)}`);
+          }
+          NODE
+
       - name: Verify XML sitemap
         run: |
           assert_contains() {
