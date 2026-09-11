@@ -1,0 +1,30 @@
+---
+layout: layouts/base.njk
+title: Retro Events | CCG Eleventy Prototype
+description: Explore retro gaming events, visits and related features from Cheeky Commodore Gamer in the lightweight Eleventy prototype.
+permalink: /games/collections/retro-events/index.html
+---
+<section class="hero hero--compact">
+  <p class="eyebrow">COLLECTION PROTOTYPE</p>
+  <h1>{{ collectionArchive.retroEvents.name }}</h1>
+  <p class="lede">{{ collectionArchive.retroEvents.description }}</p>
+</section>
+
+<section class="archive-browser" aria-labelledby="retro-events-heading">
+  <div class="section-heading">
+    <h2 id="retro-events-heading">Retro events and features</h2>
+    <p>{{ collectionArchive.retroEvents.entries | length }} entries preserved from the existing <code>retro-events.json</code> source. Demo-music records in that source remain owned by the dedicated music archive.</p>
+  </div>
+
+  <div class="collection-list">
+    {% for entry in collectionArchive.retroEvents.entries %}
+      <article class="collection-summary">
+        <h3><a href="{{ entry.url }}">{{ entry.title }}</a></h3>
+        <p>
+          {% if entry.badge %}{{ entry.badge }} · {% endif %}
+          {% if entry.membersOnly %}Members-only video{% else %}CCG video{% endif %}
+        </p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
