@@ -1,0 +1,33 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
+
+const here=path.dirname(fileURLToPath(import.meta.url));
+const root=path.resolve(here,"..");
+const read=file=>fs.readFileSync(path.join(root,file),"utf8");
+const bootstrap=read("js/v10-42-bootstrap.js");
+const fix=read("js/v10-42-r18-solo-playtest-stability.js");
+const main=read("js/game-main.js");
+
+assert.match(bootstrap,/v10-42-r1-stability\.js[\s\S]*v10-42-r18-solo-playtest-stability\.js/,"r18 must load after the established V10.42 stability layer");
+assert.match(fix,/installInteractionXPSourceContract/,"r18 composition must install the frozen door and switch XP-source guard");
+assert.match(fix,/Hidden wall opened[\s\S]*Bronze door unlocked[\s\S]*Hidden wall switch[\s\S]*Gate switch opened/,"r18 composition must preserve all four blocked interaction XP reasons");
+assert.match(fix,/CCGLostSizzlerXPSourceContract/,"r18 composition must expose the interaction XP-source contract for browser verification");
+assert.match(fix,/hurtPlayer=function\(player,\.\.\.args\)\{repairPlayer\(player\)/,"player damage must repair stale invulnerability at the damage boundary");
+assert.match(fix,/queueAttack=function\(player,\.\.\.args\)/,"gun and melee attacks must pass through the combat repair boundary");
+assert.match(main,/function clearPauseAttackCadence\(reason="resume"\)[\s\S]*fire1=0;fire2=0;fireBuffer1=0;fireBuffer2=0;projectileCD=0/,"the input owner must clear every finite player attack cadence timer");
+assert.match(main,/function resumePausedRun\(\)[\s\S]*clearPauseAttackCadence\("handler-before-resume"\)[\s\S]*pause\(true\)[\s\S]*clearPauseAttackCadence\("handler-after-resume"\)/,"the guarded resume path must clear cadence both before and after the canonical controller");
+assert.match(main,/function capturePausedResumeAttackReset\(event\)[\s\S]*mode!=="paused"[\s\S]*KeyP[\s\S]*Escape[\s\S]*capture-resume-button/,"capture-phase recovery must cover P, Escape and the Continue button while the run is paused");
+assert.match(main,/addEventListener\("keydown",capturePausedResumeAttackReset,true\)[\s\S]*addEventListener\("click",capturePausedResumeAttackReset,true\)/,"paused resume cadence recovery must run in capture phase before competing controller listeners");
+assert.match(main,/\$\("continue-save-btn"\).*resumeSavedRun/,"saved-run Continue must remain isolated from pause resume recovery");
+assert.match(fix,/function observeResumeIntent\(\)[\s\S]*setTimeout\(\(\)=>repairAfterPauseTransition\("paused"\),0\)/,"late stability must retain its delayed post-controller resume repair observer");
+assert.match(fix,/event\.code!=="KeyP"&&event\.code!=="Escape"[\s\S]*observeResumeIntent\(\)/,"keyboard P and Escape resumes must schedule the delayed repair observer");
+assert.match(fix,/#resume-btn[\s\S]*observeResumeIntent\(\)/,"Continue-button resume must schedule the same delayed repair observer");
+assert.match(fix,/beforeMode!=="paused"[\s\S]*currentMode\(\)==="playing"[\s\S]*repairAttackLiveness\("pause-resume"\)/,"delayed repair must act only on an actual paused-to-playing transition");
+assert.match(fix,/ai\.stepEnemy=wrapped/,"enemy attack stepping must repair stale attack cooldowns");
+assert.match(fix,/quick-warden-status/,"Warden state must own a dedicated HUD node");
+assert.match(fix,/stripWardenFromEffects/,"transient effects text must no longer share Warden ownership");
+assert.match(fix,/suppressedSfxRetriggers/,"repeat environmental SFX must be guarded against frame-level retrigger loops");
+assert.match(fix,/wall:180[\s\S]*fireplace:650[\s\S]*lowhealth:900/,"high-risk repeating ambience and collision sounds must have explicit cooldowns");
+console.log("V10.42 r18 solo playtest, capture/delayed pause attack-liveness and interaction XP composition contract passed");
