@@ -14,9 +14,9 @@
     "exactPages": 286,
     "issueFallbacks": 0,
     "directCoveragePercent": 100,
-    "reviewRecords": 828,
-    "additionalReviewRecords": 542,
-    "gameReviewGames": 344,
+    "reviewRecords": 830,
+    "additionalReviewRecords": 544,
+    "gameReviewGames": 345,
     "awardRecordsLinkedToGames": 100,
     "unmatchedCachedReviewPages": 27
   },
@@ -5560,6 +5560,30 @@
       "gameTitle": "Vigilante",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/vigilante"
+    },
+    "1985|october|c64|Speed King": {
+      "issue": 6,
+      "page": 114,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=6&page=114",
+      "source": "cached-game-magazine-reference",
+      "scope": "game-review",
+      "gameSlug": "speed-king",
+      "gameTitle": "Speed King",
+      "gameSystem": "c64",
+      "lemonUrl": "https://www.lemon64.com/game/speed-king"
+    },
+    "1985|november|c64|Speed King": {
+      "issue": 7,
+      "page": 44,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=7&page=44",
+      "source": "cached-game-magazine-reference",
+      "scope": "game-review",
+      "gameSlug": "speed-king",
+      "gameTitle": "Speed King",
+      "gameSystem": "c64",
+      "lemonUrl": "https://www.lemon64.com/game/speed-king"
     },
     "1988|february|c64|Andy Capp": {
       "issue": 34,
