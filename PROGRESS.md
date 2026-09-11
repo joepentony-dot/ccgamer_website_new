@@ -2,9 +2,9 @@
 
 ## Status
 
-Overall completion estimate: **77%**
+Overall completion estimate: **80%**
 
-Current milestone: **Prototype-wide shared SEO metadata is now emitted centrally for Eleventy pages using the shared base layout**
+Current milestone: **Generated XML sitemap and evidence-backed legacy collection URL compatibility are now validated on the isolated Eleventy prototype**
 
 ## Completed
 
@@ -31,27 +31,33 @@ Current milestone: **Prototype-wide shared SEO metadata is now emitted centrally
 - Added shared SEO metadata to `layouts/base.njk`: canonical URL, robots directive, Open Graph title/description/url/site name, Twitter card/title/description/url/site, and optional social image handling.
 - Canonical generation uses the established production hostname plus Eleventy's generated `page.url`, preserving trailing-slash route ownership rather than inventing a new URL model.
 - Extended isolated CI with representative canonical and social-metadata assertions covering homepage, game, genre and collection outputs.
+- Added a generated `/sitemap.xml` covering static prototype hubs, every normalized game route, every generated genre route, every generated publisher route, every migrated collection route and all ten Amiga Demo Music detail canonicals.
+- Replaced the initial `collections.all` sitemap approach after validation proved that paginated genre/publisher/game outputs were not comprehensively represented there; the final sitemap is deliberately data-driven from the same canonical prototype adapters that own those routes.
+- Audited legacy collection URL ownership and found seven explicit `.html` aliases already recorded in `collectionArchive.js`; no game, genre or publisher redirects were inferred without source evidence.
+- Added a prototype-only `_redirects` manifest mapping those seven proven legacy collection `.html` URLs to their trailing-slash Eleventy routes with permanent redirects, and configured Eleventy to copy that manifest only into the prototype build output.
+- Added CI regression checks for the sitemap and all seven evidence-backed legacy collection redirects.
 
 ## Validation
 
 - Branch isolation remains intact; no merge or write to `main` was performed.
-- Canonical `games/games.json`, production pages, existing music pages and production deployment configuration remain unchanged.
-- The previous full Amiga Demo Music implementation build is green in GitHub Actions.
-- Shared SEO changes are confined to `prototype-eleventy/src/_includes/layouts/base.njk` and the isolated `eleventy-prototype.yml` validation workflow.
-- CI now fails if representative generated routes do not contain their expected production-domain canonical URLs, `og:site_name`, or the established `@CheekyC64Gamer` Twitter site identity.
-- The newest shared-SEO validation commit has not yet surfaced a remote workflow result, so it is recorded as pending rather than assumed successful.
+- Canonical `games/games.json`, production pages, production redirect/deployment configuration and existing music pages remain unchanged.
+- The prior shared-SEO validation is confirmed green in GitHub Actions.
+- The first sitemap attempt correctly failed CI because `collections.all` omitted paginated genre output; diagnostic validation identified `/games/genres/arcade/` as the missing representative route rather than allowing an incomplete sitemap to pass.
+- The corrected data-driven sitemap subsequently passed the full remote Eleventy build, generated-route checks, shared SEO checks and sitemap assertions.
+- The prototype redirect manifest passed the full remote Eleventy build, route checks, shared SEO checks, sitemap checks and all seven legacy redirect assertions.
+- CI continues to verify representative homepage, game, genre, collection and Amiga Demo Music detail outputs.
 - A full local checkout/build remains unavailable in this connector-only execution environment because GitHub HTTPS credentials are not exposed to the container; remote GitHub Actions remains the end-to-end build authority.
 
 ## Blockers
 
 - No critical implementation blocker.
-- Remote GitHub Actions confirmation for the newest shared SEO checkpoint is pending.
-- No isolated preview deployment has been configured yet; this remains deferred until the remaining routing/sitemap regression work is stable.
+- No isolated preview deployment has been configured yet; this remains deferred until the remaining structured-data, usability/performance and regression work is stable.
+- Redirect compatibility currently covers only aliases explicitly evidenced by repository data. Any broader legacy URL migration must be source-backed before rules are added.
 
 ## Next task
 
-Continue the SEO and URL-compatibility pass by adding a generated XML sitemap for Eleventy-owned public routes and auditing established `.html` versus trailing-slash compatibility. Preserve existing public URL ownership and add regression checks before introducing any redirect compatibility layer.
+Complete the remaining structured-data ownership review, beginning with generated game pages and primary archive hubs. Preserve existing source-backed schema where it exists, avoid generic or invented structured data, and add representative regression assertions before moving into the dedicated responsive/mobile and accessibility review.
 
 ## Completion criteria still outstanding
 
-Complete home migration review; XML sitemap and legacy URL/redirect compatibility; remaining structured-data ownership review; accessibility review; image/performance work; regression testing; and an isolated browseable preview deployment.
+Complete home migration review; remaining structured-data ownership review; dedicated responsive/mobile usability review; accessibility review; image/performance optimisation; broader regression testing; and an isolated browseable preview deployment.
