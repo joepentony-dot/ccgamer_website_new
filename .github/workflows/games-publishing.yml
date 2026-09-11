@@ -251,15 +251,58 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           OUTPUT_BRANCH: ${{ steps.publish_output.outputs.branch }}
         run: |
-          PR_URL=$(gh pr create \
-            --repo "$GITHUB_REPOSITORY" \
-            --base main \
-            --head "$OUTPUT_BRANCH" \
-            --title "Publish generated game archive output" \
-            --body "Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, locally cached/curated magazine-review import, YouTube metadata sync, publisher generation, manual-viewer materialization, download-index validation, video-library generation, sitemap checks, SEO validation, canonical shared-header validation and protected-file checks all passed before this PR was created. External Lemon64/Lemon Amiga availability is optional and cannot block publishing. Any historical game-source migration is applied before the protected hashes are recorded."
+          set -euo pipefail
 
-          echo "Created generated-output PR: $PR_URL"
-          gh pr merge "$PR_URL" \
-            --repo "$GITHUB_REPOSITORY" \
-            --squash \
-            --delete-branch
+          PR_BODY="Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, locally cached/curated magazine-review import, YouTube metadata sync, publisher generation, manual-viewer materialization, download-index validation, video-library generation, sitemap checks, SEO validation, canonical shared-header validation and protected-file checks all passed before this PR was created. External Lemon64/Lemon Amiga availability is optional and cannot block publishing. Any historical game-source migration is applied before the protected hashes are recorded."
+          PR_URL=""
+
+          for attempt in 1 2 3; do
+            PR_URL=$(gh pr list \
+              --repo "$GITHUB_REPOSITORY" \
+              --head "$OUTPUT_BRANCH" \
+              --state open \
+              --json url \
+              --jq '.[0].url // empty')
+
+            if [ -z "$PR_URL" ]; then
+              if PR_URL=$(gh pr create \
+                --repo "$GITHUB_REPOSITORY" \
+                --base main \
+                --head "$OUTPUT_BRANCH" \
+                --title "Publish generated game archive output" \
+                --body "$PR_BODY"); then
+                :
+              else
+                echo "::warning::Generated-output PR creation attempt ${attempt} failed; checking again before retrying."
+                PR_URL=""
+              fi
+            fi
+
+            if [ -n "$PR_URL" ]; then
+              break
+            fi
+
+            sleep $((attempt * 5))
+          done
+
+          if [ -z "$PR_URL" ]; then
+            echo "::error::Unable to create or recover the generated-output PR after 3 attempts. The generated branch remains available at ${OUTPUT_BRANCH}."
+            exit 1
+          fi
+
+          echo "Generated-output PR: $PR_URL"
+
+          for attempt in 1 2 3; do
+            if gh pr merge "$PR_URL" \
+              --repo "$GITHUB_REPOSITORY" \
+              --squash \
+              --delete-branch; then
+              exit 0
+            fi
+
+            echo "::warning::Generated-output PR merge attempt ${attempt} failed; retrying without altering the validated branch."
+            sleep $((attempt * 5))
+          done
+
+          echo "::error::Unable to merge the generated-output PR after 3 attempts. The validated PR remains open for recovery."
+          exit 1
