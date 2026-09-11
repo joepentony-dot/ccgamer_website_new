@@ -39,14 +39,13 @@ Current milestone: **Retro Events collection preserved as a source-backed gatewa
 - Retro Events entries are read at Eleventy build time from the repository source, sorted by their existing `order` field and rejected if duplicate URLs are detected.
 - Updated `collectionArchive.js` passed local `node --check` syntax validation.
 - The new Retro Events Nunjucks page passed static front-matter/permalink checks.
-- The isolated GitHub Actions workflow now verifies `_site/games/collections/retro-events/index.html` in addition to the existing representative routes.
-- Remote Eleventy validation for commit `1302f5698de0e36558dbed1afac60b972d8dafc1` started successfully and was still in progress at the latest check.
-- A full local checkout/build remains unavailable in the execution container because outbound DNS access to GitHub is blocked; remote CI remains the end-to-end build confirmation.
+- The isolated GitHub Actions workflow verifies `_site/games/collections/retro-events/index.html` in addition to the existing representative routes.
+- Remote Eleventy validation for commit `1302f5698de0e36558dbed1afac60b972d8dafc1` completed successfully on GitHub Actions.
+- A full local checkout/build remains unavailable in the execution container because outbound DNS access to GitHub is blocked; remote CI provides the end-to-end build confirmation.
 
 ## Blockers
 
 - No critical implementation blocker.
-- Remote CI for the newest Retro Events route is currently pending completion rather than failed.
 - No isolated preview deployment has been configured yet; this remains deferred until more principal content sections are migrated.
 
 ## Next task
