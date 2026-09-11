@@ -7,7 +7,7 @@ eleventyExcludeFromCollections: true
 {% for item in collections.all %}
   {% if item.url %}
   <url>
-    <loc>https://www.cheekycommodoregamer.co.uk{{ item.url }}</loc>
+    <loc>https://www.cheekycommodoregamer.co.uk{{ item.url | replace("index.html", "") }}</loc>
   </url>
   {% endif %}
 {% endfor %}
