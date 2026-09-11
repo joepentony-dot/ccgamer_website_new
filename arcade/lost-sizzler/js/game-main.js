@@ -75,17 +75,30 @@ function handleHeaderQuit(){
   if(mode==="ended"){quitToMenu();return}
   openPauseMenu()
 }
-function clearPauseAttackCadence(){
+function clearPauseAttackCadence(reason="resume"){
   fire1=0;fire2=0;fireBuffer1=0;fireBuffer2=0;projectileCD=0;
   input.delete("Space");input.delete("Enter");
   window.__CCG_PAUSE_ATTACK_RESETS__=Math.max(0,Number(window.__CCG_PAUSE_ATTACK_RESETS__)||0)+1;
+  window.__CCG_PAUSE_ATTACK_LAST_RESET__={reason:String(reason),mode:String(mode),at:performance.now()};
 }
 function resumePausedRun(){
   if(mode!=="paused")return false;
+  clearPauseAttackCadence("handler-before-resume");
   const resumed=pause(true);
-  if(mode!=="paused"){clearPauseAttackCadence();return true}
+  if(mode!=="paused"){clearPauseAttackCadence("handler-after-resume");return true}
   return Boolean(resumed)
 }
+function capturePausedResumeAttackReset(event){
+  if(mode!=="paused"||!run)return;
+  if(event.type==="keydown"){
+    if(event.repeat||!(event.code==="KeyP"||event.code==="Escape"))return;
+    clearPauseAttackCadence(`capture-${event.code}`);return;
+  }
+  if(event.type==="click"&&event.target instanceof Element&&event.target.closest("#resume-btn"))clearPauseAttackCadence("capture-resume-button");
+}
+addEventListener("keydown",capturePausedResumeAttackReset,true);
+addEventListener("click",capturePausedResumeAttackReset,true);
+
 $("solo-btn").addEventListener("click",startSolo);$("continue-save-btn")?.addEventListener("click",resumeSavedRun);$("daily-btn")?.addEventListener("click",startDaily);$("split-btn").addEventListener("click",startSplit);$("create-btn").addEventListener("click",createRoom);$("join-btn").addEventListener("click",joinRoom);$("resume-btn")?.addEventListener("click",resumePausedRun);$("pause-quit-btn")?.addEventListener("click",quitToMenu);$("quit-btn")?.addEventListener("click",handleHeaderQuit);
 $("rulebook-btn")?.addEventListener("click",showRulebook);$("rulebook-close-btn")?.addEventListener("click",()=>UI.rulebook?.classList.add("hidden"));$("support-btn")?.addEventListener("click",showSupport);$("support-close-btn")?.addEventListener("click",()=>UI.support?.classList.add("hidden"));$("share-btn")?.addEventListener("click",shareQuest);$("item-info-close")?.addEventListener("click",hideItemInfo);$("named-dossier-btn")?.addEventListener("click",showNamedDossier);
 $("inventory-dossier-btn")?.addEventListener("click",showNamedDossier);$("named-dossier-close")?.addEventListener("click",hideNamedDossier);$("shop-close")?.addEventListener("click",closeShop);$("save-now-btn")?.addEventListener("click",()=>{saveFloorCheckpoint(false);closeSavePrompt()});$("save-continue-btn")?.addEventListener("click",()=>{if(savePromptReason==="rest"&&run)run.consecutiveDeaths=0;closeSavePrompt()});$("save-return-btn")?.addEventListener("click",()=>{if(run)run.consecutiveDeaths=0;saveFloorCheckpoint(true)});
