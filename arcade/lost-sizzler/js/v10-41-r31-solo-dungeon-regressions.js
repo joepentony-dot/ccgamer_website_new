@@ -106,6 +106,7 @@
           return baseTimeout.call(window,callback,delay,...args)
         };
         const result=source.apply(this,arguments);
+        if(result&&chest?.opened)chest.rewardXp=0;
         if(result&&chest?.opened&&captured){chestFeedback(chest,captured);if(deliveredImmediately)state.chestImmediateDeliveries++}
         return result
       }finally{
@@ -238,7 +239,7 @@
     ["LS-0827-05","FIXED","Solo score HUD visibility","The Solo Dungeon score cell is kept above overlapping hub layers and its live value is refreshed alongside shop transactions."],
     ["LS-0827-06","FIXED","Black screen after Pause or inventory","Returning from Pause, inventory, item information or the dossier now restores the live Solo render frame, canvas sizing, camera state and keyboard focus."],
     ["LS-0827-07","FIXED","Repeat shop purchases","Normal shop stock no longer becomes Sold or Traded after one purchase. The shared price now doubles through 1,000, 2,000, 4,000 and onward for every purchase made at that shop."],
-    ["LS-0827-08","ADDED","Guaranteed chest score and XP","Every opened chest now awards 10 XP plus a depth-scaled score reward, with the exact amounts displayed at the chest and in the reward notice."],
+    ["LS-0827-08","FIXED","Guaranteed chest score reward","Every opened chest keeps its depth-scaled score reward and loot feedback without granting progression XP."],
     ["LS-0827-09","FIXED","Death Stalker pursuit","Without a lit torch frightening it, the Death Stalker now clears ordinary cover and flank tactics and takes a direct pursuit route toward the player."],
     ["LS-0827-10","FIXED","Repeat rating prompt for signed-in players","Before showing Rate This Game, the game now checks whether the verified signed-in account has already submitted a rating and suppresses the prompt when it has."]
   ];
