@@ -15,9 +15,13 @@ assert.match(fix,/Hidden wall opened[\s\S]*Bronze door unlocked[\s\S]*Hidden wal
 assert.match(fix,/CCGLostSizzlerXPSourceContract/,"r18 composition must expose the interaction XP-source contract for browser verification");
 assert.match(fix,/hurtPlayer=function\(player,\.\.\.args\)\{repairPlayer\(player\)/,"player damage must repair stale invulnerability at the damage boundary");
 assert.match(fix,/queueAttack=function\(player,\.\.\.args\)/,"gun and melee attacks must pass through the combat repair boundary");
+assert.match(fix,/repairAttackLiveness/,"pause/resume recovery must own an explicit attack-liveness repair boundary");
+assert.match(fix,/fire1!==0[\s\S]*fireBuffer1!==0[\s\S]*projectileCD!==0/,"resume repair must clear finite stuck P1 cadence, buffer and projectile timers");
+assert.match(fix,/event\.code!=="KeyP"[\s\S]*schedulePauseResumeRepair/,"keyboard pause/resume must schedule attack-liveness repair on resume");
+assert.match(fix,/#resume-btn[\s\S]*schedulePauseResumeRepair/,"pause overlay Continue must schedule the same attack-liveness repair");
 assert.match(fix,/ai\.stepEnemy=wrapped/,"enemy attack stepping must repair stale attack cooldowns");
 assert.match(fix,/quick-warden-status/,"Warden state must own a dedicated HUD node");
 assert.match(fix,/stripWardenFromEffects/,"transient effects text must no longer share Warden ownership");
 assert.match(fix,/suppressedSfxRetriggers/,"repeat environmental SFX must be guarded against frame-level retrigger loops");
 assert.match(fix,/wall:180[\s\S]*fireplace:650[\s\S]*lowhealth:900/,"high-risk repeating ambience and collision sounds must have explicit cooldowns");
-console.log("V10.42 r18 solo playtest and interaction XP composition contract passed");
+console.log("V10.42 r18 solo playtest, pause attack-liveness and interaction XP composition contract passed");
