@@ -17,8 +17,9 @@ assert.match(fix,/hurtPlayer=function\(player,\.\.\.args\)\{repairPlayer\(player
 assert.match(fix,/queueAttack=function\(player,\.\.\.args\)/,"gun and melee attacks must pass through the combat repair boundary");
 assert.match(fix,/repairAttackLiveness/,"pause/resume recovery must own an explicit attack-liveness repair boundary");
 assert.match(fix,/fire1!==0[\s\S]*projectileCD!==0[\s\S]*fireBuffer1!==0/,"resume repair must clear finite stuck P1 cadence, projectile and buffer timers");
-assert.match(fix,/event\.code!=="KeyP"[\s\S]*schedulePauseResumeRepair/,"keyboard pause/resume must schedule attack-liveness repair on resume");
-assert.match(fix,/#resume-btn[\s\S]*schedulePauseResumeRepair/,"pause overlay Continue must schedule the same attack-liveness repair");
+assert.match(fix,/if\(typeof pause==="function"[\s\S]*const basePause=pause[\s\S]*pause=function\(\.\.\.args\)/,"pause/resume recovery must wrap the actual pause controller boundary rather than infer it from DOM events");
+assert.match(fix,/const before=currentMode\(\)[\s\S]*basePause\(\.\.\.args\)[\s\S]*repairAfterPauseTransition\(before\)/,"pause wrapper must inspect pre-transition state, run the canonical controller, then repair the resumed attack state");
+assert.match(fix,/beforeMode!=="paused"[\s\S]*currentMode\(\)==="playing"[\s\S]*repairAttackLiveness\("pause-resume"\)/,"attack liveness must repair only an actual paused-to-playing transition");
 assert.match(fix,/ai\.stepEnemy=wrapped/,"enemy attack stepping must repair stale attack cooldowns");
 assert.match(fix,/quick-warden-status/,"Warden state must own a dedicated HUD node");
 assert.match(fix,/stripWardenFromEffects/,"transient effects text must no longer share Warden ownership");
