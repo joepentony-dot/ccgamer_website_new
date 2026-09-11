@@ -203,6 +203,20 @@ function installDescriptionAutomation() {
   label.insertAdjacentElement('afterend', controls);
 }
 
+function installLemonSourceAutomationHint() {
+  const input = field('lemonUrl');
+  const label = input?.closest('label');
+  if (!input || !label || document.querySelector('[data-lemon-source-automation-hint]')) return;
+
+  const textNode = Array.from(label.childNodes).find((node) => node.nodeType === 3 && String(node.textContent || '').trim());
+  if (textNode) textNode.nodeValue = 'Lemon game source URL (optional)\n            ';
+
+  const hint = document.createElement('small');
+  hint.dataset.lemonSourceAutomationHint = 'true';
+  hint.textContent = 'Usually leave this blank: publishing first tries to discover and verify the matching Lemon64 or Lemon Amiga game page automatically. Paste the exact game page only if discovery misses it; magazine scores are imported automatically.';
+  input.insertAdjacentElement('afterend', hint);
+}
+
 function renderErrors(errors) {
   const box = document.querySelector('[data-game-validation]');
   if (!box) return;
@@ -234,6 +248,7 @@ function installPreflight() {
 
   removeLegacyLemonOverrides();
   installDescriptionAutomation();
+  installLemonSourceAutomationHint();
 
   form.addEventListener('submit', (event) => {
     if (!String(field('description')?.value || '').trim()) generateDescriptionIntoForm();
