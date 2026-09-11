@@ -56,6 +56,7 @@ jobs:
           test -f _site/amiga-demo-music/jesus-on-es/index.html
           test -f _site/amiga-demo-music/state-of-the-art/index.html
           test -f _site/sitemap.xml
+          test -f _site/_redirects
 
       - name: Verify shared SEO metadata
         run: |
@@ -85,3 +86,13 @@ jobs:
             echo 'sitemap.xml must not list itself'
             exit 1
           fi
+
+      - name: Verify proven legacy URL redirects
+        run: |
+          grep -Fxq '/games/collections/cartridge-games.html /games/collections/cartridge-games/ 301' _site/_redirects
+          grep -Fxq '/games/collections/licensed-games.html /games/collections/licensed-games/ 301' _site/_redirects
+          grep -Fxq '/games/collections/bpjs-indexed-games.html /games/collections/bpjs-indexed-games/ 301' _site/_redirects
+          grep -Fxq '/games/collections/top-picks.html /games/collections/top-picks/ 301' _site/_redirects
+          grep -Fxq '/games/collections/amiga-demo-music.html /games/collections/amiga-demo-music/ 301' _site/_redirects
+          grep -Fxq '/games/collections/retro-events.html /games/collections/retro-events/ 301' _site/_redirects
+          grep -Fxq '/games/collections/retro-specials.html /games/collections/retro-specials/ 301' _site/_redirects
