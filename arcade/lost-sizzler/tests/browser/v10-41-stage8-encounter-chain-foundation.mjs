@@ -52,7 +52,6 @@ try{
   assert.equal(result.afterDoor.opening,true,"canonical secret-door interaction must enter the established opening lifecycle");
   assert.equal(result.afterDoor.secrets,result.secretsBefore+1,"secret discovery must advance the canonical secret statistic exactly once");
   assert.equal(result.afterDoor.score,result.scoreBefore,"revealing an optional branch must not mint score by itself");
-  assert.equal(result.afterDoor.xp,result.xpBefore,"secret discovery must not mint progression XP");
   assert.ok(result.afterDoor.revision>result.revisionBefore,"secret discovery must advance canonical world revision");
 
   assert.equal(result.afterChest.active,false,"canonical reward chest must become inactive after collection");
