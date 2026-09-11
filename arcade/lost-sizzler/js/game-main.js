@@ -35,6 +35,16 @@ function installEarlyStableResize(){
 }
 installEarlyStableResize();
 
+function installChestXPSourceContract(){
+  const grantXP=awardXP;
+  awardXP=function(player,amount,reason=""){
+    if(String(reason)==="Chest opened")return{amount:0,gross:Math.max(0,Math.round(Number(amount)||0)),debtPaid:0,discarded:0,capped:false,reason,levels:[],blocked:true};
+    return grantXP(player,amount,reason);
+  };
+  window.CCGLostSizzlerChestXPSourceContract=Object.freeze({blockedReason:"Chest opened"});
+}
+installChestXPSourceContract();
+
 function hideStaticPanels(){UI.rulebook?.classList.add("hidden");UI.support?.classList.add("hidden");UI.shop?.classList.add("hidden");UI.savePanel?.classList.add("hidden");UI.artefactChoice?.classList.add("hidden");pendingBanishmentReward=null;activeShop=null;hideItemInfo();hideNamedDossier()}
 function closeInventoryForMenu(){if(UI.inventory&&!UI.inventory.classList.contains("hidden"))UI.inventory.classList.add("hidden");if(mode==="inventory")mode="playing"}
 function clearAbandonedRun(){
