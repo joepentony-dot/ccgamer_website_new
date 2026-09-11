@@ -62,21 +62,50 @@ try{
   });
   assert.ok(audio.after-audio.before>=2,`frame-level repeat SFX must be suppressed instead of stacking: ${JSON.stringify(audio)}`);
 
-  for(let i=0;i<6;i++){
+  await page.evaluate(()=>{
+    host.enemies=[];enemyBullets.length=0;hazards.length=0;bullets.length=0;
+    p1.firearmUnlocked=true;p1.weapon=baseWeapon();p1.mana=220;p1.maxMana=Math.max(p1.maxMana,220);
+    fire1=0;fireBuffer1=0;projectileCD=0;
+  });
+
+  for(let i=0;i<11;i++){
     await page.keyboard.press("KeyP");await page.waitForFunction(()=>mode==="paused");
-    await page.waitForTimeout(40);
+    await page.waitForTimeout(25);
     await page.keyboard.press("KeyP");await page.waitForFunction(()=>mode==="playing");
   }
-  const afterPauses=await page.evaluate(()=>{
-    fire1=999999;fireBuffer1=999999;
-    window.CCGLostSizzlerV142R18SoloPlaytestStability.repairCombatState();
-    return{fire1,fireBuffer1,mode,runActive:document.body.dataset.runActive,diag:{...window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics}};
+
+  await page.keyboard.press("KeyP");await page.waitForFunction(()=>mode==="paused");
+  await page.evaluate(()=>{
+    fire1=1200;fireBuffer1=900;projectileCD=600;
   });
-  assert.equal(afterPauses.mode,"playing");assert.equal(afterPauses.runActive,"true");
-  assert.equal(afterPauses.fire1,0,"stale gun/melee cadence timer must recover after repeated pauses");
-  assert.equal(afterPauses.fireBuffer1,0,"stale buffered attack timer must recover after repeated pauses");
+  await page.keyboard.press("KeyP");await page.waitForFunction(()=>mode==="playing");
+  await page.waitForFunction(()=>fire1===0&&fireBuffer1===0&&projectileCD===0);
+
+  const beforeAttack=await page.evaluate(()=>({
+    mana:p1.mana,
+    bullets:bullets.filter(b=>b?.owner===p1.id&&b.ttl>0).length,
+    fire1,fireBuffer1,projectileCD,
+    diag:{...window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics}
+  }));
+  assert.ok(beforeAttack.diag.pauseResumeAttackRepairs>=1,`resume boundary must repair finite stuck attack timers: ${JSON.stringify(beforeAttack)}`);
+  assert.deepEqual({fire1:beforeAttack.fire1,fireBuffer1:beforeAttack.fireBuffer1,projectileCD:beforeAttack.projectileCD},{fire1:0,fireBuffer1:0,projectileCD:0},"resume must leave attack cadence live");
+
+  await page.keyboard.press("Space");
+  await page.waitForFunction(before=>p1.mana<before||bullets.filter(b=>b?.owner===p1.id&&b.ttl>0).length>0,beforeAttack.mana,{timeout:4000});
+  const afterAttack=await page.evaluate(()=>({mana:p1.mana,bullets:bullets.filter(b=>b?.owner===p1.id&&b.ttl>0).length,mode,runActive:document.body.dataset.runActive}));
+  assert.equal(afterAttack.mode,"playing");assert.equal(afterAttack.runActive,"true");
+  assert.ok(afterAttack.mana<beforeAttack.mana||afterAttack.bullets>beforeAttack.bullets,`a real Space attack must still fire after repeated pause/resume cycles: before=${JSON.stringify(beforeAttack)} after=${JSON.stringify(afterAttack)}`);
+
+  await page.keyboard.press("KeyP");await page.waitForFunction(()=>mode==="paused");
+  await page.evaluate(()=>{fire1=850;fireBuffer1=650;projectileCD=400});
+  await page.click("#resume-btn");await page.waitForFunction(()=>mode==="playing");
+  await page.waitForFunction(()=>fire1===0&&fireBuffer1===0&&projectileCD===0);
+  const beforeButtonResumeAttack=await page.evaluate(()=>p1.mana);
+  await page.keyboard.press("Space");
+  await page.waitForFunction(before=>p1.mana<before,beforeButtonResumeAttack,{timeout:4000});
+
   assert.deepEqual(errors,[],`page errors: ${JSON.stringify(errors,null,2)}`);
-  console.log("V10.42 r18 live solo stability regression passed");
+  console.log("V10.42 r18 live solo stability and repeated pause/resume attack-liveness regression passed");
   await context.close();
 }finally{
   await browser.close();
