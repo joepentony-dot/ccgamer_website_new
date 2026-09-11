@@ -19,7 +19,7 @@
     ["v10-42-r13-encounter-progression-runtime.js","CCGLostSizzlerV142R13EncounterProgressionRuntime"],
     ["v10-42-r14-combat-encounter-bridge.js","CCGLostSizzlerV142R14CombatEncounterBridge"],
     ["v10-42-r15-npc-expansion.js","CCGLostSizzlerV142R15NpcExpansion"],
-    ["v10-42-r16-environment-presentation.js","CCGLostSizzlerV142EnvironmentPresentation"],
+    ["v10-42-r16-environment-presentation.js","CCGLostSizzlerV142R16EnvironmentPresentation"],
     ["v10-42-tutorial-campaign.js","CCGLostSizzlerV142TutorialCampaign"],
     ["v10-42-demo-paywall.js","CCGLostSizzlerV142DemoPaywall"],
     ["v10-42-zero-server-release.js","CCGLostSizzlerV142ZeroServerRelease"],
