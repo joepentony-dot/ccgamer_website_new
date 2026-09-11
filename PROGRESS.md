@@ -2,9 +2,9 @@
 
 ## Status
 
-Overall completion estimate: **83%**
+Overall completion estimate: **84%**
 
-Current milestone: **Generated game pages now preserve the repository-established VideoGame + BreadcrumbList structured-data ownership contract on the isolated Eleventy prototype**
+Current milestone: **Generated game structured data is now both source-backed and remotely validated; the HTML-escaping regression in the JSON-LD handoff has been corrected on the isolated Eleventy prototype**
 
 ## Completed
 
@@ -40,6 +40,8 @@ Current milestone: **Generated game pages now preserve the repository-establishe
 - Added source-backed game JSON-LD generation to the prototype adapter using canonical title, description, year, platform, genres, first publisher and thumbnail data already present in `games/games.json`.
 - Added an optional structured-data hook to the shared base layout and wired generated game pages to emit the game graph with the same `data-ccg-schema="game-graph"` ownership marker used by the existing site tooling.
 - Added representative CI assertions for `/games/20-tons/` covering schema parseability, `VideoGame` identity/canonical/platform/year/publisher and the three-level Home → Games → Game breadcrumb contract.
+- Diagnosed the first game-schema CI failure from the full GitHub Actions job log: the schema content itself was correct, but the Nunjucks front-matter handoff converted JSON quotation marks to `&quot;`, making the `<script type="application/ld+json">` payload invalid JSON.
+- Corrected game-schema rendering in the shared base layout so paginated game pages render `game.schemaJson` directly through the trusted `safe` path rather than through the escaping front-matter interpolation.
 
 ## Validation
 
@@ -50,14 +52,13 @@ Current milestone: **Generated game pages now preserve the repository-establishe
 - The corrected data-driven sitemap subsequently passed the full remote Eleventy build, generated-route checks, shared SEO checks and sitemap assertions.
 - The prototype redirect manifest passed the full remote Eleventy build, route checks, shared SEO checks, sitemap checks and all seven legacy redirect assertions.
 - CI continues to verify representative homepage, game, genre, collection and Amiga Demo Music detail outputs.
-- The game-schema adapter passed local Node syntax validation and the updated Eleventy workflow passed local YAML syntax validation before commit.
-- Implementation commit `e67d24ac8e70ddb0a18145be914358b763b49156` is confined to `codex/eleventy-ccg-prototype`; its remote Eleventy workflow had not surfaced through the available run/status lookup at checkpoint time, so end-to-end schema validation remains explicitly pending rather than assumed successful.
-- A full local checkout/build remains unavailable in this connector-only execution environment because GitHub HTTPS credentials are not exposed to the container; remote GitHub Actions remains the end-to-end build authority.
+- The first game structured-data run failed specifically at JSON parsing because the emitted payload contained HTML entities (`&quot;`) instead of literal JSON quotes; build, route and shared-SEO steps had already passed before that assertion.
+- Corrective commit `3829e69000e341e093472784854f8e9716e5aef7` passed GitHub Actions run `34589752798` end to end: checkout, dependency install, Eleventy build, generated-route checks, shared SEO checks, game structured-data validation, XML sitemap validation and all seven proven legacy redirect checks succeeded.
+- A full local checkout/build remains unavailable in this connector execution environment because outbound GitHub access is unavailable to the container; remote GitHub Actions remains the end-to-end build authority.
 
 ## Blockers
 
 - No critical implementation blocker.
-- Remote GitHub Actions confirmation for the newest structured-data commit is pending.
 - No isolated preview deployment has been configured yet; this remains deferred until the remaining structured-data, usability/performance and regression work is stable.
 - Redirect compatibility currently covers only aliases explicitly evidenced by repository data. Any broader legacy URL migration must be source-backed before rules are added.
 
