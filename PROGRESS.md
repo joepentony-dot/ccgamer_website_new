@@ -2,9 +2,9 @@
 
 ## Status
 
-Overall completion estimate: **80%**
+Overall completion estimate: **83%**
 
-Current milestone: **Generated XML sitemap and evidence-backed legacy collection URL compatibility are now validated on the isolated Eleventy prototype**
+Current milestone: **Generated game pages now preserve the repository-established VideoGame + BreadcrumbList structured-data ownership contract on the isolated Eleventy prototype**
 
 ## Completed
 
@@ -36,6 +36,10 @@ Current milestone: **Generated XML sitemap and evidence-backed legacy collection
 - Audited legacy collection URL ownership and found seven explicit `.html` aliases already recorded in `collectionArchive.js`; no game, genre or publisher redirects were inferred without source evidence.
 - Added a prototype-only `_redirects` manifest mapping those seven proven legacy collection `.html` URLs to their trailing-slash Eleventy routes with permanent redirects, and configured Eleventy to copy that manifest only into the prototype build output.
 - Added CI regression checks for the sitemap and all seven evidence-backed legacy collection redirects.
+- Reviewed the repository's existing Phase 2C schema generator and preserved its established canonical game-page ownership model: one `VideoGame` plus one `BreadcrumbList` in a schema.org `@graph`, without inventing a generic `VideoObject`.
+- Added source-backed game JSON-LD generation to the prototype adapter using canonical title, description, year, platform, genres, first publisher and thumbnail data already present in `games/games.json`.
+- Added an optional structured-data hook to the shared base layout and wired generated game pages to emit the game graph with the same `data-ccg-schema="game-graph"` ownership marker used by the existing site tooling.
+- Added representative CI assertions for `/games/20-tons/` covering schema parseability, `VideoGame` identity/canonical/platform/year/publisher and the three-level Home → Games → Game breadcrumb contract.
 
 ## Validation
 
@@ -46,18 +50,21 @@ Current milestone: **Generated XML sitemap and evidence-backed legacy collection
 - The corrected data-driven sitemap subsequently passed the full remote Eleventy build, generated-route checks, shared SEO checks and sitemap assertions.
 - The prototype redirect manifest passed the full remote Eleventy build, route checks, shared SEO checks, sitemap checks and all seven legacy redirect assertions.
 - CI continues to verify representative homepage, game, genre, collection and Amiga Demo Music detail outputs.
+- The game-schema adapter passed local Node syntax validation and the updated Eleventy workflow passed local YAML syntax validation before commit.
+- Implementation commit `e67d24ac8e70ddb0a18145be914358b763b49156` is confined to `codex/eleventy-ccg-prototype`; its remote Eleventy workflow had not surfaced through the available run/status lookup at checkpoint time, so end-to-end schema validation remains explicitly pending rather than assumed successful.
 - A full local checkout/build remains unavailable in this connector-only execution environment because GitHub HTTPS credentials are not exposed to the container; remote GitHub Actions remains the end-to-end build authority.
 
 ## Blockers
 
 - No critical implementation blocker.
+- Remote GitHub Actions confirmation for the newest structured-data commit is pending.
 - No isolated preview deployment has been configured yet; this remains deferred until the remaining structured-data, usability/performance and regression work is stable.
 - Redirect compatibility currently covers only aliases explicitly evidenced by repository data. Any broader legacy URL migration must be source-backed before rules are added.
 
 ## Next task
 
-Complete the remaining structured-data ownership review, beginning with generated game pages and primary archive hubs. Preserve existing source-backed schema where it exists, avoid generic or invented structured data, and add representative regression assertions before moving into the dedicated responsive/mobile and accessibility review.
+Complete the remaining structured-data ownership review for the primary archive hubs. Reuse only repository-established schema semantics where supported, avoid adding generic schema merely for coverage, and extend representative regression assertions. If no additional source-backed hub schema is warranted, document that ownership decision and move directly into the dedicated responsive/mobile and accessibility review.
 
 ## Completion criteria still outstanding
 
-Complete home migration review; remaining structured-data ownership review; dedicated responsive/mobile usability review; accessibility review; image/performance optimisation; broader regression testing; and an isolated browseable preview deployment.
+Complete home migration review; remaining primary-hub structured-data ownership review; dedicated responsive/mobile usability review; accessibility review; image/performance optimisation; broader regression testing; and an isolated browseable preview deployment.
