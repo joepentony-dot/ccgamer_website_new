@@ -85,6 +85,51 @@ Do Not Override
         }
     }
 
+    /* One navigation owner per route. Specific Games destinations are
+       checked before the generic /games fallback so CCG Games and Find Me
+       a Game never make every Games-family control look selected together. */
+    function navigationSection(value) {
+        const pathname = canonicalPath(value).toLowerCase();
+
+        if (pathname === "/home.html") return "home";
+        if (pathname === "/install-app.html") return "install";
+        if (pathname === "/emulation.html" || pathname.startsWith("/resources/emulation-guide")) return "emulation";
+        if (pathname === "/about.html") return "about";
+        if (pathname === "/contact.html") return "contact";
+
+        if (pathname === "/games/ccg-games" || pathname.startsWith("/games/ccg-games/")) return "ccg-games";
+        if (pathname === "/games/discover" || pathname.startsWith("/games/discover/")) return "discover";
+        if (pathname === "/games/genres" || pathname.startsWith("/games/genres/")) return "genres";
+        if (pathname === "/games/publishers" || pathname.startsWith("/games/publishers/")) return "publishers";
+        if (pathname === "/games/collections" || pathname.startsWith("/games/collections/")) return "collections";
+        if (pathname === "/games" || pathname.startsWith("/games/")) return "games";
+        if (pathname === "/music" || pathname.startsWith("/music/")) return "music";
+        if (pathname === "/zzap64" || pathname.startsWith("/zzap64/")) return "zzap64";
+        if (pathname === "/quiz" || pathname.startsWith("/quiz/")) return "quiz";
+
+        return "";
+    }
+
+    function markNavigationActive(header) {
+        if (!header) return;
+        const current = canonicalPath(window.location.href);
+        const currentSection = navigationSection(current);
+
+        header.querySelectorAll(".ccg-nav__link").forEach((link) => {
+            const target = canonicalPath(link.getAttribute("href") || "");
+            const targetSection = navigationSection(target);
+            const isActive = current === target || Boolean(
+                currentSection &&
+                targetSection &&
+                currentSection === targetSection
+            );
+
+            link.classList.toggle("ccg-nav__link--active", isActive);
+            if (isActive) link.setAttribute("aria-current", "page");
+            else link.removeAttribute("aria-current");
+        });
+    }
+
     function listMatches(list, links) {
         if (!list) return false;
         const anchors = Array.from(list.children)
@@ -154,9 +199,7 @@ Do Not Override
             }
         }
 
-        if (typeof window.ccgMarkNavigationActive === "function") {
-            window.ccgMarkNavigationActive(header);
-        }
+        markNavigationActive(header);
         return changed;
     }
 
@@ -238,13 +281,19 @@ Do Not Override
         });
     }
 
-    function queueApply() { window.requestAnimationFrame(applyNavGlowPatch); }
+    function queueApply() {
+        window.requestAnimationFrame(() => {
+            applyNavGlowPatch();
+            markNavigationActive(document.querySelector("[data-ccg-header]"));
+        });
+    }
 
     function bindStateReapply() {
         if (window.__ccgNavCoreBound) return;
         window.__ccgNavCoreBound = true;
         window.addEventListener("resize", queueApply, { passive: true });
         window.addEventListener("orientationchange", queueApply, { passive: true });
+        document.addEventListener("ccg:navigation-fitted", queueApply);
         document.addEventListener("click", (event) => {
             const target = event.target instanceof Element ? event.target : null;
             if (target?.closest("[data-ccg-mode-toggle], [data-ccg-nav-toggle], [data-ccg-drawer-close], [data-ccg-more-toggle]")) {
@@ -291,9 +340,11 @@ Do Not Override
     }
 
     window.applyNavGlowPatch = applyNavGlowPatch;
+    window.ccgMarkNavigationActive = markNavigationActive;
     window.CCGUnifiedNavCore = Object.freeze({
         init: initUnifiedNavCore,
         sync: synchroniseNavigationStructure,
+        markActive: markNavigationActive,
         applyNavGlowPatch
     });
 
