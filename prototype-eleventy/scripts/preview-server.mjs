@@ -7,6 +7,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const siteRoot = path.resolve(here, "../_site");
 const port = Number(process.env.PORT || 10000);
 const host = process.env.HOST || "0.0.0.0";
+const deployedCommit = process.env.RENDER_GIT_COMMIT || process.env.GITHUB_SHA || "unknown";
 
 const mimeTypes = new Map([
   [".css", "text/css; charset=utf-8"],
@@ -80,7 +81,7 @@ const server = http.createServer((req, res) => {
 
   const requestUrl = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
   if (requestUrl.pathname === "/__preview-health") {
-    const body = JSON.stringify({ ok: true, siteRoot: path.basename(siteRoot) });
+    const body = JSON.stringify({ ok: true, siteRoot: path.basename(siteRoot), commit: deployedCommit });
     if (method === "HEAD") {
       send(res, 200, "", "application/json; charset=utf-8", { "Cache-Control": "no-store" });
     } else {
@@ -117,5 +118,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(port, host, () => {
-  console.log(`[ccg-eleventy-preview] serving ${siteRoot} on http://${host}:${port}`);
+  console.log(`[ccg-eleventy-preview] serving ${siteRoot} on http://${host}:${port} at ${deployedCommit}`);
 });
