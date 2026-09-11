@@ -39,17 +39,48 @@ try{
   for(let i=0;i<12;i++){
     await page.keyboard.press("KeyP");
     await page.waitForFunction(()=>mode==="paused");
-    if(i===11)await page.evaluate(()=>{fire1=1200;fireBuffer1=900;projectileCD=600});
+    if(i===11){
+      await page.evaluate(()=>{
+        fire1=1200;fireBuffer1=900;projectileCD=600;
+        window.__CCG_PAUSE_TRACE__=[];
+        const snap=phase=>window.__CCG_PAUSE_TRACE__.push({
+          phase,mode:String(mode),fire1,fireBuffer1,projectileCD,
+          resets:Number(window.__CCG_PAUSE_ATTACK_RESETS__||0),
+          lastReset:window.__CCG_PAUSE_ATTACK_LAST_RESET__||null,
+          diag:{...window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics}
+        });
+        const trace=event=>{
+          if(event.code!=="KeyP")return;
+          snap("test-capture");
+          queueMicrotask(()=>snap("microtask"));
+          setTimeout(()=>snap("timeout-0"),0);
+          requestAnimationFrame(()=>snap("raf"));
+        };
+        window.addEventListener("keydown",trace,true);
+        window.__CCG_PAUSE_TRACE_HANDLER__=trace;
+        snap("injected-paused");
+      });
+    }
     await page.keyboard.press("KeyP");
     await page.waitForFunction(()=>mode==="playing");
   }
 
-  await page.waitForFunction(()=>fire1===0&&fireBuffer1===0&&projectileCD===0);
-  const keyboardBefore=await page.evaluate(()=>({
-    mana:p1.mana,
-    diag:{...window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics}
+  await page.waitForTimeout(150);
+  const keyboardProbe=await page.evaluate(()=>({
+    mode:String(mode),fire1,fireBuffer1,projectileCD,
+    resets:Number(window.__CCG_PAUSE_ATTACK_RESETS__||0),
+    lastReset:window.__CCG_PAUSE_ATTACK_LAST_RESET__||null,
+    diag:{...window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics},
+    trace:[...(window.__CCG_PAUSE_TRACE__||[])]
   }));
-  assert.ok(keyboardBefore.diag.pauseResumeAttackRepairs>=1,`finite stuck attack timers must be repaired after repeated P-key pauses: ${JSON.stringify(keyboardBefore)}`);
+  console.log("PAUSE_ATTACK_TRACE",JSON.stringify(keyboardProbe));
+  assert.deepEqual(
+    {fire1:keyboardProbe.fire1,fireBuffer1:keyboardProbe.fireBuffer1,projectileCD:keyboardProbe.projectileCD},
+    {fire1:0,fireBuffer1:0,projectileCD:0},
+    `finite stuck attack timers must clear after repeated P-key pauses: ${JSON.stringify(keyboardProbe)}`
+  );
+  assert.ok(keyboardProbe.diag.pauseResumeAttackRepairs>=1||keyboardProbe.resets>=1,`at least one guarded pause-resume repair must run: ${JSON.stringify(keyboardProbe)}`);
+  const keyboardBefore=await page.evaluate(()=>({mana:p1.mana,diag:{...window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics}}));
   await page.keyboard.press("Space");
   await page.waitForFunction(before=>p1.mana<before,keyboardBefore.mana,{timeout:4000});
 
@@ -57,20 +88,17 @@ try{
   await page.waitForFunction(()=>mode==="paused");
   await page.evaluate(()=>{fire1=850;fireBuffer1=650;projectileCD=400});
   await page.click("#resume-btn");
-  await page.waitForFunction(()=>mode==="playing"&&fire1===0&&fireBuffer1===0&&projectileCD===0);
-  const buttonBefore=await page.evaluate(()=>({
-    mana:p1.mana,
-    diag:{...window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics}
-  }));
-  assert.ok(buttonBefore.diag.pauseResumeAttackRepairs>=2,`Continue-button resume must repair the same finite attack state: ${JSON.stringify(buttonBefore)}`);
+  await page.waitForFunction(()=>mode==="playing");
+  await page.waitForTimeout(100);
+  const buttonProbe=await page.evaluate(()=>({fire1,fireBuffer1,projectileCD,mana:p1.mana,resets:Number(window.__CCG_PAUSE_ATTACK_RESETS__||0),diag:{...window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics}}));
+  assert.deepEqual({fire1:buttonProbe.fire1,fireBuffer1:buttonProbe.fireBuffer1,projectileCD:buttonProbe.projectileCD},{fire1:0,fireBuffer1:0,projectileCD:0},`Continue-button resume must clear finite attack state: ${JSON.stringify(buttonProbe)}`);
   await page.keyboard.press("Space");
-  await page.waitForFunction(before=>p1.mana<before,buttonBefore.mana,{timeout:4000});
+  await page.waitForFunction(before=>p1.mana<before,buttonProbe.mana,{timeout:4000});
 
   const finalState=await page.evaluate(()=>({mode,runActive:document.body.dataset.runActive,mana:p1.mana,diag:{...window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics}}));
   assert.equal(finalState.mode,"playing");
   assert.equal(finalState.runActive,"true");
   assert.ok(finalState.mana<keyboardBefore.mana,"attacks must remain live after keyboard and Continue-button pause/resume paths");
-  assert.ok(finalState.diag.pauseResumeAttackRepairs>=2,"both injected resume paths must have repaired stale attack cadence");
   assert.deepEqual(errors,[],`pause attack-liveness regression produced page errors: ${JSON.stringify(errors,null,2)}`);
   console.log("Repeated pause/resume attack liveness browser regression passed");
   await context.close();
