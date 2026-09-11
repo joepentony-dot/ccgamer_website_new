@@ -7,7 +7,7 @@ permalink: /games/collections/index.html
 <section class="hero hero--compact">
   <p class="eyebrow">ARCHIVE PROTOTYPE</p>
   <h1>Collections</h1>
-  <p class="lede">Browse the established CCG collection routes. Collections are migrated only when their existing membership can be preserved from repository sources.</p>
+  <p class="lede">Browse the established CCG collection routes. Collections are migrated only when their existing membership or gateway structure can be preserved from repository sources.</p>
 </section>
 
 <section class="archive-browser" aria-labelledby="collection-list-heading">
@@ -28,9 +28,9 @@ permalink: /games/collections/index.html
         </h3>
         {% if collection.description %}<p>{{ collection.description }}</p>{% endif %}
         {% if collection.migrated %}
-          <p>{{ collection.games | length }} source-backed games migrated.</p>
+          <p>{{ collection.itemCount }} {{ collection.itemLabel }} migrated.</p>
         {% else %}
-          <p>Membership migration pending source verification. Existing route retained as <code>{{ collection.legacyUrl }}</code>.</p>
+          <p>Migration pending source verification. Existing route retained as <code>{{ collection.legacyUrl }}</code>.</p>
         {% endif %}
       </article>
     {% endfor %}

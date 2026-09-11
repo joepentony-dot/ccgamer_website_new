@@ -2,9 +2,9 @@
 
 ## Status
 
-Overall completion estimate: **50%**
+Overall completion estimate: **54%**
 
-Current milestone: **Top Picks collection route implemented from repository-backed fallback membership**
+Current milestone: **Amiga Demo Music collection preserved as a lightweight gateway to the existing music archive**
 
 ## Completed
 
@@ -21,19 +21,22 @@ Current milestone: **Top Picks collection route implemented from repository-back
 - Added `/games/collections/licensed-games/` using the 24 game entries present in the existing Licensed Games fallback markup; licensed status was not inferred from titles, publishers or external knowledge.
 - Added `/games/collections/bpjs-indexed-games/` using the 24 game entries present in the existing BPjS/BPjM collection fallback markup; no BPjS/BPjM membership was inferred beyond those entries.
 - Added `/games/collections/top-picks/` using the 24 game entries present in the existing Top Picks fallback markup; no additional editorial picks or rankings were inferred.
+- Added `/games/collections/amiga-demo-music/` as a lightweight gateway preserving the ten explicit links in the existing collection fallback markup. The entries continue to point at their established `/amiga-demo-music/.../` URLs so the later dedicated Music migration remains the single owner of music detail pages.
+- Generalized collection-index counts so game collections and non-game gateway collections can describe their source-backed entries accurately.
 - Added Collections to the shared primary navigation.
-- Extended isolated CI route checks to cover publisher index and all four migrated game collections.
+- Extended isolated CI route checks to cover publisher index and all five migrated collection routes.
 - Added skip-to-content support, semantic navigation, visible keyboard focus treatment and reduced-motion handling.
 
 ## Validation
 
 - Branch isolation remains intact; no merge or write to `main` was performed.
 - Canonical `games/games.json` remains unchanged and is only read by the prototype adapter.
-- The Top Picks membership was taken directly from the existing repository page fallback grid, which exposes 24 concrete game links from Ace Of Aces through Commando.
-- The collection adapter resolves all four migrated collection memberships against normalized canonical game slugs and throws a build error if any referenced game is missing.
-- `collectionArchive.js` passed local `node --check` syntax validation before the commit was prepared.
-- The isolated GitHub Actions workflow now verifies `_site/games/collections/top-picks/index.html` in addition to the existing representative routes.
-- A full local checkout/build remains unavailable in the execution container because outbound DNS access to GitHub is blocked; remote CI is used for end-to-end build confirmation when surfaced.
+- The existing Amiga Demo Music collection fallback exposes exactly ten concrete links into `/amiga-demo-music/`, from `9 Fingers - Spaceballs` through `State of the Art`; those URLs and visible titles were preserved rather than re-derived.
+- The dedicated Amiga Demo Music prototype page does not generate or duplicate music detail pages; it is only a collection gateway.
+- Existing game-backed collection membership still resolves against normalized canonical game slugs and throws a build error if a referenced game is missing.
+- Updated `collectionArchive.js` passed local `node --check` syntax validation before the commit was prepared.
+- The isolated GitHub Actions workflow now verifies `_site/games/collections/amiga-demo-music/index.html` in addition to the existing representative routes.
+- A full local checkout/build remains unavailable in the execution container because outbound DNS access to GitHub is blocked; remote CI is used for end-to-end build confirmation.
 
 ## Blockers
 
@@ -42,8 +45,8 @@ Current milestone: **Top Picks collection route implemented from repository-back
 
 ## Next task
 
-Inspect the existing Amiga Demo Music collection/hub relationship and migrate only the repository-backed structure that can be represented safely without duplicating or weakening the dedicated music section planned later in the rebuild.
+Inspect the existing Retro Events collection and its repository-backed JSON/page structure, then migrate only the event routes and metadata that can be represented without inventing content or changing established URLs.
 
 ## Completion criteria still outstanding
 
-Complete home migration; remaining collection/hub compatibility; Zzap!64; retro specials; music; SEO metadata/structured data/sitemaps/redirect compatibility; accessibility review; image/performance work; regression testing; and an isolated browseable preview deployment.
+Complete home migration; remaining collection/hub compatibility; Zzap!64; retro specials; music detail/archive migration; SEO metadata/structured data/sitemaps/redirect compatibility; accessibility review; image/performance work; regression testing; and an isolated browseable preview deployment.

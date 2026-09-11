@@ -1,0 +1,27 @@
+---
+layout: layouts/base.njk
+title: Amiga Demo Music | CCG Eleventy Prototype
+description: Explore the Amiga demo music archive through the lightweight Cheeky Commodore Gamer Eleventy prototype.
+permalink: /games/collections/amiga-demo-music/index.html
+---
+<section class="hero hero--compact">
+  <p class="eyebrow">COLLECTION PROTOTYPE</p>
+  <h1>{{ collectionArchive.amigaDemoMusic.name }}</h1>
+  <p class="lede">{{ collectionArchive.amigaDemoMusic.description }}</p>
+</section>
+
+<section class="archive-browser" aria-labelledby="amiga-demo-music-heading">
+  <div class="section-heading">
+    <h2 id="amiga-demo-music-heading">Amiga demo music archive</h2>
+    <p>{{ collectionArchive.amigaDemoMusic.entries | length }} entries preserved from the existing collection fallback markup. Their dedicated music pages remain under the established <code>/amiga-demo-music/</code> URLs.</p>
+  </div>
+
+  <div class="collection-list">
+    {% for entry in collectionArchive.amigaDemoMusic.entries %}
+      <article class="collection-summary">
+        <h3><a href="{{ entry.url }}">{{ entry.title }}</a></h3>
+        <p>Existing CCG Amiga demo music entry.</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>

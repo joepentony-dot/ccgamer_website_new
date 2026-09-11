@@ -54,7 +54,24 @@ const collections = [
       "bullys-sporting-darts", "cannon-fodder", "choplifter", "civilization", "commando"
     ]
   },
-  { name: "Amiga Demo Music", slug: "amiga-demo-music", legacyUrl: "/games/collections/amiga-demo-music.html" },
+  {
+    name: "Amiga Demo Music",
+    slug: "amiga-demo-music",
+    legacyUrl: "/games/collections/amiga-demo-music.html",
+    description: "A lightweight gateway to the existing Amiga demo music archive, preserving the ten entries exposed by the current collection page.",
+    entries: [
+      { title: "9 Fingers - Spaceballs", url: "/amiga-demo-music/9-fingers-spaceballs/" },
+      { title: "Hardwired - Crionics", url: "/amiga-demo-music/crionics-hardwired/" },
+      { title: "Neverwhere - Cryonics", url: "/amiga-demo-music/cryonics-neverwhere/" },
+      { title: "Desert Dream - Kefrens", url: "/amiga-demo-music/desert-dream-kefrens/" },
+      { title: "Enigma - Phenomena", url: "/amiga-demo-music/enigma-phenomena/" },
+      { title: "Jesus on E's", url: "/amiga-demo-music/jesus-on-es/" },
+      { title: "Odyssey - Alcatraz", url: "/amiga-demo-music/odyssey-alzatraz/" },
+      { title: "Follow Me - Red Sector", url: "/amiga-demo-music/red-sector-folow-me/" },
+      { title: "Sounds of Silents", url: "/amiga-demo-music/sounds-of-silents/" },
+      { title: "State of the Art", url: "/amiga-demo-music/state-of-the-art/" }
+    ]
+  },
   { name: "Retro Events", slug: "retro-events", legacyUrl: "/games/collections/retro-events.html" },
   { name: "Retro Specials", slug: "retro-specials", legacyUrl: "/games/collections/retro-specials.html" }
 ];
@@ -62,8 +79,18 @@ const collections = [
 const gamesBySlug = new Map(games.map((game) => [game.slug, game]));
 
 const items = collections.map((collection) => {
+  if (collection.entries) {
+    return {
+      ...collection,
+      migrated: true,
+      games: [],
+      itemCount: collection.entries.length,
+      itemLabel: "source-backed music entries"
+    };
+  }
+
   if (!collection.gameSlugs) {
-    return { ...collection, migrated: false, games: [] };
+    return { ...collection, migrated: false, games: [], itemCount: 0, itemLabel: "items" };
   }
 
   const missing = collection.gameSlugs.filter((slug) => !gamesBySlug.has(slug));
@@ -71,10 +98,14 @@ const items = collections.map((collection) => {
     throw new Error(`[ccg-eleventy] Collection ${collection.name} references missing game slugs: ${missing.join(", ")}`);
   }
 
+  const collectionGames = collection.gameSlugs.map((slug) => gamesBySlug.get(slug));
+
   return {
     ...collection,
     migrated: true,
-    games: collection.gameSlugs.map((slug) => gamesBySlug.get(slug))
+    games: collectionGames,
+    itemCount: collectionGames.length,
+    itemLabel: "source-backed games"
   };
 });
 
@@ -85,5 +116,6 @@ export default {
   cartridge: items.find((item) => item.slug === "cartridge-games"),
   licensed: items.find((item) => item.slug === "licensed-games"),
   bpjs: items.find((item) => item.slug === "bpjs-indexed-games"),
-  topPicks: items.find((item) => item.slug === "top-picks")
+  topPicks: items.find((item) => item.slug === "top-picks"),
+  amigaDemoMusic: items.find((item) => item.slug === "amiga-demo-music")
 };
