@@ -3,6 +3,8 @@
   "private": true,
   "scripts": {
     "build": "eleventy",
+    "test:regression": "node tests/site-regression.mjs",
+    "validate": "npm run build && npm run test:regression",
     "serve": "eleventy --serve"
   },
   "devDependencies": {
