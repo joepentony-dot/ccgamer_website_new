@@ -43,6 +43,7 @@ on:
       - "scripts/ensure-publisher-history-runtime.js"
       - "scripts/migrate-mr-weems-thumbnail.js"
       - "scripts/migrate-ruff-n-tumble-thumbnail.js"
+      - "scripts/migrate-speed-king-release.js"
       - "scripts/sync-youtube-video-metadata.js"
       - "scripts/generate-video-seo.js"
       - "scripts/generate-video-library.js"
@@ -139,6 +140,15 @@ jobs:
       - name: Repair historical Ruff N Tumble source
         run: node scripts/migrate-ruff-n-tumble-thumbnail.js
 
+      - name: Repair Speed King release identity
+        run: node scripts/migrate-speed-king-release.js
+
+      - name: Refresh changed Lemon reference pages (best effort)
+        continue-on-error: true
+        run: |
+          echo "[games-publishing] Refreshing new or changed Lemon reference pages before magazine import. External Lemon64/Lemon Amiga availability is optional and cannot block publishing."
+          node scripts/refresh-lemon-game-cache.js --base HEAD^
+
       - name: Import cached and curated magazine reviews
         run: |
           echo "[games-publishing] Importing locally cached and curated magazine metadata. External Lemon availability is not a publishing prerequisite."
@@ -229,7 +239,7 @@ jobs:
             --base main \
             --head "$OUTPUT_BRANCH" \
             --title "Publish generated game archive output" \
-            --body "Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, locally cached/curated magazine-review import, YouTube metadata sync, publisher generation, manual-viewer materialization, download-index validation, video-library generation, sitemap checks, SEO validation, canonical shared-header validation and protected-file checks all passed before this PR was created. External Lemon64/Lemon Amiga availability is optional and cannot block publishing. Any historical game-source migration is applied before the protected hashes are recorded.")
+            --body "Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, locally cached/curated magazine-review import, YouTube metadata sync, publisher generation, manual-viewer materialization, download-index validation, video-library generation, sitemap checks, SEO validation, canonical shared-header validation and protected-file checks all passed before this PR was created. External Lemon64/Lemon Amiga availability is optional and cannot block publishing. Any historical game-source migration is applied before the protected hashes are recorded."
 
           echo "Created generated-output PR: $PR_URL"
           gh pr merge "$PR_URL" \
