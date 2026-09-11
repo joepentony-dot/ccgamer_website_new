@@ -37,6 +37,7 @@ on:
       - "scripts/build-magazine-review-chunks.js"
       - "scripts/import-amiga-magazine-reviews.js"
       - "scripts/refresh-lemon-game-cache.js"
+      - "scripts/discover-new-lemon-source.js"
       - "scripts/ensure-magazine-review-runtime.js"
       - "scripts/ensure-manual-viewer-polish.js"
       - "scripts/ensure-secondary-publisher-runtime.js"
@@ -77,6 +78,7 @@ on:
       - "scripts/normalize-public-header-shell.js"
       - "tests/magazine-publishing-pipeline.test.mjs"
       - "tests/lemon-refresh-publishing.test.mjs"
+      - "tests/lemon-source-discovery.test.mjs"
       - "tests/cloudflare-audio-admin.test.mjs"
       - "tests/manual-viewer-polish.test.mjs"
       - "tests/seo-opportunity-plan.test.mjs"
@@ -124,7 +126,7 @@ jobs:
         run: node --test tests/game-description-enrichment-fallback.test.mjs
 
       - name: Validate magazine publishing pipeline
-        run: node --test tests/magazine-publishing-pipeline.test.mjs tests/lemon-refresh-publishing.test.mjs
+        run: node --test tests/magazine-publishing-pipeline.test.mjs tests/lemon-refresh-publishing.test.mjs tests/lemon-source-discovery.test.mjs
 
       - name: Validate Cloudflare audio admin integration
         run: node --test tests/cloudflare-audio-admin.test.mjs
@@ -149,6 +151,12 @@ jobs:
         run: |
           echo "[games-publishing] Force-refreshing Lemon pages whose source URL is new or changed in this publishing revision so stale cached HTML cannot suppress current magazine reviews. External Lemon64/Lemon Amiga availability is optional and cannot block publishing."
           node scripts/refresh-lemon-game-cache.js --base HEAD^ --refresh
+
+      - name: Discover Lemon source for newly added games (best effort)
+        continue-on-error: true
+        run: |
+          echo "[games-publishing] Trying conservative Lemon source candidates for newly added games that have no explicit source. Candidates are cached only after exact title, platform, release-year and original-publisher validation."
+          node scripts/discover-new-lemon-source.js --base HEAD^
 
       - name: Refresh missing Lemon reference pages (best effort)
         continue-on-error: true
