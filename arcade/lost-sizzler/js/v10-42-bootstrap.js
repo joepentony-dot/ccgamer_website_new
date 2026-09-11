@@ -37,7 +37,7 @@
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
     ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"]
   ];
-  const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],pendingStartId:"",identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0};
+  const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],pendingStartId:"",identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0,r1ChestOwner:null,r1ChestOwnerRestores:0};
   window.CCGLostSizzlerV142Bootstrap=state;
 
   function setReleaseReady(value){
@@ -170,10 +170,42 @@
     try{return Boolean(window.CCGLostSizzlerStage8NpcDialogue?.installMerchantDialogue?.())}catch(_){return false}
   }
 
+  function chainHasR1ChestOwner(owner){
+    const seen=new Set();let current=owner;
+    while(typeof current==="function"&&!seen.has(current)){
+      if(current.__ccgV142R1===true)return true;
+      seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null;
+    }
+    return false;
+  }
+
+  function captureR1ChestOwner(){
+    const owner=window.openChest;
+    if(typeof owner==="function"&&owner.__ccgV142R1===true){
+      state.r1ChestOwner=owner;
+      return true;
+    }
+    return false;
+  }
+
+  function promoteR1ChestOwner(){
+    const current=window.openChest,captured=state.r1ChestOwner;
+    if(typeof current!=="function"||typeof captured!=="function")return false;
+    if(chainHasR1ChestOwner(current))return true;
+    if(current!==captured.__ccgOriginal)return false;
+    window.openChest=captured;
+    state.r1ChestOwnerRestores+=1;
+    return true;
+  }
+
   async function boot(){
     setReleaseReady(false);stampBuild();
     try{
-      for(const [file,marker] of modules)await loadOne(file,marker);
+      for(const [file,marker] of modules){
+        await loadOne(file,marker);
+        if(file==="v10-42-r1-stability.js")captureR1ChestOwner();
+      }
+      promoteR1ChestOwner();
       promoteStage8MerchantOwner();
       observeControllerSeal();
       state.ready=true;stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
