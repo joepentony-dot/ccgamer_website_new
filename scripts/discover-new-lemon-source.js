@@ -143,6 +143,10 @@ function sourceMatchesGame(game, html, expectedHost) {
   return releaseMatchesGame(game, releaseFromHtml(html));
 }
 
+function uniqueCandidateMatch(matches) {
+  return Array.isArray(matches) && matches.length === 1 ? matches[0] : null;
+}
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -191,6 +195,7 @@ async function discoverGame(game) {
   const candidates = candidateUrlsForGame(game);
   if (!expectedHost || !candidates.length) return { status: "skipped", url: "" };
 
+  const matches = [];
   for (const candidate of candidates) {
     try {
       console.log(`Trying verified Lemon source candidate for ${game.title}: ${candidate}`);
@@ -202,17 +207,25 @@ async function discoverGame(game) {
 
       const destination = cacheDestination(html, candidate);
       if (!destination) continue;
-      fs.mkdirSync(CACHE_DIR, { recursive: true });
-      fs.writeFileSync(destination, html, "utf8");
       const canonical = canonicalFromHtml(html) || candidate;
-      console.log(`Verified Lemon source cached for ${game.title}: ${canonical}`);
-      return { status: "matched", url: canonical, destination };
+      matches.push({ html, candidate, canonical, destination });
     } catch (error) {
       console.log(`Lemon source candidate unavailable for ${game.title}: ${candidate} (${error.message})`);
     }
   }
 
-  return { status: "unmatched", url: "" };
+  const match = uniqueCandidateMatch(matches);
+  if (!match) {
+    if (matches.length > 1) {
+      console.log(`Rejected inferred Lemon source for ${game.title}: ${matches.length} valid candidates matched, so the source is ambiguous.`);
+    }
+    return { status: "unmatched", url: "" };
+  }
+
+  fs.mkdirSync(CACHE_DIR, { recursive: true });
+  fs.writeFileSync(match.destination, match.html, "utf8");
+  console.log(`Verified Lemon source cached for ${game.title}: ${match.canonical}`);
+  return { status: "matched", url: match.canonical, destination: match.destination };
 }
 
 function requestedBaseRef(args) {
@@ -262,5 +275,6 @@ module.exports = {
   newlyAddedGames,
   slugifyTitle,
   sourceMatchesGame,
-  titleFromHtml
+  titleFromHtml,
+  uniqueCandidateMatch
 };

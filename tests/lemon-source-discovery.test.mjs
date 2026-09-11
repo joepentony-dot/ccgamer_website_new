@@ -5,7 +5,8 @@ import discovery from '../scripts/discover-new-lemon-source.js';
 const {
   candidateUrlsForGame,
   newlyAddedGames,
-  sourceMatchesGame
+  sourceMatchesGame,
+  uniqueCandidateMatch
 } = discovery;
 
 test('builds a conservative Lemon64 candidate from a new C64 game slug', () => {
@@ -75,4 +76,11 @@ test('accepts a fetched source only when title, platform, year and publisher mat
   assert.equal(sourceMatchesGame(game, wrongReleaseHtml, 'lemon64.com'), false);
   assert.equal(sourceMatchesGame(game, wrongPublisherHtml, 'lemon64.com'), false);
   assert.equal(sourceMatchesGame(game, wrongPlatformHtml, 'lemon64.com'), false);
+});
+
+test('accepts inferred discovery only when exactly one verified candidate remains', () => {
+  const one = { canonical: 'https://www.lemon64.com/game/example' };
+  assert.equal(uniqueCandidateMatch([one]), one);
+  assert.equal(uniqueCandidateMatch([]), null);
+  assert.equal(uniqueCandidateMatch([one, { canonical: 'https://www.lemon64.com/game/example-alt' }]), null);
 });
