@@ -26,18 +26,17 @@ function requirePaypalMount(value) {
   return value;
 }
 
-export function mountLostSizzlerPayPalPaywall({
-  config = globalThis.__CCG_DUNGEON_CARNAGE_COMMERCE__,
-  documentRef = globalThis.document,
-  fetchImpl = globalThis.fetch,
-  now = () => Date.now(),
-  paypalMount = null,
-  checkoutAdapterFactory = createLostSizzlerPayPalCheckoutAdapter,
-  paywallEntryFactory = mountLostSizzlerPaywallEntry,
-} = {}) {
+export function mountLostSizzlerPayPalPaywall(options = {}) {
+  const config = options?.config ?? globalThis.__CCG_DUNGEON_CARNAGE_COMMERCE__;
   if (!config || config.enabled !== true) return DISABLED_RESULT;
 
   const sourceConfig = requireConfig(config);
+  const documentRef = options.documentRef ?? globalThis.document;
+  const fetchImpl = options.fetchImpl ?? globalThis.fetch;
+  const now = options.now ?? (() => Date.now());
+  const paypalMount = options.paypalMount ?? null;
+  const checkoutAdapterFactory = options.checkoutAdapterFactory ?? createLostSizzlerPayPalCheckoutAdapter;
+  const paywallEntryFactory = options.paywallEntryFactory ?? mountLostSizzlerPaywallEntry;
   const mountPaywall = requireFactory(paywallEntryFactory, 'paywallEntryFactory');
   const checkoutEnabled = sourceConfig.checkoutEnabled === true;
 
