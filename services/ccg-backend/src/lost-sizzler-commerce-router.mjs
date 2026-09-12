@@ -15,12 +15,15 @@ function pathnameFromRequest(request) {
   }
 }
 
-export function createLostSizzlerCommerceRouter({ commerceHttp, paypalWebhookHttp } = {}) {
+export function createLostSizzlerCommerceRouter({ commerceHttp, paypalWebhookHttp, secureDownloadHttp = null } = {}) {
   if (!commerceHttp?.handles || !commerceHttp?.handle) {
     throw new Error('C64 Dungeon Carnage commerce router requires the authenticated commerce HTTP boundary.');
   }
   if (!paypalWebhookHttp?.handles || !paypalWebhookHttp?.handle) {
     throw new Error('C64 Dungeon Carnage commerce router requires the verified PayPal webhook HTTP boundary.');
+  }
+  if (secureDownloadHttp && (!secureDownloadHttp?.handles || !secureDownloadHttp?.handle)) {
+    throw new Error('C64 Dungeon Carnage commerce router secure download boundary is invalid.');
   }
 
   return Object.freeze({
@@ -33,6 +36,13 @@ export function createLostSizzlerCommerceRouter({ commerceHttp, paypalWebhookHtt
       // reconciliation can run.
       if (paypalWebhookHttp.handles(method, pathname)) {
         return paypalWebhookHttp.handle({ ...request, method }, pathname);
+      }
+
+      // Purchaser downloads are account-authenticated but have a stricter entitlement and
+      // private-delivery contract than ordinary commerce requests, so route them through
+      // their dedicated boundary before the general account-commerce handler.
+      if (secureDownloadHttp?.handles(method, pathname)) {
+        return secureDownloadHttp.handle({ ...request, method }, pathname);
       }
 
       if (commerceHttp.handles(method, pathname)) {
