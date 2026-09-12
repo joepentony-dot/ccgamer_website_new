@@ -1,0 +1,48 @@
+name: C64 Dungeon Carnage PayPal Webhook Verification Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/src/paypal-webhooks.mjs'
+      - 'services/ccg-backend/tests/paypal-webhook-verification-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-paypal-webhook-verification-contract.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'services/ccg-backend/src/paypal-webhooks.mjs'
+      - 'services/ccg-backend/tests/paypal-webhook-verification-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-paypal-webhook-verification-contract.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate syntax
+        run: |
+          node --check services/ccg-backend/src/paypal-webhooks.mjs
+          node --check services/ccg-backend/tests/paypal-webhook-verification-contract.mjs
+
+      - name: Run webhook verification contract
+        run: node services/ccg-backend/tests/paypal-webhook-verification-contract.mjs
+
+      - name: Guard against embedded PayPal secrets
+        run: |
+          set -euo pipefail
+          if grep -RniE '(PAYPAL_CLIENT_SECRET\s*=|clientSecret\s*:\s*["'"'][^"'"']{12,}["'"'])' \
+            services/ccg-backend/src/paypal-webhooks.mjs \
+            services/ccg-backend/tests/paypal-webhook-verification-contract.mjs; then
+            echo 'ERROR: possible embedded PayPal secret detected.' >&2
+            exit 1
+          fi
