@@ -1,0 +1,36 @@
+name: C64 Dungeon Carnage Commerce Persistence Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/migrations/006_game_commerce.sql'
+      - 'services/ccg-backend/tests/commerce-persistence-schema-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-commerce-persistence-contract.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'services/ccg-backend/migrations/006_game_commerce.sql'
+      - 'services/ccg-backend/tests/commerce-persistence-schema-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-commerce-persistence-contract.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  persistence-schema:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate regression contract syntax
+        run: node --check services/ccg-backend/tests/commerce-persistence-schema-contract.mjs
+
+      - name: Verify commerce persistence schema contract
+        run: node services/ccg-backend/tests/commerce-persistence-schema-contract.mjs
