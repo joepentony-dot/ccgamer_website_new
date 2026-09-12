@@ -1,0 +1,61 @@
+name: C64 Dungeon Carnage Secure Download Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/src/lost-sizzler-secure-download.mjs'
+      - 'services/ccg-backend/src/lost-sizzler-secure-download-http.mjs'
+      - 'services/ccg-backend/tests/secure-download-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-secure-download-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate secure download syntax
+        run: |
+          node --check services/ccg-backend/src/lost-sizzler-secure-download.mjs
+          node --check services/ccg-backend/src/lost-sizzler-secure-download-http.mjs
+          node --check services/ccg-backend/tests/secure-download-contract.mjs
+
+      - name: Run secure download contract
+        run: node services/ccg-backend/tests/secure-download-contract.mjs
+
+      - name: Guard private delivery boundary
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const files = [
+            'services/ccg-backend/src/lost-sizzler-secure-download.mjs',
+            'services/ccg-backend/src/lost-sizzler-secure-download-http.mjs',
+          ];
+          const source = files.map((file) => fs.readFileSync(file, 'utf8')).join('\n');
+          const forbidden = [
+            /supabase\.co\/storage/i,
+            /service[_-]?role/i,
+            /postgres(?:ql)?:\/\//i,
+            /PAYPAL_CLIENT_SECRET\s*=/i,
+          ];
+          for (const pattern of forbidden) {
+            if (pattern.test(source)) {
+              console.error(`Forbidden credential/public-storage pattern found: ${pattern}`);
+              process.exit(1);
+            }
+          }
+          if (!source.includes("kind !== 'signed-url'")) {
+            console.error('Secure download boundary must reject non-signed delivery kinds.');
+            process.exit(1);
+          }
+          NODE
