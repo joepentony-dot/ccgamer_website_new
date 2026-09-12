@@ -1,0 +1,46 @@
+name: C64 Dungeon Carnage Commerce Runtime Adapters Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/src/db.mjs'
+      - 'services/ccg-backend/src/auth.mjs'
+      - 'services/ccg-backend/src/lost-sizzler-commerce-runtime.mjs'
+      - 'services/ccg-backend/tests/commerce-runtime-adapters-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-commerce-runtime-adapters-contract.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate runtime adapter syntax
+        run: |
+          node --check services/ccg-backend/src/db.mjs
+          node --check services/ccg-backend/src/auth.mjs
+          node --check services/ccg-backend/src/lost-sizzler-commerce-runtime.mjs
+          node --check services/ccg-backend/tests/commerce-runtime-adapters-contract.mjs
+
+      - name: Run commerce runtime adapter contract
+        run: node services/ccg-backend/tests/commerce-runtime-adapters-contract.mjs
+
+      - name: Guard against embedded production credentials
+        run: |
+          set -euo pipefail
+          if grep -RInE '(PAYPAL_CLIENT_SECRET|DATABASE_URL|CCG_JWT_[A-Z_]+)[[:space:]]*=[[:space:]]*[^$]' \
+            services/ccg-backend/src/db.mjs \
+            services/ccg-backend/src/auth.mjs \
+            services/ccg-backend/src/lost-sizzler-commerce-runtime.mjs; then
+            echo 'ERROR: runtime adapter source appears to embed a credential value.' >&2
+            exit 1
+          fi
