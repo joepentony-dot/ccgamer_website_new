@@ -20,7 +20,10 @@ assert.match(source, /ApplicationId = "uk\.co\.cheekycommodoregamer\.c64-dungeon
 assert.match(source, /StableProfileId = "ccg-c64-dungeon-carnage"/);
 assert.match(source, /ExpectedSchema = "ccg-c64-dungeon-carnage-desktop-staging-v1"/);
 assert.match(source, /RequireString\(delivery, "mode", "desktop-offline"\)/);
-assert.match(source, /onlineScripts\.ValueKind != JsonValueKind\.Null/);
+assert.match(source, /RequireNull\(delivery, "injectBefore"\)/);
+assert.match(source, /RequireNull\(delivery, "onlineScripts"\)/);
+assert.doesNotMatch(source, /ExpectedOnlineGate/);
+assert.doesNotMatch(source, /packaged online-services gate/);
 assert.match(source, /RequireBoolean\(acceptance, "networkingRequired", false\)/);
 assert.match(source, /RequireBoolean\(acceptance, "websiteRootSupabaseBootstrapAllowed", false\)/);
 assert.match(source, /RequireBoolean\(acceptance, "rendererArbitraryFilesystemAccessAllowed", false\)/);
