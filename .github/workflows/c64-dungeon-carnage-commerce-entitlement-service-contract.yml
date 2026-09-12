@@ -1,0 +1,47 @@
+name: C64 Dungeon Carnage Commerce Entitlement Service Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/src/lost-sizzler-commerce.mjs'
+      - 'services/ccg-backend/tests/commerce-entitlement-service-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-commerce-entitlement-service-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  entitlement-service:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate syntax
+        run: |
+          node --check services/ccg-backend/src/lost-sizzler-commerce.mjs
+          node --check services/ccg-backend/tests/commerce-entitlement-service-contract.mjs
+
+      - name: Prove capture-to-entitlement boundary
+        run: node services/ccg-backend/tests/commerce-entitlement-service-contract.mjs
+
+      - name: Guard commercial safety boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q "price_minor" services/ccg-backend/src/lost-sizzler-commerce.mjs
+          grep -q "purchase_reconciliation_required" services/ccg-backend/src/lost-sizzler-commerce.mjs
+          grep -q "on conflict (user_id, product_slug)" services/ccg-backend/src/lost-sizzler-commerce.mjs
+          grep -q "includes_all_updates" services/ccg-backend/src/lost-sizzler-commerce.mjs
+          grep -q "commerce_unavailable" services/ccg-backend/src/lost-sizzler-commerce.mjs
+          if grep -Eiq 'PAYPAL_CLIENT_SECRET|service[_-]?role|supabase' services/ccg-backend/src/lost-sizzler-commerce.mjs; then
+            echo 'Unexpected secret/Supabase coupling found in commerce entitlement service.' >&2
+            exit 1
+          fi
