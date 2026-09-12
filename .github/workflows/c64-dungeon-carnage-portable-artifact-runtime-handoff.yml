@@ -45,10 +45,24 @@ jobs:
           fi
       - name: Guard against secrets or public package URLs
         run: |
-          set -euo pipefail
-          if grep -REni '(service[_-]?role|client[_-]?secret|password\s*=|https?://[^[:space:]"'"']+\.zip)' \
-            scripts/build-lost-sizzler-package-artifact-descriptor.mjs \
-            scripts/export-lost-sizzler-package-runtime-env.mjs; then
-            echo 'Forbidden credential/public package coupling found.' >&2
-            exit 1
-          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          files = [
+              Path('scripts/build-lost-sizzler-package-artifact-descriptor.mjs'),
+              Path('scripts/export-lost-sizzler-package-runtime-env.mjs'),
+          ]
+          patterns = [
+              re.compile(r'service[_-]?role', re.I),
+              re.compile(r'client[_-]?secret', re.I),
+              re.compile(r'password\s*=', re.I),
+              re.compile(r'https?://[^\s\"\']+\.zip', re.I),
+          ]
+          for file in files:
+              source = file.read_text(encoding='utf-8')
+              for pattern in patterns:
+                  if pattern.search(source):
+                      raise SystemExit(f'Forbidden credential/public package coupling found in {file}: {pattern.pattern}')
+          print('Portable artifact source guard passed.')
+          PY
