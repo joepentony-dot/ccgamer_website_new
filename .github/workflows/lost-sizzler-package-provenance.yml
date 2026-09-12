@@ -1,0 +1,65 @@
+name: Lost Sizzler Package Provenance
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/build-lost-sizzler-package-manifest.mjs'
+      - 'scripts/build-lost-sizzler-package-provenance.mjs'
+      - '.github/workflows/lost-sizzler-package-provenance.yml'
+      - 'arcade/lost-sizzler/version.json'
+      - 'arcade/lost-sizzler/index.html'
+      - 'arcade/lost-sizzler/css/**'
+      - 'arcade/lost-sizzler/js/**'
+      - 'arcade/lost-sizzler/assets/**'
+      - 'games/games.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  provenance:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Syntax check provenance tooling
+        run: |
+          set -euo pipefail
+          node --check scripts/build-lost-sizzler-package-manifest.mjs
+          node --check scripts/build-lost-sizzler-package-provenance.mjs
+
+      - name: Run provenance regression contract
+        run: |
+          set -euo pipefail
+          node scripts/build-lost-sizzler-package-provenance.mjs --self-test
+
+      - name: Build package manifest and provenance
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/lost-sizzler-provenance"
+          node scripts/build-lost-sizzler-package-manifest.mjs \
+            --check \
+            --output "$RUNNER_TEMP/lost-sizzler-provenance/package-manifest.json"
+          node scripts/build-lost-sizzler-package-provenance.mjs \
+            --manifest "$RUNNER_TEMP/lost-sizzler-provenance/package-manifest.json" \
+            --output "$RUNNER_TEMP/lost-sizzler-provenance/package-provenance.json"
+          node scripts/build-lost-sizzler-package-provenance.mjs \
+            --manifest "$RUNNER_TEMP/lost-sizzler-provenance/package-manifest.json" \
+            --verify "$RUNNER_TEMP/lost-sizzler-provenance/package-provenance.json"
+
+      - name: Prove deterministic provenance bytes
+        run: |
+          set -euo pipefail
+          node scripts/build-lost-sizzler-package-provenance.mjs \
+            --manifest "$RUNNER_TEMP/lost-sizzler-provenance/package-manifest.json" \
+            --output "$RUNNER_TEMP/lost-sizzler-provenance/package-provenance-second.json"
+          cmp \
+            "$RUNNER_TEMP/lost-sizzler-provenance/package-provenance.json" \
+            "$RUNNER_TEMP/lost-sizzler-provenance/package-provenance-second.json"
