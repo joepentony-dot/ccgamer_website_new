@@ -4,7 +4,7 @@
   if(window.__CCG_LOST_SIZZLER_V141_R30_GLOBAL_MOVEMENT_GUARD__)return;
   window.__CCG_LOST_SIZZLER_V141_R30_GLOBAL_MOVEMENT_GUARD__=true;
 
-  const SPY_MODE="sizzler-saboteurs",MONITOR_MS=40,STALL_RECOVERY_MS=700,RECOVERY_COOLDOWN_MS=550;
+  const SPY_MODE="sizzler-saboteurs",MONITOR_MS=40,OWNERSHIP_AUDIT_MS=1000,STALL_RECOVERY_MS=700,RECOVERY_COOLDOWN_MS=550;
   const P1_CODES=new Set(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","KeyA","KeyD","KeyW","KeyS"]);
   const P2_CODES=new Set(["KeyI","KeyJ","KeyK","KeyL"]);
   const MOVE_CODES=new Set([...P1_CODES,...P2_CODES]);
@@ -18,6 +18,7 @@
     forcedRestores:0,ownershipRepairs:0,spyMovementReassertions:0,ownershipCooldownResets:0,inputBridges:0,inputReassertions:0,
     watchdogRecoveries:0,watchdogMisses:0,watchdogCooldownBreaks:0,lastWatchdogRecoveryAt:0,
     notificationOwnershipRepairs:0,notificationPostInstallRepairs:0,nestedOwnershipDetections:0,damageOwnershipRepairs:0,damageOwnershipPreservations:0,
+    ownershipAuditRefs:null,ownershipAuditHealthy:false,ownershipAuditNextAt:0,ownershipDeepAudits:0,ownershipFastPathSkips:0,baselineFastPathSkips:0,
     lastRestoreAt:0,lastRestoreReason:"",lastModeType:"",modeTransitions:0,lastRecoveryLogAt:0
   };
   const held=new Set();
@@ -122,9 +123,20 @@
     if(state.goldenMove!==fn){state.goldenMove=fn;state.goldenMovePromotions++;state.goldenLockedAt=Date.now()}
     return true
   }
+  function ownershipAuditNow(){try{return performance.now()}catch(_){return Date.now()}}
+  function ownershipRefsUnchanged(updateFn,moveFn,hurtFn){
+    const refs=state.ownershipAuditRefs;
+    return Boolean(refs&&refs.update===updateFn&&refs.move===moveFn&&refs.hurt===hurtFn)
+  }
+  function invalidateOwnershipAudit(){
+    state.ownershipAuditRefs=null;state.ownershipAuditHealthy=false;state.ownershipAuditNextAt=0
+  }
   function captureBaseline(){
     if(spyActive()||spyEngine()?.state?.isolated)return false;
     const controllerUpdate=authoritativeControllerUpdate();
+    if(state.goldenLocked&&state.ownershipAuditHealthy&&ownershipRefsUnchanged(window.update,window.movePlayer,window.hurtPlayer)&&(!controllerUpdate||state.baselineUpdate===controllerUpdate)&&state.baselineMove===window.movePlayer&&state.baselineHurt===window.hurtPlayer){
+      state.baselineFastPathSkips++;return true
+    }
     if(controllerUpdate)state.baselineUpdate=controllerUpdate;
     else if(healthyBaseline(window.update))state.baselineUpdate=window.update;
     if(healthyBaseline(window.movePlayer))state.baselineMove=window.movePlayer;
@@ -208,7 +220,7 @@
     }
     if(enforceModernHurt&&!modernDamageOwnershipPresent(window.hurtPlayer))reinstallModernDamageOwners();
     state.forcedRestores++;state.lastRestoreAt=Date.now();state.lastRestoreReason=String(reason||"runtime handoff");
-    state.spyOwnerUpdate=state.spyOwnerMove=state.spyOwnerHurt=null;noteRecovery(state.lastRestoreReason);return true;
+    state.spyOwnerUpdate=state.spyOwnerMove=state.spyOwnerHurt=null;invalidateOwnershipAudit();noteRecovery(state.lastRestoreReason);return true;
   }
 
   function resetRecoveredMovementCooldowns(){
@@ -221,12 +233,17 @@
 
   function assertNormalRuntimeOwnership(reason="periodic invariant"){
     if(spyActive()||spyEngine()?.state?.isolated)return false;
-    const currentUpdate=window.update,currentMove=window.movePlayer,currentHurt=window.hurtPlayer;
+    const currentUpdate=window.update,currentMove=window.movePlayer,currentHurt=window.hurtPlayer,now=ownershipAuditNow();
+    if(state.ownershipAuditHealthy&&ownershipRefsUnchanged(currentUpdate,currentMove,currentHurt)&&now<state.ownershipAuditNextAt){state.ownershipFastPathSkips++;return false}
+    state.ownershipDeepAudits++;
+    state.ownershipAuditRefs={update:currentUpdate,move:currentMove,hurt:currentHurt};
+    state.ownershipAuditNextAt=now+OWNERSHIP_AUDIT_MS;
     const updateBad=typeof currentUpdate!=="function"||(!controllerProtectedUpdate(currentUpdate)&&spyContaminated(currentUpdate));
     const moveBad=typeof currentMove!=="function"||spyContaminated(currentMove)||(state.goldenLocked&&normalMovementStackReady()&&typeof state.goldenMove==="function"&&currentMove!==state.goldenMove);
     const modernDamageMissing=modernDamageOwnersRequired()&&!modernDamageOwnershipPresent(currentHurt);
     const hurtBad=typeof currentHurt!=="function"||spyContaminated(currentHurt)||modernDamageMissing;
-    if(!(updateBad||moveBad||hurtBad))return false;
+    state.ownershipAuditHealthy=!(updateBad||moveBad||hurtBad);
+    if(state.ownershipAuditHealthy)return false;
     const u=updateBad?recoveryUpdate():currentUpdate,m=moveBad?recoveryMove():currentMove;
     let h=hurtBad?recoveryHurt():currentHurt;
     if(hurtBad&&modernDamageOwnersRequired()&&typeof h!=="function"){
@@ -244,6 +261,7 @@
   function maintainSpyOwnership(){
     const engine=spyEngine();if(!engine)return false;stopLegacySpyMonitor();
     if(spyActive()){
+      invalidateOwnershipAudit();
       if(!engine.state?.isolated){
         engine.enterIsolation?.();
         if(engine.state?.isolated){state.spyOwnerUpdate=authoritativeControllerUpdate()||window.update;state.spyOwnerMove=window.movePlayer;state.spyOwnerHurt=window.hurtPlayer}
@@ -366,7 +384,7 @@
 
   function monitorModeTransition(){
     const current=modeType();if(current===state.lastModeType)return false;
-    const previous=state.lastModeType;state.lastModeType=current;state.modeTransitions++;resetWatch(watches.p1);resetWatch(watches.p2);
+    const previous=state.lastModeType;state.lastModeType=current;state.modeTransitions++;resetWatch(watches.p1);resetWatch(watches.p2);invalidateOwnershipAudit();
     if(previous===SPY_MODE&&current!==SPY_MODE)setTimeout(()=>assertNormalRuntimeOwnership("post-Spy mode-transition invariant"),0);
     return true;
   }
@@ -383,7 +401,7 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);clearHeld()},{once:true});
 
   window.CCGLostSizzlerV141R30={
-    originalLink,originalLinks,chainHas,chainContains,spyContaminated,topLevelSpyOwner,controllerProtectedUpdate,modernDamageOwnersRequired,modernDamageOwnershipPresent,reinstallModernDamageOwners,adoptReleaseMoveOwner,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,resetRecoveredMovementCooldowns,reassertHeldInput,movementWatchdog,makeR29Cooperative,
-    constants:{ORIGINAL_LINKS},get state(){return state}
+    originalLink,originalLinks,chainHas,chainContains,spyContaminated,topLevelSpyOwner,controllerProtectedUpdate,modernDamageOwnersRequired,modernDamageOwnershipPresent,reinstallModernDamageOwners,adoptReleaseMoveOwner,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,resetRecoveredMovementCooldowns,reassertHeldInput,movementWatchdog,makeR29Cooperative,invalidateOwnershipAudit,
+    constants:{ORIGINAL_LINKS,OWNERSHIP_AUDIT_MS},get state(){return state}
   };
 })();
