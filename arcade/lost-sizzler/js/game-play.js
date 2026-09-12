@@ -51,14 +51,14 @@ function tryDoor(p,x,y){
     return false;
   }
   if(d.type==="secret"){
-    d.locked=false;d.hidden=false;stats.secrets++;run.stats.secrets++;S.sfx("secret");awardXP(p,10,"Hidden wall opened");
+    d.locked=false;d.hidden=false;stats.secrets++;run.stats.secrets++;S.sfx("secret");
     showToast("SECRET DOOR FOUND","A section of wall slides aside. The main quest never depends on secrets, but the loot might justify the nosiness.","gold",9000);
     updateQuests();beginDoorOpening(d,1150);return false
   }
   if(d.type==="switch"){S.sfx("locked");showToast("MECHANICAL GATE","A pressure switch elsewhere on this floor controls this door.","red",8500);return false}
   if(d.type==="room"){S.sfx("locked");showToast("DOOR SEALED","This room is locked by the current challenge. Finish what you started in here first.","red",7500);return false}
   if(p.bronzeKeys<=0){S.sfx("locked");showToast("LOCKED BRONZE DOOR","You need a bronze key. This is an optional branch, so leaving it cannot block the floor objective.","red",8500);return false}
-  p.bronzeKeys--;d.locked=false;stats.doors++;shake=5;awardXP(p,10,"Bronze door unlocked");
+  p.bronzeKeys--;d.locked=false;stats.doors++;shake=5;
   showToast("BRONZE DOOR UNLOCKED","The lock releases. The door is opening now.","gold",8500);updateQuests();broadcastWorld();beginDoorOpening(d,1050);return false
 }
 function chestScoreReward(chest){return 100+Math.min(400,Math.max(0,Math.floor(Number(chest?.depth)||0))*25)}
@@ -66,17 +66,17 @@ function openChest(p,chest){
   if(!chest?.active)return true;if(chest.locked&&p.bronzeKeys<=0){const now=performance.now();if(!chest._lockedFeedbackAt||now-chest._lockedFeedbackAt>=1200){chest._lockedFeedbackAt=now;S.sfx("locked");showToast("LOCKED CHEST","A bronze key opens it. Come back after finding one.","red",4200)}return false}
   if(chest.locked)p.bronzeKeys--;
   chest.opened=true;chest.openedAt=performance.now();chest.active=false;host.revision++;run.stats.chests++;S.sfx("chest");shake=4;
-  const loot=chest.loot||PGR.lootForChest(chest,run,Math.random),name=loot.weapon?.displayName||loot.name||loot.kind.toUpperCase(),col=loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan,xpReward=10,scoreReward=chestScoreReward(chest);
-  chest.rewardXp=xpReward;chest.rewardScore=scoreReward;score+=scoreReward;
-  showToast("CHEST OPENED",`Inside: ${name}. +${scoreReward.toLocaleString()} score and +${xpReward} XP.`,loot.rarity==="GOLD MEDAL"?"gold":loot.rarity==="ZZAP! 97%"?"red":"cyan",7000);
-  floatText(chest.x,chest.y,`+${scoreReward.toLocaleString()} SCORE · +${xpReward} XP`,P.gold,{life:2600});
+  const loot=chest.loot||PGR.lootForChest(chest,run,Math.random),name=loot.weapon?.displayName||loot.name||loot.kind.toUpperCase(),col=loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan,scoreReward=chestScoreReward(chest);
+  chest.rewardScore=scoreReward;score+=scoreReward;
+  showToast("CHEST OPENED",`Inside: ${name}. +${scoreReward.toLocaleString()} score.`,loot.rarity==="GOLD MEDAL"?"gold":loot.rarity==="ZZAP! 97%"?"red":"cyan",7000);
+  floatText(chest.x,chest.y,`+${scoreReward.toLocaleString()} SCORE`,P.gold,{life:2600});
   setTimeout(()=>{if(["playing","inventory"].includes(mode)){floatPickupText(p,name,col);applyLoot(loot,p)}},500);
-  awardXP(p,xpReward,"Chest opened");broadcastWorld();return true
+  broadcastWorld();return true
 }
 function tryChest(p,x,y){const c=W.chestAt(host,x,y);return c?openChest(p,c):true}
 function diagonalClear(dx,dy,p){if(!dx||!dy)return true;return W.walkable(world.map,p.x+dx,p.y,host)&&W.walkable(world.map,p.x,p.y+dy,host)}
 function activateSwitch(s,p,shot=false){
-  if(!s?.active)return false;s.active=false;const d=host.doors.find(x=>x.id===s.doorId);if(d){d.locked=false;if(s.revealSecret){d.hidden=false;d.discovered=true;stats.secrets++;run.stats.secrets++;showToast("REMOTE SECRET REVEALED","A suspicious wall elsewhere in the dungeon has opened. Shooting switches is now apparently accepted maintenance procedure.","gold",8500)}else{showToast(shot?"WALL SWITCH SHOT":"WALL SWITCH",`A remote gate begins grinding open${s.remote?" elsewhere in the dungeon":""}.`,"green",7000)}awardXP(p,10,s.revealSecret?"Hidden wall switch":"Gate switch opened");beginDoorOpening(d,s.revealSecret?1150:1050)}S.sfx(s.revealSecret?"secret":"door");host.revision++;broadcastWorld();return true
+  if(!s?.active)return false;s.active=false;const d=host.doors.find(x=>x.id===s.doorId);if(d){d.locked=false;if(s.revealSecret){d.hidden=false;d.discovered=true;stats.secrets++;run.stats.secrets++;showToast("REMOTE SECRET REVEALED","A suspicious wall elsewhere in the dungeon has opened. Shooting switches is now apparently accepted maintenance procedure.","gold",8500)}else{showToast(shot?"WALL SWITCH SHOT":"WALL SWITCH",`A remote gate begins grinding open${s.remote?" elsewhere in the dungeon":""}.`,"green",7000)}beginDoorOpening(d,s.revealSecret?1150:1050)}S.sfx(s.revealSecret?"secret":"door");host.revision++;broadcastWorld();return true
 }
 function triggerSwitch(p){for(const s of host.switches||[])if(s.active&&s.x===p.x&&s.y===p.y)activateSwitch(s,p,false)}
 function triggerShrine(p){for(const s of host.shrines||[])if(s.active&&s.x===p.x&&s.y===p.y){s.active=false;run.stats.shrines++;S.sfx("shrine");const n=Math.random();if(n<.34){p.maxHealth++;p.health=Math.min(p.maxHealth,p.health+2);p.hpBarMs=3000;showToast("SHRINE OF ENDURANCE","+1 maximum health and +2 health now.","green")}else if(n<.68){p.damageBonus=(p.damageBonus||0)+1;p.maxMana=Math.max(30,p.maxMana-8);p.mana=Math.min(p.mana,p.maxMana);showToast("CURSED FIRE BUTTON","+1 damage, but maximum ammo falls by 8. Power usually sends an invoice.","red",7200)}else{p.armor=Math.min(12,p.armor+4);run.alert=Math.min(100,run.alert+18);showToast("NOISY SHRINE","+4 armour, but the dungeon alert level jumps sharply.","gold")}}}
