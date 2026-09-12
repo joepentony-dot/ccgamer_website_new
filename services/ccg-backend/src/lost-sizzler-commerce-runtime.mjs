@@ -1,5 +1,7 @@
 import { createLostSizzlerCommerceApplication } from './lost-sizzler-commerce-app.mjs';
 import { createLostSizzlerCommerceRuntimeConfig } from './lost-sizzler-commerce-runtime-config.mjs';
+import { createLostSizzlerPackageDeliveryRuntimeConfig } from './lost-sizzler-package-delivery-runtime-config.mjs';
+import { createLostSizzlerPrivatePackageDelivery } from './lost-sizzler-private-package-delivery.mjs';
 
 function readRequired(env, name) {
   const value = String(env?.[name] ?? '').trim();
@@ -25,12 +27,19 @@ async function defaultAuthFactory(config) {
   return createAuth(config);
 }
 
+async function unavailablePrivateSignerFactory() {
+  throw new Error('C64 Dungeon Carnage package downloads are enabled but no private storage signer is configured.');
+}
+
 export async function createLostSizzlerCommerceRuntime({
   env = process.env,
   createDatabaseImpl = defaultDatabaseFactory,
   createAuthImpl = defaultAuthFactory,
   createApplicationImpl = createLostSizzlerCommerceApplication,
   createRuntimeConfigImpl = createLostSizzlerCommerceRuntimeConfig,
+  createPackageDeliveryRuntimeConfigImpl = createLostSizzlerPackageDeliveryRuntimeConfig,
+  createPrivatePackageDeliveryImpl = createLostSizzlerPrivatePackageDelivery,
+  createPrivateSignerImpl = unavailablePrivateSignerFactory,
   fetchImpl = globalThis.fetch,
   now = () => Date.now(),
   randomUuidImpl,
@@ -39,6 +48,9 @@ export async function createLostSizzlerCommerceRuntime({
   if (typeof createAuthImpl !== 'function') throw new TypeError('C64 Dungeon Carnage commerce runtime requires an authentication factory.');
   if (typeof createApplicationImpl !== 'function') throw new TypeError('C64 Dungeon Carnage commerce runtime requires an application factory.');
   if (typeof createRuntimeConfigImpl !== 'function') throw new TypeError('C64 Dungeon Carnage commerce runtime requires a runtime-config factory.');
+  if (typeof createPackageDeliveryRuntimeConfigImpl !== 'function') throw new TypeError('C64 Dungeon Carnage commerce runtime requires a package-delivery runtime-config factory.');
+  if (typeof createPrivatePackageDeliveryImpl !== 'function') throw new TypeError('C64 Dungeon Carnage commerce runtime requires a private package-delivery factory.');
+  if (typeof createPrivateSignerImpl !== 'function') throw new TypeError('C64 Dungeon Carnage commerce runtime requires a private signer factory.');
 
   const databaseUrl = readRequired(env, 'DATABASE_URL');
   const authConfig = Object.freeze({
@@ -47,15 +59,29 @@ export async function createLostSizzlerCommerceRuntime({
     jwtJwksUrl: readRequired(env, 'CCG_JWT_JWKS_URL'),
   });
   const commerceConfig = createRuntimeConfigImpl(env);
+  const packageDeliveryConfig = createPackageDeliveryRuntimeConfigImpl(env);
   const database = await createDatabaseImpl(databaseUrl, { sslMode: readDatabaseSslMode(env) });
 
   let application;
   try {
     const auth = await createAuthImpl(authConfig);
+    let packageDelivery = null;
+
+    if (packageDeliveryConfig?.enabled === true) {
+      const signer = await createPrivateSignerImpl(Object.freeze({ env }));
+      packageDelivery = createPrivatePackageDeliveryImpl({
+        signer,
+        packageConfig: packageDeliveryConfig.packageConfig,
+        maxTtlSeconds: packageDeliveryConfig.maxTtlSeconds,
+        now,
+      });
+    }
+
     application = createApplicationImpl({
       database,
       auth,
       config: commerceConfig,
+      ...(packageDelivery ? { packageDelivery } : {}),
       fetchImpl,
       now,
       ...(randomUuidImpl ? { randomUuidImpl } : {}),
