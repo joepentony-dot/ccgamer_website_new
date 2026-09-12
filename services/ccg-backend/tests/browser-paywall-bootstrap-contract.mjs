@@ -180,8 +180,13 @@ const OFFER = Object.freeze({
   assert.equal(orderId, 'ORDER-1');
   assert.equal(calls.filter(([url]) => url.endsWith('/commerce/orders')).length, 1);
   assert.equal(bootstrap.controller.state.phase, 'checkout-pending');
+  assert.ok(
+    byText(root, 'Checkout is awaiting provider approval. No ownership is granted until the server confirms the entitlement.'),
+    'controller transitions invoked by the external provider bridge must repaint the mounted view',
+  );
   providerBridge.cancel();
   assert.equal(bootstrap.controller.state.phase, 'available');
+  assert.ok(byText(root, 'Buy Offline Edition — £1.99'), 'cancelled provider state must repaint purchase availability');
 }
 
 console.log('C64 Dungeon Carnage browser paywall bootstrap contract passed.');
