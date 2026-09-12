@@ -32,6 +32,7 @@ The current `main` still contains the older V10.36 startup loader path that can 
 - Lost Sizzler Load Safety #1849 passed on that exact head.
 - The correction installs the current C64 Dungeon Carnage branding guard from the first static cache-guard script and preserves the existing bounded loader, release gate, cache sanitation and zero-server readiness hold.
 - PR #1983 remains unmerged, so production should still be treated as susceptible to the old-to-new branding flash until that exact PR is explicitly approved and merged.
+- The current public document itself renders the correct C64 Dungeon Carnage / CHEEKY COMMODORE GAMER V10.42 identity; the outstanding concern is the transient legacy loader race rather than the static first paint.
 
 Do not modify the frozen #1983 candidate without new reproducible evidence.
 
@@ -44,9 +45,11 @@ The browser purchase stack has been built as isolated, fail-closed layers and re
 - #1987–#1994 establish the browser purchase/re-download/paywall stack and a dormant public-page mount.
 - #1994 mounts only the disabled page entry. With no explicit commerce configuration it returns before document/fetch/paywall work.
 - #1997 adds an injected PayPal Buttons renderer. Its exact head `495db9cad8ebc0087983088d10007218629a9731` passed its dedicated renderer contract and CCG Site Safety. It does not load the PayPal SDK, provide credentials, enable checkout or mount itself into the live page.
-- #1999 adds the next dormant provider seam: a validated PayPal JavaScript SDK loader on top of #1997. Exact head `e67857ca7b9547de8d4409d5e50edfaf3b392b65` passed C64 Dungeon Carnage PayPal SDK Loader Contract #1 and CCG Site Safety #3625. It performs no provider request until explicit `load()`, remains unmounted from the public game page and does not enable checkout.
+- #1999 adds a validated PayPal JavaScript SDK loader on top of #1997. Exact head `e67857ca7b9547de8d4409d5e50edfaf3b392b65` passed C64 Dungeon Carnage PayPal SDK Loader Contract #1 and CCG Site Safety #3625. It performs no provider request until explicit `load()`, remains unmounted from the public game page and does not enable checkout.
+- #2000 composes the green SDK loader with the injected Buttons renderer behind one dormant provider adapter. Exact head `d6f2f707b02b77a4eccd2ba376f52319ebb14985` passed C64 Dungeon Carnage PayPal Checkout Adapter Contract #1 and CCG Site Safety #3626. Construction performs no PayPal SDK request; loading begins only after an explicit checkout request.
+- #2001 composes #2000 with the existing disabled-by-default paywall entry without changing the public game page or defining production commerce configuration. Exact head `51287e29b069a92417f1be377c30b93c13c3570f` passed C64 Dungeon Carnage PayPal Paywall Composition Contract #2 and CCG Site Safety #3628. Disabled commerce exits before document/fetch/provider access; checkout-disabled mode does not construct the PayPal adapter; checkout-enabled composition requires an explicit provider mount and refuses competing provider callbacks.
 
-Production PayPal public client configuration, SDK mounting, backend deployment and checkout activation remain explicit deployment/approval boundaries.
+The browser commercial chain is therefore prepared through provider/paywall composition while remaining fully dormant. Production PayPal public client configuration, provider mount selection, backend deployment, sandbox/end-to-end purchase validation and checkout activation remain explicit approval/deployment boundaries.
 
 ## Offline / Windows Edition
 
@@ -103,7 +106,7 @@ Active draft work must continue to preserve all of the following:
 
 Code preparation has reached genuine approval, deployment and physical/manual-test boundaries rather than an identified gameplay/stability blocker:
 
-1. Obtain explicit merge approval for each required Dungeon Carnage PR/stack; do not merge implicitly. The frozen #1996 Windows candidate and #1983 overlay correction remain unmerged.
+1. Obtain explicit merge approval for each required Dungeon Carnage PR/stack; do not merge implicitly. The frozen #1996 Windows candidate, #1983 overlay correction and green dormant commerce stack through #2001 remain unmerged.
 2. If the paid Windows edition is to go live, select/configure the private production object store and signing adapter, build the approved final artifact, sign it if desired, upload it privately, and bind its immutable SHA-256/byte-size/object-key metadata to the secure-download runtime.
 3. Configure/deploy the production commerce backend and approved PayPal public SDK/client boundary, then explicitly enable checkout only after sandbox/end-to-end purchase, entitlement, refund/reversal and re-download tests pass.
 4. Perform a real Windows launch/play test of the approved package on supported Windows hardware, including offline launch, save/profile persistence, restart, external-link handling and blocked-network behaviour.
