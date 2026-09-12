@@ -16,8 +16,10 @@ assert.match(source, /mode: 'desktop-offline'/,
 assert.match(source, /entrypoint: ENTRYPOINT/);
 assert.match(source, /versionManifest: VERSION_MANIFEST/);
 assert.match(source, /catalogue: CATALOGUE/);
-assert.match(source, /injectBefore: ONLINE_GATE/,
-  'wrapper input must record that delivery injection precedes the online-services gate');
+assert.match(source, /injectBefore: null/,
+  'current verified offline package must not claim an injection target that is absent from the package manifest');
+assert.doesNotMatch(source, /ONLINE_GATE|online-services-gate\.js/,
+  'desktop staging must not require the unpromoted containment-only online-services gate');
 assert.match(source, /onlineScripts: null/,
   'offline staging must not contain online service script locations');
 assert.match(source, /websiteRootSupabaseBootstrapAllowed: false/,
