@@ -1,0 +1,61 @@
+name: C64 Dungeon Carnage Package Descriptor Runtime Handoff Contract
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/export-lost-sizzler-package-runtime-env.mjs'
+      - 'services/ccg-backend/tests/package-descriptor-runtime-handoff-contract.mjs'
+      - 'services/ccg-backend/src/lost-sizzler-package-delivery-runtime-config.mjs'
+      - '.github/workflows/c64-dungeon-carnage-package-descriptor-runtime-handoff-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate syntax
+        run: |
+          node --check scripts/export-lost-sizzler-package-runtime-env.mjs
+          node --check services/ccg-backend/tests/package-descriptor-runtime-handoff-contract.mjs
+      - name: Run handoff contract
+        run: node services/ccg-backend/tests/package-descriptor-runtime-handoff-contract.mjs
+      - name: Exercise descriptor-to-runtime CLI
+        run: |
+          tmp="$(mktemp -d)"
+          cat > "$tmp/descriptor.json" <<'JSON'
+          {
+            "schema": "ccg-c64-dungeon-carnage-package-artifact-v1",
+            "package_id": "c64-dungeon-carnage-windows",
+            "version": "10.42.0",
+            "object_key": "releases/c64-dungeon-carnage/10.42.0/windows.zip",
+            "filename": "C64-Dungeon-Carnage-10.42.0.zip",
+            "bytes": 123456789,
+            "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          }
+          JSON
+          node scripts/export-lost-sizzler-package-runtime-env.mjs \
+            --descriptor "$tmp/descriptor.json" \
+            --output "$tmp/package.env" \
+            --max-ttl-seconds 600
+          grep -Fx 'CCG_PACKAGE_DOWNLOAD_ENABLED=true' "$tmp/package.env"
+          grep -Fx 'CCG_PACKAGE_BYTES=123456789' "$tmp/package.env"
+          grep -Fx 'CCG_PACKAGE_DOWNLOAD_MAX_TTL_SECONDS=600' "$tmp/package.env"
+          if grep -Eqi '(secret|password|token|https?://)' "$tmp/package.env"; then
+            echo 'Generated package runtime environment contains forbidden secret/URL material.' >&2
+            exit 1
+          fi
+      - name: Guard protected scope
+        run: |
+          git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" | tee /tmp/changed.txt
+          if grep -Eq '^(index\.html|resources/css/intro\.css|js/index-intro\.js|games/games\.json)$' /tmp/changed.txt; then
+            echo 'Protected file changed.' >&2
+            exit 1
+          fi
