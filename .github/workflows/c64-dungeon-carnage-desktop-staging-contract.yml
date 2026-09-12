@@ -1,0 +1,59 @@
+name: C64 Dungeon Carnage Desktop Staging Contract
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/assemble-lost-sizzler-desktop-staging.mjs'
+      - 'scripts/assemble-lost-sizzler-release-handoff.mjs'
+      - 'scripts/build-lost-sizzler-package-provenance.mjs'
+      - 'scripts/verify-lost-sizzler-package-tree.mjs'
+      - 'arcade/lost-sizzler/tests/desktop-staging-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-desktop-staging-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check desktop staging files
+        run: |
+          set -euo pipefail
+          node --check scripts/assemble-lost-sizzler-desktop-staging.mjs
+          node --check arcade/lost-sizzler/tests/desktop-staging-contract.mjs
+      - name: Run desktop staging regression contract
+        run: node arcade/lost-sizzler/tests/desktop-staging-contract.mjs
+      - name: Preserve protected scope
+        run: |
+          set -euo pipefail
+          git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" | tee /tmp/changed.txt
+          if grep -Eq '^(index\.html|resources/css/intro\.css|js/index-intro\.js|games/games\.json)$' /tmp/changed.txt; then
+            echo 'Protected file changed.' >&2
+            exit 1
+          fi
+      - name: Guard framework-neutral offline staging source
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('node:fs');
+          const source = fs.readFileSync('scripts/assemble-lost-sizzler-desktop-staging.mjs', 'utf8');
+          const forbidden = [
+            /https?:\/\/[^\s'"`]+\.zip/i,
+            /supabase[^\n]{0,80}(service[_-]?role|secret)/i,
+            /postgres(?:ql)?:\/\/[^\s'"`]+:[^\s'"`]+@/i,
+            /paypal[_-]?(?:client[_-]?)?secret\s*[:=]\s*['"][^'"]+/i,
+          ];
+          for (const pattern of forbidden) {
+            if (pattern.test(source)) throw new Error(`Forbidden desktop-staging source matched: ${pattern}`);
+          }
+          console.log('Desktop staging production-source guard passed.');
+          NODE
