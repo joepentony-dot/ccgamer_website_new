@@ -1,0 +1,35 @@
+name: C64 Dungeon Carnage Commerce Refund Reconciliation Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/src/lost-sizzler-commerce-reconciliation.mjs'
+      - 'services/ccg-backend/tests/commerce-refund-reconciliation-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-commerce-refund-reconciliation-contract.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate syntax
+        run: |
+          node --check services/ccg-backend/src/lost-sizzler-commerce-reconciliation.mjs
+          node --check services/ccg-backend/tests/commerce-refund-reconciliation-contract.mjs
+      - name: Run refund/reversal reconciliation contract
+        run: node services/ccg-backend/tests/commerce-refund-reconciliation-contract.mjs
+      - name: Reject secrets from reconciliation layer
+        run: |
+          set -euo pipefail
+          if grep -REn '(PAYPAL_CLIENT_SECRET|SUPABASE_SERVICE_ROLE|service_role)' services/ccg-backend/src/lost-sizzler-commerce-reconciliation.mjs services/ccg-backend/tests/commerce-refund-reconciliation-contract.mjs; then
+            echo 'Unexpected secret-bearing configuration in reconciliation layer.' >&2
+            exit 1
+          fi
