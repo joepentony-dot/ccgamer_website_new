@@ -21,6 +21,8 @@ jobs:
         repeat: [1, 2, 3]
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -36,7 +38,8 @@ jobs:
         run: node arcade/lost-sizzler/tests/browser/v10-41-solo-long-session-soak.mjs
       - name: Preserve verification-only scope
         run: |
-          git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" | tee /tmp/changed.txt
+          set -o pipefail
+          git diff --name-only HEAD^1 HEAD | tee /tmp/changed.txt
           if grep -Eq '^(index\.html|resources/css/intro\.css|js/index-intro\.js|games/games\.json)$' /tmp/changed.txt; then
             echo 'Protected file changed.' >&2
             exit 1
