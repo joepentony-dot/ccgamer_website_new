@@ -1,0 +1,70 @@
+name: C64 Dungeon Carnage Windows WebView2 Wrapper Contract
+
+on:
+  pull_request:
+    paths:
+      - 'desktop/c64-dungeon-carnage-windows/**'
+      - '.github/workflows/c64-dungeon-carnage-windows-webview2-wrapper-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: windows-2025
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build native Windows wrapper
+        shell: pwsh
+        run: |
+          dotnet restore desktop/c64-dungeon-carnage-windows/C64DungeonCarnage.Desktop.csproj
+          dotnet build desktop/c64-dungeon-carnage-windows/C64DungeonCarnage.Desktop.csproj --configuration Release --no-restore
+      - name: Run Windows wrapper regression contract
+        shell: pwsh
+        run: node desktop/c64-dungeon-carnage-windows/tests/windows-wrapper-contract.mjs
+      - name: Guard protected and gameplay scope
+        shell: pwsh
+        run: |
+          $base = '${{ github.event.pull_request.base.sha }}'
+          $head = '${{ github.event.pull_request.head.sha }}'
+          $changed = @(git diff --name-only $base $head)
+          $changed | ForEach-Object { Write-Host $_ }
+          $forbidden = @(
+            'index.html',
+            'resources/css/intro.css',
+            'js/index-intro.js',
+            'games/games.json'
+          )
+          foreach ($file in $changed) {
+            if ($forbidden -contains $file) { throw "Protected file changed: $file" }
+            if ($file -match '^arcade/lost-sizzler/js/(game-core|game-play|progression|systems|world|ai)\.js$') {
+              throw "Gameplay/XP source changed in Windows wrapper PR: $file"
+            }
+          }
+      - name: Guard release boundary
+        shell: pwsh
+        run: |
+          $files = Get-ChildItem desktop/c64-dungeon-carnage-windows -Recurse -File
+          $source = ($files | Get-Content -Raw) -join "`n"
+          $forbidden = @(
+            'service[_-]?role',
+            'client[_-]?secret',
+            'password\s*=',
+            'https?://[^\s"'']+\.zip',
+            'paypal\.com/sdk/js',
+            'signtool(?:\.exe)?\s+sign'
+          )
+          foreach ($pattern in $forbidden) {
+            if ($source -match $pattern) { throw "Forbidden release coupling matched: $pattern" }
+          }
+          Write-Host 'Windows wrapper release-boundary guard passed.'
