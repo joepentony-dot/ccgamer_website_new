@@ -1,0 +1,57 @@
+name: C64 Dungeon Carnage Browser Re-download Client Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/client/lost-sizzler-purchase.mjs'
+      - 'services/ccg-backend/tests/browser-redownload-client-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-browser-redownload-client-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate syntax
+        run: |
+          node --check services/ccg-backend/client/lost-sizzler-purchase.mjs
+          node --check services/ccg-backend/tests/browser-redownload-client-contract.mjs
+      - name: Run purchase client regression
+        run: node services/ccg-backend/tests/purchase-client-contract.mjs
+      - name: Run browser re-download regression
+        run: node services/ccg-backend/tests/browser-redownload-client-contract.mjs
+      - name: Preserve protected scope
+        run: |
+          set -euo pipefail
+          git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" | tee /tmp/changed.txt
+          if grep -Eq '^(index\.html|resources/css/intro\.css|js/index-intro\.js|games/games\.json)$' /tmp/changed.txt; then
+            echo 'Protected file changed.' >&2
+            exit 1
+          fi
+      - name: Guard browser source against embedded secrets or public package URLs
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          source = Path('services/ccg-backend/client/lost-sizzler-purchase.mjs').read_text(encoding='utf-8')
+          patterns = [
+              re.compile(r'service[_-]?role', re.I),
+              re.compile(r'client[_-]?secret', re.I),
+              re.compile(r'password\s*=', re.I),
+              re.compile(r'https?://[^\s\"\']+\.zip', re.I),
+          ]
+          for pattern in patterns:
+              if pattern.search(source):
+                  raise SystemExit(f'Forbidden browser purchase source matched: {pattern.pattern}')
+          print('Browser re-download source guard passed.')
+          PY
