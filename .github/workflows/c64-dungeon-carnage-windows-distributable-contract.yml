@@ -1,0 +1,121 @@
+name: C64 Dungeon Carnage Windows Distributable Contract
+
+on:
+  pull_request:
+    paths:
+      - 'desktop/c64-dungeon-carnage-windows/**'
+      - 'scripts/build-c64-dungeon-carnage-windows-distributable.py'
+      - '.github/workflows/c64-dungeon-carnage-windows-distributable-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: windows-2025
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Validate distributable tooling syntax
+        shell: pwsh
+        run: |
+          python -m py_compile scripts/build-c64-dungeon-carnage-windows-distributable.py
+          python -m py_compile desktop/c64-dungeon-carnage-windows/tests/windows-distributable-contract.py
+          node --check scripts/build-lost-sizzler-package-manifest.mjs
+          node --check scripts/build-lost-sizzler-package-provenance.mjs
+          node --check scripts/materialize-lost-sizzler-package-tree.mjs
+          node --check scripts/verify-lost-sizzler-package-tree.mjs
+          node --check scripts/assemble-lost-sizzler-release-handoff.mjs
+          node --check scripts/assemble-lost-sizzler-desktop-staging.mjs
+      - name: Assemble verified desktop staging
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = Join-Path $env:RUNNER_TEMP 'ccg-windows-distributable'
+          $manifest = Join-Path $root 'package-manifest.json'
+          $provenance = Join-Path $root 'package-provenance.json'
+          $package = Join-Path $root 'package'
+          $profile = Join-Path $root 'user-data'
+          $handoff = Join-Path $root 'release-handoff'
+          $staging = Join-Path $root 'desktop-staging'
+          New-Item -ItemType Directory -Force -Path $root,$profile | Out-Null
+          Set-Content -Path (Join-Path $profile 'solo-save.json') -Value '{"floor":21,"source":"windows-distributable-contract"}' -Encoding utf8
+          node scripts/build-lost-sizzler-package-manifest.mjs --output $manifest
+          node scripts/build-lost-sizzler-package-provenance.mjs --manifest $manifest --output $provenance
+          node scripts/materialize-lost-sizzler-package-tree.mjs --manifest $manifest --output $package
+          node scripts/verify-lost-sizzler-package-tree.mjs --manifest $manifest --root $package
+          node scripts/assemble-lost-sizzler-release-handoff.mjs --package-root $package --manifest $manifest --provenance $provenance --user-data-root $profile --output $handoff
+          node scripts/assemble-lost-sizzler-desktop-staging.mjs --handoff-root $handoff --output $staging
+          "CCG_STAGING_ROOT=$staging" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Publish self-contained Win-x64 wrapper
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $publish = Join-Path $env:RUNNER_TEMP 'ccg-windows-publish'
+          dotnet publish desktop/c64-dungeon-carnage-windows/C64DungeonCarnage.Desktop.csproj `
+            --configuration Release `
+            --runtime win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=false `
+            -p:PublishReadyToRun=false `
+            -p:DebugType=None `
+            -p:DebugSymbols=false `
+            -p:Deterministic=true `
+            --output $publish
+          if (-not (Test-Path (Join-Path $publish 'C64DungeonCarnage.exe'))) { throw 'Published Windows launcher is missing.' }
+          if (Get-ChildItem $publish -Recurse -Filter '*.pdb') { throw 'Published wrapper unexpectedly contains debug symbols.' }
+          "CCG_WRAPPER_ROOT=$publish" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Run deterministic Windows distributable regression
+        shell: pwsh
+        run: |
+          $output = Join-Path $env:RUNNER_TEMP 'ccg-windows-distributable-output'
+          python desktop/c64-dungeon-carnage-windows/tests/windows-distributable-contract.py `
+            --wrapper-root $env:CCG_WRAPPER_ROOT `
+            --staging-root $env:CCG_STAGING_ROOT `
+            --output-dir $output
+      - name: Guard protected and gameplay scope
+        shell: pwsh
+        run: |
+          $base = '${{ github.event.pull_request.base.sha }}'
+          $head = '${{ github.event.pull_request.head.sha }}'
+          $changed = @(git diff --name-only $base $head)
+          $changed | ForEach-Object { Write-Host $_ }
+          $forbidden = @('index.html','resources/css/intro.css','js/index-intro.js','games/games.json')
+          foreach ($file in $changed) {
+            if ($forbidden -contains $file) { throw "Protected file changed: $file" }
+            if ($file -match '^arcade/lost-sizzler/js/(game-core|game-play|progression|systems|world|ai)\.js$') {
+              throw "Gameplay/XP source changed in Windows distributable PR: $file"
+            }
+          }
+      - name: Guard production release boundary
+        shell: pwsh
+        run: |
+          $paths = @(
+            'scripts/build-c64-dungeon-carnage-windows-distributable.py',
+            'desktop/c64-dungeon-carnage-windows/tests/windows-distributable-contract.py'
+          )
+          $source = ($paths | ForEach-Object { Get-Content $_ -Raw }) -join "`n"
+          $forbidden = @(
+            'service[_-]?role',
+            'client[_-]?secret',
+            'password\s*=',
+            'https?://[^\s"'']+\.zip',
+            'paypal\.com/sdk/js',
+            'signtool(?:\.exe)?\s+sign'
+          )
+          foreach ($pattern in $forbidden) {
+            if ($source -match $pattern) { throw "Forbidden production coupling matched: $pattern" }
+          }
+          Write-Host 'Windows distributable production-boundary guard passed.'
