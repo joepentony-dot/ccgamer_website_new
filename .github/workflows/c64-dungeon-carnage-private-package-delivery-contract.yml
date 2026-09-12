@@ -1,0 +1,45 @@
+name: C64 Dungeon Carnage Private Package Delivery Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/src/lost-sizzler-private-package-delivery.mjs'
+      - 'services/ccg-backend/tests/private-package-delivery-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-private-package-delivery-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check private delivery files
+        run: |
+          node --check services/ccg-backend/src/lost-sizzler-private-package-delivery.mjs
+          node --check services/ccg-backend/tests/private-package-delivery-contract.mjs
+      - name: Run private package delivery contract
+        run: node services/ccg-backend/tests/private-package-delivery-contract.mjs
+      - name: Guard production adapter against public URLs and embedded credentials
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const source = fs.readFileSync('services/ccg-backend/src/lost-sizzler-private-package-delivery.mjs', 'utf8');
+          const forbidden = [
+            /supabase[^\n]{0,80}(service[_-]?role|secret)/i,
+            /postgres(?:ql)?:\/\/[^\s'"`]+:[^\s'"`]+@/i,
+            /paypal[_-]?(?:client[_-]?)?secret\s*[:=]\s*['"][^'"]+/i,
+            /https?:\/\/[^\s'"`]+\.zip(?:[?'"`\s]|$)/i,
+            /(public|anon)[_-]?(bucket|url)/i,
+          ];
+          for (const pattern of forbidden) {
+            if (pattern.test(source)) throw new Error(`Forbidden private-delivery production source matched: ${pattern}`);
+          }
+          console.log('Private package delivery source guard passed.');
+          NODE
