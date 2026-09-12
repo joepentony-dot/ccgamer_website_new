@@ -15,7 +15,6 @@ internal sealed class MainForm : Form
     private const string ExpectedEntryPoint = "application/arcade/lost-sizzler/index.html";
     private const string ExpectedVersionManifest = "application/arcade/lost-sizzler/version.json";
     private const string ExpectedCatalogue = "application/games/games.json";
-    private const string ExpectedOnlineGate = "application/arcade/lost-sizzler/js/online-services-gate.js";
 
     private static readonly HashSet<string> ExternalHostAllowlist = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -149,11 +148,8 @@ internal sealed class MainForm : Form
         RequireString(delivery, "entrypoint", ExpectedEntryPoint);
         RequireString(delivery, "versionManifest", ExpectedVersionManifest);
         RequireString(delivery, "catalogue", ExpectedCatalogue);
-        RequireString(delivery, "injectBefore", ExpectedOnlineGate);
-        if (!delivery.TryGetProperty("onlineScripts", out var onlineScripts) || onlineScripts.ValueKind != JsonValueKind.Null)
-        {
-            throw new InvalidDataException("Desktop staging must not configure online scripts in desktop-offline mode.");
-        }
+        RequireNull(delivery, "injectBefore");
+        RequireNull(delivery, "onlineScripts");
 
         var acceptance = RequireObject(root, "acceptance");
         RequireBoolean(acceptance, "networkingRequired", false);
@@ -167,7 +163,6 @@ internal sealed class MainForm : Form
         RequireFileInside(stagingRoot, ExpectedEntryPoint, "packaged game entrypoint");
         RequireFileInside(stagingRoot, ExpectedVersionManifest, "packaged version manifest");
         RequireFileInside(stagingRoot, ExpectedCatalogue, "packaged C64 catalogue");
-        RequireFileInside(stagingRoot, ExpectedOnlineGate, "packaged online-services gate");
         RequireFileInside(stagingRoot, "metadata/package-manifest.json", "package manifest");
         RequireFileInside(stagingRoot, "metadata/package-provenance.json", "package provenance");
 
@@ -324,6 +319,14 @@ internal sealed class MainForm : Form
             || !string.Equals(value.GetString(), expected, StringComparison.Ordinal))
         {
             throw new InvalidDataException($"Desktop staging property {name} must equal {expected}.");
+        }
+    }
+
+    private static void RequireNull(JsonElement parent, string name)
+    {
+        if (!parent.TryGetProperty(name, out var value) || value.ValueKind != JsonValueKind.Null)
+        {
+            throw new InvalidDataException($"Desktop staging property {name} must be null for the current verified offline package.");
         }
     }
 
