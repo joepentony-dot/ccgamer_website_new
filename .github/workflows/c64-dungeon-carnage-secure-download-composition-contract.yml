@@ -1,0 +1,57 @@
+name: C64 Dungeon Carnage Secure Download Composition Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/src/lost-sizzler-commerce-app.mjs'
+      - 'services/ccg-backend/src/lost-sizzler-commerce-router.mjs'
+      - 'services/ccg-backend/src/lost-sizzler-secure-download.mjs'
+      - 'services/ccg-backend/src/lost-sizzler-secure-download-http.mjs'
+      - 'services/ccg-backend/tests/commerce-app-contract.mjs'
+      - 'services/ccg-backend/tests/secure-download-composition-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-secure-download-composition-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check composition files
+        run: |
+          node --check services/ccg-backend/src/lost-sizzler-commerce-app.mjs
+          node --check services/ccg-backend/src/lost-sizzler-commerce-router.mjs
+          node --check services/ccg-backend/tests/commerce-app-contract.mjs
+          node --check services/ccg-backend/tests/secure-download-composition-contract.mjs
+      - name: Run existing commerce application contract
+        run: node services/ccg-backend/tests/commerce-app-contract.mjs
+      - name: Run secure download composition contract
+        run: node services/ccg-backend/tests/secure-download-composition-contract.mjs
+      - name: Guard against public package URLs or embedded secrets
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const paths = [
+            'services/ccg-backend/src/lost-sizzler-commerce-app.mjs',
+            'services/ccg-backend/src/lost-sizzler-commerce-router.mjs',
+            'services/ccg-backend/tests/secure-download-composition-contract.mjs',
+          ];
+          const source = paths.map((p) => fs.readFileSync(p, 'utf8')).join('\n');
+          const forbidden = [
+            /supabase[^\n]{0,80}(service[_-]?role|secret)/i,
+            /postgres(?:ql)?:\/\/[^\s'"`]+:[^\s'"`]+@/i,
+            /paypal[_-]?(?:client[_-]?)?secret\s*[:=]\s*['"][^'"]+/i,
+            /https?:\/\/[^\s'"`]+\.zip(?:[?'"`\s]|$)/i,
+          ];
+          for (const pattern of forbidden) {
+            if (pattern.test(source)) throw new Error(`Forbidden secure-download composition source matched: ${pattern}`);
+          }
+          console.log('Secure download composition source guard passed.');
+          NODE
