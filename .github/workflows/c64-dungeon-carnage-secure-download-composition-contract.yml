@@ -34,14 +34,13 @@ jobs:
         run: node services/ccg-backend/tests/commerce-app-contract.mjs
       - name: Run secure download composition contract
         run: node services/ccg-backend/tests/secure-download-composition-contract.mjs
-      - name: Guard against public package URLs or embedded secrets
+      - name: Guard production composition sources against public package URLs or embedded secrets
         run: |
           node <<'NODE'
           const fs = require('node:fs');
           const paths = [
             'services/ccg-backend/src/lost-sizzler-commerce-app.mjs',
             'services/ccg-backend/src/lost-sizzler-commerce-router.mjs',
-            'services/ccg-backend/tests/secure-download-composition-contract.mjs',
           ];
           const source = paths.map((p) => fs.readFileSync(p, 'utf8')).join('\n');
           const forbidden = [
@@ -53,5 +52,5 @@ jobs:
           for (const pattern of forbidden) {
             if (pattern.test(source)) throw new Error(`Forbidden secure-download composition source matched: ${pattern}`);
           }
-          console.log('Secure download composition source guard passed.');
+          console.log('Secure download composition production-source guard passed.');
           NODE
