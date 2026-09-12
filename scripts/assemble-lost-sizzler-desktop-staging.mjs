@@ -13,7 +13,6 @@ const PROFILE_ID = 'ccg-c64-dungeon-carnage';
 const ENTRYPOINT = 'application/arcade/lost-sizzler/index.html';
 const VERSION_MANIFEST = 'application/arcade/lost-sizzler/version.json';
 const CATALOGUE = 'application/games/games.json';
-const ONLINE_GATE = 'application/arcade/lost-sizzler/js/online-services-gate.js';
 
 function fail(message) { throw new Error(message); }
 function isInside(parent, child) {
@@ -74,7 +73,7 @@ function stagingConfig() {
       entrypoint: ENTRYPOINT,
       versionManifest: VERSION_MANIFEST,
       catalogue: CATALOGUE,
-      injectBefore: ONLINE_GATE,
+      injectBefore: null,
       onlineScripts: null,
     }),
     acceptance: Object.freeze({
@@ -103,7 +102,6 @@ function validateHandoff(handoffRoot) {
   for (const relative of [
     'arcade/lost-sizzler/index.html',
     'arcade/lost-sizzler/version.json',
-    'arcade/lost-sizzler/js/online-services-gate.js',
     'games/games.json',
   ]) requireRegularFile(path.join(application, ...relative.split('/')), `desktop-required packaged file ${relative}`);
   return { application, metadata, manifest, provenance };
@@ -162,12 +160,11 @@ function runSelfTest() {
     const handoff = path.join(temp, 'handoff');
     const application = path.join(handoff, 'application');
     const metadata = path.join(handoff, 'metadata');
-    fs.mkdirSync(path.join(application, 'arcade/lost-sizzler/js'), { recursive: true });
+    fs.mkdirSync(path.join(application, 'arcade/lost-sizzler'), { recursive: true });
     fs.mkdirSync(path.join(application, 'games'), { recursive: true });
     fs.mkdirSync(metadata, { recursive: true });
     fs.writeFileSync(path.join(application, 'arcade/lost-sizzler/index.html'), '<!doctype html><title>C64 Dungeon Carnage</title>\n');
     fs.writeFileSync(path.join(application, 'arcade/lost-sizzler/version.json'), '{"version":"10.42"}\n');
-    fs.writeFileSync(path.join(application, 'arcade/lost-sizzler/js/online-services-gate.js'), '/* offline gate fixture */\n');
     fs.writeFileSync(path.join(application, 'games/games.json'), '[]\n');
     const manifest = path.join(metadata, 'package-manifest.json');
     const provenance = path.join(metadata, 'package-provenance.json');
@@ -179,6 +176,7 @@ function runSelfTest() {
     const config = JSON.parse(fs.readFileSync(result.configPath, 'utf8'));
     if (config.delivery.mode !== 'desktop-offline') fail('Desktop staging did not lock offline startup mode.');
     if (config.stableProfileId !== PROFILE_ID) fail('Desktop staging profile identity drifted.');
+    if (config.delivery.injectBefore !== null) fail('Current verified offline package must not declare a nonexistent pre-gate injection target.');
     if (config.delivery.onlineScripts !== null) fail('Offline desktop staging must not configure online scripts.');
     if (config.acceptance.websiteRootSupabaseBootstrapAllowed !== false) fail('Offline desktop staging must refuse website-root Supabase bootstrap.');
     if (!fs.existsSync(path.join(output, ...ENTRYPOINT.split('/')))) fail('Desktop staging entrypoint is missing.');
@@ -190,7 +188,7 @@ function runSelfTest() {
     let missingCatalogueRejected = false;
     try { assemble(handoff, path.join(temp, 'missing-catalogue-stage')); } catch { missingCatalogueRejected = true; }
     if (!missingCatalogueRejected) fail('Desktop staging must reject a handoff without the packaged catalogue.');
-    console.log('C64 Dungeon Carnage desktop staging self-test passed: verified handoff copied atomically with stable offline startup/profile metadata and required local assets.');
+    console.log('C64 Dungeon Carnage desktop staging self-test passed: current verified offline package shape copied atomically with stable startup/profile metadata and required local assets.');
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
