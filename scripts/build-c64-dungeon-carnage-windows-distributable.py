@@ -24,7 +24,6 @@ REQUIRED_STAGING_FILES = (
     "desktop-staging.json",
     "application/arcade/lost-sizzler/index.html",
     "application/arcade/lost-sizzler/version.json",
-    "application/arcade/lost-sizzler/js/online-services-gate.js",
     "application/games/games.json",
     "metadata/package-manifest.json",
     "metadata/package-provenance.json",
@@ -84,6 +83,8 @@ def validate_staging(staging: Path) -> dict:
     delivery = config.get("delivery") or {}
     if delivery.get("mode") != "desktop-offline" or delivery.get("onlineScripts") is not None:
         fail("Windows distributable requires desktop-offline staging with no online scripts")
+    if delivery.get("injectBefore") is not None:
+        fail("Windows distributable requires the current verified offline package shape with no unpromoted injection target")
     for relative in REQUIRED_STAGING_FILES:
         require_regular_file(staging / relative, f"required staging file {relative}")
 
