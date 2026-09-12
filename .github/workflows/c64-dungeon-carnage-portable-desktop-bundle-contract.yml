@@ -1,0 +1,56 @@
+name: C64 Dungeon Carnage Portable Desktop Bundle Contract
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/build-lost-sizzler-portable-desktop-bundle.py'
+      - 'arcade/lost-sizzler/tests/portable-desktop-bundle-contract.py'
+      - '.github/workflows/c64-dungeon-carnage-portable-desktop-bundle-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Validate Python syntax
+        run: |
+          python -m py_compile scripts/build-lost-sizzler-portable-desktop-bundle.py
+          python -m py_compile arcade/lost-sizzler/tests/portable-desktop-bundle-contract.py
+      - name: Run portable bundle regression
+        run: python arcade/lost-sizzler/tests/portable-desktop-bundle-contract.py
+      - name: Preserve protected scope
+        run: |
+          set -euo pipefail
+          git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" | tee /tmp/changed.txt
+          if grep -Eq '^(index\.html|resources/css/intro\.css|js/index-intro\.js|games/games\.json)$' /tmp/changed.txt; then
+            echo 'Protected file changed.' >&2
+            exit 1
+          fi
+      - name: Guard against provider/public delivery coupling
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          source = Path('scripts/build-lost-sizzler-portable-desktop-bundle.py').read_text(encoding='utf-8')
+          forbidden = [
+              r'https?://[^\s\'"`]+\.zip',
+              r'supabase[^\n]{0,80}(service[_-]?role|secret)',
+              r'paypal[_-]?(?:client[_-]?)?secret\s*[:=]',
+              r'(s3|r2|storage\.googleapis)\.',
+          ]
+          for pattern in forbidden:
+              if re.search(pattern, source, re.I):
+                  raise SystemExit(f'Forbidden portable-bundle source matched: {pattern}')
+          print('Portable bundle production-source guard passed.')
+          PY
