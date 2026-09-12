@@ -25,6 +25,9 @@ assert.match(source, /RequireBoolean\(acceptance, "networkingRequired", false\)/
 assert.match(source, /RequireBoolean\(acceptance, "websiteRootSupabaseBootstrapAllowed", false\)/);
 assert.match(source, /RequireBoolean\(acceptance, "rendererArbitraryFilesystemAccessAllowed", false\)/);
 assert.match(source, /RequireBoolean\(acceptance, "rendererArbitraryProcessExecutionAllowed", false\)/);
+assert.match(source, /RejectReparseTraversal\(rootPath, resolved, label\)/);
+assert.match(source, /FileAttributes\.ReparsePoint/);
+assert.match(source, /BeginInvoke\(new Action\(Close\)\)/);
 
 const injectionIndex = source.indexOf('AddScriptToExecuteOnDocumentCreatedAsync(BuildDeliveryInjection())');
 const navigationIndex = source.indexOf('core.Navigate($"https://{VirtualHost}/arcade/lost-sizzler/index.html")');
