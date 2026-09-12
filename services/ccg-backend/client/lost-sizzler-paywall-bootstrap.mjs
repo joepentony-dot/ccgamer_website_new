@@ -36,6 +36,10 @@ export function createLostSizzlerPaywallBootstrap({
     throw new Error('C64 Dungeon Carnage paywall bootstrap requires onCheckoutRequested before checkout can be enabled.');
   }
 
+  let view = null;
+  let started = false;
+  let destroyed = false;
+
   const purchaseClient = createLostSizzlerPurchaseClient({
     baseUrl,
     getAccessToken,
@@ -45,9 +49,12 @@ export function createLostSizzlerPaywallBootstrap({
   const controller = createLostSizzlerPaywallController({
     purchaseClient,
     checkoutEnabled: checkoutAllowed,
-    onStateChange: stateChanged,
+    onStateChange(nextState) {
+      stateChanged(nextState);
+      if (view && !destroyed) view.render(nextState);
+    },
   });
-  const view = mountLostSizzlerPaywallView({
+  view = mountLostSizzlerPaywallView({
     controller,
     root,
     documentRef,
@@ -56,9 +63,6 @@ export function createLostSizzlerPaywallBootstrap({
     onDownloadGrant: downloadGrant,
     onError: reportError,
   });
-
-  let started = false;
-  let destroyed = false;
 
   function ensureActive() {
     if (destroyed) throw new Error('C64 Dungeon Carnage paywall bootstrap has been destroyed.');
