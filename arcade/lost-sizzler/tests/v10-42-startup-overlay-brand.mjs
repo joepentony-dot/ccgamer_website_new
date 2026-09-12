@@ -48,8 +48,6 @@ test("the startup overlay is normalised to the C64 Dungeon Carnage identity", ()
     /v142StartupOverlayObserver\.observe\(overlay,\{subtree:true,childList:true,characterData:true\}\)/,
     "later legacy text mutations should remain guarded for the life of the loader",
   );
-  assert.match(
-    cacheGuardSource,
-    /startupBrandGuarded:true|startupBrandGuarded=false/,
-  );
+  assert.match(cacheGuardSource, /startupBrandGuarded:false/);
+  assert.match(cacheGuardSource, /state\.startupBrandGuarded=true/);
 });
