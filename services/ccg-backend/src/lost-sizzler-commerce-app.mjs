@@ -3,6 +3,8 @@ import { createLostSizzlerCommerceHttp } from './lost-sizzler-commerce-http.mjs'
 import { createLostSizzlerCommerceReconciliation } from './lost-sizzler-commerce-reconciliation.mjs';
 import { createLostSizzlerCommerceRouter } from './lost-sizzler-commerce-router.mjs';
 import { createLostSizzlerPayPalWebhookHttp } from './lost-sizzler-paypal-webhook-http.mjs';
+import { createLostSizzlerSecureDownloadService } from './lost-sizzler-secure-download.mjs';
+import { createLostSizzlerSecureDownloadHttp } from './lost-sizzler-secure-download-http.mjs';
 import { createPayPalOrdersGateway } from './paypal-orders.mjs';
 import { createPayPalWebhookVerifier } from './paypal-webhooks.mjs';
 
@@ -63,6 +65,7 @@ export function createLostSizzlerCommerceApplication({
   database,
   auth,
   config = {},
+  packageDelivery = null,
   fetchImpl = globalThis.fetch,
   now = () => Date.now(),
   randomUuidImpl,
@@ -102,7 +105,18 @@ export function createLostSizzlerCommerceApplication({
     ...(randomUuidImpl ? { randomUuidImpl } : {}),
   });
   const commerceHttp = createLostSizzlerCommerceHttp({ auth: authentication, commerce });
-  const router = createLostSizzlerCommerceRouter({ commerceHttp, paypalWebhookHttp });
+
+  let secureDownloadHttp = null;
+  if (packageDelivery) {
+    const downloads = createLostSizzlerSecureDownloadService({
+      commerce,
+      delivery: packageDelivery,
+      now,
+    });
+    secureDownloadHttp = createLostSizzlerSecureDownloadHttp({ auth: authentication, downloads });
+  }
+
+  const router = createLostSizzlerCommerceRouter({ commerceHttp, paypalWebhookHttp, secureDownloadHttp });
 
   return Object.freeze({
     router,
@@ -110,6 +124,7 @@ export function createLostSizzlerCommerceApplication({
       commerce_enabled: commerceEnabled,
       provider: commerceEnabled ? 'paypal' : null,
       webhook_enabled: commerceEnabled,
+      secure_download_enabled: Boolean(secureDownloadHttp),
     }),
   });
 }
