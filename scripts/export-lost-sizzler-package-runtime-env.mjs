@@ -35,7 +35,12 @@ function requirePortableToken(value, label, max = 128) {
 
 function requireObjectKey(value) {
   const text = String(value || '').trim();
-  if (!text || text.startsWith('/') || text.includes('..') || /[?#\\]/.test(text)) {
+  if (
+    !text ||
+    text.startsWith('/') ||
+    text.includes('..') ||
+    !/^[A-Za-z0-9._/-]+$/.test(text)
+  ) {
     throw new Error('Package object key is invalid.');
   }
   return text;
