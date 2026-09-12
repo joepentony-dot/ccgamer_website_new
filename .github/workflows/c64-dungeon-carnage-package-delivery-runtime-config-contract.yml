@@ -1,0 +1,52 @@
+name: C64 Dungeon Carnage Package Delivery Runtime Config Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/src/lost-sizzler-commerce-runtime.mjs'
+      - 'services/ccg-backend/src/lost-sizzler-package-delivery-runtime-config.mjs'
+      - 'services/ccg-backend/tests/package-delivery-runtime-config-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-package-delivery-runtime-config-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate syntax
+        run: |
+          node --check services/ccg-backend/src/lost-sizzler-commerce-runtime.mjs
+          node --check services/ccg-backend/src/lost-sizzler-package-delivery-runtime-config.mjs
+          node --check services/ccg-backend/tests/package-delivery-runtime-config-contract.mjs
+      - name: Run package delivery runtime contract
+        run: node services/ccg-backend/tests/package-delivery-runtime-config-contract.mjs
+      - name: Run existing runtime adapter contract
+        run: node services/ccg-backend/tests/commerce-runtime-adapters-contract.mjs
+      - name: Guard production runtime against embedded package URLs or credentials
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const source = [
+            'services/ccg-backend/src/lost-sizzler-commerce-runtime.mjs',
+            'services/ccg-backend/src/lost-sizzler-package-delivery-runtime-config.mjs',
+          ].map((path) => fs.readFileSync(path, 'utf8')).join('\n');
+          const forbidden = [
+            /supabase[^\n]{0,80}(service[_-]?role|secret)/i,
+            /postgres(?:ql)?:\/\/[^\s'"`]+:[^\s'"`]+@/i,
+            /paypal[_-]?(?:client[_-]?)?secret\s*[:=]\s*['"][^'"]+/i,
+            /https?:\/\/[^\s'"`]+\.zip(?:[?'"`\s]|$)/i,
+            /(public|anon)[_-]?(bucket|url)/i,
+          ];
+          for (const pattern of forbidden) {
+            if (pattern.test(source)) throw new Error(`Forbidden package-delivery runtime source matched: ${pattern}`);
+          }
+          console.log('Package delivery runtime source guard passed.');
+          NODE
