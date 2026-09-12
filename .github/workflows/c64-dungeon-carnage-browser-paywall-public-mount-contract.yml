@@ -1,0 +1,91 @@
+name: C64 Dungeon Carnage Browser Paywall Public Mount Contract
+
+on:
+  pull_request:
+    paths:
+      - 'arcade/lost-sizzler/index.html'
+      - 'arcade/lost-sizzler/js/v10-42-commerce-paywall-page-entry.mjs'
+      - 'arcade/lost-sizzler/js/v10-42-commerce-paywall-loader.mjs'
+      - 'arcade/lost-sizzler/tests/v10-42-commerce-paywall-public-mount.mjs'
+      - '.github/workflows/c64-dungeon-carnage-browser-paywall-public-mount-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate syntax
+        run: |
+          node --check arcade/lost-sizzler/js/v10-42-commerce-paywall-page-entry.mjs
+          node --check arcade/lost-sizzler/js/v10-42-commerce-paywall-loader.mjs
+          node --check arcade/lost-sizzler/tests/v10-42-commerce-paywall-public-mount.mjs
+      - name: Run dormant public mount regression
+        run: node arcade/lost-sizzler/tests/v10-42-commerce-paywall-public-mount.mjs
+      - name: Guard protected scope and locked XP sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          git diff --name-only "$base" "$head" | tee /tmp/changed.txt
+          if grep -Eq '^(index\.html|resources/css/intro\.css|js/index-intro\.js|games/games\.json)$' /tmp/changed.txt; then
+            echo 'Protected file changed.' >&2
+            exit 1
+          fi
+          if git diff --name-only "$base" "$head" | grep -Eq '^arcade/lost-sizzler/js/(game-core|progression|systems|world|ai)\.js$'; then
+            echo 'Gameplay/XP source changed in public-mount PR.' >&2
+            exit 1
+          fi
+      - name: Guard dormant commerce and overlay isolation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          paths = [
+              Path('arcade/lost-sizzler/index.html'),
+              Path('arcade/lost-sizzler/js/v10-42-commerce-paywall-page-entry.mjs'),
+              Path('arcade/lost-sizzler/js/v10-42-commerce-paywall-loader.mjs'),
+          ]
+          source = '\n'.join(path.read_text(encoding='utf-8') for path in paths)
+          forbidden = [
+              r'paypal\.com/sdk/js',
+              r'window\.open\s*\(',
+              r'location\.(?:assign|replace|href)\s*=',
+              r'https?://[^\s"\']+\.zip',
+              r'service[_-]?role',
+              r'client[_-]?secret',
+          ]
+          for pattern in forbidden:
+              if re.search(pattern, source, re.I):
+                  raise SystemExit(f'Forbidden dormant-commerce source matched: {pattern}')
+
+          html = paths[0].read_text(encoding='utf-8')
+          if re.search(r'__CCG_DUNGEON_CARNAGE_COMMERCE__\s*=', html):
+              raise SystemExit('Public HTML must not inline-enable commerce.')
+          print('Dormant commerce and overlay isolation guard passed.')
+          PY
+      - name: Guard first-paint mount ordering
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          html = Path('arcade/lost-sizzler/index.html').read_text(encoding='utf-8')
+          mount = '<script type="module" src="js/v10-42-commerce-paywall-page-entry.mjs?v=20260910r1"></script>'
+          assert html.count(mount) == 1
+          assert html.index('<h1>C64 Dungeon Carnage</h1>') < html.index(mount)
+          assert html.index('js/v10-41-cache-guard.js') < html.index('js/version-check.js') < html.index(mount)
+          assert html.index('js/v10-41-r30-buglog.js') < html.index(mount) < html.index('</body>')
+          PY
