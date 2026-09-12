@@ -34,9 +34,26 @@ jobs:
       - name: Guard against embedded credentials
         shell: bash
         run: |
-          if grep -RniE '(client[_-]?secret\s*[:=]\s*["'"'][^"'"']+|PAYPAL_CLIENT_SECRET\s*=\s*[^$[:space:]]+|DATABASE_URL\s*=\s*postgres)' \
-            services/ccg-backend/client/lost-sizzler-purchase.mjs \
-            services/ccg-backend/tests/purchase-client-contract.mjs; then
-            echo 'Embedded credential material detected in browser purchase-client files.' >&2
-            exit 1
-          fi
+          node --input-type=module <<'NODE'
+          import { readFile } from 'node:fs/promises';
+
+          const files = [
+            'services/ccg-backend/client/lost-sizzler-purchase.mjs',
+            'services/ccg-backend/tests/purchase-client-contract.mjs',
+          ];
+          const forbidden = [
+            /client[_-]?secret\s*[:=]\s*["'][^"']+/i,
+            /PAYPAL_CLIENT_SECRET\s*=\s*[^$\s]+/,
+            /DATABASE_URL\s*=\s*postgres/i,
+          ];
+
+          for (const file of files) {
+            const source = await readFile(file, 'utf8');
+            for (const pattern of forbidden) {
+              if (pattern.test(source)) {
+                console.error(`Embedded credential material detected in ${file}.`);
+                process.exit(1);
+              }
+            }
+          }
+          NODE
