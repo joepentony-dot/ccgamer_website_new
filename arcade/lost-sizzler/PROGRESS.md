@@ -1,74 +1,98 @@
 # C64 Dungeon Carnage — Current Project State
 
-> Legacy repository path: `arcade/lost-sizzler/`. The game has been renamed C64 Dungeon Carnage; historical workflow and path names may still use “Lost Sizzler”.
+> Legacy repository path: `arcade/lost-sizzler/`. The game has been renamed C64 Dungeon Carnage; historical workflow, route and schema names may still use “Lost Sizzler”.
 
-## Current Release State
+## Current Baseline
 
-- Public release model: static, zero-server GitHub Pages release.
-- Current version: V10.42.
-- Integrated promotion PR: #1954, `Verify complete C64 Dungeon Carnage stability and XP promotion`.
-- Promotion head: `f1f750c2b96786be7d3bc886ff7256a76dd0ddb7`.
-- Promotion gate: Lost Sizzler Load Safety #1836, run `34654313957` — **SUCCESS, 106/106 jobs green**.
-- Promotion merge commit on `main`: `b33689f99beeafc0419815414cc6e188b0f9ca75`.
-- PR #1954 is merged.
+- Public browser release remains the static, zero-server GitHub Pages build.
+- Current game version: V10.42.
+- Current `main` checkpoint at this review: `e1503dfff969e2925881d0cc3496fd733060deaa`.
+- The protected website intro-loader stack and `games/games.json` remain outside the active Dungeon Carnage work.
+- No active Dungeon Carnage release work is authorised to mutate Supabase/database/storage data or enable live checkout.
 
-## Promoted Stability / Progression Fixes
+## Stability / Progression
 
-The merged candidate includes the guarded fixes for:
+The promoted V10.42 stability baseline remains protected. Subsequent isolated candidates are intentionally not merged without explicit approval for the exact PR.
 
-- pause/resume attack liveness;
-- stale combat cooldown and invulnerability recovery;
-- dedicated Warden HUD ownership;
-- repeated environmental SFX suppression;
-- progression-XP protection so hidden/bronze doors, switches and chests do not award progression XP;
-- zero-XP chest metadata and feedback while preserving normal enemy/combat XP;
-- hardened R1 chest confirmation ownership;
-- R31 chest composition around the live `window.openChest` chain;
-- retirement of the obsolete R56 chest-delivery owner while preserving the valid R56 shrine owner;
-- zero-server public release and existing local Solo/split-screen support.
+- PR #1959 — Spy sustained-session damage-depth regression correction. The test now enforces the intended invariant: one Spy damage owner, non-empty re-entry ancestry, no growth beyond the original baseline, and stable ancestry during each active Spy session.
+- PR #1960 — XP-source boundary, exact prepared commit `6c48365bad4aacbef518868f842f4a7a447d3b0b`.
+- Locked XP rule: progression XP comes from enemy kills and XP pickups/rewards only; secret/bronze doors, switches and ordinary chests do not award progression XP.
+- PR #1976 — R30 healthy-ownership deep-audit throttle while preserving bounded recovery checks.
+- PR #1978 — independent long-session Solo repeatability verification.
+- PR #1980 — stabilization evidence record only; it does not alter runtime behaviour.
 
-## Verification Evidence
+Do not weaken these browser contracts or reintroduce XP awards on environmental interactions to obtain a green result.
 
-- Full pre-merge Load Safety gate #1836 passed on the exact frozen promotion head.
-- The formerly failing R56 mode-owned wrapper contract passed after the final ownership correction.
-- R1 chest stability, pause/attack liveness, R18 Solo stability, zero-server release and XP-source contracts passed in the same matrix.
-- Scope of PR #1954 remained confined to 17 files under `arcade/lost-sizzler/`.
-- Protected website intro-loader files, `games/games.json`, Supabase data and unrelated website systems were not part of the promotion PR.
+## Browser Commerce — Dormant / Disabled
 
-## Post-Merge Validation
+The browser purchase stack has been built as isolated, fail-closed layers and remains disabled unless explicit production configuration is supplied.
 
-Post-merge workflows were triggered from merge commit `b33689f99beeafc0419815414cc6e188b0f9ca75`:
+- #1961–#1975 establish the server-side PayPal, account-entitlement, refund/reversal, secure-download and private-delivery boundaries.
+- #1977/#1979/#1981 establish fail-closed package-delivery runtime metadata and descriptor handoff.
+- #1987–#1994 establish the browser purchase/re-download/paywall stack and a dormant public-page mount.
+- #1994 mounts only the disabled page entry. With no explicit commerce configuration it returns before document/fetch/paywall work.
+- #1997 adds an injected PayPal Buttons renderer. Its exact head `495db9cad8ebc0087983088d10007218629a9731` passed its dedicated renderer contract and CCG Site Safety. It does not load the PayPal SDK, provide credentials, enable checkout or mount itself into the live page.
 
-- Lost Sizzler Production Smoke #34 — run `34658079377`.
-- Lost Sizzler Load Safety #1837 — run `34658079411`.
+Production PayPal SDK loading, public client configuration, backend deployment and checkout activation remain explicit deployment/approval boundaries.
 
-These post-merge runs are the final production confirmation layer. Do not change runtime code solely to update this document; classify any genuine post-merge failure before modifying the promoted implementation.
+## Offline / Windows Edition
 
-## Release Exit Criteria
+The offline path now has a native Windows implementation while retaining the verified package/provenance boundaries.
 
-- [x] Complete pre-merge Load Safety gate green.
-- [x] Exact promotion head frozen after green CI.
-- [x] PR mergeable and conflict-free.
-- [x] Guarded promotion review completed.
-- [x] Safe merge to `main`.
-- [ ] Post-merge production smoke successful.
-- [ ] Post-merge Load Safety successful.
-- [ ] Live production game check completed.
-- [ ] No critical regressions found after deployment.
+- #1958 — offline package foundation.
+- #1982 — verified release handoff with Tier-A user data excluded.
+- #1984 — framework-neutral desktop staging.
+- #1985 — deterministic portable desktop ZIP.
+- #1995 — .NET 8 WinForms/WebView2 native shell. Stable LocalApplicationData profile, local virtual HTTPS host, remote renderer network blocking, disabled renderer downloads, allowlisted external navigation, no unrestricted filesystem/process host bridge, and staged-path reparse protection.
+- #1996 — self-contained Win-x64 offline distributable built from the verified staging tree.
 
-## Files To Preserve
+### #1996 exact-head evidence
 
-Unless new evidence identifies a specific regression, preserve the promoted ownership and release boundaries in:
+Head: `2008eda8d15bdde315713930e19c9125b4e61c94`
 
-- `arcade/lost-sizzler/js/v10-42-r1-stability.js`
-- `arcade/lost-sizzler/js/game-core.js`
-- `arcade/lost-sizzler/js/v10-41-r50-multiplayer-recovery-ux.js`
-- `arcade/lost-sizzler/js/v10-42-zero-server-release.js`
-- the R31 chest-composition layer and its regression contracts;
-- the retained R56 shrine owner and retirement of the superseded R56 chest owner.
+Passed:
 
-Do not weaken browser contracts to obtain a green result. Production changes require evidence from a reproducible failing contract or smoke test.
+- CCG Site Safety #3624.
+- C64 Dungeon Carnage Desktop Staging Contract #8.
+- Lost Sizzler Release Handoff #329.
+- C64 Dungeon Carnage Windows WebView2 Wrapper Contract #10.
+- C64 Dungeon Carnage Windows Distributable Contract #7.
 
-## Exact Next Step
+The end-to-end Windows CI materialized and cryptographically verified a 303-file, 24,373,960-byte application package, assembled the release handoff/staging tree, published the self-contained Win-x64 launcher, and built the customer ZIP twice. Both ZIP builds were byte-identical with SHA-256:
 
-Verify the two post-merge runs above and the deployed game. If both workflows are green and production smoke confirms the deployed build, mark the remaining release exit criteria complete. If either fails, isolate the exact failed contract first and make only a narrowly scoped correction.
+`781b14c2a10ca4a0d59f8a7dfb275f27f3e9e29c89bc8524611a6332cee40425`
+
+The CI ZIP is verification output only; it is not uploaded or published.
+
+### Package-boundary correction
+
+During #1996 integration, the older #1984 staging layer was found to require `online-services-gate.js`, but that file belongs to an older containment branch and is not present in the current verified #1958 package manifest. The Windows path was corrected to match the actual verified package instead of silently adding an unverified runtime file:
+
+- desktop staging now records `injectBefore: null`;
+- the staging/wrapper/distributable regressions forbid fabricating the absent gate;
+- offline enforcement remains owned by the native WebView2 wrapper, which blocks remote renderer requests.
+
+## Current Safety Boundaries
+
+Active draft work must continue to preserve all of the following:
+
+- no changes to `index.html`, `resources/css/intro.css`, or `js/index-intro.js` unless separately and explicitly authorised;
+- no changes to `games/games.json` as part of Dungeon Carnage release work;
+- no Supabase/database/storage mutation or migration;
+- no production credentials committed to the repository;
+- no permanent/public package URL;
+- no live checkout activation;
+- no Dungeon Carnage PR merge without explicit user authorisation for that exact PR;
+- no change to the locked XP-source rule.
+
+## Remaining Completion Boundaries
+
+Code preparation is now at the point where the remaining steps are primarily approval/deployment operations rather than missing core implementation:
+
+1. Let the exact-head Lost Sizzler Load Safety matrix finish for #1996 and classify any genuine failure before changing code.
+2. Obtain explicit merge approval for each required Dungeon Carnage PR/stack; do not merge implicitly.
+3. If the paid Windows edition is to go live, select/configure the private production object store and signing adapter, build the approved final artifact, sign it if desired, upload it privately, and bind its immutable SHA-256/byte-size/object-key metadata to the secure-download runtime.
+4. Configure/deploy the production commerce backend and PayPal public SDK/client boundary, then explicitly enable checkout only after sandbox/end-to-end purchase, entitlement, refund/reversal and re-download tests pass.
+5. Perform a real Windows launch/play test of the approved package on supported Windows hardware, including offline launch, save/profile persistence, restart, external-link handling and blocked-network behaviour.
+
+Until those approval/deployment steps are performed, browser gameplay remains the current production path and all commercial/offline work remains draft/non-production.
