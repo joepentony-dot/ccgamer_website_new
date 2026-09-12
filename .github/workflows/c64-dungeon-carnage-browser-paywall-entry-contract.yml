@@ -1,0 +1,65 @@
+name: C64 Dungeon Carnage Browser Paywall Entry Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/client/lost-sizzler-paywall-entry.mjs'
+      - 'services/ccg-backend/tests/browser-paywall-entry-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-browser-paywall-entry-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate syntax
+        run: |
+          node --check services/ccg-backend/client/lost-sizzler-paywall-entry.mjs
+          node --check services/ccg-backend/tests/browser-paywall-entry-contract.mjs
+
+      - name: Run browser paywall entry regression
+        run: node services/ccg-backend/tests/browser-paywall-entry-contract.mjs
+
+      - name: Preserve protected and public-page scope
+        run: |
+          set -euo pipefail
+          git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" | tee /tmp/changed.txt
+          if grep -Eq '^(index\.html|resources/css/intro\.css|js/index-intro\.js|games/games\.json|arcade/lost-sizzler/index\.html)$' /tmp/changed.txt; then
+            echo 'Protected or public game page changed.' >&2
+            exit 1
+          fi
+
+      - name: Guard against live checkout, automatic download, public package URLs and secrets
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          source = Path('services/ccg-backend/client/lost-sizzler-paywall-entry.mjs').read_text(encoding='utf-8')
+          forbidden = [
+              r'paypal\.com/sdk',
+              r'location\.(?:href|assign|replace)\s*=',
+              r'window\.open\s*\(',
+              r'https?://[^\s\'"`]+\.zip',
+              r'service[_-]?role',
+              r'client[_-]?secret\s*[:=]',
+              r'password\s*[:=]',
+          ]
+          for pattern in forbidden:
+              if re.search(pattern, source, re.I):
+                  raise SystemExit(f'Forbidden paywall-entry source matched: {pattern}')
+          print('Paywall entry production-source guard passed.')
+          PY
