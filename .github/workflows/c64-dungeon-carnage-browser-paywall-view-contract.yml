@@ -1,0 +1,67 @@
+name: C64 Dungeon Carnage Browser Paywall View Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/client/lost-sizzler-paywall-view.mjs'
+      - 'services/ccg-backend/client/lost-sizzler-paywall.mjs'
+      - 'services/ccg-backend/tests/browser-paywall-view-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-browser-paywall-view-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate syntax
+        run: |
+          node --check services/ccg-backend/client/lost-sizzler-paywall-view.mjs
+          node --check services/ccg-backend/client/lost-sizzler-paywall.mjs
+          node --check services/ccg-backend/tests/browser-paywall-view-contract.mjs
+      - name: Run browser paywall view regression
+        run: node services/ccg-backend/tests/browser-paywall-view-contract.mjs
+      - name: Preserve protected scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          git diff --name-only "$BASE_SHA" "${{ github.sha }}" | tee /tmp/changed.txt
+          if grep -Eq '^(index\.html|resources/css/intro\.css|js/index-intro\.js|games/games\.json)$' /tmp/changed.txt; then
+            echo 'Protected file changed.' >&2
+            exit 1
+          fi
+      - name: Guard against live checkout, auto-navigation and embedded secrets
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          source = Path('services/ccg-backend/client/lost-sizzler-paywall-view.mjs').read_text(encoding='utf-8')
+          forbidden = [
+              r'paypal\.Buttons\s*\(',
+              r'paypal\.com/sdk/js',
+              r'client[_-]?secret',
+              r'service[_-]?role',
+              r'password\s*[:=]',
+              r'https?://[^\s\'"`]+\.zip',
+              r'window\.location',
+              r'location\.(?:assign|replace)\s*\(',
+              r'window\.open\s*\(',
+          ]
+          for pattern in forbidden:
+              if re.search(pattern, source, re.I):
+                  raise SystemExit(f'Forbidden browser paywall view coupling matched: {pattern}')
+          if 'onDownloadGrant' not in source:
+              raise SystemExit('Signed download grants must be delegated to an explicit caller callback.')
+          print('Browser paywall view live-checkout/navigation/secret guard passed.')
+          PY
