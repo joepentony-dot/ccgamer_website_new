@@ -1,0 +1,73 @@
+name: C64 Dungeon Carnage Browser Paywall Loader Contract
+
+on:
+  pull_request:
+    paths:
+      - 'arcade/lost-sizzler/js/v10-42-commerce-paywall-loader.mjs'
+      - 'arcade/lost-sizzler/tests/v10-42-commerce-paywall-loader.mjs'
+      - '.github/workflows/c64-dungeon-carnage-browser-paywall-loader-contract.yml'
+      - 'services/ccg-backend/client/lost-sizzler-paywall-entry.mjs'
+      - 'services/ccg-backend/client/lost-sizzler-paywall-bootstrap.mjs'
+      - 'services/ccg-backend/client/lost-sizzler-paywall-view.mjs'
+      - 'services/ccg-backend/client/lost-sizzler-paywall-controller.mjs'
+      - 'services/ccg-backend/client/lost-sizzler-purchase-client.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate JavaScript syntax
+        run: |
+          node --check arcade/lost-sizzler/js/v10-42-commerce-paywall-loader.mjs
+          node --check arcade/lost-sizzler/tests/v10-42-commerce-paywall-loader.mjs
+      - name: Run dormant paywall loader regression
+        run: node arcade/lost-sizzler/tests/v10-42-commerce-paywall-loader.mjs
+      - name: Preserve protected and public-page scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          changed="$(git diff --name-only "$BASE_SHA"...HEAD)"
+          printf '%s\n' "$changed"
+          if printf '%s\n' "$changed" | grep -Eq '^(index\.html|resources/css/intro\.css|js/index-intro\.js|games/games\.json|arcade/lost-sizzler/index\.html)$'; then
+            echo 'Paywall loader PR touched a protected or live game-page file.' >&2
+            exit 1
+          fi
+      - name: Guard against live checkout, automatic navigation and embedded secrets
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          paths = [
+              Path('arcade/lost-sizzler/js/v10-42-commerce-paywall-loader.mjs'),
+              Path('arcade/lost-sizzler/tests/v10-42-commerce-paywall-loader.mjs'),
+          ]
+          source = '\n'.join(path.read_text(encoding='utf-8') for path in paths)
+          forbidden = [
+              r'paypal\.com/sdk/js',
+              r'window\.location\s*=',
+              r'location\.href\s*=',
+              r'window\.open\s*\(',
+              r'https?://[^\s\'"`]+\.zip',
+              r'service[_-]?role',
+              r'client[_-]?secret\s*[:=]',
+              r'password\s*[:=]',
+          ]
+          for pattern in forbidden:
+              if re.search(pattern, source, re.I):
+                  raise SystemExit(f'Forbidden paywall-loader coupling matched: {pattern}')
+          print('Paywall loader production-source guard passed.')
+          PY
