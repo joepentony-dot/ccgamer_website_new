@@ -1,0 +1,74 @@
+name: C64 Dungeon Carnage Browser Paywall Bootstrap Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/client/lost-sizzler-paywall-bootstrap.mjs'
+      - 'services/ccg-backend/client/lost-sizzler-purchase.mjs'
+      - 'services/ccg-backend/client/lost-sizzler-paywall.mjs'
+      - 'services/ccg-backend/client/lost-sizzler-paywall-view.mjs'
+      - 'services/ccg-backend/tests/browser-paywall-bootstrap-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-browser-paywall-bootstrap-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate syntax
+        run: |
+          node --check services/ccg-backend/client/lost-sizzler-paywall-bootstrap.mjs
+          node --check services/ccg-backend/client/lost-sizzler-purchase.mjs
+          node --check services/ccg-backend/client/lost-sizzler-paywall.mjs
+          node --check services/ccg-backend/client/lost-sizzler-paywall-view.mjs
+          node --check services/ccg-backend/tests/browser-paywall-bootstrap-contract.mjs
+      - name: Run browser paywall bootstrap regression
+        run: node services/ccg-backend/tests/browser-paywall-bootstrap-contract.mjs
+      - name: Preserve protected and public-game scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          git diff --name-only "$BASE_SHA" "${{ github.sha }}" | tee /tmp/changed.txt
+          if grep -Eq '^(index\.html|resources/css/intro\.css|js/index-intro\.js|games/games\.json|arcade/lost-sizzler/index\.html)$' /tmp/changed.txt; then
+            echo 'Protected or public game page changed.' >&2
+            exit 1
+          fi
+      - name: Guard passive bootstrap and production isolation
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          source = Path('services/ccg-backend/client/lost-sizzler-paywall-bootstrap.mjs').read_text(encoding='utf-8')
+          forbidden = [
+              r'paypal\.Buttons\s*\(',
+              r'paypal\.com/sdk/js',
+              r'client[_-]?secret',
+              r'service[_-]?role',
+              r'password\s*[:=]',
+              r'https?://[^\s\'"`]+\.zip',
+              r'window\.location',
+              r'location\.(?:assign|replace)\s*\(',
+              r'window\.open\s*\(',
+              r'document\.(?:querySelector|getElementById)\s*\(',
+          ]
+          for pattern in forbidden:
+              if re.search(pattern, source, re.I):
+                  raise SystemExit(f'Forbidden browser paywall bootstrap coupling matched: {pattern}')
+          if 'checkoutEnabled = false' not in source:
+              raise SystemExit('Browser paywall bootstrap must keep checkout disabled by default.')
+          if 'async function start()' not in source:
+              raise SystemExit('Browser paywall bootstrap must retain an explicit start boundary.')
+          print('Browser paywall bootstrap passive/live-production guard passed.')
+          PY
