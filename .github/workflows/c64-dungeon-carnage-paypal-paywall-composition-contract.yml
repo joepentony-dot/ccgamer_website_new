@@ -1,0 +1,76 @@
+name: C64 Dungeon Carnage PayPal Paywall Composition Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/client/lost-sizzler-paypal-paywall-composition.mjs'
+      - 'services/ccg-backend/tests/browser-paypal-paywall-composition-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-paypal-paywall-composition-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate syntax
+        run: |
+          node --check services/ccg-backend/client/lost-sizzler-paypal-paywall-composition.mjs
+          node --check services/ccg-backend/tests/browser-paypal-paywall-composition-contract.mjs
+      - name: Run composition contract
+        run: node --test services/ccg-backend/tests/browser-paypal-paywall-composition-contract.mjs
+      - name: Guard isolated scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          git diff --name-only "$base" "$head" | tee /tmp/changed.txt
+          if grep -Ev '^(services/ccg-backend/client/lost-sizzler-paypal-paywall-composition\.mjs|services/ccg-backend/tests/browser-paypal-paywall-composition-contract\.mjs|\.github/workflows/c64-dungeon-carnage-paypal-paywall-composition-contract\.yml)$' /tmp/changed.txt | grep -q .; then
+            echo 'PayPal paywall composition PR changed files outside its isolated scope.' >&2
+            exit 1
+          fi
+      - name: Guard dormant provider boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          source = Path('services/ccg-backend/client/lost-sizzler-paypal-paywall-composition.mjs').read_text(encoding='utf-8')
+          test = Path('services/ccg-backend/tests/browser-paypal-paywall-composition-contract.mjs').read_text(encoding='utf-8')
+          combined = source + '\n' + test
+
+          forbidden = [
+              r'client[_-]?secret',
+              r'service[_-]?role',
+              r'location\.(?:assign|replace|href)\s*=',
+              r'window\.open\s*\(',
+              r'https?://[^\s"\']+\.zip',
+              r'arcade/lost-sizzler/index\.html',
+          ]
+          for pattern in forbidden:
+              if re.search(pattern, combined, re.I):
+                  raise SystemExit(f'Forbidden live/deployment coupling matched: {pattern}')
+
+          required = [
+              'checkoutEnabled === true',
+              'explicit provider mount',
+              'competing checkout renderer',
+              'onCheckoutRequested: checkoutAdapter.onCheckoutRequested',
+          ]
+          for text in required:
+              if text not in source:
+                  raise SystemExit(f'Missing fail-closed composition guard: {text}')
+
+          print('Dormant PayPal paywall composition guard passed.')
+          PY
