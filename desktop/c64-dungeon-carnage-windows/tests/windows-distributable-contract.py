@@ -42,6 +42,10 @@ def run(wrapper: Path, staging: Path, output_dir: Path) -> None:
         if path.exists():
             path.unlink()
 
+    staging_config = json.loads((staging / "desktop-staging.json").read_text(encoding="utf-8"))
+    require(staging_config["delivery"]["injectBefore"] is None, "current offline staging must not claim an absent injection target")
+    require(not (staging / "application/arcade/lost-sizzler/js/online-services-gate.js").exists(), "current verified package must not fabricate the unpromoted online-services gate")
+
     BUILDER.build_distributable(str(wrapper), str(staging), str(first))
     BUILDER.build_distributable(str(wrapper), str(staging), str(second))
     require(first.read_bytes() == second.read_bytes(), "identical inputs must produce byte-identical Windows distributables")
@@ -56,6 +60,7 @@ def run(wrapper: Path, staging: Path, output_dir: Path) -> None:
         require("C64 Dungeon Carnage/staging/application/games/games.json" in names, "packaged C64 catalogue missing")
         require("C64 Dungeon Carnage/staging/metadata/package-manifest.json" in names, "package manifest missing")
         require("C64 Dungeon Carnage/staging/metadata/package-provenance.json" in names, "package provenance missing")
+        require("C64 Dungeon Carnage/staging/application/arcade/lost-sizzler/js/online-services-gate.js" not in names, "Windows distributable must not fabricate an unverified gate outside the package manifest")
         require("C64 Dungeon Carnage/windows-package.json" in names, "Windows package metadata missing")
         require("C64 Dungeon Carnage/README.txt" in names, "Windows package readme missing")
         require(not any(name.lower().endswith(".pdb") for name in names), "debug symbols leaked into Windows distributable")
