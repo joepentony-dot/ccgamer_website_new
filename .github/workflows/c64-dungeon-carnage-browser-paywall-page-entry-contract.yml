@@ -1,0 +1,64 @@
+name: C64 Dungeon Carnage Browser Paywall Page Entry Contract
+
+on:
+  pull_request:
+    paths:
+      - 'arcade/lost-sizzler/js/v10-42-commerce-paywall-page-entry.mjs'
+      - 'arcade/lost-sizzler/tests/v10-42-commerce-paywall-page-entry.mjs'
+      - '.github/workflows/c64-dungeon-carnage-browser-paywall-page-entry-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate syntax
+        run: |
+          node --check arcade/lost-sizzler/js/v10-42-commerce-paywall-page-entry.mjs
+          node --check arcade/lost-sizzler/tests/v10-42-commerce-paywall-page-entry.mjs
+      - name: Run page-entry regression
+        run: node arcade/lost-sizzler/tests/v10-42-commerce-paywall-page-entry.mjs
+      - name: Preserve protected and public-page scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          changed="$(git diff --name-only "$BASE_SHA"...HEAD)"
+          printf '%s\n' "$changed"
+          if printf '%s\n' "$changed" | grep -Eq '^(index\.html|resources/css/intro\.css|js/index-intro\.js|games/games\.json|arcade/lost-sizzler/index\.html)$'; then
+            echo 'Paywall page-entry PR touched a protected or public game-page file.' >&2
+            exit 1
+          fi
+      - name: Guard disabled page entry against live commerce and legacy overlay coupling
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          source = Path('arcade/lost-sizzler/js/v10-42-commerce-paywall-page-entry.mjs').read_text(encoding='utf-8')
+          forbidden = [
+              r'paypal\.com',
+              r'paypalobjects',
+              r'https?://[^\s\'"`]+\.zip',
+              r'window\.open',
+              r'location\s*=',
+              r'CHEEKY COMMODORE QUEST',
+              r'THE LOST SIZZLER',
+              r'ccg-release-loading',
+              r'service[_-]?role',
+              r'client[_-]?secret',
+          ]
+          for pattern in forbidden:
+              if re.search(pattern, source, re.I):
+                  raise SystemExit(f'Forbidden page-entry coupling matched: {pattern}')
+          print('Paywall page-entry safety guard passed.')
+          PY
