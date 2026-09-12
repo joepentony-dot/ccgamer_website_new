@@ -1,0 +1,48 @@
+name: C64 Dungeon Carnage Commerce Router Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/src/lost-sizzler-commerce-router.mjs'
+      - 'services/ccg-backend/tests/commerce-router-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-commerce-router-contract.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'services/ccg-backend/src/lost-sizzler-commerce-router.mjs'
+      - 'services/ccg-backend/tests/commerce-router-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-commerce-router-contract.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate syntax
+        run: |
+          node --check services/ccg-backend/src/lost-sizzler-commerce-router.mjs
+          node --check services/ccg-backend/tests/commerce-router-contract.mjs
+
+      - name: Run commerce router contract
+        run: node services/ccg-backend/tests/commerce-router-contract.mjs
+
+      - name: Guard against embedded secrets
+        run: |
+          set -euo pipefail
+          if grep -RniE '(PAYPAL_CLIENT_SECRET\s*=|SUPABASE_SERVICE_ROLE|service_role\s*=|clientSecret\s*:\s*["'"'][^"'"']{12,}["'"'])' \
+            services/ccg-backend/src/lost-sizzler-commerce-router.mjs \
+            services/ccg-backend/tests/commerce-router-contract.mjs; then
+            echo 'ERROR: possible embedded commerce secret detected.' >&2
+            exit 1
+          fi
