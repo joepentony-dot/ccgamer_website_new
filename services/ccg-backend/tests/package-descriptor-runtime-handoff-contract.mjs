@@ -53,6 +53,18 @@ const descriptor = Object.freeze({
     /object key is invalid/,
   );
   assert.throws(
+    () => buildPackageRuntimeEnvironment({ ...descriptor, object_key: 'private/game.zip\nCCG_PACKAGE_DOWNLOAD_ENABLED=false' }),
+    /object key is invalid/,
+  );
+  assert.throws(
+    () => buildPackageRuntimeEnvironment({ ...descriptor, object_key: 'private/game.zip=override' }),
+    /object key is invalid/,
+  );
+  assert.throws(
+    () => buildPackageRuntimeEnvironment({ ...descriptor, object_key: 'private/game file.zip' }),
+    /object key is invalid/,
+  );
+  assert.throws(
     () => buildPackageRuntimeEnvironment({ ...descriptor, sha256: 'bad' }),
     /SHA-256 is invalid/,
   );
