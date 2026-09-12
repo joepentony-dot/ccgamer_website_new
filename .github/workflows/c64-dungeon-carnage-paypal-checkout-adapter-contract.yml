@@ -1,0 +1,76 @@
+name: C64 Dungeon Carnage PayPal Checkout Adapter Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/client/lost-sizzler-paypal-checkout-adapter.mjs'
+      - 'services/ccg-backend/tests/browser-paypal-checkout-adapter-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-paypal-checkout-adapter-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate syntax
+        run: |
+          node --check services/ccg-backend/client/lost-sizzler-paypal-checkout-adapter.mjs
+          node --check services/ccg-backend/tests/browser-paypal-checkout-adapter-contract.mjs
+      - name: Run PayPal checkout adapter regression
+        run: node --test services/ccg-backend/tests/browser-paypal-checkout-adapter-contract.mjs
+      - name: Preserve protected and gameplay scope
+        run: |
+          set -euo pipefail
+          git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" | tee /tmp/changed.txt
+          if grep -Eq '^(index\.html|resources/css/intro\.css|js/index-intro\.js|games/games\.json)$' /tmp/changed.txt; then
+            echo 'Protected file changed.' >&2
+            exit 1
+          fi
+          if grep -Eq '^arcade/lost-sizzler/' /tmp/changed.txt; then
+            echo 'Game/runtime page changed in PayPal checkout adapter PR.' >&2
+            exit 1
+          fi
+      - name: Guard dormant checkout composition
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          paths = [
+              Path('services/ccg-backend/client/lost-sizzler-paypal-checkout-adapter.mjs'),
+              Path('services/ccg-backend/tests/browser-paypal-checkout-adapter-contract.mjs'),
+          ]
+          source = '\n'.join(path.read_text(encoding='utf-8') for path in paths)
+          forbidden = [
+              r'client[_-]?secret',
+              r'service[_-]?role',
+              r'password\s*=',
+              r'window\.location',
+              r'window\.open\s*\(',
+              r'https?://[^\s"\']+\.zip',
+              r'CCG_COMMERCE_ENABLED\s*=\s*["\']?true',
+              r'arcade/lost-sizzler/index\.html',
+          ]
+          for pattern in forbidden:
+              if re.search(pattern, source, re.I):
+                  raise SystemExit(f'Forbidden live checkout coupling matched: {pattern}')
+          required = [
+              'createLostSizzlerPayPalSdkLoader',
+              'createLostSizzlerPayPalButtonsRenderer',
+              'onCheckoutRequested',
+          ]
+          for token in required:
+              if token not in source:
+                  raise SystemExit(f'Expected dormant checkout composition token missing: {token}')
+          print('Dormant PayPal checkout adapter guard passed.')
+          PY
