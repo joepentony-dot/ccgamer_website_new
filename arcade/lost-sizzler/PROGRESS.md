@@ -23,6 +23,18 @@ The promoted V10.42 stability baseline remains protected. Subsequent isolated ca
 
 Do not weaken these browser contracts or reintroduce XP awards on environmental interactions to obtain a green result.
 
+## Startup Overlay / Loading Identity
+
+The current `main` still contains the older V10.36 startup loader path that can create `#ccg-release-loading` with retired Cheeky Commodore Quest / Lost Sizzler branding before later V10.42 layers take over.
+
+- PR #1983 is the isolated startup-overlay correction.
+- Frozen head: `f20f180899c61310a0d1942ef8b2ce2af35981ae`.
+- Lost Sizzler Load Safety #1849 passed on that exact head.
+- The correction installs the current C64 Dungeon Carnage branding guard from the first static cache-guard script and preserves the existing bounded loader, release gate, cache sanitation and zero-server readiness hold.
+- PR #1983 remains unmerged, so production should still be treated as susceptible to the old-to-new branding flash until that exact PR is explicitly approved and merged.
+
+Do not modify the frozen #1983 candidate without new reproducible evidence.
+
 ## Browser Commerce — Dormant / Disabled
 
 The browser purchase stack has been built as isolated, fail-closed layers and remains disabled unless explicit production configuration is supplied.
@@ -32,8 +44,9 @@ The browser purchase stack has been built as isolated, fail-closed layers and re
 - #1987–#1994 establish the browser purchase/re-download/paywall stack and a dormant public-page mount.
 - #1994 mounts only the disabled page entry. With no explicit commerce configuration it returns before document/fetch/paywall work.
 - #1997 adds an injected PayPal Buttons renderer. Its exact head `495db9cad8ebc0087983088d10007218629a9731` passed its dedicated renderer contract and CCG Site Safety. It does not load the PayPal SDK, provide credentials, enable checkout or mount itself into the live page.
+- #1999 adds the next dormant provider seam: a validated PayPal JavaScript SDK loader on top of #1997. Exact head `e67857ca7b9547de8d4409d5e50edfaf3b392b65` passed C64 Dungeon Carnage PayPal SDK Loader Contract #1 and CCG Site Safety #3625. It performs no provider request until explicit `load()`, remains unmounted from the public game page and does not enable checkout.
 
-Production PayPal SDK loading, public client configuration, backend deployment and checkout activation remain explicit deployment/approval boundaries.
+Production PayPal public client configuration, SDK mounting, backend deployment and checkout activation remain explicit deployment/approval boundaries.
 
 ## Offline / Windows Edition
 
@@ -48,7 +61,7 @@ The offline path now has a native Windows implementation while retaining the ver
 
 ### #1996 exact-head evidence
 
-Head: `2008eda8d15bdde315713930e19c9125b4e61c94`
+Frozen head: `2008eda8d15bdde315713930e19c9125b4e61c94`
 
 Passed:
 
@@ -57,12 +70,13 @@ Passed:
 - Lost Sizzler Release Handoff #329.
 - C64 Dungeon Carnage Windows WebView2 Wrapper Contract #10.
 - C64 Dungeon Carnage Windows Distributable Contract #7.
+- Lost Sizzler Load Safety #1864, run `34718025267`: **SUCCESS, 106/106 jobs green**.
 
 The end-to-end Windows CI materialized and cryptographically verified a 303-file, 24,373,960-byte application package, assembled the release handoff/staging tree, published the self-contained Win-x64 launcher, and built the customer ZIP twice. Both ZIP builds were byte-identical with SHA-256:
 
 `781b14c2a10ca4a0d59f8a7dfb275f27f3e9e29c89bc8524611a6332cee40425`
 
-The CI ZIP is verification output only; it is not uploaded or published.
+The CI ZIP is verification output only; it is not uploaded or published. No code change was required after the final six Load Safety jobs completed; the #1996 candidate remains frozen.
 
 ### Package-boundary correction
 
@@ -87,12 +101,12 @@ Active draft work must continue to preserve all of the following:
 
 ## Remaining Completion Boundaries
 
-Code preparation is now at the point where the remaining steps are primarily approval/deployment operations rather than missing core implementation:
+Code preparation has reached genuine approval, deployment and physical/manual-test boundaries rather than an identified gameplay/stability blocker:
 
-1. Let the exact-head Lost Sizzler Load Safety matrix finish for #1996 and classify any genuine failure before changing code.
-2. Obtain explicit merge approval for each required Dungeon Carnage PR/stack; do not merge implicitly.
-3. If the paid Windows edition is to go live, select/configure the private production object store and signing adapter, build the approved final artifact, sign it if desired, upload it privately, and bind its immutable SHA-256/byte-size/object-key metadata to the secure-download runtime.
-4. Configure/deploy the production commerce backend and PayPal public SDK/client boundary, then explicitly enable checkout only after sandbox/end-to-end purchase, entitlement, refund/reversal and re-download tests pass.
-5. Perform a real Windows launch/play test of the approved package on supported Windows hardware, including offline launch, save/profile persistence, restart, external-link handling and blocked-network behaviour.
+1. Obtain explicit merge approval for each required Dungeon Carnage PR/stack; do not merge implicitly. The frozen #1996 Windows candidate and #1983 overlay correction remain unmerged.
+2. If the paid Windows edition is to go live, select/configure the private production object store and signing adapter, build the approved final artifact, sign it if desired, upload it privately, and bind its immutable SHA-256/byte-size/object-key metadata to the secure-download runtime.
+3. Configure/deploy the production commerce backend and approved PayPal public SDK/client boundary, then explicitly enable checkout only after sandbox/end-to-end purchase, entitlement, refund/reversal and re-download tests pass.
+4. Perform a real Windows launch/play test of the approved package on supported Windows hardware, including offline launch, save/profile persistence, restart, external-link handling and blocked-network behaviour.
+5. After explicit approval of #1983, verify desktop and mobile startup/loading transitions against the deployed page to confirm no retired overlay identity becomes visible.
 
 Until those approval/deployment steps are performed, browser gameplay remains the current production path and all commercial/offline work remains draft/non-production.
