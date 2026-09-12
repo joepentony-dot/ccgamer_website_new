@@ -225,7 +225,7 @@ internal sealed class MainForm : Form
                     if (root.TryGetProperty("url", out var urlProperty)) TryOpenExternal(urlProperty.GetString());
                     break;
                 case "exitGame":
-                    BeginInvoke(Close);
+                    BeginInvoke(new Action(Close));
                     break;
             }
         }
@@ -361,13 +361,30 @@ internal sealed class MainForm : Form
         {
             throw new InvalidDataException($"{label} path is invalid.");
         }
-        var fullRoot = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
-        var resolved = Path.GetFullPath(Path.Combine(root, relativePath.Replace('/', Path.DirectorySeparatorChar)));
+        var rootPath = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar);
+        var fullRoot = rootPath + Path.DirectorySeparatorChar;
+        var resolved = Path.GetFullPath(Path.Combine(rootPath, relativePath.Replace('/', Path.DirectorySeparatorChar)));
         if (!resolved.StartsWith(fullRoot, StringComparison.OrdinalIgnoreCase))
         {
             throw new InvalidDataException($"{label} escapes the staging root.");
         }
+        RejectReparseTraversal(rootPath, resolved, label);
         return resolved;
+    }
+
+    private static void RejectReparseTraversal(string root, string resolved, string label)
+    {
+        var relative = Path.GetRelativePath(root, resolved);
+        var current = root;
+        foreach (var segment in relative.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries))
+        {
+            current = Path.Combine(current, segment);
+            if (!File.Exists(current) && !Directory.Exists(current)) continue;
+            if ((File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0)
+            {
+                throw new InvalidDataException($"{label} must not traverse a symbolic link/reparse point: {current}");
+            }
+        }
     }
 
     private sealed record StagingConfiguration(string ApplicationRoot);
