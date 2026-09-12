@@ -1,0 +1,54 @@
+name: C64 Dungeon Carnage Portable Artifact Runtime Handoff
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/build-lost-sizzler-portable-desktop-bundle.py'
+      - 'scripts/build-lost-sizzler-package-artifact-descriptor.mjs'
+      - 'scripts/export-lost-sizzler-package-runtime-env.mjs'
+      - 'services/ccg-backend/tests/portable-artifact-runtime-handoff-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-portable-artifact-runtime-handoff.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Validate syntax
+        run: |
+          node --check scripts/build-lost-sizzler-package-artifact-descriptor.mjs
+          node --check scripts/export-lost-sizzler-package-runtime-env.mjs
+          node --check services/ccg-backend/tests/portable-artifact-runtime-handoff-contract.mjs
+          python3 -m py_compile scripts/build-lost-sizzler-portable-desktop-bundle.py
+      - name: Run portable artifact runtime handoff regression
+        run: node services/ccg-backend/tests/portable-artifact-runtime-handoff-contract.mjs
+      - name: Preserve protected scope
+        run: |
+          set -euo pipefail
+          git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" | tee /tmp/changed.txt
+          if grep -Eq '^(index\.html|resources/css/intro\.css|js/index-intro\.js|games/games\.json)$' /tmp/changed.txt; then
+            echo 'Protected file changed.' >&2
+            exit 1
+          fi
+      - name: Guard against secrets or public package URLs
+        run: |
+          set -euo pipefail
+          if grep -REni '(service[_-]?role|client[_-]?secret|password\s*=|https?://[^[:space:]"'"']+\.zip)' \
+            scripts/build-lost-sizzler-package-artifact-descriptor.mjs \
+            scripts/export-lost-sizzler-package-runtime-env.mjs; then
+            echo 'Forbidden credential/public package coupling found.' >&2
+            exit 1
+          fi
