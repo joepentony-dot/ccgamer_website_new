@@ -1,0 +1,59 @@
+name: C64 Dungeon Carnage Browser Purchase Client Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/client/lost-sizzler-purchase.mjs'
+      - 'services/ccg-backend/tests/purchase-client-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-browser-purchase-client-contract.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate purchase client syntax
+        run: |
+          node --check services/ccg-backend/client/lost-sizzler-purchase.mjs
+          node --check services/ccg-backend/tests/purchase-client-contract.mjs
+
+      - name: Run browser purchase client contract
+        run: node services/ccg-backend/tests/purchase-client-contract.mjs
+
+      - name: Guard against embedded credentials
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFile } from 'node:fs/promises';
+
+          const files = [
+            'services/ccg-backend/client/lost-sizzler-purchase.mjs',
+            'services/ccg-backend/tests/purchase-client-contract.mjs',
+          ];
+          const forbidden = [
+            /client[_-]?secret\s*[:=]\s*["'][^"']+/i,
+            /PAYPAL_CLIENT_SECRET\s*=\s*[^$\s]+/,
+            /DATABASE_URL\s*=\s*postgres/i,
+          ];
+
+          for (const file of files) {
+            const source = await readFile(file, 'utf8');
+            for (const pattern of forbidden) {
+              if (pattern.test(source)) {
+                console.error(`Embedded credential material detected in ${file}.`);
+                process.exit(1);
+              }
+            }
+          }
+          NODE
