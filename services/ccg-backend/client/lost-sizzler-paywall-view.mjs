@@ -31,6 +31,12 @@ function requireLocalPath(value, label) {
   return path;
 }
 
+function optionalCallback(value, label) {
+  if (value == null) return null;
+  if (typeof value !== 'function') throw new Error(`${label} must be a function.`);
+  return value;
+}
+
 function requireCallback(value, label) {
   if (typeof value !== 'function') throw new Error(`${label} must be a function.`);
   return value;
@@ -110,16 +116,16 @@ export function mountLostSizzlerPaywallView({
   root,
   documentRef = globalThis.document,
   signInPath = '/auth/login.html?returnTo=%2Farcade%2Flost-sizzler%2F',
-  onCheckoutRequested = () => {},
-  onDownloadGrant = () => {},
+  onCheckoutRequested = null,
+  onDownloadGrant = null,
   onError = () => {},
 } = {}) {
   const paywall = requireController(controller);
   const mount = requireRoot(root);
   const doc = requireDocument(documentRef);
   const loginPath = requireLocalPath(signInPath, 'C64 Dungeon Carnage paywall sign-in path');
-  const checkoutRequested = requireCallback(onCheckoutRequested, 'onCheckoutRequested');
-  const downloadGrant = requireCallback(onDownloadGrant, 'onDownloadGrant');
+  const checkoutRequested = optionalCallback(onCheckoutRequested, 'onCheckoutRequested');
+  const downloadGrant = optionalCallback(onDownloadGrant, 'onDownloadGrant');
   const reportError = requireCallback(onError, 'onError');
   let destroyed = false;
   let busy = false;
@@ -144,6 +150,13 @@ export function mountLostSizzlerPaywallView({
   function render(state = paywall.state) {
     ensureActive();
     const model = buildLostSizzlerPaywallViewModel(state);
+    if (model.showCheckout && paywall.checkout.enabled === true && !checkoutRequested) {
+      throw new Error('C64 Dungeon Carnage paywall checkout requires onCheckoutRequested before a Buy action can be rendered.');
+    }
+    if (model.showDownload && !downloadGrant) {
+      throw new Error('C64 Dungeon Carnage paywall download requires onDownloadGrant before a download action can be rendered.');
+    }
+
     const section = doc.createElement('section');
     section.className = 'ccg-dungeon-carnage-paywall';
     section.setAttribute?.('aria-live', 'polite');
