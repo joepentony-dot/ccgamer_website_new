@@ -57,6 +57,7 @@ async function expectRejectsCode(promise, code) {
     commerce_enabled: false,
     provider: null,
     webhook_enabled: false,
+    secure_download_enabled: false,
   });
 
   const offer = await app.router.handle({
@@ -119,6 +120,7 @@ async function expectRejectsCode(promise, code) {
     commerce_enabled: true,
     provider: 'paypal',
     webhook_enabled: true,
+    secure_download_enabled: false,
   });
 
   const offer = await app.router.handle({
