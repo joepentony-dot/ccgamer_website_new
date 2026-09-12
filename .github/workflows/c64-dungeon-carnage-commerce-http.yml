@@ -1,0 +1,31 @@
+name: C64 Dungeon Carnage Commerce HTTP Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/src/lost-sizzler-commerce-http.mjs'
+      - 'services/ccg-backend/tests/commerce-http-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-commerce-http.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  commerce-http:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate commerce HTTP syntax
+        run: node --check services/ccg-backend/src/lost-sizzler-commerce-http.mjs
+
+      - name: Run account-gated commerce HTTP contract
+        run: node services/ccg-backend/tests/commerce-http-contract.mjs
