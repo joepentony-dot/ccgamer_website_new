@@ -130,6 +130,25 @@ function createController({ checkoutEnabled = false } = {}) {
 {
   const doc = new FakeDocument();
   const root = new FakeElement('div');
+  const controller = createController();
+  controller.setState({
+    phase: 'owned',
+    entitlement: { owned: true, permanent: true },
+    canCheckout: false,
+    canDownload: true,
+  });
+  const view = mountLostSizzlerPaywallView({ controller, root, documentRef: doc });
+  assert.throws(
+    () => view.render(),
+    /requires onDownloadGrant/,
+    'owner download must fail closed rather than silently discarding a signed grant',
+  );
+  assert.equal(controller.calls.download, 0);
+}
+
+{
+  const doc = new FakeDocument();
+  const root = new FakeElement('div');
   const controller = createController({ checkoutEnabled: true });
   let checkoutBridge = null;
   const view = mountLostSizzlerPaywallView({
@@ -147,6 +166,19 @@ function createController({ checkoutEnabled = false } = {}) {
   assert.ok(checkoutBridge, 'view must hand an explicit narrow checkout bridge to the later provider renderer');
   await checkoutBridge.createOrder();
   assert.equal(controller.calls.createOrder, 1, 'provider renderer can deliberately invoke the controller order boundary');
+}
+
+{
+  const doc = new FakeDocument();
+  const root = new FakeElement('div');
+  const controller = createController({ checkoutEnabled: true });
+  const view = mountLostSizzlerPaywallView({ controller, root, documentRef: doc });
+  assert.throws(
+    () => view.render(),
+    /requires onCheckoutRequested/,
+    'enabled checkout must fail closed when no provider renderer is configured',
+  );
+  assert.equal(controller.calls.createOrder, 0);
 }
 
 {
