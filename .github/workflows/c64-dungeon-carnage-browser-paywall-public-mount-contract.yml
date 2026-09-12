@@ -49,19 +49,33 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          files=(
-            arcade/lost-sizzler/index.html
-            arcade/lost-sizzler/js/v10-42-commerce-paywall-page-entry.mjs
-            arcade/lost-sizzler/js/v10-42-commerce-paywall-loader.mjs
-          )
-          if grep -REni 'paypal\.com/sdk/js|window\.open\s*\(|location\.(assign|replace|href)\s*=|https?://[^[:space:]"'"']+\.zip|service[_-]?role|client[_-]?secret' "${files[@]}"; then
-            echo 'Live checkout, automatic navigation, public package URL or credential coupling found.' >&2
-            exit 1
-          fi
-          if grep -En '__CCG_DUNGEON_CARNAGE_COMMERCE__[[:space:]]*=' arcade/lost-sizzler/index.html; then
-            echo 'Public HTML must not inline-enable commerce.' >&2
-            exit 1
-          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          paths = [
+              Path('arcade/lost-sizzler/index.html'),
+              Path('arcade/lost-sizzler/js/v10-42-commerce-paywall-page-entry.mjs'),
+              Path('arcade/lost-sizzler/js/v10-42-commerce-paywall-loader.mjs'),
+          ]
+          source = '\n'.join(path.read_text(encoding='utf-8') for path in paths)
+          forbidden = [
+              r'paypal\.com/sdk/js',
+              r'window\.open\s*\(',
+              r'location\.(?:assign|replace|href)\s*=',
+              r'https?://[^\s"\']+\.zip',
+              r'service[_-]?role',
+              r'client[_-]?secret',
+          ]
+          for pattern in forbidden:
+              if re.search(pattern, source, re.I):
+                  raise SystemExit(f'Forbidden dormant-commerce source matched: {pattern}')
+
+          html = paths[0].read_text(encoding='utf-8')
+          if re.search(r'__CCG_DUNGEON_CARNAGE_COMMERCE__\s*=', html):
+              raise SystemExit('Public HTML must not inline-enable commerce.')
+          print('Dormant commerce and overlay isolation guard passed.')
+          PY
       - name: Guard first-paint mount ordering
         shell: bash
         run: |
