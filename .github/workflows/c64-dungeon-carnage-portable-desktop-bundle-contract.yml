@@ -5,6 +5,8 @@ on:
     paths:
       - 'scripts/build-lost-sizzler-portable-desktop-bundle.py'
       - 'arcade/lost-sizzler/tests/portable-desktop-bundle-contract.py'
+      - 'scripts/verify-lost-sizzler-package-tree.mjs'
+      - 'scripts/build-lost-sizzler-package-provenance.mjs'
       - '.github/workflows/c64-dungeon-carnage-portable-desktop-bundle-contract.yml'
   workflow_dispatch:
 
@@ -19,13 +21,18 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      - name: Validate Python syntax
+      - name: Validate syntax
         run: |
           python -m py_compile scripts/build-lost-sizzler-portable-desktop-bundle.py
           python -m py_compile arcade/lost-sizzler/tests/portable-desktop-bundle-contract.py
+          node --check scripts/verify-lost-sizzler-package-tree.mjs
+          node --check scripts/build-lost-sizzler-package-provenance.mjs
       - name: Run portable bundle regression
         run: python arcade/lost-sizzler/tests/portable-desktop-bundle-contract.py
       - name: Preserve protected scope
