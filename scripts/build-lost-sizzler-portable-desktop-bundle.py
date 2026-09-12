@@ -5,12 +5,16 @@ import json
 import os
 from pathlib import Path
 import stat
+import subprocess
 import sys
 import zipfile
 
 SCHEMA = "ccg-c64-dungeon-carnage-desktop-staging-v1"
 APPLICATION_ID = "uk.co.cheekycommodoregamer.c64-dungeon-carnage"
 PROFILE_ID = "ccg-c64-dungeon-carnage"
+ROOT = Path(__file__).resolve().parents[1]
+TREE_VERIFIER = ROOT / "scripts" / "verify-lost-sizzler-package-tree.mjs"
+PROVENANCE_VERIFIER = ROOT / "scripts" / "build-lost-sizzler-package-provenance.mjs"
 REQUIRED = (
     "desktop-staging.json",
     "application/arcade/lost-sizzler/index.html",
@@ -41,6 +45,13 @@ def require_real_directory(value: str) -> Path:
     return root
 
 
+def run_verifier(command, label: str) -> None:
+    result = subprocess.run(command, cwd=ROOT, text=True, capture_output=True)
+    if result.returncode != 0:
+        detail = (result.stderr or result.stdout or "").strip()
+        fail(f"{label} failed: {detail or f'exit {result.returncode}'}")
+
+
 def validate_staging(root: Path) -> None:
     config_path = root / "desktop-staging.json"
     if not config_path.is_file() or config_path.is_symlink():
@@ -69,6 +80,18 @@ def validate_staging(root: Path) -> None:
         candidate = root / relative
         if not candidate.exists() or not candidate.is_file() or candidate.is_symlink():
             fail(f"portable bundle required file is missing or unsafe: {relative}")
+
+    application = root / "application"
+    manifest = root / "metadata/package-manifest.json"
+    provenance = root / "metadata/package-provenance.json"
+    run_verifier(
+        ["node", str(TREE_VERIFIER), "--manifest", str(manifest), "--root", str(application)],
+        "staged application tree verification",
+    )
+    run_verifier(
+        ["node", str(PROVENANCE_VERIFIER), "--manifest", str(manifest), "--verify", str(provenance)],
+        "staged package provenance verification",
+    )
 
 
 def collect_files(root: Path):
