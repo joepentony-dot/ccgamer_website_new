@@ -12,7 +12,7 @@ const legacyBootstrapSource = readFileSync(
 );
 
 test("V10.42 guards the legacy startup overlay before it can paint retired branding", () => {
-  assert.match(legacyBootstrapSource, /id="ccg-release-loading"/);
+  assert.match(legacyBootstrapSource, /overlay\.id="ccg-release-loading"/);
   assert.match(legacyBootstrapSource, /CHEEKY COMMODORE QUEST/);
   assert.match(legacyBootstrapSource, /THE LOST SIZZLER/);
 
