@@ -1,0 +1,67 @@
+name: C64 Dungeon Carnage PayPal Browser Renderer Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/client/lost-sizzler-paypal-buttons-renderer.mjs'
+      - 'services/ccg-backend/tests/browser-paypal-buttons-renderer-contract.mjs'
+      - '.github/workflows/c64-dungeon-carnage-paypal-browser-renderer-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate syntax
+        run: |
+          node --check services/ccg-backend/client/lost-sizzler-paypal-buttons-renderer.mjs
+          node --check services/ccg-backend/tests/browser-paypal-buttons-renderer-contract.mjs
+      - name: Run PayPal Buttons renderer regression
+        run: node services/ccg-backend/tests/browser-paypal-buttons-renderer-contract.mjs
+      - name: Preserve protected and gameplay scope
+        run: |
+          set -euo pipefail
+          git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" | tee /tmp/changed.txt
+          if grep -Eq '^(index\.html|resources/css/intro\.css|js/index-intro\.js|games/games\.json)$' /tmp/changed.txt; then
+            echo 'Protected file changed.' >&2
+            exit 1
+          fi
+          if grep -Eq '^arcade/lost-sizzler/' /tmp/changed.txt; then
+            echo 'Game/runtime page changed in PayPal renderer PR.' >&2
+            exit 1
+          fi
+      - name: Guard inactive provider boundary
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          paths = [
+              Path('services/ccg-backend/client/lost-sizzler-paypal-buttons-renderer.mjs'),
+              Path('services/ccg-backend/tests/browser-paypal-buttons-renderer-contract.mjs'),
+          ]
+          source = '\n'.join(path.read_text(encoding='utf-8') for path in paths)
+          forbidden = [
+              r'paypal\.com/sdk/js',
+              r'client[_-]?secret',
+              r'service[_-]?role',
+              r'password\s*=',
+              r'window\.location',
+              r'window\.open\s*\(',
+              r'https?://[^\s"\']+\.zip',
+          ]
+          for pattern in forbidden:
+              if re.search(pattern, source, re.I):
+                  raise SystemExit(f'Forbidden provider coupling matched: {pattern}')
+          print('Inactive PayPal provider boundary guard passed.')
+          PY
