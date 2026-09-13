@@ -73,6 +73,19 @@ try{
   await page.evaluate(()=>window.CCGLostSizzlerV142DemoPaywall.startTrial());
   await page.waitForFunction(()=>document.body.dataset.v142TrialExpired==="true");
   assert.equal(await page.locator("[data-trial-time]").textContent(),"00:00","reload must not grant another two-minute trial");
+
+  await page.goto(`${origin}/paywall-harness.html?purchase=1&signedIn=1`,{waitUntil:"load"});
+  await page.waitForFunction(()=>document.getElementById("v142-demo-paywall")?.classList.contains("hidden")===false);
+  const signedInReturn=await page.evaluate(()=>({
+    expired:document.body.dataset.v142TrialExpired,
+    buy:Boolean(document.querySelector("[data-checkout]")),
+    text:document.getElementById("v142-demo-paywall")?.textContent||"",
+    purchaseParam:new URL(location.href).searchParams.get("purchase")
+  }));
+  assert.equal(signedInReturn.expired,"true","expired trial must be restored immediately after account sign-in");
+  assert.equal(signedInReturn.buy,true,"signed-in expired user must immediately receive the Stripe buy action");
+  assert.match(signedInReturn.text,/CCG ACCOUNT DETECTED/i,"signed-in return must identify the account before checkout");
+  assert.equal(signedInReturn.purchaseParam,null,"account return marker must be cleaned after the gate is restored");
   await context.close();
 
   const ownedContext=await browser.newContext({viewport:{width:390,height:844}});
