@@ -35,19 +35,16 @@
       return{trap,key:canonicalTrapKey(player,trap,rare?.trapRuntime)}
     }catch(_){return null}
   }
-  function chainHas(owner,marker){
-    const seen=new Set();let current=owner;
-    while(typeof current==="function"&&!seen.has(current)){
-      if(current?.[marker]===true)return true;
-      seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null;
-    }
-    return false
-  }
 
   function installTrapDamageOwner(){
     const current=window.hurtPlayer;
     if(typeof current!=="function")return false;
-    if(chainHas(current,"__ccgV142R19MobileTrapDamage"))return true;
+    /* R1/R18 and other guarded owners can legitimately wrap hurtPlayer after R19
+       loads. For trap semantics R19 must see the untouched incoming player state,
+       so only treat the owner as installed when R19 itself is outermost. If a
+       later owner appears, wrap that complete chain once; the nested R19 instance
+       sees trapDamageInFlight and delegates without double-applying the guard. */
+    if(current?.__ccgV142R19MobileTrapDamage===true)return true;
     const wrapped=function hurtPlayerV142R19MobileTrapDamage(player,amount,flash,source){
       if(!ordinaryDungeon()||!player||!environmentalTrapSource(source))return current.apply(this,arguments);
       /* Floor-trap health damage is one hit per active contact. Later environment
