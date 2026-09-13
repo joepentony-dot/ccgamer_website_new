@@ -41,6 +41,8 @@ assert.doesNotMatch(commerce,/STRIPE_SECRET|service_role|SUPABASE_SERVICE_ROLE/i
 assert.match(css,/#v142-trial-countdown/,"countdown styling must be present");
 assert.match(css,/#v142-demo-paywall/,"paywall styling must be present");
 assert.match(css,/\.v142-download/,"owned download action must be styled");
+assert.match(css,/body\.ccg-game-cursor-idle #v142-demo-paywall/,"paywall must override the r20 idle-game cursor suppression so checkout controls retain a visible pointer");
+assert.match(css,/body\.ccg-game-cursor-idle #v142-demo-paywall button[^}]*cursor:pointer!important/,"paywall buttons must retain an interactive cursor under the r20 idle-game cursor layer");
 assert.match(css,/@media\(max-width:650px\)/,"paywall must retain a phone layout rule");
 
 console.log("C64 Dungeon Carnage two-minute Stripe trial paywall contract passed");
