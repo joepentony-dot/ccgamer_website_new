@@ -1,0 +1,41 @@
+name: C64 Dungeon Carnage PayPal Orders Contract
+
+on:
+  pull_request:
+    paths:
+      - 'services/ccg-backend/src/paypal-orders.mjs'
+      - 'services/ccg-backend/tests/paypal-orders-contract.mjs'
+      - 'services/ccg-backend/C64-DUNGEON-CARNAGE-COMMERCE-FOUNDATION.md'
+      - '.github/workflows/c64-dungeon-carnage-paypal-orders.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  paypal-orders:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate gateway syntax
+        run: node --check services/ccg-backend/src/paypal-orders.mjs
+
+      - name: Run PayPal Orders contract
+        run: node services/ccg-backend/tests/paypal-orders-contract.mjs
+
+      - name: Reject committed PayPal secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -R -Eiq 'PAYPAL_CLIENT_SECRET[[:space:]]*=[[:space:]]*[^$[:space:]]+' services/ccg-backend --exclude='*.md'; then
+            echo 'Possible hard-coded PayPal client secret detected.' >&2
+            exit 1
+          fi
