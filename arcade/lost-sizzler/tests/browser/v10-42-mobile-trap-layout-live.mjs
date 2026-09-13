@@ -167,6 +167,11 @@ async function runViewport(viewport){
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.gameReady==="true");
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142R19MobileTrapLayoutStability));
+  // V10.4 owns the touch UI from its window-load init. Qualify that real
+  // production owner before starting Solo instead of waiting for controls that
+  // cannot exist yet while the document is only at DOMContentLoaded.
+  await page.waitForLoadState("load");
+  await page.waitForFunction(()=>document.body.classList.contains("v104-touch-device")&&Boolean(document.getElementById("v104-touch-controls")));
   await page.locator("#solo-btn").click({noWaitAfter:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==="true");
   await page.waitForFunction(()=>document.getElementById("menu")?.classList.contains("hidden")===true);
