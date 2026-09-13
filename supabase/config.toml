@@ -4,5 +4,5 @@ verify_jwt = false
 [functions.ccg-commerce]
 verify_jwt = false
 
-[functions.ccg-stripe-webhook]
+[functions.ccg-paypal-webhook]
 verify_jwt = false
