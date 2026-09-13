@@ -4,8 +4,12 @@ import vm from "node:vm";
 
 const modulePath="arcade/lost-sizzler/js/v10-42-r19-mobile-trap-layout-stability.js";
 const bootstrapPath="arcade/lost-sizzler/js/v10-42-bootstrap.js";
+const touchPath="arcade/lost-sizzler/js/v10-4-patch.js";
+const gameplayPath="arcade/lost-sizzler/js/game-play.js";
 const source=fs.readFileSync(modulePath,"utf8");
 const bootstrap=fs.readFileSync(bootstrapPath,"utf8");
+const touchSource=fs.readFileSync(touchPath,"utf8");
+const gameplaySource=fs.readFileSync(gameplayPath,"utf8");
 
 assert.match(bootstrap,/v10-42-r19-mobile-trap-layout-stability\.js/,"ordered V10.42 bootstrap must load the mobile stability owner");
 assert.match(bootstrap,/CCGLostSizzlerV142R19MobileTrapLayoutStability/,"ordered bootstrap must wait for the r19 owner marker");
@@ -29,6 +33,19 @@ assert.match(source,/grid-template-rows:28px minmax\(0,1fr\) 54px!important/,"po
 assert.match(source,/min-width:44px!important/,"portrait movement controls must retain a 44px touch target");
 assert.match(source,/min-height:44px!important/,"portrait controls must retain a 44px touch target");
 assert.doesNotMatch(source,/\b(?:gainXp|addXp|grantXp|awardXp|awardXP)\b/,"mobile repair must not introduce an XP source");
+
+// Lock the real phone input route, not just the delegated damage owner. V10.4
+// touch movement feeds the same input Set consumed by d1(), which enters the
+// canonical movePlayer -> movementTriggers -> triggerTrap chain.
+for(const key of ["KeyW","KeyA","KeyD","KeyS"])assert.match(touchSource,new RegExp(`data-key=["']${key}["']`),`touch pad must retain ${key} movement mapping`);
+assert.match(touchSource,/querySelectorAll\("\[data-key\]"\)[\s\S]*?addEventListener\("pointerdown"[\s\S]*?input\.add\(button\.dataset\.key\)/,"touch pointerdown must feed movement into the canonical input Set");
+assert.match(gameplaySource,/function d1\(\)[\s\S]*?input\.has\("KeyW"\)[\s\S]*?input\.has\("KeyD"\)[\s\S]*?input\.has\("KeyS"\)/,"P1 movement resolver must consume the touch pad WASD keys");
+assert.match(gameplaySource,/function movePlayer\(p,dx,dy,dash=false\)[\s\S]*?movementTriggers\(p\)/,"successful player movement must enter the shared movement trigger boundary");
+assert.match(gameplaySource,/function movementTriggers\(p\)[\s\S]*?triggerTrap\(p\)/,"movement trigger boundary must include floor traps");
+const trapFunction=gameplaySource.match(/function triggerTrap\(p\)\{[^\n]+\}/)?.[0]||"";
+assert.match(trapFunction,/SYS\.trapActive\(t,now\)/,"floor trap boundary must require an active trap cycle");
+assert.match(trapFunction,/hurtPlayer\(p,1,false,`\$\{t\.kind\} trap`\)/,"active floor trap movement must delegate one point through hurtPlayer");
+assert.doesNotMatch(trapFunction,/\b(?:gainXp|addXp|grantXp|awardXp|awardXP)\b/,"canonical floor trap movement must not award progression XP");
 
 const player={id:"P1",x:4,y:5,health:8,armor:6,invuln:0,xp:120,totalXp:450};
 const trap={id:"trap-1",x:4,y:5,active:true,kind:"spike"};
