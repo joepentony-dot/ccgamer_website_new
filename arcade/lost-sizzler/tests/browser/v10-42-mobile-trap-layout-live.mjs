@@ -58,7 +58,23 @@ async function runViewport(viewport){
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142R19MobileTrapLayoutStability));
   await page.locator("#solo-btn").click({noWaitAfter:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==="true");
-  await page.waitForTimeout(700);
+  // V10.4 deliberately hides touch controls while the title/menu overlay owns
+  // the screen. A runActive flag can become true just before that overlay is
+  // retired, so qualify the actual playable phone state rather than sampling
+  // the controls during the short transition and mistaking display:none for a
+  // zero-sized touch target.
+  await page.waitForFunction(()=>document.getElementById("menu")?.classList.contains("hidden")===true);
+  await page.waitForFunction(()=>{
+    const touch=document.getElementById("v104-touch-controls");
+    const buttons=[...document.querySelectorAll("#v104-touch-controls .v104-touch-pad .v104-touch-btn")];
+    if(!touch?.classList.contains("active")||buttons.length!==4)return false;
+    const touchRect=touch.getBoundingClientRect();
+    return touchRect.width>0&&touchRect.height>0&&buttons.every(button=>{
+      const rect=button.getBoundingClientRect();
+      return rect.width>0&&rect.height>0;
+    });
+  });
+  await page.waitForTimeout(160);
 
   const layout=await page.evaluate(()=>{
     const box=selector=>{
