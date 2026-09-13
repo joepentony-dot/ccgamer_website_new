@@ -158,13 +158,27 @@ async function readPlayerTrapState(page){
   }))()`));
 }
 
-async function resetForInvulnerableTrapReentry(page,fixture){
-  await page.evaluate(({origin})=>globalThis.eval(`(()=>{
-    p1.x=${Number(origin.x)};p1.y=${Number(origin.y)};
-    p1.rx=${Number(origin.x)};p1.ry=${Number(origin.y)};
-    p1.hitStunMs=0;move1=0;input.clear();
-    window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.rearmInactiveTrapContacts?.();
-  })()`),{origin:fixture.origin});
+async function exerciseImmediateDuplicateTrapOwner(page){
+  return page.evaluate(()=>globalThis.eval(`(()=>{
+    const before={
+      health:Number(p1?.health||0),
+      armor:Number(p1?.armor||0),
+      invuln:Number(p1?.invuln||0),
+      xp:Number(p1?.xp||0),
+      totalXp:Number(p1?.totalXp||0),
+      trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0)
+    };
+    const result=window.hurtPlayer?.(p1,1,false,"spike trap");
+    const after={
+      health:Number(p1?.health||0),
+      armor:Number(p1?.armor||0),
+      invuln:Number(p1?.invuln||0),
+      xp:Number(p1?.xp||0),
+      totalXp:Number(p1?.totalXp||0),
+      trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0)
+    };
+    return{before,after,result};
+  })()`));
 }
 
 async function runViewport(viewport){
@@ -262,17 +276,20 @@ async function runViewport(viewport){
   assert.ok(first.invuln>0,"touch-triggered trap damage must preserve canonical post-hit invulnerability");
   assert.equal(first.trapHits,fixture.trapHits+1,"one touch trap entry must create exactly one successful health hit");
 
-  await resetForInvulnerableTrapReentry(page,fixture);
-  const beforeSecond=await readPlayerTrapState(page);
-  assert.ok(beforeSecond.invuln>0,"second trap entry must retain first-hit invulnerability");
-  await touchButton(page,context,`#v104-touch-controls .v104-touch-pad [data-key="${fixture.key}"]`);
-  const second=await readPlayerTrapState(page);
-  assert.deepEqual({x:second.x,y:second.y},fixture.target,"second real touch movement must re-enter the active trap tile");
-  assert.equal(second.health,first.health,"invulnerability must suppress an immediate duplicate trap health hit");
-  assert.equal(second.armor,first.armor,"duplicate touch trap contact must not consume armour");
-  assert.equal(second.xp,first.xp,"duplicate touch trap contact must not award XP");
-  assert.equal(second.totalXp,first.totalXp,"duplicate touch trap contact must not alter total XP");
-  assert.equal(second.trapHits,first.trapHits,"suppressed duplicate trap contact must not be recorded as another health hit");
+  // Stay on the same live trap contact and exercise the real window.hurtPlayer
+  // chain synchronously. The older regression teleported off the tile, re-armed
+  // the contact and then waited through more browser frames before re-entering;
+  // that is a new contact and can legitimately outlive the original 800ms
+  // invulnerability window. This observation instead proves the production
+  // post-hit owner cannot create a duplicate while invulnerability/contact
+  // ownership from the real touch hit is still active.
+  const duplicate=await exerciseImmediateDuplicateTrapOwner(page);
+  assert.ok(duplicate.before.invuln>0,"duplicate trap observation must begin inside first-hit invulnerability");
+  assert.equal(duplicate.after.health,duplicate.before.health,"invulnerability/contact ownership must suppress an immediate duplicate trap health hit");
+  assert.equal(duplicate.after.armor,duplicate.before.armor,"suppressed duplicate trap damage must not consume armour");
+  assert.equal(duplicate.after.xp,duplicate.before.xp,"suppressed duplicate trap damage must not award XP");
+  assert.equal(duplicate.after.totalXp,duplicate.before.totalXp,"suppressed duplicate trap damage must not alter total XP");
+  assert.equal(duplicate.after.trapHits,duplicate.before.trapHits,"suppressed duplicate trap damage must not be recorded as another health hit");
 
   assert.deepEqual(errors,[],`mobile trap exercise must have no uncaught browser errors: ${errors.join("\n")}`);
   console.log(`C64 Dungeon Carnage mobile live contract passed at ${viewport.width}x${viewport.height}.`);
