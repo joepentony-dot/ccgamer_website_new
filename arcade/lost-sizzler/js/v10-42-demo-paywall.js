@@ -170,6 +170,16 @@
       await showPaywall({reason:"purchase-pending"});return false;
     }
     if(purchase==="cancel"){cleanPurchaseQuery();return false}
+    if(purchase==="1"){
+      const owned=await refreshEntitlement();
+      if(owned){renderOwned();cleanPurchaseQuery();return true}
+      const stored=readStoredDeadline();
+      if(stored&&stored<=Date.now()){
+        state.deadline=stored;state.trialStarted=true;state.expired=true;lockRuntime();
+        await showPaywall({reason:"trial-expired"});cleanPurchaseQuery();return false;
+      }
+      cleanPurchaseQuery();return false;
+    }
     return refreshEntitlement();
   }
 
