@@ -39,7 +39,8 @@ assert.doesNotMatch(source,/\b(?:gainXp|addXp|grantXp|awardXp|awardXP)\b/,"mobil
 // canonical movePlayer -> movementTriggers -> triggerTrap chain.
 for(const key of ["KeyW","KeyA","KeyD","KeyS"])assert.match(touchSource,new RegExp(`data-key=["']${key}["']`),`touch pad must retain ${key} movement mapping`);
 assert.match(touchSource,/querySelectorAll\("\[data-key\]"\)[\s\S]*?addEventListener\("pointerdown"[\s\S]*?input\.add\(button\.dataset\.key\)/,"touch pointerdown must feed movement into the canonical input Set");
-assert.match(gameplaySource,/function d1\(\)[\s\S]*?input\.has\("KeyW"\)[\s\S]*?input\.has\("KeyD"\)[\s\S]*?input\.has\("KeyS"\)/,"P1 movement resolver must consume the touch pad WASD keys");
+const d1Function=gameplaySource.match(/function d1\(\)\{[^\n]+\}/)?.[0]||"";
+for(const key of ["KeyW","KeyA","KeyD","KeyS"])assert.match(d1Function,new RegExp(`input\\.has\\(["']${key}["']\\)`),`P1 movement resolver must consume ${key} from mobile touch input`);
 assert.match(gameplaySource,/function movePlayer\(p,dx,dy,dash=false\)[\s\S]*?movementTriggers\(p\)/,"successful player movement must enter the shared movement trigger boundary");
 assert.match(gameplaySource,/function movementTriggers\(p\)[\s\S]*?triggerTrap\(p\)/,"movement trigger boundary must include floor traps");
 const trapFunction=gameplaySource.match(/function triggerTrap\(p\)\{[^\n]+\}/)?.[0]||"";
