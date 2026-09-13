@@ -16,13 +16,14 @@ window.ccgSupabase={
   waitForAuth:async()=>window.__TEST_SIGNED_IN__?{user:{id:"test-user",email:"test@example.invalid"}}:null,
   getClient:async()=>({functions:{invoke:async(endpoint,{body})=>{
     if(endpoint!=="ccg-commerce")return{data:{ok:false,error:"wrong endpoint"},error:null};
-    if(body.action==="status")return{data:{ok:true,signedIn:window.__TEST_SIGNED_IN__,entitled:window.__TEST_ENTITLED__,entitlement:window.__TEST_ENTITLED__?{status:"active",purchased_at:"2026-09-13T00:00:00Z"}:null,product:{slug:"c64-dungeon-carnage",name:"C64 Dungeon Carnage",displayPrice:"£1.99",currency:"gbp"},checkoutConfigured:true,downloadReady:window.__TEST_DOWNLOAD_READY__},error:null};
-    if(body.action==="create_checkout")return{data:{ok:true,checkoutUrl:"https://checkout.stripe.test/session",sessionId:"cs_test"},error:null};
+    if(body.action==="status")return{data:{ok:true,signedIn:window.__TEST_SIGNED_IN__,entitled:window.__TEST_ENTITLED__,entitlement:window.__TEST_ENTITLED__?{status:"active",purchased_at:"2026-09-13T00:00:00Z"}:null,product:{slug:"c64-dungeon-carnage",name:"C64 Dungeon Carnage",displayPrice:"£1.99",currency:"gbp"},checkoutConfigured:true,paymentProvider:"paypal",downloadReady:window.__TEST_DOWNLOAD_READY__},error:null};
+    if(body.action==="create_checkout")return{data:{ok:true,checkoutUrl:"https://www.paypal.test/checkoutnow?token=PAYPAL123",orderId:"PAYPAL123"},error:null};
+    if(body.action==="capture_checkout")return{data:{ok:true,entitled:true,orderId:body.orderId,captureId:"CAPTURE123"},error:null};
     if(body.action==="download")return{data:{ok:true,url:"/private-test-download.zip",expiresIn:120},error:null};
     return{data:{ok:false,error:"unknown action"},error:null};
   }}})
 };
-</script><script src="/arcade/lost-sizzler/js/v10-42-stripe-commerce.js"></script><script src="/arcade/lost-sizzler/js/v10-42-demo-paywall.js"></script></body></html>`;
+</script><script src="/arcade/lost-sizzler/js/v10-42-paypal-commerce.js"></script><script src="/arcade/lost-sizzler/js/v10-42-demo-paywall.js"></script></body></html>`;
 
 const sockets=new Set();
 const server=http.createServer((req,res)=>{
@@ -83,14 +84,15 @@ try{
     purchaseParam:new URL(location.href).searchParams.get("purchase")
   }));
   assert.equal(signedInReturn.expired,"true","expired trial must be restored immediately after account sign-in");
-  assert.equal(signedInReturn.buy,true,"signed-in expired user must immediately receive the Stripe buy action");
+  assert.equal(signedInReturn.buy,true,"signed-in expired user must immediately receive the PayPal buy action");
   assert.match(signedInReturn.text,/CCG ACCOUNT DETECTED/i,"signed-in return must identify the account before checkout");
+  assert.match(signedInReturn.text,/BUY SECURELY WITH PAYPAL/i,"signed-in return must identify PayPal as the checkout provider");
   assert.equal(signedInReturn.purchaseParam,null,"account return marker must be cleaned after the gate is restored");
   await context.close();
 
   const ownedContext=await browser.newContext({viewport:{width:390,height:844}});
   const owned=await ownedContext.newPage();
-  await owned.goto(`${origin}/paywall-harness.html?purchase=success&signedIn=1&entitled=1&download=1`,{waitUntil:"load"});
+  await owned.goto(`${origin}/paywall-harness.html?purchase=success&token=PAYPAL123&signedIn=1&entitled=1&download=1`,{waitUntil:"load"});
   await owned.waitForFunction(()=>document.body.dataset.fullGameEntitled==="true");
   await owned.waitForFunction(()=>document.getElementById("v142-demo-paywall")?.classList.contains("hidden")===false);
   const ownership=await owned.evaluate(()=>({
@@ -99,17 +101,19 @@ try{
     text:document.getElementById("v142-demo-paywall")?.textContent||"",
     download:Boolean(document.querySelector("[data-download]")),
     startsTrial:window.CCGLostSizzlerV142DemoPaywall.startTrial(),
-    purchaseParam:new URL(location.href).searchParams.get("purchase")
+    purchaseParam:new URL(location.href).searchParams.get("purchase"),
+    tokenParam:new URL(location.href).searchParams.get("token")
   }));
-  assert.equal(ownership.entitled,"true","server-confirmed ownership must bypass the trial lock");
+  assert.equal(ownership.entitled,"true","server-confirmed PayPal ownership must bypass the trial lock");
   assert.notEqual(ownership.expired,"true","owned account must not remain trial-locked");
-  assert.match(ownership.text,/FULL GAME OWNED/i,"successful Checkout return must render owned state");
+  assert.match(ownership.text,/FULL GAME OWNED/i,"successful PayPal return must render owned state");
   assert.equal(ownership.download,true,"owned account with a published build must receive the download action");
   assert.equal(ownership.startsTrial,false,"owned account must never start a new trial countdown");
   assert.equal(ownership.purchaseParam,null,"successful purchase query markers must be cleaned after verification");
+  assert.equal(ownership.tokenParam,null,"PayPal order token must be cleaned after verification");
   await ownedContext.close();
 
-  console.log("C64 Dungeon Carnage live two-minute paywall contract passed");
+  console.log("C64 Dungeon Carnage live two-minute PayPal paywall contract passed");
 }finally{
   await browser.close();
   for(const socket of sockets)socket.destroy();
