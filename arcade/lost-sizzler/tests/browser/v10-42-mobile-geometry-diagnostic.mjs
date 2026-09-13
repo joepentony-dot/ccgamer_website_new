@@ -46,7 +46,7 @@ try{
       return{id:element.id||"",className:String(element.className||""),rect:{x:r.x,y:r.y,width:r.width,height:r.height},display:s.display,visibility:s.visibility,position:s.position,gridRow:s.gridRow};
     };
     const action=element=>({tag:element.tagName,id:element.id||"",className:String(element.className||""),text:String(element.textContent||"").trim(),href:element.getAttribute("href"),role:element.getAttribute("role"),dataAction:element.getAttribute("data-action")});
-    const shell=document.querySelector(".ccg-game"),area=document.querySelector(".ccg-game>.game-area"),touch=document.getElementById("v104-touch-controls"),notice=document.getElementById("mobile-pc-notice");
+    const shell=document.querySelector(".ccg-game"),area=document.querySelector(".ccg-game>.game-area"),touch=document.getElementById("v104-touch-controls"),notice=document.getElementById("ccg-mobile-pc-notice");
     return{
       viewport:{width:innerWidth,height:innerHeight},
       runActive:document.body.dataset.runActive,
