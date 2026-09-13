@@ -24,7 +24,7 @@ The following Edge Functions are deployed and active:
 
 The functions intentionally fail closed until PayPal credentials are configured. The older `ccg-stripe-webhook` function remains deployed but is not part of the PayPal purchase path.
 
-## Required Supabase Edge Function secrets
+## Remaining credential blocker
 
 Configure these directly in Supabase; never store them in GitHub or browser JavaScript:
 
@@ -32,6 +32,8 @@ Configure these directly in Supabase; never store them in GitHub or browser Java
 - `PAYPAL_CLIENT_SECRET`
 - `PAYPAL_WEBHOOK_ID`
 - `PAYPAL_ENVIRONMENT=sandbox` for qualification
+
+The current integration cannot create a PayPal Developer REST application or write Supabase Edge Function secrets automatically. Those values must be entered through the PayPal Developer and Supabase dashboards before sandbox checkout can work.
 
 Switch `PAYPAL_ENVIRONMENT` to `live` only after the sandbox flow has been fully exercised.
 
