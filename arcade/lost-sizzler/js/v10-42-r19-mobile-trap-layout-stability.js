@@ -125,20 +125,107 @@
     style.id=STYLE_ID;
     style.textContent=`
       @media (orientation:portrait) and (max-width:900px), (orientation:portrait) and (pointer:coarse){
+        /* During active portrait play only three direct shell rows should own
+           viewport height: mission, dungeon and compact combat HUD. The normal
+           title/desktop information rows are useful before play, but leaving
+           them in grid auto-placement after switching to a three-row template
+           creates implicit rows and can collapse .game-area to zero height. */
         body[data-run-active="true"] .ccg-game,
         body[data-run-active="true"] .ccg-game:fullscreen,
         body[data-run-active="true"] .ccg-game:-webkit-full-screen{
-          grid-template-rows:28px minmax(0,1fr) 54px!important;
+          grid-template-rows:28px minmax(0,1fr) 74px!important;
+        }
+        body[data-run-active="true"] .ccg-game>.v102-topbar,
+        body[data-run-active="true"] .ccg-game>.critical-strip,
+        body[data-run-active="true"] .ccg-game>.fullscreen-hint,
+        body[data-run-active="true"] .ccg-game>.tactical-zone{
+          display:none!important;
         }
         body[data-run-active="true"] .ccg-game>.mission{
+          grid-row:1!important;
           height:28px!important;
           min-height:28px!important;
           padding:3px 7px!important;
         }
+        body[data-run-active="true"] .ccg-game>.game-area{
+          grid-row:2!important;
+          min-height:0!important;
+          height:100%!important;
+        }
         body[data-run-active="true"] .ccg-game>.player-hub{
-          height:54px!important;
-          min-height:54px!important;
-          padding:4px 5px max(4px,env(safe-area-inset-bottom))!important;
+          grid-row:3!important;
+          display:grid!important;
+          grid-template-columns:minmax(0,1.18fr) minmax(0,1fr)!important;
+          grid-template-rows:minmax(0,1fr)!important;
+          gap:3px!important;
+          height:74px!important;
+          min-height:74px!important;
+          max-height:74px!important;
+          padding:3px max(4px,env(safe-area-inset-right)) max(3px,env(safe-area-inset-bottom)) max(4px,env(safe-area-inset-left))!important;
+          overflow:hidden!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub>.hub-inventory,
+        body[data-run-active="true"] .ccg-game>.player-hub>.hub-telemetry{
+          display:none!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub>.core-stats{
+          grid-template-columns:repeat(4,minmax(0,1fr))!important;
+          gap:2px!important;
+          min-width:0!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub .hub-stat{
+          min-width:0!important;
+          min-height:0!important;
+          padding:3px 2px 9px!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub .hub-stat span{
+          font-size:5.8px!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub .hub-stat b{
+          margin-top:2px!important;
+          font-size:9px!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub>.hub-progress{
+          grid-column:auto!important;
+          display:grid!important;
+          grid-template-columns:minmax(78px,1.35fr) repeat(3,minmax(38px,.55fr))!important;
+          grid-template-rows:minmax(0,1fr)!important;
+          gap:2px!important;
+          min-width:0!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub .priority-xp{
+          grid-column:auto!important;
+          min-width:0!important;
+          padding:3px!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub .priority-xp-head{
+          display:block!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub .priority-xp-head b,
+        body[data-run-active="true"] .ccg-game>.player-hub .priority-xp-head strong{
+          display:block!important;
+          font-size:6px!important;
+          white-space:nowrap!important;
+          overflow:hidden!important;
+          text-overflow:ellipsis!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub .priority-xp small{
+          display:none!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub .xp-track{
+          height:5px!important;
+          margin:3px 0 0!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub .run-stat{
+          min-width:0!important;
+          padding:3px 2px!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub .run-stat span{
+          font-size:5.5px!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub .run-stat b{
+          margin-top:2px!important;
+          font-size:8px!important;
         }
         body[data-run-active="true"] .ccg-game>.game-area>.canvas-wrap,
         body[data-run-active="true"] .ccg-game:fullscreen>.game-area>.canvas-wrap,
