@@ -9,6 +9,7 @@ const repoRoot = process.env.CCG_REPO_ROOT
   ? path.resolve(process.env.CCG_REPO_ROOT)
   : path.resolve(__dirname, "..");
 const overridesPath = path.join(repoRoot, "data", "game-video-overrides.json");
+const gamesPath = path.join(repoRoot, "games", "games.json");
 const sitemapPath = path.join(repoRoot, "sitemap-videos.xml");
 const SITE_ORIGIN = "https://www.cheekycommodoregamer.co.uk";
 
@@ -67,6 +68,26 @@ function removeAttribute(tag, name) {
 function removeBooleanAttribute(tag, name) {
   const attrRe = new RegExp(`\\s${name}(?=\\s|>|/)`, "gi");
   return tag.replace(attrRe, "");
+}
+
+function videoIdFor(game) {
+  const value = String(game?.videoid || game?.videoId || "").trim();
+  return /^[A-Za-z0-9_-]{6,20}$/.test(value) ? value : "";
+}
+
+function gameIdentityKey(value) {
+  return String(value || "").trim().toLowerCase().replace(/_/g, "-");
+}
+
+function gameForOverride(games, gameId, slug) {
+  const wantedSlug = gameIdentityKey(slug);
+  const wantedId = gameIdentityKey(gameId);
+  return games.find((game) => {
+    const gameSlug = gameIdentityKey(game?.slug);
+    const gameIdKey = gameIdentityKey(game?.id);
+    return (wantedSlug && gameSlug === wantedSlug)
+      || (wantedId && (gameIdKey === wantedId || gameSlug === wantedId));
+  }) || null;
 }
 
 function patchGamePage(html, override) {
@@ -137,14 +158,27 @@ function main() {
     return;
   }
 
+  const gamesPayload = readJson(gamesPath, []);
+  const games = Array.isArray(gamesPayload) ? gamesPayload : (gamesPayload?.games || []);
+
   let sitemap = fs.existsSync(sitemapPath) ? fs.readFileSync(sitemapPath, "utf8") : "";
   if (!sitemap) fail("sitemap-videos.xml is missing. Run generate-video-seo first.");
 
   let updatedPages = 0;
+  let appliedOverrides = 0;
+  let skippedYoutubeOverrides = 0;
   for (const [gameId, raw] of overrides) {
     const override = { gameId, ...raw };
     if (!override.slug || !override.playerUrl || !override.actionUrl || !override.thumbnailUrl) {
       fail(`${gameId}: override requires slug, playerUrl, actionUrl and thumbnailUrl.`);
+    }
+
+    const canonicalGame = gameForOverride(games, gameId, override.slug);
+    const youtubeVideoId = videoIdFor(canonicalGame);
+    if (youtubeVideoId) {
+      skippedYoutubeOverrides += 1;
+      console.log(`[game-video-overrides] ${override.slug}: external override ignored because the canonical game record has verified YouTube video ${youtubeVideoId}.`);
+      continue;
     }
 
     const pagePath = path.join(repoRoot, "games", override.slug, "index.html");
@@ -154,10 +188,11 @@ function main() {
     const nextHtml = patchGamePage(html, override);
     if (writeFileIfChanged(pagePath, nextHtml)) updatedPages += 1;
     sitemap = patchSitemap(sitemap, override);
+    appliedOverrides += 1;
   }
 
   const sitemapUpdated = writeFileIfChanged(sitemapPath, sitemap);
-  console.log(`[game-video-overrides] ${overrides.length} external video override(s) applied; ${updatedPages} page(s) updated; sitemap ${sitemapUpdated ? "updated" : "already current"}.`);
+  console.log(`[game-video-overrides] ${appliedOverrides} external video override(s) applied; ${skippedYoutubeOverrides} stale override(s) skipped for canonical YouTube records; ${updatedPages} page(s) updated; sitemap ${sitemapUpdated ? "updated" : "already current"}.`);
 }
 
 main();
