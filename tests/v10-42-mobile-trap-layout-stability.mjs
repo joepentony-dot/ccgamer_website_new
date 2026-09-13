@@ -20,6 +20,7 @@ assert.ok(r19Index<r1Index,"mobile stability must load before the final R1/R18 g
 assert.ok(r1Index<r18Index,"R1 must remain immediately before R18 in the ordered bootstrap");
 
 assert.match(source,/__ccgV142R19MobileTrapDamage/,"trap damage must have an isolated owner marker");
+assert.match(source,/current\?\.__ccgV142R19MobileTrapDamage===true/,"trap guard installation must only settle when R19 is the outermost hurtPlayer owner");
 assert.match(source,/trapProtectionUntil=new Map\(\)/,"trap damage owner must retain the successful hit protection window independently of mutable player state");
 assert.match(source,/protectedUntil>now/,"trap damage owner must reject re-entry while the original trap protection window remains active");
 assert.match(source,/trapProtectionUntil\.set\(contactKey,performance\.now\(\)\+protectionMs\)/,"successful trap health damage must preserve its canonical invulnerability duration for re-entry");
@@ -140,6 +141,17 @@ assert.equal(context.CCGLostSizzlerV142R19MobileTrapLayoutStability.syncPortrait
 assert.equal(canvas.width,repairedWidth,"stable portrait width must remain unchanged");
 assert.equal(canvas.height,repairedHeight,"stable portrait height must remain unchanged");
 
+// Simulate a later guarded owner (like R18) that mutates player state before
+// delegating. R19's monitor must reclaim the outermost position so trap calls are
+// screened before that later owner can erase the incoming invulnerability state.
+const firstR19Owner=context.hurtPlayer;
+const lateRepairOwner=function lateRepairOwner(target,...args){target.invuln=0;return firstR19Owner(target,...args)};
+lateRepairOwner.__ccgOriginal=firstR19Owner;
+context.hurtPlayer=lateRepairOwner;
+context.CCGLostSizzlerV142R19MobileTrapLayoutStability.installTrapDamageOwner();
+assert.equal(context.hurtPlayer.__ccgV142R19MobileTrapDamage,true,"R19 must reclaim outermost hurtPlayer ownership after a later wrapper appears");
+assert.ok(context.CCGLostSizzlerV142R19MobileTrapLayoutStability.state.damageOwnerInstalls>=2,"outermost repair must record the additional guarded installation");
+
 context.SYS.trapActive=()=>true;
 const beforeHealth=player.health,beforeArmor=player.armor,beforeXp=player.xp,beforeTotalXp=player.totalXp;
 context.hurtPlayer(player,1,false,"spike trap");
@@ -151,7 +163,7 @@ assert.ok(player.invuln>0,"canonical post-hit invulnerability must remain after 
 
 const afterFirstTrap=player.health;
 context.hurtPlayer(player,1,false,"spike trap");
-assert.equal(player.health,afterFirstTrap,"post-hit protection must prevent an immediate duplicate trap hit");
+assert.equal(player.health,afterFirstTrap,"post-hit protection must prevent an immediate duplicate trap hit before a later wrapper can mutate invulnerability");
 assert.equal(player.armor,beforeArmor,"duplicate trap suppression must not consume armour");
 
 player.invuln=0;
