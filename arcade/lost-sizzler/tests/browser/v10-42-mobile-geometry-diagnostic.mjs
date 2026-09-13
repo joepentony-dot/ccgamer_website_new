@@ -45,7 +45,8 @@ try{
       const r=element.getBoundingClientRect(),s=getComputedStyle(element);
       return{id:element.id||"",className:String(element.className||""),rect:{x:r.x,y:r.y,width:r.width,height:r.height},display:s.display,visibility:s.visibility,position:s.position,gridRow:s.gridRow};
     };
-    const shell=document.querySelector(".ccg-game"),area=document.querySelector(".ccg-game>.game-area"),touch=document.getElementById("v104-touch-controls");
+    const action=element=>({tag:element.tagName,id:element.id||"",className:String(element.className||""),text:String(element.textContent||"").trim(),href:element.getAttribute("href"),role:element.getAttribute("role"),dataAction:element.getAttribute("data-action")});
+    const shell=document.querySelector(".ccg-game"),area=document.querySelector(".ccg-game>.game-area"),touch=document.getElementById("v104-touch-controls"),notice=document.getElementById("mobile-pc-notice");
     return{
       viewport:{width:innerWidth,height:innerHeight},
       runActive:document.body.dataset.runActive,
@@ -53,6 +54,7 @@ try{
       shell:snap(shell),area:snap(area),touch:snap(touch),
       activeDirectOverlays:[...document.querySelectorAll(".game-area>.overlay:not(.hidden)")].map(snap),
       allDirectOverlays:[...document.querySelectorAll(".game-area>.overlay")].map(element=>({id:element.id,className:String(element.className||""),display:getComputedStyle(element).display,hidden:element.classList.contains("hidden")})),
+      notice:notice?{...snap(notice),text:String(notice.innerText||notice.textContent||"").trim(),actions:[...notice.querySelectorAll("button,a,[role='button']")].map(action)}:null,
       buttons:[...document.querySelectorAll("#v104-touch-controls .v104-touch-pad .v104-touch-btn")].map(snap)
     };
   });
