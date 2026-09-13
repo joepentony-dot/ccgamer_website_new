@@ -11,8 +11,8 @@
   const RETURN_TO="/arcade/lost-sizzler/?purchase=1";
   const LOGIN_URL=`/auth/login.html?returnTo=${encodeURIComponent(RETURN_TO)}`;
   const REGISTER_URL=`/auth/register.html?returnTo=${encodeURIComponent(RETURN_TO)}`;
-  const STYLE_URL="/resources/css/c64-dungeon-carnage-trial-paywall.css?v=20260913r2";
-  const COMMERCE_ADAPTER_URL="js/v10-42-stripe-commerce.js?v=20260913r2";
+  const STYLE_URL="/resources/css/c64-dungeon-carnage-trial-paywall.css?v=20260914r1";
+  const COMMERCE_ADAPTER_URL="js/v10-42-paypal-commerce.js?v=20260914r1";
   const state={shown:false,checking:false,entitled:false,providerReady:false,lastError:"",overlay:null,badge:null,deadline:0,timer:0,trialStarted:false,expired:false,lockedMode:"",downloadReady:false,commercePromise:null,purchaseReturn:""};
   const esc=value=>String(value).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const safeOfferText=value=>String(value??"").replace(/[\u0000-\u001f\u007f]/g," ").replace(/\s+/g," ").trim().slice(0,32);
@@ -22,7 +22,7 @@
     if(window.CCGLostSizzlerCommerce)return Promise.resolve(window.CCGLostSizzlerCommerce);
     if(state.commercePromise)return state.commercePromise;
     state.commercePromise=new Promise((resolve,reject)=>{
-      const existing=[...document.scripts].find(script=>String(script.src||"").includes("/v10-42-stripe-commerce.js"));
+      const existing=[...document.scripts].find(script=>String(script.src||"").includes("/v10-42-paypal-commerce.js"));
       if(existing){
         const finish=()=>window.CCGLostSizzlerCommerce?resolve(window.CCGLostSizzlerCommerce):reject(new Error("Commerce adapter loaded without registering"));
         existing.addEventListener("load",finish,{once:true});existing.addEventListener("error",()=>reject(new Error("Commerce adapter failed to load")),{once:true});
@@ -101,15 +101,23 @@
   }
 
   async function checkout(){
-    try{await ensureCommerceAdapter()}catch(error){status("Secure Checkout could not be loaded. Please try again shortly.",true);return false}
-    const start=providerMethod(["checkout","purchase","openCheckout","startCheckout"]);if(!start){status("Secure Checkout is not configured yet.",true);return false}
+    try{await ensureCommerceAdapter()}catch(error){status("Secure PayPal checkout could not be loaded. Please try again shortly.",true);return false}
+    const start=providerMethod(["checkout","purchase","openCheckout","startCheckout"]);if(!start){status("Secure PayPal checkout is not configured yet.",true);return false}
     if(!(await signedIn())){status("Sign in or create a CCG account first so permanent ownership can be attached to your account.",true);return false}
-    const button=state.overlay?.querySelector?.("[data-checkout]");if(button)button.disabled=true;status("Opening secure Stripe Checkout…");
+    const button=state.overlay?.querySelector?.("[data-checkout]");if(button)button.disabled=true;status("Opening secure PayPal checkout…");
     try{
       const result=await start({product:PRODUCT_SLUG});
       if(result?.entitled||result?.alreadyOwned){const value=await entitlement();if(unlockRuntime(value)){renderOwned();return true}}
       return true;
-    }catch(error){state.lastError=String(error?.code||error?.message||error);status(error?.code==="checkout_not_configured"?"Secure payment setup is not active yet. No payment has been attempted.":"Secure Checkout could not be opened. No payment has been taken.",true);return false}finally{if(button)button.disabled=false}
+    }catch(error){state.lastError=String(error?.code||error?.message||error);status(error?.code==="checkout_not_configured"?"Secure PayPal setup is not active yet. No payment has been attempted.":"Secure PayPal checkout could not be opened. No payment has been taken.",true);return false}finally{if(button)button.disabled=false}
+  }
+
+  async function capturePayPalReturn(){
+    let orderId="";try{orderId=new URLSearchParams(location.search).get("token")||""}catch(_){}
+    if(!orderId)return false;
+    try{await ensureCommerceAdapter()}catch(_){return false}
+    const capture=providerMethod(["captureReturn","captureCheckout"]);if(!capture)return false;
+    try{return Boolean((await capture({orderId}))?.entitled)}catch(error){state.lastError=String(error?.code||error?.message||error);return false}
   }
 
   async function downloadOwned(){
@@ -131,8 +139,8 @@
       try{const owned=await entitlement();if(unlockRuntime(owned)){renderOwned();return true}}catch(_){}
       if(reason==="trial-expired")lockRuntime();
       const overlay=ensureOverlay(),p=provider(),authenticated=await signedIn(),offer=await authoritativeOffer();state.providerReady=Boolean(p);
-      const trialCopy=reason==="trial-expired"?"Your two-minute browser trial has finished. Unlock C64 Dungeon Carnage permanently to continue playing.":reason==="purchase-pending"?"Your payment return was received, but ownership has not been confirmed by the secure webhook yet. You have not been unlocked until Stripe and CCG agree the payment completed.":"Unlock the full C64 Dungeon Carnage game permanently.";
-      overlay.innerHTML=`<div class="v142-paywall-card"><span class="v142-paywall-kicker">${reason==="trial-expired"?"2-MINUTE TRIAL COMPLETE":reason==="purchase-pending"?"VERIFYING PURCHASE":"FULL GAME"}</span><h2 id="v142-paywall-title">Unlock C64 Dungeon Carnage</h2><div class="v142-price">${esc(offer.display)} ONE-OFF</div><p>${trialCopy}</p><div class="v142-promise"><span><b>PERMANENT CCG ACCOUNT OWNERSHIP</b>Buy once. Ownership is stored against your CCG account rather than this browser.</span><span><b>ALL FUTURE GAME UPDATES INCLUDED</b>Future C64 Dungeon Carnage updates are included at no extra charge.</span><span><b>PRIVATE DOWNLOAD ACCESS</b>Published downloadable builds use short-lived signed links available only to an entitled account.</span><span><b>STRIPE VERIFIED</b>The game unlocks only after Stripe's signed webhook confirms the payment server-side.</span></div><div class="v142-account-note"><b>${authenticated?"CCG ACCOUNT DETECTED":"SIGN IN OR CREATE A CCG ACCOUNT"}</b><br>${authenticated?"Your £1.99 purchase will be attached to this signed-in account.":"Permanent access must be attached to a recoverable CCG account before Checkout opens."}</div><div class="v142-actions">${authenticated?'<button class="v142-paypal" type="button" data-checkout>BUY SECURELY WITH STRIPE</button>':`<a class="v142-login" href="${LOGIN_URL}">SIGN IN</a><a class="v142-register" href="${REGISTER_URL}">CREATE ACCOUNT</a>`}${reason!=="trial-expired"?'<button class="v142-later" type="button" data-later>NOT NOW</button>':""}</div><div class="v142-status" aria-live="polite">${offer.checkoutConfigured===false?"Secure Stripe keys still need to be connected before live payments can be accepted.":reason==="purchase-pending"?"Checking your account ownership…":""}</div></div>`;
+      const trialCopy=reason==="trial-expired"?"Your two-minute browser trial has finished. Unlock C64 Dungeon Carnage permanently to continue playing.":reason==="purchase-pending"?"Your PayPal return was received, but ownership has not been confirmed yet. The game stays locked until the server confirms the payment completed.":"Unlock the full C64 Dungeon Carnage game permanently.";
+      overlay.innerHTML=`<div class="v142-paywall-card"><span class="v142-paywall-kicker">${reason==="trial-expired"?"2-MINUTE TRIAL COMPLETE":reason==="purchase-pending"?"VERIFYING PURCHASE":"FULL GAME"}</span><h2 id="v142-paywall-title">Unlock C64 Dungeon Carnage</h2><div class="v142-price">${esc(offer.display)} ONE-OFF</div><p>${trialCopy}</p><div class="v142-promise"><span><b>PERMANENT CCG ACCOUNT OWNERSHIP</b>Buy once. Ownership is stored against your CCG account rather than this browser.</span><span><b>ALL FUTURE GAME UPDATES INCLUDED</b>Future C64 Dungeon Carnage updates are included at no extra charge.</span><span><b>PRIVATE DOWNLOAD ACCESS</b>Published downloadable builds use short-lived signed links available only to an entitled account.</span><span><b>PAYPAL VERIFIED</b>The game unlocks only after PayPal confirms the captured payment server-side.</span></div><div class="v142-account-note"><b>${authenticated?"CCG ACCOUNT DETECTED":"SIGN IN OR CREATE A CCG ACCOUNT"}</b><br>${authenticated?"Your £1.99 purchase will be attached to this signed-in account.":"Permanent access must be attached to a recoverable CCG account before checkout opens."}</div><div class="v142-actions">${authenticated?'<button class="v142-paypal" type="button" data-checkout>BUY SECURELY WITH PAYPAL</button>':`<a class="v142-login" href="${LOGIN_URL}">SIGN IN</a><a class="v142-register" href="${REGISTER_URL}">CREATE ACCOUNT</a>`}${reason!=="trial-expired"?'<button class="v142-later" type="button" data-later>NOT NOW</button>':""}</div><div class="v142-status" aria-live="polite">${offer.checkoutConfigured===false?"Secure PayPal credentials still need to be connected before payments can be accepted.":reason==="purchase-pending"?"Checking your account ownership…":""}</div></div>`;
       overlay.querySelector("[data-checkout]")?.addEventListener("click",checkout);overlay.querySelector("[data-later]")?.addEventListener("click",closePaywall);overlay.classList.remove("hidden");state.shown=true;return true;
     }finally{state.checking=false}
   }
@@ -159,12 +167,13 @@
   }
 
   function cleanPurchaseQuery(){
-    try{const url=new URL(location.href);url.searchParams.delete("purchase");url.searchParams.delete("session_id");history.replaceState(history.state,"",`${url.pathname}${url.search}${url.hash}`)}catch(_){}
+    try{const url=new URL(location.href);url.searchParams.delete("purchase");url.searchParams.delete("session_id");url.searchParams.delete("token");url.searchParams.delete("PayerID");history.replaceState(history.state,"",`${url.pathname}${url.search}${url.hash}`)}catch(_){}
   }
   async function handlePurchaseReturn(){
     let purchase="";try{purchase=new URLSearchParams(location.search).get("purchase")||""}catch(_){}
     state.purchaseReturn=purchase;
     if(purchase==="success"){
+      await capturePayPalReturn();
       const owned=await refreshEntitlement({poll:true});
       if(owned){renderOwned();cleanPurchaseQuery();return true}
       await showPaywall({reason:"purchase-pending"});return false;
