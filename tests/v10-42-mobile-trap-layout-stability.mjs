@@ -20,7 +20,10 @@ assert.ok(r19Index<r1Index,"mobile stability must load before the final R1/R18 g
 assert.ok(r1Index<r18Index,"R1 must remain immediately before R18 in the ordered bootstrap");
 
 assert.match(source,/__ccgV142R19MobileTrapDamage/,"trap damage must have an isolated owner marker");
-assert.match(source,/if\(Number\(player\.invuln\|\|0\)>0\)return false/,"trap damage owner must enforce canonical post-hit invulnerability before environment wrappers");
+assert.match(source,/trapProtectionUntil=new Map\(\)/,"trap damage owner must retain the successful hit protection window independently of mutable player state");
+assert.match(source,/protectedUntil>now/,"trap damage owner must reject re-entry while the original trap protection window remains active");
+assert.match(source,/trapProtectionUntil\.set\(contactKey,performance\.now\(\)\+protectionMs\)/,"successful trap health damage must preserve its canonical invulnerability duration for re-entry");
+assert.match(source,/if\(Number\(player\.invuln\|\|0\)>0\)return false/,"trap damage owner must still enforce the live player invulnerability field before environment wrappers");
 assert.match(source,/trapContacts\.has\(contactKey\)/,"trap damage owner must suppress duplicate damage on one active trap contact");
 assert.match(source,/trapContacts\.add\(contactKey\)/,"successful trap health damage must latch the active contact");
 assert.match(source,/trapContacts\.delete\(contactKey\)/,"leaving or deactivating a trap must re-arm the contact latch");
@@ -66,6 +69,7 @@ const cameras=new Map([["P1",{}]]);
 const canvasWrap={getBoundingClientRect:()=>({width:360,height:520})};
 let insertedStyle="";
 let intervalHandler=null;
+let now=1000;
 
 const document={
   body:{dataset:{runActive:"true",specialMode:""}},
@@ -77,7 +81,7 @@ const document={
 const context={
   console,
   document,
-  performance:{now:()=>1000},
+  performance:{now:()=>now},
   innerWidth:360,
   innerHeight:800,
   matchMedia(query){return {matches:query.includes("orientation: portrait")||query.includes("pointer: coarse")}},
@@ -147,22 +151,28 @@ assert.ok(player.invuln>0,"canonical post-hit invulnerability must remain after 
 
 const afterFirstTrap=player.health;
 context.hurtPlayer(player,1,false,"spike trap");
-assert.equal(player.health,afterFirstTrap,"post-hit invulnerability must prevent an immediate duplicate trap hit");
+assert.equal(player.health,afterFirstTrap,"post-hit protection must prevent an immediate duplicate trap hit");
 assert.equal(player.armor,beforeArmor,"duplicate trap suppression must not consume armour");
 
 player.invuln=0;
 context.hurtPlayer(player,1,false,"dungeon trap");
-assert.equal(player.health,afterFirstTrap,"the same active trap contact must remain latched after invulnerability expires");
-assert.equal(player.armor,beforeArmor,"latched duplicate trap contact must preserve armour");
-assert.equal(context.CCGLostSizzlerV142R19MobileTrapLayoutStability.state.trapContactBlocks,1,"duplicate active contact must be recorded as one blocked environmental trap call");
+assert.equal(player.health,afterFirstTrap,"the original successful hit protection window must survive a mutable player invulnerability field");
+assert.equal(player.armor,beforeArmor,"protected duplicate trap contact must preserve armour");
 
 player.x=3;
 context.CCGLostSizzlerV142R19MobileTrapLayoutStability.rearmInactiveTrapContacts();
 player.x=4;
 player.invuln=0;
 context.hurtPlayer(player,1,false,"spike trap");
-assert.equal(player.health,afterFirstTrap-1,"leaving the trap tile must re-arm one later contact hit");
-assert.equal(player.armor,beforeArmor,"re-armed floor trap health damage must still preserve armour");
+assert.equal(player.health,afterFirstTrap,"brief trap re-entry must remain protected until the original hit window expires");
+assert.equal(player.armor,beforeArmor,"protected re-entry must preserve armour");
+assert.ok(context.CCGLostSizzlerV142R19MobileTrapLayoutStability.state.trapProtectionBlocks>=3,"duplicate and re-entry calls inside the original protection window must be blocked above environment wrappers");
+
+now=1300;
+player.invuln=0;
+context.hurtPlayer(player,1,false,"spike trap");
+assert.equal(player.health,afterFirstTrap-1,"after the original protection window expires, the re-armed contact may deal one later health hit");
+assert.equal(player.armor,beforeArmor,"expired protection must still preserve armour on the next legitimate floor-trap hit");
 
 const afterRearmedTrap=player.health;
 player.invuln=0;
