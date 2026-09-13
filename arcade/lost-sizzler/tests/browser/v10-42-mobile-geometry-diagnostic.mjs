@@ -106,12 +106,15 @@ try{
       await page.waitForTimeout(140);
     }
   }
-  const trapDiagnostic=await page.evaluate(()=>globalThis.eval(`(()=>({
-    fixture:${JSON.stringify(fixture)},
-    after:{x:p1?.x,y:p1?.y,health:Number(p1?.health||0),armor:Number(p1?.armor||0),invuln:Number(p1?.invuln||0),hitStunMs:Number(p1?.hitStunMs||0)},
-    trace:window.__ccgMobileTrapDamageTrace||[],
-    r19:{state:window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||null}
-  }))()`));
+  const trapDiagnostic=await page.evaluate(fixture=>{
+    window.__ccgMobileTrapFixture=fixture;
+    return globalThis.eval(`(()=>({
+      fixture:window.__ccgMobileTrapFixture,
+      after:{x:p1?.x,y:p1?.y,health:Number(p1?.health||0),armor:Number(p1?.armor||0),invuln:Number(p1?.invuln||0),hitStunMs:Number(p1?.hitStunMs||0)},
+      trace:window.__ccgMobileTrapDamageTrace||[],
+      r19:{state:window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||null}
+    }))()`);
+  },fixture);
   console.log(`MOBILE_TRAP_DAMAGE_DIAGNOSTIC ${JSON.stringify(trapDiagnostic)}`);
 
   await context.close();
