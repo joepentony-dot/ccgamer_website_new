@@ -22,6 +22,16 @@ The promoted V10.42 stability baseline remains protected. Subsequent isolated ca
 - PR #1978 — independent long-session Solo repeatability verification.
 - PR #1980 — stabilization evidence record only; it does not alter runtime behaviour.
 
+### Latest Load Safety classification
+
+Docs-only PR #1998 exact head `65fc7d34356ef3dca156233c88c7765ac7f3c3c9` passed SEO Automation #4583 but Lost Sizzler Load Safety #1868, run `34729301951`, failed in exactly one Chromium contract: `v10-41-stage10-spy-sustained-session-soak.mjs`.
+
+The failure is the already-known Spy re-entry assertion: damage ancestry depth is 6 on re-entry 2 versus historical baseline 7. PR #1998 changes only this `PROGRESS.md` file, so it cannot introduce that runtime behaviour. The surrounding canonical Node contracts and the inspected Chromium jobs passed.
+
+PR #1959 is the existing isolated one-file correction for this exact contract assumption at head `a504a4de577403b3b62027bd69dbd5fcfb5be5b6`; its exact-head Lost Sizzler Load Safety #1843 passed. The correction preserves the real invariant — exactly one Spy damage boundary, non-empty ancestry, no ancestry growth beyond the original baseline, and stable ancestry during each active Spy session — while allowing valid stale-wrapper retirement on mode exit/re-entry.
+
+Therefore #1868 is classified as inherited known test-contract debt, not a regression introduced by #1998. Do not duplicate or weaken #1959 merely to make the documentation branch green; keep #1959 isolated until explicit approval for that exact PR.
+
 Do not weaken these browser contracts or reintroduce XP awards on environmental interactions to obtain a green result.
 
 ## Startup Overlay / Loading Identity
@@ -107,7 +117,7 @@ Active draft work must continue to preserve all of the following:
 
 Code preparation has reached genuine approval, deployment and physical/manual-test boundaries rather than an identified gameplay/stability blocker:
 
-1. Obtain explicit merge approval for each required Dungeon Carnage PR/stack; do not merge implicitly. The frozen #1996 Windows candidate, #1983 overlay correction and green dormant commerce stack through #2001 remain unmerged.
+1. Obtain explicit merge approval for each required Dungeon Carnage PR/stack; do not merge implicitly. The frozen #1996 Windows candidate, #1983 overlay correction, #1959 Spy contract correction and green dormant commerce stack through #2001 remain unmerged.
 2. If the paid Windows edition is to go live, select/configure the private production object store and signing adapter, build the approved final artifact, sign it if desired, upload it privately, and bind its immutable SHA-256/byte-size/object-key metadata to the secure-download runtime.
 3. Configure/deploy the production commerce backend and approved PayPal public SDK/client boundary, then explicitly enable checkout only after sandbox/end-to-end purchase, entitlement, refund/reversal and re-download tests pass.
 4. Perform a real Windows launch/play test of the approved package on supported Windows hardware, including offline launch, save/profile persistence, restart, external-link handling and blocked-network behaviour.
