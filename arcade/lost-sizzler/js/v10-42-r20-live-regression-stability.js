@@ -5,7 +5,7 @@
 
   const diagnostics={
     attackIntents:0,
-    immediateShots:0,
+    queuedAttackRepairs:0,
     staleModeRecoveries:0,
     dossierKeyboardCloses:0,
     cursorHides:0,
@@ -53,15 +53,11 @@
     if(!player)return false;
     repairAttackBoundary();
     try{input?.add?.(code)}catch(_){}
-    try{if(typeof queueAttack==="function")queueAttack(player)}catch(_){}
-    try{
-      if(Number(fire1)<=0&&typeof firePlayer==="function"){
-        firePlayer(player,player.dir||{x:1,y:0});
-        diagnostics.immediateShots++;
-      }
-    }catch(_){}
+    let queued=false;
+    try{if(typeof queueAttack==="function")queued=queueAttack(player)!==false}catch(_){}
+    if(queued)diagnostics.queuedAttackRepairs++;
     diagnostics.attackIntents++;
-    return true;
+    return queued;
   }
 
   try{
