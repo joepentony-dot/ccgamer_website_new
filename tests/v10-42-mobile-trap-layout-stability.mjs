@@ -22,6 +22,8 @@ assert.match(source,/finally\{player\.armor=beforeArmor\}/,"trap damage owner mu
 assert.doesNotMatch(source,/player\.invuln=0/,"trap damage must preserve the canonical invulnerability contract");
 assert.match(source,/trapRuntime\?\.contact/,"mobile repair must use the canonical rare-events trap contact latch");
 assert.match(source,/trapCycles\.set\(key,false\)/,"mobile repair must re-arm the r57 trap-cycle latch while inactive");
+assert.match(source,/function syncPortraitCanvasAspect\(\)/,"portrait stability must own a bounded backing-store aspect repair");
+assert.match(source,/Math\.max\(1,640\/cssW,360\/cssH\)/,"portrait backing store must scale both axes together from the canonical minimums");
 assert.match(source,/aspect-ratio:auto!important/,"portrait playfield must use the live viewport geometry instead of forcing a desktop 16:9 frame");
 assert.match(source,/grid-template-rows:28px minmax\(0,1fr\) 54px!important/,"portrait mission and HUD rows must be compacted to return space to gameplay");
 assert.match(source,/min-width:44px!important/,"portrait movement controls must retain a 44px touch target");
@@ -32,19 +34,30 @@ const player={id:"P1",x:4,y:5,health:8,armor:6,invuln:0,xp:120,totalXp:450};
 const trap={id:"trap-1",x:4,y:5,active:true,kind:"spike"};
 const contact=new Set(["test-run|F1|P1|trap-1"]);
 const trapCycles=new Map([["P1|trap-1",true]]);
+const canvas={width:640,height:360};
+const ctx={imageSmoothingEnabled:true};
+const cameras=new Map([["P1",{}]]);
+const canvasWrap={getBoundingClientRect:()=>({width:360,height:520})};
 let insertedStyle="";
 let intervalHandler=null;
 
 const document={
   body:{dataset:{runActive:"true",specialMode:""}},
   head:{appendChild(node){insertedStyle=String(node.textContent||"")}},
-  getElementById(){return null},
+  getElementById(id){return id==="game"?canvas:null},
+  querySelector(selector){return selector===".canvas-wrap"?canvasWrap:null},
   createElement(){return {id:"",textContent:""}}
 };
 const context={
   console,
   document,
   performance:{now:()=>1000},
+  innerWidth:360,
+  innerHeight:800,
+  matchMedia(query){return {matches:query.includes("orientation: portrait")||query.includes("pointer: coarse")}},
+  canvas,
+  ctx,
+  cameras,
   run:{seed:"test-run",floor:1},
   host:{traps:[trap]},
   p1:player,
@@ -71,7 +84,8 @@ const context={
   clearInterval(){},
   addEventListener(){},
   Set,
-  Map
+  Map,
+  Math
 };
 context.window=context;
 context.globalThis=context;
@@ -83,6 +97,17 @@ assert.equal(trapCycles.get("P1|trap-1"),false,"inactive trap cycle must clear t
 assert.equal(typeof intervalHandler,"function","mobile stability owner must retain its small periodic re-arm check");
 assert.match(insertedStyle,/aspect-ratio:auto!important/,"runtime style must avoid a forced desktop aspect ratio on portrait phones");
 assert.match(insertedStyle,/grid-template-columns:repeat\(3,44px\)!important/,"runtime style must preserve usable movement controls");
+
+const cssAspect=360/520;
+const canvasAspect=canvas.width/canvas.height;
+assert.ok(Math.abs(canvasAspect-cssAspect)<=0.004,`portrait canvas backing aspect ${canvasAspect} must match displayed aspect ${cssAspect}`);
+assert.ok(canvas.width>=640&&canvas.height>=360,"portrait aspect repair must retain the canonical minimum backing-store dimensions");
+assert.equal(ctx.imageSmoothingEnabled,false,"portrait aspect repair must retain crisp pixel rendering");
+assert.equal(context.CCGLostSizzlerV142R19MobileTrapLayoutStability.state.canvasAspectRepairs,1,"initial squashed portrait backing store must be repaired exactly once");
+const repairedWidth=canvas.width,repairedHeight=canvas.height;
+assert.equal(context.CCGLostSizzlerV142R19MobileTrapLayoutStability.syncPortraitCanvasAspect(),false,"stable portrait geometry must not churn the backing store");
+assert.equal(canvas.width,repairedWidth,"stable portrait width must remain unchanged");
+assert.equal(canvas.height,repairedHeight,"stable portrait height must remain unchanged");
 
 context.SYS.trapActive=()=>true;
 const beforeHealth=player.health,beforeArmor=player.armor,beforeXp=player.xp,beforeTotalXp=player.totalXp;
