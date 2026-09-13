@@ -14,7 +14,8 @@ assert.match(bootstrap,/const BUILD="V10\.42 r20"[\s\S]*const CACHE="20260913r20
 
 assert.match(fix,/ATTACK_KEYS=new Set\(\["Space","KeyF","Numpad0"\]\)/,"normal gameplay must recover all supported P1 attack keys");
 assert.match(fix,/function recoverOrphanedGameplayMode\(\)[\s\S]*dossier[\s\S]*inventory[\s\S]*shop[\s\S]*mode="playing"/,"hidden transient panels must not leave gameplay stranded outside playing mode");
-assert.match(fix,/function attackNow\(code\)[\s\S]*queueAttack\(player\)[\s\S]*firePlayer\(player,player\.dir/,"an attack intent must re-arm the canonical queue and fire immediately when cadence permits");
+assert.match(fix,/function attackNow\(code\)[\s\S]*repairAttackBoundary\(\)[\s\S]*queueAttack\(player\)/,"an attack intent must repair state and re-arm the canonical attack queue");
+assert.doesNotMatch(fix,/function attackNow\(code\)[\s\S]{0,900}firePlayer\(/,"the input repair must not bypass canonical cadence or create a second buffered shot");
 assert.match(fix,/event\.code==="KeyF"&&spyActive\(\)/,"Spy Vs Spy must retain its existing F/fullscreen ownership");
 assert.match(fix,/event\.code==="KeyF"\|\|event\.code==="Numpad0"\)event\.stopImmediatePropagation\(\)/,"normal gameplay F/Numpad attack must not fall through to the fullscreen owner");
 
