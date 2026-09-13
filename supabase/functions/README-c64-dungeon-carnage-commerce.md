@@ -13,26 +13,33 @@ C64 Dungeon Carnage uses a two-minute browser trial followed by a permanent £1.
 - Private download bucket: `ccg-paid-downloads`
 - Download path: `c64-dungeon-carnage/c64-dungeon-carnage.zip`
 
+## Live Supabase state
+
+The PayPal schema migration has been applied to Supabase project `lcslgxpgmttaexsorxik`.
+
+The following Edge Functions are deployed and active:
+
+- `ccg-commerce` — PayPal Orders v2 create/capture flow
+- `ccg-paypal-webhook` — PayPal webhook verification and entitlement handling
+
+The functions intentionally fail closed until PayPal credentials are configured. The older `ccg-stripe-webhook` function remains deployed but is not part of the PayPal purchase path.
+
 ## Required Supabase Edge Function secrets
 
-The hosted functions fail closed until the PayPal configuration exists:
+Configure these directly in Supabase; never store them in GitHub or browser JavaScript:
 
 - `PAYPAL_CLIENT_ID`
 - `PAYPAL_CLIENT_SECRET`
 - `PAYPAL_WEBHOOK_ID`
-- `PAYPAL_ENVIRONMENT` set explicitly to `sandbox` or `live`
+- `PAYPAL_ENVIRONMENT=sandbox` for qualification
 
-Never put PayPal client secrets or other privileged credentials in GitHub source or browser JavaScript.
+Switch `PAYPAL_ENVIRONMENT` to `live` only after the sandbox flow has been fully exercised.
 
-## PayPal flow
-
-Checkout uses PayPal Orders v2 server-side. The signed-in CCG user creates an order through `ccg-commerce`, PayPal handles buyer approval, and the returning order is captured server-side before permanent entitlement is granted. The browser never receives the PayPal client secret.
-
-The webhook endpoint is:
+## PayPal webhook endpoint
 
 `https://lcslgxpgmttaexsorxik.supabase.co/functions/v1/ccg-paypal-webhook`
 
-Subscribe the PayPal REST app webhook to at least:
+Subscribe the PayPal app webhook to:
 
 - `PAYMENT.CAPTURE.COMPLETED`
 - `PAYMENT.CAPTURE.DENIED`
@@ -41,11 +48,7 @@ Subscribe the PayPal REST app webhook to at least:
 - `CHECKOUT.PAYMENT-APPROVAL.REVERSED`
 - `CUSTOMER.DISPUTE.CREATED`
 
-`ccg-paypal-webhook` verifies every webhook through PayPal's `verify-webhook-signature` API using the registered `PAYPAL_WEBHOOK_ID`. Successful capture events are checked against the server-side CCG checkout session, product price and GBP currency before entitlement is granted. A full refund is confirmed from the original capture before access is revoked; a partial refund is recorded without revoking ownership. Reversals and disputes revoke access, while an approval reversal marks the checkout as failed.
-
-## Release safety
-
-Start with `PAYPAL_ENVIRONMENT=sandbox` and complete an end-to-end sandbox purchase, return, capture, webhook, full-refund and dispute test before changing to `live`. Do not enable live PayPal credentials merely because repository CI passes.
+The webhook verifies PayPal's notification signature with PayPal before changing entitlement state. Order identity, CCG account ownership, currency and amount are verified before access is granted. Full refunds, reversals and disputes revoke ownership; partial refunds are recorded without revoking ownership.
 
 ## Download publication
 
