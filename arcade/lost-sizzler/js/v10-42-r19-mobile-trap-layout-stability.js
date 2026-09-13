@@ -11,7 +11,6 @@
   const specialType=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")}catch(_){return""}};
   const ordinaryDungeon=()=>document.body?.dataset?.runActive==="true"&&!new Set(["horde-survivor","sizzler-saboteurs"]).has(specialType());
   const players=()=>{try{return (typeof localPlayers==="function"?localPlayers():[typeof p1!=="undefined"?p1:null,typeof p2!=="undefined"?p2:null]).filter(Boolean)}catch(_){return[]}};
-  const durability=player=>Number(player?.health||0)+Number(player?.armor||0);
   const playerId=player=>String(player?.id||player?.name||(player===globalThis.p2?"P2":"P1"));
   const trapId=trap=>String(trap?.id||`${trap?.x},${trap?.y}`);
   const r57TrapKey=(player,trap)=>`${playerId(player)}|${trapId(trap)}`;
@@ -39,12 +38,15 @@
     if(chainHas(current,"__ccgV142R19MobileTrapDamage"))return true;
     const wrapped=function hurtPlayerV142R19MobileTrapDamage(player,amount,flash,source){
       if(!ordinaryDungeon()||!player||!environmentalTrapSource(source))return current.apply(this,arguments);
-      const before=durability(player),oldInv=Number(player.invuln||0);
-      player.invuln=0;
-      const result=current.apply(this,arguments);
-      const after=durability(player);
-      if(after<before)state.trapHits++;
-      else if(oldInv>0)player.invuln=oldInv;
+      /* Ordinary floor traps promise health damage. Preserve the canonical
+         hurtPlayer owner, including its mode/invulnerability/death rules, but
+         temporarily remove armour from this one delegated hit so a phone run
+         cannot show “-1 health” while silently consuming ARM instead. */
+      const beforeHealth=Number(player.health||0),beforeArmor=Number(player.armor||0);
+      player.armor=0;
+      let result;
+      try{result=current.apply(this,arguments)}finally{player.armor=beforeArmor}
+      if(Number(player.health||0)<beforeHealth)state.trapHits++;
       return result
     };
     wrapped.__ccgV142R19MobileTrapDamage=true;
@@ -81,17 +83,31 @@
     style.id=STYLE_ID;
     style.textContent=`
       @media (orientation:portrait) and (max-width:900px), (orientation:portrait) and (pointer:coarse){
+        body[data-run-active="true"] .ccg-game,
+        body[data-run-active="true"] .ccg-game:fullscreen,
+        body[data-run-active="true"] .ccg-game:-webkit-full-screen{
+          grid-template-rows:28px minmax(0,1fr) 54px!important;
+        }
+        body[data-run-active="true"] .ccg-game>.mission{
+          height:28px!important;
+          min-height:28px!important;
+          padding:3px 7px!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub{
+          height:54px!important;
+          min-height:54px!important;
+          padding:4px 5px max(4px,env(safe-area-inset-bottom))!important;
+        }
         body[data-run-active="true"] .ccg-game>.game-area>.canvas-wrap,
         body[data-run-active="true"] .ccg-game:fullscreen>.game-area>.canvas-wrap,
         body[data-run-active="true"] .ccg-game:-webkit-full-screen>.game-area>.canvas-wrap{
           width:100%!important;
-          height:auto!important;
+          height:100%!important;
+          min-width:0!important;
           min-height:0!important;
           max-width:100%!important;
           max-height:100%!important;
-          aspect-ratio:16/9!important;
-          align-self:center!important;
-          justify-self:center!important;
+          aspect-ratio:auto!important;
           overflow:hidden!important;
         }
         body[data-run-active="true"] .ccg-game>.game-area>.canvas-wrap>canvas#game,
@@ -103,8 +119,44 @@
           height:100%!important;
           max-width:100%!important;
           max-height:100%!important;
-          aspect-ratio:16/9!important;
-          object-fit:contain!important;
+          aspect-ratio:auto!important;
+          object-fit:fill!important;
+        }
+        body[data-run-active="true"] .ccg-game>.game-area>#v104-touch-controls{
+          grid-template-columns:138px minmax(0,1fr)!important;
+          gap:5px!important;
+          min-height:146px!important;
+          max-height:146px!important;
+          padding:4px max(5px,env(safe-area-inset-right)) max(4px,env(safe-area-inset-bottom)) max(5px,env(safe-area-inset-left))!important;
+        }
+        body[data-run-active="true"] .ccg-game #v104-touch-controls .v104-touch-pad{
+          grid-template-columns:repeat(3,44px)!important;
+          grid-template-rows:repeat(3,44px)!important;
+          gap:2px!important;
+          width:136px!important;
+          height:136px!important;
+        }
+        body[data-run-active="true"] .ccg-game #v104-touch-controls .v104-touch-pad .v104-touch-btn{
+          min-width:44px!important;
+          min-height:44px!important;
+          padding:0!important;
+        }
+        body[data-run-active="true"] .ccg-game #v104-touch-controls .v104-touch-actions{
+          height:136px!important;
+          gap:4px!important;
+        }
+        body[data-run-active="true"] .ccg-game #v104-touch-controls .v104-touch-btn{
+          min-height:44px!important;
+          padding:3px 2px!important;
+          font-size:9.5px!important;
+          line-height:1.08!important;
+        }
+      }
+      @media (orientation:portrait) and (max-width:380px){
+        body[data-run-active="true"] .ccg-game>.game-area>#v104-touch-controls{
+          grid-template-columns:136px minmax(0,1fr)!important;
+          min-height:146px!important;
+          max-height:146px!important;
         }
       }
     `;
