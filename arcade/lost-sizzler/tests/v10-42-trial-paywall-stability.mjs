@@ -32,9 +32,10 @@ assert.doesNotMatch(paywall,/createElement\("style"\)/,"runtime must not inject 
 assert.match(commerce,/const ENDPOINT="ccg-commerce";/,"browser commerce must use the dedicated Supabase Edge Function");
 assert.match(commerce,/productSlug:PRODUCT_SLUG/,"commerce adapter must expose the canonical product identity");
 assert.match(commerce,/functions\.invoke\(ENDPOINT/,"commerce calls must route through authenticated Supabase function invocation");
-assert.match(commerce,/action:\"status\"|invoke\("status"\)/,"commerce adapter must expose an ownership/status check");
+assert.match(commerce,/invoke\("status"\)/,"commerce adapter must expose an ownership/status check");
 assert.match(commerce,/invoke\("create_checkout"\)/,"checkout must be created server-side");
 assert.match(commerce,/invoke\("download"\)/,"download authorization must be created server-side");
+assert.match(commerce,/checkout_configured:Boolean\(data\.checkoutConfigured\)/,"server checkout readiness must be surfaced to the paywall");
 assert.doesNotMatch(commerce,/STRIPE_SECRET|service_role|SUPABASE_SERVICE_ROLE/i,"browser adapter must never contain Stripe or Supabase server secrets");
 
 assert.match(css,/#v142-trial-countdown/,"countdown styling must be present");
