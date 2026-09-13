@@ -8,6 +8,7 @@ const root=path.resolve(here,"..");
 const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 
 const main=read("js/game-main.js");
+const play=read("js/game-play.js");
 const config=read("js/config.js");
 const deathCache=read("js/v10-4-death-cache.js");
 const progressionRecovery=read("js/v10-41-progression-recovery.js");
@@ -25,7 +26,8 @@ assert.doesNotMatch(index,/M SOUND/,"published keyboard help must not advertise 
 
 assert.match(map,/document\.fullscreenElement/,"full map must mount inside the active fullscreen element");
 assert.match(map,/function clearMovementState/,"opening/closing the map must clear held movement state");
-assert.match(map,/mode="paused"/,"Solo full map must freeze the run while visible");
+assert.match(map,/const MAP_MODE="fullmap"/,"full map must use a dedicated non-playing mode while visible");
+assert.match(play,/if\(mode!=="playing"\)\{fireBuffer1=fireBuffer2=0;return\}/,"every non-playing mode, including the full map, must freeze simulation updates");
 assert.match(map,/progressionRecoveryMarkers/,"full map must draw returned progression-item markers");
 assert.match(map,/drawMarker\(context,p1,"#6cecff"/,"full map must draw the player marker");
 

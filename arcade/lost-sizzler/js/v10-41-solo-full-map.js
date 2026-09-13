@@ -1,9 +1,10 @@
-/* The Lost Sizzler V10.41 — solo full-level explored map and M-key ownership. */
+/* The Lost Sizzler V10.41 — full-level explored map and M-key ownership for Solo and local split-screen. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V141_SOLO_FULL_MAP__)return;
   window.__CCG_LOST_SIZZLER_V141_SOLO_FULL_MAP__=true;
 
+  const MAP_MODE="fullmap";
   const state={open:false,previousMode:"playing",pausedByMap:false,timer:0,renderedAt:0};
   const CELL=8;
 
@@ -22,8 +23,8 @@
     return Boolean(target.closest("input,textarea,select,[contenteditable='true'],[contenteditable='']"));
   }
 
-  function soloRun(){
-    try{return typeof playMode!=="undefined"&&playMode==="solo"&&document.body?.dataset?.runActive==="true"}catch(_){return false}
+  function mapRun(){
+    try{return typeof playMode!=="undefined"&&(playMode==="solo"||playMode==="split")&&document.body?.dataset?.runActive==="true"}catch(_){return false}
   }
 
   function panelHost(){
@@ -105,7 +106,7 @@
 
   function drawMap(){
     if(!state.open)return;
-    if(!soloRun()||typeof world==="undefined"||!world||typeof p1==="undefined"||!p1){closeMap(false);return}
+    if(!mapRun()||typeof world==="undefined"||!world||typeof p1==="undefined"||!p1){closeMap(false);return}
     const canvas=document.getElementById("ccg-solo-full-map-canvas"),context=canvas?.getContext?.("2d");
     if(!canvas||!context)return;
     const rows=Array.isArray(world.map)?world.map.length:0,cols=rows&&Array.isArray(world.map[0])?world.map[0].length:0;
@@ -159,7 +160,7 @@
   function stopTimer(){if(state.timer){clearInterval(state.timer);state.timer=0}}
 
   function openMap(){
-    if(state.open||!soloRun())return false;
+    if(state.open||!mapRun())return false;
     if(typeof mode==="undefined"||mode!=="playing")return false;
     ensureStyle();
     const panel=ensurePanel();
@@ -168,7 +169,10 @@
     document.body.dataset.ccgSoloMapOpen="true";
     panel.classList.remove("hidden");
     clearMovementState();
-    try{mode="paused"}catch(_){}
+    // Use a dedicated non-playing state. The game loop pauses for every mode
+    // other than "playing", while R56's orphan recovery only repairs legacy
+    // paused/inventory/dossier states when their own panels disappear.
+    try{mode=MAP_MODE}catch(_){}
     panel.querySelector("#ccg-solo-full-map-close")?.focus?.({preventScroll:true});
     startTimer();
     return true;
@@ -180,7 +184,7 @@
     document.getElementById("ccg-solo-full-map")?.classList.add("hidden");
     document.body.dataset.ccgSoloMapOpen="false";
     if(restore&&state.pausedByMap){
-      try{if(mode==="paused"&&document.body.dataset.runActive==="true")mode=state.previousMode||"playing"}catch(_){}
+      try{if(mode===MAP_MODE&&document.body.dataset.runActive==="true")mode=state.previousMode||"playing"}catch(_){}
     }
     state.pausedByMap=false;
     clearMovementState();
@@ -192,6 +196,7 @@
     if(isTypingTarget(event.target))return;
     if(event.code==="KeyM"){
       event.preventDefault();event.stopImmediatePropagation();
+      if(event.repeat)return;
       if(state.open)closeMap();else openMap();
       return;
     }
@@ -205,7 +210,7 @@
       if(node.textContent.includes("M SOUND"))node.textContent=node.textContent.replace("M SOUND","M MAP");
     }
     const sound=document.getElementById("sound-btn");
-    if(sound){sound.title="Toggle game sound/music. Keyboard M is reserved for the Solo full map.";sound.removeAttribute("aria-keyshortcuts")}
+    if(sound){sound.title="Toggle game sound/music. Keyboard M is reserved for the full explored map.";sound.removeAttribute("aria-keyshortcuts")}
   }
 
   const onResize=()=>{if(state.open)requestAnimationFrame(drawMap)};
@@ -227,5 +232,7 @@
     window.removeEventListener("resize",onResize);
     document.removeEventListener("fullscreenchange",onFullscreenChange);
   },{once:true});
-  window.CCGLostSizzlerSoloFullMapV141={state,open:openMap,close:closeMap,draw:drawMap,syncHost:syncPanelHost};
+  const api={state,open:openMap,close:closeMap,draw:drawMap,syncHost:syncPanelHost};
+  window.CCGLostSizzlerSoloFullMapV141=api;
+  window.CCGLostSizzlerFullMapV141=api;
 })();
