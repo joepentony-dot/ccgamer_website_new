@@ -38,13 +38,14 @@ Subscribe the PayPal REST app webhook to at least:
 - `PAYMENT.CAPTURE.DENIED`
 - `PAYMENT.CAPTURE.REFUNDED`
 - `PAYMENT.CAPTURE.REVERSED`
+- `CHECKOUT.PAYMENT-APPROVAL.REVERSED`
 - `CUSTOMER.DISPUTE.CREATED`
 
-`ccg-paypal-webhook` verifies every webhook through PayPal's `verify-webhook-signature` API using the registered `PAYPAL_WEBHOOK_ID`. Successful capture events are also checked against the server-side CCG checkout session, product price and GBP currency before entitlement is granted. Refunds, reversals and disputes revoke access.
+`ccg-paypal-webhook` verifies every webhook through PayPal's `verify-webhook-signature` API using the registered `PAYPAL_WEBHOOK_ID`. Successful capture events are checked against the server-side CCG checkout session, product price and GBP currency before entitlement is granted. A full refund is confirmed from the original capture before access is revoked; a partial refund is recorded without revoking ownership. Reversals and disputes revoke access, while an approval reversal marks the checkout as failed.
 
 ## Release safety
 
-Start with `PAYPAL_ENVIRONMENT=sandbox` and complete an end-to-end sandbox purchase, return, capture, webhook, refund and dispute test before changing to `live`. Do not enable live PayPal credentials merely because repository CI passes.
+Start with `PAYPAL_ENVIRONMENT=sandbox` and complete an end-to-end sandbox purchase, return, capture, webhook, full-refund and dispute test before changing to `live`. Do not enable live PayPal credentials merely because repository CI passes.
 
 ## Download publication
 
