@@ -6,7 +6,7 @@
 
   const STYLE_ID="ccg-v142-r19-mobile-trap-layout";
   const MONITOR_MS=80;
-  const state={timer:0,rearms:0,damageOwnerInstalls:0,trapHits:0};
+  const state={timer:0,rearms:0,damageOwnerInstalls:0,trapHits:0,canvasAspectRepairs:0};
 
   const specialType=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")}catch(_){return""}};
   const ordinaryDungeon=()=>document.body?.dataset?.runActive==="true"&&!new Set(["horde-survivor","sizzler-saboteurs"]).has(specialType());
@@ -74,6 +74,48 @@
         if(changed)state.rearms++;
       }
     }
+    return true
+  }
+
+  function portraitTouchViewport(){
+    try{
+      const portrait=window.matchMedia?.("(orientation: portrait)")?.matches ?? (Number(window.innerHeight||0)>=Number(window.innerWidth||0));
+      const coarse=window.matchMedia?.("(pointer: coarse)")?.matches===true;
+      return Boolean(portrait&&(coarse||Number(window.innerWidth||0)<=900));
+    }catch(_){return false}
+  }
+
+  function syncPortraitCanvasAspect(){
+    if(!ordinaryDungeon()||!portraitTouchViewport())return false;
+    const wrap=document.querySelector?.(".canvas-wrap");
+    const gameCanvas=document.getElementById?.("game")||window.canvas||globalThis.canvas;
+    if(!wrap||!gameCanvas)return false;
+    const rect=wrap.getBoundingClientRect?.();
+    const cssW=Number(rect?.width||0),cssH=Number(rect?.height||0);
+    if(!Number.isFinite(cssW)||!Number.isFinite(cssH)||cssW<2||cssH<2)return false;
+
+    /* The canonical resize guard protects the render budget with a 640x360
+       minimum backing store. On narrow portrait phones that independently
+       clamps width but not height, producing a backing-store aspect ratio that
+       no longer matches the displayed canvas. Scale both axes together instead:
+       square dungeon tiles stay square while the camera can use the taller phone
+       viewport rather than stretching a landscape frame. */
+    const scale=Math.max(1,640/cssW,360/cssH);
+    let targetW=Math.max(2,Math.round(cssW*scale));
+    let targetH=Math.max(2,Math.round(cssH*scale));
+    const maxPixels=1900000;
+    if(targetW*targetH>maxPixels){
+      const budgetScale=Math.sqrt(maxPixels/(targetW*targetH));
+      targetW=Math.max(2,Math.floor(targetW*budgetScale));
+      targetH=Math.max(2,Math.floor(targetH*budgetScale));
+    }
+    const cssAspect=cssW/cssH,currentAspect=Number(gameCanvas.width||0)/Math.max(1,Number(gameCanvas.height||0));
+    const targetAspect=targetW/targetH;
+    if(Math.abs(currentAspect-cssAspect)<=0.004&&Math.abs(currentAspect-targetAspect)<=0.004)return false;
+    gameCanvas.width=targetW;gameCanvas.height=targetH;
+    try{const gameCtx=window.ctx||globalThis.ctx;if(gameCtx)gameCtx.imageSmoothingEnabled=false}catch(_){}
+    try{window.cameras?.clear?.();globalThis.cameras?.clear?.()}catch(_){}
+    state.canvasAspectRepairs++;
     return true
   }
 
@@ -168,6 +210,7 @@
     installPortraitLayout();
     installTrapDamageOwner();
     rearmInactiveTrapContacts();
+    syncPortraitCanvasAspect();
   }
 
   installPortraitLayout();
@@ -176,5 +219,5 @@
   state.timer=setInterval(()=>{try{tick()}catch(error){console.warn("[C64 Dungeon Carnage r19] mobile stability tick failed safely",error)}},MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
-  window.CCGLostSizzlerV142R19MobileTrapLayoutStability={installPortraitLayout,installTrapDamageOwner,rearmInactiveTrapContacts,trapActive,get state(){return state}};
+  window.CCGLostSizzlerV142R19MobileTrapLayoutStability={installPortraitLayout,installTrapDamageOwner,rearmInactiveTrapContacts,syncPortraitCanvasAspect,trapActive,get state(){return state}};
 })();
