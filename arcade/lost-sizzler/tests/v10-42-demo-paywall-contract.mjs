@@ -19,17 +19,22 @@ assert(source.includes('trialMode:true'),'The browser-facing paywall API must ex
 assert(source.includes('demoMode:false'),'Legacy pre-run demo locking must stay disabled.');
 assert(source.includes('PERMANENT CCG ACCOUNT OWNERSHIP'),'Purchase presentation must explain permanent account ownership.');
 assert(source.includes('ALL FUTURE GAME UPDATES INCLUDED'),'Purchase presentation must state that future C64 Dungeon Carnage updates are included.');
+assert(source.includes('PAYPAL VERIFIED'),'Purchase presentation must identify PayPal as the payment-verification provider.');
+assert(source.includes('BUY SECURELY WITH PAYPAL'),'Signed-in buyers must receive the PayPal purchase action.');
 assert(source.includes('SIGN IN OR CREATE A CCG ACCOUNT'),'Signed-out players must be directed to account access before checkout.');
-assert(source.includes('if(!(await signedIn()))'),'Checkout must verify CCG account authentication before invoking Stripe.');
+assert(source.includes('if(!(await signedIn()))'),'Checkout must verify CCG account authentication before invoking PayPal.');
 assert(source.includes('const result=await start({product:PRODUCT_SLUG});'),'Checkout initiation must go through the commerce provider.');
-assert(source.includes('const value=await entitlement();if(unlockRuntime(value))'),'An already-owned Checkout response must still be followed by a fresh entitlement read before unlock.');
+assert(source.includes('capturePayPalReturn'),'Approved PayPal returns must be captured server-side before ownership restoration.');
+assert(source.includes('providerMethod(["captureReturn","captureCheckout"])'),'PayPal return capture must go through the commerce provider.');
+assert(source.includes('const value=await entitlement();if(unlockRuntime(value))'),'An already-owned checkout response must still be followed by a fresh entitlement read before unlock.');
 assert(source.includes('if(!activePermanent(entitlementValue))return false'),'Only a permanent entitlement returned through the commerce-provider path may unlock the runtime.');
 assert(source.includes('finally{state.checking=false}'),'Paywall presentation mutex must always release.');
 assert(source.includes('if(state.expired&&!state.entitled)return false'),'Expired trial paywall must not be dismissible before ownership is verified.');
 assert(source.includes('lockRuntime();showPaywall({reason:"trial-expired"})'),'Trial expiry must stop gameplay and present the purchase gate.');
 assert(source.includes('localStorage.setItem(TRIAL_STORAGE_KEY'),'Trial deadline must persist across reloads in the same browser profile.');
-assert(source.includes('purchase==="success"'),'Stripe Checkout success return must trigger ownership restoration.');
-assert(source.includes('refreshEntitlement({poll:true})'),'Checkout return must tolerate webhook propagation before deciding ownership is still pending.');
+assert(source.includes('purchase==="success"'),'PayPal success return must trigger capture and ownership restoration.');
+assert(source.includes('refreshEntitlement({poll:true})'),'PayPal return must tolerate entitlement propagation before deciding ownership is still pending.');
+assert(source.includes('url.searchParams.delete("token")'),'PayPal order tokens must be removed from the address bar after processing.');
 assert(source.includes('data-download>DOWNLOAD GAME'),'Verified owners must receive the secure download action when a package is published.');
 assert(source.includes('const safeOfferText=')&&source.includes('.trim().slice(0,32)'),'Commerce-controlled offer text must be normalized and length-bounded before presentation.');
 assert(source.includes('${esc(offer.display)} ONE-OFF'),'Commerce-controlled display-price text must be HTML-escaped before entering the paywall template.');
@@ -40,4 +45,4 @@ assert(!source.includes('refreshEntitlement,unlockRuntime})'),'Direct browser ac
 assert(!source.includes('refreshEntitlement,state,')&&!source.includes('state,showPaywall'),'Mutable entitlement state must not be exported through the public paywall API.');
 assert(source.includes('credentials:')===false,'The presentation layer must not embed privileged network credentials.');
 
-console.log('C64 Dungeon Carnage V10.42 timed trial, Stripe entitlement, safe offer rendering and permanent-unlock contract passed.');
+console.log('C64 Dungeon Carnage V10.42 timed trial, PayPal entitlement, safe offer rendering and permanent-unlock contract passed.');
