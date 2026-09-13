@@ -52,6 +52,11 @@
          the base invulnerability field, so preserve the successful trap hit's
          canonical protection window independently across a brief leave/re-entry. */
       const contact=activeTrapContact(player),contactKey=String(contact?.key||"");
+      /* R19 owns occupied floor-trap contacts only. Environmental owners such as
+         R60 deliberately accept trap-labelled damage without an occupied floor
+         trap (for example stale-invulnerability recovery). Delegating that case
+         preserves their established ownership instead of swallowing it here. */
+      if(!contactKey)return current.apply(this,arguments);
       const now=performance.now();
       if(contactKey){
         const protectedUntil=Number(trapProtectionUntil.get(contactKey)||0);
