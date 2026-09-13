@@ -11,14 +11,19 @@ const mime={".js":"text/javascript; charset=utf-8",".css":"text/css; charset=utf
 
 const harness=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body data-run-active="false"><main class="ccg-game"><div id="pause" class="hidden"></div></main><script>
 var mode="menu";var input=new Set();var UI={pause:document.getElementById("pause")};
-const params=new URLSearchParams(location.search);window.__TEST_SIGNED_IN__=params.get("signedIn")==="1";window.__TEST_ENTITLED__=params.get("entitled")==="1";window.__TEST_DOWNLOAD_READY__=params.get("download")==="1";
+const params=new URLSearchParams(location.search);window.__TEST_SIGNED_IN__=params.get("signedIn")==="1";window.__TEST_ENTITLED__=params.get("entitled")==="1";window.__TEST_DOWNLOAD_READY__=params.get("download")==="1";window.__TEST_CAPTURE_CALLS__=0;
 window.ccgSupabase={
   waitForAuth:async()=>window.__TEST_SIGNED_IN__?{user:{id:"test-user",email:"test@example.invalid"}}:null,
   getClient:async()=>({functions:{invoke:async(endpoint,{body})=>{
     if(endpoint!=="ccg-commerce")return{data:{ok:false,error:"wrong endpoint"},error:null};
     if(body.action==="status")return{data:{ok:true,signedIn:window.__TEST_SIGNED_IN__,entitled:window.__TEST_ENTITLED__,entitlement:window.__TEST_ENTITLED__?{status:"active",purchased_at:"2026-09-13T00:00:00Z"}:null,product:{slug:"c64-dungeon-carnage",name:"C64 Dungeon Carnage",displayPrice:"£1.99",currency:"gbp"},checkoutConfigured:true,paymentProvider:"paypal",downloadReady:window.__TEST_DOWNLOAD_READY__},error:null};
     if(body.action==="create_checkout")return{data:{ok:true,checkoutUrl:"https://www.paypal.test/checkoutnow?token=PAYPAL123",orderId:"PAYPAL123"},error:null};
-    if(body.action==="capture_checkout")return{data:{ok:true,entitled:true,orderId:body.orderId,captureId:"CAPTURE123"},error:null};
+    if(body.action==="capture_checkout"){
+      window.__TEST_CAPTURE_CALLS__+=1;
+      if(body.orderId!=="PAYPAL123")return{data:{ok:false,error:"wrong order",code:"invalid_order"},error:null};
+      window.__TEST_ENTITLED__=true;
+      return{data:{ok:true,entitled:true,orderId:body.orderId,captureId:"CAPTURE123"},error:null};
+    }
     if(body.action==="download")return{data:{ok:true,url:"/private-test-download.zip",expiresIn:120},error:null};
     return{data:{ok:false,error:"unknown action"},error:null};
   }}})
@@ -92,7 +97,7 @@ try{
 
   const ownedContext=await browser.newContext({viewport:{width:390,height:844}});
   const owned=await ownedContext.newPage();
-  await owned.goto(`${origin}/paywall-harness.html?purchase=success&token=PAYPAL123&signedIn=1&entitled=1&download=1`,{waitUntil:"load"});
+  await owned.goto(`${origin}/paywall-harness.html?purchase=success&token=PAYPAL123&signedIn=1&download=1`,{waitUntil:"load"});
   await owned.waitForFunction(()=>document.body.dataset.fullGameEntitled==="true");
   await owned.waitForFunction(()=>document.getElementById("v142-demo-paywall")?.classList.contains("hidden")===false);
   const ownership=await owned.evaluate(()=>({
@@ -102,9 +107,11 @@ try{
     download:Boolean(document.querySelector("[data-download]")),
     startsTrial:window.CCGLostSizzlerV142DemoPaywall.startTrial(),
     purchaseParam:new URL(location.href).searchParams.get("purchase"),
-    tokenParam:new URL(location.href).searchParams.get("token")
+    tokenParam:new URL(location.href).searchParams.get("token"),
+    captureCalls:window.__TEST_CAPTURE_CALLS__
   }));
-  assert.equal(ownership.entitled,"true","server-confirmed PayPal ownership must bypass the trial lock");
+  assert.equal(ownership.captureCalls,1,"PayPal success return must capture the approved order exactly once before ownership is restored");
+  assert.equal(ownership.entitled,"true","server-captured PayPal ownership must bypass the trial lock");
   assert.notEqual(ownership.expired,"true","owned account must not remain trial-locked");
   assert.match(ownership.text,/FULL GAME OWNED/i,"successful PayPal return must render owned state");
   assert.equal(ownership.download,true,"owned account with a published build must receive the download action");
