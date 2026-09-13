@@ -150,8 +150,8 @@ async function readPlayerTrapState(page){
 
 async function resetForInvulnerableTrapReentry(page,fixture){
   await page.evaluate(({origin})=>globalThis.eval(`(()=>{
-    p1.x=${Number(fixture.origin.x)};p1.y=${Number(fixture.origin.y)};
-    p1.rx=${Number(fixture.origin.x)};p1.ry=${Number(fixture.origin.y)};
+    p1.x=${Number(origin.x)};p1.y=${Number(origin.y)};
+    p1.rx=${Number(origin.x)};p1.ry=${Number(origin.y)};
     p1.hitStunMs=0;move1=0;input.clear();
     window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.rearmInactiveTrapContacts?.();
   })()`),{origin:fixture.origin});
