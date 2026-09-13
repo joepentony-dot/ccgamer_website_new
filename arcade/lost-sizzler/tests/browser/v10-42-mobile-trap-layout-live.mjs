@@ -60,18 +60,22 @@ async function runViewport(viewport){
   await page.waitForFunction(()=>document.body.dataset.runActive==="true");
   // V10.4 deliberately hides touch controls while the title/menu overlay owns
   // the screen. A runActive flag can become true just before that overlay is
-  // retired, so qualify the actual playable phone state rather than sampling
-  // the controls during the short transition and mistaking display:none for a
-  // zero-sized touch target.
+  // retired, so qualify the actual rendered playable-phone state rather than
+  // relying on an implementation-specific class name. The real acceptance
+  // boundary is: menu hidden, touch dock rendered/visible, and all four movement
+  // targets have non-zero geometry. The 44px minimum remains asserted below.
   await page.waitForFunction(()=>document.getElementById("menu")?.classList.contains("hidden")===true);
   await page.waitForFunction(()=>{
     const touch=document.getElementById("v104-touch-controls");
     const buttons=[...document.querySelectorAll("#v104-touch-controls .v104-touch-pad .v104-touch-btn")];
-    if(!touch?.classList.contains("active")||buttons.length!==4)return false;
+    if(!touch||buttons.length!==4)return false;
+    const style=getComputedStyle(touch);
+    if(style.display==="none"||style.visibility==="hidden"||Number(style.opacity||1)<=0)return false;
     const touchRect=touch.getBoundingClientRect();
     return touchRect.width>0&&touchRect.height>0&&buttons.every(button=>{
       const rect=button.getBoundingClientRect();
-      return rect.width>0&&rect.height>0;
+      const buttonStyle=getComputedStyle(button);
+      return buttonStyle.display!=="none"&&buttonStyle.visibility!=="hidden"&&Number(buttonStyle.opacity||1)>0&&rect.width>0&&rect.height>0;
     });
   });
   await page.waitForTimeout(160);
