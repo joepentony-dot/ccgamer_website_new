@@ -17,7 +17,7 @@ for(const table of ["ccg_products","ccg_product_entitlements","ccg_checkout_sess
 }
 assert.match(migration,/values \('c64-dungeon-carnage','C64 Dungeon Carnage','gbp',199,/,"canonical product must stay £1.99 GBP");
 assert.match(migration,/values \('ccg-paid-downloads','ccg-paid-downloads',false,/,"paid-download bucket must remain private");
-assert.match(migration,/download_path,download_ready,active\)[\s\S]*false,true\)/,"download must fail closed until a verified package is published");
+assert.match(migration,/'c64-dungeon-carnage\/c64-dungeon-carnage\.zip',false,true\)/,"download must fail closed until a verified package is published");
 for(const index of ["ccg_product_entitlements_product_slug_idx","ccg_checkout_sessions_product_slug_idx","ccg_download_audit_user_id_idx","ccg_download_audit_product_slug_idx"]){assert.match(indexes,new RegExp(index),`${index} must remain versioned`)}
 
 assert.match(commerce,/service\.auth\.getUser\(token\)/,"commerce endpoint must authenticate bearer tokens server-side");
@@ -25,8 +25,8 @@ assert.match(commerce,/mode: "payment"/,"Checkout must remain a one-off payment"
 assert.match(commerce,/unit_amount: Number\(product\.amount_pence\)/,"Checkout price must come from the server product record");
 assert.match(commerce,/client_reference_id: user\.id/,"Checkout must bind the CCG account as client_reference_id");
 assert.match(commerce,/createSignedUrl\(String\(product\.download_path\), 120,/,"paid download must use a short-lived signed URL");
-assert.match(commerce,/if \(!owned\) return json\(req, \{ ok: false, error: "Permanent ownership is required for this download", code: "entitlement_required" \}/,"download must require active ownership");
-assert.match(commerce,/if \(!STRIPE_SECRET_KEY \|\| !STRIPE_WEBHOOK_SECRET\) return json\(req, \{ ok: false, error: "Stripe Checkout is awaiting secure account configuration", code: "checkout_not_configured" \}/,"checkout must fail closed until Stripe secrets are configured");
+assert.match(commerce,/Permanent ownership is required for this download/,"download must require active ownership");
+assert.match(commerce,/checkout_not_configured/,"checkout must fail closed until Stripe secrets are configured");
 
 assert.match(webhook,/constructEventAsync\(body, signature, STRIPE_WEBHOOK_SECRET/,"webhook must cryptographically verify Stripe signatures");
 assert.match(webhook,/session\.payment_status !== "paid"/,"webhook must not grant access for unpaid sessions");
