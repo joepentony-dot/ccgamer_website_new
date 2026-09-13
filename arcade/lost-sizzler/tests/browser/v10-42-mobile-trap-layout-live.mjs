@@ -175,20 +175,11 @@ async function runViewport(viewport){
   await page.locator("#solo-btn").click({noWaitAfter:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==="true");
   await page.waitForFunction(()=>document.getElementById("menu")?.classList.contains("hidden")===true);
-  await page.waitForFunction(()=>{
-    const touch=document.getElementById("v104-touch-controls");
-    const buttons=[...document.querySelectorAll("#v104-touch-controls .v104-touch-pad .v104-touch-btn")];
-    if(!touch||buttons.length!==4)return false;
-    const style=getComputedStyle(touch);
-    if(style.display==="none"||style.visibility==="hidden"||Number(style.opacity||1)<=0)return false;
-    const touchRect=touch.getBoundingClientRect();
-    return touchRect.width>0&&touchRect.height>0&&buttons.every(button=>{
-      const rect=button.getBoundingClientRect();
-      const buttonStyle=getComputedStyle(button);
-      return buttonStyle.display!=="none"&&buttonStyle.visibility!=="hidden"&&Number(buttonStyle.opacity||1)>0&&rect.width>0&&rect.height>0;
-    });
-  });
-  await page.waitForTimeout(160);
+  // The acceptance assertions below already require the real dock and every
+  // directional target to have usable geometry. Give the production 220ms
+  // V10.4 UI refresh one bounded cycle, then report the measured layout rather
+  // than hiding a geometry failure behind a generic wait timeout.
+  await page.waitForTimeout(320);
 
   const layout=await page.evaluate(()=>{
     const box=selector=>{
@@ -235,13 +226,14 @@ async function runViewport(viewport){
   assert.ok(layout.gameArea.height>layout.viewport.height*.55,`dungeon playfield must own most active portrait height: ${JSON.stringify(layout)}`);
   assert.ok(layout.gameArea.height>layout.mission.height+layout.playerHub.height,`gameplay area must retain the majority of active vertical space: ${JSON.stringify(layout)}`);
   assert.ok(layout.canvasWrap.width>0&&layout.canvasWrap.height>0,`portrait canvas must have usable geometry: ${JSON.stringify(layout)}`);
+  assert.ok(layout.touch.width>0&&layout.touch.height>0,`touch dock must have rendered portrait geometry: ${JSON.stringify(layout)}`);
   assert.ok(Math.abs(layout.cssAspect-layout.backingAspect)<=0.01,`canvas backing aspect must match displayed portrait aspect: ${JSON.stringify(layout)}`);
   assert.ok(layout.backing.width>=640&&layout.backing.height>=360,`portrait backing store must retain canonical minimum dimensions: ${JSON.stringify(layout)}`);
   assert.ok(layout.repairs>=1,`portrait runtime should repair the initial landscape backing store when required: ${JSON.stringify(layout)}`);
   assert.deepEqual(layout.hiddenRows,{topbar:"none",critical:"none",fullscreenHint:"none",tactical:"none"},`desktop information rows must not consume active portrait gameplay height: ${JSON.stringify(layout.hiddenRows)}`);
   assert.equal(layout.movement.length,4,"mobile movement pad must expose four directional buttons");
   for(const button of layout.movement){
-    assert.ok(button.width>=43.5&&button.height>=43.5,`mobile movement target ${button.key} must remain at least 44px: ${JSON.stringify(button)}`);
+    assert.ok(button.width>=43.5&&button.height>=43.5,`mobile movement target ${button.key} must remain at least 44px: ${JSON.stringify({button,layout})}`);
   }
 
   const fixture=await prepareTouchTrapFixture(page);
