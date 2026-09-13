@@ -62,6 +62,16 @@ async function touchButton(page,context,selector){
   await page.waitForTimeout(80);
 }
 
+async function acceptMobilePlayNotice(page){
+  const notice=page.locator("#ccg-mobile-pc-notice");
+  if(!(await notice.isVisible()))return false;
+  const accept=page.locator("#ccg-mobile-pc-accept");
+  assert.equal(await accept.isVisible(),true,"mobile play notice must expose its production ACCEPT action");
+  await accept.click({noWaitAfter:true});
+  await page.waitForFunction(()=>document.getElementById("ccg-mobile-pc-notice")?.classList.contains("hidden")===true||getComputedStyle(document.getElementById("ccg-mobile-pc-notice")).display==="none");
+  return true;
+}
+
 async function prepareTouchTrapFixture(page){
   return page.evaluate(()=>globalThis.eval(`(()=>{
     if(!p1||!world||!host||!W)return{available:false,reason:"runtime unavailable"};
@@ -175,6 +185,10 @@ async function runViewport(viewport){
   await page.locator("#solo-btn").click({noWaitAfter:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==="true");
   await page.waitForFunction(()=>document.getElementById("menu")?.classList.contains("hidden")===true);
+  // Mobile production presents a real play notice before it exposes the touch
+  // controls. Exercise the same ACCEPT action a phone user must press; do not
+  // bypass the overlay by mutating classes or forcing the dock visible.
+  await acceptMobilePlayNotice(page);
   // The acceptance assertions below already require the real dock and every
   // directional target to have usable geometry. Give the production 220ms
   // V10.4 UI refresh one bounded cycle, then report the measured layout rather
