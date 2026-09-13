@@ -1,4 +1,14 @@
 {
   "version": 1,
-  "videos": {}
+  "videos": {
+    "the_happiest_days_of_your_life": {
+      "slug": "the-happiest-days-of-your-life",
+      "provider": "google-drive",
+      "playerUrl": "https://drive.google.com/file/d/1QgikSUH8QDdAE7k42IylKkUGuivxhEct/preview",
+      "actionUrl": "https://drive.google.com/file/d/1QgikSUH8QDdAE7k42IylKkUGuivxhEct/view?usp=drive_link",
+      "thumbnailUrl": "https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/happiest_days_of_your_life_the.jpg",
+      "actionLabel": "Watch Video",
+      "note": "Fallback source only: use this external video only when the canonical game record has no verified YouTube video ID."
+    }
+  }
 }
