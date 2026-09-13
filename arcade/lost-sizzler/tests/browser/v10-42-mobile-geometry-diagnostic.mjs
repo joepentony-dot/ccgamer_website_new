@@ -59,6 +59,61 @@ try{
     };
   });
   console.log(`MOBILE_OVERLAY_DIAGNOSTIC ${JSON.stringify(diagnostic)}`);
+
+  const notice=page.locator("#ccg-mobile-pc-notice");
+  if(await notice.isVisible()){
+    await page.locator("#ccg-mobile-pc-accept").click({noWaitAfter:true});
+    await page.waitForFunction(()=>document.getElementById("ccg-mobile-pc-notice")?.classList.contains("hidden")===true||getComputedStyle(document.getElementById("ccg-mobile-pc-notice")).display==="none");
+  }
+  await page.waitForTimeout(320);
+
+  const fixture=await page.evaluate(()=>globalThis.eval(`(()=>{
+    if(!p1||!world||!host||!W)return{available:false,reason:"runtime unavailable"};
+    host.enemies=[];host.items=[];host.doors=[];host.chests=[];host.switches=[];host.shrines=[];host.arenas=[];host.timedRooms=[];host.generators=[];
+    host.trader=null;host.startShop=null;host.rescue=null;host.boulderTrap=null;host.spiderNest=null;host.memoryPuzzle=null;host.sequenceTorchPuzzle=null;host.weightBridge=null;
+    host.sigilRoomId=null;host.sigilLockdown=false;host.sigilResolved=true;host.stalker=null;
+    const dirs=[{dx:1,dy:0,key:"KeyD"},{dx:-1,dy:0,key:"KeyA"},{dx:0,dy:1,key:"KeyS"},{dx:0,dy:-1,key:"KeyW"}];
+    let route=null;
+    for(let y=2;y<world.map.length-2&&!route;y++)for(let x=2;x<world.map[y].length-2&&!route;x++){
+      if(world.map[y]?.[x]!==0||!W.walkable(world.map,x,y,host))continue;
+      for(const dir of dirs){const tx=x+dir.dx,ty=y+dir.dy;if(world.map[ty]?.[tx]!==0||!W.walkable(world.map,tx,ty,host))continue;if((tx===world.exit?.x&&ty===world.exit?.y)||(x===world.exit?.x&&y===world.exit?.y))continue;route={x,y,targetX:tx,targetY:ty,...dir};break}
+    }
+    if(!route)return{available:false,reason:"no cardinal walkable route"};
+    const now=performance.now(),period=1000000;
+    host.traps=[{id:"mobile-diagnostic-trap",x:route.targetX,y:route.targetY,roomId:W.roomAt(world,route.targetX,route.targetY),kind:"spike",phase:(period-(now%period))%period,period,active:true}];
+    p1.x=route.x;p1.y=route.y;p1.rx=route.x;p1.ry=route.y;p1.health=8;p1.maxHealth=Math.max(Number(p1.maxHealth)||8,8);p1.armor=6;p1.invuln=0;p1.hitStunMs=0;move1=0;input.clear();
+    window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.rearmInactiveTrapContacts?.();
+    const chain=[];let owner=window.hurtPlayer;const seen=new Set();
+    while(typeof owner==="function"&&!seen.has(owner)&&chain.length<24){seen.add(owner);chain.push({name:owner.name||"anonymous",markers:Object.getOwnPropertyNames(owner).filter(key=>key.startsWith("__ccg")||key.toLowerCase().includes("original")),source:String(owner).slice(0,180)});owner=typeof owner.__ccgOriginal==="function"?owner.__ccgOriginal:null}
+    window.__ccgMobileTrapDamageTrace=[];
+    const original=window.hurtPlayer;
+    const traced=function mobileTrapDiagnosticTrace(player,amount,flash,source){const before={health:Number(player?.health||0),armor:Number(player?.armor||0),invuln:Number(player?.invuln||0),hitStunMs:Number(player?.hitStunMs||0)};const result=original.apply(this,arguments);window.__ccgMobileTrapDamageTrace.push({amount,flash,source,before,after:{health:Number(player?.health||0),armor:Number(player?.armor||0),invuln:Number(player?.invuln||0),hitStunMs:Number(player?.hitStunMs||0)}});return result};
+    traced.__ccgOriginal=original;window.hurtPlayer=traced;
+    return{available:true,key:route.key,origin:{x:route.x,y:route.y},target:{x:route.targetX,y:route.targetY},before:{health:p1.health,armor:p1.armor,invuln:p1.invuln},chain};
+  })()`));
+
+  if(fixture.available){
+    const button=page.locator(`#v104-touch-controls .v104-touch-pad [data-key="${fixture.key}"]`);
+    const box=await button.boundingBox();
+    if(box){
+      const cdp=await context.newCDPSession(page);
+      const x=box.x+box.width/2,y=box.y+box.height/2;
+      try{
+        await cdp.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{x,y,radiusX:1,radiusY:1,force:1,id:1}]});
+        await page.waitForTimeout(55);
+        await cdp.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
+      }finally{await cdp.detach()}
+      await page.waitForTimeout(140);
+    }
+  }
+  const trapDiagnostic=await page.evaluate(()=>globalThis.eval(`(()=>({
+    fixture:${JSON.stringify(fixture)},
+    after:{x:p1?.x,y:p1?.y,health:Number(p1?.health||0),armor:Number(p1?.armor||0),invuln:Number(p1?.invuln||0),hitStunMs:Number(p1?.hitStunMs||0)},
+    trace:window.__ccgMobileTrapDamageTrace||[],
+    r19:{state:window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||null}
+  }))()`));
+  console.log(`MOBILE_TRAP_DAMAGE_DIAGNOSTIC ${JSON.stringify(trapDiagnostic)}`);
+
   await context.close();
 }finally{
   await browser.close();
