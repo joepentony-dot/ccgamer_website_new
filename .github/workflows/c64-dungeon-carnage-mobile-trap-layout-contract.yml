@@ -6,6 +6,7 @@ on:
       - "arcade/lost-sizzler/js/v10-42-bootstrap.js"
       - "arcade/lost-sizzler/js/v10-42-r19-mobile-trap-layout-stability.js"
       - "arcade/lost-sizzler/tests/browser/v10-42-mobile-trap-layout-live.mjs"
+      - "arcade/lost-sizzler/tests/browser/v10-42-mobile-geometry-diagnostic.mjs"
       - "tests/v10-42-mobile-trap-layout-stability.mjs"
       - ".github/workflows/c64-dungeon-carnage-mobile-trap-layout-contract.yml"
   workflow_dispatch:
@@ -45,5 +46,7 @@ jobs:
           sudo rm -f /etc/apt/sources.list.d/google-chrome.list
           sudo apt-get update
           npx playwright install --with-deps chromium
+      - name: Report live mobile geometry
+        run: node arcade/lost-sizzler/tests/browser/v10-42-mobile-geometry-diagnostic.mjs
       - name: Verify live portrait geometry and trap damage
         run: node arcade/lost-sizzler/tests/browser/v10-42-mobile-trap-layout-live.mjs
