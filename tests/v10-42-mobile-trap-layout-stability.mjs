@@ -20,9 +20,13 @@ assert.ok(r19Index<r1Index,"mobile stability must load before the final R1/R18 g
 assert.ok(r1Index<r18Index,"R1 must remain immediately before R18 in the ordered bootstrap");
 
 assert.match(source,/__ccgV142R19MobileTrapDamage/,"trap damage must have an isolated owner marker");
+assert.match(source,/if\(Number\(player\.invuln\|\|0\)>0\)return false/,"trap damage owner must enforce canonical post-hit invulnerability before environment wrappers");
+assert.match(source,/trapContacts\.has\(contactKey\)/,"trap damage owner must suppress duplicate damage on one active trap contact");
+assert.match(source,/trapContacts\.add\(contactKey\)/,"successful trap health damage must latch the active contact");
+assert.match(source,/trapContacts\.delete\(contactKey\)/,"leaving or deactivating a trap must re-arm the contact latch");
 assert.match(source,/const beforeHealth=Number\(player\.health\|\|0\),beforeArmor=Number\(player\.armor\|\|0\)/,"trap damage owner must snapshot health and armour");
 assert.match(source,/player\.armor=0/,"ordinary floor traps must bypass armour for their promised health hit");
-assert.match(source,/finally\{player\.armor=beforeArmor\}/,"trap damage owner must restore armour after delegating the hit");
+assert.match(source,/finally\{[\s\S]*?player\.armor=beforeArmor/,"trap damage owner must restore armour after delegating the hit");
 assert.doesNotMatch(source,/player\.invuln=0/,"trap damage must preserve the canonical invulnerability contract");
 assert.match(source,/trapRuntime\?\.contact/,"mobile repair must use the canonical rare-events trap contact latch");
 assert.match(source,/trapCycles\.set\(key,false\)/,"mobile repair must re-arm the r57 trap-cycle latch while inactive");
@@ -147,8 +151,23 @@ assert.equal(player.health,afterFirstTrap,"post-hit invulnerability must prevent
 assert.equal(player.armor,beforeArmor,"duplicate trap suppression must not consume armour");
 
 player.invuln=0;
+context.hurtPlayer(player,1,false,"dungeon trap");
+assert.equal(player.health,afterFirstTrap,"the same active trap contact must remain latched after invulnerability expires");
+assert.equal(player.armor,beforeArmor,"latched duplicate trap contact must preserve armour");
+assert.equal(context.CCGLostSizzlerV142R19MobileTrapLayoutStability.state.trapContactBlocks,1,"duplicate active contact must be recorded as one blocked environmental trap call");
+
+player.x=3;
+context.CCGLostSizzlerV142R19MobileTrapLayoutStability.rearmInactiveTrapContacts();
+player.x=4;
+player.invuln=0;
+context.hurtPlayer(player,1,false,"spike trap");
+assert.equal(player.health,afterFirstTrap-1,"leaving the trap tile must re-arm one later contact hit");
+assert.equal(player.armor,beforeArmor,"re-armed floor trap health damage must still preserve armour");
+
+const afterRearmedTrap=player.health;
+player.invuln=0;
 context.hurtPlayer(player,1,false,"enemy melee");
-assert.equal(player.health,afterFirstTrap,"non-trap damage must retain the existing armour-first contract");
+assert.equal(player.health,afterRearmedTrap,"non-trap damage must retain the existing armour-first contract");
 assert.equal(player.armor,beforeArmor-1,"non-trap damage must still be absorbed by armour normally");
 
 console.log("v10-42 mobile trap/layout stability contract passed");
