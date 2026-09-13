@@ -24,6 +24,7 @@
   const currentMode=()=>{try{return typeof mode!=="undefined"?String(mode):""}catch(_){return""}};
   const editableTarget=target=>Boolean(target instanceof Element&&(target.matches("input,textarea,select,[contenteditable='true'],[contenteditable='']")||target.closest("input,textarea,select,[contenteditable='true'],[contenteditable='']")));
   const finePointer=()=>window.matchMedia?.("(pointer: fine)")?.matches!==false;
+  const spyActive=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")==="sizzler-saboteurs"}catch(_){return false}};
 
   function focusGame(){
     try{if(typeof focusGameplayKeyboard==="function")focusGameplayKeyboard();else{const game=document.getElementById("game");game?.focus?.({preventScroll:true})}}catch(_){}
@@ -86,11 +87,14 @@
       return;
     }
     if(!ATTACK_KEYS.has(event.code)||!activeRun())return;
+    // Spy Vs Spy owns F as its fullscreen key. Do not steal that established
+    // special-mode control while repairing normal Dungeon/Horde attack input.
+    if(event.code==="KeyF"&&spyActive())return;
     if(!recoverOrphanedGameplayMode())return;
     event.preventDefault();
     attackNow(event.code);
-    // The base KeyF owner toggles fullscreen before it reaches gameplay. Once a
-    // run is active F is an attack key, so the late owner must stop that path.
+    // The base KeyF owner toggles fullscreen before it reaches normal gameplay.
+    // Once an ordinary run is active F is an attack key, so stop that path.
     if(event.code==="KeyF"||event.code==="Numpad0")event.stopImmediatePropagation();
   },true);
   document.addEventListener("keyup",event=>{if(ATTACK_KEYS.has(event.code))try{input?.delete?.(event.code)}catch(_){}},true);
