@@ -36,7 +36,7 @@ assert.match(commerce,/\/v2\/checkout\/orders/,"commerce must create PayPal Orde
 assert.match(commerce,/intent: "CAPTURE"/,"PayPal checkout must remain a one-off capture payment");
 assert.match(commerce,/custom_id: user\.id/,"PayPal order must bind the signed-in CCG user server-side");
 assert.match(commerce,/amount: \{ currency_code: currency, value \}/,"PayPal price must come from the server product record");
-assert.match(commerce,/\/capture`/,"approved PayPal orders must be captured server-side");
+assert.ok(commerce.includes('/capture`'),"approved PayPal orders must be captured server-side");
 assert.match(commerce,/moneyToPence\(amount\?\.value\) !== Number\(product\.amount_pence\)/,"capture must verify the exact paid amount");
 assert.match(commerce,/createSignedUrl\(String\(product\.download_path\), 120,/,"paid download must use a short-lived signed URL");
 assert.match(commerce,/Permanent ownership is required for this download/,"download must require active ownership");
@@ -50,8 +50,13 @@ assert.match(webhook,/eventType === "PAYMENT\.CAPTURE\.COMPLETED"/,"completed ca
 assert.match(webhook,/moneyToPence\(resource\?\.amount\?\.value\) !== Number\(expected\.amount_pence\)/,"completed capture webhook must verify the paid amount");
 assert.match(webhook,/status: "active"/,"completed PayPal capture must create active entitlement");
 assert.match(webhook,/eventType === "PAYMENT\.CAPTURE\.REFUNDED"/,"refunds must be handled");
-assert.match(webhook,/eventType === "PAYMENT\.CAPTURE\.REVERSED"/,"reversals must be handled");
+assert.match(webhook,/\/v2\/payments\/captures\/\$\{encodeURIComponent\(captureId\)\}/,"refund handling must re-read the original capture from PayPal");
+assert.match(webhook,/toUpperCase\(\) === "REFUNDED"/,"only a fully refunded PayPal capture may revoke permanent ownership");
+assert.match(webhook,/Partial refund recorded/,"partial refunds must not revoke permanent ownership");
+assert.match(webhook,/eventType === "PAYMENT\.CAPTURE\.REVERSED"/,"capture reversals must be handled");
+assert.match(webhook,/eventType === "CHECKOUT\.PAYMENT-APPROVAL\.REVERSED"/,"approval reversals must be handled");
 assert.match(webhook,/eventType === "CUSTOMER\.DISPUTE\.CREATED"/,"payment disputes must be handled");
+assert.match(webhook,/\/v1\/customer\/disputes\/\$\{encodeURIComponent\(disputeId\)\}/,"dispute processing must be able to retrieve authoritative dispute details when the webhook omits transaction details");
 assert.match(webhook,/"disputed"/,"disputes must stop active entitlement");
 
 assert.match(adapter,/provider:"paypal-supabase"/,"browser commerce adapter must identify PayPal");
