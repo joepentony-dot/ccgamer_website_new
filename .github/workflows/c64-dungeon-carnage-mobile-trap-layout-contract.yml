@@ -1,0 +1,27 @@
+name: C64 Dungeon Carnage Mobile Trap Layout Contract
+
+on:
+  pull_request:
+    paths:
+      - "arcade/lost-sizzler/js/v10-42-bootstrap.js"
+      - "arcade/lost-sizzler/js/v10-42-r19-mobile-trap-layout-stability.js"
+      - "tests/v10-42-mobile-trap-layout-stability.mjs"
+      - ".github/workflows/c64-dungeon-carnage-mobile-trap-layout-contract.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mobile-trap-layout-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Verify mobile trap and portrait layout contract
+        run: node tests/v10-42-mobile-trap-layout-stability.mjs
