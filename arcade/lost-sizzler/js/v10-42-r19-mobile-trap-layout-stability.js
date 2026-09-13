@@ -6,9 +6,10 @@
 
   const STYLE_ID="ccg-v142-r19-mobile-trap-layout";
   const MONITOR_MS=80;
-  const state={timer:0,rearms:0,damageOwnerInstalls:0,trapHits:0,trapContactBlocks:0,canvasAspectRepairs:0};
+  const state={timer:0,rearms:0,damageOwnerInstalls:0,trapHits:0,trapContactBlocks:0,trapProtectionBlocks:0,canvasAspectRepairs:0};
   const trapContacts=new Set();
   const trapDamageInFlight=new Set();
+  const trapProtectionUntil=new Map();
 
   const specialType=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")}catch(_){return""}};
   const ordinaryDungeon=()=>document.body?.dataset?.runActive==="true"&&!new Set(["horde-survivor","sizzler-saboteurs"]).has(specialType());
@@ -50,11 +51,17 @@
     const wrapped=function hurtPlayerV142R19MobileTrapDamage(player,amount,flash,source){
       if(!ordinaryDungeon()||!player||!environmentalTrapSource(source))return current.apply(this,arguments);
       /* Floor-trap health damage is one hit per active contact. Later environment
-         wrappers deliberately own other hazard cadence and may bypass the base
-         invulnerability check, so enforce the canonical player invulnerability
-         and contact boundary here before delegating through that shared chain. */
-      if(Number(player.invuln||0)>0)return false;
+         wrappers deliberately own other hazard cadence and may bypass or mutate
+         the base invulnerability field, so preserve the successful trap hit's
+         canonical protection window independently across a brief leave/re-entry. */
       const contact=activeTrapContact(player),contactKey=String(contact?.key||"");
+      const now=performance.now();
+      if(contactKey){
+        const protectedUntil=Number(trapProtectionUntil.get(contactKey)||0);
+        if(protectedUntil>now){state.trapProtectionBlocks++;return false}
+        if(protectedUntil>0)trapProtectionUntil.delete(contactKey);
+      }
+      if(Number(player.invuln||0)>0)return false;
       if(contactKey&&trapContacts.has(contactKey)){state.trapContactBlocks++;return false}
       if(contactKey&&trapDamageInFlight.has(contactKey))return current.apply(this,arguments);
       if(contactKey)trapDamageInFlight.add(contactKey);
@@ -67,7 +74,11 @@
       }
       if(Number(player.health||0)<beforeHealth){
         state.trapHits++;
-        if(contactKey)trapContacts.add(contactKey)
+        if(contactKey){
+          trapContacts.add(contactKey);
+          const protectionMs=Math.max(0,Number(player.invuln||0));
+          if(protectionMs>0)trapProtectionUntil.set(contactKey,performance.now()+protectionMs)
+        }
       }
       return result
     };
@@ -87,10 +98,12 @@
     for(const player of players()){
       for(const trap of host?.traps||[]){
         if(!player||!trap)continue;
+        const contactKey=canonicalTrapKey(player,trap,rare?.trapRuntime);
+        const protectedUntil=Number(trapProtectionUntil.get(contactKey)||0);
+        if(protectedUntil>0&&protectedUntil<=now)trapProtectionUntil.delete(contactKey);
         const occupied=Number(trap.x)===Number(player.x)&&Number(trap.y)===Number(player.y);
         if(occupied&&trapActive(trap,now))continue;
         let changed=false;
-        const contactKey=canonicalTrapKey(player,trap,rare?.trapRuntime);
         if(trapContacts.delete(contactKey))changed=true;
         trapDamageInFlight.delete(contactKey);
         if(canonical?.delete?.(contactKey))changed=true;
