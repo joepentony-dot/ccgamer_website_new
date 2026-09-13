@@ -43,38 +43,20 @@ try{
     const snap=element=>{
       if(!element)return null;
       const r=element.getBoundingClientRect(),s=getComputedStyle(element);
-      return{tag:element.tagName,id:element.id||"",className:String(element.className||""),rect:{x:r.x,y:r.y,width:r.width,height:r.height,top:r.top,right:r.right,bottom:r.bottom,left:r.left},display:s.display,visibility:s.visibility,opacity:s.opacity,position:s.position,height:s.height,minHeight:s.minHeight,maxHeight:s.maxHeight,width:s.width,minWidth:s.minWidth,maxWidth:s.maxWidth,gridRow:s.gridRow,gridColumn:s.gridColumn,gridTemplateRows:s.gridTemplateRows,gridTemplateColumns:s.gridTemplateColumns,overflow:s.overflow};
+      return{id:element.id||"",className:String(element.className||""),rect:{x:r.x,y:r.y,width:r.width,height:r.height},display:s.display,visibility:s.visibility,position:s.position,gridRow:s.gridRow};
     };
-    const collectRules=(rules,source,media,out)=>{
-      for(const rule of rules||[]){
-        const nextMedia=rule.conditionText?`${media}${media?" && ":""}${rule.conditionText}`:media;
-        if(rule.cssRules){try{collectRules(rule.cssRules,source,nextMedia,out)}catch(_){}}
-        if(rule.cssText?.includes("v104-touch-controls"))out.push({source,media:nextMedia,selector:rule.selectorText||"",cssText:rule.cssText});
-      }
-    };
-    const touchRules=[];
-    for(const sheet of [...document.styleSheets]){
-      try{collectRules(sheet.cssRules,sheet.href||sheet.ownerNode?.id||"inline","",touchRules)}catch(error){touchRules.push({source:sheet.href||"unknown",error:String(error)})}
-    }
-    const shell=document.querySelector(".ccg-game"),area=document.querySelector(".ccg-game>.game-area"),wrap=document.querySelector(".canvas-wrap"),hub=document.querySelector(".ccg-game>.player-hub"),touch=document.getElementById("v104-touch-controls"),pad=touch?.querySelector(".v104-touch-pad");
+    const shell=document.querySelector(".ccg-game"),area=document.querySelector(".ccg-game>.game-area"),touch=document.getElementById("v104-touch-controls");
     return{
-      readyState:document.readyState,
       viewport:{width:innerWidth,height:innerHeight},
-      maxTouchPoints:navigator.maxTouchPoints,
-      coarse:matchMedia("(pointer: coarse)").matches,
-      portrait:matchMedia("(orientation: portrait)").matches,
-      touchClass:document.body.classList.contains("v104-touch-device"),
       runActive:document.body.dataset.runActive,
       menuHidden:document.getElementById("menu")?.classList.contains("hidden")===true,
-      shell:snap(shell),area:snap(area),wrap:snap(wrap),hub:snap(hub),touch:snap(touch),pad:snap(pad),
-      buttons:[...document.querySelectorAll("#v104-touch-controls .v104-touch-pad .v104-touch-btn")].map(snap),
-      children:[...shell.children].map(snap),
-      touchRules,
-      r19Style:Boolean(document.getElementById("ccg-v142-r19-mobile-trap-layout")),
-      r19State:{...(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||{})}
+      shell:snap(shell),area:snap(area),touch:snap(touch),
+      activeDirectOverlays:[...document.querySelectorAll(".game-area>.overlay:not(.hidden)")].map(snap),
+      allDirectOverlays:[...document.querySelectorAll(".game-area>.overlay")].map(element=>({id:element.id,className:String(element.className||""),display:getComputedStyle(element).display,hidden:element.classList.contains("hidden")})),
+      buttons:[...document.querySelectorAll("#v104-touch-controls .v104-touch-pad .v104-touch-btn")].map(snap)
     };
   });
-  console.log(`MOBILE_GEOMETRY_DIAGNOSTIC ${JSON.stringify(diagnostic)}`);
+  console.log(`MOBILE_OVERLAY_DIAGNOSTIC ${JSON.stringify(diagnostic)}`);
   await context.close();
 }finally{
   await browser.close();
