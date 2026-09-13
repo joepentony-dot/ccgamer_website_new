@@ -6,7 +6,9 @@
 
   const STYLE_ID="ccg-v142-r19-mobile-trap-layout";
   const MONITOR_MS=80;
-  const state={timer:0,rearms:0,damageOwnerInstalls:0,trapHits:0,canvasAspectRepairs:0};
+  const state={timer:0,rearms:0,damageOwnerInstalls:0,trapHits:0,trapContactBlocks:0,canvasAspectRepairs:0};
+  const trapContacts=new Set();
+  const trapDamageInFlight=new Set();
 
   const specialType=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")}catch(_){return""}};
   const ordinaryDungeon=()=>document.body?.dataset?.runActive==="true"&&!new Set(["horde-survivor","sizzler-saboteurs"]).has(specialType());
@@ -23,6 +25,15 @@
   }
 
   function environmentalTrapSource(source){return /trap/i.test(String(source||""))}
+  function activeTrapContact(player){
+    try{
+      const now=performance.now();
+      const trap=(host?.traps||[]).find(trap=>trap?.active&&Number(trap.x)===Number(player?.x)&&Number(trap.y)===Number(player?.y)&&trapActive(trap,now));
+      if(!trap)return null;
+      const rare=window.CCGLostSizzlerRareEventsBalance||null;
+      return{trap,key:canonicalTrapKey(player,trap,rare?.trapRuntime)}
+    }catch(_){return null}
+  }
   function chainHas(owner,marker){
     const seen=new Set();let current=owner;
     while(typeof current==="function"&&!seen.has(current)){
@@ -38,15 +49,26 @@
     if(chainHas(current,"__ccgV142R19MobileTrapDamage"))return true;
     const wrapped=function hurtPlayerV142R19MobileTrapDamage(player,amount,flash,source){
       if(!ordinaryDungeon()||!player||!environmentalTrapSource(source))return current.apply(this,arguments);
-      /* Ordinary floor traps promise health damage. Preserve the canonical
-         hurtPlayer owner, including its mode/invulnerability/death rules, but
-         temporarily remove armour from this one delegated hit so a phone run
-         cannot show “-1 health” while silently consuming ARM instead. */
+      /* Floor-trap health damage is one hit per active contact. Later environment
+         wrappers deliberately own other hazard cadence and may bypass the base
+         invulnerability check, so enforce the canonical player invulnerability
+         and contact boundary here before delegating through that shared chain. */
+      if(Number(player.invuln||0)>0)return false;
+      const contact=activeTrapContact(player),contactKey=String(contact?.key||"");
+      if(contactKey&&trapContacts.has(contactKey)){state.trapContactBlocks++;return false}
+      if(contactKey&&trapDamageInFlight.has(contactKey))return current.apply(this,arguments);
+      if(contactKey)trapDamageInFlight.add(contactKey);
       const beforeHealth=Number(player.health||0),beforeArmor=Number(player.armor||0);
       player.armor=0;
       let result;
-      try{result=current.apply(this,arguments)}finally{player.armor=beforeArmor}
-      if(Number(player.health||0)<beforeHealth)state.trapHits++;
+      try{result=current.apply(this,arguments)}finally{
+        player.armor=beforeArmor;
+        if(contactKey)trapDamageInFlight.delete(contactKey)
+      }
+      if(Number(player.health||0)<beforeHealth){
+        state.trapHits++;
+        if(contactKey)trapContacts.add(contactKey)
+      }
       return result
     };
     wrapped.__ccgV142R19MobileTrapDamage=true;
@@ -68,7 +90,10 @@
         const occupied=Number(trap.x)===Number(player.x)&&Number(trap.y)===Number(player.y);
         if(occupied&&trapActive(trap,now))continue;
         let changed=false;
-        if(canonical?.delete?.(canonicalTrapKey(player,trap,rare.trapRuntime)))changed=true;
+        const contactKey=canonicalTrapKey(player,trap,rare?.trapRuntime);
+        if(trapContacts.delete(contactKey))changed=true;
+        trapDamageInFlight.delete(contactKey);
+        if(canonical?.delete?.(contactKey))changed=true;
         const key=r57TrapKey(player,trap);
         if(r57?.state?.trapCycles?.get?.(key)===true){r57.state.trapCycles.set(key,false);changed=true}
         if(changed)state.rearms++;
