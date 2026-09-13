@@ -12,6 +12,7 @@ const commerce=fs.readFileSync(path.join(root,"supabase/functions/ccg-commerce/i
 const webhook=fs.readFileSync(path.join(root,"supabase/functions/ccg-paypal-webhook/index.ts"),"utf8");
 const adapter=fs.readFileSync(path.join(root,"arcade/lost-sizzler/js/v10-42-paypal-commerce.js"),"utf8");
 const config=fs.readFileSync(path.join(root,"supabase/config.toml"),"utf8");
+const readme=fs.readFileSync(path.join(root,"supabase/functions/README-c64-dungeon-carnage-commerce.md"),"utf8");
 
 for(const table of ["ccg_products","ccg_product_entitlements","ccg_checkout_sessions","ccg_stripe_webhook_events","ccg_download_audit"]){
   assert.match(migration,new RegExp(`alter table public\\.${table} enable row level security;`),`${table} must have RLS enabled`);
@@ -66,5 +67,8 @@ assert.doesNotMatch(adapter,/PAYPAL_CLIENT_SECRET|STRIPE_SECRET_KEY/,"browser Ja
 
 assert.match(config,/\[functions\.ccg-commerce\][\s\S]*?verify_jwt = false/,"commerce function uses custom bearer authentication");
 assert.match(config,/\[functions\.ccg-paypal-webhook\][\s\S]*?verify_jwt = false/,"PayPal webhook must accept external signed webhook requests");
+assert.match(readme,/The PayPal schema migration has been applied to Supabase project `lcslgxpgmttaexsorxik`\./,"release notes must reflect the applied PayPal migration");
+assert.match(readme,/`ccg-commerce` — PayPal Orders v2 create\/capture flow/,"release notes must reflect the deployed PayPal commerce function");
+assert.match(readme,/`ccg-paypal-webhook` — PayPal webhook verification and entitlement handling/,"release notes must reflect the deployed PayPal webhook function");
 
 console.log("C64 Dungeon Carnage PayPal commerce schema and webhook contract passed");
