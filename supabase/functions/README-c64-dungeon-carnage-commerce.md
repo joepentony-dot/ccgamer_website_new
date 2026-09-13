@@ -5,9 +5,9 @@ C64 Dungeon Carnage uses a two-minute browser trial followed by a permanent £1.
 ## Runtime
 
 - Browser paywall: `arcade/lost-sizzler/js/v10-42-demo-paywall.js`
-- Browser commerce adapter: `arcade/lost-sizzler/js/v10-42-stripe-commerce.js`
+- Browser commerce adapter: `arcade/lost-sizzler/js/v10-42-paypal-commerce.js`
 - Commerce API: `supabase/functions/ccg-commerce/index.ts`
-- Stripe webhook: `supabase/functions/ccg-stripe-webhook/index.ts`
+- PayPal webhook: `supabase/functions/ccg-paypal-webhook/index.ts`
 - Product slug: `c64-dungeon-carnage`
 - Price: GBP 1.99, read server-side from `public.ccg_products`
 - Private download bucket: `ccg-paid-downloads`
@@ -15,26 +15,36 @@ C64 Dungeon Carnage uses a two-minute browser trial followed by a permanent £1.
 
 ## Required Supabase Edge Function secrets
 
-The hosted functions fail closed until both Stripe secrets exist:
+The hosted functions fail closed until the PayPal configuration exists:
 
-- `STRIPE_SECRET_KEY`
-- `STRIPE_WEBHOOK_SECRET`
+- `PAYPAL_CLIENT_ID`
+- `PAYPAL_CLIENT_SECRET`
+- `PAYPAL_WEBHOOK_ID`
+- `PAYPAL_ENVIRONMENT` set explicitly to `sandbox` or `live`
 
-Never put either value in GitHub source or browser JavaScript.
+Never put PayPal client secrets or other privileged credentials in GitHub source or browser JavaScript.
 
-## Stripe webhook endpoint
+## PayPal flow
 
-`https://lcslgxpgmttaexsorxik.supabase.co/functions/v1/ccg-stripe-webhook`
+Checkout uses PayPal Orders v2 server-side. The signed-in CCG user creates an order through `ccg-commerce`, PayPal handles buyer approval, and the returning order is captured server-side before permanent entitlement is granted. The browser never receives the PayPal client secret.
 
-Subscribe the endpoint to:
+The webhook endpoint is:
 
-- `checkout.session.completed`
-- `checkout.session.async_payment_succeeded`
-- `checkout.session.expired`
-- `charge.refunded`
-- `charge.dispute.created`
+`https://lcslgxpgmttaexsorxik.supabase.co/functions/v1/ccg-paypal-webhook`
 
-The webhook verifies Stripe's signature and then verifies the account ID, product slug, currency and amount before granting entitlement.
+Subscribe the PayPal REST app webhook to at least:
+
+- `PAYMENT.CAPTURE.COMPLETED`
+- `PAYMENT.CAPTURE.DENIED`
+- `PAYMENT.CAPTURE.REFUNDED`
+- `PAYMENT.CAPTURE.REVERSED`
+- `CUSTOMER.DISPUTE.CREATED`
+
+`ccg-paypal-webhook` verifies every webhook through PayPal's `verify-webhook-signature` API using the registered `PAYPAL_WEBHOOK_ID`. Successful capture events are also checked against the server-side CCG checkout session, product price and GBP currency before entitlement is granted. Refunds, reversals and disputes revoke access.
+
+## Release safety
+
+Start with `PAYPAL_ENVIRONMENT=sandbox` and complete an end-to-end sandbox purchase, return, capture, webhook, refund and dispute test before changing to `live`. Do not enable live PayPal credentials merely because repository CI passes.
 
 ## Download publication
 
