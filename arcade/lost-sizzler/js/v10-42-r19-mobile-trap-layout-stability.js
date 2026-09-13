@@ -252,6 +252,7 @@
           object-fit:fill!important;
         }
         body[data-run-active="true"] .ccg-game>.game-area>#v104-touch-controls{
+          display:flex!important;
           grid-template-columns:138px minmax(0,1fr)!important;
           gap:5px!important;
           min-height:146px!important;
