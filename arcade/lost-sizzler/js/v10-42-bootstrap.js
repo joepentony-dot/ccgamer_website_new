@@ -34,6 +34,7 @@
     ["v10-42-warden-hunt-guidance.js","CCGLostSizzlerV142WardenHuntGuidance"],
     ["v10-42-warden-navigation-cues.js","CCGLostSizzlerV142WardenNavigationCues"],
     ["v10-42-warden-interface-consistency.js","CCGLostSizzlerV142WardenInterfaceConsistency"],
+    ["v10-42-r19-mobile-trap-layout-stability.js","CCGLostSizzlerV142R19MobileTrapLayoutStability"],
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
     ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"]
   ];
