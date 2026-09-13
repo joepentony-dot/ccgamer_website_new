@@ -62,7 +62,9 @@
       product_slug:PRODUCT_SLUG,
       product:PRODUCT_SLUG,
       currency:String(data.product?.currency||"GBP").toUpperCase(),
-      display_price:String(data.product?.displayPrice||"£1.99")
+      display_price:String(data.product?.displayPrice||"£1.99"),
+      checkout_configured:Boolean(data.checkoutConfigured),
+      download_ready:Boolean(data.downloadReady)
     };
   }
 
