@@ -45,6 +45,17 @@ try{
       const r=element.getBoundingClientRect(),s=getComputedStyle(element);
       return{tag:element.tagName,id:element.id||"",className:String(element.className||""),rect:{x:r.x,y:r.y,width:r.width,height:r.height,top:r.top,right:r.right,bottom:r.bottom,left:r.left},display:s.display,visibility:s.visibility,opacity:s.opacity,position:s.position,height:s.height,minHeight:s.minHeight,maxHeight:s.maxHeight,width:s.width,minWidth:s.minWidth,maxWidth:s.maxWidth,gridRow:s.gridRow,gridColumn:s.gridColumn,gridTemplateRows:s.gridTemplateRows,gridTemplateColumns:s.gridTemplateColumns,overflow:s.overflow};
     };
+    const collectRules=(rules,source,media,out)=>{
+      for(const rule of rules||[]){
+        const nextMedia=rule.conditionText?`${media}${media?" && ":""}${rule.conditionText}`:media;
+        if(rule.cssRules){try{collectRules(rule.cssRules,source,nextMedia,out)}catch(_){}}
+        if(rule.cssText?.includes("v104-touch-controls"))out.push({source,media:nextMedia,selector:rule.selectorText||"",cssText:rule.cssText});
+      }
+    };
+    const touchRules=[];
+    for(const sheet of [...document.styleSheets]){
+      try{collectRules(sheet.cssRules,sheet.href||sheet.ownerNode?.id||"inline","",touchRules)}catch(error){touchRules.push({source:sheet.href||"unknown",error:String(error)})}
+    }
     const shell=document.querySelector(".ccg-game"),area=document.querySelector(".ccg-game>.game-area"),wrap=document.querySelector(".canvas-wrap"),hub=document.querySelector(".ccg-game>.player-hub"),touch=document.getElementById("v104-touch-controls"),pad=touch?.querySelector(".v104-touch-pad");
     return{
       readyState:document.readyState,
@@ -58,6 +69,7 @@ try{
       shell:snap(shell),area:snap(area),wrap:snap(wrap),hub:snap(hub),touch:snap(touch),pad:snap(pad),
       buttons:[...document.querySelectorAll("#v104-touch-controls .v104-touch-pad .v104-touch-btn")].map(snap),
       children:[...shell.children].map(snap),
+      touchRules,
       r19Style:Boolean(document.getElementById("ccg-v142-r19-mobile-trap-layout")),
       r19State:{...(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||{})}
     };
