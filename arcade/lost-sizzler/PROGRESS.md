@@ -6,7 +6,8 @@
 
 - Public browser release remains the static, zero-server GitHub Pages build.
 - Current game version: V10.42.
-- Current `main` checkpoint at this review: `e1503dfff969e2925881d0cc3496fd733060deaa`.
+- Current `main` checkpoint at this review: `49b7dec28580070e7d725289a893275ebeabb242`.
+- `main` advanced four commits from the previous Dungeon Carnage checkpoint `e1503dfff969e2925881d0cc3496fd733060deaa`; the compare touches only `sitemap.xml` and `sitemap-games.xml`, so no Dungeon Carnage runtime candidate was invalidated by that movement.
 - The protected website intro-loader stack and `games/games.json` remain outside the active Dungeon Carnage work.
 - No active Dungeon Carnage release work is authorised to mutate Supabase/database/storage data or enable live checkout.
 
