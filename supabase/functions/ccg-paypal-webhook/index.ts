@@ -47,6 +47,16 @@ async function paypalAccessToken() {
   if (!response.ok || !data?.access_token) throw new Error(`paypal_oauth_${response.status}`);
   return String(data.access_token);
 }
+async function paypalGet(path: string) {
+  const token = await paypalAccessToken();
+  const response = await fetch(`${paypalBaseUrl()}${path}`, {
+    method: "GET",
+    headers: { "Authorization": `Bearer ${token}`, "Accept": "application/json" }
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(`paypal_get_${response.status}`);
+  return data;
+}
 async function verifyWebhook(req: Request, event: Record<string, unknown>) {
   const token = await paypalAccessToken();
   const body = {
@@ -69,6 +79,9 @@ async function verifyWebhook(req: Request, event: Record<string, unknown>) {
 }
 function relatedIds(resource: any) {
   return resource?.supplementary_data?.related_ids || {};
+}
+function firstDisputeTransaction(resource: any) {
+  return Array.isArray(resource?.disputed_transactions) ? resource.disputed_transactions[0] : null;
 }
 
 Deno.serve(async (req: Request) => {
@@ -147,10 +160,31 @@ Deno.serve(async (req: Request) => {
     if (sessionError) throw sessionError;
   }
   async function revokeByCapture(captureId: string, status: "refunded" | "disputed" | "revoked") {
-    if (!captureId) return;
+    if (!captureId) return false;
     const now = new Date().toISOString();
-    await service.from("ccg_product_entitlements").update({ status, revoked_at: now, updated_at: now }).eq("paypal_capture_id", captureId);
-    await service.from("ccg_checkout_sessions").update({ status: status === "revoked" ? "failed" : status, updated_at: now }).eq("paypal_capture_id", captureId);
+    const { data: entitlementRows, error: entitlementError } = await service.from("ccg_product_entitlements")
+      .update({ status, revoked_at: now, updated_at: now })
+      .eq("paypal_capture_id", captureId)
+      .eq("product_slug", PRODUCT_SLUG)
+      .select("user_id");
+    if (entitlementError) throw entitlementError;
+    const { error: checkoutError } = await service.from("ccg_checkout_sessions")
+      .update({ status: status === "revoked" ? "failed" : status, updated_at: now })
+      .eq("paypal_capture_id", captureId)
+      .eq("product_slug", PRODUCT_SLUG);
+    if (checkoutError) throw checkoutError;
+    return Boolean(entitlementRows?.length);
+  }
+  async function disputeCaptureId(resource: any) {
+    let transaction = firstDisputeTransaction(resource);
+    let captureId = String(transaction?.seller_transaction_id || transaction?.buyer_transaction_id || "");
+    if (captureId) return captureId;
+    const disputeId = String(resource?.dispute_id || resource?.id || "");
+    if (!disputeId) return "";
+    const details = await paypalGet(`/v1/customer/disputes/${encodeURIComponent(disputeId)}`);
+    transaction = firstDisputeTransaction(details);
+    captureId = String(transaction?.seller_transaction_id || transaction?.buyer_transaction_id || "");
+    return captureId;
   }
 
   try {
@@ -164,21 +198,24 @@ Deno.serve(async (req: Request) => {
 
     if (eventType === "PAYMENT.CAPTURE.REFUNDED") {
       const captureId = String(relatedIds(resource).capture_id || "");
-      await revokeByCapture(captureId, "refunded");
+      if (!captureId) throw new Error("paypal_refund_capture_missing");
+      const capture = await paypalGet(`/v2/payments/captures/${encodeURIComponent(captureId)}`);
+      if (String(capture?.status || "").toUpperCase() === "REFUNDED") await revokeByCapture(captureId, "refunded");
       await record(String(resource?.id || captureId));
-      return text("Refund handled", 200);
+      return text(String(capture?.status || "").toUpperCase() === "REFUNDED" ? "Full refund handled" : "Partial refund recorded", 200);
     }
 
     if (eventType === "PAYMENT.CAPTURE.REVERSED") {
       const captureId = String(resource?.id || relatedIds(resource).capture_id || "");
+      if (!captureId) throw new Error("paypal_reversal_capture_missing");
       await revokeByCapture(captureId, "revoked");
       await record(captureId);
       return text("Reversal handled", 200);
     }
 
     if (eventType === "CUSTOMER.DISPUTE.CREATED") {
-      const transaction = Array.isArray(resource?.disputed_transactions) ? resource.disputed_transactions[0] : null;
-      const captureId = String(transaction?.seller_transaction_id || transaction?.buyer_transaction_id || "");
+      const captureId = await disputeCaptureId(resource);
+      if (!captureId) throw new Error("paypal_dispute_capture_missing");
       await revokeByCapture(captureId, "disputed");
       await record(String(resource?.dispute_id || resource?.id || captureId));
       return text("Dispute handled", 200);
@@ -186,9 +223,16 @@ Deno.serve(async (req: Request) => {
 
     if (eventType === "PAYMENT.CAPTURE.DENIED") {
       const orderId = String(relatedIds(resource).order_id || "");
-      if (orderId) await service.from("ccg_checkout_sessions").update({ status: "failed", updated_at: new Date().toISOString() }).eq("paypal_order_id", orderId);
+      if (orderId) await service.from("ccg_checkout_sessions").update({ status: "failed", updated_at: new Date().toISOString() }).eq("paypal_order_id", orderId).eq("product_slug", PRODUCT_SLUG);
       await record(String(resource?.id || orderId));
       return text("Denied capture handled", 200);
+    }
+
+    if (eventType === "CHECKOUT.PAYMENT-APPROVAL.REVERSED") {
+      const orderId = String(resource?.order_id || relatedIds(resource).order_id || "");
+      if (orderId) await service.from("ccg_checkout_sessions").update({ status: "failed", updated_at: new Date().toISOString() }).eq("paypal_order_id", orderId).eq("product_slug", PRODUCT_SLUG);
+      await record(orderId);
+      return text("Approval reversal handled", 200);
     }
 
     await record(String(resource?.id || ""));
