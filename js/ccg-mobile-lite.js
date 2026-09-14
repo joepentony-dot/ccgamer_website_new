@@ -6,7 +6,13 @@
 (function () {
     const root = document.documentElement;
 
-    const retireLegacyRetailerCommissionUi = () => {
+    let legacyRetailerCommissionUiInitialPassDone = false;
+
+    const retireLegacyRetailerCommissionUi = ({ force = false } = {}) => {
+        if (!document.body) return;
+        if (!force && legacyRetailerCommissionUiInitialPassDone) return;
+        legacyRetailerCommissionUiInitialPassDone = true;
+
         document.querySelectorAll("#affiliate-products-section").forEach((section) => {
             section.hidden = true;
             section.setAttribute("aria-hidden", "true");
@@ -259,7 +265,7 @@
     ensureSingleGameViewportModalRoot();
     bindDedicatedBoxDialog();
 
-    window.addEventListener("ccg:game-loaded", retireLegacyRetailerCommissionUi);
+    window.addEventListener("ccg:game-loaded", () => retireLegacyRetailerCommissionUi({ force: true }));
 
     const isMobile =
         window.matchMedia("(max-width: 900px)").matches ||
