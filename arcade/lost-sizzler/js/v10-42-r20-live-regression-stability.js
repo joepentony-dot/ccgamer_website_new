@@ -161,7 +161,7 @@
       return;
     }
     if(!ATTACK_KEYS.has(event.code)||!activeRun())return;
-    if(event.code==="KeyF"&&spyActive())return;
+    if(spyActive())return;
     if(!recoverOrphanedGameplayMode())return;
     event.preventDefault();
     attackNow(event.code);
@@ -234,15 +234,40 @@
     }
   }catch(_){}
 
+  function installAuthoritativeLoopStallClamp(){
+    const current=window.loop;
+    if(typeof current!=="function")return false;
+    if(current.__ccgV142R20LoopStallClamp===true)return true;
+    const wrapped=function loopV142R20StallClamp(timestamp){
+      if(activeRun()&&currentMode()==="playing"&&!spyActive()){
+        const t=Number(timestamp);
+        if(Number.isFinite(t)){
+          try{
+            const previous=typeof last!=="undefined"?Number(last):NaN;
+            const gap=Number.isFinite(previous)?t-previous:0;
+            if(gap>STALL_MS&&gap<600000){last=t-16;diagnostics.frameStalls++}
+          }catch(_){}
+        }
+      }
+      return current.call(this,timestamp);
+    };
+    try{for(const key of Object.keys(current))wrapped[key]=current[key]}catch(_){}
+    wrapped.__ccgV141R29Stable=true;
+    wrapped.__ccgV142R20LoopStallClamp=true;
+    wrapped.__ccgOriginal=current;
+    window.loop=wrapped;
+    diagnostics.stallClampInstalls++;
+    return window.loop===wrapped;
+  }
+
   /* R2 intentionally seals global update ownership behind a non-configurable
-     accessor, so writing update=... here is both ineffective and the wrong
-     ownership boundary. Extend the mode runtime's mutable authoritative frame
-     boundary instead. R2's getter resolves that boundary dynamically, keeping
-     the established runtime as sole update/RAF owner while allowing oversized
-     external dt calls to be clamped before they reach dungeon simulation. */
+     accessor. Keep its mutable boundary clamp for direct external update calls,
+     and extend the already-established r29 RAF owner for real browser stalls.
+     This adds no second RAF chain and explicitly leaves Spy timing untouched. */
   function installStallClamp(){
+    let installed=installAuthoritativeLoopStallClamp();
     const runtime=window.CCGLostSizzlerModeRuntime,boundary=runtime?.state?.sharedFrameBoundary;
-    if(typeof boundary!=="function")return false;
+    if(typeof boundary!=="function")return installed;
     if(boundary.__ccgV142R20StallClamp===true)return true;
     const stallSafeBoundary=function updateV142R20StallClamp(dt,...args){
       let safeDt=Number(dt);
@@ -258,13 +283,14 @@
     stallSafeBoundary.__ccgOriginal=boundary;
     runtime.state.sharedFrameBoundary=stallSafeBoundary;
     diagnostics.stallClampInstalls++;
-    return runtime.state.sharedFrameBoundary===stallSafeBoundary;
+    installed=runtime.state.sharedFrameBoundary===stallSafeBoundary||installed;
+    return installed;
   }
   installStallClamp();
 
-  /* r20 is deliberately not a frame owner. V10.41/V10.42 mode runtime owns
-     update/RAF progression; creating even a passive second RAF chain distorts
-     the performance governor and risks competing with the sealed boundary. */
+  /* r20 remains an extension of the established frame owner. It never starts
+     a second RAF chain; it only clamps the timestamp gap before r29 advances
+     the existing simulation loop. */
   addEventListener("ccg:v142-ready",()=>{captureR1FireOwner();installStallClamp()},{once:true});
   addEventListener("pagehide",()=>{showCursor();if(cursorTimer)clearTimeout(cursorTimer)},{once:true});
 
