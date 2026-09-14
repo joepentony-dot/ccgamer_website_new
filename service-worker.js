@@ -2,8 +2,10 @@
 "use strict";
 
 const CACHE_VERSION = "2026-08-25-public-release-v10";
-const SHELL_CACHE = `ccg-shell-${CACHE_VERSION}`;
+const CODE_CACHE_VERSION = "2026-09-15-public-code-v1";
+const SHELL_CACHE = `ccg-shell-${CACHE_VERSION}-${CODE_CACHE_VERSION}`;
 const PAGE_CACHE = `ccg-pages-${CACHE_VERSION}`;
+const CODE_CACHE = `ccg-code-${CODE_CACHE_VERSION}`;
 const ASSET_CACHE = `ccg-assets-${CACHE_VERSION}`;
 const DATA_CACHE = `ccg-public-data-${CACHE_VERSION}`;
 const CACHE_PREFIX = "ccg-";
@@ -138,7 +140,7 @@ async function precachePublicShell() {
 }
 
 async function deleteOldCaches() {
-  const current = new Set([SHELL_CACHE, PAGE_CACHE, ASSET_CACHE, DATA_CACHE]);
+  const current = new Set([SHELL_CACHE, PAGE_CACHE, CODE_CACHE, ASSET_CACHE, DATA_CACHE]);
   const keys = await caches.keys();
   await Promise.all(keys.map((key) => {
     if (key.startsWith(CACHE_PREFIX) && !current.has(key)) return caches.delete(key);
@@ -216,6 +218,22 @@ async function networkFirstAsset(request) {
   }
 }
 
+async function cacheFirstCodeAsset(request) {
+  const cached = await caches.match(request, { ignoreSearch: false });
+  if (cached) return cached;
+
+  const cache = await caches.open(CODE_CACHE);
+  try {
+    // A cache-version bump creates a fresh namespace. The first miss must still
+    // bypass any stale browser HTTP entry before the response is stored here.
+    const response = await fetch(request, { cache: "reload" });
+    if (canStoreResponse(response)) await cache.put(request, response.clone());
+    return response;
+  } catch (error) {
+    return new Response("", { status: 504, statusText: "Offline" });
+  }
+}
+
 async function cacheFirstAsset(request) {
   const cache = await caches.open(ASSET_CACHE);
   const cached = await cache.match(request, { ignoreSearch: false });
@@ -270,7 +288,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (CODE_ASSET_PATTERN.test(url.pathname)) {
-    event.respondWith(networkFirstAsset(request));
+    event.respondWith(isLostSizzlerPath(url.pathname) ? networkFirstAsset(request) : cacheFirstCodeAsset(request));
     return;
   }
 
