@@ -79,15 +79,26 @@ html[data-ccg-page] :where(
 }
 
 /* ============================================================
-   RETRO SPECIALS WHEEL PERFORMANCE
+   SITE-WIDE WHEEL PERFORMANCE CONTRACT
    ------------------------------------------------------------
-   The Retro Specials archive can contain many image-heavy cards. Avoid
-   promoting every card to its own compositor layer, and while the existing
-   global scroll-performance class is active temporarily pause the animated
-   starfield and card/image hover work. Native browser wheel scrolling remains
-   fully in control; there is no synthetic wheel handler or preventDefault.
+   Mouse-wheel scrolling remains fully native. Expensive background-position
+   drift is removed from the fixed universe layer on public pages while its
+   subtle opacity breathing remains. This avoids repainting a viewport-sized
+   fixed image on every animation frame before the first wheel event arrives.
 ============================================================ */
 
+html[data-ccg-page] .ccg-bg-starfield {
+    animation: ccg-star-breathe 24s ease-in-out infinite !important;
+    will-change: opacity !important;
+}
+
+html[data-ccg-page] .ccg-bg-starfield::after {
+    animation: ccg-star-breathe-alt 30s ease-in-out infinite !important;
+    will-change: opacity !important;
+}
+
+/* Retro Specials previously promoted every video card into a compositor
+   layer. Keep that specific optimisation because the collection can be large. */
 html[data-ccg-page="collection-single"]
 > body[data-collection="Retro Specials"]
 .ccg-game-card--retro-event {
@@ -95,38 +106,82 @@ html[data-ccg-page="collection-single"]
     will-change: auto;
 }
 
-html.ccg-perf-paused[data-ccg-page="collection-single"]
-> body[data-collection="Retro Specials"]
-.ccg-bg-starfield,
-html.ccg-perf-paused[data-ccg-page="collection-single"]
-> body[data-collection="Retro Specials"]
-.ccg-bg-starfield::after {
+/* During active document scrolling the shared `ccg-perf-paused` state pauses
+   decorative motion and removes hover-transition churn across ALL public
+   pages, including Browse by Genre, Collections, game pages, Home and hubs. */
+html.ccg-perf-paused[data-ccg-page] .ccg-bg-starfield,
+html.ccg-perf-paused[data-ccg-page] .ccg-bg-starfield::after,
+html.ccg-perf-paused[data-ccg-page] .ccg-bg-particles__spark,
+html.ccg-perf-paused[data-ccg-page] .ccg-pulse,
+html.ccg-perf-paused[data-ccg-page] .ccg-fade-in,
+html.ccg-perf-paused[data-ccg-page] .ccg-slide-up,
+html.ccg-perf-paused[data-ccg-page] .ccg-anim-in {
     animation-play-state: paused !important;
     will-change: auto !important;
 }
 
-html.ccg-perf-paused[data-ccg-page="collection-single"]
-> body[data-collection="Retro Specials"]
-.ccg-game-card--retro-event,
-html.ccg-perf-paused[data-ccg-page="collection-single"]
-> body[data-collection="Retro Specials"]
-.ccg-game-card--retro-event:hover,
-html.ccg-perf-paused[data-ccg-page="collection-single"]
-> body[data-collection="Retro Specials"]
-.ccg-game-card--retro-event:focus-within {
-    transform: none !important;
-    filter: none !important;
+html.ccg-perf-paused[data-ccg-page] :where(
+    .ccg-card,
+    .ccg-game-card,
+    .ccg-genre-card,
+    .ccg-collection-card,
+    .ccg-feature-card,
+    .home-video-card,
+    .home-highlight-card,
+    .ccg-publisher-card,
+    .video-library-card,
+    .related-card
+) {
     transition: none !important;
     will-change: auto !important;
 }
 
-html.ccg-perf-paused[data-ccg-page="collection-single"]
-> body[data-collection="Retro Specials"]
-.ccg-game-card--retro-event .ccg-game-card__media img {
+html.ccg-perf-paused[data-ccg-page] :where(
+    .ccg-card,
+    .ccg-game-card,
+    .ccg-genre-card,
+    .ccg-collection-card,
+    .ccg-feature-card,
+    .home-video-card,
+    .home-highlight-card,
+    .ccg-publisher-card,
+    .video-library-card,
+    .related-card
+):is(:hover, :focus-within) {
     transform: none !important;
     filter: none !important;
+}
+
+html.ccg-perf-paused[data-ccg-page] :where(
+    .ccg-card,
+    .ccg-game-card,
+    .ccg-genre-card,
+    .ccg-collection-card,
+    .ccg-feature-card,
+    .home-video-card,
+    .home-highlight-card,
+    .ccg-publisher-card,
+    .video-library-card,
+    .related-card
+) img {
     transition: none !important;
     will-change: auto !important;
+}
+
+html.ccg-perf-paused[data-ccg-page] :where(
+    .ccg-card,
+    .ccg-game-card,
+    .ccg-genre-card,
+    .ccg-collection-card,
+    .ccg-feature-card,
+    .home-video-card,
+    .home-highlight-card,
+    .ccg-publisher-card,
+    .video-library-card,
+    .related-card
+):is(:hover, :focus-within) img {
+    transform: none !important;
+    filter: none !important;
 }
 
 /* One restrained Omega scrollbar instead of a heavy inner/outer rail effect. */
