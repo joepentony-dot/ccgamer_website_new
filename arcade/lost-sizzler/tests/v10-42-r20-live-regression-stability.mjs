@@ -13,7 +13,7 @@ const ownerSeal=read("js/v10-42-r21-owner-and-attack-seal.js");
 const controllerSeal=read("js/v10-42-r2-controller-owner-seal.js");
 
 assert.match(bootstrap,/v10-42-r20-live-regression-stability\.js[\s\S]*v10-42-r22-stall-elapsed-handoff\.js[\s\S]*v10-42-r1-stability\.js[\s\S]*v10-42-r18-solo-playtest-stability\.js/,"r20 and its elapsed writer handoff must load before the established final r1/r18 stability pair");
-assert.match(bootstrap,/const BUILD="V10\.42 r20"[\s\S]*const CACHE="20260913r20"/,"r20 must own a fresh visible build/cache identity");
+assert.match(bootstrap,/const BUILD="V10\.42 r20"[\s\S]*const CACHE="20260914r20"/,"r20 must own a fresh visible build/cache identity");
 
 assert.match(fix,/ATTACK_KEYS=new Set\(\["Space","KeyF","Numpad0"\]\)/,"normal gameplay must recover all supported P1 attack keys");
 assert.match(fix,/function recoverOrphanedGameplayMode\(\)[\s\S]*dossier[\s\S]*inventory[\s\S]*shop[\s\S]*mode="playing"/,"hidden transient panels must not leave gameplay stranded outside playing mode");
