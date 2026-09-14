@@ -3,7 +3,7 @@
   "use strict";
   if(window.CCGLostSizzlerV142R22StallElapsedHandoff)return;
 
-  const diagnostics={stallFrames:0,alertDtClamps:0,catchupDrops:0,lastOriginalDt:0,lastAppliedDt:0,lastWallGap:0,loopRepairs:0,recoveryClamps:0,rafGuardInstalls:0,rafRecoveryFrames:0};
+  const diagnostics={stallFrames:0,alertDtClamps:0,catchupDrops:0,lastOriginalDt:0,lastAppliedDt:0,lastWallGap:0,loopRepairs:0,recoveryClamps:0,rafGuardInstalls:0,rafRecoveryFrames:0,pauseBoundarySkips:0};
   const STALL_MS=120;
   const NORMAL_FRAME_MS=16;
   const RECOVERY_PAD_MS=180;
@@ -14,6 +14,7 @@
   const currentMode=()=>{try{return typeof mode!=="undefined"?String(mode):""}catch(_){return""}};
   const spyActive=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")==="sizzler-saboteurs"}catch(_){return false}};
   const normalPlay=()=>activeRun()&&currentMode()==="playing"&&!spyActive();
+  const pauseBoundaryCount=()=>{try{return Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.pauseBoundaries)||0}catch(_){return 0}};
 
   function reportStall(){
     diagnostics.stallFrames++;
@@ -74,17 +75,24 @@
 
     let previousRafTimestamp=0;
     let recovery=null;
+    let lastPauseBoundary=pauseBoundaryCount();
 
     const wrapped=function requestAnimationFrameV142R22RafRecoveryGuard(callback){
       if(typeof callback!=="function")return current.call(this,callback);
       return current.call(this,function(timestamp){
         const t=Number(timestamp);
         const ownsNormalFrame=normalPlay();
+        const pauseBoundary=pauseBoundaryCount();
+        const crossedPauseBoundary=pauseBoundary!==lastPauseBoundary;
+        lastPauseBoundary=pauseBoundary;
         const previous=previousRafTimestamp;
         const gap=Number.isFinite(t)&&previous>0?Math.max(0,t-previous):0;
         if(Number.isFinite(t))previousRafTimestamp=t;
 
-        if(ownsNormalFrame&&gap>STALL_MS&&gap<600000){
+        if(crossedPauseBoundary){
+          recovery=null;
+          diagnostics.pauseBoundarySkips++;
+        }else if(ownsNormalFrame&&gap>STALL_MS&&gap<600000){
           let elapsedBase=NaN,floorBase=NaN;
           try{
             elapsedBase=Number(run?.elapsed);
@@ -134,13 +142,23 @@
     if(current.__ccgV142R20LoopStallClamp===true&&typeof current.__ccgOriginal==="function")current=current.__ccgOriginal;
 
     let recovery=null;
+    let lastPauseBoundary=pauseBoundaryCount();
     const wrapped=function loopV142R22RecoveryGuard(timestamp){
       const ownsNormalFrame=normalPlay();
       const t=Number(timestamp);
       const wallNow=performance.now();
+      const pauseBoundary=pauseBoundaryCount();
+      const crossedPauseBoundary=pauseBoundary!==lastPauseBoundary;
+      lastPauseBoundary=pauseBoundary;
       let stalled=false,gap=NORMAL_FRAME_MS,beforeElapsed=NaN,beforeFloorElapsed=NaN;
 
-      if(ownsNormalFrame&&Number.isFinite(t)){
+      if(crossedPauseBoundary){
+        recovery=null;
+        diagnostics.pauseBoundarySkips++;
+        if(ownsNormalFrame&&Number.isFinite(t)){
+          try{if(typeof last!=="undefined"&&Number.isFinite(Number(last)))last=t-NORMAL_FRAME_MS}catch(_){}
+        }
+      }else if(ownsNormalFrame&&Number.isFinite(t)){
         try{
           const previous=typeof last!=="undefined"?Number(last):NaN;
           gap=Number.isFinite(previous)?Math.max(0,t-previous):NORMAL_FRAME_MS;
