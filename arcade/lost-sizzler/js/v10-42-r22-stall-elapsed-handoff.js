@@ -3,11 +3,13 @@
   "use strict";
   if(window.CCGLostSizzlerV142R22StallElapsedHandoff)return;
 
-  const diagnostics={stallFrames:0,alertDtClamps:0,catchupDrops:0,lastOriginalDt:0,lastAppliedDt:0,lastWallGap:0,loopRepairs:0,recoveryClamps:0,rafGuardInstalls:0,rafRecoveryFrames:0,pauseBoundarySkips:0};
-  const STALL_MS=120;
+  const diagnostics={stallFrames:0,alertDtClamps:0,catchupDrops:0,lastOriginalDt:0,lastAppliedDt:0,lastWallGap:0,loopRepairs:0,recoveryClamps:0,rafGuardInstalls:0,rafRecoveryFrames:0,pauseBoundarySkips:0,debtRepaidMs:0,maxDebtMs:0};
+  const STALL_MS=300;
   const NORMAL_FRAME_MS=16;
   const RECOVERY_PAD_MS=180;
   const RAF_RECOVERY_FRAMES=4;
+  const RAF_RECOVERY_MAX_STEP_MS=120;
+  const RAF_RECOVERY_MAX_DEBT_MS=1080;
   let lastWriterTick=performance.now();
 
   const activeRun=()=>document.body?.dataset?.runActive==="true";
@@ -15,6 +17,7 @@
   const spyActive=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")==="sizzler-saboteurs"}catch(_){return false}};
   const normalPlay=()=>activeRun()&&currentMode()==="playing"&&!spyActive();
   const pauseBoundaryCount=()=>{try{return Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.pauseBoundaries)||0}catch(_){return 0}};
+  const r59Api=()=>{try{return window.CCGLostSizzlerV141R59LiveRegressionFixes||null}catch(_){return null}};
 
   function reportStall(){
     diagnostics.stallFrames++;
@@ -80,6 +83,10 @@
     const wrapped=function requestAnimationFrameV142R22RafRecoveryGuard(callback){
       if(typeof callback!=="function")return current.call(this,callback);
       return current.call(this,function(timestamp){
+        const api=r59Api();
+        const r59Callback=Boolean(api&&(callback===api.stableLoopR59||callback.__ccgV141R59PauseClock===true));
+        if(!r59Callback)return callback.apply(this,arguments);
+
         const t=Number(timestamp);
         const ownsNormalFrame=normalPlay();
         const pauseBoundary=pauseBoundaryCount();
@@ -92,34 +99,44 @@
         if(crossedPauseBoundary){
           recovery=null;
           diagnostics.pauseBoundarySkips++;
+          if(ownsNormalFrame&&Number.isFinite(t)){
+            try{
+              if(typeof last!=="undefined"&&Number.isFinite(Number(last)))last=t-NORMAL_FRAME_MS;
+              api?.setAcceptedRafTimestamp?.(t-NORMAL_FRAME_MS);
+            }catch(_){}
+          }
         }else if(ownsNormalFrame&&gap>STALL_MS&&gap<600000){
-          let elapsedBase=NaN,floorBase=NaN;
+          const carried=Number(recovery?.debtMs)||0;
+          const debtMs=Math.min(RAF_RECOVERY_MAX_DEBT_MS,carried+Math.max(0,gap-NORMAL_FRAME_MS));
+          recovery={debtMs,frames:0,lastFrameTimestamp:t};
+          diagnostics.maxDebtMs=Math.max(diagnostics.maxDebtMs,debtMs);
           try{
-            elapsedBase=Number(run?.elapsed);
-            floorBase=Number(host?.floorElapsed);
             if(typeof last!=="undefined"&&Number.isFinite(Number(last)))last=t-NORMAL_FRAME_MS;
+            api?.setAcceptedRafTimestamp?.(t-NORMAL_FRAME_MS);
           }catch(_){}
-          recovery={elapsedBase,floorBase,frames:0,lastFrameTimestamp:NaN};
           reportStall();
-        }
-
-        const result=callback.apply(this,arguments);
-
-        if(!ownsNormalFrame){
+        }else if(ownsNormalFrame&&recovery&&Number.isFinite(t)){
+          const debtBefore=Math.max(0,Number(recovery.debtMs)||0);
+          const wallStep=Math.max(0,Number(gap)||0);
+          const desiredStep=Math.min(RAF_RECOVERY_MAX_STEP_MS,Math.max(NORMAL_FRAME_MS,wallStep)+debtBefore);
+          const repaid=Math.max(0,desiredStep-wallStep);
+          if(repaid>0){
+            recovery.debtMs=Math.max(0,debtBefore-repaid);
+            recovery.frames=Math.max(0,Number(recovery.frames)||0)+1;
+            recovery.lastFrameTimestamp=t;
+            diagnostics.rafRecoveryFrames++;
+            diagnostics.debtRepaidMs+=repaid;
+            try{
+              if(typeof last!=="undefined"&&Number.isFinite(Number(last)))last=t-desiredStep;
+              api?.setAcceptedRafTimestamp?.(t-desiredStep);
+            }catch(_){}
+          }
+          if(recovery.debtMs<=0)recovery=null;
+        }else if(!ownsNormalFrame){
           recovery=null;
-          return result;
         }
-        if(!recovery)return result;
 
-        if(!Number.isFinite(recovery.lastFrameTimestamp)||recovery.lastFrameTimestamp!==t){
-          recovery.frames+=1;
-          recovery.lastFrameTimestamp=t;
-          diagnostics.rafRecoveryFrames++;
-        }
-        const allowance=NORMAL_FRAME_MS*Math.max(1,recovery.frames);
-        clampRuntimeElapsed(recovery.elapsedBase,recovery.floorBase,allowance);
-        if(recovery.frames>=RAF_RECOVERY_FRAMES)recovery=null;
-        return result;
+        return callback.apply(this,arguments);
       });
     };
 
