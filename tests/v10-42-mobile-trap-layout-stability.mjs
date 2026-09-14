@@ -187,23 +187,41 @@ assert.equal(player.armor,beforeArmor,"duplicate trap suppression must not consu
 
 player.invuln=0;
 context.hurtPlayer(player,1,false,"dungeon trap");
-assert.equal(player.health,afterFirstTrap,"the original successful hit protection window must survive a mutable player invulnerability field");
+assert.equal(player.health,afterFirstTrap,"the successful hit protection window must survive a mutable player invulnerability field during the same contact");
 assert.equal(player.armor,beforeArmor,"protected duplicate trap contact must preserve armour");
+
+// Leaving/deactivating a trap is a genuine lifecycle boundary. It must clear
+// both the active-contact latch and its temporary protection so the next real
+// active contact can inflict exactly one new hit, matching R57's cycle contract.
+player.x=3;
+context.CCGLostSizzlerV142R19MobileTrapLayoutStability.rearmInactiveTrapContacts();
+player.x=4;
+player.invuln=0;
+context.hurtPlayer(player,1,false,"spike trap");
+const afterSecondContact=player.health;
+assert.equal(afterSecondContact,afterFirstTrap-1,"a re-armed floor-trap contact must deal exactly one new health hit");
+assert.equal(player.armor,beforeArmor,"a re-armed floor-trap hit must still preserve armour");
+assert.equal(player.xp,beforeXp,"re-armed trap damage must not award progression XP");
+assert.equal(player.totalXp,beforeTotalXp,"re-armed trap damage must not mutate total progression XP");
+
+context.hurtPlayer(player,1,false,"spike trap");
+assert.equal(player.health,afterSecondContact,"the new active contact must still suppress its immediate duplicate hit");
+assert.equal(player.armor,beforeArmor,"duplicate suppression on the re-armed contact must preserve armour");
+assert.ok(context.CCGLostSizzlerV142R19MobileTrapLayoutStability.state.trapProtectionBlocks>=3,"same-contact duplicates must remain blocked by independent trap protection");
+
+now=1300;
+player.invuln=0;
+context.hurtPlayer(player,1,false,"spike trap");
+assert.equal(player.health,afterSecondContact,"expiry of the time window alone must not duplicate-hit while the active contact latch remains set");
+assert.ok(context.CCGLostSizzlerV142R19MobileTrapLayoutStability.state.trapContactBlocks>=1,"active contact latch must continue suppressing damage after the temporary protection window expires");
 
 player.x=3;
 context.CCGLostSizzlerV142R19MobileTrapLayoutStability.rearmInactiveTrapContacts();
 player.x=4;
 player.invuln=0;
 context.hurtPlayer(player,1,false,"spike trap");
-assert.equal(player.health,afterFirstTrap,"brief trap re-entry must remain protected until the original hit window expires");
-assert.equal(player.armor,beforeArmor,"protected re-entry must preserve armour");
-assert.ok(context.CCGLostSizzlerV142R19MobileTrapLayoutStability.state.trapProtectionBlocks>=3,"duplicate and re-entry calls inside the original protection window must be blocked above environment wrappers");
-
-now=1300;
-player.invuln=0;
-context.hurtPlayer(player,1,false,"spike trap");
-assert.equal(player.health,afterFirstTrap-1,"after the original protection window expires, the re-armed contact may deal one later health hit");
-assert.equal(player.armor,beforeArmor,"expired protection must still preserve armour on the next legitimate floor-trap hit");
+assert.equal(player.health,afterSecondContact-1,"a later independently re-armed trap cycle may deal exactly one further health hit");
+assert.equal(player.armor,beforeArmor,"later re-armed trap cycle must preserve armour");
 
 const afterRearmedTrap=player.health;
 player.invuln=0;
