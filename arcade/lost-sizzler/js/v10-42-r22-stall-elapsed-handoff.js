@@ -3,7 +3,7 @@
   "use strict";
   if(window.CCGLostSizzlerV142R22StallElapsedHandoff)return;
 
-  const diagnostics={stallFrames:0,alertDtClamps:0,catchupDrops:0,lastOriginalDt:0,lastAppliedDt:0,lastWallGap:0,loopRepairs:0,recoveryClamps:0,rafGuardInstalls:0,rafRecoveryFrames:0,pauseBoundarySkips:0,debtRepaidMs:0,maxDebtMs:0};
+  const diagnostics={stallFrames:0,alertDtClamps:0,catchupDrops:0,lastOriginalDt:0,lastAppliedDt:0,lastWallGap:0,loopRepairs:0,recoveryClamps:0,rafGuardInstalls:0,rafRecoveryFrames:0,pauseBoundarySkips:0,debtRepaidMs:0,maxDebtMs:0,sustainedRafFallbacks:0};
   const STALL_MS=300;
   const NORMAL_FRAME_MS=16;
   const RECOVERY_PAD_MS=180;
@@ -78,6 +78,7 @@
 
     let previousRafTimestamp=0;
     let recovery=null;
+    let sustainedSlowRaf=false;
     let lastPauseBoundary=pauseBoundaryCount();
 
     const wrapped=function requestAnimationFrameV142R22RafRecoveryGuard(callback){
@@ -98,6 +99,7 @@
 
         if(crossedPauseBoundary){
           recovery=null;
+          sustainedSlowRaf=false;
           diagnostics.pauseBoundarySkips++;
           if(ownsNormalFrame&&Number.isFinite(t)){
             try{
@@ -105,16 +107,27 @@
               api?.setAcceptedRafTimestamp?.(t-NORMAL_FRAME_MS);
             }catch(_){}
           }
+        }else if(ownsNormalFrame&&sustainedSlowRaf){
+          if(gap<=STALL_MS){
+            sustainedSlowRaf=false;
+            recovery=null;
+          }
         }else if(ownsNormalFrame&&gap>STALL_MS&&gap<600000){
-          const carried=Number(recovery?.debtMs)||0;
-          const debtMs=Math.min(RAF_RECOVERY_MAX_DEBT_MS,carried+Math.max(0,gap-NORMAL_FRAME_MS));
-          recovery={debtMs,frames:0,lastFrameTimestamp:t};
-          diagnostics.maxDebtMs=Math.max(diagnostics.maxDebtMs,debtMs);
-          try{
-            if(typeof last!=="undefined"&&Number.isFinite(Number(last)))last=t-NORMAL_FRAME_MS;
-            api?.setAcceptedRafTimestamp?.(t-NORMAL_FRAME_MS);
-          }catch(_){}
-          reportStall();
+          if(recovery){
+            recovery=null;
+            sustainedSlowRaf=true;
+            diagnostics.sustainedRafFallbacks++;
+          }else{
+            try{api?.safeGapRecovery?.(gap)}catch(_){}
+            const debtMs=Math.min(RAF_RECOVERY_MAX_DEBT_MS,Math.max(0,gap-NORMAL_FRAME_MS));
+            recovery={debtMs,frames:0,lastFrameTimestamp:t};
+            diagnostics.maxDebtMs=Math.max(diagnostics.maxDebtMs,debtMs);
+            try{
+              if(typeof last!=="undefined"&&Number.isFinite(Number(last)))last=t-NORMAL_FRAME_MS;
+              api?.setAcceptedRafTimestamp?.(t-NORMAL_FRAME_MS);
+            }catch(_){}
+            reportStall();
+          }
         }else if(ownsNormalFrame&&recovery&&Number.isFinite(t)){
           const debtBefore=Math.max(0,Number(recovery.debtMs)||0);
           const wallStep=Math.max(0,Number(gap)||0);
@@ -134,6 +147,7 @@
           if(recovery.debtMs<=0)recovery=null;
         }else if(!ownsNormalFrame){
           recovery=null;
+          sustainedSlowRaf=false;
         }
 
         return callback.apply(this,arguments);
@@ -153,9 +167,6 @@
     if(typeof current!=="function")return false;
     if(current.__ccgV142R22LoopRecoveryGuard===true)return true;
 
-    /* R20 capped every ordinary frame to the observed RAF gap. In headless and
-       high-refresh sessions that can make normal simulation run well below 1x.
-       Retire only that wrapper and keep its underlying established RAF owner. */
     if(current.__ccgV142R20LoopStallClamp===true&&typeof current.__ccgOriginal==="function")current=current.__ccgOriginal;
 
     let recovery=null;
