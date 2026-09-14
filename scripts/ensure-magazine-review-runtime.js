@@ -254,7 +254,19 @@ function stripStaticPanel(html) {
   if (start < 0) return html;
   const end = html.indexOf(STATIC_END, start);
   if (end < 0) return html;
-  return `${html.slice(0, start)}${html.slice(end + STATIC_END.length)}`;
+
+  // materializeMagazineReviewsHtml always inserts exactly one newline before the
+  // generated block. Remove that generated separator as well as the block so a
+  // second materialization produces byte-for-byte identical HTML instead of
+  // accumulating one blank line on every publishing rebuild.
+  let stripStart = start;
+  if (stripStart >= 2 && html.slice(stripStart - 2, stripStart) === "\r\n") {
+    stripStart -= 2;
+  } else if (stripStart >= 1 && html[stripStart - 1] === "\n") {
+    stripStart -= 1;
+  }
+
+  return `${html.slice(0, stripStart)}${html.slice(end + STATIC_END.length)}`;
 }
 
 function stripEmptyPlaceholder(html) {
