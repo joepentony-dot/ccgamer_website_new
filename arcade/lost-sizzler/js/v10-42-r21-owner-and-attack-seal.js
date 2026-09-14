@@ -8,6 +8,7 @@
     duplicateOuterTrapOwnersRemoved:0,
     finalTrapOwnerInstalls:0,
     finalTrapOwnerCalls:0,
+    finalTrapDamageClamps:0,
     maintenanceTicks:0
   };
   let maintenanceTimer=0;
@@ -53,7 +54,14 @@
      floor traps always cost exactly one health per valid contact, regardless of
      the raw environmental amount supplied by a lower-level caller. Armour is
      temporarily bypassed while the established R18 -> ... -> R19 chain retains
-     contact/invulnerability ownership, then restored unchanged. */
+     contact/invulnerability ownership, then restored unchanged.
+
+     Some downstream environmental owners intentionally convert a trap event to
+     their canonical fixed hit (currently three health). That side effect still
+     has to run because it establishes invulnerability/contact ownership. After a
+     successful downstream hit, restore only the excess health so the public
+     floor-trap contract remains exactly one net health per contact. A blocked
+     hit is never manufactured here. */
   function installFinalTrapOwner(){
     try{
       const current=window.hurtPlayer;
@@ -62,9 +70,17 @@
       const wrapped=function hurtPlayerV142R21TrapDamageFinal(player,amount,flash,source){
         if(!ordinaryDungeon()||!player||!environmentalTrapSource(source))return current.apply(this,arguments);
         const beforeArmor=Number(player.armor||0);
+        const beforeHealth=Number(player.health||0);
         state.finalTrapOwnerCalls++;
         player.armor=0;
-        try{return current.call(this,player,1,flash,source)}finally{player.armor=beforeArmor}
+        let result;
+        try{result=current.call(this,player,1,flash,source)}finally{player.armor=beforeArmor}
+        const afterHealth=Number(player.health||0);
+        if(Number.isFinite(beforeHealth)&&Number.isFinite(afterHealth)&&afterHealth<beforeHealth-1){
+          player.health=Math.max(0,beforeHealth-1);
+          state.finalTrapDamageClamps++;
+        }
+        return result
       };
       wrapped.__ccgV142R21TrapDamageFinal=true;
       wrapped.__ccgOriginal=current;
