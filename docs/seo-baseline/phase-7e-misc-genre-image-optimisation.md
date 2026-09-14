@@ -31,6 +31,10 @@ The original and corrected images were independently resampled to representative
 
 The workflow artifact contains the original resampled to 460×213, the corrected image, and an 8× amplified difference panel.
 
+## Exact-head validation
+
+The correction workflow is idempotent. Its first run generated and committed the corrected binary; because GitHub does not recursively execute Actions jobs for a commit pushed with `GITHUB_TOKEN`, this documentation-only follow-up commit exists to trigger a normal exact-head validation pass without altering the corrected image, HTML reference, evidence, thresholds, or visual output.
+
 ## Safety checks
 
 - the image remains an opaque PNG
