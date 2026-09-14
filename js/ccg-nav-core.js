@@ -83,8 +83,10 @@ Do Not Override
        This removes the short-lived html/body scroll-container race that can
        make physical mouse-wheel input feel intermittent on archive pages. */
     function installEarlyScrollAuthority() {
-        if (!document.documentElement.hasAttribute("data-ccg-page")) return;
-        if (document.getElementById("ccg-scroll-authority-bootstrap")) return;
+        const root = document.documentElement;
+        if (!root || typeof root.hasAttribute !== "function" || !root.hasAttribute("data-ccg-page")) return;
+        if (typeof document.createElement !== "function" || !document.head || typeof document.head.appendChild !== "function") return;
+        if (typeof document.getElementById === "function" && document.getElementById("ccg-scroll-authority-bootstrap")) return;
 
         const style = document.createElement("style");
         style.id = "ccg-scroll-authority-bootstrap";
