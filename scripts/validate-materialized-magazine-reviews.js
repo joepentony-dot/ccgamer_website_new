@@ -33,10 +33,17 @@ function readGames() {
     .filter((game) => /^[a-z0-9-]+$/.test(String(game?.slug || "").trim()));
 }
 
+function delegatesToGameTemplate(html) {
+  const source = String(html || "");
+  const hasRefresh = /<meta\b[^>]*http-equiv=(["'])refresh\1[^>]*content=(["'])[^"']*\/games\/game\.html\?id=[^"']+\2/i.test(source);
+  const hasRedirect = /window\.location\.replace\(\s*(["'])\/games\/game\.html\?id=[^"']+\1\s*\)/i.test(source);
+  return hasRefresh && hasRedirect;
+}
+
 function validateGamePage(game) {
   const slug = String(game?.slug || "").trim();
   const rows = reviewRowsForGame(game, slug);
-  if (!rows.length) return { reviewed: false, rows: 0 };
+  if (!rows.length) return { reviewed: false, rows: 0, delegated: false };
 
   const pagePath = path.join(ROOT, "games", slug, "index.html");
   const relative = path.relative(ROOT, pagePath).replace(/\\/g, "/");
@@ -45,6 +52,13 @@ function validateGamePage(game) {
   }
 
   const html = fs.readFileSync(pagePath, "utf8");
+  if (delegatesToGameTemplate(html)) {
+    // Redirect wrappers intentionally have no per-game static container. Their shared
+    // games/game.html destination is guarded by ensure-magazine-review-runtime.js and
+    // serves these same validated review rows at runtime.
+    return { reviewed: false, rows: rows.length, delegated: true };
+  }
+
   const expected = materializeMagazineReviewsHtml(html, rows);
   if (!expected.foundContainer) {
     throw new Error(`${relative}: ${rows.length} magazine review record(s) exist but no magazine review container is present.`);
@@ -59,7 +73,7 @@ function validateGamePage(game) {
     throw new Error(`${relative}: rendered magazine review count does not match the ${rows.length} source record(s).`);
   }
 
-  return { reviewed: true, rows: rows.length };
+  return { reviewed: true, rows: rows.length, delegated: false };
 }
 
 function main() {
@@ -67,6 +81,8 @@ function main() {
   const errors = [];
   let reviewedPages = 0;
   let reviewRows = 0;
+  let delegatedPages = 0;
+  let delegatedRows = 0;
 
   for (const game of games) {
     try {
@@ -74,6 +90,10 @@ function main() {
       if (result.reviewed) {
         reviewedPages += 1;
         reviewRows += result.rows;
+      }
+      if (result.delegated) {
+        delegatedPages += 1;
+        delegatedRows += result.rows;
       }
     } catch (error) {
       errors.push(error.message);
@@ -85,12 +105,14 @@ function main() {
   }
 
   console.log(
-    `[validate-materialized-magazine-reviews] Verified ${reviewRows} review record(s) materialized across ${reviewedPages} canonical game page(s).`
+    `[validate-materialized-magazine-reviews] Verified ${reviewRows} review record(s) materialized across ${reviewedPages} canonical game page(s); `
+    + `${delegatedRows} review record(s) across ${delegatedPages} intentional redirect wrapper(s) remain served by the guarded shared game template.`
   );
 }
 
 if (require.main === module) main();
 
 module.exports = {
+  delegatesToGameTemplate,
   validateGamePage,
 };
