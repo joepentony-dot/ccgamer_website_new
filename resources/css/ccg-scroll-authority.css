@@ -18,6 +18,15 @@ html[data-ccg-page] {
     scrollbar-color: rgba(var(--accent-rgb), 0.72) rgba(2, 6, 14, 0.94);
 }
 
+/* `clip` prevents horizontal escape without creating another scroll
+   container. Chromium can otherwise pair overflow-x:hidden with an auto
+   vertical overflow value, which makes wheel ownership less deterministic. */
+@supports (overflow: clip) {
+    html[data-ccg-page] {
+        overflow-x: clip !important;
+    }
+}
+
 html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
     position: static !important;
     height: auto !important;
@@ -67,6 +76,57 @@ html[data-ccg-page] :where(
 ) {
     scroll-behavior: auto !important;
     -webkit-overflow-scrolling: touch;
+}
+
+/* ============================================================
+   RETRO SPECIALS WHEEL PERFORMANCE
+   ------------------------------------------------------------
+   The Retro Specials archive can contain many image-heavy cards. Avoid
+   promoting every card to its own compositor layer, and while the existing
+   global scroll-performance class is active temporarily pause the animated
+   starfield and card/image hover work. Native browser wheel scrolling remains
+   fully in control; there is no synthetic wheel handler or preventDefault.
+============================================================ */
+
+html[data-ccg-page="collection-single"]
+> body[data-collection="Retro Specials"]
+.ccg-game-card--retro-event {
+    transform: none;
+    will-change: auto;
+}
+
+html.ccg-perf-paused[data-ccg-page="collection-single"]
+> body[data-collection="Retro Specials"]
+.ccg-bg-starfield,
+html.ccg-perf-paused[data-ccg-page="collection-single"]
+> body[data-collection="Retro Specials"]
+.ccg-bg-starfield::after {
+    animation-play-state: paused !important;
+    will-change: auto !important;
+}
+
+html.ccg-perf-paused[data-ccg-page="collection-single"]
+> body[data-collection="Retro Specials"]
+.ccg-game-card--retro-event,
+html.ccg-perf-paused[data-ccg-page="collection-single"]
+> body[data-collection="Retro Specials"]
+.ccg-game-card--retro-event:hover,
+html.ccg-perf-paused[data-ccg-page="collection-single"]
+> body[data-collection="Retro Specials"]
+.ccg-game-card--retro-event:focus-within {
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+    will-change: auto !important;
+}
+
+html.ccg-perf-paused[data-ccg-page="collection-single"]
+> body[data-collection="Retro Specials"]
+.ccg-game-card--retro-event .ccg-game-card__media img {
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+    will-change: auto !important;
 }
 
 /* One restrained Omega scrollbar instead of a heavy inner/outer rail effect. */
