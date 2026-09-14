@@ -1,0 +1,91 @@
+name: Performance phase 4 CSS coverage audit
+
+on:
+  push:
+    branches:
+      - codex/performance-phase4-css-coverage-audit
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Audit public-header stylesheet coverage
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import re
+          import subprocess
+          from pathlib import Path
+
+          tracked = subprocess.check_output(["git", "ls-files", "*.html"], text=True).splitlines()
+          rows = []
+          for raw in tracked:
+              path = Path(raw)
+              try:
+                  text = path.read_text(encoding="utf-8")
+              except Exception:
+                  continue
+              if "data-ccg-header" not in text:
+                  continue
+              html_tag = re.search(r"<html\b[^>]*>", text, re.I)
+              page_type = ""
+              if html_tag:
+                  match = re.search(r"\bdata-ccg-page\s*=\s*['\"]([^'\"]+)['\"]", html_tag.group(0), re.I)
+                  if match:
+                      page_type = match.group(1)
+              rows.append({
+                  "path": raw,
+                  "page_type": page_type,
+                  "mobile_lite": "ccg-mobile-lite.css" in text,
+                  "nav_fit": "ccg-nav-fit.css" in text,
+              })
+
+          summary = {
+              "public_header_pages": len(rows),
+              "both": sum(r["mobile_lite"] and r["nav_fit"] for r in rows),
+              "mobile_lite_only": sum(r["mobile_lite"] and not r["nav_fit"] for r in rows),
+              "nav_fit_only": sum(r["nav_fit"] and not r["mobile_lite"] for r in rows),
+              "neither": sum(not r["mobile_lite"] and not r["nav_fit"] for r in rows),
+          }
+          page_types = {}
+          for row in rows:
+              key = row["page_type"] or "(unset)"
+              bucket = page_types.setdefault(key, {"count": 0, "both": 0, "nav_fit_only": 0, "mobile_lite_only": 0, "neither": 0})
+              bucket["count"] += 1
+              if row["mobile_lite"] and row["nav_fit"]:
+                  bucket["both"] += 1
+              elif row["nav_fit"]:
+                  bucket["nav_fit_only"] += 1
+              elif row["mobile_lite"]:
+                  bucket["mobile_lite_only"] += 1
+              else:
+                  bucket["neither"] += 1
+
+          report = {
+              "summary": summary,
+              "page_types": dict(sorted(page_types.items())),
+              "nav_fit_without_mobile_lite": [r for r in rows if r["nav_fit"] and not r["mobile_lite"]],
+              "mobile_lite_without_nav_fit": [r for r in rows if r["mobile_lite"] and not r["nav_fit"]],
+          }
+          Path("phase4-css-coverage.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+          print(json.dumps(report, indent=2))
+          PY
+
+      - name: Confirm read-only audit
+        run: |
+          git diff --exit-code
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phase4-css-coverage
+          path: phase4-css-coverage.json
+          if-no-files-found: error
