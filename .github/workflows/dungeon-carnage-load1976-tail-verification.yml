@@ -1,0 +1,80 @@
+name: Dungeon Carnage Load Safety Tail Verification
+
+on:
+  push:
+    branches:
+      - verify/dungeon-carnage-load1976-tail
+
+permissions:
+  contents: read
+
+jobs:
+  tail-contracts:
+    name: Exact #2009 V10.42 tail contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout verification branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify candidate code is unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="e7f522ac81b162f95a638e2fc8eacd27fdb735d4"
+          git cat-file -e "$expected^{commit}"
+          if ! git diff --quiet "$expected"...HEAD -- . ':(exclude).github/workflows/dungeon-carnage-load1976-tail-verification.yml'; then
+            echo "Verification branch differs from candidate outside the temporary workflow" >&2
+            git diff --name-only "$expected"...HEAD
+            exit 1
+          fi
+          echo "Candidate gameplay/code tree verified unchanged from $expected"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Chromium test runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock playwright@1.55.0
+          sudo rm -f /etc/apt/sources.list.d/google-chrome.list
+          sudo apt-get update
+          npx playwright install --with-deps chromium
+
+      - name: Run the nine stalled Load Safety contracts unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          tests=(
+            arcade/lost-sizzler/tests/browser/v10-42-mobile-geometry-diagnostic.mjs
+            arcade/lost-sizzler/tests/browser/v10-42-five-depth-live-transition.mjs
+            arcade/lost-sizzler/tests/browser/v10-42-mobile-trap-layout-live.mjs
+            arcade/lost-sizzler/tests/browser/v10-42-r1-stability.mjs
+            arcade/lost-sizzler/tests/browser/v10-42-r18-solo-playtest-stability.mjs
+            arcade/lost-sizzler/tests/browser/v10-42-multiplayer-loader.mjs
+            arcade/lost-sizzler/tests/browser/v10-42-r20-live-regression.mjs
+            arcade/lost-sizzler/tests/browser/v10-42-xp-source-contract.mjs
+            arcade/lost-sizzler/tests/browser/v10-42-zero-server-release.mjs
+          )
+          log="$RUNNER_TEMP/dungeon-carnage-load1976-tail.log"
+          : > "$log"
+          for test_file in "${tests[@]}"; do
+            echo "::group::$test_file"
+            echo "=== $test_file ===" | tee -a "$log"
+            node "$test_file" 2>&1 | tee -a "$log"
+            echo "::endgroup::"
+          done
+
+      - name: Upload failing tail verification log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dungeon-carnage-load1976-tail-failure
+          path: ${{ runner.temp }}/dungeon-carnage-load1976-tail.log
+          if-no-files-found: ignore
+          retention-days: 7
