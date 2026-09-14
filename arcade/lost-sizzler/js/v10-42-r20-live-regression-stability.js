@@ -233,6 +233,28 @@
     }
   }catch(_){}
 
+  /* Keep the established mode runtime as the sole RAF owner, but prevent its
+     normal dungeon update boundary from repaying a suspended browser frame as
+     hundreds of milliseconds of simulation. This clamps only an oversized dt
+     passed into ordinary active play; Spy Vs Spy keeps its specialist timing. */
+  try{
+    if(typeof update==="function"&&!update.__ccgV142R20StallClamp){
+      const baseUpdate=update;
+      const stallSafeUpdate=function(dt,...args){
+        let safeDt=Number(dt);
+        if(activeRun()&&currentMode()==="playing"&&!spyActive()&&Number.isFinite(safeDt)&&safeDt>STALL_MS&&safeDt<600000){
+          safeDt=16;
+          diagnostics.frameStalls++;
+        }
+        return baseUpdate.call(this,safeDt,...args);
+      };
+      try{for(const key of Object.keys(baseUpdate))stallSafeUpdate[key]=baseUpdate[key]}catch(_){}
+      stallSafeUpdate.__ccgV142R20StallClamp=true;
+      stallSafeUpdate.__ccgOriginal=baseUpdate;
+      update=stallSafeUpdate;
+    }
+  }catch(_){}
+
   /* r20 is deliberately not a frame owner. V10.41/V10.42 mode runtime owns
      update/RAF progression; creating even a passive second RAF chain distorts
      the performance governor and risks competing with the sealed boundary. */
