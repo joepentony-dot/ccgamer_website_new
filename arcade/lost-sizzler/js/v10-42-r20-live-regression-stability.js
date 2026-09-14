@@ -6,6 +6,7 @@
   const diagnostics={
     attackIntents:0,
     queuedAttackRepairs:0,
+    directAttackRepairs:0,
     staleModeRecoveries:0,
     dossierKeyboardCloses:0,
     cursorHides:0,
@@ -65,11 +66,24 @@
     if(!player)return false;
     repairAttackBoundary();
     try{input?.add?.(code)}catch(_){}
-    let queued=false;
-    try{if(typeof queueAttack==="function")queued=queueAttack(player)!==false}catch(_){}
-    if(queued)diagnostics.queuedAttackRepairs++;
+    const beforeMana=Math.max(0,Number(player.mana)||0);
+    let fired=false;
+    try{
+      if(typeof firePlayer==="function"){
+        firePlayer(player,typeof attackDirection==="function"?attackDirection(player):player.dir);
+        fired=Math.max(0,Number(player.mana)||0)<beforeMana;
+      }
+    }catch(_){}
+    if(fired){
+      try{fireBuffer1=0}catch(_){}
+      diagnostics.directAttackRepairs++;
+    }else{
+      let queued=false;
+      try{if(typeof queueAttack==="function")queued=queueAttack(player)!==false}catch(_){}
+      if(queued)diagnostics.queuedAttackRepairs++;
+    }
     diagnostics.attackIntents++;
-    return queued;
+    return fired||Boolean(fireBuffer1>0);
   }
 
   try{
@@ -101,9 +115,9 @@
     if(!recoverOrphanedGameplayMode())return;
     event.preventDefault();
     attackNow(event.code);
-    // The base KeyF owner toggles fullscreen before it reaches normal gameplay.
-    // Once an ordinary run is active F is an attack key, so stop that path.
-    if(event.code==="KeyF"||event.code==="Numpad0")event.stopImmediatePropagation();
+    // r20 owns the normal P1 attack intent at capture time. Stop the older
+    // Space/fullscreen listeners from adding a second queued shot afterwards.
+    event.stopImmediatePropagation();
   },true);
   document.addEventListener("keyup",event=>{if(ATTACK_KEYS.has(event.code))try{input?.delete?.(event.code)}catch(_){}},true);
 
