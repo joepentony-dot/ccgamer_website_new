@@ -16,7 +16,8 @@ for(const prefix of ["/arcade/lost-sizzler/","/games/ccg-games/cheeky-commodore-
 
 assert.match(serviceWorker,/const lostSizzler = isLostSizzlerPath\(url\.pathname\)/,"navigation routing must identify Lost Sizzler before selecting a cache strategy");
 assert.match(serviceWorker,/fetch\(request, lostSizzler \? \{ cache: "reload" \} : undefined\)/,"Lost Sizzler navigation must bypass stale browser HTTP cache entries");
-assert.match(serviceWorker,/if \(CODE_ASSET_PATTERN\.test\(url\.pathname\)\) \{\s*event\.respondWith\(networkFirstAsset\(request\)\)/,"code assets must remain network-first");
+assert.match(serviceWorker,/if \(CODE_ASSET_PATTERN\.test\(url\.pathname\)\) \{\s*event\.respondWith\(isLostSizzlerPath\(url\.pathname\) \? networkFirstAsset\(request\) : cacheFirstCodeAsset\(request\)\)/,"Lost Sizzler code assets must remain network-first while unrelated public code may use the versioned cache-first strategy");
+assert.match(serviceWorker,/async function cacheFirstCodeAsset\(request\)[\s\S]*?fetch\(request, \{ cache: "reload" \}\)/,"a versioned public-code cache miss must bypass stale browser HTTP cache entries before storage");
 assert.match(serviceWorker,/if \(STATIC_ASSET_PATTERN\.test\(url\.pathname\)\) \{\s*event\.respondWith\(isLostSizzlerPath\(url\.pathname\) \? networkFirstAsset\(request\) : cacheFirstAsset\(request\)\)/,"Lost Sizzler images, audio, fonts and other static assets must be network-first while unrelated site assets retain cache-first behaviour");
 assert.match(serviceWorker,/async function deleteLostSizzlerCacheEntries\(\)/,"service worker must retain a targeted Lost Sizzler cache purge path");
 assert.match(cacheGuard,/if\(!gamePath\(request\?\.url\)\)continue;/,"in-page sanitation must delete only matching Lost Sizzler cache entries");

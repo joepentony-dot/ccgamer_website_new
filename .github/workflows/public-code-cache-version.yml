@@ -1,0 +1,40 @@
+name: Public Code Cache Version
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "**/*.css"
+      - "**/*.js"
+      - "**/*.mjs"
+      - "service-worker.js"
+      - "scripts/check-public-code-cache-version.mjs"
+      - ".github/workflows/public-code-cache-version.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-code-cache-version:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch main baseline
+        run: git fetch --no-tags --depth=1 origin main:refs/remotes/origin/main
+
+      - name: Validate guard syntax
+        run: node --check scripts/check-public-code-cache-version.mjs
+
+      - name: Run guard self-test
+        run: node scripts/check-public-code-cache-version.mjs --self-test
+
+      - name: Require a fresh cache namespace for changed public code
+        run: node scripts/check-public-code-cache-version.mjs --base origin/main
