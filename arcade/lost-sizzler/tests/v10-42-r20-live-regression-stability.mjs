@@ -9,6 +9,7 @@ const read=file=>fs.readFileSync(path.join(root,file),"utf8");
 const bootstrap=read("js/v10-42-bootstrap.js");
 const fix=read("js/v10-42-r20-live-regression-stability.js");
 const ownerSeal=read("js/v10-42-r21-owner-and-attack-seal.js");
+const controllerSeal=read("js/v10-42-r2-controller-owner-seal.js");
 
 assert.match(bootstrap,/v10-42-r20-live-regression-stability\.js[\s\S]*v10-42-r1-stability\.js[\s\S]*v10-42-r18-solo-playtest-stability\.js/,"r20 must load before the established final r1/r18 stability pair");
 assert.match(bootstrap,/const BUILD="V10\.42 r20"[\s\S]*const CACHE="20260913r20"/,"r20 must own a fresh visible build/cache identity");
@@ -25,6 +26,11 @@ assert.match(fix,/hideNamedDossier=function[\s\S]*focusGame\(\)[\s\S]*scheduleCu
 assert.match(fix,/CURSOR_IDLE_MS=1600[\s\S]*ccg-game-cursor-idle/,"desktop gameplay must hide an idle pointer after a short delay");
 assert.match(fix,/shop-score-delta-rail[\s\S]*−\$\{value\.toLocaleString\(\)\} SCORE/,"each successful shop purchase must expose its own visible score deduction");
 assert.match(fix,/updateDoors=function[\s\S]*gap>STALL_MS[\s\S]*openingStart[\s\S]*openAt/,"door animation time must freeze across a browser stall instead of jumping straight to open");
+
+assert.match(controllerSeal,/Object\.defineProperty\(window,"update"[\s\S]*configurable:false/,"r2 must retain sealed ownership of the global update boundary");
+assert.doesNotMatch(fix,/(?:window\.)?update\s*=\s*stallSafeUpdate/,"r20 must not attempt a blocked write through r2's sealed global update owner");
+assert.match(fix,/function installStallClamp\(\)[\s\S]*runtime\?\.state\?\.sharedFrameBoundary[\s\S]*safeDt=16[\s\S]*__ccgV141ModeFrameBoundary=true[\s\S]*runtime\.state\.sharedFrameBoundary=stallSafeBoundary/,"r20 must clamp oversized dungeon dt at the mutable authoritative mode-runtime boundary while preserving its ownership marker");
+assert.match(fix,/currentMode\(\)==="playing"&&!spyActive\(\)/,"stall clamping must remain limited to active ordinary dungeon play and leave Spy timing alone");
 
 assert.doesNotMatch(fix,/requestAnimationFrame\s*\(/,"r20 must not create a competing RAF chain");
 assert.doesNotMatch(fix,/window\.loop\s*=|loop\s*=\s*stableFrame/,"r20 must not take ownership of the sealed frame loop");
