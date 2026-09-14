@@ -7,15 +7,15 @@
     attackIntents:0,
     queuedAttackRepairs:0,
     directAttackRepairs:0,
+    directAttackFallbacks:0,
+    directAttackErrors:0,
     staleModeRecoveries:0,
     dossierKeyboardCloses:0,
     cursorHides:0,
     scoreDeltas:0,
     doorLagFreezes:0,
     frameStalls:0,
-    duplicateFramesDropped:0,
-    staleTrapInvulnerabilityBridges:0,
-    trapCycleRearms:0
+    duplicateFramesDropped:0
   };
   const ATTACK_KEYS=new Set(["Space","KeyF","Numpad0"]);
   const STALL_MS=120;
@@ -63,6 +63,17 @@
     }catch(_){}
   }
 
+  function deepestFireOwner(){
+    try{
+      let owner=typeof firePlayer==="function"?firePlayer:null;
+      const seen=new Set();
+      while(typeof owner==="function"&&typeof owner.__ccgOriginal==="function"&&!seen.has(owner)){
+        seen.add(owner);owner=owner.__ccgOriginal;
+      }
+      return typeof owner==="function"?owner:null;
+    }catch(_){return null}
+  }
+
   function attackNow(code){
     if(!activeRun()||!recoverOrphanedGameplayMode())return false;
     let player=null;try{player=p1}catch(_){}
@@ -70,15 +81,27 @@
     repairAttackBoundary();
     try{input?.add?.(code)}catch(_){}
     const beforeMana=Math.max(0,Number(player.mana)||0);
+    const direction=typeof attackDirection==="function"?attackDirection(player):player.dir;
     let fired=false;
     try{
       if(typeof firePlayer==="function"){
-        firePlayer(player,typeof attackDirection==="function"?attackDirection(player):player.dir);
+        firePlayer(player,direction);
         fired=Math.max(0,Number(player.mana)||0)<beforeMana;
       }
-    }catch(_){}
+    }catch(_){diagnostics.directAttackErrors++}
+    if(!fired){
+      const fallback=deepestFireOwner();
+      if(fallback&&fallback!==firePlayer){
+        try{
+          repairAttackBoundary();
+          fallback(player,direction);
+          fired=Math.max(0,Number(player.mana)||0)<beforeMana;
+          if(fired)diagnostics.directAttackFallbacks++;
+        }catch(_){diagnostics.directAttackErrors++}
+      }
+    }
     if(fired){
-      try{fireBuffer1=0}catch(_){}
+      try{fireBuffer1=0;input?.delete?.(code)}catch(_){}
       diagnostics.directAttackRepairs++;
     }else{
       let queued=false;
@@ -88,51 +111,6 @@
     diagnostics.attackIntents++;
     return fired||Boolean(fireBuffer1>0);
   }
-
-  // R19 owns per-contact trap protection, but it can sit outside the older R60
-  // environment repair layer and reject a deliberately stale invulnerability
-  // value before R60 sees it. Bridge only active trap damage through that stale
-  // field. If the downstream chain rejects the hit, restore the prior value;
-  // if damage lands, keep the fresh invulnerability written by the canonical
-  // damage owner. R19's contact/protection maps still prevent duplicate hits.
-  try{
-    if(typeof hurtPlayer==="function"&&!hurtPlayer.__ccgV142R20TrapBridge){
-      const baseHurtPlayer=hurtPlayer;
-      hurtPlayer=function hurtPlayerV142R20TrapBridge(player,amount,flash,source){
-        const trap=activeRun()&&/trap/i.test(String(source||""));
-        const beforeInv=Number(player?.invuln||0),beforeHealth=Number(player?.health||0);
-        if(trap&&player&&beforeInv>0){
-          try{player.invuln=0;diagnostics.staleTrapInvulnerabilityBridges++}catch(_){}
-        }
-        const result=baseHurtPlayer.apply(this,arguments);
-        if(trap&&player&&Number(player.health||0)>=beforeHealth&&beforeInv>0){
-          try{player.invuln=Math.max(Number(player.invuln||0),beforeInv)}catch(_){}
-        }
-        return result;
-      };
-      hurtPlayer.__ccgV142R20TrapBridge=true;hurtPlayer.__ccgOriginal=baseHurtPlayer;
-    }
-  }catch(_){}
-
-  // R56 owns the canonical active/inactive trap-cycle transition. R19 normally
-  // notices inactive contacts from its monitor, but a full trap cycle can occur
-  // synchronously between monitor ticks. Re-arm R19 immediately after each R56
-  // trap-cycle tick so a genuinely new active cycle can damage again while the
-  // same active contact is still protected from duplicate damage.
-  try{
-    const r56=window.CCGLostSizzlerV141R56PlaytestCompletion;
-    if(r56&&typeof r56.trapCycleTick==="function"&&!r56.trapCycleTick.__ccgV142R20TrapRearm){
-      const baseTrapCycleTick=r56.trapCycleTick;
-      const wrappedTrapCycleTick=function(...args){
-        const result=baseTrapCycleTick.apply(this,args);
-        try{window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.rearmInactiveTrapContacts?.();diagnostics.trapCycleRearms++}catch(_){}
-        return result;
-      };
-      wrappedTrapCycleTick.__ccgV142R20TrapRearm=true;
-      wrappedTrapCycleTick.__ccgOriginal=baseTrapCycleTick;
-      r56.trapCycleTick=wrappedTrapCycleTick;
-    }
-  }catch(_){}
 
   try{
     if(typeof hideNamedDossier==="function"&&!hideNamedDossier.__ccgV142R20){
