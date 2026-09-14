@@ -16,6 +16,7 @@
   const currentMode=()=>{try{return typeof mode!=="undefined"?String(mode):""}catch(_){return""}};
   const spyActive=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")==="sizzler-saboteurs"}catch(_){return false}};
   const normalPlay=()=>activeRun()&&currentMode()==="playing"&&!spyActive();
+  const openingDoorActive=()=>{try{return Boolean((host?.doors||[]).some(door=>door&&door.opening&&!door.open))}catch(_){return false}};
   const pauseBoundaryCount=()=>{try{return Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.pauseBoundaries)||0}catch(_){return 0}};
   const r59Api=()=>{try{return window.CCGLostSizzlerV141R59LiveRegressionFixes||null}catch(_){return null}};
 
@@ -90,6 +91,7 @@
 
         const t=Number(timestamp);
         const ownsNormalFrame=normalPlay();
+        const stallSensitive=ownsNormalFrame&&openingDoorActive();
         const pauseBoundary=pauseBoundaryCount();
         const crossedPauseBoundary=pauseBoundary!==lastPauseBoundary;
         lastPauseBoundary=pauseBoundary;
@@ -107,18 +109,25 @@
               api?.setAcceptedRafTimestamp?.(t-NORMAL_FRAME_MS);
             }catch(_){}
           }
-        }else if(ownsNormalFrame&&sustainedSlowRaf){
+        }else if(ownsNormalFrame&&!stallSensitive){
+          // R59 is the authoritative Solo clock and already owns bounded visible
+          // catch-up plus combat-lock recovery. Do not rewrite its accepted RAF
+          // timestamp during ordinary gameplay: doing so turns busy CI cadence
+          // into lost simulation time and can hide a real stall from R59.
+          recovery=null;
+          sustainedSlowRaf=false;
+        }else if(stallSensitive&&sustainedSlowRaf){
           if(gap<=STALL_MS){
             sustainedSlowRaf=false;
             recovery=null;
           }
-        }else if(ownsNormalFrame&&gap>STALL_MS&&gap<600000){
+        }else if(stallSensitive&&gap>STALL_MS&&gap<600000){
           if(recovery){
             recovery=null;
             sustainedSlowRaf=true;
             diagnostics.sustainedRafFallbacks++;
           }else{
-            try{api?.safeGapRecovery?.(gap)}catch(_){}
+            try{api?.noteFrameStall?.();api?.safeGapRecovery?.(gap)}catch(_){}
             const debtMs=Math.min(RAF_RECOVERY_MAX_DEBT_MS,Math.max(0,gap-NORMAL_FRAME_MS));
             recovery={debtMs,frames:0,lastFrameTimestamp:t};
             diagnostics.maxDebtMs=Math.max(diagnostics.maxDebtMs,debtMs);
@@ -128,7 +137,7 @@
             }catch(_){}
             reportStall();
           }
-        }else if(ownsNormalFrame&&recovery&&Number.isFinite(t)){
+        }else if(stallSensitive&&recovery&&Number.isFinite(t)){
           const debtBefore=Math.max(0,Number(recovery.debtMs)||0);
           const wallStep=Math.max(0,Number(gap)||0);
           const desiredStep=Math.min(RAF_RECOVERY_MAX_STEP_MS,Math.max(NORMAL_FRAME_MS,wallStep)+debtBefore);
@@ -173,6 +182,7 @@
     let lastPauseBoundary=pauseBoundaryCount();
     const wrapped=function loopV142R22RecoveryGuard(timestamp){
       const ownsNormalFrame=normalPlay();
+      const stallSensitive=ownsNormalFrame&&openingDoorActive();
       const t=Number(timestamp);
       const wallNow=performance.now();
       const pauseBoundary=pauseBoundaryCount();
@@ -186,7 +196,7 @@
         if(ownsNormalFrame&&Number.isFinite(t)){
           try{if(typeof last!=="undefined"&&Number.isFinite(Number(last)))last=t-NORMAL_FRAME_MS}catch(_){}
         }
-      }else if(ownsNormalFrame&&Number.isFinite(t)){
+      }else if(stallSensitive&&Number.isFinite(t)){
         try{
           const previous=typeof last!=="undefined"?Number(last):NaN;
           gap=Number.isFinite(previous)?Math.max(0,t-previous):NORMAL_FRAME_MS;
@@ -202,7 +212,7 @@
 
       const result=current.call(this,timestamp);
 
-      if(!ownsNormalFrame){
+      if(!stallSensitive){
         recovery=null;
         return result;
       }
