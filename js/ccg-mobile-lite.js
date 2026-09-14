@@ -27,7 +27,16 @@
             link.remove();
         });
 
-        document.querySelectorAll("a[href]").forEach((link) => {
+        // The retired programme only used Amazon hosts or its two legacy data
+        // markers.  Avoid parsing every navigation and content link on each
+        // public page; this selector still sends every possible retired link
+        // through the existing URL and query-string checks below.
+        document.querySelectorAll([
+            'a[href*="amzn.to" i]',
+            'a[href*="amazon." i]',
+            'a[data-ccg-affiliate-link="amazon"]',
+            'a[data-ccg-revenue-link="amazon-affiliate"]'
+        ].join(", ")).forEach((link) => {
             const rawHref = link.getAttribute("href") || "";
             let url;
 

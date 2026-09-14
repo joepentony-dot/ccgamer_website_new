@@ -11,6 +11,10 @@ assert(source.includes("if (!document.body) return;"), "startup cleanup must def
 assert(source.includes("if (!force && legacyRetailerCommissionUiInitialPassDone) return;"), "normal repeated startup calls must avoid a second full DOM scan");
 assert(source.includes("legacyRetailerCommissionUiInitialPassDone = true;"), "a successful startup cleanup must mark the initial pass complete");
 assert(source.includes('window.addEventListener("ccg:game-loaded", () => retireLegacyRetailerCommissionUi({ force: true }));'), "dynamic game rendering must still force a fresh cleanup pass");
-assert(source.includes('document.querySelectorAll("a[href]").forEach((link) => {'), "legacy affiliate link cleanup behaviour must remain present");
+assert(source.includes("'a[href*=\"amzn.to\" i]'"), "legacy cleanup must still inspect shortened Amazon links");
+assert(source.includes("'a[href*=\"amazon.\" i]'"), "legacy cleanup must still inspect Amazon host links");
+assert(source.includes("'a[data-ccg-affiliate-link=\"amazon\"]'"), "legacy cleanup must still inspect explicit Amazon affiliate markers");
+assert(source.includes("'a[data-ccg-revenue-link=\"amazon-affiliate\"]'"), "legacy cleanup must still inspect explicit Amazon revenue markers");
+assert(!source.includes('document.querySelectorAll("a[href]")'), "startup cleanup must not scan every link when only legacy affiliate candidates need parsing");
 
 console.log("CCG mobile-lite startup optimisation guard passed.");

@@ -138,6 +138,9 @@ jobs:
           node --check scripts/audit-responsive-browser.js
           node --check scripts/audit-scroll-reachability.js
 
+      - name: Run mobile-lite startup regression guard
+        run: node tests/ccg-mobile-lite-startup.mjs
+
       - name: Run read-only site safety audit
         run: python scripts/audit-site-safety.py
 
