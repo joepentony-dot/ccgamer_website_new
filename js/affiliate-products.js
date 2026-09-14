@@ -7,6 +7,8 @@
     const HOME_SPOTLIGHT_SELECTOR = "[data-ccg-home-affiliate-spotlight]";
 
     let configPromise = null;
+    let renderTimer = null;
+    let lastRenderedContextKey = "";
 
     function toSafeString(value) {
         return typeof value === "string" ? value.trim() : "";
@@ -429,19 +431,46 @@
         hero.insertAdjacentElement("afterend", section);
     }
 
+    function getRenderContextKey() {
+        if (document.documentElement.getAttribute("data-ccg-page") === "home") {
+            return "home";
+        }
+
+        const section = document.getElementById(GAME_SECTION_ID);
+        if (!section) return "";
+
+        const system = resolveGameSystem(section);
+        if (!system) return "";
+
+        const slug = resolveGameSlug(section) || "unknown";
+        return `game:${slug}:${normaliseKey(system)}`;
+    }
+
     async function renderAll() {
+        const renderContextKey = getRenderContextKey();
+        if (!renderContextKey || renderContextKey === lastRenderedContextKey) return;
+
+        // Do not fetch the affiliate catalogue or inject its stylesheet until
+        // the page has a real home/game rendering target. Single-game metadata
+        // is populated before ccg:game-loaded, so this keeps affiliate work off
+        // the initial critical path without removing the feature.
         ensureStylesheet();
         try {
             const config = await loadConfig();
             renderGameShowcase(config);
             renderHomeSpotlight(config);
+            lastRenderedContextKey = renderContextKey;
         } catch (_error) {
             hideGameSection(document.getElementById(GAME_SECTION_ID));
         }
     }
 
     function scheduleRender() {
-        window.setTimeout(renderAll, 0);
+        if (renderTimer !== null) return;
+        renderTimer = window.setTimeout(() => {
+            renderTimer = null;
+            void renderAll();
+        }, 0);
     }
 
     if (document.readyState === "complete") {
