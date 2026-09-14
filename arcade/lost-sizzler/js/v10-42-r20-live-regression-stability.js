@@ -8,6 +8,7 @@
     queuedAttackRepairs:0,
     directAttackRepairs:0,
     directAttackFallbacks:0,
+    capturedR1Shots:0,
     directAttackErrors:0,
     staleModeRecoveries:0,
     dossierKeyboardCloses:0,
@@ -20,7 +21,7 @@
   const ATTACK_KEYS=new Set(["Space","KeyF","Numpad0"]);
   const STALL_MS=120;
   const CURSOR_IDLE_MS=1600;
-  let cursorTimer=0,lastFrameTimestamp=null,lastDoorTick=performance.now(),frameMonitorId=0,frameOwnerTimer=0;
+  let cursorTimer=0,lastDoorTick=performance.now(),capturedR1FireOwner=null;
 
   const activeRun=()=>document.body?.dataset?.runActive==="true";
   const panelVisible=id=>{const node=document.getElementById(id);return Boolean(node&&!node.classList.contains("hidden"))};
@@ -29,20 +30,8 @@
   const finePointer=()=>window.matchMedia?.("(pointer: fine)")?.matches!==false;
   const spyActive=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")==="sizzler-saboteurs"}catch(_){return false}};
 
-  function authoritativeFrameBoundary(){
-    try{
-      const seal=window.CCGLostSizzlerV142R2ControllerOwnerSeal;
-      const sealed=seal?.authoritativeBoundary?.();
-      if(typeof sealed==="function")return sealed;
-    }catch(_){}
-    try{
-      const shared=window.CCGLostSizzlerModeRuntime?.state?.sharedFrameBoundary;
-      return typeof shared==="function"?shared:null;
-    }catch(_){return null}
-  }
-
   function focusGame(){
-    try{if(typeof focusGameplayKeyboard==="function")focusGameplayKeyboard();else{const game=document.getElementById("game");game?.focus?.({preventScroll:true})}}catch(_){}
+    try{if(typeof focusGameplayKeyboard==="function")focusGameplayKeyboard();else document.getElementById("game")?.focus?.({preventScroll:true})}catch(_){}
   }
 
   function recoverOrphanedGameplayMode(){
@@ -50,6 +39,18 @@
     const stale=(currentMode()==="dossier"&&!panelVisible("named-dossier-panel"))||(currentMode()==="inventory"&&!panelVisible("inventory-panel"))||(currentMode()==="shop"&&!panelVisible("shop-panel"));
     if(stale){try{mode="playing";diagnostics.staleModeRecoveries++}catch(_){} }
     return currentMode()==="playing";
+  }
+
+  function captureR1FireOwner(){
+    try{
+      let owner=typeof firePlayer==="function"?firePlayer:null;
+      const seen=new Set();
+      while(typeof owner==="function"&&!seen.has(owner)){
+        if(owner.__ccgV142R1===true){capturedR1FireOwner=owner;return owner}
+        seen.add(owner);owner=typeof owner.__ccgOriginal==="function"?owner.__ccgOriginal:null;
+      }
+    }catch(_){}
+    return capturedR1FireOwner
   }
 
   function repairAttackBoundary(){
@@ -74,6 +75,13 @@
     }catch(_){return null}
   }
 
+  function shotCompleted(player,beforeMana,beforeBullets){
+    const mana=Math.max(0,Number(player?.mana)||0);
+    let bullets=beforeBullets;
+    try{bullets=(host?.projectiles||[]).filter(projectile=>projectile?.active!==false).length}catch(_){}
+    return mana<beforeMana||bullets>beforeBullets
+  }
+
   function attackNow(code){
     if(!activeRun()||!recoverOrphanedGameplayMode())return false;
     let player=null;try{player=p1}catch(_){}
@@ -81,25 +89,42 @@
     repairAttackBoundary();
     try{input?.add?.(code)}catch(_){}
     const beforeMana=Math.max(0,Number(player.mana)||0);
+    let beforeBullets=0;try{beforeBullets=(host?.projectiles||[]).filter(projectile=>projectile?.active!==false).length}catch(_){}
     const direction=typeof attackDirection==="function"?attackDirection(player):player.dir;
     let fired=false;
-    try{
-      if(typeof firePlayer==="function"){
-        firePlayer(player,direction);
-        fired=Math.max(0,Number(player.mana)||0)<beforeMana;
-      }
-    }catch(_){diagnostics.directAttackErrors++}
+
+    const r1Owner=captureR1FireOwner();
+    if(typeof r1Owner==="function"){
+      try{
+        repairAttackBoundary();
+        r1Owner(player,direction);
+        fired=shotCompleted(player,beforeMana,beforeBullets);
+        if(fired)diagnostics.capturedR1Shots++;
+      }catch(_){diagnostics.directAttackErrors++}
+    }
+
+    if(!fired){
+      try{
+        if(typeof firePlayer==="function"&&firePlayer!==r1Owner){
+          repairAttackBoundary();
+          firePlayer(player,direction);
+          fired=shotCompleted(player,beforeMana,beforeBullets);
+        }
+      }catch(_){diagnostics.directAttackErrors++}
+    }
+
     if(!fired){
       const fallback=deepestFireOwner();
-      if(fallback&&fallback!==firePlayer){
+      if(fallback&&fallback!==firePlayer&&fallback!==r1Owner){
         try{
           repairAttackBoundary();
           fallback(player,direction);
-          fired=Math.max(0,Number(player.mana)||0)<beforeMana;
+          fired=shotCompleted(player,beforeMana,beforeBullets);
           if(fired)diagnostics.directAttackFallbacks++;
         }catch(_){diagnostics.directAttackErrors++}
       }
     }
+
     if(fired){
       try{fireBuffer1=0;input?.delete?.(code)}catch(_){}
       diagnostics.directAttackRepairs++;
@@ -109,7 +134,7 @@
       if(queued)diagnostics.queuedAttackRepairs++;
     }
     diagnostics.attackIntents++;
-    return fired||Boolean(fireBuffer1>0);
+    return fired||Boolean(fireBuffer1>0)
   }
 
   try{
@@ -135,14 +160,10 @@
       return;
     }
     if(!ATTACK_KEYS.has(event.code)||!activeRun())return;
-    // Spy Vs Spy owns F as its fullscreen key. Do not steal that established
-    // special-mode control while repairing normal Dungeon/Horde attack input.
     if(event.code==="KeyF"&&spyActive())return;
     if(!recoverOrphanedGameplayMode())return;
     event.preventDefault();
     attackNow(event.code);
-    // r20 owns the normal P1 attack intent at capture time. Stop the older
-    // Space/fullscreen listeners from adding a second queued shot afterwards.
     event.stopImmediatePropagation();
   },true);
   document.addEventListener("keyup",event=>{if(ATTACK_KEYS.has(event.code))try{input?.delete?.(event.code)}catch(_){}},true);
@@ -169,7 +190,7 @@
   addEventListener("pointermove",scheduleCursorHide,{passive:true});
   addEventListener("pointerdown",scheduleCursorHide,{passive:true});
   addEventListener("keydown",()=>{if(activeRun()&&!interactiveOverlayVisible())scheduleCursorHide()},{passive:true});
-  document.addEventListener("visibilitychange",()=>{showCursor();lastFrameTimestamp=null;lastDoorTick=performance.now()});
+  document.addEventListener("visibilitychange",()=>{showCursor();lastDoorTick=performance.now()});
 
   function ensureScoreFeedback(){
     let rail=document.getElementById("shop-score-delta-rail");if(rail)return rail;
@@ -197,9 +218,6 @@
     }
   }catch(_){}
 
-  // Door animation is wall-clock based. A browser stall longer than the open
-  // animation used to let updateDoors jump straight from closed to open. Shift
-  // the active animation window by the stalled time so the visual still plays.
   try{
     if(typeof updateDoors==="function"&&!updateDoors.__ccgV142R20){
       const baseUpdateDoors=updateDoors;
@@ -215,63 +233,18 @@
     }
   }catch(_){}
 
-  // Fallback frame owner for pages that do not expose the sealed V10.42 mode
-  // controller. Normal V10.42 play leaves simulation ownership with the
-  // authoritative sharedFrameBoundary and observes RAF timing passively.
-  function stableFrame(timestamp){
-    const numeric=Number(timestamp),t=Number.isFinite(numeric)?numeric:performance.now();
-    if(Number.isFinite(lastFrameTimestamp)&&t<=lastFrameTimestamp){diagnostics.duplicateFramesDropped++;return}
-    let gap=Number.isFinite(lastFrameTimestamp)?t-lastFrameTimestamp:16;lastFrameTimestamp=t;
-    if(!Number.isFinite(gap)||gap<0)gap=16;
-    const stalled=gap>STALL_MS;if(stalled)diagnostics.frameStalls++;
-    const dt=stalled?16:Math.max(0,Math.min(32,gap||16));
-    try{last=t}catch(_){}
-    try{if(typeof update==="function")update(dt)}catch(error){console.error("[Dungeon Carnage r20] update fault contained",error)}
-    try{if(typeof render==="function")render()}catch(error){console.error("[Dungeon Carnage r20] render fault contained",error)}
-    try{requestAnimationFrame(loop)}catch(_){setTimeout(()=>{try{requestAnimationFrame(loop)}catch(__){}},16)}
-  }
-  stableFrame.__ccgV141R29Stable=true;
-  stableFrame.__ccgV142R20=true;
+  /* r20 is deliberately not a frame owner. V10.41/V10.42 mode runtime owns
+     update/RAF progression; creating even a passive second RAF chain distorts
+     the performance governor and risks competing with the sealed boundary. */
+  addEventListener("ccg:v142-ready",()=>captureR1FireOwner(),{once:true});
+  addEventListener("pagehide",()=>{showCursor();if(cursorTimer)clearTimeout(cursorTimer)},{once:true});
 
-  function observeAuthoritativeFrame(timestamp){
-    const numeric=Number(timestamp),t=Number.isFinite(numeric)?numeric:performance.now();
-    if(Number.isFinite(lastFrameTimestamp)){
-      const gap=t-lastFrameTimestamp;
-      if(Number.isFinite(gap)&&gap>STALL_MS)diagnostics.frameStalls++;
-    }
-    lastFrameTimestamp=t;
-    frameMonitorId=requestAnimationFrame(observeAuthoritativeFrame);
-  }
-
-  function installFramePolicy(attempt=0){
-    if(authoritativeFrameBoundary()){
-      if(frameOwnerTimer){clearTimeout(frameOwnerTimer);frameOwnerTimer=0}
-      if(!frameMonitorId)frameMonitorId=requestAnimationFrame(observeAuthoritativeFrame);
-      return true;
-    }
-    if(attempt<4){
-      const delays=[0,16,64,160];
-      frameOwnerTimer=setTimeout(()=>installFramePolicy(attempt+1),delays[attempt]);
-      return false;
-    }
-    try{loop=stableFrame;window.loop=stableFrame}catch(_){}
-    return false;
-  }
-  queueMicrotask(()=>installFramePolicy());
-
-  addEventListener("pagehide",()=>{
-    showCursor();
-    if(cursorTimer)clearTimeout(cursorTimer);
-    if(frameOwnerTimer)clearTimeout(frameOwnerTimer);
-    if(frameMonitorId)cancelAnimationFrame(frameMonitorId);
-    frameOwnerTimer=0;frameMonitorId=0;
-  },{once:true});
   window.CCGLostSizzlerV142R20LiveRegressionStability=Object.freeze({
     version:"V10.42-r20",
     diagnostics,
     attackNow,
     recoverOrphanedGameplayMode,
     showScoreDelta,
-    stableFrame
+    captureR1FireOwner
   });
 })();
