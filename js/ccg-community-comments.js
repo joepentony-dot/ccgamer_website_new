@@ -31,6 +31,12 @@
     maxRetries: 3
   };
 
+  const summaryState = {
+    contextKey: '',
+    inFlight: null,
+    inFlightKey: ''
+  };
+
 
 
   function commentsEnabled() {
@@ -608,19 +614,46 @@
     return document.getElementById('ccg-community-comments-panel');
   }
 
-  async function refreshSummaryCount() {
+  async function refreshSummaryCount(options) {
     const meta = document.getElementById('ccg-comments-summary-meta');
     if (!meta || !window.ccgSupabase) return;
+
     const game = getGameContext();
     if (!game.slug) return;
+
+    const contextKey = normalizeGameKey({ slug: game.slug, id: game.gameId });
+    const force = Boolean(options && options.force);
+
+    if (!force && summaryState.contextKey === contextKey) return;
+
+    if (summaryState.inFlight && summaryState.inFlightKey === contextKey) {
+      await summaryState.inFlight;
+      if (!force) return;
+    }
+
+    const request = (async function () {
+      try {
+        const supabase = await window.ccgSupabase.getClient();
+        const countRes = await supabase.from('comments').select('id', { count: 'exact', head: true }).eq('game_key', contextKey);
+        if (!countRes.error) {
+          const count = Number(countRes.count || 0);
+          meta.textContent = count === 1 ? '1 review' : count + ' reviews';
+          summaryState.contextKey = contextKey;
+        }
+      } catch (_error) {}
+    })();
+
+    summaryState.inFlight = request;
+    summaryState.inFlightKey = contextKey;
+
     try {
-      const supabase = await window.ccgSupabase.getClient();
-      const countRes = await supabase.from('comments').select('id', { count: 'exact', head: true }).eq('game_key', normalizeGameKey({ slug: game.slug, id: game.gameId }));
-      if (!countRes.error) {
-        const count = Number(countRes.count || 0);
-        meta.textContent = count === 1 ? '1 review' : count + ' reviews';
+      await request;
+    } finally {
+      if (summaryState.inFlight === request) {
+        summaryState.inFlight = null;
+        summaryState.inFlightKey = '';
       }
-    } catch (_error) {}
+    }
   }
 
   function init() {
@@ -659,7 +692,7 @@
       refreshSummaryCount();
     });
     window.addEventListener('ccg:comments-updated', function () {
-      refreshSummaryCount();
+      refreshSummaryCount({ force: true });
       if (!panel || panel.open) runSafeInit('comments-updated');
     });
   }
