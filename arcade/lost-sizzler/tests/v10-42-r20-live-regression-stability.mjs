@@ -15,7 +15,8 @@ assert.match(bootstrap,/const BUILD="V10\.42 r20"[\s\S]*const CACHE="20260913r20
 
 assert.match(fix,/ATTACK_KEYS=new Set\(\["Space","KeyF","Numpad0"\]\)/,"normal gameplay must recover all supported P1 attack keys");
 assert.match(fix,/function recoverOrphanedGameplayMode\(\)[\s\S]*dossier[\s\S]*inventory[\s\S]*shop[\s\S]*mode="playing"/,"hidden transient panels must not leave gameplay stranded outside playing mode");
-assert.match(fix,/function attackNow\(code\)[\s\S]*repairAttackBoundary\(\)[\s\S]*firePlayer\(player[\s\S]*queueAttack\(player\)/,"an attack intent must try the canonical fire boundary immediately and retain the canonical queue as a cooldown fallback");
+assert.match(fix,/function captureR1FireOwner\(\)[\s\S]*__ccgV142R1===true[\s\S]*capturedR1FireOwner=owner/,"r20 must retain the verified r1 fire owner before legacy maintenance can replace the global reference");
+assert.match(fix,/function attackNow\(code\)[\s\S]*repairAttackBoundary\(\)[\s\S]*r1Owner\(player,direction\)[\s\S]*firePlayer\(player,direction\)[\s\S]*queueAttack\(player\)/,"an attack intent must prefer the captured r1 owner, then the current canonical owner, while retaining the canonical queue as fallback");
 assert.match(fix,/if\(fired\)[\s\S]*fireBuffer1=0[\s\S]*else[\s\S]*queueAttack\(player\)/,"a successful direct shot must clear the buffered fallback so one press cannot become two shots");
 assert.match(fix,/event\.code==="KeyF"&&spyActive\(\)/,"Spy Vs Spy must retain its existing F/fullscreen ownership");
 assert.match(fix,/attackNow\(event\.code\)[\s\S]*event\.stopImmediatePropagation\(\)/,"normal gameplay attack capture must stop older Space/fullscreen listeners from adding duplicate intents");
@@ -23,11 +24,14 @@ assert.match(fix,/attackNow\(event\.code\)[\s\S]*event\.stopImmediatePropagation
 assert.match(fix,/hideNamedDossier=function[\s\S]*focusGame\(\)[\s\S]*scheduleCursorHide\(\)/,"closing the dossier must restore keyboard focus and desktop cursor-idle behaviour");
 assert.match(fix,/CURSOR_IDLE_MS=1600[\s\S]*ccg-game-cursor-idle/,"desktop gameplay must hide an idle pointer after a short delay");
 assert.match(fix,/shop-score-delta-rail[\s\S]*−\$\{value\.toLocaleString\(\)\} SCORE/,"each successful shop purchase must expose its own visible score deduction");
-
 assert.match(fix,/updateDoors=function[\s\S]*gap>STALL_MS[\s\S]*openingStart[\s\S]*openAt/,"door animation time must freeze across a browser stall instead of jumping straight to open");
-assert.match(fix,/function authoritativeFrameBoundary\(\)[\s\S]*sharedFrameBoundary/ ,"r20 must recognise the established authoritative frame boundary");
-assert.match(fix,/function installFramePolicy\(attempt=0\)[\s\S]*authoritativeFrameBoundary\(\)[\s\S]*observeAuthoritativeFrame[\s\S]*loop=stableFrame/ ,"r20 must observe the authoritative frame owner and only install its stable frame as a fallback");
-assert.match(fix,/stableFrame\.__ccgV141R29Stable=true/,"the fallback r20 frame owner must satisfy the retained r29 ownership marker");
-assert.match(ownerSeal,/hurtPlayerV142R21TrapDamageFinal[\s\S]*player\.armor=0[\s\S]*current\.call\(this,player,1,flash,source\)[\s\S]*player\.armor=beforeArmor/,"ordinary dungeon floor traps must clamp a valid contact to exactly one health while preserving armour");
 
-console.log("V10.42 r20 live input, frame pacing, door, dossier, cursor, trap damage and shop feedback contracts passed");
+assert.doesNotMatch(fix,/requestAnimationFrame\s*\(/,"r20 must not create a competing RAF chain");
+assert.doesNotMatch(fix,/window\.loop\s*=|loop\s*=\s*stableFrame/,"r20 must not take ownership of the sealed frame loop");
+assert.doesNotMatch(fix,/function\s+stableFrame\s*\(/,"r20 must leave simulation frame ownership to the established mode runtime");
+
+assert.match(ownerSeal,/retired:true/,"r21 must remain only as a cached-bootstrap compatibility marker");
+assert.doesNotMatch(ownerSeal,/window\.hurtPlayer\s*=|hurtPlayerV142R21TrapDamageFinal/,"r21 must not install an additional trap damage owner");
+assert.doesNotMatch(ownerSeal,/setInterval\s*\(/,"r21 must not replace the verified r19 trap maintenance loop");
+
+console.log("V10.42 r20 live input, owner isolation, door, dossier, cursor, trap and shop feedback contracts passed");
