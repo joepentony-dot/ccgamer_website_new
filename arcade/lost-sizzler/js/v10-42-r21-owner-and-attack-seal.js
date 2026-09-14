@@ -49,9 +49,11 @@
      but R1/R18 legitimately wrap hurtPlayer later in the ordered bootstrap. In
      that final chain an armour-aware owner can consume a floor-trap point before
      R19 gets the chance to preserve armour and route the hit to health. Install
-     one final, non-R19 boundary after bootstrap completion: it only zeroes armour
-     for ordinary dungeon trap calls while delegating all contact/invulnerability
-     decisions to the established R18 -> ... -> R19 chain, then restores armour. */
+     one final, non-R19 boundary after bootstrap completion: ordinary dungeon
+     floor traps always cost exactly one health per valid contact, regardless of
+     the raw environmental amount supplied by a lower-level caller. Armour is
+     temporarily bypassed while the established R18 -> ... -> R19 chain retains
+     contact/invulnerability ownership, then restored unchanged. */
   function installFinalTrapOwner(){
     try{
       const current=window.hurtPlayer;
@@ -62,7 +64,7 @@
         const beforeArmor=Number(player.armor||0);
         state.finalTrapOwnerCalls++;
         player.armor=0;
-        try{return current.apply(this,arguments)}finally{player.armor=beforeArmor}
+        try{return current.call(this,player,1,flash,source)}finally{player.armor=beforeArmor}
       };
       wrapped.__ccgV142R21TrapDamageFinal=true;
       wrapped.__ccgOriginal=current;
