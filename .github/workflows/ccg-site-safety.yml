@@ -141,6 +141,9 @@ jobs:
       - name: Run mobile-lite startup regression guard
         run: node tests/ccg-mobile-lite-startup.mjs
 
+      - name: Run game box-dialog runtime extraction guard
+        run: node tests/ccg-game-box-dialog-runtime.mjs
+
       - name: Run read-only site safety audit
         run: python scripts/audit-site-safety.py
 
