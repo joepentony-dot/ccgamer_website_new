@@ -8,10 +8,11 @@ const root=path.resolve(here,"..");
 const read=file=>fs.readFileSync(path.join(root,file),"utf8");
 const bootstrap=read("js/v10-42-bootstrap.js");
 const fix=read("js/v10-42-r20-live-regression-stability.js");
+const stallElapsed=read("js/v10-42-r22-stall-elapsed-handoff.js");
 const ownerSeal=read("js/v10-42-r21-owner-and-attack-seal.js");
 const controllerSeal=read("js/v10-42-r2-controller-owner-seal.js");
 
-assert.match(bootstrap,/v10-42-r20-live-regression-stability\.js[\s\S]*v10-42-r1-stability\.js[\s\S]*v10-42-r18-solo-playtest-stability\.js/,"r20 must load before the established final r1/r18 stability pair");
+assert.match(bootstrap,/v10-42-r20-live-regression-stability\.js[\s\S]*v10-42-r22-stall-elapsed-handoff\.js[\s\S]*v10-42-r1-stability\.js[\s\S]*v10-42-r18-solo-playtest-stability\.js/,"r20 and its elapsed writer handoff must load before the established final r1/r18 stability pair");
 assert.match(bootstrap,/const BUILD="V10\.42 r20"[\s\S]*const CACHE="20260913r20"/,"r20 must own a fresh visible build/cache identity");
 
 assert.match(fix,/ATTACK_KEYS=new Set\(\["Space","KeyF","Numpad0"\]\)/,"normal gameplay must recover all supported P1 attack keys");
@@ -32,6 +33,14 @@ assert.doesNotMatch(fix,/(?:window\.)?update\s*=\s*stallSafeUpdate/,"r20 must no
 assert.match(fix,/function installStallClamp\(\)[\s\S]*runtime\?\.state\?\.sharedFrameBoundary[\s\S]*safeDt=16[\s\S]*__ccgV141ModeFrameBoundary=true[\s\S]*runtime\.state\.sharedFrameBoundary=stallSafeBoundary/,"r20 must clamp oversized dungeon dt at the mutable authoritative mode-runtime boundary while preserving its ownership marker");
 assert.match(fix,/function installAuthoritativeLoopStallClamp\(\)[\s\S]*const current=window\.loop[\s\S]*wrapped\.__ccgV141R29Stable=true[\s\S]*wrapped\.__ccgV142R20LoopStallClamp=true[\s\S]*wrapped\.__ccgOriginal=current[\s\S]*window\.loop=wrapped/,"r20 may extend the established r29 loop only as a marked wrapper that retains the prior owner ancestry");
 assert.match(fix,/currentMode\(\)==="playing"&&!spyActive\(\)/,"stall clamping must remain limited to active ordinary dungeon play and leave Spy timing alone");
+
+assert.match(stallElapsed,/const current=window\.updateAlert/ ,"r22 must clamp at updateAlert, the authoritative writer of run and floor elapsed time");
+assert.match(stallElapsed,/normalPlay=activeRun\(\)&&currentMode\(\)==="playing"&&!spyActive\(\)/,"r22 elapsed clamping must be limited to active ordinary dungeon play and leave Spy timing alone");
+assert.match(stallElapsed,/safeDt>STALL_MS[\s\S]*safeDt=16[\s\S]*current\.call\(this,safeDt/ ,"r22 must replace an oversized elapsed-writer delta with one normal simulation step before the elapsed counters are advanced");
+assert.match(stallElapsed,/r20\.diagnostics\.frameStalls=Math\.max/ ,"the authoritative elapsed owner must report a detected browser stall through the existing r20 diagnostics");
+assert.match(stallElapsed,/wrapped\.__ccgV142R22StallElapsedHandoff=true[\s\S]*wrapped\.__ccgOriginal=current[\s\S]*window\.updateAlert=wrapped/ ,"r22 must retain bounded owner ancestry when replacing the elapsed writer");
+assert.doesNotMatch(stallElapsed,/window\.updateDoors=|queueMicrotask\s*\(/,"r22 must not rely on the earlier door boundary or a late microtask clamp for elapsed ownership");
+assert.doesNotMatch(stallElapsed,/requestAnimationFrame\s*\(/,"r22 must not create a competing RAF chain");
 
 assert.doesNotMatch(fix,/requestAnimationFrame\s*\(/,"r20 must not create a competing RAF chain");
 assert.doesNotMatch(fix,/function\s+stableFrame\s*\(/,"r20 must not introduce an independent simulation-frame implementation");
