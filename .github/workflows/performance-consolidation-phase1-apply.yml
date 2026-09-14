@@ -1,0 +1,89 @@
+name: Performance consolidation phase 1 apply
+
+on:
+  push:
+    branches:
+      - codex/performance-consolidation-phase-1
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply guarded performance consolidation
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          root = Path('.')
+          home = root / 'home.html'
+          home_css = root / 'resources/css/home.css'
+          home_debug = root / 'resources/css/home-debug.css'
+          sw = root / 'service-worker.js'
+
+          home_text = home.read_text(encoding='utf-8')
+
+          old_preloads = '''    <link rel="preload" as="image" href="resources/images/hero/ccg-hero-c64.png" fetchpriority="high" type="image/png">\n    <link rel="preload" as="image" href="resources/images/hero/ccg-hero-amiga.png" fetchpriority="high" type="image/png">'''
+          mode_aware_preload = '''    <script>\n        (function () {\n            try {\n                var mode = document.documentElement.getAttribute('data-ccg-mode') === 'amiga' ? 'amiga' : 'c64';\n                var preload = document.createElement('link');\n                preload.rel = 'preload';\n                preload.as = 'image';\n                preload.href = mode === 'amiga'\n                    ? 'resources/images/hero/ccg-hero-amiga.png'\n                    : 'resources/images/hero/ccg-hero-c64.png';\n                preload.setAttribute('fetchpriority', 'high');\n                preload.type = 'image/png';\n                document.head.appendChild(preload);\n            } catch (e) {}\n        })();\n    </script>'''
+
+          if old_preloads not in home_text:
+              raise SystemExit('Expected dual hero preload block not found in home.html')
+          home_text = home_text.replace(old_preloads, mode_aware_preload, 1)
+
+          debug_link = '    <link rel="stylesheet" href="resources/css/home-debug.css" />\n'
+          if debug_link not in home_text:
+              raise SystemExit('Expected home-debug.css link not found in home.html')
+          home_text = home_text.replace(debug_link, '', 1)
+          home.write_text(home_text, encoding='utf-8')
+
+          if not home_debug.exists():
+              raise SystemExit('resources/css/home-debug.css is missing')
+          marker = '/* ============================================================\n   CONSOLIDATED FROM FORMER home-debug.css\n   Production fixes retained in original cascade order.\n============================================================ */'
+          css_text = home_css.read_text(encoding='utf-8')
+          if marker in css_text:
+              raise SystemExit('home-debug.css appears to have already been consolidated')
+          debug_text = home_debug.read_text(encoding='utf-8').strip()
+          home_css.write_text(css_text.rstrip() + '\n\n' + marker + '\n\n' + debug_text + '\n', encoding='utf-8')
+          home_debug.unlink()
+
+          sw_text = sw.read_text(encoding='utf-8')
+          old_version = 'const CACHE_VERSION = "2026-08-25-public-release-v10";'
+          new_version = 'const CACHE_VERSION = "2026-09-14-public-release-v11-performance";'
+          if old_version not in sw_text:
+              raise SystemExit('Expected service-worker cache version not found')
+          sw_text = sw_text.replace(old_version, new_version, 1)
+
+          old_code_route = '''  if (CODE_ASSET_PATTERN.test(url.pathname)) {\n    event.respondWith(networkFirstAsset(request));\n    return;\n  }'''
+          new_code_route = '''  if (CODE_ASSET_PATTERN.test(url.pathname)) {\n    event.respondWith(\n      isLostSizzlerPath(url.pathname)\n        ? networkFirstAsset(request)\n        : staleWhileRevalidate(request, ASSET_CACHE)\n    );\n    return;\n  }'''
+          if old_code_route not in sw_text:
+              raise SystemExit('Expected code-asset network-first route not found')
+          sw_text = sw_text.replace(old_code_route, new_code_route, 1)
+          sw.write_text(sw_text, encoding='utf-8')
+
+          test = root / 'tests/performance-consolidation-phase1.mjs'
+          test.write_text('''import fs from "node:fs";\n\nconst home = fs.readFileSync("home.html", "utf8");\nconst homeCss = fs.readFileSync("resources/css/home.css", "utf8");\nconst sw = fs.readFileSync("service-worker.js", "utf8");\n\nfunction assert(condition, message) {\n  if (!condition) throw new Error(message);\n}\n\nassert(!home.includes("home-debug.css"), "home.html must not request the retired home-debug.css file");\nassert(!home.includes('href="resources/images/hero/ccg-hero-c64.png" fetchpriority="high"'), "home.html must not statically preload the C64 hero alongside the Amiga hero");\nassert(!home.includes('href="resources/images/hero/ccg-hero-amiga.png" fetchpriority="high"'), "home.html must not statically preload the Amiga hero alongside the C64 hero");\nassert(home.includes("document.documentElement.getAttribute('data-ccg-mode')"), "home.html must select the hero preload from the saved mode");\nassert(homeCss.includes("CONSOLIDATED FROM FORMER home-debug.css"), "home.css must retain the former production correction rules");\nassert(sw.includes('2026-09-14-public-release-v11-performance'), "service-worker cache version must be bumped");\nassert(sw.includes('? networkFirstAsset(request)\\n        : staleWhileRevalidate(request, ASSET_CACHE)'), "Lost Sizzler code must remain network-first while ordinary code assets use stale-while-revalidate");\n\nconsole.log("Performance consolidation phase 1 guards passed.");\n''', encoding='utf-8')
+          PY
+
+      - name: Run phase 1 guard
+        run: node tests/performance-consolidation-phase1.mjs
+
+      - name: Commit guarded changes
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Consolidate first-stage public performance assets"
+          git push origin HEAD:${GITHUB_REF_NAME}
