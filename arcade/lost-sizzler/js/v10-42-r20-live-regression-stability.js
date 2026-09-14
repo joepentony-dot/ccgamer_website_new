@@ -13,7 +13,8 @@
     scoreDeltas:0,
     doorLagFreezes:0,
     frameStalls:0,
-    duplicateFramesDropped:0
+    duplicateFramesDropped:0,
+    staleTrapInvulnerabilityBridges:0
   };
   const ATTACK_KEYS=new Set(["Space","KeyF","Numpad0"]);
   const STALL_MS=120;
@@ -51,6 +52,7 @@
   }
 
   function repairAttackBoundary(){
+    try{window.CCGLostSizzlerV142R18SoloPlaytestStability?.repairAttackLiveness?.("r20-input")}catch(_){}
     try{window.CCGLostSizzlerV142R1Stability?.repairCombatTimers?.()}catch(_){}
     try{window.CCGLostSizzlerV142R1Stability?.repairProjectilePool?.()}catch(_){}
     try{
@@ -85,6 +87,31 @@
     diagnostics.attackIntents++;
     return fired||Boolean(fireBuffer1>0);
   }
+
+  // R19 owns per-contact trap protection, but it can sit outside the older R60
+  // environment repair layer and reject a deliberately stale invulnerability
+  // value before R60 sees it. Bridge only active trap damage through that stale
+  // field. If the downstream chain rejects the hit, restore the prior value;
+  // if damage lands, keep the fresh invulnerability written by the canonical
+  // damage owner. R19's contact/protection maps still prevent duplicate hits.
+  try{
+    if(typeof hurtPlayer==="function"&&!hurtPlayer.__ccgV142R20TrapBridge){
+      const baseHurtPlayer=hurtPlayer;
+      hurtPlayer=function hurtPlayerV142R20TrapBridge(player,amount,flash,source){
+        const trap=activeRun()&&/trap/i.test(String(source||""));
+        const beforeInv=Number(player?.invuln||0),beforeHealth=Number(player?.health||0);
+        if(trap&&player&&beforeInv>0){
+          try{player.invuln=0;diagnostics.staleTrapInvulnerabilityBridges++}catch(_){}
+        }
+        const result=baseHurtPlayer.apply(this,arguments);
+        if(trap&&player&&Number(player.health||0)>=beforeHealth&&beforeInv>0){
+          try{player.invuln=Math.max(Number(player.invuln||0),beforeInv)}catch(_){}
+        }
+        return result;
+      };
+      hurtPlayer.__ccgV142R20TrapBridge=true;hurtPlayer.__ccgOriginal=baseHurtPlayer;
+    }
+  }catch(_){}
 
   try{
     if(typeof hideNamedDossier==="function"&&!hideNamedDossier.__ccgV142R20){
