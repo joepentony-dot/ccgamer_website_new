@@ -162,6 +162,11 @@ test("generated game HTML receives magazine reviews at build time instead of rel
   assert.match(result.html, /Zzap!64/);
   assert.match(result.html, /70%/);
   assert.match(result.html, /issue=28&amp;page=39/);
+
+  const repeated = materializeMagazineReviewsHtml(result.html, rows);
+  assert.equal(repeated.foundContainer, true);
+  assert.equal(repeated.changed, false, "magazine review materialization must be byte-for-byte idempotent");
+  assert.equal(repeated.html, result.html, "a second magazine review materialization must not alter generated HTML");
 });
 
 test("Mr Weems retains the three verified contemporary magazine scores", () => {
