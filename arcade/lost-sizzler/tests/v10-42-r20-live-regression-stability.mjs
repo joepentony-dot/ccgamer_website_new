@@ -8,6 +8,7 @@ const root=path.resolve(here,"..");
 const read=file=>fs.readFileSync(path.join(root,file),"utf8");
 const bootstrap=read("js/v10-42-bootstrap.js");
 const fix=read("js/v10-42-r20-live-regression-stability.js");
+const ownerSeal=read("js/v10-42-r21-owner-and-attack-seal.js");
 
 assert.match(bootstrap,/v10-42-r20-live-regression-stability\.js[\s\S]*v10-42-r1-stability\.js[\s\S]*v10-42-r18-solo-playtest-stability\.js/,"r20 must load before the established final r1/r18 stability pair");
 assert.match(bootstrap,/const BUILD="V10\.42 r20"[\s\S]*const CACHE="20260913r20"/,"r20 must own a fresh visible build/cache identity");
@@ -27,5 +28,6 @@ assert.match(fix,/updateDoors=function[\s\S]*gap>STALL_MS[\s\S]*openingStart[\s\
 assert.match(fix,/function authoritativeFrameBoundary\(\)[\s\S]*sharedFrameBoundary/ ,"r20 must recognise the established authoritative frame boundary");
 assert.match(fix,/function installFramePolicy\(attempt=0\)[\s\S]*authoritativeFrameBoundary\(\)[\s\S]*observeAuthoritativeFrame[\s\S]*loop=stableFrame/ ,"r20 must observe the authoritative frame owner and only install its stable frame as a fallback");
 assert.match(fix,/stableFrame\.__ccgV141R29Stable=true/,"the fallback r20 frame owner must satisfy the retained r29 ownership marker");
+assert.match(ownerSeal,/hurtPlayerV142R21TrapDamageFinal[\s\S]*player\.armor=0[\s\S]*current\.call\(this,player,1,flash,source\)[\s\S]*player\.armor=beforeArmor/,"ordinary dungeon floor traps must clamp a valid contact to exactly one health while preserving armour");
 
-console.log("V10.42 r20 live input, frame pacing, door, dossier, cursor and shop feedback contracts passed");
+console.log("V10.42 r20 live input, frame pacing, door, dossier, cursor, trap damage and shop feedback contracts passed");
