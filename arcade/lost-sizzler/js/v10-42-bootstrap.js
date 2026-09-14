@@ -4,8 +4,8 @@
   if(window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
-  const BUILD="V10.42 r2";
-  const CACHE="20260909r32";
+  const BUILD="V10.42 r20";
+  const CACHE="20260914r20";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-five-depth-campaign.js","CCGLostSizzlerV142FiveDepthCampaign"],
@@ -36,6 +36,9 @@
     ["v10-42-warden-interface-consistency.js","CCGLostSizzlerV142WardenInterfaceConsistency"],
     ["v10-42-r19-mobile-trap-layout-stability.js","CCGLostSizzlerV142R19MobileTrapLayoutStability"],
     ["v10-42-r20-trap-cycle-handoff-stability.js","CCGLostSizzlerV142R20TrapCycleHandoffStability"],
+    ["v10-42-r21-owner-and-attack-seal.js","CCGLostSizzlerV142R21OwnerAndAttackSeal"],
+    ["v10-42-r20-live-regression-stability.js","CCGLostSizzlerV142R20LiveRegressionStability"],
+    ["v10-42-r22-stall-elapsed-handoff.js","CCGLostSizzlerV142R22StallElapsedHandoff"],
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
     ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"]
   ];
