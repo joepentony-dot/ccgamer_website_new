@@ -119,27 +119,31 @@ try{
   await page.evaluate(()=>closeShop());
   await page.waitForFunction(()=>mode==="playing");
 
-  const lagFixture=await page.evaluate(()=>{
+  const stallResult=await page.evaluate(async()=>{
     const door=(host.doors||[]).find(candidate=>candidate&&!candidate.open&&!candidate.opening)||(host.doors||[])[0];
     if(!door)throw new Error("r20 browser contract requires at least one dungeon door");
     door.open=false;door.opening=false;door.locked=false;door.openAt=0;door.openingStart=0;
     const elapsedBefore=Number(run.elapsed||0);beginDoorOpening(door,300);
     const blockedAt=performance.now();while(performance.now()-blockedAt<450){}
-    return{id:door.id,elapsedBefore,blockedMs:performance.now()-blockedAt};
+    const blockedMs=performance.now()-blockedAt;
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    const observedAt=performance.now(),current=(host.doors||[]).find(candidate=>candidate.id===door.id);
+    return{
+      id:door.id,elapsedBefore,blockedMs,postStallObservationMs:Math.max(0,observedAt-blockedAt-blockedMs),
+      opening:Boolean(current?.opening),open:Boolean(current?.open),remaining:Number(current?.openAt||0)-observedAt,
+      elapsed:Number(run.elapsed||0),frameStalls:Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.frameStalls||0),
+      doorLagFreezes:Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.doorLagFreezes||0)
+    };
   });
-  assert.ok(lagFixture.blockedMs>=430,"browser stall fixture must actually block the main thread");
-  await page.waitForTimeout(80);
-  const afterStall=await page.evaluate(id=>{
-    const door=(host.doors||[]).find(candidate=>candidate.id===id);return{opening:Boolean(door?.opening),open:Boolean(door?.open),remaining:Number(door?.openAt||0)-performance.now(),elapsed:Number(run.elapsed||0),frameStalls:Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.frameStalls||0),doorLagFreezes:Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.doorLagFreezes||0)};
-  },lagFixture.id);
-  assert.equal(afterStall.open,false,"a stalled browser must not skip directly to the fully-open door state");
-  assert.equal(afterStall.opening,true,"the door opening animation must remain active after a long browser stall");
-  assert.ok(afterStall.remaining>80,"the door animation window must be shifted forward after the stall");
-  assert.ok(afterStall.elapsed-lagFixture.elapsedBefore<300,`simulation must not repay the ${Math.round(lagFixture.blockedMs)}ms browser stall as a speed burst; advanced ${Math.round(afterStall.elapsed-lagFixture.elapsedBefore)}ms`);
-  assert.ok(afterStall.frameStalls>=1,"r20 must record the long frame stall");
-  assert.ok(afterStall.doorLagFreezes>=1,"r20 must record preserving an opening door across the stall");
+  assert.ok(stallResult.blockedMs>=430,"browser stall fixture must actually block the main thread");
+  assert.equal(stallResult.open,false,"a stalled browser must not skip directly to the fully-open door state");
+  assert.equal(stallResult.opening,true,"the door opening animation must remain active after a long browser stall");
+  assert.ok(stallResult.remaining>80,"the door animation window must be shifted forward after the stall");
+  assert.ok(stallResult.elapsed-stallResult.elapsedBefore<300,`simulation must not repay the ${Math.round(stallResult.blockedMs)}ms browser stall as a speed burst; advanced ${Math.round(stallResult.elapsed-stallResult.elapsedBefore)}ms across ${Math.round(stallResult.postStallObservationMs)}ms of browser-frame observation`);
+  assert.ok(stallResult.frameStalls>=1,"r20 must record the long frame stall");
+  assert.ok(stallResult.doorLagFreezes>=1,"r20 must record preserving an opening door across the stall");
   await page.waitForTimeout(420);
-  await page.waitForFunction(id=>(host.doors||[]).find(candidate=>candidate.id===id)?.open===true,lagFixture.id,{timeout:2500});
+  await page.waitForFunction(id=>(host.doors||[]).find(candidate=>candidate.id===id)?.open===true,stallResult.id,{timeout:2500});
 
   const pointer=await page.evaluate(()=>({fine:matchMedia("(pointer: fine)").matches}));
   if(pointer.fine){
