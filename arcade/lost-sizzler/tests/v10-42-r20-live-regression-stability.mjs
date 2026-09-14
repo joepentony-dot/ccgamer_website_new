@@ -35,8 +35,8 @@ assert.match(fix,/function installAuthoritativeLoopStallClamp\(\)[\s\S]*const cu
 assert.match(fix,/currentMode\(\)==="playing"&&!spyActive\(\)/,"stall clamping must remain limited to active ordinary dungeon play and leave Spy timing alone");
 
 assert.match(stallElapsed,/const current=window\.updateAlert/ ,"r22 must clamp at updateAlert, the authoritative writer of run and floor elapsed time");
-assert.match(stallElapsed,/normalPlay=activeRun\(\)&&currentMode\(\)==="playing"&&!spyActive\(\)/,"r22 elapsed clamping must be limited to active ordinary dungeon play and leave Spy timing alone");
-assert.match(stallElapsed,/safeDt>STALL_MS[\s\S]*safeDt=16[\s\S]*current\.call\(this,safeDt/ ,"r22 must replace an oversized elapsed-writer delta with one normal simulation step before the elapsed counters are advanced");
+assert.match(stallElapsed,/normalPlay=\(\)=>activeRun\(\)&&currentMode\(\)==="playing"&&!spyActive\(\)/,"r22 elapsed clamping must be limited to active ordinary dungeon play and leave Spy timing alone");
+assert.match(stallElapsed,/safeDt>STALL_MS[\s\S]*safeDt=NORMAL_FRAME_MS[\s\S]*current\.call\(this,safeDt/ ,"r22 must replace an oversized elapsed-writer delta with one normal simulation step before the elapsed counters are advanced");
 assert.match(stallElapsed,/r20\.diagnostics\.frameStalls=Math\.max/ ,"the authoritative elapsed owner must report a detected browser stall through the existing r20 diagnostics");
 assert.match(stallElapsed,/wrapped\.__ccgV142R22StallElapsedHandoff=true[\s\S]*wrapped\.__ccgOriginal=current[\s\S]*window\.updateAlert=wrapped/ ,"r22 must retain bounded owner ancestry when replacing the elapsed writer");
 assert.doesNotMatch(stallElapsed,/window\.updateDoors=|queueMicrotask\s*\(/,"r22 must not rely on the earlier door boundary or a late microtask clamp for elapsed ownership");
