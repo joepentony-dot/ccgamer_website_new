@@ -77,6 +77,48 @@ Do Not Override
     let navAuthorityObserver = null;
     let navCoreInitialised = false;
 
+    /* Establish the public document scroll root synchronously, before the
+       external scroll-authority stylesheet has finished loading and before
+       ccg-global's DOMContentLoaded hardening can apply inline overflow rules.
+       This removes the short-lived html/body scroll-container race that can
+       make physical mouse-wheel input feel intermittent on archive pages. */
+    function installEarlyScrollAuthority() {
+        if (!document.documentElement.hasAttribute("data-ccg-page")) return;
+        if (document.getElementById("ccg-scroll-authority-bootstrap")) return;
+
+        const style = document.createElement("style");
+        style.id = "ccg-scroll-authority-bootstrap";
+        style.textContent = `
+html[data-ccg-page] {
+    height: auto !important;
+    min-height: 100% !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior-y: auto !important;
+    scroll-behavior: auto !important;
+}
+html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
+    position: static !important;
+    height: auto !important;
+    min-height: 100% !important;
+    max-height: none !important;
+    overflow-y: visible !important;
+    overflow-x: hidden !important;
+    overscroll-behavior-y: auto !important;
+    scroll-behavior: auto !important;
+}
+@supports (overflow: clip) {
+    html[data-ccg-page],
+    html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
+        overflow-x: clip !important;
+    }
+}
+`;
+        document.head.appendChild(style);
+    }
+
+    installEarlyScrollAuthority();
+
     function canonicalPath(value) {
         try {
             return new URL(value, window.location.href).pathname.replace(/\/+$/, "") || "/";
