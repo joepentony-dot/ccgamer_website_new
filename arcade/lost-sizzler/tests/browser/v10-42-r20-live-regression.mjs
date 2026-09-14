@@ -36,6 +36,7 @@ async function dispatchKey(page,code,key=code){
 
 async function prepareAttack(page){
   return page.evaluate(()=>{
+    p1.firearmUnlocked=true;p1.weapon=baseWeapon();
     p1.maxMana=Math.max(100,Number(p1.maxMana)||0);p1.mana=100;p1.hitStunMs=0;fire1=0;fireBuffer1=0;projectileCD=0;bullets.length=0;input.clear();
     return Number(p1.mana);
   });
