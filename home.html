@@ -51,8 +51,22 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="dns-prefetch" href="//fonts.googleapis.com" />
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
-    <link rel="preload" as="image" href="resources/images/hero/ccg-hero-c64.png" fetchpriority="high" type="image/png">
-    <link rel="preload" as="image" href="resources/images/hero/ccg-hero-amiga.png" fetchpriority="high" type="image/png">
+    <script>
+        (function () {
+            try {
+                var mode = document.documentElement.getAttribute('data-ccg-mode') === 'amiga' ? 'amiga' : 'c64';
+                var preload = document.createElement('link');
+                preload.rel = 'preload';
+                preload.as = 'image';
+                preload.href = mode === 'amiga'
+                    ? 'resources/images/hero/ccg-hero-amiga.png'
+                    : 'resources/images/hero/ccg-hero-c64.png';
+                preload.setAttribute('fetchpriority', 'high');
+                preload.type = 'image/png';
+                document.head.appendChild(preload);
+            } catch (e) {}
+        })();
+    </script>
     <link rel="preload" as="image" href="resources/images/ccgamer-logo.png" fetchpriority="high" type="image/png" imagesizes="150px">
 
     <script>
@@ -83,7 +97,6 @@
 
     <!-- PAGE CSS -->
     <link rel="stylesheet" href="resources/css/home.css" />
-    <link rel="stylesheet" href="resources/css/home-debug.css" />
     <link rel="stylesheet" href="resources/css/ccg-mobile-lite.css">
     <script src="js/ccg-mobile-lite.js" defer></script>
 

@@ -1,7 +1,7 @@
 /* CCG public offline service worker */
 "use strict";
 
-const CACHE_VERSION = "2026-08-25-public-release-v10";
+const CACHE_VERSION = "2026-09-14-public-release-v11-performance";
 const SHELL_CACHE = `ccg-shell-${CACHE_VERSION}`;
 const PAGE_CACHE = `ccg-pages-${CACHE_VERSION}`;
 const ASSET_CACHE = `ccg-assets-${CACHE_VERSION}`;
@@ -270,7 +270,11 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (CODE_ASSET_PATTERN.test(url.pathname)) {
-    event.respondWith(networkFirstAsset(request));
+    event.respondWith(
+      isLostSizzlerPath(url.pathname)
+        ? networkFirstAsset(request)
+        : staleWhileRevalidate(request, ASSET_CACHE)
+    );
     return;
   }
 
