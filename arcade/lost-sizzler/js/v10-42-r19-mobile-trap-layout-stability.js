@@ -26,6 +26,14 @@
   }
 
   function environmentalTrapSource(source){return /trap/i.test(String(source||""))}
+  function chainHas(owner,marker){
+    const seen=new Set();let current=owner;
+    while(typeof current==="function"&&!seen.has(current)){
+      if(current?.[marker]===true)return true;
+      seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null;
+    }
+    return false
+  }
   function activeTrapContact(player){
     try{
       const now=performance.now();
@@ -39,26 +47,28 @@
   function installTrapDamageOwner(){
     const current=window.hurtPlayer;
     if(typeof current!=="function")return false;
-    /* R1/R18 and other guarded owners can legitimately wrap hurtPlayer after R19
-       loads. For trap semantics R19 must see the untouched incoming player state,
-       so only treat the owner as installed when R19 itself is outermost. If a
-       later owner appears, wrap that complete chain once; the nested R19 instance
-       sees trapDamageInFlight and delegates without double-applying the guard. */
-    if(current?.__ccgV142R19MobileTrapDamage===true)return true;
+    /* Keep one R19 owner in the linked hurtPlayer ancestry. Later guarded owners
+       may legitimately sit outside it; re-wrapping them on every lifecycle pass
+       grows the chain after repeated mode leave/re-entry and is not required for
+       R19's contact/protection state to remain authoritative. */
+    if(chainHas(current,"__ccgV142R19MobileTrapDamage"))return true;
     const wrapped=function hurtPlayerV142R19MobileTrapDamage(player,amount,flash,source){
       if(!ordinaryDungeon()||!player||!environmentalTrapSource(source))return current.apply(this,arguments);
-      /* Floor-trap health damage is one hit per active contact. Later environment
-         wrappers deliberately own other hazard cadence and may bypass or mutate
-         the base invulnerability field, so preserve the successful trap hit's
-         canonical protection window independently across a brief leave/re-entry. */
+      /* Floor-trap health damage is one hit per active contact. The independent
+         contact/protection guard prevents duplicate damage while established
+         downstream environment owners retain their stale-invulnerability rules. */
       const contact=activeTrapContact(player),contactKey=String(contact?.key||"");
+      /* R19 owns occupied floor-trap contacts only. Environmental owners such as
+         R56 deliberately accept trap-labelled damage without an occupied floor
+         trap (for example stale-invulnerability recovery). Delegating that case
+         preserves their established ownership instead of swallowing it here. */
+      if(!contactKey)return current.apply(this,arguments);
       const now=performance.now();
       if(contactKey){
         const protectedUntil=Number(trapProtectionUntil.get(contactKey)||0);
         if(protectedUntil>now){state.trapProtectionBlocks++;return false}
         if(protectedUntil>0)trapProtectionUntil.delete(contactKey);
       }
-      if(Number(player.invuln||0)>0)return false;
       if(contactKey&&trapContacts.has(contactKey)){state.trapContactBlocks++;return false}
       if(contactKey&&trapDamageInFlight.has(contactKey))return current.apply(this,arguments);
       if(contactKey)trapDamageInFlight.add(contactKey);
@@ -103,6 +113,7 @@
         let changed=false;
         if(trapContacts.delete(contactKey))changed=true;
         trapDamageInFlight.delete(contactKey);
+        if(trapProtectionUntil.delete(contactKey))changed=true;
         if(canonical?.delete?.(contactKey))changed=true;
         const key=r57TrapKey(player,trap);
         if(r57?.state?.trapCycles?.get?.(key)===true){r57.state.trapCycles.set(key,false);changed=true}
