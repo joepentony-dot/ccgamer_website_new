@@ -8,7 +8,7 @@
   const CACHE_TOKEN=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||BUILD||"latest").trim();
   const STORAGE_KEY="ccg-lost-sizzler:last-sanitised-cache";
   const GAME_PREFIXES=["/arcade/lost-sizzler/","/games/ccg-games/cheeky-commodore-quest/"];
-  const state={build:BUILD,cacheToken:CACHE_TOKEN,previous:"",needed:false,running:false,done:false,timedOut:false,deletedEntries:0,checkedCaches:0,serviceWorkersChecked:0,runtimeErrors:[],errors:[],startedAt:performance.now(),finishedAt:0,v142ReleaseHeld:false,v142ReleaseReleased:false};
+  const state={build:BUILD,cacheToken:CACHE_TOKEN,previous:"",needed:false,running:false,done:false,timedOut:false,deletedEntries:0,checkedCaches:0,serviceWorkersChecked:0,runtimeErrors:[],errors:[],startedAt:performance.now(),finishedAt:0,v142ReleaseHeld:false,v142ReleaseReleased:false,startupBrandGuarded:false};
 
   /* V10.42 production is zero-server-cost, but this guard is the first static
    * script on the game page. Hold the public release-ready bit here so legacy
@@ -46,6 +46,54 @@
   }
   startV142ReleaseGuard();
 
+  /* V10.36 still owns the bounded loading overlay and therefore still creates
+   * its retired pre-rename labels. This guard runs earlier than V10.36: attach
+   * before that overlay is inserted and rewrite only its visible branding in a
+   * mutation microtask, so the browser cannot paint the old title for a frame. */
+  let v142StartupBrandObserver=null;
+  let v142StartupOverlayObserver=null;
+  function currentStartupBrandText(value){
+    return String(value||"")
+      .replace(/CHEEKY COMMODORE QUEST/g,"CHEEKY COMMODORE GAMER")
+      .replace(/THE LOST SIZZLER/g,"C64 DUNGEON CARNAGE")
+      .replace(/The Lost Sizzler/g,"C64 Dungeon Carnage")
+      .replace(/Lost Sizzler/g,"C64 Dungeon Carnage");
+  }
+  function syncV142StartupBranding(){
+    const overlay=document.getElementById("ccg-release-loading");
+    if(!overlay)return false;
+    const kicker=overlay.querySelector(".ccg-release-loading-kicker");
+    const status=overlay.querySelector("#ccg-release-loading-status");
+    const meta=overlay.querySelector(".ccg-release-loading-meta span:last-child");
+    if(kicker&&kicker.textContent!=="CHEEKY COMMODORE GAMER")kicker.textContent="CHEEKY COMMODORE GAMER";
+    if(status){const next=currentStartupBrandText(status.textContent);if(next!==status.textContent)status.textContent=next}
+    if(meta&&meta.textContent!=="C64 DUNGEON CARNAGE · PREPARING RUNTIME")meta.textContent="C64 DUNGEON CARNAGE · PREPARING RUNTIME";
+    state.startupBrandGuarded=true;
+    if(typeof MutationObserver==="function"&&!v142StartupOverlayObserver){
+      v142StartupOverlayObserver=new MutationObserver(syncV142StartupBranding);
+      v142StartupOverlayObserver.observe(overlay,{subtree:true,childList:true,characterData:true});
+    }
+    return true;
+  }
+  function startV142StartupBrandGuard(){
+    if(syncV142StartupBranding())return true;
+    if(typeof MutationObserver!=="function")return false;
+    v142StartupBrandObserver=new MutationObserver(()=>{
+      if(!syncV142StartupBranding())return;
+      v142StartupBrandObserver?.disconnect();
+      v142StartupBrandObserver=null;
+    });
+    v142StartupBrandObserver.observe(document.documentElement,{subtree:true,childList:true});
+    addEventListener("pagehide",()=>{
+      v142StartupBrandObserver?.disconnect();
+      v142StartupOverlayObserver?.disconnect();
+      v142StartupBrandObserver=null;
+      v142StartupOverlayObserver=null;
+    },{once:true});
+    return true;
+  }
+  startV142StartupBrandGuard();
+
   /* Start the 92%-freeze protection before version-check can inject V10.36.
    * The guard itself waits for the release gate/V10.36 hook, so loading it this
    * early is safe and removes any race with the sequential enhancement queue. */
@@ -68,7 +116,7 @@
   }
   function announce(stage,message,detail={}){
     try{window.dispatchEvent(new CustomEvent("ccg-lost-sizzler-cache-status",{detail:{stage,message,build:BUILD,cacheToken:CACHE_TOKEN,...detail}}))}catch(_){}
-    const status=document.getElementById("ccg-release-loading-status");if(status&&message)status.textContent=message;
+    const status=document.getElementById("ccg-release-loading-status");if(status&&message)status.textContent=currentStartupBrandText(message);
   }
   function errorText(value){return String(value?.stack||value?.message||value||"Unknown startup error").slice(0,1200)}
   function sourceLooksLocal(source="",message=""){
@@ -129,7 +177,7 @@
     state.needed=Boolean(force||state.previous!==CACHE_TOKEN);
     if(!state.needed){state.done=true;state.finishedAt=performance.now();announce("current","Cached game files already match this build.");resolveReady(state);return state}
     state.running=true;
-    announce("cleaning","Refreshing cached Lost Sizzler files…");
+    announce("cleaning","Refreshing cached C64 Dungeon Carnage files…");
     activePromise=(async()=>{
       try{
         await clearCacheStorage();
@@ -158,10 +206,10 @@
   function ensureManualButton(){
     if(document.getElementById("clean-game-cache-btn"))return true;
     const row=document.querySelector("#menu .secondary-menu");if(!row)return false;
-    const button=document.createElement("button");button.id="clean-game-cache-btn";button.type="button";button.textContent="Clean Game Cache";button.title="Remove cached Lost Sizzler game files and reload the current published build. Saves, settings, achievements and leaderboard data are kept.";
+    const button=document.createElement("button");button.id="clean-game-cache-btn";button.type="button";button.textContent="Clean Game Cache";button.title="Remove cached C64 Dungeon Carnage game files and reload the current published build. Saves, settings, achievements and leaderboard data are kept.";
     button.addEventListener("click",async()=>{
       if(button.disabled)return;button.disabled=true;button.textContent="Cleaning Game Cache…";
-      try{await cleanNow({reload:true})}catch(error){button.disabled=false;button.textContent="Clean Game Cache";console.warn("[Lost Sizzler] manual game-cache clean failed",error)}
+      try{await cleanNow({reload:true})}catch(error){button.disabled=false;button.textContent="Clean Game Cache";console.warn("[C64 Dungeon Carnage] manual game-cache clean failed",error)}
     });
     const exit=row.querySelector(".menu-exit-link");row.insertBefore(button,exit||null);return true;
   }
@@ -177,5 +225,5 @@
 
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",ensureManualButton,{once:true});else ensureManualButton();
   performClean(false);
-  window.CCGLostSizzlerCacheGuard={state,ready,cleanNow,performClean,gamePath,ensureManualButton,get runtimeErrors(){return state.runtimeErrors.map(row=>({...row}))}};
+  window.CCGLostSizzlerCacheGuard={state,ready,cleanNow,performClean,gamePath,ensureManualButton,syncV142StartupBranding,get runtimeErrors(){return state.runtimeErrors.map(row=>({...row}))}};
 })();
