@@ -17,7 +17,7 @@
   const ATTACK_KEYS=new Set(["Space","KeyF","Numpad0"]);
   const STALL_MS=120;
   const CURSOR_IDLE_MS=1600;
-  let cursorTimer=0,lastFrameTimestamp=null,lastDoorTick=performance.now();
+  let cursorTimer=0,lastFrameTimestamp=null,lastDoorTick=performance.now(),frameMonitorId=0,frameOwnerTimer=0;
 
   const activeRun=()=>document.body?.dataset?.runActive==="true";
   const panelVisible=id=>{const node=document.getElementById(id);return Boolean(node&&!node.classList.contains("hidden"))};
@@ -25,6 +25,18 @@
   const editableTarget=target=>Boolean(target instanceof Element&&(target.matches("input,textarea,select,[contenteditable='true'],[contenteditable='']")||target.closest("input,textarea,select,[contenteditable='true'],[contenteditable='']")));
   const finePointer=()=>window.matchMedia?.("(pointer: fine)")?.matches!==false;
   const spyActive=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")==="sizzler-saboteurs"}catch(_){return false}};
+
+  function authoritativeFrameBoundary(){
+    try{
+      const seal=window.CCGLostSizzlerV142R2ControllerOwnerSeal;
+      const sealed=seal?.authoritativeBoundary?.();
+      if(typeof sealed==="function")return sealed;
+    }catch(_){}
+    try{
+      const shared=window.CCGLostSizzlerModeRuntime?.state?.sharedFrameBoundary;
+      return typeof shared==="function"?shared:null;
+    }catch(_){return null}
+  }
 
   function focusGame(){
     try{if(typeof focusGameplayKeyboard==="function")focusGameplayKeyboard();else{const game=document.getElementById("game");game?.focus?.({preventScroll:true})}}catch(_){}
@@ -163,9 +175,9 @@
     }
   }catch(_){}
 
-  // Final single-owner RAF boundary. Long browser stalls resume with one normal
-  // simulation step instead of paying down wall-clock debt; duplicate RAF
-  // chains die on the shared timestamp rather than multiplying game speed.
+  // Fallback frame owner for pages that do not expose the sealed V10.42 mode
+  // controller. Normal V10.42 play leaves simulation ownership with the
+  // authoritative sharedFrameBoundary and observes RAF timing passively.
   function stableFrame(timestamp){
     const numeric=Number(timestamp),t=Number.isFinite(numeric)?numeric:performance.now();
     if(Number.isFinite(lastFrameTimestamp)&&t<=lastFrameTimestamp){diagnostics.duplicateFramesDropped++;return}
@@ -180,9 +192,40 @@
   }
   stableFrame.__ccgV141R29Stable=true;
   stableFrame.__ccgV142R20=true;
-  try{loop=stableFrame;window.loop=stableFrame}catch(_){}
 
-  addEventListener("pagehide",()=>{showCursor();if(cursorTimer)clearTimeout(cursorTimer)},{once:true});
+  function observeAuthoritativeFrame(timestamp){
+    const numeric=Number(timestamp),t=Number.isFinite(numeric)?numeric:performance.now();
+    if(Number.isFinite(lastFrameTimestamp)){
+      const gap=t-lastFrameTimestamp;
+      if(Number.isFinite(gap)&&gap>STALL_MS)diagnostics.frameStalls++;
+    }
+    lastFrameTimestamp=t;
+    frameMonitorId=requestAnimationFrame(observeAuthoritativeFrame);
+  }
+
+  function installFramePolicy(attempt=0){
+    if(authoritativeFrameBoundary()){
+      if(frameOwnerTimer){clearTimeout(frameOwnerTimer);frameOwnerTimer=0}
+      if(!frameMonitorId)frameMonitorId=requestAnimationFrame(observeAuthoritativeFrame);
+      return true;
+    }
+    if(attempt<4){
+      const delays=[0,16,64,160];
+      frameOwnerTimer=setTimeout(()=>installFramePolicy(attempt+1),delays[attempt]);
+      return false;
+    }
+    try{loop=stableFrame;window.loop=stableFrame}catch(_){}
+    return false;
+  }
+  queueMicrotask(()=>installFramePolicy());
+
+  addEventListener("pagehide",()=>{
+    showCursor();
+    if(cursorTimer)clearTimeout(cursorTimer);
+    if(frameOwnerTimer)clearTimeout(frameOwnerTimer);
+    if(frameMonitorId)cancelAnimationFrame(frameMonitorId);
+    frameOwnerTimer=0;frameMonitorId=0;
+  },{once:true});
   window.CCGLostSizzlerV142R20LiveRegressionStability=Object.freeze({
     version:"V10.42-r20",
     diagnostics,
