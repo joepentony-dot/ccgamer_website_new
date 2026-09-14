@@ -19,7 +19,7 @@ assert.match(fix,/function recoverOrphanedGameplayMode\(\)[\s\S]*dossier[\s\S]*i
 assert.match(fix,/function captureR1FireOwner\(\)[\s\S]*__ccgV142R1===true[\s\S]*capturedR1FireOwner=owner/,"r20 must retain the verified r1 fire owner before legacy maintenance can replace the global reference");
 assert.match(fix,/function attackNow\(code\)[\s\S]*repairAttackBoundary\(\)[\s\S]*r1Owner\(player,direction\)[\s\S]*firePlayer\(player,direction\)[\s\S]*queueAttack\(player\)/,"an attack intent must prefer the captured r1 owner, then the current canonical owner, while retaining the canonical queue as fallback");
 assert.match(fix,/if\(fired\)[\s\S]*fireBuffer1=0[\s\S]*else[\s\S]*queueAttack\(player\)/,"a successful direct shot must clear the buffered fallback so one press cannot become two shots");
-assert.match(fix,/event\.code==="KeyF"&&spyActive\(\)/,"Spy Vs Spy must retain its existing F/fullscreen ownership");
+assert.match(fix,/if\(spyActive\(\)\)return;/,"Spy Vs Spy must retain ownership of its own attack/fullscreen input instead of r20 intercepting dungeon attack keys");
 assert.match(fix,/attackNow\(event\.code\)[\s\S]*event\.stopImmediatePropagation\(\)/,"normal gameplay attack capture must stop older Space/fullscreen listeners from adding duplicate intents");
 
 assert.match(fix,/hideNamedDossier=function[\s\S]*focusGame\(\)[\s\S]*scheduleCursorHide\(\)/,"closing the dossier must restore keyboard focus and desktop cursor-idle behaviour");
@@ -30,11 +30,11 @@ assert.match(fix,/updateDoors=function[\s\S]*gap>STALL_MS[\s\S]*openingStart[\s\
 assert.match(controllerSeal,/Object\.defineProperty\(window,"update"[\s\S]*configurable:false/,"r2 must retain sealed ownership of the global update boundary");
 assert.doesNotMatch(fix,/(?:window\.)?update\s*=\s*stallSafeUpdate/,"r20 must not attempt a blocked write through r2's sealed global update owner");
 assert.match(fix,/function installStallClamp\(\)[\s\S]*runtime\?\.state\?\.sharedFrameBoundary[\s\S]*safeDt=16[\s\S]*__ccgV141ModeFrameBoundary=true[\s\S]*runtime\.state\.sharedFrameBoundary=stallSafeBoundary/,"r20 must clamp oversized dungeon dt at the mutable authoritative mode-runtime boundary while preserving its ownership marker");
+assert.match(fix,/function installAuthoritativeLoopStallClamp\(\)[\s\S]*const current=window\.loop[\s\S]*wrapped\.__ccgV141R29Stable=true[\s\S]*wrapped\.__ccgV142R20LoopStallClamp=true[\s\S]*wrapped\.__ccgOriginal=current[\s\S]*window\.loop=wrapped/,"r20 may extend the established r29 loop only as a marked wrapper that retains the prior owner ancestry");
 assert.match(fix,/currentMode\(\)==="playing"&&!spyActive\(\)/,"stall clamping must remain limited to active ordinary dungeon play and leave Spy timing alone");
 
 assert.doesNotMatch(fix,/requestAnimationFrame\s*\(/,"r20 must not create a competing RAF chain");
-assert.doesNotMatch(fix,/window\.loop\s*=|loop\s*=\s*stableFrame/,"r20 must not take ownership of the sealed frame loop");
-assert.doesNotMatch(fix,/function\s+stableFrame\s*\(/,"r20 must leave simulation frame ownership to the established mode runtime");
+assert.doesNotMatch(fix,/function\s+stableFrame\s*\(/,"r20 must not introduce an independent simulation-frame implementation");
 
 assert.match(ownerSeal,/retired:true/,"r21 must remain only as a cached-bootstrap compatibility marker");
 assert.doesNotMatch(ownerSeal,/window\.hurtPlayer\s*=|hurtPlayerV142R21TrapDamageFinal/,"r21 must not install an additional trap damage owner");
