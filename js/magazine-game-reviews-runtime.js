@@ -316,14 +316,21 @@
         observer.observe(container, { childList: true });
     }
 
+    function retryRender() {
+        const container = document.getElementById("gameMagazineReviews")
+            || document.getElementById("gameLemonLinks");
+        if (container?.querySelector(`[${PANEL_ATTR}="true"]`)) return;
+        render();
+    }
+
     function init() {
         const isGamePage = document.documentElement.matches('[data-ccg-page="single-game"]')
             || document.querySelector(".ccg-page--single-game");
         if (!isGamePage) return;
         render();
         observe();
-        window.setTimeout(render, 500);
-        window.setTimeout(render, 1500);
+        window.setTimeout(retryRender, 500);
+        window.setTimeout(retryRender, 1500);
     }
 
     if (document.readyState === "loading") {
