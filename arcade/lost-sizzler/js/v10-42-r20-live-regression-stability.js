@@ -239,17 +239,27 @@
     if(typeof current!=="function")return false;
     if(current.__ccgV142R20LoopStallClamp===true)return true;
     const wrapped=function loopV142R20StallClamp(timestamp){
-      if(activeRun()&&currentMode()==="playing"&&!spyActive()){
-        const t=Number(timestamp);
-        if(Number.isFinite(t)){
-          try{
-            const previous=typeof last!=="undefined"?Number(last):NaN;
-            const gap=Number.isFinite(previous)?t-previous:0;
-            if(gap>STALL_MS&&gap<600000){last=t-16;diagnostics.frameStalls++}
-          }catch(_){}
-        }
+      const ownsNormalFrame=activeRun()&&currentMode()==="playing"&&!spyActive();
+      const t=Number(timestamp);
+      let maxAdvance=45,beforeElapsed=NaN,beforeFloorElapsed=NaN;
+      if(ownsNormalFrame&&Number.isFinite(t)){
+        try{
+          const previous=typeof last!=="undefined"?Number(last):NaN;
+          const gap=Number.isFinite(previous)?Math.max(0,t-previous):16;
+          maxAdvance=Math.min(45,Math.max(0,gap||16));
+          if(gap>STALL_MS&&gap<600000){last=t-16;maxAdvance=16;diagnostics.frameStalls++}
+          beforeElapsed=Number(run?.elapsed);
+          beforeFloorElapsed=Number(host?.floorElapsed);
+        }catch(_){}
       }
-      return current.call(this,timestamp);
+      const result=current.call(this,timestamp);
+      if(ownsNormalFrame){
+        try{
+          if(Number.isFinite(beforeElapsed)&&Number.isFinite(Number(run?.elapsed))&&Number(run.elapsed)-beforeElapsed>maxAdvance)run.elapsed=beforeElapsed+maxAdvance;
+          if(Number.isFinite(beforeFloorElapsed)&&Number.isFinite(Number(host?.floorElapsed))&&Number(host.floorElapsed)-beforeFloorElapsed>maxAdvance)host.floorElapsed=beforeFloorElapsed+maxAdvance;
+        }catch(_){}
+      }
+      return result;
     };
     try{for(const key of Object.keys(current))wrapped[key]=current[key]}catch(_){}
     wrapped.__ccgV141R29Stable=true;
