@@ -304,7 +304,6 @@
       status.textContent = 'Saved to your account.';
       logRating('saved', { gameSlug: slug, userId: activeUser.id, rating: rating });
       window.dispatchEvent(new CustomEvent('ccg:rating-updated', { detail: { gameSlug: slug } }));
-      render();
       } finally {
         isSubmitting = false;
       }
