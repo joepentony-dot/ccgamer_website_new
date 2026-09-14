@@ -8,7 +8,7 @@
     "validate:video-seo": "node scripts/validate-video-seo.js",
     "generate:retro-video-seo": "node scripts/generate-retro-video-seo.js",
     "validate:retro-video-seo": "node scripts/validate-retro-video-seo.js",
-    "generate:video-library": "node scripts/generate-video-library.js",
+    "generate:video-library": "node scripts/generate-video-library.js && node scripts/inject-retro-manual-schema.js",
     "validate:video-library": "node scripts/validate-video-library.js",
     "generate:sitemaps": "node scripts/generate-sitemaps.js",
     "validate:sitemaps": "node scripts/validate-sitemaps.js",
