@@ -1,0 +1,68 @@
+name: Performance consolidation phase 2 apply
+
+on:
+  push:
+    branches:
+      - codex/performance-consolidation-phase-2
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            js/affiliate-products.js
+            tests
+
+      - name: Defer affiliate runtime until a renderable page context exists
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('js/affiliate-products.js')
+          text = path.read_text(encoding='utf-8')
+
+          old_state = '''    let configPromise = null;\n'''
+          new_state = '''    let configPromise = null;\n    let renderTimer = null;\n    let lastRenderedContextKey = "";\n'''
+          if old_state not in text:
+              raise SystemExit('Expected affiliate runtime state block not found')
+          text = text.replace(old_state, new_state, 1)
+
+          old_render = '''    async function renderAll() {\n        ensureStylesheet();\n        try {\n            const config = await loadConfig();\n            renderGameShowcase(config);\n            renderHomeSpotlight(config);\n        } catch (_error) {\n            hideGameSection(document.getElementById(GAME_SECTION_ID));\n        }\n    }\n\n    function scheduleRender() {\n        window.setTimeout(renderAll, 0);\n    }'''
+          new_render = '''    function getRenderContextKey() {\n        if (document.documentElement.getAttribute("data-ccg-page") === "home") {\n            return "home";\n        }\n\n        const section = document.getElementById(GAME_SECTION_ID);\n        if (!section) return "";\n\n        const system = resolveGameSystem(section);\n        if (!system) return "";\n\n        const slug = resolveGameSlug(section) || "unknown";\n        return `game:${slug}:${normaliseKey(system)}`;\n    }\n\n    async function renderAll() {\n        const renderContextKey = getRenderContextKey();\n        if (!renderContextKey || renderContextKey === lastRenderedContextKey) return;\n\n        // Do not fetch the affiliate catalogue or inject its stylesheet until\n        // the page has a real home/game rendering target. Single-game metadata\n        // is populated before ccg:game-loaded, so this keeps affiliate work off\n        // the initial critical path without removing the feature.\n        ensureStylesheet();\n        try {\n            const config = await loadConfig();\n            renderGameShowcase(config);\n            renderHomeSpotlight(config);\n            lastRenderedContextKey = renderContextKey;\n        } catch (_error) {\n            hideGameSection(document.getElementById(GAME_SECTION_ID));\n        }\n    }\n\n    function scheduleRender() {\n        if (renderTimer !== null) return;\n        renderTimer = window.setTimeout(() => {\n            renderTimer = null;\n            void renderAll();\n        }, 0);\n    }'''
+          if old_render not in text:
+              raise SystemExit('Expected affiliate render/scheduler block not found')
+          text = text.replace(old_render, new_render, 1)
+          path.write_text(text, encoding='utf-8')
+
+          test = Path('tests/affiliate-products-critical-path.mjs')
+          test.write_text('''import fs from "node:fs";\n\nconst source = fs.readFileSync("js/affiliate-products.js", "utf8");\n\nfunction assert(condition, message) {\n  if (!condition) throw new Error(message);\n}\n\nconst contextGuard = 'const renderContextKey = getRenderContextKey();\\n        if (!renderContextKey || renderContextKey === lastRenderedContextKey) return;';\nconst guardIndex = source.indexOf(contextGuard);\nconst styleIndex = source.indexOf('ensureStylesheet();', guardIndex);\nconst configIndex = source.indexOf('const config = await loadConfig();', guardIndex);\n\nassert(source.includes('let renderTimer = null;'), 'affiliate scheduling must coalesce same-tick render requests');\nassert(source.includes('let lastRenderedContextKey = "";'), 'affiliate runtime must track its last successful page context');\nassert(source.includes('function getRenderContextKey()'), 'affiliate runtime must derive a renderable page context before loading assets');\nassert(source.includes('if (!system) return "";'), 'single-game affiliate work must wait until game system metadata exists');\nassert(guardIndex >= 0, 'renderAll must return before doing work when no new render context exists');\nassert(styleIndex > guardIndex, 'affiliate stylesheet injection must happen after the context guard');\nassert(configIndex > guardIndex, 'affiliate catalogue loading must happen after the context guard');\nassert(source.includes('lastRenderedContextKey = renderContextKey;'), 'successful affiliate renders must be memoized');\nassert(source.includes('if (renderTimer !== null) return;'), 'duplicate scheduled renders must be coalesced');\nassert(source.includes('window.addEventListener("ccg:game-loaded", scheduleRender);'), 'dynamic game loading must continue to trigger affiliate rendering');\nassert(source.includes('renderHomeSpotlight(config);'), 'homepage affiliate spotlight behaviour must remain present');\nassert(source.includes('renderGameShowcase(config);'), 'game affiliate showcase behaviour must remain present');\n\nconsole.log("Affiliate critical-path optimisation guard passed.");\n''', encoding='utf-8')
+          PY
+
+      - name: Validate runtime and guard
+        run: |
+          node --check js/affiliate-products.js
+          node tests/affiliate-products-critical-path.mjs
+
+      - name: Commit guarded changes
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add js/affiliate-products.js tests/affiliate-products-critical-path.mjs
+          git commit -m "Defer affiliate rendering until page context is ready"
+          git fetch origin "${GITHUB_REF_NAME}"
+          git rebase "origin/${GITHUB_REF_NAME}"
+          git push origin HEAD:${GITHUB_REF_NAME}
