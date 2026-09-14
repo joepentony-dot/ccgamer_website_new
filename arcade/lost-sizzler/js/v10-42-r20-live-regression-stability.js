@@ -14,7 +14,8 @@
     doorLagFreezes:0,
     frameStalls:0,
     duplicateFramesDropped:0,
-    staleTrapInvulnerabilityBridges:0
+    staleTrapInvulnerabilityBridges:0,
+    trapCycleRearms:0
   };
   const ATTACK_KEYS=new Set(["Space","KeyF","Numpad0"]);
   const STALL_MS=120;
@@ -110,6 +111,26 @@
         return result;
       };
       hurtPlayer.__ccgV142R20TrapBridge=true;hurtPlayer.__ccgOriginal=baseHurtPlayer;
+    }
+  }catch(_){}
+
+  // R56 owns the canonical active/inactive trap-cycle transition. R19 normally
+  // notices inactive contacts from its monitor, but a full trap cycle can occur
+  // synchronously between monitor ticks. Re-arm R19 immediately after each R56
+  // trap-cycle tick so a genuinely new active cycle can damage again while the
+  // same active contact is still protected from duplicate damage.
+  try{
+    const r56=window.CCGLostSizzlerV141R56PlaytestCompletion;
+    if(r56&&typeof r56.trapCycleTick==="function"&&!r56.trapCycleTick.__ccgV142R20TrapRearm){
+      const baseTrapCycleTick=r56.trapCycleTick;
+      const wrappedTrapCycleTick=function(...args){
+        const result=baseTrapCycleTick.apply(this,args);
+        try{window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.rearmInactiveTrapContacts?.();diagnostics.trapCycleRearms++}catch(_){}
+        return result;
+      };
+      wrappedTrapCycleTick.__ccgV142R20TrapRearm=true;
+      wrappedTrapCycleTick.__ccgOriginal=baseTrapCycleTick;
+      r56.trapCycleTick=wrappedTrapCycleTick;
     }
   }catch(_){}
 
