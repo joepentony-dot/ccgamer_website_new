@@ -16,6 +16,7 @@
     scoreDeltas:0,
     doorLagFreezes:0,
     frameStalls:0,
+    stallClampInstalls:0,
     duplicateFramesDropped:0
   };
   const ATTACK_KEYS=new Set(["Space","KeyF","Numpad0"]);
@@ -233,32 +234,38 @@
     }
   }catch(_){}
 
-  /* Keep the established mode runtime as the sole RAF owner, but prevent its
-     normal dungeon update boundary from repaying a suspended browser frame as
-     hundreds of milliseconds of simulation. This clamps only an oversized dt
-     passed into ordinary active play; Spy Vs Spy keeps its specialist timing. */
-  try{
-    if(typeof update==="function"&&!update.__ccgV142R20StallClamp){
-      const baseUpdate=update;
-      const stallSafeUpdate=function(dt,...args){
-        let safeDt=Number(dt);
-        if(activeRun()&&currentMode()==="playing"&&!spyActive()&&Number.isFinite(safeDt)&&safeDt>STALL_MS&&safeDt<600000){
-          safeDt=16;
-          diagnostics.frameStalls++;
-        }
-        return baseUpdate.call(this,safeDt,...args);
-      };
-      try{for(const key of Object.keys(baseUpdate))stallSafeUpdate[key]=baseUpdate[key]}catch(_){}
-      stallSafeUpdate.__ccgV142R20StallClamp=true;
-      stallSafeUpdate.__ccgOriginal=baseUpdate;
-      update=stallSafeUpdate;
-    }
-  }catch(_){}
+  /* R2 intentionally seals global update ownership behind a non-configurable
+     accessor, so writing update=... here is both ineffective and the wrong
+     ownership boundary. Extend the mode runtime's mutable authoritative frame
+     boundary instead. R2's getter resolves that boundary dynamically, keeping
+     the established runtime as sole update/RAF owner while allowing oversized
+     external dt calls to be clamped before they reach dungeon simulation. */
+  function installStallClamp(){
+    const runtime=window.CCGLostSizzlerModeRuntime,boundary=runtime?.state?.sharedFrameBoundary;
+    if(typeof boundary!=="function")return false;
+    if(boundary.__ccgV142R20StallClamp===true)return true;
+    const stallSafeBoundary=function updateV142R20StallClamp(dt,...args){
+      let safeDt=Number(dt);
+      if(activeRun()&&currentMode()==="playing"&&!spyActive()&&Number.isFinite(safeDt)&&safeDt>STALL_MS&&safeDt<600000){
+        safeDt=16;
+        diagnostics.frameStalls++;
+      }
+      return boundary.call(this,safeDt,...args);
+    };
+    try{for(const key of Object.keys(boundary))stallSafeBoundary[key]=boundary[key]}catch(_){}
+    stallSafeBoundary.__ccgV141ModeFrameBoundary=true;
+    stallSafeBoundary.__ccgV142R20StallClamp=true;
+    stallSafeBoundary.__ccgOriginal=boundary;
+    runtime.state.sharedFrameBoundary=stallSafeBoundary;
+    diagnostics.stallClampInstalls++;
+    return runtime.state.sharedFrameBoundary===stallSafeBoundary;
+  }
+  installStallClamp();
 
   /* r20 is deliberately not a frame owner. V10.41/V10.42 mode runtime owns
      update/RAF progression; creating even a passive second RAF chain distorts
      the performance governor and risks competing with the sealed boundary. */
-  addEventListener("ccg:v142-ready",()=>captureR1FireOwner(),{once:true});
+  addEventListener("ccg:v142-ready",()=>{captureR1FireOwner();installStallClamp()},{once:true});
   addEventListener("pagehide",()=>{showCursor();if(cursorTimer)clearTimeout(cursorTimer)},{once:true});
 
   window.CCGLostSizzlerV142R20LiveRegressionStability=Object.freeze({
@@ -267,6 +274,7 @@
     attackNow,
     recoverOrphanedGameplayMode,
     showScoreDelta,
-    captureR1FireOwner
+    captureR1FireOwner,
+    installStallClamp
   });
 })();
