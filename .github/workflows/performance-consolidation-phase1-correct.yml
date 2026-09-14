@@ -19,6 +19,7 @@ jobs:
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             home.html
+            resources/css/home.css
             service-worker.js
             tests/performance-consolidation-phase1.mjs
 
