@@ -1,0 +1,73 @@
+{
+  "phase": "7E",
+  "correction": "miscellaneous-genre-image-optimisation",
+  "target": "resources/images/genres/miscellaneous.png",
+  "html_reference": "games/genres/index.html",
+  "before": {
+    "bytes": 662336,
+    "kilobytes": 646.8125,
+    "width": 1024,
+    "height": 474,
+    "mode": "RGB",
+    "has_transparency": false,
+    "sha256": "9fbccc32a151736208e4a6d55ba875c453e3f0d6b166b41b5430bd55dbb2ea62"
+  },
+  "after": {
+    "bytes": 160527,
+    "kilobytes": 156.7646484375,
+    "width": 460,
+    "height": 213,
+    "mode": "RGB",
+    "has_transparency": false,
+    "sha256": "f94ed5576c658f18bc5e8f27b458ec71061aea057a35e2020154ee845148bbb3"
+  },
+  "reduction": {
+    "bytes_saved": 501809,
+    "percent": 75.76350975939704
+  },
+  "aspect_ratio_delta_percent": 0.033010563380264646,
+  "display_quality": {
+    "180": {
+      "width": 180,
+      "height": 83,
+      "mean_absolute_error_rgb": [
+        0.388755,
+        0.404083,
+        0.39257
+      ],
+      "max_absolute_error_rgb": [
+        10,
+        9,
+        9
+      ]
+    },
+    "360": {
+      "width": 360,
+      "height": 167,
+      "mean_absolute_error_rgb": [
+        0.775915,
+        0.808932,
+        0.76492
+      ],
+      "max_absolute_error_rgb": [
+        20,
+        27,
+        23
+      ]
+    },
+    "460": {
+      "width": 460,
+      "height": 213,
+      "mean_absolute_error_rgb": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max_absolute_error_rgb": [
+        0,
+        0,
+        0
+      ]
+    }
+  }
+}
