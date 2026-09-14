@@ -1,0 +1,74 @@
+name: Performance consolidation phase 3 apply
+
+on:
+  push:
+    branches:
+      - codex/performance-consolidation-phase-3
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            js/ccg-community-comments.js
+            tests
+
+      - name: Coalesce duplicate community summary requests
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('js/ccg-community-comments.js')
+          text = path.read_text(encoding='utf-8')
+
+          old_state = '''  const state = {\n    initStarted: false,\n    authReady: false,\n    activeSlug: null,\n    activeGameId: null,\n    lastGameEventAt: 0,\n    renderInFlight: null,\n    retryTimer: null,\n    retryCount: 0,\n    maxRetries: 3\n  };\n'''
+          new_state = old_state + '''\n  const summaryState = {\n    contextKey: '',\n    inFlight: null,\n    inFlightKey: ''\n  };\n'''
+          if old_state not in text:
+              raise SystemExit('Expected comments state block not found')
+          text = text.replace(old_state, new_state, 1)
+
+          old_summary = '''  async function refreshSummaryCount() {\n    const meta = document.getElementById('ccg-comments-summary-meta');\n    if (!meta || !window.ccgSupabase) return;\n    const game = getGameContext();\n    if (!game.slug) return;\n    try {\n      const supabase = await window.ccgSupabase.getClient();\n      const countRes = await supabase.from('comments').select('id', { count: 'exact', head: true }).eq('game_key', normalizeGameKey({ slug: game.slug, id: game.gameId }));\n      if (!countRes.error) {\n        const count = Number(countRes.count || 0);\n        meta.textContent = count === 1 ? '1 review' : count + ' reviews';\n      }\n    } catch (_error) {}\n  }\n'''
+          new_summary = '''  async function refreshSummaryCount(options) {\n    const meta = document.getElementById('ccg-comments-summary-meta');\n    if (!meta || !window.ccgSupabase) return;\n\n    const game = getGameContext();\n    if (!game.slug) return;\n\n    const contextKey = normalizeGameKey({ slug: game.slug, id: game.gameId });\n    const force = Boolean(options && options.force);\n\n    if (!force && summaryState.contextKey === contextKey) return;\n\n    if (summaryState.inFlight && summaryState.inFlightKey === contextKey) {\n      await summaryState.inFlight;\n      if (!force) return;\n    }\n\n    const request = (async function () {\n      try {\n        const supabase = await window.ccgSupabase.getClient();\n        const countRes = await supabase.from('comments').select('id', { count: 'exact', head: true }).eq('game_key', contextKey);\n        if (!countRes.error) {\n          const count = Number(countRes.count || 0);\n          meta.textContent = count === 1 ? '1 review' : count + ' reviews';\n          summaryState.contextKey = contextKey;\n        }\n      } catch (_error) {}\n    })();\n\n    summaryState.inFlight = request;\n    summaryState.inFlightKey = contextKey;\n\n    try {\n      await request;\n    } finally {\n      if (summaryState.inFlight === request) {\n        summaryState.inFlight = null;\n        summaryState.inFlightKey = '';\n      }\n    }\n  }\n'''
+          if old_summary not in text:
+              raise SystemExit('Expected comments summary function not found')
+          text = text.replace(old_summary, new_summary, 1)
+
+          old_updated = '''    window.addEventListener('ccg:comments-updated', function () {\n      refreshSummaryCount();\n      if (!panel || panel.open) runSafeInit('comments-updated');\n    });'''
+          new_updated = '''    window.addEventListener('ccg:comments-updated', function () {\n      refreshSummaryCount({ force: true });\n      if (!panel || panel.open) runSafeInit('comments-updated');\n    });'''
+          if old_updated not in text:
+              raise SystemExit('Expected comments-updated listener not found')
+          text = text.replace(old_updated, new_updated, 1)
+          path.write_text(text, encoding='utf-8')
+
+          test = Path('tests/community-summary-critical-path.mjs')
+          test.write_text('''import fs from "node:fs";\n\nconst source = fs.readFileSync("js/ccg-community-comments.js", "utf8");\n\nfunction assert(condition, message) {\n  if (!condition) throw new Error(message);\n}\n\nassert(source.includes("const summaryState = {"), "comments runtime must track summary request state");\nassert(source.includes("if (!force && summaryState.contextKey === contextKey) return;"), "completed duplicate summary queries must be skipped");\nassert(source.includes("summaryState.inFlight && summaryState.inFlightKey === contextKey"), "in-flight duplicate summary queries must be coalesced");\nassert(source.includes("await summaryState.inFlight;"), "duplicate callers must reuse the active summary request");\nassert(source.includes("summaryState.contextKey = contextKey;"), "successful summary queries must memoize their game context");\nassert(source.includes("refreshSummaryCount({ force: true });"), "comment mutations must force a fresh summary count");\nassert(source.includes("refreshSummaryCount();"), "normal startup/game-load summary refresh behaviour must remain present");\nassert(source.includes("window.addEventListener('ccg:game-loaded'"), "game-loaded summary refresh behaviour must remain present");\n\nconsole.log("Community summary critical-path guard passed.");\n''', encoding='utf-8')
+          PY
+
+      - name: Validate comments runtime and guard
+        run: |
+          node --check js/ccg-community-comments.js
+          node tests/community-summary-critical-path.mjs
+
+      - name: Commit guarded changes
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add js/ccg-community-comments.js tests/community-summary-critical-path.mjs
+          git commit -m "Coalesce duplicate community summary requests"
+          git fetch origin "${GITHUB_REF_NAME}"
+          git rebase "origin/${GITHUB_REF_NAME}"
+          git push origin HEAD:${GITHUB_REF_NAME}
