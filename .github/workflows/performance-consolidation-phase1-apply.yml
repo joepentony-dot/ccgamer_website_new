@@ -15,7 +15,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            home.html
+            resources/css/home.css
+            resources/css/home-debug.css
+            service-worker.js
+            tests
 
       - name: Apply guarded performance consolidation
         shell: bash
