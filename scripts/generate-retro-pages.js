@@ -21,6 +21,18 @@ const repoRoot = resolveRootArgument();
 const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
 const RETRO_SPECIAL_MAX_SLUG_LENGTH = 55;
 const RETRO_SPECIAL_FILLER_WORDS = new Set(['the', 'about', 'these', 'this', 'a', 'an']);
+const RETRO_SPECIAL_MANUALS = {
+  'light-fantastic-toolbox': [
+    {
+      title: 'The Image System User’s Guide',
+      url: '/resources/manuals/The_Image_System.pdf'
+    },
+    {
+      title: 'The Music System User Manual',
+      url: '/resources/manuals/The_Music_System_User.pdf'
+    }
+  ]
+};
 
 const retroVideoTemplatePath = path.join(repoRoot, 'admin', 'templates', 'retro-video-template.html');
 
@@ -148,6 +160,20 @@ function buildSeo(entry, title, description) {
   const seoTitle = String(entry?.seo?.title || `${title} | Retro Special | Cheeky Commodore Gamer`).trim();
   const seoDescription = String(entry?.seo?.description || description).trim();
   return { seoTitle, seoDescription };
+}
+
+function buildManualsSection(entry) {
+  const manuals = RETRO_SPECIAL_MANUALS[String(entry?.slug || '').trim()] || [];
+  if (!manuals.length) return '';
+
+  const links = manuals
+    .map(
+      (manual) =>
+        `<a class="ccg-btn ccg-btn--secondary" href="${escapeHtml(manual.url)}" target="_blank" rel="noopener" type="application/pdf">${escapeHtml(manual.title)} (PDF) ↗</a>`
+    )
+    .join('\n        ');
+
+  return `<section class="retro-video-page__description-block" aria-labelledby="retro-manuals-title">\n      <h2 id="retro-manuals-title">Toolbox manuals</h2>\n      <p class="retro-video-page__description">Read the original user guides alongside the video.</p>\n      <div class="retro-video-page__actions" aria-label="Toolbox PDF manuals">\n        ${links}\n      </div>\n    </section>`;
 }
 
 function buildRelatedItems(items, currentSlug, pagePrefix) {
@@ -287,6 +313,7 @@ function generateDatasetPages(config, template) {
     const summary = String(entry.summary || entry.description || '').trim();
     const description = String(entry.description || summary).trim();
     const { seoTitle, seoDescription } = buildSeo(entry, entry.title || '', description);
+    const manualsHtml = buildManualsSection(entry);
     const relatedItemsHtml = buildRelatedItems(normalizedItems, slug, config.pagePrefix);
 
     const renderedHtml = applyTemplate(template, {
@@ -312,7 +339,7 @@ function generateDatasetPages(config, template) {
         ? `,\n      "duration": "${escapeJsonTemplateValue(entry.duration)}"`
         : '',
       MEMBERS_BADGE: entry.membersOnly ? '<p class="game-tag">Members only</p>' : '',
-      RELATED_ITEMS: relatedItemsHtml
+      RELATED_ITEMS: [manualsHtml, relatedItemsHtml].filter(Boolean).join('\n\n')
     });
 
     const shellResult = normaliseHtml(renderedHtml);
