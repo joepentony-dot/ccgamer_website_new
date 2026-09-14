@@ -41,10 +41,46 @@ async function prepareAttack(page){
   });
 }
 
+async function failedAttackDiagnostics(page,expected){
+  return page.evaluate(expected=>{
+    const snapshot=()=>({
+      expected,
+      mana:Number(p1?.mana),
+      fire1:Number(fire1),
+      fireBuffer1:Number(fireBuffer1),
+      projectileCD:Number(projectileCD),
+      bullets:Number(bullets?.length||0),
+      hitStunMs:Number(p1?.hitStunMs||0),
+      mode:String(mode),
+      active:document.body?.dataset?.runActive||"",
+      releaseReady:document.body?.dataset?.releaseReady||"",
+      input:[...(input||[])],
+      runElapsed:Number(run?.elapsed||0),
+      attackDiagnostics:{...(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics||{})},
+      r18Diagnostics:{...(window.CCGLostSizzlerV142R18SoloPlaytestStability?.diagnostics||{})},
+      modeRuntime:window.CCGLostSizzlerModeRuntime?.snapshot?.()||null,
+      loopR20:Boolean(loop?.__ccgV142R20),
+      updateModeBoundary:Boolean(update?.__ccgV141ModeFrameBoundary),
+      queueR18:Boolean(queueAttack?.__ccgV142R18),
+      fireR1:Boolean(firePlayer?.__ccgV142R1)
+    });
+    const beforeManualUpdate=snapshot();
+    let manualUpdateError="";
+    try{update(16)}catch(error){manualUpdateError=String(error?.stack||error)}
+    const afterManualUpdate=snapshot();
+    return{beforeManualUpdate,manualUpdateError,afterManualUpdate};
+  },expected);
+}
+
 async function assertSingleShot(page,code,key){
   const before=await prepareAttack(page);
   await dispatchKey(page,code,key);
-  await page.waitForFunction(expected=>Number(p1.mana)===expected-1,before,{timeout:3000});
+  try{
+    await page.waitForFunction(expected=>Number(p1.mana)===expected-1,before,{timeout:3000});
+  }catch(error){
+    const diagnostics=await failedAttackDiagnostics(page,before-1);
+    throw new Error(`${code} attack did not complete through the live frame owner: ${JSON.stringify(diagnostics)}`,{cause:error});
+  }
   await page.waitForTimeout(800);
   const after=await page.evaluate(()=>({mana:Number(p1.mana),mode,buffer:Number(fireBuffer1),active:document.body.dataset.runActive}));
   assert.equal(after.mana,before-1,`${code} must produce exactly one shot from one press, not a duplicated buffered shot`);
