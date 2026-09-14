@@ -31,16 +31,19 @@
     function positionCommunitySection(section) {
       var peripherals = shell.querySelector('#affiliate-products-section');
       if (peripherals) {
+        if (section.nextElementSibling === peripherals) return;
         shell.insertBefore(section, peripherals);
         return;
       }
 
       var quickActions = shell.querySelector('[data-game-quick-actions]');
       if (quickActions) {
+        if (section.nextElementSibling === quickActions) return;
         shell.insertBefore(section, quickActions);
         return;
       }
 
+      if (section.parentElement === shell && section === shell.lastElementChild) return;
       shell.appendChild(section);
     }
 
