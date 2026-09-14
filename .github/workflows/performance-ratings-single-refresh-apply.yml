@@ -1,0 +1,61 @@
+name: Performance ratings single refresh apply
+
+on:
+  push:
+    branches:
+      - codex/performance-ratings-single-refresh
+
+permissions:
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  apply:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+          show-progress: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            js/ccg-community-ratings.js
+            tests
+
+      - name: Remove duplicate post-save ratings render
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('js/ccg-community-ratings.js')
+          source = path.read_text(encoding='utf-8')
+          old = """      window.dispatchEvent(new CustomEvent('ccg:rating-updated', { detail: { gameSlug: slug } }));\n      render();\n"""
+          new = """      window.dispatchEvent(new CustomEvent('ccg:rating-updated', { detail: { gameSlug: slug } }));\n"""
+          if source.count(old) != 1:
+              raise SystemExit(f'Expected exactly one duplicate post-save render sequence, found {source.count(old)}')
+          path.write_text(source.replace(old, new, 1), encoding='utf-8')
+
+          test_source = '''import fs from "node:fs";\n\nconst source = fs.readFileSync("js/ccg-community-ratings.js", "utf8");\n\nfunction assert(condition, message) {\n  if (!condition) throw new Error(message);\n}\n\nconst dispatch = "window.dispatchEvent(new CustomEvent('ccg:rating-updated', { detail: { gameSlug: slug } }));";\nconst listener = "window.addEventListener('ccg:rating-updated', function () { if (!panel || panel.open) render(); });";\nconst duplicate = dispatch + "\\n      render();";\n\nassert(source.includes(dispatch), "successful rating saves must still emit ccg:rating-updated");\nassert(source.includes(listener), "rating-updated listener must remain the refresh path");\nassert(!source.includes(duplicate), "successful saves must not start a second direct render after dispatch");\nassert(source.includes(".upsert({ user_id: activeUser.id, game_key: slug, rating: rating }"), "rating persistence must remain intact");\nassert(source.includes("if (isSubmitting) return;"), "duplicate form submission guard must remain intact");\n\nconsole.log("Ratings single-refresh guard passed.");\n'''
+          Path('tests/community-ratings-single-refresh.mjs').write_text(test_source, encoding='utf-8')
+          PY
+
+      - name: Validate ratings runtime and guard
+        run: |
+          node --check js/ccg-community-ratings.js
+          node tests/community-ratings-single-refresh.mjs
+          git diff --check
+
+      - name: Commit guarded changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add js/ccg-community-ratings.js tests/community-ratings-single-refresh.mjs
+          git commit -m "Avoid duplicate ratings refresh after save"
+          git fetch origin "${GITHUB_REF_NAME}"
+          git rebase "origin/${GITHUB_REF_NAME}"
+          git push origin HEAD:${GITHUB_REF_NAME}
