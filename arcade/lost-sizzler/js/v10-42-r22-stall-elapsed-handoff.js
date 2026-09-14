@@ -109,6 +109,15 @@
               api?.setAcceptedRafTimestamp?.(t-NORMAL_FRAME_MS);
             }catch(_){}
           }
+        }else if(ownsNormalFrame&&sustainedSlowRaf){
+          // Once R59 takes sustained slow-cadence ownership, keep that handoff
+          // intact until normal RAF cadence actually returns. Door animation may
+          // finish before the runner/browser recovers, but the Solo clock must
+          // not be bounced back into R22 recovery in the meantime.
+          if(gap<=STALL_MS){
+            sustainedSlowRaf=false;
+            recovery=null;
+          }
         }else if(ownsNormalFrame&&!stallSensitive){
           // R59 is the authoritative Solo clock and already owns bounded visible
           // catch-up plus combat-lock recovery. Do not rewrite its accepted RAF
@@ -116,11 +125,6 @@
           // into lost simulation time and can hide a real stall from R59.
           recovery=null;
           sustainedSlowRaf=false;
-        }else if(stallSensitive&&sustainedSlowRaf){
-          if(gap<=STALL_MS){
-            sustainedSlowRaf=false;
-            recovery=null;
-          }
         }else if(stallSensitive&&gap>STALL_MS&&gap<600000){
           if(recovery){
             recovery=null;
