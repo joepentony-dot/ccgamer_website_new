@@ -47,6 +47,7 @@ const steps = [
   ["validate-downloads-page.js"],
   ["generate-sitemaps.js"],
   ["apply-seo-opportunity-plan.js"],
+  ["apply-game-video-overrides.js"],
   ["ensure-magazine-review-runtime.js"],
   ["validate-materialized-magazine-reviews.js"],
   ["validate-sitemaps.js"],
