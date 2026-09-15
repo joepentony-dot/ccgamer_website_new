@@ -28,11 +28,11 @@ jobs:
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.head_ref }}
-          fetch-depth: 0
+          fetch-depth: 1
           show-progress: false
 
       - name: Fetch main baseline
-        run: git fetch --no-tags origin main:refs/remotes/origin/main
+        run: git fetch --depth=1 --no-tags origin main:refs/remotes/origin/main
 
       - name: Set up Python
         uses: actions/setup-python@v5
