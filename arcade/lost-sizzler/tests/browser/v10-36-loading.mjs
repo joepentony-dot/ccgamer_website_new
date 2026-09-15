@@ -50,29 +50,35 @@ try{
   page.on("pageerror",error=>errors.push(String(error?.stack||error)));
 
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
-  await page.waitForSelector("#ccg-release-loading",{state:"visible"});
-  const during=await page.evaluate(()=>({
-    text:document.querySelector("#ccg-release-loading h2")?.textContent||"",
-    value:Number(document.getElementById("ccg-release-loading-progress")?.value||0),
-    max:Number(document.getElementById("ccg-release-loading-progress")?.max||0),
-    ready:document.body.dataset.releaseReady
-  }));
-  assert.match(during.text,/LOADING.*PLEASE WAIT/i,"loading overlay must give an explicit wait message");
-  assert.equal(during.max,100,"loading progress must use a 0-100 scale");
-  assert.ok(during.value>0&&during.value<100,`loading progress must visibly advance before runtime readiness: ${JSON.stringify(during)}`);
+  await page.waitForSelector("#menu",{state:"visible"});
+  await page.waitForSelector("#ccg-release-loading",{state:"attached"});
+  const during=await page.evaluate(()=>{
+    const legacy=document.getElementById("ccg-release-loading");
+    const menu=document.getElementById("menu");
+    return{
+      menuVisible:Boolean(menu&&getComputedStyle(menu).display!=="none"),
+      title:menu?.querySelector(".pixel-title-lockup h2")?.textContent||"",
+      legacyDisplay:legacy?getComputedStyle(legacy).display:"missing",
+      legacyAriaHidden:legacy?.getAttribute("aria-hidden")||"",
+      ready:document.body.dataset.releaseReady
+    };
+  });
+  assert.equal(during.menuVisible,true,"current Dungeon Carnage menu must own startup presentation");
+  assert.match(during.title,/C64 DUNGEON\s*CARNAGE/i,"current title must remain visible while runtime prepares");
+  assert.equal(during.legacyDisplay,"none","retired V10.36 loading overlay must never paint over the current menu");
+  assert.equal(during.legacyAriaHidden,"true","retired loading overlay must be removed from accessibility presentation");
 
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
-  await page.waitForFunction(()=>document.getElementById("ccg-release-loading")?.hidden===true);
   const finished=await page.evaluate(()=>({
-    value:Number(document.getElementById("ccg-release-loading-progress")?.value||0),
-    hidden:Boolean(document.getElementById("ccg-release-loading")?.hidden),
+    legacyDisplay:getComputedStyle(document.getElementById("ccg-release-loading")).display,
     runtime:Boolean(window.CCGLostSizzlerV136),
-    audit:window.CCGLostSizzlerV136?.renderOwnershipAudit?.()||null
+    audit:window.CCGLostSizzlerV136?.renderOwnershipAudit?.()||null,
+    unified:Boolean(window.CCGDungeonCarnageUnifiedUi)
   }));
-  assert.equal(finished.value,100,"loading progress must reach 100% when the release gate completes");
-  assert.equal(finished.hidden,true,"loading overlay must leave the screen after successful preparation");
-  assert.equal(finished.runtime,true,"V10.36 runtime must be installed before the game becomes ready");
+  assert.equal(finished.legacyDisplay,"none","legacy loading overlay must remain retired after readiness");
+  assert.equal(finished.runtime,true,"V10.36 runtime must still be installed before the game becomes ready");
   assert.equal(finished.audit?.noDoubleDrawPolicy,true,"render-ownership audit must be live in Chromium");
+  assert.equal(finished.unified,true,"unified Dungeon Carnage presentation layer must be active");
 
   const spyKit=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerSpecialModes;
@@ -107,8 +113,8 @@ try{
   assert.match(spyKit.loadoutText,/Rubber Chicken.*TRAP CHARGES 2.*Trap Scanner/s,"Spy loadout must show live equipment and counter state");
   assert.ok(!spyKit.guideText.includes("BANISHMENT FLASK"),"legacy dungeon item guide must not leak into Spy mode");
 
-  assert.deepEqual(errors,[],`loading/Spy field-kit launch must have no uncaught browser errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.36 loading progress, runtime installation and Spy field kit passed in Chromium.");
+  assert.deepEqual(errors,[],`unified startup/Spy field-kit launch must have no uncaught browser errors: ${errors.join("\n")}`);
+  console.log("C64 Dungeon Carnage unified startup ownership, V10.36 runtime installation and Spy field kit passed in Chromium.");
   await context.close();
 }finally{
   await browser.close();
