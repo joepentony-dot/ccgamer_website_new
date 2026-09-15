@@ -47,11 +47,10 @@ try{
     try{const url=new URL(request.url());if(url.origin===origin&&/\.(?:js|mjs)(?:\?|$)/i.test(url.pathname))failedScripts.push(`${url.pathname}: ${request.failure()?.errorText||"failed"}`)}catch(_){}
   });
 
-  /* Parallel release loading can legitimately finish before Playwright gets a
-   * chance to observe the transient loading overlay. Hold only the final
-   * enhancement response inside this browser test so the overlay lifecycle is
-   * deterministic without adding any delay to production startup. The delay is
-   * intentionally far below asset-overrides.js's 5s per-module timeout. */
+  /* Hold only the final enhancement response inside this browser test so the
+   * startup lifecycle is deterministic. The retired V10.36 loader remains
+   * attached for compatibility hooks but is intentionally never visible; the
+   * current Dungeon Carnage menu owns public startup presentation. */
   await page.route("**/arcade/lost-sizzler/js/v10-35-quality.js*",async route=>{
     await new Promise(resolve=>setTimeout(resolve,700));
     await route.continue();
@@ -67,7 +66,8 @@ try{
 
   async function loadAndAudit(iteration){
     await page.goto(`${origin}/arcade/lost-sizzler/?load-safety=${iteration}`,{waitUntil:"domcontentloaded"});
-    await page.waitForSelector("#ccg-release-loading",{state:"visible"});
+    await page.waitForSelector("#ccg-release-loading",{state:"attached"});
+    await page.waitForFunction(()=>{const node=document.getElementById("ccg-release-loading");return Boolean(node&&getComputedStyle(node).display==="none"&&node.getAttribute("aria-hidden")==="true")});
     await page.waitForFunction(()=>window.CCGLostSizzlerCacheGuard?.state?.done===true);
     await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
     await page.waitForFunction(()=>document.getElementById("ccg-release-loading")?.hidden===true);
@@ -91,7 +91,9 @@ try{
         }:null,
         watchdog:window.CCGLostSizzlerLoadWatchdog?{...window.CCGLostSizzlerLoadWatchdog.state}:null,
         staleStillCached:Boolean(stale),unrelatedStillCached:Boolean(unrelated),delay,
-        loadingHidden:Boolean(document.getElementById("ccg-release-loading")?.hidden)
+        loadingHidden:Boolean(document.getElementById("ccg-release-loading")?.hidden),
+        loadingDisplay:getComputedStyle(document.getElementById("ccg-release-loading")).display,
+        loadingAriaHidden:document.getElementById("ccg-release-loading")?.getAttribute("aria-hidden")||""
       };
     });
 
@@ -105,7 +107,9 @@ try{
     assert.equal(audit.storedToken,audit.cacheGuard.cacheToken,`iteration ${iteration}: successful sanitation must record the token used by the cache guard`);
     assert.equal(audit.staleStillCached,false,`iteration ${iteration}: stale Lost Sizzler cache entry must be removed`);
     assert.equal(audit.unrelatedStillCached,true,`iteration ${iteration}: unrelated cached data must not be deleted`);
-    assert.equal(audit.loadingHidden,true,`iteration ${iteration}: loading overlay must close after successful startup`);
+    assert.equal(audit.loadingDisplay,"none",`iteration ${iteration}: retired loading overlay must never become the public startup surface`);
+    assert.equal(audit.loadingAriaHidden,"true",`iteration ${iteration}: retired loading overlay must stay out of accessibility presentation`);
+    assert.equal(audit.loadingHidden,true,`iteration ${iteration}: retired loading overlay must finish hidden after successful startup`);
     assert.equal(audit.watchdog?.finished,true,`iteration ${iteration}: loading watchdog must finish and detach after startup`);
     assert.equal(audit.watchdog?.timer,0,`iteration ${iteration}: watchdog interval must stop after startup`);
     assert.deepEqual(audit.cacheGuard.runtimeErrors,[],`iteration ${iteration}: no uncaught Lost Sizzler startup errors are allowed`);

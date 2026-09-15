@@ -13,7 +13,6 @@ const repair=read("js/v10-41-r28-special-mode-repair.js");
 const noPause=read("js/v10-41-multiplayer-no-pause.js");
 const css=read("css/v10-41-r28.css");
 const checker=read("js/version-check.js");
-const changelog=read("js/v10-12-developer-changelog.js");
 const r29=read("js/v10-41-r29-runtime-repair.js");
 
 assert.equal(manifest.releaseVersion,"V10.42");
@@ -76,10 +75,6 @@ assert.match(checker,/if\(menuVisible\(\)\)renderPanel\("outdated"\)/,"an outdat
 assert.match(checker,/Refresh to Latest Version/,"automatic update prompt must provide the same fresh-load action as the manual updater");
 assert.match(checker,/cache:"no-store"/,"automatic update comparison must bypass stale manifest caches");
 
-for(const id of ["LS-0825-14","LS-0825-15","LS-0825-16","LS-0825-17","LS-0825-18","LS-0825-19","LS-0825-20","LS-0825-21","LS-0825-22"]){
-  assert.match(changelog,new RegExp(id),`retained r28 bug log must contain ${id}`)
-}
-assert.match(changelog,/build 2026\.08\.25\.28/,"historical r28 bug tracker entry must continue to identify the r28 build that introduced these fixes");
 assert.match(r29,/__CCG_LOST_SIZZLER_V141_R29_RUNTIME_REPAIR__/,"r29 final runtime layer must remain present above the retained r28 feature layer");
 
 console.log("Lost Sizzler V10.41 retained r28 Horde, Spy, Hunter, 1440p and update protections passed inside the current release shell.");

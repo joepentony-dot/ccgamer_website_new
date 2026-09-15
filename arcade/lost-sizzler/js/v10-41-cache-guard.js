@@ -46,6 +46,28 @@
   }
   startV142ReleaseGuard();
 
+  /* The current Dungeon Carnage title/menu is the only public startup owner.
+   * V10.36 still supplies compatibility/runtime work, but its retired loading
+   * surface must never paint over the current menu. Load the small presentation
+   * cleanup before version-check can inject V10.36, and retire the old Horde
+   * leaderboard decorator before its later static script is evaluated. */
+  function startV142UnifiedUi(){
+    if(!document.getElementById("ccg-v142-startup-owner-style")){
+      const style=document.createElement("style");
+      style.id="ccg-v142-startup-owner-style";
+      style.textContent="#ccg-release-loading{display:none!important;visibility:hidden!important;pointer-events:none!important}";
+      document.head.appendChild(style);
+    }
+    window.__CCG_LOST_SIZZLER_V141_HORDE_BOARD_POLISH__=true;
+    if(document.querySelector('script[data-ccg-v142-unified-ui="true"]'))return;
+    const script=document.createElement("script");
+    script.src=`js/v10-42-unified-ui.js?v=${encodeURIComponent(CACHE_TOKEN)}`;
+    script.async=false;
+    script.dataset.ccgV142UnifiedUi="true";
+    document.head.appendChild(script);
+  }
+  startV142UnifiedUi();
+
   /* Start the 92%-freeze protection before version-check can inject V10.36.
    * The guard itself waits for the release gate/V10.36 hook, so loading it this
    * early is safe and removes any race with the sequential enhancement queue. */
