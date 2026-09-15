@@ -131,7 +131,7 @@
     if(!standardSoloRun())return false;
     const current=window.render;if(typeof current!=="function")return false;
     if(current===state.renderGuard||current.__ccgV141R42SoloBlackGuard){state.renderGuard=current;state.renderInstalled=true;return true}
-    const original=current,retainedPostPlaytest=sourceHasMarker(original,"__ccgV141PostPlaytestRender"),retainedR28=sourceHasMarker(original,"__ccgV141R28NoHordeBanner");
+    const original=current,retainedPostPlaytest=sourceHasMarker(original,"__ccgV141PostPlaytestRender");
     const wrapped=function renderV141R42SoloLiveGuard(){
       state.renderCalls++;
       try{
@@ -146,7 +146,6 @@
     // These owners remain underneath r42. Preserve only their recognition
     // markers so their monitors do not repeatedly wrap the same retained work.
     if(retainedPostPlaytest)wrapped.__ccgV141PostPlaytestRender=true;
-    if(retainedR28)wrapped.__ccgV141R28NoHordeBanner=true;
     state.renderSource=original;state.renderGuard=wrapped;window.render=wrapped;state.renderInstalled=true;return true
   }
 

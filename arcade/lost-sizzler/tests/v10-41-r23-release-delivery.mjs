@@ -13,7 +13,7 @@ const checker=read("js/version-check.js");
 const late=read("js/v10-41-lake-item-safety.js");
 const network=read("js/network.js");
 const tutorialFinal=read("js/v10-41-tutorial-action-finalizer.js");
-const r28=read("js/v10-41-r28-special-mode-repair.js");
+const activeEnemyFire=read("js/v10-41-active-enemy-fire.js");
 const r29=read("js/v10-41-r29-runtime-repair.js");
 
 assert.equal(version.releaseVersion,"V10.42","current stability release must publish V10.42");
@@ -28,15 +28,15 @@ assert.match(late,/load\("js\/v10-41-tutorial-action-finalizer\.js","data-ccg-v1
 assert.match(late,/load\("js\/v10-41-r24-live-regressions\.js","data-ccg-v141-r24-live-regressions"\)/,"the r24 live regression owner must remain included beneath the later hotfix layers");
 
 const token=version.cacheToken;
-const r28Url=`v10-41-r28-special-mode-repair.js?v=${token}`;
+const activeEnemyFireUrl=`v10-41-active-enemy-fire.js?v=${token}`;
 const r29Url=`v10-41-r29-runtime-repair.js?v=${token}`;
 assert.doesNotMatch(index,/v10-41-r25-spy-speed-bounty-hotfix\.js/,"retired r25 Spy hotfix must not be directly loaded by the canonical page");
 assert.doesNotMatch(index,/v10-41-r26-spy-enemy-stability\.js/,"retired r26 Spy stability layer must not be directly loaded by the canonical page");
 assert.doesNotMatch(index,/v10-41-r27-spy-isolation\.js/,"retired r27 Spy isolation layer must not be directly loaded by the canonical page");
-assert.ok(index.includes(r28Url),"the retained mixed r28 compatibility layer must remain loaded until its shared Dungeon fire path is extracted");
+assert.ok(index.includes(activeEnemyFireUrl),"active enemy-fire compatibility must remain loaded");
 assert.ok(index.includes(r29Url),"the retained mixed r29 runtime repair must remain loaded until shared runtime protections are extracted");
-assert.ok(index.indexOf(r28Url)<index.indexOf(r29Url),"r29 must load after the retained r28 compatibility layer");
-assert.match(r28,/__CCG_LOST_SIZZLER_V141_R28_SPECIAL_MODE_REPAIR__/,"r28 compatibility layer must retain its duplicate-install guard until extraction");
+assert.ok(index.indexOf(activeEnemyFireUrl)<index.indexOf(r29Url),"r29 must load after active enemy-fire compatibility");
+assert.match(activeEnemyFire,/__CCG_LOST_SIZZLER_V141_ACTIVE_ENEMY_FIRE__/,"active enemy-fire module must retain its duplicate-install guard");
 assert.match(r29,/__CCG_LOST_SIZZLER_V141_R29_RUNTIME_REPAIR__/,"r29 shared runtime layer must retain its duplicate-install guard until extraction");
 assert.doesNotMatch(network,/v10-41-live-join-presence\.js\?v=20260825a/,"network core must not retain the dated live-join cache URL");
 assert.match(network,/v10-41-live-join-presence\.js\?v=\$\{encodeURIComponent\(releaseRev\)\}/,"network live-join loader must inherit the published cache generation from page metadata");

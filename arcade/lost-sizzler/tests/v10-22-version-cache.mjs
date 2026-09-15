@@ -20,7 +20,7 @@ const cacheGuard=readGame("js/v10-41-cache-guard.js");
 const loadWatchdog=readGame("js/v10-41-load-watchdog.js");
 const startupFreezeGuard=readGame("js/v10-41-startup-freeze-guard.js");
 const network=readGame("js/network.js");
-const r28=readGame("js/v10-41-r28-special-mode-repair.js");
+const activeEnemyFire=readGame("js/v10-41-active-enemy-fire.js");
 const r29=readGame("js/v10-41-r29-runtime-repair.js");
 
 const metaBuild=index.match(/<meta name="ccg-lost-sizzler-build" content="([^"]+)">/)?.[1];
@@ -40,7 +40,7 @@ const activeAssets=[
   "js/game-network.js","js/game-play.js","js/game-render.js","js/game-main.js","js/split-player-hud.js",
   "js/v10-41-lake-item-safety.js","js/v10-41-gambler-devroom.js","js/v10-41-developer-vault-hardening.js",
   "js/v10-41-developer-asset-catalog.js","js/v10-41-split-friendly-fire.js","js/v10-41-landing-notification-polish.js",
-  "js/v10-41-major-notification-hardening.js","js/v10-41-r28-special-mode-repair.js","js/v10-41-r29-buglog.js",
+  "js/v10-41-major-notification-hardening.js","js/v10-41-active-enemy-fire.js","js/v10-41-r29-buglog.js",
   "js/v10-41-r29-runtime-repair.js","js/v10-41-r30-global-movement-guard.js","js/v10-41-r30-buglog.js"
 ];
 for(const asset of activeAssets){
@@ -79,7 +79,7 @@ const token=manifest.cacheToken;
 assert.ok(index.indexOf(`js/v10-41-cache-guard.js?v=${token}`)<index.indexOf(`js/asset-overrides.js?v=${token}`),"cache guard must begin before the enhancement queue owner loads");
 assert.ok(index.indexOf(`js/v10-41-load-watchdog.js?v=${token}`)<index.indexOf(`js/asset-overrides.js?v=${token}`),"load watchdog must start before the enhancement queue");
 assert.ok(index.indexOf(`js/game-main.js?v=${token}`)<index.indexOf(`js/v10-41-gambler-devroom.js?v=${token}`),"Gambler/Developer Vault layer must load after core game globals exist");
-assert.ok(index.indexOf(`js/v10-41-r28-special-mode-repair.js?v=${token}`)<index.indexOf(`js/v10-41-r29-runtime-repair.js?v=${token}`),"retained r29 runtime repair must remain after the mixed r28 compatibility layer");
+assert.ok(index.indexOf(`js/v10-41-active-enemy-fire.js?v=${token}`)<index.indexOf(`js/v10-41-r29-runtime-repair.js?v=${token}`),"r29 runtime repair must remain after active enemy-fire compatibility");
 assert.ok(index.indexOf(`js/v10-41-r29-runtime-repair.js?v=${token}`)<index.indexOf(`js/v10-41-r30-global-movement-guard.js?v=${token}`),"r30 movement ownership must load after r29 runtime repair");
 
 assert.ok(index.includes('<h1>C64 Dungeon Carnage</h1>'),"static title bar must identify C64 Dungeon Carnage");
@@ -111,7 +111,7 @@ assert.match(startupFreezeGuard,/source\.__ccgV136Guttered=true/,"startup must r
 assert.doesNotMatch(startupFreezeGuard,/\.toDataURL\s*\(/,"startup guard must never synchronously convert an atlas to a data URL");
 assert.match(startupFreezeGuard,/assets\.chests=canvas/,"deferred atlas preparation must keep a direct canvas source");
 
-assert.match(r28,/function installEnemyCardinalFire\(/,"mixed r28 layer must retain shared cardinal enemy-fire compatibility until extraction");
+assert.match(activeEnemyFire,/function installEnemyCardinalFire\(/,"active module must retain shared cardinal enemy-fire compatibility");
 assert.match(r29,/stableLoop\.__ccgV141R29Stable=true/,"r29 must retain the final non-destructive frame loop");
 
 assert.match(checker,/Check \/ Refresh Game/,"main menu must expose the update-check button");
