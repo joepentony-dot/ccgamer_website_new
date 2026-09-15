@@ -143,7 +143,7 @@
     try{
       if(typeof showToast!=="function"||showToast.__ccgProgressionFoundation)return;
       const base=showToast;
-      showToast=function(title,text,...rest){return base.call(this,title,replaceProgressionCopy(text),...rest)};
+      showToast=function(title,text,...rest){return base.call(this,title,isDungeonMode()?replaceProgressionCopy(text):text,...rest)};
       showToast.__ccgProgressionFoundation=true;showToast.__ccgOriginal=base;
     }catch(_){}
   }
@@ -309,8 +309,8 @@
       if(typeof renderInventoryPanel!=="function"||renderInventoryPanel.__ccgProgressionFoundation)return;
       const base=renderInventoryPanel;
       renderInventoryPanel=function(...args){
-        const player=currentP1();normaliseWeaponOwnership(player);const result=base.apply(this,args);
-        if(!player||!isDungeonMode())return result;
+        const player=currentP1(),dungeon=isDungeonMode();if(dungeon)normaliseWeaponOwnership(player);const result=base.apply(this,args);
+        if(!player||!dungeon)return result;
         const load=document.getElementById("inventory-loadout"),owned=player.ownedWeapons||[];if(!load)return result;
         load.querySelector(".ccg-owned-weapons")?.remove();
         const panel=document.createElement("div");panel.className="ccg-owned-weapons slot-actions";

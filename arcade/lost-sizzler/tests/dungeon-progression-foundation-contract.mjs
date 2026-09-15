@@ -70,6 +70,8 @@ assert.match(source,/makePlayer=function\(\.\.\.args\)\{const player=base\.apply
 assert.match(source,/if\(prior&&player&&isDungeonMode\(\)\)/,"preserved players are only migrated in dungeon mode");
 assert.match(source,/renderShop=function\(\.\.\.args\)\{return isDungeonMode\(\)\?renderGoldShop\(\):baseRender/,"shop wrapper delegates outside dungeon mode");
 assert.match(source,/buyShopItem=function\(id,\.\.\.args\)\{return isDungeonMode\(\)\?buyGoldShopItem\(id\):baseBuy/,"shop purchases delegate outside dungeon mode");
+assert.match(source,/showToast=function\(title,text,\.\.\.rest\)\{return base\.call\(this,title,isDungeonMode\(\)\?replaceProgressionCopy\(text\):text/,"toast-copy rewriting is dungeon-only");
+assert.match(source,/const player=currentP1\(\),dungeon=isDungeonMode\(\);if\(dungeon\)normaliseWeaponOwnership\(player\)/,"inventory rendering does not mutate special-mode weapon ownership");
 
 const r31=fs.readFileSync("arcade/lost-sizzler/js/v10-41-r31-solo-dungeon-regressions.js","utf8");
 assert.match(r31,/PGR\?\.goldBalance/,"r31 shop wallet refresh recognises the Gold foundation");
