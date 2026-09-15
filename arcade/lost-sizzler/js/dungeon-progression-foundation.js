@@ -113,7 +113,7 @@
 
   function ensureGoldHud(){
     let node=document.getElementById("hud-gold");if(node)return node;
-    const score=document.getElementById("hud-score"),stat=score?.closest?.(".hub-stat");if(!stat?.parentElement)return null;
+    const score=document.getElementById("hud-score"),stat=score?.closest?.(".run-stat,.hub-stat");if(!stat?.parentElement)return null;
     const wrap=stat.cloneNode(true),label=wrap.querySelector("span"),value=wrap.querySelector("b");
     if(label)label.textContent="GOLD";
     if(value){value.id="hud-gold";value.textContent="0"}
