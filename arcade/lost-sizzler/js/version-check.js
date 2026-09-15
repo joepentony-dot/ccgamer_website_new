@@ -120,54 +120,6 @@
     script.dataset.ccgV136Bootstrap="true";
     document.head.appendChild(script);
   }
-  function loadV137HordeFocus(){
-    if(document.querySelector('script[data-ccg-v137-horde-focus="true"]'))return;
-    const script=document.createElement("script");
-    script.src=`js/v10-37-horde-focus.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
-    script.async=false;
-    script.dataset.ccgV137HordeFocus="true";
-    document.head.appendChild(script);
-  }
-  function loadV138HordeLive(){
-    if(document.querySelector('script[data-ccg-v138-horde-live="true"]'))return;
-    const script=document.createElement("script");
-    script.src=`js/v10-38-horde-live.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
-    script.async=false;
-    script.dataset.ccgV138HordeLive="true";
-    document.head.appendChild(script);
-  }
-  function loadV139HordeLiveLoadout(){
-    if(document.querySelector('script[data-ccg-v139-horde-live-loadout="true"]'))return;
-    const script=document.createElement("script");
-    script.src=`js/v10-39-horde-live-loadout.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
-    script.async=false;
-    script.dataset.ccgV139HordeLiveLoadout="true";
-    document.head.appendChild(script);
-  }
-  function loadV140HordeFinal(){
-    if(document.querySelector('script[data-ccg-v140-horde-final="true"]'))return;
-    const script=document.createElement("script");
-    script.src=`js/v10-40-horde-final.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
-    script.async=false;
-    script.dataset.ccgV140HordeFinal="true";
-    document.head.appendChild(script);
-  }
-  function loadV141HordeCombatPolish(){
-    if(document.querySelector('script[data-ccg-v141-horde-combat-polish="true"]'))return;
-    const script=document.createElement("script");
-    script.src=`js/v10-41-horde-combat-polish.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
-    script.async=false;
-    script.dataset.ccgV141HordeCombatPolish="true";
-    document.head.appendChild(script);
-  }
-  function loadV141HordeCompletion(){
-    if(document.querySelector('script[data-ccg-v141-horde-completion="true"]'))return;
-    const script=document.createElement("script");
-    script.src=`js/v10-41-horde-completion.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
-    script.async=false;
-    script.dataset.ccgV141HordeCompletion="true";
-    document.head.appendChild(script);
-  }
   function loadV141MultiplayerPresence(){
     if(document.querySelector('script[data-ccg-v141-multiplayer-presence="true"]'))return;
     const script=document.createElement("script");
@@ -225,12 +177,6 @@
     document.head.appendChild(script);
   }
   loadV136Bootstrap();
-  loadV137HordeFocus();
-  loadV138HordeLive();
-  loadV139HordeLiveLoadout();
-  loadV140HordeFinal();
-  loadV141HordeCombatPolish();
-  loadV141HordeCompletion();
   loadV141MultiplayerPresence();
   loadV141WorldSafety();
   loadV141SanctuaryHardening();

@@ -12,8 +12,6 @@ const config=read("js/config.js");
 const deathCache=read("js/v10-4-death-cache.js");
 const progressionRecovery=read("js/v10-41-progression-recovery.js");
 const sanctuary=read("js/v10-41-sanctuary-azalea.js");
-const hordePolish=read("js/v10-41-horde-combat-polish.js");
-const hordeCompletion=read("js/v10-41-horde-completion.js");
 const map=read("js/v10-41-solo-full-map.js");
 const loader=read("js/version-check.js");
 const index=read("index.html");
@@ -56,24 +54,11 @@ assert.match(progressionRecovery,/KINDS=new Set\(\["key","mainKey","bronze","bro
 assert.match(progressionRecovery,/function restoreFromSnapshots/,"fresh V10.41 layer must recover essentials even if an older cached death-cache module is present");
 assert.match(progressionRecovery,/progressionRecoveryMarkers/,"fresh recovery layer must publish tactical/full-map markers");
 
-assert.match(hordePolish,/WAVE_RECOVERY_HP=5/,"Horde survivors must recover up to 5 HP after a completed wave");
-assert.match(hordePolish,/MAX_ENEMY_SPEED=\.72/,"ordinary Horde enemies must use the slower movement cap");
-assert.match(hordePolish,/WAVE_POWER=Object\.freeze\(\[2,2,3,3,4,4,5,5,6,7\]\)/,"Horde firearms must use the stronger damage curve");
-assert.match(hordePolish,/SIDE_STEP_GRACE_MS=1100/,"Horde lateral pathing must be delayed rather than used as rapid shot-dodging");
-
-assert.match(hordeCompletion,/id="horde-solo-btn"|button\.id="horde-solo-btn"/,"menu must expose a dedicated Solo Horde option");
-assert.match(hordeCompletion,/net\.setSolo\(name\)/,"Solo Horde must not require an online room");
-assert.match(hordeCompletion,/api\.startOnline\(\{roomMode:"horde-survivor"/,"Solo Horde must reuse the authoritative Horde rules engine");
-assert.match(hordeCompletion,/STORAGE_KEY="ccg-lost-sizzler:horde-leaderboard:v1"/,"Horde leaderboard must persist between local sessions");
-assert.match(hordeCompletion,/\["SOLO","DUO","TRIO","SQUAD"\]/,"Horde leaderboard must keep four player-count categories");
-assert.match(hordeCompletion,/horde\.leaderboardResult\(runState\)/,"completed Horde runs must be converted into leaderboard results");
-assert.match(hordeCompletion,/ai\.stepEnemies=function stepEnemiesV141HordeMovementOwnership/,"Horde must override the ordinary dungeon movement/dodge pass");
-assert.match(hordeCompletion,/enemy\.x=before\.x;enemy\.y=before\.y/,"ordinary AI movement must be rolled back for Horde enemies so the dedicated Horde driver owns movement");
-
-assert.match(loader,/v10-41-horde-combat-polish\.js/,"release loader must include Horde combat polish");
-assert.match(loader,/v10-41-horde-completion\.js/,"release loader must include Solo Horde, rankings and movement ownership");
+assert.doesNotMatch(loader,/v10-41-horde-combat-polish\.js|v10-41-horde-completion\.js/,"release loader must not reintroduce retired Horde runtime modules");
 assert.match(loader,/v10-41-sanctuary-azalea\.js/,"release loader must include sanctuary scenes and AZALEA");
 assert.match(loader,/v10-41-progression-recovery\.js/,"release loader must include fresh progression recovery hardening");
 assert.match(loader,/v10-41-solo-full-map\.js\?v=\$\{encodeURIComponent\(RELEASE_CACHE\)\}/,"release loader must include the fullscreen-safe Solo map revision using the current release cache generation");
 
-console.log("Lost Sizzler V10.41 completion pass regression checks passed.");
+assert.doesNotMatch(index,/id="horde-mode-btn"|id="saboteurs-mode-btn"/,"retired special-mode launch controls must stay absent from the canonical menu");
+
+console.log("C64 Dungeon Carnage V10.41 active completion regression checks passed.");
