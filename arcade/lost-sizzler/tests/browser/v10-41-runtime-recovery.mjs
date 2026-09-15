@@ -89,19 +89,13 @@ try{
   await page.waitForTimeout(250);
   assert.deepEqual(crashes,[],`Chromium must not crash during fault containment, pause/resume or coordinate recovery: ${crashes.join("\n")}`);
   assert.deepEqual(pageErrors,[],`fault containment, pause/resume and coordinate recovery must produce no uncaught page errors: ${pageErrors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 r29 final-loop fault containment, pause/resume and invalid-coordinate recovery checks passed.");
+  console.log("C64 Dungeon Carnage r29 final-loop fault containment, pause/resume and invalid-coordinate recovery checks passed.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
 }
 
-// This file is already called by the canonical Lost Sizzler Arcade Validation
-// workflow. Keep the structural browser regressions chained here so mode
-// isolation cannot exist only as dormant tests under tests/browser/. The Spy
-// movement suite is scheduled explicitly by Arcade Validation and by Load
-// Safety's browser glob, so it must not be run twice through this chain.
-for(const regression of [
-  "./v10-41-solo-combat-load-movement.mjs",
-  "./v10-41-mode-controller-isolation.mjs",
-  "./v10-41-horde-controller-update-ownership.mjs"
-])await import(regression);
+// Keep the active Solo combat/movement structural regression chained here.
+// Retired Horde/Spy controller-isolation children are intentionally excluded
+// from the supported zero-server release qualification.
+await import("./v10-41-solo-combat-load-movement.mjs");
