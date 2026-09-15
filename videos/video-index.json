@@ -1,13 +1,27 @@
 {
   "version": 1,
   "counts": {
-    "total": 693,
+    "total": 694,
     "gameVideos": 658,
-    "retroVideos": 35,
+    "retroVideos": 36,
     "c64GameVideos": 557,
     "amigaGameVideos": 101
   },
   "items": [
+    {
+      "id": "hDn4367Gx9Y",
+      "kind": "retro",
+      "filter": "retro-specials",
+      "badge": "Retro Special",
+      "title": "Endorfun – The 1995 PC Game That Used Subliminal Messages While You Played",
+      "description": "Revisiting Endorfun, the unusual 1995 PC and Macintosh puzzle game that combined cube puzzles, positive affirmations and controversial subliminal audio.",
+      "url": "/retro-specials/endorfun-subliminal-messages/",
+      "thumbnail": "https://i.ytimg.com/vi/hDn4367Gx9Y/hqdefault.jpg",
+      "platform": "",
+      "year": "",
+      "publisher": "",
+      "collectionLabel": "Retro Specials"
+    },
     {
       "id": "6GiJ3iYTEPg",
       "kind": "retro",
