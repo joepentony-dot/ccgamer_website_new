@@ -533,5 +533,29 @@
         "path": "/resources/manuals/The_Music_System_User.pdf"
       }
     ]
+  },
+  {
+    "id": "endorfun-subliminal-messages",
+    "slug": "endorfun-subliminal-messages",
+    "type": "retro-specials",
+    "title": "Endorfun – The 1995 PC Game That Used Subliminal Messages While You Played",
+    "youtubeId": "hDn4367Gx9Y",
+    "thumbnail": "https://img.youtube.com/vi/hDn4367Gx9Y/hqdefault.jpg",
+    "membersOnly": false,
+    "order": 21,
+    "summary": "Revisiting Endorfun, the unusual 1995 PC and Macintosh puzzle game that combined cube puzzles, positive affirmations and controversial subliminal audio.",
+    "description": "This Retro Special revisits Endorfun, the 1995 PC and Macintosh puzzle game developed by Onesong Partners and published by Time Warner Interactive. Behind its colourful cube-matching puzzles and world-music soundtrack were around 100 positive affirmations, some audible and others mixed much further into the audio, prompting contemporary debate about subliminal messaging in computer software. The feature explores Endorfun’s gameplay, the press controversy, Timothy Leary’s connection, Microsoft’s consideration of a Windows 95 sample, television coverage including Bad Influence!, and the Japanese game Cu-On-Pa, while asking whether there was a worthwhile puzzle game underneath the publicity.",
+    "collection": "retro-specials",
+    "seo": {
+      "title": "Endorfun (1995) – Subliminal Messages, Timothy Leary & Windows 95 | Retro Special | Cheeky Commodore Gamer",
+      "description": "Explore Endorfun, the 1995 PC and Mac puzzle game linked to subliminal messages, positive affirmations, Timothy Leary, Microsoft and Windows 95."
+    },
+    "created_at": "2026-09-15T00:00:00.000Z",
+    "relatedSlugs": [
+      "light-fantastic-toolbox",
+      "banned-c64-games-they-didnt-want-you-to-see",
+      "guru-meditation-amiga",
+      "sid-chip-story"
+    ]
   }
 ]
