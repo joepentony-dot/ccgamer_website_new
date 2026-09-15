@@ -66,6 +66,10 @@ assert.match(source,/ownedWeapons/);
 assert.match(source,/activeWeaponIndex/);
 assert.match(source,/event===\"v131_player_state\"/,"co-op player state restores permanent ownership");
 assert.match(source,/special!==\"horde-survivor\"&&special!==\"sizzler-saboteurs\"/,"special-mode ownership stays isolated");
+assert.match(source,/makePlayer=function\(\.\.\.args\)\{const player=base\.apply\(this,args\);if\(isDungeonMode\(\)\)normaliseWeaponOwnership\(player\)/,"player creation leaves Horde and Spy ownership alone");
+assert.match(source,/if\(prior&&player&&isDungeonMode\(\)\)/,"preserved players are only migrated in dungeon mode");
+assert.match(source,/renderShop=function\(\.\.\.args\)\{return isDungeonMode\(\)\?renderGoldShop\(\):baseRender/,"shop wrapper delegates outside dungeon mode");
+assert.match(source,/buyShopItem=function\(id,\.\.\.args\)\{return isDungeonMode\(\)\?buyGoldShopItem\(id\):baseBuy/,"shop purchases delegate outside dungeon mode");
 
 const r31=fs.readFileSync("arcade/lost-sizzler/js/v10-41-r31-solo-dungeon-regressions.js","utf8");
 assert.match(r31,/PGR\?\.goldBalance/,"r31 shop wallet refresh recognises the Gold foundation");

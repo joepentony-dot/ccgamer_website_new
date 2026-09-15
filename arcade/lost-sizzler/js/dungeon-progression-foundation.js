@@ -88,15 +88,15 @@
       const wrapped=function(...args){
         const data=base.apply(this,args);if(!data)return data;
         if(data.run)ensureRunGold(data.run);
-        if(data.player)normaliseWeaponOwnership(data.player);
-        if(data.player2)normaliseWeaponOwnership(data.player2);
+        if(isDungeonMode()&&data.player)normaliseWeaponOwnership(data.player);
+        if(isDungeonMode()&&data.player2)normaliseWeaponOwnership(data.player2);
         return data;
       };
       wrapped.__ccgGoldFoundation=true;wrapped.__ccgOriginal=base;PGR.loadCheckpoint=wrapped;
     }
     if(typeof PGR.makeCheckpoint==="function"&&!PGR.makeCheckpoint.__ccgGoldFoundation){
       const base=PGR.makeCheckpoint;
-      const wrapped=function(runState,player,player2,...rest){ensureRunGold(runState);normaliseWeaponOwnership(player);normaliseWeaponOwnership(player2);return base.call(this,runState,player,player2,...rest)};
+      const wrapped=function(runState,player,player2,...rest){ensureRunGold(runState);if(isDungeonMode()){normaliseWeaponOwnership(player);normaliseWeaponOwnership(player2)}return base.call(this,runState,player,player2,...rest)};
       wrapped.__ccgGoldFoundation=true;wrapped.__ccgOriginal=base;PGR.makeCheckpoint=wrapped;
     }
   }
@@ -152,7 +152,7 @@
     try{
       if(typeof makePlayer==="function"&&!makePlayer.__ccgProgressionFoundation){
         const base=makePlayer;
-        makePlayer=function(...args){const player=base.apply(this,args);normaliseWeaponOwnership(player);return player};
+        makePlayer=function(...args){const player=base.apply(this,args);if(isDungeonMode())normaliseWeaponOwnership(player);return player};
         makePlayer.__ccgProgressionFoundation=true;makePlayer.__ccgOriginal=base;
       }
     }catch(_){}
@@ -162,13 +162,13 @@
         preservePlayer=function(old,...args){
           const prior=old?{ownedWeapons:(old.ownedWeapons||[]).map(cloneWeapon),activeWeaponIndex:old.activeWeaponIndex,weapon:cloneWeapon(old.weapon),firearmUnlocked:old.firearmUnlocked}:null;
           const player=base.call(this,old,...args);
-          if(prior&&player){player.ownedWeapons=prior.ownedWeapons;player.activeWeaponIndex=prior.activeWeaponIndex;if(prior.weapon)player.weapon=prior.weapon;if(prior.firearmUnlocked!==undefined)player.firearmUnlocked=prior.firearmUnlocked;normaliseWeaponOwnership(player)}
+          if(prior&&player&&isDungeonMode()){player.ownedWeapons=prior.ownedWeapons;player.activeWeaponIndex=prior.activeWeaponIndex;if(prior.weapon)player.weapon=prior.weapon;if(prior.firearmUnlocked!==undefined)player.firearmUnlocked=prior.firearmUnlocked;normaliseWeaponOwnership(player)}
           return player;
         };
         preservePlayer.__ccgProgressionFoundation=true;preservePlayer.__ccgOriginal=base;
       }
     }catch(_){}
-    normaliseWeaponOwnership(currentP1());normaliseWeaponOwnership(currentP2());
+    if(isDungeonMode()){normaliseWeaponOwnership(currentP1());normaliseWeaponOwnership(currentP2())}
   }
 
   function installWeaponAcquisition(){
@@ -292,10 +292,15 @@
   }
 
   function installShop(){
-    try{shopScorePrice=function(shop){return shopGoldPrice(shop)}}catch(_){}
     try{
-      renderShop=function(){return renderGoldShop()};renderShop.__ccgProgressionFoundation=true;
-      buyShopItem=function(id){return buyGoldShopItem(id)};buyShopItem.__ccgProgressionFoundation=true;
+      const basePrice=typeof shopScorePrice==="function"?shopScorePrice:null;
+      shopScorePrice=function(shop){return isDungeonMode()?shopGoldPrice(shop):basePrice?basePrice.call(this,shop):shopGoldPrice(shop)};
+      shopScorePrice.__ccgProgressionFoundation=true;shopScorePrice.__ccgOriginal=basePrice;
+    }catch(_){}
+    try{
+      const baseRender=typeof renderShop==="function"?renderShop:null,baseBuy=typeof buyShopItem==="function"?buyShopItem:null;
+      renderShop=function(...args){return isDungeonMode()?renderGoldShop():baseRender?baseRender.apply(this,args):false};renderShop.__ccgProgressionFoundation=true;renderShop.__ccgOriginal=baseRender;
+      buyShopItem=function(id,...args){return isDungeonMode()?buyGoldShopItem(id):baseBuy?baseBuy.call(this,id,...args):false};buyShopItem.__ccgProgressionFoundation=true;buyShopItem.__ccgOriginal=baseBuy;
     }catch(error){console.warn("[C64 Dungeon Carnage] Gold shop install failed safely",error)}
   }
 
@@ -361,7 +366,7 @@
     if(!PGR||typeof document==="undefined")return false;
     state.runtimeInstalled=true;
     installPlayerOwnership();installWeaponAcquisition();installCredits();installTreasureBatReward();installShop();installInventorySwitching();installNetworkOwnership();installToastCopy();installSync();
-    ensureRunGold(currentRun());normaliseWeaponOwnership(currentP1());normaliseWeaponOwnership(currentP2());patchCopy();syncGoldHud();
+    if(isDungeonMode()){ensureRunGold(currentRun());normaliseWeaponOwnership(currentP1());normaliseWeaponOwnership(currentP2());patchCopy();syncGoldHud()}
     window.CCGDungeonProgressionFoundation.ready=true;
     return true;
   }
