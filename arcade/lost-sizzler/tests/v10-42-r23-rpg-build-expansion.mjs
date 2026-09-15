@@ -33,6 +33,21 @@ globalThis.CCGProgression={
 globalThis.preservePlayer=function(old,x=0,y=0){
   return{...old,x,y,rpgStats:{...old.rpgStats},skills:[...(old.skills||[])]};
 };
+globalThis.p1=null;
+globalThis.p2=null;
+globalThis.startWorld=function startWorldV125Simulation(seed,split=false,preserve=false){
+  if(preserve&&p1){
+    p1=preservePlayer(p1,1,1);
+    p1.maxMana=Math.max(60,Math.min(Number(p1.maxMana||60),140));
+    p1.mana=Math.max(0,Math.min(Number(p1.mana||0),p1.maxMana));
+  }
+  if(preserve&&split&&p2){
+    p2=preservePlayer(p2,2,2);
+    p2.maxMana=Math.max(60,Math.min(Number(p2.maxMana||60),140));
+    p2.mana=Math.max(0,Math.min(Number(p2.mana||0),p2.maxMana));
+  }
+  return{seed,split,preserve};
+};
 
 vm.runInThisContext(source,{filename:"v10-42-r23-rpg-build-expansion.js"});
 const API=globalThis.CCGLostSizzlerV142R23RpgBuildExpansion;
@@ -79,6 +94,11 @@ assert.equal(endurance.rpgStats.endurance,10);
 assert.equal(endurance.maxMana,294,"Endurance 10 must include the normal +14 and specialization +40 maximum ammunition.");
 assert.equal(endurance.mana,174,"Endurance 10 must refill the matching 54 ammunition when capacity permits.");
 assert.equal(endurance.armor,3,"Endurance 10 must include the normal +1 and specialization +2 armour.");
+p1=endurance;
+startWorld("ENDURANCE-PERSIST",false,true);
+assert.equal(p1.maxMana,294,"An already-unlocked Endurance specialization must survive the retained V10.25 140-ammo floor clamp.");
+assert.equal(p1.mana,174,"Floor preservation must keep current specialized ammunition without refilling or clamping it.");
+assert.equal(p1.v142R23BuildMilestones.endurance,10,"Endurance specialization ownership must survive the floor transition.");
 
 const arcana=player();
 CCGProgression.applySkill(arcana,"v142-stat-arcana");
@@ -95,6 +115,14 @@ assert.equal(legacy.maxHealth,11);
 const preserved=preservePlayer(legacy,4,7);
 assert.equal(preserved.maxHealth,11,"Floor preservation must not reapply an already-recorded specialization.");
 assert.equal(preserved.v142R23BuildMilestones.vitality,10,"The r23 milestone ledger must survive floor preservation.");
+
+const legacyEndurance=player({rpgStats:{might:5,vitality:5,agility:5,endurance:10,luck:5,arcana:5},maxMana:140,mana:60,armor:0,v142R23BuildMilestones:undefined});
+p1=legacyEndurance;
+startWorld("LEGACY-ENDURANCE-MIGRATION",false,true);
+assert.equal(p1.v142R23BuildMilestones.endurance,10,"A legacy END 10 save must acquire the missing Endurance milestone during floor preservation.");
+assert.equal(p1.maxMana,180,"The migrated Endurance +40 capacity must survive V10.25 post-world normalization exactly once.");
+assert.equal(p1.mana,100,"The migrated Endurance refill must survive V10.25 post-world normalization without being applied twice.");
+assert.equal(p1.armor,2,"Legacy Endurance migration must retain its +2 specialization armour exactly once.");
 
 body.dataset.specialMode="horde-survivor";
 const horde=player();
