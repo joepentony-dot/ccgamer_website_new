@@ -750,7 +750,7 @@ function resolveGameDescriptionEnrichmentUrls() {
 async function fetchGameDescriptionEnrichments() {
     for (const url of resolveGameDescriptionEnrichmentUrls()) {
         try {
-            const response = await fetch(url, { cache: "no-store" });
+            const response = await fetch(url, { cache: "no-cache" });
             if (!response.ok) continue;
             const payload = await response.json();
             return payload?.games && typeof payload.games === "object"
