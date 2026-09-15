@@ -42,7 +42,7 @@ const legacy=PGR.loadCheckpoint();
 assert.equal(legacy.run.gold,0,"legacy saves gain Gold without changing the checkpoint version");
 assert.equal(legacy.player.ownedWeapons.length,1,"legacy P1 firearm migrates into ownership");
 assert.equal(legacy.player.activeWeaponIndex,0);
-assert.deepEqual(legacy.player2.ownedWeapons,[],"locked P2 does not gain a firearm during migration");
+assert.equal(legacy.player2.ownedWeapons.length,0,"locked P2 does not gain a firearm during migration");
 
 const w1={id:"pulse",displayName:"COMMON Pulse",rarity:"COMMON",rating:1,power:1,delay:1,shots:1,element:"energy",mods:[]};
 const w2={id:"fire",displayName:"SIZZLER Fire",rarity:"SIZZLER",rating:5,power:3,delay:1.2,shots:1,element:"fire",mods:["Turbo"]};
