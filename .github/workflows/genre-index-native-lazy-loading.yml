@@ -40,7 +40,13 @@ jobs:
           python-version: "3.12"
 
       - name: Validate optimiser source
-        run: python -m py_compile scripts/apply-genre-index-native-lazy-images.py
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("scripts/apply-genre-index-native-lazy-images.py")
+          compile(path.read_text(encoding="utf-8"), str(path), "exec")
+          print("Genre index native lazy-loading optimiser compiles.")
+          PY
 
       - name: Apply bounded loading policy
         run: python scripts/apply-genre-index-native-lazy-images.py apply
