@@ -57,7 +57,13 @@ jobs:
           node --check arcade/quest/game/audio.js
           node --check arcade/quest/game/achievements.js
           node --check arcade/quest/game/main-v3.js
-          node --check arcade/quest/tests/quest-2-browser.mjs
+          node --check arcade/quest/game/main-v4-core.js
+          node --check arcade/quest/game/main-v4-director.js
+          node --check arcade/quest/game/main-v4-modes.js
+          node --check arcade/quest/game/main-v4-render.js
+          node --check arcade/quest/game/main-v4-ui.js
+          node --check arcade/quest/tests/quest-v3-contract.mjs
+          node --check arcade/quest/tests/quest-v3-browser.mjs
           node --check admin/js/arcade-assets.js
           node --check games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js
           node --check games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js
@@ -78,24 +84,34 @@ jobs:
           node --check scripts/generate-lost-sizzler-audio.mjs
           node --check scripts/validate-arcade-quest.js
 
-      - name: Validate Quest 2.0 contracts
+      - name: Validate Quest 3.0 rebuild contracts
         shell: bash
         run: |
-          grep -F "jumpVelocity:955" arcade/quest/game/balance.js
-          grep -F "crouchHeight:90" arcade/quest/game/balance.js
-          grep -F "stateMeta:mainState" arcade/quest/game/assets-config.js
-          grep -F "player/cheeky-main-sheet.png" arcade/quest/game/assets-config.js
-          grep -F "player/cheeky-fight-sheet.png" arcade/quest/game/assets-config.js
-          grep -F "duck:[3]" arcade/quest/game/assets-config.js
-          grep -F "Q.spriteHitbox=function" arcade/quest/game/sprite-runtime.js
-          grep -F "main-v3.js?v=20260825q2" arcade/quest/index.html
-          grep -F "main-v3.js?v=20260825q2" games/commodore-quest/index.html
-          ! grep -F "main-v2.js" arcade/quest/index.html
-          ! grep -F "main-v2.js" games/commodore-quest/index.html
+          grep -F "jumpVelocity:900" arcade/quest/game/balance.js
+          grep -F "kickTelegraph:.68" arcade/quest/game/balance.js
+          grep -F "const ASSET_REVISION='v20260915-q3'" arcade/quest/game/assets-config.js
+          grep -F "nativeFacing:-1" arcade/quest/game/assets-config.js
+          grep -F "Q.createSpriteAnimator=function" arcade/quest/game/sprite-runtime.js
+          grep -F "const flip=desiredFacing!==nativeFacing" arcade/quest/game/sprite-runtime.js
+          grep -F "main-v4-core.js?v=20260915q3" arcade/quest/index.html
+          grep -F "main-v4-director.js?v=20260915q3" arcade/quest/index.html
+          grep -F "main-v4-modes.js?v=20260915q3" arcade/quest/index.html
+          grep -F "main-v4-render.js?v=20260915q3" arcade/quest/index.html
+          grep -F "main-v4-ui.js?v=20260915q3" arcade/quest/index.html
+          grep -F "main-v4-core.js?v=20260915q3" games/commodore-quest/index.html
+          grep -F "main-v4-director.js?v=20260915q3" games/commodore-quest/index.html
+          grep -F "main-v4-modes.js?v=20260915q3" games/commodore-quest/index.html
+          grep -F "main-v4-render.js?v=20260915q3" games/commodore-quest/index.html
+          grep -F "main-v4-ui.js?v=20260915q3" games/commodore-quest/index.html
+          ! grep -F "main-v3.js?v=20260825q2" arcade/quest/index.html
+          ! grep -F "main-v3.js?v=20260825q2" games/commodore-quest/index.html
           test -f arcade/quest/assets/production/player/cheeky-main-sheet.png
           test -f arcade/quest/assets/production/player/cheeky-fight-sheet.png
           test -f arcade/quest/assets/archive/recovered/recovered-assets-manifest.json
           test ! -f arcade/quest/assets/production/recovered-assets-manifest.json
+
+      - name: Exercise Quest 3.0 fairness contract
+        run: node arcade/quest/tests/quest-v3-contract.mjs
 
       - name: Validate Lost Sizzler owner music hooks
         shell: bash
@@ -129,7 +145,7 @@ jobs:
       - name: Validate Lost Sizzler tactical sidebar layout
         run: node games/ccg-games/cheeky-commodore-quest/tests/v10-6-sidebar-layout.mjs
 
-      - name: Validate Arcade Quest 2.0 contract
+      - name: Validate Arcade Quest 3.0 contract
         run: node scripts/validate-arcade-quest.js
 
   browser:
@@ -150,8 +166,8 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.55.0
           npx playwright install --with-deps chromium
 
-      - name: Exercise Commodore Quest 2.0 in Chromium
+      - name: Exercise Commodore Quest 3.0 in Chromium
         shell: bash
         run: |
           set -euo pipefail
-          node arcade/quest/tests/quest-2-browser.mjs
+          node arcade/quest/tests/quest-v3-browser.mjs
