@@ -9,11 +9,16 @@ const exists=r=>{if(!fs.existsSync(full(r)))errors.push(`Missing ${r}`);};
 const absent=r=>{if(fs.existsSync(full(r)))errors.push(`Expected sorted asset to be absent: ${r}`);};
 function png(r,w,h){const p=full(r);if(!fs.existsSync(p)){errors.push(`Missing ${r}`);return;}const b=fs.readFileSync(p);if(b.readUInt32BE(16)!==w||b.readUInt32BE(20)!==h)errors.push(`${r} wrong size`);}
 
-const main='arcade/quest/game/main-v4.js';
+const mainParts=['main-v4-core.js','main-v4-director.js','main-v4-modes.js','main-v4-render.js','main-v4-ui.js'];
+const mainText=()=>mainParts.map(name=>read(`arcade/quest/game/${name}`)).join('\n');
+const main='arcade/quest/game/main-v4-core.js';
 const config='arcade/quest/game/assets-config.js';
 const runtime='arcade/quest/game/sprite-runtime.js';
 const balance='arcade/quest/game/balance.js';
 const stages='arcade/quest/game/stages.js';
+
+const hasMain=(s,n=s)=>{const t=mainText();if(!t.includes(s))errors.push(`Quest 3 runtime missing ${n}`);};
+const notMain=(s,n=s)=>{const t=mainText();if(t.includes(s))errors.push(`Quest 3 runtime still contains ${n}`);};
 
 has(config,"const ASSET_REVISION='v20260915-q3'",'Quest 3.0 asset revision');
 has(config,"player:production('player/cheeky-main-sheet.png')",'raster main sprite');
@@ -52,27 +57,27 @@ for(const mechanic of ["mechanic:'loading'","mechanic:'rack'","mechanic:'reverse
 has(stages,"duration:30,accent:'#6eeaff'",'shorter Bedroom duration');
 has(stages,'bossHp:20','reduced Bedroom boss endurance');
 
-has(main,"const PATTERNS={",'single authored threat-pattern table');
-has(main,'function activeMandatoryThreat()','unresolved-threat guard');
-not(main,'enemyTimer','independent ambient enemy timer');
-has(main,"S.director.lastResponse=pat.r",'director response tracking');
-has(main,"ctx.setTransform(1,0,0,1,0,0)",'frame transform reset');
-has(main,"ctx.fillRect(0,0,Q.W,Q.H)",'explicit frame repaint');
-has(main,"Q.drawAnchoredSprite(ctx,im,meta,stateName,P.anim.time",'state-local main sprite rendering');
-has(main,"Q.drawAnchoredSprite(ctx,sheet,meta,stateName,f.anim.time",'state-local fighter rendering');
-has(main,"phase:'telegraph'",'fighter telegraph phase');
-has(main,"a.phase='active'",'fighter active phase');
-has(main,"a.phase='recover'",'fighter recovery phase');
-has(main,"float('CHECKPOINT'",'section checkpoint respawn feedback');
-has(main,'forceFighterAttack','browser-test fighter hook');
-for(const fn of ['drawCassette','drawTapeLoop','drawRewinder','drawShelf','drawPrice','drawBin','drawPresent','drawBauble','drawTinsel','drawDisk','drawWindow','drawGlitch','drawBeam','drawCorrupt'])has(main,`function ${fn}`,`${fn} detailed hazard renderer`);
-for(const mode of ['startBeads','startFighter','startInvaders','startMaze'])has(main,`function ${mode}()`,`${mode} arcade section`);
-has(main,"text('QUEST 3.0 REBUILD'",'Quest 3.0 title treatment');
-not(main,"return P.duck&&P.ground?{x:P.x+4,y:P.y-4,w:70,h:131}",'legacy shallow crouch geometry');
+hasMain("const PATTERNS={",'single authored threat-pattern table');
+hasMain('function activeMandatoryThreat()','unresolved-threat guard');
+notMain('enemyTimer','independent ambient enemy timer');
+hasMain("S.director.lastResponse=pat.r",'director response tracking');
+hasMain("ctx.setTransform(1,0,0,1,0,0)",'frame transform reset');
+hasMain("ctx.fillRect(0,0,Q.W,Q.H)",'explicit frame repaint');
+hasMain("Q.drawAnchoredSprite(ctx,im,meta,stateName,P.anim.time",'state-local main sprite rendering');
+hasMain("Q.drawAnchoredSprite(ctx,sheet,meta,stateName,f.anim.time",'state-local fighter rendering');
+hasMain("phase:'telegraph'",'fighter telegraph phase');
+hasMain("a.phase='active'",'fighter active phase');
+hasMain("a.phase='recover'",'fighter recovery phase');
+hasMain("float('CHECKPOINT'",'section checkpoint respawn feedback');
+hasMain('forceFighterAttack','browser-test fighter hook');
+for(const fn of ['drawCassette','drawTapeLoop','drawRewinder','drawShelf','drawPrice','drawBin','drawPresent','drawBauble','drawTinsel','drawDisk','drawWindow','drawGlitch','drawBeam','drawCorrupt'])hasMain(`function ${fn}`,`${fn} detailed hazard renderer`);
+for(const mode of ['startBeads','startFighter','startInvaders','startMaze'])hasMain(`function ${mode}()`,`${mode} arcade section`);
+hasMain("text('QUEST 3.0 REBUILD'",'Quest 3.0 title treatment');
+notMain("return P.duck&&P.ground?{x:P.x+4,y:P.y-4,w:70,h:131}",'legacy shallow crouch geometry');
 
-has('arcade/quest/index.html','main-v4.js?v=20260915q3');
+for(const file of mainParts)has('arcade/quest/index.html',`${file}?v=20260915q3`);
 not('arcade/quest/index.html','main-v3.js?v=20260825q2','active Quest 2 engine include');
-has('games/commodore-quest/index.html','main-v4.js?v=20260915q3');
+for(const file of mainParts)has('games/commodore-quest/index.html',`${file}?v=20260915q3`);
 not('games/commodore-quest/index.html','main-v3.js?v=20260825q2','active public Quest 2 engine include');
 has('arcade/quest/index.html','class="rotate-prompt"');
 has('games/commodore-quest/index.html','class="rotate-prompt"');
@@ -97,6 +102,7 @@ exists('arcade/quest/assets/README.md');
 exists('arcade/quest/QUEST-2-OVERHAUL-SPEC.md');
 exists('arcade/quest/SPRITE-SPEC-V2.md');
 exists('arcade/quest/QUEST-3-REBUILD-SPEC.md');
+for(const file of mainParts)exists(`arcade/quest/game/${file}`);
 exists('arcade/quest/tests/quest-v3-contract.mjs');
 exists('arcade/quest/tests/quest-v3-browser.mjs');
 
