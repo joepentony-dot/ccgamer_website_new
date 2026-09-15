@@ -101,7 +101,7 @@ function updatePlayer(dt,opts={}){
   if(!P.duck&&P.stun<=0&&P.jumpBuffer>0&&(P.ground||P.coyote>0)){
     P.vy=-T.player.jumpVelocity;P.ground=false;P.coyote=0;P.jumpBuffer=0;P.jumpAge=0;P.landTimer=0;audio.sfx('jump');sparks(playerAnchorX(),playerGround(),'#b8f5ff',6);
   }
-  if(!P.ground){P.jumpAge+=dt;if(!input.down('Space','ArrowUp','KeyW')&&P.vy<0)P.vy+=gravity*.7*dt;}
+  if(!P.ground){P.jumpAge+=dt;if(!input.down('Space','ArrowUp','KeyW')&&P.vy<0&&P.jumpAge>.1)P.vy+=gravity*.22*dt;}
   P.vy+=gravity*dt;P.x=clamp(P.x+P.vx*dt,limitLeft,limitRight);P.y+=P.vy*dt;
   if(P.y>=Q.GROUND-P.h){P.y=Q.GROUND-P.h;P.vy=0;P.ground=true;if(!wasGround){P.landTimer=.12;sparks(playerAnchorX(),Q.GROUND,'#d8f9ff',7);audio.sfx('land');}}
   P.fire=Math.max(0,P.fire-dt);
