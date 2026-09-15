@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "YouTube Data API v3. Verified title, description, thumbnail, uploadDate and duration support video discovery; uploadDate and duration are only emitted into VideoObject when verified here.",
-  "updatedAt": "2026-09-15T09:58:09.890Z",
+  "updatedAt": "2026-09-15T22:51:28.224Z",
   "videos": {
     "_0bKM3s0SMs": {
       "title": "The New Zealand Story C64 – Did Ocean Nail the Arcade Conversion?",
@@ -2745,6 +2745,15 @@
       "uploadDate": "2023-08-10T17:30:04Z",
       "duration": "PT6M51S",
       "thumbnailUrl": "https://i.ytimg.com/vi/HBGHNeQZrYY/maxresdefault.jpg",
+      "channelTitle": "Cheeky Commodore Gamer",
+      "verifiedBy": "youtube-data-api-v3"
+    },
+    "hDn4367Gx9Y": {
+      "title": "This 1995 PC Game Used 100 Subliminal Messages | Endorfun",
+      "description": "🧠 Endorfun – The 1995 PC Game That Used Subliminal Messages While You Played\nIn 1995, Endorfun arrived on PC and Macintosh looking like a colourful, slightly strange puzzle game. Roll a cube around a grid, match its coloured sides with the squares beneath it, listen to the music and try to work your way through increasingly difficult stages.\n\nBut Endorfun had something else going on in the background. Built into its soundtrack were around 100 positive affirmations, including messages such as “I am joyful,” “I am powerful,” “My heart is filled with joy” and even the considered “I honour my sexual energy.” Some were perfectly audible. Others were mixed much further into the music. The idea was that while you concentrated on playing the game, these positive messages could potentially influence how you felt.\n\nAnd in 1995, that attracted quite a bit of attention.\n\n📰 The Los Angeles Times investigated Endorfun and the growing debate surrounding subliminal software.\n🧠 Timothy Leary was reportedly shown an early version of the game and described subliminals in software as “the drug for the 21st century.”\n💻 Microsoft even considered including a sample of Endorfun with Windows 95, although concerns were raised about including subliminal material in a Microsoft product.\n📖 WIRED covered it under the wonderfully ominous headline “You Will Have Fun.”\n\nAnd behind all of that controversy was an actual game — developed by Onesong Partners and published by Time Warner Interactive — that was attempting something very different from most computer games appearing in 1995. Contemporary coverage described its combination of abstract puzzle gameplay, colourful visuals, world-music soundtrack and positive messages, while also questioning exactly where entertainment ended and subconscious persuasion began.\n\nIn this video I go back to Endorfun, play through the original PC game, listen to some of those affirmations and dig into the rather bizarre story surrounding it. We’ll look at the contemporary press coverage, the subliminal-message controversy, Timothy Leary’s involvement, the Microsoft connection and, most importantly, whether there was actually a decent puzzle game underneath all of it.\n\nAnd after spending this long listening to positive affirmations while editing the video, I fully expect to wake up tomorrow confident, successful and considerably better at rolling cubes around grids.\n\n💬 Had you ever heard of Endorfun? And how would you have felt in 1995 about discovering that a computer game had been feeding you positive affirmations while you played?\n\n▶️ PLAYLISTS\nhttps://www.youtube.com/playlist?list=PL_TYjnCNYSewjVfw7IxvRAn-7PHzebE_c\n📺 Watch the original BAD INFLUENCE Endorfun section here:\nhttps://www.youtube.com/watch?v=YvJxEmc4th4&t=922s\n\n💙 SUPPORT & CONNECT\nPatreon: https://www.patreon.com/CheekyCommodoreGamer\nJoin: https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join\nTwitter: https://twitter.com/CheekyC64Gamer\nFacebook: https://facebook.com/cheekycommodoregamer\nDiscord: https://discord.gg/83Xw9ktAn4\nWebsite: https://www.cheekycommodoregamer.co.uk\n\n0:00 🧠 Endorfun – The Game That Wanted Inside Your Head\n1:19 🎮 How Endorfun Works\n2:00 🗣️ The Subliminal Messages\n3:26 🎶 The O Band, Timothy Leary & Microsoft\n5:10 📺 Bad Influence! \n5:58 📺 BBC Controversy\n8:06 ⭐ Reviews and Endorfun’s Legacy\n09:57 🇯🇵 Cu-On-Pa\n10:30 👋 Final Thoughts\n\n#Endorfun #PCGaming #RetroGaming #Windows95 #SubliminalMessages",
+      "uploadDate": "2026-09-15T17:30:09Z",
+      "duration": "PT12M3S",
+      "thumbnailUrl": "https://i.ytimg.com/vi/hDn4367Gx9Y/sddefault.jpg",
       "channelTitle": "Cheeky Commodore Gamer",
       "verifiedBy": "youtube-data-api-v3"
     },
