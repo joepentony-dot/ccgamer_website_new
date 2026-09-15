@@ -13,9 +13,6 @@ const checker=read("js/version-check.js");
 const late=read("js/v10-41-lake-item-safety.js");
 const network=read("js/network.js");
 const tutorialFinal=read("js/v10-41-tutorial-action-finalizer.js");
-const r25=read("js/v10-41-r25-spy-speed-bounty-hotfix.js");
-const r26=read("js/v10-41-r26-spy-enemy-stability.js");
-const r27=read("js/v10-41-r27-spy-isolation.js");
 const r28=read("js/v10-41-r28-special-mode-repair.js");
 const r29=read("js/v10-41-r29-runtime-repair.js");
 
@@ -31,29 +28,20 @@ assert.match(late,/load\("js\/v10-41-tutorial-action-finalizer\.js","data-ccg-v1
 assert.match(late,/load\("js\/v10-41-r24-live-regressions\.js","data-ccg-v141-r24-live-regressions"\)/,"the r24 live regression owner must remain included beneath the later hotfix layers");
 
 const token=version.cacheToken;
-const r25Url=`v10-41-r25-spy-speed-bounty-hotfix.js?v=${token}`;
-const r26Url=`v10-41-r26-spy-enemy-stability.js?v=${token}`;
-const r27Url=`v10-41-r27-spy-isolation.js?v=${token}`;
 const r28Url=`v10-41-r28-special-mode-repair.js?v=${token}`;
 const r29Url=`v10-41-r29-runtime-repair.js?v=${token}`;
-assert.ok(index.includes(r25Url),"the r25 Spy speed/bounty hotfix must remain directly loaded under the current cache shell");
-assert.ok(index.includes(r26Url),"the r26 Spy/enemy stability layer must remain loaded before the later isolation layers");
-assert.ok(index.includes(r27Url),"the r27 Spy isolation layer must remain loaded beneath r28/r29");
-assert.ok(index.includes(r28Url),"the retained r28 special-mode repair must load beneath r29");
-assert.ok(index.includes(r29Url),"the r29 runtime repair must remain the final canonical gameplay layer");
-assert.ok(index.indexOf(r25Url)<index.indexOf(r26Url),"r26 must load after r25");
-assert.ok(index.indexOf(r26Url)<index.indexOf(r27Url),"r27 must load after r26");
-assert.ok(index.indexOf(r27Url)<index.indexOf(r28Url),"r28 must load after r27");
-assert.ok(index.indexOf(r28Url)<index.indexOf(r29Url),"r29 must load after the retained r28 repair layer");
-assert.match(r25,/__CCG_LOST_SIZZLER_V141_R25_SPY_SPEED_BOUNTY_HOTFIX__/,"r25 hotfix must retain a duplicate-install guard");
-assert.match(r26,/__CCG_LOST_SIZZLER_V141_R26_SPY_ENEMY_STABILITY__/,"r26 hotfix must retain a duplicate-install guard");
-assert.match(r27,/__CCG_LOST_SIZZLER_V141_R27_SPY_ISOLATION__/,"r27 isolation must retain its duplicate-install guard");
-assert.match(r28,/__CCG_LOST_SIZZLER_V141_R28_SPECIAL_MODE_REPAIR__/,"r28 repair must retain its duplicate-install guard");
-assert.match(r29,/__CCG_LOST_SIZZLER_V141_R29_RUNTIME_REPAIR__/,"r29 final runtime repair must retain its duplicate-install guard");
+assert.doesNotMatch(index,/v10-41-r25-spy-speed-bounty-hotfix\.js/,"retired r25 Spy hotfix must not be directly loaded by the canonical page");
+assert.doesNotMatch(index,/v10-41-r26-spy-enemy-stability\.js/,"retired r26 Spy stability layer must not be directly loaded by the canonical page");
+assert.doesNotMatch(index,/v10-41-r27-spy-isolation\.js/,"retired r27 Spy isolation layer must not be directly loaded by the canonical page");
+assert.ok(index.includes(r28Url),"the retained mixed r28 compatibility layer must remain loaded until its shared Dungeon fire path is extracted");
+assert.ok(index.includes(r29Url),"the retained mixed r29 runtime repair must remain loaded until shared runtime protections are extracted");
+assert.ok(index.indexOf(r28Url)<index.indexOf(r29Url),"r29 must load after the retained r28 compatibility layer");
+assert.match(r28,/__CCG_LOST_SIZZLER_V141_R28_SPECIAL_MODE_REPAIR__/,"r28 compatibility layer must retain its duplicate-install guard until extraction");
+assert.match(r29,/__CCG_LOST_SIZZLER_V141_R29_RUNTIME_REPAIR__/,"r29 shared runtime layer must retain its duplicate-install guard until extraction");
 assert.doesNotMatch(network,/v10-41-live-join-presence\.js\?v=20260825a/,"network core must not retain the dated live-join cache URL");
 assert.match(network,/v10-41-live-join-presence\.js\?v=\$\{encodeURIComponent\(releaseRev\)\}/,"network live-join loader must inherit the published cache generation from page metadata");
 assert.match(tutorialFinal,/function installMove\(\)/,"current release must retain final tutorial movement ownership");
 assert.match(tutorialFinal,/function installFire\(\)/,"current release must retain final tutorial sword ownership");
 assert.match(tutorialFinal,/function installDash\(\)/,"current release must retain final tutorial dash ownership");
 
-console.log("Lost Sizzler V10.42 current release-delivery contract passed.");
+console.log("C64 Dungeon Carnage V10.42 active release-delivery contract passed.");
