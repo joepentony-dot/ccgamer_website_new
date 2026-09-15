@@ -71,11 +71,28 @@ try{
   });
   assert.equal(idempotent.maxHealth,11);assert.equal(idempotent.maxMana,294);assert.equal(idempotent.armor,3);assert.ok(Math.abs(idempotent.moveMultiplier-(.97*.95))<1e-9);assert.equal(idempotent.dashDamage,1);assert.equal(idempotent.sight,1);assert.equal(idempotent.ward,18000);
 
+  await page.evaluate(()=>{
+    const snapshot=player=>player?{maxMana:player.maxMana,mana:player.mana,maxHealth:player.maxHealth,armor:player.armor,endurance:player.rpgStats?.endurance,milestones:{...(player.v142R23BuildMilestones||{})}}:null;
+    const trace={startBefore:null,startAfter:null,afterGenerate:null,afterCreateHost:null,afterDecorate:null,preserveCalls:[]};
+    window.__r23FloorTrace=trace;
+    const baseStartWorld=startWorld;
+    startWorld=function(...args){trace.startBefore=snapshot(p1);const result=baseStartWorld(...args);trace.startAfter=snapshot(p1);return result};
+    const baseGenerate=window.CCGWorld.generate.bind(window.CCGWorld);
+    window.CCGWorld.generate=function(...args){const result=baseGenerate(...args);trace.afterGenerate=snapshot(p1);return result};
+    const baseCreateHostState=window.CCGWorld.createHostState.bind(window.CCGWorld);
+    window.CCGWorld.createHostState=function(...args){const result=baseCreateHostState(...args);trace.afterCreateHost=snapshot(p1);return result};
+    const baseDecorate=window.CCGSystems.decorate.bind(window.CCGSystems);
+    window.CCGSystems.decorate=function(...args){const result=baseDecorate(...args);trace.afterDecorate=snapshot(p1);return result};
+    const basePreservePlayer=preservePlayer;
+    preservePlayer=function(old,...args){const before=snapshot(old),result=basePreservePlayer(old,...args);trace.preserveCalls.push({before,after:snapshot(result)});return result};
+  });
+
   await page.evaluate(()=>floorComplete("r23 RPG build qualification"));
   await page.waitForFunction(()=>mode==="floorcomplete"&&!document.getElementById("floor-complete")?.classList.contains("hidden"));
   await page.evaluate(()=>descendFloor());
   await settleFloorEntry(page,2);
-  const persisted=await page.evaluate(()=>({floor:run.floor,cap:window.CCGProgression.floorLevelCap(run),rpg:{...p1.rpgStats},milestones:{...p1.v142R23BuildMilestones},maxHealth:p1.maxHealth,maxMana:p1.maxMana,armor:p1.armor,moveMultiplier:p1.moveMultiplier,dashDamage:p1.dashDamage,sight:p1.v142SightBonus,ward:p1.v142WardCooldownMs}));
+  const persisted=await page.evaluate(()=>({floor:run.floor,cap:window.CCGProgression.floorLevelCap(run),rpg:{...p1.rpgStats},milestones:{...p1.v142R23BuildMilestones},maxHealth:p1.maxHealth,maxMana:p1.maxMana,armor:p1.armor,moveMultiplier:p1.moveMultiplier,dashDamage:p1.dashDamage,sight:p1.v142SightBonus,ward:p1.v142WardCooldownMs,trace:JSON.parse(JSON.stringify(window.__r23FloorTrace||{}))}));
+  if(persisted.maxMana!==294)console.error("R23_FLOOR_TRACE",JSON.stringify(persisted.trace));
   assert.equal(persisted.floor,2);assert.equal(persisted.cap,10,"r23 must preserve the established Floor 2 cap.");
   assert.deepEqual(persisted.milestones,{vitality:10,agility:10,endurance:10,arcana:10},"Specialization ownership must survive the real floor transition.");
   assert.equal(persisted.maxHealth,11,"Vitality specialization must not stack on descent.");
