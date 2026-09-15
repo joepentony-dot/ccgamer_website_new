@@ -1,0 +1,42 @@
+name: Native Mouse Wheel Scroll Contract
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "**/*.css"
+      - "**/*.js"
+      - "**/*.mjs"
+      - "games/collections/retro-specials.html"
+      - "scripts/audit-native-wheel-contract.js"
+      - ".github/workflows/native-mouse-wheel-scroll-contract.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "**/*.css"
+      - "**/*.js"
+      - "**/*.mjs"
+      - "games/collections/retro-specials.html"
+      - "scripts/audit-native-wheel-contract.js"
+      - ".github/workflows/native-mouse-wheel-scroll-contract.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-wheel-scroll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate blocker syntax
+        run: node --check scripts/audit-native-wheel-contract.js
+
+      - name: Enforce native mouse-wheel scrolling
+        run: node scripts/audit-native-wheel-contract.js
