@@ -51,45 +51,52 @@ try{
 
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
-  await page.waitForSelector("#horde-leaderboard [data-horde-category]");
+  await page.waitForSelector("#ccg-weekly-board-wrap");
 
-  const weekly=await page.evaluate(()=>{
+  const initial=await page.evaluate(()=>{
+    const weekly=document.getElementById("ccg-weekly-board-wrap");
     const section=document.getElementById("weekly-vault");
-    const style=section?getComputedStyle(section):null;
     return{
-      tag:section?.tagName||"",
-      maxHeight:style?.maxHeight||"",
-      overflowY:style?.overflowY||"",
-      contain:style?.contain||""
+      weeklyTag:weekly?.tagName||"",
+      weeklyOpen:Boolean(weekly?.open),
+      sectionTag:section?.tagName||"",
+      hordeBoard:Boolean(document.getElementById("horde-leaderboard")),
+      hordeCategories:document.querySelectorAll("[data-horde-category]").length,
+      hordeButton:Boolean(document.getElementById("horde-mode-btn"))
     }
   });
-  assert.equal(weekly.tag,"SECTION","Weekly leaderboard must not remain a native expandable DETAILS element");
-  assert.notEqual(weekly.maxHeight,"none","Weekly leaderboard must remain height bounded");
-  assert.ok(["auto","scroll"].includes(weekly.overflowY),`Weekly leaderboard should scroll internally, got ${weekly.overflowY}`);
-  assert.match(weekly.contain,/layout/,"Weekly leaderboard should contain its layout changes");
+  assert.equal(initial.weeklyTag,"DETAILS","Weekly Vault must be collapsed behind an explicit viewer control");
+  assert.equal(initial.weeklyOpen,false,"Weekly Vault must start closed to reduce menu clutter");
+  assert.equal(initial.sectionTag,"SECTION","the existing Weekly Vault section must remain available inside the wrapper");
+  assert.equal(initial.hordeBoard,false,"Horde Survivor local leaderboard must be retired from the menu");
+  assert.equal(initial.hordeCategories,0,"retired Horde leaderboard category tabs must not be mounted");
+  assert.equal(initial.hordeButton,true,"Horde Survivor mode itself must remain available");
 
-  const categories=["SOLO","DUO","TRIO","SQUAD"];
+  const weekly=page.locator("#ccg-weekly-board-wrap");
   for(let cycle=0;cycle<25;cycle++){
-    for(const category of categories){
-      await page.locator(`[data-horde-category="${category}"]`).click();
-      const active=await page.locator(`[data-horde-category="${category}"]`).getAttribute("aria-pressed");
-      assert.equal(active,"true",`${category} Horde leaderboard tab must become active`);
-    }
+    await weekly.locator(":scope > summary").click();
+    assert.equal(await weekly.getAttribute("open"),"","Weekly Vault must open on demand");
+    await weekly.locator(":scope > summary").click();
+    assert.equal(await weekly.getAttribute("open"),null,"Weekly Vault must close again without destabilising the menu");
   }
 
   await page.waitForTimeout(250);
   const responsive=await page.evaluate(()=>({
     title:document.title,
-    categories:[...document.querySelectorAll("[data-horde-category]")].map(button=>({category:button.dataset.hordeCategory,pressed:button.getAttribute("aria-pressed")})),
-    bodyReady:document.body.dataset.releaseReady
+    bodyReady:document.body.dataset.releaseReady,
+    hordeBoard:Boolean(document.getElementById("horde-leaderboard")),
+    weeklyOpen:Boolean(document.getElementById("ccg-weekly-board-wrap")?.open),
+    menuVisible:getComputedStyle(document.getElementById("menu")).display!=="none"
   }));
 
-  assert.equal(crashed,false,"Repeated Horde leaderboard tab switching must not crash the browser page");
-  assert.equal(responsive.bodyReady,"true","page must remain responsive after repeated leaderboard interactions");
-  assert.equal(responsive.categories.find(row=>row.category==="SQUAD")?.pressed,"true","final Horde category must remain selectable after repeated switching");
-  assert.deepEqual(errors,[],`Leaderboard menu interactions must have no uncaught browser errors: ${errors.join("\n")}`);
+  assert.equal(crashed,false,"Repeated Weekly Vault disclosure switching must not crash the browser page");
+  assert.equal(responsive.bodyReady,"true","page must remain responsive after repeated menu interactions");
+  assert.equal(responsive.hordeBoard,false,"Horde leaderboard must remain absent after late scripts settle");
+  assert.equal(responsive.weeklyOpen,false,"Weekly Vault must finish in its compact closed state");
+  assert.equal(responsive.menuVisible,true,"current Dungeon Carnage menu must remain visible and responsive");
+  assert.deepEqual(errors,[],`Unified menu interactions must have no uncaught browser errors: ${errors.join("\n")}`);
 
-  console.log("Lost Sizzler V10.41 menu leaderboard stability passed in Chromium.");
+  console.log("C64 Dungeon Carnage unified menu and retired Horde leaderboard stability passed in Chromium.");
   await context.close()
 }finally{
   await browser.close();
