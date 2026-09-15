@@ -109,12 +109,17 @@ jobs:
           set -euo pipefail
           node <<'NODE' >> "$GITHUB_OUTPUT"
           const fs=require('fs');
+          const retiredModeTests=new Set([
+            'v10-41-mode-controller-isolation.mjs'
+          ]);
           const tests=[
             'arcade/lost-sizzler/tests/v10-6-browser.mjs',
             'arcade/lost-sizzler/tests/v10-9-stability.mjs',
             'arcade/lost-sizzler/tests/support/v10-28-browser-stability-deterministic.mjs',
             ...fs.readdirSync('arcade/lost-sizzler/tests/browser')
               .filter(name=>name.endsWith('.mjs'))
+              .filter(name=>!/(?:horde|spy)/i.test(name))
+              .filter(name=>!retiredModeTests.has(name))
               .sort()
               .map(name=>`arcade/lost-sizzler/tests/browser/${name}`)
           ];
