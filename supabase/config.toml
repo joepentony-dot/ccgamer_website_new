@@ -1,2 +1,8 @@
 [functions.send-new-game-notification]
 verify_jwt = false
+
+[functions.ccg-commerce]
+verify_jwt = false
+
+[functions.ccg-paypal-webhook]
+verify_jwt = false
