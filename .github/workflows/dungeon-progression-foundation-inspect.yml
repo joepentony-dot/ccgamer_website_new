@@ -15,36 +15,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect progression foundation source paths
+      - name: Inspect exact progression mutation sites
         shell: bash
         run: |
           node <<'NODE'
           const fs=require('fs');
-          const files=[
-            'arcade/lost-sizzler/js/game-core.js',
-            'arcade/lost-sizzler/js/progression.js',
-            'arcade/lost-sizzler/js/systems.js',
-            'arcade/lost-sizzler/index.html'
-          ];
+          const file='arcade/lost-sizzler/js/game-core.js';
+          const s=fs.readFileSync(file,'utf8');
           const needles=[
-            'function baseWeapon','function makePlayer','function preservePlayer',
-            'function shopScorePrice','function renderShop','function buyShopItem',
-            'weaponLoot','credits','treasureGoblin','kind==="treasure"','kind === "treasure"',
-            'function captureFloorEntryCheckpoint','function resumeSavedRun','function beginRun',
-            'bronzeKeys','scorePurchases','shop-score','shop-next-price',
-            'enemy.hp<=0','e.hp<=0','alive=false','alive = false','escapeMs'
+            'score+=','score +=','score-=','score -=',
+            '.weapon=','.weapon =','weaponLoot',
+            'kind==="credits"','kind === "credits"','kind==="weapon"','kind === "weapon"',
+            'hp<=0','hp <= 0','alive=false','alive = false',
+            'treasure','escapeMs','KeyX','Digit1','BracketLeft','BracketRight',
+            'function interact','function pickup','function updateEnemies','function updateEnemy',
+            'function openChest','function sync','function updateHUD'
           ];
-          for(const file of files){
-            const s=fs.readFileSync(file,'utf8');
-            console.log(`\n===== ${file} (${s.length} bytes, ${s.split('\n').length} lines) =====`);
-            for(const needle of needles){
-              let from=0,hit=0;
-              while((from=s.indexOf(needle,from))!==-1 && hit<8){
-                hit++;
-                const a=Math.max(0,from-700),b=Math.min(s.length,from+needle.length+1800);
-                console.log(`\n--- ${needle} #${hit} @ ${from} ---\n${s.slice(a,b)}`);
-                from+=needle.length;
-              }
+          console.log(`===== ${file} (${s.length} bytes, ${s.split('\n').length} lines) =====`);
+          for(const needle of needles){
+            let from=0,hit=0;
+            while((from=s.indexOf(needle,from))!==-1 && hit<20){
+              hit++;
+              const a=Math.max(0,from-1100),b=Math.min(s.length,from+needle.length+2600);
+              console.log(`\n--- ${needle} #${hit} @ ${from} ---\n${s.slice(a,b)}`);
+              from+=needle.length;
             }
           }
           NODE
