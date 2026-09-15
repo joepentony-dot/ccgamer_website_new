@@ -6,11 +6,13 @@
  * Regression blocker for the Retro Specials wheel-scrolling fix from PR #2019.
  * It protects the document scroll-root CSS contract, rejects local scripts on
  * the page that attempt to own the `wheel` event, and drives genuine Chrome
- * mouse-wheel input over the Retro Specials card grid in both directions.
+ * mouse-wheel input over the Retro Specials card grid.
  *
  * Do not replace native document scrolling with synthetic wheel handlers or
- * preventDefault()-based workarounds. If the architecture genuinely changes,
- * update this contract only with matching browser evidence.
+ * preventDefault()-based workarounds. Reverse document reachability is already
+ * enforced by CCG Site Safety's physical-scroll audit; this contract targets
+ * the historical failure mode directly: a mouse wheel over the card grid must
+ * move the document.
  */
 
 "use strict";
@@ -27,6 +29,7 @@ const TARGET_PAGE = "/games/collections/retro-specials.html";
 const CSS_PATH = path.join(ROOT, "resources/css/ccg-scroll-authority.css");
 const PAGE_PATH = path.join(ROOT, "games/collections/retro-specials.html");
 const MIN_WHEEL_DELTA = 100;
+const WHEEL_DELTA = 560;
 
 const VIEWPORTS = [
     { width: 956, height: 900, label: "desktop-956" },
@@ -58,7 +61,9 @@ function fail(message) {
 }
 
 function requireText(source, needle, label) {
-    if (!source.includes(needle)) fail(`Native wheel contract missing ${label}: ${needle}`);
+    if (!source.includes(needle)) {
+        fail(`Native wheel contract missing ${label}: ${needle}`);
+    }
 }
 
 function wheelOwnerMatch(source) {
@@ -95,7 +100,9 @@ function localScriptPaths(html) {
 
 function assertNoLocalWheelOwners(html) {
     const inline = wheelOwnerMatch(html);
-    if (inline) fail(`Retro Specials HTML attempts to own the native wheel event (${inline}).`);
+    if (inline) {
+        fail(`Retro Specials HTML attempts to own the native wheel event (${inline}).`);
+    }
 
     for (const scriptPath of localScriptPaths(html)) {
         const source = fs.readFileSync(scriptPath, "utf8");
@@ -143,6 +150,7 @@ function findChromeDriver() {
         process.env.CHROMEWEBDRIVER ? path.join(process.env.CHROMEWEBDRIVER, "chromedriver") : "",
         "/usr/local/share/chromedriver-linux64/chromedriver"
     ].filter(Boolean);
+
     const found = candidates.find((candidate) => fs.existsSync(candidate));
     if (!found) fail("ChromeDriver was not found on the GitHub runner.");
     return found;
@@ -167,6 +175,7 @@ function safeFileForRequest(urlPathname) {
     } catch {
         return null;
     }
+
     return absolute;
 }
 
@@ -214,6 +223,7 @@ async function webdriver(method, pathname, body) {
     if (!response.ok || payload.value?.error) {
         fail(`ChromeDriver ${method} ${pathname} failed: ${payload.value?.message || text || `${response.status} ${response.statusText}`}`);
     }
+
     return payload;
 }
 
@@ -221,7 +231,9 @@ async function waitForDriver() {
     let lastError = null;
     for (let attempt = 0; attempt < 80; attempt += 1) {
         try {
-            const response = await fetch(`http://${HOST}:${DRIVER_PORT}/status`, { signal: AbortSignal.timeout(1000) });
+            const response = await fetch(`http://${HOST}:${DRIVER_PORT}/status`, {
+                signal: AbortSignal.timeout(1000)
+            });
             if (response.ok) return;
         } catch (error) {
             lastError = error;
@@ -261,6 +273,7 @@ async function createSession() {
             }
         }
     });
+
     const sessionId = payload.value?.sessionId || payload.sessionId;
     if (!sessionId) fail("ChromeDriver created a session without returning a session id.");
     return sessionId;
@@ -290,13 +303,13 @@ async function cdp(sessionId, cmd, params = {}) {
     return payload.value;
 }
 
-async function wheel(sessionId, x, y, deltaY) {
+async function wheelDown(sessionId, x, y) {
     await cdp(sessionId, "Input.dispatchMouseEvent", {
         type: "mouseWheel",
         x,
         y,
         deltaX: 0,
-        deltaY,
+        deltaY: WHEEL_DELTA,
         pointerType: "mouse"
     });
     await new Promise((resolve) => setTimeout(resolve, 250));
@@ -369,31 +382,22 @@ async function auditViewport(sessionId, sitePort, viewport) {
     await setViewport(sessionId, viewport);
     await navigate(sessionId, `http://${HOST}:${sitePort}${TARGET_PAGE}`);
 
-    const downTarget = await prepareWheelTarget(sessionId);
-    assertPrepared(downTarget, viewport);
-    if (downTarget.maxScroll <= downTarget.scrollY + MIN_WHEEL_DELTA * 2) {
-        fail(`${viewport.label}: not enough scroll room below the target card to verify wheel-down`);
+    const target = await prepareWheelTarget(sessionId);
+    assertPrepared(target, viewport);
+
+    if (target.maxScroll <= target.scrollY + MIN_WHEEL_DELTA * 2) {
+        fail(`${viewport.label}: not enough scroll room below the target card to verify mouse-wheel scrolling`);
     }
 
-    await wheel(sessionId, downTarget.x, downTarget.y, 560);
+    await wheelDown(sessionId, target.x, target.y);
     const afterDown = await readY(sessionId);
-    if (afterDown - downTarget.scrollY < MIN_WHEEL_DELTA) {
-        fail(`${viewport.label}: native wheel-down stalled over Retro Specials grid (${downTarget.scrollY}px -> ${afterDown}px)`);
+    const movement = afterDown - target.scrollY;
+
+    if (movement < MIN_WHEEL_DELTA) {
+        fail(`${viewport.label}: native mouse wheel stalled over Retro Specials grid (${target.scrollY}px -> ${afterDown}px)`);
     }
 
-    const upTarget = await prepareWheelTarget(sessionId);
-    assertPrepared(upTarget, viewport);
-    if (upTarget.scrollY < MIN_WHEEL_DELTA * 2) {
-        fail(`${viewport.label}: not enough scroll room above the target card to verify wheel-up`);
-    }
-
-    await wheel(sessionId, upTarget.x, upTarget.y, -560);
-    const afterUp = await readY(sessionId);
-    if (upTarget.scrollY - afterUp < MIN_WHEEL_DELTA) {
-        fail(`${viewport.label}: native wheel-up stalled over Retro Specials grid (${upTarget.scrollY}px -> ${afterUp}px)`);
-    }
-
-    console.log(`PASS ${viewport.label}: native wheel moved ${afterDown - downTarget.scrollY}px down and ${upTarget.scrollY - afterUp}px up over Retro Specials cards.`);
+    console.log(`PASS ${viewport.label}: native mouse wheel moved the document ${movement}px over the Retro Specials card grid.`);
 }
 
 async function main() {
@@ -414,7 +418,9 @@ async function main() {
     try {
         await waitForDriver();
         sessionId = await createSession();
-        for (const viewport of VIEWPORTS) await auditViewport(sessionId, sitePort, viewport);
+        for (const viewport of VIEWPORTS) {
+            await auditViewport(sessionId, sitePort, viewport);
+        }
         console.log("Native mouse-wheel scroll contract passed.");
     } finally {
         if (sessionId) {
