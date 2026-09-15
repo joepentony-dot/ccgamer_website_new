@@ -68,17 +68,13 @@ const CCG_MELEE_AMMO_REV=CCG_RELEASE_REV;
 const CCG_AMMO_BUDGET_REV=CCG_RELEASE_REV;
 const CCG_ACHIEVEMENTS_REV=CCG_RELEASE_REV;
 const CCG_POLISH_REV=CCG_RELEASE_REV;
-const CCG_HORDE_REV=CCG_RELEASE_REV;
-const CCG_SABOTEURS_REV=CCG_RELEASE_REV;
-const CCG_SPECIAL_MODES_REV=CCG_RELEASE_REV;
-const CCG_MODE_POLISH_REV=CCG_RELEASE_REV;
 const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
 
 /* A run must not begin while the ordered enhancement queue is still replacing
  * the base combat, onboarding and balance functions. Keep the first requested
  * launch and replay it once the complete release runtime is ready. */
 (()=>{
-  const launchIds=new Set(["solo-btn","tutorial-zone-btn","continue-save-btn","daily-btn","split-btn","create-btn","horde-mode-btn","saboteurs-mode-btn","join-btn"]);
+  const launchIds=new Set(["solo-btn","tutorial-zone-btn","continue-save-btn","daily-btn","split-btn","create-btn","join-btn"]);
   let resolveReady;
   const state={ready:false,failed:false,pendingId:"",errors:[],promise:new Promise(resolve=>{resolveReady=resolve})};
   const setBodyState=value=>{if(document.body)document.body.dataset.releaseReady=value};
@@ -269,16 +265,10 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
       [`js/v10-29-achievements.js?v=${CCG_ACHIEVEMENTS_REV}`,"ccgLostSizzlerAchievementsV129"],
       [`js/v10-30-polish.js?v=${CCG_POLISH_REV}`,"ccgLostSizzlerPolishV130"],
       [`js/v10-31-multiplayer-sync.js?v=${CCG_MULTIPLAYER_SYNC_REV}`,"ccgLostSizzlerMultiplayerSyncV131"],
-      [`js/horde-survivor.js?v=${CCG_HORDE_REV}`,"ccgLostSizzlerHordeRules"],
-      [`js/horde-survivor-audio.js?v=${CCG_HORDE_REV}`,"ccgLostSizzlerHordeAudio"],
-      [`js/sizzler-saboteurs.js?v=${CCG_SABOTEURS_REV}`,"ccgLostSizzlerSaboteursRules"],
-      [`js/sizzler-saboteurs-audio.js?v=${CCG_SABOTEURS_REV}`,"ccgLostSizzlerSaboteursAudio"],
-      [`js/v10-33-special-modes.js?v=${CCG_SPECIAL_MODES_REV}`,"ccgLostSizzlerSpecialModesV133"],
-      [`js/v10-33-mode-polish.js?v=${CCG_MODE_POLISH_REV}`,"ccgLostSizzlerModePolishV133"],
       [`js/v10-35-quality.js?v=${CCG_QUALITY_V135_REV}`,"ccgLostSizzlerQualityV135"]
     ];
     const criticalFailures=[];
-    const criticalPaths=new Set(["/arcade/lost-sizzler/js/v10-25-melee-ammo-balance.js","/arcade/lost-sizzler/js/v10-26-ammo-budget.js","/arcade/lost-sizzler/js/v10-29-achievements.js","/arcade/lost-sizzler/js/v10-30-polish.js","/arcade/lost-sizzler/js/v10-31-multiplayer-sync.js","/arcade/lost-sizzler/js/horde-survivor.js","/arcade/lost-sizzler/js/horde-survivor-audio.js","/arcade/lost-sizzler/js/sizzler-saboteurs.js","/arcade/lost-sizzler/js/sizzler-saboteurs-audio.js","/arcade/lost-sizzler/js/v10-33-special-modes.js","/arcade/lost-sizzler/js/v10-33-mode-polish.js","/arcade/lost-sizzler/js/v10-35-quality.js"]);
+    const criticalPaths=new Set(["/arcade/lost-sizzler/js/v10-25-melee-ammo-balance.js","/arcade/lost-sizzler/js/v10-26-ammo-budget.js","/arcade/lost-sizzler/js/v10-29-achievements.js","/arcade/lost-sizzler/js/v10-30-polish.js","/arcade/lost-sizzler/js/v10-31-multiplayer-sync.js","/arcade/lost-sizzler/js/v10-35-quality.js"]);
 
     /* Dynamic scripts with async=false execute in insertion order but may fetch
      * in parallel. This keeps the long-established module ownership order while
