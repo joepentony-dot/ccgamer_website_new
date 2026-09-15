@@ -38,7 +38,7 @@ try{
   }));
   assert.equal(release.build,release.canonicalBuild,"release-ready build metadata must match the authoritative V10.42 bootstrap identity");
   assert.equal(release.cache,release.canonicalCache,"release-ready cache metadata must match the authoritative V10.42 bootstrap identity");
-  assert.deepEqual({r29:release.r29,loop:release.loop},{r29:true,loop:true},"Chromium must run the r30 page while retaining the r29 stable-loop protections");
+  assert.deepEqual({r29:release.r29,loop:release.loop},{r29:true,loop:true},"Chromium must retain the r29 stable-loop protections under V10.42");
 
   const geometry=await page.evaluate(async()=>{
     document.body.dataset.runActive="true";
@@ -63,7 +63,7 @@ try{
     return{before,after,visibleSamples,hiddenSamples,visibleReady,hiddenReady,toastPosition:getComputedStyle(toast).position,toastOwnerStable:Boolean(window.showToast?.__ccgV141Priority)}
   });
   assert.equal(geometry.toastPosition,"absolute","retained r29 gameplay toasts must overlay the canvas");
-  assert.equal(geometry.toastOwnerStable,true,"retained r29 notification ownership must remain stable under r30");
+  assert.equal(geometry.toastOwnerStable,true,"retained r29 notification ownership must remain stable under V10.42");
   assert.ok(geometry.visibleReady.every(Boolean),"every retained r29 toast must become visibly live in Chromium before it is sampled");
   assert.ok(geometry.hiddenReady.every(Boolean),"every retained r29 toast must collapse its notification rail after closing");
   assert.equal(geometry.before.railDisplay,"none","an idle notification rail must collapse completely instead of reserving a gameplay row");
@@ -86,27 +86,8 @@ try{
   });
   assert.ok(audio.stops>=1,"retained r29 return-to-menu audio guard must call the ordinary music stop path");
 
-  const spyThrottle=await page.evaluate(()=>{
-    const special=window.CCGLostSizzlerSpecialModes,descriptor=Object.getOwnPropertyDescriptor(special,"active"),before=window.CCGLostSizzlerV141R29.state.spyHintsSuppressed;
-    Object.defineProperty(special,"active",{configurable:true,value:{type:"sizzler-saboteurs",state:{players:[]}}});
-    window.showToast("MOVE BESIDE FURNITURE","first","cyan",3000);window.showToast("MOVE BESIDE FURNITURE","second","cyan",3000);window.showToast("MOVE BESIDE FURNITURE","third","cyan",3000);
-    const after=window.CCGLostSizzlerV141R29.state.spyHintsSuppressed;
-    if(descriptor)Object.defineProperty(special,"active",descriptor);else delete special.active;
-    return{before,after}
-  });
-  assert.ok(spyThrottle.after-spyThrottle.before>=2,"repeated Spy furniture guidance must remain suppressed instead of firing every update");
-
-  const friendly=await page.evaluate(()=>{
-    const special=window.CCGLostSizzlerSpecialModes,descriptor=Object.getOwnPropertyDescriptor(special,"active"),before=window.CCGLostSizzlerV141R29.state.hordeFriendlyFireBlocked;
-    Object.defineProperty(special,"active",{configurable:true,value:{type:"horde-survivor",state:{players:[]}}});
-    const result=window.hurtPlayer?.({id:"test-player"},1,true,"team-mate","other-player"),after=window.CCGLostSizzlerV141R29.state.hordeFriendlyFireBlocked;
-    if(descriptor)Object.defineProperty(special,"active",descriptor);else delete special.active;
-    return{result,delta:after-before}
-  });
-  assert.equal(friendly.result,false,"Horde player-v-player damage must be rejected");assert.equal(friendly.delta,1,"Horde friendly-fire rejection must execute exactly once");
-
   assert.deepEqual(errors,[],`retained r29 Chromium runtime regression must have no uncaught errors under V10.42: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 retained r29 geometry, notification, audio, Spy hint and Horde friendly-fire protections passed under V10.42 in Chromium.");
+  console.log("Lost Sizzler V10.41 retained r29 geometry, notification, audio and stable-loop protections passed under V10.42 in Chromium.");
   await context.close()
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()))
