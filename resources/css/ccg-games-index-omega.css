@@ -338,9 +338,11 @@
     background: rgba(5, 9, 19, 0.88);
 }
 
-/* Keep crawlable fallback useful to search engines and no-JS visitors,
-   but visually secondary once the interactive archive is available. */
+/* Keep crawlable fallback useful to search engines and no-JS visitors while
+   deferring its large offscreen subtree until it approaches the viewport. */
 .ccg-page--games-index .games-static-fallback {
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto 14000px;
     border-top: 1px solid rgba(var(--accent-rgb), 0.16);
     margin-top: 22px;
     padding-top: 20px;
