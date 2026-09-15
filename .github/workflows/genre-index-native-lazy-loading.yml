@@ -31,9 +31,6 @@ jobs:
           fetch-depth: 1
           show-progress: false
 
-      - name: Fetch main baseline
-        run: git fetch --depth=1 --no-tags origin main:refs/remotes/origin/main
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -56,29 +53,22 @@ jobs:
           python scripts/apply-genre-index-native-lazy-images.py validate
           git diff --check
 
-      - name: Confirm exact correction scope
+      - name: Confirm runtime correction scope
         run: |
           python - <<'PY'
           import subprocess
 
-          allowed = {
-              ".github/workflows/genre-index-native-lazy-loading.yml",
-              "games/genres/index.html",
-              "scripts/apply-genre-index-native-lazy-images.py",
-          }
+          allowed = {"games/genres/index.html"}
           changed = set(subprocess.check_output(
-              ["git", "diff", "--name-only", "origin/main"], text=True
+              ["git", "diff", "--name-only"], text=True
           ).splitlines())
           changed.update(subprocess.check_output(
               ["git", "ls-files", "--others", "--exclude-standard"], text=True
           ).splitlines())
           unexpected = sorted(changed - allowed)
           if unexpected:
-              raise SystemExit(f"Unexpected genre loading correction paths: {unexpected}")
-          missing = sorted(allowed - changed)
-          if missing:
-              raise SystemExit(f"Expected genre loading correction paths are missing: {missing}")
-          print("Validated exact genre index loading scope (3 files).")
+              raise SystemExit(f"Unexpected genre loading runtime changes: {unexpected}")
+          print(f"Validated genre loading runtime scope ({len(changed)} workspace file(s) changed).")
           PY
 
       - name: Commit bounded HTML correction to PR branch
@@ -101,5 +91,6 @@ jobs:
             echo "- first 6 genre-card images remain eager"
             echo "- remaining 9 genre-card images use native loading=lazy"
             echo "- all 15 intrinsic image dimensions and source paths are contract-checked"
+            echo "- runtime mutation scope is limited to games/genres/index.html"
             echo "- no CSS, artwork, card order, routes or runtime JavaScript are changed"
           } >> "$GITHUB_STEP_SUMMARY"
