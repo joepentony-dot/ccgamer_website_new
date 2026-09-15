@@ -20,9 +20,9 @@ assert.doesNotMatch(index,/\?v=20260825r28/,"canonical page must not request sta
 assert.ok(index.includes(`css/v10-41-r29.css?v=${manifest.cacheToken}`),"r29 stable geometry CSS must load under the current cache generation");
 assert.ok(index.includes(`js/v10-41-r29-buglog.js?v=${manifest.cacheToken}`),"r29 developer buglog additions must load under the current cache generation");
 assert.ok(index.includes(`js/v10-41-r29-runtime-repair.js?v=${manifest.cacheToken}`),"r29 runtime repair must load under the current cache generation");
-const r28Url=`v10-41-r28-special-mode-repair.js?v=${manifest.cacheToken}`;
+const activeEnemyFireUrl=`v10-41-active-enemy-fire.js?v=${manifest.cacheToken}`;
 const r29Url=`v10-41-r29-runtime-repair.js?v=${manifest.cacheToken}`;
-assert.ok(index.indexOf(r28Url)<index.indexOf(r29Url),"retained r29 runtime protections must execute after r28 before the later ownership failsafe");
+assert.ok(index.indexOf(activeEnemyFireUrl)<index.indexOf(r29Url),"r29 runtime protections must execute after active enemy-fire compatibility");
 
 assert.match(repair,/stableLoop\.__ccgV141R29Stable=true/,"r29 must publish a final stable frame-loop owner");
 assert.doesNotMatch(repair,/canvas\.width\s*=|canvas\.height\s*=/,"r29 frame recovery must never recreate the canvas backing store");

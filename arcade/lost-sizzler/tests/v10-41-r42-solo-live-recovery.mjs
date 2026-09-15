@@ -21,7 +21,7 @@ assert.match(source,/captureGoodFrame/,"watchdog must preserve a last-good frame
 assert.match(source,/restoreGoodFrame/,"watchdog must be able to restore the last-good frame");
 assert.match(source,/__ccgV141R42SoloBlackGuard/,"render wrapper must carry a stable ownership marker");
 assert.match(source,/__ccgV141PostPlaytestRender/,"r42 must preserve the retained post-playtest render owner marker instead of fighting its monitor");
-assert.match(source,/__ccgV141R28NoHordeBanner/,"r42 must preserve the retained r28 render owner marker instead of fighting its monitor");
+assert.doesNotMatch(source,/__ccgV141R28NoHordeBanner/,"r42 must not retain a retired r28 Horde render-owner dependency");
 assert.match(source,/function onDescendIntent\(event\)/,"real floor descent must be observed at the already-bound Descend button boundary");
 assert.match(source,/document\.addEventListener\("click",onDescendIntent,true\)/,"the Descend observer must run in capture phase before the original button callback");
 assert.match(source,/queueMicrotask\(\(\)=>\{[\s\S]*after>before[\s\S]*scheduleTransitionRecovery\(after\)/,"the Descend observer must verify that the real floor number advanced before recovery");
