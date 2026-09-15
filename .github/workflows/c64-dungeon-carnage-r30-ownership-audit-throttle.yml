@@ -1,0 +1,35 @@
+name: C64 Dungeon Carnage R30 Ownership Audit Throttle
+
+on:
+  pull_request:
+    paths:
+      - 'arcade/lost-sizzler/js/v10-41-r30-global-movement-guard.js'
+      - 'arcade/lost-sizzler/tests/v10-41-r30-ownership-audit-throttle.mjs'
+      - '.github/workflows/c64-dungeon-carnage-r30-ownership-audit-throttle.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate syntax
+        run: |
+          node --check arcade/lost-sizzler/js/v10-41-r30-global-movement-guard.js
+          node --check arcade/lost-sizzler/tests/v10-41-r30-ownership-audit-throttle.mjs
+      - name: Run focused regression
+        run: node arcade/lost-sizzler/tests/v10-41-r30-ownership-audit-throttle.mjs
+      - name: Preserve protected scope
+        run: |
+          git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" | tee /tmp/changed.txt
+          if grep -Eq '^(index\.html|resources/css/intro\.css|js/index-intro\.js|games/games\.json)$' /tmp/changed.txt; then
+            echo 'Protected file changed.' >&2
+            exit 1
+          fi
