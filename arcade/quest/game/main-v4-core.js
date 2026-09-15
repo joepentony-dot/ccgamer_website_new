@@ -96,7 +96,7 @@ function updatePlayer(dt,opts={}){
   let move=0;if(P.stun<=0)move=(input.down('ArrowLeft','KeyA')?-1:0)+(input.down('ArrowRight','KeyD')?1:0);
   const base=now()<P.speed?T.player.runSpeed*1.2:T.player.runSpeed,max=P.duck?T.player.crouchSpeed:base,control=P.ground?1:T.player.airControl;
   P.vx=Q.lerp(P.vx,move*max,Math.min(1,dt*T.player.accel*control));
-  if(!move&&P.stun<=0){P.vx*=Math.exp(-(P.ground?18:7)*dt);if(P.ground&&Math.abs(P.vx)<18)P.vx=0;}
+  if(!move&&P.stun<=0){P.vx*=Math.exp(-(P.ground?32:7)*dt);if(P.ground&&Math.abs(P.vx)<18)P.vx=0;}
   if(move)P.face=move;
   if(!P.duck&&P.stun<=0&&P.jumpBuffer>0&&(P.ground||P.coyote>0)){
     P.vy=-T.player.jumpVelocity;P.ground=false;P.coyote=0;P.jumpBuffer=0;P.jumpAge=0;P.landTimer=0;audio.sfx('jump');sparks(playerAnchorX(),playerGround(),'#b8f5ff',6);
