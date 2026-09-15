@@ -15,20 +15,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect gameplay mutation paths
+      - name: Locate progression mutation owners
         shell: bash
         run: |
           node <<'NODE'
-          const fs=require('fs');
-          const file='arcade/lost-sizzler/js/game-play.js';
-          const lines=fs.readFileSync(file,'utf8').split('\n');
-          const needles=['function applyLoot','function pickup','function triggerPickup','function collect','weaponLoot','credits','treasureGoblin','kind==="treasure"','treasure','gold','e.alive=false','enemy.alive=false','alive=false','hp<=0','rewarded','score+=','score +=','.weapon=','.weapon =','generateWeapon'];
-          console.log(`===== ${file} ${lines.length} lines =====`);
-          for(const needle of needles){
-            for(let i=0;i<lines.length;i++)if(lines[i].includes(needle)){
-              const from=Math.max(0,i-2),to=Math.min(lines.length,i+4);
-              console.log(`\n### ${needle} at line ${i+1}`);
-              for(let j=from;j<to;j++)console.log(`${j+1}: ${lines[j]}`);
+          const fs=require('fs'),path=require('path');
+          const root='arcade/lost-sizzler/js';
+          const files=fs.readdirSync(root).filter(f=>f.endsWith('.js'));
+          const needles=['function applyLoot','function damageEnemy','applyLoot(','damageEnemy(','weaponLoot','treasureGoblin','kind:"credits"','kind:"treasure"','kind==="credits"','kind==="treasure"','kind === "credits"','kind === "treasure"','.weapon=','.weapon =','generateWeapon('];
+          for(const f of files){
+            const file=path.join(root,f),lines=fs.readFileSync(file,'utf8').split('\n');
+            let printed=false;
+            for(const needle of needles){
+              for(let i=0;i<lines.length;i++)if(lines[i].includes(needle)){
+                if(!printed){console.log(`\n===== ${file} ${lines.length} lines =====`);printed=true}
+                console.log(`\n### ${needle} at line ${i+1}`);
+                for(let j=Math.max(0,i-2);j<Math.min(lines.length,i+4);j++)console.log(`${j+1}: ${lines[j]}`);
+              }
             }
           }
           NODE
