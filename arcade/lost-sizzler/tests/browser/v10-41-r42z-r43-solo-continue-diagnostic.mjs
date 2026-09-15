@@ -21,6 +21,19 @@ await new Promise((resolve,reject)=>{server.once("error",reject);server.listen(0
 const origin=`http://127.0.0.1:${server.address().port}`;
 const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage","--disable-background-networking","--autoplay-policy=no-user-gesture-required"]});
 
+async function settleFloorEntry(page){
+  for(let attempt=0;attempt<2;attempt++){
+    await page.evaluate(()=>{
+      const dossier=document.getElementById("named-dossier-panel");
+      if(mode==="dossier"&&dossier&&!dossier.classList.contains("hidden")&&typeof hideNamedDossier==="function")hideNamedDossier();
+      const save=document.getElementById("save-panel");
+      if(mode==="saveprompt"&&save&&!save.classList.contains("hidden")&&typeof closeSavePrompt==="function")closeSavePrompt();
+    });
+    await page.waitForTimeout(150);
+  }
+  await page.waitForFunction(()=>mode==="playing",null,{timeout:10000});
+}
+
 try{
   const context=await browser.newContext({viewport:{width:1600,height:900}}),page=await context.newPage();
   page.setDefaultTimeout(45000);
@@ -54,12 +67,15 @@ try{
 
   await page.click("#continue-save-btn");
   const deadline=Date.now()+20000;
-  let resumed=false;
+  let runRestored=false;
   while(Date.now()<deadline){
-    resumed=await page.evaluate(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&run?.floor===1&&Boolean(world)&&Boolean(host)&&Boolean(p1));
-    if(resumed)break;
+    runRestored=await page.evaluate(()=>document.body.dataset.runActive==="true"&&run?.floor===1&&Boolean(world)&&Boolean(host)&&Boolean(p1)&&playMode==="solo");
+    if(runRestored)break;
     await page.waitForTimeout(100);
   }
+
+  if(runRestored)await settleFloorEntry(page);
+  const resumed=runRestored&&await page.evaluate(()=>mode==="playing"&&document.body.dataset.runActive==="true"&&run?.floor===1&&Boolean(world)&&Boolean(host)&&Boolean(p1)&&playMode==="solo");
 
   const after=await page.evaluate(()=>({
     runActive:document.body.dataset.runActive,
