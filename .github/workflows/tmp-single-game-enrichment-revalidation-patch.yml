@@ -1,0 +1,74 @@
+name: Temporary Single Game Enrichment Revalidation Patch
+
+on:
+  push:
+    branches:
+      - perf/single-game-enrichment-revalidation
+    paths:
+      - ".github/workflows/tmp-single-game-enrichment-revalidation-patch.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: perf/single-game-enrichment-revalidation
+          fetch-depth: 0
+
+      - name: Apply bounded enrichment revalidation patch
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          loader_path = Path('js/load-single-game.js')
+          loader = loader_path.read_text(encoding='utf-8')
+          start = loader.index('async function fetchGameDescriptionEnrichments()')
+          end = loader.index('\nfunction mergeGameDescriptionEnrichment', start)
+          block = loader[start:end]
+          old_fetch = 'const response = await fetch(url, { cache: "no-store" });'
+          new_fetch = 'const response = await fetch(url, { cache: "no-cache" });'
+          if block.count(old_fetch) != 1:
+              raise SystemExit(f'Expected one enrichment no-store fetch, found {block.count(old_fetch)}')
+          block = block.replace(old_fetch, new_fetch, 1)
+          loader_path.write_text(loader[:start] + block + loader[end:], encoding='utf-8')
+
+          sw_path = Path('service-worker.js')
+          sw = sw_path.read_text(encoding='utf-8')
+          old_version = 'const CODE_CACHE_VERSION = "2026-09-15-public-code-v3";'
+          new_version = 'const CODE_CACHE_VERSION = "2026-09-15-public-code-v4";'
+          if sw.count(old_version) != 1:
+              raise SystemExit(f'Expected one CODE_CACHE_VERSION v3 target, found {sw.count(old_version)}')
+          sw_path.write_text(sw.replace(old_version, new_version, 1), encoding='utf-8')
+
+          test_path = Path('tests/single-game-data-overlap.test.mjs')
+          test = test_path.read_text(encoding='utf-8')
+          addition = '''\nfunction fetchDescriptionEnrichmentBlock() {\n  const start = source.indexOf("async function fetchGameDescriptionEnrichments()");\n  const end = source.indexOf("\\nfunction mergeGameDescriptionEnrichment", start);\n  assert.notEqual(start, -1, "fetchGameDescriptionEnrichments must exist");\n  assert.notEqual(end, -1, "description enrichment boundary must remain discoverable");\n  return source.slice(start, end);\n}\n\ntest("description enrichments revalidate instead of forcing a full no-store transfer", () => {\n  const block = fetchDescriptionEnrichmentBlock();\n  assert.match(block, /fetch\\(url, \\{ cache: "no-cache" \\}\\)/, "enrichment fetch must permit validated browser reuse");\n  assert.doesNotMatch(block, /cache: "no-store"/, "enrichment fetch must not force a full fresh transfer on every game navigation");\n});\n'''
+          marker = 'description enrichments revalidate instead of forcing a full no-store transfer'
+          if marker in test:
+              raise SystemExit('Enrichment cache contract already present')
+          test_path.write_text(test.rstrip() + '\n' + addition, encoding='utf-8')
+
+          Path('.github/workflows/tmp-single-game-enrichment-revalidation-patch.yml').unlink()
+          PY
+
+      - name: Validate bounded patch
+        run: |
+          node --check js/load-single-game.js
+          node tests/single-game-data-overlap.test.mjs
+          grep -F 'const CODE_CACHE_VERSION = "2026-09-15-public-code-v4";' service-worker.js
+          test ! -e .github/workflows/tmp-single-game-enrichment-revalidation-patch.yml
+
+      - name: Commit bounded patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add js/load-single-game.js service-worker.js tests/single-game-data-overlap.test.mjs .github/workflows/tmp-single-game-enrichment-revalidation-patch.yml
+          git commit -m "perf: revalidate single-game description enrichments"
+          git push origin HEAD:perf/single-game-enrichment-revalidation
