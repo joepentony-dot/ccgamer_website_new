@@ -6,6 +6,7 @@ on:
       - codex/dungeon-carnage-progression-foundation
     paths:
       - scripts/harden-dungeon-progression-mode-boundaries.mjs
+      - .github/workflows/dungeon-progression-mode-boundary-harden.yml
 
 permissions:
   contents: write
