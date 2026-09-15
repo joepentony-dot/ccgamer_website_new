@@ -8,6 +8,7 @@
   if(!PROG||!RPG)return;
 
   const THRESHOLD=10;
+  const preservedEnduranceAmmo=new WeakMap();
   const definitions=Object.freeze({
     vitality:Object.freeze({id:"vitality",name:"VITALITY",copy:"At VIT 10: +2 maximum health and heal 2 immediately.",apply(player){player.maxHealth=Math.max(1,Number(player.maxHealth)||1)+2;player.health=Math.min(player.maxHealth,Math.max(0,Number(player.health)||0)+2)}}),
     agility:Object.freeze({id:"agility",name:"AGILITY",copy:"At AGI 10: another 5% movement improvement and dashes deal +1 contact damage.",apply(player){player.moveMultiplier=Math.max(.1,Number(player.moveMultiplier)||1)*.95;player.dashDamage=Math.max(0,Number(player.dashDamage)||0)+1}}),
@@ -35,12 +36,30 @@
   function hasEnduranceSpecialisation(player){
     return dungeonEligible(player)&&stat(player,"endurance")>=THRESHOLD&&Number(player?.v142R23BuildMilestones?.endurance||0)>=THRESHOLD;
   }
+  function applyAmmoSnapshot(result,snapshot){
+    if(!result||!snapshot)return result;
+    const max=Number(snapshot.maxMana),mana=Number(snapshot.mana);
+    if(Number.isFinite(max)&&max>0)result.maxMana=max;
+    if(Number.isFinite(mana))result.mana=Math.max(0,Math.min(Number(result.maxMana)||max||1,mana));
+    return result;
+  }
   function restoreEnduranceAmmo(old,result){
     if(!old||!result||!hasEnduranceSpecialisation(old))return result;
-    const oldMax=Number(old.maxMana),oldMana=Number(old.mana);
-    if(Number.isFinite(oldMax)&&oldMax>0)result.maxMana=oldMax;
-    if(Number.isFinite(oldMana))result.mana=Math.max(0,Math.min(Number(result.maxMana)||oldMax||1,oldMana));
+    return applyAmmoSnapshot(result,{maxMana:old.maxMana,mana:old.mana});
+  }
+  function rememberPreservedEnduranceAmmo(old,result){
+    if(!old||!result||!hasEnduranceSpecialisation(result))return result;
+    preservedEnduranceAmmo.set(old,{maxMana:Number(result.maxMana),mana:Number(result.mana)});
     return result;
+  }
+  function restoreFloorTransitionAmmo(old,result){
+    if(!old||!result)return result;
+    const snapshot=preservedEnduranceAmmo.get(old);
+    if(snapshot&&hasEnduranceSpecialisation(result)){
+      preservedEnduranceAmmo.delete(old);
+      return applyAmmoSnapshot(result,snapshot);
+    }
+    return restoreEnduranceAmmo(old,result);
   }
   function reconcile(player){
     if(!dungeonEligible(player))return[];
@@ -95,6 +114,7 @@
       if(old?.v142R23BuildMilestones&&typeof old.v142R23BuildMilestones==="object")result.v142R23BuildMilestones={...old.v142R23BuildMilestones};
       restoreEnduranceAmmo(old,result);
       reconcile(result);
+      rememberPreservedEnduranceAmmo(old,result);
       return result;
     };
   }
@@ -107,8 +127,8 @@
       const oldP2=preserve&&typeof p2!=="undefined"&&p2?p2:null;
       const result=baseStartWorld.apply(this,args);
       if(preserve){
-        try{if(oldP1&&typeof p1!=="undefined"&&p1)restoreEnduranceAmmo(oldP1,p1)}catch(_){}
-        try{if(oldP2&&typeof p2!=="undefined"&&p2)restoreEnduranceAmmo(oldP2,p2)}catch(_){}
+        try{if(oldP1&&typeof p1!=="undefined"&&p1)restoreFloorTransitionAmmo(oldP1,p1)}catch(_){}
+        try{if(oldP2&&typeof p2!=="undefined"&&p2)restoreFloorTransitionAmmo(oldP2,p2)}catch(_){}
       }
       return result;
     };
