@@ -701,6 +701,10 @@ function resolveGamesDataFallbackUrls() {
 async function fetchGamesLibrary() {
     const urls = resolveGamesDataFallbackUrls();
     let lastError = null;
+    // Editorial enrichments are required before the existing render gate opens,
+    // but they do not depend on games.json. Start both network paths together so
+    // the 700KB+ enrichment payload does not begin only after games.json parses.
+    const enrichmentsPromise = fetchGameDescriptionEnrichments();
 
     for (const url of urls) {
         try {
@@ -711,7 +715,7 @@ async function fetchGamesLibrary() {
             }
 
             const payload = await response.json();
-            const enrichments = await fetchGameDescriptionEnrichments();
+            const enrichments = await enrichmentsPromise;
             return {
                 games: Array.isArray(payload)
                     ? payload.map(game => normalizeGame(mergeGameDescriptionEnrichment(game, enrichments)))

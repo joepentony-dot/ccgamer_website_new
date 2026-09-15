@@ -1,0 +1,33 @@
+name: Single Game Data Overlap Contract
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "js/load-single-game.js"
+      - "tests/single-game-data-overlap.test.mjs"
+      - ".github/workflows/single-game-data-overlap-contract.yml"
+  pull_request:
+    paths:
+      - "js/load-single-game.js"
+      - "tests/single-game-data-overlap.test.mjs"
+      - ".github/workflows/single-game-data-overlap-contract.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  single-game-data-overlap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate single-game loader syntax
+        run: node --check js/load-single-game.js
+
+      - name: Enforce parallel single-game data start
+        run: node tests/single-game-data-overlap.test.mjs
