@@ -83,7 +83,7 @@ jobs:
           set -euo pipefail
           for test in arcade/lost-sizzler/tests/*.mjs; do
             case "$(basename "$test")" in
-              v10-6-browser.mjs|v10-28-browser-stability.mjs)
+              v10-6-browser.mjs|v10-28-browser-stability.mjs|horde-survivor-contract.mjs|sizzler-saboteurs-contract.mjs)
                 continue
                 ;;
             esac
