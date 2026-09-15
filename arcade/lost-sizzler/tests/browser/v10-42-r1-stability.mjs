@@ -48,17 +48,20 @@ try{
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(p1)&&Boolean(host),null,{timeout:20000});
 
   const shop=await page.evaluate(()=>{
-    score=100000;
-    const fake={id:"v142-r1-shop-contract",active:true,title:"TEST SHOP",shopType:"normal",sold:{},scorePurchases:0};
+    score=100000;run.gold=1000;
+    const startingScore=score,startingGold=run.gold;
+    const fake={id:"v142-r1-shop-contract",active:true,title:"TEST SHOP",shopType:"normal",sold:{},goldPurchases:0};
     openShop(fake,p1);
     const prices=[shopScorePrice(fake)];
     for(let i=0;i<5;i++){buyShopItem("ammo");prices.push(shopScorePrice(fake))}
     closeShop();
-    return{prices,count:fake.scorePurchases,shadow:fake.__v142ScorePurchases};
+    return{prices,count:fake.goldPurchases,legacy:fake.scorePurchases,goldSpent:startingGold-run.gold,scoreDelta:startingScore-score};
   });
-  assert.deepEqual(shop.prices,[1000,2000,4000,8000,16000,32000],"Repeated score purchases in one shop must progress 1,000 → 2,000 → 4,000 → 8,000 → 16,000 → 32,000.");
-  assert.equal(shop.count,5,"Five successful score purchases must advance the shop counter five times.");
-  assert.equal(shop.shadow,5,"V10.42 stability counter must stay synchronized with the shop counter.");
+  assert.deepEqual(shop.prices,[2,3,4,5,6,7],"Repeated Gold purchases in one shop must progress 2 → 3 → 4 → 5 → 6 → 7 Gold.");
+  assert.equal(shop.count,5,"Five successful Gold purchases must advance the shop counter five times.");
+  assert.equal(shop.legacy,undefined,"Dungeon shop purchases must migrate away from the legacy score-purchase counter.");
+  assert.equal(shop.goldSpent,20,"Five standard purchases at 2, 3, 4, 5 and 6 Gold must spend 20 Gold total.");
+  assert.equal(shop.scoreDelta,0,"Dungeon shop purchases must not spend score.");
 
   const combatRepair=await page.evaluate(()=>{
     p1.firearmUnlocked=true;p1.weapon=baseWeapon();p1.mana=100;fire1=Number.NaN;projectileCD=Number.NaN;fireBuffer1=Number.NaN;
@@ -191,7 +194,7 @@ try{
   assert.deepEqual(errors,[],`V10.42 r1 stability regression must not raise page errors: ${errors.join("\n")}`);
   assert.deepEqual(failedScripts,[],`V10.42 ordered bootstrap must not lose same-origin scripts: ${failedScripts.join("\n")}`);
 
-  console.log("Lost Sizzler V10.42 r1 ordered bootstrap, sustained combat, shop, dossier, chest and collectible stability browser regression passed.");
+  console.log("Lost Sizzler V10.42 r1 ordered bootstrap, sustained combat, Gold shop, dossier, chest and collectible stability browser regression passed.");
   await context.close();
 }finally{
   await browser.close();
