@@ -1,0 +1,123 @@
+name: Temporary Single Game Data Overlap Patch
+
+on:
+  push:
+    branches:
+      - perf/single-game-data-overlap
+    paths:
+      - ".github/workflows/tmp-single-game-data-overlap-patch.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: perf/single-game-data-overlap
+          fetch-depth: 0
+
+      - name: Apply bounded single-game request overlap patch
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          loader_path = Path('js/load-single-game.js')
+          loader = loader_path.read_text(encoding='utf-8')
+          old = '''async function fetchGamesLibrary() {
+              const urls = resolveGamesDataFallbackUrls();
+              let lastError = null;
+
+              for (const url of urls) {
+                  try {
+                      const response = await fetch(url, { cache: "no-store" });
+                      if (!response.ok) {
+                          lastError = new Error(`games.json ${response.status} via ${url}`);
+                          continue;
+                      }
+
+                      const payload = await response.json();
+                      const enrichments = await fetchGameDescriptionEnrichments();
+                      return {
+                          games: Array.isArray(payload)
+                              ? payload.map(game => normalizeGame(mergeGameDescriptionEnrichment(game, enrichments)))
+                              : [],
+                          source: url
+                      };
+                  } catch (error) {
+                      lastError = error;
+                  }
+              }
+
+              throw lastError || new Error("Unable to load games.json from known paths.");
+          }
+          '''
+          new = '''async function fetchGamesLibrary() {
+              const urls = resolveGamesDataFallbackUrls();
+              let lastError = null;
+              // Editorial enrichments are required before the existing render gate opens,
+              // but they do not depend on games.json. Start both network paths together so
+              // the 700KB+ enrichment payload does not begin only after games.json parses.
+              const enrichmentsPromise = fetchGameDescriptionEnrichments();
+
+              for (const url of urls) {
+                  try {
+                      const response = await fetch(url, { cache: "no-store" });
+                      if (!response.ok) {
+                          lastError = new Error(`games.json ${response.status} via ${url}`);
+                          continue;
+                      }
+
+                      const payload = await response.json();
+                      const enrichments = await enrichmentsPromise;
+                      return {
+                          games: Array.isArray(payload)
+                              ? payload.map(game => normalizeGame(mergeGameDescriptionEnrichment(game, enrichments)))
+                              : [],
+                          source: url
+                      };
+                  } catch (error) {
+                      lastError = error;
+                  }
+              }
+
+              throw lastError || new Error("Unable to load games.json from known paths.");
+          }
+          '''
+          if loader.count(old) != 1:
+              raise SystemExit(f'Expected one fetchGamesLibrary target, found {loader.count(old)}')
+          loader_path.write_text(loader.replace(old, new, 1), encoding='utf-8')
+
+          sw_path = Path('service-worker.js')
+          sw = sw_path.read_text(encoding='utf-8')
+          old_version = 'const CODE_CACHE_VERSION = "2026-09-15-public-code-v2";'
+          new_version = 'const CODE_CACHE_VERSION = "2026-09-15-public-code-v3";'
+          if sw.count(old_version) != 1:
+              raise SystemExit(f'Expected one CODE_CACHE_VERSION v2 target, found {sw.count(old_version)}')
+          sw_path.write_text(sw.replace(old_version, new_version, 1), encoding='utf-8')
+
+          test_path = Path('tests/single-game-data-overlap.test.mjs')
+          test_path.write_text('''import assert from "node:assert/strict";\nimport fs from "node:fs";\nimport test from "node:test";\n\nconst source = fs.readFileSync("js/load-single-game.js", "utf8");\n\nfunction fetchGamesLibraryBlock() {\n  const start = source.indexOf("async function fetchGamesLibrary()");\n  const end = source.indexOf("\\nfunction resolveGameDescriptionEnrichmentUrls", start);\n  assert.notEqual(start, -1, "fetchGamesLibrary must exist");\n  assert.notEqual(end, -1, "fetchGamesLibrary boundary must remain discoverable");\n  return source.slice(start, end);\n}\n\ntest("single-game library starts description enrichments before the games.json request loop", () => {\n  const block = fetchGamesLibraryBlock();\n  const enrichmentStart = block.indexOf("const enrichmentsPromise = fetchGameDescriptionEnrichments();");\n  const requestLoop = block.indexOf("for (const url of urls)");\n  assert.ok(enrichmentStart >= 0, "enrichment promise must be started once");\n  assert.ok(requestLoop >= 0, "games.json fallback request loop must remain present");\n  assert.ok(enrichmentStart < requestLoop, "enrichment request must start before games.json fallback fetching begins");\n});\n\ntest("single-game library still waits for enrichment before merging and returning games", () => {\n  const block = fetchGamesLibraryBlock();\n  const payloadParse = block.indexOf("const payload = await response.json();");\n  const enrichmentJoin = block.indexOf("const enrichments = await enrichmentsPromise;");\n  const merge = block.indexOf("mergeGameDescriptionEnrichment(game, enrichments)");\n  assert.ok(payloadParse >= 0 && enrichmentJoin > payloadParse, "enrichment join must remain after a successful games.json parse");\n  assert.ok(merge > enrichmentJoin, "enriched descriptions must still be merged before return");\n  assert.doesNotMatch(block, /const enrichments = await fetchGameDescriptionEnrichments\\(\\);/, "do not restore sequential enrichment fetching");\n});\n''', encoding='utf-8')
+
+          Path('.github/workflows/tmp-single-game-data-overlap-patch.yml').unlink()
+          PY
+
+      - name: Validate bounded patch
+        run: |
+          node --check js/load-single-game.js
+          node tests/single-game-data-overlap.test.mjs
+          grep -F 'const CODE_CACHE_VERSION = "2026-09-15-public-code-v3";' service-worker.js
+          test ! -e .github/workflows/tmp-single-game-data-overlap-patch.yml
+
+      - name: Commit bounded patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add js/load-single-game.js service-worker.js tests/single-game-data-overlap.test.mjs .github/workflows/tmp-single-game-data-overlap-patch.yml
+          git commit -m "perf: overlap single-game data requests"
+          git push origin HEAD:perf/single-game-data-overlap
