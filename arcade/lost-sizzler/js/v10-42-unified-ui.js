@@ -237,10 +237,10 @@
         "split-btn":"2P SPLIT SCREEN"
       };
       for(const [id,text] of Object.entries(labels)){const button=document.getElementById(id);if(button)button.textContent=text}
-      moveRetiredMenuCopy(panel);
-      wrapWeeklyBoard(panel);
-      quickControls(panel);
     }
+    moveRetiredMenuCopy(panel);
+    wrapWeeklyBoard(panel);
+    quickControls(panel);
     return true;
   }
 
@@ -250,9 +250,9 @@
     log.open=false;
     log.querySelectorAll(".developer-log-day,.developer-log-monitoring,.developer-changelog-foot").forEach(node=>node.remove());
     const latest=log.querySelector(".developer-changelog-latest");
-    if(latest)latest.textContent="LOG CLEARED · 15 SEP 2026";
+    if(latest&&latest.textContent!=="LOG CLEARED · 15 SEP 2026")latest.textContent="LOG CLEARED · 15 SEP 2026";
     const intro=log.querySelector(".developer-changelog-intro");
-    if(intro){
+    if(intro&&intro.dataset.ccgCleared!=="true"){
       intro.innerHTML="<span><strong>LIVE DEVELOPMENT LOG.</strong> No public development entries are currently listed.</span>";
       intro.dataset.ccgCleared="true";
     }
