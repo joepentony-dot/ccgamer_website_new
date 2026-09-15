@@ -13,29 +13,23 @@ on:
       - "docs/seo-baseline/phase-7e-misc-genre-image-optimisation-evidence.json"
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: phase-7e-misc-genre-image-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
-  optimise-misc-genre-image:
-    if: github.event.pull_request.head.repo.full_name == github.repository
+  validate-misc-genre-image:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
 
     steps:
-      - name: Check out Phase 7E correction branch
+      - name: Check out repository
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.head_ref }}
-          fetch-depth: 0
+          fetch-depth: 1
           show-progress: false
-
-      - name: Fetch main baseline
-        run: git fetch --no-tags origin main:refs/remotes/origin/main
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -54,56 +48,10 @@ jobs:
           print("Phase 7E Misc genre image optimiser compiles.")
           PY
 
-      - name: Record protected hashes
-        run: |
-          sha256sum \
-            index.html \
-            home.html \
-            resources/css/intro.css \
-            js/index-intro.js \
-            games/games.json \
-            resources/css/ccg-cards.css \
-            resources/css/genre.css \
-            > "$RUNNER_TEMP/phase7e-protected.sha256"
-
-      - name: Record all other raster image hashes
+      - name: Validate optimised image, evidence and HTML contract
         run: |
           python - <<'PY'
           import hashlib
-          import json
-          import os
-          from pathlib import Path
-
-          root = Path.cwd()
-          runner_temp = Path(os.environ["RUNNER_TEMP"])
-          target = "resources/images/genres/miscellaneous.png"
-          extensions = {".png", ".jpg", ".jpeg", ".webp"}
-          manifest = {}
-          for path in sorted(root.rglob("*")):
-              if not path.is_file() or path.suffix.lower() not in extensions:
-                  continue
-              relative = path.relative_to(root).as_posix()
-              if relative == target or relative.startswith(".git/"):
-                  continue
-              digest = hashlib.sha256(path.read_bytes()).hexdigest()
-              manifest[relative] = digest
-          (runner_temp / "phase7e-other-images-before.json").write_text(
-              json.dumps(manifest, sort_keys=True, indent=2) + "\n",
-              encoding="utf-8",
-          )
-          print(f"Recorded {len(manifest)} non-target raster image hashes.")
-          PY
-
-      - name: Optimise Miscellaneous genre image
-        run: |
-          python scripts/apply-phase7e-misc-genre-image-optimisation.py apply \
-            --report docs/seo-baseline/phase-7e-misc-genre-image-optimisation.md \
-            --evidence docs/seo-baseline/phase-7e-misc-genre-image-optimisation-evidence.json \
-            --artifact-dir "$RUNNER_TEMP/phase7e-misc-genre-image-artifacts"
-
-      - name: Validate corrected image, HTML and evidence
-        run: |
-          python - <<'PY'
           import json
           from pathlib import Path
           from PIL import Image
@@ -111,138 +59,72 @@ jobs:
           image_path = Path("resources/images/genres/miscellaneous.png")
           html_path = Path("games/genres/index.html")
           evidence_path = Path("docs/seo-baseline/phase-7e-misc-genre-image-optimisation-evidence.json")
+
           evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
-          with Image.open(image_path) as image:
-              image.load()
-              if image.size != (460, 213):
-                  raise SystemExit(f"Unexpected corrected dimensions: {image.size}")
-              if image.format != "PNG":
-                  raise SystemExit(f"Unexpected corrected format: {image.format}")
-              if image.mode in {"RGBA", "LA"} and image.getchannel("A").getextrema()[0] < 255:
-                  raise SystemExit("Corrected image unexpectedly contains transparency")
-              if image.mode == "P" and "transparency" in image.info:
-                  raise SystemExit("Corrected image unexpectedly contains palette transparency")
-
-          html = html_path.read_text(encoding="utf-8")
-          corrected_tag = '<img src="../../resources/images/genres/miscellaneous.png" alt="Miscellaneous" width="460" height="213">'
-          if html.count(corrected_tag) != 1:
-              raise SystemExit("Corrected intrinsic dimensions are missing from genre index")
-          if 'miscellaneous.png" alt="Miscellaneous" width="1024" height="474"' in html:
-              raise SystemExit("Old Miscellaneous intrinsic dimensions remain in genre index")
-
           if evidence.get("phase") != "7E":
               raise SystemExit("Invalid Phase 7E evidence identity")
           if evidence.get("correction") != "miscellaneous-genre-image-optimisation":
               raise SystemExit("Invalid Phase 7E correction identity")
-          if float(evidence["reduction"]["percent"]) < 55:
-              raise SystemExit("Miscellaneous genre image reduction did not reach 55%")
-          if int(evidence["after"]["bytes"]) > 300000:
-              raise SystemExit("Corrected Miscellaneous genre image remains too large")
-          if float(evidence["aspect_ratio_delta_percent"]) > 0.05:
-              raise SystemExit("Corrected Miscellaneous genre image aspect ratio drift is too large")
-          print(json.dumps(evidence, indent=2))
-          PY
-          git diff --check
+          if evidence.get("target") != image_path.as_posix():
+              raise SystemExit("Invalid Phase 7E evidence target")
+          if evidence.get("html_reference") != html_path.as_posix():
+              raise SystemExit("Invalid Phase 7E HTML reference")
 
-      - name: Confirm all other raster images are unchanged
-        run: |
-          python - <<'PY'
-          import hashlib
-          import json
-          import os
-          from pathlib import Path
+          digest = hashlib.sha256(image_path.read_bytes()).hexdigest()
+          actual_bytes = image_path.stat().st_size
+          recorded_after = evidence.get("after", {})
+          if digest != recorded_after.get("sha256"):
+              raise SystemExit("Miscellaneous image hash no longer matches Phase 7E evidence")
+          if actual_bytes != int(recorded_after.get("bytes", -1)):
+              raise SystemExit("Miscellaneous image byte size no longer matches Phase 7E evidence")
+          if actual_bytes > 300000:
+              raise SystemExit("Optimised Miscellaneous image exceeds the 300 KB ceiling")
 
-          root = Path.cwd()
-          runner_temp = Path(os.environ["RUNNER_TEMP"])
-          target = "resources/images/genres/miscellaneous.png"
-          extensions = {".png", ".jpg", ".jpeg", ".webp"}
-          manifest = {}
-          for path in sorted(root.rglob("*")):
-              if not path.is_file() or path.suffix.lower() not in extensions:
-                  continue
-              relative = path.relative_to(root).as_posix()
-              if relative == target or relative.startswith(".git/"):
-                  continue
-              digest = hashlib.sha256(path.read_bytes()).hexdigest()
-              manifest[relative] = digest
-          after_path = runner_temp / "phase7e-other-images-after.json"
-          after_path.write_text(
-              json.dumps(manifest, sort_keys=True, indent=2) + "\n",
-              encoding="utf-8",
-          )
-          before = (runner_temp / "phase7e-other-images-before.json").read_text(encoding="utf-8")
-          after = after_path.read_text(encoding="utf-8")
-          if before != after:
-              raise SystemExit("A non-target raster image changed during Phase 7E correction")
-          print(f"Validated {len(manifest)} unchanged non-target raster images.")
-          PY
+          with Image.open(image_path) as image:
+              image.load()
+              if image.size != (460, 213):
+                  raise SystemExit(f"Unexpected optimised dimensions: {image.size}")
+              if image.format != "PNG":
+                  raise SystemExit(f"Unexpected optimised format: {image.format}")
+              if image.mode in {"RGBA", "LA"} and image.getchannel("A").getextrema()[0] < 255:
+                  raise SystemExit("Optimised image unexpectedly contains transparency")
+              if image.mode == "P" and "transparency" in image.info:
+                  raise SystemExit("Optimised image unexpectedly contains palette transparency")
 
-      - name: Confirm protected files are unchanged
-        run: sha256sum --check "$RUNNER_TEMP/phase7e-protected.sha256"
+          if float(evidence.get("reduction", {}).get("percent", 0)) < 55:
+              raise SystemExit("Recorded Phase 7E reduction fell below 55%")
+          if float(evidence.get("aspect_ratio_delta_percent", 1)) > 0.05:
+              raise SystemExit("Recorded Phase 7E aspect-ratio drift exceeds 0.05%")
 
-      - name: Confirm exact correction scope
-        run: |
-          python - <<'PY'
-          import subprocess
+          html = html_path.read_text(encoding="utf-8")
+          tag_prefix = '<img src="../../resources/images/genres/miscellaneous.png" alt="Miscellaneous" width="460" height="213"'
+          if html.count(tag_prefix) != 1:
+              raise SystemExit("Corrected Miscellaneous intrinsic dimensions are missing or duplicated")
+          if 'miscellaneous.png" alt="Miscellaneous" width="1024" height="474"' in html:
+              raise SystemExit("Old Miscellaneous intrinsic dimensions remain in genre index")
 
-          allowed = {
-              ".github/workflows/phase-7e-misc-genre-image-optimisation.yml",
-              "scripts/apply-phase7e-misc-genre-image-optimisation.py",
-              "resources/images/genres/miscellaneous.png",
-              "games/genres/index.html",
-              "docs/seo-baseline/phase-7e-misc-genre-image-optimisation.md",
-              "docs/seo-baseline/phase-7e-misc-genre-image-optimisation-evidence.json",
-          }
-          tracked = subprocess.check_output(
-              ["git", "diff", "--name-only", "origin/main"], text=True
-          ).splitlines()
-          untracked = subprocess.check_output(
-              ["git", "ls-files", "--others", "--exclude-standard"], text=True
-          ).splitlines()
-          changed = sorted({*tracked, *untracked})
-          unexpected = [path for path in changed if path not in allowed]
-          if unexpected:
-              raise SystemExit(f"Unexpected Phase 7E correction paths: {unexpected}")
-          required = {
-              ".github/workflows/phase-7e-misc-genre-image-optimisation.yml",
-              "scripts/apply-phase7e-misc-genre-image-optimisation.py",
-              "resources/images/genres/miscellaneous.png",
-              "games/genres/index.html",
-              "docs/seo-baseline/phase-7e-misc-genre-image-optimisation.md",
-              "docs/seo-baseline/phase-7e-misc-genre-image-optimisation-evidence.json",
-          }
-          missing = sorted(required.difference(changed))
-          if missing:
-              raise SystemExit(f"Expected Phase 7E correction paths are missing: {missing}")
-          print(f"Validated exact Phase 7E correction scope ({len(changed)} files).")
+          print(json.dumps({
+              "sha256": digest,
+              "bytes": actual_bytes,
+              "dimensions": [460, 213],
+              "reduction_percent": evidence["reduction"]["percent"],
+          }, indent=2))
           PY
 
-      - name: Upload visual comparison and evidence
-        uses: actions/upload-artifact@v4
-        with:
-          name: phase-7e-misc-genre-image-optimisation
-          path: |
-            ${{ runner.temp }}/phase7e-misc-genre-image-artifacts/
-            docs/seo-baseline/phase-7e-misc-genre-image-optimisation.md
-            docs/seo-baseline/phase-7e-misc-genre-image-optimisation-evidence.json
-          if-no-files-found: error
-          retention-days: 30
-
-      - name: Commit bounded correction to PR branch
+      - name: Confirm validation is read-only
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
-            resources/images/genres/miscellaneous.png \
-            games/genres/index.html \
-            docs/seo-baseline/phase-7e-misc-genre-image-optimisation.md \
-            docs/seo-baseline/phase-7e-misc-genre-image-optimisation-evidence.json
-          if git diff --cached --quiet; then
-            echo "No generated correction changes to commit."
-            exit 0
-          fi
-          git commit -m "Optimise Phase 7E Misc genre image"
-          git push origin "HEAD:${{ github.head_ref }}"
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
 
-      - name: Publish correction summary
-        run: cat docs/seo-baseline/phase-7e-misc-genre-image-optimisation.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish guard summary
+        run: |
+          {
+            echo "## Phase 7E Misc Genre Image Guard"
+            echo
+            echo "- optimised PNG hash and byte size match recorded evidence"
+            echo "- dimensions remain 460×213 and opaque"
+            echo "- recorded reduction remains above 55%"
+            echo "- genre index retains the corrected intrinsic dimensions"
+            echo "- additional non-dimensional image attributes are permitted"
+            echo "- validation makes no repository changes"
+          } >> "$GITHUB_STEP_SUMMARY"

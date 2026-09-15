@@ -1,0 +1,96 @@
+name: Genre Index Native Lazy Loading
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "games/genres/index.html"
+      - "scripts/apply-genre-index-native-lazy-images.py"
+      - ".github/workflows/genre-index-native-lazy-loading.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: genre-index-native-lazy-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  validate-genre-index-loading:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out correction branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.head_ref }}
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate optimiser source
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("scripts/apply-genre-index-native-lazy-images.py")
+          compile(path.read_text(encoding="utf-8"), str(path), "exec")
+          print("Genre index native lazy-loading optimiser compiles.")
+          PY
+
+      - name: Apply bounded loading policy
+        run: python scripts/apply-genre-index-native-lazy-images.py apply
+
+      - name: Validate exact loading policy
+        run: |
+          python scripts/apply-genre-index-native-lazy-images.py validate
+          git diff --check
+
+      - name: Confirm runtime correction scope
+        run: |
+          python - <<'PY'
+          import subprocess
+
+          allowed = {"games/genres/index.html"}
+          changed = set(subprocess.check_output(
+              ["git", "diff", "--name-only"], text=True
+          ).splitlines())
+          changed.update(subprocess.check_output(
+              ["git", "ls-files", "--others", "--exclude-standard"], text=True
+          ).splitlines())
+          unexpected = sorted(changed - allowed)
+          if unexpected:
+              raise SystemExit(f"Unexpected genre loading runtime changes: {unexpected}")
+          print(f"Validated genre loading runtime scope ({len(changed)} workspace file(s) changed).")
+          PY
+
+      - name: Commit bounded HTML correction to PR branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add games/genres/index.html
+          if git diff --cached --quiet; then
+            echo "No generated correction changes to commit."
+            exit 0
+          fi
+          git commit -m "Optimise genre index image loading"
+          git push origin "HEAD:${{ github.head_ref }}"
+
+      - name: Publish summary
+        run: |
+          {
+            echo "## Genre Index Native Lazy Loading"
+            echo
+            echo "- first 6 genre-card images remain eager"
+            echo "- remaining 9 genre-card images use native loading=lazy"
+            echo "- all 15 intrinsic image dimensions and source paths are contract-checked"
+            echo "- runtime mutation scope is limited to games/genres/index.html"
+            echo "- no CSS, artwork, card order, routes or runtime JavaScript are changed"
+          } >> "$GITHUB_STEP_SUMMARY"
