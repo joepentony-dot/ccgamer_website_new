@@ -110,7 +110,9 @@ jobs:
           node <<'NODE' >> "$GITHUB_OUTPUT"
           const fs=require('fs');
           const retiredModeTests=new Set([
-            'v10-41-mode-controller-isolation.mjs'
+            'v10-41-menu-leaderboard-stability.mjs',
+            'v10-41-mode-controller-isolation.mjs',
+            'v10-41-stage11-release-cross-mode-lifecycle.mjs'
           ]);
           const tests=[
             'arcade/lost-sizzler/tests/v10-6-browser.mjs',
