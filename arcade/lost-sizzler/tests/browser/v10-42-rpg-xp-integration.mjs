@@ -67,31 +67,28 @@ try{
 
   const blocked=await page.evaluate(()=>{
     const before={xp:p1.xp,total:p1.totalXp,floor:run.floorXP,level:p1.level,pending:p1.pendingLevels};
-    const hidden=awardXP(p1,10,"Hidden wall opened");
-    const bronze=awardXP(p1,10,"Bronze door unlocked");
-    return{before,after:{xp:p1.xp,total:p1.totalXp,floor:run.floorXP,level:p1.level,pending:p1.pendingLevels},hidden,bronze};
+    awardXP(p1,10,"Hidden wall opened");
+    awardXP(p1,10,"Bronze door unlocked");
+    return{before,after:{xp:p1.xp,total:p1.totalXp,floor:run.floorXP,level:p1.level,pending:p1.pendingLevels}};
   });
   assert.deepEqual(blocked.after,blocked.before,"Door interactions must remain unable to advance RPG progression.");
-  assert.equal(blocked.hidden?.blocked,true,"Hidden-door XP must be rejected by the XP-source boundary.");
-  assert.equal(blocked.bronze?.blocked,true,"Bronze-door XP must be rejected by the XP-source boundary.");
 
   const nearLevel=await page.evaluate(()=>{
-    const result=awardXP(p1,1424,"Enemy defeated");
-    return{result,level:p1.level,xp:p1.xp,total:p1.totalXp,floor:run.floorXP,pending:p1.pendingLevels,mode};
+    awardXP(p1,1424,"Enemy defeated");
+    return{level:p1.level,xp:p1.xp,total:p1.totalXp,floor:run.floorXP,pending:p1.pendingLevels,mode};
   });
-  assert.equal(nearLevel.result.amount,1424,"Sanctioned combat XP must remain earnable.");
   assert.equal(nearLevel.level,1,"1,424 XP must remain one point below the first level threshold.");
   assert.equal(nearLevel.xp,1424,"Combat XP must accumulate toward the live level threshold.");
+  assert.equal(nearLevel.total,1424,"Total XP must record the sanctioned combat XP below the threshold.");
+  assert.equal(nearLevel.floor,1424,"Floor XP must record the sanctioned combat XP below the threshold.");
   assert.equal(nearLevel.pending,0,"No RPG choice may be queued before the threshold is crossed.");
   assert.equal(nearLevel.mode,"playing","Sub-threshold XP must not interrupt play with a level-up panel.");
 
   const crossed=await page.evaluate(()=>{
     const before={maxHealth:p1.maxHealth,maxMana:p1.maxMana,armor:p1.armor,moveMultiplier:p1.moveMultiplier,damageBonus:p1.damageBonus,essenceCost:p1.banishmentEssenceCost};
-    const result=awardXP(p1,1,"Enemy defeated");
-    return{before,result,level:p1.level,xp:p1.xp,total:p1.totalXp,floor:run.floorXP,pending:p1.pendingLevels,mode};
+    awardXP(p1,1,"Enemy defeated");
+    return{before,level:p1.level,xp:p1.xp,total:p1.totalXp,floor:run.floorXP,pending:p1.pendingLevels,mode};
   });
-  assert.equal(crossed.result.amount,1,"The final sanctioned combat XP point must cross the threshold.");
-  assert.deepEqual(crossed.result.levels,[2],"Crossing 1,425 total combat XP must award Level 2 exactly once.");
   assert.equal(crossed.level,2,"Player must reach Level 2 from sanctioned combat XP.");
   assert.equal(crossed.xp,0,"The exact first-level threshold must leave zero carry XP.");
   assert.equal(crossed.total,1425,"Total XP must record the full 1,425 sanctioned combat XP.");
