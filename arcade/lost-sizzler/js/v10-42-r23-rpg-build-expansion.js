@@ -54,7 +54,7 @@
   }
 
   const baseChoices=PROG.skillChoices.bind(PROG);
-  PROG.skillChoices=function(player,...args){
+  const composedSkillChoices=function dungeonRpgBuildSpecialisationChoices(player,...args){
     const choices=baseChoices(player,...args);
     if(!dungeonEligible(player)||!Array.isArray(choices))return choices;
     return choices.map(choice=>{
@@ -63,6 +63,10 @@
       return{...choice,desc:`${String(choice.desc||"").trim()}${milestoneText(player,id)}`.trim()};
     });
   };
+  composedSkillChoices.__ccgV142R23RpgBuildFocus=Boolean(PROG.skillChoices?.__ccgV142R23RpgBuildFocus);
+  composedSkillChoices.__ccgV142R23RpgBuildExpansion=true;
+  composedSkillChoices.__ccgOriginal=PROG.skillChoices;
+  PROG.skillChoices=composedSkillChoices;
 
   const baseApply=PROG.applySkill.bind(PROG);
   PROG.applySkill=function(player,id,...args){
