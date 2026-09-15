@@ -81,7 +81,7 @@ try{
   const demoContext=await browser.newContext({viewport:{width:1280,height:800}});
   await demoContext.addInitScript(()=>{window.CCG_LOST_SIZZLER_DEMO_MODE=true});
   const demo=await open(demoContext,"demo");
-  await demo.page.waitForFunction(()=>window.CCGLostSizzlerV142DemoPaywall.diagnostics().guardedCount===8);
+  await demo.page.waitForFunction(()=>document.body.dataset.v142DemoLocked==="true"&&window.CCGLostSizzlerV142DemoPaywall.diagnostics().guardedCount===4);
   await emitTutorialComplete(demo.page);
   await demo.page.waitForFunction(()=>!document.getElementById("v142-demo-paywall")?.classList.contains("hidden"));
   const demoAudit=await demo.page.evaluate(()=>({
@@ -94,7 +94,7 @@ try{
   assert.equal(demoAudit.demoMode,true,"Explicit demo wrapper must retain the Tutorial completion purchase boundary.");
   assert.equal(demoAudit.shown,true,"Demo Tutorial completion must present the permanent-unlock offer.");
   assert.match(demoAudit.kicker,/TUTORIAL COMPLETE/i,"Demo Tutorial completion offer must identify the completed free introduction.");
-  assert.equal(demoAudit.guarded,8,"Tutorial completion offer must leave all paid game-entry paths guarded until entitlement is verified.");
+  assert.equal(demoAudit.guarded,4,"Tutorial completion offer must guard every supported paid local-game entry until entitlement is verified.");
   assert.notEqual(demoAudit.runActive,"true","Tutorial completion purchase presentation must not start paid gameplay underneath the overlay.");
   assert.deepEqual(demo.pageErrors,[],`Demo Tutorial completion boundary must not raise page errors: ${demo.pageErrors.join("\n")}`);
   await demoContext.close();

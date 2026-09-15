@@ -112,14 +112,10 @@ jobs:
           const retiredModeTests=new Set([
             'v10-41-menu-leaderboard-stability.mjs',
             'v10-41-mode-controller-isolation.mjs',
-            'v10-41-r50-multiplayer-recovery-ux.mjs',
-            'v10-41-r55-final-playtest-cleanup.mjs',
-            'v10-41-r56z-quick-inventory-owner-diagnostic.mjs',
-            'v10-41-r57-desktop-prep-stability.mjs',
-            'v10-41-r60-damage-owner-transition-diagnostic.mjs',
             'v10-41-stage11-release-cross-mode-lifecycle.mjs',
-            'v10-42-demo-paywall.mjs',
-            'v10-42-demo-tutorial-boundary.mjs'
+            // These diagnostics exercise only retired Spy/Horde ownership.
+            'v10-41-r57-desktop-prep-stability.mjs',
+            'v10-41-r60-damage-owner-transition-diagnostic.mjs'
           ]);
           const tests=[
             'arcade/lost-sizzler/tests/v10-6-browser.mjs',

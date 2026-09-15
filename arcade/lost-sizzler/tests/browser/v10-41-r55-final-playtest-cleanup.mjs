@@ -26,13 +26,13 @@ try{
   page.setDefaultTimeout(45000);
   const pageErrors=[];page.on("pageerror",error=>pageErrors.push(String(error?.stack||error)));
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R55FinalPlaytestCleanup)&&Boolean(document.getElementById("horde-solo-btn")),null,{timeout:90000});
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&window.CCGLostSizzlerV142Bootstrap?.ready===true&&Boolean(document.getElementById("solo-btn")),null,{timeout:90000});
 
   const menuLayout=await page.evaluate(()=>{
     const continueButton=document.getElementById("continue-save-btn");
     continueButton?.classList.remove("hidden");
     if(continueButton)continueButton.textContent="Continue Solo — Floor 1";
-    const visibleIds=["solo-btn","continue-save-btn","horde-solo-btn","split-btn","tutorial-zone-btn","daily-btn"];
+    const visibleIds=["solo-btn","continue-save-btn","split-btn","tutorial-zone-btn","daily-btn"];
     const retiredOnlineIds=["create-btn","horde-mode-btn","saboteurs-mode-btn"];
     const retiredOnline=retiredOnlineIds.map(id=>{
       const button=document.getElementById(id);if(!button)return{id,missing:true};
@@ -48,7 +48,9 @@ try{
   });
 
   for(const row of menuLayout.retiredOnline){
-    assert.equal(row.missing,false,`retired online control ${row.id} must exist`);
+    // Retired controls may be removed outright or kept hidden for legacy DOM
+    // compatibility; neither form may expose a production entry point.
+    if(row.missing)continue;
     assert.equal(row.hidden,true,`${row.id} must remain hidden in the zero-server menu`);
     assert.equal(row.display,"none",`${row.id} must not occupy a zero-server menu card`);
   }
@@ -69,6 +71,13 @@ try{
     }
   }
 
+  await page.click("#solo-btn");
+  await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&playMode==="solo"&&Boolean(p1));
+  assert.deepEqual(pageErrors,[],`active menu and Solo launch must not produce page errors: ${pageErrors.join("\n")}`);
+
+  /* Historic Horde progression assertions are intentionally retained as source
+   * context but must not execute after the mode's retirement. */
+  if(false){
   await page.click("#horde-solo-btn");
   await page.waitForFunction(()=>document.body.dataset.specialMode==="horde-survivor"&&document.body.dataset.hordeSolo==="true"&&Boolean(window.CCGLostSizzlerSpecialModes?.active?.state),null,{timeout:15000});
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R38ColyseusHorde)&&Boolean(window.CCGLostSizzlerV141R39HordeResponsive),null,{timeout:15000});
@@ -99,9 +108,10 @@ try{
   assert.equal(horde.bannerVisible,"false",`HORDE SURVIVOR centre banner must disappear once Wave 1 begins: ${JSON.stringify(horde)}`);
   assert.ok(horde.physicalEnemies>=1,`Wave 1 must materialise live Horde enemies: ${JSON.stringify(horde)}`);
   assert.deepEqual(pageErrors,[],`R55 browser regression produced page errors: ${pageErrors.join("\n")}`);
+  }
 
   await context.close();
-  console.log("R55 rendered menu and Horde progression browser regression passed.");
+  console.log("R55 rendered supported-mode menu and Solo launch browser regression passed.");
 }finally{
   await browser.close();
   for(const socket of sockets)socket.destroy();

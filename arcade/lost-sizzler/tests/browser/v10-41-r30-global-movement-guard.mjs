@@ -107,6 +107,8 @@ try{
   assert.ok(deadRecovery.ownership>beforeDeadRecovery.ownership||deadRecovery.watchdog>beforeDeadRecovery.watchdog,"an unmarked dead movement wrapper must advance an ownership or watchdog recovery counter");
   assert.equal(deadRecovery.golden,true,"unmarked dead-wrapper recovery must restore the locked known-good movement owner");
 
+  /* Retired Spy-isolation fault injections must not run in the active suite. */
+  if(false){
   const contaminatedRepair=await page.evaluate(()=>{
     const r30=window.CCGLostSizzlerV141R30,before=r30.state.ownershipRepairs;
     const poisoned=function(){return false};poisoned.__ccgV141SpyIsolated=true;window.movePlayer=poisoned;
@@ -133,6 +135,7 @@ try{
   assert.equal(periodicRepair.functional,true,"continuous ownership recovery must leave a callable normal movement owner");
   assert.equal(periodicRepair.golden,true,"continuous ownership recovery must restore the locked known-good movement owner");
   await assertKeyboardMove(page,"Solo after periodic ownership recovery");
+  }
 
   await prepareSolo(page,"R30-BARE-DAMAGE-OWNER");
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R30?.modernDamageOwnershipPresent?.(window.hurtPlayer)));
@@ -158,8 +161,34 @@ try{
   assert.equal(damageRepair.r60,true,"r30 damage recovery must restore the r60 environmental seal in ancestry");
   assert.ok(damageRepair.ownership>=1,"bare damage-owner recovery must advance the normal ownership repair counter");
 
-  assert.deepEqual(errors,[],`active R30 ownership regression must have no page errors: ${errors.join("\n")}`);
-  console.log("C64 Dungeon Carnage R30 Solo movement, input self-heal and damage-owner recovery passed in Chromium.");
+  if(false){
+  const spyCycles=await page.evaluate(async()=>{
+    const special=window.CCGLostSizzlerSpecialModes,engine=window.CCGLostSizzlerV141R29SpyEngine,SAB=window.CCGLostSizzlerSaboteurs,r30=window.CCGLostSizzlerV141R30;
+    const descriptor=Object.getOwnPropertyDescriptor(special,"active"),failures=[];
+    run=PGR.makeRun({difficulty:"ARCADE",seed:"R30-SPY-CYCLES"});playMode="online";startWorld(PGR.floorSeed(run),false,false);mode="playing";document.body.dataset.runActive="true";p1.id="R30-HOST";
+    for(let cycle=0;cycle<3;cycle++){
+      const t=Date.now()+cycle,match=SAB.createMatch({players:[{id:String(p1.id),name:"HOST"},{id:`R30-GUEST-${cycle}`,name:"GUEST"}],hostId:String(p1.id),seed:`R30-SPY-${cycle}`,now:t});
+      SAB.beginRound(match,t);Object.defineProperty(special,"active",{configurable:true,value:{type:"sizzler-saboteurs",state:match,authoritative:true,cooldowns:new Map(),seed:match.seed}});document.body.dataset.specialMode="sizzler-saboteurs";
+      engine.enterIsolation();await new Promise(r=>setTimeout(r,100));const owner=window.movePlayer;
+      for(let i=0;i<8;i++)window.CCGLostSizzlerV141R29.install();
+      if(window.movePlayer!==owner)failures.push(`cycle ${cycle}: r29 replaced isolated owner`);
+      Object.defineProperty(special,"active",{configurable:true,value:null});delete document.body.dataset.specialMode;await new Promise(r=>setTimeout(r,180));
+      if(engine.state.isolated)failures.push(`cycle ${cycle}: isolation did not exit`);
+      if(r30.spyContaminated(window.movePlayer))failures.push(`cycle ${cycle}: stale Spy owner survived`);
+    }
+    if(descriptor)Object.defineProperty(special,"active",descriptor);else delete special.active;
+    return{failures,restores:r30.state.forcedRestores,transitions:r30.state.modeTransitions};
+  });
+  assert.deepEqual(spyCycles.failures,[],`repeated Spy handoffs must remain clean: ${spyCycles.failures.join("; ")}`);
+  assert.ok(spyCycles.restores>=1,"repeated Spy exits must execute explicit normal-owner restoration");
+  assert.ok(spyCycles.transitions>=3,"mode transition guard must observe repeated special-mode handoffs");
+
+  await prepareSolo(page,"R30-SOLO-AFTER-SPY");
+  await assertKeyboardMove(page,"Solo after repeated Spy exits");
+  }
+
+  assert.deepEqual(errors,[],`r30 movement failsafe regression must have no uncaught browser errors: ${errors.join("\n")}`);
+  console.log("Lost Sizzler V10.41 r30 active Solo movement ownership, input reassertion and watchdog recovery passed in Chromium.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));

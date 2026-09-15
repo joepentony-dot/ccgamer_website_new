@@ -44,24 +44,11 @@ try{
     window.__r56zSyncPoll=setInterval(()=>{if(window.sync!==window.__r56zSyncLast)window.__r56zCaptureSync("owner-change")},10);
   });
 
-  const started=await page.evaluate(()=>{
-    net.setSolo("Agent One");const id=String(net.sessionId);
-    window.__r56zCaptureSync?.("before-spy-start");
-    const result=window.CCGLostSizzlerSpecialModes.startOnline({roomMode:"sizzler-saboteurs",players:[{id,name:"Agent One"},{id:"R56Z-SPY-B",name:"Agent Two"}],hostId:id,seed:"V141-R56Z-QUICK-OWNER",roomCode:"R56ZSPY"});
-    window.__r56zCaptureSync?.("after-spy-start-call");
-    return result;
-  });
-  assert.equal(started,true,"diagnostic Spy fixture must start");
-  await page.waitForFunction(()=>document.body.dataset.specialMode==="sizzler-saboteurs"&&Boolean(window.CCGLostSizzlerV141R32SpyOverhaul));
-  await page.waitForTimeout(250);
-  await page.evaluate(()=>window.__r56zCaptureSync?.("spy-settled"));
-  await page.evaluate(async()=>{window.__r56zCaptureSync?.("before-quit-to-menu");await Promise.resolve(quitToMenu());window.__r56zCaptureSync?.("after-quit-to-menu")});
-  await page.waitForFunction(()=>document.body.dataset.runActive!=="true"&&!document.getElementById("menu").classList.contains("hidden"));
-  await page.evaluate(()=>window.__r56zCaptureSync?.("menu-settled"));
+  // The quick-slot owner is a Solo Dungeon UI concern. Start it directly;
+  // retired Spy setup must not be used as an ownership-transition fixture.
   await page.locator("#solo-btn").click();
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&String(playMode)==="solo"&&Boolean(p1),null,{timeout:10000});
-  await page.waitForTimeout(100);
-  await page.evaluate(()=>window.__r56zCaptureSync?.("solo-returned"));
+  await page.evaluate(()=>window.__r56zCaptureSync?.("solo-ready"));
 
   const evidence=await page.evaluate(()=>{
     if(window.__r56zSyncPoll){clearInterval(window.__r56zSyncPoll);window.__r56zSyncPoll=0}

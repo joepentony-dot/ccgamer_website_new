@@ -89,7 +89,7 @@ try{
     window.CCGLostSizzlerCommerce={isAuthenticated:async()=>false,getOffer:async()=>({display_price:'£1<img id="v142-offer-xss">'})};
   });
   const hostile=await auditPage(hostileOfferContext,"hostile-offer");
-  await hostile.page.waitForFunction(()=>window.CCGLostSizzlerV142DemoPaywall.diagnostics().guardedCount===8);
+  await hostile.page.waitForFunction(()=>document.body.dataset.v142DemoLocked==="true"&&window.CCGLostSizzlerV142DemoPaywall.diagnostics().guardedCount===4);
   await hostile.page.evaluate(()=>document.getElementById("solo-btn").click());
   await hostile.page.waitForFunction(()=>!document.getElementById("v142-demo-paywall")?.classList.contains("hidden"));
   const hostileAudit=await hostile.page.evaluate(()=>({
@@ -112,7 +112,7 @@ try{
     };
   });
   const callback=await auditPage(callbackContext,"callback-only");
-  await callback.page.waitForFunction(()=>window.CCGLostSizzlerV142DemoPaywall.diagnostics().guardedCount===8);
+  await callback.page.waitForFunction(()=>document.body.dataset.v142DemoLocked==="true"&&window.CCGLostSizzlerV142DemoPaywall.diagnostics().guardedCount===4);
   await callback.page.evaluate(()=>document.getElementById("solo-btn").click());
   await callback.page.waitForFunction(()=>Boolean(document.querySelector("#v142-demo-paywall [data-paypal]")));
   await callback.page.evaluate(()=>document.querySelector("#v142-demo-paywall [data-paypal]")?.click());
@@ -126,7 +126,7 @@ try{
   }));
   assert.equal(callbackAudit.entitled,false,"A checkout callback claiming permanent ownership must not set entitlement without a fresh provider read.");
   assert.equal(callbackAudit.locked,"true","Callback-only purchase data must leave demo mode locked.");
-  assert.equal(callbackAudit.guarded,8,"Callback-only purchase data must leave every paid entry guard installed.");
+  assert.equal(callbackAudit.guarded,4,"Callback-only purchase data must leave every supported paid local entry guard installed.");
   assert.equal(callbackAudit.owned,false,"Callback-only purchase data must not render the full-game-owned state.");
   assert.match(callbackAudit.status,/Purchase was not verified/i,"Callback-only purchase data must report verification failure.");
   assert.deepEqual(callback.pageErrors,[],`Callback-only checkout verification must not raise page errors: ${callback.pageErrors.join("\n")}`);
@@ -136,7 +136,7 @@ try{
   const demoContext=await browser.newContext({viewport:{width:1280,height:800}});
   await demoContext.addInitScript(()=>{window.CCG_LOST_SIZZLER_DEMO_MODE=true});
   const demo=await auditPage(demoContext,"demo");
-  await demo.page.waitForFunction(()=>document.body.dataset.v142DemoLocked==="true"&&window.CCGLostSizzlerV142DemoPaywall.diagnostics().guardedCount===8);
+  await demo.page.waitForFunction(()=>document.body.dataset.v142DemoLocked==="true"&&window.CCGLostSizzlerV142DemoPaywall.diagnostics().guardedCount===4);
   const lockedAudit=await demo.page.evaluate(()=>({
     demoMode:window.CCGLostSizzlerV142DemoPaywall.demoMode,
     locked:document.body.dataset.v142DemoLocked,
@@ -149,11 +149,11 @@ try{
   }));
   assert.equal(lockedAudit.demoMode,true,"Explicit demo mode must activate the V10.42 permanent-unlock boundary.");
   assert.equal(lockedAudit.locked,"true","Demo mode must mark the full-game runtime as locked.");
-  assert.equal(lockedAudit.guarded,8,"Demo guard registry must retain all eight historical entry controls until entitlement is verified; zero-server separately retires online routes.");
-  assert.equal(lockedAudit.badges,8,"Every registered demo guard must retain one FULL GAME badge until entitlement is verified.");
+  assert.equal(lockedAudit.guarded,4,"Demo guard registry must retain every supported paid local entry control until entitlement is verified.");
+  assert.equal(lockedAudit.badges,4,"Every supported paid local entry must retain one FULL GAME badge until entitlement is verified.");
   assert.equal(lockedAudit.tutorialBadge,false,"The free Tutorial must remain outside the paid-control guard set.");
   assert.equal(lockedAudit.resumeBadge,true,"A visible saved-run Resume control must remain behind the demo entitlement boundary.");
-  assert.equal(lockedAudit.joinBadge,true,"Room-code Join may remain registered with the demo guard before the zero-server release retires the online route.");
+  assert.equal(lockedAudit.joinBadge,false,"Retired room-code Join must not be restored as a demo entitlement path.");
 
   await demo.page.evaluate(()=>document.getElementById("solo-btn").click());
   await demo.page.waitForFunction(()=>!document.getElementById("v142-demo-paywall")?.classList.contains("hidden"));

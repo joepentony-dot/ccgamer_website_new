@@ -81,7 +81,7 @@ const readyHelperTarget=`async function waitForReady(state,label){
   await withTimeout(state.page.waitForFunction(()=>document.body.dataset.gameReady==="true",null,{timeout:15000}),STAGE_TIMEOUT_MS,\`${"${label}"} gameReady\`);
 }`;
 const readyHelperReplacement=`async function waitForReady(state,label){
-  await withTimeout(state.page.waitForFunction(()=>document.body.dataset.gameReady==="true",null,{timeout:25000}),STAGE_TIMEOUT_MS,\`${"${label}"} gameReady\`);
+  await withTimeout(state.page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&document.body.dataset.releaseReady==="true"&&window.CCGLostSizzlerV142Bootstrap?.ready===true,null,{timeout:15000}),STAGE_TIMEOUT_MS,\`${"${label}"} active runtime ready\`);
 }
 
 async function acknowledgeTutorialStage(page,label){

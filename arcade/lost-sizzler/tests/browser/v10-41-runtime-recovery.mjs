@@ -95,7 +95,5 @@ try{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
 }
 
-// Keep the active Solo combat/movement structural regression chained here.
-// Retired Horde/Spy controller-isolation children are intentionally excluded
-// from the supported zero-server release qualification.
-await import("./v10-41-solo-combat-load-movement.mjs");
+// Browser contracts run independently in the sharded workflow. Do not import
+// retired cross-mode or Horde diagnostics transitively from active recovery.

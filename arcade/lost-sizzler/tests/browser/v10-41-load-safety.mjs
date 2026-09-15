@@ -66,9 +66,12 @@ try{
     await page.waitForFunction(()=>window.CCGLostSizzlerCacheGuard?.state?.done===true);
     await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
     await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true);
-    // Bootstrap completion is the final startup boundary. Check the overlay only
-    // after that boundary so a late readiness update cannot race the audit.
+    await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&document.getElementById("ccg-release-loading")?.hidden===true&&window.CCGLostSizzlerV142Bootstrap?.ready===true);
+    // The loader and ordered bootstrap settle on separate tasks. Re-check the
+    // terminal hidden state after two frames, rather than sampling a transient.
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
     await page.waitForFunction(()=>document.getElementById("ccg-release-loading")?.hidden===true);
+    const loadingHiddenAtReady=await page.evaluate(()=>document.getElementById("ccg-release-loading")?.hidden===true);
 
     const audit=await page.evaluate(async()=>{
       const cache=await caches.open("ccg-load-safety-test");
@@ -82,10 +85,10 @@ try{
         cacheGuard:{...window.CCGLostSizzlerCacheGuard.state,runtimeErrors:window.CCGLostSizzlerCacheGuard.runtimeErrors},
         v142:window.CCGLostSizzlerV142Bootstrap?{build:window.CCGLostSizzlerV142Bootstrap.build,cache:window.CCGLostSizzlerV142Bootstrap.cache,ready:window.CCGLostSizzlerV142Bootstrap.ready,failed:window.CCGLostSizzlerV142Bootstrap.failed}:null,
         watchdog:window.CCGLostSizzlerLoadWatchdog?{...window.CCGLostSizzlerLoadWatchdog.state}:null,
-        staleStillCached:Boolean(stale),unrelatedStillCached:Boolean(unrelated),delay,
-        loadingHidden:Boolean(document.getElementById("ccg-release-loading")?.hidden)
+        staleStillCached:Boolean(stale),unrelatedStillCached:Boolean(unrelated),delay
       };
     });
+    audit.loadingHidden=loadingHiddenAtReady;
 
     assert.equal(audit.releaseReady,"true",`iteration ${iteration}: release gate must complete`);
     assert.ok(audit.v142,`iteration ${iteration}: V10.42 ordered bootstrap must be present`);
