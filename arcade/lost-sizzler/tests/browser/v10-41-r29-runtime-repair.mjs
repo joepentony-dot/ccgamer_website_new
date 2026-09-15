@@ -38,7 +38,7 @@ try{
   }));
   assert.equal(release.build,release.canonicalBuild,"release-ready build metadata must match the authoritative V10.42 bootstrap identity");
   assert.equal(release.cache,release.canonicalCache,"release-ready cache metadata must match the authoritative V10.42 bootstrap identity");
-  assert.deepEqual({r29:release.r29,loop:release.loop},{r29:true,loop:true},"Chromium must run the r30 page while retaining the r29 stable-loop protections");
+  assert.deepEqual({r29:release.r29,loop:release.loop},{r29:true,loop:true},"Chromium must retain the active r29 stable-loop protections");
 
   const geometry=await page.evaluate(async()=>{
     document.body.dataset.runActive="true";
@@ -86,27 +86,15 @@ try{
   });
   assert.ok(audio.stops>=1,"retained r29 return-to-menu audio guard must call the ordinary music stop path");
 
-  const spyThrottle=await page.evaluate(()=>{
-    const special=window.CCGLostSizzlerSpecialModes,descriptor=Object.getOwnPropertyDescriptor(special,"active"),before=window.CCGLostSizzlerV141R29.state.spyHintsSuppressed;
-    Object.defineProperty(special,"active",{configurable:true,value:{type:"sizzler-saboteurs",state:{players:[]}}});
-    window.showToast("MOVE BESIDE FURNITURE","first","cyan",3000);window.showToast("MOVE BESIDE FURNITURE","second","cyan",3000);window.showToast("MOVE BESIDE FURNITURE","third","cyan",3000);
-    const after=window.CCGLostSizzlerV141R29.state.spyHintsSuppressed;
-    if(descriptor)Object.defineProperty(special,"active",descriptor);else delete special.active;
-    return{before,after}
-  });
-  assert.ok(spyThrottle.after-spyThrottle.before>=2,"repeated Spy furniture guidance must remain suppressed instead of firing every update");
+  const retirement=await page.evaluate(()=>({
+    hordeButton:Boolean(document.getElementById("horde-mode-btn")),
+    spyButton:Boolean(document.getElementById("saboteurs-mode-btn")),
+    specialMode:String(document.body.dataset.specialMode||"")
+  }));
+  assert.deepEqual(retirement,{hordeButton:false,spyButton:false,specialMode:""},"retired special-mode launch controls must remain absent from the active runtime");
 
-  const friendly=await page.evaluate(()=>{
-    const special=window.CCGLostSizzlerSpecialModes,descriptor=Object.getOwnPropertyDescriptor(special,"active"),before=window.CCGLostSizzlerV141R29.state.hordeFriendlyFireBlocked;
-    Object.defineProperty(special,"active",{configurable:true,value:{type:"horde-survivor",state:{players:[]}}});
-    const result=window.hurtPlayer?.({id:"test-player"},1,true,"team-mate","other-player"),after=window.CCGLostSizzlerV141R29.state.hordeFriendlyFireBlocked;
-    if(descriptor)Object.defineProperty(special,"active",descriptor);else delete special.active;
-    return{result,delta:after-before}
-  });
-  assert.equal(friendly.result,false,"Horde player-v-player damage must be rejected");assert.equal(friendly.delta,1,"Horde friendly-fire rejection must execute exactly once");
-
-  assert.deepEqual(errors,[],`retained r29 Chromium runtime regression must have no uncaught errors under V10.42: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 retained r29 geometry, notification, audio, Spy hint and Horde friendly-fire protections passed under V10.42 in Chromium.");
+  assert.deepEqual(errors,[],`retained r29 active-runtime regression must have no uncaught errors under V10.42: ${errors.join("\n")}`);
+  console.log("C64 Dungeon Carnage V10.41 retained r29 geometry, notification, audio and special-mode retirement checks passed in Chromium.");
   await context.close()
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()))

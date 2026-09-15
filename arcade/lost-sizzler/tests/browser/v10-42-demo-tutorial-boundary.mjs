@@ -60,6 +60,15 @@ async function emitTutorialComplete(page){
   });
 }
 
+async function waitForDemoGuards(page){
+  await page.waitForFunction(()=>{
+    const api=window.CCGLostSizzlerV142DemoPaywall;
+    const ids=["solo-btn","create-btn","split-btn","daily-btn","continue-save-btn","join-btn"];
+    const present=ids.filter(id=>Boolean(document.getElementById(id)));
+    return document.body.dataset.v142DemoLocked==="true"&&!document.getElementById("horde-mode-btn")&&!document.getElementById("saboteurs-mode-btn")&&present.length===6&&api?.diagnostics().guardedCount===present.length;
+  });
+}
+
 try{
   const normalContext=await browser.newContext({viewport:{width:1280,height:800}});
   const normal=await open(normalContext,"normal");
@@ -81,7 +90,7 @@ try{
   const demoContext=await browser.newContext({viewport:{width:1280,height:800}});
   await demoContext.addInitScript(()=>{window.CCG_LOST_SIZZLER_DEMO_MODE=true});
   const demo=await open(demoContext,"demo");
-  await demo.page.waitForFunction(()=>window.CCGLostSizzlerV142DemoPaywall.diagnostics().guardedCount===8);
+  await waitForDemoGuards(demo.page);
   await emitTutorialComplete(demo.page);
   await demo.page.waitForFunction(()=>!document.getElementById("v142-demo-paywall")?.classList.contains("hidden"));
   const demoAudit=await demo.page.evaluate(()=>({
@@ -94,7 +103,7 @@ try{
   assert.equal(demoAudit.demoMode,true,"Explicit demo wrapper must retain the Tutorial completion purchase boundary.");
   assert.equal(demoAudit.shown,true,"Demo Tutorial completion must present the permanent-unlock offer.");
   assert.match(demoAudit.kicker,/TUTORIAL COMPLETE/i,"Demo Tutorial completion offer must identify the completed free introduction.");
-  assert.equal(demoAudit.guarded,8,"Tutorial completion offer must leave all paid game-entry paths guarded until entitlement is verified.");
+  assert.equal(demoAudit.guarded,6,"Tutorial completion offer must retain all six DOM-backed historical guards until zero-server retirement blocks its retired routes.");
   assert.notEqual(demoAudit.runActive,"true","Tutorial completion purchase presentation must not start paid gameplay underneath the overlay.");
   assert.deepEqual(demo.pageErrors,[],`Demo Tutorial completion boundary must not raise page errors: ${demo.pageErrors.join("\n")}`);
   await demoContext.close();

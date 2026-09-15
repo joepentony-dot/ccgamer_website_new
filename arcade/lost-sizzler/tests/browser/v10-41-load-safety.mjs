@@ -47,11 +47,6 @@ try{
     try{const url=new URL(request.url());if(url.origin===origin&&/\.(?:js|mjs)(?:\?|$)/i.test(url.pathname))failedScripts.push(`${url.pathname}: ${request.failure()?.errorText||"failed"}`)}catch(_){}
   });
 
-  /* Parallel release loading can legitimately finish before Playwright gets a
-   * chance to observe the transient loading overlay. Hold only the final
-   * enhancement response inside this browser test so the overlay lifecycle is
-   * deterministic without adding any delay to production startup. The delay is
-   * intentionally far below asset-overrides.js's 5s per-module timeout. */
   await page.route("**/arcade/lost-sizzler/js/v10-35-quality.js*",async route=>{
     await new Promise(resolve=>setTimeout(resolve,700));
     await route.continue();
@@ -70,8 +65,13 @@ try{
     await page.waitForSelector("#ccg-release-loading",{state:"visible"});
     await page.waitForFunction(()=>window.CCGLostSizzlerCacheGuard?.state?.done===true);
     await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
-    await page.waitForFunction(()=>document.getElementById("ccg-release-loading")?.hidden===true);
     await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true);
+    await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&document.getElementById("ccg-release-loading")?.hidden===true&&window.CCGLostSizzlerV142Bootstrap?.ready===true);
+    // The loader and ordered bootstrap settle on separate tasks. Re-check the
+    // terminal hidden state after two frames, rather than sampling a transient.
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    await page.waitForFunction(()=>document.getElementById("ccg-release-loading")?.hidden===true);
+    const loadingHiddenAtReady=await page.evaluate(()=>document.getElementById("ccg-release-loading")?.hidden===true);
 
     const audit=await page.evaluate(async()=>{
       const cache=await caches.open("ccg-load-safety-test");
@@ -83,17 +83,12 @@ try{
         cacheToken:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||"",
         storedToken:localStorage.getItem("ccg-lost-sizzler:last-sanitised-cache")||"",
         cacheGuard:{...window.CCGLostSizzlerCacheGuard.state,runtimeErrors:window.CCGLostSizzlerCacheGuard.runtimeErrors},
-        v142:window.CCGLostSizzlerV142Bootstrap?{
-          build:window.CCGLostSizzlerV142Bootstrap.build,
-          cache:window.CCGLostSizzlerV142Bootstrap.cache,
-          ready:window.CCGLostSizzlerV142Bootstrap.ready,
-          failed:window.CCGLostSizzlerV142Bootstrap.failed
-        }:null,
+        v142:window.CCGLostSizzlerV142Bootstrap?{build:window.CCGLostSizzlerV142Bootstrap.build,cache:window.CCGLostSizzlerV142Bootstrap.cache,ready:window.CCGLostSizzlerV142Bootstrap.ready,failed:window.CCGLostSizzlerV142Bootstrap.failed}:null,
         watchdog:window.CCGLostSizzlerLoadWatchdog?{...window.CCGLostSizzlerLoadWatchdog.state}:null,
-        staleStillCached:Boolean(stale),unrelatedStillCached:Boolean(unrelated),delay,
-        loadingHidden:Boolean(document.getElementById("ccg-release-loading")?.hidden)
+        staleStillCached:Boolean(stale),unrelatedStillCached:Boolean(unrelated),delay
       };
     });
+    audit.loadingHidden=loadingHiddenAtReady;
 
     assert.equal(audit.releaseReady,"true",`iteration ${iteration}: release gate must complete`);
     assert.ok(audit.v142,`iteration ${iteration}: V10.42 ordered bootstrap must be present`);
@@ -124,10 +119,10 @@ try{
   const third=await loadAndAudit(3);
   assert.equal(third.cacheGuard.needed,false,"repeated current-build visits must stay out of cache-clean loops");
 
-  assert.deepEqual(crashes,[],`Chromium must not crash while repeatedly loading The Lost Sizzler: ${crashes.join("\n")}`);
-  assert.deepEqual(pageErrors,[],`The Lost Sizzler must have no uncaught page errors during repeated startup: ${pageErrors.join("\n")}`);
+  assert.deepEqual(crashes,[],`Chromium must not crash while repeatedly loading C64 Dungeon Carnage: ${crashes.join("\n")}`);
+  assert.deepEqual(pageErrors,[],`C64 Dungeon Carnage must have no uncaught page errors during repeated startup: ${pageErrors.join("\n")}`);
   assert.deepEqual(failedScripts,[],`All same-origin game JavaScript must load successfully: ${failedScripts.join("\n")}`);
-  console.log("Lost Sizzler repeated Chromium load, cache sanitation, V10.42 cache-token handoff and main-thread responsiveness checks passed.");
+  console.log("C64 Dungeon Carnage repeated Chromium load, cache sanitation, V10.42 cache-token handoff and main-thread responsiveness checks passed.");
   await context.close();
 }finally{
   await browser.close();

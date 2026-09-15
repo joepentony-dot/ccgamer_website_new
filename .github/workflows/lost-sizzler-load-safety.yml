@@ -83,7 +83,7 @@ jobs:
           set -euo pipefail
           for test in arcade/lost-sizzler/tests/*.mjs; do
             case "$(basename "$test")" in
-              v10-6-browser.mjs|v10-28-browser-stability.mjs)
+              v10-6-browser.mjs|v10-28-browser-stability.mjs|horde-survivor-contract.mjs|sizzler-saboteurs-contract.mjs|v10-33-special-modes-polish.mjs|v10-37-horde-*.mjs|v10-38-horde-*.mjs|v10-39-horde-*.mjs|v10-40-horde-*.mjs|v10-41-horde-*.mjs|v10-41-r25-spy-*.mjs|v10-41-r26-spy-*.mjs|v10-41-r27-spy-*.mjs|v10-41-r29-spy-*.mjs|v10-41-r36-spy-*.mjs|v10-41-r41-colyseus-spy.mjs|v10-41-r45-spy-*.mjs|v10-41-r58-spy-*.mjs|v10-41-spy-*.mjs|v10-41-ui-spy-*.mjs|v10-42-r11-spy-*.mjs)
                 continue
                 ;;
             esac
@@ -102,7 +102,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build browser contract matrix
+      - name: Build sharded browser contract matrix
         id: manifest
         shell: bash
         run: |
@@ -112,7 +112,10 @@ jobs:
           const retiredModeTests=new Set([
             'v10-41-menu-leaderboard-stability.mjs',
             'v10-41-mode-controller-isolation.mjs',
-            'v10-41-stage11-release-cross-mode-lifecycle.mjs'
+            'v10-41-stage11-release-cross-mode-lifecycle.mjs',
+            // These diagnostics exercise only retired Spy/Horde ownership.
+            'v10-41-r57-desktop-prep-stability.mjs',
+            'v10-41-r60-damage-owner-transition-diagnostic.mjs'
           ]);
           const tests=[
             'arcade/lost-sizzler/tests/v10-6-browser.mjs',
@@ -125,17 +128,31 @@ jobs:
               .sort()
               .map(name=>`arcade/lost-sizzler/tests/browser/${name}`)
           ];
-          process.stdout.write(`matrix=${JSON.stringify({test:tests})}\n`);
+          const shardCount=6;
+          const duplicateTests=tests.filter((test,index)=>tests.indexOf(test)!==index);
+          if (duplicateTests.length) {
+            throw new Error(`Duplicate browser contracts in manifest: ${duplicateTests.join(', ')}`);
+          }
+          const shards=Array.from({length:shardCount},()=>[]);
+          for (const [index,test] of tests.entries()) {
+            shards[index%shardCount].push(test);
+          }
+          const shardedTests=shards.flat();
+          if (shardedTests.length!==tests.length || new Set(shardedTests).size!==tests.length) {
+            throw new Error('Browser contract sharding omitted or duplicated a retained contract.');
+          }
+          process.stdout.write(`matrix=${JSON.stringify({include:shards.map((tests,index)=>({shard:index+1,tests:JSON.stringify(tests)}))})}\n`);
           NODE
 
   browser-contract:
-    name: Chromium · ${{ matrix.test }}
+    name: Chromium shard ${{ matrix.shard }}
     needs: browser-manifest
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    # Each shard runs the retained active contracts after one Chromium install.
+    timeout-minutes: 45
     strategy:
       fail-fast: false
-      max-parallel: 4
+      max-parallel: 6
       matrix: ${{ fromJSON(needs.browser-manifest.outputs.matrix) }}
     steps:
       - name: Checkout repository
@@ -157,52 +174,56 @@ jobs:
           sudo apt-get update
           npx playwright install --with-deps chromium
 
-      - name: Prepare failure artifact name
-        id: artifact
+      - name: Run browser contracts in shard
         shell: bash
         env:
-          TEST_FILE: ${{ matrix.test }}
+          SHARD: ${{ matrix.shard }}
+          TESTS_JSON: ${{ matrix.tests }}
         run: |
-          set -euo pipefail
-          base="$(basename "$TEST_FILE" .mjs)"
-          echo "name=$base" >> "$GITHUB_OUTPUT"
-
-      - name: Run browser contract
-        shell: bash
-        env:
-          TEST_FILE: ${{ matrix.test }}
-        run: |
-          set -euo pipefail
-          name="$(basename "$TEST_FILE")"
-          log="$RUNNER_TEMP/lost-sizzler-browser-contract.log"
+          set -uo pipefail
+          log="$RUNNER_TEMP/lost-sizzler-browser-shard-$SHARD.log"
           : > "$log"
-          attempts=1
-          case "$name" in
-            v10-6-browser.mjs|v10-28-browser-stability-deterministic.mjs|v10-41-solo-long-session-soak.mjs)
-              attempts=2
-              ;;
-          esac
-          for attempt in $(seq 1 "$attempts"); do
-            echo "::group::$TEST_FILE (attempt $attempt/$attempts)"
-            echo "=== $TEST_FILE attempt $attempt/$attempts ===" >> "$log"
-            if node "$TEST_FILE" 2>&1 | tee -a "$log"; then
+          failures=()
+          while IFS= read -r test_file; do
+            name="$(basename "$test_file")"
+            attempts=1
+            case "$name" in
+              v10-6-browser.mjs|v10-28-browser-stability-deterministic.mjs|v10-41-solo-long-session-soak.mjs)
+                attempts=2
+                ;;
+            esac
+            passed=false
+            for attempt in $(seq 1 "$attempts"); do
+              echo "::group::$test_file (attempt $attempt/$attempts)"
+              echo "=== $test_file attempt $attempt/$attempts ===" | tee -a "$log"
+              if node "$test_file" 2>&1 | tee -a "$log"; then
+                passed=true
+                echo "::endgroup::"
+                break
+              fi
               echo "::endgroup::"
-              exit 0
+              if [ "$attempt" -lt "$attempts" ]; then
+                echo "Browser contract failed on attempt $attempt; retrying on a fresh process: $test_file" | tee -a "$log"
+                echo >> "$log"
+              fi
+            done
+            if [ "$passed" != true ]; then
+              failures+=("$test_file")
             fi
-            echo "::endgroup::"
-            if [ "$attempt" -lt "$attempts" ]; then
-              echo "Browser contract failed on attempt $attempt; retrying on a fresh process: $TEST_FILE"
-              echo >> "$log"
-            fi
-          done
-          echo "::error title=Lost Sizzler browser regression::$TEST_FILE failed after $attempts attempt(s)"
-          exit 1
+          done < <(node -e 'JSON.parse(process.env.TESTS_JSON).forEach(test => console.log(test))')
+          if [ "${#failures[@]}" -gt 0 ]; then
+            for test_file in "${failures[@]}"; do
+              echo "::error title=Lost Sizzler browser regression::$test_file failed in Chromium shard $SHARD"
+            done
+            echo "Chromium shard $SHARD failed contracts: ${failures[*]}" | tee -a "$log"
+            exit 1
+          fi
 
-      - name: Upload failing Chromium contract log
+      - name: Upload failing Chromium shard log
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: lost-sizzler-${{ steps.artifact.outputs.name }}-failure
-          path: ${{ runner.temp }}/lost-sizzler-browser-contract.log
+          name: lost-sizzler-browser-shard-${{ matrix.shard }}-failure
+          path: ${{ runner.temp }}/lost-sizzler-browser-shard-${{ matrix.shard }}.log
           if-no-files-found: error
           retention-days: 7

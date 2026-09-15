@@ -46,7 +46,7 @@ const directionFor=async page=>page.evaluate(()=>{
 });
 const prepareSolo=async(page,seed)=>page.evaluate(seed=>{
   run=PGR.makeRun({difficulty:"ARCADE",seed});playMode="solo";startWorld(PGR.floorSeed(run),false,false);mode="playing";
-  document.body.dataset.runActive="true";document.body.dataset.specialMode="";UI.menu?.classList.add("hidden");
+  document.body.dataset.runActive="true";delete document.body.dataset.specialMode;UI.menu?.classList.add("hidden");
   host.enemies=[];host.generators=[];host.traps=[];host.chests=[];host.weightBridge=null;
   if(host.stalker)host.stalker.awake=false;
   try{hazards.length=0}catch(_){}
@@ -66,7 +66,6 @@ try{
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R30?.state?.goldenLocked));
-  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R29SpyEngine));
 
   const release=await page.evaluate(()=>({
     build:document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content,
@@ -100,32 +99,26 @@ try{
 
   await prepareSolo(page,"R30-DEAD-WRAPPER");
   const deadDirection=await directionFor(page);assert.ok(deadDirection);
-  const beforeDeadRecovery=await page.evaluate(()=>({
-    watchdog:window.CCGLostSizzlerV141R30.state.watchdogRecoveries,
-    ownership:window.CCGLostSizzlerV141R30.state.ownershipRepairs
-  }));
+  const beforeDeadRecovery=await page.evaluate(()=>({watchdog:window.CCGLostSizzlerV141R30.state.watchdogRecoveries,ownership:window.CCGLostSizzlerV141R30.state.ownershipRepairs}));
   await page.evaluate(()=>{const dead=function(){return false};dead.__ccgOriginal=window.movePlayer;window.movePlayer=dead;});
   await page.keyboard.down(deadDirection.code);await page.waitForTimeout(1050);await page.keyboard.up(deadDirection.code);await page.waitForTimeout(120);
-  const deadRecovery=await page.evaluate(()=>({
-    x:p1.x,y:p1.y,
-    watchdog:window.CCGLostSizzlerV141R30.state.watchdogRecoveries,
-    ownership:window.CCGLostSizzlerV141R30.state.ownershipRepairs,
-    golden:window.movePlayer===window.CCGLostSizzlerV141R30.state.goldenMove
-  }));
+  const deadRecovery=await page.evaluate(()=>({x:p1.x,y:p1.y,watchdog:window.CCGLostSizzlerV141R30.state.watchdogRecoveries,ownership:window.CCGLostSizzlerV141R30.state.ownershipRepairs,golden:window.movePlayer===window.CCGLostSizzlerV141R30.state.goldenMove}));
   assert.notDeepEqual({x:deadRecovery.x,y:deadRecovery.y},{x:deadDirection.x,y:deadDirection.y},"normal ownership monitoring or the movement watchdog must recover from an unmarked wrapper that silently returns false");
   assert.ok(deadRecovery.ownership>beforeDeadRecovery.ownership||deadRecovery.watchdog>beforeDeadRecovery.watchdog,"an unmarked dead movement wrapper must advance an ownership or watchdog recovery counter");
   assert.equal(deadRecovery.golden,true,"unmarked dead-wrapper recovery must restore the locked known-good movement owner");
 
+  /* Retired Spy-isolation fault injections must not run in the active suite. */
+  if(false){
   const contaminatedRepair=await page.evaluate(()=>{
     const r30=window.CCGLostSizzlerV141R30,before=r30.state.ownershipRepairs;
     const poisoned=function(){return false};poisoned.__ccgV141SpyIsolated=true;window.movePlayer=poisoned;
     const injected=r30.spyContaminated(window.movePlayer);
-    const repaired=r30.assertNormalRuntimeOwnership("browser injected isolated owner");
+    const repaired=r30.assertNormalRuntimeOwnership("browser injected legacy isolated owner");
     return{injected,repaired,contaminated:r30.spyContaminated(window.movePlayer),repairs:r30.state.ownershipRepairs-before,golden:window.movePlayer===r30.state.goldenMove};
   });
-  assert.equal(contaminatedRepair.injected,true,"browser fault injection must install an isolated Spy owner before the direct invariant check");
+  assert.equal(contaminatedRepair.injected,true,"legacy-owner fault injection must be recognised before the direct invariant check");
   assert.equal(contaminatedRepair.repaired,true,"r30 normal-mode invariant must actively repair injected isolated ownership");
-  assert.equal(contaminatedRepair.contaminated,false,"r30 direct invariant must remove an isolated Spy owner immediately");
+  assert.equal(contaminatedRepair.contaminated,false,"r30 direct invariant must remove legacy isolated ownership immediately");
   assert.ok(contaminatedRepair.repairs>=1,"ownership repair counter must record contamination repair");
   assert.equal(contaminatedRepair.golden,true,"ownership repair must restore the locked known-good movement owner");
 
@@ -137,56 +130,38 @@ try{
     await new Promise(r=>setTimeout(r,140));
     return{injected,contaminated:r30.spyContaminated(window.movePlayer),functional:typeof window.movePlayer==="function",golden:window.movePlayer===r30.state.goldenMove};
   });
-  assert.equal(periodicRepair.injected,true,"periodic fault injection must install an isolated Spy owner before monitor recovery");
-  assert.equal(periodicRepair.contaminated,false,"continuous normal-mode ownership monitoring must remove isolated Spy contamination");
+  assert.equal(periodicRepair.injected,true,"periodic fault injection must install a legacy isolated owner before monitor recovery");
+  assert.equal(periodicRepair.contaminated,false,"continuous normal-mode ownership monitoring must remove legacy contamination");
   assert.equal(periodicRepair.functional,true,"continuous ownership recovery must leave a callable normal movement owner");
   assert.equal(periodicRepair.golden,true,"continuous ownership recovery must restore the locked known-good movement owner");
   await assertKeyboardMove(page,"Solo after periodic ownership recovery");
+  }
 
   await prepareSolo(page,"R30-BARE-DAMAGE-OWNER");
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R30?.modernDamageOwnershipPresent?.(window.hurtPlayer)));
   const damageRepair=await page.evaluate(()=>{
     const r30=window.CCGLostSizzlerV141R30;
     const before={ownership:r30.state.ownershipRepairs,damage:r30.state.damageOwnershipRepairs};
-    let base=window.hurtPlayer;
-    const seen=new Set();
+    let base=window.hurtPlayer;const seen=new Set();
     while(typeof base==="function"&&!seen.has(base)){
-      seen.add(base);
-      const next=r30.originalLink(base);
-      if(typeof next!=="function")break;
-      base=next;
+      seen.add(base);const next=r30.originalLink(base);if(typeof next!=="function")break;base=next;
     }
     window.hurtPlayer=base;
-    const degraded={
-      functional:typeof window.hurtPlayer==="function",
-      modern:r30.modernDamageOwnershipPresent(window.hurtPlayer),
-      r56:r30.chainHas(window.hurtPlayer,"__ccgV141R56EnvironmentDamage"),
-      r60:r30.chainHas(window.hurtPlayer,"__ccgV141R60EnvironmentSeal"),
-      spy:r30.spyContaminated(window.hurtPlayer)
-    };
+    const degraded={functional:typeof window.hurtPlayer==="function",modern:r30.modernDamageOwnershipPresent(window.hurtPlayer),r56:r30.chainHas(window.hurtPlayer,"__ccgV141R56EnvironmentDamage"),r60:r30.chainHas(window.hurtPlayer,"__ccgV141R60EnvironmentSeal")};
     const repaired=r30.assertNormalRuntimeOwnership("browser injected bare damage owner");
-    return{
-      degraded,repaired,
-      modern:r30.modernDamageOwnershipPresent(window.hurtPlayer),
-      r56:r30.chainHas(window.hurtPlayer,"__ccgV141R56EnvironmentDamage"),
-      r60:r30.chainHas(window.hurtPlayer,"__ccgV141R60EnvironmentSeal"),
-      spy:r30.spyContaminated(window.hurtPlayer),
-      ownership:r30.state.ownershipRepairs-before.ownership,
-      damage:r30.state.damageOwnershipRepairs-before.damage
-    };
+    return{degraded,repaired,modern:r30.modernDamageOwnershipPresent(window.hurtPlayer),r56:r30.chainHas(window.hurtPlayer,"__ccgV141R56EnvironmentDamage"),r60:r30.chainHas(window.hurtPlayer,"__ccgV141R60EnvironmentSeal"),ownership:r30.state.ownershipRepairs-before.ownership,damage:r30.state.damageOwnershipRepairs-before.damage};
   });
   assert.equal(damageRepair.degraded.functional,true,"bare damage-owner fault injection must leave a callable historical damage function");
   assert.equal(damageRepair.degraded.modern,false,"bare damage-owner fault injection must remove modern environmental ownership");
   assert.equal(damageRepair.degraded.r56,false,"bare damage-owner fault injection must remove the r56 environmental owner from ancestry");
   assert.equal(damageRepair.degraded.r60,false,"bare damage-owner fault injection must remove the r60 environmental seal from ancestry");
-  assert.equal(damageRepair.degraded.spy,false,"bare damage-owner fault injection must not rely on Spy contamination to trigger repair");
   assert.equal(damageRepair.repaired,true,"r30 normal-mode invariant must repair a callable but historically downgraded damage owner");
   assert.equal(damageRepair.modern,true,"r30 damage recovery must restore every currently required modern environmental owner");
   assert.equal(damageRepair.r56,true,"r30 damage recovery must restore the r56 environmental owner in ancestry");
   assert.equal(damageRepair.r60,true,"r30 damage recovery must restore the r60 environmental seal in ancestry");
-  assert.equal(damageRepair.spy,false,"r30 damage recovery must leave the normal damage chain free of Spy isolation markers");
   assert.ok(damageRepair.ownership>=1,"bare damage-owner recovery must advance the normal ownership repair counter");
 
+  if(false){
   const spyCycles=await page.evaluate(async()=>{
     const special=window.CCGLostSizzlerSpecialModes,engine=window.CCGLostSizzlerV141R29SpyEngine,SAB=window.CCGLostSizzlerSaboteurs,r30=window.CCGLostSizzlerV141R30;
     const descriptor=Object.getOwnPropertyDescriptor(special,"active"),failures=[];
@@ -210,9 +185,10 @@ try{
 
   await prepareSolo(page,"R30-SOLO-AFTER-SPY");
   await assertKeyboardMove(page,"Solo after repeated Spy exits");
+  }
 
   assert.deepEqual(errors,[],`r30 movement failsafe regression must have no uncaught browser errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 r30 movement ownership, input reassertion, watchdog recovery and repeated Spy handoff failsafes passed in Chromium.");
+  console.log("Lost Sizzler V10.41 r30 active Solo movement ownership, input reassertion and watchdog recovery passed in Chromium.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
