@@ -15,30 +15,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect exact progression mutation sites
+      - name: Pinpoint progression mutation lines
         shell: bash
         run: |
           node <<'NODE'
           const fs=require('fs');
           const file='arcade/lost-sizzler/js/game-core.js';
-          const s=fs.readFileSync(file,'utf8');
-          const needles=[
-            'score+=','score +=','score-=','score -=',
-            '.weapon=','.weapon =','weaponLoot',
-            'kind==="credits"','kind === "credits"','kind==="weapon"','kind === "weapon"',
-            'hp<=0','hp <= 0','alive=false','alive = false',
-            'treasure','escapeMs','KeyX','Digit1','BracketLeft','BracketRight',
-            'function interact','function pickup','function updateEnemies','function updateEnemy',
-            'function openChest','function sync','function updateHUD'
-          ];
-          console.log(`===== ${file} (${s.length} bytes, ${s.split('\n').length} lines) =====`);
+          const lines=fs.readFileSync(file,'utf8').split('\n');
+          const needles=['.weapon=','.weapon =','weaponLoot','kind==="credits"','kind === "credits"','kind==="weapon"','kind === "weapon"','hp<=0','hp <= 0','alive=false','alive = false','treasure','escapeMs','KeyX','Digit1','BracketLeft','BracketRight','function interact','function pickup','function updateEnemies','function updateEnemy','function openChest'];
           for(const needle of needles){
-            let from=0,hit=0;
-            while((from=s.indexOf(needle,from))!==-1 && hit<20){
-              hit++;
-              const a=Math.max(0,from-1100),b=Math.min(s.length,from+needle.length+2600);
-              console.log(`\n--- ${needle} #${hit} @ ${from} ---\n${s.slice(a,b)}`);
-              from+=needle.length;
+            for(let i=0;i<lines.length;i++){
+              let at=lines[i].indexOf(needle),hit=0;
+              while(at!==-1&&hit<8){
+                const a=Math.max(0,at-420),b=Math.min(lines[i].length,at+needle.length+900);
+                console.log(`LINE ${i+1} :: ${needle} :: ${lines[i].slice(a,b)}`);
+                hit++;at=lines[i].indexOf(needle,at+needle.length);
+              }
             }
           }
           NODE
