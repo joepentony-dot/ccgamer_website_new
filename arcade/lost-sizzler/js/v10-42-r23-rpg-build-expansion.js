@@ -32,6 +32,16 @@
     return player.v142R23BuildMilestones;
   }
   function stat(player,id){return Math.max(5,Math.floor(Number(player?.rpgStats?.[id])||5))}
+  function hasEnduranceSpecialisation(player){
+    return dungeonEligible(player)&&stat(player,"endurance")>=THRESHOLD&&Number(player?.v142R23BuildMilestones?.endurance||0)>=THRESHOLD;
+  }
+  function restoreEnduranceAmmo(old,result){
+    if(!old||!result||!hasEnduranceSpecialisation(old))return result;
+    const oldMax=Number(old.maxMana),oldMana=Number(old.mana);
+    if(Number.isFinite(oldMax)&&oldMax>0)result.maxMana=oldMax;
+    if(Number.isFinite(oldMana))result.mana=Math.max(0,Math.min(Number(result.maxMana)||oldMax||1,oldMana));
+    return result;
+  }
   function reconcile(player){
     if(!dungeonEligible(player))return[];
     const marks=ledger(player),unlocked=[];
@@ -83,7 +93,23 @@
     preservePlayer=function(old,...args){
       const result=basePreservePlayer(old,...args);
       if(old?.v142R23BuildMilestones&&typeof old.v142R23BuildMilestones==="object")result.v142R23BuildMilestones={...old.v142R23BuildMilestones};
+      restoreEnduranceAmmo(old,result);
       reconcile(result);
+      return result;
+    };
+  }
+
+  if(typeof startWorld==="function"){
+    const baseStartWorld=startWorld;
+    startWorld=function(...args){
+      const preserve=Boolean(args[2]);
+      const oldP1=preserve&&typeof p1!=="undefined"&&p1?p1:null;
+      const oldP2=preserve&&typeof p2!=="undefined"&&p2?p2:null;
+      const result=baseStartWorld.apply(this,args);
+      if(preserve){
+        try{if(oldP1&&typeof p1!=="undefined"&&p1)restoreEnduranceAmmo(oldP1,p1)}catch(_){}
+        try{if(oldP2&&typeof p2!=="undefined"&&p2)restoreEnduranceAmmo(oldP2,p2)}catch(_){}
+      }
       return result;
     };
   }
