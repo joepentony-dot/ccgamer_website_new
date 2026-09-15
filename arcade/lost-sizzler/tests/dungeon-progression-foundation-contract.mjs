@@ -67,6 +67,11 @@ assert.match(source,/activeWeaponIndex/);
 assert.match(source,/event===\"v131_player_state\"/,"co-op player state restores permanent ownership");
 assert.match(source,/special!==\"horde-survivor\"&&special!==\"sizzler-saboteurs\"/,"special-mode ownership stays isolated");
 
+const r31=fs.readFileSync("arcade/lost-sizzler/js/v10-41-r31-solo-dungeon-regressions.js","utf8");
+assert.match(r31,/PGR\?\.goldBalance/,"r31 shop wallet refresh recognises the Gold foundation");
+assert.match(r31,/label\.textContent=\"GOLD \"/,"r31 refresh preserves the Gold shop label after purchases");
+assert.match(r31,/hudScore\)hudScore\.textContent=formatScore\(score\)/,"r31 keeps the main Solo HUD on Score");
+
 for(const file of [
   "arcade/lost-sizzler/js/v10-33-special-modes.js",
   "arcade/lost-sizzler/js/v10-39-horde-live-loadout.js",
