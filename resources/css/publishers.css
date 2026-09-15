@@ -199,6 +199,17 @@ html[data-ccg-page="publisher-index"] .ccg-publishers-filter {
     transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
 }
 
+/* Full publisher directory only: let supporting browsers skip style/layout/paint
+   for offscreen cards while preserving every crawlable card in the DOM. */
+html[data-ccg-page="publisher-index"] #publisherGrid > .ccg-publisher-card {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 154px;
+}
+
+html[data-ccg-page="publisher-index"] #publisherGrid > .ccg-publisher-card--has-logo {
+    contain-intrinsic-size: auto 226px;
+}
+
 .ccg-publisher-card:hover,
 .ccg-publisher-card:focus-visible {
     transform: translateY(-3px);
@@ -349,6 +360,10 @@ html[data-ccg-page="publisher-index"] .ccg-publishers-filter {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    html[data-ccg-page="publisher-index"] #publisherGrid > .ccg-publisher-card--has-logo {
+        contain-intrinsic-size: auto 218px;
+    }
+
     .ccg-publishers-tools {
         grid-template-columns: 1fr;
     }
@@ -374,6 +389,10 @@ html[data-ccg-page="publisher-index"] .ccg-publishers-filter {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    html[data-ccg-page="publisher-index"] #publisherGrid > .ccg-publisher-card--has-logo {
+        contain-intrinsic-size: auto 214px;
+    }
+
     .ccg-publisher-playlist {
         align-items: stretch;
         flex-direction: column;
@@ -385,6 +404,10 @@ html[data-ccg-page="publisher-index"] .ccg-publishers-filter {
     .ccg-publisher-grid--featured,
     .ccg-publisher-game-grid {
         grid-template-columns: 1fr;
+    }
+
+    html[data-ccg-page="publisher-index"] #publisherGrid > .ccg-publisher-card--has-logo {
+        contain-intrinsic-size: auto 204px;
     }
 
     .ccg-publisher-game-card__image {
