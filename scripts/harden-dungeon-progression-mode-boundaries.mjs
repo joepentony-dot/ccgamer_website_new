@@ -29,8 +29,7 @@ replaceExact(foundation,
 
 replaceExact(foundation,
 `    normaliseWeaponOwnership(currentP1());normaliseWeaponOwnership(currentP2());`,
-`    if(isDungeonMode()){normaliseWeaponOwnership(currentP1());normaliseWeaponOwnership(currentP2())}`,
-2);
+`    if(isDungeonMode()){normaliseWeaponOwnership(currentP1());normaliseWeaponOwnership(currentP2())}`);
 
 replaceExact(foundation,
 `  function installShop(){\n    try{shopScorePrice=function(shop){return shopGoldPrice(shop)}}catch(_){}\n    try{\n      renderShop=function(){return renderGoldShop()};renderShop.__ccgProgressionFoundation=true;\n      buyShopItem=function(id){return buyGoldShopItem(id)};buyShopItem.__ccgProgressionFoundation=true;\n    }catch(error){console.warn("[C64 Dungeon Carnage] Gold shop install failed safely",error)}\n  }`,
