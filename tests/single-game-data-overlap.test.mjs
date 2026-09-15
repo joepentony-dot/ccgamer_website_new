@@ -41,6 +41,7 @@ function fetchDescriptionEnrichmentBlock() {
 
 test("description enrichments revalidate instead of forcing a full no-store transfer", () => {
   const block = fetchDescriptionEnrichmentBlock();
+  // no-cache still validates freshness, while allowing a previously stored response to satisfy an unchanged payload.
   assert.match(block, /fetch\(url, \{ cache: "no-cache" \}\)/, "enrichment fetch must permit validated browser reuse");
   assert.doesNotMatch(block, /cache: "no-store"/, "enrichment fetch must not force a full fresh transfer on every game navigation");
 });
