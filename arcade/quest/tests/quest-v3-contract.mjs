@@ -6,7 +6,7 @@ import {fileURLToPath} from 'node:url';
 const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,'../../..');
 const read=rel=>fs.readFileSync(path.join(root,rel),'utf8');
-const main=read('arcade/quest/game/main-v4.js');
+const main=['main-v4-core.js','main-v4-director.js','main-v4-modes.js','main-v4-render.js','main-v4-ui.js'].map(name=>read(`arcade/quest/game/${name}`)).join('\n');
 const balance=read('arcade/quest/game/balance.js');
 const assets=read('arcade/quest/game/assets-config.js');
 const runtime=read('arcade/quest/game/sprite-runtime.js');
@@ -64,7 +64,7 @@ const highPunchTop=235,highPunchHeight=52,crouchTop=180;
 assert.ok(highPunchTop-highPunchHeight>=crouchTop-1,'high punch ends at or above the crouch body');
 
 for(const html of [engineHtml,publicHtml]){
-  assert.ok(html.includes('main-v4.js?v=20260915q3'),'V3 runtime is loaded');
+  for(const file of ['main-v4-core.js','main-v4-director.js','main-v4-modes.js','main-v4-render.js','main-v4-ui.js'])assert.ok(html.includes(`${file}?v=20260915q3`),`${file} is loaded`);
   assert.ok(!html.includes('main-v3.js?v=20260825q2'),'Quest 2 runtime is no longer active');
   assert.ok(html.includes('COMMODORE QUEST 3.0'),'V3 loading identity is present');
 }
