@@ -73,15 +73,11 @@ try{
 
   const goldFeedback=await page.evaluate(()=>{
     score=0;run.gold=0;run.rareMutation="";
-    const emitted=[],originalShowToast=window.showToast,item={id:"r56-gold",kind:"credits",active:true,x:p1.x,y:p1.y,value:25,scoreValue:25};
-    window.showToast=function(...args){emitted.push({title:String(args[0]||""),text:String(args[1]||"")});return originalShowToast.apply(this,args)};
-    try{
-      const result=applyItem(item,p1);
-      return{result,awarded:item._ccgGoldAwarded===true,emitted,gold:Number(run.gold||0),score:Number(score||0),visibleToast:String(document.getElementById("pickup-title")?.textContent||"")};
-    }finally{window.showToast=originalShowToast}
+    const foundation=window.CCGDungeonProgressionFoundation,item={id:"r56-gold",kind:"credits",active:true,x:p1.x,y:p1.y,value:25,scoreValue:25},coinAwardsBefore=Number(foundation?.state?.coinAwards||0);
+    const result=applyItem(item,p1);
+    return{result,awarded:item._ccgGoldAwarded===true,gold:Number(run.gold||0),score:Number(score||0),coinAwardsDelta:Number(foundation?.state?.coinAwards||0)-coinAwardsBefore,hud:String(document.getElementById("hud-gold")?.textContent||"")};
   });
-  assert.notEqual(goldFeedback.result,false,`credits pickup must complete: ${JSON.stringify(goldFeedback)}`);assert.equal(goldFeedback.awarded,true,`credits must be marked as Gold-awarded exactly once: ${JSON.stringify(goldFeedback)}`);assert.equal(goldFeedback.gold,1,`credits must award one Gold coin: ${JSON.stringify(goldFeedback)}`);assert.equal(goldFeedback.score,0,`credits must not change Score: ${JSON.stringify(goldFeedback)}`);
-  const goldNotice=goldFeedback.emitted.find(row=>/GOLD/i.test(row.title));assert.ok(goldNotice,`credits must emit Gold feedback even when notification priority owns the visible banner: ${JSON.stringify(goldFeedback)}`);assert.match(goldNotice.text,/\+1 Gold/i);assert.match(goldNotice.text,/Score is unchanged/i);
+  assert.notEqual(goldFeedback.result,false,`credits pickup must complete: ${JSON.stringify(goldFeedback)}`);assert.equal(goldFeedback.awarded,true,`credits must be marked as Gold-awarded exactly once: ${JSON.stringify(goldFeedback)}`);assert.equal(goldFeedback.gold,1,`credits must award one Gold coin: ${JSON.stringify(goldFeedback)}`);assert.equal(goldFeedback.score,0,`credits must not change Score: ${JSON.stringify(goldFeedback)}`);assert.equal(goldFeedback.coinAwardsDelta,1,`credits must record exactly one Gold award: ${JSON.stringify(goldFeedback)}`);assert.equal(goldFeedback.hud,"1",`Gold HUD must reflect the awarded coin: ${JSON.stringify(goldFeedback)}`);
 
   const icons=await page.evaluate(()=>{p1.inventorySlots=3;p1.inventory=[{kind:"potion",name:"Restoration Potion",qty:2},{kind:"teleport",name:"Teleport Spell",qty:1},{kind:"artefact",name:"Rare Artefact",qty:1}];sync();window.CCGLostSizzlerV141R56PlaytestCompletion.renderQuickIcons();return [...document.querySelectorAll("#quick-slots .quick-slot")].slice(0,3).map((slot,index)=>{const icon=slot.querySelector(".r56-quick-slot-icon svg,.r56-quick-slot-icon img.item-art"),a=slot.getBoundingClientRect(),b=icon?.getBoundingClientRect();return{index,tag:String(icon?.tagName||""),has:Boolean(icon),w:b?.width||0,h:b?.height||0,inside:Boolean(b&&b.left>=a.left&&b.right<=a.right&&b.top>=a.top&&b.bottom<=a.bottom)}})});
   assert.equal(icons.length,3,`three Quick Inventory slots must render: ${JSON.stringify(icons)}`);for(const row of icons){assert.equal(row.has,true,`occupied slot ${row.index+1} must contain graphical item art: ${JSON.stringify(icons)}`);assert.ok(row.w>=16&&row.h>=16&&row.inside,`slot ${row.index+1} icon must remain visible inside the compact bottom strip: ${JSON.stringify(icons)}`)}
