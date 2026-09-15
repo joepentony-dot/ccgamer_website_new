@@ -109,13 +109,15 @@ try{
   await page.waitForFunction(()=>mode==="playing"&&document.getElementById("named-dossier-panel")?.classList.contains("hidden")&&document.activeElement?.id==="game");
 
   const shop=await page.evaluate(()=>{
-    score=10000;
-    const fixture={id:"r20-shop",active:true,shopType:"entrance",scorePurchases:0,sold:{},title:"R20 TEST SHOP"};
+    score=10000;run.gold=10;
+    const fixture={id:"r20-shop",active:true,shopType:"entrance",goldPurchases:0,sold:{},title:"R20 TEST SHOP"};
     openShop(fixture,p1);buyShopItem("ammo");buyShopItem("ammo");
-    return{score:Number(score),deltas:[...document.querySelectorAll("#shop-score-delta-rail .shop-score-delta")].map(node=>node.textContent)};
+    return{score:Number(score),gold:Number(run.gold),purchases:Number(fixture.goldPurchases||0),next:Number(shopScorePrice(fixture))};
   });
-  assert.equal(shop.score,7000,"two normal shop buys must deduct the 1,000 then 2,000 price steps");
-  assert.deepEqual(shop.deltas,["−1,000 SCORE","−2,000 SCORE"],"multiple purchases must retain separate visible score-deduction feedback");
+  assert.equal(shop.score,10000,"Gold shop purchases must not spend gameplay score");
+  assert.equal(shop.gold,5,"two normal shop buys must deduct the 2 then 3 Gold price steps");
+  assert.equal(shop.purchases,2,"two successful Gold purchases must advance the shop purchase counter twice");
+  assert.equal(shop.next,4,"the next normal shop purchase must cost 4 Gold after two buys");
   await page.evaluate(()=>closeShop());
   await page.waitForFunction(()=>mode==="playing");
 
@@ -154,7 +156,7 @@ try{
   }
 
   assert.deepEqual(errors,[],`r20 browser regression contract must not produce uncaught page errors: ${errors.join("\n")}`);
-  console.log("V10.42 r20 live firing, dossier, shop feedback, stall pacing, door animation and desktop cursor browser contract passed.");
+  console.log("V10.42 r20 live firing, dossier, Gold shop, stall pacing, door animation and desktop cursor browser contract passed.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
