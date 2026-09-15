@@ -71,10 +71,10 @@ try{
   const xpFeedback=await page.evaluate(()=>({text:String(window.CCGLostSizzlerV141R56PlaytestCompletion.state.lastPickup),xp:Number(p1.totalXp||0)}));
   assert.ok(xpFeedback.xp>0,`XP orb must award XP below the cap: ${JSON.stringify(xpFeedback)}`);assert.match(xpFeedback.text,/\+\d+ XP/);
 
-  await page.evaluate(()=>{score=0;window.CCGLostSizzlerV141R56PlaytestCompletion.state.lastPickup="";applyItem({id:"r56-score",kind:"credits",active:true,x:p1.x,y:p1.y,value:25,scoreValue:25},p1)});
-  await page.waitForFunction(()=>/SCORE/.test(String(window.CCGLostSizzlerV141R56PlaytestCompletion?.state?.lastPickup||"")),null,{timeout:3000});
-  const scoreFeedback=await page.evaluate(()=>({text:String(window.CCGLostSizzlerV141R56PlaytestCompletion.state.lastPickup),score:Number(score)}));
-  assert.ok(scoreFeedback.score>0,`score item must change score: ${JSON.stringify(scoreFeedback)}`);assert.match(scoreFeedback.text,/\+.*SCORE/);
+  await page.evaluate(()=>{score=0;run.gold=0;run.rareMutation="";applyItem({id:"r56-gold",kind:"credits",active:true,x:p1.x,y:p1.y,value:25,scoreValue:25},p1)});
+  await page.waitForFunction(()=>/GOLD/i.test(String(document.getElementById("pickup-title")?.textContent||"")),null,{timeout:3000});
+  const goldFeedback=await page.evaluate(()=>({toast:String(document.getElementById("pickup-title")?.textContent||""),gold:Number(run.gold||0),score:Number(score||0)}));
+  assert.equal(goldFeedback.gold,1,`credits must award one Gold coin: ${JSON.stringify(goldFeedback)}`);assert.equal(goldFeedback.score,0,`credits must not change Score: ${JSON.stringify(goldFeedback)}`);assert.match(goldFeedback.toast,/GOLD/i);
 
   const icons=await page.evaluate(()=>{p1.inventorySlots=3;p1.inventory=[{kind:"potion",name:"Restoration Potion",qty:2},{kind:"teleport",name:"Teleport Spell",qty:1},{kind:"artefact",name:"Rare Artefact",qty:1}];sync();window.CCGLostSizzlerV141R56PlaytestCompletion.renderQuickIcons();return [...document.querySelectorAll("#quick-slots .quick-slot")].slice(0,3).map((slot,index)=>{const icon=slot.querySelector(".r56-quick-slot-icon svg,.r56-quick-slot-icon img.item-art"),a=slot.getBoundingClientRect(),b=icon?.getBoundingClientRect();return{index,tag:String(icon?.tagName||""),has:Boolean(icon),w:b?.width||0,h:b?.height||0,inside:Boolean(b&&b.left>=a.left&&b.right<=a.right&&b.top>=a.top&&b.bottom<=a.bottom)}})});
   assert.equal(icons.length,3,`three Quick Inventory slots must render: ${JSON.stringify(icons)}`);for(const row of icons){assert.equal(row.has,true,`occupied slot ${row.index+1} must contain graphical item art: ${JSON.stringify(icons)}`);assert.ok(row.w>=16&&row.h>=16&&row.inside,`slot ${row.index+1} icon must remain visible inside the compact bottom strip: ${JSON.stringify(icons)}`)}
