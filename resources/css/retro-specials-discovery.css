@@ -1,0 +1,330 @@
+/* =========================================================
+   CCG RETRO SPECIALS — DISCOVERY CONTROLS
+   ---------------------------------------------------------
+   Dedicated enhancement layer for the Retro Specials page.
+   Loaded by js/retro-specials-loader.js only on that collection.
+========================================================= */
+
+body[data-collection="Retro Specials"] .ccg-retro-specials-discovery-shell {
+    width: min(1320px, calc(100% - 28px));
+    margin: 0 auto clamp(26px, 4vw, 42px);
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-latest,
+body[data-collection="Retro Specials"] .ccg-retro-discovery {
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 16px;
+    background:
+        linear-gradient(145deg, rgba(var(--accent-rgb),0.07), transparent 46%),
+        rgba(5,10,22,0.76);
+    box-shadow:
+        0 18px 42px rgba(0,0,0,0.28),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-latest {
+    margin-bottom: clamp(18px, 3vw, 26px);
+    padding: clamp(16px, 2.6vw, 24px);
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-discovery {
+    padding: clamp(16px, 2.6vw, 24px);
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-section-heading,
+body[data-collection="Retro Specials"] .ccg-retro-archive-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px 28px;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-section-heading {
+    margin-bottom: 18px;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-section-heading--compact {
+    align-items: center;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-section-heading h2,
+body[data-collection="Retro Specials"] .ccg-retro-archive-heading h2 {
+    margin: 0;
+    color: rgba(249,252,255,0.97);
+    font: 700 clamp(1.02rem, 2vw, 1.34rem)/1.3 "Orbitron", sans-serif;
+    letter-spacing: 0.035em;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-section-heading p,
+body[data-collection="Retro Specials"] .ccg-retro-archive-heading > p {
+    max-width: 56ch;
+    margin: 0;
+    color: rgba(228,238,248,0.70);
+    font-size: 0.9rem;
+    line-height: 1.55;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-section-heading__eyebrow {
+    margin: 0 0 5px !important;
+    color: rgb(var(--accent-rgb)) !important;
+    font: 700 0.68rem/1.2 "Orbitron", sans-serif !important;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-latest__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(12px, 1.6vw, 18px);
+    align-items: stretch;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-latest__grid .ccg-game-card--retro-event .ccg-game-card__title {
+    font-size: clamp(0.88rem, 1.25vw, 1rem);
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-latest__grid .ccg-game-card--retro-event .ccg-game-card__desc {
+    -webkit-line-clamp: 2;
+    font-size: 0.84rem;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-discovery__toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(180px, 240px);
+    gap: 14px;
+    align-items: end;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-search,
+body[data-collection="Retro Specials"] .ccg-retro-sort {
+    display: grid;
+    gap: 7px;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-search__label,
+body[data-collection="Retro Specials"] .ccg-retro-sort > span {
+    color: rgba(238,246,252,0.78);
+    font: 700 0.7rem/1.2 "Orbitron", sans-serif;
+    letter-spacing: 0.065em;
+    text-transform: uppercase;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-search__field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 46px;
+    padding: 0 13px;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    background: rgba(2,8,20,0.78);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.035);
+    transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-search__field:focus-within {
+    border-color: rgba(var(--accent-rgb),0.62);
+    background: rgba(3,10,24,0.90);
+    box-shadow:
+        0 0 0 3px rgba(var(--accent-rgb),0.10),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-search__field > span {
+    color: rgb(var(--accent-rgb));
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-search input,
+body[data-collection="Retro Specials"] .ccg-retro-sort select {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: rgba(248,252,255,0.95);
+    font: 500 0.95rem/1.3 "Roboto", sans-serif;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-search input {
+    min-height: 44px;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-search input::placeholder {
+    color: rgba(218,229,240,0.46);
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-search input::-webkit-search-cancel-button {
+    cursor: pointer;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-sort select {
+    min-height: 46px;
+    padding: 0 36px 0 12px;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    background: rgba(2,8,20,0.78);
+    color-scheme: dark;
+    cursor: pointer;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-sort select:focus {
+    border-color: rgba(var(--accent-rgb),0.62);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb),0.10);
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-filter {
+    min-height: 36px;
+    padding: 8px 12px;
+    border: 1px solid rgba(255,255,255,0.13);
+    border-radius: 999px;
+    background: rgba(2,8,20,0.58);
+    color: rgba(231,241,249,0.78);
+    font: 700 0.66rem/1.1 "Orbitron", sans-serif;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition:
+        border-color 160ms ease,
+        background 160ms ease,
+        color 160ms ease,
+        transform 160ms ease;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-filter:hover,
+body[data-collection="Retro Specials"] .ccg-retro-filter:focus-visible {
+    border-color: rgba(var(--accent-rgb),0.52);
+    color: rgba(248,252,255,0.96);
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-filter.is-active {
+    border-color: rgba(var(--accent-rgb),0.72);
+    background: rgba(var(--accent-rgb),0.17);
+    color: rgba(252,254,255,0.98);
+    box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb),0.08);
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-discovery__status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 36px;
+    margin-top: 13px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-discovery__status {
+    margin: 0;
+    color: rgba(228,238,248,0.68);
+    font-size: 0.85rem;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-discovery__reset {
+    padding: 5px 0;
+    border: 0;
+    background: transparent;
+    color: rgb(var(--accent-rgb));
+    font: 700 0.68rem/1.2 "Orbitron", sans-serif;
+    letter-spacing: 0.045em;
+    cursor: pointer;
+    text-underline-offset: 3px;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-discovery__reset:hover,
+body[data-collection="Retro Specials"] .ccg-retro-discovery__reset:focus-visible {
+    text-decoration: underline;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-archive-heading {
+    margin: 0 0 16px;
+    padding: 0 2px;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-load-more {
+    display: flex;
+    justify-content: center;
+    margin: clamp(20px, 3vw, 30px) 0 0;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-load-more .ccg-btn {
+    min-width: min(100%, 240px);
+    justify-content: center;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-empty {
+    grid-column: 1 / -1;
+    padding: clamp(28px, 5vw, 52px) 20px;
+    border: 1px dashed rgba(255,255,255,0.14);
+    border-radius: 14px;
+    background: rgba(5,10,22,0.48);
+    text-align: center;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-empty h3 {
+    margin: 0 0 8px;
+    color: rgba(248,252,255,0.95);
+    font: 700 1rem/1.3 "Orbitron", sans-serif;
+}
+
+body[data-collection="Retro Specials"] .ccg-retro-empty p {
+    margin: 0;
+    color: rgba(228,238,248,0.68);
+}
+
+@media (max-width: 1100px) {
+    body[data-collection="Retro Specials"] .ccg-retro-latest__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    body[data-collection="Retro Specials"] .ccg-retro-specials-discovery-shell {
+        width: calc(100% - 20px);
+    }
+
+    body[data-collection="Retro Specials"] .ccg-retro-section-heading,
+    body[data-collection="Retro Specials"] .ccg-retro-archive-heading,
+    body[data-collection="Retro Specials"] .ccg-retro-discovery__status-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    body[data-collection="Retro Specials"] .ccg-retro-discovery__toolbar {
+        grid-template-columns: 1fr;
+    }
+
+    body[data-collection="Retro Specials"] .ccg-retro-sort {
+        max-width: none;
+    }
+}
+
+@media (max-width: 560px) {
+    body[data-collection="Retro Specials"] .ccg-retro-latest__grid {
+        grid-template-columns: 1fr;
+    }
+
+    body[data-collection="Retro Specials"] .ccg-retro-filters {
+        gap: 7px;
+    }
+
+    body[data-collection="Retro Specials"] .ccg-retro-filter {
+        flex: 1 1 auto;
+        text-align: center;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body[data-collection="Retro Specials"] .ccg-retro-search__field,
+    body[data-collection="Retro Specials"] .ccg-retro-filter {
+        transition: none;
+    }
+}
