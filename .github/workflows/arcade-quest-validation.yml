@@ -57,7 +57,11 @@ jobs:
           node --check arcade/quest/game/audio.js
           node --check arcade/quest/game/achievements.js
           node --check arcade/quest/game/main-v3.js
-          node --check arcade/quest/game/main-v4.js
+          node --check arcade/quest/game/main-v4-core.js
+          node --check arcade/quest/game/main-v4-director.js
+          node --check arcade/quest/game/main-v4-modes.js
+          node --check arcade/quest/game/main-v4-render.js
+          node --check arcade/quest/game/main-v4-ui.js
           node --check arcade/quest/tests/quest-v3-contract.mjs
           node --check arcade/quest/tests/quest-v3-browser.mjs
           node --check admin/js/arcade-assets.js
@@ -89,8 +93,16 @@ jobs:
           grep -F "nativeFacing:-1" arcade/quest/game/assets-config.js
           grep -F "Q.createSpriteAnimator=function" arcade/quest/game/sprite-runtime.js
           grep -F "const flip=desiredFacing!==nativeFacing" arcade/quest/game/sprite-runtime.js
-          grep -F "main-v4.js?v=20260915q3" arcade/quest/index.html
-          grep -F "main-v4.js?v=20260915q3" games/commodore-quest/index.html
+          grep -F "main-v4-core.js?v=20260915q3" arcade/quest/index.html
+          grep -F "main-v4-director.js?v=20260915q3" arcade/quest/index.html
+          grep -F "main-v4-modes.js?v=20260915q3" arcade/quest/index.html
+          grep -F "main-v4-render.js?v=20260915q3" arcade/quest/index.html
+          grep -F "main-v4-ui.js?v=20260915q3" arcade/quest/index.html
+          grep -F "main-v4-core.js?v=20260915q3" games/commodore-quest/index.html
+          grep -F "main-v4-director.js?v=20260915q3" games/commodore-quest/index.html
+          grep -F "main-v4-modes.js?v=20260915q3" games/commodore-quest/index.html
+          grep -F "main-v4-render.js?v=20260915q3" games/commodore-quest/index.html
+          grep -F "main-v4-ui.js?v=20260915q3" games/commodore-quest/index.html
           ! grep -F "main-v3.js?v=20260825q2" arcade/quest/index.html
           ! grep -F "main-v3.js?v=20260825q2" games/commodore-quest/index.html
           test -f arcade/quest/assets/production/player/cheeky-main-sheet.png
