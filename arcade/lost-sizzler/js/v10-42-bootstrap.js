@@ -178,7 +178,7 @@
 
   function chainHasR1ChestOwner(owner){
     const seen=new Set();let current=owner;
-    while(typeof owner==="function"&&!seen.has(current)){
+    while(typeof current==="function"&&!seen.has(current)){
       if(current.__ccgV142R1===true)return true;
       seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null;
     }
