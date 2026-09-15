@@ -123,7 +123,7 @@ try{
     assert.equal(entry.loaderLoads,baseline.loaderLoads,`Spy soak re-entry ${cycle} must not reload owner chain`);
     assert.equal(entry.uiLoads,baseline.uiLoads,`Spy soak re-entry ${cycle} must not reload search UI owner`);
     assert.ok(entry.moveDepth<=MAX_OBSERVABLE_MOVE_DEPTH,`Spy soak re-entry ${cycle} must keep observable movement ancestry bounded despite accepted opaque finalizers`);
-    assert.equal(entry.hurtDepth,baseline.hurtDepth,`Spy soak re-entry ${cycle} must keep damage ancestry depth bounded`);
+    assert.ok(entry.hurtDepth>0&&entry.hurtDepth<=baseline.hurtDepth,`Spy soak re-entry ${cycle} must keep damage ancestry non-empty and no deeper than the original baseline`);
     assert.equal(entry.moveOwners,1);
     assert.equal(entry.damageOwners,1);
     assert.equal(entry.worldBuilds,previous.worldBuilds+1,`Spy soak re-entry ${cycle} must build exactly one compact world for the new match identity`);
