@@ -1,0 +1,50 @@
+name: Dungeon Progression Foundation Inspect
+
+on:
+  push:
+    branches:
+      - codex/dungeon-carnage-progression-foundation
+    paths:
+      - .github/workflows/dungeon-progression-foundation-inspect.yml
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect progression foundation source paths
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const files=[
+            'arcade/lost-sizzler/js/game-core.js',
+            'arcade/lost-sizzler/js/progression.js',
+            'arcade/lost-sizzler/js/systems.js',
+            'arcade/lost-sizzler/index.html'
+          ];
+          const needles=[
+            'function baseWeapon','function makePlayer','function preservePlayer',
+            'function shopScorePrice','function renderShop','function buyShopItem',
+            'weaponLoot','credits','treasureGoblin','kind==="treasure"','kind === "treasure"',
+            'function captureFloorEntryCheckpoint','function resumeSavedRun','function beginRun',
+            'bronzeKeys','scorePurchases','shop-score','shop-next-price',
+            'enemy.hp<=0','e.hp<=0','alive=false','alive = false','escapeMs'
+          ];
+          for(const file of files){
+            const s=fs.readFileSync(file,'utf8');
+            console.log(`\n===== ${file} (${s.length} bytes, ${s.split('\n').length} lines) =====`);
+            for(const needle of needles){
+              let from=0,hit=0;
+              while((from=s.indexOf(needle,from))!==-1 && hit<8){
+                hit++;
+                const a=Math.max(0,from-700),b=Math.min(s.length,from+needle.length+1800);
+                console.log(`\n--- ${needle} #${hit} @ ${from} ---\n${s.slice(a,b)}`);
+                from+=needle.length;
+              }
+            }
+          }
+          NODE
