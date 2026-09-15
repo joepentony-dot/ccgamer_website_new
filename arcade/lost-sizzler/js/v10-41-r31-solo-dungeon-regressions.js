@@ -40,10 +40,10 @@
     try{
       if(!activeShop||!p1)return false;
       const scoreNode=UI?.shopScore||document.getElementById("shop-score"),artefactNode=UI?.shopArtefacts||document.getElementById("shop-artefacts"),nextNode=UI?.shopNextPrice||document.getElementById("shop-next-price"),hudScore=UI?.score||document.getElementById("hud-score");
-      if(scoreNode)scoreNode.textContent=formatScore(score);
+      if(scoreNode){const hasGold=typeof PGR?.goldBalance==="function",gold=hasGold?PGR.goldBalance(run):0;scoreNode.textContent=hasGold?String(gold):formatScore(score);const label=scoreNode.parentElement?.firstChild;if(hasGold&&label)label.textContent="GOLD "}
       if(hudScore)hudScore.textContent=formatScore(score);
       if(artefactNode){let count=0;try{count=PGR?.inventoryKindCount?.(p1,"artefact")||0}catch(_){}artefactNode.textContent=String(Math.max(0,Number(count)||0))}
-      if(nextNode){let next=1000;try{next=typeof shopScorePrice==="function"?shopScorePrice(activeShop):1000*(2**Math.max(0,Math.floor(Number(activeShop.scorePurchases)||0)))}catch(_){}nextNode.textContent=String(Math.max(0,Math.floor(Number(next)||0)))}
+      if(nextNode){let next=typeof PGR?.shopGoldPrice==="function"?PGR.shopGoldPrice(activeShop):1000;try{next=typeof shopScorePrice==="function"?shopScorePrice(activeShop):next}catch(_){}nextNode.textContent=String(Math.max(0,Math.floor(Number(next)||0)));const label=nextNode.parentElement?.firstChild;if(typeof PGR?.shopGoldPrice==="function"&&label)label.textContent="NEXT GOLD PRICE "}
       state.shopWalletRefreshes++;return true
     }catch(_){return false}
   }
