@@ -30,3 +30,18 @@ test("single-game library still waits for enrichment before merging and returnin
   assert.ok(merge > enrichmentJoin, "enriched descriptions must still be merged before return");
   assert.doesNotMatch(block, /const enrichments = await fetchGameDescriptionEnrichments\(\);/, "do not restore sequential enrichment fetching");
 });
+
+function fetchDescriptionEnrichmentBlock() {
+  const start = source.indexOf("async function fetchGameDescriptionEnrichments()");
+  const end = source.indexOf("\nfunction mergeGameDescriptionEnrichment", start);
+  assert.notEqual(start, -1, "fetchGameDescriptionEnrichments must exist");
+  assert.notEqual(end, -1, "description enrichment boundary must remain discoverable");
+  return source.slice(start, end);
+}
+
+test("description enrichments revalidate instead of forcing a full no-store transfer", () => {
+  const block = fetchDescriptionEnrichmentBlock();
+  // no-cache still validates freshness, while allowing a previously stored response to satisfy an unchanged payload.
+  assert.match(block, /fetch\(url, \{ cache: "no-cache" \}\)/, "enrichment fetch must permit validated browser reuse");
+  assert.doesNotMatch(block, /cache: "no-store"/, "enrichment fetch must not force a full fresh transfer on every game navigation");
+});
