@@ -3,7 +3,8 @@
 
 The first six genre cards stay eager so desktop/tablet initial content is not
 artificially delayed. The remaining nine cards use browser-native lazy loading.
-Only the known genre-card <img> tags are allowed to change.
+Only the known genre-card <img> tags are allowed to change. The operation is
+idempotent so the corrected PR head can be validated without further edits.
 """
 
 from __future__ import annotations
