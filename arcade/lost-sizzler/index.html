@@ -91,8 +91,7 @@
         </div>
         <div class="menu-config"><label class="field"><span>PLAYER 1 NAME</span><input id="player-name" maxlength="18" value="CCG Player" autocomplete="nickname"></label><label class="field"><span>DIFFICULTY</span><select id="difficulty"><option>CASUAL</option><option selected>ARCADE</option><option>SIZZLER</option><option>GOLD MEDAL</option></select></label></div>
         <div class="mode-select-label"><span>✦</span> CHOOSE YOUR ADVENTURE <span>✦</span></div>
-        <div class="menu-buttons game-mode-buttons" aria-label="Game modes"><button id="solo-btn" class="primary game-mode-button mode-solo">Play Solo</button><button id="tutorial-zone-btn" type="button" class="tutorial-primary-option">Tutorial</button><button id="create-btn" class="game-mode-button mode-dungeon" data-room-mode="dungeon">Dungeon Multiplayer</button><button id="continue-save-btn" class="save-resume hidden">Resume Saved Run</button><button id="daily-btn">Weekly High-Score Vault</button><button id="split-btn">2P Split Screen</button></div>
-        <section class="online-howto" aria-label="Online multiplayer instructions"><h3>ONLINE MULTIPLAYER — WORLDWIDE BROWSER ROOMS</h3><div><p><b>HOST</b> Choose Dungeon Multiplayer for up to four players. Share the room invite, then start from the lobby.</p><p><b>JOIN</b> Open the invite or enter its room code. Supabase Realtime relays host-authoritative Dungeon play between supported browsers in different countries.</p></div></section>
+        <div class="menu-buttons game-mode-buttons" aria-label="Game modes"><button id="solo-btn" class="primary game-mode-button mode-solo">Play Solo</button><button id="tutorial-zone-btn" type="button" class="tutorial-primary-option">Tutorial</button><button id="continue-save-btn" class="save-resume hidden">Resume Saved Run</button><button id="daily-btn">Weekly High-Score Vault</button><button id="split-btn">2P Split Screen</button></div>
         <section id="weekly-vault" class="weekly-vault-section" aria-labelledby="weekly-vault-title">
         <h3 id="weekly-vault-title">WEEKLY HIGH-SCORE VAULT LEADERBOARD</h3>
         <p class="weekly-leaderboard-note">Check this leaderboard throughout the week to see who is winning. If nobody completes an attempt or nobody plays, no winner is declared and nothing is awarded or announced for that week.</p>
@@ -101,21 +100,12 @@
         <ol id="weekly-leaderboard" class="weekly-leaderboard" aria-label="Weekly High-Score Vault leaderboard"></ol>
         </section>
         <div class="menu-buttons secondary-menu"><button id="rulebook-btn">Objectives &amp; Rulebook</button><button id="support-btn">Support / Donate / Share</button><a class="menu-exit-link" href="/games/ccg-games/">Exit to CCG Games</a></div>
-        <div class="join-row"><input id="room-code" maxlength="6" placeholder="ROOM CODE" autocomplete="off"><button id="join-btn">Join Online Room</button></div>
         <p id="collection-summary" class="collection-summary">Unique C64 titles permanently saved on this device: 0. Duplicates count once; clearing browser data resets this list.</p>
         <p id="menu-note" class="note">Starting a run requests fullscreen automatically. Collectible games are shuffled into a seeded random order for every run. Weekly High-Score Vault allows one registered-account attempt per week, resets Monday at 00:00 UTC, uses Arcade rules, and death or completion ends the attempt. Sound begins when play starts.</p>
         <p class="game-copyright">© 2026 CHEEKY COMMODORE GAMER · ALL RIGHTS RESERVED</p>
         <div class="keys-help"><kbd>P1: WASD / ARROWS MOVE • SPACE ATTACK • L-SHIFT DASH • E POTION • Q TORCH</kbd><kbd>R TELEPORT • C CLOSE DOOR • B BANISH • TAB INVENTORY</kbd><kbd>P2: IJKL MOVE • ENTER ATTACK • R-CTRL DASH • O POTION • M MAP • F FULLSCREEN</kbd></div>
       </div>
     </div>
-
-    <div id="online-lobby" class="overlay hidden" aria-live="polite"><div class="panel online-lobby-card">
-      <p class="lobby-kicker">ONLINE MULTIPLAYER</p><h2>ROOM <span id="lobby-room-code">-----</span></h2>
-      <p id="lobby-status">1/4 players connected</p>
-      <label class="field lobby-invite"><span>INVITE LINK</span><input id="lobby-invite-url" readonly></label>
-      <div class="menu-buttons lobby-actions"><button id="lobby-copy-btn">Copy Invite</button><button id="lobby-share-btn">Share Invite</button><button id="lobby-start-btn" class="primary">Start Dungeon</button><button id="lobby-cancel-btn" class="danger-button">Cancel</button></div>
-      <div class="lobby-columns"><section><h3>PLAYERS</h3><ol id="lobby-player-list"></ol></section><section><h3>HOW IT WORKS</h3><p id="lobby-capacity-copy">The host controls the start. Guests remain in this lobby until the host begins. Dungeon Multiplayer holds four players; disconnected guests are removed and the earliest remaining player becomes host.</p></section></div>
-    </div></div>
 
     <div id="pause" class="overlay hidden"><div class="panel compact"><h2>Paused</h2><p>Continue the run, abandon its unsaved live state and return to the title screen, or leave C64 Dungeon Carnage completely.</p><div class="menu-buttons"><button id="resume-btn" class="primary">Continue</button><button id="pause-quit-btn" class="danger-button">Quit to Main Menu</button><a class="menu-exit-link" href="/games/ccg-games/">Exit to CCG Games</a></div><small>Saved floor checkpoints and permanently banked C64 titles are not removed.</small></div></div>
 
