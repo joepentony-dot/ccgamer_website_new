@@ -1,6 +1,12 @@
 name = "ccg-game-music-upload"
 main = "src/worker.mjs"
 compatibility_date = "2026-09-09"
+workers_dev = false
+keep_vars = true
+
+[[routes]]
+pattern = "www.cheekycommodoregamer.co.uk/api/admin/game-music*"
+zone_name = "cheekycommodoregamer.co.uk"
 
 [[r2_buckets]]
 binding = "GAME_MUSIC"
