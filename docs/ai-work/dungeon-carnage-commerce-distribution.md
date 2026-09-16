@@ -6,11 +6,9 @@ Dungeon Carnage purchase/download distribution, release packaging, desktop/Windo
 
 ## Verified checkpoint — 2026-09-16
 
-Current `main` is `5112035f0d1f3c80fdb4fa2c6c83ff0228778600`.
+The intended distribution route is **itch.io**. `arcade/lost-sizzler/PROGRESS.md` records itch.io as the purchase/download route and marks the old PayPal-specific checkout/paywall/download plan **SUPERSEDED**. The CCG website remains the branded landing/demo experience. CCG account/community services are not a reason to revive the old custom payment-delivery stack.
 
-`arcade/lost-sizzler/PROGRESS.md` records **itch.io as the intended purchase/download route** and marks the old PayPal-specific checkout/paywall/download plan **SUPERSEDED**. The CCG website remains the branded landing/demo experience. CCG account/community services are not a reason to revive the old custom payment-delivery stack.
-
-The active PR queue has now been reconciled to that product decision instead of leaving the old commerce graph open indefinitely.
+This distribution decision was reconciled through merged continuation/governance PR #2104. Later generated-output or documentation-only mainline commits do not change the route; always re-check live `main` before implementing package work.
 
 ### Superseded custom commerce and browser paywall — CLOSED
 
@@ -54,3 +52,4 @@ Before release, perform an end-to-end package check for supported product modes 
 - 2026-09-16: Reconciled the continuation record with the itch.io decision and separated superseded commerce from potentially reusable packaging work.
 - 2026-09-16: Closed the superseded PayPal/private-delivery chain #1961–#1975 (excluding unrelated #1976), #1977, #1979 and #1981 without merge.
 - 2026-09-16: Closed browser re-download/paywall PRs #1987–#1994 without merge. Provider-neutral packaging/Windows candidates remain open for later current-main reconciliation.
+- 2026-09-16: Post-#2104 reconciliation stabilized the checkpoint wording so later documentation/generated-output merges do not imply a distribution-route change.
