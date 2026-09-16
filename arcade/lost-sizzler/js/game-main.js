@@ -71,7 +71,6 @@ async function shareQuest(){
 
 function handleHeaderQuit(){
   if(mode==="menu"){location.assign("/games/ccg-games/");return}
-  if(mode==="lobby"){window.CCGLostSizzlerV106?.leaveLobby?.("You left the online room.");return}
   if(mode==="ended"){quitToMenu();return}
   openPauseMenu()
 }
@@ -99,7 +98,7 @@ function capturePausedResumeAttackReset(event){
 addEventListener("keydown",capturePausedResumeAttackReset,true);
 addEventListener("click",capturePausedResumeAttackReset,true);
 
-$("solo-btn").addEventListener("click",startSolo);$("continue-save-btn")?.addEventListener("click",resumeSavedRun);$("daily-btn")?.addEventListener("click",startDaily);$("split-btn").addEventListener("click",startSplit);$("create-btn").addEventListener("click",createRoom);$("join-btn").addEventListener("click",joinRoom);$("resume-btn")?.addEventListener("click",resumePausedRun);$("pause-quit-btn")?.addEventListener("click",quitToMenu);$("quit-btn")?.addEventListener("click",handleHeaderQuit);
+$("solo-btn").addEventListener("click",startSolo);$("continue-save-btn")?.addEventListener("click",resumeSavedRun);$("daily-btn")?.addEventListener("click",startDaily);$("split-btn").addEventListener("click",startSplit);$("resume-btn")?.addEventListener("click",resumePausedRun);$("pause-quit-btn")?.addEventListener("click",quitToMenu);$("quit-btn")?.addEventListener("click",handleHeaderQuit);
 $("rulebook-btn")?.addEventListener("click",showRulebook);$("rulebook-close-btn")?.addEventListener("click",()=>UI.rulebook?.classList.add("hidden"));$("support-btn")?.addEventListener("click",showSupport);$("support-close-btn")?.addEventListener("click",()=>UI.support?.classList.add("hidden"));$("share-btn")?.addEventListener("click",shareQuest);$("item-info-close")?.addEventListener("click",hideItemInfo);$("named-dossier-btn")?.addEventListener("click",showNamedDossier);
 $("inventory-dossier-btn")?.addEventListener("click",showNamedDossier);$("named-dossier-close")?.addEventListener("click",hideNamedDossier);$("shop-close")?.addEventListener("click",closeShop);$("save-now-btn")?.addEventListener("click",()=>{saveFloorCheckpoint(false);closeSavePrompt()});$("save-continue-btn")?.addEventListener("click",()=>{if(savePromptReason==="rest"&&run)run.consecutiveDeaths=0;closeSavePrompt()});$("save-return-btn")?.addEventListener("click",()=>{if(run)run.consecutiveDeaths=0;saveFloorCheckpoint(true)});
 $("inventory-close-top")?.addEventListener("click",returnToGameFromPanel);$("named-dossier-close-top")?.addEventListener("click",returnToGameFromPanel);
@@ -116,7 +115,7 @@ function isEditableKeyboardTarget(target){
 addEventListener("keydown",e=>{
   // Forms and text editors own their keyboard input. This must happen before
   // the gameplay preventDefault calls so Space remains usable in bug reports,
-  // emails, room codes, player names and any future editable admin/game field.
+  // emails, player names and any future editable admin/game field.
   if(isEditableKeyboardTarget(e.target))return;
   if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space","Tab"].includes(e.code))e.preventDefault();
   if(e.code==="Escape"){
