@@ -10,18 +10,38 @@
   function progression(){return window.CCGProgression||null}
   function currentShopOwner(){try{return typeof buyShopItem==="function"?buyShopItem:null}catch(_){return null}}
   function ownsCurrentBoundary(){const owner=currentShopOwner();return Boolean(owner?.__ccgArtefactShopStability)}
+  const nonNegativeInt=value=>Math.max(0,Math.floor(Number(value)||0));
+  const cloneItem=item=>item&&typeof item==="object"?{...item}:item;
 
-  function restoreRemovedArtefacts(player,removed){
-    const PGR=progression();
-    if(!PGR||!player)return;
-    for(const item of removed)PGR.inventoryAdd(player,item);
+  function physicalArtefactCount(player){
+    return (Array.isArray(player?.inventory)?player.inventory:[]).reduce((total,item)=>{
+      if(item?.kind!=="artefact")return total;
+      return total+Math.max(1,nonNegativeInt(item.qty)||1);
+    },0);
+  }
+
+  function snapshotPaymentState(player){
+    return{
+      inventory:(Array.isArray(player?.inventory)?player.inventory:[]).map(cloneItem),
+      hadEssence:Object.prototype.hasOwnProperty.call(player||{},"banishmentEssence"),
+      essence:player?.banishmentEssence
+    };
+  }
+
+  function restorePaymentState(player,snapshot){
+    if(!player||!snapshot)return;
+    player.inventory=snapshot.inventory.map(cloneItem);
+    if(snapshot.hadEssence)player.banishmentEssence=snapshot.essence;
+    else delete player.banishmentEssence;
   }
 
   function tradeArtefactsForFlask(){
     const PGR=progression(),player=currentPlayer();
     if(!PGR||!player)return false;
     const need=Math.max(1,Math.floor(Number(window.CCG_CONFIG?.stalker?.flaskArtefacts)||3));
-    const have=PGR.inventoryKindCount(player,"artefact");
+    const physicalHave=physicalArtefactCount(player);
+    const essenceHave=nonNegativeInt(player.banishmentEssence);
+    const have=physicalHave+essenceHave;
     if(have<need){
       diagnostics.insufficient++;
       try{showToast("NOT ENOUGH ARTEFACTS",`The Flask costs ${need} artefacts. You have ${have}.`,"red",6000)}catch(_){}
@@ -29,23 +49,35 @@
     }
 
     /*
-      Spend the Artefacts before checking the destination slot. Artefacts stack
-      in inventory, so a player carrying exactly the required stack can trade
-      it even when every visible inventory slot is occupied: removing that
-      stack creates the slot the Flask needs. If the Flask still cannot be
-      added, restore every removed Artefact and leave the transaction unchanged.
+      V10.42 stores newly collected Artefacts as banishmentEssence, while older
+      saves and compatibility fixtures can still contain physical Artefact
+      stacks in inventory. Treat both as spendable without converting one model
+      into the other. Spend physical Artefacts first so an exact full stack can
+      free the destination slot, then use essence for any remaining cost.
+      Snapshot both stores so a failed Flask insertion restores the transaction
+      exactly instead of routing legacy Artefacts through the V10.42 essence
+      inventory wrapper during rollback.
     */
-    const removed=[];
-    for(let index=0;index<need;index++){
+    const snapshot=snapshotPaymentState(player);
+    let remaining=need;
+    while(remaining>0&&physicalArtefactCount(player)>0){
       const slot=PGR.firstInventory(player,"artefact");
-      if(slot<0){restoreRemovedArtefacts(player,removed);diagnostics.rollbacks++;return false}
+      if(slot<0){restorePaymentState(player,snapshot);diagnostics.rollbacks++;return false}
       const item=PGR.inventoryRemove(player,slot,1);
-      if(item)removed.push(item);
+      if(!item){restorePaymentState(player,snapshot);diagnostics.rollbacks++;return false}
+      remaining--;
     }
+    if(remaining>0){
+      const available=nonNegativeInt(player.banishmentEssence);
+      const spent=Math.min(available,remaining);
+      player.banishmentEssence=available-spent;
+      remaining-=spent;
+    }
+    if(remaining>0){restorePaymentState(player,snapshot);diagnostics.rollbacks++;return false}
 
     const flask={kind:"banishment",name:"Banishment Flask",short:"BANISH"};
     if(!PGR.inventoryAdd(player,flask)){
-      restoreRemovedArtefacts(player,removed);diagnostics.rollbacks++;
+      restorePaymentState(player,snapshot);diagnostics.rollbacks++;
       try{showToast("INVENTORY FULL","The Flask still needs a free slot. Your Artefacts were not spent.","red",6000)}catch(_){}
       return false;
     }
