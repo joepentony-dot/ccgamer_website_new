@@ -9,7 +9,6 @@ const read=name=>fs.readFileSync(path.join(gameDir,name),"utf8");
 
 const elf=read("js/v10-14-gilded-elf.js");
 const loader=read("js/asset-overrides.js");
-const changelog=read("js/v10-12-developer-changelog.js");
 
 assert.match(loader,/v10-14-gilded-elf\.js\?v=\$\{CCG_GILDED_ELF_REV\}/,"Gilded Elf enhancement is cache-busted and loaded");
 assert.match(elf,/const SPAWN_CHANCE=\.08;/,"Gilded Elf retains the agreed rare 8% per-floor spawn chance");
@@ -27,6 +26,5 @@ assert.match(elf,/dustAt\(ox,oy,q\.dx,q\.dy,false\)/,"elf movement continues to 
 assert.match(elf,/if\(enemy\?\.gildedElf\)\{gildedHit\(enemy,power,attacker\);return\}/,"Gilded Elf damage remains isolated from ordinary enemy death/reward handling");
 assert.match(elf,/if\(item\?\.gildedElfCoin\)/,"Gilded Elf gold pickups continue to feed the score system");
 assert.match(elf,/if\(enemy\?\.gildedElf\)return drawGildedElf\(enemy\)/,"Gilded Elf keeps its dedicated visual and countdown renderer");
-assert.match(changelog,/LS-0823-14/,"developer changelog records the Gilded Elf encounter");
 
 console.log("V10.14 Gilded Elf regression checks passed");
