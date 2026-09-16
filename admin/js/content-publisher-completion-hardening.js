@@ -3,6 +3,7 @@ const MUSIC_BASE_URL = 'https://pub-2f6ac7261f6347f59524930d84e71a92.r2.dev/';
 const MUSIC_EXPECTED_KEY = 'ccg_publisher_music_expected_v1';
 
 const SUCCESS_TEXT = /^(?:source saved|verified|generated|refreshed|regenerated|passed(?:\s*\+.*)?|live\s*&\s*complete|complete|success)$/i;
+const COMPLETE_LIVE_TEXT = /^(?:live|live\s*&\s*complete|complete|success)$/i;
 const PIPELINE_ORDER = ['source', 'metadata', 'pages', 'library', 'sitemaps', 'validation', 'live'];
 
 function slugify(value) {
@@ -62,7 +63,7 @@ function enforcePipelineTruth() {
 
   const upstream = PIPELINE_ORDER.slice(0, -1);
   const incomplete = upstream.filter((step) => !isSuccessfulStep(step));
-  const claimsComplete = live.ok || /live(?:\s*&\s*complete)?|complete|success/i.test(live.text);
+  const claimsComplete = live.ok || COMPLETE_LIVE_TEXT.test(live.text);
 
   if (claimsComplete && incomplete.length) {
     live.node.classList.remove('is-ok');
