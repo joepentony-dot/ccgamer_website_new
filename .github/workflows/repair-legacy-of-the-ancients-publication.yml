@@ -1,0 +1,77 @@
+name: Repair Legacy of the Ancients Publication
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/repair-legacy-of-the-ancients-publication.yml"
+      - "scripts/migrate-legacy-of-the-ancients-publication.js"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+
+      - name: Validate repair script
+        run: node --check scripts/migrate-legacy-of-the-ancients-publication.js
+
+      - name: Apply Legacy publication repair
+        run: node scripts/migrate-legacy-of-the-ancients-publication.js
+
+      - name: Verify repair diff
+        run: git diff --check
+
+      - name: Commit repair branch
+        id: repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          BRANCH="automation/repair-legacy-of-the-ancients-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add games/games.json resources/images/thumbnails/all/legacy-of-the-ancient.webp resources/images/thumbnails/all/legacy-of-the-ancients.webp
+          git commit -m "Repair Legacy of the Ancients publication source"
+          git push origin "HEAD:$BRANCH"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+
+      - name: Open and merge repair pull request
+        if: steps.repair.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ steps.repair.outputs.branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PR_URL=$(gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --base main \
+            --head "$BRANCH" \
+            --title "Repair Legacy of the Ancients publication source" \
+            --body "Canonicalises the Legacy of the Ancients thumbnail filename and attaches the verified Lemon64 source so magazine-review import can refresh the game automatically.")
+          gh pr merge "$PR_URL" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
