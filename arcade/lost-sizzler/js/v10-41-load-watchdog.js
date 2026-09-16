@@ -4,24 +4,18 @@
   if(window.__CCG_LOST_SIZZLER_V141_LOAD_WATCHDOG__)return;
   window.__CCG_LOST_SIZZLER_V141_LOAD_WATCHDOG__=true;
 
-  const LIVE_HOSTS=new Set(["cheekycommodoregamer.co.uk","www.cheekycommodoregamer.co.uk"]);
-  const PLAYABLE_IDS=new Set(["solo-btn","tutorial-zone-btn","create-btn","horde-solo-btn","horde-mode-btn","saboteurs-mode-btn","continue-save-btn","daily-btn","split-btn","join-btn","lobby-start-btn"]);
-  const OWNER_USERNAME="cheeky commodore gamer";
-  const OWNER_ROLE="admin";
-  let ownerAccessGranted=false;
   const state={
     startedAt:performance.now(),lastTick:performance.now(),maxDelay:0,stalls:0,timer:0,finished:false,
     pendingSolo:false,soloReplayQueued:false,soloReplays:0,soloIntentSerial:0,soloRecoveries:0,soloRecoveryTimer:0,soloLivenessObserver:null,
     moduleObserver:null,loadingTimer:0,modulesReady:0,moduleKeys:new Set(),loadingStage:10,loadingStages:[10],
-    betaObserver:null,betaRunObserver:null,betaSyncTimer:0,betaClosed:false,betaBlocks:0,
-    ownerAccess:false,ownerAuthChecked:false,ownerAuthPending:false,ownerAuthTimer:0,ownerAuthAttempts:0,ownerUsername:"",ownerRole:"",
     r57Timer:0,r57Loaded:false
   };
 
-  const publicBetaClosed=()=>LIVE_HOSTS.has(String(location.hostname||"").toLowerCase());
-  const normalizeAccountName=value=>String(value||"").trim().replace(/\s+/g," ").toLowerCase();
-  const ownerProfileMatches=profile=>normalizeAccountName(profile?.username)===OWNER_USERNAME&&normalizeAccountName(profile?.role)===OWNER_ROLE;
-  const publicPlayLocked=()=>publicBetaClosed()&&!ownerAccessGranted;
+  // The C64 Dungeon Carnage release is playable on its public game page. These
+  // compatibility probes deliberately stay false for older runtime layers that
+  // still query them; account/authentication ownership remains with the site.
+  const publicBetaClosed=()=>false;
+  const publicPlayLocked=()=>false;
 
   function loadingStatus(message){
     const node=document.getElementById("ccg-release-loading-status");
@@ -30,160 +24,6 @@
 
   function releaseReady(){
     try{return document.body?.dataset?.releaseReady==="true"||window.CCGLostSizzlerReleaseGate?.state?.ready===true}catch(_){return false}
-  }
-
-  function ensureBetaStyle(){
-    if(!publicBetaClosed()||document.getElementById("ccg-lost-sizzler-beta-ended-style"))return;
-    const style=document.createElement("style");
-    style.id="ccg-lost-sizzler-beta-ended-style";
-    style.textContent=`
-      body.ccg-public-beta-closed #menu .game-mode-buttons button:disabled,
-      body.ccg-public-beta-closed #menu #join-btn:disabled,
-      body.ccg-public-beta-closed #online-lobby #lobby-start-btn:disabled{opacity:.28!important;filter:grayscale(1)!important;cursor:not-allowed!important;pointer-events:none!important;box-shadow:none!important}
-      body.ccg-public-beta-closed #menu .beta-stage-disclaimer{text-decoration:line-through!important;opacity:.58!important}
-      #ccg-beta-ended-sash{position:fixed;left:0;right:0;top:42%;z-index:9800;display:grid;place-items:center;gap:3px;padding:15px 18px;border-top:3px solid #ffd85a;border-bottom:3px solid #ffd85a;background:linear-gradient(90deg,rgba(17,4,27,.98),rgba(76,13,85,.99),rgba(17,4,27,.98));box-shadow:0 0 38px rgba(185,120,255,.52),0 12px 34px rgba(0,0,0,.72);pointer-events:none;text-align:center;text-transform:uppercase;font-family:Consolas,"Courier New",monospace;letter-spacing:.12em}
-      #ccg-beta-ended-sash strong{display:block;color:#d8cddd;font-size:clamp(13px,1.4vw,20px);font-weight:900;text-decoration:line-through;text-decoration-thickness:3px;text-decoration-color:#ff6868}
-      #ccg-beta-ended-sash span{display:block;color:#fff3b0;font-size:clamp(28px,5vw,72px);line-height:.96;font-weight:1000;letter-spacing:.08em;text-shadow:0 0 18px rgba(255,216,90,.55)}
-      #ccg-beta-ended-sash small{display:block;color:#e7dcf2;font-size:clamp(8px,.9vw,13px);font-weight:800;letter-spacing:.15em}
-      body.ccg-public-beta-closed:has(#rulebook-panel:not(.hidden)) #ccg-beta-ended-sash,
-      body.ccg-public-beta-closed:has(#support-panel:not(.hidden)) #ccg-beta-ended-sash{opacity:.12}
-      @media(max-width:760px){#ccg-beta-ended-sash{top:38%;padding:12px 10px}#ccg-beta-ended-sash span{font-size:clamp(30px,10vw,54px)}}
-    `;
-    document.head.appendChild(style);
-  }
-
-  function ensureBetaSash(){
-    if(!publicPlayLocked()||document.getElementById("ccg-beta-ended-sash"))return;
-    const sash=document.createElement("div");
-    sash.id="ccg-beta-ended-sash";
-    sash.setAttribute("role","status");
-    sash.setAttribute("aria-label","Beta has ended. Coming soon.");
-    sash.innerHTML='<strong>BETA HAS ENDED</strong><span>COMING SOON</span><small>THE LOST SIZZLER IS BEING PREPARED FOR ITS NEXT RELEASE</small>';
-    document.body.appendChild(sash);
-  }
-
-  function restoreOwnerControls(){
-    if(!publicBetaClosed()||!ownerAccessGranted)return false;
-    const changed=state.betaClosed||!state.ownerAccess;
-    state.betaClosed=false;state.ownerAccess=true;
-    const body=document.body;
-    if(body?.classList?.contains("ccg-public-beta-closed"))body.classList.remove("ccg-public-beta-closed");
-    if(body?.getAttribute?.("data-public-beta")!=="owner-preview")body?.setAttribute?.("data-public-beta","owner-preview");
-    const sash=document.getElementById("ccg-beta-ended-sash");if(sash)sash.remove();
-    for(const id of PLAYABLE_IDS){
-      const button=document.getElementById(id);if(!button||button.dataset.betaEnded!=="true")continue;
-      const wasDisabled=button.dataset.betaPreviousDisabled==="true",previousTitle=button.dataset.betaPreviousTitle||"";
-      if(button.disabled!==wasDisabled)button.disabled=wasDisabled;
-      if(wasDisabled){if(button.getAttribute("aria-disabled")!=="true")button.setAttribute("aria-disabled","true")}else if(button.hasAttribute("aria-disabled"))button.removeAttribute("aria-disabled");
-      if(previousTitle){if(button.title!==previousTitle)button.title=previousTitle}else if(button.hasAttribute("title"))button.removeAttribute("title");
-      delete button.dataset.betaEnded;delete button.dataset.betaPreviousDisabled;delete button.dataset.betaPreviousTitle;
-    }
-    if(changed){try{window.CCGWeeklyChallenge?.render?.()}catch(_){}}
-    return true
-  }
-
-  function lockPlayableControls(){
-    if(!publicBetaClosed())return false;
-    if(ownerAccessGranted)return restoreOwnerControls();
-    state.betaClosed=true;state.ownerAccess=false;
-    const body=document.body;
-    if(body&&!body.classList.contains("ccg-public-beta-closed"))body.classList.add("ccg-public-beta-closed");
-    if(body?.getAttribute?.("data-public-beta")!=="ended")body?.setAttribute?.("data-public-beta","ended");
-    ensureBetaStyle();ensureBetaSash();
-    for(const id of PLAYABLE_IDS){
-      const button=document.getElementById(id);if(!button)continue;
-      if(button.dataset.betaEnded!=="true"){
-        button.dataset.betaPreviousDisabled=button.disabled?"true":"false";
-        button.dataset.betaPreviousTitle=button.getAttribute("title")||"";
-      }
-      if(!button.disabled)button.disabled=true;
-      if(button.getAttribute("aria-disabled")!=="true")button.setAttribute("aria-disabled","true");
-      if(button.dataset.betaEnded!=="true")button.dataset.betaEnded="true";
-      const endedTitle="The browser beta has ended. The next Lost Sizzler release is coming soon.";
-      if(button.title!==endedTitle)button.title=endedTitle;
-    }
-    return true
-  }
-
-  function scheduleBetaControlSync(){
-    if(!publicBetaClosed()||state.betaSyncTimer)return false;
-    state.betaSyncTimer=setTimeout(()=>{
-      state.betaSyncTimer=0;
-      if(ownerAccessGranted)restoreOwnerControls();else lockPlayableControls();
-    },0);
-    return true
-  }
-
-  async function resolveOwnerAccess(){
-    if(!publicBetaClosed())return false;
-    const auth=window.ccgSupabase;
-    if(state.ownerAuthPending||!auth?.getCurrentUserContext||!auth?.getClient)return false;
-    state.ownerAuthPending=true;
-    try{
-      const context=await auth.getCurrentUserContext();
-      const user=context?.user;
-      if(!context?.isAuthenticated||!user?.id){
-        ownerAccessGranted=false;state.ownerAccess=false;state.ownerAuthChecked=true;state.ownerUsername="";state.ownerRole="";lockPlayableControls();return false
-      }
-      const client=await auth.getClient();
-      if(!client?.from)throw new Error("Website profile service unavailable");
-      const query=client.from("profiles").select("username,role").eq("id",user.id);
-      const result=typeof query?.maybeSingle==="function"?await query.maybeSingle():await query.single();
-      if(result?.error)throw result.error;
-      const profile=result?.data||null;
-      state.ownerUsername=String(profile?.username||"");state.ownerRole=String(profile?.role||"");
-      ownerAccessGranted=ownerProfileMatches(profile);state.ownerAccess=ownerAccessGranted;state.ownerAuthChecked=true;
-      if(ownerAccessGranted)restoreOwnerControls();else lockPlayableControls();
-      return ownerAccessGranted
-    }catch(error){
-      ownerAccessGranted=false;state.ownerAccess=false;state.ownerAuthChecked=true;lockPlayableControls();
-      console.warn("[Lost Sizzler] owner preview authentication unavailable; public beta remains locked",error);return false
-    }finally{state.ownerAuthPending=false}
-  }
-
-  function onOwnerAuthSignal(){
-    state.ownerAuthChecked=false;
-    resolveOwnerAccess().catch(()=>{});
-  }
-
-  function blockPublicPlay(event){
-    if(!publicPlayLocked())return;
-    const button=event?.target?.closest?.("button");
-    if(!button||!PLAYABLE_IDS.has(button.id))return;
-    event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();state.betaBlocks++;
-    lockPlayableControls();
-  }
-
-  function installPublicBetaLock(){
-    if(!publicBetaClosed())return false;
-    const start=()=>{
-      lockPlayableControls();
-      document.addEventListener("click",blockPublicPlay,true);
-      state.betaObserver=new MutationObserver(records=>{
-        const relevant=records.some(record=>{
-          if(record.type==="childList")return true;
-          const target=record.target;
-          return target===document.body||(target instanceof HTMLButtonElement&&PLAYABLE_IDS.has(target.id));
-        });
-        if(relevant)scheduleBetaControlSync();
-      });
-      state.betaObserver.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["class","disabled"]});
-      state.betaRunObserver=new MutationObserver(()=>{
-        if(!publicPlayLocked()||document.body?.dataset?.runActive!=="true")return;
-        queueMicrotask(()=>{try{if(typeof quitToMenu==="function")quitToMenu()}catch(_){};lockPlayableControls()});
-      });
-      state.betaRunObserver.observe(document.body,{attributes:true,attributeFilter:["data-run-active"]});
-      window.addEventListener("ccg:auth-ready",onOwnerAuthSignal);
-      window.addEventListener("ccg:auth-changed",onOwnerAuthSignal);
-      state.ownerAuthTimer=setInterval(()=>{
-        state.ownerAuthAttempts++;
-        if(window.ccgSupabase?.getCurrentUserContext){clearInterval(state.ownerAuthTimer);state.ownerAuthTimer=0;onOwnerAuthSignal()}
-        else if(state.ownerAuthAttempts>=40){clearInterval(state.ownerAuthTimer);state.ownerAuthTimer=0}
-      },250);
-      onOwnerAuthSignal();
-    };
-    if(document.body)start();else document.addEventListener("DOMContentLoaded",start,{once:true});
-    return true
   }
 
   function moduleScript(node){
@@ -349,21 +189,18 @@
     else if(gate?.failed){state.pendingSolo=false;stopLoaderObservers()}
   }
 
-  installPublicBetaLock();installStagedLoader();
+  installStagedLoader();
   document.addEventListener("click",capturePreReleaseSolo,true);
   window.addEventListener("ccg-lost-sizzler-cache-status",()=>queueMicrotask(syncCacheStatus));
   window.addEventListener("pagehide",()=>{
     state.pendingSolo=false;clearSoloLiveness(true);
-    document.removeEventListener("click",capturePreReleaseSolo,true);document.removeEventListener("click",blockPublicPlay,true);
-    window.removeEventListener("ccg:auth-ready",onOwnerAuthSignal);window.removeEventListener("ccg:auth-changed",onOwnerAuthSignal);
-    try{state.betaObserver?.disconnect?.();state.betaRunObserver?.disconnect?.();state.moduleObserver?.disconnect?.()}catch(_){}
-    if(state.betaSyncTimer)clearTimeout(state.betaSyncTimer);state.betaSyncTimer=0;
-    if(state.ownerAuthTimer)clearInterval(state.ownerAuthTimer);state.ownerAuthTimer=0;
+    document.removeEventListener("click",capturePreReleaseSolo,true);
+    try{state.moduleObserver?.disconnect?.()}catch(_){}
     if(state.r57Timer)clearInterval(state.r57Timer);state.r57Timer=0;
     stopLoaderObservers();
   },{once:true});
   state.timer=setInterval(tick,250);
   state.r57Timer=setInterval(ensureR57,100);
   tick();ensureR57();
-  window.CCGLostSizzlerLoadWatchdog={state,stop:stopLoaderObservers,replayPendingSolo,scheduleSoloLivenessCheck,clearSoloLiveness,syncLoadingStage,lockPlayableControls,restoreOwnerControls,resolveOwnerAccess,ownerProfileMatches,publicPlayLocked,publicBetaClosed,scheduleBetaControlSync,ensureR57};
+  window.CCGLostSizzlerLoadWatchdog={state,stop:stopLoaderObservers,replayPendingSolo,scheduleSoloLivenessCheck,clearSoloLiveness,syncLoadingStage,publicPlayLocked,publicBetaClosed,ensureR57};
 })();
