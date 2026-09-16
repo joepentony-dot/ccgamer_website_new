@@ -18,7 +18,7 @@ const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usag
 try{
   const context=await browser.newContext({viewport:{width:1440,height:900}}),page=await context.newPage();page.setDefaultTimeout(45000);const pageErrors=[];page.on("pageerror",error=>pageErrors.push(String(error?.stack||error)));
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&Boolean(window.CCGLostSizzlerV141R53TerminalSoloEndRecovery));
+  await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&document.body.dataset.releaseReady==="true"&&window.CCGLostSizzlerV142Bootstrap?.ready===true&&Boolean(window.CCGLostSizzlerV141R53TerminalSoloEndRecovery));
   await page.locator("#solo-btn").click({noWaitAfter:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof run!=="undefined"&&Boolean(run)&&typeof p1!=="undefined"&&Boolean(p1));
 

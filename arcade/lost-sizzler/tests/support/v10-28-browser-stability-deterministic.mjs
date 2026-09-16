@@ -102,6 +102,45 @@ const tutorialAckMatches=source.split(tutorialAckTarget).length-1;
 assert.ok(tutorialAckMatches>=4,`the deterministic browser harness must find the Tutorial stage acknowledgements (found ${tutorialAckMatches})`);
 source=source.split(tutorialAckTarget).join(`    await acknowledgeTutorialStage(state.page,"Tutorial stage acknowledgement");`);
 
+const immediateSoloWaitTarget=`    await withTimeout(state.page.waitForFunction(()=>document.body.dataset.runActive==="true",null,{timeout:15000}),STAGE_TIMEOUT_MS,"queued Solo launch");`;
+const immediateSoloWaitReplacement=`    try{
+      await withTimeout(state.page.waitForFunction(()=>document.body.dataset.runActive==="true",null,{timeout:15000}),STAGE_TIMEOUT_MS,"queued Solo launch");
+    }catch(error){
+      const debug=await state.page.evaluate(()=>({
+        body:{gameReady:document.body?.dataset?.gameReady,releaseReady:document.body?.dataset?.releaseReady,runActive:document.body?.dataset?.runActive,v142BootstrapReady:document.body?.dataset?.v142BootstrapReady},
+        bootstrap:window.CCGLostSizzlerV142Bootstrap?{ready:window.CCGLostSizzlerV142Bootstrap.ready,failed:window.CCGLostSizzlerV142Bootstrap.failed,pendingStartId:window.CCGLostSizzlerV142Bootstrap.pendingStartId,pendingStartRetries:window.CCGLostSizzlerV142Bootstrap.pendingStartRetries,error:window.CCGLostSizzlerV142Bootstrap.error||""}:null,
+        legacyGate:window.CCGLostSizzlerReleaseGate?.state?{ready:window.CCGLostSizzlerReleaseGate.state.ready,failed:window.CCGLostSizzlerReleaseGate.state.failed,errors:Number(window.CCGLostSizzlerReleaseGate.state.errors?.length||0)}:null,
+        watchdog:window.CCGLostSizzlerLoadWatchdog?.state?{finished:window.CCGLostSizzlerLoadWatchdog.state.finished,pendingSolo:window.CCGLostSizzlerLoadWatchdog.state.pendingSolo,soloReplayQueued:window.CCGLostSizzlerLoadWatchdog.state.soloReplayQueued,soloReplays:window.CCGLostSizzlerLoadWatchdog.state.soloReplays,modulesReady:window.CCGLostSizzlerLoadWatchdog.state.modulesReady,loadingStage:window.CCGLostSizzlerLoadWatchdog.state.loadingStage}:null,
+        button:(()=>{const button=document.getElementById("solo-btn");return button?{disabled:button.disabled,connected:button.isConnected,ariaBusy:button.getAttribute("aria-busy")}:null})(),
+        runtime:{runActive:Boolean(window.run?.active),mode:typeof mode!=="undefined"?mode:null,playMode:typeof playMode!=="undefined"?playMode:null,p1:Boolean(window.p1)}
+      }));
+      console.error(\`[deterministic early-start diagnostic] immediate Solo ${"${JSON.stringify(debug)}"}\`);
+      throw error;
+    }`;
+const immediateSoloWaitMatches=source.split(immediateSoloWaitTarget).length-1;
+assert.equal(immediateSoloWaitMatches,1,"the diagnostic harness must find exactly one queued-Solo activation wait");
+source=source.replace(immediateSoloWaitTarget,immediateSoloWaitReplacement);
+
+const tutorialWaitTarget=`    await withTimeout(state.page.waitForFunction(()=>document.body.dataset.runActive==="true"&&window.CCGLostSizzlerOnboardingV120?.state?.active===true,null,{timeout:15000}),STAGE_TIMEOUT_MS,"Tutorial activation");`;
+const tutorialWaitReplacement=`    try{
+      await withTimeout(state.page.waitForFunction(()=>document.body.dataset.runActive==="true"&&window.CCGLostSizzlerOnboardingV120?.state?.active===true,null,{timeout:15000}),STAGE_TIMEOUT_MS,"Tutorial activation");
+    }catch(error){
+      const debug=await state.page.evaluate(()=>({
+        body:{gameReady:document.body?.dataset?.gameReady,releaseReady:document.body?.dataset?.releaseReady,runActive:document.body?.dataset?.runActive,v142BootstrapReady:document.body?.dataset?.v142BootstrapReady},
+        bootstrap:window.CCGLostSizzlerV142Bootstrap?{ready:window.CCGLostSizzlerV142Bootstrap.ready,failed:window.CCGLostSizzlerV142Bootstrap.failed,pendingStartId:window.CCGLostSizzlerV142Bootstrap.pendingStartId,pendingStartRetries:window.CCGLostSizzlerV142Bootstrap.pendingStartRetries,error:window.CCGLostSizzlerV142Bootstrap.error||""}:null,
+        legacyGate:window.CCGLostSizzlerReleaseGate?.state?{ready:window.CCGLostSizzlerReleaseGate.state.ready,failed:window.CCGLostSizzlerReleaseGate.state.failed,errors:Number(window.CCGLostSizzlerReleaseGate.state.errors?.length||0)}:null,
+        watchdog:window.CCGLostSizzlerLoadWatchdog?.state?{finished:window.CCGLostSizzlerLoadWatchdog.state.finished,pendingSolo:window.CCGLostSizzlerLoadWatchdog.state.pendingSolo,soloReplayQueued:window.CCGLostSizzlerLoadWatchdog.state.soloReplayQueued,soloReplays:window.CCGLostSizzlerLoadWatchdog.state.soloReplays,modulesReady:window.CCGLostSizzlerLoadWatchdog.state.modulesReady,loadingStage:window.CCGLostSizzlerLoadWatchdog.state.loadingStage}:null,
+        button:(()=>{const button=document.getElementById("tutorial-zone-btn");return button?{disabled:button.disabled,connected:button.isConnected,ariaBusy:button.getAttribute("aria-busy")}:null})(),
+        onboarding:window.CCGLostSizzlerOnboardingV120?.state?{active:window.CCGLostSizzlerOnboardingV120.state.active,tutorialRequested:window.CCGLostSizzlerOnboardingV120.state.tutorialRequested,step:window.CCGLostSizzlerOnboardingV120.state.step}:null,
+        runtime:{runActive:Boolean(window.run?.active),mode:typeof mode!=="undefined"?mode:null,playMode:typeof playMode!=="undefined"?playMode:null,p1:Boolean(window.p1)}
+      }));
+      console.error(\`[deterministic early-start diagnostic] Tutorial ${"${JSON.stringify(debug)}"}\`);
+      throw error;
+    }`;
+const tutorialWaitMatches=source.split(tutorialWaitTarget).length-1;
+assert.equal(tutorialWaitMatches,1,"the diagnostic harness must find exactly one Tutorial activation wait");
+source=source.replace(tutorialWaitTarget,tutorialWaitReplacement);
+
 fs.writeFileSync(tempPath,source,"utf8");
 try{
   await import(`${pathToFileURL(tempPath).href}?deterministic=${Date.now()}`);
