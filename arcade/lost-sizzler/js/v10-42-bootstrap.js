@@ -4,8 +4,8 @@
   if(window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
-  const BUILD="V10.42 r26";
-  const CACHE="20260916r26";
+  const BUILD="V10.42 r27";
+  const CACHE="20260916r27";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-r23-rpg-build-focus.js","CCGLostSizzlerV142R23RpgBuildFocus"],
@@ -126,20 +126,24 @@
 
   function replayPendingStart(){
     const pendingId=state.pendingStartId;
-    state.pendingStartId="";
     if(!pendingId)return;
-    const target=document.getElementById(pendingId);
-    target?.removeAttribute("aria-busy");
-    const deadline=Date.now()+5000;
+    const finish=()=>{
+      if(state.pendingStartId===pendingId)state.pendingStartId="";
+      document.getElementById(pendingId)?.removeAttribute("aria-busy");
+    };
+    const retry=()=>{
+      state.pendingStartRetries+=1;
+      const delay=Math.min(500,50+state.pendingStartRetries*25);
+      setTimeout(attempt,delay);
+    };
     const attempt=()=>{
-      if(!state.ready||state.failed||document.body.dataset.runActive==="true")return;
+      if(state.failed){finish();return}
+      if(document.body?.dataset?.runActive==="true"){finish();return}
+      if(!state.ready){retry();return}
       const button=document.getElementById(pendingId);
-      if(!button||!button.isConnected)return;
       const legacyGatePending=window.CCGLostSizzlerReleaseGate?.state?.ready===false;
-      if(button.disabled||legacyGatePending){
-        if(Date.now()<deadline){state.pendingStartRetries+=1;setTimeout(attempt,50)}
-        return;
-      }
+      if(!button||!button.isConnected||button.disabled||legacyGatePending){retry();return}
+      finish();
       button.click();
     };
     queueMicrotask(attempt);
