@@ -48,7 +48,7 @@ try{
   const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
 
   await page.goto(`${origin}/arcade/lost-sizzler/?live-defects-current-main=1`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&window.CCGLostSizzlerV142Bootstrap?.ready===true&&Boolean(window.CCGLostSizzlerV142AttackHoldLiveness)&&Boolean(window.CCGLostSizzlerV142ArtefactShopStability),null,{timeout:90000});
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&window.CCGLostSizzlerV142Bootstrap?.ready===true&&Boolean(window.CCGLostSizzlerV142AttackHoldLiveness)&&window.CCGDungeonProgressionFoundation?.ready===true&&window.CCGLostSizzlerV142ArtefactShopStability?.isInstalled?.()===true,null,{timeout:90000});
   await page.waitForTimeout(1900);
   assert.equal(await page.locator(".v102-brand p").textContent(),"C64 DUNGEON CARNAGE — V10.42","late bootstrap restamps must retain the C64 Dungeon Carnage identity");
 
@@ -84,9 +84,11 @@ try{
       capacity:PGR.inventoryCapacity(p1),
       gold:Number(run.gold),
       score:Number(score),
-      trades:Number(window.CCGLostSizzlerV142ArtefactShopStability?.diagnostics?.trades||0)
+      trades:Number(window.CCGLostSizzlerV142ArtefactShopStability?.diagnostics?.trades||0),
+      installs:Number(window.CCGLostSizzlerV142ArtefactShopStability?.diagnostics?.installs||0)
     };
   });
+  assert.ok(trade.installs>=1,"Artefact stability wrapper must own the live shop boundary before the exchange is tested");
   assert.equal(trade.result,true,"three Artefacts must be spendable for one Banishment Flask");
   assert.equal(trade.artefacts,0,"the three traded Artefacts must be consumed exactly once");
   assert.equal(trade.flasks,1,"the Artefact exchange must add exactly one Banishment Flask");
