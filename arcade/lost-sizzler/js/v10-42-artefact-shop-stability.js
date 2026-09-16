@@ -3,11 +3,10 @@
   "use strict";
   if(window.CCGLostSizzlerV142ArtefactShopStability)return;
 
-  const diagnostics={installs:0,trades:0,rollbacks:0,insufficient:0};
+  const diagnostics={installs:0,trades:0,rollbacks:0,insufficient:0,installWaits:0};
   let installed=false,installTimer=0;
 
   function currentPlayer(){try{return typeof p1!=="undefined"?p1:null}catch(_){return null}}
-  function currentShop(){try{return typeof activeShop!=="undefined"?activeShop:null}catch(_){return null}}
   function progression(){return window.CCGProgression||null}
 
   function restoreRemovedArtefacts(player,removed){
@@ -17,8 +16,8 @@
   }
 
   function tradeArtefactsForFlask(){
-    const PGR=progression(),player=currentPlayer(),shop=currentShop();
-    if(!PGR||!player||!shop)return false;
+    const PGR=progression(),player=currentPlayer();
+    if(!PGR||!player)return false;
     const need=Math.max(1,Math.floor(Number(window.CCG_CONFIG?.stalker?.flaskArtefacts)||3));
     const have=PGR.inventoryKindCount(player,"artefact");
     if(have<need){
@@ -59,7 +58,7 @@
   function install(){
     if(installed)return true;
     const foundation=window.CCGDungeonProgressionFoundation;
-    if(!foundation?.ready)return false;
+    if(!foundation?.ready){diagnostics.installWaits++;return false}
     try{
       if(typeof buyShopItem!=="function")return false;
       if(buyShopItem.__ccgArtefactShopStability){installed=true;return true}
@@ -81,13 +80,14 @@
     installTimer=setInterval(()=>{if(install())stopInstaller()},60);
     setTimeout(stopInstaller,12000);
   }
-  addEventListener("ccg:v142-ready",()=>{if(install())stopInstaller()},{once:true});
+  addEventListener("ccg:v142-ready",()=>{queueMicrotask(()=>{if(install())stopInstaller()})},{once:true});
   addEventListener("pagehide",stopInstaller,{once:true});
 
   window.CCGLostSizzlerV142ArtefactShopStability=Object.freeze({
     version:"V10.42-artefact-shop-stability",
     diagnostics,
     install,
-    tradeArtefactsForFlask
+    tradeArtefactsForFlask,
+    isInstalled:()=>installed
   });
 })();
