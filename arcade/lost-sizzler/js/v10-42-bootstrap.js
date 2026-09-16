@@ -4,8 +4,8 @@
   if(window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
-  const BUILD="V10.42 r27";
-  const CACHE="20260916r27";
+  const BUILD="V10.42 r28";
+  const CACHE="20260916r28";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-r23-rpg-build-focus.js","CCGLostSizzlerV142R23RpgBuildFocus"],
@@ -42,6 +42,7 @@
     ["v10-42-r22-stall-elapsed-handoff.js","CCGLostSizzlerV142R22StallElapsedHandoff"],
     ["v10-42-attack-hold-liveness.js","CCGLostSizzlerV142AttackHoldLiveness"],
     ["v10-42-artefact-shop-stability.js","CCGLostSizzlerV142ArtefactShopStability"],
+    ["v10-42-projectile-lifecycle.js","CCGLostSizzlerV142ProjectileLifecycle"],
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
     ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"]
   ];
