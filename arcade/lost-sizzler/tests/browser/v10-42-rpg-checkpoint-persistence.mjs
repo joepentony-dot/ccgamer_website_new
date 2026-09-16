@@ -78,7 +78,9 @@ try{
     };
     const checkpoint=window.CCGProgression.makeCheckpoint(run,p1,typeof p2!=="undefined"?p2:null,typeof score!=="undefined"?score:0,playMode);
     if(!window.CCGProgression.saveCheckpointData(checkpoint))throw new Error("Checkpoint save failed");
-    return{snapshot,run:{floor:run.floor,floorXP:run.floorXP,bankedXP:run.bankedXP},savedAt:checkpoint.savedAt};
+    const persisted=window.CCGProgression.loadCheckpoint();
+    if(!persisted)throw new Error("Persisted checkpoint could not be read back before navigation");
+    return{snapshot,run:{floor:run.floor,floorXP:run.floorXP,bankedXP:run.bankedXP},savedAt:persisted.savedAt};
   });
 
   assert.deepEqual(saved.snapshot.rpgStats,{might:5,vitality:6,agility:6,endurance:6,luck:5,arcana:6},"The qualification setup must create the expected four-stat V10.42 build.");
@@ -113,7 +115,7 @@ try{
 
   assert.equal(loaded.version,"V10.3","V10.42 RPG persistence must remain compatible with the established checkpoint format.");
   assert.equal(loaded.playMode,"solo","The saved dungeon mode must survive the checkpoint round-trip.");
-  assert.equal(loaded.savedAt,saved.savedAt,"The reload must read the exact checkpoint that was written before navigation.");
+  assert.equal(loaded.savedAt,saved.savedAt,"The reload must read the exact authoritative checkpoint that was persisted before navigation.");
   assert.deepEqual(loaded.run,saved.run,"Floor and XP run state must survive alongside the RPG build.");
   assert.deepEqual(loaded.player,saved.snapshot,"All six-stat RPG state, derived effects, relic state and V10.42 persistent fields must survive a real storage/page-reload round-trip.");
   assert.deepEqual(errors,[],`RPG checkpoint persistence qualification must not raise page errors: ${errors.join("\n")}`);
