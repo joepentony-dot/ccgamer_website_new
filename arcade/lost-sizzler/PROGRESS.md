@@ -5,11 +5,12 @@
 ## Audit checkpoint
 
 - Audited: **16 September 2026**.
-- Current runtime checkpoint: `c3549e6d45b7748f1efcf5c4f4ba134200325a5f` (#2113 merge).
+- Current runtime checkpoint: `95bd8431fd6b8313bf5873a79bd4bc93404d8de9` (#2115 merge).
 - #2090 is merged: held-fire liveness, Artefact/Essence Flask exchange support, early-Solo startup ownership and public C64 Dungeon Carnage identity are present in code and automated qualification is green.
 - #2098 is merged: deterministic R24 five-depth room grammar is present and qualified at V10.42 r26 / `20260916r26`.
 - #2102 is merged: the retained `hostEnemyStep(...)` through `dropInventorySlot(...)` local gameplay suffix was extracted from `game-network.js` into `game-local-runtime.js`.
 - #2113 is merged: the obsolete networked Dungeon Multiplayer packet routing, remote-player simulation and world serializer/receiver prefix has been retired from `game-network.js`; only inert compatibility owners required by the retained local session shell remain.
+- #2115 is merged: the full explored dungeon map supports Solo and local 2P Split Screen, uses a dedicated map mode, and ignores held-M repeats.
 - A merged PR is not treated as a closed user-reproduced defect until the deployed behaviour is manually accepted.
 
 ## Status definitions
@@ -29,6 +30,7 @@
 | Retired online entry/lobby | PRESENT | Networked Dungeon Multiplayer entry/lobby controls are removed and obsolete hard startup bindings are detached. Horde Survivor and Spy/Sizzler Saboteurs are retired product modes. |
 | Retained local runtime extraction | PRESENT | #2102 moved the active local gameplay suffix from `game-network.js` into `game-local-runtime.js`, preserving supported local gameplay ownership. |
 | Retired multiplayer runtime removal | PRESENT | #2113 replaced the obsolete online packet routing, remote-player simulation and world serializer/receiver layer in `game-network.js` with inert compatibility owners. Regression contracts now prohibit that retired transport/world-sync behaviour from returning while preserving the local RoomNetwork session shell still used by supported modes. |
+| Local Split Screen full map | PRESENT | #2115 restored the explored full dungeon map for supported local Split Screen while keeping the established P1 exploration knowledge and local input ownership intact. |
 | Five-depth campaign foundation | PRESENT | The ordered V10.42 bootstrap loads the five-depth campaign and floor-balance layers. |
 | Five-depth environment identity | PRESENT | R6 supplies distinct Threshold, Iron, Bone, Ash and Sigil environment identities. |
 | Five-depth room grammar | PRESENT | #2098 adds R24 deterministic room identities, landmarks, route moods, approach cues, foreshadowing and role/rare-role grammar. R24 is semantic metadata only and does not claim simulation, collision, progression, save or network ownership. |
