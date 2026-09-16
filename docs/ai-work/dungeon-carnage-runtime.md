@@ -6,14 +6,14 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Verified checkpoint — 2026-09-16
 
-The current runtime checkpoint is the merged #2113 retirement stage:
+The current runtime checkpoint is the merged #2115 supported Split Screen map stage:
 
-- qualified head: `2fa216c6f8004616134430be69439a80e728cfd3`
-- merge commit: `c3549e6d45b7748f1efcf5c4f4ba134200325a5f`
+- qualified head: `30c5871749d9015406bd98a7dc0123c7c6c0c8bc`
+- merge commit: `95bd8431fd6b8313bf5873a79bd4bc93404d8de9`
 
-#2102 remains the preceding structural stage that moved the retained local gameplay suffix into `game-local-runtime.js`. #2113 then retired the obsolete networked Dungeon Multiplayer packet/world-sync prefix from `game-network.js` while retaining the minimal inert callback/function owners still required by the local RoomNetwork session shell.
+#2102 moved the retained local gameplay suffix into `game-local-runtime.js`; #2113 retired the obsolete networked Dungeon Multiplayer packet/world-sync prefix from `game-network.js`; and #2115 restored the full explored map for supported local Split Screen without reviving retired online modes.
 
-The live work register records #2098 R24 five-depth room grammar as present, the XP source boundary as present, networked Dungeon Multiplayer/Horde/Spy as retired modes, #2102 local-runtime extraction as present, #2113 obsolete transport retirement as present, and #2090 held-fire/Flask repairs as awaiting hands-on acceptance.
+The live work register records #2098 R24 five-depth room grammar as present, the XP source boundary as present, networked Dungeon Multiplayer/Horde/Spy as retired modes, #2102 local-runtime extraction as present, #2113 obsolete transport retirement as present, #2115 local Split Screen full map as present, and #2090 held-fire/Flask repairs as awaiting hands-on acceptance.
 
 ### Completed runtime stages
 
@@ -46,6 +46,10 @@ The exact #2113 head was green before merge across its PR-triggered checks:
 
 The first Load Safety attempt had one isolated Chromium shard-5 failure: `v10-35-layout.mjs` timed out during its initial startup wait while every later contract in that shard passed and shards 1, 2, 3, 4 and 6 were green. The unchanged shard-5 job was rerun after the workflow completed and passed. No timeout, assertion or production runtime code was weakened to obtain green.
 
+### #2115 supported local Split Screen full map
+
+#2115, `codex/rebuild-split-full-map-current-main`, is **MERGED**. It restores the full explored-map panel for local Split Screen, retains P1 exploration knowledge as the shared map view, makes `M` ignore held-key repeats, and uses a dedicated `fullmap` non-playing mode so pause-recovery layers cannot mistake the overlay for an orphaned pause. Its exact head passed all current PR checks. The first Chromium shard-3 run failed only in the pre-existing `v10-28-browser-stability-deterministic.mjs` startup wait; the unchanged shard retry passed, with no test weakening or unrelated runtime change.
+
 ### Retired stale/superseded runtime PRs
 
 | PR | Classification | Current state |
@@ -64,7 +68,7 @@ The first Load Safety attempt had one isolated Chromium shard-5 failure: `v10-35
 ### Other unresolved candidates
 
 - #1976 (R30 ownership-audit throttle) may contain a useful optimisation idea, but it must be re-derived against current `main`; its old branch is not the integration vehicle.
-- #1902 concerns a still-supported Split Screen map behaviour. Current `main` still limits the V10.41 full explored map to Solo, so the requested split-screen behaviour appears genuinely missing; re-derive the small behaviour against current `main` rather than merging the old branch wholesale.
+- #1902 is closed without merge as superseded by merged #2115.
 - #1860 and #1852 are historical long-running containment/stabilisation branches and are not safe bases for new runtime work. Their broader non-runtime implications must be reconciled separately before any closure decision.
 
 ## Guardrails and next action
@@ -72,8 +76,6 @@ The first Load Safety attempt had one isolated Chromium shard-5 failure: `v10-35
 Preserve Solo, Tutorial, local 2P Split Screen and Weekly Vault/account services. The obsolete packet/world-sync retirement is complete; do not reintroduce its online transport, remote-player simulation or world snapshots while cleaning up residual terminology or compatibility code.
 
 The next repository-side runtime step is a **bounded audit of remaining retired-mode language/runtime residue** on current `main`. Only remove or relabel residue that is demonstrably obsolete; do not combine that audit with portal/topology/NPC/merchant work or with the separate itch.io release path.
-
-A separate small current-main rebuild of #1902's still-missing local Split Screen full-map behaviour is also a valid supported-mode candidate after the retired-mode residue boundary is reconciled.
 
 Manual acceptance remains separate from CI: #2090 sustained held-fire behaviour and the 3-Artefact Banishment Flask exchange still require hands-on confirmation on the deployed/current build before those reproduced defects are marked closed.
 
@@ -85,3 +87,4 @@ Manual acceptance remains separate from CI: #2090 sustained held-fire behaviour 
 - 2026-09-16: Updated #2113's canonical tests to retire obsolete positive world-sync expectations rather than restoring retired online behaviour.
 - 2026-09-16: Qualified #2113 head `2fa216c6...`; one transient `v10-35-layout` shard timeout passed on an unchanged targeted retry.
 - 2026-09-16: Merged #2113 as `c3549e6d45b7748f1efcf5c4f4ba134200325a5f`. Obsolete packet/world-sync runtime retirement is complete.
+- 2026-09-16: Closed stale #1902 and rebuilt its still-valid local Split Screen map behaviour as #2115 on current `main`. The exact head `30c58717...` passed the complete matrix after an unchanged retry of an unrelated `v10-28-browser-stability-deterministic.mjs` startup timeout; #2115 merged as `95bd8431fd6b8313bf5873a79bd4bc93404d8de9`.
