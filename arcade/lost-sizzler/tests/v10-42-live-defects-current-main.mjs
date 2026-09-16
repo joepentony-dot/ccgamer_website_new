@@ -14,6 +14,9 @@ assert.match(bootstrap,/expectedSubtitle="C64 DUNGEON CARNAGE — V10\.42"/,"aut
 assert.doesNotMatch(bootstrap,/expectedSubtitle="THE LOST SIZZLER/,"authoritative bootstrap must not restamp the retired public title");
 assert.match(bootstrap,/v10-42-attack-hold-liveness\.js/,"ordered bootstrap must load sustained attack-key liveness");
 assert.match(bootstrap,/v10-42-artefact-shop-stability\.js/,"ordered bootstrap must load Artefact exchange stability");
+assert.match(bootstrap,/legacyGatePending=window\.CCGLostSizzlerReleaseGate\?\.state\?\.ready===false/,"queued starts must wait for the legacy release gate rather than dropping the click");
+assert.match(bootstrap,/if\(button\.disabled\|\|legacyGatePending\)/,"queued starts must survive the transient disabled-button window at ordered-bootstrap completion");
+assert.match(bootstrap,/setTimeout\(attempt,50\)/,"queued starts must retry for a bounded period instead of being discarded after one microtask");
 
 assert.match(attack,/new Set\(\["Space","KeyF","Numpad0"\]\)/,"all supported P1 attack keys must share the held-fire normalisation");
 assert.match(attack,/input\?\.add\?\.\("Space"\)/,"held attack aliases must normalise to the canonical Space input consumed by the frame loop");
@@ -23,6 +26,9 @@ assert.match(attack,/addEventListener\("blur",clearHeld/,"focus loss must clear 
 assert.match(shop,/String\(id\)==="banishment"/,"Artefact repair must be isolated to the Flask exchange action");
 assert.match(shop,/inventoryRemove\(player,slot,1\)/,"Artefacts must be removed transactionally before destination-slot validation");
 assert.match(shop,/restoreRemovedArtefacts\(player,removed\)/,"failed exchange must restore every removed Artefact");
+assert.match(shop,/liveOwner\.__ccgArtefactShopStability/,"Artefact repair must verify current buyShopItem ownership rather than trusting a historical install flag");
+assert.match(shop,/wrapped\.__ccgOriginal=base/,"Artefact repair must preserve the latest non-Flask shop owner chain when re-binding");
+assert.match(shop,/if\(installed\)diagnostics\.rebinds\+\+/,"later shop wrappers must be detectable as an explicit Artefact-boundary rebind");
 assert.match(shop,/10 Gold purchase remains available separately/,"Artefact repair must preserve the current 10 Gold Flask alternative");
 assert.doesNotMatch(shop,/spendGold|shopGoldPrice/,"Artefact exchange repair must not rewrite the normal Gold economy");
 
