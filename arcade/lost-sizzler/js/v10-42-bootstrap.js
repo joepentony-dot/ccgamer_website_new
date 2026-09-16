@@ -121,7 +121,7 @@
     target.setAttribute("aria-busy","true");
     const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 systems are finishing their ordered startup. Your selected adventure will start automatically when the build is ready.";
   }
-  document.addEventListener("click",blockedStart,true);
+  window.addEventListener("click",blockedStart,true);
 
   function replayPendingStart(){
     const pendingId=state.pendingStartId;
@@ -222,7 +222,7 @@
       promoteR1ChestOwner();
       promoteStage8MerchantOwner();
       observeControllerSeal();
-      state.ready=true;stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
+      state.ready=true;stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";window.removeEventListener("click",blockedStart,true);
       const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five new dungeon floors are loaded in verified order. Solo, Tutorial and 2P Split Screen run locally; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
       replayPendingStart();
