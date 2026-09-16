@@ -142,7 +142,8 @@
       if(!state.ready){retry();return}
       const button=document.getElementById(pendingId);
       const legacyGatePending=window.CCGLostSizzlerReleaseGate?.state?.ready===false;
-      if(!button||!button.isConnected||button.disabled||legacyGatePending){retry();return}
+      if(!button||!button.isConnected){retry();return}
+      if(button.disabled||legacyGatePending){retry();return}
       finish();
       button.click();
     };
