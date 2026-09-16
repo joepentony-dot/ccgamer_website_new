@@ -10,7 +10,7 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 | PR | Branch | State | Focus |
 | --- | --- | --- | --- |
-| #2102 | `codex/dungeon-carnage-extract-local-runtime` | draft | Extract retained local runtime from `game-network.js`; audit found it one main commit behind and 12 commits ahead. |
+| #2102 | `codex/dungeon-carnage-extract-local-runtime` | draft | Extract retained local runtime from `game-network.js`; frozen at `52cd8192fca707423d48fc77761195c231619ffe`, one `main` commit behind and 14 commits ahead. Exact-head canonical Node, six-shard Chromium, safety, mobile, cache/version, validation, SEO, native-wheel and Workers checks passed. |
 | #2062 | `codex/dungeon-carnage-biome-room-grammar-mainline` | draft | Five-depth biome room grammar and checkpoint/browser contracts; 113 main commits behind. |
 | #2055 | `codex/dungeon-carnage-unified-ui` | ready for review | Startup/menu UI simplification; 182 main commits behind. |
 | #1960 | `fix/c64-dungeon-carnage-xp-source-boundary` | draft | XP source boundary; 366 main commits behind. |
@@ -23,8 +23,9 @@ Related open draft PRs: #1983 (startup overlay flicker), #1976 (R30 ownership-au
 
 Many candidates are substantially behind `main`; do not stack new runtime work on an old PR without first checking whether its change is already present, conflicts with newer retained-local-runtime work, or needs a fresh rebase. For runtime edits, inspect the current ordered script loading in `arcade/lost-sizzler/index.html`, `v10-42-bootstrap.js`, and the precise contract tests touched by the target PR.
 
-Next safe action: reconcile #2102 with current `main` and the newer same-topic candidate branches before extending its extraction. Keep the network-retirement boundary and the test suite aligned.
+Next safe action: keep #2102 frozen at `52cd8192fca707423d48fc77761195c231619ffe` and review its exact 11-file delta plus green evidence against current `main`; do not merge without explicit authorization. The similarly named extraction branches audited on 2026-09-16 were behind `main`, while later retirement candidates were stale divergent work and did not supersede #2102. Keep the network-retirement boundary and test suite aligned.
 
 ## Session log
 
+- 2026-09-16: Re-audited current `main`, all active runtime PRs and same-topic candidate branches. Corrected only the stale queued-start source assertion on #2102; no runtime logic changed. Exact head `52cd8192fca707423d48fc77761195c231619ffe` passed the complete fresh matrix and remains draft/unmerged pending explicit authorization.
 - 2026-09-16: Initial continuation checkpoint created from a fetch of `origin` and the live GitHub open-PR inventory. No runtime code changed.
