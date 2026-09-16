@@ -55,14 +55,15 @@ try{
   await page.evaluate(async()=>{const api=window.CCGLostSizzlerV141R50MultiplayerRecoveryUX;await api.returnToOnlineMenu()});
   await page.waitForFunction(()=>typeof mode!=="undefined"&&mode==="menu");
   await page.waitForTimeout(150);
-  const returned=await page.evaluate(()=>({code:document.getElementById("room-code")?.value,active:document.activeElement?.id,endAction:Boolean(document.getElementById("ccg-r50-online-return")),joinHidden:document.getElementById("join-btn")?.hidden,soloDisabled:document.getElementById("solo-btn")?.disabled}));
-  assert.equal(returned.code,"R50UX","room code must survive the canonical return-to-menu path even though online entry is retired");
-  assert.equal(returned.joinHidden,true,"zero-server release must keep the retired Join action hidden");
+  const returned=await page.evaluate(()=>({roomCodePresent:Boolean(document.getElementById("room-code")),joinPresent:Boolean(document.getElementById("join-btn")),retainedCode:window.CCGLostSizzlerV141R50MultiplayerRecoveryUX?.state?.lastRoomCode||"",active:document.activeElement?.id,endAction:Boolean(document.getElementById("ccg-r50-online-return")),soloDisabled:document.getElementById("solo-btn")?.disabled}));
+  assert.equal(returned.roomCodePresent,false,"retired room-code entry must remain physically absent after the canonical return-to-menu path");
+  assert.equal(returned.joinPresent,false,"retired Join action must remain physically absent after recovery returns to the local menu");
+  assert.equal(returned.retainedCode,"R50UX","legacy recovery state may retain the former room code internally for safe teardown without restoring online UI");
   assert.equal(returned.soloDisabled,false,"a supported local action must remain available after recovery returns to menu");
   assert.equal(returned.active,"solo-btn","zero-server recovery must focus a supported local action rather than a retired online control");
   assert.equal(returned.endAction,true,"recovery result action must remain installed for retained-session teardown paths");
   assert.deepEqual(errors,[],`r50 browser test must not raise page errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 r50 recovery, room preservation and zero-server local-menu focus passed in Chromium.");
+  console.log("Lost Sizzler V10.41 r50 recovery teardown and zero-server local-menu focus passed with retired online entry UI absent in Chromium.");
   await context.close();
 }finally{
   await browser.close().catch(()=>{});for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));

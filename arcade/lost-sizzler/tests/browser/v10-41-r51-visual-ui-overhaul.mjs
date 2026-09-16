@@ -25,15 +25,23 @@ try{
     styled:Boolean(document.querySelector('link[data-ccg-v141-r51-style="true"]')),
     panel:document.querySelector("#menu .panel")?.classList.contains("r51-menu-panel"),
     guide:Boolean(document.getElementById("ccg-r51-menu-guide")),
+    guideText:document.getElementById("ccg-r51-menu-guide")?.textContent||"",
     soloDesc:document.getElementById("solo-btn")?.dataset.r51Desc,
-    dungeonDesc:document.getElementById("create-btn")?.dataset.r51Desc,
+    retiredCreate:Boolean(document.getElementById("create-btn")),
+    retiredJoin:Boolean(document.getElementById("join-btn")),
+    retiredRoom:Boolean(document.getElementById("room-code")),
+    retiredLobby:Boolean(document.getElementById("online-lobby")),
     focusLabel:document.getElementById("split-btn")?.getAttribute("aria-label")
   }));
   assert.equal(menu.styled,true);
   assert.equal(menu.panel,true);
   assert.equal(menu.guide,true);
   assert.match(menu.soloDesc,/Five floors/);
-  assert.match(menu.dungeonDesc,/four players/i);
+  assert.equal(menu.retiredCreate,false,"retired Dungeon Multiplayer entry must stay absent from the R51 menu");
+  assert.equal(menu.retiredJoin,false,"retired Join Online Room action must stay absent from the R51 menu");
+  assert.equal(menu.retiredRoom,false,"retired room-code input must stay absent from the R51 menu");
+  assert.equal(menu.retiredLobby,false,"retired online lobby must stay absent from the R51 menu");
+  assert.doesNotMatch(menu.guideText,/Dungeon Multiplayer|Join Online Room|ONLINE MULTIPLAYER|four players/i,"R51 menu guidance must not restore retired online multiplayer copy");
   assert.match(menu.focusLabel,/Two controllers/i);
 
   await page.locator("#solo-btn").click({noWaitAfter:true});
@@ -82,8 +90,8 @@ try{
   assert.ok(visual.diag.enemyFrames>=0);
   assert.ok(visual.diag.lightingUpdates>0);
 
-  const focus=await page.evaluate(async()=>{await quitToMenu();const api=window.CCGLostSizzlerV141R51MenuFocus,before=api.state.focusMoves,button=document.getElementById("split-btn");button.focus();await new Promise(resolve=>setTimeout(resolve,40));const style=getComputedStyle(button);return{active:document.activeElement?.id,outline:style.outlineStyle,outlineWidth:style.outlineWidth,moves:api.state.focusMoves-before,createHidden:document.getElementById("create-btn")?.hidden}});
-  assert.equal(focus.createHidden,true,"zero-server release must keep retired Create Online hidden");
+  const focus=await page.evaluate(async()=>{await quitToMenu();const api=window.CCGLostSizzlerV141R51MenuFocus,before=api.state.focusMoves,button=document.getElementById("split-btn");button.focus();await new Promise(resolve=>setTimeout(resolve,40));const style=getComputedStyle(button);return{active:document.activeElement?.id,outline:style.outlineStyle,outlineWidth:style.outlineWidth,moves:api.state.focusMoves-before,createPresent:Boolean(document.getElementById("create-btn"))}});
+  assert.equal(focus.createPresent,false,"zero-server release must keep retired Create Online absent");
   assert.equal(focus.active,"split-btn","focus helper must work on a supported local gameplay action");
   assert.notEqual(focus.outline,"none","keyboard/controller focus must remain visually obvious");
   assert.ok(focus.moves>=1,"menu focus helper must keep keyboard/controller focus visible");

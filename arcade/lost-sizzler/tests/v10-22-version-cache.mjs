@@ -60,8 +60,9 @@ for(const asset of retiredDirectAssets){
 }
 assert.doesNotMatch(index,/id="horde-mode-btn"/,"retired Horde mode must not be exposed in the live menu");
 assert.doesNotMatch(index,/id="saboteurs-mode-btn"/,"retired Spy Vs Spy mode must not be exposed in the live menu");
-assert.doesNotMatch(index,/Choose Dungeon or Horde|Spy Vs Spy for exactly two/i,"online help must describe Dungeon Multiplayer only");
-assert.match(index,/Choose Dungeon Multiplayer for up to four players/,"online help must retain supported Dungeon Multiplayer guidance");
+assert.doesNotMatch(index,/Choose Dungeon or Horde|Spy Vs Spy for exactly two/i,"retired mixed-mode online guidance must remain absent");
+assert.doesNotMatch(index,/id="create-btn"|id="join-btn"|id="online-lobby"|class="online-howto"/,"retired online multiplayer entry and lobby markup must not be exposed in the live menu");
+assert.doesNotMatch(index,/Dungeon Multiplayer|Join Online Room|ONLINE MULTIPLAYER/,"retired online multiplayer guidance must not remain in canonical HTML");
 
 assert.doesNotMatch(checker,/v10-37-horde-focus\.js|v10-38-horde-live\.js|v10-39-horde-live-loadout\.js|v10-40-horde-final\.js|v10-41-horde-combat-polish\.js|v10-41-horde-completion\.js/,"version loader must not inject retired Horde runtime modules");
 assert.match(checker,/v10-36-bootstrap\.js/,"version loader must retain the active V10.36 bootstrap");
