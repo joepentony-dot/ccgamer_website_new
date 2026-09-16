@@ -24,11 +24,15 @@ on:
       - "js/retro-specials-loader.js"
       - "scripts/discover-new-lemon-source.js"
       - "scripts/audit-admin-runtime-bootstrap.js"
+      - "workers/game-music-upload/src/handler.mjs"
+      - "workers/game-music-upload/src/worker.mjs"
+      - "workers/game-music-upload/wrangler.toml"
       - "tests/content-publisher.test.mjs"
       - "tests/content-publisher-source-preflight.test.mjs"
       - "tests/lemon-source-discovery.test.mjs"
       - "tests/admin-collection-values.test.mjs"
       - "tests/game-zzap-links.test.mjs"
+      - "tests/cloudflare-audio-admin.test.mjs"
       - ".github/workflows/content-publisher-validation.yml"
   push:
     branches:
@@ -53,11 +57,15 @@ on:
       - "js/retro-specials-loader.js"
       - "scripts/discover-new-lemon-source.js"
       - "scripts/audit-admin-runtime-bootstrap.js"
+      - "workers/game-music-upload/src/handler.mjs"
+      - "workers/game-music-upload/src/worker.mjs"
+      - "workers/game-music-upload/wrangler.toml"
       - "tests/content-publisher.test.mjs"
       - "tests/content-publisher-source-preflight.test.mjs"
       - "tests/lemon-source-discovery.test.mjs"
       - "tests/admin-collection-values.test.mjs"
       - "tests/game-zzap-links.test.mjs"
+      - "tests/cloudflare-audio-admin.test.mjs"
       - ".github/workflows/content-publisher-validation.yml"
   workflow_dispatch:
 
@@ -92,6 +100,8 @@ jobs:
           node --check js/collection-loader.js
           node --check js/ccg-zzap64-matcher.js
           node --check js/retro-specials-loader.js
+          node --check workers/game-music-upload/src/handler.mjs
+          node --check workers/game-music-upload/src/worker.mjs
 
       - name: Run publisher and collection regression tests
         run: |
@@ -100,6 +110,7 @@ jobs:
           node --test tests/lemon-source-discovery.test.mjs
           node --test tests/admin-collection-values.test.mjs
           node --test tests/game-zzap-links.test.mjs
+          node --test tests/cloudflare-audio-admin.test.mjs
 
       - name: Run admin runtime bootstrap audit
         run: node scripts/audit-admin-runtime-bootstrap.js
