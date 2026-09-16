@@ -13,8 +13,8 @@ const server=http.createServer((req,res)=>{
   try{
     const url=new URL(req.url,"http://local"),pathname=decodeURIComponent(url.pathname),relative=pathname.endsWith("/")?`${pathname}index.html`:pathname,file=path.resolve(repo,`.${relative}`);
     if(!file.startsWith(`${repo}${path.sep}`)&&file!==repo){res.writeHead(403).end("forbidden");return}
-    fs.readFile(file,(error,data)=>{if(error){res.writeHead(404,{"connection":"close"}).end("not found");return}res.writeHead(200,{"content-type":mime[path.extname(file).toLowerCase()]||"application/octet-stream","cache-control":"no-store","connection":"close"});res.end(data)});
-  }catch(error){res.writeHead(500,{"connection":"close"}).end(String(error))}
+    fs.readFile(file,(error,data)=>{if(error){res.writeHead(404,{"connection":"close"}).end("not found");return}res.writeHead(200,{"content-type":mime[path.extname(file).toLowerCase()]||"application/octet-stream","cache-control":"no-store",connection:"close"});res.end(data)});
+  }catch(error){res.writeHead(500,{connection:"close"}).end(String(error))}
 });
 server.on("connection",socket=>{sockets.add(socket);socket.on("close",()=>sockets.delete(socket))});
 await new Promise((resolve,reject)=>{server.once("error",reject);server.listen(0,"127.0.0.1",resolve)});
@@ -52,6 +52,11 @@ try{
     }))
   }));
 
+  const retiredFileStatuses=await page.evaluate(async()=>Object.fromEntries(await Promise.all([
+    "v10-42-multiplayer-state.js",
+    "v10-42-multiplayer-collect-authority.js"
+  ].map(async file=>[file,(await fetch(`js/${file}`,{cache:"no-store"})).status]))));
+
   assert.equal(audit.zeroServer,true,"Canonical V10.42 page must install the zero-server release policy.");
   assert.equal(audit.releaseModel,"zero-server-cost","Canonical runtime must identify the zero-server-cost release model.");
   assert.equal(audit.onlineFlag,"disabled","Canonical runtime must mark online multiplayer disabled.");
@@ -63,6 +68,7 @@ try{
   assert.equal(audit.collectScript,false,"Canonical dynamic loader must not mount the retired multiplayer collection bridge script.");
   assert.ok(!audit.bootstrap.includes("v10-42-multiplayer-state.js"),"Ordered V10.42 bootstrap must exclude the online multiplayer state adapter.");
   assert.ok(!audit.bootstrap.includes("v10-42-multiplayer-collect-authority.js"),"Ordered V10.42 bootstrap must exclude the online collection authority bridge.");
+  assert.deepEqual(retiredFileStatuses,{"v10-42-multiplayer-state.js":404,"v10-42-multiplayer-collect-authority.js":404},"Retired V10.42 online multiplayer adapters must be physically absent from the release tree.");
   assert.ok(audit.bootstrap.includes("v10-42-zero-server-release.js"),"Ordered V10.42 bootstrap must include the zero-server release policy.");
   assert.equal(audit.networkConnected,false,"Canonical zero-server page must not connect to an online room.");
   assert.equal(audit.networkTransport,"solo","Canonical network object must remain in inert Solo transport state.");
