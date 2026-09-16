@@ -2881,6 +2881,25 @@
     ]
   },
   {
+    "name": "Johnny Klonaris",
+    "slug": "johnny-klonaris",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1987,
+    "lastYear": 1987,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Johnny Klonaris"
+    ],
+    "games": [
+      "legacy-of-the-ancients"
+    ]
+  },
+  {
     "name": "Markus Kludzuweit",
     "slug": "markus-kludzuweit",
     "count": 1,
@@ -5413,6 +5432,25 @@
     ],
     "games": [
       "dan-dare-pilot-of-the-future"
+    ]
+  },
+  {
+    "name": "Mary Winter",
+    "slug": "mary-winter",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1987,
+    "lastYear": 1987,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Mary Winter"
+    ],
+    "games": [
+      "legacy-of-the-ancients"
     ]
   },
   {
