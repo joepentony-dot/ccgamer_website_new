@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
 const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,"..");
 const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
-const loader=read("js/asset-overrides.js"),core=read("js/game-core.js"),rpg=read("js/v10-5-rpg-balance.js"),network=read("js/game-network.js"),render=read("js/game-render.js"),polish=read("js/v10-30-polish.js"),css=read("css/v10-30-polish.css"),index=read("index.html");
+const loader=read("js/asset-overrides.js"),core=read("js/game-core.js"),rpg=read("js/v10-5-rpg-balance.js"),localRuntime=read("js/game-local-runtime.js"),render=read("js/game-render.js"),polish=read("js/v10-30-polish.js"),css=read("css/v10-30-polish.css"),index=read("index.html");
 
 assert.match(loader,/const CCG_POLISH_REV=CCG_RELEASE_REV;/,"V10.30 must inherit the current published release token");
 assert.match(loader,/CCGLostSizzlerReleaseGate=\{state,finish\}/,"launches must be protected by a release-ready gate");
@@ -26,12 +26,12 @@ assert.match(rpg,/player\.meleeWeapon\|\|\{power:1,cooldown:390\}/,"adaptive com
 assert.match(rpg,/enemy\._v105ThreatLocked=true/,"enemy threat must lock after its first evaluation");
 assert.match(rpg,/enemy\._v105ThreatLocked\)return/,"locked enemies must not gain health during an existing encounter");
 
-assert.match(network,/function resourcePickupBlock\(/,"health and ammunition pickups must have a resource-waste guard");
-assert.match(network,/The health pack stays on the floor until you have taken damage/,"full-health collection must preserve the health pack");
-assert.match(network,/free<Math\.ceil\(pack\*\.25\)/,"ammunition must remain on the floor when less than a quarter would fit");
-assert.match(network,/resourceSnapshot:\{health:p\.health,maxHealth:p\.maxHealth,mana:p\.mana,maxMana:p\.maxMana\}/,"online hosts must receive enough state to enforce the same pickup rules");
-assert.match(network,/function reserveAmmoCollection\(/,"the final-objective reserve must support partial collection");
-assert.match(network,/i\.ammoRounds=Math\.max\(0,available-rounds\)/,"unused reserve rounds must stay in the cache for a later visit");
+assert.match(localRuntime,/function resourcePickupBlock\(/,"health and ammunition pickups must have a resource-waste guard");
+assert.match(localRuntime,/The health pack stays on the floor until you have taken damage/,"full-health collection must preserve the health pack");
+assert.match(localRuntime,/free<Math\.ceil\(pack\*\.25\)/,"ammunition must remain on the floor when less than a quarter would fit");
+assert.match(localRuntime,/resourceSnapshot:\{health:p\.health,maxHealth:p\.maxHealth,mana:p\.mana,maxMana:p\.maxMana\}/,"online hosts must receive enough state to enforce the same pickup rules");
+assert.match(localRuntime,/function reserveAmmoCollection\(/,"the final-objective reserve must support partial collection");
+assert.match(localRuntime,/i\.ammoRounds=Math\.max\(0,available-rounds\)/,"unused reserve rounds must stay in the cache for a later visit");
 
 assert.match(polish,/const POTION_TARGETS=\[3,4,4,5,5\]/,"ground potion density must rise gradually by floor");
 assert.match(polish,/startWorld=function startWorldV130Polish/,"every generated floor must receive the final potion pass");
