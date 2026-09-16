@@ -6,13 +6,40 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Verified checkpoint — 2026-09-16
 
-`origin/main` is `e40f5c4f`. The current live register on `main` already records #2098 R24 five-depth room grammar as present, the XP source boundary as present, networked Dungeon Multiplayer/Horde/Spy as retired modes, and the guarded local-runtime extraction as the next code cleanup after #2096.
+Current `main` is `fa25ee38bd97426a392b7415ae3534793eb4fcd9`.
+
+The live work register still correctly records #2098 R24 five-depth room grammar as present, the XP source boundary as present, networked Dungeon Multiplayer/Horde/Spy as retired modes, and #2090 held-fire/Flask repairs as awaiting hands-on acceptance. Its audit SHA is older than current `main`, and its separate-work reference to #2073 is stale because #2105 has since merged.
 
 ### Current runtime candidate
 
 | PR | Branch | State | Focus |
 | --- | --- | --- | --- |
-| #2102 | `codex/dungeon-carnage-extract-local-runtime` | draft | Current guarded extraction of the retained local helper block from `game-network.js`. Frozen at `52cd8192fca707423d48fc77761195c231619ffe`; against current `main` it is 14 commits ahead and only the later generated-output #2101 commit behind. Exact-head canonical Node, six-shard Chromium, safety, mobile, cache/version, validation, SEO, native-wheel and Workers checks passed. Keep frozen and unmerged without explicit authorization. |
+| #2102 | `codex/dungeon-carnage-extract-local-runtime` | draft, fully qualified | Current guarded extraction of the retained local helper block from `game-network.js`. Head `dcb35f3e1271284e95f4e17de3d192f384ee4682` is based exactly on live `main`: 15 commits ahead, 0 behind, with exactly 11 changed Dungeon files. Keep unmerged without explicit user authorization. |
+
+#2102 current exact delta remains the intended 11 files:
+
+- `arcade/lost-sizzler/index.html`
+- `arcade/lost-sizzler/js/game-network.js`
+- `arcade/lost-sizzler/js/game-local-runtime.js`
+- `arcade/lost-sizzler/js/v10-42-bootstrap.js`
+- seven focused Dungeon regression/support files
+
+The branch mechanically moves the retained `hostEnemyStep(...)` through `dropInventorySlot(...)` local gameplay suffix out of `game-network.js`, preserves the obsolete transport prefix for later retirement, and retains the queued early Solo/Split start repair discovered during qualification. It does not delete `game-network.js` or retire the remaining transport in this stage.
+
+### Exact-head qualification
+
+Current head `dcb35f3e1271284e95f4e17de3d192f384ee4682` is green across the current PR-triggered matrix:
+
+- Lost Sizzler Load Safety — PASS
+- CCG Site Safety — PASS after rerunning the unchanged failed job
+- C64 Dungeon Carnage Mobile Trap Layout — PASS
+- Public Code Cache Version — PASS
+- Native Mouse Wheel Scroll — PASS
+- SEO Automation — PASS
+- Structured Data Validation — PASS
+- Social Metadata Validation — PASS
+
+The first CCG Site Safety attempt failed only while creating the rendered responsive WebDriver session with an Undici timeout. All preceding syntax/static/layout checks had passed. The failed job was rerun without any code or test change; rendered responsive audit, physical scroll reachability and every subsequent safety audit then passed. Treat the first red as transient CI/browser infrastructure evidence, not a production regression.
 
 ### Stale or superseded runtime PRs
 
@@ -21,28 +48,27 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 | #2062 | **SUPERSEDED** | Its R24 five-depth biome-room goal was refreshed on post-defect `main` and merged through #2098. Do not merge or rebase #2062. |
 | #1960 | **SUPERSEDED** | The XP-source-boundary patch was reapplied and merged through #2052; current `main` records the XP boundary as present. |
 | #1959 | **OBSOLETE PRODUCT-MODE WORK** | It repairs a Spy soak contract. Spy/Sizzler Saboteurs is a retired product mode and #2069 removed remaining Spy runtime seals. Do not use this as a supported-mode requirement. |
-| #1998 | **SUPERSEDED DOCUMENTATION** | Its project-status refresh is older than the merged #2100 `arcade/lost-sizzler/PROGRESS.md` current work register. |
-| #2055 | **STALE SOURCE MATERIAL** | Startup/menu simplification remains a useful design source, but the branch is 182 commits behind and contains assumptions from before later mode retirement. Rebuild only still-valid presentation pieces as small current-main stages; do not merge it wholesale. |
-| #1983 | **STALE / REPRODUCTION REQUIRED** | Startup-overlay work is 366 commits behind current main. Do not revive it unless the defect reproduces on the current deployed/current build after later identity and startup changes. |
+| #1998 | **SUPERSEDED DOCUMENTATION** | Its project-status refresh is older than the merged #2100 `arcade/lost-sizzler/PROGRESS.md` work register. |
+| #2055 | **STALE SOURCE MATERIAL** | Startup/menu simplification remains potentially useful design source material, but it predates substantial mode-retirement/runtime work. Rebuild only still-valid presentation pieces as small current-main stages; do not merge it wholesale. |
+| #1983 | **STALE / REPRODUCTION REQUIRED** | Do not revive old startup-overlay work unless the defect reproduces on the current deployed/current build. |
 
 ### Other unresolved but stale candidates
 
-- #1976 (R30 ownership-audit throttle) has no evidence of being merged and may still contain a useful runtime optimisation, but it is an old base and must be re-derived against current `main` before use.
-- #1978 and #1980 are old verification/evidence children of #1976 and should not be treated as independent merge candidates.
-- #1902 (split-screen M map) is old but concerns a still-supported mode; compare its exact delta with current main before deciding whether anything remains missing.
-- #1900, #1898, #1860 and #1852 are long-lived historical diagnostic/stabilisation branches. They are not safe bases for new work and must not be merged wholesale.
-- #1958 is primarily an old offline-package foundation and is handled in the distribution workstream; it is not a current Dungeon runtime integration candidate.
+- #1976 (R30 ownership-audit throttle) may still contain a useful optimisation idea, but it must be re-derived against current `main`; #1978/#1980 are stale evidence children, not independent integration candidates.
+- #1902 concerns a still-supported Split Screen map behaviour but is old; compare its delta with current `main` before deciding whether anything remains missing.
+- #1900, #1898, #1860 and #1852 are historical diagnostic/stabilisation branches and are not safe bases for new work.
+- #1958 belongs to the distribution/packaging workstream, not current Dungeon runtime integration.
 
 ## Guardrails and next action
 
-Do not stack new runtime work on an old PR without first checking current `arcade/lost-sizzler/PROGRESS.md`, current ordered script loading, and whether newer merged work already owns the requested behaviour. Preserve Solo, Tutorial, local 2P Split Screen and Weekly Vault/account services while retiring obsolete network transport.
+Preserve Solo, Tutorial, local 2P Split Screen and Weekly Vault/account services while retiring obsolete network transport. Do not stack new runtime work on an old PR without checking current `PROGRESS.md`, ordered loading and newer ownership first.
 
-Next safe runtime action: keep #2102 frozen at `52cd8192fca707423d48fc77761195c231619ffe` and review/merge it only with explicit authorization after reconfirming its exact 11-file delta and green exact-head evidence. Later network-adapter retirement branches audited on 2026-09-16 are stale/divergent and do not supersede #2102.
+Next safe runtime action: #2102 is qualified and structurally current, but remains draft and unmerged pending explicit user authorization. After that stage, obsolete online transport can be retired in a separate guarded step rather than mixed into the extraction.
 
-Manual acceptance remains separate from CI: `PROGRESS.md` still requires hands-on confirmation of #2090 held-fire behaviour and the 3-Artefact Banishment Flask exchange before those reproduced defects are closed.
+Manual acceptance remains separate from CI: #2090 sustained held-fire behaviour and the 3-Artefact Banishment Flask exchange still require hands-on confirmation on the deployed/current build before those reproduced defects are marked closed.
 
 ## Session log
 
-- 2026-09-16: Reconciled this record against current `main` and the newer merged #2100 work register. Reclassified #2062 as superseded by #2098, #1960 as superseded by #2052, #1959 as obsolete after Spy retirement/#2069, and #1998 as superseded documentation. No Dungeon runtime code changed.
-- 2026-09-16: Re-audited current `main`, all active runtime PRs and same-topic candidate branches. Corrected only the stale queued-start source assertion on #2102; no runtime logic changed. Exact head `52cd8192fca707423d48fc77761195c231619ffe` passed the complete fresh matrix and remains draft/unmerged pending explicit authorization.
-- 2026-09-16: Initial continuation checkpoint created from a fetch of `origin` and the live GitHub open-PR inventory. No runtime code changed.
+- 2026-09-16: Reclassified #2062 as superseded by #2098, #1960 as superseded by #2052, #1959 as obsolete after Spy retirement/#2069, and #1998 as superseded documentation.
+- 2026-09-16: Earlier #2102 head `52cd8192...` passed the complete matrix; a later assertion-only head advanced the PR to `dcb35f3e...` on top of current `main`.
+- 2026-09-16: Live re-audit confirmed #2102 is 15 ahead/0 behind current `main` with exactly 11 intended files. Its first Site Safety run failed on a WebDriver-session timeout; the unchanged failed job rerun passed every Site Safety step. Current exact head is fully green and remains unmerged pending explicit authorization.
