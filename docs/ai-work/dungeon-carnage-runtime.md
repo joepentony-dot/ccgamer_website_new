@@ -81,6 +81,20 @@ No production runtime code was changed by this audit.
 
 ## Guardrails and next action
 
+## Current live-defect remediation — 2026-09-16
+
+The user reproduced seven defects on the deployed game. This list supersedes the previous speculative runtime order until each item has a bounded repository fix, exact-head qualification, deployment confirmation and, where required, hands-on live acceptance:
+
+1. Public-beta watchdog/menu lock and startup flicker.
+2. Projectile accumulation during sustained firing/enemy hits.
+3. Completion-portal floor progression freeze.
+4. Save and Exit / Continue restoration failure.
+5. Immediate three-Artefact Banishment Flask exchange failure.
+6. Missing firearm differentiation/Owned Firearms information.
+7. Remaining Sizzler/Zzap!/Uncommon RPG terminology.
+
+The first investigation on current `main` `2781bc85b68a7b92a5c8bbea53e7aa1513a6fda2` confirmed that `v10-41-load-watchdog.js` unconditionally treats both public CCG hostnames as a closed beta, immediately locks buttons and then performs an owner-profile lookup. This creates the enabled-menu → COMING SOON/disabled-menu handoff. The bounded remediation removes only this obsolete game-availability gate; it does not alter the website's account or authentication services. Its focused public-host regression must prove that an unauthenticated public game page stays playable without the lock class or sash.
+
 Preserve Solo, Tutorial, local 2P Split Screen and Weekly Vault/account services. The obsolete packet/world-sync retirement is complete; do not reintroduce its online transport, remote-player simulation or world snapshots while cleaning up residual terminology or compatibility code.
 
 The bounded retired-mode residue audit is complete. The next independently actionable repository scope is a small current-main reconstruction of still-valid startup/menu presentation ideas from closed #2055, after explicitly selecting only the required presentation behaviour. Do not restore retired online modes or combine that work with the separate local-runtime conditional cleanup, portal/topology/NPC/merchant work, or itch.io release path.

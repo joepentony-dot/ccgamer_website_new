@@ -5,13 +5,27 @@
 ## Audit checkpoint
 
 - Audited: **16 September 2026**.
-- Current runtime checkpoint: `95bd8431fd6b8313bf5873a79bd4bc93404d8de9` (#2115 merge).
+- Current runtime checkpoint: `2781bc85b68a7b92a5c8bbea53e7aa1513a6fda2` (current-main live-defect reconciliation).
 - #2090 is merged: held-fire liveness, Artefact/Essence Flask exchange support, early-Solo startup ownership and public C64 Dungeon Carnage identity are present in code and automated qualification is green.
 - #2098 is merged: deterministic R24 five-depth room grammar is present and qualified at V10.42 r26 / `20260916r26`.
 - #2102 is merged: the retained `hostEnemyStep(...)` through `dropInventorySlot(...)` local gameplay suffix was extracted from `game-network.js` into `game-local-runtime.js`.
 - #2113 is merged: the obsolete networked Dungeon Multiplayer packet routing, remote-player simulation and world serializer/receiver prefix has been retired from `game-network.js`; only inert compatibility owners required by the retained local session shell remain.
 - #2115 is merged: the full explored dungeon map supports Solo and local 2P Split Screen, uses a dedicated map mode, and ignores held-M repeats.
 - A merged PR is not treated as a closed user-reproduced defect until the deployed behaviour is manually accepted.
+
+## Authoritative current live defects — 16 September 2026
+
+The following are current deployed-game reproductions. Earlier green checks and historical claims do not close them. Address them as separate bounded fixes in priority order; a repository fix requires deployed hands-on acceptance before closure.
+
+| Priority | Defect | Status |
+| --- | --- | --- |
+| 1 | Public-beta watchdog replaces the final menu with COMING SOON and disabled controls after initial paint. | **OPEN — root cause confirmed**: hostname-only lock in `v10-41-load-watchdog.js`. |
+| 2 | Sustained firing/enemy hits retain projectile entities and progressively slow the game. | **OPEN** |
+| 3 | Completion portal does not advance Floor 1 to the next campaign depth. | **OPEN** |
+| 4 | Save and Exit does not restore a supported run through Continue. | **OPEN** |
+| 5 | Three-Artefact Banishment Flask exchange only works after a Gold purchase. | **OPEN** |
+| 6 | Owned Firearms do not communicate meaningful weapon differences. | **OPEN — audit required** |
+| 7 | Remaining Sizzler/Zzap!/Uncommon RPG wording needs coherent setting-appropriate replacement. | **OPEN — terminology audit required** |
 
 ## Status definitions
 
