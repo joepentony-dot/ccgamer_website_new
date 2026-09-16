@@ -39,11 +39,11 @@ async function enterOpenExit(page){
   const route=await page.evaluate(()=>{
     const candidates=[[1,0],[-1,0],[0,1],[0,-1]];
     const step=candidates.find(([dx,dy])=>window.CCGWorld.walkable(world.map,world.exit.x-dx,world.exit.y-dy,host));
-    if(!step)return{moved:false,exitOpen:Boolean(host.exitOpen)};
-    const [dx,dy]=step;
+    if(!step)return{moved:false,exitOpen:false};
+    const [dx,dy]=step,exitOpen=Boolean(host.exitOpen);
     p1.x=world.exit.x-dx;p1.y=world.exit.y-dy;p1.rx=p1.x;p1.ry=p1.y;
     movePlayer(p1,dx,dy);
-    return{moved:p1.x===world.exit.x&&p1.y===world.exit.y,exitOpen:Boolean(host.exitOpen)};
+    return{moved:p1.x===world.exit.x&&p1.y===world.exit.y,exitOpen};
   });
   assert.equal(route.exitOpen,true,"The completed floor must authorize the live exit before entry.");
   assert.equal(route.moved,true,"The player must enter the real exit tile through movePlayer().");
@@ -80,12 +80,17 @@ try{
     bullets.push({id:"defect3-old-player-shot",x:p1.x,y:p1.y,vx:0,vy:0,life:9999,power:1,owner:p1.id});
     enemyBullets.push({id:"defect3-old-enemy-shot",x:p1.x,y:p1.y,vx:0,vy:0,life:9999,power:1});
     if(!host.guardian?.alive)throw new Error("Floor 1 guardian is required for the live objective contract");
+    const visited=explored.get(p1.id)||new Set();
+    for(const room of world.rooms||[])if(!room.optional)visited.add(room.id);
+    explored.set(p1.id,visited);
     damageEnemy(host.guardian,999,"energy",p1);
-    const opened=window.CCGSystems.updateObjective(host,run,100);
-    return{opened:Boolean(opened),objective:Boolean(host.objective?.complete),guardianAlive:Boolean(host.guardian?.alive),xp:Number(p1.xp||0),totalXp:Number(p1.totalXp||0),score:Number(score||0)};
+    const explorePct=Math.round(window.CCGProgression.roomCompletion(visited,world)*100);
+    const opened=window.CCGSystems.updateObjective(host,run,explorePct);
+    return{opened:Boolean(opened),objective:Boolean(host.objective?.complete),guardianAlive:Boolean(host.guardian?.alive),explorePct,xp:Number(p1.xp||0),totalXp:Number(p1.totalXp||0),score:Number(score||0)};
   });
   assert.equal(seeded.guardianAlive,false,"The real Floor 1 guardian must be defeated before exit authorization.");
-  assert.equal(seeded.objective,true,"100% exploration plus the defeated guardian must complete Floor 1.");
+  assert.ok(seeded.explorePct>=70,"The deterministic reproduction must satisfy the real Floor 1 exploration threshold.");
+  assert.equal(seeded.objective,true,"A legitimately explored Floor 1 plus the defeated guardian must complete the objective.");
   assert.equal(seeded.opened,true,"Completed Floor 1 must authorize the live stairs.");
 
   await enterOpenExit(page);
