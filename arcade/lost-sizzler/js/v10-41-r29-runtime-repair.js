@@ -6,12 +6,12 @@
 
   const INSTALL_MS=80;
   const state={
-    timer:0,loopInstalled:false,quitInstalled:false,contactInstalled:false,pickupInstalled:false,enterInstalled:false,
+    timer:0,loopInstalled:false,quitInstalled:false,contactInstalled:false,pickupInstalled:false,enterInstalled:false,releaseLifecycleInstalled:false,
     lastLoopSource:null,lastQuitSource:null,lastContactSource:null,lastPickupSource:null,
     frameFaults:0,updateFaults:0,renderFaults:0,lastFaultAt:0,lastFaultMessage:"",lastFaultLogAt:0,
     duplicateFramesSkipped:0,frameStalls:0,combatStallRecoveries:0,lastAcceptedRafTimestamp:null,
     lastRunActive:false,audioStops:0,contactBlocks:0,itemNameHost:null,itemNameRevision:-1,itemNamesNormalised:0,
-    pickupEnhancedDraws:0,doorBypassesSealed:0,enterContinues:0
+    pickupEnhancedDraws:0,doorBypassesSealed:0,enterContinues:0,releaseOverlay:null,releaseOverlayObserver:null,releaseOverlayHides:0,pendingSoloReplays:0
   };
 
   const finite=value=>Number.isFinite(Number(value));
@@ -100,6 +100,42 @@
     const running=document.body?.dataset?.runActive==="true";
     if(state.lastRunActive&&!running)silenceGameplayAudio();
     state.lastRunActive=running;
+  }
+
+  function releaseRuntimeReady(){
+    return document.body?.dataset?.releaseReady==="true"&&window.CCGLostSizzlerV142Bootstrap?.ready===true
+  }
+  function bindReleaseOverlay(){
+    const overlay=document.getElementById("ccg-release-loading");if(!overlay||overlay===state.releaseOverlay)return Boolean(overlay);
+    try{state.releaseOverlayObserver?.disconnect?.()}catch(_){}
+    state.releaseOverlay=overlay;
+    state.releaseOverlayObserver=new MutationObserver(()=>{
+      if(!releaseRuntimeReady()||overlay.classList.contains("is-error")||overlay.hidden)return;
+      overlay.hidden=true;state.releaseOverlayHides++;
+    });
+    state.releaseOverlayObserver.observe(overlay,{attributes:true,attributeFilter:["hidden","class"]});
+    return true;
+  }
+  function settleReleaseLifecycle(){
+    bindReleaseOverlay();
+    if(!releaseRuntimeReady())return false;
+    const overlay=state.releaseOverlay||document.getElementById("ccg-release-loading");
+    if(overlay&&!overlay.classList.contains("is-error")&&!overlay.hidden){overlay.hidden=true;state.releaseOverlayHides++}
+    try{if(window.CCGLostSizzlerLoadWatchdog?.replayPendingSolo?.())state.pendingSoloReplays++}catch(_){}
+    return true;
+  }
+  function onReleaseReady(){
+    queueMicrotask(settleReleaseLifecycle);
+    try{requestAnimationFrame(()=>requestAnimationFrame(settleReleaseLifecycle))}catch(_){}
+    setTimeout(settleReleaseLifecycle,400);
+  }
+  function installReleaseLifecycleSeal(){
+    if(state.releaseLifecycleInstalled)return true;
+    state.releaseLifecycleInstalled=true;
+    window.addEventListener("ccg:v142-ready",onReleaseReady);
+    bindReleaseOverlay();
+    if(releaseRuntimeReady())onReleaseReady();
+    return true;
   }
 
   function preserveStaticUi(){
@@ -234,13 +270,18 @@
   }
 
   function install(){
-    installStableLoop();installQuitAudioGuard();installContactCombatGuard();installPickupGraphics();installEnterProgress();normaliseItemNames();repairDungeonStructure();runTransitionGuard();preserveStaticUi();
-    return state.loopInstalled&&state.quitInstalled&&state.contactInstalled&&state.pickupInstalled&&state.enterInstalled
+    installStableLoop();installQuitAudioGuard();installContactCombatGuard();installPickupGraphics();installEnterProgress();installReleaseLifecycleSeal();normaliseItemNames();repairDungeonStructure();runTransitionGuard();preserveStaticUi();
+    return state.loopInstalled&&state.quitInstalled&&state.contactInstalled&&state.pickupInstalled&&state.enterInstalled&&state.releaseLifecycleInstalled
   }
 
   install();state.timer=setInterval(install,INSTALL_MS);
-  addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);silenceGameplayAudio()},{once:true});
+  addEventListener("pagehide",()=>{
+    if(state.timer)clearInterval(state.timer);
+    try{state.releaseOverlayObserver?.disconnect?.()}catch(_){}
+    window.removeEventListener("ccg:v142-ready",onReleaseReady);
+    silenceGameplayAudio();
+  },{once:true});
   window.CCGLostSizzlerV141R29={
-    originalChainHasMarker,stableLoop,payDownCombatGap,silenceGameplayAudio,contactBlock,normaliseItemTitle,normaliseItemNames,sealRoomDoorBypasses,repairDungeonStructure,progressButtonFor,handleEnterProgress,drawEnhancedPickup,install,get state(){return state}
+    originalChainHasMarker,stableLoop,payDownCombatGap,silenceGameplayAudio,contactBlock,normaliseItemTitle,normaliseItemNames,sealRoomDoorBypasses,repairDungeonStructure,progressButtonFor,handleEnterProgress,drawEnhancedPickup,settleReleaseLifecycle,install,get state(){return state}
   };
 })();
