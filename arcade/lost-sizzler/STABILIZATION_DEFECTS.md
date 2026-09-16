@@ -1,5 +1,7 @@
 # Lost Sizzler Solo Stabilization Defect Ledger
 
+> **Historical evidence ledger — not the current C64 Dungeon Carnage backlog.** This file preserves the earlier Solo stabilization programme, frozen findings and exit criteria. See [`PROGRESS.md`](./PROGRESS.md) for current work. Historical Horde, Spy/Sizzler Saboteurs and online-multiplayer references below document past testing only and do not reactivate those retired product modes.
+
 This ledger tracks the stabilization programme on `codex/lost-sizzler-solo-stabilization`.
 
 Status values: `OPEN`, `INSTRUMENTED`, `FIX IN PROGRESS`, `VERIFYING`, `CLOSED`.

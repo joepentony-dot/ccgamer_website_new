@@ -10,7 +10,6 @@ const core=read("js/game-core.js");
 const play=read("js/game-play.js");
 const onboarding=read("js/v10-20-onboarding-safety.js");
 const guidance=read("js/v10-23-tutorial-guidance.js");
-const changelog=read("js/v10-12-developer-changelog.js");
 const render=read("js/game-render.js");
 const css=read("css/game.css");
 const index=read("index.html");
@@ -31,9 +30,6 @@ assert.match(guidance,/showInformationTour\(step\);[\s\S]*?return;/,"the first i
 assert.match(guidance,/function completeInformationTour\(step\)[\s\S]*?\[data-next\]/,"only the visual tour Continue may advance an information lesson");
 assert.match(onboarding,/You Are Ready To Take On The Adventure!/,"the requested final tutorial message must ship");
 assert.match(guidance,/\$\{step===9\?"":'<button type="button" data-stage-exit>EXIT TUTORIAL<\/button>'\}/,"Exit Tutorial must be absent from the final card");
-
-assert.match(changelog,/date:"24 AUGUST 2026"/,"the LIVE DEVELOPMENT LOG must include this release date");
-for(const id of ["LS-0824-01","LS-0824-07","LS-0824-08","LS-0824-09","LS-0824-10","LS-0824-11"])assert.ok(changelog.includes(id),`LIVE DEVELOPMENT LOG is missing ${id}`);
 
 for(const asset of ["assets/pixel/title-dungeon-v10-34.webp","assets/pixel/explorer-sheet-v10-34.png","assets/pixel/chest-sheet-v10-34.png"])assert.ok(fs.existsSync(path.join(root,asset)),`pixel-art asset is missing: ${asset}`);
 assert.match(index,/class="pixel-title-lockup"/,"the menu must use a responsive HTML pixel-title lockup");

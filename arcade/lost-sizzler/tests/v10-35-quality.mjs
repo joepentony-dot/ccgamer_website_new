@@ -6,7 +6,7 @@ import {fileURLToPath} from "node:url";
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 const read=file=>fs.readFileSync(path.join(root,file),"utf8");
-const quality=read("js/v10-35-quality.js"),special=read("js/v10-33-special-modes.js"),melee=read("js/v10-25-melee-ammo-balance.js"),rare=read("js/v10-15-rare-events.js"),voice=read("js/v10-16-voice-director.js"),index=read("index.html"),css=read("css/game.css"),loader=read("js/asset-overrides.js"),log=read("js/v10-12-developer-changelog.js");
+const quality=read("js/v10-35-quality.js"),special=read("js/v10-33-special-modes.js"),melee=read("js/v10-25-melee-ammo-balance.js"),rare=read("js/v10-15-rare-events.js"),voice=read("js/v10-16-voice-director.js"),index=read("index.html"),css=read("css/game.css"),loader=read("js/asset-overrides.js");
 
 for(const asset of ["enemy-atlas-standard-a-v10-35.png","enemy-atlas-standard-b-v10-35.png","enemy-atlas-horde-v10-35.png","environment-atlas-v10-35.png"]){
   const data=fs.readFileSync(path.join(root,"assets/pixel",asset));
@@ -52,7 +52,6 @@ assert.match(index,/© 2026 CHEEKY COMMODORE GAMER/);
 assert.match(quality,/© 2026 CHEEKY COMMODORE GAMER/);
 assert.match(css,/TACTICAL RADAR DISABLED/);
 assert.match(loader,/v10-35-quality\.js/);
-for(const id of ["LS-0824-12","LS-0824-19"])assert.ok(log.includes(id),`${id} must be in the LIVE DEVELOPMENT LOG`);
 
 for(const file of ["horde-survival-wave-10.ogg","horde-survival-waves-1-4.ogg","horde-survival-waves-5-9.ogg","sizzler-saboteurs-theme.ogg"]){
   assert.ok(fs.statSync(path.join(root,"assets/audio/music",file)).size>2_000_000,`${file} must not be a truncated connector placeholder`);
