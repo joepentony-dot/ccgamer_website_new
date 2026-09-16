@@ -1,6 +1,7 @@
 import './content-publisher-source-preflight.mjs';
 import './content-publisher-existing-game-update.js';
 import './content-publisher-status-reconciler.js';
+import './content-publisher-completion-guard.js';
 
 const MAX_WIDTH = 1280;
 const MAX_HEIGHT = 960;
