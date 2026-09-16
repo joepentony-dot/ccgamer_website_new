@@ -9,7 +9,7 @@ const WORKFLOW_POLL_TIMEOUT_MS = 240000;
 const RETRO_SPECIAL_MAX_SLUG_LENGTH = 55;
 const ALLOWED_THUMBNAIL_PREFIX = 'resources/images/thumbnails/all/';
 const BOX3D_PREFIX = 'resources/images/games/boxes-3d/';
-const MUSIC_UPLOAD_URL = '/api/admin/game-music';
+const MUSIC_UPLOAD_URL = 'https://ccgamer-website-new.joepentony.workers.dev';
 const MAX_MUSIC_BYTES = 25 * 1024 * 1024;
 const ZZAP_MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',

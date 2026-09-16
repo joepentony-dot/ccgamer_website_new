@@ -76,7 +76,7 @@ test('publisher keeps the established 3D-box path and separate authenticated mus
   assert.match(html, /data-game-music-file/);
   assert.match(js, /resources\/images\/games\/boxes-3d\//);
   assert.match(js, /\$\{slugify\(slug\)\}\.webp/);
-  assert.match(js, /\/api\/admin\/game-music/);
+  assert.match(js, /https:\/\/ccgamer-website-new\.joepentony\.workers\.dev/);
   assert.match(js, /getSession/);
   assert.match(js, /\$\{slugify\(slug\)\}\.mp3/);
   assert.doesNotMatch(js, /gameValue\(['"]music['"]\)/);
@@ -87,7 +87,7 @@ test('existing-game updates can add 3D boxes and music without creating empty co
   assert.match(editJs, /data-game-box3d-file/);
   assert.match(editJs, /resources\/images\/games\/boxes-3d\//);
   assert.match(editJs, /data-game-music-file/);
-  assert.match(editJs, /\/api\/admin\/game-music/);
+  assert.match(editJs, /https:\/\/ccgamer-website-new\.joepentony\.workers\.dev/);
   assert.match(editJs, /tree\?\.sha === baseTree/);
   assert.match(editJs, /No empty Git commit was created/);
   assert.match(editJs, /if \(!sourceChanged\)/);
