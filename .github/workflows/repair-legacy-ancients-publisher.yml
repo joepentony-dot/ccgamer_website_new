@@ -15,6 +15,7 @@ env:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 jobs:
   repair:
@@ -90,6 +91,29 @@ jobs:
             --base main \
             --head "$REPAIR_BRANCH" \
             --title "Repair Legacy Of The Ancients publisher data" \
-            --body "Repairs the stranded Content Publisher record: canonical thumbnail filename, verified Lemon64 source, and unresolved-source queue state. Reliable Games Publishing will rebuild the page and magazine review data after merge.")
+            --body "Repairs the stranded Content Publisher record: canonical thumbnail filename, verified Lemon64 source, and unresolved-source queue state. Reliable Games Publishing is explicitly dispatched after repair so token-generated merges cannot suppress the rebuild.")
           echo "Repair PR: $PR_URL"
           gh pr merge "$PR_URL" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+
+      - name: Ensure repair is present on main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git checkout --detach origin/main
+          node scripts/migrate-legacy-of-the-ancients-publisher.js
+          if ! git diff --quiet -- games/games.json data/lemon-source-pending.json resources/images/thumbnails/all/legacy-of-the-ancients.webp; then
+            echo "Repair is not yet present on main; refusing to dispatch publishing."
+            git diff -- games/games.json data/lemon-source-pending.json resources/images/thumbnails/all/legacy-of-the-ancients.webp
+            exit 1
+          fi
+          echo "Legacy repair is present on main."
+
+      - name: Dispatch Reliable Games Publishing
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh workflow run games-publishing.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo "Reliable Games Publishing dispatched explicitly after verified repair."
