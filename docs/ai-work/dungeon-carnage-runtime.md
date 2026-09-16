@@ -6,14 +6,14 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Verified checkpoint — 2026-09-16
 
-The current runtime checkpoint is the merged #2115 supported Split Screen map stage:
+The current runtime checkpoint is the merged #2117 public-beta/watchdog remediation:
 
-- qualified head: `30c5871749d9015406bd98a7dc0123c7c6c0c8bc`
-- merge commit: `95bd8431fd6b8313bf5873a79bd4bc93404d8de9`
+- qualified head: `23bd55e28d1367ad84bb82e22af08e16a2bc9b4f`
+- merge commit: `408a9870d33f9ea2931934c302176743d2589160`
 
-#2102 moved the retained local gameplay suffix into `game-local-runtime.js`; #2113 retired the obsolete networked Dungeon Multiplayer packet/world-sync prefix from `game-network.js`; and #2115 restored the full explored map for supported local Split Screen without reviving retired online modes.
+#2102 moved the retained local gameplay suffix into `game-local-runtime.js`; #2113 retired the obsolete networked Dungeon Multiplayer packet/world-sync prefix from `game-network.js`; #2115 restored the full explored map for supported local Split Screen; and #2117 removed the obsolete public-host beta gate that replaced the final menu with COMING SOON/disabled controls. The user has explicitly confirmed #2117 as complete; do not reopen that defect without new current-build evidence.
 
-The live work register records #2098 R24 five-depth room grammar as present, the XP source boundary as present, networked Dungeon Multiplayer/Horde/Spy as retired modes, #2102 local-runtime extraction as present, #2113 obsolete transport retirement as present, #2115 local Split Screen full map as present, and #2090 held-fire/Flask repairs as awaiting hands-on acceptance.
+The live work register records #2098 R24 five-depth room grammar as present, the XP source boundary as present, networked Dungeon Multiplayer/Horde/Spy as retired modes, #2102 local-runtime extraction as present, #2113 obsolete transport retirement as present, #2115 local Split Screen full map as present, #2117 public-beta/watchdog remediation as complete, and the remaining live-defect queue beginning with projectile lifecycle/slowdown.
 
 ### Completed runtime stages
 
@@ -50,6 +50,10 @@ The first Load Safety attempt had one isolated Chromium shard-5 failure: `v10-35
 
 #2115, `codex/rebuild-split-full-map-current-main`, is **MERGED**. It restores the full explored-map panel for local Split Screen, retains P1 exploration knowledge as the shared map view, makes `M` ignore held-key repeats, and uses a dedicated `fullmap` non-playing mode so pause-recovery layers cannot mistake the overlay for an orphaned pause. Its exact head passed all current PR checks. The first Chromium shard-3 run failed only in the pre-existing `v10-28-browser-stability-deterministic.mjs` startup wait; the unchanged shard retry passed, with no test weakening or unrelated runtime change.
 
+### #2117 public-beta/watchdog remediation
+
+#2117 is **MERGED**. Exact qualified head `23bd55e28d1367ad84bb82e22af08e16a2bc9b4f` merged as `408a9870d33f9ea2931934c302176743d2589160`. It removed the obsolete public-host closed-beta ownership from `v10-41-load-watchdog.js` while preserving site account/authentication ownership and current game startup. The user has designated this live defect complete.
+
 ### Retired stale/superseded runtime PRs
 
 | PR | Classification | Current state |
@@ -83,23 +87,26 @@ No production runtime code was changed by this audit.
 
 ## Current live-defect remediation — 2026-09-16
 
-The user reproduced seven defects on the deployed game. This list supersedes the previous speculative runtime order until each item has a bounded repository fix, exact-head qualification, deployment confirmation and, where required, hands-on live acceptance:
+#2117 closed the obsolete public-beta watchdog/menu-lock defect. The remaining authoritative deployed-game queue is now:
 
-1. Public-beta watchdog/menu lock and startup flicker.
-2. Projectile accumulation during sustained firing/enemy hits.
-3. Completion-portal floor progression freeze.
-4. Save and Exit / Continue restoration failure.
-5. Immediate three-Artefact Banishment Flask exchange failure.
-6. Missing firearm differentiation/Owned Firearms information.
-7. Remaining Sizzler/Zzap!/Uncommon RPG terminology.
+1. Projectile accumulation during sustained firing/enemy hits.
+2. Completion-portal floor progression freeze.
+3. Save and Exit / Continue restoration failure.
+4. Immediate three-Artefact Banishment Flask exchange failure.
+5. Missing firearm differentiation/Owned Firearms information.
+6. Remaining Sizzler/Zzap!/Uncommon RPG terminology.
 
-The first investigation on current `main` `2781bc85b68a7b92a5c8bbea53e7aa1513a6fda2` confirmed that `v10-41-load-watchdog.js` unconditionally treats both public CCG hostnames as a closed beta, immediately locks buttons and then performs an owner-profile lookup. This creates the enabled-menu → COMING SOON/disabled-menu handoff. The bounded remediation removes only this obsolete game-availability gate; it does not alter the website's account or authentication services. Its focused public-host regression must prove that an unauthenticated public game page stays playable without the lock class or sash.
+### Active Defect 2 candidate — PR #2118
+
+Branch `codex/dungeon-projectile-lifecycle-current-main` was created from exact live `main` `408a9870d33f9ea2931934c302176743d2589160`. Investigation found one authoritative player-projectile collection, `bullets`, shared by simulation and rendering. The legacy projectile owner marked TTL dead on impacts but deferred physical removal until the end of the complete `stepProjectiles()` pass. The r29 runtime intentionally catches recoverable `update()` faults and continues the loop, so a hit/death callback fault can bypass that deferred sweep. Both projectile rendering and dynamic lighting iterate the retained authoritative entries. Existing R1 stale-projectile repair only marks old bullets dead and still depends on the same sweep.
+
+#2118 therefore adds an ordered V10.42 projectile lifecycle owner that retires non-piercing enemy/generator impacts before downstream callbacks and sweeps expired player/enemy projectiles from a `finally` boundary. It does not alter fire delay, rapid-fire cadence, projectile allowance, projectile TTL, held-fire ownership or room/run cleanup. Focused deterministic coverage includes direct enemy hits, 500 repeated impacts, an enemy-death callback fault and 2,400 sustained-fire ticks; the established Chromium held-fire contract remains part of the required matrix.
+
+A local deterministic lifecycle harness passed before PR qualification. #2118 must still qualify on its final exact head through the repository-required GitHub checks before merge.
 
 Preserve Solo, Tutorial, local 2P Split Screen and Weekly Vault/account services. The obsolete packet/world-sync retirement is complete; do not reintroduce its online transport, remote-player simulation or world snapshots while cleaning up residual terminology or compatibility code.
 
-The bounded retired-mode residue audit is complete. The next independently actionable repository scope is a small current-main reconstruction of still-valid startup/menu presentation ideas from closed #2055, after explicitly selecting only the required presentation behaviour. Do not restore retired online modes or combine that work with the separate local-runtime conditional cleanup, portal/topology/NPC/merchant work, or itch.io release path.
-
-Manual acceptance remains separate from CI: #2090 sustained held-fire behaviour and the 3-Artefact Banishment Flask exchange still require hands-on confirmation on the deployed/current build before those reproduced defects are marked closed.
+The bounded retired-mode residue audit is complete. Do not restore retired online modes or combine live-defect stages with the separate portal/topology/NPC/merchant work or itch.io release path.
 
 ## Session log
 
@@ -110,5 +117,6 @@ Manual acceptance remains separate from CI: #2090 sustained held-fire behaviour 
 - 2026-09-16: Qualified #2113 head `2fa216c6...`; one transient `v10-35-layout` shard timeout passed on an unchanged targeted retry.
 - 2026-09-16: Merged #2113 as `c3549e6d45b7748f1efcf5c4f4ba134200325a5f`. Obsolete packet/world-sync runtime retirement is complete.
 - 2026-09-16: Closed stale #1902 and rebuilt its still-valid local Split Screen map behaviour as #2115 on current `main`. The exact head `30c58717...` passed the complete matrix after an unchanged retry of an unrelated `v10-28-browser-stability-deterministic.mjs` startup timeout; #2115 merged as `95bd8431fd6b8313bf5873a79bd4bc93404d8de9`.
-
 - 2026-09-16: Completed the bounded current-main retired-mode residue audit at `e9adbd16...`. No retired Horde/Spy module is loaded by the supported page bootstrap; the retained network boundary is inert. Kept historical source/evidence and local-runtime online guards untouched because broader removal requires a dedicated local-runtime contract.
+- 2026-09-16: Qualified #2117 exact head `23bd55e2...` and merged the public-beta/watchdog remediation as `408a9870d33f9ea2931934c302176743d2589160`; the user designated that live defect complete.
+- 2026-09-16: Opened bounded Defect 2 PR #2118 from exact #2117 `main`, with transactional projectile retirement/finally cleanup and focused accumulation/death-path coverage. Final exact-head GitHub qualification remains in progress.

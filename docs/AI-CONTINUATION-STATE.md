@@ -10,11 +10,13 @@ Update this file when a workstream changes category, its active PR/dependency ch
 
 ## Verified checkpoint
 
-- Reconciled through `main` commit `95bd8431fd6b8313bf5873a79bd4bc93404d8de9`, the merge of supported local Split Screen full-map PR #2115. Always refresh live GitHub before acting because automation or later merges may advance `main` again.
-- The live open-PR queue contains **five active drafts** after merging #2115 and closing superseded #1902. Treat that count as an audit fact, not a permanent repository invariant.
+- Reconciled through `main` commit `408a9870d33f9ea2931934c302176743d2589160`, the merge of public-beta/watchdog remediation PR #2117. Always refresh live GitHub before acting because automation or later merges may advance `main` again.
+- The live open-PR queue contains **six active PRs** after opening bounded Dungeon Defect 2 PR #2118. Treat that count as an audit fact, not a permanent repository invariant.
 - #2102 is **MERGED**. The retained local Dungeon gameplay suffix lives in `game-local-runtime.js`.
 - #2113 is **MERGED**. The obsolete networked Dungeon Multiplayer packet routing, remote-player simulation and world serializer/receiver prefix is retired; `game-network.js` retains only inert compatibility owners required by the local session shell.
 - #2115 is **MERGED**. The full explored dungeon map now supports Solo and local Split Screen, uses a dedicated non-playing map mode, and ignores held-M key repeats.
+- #2117 is **MERGED AND COMPLETE** per the user's current live-defect checkpoint. The obsolete public-host closed-beta/watchdog gate no longer owns public game availability.
+- #2118 is the active bounded **Dungeon Defect 2** candidate for retained projectile entities/progressive slowdown. It is based directly on #2117 `main` and must qualify on its final exact head before merge.
 - #2111 remains the newest merged **SEO/video-page automation** result. #2109 remains the authoritative merged **game/archive publication** result; these are separate generated-output scopes.
 - Superseded runtime/documentation/generated-output PRs #2073, #2062, #1960, #1959, #1998, #2107, #1759 and #1752 remain closed without merge.
 - Additional stale runtime/verification candidates #1978, #1980, #2055, #1983, #1898, #1900 and #1902 are closed without merge. #1976 remains source material for a possible current-main optimisation re-derivation.
@@ -25,7 +27,7 @@ Update this file when a workstream changes category, its active PR/dependency ch
 
 | Workstream | Record | Current GitHub state |
 | --- | --- | --- |
-| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) | Seven current live user-reproduced defects now supersede the earlier speculative order. The public-beta watchdog/menu lock is first; projectile lifecycle, portal progression, save/restore, Flask exchange, firearm clarity and RPG terminology follow as separate bounded stages. |
+| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) | #2117 public-beta/watchdog remediation is complete. #2118 is the active bounded projectile-lifecycle/slowdown candidate; portal progression, save/restore, Flask exchange, firearm clarity and RPG terminology follow as separate stages. |
 | Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | itch.io is the intended purchase/download route; the custom commerce/paywall and stale packaging/Windows PR graphs are closed. Any package artifact must be rebuilt from current `main`, selectively reusing historical provider-neutral ideas only where necessary. |
 | Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2103 and #2105 are merged; #2073 is closed. #2110 remains the current draft endpoint follow-up but is **BLOCKED** by missing/mismatched Cloudflare runtime configuration. Repository-side work for that blocker is already complete. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | draft rebuild PR #2056 remains based on an old merge base and requires a current-main rebuild/reconciliation before integration. |
@@ -33,6 +35,7 @@ Update this file when a workstream changes category, its active PR/dependency ch
 
 ## Remaining live PR classes at this checkpoint
 
+- #2118 — active bounded **Dungeon Defect 2** projectile-lifecycle/slowdown remediation; qualify the final exact head before merge.
 - #2110 — deliberately deferred **BLOCKED** Content Publisher endpoint follow-up; do not rebase/retest solely because `main` advanced.
 - #2056 — stale Quest 3 rebuild requiring current-main reconstruction and fresh qualification.
 - #1976 — old R30 optimisation source material; re-derive only if the optimisation is still justified on current `main`.
