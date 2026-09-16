@@ -71,11 +71,19 @@ The first Load Safety attempt had one isolated Chromium shard-5 failure: `v10-35
 - #1902 is closed without merge as superseded by merged #2115.
 - #1860 and #1852 are historical long-running containment/stabilisation branches and are not safe bases for new runtime work. Their broader non-runtime implications must be reconciled separately before any closure decision.
 
+## Retired-mode residue audit — 2026-09-16
+
+The bounded current-main audit was completed at `e9adbd16eb56698254200e371ffb54cd9b8125e4` after the #2115 checkpoint. It confirmed that the runtime page bootstrap does **not** load the retired Horde Survivor or Sizzler Saboteurs modules, and that the loaded `game-network.js` surface remains the intentionally inert local-session compatibility boundary established by #2113.
+
+Historical Horde/Spy source files and acceptance records remain in the repository as evidence and are not loaded by the supported runtime. The audit also found old `playMode === "online"` conditional guards inside `game-local-runtime.js`. They are unreachable in the supported release but occur within retained local gameplay ownership; removing them requires a separate, focused local-runtime contract and must not be folded into terminology, topology, NPC, commerce, or menu work.
+
+No production runtime code was changed by this audit.
+
 ## Guardrails and next action
 
 Preserve Solo, Tutorial, local 2P Split Screen and Weekly Vault/account services. The obsolete packet/world-sync retirement is complete; do not reintroduce its online transport, remote-player simulation or world snapshots while cleaning up residual terminology or compatibility code.
 
-The next repository-side runtime step is a **bounded audit of remaining retired-mode language/runtime residue** on current `main`. Only remove or relabel residue that is demonstrably obsolete; do not combine that audit with portal/topology/NPC/merchant work or with the separate itch.io release path.
+The bounded retired-mode residue audit is complete. The next independently actionable repository scope is a small current-main reconstruction of still-valid startup/menu presentation ideas from closed #2055, after explicitly selecting only the required presentation behaviour. Do not restore retired online modes or combine that work with the separate local-runtime conditional cleanup, portal/topology/NPC/merchant work, or itch.io release path.
 
 Manual acceptance remains separate from CI: #2090 sustained held-fire behaviour and the 3-Artefact Banishment Flask exchange still require hands-on confirmation on the deployed/current build before those reproduced defects are marked closed.
 
@@ -88,3 +96,5 @@ Manual acceptance remains separate from CI: #2090 sustained held-fire behaviour 
 - 2026-09-16: Qualified #2113 head `2fa216c6...`; one transient `v10-35-layout` shard timeout passed on an unchanged targeted retry.
 - 2026-09-16: Merged #2113 as `c3549e6d45b7748f1efcf5c4f4ba134200325a5f`. Obsolete packet/world-sync runtime retirement is complete.
 - 2026-09-16: Closed stale #1902 and rebuilt its still-valid local Split Screen map behaviour as #2115 on current `main`. The exact head `30c58717...` passed the complete matrix after an unchanged retry of an unrelated `v10-28-browser-stability-deterministic.mjs` startup timeout; #2115 merged as `95bd8431fd6b8313bf5873a79bd4bc93404d8de9`.
+
+- 2026-09-16: Completed the bounded current-main retired-mode residue audit at `e9adbd16...`. No retired Horde/Spy module is loaded by the supported page bootstrap; the retained network boundary is inert. Kept historical source/evidence and local-runtime online guards untouched because broader removal requires a dedicated local-runtime contract.
