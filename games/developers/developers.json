@@ -308,6 +308,17 @@
     "url": "/games/developers/psygnosis/"
   },
   {
+    "name": "Quest Software",
+    "slug": "quest-software",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1987,
+    "lastYear": 1987,
+    "indexable": false,
+    "url": "/games/developers/quest-software/"
+  },
+  {
     "name": "Reaktor Software",
     "slug": "reaktor-software",
     "count": 2,

@@ -1,10 +1,10 @@
 {
   "version": 1,
   "counts": {
-    "total": 694,
-    "gameVideos": 658,
+    "total": 695,
+    "gameVideos": 659,
     "retroVideos": 36,
-    "c64GameVideos": 557,
+    "c64GameVideos": 558,
     "amigaGameVideos": 101
   },
   "items": [
@@ -9052,6 +9052,19 @@
       "year": "",
       "publisher": "",
       "collectionLabel": "Amiga Demo Music"
+    },
+    {
+      "id": "pa47GVPA1jU",
+      "kind": "game",
+      "filter": "c64",
+      "badge": "C64 Game",
+      "title": "Legacy Of The Ancients",
+      "description": "Legacy of the Ancients is a 1987 Commodore 64 role-playing game developed by Quest Software and published by Electronic Arts. Created by John and Chuck Dougherty, the adventure begins with…",
+      "url": "/games/legacy-of-the-ancients/",
+      "thumbnail": "https://i.ytimg.com/vi/pa47GVPA1jU/hqdefault.jpg",
+      "platform": "Commodore 64",
+      "year": 1987,
+      "publisher": "Electronic Arts"
     },
     {
       "id": "ght7u1k_tqw",

@@ -4,16 +4,16 @@
 
 | Check | Count |
 |---|---:|
-| Game records scanned | **658** |
-| Credited composer entities | **271** |
+| Game records scanned | **659** |
+| Credited composer entities | **273** |
 | Existing dedicated composer pages preserved | **20** |
 | Credited composers with an existing page | **20** |
-| Newly generated static composer routes | **251** |
+| Newly generated static composer routes | **253** |
 | Indexable generated routes | **63** |
-| Single-game generated noindex routes | **188** |
-| Total static composer routes | **271** |
-| Linked game-credit relationships | **577** |
-| Generated pages written in this run | **251** |
+| Single-game generated noindex routes | **190** |
+| Total static composer routes | **273** |
+| Linked game-credit relationships | **579** |
+| Generated pages written in this run | **253** |
 | Stale generated pages removed | **0** |
 
 ## Indexing policy
@@ -64,7 +64,7 @@ The source records in `games/games.json` remain unchanged.
 ## Research enrichment
 
 - Externally researched generated profiles: **95**
-- Credit-only generated profiles: **156**
+- Credit-only generated profiles: **158**
 - Research registry: `music/composers/research.json`
 - Research-backed single-credit SEO overrides: **31**
 
