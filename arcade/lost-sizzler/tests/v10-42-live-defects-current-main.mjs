@@ -17,8 +17,8 @@ assert.match(bootstrap,/v10-42-artefact-shop-stability\.js/,"ordered bootstrap m
 assert.match(bootstrap,/window\.addEventListener\("click",blockedStart,true\)/,"V10.42 must capture pre-ready start gestures before older document-level release handlers");
 assert.match(bootstrap,/window\.removeEventListener\("click",blockedStart,true\)/,"V10.42 must release authoritative start capture once ordered startup is ready");
 assert.match(bootstrap,/legacyGatePending=window\.CCGLostSizzlerReleaseGate\?\.state\?\.ready===false/,"queued starts must wait for the legacy release gate rather than dropping the click");
-assert.match(bootstrap,/if\(button\.disabled\|\|legacyGatePending\)/,"queued starts must survive the transient disabled-button window at ordered-bootstrap completion");
-assert.match(bootstrap,/setTimeout\(attempt,50\)/,"queued starts must retry for a bounded period instead of being discarded after one microtask");
+assert.match(bootstrap,/if\(!button\|\|!button\.isConnected\|\|button\.disabled\|\|legacyGatePending\)\{retry\(\);return\}/,"queued starts must survive missing, detached or transiently disabled buttons and the legacy-gate handoff");
+assert.match(bootstrap,/const delay=Math\.min\(500,50\+state\.pendingStartRetries\*25\);\s*setTimeout\(attempt,delay\)/,"queued starts must keep retrying with a bounded backoff until dispatch becomes safe");
 
 assert.match(attack,/new Set\(\["Space","KeyF","Numpad0"\]\)/,"all supported P1 attack keys must share the held-fire normalisation");
 assert.match(attack,/input\?\.add\?\.\("Space"\)/,"held attack aliases must normalise to the canonical Space input consumed by the frame loop");
