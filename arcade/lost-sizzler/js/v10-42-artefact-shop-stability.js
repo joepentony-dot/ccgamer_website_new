@@ -3,11 +3,13 @@
   "use strict";
   if(window.CCGLostSizzlerV142ArtefactShopStability)return;
 
-  const diagnostics={installs:0,trades:0,rollbacks:0,insufficient:0,installWaits:0};
+  const diagnostics={installs:0,rebinds:0,trades:0,rollbacks:0,insufficient:0,installWaits:0};
   let installed=false,installTimer=0;
 
   function currentPlayer(){try{return typeof p1!=="undefined"?p1:null}catch(_){return null}}
   function progression(){return window.CCGProgression||null}
+  function currentShopOwner(){try{return typeof buyShopItem==="function"?buyShopItem:null}catch(_){return null}}
+  function ownsCurrentBoundary(){const owner=currentShopOwner();return Boolean(owner?.__ccgArtefactShopStability)}
 
   function restoreRemovedArtefacts(player,removed){
     const PGR=progression();
@@ -56,13 +58,22 @@
   }
 
   function install(){
-    if(installed)return true;
     const foundation=window.CCGDungeonProgressionFoundation;
     if(!foundation?.ready){diagnostics.installWaits++;return false}
     try{
-      if(typeof buyShopItem!=="function")return false;
-      if(buyShopItem.__ccgArtefactShopStability){installed=true;return true}
-      const base=buyShopItem;
+      const liveOwner=currentShopOwner();
+      if(!liveOwner)return false;
+      if(liveOwner.__ccgArtefactShopStability){installed=true;return true}
+
+      /*
+        Later ordered modules (notably R1 shop-counter stability) legitimately
+        wrap buyShopItem after this module first loads. A historical `installed`
+        flag therefore cannot prove that the live purchase boundary still reaches
+        the Artefact exchange. Re-wrap the current live owner whenever that
+        boundary has been displaced; non-Flask purchases continue through the
+        latest owner chain unchanged.
+      */
+      const base=liveOwner;
       const wrapped=function(id,...args){
         if(String(id)==="banishment")return tradeArtefactsForFlask();
         return base.call(this,id,...args);
@@ -70,6 +81,7 @@
       wrapped.__ccgArtefactShopStability=true;
       wrapped.__ccgOriginal=base;
       buyShopItem=wrapped;
+      if(installed)diagnostics.rebinds++;
       installed=true;diagnostics.installs++;
       return true;
     }catch(_){return false}
@@ -80,7 +92,7 @@
     installTimer=setInterval(()=>{if(install())stopInstaller()},60);
     setTimeout(stopInstaller,12000);
   }
-  addEventListener("ccg:v142-ready",()=>{queueMicrotask(()=>{if(install())stopInstaller()})},{once:true});
+  addEventListener("ccg:v142-ready",()=>{queueMicrotask(()=>{install();stopInstaller()})},{once:true});
   addEventListener("pagehide",stopInstaller,{once:true});
 
   window.CCGLostSizzlerV142ArtefactShopStability=Object.freeze({
@@ -88,6 +100,6 @@
     diagnostics,
     install,
     tradeArtefactsForFlask,
-    isInstalled:()=>installed
+    isInstalled:()=>installed&&ownsCurrentBoundary()
   });
 })();
