@@ -1,0 +1,95 @@
+name: Repair Legacy Of The Ancients Publisher Data
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/repair-legacy-ancients-publisher.yml"
+      - "scripts/migrate-legacy-of-the-ancients-publisher.js"
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+
+      - name: Validate repair script
+        run: node --check scripts/migrate-legacy-of-the-ancients-publisher.js
+
+      - name: Repair stranded source and thumbnail
+        run: node scripts/migrate-legacy-of-the-ancients-publisher.js
+
+      - name: Verify repaired source
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const games = JSON.parse(fs.readFileSync('games/games.json', 'utf8'));
+          const pending = JSON.parse(fs.readFileSync('data/lemon-source-pending.json', 'utf8'));
+          const game = games.find((item) => item?.slug === 'legacy-of-the-ancients');
+          if (!game) throw new Error('Legacy Of The Ancients source record is missing.');
+          if (game.thumbnail !== 'resources/images/thumbnails/all/legacy-of-the-ancients.webp') throw new Error('Canonical thumbnail path was not repaired.');
+          if (game.lemon?.[0] !== 'https://www.lemon64.com/game/legacy-of-the-ancients') throw new Error('Verified Lemon source was not installed.');
+          if (pending.includes('legacy-of-the-ancients')) throw new Error('Legacy remains in the unresolved Lemon queue.');
+          if (!fs.existsSync('resources/images/thumbnails/all/legacy-of-the-ancients.webp')) throw new Error('Canonical thumbnail file is missing.');
+          console.log('Legacy publisher source repair verified.');
+          NODE
+
+      - name: Commit repair branch
+        id: repair_commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add \
+            games/games.json \
+            data/lemon-source-pending.json \
+            resources/images/thumbnails/all/legacy-of-the-ancients.webp
+
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Legacy publisher data is already repaired."
+            exit 0
+          fi
+
+          BRANCH="automation/repair-legacy-ancients-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git commit -m "Repair Legacy Of The Ancients publisher data"
+          git push origin "HEAD:$BRANCH"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+
+      - name: Open and merge repair pull request
+        if: steps.repair_commit.outputs.changed == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPAIR_BRANCH: ${{ steps.repair_commit.outputs.branch }}
+        run: |
+          set -euo pipefail
+          PR_URL=$(gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --base main \
+            --head "$REPAIR_BRANCH" \
+            --title "Repair Legacy Of The Ancients publisher data" \
+            --body "Repairs the stranded Content Publisher record: canonical thumbnail filename, verified Lemon64 source, and unresolved-source queue state. Reliable Games Publishing will rebuild the page and magazine review data after merge.")
+          echo "Repair PR: $PR_URL"
+          gh pr merge "$PR_URL" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
