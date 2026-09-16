@@ -81,7 +81,7 @@ try{
     enemyBullets.push({id:"defect3-old-enemy-shot",x:p1.x,y:p1.y,vx:0,vy:0,life:9999,power:1});
     if(!host.guardian?.alive)throw new Error("Floor 1 guardian is required for the live objective contract");
     const visited=explored.get(p1.id)||new Set();
-    for(const room of world.rooms||[])if(!room.optional)visited.add(room.id);
+    for(const room of world.rooms||[])if(!room.optional){const cx=Math.floor(room.x+room.w/2),cy=Math.floor(room.y+room.h/2);visited.add(`${cx},${cy}`)}
     explored.set(p1.id,visited);
     damageEnemy(host.guardian,999,"energy",p1);
     const explorePct=Math.round(window.CCGProgression.roomCompletion(visited,world)*100);
