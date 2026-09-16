@@ -36,9 +36,9 @@ const context={
   projectilePathClear(){return true},
   burst(){},ring(){},
   activateSequenceTorch(){},activateSwitch(){},hitStalker(){return false},damageGenerator(){},
-  findLocal(owner){return owner==="p1"?this.p1:null},
+  findLocal(owner){return owner==="p1"?context.p1:null},
   damageEnemy(){},
-  localPlayers(){return [this.p1]},
+  localPlayers(){return [context.p1]},
   hurtPlayer(){}
 };
 context.window=context;
