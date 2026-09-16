@@ -39,10 +39,10 @@
     ["v10-42-r21-owner-and-attack-seal.js","CCGLostSizzlerV142R21OwnerAndAttackSeal"],
     ["v10-42-r20-live-regression-stability.js","CCGLostSizzlerV142R20LiveRegressionStability"],
     ["v10-42-r22-stall-elapsed-handoff.js","CCGLostSizzlerV142R22StallElapsedHandoff"],
-    ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
-    ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"],
     ["v10-42-attack-hold-liveness.js","CCGLostSizzlerV142AttackHoldLiveness"],
-    ["v10-42-artefact-shop-stability.js","CCGLostSizzlerV142ArtefactShopStability"]
+    ["v10-42-artefact-shop-stability.js","CCGLostSizzlerV142ArtefactShopStability"],
+    ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
+    ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"]
   ];
   const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],pendingStartId:"",identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0,r1ChestOwner:null,r1ChestOwnerRestores:0};
   window.CCGLostSizzlerV142Bootstrap=state;
