@@ -25,6 +25,7 @@ on:
       - "admin/js/content-publisher-image-optimizer.js"
       - "admin/js/content-publisher-status-reconciler.js"
       - "admin/js/content-publisher-source-preflight.mjs"
+      - "admin/js/content-publisher-completion-guard.js"
       - "js/game-secondary-publisher-runtime.js"
       - "js/ccg-publisher-history.js"
       - "js/ccg-category-omega.js"
@@ -40,6 +41,7 @@ on:
       - "scripts/import-amiga-magazine-reviews.js"
       - "scripts/refresh-lemon-game-cache.js"
       - "scripts/discover-new-lemon-source.js"
+      - "scripts/validate-new-game-enrichment.mjs"
       - "scripts/ensure-magazine-review-runtime.js"
       - "scripts/ensure-manual-viewer-polish.js"
       - "scripts/ensure-secondary-publisher-runtime.js"
@@ -122,6 +124,8 @@ jobs:
         run: |
           node --check admin/js/content-publisher-status-reconciler.js
           node --check admin/js/content-publisher-source-preflight.mjs
+          node --check admin/js/content-publisher-completion-guard.js
+          node --check scripts/validate-new-game-enrichment.mjs
           node --test tests/content-publisher-source-preflight.test.mjs
 
       - name: Validate game description fallback
@@ -170,6 +174,11 @@ jobs:
         run: |
           echo "[games-publishing] Importing locally cached and curated magazine metadata. External Lemon availability is not a publishing prerequisite."
           node scripts/import-amiga-magazine-reviews.js
+
+      - name: Require new-game enrichment completion
+        run: |
+          echo "[games-publishing] Refusing to mark newly added games complete while automatic Lemon discovery is still unresolved."
+          node scripts/validate-new-game-enrichment.mjs --base HEAD^
 
       - name: Sync verified YouTube metadata
         env:
