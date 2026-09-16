@@ -2,27 +2,30 @@ const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
 const MUSIC_UPLOAD_URL = '/api/admin/game-music';
 const THUMBNAIL_PREFIX = 'resources/images/thumbnails/all/';
 const MUSIC_EXPECTED_KEY = 'ccg_publisher_music_expected_v1';
+const HAS_BROWSER = typeof window !== 'undefined' && typeof document !== 'undefined';
 
-const form = document.querySelector('[data-game-form]');
-const titleInput = document.querySelector('[data-game-field="title"]');
-const slugInput = document.querySelector('[data-game-field="slug"]');
-const idInput = document.querySelector('[data-game-field="id"]');
-const thumbnailInput = document.querySelector('[data-game-field="thumbnail"]');
-const videoIdInput = document.querySelector('[data-game-field="videoId"]');
-const lemonInput = document.querySelector('[data-game-field="lemonUrl"]');
-const thumbnailFile = document.querySelector('[data-game-thumbnail-file]');
-const musicFile = document.querySelector('[data-game-music-file]');
-const log = document.querySelector('[data-publisher-log]');
+const form = HAS_BROWSER ? document.querySelector('[data-game-form]') : null;
+const titleInput = HAS_BROWSER ? document.querySelector('[data-game-field="title"]') : null;
+const slugInput = HAS_BROWSER ? document.querySelector('[data-game-field="slug"]') : null;
+const idInput = HAS_BROWSER ? document.querySelector('[data-game-field="id"]') : null;
+const thumbnailInput = HAS_BROWSER ? document.querySelector('[data-game-field="thumbnail"]') : null;
+const videoIdInput = HAS_BROWSER ? document.querySelector('[data-game-field="videoId"]') : null;
+const lemonInput = HAS_BROWSER ? document.querySelector('[data-game-field="lemonUrl"]') : null;
+const thumbnailFile = HAS_BROWSER ? document.querySelector('[data-game-thumbnail-file]') : null;
+const musicFile = HAS_BROWSER ? document.querySelector('[data-game-music-file]') : null;
+const log = HAS_BROWSER ? document.querySelector('[data-publisher-log]') : null;
 
-const nativeFetch = window.fetch.bind(window);
+const nativeFetch = HAS_BROWSER ? window.fetch.bind(window) : null;
 let musicReadyKey = '';
 let musicReadyPayload = null;
 let resubmitting = false;
 
-installInternalFieldUi();
-installCanonicalFieldAutomation();
-installMusicBarrier();
-installCompletionGuard();
+if (HAS_BROWSER) {
+  installInternalFieldUi();
+  installCanonicalFieldAutomation();
+  installMusicBarrier();
+  installCompletionGuard();
+}
 
 function slugify(value) {
   return String(value || '')
@@ -37,6 +40,7 @@ function slugify(value) {
 }
 
 function isCreateMode() {
+  if (!HAS_BROWSER) return true;
   return String(document.querySelector('[data-game-edit-mode]')?.value || 'create') !== 'edit';
 }
 
@@ -96,11 +100,12 @@ function musicFingerprint(slug, file) {
 }
 
 function readExpectedMusic() {
+  if (!HAS_BROWSER) return {};
   try { return JSON.parse(localStorage.getItem(MUSIC_EXPECTED_KEY) || '{}'); } catch { return {}; }
 }
 
 function writeExpectedMusic(slug, value) {
-  if (!slug) return;
+  if (!HAS_BROWSER || !slug) return;
   const map = readExpectedMusic();
   if (value) map[slug] = value;
   else delete map[slug];
@@ -108,6 +113,7 @@ function writeExpectedMusic(slug, value) {
 }
 
 async function uploadMusicBeforeCommit(slug, file) {
+  if (!HAS_BROWSER || !nativeFetch) throw new Error('Browser upload runtime is unavailable.');
   const client = await window.ccgSupabase?.getClient?.();
   const { data, error } = await client?.auth?.getSession?.() || {};
   const token = data?.session?.access_token;
@@ -122,7 +128,7 @@ async function uploadMusicBeforeCommit(slug, file) {
 }
 
 function installMusicBarrier() {
-  if (!form || !musicFile) return;
+  if (!form || !musicFile || !HAS_BROWSER) return;
 
   const originalFetch = window.fetch.bind(window);
   window.fetch = async (input, init = {}) => {
@@ -199,6 +205,7 @@ function installCompletionGuard() {
 }
 
 async function verifyCompletion(slug) {
+  if (!nativeFetch) return;
   const issues = [];
   try {
     const pendingResponse = await nativeFetch(`/data/lemon-source-pending.json?publisher_integrity=${Date.now()}`, { cache: 'no-store' });
@@ -237,6 +244,7 @@ async function verifyCompletion(slug) {
 }
 
 function setPipeline(step, state, text) {
+  if (!HAS_BROWSER) return;
   const node = document.querySelector(`[data-pipeline-step="${step}"]`);
   if (!node) return;
   node.classList.remove('is-running', 'is-ok', 'is-error');
@@ -248,6 +256,7 @@ function setPipeline(step, state, text) {
 }
 
 function setGameValidation(message, error) {
+  if (!HAS_BROWSER) return;
   const node = document.querySelector('[data-game-validation]');
   if (!node) return;
   node.hidden = false;
