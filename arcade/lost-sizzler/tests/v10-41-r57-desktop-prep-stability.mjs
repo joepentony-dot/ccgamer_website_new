@@ -16,29 +16,11 @@ assert.doesNotThrow(()=>new Function(overrides),"R57 release-loader changes must
 assert.doesNotThrow(()=>new Function(freezeGuard),"R57 startup freeze-guard changes must parse");
 assert.doesNotThrow(()=>new Function(r57),"R57 desktop-prep owner must parse");
 
-assert.match(watchdog,/cheekycommodoregamer\.co\.uk/,"public beta lockdown must be hostname-scoped");
-assert.match(watchdog,/BETA HAS ENDED/,"public page must state that the beta has ended");
-assert.match(watchdog,/COMING SOON/,"public page must carry the Coming Soon sash");
-for(const id of ["solo-btn","tutorial-zone-btn","create-btn","horde-solo-btn","horde-mode-btn","saboteurs-mode-btn","continue-save-btn","daily-btn","split-btn","join-btn","lobby-start-btn"]){
-  assert.ok(watchdog.includes(`\"${id}\"`),`public lockdown must cover ${id}`);
-}
-assert.match(watchdog,/button\.disabled=true/,"public playable buttons must be genuinely disabled");
-assert.match(watchdog,/const OWNER_USERNAME="cheeky commodore gamer"/,"owner preview must identify the unique Cheeky Commodore Gamer profile username");
-assert.match(watchdog,/const OWNER_ROLE="admin"/,"owner preview must additionally require the admin role");
-assert.match(watchdog,/ownerProfileMatches=profile=>normalizeAccountName\(profile\?\.username\)===OWNER_USERNAME&&normalizeAccountName\(profile\?\.role\)===OWNER_ROLE/,"owner access must use authenticated profile username and role rather than display text");
-assert.match(watchdog,/from\("profiles"\)\.select\("username,role"\)\.eq\("id",user\.id\)/,"owner access must resolve the profile belonging to the authenticated user id");
-assert.ok(!/select\("[^"]*display_name/.test(watchdog),"owner preview authorization must not trust a spoofable display name");
-assert.match(watchdog,/publicPlayLocked=\(\)=>publicBetaClosed\(\)&&!ownerAccessGranted/,"live beta controls must stay locked unless private owner authorization succeeds");
-assert.match(watchdog,/getAttribute\?\.\("data-public-beta"\)!=="owner-preview"\)body\?\.setAttribute\?\.\("data-public-beta","owner-preview"\)/,"verified owner access must switch the live page into owner-preview state without rewriting an unchanged attribute");
-assert.match(watchdog,/const sash=document\.getElementById\("ccg-beta-ended-sash"\);if\(sash\)sash\.remove\(\)/,"verified owner access must remove the public Coming Soon sash only when it exists");
-assert.match(watchdog,/if\(changed\)\{try\{window\.CCGWeeklyChallenge\?\.render\?\.\(\)\}/,"owner-dependent UI must only re-render on an actual locked-to-owner transition");
-assert.match(watchdog,/function scheduleBetaControlSync\(\)/,"live-host mutation handling must use a bounded scheduled beta sync");
-assert.match(watchdog,/state\.betaSyncTimer=setTimeout\(\(\)=>\{\s*state\.betaSyncTimer=0;\s*if\(ownerAccessGranted\)restoreOwnerControls\(\);else lockPlayableControls\(\)/s,"observer-driven beta sync must yield to the browser event loop before reapplying state");
-assert.match(watchdog,/state\.betaObserver=new MutationObserver\(records=>\{[\s\S]*if\(relevant\)scheduleBetaControlSync\(\)/,"the live-host MutationObserver must schedule rather than directly recurse into beta lock ownership");
-assert.match(watchdog,/if\(body&&!body\.classList\.contains\("ccg-public-beta-closed"\)\)body\.classList\.add\("ccg-public-beta-closed"\)/,"public beta lock must not rewrite its watched body class when already locked");
-assert.match(watchdog,/window\.addEventListener\("ccg:auth-ready",onOwnerAuthSignal\)/,"owner preview must react when the website auth session becomes ready");
-assert.match(watchdog,/window\.addEventListener\("ccg:auth-changed",onOwnerAuthSignal\)/,"owner preview must relock or unlock when authentication changes");
-assert.match(watchdog,/ownerAccessGranted=false;state\.ownerAccess=false;state\.ownerAuthChecked=true;lockPlayableControls\(\)/,"owner-auth failures must fail closed and leave public controls locked");
+assert.match(watchdog,/const publicBetaClosed=\(\)=>false/,"the obsolete hostname public-beta gate must stay disabled for the released game");
+assert.match(watchdog,/const publicPlayLocked=\(\)=>false/,"the released game must not reintroduce a public menu lock");
+assert.ok(!watchdog.includes("ccg-public-beta-closed"),"the watchdog must not inject the retired public-beta lock class");
+assert.ok(!watchdog.includes("ccg-beta-ended-sash"),"the watchdog must not inject a retired Coming Soon sash");
+assert.ok(!watchdog.includes("from(\"profiles\")"),"the watchdog must not query account profiles to decide public game availability");
 assert.match(watchdog,/Math\.min\(90,10\+Math\.floor\(Math\.max\(0,state\.modulesReady\)\/5\)\*10\)/,"loading progress must advance by real ten-percent module stages instead of sticking at 92%");
 assert.match(watchdog,/state\.loadingStages\.push\(stage\)/,"loader must retain observable stage evidence");
 assert.match(watchdog,/scheduleSoloLivenessCheck/,"Solo launch must gain a bounded post-menu liveness check");
