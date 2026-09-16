@@ -59,8 +59,9 @@ async function optimiseBox3dSelectedImage(status) {
     status.textContent = '3D box must be PNG, JPEG or WebP.';
     return;
   }
+  let source = null;
   try {
-    const source = await loadImage(original);
+    source = await decodeImage(original);
     const width = Number(source.width || source.naturalWidth || 0);
     const height = Number(source.height || source.naturalHeight || 0);
     if (!width || !height) throw new Error('Image dimensions could not be read.');
@@ -77,6 +78,8 @@ async function optimiseBox3dSelectedImage(status) {
     status.textContent = `3D box ready: ${BOX3D_PREFIX}${slug}.webp · ${formatBytes(file.size)}.`;
   } catch (error) {
     status.textContent = `3D box optimisation stopped safely: ${error.message || error}`;
+  } finally {
+    closeDecodedImage(source);
   }
 }
 
