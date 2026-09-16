@@ -1,8 +1,13 @@
 # Content Publisher R2 music upload setup
 
-Deploy `workers/game-music-upload` as a Cloudflare Worker and bind `GAME_MUSIC`
-to the existing `game-music` R2 bucket. Configure a route such as
-`https://www.cheekycommodoregamer.co.uk/api/admin/game-music` to this Worker.
+Deploy `workers/game-music-upload` as the Cloudflare Worker connected to this
+repository and bind `GAME_MUSIC` to the existing `game-music` R2 bucket.
+
+The public site domain is not currently a Cloudflare-managed zone, so the
+upload Worker is exposed through its Cloudflare `workers.dev` production URL
+rather than a route on `www.cheekycommodoregamer.co.uk`. Keep `workers_dev =
+true` and do not add a `zone_name` route unless the site domain is later moved
+to Cloudflare-managed DNS.
 
 Set Worker variables for `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` and
 `ALLOWED_ADMIN_ORIGIN` (the exact `https://www.cheekycommodoregamer.co.uk`
@@ -18,3 +23,7 @@ Keep the existing public R2.dev playback endpoint enabled for read-only
 `<slug>.mp3` delivery, including Range requests. Configure the Worker CORS
 origin to the admin site only. No Cloudflare, R2, GitHub, or Supabase secret is
 committed in this repository.
+
+After the first successful Worker deployment, copy the exact production
+`workers.dev` URL into the Content Publisher upload endpoint. Do not guess the
+account subdomain or hard-code a placeholder hostname.
