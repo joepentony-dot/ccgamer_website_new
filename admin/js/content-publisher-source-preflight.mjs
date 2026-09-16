@@ -1,4 +1,5 @@
 import './content-publisher-integrity-guard.js';
+import './content-publisher-completion-hardening.js';
 
 const SOURCE_MIN_WORDS = 40;
 const THUMBNAIL_PREFIX = 'resources/images/thumbnails/all/';
