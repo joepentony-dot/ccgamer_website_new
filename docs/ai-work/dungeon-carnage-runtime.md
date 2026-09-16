@@ -2,20 +2,22 @@
 
 ## Scope
 
-The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when that document has not yet caught up with a merged runtime stage.
+The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
 ## Verified checkpoint — 2026-09-16
 
-Current `main` is `5112035f0d1f3c80fdb4fa2c6c83ff0228778600`, the merge commit for #2102.
+The material runtime checkpoint is the merged #2102 stage:
 
-The live work register still correctly records #2098 R24 five-depth room grammar as present, the XP source boundary as present, networked Dungeon Multiplayer/Horde/Spy as retired modes, and #2090 held-fire/Flask repairs as awaiting hands-on acceptance. It is now stale on the local-runtime extraction itself: #2102 has merged, so the active `hostEnemyStep(...)` through `dropInventorySlot(...)` gameplay suffix is no longer pending inside `game-network.js`.
+- qualified head: `dcb35f3e1271284e95f4e17de3d192f384ee4682`
+- merge commit: `5112035f0d1f3c80fdb4fa2c6c83ff0228778600`
+
+Later merged #2111 generated SEO/video pages and #2104 continuation/governance documentation did not change Dungeon runtime ownership. Always re-check live `main` before starting the next runtime stage.
+
+The live work register correctly records #2098 R24 five-depth room grammar as present, the XP source boundary as present, networked Dungeon Multiplayer/Horde/Spy as retired modes, #2102 local-runtime extraction as present, and #2090 held-fire/Flask repairs as awaiting hands-on acceptance.
 
 ### Completed runtime stage
 
 #2102, `codex/dungeon-carnage-extract-local-runtime`, is **MERGED**.
-
-Qualified head before merge: `dcb35f3e1271284e95f4e17de3d192f384ee4682`.
-Merge commit on `main`: `5112035f0d1f3c80fdb4fa2c6c83ff0228778600`.
 
 The merged stage:
 
@@ -70,5 +72,6 @@ Manual acceptance remains separate from CI: #2090 sustained held-fire behaviour 
 ## Session log
 
 - 2026-09-16: Reclassified #2062, #1960, #1959 and #1998 as superseded/obsolete; they are now closed without merge.
-- 2026-09-16: Qualified #2102 head `dcb35f3e...` against the then-live `main`, including a successful unchanged rerun of one transient Site Safety/WebDriver timeout.
-- 2026-09-16: Merged #2102 with an expected-head guard. `main` advanced to `5112035f0d1f3c80fdb4fa2c6c83ff0228778600`; the retained local runtime extraction is complete.
+- 2026-09-16: Qualified #2102 head `dcb35f3e...`, including a successful unchanged rerun of one transient Site Safety/WebDriver timeout.
+- 2026-09-16: Merged #2102 with an expected-head guard. The retained local runtime extraction is complete.
+- 2026-09-16: Post-merge reconciliation confirmed later #2111/#2104 changes did not alter Dungeon runtime ownership.
