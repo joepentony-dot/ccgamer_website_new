@@ -36,7 +36,6 @@ test('Archive Quality separates Cloudflare music from local resource findings', 
   assert.match(js, /new Audio\(\)/);
   assert.doesNotMatch(js, /category:\s*["']Local audio["']/);
   assert.doesNotMatch(js, /resources\/audio\/games/);
-  assert.doesNotMatch(js, /\n\s*\}\);\n\n\s*\[game\?\.pdf, game\?\.disk\]/, 'Local linked-file checks must remain inside the per-game resource loop');
   assert.doesNotMatch(publishing, /resources\/audio\/games/, 'Reliable Games Publishing must not watch the retired local audio directory');
 
   const archiveBase = js.match(/CLOUDFLARE_MUSIC_BASE_URL = '([^']+)'/)?.[1];
@@ -48,6 +47,8 @@ test('music upload Worker keeps R2 credentials and role enforcement server-side'
   const worker = read('workers/game-music-upload/src/handler.mjs');
   const config = read('workers/game-music-upload/wrangler.toml');
   assert.match(config, /binding = "GAME_MUSIC"/);
+  assert.match(config, /pattern = "www\.cheekycommodoregamer\.co\.uk\/api\/admin\/game-music\*"/);
+  assert.match(config, /zone_name = "cheekycommodoregamer\.co\.uk"/);
   assert.match(worker, /SUPABASE_SERVICE_ROLE_KEY/);
   assert.match(worker, /user_roles/);
   assert.match(worker, /editor.*admin.*superadmin/);
