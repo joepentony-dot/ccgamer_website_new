@@ -41,8 +41,11 @@ try{
   await page.goto(`${origin}/arcade/lost-sizzler/?v142-r23-rpg-build=1`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV142R23RpgBuildFocus)&&Boolean(window.CCGLostSizzlerV142R23RpgBuildExpansion)&&Boolean(window.CCGLostSizzlerV142ProceduralOverhaul)&&Boolean(window.CCGLostSizzlerV142FiveDepthCampaign),null,{timeout:90000});
   const bootstrap=await page.evaluate(()=>({build:window.CCGLostSizzlerV142Bootstrap?.build,cache:window.CCGLostSizzlerV142Bootstrap?.cache,loaded:[...(window.CCGLostSizzlerV142Bootstrap?.loaded||[])]}));
-  assert.equal(bootstrap.build,"V10.42 r23","Ordered bootstrap must advertise the r23 build.");
-  assert.equal(bootstrap.cache,"20260915r23","Ordered bootstrap must use the r23 module cache token.");
+  const buildMatch=/^V10\.42 r(\d+)$/.exec(String(bootstrap.build||""));
+  assert.ok(buildMatch&&Number(buildMatch[1])>=23,"Ordered bootstrap must advertise V10.42 r23 or later.");
+  const cacheMatch=/^(\d{8})r(\d+)$/.exec(String(bootstrap.cache||""));
+  assert.ok(cacheMatch&&Number(cacheMatch[2])>=23,"Ordered bootstrap must use an r23-or-later module cache token.");
+  assert.equal(Number(cacheMatch[2]),Number(buildMatch[1]),"Ordered bootstrap build and cache revisions must stay aligned.");
   assert.ok(bootstrap.loaded.includes("v10-42-r23-rpg-build-focus.js"),"Ordered bootstrap must retain the qualified r23 RPG build-focus runtime.");
   assert.ok(bootstrap.loaded.includes("v10-42-r23-rpg-build-expansion.js"),"Ordered bootstrap must load the r23 RPG expansion after build focus.");
 

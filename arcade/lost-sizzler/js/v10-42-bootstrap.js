@@ -1,11 +1,11 @@
-/* The Lost Sizzler V10.42 — authoritative ordered bootstrap. */
+/* C64 Dungeon Carnage V10.42 — authoritative ordered bootstrap. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
-  const BUILD="V10.42 r23";
-  const CACHE="20260915r23";
+  const BUILD="V10.42 r25";
+  const CACHE="20260916r25";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-r23-rpg-build-focus.js","CCGLostSizzlerV142R23RpgBuildFocus"],
@@ -39,10 +39,12 @@
     ["v10-42-r21-owner-and-attack-seal.js","CCGLostSizzlerV142R21OwnerAndAttackSeal"],
     ["v10-42-r20-live-regression-stability.js","CCGLostSizzlerV142R20LiveRegressionStability"],
     ["v10-42-r22-stall-elapsed-handoff.js","CCGLostSizzlerV142R22StallElapsedHandoff"],
+    ["v10-42-attack-hold-liveness.js","CCGLostSizzlerV142AttackHoldLiveness"],
+    ["v10-42-artefact-shop-stability.js","CCGLostSizzlerV142ArtefactShopStability"],
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
     ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"]
   ];
-  const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],pendingStartId:"",identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0,r1ChestOwner:null,r1ChestOwnerRestores:0};
+  const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],pendingStartId:"",pendingStartRetries:0,identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0,r1ChestOwner:null,r1ChestOwnerRestores:0};
   window.CCGLostSizzlerV142Bootstrap=state;
 
   function setReleaseReady(value){
@@ -71,7 +73,7 @@
     const buildMeta=document.querySelector('meta[name="ccg-lost-sizzler-build"]'),cacheMeta=document.querySelector('meta[name="ccg-lost-sizzler-cache"]');
     if(buildMeta&&buildMeta.content!==BUILD)buildMeta.content=BUILD;
     if(cacheMeta&&cacheMeta.content!==CACHE)cacheMeta.content=CACHE;
-    const subtitle=document.querySelector(".v102-brand p"),expectedSubtitle="THE LOST SIZZLER — V10.42";
+    const subtitle=document.querySelector(".v102-brand p"),expectedSubtitle="C64 DUNGEON CARNAGE — V10.42";
     if(subtitle&&subtitle.textContent!==expectedSubtitle)subtitle.textContent=expectedSubtitle;
     const badge=document.querySelector(".build-badge"),expectedBadge=`BUILD ${BUILD.toUpperCase()}`;
     if(badge&&badge.textContent!==expectedBadge)badge.textContent=expectedBadge;
@@ -119,7 +121,7 @@
     target.setAttribute("aria-busy","true");
     const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 systems are finishing their ordered startup. Your selected adventure will start automatically when the build is ready.";
   }
-  document.addEventListener("click",blockedStart,true);
+  window.addEventListener("click",blockedStart,true);
 
   function replayPendingStart(){
     const pendingId=state.pendingStartId;
@@ -127,12 +129,19 @@
     if(!pendingId)return;
     const target=document.getElementById(pendingId);
     target?.removeAttribute("aria-busy");
-    queueMicrotask(()=>{
+    const deadline=Date.now()+5000;
+    const attempt=()=>{
       if(!state.ready||state.failed||document.body.dataset.runActive==="true")return;
       const button=document.getElementById(pendingId);
-      if(!button||button.disabled||!button.isConnected)return;
+      if(!button||!button.isConnected)return;
+      const legacyGatePending=window.CCGLostSizzlerReleaseGate?.state?.ready===false;
+      if(button.disabled||legacyGatePending){
+        if(Date.now()<deadline){state.pendingStartRetries+=1;setTimeout(attempt,50)}
+        return;
+      }
       button.click();
-    });
+    };
+    queueMicrotask(attempt);
   }
 
   function alreadyLoaded(marker){return Boolean(marker&&window[marker])}
@@ -213,7 +222,7 @@
       promoteR1ChestOwner();
       promoteStage8MerchantOwner();
       observeControllerSeal();
-      state.ready=true;stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";document.removeEventListener("click",blockedStart,true);
+      state.ready=true;stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";window.removeEventListener("click",blockedStart,true);
       const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five new dungeon floors are loaded in verified order. Solo, Tutorial and 2P Split Screen run locally; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
       replayPendingStart();
@@ -221,7 +230,7 @@
       state.failed=true;state.error=String(error?.message||error);setReleaseReady(false);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="failed";
       clearPendingBusy();state.pendingStartId="";
       const note=document.getElementById("menu-note");if(note)note.textContent=`V10.42 startup failed safely: ${state.error}. Refresh before starting a run.`;
-      console.error("[Lost Sizzler V10.42] ordered bootstrap failed",error);
+      console.error("[C64 Dungeon Carnage V10.42] ordered bootstrap failed",error);
     }
   }
 

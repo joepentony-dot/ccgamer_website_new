@@ -17,7 +17,7 @@ source=source.replace(timeoutTarget,timeoutReplacement);
 const releaseSubtitleTarget=`    const buildSubtitle=await state.page.locator(".brand p").textContent();
     assert.equal(buildSubtitle?.trim(),"THE LOST SIZZLER — V10.41","the current build subtitle must survive older deferred UI initialisers");`;
 const releaseSubtitleReplacement=`    const buildSubtitle=await state.page.locator(".brand p").textContent();
-    assert.equal(buildSubtitle?.trim(),"THE LOST SIZZLER — V10.42","the current V10.42 build subtitle must survive older deferred UI initialisers");`;
+    assert.equal(buildSubtitle?.trim(),"C64 DUNGEON CARNAGE — V10.42","the current C64 Dungeon Carnage V10.42 subtitle must survive older deferred UI initialisers");`;
 const releaseSubtitleMatches=source.split(releaseSubtitleTarget).length-1;
 assert.equal(releaseSubtitleMatches,1,"the deterministic browser harness must find exactly one legacy V10.41 subtitle assertion");
 source=source.replace(releaseSubtitleTarget,releaseSubtitleReplacement);
