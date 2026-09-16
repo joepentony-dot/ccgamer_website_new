@@ -47,11 +47,12 @@ test('Archive Quality separates Cloudflare music from local resource findings', 
 test('music upload Worker keeps R2 credentials and role enforcement server-side', () => {
   const worker = read('workers/game-music-upload/src/handler.mjs');
   const config = read('workers/game-music-upload/wrangler.toml');
+  assert.match(config, /name = "ccgamer-website-new"/);
   assert.match(config, /binding = "GAME_MUSIC"/);
-  assert.match(config, /workers_dev = false/);
+  assert.match(config, /workers_dev = true/);
   assert.match(config, /keep_vars = true/);
-  assert.match(config, /pattern = "www\.cheekycommodoregamer\.co\.uk\/api\/admin\/game-music\*"/);
-  assert.match(config, /zone_name = "cheekycommodoregamer\.co\.uk"/);
+  assert.doesNotMatch(config, /\[\[routes\]\]/);
+  assert.doesNotMatch(config, /zone_name\s*=/);
   assert.match(worker, /SUPABASE_SERVICE_ROLE_KEY/);
   assert.match(worker, /user_roles/);
   assert.match(worker, /editor.*admin.*superadmin/);
