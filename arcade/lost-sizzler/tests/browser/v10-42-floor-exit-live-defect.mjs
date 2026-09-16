@@ -7,7 +7,7 @@ import {chromium} from "playwright";
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const repo=path.resolve(here,"../../../..");
-const mime={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".json":"application/json; charset=utf-8",".svg":"image/svg+xml",".png":"image/png",".webp":"image/webp",".wav":"audio/wav",".mp3":"audio/mpeg",".ogg":"audio/ogg"};
+const mime={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".json":"application/json",".svg":"image/svg+xml",".png":"image/png",".webp":"image/webp",".wav":"audio/wav",".mp3":"audio/mpeg",".ogg":"audio/ogg"};
 const sockets=new Set();
 const server=http.createServer((req,res)=>{
   try{
@@ -39,14 +39,25 @@ async function enterOpenExit(page){
   const route=await page.evaluate(()=>{
     const candidates=[[1,0],[-1,0],[0,1],[0,-1]];
     const step=candidates.find(([dx,dy])=>window.CCGWorld.walkable(world.map,world.exit.x-dx,world.exit.y-dy,host));
-    if(!step)return{moved:false,exitOpen:false};
+    if(!step)return{moved:false,exitOpen:false,mode:String(mode),floorComplete:Boolean(run?.floorComplete),panelVisible:false,panelClass:"missing"};
     const [dx,dy]=step,exitOpen=Boolean(host.exitOpen);
     p1.x=world.exit.x-dx;p1.y=world.exit.y-dy;p1.rx=p1.x;p1.ry=p1.y;
     movePlayer(p1,dx,dy);
-    return{moved:p1.x===world.exit.x&&p1.y===world.exit.y,exitOpen};
+    const panel=document.getElementById("floor-complete");
+    return{
+      moved:p1.x===world.exit.x&&p1.y===world.exit.y,
+      exitOpen,
+      mode:String(mode),
+      floorComplete:Boolean(run?.floorComplete),
+      panelVisible:Boolean(panel&&!panel.classList.contains("hidden")),
+      panelClass:panel?.className||"missing"
+    };
   });
   assert.equal(route.exitOpen,true,"The completed floor must authorize the live exit before entry.");
   assert.equal(route.moved,true,"The player must enter the real exit tile through movePlayer().");
+  assert.equal(route.mode,"floorcomplete",`Exit entry must synchronously transfer mode ownership to floorcomplete. Observed: ${JSON.stringify(route)}`);
+  assert.equal(route.floorComplete,true,`Exit entry must synchronously set the floor-complete latch. Observed: ${JSON.stringify(route)}`);
+  assert.equal(route.panelVisible,true,`Exit entry must synchronously reveal the authoritative floor-complete panel. Observed: ${JSON.stringify(route)}`);
   await page.waitForFunction(()=>mode==="floorcomplete"&&run?.floorComplete===true&&!document.getElementById("floor-complete")?.classList.contains("hidden"));
 }
 
