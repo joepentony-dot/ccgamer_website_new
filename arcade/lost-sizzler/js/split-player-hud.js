@@ -78,7 +78,7 @@
       <div><span>TIME</span><b data-time>00:00</b></div>
     </section>
     <section class="split-player-card player-two" data-split-player="2">
-      <div class="split-player-head"><strong data-name>PLAYER 2</strong><span>IJKL · ENTER · O</span></div>
+      <div class="split-player-head"><strong data-name>PLAYER 2</strong><span>IJKL · ENTER · O · M MAP</span></div>
       <div class="split-player-main">
         <div class="split-player-stat health"><span>HEALTH</span><b data-health>0/0</b><i data-health-meter></i></div>
         <div class="split-player-stat armour"><span>ARMOUR</span><b data-armour>0</b><i data-armour-meter></i></div>
