@@ -40,6 +40,10 @@ try{
       exitMovement:Boolean(window.CCGLostSizzlerV142R5SpyExitMovementSeal),
       packetRejection:Boolean(window.CCGLostSizzlerV142R11SpyPacketRejectionSeal)
     },
+    retiredNetworkGlobals:{
+      multiplayerState:Boolean(window.CCGLostSizzlerV142MultiplayerState),
+      collectAuthority:Boolean(window.CCGLostSizzlerV142MultiplayerCollectAuthority)
+    },
     visible:Object.fromEntries(['solo-btn','tutorial-zone-btn','split-btn','daily-btn','create-btn','horde-mode-btn','saboteurs-mode-btn','join-btn'].map(id=>{
       const node=document.getElementById(id);return[id,Boolean(node&&!node.hidden&&getComputedStyle(node).display!=='none')]
     })),
@@ -69,6 +73,7 @@ try{
   assert.ok(!state.bootstrap.includes('v10-42-multiplayer-collect-authority.js'),'Online collection authority bridge must not load in production V10.42.');
   for(const file of ['v10-42-r3-retained-spy-inventory-seal.js','v10-42-r5-spy-exit-movement-seal.js','v10-42-r11-spy-packet-rejection-seal.js'])assert.ok(!state.bootstrap.includes(file),`${file} must remain retired from the production V10.42 bootstrap.`);
   assert.deepEqual(state.retiredSpyGlobals,{inventory:false,exitMovement:false,packetRejection:false},'Retired V10.42 Spy compatibility owners must never be installed in the zero-server release.');
+  assert.deepEqual(state.retiredNetworkGlobals,{multiplayerState:false,collectAuthority:false},'Retired V10.42 networked Dungeon Multiplayer adapters must remain absent from the zero-server release.');
   assert.ok(state.bootstrap.includes('v10-42-zero-server-release.js'),'Zero-server release policy must load in production V10.42.');
 
   const schedulerAdvanced=await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve(true)))));
