@@ -7,7 +7,7 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const game=path.resolve(here,"..");
 const repo=path.resolve(game,"../..");
 const readGame=file=>fs.readFileSync(path.join(game,file),"utf8");
-const play=readGame("js/game-play.js"),render=readGame("js/game-render.js"),systems=readGame("js/systems.js"),audio=readGame("js/audio.js"),weekly=readGame("js/weekly-challenge.js"),core=readGame("js/game-core.js"),main=readGame("js/game-main.js"),network=readGame("js/network.js"),gameNetwork=readGame("js/game-network.js"),runtime=readGame("js/v10-6-runtime.js"),multiplayerSync=readGame("js/v10-31-multiplayer-sync.js"),assets=readGame("js/asset-overrides.js"),index=readGame("index.html");
+const play=readGame("js/game-play.js"),render=readGame("js/game-render.js"),systems=readGame("js/systems.js"),audio=readGame("js/audio.js"),weekly=readGame("js/weekly-challenge.js"),core=readGame("js/game-core.js"),main=readGame("js/game-main.js"),network=readGame("js/network.js"),runtime=readGame("js/v10-6-runtime.js"),multiplayerSync=readGame("js/v10-31-multiplayer-sync.js"),assets=readGame("js/asset-overrides.js"),index=readGame("index.html");
 const release=JSON.parse(readGame("version.json"));
 const supabaseClient=fs.readFileSync(path.join(repo,"js/ccg-supabase-client.js"),"utf8");
 const edge=fs.readFileSync(path.join(repo,"supabase/functions/ccq-weekly-challenge/index.ts"),"utf8");
@@ -51,13 +51,13 @@ assert.match(multiplayerSync,/request\("door",\{x,y,bronzeKeys:/,"a joined playe
 assert.match(multiplayerSync,/payload\.action==="chest"/,"chests must be opened by the host for joined players");
 assert.match(multiplayerSync,/payload\.action==="furniture"/,"furniture destruction must be processed by the host");
 assert.match(multiplayerSync,/net\.send\("hit"/,"joined-player melee and projectile damage must be sent to the host");
-assert.match(gameNetwork,/lastAuthoritativeWorldRevision/,"guest-local animation revisions must not block later host snapshots");
-assert.match(gameNetwork,/processRemoteMovement\(next\)/,"the host must process shared dungeon triggers reached by joined players");
-assert.match(gameNetwork,/inventory:\(p\.inventory\|\|\[\]\)\.map/,"joined-player inventory and key state must be included in player synchronisation");
-assert.match(gameNetwork,/openingRemainingMs:remaining/,"door snapshots must transfer remaining duration instead of a host-local browser deadline");
-assert.match(gameNetwork,/openAt:receivedAt\+remaining/,"joined browsers must reconstruct door deadlines from their own monotonic clock");
-assert.match(gameNetwork,/syncSequence:\+\+worldSyncSequence/,"world snapshots must carry an ordered host sequence");
+/*
+ * The packet/world-snapshot assertions that previously targeted game-network.js
+ * are intentionally retired with the post-#2102 compatibility-boundary stage.
+ * retired-network-runtime-boundary-contract.mjs now owns the inverse guarantee:
+ * those packet, remote-player and world-sync behaviours must not return.
+ */
 assert.match(multiplayerSync,/actorState:playerStateForNetwork\(p1\)/,"interaction requests must carry a latency-tolerant player position snapshot");
 assert.match(multiplayerSync,/v132_interaction_result/,"the host must explicitly accept or reject joined-player interactions");
 
-console.log("Lost Sizzler V10.33 furniture, melee, tutorial safety and multiplayer clock-sync checks passed under r30.");
+console.log("Lost Sizzler V10.33 furniture, melee, tutorial safety and remaining compatibility checks passed under r30.");

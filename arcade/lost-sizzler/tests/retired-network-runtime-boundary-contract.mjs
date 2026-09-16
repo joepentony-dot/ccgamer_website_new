@@ -12,74 +12,61 @@ const main=read("js/game-main.js");
 const index=read("index.html");
 
 /*
- * The guarded split is now complete: game-network.js owns the retired online
- * packet/world-sync prefix, while game-local-runtime.js owns the retained
- * Solo/local combat, pickup, Banishment and inventory runtime.
+ * Networked Dungeon Multiplayer is retired. The active local gameplay suffix
+ * remains in game-local-runtime.js. game-network.js now contains only inert
+ * compatibility owners needed while RoomNetwork is still the Solo/Split local
+ * session shell; it must not regain packet routing, remote simulation or world
+ * synchronisation behaviour.
  */
 const activeOwners=[
-  "hostEnemyStep",
-  "onHit",
-  "elementalDamage",
-  "isDeathStalkerEnemy",
-  "enemyDefeatIdentity",
-  "recordEnemyDefeat",
-  "damageEnemy",
-  "onFX",
-  "floorItemNeedsSlot",
-  "floorItemCarryCandidate",
-  "inventoryFullForPickup",
-  "resourcePickupBlock",
-  "reserveAmmoCollection",
-  "onCollectRequest",
-  "requestCollect",
-  "collectedName",
-  "onCollected",
-  "storeConsumable",
-  "equipWeapon",
-  "applyLoot",
-  "pickupXP",
-  "applyItem",
-  "usePotion",
-  "banishmentState",
-  "dropBanishmentArtefact",
-  "offerBanishmentArtefact",
-  "claimBanishmentArtefact",
-  "permanentlyBanish",
-  "activateBanishment",
-  "useUtility",
-  "useTeleport",
-  "useBanishment",
-  "useInventorySlot",
+  "hostEnemyStep","onHit","elementalDamage","isDeathStalkerEnemy",
+  "enemyDefeatIdentity","recordEnemyDefeat","damageEnemy","onFX",
+  "floorItemNeedsSlot","floorItemCarryCandidate","inventoryFullForPickup",
+  "resourcePickupBlock","reserveAmmoCollection","onCollectRequest",
+  "requestCollect","collectedName","onCollected","storeConsumable",
+  "equipWeapon","applyLoot","pickupXP","applyItem","usePotion",
+  "banishmentState","dropBanishmentArtefact","offerBanishmentArtefact",
+  "claimBanishmentArtefact","permanentlyBanish","activateBanishment",
+  "useUtility","useTeleport","useBanishment","useInventorySlot",
   "dropInventorySlot"
 ];
 
 for(const name of activeOwners){
   const legacyMatches=legacyNetwork.match(new RegExp(`function\\s+${name}\\s*\\(`,"g"))||[];
   const localMatches=extractedLocal.match(new RegExp(`function\\s+${name}\\s*\\(`,"g"))||[];
-  assert.equal(legacyMatches.length,0,`${name} must no longer be owned by game-network.js after extraction`);
+  assert.equal(legacyMatches.length,0,`${name} must not return to game-network.js`);
   assert.equal(localMatches.length,1,`${name} must have exactly one retained owner in game-local-runtime.js`);
 }
 
-assert.match(legacyNetwork,/function onPacket\s*\(/,"the retired online adapter must remain identifiable in game-network.js until transport retirement");
-assert.match(legacyNetwork,/function serialWorld\s*\(/,"the retired online world serializer must remain identifiable in game-network.js until transport retirement");
-assert.match(legacyNetwork,/function onWorld\s*\(/,"the retired online world receiver must remain identifiable in game-network.js until transport retirement");
-assert.doesNotMatch(legacyNetwork,/function hostEnemyStep\s*\(/,"game-network.js must stop at the completed transport/local-runtime boundary");
+for(const name of ["onMembers","onPacket","onPlayer","playerStateForNetwork","sendPlayer","sendRemotePlayerState","processRemoteMovement","serialWorld","broadcastWorld","onWorld"]){
+  assert.equal((legacyNetwork.match(new RegExp(`function\\s+${name}\\s*\\(`,"g"))||[]).length,1,`${name} compatibility owner must remain singular while RoomNetwork backs local sessions`);
+}
+assert.doesNotMatch(legacyNetwork,/net\.send\s*\(/,"retired online adapter must not transmit packets");
+assert.doesNotMatch(legacyNetwork,/remote\.(?:get|set|delete|clear)\s*\(/,"retired online adapter must not own remote-player state");
+assert.doesNotMatch(legacyNetwork,/host\.(?:doors|chests|enemies|items|traps|generators|shrines|switches|arenas|timedRooms)/,"retired online adapter must not serialize or apply world state");
+assert.doesNotMatch(legacyNetwork,/playMode\s*===?\s*["']online["']|playMode\s*!==?\s*["']online["']/,"retired online product mode must not regain a runtime branch");
+assert.match(legacyNetwork,/function onPacket\s*\([^)]*\)\{\}/,"packet callback must be inert");
+assert.match(legacyNetwork,/function broadcastWorld\s*\(\)\{\}/,"world broadcast compatibility owner must be inert");
+assert.match(legacyNetwork,/function onWorld\s*\([^)]*\)\{\}/,"world receive compatibility owner must be inert");
+assert.match(legacyNetwork,/function serialWorld\s*\(\)\{return null\}/,"world serializer compatibility owner must not expose local world state");
+
 assert.match(extractedLocal,/^function hostEnemyStep\s*\(/,"game-local-runtime.js must begin at the retained hostEnemyStep boundary");
-assert.match(extractedLocal,/function dropInventorySlot\s*\(/,"game-local-runtime.js must extend through inventory dropping, not stop at combat or pickups");
-assert.doesNotMatch(extractedLocal,/function onPacket\s*\(|function serialWorld\s*\(|function onWorld\s*\(/,"retained local runtime must not absorb the retired packet/world-sync owners");
+assert.match(extractedLocal,/function dropInventorySlot\s*\(/,"game-local-runtime.js must extend through inventory dropping");
+assert.doesNotMatch(extractedLocal,/function onPacket\s*\(|function serialWorld\s*\(|function onWorld\s*\(/,"retained local runtime must not absorb retired packet/world-sync owners");
 
 const networkScript=index.indexOf('src="js/game-network.js');
 const localScript=index.indexOf('src="js/game-local-runtime.js');
 const playScript=index.indexOf('src="js/game-play.js');
-assert.ok(networkScript>=0,"game-network.js must remain loaded while its retired transport prefix still exists");
-assert.ok(localScript>networkScript,"game-local-runtime.js must load after game-network.js");
-assert.ok(playScript>localScript,"game-local-runtime.js must load before game-play.js so retained helpers exist before gameplay wiring");
+assert.ok(networkScript>=0,"compatibility boundary must remain loaded while RoomNetwork constructs with onMembers/onPacket");
+assert.ok(localScript>networkScript,"game-local-runtime.js must load after the compatibility boundary");
+assert.ok(playScript>localScript,"game-local-runtime.js must load before game-play.js");
 assert.equal((index.match(/src="js\/game-local-runtime\.js/g)||[]).length,1,"game-local-runtime.js must be loaded exactly once");
 
+assert.match(main,/new window\.CCGNetwork\.RoomNetwork\(\{onMembers,onPacket\}\)/,"local session shell must retain its explicit compatibility callbacks");
 assert.doesNotMatch(index,/id="create-btn"|id="join-btn"|id="room-code"/,"retired online room controls must not return to the public menu");
-assert.match(index,/id="solo-btn"/,"Solo must remain available while online runtime is retired");
-assert.match(index,/id="split-btn"/,"local 2P Split Screen must remain available while online runtime is retired");
-assert.match(index,/id="weekly-vault"/,"Weekly High-Score Vault/account UI must remain available while online runtime is retired");
-assert.doesNotMatch(main,/getElementById\(["']create-btn["']\)|getElementById\(["']join-btn["']\)/,"game-main.js must not restore hard bindings to retired online controls");
+assert.match(index,/id="solo-btn"/,"Solo must remain available");
+assert.match(index,/id="split-btn"/,"local 2P Split Screen must remain available");
+assert.match(index,/id="weekly-vault"/,"Weekly High-Score Vault/account UI must remain available");
+assert.doesNotMatch(main,/getElementById\(["']create-btn["']\)|getElementById\(["']join-btn["']\)/,"game-main.js must not restore retired online controls");
 
-console.log("Dungeon Carnage retired-network runtime extraction contract passed.");
+console.log("Dungeon Carnage retired-network runtime retirement contract passed.");
