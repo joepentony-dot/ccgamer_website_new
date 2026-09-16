@@ -1,3 +1,5 @@
+import './content-publisher-music-upload-router.js';
+
 const THUMBNAIL_PREFIX = 'resources/images/thumbnails/all/';
 const MUSIC_UPLOAD_URL = '/api/admin/game-music';
 const MUSIC_STATE_KEY = 'ccg_publisher_music_state_v1';
