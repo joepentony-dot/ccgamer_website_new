@@ -133,8 +133,7 @@
     };
     const retry=()=>{
       state.pendingStartRetries+=1;
-      const delay=Math.min(500,50+state.pendingStartRetries*25);
-      setTimeout(attempt,delay);
+      setTimeout(attempt,50);
     };
     const attempt=()=>{
       if(state.failed){finish();return}
