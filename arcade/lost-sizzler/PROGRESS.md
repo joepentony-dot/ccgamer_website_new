@@ -5,10 +5,10 @@
 ## Audit checkpoint
 
 - Audited: **16 September 2026**.
-- Current `main` checkpoint: `351727ec4f08d82f764f27e284a15b1b71f596e3`.
+- Current runtime checkpoint: `5112035f0d1f3c80fdb4fa2c6c83ff0228778600` (#2102 merge).
 - #2090 is merged: held-fire liveness, Artefact/Essence Flask exchange support, early-Solo startup ownership and public C64 Dungeon Carnage identity are present in code and automated qualification is green.
-- #2096 is merged: the retained-local-runtime ownership fence is present, but the physical extraction from `game-network.js` has **not** happened yet.
 - #2098 is merged: deterministic R24 five-depth room grammar is present and qualified at V10.42 r26 / `20260916r26`.
+- #2102 is merged: the retained `hostEnemyStep(...)` through `dropInventorySlot(...)` local gameplay suffix has been extracted from `game-network.js` into `game-local-runtime.js`; the obsolete online packet/world-sync prefix remains for a later guarded retirement stage.
 - A merged PR is not treated as a closed user-reproduced defect until the deployed behaviour is manually accepted.
 
 ## Status definitions
@@ -26,6 +26,7 @@
 | --- | --- | --- |
 | Supported release modes | PRESENT | Solo, Tutorial and local 2P Split Screen remain supported gameplay modes. Weekly Vault/account services remain supported menu/account functionality. |
 | Retired online entry/lobby | PRESENT | Networked Dungeon Multiplayer entry/lobby controls are removed and obsolete hard startup bindings are detached. Horde Survivor and Spy/Sizzler Saboteurs are retired product modes. |
+| Retained local runtime extraction | PRESENT | #2102 moved the active local gameplay suffix from `game-network.js` into `game-local-runtime.js`, preserving supported local gameplay ownership while leaving the obsolete online transport prefix isolated for later removal. |
 | Five-depth campaign foundation | PRESENT | The ordered V10.42 bootstrap loads the five-depth campaign and floor-balance layers. |
 | Five-depth environment identity | PRESENT | R6 supplies distinct Threshold, Iron, Bone, Ash and Sigil environment identities. |
 | Five-depth room grammar | PRESENT | #2098 adds R24 deterministic room identities, landmarks, route moods, approach cues, foreshadowing and role/rare-role grammar. R24 is semantic metadata only and does not claim simulation, collision, progression, save or network ownership. |
@@ -49,7 +50,7 @@
 
 | Area | Status | Remaining work |
 | --- | --- | --- |
-| Retired multiplayer runtime removal | **PARTIAL** | #2096 merged the ownership fence identifying the active local suffix in `game-network.js`. The active `hostEnemyStep(...)` through `dropInventorySlot(...)` helper block still needs mechanical extraction to `game-local-runtime.js` before obsolete online transport can be removed. Do not delete `game-network.js` wholesale. Preserve Solo, local Split Screen and Weekly Vault/account services. |
+| Retired multiplayer runtime removal | **PARTIAL** | The active local suffix has been extracted by #2102. `game-network.js` still owns the obsolete online packet/world-sync prefix through `onWorld`; retire that prefix in a separate guarded stage. Do not delete retained local gameplay or disturb Solo, local Split Screen and Weekly Vault/account services. |
 | Banishment terminology | **PARTIAL** | Runtime and customer-facing layers contain a mixture of Artefact, Essence, Vessel and Ward-Break wording. Reconcile visible instructions only after the current live Flask behaviour has been manually verified, so documentation follows demonstrated behaviour rather than assumption. |
 | NPC / merchant expansion | **PARTIAL** | NPC dialogue/quest data exists, but deeper world integration, merchant/service behaviour and finished reward/content flows remain. |
 | Startup/menu simplification | **PARTIAL** | Useful presentation work from the old #2055 candidate remains stale. Rebuild only valid pieces as small current-main stages; do not restore retired online modes. |
@@ -67,7 +68,7 @@
 
 ## Superseded work
 
-The old PayPal-specific checkout/paywall/download plan is **SUPERSEDED**. Reusable provider-neutral/offline packaging work may still be used where it helps the itch.io release.
+The old PayPal-specific checkout/paywall/download plan is **SUPERSEDED** and its historical PR graph has been closed without merge. Reusable provider-neutral/offline packaging work may still be used where it helps the itch.io release after current-main reconciliation.
 
 Horde Survivor, Spy Vs Spy/Sizzler Saboteurs and networked Dungeon Multiplayer are retired product modes. Historical files/tests may still reference them as compatibility or evidence, but their old feature backlog, menu entries, leaderboards and online product flows are not active release requirements.
 
@@ -77,21 +78,21 @@ Horde Survivor, Spy Vs Spy/Sizzler Saboteurs and networked Dungeon Multiplayer a
 
 ## Separate queued repository work
 
-- **#2073 — Content Publisher 3D box WebP optimisation:** valid separate website/admin work. Keep it isolated from Dungeon Carnage runtime changes and requalify it against current main at a safe boundary.
+- Content Publisher 3D-box optimisation is complete through merged #2105; superseded #2073 is closed.
+- Game-music Worker endpoint follow-up #2110 is tracked separately and remains blocked by Cloudflare account-side runtime/build configuration; it is not a Dungeon runtime prerequisite.
 
 ## Current work order
 
 1. **Live-verify #2090 firing/attack liveness and the 3-Artefact Banishment Flask exchange.** Automated qualification is complete; manual deployed/current-build acceptance remains.
 2. **Reconcile Banishment customer-facing terminology** against the manually demonstrated current behaviour.
-3. **Perform the guarded local-runtime extraction after #2096:** mechanically move the retained `hostEnemyStep(...)` → `dropInventorySlot(...)` block out of `game-network.js`, qualify it, and only then remove obsolete online transport.
-4. **Audit remaining retired-mode language/runtime residue**, including legacy online-menu wording, without restoring retired product modes.
+3. **Retire the obsolete online packet/world-sync prefix left in `game-network.js` after #2102** as a separate guarded stage, preserving all supported local/account functionality.
+4. **Audit remaining retired-mode language/runtime residue**, including legacy online wording, without restoring retired product modes.
 5. **Rebuild useful #2055 startup/menu presentation work** as small current-main stages.
 6. **Implement Water / Fire / Earth / Air portal architecture and materially larger zone topology.**
 7. **Deepen zone-specific enemies, bosses, events, Artefacts and secrets.**
 8. **Finish NPC/merchant world integration.**
 9. **Complete the itch.io release handoff and package checks.**
 10. **Run final supported-mode regression and hands-on release acceptance.**
-11. **Handle #2073 separately** after a safe Dungeon checkpoint.
 
 ## Closure rule
 
