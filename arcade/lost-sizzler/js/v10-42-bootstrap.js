@@ -1,11 +1,11 @@
-/* The Lost Sizzler V10.42 — authoritative ordered bootstrap. */
+/* C64 Dungeon Carnage V10.42 — authoritative ordered bootstrap. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
-  const BUILD="V10.42 r23";
-  const CACHE="20260915r23";
+  const BUILD="V10.42 r25";
+  const CACHE="20260916r25";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-r23-rpg-build-focus.js","CCGLostSizzlerV142R23RpgBuildFocus"],
@@ -40,7 +40,9 @@
     ["v10-42-r20-live-regression-stability.js","CCGLostSizzlerV142R20LiveRegressionStability"],
     ["v10-42-r22-stall-elapsed-handoff.js","CCGLostSizzlerV142R22StallElapsedHandoff"],
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
-    ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"]
+    ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"],
+    ["v10-42-attack-hold-liveness.js","CCGLostSizzlerV142AttackHoldLiveness"],
+    ["v10-42-artefact-shop-stability.js","CCGLostSizzlerV142ArtefactShopStability"]
   ];
   const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],pendingStartId:"",identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0,r1ChestOwner:null,r1ChestOwnerRestores:0};
   window.CCGLostSizzlerV142Bootstrap=state;
@@ -71,7 +73,7 @@
     const buildMeta=document.querySelector('meta[name="ccg-lost-sizzler-build"]'),cacheMeta=document.querySelector('meta[name="ccg-lost-sizzler-cache"]');
     if(buildMeta&&buildMeta.content!==BUILD)buildMeta.content=BUILD;
     if(cacheMeta&&cacheMeta.content!==CACHE)cacheMeta.content=CACHE;
-    const subtitle=document.querySelector(".v102-brand p"),expectedSubtitle="THE LOST SIZZLER — V10.42";
+    const subtitle=document.querySelector(".v102-brand p"),expectedSubtitle="C64 DUNGEON CARNAGE — V10.42";
     if(subtitle&&subtitle.textContent!==expectedSubtitle)subtitle.textContent=expectedSubtitle;
     const badge=document.querySelector(".build-badge"),expectedBadge=`BUILD ${BUILD.toUpperCase()}`;
     if(badge&&badge.textContent!==expectedBadge)badge.textContent=expectedBadge;
@@ -221,7 +223,7 @@
       state.failed=true;state.error=String(error?.message||error);setReleaseReady(false);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="failed";
       clearPendingBusy();state.pendingStartId="";
       const note=document.getElementById("menu-note");if(note)note.textContent=`V10.42 startup failed safely: ${state.error}. Refresh before starting a run.`;
-      console.error("[Lost Sizzler V10.42] ordered bootstrap failed",error);
+      console.error("[C64 Dungeon Carnage V10.42] ordered bootstrap failed",error);
     }
   }
 
