@@ -6,14 +6,13 @@ Content Publisher administration, asset optimisation, music upload, R2/Worker ro
 
 ## Verified checkpoint — 2026-09-16
 
-Live repository checkpoint:
+Repository state for this workstream was reconciled through merged continuation/governance PR #2104. Later generated-output or documentation-only commits do not change the publishing implementation facts below; always refresh live GitHub before acting.
 
-- `main`: `5112035f0d1f3c80fdb4fa2c6c83ff0228778600`
 - #2103 **MERGED** — switched the dedicated game-music Worker to its `workers.dev` deployment path while retaining `GAME_MUSIC -> game-music` and `keep_vars = true`.
 - #2105 **MERGED** — current-main 3D-box WebP optimiser repair.
 - #2073 **CLOSED / SUPERSEDED** — do not revive or merge it after #2105.
-- #2109 **MERGED** — authoritative current generated game/archive publication output.
-- #2110 **OPEN DRAFT / BLOCKED** — endpoint follow-up on `codex/game-music-production-endpoint`, head `969a632a6a2598b8119d9b16b1019c2e932c832c`.
+- #2109 **MERGED** — authoritative game/archive publication output for that scope.
+- #2110 **OPEN DRAFT / BLOCKED** — endpoint follow-up on `codex/game-music-production-endpoint`, head `969a632a6a2598b8119d9b16b1019c2e932c832c` at the audit checkpoint.
 
 ## Worker deployment and current production blocker
 
@@ -52,7 +51,7 @@ Never expose the service-role secret while verifying it.
 
 ## #2110 exact repository scope
 
-Current net diff is exactly three files:
+At the audit checkpoint its net diff is exactly three files:
 
 - `admin/js/content-publisher.js`
 - `admin/js/content-publisher-existing-game-update.js`
@@ -111,4 +110,5 @@ Do not alter Dungeon Carnage runtime, Commodore Quest, protected intro-loader fi
 - 2026-09-16: #2105 merged; superseded #2073 is now closed without merge.
 - 2026-09-16: Verified the production Worker hostname and opened #2110 for both new-game and existing-game upload endpoints.
 - 2026-09-16: Production probes found missing/mismatched CORS/runtime configuration; #2110 remains blocked and draft.
-- 2026-09-16: Removed an accidentally retained temporary patch workflow from #2110; current net delta is three publisher/test files only.
+- 2026-09-16: Removed an accidentally retained temporary patch workflow from #2110; current net delta is three publisher/test files only at the audit checkpoint.
+- 2026-09-16: Post-#2104 reconciliation stabilized the checkpoint wording; no Content Publisher implementation was changed.
