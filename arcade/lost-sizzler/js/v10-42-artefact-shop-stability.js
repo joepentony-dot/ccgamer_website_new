@@ -1,0 +1,93 @@
+/* C64 Dungeon Carnage V10.42 — Artefact shop exchange stability. */
+(()=>{
+  "use strict";
+  if(window.CCGLostSizzlerV142ArtefactShopStability)return;
+
+  const diagnostics={installs:0,trades:0,rollbacks:0,insufficient:0};
+  let installed=false,installTimer=0;
+
+  function currentPlayer(){try{return typeof p1!=="undefined"?p1:null}catch(_){return null}}
+  function currentShop(){try{return typeof activeShop!=="undefined"?activeShop:null}catch(_){return null}}
+  function progression(){return window.CCGProgression||null}
+
+  function restoreRemovedArtefacts(player,removed){
+    const PGR=progression();
+    if(!PGR||!player)return;
+    for(const item of removed)PGR.inventoryAdd(player,item);
+  }
+
+  function tradeArtefactsForFlask(){
+    const PGR=progression(),player=currentPlayer(),shop=currentShop();
+    if(!PGR||!player||!shop)return false;
+    const need=Math.max(1,Math.floor(Number(window.CCG_CONFIG?.stalker?.flaskArtefacts)||3));
+    const have=PGR.inventoryKindCount(player,"artefact");
+    if(have<need){
+      diagnostics.insufficient++;
+      try{showToast("NOT ENOUGH ARTEFACTS",`The Flask costs ${need} artefacts. You have ${have}.`,"red",6000)}catch(_){}
+      return false;
+    }
+
+    /*
+      Spend the Artefacts before checking the destination slot. Artefacts stack
+      in inventory, so a player carrying exactly the required stack can trade
+      it even when every visible inventory slot is occupied: removing that
+      stack creates the slot the Flask needs. If the Flask still cannot be
+      added, restore every removed Artefact and leave the transaction unchanged.
+    */
+    const removed=[];
+    for(let index=0;index<need;index++){
+      const slot=PGR.firstInventory(player,"artefact");
+      if(slot<0){restoreRemovedArtefacts(player,removed);diagnostics.rollbacks++;return false}
+      const item=PGR.inventoryRemove(player,slot,1);
+      if(item)removed.push(item);
+    }
+
+    const flask={kind:"banishment",name:"Banishment Flask",short:"BANISH"};
+    if(!PGR.inventoryAdd(player,flask)){
+      restoreRemovedArtefacts(player,removed);diagnostics.rollbacks++;
+      try{showToast("INVENTORY FULL","The Flask still needs a free slot. Your Artefacts were not spent.","red",6000)}catch(_){}
+      return false;
+    }
+
+    diagnostics.trades++;
+    try{S.sfx("shrine")}catch(_){}
+    try{showToast("BANISHMENT FLASK ACQUIRED",`${need} artefacts exchanged. The 10 Gold purchase remains available separately.`,"gold",8000)}catch(_){}
+    try{if(host)host.revision++;broadcastWorld();renderShop();sync()}catch(_){}
+    return true;
+  }
+
+  function install(){
+    if(installed)return true;
+    const foundation=window.CCGDungeonProgressionFoundation;
+    if(!foundation?.ready)return false;
+    try{
+      if(typeof buyShopItem!=="function")return false;
+      if(buyShopItem.__ccgArtefactShopStability){installed=true;return true}
+      const base=buyShopItem;
+      const wrapped=function(id,...args){
+        if(String(id)==="banishment")return tradeArtefactsForFlask();
+        return base.call(this,id,...args);
+      };
+      wrapped.__ccgArtefactShopStability=true;
+      wrapped.__ccgOriginal=base;
+      buyShopItem=wrapped;
+      installed=true;diagnostics.installs++;
+      return true;
+    }catch(_){return false}
+  }
+
+  function stopInstaller(){if(installTimer){clearInterval(installTimer);installTimer=0}}
+  if(!install()){
+    installTimer=setInterval(()=>{if(install())stopInstaller()},60);
+    setTimeout(stopInstaller,12000);
+  }
+  addEventListener("ccg:v142-ready",()=>{if(install())stopInstaller()},{once:true});
+  addEventListener("pagehide",stopInstaller,{once:true});
+
+  window.CCGLostSizzlerV142ArtefactShopStability=Object.freeze({
+    version:"V10.42-artefact-shop-stability",
+    diagnostics,
+    install,
+    tradeArtefactsForFlask
+  });
+})();
