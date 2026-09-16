@@ -63,6 +63,40 @@ async function snapshot(page){
   }));
 }
 
+async function completeFirstFloorThroughExit(page,{game,nextFloor}){
+  const before=await page.evaluate(()=>({floor:Number(run.floor),xp:Number(p1.xp||0),totalXp:Number(p1.totalXp||0),score:Number(score||0)}));
+  const route=await page.evaluate(game=>{
+    run.floorGames=Array.isArray(run.floorGames)?run.floorGames:[];
+    run.floorGames.push(game);
+    const opened=window.CCGSystems.updateObjective(host,run,100);
+    const candidates=[[1,0],[-1,0],[0,1],[0,-1]];
+    const step=candidates.find(([dx,dy])=>window.CCGWorld.walkable(world.map,world.exit.x-dx,world.exit.y-dy,host));
+    if(!step)return{opened:Boolean(opened),exitOpen:Boolean(host.exitOpen),moved:false};
+    const [dx,dy]=step;
+    p1.x=world.exit.x-dx;p1.y=world.exit.y-dy;p1.rx=p1.x;p1.ry=p1.y;
+    movePlayer(p1,dx,dy);
+    return{opened:Boolean(opened),exitOpen:Boolean(host.exitOpen),moved:p1.x===world.exit.x&&p1.y===world.exit.y};
+  },game);
+  assert.equal(route.opened,true,"Floor 1 objective completion must authorize the live stairs.");
+  assert.equal(route.exitOpen,true,"Floor 1 completion must leave the live exit open for movement.");
+  assert.equal(route.moved,true,"The player must physically enter the Floor 1 exit tile through movePlayer().");
+  await page.waitForFunction(()=>mode==="floorcomplete"&&!document.getElementById("floor-complete")?.classList.contains("hidden"));
+  const completed=await page.evaluate(()=>({floor:Number(run.floor),floorComplete:Boolean(run.floorComplete),xp:Number(p1.xp||0),totalXp:Number(p1.totalXp||0),score:Number(score||0)}));
+  assert.equal(completed.floor,1,"Entering the Floor 1 stairs must not skip directly past the completion screen.");
+  assert.equal(completed.floorComplete,true,"The live movement route must mark Floor 1 complete exactly once before descent.");
+  assert.equal(completed.xp,before.xp,"Floor completion through the live exit must award zero progression XP.");
+  assert.equal(completed.totalXp,before.totalXp,"Floor completion through the live exit must not alter lifetime progression XP.");
+  await page.evaluate(()=>descendFloor());
+  await settleFloorEntry(page,nextFloor);
+  const after=await snapshot(page);
+  assert.equal(after.floor,nextFloor,"The live Floor 1 completion route must advance exactly one floor.");
+  const reset=await page.evaluate(()=>({floorComplete:Boolean(run.floorComplete),xp:Number(p1.xp||0),totalXp:Number(p1.totalXp||0)}));
+  assert.equal(reset.floorComplete,false,"Floor 2 entry must reset the floor-complete latch.");
+  assert.equal(reset.xp,before.xp,"Floor 1 to Floor 2 descent must award zero progression XP.");
+  assert.equal(reset.totalXp,before.totalXp,"Floor 1 to Floor 2 descent must not alter lifetime progression XP.");
+  return after;
+}
+
 async function bankAndDescend(page,{game,domain=null,relic=null,essence=null,sigil=null,nextFloor}){
   await page.evaluate(({game,domain,relic,essence,sigil})=>{
     run.floorGames=Array.isArray(run.floorGames)?run.floorGames:[];
@@ -113,12 +147,12 @@ try{
   assert.equal(opening.controller,"dungeon-solo","The live campaign must remain under the Solo Dungeon controller.");
   assert.deepEqual(opening.rpgStats,{might:8,vitality:7,agility:6,endurance:9,luck:7,arcana:8},"Seeded RPG attributes must be visible before the first descent.");
 
-  const floor2=await bankAndDescend(page,{game:"Archon",essence:2,nextFloor:2});
+  const floor2=await completeFirstFloorThroughExit(page,{game:"Archon",nextFloor:2});
   assert.equal(floor2.floorName,"IRON KEEP","First descent must enter Iron Keep.");
   assert.deepEqual(floor2.bankedGames,["Archon"],"Floor 1 rescued C64 games must be banked before entering Floor 2.");
   assert.deepEqual(floor2.rpgStats,opening.rpgStats,"RPG attributes must survive the first real startWorld transition.");
   assert.deepEqual(floor2.relics,["threshold-compass"],"Existing relics must survive the first real startWorld transition.");
-  assert.equal(floor2.essence,2,"Banishment Essence must survive the first real startWorld transition.");
+  assert.equal(floor2.essence,1,"Banishment Essence must survive the first real startWorld transition.");
 
   const floor3=await bankAndDescend(page,{game:"Bruce Lee",domain:"iron",relic:"iron-heart",essence:3,sigil:"sigilReveal",nextFloor:3});
   assert.equal(floor3.floorName,"MOSS CRYPT","Second descent must enter Moss Crypt.");
