@@ -12,6 +12,7 @@ const loader=read('arcade/lost-sizzler/js/v10-41-r30-buglog.js');
 const bootstrap=read('arcade/lost-sizzler/js/v10-42-bootstrap.js');
 const zeroServer=read('arcade/lost-sizzler/js/v10-42-zero-server-release.js');
 const network=read('arcade/lost-sizzler/js/game-network.js');
+const localRuntime=read('arcade/lost-sizzler/js/game-local-runtime.js');
 
 assert(loader.includes('v10-42-bootstrap.js'),'Canonical late loader must hand V10.42 activation to the ordered bootstrap.');
 assert(!bootstrap.includes('v10-42-multiplayer-state.js'),'Production V10.42 bootstrap must not load the retired online multiplayer state adapter.');
@@ -29,6 +30,7 @@ assert(zeroServer.includes('supabaseAccountFeatures:true'),'Supabase-backed acco
 assert(zeroServer.includes('online_multiplayer_disabled'),'Direct legacy multiplayer calls must fail with an explicit release-policy error.');
 assert(zeroServer.includes('net.setSolo?.(\"TITLE\")'),'Release policy must normalize the legacy network object back to local Solo state.');
 
-assert(network.includes('function onCollectRequest(p)'),'Legacy game-network collection handling remains a separate later retirement boundary and must not be changed by this adapter-only stage.');
+assert(!network.includes('function onCollectRequest(p)'),'Completed extraction must remove local collection handling from the legacy transport file.');
+assert(localRuntime.includes('function onCollectRequest(p)'),'Local collection handling must remain present in the retained local runtime after extraction.');
 
 console.log('Lost Sizzler V10.42 zero-server retirement contract passed: obsolete V10.42 network adapters are deleted while Solo, Tutorial and local 2P Split Screen remain the supported release modes.');
