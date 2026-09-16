@@ -1,42 +1,19 @@
-function onMembers(members,isHost,changed){if(changed&&isHost&&mode==="playing"){say("<strong>HOST MIGRATION.</strong> You're now running the dungeon simulation.","cyan");broadcastWorld()}sync()}
-function onPacket(event,p){
-  if(event==="player")onPlayer(p);else if(event==="shot")spawnBullet(p,true);else if(event==="enemy_shot")spawnEnemyShot(p);else if(event==="hit")onHit(p);else if(event==="player_hit"&&p?.target===p1?.id)hurtPlayer(p1,p.power||1,true,p.source||"another player");else if(event==="collect")onCollectRequest(p);else if(event==="collected")onCollected(p);else if(event==="world")onWorld(p);else if(event==="hello"&&net.isHost)broadcastWorld();else if(event==="notice"){const src=p?.source;if(!src||localPlayers().some(lp=>visibleTo(lp,src.x,src.y)))say(p?.html||"");}else if(event==="fx")onFX(p);else if(event==="complete")floorComplete(p?.by||"the team")
-}
-function onPlayer(p){
-  if(!p||p.id===net.sessionId)return;const old=remote.get(p.id),changed=old&&Number(old.health)!==Number(p.health),moved=old&&(Number(old.x)!==Number(p.x)||Number(old.y)!==Number(p.y));
-  const next={...old,...p,inventory:Array.isArray(p.inventory)?p.inventory.map(x=>({...x})):old?.inventory||[],rx:old?.rx??p.x,ry:old?.ry??p.y,hpBarMs:changed?2600:Math.max(0,old?.hpBarMs||0),lastSeen:performance.now()};remote.set(p.id,next);if(net.isHost&&moved)processRemoteMovement(next)
-}
-function playerStateForNetwork(p){return{id:p.id,name:p.name,x:p.x,y:p.y,health:p.health,maxHealth:p.maxHealth,mana:p.mana,maxMana:p.maxMana,dir:p.dir?{...p.dir}:{x:1,y:0},torchMs:p.torchMs,rapidMs:p.rapidMs,armor:p.armor,bronzeKeys:p.bronzeKeys,level:p.level,xp:p.xp,totalXp:p.totalXp,inventory:(p.inventory||[]).map(x=>({...x})),inventorySlots:p.inventorySlots,weapon:p.weapon?{...p.weapon}:null,firearmUnlocked:Boolean(p.firearmUnlocked),meleeWeapon:p.meleeWeapon?{...p.meleeWeapon}:null,damageBonus:p.damageBonus,dashDamage:p.dashDamage,potionBonus:p.potionBonus,torchBonusMs:p.torchBonusMs,moveMultiplier:p.moveMultiplier}}
-function sendPlayer(){if(playMode!=="online")return;net.send("player",playerStateForNetwork(p1))}
-function sendRemotePlayerState(p){if(playMode==="online"&&net.isHost&&p?.id)net.send("v131_player_state",{target:p.id,state:playerStateForNetwork(p)})}
-function processRemoteMovement(p){
-  if(!p||!net.isHost||playMode!=="online"||mode!=="playing")return;const before=Number(host.revision||0),playerBefore=JSON.stringify(playerStateForNetwork(p));
-  try{triggerSwitch(p);triggerBloodClue(p);triggerMemoryPuzzle(p);triggerSequenceTorch(p);triggerWeightBridge(p);triggerShrine(p);triggerRescue(p);triggerArena(p);triggerTimed(p);triggerBoulder(p);triggerHauntedCorridor(p);triggerSigilRoom(p);markRoomVisit(p);rememberTrail(p)}catch(error){console.warn("[Lost Sizzler] remote movement trigger failed",error)}
-  const playerChanged=JSON.stringify(playerStateForNetwork(p))!==playerBefore;if(playerChanged)sendRemotePlayerState(p);if(playerChanged||Number(host.revision||0)!==before)broadcastWorld()
-}
-let worldSyncSequence=0;
-function serialWorld(){const now=performance.now();return{
-  revision:host.revision,syncSequence:++worldSyncSequence,syncHostId:net.sessionId,keysCollected:host.keysCollected,exitOpen:host.exitOpen,exitSigilCollected:Boolean(host.exitSigilCollected),exitSigilDropped:Boolean(host.exitSigilDropped),
-  sigilRoomId:host.sigilRoomId??null,sigilLockdown:Boolean(host.sigilLockdown),sigilResolved:Boolean(host.sigilResolved),sigilDropPos:host.sigilDropPos?{...host.sigilDropPos}:null,radarSigilSeen:host.radarSigilSeen?{...host.radarSigilSeen}:null,radarSigilGateSeen:host.radarSigilGateSeen?{...host.radarSigilGateSeen}:null,sigilDefenderIds:[...(host.sigilDefenderIds||[])],sigilGateIds:[...(host.sigilGateIds||[])],
-  doors:host.doors.map(d=>{const duration=Math.max(1,Number(d.openAt||0)-Number(d.openingStart||0)),remaining=d.opening?Math.max(0,Number(d.openAt||0)-now):0;return{...d,openingDurationMs:d.opening?duration:0,openingRemainingMs:remaining,openingStart:0,openAt:0}}),chests:(host.chests||[]).map(c=>({...c,openedAgeMs:c.openedAt?Math.max(0,now-Number(c.openedAt)):null,openedAt:0,loot:c.loot?{...c.loot,weapon:c.loot.weapon?{...c.loot.weapon}:undefined}:null})),enemies:host.enemies.map(e=>({...e,lastSeen:e.lastSeen?{...e.lastSeen}:null,follower:e.follower||null})),items:host.items.map(i=>({...i})),
-  traps:(host.traps||[]).map(t=>{const period=Math.max(1,Number(t.period||1)),cycleElapsedMs=((now+Number(t.phase||0))%period+period)%period;return{...t,cycleElapsedMs,phase:0}}),generators:(host.generators||[]).map(x=>({...x})),shrines:(host.shrines||[]).map(x=>({...x})),switches:(host.switches||[]).map(x=>({...x})),arenas:(host.arenas||[]).map(x=>({...x})),timedRooms:(host.timedRooms||[]).map(x=>({...x})),blockingDecor:(host.blockingDecor||[]).map(x=>({...x})),hazardRooms:(host.hazardRooms||[]).map(h=>({...h,cells:(h.cells||[]).map(x=>({...x}))})),spiderNest:host.spiderNest?{...host.spiderNest,corridorCells:(host.spiderNest.corridorCells||[]).map(x=>({...x})),enemyIds:[...(host.spiderNest.enemyIds||[])]}:null,skeletonHorde:host.skeletonHorde?{...host.skeletonHorde,enemyIds:[...(host.skeletonHorde.enemyIds||[])]}:null,
-  trader:host.trader?{...host.trader,sold:{...(host.trader.sold||{})}}:null,startShop:host.startShop?{...host.startShop,sold:{...(host.startShop.sold||{})}}:null,shops:(host.shops||[]).map(x=>({...x,sold:{...(x.sold||{})}})),boulderTrap:host.boulderTrap?{...host.boulderTrap,start:{...host.boulderTrap.start},end:{...host.boulderTrap.end},target:{...host.boulderTrap.target}}:null,deathCaches:(host.deathCaches||[]).map(c=>({...c,inventory:(c.inventory||[]).map(x=>({...x})),games:[...(c.games||[])]})),voidStalkers:[...(host.voidStalkers||[])],defeatedDeathStalkers:[...(host.defeatedDeathStalkers||[])],
-  bloodClue:host.bloodClue?{...host.bloodClue,sequence:[...(host.bloodClue.sequence||[])]}:null,memoryPuzzle:host.memoryPuzzle?{...host.memoryPuzzle,tiles:(host.memoryPuzzle.tiles||[]).map(x=>({...x})),sequence:[...(host.memoryPuzzle.sequence||[])]}:null,sequenceTorchPuzzle:host.sequenceTorchPuzzle?{...host.sequenceTorchPuzzle,torches:(host.sequenceTorchPuzzle.torches||[]).map(x=>({...x})),sequence:[...(host.sequenceTorchPuzzle.sequence||[])]}:null,weightBridge:host.weightBridge?{...host.weightBridge,pitTiles:(host.weightBridge.pitTiles||[]).map(x=>({...x})),bridgeTiles:(host.weightBridge.bridgeTiles||[]).map(x=>({...x}))}:null,
-  rescue:host.rescue?{...host.rescue}:null,stalker:host.stalker?{...host.stalker}:null,objective:host.objective?{...host.objective}:null,mapRewards:host.mapRewards?{...host.mapRewards}:null,enteredRoomIds:[...(host.enteredRoomIds||[])],alertLevel:host.alertLevel||0,floorElapsed:Number(host.floorElapsed||0)
-}}
-function broadcastWorld(){if(playMode==="online"&&net.connected&&net.isHost)net.send("world",serialWorld())}
-let lastAuthoritativeWorldRevision=-1,lastAuthoritativeWorldFloor=-1,lastAuthoritativeWorldSequence=-1,lastAuthoritativeWorldHost="";
-function onWorld(s){
-  if(!s||net.isHost)return;
-  const incomingFloor=Math.max(1,Number(s?._v106Run?.floor||s?._v105Run?.floor||run?.floor||1)),incomingRevision=Number(s.revision||0),incomingSequence=Number(s.syncSequence||0),incomingHost=String(s.syncHostId||"");if(incomingFloor!==lastAuthoritativeWorldFloor||incomingHost&&incomingHost!==lastAuthoritativeWorldHost){lastAuthoritativeWorldFloor=incomingFloor;lastAuthoritativeWorldRevision=-1;lastAuthoritativeWorldSequence=-1;lastAuthoritativeWorldHost=incomingHost}
-  const isNewer=incomingSequence>0?incomingSequence>lastAuthoritativeWorldSequence:incomingRevision>=lastAuthoritativeWorldRevision;
-  if(!host||isNewer){lastAuthoritativeWorldRevision=incomingRevision;if(incomingSequence>0){lastAuthoritativeWorldSequence=incomingSequence;worldSyncSequence=Math.max(worldSyncSequence,incomingSequence)}
-    const receivedAt=performance.now(),doors=(s.doors||[]).map(d=>{if(!d?.opening)return{...d,openingStart:0,openAt:0};const duration=Math.max(1,Number(d.openingDurationMs||900)),remaining=Math.max(0,Math.min(duration,Number(d.openingRemainingMs??duration)));return{...d,openingStart:receivedAt-(duration-remaining),openAt:receivedAt+remaining}}),chests=(s.chests||[]).map(c=>{const age=Number(c.openedAgeMs);return{...c,openedAt:Number.isFinite(age)&&age<650?receivedAt-Math.max(0,age):0}}),traps=(s.traps||[]).map(t=>{const period=Math.max(1,Number(t.period||1)),elapsed=Number(t.cycleElapsedMs);return{...t,phase:Number.isFinite(elapsed)?((elapsed-receivedAt)%period+period)%period:Number(t.phase||0)}});
-    host={...host,revision:Number(s.revision||0),keysCollected:Number(s.keysCollected||0),exitOpen:Boolean(s.exitOpen),exitSigilCollected:Boolean(s.exitSigilCollected),exitSigilDropped:Boolean(s.exitSigilDropped),
-      sigilRoomId:s.sigilRoomId??host?.sigilRoomId??null,sigilLockdown:Boolean(s.sigilLockdown),sigilResolved:Boolean(s.sigilResolved),sigilDropPos:s.sigilDropPos||null,radarSigilSeen:s.radarSigilSeen||host?.radarSigilSeen||null,radarSigilGateSeen:s.radarSigilGateSeen||host?.radarSigilGateSeen||null,sigilDefenderIds:s.sigilDefenderIds||[],sigilGateIds:s.sigilGateIds||[],
-      doors,chests,enemies:s.enemies||[],items:s.items||[],traps,generators:s.generators||[],shrines:s.shrines||[],switches:s.switches||[],arenas:s.arenas||[],timedRooms:s.timedRooms||[],blockingDecor:s.blockingDecor||[],hazardRooms:s.hazardRooms||[],spiderNest:s.spiderNest||null,skeletonHorde:s.skeletonHorde||null,
-      trader:s.trader||null,startShop:s.startShop||null,shops:s.shops||[],boulderTrap:s.boulderTrap||null,deathCaches:s.deathCaches||[],voidStalkers:s.voidStalkers||[],defeatedDeathStalkers:s.defeatedDeathStalkers||host?.defeatedDeathStalkers||[],bloodClue:s.bloodClue||null,memoryPuzzle:s.memoryPuzzle||null,sequenceTorchPuzzle:s.sequenceTorchPuzzle||null,weightBridge:s.weightBridge||null,rescue:s.rescue||null,stalker:s.stalker||null,objective:s.objective||host?.objective,mapRewards:s.mapRewards||host?.mapRewards,enteredRoomIds:s.enteredRoomIds||host?.enteredRoomIds||[],alertLevel:s.alertLevel||0,floorElapsed:Number(s.floorElapsed||0)};
-    const liveDecor=new Set((host.blockingDecor||[]).map(d=>d.id));for(const decor of world?.decor||[])if(decor.blocking&&!decor.structural)decor.destroyed=!liveDecor.has(decor.id);
-    sync()
-  }
-}
+/*
+ * C64 Dungeon Carnage retained network compatibility boundary.
+ *
+ * Networked Dungeon Multiplayer is retired. RoomNetwork is still used as the
+ * local session shell by Solo/Split Screen, so the callback/function names
+ * below remain as inert compatibility owners until that local session shell is
+ * replaced. No packet routing, remote-player simulation or world-sync state is
+ * retained here.
+ */
+function onMembers(_members,_isHost,changed){if(changed&&mode==="playing")sync()}
+function onPacket(_event,_payload){}
+function onPlayer(_payload){}
+function playerStateForNetwork(p){return p?{id:p.id,name:p.name,x:p.x,y:p.y,health:p.health,maxHealth:p.maxHealth}:null}
+function sendPlayer(){}
+function sendRemotePlayerState(_player){}
+function processRemoteMovement(_player){}
+function serialWorld(){return null}
+function broadcastWorld(){}
+function onWorld(_state){}
