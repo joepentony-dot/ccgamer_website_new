@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "source": "https://www.lemon64.com/game/legacy-of-the-ancients",
+  "games": {
+    "c64:legacy-of-the-ancients": [
+      {
+        "magazine": "Commodore User",
+        "issue": "49",
+        "date": "October 1987",
+        "page": 61,
+        "reviewer": "Ken McMahon. Electronic Arts full-price release",
+        "score": "8/10",
+        "scorePercent": 80,
+        "url": "https://amr.abime.net/review_12395",
+        "language": "English",
+        "scanStatus": "available",
+        "era": "contemporary"
+      },
+      {
+        "magazine": "Your Commodore",
+        "issue": "38",
+        "date": "November 1987",
+        "page": 83,
+        "reviewer": "Gordon Hamlett. Electronic Arts full-price release",
+        "score": "8/10",
+        "scorePercent": 80,
+        "url": "https://archive.org/details/38-your-commodore-magazine/page/n82/mode/2up?view=theater",
+        "language": "English",
+        "scanStatus": "available",
+        "era": "contemporary"
+      },
+      {
+        "magazine": "Zzap!64",
+        "issue": "31",
+        "date": "November 1987",
+        "page": 104,
+        "reviewer": "Julian Rignall & Nik Wild. Electronic Arts full-price release",
+        "score": "61%",
+        "scorePercent": 61,
+        "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=31&page=104",
+        "language": "English",
+        "scanStatus": "available",
+        "era": "contemporary"
+      }
+    ]
+  }
+}
