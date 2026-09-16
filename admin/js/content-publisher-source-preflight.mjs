@@ -1,3 +1,5 @@
+import './content-publisher-integrity-guard.js';
+
 const SOURCE_MIN_WORDS = 40;
 const THUMBNAIL_PREFIX = 'resources/images/thumbnails/all/';
 const LEMON_HOSTS = {
