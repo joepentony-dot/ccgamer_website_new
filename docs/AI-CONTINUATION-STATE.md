@@ -10,23 +10,33 @@ Update this file when a workstream changes category, its active PR/dependency ch
 
 ## Verified checkpoint
 
-- Reconciled through `main` commit `8a2e72f4425973e3ce6756ae6c8365378dc63b34`, the merge of continuation/governance PR #2104. Always refresh live GitHub before acting because automation or later merges may advance `main` again.
-- The post-#2104 audit found **19 open pull requests**. Treat that number as an audit fact, not a permanent repository invariant.
-- #2102 is **MERGED**. The retained local Dungeon gameplay suffix now lives in `game-local-runtime.js`; only the obsolete online packet/world-sync prefix remains for a later guarded runtime-retirement stage.
-- #2104 is **MERGED**. `AGENTS.md`, this index, the five `docs/ai-work/` records, and the corrected Dungeon `PROGRESS.md` are now on `main`.
-- #2111 merged between #2102 and #2104 and is the newest merged **SEO/video-page automation** result. #2109 remains the authoritative merged **game/archive publication** result; these are separate generated-output scopes.
-- Superseded runtime/documentation/generated-output PRs #2073, #2062, #1960, #1959, #1998, #2107, #1759 and #1752 are closed without merge.
+- Reconciled through `main` commit `c3549e6d45b7748f1efcf5c4f4ba134200325a5f`, the merge of Dungeon runtime-retirement PR #2113. Always refresh live GitHub before acting because automation or later merges may advance `main` again.
+- The live open-PR queue was reduced from the earlier 20-candidate state to **six pre-checkpoint open PRs** after merging #2113 and closing stale/superseded runtime, verification and packaging candidates. Treat that count as an audit fact, not a permanent repository invariant.
+- #2102 is **MERGED**. The retained local Dungeon gameplay suffix lives in `game-local-runtime.js`.
+- #2113 is **MERGED**. The obsolete networked Dungeon Multiplayer packet routing, remote-player simulation and world serializer/receiver prefix is retired; `game-network.js` retains only inert compatibility owners required by the local session shell.
+- #2111 remains the newest merged **SEO/video-page automation** result. #2109 remains the authoritative merged **game/archive publication** result; these are separate generated-output scopes.
+- Superseded runtime/documentation/generated-output PRs #2073, #2062, #1960, #1959, #1998, #2107, #1759 and #1752 remain closed without merge.
+- Additional stale runtime/verification candidates #1978, #1980, #2055, #1983, #1898 and #1900 are now closed without merge. #1976 remains source material for a possible current-main optimisation re-derivation; #1902 still represents a supported Split Screen full-map behaviour that appears missing on current `main` and must be re-derived rather than merged wholesale.
 - The old custom PayPal/private-download/browser-paywall chain is retired from the active PR queue: #1961–#1975 (excluding unrelated #1976), #1977, #1979, #1981 and #1987–#1994 are closed as superseded by the itch.io distribution decision.
+- The old packaging/desktop stack #1958, #1982, #1984, #1985, #1986, #1995 and #1996 is also closed without merge as an integration vehicle. Its history remains source material only for a fresh current-main itch.io artifact.
 
 ## Current workstreams
 
 | Workstream | Record | Current GitHub state |
 | --- | --- | --- |
-| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) | #2102 is **MERGED**; retained local gameplay now lives in `game-local-runtime.js`. Remaining runtime work is separate guarded obsolete-transport retirement plus the still-required manual #2090 held-fire/Flask acceptance. |
-| Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | itch.io is the intended purchase/download route; the custom PayPal/private-delivery/paywall PR graph is closed. Provider-neutral packaging/Windows candidates remain source material only until reconciled with current `main`. |
-| Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2103 and #2105 are merged; #2073 is closed. #2110 is the current draft endpoint follow-up but is **BLOCKED** by missing/mismatched Cloudflare runtime configuration. |
+| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) | #2102 and #2113 are **MERGED**. Retained local gameplay is separated and the obsolete online packet/world-sync runtime is retired. Manual #2090 held-fire/Flask acceptance remains; next independent repository step is a bounded retired-mode residue audit. |
+| Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | itch.io is the intended purchase/download route; the custom commerce/paywall and stale packaging/Windows PR graphs are closed. Any package artifact must be rebuilt from current `main`, selectively reusing historical provider-neutral ideas only where necessary. |
+| Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2103 and #2105 are merged; #2073 is closed. #2110 remains the current draft endpoint follow-up but is **BLOCKED** by missing/mismatched Cloudflare runtime configuration. Repository-side work for that blocker is already complete. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | draft rebuild PR #2056 remains based on an old merge base and requires a current-main rebuild/reconciliation before integration. |
 | SEO and generated output | [seo-and-generated-output.md](ai-work/seo-and-generated-output.md) | #2109 is the current merged game/archive publication result; #2111 is the latest merged SEO/video-page automation result; superseded #2107 and stale #1752/#1759 are closed. |
+
+## Remaining live PR classes at this checkpoint
+
+- #2110 — deliberately deferred **BLOCKED** Content Publisher endpoint follow-up; do not rebase/retest solely because `main` advanced.
+- #2056 — stale Quest 3 rebuild requiring current-main reconstruction and fresh qualification.
+- #1976 — old R30 optimisation source material; re-derive only if the optimisation is still justified on current `main`.
+- #1902 — old Split Screen full-map candidate; behaviour appears still missing, but rebuild the small change on current `main` rather than merging the stale branch.
+- #1860 and #1852 — historical long-running containment/stabilisation branches. They are not safe bases for new Dungeon runtime work; reconcile their broader remaining account/backend or historical-evidence purpose separately before any closure or extraction decision.
 
 ## Always re-check before acting
 
