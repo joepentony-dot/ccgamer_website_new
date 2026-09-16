@@ -1,17 +1,16 @@
-name = "ccg-game-music-upload"
+name = "ccgamer-website-new"
 main = "src/worker.mjs"
 compatibility_date = "2026-09-09"
-workers_dev = false
+workers_dev = true
 keep_vars = true
-
-[[routes]]
-pattern = "www.cheekycommodoregamer.co.uk/api/admin/game-music*"
-zone_name = "cheekycommodoregamer.co.uk"
 
 [[r2_buckets]]
 binding = "GAME_MUSIC"
 bucket_name = "game-music"
 
+# This Worker is deployed on its Cloudflare workers.dev hostname because the
+# public site domain is not currently a Cloudflare-managed zone. The browser
+# upload endpoint must use the deployed workers.dev URL directly.
 # Configure these outside the repository with `wrangler secret put` or in the
 # Cloudflare dashboard: SUPABASE_SERVICE_ROLE_KEY.
 # Non-secret variables required by the Worker: SUPABASE_URL,
