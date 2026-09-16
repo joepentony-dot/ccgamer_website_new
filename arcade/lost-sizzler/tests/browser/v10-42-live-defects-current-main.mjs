@@ -68,6 +68,7 @@ try{
   const trade=await page.evaluate(()=>{
     const PGR=window.CCGProgression;
     p1.inventorySlots=3;
+    delete p1.banishmentEssence;
     p1.inventory=[
       {kind:"artefact",name:"CCG Artefact",short:"ARTEFACT",qty:3},
       {kind:"potion",name:"Restoration Potion",short:"POTION",qty:1},
@@ -89,16 +90,48 @@ try{
     };
   });
   assert.ok(trade.installs>=1,"Artefact stability wrapper must own the live shop boundary before the exchange is tested");
-  assert.equal(trade.result,true,"three Artefacts must be spendable for one Banishment Flask");
-  assert.equal(trade.artefacts,0,"the three traded Artefacts must be consumed exactly once");
-  assert.equal(trade.flasks,1,"the Artefact exchange must add exactly one Banishment Flask");
-  assert.ok(trade.count<=trade.capacity,"the exchange must remain within inventory capacity");
-  assert.equal(trade.gold,10,"Artefact exchange must not spend Gold");
-  assert.equal(trade.score,10000,"Artefact exchange must not spend Score");
-  assert.ok(trade.trades>=1,"Artefact stability layer must record the successful trade");
+  assert.equal(trade.result,true,"three legacy physical Artefacts must be spendable for one Banishment Flask");
+  assert.equal(trade.artefacts,0,"the three traded physical Artefacts must be consumed exactly once");
+  assert.equal(trade.flasks,1,"the physical Artefact exchange must add exactly one Banishment Flask");
+  assert.ok(trade.count<=trade.capacity,"the physical exchange must remain within inventory capacity");
+  assert.equal(trade.gold,10,"physical Artefact exchange must not spend Gold");
+  assert.equal(trade.score,10000,"physical Artefact exchange must not spend Score");
+  assert.ok(trade.trades>=1,"Artefact stability layer must record the successful physical trade");
+
+  const essenceTrade=await page.evaluate(()=>{
+    const PGR=window.CCGProgression;
+    p1.inventorySlots=3;
+    p1.inventory=[
+      {kind:"potion",name:"Restoration Potion",short:"POTION",qty:1},
+      {kind:"torch",name:"Flaming Torch",short:"TORCH",qty:1}
+    ];
+    p1.banishmentEssence=3;
+    run.gold=10;score=10000;
+    activeShop={id:"artefact-essence-regression-shop",active:true,shopType:"hidden",goldPurchases:0,sold:{},title:"ARTEFACT ESSENCE REGRESSION SHOP"};
+    const result=buyShopItem("banishment");
+    return{
+      result,
+      essence:Number(p1.banishmentEssence),
+      artefacts:PGR.inventoryKindCount(p1,"artefact"),
+      flasks:PGR.inventoryKindCount(p1,"banishment"),
+      count:PGR.inventoryCount(p1),
+      capacity:PGR.inventoryCapacity(p1),
+      gold:Number(run.gold),
+      score:Number(score),
+      trades:Number(window.CCGLostSizzlerV142ArtefactShopStability?.diagnostics?.trades||0)
+    };
+  });
+  assert.equal(essenceTrade.result,true,"three current V10.42 Artefact essence must be spendable for one Banishment Flask");
+  assert.equal(essenceTrade.essence,0,"the three traded Artefact essence points must be consumed exactly once");
+  assert.equal(essenceTrade.artefacts,0,"the live Artefact counter must report zero after the essence exchange");
+  assert.equal(essenceTrade.flasks,1,"the essence exchange must add exactly one Banishment Flask");
+  assert.ok(essenceTrade.count<=essenceTrade.capacity,"the essence exchange must remain within inventory capacity");
+  assert.equal(essenceTrade.gold,10,"essence Artefact exchange must not spend Gold");
+  assert.equal(essenceTrade.score,10000,"essence Artefact exchange must not spend Score");
+  assert.ok(essenceTrade.trades>=2,"Artefact stability layer must record both successful compatibility and live-store trades");
 
   assert.deepEqual(errors,[],`live-defect regression must not produce uncaught page errors: ${errors.join("\n")}`);
-  console.log("Dungeon Carnage current-main firing hold, Artefact exchange and runtime identity regression passed.");
+  console.log("Dungeon Carnage current-main firing hold, physical/essence Artefact exchange and runtime identity regression passed.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
