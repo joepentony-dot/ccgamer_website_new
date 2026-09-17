@@ -47,7 +47,7 @@ assert.match(blockingCss,/html body\[data-run-active="false"\] #menu #solo-btn\{
 assert.match(blockingCss,/html body\[data-run-active="false"\] #menu #split-btn\{[\s\S]*?grid-column:span 2!important[\s\S]*?min-height:74px!important/,'local Split Screen must sit beside Solo and match the settled R55 height');
 assert.match(blockingCss,/html body\[data-run-active="false"\] #menu #tutorial-zone-btn\{[\s\S]*?min-height:70px!important/,'Tutorial first-paint geometry must match the retained R55 owner');
 assert.match(blockingCss,/html body\[data-run-active="false"\] #menu #daily-btn\{[\s\S]*?min-height:70px!important/,'Weekly first-paint geometry must match the retained R55 owner');
-assert.match(blockingCss,/html body\[data-run-active="false"\] #menu \.game-mode-buttons button\{[\s\S]*?padding:28px 12px 24px!important/,'blocking CSS must own the same desktop card padding as R55 before first paint');
+assert.match(blockingCss,/html body\[data-run-active="false"\] #menu \.game-mode-buttons button:not\(\.hidden\)\{[\s\S]*?padding:28px 12px 24px!important/,'blocking CSS must own the same desktop card padding as R55 for visible controls before first paint without forcing hidden controls visible');
 assert.match(blockingCss,/@media\(max-width:760px\)\{[\s\S]*?min-height:78px!important;[\s\S]*?padding:29px 12px 25px!important/,'blocking mobile geometry must match the retained R55 seal');
 assert.match(blockingCss,/@media\(max-width:520px\)\{[\s\S]*?grid-template-columns:1fr!important/,'narrow mobile landing menu must collapse to one column');
 
