@@ -21,9 +21,11 @@ assert.equal(buildMeta,BUILD,"the blocking page identity must already be the cur
 assert.equal(cacheMeta,CACHE,"the cache guard must read the r31 token on its first execution");
 assert.equal(version.build,BUILD,"version.json must describe the same current build as the blocking page and bootstrap");
 assert.equal(version.cacheToken,CACHE,"version.json must describe the same current cache token as the blocking page and bootstrap");
-assert.match(bootstrap,/const BUILD="V10\.42 r30";/,"ordered bootstrap build identity changed unexpectedly");
+assert.match(bootstrap,/const BUILD="V10\.42 r31";/,"ordered bootstrap build identity changed unexpectedly");
 assert.match(bootstrap,/const CACHE="20260917r31";/,"ordered bootstrap cache identity changed unexpectedly");
 assert.match(guard,/ccg-lost-sizzler-cache[^\n]+content/,"cache guard must continue taking its initial token from the blocking page meta");
+assert.match(handoff,/function revision\(\)\{return String\(document\.querySelector\(\x27meta\[name="ccg-lost-sizzler-cache"\]\x27\)\?\.content/,"the historical r30 handoff must derive its module token from the canonical page cache meta");
+assert.match(handoff,/loadScript\("v10-42-bootstrap\.js","data-ccg-v142-bootstrap"\)/,"the historical handoff must continue loading the ordered V10.42 bootstrap through the derived release token");
 assert.ok(localAssets.length>=30,`expected the canonical page to expose its local script/style cache tokens, found ${localAssets.length}`);
 for(const asset of localAssets)assert.equal(asset.token,CACHE,`${asset.url} is not pinned to the current r31 cache token`);
 assert.match(html,/game-local-runtime\.js\?v=20260917r31/,"the extracted current local runtime must not remain under the obsolete September 10 cache key");
