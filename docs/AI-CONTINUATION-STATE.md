@@ -10,7 +10,7 @@ Update this file when a workstream changes category, its active PR/dependency ch
 
 ## Current autonomous Dungeon Carnage checkpoint — 17 September 2026
 
-- Verified live `main` before #2134 final qualification: `e87f920b4629885eb87ad66d8049cc9fdc62fc72`, generated SEO/video-page PR #2133 directly on top of the #2131 Stage 1 merge.
+- Verified live `main` after #2134 merge: `adc6f96d2ab8d8395b8cae5818b38c101bd846b9`.
 - The original seven-item repository-side Dungeon Carnage live-defect remediation programme remains repository-complete except for the already-documented deployed/manual acceptance gate on Defect 5.
 - The later current-build Solo freeze/stopped-firing regression is repository-fixed through #2129. Proven root cause: the canonical page loaded the base runtime under `20260910r1` while the authoritative V10.42 bootstrap used `20260917r30`, allowing a supported mixed-generation cache/runtime path.
 - #2129 synchronised the blocking page, direct CSS/JS asset queries and `version.json` to `V10.42 r30` / `20260917r30` without changing projectile mechanics, firing cadence, movement semantics, save data, supported mode ownership or Defect 5 shop logic.
@@ -25,7 +25,8 @@ Update this file when a workstream changes category, its active PR/dependency ch
 - Defect 7 — RPG terminology reconciliation — **repository-complete through #2126**.
 - Later freeze/stopped-firing regression — **repository-complete through #2129; deployed/manual sustained-Solo acceptance deferred by the user**.
 - Stage 1 startup-owner cleanup #2131 is **merged**. Exact qualified head: `21fed121ceb0f72278142ba201f25927c5c6b9b5`; merge commit: `3358cddc66725f75213c74dec7459551d8ff02b7`.
-- Active Stage 1 follow-up: **#2134 — Remove retired Spy fullscreen hook from Dungeon Carnage**, branch `codex/dungeon-retired-spy-fullscreen-hook-current-main`.
+- Stage 1 shared-fullscreen cleanup #2134 is **merged**. Exact qualified head: `dcc1ebf7428bf36f89b92a52f00645f832565ead`; merge commit: `adc6f96d2ab8d8395b8cae5818b38c101bd846b9`.
+- Active Stage 1 follow-up: **#2135 — Trim retired network compatibility shell in Dungeon Carnage**, branch `codex/dungeon-retired-online-entry-current-main`.
 
 ### Manual acceptance state
 
@@ -59,13 +60,22 @@ PR #2131 is **MERGED**.
 - Exact qualified #2131 head `21fed121ceb0f72278142ba201f25927c5c6b9b5` passed Public Code Cache Version, Native Mouse Wheel Scroll Contract, SEO Automation, canonical/Node contracts and all six Chromium shards. One unchanged shard-5 retry was required after the historical `v10-35-layout.mjs` 15-second startup wait flaked; the retry passed without changing runtime code, assertions or timeouts.
 - #2131 merged as `3358cddc66725f75213c74dec7459551d8ff02b7`.
 
-PR #2134 is the next bounded Stage 1 residue item.
+PR #2134 is **MERGED**.
 
-- #2134 removes only the dead `CCGLostSizzlerV141R32SpyLoader.handleSpyFullscreenKey()` pre-dispatch from supported global `F` input.
+- #2134 removed only the dead `CCGLostSizzlerV141R32SpyLoader.handleSpyFullscreenKey()` pre-dispatch from supported global `F` input.
 - The supported fullscreen owner remains `game-render.js → toggleFullscreen()`; the fullscreen button and `F` both reach that owner directly.
-- The retained R59 static contract has been reconciled so it requires direct supported fullscreen ownership and forbids the retired shared Spy dependency while leaving R59 pause/Solo protections unchanged.
-- Automated review also found that the original browser regression filename contained `spy`, causing the existing Chromium manifest retired-mode filter to exclude it. The contract has been renamed to `v10-42-retired-fullscreen-owner.mjs` so it enters the normal Chromium matrix without altering the manifest filter.
-- No Spy/Saboteur gameplay is restored and no movement, firing, pause/resume, save, combat, Banishment, R56, R59 or R60 runtime ownership is changed.
+- The retained R59 static contract was reconciled so it requires direct supported fullscreen ownership and forbids the retired shared Spy dependency while leaving R59 pause/Solo protections unchanged.
+- Automated review found that the original browser regression filename contained `spy`, causing the existing Chromium manifest retired-mode filter to exclude it. The contract was renamed to `v10-42-retired-fullscreen-owner.mjs` so it entered the normal Chromium matrix without altering the manifest filter.
+- Exact qualified #2134 head `dcc1ebf7428bf36f89b92a52f00645f832565ead` passed Public Code Cache Version, Native Mouse Wheel Scroll Contract, SEO Automation and Lost Sizzler Load Safety, including canonical/Node contracts, Chromium discovery and all six Chromium shards.
+- #2134 merged as `adc6f96d2ab8d8395b8cae5818b38c101bd846b9`.
+- No Spy/Saboteur gameplay was restored and no movement, firing, pause/resume, save, combat, Banishment, R56, R59 or R60 runtime ownership changed.
+
+PR #2135 is the active bounded Stage 1 residue item.
+
+- It removes seven inert network-era compatibility owners from `game-network.js`: `onPlayer`, `playerStateForNetwork`, `sendPlayer`, `sendRemotePlayerState`, `processRemoteMovement`, `serialWorld`, and `onWorld`.
+- It deliberately retains `onMembers` and `onPacket`, which are still passed to the retained local `RoomNetwork` shell, plus inert `broadcastWorld`, which supported local gameplay still calls.
+- The existing retired-network runtime contract is tightened to require the removed owners to stay absent while preserving those three supported compatibility obligations.
+- This does not remove the separately identified `playMode === "online"` branches in `game-core.js` or `game-local-runtime.js`; those require their own bounded ownership proof rather than being folded into #2135.
 - Detailed runtime reasoning is recorded in [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md).
 
 ### Defect 7 final record
@@ -83,20 +93,19 @@ PR #2134 is the next bounded Stage 1 residue item.
 
 ### Active Dungeon branch / PR
 
-- **#2134** is the active independent Stage 1 cleanup PR. It is not a reopening of #2129, #2131 or the seven-item defect programme.
+- **#2135** is the active independent Stage 1 cleanup PR. It is not a reopening of #2129, #2131, #2134 or the seven-item defect programme.
 - Do not reopen Defects 1, 2, 3, 4, 6 or 7 without new current-build regression evidence.
-- Preserve #2118 projectile lifecycle ownership, #2129 release/cache identity and #2131 explicit supported R56/R59/R60 startup ownership unless new evidence independently disproves them.
+- Preserve #2118 projectile lifecycle ownership, #2129 release/cache identity, #2131 explicit supported R56/R59/R60 startup ownership and #2134 supported fullscreen ownership unless new evidence independently disproves them.
 - Defect 5 and the #2129 sustained-Solo check are manual acceptance gates only at this checkpoint.
 
 ### Exact next action
 
-1. Reconcile the final exact head of #2134 after the R59-contract, browser-contract rename and checkpoint documentation commits.
+1. Qualify #2135 on its final exact head after checkpoint documentation commits.
 2. Require Public Code Cache Version, Native Mouse Wheel Scroll Contract, SEO Automation and Lost Sizzler Load Safety—including canonical/Node contracts, Chromium discovery and all six Chromium shards—to pass on that exact head.
-3. Confirm the renamed `v10-42-retired-fullscreen-owner.mjs` appears in the discovered Chromium matrix.
-4. Reconcile review findings/threads, changed paths and mergeability against current `main`; do not allow generated SEO output into the branch.
-5. Merge #2134 under the standing authorization when qualified.
-6. Reconcile the resulting `main`, checkpoint the exact qualified head/merge SHA and continue the next independent Stage 1 retired-mode/legacy-residue audit item.
-7. Keep both manual product gates explicitly deferred until the user is available to perform them.
+3. Reconcile reviews/threads, changed paths and mergeability against live `main`; do not allow generated SEO output into the branch.
+4. Merge #2135 under the standing authorization when qualified.
+5. Reconcile the resulting `main`, checkpoint the exact qualified head/merge SHA and continue the next independent Stage 1 retired-mode/legacy-residue audit item.
+6. Keep both manual product gates explicitly deferred until the user is available to perform them.
 
 Autonomous merge authorization remains in force for bounded repository fixes that satisfy the established exact-head qualification rules. Genuine hands-on acceptance, credentials, destructive external actions and project-level human approval gates still apply where documented.
 
@@ -117,7 +126,7 @@ Autonomous merge authorization remains in force for bounded repository fixes tha
 
 | Workstream | Record | Current GitHub state |
 | --- | --- | --- |
-| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) plus [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md) | Original repository defect programme complete; both remaining hands-on acceptance gates are user-deferred. Independent Stage 1 retired-mode/legacy-residue cleanup is active in #2134 after merged #2131. |
+| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) plus [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md) | Original repository defect programme complete; both remaining hands-on acceptance gates are user-deferred. Independent Stage 1 retired-mode/legacy-residue cleanup is active in #2135 after merged #2131 and #2134. |
 | Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | itch.io is the intended purchase/download route; the custom commerce/paywall and stale packaging/Windows PR graphs are closed. Any package artifact must be rebuilt from current `main`, selectively reusing historical provider-neutral ideas only where necessary. |
 | Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2103 and #2105 are merged; #2073 is closed. #2110 remains the current draft endpoint follow-up but is **BLOCKED** by missing/mismatched Cloudflare runtime configuration. Repository-side work for that blocker is already complete. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | draft rebuild PR #2056 remains based on an old merge base and requires a current-main rebuild/reconciliation before integration. |
