@@ -95,7 +95,11 @@
     if(!buttons.length)return false;
     const current=[...grid.children].filter(node=>ids.includes(String(node.id||""))).map(node=>node.id);
     if(current.length===buttons.length&&current.every((id,index)=>id===buttons[index].id))return true;
-    const fragment=document.createDocumentFragment();for(const button of buttons)fragment.appendChild(button);grid.insertBefore(fragment,grid.firstChild);state.menuRepairs++;return true
+    const focused=document.activeElement;
+    const restoreFocus=focused instanceof HTMLElement&&buttons.includes(focused);
+    const fragment=document.createDocumentFragment();for(const button of buttons)fragment.appendChild(button);grid.insertBefore(fragment,grid.firstChild);
+    if(restoreFocus){try{focused.focus({preventScroll:true})}catch(_){try{focused.focus()}catch(__){}}}
+    state.menuRepairs++;return true
   }
 
   function markMenu(){
