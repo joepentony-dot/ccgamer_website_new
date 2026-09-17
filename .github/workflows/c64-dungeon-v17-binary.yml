@@ -42,6 +42,7 @@ jobs:
           mkdir -p /tmp/dungeon-v17/tools /tmp/dungeon-v17/tests/stubs
           cp .c64-v17-support/validate_release.py /tmp/dungeon-v17/tools/validate_release.py
           cp .c64-v17-support/stubs/*.h /tmp/dungeon-v17/tests/stubs/
+          python3 .c64-v17-support/apply_cc65_compat.py
           find /tmp/dungeon-v17 -maxdepth 3 -type f -print | sort
 
       - name: Run v1.7 source regressions
