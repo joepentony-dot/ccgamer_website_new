@@ -57,6 +57,16 @@ function installFloorCheckpointContinuity(){
     floorEntryCheckpoint=PGR.makeCheckpoint(run,p1,p2,score,playMode);
     return floorEntryCheckpoint;
   };
+  saveFloorCheckpoint=function(returnToMenu=false){
+    const data=floorEntryCheckpoint||captureFloorEntryCheckpoint();
+    if(!data)return false;
+    const ok=PGR.saveCheckpointData(data);
+    updateSavedRunButton();
+    if(ok)showToast("FLOOR CHECKPOINT SAVED",`Floor ${data.floor} entry saved. Loading it later restarts this floor from its entrance state.`,"green",7500);
+    else showToast("SAVE FAILED","The floor-entry checkpoint could not be written to this browser. Your current run is still active.","red",7000);
+    if(ok&&returnToMenu)setTimeout(()=>quitToMenu(),180);
+    return ok;
+  };
   offerFloorSave=function(restPrompt=false){
     if(!run||run.daily||playMode==="online"||!UI.savePanel||Number(run.floor||0)<1)return false;
     savePromptReason=restPrompt?"rest":"entry";
@@ -88,7 +98,7 @@ function installFloorCheckpointContinuity(){
     if(started!==false&&run&&!run.daily&&playMode!=="online")captureFloorEntryCheckpoint();
     return started;
   };
-  window.CCGDungeonSaveRestoreContract=Object.freeze({floorOne:true,entrySnapshot:true,voluntaryCheckpoint:true});
+  window.CCGDungeonSaveRestoreContract=Object.freeze({floorOne:true,entrySnapshot:true,writeFailureSafe:true,r43AutosaveAware:true});
 }
 installFloorCheckpointContinuity();
 
