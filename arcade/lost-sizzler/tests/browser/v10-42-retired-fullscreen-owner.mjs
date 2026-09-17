@@ -49,47 +49,54 @@ try{
   assert.equal(before.specialMode,"","Solo must not activate a retired special mode");
   assert.equal(before.controller,"dungeon-solo","Solo must retain canonical dungeon-solo ownership");
 
-  // Solo startup may legitimately have entered fullscreen already. Return to a
-  // known non-fullscreen state so the next F press exercises requestFullscreen
-  // through the supported toggle owner rather than its equally valid exit path.
-  await page.evaluate(async()=>{
-    if(document.fullscreenElement){
-      try{await document.exitFullscreen()}catch(_){}
-    }
-  });
-  await page.waitForFunction(()=>!document.fullscreenElement,null,{timeout:5000});
-
+  // Exercise the installed shared KeyF listener directly. A synthetic DOM event
+  // avoids CI focus/fullscreen-policy differences while still traversing the
+  // production window keydown listener and its supported toggleFullscreen binding.
   await page.evaluate(()=>{
-    window.__ccgStage1FullscreenCalls=0;
+    window.__ccgStage1KeyFullscreenCalls=0;
     window.__ccgStage1RetiredSpyFullscreenCalls=0;
-    const shell=document.querySelector(".ccg-game");
-    shell.requestFullscreen=async()=>{window.__ccgStage1FullscreenCalls++};
+    window.__ccgStage1OriginalToggleFullscreen=toggleFullscreen;
+    toggleFullscreen=async()=>{window.__ccgStage1KeyFullscreenCalls++};
     window.CCGLostSizzlerV141R32SpyLoader={
       handleSpyFullscreenKey(){window.__ccgStage1RetiredSpyFullscreenCalls++;return true}
     };
+    window.dispatchEvent(new KeyboardEvent("keydown",{code:"KeyF",key:"f",bubbles:true,cancelable:true}));
   });
-
-  await page.keyboard.press("f");
-  await page.waitForFunction(()=>window.__ccgStage1FullscreenCalls===1,null,{timeout:5000});
+  await page.waitForFunction(()=>window.__ccgStage1KeyFullscreenCalls===1,null,{timeout:5000});
   let result=await page.evaluate(()=>({
-    fullscreenCalls:Number(window.__ccgStage1FullscreenCalls||0),
+    keyFullscreenCalls:Number(window.__ccgStage1KeyFullscreenCalls||0),
     retiredSpyCalls:Number(window.__ccgStage1RetiredSpyFullscreenCalls||0),
     controller:String(window.CCGLostSizzlerModeRuntime?.state?.activeId||""),
     specialMode:String(document.body?.dataset?.specialMode||"")
   }));
-  assert.equal(result.fullscreenCalls,1,"F must dispatch directly to the supported fullscreen owner");
+  assert.equal(result.keyFullscreenCalls,1,"F must dispatch directly to the supported fullscreen owner");
   assert.equal(result.retiredSpyCalls,0,"fabricated retired Spy fullscreen owner must not intercept F");
   assert.equal(result.controller,"dungeon-solo","fullscreen input must not change Solo mode ownership");
   assert.equal(result.specialMode,"","fullscreen input must not activate retired special-mode state");
 
+  // The fullscreen button captured the original supported owner when game-main
+  // installed its click listener. Restore the global binding and instrument the
+  // shell request to prove that button path remains intact independently of Spy.
+  await page.evaluate(async()=>{
+    toggleFullscreen=window.__ccgStage1OriginalToggleFullscreen;
+    if(document.fullscreenElement){
+      try{await document.exitFullscreen()}catch(_){}
+    }
+    window.__ccgStage1ButtonFullscreenCalls=0;
+    const shell=document.querySelector(".ccg-game");
+    shell.requestFullscreen=async()=>{window.__ccgStage1ButtonFullscreenCalls++};
+  });
+  await page.waitForFunction(()=>!document.fullscreenElement,null,{timeout:5000});
   await page.click("#fullscreen-btn");
-  await page.waitForFunction(()=>window.__ccgStage1FullscreenCalls===2,null,{timeout:5000});
+  await page.waitForFunction(()=>window.__ccgStage1ButtonFullscreenCalls===1,null,{timeout:5000});
   result=await page.evaluate(()=>({
-    fullscreenCalls:Number(window.__ccgStage1FullscreenCalls||0),
+    keyFullscreenCalls:Number(window.__ccgStage1KeyFullscreenCalls||0),
+    buttonFullscreenCalls:Number(window.__ccgStage1ButtonFullscreenCalls||0),
     retiredSpyCalls:Number(window.__ccgStage1RetiredSpyFullscreenCalls||0)
   }));
-  assert.equal(result.fullscreenCalls,2,"fullscreen button must retain the same supported fullscreen owner");
-  assert.equal(result.retiredSpyCalls,0,"fullscreen button must remain independent of retired Spy ownership");
+  assert.equal(result.keyFullscreenCalls,1,"keyboard path must reach the supported fullscreen binding exactly once");
+  assert.equal(result.buttonFullscreenCalls,1,"fullscreen button must retain the supported shell fullscreen owner");
+  assert.equal(result.retiredSpyCalls,0,"supported fullscreen controls must remain independent of retired Spy ownership");
   assert.deepEqual(errors,[],`fullscreen retirement boundary must have no uncaught browser errors: ${errors.join("\n")}`);
 
   console.log("DUNGEON_RETIRED_SPY_FULLSCREEN_HOOK",JSON.stringify({before,result}));
