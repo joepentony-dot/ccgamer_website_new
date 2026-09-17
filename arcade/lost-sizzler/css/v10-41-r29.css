@@ -131,3 +131,56 @@ body[data-run-active="false"] #menu .secondary-menu a{min-height:34px!important;
   body[data-run-active="false"] #menu #split-btn{grid-column:span 1!important}
   body[data-run-active="false"] #menu .feature-strip{grid-template-columns:1fr!important}
 }
+
+/* Stage 2 landing milestone.
+ * The supported release now presents one stable hierarchy instead of exposing
+ * historical runtime-injected tiers that referred to retired modes. These
+ * rules intentionally outrank the later V10.41 compatibility style injection,
+ * so the first paint and the settled menu keep the same geometry. */
+html body[data-run-active="false"] #menu .ccg-mode-tier-label{display:none!important}
+html body[data-run-active="false"] #menu #continue-save-btn{
+  order:10!important;
+  grid-column:1/-1!important;
+  min-height:48px!important;
+  font-size:10px!important;
+}
+html body[data-run-active="false"] #menu #solo-btn{
+  order:11!important;
+  grid-column:span 2!important;
+  min-height:56px!important;
+}
+html body[data-run-active="false"] #menu #split-btn{
+  order:12!important;
+  grid-column:span 2!important;
+  min-height:56px!important;
+  font-size:10px!important;
+}
+html body[data-run-active="false"] #menu #tutorial-zone-btn{
+  order:21!important;
+  grid-column:span 2!important;
+  min-height:42px!important;
+}
+html body[data-run-active="false"] #menu #daily-btn{
+  order:22!important;
+  grid-column:span 2!important;
+  min-height:42px!important;
+}
+html body[data-run-active="false"] #menu #tutorial-zone-btn,
+html body[data-run-active="false"] #menu #daily-btn{
+  margin-top:3px!important;
+}
+@media(max-width:760px){
+  html body[data-run-active="false"] #menu #continue-save-btn{grid-column:1/-1!important}
+  html body[data-run-active="false"] #menu #solo-btn,
+  html body[data-run-active="false"] #menu #split-btn,
+  html body[data-run-active="false"] #menu #tutorial-zone-btn,
+  html body[data-run-active="false"] #menu #daily-btn{grid-column:span 1!important}
+}
+@media(max-width:520px){
+  html body[data-run-active="false"] #menu .game-mode-buttons{grid-template-columns:1fr!important}
+  html body[data-run-active="false"] #menu #continue-save-btn,
+  html body[data-run-active="false"] #menu #solo-btn,
+  html body[data-run-active="false"] #menu #split-btn,
+  html body[data-run-active="false"] #menu #tutorial-zone-btn,
+  html body[data-run-active="false"] #menu #daily-btn{grid-column:1!important}
+}
