@@ -65,13 +65,62 @@ try{
       cursor=candidates[0]||null;
     }
 
+    const wardenApi=window.CCGLostSizzlerV142WardenHuntGuidance;
+    const snapshotWarden=(by="")=>{
+      const floor=Math.max(1,Math.floor(Number(run?.floor||host?.floor||1)||1));
+      const row=run?.v142WardenFloors?.[String(floor)]||null;
+      const domain=host?.v142WardenDomain||null;
+      const issues=typeof wardenApi?.exitIssues==="function"?wardenApi.exitIssues(floor,run,host):[];
+      const blocking=issues.filter(issue=>Boolean(issue?.blocking));
+      const key=blocking.map(issue=>String(issue?.kind||"")).sort().join("|");
+      const armed=host?.v142WardenExitConfirm||null;
+      const now=Date.now();
+      const physicalContact=typeof wardenApi?.playerExitContact==="function"?Boolean(wardenApi.playerExitContact(by,host)):null;
+      const shouldSuppress=Boolean(physicalContact&&blocking.length&&(!armed||Number(armed.floor)!==floor||String(armed.key||"")!==key||now>Number(armed.until||0)));
+      return{
+        floor,
+        mode:String(mode||""),
+        runFloorComplete:Boolean(run?.floorComplete),
+        exitOpen:Boolean(host?.exitOpen),
+        objectiveComplete:Boolean(host?.objective?.complete),
+        physicalContact,
+        issues:issues.map(issue=>({kind:String(issue?.kind||""),blocking:Boolean(issue?.blocking),text:String(issue?.text||"")})),
+        blockingKinds:blocking.map(issue=>String(issue?.kind||"")).sort(),
+        issueKey:key,
+        shouldSuppress,
+        row:row?{
+          available:row.available,
+          noWarden:Boolean(row.noWarden),
+          resolved:Boolean(row.resolved),
+          cleansed:Boolean(row.cleansed),
+          skipped:Boolean(row.skipped),
+          cacheFragmentAwarded:Boolean(row.cacheFragmentAwarded),
+          killFragmentAwarded:Boolean(row.killFragmentAwarded),
+          fragmentAwarded:Boolean(row.fragmentAwarded)
+        }:null,
+        domain:domain?{
+          active:Boolean(domain.active),
+          cleansed:Boolean(domain.cleansed),
+          sourceId:String(domain.sourceId||""),
+          sourceKind:String(domain.sourceKind||""),
+          profileId:String(domain.profileId||""),
+          profileName:String(domain.profileName||""),
+          roomId:Number.isFinite(Number(domain.roomId))?Number(domain.roomId):null
+        }:null,
+        confirm:armed?{floor:Number(armed.floor),key:String(armed.key||""),until:Number(armed.until||0),remainingMs:Number(armed.until||0)-now}:null,
+        panelHidden:Boolean(document.getElementById("floor-complete")?.classList.contains("hidden")),
+        summaryHtml:String(document.getElementById("floor-summary")?.innerHTML||"")
+      };
+    };
+
     const originalFloorComplete=window.floorComplete;
     const floorCompleteCalls=[];
     if(typeof originalFloorComplete==="function"){
       window.floorComplete=function floorCompleteDiagnostic(){
-        floorCompleteCalls.push({phase:"entry",args:[...arguments].map(value=>String(value)),mode:String(mode||""),floorComplete:Boolean(run?.floorComplete)});
+        const by=String(arguments[0]??"");
+        floorCompleteCalls.push({phase:"entry",args:[...arguments].map(value=>String(value)),guard:snapshotWarden(by)});
         const result=originalFloorComplete.apply(this,arguments);
-        floorCompleteCalls.push({phase:"exit",mode:String(mode||""),floorComplete:Boolean(run?.floorComplete),panelHidden:Boolean(document.getElementById("floor-complete")?.classList.contains("hidden"))});
+        floorCompleteCalls.push({phase:"exit",result,guard:snapshotWarden(by)});
         return result;
       };
     }
@@ -80,11 +129,12 @@ try{
     mode="playing";run.floorComplete=false;
     const panel=document.getElementById("floor-complete");
     panel?.classList.add("hidden");panel?.setAttribute("aria-hidden","true");
-    const before={player:{x:p1.x,y:p1.y},exit:{...world.exit},mode:String(mode),floorComplete:Boolean(run.floorComplete),exitOpen:Boolean(host.exitOpen),objectiveComplete:Boolean(host.objective?.complete),opened:Boolean(opened),owner:window.movePlayer?.name||""};
+    if(host?.v142WardenExitConfirm)delete host.v142WardenExitConfirm;
+    const before={player:{x:p1.x,y:p1.y},exit:{...world.exit},mode:String(mode),floorComplete:Boolean(run.floorComplete),exitOpen:Boolean(host.exitOpen),objectiveComplete:Boolean(host.objective?.complete),opened:Boolean(opened),owner:window.movePlayer?.name||"",warden:snapshotWarden(p1.name)};
     window.movePlayer(p1,dx,dy);
-    const after={player:{x:p1.x,y:p1.y},exit:{...world.exit},mode:String(mode),floorComplete:Boolean(run.floorComplete),exitOpen:Boolean(host.exitOpen),panelHidden:Boolean(panel?.classList.contains("hidden")),owner:window.movePlayer?.name||""};
+    const after={player:{x:p1.x,y:p1.y},exit:{...world.exit},mode:String(mode),floorComplete:Boolean(run.floorComplete),exitOpen:Boolean(host.exitOpen),panelHidden:Boolean(panel?.classList.contains("hidden")),owner:window.movePlayer?.name||"",warden:snapshotWarden(p1.name)};
     window.floorComplete=originalFloorComplete;
-    return{before,after,floorCompleteCalls,chain};
+    return{before,after,floorCompleteCalls,chain,floorCompleteOwner:describe(originalFloorComplete)};
 
     function assertStep(value){if(!value)throw new Error("No walkable tile adjacent to Floor 1 exit")}
   });
@@ -93,7 +143,24 @@ try{
   assert.equal(diagnostic.before.objectiveComplete,true,"Diagnostic requires the genuine Floor 1 objective to be complete.");
   assert.equal(diagnostic.before.exitOpen,true,"Diagnostic requires the genuine Floor 1 exit to be open.");
   assert.deepEqual(diagnostic.after.player,diagnostic.after.exit,"Diagnostic move must physically reach the genuine exit tile.");
-  console.log("Floor 1 exit owner diagnostic completed.");
+  assert.equal(diagnostic.floorCompleteCalls.length,2,"The real exit entry should invoke floorComplete exactly once.");
+  const guardEntry=diagnostic.floorCompleteCalls[0]?.guard,guardExit=diagnostic.floorCompleteCalls[1]?.guard;
+  assert.equal(guardEntry?.floor,1,"The diagnostic suppression must be observed on Floor 1.");
+  assert.equal(guardEntry?.mode,"playing","The Warden guard must receive the valid exit while gameplay is active.");
+  assert.equal(guardEntry?.runFloorComplete,false,"The Warden guard must receive an uncompleted run state.");
+  assert.equal(guardEntry?.exitOpen,true,"The Warden guard must receive an open exit.");
+  assert.equal(guardEntry?.objectiveComplete,true,"The Warden guard must receive the completed Floor 1 objective.");
+  assert.equal(guardEntry?.physicalContact,true,"The Warden guard must see real physical contact with the Floor 1 exit.");
+  assert.ok(guardEntry?.blockingKinds?.includes("warden-debt"),"The first valid Floor 1 exit must expose the unresolved optional Warden debt predicate.");
+  assert.equal(guardEntry?.shouldSuppress,true,"The current Warden guard predicate must identify the first valid Floor 1 exit as suppressible.");
+  assert.equal(diagnostic.floorCompleteCalls[1]?.result,false,"The current Warden guard must return false on the first valid Floor 1 exit.");
+  assert.equal(guardExit?.mode,"playing","Suppression must leave gameplay mode unchanged.");
+  assert.equal(guardExit?.runFloorComplete,false,"Suppression must leave run.floorComplete false.");
+  assert.equal(guardExit?.panelHidden,true,"Suppression must leave the floor-complete panel hidden.");
+  assert.equal(guardExit?.row?.skipped,false,"The inner Warden domain completion wrapper must not have been reached on the suppressed first exit.");
+  assert.equal(guardExit?.confirm?.floor,1,"The suppression branch must arm a Floor 1 Warden exit confirmation.");
+  assert.equal(guardExit?.confirm?.key,"warden-debt","The suppression branch must be caused specifically by unresolved Warden debt.");
+  console.log("Floor 1 Warden exit suppression diagnostic completed.");
   await context.close();
 }finally{
   await browser.close();
