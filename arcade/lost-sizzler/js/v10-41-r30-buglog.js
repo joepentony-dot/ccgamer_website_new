@@ -12,10 +12,12 @@
   function loadOwnerSeal(){if(!window.CCGLostSizzlerV141R30OwnerSeal)loadScript("v10-41-r30-owner-seal.js","data-ccg-r30-owner-seal")}
   function loadModeRuntime(){if(!window.CCGLostSizzlerModeRuntime)loadScript("v10-41-mode-runtime.js","data-ccg-mode-runtime")}
   function loadSoloDiagnostics(){if(!window.CCGLostSizzlerSoloDiagnostics)loadScript("v10-41-solo-stability-diagnostics.js","data-ccg-solo-stability-diagnostics")}
-  function loadSpyExitControlReset(){if(!window.CCGLostSizzlerV141R30SpyExitControlReset)loadScript("v10-41-r30-spy-exit-control-reset.js","data-ccg-r30-spy-exit-reset")}
+  function loadPostPlaytestStability(){if(!window.CCGLostSizzlerV141PostPlaytestStability)loadScript("v10-41-post-playtest-stability.js","data-ccg-post-playtest-stability")}
+  function loadR59LiveRegressionFixes(){if(!window.CCGLostSizzlerV141R59LiveRegressionFixes)loadScript("v10-41-r59-live-regression-fixes.js","data-ccg-r59-live-regression-fixes")}
   function loadSoloDungeonR31(){if(!window.CCGLostSizzlerV141R31SoloDungeon)loadScript("v10-41-r31-solo-dungeon-regressions.js","data-ccg-r31-solo-dungeon")}
-  function loadSpyR32WorldOwner(){if(!window.CCGLostSizzlerV141R32SpyWorldOwner)loadScript("v10-41-r32-spy-world-owner.js","data-ccg-r32-spy-world-owner")}
-  function loadSpyR32Loader(){if(!window.CCGLostSizzlerV141R32SpyLoader)loadScript("v10-41-r32-spy-loader.js","data-ccg-r32-spy-loader")}
+  /* Despite its historical Horde name, this layer still owns supported Solo
+     chain-aware R60 maintenance/damage protection. Keep it until that supported
+     ownership is independently extracted. */
   function loadHordeOwnerComposition(){if(!window.CCGLostSizzlerV141R60HordeOwnerComposition)loadScript("v10-41-r60-horde-owner-composition.js","data-ccg-r60-horde-owner-composition")}
   function loadStage8NpcDialogue(){if(!window.CCGLostSizzlerStage8NpcDialogue)loadScript("v10-41-stage8-npc-dialogue.js","data-ccg-stage8-npc-dialogue")}
   function loadStage13EncounterCompletion(){if(!window.CCGLostSizzlerStage13EncounterCompletion)loadScript("v10-41-stage13-encounter-completion.js","data-ccg-stage13-encounter-completion")}
@@ -25,7 +27,7 @@
     if(document.readyState==="complete"){queueMicrotask(loadProgression);setTimeout(loadV142Bootstrap,0);return}
     addEventListener("load",()=>{loadProgression();setTimeout(loadV142Bootstrap,0)},{once:true})
   }
-  loadOwnerSeal();loadModeRuntime();loadSoloDiagnostics();loadSpyExitControlReset();loadSoloDungeonR31();loadSpyR32WorldOwner();loadSpyR32Loader();loadHordeOwnerComposition();loadStage8AfterInitialRuntime();
+  loadOwnerSeal();loadModeRuntime();loadSoloDiagnostics();loadPostPlaytestStability();loadR59LiveRegressionFixes();loadSoloDungeonR31();loadHordeOwnerComposition();loadStage8AfterInitialRuntime();
 
   const entries=[
     ["LS-0907-03","FIXED","V10.42 acceptance-play blockers","The consolidated playtest layer now protects the shop price ladder, CPU Cook dossier identity, Space-to-close dossier control, chest reward confirmation and the A–Z anti-alphabet safeguard before another manual acceptance build is issued."],
