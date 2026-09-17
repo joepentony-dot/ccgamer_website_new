@@ -72,12 +72,15 @@
     else if(id==="tutorial-zone-btn"||id==="daily-btn"){height="70px";font="9px"}
     const mobile=matchMedia?.("(max-width:760px)")?.matches===true;
     if(mobile)height="78px";
+    const hidden=button.classList.contains("hidden");
     const values={
-      "box-sizing":"border-box","position":"relative","display":"flex","align-items":"center","justify-content":"flex-start",
+      "box-sizing":"border-box","position":"relative","align-items":"center","justify-content":"flex-start",
       "min-height":height,"padding":mobile?"29px 12px 25px":"28px 12px 24px","overflow":"hidden","white-space":"normal","text-overflow":"clip",
       "text-align":"left","line-height":"1.15","font-size":font,"text-shadow":"none","transform":"none","filter":"none","-webkit-filter":"none"
     };
+    if(!hidden)values.display="flex";
     let repaired=false;
+    if(hidden&&button.style.getPropertyValue("display")){button.style.removeProperty("display");repaired=true}
     for(const [prop,value] of Object.entries(values)){
       if(button.style.getPropertyValue(prop)!==value||button.style.getPropertyPriority(prop)!=="important"){button.style.setProperty(prop,value,"important");repaired=true}
     }
