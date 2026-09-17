@@ -99,7 +99,12 @@ async function fireCycle(page,key,round){
 }
 
 try{
-  const context=await browser.newContext({viewport:{width:1440,height:900}}),page=await context.newPage();
+  const context=await browser.newContext({viewport:{width:1440,height:900}});
+  // The endurance contract owns runtime/frame/firing behaviour, not live account
+  // services. Stub production Supabase calls so localhost CORS policy cannot
+  // create false console failures after the gameplay assertions have passed.
+  await context.route("https://*.supabase.co/**",route=>route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:"{}"}));
+  const page=await context.newPage();
   page.setDefaultTimeout(60000);
   const pageErrors=[],consoleErrors=[],failedScripts=[],v142Requests=[];
   page.on("pageerror",error=>pageErrors.push(String(error?.stack||error)));
