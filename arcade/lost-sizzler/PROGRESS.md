@@ -5,10 +5,11 @@
 ## Audit checkpoint
 
 - Audited: **17 September 2026**.
-- Runtime checkpoint before this documentation update: `2e734f4875fb737a0a292b4f92331197bc1c6f85`, merge of Defect 7 PR #2126.
+- Runtime checkpoint before this documentation update: `218025ce2beac3765d65ca9b838e8afd58a5eedf`, merge of post-program live regression PR #2129.
 - The seven-item repository-side live-defect remediation programme has completed through #2117, #2118, #2119, #2123, #2090, #2125 and #2126.
-- Defect 5 still has a deployed/manual acceptance gate under the closure rule below; there is no remaining repository-side correction currently proven necessary for that defect.
-- No active Dungeon live-defect branch or PR remains from the seven-item programme.
+- A later current-build freeze/stopped-firing regression is repository-fixed through #2129; product-level closure still requires a short sustained Solo live acceptance on the deployed current build.
+- Defect 5 still has a deployed/manual acceptance gate under the closure rule below. Resume that acceptance only after the post-#2129 Solo stability check passes; there is no remaining repository-side correction currently proven necessary for Defect 5.
+- No active Dungeon runtime defect PR remains. The current `codex/dungeon-2129-checkpoint` branch is documentation-only.
 - A merged PR is not treated as a closed user-reproduced defect until the deployed behaviour is manually accepted where this register explicitly requires that acceptance.
 
 ## Authoritative live-defect programme status — 17 September 2026
@@ -22,6 +23,22 @@
 | 5 | Three-Artefact Banishment Flask exchange only works after a Gold purchase. | **VERIFYING — repository path complete through #2090; deployed/manual acceptance still required** |
 | 6 | Owned Firearms do not communicate meaningful weapon differences. | **REPOSITORY-COMPLETE — #2125** |
 | 7 | Remaining Sizzler/Zzap!/Uncommon RPG wording needs coherent setting-appropriate replacement. | **REPOSITORY-COMPLETE — #2126** |
+
+## Post-program live regression — freeze / stopped firing
+
+After the seven-item repository programme completed, the deployed/current V10.42 r30 build reproduced a separate Solo failure where gameplay could freeze/stall and/or firing could stop before the outstanding Defect 5 shop acceptance could be reached.
+
+PR #2129 proved a split release/cache identity on the canonical page. The authoritative V10.42 bootstrap used `V10.42 r30` / `20260917r30`, while the blocking page still identified and directly loaded the base runtime stack under `2026.09.10.1` / `20260910r1`. That allowed a supported mixed-generation path in which stale base frame/input/attack owners could coexist with current r30 ordered modules even though the visible badge later showed r30.
+
+#2129 synchronised the blocking page build/cache identity, direct Dungeon CSS/JS query tokens and `version.json` to r30. It did not change projectile lifecycle mechanics, firing cadence, movement semantics, save data, supported mode ownership or Defect 5 shop logic.
+
+- Exact qualified #2129 head: `585cda263e2f0c9a626fef61d19bae9635d2087f`.
+- Merge commit: `218025ce2beac3765d65ca9b838e8afd58a5eedf`.
+- All seven PR-triggered exact-head workflows passed before merge.
+- The exact PR head also received a successful Cloudflare preview deployment.
+- Detailed checkpoint: `docs/ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md`.
+
+Repository status: **REPOSITORY-COMPLETE — #2129**. Product-level status remains **VERIFYING** until a short live Solo endurance check confirms that firing continues and the game does not freeze/stall on the deployed current build.
 
 ### Defect 7 final terminology boundary
 
@@ -72,7 +89,8 @@ The exact candidate head `f70f816910fab8d07aaf946f140b593c9220f1ef` passed all r
 
 | Area | Status | Remaining acceptance |
 | --- | --- | --- |
-| 3-Artefact Banishment Flask exchange | **VERIFYING** | #2090 is merged and automated coverage passes for both legacy physical Artefacts and the current V10.42 `banishmentEssence` representation without spending Gold/Score. Product-level closure still requires the deployed/current build to be manually checked. |
+| #2129 freeze/stopped-firing regression | **VERIFYING** | Confirm on the deployed/current build that sustained Solo movement, real enemy combat and repeated firing/hold/release cycles continue without firing stopping or the game freezing/stalling. |
+| 3-Artefact Banishment Flask exchange | **VERIFYING** | #2090 is merged and automated coverage passes for both legacy physical Artefacts and the current V10.42 `banishmentEssence` representation without spending Gold/Score. Product-level closure still requires the deployed/current build to be manually checked after #2129 stability acceptance passes. |
 
 ## Partially completed work
 
@@ -112,16 +130,17 @@ Horde Survivor, Spy Vs Spy/Sizzler Saboteurs and networked Dungeon Multiplayer a
 
 ## Current work order
 
-1. **Live-verify the 3-Artefact Banishment Flask exchange on the deployed/current build.** Automated qualification is complete; manual acceptance remains.
-2. **If the Flask acceptance passes, mark the seven-item live-defect programme product-complete.** If it fails, reproduce against the then-current deployed `main` and create a new bounded defect rather than reviving stale branches.
-3. **Reconcile the separate Banishment customer-facing Artefact/Essence/Vessel/Ward-Break terminology** only after the demonstrated Flask behaviour is known.
-4. **Audit remaining retired-mode language/runtime residue**, including legacy online wording and compatibility-only code, without restoring retired product modes.
-5. **Rebuild useful startup/menu presentation ideas** from the closed #2055 source as small current-main stages only where the current product still needs them.
-6. **Implement Water / Fire / Earth / Air portal architecture and materially larger zone topology.**
-7. **Deepen zone-specific enemies, bosses, events, Artefacts and secrets.**
-8. **Finish NPC/merchant world integration.**
-9. **Complete the itch.io release handoff and package checks.**
-10. **Run final supported-mode regression and hands-on release acceptance.**
+1. **Verify that #2129 / `218025ce2beac3765d65ca9b838e8afd58a5eedf` is deployed, then live-test sustained Solo stability.** Use normal movement, real enemy combat and several firing press/hold/release cycles; confirm firing does not stop and the game does not freeze/stall. Include pause/resume recovery if practical.
+2. **Only after #2129 stability acceptance passes, live-verify the 3-Artefact Banishment Flask exchange.** Automated qualification is complete; manual acceptance remains.
+3. **If both live checks pass, mark the seven-item live-defect programme and the later #2129 regression product-complete.** If either fails, reproduce against the then-current deployed `main` and create a new bounded defect rather than reviving stale branches.
+4. **Reconcile the separate Banishment customer-facing Artefact/Essence/Vessel/Ward-Break terminology** only after the demonstrated Flask behaviour is known.
+5. **Audit remaining retired-mode language/runtime residue**, including legacy online wording and compatibility-only code, without restoring retired product modes.
+6. **Rebuild useful startup/menu presentation ideas** from the closed #2055 source as small current-main stages only where the current product still needs them.
+7. **Implement Water / Fire / Earth / Air portal architecture and materially larger zone topology.**
+8. **Deepen zone-specific enemies, bosses, events, Artefacts and secrets.**
+9. **Finish NPC/merchant world integration.**
+10. **Complete the itch.io release handoff and package checks.**
+11. **Run final supported-mode regression and hands-on release acceptance.**
 
 ## Closure rule
 
