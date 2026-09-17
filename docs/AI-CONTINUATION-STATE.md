@@ -10,22 +10,20 @@ Update this file when a workstream changes category, its active PR/dependency ch
 
 ## Current autonomous Dungeon Carnage checkpoint — 17 September 2026
 
-- Verified live `main` before #2134 final qualification: `e87f920b4629885eb87ad66d8049cc9fdc62fc72`, generated SEO/video-page PR #2133 directly on top of the #2131 Stage 1 merge.
-- The original seven-item repository-side Dungeon Carnage live-defect remediation programme remains repository-complete except for the already-documented deployed/manual acceptance gate on Defect 5.
-- The later current-build Solo freeze/stopped-firing regression is repository-fixed through #2129. Proven root cause: the canonical page loaded the base runtime under `20260910r1` while the authoritative V10.42 bootstrap used `20260917r30`, allowing a supported mixed-generation cache/runtime path.
-- #2129 synchronised the blocking page, direct CSS/JS asset queries and `version.json` to `V10.42 r30` / `20260917r30` without changing projectile mechanics, firing cadence, movement semantics, save data, supported mode ownership or Defect 5 shop logic.
-- Exact qualified #2129 head: `585cda263e2f0c9a626fef61d19bae9635d2087f`; merge commit: `218025ce2beac3765d65ca9b838e8afd58a5eedf`.
-- Detailed regression record: [Dungeon Carnage live freeze/cache checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md).
-- Defect 1 — obsolete public-beta/watchdog startup lock — **repository-complete through #2117**.
-- Defect 2 — retained projectile entities / progressive slowdown — **repository-complete through #2118**.
-- Defect 3 — Floor 1 completion/exit progression failure — **repository-complete through #2119**.
-- Defect 4 — Save and Exit restore reliability — **repository-complete through #2123**.
-- Defect 5 — 3-Artefact Banishment Flask exchange — **no remaining repository-side correction; deployed/manual acceptance deferred by the user**.
-- Defect 6 — Owned Firearms differentiation — **repository-complete through #2125**.
-- Defect 7 — RPG terminology reconciliation — **repository-complete through #2126**.
-- Later freeze/stopped-firing regression — **repository-complete through #2129; deployed/manual sustained-Solo acceptance deferred by the user**.
-- Stage 1 startup-owner cleanup #2131 is **merged**. Exact qualified head: `21fed121ceb0f72278142ba201f25927c5c6b9b5`; merge commit: `3358cddc66725f75213c74dec7459551d8ff02b7`.
-- Active Stage 1 follow-up: **#2134 — Remove retired Spy fullscreen hook from Dungeon Carnage**, branch `codex/dungeon-retired-spy-fullscreen-hook-current-main`.
+- Verified live `main`: `ee2d6b38e5c5805ee1c906d7f801bda2d8496383` — merged Stage 2 landing milestone (#2136).
+- Original seven-item repository-side live-defect remediation remains complete except for the deferred manual Defect 5 product acceptance. The later #2129 sustained-Solo acceptance is also deferred.
+- Stage 1 is converged for the current product programme: #2134 merged as `adc6f96d2ab8d8395b8cae5818b38c101bd846b9`; #2135 merged as `811f67845dbcaa0b4b5c2b83f8860e10a184c1a0`.
+- Stage 2 startup/main-menu polish #2136 is merged as current main `ee2d6b38e5c5805ee1c906d7f801bda2d8496383`.
+- The programme is milestone-first. Do not resume broad residue cleanup unless it blocks or destabilises the active player-facing milestone.
+- Active Dungeon PR: **#2137 — Add Dungeon Carnage elemental portal campaign foundation**.
+- Branch: `codex/dungeon-elemental-portal-foundation-current-main`.
+- Base: current `main` `ee2d6b38e5c5805ee1c906d7f801bda2d8496383`.
+- Stage 4 foundation maps Water Floor 1→2, Fire 2→3, Earth 3→4 and Air 4→5 while leaving `run.floor`, `floorComplete()` and `descendFloor()` authoritative. Portal discovery/unlock/traversal metadata persists inside the existing run/checkpoint object; legacy saves infer already-earned unlocks from proven depth without advancing the floor.
+- First reviewed #2137 head `6b8483154bbfbd20d11a9a050b426b4e784667dc` passed the four attached workflows, including Load Safety canonical/Node contracts, Chromium discovery and all six shards.
+- Automated review identified two legitimate blockers: stale r30 cache/release identity for the new bootstrap module, and missing persistent checkpoint updates.
+- The branch now advances the canonical page, direct local asset query tokens, `version.json` and ordered bootstrap to **`V10.42 r31` / `20260917r31`**. The historical r30 handoff remains in place but derives its child-module token from canonical cache metadata; the new r31 release-identity regression protects that path. The previous r30 release-identity contract is retired.
+- Persistent runtime and work-register checkpoints are updated on the same branch before final exact-head qualification.
+- Larger visual portal rooms, larger procedural topology and deeper zone-specific gameplay are not part of this foundation and remain subsequent milestones.
 
 ### Manual acceptance state
 
@@ -40,65 +38,15 @@ For both, record exactly:
 
 These deferred gates do not block independent repository work that does not depend on their outcome.
 
-### Stage 1 — retired mode / legacy residue audit
-
-PR #2131 is **MERGED**.
-
-- Branch: `codex/dungeon-retired-spy-startup-current-main`.
-- Base at Stage 1 start: `5db1fa275fba1b33d9fbab55d065724110338fd7`.
-- The earlier 16 September audit was too broad when it stated that the supported runtime did not load retired Horde/Spy modules. The canonical page did not directly list them, but the r30 startup handoff still dynamically preloaded three retired Spy/Saboteurs owners.
-- #2131 removed startup preloading of `v10-41-r30-spy-exit-control-reset.js`, `v10-41-r32-spy-world-owner.js`, and `v10-41-r32-spy-loader.js`.
-- Ownership investigation proved that some supported responsibilities had been reached indirectly through that historical chain, so #2131 preserved them explicitly instead of deleting by filename:
-  - `v10-41-post-playtest-stability.js` — supported Solo fire-state recovery;
-  - `v10-41-r56-playtest-completion.js` — ordinary-dungeon environment/chest/combat recovery;
-  - `v10-41-r59-live-regression-fixes.js` — pause/Solo stability;
-  - `v10-41-horde-frame-performance.js` — historical Horde name but still the loader/maintenance bridge for the supported Solo R60 live-play integrity owner; its Horde polling timer is stopped during Solo;
-  - `v10-41-r60-horde-owner-composition.js` — historical Horde name but still protects supported Solo R60 maintenance/damage ancestry.
-- The first #2131 candidate exposed this hidden ownership in Chromium: Solo stabilization lost the Horde-frame compatibility API and selective-owner recovery lost supported R56/R60 owners. Tests were not weakened; the candidate was corrected by making supported ownership explicit while keeping the retired Spy startup owners absent.
-- The stale `v10-41-r32-solo-monitor-diagnostic.mjs` contract was reconciled rather than timed out or deleted. Its replacement proves the retired R32 loader/observer and retired Spy assets remain absent during canonical Solo while R56/R59/R60 ownership stays present.
-- Exact qualified #2131 head `21fed121ceb0f72278142ba201f25927c5c6b9b5` passed Public Code Cache Version, Native Mouse Wheel Scroll Contract, SEO Automation, canonical/Node contracts and all six Chromium shards. One unchanged shard-5 retry was required after the historical `v10-35-layout.mjs` 15-second startup wait flaked; the retry passed without changing runtime code, assertions or timeouts.
-- #2131 merged as `3358cddc66725f75213c74dec7459551d8ff02b7`.
-
-PR #2134 is the next bounded Stage 1 residue item.
-
-- #2134 removes only the dead `CCGLostSizzlerV141R32SpyLoader.handleSpyFullscreenKey()` pre-dispatch from supported global `F` input.
-- The supported fullscreen owner remains `game-render.js → toggleFullscreen()`; the fullscreen button and `F` both reach that owner directly.
-- The retained R59 static contract has been reconciled so it requires direct supported fullscreen ownership and forbids the retired shared Spy dependency while leaving R59 pause/Solo protections unchanged.
-- Automated review also found that the original browser regression filename contained `spy`, causing the existing Chromium manifest retired-mode filter to exclude it. The contract has been renamed to `v10-42-retired-fullscreen-owner.mjs` so it enters the normal Chromium matrix without altering the manifest filter.
-- No Spy/Saboteur gameplay is restored and no movement, firing, pause/resume, save, combat, Banishment, R56, R59 or R60 runtime ownership is changed.
-- Detailed runtime reasoning is recorded in [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md).
-
-### Defect 7 final record
-
-- Branch used: `codex/dungeon-rpg-terminology-current-main`.
-- PR: #2126, merged 17 September 2026.
-- Exact qualified candidate head: `f70f816910fab8d07aaf946f140b593c9220f1ef`.
-- Merge commit: `2e734f4875fb737a0a292b4f92331197bc1c6f85`.
-- Root cause: `progression.js` deliberately retains historical rarity identities (`UNCOMMON`, `SIZZLER`, `GOLD MEDAL`, `ZZAP! 97%`) for progression/save compatibility, but those same values leaked directly into generated player-facing weapon/item names and the objective copy still exposed `Zzap! Citadel guardian`.
-- Bounded correction: keep the internal identities untouched and reconcile only visible labels: `UNCOMMON` → `RARE`, `SIZZLER` → `ENCHANTED`, `GOLD MEDAL` → `RELIC`, `ZZAP! 97%` → `LEGENDARY`; visible `Zzap! Citadel guardian` becomes `Citadel guardian`.
-- Files changed by #2126: `arcade/lost-sizzler/js/v10-42-rpg-terminology.js`, `arcade/lost-sizzler/js/v10-42-bootstrap.js`, `arcade/lost-sizzler/tests/v10-42-rpg-terminology.mjs`, and `docs/ai-work/dungeon-carnage-rpg-terminology-2026-09-17.md`.
-- Exact-head qualification on `f70f8169…`: Native Mouse Wheel Scroll Contract **green**; Public Code Cache Version **green**; SEO Automation **green**; C64 Dungeon Carnage Mobile Trap Layout Contract **green**; Lost Sizzler Load Safety **green**.
-- Lost Sizzler Load Safety passed canonical structure/Node contracts, Chromium discovery and all six Chromium shards.
-- Detailed record: [Defect 7 RPG terminology checkpoint](ai-work/dungeon-carnage-rpg-terminology-2026-09-17.md).
-
-### Active Dungeon branch / PR
-
-- **#2134** is the active independent Stage 1 cleanup PR. It is not a reopening of #2129, #2131 or the seven-item defect programme.
-- Do not reopen Defects 1, 2, 3, 4, 6 or 7 without new current-build regression evidence.
-- Preserve #2118 projectile lifecycle ownership, #2129 release/cache identity and #2131 explicit supported R56/R59/R60 startup ownership unless new evidence independently disproves them.
-- Defect 5 and the #2129 sustained-Solo check are manual acceptance gates only at this checkpoint.
-
 ### Exact next action
 
-1. Reconcile the final exact head of #2134 after the R59-contract, browser-contract rename and checkpoint documentation commits.
-2. Require Public Code Cache Version, Native Mouse Wheel Scroll Contract, SEO Automation and Lost Sizzler Load Safety—including canonical/Node contracts, Chromium discovery and all six Chromium shards—to pass on that exact head.
-3. Confirm the renamed `v10-42-retired-fullscreen-owner.mjs` appears in the discovered Chromium matrix.
-4. Reconcile review findings/threads, changed paths and mergeability against current `main`; do not allow generated SEO output into the branch.
-5. Merge #2134 under the standing authorization when qualified.
-6. Reconcile the resulting `main`, checkpoint the exact qualified head/merge SHA and continue the next independent Stage 1 retired-mode/legacy-residue audit item.
+1. Reconcile #2137's final exact head after the r31 cache/release correction and checkpoint commits.
+2. Require all PR-triggered checks on that exact head to pass, including Lost Sizzler Load Safety canonical/Node contracts, Chromium discovery and all six Chromium shards.
+3. Confirm the r31 release-identity regression executes and no stale canonical `20260917r30` token remains.
+4. Reconcile Codex review findings/threads, changed paths and mergeability against current `main`.
+5. Merge only under the established merge-authorisation rule; otherwise leave #2137 in an exact **READY TO MERGE** state.
+6. After a qualified merge, reconcile the new `main`, record the exact head/merge SHA, and continue with Stage 5 larger procedural topology/zone structure rather than broad legacy cleanup.
 7. Keep both manual product gates explicitly deferred until the user is available to perform them.
-
-Autonomous merge authorization remains in force for bounded repository fixes that satisfy the established exact-head qualification rules. Genuine hands-on acceptance, credentials, destructive external actions and project-level human approval gates still apply where documented.
 
 ## Historical checkpoint notes
 
@@ -117,7 +65,7 @@ Autonomous merge authorization remains in force for bounded repository fixes tha
 
 | Workstream | Record | Current GitHub state |
 | --- | --- | --- |
-| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) plus [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md) | Original repository defect programme complete; both remaining hands-on acceptance gates are user-deferred. Independent Stage 1 retired-mode/legacy-residue cleanup is active in #2134 after merged #2131. |
+| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) plus [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md) | Stage 1 and Stage 2 are merged. Stage 4 elemental portal campaign-state foundation is active in #2137 with r31 cache/release correction under final qualification; two independent manual product gates remain deferred. |
 | Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | itch.io is the intended purchase/download route; the custom commerce/paywall and stale packaging/Windows PR graphs are closed. Any package artifact must be rebuilt from current `main`, selectively reusing historical provider-neutral ideas only where necessary. |
 | Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2103 and #2105 are merged; #2073 is closed. #2110 remains the current draft endpoint follow-up but is **BLOCKED** by missing/mismatched Cloudflare runtime configuration. Repository-side work for that blocker is already complete. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | draft rebuild PR #2056 remains based on an old merge base and requires a current-main rebuild/reconciliation before integration. |
