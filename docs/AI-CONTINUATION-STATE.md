@@ -8,25 +8,53 @@ For Dungeon Carnage specifically, `arcade/lost-sizzler/PROGRESS.md` is the produ
 
 Update this file when a workstream changes category, its active PR/dependency changes, or a substantial session ends. Keep detailed reasoning, checks, blockers, and next actions in the workstream file.
 
-## Current autonomous Dungeon Carnage live-defect checkpoint — 17 September 2026
+## Current autonomous Dungeon Carnage checkpoint — 17 September 2026
 
-- Verified runtime `main` before this documentation checkpoint: `218025ce2beac3765d65ca9b838e8afd58a5eedf`, merge of live regression PR #2129.
+- Verified live `main` at the start of the current independent backlog programme: `5db1fa275fba1b33d9fbab55d065724110338fd7`, merge of documentation checkpoint PR #2130.
 - The original seven-item repository-side Dungeon Carnage live-defect remediation programme remains repository-complete except for the already-documented deployed/manual acceptance gate on Defect 5.
-- A later current-build live regression was independently reproduced after that programme: Solo gameplay could freeze/stall and/or firing could stop before Defect 5 acceptance could be reached.
-- That regression is **repository-fixed through #2129**. Proven root cause: the canonical page still loaded the base runtime under `20260910r1` while the authoritative V10.42 bootstrap used `20260917r30`, allowing a supported mixed-generation cache/runtime path.
+- The later current-build Solo freeze/stopped-firing regression is repository-fixed through #2129. Proven root cause: the canonical page loaded the base runtime under `20260910r1` while the authoritative V10.42 bootstrap used `20260917r30`, allowing a supported mixed-generation cache/runtime path.
 - #2129 synchronised the blocking page, direct CSS/JS asset queries and `version.json` to `V10.42 r30` / `20260917r30` without changing projectile mechanics, firing cadence, movement semantics, save data, supported mode ownership or Defect 5 shop logic.
-- Exact qualified #2129 head: `585cda263e2f0c9a626fef61d19bae9635d2087f`.
-- #2129 merge commit: `218025ce2beac3765d65ca9b838e8afd58a5eedf`.
-- Exact-head qualification on `585cda26…`: Public Code Cache Version **green**; SEO Automation **green**; Native Mouse Wheel Scroll Contract **green**; Social Metadata Validation **green**; Structured Data Validation **green**; CCG Site Safety **green**; Lost Sizzler Load Safety **green**.
-- #2129 had no reviews, no unresolved review threads, no conflicts, and was mergeable before merge. Cloudflare reported a successful exact-head preview deployment.
+- Exact qualified #2129 head: `585cda263e2f0c9a626fef61d19bae9635d2087f`; merge commit: `218025ce2beac3765d65ca9b838e8afd58a5eedf`.
 - Detailed regression record: [Dungeon Carnage live freeze/cache checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md).
 - Defect 1 — obsolete public-beta/watchdog startup lock — **repository-complete through #2117**.
 - Defect 2 — retained projectile entities / progressive slowdown — **repository-complete through #2118**.
-- Defect 3 — Floor 1 completion/exit progression failure — **repository-complete through #2119**. The bounded fix preserved the genuine objective → exit → `movePlayer()` → floor-complete → `#descend-btn` → `descendFloor()` ownership route.
+- Defect 3 — Floor 1 completion/exit progression failure — **repository-complete through #2119**.
 - Defect 4 — Save and Exit restore reliability — **repository-complete through #2123**.
-- Defect 5 — 3-Artefact Banishment Flask exchange — **no remaining repository-side correction**. #2090 owns the live Artefact/Essence exchange path and its current-main browser contract has passed; deployed/manual acceptance remains required before product-level closure. That acceptance is currently gated behind the short post-#2129 sustained Solo stability check.
-- Defect 6 — Owned Firearms differentiation — **repository-complete through #2125**. Presentation now exposes the meaningful differences already present in firearm runtime data without changing acquisition, switching or combat ownership.
+- Defect 5 — 3-Artefact Banishment Flask exchange — **no remaining repository-side correction; deployed/manual acceptance deferred by the user**.
+- Defect 6 — Owned Firearms differentiation — **repository-complete through #2125**.
 - Defect 7 — RPG terminology reconciliation — **repository-complete through #2126**.
+- Later freeze/stopped-firing regression — **repository-complete through #2129; deployed/manual sustained-Solo acceptance deferred by the user**.
+
+### Manual acceptance state
+
+Two product-level checks remain unresolved and must not be inferred from automated tests:
+
+1. sustained Solo movement/firing/combat/pause-resume stability after #2129;
+2. 3 Artefacts/Essences → 1 Banishment Flask without first buying a Gold Flask, while Gold and Score remain unchanged.
+
+For both, record exactly:
+
+**MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**
+
+These deferred gates do not block independent repository work that does not depend on their outcome.
+
+### Stage 1 — retired mode / legacy residue audit
+
+Active PR: **#2131 — Retire unused Spy startup owners from Dungeon Carnage**.
+
+- Branch: `codex/dungeon-retired-spy-startup-current-main`.
+- Base at Stage 1 start: `5db1fa275fba1b33d9fbab55d065724110338fd7`.
+- The earlier 16 September audit was too broad when it stated that the supported runtime did not load retired Horde/Spy modules. The canonical page did not directly list them, but the r30 startup handoff still dynamically preloaded three retired Spy/Saboteurs owners.
+- #2131 removes startup preloading of `v10-41-r30-spy-exit-control-reset.js`, `v10-41-r32-spy-world-owner.js`, and `v10-41-r32-spy-loader.js`.
+- Ownership investigation proved that some supported responsibilities had been reached indirectly through that historical chain, so the candidate preserves them explicitly instead of deleting by filename:
+  - `v10-41-post-playtest-stability.js` — supported Solo fire-state recovery;
+  - `v10-41-r56-playtest-completion.js` — ordinary-dungeon environment/chest/combat recovery;
+  - `v10-41-r59-live-regression-fixes.js` — pause/Solo stability;
+  - `v10-41-horde-frame-performance.js` — historical Horde name but still the loader/maintenance bridge for the supported Solo R60 live-play integrity owner; its Horde polling timer is stopped during Solo;
+  - `v10-41-r60-horde-owner-composition.js` — historical Horde name but still protects supported Solo R60 maintenance/damage ancestry.
+- The first #2131 candidate exposed this hidden ownership in Chromium: Solo stabilization lost the Horde-frame compatibility API and selective-owner recovery lost supported R56/R60 owners. Tests were not weakened; the candidate was corrected by making supported ownership explicit while keeping the retired Spy startup owners absent.
+- Current #2131 exact-head qualification must be re-read live because checkpoint documentation commits advance the head. Merge only after Public Code Cache Version, Native Mouse Wheel Scroll Contract and Lost Sizzler Load Safety are green on the final exact head, no unresolved review threads remain, and the PR is still conflict-free and bounded.
+- Detailed runtime reasoning is recorded in [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md).
 
 ### Defect 7 final record
 
@@ -38,25 +66,24 @@ Update this file when a workstream changes category, its active PR/dependency ch
 - Bounded correction: keep the internal identities untouched and reconcile only visible labels: `UNCOMMON` → `RARE`, `SIZZLER` → `ENCHANTED`, `GOLD MEDAL` → `RELIC`, `ZZAP! 97%` → `LEGENDARY`; visible `Zzap! Citadel guardian` becomes `Citadel guardian`.
 - Files changed by #2126: `arcade/lost-sizzler/js/v10-42-rpg-terminology.js`, `arcade/lost-sizzler/js/v10-42-bootstrap.js`, `arcade/lost-sizzler/tests/v10-42-rpg-terminology.mjs`, and `docs/ai-work/dungeon-carnage-rpg-terminology-2026-09-17.md`.
 - Exact-head qualification on `f70f8169…`: Native Mouse Wheel Scroll Contract **green**; Public Code Cache Version **green**; SEO Automation **green**; C64 Dungeon Carnage Mobile Trap Layout Contract **green**; Lost Sizzler Load Safety **green**.
-- Lost Sizzler Load Safety passed canonical structure/Node contracts, Chromium discovery and **all six Chromium shards**, including the historically troublesome shard 3 and the shard-1 sustained Solo long-session soak.
-- #2126 had no reviews, no unresolved review threads, no conflicts and was cleanly mergeable before merge.
+- Lost Sizzler Load Safety passed canonical structure/Node contracts, Chromium discovery and all six Chromium shards.
 - Detailed record: [Defect 7 RPG terminology checkpoint](ai-work/dungeon-carnage-rpg-terminology-2026-09-17.md).
 
-### Active Dungeon live-defect branch / PR
+### Active Dungeon branch / PR
 
-- **None.** #2129 is merged; the only current branch created by this checkpoint is documentation-only and must not be mistaken for an active runtime defect branch.
-- Do not reopen Defects 1, 2, 3, 4, 6 or 7 without new regression evidence.
-- Preserve #2118 projectile lifecycle ownership; #2129 was a release/cache identity correction, not a projectile-mechanics rewrite.
-- Defect 5 is not a coding task at this checkpoint; its remaining gate is deployed/manual acceptance of the 3-Artefact Banishment Flask exchange after the post-#2129 sustained Solo stability check passes.
+- **#2131** is the active independent Stage 1 cleanup PR. It is not a reopening of #2129 or the seven-item defect programme.
+- Do not reopen Defects 1, 2, 3, 4, 6 or 7 without new current-build regression evidence.
+- Preserve #2118 projectile lifecycle ownership and #2129 release/cache identity unless new evidence independently disproves them.
+- Defect 5 and the #2129 sustained-Solo check are manual acceptance gates only at this checkpoint.
 
 ### Exact next action
 
-1. Verify that `218025ce2beac3765d65ca9b838e8afd58a5eedf` has completed the normal production deployment path.
-2. Perform a short sustained Solo live acceptance covering normal movement, real enemy combat, repeated firing/hold/release cycles, and enough continued play to confirm firing does not stop and the game does not freeze/stall. Include pause/resume recovery if practical.
-3. Only after that passes, resume Defect 5 deployed/manual acceptance: obtain three Artefacts/Essences, perform the Banishment Flask exchange without first buying a Gold Flask, and confirm exactly one Flask is received while Gold and Score remain unchanged.
-4. If both checks pass, mark the seven-item live-defect programme and the later #2129 regression product-complete in the work register.
-5. If either check fails, reproduce against the then-current deployed `main` and open a fresh bounded defect from that exact repository state; do not revive stale branches wholesale.
-6. If no new defect is reported, move only to the separately documented post-defect product backlog rather than inventing further remediation work.
+1. Reconcile the final exact head of #2131 after the checkpoint commits.
+2. Require Public Code Cache Version, Native Mouse Wheel Scroll Contract and Lost Sizzler Load Safety—including canonical/Node contracts and all six Chromium shards—to pass on that exact head.
+3. Confirm #2131 remains bounded, mergeable, conflict-free and has no unresolved review threads.
+4. Merge #2131 under the standing authorization when qualified.
+5. Reconcile the resulting `main` and continue the next independent Stage 1 retired-mode/legacy-residue audit item.
+6. Keep both manual product gates explicitly deferred until the user is available to perform them.
 
 Autonomous merge authorization remains in force for bounded repository fixes that satisfy the established exact-head qualification rules. Genuine hands-on acceptance, credentials, destructive external actions and project-level human approval gates still apply where documented.
 
@@ -77,7 +104,7 @@ Autonomous merge authorization remains in force for bounded repository fixes tha
 
 | Workstream | Record | Current GitHub state |
 | --- | --- | --- |
-| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) plus [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md) | Seven-item repository live-defect programme completed through #2117, #2118, #2119, #2123, #2090, #2125 and #2126. Later freeze/stopped-firing regression repository-fixed through merged #2129. Short live Solo stability acceptance is now required before Defect 5 deployed acceptance resumes. |
+| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) plus [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md) | Original repository defect programme complete; both remaining hands-on acceptance gates are user-deferred. Independent Stage 1 retired-mode/legacy-residue cleanup is active in #2131. |
 | Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | itch.io is the intended purchase/download route; the custom commerce/paywall and stale packaging/Windows PR graphs are closed. Any package artifact must be rebuilt from current `main`, selectively reusing historical provider-neutral ideas only where necessary. |
 | Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2103 and #2105 are merged; #2073 is closed. #2110 remains the current draft endpoint follow-up but is **BLOCKED** by missing/mismatched Cloudflare runtime configuration. Repository-side work for that blocker is already complete. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | draft rebuild PR #2056 remains based on an old merge base and requires a current-main rebuild/reconciliation before integration. |
