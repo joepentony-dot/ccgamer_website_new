@@ -1,0 +1,300 @@
+    static const unsigned char cols[8] = {
+        COLOR_LIGHTBLUE, COLOR_CYAN, COLOR_WHITE, COLOR_LIGHTBLUE,
+        COLOR_BLUE, COLOR_YELLOW, COLOR_ORANGE, COLOR_LIGHTRED
+    };
+    uint8_t y;
+    for (y = 0; y < 8; ++y) textat(6, (uint8_t)(3 + y), rows[y], cols[y]);
+}
+
+static void title_screen(void) {
+    uint8_t j;
+    uint8_t pulse;
+    uint8_t x;
+    uint8_t y;
+    uint16_t p;
+    char hs[8];
+    sprites_off();
+    clear_screen(COLOR_BLUE, COLOR_BLACK);
+    for (x = 0; x < 40; ++x) {
+        SCREEN[x] = 160;
+        SCREEN[24u * 40u + x] = 160;
+        COLOR[x] = (x & 1u) ? COLOR_BLUE : COLOR_LIGHTBLUE;
+        COLOR[24u * 40u + x] = (x & 1u) ? COLOR_PURPLE : COLOR_LIGHTRED;
+    }
+    for (y = 1; y < 24; ++y) {
+        SCREEN[(uint16_t)y * 40u] = 160;
+        SCREEN[(uint16_t)y * 40u + 39u] = 160;
+        COLOR[(uint16_t)y * 40u] = COLOR_BLUE;
+        COLOR[(uint16_t)y * 40u + 39u] = COLOR_PURPLE;
+    }
+    title_logo();
+    textat(8, 12, "V1.7  CARNAGE UNLEASHED", COLOR_LIGHTBLUE);
+    textat(2, 14, "TRAPS. GRADES. SECRETS. BUFFERING.", COLOR_LIGHTGREEN);
+    number5(hs, high_score);
+    textat(11, 15, "HI SCORE", COLOR_YELLOW);
+    textat(20, 15, hs, COLOR_WHITE);
+    textat(8, 17, "JOYSTICK PORT 2 + FIRE", COLOR_WHITE);
+    textat(5, 19, "FIRE ATTACK   SPACE SMART BOMB", COLOR_YELLOW);
+    textat(4, 21, "CHEEKYCOMMODOREGAMER.CO.UK", COLOR_CYAN);
+    textat(8, 23, "PRESS FIRE - ENTER DUNGEON", COLOR_WHITE);
+    SCREEN[12u * 40u + 3u] = 42;
+    SCREEN[12u * 40u + 36u] = 42;
+    pulse = 0;
+    joy_prev = 0;
+    for (;;) {
+        j = joy_read(JOY_2);
+        p = (uint16_t)23 * 40u + 8u + (pulse % 24u);
+        COLOR[p] = (unsigned char)(1u + (pulse & 14u));
+        COLOR[12u * 40u + 3u] = (pulse & 4u) ? COLOR_ORANGE : COLOR_YELLOW;
+        COLOR[12u * 40u + 36u] = (pulse & 4u) ? COLOR_YELLOW : COLOR_ORANGE;
+        audio_tick();
+        if ((j & JOY_BTN_1_MASK) && !(joy_prev & JOY_BTN_1_MASK)) break;
+        joy_prev = j;
+        ++pulse;
+        frame_sync();
+    }
+    sfx(SFX_EXIT);
+}
+
+static void clear_map(void) {
+    uint8_t x;
+    uint8_t y;
+    for (y = 0; y < MAP_H; ++y) {
+        for (x = 0; x < SCREEN_W; ++x) {
+            mapbuf[map_index(x, y)] = (x == 0 || x == SCREEN_W - 1 || y == 0 || y == MAP_H - 1) ? TILE_WALL : TILE_FLOOR;
+        }
+    }
+}
+
+static void hline(uint8_t x1, uint8_t x2, uint8_t y, uint8_t t) {
+    uint8_t x;
+    for (x = x1; x <= x2; ++x) mapbuf[map_index(x, y)] = t;
+}
+
+static void vline(uint8_t x, uint8_t y1, uint8_t y2, uint8_t t) {
+    uint8_t y;
+    for (y = y1; y <= y2; ++y) mapbuf[map_index(x, y)] = t;
+}
+
+static void decorate_floor(void) {
+    uint8_t x;
+    uint8_t y;
+    clear_map();
+    if (floor_no == 1) {
+        for (x = 5; x < 35; x += 6) {
+            mapbuf[map_index(x, 6)] = TILE_BARREL;
+            mapbuf[map_index(x, 14)] = TILE_BARREL;
+        }
+        hline(10, 15, 10, TILE_WALL);
+        hline(24, 29, 10, TILE_WALL);
+        mapbuf[map_index(20, 6)] = TILE_CHEST;
+    } else if (floor_no == 2) {
+        hline(3, 36, 7, TILE_WATER);
+        hline(3, 36, 15, TILE_WATER);
+        vline(8, 4, 18, TILE_PILLAR);
+        vline(31, 4, 18, TILE_PILLAR);
+        mapbuf[map_index(8, 10)] = TILE_SECRET;
+        mapbuf[map_index(20, 11)] = TILE_CHEST;
+    } else if (floor_no == 3) {
+        vline(8, 3, 17, TILE_WALL);
+        vline(16, 5, 20, TILE_WALL);
+        vline(24, 3, 17, TILE_WALL);
+        vline(32, 5, 20, TILE_WALL);
+        mapbuf[map_index(8, 8)] = TILE_FLOOR;
+        mapbuf[map_index(16, 16)] = TILE_FLOOR;
+        mapbuf[map_index(24, 9)] = TILE_FLOOR;
+        mapbuf[map_index(32, 15)] = TILE_FLOOR;
+        mapbuf[map_index(24, 13)] = TILE_SECRET;
+        mapbuf[map_index(20, 3)] = TILE_CHEST;
+    } else if (floor_no == 4) {
+        for (y = 5; y < 19; y += 4) {
+            for (x = 5; x < 36; x += 5) mapbuf[map_index(x, y)] = TILE_SPIKE;
+        }
+        hline(12, 27, 11, TILE_PILLAR);
+        mapbuf[map_index(19, 11)] = TILE_GATE;
+        mapbuf[map_index(20, 11)] = TILE_FLOOR;
+        mapbuf[map_index(8, 10)] = TILE_RUNE;
+        mapbuf[map_index(10, 7)] = TILE_FIREJET;
+        mapbuf[map_index(30, 15)] = TILE_FIREJET;
+    } else if (floor_no == 5) {
+        hline(2, 37, 6, TILE_LAVA);
+        hline(2, 37, 16, TILE_LAVA);
+        vline(11, 3, 18, TILE_LAVA);
+        vline(28, 3, 18, TILE_LAVA);
+        mapbuf[map_index(11, 10)] = TILE_FLOOR;
+        mapbuf[map_index(11, 11)] = TILE_FLOOR;
+        mapbuf[map_index(28, 10)] = TILE_FLOOR;
+        mapbuf[map_index(28, 11)] = TILE_FLOOR;
+        mapbuf[map_index(20, 6)] = TILE_FLOOR;
+        mapbuf[map_index(20, 16)] = TILE_FLOOR;
+        mapbuf[map_index(20, 11)] = TILE_CHEST;
+        mapbuf[map_index(17, 10)] = TILE_CRACK;
+        mapbuf[map_index(18, 10)] = TILE_CRACK;
+        mapbuf[map_index(21, 12)] = TILE_CRACK;
+        mapbuf[map_index(22, 12)] = TILE_CRACK;
+        hline(3, 8, 3, TILE_WALL);
+        vline(3, 3, 6, TILE_WALL);
+        vline(8, 3, 6, TILE_WALL);
+        mapbuf[map_index(8, 4)] = TILE_SECRET;
+        mapbuf[map_index(5, 4)] = TILE_CHEST;
+    } else {
+        hline(5, 34, 5, TILE_PILLAR);
+        hline(5, 34, 17, TILE_PILLAR);
+        mapbuf[map_index(10, 5)] = TILE_FLOOR;
+        mapbuf[map_index(29, 5)] = TILE_FLOOR;
+        mapbuf[map_index(10, 17)] = TILE_FLOOR;
+        mapbuf[map_index(29, 17)] = TILE_FLOOR;
+        mapbuf[map_index(20, 11)] = TILE_CHEST;
+    }
+    /* Small floor-specific scenery: passable torches/skulls, one useful altar. */
+    mapbuf[map_index(4, 2)] = TILE_TORCH;
+    mapbuf[map_index(35, 19)] = TILE_TORCH;
+    if (floor_no >= 3) { mapbuf[map_index(5, 18)] = TILE_SKULL; mapbuf[map_index(34, 4)] = TILE_SKULL; }
+    if (floor_no == 3 || floor_no == 5) mapbuf[map_index(20, 18)] = TILE_ALTAR;
+    mapbuf[map_index(37, 2)] = TILE_EXIT;
+}
+
+static void draw_map(void) {
+    uint8_t x;
+    uint8_t y;
+    for (y = 0; y < MAP_H; ++y) {
+        for (x = 0; x < SCREEN_W; ++x) redraw_cell(x, y);
+    }
+}
+
+static void spawn_enemy(uint8_t slot, uint8_t type, uint8_t x, uint8_t y, uint8_t hp) {
+    Enemy* e;
+    e = &enemies[slot];
+    e->type = type;
+    e->x = x;
+    e->y = y;
+    e->old_x = 255;
+    e->old_y = 255;
+    e->dx = 0;
+    e->dy = 0;
+    e->hp = hp;
+    e->maxhp = hp;
+    e->state = (type == TYPE_BAT) ? AI_IDLE : AI_CHASE;
+    e->timer = (uint8_t)(20u + (rnd8() & 31u));
+    e->cooldown = (uint8_t)(rnd8() & 31u);
+    e->flash = 0;
+    ++enemies_alive;
+}
+
+static void floor_roster(void) {
+    memset(enemies, 0, sizeof(enemies));
+    memset(shots, 0, sizeof(shots));
+    memset(pickups, 0, sizeof(pickups));
+    enemies_alive = 0;
+    boss_phase = 0;
+    if (floor_no == 1) {
+        spawn_enemy(0, TYPE_SLIME, 8, 8, 3);
+        spawn_enemy(1, TYPE_BAT, 29, 6, 1);
+        spawn_enemy(2, TYPE_SKELETON, 30, 15, 3);
+    } else if (floor_no == 2) {
+        spawn_enemy(0, TYPE_SLIME, 7, 5, 4);
+        spawn_enemy(1, TYPE_SLIME, 32, 17, 4);
+        spawn_enemy(2, TYPE_SORCERER, 20, 8, 3);
+        spawn_enemy(3, TYPE_BAT, 28, 12, 1);
+    } else if (floor_no == 3) {
+        spawn_enemy(0, TYPE_SKELETON, 5, 5, 4);
+        spawn_enemy(1, TYPE_SKELETON, 12, 16, 4);
+        spawn_enemy(2, TYPE_SKELETON, 27, 7, 4);
+        spawn_enemy(3, TYPE_BAT, 35, 18, 1);
+    } else if (floor_no == 4) {
+        spawn_enemy(0, TYPE_BAT, 8, 4, 1);
+        spawn_enemy(1, TYPE_BAT, 32, 5, 1);
+        spawn_enemy(2, TYPE_SORCERER, 8, 17, 4);
+        spawn_enemy(3, TYPE_SORCERER, 31, 17, 4);
+        spawn_enemy(4, TYPE_GUARDIAN, 20, 7, 7);
+    } else if (floor_no == 5) {
+        spawn_enemy(0, TYPE_SLIME, 6, 10, 5);
+        spawn_enemy(1, TYPE_SKELETON, 20, 4, 5);
+        spawn_enemy(2, TYPE_SORCERER, 34, 10, 5);
+        spawn_enemy(3, TYPE_BAT, 20, 18, 1);
+        spawn_enemy(4, TYPE_GUARDIAN, 20, 11, 8);
+    } else {
+        spawn_enemy(0, TYPE_BOSS, 20, 8, 18);
+        boss_phase = 1;
+    }
+}
+
+static void number5(char* b, uint16_t n) {
+    b[0] = (char)('0' + ((n / 10000u) % 10u));
+    b[1] = (char)('0' + ((n / 1000u) % 10u));
+    b[2] = (char)('0' + ((n / 100u) % 10u));
+    b[3] = (char)('0' + ((n / 10u) % 10u));
+    b[4] = (char)('0' + (n % 10u));
+    b[5] = 0;
+}
+
+static void draw_hud(void) {
+    char b[8];
+    uint8_t i;
+    memset(SCREEN, 32, 120u);
+    memset(COLOR, COLOR_WHITE, 120u);
+    textat(0, 0, "HP", COLOR_LIGHTRED);
+    for (i = 0; i < player_maxhp; ++i) {
+        SCREEN[3 + i] = (i < player_hp) ? 81 : 45;
+        COLOR[3 + i] = (i < player_hp) ? COLOR_LIGHTRED : COLOR_GRAY2;
+    }
+    textat(13, 0, "SCORE", COLOR_YELLOW);
+    number5(b, score);
+    textat(19, 0, b, COLOR_WHITE);
+    textat(27, 0, "GEMS", COLOR_CYAN);
+    b[0] = (char)('0' + (gems / 10u));
+    b[1] = (char)('0' + (gems % 10u));
+    b[2] = 0;
+    textat(32, 0, b, COLOR_WHITE);
+    textat(0, 1, "FLOOR", COLOR_LIGHTBLUE);
+    b[0] = (char)('0' + floor_no);
+    b[1] = 0;
+    textat(6, 1, b, COLOR_WHITE);
+    textat(9, 1, floor_names[floor_no - 1], COLOR_LIGHTGREEN);
+    textat(31, 1, "BOMB", COLOR_ORANGE);
+    b[0] = (char)('0' + bombs);
+    b[1] = 0;
+    textat(36, 1, b, COLOR_WHITE);
+    if (multiplier > 1) {
+        textat(0, 2, "CARNAGE X", COLOR_YELLOW);
+        b[0] = (char)('0' + multiplier);
+        b[1] = 0;
+        textat(9, 2, b, COLOR_WHITE);
+    } else {
+        textat(0, 2, "TAKE THEM APART.", COLOR_GRAY3);
+    }
+    if (rage_timer) textat(13, 2, "RAGE", COLOR_LIGHTRED);
+    if (shield) textat(19, 2, "SHIELD", COLOR_CYAN);
+    if (boss_warning_timer) textat(24, 2, "MAGIC BURST!", COLOR_LIGHTRED);
+    else if (rune_notice) textat(26, 2, "GATE OPEN!", COLOR_CYAN);
+    else if (secret_notice) textat(26, 2, "SECRET!", COLOR_PURPLE);
+    else if (exit_open) textat(29, 2, "EXIT!", COLOR_LIGHTGREEN);
+}
+
+static uint8_t within_range(uint8_t ax, uint8_t ay, uint8_t bx, uint8_t by, uint8_t d) {
+    return (uint8_t)(abs8((int8_t)ax - (int8_t)bx) + abs8((int8_t)ay - (int8_t)by) <= d);
+}
+
+static uint8_t enemy_occupied(const Enemy* self, uint8_t x, uint8_t y) {
+    uint8_t i;
+    for (i = 0; i < MAX_ENEMIES; ++i) {
+        const Enemy* e;
+        e = &enemies[i];
+        if (e != self && e->type != TYPE_NONE && e->hp && e->x == x && e->y == y) return 1;
+    }
+    return 0;
+}
+
+static void health_pips_clear(Enemy* e) {
+    uint8_t y;
+    if (e->old_x == 255) return;
+    y = e->old_y > 0 ? (uint8_t)(e->old_y - 1) : e->old_y;
+    redraw_cell(e->old_x, y);
+    if (e->old_x + 1u < SCREEN_W) redraw_cell((uint8_t)(e->old_x + 1u), y);
+    e->old_x = 255;
+    e->old_y = 255;
+}
+
+static void health_pips_draw(Enemy* e) {
+    uint8_t y;
+    uint8_t n;
