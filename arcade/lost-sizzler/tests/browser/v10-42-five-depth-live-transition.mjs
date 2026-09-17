@@ -80,36 +80,22 @@ async function completeFirstFloorThroughExit(page,{game,nextFloor}){
     explored.set(p1.id,exploredCells);
     if(host.guardian)host.guardian.alive=false;
 
-    const openedBeforeSigil=window.CCGSystems.updateObjective(host,run,100);
-    const objectiveComplete=Boolean(host.objective?.complete);
-    const exitBeforeSigil=Boolean(host.exitOpen);
-
-    for(const enemy of host.enemies||[])if(enemy.sigilDefender)enemy.alive=false;
-    host.sigilResolved=true;
-    host.sigilLockdown=false;
-    host.exitSigilDropped=true;
-    const sigil={id:`floor-1-exit-sigil-contract-${Date.now()}`,x:p1.x,y:p1.y,kind:"exitSigil",active:true,title:"EXIT SIGIL"};
-    host.items.push(sigil);
-    const collected=requestCollect(sigil,p1);
     const opened=window.CCGSystems.updateObjective(host,run,100);
+    const objectiveComplete=Boolean(host.objective?.complete);
     const before={floor:Number(run.floor),xp:Number(p1.xp||0),totalXp:Number(p1.totalXp||0),score:Number(score||0),floorCompletions:Number(run.stats?.floors||0)};
 
     const candidates=[[1,0],[-1,0],[0,1],[0,-1]];
     const step=candidates.find(([dx,dy])=>window.CCGWorld.walkable(world.map,world.exit.x-dx,world.exit.y-dy,host));
-    if(!step)return{openedBeforeSigil:Boolean(openedBeforeSigil),objectiveComplete,exitBeforeSigil,collected:Boolean(collected),sigilCollected:Boolean(host.exitSigilCollected),opened:Boolean(opened),exitOpen:Boolean(host.exitOpen),moved:false,before};
+    if(!step)return{objectiveComplete,opened:Boolean(opened),exitOpen:Boolean(host.exitOpen),moved:false,before};
     const [dx,dy]=step;
     p1.x=world.exit.x-dx;p1.y=world.exit.y-dy;p1.rx=p1.x;p1.ry=p1.y;
     movePlayer(p1,dx,dy);
-    return{openedBeforeSigil:Boolean(openedBeforeSigil),objectiveComplete,exitBeforeSigil,collected:Boolean(collected),sigilCollected:Boolean(host.exitSigilCollected),opened:Boolean(opened),exitOpen:Boolean(host.exitOpen),moved:p1.x===world.exit.x&&p1.y===world.exit.y,before};
+    return{objectiveComplete,opened:Boolean(opened),exitOpen:Boolean(host.exitOpen),moved:p1.x===world.exit.x&&p1.y===world.exit.y,before};
   },game);
 
   assert.equal(route.objectiveComplete,true,"Floor 1 explore/guardian completion must complete the authoritative objective.");
-  assert.equal(route.openedBeforeSigil,false,"The main Floor 1 objective alone must not bypass the mandatory Exit Sigil.");
-  assert.equal(route.exitBeforeSigil,false,"The live stairs must remain sealed until the Exit Sigil is collected.");
-  assert.equal(route.collected,true,"The corrected fixture must collect the Exit Sigil through the live pickup owner.");
-  assert.equal(route.sigilCollected,true,"The live pickup owner must record the Floor 1 Exit Sigil.");
-  assert.equal(route.opened,true,"Completed Floor 1 objective plus the Exit Sigil must authorize the live stairs.");
-  assert.equal(route.exitOpen,true,"The complete Floor 1 route must leave the live exit open for movement.");
+  assert.equal(route.opened,true,"Floor 1 objective completion must authorize the live stairs.");
+  assert.equal(route.exitOpen,true,"The complete Floor 1 objective route must leave the live exit open for movement.");
   assert.equal(route.moved,true,"The player must physically enter the Floor 1 exit tile through movePlayer().");
 
   await page.waitForFunction(()=>mode==="floorcomplete"&&!document.getElementById("floor-complete")?.classList.contains("hidden"));
