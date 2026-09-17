@@ -13,8 +13,13 @@
   function loadModeRuntime(){if(!window.CCGLostSizzlerModeRuntime)loadScript("v10-41-mode-runtime.js","data-ccg-mode-runtime")}
   function loadSoloDiagnostics(){if(!window.CCGLostSizzlerSoloDiagnostics)loadScript("v10-41-solo-stability-diagnostics.js","data-ccg-solo-stability-diagnostics")}
   function loadPostPlaytestStability(){if(!window.CCGLostSizzlerV141PostPlaytestStability)loadScript("v10-41-post-playtest-stability.js","data-ccg-post-playtest-stability")}
+  function loadR56PlaytestCompletion(){if(!window.CCGLostSizzlerV141R56PlaytestCompletion)loadScript("v10-41-r56-playtest-completion.js","data-ccg-r56-playtest-completion")}
   function loadR59LiveRegressionFixes(){if(!window.CCGLostSizzlerV141R59LiveRegressionFixes)loadScript("v10-41-r59-live-regression-fixes.js","data-ccg-r59-live-regression-fixes")}
   function loadSoloDungeonR31(){if(!window.CCGLostSizzlerV141R31SoloDungeon)loadScript("v10-41-r31-solo-dungeon-regressions.js","data-ccg-r31-solo-dungeon")}
+  /* Despite its historical Horde name, the frame-performance layer is also the
+     loader/maintenance bridge for the supported Solo R60 live-play integrity
+     owner. In Solo it stops its Horde polling timer and maintains R60 once. */
+  function loadHordeFramePerformance(){if(!window.CCGLostSizzlerV141HordeFramePerformance)loadScript("v10-41-horde-frame-performance.js","data-ccg-horde-frame-performance")}
   /* Despite its historical Horde name, this layer still owns supported Solo
      chain-aware R60 maintenance/damage protection. Keep it until that supported
      ownership is independently extracted. */
@@ -27,7 +32,7 @@
     if(document.readyState==="complete"){queueMicrotask(loadProgression);setTimeout(loadV142Bootstrap,0);return}
     addEventListener("load",()=>{loadProgression();setTimeout(loadV142Bootstrap,0)},{once:true})
   }
-  loadOwnerSeal();loadModeRuntime();loadSoloDiagnostics();loadPostPlaytestStability();loadR59LiveRegressionFixes();loadSoloDungeonR31();loadHordeOwnerComposition();loadStage8AfterInitialRuntime();
+  loadOwnerSeal();loadModeRuntime();loadSoloDiagnostics();loadPostPlaytestStability();loadR56PlaytestCompletion();loadR59LiveRegressionFixes();loadSoloDungeonR31();loadHordeFramePerformance();loadHordeOwnerComposition();loadStage8AfterInitialRuntime();
 
   const entries=[
     ["LS-0907-03","FIXED","V10.42 acceptance-play blockers","The consolidated playtest layer now protects the shop price ladder, CPU Cook dossier identity, Space-to-close dossier control, chest reward confirmation and the A–Z anti-alphabet safeguard before another manual acceptance build is issued."],
@@ -37,7 +42,7 @@
     ["LS-0906-08","ADDED","Campaign-aware Tutorial language","The stabilized Tutorial runtime is preserved, but its V10.42 presentation now teaches the five-depth campaign, persistent RPG attributes, global Iron/Bone/Ash Keys, the Vessel and Banishment Essence system, relic choices and the campaign-wide A–Z C64 rescue deck instead of explaining retired artefact-for-Flask progression."],
     ["LS-0906-07","ADDED","Tutorial-completion permanent unlock screen","Completing the free Tutorial can now present the V10.42 permanent-unlock screen. The screen explains the one-off £1.99 launch target, account-tied ownership, cross-device restore, continued-development support and free future game updates. The browser cannot self-authorize payment; final unlock requires a verified CCG commerce entitlement and PayPal server bridge."],
     ["LS-0906-06","ADDED","Progressive combat damage curve","Enemy damage now scales alongside durability and pursuit tempo: the opening floor is deliberately gentler, mid-campaign reaches the stabilized baseline, and Floors 4–5 apply progressively stronger damage. Named threats receive a modest extra late-game multiplier so four floors of RPG growth do not make the final depth trivial."],
-    ["LS-0906-05","ADDED","Five-depth campaign and floor balance","V10.42 now targets a roughly 55–75 minute successful run across The Threshold, Iron Keep, Moss Crypt, Ember Depths and the Sigil Sanctum. Enemy durability, pursuit tempo, Stalker pressure and ammunition availability ramp by floor while RPG stats, relics, Banishment Essence and global Key progress persist downward."],
+    ["LS-0906-05","ADDED","Five-depth campaign and floor balance","V10.42 now targets a roughly 55–75 minute successful run across The Threshold, Iron Keep, Moss Crypt, Ember Depths and the Sigil Sanctum. Enemy durability, pursuit tempo and ammunition availability ramp by floor while RPG stats, relics, Banishment Essence and global Key progress persist downward."],
     ["LS-0906-01","ADDED","Procedural RPG campaign overhaul","The stabilized five-floor structure is being rebuilt as five substantially richer generated depths. The Keys of Iron, Bone and Ash are global campaign objectives, followed by the completed Sigil and a final escape phase."],
     ["LS-0906-02","ADDED","RPG character attributes","Levelling now develops Might, Vitality, Agility, Endurance, Luck and Arcana. Attributes change combat power, health, movement, ammunition, loot quality, Sigil behaviour and Banishment alchemy rather than relying only on generic upgrade cards."],
     ["LS-0906-03","ADDED","A–Z randomized C64 collectible deck","Every campaign builds one shuffled collectible deck with one randomly selected C64 title for each available letter A through Z, then distributes that 26-game deck across all five depths."],
@@ -52,7 +57,7 @@
     ["LS-0826-16","ADDED","Movement fault-injection regression tests","Chromium release tests now deliberately clear held input, install a silent dead movement wrapper, inject an isolated Spy owner, cycle Spy ownership repeatedly and then require a fresh Solo run to move. These tests are designed to prevent the recurring control-freeze class from passing CI again."],
     ["LS-0826-17","FIXED","Notification ownership race under stability monitoring","r30 now keeps the final notification rail and priority toast owner inside the same runtime invariant loop as movement. Legacy timed wrappers can no longer briefly displace notification ownership and create intermittent hidden-toast or release-test failures."],
     ["LS-0826-18","FIXED","Post-Spy transient control lock","Spy teardown now normalises movement cooldown, hit-stun and retained control-lock state at the same boundary that restores normal movement ownership. Repeated Spy exits can no longer leave a later Solo run with a valid movement function but blocked player controls."],
-    ["LS-0826-19","FIXED","Intermittent late movement-owner replacement","Once r30 has locked the known-good normal movement owner, a dedicated non-Spy ownership seal now restores that exact owner if any late wrapper replaces it. Spy retains exclusive movement ownership while active, and the seal resumes only after Spy isolation has ended."]
+    ["LS-0826-19","ADDED","Intermittent late movement-owner replacement","Once r30 has locked the known-good normal movement owner, a dedicated non-Spy ownership seal now restores that exact owner if any late wrapper replaces it. Spy retains exclusive movement ownership while active, and the seal resumes only after Spy isolation has ended."]
   ];
   const statusClass=status=>String(status).toLowerCase().replace(/[^a-z]+/g,"-");
   const entryHtml=([id,status,title,copy])=>`<article class="developer-log-entry" data-r30-entry="${id}"><code class="developer-log-id">${id}</code><span class="developer-log-status ${statusClass(status)}">${status}</span><div class="developer-log-copy"><b>${title}</b><span>${copy}</span></div></article>`;
