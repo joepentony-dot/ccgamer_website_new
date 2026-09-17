@@ -13,10 +13,9 @@ const index=read("index.html");
 
 /*
  * Networked Dungeon Multiplayer is retired. The active local gameplay suffix
- * remains in game-local-runtime.js. game-network.js now contains only inert
- * compatibility owners needed while RoomNetwork is still the Solo/Split local
- * session shell; it must not regain packet routing, remote simulation or world
- * synchronisation behaviour.
+ * remains in game-local-runtime.js. game-network.js retains only the callbacks
+ * still passed to RoomNetwork plus broadcastWorld(), which supported local
+ * gameplay still calls as an inert compatibility hook.
  */
 const activeOwners=[
   "hostEnemyStep","onHit","elementalDamage","isDeathStalkerEnemy",
@@ -38,17 +37,18 @@ for(const name of activeOwners){
   assert.equal(localMatches.length,1,`${name} must have exactly one retained owner in game-local-runtime.js`);
 }
 
-for(const name of ["onMembers","onPacket","onPlayer","playerStateForNetwork","sendPlayer","sendRemotePlayerState","processRemoteMovement","serialWorld","broadcastWorld","onWorld"]){
-  assert.equal((legacyNetwork.match(new RegExp(`function\\s+${name}\\s*\\(`,"g"))||[]).length,1,`${name} compatibility owner must remain singular while RoomNetwork backs local sessions`);
+for(const name of ["onMembers","onPacket","broadcastWorld"]){
+  assert.equal((legacyNetwork.match(new RegExp(`function\\s+${name}\\s*\\(`,"g"))||[]).length,1,`${name} required local-session compatibility owner must remain singular`);
+}
+for(const name of ["onPlayer","playerStateForNetwork","sendPlayer","sendRemotePlayerState","processRemoteMovement","serialWorld","onWorld"]){
+  assert.equal((legacyNetwork.match(new RegExp(`function\\s+${name}\\s*\\(`,"g"))||[]).length,0,`${name} retired network compatibility owner must remain removed`);
 }
 assert.doesNotMatch(legacyNetwork,/net\.send\s*\(/,"retired online adapter must not transmit packets");
 assert.doesNotMatch(legacyNetwork,/remote\.(?:get|set|delete|clear)\s*\(/,"retired online adapter must not own remote-player state");
 assert.doesNotMatch(legacyNetwork,/host\.(?:doors|chests|enemies|items|traps|generators|shrines|switches|arenas|timedRooms)/,"retired online adapter must not serialize or apply world state");
 assert.doesNotMatch(legacyNetwork,/playMode\s*===?\s*["']online["']|playMode\s*!==?\s*["']online["']/,"retired online product mode must not regain a runtime branch");
-assert.match(legacyNetwork,/function onPacket\s*\([^)]*\)\{\}/,"packet callback must be inert");
-assert.match(legacyNetwork,/function broadcastWorld\s*\(\)\{\}/,"world broadcast compatibility owner must be inert");
-assert.match(legacyNetwork,/function onWorld\s*\([^)]*\)\{\}/,"world receive compatibility owner must be inert");
-assert.match(legacyNetwork,/function serialWorld\s*\(\)\{return null\}/,"world serializer compatibility owner must not expose local world state");
+assert.match(legacyNetwork,/function onPacket\s*\([^)]*\)\{\}/,"packet callback must remain inert while RoomNetwork constructs with it");
+assert.match(legacyNetwork,/function broadcastWorld\s*\(\)\{\}/,"local gameplay broadcast compatibility hook must remain inert");
 
 assert.match(extractedLocal,/^function hostEnemyStep\s*\(/,"game-local-runtime.js must begin at the retained hostEnemyStep boundary");
 assert.match(extractedLocal,/function dropInventorySlot\s*\(/,"game-local-runtime.js must extend through inventory dropping");
