@@ -1,0 +1,300 @@
+};
+static const unsigned char sprite_slime_a[64] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 60, 0,
+    0, 126, 0, 1, 255, 128, 3, 255, 192, 7, 255, 224,
+    15, 219, 240, 15, 255, 240, 7, 126, 224, 3, 60, 192,
+    7, 255, 224, 15, 255, 240, 31, 255, 248, 31, 219, 248,
+    15, 255, 240, 7, 255, 224, 3, 195, 192, 1, 129, 128,
+    0, 0, 0, 0
+};
+static const unsigned char sprite_slime_b[64] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 60, 0,
+    0, 126, 0, 1, 255, 128, 3, 255, 192, 7, 126, 224,
+    15, 255, 240, 31, 219, 248, 7, 126, 224, 3, 60, 192,
+    15, 255, 240, 31, 255, 248, 63, 219, 252, 31, 219, 248,
+    15, 255, 240, 7, 255, 224, 3, 195, 192, 1, 129, 128,
+    0, 0, 0, 0
+};
+static const unsigned char sprite_mage_b[64] = {
+    0, 0, 0, 0, 24, 0, 0, 126, 0, 1, 255, 128,
+    1, 219, 128, 3, 255, 192, 3, 126, 192, 7, 255, 224,
+    7, 219, 224, 15, 255, 240, 15, 126, 240, 14, 60, 112,
+    12, 60, 48, 24, 126, 24, 48, 255, 12, 96, 219, 6,
+    96, 129, 6, 192, 129, 3, 64, 0, 2, 0, 0, 0,
+    0, 0, 0, 0
+};
+static const unsigned char sprite_boss_b[64] = {
+    0, 255, 0, 1, 255, 128, 7, 255, 224, 15, 189, 240,
+    31, 255, 248, 31, 255, 248, 63, 126, 252, 63, 255, 252,
+    127, 219, 254, 127, 255, 254, 127, 126, 254, 63, 255, 252,
+    31, 255, 248, 31, 126, 248, 60, 60, 60, 120, 24, 30,
+    112, 60, 14, 112, 102, 14, 96, 195, 6, 0, 0, 0,
+    0, 0, 0, 0
+};
+static const unsigned char sprite_guardian[64] = {
+    0, 24, 0, 0, 126, 0, 1, 255, 128, 3, 219, 192,
+    7, 255, 224, 15, 126, 240, 7, 255, 224, 15, 255, 240,
+    15, 126, 240, 31, 255, 248, 31, 255, 248, 15, 255, 240,
+    31, 255, 248, 15, 126, 240, 14, 60, 112, 28, 126, 56,
+    56, 255, 28, 24, 129, 24, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0
+};
+
+
+static const unsigned char sprite_player_walk_a[64] = {
+    0, 24, 0, 0, 60, 0, 0, 126, 0, 0, 219, 0,
+    1, 255, 128, 3, 255, 192, 3, 126, 192, 3, 60, 192,
+    1, 126, 128, 1, 255, 128, 0, 255, 0, 0, 126, 0,
+    0, 102, 0, 0, 102, 0, 0, 195, 0, 1, 129, 128,
+    3, 0, 192, 6, 0, 96, 12, 0, 48, 0, 0, 0,
+    0, 0, 0, 0
+};
+static const unsigned char sprite_player_walk_b[64] = {
+    0, 24, 0, 0, 60, 0, 0, 126, 0, 0, 219, 0,
+    1, 255, 128, 3, 255, 192, 3, 126, 192, 3, 60, 192,
+    1, 126, 128, 1, 255, 128, 0, 255, 0, 0, 126, 0,
+    0, 102, 0, 0, 102, 0, 1, 129, 128, 0, 195, 0,
+    0, 102, 0, 0, 60, 0, 0, 24, 0, 0, 0, 0,
+    0, 0, 0, 0
+};
+
+static void number5(char* b, uint16_t n);
+
+static uint8_t abs8(int8_t v) {
+    return (uint8_t)(v < 0 ? -v : v);
+}
+
+static uint8_t rnd8(void) {
+    static uint16_t s = 0xACE1u;
+    s = (uint16_t)((s >> 1) ^ ((uint16_t)(-(int16_t)(s & 1u)) & 0xB400u));
+    return (uint8_t)(s & 0xffu);
+}
+
+static uint16_t map_index(uint8_t x, uint8_t y) {
+    return (uint16_t)y * SCREEN_W + x;
+}
+
+static unsigned char to_screen(unsigned char ch) {
+    if (ch >= 'A' && ch <= 'Z') return (unsigned char)(ch - 'A' + 1);
+    return ch;
+}
+
+static uint8_t tile_at(uint8_t x, uint8_t y) {
+    if (x >= SCREEN_W || y >= MAP_H) return TILE_WALL;
+    return mapbuf[map_index(x, y)];
+}
+
+static unsigned char tile_glyph(uint8_t t) {
+    switch (t) {
+        case TILE_WALL: return 160;
+        case TILE_BARREL: return to_screen('B');
+        case TILE_SPIKE: return 94;
+        case TILE_WATER: return 126;
+        case TILE_LAVA: return 102;
+        case TILE_PILLAR: return to_screen('O');
+        case TILE_EXIT: return to_screen('E');
+        case TILE_CHEST: return to_screen('C');
+        case TILE_RUBBLE: return 58;
+        case TILE_TORCH: return 42;
+        case TILE_SKULL: return to_screen('X');
+        case TILE_ALTAR: return to_screen('A');
+        case TILE_SECRET: return 160;
+        case TILE_CRACK: return 47;
+        case TILE_RUNE: return 43;
+        case TILE_GATE: return 61;
+        case TILE_FIREJET: return 42;
+        default: return 46;
+    }
+}
+
+static unsigned char tile_color(uint8_t t) {
+    switch (t) {
+        case TILE_WALL: return floor_border[floor_no - 1];
+        case TILE_BARREL: return COLOR_ORANGE;
+        case TILE_SPIKE: return COLOR_GRAY3;
+        case TILE_WATER: return COLOR_CYAN;
+        case TILE_LAVA: return COLOR_YELLOW;
+        case TILE_PILLAR: return COLOR_GRAY3;
+        case TILE_EXIT: return exit_open ? COLOR_LIGHTGREEN : COLOR_GRAY2;
+        case TILE_CHEST: return COLOR_YELLOW;
+        case TILE_RUBBLE: return COLOR_GRAY2;
+        case TILE_TORCH: return (frame & 8u) ? COLOR_YELLOW : COLOR_ORANGE;
+        case TILE_SKULL: return COLOR_WHITE;
+        case TILE_ALTAR: return COLOR_PURPLE;
+        case TILE_SECRET: return floor_border[floor_no - 1];
+        case TILE_CRACK: return (frame & 8u) ? COLOR_GRAY2 : COLOR_LIGHTRED;
+        case TILE_RUNE: return rune_opened ? COLOR_LIGHTGREEN : COLOR_CYAN;
+        case TILE_GATE: return rune_opened ? COLOR_LIGHTGREEN : COLOR_PURPLE;
+        case TILE_FIREJET: return ((frame & 63u) < 20u) ? COLOR_YELLOW : COLOR_RED;
+        default: return floor_floorcol[floor_no - 1];
+    }
+}
+
+static void redraw_cell(uint8_t x, uint8_t y) {
+    uint16_t p;
+    uint8_t t;
+    if (x >= SCREEN_W || y >= MAP_H) return;
+    t = tile_at(x, y);
+    p = (uint16_t)(y + MAP_Y0) * SCREEN_W + x;
+    SCREEN[p] = tile_glyph(t);
+    COLOR[p] = tile_color(t);
+}
+
+static void put_tile(uint8_t x, uint8_t y, uint8_t t) {
+    if (x >= SCREEN_W || y >= MAP_H) return;
+    mapbuf[map_index(x, y)] = t;
+    redraw_cell(x, y);
+}
+
+static uint8_t blocked(uint8_t x, uint8_t y) {
+    uint8_t t;
+    t = tile_at(x, y);
+    return (uint8_t)(t == TILE_WALL || t == TILE_PILLAR || t == TILE_BARREL || t == TILE_CHEST || t == TILE_ALTAR || t == TILE_SECRET || t == TILE_GATE);
+}
+
+static void textat(uint8_t x, uint8_t y, const char* s, unsigned char col) {
+    uint16_t p;
+    p = (uint16_t)y * SCREEN_W + x;
+    while (*s && x < SCREEN_W) {
+        SCREEN[p] = to_screen((unsigned char)*s++);
+        COLOR[p] = col;
+        ++p;
+        ++x;
+    }
+}
+
+static void clear_screen(unsigned char border, unsigned char bg) {
+    uint16_t i;
+    VIC.bordercolor = border;
+    VIC.bgcolor0 = bg;
+    for (i = 0; i < 1000u; ++i) {
+        SCREEN[i] = 32;
+        COLOR[i] = COLOR_WHITE;
+    }
+}
+
+static void copy_sprite(uint8_t slot, const unsigned char* data) {
+    memcpy(SPRDATA + (uint16_t)slot * 64u, data, 64u);
+}
+
+static void init_video(void) {
+    /* VIC bank 2 = $8000-$BFFF. Screen at $8400, ROM charset at $9000. */
+    CIA2.ddra |= 0x03;
+    CIA2.pra = (unsigned char)((CIA2.pra & 0xFCu) | 0x01u);
+    VIC.addr = 0x14;
+    VIC.ctrl2 = (unsigned char)((VIC.ctrl2 & 0xF8u) | 0x08u);
+}
+
+static void init_sprites(void) {
+    uint8_t i;
+    copy_sprite(SPR_PLAYER_IDLE, sprite_player_idle);
+    copy_sprite(SPR_PLAYER_ATTACK, sprite_player_attack);
+    copy_sprite(SPR_BAT_A, sprite_bat_a);
+    copy_sprite(SPR_BAT_B, sprite_bat_b);
+    copy_sprite(SPR_BRUTE, sprite_brute);
+    copy_sprite(SPR_MAGE, sprite_mage);
+    copy_sprite(SPR_BOSS, sprite_boss);
+    copy_sprite(SPR_SLASH, sprite_slash);
+    copy_sprite(SPR_BRUTE_B, sprite_brute_b);
+    copy_sprite(SPR_SLIME_A, sprite_slime_a);
+    copy_sprite(SPR_SLIME_B, sprite_slime_b);
+    copy_sprite(SPR_MAGE_B, sprite_mage_b);
+    copy_sprite(SPR_BOSS_B, sprite_boss_b);
+    copy_sprite(SPR_GUARDIAN, sprite_guardian);
+    copy_sprite(SPR_PLAYER_WALK_A, sprite_player_walk_a);
+    copy_sprite(SPR_PLAYER_WALK_B, sprite_player_walk_b);
+    for (i = 0; i < 8; ++i) SPRPTR[i] = (unsigned char)(SPR_BASE_PTR + i);
+    VIC.spr_mcolor = 0;
+    VIC.spr_exp_x = 0;
+    VIC.spr_exp_y = 0;
+}
+
+static void sprite_xy(uint8_t n, uint8_t tx, uint8_t ty) {
+    uint16_t px;
+    uint8_t py;
+    px = (uint16_t)tx * 8u + 24u;
+    py = (uint8_t)((ty + MAP_Y0) * 8u + 50u);
+    VIC.spr_pos[n].x = (uint8_t)px;
+    VIC.spr_pos[n].y = py;
+    if (px > 255u) VIC.spr_hi_x |= (unsigned char)(1u << n);
+    else VIC.spr_hi_x &= (unsigned char)~(1u << n);
+}
+
+static void sprites_off(void) {
+    VIC.spr_ena = 0;
+    VIC.spr_exp_x = 0;
+    VIC.spr_exp_y = 0;
+}
+
+static void frame_sync(void) {
+    while (VIC.rasterline < 250) {}
+    while (VIC.rasterline >= 250) {}
+}
+
+static void sid_init(void) {
+    SID.amp = 15;
+    SID.v1.ad = 0x09;
+    SID.v1.sr = 0x80;
+    SID.v1.pw = 0x0800;
+    SID.v2.ad = 0x04;
+    SID.v2.sr = 0x70;
+    SID.v2.pw = 0x0600;
+    SID.v3.ad = 0x02;
+    SID.v3.sr = 0x50;
+    SID.v3.pw = 0x0400;
+    SID.v1.ctrl = 0;
+    SID.v2.ctrl = 0;
+    SID.v3.ctrl = 0;
+}
+
+static void sfx(uint8_t kind) {
+    sfx_timer = 5;
+    if (kind == SFX_SWING) { SID.v1.freq = 0x2200; SID.v1.ctrl = 0x81; }
+    else if (kind == SFX_HIT) { SID.v1.freq = 0x0B00; SID.v1.ctrl = 0x81; }
+    else if (kind == SFX_KILL) { SID.v1.freq = 0x1800; SID.v1.ctrl = 0x41; sfx_timer = 9; }
+    else if (kind == SFX_HURT) { SID.v1.freq = 0x0700; SID.v1.ctrl = 0x81; sfx_timer = 10; }
+    else if (kind == SFX_PICK) { SID.v1.freq = 0x2A00; SID.v1.ctrl = 0x11; }
+    else if (kind == SFX_EXIT) { SID.v1.freq = 0x3400; SID.v1.ctrl = 0x11; sfx_timer = 12; }
+    else if (kind == SFX_BOMB) { SID.v1.freq = 0x0500; SID.v1.ctrl = 0x81; sfx_timer = 18; }
+    else if (kind == SFX_POWER) { SID.v1.freq = 0x3000; SID.v1.ctrl = 0x21; sfx_timer = 12; }
+    else if (kind == SFX_ALTAR) { SID.v1.freq = 0x2400; SID.v1.ctrl = 0x11; sfx_timer = 16; }
+    else if (kind == SFX_SECRET) { SID.v1.freq = 0x3A00; SID.v1.ctrl = 0x21; sfx_timer = 14; }
+    else if (kind == SFX_CLEAR) { SID.v1.freq = 0x4200; SID.v1.ctrl = 0x11; sfx_timer = 20; }
+    else if (kind == SFX_WARN) { SID.v1.freq = 0x0900; SID.v1.ctrl = 0x81; sfx_timer = 7; }
+    else if (kind == SFX_RUNE) { SID.v1.freq = 0x4800; SID.v1.ctrl = 0x21; sfx_timer = 18; }
+    else if (kind == SFX_CRUMBLE) { SID.v1.freq = 0x0600; SID.v1.ctrl = 0x81; sfx_timer = 8; }
+}
+
+static void audio_tick(void) {
+    if (sfx_timer) {
+        --sfx_timer;
+        if (!sfx_timer) SID.v1.ctrl = 0;
+    }
+    ++music_div;
+    if (music_div >= 12) {
+        music_div = 0;
+        music_step = (uint8_t)((music_step + 1) & 7);
+        SID.v3.freq = music_notes[music_step];
+        SID.v3.ctrl = 0x11;
+        SID.v2.freq = (uint16_t)(music_notes[music_step] >> 1);
+        SID.v2.ctrl = 0x41;
+    }
+}
+
+static void sid_silence(void) {
+    SID.v1.ctrl = 0;
+    SID.v2.ctrl = 0;
+    SID.v3.ctrl = 0;
+}
+
+static void title_logo(void) {
+    static const char* rows[8] = {
+        "   CCCCC   CCCCC    GGGGG   ",
+        "  CC      CC       GG       ",
+        "  CC      CC       GG  GGG  ",
+        "  CC      CC       GG   GG  ",
+        "   CCCCC   CCCCC    GGGGG   ",
+        "",
+        " CHEEKY COMMODORE GAMER",
+        "   DUNGEON CARNAGE 64"
+    };
