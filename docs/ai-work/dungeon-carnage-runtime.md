@@ -4,6 +4,10 @@
 
 The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
+## Current checkpoint — 17 September 2026
+
+Current main is `e5e5dc46a7fd1d3d0f620d4fdcbb9f1780024c0a`; #2117 and #2118 are merged and complete per the user's current programme. Defect 3 continues in #2119, branch `codex/dungeon-live-defect-checkpoint-post-2118`. Read [the current Floor progression record](dungeon-carnage-floor-progression-diagnosis-2026-09-16.md) for the proven Warden guard predicate, competing #2120 proposal, tests and next action. The older Defect 2 active-candidate section below is historical.
+
 ## Verified checkpoint — 2026-09-16
 
 The current runtime checkpoint is the merged #2117 public-beta/watchdog remediation:
