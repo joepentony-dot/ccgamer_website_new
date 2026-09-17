@@ -6,7 +6,7 @@ PR: #2119 (`codex/dungeon-live-defect-checkpoint-post-2118`)
 
 ## Scope
 
-This checkpoint records the bounded current-main investigation of the reported Floor-1 completion/exit progression failure. Production gameplay remains unchanged: the first exact CI failure was traced to an incomplete strengthened browser fixture rather than evidence that the authoritative descent owner is faulty.
+This checkpoint records the bounded current-main investigation of the reported Floor-1 completion/exit progression failure. Production gameplay remains unchanged: exact CI evidence shows the strengthened browser fixture was incomplete and then briefly over-constrained, rather than demonstrating a fault in the authoritative descent owner.
 
 ## Current-main transition ownership
 
@@ -19,32 +19,25 @@ This checkpoint records the bounded current-main investigation of the reported F
 
 The authoritative core descent path therefore remains intact and must not be replaced or bypassed without contrary runtime evidence.
 
-## Exact shard-2 failure and root cause
+## Exact shard-2 failures and root cause
 
 The strengthened five-depth browser regression at exact head `8e5b6b687f123b6c450798fa7ba05a0c87050703` failed deterministically in Chromium shard 2 at:
 
 `Floor 1 objective completion must authorize the live stairs.`
 
-The failure occurred before physical exit movement or `descendFloor()`.
+That failure occurred before physical exit movement or `descendFloor()` because the fixture only appended a rescued C64 game to `run.floorGames`. Floor 1 (`THE THRESHOLD`) uses the `explore_guardian` objective instead: real play must establish at least 70% exploration and defeat the guardian before `CCGSystems.updateObjective(...)` can complete the objective.
 
-Source inspection proved the fixture was incomplete:
+Head `cde9ab2622aee99b479e674f3cadf2e3be48b446` corrected those prerequisites but added an unsupported second assumption: that the completed Floor-1 objective must leave the exit sealed until a separately injected Exit Sigil is collected. Exact shard-2 execution disproved that assumption. With real exploration and guardian state established, `CCGSystems.updateObjective(...)` completed the objective and `host.exitOpen` was already true.
 
-1. Floor 1 (`THE THRESHOLD`) uses the `explore_guardian` objective, not rescued-game count. `CCGSystems.updateObjective(...)` completes that objective only when exploration is at least 70% and the Floor-1 guardian is no longer alive.
-2. Objective completion deliberately does **not** open the floor exit by itself. `host.exitOpen` requires both the completed main objective and `host.exitSigilCollected`.
-3. The Exit Sigil is exposed after the Sigil defenders are resolved and its live pickup owner records `host.exitSigilCollected`, then re-runs the objective owner using the actual explored-room state.
-4. The failing fixture only appended a rescued C64 game to `run.floorGames` and called `updateObjective(host,run,100)`. That state is unrelated to the Floor-1 `explore_guardian` requirement and omitted the mandatory Exit Sigil, so `false` was the expected result.
-
-No production runtime change is justified by that failed assertion.
+The authoritative Defect-3 acceptance contract is therefore the direct supported route: genuine Floor-1 objective completion authorizes the live exit, followed by physical entry into the exit tile and the established completion/descent handoff. No production runtime change is justified by either fixture failure.
 
 ## Corrected bounded regression
 
-The corrected #2119 browser contract now models only prerequisites that real Floor-1 play establishes before the exit handoff:
+The corrected #2119 browser contract now models only prerequisites proven to be required by real Floor-1 play:
 
-- records all ordinary room centres as explored so the live exploration calculation remains complete when the pickup owner re-evaluates the objective;
+- records all ordinary room centres as explored so the live exploration requirement is satisfied;
 - marks the defeated Floor-1 guardian state and runs the real `CCGSystems.updateObjective(...)` owner;
-- proves the completed main objective still leaves the exit sealed before the Exit Sigil;
-- models the already-cleared Sigil fight state, exposes an Exit Sigil fixture item, and collects it through the live `requestCollect(...)` pickup owner rather than forcing `host.exitOpen`;
-- proves the combined objective + Exit Sigil state authorizes the live exit;
+- proves genuine Floor-1 objective completion authorizes `host.exitOpen` without directly forcing the exit state;
 - physically moves P1 onto the real exit tile through `movePlayer(...)` and waits for the real `floorcomplete` mode;
 - proves Floor 1 is banked exactly once;
 - injects old-floor player/enemy projectile sentinels only after the floor-complete state and proves the Floor-2 world clears them;
