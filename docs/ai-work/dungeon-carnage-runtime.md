@@ -6,7 +6,7 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Current checkpoint — 17 September 2026
 
-Live `main` is `ee2d6b38e5c5805ee1c906d7f801bda2d8496383`, the merged Stage 2 landing milestone (#2136).
+Live `main` is `d3225318ff5cb87664bce96020c790099f53e06a`, the merged Stage 4 elemental-portal foundation (#2137).
 
 Stage 1 is converged for the current product programme:
 
@@ -20,22 +20,34 @@ The original seven-item repository defect programme remains repository-complete 
 
 **MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**
 
-### Stage 4 elemental portal foundation — PR #2137
+### Stage 4 elemental portal foundation — PR #2137 — MERGED
 
-Active branch: `codex/dungeon-elemental-portal-foundation-current-main`.
+Qualified head: `030af6e9f8c2da98fb618c64ae276b1159adda3f`.
 
-Base/current main at branch start: `ee2d6b38e5c5805ee1c906d7f801bda2d8496383`.
+Merge commit/current main: `d3225318ff5cb87664bce96020c790099f53e06a`.
 
-The bounded foundation adds `v10-42-elemental-portal-foundation.js` immediately after the existing five-depth campaign owner and before split-campaign state. It maps Water Floor 1→2, Fire 2→3, Earth 3→4 and Air 4→5 while preserving the existing `run.floor`, `floorComplete()` and `descendFloor()` chain as the only floor-progression owner.
+#2137 maps Water Floor 1→2, Fire 2→3, Earth 3→4 and Air 4→5 while preserving `run.floor`, `floorComplete()` and `descendFloor()` as the only campaign-depth owner. Portal discovery/unlock/traversal metadata remains inside the existing run/checkpoint object; legacy checkpoints infer already-earned unlocks without advancing floor state. Deterministic portal route seeds are now the stable handoff for later topology/zone work.
 
-Portal discovery/unlock/traversal metadata lives inside the existing run object and therefore persists through the existing V10.3 checkpoint payload. Legacy checkpoints infer already-earned unlocks from proven campaign depth without mutating that depth. Deterministic route seeds establish the contract for later zone/topology work. Focused Node coverage protects route order, legacy checkpoint compatibility and the no-parallel-progression boundary.
+The final qualification also resolved two startup/UI ownership issues encountered while proving the candidate:
 
-The first #2137 head `6b8483154bbfbd20d11a9a050b426b4e784667dc` was directly ahead of main by three commits and passed Native Mouse Wheel Scroll Contract, Public Code Cache Version, C64 Dungeon Carnage Mobile Trap Layout Contract and Lost Sizzler Load Safety, including canonical/Node contracts, Chromium discovery and all six Chromium shards. Automated review still found two legitimate blockers:
+- Tutorial guidance no longer continuously fights the Stage 2 menu-order owner; it restores a missing/detached Tutorial button but leaves an existing Stage 2-managed button in place.
+- V10.42 retains a narrow capture owner for Solo/Tutorial through the ready-state transition and hands buffered starts directly to the established Tutorial/Solo launch owner. Continue, Weekly and Split Screen retain their established ready-state handlers. This closes the deterministic immediate-start race without weakening the browser contract.
 
-1. the new bootstrap module reused the already-deployed `V10.42 r30` / `20260917r30` identity, so cached clients could retain a stale bootstrap and never request the portal foundation;
-2. persistent continuation/work-register records still described the portal milestone as wholly open.
+Exact-head qualification passed Native Mouse Wheel, Public Code Cache, Social Metadata, Mobile Trap Layout, Structured Data, SEO, CCG Site Safety and Lost Sizzler Load Safety. Load Safety passed canonical/Node, discovery and all six Chromium shards. Shard 5 initially hit the historical `v10-35-layout.mjs` startup wait; one unchanged targeted retry passed.
 
-The branch now advances the canonical page, all directly loaded local CSS/JS query tokens, `version.json` and ordered bootstrap to `V10.42 r31` / `20260917r31`. The historical r30 buglog remains the handoff owner but already derives its child-module token from the canonical cache meta; the new r31 release-identity regression explicitly protects that relationship. The stale r30 identity contract is retired. This checkpoint and the repository-level/work-register records are updated before final exact-head qualification.
+### Stage 5 larger procedural topology — ACTIVE
+
+Branch: `codex/dungeon-stage5-procedural-topology-current-main`.
+
+Base: merged `main` `d3225318ff5cb87664bce96020c790099f53e06a`.
+
+Ownership reconciliation before code changes:
+
+- `world.js` is the authoritative topology generator (BSP partitioning, room carving, tree connections, optional bonus rooms and connectivity graph).
+- R6 biome environment, R7 room objectives and R24 biome room grammar consume the generated world. R24 explicitly owns semantic metadata only and must not mutate topology, collision, progression, saves or networking.
+- Stage 5 therefore extends `world.js` deterministically rather than adding a competing procedural overlay.
+- The requested outcome is route variety, alternate paths, landmarks, purposeful dead ends, exploration decisions and floor-aware structure without simply increasing map dimensions.
+- Required invariants include deterministic seeds, guaranteed start→exit reachability, optional content remaining non-blocking, unchanged authoritative floor/portal progression, checkpoint compatibility and supported Solo/Tutorial/Split behaviour.
 
 ### #2129 release/cache ownership remediation
 
