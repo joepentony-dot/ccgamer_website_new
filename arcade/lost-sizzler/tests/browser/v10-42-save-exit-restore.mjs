@@ -24,12 +24,16 @@ const page=await browser.newPage({viewport:{width:1440,height:1000}});
 
 try{
   await page.goto(`http://127.0.0.1:${port}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&typeof beginRun==="function"&&typeof descendFloor==="function"&&typeof saveFloorCheckpoint==="function"&&typeof resumeSavedRun==="function");
+  await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&typeof beginRun==="function"&&typeof descendFloor==="function"&&window.CCGLostSizzlerV141R43SoloSave?.saveAndQuit&&window.CCGLostSizzlerV141R43SoloSave?.resumeSolo);
 
   await page.evaluate(()=>{
     try{localStorage.clear()}catch(_){}
     net.setSolo("Save Restore Test");
     beginRun({split:false});
+  });
+  await page.waitForFunction(()=>mode==="playing"&&p1&&run&&document.body.dataset.runActive==="true");
+
+  await page.evaluate(()=>{
     p1.rpgStats={might:8,vitality:7,agility:6,endurance:9,luck:7,arcana:8};
     p1.inventory=[{kind:"potion",name:"Restoration Potion",short:"POTION",qty:2}];
     p1.relics=["threshold-compass"];
@@ -40,7 +44,7 @@ try{
     descendFloor();
   });
 
-  await page.waitForFunction(()=>Number(run?.floor)===2&&mode==="saveprompt"&&!document.getElementById("save-panel")?.classList.contains("hidden"));
+  await page.waitForFunction(()=>Number(run?.floor)===2&&mode==="playing"&&window.CCGLostSizzlerV141R43SoloSave?.readEnvelope()?.summary?.floor===2);
   const floorEntry=await page.evaluate(()=>({
     floor:run.floor,
     score,
@@ -52,13 +56,10 @@ try{
     sigilReveal:p1.sigilReveal
   }));
 
-  await page.click("#save-now-btn");
-  await page.waitForFunction(()=>mode==="playing"&&document.getElementById("save-panel")?.classList.contains("hidden"));
-  const stored=await page.evaluate(()=>window.CCGProgression.loadCheckpoint());
-  assert.equal(stored?.floor,2,"Saving at the supported Floor 2 entry prompt must create a Floor 2 checkpoint.");
+  const savedAndQuit=await page.evaluate(()=>window.CCGLostSizzlerV141R43SoloSave.saveAndQuit());
+  assert.equal(savedAndQuit,true,"Supported Save & Quit must report a successful checkpoint write before leaving the run.");
+  await page.waitForFunction(()=>mode==="menu"&&document.body.dataset.runActive==="false"&&!document.getElementById("continue-save-btn")?.classList.contains("hidden"));
 
-  await page.evaluate(()=>quitToMenu());
-  await page.waitForFunction(()=>mode==="menu"&&!document.getElementById("continue-save-btn")?.classList.contains("hidden"));
   await page.reload({waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&!document.getElementById("continue-save-btn")?.classList.contains("hidden"));
   await page.click("#continue-save-btn");
@@ -86,19 +87,19 @@ try{
   assert.equal(restored.x,restored.startX,"Checkpoint restore must restart at the floor entrance X coordinate.");
   assert.equal(restored.y,restored.startY,"Checkpoint restore must restart at the floor entrance Y coordinate.");
 
-  await page.evaluate(()=>{
+  const failedSaveResult=await page.evaluate(async()=>{
     const originalSetItem=Storage.prototype.setItem;
     window.__checkpointOriginalSetItem=originalSetItem;
-    Storage.prototype.setItem=function(key,value){
-      if(String(key)==="ccg-quest-v10.3-checkpoint")throw new DOMException("simulated quota failure","QuotaExceededError");
-      return originalSetItem.call(this,key,value);
+    const key=window.CCGLostSizzlerV141R43SoloSave.PRIMARY_KEY;
+    Storage.prototype.setItem=function(storageKey,value){
+      if(String(storageKey)===String(key))throw new DOMException("simulated quota failure","QuotaExceededError");
+      return originalSetItem.call(this,storageKey,value);
     };
-    offerFloorSave(true);
+    return window.CCGLostSizzlerV141R43SoloSave.saveAndQuit();
   });
-  await page.waitForFunction(()=>mode==="saveprompt"&&!document.getElementById("save-return-btn")?.classList.contains("hidden"));
-  await page.click("#save-return-btn");
+  assert.equal(failedSaveResult,false,"Supported Save & Quit must report a failed checkpoint write instead of pretending the save succeeded.");
   await page.waitForTimeout(350);
-  const failedSaveState=await page.evaluate(()=>({mode,runActive:document.body.dataset.runActive,menuHidden:document.getElementById("menu")?.classList.contains("hidden"),saveHidden:document.getElementById("save-panel")?.classList.contains("hidden")}));
+  const failedSaveState=await page.evaluate(()=>({mode,runActive:document.body.dataset.runActive,menuHidden:document.getElementById("menu")?.classList.contains("hidden")}));
   assert.notEqual(failedSaveState.mode,"menu","A failed checkpoint write must not discard the active run and return to the menu.");
   assert.equal(failedSaveState.runActive,"true","A failed checkpoint write must keep the active run alive.");
   assert.equal(failedSaveState.menuHidden,true,"A failed checkpoint write must not expose the title menu as if saving succeeded.");
