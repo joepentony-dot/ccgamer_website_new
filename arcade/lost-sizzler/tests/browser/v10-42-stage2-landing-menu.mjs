@@ -7,7 +7,7 @@ import {chromium} from "playwright";
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const repo=path.resolve(here,"../../../..");
-const mime={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".json":"application/json; charset=utf-8",".svg":"image/svg+xml",".webp":"image/webp",".png":"image/png",".jpg":"image/jpeg",".ogg":"audio/ogg",".mp3":"audio/mpeg",".wav":"audio/wav"};
+const mime={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".json":"application/json",".svg":"image/svg+xml",".webp":"image/webp",".png":"image/png",".jpg":"image/jpeg",".ogg":"audio/ogg",".mp3":"audio/mpeg",".wav":"audio/wav"};
 const sockets=new Set();
 const server=http.createServer((req,res)=>{
   try{
@@ -38,9 +38,10 @@ try{
   await page.goto(`${origin}/arcade/lost-sizzler/?stage2-landing-menu=1`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body?.dataset?.releaseReady==="true"&&document.body?.dataset?.gameReady==="true",null,{timeout:90000});
   await page.waitForFunction(()=>document.querySelectorAll("#menu .ccg-mode-tier-label").length>=3,null,{timeout:10000});
+  await page.waitForFunction(()=>document.querySelector("#menu .game-mode-buttons")?.dataset?.r55TextLayout==="true",null,{timeout:10000});
 
   const state=await page.evaluate(()=>{
-    const ids=["solo-btn","continue-save-btn","split-btn","tutorial-zone-btn","daily-btn"];
+    const ids=["continue-save-btn","solo-btn","split-btn","tutorial-zone-btn","daily-btn"];
     const controls=Object.fromEntries(ids.map(id=>{
       const element=document.getElementById(id);
       const style=element?getComputedStyle(element):null;
@@ -53,7 +54,9 @@ try{
         top:Math.round(rect.top),
         left:Math.round(rect.left),
         width:Math.round(rect.width),
-        height:Math.round(rect.height)
+        height:Math.round(rect.height),
+        inlineMinHeight:element.style.getPropertyValue("min-height"),
+        inlinePadding:element.style.getPropertyValue("padding")
       }:{exists:false}];
     }));
     const tiers=[...document.querySelectorAll("#menu .ccg-mode-tier-label")].map(element=>({
@@ -61,11 +64,14 @@ try{
       text:String(element.textContent||"").trim(),
       display:getComputedStyle(element).display
     }));
+    const grid=document.querySelector("#menu .game-mode-buttons");
+    const domOrder=[...grid.children].filter(node=>ids.includes(String(node.id||""))).map(node=>node.id);
     const retired=["create-btn","join-btn","horde-solo-btn","horde-mode-btn","saboteurs-mode-btn"].filter(id=>document.getElementById(id));
     return {
       runActive:document.body?.dataset?.runActive,
       menuHidden:document.getElementById("menu")?.classList.contains("hidden")||false,
       controls,
+      domOrder,
       tiers,
       retired
     };
@@ -76,6 +82,7 @@ try{
   assert.deepEqual(state.retired,[],"retired online/Horde/Saboteur controls must not return to the canonical menu");
   for(const [id,control] of Object.entries(state.controls))assert.equal(control.exists,true,`${id} must remain available in the supported landing DOM`);
 
+  assert.deepEqual(state.domOrder,["continue-save-btn","solo-btn","split-btn","tutorial-zone-btn","daily-btn"],"supported DOM/focus order must match the Stage 2 visual hierarchy");
   assert.equal(state.controls["continue-save-btn"].order,10,"Resume Saved Run must own the first priority slot when it becomes visible");
   assert.equal(state.controls["solo-btn"].order,11,"Solo must be the first always-visible adventure choice");
   assert.equal(state.controls["split-btn"].order,12,"local Split Screen must sit beside Solo in the adventure row");
@@ -85,8 +92,14 @@ try{
   assert.equal(state.controls["solo-btn"].top,state.controls["split-btn"].top,"Solo and Split Screen must occupy the same primary adventure row");
   assert.ok(state.controls["tutorial-zone-btn"].top>state.controls["solo-btn"].top,"Tutorial must sit below the primary adventure row");
   assert.equal(state.controls["tutorial-zone-btn"].top,state.controls["daily-btn"].top,"Tutorial and Weekly Vault must share the secondary row");
-  assert.ok(state.controls["solo-btn"].height>=50,"Solo must retain strong landing-page visual priority");
-  assert.ok(state.controls["split-btn"].height>=50,"Split Screen must be presented as a substantial supported play option");
+
+  const settledHeights={"continue-save-btn":"78px","solo-btn":"82px","split-btn":"74px","tutorial-zone-btn":"70px","daily-btn":"70px"};
+  for(const [id,height] of Object.entries(settledHeights)){
+    assert.equal(state.controls[id].inlineMinHeight,height,`${id} late R55 min-height must agree with Stage 2 blocking geometry`);
+    assert.equal(state.controls[id].inlinePadding,"28px 12px 24px",`${id} late R55 padding must agree with Stage 2 blocking geometry`);
+  }
+  assert.ok(state.controls["solo-btn"].height>=82,"Solo must retain its settled primary-card height");
+  assert.ok(state.controls["split-btn"].height>=74,"Split Screen must retain its settled supported-card height");
 
   assert.ok(state.tiers.length>=3,"historical compatibility layer should still be allowed to create its tier nodes");
   assert.ok(state.tiers.every(tier=>tier.display==="none"),`runtime-injected historical tier labels must remain visually retired: ${JSON.stringify(state.tiers)}`);
