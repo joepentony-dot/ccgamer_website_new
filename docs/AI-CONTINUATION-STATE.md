@@ -8,33 +8,54 @@ For Dungeon Carnage specifically, `arcade/lost-sizzler/PROGRESS.md` is the produ
 
 Update this file when a workstream changes category, its active PR/dependency changes, or a substantial session ends. Keep detailed reasoning, checks, blockers, and next actions in the workstream file.
 
-## Current autonomous live-defect checkpoint — 17 September 2026
+## Current autonomous Dungeon Carnage live-defect checkpoint — 17 September 2026
 
-- Verified live `main`: `32b42045558a37b0052372319dd23bb3a2ae004b`, the generated SEO refresh immediately following Defect 4 merge #2123 (`02f6456f459e0d586ed3eb6bd6c09d92130e6810`).
-- Defects 1 (#2117), 2 (#2118), 3 (#2119) and 4 (#2123) are repository-complete. Do not reopen them without new regression evidence.
+- Verified runtime `main` before this documentation checkpoint: `2e734f4875fb737a0a292b4f92331197bc1c6f85`, the merge of Defect 7 PR #2126.
+- The seven-item repository-side Dungeon Carnage live-defect remediation programme is complete except for the already-documented deployed/manual acceptance gate on Defect 5.
+- Defect 1 — obsolete public-beta/watchdog startup lock — **repository-complete through #2117**.
+- Defect 2 — retained projectile entities / progressive slowdown — **repository-complete through #2118**.
+- Defect 3 — Floor 1 completion/exit progression failure — **repository-complete through #2119**. The bounded fix preserved the genuine objective → exit → `movePlayer()` → floor-complete → `#descend-btn` → `descendFloor()` ownership route.
+- Defect 4 — Save and Exit restore reliability — **repository-complete through #2123**.
+- Defect 5 — 3-Artefact Banishment Flask exchange — **no remaining repository-side correction**. #2090 owns the live Artefact/Essence exchange path and its current-main browser contract has passed; deployed/manual acceptance remains required before product-level closure.
+- Defect 6 — Owned Firearms differentiation — **repository-complete through #2125**. Presentation now exposes the meaningful differences already present in firearm runtime data without changing acquisition, switching or combat ownership.
+- Defect 7 — RPG terminology reconciliation — **repository-complete through #2126**.
+
+### Defect 7 final record
+
+- Branch used: `codex/dungeon-rpg-terminology-current-main`.
+- PR: #2126, merged 17 September 2026.
+- Exact qualified candidate head: `f70f816910fab8d07aaf946f140b593c9220f1ef`.
+- Merge commit: `2e734f4875fb737a0a292b4f92331197bc1c6f85`.
+- Root cause: `progression.js` deliberately retains historical rarity identities (`UNCOMMON`, `SIZZLER`, `GOLD MEDAL`, `ZZAP! 97%`) for progression/save compatibility, but those same values leaked directly into generated player-facing weapon/item names and the objective copy still exposed `Zzap! Citadel guardian`.
+- Bounded correction: keep the internal identities untouched and reconcile only visible labels: `UNCOMMON` → `RARE`, `SIZZLER` → `ENCHANTED`, `GOLD MEDAL` → `RELIC`, `ZZAP! 97%` → `LEGENDARY`; visible `Zzap! Citadel guardian` becomes `Citadel guardian`.
+- Files changed by #2126: `arcade/lost-sizzler/js/v10-42-rpg-terminology.js`, `arcade/lost-sizzler/js/v10-42-bootstrap.js`, `arcade/lost-sizzler/tests/v10-42-rpg-terminology.mjs`, and `docs/ai-work/dungeon-carnage-rpg-terminology-2026-09-17.md`.
+- Exact-head qualification on `f70f8169…`: Native Mouse Wheel Scroll Contract **green**; Public Code Cache Version **green**; SEO Automation **green**; C64 Dungeon Carnage Mobile Trap Layout Contract **green**; Lost Sizzler Load Safety **green**.
+- Lost Sizzler Load Safety passed canonical structure/Node contracts, Chromium discovery and **all six Chromium shards**, including the historically troublesome shard 3 and the shard-1 sustained Solo long-session soak.
+- #2126 had no reviews, no unresolved review threads, no conflicts and was cleanly mergeable before merge.
+- Detailed record: [Defect 7 RPG terminology checkpoint](ai-work/dungeon-carnage-rpg-terminology-2026-09-17.md).
+
+### Active Dungeon live-defect branch / PR
+
+- **None.** Do not create another repository defect branch merely to continue the original seven-item programme.
+- Do not reopen Defects 1, 2, 3, 4, 6 or 7 without new regression evidence.
+- Defect 5 is not a coding task at this checkpoint; its remaining gate is deployed/manual acceptance of the 3-Artefact Banishment Flask exchange.
+
+### Exact next action
+
+1. When the current build is deployed and available for hands-on testing, perform the short manual Defect 5 acceptance: verify the 3-Artefact/Essence Banishment Flask exchange succeeds without requiring a Gold purchase and does not spend Gold/Score incorrectly.
+2. If that passes, mark the seven-item live-defect programme product-complete in the work register.
+3. If it fails, reproduce against the then-current deployed `main` and open a new bounded defect from that exact repository state; do not revive stale branches wholesale.
+4. If no new defect is reported, move only to the separately documented post-defect product backlog rather than inventing further remediation work.
+
+Autonomous merge authorization remains in force for bounded repository fixes that satisfy the established exact-head qualification rules. Genuine hands-on acceptance, credentials, destructive external actions and project-level human approval gates still apply where documented.
+
+## Historical checkpoint notes
+
 - PR #2120 was a redundant movement-wrapper proposal and is closed without merge.
 - Diagnostic-only Defect 4 PR #2122 is closed without merge.
-- Defect 5 — 3-Artefact Banishment Flask exchange — has no remaining repository-side correction on current `main`: merged #2090 installs the live Artefact/Essence exchange owner and the current-main browser contract for both payment representations passed again during #2123 exact-head qualification. It remains a deployed/manual acceptance item under the product work-register closure rule.
-- Defect 6 — Owned Firearms differentiation — is active in draft PR #2125 on branch `codex/dungeon-owned-firearms-current-main`, rebuilt exactly from `32b42045558a37b0052372319dd23bb3a2ae004b` after the generated-main advance.
-- Defect 6 root cause: runtime firearm ownership already preserves meaningful differences (`rating`, `power`, `delay`, `shots`, `ammo`, `pierce`, `element`, `mods`), but the existing Owned Firearms inventory controls display only EQUIP/EQUIPPED plus the weapon name.
-- The bounded Defect 6 candidate adds `v10-42-owned-firearm-clarity.js`, loads it through the authoritative V10.42 bootstrap, and adds a focused genuine-browser regression. It changes presentation only; weapon mechanics, acquisition and switching ownership remain intact.
-- The first exact-head Chromium run found that the new regression rendered the correct EQUIP controls while the real inventory overlay was hidden, then attempted a normal Playwright click. Commit `a677127d97501f183fab503f44b36a2315a2048a` corrected only the regression to use the real `TAB -> visible inventory -> EQUIP` path; the subsequent shard-4 run passed. No production behaviour, assertions, forced clicks or timeout limits were changed to obtain that pass.
-- A separate Chromium shard-3 deterministic startup contract has timed out during early Solo/Tutorial launch while the other shard-3 contracts pass. The Defect 6 production layer is inventory-rendering-only and does not own menu/start transitions; do not alter gameplay to repair that unrelated browser-stability failure. Reconcile/retry exact-head CI as needed without weakening tests.
-- Detailed current record: [Defect 6 Owned Firearms checkpoint](ai-work/dungeon-carnage-owned-firearms-2026-09-17.md).
-- Next safe action: qualify the final documentation-inclusive #2125 head through canonical/Node, sharded Chromium and retained repository workflows; merge when green/mergeable/review-clean under standing authorization; then reconcile and move to Defect 7 terminology reconciliation.
-- Autonomous merge authorization remains in force; genuine hands-on acceptance, credentials, destructive external actions and project-level human approval gates still apply where documented.
-
-## Historical checkpoint (superseded where the current checkpoint differs)
-
-- Reconciled through `main` commit `408a9870d33f9ea2931934c302176743d2589160`, the merge of public-beta/watchdog remediation PR #2117. Always refresh live GitHub before acting because automation or later merges may advance `main` again.
-- The live open-PR queue contained six active PRs after opening bounded Dungeon Defect 2 PR #2118. Treat that count as an audit fact, not a permanent repository invariant.
-- #2102 is **MERGED**. The retained local Dungeon gameplay suffix lives in `game-local-runtime.js`.
-- #2113 is **MERGED**. The obsolete networked Dungeon Multiplayer packet routing, remote-player simulation and world serializer/receiver prefix is retired; `game-network.js` retains only inert compatibility owners required by the local session shell.
-- #2115 is **MERGED**. The full explored dungeon map now supports Solo and local Split Screen, uses a dedicated non-playing map mode, and ignores held-M key repeats.
-- #2117 is **MERGED AND COMPLETE**. The obsolete public-host closed-beta/watchdog gate no longer owns public game availability.
-- #2118 is **MERGED AND COMPLETE**. Retained projectile lifecycle/progressive slowdown remediation is complete.
-- #2119 is **MERGED AND COMPLETE**. Floor 1 objective/exit/floor-completion progression is complete.
-- #2123 is **MERGED**. Floor 1 save/restore and failed-write Save & Return safety are integrated on `main`.
+- #2102 is merged. The retained local Dungeon gameplay suffix lives in `game-local-runtime.js`.
+- #2113 is merged. Obsolete networked Dungeon Multiplayer packet routing, remote-player simulation and world serializer/receiver logic is retired; only inert compatibility owners required by the local session shell remain.
+- #2115 is merged. The full explored dungeon map supports Solo and local Split Screen, uses a dedicated non-playing map mode, and ignores held-M repeats.
 - #2111 remains a merged SEO/video-page automation result. #2109 remains the authoritative merged game/archive publication result; these are separate generated-output scopes.
 - Superseded runtime/documentation/generated-output PRs #2073, #2062, #1960, #1959, #1998, #2107, #1759 and #1752 remain closed without merge.
 - Additional stale runtime/verification candidates #1978, #1980, #2055, #1983, #1898, #1900 and #1902 are closed without merge. #1976 remains source material for a possible current-main optimisation re-derivation.
@@ -45,17 +66,16 @@ Update this file when a workstream changes category, its active PR/dependency ch
 
 | Workstream | Record | Current GitHub state |
 | --- | --- | --- |
-| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) | Defects 1–4 are integrated through #2117–#2119 and #2123. Defect 5 is repository-complete through #2090 but still needs deployed/manual acceptance. Defect 6 firearm differentiation is active in draft #2125; Defect 7 RPG terminology follows. |
+| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) | Seven-item repository live-defect programme completed through #2117, #2118, #2119, #2123, #2090, #2125 and #2126. Defect 5 still has a deployed/manual acceptance gate; no active repository defect PR remains. |
 | Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | itch.io is the intended purchase/download route; the custom commerce/paywall and stale packaging/Windows PR graphs are closed. Any package artifact must be rebuilt from current `main`, selectively reusing historical provider-neutral ideas only where necessary. |
 | Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2103 and #2105 are merged; #2073 is closed. #2110 remains the current draft endpoint follow-up but is **BLOCKED** by missing/mismatched Cloudflare runtime configuration. Repository-side work for that blocker is already complete. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | draft rebuild PR #2056 remains based on an old merge base and requires a current-main rebuild/reconciliation before integration. |
 | SEO and generated output | [seo-and-generated-output.md](ai-work/seo-and-generated-output.md) | #2109 is the current merged game/archive publication result; #2111 is a merged SEO/video-page automation result; superseded #2107 and stale #1752/#1759 are closed. |
 
-## Remaining live PR classes at this checkpoint
+## Remaining non-Dungeon-defect PR classes at this checkpoint
 
-- #2125 — active bounded **Dungeon Defect 6** Owned Firearms differentiation candidate; qualify its final exact head before merge.
 - #2110 — deliberately deferred **BLOCKED** Content Publisher endpoint follow-up; do not rebase/retest solely because `main` advanced.
-- #2056 — stale Quest 3 rebuild requiring current-main reconstruction and fresh qualification.
+- #2056 — stale Quest 3 rebuild requiring current-main reconstruction and fresh qualification before integration.
 - #1976 — old R30 optimisation source material; re-derive only if the optimisation is still justified on current `main`.
 - #1860 and #1852 — historical long-running containment/stabilisation branches. They are not safe bases for new Dungeon runtime work; reconcile their broader remaining account/backend or historical-evidence purpose separately before any closure or extraction decision.
 
