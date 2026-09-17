@@ -28,13 +28,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y cc65 vice xvfb xauth
           cl65 --version
-          (x64sc --version || x64 --version) 2>&1 | head -20
 
-      - name: Restore exact v1.7 source payload
+      - name: Restore and verify exact v1.7 source payload
         run: |
-          rm -rf /tmp/dungeon-v17
+          rm -rf /tmp/dungeon-v17 /tmp/dungeon-v17.tar.gz /tmp/dungeon-v17.tar.gz.b64
           mkdir -p /tmp/dungeon-v17
-          base64 -d tools/c64-binary-build/v17/payload.tar.gz.b64 > /tmp/dungeon-v17.tar.gz
+          cat tools/c64-binary-build/v17/chunks/payload.part-* > /tmp/dungeon-v17.tar.gz.b64
+          test "$(wc -c < /tmp/dungeon-v17.tar.gz.b64)" = "23588"
+          echo 'ce9693ab84999db05856b9289c9ad57abe3a0809f0b43d8194d967b288fe5f4a  /tmp/dungeon-v17.tar.gz.b64' | sha256sum -c -
+          base64 -d /tmp/dungeon-v17.tar.gz.b64 > /tmp/dungeon-v17.tar.gz
+          echo 'feb03f66af46b11620b9d02af5c83feb9b7439c468de20e18e9678fa8554844c  /tmp/dungeon-v17.tar.gz' | sha256sum -c -
           tar -xzf /tmp/dungeon-v17.tar.gz -C /tmp/dungeon-v17
           find /tmp/dungeon-v17 -maxdepth 3 -type f -print | sort
 
@@ -64,12 +67,7 @@ jobs:
           test "$(stat -c%s build/DUNGEON-CARNAGE-64-v1.7.d64)" = "174848"
           printf 'D64 bytes: '
           stat -c%s build/DUNGEON-CARNAGE-64-v1.7.d64
-          if command -v c1541 >/dev/null 2>&1; then
-            c1541 build/DUNGEON-CARNAGE-64-v1.7.d64 -list | tee build/D64-DIRECTORY.txt
-          else
-            echo 'c1541 unavailable after VICE install' | tee build/D64-DIRECTORY.txt
-            exit 1
-          fi
+          c1541 build/DUNGEON-CARNAGE-64-v1.7.d64 -list | tee build/D64-DIRECTORY.txt
           grep -qi 'DUNGEON CARNAGE' build/D64-DIRECTORY.txt
           sha256sum \
             build/DUNGEON-CARNAGE-64.prg \
@@ -82,16 +80,14 @@ jobs:
         run: |
           mkdir -p build/vice
           EMU="$(command -v x64sc || command -v x64 || true)"
-          if [ -z "$EMU" ]; then
-            echo 'No VICE C64 emulator executable found.'
-            exit 1
-          fi
+          test -n "$EMU"
           echo "Using VICE: $EMU"
           set +e
           timeout 30s xvfb-run -a "$EMU" \
             -pal \
             -silent \
             -warp \
+            -sounddev dummy \
             -autostart build/DUNGEON-CARNAGE-64-v1.7.d64 \
             -limitcycles 5000000 \
             -exitscreenshot build/vice/boot.png \
@@ -115,10 +111,12 @@ jobs:
           mkdir -p build
           {
             echo 'Cheeky Commodore Gamer: Dungeon Carnage 64 v1.7'
-            echo 'GitHub Actions authentic binary-validation run'
+            echo 'Authentic cc65 + VICE binary-validation run'
             echo "Commit: $GITHUB_SHA"
             echo "Runner: $RUNNER_OS $RUNNER_ARCH"
             echo "Date: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            cl65 --version 2>&1 || true
+            (x64sc --version || x64 --version) 2>&1 | head -20 || true
           } > build/BINARY-VALIDATION.txt
 
       - name: Upload compiled C64 release artifact
