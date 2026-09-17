@@ -14,10 +14,12 @@ Update this file when a workstream changes category, its active PR/dependency ch
 - Defects 1 (#2117), 2 (#2118) and 3 (#2119) are complete. Do not reopen them without new regression evidence.
 - PR #2120 was a redundant movement-wrapper proposal and is closed without merge.
 - Defect 4 — Save and Exit restoration — is active in draft PR #2123 on branch `codex/dungeon-save-restore-current-main`.
-- Defect 4 root cause is proven: the consolidated checkpoint owner rejected Floor 1 in capture, save prompting, title-menu visibility and restoration, while `beginRun()` left the initial floor-entry snapshot null. Deeper floors already capture their entry snapshot after `descendFloor()`.
-- #2123 restores Floor 1 to the existing voluntary floor-entry checkpoint contract without adding autosave, mid-room saves or a persistence-schema change. It adds a browser regression covering genuine Solo start → Floor 1 entry snapshot → five-death Save & Return → title-menu Resume Saved Run → real Floor 1 restoration.
+- Defect 4 ownership is now reconciled with the existing r43 Solo save layer: r43 already persists a Floor 1 entrance autosave and safely owns pause-menu Save & Quit / Continue. The remaining base five-death Save & Return path lacked a Floor 1 `floorEntryCheckpoint`, rejected Floor 1, and could schedule a menu quit even when its checkpoint write failed.
+- #2123 supplies the missing Floor 1 base entry snapshot/prompt compatibility while preserving r43 autosave ownership, and makes the retained Save & Return path abandon the run only after a successful checkpoint write. It does not add mid-room saving or a new persistence schema.
+- Focused browser coverage now proves genuine Solo start → established r43 Floor 1 autosave + base entry snapshot → five-death Save & Return → real Continue/restore, plus a simulated failed browser write that must leave the active run intact.
 - Detailed current record: [Defect 4 save/restore checkpoint](ai-work/dungeon-carnage-save-restore-2026-09-17.md).
-- First code/test head before checkpoint documentation was `fa6722667d2b5095c7d0a162d83eb759fa81d03d`; structure and syntax checks passed there. Because documentation commits advance the candidate, qualification and any merge decision must use the final exact PR head.
+- Exact head `f79a87a1c845e9814dad4be9e782be3272d09f31` failed only the new Chromium shard-5 regression because that first test version incorrectly assumed Floor 1 had no autosave; all other Load Safety shards/Node jobs and the other top-level workflows passed. The corrected code/test head before this documentation update is `efaf99ba5e483954ef092a00436156a9e411e2d1`; final qualification must use the post-documentation PR head.
+- Diagnostic-only #2122 is not the integration candidate; its test timed out in its own readiness harness before reaching its intended assertions.
 - Autonomous merge authorization remains in force; genuine hands-on acceptance, credentials, destructive external actions and project-level human approval gates still apply where documented.
 - Queue after Defect 4: 3-Artefact Banishment Flask exchange, owned firearms differentiation, then RPG terminology reconciliation.
 
@@ -50,6 +52,7 @@ Update this file when a workstream changes category, its active PR/dependency ch
 ## Remaining live PR classes at this checkpoint
 
 - #2123 — active bounded **Dungeon Defect 4** Save and Exit restoration candidate; qualify its final exact head before merge.
+- #2122 — diagnostic-only Defect 4 regression branch; not an integration candidate and should be closed once #2123 is complete.
 - #2110 — deliberately deferred **BLOCKED** Content Publisher endpoint follow-up; do not rebase/retest solely because `main` advanced.
 - #2056 — stale Quest 3 rebuild requiring current-main reconstruction and fresh qualification.
 - #1976 — old R30 optimisation source material; re-derive only if the optimisation is still justified on current `main`.
