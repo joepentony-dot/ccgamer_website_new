@@ -14,6 +14,7 @@ Date: 17 September 2026
 - Base: `32b42045558a37b0052372319dd23bb3a2ae004b`
 - Draft PR: #2125
 - Defect: Owned Firearms do not communicate meaningful weapon differences.
+- Latest engineering candidate before checkpoint-only documentation commits: `a677127d97501f183fab503f44b36a2315a2048a`.
 
 ## Proven root cause
 
@@ -45,10 +46,20 @@ The browser contract uses a genuine Solo run and the actual inventory renderer, 
 - the newly equipped row updates to EQUIPPED;
 - no page errors or same-origin script failures occur.
 
+The first exact-head matrix exposed a test-ownership defect rather than a gameplay defect: the regression populated `#inventory-panel` through `renderInventoryPanel()` while the real overlay remained hidden, then Playwright correctly refused to click the hidden EQUIP control. Commit `a677127d97501f183fab503f44b36a2315a2048a` corrected only the regression so it opens the real inventory through the supported live `TAB` command, waits for the actual panel/control to be visible, and then performs the genuine EQUIP click. No forced click, direct handler invocation, assertion removal or timeout inflation was used.
+
+## Qualification evidence
+
+- Initial #2125 exact-head canonical/Node and discovery jobs passed.
+- Initial Chromium shard 4 failed only because the new regression attempted to click its correct EQUIP element while the inventory overlay was still hidden.
+- Chromium shard 3 separately failed the pre-existing deterministic browser-stability contract during early Solo/Tutorial startup; all other shard-3 contracts passed. The Defect 6 production layer is confined to inventory rendering/decorating and does not own menu/start transitions, so gameplay was not changed to address this unrelated startup instability.
+- On engineering head `a677127d97501f183fab503f44b36a2315a2048a`, canonical/Node and contract discovery passed again and Chromium shard 4 passed with the corrected real `TAB -> visible inventory -> EQUIP` route. Chromium shard 5 also passed while the remaining shards were still running when this checkpoint was written.
+- A final exact-head qualification is required after these checkpoint-only documentation commits. Merge only if required checks are green, the PR remains mergeable/review-clean, and no new candidate-attributable failure appears.
+
 ## Scope boundary
 
 No weapon damage, cadence, projectile, rarity, generation, acquisition, inventory ownership, save schema, Gold economy, retired modes, protected intro-loader files, `games/games.json`, Supabase, Cloudflare or commerce configuration is changed.
 
 ## Next action
 
-Qualify the exact #2125 head through canonical/Node and sharded Chromium checks plus retained repository workflows. Fix only candidate-attributable failures. If the exact candidate is green, mergeable and review-clean, mark ready and merge under the standing autonomous authorization. After merge, reconcile `main` and continue to Defect 7 terminology reconciliation while retaining Defect 5 as a separate live/manual acceptance item.
+Qualify the final documentation-inclusive #2125 head through canonical/Node and sharded Chromium checks plus retained repository workflows. Fix only candidate-attributable failures. If the exact candidate is green, mergeable and review-clean, mark ready and merge under the standing autonomous authorization. After merge, reconcile `main` and continue to Defect 7 terminology reconciliation while retaining Defect 5 as a separate live/manual acceptance item.
