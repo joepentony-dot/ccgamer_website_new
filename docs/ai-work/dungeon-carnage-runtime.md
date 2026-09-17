@@ -6,18 +6,24 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Current checkpoint — 17 September 2026
 
-Live repository reconciliation after the seven-item defect programme and the later current-build freeze/stopped-firing regression:
+Live repository reconciliation after the seven-item defect programme, the later current-build freeze/stopped-firing regression, and the start of the independent retired-mode/legacy-residue programme:
 
-- Current runtime `main` before this documentation update: `218025ce2beac3765d65ca9b838e8afd58a5eedf`, merge of PR #2129.
+- Current `main` at the start of Stage 1: `5db1fa275fba1b33d9fbab55d065724110338fd7`, merge of documentation checkpoint PR #2130.
 - Defect 1 — obsolete public-beta/watchdog startup lock — **repository-complete through #2117**.
 - Defect 2 — retained projectile entities / progressive slowdown — **repository-complete through #2118**.
 - Defect 3 — Floor 1 completion/exit progression failure — **repository-complete through #2119**.
 - Defect 4 — Save and Exit / Continue restoration reliability — **repository-complete through #2123**.
-- Defect 5 — 3-Artefact Banishment Flask exchange — **repository implementation complete through #2090; deployed/manual acceptance remains required before product-level closure**.
+- Defect 5 — 3-Artefact Banishment Flask exchange — **repository implementation complete through #2090; deployed/manual acceptance deferred by the user**.
 - Defect 6 — Owned Firearms differentiation — **repository-complete through #2125**.
 - Defect 7 — RPG terminology reconciliation — **repository-complete through #2126**.
-- Post-program live freeze/stopped-firing regression — **repository-complete through #2129; deployed/manual Solo stability acceptance remains required**.
-- There is **no active Dungeon runtime defect PR**. The current `codex/dungeon-2129-checkpoint` branch is documentation-only.
+- Post-program live freeze/stopped-firing regression — **repository-complete through #2129; deployed/manual Solo stability acceptance deferred by the user**.
+- Active independent Stage 1 cleanup: PR #2131, `codex/dungeon-retired-spy-startup-current-main`, removing retired Spy startup owners while preserving supported late-runtime ownership proved to have been reached indirectly through that historical chain.
+
+Both hands-on gates remain exactly:
+
+**MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**
+
+No automated result may be promoted into user acceptance for either gate.
 
 The final runtime merge in the original seven-item programme was Defect 7 PR #2126. Its exact qualified head was `f70f816910fab8d07aaf946f140b593c9220f1ef`, merged as `2e734f4875fb737a0a292b4f92331197bc1c6f85`. The exact candidate passed Native Mouse Wheel Scroll Contract, Public Code Cache Version, SEO Automation, C64 Dungeon Carnage Mobile Trap Layout Contract and Lost Sizzler Load Safety, including canonical/Node coverage and all six Chromium shards.
 
@@ -51,7 +57,7 @@ Current-main browser coverage proves both representations:
 - Gold and Score are not spent by the Artefact/Essence exchange;
 - inventory capacity remains valid.
 
-No further repository-side correction is currently proven necessary. Product-level closure still requires hands-on acceptance on the deployed/current build, but that acceptance must resume only after the short post-#2129 sustained Solo stability check passes.
+No further repository-side correction is currently proven necessary. Product-level closure still requires hands-on acceptance on the deployed/current build, but that acceptance is deferred by the user and must not block independent backlog work.
 
 ### Defect 6 ownership result
 
@@ -83,6 +89,26 @@ The bounded production delta keeps the canonical page and runtime on one release
 - the r30 bootstrap handoff and ordered module chain stay on the same cache token.
 
 New regression coverage includes `v10-42-r30-release-cache-identity.mjs` plus the real-browser `v10-42-live-solo-combat-endurance.mjs`, which exercises generated enemies, real projectile/damage/death ownership, Space/F/Numpad0 firing, held/release cycles, movement between combat cycles, pause/resume recovery, simulation progress and bounded projectile/visual collections. The first CI attempt exposed only external Supabase/local-fixture CORS noise after the endurance exercise had completed; that fixture was isolated without weakening gameplay assertions, ownership assertions, collection bounds or timeouts.
+
+### Stage 1 retired Spy startup ownership — PR #2131
+
+The earlier 16 September residue note was too broad. It was true that the canonical page did not directly list the retired special-mode files, but the supported r30 startup handoff still dynamically preloaded three retired Spy/Saboteurs owners. PR #2131 corrects that actual ownership boundary rather than relying on filename assumptions.
+
+The retired startup owners being removed are:
+
+- `v10-41-r30-spy-exit-control-reset.js`;
+- `v10-41-r32-spy-world-owner.js`;
+- `v10-41-r32-spy-loader.js`.
+
+Investigation also proved that the historical chain was carrying supported responsibilities. #2131 therefore preserves those responsibilities explicitly:
+
+- `v10-41-post-playtest-stability.js` — supported Solo fire-state recovery;
+- `v10-41-r56-playtest-completion.js` — ordinary-dungeon environment/chest/combat recovery ownership;
+- `v10-41-r59-live-regression-fixes.js` — pause/Solo stability ownership;
+- `v10-41-horde-frame-performance.js` — despite its name, the loader/maintenance bridge for the supported Solo R60 live-play integrity owner; its Horde R60 polling timer is stopped in Solo;
+- `v10-41-r60-horde-owner-composition.js` — despite its name, still protects supported Solo R60 maintenance and damage ancestry.
+
+The first #2131 CI candidate exposed exactly this hidden ownership: one Solo soak saw the retired Horde frame-performance global disappear entirely, while selective-owner recovery could no longer see the supported R56/R60 integrity APIs. The tests were not weakened. The candidate was corrected by making supported ownership explicit while keeping the retired Spy startup owners absent.
 
 ## Completed runtime stages
 
@@ -127,11 +153,11 @@ The first Load Safety attempt had one isolated Chromium shard-5 failure: `v10-35
 
 #2118 is **MERGED**. It adds an ordered projectile lifecycle owner that retires non-piercing impacts before downstream callbacks and performs authoritative player/enemy projectile cleanup from a `finally` boundary. It preserves fire delay, rapid-fire cadence, projectile allowance, projectile TTL, held-fire ownership and room/run cleanup. Exact-head regression covered sustained fire, repeated impacts and downstream enemy-death faults.
 
-## Retired-mode residue audit — 16 September 2026
+## Retired-mode residue audit — corrected 17 September 2026
 
-The bounded current-main audit completed after #2115 confirmed that the runtime page bootstrap does **not** load the retired Horde Survivor or Sizzler Saboteurs modules, and that loaded `game-network.js` remains the intentionally inert local-session compatibility boundary established by #2113.
+The 16 September audit correctly established that `game-network.js` is the intentionally inert local-session compatibility boundary from #2113 and that Horde/Saboteur product modes are retired. It overstated the startup result by saying no retired Horde/Spy module was loaded by the supported runtime. Stage 1 reconciliation proved that r30 still dynamically preloaded three retired Spy startup owners even though they were absent from the canonical page script list.
 
-Historical Horde/Spy source files and acceptance records remain in the repository as evidence and are not loaded by the supported runtime. Old `playMode === "online"` conditional guards remain inside retained local gameplay ownership; removing them would require a separate focused contract and must not be folded into unrelated terminology, topology, NPC, commerce or menu work.
+Historical Horde/Spy source files and acceptance records remain in the repository as evidence. They must not be removed solely because of their names: #2131 proved that two Horde-named compatibility layers still deliver supported Solo R60 ownership. Old `playMode === "online"` conditional guards also remain inside retained local gameplay ownership; removing them requires a separate focused contract and must not be folded into unrelated terminology, topology, NPC, commerce or menu work.
 
 ## Retired stale/superseded runtime PRs
 
@@ -159,19 +185,14 @@ Historical Horde/Spy source files and acceptance records remain in the repositor
 
 Preserve Solo, Tutorial, local 2P Split Screen and Weekly Vault/account services. Do not restore retired networked Dungeon Multiplayer, Horde Survivor or Spy/Sizzler Saboteurs behaviour. Do not reopen completed Defects 1, 2, 3, 4, 6 or 7 without new current-build regression evidence. Preserve #2118 projectile lifecycle ownership unless new evidence independently disproves it.
 
-The exact next action is now two staged human acceptance gates on the deployed/current build:
+The two live gates remain unresolved but are not the current development task:
 
-1. Confirm that merge `218025ce2beac3765d65ca9b838e8afd58a5eedf` has completed the normal production deployment path.
-2. Run the short sustained Solo acceptance: move normally, fight real enemies, use repeated firing press/hold/release cycles, continue long enough to confirm firing does not stop and the game does not freeze/stall, and include pause/resume recovery if practical.
-3. Only after that passes, reach the live shop route with three earned Artefacts/Essence available.
-4. Perform the Artefact/Essence exchange **without first buying a Flask for Gold**.
-5. Confirm exactly one Banishment Flask is received and the three Artefacts/Essence are consumed.
-6. Confirm the exchange does not reduce Gold or Score.
-7. Confirm the transaction also succeeds when inventory capacity is tight enough that consuming the traded stack must make room for the Flask.
+- sustained Solo movement/firing/combat/pause-resume stability after #2129;
+- 3 Artefacts/Essences → 1 Banishment Flask without prior Gold purchase, with Gold and Score unchanged.
 
-If both live checks pass, update `arcade/lost-sizzler/PROGRESS.md` to mark the original seven-item live-defect programme and the later #2129 regression product-complete. If either fails, reproduce on the then-current deployed `main` and open a fresh bounded defect from that exact state. Do not revive stale branches wholesale.
+For both: **MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**.
 
-No new repository defect branch should be created merely to continue the original seven-item programme or #2129 while these manual gates are outstanding.
+The exact repository action is to qualify #2131 on its final exact head. If green, review-clean and conflict-free, merge it under the standing authorization, reconcile `main`, checkpoint the Stage 1 result, and continue to the next independent retired-mode/legacy-residue item. Do not stop the independent programme merely because the two hands-on release gates remain deferred.
 
 ## Historical live-defect remediation checkpoint — 16 September 2026
 
@@ -192,7 +213,7 @@ Branch `codex/dungeon-projectile-lifecycle-current-main` was created from exact 
 - 2026-09-16: Qualified #2113 head `2fa216c6...`; one transient `v10-35-layout` shard timeout passed on an unchanged targeted retry.
 - 2026-09-16: Merged #2113 as `c3549e6d45b7748f1efcf5c4f4ba134200325a5f`. Obsolete packet/world-sync runtime retirement is complete.
 - 2026-09-16: Closed stale #1902 and rebuilt its still-valid local Split Screen map behaviour as #2115 on current `main`. The exact head `30c58717...` passed the complete matrix after an unchanged retry of an unrelated `v10-28-browser-stability-deterministic.mjs` startup timeout; #2115 merged as `95bd8431fd6b8313bf5873a79bd4bc93404d8de9`.
-- 2026-09-16: Completed the bounded current-main retired-mode residue audit at `e9adbd16...`. No retired Horde/Spy module is loaded by the supported page bootstrap; the retained network boundary is inert.
+- 2026-09-16: Completed the bounded current-main retired-mode residue audit at `e9adbd16...`; Stage 1 later corrected its too-broad conclusion about dynamically preloaded Spy owners.
 - 2026-09-16: Qualified #2117 exact head `23bd55e2...` and merged the public-beta/watchdog remediation as `408a9870d33f9ea2931934c302176743d2589160`.
 - 2026-09-16: Qualified and merged #2118, closing the retained-projectile/progressive-slowdown repository defect.
 - 2026-09-17: Qualified and merged #2119, correcting the optional Warden completion guard while preserving the genuine floor-transition owner chain; redundant #2120 closed without merge.
@@ -201,4 +222,5 @@ Branch `codex/dungeon-projectile-lifecycle-current-main` was created from exact 
 - 2026-09-17: Qualified and merged #2125, exposing meaningful Owned Firearms differences through the existing selector without changing weapon mechanics.
 - 2026-09-17: Qualified and merged #2126 at exact head `f70f816910fab8d07aaf946f140b593c9220f1ef`; all retained workflows and all six Chromium shards passed.
 - 2026-09-17: Reconciled `docs/AI-CONTINUATION-STATE.md` and `arcade/lost-sizzler/PROGRESS.md` after Defect 7. The remaining next action at that checkpoint was Defect 5 deployed/manual acceptance.
-- 2026-09-17: Reproduced a later current-build Solo freeze/stopped-firing regression, proved split release/cache ownership rather than a return of #2118, qualified #2129 exact head `585cda263e2f0c9a626fef61d19bae9635d2087f`, and merged it as `218025ce2beac3765d65ca9b838e8afd58a5eedf`. The next live gate is sustained Solo stability, followed by the existing Defect 5 Flask acceptance.
+- 2026-09-17: Reproduced a later current-build Solo freeze/stopped-firing regression, proved split release/cache ownership rather than a return of #2118, qualified #2129 exact head `585cda263e2f0c9a626fef61d19bae9635d2087f`, and merged it as `218025ce2beac3765d65ca9b838e8afd58a5eedf`.
+- 2026-09-17: User explicitly deferred both remaining hands-on acceptance gates. Independent Stage 1 work began on #2131; the first candidate exposed hidden R56/R60 supported ownership previously reached through retired special-mode startup ancestry, and the candidate was corrected without restoring the retired Spy startup owners or weakening tests.
