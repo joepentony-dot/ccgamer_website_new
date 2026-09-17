@@ -1,0 +1,300 @@
+    uint16_t p;
+    y = e->y > 0 ? (uint8_t)(e->y - 1) : e->y;
+    n = (uint8_t)((e->hp * 4u + e->maxhp - 1u) / e->maxhp);
+    p = (uint16_t)(y + MAP_Y0) * 40u + e->x;
+    SCREEN[p] = n >= 3 ? 61 : 45;
+    COLOR[p] = n >= 3 ? COLOR_LIGHTGREEN : (n == 2 ? COLOR_YELLOW : COLOR_LIGHTRED);
+    if (e->x + 1u < SCREEN_W) {
+        SCREEN[p + 1u] = n >= 4 ? 61 : (n >= 2 ? 45 : 32);
+        COLOR[p + 1u] = COLOR[p];
+    }
+    e->old_x = e->x;
+    e->old_y = e->y;
+}
+
+static void add_combo(void) {
+    ++combo;
+    combo_timer = 110;
+    multiplier = combo >= 8 ? 4 : (combo >= 5 ? 3 : (combo >= 2 ? 2 : 1));
+}
+
+static void spawn_pickup_type(uint8_t x, uint8_t y, uint8_t type) {
+    uint8_t i;
+    for (i = 0; i < MAX_PICKUPS; ++i) {
+        if (!pickups[i].active) {
+            pickups[i].active = 1;
+            pickups[i].x = x;
+            pickups[i].y = y;
+            pickups[i].type = type;
+            return;
+        }
+    }
+}
+
+static void reveal_secret(uint8_t x, uint8_t y) {
+    if (tile_at(x, y) != TILE_SECRET) return;
+    put_tile(x, y, TILE_FLOOR);
+    ++secrets_found;
+    secret_notice = 90;
+    score = (uint16_t)(score + 100u);
+    spawn_pickup_type(x, y, (secrets_found & 1u) ? PICK_SHIELD : PICK_RAGE);
+    sfx(SFX_SECRET);
+    screen_shake = 4;
+}
+
+static void open_rune_gate(void) {
+    if (rune_opened || floor_no != 4) return;
+    rune_opened = 1;
+    rune_notice = 90;
+    if (tile_at(19, 11) == TILE_GATE) put_tile(19, 11, TILE_FLOOR);
+    score = (uint16_t)(score + 75u);
+    sfx(SFX_RUNE);
+    screen_shake = 4;
+}
+
+static void drop_pickup(uint8_t x, uint8_t y) {
+    uint8_t i;
+    uint8_t r;
+    r = rnd8();
+    if ((r & 3u) != 0) return;
+    for (i = 0; i < MAX_PICKUPS; ++i) {
+        if (!pickups[i].active) {
+            pickups[i].active = 1;
+            pickups[i].x = x;
+            pickups[i].y = y;
+            if ((r & 63u) == 0) pickups[i].type = PICK_RAGE;
+            else if ((r & 31u) == 1) pickups[i].type = PICK_SHIELD;
+            else pickups[i].type = (r & 16u) ? PICK_GEM : ((r & 32u) ? PICK_BOMB : PICK_MEAT);
+            return;
+        }
+    }
+}
+
+static void on_floor_cleared(void) {
+    uint16_t bonus;
+    if (exit_open) return;
+    bonus = (uint16_t)((uint16_t)floor_no * 75u + (uint16_t)player_hp * 10u + (uint16_t)multiplier * 25u);
+    floor_clear_bonus = bonus;
+    if (player_hp >= 7u && multiplier >= 3u) floor_grade = 'S';
+    else if (player_hp >= 6u) floor_grade = 'A';
+    else if (player_hp >= 4u) floor_grade = 'B';
+    else floor_grade = 'C';
+    score = (uint16_t)(score + bonus);
+    floor_clear_timer = 100;
+    exit_open = 1;
+    redraw_cell(37, 2);
+    sfx(SFX_CLEAR);
+}
+
+static void kill_enemy(Enemy* e) {
+    uint8_t dead_x;
+    uint8_t dead_y;
+    if (e->type == TYPE_NONE || !e->hp) return;
+    dead_x = e->x;
+    dead_y = e->y;
+    if (e->type == TYPE_BOSS) {
+        uint8_t k;
+        for (k = 1; k < MAX_ENEMIES; ++k) {
+            if (enemies[k].type != TYPE_NONE && enemies[k].hp) { enemies[k].hp = 0; enemies[k].type = TYPE_NONE; if (enemies_alive) --enemies_alive; }
+        }
+    }
+    e->hp = 0;
+    e->type = TYPE_NONE;
+    if (enemies_alive) --enemies_alive;
+    score = (uint16_t)(score + (uint16_t)(100u * multiplier));
+    add_combo();
+    ++floor_kills;
+    drop_pickup(dead_x, dead_y);
+    death_fx_x = dead_x;
+    death_fx_y = dead_y;
+    death_fx_timer = 14;
+    sfx(SFX_KILL);
+    screen_shake = 4;
+    if (!enemies_alive) on_floor_cleared();
+}
+
+static void damage_enemy(Enemy* e, uint8_t amount) {
+    if (e->type == TYPE_NONE || !e->hp) return;
+    if (amount >= e->hp) {
+        kill_enemy(e);
+    } else {
+        e->hp = (uint8_t)(e->hp - amount);
+        e->flash = 5;
+        sfx(SFX_HIT);
+    }
+}
+
+static void player_damage(uint8_t amount) {
+    if (invuln || game_over) return;
+    if (shield) { shield = 0; invuln = 24; sfx(SFX_POWER); return; }
+    if (amount >= player_hp) player_hp = 0;
+    else player_hp = (uint8_t)(player_hp - amount);
+    invuln = 35;
+    combo = 0;
+    multiplier = 1;
+    combo_timer = 0;
+    screen_shake = 8;
+    sfx(SFX_HURT);
+    if (!player_hp) game_over = 1;
+}
+
+static void melee_attack(void) {
+    uint8_t i;
+    uint8_t tx;
+    uint8_t ty;
+    tx = player_x;
+    ty = player_y;
+    if (attack_cd) return;
+    attack_cd = 9;
+    attack_flash = 4;
+    if (facing == DIR_UP && ty > 0) --ty;
+    else if (facing == DIR_RIGHT && tx < SCREEN_W - 1) ++tx;
+    else if (facing == DIR_DOWN && ty < MAP_H - 1) ++ty;
+    else if (facing == DIR_LEFT && tx > 0) --tx;
+    attack_x = tx;
+    attack_y = ty;
+    sfx(SFX_SWING);
+    if (tile_at(tx, ty) == TILE_SECRET) {
+        reveal_secret(tx, ty);
+        return;
+    }
+    if (tile_at(tx, ty) == TILE_BARREL) {
+        put_tile(tx, ty, TILE_RUBBLE);
+        score = (uint16_t)(score + 15u);
+        screen_shake = 5;
+        sfx(SFX_BOMB);
+        for (i = 0; i < MAX_ENEMIES; ++i) {
+            Enemy* blast;
+            blast = &enemies[i];
+            if (blast->type != TYPE_NONE && blast->hp && within_range(tx, ty, blast->x, blast->y, 2)) damage_enemy(blast, 2);
+        }
+        return;
+    }
+    if (tile_at(tx, ty) == TILE_ALTAR) {
+        if (gems >= 3u) {
+            gems = (uint8_t)(gems - 3u);
+            if (player_hp < player_maxhp) player_hp = player_maxhp;
+            else if (bombs < 9u) ++bombs;
+            put_tile(tx, ty, TILE_RUBBLE);
+            sfx(SFX_ALTAR);
+            screen_shake = 3;
+        }
+        return;
+    }
+    if (tile_at(tx, ty) == TILE_CHEST) {
+        put_tile(tx, ty, TILE_FLOOR);
+        ++chests_opened;
+        if (bombs < 9) ++bombs;
+        gems = (uint8_t)(gems + 2u);
+        score = (uint16_t)(score + 50u);
+        sfx(SFX_PICK);
+        return;
+    }
+    for (i = 0; i < MAX_ENEMIES; ++i) {
+        Enemy* e;
+        e = &enemies[i];
+        if (e->type != TYPE_NONE && e->hp && within_range(tx, ty, e->x, e->y, 1)) {
+            uint8_t was_alive;
+            was_alive = e->hp;
+            damage_enemy(e, rage_timer ? 2u : 1u);
+            if (e->type != TYPE_NONE && was_alive) {
+                if (facing == DIR_UP && e->y > 1 && !blocked(e->x, (uint8_t)(e->y - 1)) && !enemy_occupied(e, e->x, (uint8_t)(e->y - 1))) --e->y;
+                else if (facing == DIR_RIGHT && e->x < 38 && !blocked((uint8_t)(e->x + 1), e->y) && !enemy_occupied(e, (uint8_t)(e->x + 1), e->y)) ++e->x;
+                else if (facing == DIR_DOWN && e->y < 20 && !blocked(e->x, (uint8_t)(e->y + 1)) && !enemy_occupied(e, e->x, (uint8_t)(e->y + 1))) ++e->y;
+                else if (facing == DIR_LEFT && e->x > 1 && !blocked((uint8_t)(e->x - 1), e->y) && !enemy_occupied(e, (uint8_t)(e->x - 1), e->y)) --e->x;
+            }
+            return;
+        }
+    }
+}
+
+static void smart_bomb(void) {
+    uint8_t i;
+    uint8_t x;
+    uint8_t y;
+    if (!bombs) return;
+    --bombs;
+    screen_shake = 14;
+    sfx(SFX_BOMB);
+    for (i = 0; i < MAX_ENEMIES; ++i) {
+        Enemy* e;
+        e = &enemies[i];
+        if (e->type != TYPE_NONE && e->hp) damage_enemy(e, e->type == TYPE_BOSS ? 2 : 3);
+    }
+    for (y = 1; y < MAP_H - 1; ++y) {
+        for (x = 1; x < SCREEN_W - 1; ++x) {
+            uint8_t t;
+            t = tile_at(x, y);
+            if (t == TILE_BARREL) put_tile(x, y, TILE_RUBBLE);
+            else if (t == TILE_SECRET && within_range(player_x, player_y, x, y, 4)) reveal_secret(x, y);
+        }
+    }
+}
+
+static void enemy_move_step(Enemy* e, int8_t dx, int8_t dy) {
+    int16_t nx16;
+    int16_t ny16;
+    uint8_t nx;
+    uint8_t ny;
+    nx16 = (int16_t)e->x + dx;
+    ny16 = (int16_t)e->y + dy;
+    if (nx16 < 1 || nx16 >= SCREEN_W - 1 || ny16 < 1 || ny16 >= MAP_H - 1) return;
+    nx = (uint8_t)nx16;
+    ny = (uint8_t)ny16;
+    if (!blocked(nx, ny) && tile_at(nx, ny) != TILE_LAVA && !enemy_occupied(e, nx, ny)) {
+        e->x = nx;
+        e->y = ny;
+    }
+}
+
+static uint8_t other_bat_diving(const Enemy* self) {
+    uint8_t i;
+    for (i = 0; i < MAX_ENEMIES; ++i) {
+        const Enemy* e;
+        e = &enemies[i];
+        if (e != self && e->type == TYPE_BAT && e->hp && e->state == AI_DIVE) return 1;
+    }
+    return 0;
+}
+
+static uint8_t spawn_enemy_shot(uint8_t x, uint8_t y, int8_t dx, int8_t dy, uint8_t ttl) {
+    uint8_t i;
+    for (i = 0; i < MAX_SHOTS; ++i) {
+        if (!shots[i].active) {
+            shots[i].active = 1;
+            shots[i].x = x;
+            shots[i].y = y;
+            shots[i].old_x = x;
+            shots[i].old_y = y;
+            shots[i].dx = dx;
+            shots[i].dy = dy;
+            shots[i].ttl = ttl;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+static void fire_enemy_shot(Enemy* e) {
+    int8_t dx;
+    int8_t dy;
+    dx = 0;
+    dy = 0;
+    if (abs8((int8_t)player_x - (int8_t)e->x) > abs8((int8_t)player_y - (int8_t)e->y)) dx = player_x > e->x ? 1 : -1;
+    else dy = player_y > e->y ? 1 : -1;
+    spawn_enemy_shot(e->x, e->y, dx, dy, 35);
+}
+
+static void boss_volley(Enemy* e) {
+    boss_warning_timer = 0;
+    spawn_enemy_shot(e->x, e->y, 1, 0, 24);
+    spawn_enemy_shot(e->x, e->y, -1, 0, 24);
+    spawn_enemy_shot(e->x, e->y, 0, 1, 24);
+    spawn_enemy_shot(e->x, e->y, 0, -1, 24);
+    if (boss_phase >= 3) {
+        spawn_enemy_shot(e->x, e->y, 1, 1, 18);
+        spawn_enemy_shot(e->x, e->y, -1, 1, 18);
+        spawn_enemy_shot(e->x, e->y, 1, -1, 18);
+        spawn_enemy_shot(e->x, e->y, -1, -1, 18);
+    }
+    screen_shake = boss_phase >= 3 ? 7 : 4;
