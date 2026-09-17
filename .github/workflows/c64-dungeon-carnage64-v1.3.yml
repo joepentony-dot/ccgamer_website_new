@@ -1,0 +1,73 @@
+name: Build Dungeon Carnage 64 v1.3
+
+on:
+  push:
+    branches:
+      - codex/c64-dungeon-carnage64-v1-3-build
+    paths:
+      - 'experiments/c64-dungeon-carnage64-v1.3/**'
+      - '.github/workflows/c64-dungeon-carnage64-v1.3.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-c64-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install C64 build toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cc65 python3-pil unzip zip
+          cl65 --version
+
+      - name: Extract v1.3 source
+        working-directory: experiments/c64-dungeon-carnage64-v1.3
+        run: |
+          mkdir work
+          cd work
+          unzip ../source.zip
+          chmod +x build.sh
+
+      - name: Verify source invariants
+        working-directory: experiments/c64-dungeon-carnage64-v1.3/work
+        run: python3 tools/verify_v13_source.py
+
+      - name: Compile PRG and package D64
+        working-directory: experiments/c64-dungeon-carnage64-v1.3/work
+        run: ./build.sh
+
+      - name: Verify release artifacts
+        working-directory: experiments/c64-dungeon-carnage64-v1.3/work
+        run: |
+          test -s build/DUNGEON-CARNAGE-64.prg
+          test "$(stat -c%s build/DUNGEON-CARNAGE-64.d64)" = "174848"
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('build/DUNGEON-CARNAGE-64.prg').read_bytes()
+          assert p[:2] == b'\x01\x08'
+          assert len(p) < 47100, len(p)
+          print('PRG bytes:', len(p))
+          PY
+          sha256sum build/DUNGEON-CARNAGE-64.prg build/DUNGEON-CARNAGE-64.d64 > verification/sha256.txt
+          cp ../source.zip build/DUNGEON-CARNAGE-64-v1.3-SOURCE.zip
+          cp assets/title.png build/DUNGEON-CARNAGE-64-v1.3-TITLE.png
+          cp verification/disk-validation.json build/disk-validation.json
+          cp verification/sha256.txt build/sha256.txt
+
+      - name: Upload v1.3 release
+        uses: actions/upload-artifact@v4
+        with:
+          name: DUNGEON-CARNAGE-64-v1.3
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            experiments/c64-dungeon-carnage64-v1.3/work/build/DUNGEON-CARNAGE-64.prg
+            experiments/c64-dungeon-carnage64-v1.3/work/build/DUNGEON-CARNAGE-64.d64
+            experiments/c64-dungeon-carnage64-v1.3/work/build/DUNGEON-CARNAGE-64-v1.3-SOURCE.zip
+            experiments/c64-dungeon-carnage64-v1.3/work/build/DUNGEON-CARNAGE-64-v1.3-TITLE.png
+            experiments/c64-dungeon-carnage64-v1.3/work/build/disk-validation.json
+            experiments/c64-dungeon-carnage64-v1.3/work/build/sha256.txt
