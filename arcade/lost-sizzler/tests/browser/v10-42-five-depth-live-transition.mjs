@@ -49,6 +49,7 @@ async function snapshot(page){
     controller:window.CCGLostSizzlerModeRuntime?.detect?.()||"",
     runActive:document.body.dataset.runActive,
     rpgStats:{...(p1?.rpgStats||{})},
+    inventory:(p1?.inventory||[]).map(item=>({kind:item.kind,name:item.name,short:item.short,qty:Number(item.qty||1)})),
     relics:[...(p1?.relics||[])],
     vessel:Boolean(p1?.banishmentVessel),
     essence:Number(p1?.banishmentEssence||0),
@@ -59,41 +60,81 @@ async function snapshot(page){
     claimedDomains:[...(run?.v142ClaimedDomains||[])],
     bankedGames:[...(run?.bankedGames||[])],
     floorGames:[...(run?.floorGames||[])],
+    floorCompletions:Number(run?.stats?.floors||0),
+    playerProjectiles:bullets.length,
+    enemyProjectiles:enemyBullets.length,
     persistentCollection:window.CCGProgression?.persistentCollection?.()||[]
   }));
 }
 
 async function completeFirstFloorThroughExit(page,{game,nextFloor}){
-  const before=await page.evaluate(()=>({floor:Number(run.floor),xp:Number(p1.xp||0),totalXp:Number(p1.totalXp||0),score:Number(score||0)}));
   const route=await page.evaluate(game=>{
     run.floorGames=Array.isArray(run.floorGames)?run.floorGames:[];
     run.floorGames.push(game);
+
+    const exploredCells=explored.get(p1.id)||new Set();
+    for(const room of world.rooms.filter(room=>!room.optional)){
+      const cx=Math.floor(room.x+room.w/2),cy=Math.floor(room.y+room.h/2);
+      exploredCells.add(`${cx},${cy}`);
+    }
+    explored.set(p1.id,exploredCells);
+    if(host.guardian)host.guardian.alive=false;
+
+    const openedBeforeSigil=window.CCGSystems.updateObjective(host,run,100);
+    const objectiveComplete=Boolean(host.objective?.complete);
+    const exitBeforeSigil=Boolean(host.exitOpen);
+
+    for(const enemy of host.enemies||[])if(enemy.sigilDefender)enemy.alive=false;
+    host.sigilResolved=true;
+    host.sigilLockdown=false;
+    host.exitSigilDropped=true;
+    const sigil={id:`floor-1-exit-sigil-contract-${Date.now()}`,x:p1.x,y:p1.y,kind:"exitSigil",active:true,title:"EXIT SIGIL"};
+    host.items.push(sigil);
+    const collected=requestCollect(sigil,p1);
     const opened=window.CCGSystems.updateObjective(host,run,100);
+    const before={floor:Number(run.floor),xp:Number(p1.xp||0),totalXp:Number(p1.totalXp||0),score:Number(score||0),floorCompletions:Number(run.stats?.floors||0)};
+
     const candidates=[[1,0],[-1,0],[0,1],[0,-1]];
     const step=candidates.find(([dx,dy])=>window.CCGWorld.walkable(world.map,world.exit.x-dx,world.exit.y-dy,host));
-    if(!step)return{opened:Boolean(opened),exitOpen:Boolean(host.exitOpen),moved:false};
+    if(!step)return{openedBeforeSigil:Boolean(openedBeforeSigil),objectiveComplete,exitBeforeSigil,collected:Boolean(collected),sigilCollected:Boolean(host.exitSigilCollected),opened:Boolean(opened),exitOpen:Boolean(host.exitOpen),moved:false,before};
     const [dx,dy]=step;
     p1.x=world.exit.x-dx;p1.y=world.exit.y-dy;p1.rx=p1.x;p1.ry=p1.y;
     movePlayer(p1,dx,dy);
-    return{opened:Boolean(opened),exitOpen:Boolean(host.exitOpen),moved:p1.x===world.exit.x&&p1.y===world.exit.y};
+    return{openedBeforeSigil:Boolean(openedBeforeSigil),objectiveComplete,exitBeforeSigil,collected:Boolean(collected),sigilCollected:Boolean(host.exitSigilCollected),opened:Boolean(opened),exitOpen:Boolean(host.exitOpen),moved:p1.x===world.exit.x&&p1.y===world.exit.y,before};
   },game);
-  assert.equal(route.opened,true,"Floor 1 objective completion must authorize the live stairs.");
-  assert.equal(route.exitOpen,true,"Floor 1 completion must leave the live exit open for movement.");
+
+  assert.equal(route.objectiveComplete,true,"Floor 1 explore/guardian completion must complete the authoritative objective.");
+  assert.equal(route.openedBeforeSigil,false,"The main Floor 1 objective alone must not bypass the mandatory Exit Sigil.");
+  assert.equal(route.exitBeforeSigil,false,"The live stairs must remain sealed until the Exit Sigil is collected.");
+  assert.equal(route.collected,true,"The corrected fixture must collect the Exit Sigil through the live pickup owner.");
+  assert.equal(route.sigilCollected,true,"The live pickup owner must record the Floor 1 Exit Sigil.");
+  assert.equal(route.opened,true,"Completed Floor 1 objective plus the Exit Sigil must authorize the live stairs.");
+  assert.equal(route.exitOpen,true,"The complete Floor 1 route must leave the live exit open for movement.");
   assert.equal(route.moved,true,"The player must physically enter the Floor 1 exit tile through movePlayer().");
+
   await page.waitForFunction(()=>mode==="floorcomplete"&&!document.getElementById("floor-complete")?.classList.contains("hidden"));
-  const completed=await page.evaluate(()=>({floor:Number(run.floor),floorComplete:Boolean(run.floorComplete),xp:Number(p1.xp||0),totalXp:Number(p1.totalXp||0),score:Number(score||0)}));
+  const completed=await page.evaluate(()=>({floor:Number(run.floor),floorComplete:Boolean(run.floorComplete),xp:Number(p1.xp||0),totalXp:Number(p1.totalXp||0),score:Number(score||0),floorCompletions:Number(run.stats?.floors||0)}));
   assert.equal(completed.floor,1,"Entering the Floor 1 stairs must not skip directly past the completion screen.");
-  assert.equal(completed.floorComplete,true,"The live movement route must mark Floor 1 complete exactly once before descent.");
-  assert.equal(completed.xp,before.xp,"Floor completion through the live exit must award zero progression XP.");
-  assert.equal(completed.totalXp,before.totalXp,"Floor completion through the live exit must not alter lifetime progression XP.");
-  await page.evaluate(()=>descendFloor());
+  assert.equal(completed.floorComplete,true,"The live movement route must mark Floor 1 complete before descent.");
+  assert.equal(completed.floorCompletions,route.before.floorCompletions+1,"The supported Floor 1 exit route must bank the floor exactly once.");
+  assert.equal(completed.xp,route.before.xp,"Floor completion through the live exit must award zero progression XP.");
+  assert.equal(completed.totalXp,route.before.totalXp,"Floor completion through the live exit must not alter lifetime progression XP.");
+
+  await page.evaluate(()=>{
+    bullets.push({id:"floor-1-player-projectile-sentinel",owner:p1.id,x:p1.x,y:p1.y,dx:1,dy:0,ttl:99,power:1});
+    enemyBullets.push({id:"floor-1-enemy-projectile-sentinel",x:p1.x,y:p1.y,dx:-1,dy:0,ttl:99,power:1});
+  });
+  await page.click("#descend-btn");
   await settleFloorEntry(page,nextFloor);
   const after=await snapshot(page);
   assert.equal(after.floor,nextFloor,"The live Floor 1 completion route must advance exactly one floor.");
+  assert.equal(after.floorCompletions,completed.floorCompletions,"Floor 2 entry must not bank Floor 1 a second time.");
+  assert.equal(after.playerProjectiles,0,"Floor 2 must not retain Floor 1 player projectiles.");
+  assert.equal(after.enemyProjectiles,0,"Floor 2 must not retain Floor 1 enemy projectiles.");
   const reset=await page.evaluate(()=>({floorComplete:Boolean(run.floorComplete),xp:Number(p1.xp||0),totalXp:Number(p1.totalXp||0)}));
   assert.equal(reset.floorComplete,false,"Floor 2 entry must reset the floor-complete latch.");
-  assert.equal(reset.xp,before.xp,"Floor 1 to Floor 2 descent must award zero progression XP.");
-  assert.equal(reset.totalXp,before.totalXp,"Floor 1 to Floor 2 descent must not alter lifetime progression XP.");
+  assert.equal(reset.xp,route.before.xp,"Floor 1 to Floor 2 descent must award zero progression XP.");
+  assert.equal(reset.totalXp,route.before.totalXp,"Floor 1 to Floor 2 descent must not alter lifetime progression XP.");
   return after;
 }
 
@@ -130,6 +171,7 @@ try{
 
   await page.evaluate(()=>{
     p1.rpgStats={might:8,vitality:7,agility:6,endurance:9,luck:7,arcana:8};
+    p1.inventory=[{kind:"potion",name:"Restoration Potion",short:"POTION",qty:2}];
     p1.relics=["threshold-compass"];
     p1.banishmentVessel=true;
     p1.banishmentEssence=1;
@@ -146,11 +188,13 @@ try{
   assert.equal(opening.floorName,"THE THRESHOLD","The live campaign must begin in The Threshold.");
   assert.equal(opening.controller,"dungeon-solo","The live campaign must remain under the Solo Dungeon controller.");
   assert.deepEqual(opening.rpgStats,{might:8,vitality:7,agility:6,endurance:9,luck:7,arcana:8},"Seeded RPG attributes must be visible before the first descent.");
+  assert.deepEqual(opening.inventory,[{kind:"potion",name:"Restoration Potion",short:"POTION",qty:2}],"Seeded inventory state must be visible before the first descent.");
 
   const floor2=await completeFirstFloorThroughExit(page,{game:"Archon",nextFloor:2});
   assert.equal(floor2.floorName,"IRON KEEP","First descent must enter Iron Keep.");
   assert.deepEqual(floor2.bankedGames,["Archon"],"Floor 1 rescued C64 games must be banked before entering Floor 2.");
   assert.deepEqual(floor2.rpgStats,opening.rpgStats,"RPG attributes must survive the first real startWorld transition.");
+  assert.deepEqual(floor2.inventory,opening.inventory,"Inventory state must survive the first real startWorld transition.");
   assert.deepEqual(floor2.relics,["threshold-compass"],"Existing relics must survive the first real startWorld transition.");
   assert.equal(floor2.essence,1,"Banishment Essence must survive the first real startWorld transition.");
 
@@ -174,6 +218,7 @@ try{
   assert.equal(floor5.floorName,"SIGIL SANCTUM","Fourth descent must enter Sigil Sanctum.");
   assert.deepEqual(floor5.claimedDomains,["iron","bone","ash"],"All three global Keys must survive into Sigil Sanctum.");
   assert.deepEqual(floor5.rpgStats,opening.rpgStats,"All six RPG attributes must survive the complete four-transition campaign path.");
+  assert.deepEqual(floor5.inventory,opening.inventory,"Inventory state must survive the complete four-transition campaign path.");
   assert.deepEqual(floor5.relics,["threshold-compass","iron-heart","crypt-lantern","ember-seal"],"Relics accumulated across earlier depths must survive into Sigil Sanctum.");
   assert.equal(floor5.vessel,true,"The persistent Banishment Vessel must survive into Sigil Sanctum.");
   assert.equal(floor5.essence,5,"Banishment Essence must survive into Sigil Sanctum.");
