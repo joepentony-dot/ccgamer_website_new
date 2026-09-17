@@ -39,6 +39,9 @@ jobs:
           base64 -d /tmp/dungeon-v17.tar.gz.b64 > /tmp/dungeon-v17.tar.gz
           echo 'feb03f66af46b11620b9d02af5c83feb9b7439c468de20e18e9678fa8554844c  /tmp/dungeon-v17.tar.gz' | sha256sum -c -
           tar -xzf /tmp/dungeon-v17.tar.gz -C /tmp/dungeon-v17
+          mkdir -p /tmp/dungeon-v17/tools /tmp/dungeon-v17/tests/stubs
+          cp .c64-v17-support/validate_release.py /tmp/dungeon-v17/tools/validate_release.py
+          cp .c64-v17-support/stubs/*.h /tmp/dungeon-v17/tests/stubs/
           find /tmp/dungeon-v17 -maxdepth 3 -type f -print | sort
 
       - name: Run v1.7 source regressions
