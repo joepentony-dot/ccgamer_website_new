@@ -5,12 +5,23 @@
 ## Audit checkpoint
 
 - Audited: **17 September 2026**.
-- Runtime checkpoint before this documentation update: `218025ce2beac3765d65ca9b838e8afd58a5eedf`, merge of post-program live regression PR #2129.
+- Current `main` at the start of the independent post-defect programme: `5db1fa275fba1b33d9fbab55d065724110338fd7`, merge of documentation checkpoint PR #2130.
 - The seven-item repository-side live-defect remediation programme has completed through #2117, #2118, #2119, #2123, #2090, #2125 and #2126.
-- A later current-build freeze/stopped-firing regression is repository-fixed through #2129; product-level closure still requires a short sustained Solo live acceptance on the deployed current build.
-- Defect 5 still has a deployed/manual acceptance gate under the closure rule below. Resume that acceptance only after the post-#2129 Solo stability check passes; there is no remaining repository-side correction currently proven necessary for Defect 5.
-- No active Dungeon runtime defect PR remains. The current `codex/dungeon-2129-checkpoint` branch is documentation-only.
+- The later current-build freeze/stopped-firing regression is repository-fixed through #2129.
+- Two hands-on product gates remain unresolved, but the user has explicitly deferred them. Do not infer acceptance from automated tests and do not let those gates block independent repository work.
+- Active independent runtime work: Stage 1 retired-mode / legacy-residue cleanup in PR #2131, branch `codex/dungeon-retired-spy-startup-current-main`.
 - A merged PR is not treated as a closed user-reproduced defect until the deployed behaviour is manually accepted where this register explicitly requires that acceptance.
+
+### Deferred manual acceptance
+
+The two unresolved hands-on checks are:
+
+1. sustained Solo movement/firing/combat/pause-resume stability after #2129;
+2. three Artefacts/Essences → one Banishment Flask without first buying a Gold Flask, while Gold and Score remain unchanged.
+
+For both:
+
+**MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**
 
 ## Authoritative live-defect programme status — 17 September 2026
 
@@ -20,7 +31,7 @@
 | 2 | Sustained firing/enemy hits retain projectile entities and progressively slow the game. | **REPOSITORY-COMPLETE — #2118** |
 | 3 | Completion portal does not advance Floor 1 to the next campaign depth. | **REPOSITORY-COMPLETE — #2119** |
 | 4 | Save and Exit does not restore a supported run through Continue. | **REPOSITORY-COMPLETE — #2123** |
-| 5 | Three-Artefact Banishment Flask exchange only works after a Gold purchase. | **VERIFYING — repository path complete through #2090; deployed/manual acceptance still required** |
+| 5 | Three-Artefact Banishment Flask exchange only works after a Gold purchase. | **VERIFYING — repository path complete through #2090; manual acceptance deferred** |
 | 6 | Owned Firearms do not communicate meaningful weapon differences. | **REPOSITORY-COMPLETE — #2125** |
 | 7 | Remaining Sizzler/Zzap!/Uncommon RPG wording needs coherent setting-appropriate replacement. | **REPOSITORY-COMPLETE — #2126** |
 
@@ -38,7 +49,29 @@ PR #2129 proved a split release/cache identity on the canonical page. The author
 - The exact PR head also received a successful Cloudflare preview deployment.
 - Detailed checkpoint: `docs/ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md`.
 
-Repository status: **REPOSITORY-COMPLETE — #2129**. Product-level status remains **VERIFYING** until a short live Solo endurance check confirms that firing continues and the game does not freeze/stall on the deployed current build.
+Repository status: **REPOSITORY-COMPLETE — #2129**. Product-level status remains **VERIFYING — MANUAL ACCEPTANCE DEFERRED**.
+
+## Stage 1 — retired mode / legacy residue audit
+
+PR #2131 is the active bounded Stage 1 candidate.
+
+The earlier 16 September audit was too broad when it stated that the supported runtime did not load retired Horde/Spy modules. The canonical page did not directly list those special-mode files, but the r30 startup handoff still dynamically preloaded three retired Spy/Saboteurs owners.
+
+#2131 removes supported-startup preloading of:
+
+- `v10-41-r30-spy-exit-control-reset.js`;
+- `v10-41-r32-spy-world-owner.js`;
+- `v10-41-r32-spy-loader.js`.
+
+Ownership investigation proved that historically named special-mode layers were also carrying supported responsibilities. Those supported responsibilities are therefore retained explicitly rather than deleted by filename:
+
+- `v10-41-post-playtest-stability.js` — supported Solo fire-state recovery;
+- `v10-41-r56-playtest-completion.js` — ordinary-dungeon environment/chest/combat recovery ownership;
+- `v10-41-r59-live-regression-fixes.js` — supported pause/Solo stability ownership;
+- `v10-41-horde-frame-performance.js` — despite its name, still loads/maintains the supported Solo R60 live-play integrity owner and stops its Horde R60 polling timer outside Horde;
+- `v10-41-r60-horde-owner-composition.js` — despite its name, still protects supported Solo R60 maintenance/damage ancestry.
+
+The first #2131 CI candidate exposed this hidden dependency: the Solo soak lost the Horde-frame compatibility API, while selective-owner recovery could no longer see the supported R56/R60 integrity owners. The tests were not weakened and no retired mode was restored; the candidate was corrected by making supported ownership explicit.
 
 ### Defect 7 final terminology boundary
 
@@ -89,21 +122,21 @@ The exact candidate head `f70f816910fab8d07aaf946f140b593c9220f1ef` passed all r
 
 | Area | Status | Remaining acceptance |
 | --- | --- | --- |
-| #2129 freeze/stopped-firing regression | **VERIFYING** | Confirm on the deployed/current build that sustained Solo movement, real enemy combat and repeated firing/hold/release cycles continue without firing stopping or the game freezing/stalling. |
-| 3-Artefact Banishment Flask exchange | **VERIFYING** | #2090 is merged and automated coverage passes for both legacy physical Artefacts and the current V10.42 `banishmentEssence` representation without spending Gold/Score. Product-level closure still requires the deployed/current build to be manually checked after #2129 stability acceptance passes. |
+| #2129 freeze/stopped-firing regression | **VERIFYING — DEFERRED** | Future live confirmation must cover sustained Solo movement, real enemy combat, repeated firing/hold/release cycles and pause/resume without firing stopping or the game freezing/stalling. |
+| 3-Artefact Banishment Flask exchange | **VERIFYING — DEFERRED** | Future live confirmation must prove three Artefacts/Essences exchange for exactly one Banishment Flask without a prior Gold Flask purchase while Gold and Score remain unchanged. |
 
 ## Partially completed work
 
 | Area | Status | Remaining work |
 | --- | --- | --- |
-| Banishment terminology | **PARTIAL** | Runtime and customer-facing layers still contain a mixture of Artefact, Essence, Vessel and Ward-Break wording. Reconcile that separate terminology only after the live Flask behaviour is manually verified, so documentation follows demonstrated behaviour rather than assumption. |
+| Banishment terminology | **PARTIAL** | Runtime and customer-facing layers still contain a mixture of Artefact, Essence, Vessel and Ward-Break wording. Stage 3 may audit and safely reconcile presentation-only terminology while avoiding semantic/data migrations that depend on the deferred live exchange result. |
 | NPC / merchant expansion | **PARTIAL** | NPC dialogue/quest data exists, but deeper world integration, merchant/service behaviour and finished reward/content flows remain. |
 | Startup/menu simplification | **PARTIAL** | Useful presentation ideas from the now-closed stale #2055 candidate may still be re-derived. Rebuild only valid pieces as small current-main stages; do not restore retired online modes. |
 | Final release qualification | **VERIFYING** | A fresh supported-mode acceptance pass is required after remaining product/release work. |
 
 ## Requested work not yet implemented
 
-These are post-defect product/backlog items. They are **not** additional defects in the completed seven-item remediation programme and should not be started merely to keep that programme running.
+These are post-defect product/backlog items. They are **not** additional defects in the completed seven-item remediation programme.
 
 | Area | Status | Required outcome |
 | --- | --- | --- |
@@ -130,17 +163,17 @@ Horde Survivor, Spy Vs Spy/Sizzler Saboteurs and networked Dungeon Multiplayer a
 
 ## Current work order
 
-1. **Verify that #2129 / `218025ce2beac3765d65ca9b838e8afd58a5eedf` is deployed, then live-test sustained Solo stability.** Use normal movement, real enemy combat and several firing press/hold/release cycles; confirm firing does not stop and the game does not freeze/stall. Include pause/resume recovery if practical.
-2. **Only after #2129 stability acceptance passes, live-verify the 3-Artefact Banishment Flask exchange.** Automated qualification is complete; manual acceptance remains.
-3. **If both live checks pass, mark the seven-item live-defect programme and the later #2129 regression product-complete.** If either fails, reproduce against the then-current deployed `main` and create a new bounded defect rather than reviving stale branches.
-4. **Reconcile the separate Banishment customer-facing Artefact/Essence/Vessel/Ward-Break terminology** only after the demonstrated Flask behaviour is known.
-5. **Audit remaining retired-mode language/runtime residue**, including legacy online wording and compatibility-only code, without restoring retired product modes.
-6. **Rebuild useful startup/menu presentation ideas** from the closed #2055 source as small current-main stages only where the current product still needs them.
-7. **Implement Water / Fire / Earth / Air portal architecture and materially larger zone topology.**
-8. **Deepen zone-specific enemies, bosses, events, Artefacts and secrets.**
-9. **Finish NPC/merchant world integration.**
-10. **Complete the itch.io release handoff and package checks.**
-11. **Run final supported-mode regression and hands-on release acceptance.**
+1. **Complete Stage 1 retired-mode / legacy-residue cleanup.** Qualify and merge bounded #2131, reconcile current `main`, then continue auditing obsolete visible wording, unreachable controls, dead menu remnants, unnecessary startup bindings, compatibility wrappers and supported-play runtime work. Prove ownership before removing historically named code.
+2. **Stage 2 — startup/main-menu polish.** Keep the #2127 flicker fix intact; simplify only obsolete/dead presentation while preserving supported Solo/New Run, Continue, local Split Screen, Tutorial, Weekly/account, audio/options, controller and accessibility functions.
+3. **Stage 3 — Banishment terminology preparation.** Inventory Artefact/Essence/Vessel/Banishment/Ward wording, distinguish save-compatible internal identifiers from presentation text, and avoid risky migrations dependent on the deferred Flask acceptance.
+4. **Stage 4 — Water / Fire / Earth / Air portal architecture.** Design portal placement, unlocks, depth relationship, return flow and save representation before implementation; preserve the working five-depth campaign.
+5. **Stage 5 — larger procedural world structure.** Improve route variety, alternate paths, landmarks, purposeful dead ends, exploration decisions and zone-specific layouts without blindly increasing map size.
+6. **Stage 6 — deeper zone-specific gameplay.** Expand enemies, elites, bosses, telegraphing, traps, events, secrets, treasure, items, hazards and encounter patterns with mechanical purpose.
+7. **Stage 7 — NPC / merchant integration.** Finish useful world encounters, services, rewards, quest/content hooks, zone-specific characters and established-economy integration.
+8. **Stage 8 — itch.io release preparation.** Build release/package artifacts fresh from current `main`, verify version identity/save/startup/assets/documentation and the website → itch.io handoff.
+9. **Final qualification.** Run complete automated regression and hands-on release acceptance when the user is available.
+
+The deferred #2129 sustained-Solo check and Defect 5 Flask check remain release gates throughout this work order; they are not prerequisites for independent stages that do not depend on their outcomes.
 
 ## Closure rule
 
