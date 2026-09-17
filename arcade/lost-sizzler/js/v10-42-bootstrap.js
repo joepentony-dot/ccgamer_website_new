@@ -43,6 +43,7 @@
     ["v10-42-attack-hold-liveness.js","CCGLostSizzlerV142AttackHoldLiveness"],
     ["v10-42-artefact-shop-stability.js","CCGLostSizzlerV142ArtefactShopStability"],
     ["v10-42-projectile-lifecycle.js","CCGLostSizzlerV142ProjectileLifecycle"],
+    ["v10-42-owned-firearm-clarity.js","CCGLostSizzlerV142OwnedFirearmClarity"],
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
     ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"]
   ];
