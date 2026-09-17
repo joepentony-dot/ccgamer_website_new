@@ -6,9 +6,9 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Current checkpoint — 17 September 2026
 
-Live repository reconciliation after the seven-item defect programme, the later current-build freeze/stopped-firing regression, and the start of the independent retired-mode/legacy-residue programme:
+Live repository reconciliation after the seven-item defect programme, the later current-build freeze/stopped-firing regression, and the active independent retired-mode/legacy-residue programme:
 
-- Current `main` at the start of Stage 1: `5db1fa275fba1b33d9fbab55d065724110338fd7`, merge of documentation checkpoint PR #2130.
+- Current live `main` before #2134 final qualification: `e87f920b4629885eb87ad66d8049cc9fdc62fc72`, generated SEO/video-page PR #2133 directly on top of the #2131 merge.
 - Defect 1 — obsolete public-beta/watchdog startup lock — **repository-complete through #2117**.
 - Defect 2 — retained projectile entities / progressive slowdown — **repository-complete through #2118**.
 - Defect 3 — Floor 1 completion/exit progression failure — **repository-complete through #2119**.
@@ -17,7 +17,8 @@ Live repository reconciliation after the seven-item defect programme, the later 
 - Defect 6 — Owned Firearms differentiation — **repository-complete through #2125**.
 - Defect 7 — RPG terminology reconciliation — **repository-complete through #2126**.
 - Post-program live freeze/stopped-firing regression — **repository-complete through #2129; deployed/manual Solo stability acceptance deferred by the user**.
-- Active independent Stage 1 cleanup: PR #2131, `codex/dungeon-retired-spy-startup-current-main`, removing retired Spy startup owners while preserving supported late-runtime ownership proved to have been reached indirectly through that historical chain.
+- Stage 1 startup-owner cleanup #2131 — **merged** at exact qualified head `21fed121ceb0f72278142ba201f25927c5c6b9b5`, merge commit `3358cddc66725f75213c74dec7459551d8ff02b7`.
+- Active independent Stage 1 cleanup: PR #2134, `codex/dungeon-retired-spy-fullscreen-hook-current-main`, removing the dead retired Spy fullscreen pre-dispatch while preserving supported fullscreen ownership.
 
 Both hands-on gates remain exactly:
 
@@ -92,15 +93,15 @@ New regression coverage includes `v10-42-r30-release-cache-identity.mjs` plus th
 
 ### Stage 1 retired Spy startup ownership — PR #2131
 
-The earlier 16 September residue note was too broad. It was true that the canonical page did not directly list the retired special-mode files, but the supported r30 startup handoff still dynamically preloaded three retired Spy/Saboteurs owners. PR #2131 corrects that actual ownership boundary rather than relying on filename assumptions.
+The earlier 16 September residue note was too broad. It was true that the canonical page did not directly list the retired special-mode files, but the supported r30 startup handoff still dynamically preloaded three retired Spy/Saboteurs owners. PR #2131 corrected that actual ownership boundary rather than relying on filename assumptions.
 
-The retired startup owners being removed are:
+The retired startup owners removed are:
 
 - `v10-41-r30-spy-exit-control-reset.js`;
 - `v10-41-r32-spy-world-owner.js`;
 - `v10-41-r32-spy-loader.js`.
 
-Investigation also proved that the historical chain was carrying supported responsibilities. #2131 therefore preserves those responsibilities explicitly:
+Investigation also proved that the historical chain was carrying supported responsibilities. #2131 therefore preserved those responsibilities explicitly:
 
 - `v10-41-post-playtest-stability.js` — supported Solo fire-state recovery;
 - `v10-41-r56-playtest-completion.js` — ordinary-dungeon environment/chest/combat recovery ownership;
@@ -109,6 +110,28 @@ Investigation also proved that the historical chain was carrying supported respo
 - `v10-41-r60-horde-owner-composition.js` — despite its name, still protects supported Solo R60 maintenance and damage ancestry.
 
 The first #2131 CI candidate exposed exactly this hidden ownership: one Solo soak saw the retired Horde frame-performance global disappear entirely, while selective-owner recovery could no longer see the supported R56/R60 integrity APIs. The tests were not weakened. The candidate was corrected by making supported ownership explicit while keeping the retired Spy startup owners absent.
+
+The historical `v10-41-r32-solo-monitor-diagnostic.mjs` contract was then reconciled with the authorised retirement boundary. It no longer waits for the retired R32 Spy loader. It proves the retired loader/observer/assets remain absent in canonical Solo while R56/R59/R60 supported ownership remains present. Exact qualified #2131 head `21fed121ceb0f72278142ba201f25927c5c6b9b5` passed Public Code Cache Version, Native Mouse Wheel Scroll Contract, SEO Automation, canonical/Node contracts and all six Chromium shards. Chromium shard 5 initially hit the known `v10-35-layout.mjs` startup-wait flake; an unchanged retry passed, with no timeout, assertion or runtime weakening. #2131 merged as `3358cddc66725f75213c74dec7459551d8ff02b7`.
+
+### Stage 1 retired fullscreen dispatch — PR #2134
+
+#2134 is the active bounded follow-up from the #2131 merge.
+
+The supported global `F` handler in `game-main.js` still looked up `CCGLostSizzlerV141R32SpyLoader.handleSpyFullscreenKey()` before falling through to fullscreen even though #2131 now guarantees that retired R32 loader is absent from supported startup. The real supported owner is `game-render.js → toggleFullscreen()`, which already owns the fullscreen button and the browser fullscreen API call.
+
+#2134 therefore changes only the supported shared-input dispatch:
+
+- `F` now calls `toggleFullscreen()` directly;
+- the fullscreen button continues calling `toggleFullscreen()` directly;
+- no retired Spy/Saboteur owner can intercept supported shared `F` input;
+- fullscreen API behavior itself is unchanged;
+- movement, firing, pause/resume, saves, combat, Banishment logic and R56/R59/R60 ownership are unchanged.
+
+Focused static coverage prohibits the retired shared Spy dispatch while retaining the supported keyboard/button fullscreen owner. The browser contract fabricates a retired R32 Spy fullscreen handler and proves it cannot intercept `F`, while canonical `dungeon-solo` ownership stays active and both keyboard and button fullscreen paths still reach the supported shell owner.
+
+The first #2134 Load Safety run exposed a stale historical assertion in `v10-41-r59-live-regression-fixes.mjs` that still required `game-main.js` to delegate shared `F` to the retired Spy helper. That assertion has been narrowed to the current supported boundary: direct `F → toggleFullscreen()` plus an explicit prohibition on a shared R32 Spy fullscreen dependency. All unrelated R59 pause-clock, Solo wall-time, diagnostics, autosave and recovery assertions remain unchanged.
+
+Automated review also found that the original browser regression filename `v10-42-retired-spy-fullscreen-hook.mjs` matched the existing `/(?:horde|spy)/i` retired-mode filter in the Load Safety Chromium manifest and therefore would have been silently omitted from all six shards. The contract has been renamed to `v10-42-retired-fullscreen-owner.mjs`; the manifest itself is not weakened or broadened.
 
 ## Completed runtime stages
 
@@ -151,7 +174,7 @@ The first Load Safety attempt had one isolated Chromium shard-5 failure: `v10-35
 
 ### #2118 projectile lifecycle remediation
 
-#2118 is **MERGED**. It adds an ordered projectile lifecycle owner that retires non-piercing impacts before downstream callbacks and performs authoritative player/enemy projectile cleanup from a `finally` boundary. It preserves fire delay, rapid-fire cadence, projectile allowance, projectile TTL, held-fire ownership and room/run cleanup. Exact-head regression covered sustained fire, repeated impacts and downstream enemy-death faults.
+#2118 is **MERGED**. It adds an ordered V10.42 projectile lifecycle owner that retires non-piercing enemy/generator impacts before downstream callbacks and sweeps expired player/enemy projectiles from a `finally` boundary. It preserves fire delay, rapid-fire cadence, projectile allowance, projectile TTL, held-fire ownership and room/run cleanup. Exact-head regression covered sustained fire, repeated impacts and downstream enemy-death faults.
 
 ## Retired-mode residue audit — corrected 17 September 2026
 
@@ -183,7 +206,7 @@ Historical Horde/Spy source files and acceptance records remain in the repositor
 
 ## Guardrails and exact next action
 
-Preserve Solo, Tutorial, local 2P Split Screen and Weekly Vault/account services. Do not restore retired networked Dungeon Multiplayer, Horde Survivor or Spy/Sizzler Saboteurs behaviour. Do not reopen completed Defects 1, 2, 3, 4, 6 or 7 without new current-build regression evidence. Preserve #2118 projectile lifecycle ownership unless new evidence independently disproves it.
+Preserve Solo, Tutorial, local 2P Split Screen and Weekly Vault/account services. Do not restore retired networked Dungeon Multiplayer, Horde Survivor or Spy/Sizzler Saboteurs behaviour. Do not reopen completed Defects 1, 2, 3, 4, 6 or 7 without new current-build regression evidence. Preserve #2118 projectile lifecycle ownership, #2129 release/cache identity and #2131 explicit supported R56/R59/R60 startup ownership unless new evidence independently disproves them.
 
 The two live gates remain unresolved but are not the current development task:
 
@@ -192,7 +215,7 @@ The two live gates remain unresolved but are not the current development task:
 
 For both: **MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**.
 
-The exact repository action is to qualify #2131 on its final exact head. If green, review-clean and conflict-free, merge it under the standing authorization, reconcile `main`, checkpoint the Stage 1 result, and continue to the next independent retired-mode/legacy-residue item. Do not stop the independent programme merely because the two hands-on release gates remain deferred.
+The exact repository action is to qualify #2134 on its final exact head after the R59 static-contract correction, Chromium-visible browser-contract rename and checkpoint documentation changes. Require Public Code Cache Version, Native Mouse Wheel Scroll Contract, SEO Automation and Lost Sizzler Load Safety, including canonical/Node contracts, Chromium discovery and all six Chromium shards. Confirm `v10-42-retired-fullscreen-owner.mjs` is actually present in the discovered matrix, resolve legitimate review threads, verify a bounded conflict-free diff against current `main`, merge under the standing authorization when qualified, reconcile the new `main`, then continue the next independent Stage 1 residue audit item. Do not stop the independent programme merely because the two hands-on release gates remain deferred.
 
 ## Historical live-defect remediation checkpoint — 16 September 2026
 
@@ -224,3 +247,5 @@ Branch `codex/dungeon-projectile-lifecycle-current-main` was created from exact 
 - 2026-09-17: Reconciled `docs/AI-CONTINUATION-STATE.md` and `arcade/lost-sizzler/PROGRESS.md` after Defect 7. The remaining next action at that checkpoint was Defect 5 deployed/manual acceptance.
 - 2026-09-17: Reproduced a later current-build Solo freeze/stopped-firing regression, proved split release/cache ownership rather than a return of #2118, qualified #2129 exact head `585cda263e2f0c9a626fef61d19bae9635d2087f`, and merged it as `218025ce2beac3765d65ca9b838e8afd58a5eedf`.
 - 2026-09-17: User explicitly deferred both remaining hands-on acceptance gates. Independent Stage 1 work began on #2131; the first candidate exposed hidden R56/R60 supported ownership previously reached through retired special-mode startup ancestry, and the candidate was corrected without restoring the retired Spy startup owners or weakening tests.
+- 2026-09-17: Reconciled the stale R32 Solo-monitor contract, qualified #2131 exact head `21fed121ceb0f72278142ba201f25927c5c6b9b5` across all required workflows and all six Chromium shards, used one unchanged shard-5 retry for the historical `v10-35-layout.mjs` startup flake, and merged #2131 as `3358cddc66725f75213c74dec7459551d8ff02b7`.
+- 2026-09-17: Began #2134 from the #2131 merge to remove the dead shared Spy fullscreen pre-dispatch. Initial CI exposed the stale R59 fullscreen assertion; review also proved the first browser-contract filename was filtered from Chromium by the retained-mode manifest. Both findings were corrected without restoring retired behavior or weakening supported R59 ownership.

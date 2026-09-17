@@ -5,11 +5,12 @@
 ## Audit checkpoint
 
 - Audited: **17 September 2026**.
-- Current `main` at the start of the independent post-defect programme: `5db1fa275fba1b33d9fbab55d065724110338fd7`, merge of documentation checkpoint PR #2130.
+- Current live `main` before #2134 qualification: `e87f920b4629885eb87ad66d8049cc9fdc62fc72`, an unrelated generated SEO/video-page update directly on top of the #2131 Stage 1 merge.
+- Stage 1 startup-owner cleanup #2131 is merged. Exact qualified head: `21fed121ceb0f72278142ba201f25927c5c6b9b5`; merge commit: `3358cddc66725f75213c74dec7459551d8ff02b7`.
 - The seven-item repository-side live-defect remediation programme has completed through #2117, #2118, #2119, #2123, #2090, #2125 and #2126.
 - The later current-build freeze/stopped-firing regression is repository-fixed through #2129.
 - Two hands-on product gates remain unresolved, but the user has explicitly deferred them. Do not infer acceptance from automated tests and do not let those gates block independent repository work.
-- Active independent runtime work: Stage 1 retired-mode / legacy-residue cleanup in PR #2131, branch `codex/dungeon-retired-spy-startup-current-main`.
+- Active independent runtime work: continued Stage 1 retired-mode / legacy-residue cleanup in PR #2134, branch `codex/dungeon-retired-spy-fullscreen-hook-current-main`.
 - A merged PR is not treated as a closed user-reproduced defect until the deployed behaviour is manually accepted where this register explicitly requires that acceptance.
 
 ### Deferred manual acceptance
@@ -53,17 +54,17 @@ Repository status: **REPOSITORY-COMPLETE — #2129**. Product-level status remai
 
 ## Stage 1 — retired mode / legacy residue audit
 
-PR #2131 is the active bounded Stage 1 candidate.
+PR #2131 is **MERGED**.
 
 The earlier 16 September audit was too broad when it stated that the supported runtime did not load retired Horde/Spy modules. The canonical page did not directly list those special-mode files, but the r30 startup handoff still dynamically preloaded three retired Spy/Saboteurs owners.
 
-#2131 removes supported-startup preloading of:
+#2131 removed supported-startup preloading of:
 
 - `v10-41-r30-spy-exit-control-reset.js`;
 - `v10-41-r32-spy-world-owner.js`;
 - `v10-41-r32-spy-loader.js`.
 
-Ownership investigation proved that historically named special-mode layers were also carrying supported responsibilities. Those supported responsibilities are therefore retained explicitly rather than deleted by filename:
+Ownership investigation proved that historically named special-mode layers were also carrying supported responsibilities. Those supported responsibilities remain explicitly loaded rather than deleted by filename:
 
 - `v10-41-post-playtest-stability.js` — supported Solo fire-state recovery;
 - `v10-41-r56-playtest-completion.js` — ordinary-dungeon environment/chest/combat recovery ownership;
@@ -72,6 +73,10 @@ Ownership investigation proved that historically named special-mode layers were 
 - `v10-41-r60-horde-owner-composition.js` — despite its name, still protects supported Solo R60 maintenance/damage ancestry.
 
 The first #2131 CI candidate exposed this hidden dependency: the Solo soak lost the Horde-frame compatibility API, while selective-owner recovery could no longer see the supported R56/R60 integrity owners. The tests were not weakened and no retired mode was restored; the candidate was corrected by making supported ownership explicit.
+
+The stale `v10-41-r32-solo-monitor-diagnostic.mjs` contract was also reconciled rather than timed out or deleted. Its final replacement proves the retired R32 loader/observer and retired Spy assets remain absent during canonical Solo while R56/R59/R60 ownership stays present. Exact qualified #2131 head `21fed121ceb0f72278142ba201f25927c5c6b9b5` passed Public Code Cache Version, Native Mouse Wheel Scroll Contract, SEO Automation, canonical/Node contracts and all six Chromium shards. One unchanged shard-5 retry was required after the historical `v10-35-layout.mjs` 15-second startup wait flaked; the retry passed without changing runtime code, assertions or timeouts. #2131 merged as `3358cddc66725f75213c74dec7459551d8ff02b7`.
+
+PR #2134 is the next bounded Stage 1 candidate. It removes the now-dead `CCGLostSizzlerV141R32SpyLoader.handleSpyFullscreenKey()` pre-dispatch from supported `F` fullscreen input while leaving the real `toggleFullscreen()` owner and fullscreen button behavior unchanged. Static and browser contracts protect that boundary; no retired Spy runtime is restored.
 
 ### Defect 7 final terminology boundary
 
@@ -163,7 +168,7 @@ Horde Survivor, Spy Vs Spy/Sizzler Saboteurs and networked Dungeon Multiplayer a
 
 ## Current work order
 
-1. **Complete Stage 1 retired-mode / legacy-residue cleanup.** Qualify and merge bounded #2131, reconcile current `main`, then continue auditing obsolete visible wording, unreachable controls, dead menu remnants, unnecessary startup bindings, compatibility wrappers and supported-play runtime work. Prove ownership before removing historically named code.
+1. **Complete Stage 1 retired-mode / legacy-residue cleanup.** #2131 is merged. Qualify and merge bounded #2134, then continue auditing obsolete visible wording, unreachable controls, dead menu remnants, unnecessary startup/input bindings, compatibility wrappers and supported-play runtime residue. Prove ownership before removing historically named code.
 2. **Stage 2 — startup/main-menu polish.** Keep the #2127 flicker fix intact; simplify only obsolete/dead presentation while preserving supported Solo/New Run, Continue, local Split Screen, Tutorial, Weekly/account, audio/options, controller and accessibility functions.
 3. **Stage 3 — Banishment terminology preparation.** Inventory Artefact/Essence/Vessel/Banishment/Ward wording, distinguish save-compatible internal identifiers from presentation text, and avoid risky migrations dependent on the deferred Flask acceptance.
 4. **Stage 4 — Water / Fire / Earth / Air portal architecture.** Design portal placement, unlocks, depth relationship, return flow and save representation before implementation; preserve the working five-depth campaign.

@@ -20,9 +20,10 @@ assert.match(r27,/if\(code==="KeyF"\)/,"the historical r27 conflict must remain 
 assert.match(loader,/function detachLegacyR27KeyOwner\(\)/,"the live loader must explicitly retire the old r27 keyboard owner");
 assert.match(loader,/removeEventListener\("keydown",api\.onSpyKeyDown,true\)/,"the exact r27 capture listener must be removed without disabling its world-isolation timer");
 
-// TAB owns the private Spy field kit. F is routed through one idempotent helper
-// so game-main and the Spy capture boundary cannot double-dispatch fullscreen.
-assert.match(gameMain,/if\(e\.code==="KeyF"\)\{[\s\S]*spyLoader\?\.handleSpyFullscreenKey\?\.\(e\)[\s\S]*toggleFullscreen\(\);return[\s\S]*\}/,"shared controls must delegate Spy F to the idempotent owner while preserving ordinary fullscreen fallback");
+// Historical Spy field-kit ownership remains source evidence, but supported
+// shared F input must now reach the canonical fullscreen owner directly.
+assert.match(gameMain,/if\(e\.code==="KeyF"\)\{toggleFullscreen\(\);return\}/,"shared controls must route F directly to the supported fullscreen owner");
+assert.doesNotMatch(gameMain,/CCGLostSizzlerV141R32SpyLoader|handleSpyFullscreenKey/,"supported shared controls must not depend on the retired R32 Spy fullscreen owner");
 assert.match(loader,/if\(code==="Tab"\)[\s\S]*stopImmediatePropagation[\s\S]*toggleSpyInventoryFromTab\(\)/,"Spy TAB must be synchronously captured by the loader and bridged to the private Spy inventory owner");
 assert.match(loader,/owner\.setInventory\(!Boolean\(owner\.state\?\.inventoryOpen\)\)/,"TAB must toggle the r32 private Spy field kit rather than the shared Dungeon inventory mode");
 assert.match(loader,/const fullscreenEvents=new WeakSet\(\)/,"Spy F must track each keyboard event by identity instead of listener order");
@@ -94,4 +95,4 @@ assert.match(r59,/installClockOwner\(\);installPauseOwners\(\);installSoloSaveTr
 assert.match(r59,/api\.patchInputOwnership\?\.\(\);api\.patchSaboteurRules\?\.\(\)/,"r59 must reassert r58 input and Saboteur rules while Spy is active");
 assert.match(r59,/if\(api\.tick\?\.\(\)\)/,"r59 must keep the r58 live state reconciled after older compatibility monitors run");
 
-console.log("Lost Sizzler V10.41 r59 pause-clock, null RAF rebasing, expanded bounded Solo wall-time substeps, visible-play stall recovery, R29 duplicate/stall/fault diagnostics, synchronous Solo floor autosave, TAB field-kit, idempotent F fullscreen and r58 ownership regressions passed.");
+console.log("Lost Sizzler V10.41 r59 pause-clock, null RAF rebasing, expanded bounded Solo wall-time substeps, visible-play stall recovery, R29 duplicate/stall/fault diagnostics, synchronous Solo floor autosave, supported F fullscreen and r58 ownership regressions passed.");
