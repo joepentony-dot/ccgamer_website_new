@@ -49,6 +49,16 @@ try{
   assert.equal(before.specialMode,"","Solo must not activate a retired special mode");
   assert.equal(before.controller,"dungeon-solo","Solo must retain canonical dungeon-solo ownership");
 
+  // Solo startup may legitimately have entered fullscreen already. Return to a
+  // known non-fullscreen state so the next F press exercises requestFullscreen
+  // through the supported toggle owner rather than its equally valid exit path.
+  await page.evaluate(async()=>{
+    if(document.fullscreenElement){
+      try{await document.exitFullscreen()}catch(_){}
+    }
+  });
+  await page.waitForFunction(()=>!document.fullscreenElement,null,{timeout:5000});
+
   await page.evaluate(()=>{
     window.__ccgStage1FullscreenCalls=0;
     window.__ccgStage1RetiredSpyFullscreenCalls=0;
