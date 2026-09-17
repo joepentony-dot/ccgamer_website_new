@@ -85,8 +85,19 @@
     return true
   }
 
+  function alignSupportedMenuOrder(grid){
+    if(!grid)return false;
+    const ids=["continue-save-btn","solo-btn","split-btn","tutorial-zone-btn","daily-btn"];
+    const buttons=ids.map(id=>grid.querySelector(`#${id}`)).filter(Boolean);
+    if(!buttons.length)return false;
+    const current=[...grid.children].filter(node=>ids.includes(String(node.id||""))).map(node=>node.id);
+    if(current.length===buttons.length&&current.every((id,index)=>id===buttons[index].id))return true;
+    const fragment=document.createDocumentFragment();for(const button of buttons)fragment.appendChild(button);grid.insertBefore(fragment,grid.firstChild);state.menuRepairs++;return true
+  }
+
   function markMenu(){
     const grid=document.querySelector("#menu .game-mode-buttons");if(!grid)return false;
+    alignSupportedMenuOrder(grid);
     for(const button of grid.querySelectorAll("button"))sealButtonLayout(button);
     grid.dataset.r55TextLayout="true";state.menuPasses++;return true
   }
