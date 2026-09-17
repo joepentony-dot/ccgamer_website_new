@@ -138,7 +138,7 @@ body[data-run-active="false"] #menu .secondary-menu a{min-height:34px!important;
  * supported card geometry also matches the retained R55 text-layout owner so a
  * late compatibility pass cannot resize the menu after first paint. */
 html body[data-run-active="false"] #menu .ccg-mode-tier-label{display:none!important}
-html body[data-run-active="false"] #menu .game-mode-buttons button{
+html body[data-run-active="false"] #menu .game-mode-buttons button:not(.hidden){
   box-sizing:border-box!important;
   position:relative!important;
   display:flex!important;
