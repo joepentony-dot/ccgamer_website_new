@@ -1,0 +1,76 @@
+name: C64 Dungeon Carnage v1.7 60s PAL Boot
+on:
+  push:
+    branches: [codex/c64-dungeon-v17-binary-build]
+    paths: ['.github/workflows/c64-dungeon-v17-boot60.yml']
+permissions:
+  contents: read
+jobs:
+  boot60:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install toolchain
+        run: |
+          sudo add-apt-repository -y universe
+          sudo add-apt-repository -y multiverse
+          sudo apt-get update
+          sudo apt-get install -y cc65 vice xvfb xauth curl
+      - name: Restore exact source and compile exact binary
+        run: |
+          rm -rf /tmp/dungeon-v17 /tmp/dungeon-v17.tar.gz*
+          mkdir -p /tmp/dungeon-v17
+          cat tools/c64-binary-build/v17/chunks/payload.part-* > /tmp/dungeon-v17.tar.gz.b64
+          echo 'ce9693ab84999db05856b9289c9ad57abe3a0809f0b43d8194d967b288fe5f4a  /tmp/dungeon-v17.tar.gz.b64' | sha256sum -c -
+          base64 -d /tmp/dungeon-v17.tar.gz.b64 > /tmp/dungeon-v17.tar.gz
+          echo 'feb03f66af46b11620b9d02af5c83feb9b7439c468de20e18e9678fa8554844c  /tmp/dungeon-v17.tar.gz' | sha256sum -c -
+          tar -xzf /tmp/dungeon-v17.tar.gz -C /tmp/dungeon-v17
+          mkdir -p /tmp/dungeon-v17/tools /tmp/dungeon-v17/tests/stubs /tmp/dungeon-v17/build
+          cp .c64-v17-support/validate_release.py /tmp/dungeon-v17/tools/validate_release.py
+          cp .c64-v17-support/stubs/*.h /tmp/dungeon-v17/tests/stubs/
+          python3 .c64-v17-support/apply_cc65_compat.py
+          cd /tmp/dungeon-v17
+          python3 tests/test_v17.py
+          cl65 -Oirs -t c64 -C c64-game.cfg -o build/DUNGEON-CARNAGE-64.prg src/main.c
+          echo '93f51958590964fccb27b0ab7c7c9da49ad6cb82e95a358193d580e602d9429a  build/DUNGEON-CARNAGE-64.prg' | sha256sum -c -
+          python3 tools/make_d64.py build/DUNGEON-CARNAGE-64.prg build/DUNGEON-CARNAGE-64-v1.7.d64
+          echo '1c881d728a860c8fefc2d64ebfc02fb9eef36ca4d6c29bfe593f2e462fe8d75f  build/DUNGEON-CARNAGE-64-v1.7.d64' | sha256sum -c -
+          c1541 build/DUNGEON-CARNAGE-64-v1.7.d64 -list | tee build/D64-DIRECTORY.txt
+      - name: Supply VICE ROM data to ephemeral runner
+        run: |
+          mkdir -p /tmp/vice-roms/C64 /tmp/vice-roms/DRIVES
+          base='https://raw.githubusercontent.com/VICE-Team/svn-mirror/main/vice/data'
+          curl -fsSL "$base/C64/basic-901226-01.bin" -o /tmp/vice-roms/C64/basic.bin
+          curl -fsSL "$base/C64/chargen-901225-01.bin" -o /tmp/vice-roms/C64/chargen.bin
+          curl -fsSL "$base/C64/kernal-901227-03.bin" -o /tmp/vice-roms/C64/kernal.bin
+          curl -fsSL "$base/DRIVES/dos1541-325302-01+901229-05.bin" -o /tmp/vice-roms/DRIVES/dos1541.bin
+      - name: Run 60 seconds of PAL C64 time
+        working-directory: /tmp/dungeon-v17
+        shell: bash
+        run: |
+          mkdir -p build/vice
+          set +e
+          timeout 40s xvfb-run -a x64sc -pal -silent -warp -sounddev dummy \
+            -kernal /tmp/vice-roms/C64/kernal.bin \
+            -basic /tmp/vice-roms/C64/basic.bin \
+            -chargen /tmp/vice-roms/C64/chargen.bin \
+            -dos1541 /tmp/vice-roms/DRIVES/dos1541.bin \
+            -autostart build/DUNGEON-CARNAGE-64-v1.7.d64 \
+            -limitcycles 60000000 -exitscreenshot build/vice/boot60.png \
+            > build/vice/vice60.log 2>&1
+          rc=$?
+          set -e
+          echo "VICE cycle-limit exit code: $rc"
+          test -s build/vice/boot60.png
+          test "$rc" -eq 1
+          if grep -Eqi 'panic|segmentation fault' build/vice/vice60.log; then exit 1; fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dungeon-carnage-64-v1.7-boot60
+          retention-days: 7
+          path: |
+            /tmp/dungeon-v17/build/DUNGEON-CARNAGE-64-v1.7.d64
+            /tmp/dungeon-v17/build/DUNGEON-CARNAGE-64.prg
+            /tmp/dungeon-v17/build/D64-DIRECTORY.txt
+            /tmp/dungeon-v17/build/vice/**
