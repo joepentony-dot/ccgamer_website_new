@@ -4,13 +4,14 @@
   if(window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
-  const BUILD="V10.42 r30";
-  const CACHE="20260917r30";
+  const BUILD="V10.42 r31";
+  const CACHE="20260917r31";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-r23-rpg-build-focus.js","CCGLostSizzlerV142R23RpgBuildFocus"],
     ["v10-42-r23-rpg-build-expansion.js","CCGLostSizzlerV142R23RpgBuildExpansion"],
     ["v10-42-five-depth-campaign.js","CCGLostSizzlerV142FiveDepthCampaign"],
+    ["v10-42-elemental-portal-foundation.js","CCGLostSizzlerV142ElementalPortalFoundation"],
     ["v10-42-split-campaign-state.js","CCGLostSizzlerV142SplitCampaignState"],
     ["v10-42-floor-balance.js","CCGLostSizzlerV142FloorBalance"],
     ["v10-42-r6-biome-environment-director.js","CCGLostSizzlerV142R6BiomeEnvironmentDirector"],
@@ -110,15 +111,31 @@
   }
 
   function blockedStart(event){
-    if(state.ready||state.failed)return;
     const target=event.target instanceof Element?event.target.closest("#solo-btn,#continue-save-btn,#daily-btn,#split-btn,#tutorial-zone-btn"):null;
-    if(!target)return;
+    if(!target||state.failed)return;
     const paywall=window.CCGLostSizzlerV142DemoPaywall;
     if(paywall?.demoMode&&document.body?.dataset?.fullGameEntitled!=="true"&&target.id!=="tutorial-zone-btn"){
       event.preventDefault();event.stopImmediatePropagation();
       paywall.showPaywall?.({reason:"full-game"});
       return;
     }
+
+    /* Keep V10.42 on the capture boundary after readiness for Solo/Tutorial.
+     * A click can be scheduled while ready=false but dispatch after ready=true.
+     * Letting that transition click fall through to the legacy core handler
+     * bypasses the onboarding choiceAccepted handoff and silently returns to
+     * the menu. Other supported buttons retain their established ready-state
+     * handlers. */
+    if(state.ready){
+      if(target.id!=="solo-btn"&&target.id!=="tutorial-zone-btn")return;
+      event.preventDefault();event.stopImmediatePropagation();
+      clearPendingBusy();
+      state.pendingStartId=target.id;
+      target.setAttribute("aria-busy","true");
+      replayPendingStart();
+      return;
+    }
+
     event.preventDefault();event.stopImmediatePropagation();
     clearPendingBusy();
     state.pendingStartId=target.id;
@@ -146,6 +163,25 @@
       const legacyGatePending=window.CCGLostSizzlerReleaseGate?.state?.ready===false;
       if(!button||!button.isConnected){retry();return}
       if(button.disabled||legacyGatePending){retry();return}
+
+      /* Solo and Tutorial are owned by the guidance layer once the ordered
+       * bootstrap is ready. Hand the preserved intent to that owner directly:
+       * a synthetic button click can be consumed by older capture listeners,
+       * and clearing pendingStartId before a run actually starts loses the
+       * player's original choice. */
+      if(pendingId==="solo-btn"||pendingId==="tutorial-zone-btn"){
+        const guidance=window.CCGLostSizzlerTutorialGuidanceV123;
+        if(typeof guidance?.launchSolo!=="function"){retry();return}
+        let launched;
+        try{launched=guidance.launchSolo(pendingId==="tutorial-zone-btn")}catch(_){retry();return}
+        if(launched===false&&guidance.queuedLaunch!==null){finish();return}
+        Promise.resolve(launched).then(()=>{
+          if(document.body?.dataset?.runActive==="true"){finish();return}
+          retry();
+        }).catch(()=>retry());
+        return
+      }
+
       finish();
       button.click();
     };
@@ -230,7 +266,8 @@
       promoteR1ChestOwner();
       promoteStage8MerchantOwner();
       observeControllerSeal();
-      state.ready=true;stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";window.removeEventListener("click",blockedStart,true);
+      try{window.CCGLostSizzlerV141R55FinalPlaytestCleanup?.markMenu?.()}catch(_){}
+      state.ready=true;stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";
       const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five new dungeon floors are loaded in verified order. Solo, Tutorial and 2P Split Screen run locally; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
       replayPendingStart();

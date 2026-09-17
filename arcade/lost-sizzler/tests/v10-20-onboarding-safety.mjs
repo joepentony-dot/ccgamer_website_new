@@ -72,8 +72,10 @@ assert.match(guidance,/#inventory-close,#inventory-close-top/,"inventory close c
 
 /* Start flow: the menu itself is the only chooser after the mobile notice. */
 assert.match(index,/<button id="solo-btn" class="[^"]*primary[^"]*">Play Solo<\/button><button id="tutorial-zone-btn" type="button" class="tutorial-primary-option">Tutorial<\/button>/,"Tutorial must be present in the shipped HTML immediately beside Play Solo");
-assert.match(guidance,/function ensurePrimaryTutorialButton\(\)/,"guidance must enforce the permanent Tutorial button if another runtime rearranges the menu");
-assert.match(guidance,/solo\.insertAdjacentElement\("afterend",button\)/,"Tutorial must remain immediately beside Play Solo");
+assert.match(guidance,/function ensurePrimaryTutorialButton\(\)/,"guidance must preserve the permanent Tutorial button if another runtime removes it");
+assert.match(guidance,/if\(!button\)\{[\s\S]*?solo\.insertAdjacentElement\("afterend",button\)/,"a missing Tutorial button must still be restored beside Play Solo as the safe shipped fallback");
+assert.match(guidance,/if\(button\.parentElement!==row\)solo\.insertAdjacentElement\("afterend",button\)/,"a detached Tutorial button must be restored to the supported menu");
+assert.doesNotMatch(guidance,/button\.previousElementSibling!==solo/,"tutorial guidance must not fight the Stage 2 runtime owner by repeatedly forcing an existing Tutorial button beside Solo");
 assert.match(guidance,/button\.textContent="Tutorial"/,"permanent tutorial option must be labelled Tutorial");
 assert.match(guidance,/function bindSoloDirect\(\)/,"Play Solo must start directly without another chooser");
 assert.doesNotMatch(guidance,/Choose how you want to start|data-start-tutorial|data-start-game/,"the redundant second tutorial/play chooser must be removed");

@@ -176,6 +176,7 @@
       button=document.createElement("button");
       button.id="tutorial-zone-btn";
       button.type="button";
+      solo.insertAdjacentElement("afterend",button);
     }
     if(button.dataset.ccgTutorialLaunchBound!=="true"){
       button.addEventListener("click",event=>{
@@ -187,7 +188,7 @@
     button.textContent="Tutorial";
     button.title="Open the safe Training Archive tutorial";
     button.classList.add("tutorial-primary-option");
-    if(button.parentElement!==row||button.previousElementSibling!==solo)solo.insertAdjacentElement("afterend",button);
+    if(button.parentElement!==row)solo.insertAdjacentElement("afterend",button);
     return true;
   }
 

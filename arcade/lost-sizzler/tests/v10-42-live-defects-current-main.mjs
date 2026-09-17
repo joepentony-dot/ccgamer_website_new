@@ -15,7 +15,9 @@ assert.doesNotMatch(bootstrap,/expectedSubtitle="THE LOST SIZZLER/,"authoritativ
 assert.match(bootstrap,/v10-42-attack-hold-liveness\.js/,"ordered bootstrap must load sustained attack-key liveness");
 assert.match(bootstrap,/v10-42-artefact-shop-stability\.js/,"ordered bootstrap must load Artefact exchange stability");
 assert.match(bootstrap,/window\.addEventListener\("click",blockedStart,true\)/,"V10.42 must capture pre-ready start gestures before older document-level release handlers");
-assert.match(bootstrap,/window\.removeEventListener\("click",blockedStart,true\)/,"V10.42 must release authoritative start capture once ordered startup is ready");
+assert.match(bootstrap,/if\(state\.ready\)\{\s*if\(target\.id!=="solo-btn"&&target\.id!=="tutorial-zone-btn"\)return;/,"after readiness V10.42 must narrow capture ownership to Solo/Tutorial while preserving established handlers for the other supported controls");
+assert.match(bootstrap,/state\.pendingStartId=target\.id;\s*target\.setAttribute\("aria-busy","true"\);\s*replayPendingStart\(\);/,"a Solo/Tutorial click crossing the readiness boundary must be preserved and handed to the authoritative replay path");
+assert.doesNotMatch(bootstrap,/window\.removeEventListener\("click",blockedStart,true\)/,"V10.42 must not reopen the proven ready-transition click race by removing its narrow Solo/Tutorial capture owner");
 assert.match(bootstrap,/legacyGatePending=window\.CCGLostSizzlerReleaseGate\?\.state\?\.ready===false/,"queued starts must wait for the legacy release gate rather than dropping the click");
 assert.match(bootstrap,/if\(!button\|\|!button\.isConnected\)\{retry\(\);return\}\s*if\(button\.disabled\|\|legacyGatePending\)\{retry\(\);return\}/,"queued starts must survive missing, detached or transiently disabled buttons and the legacy-gate handoff");
 assert.match(bootstrap,/state\.pendingStartRetries\+=1;\s*setTimeout\(attempt,50\)/,"queued starts must retain the canonical fixed retry cadence until dispatch becomes safe");
