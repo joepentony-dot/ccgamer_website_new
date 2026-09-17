@@ -151,16 +151,15 @@ try{
   assert.equal(guardEntry?.exitOpen,true,"The Warden guard must receive an open exit.");
   assert.equal(guardEntry?.objectiveComplete,true,"The Warden guard must receive the completed Floor 1 objective.");
   assert.equal(guardEntry?.physicalContact,true,"The Warden guard must see real physical contact with the Floor 1 exit.");
-  assert.ok(guardEntry?.blockingKinds?.includes("warden-debt"),"The first valid Floor 1 exit must expose the unresolved optional Warden debt predicate.");
-  assert.equal(guardEntry?.shouldSuppress,true,"The current Warden guard predicate must identify the first valid Floor 1 exit as suppressible.");
-  assert.equal(diagnostic.floorCompleteCalls[1]?.result,false,"The current Warden guard must return false on the first valid Floor 1 exit.");
-  assert.equal(guardExit?.mode,"playing","Suppression must leave gameplay mode unchanged.");
-  assert.equal(guardExit?.runFloorComplete,false,"Suppression must leave run.floorComplete false.");
-  assert.equal(guardExit?.panelHidden,true,"Suppression must leave the floor-complete panel hidden.");
-  assert.equal(guardExit?.row?.skipped,false,"The inner Warden domain completion wrapper must not have been reached on the suppressed first exit.");
-  assert.equal(guardExit?.confirm?.floor,1,"The suppression branch must arm a Floor 1 Warden exit confirmation.");
-  assert.equal(guardExit?.confirm?.key,"warden-debt","The suppression branch must be caused specifically by unresolved Warden debt.");
-  console.log("Floor 1 Warden exit suppression diagnostic completed.");
+  assert.ok(guardEntry?.issues?.some(issue=>issue.kind==="warden-debt"),"Unresolved optional Warden debt must remain represented");
+  assert.deepEqual(guardEntry?.blockingKinds,[],"Optional Warden debt must not block an authorized exit");
+  assert.equal(guardEntry?.shouldSuppress,false,"First valid exit must reach the inner completion owner");
+  assert.equal(guardExit?.mode,"floorcomplete","Completion must transfer gameplay mode");
+  assert.equal(guardExit?.runFloorComplete,true,"Completion must set the real latch");
+  assert.equal(guardExit?.panelHidden,false,"Completion must show the real panel");
+  assert.equal(guardExit?.row?.skipped,true,"Inner domain owner must record skipped Warden debt");
+  assert.equal(guardExit?.confirm,null,"First valid exit must not leave a re-entry confirmation armed");
+  console.log("Floor 1 Warden exit completion ownership regression passed.");
   await context.close();
 }finally{
   await browser.close();

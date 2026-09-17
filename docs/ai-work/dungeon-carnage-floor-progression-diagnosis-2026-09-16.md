@@ -1,65 +1,36 @@
 # Dungeon Carnage — Floor progression defect diagnosis
 
-Date: 2026-09-17
-Base: `e5e5dc46a7fd1d3d0f620d4fdcbb9f1780024c0a`
-PR: #2119 (`codex/dungeon-live-defect-checkpoint-post-2118`)
+## Checkpoint — 17 September 2026
 
-## Scope
+Verified main: `e5e5dc46a7fd1d3d0f620d4fdcbb9f1780024c0a` (merged #2118).
+Active Defect 3: #2119, `codex/dungeon-live-defect-checkpoint-post-2118`.
+Incoming head: `b8f3ab5df0c23b0bbf90ec7143c0b159144ae891`.
+Defects 1 (#2117) and 2 (#2118) are complete per the user's current programme; do not reopen without new evidence.
 
-This checkpoint records the bounded current-main investigation of the reported Floor-1 completion/exit progression failure. Production gameplay remains unchanged: exact CI evidence shows the strengthened browser fixture was incomplete and then briefly over-constrained, rather than demonstrating a fault in the authoritative descent owner.
+## Established root cause
 
-## Current-main transition ownership
+The supported Floor-1 exploration/guardian objective opens the real exit. Physical `movePlayer()` entry invokes `floorComplete` once with `mode=playing` and `run.floorComplete=false`. It is not a missing movement callback or a faulty `descendFloor()`.
 
-`arcade/lost-sizzler/js/game-core.js` owns the supported floor-completion state machine:
+The ordered bootstrap loads Warden domain progression, cleansing effects, charge routes, then hunt guidance. Hunt guidance captures the cleansing/domain/core completion chain as `baseFloorComplete` and installs the outer `guardedFloorComplete` wrapper. On physical exit contact, unresolved optional Warden debt (or an unclaimed optional cache fragment) was marked `blocking:true`. With no matching unexpired `host.v142WardenExitConfirm`, the guard armed a 12-second confirmation, showed a toast and returned false before calling the inner owner. Mode stayed playing, the latch stayed false, and the completion panel stayed hidden. A second invocation could consume the confirmation; this explains why an extra movement callback is not a root-cause fix.
 
-- `floorComplete(by)` refuses duplicate completion, sets `run.floorComplete=true`, changes `mode` to `floorcomplete`, banks the floor, and exposes the descend/extract UI.
-- `descendFloor()` is the authoritative next-depth mutation. It increments `run.floor`, updates `run.deepest`, clears `run.floorComplete`, chooses the next modifier, rebuilds the world from `PGR.floorSeed(run)`, returns to `playing`, captures the new floor-entry checkpoint, and offers the save prompt.
-- `game-main.js` binds `UI.descend` (`#descend-btn`) directly to `descendFloor`.
-- `game-play.js::movePlayer(...)` calls `floorComplete(...)` when the player physically enters `world.exit` while `host.exitOpen` is true.
+#2119's incoming head already changes the two optional issue flags to `blocking:false`. The correction preserves issue text, quest guidance, domain skip/debt accounting, Seal rewards, reserved-charge delivery, the core completion panel and the real Descend button. No additional movement owner is needed.
 
-The authoritative core descent path therefore remains intact and must not be replaced or bypassed without contrary runtime evidence.
+## Candidate qualification
 
-## Exact shard-2 failures and root cause
+Incoming exact-head Load Safety run 35183452102 failed in Node job 105080375126 at `v10-42-warden-hunt-guidance-contract.mjs:46`: the old contract still required first-contact suppression. Chromium was skipped. This is a deterministic candidate contract mismatch, not flaky CI.
 
-The strengthened five-depth browser regression at exact head `8e5b6b687f123b6c450798fa7ba05a0c87050703` failed deterministically in Chromium shard 2 at:
+The updated Node regression requires exactly one underlying completion call on the first valid unresolved/cache exit and retains debt/cache-loss guidance, optional quests, reserved rewards, completed/no-Warden states and off-exit lifecycle coverage. With the old two blocking flags restored temporarily, the new regression fails at first-contact completion; with the corrected flags it passes.
 
-`Floor 1 objective completion must authorize the live stairs.`
+The focused browser ownership diagnostic is converted from asserting the bug to asserting first-contact completion, visible real panel, domain skip recording and no armed confirmation. The five-depth browser contract preserves the genuine objective → physical exit entry → real completion → actual #descend-btn → authoritative descent → playable Floor 2 route, exactly-once banking, zero transition XP and persistent RPG/inventory/relic/Banishment state.
 
-That failure occurred before physical exit movement or `descendFloor()` because the fixture only appended a rescued C64 game to `run.floorGames`. Floor 1 (`THE THRESHOLD`) uses the `explore_guardian` objective instead: real play must establish at least 70% exploration and defeat the guardian before `CCGSystems.updateObjective(...)` can complete the objective.
+Build/cache marker advances to V10.42 r29 / 20260917r29 through the existing bootstrap. No protected intro, games/games.json, external account/configuration, retired mode or unrelated candidate changes.
 
-Head `cde9ab2622aee99b479e674f3cadf2e3be48b446` corrected those prerequisites but added an unsupported second assumption: that the completed Floor-1 objective must leave the exit sealed until a separately injected Exit Sigil is collected. Exact shard-2 execution disproved that assumption. With real exploration and guardian state established, `CCGSystems.updateObjective(...)` completed the objective and `host.exitOpen` was already true.
+Local browser execution initially could not launch because the installed Playwright package had no Chromium executable; browser download was attempted. This is not a browser pass. Final exact-head CI must still qualify the candidate before merge.
 
-The authoritative Defect-3 acceptance contract is therefore the direct supported route: genuine Floor-1 objective completion authorizes the live exit, followed by physical entry into the exit tile and the established completion/descent handoff. No production runtime change is justified by either fixture failure.
+## Related candidate and continuation
 
-## Corrected bounded regression
+#2120 remains draft/unmerged at `51667cbac96b6d10153619833a4fd608427dbe11`. Its three-file proposal adds a redundant movement handoff and is superseded in approach by the proven guard correction; do not import it. Its Load Safety run 35164780945 is red in Chromium shards 2 and 3. Retire only after the root-cause candidate is qualified.
 
-The corrected #2119 browser contract now models only prerequisites proven to be required by real Floor-1 play:
+The user's autonomous-run authorization supersedes the old temporary ask-before-merging gate for #2119. Required exact-head checks and review/conflict checks still apply. Product-register live/manual acceptance remains a closure requirement; do not claim a user-reproduced defect closed solely from CI or merge. Continue repository work on Defects 4–6 after qualification as authorized. Banishment wording in Defect 7 must follow the documented live exchange acceptance gate.
 
-- records all ordinary room centres as explored so the live exploration requirement is satisfied;
-- marks the defeated Floor-1 guardian state and runs the real `CCGSystems.updateObjective(...)` owner;
-- proves genuine Floor-1 objective completion authorizes `host.exitOpen` without directly forcing the exit state;
-- physically moves P1 onto the real exit tile through `movePlayer(...)` and waits for the real `floorcomplete` mode;
-- proves Floor 1 is banked exactly once;
-- injects old-floor player/enemy projectile sentinels only after the floor-complete state and proves the Floor-2 world clears them;
-- uses the real `#descend-btn` UI handoff rather than calling `descendFloor()` directly for the Defect-3 transition;
-- proves Floor 1 → Floor 2 advances exactly once, resets `run.floorComplete`, returns to playable Solo mode, preserves seeded RPG/inventory/relic/Banishment state, banks the rescued game, and awards no XP merely for the exit/descent transition.
-
-Later Floor-2→5 persistence steps remain the pre-existing five-depth contract and are not being converted into Defect-3 UI coverage.
-
-## Qualification boundary
-
-The corrected exact head must pass the repository-required PR checks before #2119 can be considered qualified. A red result must be diagnosed from its exact job/log; tests, timeouts and gameplay must not be weakened merely to obtain green.
-
-Even if fully qualified, #2119 retains its explicit merge gate: **do not merge without explicit user authorization for this exact PR**.
-
-## Preserved boundaries
-
-- Progression XP remains enemy-kill and explicit XP reward/pickup only. The exit/portal transition must never award XP.
-- Do not alter the already-qualified mobile trap/touch-damage or portrait-layout implementation without contrary reproduction evidence.
-- Do not touch protected intro-loader files or `games/games.json`.
-- Do not revive retired online/Horde/Spy modes.
-- Do not absorb the prepared XP candidate or unrelated Cloudflare/commerce/release work.
-
-## Related current-main reconciliation
-
-PR #2117 (public-beta watchdog) and PR #2118 (projectile lifecycle retention) are on current `main`. Under the work-register closure rule they are VERIFYING pending deployed/manual acceptance rather than OPEN implementation work.
+Next: qualify the updated #2119 head, diagnose any remaining genuine failures without bypasses or weaker assertions, merge only under the current authorization and actual gates, reconcile main, then continue Save and Exit restoration. Keep #2110 and unrelated frozen candidates parked.

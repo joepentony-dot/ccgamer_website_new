@@ -8,7 +8,19 @@ For Dungeon Carnage specifically, `arcade/lost-sizzler/PROGRESS.md` is the produ
 
 Update this file when a workstream changes category, its active PR/dependency changes, or a substantial session ends. Keep detailed reasoning, checks, blockers, and next actions in the workstream file.
 
-## Verified checkpoint
+## Current autonomous live-defect checkpoint — 17 September 2026
+
+- Verified main: `e5e5dc46a7fd1d3d0f620d4fdcbb9f1780024c0a` (#2118 merged).
+- Defects 1 (#2117) and 2 (#2118) are complete per current user instruction.
+- Defect 3 is active in #2119 (`codex/dungeon-live-defect-checkpoint-post-2118`), incoming head `b8f3ab5df0c23b0bbf90ec7143c0b159144ae891`. Optional Warden first-exit confirmation is the suppression owner; the two-line correction needs aligned regressions and exact-head qualification.
+- Detailed current record: [Floor progression diagnosis](ai-work/dungeon-carnage-floor-progression-diagnosis-2026-09-16.md).
+- #2120 is a competing draft movement-callback proposal, not merged or qualified; retain only as historical evidence pending qualification of the root-cause fix.
+- Open PR inventory: #2119, #2120, #2110, #2056, #1976, #1860, #1852. Do not disturb unrelated candidates.
+- Autonomous merge authorization replaces prior temporary supervised merge prompts; genuine manual acceptance and external configuration gates remain.
+- Next queue: Save and Exit restoration, immediate three-Artefact Flask exchange, firearms differentiation, then terminology subject to live Banishment acceptance.
+
+## Historical checkpoint (superseded where the current checkpoint differs)
+
 
 - Reconciled through `main` commit `408a9870d33f9ea2931934c302176743d2589160`, the merge of public-beta/watchdog remediation PR #2117. Always refresh live GitHub before acting because automation or later merges may advance `main` again.
 - The live open-PR queue contains **six active PRs** after opening bounded Dungeon Defect 2 PR #2118. Treat that count as an audit fact, not a permanent repository invariant.

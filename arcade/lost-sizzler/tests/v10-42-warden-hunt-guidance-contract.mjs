@@ -43,17 +43,13 @@ assert.match(UI.quests.innerHTML,/\+10% maximum HP and \+1 armour/,"The optional
 assert.equal(api.playerExitContact("TESTER"),true,"A named local player standing on the open floor exit should own Warden exit confirmation");
 
 const unresolvedFirst=context.floorComplete("TESTER");
-assert.equal(unresolvedFirst,false,"First exit contact with an unresolved Warden should stop floor completion");
-assert.equal(floorCalls,0,"The unresolved-Warden warning must fire before the underlying floor completion can record a skip");
-assert.ok(host.v142WardenExitConfirm,"The first blocked exit should arm an explicit second-entry confirmation");
-assert.match(toasts.at(-1)?.title||"",/WARDEN BUSINESS REMAINS/,"Blocked exit should show a dedicated Warden warning");
-assert.match(toasts.at(-1)?.text||"",/WARDEN UNRESOLVED/,"Exit warning should identify the unresolved Warden");
-assert.match(toasts.at(-1)?.text||"",/\+10% maximum HP and \+1 armour/,"Exit warning should state the exact Warden Debt consequence");
-assert.match(toasts.at(-1)?.text||"",/enter it again within 12 seconds/i,"Exit warning should explain the opt-in second-entry confirmation");
-const unresolvedSecond=context.floorComplete("TESTER");
-assert.equal(unresolvedSecond,"BASE FLOOR COMPLETE:TESTER","Second exit entry inside the confirmation window should preserve player choice and complete the floor");
-assert.equal(floorCalls,1,"Confirmed unresolved exit should call the underlying floor completion exactly once");
-assert.equal(host.v142WardenExitConfirm,undefined,"Consumed exit confirmation should not remain armed");
+assert.equal(unresolvedFirst,"BASE FLOOR COMPLETE:TESTER","Optional unresolved Warden must allow the first valid exit contact");
+assert.equal(floorCalls,1,"First exit must call the real completion owner exactly once");
+assert.equal(host.v142WardenExitConfirm,undefined,"Optional Warden debt must not arm a hidden re-entry requirement");
+const debtIssue=api.exitIssues().find(issue=>issue.kind==="warden-debt");
+assert.equal(debtIssue?.blocking,false,"Debt remains advisory");
+assert.match(debtIssue.text,/\+10% maximum HP and \+1 armour/,"Exact debt consequences remain visible");
+assert.match(UI.quests.innerHTML,/OPTIONAL WARDEN/,"Optional quest guidance remains visible");
 
 context.startWorld();
 assert.equal(startCalls,1,"Guidance should preserve the existing world-start handler");
@@ -83,13 +79,13 @@ assert.match(UI.quests.innerHTML,/WARDEN CLEANSED — CACHE FRAGMENT UNCLAIMED/,
 assert.doesNotMatch(UI.quests.innerHTML,/v142-warden-contract quest-done/,"The contract should remain incomplete until the Warden Cache fragment is claimed");
 
 const cacheFirst=context.floorComplete("TESTER");
-assert.equal(cacheFirst,false,"First exit contact with an unclaimed Warden Cache fragment should stop floor completion");
-assert.equal(floorCalls,1,"Cache warning must fire before calling the underlying floor completion again");
-assert.match(toasts.at(-1)?.text||"",/WARDEN CACHE UNCLAIMED/,"Exit warning should identify the missing second Seal Fragment");
-assert.match(toasts.at(-1)?.text||"",/left behind/,"Cache warning should state that the fragment is lost by leaving");
-const cacheSecond=context.floorComplete("TESTER");
-assert.equal(cacheSecond,"BASE FLOOR COMPLETE:TESTER","Second exit entry should allow the player to knowingly abandon the cache fragment");
-assert.equal(floorCalls,2,"Confirmed cache abandonment should call the underlying floor completion once");
+assert.equal(cacheFirst,"BASE FLOOR COMPLETE:TESTER","Optional cache fragment must allow first exit contact");
+assert.equal(floorCalls,2,"Cache abandonment calls the real completion owner exactly once");
+assert.equal(host.v142WardenExitConfirm,undefined,"Optional cache must not require re-entry");
+const cacheIssue=api.exitIssues().find(issue=>issue.kind==="cache-fragment");
+assert.equal(cacheIssue?.blocking,false,"Unclaimed cache remains advisory");
+assert.match(cacheIssue.text,/WARDEN CACHE UNCLAIMED/,"Unclaimed cache remains identified");
+assert.match(cacheIssue.text,/left behind/,"Cache loss consequence remains explicit");
 
 run.v142WardenFloors["2"].cacheFragmentAwarded=true;
 context.updateQuests();
@@ -136,4 +132,4 @@ assert.equal(lifecycleExit,"BASE FLOOR COMPLETE:R42 REGRESSION","Non-exit lifecy
 assert.equal(floorCalls,6,"Lifecycle passthrough should call the underlying floor completion exactly once");
 assert.equal(host.v142WardenExitConfirm,undefined,"Lifecycle passthrough must not arm Warden exit confirmation");
 
-console.log("PASS v10-42 Warden hunt guidance + safe exit confirmation contract");
+console.log("PASS v10-42 Warden hunt guidance + non-blocking optional exit contract");

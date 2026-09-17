@@ -19,9 +19,9 @@ The following are current deployed-game reproductions. Earlier green checks and 
 
 | Priority | Defect | Status |
 | --- | --- | --- |
-| 1 | Public-beta watchdog replaces the final menu with COMING SOON and disabled controls after initial paint. | **OPEN — root cause confirmed**: hostname-only lock in `v10-41-load-watchdog.js`. |
-| 2 | Sustained firing/enemy hits retain projectile entities and progressively slow the game. | **OPEN** |
-| 3 | Completion portal does not advance Floor 1 to the next campaign depth. | **OPEN** |
+| 1 | Public-beta watchdog replaces the final menu with COMING SOON and disabled controls after initial paint. | **COMPLETE — #2117**, per current user programme. |
+| 2 | Sustained firing/enemy hits retain projectile entities and progressively slow the game. | **COMPLETE — #2118**, per current user programme. |
+| 3 | Completion portal does not advance Floor 1 to the next campaign depth. | **OPEN — #2119**: optional Warden first-contact guard identified; regression/CI qualification in progress. |
 | 4 | Save and Exit does not restore a supported run through Continue. | **OPEN** |
 | 5 | Three-Artefact Banishment Flask exchange only works after a Gold purchase. | **OPEN** |
 | 6 | Owned Firearms do not communicate meaningful weapon differences. | **OPEN — audit required** |
