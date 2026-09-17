@@ -1,0 +1,301 @@
+/*
+ * CHEEKY COMMODORE GAMER: DUNGEON CARNAGE 64
+ * v1.7 "Carnage Unleashed"
+ *
+ * Real Commodore 64 cc65 C source.
+ * Target: PAL/NTSC C64, joystick port 2.
+ *
+ * v1.7 priorities:
+ * - stronger commercial-style feedback: high score, grades and phase notices
+ * - animate player movement and preserve bounded sprite-memory ownership
+ * - add timed traps, collapsing floor cells and a rune-operated shortcut
+ * - telegraph boss magic before dangerous volleys
+ * - improve death feedback without adding unbounded particles/entities
+ * - retain hard caps on enemies/projectiles for C64 speed
+ */
+
+#include <c64.h>
+#include <conio.h>
+#include <joystick.h>
+#include <stdint.h>
+#include <string.h>
+
+#define SCREEN ((unsigned char*)0x8400)
+#define COLOR  ((unsigned char*)0xD800)
+#define SPRPTR ((unsigned char*)0x87F8)
+#define SPRDATA ((unsigned char*)0xB800)
+#define SPR_BASE_PTR ((unsigned char)0xE0)
+
+#define SCREEN_W 40
+#define SCREEN_H 25
+#define MAP_H 22
+#define MAP_Y0 3
+
+#define MAX_ENEMIES 6
+#define MAX_SHOTS 8
+#define MAX_PICKUPS 4
+
+#define TILE_FLOOR 0
+#define TILE_WALL 1
+#define TILE_BARREL 2
+#define TILE_SPIKE 3
+#define TILE_WATER 4
+#define TILE_LAVA 5
+#define TILE_PILLAR 6
+#define TILE_EXIT 7
+#define TILE_CHEST 8
+#define TILE_RUBBLE 9
+#define TILE_TORCH 10
+#define TILE_SKULL 11
+#define TILE_ALTAR 12
+#define TILE_SECRET 13
+#define TILE_CRACK 14
+#define TILE_RUNE 15
+#define TILE_GATE 16
+#define TILE_FIREJET 17
+
+#define TYPE_NONE 0
+#define TYPE_BAT 1
+#define TYPE_SLIME 2
+#define TYPE_SKELETON 3
+#define TYPE_SORCERER 4
+#define TYPE_GUARDIAN 5
+#define TYPE_BOSS 6
+
+#define AI_IDLE 0
+#define AI_TELEGRAPH 1
+#define AI_DIVE 2
+#define AI_RECOVER 3
+#define AI_CHASE 4
+
+#define PICK_NONE 0
+#define PICK_MEAT 1
+#define PICK_GEM 2
+#define PICK_BOMB 3
+#define PICK_RAGE 4
+#define PICK_SHIELD 5
+
+#define SFX_NONE 0
+#define SFX_SWING 1
+#define SFX_HIT 2
+#define SFX_KILL 3
+#define SFX_HURT 4
+#define SFX_PICK 5
+#define SFX_EXIT 6
+#define SFX_BOMB 7
+#define SFX_POWER 8
+#define SFX_ALTAR 9
+#define SFX_SECRET 10
+#define SFX_CLEAR 11
+#define SFX_WARN 12
+#define SFX_RUNE 13
+#define SFX_CRUMBLE 14
+
+#define DIR_NONE 255
+#define DIR_UP 0
+#define DIR_RIGHT 1
+#define DIR_DOWN 2
+#define DIR_LEFT 3
+
+#define SPR_PLAYER_IDLE 0
+#define SPR_PLAYER_ATTACK 1
+#define SPR_BAT_A 2
+#define SPR_BAT_B 3
+#define SPR_BRUTE 4
+#define SPR_MAGE 5
+#define SPR_BOSS 6
+#define SPR_SLASH 7
+#define SPR_BRUTE_B 8
+#define SPR_SLIME_A 9
+#define SPR_SLIME_B 10
+#define SPR_MAGE_B 11
+#define SPR_BOSS_B 12
+#define SPR_GUARDIAN 13
+#define SPR_PLAYER_WALK_A 14
+#define SPR_PLAYER_WALK_B 15
+
+typedef struct Enemy {
+    uint8_t type;
+    uint8_t x;
+    uint8_t y;
+    uint8_t old_x;
+    uint8_t old_y;
+    int8_t dx;
+    int8_t dy;
+    uint8_t hp;
+    uint8_t maxhp;
+    uint8_t state;
+    uint8_t timer;
+    uint8_t cooldown;
+    uint8_t flash;
+} Enemy;
+
+typedef struct Shot {
+    uint8_t active;
+    uint8_t x;
+    uint8_t y;
+    uint8_t old_x;
+    uint8_t old_y;
+    int8_t dx;
+    int8_t dy;
+    uint8_t ttl;
+} Shot;
+
+typedef struct Pickup {
+    uint8_t type;
+    uint8_t x;
+    uint8_t y;
+    uint8_t active;
+} Pickup;
+
+static unsigned char mapbuf[SCREEN_W * MAP_H];
+static Enemy enemies[MAX_ENEMIES];
+static Shot shots[MAX_SHOTS];
+static Pickup pickups[MAX_PICKUPS];
+
+static uint8_t floor_no;
+static uint8_t player_x;
+static uint8_t player_y;
+static uint8_t player_hp;
+static uint8_t player_maxhp;
+static uint8_t invuln;
+static uint8_t attack_cd;
+static uint8_t attack_flash;
+static uint8_t attack_x;
+static uint8_t attack_y;
+static uint8_t facing;
+static uint8_t frame;
+static uint8_t move_repeat;
+static uint8_t last_dir;
+static uint8_t joy_prev;
+static uint8_t combo;
+static uint8_t combo_timer;
+static uint8_t multiplier;
+static uint16_t score;
+static uint8_t gems;
+static uint8_t bombs;
+static uint8_t enemies_alive;
+static uint8_t exit_open;
+static uint8_t game_over;
+static uint8_t boss_phase;
+static uint8_t screen_shake;
+static uint8_t floor_banner;
+static uint8_t sfx_timer;
+static uint8_t music_step;
+static uint8_t music_div;
+static uint8_t rage_timer;
+static uint8_t shield;
+static uint8_t boss_reinforce_mask;
+static uint8_t floor_kills;
+static uint8_t secrets_found;
+static uint8_t secret_notice;
+static uint8_t floor_clear_timer;
+static uint16_t floor_clear_bonus;
+static uint8_t floor_grade;
+static uint8_t walk_timer;
+static uint8_t rune_opened;
+static uint8_t rune_notice;
+static uint8_t boss_warning_timer;
+static uint8_t boss_phase_notice;
+static uint8_t death_fx_timer;
+static uint8_t death_fx_x;
+static uint8_t death_fx_y;
+static uint8_t chests_opened;
+static uint16_t high_score;
+
+static const unsigned char floor_border[6] = {
+    COLOR_BROWN, COLOR_LIGHTBLUE, COLOR_GRAY2,
+    COLOR_RED, COLOR_ORANGE, COLOR_PURPLE
+};
+
+static const unsigned char floor_floorcol[6] = {
+    COLOR_GRAY1, COLOR_BLUE, COLOR_GRAY3,
+    COLOR_BROWN, COLOR_RED, COLOR_GRAY1
+};
+
+static const char* floor_names[6] = {
+    "BARREL CELLAR",
+    "DROWNED CRYPT",
+    "BONE MAZE",
+    "SPIKE HALL",
+    "LAVA VAULT",
+    "BUFFERING THRONE"
+};
+
+static const char* floor_hints[6] = {
+    "BARRELS EXPLODE. THE WALLS MAY LIE.",
+    "WATER SLOWS YOU. CHECK THE PILLARS.",
+    "THE MAZE HAS A SHORTCUT. SOMEWHERE.",
+    "SPIKES BITE. BATS NOW TAKE TURNS.",
+    "LAVA, A HIDDEN CACHE, AND BAD NEWS.",
+    "HE VOLLEYS MAGIC. DO NOT STAND STILL."
+};
+
+static const uint16_t music_notes[8] = {
+    0x1168, 0x15F0, 0x1A10, 0x15F0,
+    0x1330, 0x1870, 0x1D00, 0x1870
+};
+
+/* Expanded animation bank. Each frame is exactly one 64-byte VIC-II sprite slot. */
+static const unsigned char sprite_player_idle[64] = {
+    0, 24, 0, 0, 60, 0, 0, 126, 0, 0, 219, 0,
+    1, 255, 128, 3, 255, 192, 3, 126, 192, 3, 60, 192,
+    1, 126, 128, 1, 255, 128, 0, 255, 0, 0, 126, 0,
+    0, 102, 0, 0, 102, 0, 0, 195, 0, 1, 129, 128,
+    1, 129, 128, 3, 0, 192, 3, 0, 192, 0, 0, 0,
+    0, 0, 0, 0
+};
+static const unsigned char sprite_player_attack[64] = {
+    0, 24, 0, 0, 60, 0, 0, 126, 0, 0, 219, 0,
+    1, 255, 128, 3, 255, 192, 3, 126, 192, 3, 60, 248,
+    1, 127, 252, 1, 255, 248, 0, 255, 0, 0, 126, 0,
+    0, 102, 0, 0, 102, 0, 0, 195, 0, 1, 129, 128,
+    1, 129, 128, 3, 0, 192, 3, 0, 192, 0, 0, 0,
+    0, 0, 0, 0
+};
+static const unsigned char sprite_bat_a[64] = {
+    0,0,0, 64,0,2, 96,0,6, 112,24,14, 56,60,28, 31,126,248,
+    15,255,240, 7,231,224, 3,195,192, 1,129,128, 3,195,192, 7,0,224,
+    14,0,112, 28,0,56, 56,0,28, 112,0,14, 96,0,6, 64,0,2,
+    0,0,0, 0,0,0, 0,0,0, 0
+};
+static const unsigned char sprite_bat_b[64] = {
+    0,0,0, 0,0,0, 96,0,6, 120,24,30, 60,60,60, 31,126,248,
+    15,255,240, 7,231,224, 3,195,192, 1,129,128, 3,195,192, 7,231,224,
+    15,195,240, 31,129,248, 56,0,28, 48,0,12, 32,0,4, 0,0,0,
+    0,0,0, 0,0,0, 0,0,0, 0
+};
+static const unsigned char sprite_brute[64] = {
+    0,126,0, 0,255,0, 1,255,128, 3,219,192, 3,255,192, 7,126,224,
+    7,255,224, 15,255,240, 15,126,240, 31,255,248, 31,255,248, 15,255,240,
+    7,255,224, 7,126,224, 6,102,96, 6,102,96, 12,195,48, 12,195,48,
+    24,129,24, 0,0,0, 0,0,0, 0
+};
+static const unsigned char sprite_mage[64] = {
+    0,24,0, 0,60,0, 0,126,0, 0,255,0, 1,219,128, 3,255,192,
+    3,126,192, 7,255,224, 7,219,224, 15,255,240, 15,126,240, 14,60,112,
+    12,60,48, 24,126,24, 24,255,24, 48,219,12, 48,129,12, 96,129,6,
+    64,0,2, 0,0,0, 0,0,0, 0
+};
+static const unsigned char sprite_boss[64] = {
+    0,255,0, 3,255,192, 7,189,224, 15,255,240, 31,219,248, 31,255,248,
+    63,126,252, 63,255,252, 127,219,254, 127,255,254, 127,126,254, 63,255,252,
+    31,255,248, 31,126,248, 30,60,120, 28,24,56, 56,60,28, 112,102,14,
+    96,195,6, 0,0,0, 0,0,0, 0
+};
+static const unsigned char sprite_slash[64] = {
+    128, 0, 0, 96, 0, 0, 48, 0, 0, 24, 0, 0,
+    12, 0, 0, 6, 0, 0, 3, 0, 0, 1, 128, 0,
+    0, 192, 0, 0, 96, 0, 0, 48, 0, 0, 24, 0,
+    0, 12, 0, 0, 6, 0, 0, 3, 0, 0, 1, 128,
+    0, 0, 192, 0, 0, 96, 0, 0, 48, 0, 0, 24,
+    0, 0, 0, 0
+};
+static const unsigned char sprite_brute_b[64] = {
+    0, 126, 0, 0, 255, 0, 1, 255, 128, 3, 219, 192,
+    3, 255, 192, 7, 126, 224, 7, 255, 224, 15, 255, 240,
+    15, 126, 240, 31, 255, 248, 31, 255, 248, 15, 255, 240,
+    7, 255, 224, 4, 126, 224, 6, 102, 96, 5, 102, 96,
+    12, 195, 48, 15, 195, 48, 24, 129, 24, 0, 0, 0,
+    0, 0, 0, 0
+};
