@@ -6,75 +6,36 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Current checkpoint — 17 September 2026
 
-Live repository reconciliation after the seven-item defect programme, the later current-build freeze/stopped-firing regression, and the active independent retired-mode/legacy-residue programme:
+Live `main` is `ee2d6b38e5c5805ee1c906d7f801bda2d8496383`, the merged Stage 2 landing milestone (#2136).
 
-- Current live `main` before #2134 final qualification: `e87f920b4629885eb87ad66d8049cc9fdc62fc72`, generated SEO/video-page PR #2133 directly on top of the #2131 merge.
-- Defect 1 — obsolete public-beta/watchdog startup lock — **repository-complete through #2117**.
-- Defect 2 — retained projectile entities / progressive slowdown — **repository-complete through #2118**.
-- Defect 3 — Floor 1 completion/exit progression failure — **repository-complete through #2119**.
-- Defect 4 — Save and Exit / Continue restoration reliability — **repository-complete through #2123**.
-- Defect 5 — 3-Artefact Banishment Flask exchange — **repository implementation complete through #2090; deployed/manual acceptance deferred by the user**.
-- Defect 6 — Owned Firearms differentiation — **repository-complete through #2125**.
-- Defect 7 — RPG terminology reconciliation — **repository-complete through #2126**.
-- Post-program live freeze/stopped-firing regression — **repository-complete through #2129; deployed/manual Solo stability acceptance deferred by the user**.
-- Stage 1 startup-owner cleanup #2131 — **merged** at exact qualified head `21fed121ceb0f72278142ba201f25927c5c6b9b5`, merge commit `3358cddc66725f75213c74dec7459551d8ff02b7`.
-- Active independent Stage 1 cleanup: PR #2134, `codex/dungeon-retired-spy-fullscreen-hook-current-main`, removing the dead retired Spy fullscreen pre-dispatch while preserving supported fullscreen ownership.
+Stage 1 is converged for the current product programme:
 
-Both hands-on gates remain exactly:
+- #2134 removed the retired Spy fullscreen pre-dispatch and merged as `adc6f96d2ab8d8395b8cae5818b38c101bd846b9`;
+- #2135 trimmed six inert retired network-compatibility owners while retaining the still-called local-session compatibility hooks and merged as `811f67845dbcaa0b4b5c2b83f8860e10a184c1a0`;
+- Stage 2 #2136 consolidated the supported landing/menu hierarchy and merged as `ee2d6b38e5c5805ee1c906d7f801bda2d8496383`.
+
+The programme is now milestone-first. General legacy residue remains backlog unless it visibly affects, destabilises or blocks the player-facing milestone being delivered.
+
+The original seven-item repository defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The later #2129 sustained-Solo acceptance is also still deferred. For both:
 
 **MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**
 
-No automated result may be promoted into user acceptance for either gate.
+### Stage 4 elemental portal foundation — PR #2137
 
-The final runtime merge in the original seven-item programme was Defect 7 PR #2126. Its exact qualified head was `f70f816910fab8d07aaf946f140b593c9220f1ef`, merged as `2e734f4875fb737a0a292b4f92331197bc1c6f85`. The exact candidate passed Native Mouse Wheel Scroll Contract, Public Code Cache Version, SEO Automation, C64 Dungeon Carnage Mobile Trap Layout Contract and Lost Sizzler Load Safety, including canonical/Node coverage and all six Chromium shards.
+Active branch: `codex/dungeon-elemental-portal-foundation-current-main`.
 
-After that programme, the user reproduced a current-build Solo failure where gameplay froze/stalled and/or firing stopped before the outstanding Defect 5 manual acceptance could be reached. PR #2129 proved that current `main` had a split release/cache identity: the authoritative V10.42 bootstrap used `V10.42 r30` / `20260917r30`, while the blocking canonical page still identified and directly loaded the base frame/input/runtime stack under `2026.09.10.1` / `20260910r1`. That allowed a supported mixed-generation path where stale base frame/input/attack owners could coexist with current r30 ordered modules even though the visible page badge was later restamped to r30.
+Base/current main at branch start: `ee2d6b38e5c5805ee1c906d7f801bda2d8496383`.
 
-#2129 synchronised the blocking page identity, every directly loaded Dungeon CSS/JS query token and `version.json` to r30. It deliberately did not alter projectile lifecycle mechanics, firing cadence, movement semantics, save data, supported mode ownership or Defect 5 shop logic. The exact qualified head `585cda263e2f0c9a626fef61d19bae9635d2087f` passed Public Code Cache Version, SEO Automation, Native Mouse Wheel Scroll Contract, Social Metadata Validation, Structured Data Validation, CCG Site Safety and Lost Sizzler Load Safety. It had no reviews, no review threads, no conflicts and was mergeable; Cloudflare also reported a successful exact-head preview deployment. #2129 merged as `218025ce2beac3765d65ca9b838e8afd58a5eedf`.
+The bounded foundation adds `v10-42-elemental-portal-foundation.js` immediately after the existing five-depth campaign owner and before split-campaign state. It maps Water Floor 1→2, Fire 2→3, Earth 3→4 and Air 4→5 while preserving the existing `run.floor`, `floorComplete()` and `descendFloor()` chain as the only floor-progression owner.
 
-Detailed #2129 record: `docs/ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md`.
+Portal discovery/unlock/traversal metadata lives inside the existing run object and therefore persists through the existing V10.3 checkpoint payload. Legacy checkpoints infer already-earned unlocks from proven campaign depth without mutating that depth. Deterministic route seeds establish the contract for later zone/topology work. Focused Node coverage protects route order, legacy checkpoint compatibility and the no-parallel-progression boundary.
 
-### Defect 3 ownership result
+The first #2137 head `6b8483154bbfbd20d11a9a050b426b4e784667dc` was directly ahead of main by three commits and passed Native Mouse Wheel Scroll Contract, Public Code Cache Version, C64 Dungeon Carnage Mobile Trap Layout Contract and Lost Sizzler Load Safety, including canonical/Node contracts, Chromium discovery and all six Chromium shards. Automated review still found two legitimate blockers:
 
-#2119 proved that the real movement owner already invoked `floorComplete()` once when the player entered the legitimately opened exit. The failure was the optional Warden first-contact guard: unresolved optional debt/cache fragments were incorrectly treated as blocking and required an undisclosed second physical entry. The bounded fix changed only those optional blocking flags while preserving the genuine route:
+1. the new bootstrap module reused the already-deployed `V10.42 r30` / `20260917r30` identity, so cached clients could retain a stale bootstrap and never request the portal foundation;
+2. persistent continuation/work-register records still described the portal milestone as wholly open.
 
-`real objective completion → exit opens → physical movePlayer() entry → real floorComplete ownership → floor-complete panel → #descend-btn → authoritative descendFloor() → playable next floor`
-
-The redundant #2120 movement-wrapper proposal is closed without merge and must not be revived.
-
-### Defect 4 ownership result
-
-#2123 restored the existing Floor 1 save/restore lifecycle rather than introducing a second persistence model. It captures the base Floor 1 entry snapshot, allows the retained five-death Save & Return flow on Floor 1, preserves the later r43 autosave/Continue owner, and only exits to the menu after a successful checkpoint write. Diagnostic PR #2122 is closed without merge.
-
-### Defect 5 repository result and remaining gate
-
-#2090 repaired the live 3-Artefact/Essence → 1 Banishment Flask exchange at the existing shop owner. The implementation is transactional, supports the full-inventory case where consuming the traded Artefacts must free the destination slot, and preserves the separate 10-Gold Flask purchase route.
-
-Current-main browser coverage proves both representations:
-
-- three legacy physical Artefacts exchange for exactly one Banishment Flask;
-- three current `banishmentEssence` points exchange for exactly one Banishment Flask;
-- traded Artefacts/Essence are consumed exactly once;
-- Gold and Score are not spent by the Artefact/Essence exchange;
-- inventory capacity remains valid.
-
-No further repository-side correction is currently proven necessary. Product-level closure still requires hands-on acceptance on the deployed/current build, but that acceptance is deferred by the user and must not block independent backlog work.
-
-### Defect 6 ownership result
-
-#2125 exposes meaningful differences already present in owned firearm data through the established Owned Firearms selector. It retains the real inventory controls, indices, acquisition/switching owner and combat data while presenting rating, power, delay, shots, ammo, pierce, element and mod information. The focused browser contract also proves switching through the real EQUIP control.
-
-### Defect 7 ownership result
-
-#2126 preserves historical internal rarity identities for progression/save compatibility while translating only customer-facing wording:
-
-- `UNCOMMON` → `RARE`
-- `SIZZLER` → `ENCHANTED`
-- `GOLD MEDAL` → `RELIC`
-- `ZZAP! 97%` → `LEGENDARY`
-- visible `Zzap! Citadel guardian` → `Citadel guardian`
-
-No rarity probabilities, ordering, weapon stats, loot mechanics or save identifiers were changed.
+The branch now advances the canonical page, all directly loaded local CSS/JS query tokens, `version.json` and ordered bootstrap to `V10.42 r31` / `20260917r31`. The historical r30 buglog remains the handoff owner but already derives its child-module token from the canonical cache meta; the new r31 release-identity regression explicitly protects that relationship. The stale r30 identity contract is retired. This checkpoint and the repository-level/work-register records are updated before final exact-head qualification.
 
 ### #2129 release/cache ownership remediation
 
@@ -206,7 +167,7 @@ Historical Horde/Spy source files and acceptance records remain in the repositor
 
 ## Guardrails and exact next action
 
-Preserve Solo, Tutorial, local 2P Split Screen and Weekly Vault/account services. Do not restore retired networked Dungeon Multiplayer, Horde Survivor or Spy/Sizzler Saboteurs behaviour. Do not reopen completed Defects 1, 2, 3, 4, 6 or 7 without new current-build regression evidence. Preserve #2118 projectile lifecycle ownership, #2129 release/cache identity and #2131 explicit supported R56/R59/R60 startup ownership unless new evidence independently disproves them.
+Preserve Solo, Tutorial, local 2P Split Screen and Weekly Vault/account services. Do not restore retired networked Dungeon Multiplayer, Horde Survivor or Spy/Sizzler Saboteurs behaviour. Do not reopen completed Defects 1, 2, 3, 4, 6 or 7 without new current-build regression evidence. Preserve #2118 projectile lifecycle ownership, #2129 release/cache discipline and the explicit supported R56/R59/R60 startup ownership established by #2131.
 
 The two live gates remain unresolved but are not the current development task:
 
@@ -215,7 +176,14 @@ The two live gates remain unresolved but are not the current development task:
 
 For both: **MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**.
 
-The exact repository action is to qualify #2134 on its final exact head after the R59 static-contract correction, Chromium-visible browser-contract rename and checkpoint documentation changes. Require Public Code Cache Version, Native Mouse Wheel Scroll Contract, SEO Automation and Lost Sizzler Load Safety, including canonical/Node contracts, Chromium discovery and all six Chromium shards. Confirm `v10-42-retired-fullscreen-owner.mjs` is actually present in the discovered matrix, resolve legitimate review threads, verify a bounded conflict-free diff against current `main`, merge under the standing authorization when qualified, reconcile the new `main`, then continue the next independent Stage 1 residue audit item. Do not stop the independent programme merely because the two hands-on release gates remain deferred.
+Exact next repository action:
+
+1. reconcile #2137 after the r31 release/cache correction and checkpoint updates;
+2. require the PR-triggered exact-head workflows to pass on that final head, including Lost Sizzler Load Safety canonical/Node contracts, Chromium discovery and all six Chromium shards;
+3. verify the r31 release-identity contract is discovered/executed and that no stale r30 canonical token remains;
+4. reconcile Codex review threads, changed paths and mergeability against current `main`;
+5. if the established merge-authorisation rule is satisfied, merge #2137 and record the exact qualified head and merge SHA; otherwise leave it **READY TO MERGE** without starting a competing branch;
+6. after merge, move to Stage 5 larger procedural topology/zone structure on fresh current `main`, keeping portal state subordinate to the five-depth floor owner.
 
 ## Historical live-defect remediation checkpoint — 16 September 2026
 
