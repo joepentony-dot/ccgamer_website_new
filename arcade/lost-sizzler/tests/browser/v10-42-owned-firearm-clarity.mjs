@@ -60,6 +60,16 @@ try{
   assert.notEqual(before.summaries[0],before.summaries[1],"genuinely different firearm characteristics must produce distinct comparison summaries");
   assert.match(before.titles[1],/PWR 3/i,"the same comparison must be available as a native hover/title description");
 
+  // Exercise the real player-owned inventory route before interacting with its
+  // controls. renderInventoryPanel() can populate the DOM while the overlay is
+  // still hidden; TAB is the supported live-game command that exposes it.
+  await page.keyboard.press("Tab");
+  await page.waitForFunction(()=>{
+    const panel=document.getElementById("inventory-panel");
+    const equip=document.querySelector('.ccg-owned-weapons [data-ccg-equip-weapon="1"]');
+    return Boolean(panel&&!panel.classList.contains("hidden")&&equip&&equip.getClientRects().length);
+  });
+
   await page.click('.ccg-owned-weapons [data-ccg-equip-weapon="1"]');
   await page.waitForFunction(()=>p1?.activeWeaponIndex===1&&p1?.weapon?.id==="scatter-test");
   const after=await page.evaluate(()=>({weapon:p1.weapon?.id,index:p1.activeWeaponIndex,text:document.querySelector('.ccg-owned-weapons [data-ccg-equip-weapon="1"]')?.textContent||""}));
