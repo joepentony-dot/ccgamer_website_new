@@ -10,7 +10,7 @@ Update this file when a workstream changes category, its active PR/dependency ch
 
 ## Current autonomous Dungeon Carnage checkpoint — 17 September 2026
 
-- Verified live `main` at the start of the current independent backlog programme: `5db1fa275fba1b33d9fbab55d065724110338fd7`, merge of documentation checkpoint PR #2130.
+- Verified live `main` before #2134 final qualification: `e87f920b4629885eb87ad66d8049cc9fdc62fc72`, generated SEO/video-page PR #2133 directly on top of the #2131 Stage 1 merge.
 - The original seven-item repository-side Dungeon Carnage live-defect remediation programme remains repository-complete except for the already-documented deployed/manual acceptance gate on Defect 5.
 - The later current-build Solo freeze/stopped-firing regression is repository-fixed through #2129. Proven root cause: the canonical page loaded the base runtime under `20260910r1` while the authoritative V10.42 bootstrap used `20260917r30`, allowing a supported mixed-generation cache/runtime path.
 - #2129 synchronised the blocking page, direct CSS/JS asset queries and `version.json` to `V10.42 r30` / `20260917r30` without changing projectile mechanics, firing cadence, movement semantics, save data, supported mode ownership or Defect 5 shop logic.
@@ -24,6 +24,8 @@ Update this file when a workstream changes category, its active PR/dependency ch
 - Defect 6 — Owned Firearms differentiation — **repository-complete through #2125**.
 - Defect 7 — RPG terminology reconciliation — **repository-complete through #2126**.
 - Later freeze/stopped-firing regression — **repository-complete through #2129; deployed/manual sustained-Solo acceptance deferred by the user**.
+- Stage 1 startup-owner cleanup #2131 is **merged**. Exact qualified head: `21fed121ceb0f72278142ba201f25927c5c6b9b5`; merge commit: `3358cddc66725f75213c74dec7459551d8ff02b7`.
+- Active Stage 1 follow-up: **#2134 — Remove retired Spy fullscreen hook from Dungeon Carnage**, branch `codex/dungeon-retired-spy-fullscreen-hook-current-main`.
 
 ### Manual acceptance state
 
@@ -40,20 +42,30 @@ These deferred gates do not block independent repository work that does not depe
 
 ### Stage 1 — retired mode / legacy residue audit
 
-Active PR: **#2131 — Retire unused Spy startup owners from Dungeon Carnage**.
+PR #2131 is **MERGED**.
 
 - Branch: `codex/dungeon-retired-spy-startup-current-main`.
 - Base at Stage 1 start: `5db1fa275fba1b33d9fbab55d065724110338fd7`.
 - The earlier 16 September audit was too broad when it stated that the supported runtime did not load retired Horde/Spy modules. The canonical page did not directly list them, but the r30 startup handoff still dynamically preloaded three retired Spy/Saboteurs owners.
-- #2131 removes startup preloading of `v10-41-r30-spy-exit-control-reset.js`, `v10-41-r32-spy-world-owner.js`, and `v10-41-r32-spy-loader.js`.
-- Ownership investigation proved that some supported responsibilities had been reached indirectly through that historical chain, so the candidate preserves them explicitly instead of deleting by filename:
+- #2131 removed startup preloading of `v10-41-r30-spy-exit-control-reset.js`, `v10-41-r32-spy-world-owner.js`, and `v10-41-r32-spy-loader.js`.
+- Ownership investigation proved that some supported responsibilities had been reached indirectly through that historical chain, so #2131 preserved them explicitly instead of deleting by filename:
   - `v10-41-post-playtest-stability.js` — supported Solo fire-state recovery;
   - `v10-41-r56-playtest-completion.js` — ordinary-dungeon environment/chest/combat recovery;
   - `v10-41-r59-live-regression-fixes.js` — pause/Solo stability;
   - `v10-41-horde-frame-performance.js` — historical Horde name but still the loader/maintenance bridge for the supported Solo R60 live-play integrity owner; its Horde polling timer is stopped during Solo;
   - `v10-41-r60-horde-owner-composition.js` — historical Horde name but still protects supported Solo R60 maintenance/damage ancestry.
 - The first #2131 candidate exposed this hidden ownership in Chromium: Solo stabilization lost the Horde-frame compatibility API and selective-owner recovery lost supported R56/R60 owners. Tests were not weakened; the candidate was corrected by making supported ownership explicit while keeping the retired Spy startup owners absent.
-- Current #2131 exact-head qualification must be re-read live because checkpoint documentation commits advance the head. Merge only after Public Code Cache Version, Native Mouse Wheel Scroll Contract and Lost Sizzler Load Safety are green on the final exact head, no unresolved review threads remain, and the PR is still conflict-free and bounded.
+- The stale `v10-41-r32-solo-monitor-diagnostic.mjs` contract was reconciled rather than timed out or deleted. Its replacement proves the retired R32 loader/observer and retired Spy assets remain absent during canonical Solo while R56/R59/R60 ownership stays present.
+- Exact qualified #2131 head `21fed121ceb0f72278142ba201f25927c5c6b9b5` passed Public Code Cache Version, Native Mouse Wheel Scroll Contract, SEO Automation, canonical/Node contracts and all six Chromium shards. One unchanged shard-5 retry was required after the historical `v10-35-layout.mjs` 15-second startup wait flaked; the retry passed without changing runtime code, assertions or timeouts.
+- #2131 merged as `3358cddc66725f75213c74dec7459551d8ff02b7`.
+
+PR #2134 is the next bounded Stage 1 residue item.
+
+- #2134 removes only the dead `CCGLostSizzlerV141R32SpyLoader.handleSpyFullscreenKey()` pre-dispatch from supported global `F` input.
+- The supported fullscreen owner remains `game-render.js → toggleFullscreen()`; the fullscreen button and `F` both reach that owner directly.
+- The retained R59 static contract has been reconciled so it requires direct supported fullscreen ownership and forbids the retired shared Spy dependency while leaving R59 pause/Solo protections unchanged.
+- Automated review also found that the original browser regression filename contained `spy`, causing the existing Chromium manifest retired-mode filter to exclude it. The contract has been renamed to `v10-42-retired-fullscreen-owner.mjs` so it enters the normal Chromium matrix without altering the manifest filter.
+- No Spy/Saboteur gameplay is restored and no movement, firing, pause/resume, save, combat, Banishment, R56, R59 or R60 runtime ownership is changed.
 - Detailed runtime reasoning is recorded in [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md).
 
 ### Defect 7 final record
@@ -71,19 +83,20 @@ Active PR: **#2131 — Retire unused Spy startup owners from Dungeon Carnage**.
 
 ### Active Dungeon branch / PR
 
-- **#2131** is the active independent Stage 1 cleanup PR. It is not a reopening of #2129 or the seven-item defect programme.
+- **#2134** is the active independent Stage 1 cleanup PR. It is not a reopening of #2129, #2131 or the seven-item defect programme.
 - Do not reopen Defects 1, 2, 3, 4, 6 or 7 without new current-build regression evidence.
-- Preserve #2118 projectile lifecycle ownership and #2129 release/cache identity unless new evidence independently disproves them.
+- Preserve #2118 projectile lifecycle ownership, #2129 release/cache identity and #2131 explicit supported R56/R59/R60 startup ownership unless new evidence independently disproves them.
 - Defect 5 and the #2129 sustained-Solo check are manual acceptance gates only at this checkpoint.
 
 ### Exact next action
 
-1. Reconcile the final exact head of #2131 after the checkpoint commits.
-2. Require Public Code Cache Version, Native Mouse Wheel Scroll Contract and Lost Sizzler Load Safety—including canonical/Node contracts and all six Chromium shards—to pass on that exact head.
-3. Confirm #2131 remains bounded, mergeable, conflict-free and has no unresolved review threads.
-4. Merge #2131 under the standing authorization when qualified.
-5. Reconcile the resulting `main` and continue the next independent Stage 1 retired-mode/legacy-residue audit item.
-6. Keep both manual product gates explicitly deferred until the user is available to perform them.
+1. Reconcile the final exact head of #2134 after the R59-contract, browser-contract rename and checkpoint documentation commits.
+2. Require Public Code Cache Version, Native Mouse Wheel Scroll Contract, SEO Automation and Lost Sizzler Load Safety—including canonical/Node contracts, Chromium discovery and all six Chromium shards—to pass on that exact head.
+3. Confirm the renamed `v10-42-retired-fullscreen-owner.mjs` appears in the discovered Chromium matrix.
+4. Reconcile review findings/threads, changed paths and mergeability against current `main`; do not allow generated SEO output into the branch.
+5. Merge #2134 under the standing authorization when qualified.
+6. Reconcile the resulting `main`, checkpoint the exact qualified head/merge SHA and continue the next independent Stage 1 retired-mode/legacy-residue audit item.
+7. Keep both manual product gates explicitly deferred until the user is available to perform them.
 
 Autonomous merge authorization remains in force for bounded repository fixes that satisfy the established exact-head qualification rules. Genuine hands-on acceptance, credentials, destructive external actions and project-level human approval gates still apply where documented.
 
@@ -104,7 +117,7 @@ Autonomous merge authorization remains in force for bounded repository fixes tha
 
 | Workstream | Record | Current GitHub state |
 | --- | --- | --- |
-| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) plus [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md) | Original repository defect programme complete; both remaining hands-on acceptance gates are user-deferred. Independent Stage 1 retired-mode/legacy-residue cleanup is active in #2131. |
+| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) plus [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md) | Original repository defect programme complete; both remaining hands-on acceptance gates are user-deferred. Independent Stage 1 retired-mode/legacy-residue cleanup is active in #2134 after merged #2131. |
 | Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | itch.io is the intended purchase/download route; the custom commerce/paywall and stale packaging/Windows PR graphs are closed. Any package artifact must be rebuilt from current `main`, selectively reusing historical provider-neutral ideas only where necessary. |
 | Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2103 and #2105 are merged; #2073 is closed. #2110 remains the current draft endpoint follow-up but is **BLOCKED** by missing/mismatched Cloudflare runtime configuration. Repository-side work for that blocker is already complete. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | draft rebuild PR #2056 remains based on an old merge base and requires a current-main rebuild/reconciliation before integration. |
