@@ -9,6 +9,19 @@
   },
   "items": [
     {
+      "id": "pa47GVPA1jU",
+      "kind": "game",
+      "filter": "c64",
+      "badge": "C64 Game",
+      "title": "The C64 RPG That Let You Rob Shops, Gamble & Fight the Guards | Legacy of the Ancients",
+      "description": "Legacy of the Ancients is a 1987 Commodore 64 role-playing game developed by Quest Software and published by Electronic Arts. Created by John and Chuck Dougherty, the adventure begins with…",
+      "url": "/games/legacy-of-the-ancients/",
+      "thumbnail": "https://i.ytimg.com/vi/pa47GVPA1jU/maxresdefault.jpg",
+      "platform": "Commodore 64",
+      "year": 1987,
+      "publisher": "Electronic Arts"
+    },
+    {
       "id": "hDn4367Gx9Y",
       "kind": "retro",
       "filter": "retro-specials",
@@ -9052,19 +9065,6 @@
       "year": "",
       "publisher": "",
       "collectionLabel": "Amiga Demo Music"
-    },
-    {
-      "id": "pa47GVPA1jU",
-      "kind": "game",
-      "filter": "c64",
-      "badge": "C64 Game",
-      "title": "Legacy Of The Ancients",
-      "description": "Legacy of the Ancients is a 1987 Commodore 64 role-playing game developed by Quest Software and published by Electronic Arts. Created by John and Chuck Dougherty, the adventure begins with…",
-      "url": "/games/legacy-of-the-ancients/",
-      "thumbnail": "https://i.ytimg.com/vi/pa47GVPA1jU/hqdefault.jpg",
-      "platform": "Commodore 64",
-      "year": 1987,
-      "publisher": "Electronic Arts"
     },
     {
       "id": "ght7u1k_tqw",

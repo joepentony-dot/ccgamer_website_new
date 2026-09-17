@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "YouTube Data API v3. Verified title, description, thumbnail, uploadDate and duration support video discovery; uploadDate and duration are only emitted into VideoObject when verified here.",
-  "updatedAt": "2026-09-16T08:50:34.615Z",
+  "updatedAt": "2026-09-17T05:05:17.873Z",
   "videos": {
     "_0bKM3s0SMs": {
       "title": "The New Zealand Story C64 – Did Ocean Nail the Arcade Conversion?",
@@ -4122,6 +4122,15 @@
       "uploadDate": "2023-03-20T18:30:46Z",
       "duration": "PT4M59S",
       "thumbnailUrl": "https://i.ytimg.com/vi/p8oj9r9KMMw/maxresdefault.jpg",
+      "channelTitle": "Cheeky Commodore Gamer",
+      "verifiedBy": "youtube-data-api-v3"
+    },
+    "pa47GVPA1jU": {
+      "title": "The C64 RPG That Let You Rob Shops, Gamble & Fight the Guards | Legacy of the Ancients",
+      "description": "🕹️ Legacy of the Ancients (1987) – Commodore 64 RPG Classic\nReleased by Electronic Arts in 1987 and developed by Quest Software, Legacy of the Ancients is a wonderfully unusual C64 role-playing game created by John and Chuck Dougherty. You don't begin as a warrior, wizard or chosen hero either. You're a shepherd whose quiet life disappears after discovering the mysterious Wizard's Compendium and an Access Disk leading to the Tarmalon Galactic Museum.\n\n🌐 Full game info, manual & download:\n👉 https://www.cheekycommodoregamer.co.uk/games/legacy-of-the-ancients\n\nThe Galactic Museum gives Legacy of the Ancients much of its character. Explored from a first-person viewpoint, its exhibits are unlocked using jewel-encrusted coins found throughout the adventure, revealing clues, equipment and other rewards as you gradually explore more of Tarmalon.\n\nOutside you'll find twelve towns, mountains, swamps, rivers and wilderness to explore, while character abilities can be improved through training and mini-games rather than simply grinding enemies for experience. There are shops, banks, magic, jobs, gambling and even robbery — and win too much at the gambling tables and the town guards may decide they've had enough of you.\n\nThe dungeons switch back to first-person exploration, with 24 increasingly dangerous levels packed with monsters, treasure, traps and secret routes. There's no automatic map either, so the traditional RPG equipment of choice soon becomes a pencil and a large piece of paper.\n\nThe original release even included a physical code wheel used when re-entering the Galactic Museum, requiring players to match planets, gemstones and ring numbers. It doesn't get much more 1987 than rotating bits of cardboard just to get through the front door.\n\nReviews were surprisingly divided. Zzap!64 awarded Legacy of the Ancients just 61%, while Commodore User and Your Commodore both gave it 8/10. Nearly forty years later, its mixture of exploration, RPG progression, dungeons, gambling, magic and intergalactic archaeology still gives it an identity all of its own.\n\n💬 Did you play Legacy of the Ancients on the C64? And did you actually map those dungeons properly, or did your notebook eventually become a collection of squares, arrows and increasingly angry question marks?\n\n▶️ MORE CCG VIDEOS\nCommodore 64 & Amiga playlists:\nhttps://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/playlists\n\n💙 SUPPORT & CONNECT\nPatreon: https://www.patreon.com/CheekyCommodoreGamer\nJoin: https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join\nTwitter: https://twitter.com/CheekyC64Gamer\nFacebook: https://facebook.com/cheekycommodoregamer\nDiscord: https://discord.gg/83Xw9ktAn4\nWebsite: https://www.cheekycommodoregamer.co.uk\n\n00:00 🏛️ Legacy of the Ancients\n00:33 📖 The Compendium, Museum & Character Building\n03:14 🗺️ Exploring Tarmalon\n04:30 ⚔️ Gambling, Crime, Monsters & Combat\n06:02 🕯️ Dungeons, Graphics & Sound\n08:00 📰 The 61% Zzap!64 Review & Final Verdict\n11:04 💛 Patreon Shoutout\n\n#c64 #legacyoftheancients #commodore64 #c64games #retrogaming",
+      "uploadDate": "2026-09-16T17:30:03Z",
+      "duration": "PT11M36S",
+      "thumbnailUrl": "https://i.ytimg.com/vi/pa47GVPA1jU/maxresdefault.jpg",
       "channelTitle": "Cheeky Commodore Gamer",
       "verifiedBy": "youtube-data-api-v3"
     },
