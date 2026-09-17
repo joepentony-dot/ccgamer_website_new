@@ -147,6 +147,25 @@
       const legacyGatePending=window.CCGLostSizzlerReleaseGate?.state?.ready===false;
       if(!button||!button.isConnected){retry();return}
       if(button.disabled||legacyGatePending){retry();return}
+
+      /* Solo and Tutorial are owned by the guidance layer once the ordered
+       * bootstrap is ready. Hand the preserved intent to that owner directly:
+       * a synthetic button click can be consumed by older capture listeners,
+       * and clearing pendingStartId before a run actually starts loses the
+       * player's original choice. */
+      if(pendingId==="solo-btn"||pendingId==="tutorial-zone-btn"){
+        const guidance=window.CCGLostSizzlerTutorialGuidanceV123;
+        if(typeof guidance?.launchSolo!=="function"){retry();return}
+        let launched;
+        try{launched=guidance.launchSolo(pendingId==="tutorial-zone-btn")}catch(_){retry();return}
+        if(launched===false&&guidance.queuedLaunch!==null){finish();return}
+        Promise.resolve(launched).then(()=>{
+          if(document.body?.dataset?.runActive==="true"){finish();return}
+          retry();
+        }).catch(()=>retry());
+        return
+      }
+
       finish();
       button.click();
     };
