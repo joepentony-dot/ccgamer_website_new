@@ -4,8 +4,8 @@
   if(window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
-  const BUILD="V10.42 r28";
-  const CACHE="20260916r28";
+  const BUILD="V10.42 r29";
+  const CACHE="20260917r29";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-r23-rpg-build-focus.js","CCGLostSizzlerV142R23RpgBuildFocus"],
@@ -44,7 +44,8 @@
     ["v10-42-artefact-shop-stability.js","CCGLostSizzlerV142ArtefactShopStability"],
     ["v10-42-projectile-lifecycle.js","CCGLostSizzlerV142ProjectileLifecycle"],
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
-    ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"]
+    ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"],
+    ["v10-42-floor-exit-handoff.js","CCGLostSizzlerV142FloorExitHandoff"]
   ];
   const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],pendingStartId:"",pendingStartRetries:0,identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0,r1ChestOwner:null,r1ChestOwnerRestores:0};
   window.CCGLostSizzlerV142Bootstrap=state;
