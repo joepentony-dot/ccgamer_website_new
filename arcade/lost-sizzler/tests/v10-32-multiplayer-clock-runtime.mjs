@@ -26,18 +26,17 @@ const context={
 vm.createContext(context);
 vm.runInContext(source,context,{filename:"game-network.js"});
 
-assert.equal(vm.runInContext("serialWorld()",context),null,"retired world serialization must remain disabled");
-vm.runInContext("onPacket('world',{doors:[{id:'replacement'}]})",context);
-vm.runInContext("onPlayer({id:'remote-b',x:9,y:9})",context);
-vm.runInContext("sendPlayer()",context);
-vm.runInContext("sendRemotePlayerState({id:'remote-a'})",context);
-vm.runInContext("processRemoteMovement({id:'remote-a'})",context);
-vm.runInContext("broadcastWorld()",context);
-vm.runInContext("onWorld({revision:99,doors:[{id:'replacement'}]})",context);
+for(const retired of ["onPlayer","playerStateForNetwork","sendRemotePlayerState","processRemoteMovement","serialWorld","onWorld"]){
+  assert.doesNotMatch(source,new RegExp(`function\\s+${retired}\\s*\\(`),`${retired} must remain retired rather than preserved as an inert multiplayer API`);
+}
 
-assert.equal(sendCalls,0,"retired compatibility callbacks must never transmit network packets");
-assert.equal(context.host,originalHost,"retired world receive must not replace local host state");
-assert.deepEqual([...context.remote.entries()],[...originalRemote.entries()],"retired remote-player callbacks must not mutate remote-player state");
+vm.runInContext("onPacket('world',{doors:[{id:'replacement'}]})",context);
+vm.runInContext("sendPlayer()",context);
+vm.runInContext("broadcastWorld()",context);
+
+assert.equal(sendCalls,0,"retained local-session compatibility hooks must never transmit network packets");
+assert.equal(context.host,originalHost,"retained packet compatibility callback must not replace local host state");
+assert.deepEqual([...context.remote.entries()],[...originalRemote.entries()],"retained compatibility hooks must not mutate remote-player state");
 
 vm.runInContext("onMembers([],true,true)",context);
 assert.equal(syncCalls,1,"the retained membership callback may still request a local UI sync while the RoomNetwork shell remains");
