@@ -45,6 +45,53 @@ function installChestXPSourceContract(){
 }
 installChestXPSourceContract();
 
+function installFloorCheckpointContinuity(){
+  updateSavedRunButton=function(){
+    const b=$("continue-save-btn"),raw=PGR.loadCheckpoint(),floor=Number(raw?.floor||raw?.run?.floor||0),data=floor>=1?raw:null;
+    if(!b)return;
+    b.classList.toggle("hidden",!data);
+    if(data)b.textContent=savedRunLabel(data);
+  };
+  captureFloorEntryCheckpoint=function(){
+    if(!run||run.daily||playMode==="online"||Number(run.floor||0)<1){floorEntryCheckpoint=null;return null}
+    floorEntryCheckpoint=PGR.makeCheckpoint(run,p1,p2,score,playMode);
+    return floorEntryCheckpoint;
+  };
+  offerFloorSave=function(restPrompt=false){
+    if(!run||run.daily||playMode==="online"||!UI.savePanel||Number(run.floor||0)<1)return false;
+    savePromptReason=restPrompt?"rest":"entry";
+    UI.saveTitle.textContent=restPrompt?"FIVE DEATHS — SAVE FOR ANOTHER DAY?":`FLOOR ${run.floor} CHECKPOINT`;
+    UI.saveCopy.textContent=restPrompt?"That was five deaths on this floor. Save the floor-entry checkpoint and return when you are feeling braver, or keep going now.":"Save this floor-entry checkpoint so you can leave the game and resume from the start of this floor later.";
+    UI.saveNow.classList.toggle("hidden",restPrompt);
+    UI.saveContinue.textContent=restPrompt?"Continue the Run":"Continue Without Saving";
+    UI.saveReturn.classList.toggle("hidden",!restPrompt);
+    UI.saveNote.textContent="Checkpoint saves deliberately return you to the floor entrance; they are not mid-battle quick saves.";
+    mode="saveprompt";input.clear();UI.savePanel.classList.remove("hidden");return true;
+  };
+  resumeSavedRun=async function(){
+    const saved=PGR.loadCheckpoint(),floor=Number(saved?.floor||saved?.run?.floor||0);
+    if(!saved||floor<1){updateSavedRunButton();return false}
+    const audio=S.start(),fs=requestPlayFullscreen();
+    await Promise.all([audio,fs]);
+    await net.leave();
+    net.setSolo(saved.player?.name||playerName());
+    run=saved.run;score=Math.max(0,Number(saved.score)||0);p1=saved.player;p2=saved.player2||null;playMode=p2?"split":"solo";mode="playing";
+    startWorld(PGR.floorSeed(run),Boolean(p2),true,true);
+    floorEntryCheckpoint=saved;
+    UI.menu.classList.add("hidden");setRunPresentation(true);S.startMusic();
+    showToast("CHECKPOINT RESTORED",`Floor ${run.floor}: ${PGR.floorInfo(run).name}. You are back at the floor entrance with the saved loadout.`,"green",9000);
+    sync();return true;
+  };
+  const startRun=beginRun;
+  beginRun=function(options={}){
+    const started=startRun(options);
+    if(started!==false&&run&&!run.daily&&playMode!=="online")captureFloorEntryCheckpoint();
+    return started;
+  };
+  window.CCGDungeonSaveRestoreContract=Object.freeze({floorOne:true,entrySnapshot:true,voluntaryCheckpoint:true});
+}
+installFloorCheckpointContinuity();
+
 function hideStaticPanels(){UI.rulebook?.classList.add("hidden");UI.support?.classList.add("hidden");UI.shop?.classList.add("hidden");UI.savePanel?.classList.add("hidden");UI.artefactChoice?.classList.add("hidden");pendingBanishmentReward=null;activeShop=null;hideItemInfo();hideNamedDossier()}
 function closeInventoryForMenu(){if(UI.inventory&&!UI.inventory.classList.contains("hidden"))UI.inventory.classList.add("hidden");if(mode==="inventory")mode="playing"}
 function clearAbandonedRun(){
