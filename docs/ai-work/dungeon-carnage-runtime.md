@@ -6,39 +6,84 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Current checkpoint — 17 September 2026
 
-Current main is `e5e5dc46a7fd1d3d0f620d4fdcbb9f1780024c0a`; #2117 and #2118 are merged and complete per the user's current programme. Defect 3 continues in #2119, branch `codex/dungeon-live-defect-checkpoint-post-2118`. Read [the current Floor progression record](dungeon-carnage-floor-progression-diagnosis-2026-09-16.md) for the proven Warden guard predicate, competing #2120 proposal, tests and next action. The older Defect 2 active-candidate section below is historical.
+Live repository reconciliation after the seven-item defect programme:
 
-## Verified checkpoint — 2026-09-16
+- Current `main` before this documentation update: `53698285b135199f5807db95094eb59bce200d38`.
+- Defect 1 — obsolete public-beta/watchdog startup lock — **repository-complete through #2117**.
+- Defect 2 — retained projectile entities / progressive slowdown — **repository-complete through #2118**.
+- Defect 3 — Floor 1 completion/exit progression failure — **repository-complete through #2119**.
+- Defect 4 — Save and Exit / Continue restoration reliability — **repository-complete through #2123**.
+- Defect 5 — 3-Artefact Banishment Flask exchange — **repository implementation complete through #2090; deployed/manual acceptance remains required before product-level closure**.
+- Defect 6 — Owned Firearms differentiation — **repository-complete through #2125**.
+- Defect 7 — RPG terminology reconciliation — **repository-complete through #2126**.
+- There is **no active Dungeon live-defect branch or PR** from this seven-item programme.
 
-The current runtime checkpoint is the merged #2117 public-beta/watchdog remediation:
+The final runtime merge in the programme was Defect 7 PR #2126. Its exact qualified head was `f70f816910fab8d07aaf946f140b593c9220f1ef`, merged as `2e734f4875fb737a0a292b4f92331197bc1c6f85`. The exact candidate passed Native Mouse Wheel Scroll Contract, Public Code Cache Version, SEO Automation, C64 Dungeon Carnage Mobile Trap Layout Contract and Lost Sizzler Load Safety, including canonical/Node coverage and all six Chromium shards.
 
-- qualified head: `23bd55e28d1367ad84bb82e22af08e16a2bc9b4f`
-- merge commit: `408a9870d33f9ea2931934c302176743d2589160`
+The two commits after that merge are documentation-only checkpoint reconciliation: `83394ae87c358c68e882b6d2c041d108565b2add` updated `docs/AI-CONTINUATION-STATE.md`, and `53698285b135199f5807db95094eb59bce200d38` updated `arcade/lost-sizzler/PROGRESS.md`.
 
-#2102 moved the retained local gameplay suffix into `game-local-runtime.js`; #2113 retired the obsolete networked Dungeon Multiplayer packet/world-sync prefix from `game-network.js`; #2115 restored the full explored map for supported local Split Screen; and #2117 removed the obsolete public-host beta gate that replaced the final menu with COMING SOON/disabled controls. The user has explicitly confirmed #2117 as complete; do not reopen that defect without new current-build evidence.
+### Defect 3 ownership result
 
-The live work register records #2098 R24 five-depth room grammar as present, the XP source boundary as present, networked Dungeon Multiplayer/Horde/Spy as retired modes, #2102 local-runtime extraction as present, #2113 obsolete transport retirement as present, #2115 local Split Screen full map as present, #2117 public-beta/watchdog remediation as complete, and the remaining live-defect queue beginning with projectile lifecycle/slowdown.
+#2119 proved that the real movement owner already invoked `floorComplete()` once when the player entered the legitimately opened exit. The failure was the optional Warden first-contact guard: unresolved optional debt/cache fragments were incorrectly treated as blocking and required an undisclosed second physical entry. The bounded fix changed only those optional blocking flags while preserving the genuine route:
 
-### Completed runtime stages
+`real objective completion → exit opens → physical movePlayer() entry → real floorComplete ownership → floor-complete panel → #descend-btn → authoritative descendFloor() → playable next floor`
+
+The redundant #2120 movement-wrapper proposal is closed without merge and must not be revived.
+
+### Defect 4 ownership result
+
+#2123 restored the existing Floor 1 save/restore lifecycle rather than introducing a second persistence model. It captures the base Floor 1 entry snapshot, allows the retained five-death Save & Return flow on Floor 1, preserves the later r43 autosave/Continue owner, and only exits to the menu after a successful checkpoint write. Diagnostic PR #2122 is closed without merge.
+
+### Defect 5 repository result and remaining gate
+
+#2090 repaired the live 3-Artefact/Essence → 1 Banishment Flask exchange at the existing shop owner. The implementation is transactional, supports the full-inventory case where consuming the traded Artefacts must free the destination slot, and preserves the separate 10-Gold Flask purchase route.
+
+Current-main browser coverage proves both representations:
+
+- three legacy physical Artefacts exchange for exactly one Banishment Flask;
+- three current `banishmentEssence` points exchange for exactly one Banishment Flask;
+- traded Artefacts/Essence are consumed exactly once;
+- Gold and Score are not spent by the Artefact/Essence exchange;
+- inventory capacity remains valid.
+
+No further repository-side correction is currently proven necessary. Product-level closure still requires hands-on acceptance on the deployed/current build.
+
+### Defect 6 ownership result
+
+#2125 exposes meaningful differences already present in owned firearm data through the established Owned Firearms selector. It retains the real inventory controls, indices, acquisition/switching owner and combat data while presenting rating, power, delay, shots, ammo, pierce, element and mod information. The focused browser contract also proves switching through the real EQUIP control.
+
+### Defect 7 ownership result
+
+#2126 preserves historical internal rarity identities for progression/save compatibility while translating only customer-facing wording:
+
+- `UNCOMMON` → `RARE`
+- `SIZZLER` → `ENCHANTED`
+- `GOLD MEDAL` → `RELIC`
+- `ZZAP! 97%` → `LEGENDARY`
+- visible `Zzap! Citadel guardian` → `Citadel guardian`
+
+No rarity probabilities, ordering, weapon stats, loot mechanics or save identifiers were changed.
+
+## Completed runtime stages
 
 #2102, `codex/dungeon-carnage-extract-local-runtime`, is **MERGED**.
 
 The merged stage:
 
-- moved the retained local gameplay suffix from `game-network.js` into `game-local-runtime.js`
-- loaded `game-local-runtime.js` immediately after `game-network.js` and before `game-play.js`
-- preserved Solo, Tutorial, local 2P Split Screen, Weekly Vault/account, save/progression and established gameplay ownership
-- retained the queued early Solo/Split start repair discovered during qualification
+- moved the retained local gameplay suffix from `game-network.js` into `game-local-runtime.js`;
+- loaded `game-local-runtime.js` immediately after `game-network.js` and before `game-play.js`;
+- preserved Solo, Tutorial, local 2P Split Screen, Weekly Vault/account, save/progression and established gameplay ownership;
+- retained the queued early Solo/Split start repair discovered during qualification.
 
 #2113, `codex/dungeon-carnage-retire-online-prefix-current-main`, is **MERGED**.
 
 The merged stage:
 
-- replaced obsolete packet routing, remote-player simulation and world serializer/receiver logic in `game-network.js` with inert compatibility owners
-- retained only the callback/function names required while RoomNetwork remains the local Solo/Split session shell
-- added/strengthened retirement contracts so the old packet, remote-player and world-sync behaviours cannot silently return
-- updated two old multiplayer-era tests whose positive world-sync expectations directly contradicted the intentional retirement boundary
-- left retained combat, pickups, Banishment, inventory and XP ownership in `game-local-runtime.js`
+- replaced obsolete packet routing, remote-player simulation and world serializer/receiver logic in `game-network.js` with inert compatibility owners;
+- retained only the callback/function names required while RoomNetwork remains the local Solo/Split session shell;
+- added/strengthened retirement contracts so the old packet, remote-player and world-sync behaviours cannot silently return;
+- updated old multiplayer-era tests whose positive world-sync expectations directly contradicted the intentional retirement boundary;
+- left retained combat, pickups, Banishment, inventory and XP ownership in `game-local-runtime.js`.
 
 ### #2113 merge qualification evidence
 
@@ -56,9 +101,19 @@ The first Load Safety attempt had one isolated Chromium shard-5 failure: `v10-35
 
 ### #2117 public-beta/watchdog remediation
 
-#2117 is **MERGED**. Exact qualified head `23bd55e28d1367ad84bb82e22af08e16a2bc9b4f` merged as `408a9870d33f9ea2931934c302176743d2589160`. It removed the obsolete public-host closed-beta ownership from `v10-41-load-watchdog.js` while preserving site account/authentication ownership and current game startup. The user has designated this live defect complete.
+#2117 is **MERGED**. Exact qualified head `23bd55e28d1367ad84bb82e22af08e16a2bc9b4f` merged as `408a9870d33f9ea2931934c302176743d2589160`. It removed the obsolete public-host closed-beta ownership from `v10-41-load-watchdog.js` while preserving site account/authentication ownership and current game startup.
 
-### Retired stale/superseded runtime PRs
+### #2118 projectile lifecycle remediation
+
+#2118 is **MERGED**. It adds an ordered projectile lifecycle owner that retires non-piercing impacts before downstream callbacks and performs authoritative player/enemy projectile cleanup from a `finally` boundary. It preserves fire delay, rapid-fire cadence, projectile allowance, projectile TTL, held-fire ownership and room/run cleanup. Exact-head regression covered sustained fire, repeated impacts and downstream enemy-death faults.
+
+## Retired-mode residue audit — 16 September 2026
+
+The bounded current-main audit completed after #2115 confirmed that the runtime page bootstrap does **not** load the retired Horde Survivor or Sizzler Saboteurs modules, and that loaded `game-network.js` remains the intentionally inert local-session compatibility boundary established by #2113.
+
+Historical Horde/Spy source files and acceptance records remain in the repository as evidence and are not loaded by the supported runtime. Old `playMode === "online"` conditional guards remain inside retained local gameplay ownership; removing them would require a separate focused contract and must not be folded into unrelated terminology, topology, NPC, commerce or menu work.
+
+## Retired stale/superseded runtime PRs
 
 | PR | Classification | Current state |
 | --- | --- | --- |
@@ -72,55 +127,55 @@ The first Load Safety attempt had one isolated Chromium shard-5 failure: `v10-35
 | #1980 | **STALE DOCUMENTATION CHILD** of #1978 | Closed without merge; evidence remains in Git history. |
 | #1898 | **HISTORICAL PRODUCTION-SMOKE DIAGNOSTIC** | Closed without merge. |
 | #1900 | **HISTORICAL TEST FOLLOW-UP** to #1898 | Closed without merge. |
+| #2120 | **SUPERSEDED DEFECT 3 MOVEMENT WRAPPER** | Closed without merge; #2119 contains the proven owner fix. |
+| #2122 | **DIAGNOSTIC-ONLY DEFECT 4 BRANCH** | Closed without merge; #2123 contains the bounded fix. |
 
-### Other unresolved candidates
+### Other unresolved candidates outside the seven-item defect programme
 
 - #1976 (R30 ownership-audit throttle) may contain a useful optimisation idea, but it must be re-derived against current `main`; its old branch is not the integration vehicle.
-- #1902 is closed without merge as superseded by merged #2115.
-- #1860 and #1852 are historical long-running containment/stabilisation branches and are not safe bases for new runtime work. Their broader non-runtime implications must be reconciled separately before any closure decision.
+- #1860 and #1852 are historical long-running containment/stabilisation branches and are not safe bases for new runtime work. Their broader non-runtime implications must be reconciled separately before any closure or extraction decision.
 
-## Retired-mode residue audit — 2026-09-16
+## Guardrails and exact next action
 
-The bounded current-main audit was completed at `e9adbd16eb56698254200e371ffb54cd9b8125e4` after the #2115 checkpoint. It confirmed that the runtime page bootstrap does **not** load the retired Horde Survivor or Sizzler Saboteurs modules, and that the loaded `game-network.js` surface remains the intentionally inert local-session compatibility boundary established by #2113.
+Preserve Solo, Tutorial, local 2P Split Screen and Weekly Vault/account services. Do not restore retired networked Dungeon Multiplayer, Horde Survivor or Spy/Sizzler Saboteurs behaviour. Do not reopen completed Defects 1, 2, 3, 4, 6 or 7 without new current-build regression evidence.
 
-Historical Horde/Spy source files and acceptance records remain in the repository as evidence and are not loaded by the supported runtime. The audit also found old `playMode === "online"` conditional guards inside `game-local-runtime.js`. They are unreachable in the supported release but occur within retained local gameplay ownership; removing them requires a separate, focused local-runtime contract and must not be folded into terminology, topology, NPC, commerce, or menu work.
+The exact next action is the remaining human acceptance gate for Defect 5 on the deployed/current build:
 
-No production runtime code was changed by this audit.
+1. Reach the live shop route that offers the Banishment Flask exchange with three earned Artefacts/Essence available.
+2. Perform the Artefact/Essence exchange **without first buying a Flask for Gold**.
+3. Confirm exactly one Banishment Flask is received and the three Artefacts/Essence are consumed.
+4. Confirm the exchange does not reduce Gold or Score.
+5. Confirm the transaction also succeeds when inventory capacity is tight enough that consuming the traded stack must make room for the Flask.
 
-## Guardrails and next action
+If that passes, update `arcade/lost-sizzler/PROGRESS.md` to mark the seven-item live-defect programme product-complete. If it fails, reproduce on the then-current deployed `main` and open a fresh bounded defect from that exact state. Do not revive stale branches wholesale.
 
-## Current live-defect remediation — 2026-09-16
+No new repository defect branch should be created merely to continue the original seven-item programme while this manual gate is outstanding.
 
-#2117 closed the obsolete public-beta watchdog/menu-lock defect. The remaining authoritative deployed-game queue is now:
+## Historical live-defect remediation checkpoint — 16 September 2026
 
-1. Projectile accumulation during sustained firing/enemy hits.
-2. Completion-portal floor progression freeze.
-3. Save and Exit / Continue restoration failure.
-4. Immediate three-Artefact Banishment Flask exchange failure.
-5. Missing firearm differentiation/Owned Firearms information.
-6. Remaining Sizzler/Zzap!/Uncommon RPG terminology.
+At this earlier checkpoint #2117 had closed the obsolete public-beta watchdog/menu-lock defect and the remaining queue was projectile accumulation, floor progression, save/restore, Banishment Flask exchange, firearm differentiation and RPG terminology. Those repository-side items have since advanced as recorded in the current checkpoint above.
 
-### Active Defect 2 candidate — PR #2118
+### Historical Defect 2 candidate — PR #2118
 
-Branch `codex/dungeon-projectile-lifecycle-current-main` was created from exact live `main` `408a9870d33f9ea2931934c302176743d2589160`. Investigation found one authoritative player-projectile collection, `bullets`, shared by simulation and rendering. The legacy projectile owner marked TTL dead on impacts but deferred physical removal until the end of the complete `stepProjectiles()` pass. The r29 runtime intentionally catches recoverable `update()` faults and continues the loop, so a hit/death callback fault can bypass that deferred sweep. Both projectile rendering and dynamic lighting iterate the retained authoritative entries. Existing R1 stale-projectile repair only marks old bullets dead and still depends on the same sweep.
+Branch `codex/dungeon-projectile-lifecycle-current-main` was created from exact live `main` `408a9870d33f9ea2931934c302176743d2589160`. Investigation found one authoritative player-projectile collection, `bullets`, shared by simulation and rendering. The legacy projectile owner marked TTL dead on impacts but deferred physical removal until the end of the complete `stepProjectiles()` pass. The r29 runtime intentionally catches recoverable `update()` faults and continues the loop, so a hit/death callback fault could bypass that deferred sweep. Both projectile rendering and dynamic lighting iterate the retained authoritative entries. Existing R1 stale-projectile repair only marked old bullets dead and still depended on the same sweep.
 
-#2118 therefore adds an ordered V10.42 projectile lifecycle owner that retires non-piercing enemy/generator impacts before downstream callbacks and sweeps expired player/enemy projectiles from a `finally` boundary. It does not alter fire delay, rapid-fire cadence, projectile allowance, projectile TTL, held-fire ownership or room/run cleanup. Focused deterministic coverage includes direct enemy hits, 500 repeated impacts, an enemy-death callback fault and 2,400 sustained-fire ticks; the established Chromium held-fire contract remains part of the required matrix.
-
-A local deterministic lifecycle harness passed before PR qualification. #2118 must still qualify on its final exact head through the repository-required GitHub checks before merge.
-
-Preserve Solo, Tutorial, local 2P Split Screen and Weekly Vault/account services. The obsolete packet/world-sync retirement is complete; do not reintroduce its online transport, remote-player simulation or world snapshots while cleaning up residual terminology or compatibility code.
-
-The bounded retired-mode residue audit is complete. Do not restore retired online modes or combine live-defect stages with the separate portal/topology/NPC/merchant work or itch.io release path.
+#2118 added an ordered V10.42 projectile lifecycle owner that retires non-piercing enemy/generator impacts before downstream callbacks and sweeps expired player/enemy projectiles from a `finally` boundary. Focused deterministic coverage included direct enemy hits, 500 repeated impacts, an enemy-death callback fault and 2,400 sustained-fire ticks; the established Chromium held-fire contract remained part of the matrix.
 
 ## Session log
 
-- 2026-09-16: Reclassified #2062, #1960, #1959 and #1998 as superseded/obsolete; they are now closed without merge.
+- 2026-09-16: Reclassified #2062, #1960, #1959 and #1998 as superseded/obsolete; they were closed without merge.
 - 2026-09-16: Qualified #2102 head `dcb35f3e...`, including a successful unchanged rerun of one transient Site Safety/WebDriver timeout; merged #2102 and completed retained local-runtime extraction.
 - 2026-09-16: Closed stale runtime/verification integration candidates #1978, #1980, #2055, #1983, #1898 and #1900 without merge while preserving their history/source material.
 - 2026-09-16: Updated #2113's canonical tests to retire obsolete positive world-sync expectations rather than restoring retired online behaviour.
 - 2026-09-16: Qualified #2113 head `2fa216c6...`; one transient `v10-35-layout` shard timeout passed on an unchanged targeted retry.
 - 2026-09-16: Merged #2113 as `c3549e6d45b7748f1efcf5c4f4ba134200325a5f`. Obsolete packet/world-sync runtime retirement is complete.
 - 2026-09-16: Closed stale #1902 and rebuilt its still-valid local Split Screen map behaviour as #2115 on current `main`. The exact head `30c58717...` passed the complete matrix after an unchanged retry of an unrelated `v10-28-browser-stability-deterministic.mjs` startup timeout; #2115 merged as `95bd8431fd6b8313bf5873a79bd4bc93404d8de9`.
-- 2026-09-16: Completed the bounded current-main retired-mode residue audit at `e9adbd16...`. No retired Horde/Spy module is loaded by the supported page bootstrap; the retained network boundary is inert. Kept historical source/evidence and local-runtime online guards untouched because broader removal requires a dedicated local-runtime contract.
-- 2026-09-16: Qualified #2117 exact head `23bd55e2...` and merged the public-beta/watchdog remediation as `408a9870d33f9ea2931934c302176743d2589160`; the user designated that live defect complete.
-- 2026-09-16: Opened bounded Defect 2 PR #2118 from exact #2117 `main`, with transactional projectile retirement/finally cleanup and focused accumulation/death-path coverage. Final exact-head GitHub qualification remains in progress.
+- 2026-09-16: Completed the bounded current-main retired-mode residue audit at `e9adbd16...`. No retired Horde/Spy module is loaded by the supported page bootstrap; the retained network boundary is inert.
+- 2026-09-16: Qualified #2117 exact head `23bd55e2...` and merged the public-beta/watchdog remediation as `408a9870d33f9ea2931934c302176743d2589160`.
+- 2026-09-16: Qualified and merged #2118, closing the retained-projectile/progressive-slowdown repository defect.
+- 2026-09-17: Qualified and merged #2119, correcting the optional Warden completion guard while preserving the genuine floor-transition owner chain; redundant #2120 closed without merge.
+- 2026-09-17: Qualified and merged #2123, repairing Floor 1 Save & Return / Continue ownership and failed-write safety; diagnostic #2122 closed without merge.
+- 2026-09-17: Reconfirmed #2090 owns both physical-Artefact and current Essence Banishment Flask exchange paths on current main; repository-side Defect 5 work is complete, with deployed/manual acceptance still outstanding.
+- 2026-09-17: Qualified and merged #2125, exposing meaningful Owned Firearms differences through the existing selector without changing weapon mechanics.
+- 2026-09-17: Qualified and merged #2126 at exact head `f70f816910fab8d07aaf946f140b593c9220f1ef`; all retained workflows and all six Chromium shards passed.
+- 2026-09-17: Reconciled `docs/AI-CONTINUATION-STATE.md` and `arcade/lost-sizzler/PROGRESS.md` after Defect 7. This runtime workstream record was then brought to the same checkpoint; the remaining next action is Defect 5 deployed/manual acceptance.
