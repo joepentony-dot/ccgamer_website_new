@@ -111,15 +111,31 @@
   }
 
   function blockedStart(event){
-    if(state.ready||state.failed)return;
     const target=event.target instanceof Element?event.target.closest("#solo-btn,#continue-save-btn,#daily-btn,#split-btn,#tutorial-zone-btn"):null;
-    if(!target)return;
+    if(!target||state.failed)return;
     const paywall=window.CCGLostSizzlerV142DemoPaywall;
     if(paywall?.demoMode&&document.body?.dataset?.fullGameEntitled!=="true"&&target.id!=="tutorial-zone-btn"){
       event.preventDefault();event.stopImmediatePropagation();
       paywall.showPaywall?.({reason:"full-game"});
       return;
     }
+
+    /* Keep V10.42 on the capture boundary after readiness for Solo/Tutorial.
+     * A click can be scheduled while ready=false but dispatch after ready=true.
+     * Letting that transition click fall through to the legacy core handler
+     * bypasses the onboarding choiceAccepted handoff and silently returns to
+     * the menu. Other supported buttons retain their established ready-state
+     * handlers. */
+    if(state.ready){
+      if(target.id!=="solo-btn"&&target.id!=="tutorial-zone-btn")return;
+      event.preventDefault();event.stopImmediatePropagation();
+      clearPendingBusy();
+      state.pendingStartId=target.id;
+      target.setAttribute("aria-busy","true");
+      replayPendingStart();
+      return;
+    }
+
     event.preventDefault();event.stopImmediatePropagation();
     clearPendingBusy();
     state.pendingStartId=target.id;
@@ -251,7 +267,7 @@
       promoteStage8MerchantOwner();
       observeControllerSeal();
       try{window.CCGLostSizzlerV141R55FinalPlaytestCleanup?.markMenu?.()}catch(_){}
-      state.ready=true;stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";window.removeEventListener("click",blockedStart,true);
+      state.ready=true;stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";
       const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five new dungeon floors are loaded in verified order. Solo, Tutorial and 2P Split Screen run locally; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
       replayPendingStart();
