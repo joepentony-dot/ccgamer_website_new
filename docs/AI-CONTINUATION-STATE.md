@@ -10,20 +10,16 @@ Update this file when a workstream changes category, its active PR/dependency ch
 
 ## Current autonomous Dungeon Carnage checkpoint — 17 September 2026
 
-- Verified live `main`: `ee2d6b38e5c5805ee1c906d7f801bda2d8496383` — merged Stage 2 landing milestone (#2136).
+- Verified live `main`: `d3225318ff5cb87664bce96020c790099f53e06a` — merged Stage 4 elemental-portal foundation (#2137).
 - Original seven-item repository-side live-defect remediation remains complete except for the deferred manual Defect 5 product acceptance. The later #2129 sustained-Solo acceptance is also deferred.
-- Stage 1 is converged for the current product programme: #2134 merged as `adc6f96d2ab8d8395b8cae5818b38c101bd846b9`; #2135 merged as `811f67845dbcaa0b4b5c2b83f8860e10a184c1a0`.
-- Stage 2 startup/main-menu polish #2136 is merged as current main `ee2d6b38e5c5805ee1c906d7f801bda2d8496383`.
-- The programme is milestone-first. Do not resume broad residue cleanup unless it blocks or destabilises the active player-facing milestone.
-- Active Dungeon PR: **#2137 — Add Dungeon Carnage elemental portal campaign foundation**.
-- Branch: `codex/dungeon-elemental-portal-foundation-current-main`.
-- Base: current `main` `ee2d6b38e5c5805ee1c906d7f801bda2d8496383`.
-- Stage 4 foundation maps Water Floor 1→2, Fire 2→3, Earth 3→4 and Air 4→5 while leaving `run.floor`, `floorComplete()` and `descendFloor()` authoritative. Portal discovery/unlock/traversal metadata persists inside the existing run/checkpoint object; legacy saves infer already-earned unlocks from proven depth without advancing the floor.
-- First reviewed #2137 head `6b8483154bbfbd20d11a9a050b426b4e784667dc` passed the four attached workflows, including Load Safety canonical/Node contracts, Chromium discovery and all six shards.
-- Automated review identified two legitimate blockers: stale r30 cache/release identity for the new bootstrap module, and missing persistent checkpoint updates.
-- The branch now advances the canonical page, direct local asset query tokens, `version.json` and ordered bootstrap to **`V10.42 r31` / `20260917r31`**. The historical r30 handoff remains in place but derives its child-module token from canonical cache metadata; the new r31 release-identity regression protects that path. The previous r30 release-identity contract is retired.
-- Persistent runtime and work-register checkpoints are updated on the same branch before final exact-head qualification.
-- Larger visual portal rooms, larger procedural topology and deeper zone-specific gameplay are not part of this foundation and remain subsequent milestones.
+- Stage 1 is converged through #2134/#2135; Stage 2 landing/menu polish is merged through #2136.
+- Stage 4 #2137 is merged from exact qualified head `030af6e9f8c2da98fb618c64ae276b1159adda3f` as merge commit `d3225318ff5cb87664bce96020c790099f53e06a`.
+- The merged portal foundation maps Water 1→2, Fire 2→3, Earth 3→4 and Air 4→5 while leaving `run.floor`, `floorComplete()` and `descendFloor()` authoritative. Portal metadata persists inside the existing run/checkpoint object.
+- #2137 also advances the release/cache identity to `V10.42 r31` / `20260917r31`, resolves the Stage 2 Tutorial/menu ordering ownership conflict, and seals the reproducible Solo/Tutorial click race across the V10.42 ready transition.
+- Exact-head qualification passed every top-level workflow and all six Chromium shards. Shard 5 passed on one unchanged retry after the known `v10-35-layout.mjs` startup-timeout flake; no production behaviour, assertion or timeout was weakened.
+- Active work is Stage 5 larger procedural topology on branch `codex/dungeon-stage5-procedural-topology-current-main`, created directly from merge SHA `d3225318ff5cb87664bce96020c790099f53e06a`.
+- Stage 5 must extend the authoritative `world.js` topology generator. R6/R7/R24 are downstream environment/objective/semantic consumers and must not become competing topology, progression, save or network owners.
+- The programme remains milestone-first. Do not resume broad residue cleanup unless it blocks or destabilises the active player-facing milestone.
 
 ### Manual acceptance state
 
@@ -40,12 +36,12 @@ These deferred gates do not block independent repository work that does not depe
 
 ### Exact next action
 
-1. Reconcile #2137's final exact head after the r31 cache/release correction and checkpoint commits.
-2. Require all PR-triggered checks on that exact head to pass, including Lost Sizzler Load Safety canonical/Node contracts, Chromium discovery and all six Chromium shards.
-3. Confirm the r31 release-identity regression executes and no stale canonical `20260917r30` token remains.
-4. Reconcile Codex review findings/threads, changed paths and mergeability against current `main`.
-5. Merge only under the established merge-authorisation rule; otherwise leave #2137 in an exact **READY TO MERGE** state.
-6. After a qualified merge, reconcile the new `main`, record the exact head/merge SHA, and continue with Stage 5 larger procedural topology/zone structure rather than broad legacy cleanup.
+1. Implement Stage 5 from merged main `d3225318ff5cb87664bce96020c790099f53e06a` on `codex/dungeon-stage5-procedural-topology-current-main`.
+2. Keep `world.js` as the topology owner; add deterministic loops/alternate routes, purposeful branches/dead ends, route landmarks and floor-aware structural variation without blindly increasing world dimensions.
+3. Preserve guaranteed start→exit connectivity, optional-room non-blocking behaviour, floor progression, checkpoint format, portal state, local Split Screen, Tutorial and supported input ownership.
+4. Add deterministic Node/browser contracts for topology connectivity, seed stability, route choice and ownership boundaries. Do not weaken existing regression contracts to obtain green.
+5. Qualify the exact Stage 5 head through the full retained matrix, reconcile review findings and merge only when clean.
+6. Continue to Stage 6 deeper zone-specific gameplay only after Stage 5 is merged and reconciled.
 7. Keep both manual product gates explicitly deferred until the user is available to perform them.
 
 ## Historical checkpoint notes
@@ -65,7 +61,7 @@ These deferred gates do not block independent repository work that does not depe
 
 | Workstream | Record | Current GitHub state |
 | --- | --- | --- |
-| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) plus [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md) | Stage 1 and Stage 2 are merged. Stage 4 elemental portal campaign-state foundation is active in #2137 with r31 cache/release correction under final qualification; two independent manual product gates remain deferred. |
+| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) plus [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md) | Stage 4 #2137 is merged as `d3225318ff5cb87664bce96020c790099f53e06a`; Stage 5 procedural topology is active on the current-main branch. Two independent manual product gates remain deferred. |
 | Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | itch.io is the intended purchase/download route; the custom commerce/paywall and stale packaging/Windows PR graphs are closed. Any package artifact must be rebuilt from current `main`, selectively reusing historical provider-neutral ideas only where necessary. |
 | Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2103 and #2105 are merged; #2073 is closed. #2110 remains the current draft endpoint follow-up but is **BLOCKED** by missing/mismatched Cloudflare runtime configuration. Repository-side work for that blocker is already complete. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | draft rebuild PR #2056 remains based on an old merge base and requires a current-main rebuild/reconciliation before integration. |
