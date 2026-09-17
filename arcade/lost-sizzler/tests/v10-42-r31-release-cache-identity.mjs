@@ -28,6 +28,9 @@ assert.match(handoff,/function revision\(\)\{return String\(document\.querySelec
 assert.match(handoff,/loadScript\("v10-42-bootstrap\.js","data-ccg-v142-bootstrap"\)/,"the historical handoff must continue loading the ordered V10.42 bootstrap through the derived release token");
 assert.match(bootstrap,/pendingId==="solo-btn"\|\|pendingId==="tutorial-zone-btn"/,"the ordered bootstrap must treat buffered Solo and Tutorial starts as owned launch intents");
 assert.match(bootstrap,/guidance\.launchSolo\(pendingId==="tutorial-zone-btn"\)/,"buffered Solo and Tutorial starts must hand directly to the guidance launch owner rather than relying on a synthetic click");
+assert.match(bootstrap,/if\(state\.ready\)\{[\s\S]*?target\.id!=="solo-btn"&&target\.id!=="tutorial-zone-btn"[\s\S]*?state\.pendingStartId=target\.id[\s\S]*?replayPendingStart\(\)/,"V10.42 must keep capture ownership for Solo/Tutorial through the ready-state transition instead of exposing a click-dispatch race");
+assert.doesNotMatch(bootstrap,/removeEventListener\("click",blockedStart,true\)/,"the V10.42 Solo/Tutorial capture owner must remain installed after readiness so a transition click cannot fall through to the legacy core handler");
+
 assert.match(bootstrap,/Promise\.resolve\(launched\)\.then\(\(\)=>\{[\s\S]*?dataset\?\.runActive==="true"[\s\S]*?finish\(\)[\s\S]*?retry\(\)/,"the ordered bootstrap must retain a buffered local start until the launch owner either activates the run or needs a retry");
 
 assert.ok(localAssets.length>=30,`expected the canonical page to expose its local script/style cache tokens, found ${localAssets.length}`);
