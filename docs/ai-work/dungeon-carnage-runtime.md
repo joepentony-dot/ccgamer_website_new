@@ -6,9 +6,9 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Current checkpoint — 17 September 2026
 
-Live repository reconciliation after the seven-item defect programme:
+Live repository reconciliation after the seven-item defect programme and the later current-build freeze/stopped-firing regression:
 
-- Current `main` before this documentation update: `53698285b135199f5807db95094eb59bce200d38`.
+- Current runtime `main` before this documentation update: `218025ce2beac3765d65ca9b838e8afd58a5eedf`, merge of PR #2129.
 - Defect 1 — obsolete public-beta/watchdog startup lock — **repository-complete through #2117**.
 - Defect 2 — retained projectile entities / progressive slowdown — **repository-complete through #2118**.
 - Defect 3 — Floor 1 completion/exit progression failure — **repository-complete through #2119**.
@@ -16,11 +16,16 @@ Live repository reconciliation after the seven-item defect programme:
 - Defect 5 — 3-Artefact Banishment Flask exchange — **repository implementation complete through #2090; deployed/manual acceptance remains required before product-level closure**.
 - Defect 6 — Owned Firearms differentiation — **repository-complete through #2125**.
 - Defect 7 — RPG terminology reconciliation — **repository-complete through #2126**.
-- There is **no active Dungeon live-defect branch or PR** from this seven-item programme.
+- Post-program live freeze/stopped-firing regression — **repository-complete through #2129; deployed/manual Solo stability acceptance remains required**.
+- There is **no active Dungeon runtime defect PR**. The current `codex/dungeon-2129-checkpoint` branch is documentation-only.
 
-The final runtime merge in the programme was Defect 7 PR #2126. Its exact qualified head was `f70f816910fab8d07aaf946f140b593c9220f1ef`, merged as `2e734f4875fb737a0a292b4f92331197bc1c6f85`. The exact candidate passed Native Mouse Wheel Scroll Contract, Public Code Cache Version, SEO Automation, C64 Dungeon Carnage Mobile Trap Layout Contract and Lost Sizzler Load Safety, including canonical/Node coverage and all six Chromium shards.
+The final runtime merge in the original seven-item programme was Defect 7 PR #2126. Its exact qualified head was `f70f816910fab8d07aaf946f140b593c9220f1ef`, merged as `2e734f4875fb737a0a292b4f92331197bc1c6f85`. The exact candidate passed Native Mouse Wheel Scroll Contract, Public Code Cache Version, SEO Automation, C64 Dungeon Carnage Mobile Trap Layout Contract and Lost Sizzler Load Safety, including canonical/Node coverage and all six Chromium shards.
 
-The two commits after that merge are documentation-only checkpoint reconciliation: `83394ae87c358c68e882b6d2c041d108565b2add` updated `docs/AI-CONTINUATION-STATE.md`, and `53698285b135199f5807db95094eb59bce200d38` updated `arcade/lost-sizzler/PROGRESS.md`.
+After that programme, the user reproduced a current-build Solo failure where gameplay froze/stalled and/or firing stopped before the outstanding Defect 5 manual acceptance could be reached. PR #2129 proved that current `main` had a split release/cache identity: the authoritative V10.42 bootstrap used `V10.42 r30` / `20260917r30`, while the blocking canonical page still identified and directly loaded the base frame/input/runtime stack under `2026.09.10.1` / `20260910r1`. That allowed a supported mixed-generation path where stale base frame/input/attack owners could coexist with current r30 ordered modules even though the visible page badge was later restamped to r30.
+
+#2129 synchronised the blocking page identity, every directly loaded Dungeon CSS/JS query token and `version.json` to r30. It deliberately did not alter projectile lifecycle mechanics, firing cadence, movement semantics, save data, supported mode ownership or Defect 5 shop logic. The exact qualified head `585cda263e2f0c9a626fef61d19bae9635d2087f` passed Public Code Cache Version, SEO Automation, Native Mouse Wheel Scroll Contract, Social Metadata Validation, Structured Data Validation, CCG Site Safety and Lost Sizzler Load Safety. It had no reviews, no review threads, no conflicts and was mergeable; Cloudflare also reported a successful exact-head preview deployment. #2129 merged as `218025ce2beac3765d65ca9b838e8afd58a5eedf`.
+
+Detailed #2129 record: `docs/ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md`.
 
 ### Defect 3 ownership result
 
@@ -46,7 +51,7 @@ Current-main browser coverage proves both representations:
 - Gold and Score are not spent by the Artefact/Essence exchange;
 - inventory capacity remains valid.
 
-No further repository-side correction is currently proven necessary. Product-level closure still requires hands-on acceptance on the deployed/current build.
+No further repository-side correction is currently proven necessary. Product-level closure still requires hands-on acceptance on the deployed/current build, but that acceptance must resume only after the short post-#2129 sustained Solo stability check passes.
 
 ### Defect 6 ownership result
 
@@ -63,6 +68,21 @@ No further repository-side correction is currently proven necessary. Product-lev
 - visible `Zzap! Citadel guardian` → `Citadel guardian`
 
 No rarity probabilities, ordering, weapon stats, loot mechanics or save identifiers were changed.
+
+### #2129 release/cache ownership remediation
+
+#2129 is **MERGED**. It corrected the current-build split generation without reopening #2118 projectile semantics.
+
+The bounded production delta keeps the canonical page and runtime on one release generation:
+
+- page build identity `V10.42 r30`;
+- page cache identity `20260917r30`;
+- all directly loaded Dungeon CSS/JS assets use `20260917r30`;
+- `version.json` carries the same identity;
+- the cache guard sees r30 before gameplay owners execute;
+- the r30 bootstrap handoff and ordered module chain stay on the same cache token.
+
+New regression coverage includes `v10-42-r30-release-cache-identity.mjs` plus the real-browser `v10-42-live-solo-combat-endurance.mjs`, which exercises generated enemies, real projectile/damage/death ownership, Space/F/Numpad0 firing, held/release cycles, movement between combat cycles, pause/resume recovery, simulation progress and bounded projectile/visual collections. The first CI attempt exposed only external Supabase/local-fixture CORS noise after the endurance exercise had completed; that fixture was isolated without weakening gameplay assertions, ownership assertions, collection bounds or timeouts.
 
 ## Completed runtime stages
 
@@ -137,19 +157,21 @@ Historical Horde/Spy source files and acceptance records remain in the repositor
 
 ## Guardrails and exact next action
 
-Preserve Solo, Tutorial, local 2P Split Screen and Weekly Vault/account services. Do not restore retired networked Dungeon Multiplayer, Horde Survivor or Spy/Sizzler Saboteurs behaviour. Do not reopen completed Defects 1, 2, 3, 4, 6 or 7 without new current-build regression evidence.
+Preserve Solo, Tutorial, local 2P Split Screen and Weekly Vault/account services. Do not restore retired networked Dungeon Multiplayer, Horde Survivor or Spy/Sizzler Saboteurs behaviour. Do not reopen completed Defects 1, 2, 3, 4, 6 or 7 without new current-build regression evidence. Preserve #2118 projectile lifecycle ownership unless new evidence independently disproves it.
 
-The exact next action is the remaining human acceptance gate for Defect 5 on the deployed/current build:
+The exact next action is now two staged human acceptance gates on the deployed/current build:
 
-1. Reach the live shop route that offers the Banishment Flask exchange with three earned Artefacts/Essence available.
-2. Perform the Artefact/Essence exchange **without first buying a Flask for Gold**.
-3. Confirm exactly one Banishment Flask is received and the three Artefacts/Essence are consumed.
-4. Confirm the exchange does not reduce Gold or Score.
-5. Confirm the transaction also succeeds when inventory capacity is tight enough that consuming the traded stack must make room for the Flask.
+1. Confirm that merge `218025ce2beac3765d65ca9b838e8afd58a5eedf` has completed the normal production deployment path.
+2. Run the short sustained Solo acceptance: move normally, fight real enemies, use repeated firing press/hold/release cycles, continue long enough to confirm firing does not stop and the game does not freeze/stall, and include pause/resume recovery if practical.
+3. Only after that passes, reach the live shop route with three earned Artefacts/Essence available.
+4. Perform the Artefact/Essence exchange **without first buying a Flask for Gold**.
+5. Confirm exactly one Banishment Flask is received and the three Artefacts/Essence are consumed.
+6. Confirm the exchange does not reduce Gold or Score.
+7. Confirm the transaction also succeeds when inventory capacity is tight enough that consuming the traded stack must make room for the Flask.
 
-If that passes, update `arcade/lost-sizzler/PROGRESS.md` to mark the seven-item live-defect programme product-complete. If it fails, reproduce on the then-current deployed `main` and open a fresh bounded defect from that exact state. Do not revive stale branches wholesale.
+If both live checks pass, update `arcade/lost-sizzler/PROGRESS.md` to mark the original seven-item live-defect programme and the later #2129 regression product-complete. If either fails, reproduce on the then-current deployed `main` and open a fresh bounded defect from that exact state. Do not revive stale branches wholesale.
 
-No new repository defect branch should be created merely to continue the original seven-item programme while this manual gate is outstanding.
+No new repository defect branch should be created merely to continue the original seven-item programme or #2129 while these manual gates are outstanding.
 
 ## Historical live-defect remediation checkpoint — 16 September 2026
 
@@ -178,4 +200,5 @@ Branch `codex/dungeon-projectile-lifecycle-current-main` was created from exact 
 - 2026-09-17: Reconfirmed #2090 owns both physical-Artefact and current Essence Banishment Flask exchange paths on current main; repository-side Defect 5 work is complete, with deployed/manual acceptance still outstanding.
 - 2026-09-17: Qualified and merged #2125, exposing meaningful Owned Firearms differences through the existing selector without changing weapon mechanics.
 - 2026-09-17: Qualified and merged #2126 at exact head `f70f816910fab8d07aaf946f140b593c9220f1ef`; all retained workflows and all six Chromium shards passed.
-- 2026-09-17: Reconciled `docs/AI-CONTINUATION-STATE.md` and `arcade/lost-sizzler/PROGRESS.md` after Defect 7. This runtime workstream record was then brought to the same checkpoint; the remaining next action is Defect 5 deployed/manual acceptance.
+- 2026-09-17: Reconciled `docs/AI-CONTINUATION-STATE.md` and `arcade/lost-sizzler/PROGRESS.md` after Defect 7. The remaining next action at that checkpoint was Defect 5 deployed/manual acceptance.
+- 2026-09-17: Reproduced a later current-build Solo freeze/stopped-firing regression, proved split release/cache ownership rather than a return of #2118, qualified #2129 exact head `585cda263e2f0c9a626fef61d19bae9635d2087f`, and merged it as `218025ce2beac3765d65ca9b838e8afd58a5eedf`. The next live gate is sustained Solo stability, followed by the existing Defect 5 Flask acceptance.

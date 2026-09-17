@@ -10,13 +10,21 @@ Update this file when a workstream changes category, its active PR/dependency ch
 
 ## Current autonomous Dungeon Carnage live-defect checkpoint — 17 September 2026
 
-- Verified runtime `main` before this documentation checkpoint: `2e734f4875fb737a0a292b4f92331197bc1c6f85`, the merge of Defect 7 PR #2126.
-- The seven-item repository-side Dungeon Carnage live-defect remediation programme is complete except for the already-documented deployed/manual acceptance gate on Defect 5.
+- Verified runtime `main` before this documentation checkpoint: `218025ce2beac3765d65ca9b838e8afd58a5eedf`, merge of live regression PR #2129.
+- The original seven-item repository-side Dungeon Carnage live-defect remediation programme remains repository-complete except for the already-documented deployed/manual acceptance gate on Defect 5.
+- A later current-build live regression was independently reproduced after that programme: Solo gameplay could freeze/stall and/or firing could stop before Defect 5 acceptance could be reached.
+- That regression is **repository-fixed through #2129**. Proven root cause: the canonical page still loaded the base runtime under `20260910r1` while the authoritative V10.42 bootstrap used `20260917r30`, allowing a supported mixed-generation cache/runtime path.
+- #2129 synchronised the blocking page, direct CSS/JS asset queries and `version.json` to `V10.42 r30` / `20260917r30` without changing projectile mechanics, firing cadence, movement semantics, save data, supported mode ownership or Defect 5 shop logic.
+- Exact qualified #2129 head: `585cda263e2f0c9a626fef61d19bae9635d2087f`.
+- #2129 merge commit: `218025ce2beac3765d65ca9b838e8afd58a5eedf`.
+- Exact-head qualification on `585cda26…`: Public Code Cache Version **green**; SEO Automation **green**; Native Mouse Wheel Scroll Contract **green**; Social Metadata Validation **green**; Structured Data Validation **green**; CCG Site Safety **green**; Lost Sizzler Load Safety **green**.
+- #2129 had no reviews, no unresolved review threads, no conflicts, and was mergeable before merge. Cloudflare reported a successful exact-head preview deployment.
+- Detailed regression record: [Dungeon Carnage live freeze/cache checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md).
 - Defect 1 — obsolete public-beta/watchdog startup lock — **repository-complete through #2117**.
 - Defect 2 — retained projectile entities / progressive slowdown — **repository-complete through #2118**.
 - Defect 3 — Floor 1 completion/exit progression failure — **repository-complete through #2119**. The bounded fix preserved the genuine objective → exit → `movePlayer()` → floor-complete → `#descend-btn` → `descendFloor()` ownership route.
 - Defect 4 — Save and Exit restore reliability — **repository-complete through #2123**.
-- Defect 5 — 3-Artefact Banishment Flask exchange — **no remaining repository-side correction**. #2090 owns the live Artefact/Essence exchange path and its current-main browser contract has passed; deployed/manual acceptance remains required before product-level closure.
+- Defect 5 — 3-Artefact Banishment Flask exchange — **no remaining repository-side correction**. #2090 owns the live Artefact/Essence exchange path and its current-main browser contract has passed; deployed/manual acceptance remains required before product-level closure. That acceptance is currently gated behind the short post-#2129 sustained Solo stability check.
 - Defect 6 — Owned Firearms differentiation — **repository-complete through #2125**. Presentation now exposes the meaningful differences already present in firearm runtime data without changing acquisition, switching or combat ownership.
 - Defect 7 — RPG terminology reconciliation — **repository-complete through #2126**.
 
@@ -36,16 +44,19 @@ Update this file when a workstream changes category, its active PR/dependency ch
 
 ### Active Dungeon live-defect branch / PR
 
-- **None.** Do not create another repository defect branch merely to continue the original seven-item programme.
+- **None.** #2129 is merged; the only current branch created by this checkpoint is documentation-only and must not be mistaken for an active runtime defect branch.
 - Do not reopen Defects 1, 2, 3, 4, 6 or 7 without new regression evidence.
-- Defect 5 is not a coding task at this checkpoint; its remaining gate is deployed/manual acceptance of the 3-Artefact Banishment Flask exchange.
+- Preserve #2118 projectile lifecycle ownership; #2129 was a release/cache identity correction, not a projectile-mechanics rewrite.
+- Defect 5 is not a coding task at this checkpoint; its remaining gate is deployed/manual acceptance of the 3-Artefact Banishment Flask exchange after the post-#2129 sustained Solo stability check passes.
 
 ### Exact next action
 
-1. When the current build is deployed and available for hands-on testing, perform the short manual Defect 5 acceptance: verify the 3-Artefact/Essence Banishment Flask exchange succeeds without requiring a Gold purchase and does not spend Gold/Score incorrectly.
-2. If that passes, mark the seven-item live-defect programme product-complete in the work register.
-3. If it fails, reproduce against the then-current deployed `main` and open a new bounded defect from that exact repository state; do not revive stale branches wholesale.
-4. If no new defect is reported, move only to the separately documented post-defect product backlog rather than inventing further remediation work.
+1. Verify that `218025ce2beac3765d65ca9b838e8afd58a5eedf` has completed the normal production deployment path.
+2. Perform a short sustained Solo live acceptance covering normal movement, real enemy combat, repeated firing/hold/release cycles, and enough continued play to confirm firing does not stop and the game does not freeze/stall. Include pause/resume recovery if practical.
+3. Only after that passes, resume Defect 5 deployed/manual acceptance: obtain three Artefacts/Essences, perform the Banishment Flask exchange without first buying a Gold Flask, and confirm exactly one Flask is received while Gold and Score remain unchanged.
+4. If both checks pass, mark the seven-item live-defect programme and the later #2129 regression product-complete in the work register.
+5. If either check fails, reproduce against the then-current deployed `main` and open a fresh bounded defect from that exact repository state; do not revive stale branches wholesale.
+6. If no new defect is reported, move only to the separately documented post-defect product backlog rather than inventing further remediation work.
 
 Autonomous merge authorization remains in force for bounded repository fixes that satisfy the established exact-head qualification rules. Genuine hands-on acceptance, credentials, destructive external actions and project-level human approval gates still apply where documented.
 
@@ -66,7 +77,7 @@ Autonomous merge authorization remains in force for bounded repository fixes tha
 
 | Workstream | Record | Current GitHub state |
 | --- | --- | --- |
-| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) | Seven-item repository live-defect programme completed through #2117, #2118, #2119, #2123, #2090, #2125 and #2126. Defect 5 still has a deployed/manual acceptance gate; no active repository defect PR remains. |
+| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) plus [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md) | Seven-item repository live-defect programme completed through #2117, #2118, #2119, #2123, #2090, #2125 and #2126. Later freeze/stopped-firing regression repository-fixed through merged #2129. Short live Solo stability acceptance is now required before Defect 5 deployed acceptance resumes. |
 | Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | itch.io is the intended purchase/download route; the custom commerce/paywall and stale packaging/Windows PR graphs are closed. Any package artifact must be rebuilt from current `main`, selectively reusing historical provider-neutral ideas only where necessary. |
 | Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2103 and #2105 are merged; #2073 is closed. #2110 remains the current draft endpoint follow-up but is **BLOCKED** by missing/mismatched Cloudflare runtime configuration. Repository-side work for that blocker is already complete. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | draft rebuild PR #2056 remains based on an old merge base and requires a current-main rebuild/reconciliation before integration. |
