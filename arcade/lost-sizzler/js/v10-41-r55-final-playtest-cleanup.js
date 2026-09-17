@@ -72,12 +72,15 @@
     else if(id==="tutorial-zone-btn"||id==="daily-btn"){height="70px";font="9px"}
     const mobile=matchMedia?.("(max-width:760px)")?.matches===true;
     if(mobile)height="78px";
+    const hidden=button.classList.contains("hidden");
     const values={
-      "box-sizing":"border-box","position":"relative","display":"flex","align-items":"center","justify-content":"flex-start",
+      "box-sizing":"border-box","position":"relative","align-items":"center","justify-content":"flex-start",
       "min-height":height,"padding":mobile?"29px 12px 25px":"28px 12px 24px","overflow":"hidden","white-space":"normal","text-overflow":"clip",
       "text-align":"left","line-height":"1.15","font-size":font,"text-shadow":"none","transform":"none","filter":"none","-webkit-filter":"none"
     };
+    if(!hidden)values.display="flex";
     let repaired=false;
+    if(hidden&&button.style.getPropertyValue("display")){button.style.removeProperty("display");repaired=true}
     for(const [prop,value] of Object.entries(values)){
       if(button.style.getPropertyValue(prop)!==value||button.style.getPropertyPriority(prop)!=="important"){button.style.setProperty(prop,value,"important");repaired=true}
     }
@@ -85,8 +88,23 @@
     return true
   }
 
+  function alignSupportedMenuOrder(grid){
+    if(!grid)return false;
+    const ids=["continue-save-btn","solo-btn","split-btn","tutorial-zone-btn","daily-btn"];
+    const buttons=ids.map(id=>grid.querySelector(`#${id}`)).filter(Boolean);
+    if(!buttons.length)return false;
+    const current=[...grid.children].filter(node=>ids.includes(String(node.id||""))).map(node=>node.id);
+    if(current.length===buttons.length&&current.every((id,index)=>id===buttons[index].id))return true;
+    const focused=document.activeElement;
+    const restoreFocus=focused instanceof HTMLElement&&buttons.includes(focused);
+    const fragment=document.createDocumentFragment();for(const button of buttons)fragment.appendChild(button);grid.insertBefore(fragment,grid.firstChild);
+    if(restoreFocus){try{focused.focus({preventScroll:true})}catch(_){try{focused.focus()}catch(__){}}}
+    state.menuRepairs++;return true
+  }
+
   function markMenu(){
     const grid=document.querySelector("#menu .game-mode-buttons");if(!grid)return false;
+    alignSupportedMenuOrder(grid);
     for(const button of grid.querySelectorAll("button"))sealButtonLayout(button);
     grid.dataset.r55TextLayout="true";state.menuPasses++;return true
   }

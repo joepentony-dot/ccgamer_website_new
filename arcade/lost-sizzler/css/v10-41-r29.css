@@ -131,3 +131,77 @@ body[data-run-active="false"] #menu .secondary-menu a{min-height:34px!important;
   body[data-run-active="false"] #menu #split-btn{grid-column:span 1!important}
   body[data-run-active="false"] #menu .feature-strip{grid-template-columns:1fr!important}
 }
+
+/* Stage 2 landing milestone.
+ * The supported release now presents one stable hierarchy instead of exposing
+ * historical runtime-injected tiers that referred to retired modes. The final
+ * supported card geometry also matches the retained R55 text-layout owner so a
+ * late compatibility pass cannot resize the menu after first paint. */
+html body[data-run-active="false"] #menu .ccg-mode-tier-label{display:none!important}
+html body[data-run-active="false"] #menu .game-mode-buttons button:not(.hidden){
+  box-sizing:border-box!important;
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  min-height:74px!important;
+  padding:28px 12px 24px!important;
+  overflow:hidden!important;
+  white-space:normal!important;
+  text-overflow:clip!important;
+  text-align:left!important;
+  line-height:1.15!important;
+}
+html body[data-run-active="false"] #menu #continue-save-btn{
+  order:10!important;
+  grid-column:1/-1!important;
+  min-height:78px!important;
+  font-size:10px!important;
+}
+html body[data-run-active="false"] #menu #solo-btn{
+  order:11!important;
+  grid-column:span 2!important;
+  min-height:82px!important;
+  font-size:10.5px!important;
+}
+html body[data-run-active="false"] #menu #split-btn{
+  order:12!important;
+  grid-column:span 2!important;
+  min-height:74px!important;
+  font-size:9.5px!important;
+}
+html body[data-run-active="false"] #menu #tutorial-zone-btn{
+  order:21!important;
+  grid-column:span 2!important;
+  min-height:70px!important;
+  font-size:9px!important;
+}
+html body[data-run-active="false"] #menu #daily-btn{
+  order:22!important;
+  grid-column:span 2!important;
+  min-height:70px!important;
+  font-size:9px!important;
+}
+html body[data-run-active="false"] #menu #tutorial-zone-btn,
+html body[data-run-active="false"] #menu #daily-btn{
+  margin-top:3px!important;
+}
+@media(max-width:760px){
+  html body[data-run-active="false"] #menu #continue-save-btn{grid-column:1/-1!important}
+  html body[data-run-active="false"] #menu #solo-btn,
+  html body[data-run-active="false"] #menu #split-btn,
+  html body[data-run-active="false"] #menu #tutorial-zone-btn,
+  html body[data-run-active="false"] #menu #daily-btn{
+    grid-column:span 1!important;
+    min-height:78px!important;
+    padding:29px 12px 25px!important;
+  }
+}
+@media(max-width:520px){
+  html body[data-run-active="false"] #menu .game-mode-buttons{grid-template-columns:1fr!important}
+  html body[data-run-active="false"] #menu #continue-save-btn,
+  html body[data-run-active="false"] #menu #solo-btn,
+  html body[data-run-active="false"] #menu #split-btn,
+  html body[data-run-active="false"] #menu #tutorial-zone-btn,
+  html body[data-run-active="false"] #menu #daily-btn{grid-column:1!important}
+}
