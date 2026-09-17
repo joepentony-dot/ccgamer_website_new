@@ -29,10 +29,10 @@ try{
   page.on("requestfailed",request=>{try{const url=new URL(request.url());if(url.origin===origin&&/\.js(?:\?|$)/i.test(url.pathname))failedScripts.push(`${url.pathname}: ${request.failure()?.errorText||"failed"}`)}catch(_){}});
 
   await page.goto(`${origin}/arcade/lost-sizzler/?floor1-save-exit-restore=1`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGProgression)&&Boolean(window.CCGDungeonSaveRestoreContract)&&Boolean(document.getElementById("solo-btn")),null,{timeout:90000});
-  await page.evaluate(()=>window.CCGProgression.clearCheckpoint());
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGProgression)&&Boolean(window.CCGDungeonSaveRestoreContract)&&Boolean(window.CCGLostSizzlerV141R43SoloSave)&&Boolean(document.getElementById("solo-btn")),null,{timeout:90000});
+  await page.evaluate(()=>window.CCGLostSizzlerV141R43SoloSave.clearSoloSave());
   await page.click("#solo-btn");
-  await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&playMode==="solo"&&run?.floor===1&&Boolean(p1)&&Boolean(world),null,{timeout:20000});
+  await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&playMode==="solo"&&run?.floor===1&&Boolean(p1)&&Boolean(world)&&Boolean(window.CCGLostSizzlerV141R43SoloSave.readEnvelope()),null,{timeout:20000});
 
   const entry=await page.evaluate(()=>({
     floor:floorEntryCheckpoint?.run?.floor||floorEntryCheckpoint?.floor||0,
@@ -42,10 +42,12 @@ try{
     mana:floorEntryCheckpoint?.player?.mana,
     x:floorEntryCheckpoint?.player?.x,
     y:floorEntryCheckpoint?.player?.y,
-    persisted:Boolean(window.CCGProgression.loadCheckpoint())
+    persistedFloor:window.CCGLostSizzlerV141R43SoloSave.readEnvelope()?.summary?.floor||0,
+    persistedReason:window.CCGLostSizzlerV141R43SoloSave.readEnvelope()?.reason||""
   }));
-  assert.equal(entry.floor,1,"a genuine Solo Floor 1 start must own a floor-entry checkpoint snapshot");
-  assert.equal(entry.persisted,false,"starting Floor 1 must not silently change the current voluntary checkpoint design into autosave");
+  assert.equal(entry.floor,1,"a genuine Solo Floor 1 start must own the legacy floor-entry checkpoint snapshot used by Save & Return");
+  assert.equal(entry.persistedFloor,1,"the established r43 owner must continue its existing Floor 1 entrance autosave");
+  assert.equal(entry.persistedReason,"autosave","the Defect 4 correction must preserve the established r43 autosave ownership rather than introducing a competing persistence mode");
 
   const prompt=await page.evaluate(()=>{
     score=98765;p1.health=1;p1.mana=0;p1.x+=1;p1.y+=1;run.consecutiveDeaths=5;
@@ -81,7 +83,7 @@ try{
   assert.equal(saved.mana,entry.mana,"Save & Return must persist entrance ammunition, not mutated mid-room ammunition");
   assert.equal(saved.x,entry.x,"Save & Return must persist the Floor 1 entrance X position");
   assert.equal(saved.y,entry.y,"Save & Return must persist the Floor 1 entrance Y position");
-  assert.match(saved.label,/Resume Floor 1/i,"the title screen must expose the saved Floor 1 run");
+  assert.match(saved.label,/Floor 1/i,"the title screen must expose the saved Floor 1 run");
 
   await page.click("#continue-save-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&playMode==="solo"&&run?.floor===1&&Boolean(p1)&&Boolean(world),null,{timeout:20000});
@@ -95,10 +97,39 @@ try{
   assert.equal(resumed.y,entry.y,"Floor 1 restore must recover entrance Y position");
   assert.equal(resumed.player2,false,"the Solo Floor 1 checkpoint must remain Solo after restore");
 
+  const failedPrompt=await page.evaluate(()=>{
+    score=76543;p1.health=Math.max(1,p1.health-1);run.consecutiveDeaths=5;
+    const offered=offerFloorSave(true),owner=window.CCGLostSizzlerV141R43SoloSave,originalSetItem=Storage.prototype.setItem;
+    window.__ccgFloor1SaveOriginalSetItem=originalSetItem;
+    Storage.prototype.setItem=function(storageKey,value){
+      if(String(storageKey)===String(owner.PRIMARY_KEY))throw new DOMException("simulated quota failure","QuotaExceededError");
+      return originalSetItem.call(this,storageKey,value);
+    };
+    return{offered,mode};
+  });
+  assert.equal(failedPrompt.offered,true,"write-failure validation must use the real Floor 1 five-death Save & Return prompt");
+  assert.equal(failedPrompt.mode,"saveprompt","write-failure validation must remain on the supported save prompt before the click");
+
+  await page.click("#save-return-btn");
+  await page.waitForTimeout(400);
+  const failedSave=await page.evaluate(()=>({
+    mode,
+    runActive:document.body.dataset.runActive,
+    menuHidden:document.getElementById("menu")?.classList.contains("hidden")===true,
+    savePanelVisible:UI.savePanel&&!UI.savePanel.classList.contains("hidden"),
+    lastError:window.CCGLostSizzlerV141R43SoloSave.state.lastError||""
+  }));
+  assert.notEqual(failedSave.mode,"menu","a failed Floor 1 checkpoint write must not discard the active run");
+  assert.equal(failedSave.runActive,"true","a failed Floor 1 checkpoint write must keep the run active");
+  assert.equal(failedSave.menuHidden,true,"a failed Floor 1 checkpoint write must not expose the title menu as though saving succeeded");
+  assert.equal(failedSave.savePanelVisible,true,"the failed Save & Return prompt must remain available so the player can retry or continue");
+  assert.match(failedSave.lastError,/simulated quota failure/i,"the established r43 persistence owner must report the failed browser write");
+  await page.evaluate(()=>{if(window.__ccgFloor1SaveOriginalSetItem)Storage.prototype.setItem=window.__ccgFloor1SaveOriginalSetItem});
+
   assert.deepEqual(errors,[],`Floor 1 Save & Exit regression must not raise page errors: ${errors.join("\n")}`);
   assert.deepEqual(failedScripts,[],`Floor 1 Save & Exit regression must not lose same-origin scripts: ${failedScripts.join("\n")}`);
-  await page.evaluate(()=>window.CCGProgression.clearCheckpoint());
-  console.log("V10.42 Floor 1 Save & Return / restore regression passed.");
+  await page.evaluate(()=>window.CCGLostSizzlerV141R43SoloSave.clearSoloSave());
+  console.log("V10.42 Floor 1 Save & Return / restore / write-failure regression passed.");
   await context.close();
 }finally{
   await browser.close();
