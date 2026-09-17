@@ -1,0 +1,60 @@
+name: Dungeon Carnage 64 Native Build
+
+on:
+  push:
+    branches:
+      - codex/dungeon-carnage-c64-native-build
+    paths:
+      - '.github/workflows/dungeon-carnage-c64-native-build.yml'
+      - 'tools/dungeon-carnage-c64-ci/**'
+
+permissions:
+  contents: read
+
+jobs:
+  build-c64:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout isolated build branch
+        uses: actions/checkout@v4
+
+      - name: Install C64 toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cc65 python3-pil
+          cl65 --version
+
+      - name: Restore enhanced Dungeon Carnage source
+        run: |
+          mkdir -p /tmp/dungeon-carnage-64
+          cat tools/dungeon-carnage-c64-ci/source.part* | base64 -d | tar -xz -C /tmp/dungeon-carnage-64
+
+      - name: Validate and compile native C64 build
+        working-directory: /tmp/dungeon-carnage-64
+        run: |
+          python3 assets/generate.py
+          python3 tools/verify_v11_source.py
+          sh build.sh
+          test -s build/DUNGEON-CARNAGE-64.prg
+          test "$(stat -c%s build/DUNGEON-CARNAGE-64.d64)" = "174848"
+          sha256sum build/DUNGEON-CARNAGE-64.prg build/DUNGEON-CARNAGE-64.d64
+
+      - name: Stage native build artifact
+        run: |
+          mkdir -p /tmp/dungeon-carnage-artifact
+          cp /tmp/dungeon-carnage-64/build/DUNGEON-CARNAGE-64.prg /tmp/dungeon-carnage-artifact/
+          cp /tmp/dungeon-carnage-64/build/DUNGEON-CARNAGE-64.d64 /tmp/dungeon-carnage-artifact/
+          cp /tmp/dungeon-carnage-64/build/game.map /tmp/dungeon-carnage-artifact/
+          cp /tmp/dungeon-carnage-64/build/game.lbl /tmp/dungeon-carnage-artifact/
+          cp /tmp/dungeon-carnage-64/assets/title.png /tmp/dungeon-carnage-artifact/title-preview.png
+          cp /tmp/dungeon-carnage-64/assets/sprites.png /tmp/dungeon-carnage-artifact/sprites-preview.png
+          cp /tmp/dungeon-carnage-64/verification/disk-validation.json /tmp/dungeon-carnage-artifact/
+
+      - name: Upload native C64 build
+        uses: actions/upload-artifact@v4
+        with:
+          name: dungeon-carnage-64-native-build
+          path: /tmp/dungeon-carnage-artifact
+          if-no-files-found: error
+          retention-days: 7
