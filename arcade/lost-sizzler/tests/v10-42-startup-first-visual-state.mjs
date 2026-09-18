@@ -25,6 +25,10 @@ assert.match(index,/C64 DUNGEON CARNAGE · PREPARING RUNTIME/,'static loader mus
 assert.match(loaderCss,/\.ccg-release-loading\{[\s\S]*?position:fixed;[\s\S]*?inset:0;[\s\S]*?z-index:2147483000/,'blocking loader CSS must cover the viewport above the game shell');
 assert.match(loaderBootstrap,/document\.getElementById\("ccg-release-loading"\)/,'V10.36 must continue adopting an existing canonical loader instead of requiring dynamic creation');
 assert.match(loaderBootstrap,/link\[data-ccg-v136-special-ui="true"\]/,'V10.36 must continue respecting the static blocking loader stylesheet');
+assert.match(loaderBootstrap,/function authoritativeReleaseReady\(\)/,'V10.36 must explicitly wait for the authoritative current release before revealing the menu');
+assert.match(loaderBootstrap,/build\.startsWith\("V10\.42"\)/,'V10.42 builds must use the authoritative ordered-bootstrap reveal gate');
+assert.match(loaderBootstrap,/v142\?\.ready===true[\s\S]*?dataset\?\.releaseReady==="true"[\s\S]*?dataset\?\.v142BootstrapReady==="true"/,'loader reveal must require V10.42 ordered readiness and matching body readiness markers');
+assert.match(loaderBootstrap,/gate\?\.state\?\.ready&&authoritativeReleaseReady\(\)/,'legacy readiness alone must no longer hide the release loader');
 
 for(const contract of [
   'color:#f5eefb!important',
