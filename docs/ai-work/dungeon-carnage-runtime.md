@@ -4,9 +4,9 @@
 
 The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
-## Current checkpoint — 17 September 2026
+## Current checkpoint — 18 September 2026
 
-Live `main` is `f4fecd858fab8d43cd9d6732ab56495cfb313116`, the merged Stage 7 NPC/merchant milestone (#2140).
+Live `main` is `53cba902af9dbf1e118f3f274836120f6c30bb40`, the merged Stage 8 itch.io HTML5 release-preparation milestone (#2141).
 
 Stage 1 is converged for the current product programme:
 
@@ -108,7 +108,7 @@ Merge commit/current main: `f4fecd858fab8d43cd9d6732ab56495cfb313116`.
 
 #2140 binds established R15 NPC identities/dialogue/service/optional quest metadata to the already-authoritative entrance and hidden dungeon shops. `buyShopItem()` remains the sole owner of prices, Score deductions, Artefact removal, inventory grants, sold state and price ladders. The deferred three-Artefact Banishment Flask exchange semantics were not rewritten. Release/cache identity is `V10.42 r34` / `20260918r34`. Exact-head qualification passed all eight top-level workflows, canonical/Node and all six Chromium shards.
 
-### Stage 8 itch.io release preparation — ACTIVE
+### Stage 8 itch.io release preparation — PR #2141 — MERGED
 
 Branch: `codex/dungeon-stage8-itch-release-current-main`.
 
@@ -125,6 +125,14 @@ Repository release ownership is deliberately separate from the canonical website
 - a dedicated workflow produces the verified ZIP artifact without credentials or retired custom commerce.
 
 No old PayPal checkout, browser paywall, entitlement/private-download backend, Windows wrapper or stale packaging branch is being merged. Historical package work is source material only.
+
+Qualified head: `e5d4333d4e8dc2912b2ffc9c5abc13f79d4b4a2d`.
+
+Merge commit/current main: `53cba902af9dbf1e118f3f274836120f6c30bb40`.
+
+#2141 produced a verified standalone HTML5 ZIP without changing the canonical website runtime. The dedicated package workflow, Site Safety, cache/SEO/mouse-wheel checks, canonical/Node contracts and all six Chromium shards passed on the exact head. Load Safety shard 2 initially hit only the unchanged `v10-41-stage8-scout-persistence.mjs` startup wait; one unchanged targeted retry passed. The qualified package artifact is `C64-Dungeon-Carnage-Itch` (artifact ID `10533819282`, 21,109,428 bytes, SHA-256 `5bcb8a915490382327f16fba0ba6ea5dcc20e0b1ba9d156dfc5a5d2a438b3c38`).
+
+Repository-side Stage 8 is complete. Public itch.io page creation, upload/publication and the final public URL are external release actions. The two existing Dungeon hands-on acceptance gates remain deferred and are not inferred from package qualification.
 
 ### #2129 release/cache ownership remediation
 
