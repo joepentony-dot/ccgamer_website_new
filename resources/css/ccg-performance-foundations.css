@@ -5,6 +5,7 @@
    Loaded by resources/js/ccg-performance.js.
 ============================================================ */
 
+html.ccg-perf-enabled .games-accordion__section,
 html.ccg-perf-enabled .ccg-publisher-results,
 html.ccg-perf-enabled .ccg-developer-results,
 html.ccg-perf-enabled [data-ccg-defer-render] {
@@ -12,16 +13,8 @@ html.ccg-perf-enabled [data-ccg-defer-render] {
     contain-intrinsic-size: auto 720px;
 }
 
-/*
- * Collapsed Games A-Z accordion wrappers must keep real layout geometry.
- * content-visibility:auto previously substituted a 240px off-screen estimate
- * for each collapsed section; as mobile scrolling revealed those sections,
- * Chromium resolved their much smaller real height and clamped window.scrollY.
- * Card batching/lazy media remain responsible for archive performance.
- */
 html.ccg-perf-enabled .games-accordion__section {
-    content-visibility: visible;
-    contain-intrinsic-size: none;
+    contain-intrinsic-size: auto 240px;
 }
 
 html.ccg-perf-enabled img[data-ccg-perf-normalized="true"] {
