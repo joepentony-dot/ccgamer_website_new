@@ -43,7 +43,7 @@ These deferred gates do not block independent repository work that does not depe
 3. Keep public itch.io page creation, artifact upload/publication and the final public URL as an external release gate.
 4. Commodore Quest 3 repository reconstruction is complete in draft #2143 at exact head `15e48c3743775f2ba582134e9e04303e07bb4ea4`; all automated qualification is green. The next Quest action is the required hands-on browser playtest of The Bedroom and 36% Conversion Bout. Do not merge before that acceptance.
 5. Treat the Content Publisher magazine/no-music repair as repository-complete: #2150 merged as `5223f5053bceee18e70e70440992f31ff2510c7d`, generated archive output #2157 merged as `bde682be7311c5206b390a4bcfbd52891bc83fbc`, and the Lemon refresh success-counter follow-up #2159 merged as `13311f9e8b7a0a9376bbd5ca84451eb37d908a40`. #2110 is closed unmerged and must not be revived merely to reintroduce game-music upload into the unified publisher.
-6. Treat #1976 as source material only unless current-main evidence independently justifies re-deriving that optimisation.
+6. PR #1976 is closed without merge. Its R30 optimisation history remains source material only and must be re-derived from current main only if new player-facing evidence justifies it.
 
 ## Single-game archive presentation checkpoint — 18 September 2026
 
@@ -69,12 +69,13 @@ These deferred gates do not block independent repository work that does not depe
 - PR #2120 was a redundant movement-wrapper proposal and is closed without merge.
 - Content Publisher PR #2150 is merged; generated archive output #2157 and refresh-counter follow-up #2159 are also merged. The older game-music endpoint PR #2110 is closed without merge as superseded.
 - Diagnostic-only Defect 4 PR #2122 is closed without merge.
+- #1852 is closed without merge as a superseded historical Solo-stabilisation integration branch.
 - #2102 is merged. The retained local Dungeon gameplay suffix lives in `game-local-runtime.js`.
 - #2113 is merged. Obsolete networked Dungeon Multiplayer packet routing, remote-player simulation and world serializer/receiver logic is retired; only inert compatibility owners required by the local session shell remain.
 - #2115 is merged. The full explored dungeon map supports Solo and local Split Screen, uses a dedicated non-playing map mode, and ignores held-M repeats.
 - #2111 remains a merged SEO/video-page automation result. #2109 remains the authoritative merged game/archive publication result; these are separate generated-output scopes.
 - Superseded runtime/documentation/generated-output PRs #2073, #2062, #1960, #1959, #1998, #2107, #1759 and #1752 remain closed without merge.
-- Additional stale runtime/verification candidates #1978, #1980, #2055, #1983, #1898, #1900 and #1902 are closed without merge. #1976 remains source material for a possible current-main optimisation re-derivation.
+- Additional stale runtime/verification candidates #1978, #1980, #2055, #1983, #1898, #1900 and #1902 are closed without merge. #1976 is also closed without merge; its optimisation history remains source material only.
 - The old custom PayPal/private-download/browser-paywall chain is retired from the active PR queue: #1961–#1975 (excluding unrelated #1976), #1977, #1979, #1981 and #1987–#1994 are closed as superseded by the itch.io distribution decision.
 - The old packaging/desktop stack #1958, #1982, #1984, #1985, #1986, #1995 and #1996 is also closed without merge as an integration vehicle. Its history remains source material only for a fresh current-main itch.io artifact.
 
@@ -88,11 +89,12 @@ These deferred gates do not block independent repository work that does not depe
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | Fresh draft #2143 is the qualified current-main Quest 3 candidate at exact head `15e48c3743775f2ba582134e9e04303e07bb4ea4`; all automated checks are green. Old #2056 is closed as superseded. Hands-on Bedroom + 36% Conversion Bout acceptance remains the merge gate. |
 | SEO and generated output | [seo-and-generated-output.md](ai-work/seo-and-generated-output.md) | #2146 individual-game presentation, #2167 site-wide public layout and #2170 bounded public-page discovery metadata are merged. Generated outputs remain workflow-owned; #2169 is the latest generated SEO/video automation merge observed before #2170. |
 
-## Remaining non-Dungeon-defect PR classes at this checkpoint
+## Remaining active draft PR classes at this checkpoint
 
-- #2056 — **CLOSED / SUPERSEDED** by fresh current-main Quest 3 draft #2143. #2143 is exact-head automated-green and waiting only on the documented hands-on browser acceptance gate.
-- #1976 — old R30 optimisation source material; re-derive only if the optimisation is still justified on current `main`.
-- #1860 and #1852 — historical long-running containment/stabilisation branches. They are not safe bases for new Dungeon runtime work; reconcile their broader remaining account/backend or historical-evidence purpose separately before any closure or extraction decision.
+- #2143 — Quest 3 current-main reconstruction; automated qualification is green and the documented Bedroom + 36% Conversion Bout hands-on browser acceptance remains the merge gate.
+- #1860 — Supabase-egress/account/backend containment programme; remains draft and requires its own staging/authenticated acceptance gates before any production cut-over decision.
+- #1976 — **CLOSED / SUPERSEDED AS ACTIVE WORK**. Historical R30 optimisation source material only.
+- #1852 — **CLOSED / SUPERSEDED**. Historical Solo-stabilisation integration branch only; the current Dungeon programme and manual gates are tracked elsewhere.
 
 ## Always re-check before acting
 

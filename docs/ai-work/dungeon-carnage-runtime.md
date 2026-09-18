@@ -16,6 +16,8 @@ Stage 1 is converged for the current product programme:
 
 The programme is now milestone-first. General legacy residue remains backlog unless it visibly affects, destabilises or blocks the player-facing milestone being delivered.
 
+Historical integration cleanup: PR #1852 (long-running Solo stabilisation) and PR #1976 (R30 ownership-audit throttle optimisation) are closed without merge. Their Git history remains evidence/source material only; neither is an active current-main integration path.
+
 The original seven-item repository defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The later #2129 sustained-Solo acceptance is also still deferred. For both:
 
 **MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**
