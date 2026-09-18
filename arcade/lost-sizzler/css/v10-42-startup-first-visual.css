@@ -6,6 +6,14 @@
  * button presentation. When R55 runs later it may reapply the same values, but
  * it must not create a visible colour/text-layout transition at reveal time.
  */
+/* The retained late menu stack settles the supported R51 panel to these
+ * values. Own them before reveal as well so the panel itself cannot make a
+ * second visible layout/alignment transition after the loader leaves. */
+body[data-run-active="false"] #menu>.panel.r51-menu-panel{
+  padding:20px 16px 22px!important;
+  text-align:center!important;
+}
+
 body[data-run-active="false"] #menu .game-mode-buttons button{
   color:#f5eefb!important;
   text-shadow:none!important;
