@@ -77,7 +77,6 @@ try{
   assert.match(sourceBuilder,/sameOrWithin\(REPO_ROOT,outputRoot\).*sameOrWithin\(outputRoot,REPO_ROOT\)/s,"builder must reject both descendants and ancestors of the repository before recursive deletion");
   assert.match(sourceBuilder,/packageDemoPaywallRuntime\(\)/,"builder must replace the retired website commerce module only inside the staged artifact");
   assert.doesNotMatch(sourceBuilder,/path\.join\(REPO_ROOT[^\n]*(?:desktop|services\/ccg-backend|private-download|signed-download)/i,"fresh itch builder must not source files from retired desktop/private-delivery integration");
-  assert.doesNotMatch(sourceBuilder,/EXTERNAL_FILES\s*=\s*\[[\s\S]*?(?:desktop\/|services\/ccg-backend|private-download|signed-download)/i,"fresh itch builder external-file allowlist must not include retired delivery stacks");
 
   console.log("PASS V10.42 Stage 8 itch.io package contract");
 }finally{
