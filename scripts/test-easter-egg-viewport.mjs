@@ -165,7 +165,7 @@ async function settleAtPageBottom(page) {
     const stable = previous
       && Math.abs(latest.scrollHeight - previous.scrollHeight) <= 1
       && Math.abs(latest.maxScroll - previous.maxScroll) <= 1
-      && Math.abs(latest.scrollY - latest.maxScroll) <= 2;
+      && Math.abs(latest.scrollY - previous.scrollY) <= 1;
 
     if (stable) {
       stableSamples += 1;
