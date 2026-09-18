@@ -497,7 +497,8 @@ function buildCanonicalHtml({
 
     if (current.trim()) {
         const socialDescription = `${title} on ${platformLong} — screenshots, gameplay video, manual, downloads and game history.`;
-        const socialTitle = `${title} – ${normalizePlatformShort(game)} | Review, Screens & History`;
+        const year = String(game?.year || "").trim();
+        const socialTitle = `${title}${year ? ` (${year})` : ""} – ${normalizePlatformShort(game)} | Review, Screens & History`;
         let updated = upsertSocialMeta(current, buildSocialMetaBlock({
             title: socialTitle,
             description: socialDescription,
@@ -517,7 +518,8 @@ function buildCanonicalHtml({
     }
 
     const metaDescription = `${title} on ${platformLong} — screenshots, gameplay video, manual, downloads and game history.`;
-    const socialTitle = `${title} – ${normalizePlatformShort(game)} | Review, Screens & History`;
+    const year = String(game?.year || "").trim();
+    const socialTitle = `${title}${year ? ` (${year})` : ""} – ${normalizePlatformShort(game)} | Review, Screens & History`;
     const socialMetaBlock = buildSocialMetaBlock({
         title: socialTitle,
         description: metaDescription,

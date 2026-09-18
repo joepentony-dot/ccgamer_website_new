@@ -261,12 +261,12 @@ function removeStaticNotFoundCopy(html) {
   );
 }
 
-function prefillStaticContent(html, game, title, imagePath) {
+function prefillStaticContent(html, game, title, imagePath, imageMetadata) {
   const description = stripHtml(game?.description || "");
 
   html = html.replace(
     /<img id="gameHeroThumb"[\s\S]*?>/i,
-    `<img id="gameHeroThumb" class="game-hero__thumb" src="${escapeHtml(imagePath)}" alt="${escapeHtml(title)} cover art" loading="eager" decoding="async" fetchpriority="high" width="320" height="180">`
+    `<img id="gameHeroThumb" class="game-hero__thumb" src="${escapeHtml(imagePath)}" alt="${escapeHtml(title)} cover art" loading="eager" decoding="async" fetchpriority="high" width="${Number(imageMetadata?.width || 300)}" height="${Number(imageMetadata?.height || 400)}">`
   );
   html = html.replace(
     /<h1 id="gameHeroTitle" class="game-hero__title">[\s\S]*?<\/h1>/i,
@@ -290,7 +290,9 @@ function buildCanonicalPage(shell, game) {
   const slug = String(game?.slug || "").trim();
   const title = canonicalGameTitle(game);
   const platform = detectPlatform(game);
-  const seoTitle = `${title} – ${platform} | Review, Screens & History`;
+  const platformLabel = schemaPlatform(game) === "Commodore 64" ? "C64" : "Amiga";
+  const year = String(game?.year || "").trim();
+  const seoTitle = `${title}${year ? ` (${year})` : ""} – ${platformLabel} | Review, Screens & History`;
   const description = buildRuntimeDescription(game, title);
   const canonicalUrl = `${SITE_ORIGIN}/games/${slug}/`;
   const imagePath = `/resources/images/thumbnails/all/${thumbnailFilename(game, slug)}`;
@@ -342,7 +344,7 @@ function buildCanonicalPage(shell, game) {
     schemaScript
   );
   html = removeStaticNotFoundCopy(html);
-  html = prefillStaticContent(html, game, title, imagePath);
+  html = prefillStaticContent(html, game, title, imagePath, imageMetadata);
   return normalizeGeneratedWhitespace(html);
 }
 

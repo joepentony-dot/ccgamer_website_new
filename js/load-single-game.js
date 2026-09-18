@@ -1571,8 +1571,6 @@ function renderGame(game) {
             heroThumb.loading = "eager";
             heroThumb.decoding = "async";
             heroThumb.fetchPriority = "high";
-            heroThumb.width = 320;
-            heroThumb.height = 180;
         }
         if (heroTitle) heroTitle.textContent = resolveCanonicalGameTitle(game);
     }
@@ -2803,10 +2801,96 @@ function resolveCreditValue(game, key) {
     return formatFactValue(credits?.[key] || game?.[key]);
 }
 
+function buildGameSectionNav(state) {
+    const hero = document.querySelector(".game-hero");
+    if (!hero || !hero.parentNode) return null;
+
+    let nav = document.querySelector("[data-game-section-nav]");
+    if (!nav) {
+        nav = document.createElement("nav");
+        nav.className = "ccg-game-section-nav";
+        nav.setAttribute("data-game-section-nav", "");
+        nav.setAttribute("aria-label", "Jump to game page section");
+        insertAfter(hero, nav);
+    }
+
+    const candidates = [
+        { label: "Video", target: document.getElementById("game-video-section"), enabled: !!state?.hasVideo },
+        { label: "Overview", target: document.getElementById("game-description-section"), enabled: !!state?.hasOverview },
+        { label: "Credits", target: document.querySelector(".ccg-behind-pixels-inline"), enabled: true, id: "game-credits" },
+        { label: "Manual", target: document.getElementById("game-utility-hub-section"), enabled: !!state?.hasManual },
+        { label: "Reviews", target: document.getElementById("game-reading-section"), enabled: true },
+        { label: "Music", target: document.getElementById("game-music-archive-section"), enabled: true },
+        { label: "Gallery", target: document.querySelector(".game-screenshots"), enabled: !!state?.hasScreenshots, id: "game-gallery" },
+        { label: "Similar", target: document.querySelector(".game-section--related"), enabled: !!state?.hasRelated, id: "game-related" },
+        { label: "Community", target: document.querySelector(".ccg-community-game-section"), enabled: true, id: "game-community" }
+    ];
+
+    const active = candidates.filter((item) => {
+        if (!item.enabled || !item.target) return false;
+        return item.target.hidden !== true;
+    });
+
+    if (!active.length) {
+        nav.hidden = true;
+        nav.replaceChildren();
+        return nav;
+    }
+
+    const label = document.createElement("span");
+    label.className = "ccg-game-section-nav__label";
+    label.textContent = "Explore";
+
+    const links = document.createElement("div");
+    links.className = "ccg-game-section-nav__links";
+
+    active.forEach((item, index) => {
+        const id = ensureSectionId(item.target, item.id || `game-section-${index + 1}`);
+        if (!id) return;
+
+        const link = document.createElement("a");
+        link.className = "ccg-game-section-nav__link";
+        link.href = `#${id}`;
+        link.textContent = item.label;
+        link.addEventListener("click", (event) => {
+            event.preventDefault();
+            smoothScrollTo(item.target);
+            if (window.history && typeof window.history.replaceState === "function") {
+                window.history.replaceState(null, "", `#${id}`);
+            }
+        });
+        links.appendChild(link);
+    });
+
+    nav.replaceChildren(label, links);
+    nav.hidden = links.childElementCount === 0;
+    return nav;
+}
+
+function initGameSectionNav(state) {
+    const nav = buildGameSectionNav(state);
+    if (!nav || nav.dataset.visibilityObserver === "true") return;
+
+    const dynamicSections = [
+        document.getElementById("game-reading-section"),
+        document.getElementById("game-music-archive-section"),
+        document.querySelector(".ccg-community-game-section")
+    ].filter(Boolean);
+
+    if (!dynamicSections.length || !("MutationObserver" in window)) return;
+
+    const observer = new MutationObserver(() => buildGameSectionNav(state));
+    dynamicSections.forEach((section) => {
+        observer.observe(section, { attributes: true, attributeFilter: ["hidden"] });
+    });
+    nav.dataset.visibilityObserver = "true";
+}
+
 function initSingleGameUX(state) {
     initScrollProgress();
     initBackToTop();
     initScreenshotModalEnhancements();
+    initGameSectionNav(state);
     initQuickActions(state);
 }
 

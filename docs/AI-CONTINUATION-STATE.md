@@ -45,6 +45,14 @@ These deferred gates do not block independent repository work that does not depe
 5. Keep #2110 parked behind its documented Cloudflare configuration blocker; do not rebase or retest it solely because `main` advanced.
 6. Treat #1976 as source material only unless current-main evidence independently justifies re-deriving that optimisation.
 
+## Single-game archive presentation checkpoint — 18 September 2026
+
+- Shared individual-game presentation work is in PR **#2146** on `codex/single-game-premium-layout-seo`.
+- It applies through the common single-game CSS/runtime/template/generator owners, so the layout improvement is library-wide rather than Road Rash-specific.
+- The implementation standardises the compact content frame, tightens desktop/mobile browsing, adds available-section navigation, reserves actual generated cover dimensions to reduce CLS, and improves year/platform search-social titles.
+- Current-main reconciliation found no implementation-path overlap with later Dungeon or generated-video work. The only overlap was this continuation index, which has been reconciled onto the latest main checkpoint.
+- Road Rash remains a separate publishing-output issue until `/games/road-rash/` is generated successfully; do not hand-edit the canonical generated page.
+
 ## Historical checkpoint notes
 
 - PR #2120 was a redundant movement-wrapper proposal and is closed without merge.
@@ -66,7 +74,7 @@ These deferred gates do not block independent repository work that does not depe
 | Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | Stage 8 #2141 is merged and the verified standalone HTML5 artifact is repository-ready. Public itch.io page creation/upload/final URL remain external; the retired custom commerce/paywall and desktop/Windows graphs stay closed. |
 | Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2103 and #2105 are merged; #2073 is closed. #2110 remains the current draft endpoint follow-up but is **BLOCKED** by missing/mismatched Cloudflare runtime configuration. Repository-side work for that blocker is already complete. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | Fresh draft #2143 is the qualified current-main Quest 3 candidate at exact head `15e48c3743775f2ba582134e9e04303e07bb4ea4`; all automated checks are green. Old #2056 is closed as superseded. Hands-on Bedroom + 36% Conversion Bout acceptance remains the merge gate. |
-| SEO and generated output | [seo-and-generated-output.md](ai-work/seo-and-generated-output.md) | #2109 is the current merged game/archive publication result; #2111 is a merged SEO/video-page automation result; superseded #2107 and stale #1752/#1759 are closed. |
+| SEO and generated output | [seo-and-generated-output.md](ai-work/seo-and-generated-output.md) | PR #2146 owns the current shared individual-game layout/CWV/SEO refinement; later generated SEO/video commits remain separate. #2109 and #2111 are prior merged publication/automation checkpoints. |
 
 ## Remaining non-Dungeon-defect PR classes at this checkpoint
 
