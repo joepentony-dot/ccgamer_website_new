@@ -6,7 +6,7 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Current checkpoint — 18 September 2026
 
-Latest verified Dungeon runtime merge checkpoint is `38c79b61271be59791fe5f46dbc796b243f317dc`, the merged module-startup loader-flicker correction (#2164). Live repository `main` has since advanced through documentation/website work to `74e6147d28333e0d6082d7fc69a42a20bc0b52f7` without a later Dungeon runtime change. Stage 8 itch.io repository preparation remains complete through #2141.
+Latest verified Dungeon runtime merge checkpoint is `4319ff84ea8bca41559347915d0ab5d2c1a0e873`, the merge of #2182 from exact qualified head `dfce128672fd90c8edf7900b3bac3a14095e58fe`. This follows #2180's early active-state loader-authority correction and #2181's production-smoke identity alignment. Stage 8 itch.io repository preparation remains complete through #2141, with the publication artifact now superseded by the qualified post-#2182 runtime artifact recorded below.
 
 Stage 1 is converged for the current product programme:
 
@@ -18,13 +18,13 @@ The programme is now milestone-first. General legacy residue remains backlog unl
 
 Historical integration cleanup: PR #1852 (long-running Solo stabilisation) and PR #1976 (R30 ownership-audit throttle optimisation) are closed without merge. Their Git history remains evidence/source material only; neither is an active current-main integration path.
 
-The original seven-item repository defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The later #2129 sustained-Solo acceptance is also still deferred. In addition, #2164 is repository-complete but the deployed startup sequence has not yet received a successful hands-on retest after that merge.
+The original seven-item repository defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The later #2129 sustained-Solo acceptance is also still deferred. Startup ownership has progressed beyond #2164 through #2180 and #2182; exact-head automated qualification is green, but the current deployed build still requires hands-on startup acceptance and the merged #2182 mainline still requires a verified push-triggered production smoke.
 
 Outstanding product gates:
 
 1. sustained Solo movement/firing/combat/pause-resume stability after #2129;
 2. three Artefacts/Essences → exactly one Banishment Flask without prior Gold-Flask purchase, with Gold and Score unchanged;
-3. deployed startup retest after #2164: loader must transition directly to the final V10.42 menu with no compact/intermediate menu flash and no loader → page → loader pulse.
+3. deployed startup retest on current post-#2182 main: loader must transition directly to the final V10.42 menu with no compact/intermediate menu flash and no loader → page → loader pulse.
 
 **MANUAL ACCEPTANCE REQUIRED — AUTOMATED TESTS DO NOT SUBSTITUTE FOR THESE GATES**
 
@@ -70,6 +70,40 @@ A later supplied video still captured `loader → main page → loader → main 
 - all triggered workflows passed, including canonical/Node and all six Chromium shards
 
 Repository status: **REPOSITORY-COMPLETE — #2164 / DEPLOYED MANUAL RETEST REMAINS**.
+
+### Early active-state loader authority — PR #2180 — MERGED
+
+Exact qualified head: `c51522ab2b9b97046f23ed492d68a94b8fc3233f`.
+
+Merge commit: `bf4cfa4b68f1bc14bf89e81e71fa35fa585b2fb3`.
+
+Deterministic browser qualification reproduced a remaining startup race after the earlier #2153/#2164 fixes: premature `data-run-active="true"` or `data-tutorial-active="true"` could still cause the retained release-overlay safety CSS to hide the canonical loader before authoritative V10.42 bootstrap/release readiness.
+
+#2180 requires both V10.42 bootstrap readiness and release readiness before those active-state selectors may retire a stale non-error loader. Static and Chromium contracts prove run/tutorial state alone no longer owns loader visibility. No gameplay, movement, firing, combat, saves, progression, economy, Banishment, package logic, menu layout or arbitrary delay changed.
+
+Repository status: **REPOSITORY-COMPLETE — #2180 / DEPLOYED MANUAL RETEST REMAINS**.
+
+### Production smoke release identity — PR #2181 — MERGED
+
+Exact qualified head: `275773ccdab4e6ca20b4bae77bff2847fac5b66c`.
+
+Merge commit: `69ba137423b0f435af9b5a6577b77c64668015e1`.
+
+#2181 changes only the production-smoke expected build/cache constants to `V10.42 r34` / `20260918r34`. It contains no runtime, gameplay, loader, package or release-file changes. The post-merge live smoke then exposed a separate stale-browser badge-ownership defect rather than a release-generation mismatch.
+
+### Stale-build update badge authority — PR #2182 — MERGED
+
+Exact qualified head: `dfce128672fd90c8edf7900b3bac3a14095e58fe`.
+
+Merge commit/current `main`: `4319ff84ea8bca41559347915d0ab5d2c1a0e873`.
+
+The live stale-browser path displayed the current Update Available panel, but the legacy V10.41 brand observer could overwrite the badge with `BUILD V10.41` before the V10.42 bootstrap object existed. #2182 adds a single guard: when `window.CCGLostSizzlerVersion.state.outdated === true`, the legacy observer stops writing release labels and the current version checker remains authoritative.
+
+The production delta is one added guard in `v10-41-landing-notification-polish.js`. Exact-head qualification passed the itch.io package workflow, Public Code Cache Version, Native Mouse Wheel Scroll Contract and Lost Sizzler Load Safety, including canonical/Node, discovery and all six Chromium shards.
+
+Latest qualified runtime/package artifact: `C64-Dungeon-Carnage-Itch`, artifact ID `10566350206`, 21,111,022 bytes, GitHub Actions SHA-256 `147782cb38cab392817b1bd4670f670ca0bcc2d51264839378d50bf229237be6`, workflow run `35390021405`.
+
+Repository status: **REPOSITORY-COMPLETE — #2182 / POST-MERGE PRODUCTION SMOKE AND DEPLOYED MANUAL ACCEPTANCE REMAIN**.
 
 ### Stage 4 elemental portal foundation — PR #2137 — MERGED
 
