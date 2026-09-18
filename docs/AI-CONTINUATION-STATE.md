@@ -38,7 +38,7 @@ These deferred gates do not block independent repository work that does not depe
 1. Treat Stage 8 repository work as complete on merged `main` `53cba902af9dbf1e118f3f274836120f6c30bb40`; do not rebuild or requalify it without new evidence.
 2. Keep public itch.io page creation, artifact upload/publication and the final public URL as an external release gate.
 3. Keep the two Dungeon product acceptance checks explicitly deferred until the user is available to perform them.
-4. The next independent actionable repository workstream is Commodore Quest 3 (#2056): reconcile its stale branch against current `main`, re-derive only still-valid Quest 3 changes, and qualify a fresh current-main candidate under its own workstream rules.
+4. Commodore Quest 3 repository reconstruction is complete in draft #2143 at exact head `15e48c3743775f2ba582134e9e04303e07bb4ea4`; all automated qualification is green. The next Quest action is the required hands-on browser playtest of The Bedroom and 36% Conversion Bout. Do not merge before that acceptance.
 5. Keep #2110 parked behind its documented Cloudflare configuration blocker; do not rebase or retest it solely because `main` advanced.
 6. Treat #1976 as source material only unless current-main evidence independently justifies re-deriving that optimisation.
 
@@ -62,13 +62,13 @@ These deferred gates do not block independent repository work that does not depe
 | Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) plus [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md) | Stage 8 #2141 is merged as `53cba902af9dbf1e118f3f274836120f6c30bb40`; repository-side release preparation is complete. Two independent manual product gates remain deferred. |
 | Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | Stage 8 #2141 is merged and the verified standalone HTML5 artifact is repository-ready. Public itch.io page creation/upload/final URL remain external; the retired custom commerce/paywall and desktop/Windows graphs stay closed. |
 | Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2103 and #2105 are merged; #2073 is closed. #2110 remains the current draft endpoint follow-up but is **BLOCKED** by missing/mismatched Cloudflare runtime configuration. Repository-side work for that blocker is already complete. |
-| Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | draft rebuild PR #2056 remains based on an old merge base and requires a current-main rebuild/reconciliation before integration. |
+| Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | Fresh draft #2143 is the qualified current-main Quest 3 candidate at exact head `15e48c3743775f2ba582134e9e04303e07bb4ea4`; all automated checks are green. Old #2056 is closed as superseded. Hands-on Bedroom + 36% Conversion Bout acceptance remains the merge gate. |
 | SEO and generated output | [seo-and-generated-output.md](ai-work/seo-and-generated-output.md) | #2109 is the current merged game/archive publication result; #2111 is a merged SEO/video-page automation result; superseded #2107 and stale #1752/#1759 are closed. |
 
 ## Remaining non-Dungeon-defect PR classes at this checkpoint
 
 - #2110 — deliberately deferred **BLOCKED** Content Publisher endpoint follow-up; do not rebase/retest solely because `main` advanced.
-- #2056 — stale Quest 3 rebuild requiring current-main reconstruction and fresh qualification before integration.
+- #2056 — **CLOSED / SUPERSEDED** by fresh current-main Quest 3 draft #2143. #2143 is exact-head automated-green and waiting only on the documented hands-on browser acceptance gate.
 - #1976 — old R30 optimisation source material; re-derive only if the optimisation is still justified on current `main`.
 - #1860 and #1852 — historical long-running containment/stabilisation branches. They are not safe bases for new Dungeon runtime work; reconcile their broader remaining account/backend or historical-evidence purpose separately before any closure or extraction decision.
 
