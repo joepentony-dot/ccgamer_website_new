@@ -143,7 +143,7 @@ async function refresh(urls, options = {}) {
   fs.mkdirSync(CACHE_DIR, { recursive: true });
   const existing = cachedUrlMap();
   const failures = [];
-  let fetched = 0;
+  let fetchedCount = 0;
   let reused = 0;
 
   for (const url of urls) {
@@ -155,13 +155,13 @@ async function refresh(urls, options = {}) {
 
     try {
       console.log(`Fetching Lemon game page: ${url}`);
-      const fetched = await fetchLemonHtml(url, {
+      const fetchResult = await fetchLemonHtml(url, {
         userAgent: USER_AGENT,
         timeoutMs: 15000,
         retries: 3,
         delayMs: 700
       });
-      const html = fetched.html;
+      const html = fetchResult.html;
       const canonical = normalizeLemonGameUrl(extractCanonical(html));
       const destination = existing.get(url)
         || (canonical ? existing.get(canonical) : "")
@@ -170,8 +170,8 @@ async function refresh(urls, options = {}) {
       existing.set(url, destination);
       if (canonical) existing.set(canonical, destination);
       const reviews = extractZzapLinks(html);
-      console.log(`Cached ${path.relative(ROOT, destination)} from ${fetched.source} source (${reviews.length} Zzap!64 review link${reviews.length === 1 ? "" : "s"}).`);
-      fetched += 1;
+      console.log(`Cached ${path.relative(ROOT, destination)} from ${fetchResult.source} source (${reviews.length} Zzap!64 review link${reviews.length === 1 ? "" : "s"}).`);
+      fetchedCount += 1;
     } catch (error) {
       failures.push(`${url}: ${error.message}`);
       console.error(`Failed to cache ${url}: ${error.message}`);
@@ -182,7 +182,7 @@ async function refresh(urls, options = {}) {
     throw new Error(`Unable to refresh ${failures.length} Lemon game page${failures.length === 1 ? "" : "s"}: ${failures.join(" | ")}`);
   }
 
-  return { fetched, reused, total: urls.length };
+  return { fetched: fetchedCount, reused, total: urls.length };
 }
 
 function checkCoverage(urls) {
