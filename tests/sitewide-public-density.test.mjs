@@ -8,8 +8,8 @@ const serviceWorker = fs.readFileSync("service-worker.js", "utf8");
 test("public content density pass covers the main browse and information families", () => {
   assert.match(css, /CCG PUBLIC CONTENT DENSITY PASS — 2026-09-18/);
   for (const page of [
-    "games-index", "genres-index", "collections-index",
-    "publisher-index", "publisher-single", "developers-index",
+    "games-index", "genres-index", "genre-single", "collections-index",
+    "publisher-index", "publisher-single", "developers-index", "developer-single",
     "years-index", "year-single", "platforms-index", "platform-single",
     "music-hub", "music-composer", "game-discovery",
     "collection-single", "complete-index", "video-library", "retro-video", "zzap64-awards",
