@@ -42,7 +42,7 @@ These deferred gates do not block independent repository work that does not depe
 2. Keep the two Dungeon product acceptance checks explicitly deferred until the user is available to perform them.
 3. Keep public itch.io page creation, artifact upload/publication and the final public URL as an external release gate.
 4. Commodore Quest 3 repository reconstruction is complete in draft #2143 at exact head `15e48c3743775f2ba582134e9e04303e07bb4ea4`; all automated qualification is green. The next Quest action is the required hands-on browser playtest of The Bedroom and 36% Conversion Bout. Do not merge before that acceptance.
-5. Keep #2110 parked behind its documented Cloudflare configuration blocker; do not rebase or retest it solely because `main` advanced.
+5. Treat the Content Publisher magazine/no-music repair as repository-complete: #2150 merged as `5223f5053bceee18e70e70440992f31ff2510c7d`, generated archive output #2157 merged as `bde682be7311c5206b390a4bcfbd52891bc83fbc`, and the Lemon refresh success-counter follow-up #2159 merged as `13311f9e8b7a0a9376bbd5ca84451eb37d908a40`. #2110 is closed unmerged and must not be revived merely to reintroduce game-music upload into the unified publisher.
 6. Treat #1976 as source material only unless current-main evidence independently justifies re-deriving that optimisation.
 
 ## Single-game archive presentation checkpoint — 18 September 2026
@@ -51,11 +51,12 @@ These deferred gates do not block independent repository work that does not depe
 - It applies through the common single-game CSS/runtime/template/generator owners, so the layout improvement is library-wide rather than Road Rash-specific.
 - The implementation standardises the compact content frame, tightens desktop/mobile browsing, adds available-section navigation, reserves actual generated cover dimensions to reduce CLS, and improves year/platform search-social titles.
 - Current-main reconciliation found no implementation-path overlap with later Dungeon or generated-video work. The only overlap was this continuation index, which has been reconciled onto the latest main checkpoint.
-- Road Rash remains a separate publishing-output issue until `/games/road-rash/` is generated successfully; do not hand-edit the canonical generated page.
+- Road Rash is now generated through the authoritative publishing chain and its canonical page materialises 21 magazine-review records with source links. Do not hand-edit that generated page; future changes must continue through source data and Reliable Games Publishing.
 
 ## Historical checkpoint notes
 
 - PR #2120 was a redundant movement-wrapper proposal and is closed without merge.
+- Content Publisher PR #2150 is merged; generated archive output #2157 and refresh-counter follow-up #2159 are also merged. The older game-music endpoint PR #2110 is closed without merge as superseded.
 - Diagnostic-only Defect 4 PR #2122 is closed without merge.
 - #2102 is merged. The retained local Dungeon gameplay suffix lives in `game-local-runtime.js`.
 - #2113 is merged. Obsolete networked Dungeon Multiplayer packet routing, remote-player simulation and world serializer/receiver logic is retired; only inert compatibility owners required by the local session shell remain.
@@ -72,13 +73,12 @@ These deferred gates do not block independent repository work that does not depe
 | --- | --- | --- |
 | Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md), [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md), and [#2145 first-visual checkpoint](ai-work/dungeon-carnage-startup-first-visual-2026-09-18.md) | Startup/first-visual remediation #2145 is merged as `4c56d2bccd73350359c8b3246b0d70142894d353` after exact-head full-matrix qualification. Repository-side itch.io preparation remains complete; two independent manual product gates remain deferred. |
 | Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | Stage 8 #2141 is merged and the verified standalone HTML5 artifact is repository-ready. Public itch.io page creation/upload/final URL remain external; the retired custom commerce/paywall and desktop/Windows graphs stay closed. |
-| Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2150 is the active current-main Content Publisher repair: resilient magazine-source recovery, Road Rash review materialisation, and removal of the unavailable game-music upload surface. #2110 remains open draft but is superseded in direction if #2150 is accepted; do not merge both. |
+| Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2150 is merged and the unified Content Publisher no longer exposes game-music upload. Magazine-source recovery is live/archive best-effort and no longer blocks canonical publishing. #2157 materialised the Road Rash archive/reviews and #2159 fixed the successful-refresh counter path. #2110 is closed unmerged as superseded. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | Fresh draft #2143 is the qualified current-main Quest 3 candidate at exact head `15e48c3743775f2ba582134e9e04303e07bb4ea4`; all automated checks are green. Old #2056 is closed as superseded. Hands-on Bedroom + 36% Conversion Bout acceptance remains the merge gate. |
 | SEO and generated output | [seo-and-generated-output.md](ai-work/seo-and-generated-output.md) | PR #2146 owns the current shared individual-game layout/CWV/SEO refinement; later generated SEO/video commits remain separate. #2109 and #2111 are prior merged publication/automation checkpoints. |
 
 ## Remaining non-Dungeon-defect PR classes at this checkpoint
 
-- #2150 — active Content Publisher magazine-reliability/no-music repair; qualify its final exact head before any merge. #2110 remains the older **BLOCKED** endpoint follow-up and must not be merged alongside #2150.
 - #2056 — **CLOSED / SUPERSEDED** by fresh current-main Quest 3 draft #2143. #2143 is exact-head automated-green and waiting only on the documented hands-on browser acceptance gate.
 - #1976 — old R30 optimisation source material; re-derive only if the optimisation is still justified on current `main`.
 - #1860 and #1852 — historical long-running containment/stabilisation branches. They are not safe bases for new Dungeon runtime work; reconcile their broader remaining account/backend or historical-evidence purpose separately before any closure or extraction decision.
