@@ -9,7 +9,8 @@ const staticSeoPages = [
   ["contact.html", "ContactPage"],
   ["emulation.html", "WebPage"],
   ["quiz/quiz.html", "WebPage"],
-  ["community/index.html", "CollectionPage"]
+  ["community/index.html", "CollectionPage"],
+  ["games/discover/index.html", "WebPage"]
 ];
 
 test("home preloads only the artwork for the active saved display mode", () => {
