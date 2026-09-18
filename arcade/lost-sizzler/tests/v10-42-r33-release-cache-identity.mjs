@@ -39,5 +39,5 @@ assert.match(html,/game-local-runtime\.js\?v=20260918r33/,"the extracted current
 assert.match(html,/game-main\.js\?v=20260918r33/,"the current input/frame owner must not remain under the obsolete September 10 cache key");
 assert.match(html,/v10-41-cache-guard\.js\?v=20260918r33/,"the cache guard itself must be fetched under the current release token");
 
-console.log("Dungeon Carnage r33 blocking release/cache identity contract passed.");
-\nassert.match(bootstrap,/v10-42-stage6-zone-gameplay\\.js/,"r33 must load the Stage 6 zone gameplay owner through the ordered bootstrap");\n
+assert.match(bootstrap,/v10-42-stage6-zone-gameplay\\.js/,"r33 must load the Stage 6 zone gameplay owner through the ordered bootstrap");\n\nconsole.log("Dungeon Carnage r33 blocking release/cache identity contract passed.");
+\n\n
