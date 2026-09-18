@@ -47,6 +47,11 @@ try{
 
   await page.goto(`${origin}/arcade/lost-sizzler/?startup-first-visual=1`,{waitUntil:"commit",timeout:90000});
   await firstScriptPaused;
+  await page.waitForFunction(()=>{
+    const loaderCss=document.querySelector('link[data-ccg-v136-special-ui="true"]');
+    const startupCss=[...document.querySelectorAll('link[rel="stylesheet"]')].find(link=>String(link.getAttribute("href")||"").includes("v10-42-startup-first-visual.css"));
+    return Boolean(document.getElementById("ccg-release-loading")&&loaderCss?.sheet&&startupCss?.sheet);
+  },null,{timeout:10000});
 
   const first=await page.evaluate(()=>{
     const loader=document.getElementById("ccg-release-loading"),rect=loader?.getBoundingClientRect(),style=loader?getComputedStyle(loader):null;
