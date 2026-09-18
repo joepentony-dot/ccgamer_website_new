@@ -118,7 +118,7 @@
       const room=worldState?.rooms?.[row.roomId]||null,role=routeRole(room),enc=row.encounter||{};
       return Object.freeze({
         roomId:row.roomId,zone:profile.id,routeRole:role,
-        pressureBias:role==="crossroads"?1:role==="alternate-route"?1:role==="purposeful-dead-end"?.5:0,
+        pressureBias:role==="crossroads"?1:role==="alternate-route"?1:role==="purposeful-dead-end"?0.5:0,
         eventKind:String(enc.event?.kind||""),
         elite:Boolean(enc.elite),
         rewardFocus:String(enc.rewardFocus||"supplies"),
