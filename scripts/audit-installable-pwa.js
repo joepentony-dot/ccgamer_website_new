@@ -182,6 +182,16 @@ requireText(offline, 'href="/games/discover/"', "Offline game-finder link");
 requireText(offline, 'rel="manifest"', "Offline manifest link");
 
 requireText(pwaCss, ".ccg-pwa-panel", "Install/update panel styling");
+requireText(
+  pwaCss,
+  ".ccg-pwa-panel--update {\n  top: max(16px, env(safe-area-inset-top));\n  bottom: auto;",
+  "Desktop update panel top anchoring"
+);
+requireText(
+  pwaCss,
+  ".ccg-pwa-panel--update {\n    top: max(12px, env(safe-area-inset-top));\n    bottom: auto;",
+  "Mobile update panel top anchoring"
+);
 requireText(pwaCss, ".ccg-pwa-network", "Network notice styling");
 requireText(pwaCss, "prefers-reduced-motion", "Reduced-motion styling");
 requireText(pwaCss, "@media print", "Print exclusion");

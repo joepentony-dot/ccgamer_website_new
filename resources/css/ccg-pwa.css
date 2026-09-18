@@ -36,6 +36,8 @@
 }
 
 .ccg-pwa-panel--update {
+  top: max(16px, env(safe-area-inset-top));
+  bottom: auto;
   border-color: #c778ff;
   grid-template-columns: minmax(0, 1fr);
 }
@@ -164,6 +166,8 @@
   }
 
   .ccg-pwa-panel--update {
+    top: max(12px, env(safe-area-inset-top));
+    bottom: auto;
     grid-template-columns: minmax(0, 1fr);
   }
 
