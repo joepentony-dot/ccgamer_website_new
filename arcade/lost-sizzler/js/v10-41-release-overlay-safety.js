@@ -1,10 +1,9 @@
 /* The Lost Sizzler V10.41 — release overlay gameplay-input safety.
  *
- * V10.36 owns the release/loading presentation. A late release-gate callback
- * can occasionally lag behind a page that has already become playable, leaving
- * the full-screen loading layer above otherwise usable controls. The body
- * already exposes authoritative lifecycle flags, so this guard is deliberately
- * CSS-only: no polling, no MutationObservers and no extra work in the game loop.
+ * V10.36 owns the release/loading presentation. This compatibility guard may
+ * retire the loader only after gameplay has actually begun. It must not use the
+ * legacy data-release-ready pulse as a visibility owner because V10.42 can
+ * temporarily receive that value before its ordered bootstrap is complete.
  * Genuine fatal-load presentation remains visible via the .is-error exemption.
  */
 (()=>{
@@ -19,7 +18,6 @@
     const style=document.createElement("style");
     style.id=STYLE_ID;
     style.textContent=`
-      body[data-release-ready="true"] #ccg-release-loading:not(.is-error),
       body[data-run-active="true"] #ccg-release-loading:not(.is-error),
       body[data-tutorial-active="true"] #ccg-release-loading:not(.is-error){
         display:none!important;
