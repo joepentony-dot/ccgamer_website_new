@@ -137,6 +137,51 @@ async function waitForTestPageReady(page, testCase) {
   return waitForStableGamesGeometry(page);
 }
 
+async function settleAtPageBottom(page) {
+  const deadline = Date.now() + 6000;
+  let previous = null;
+  let stableSamples = 0;
+  let latest = null;
+
+  while (Date.now() < deadline) {
+    await page.evaluate(() => {
+      const scroller = document.scrollingElement || document.documentElement;
+      const maxScroll = Math.max(0, scroller.scrollHeight - window.innerHeight);
+      window.scrollTo(0, maxScroll);
+    });
+    await page.waitForTimeout(180);
+
+    latest = await page.evaluate(() => {
+      const scroller = document.scrollingElement || document.documentElement;
+      const maxScroll = Math.max(0, scroller.scrollHeight - window.innerHeight);
+      return {
+        scrollY: window.scrollY,
+        scrollHeight: scroller.scrollHeight,
+        clientHeight: scroller.clientHeight,
+        maxScroll,
+      };
+    });
+
+    const stable = previous
+      && Math.abs(latest.scrollHeight - previous.scrollHeight) <= 1
+      && Math.abs(latest.maxScroll - previous.maxScroll) <= 1
+      && Math.abs(latest.scrollY - latest.maxScroll) <= 2;
+
+    if (stable) {
+      stableSamples += 1;
+      if (stableSamples >= 3) return latest;
+    } else {
+      stableSamples = 0;
+    }
+
+    previous = latest;
+  }
+
+  throw new Error(
+    `Page bottom did not settle before viewport validation: ${JSON.stringify(latest)}`
+  );
+}
+
 async function viewportMetrics(page, selector) {
   return page.evaluate(targetSelector => {
     const element = document.querySelector(targetSelector);
@@ -194,8 +239,7 @@ async function runCase(browser, testCase) {
   const url = new URL(testCase.page, args.baseUrl).toString();
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
   const readinessState = await waitForTestPageReady(page, testCase);
-  await page.evaluate(() => window.scrollTo(0, Math.max(0, document.documentElement.scrollHeight - window.innerHeight)));
-  await page.waitForTimeout(150);
+  const bottomState = await settleAtPageBottom(page);
   const scrollBeforeOpen = await page.evaluate(() => window.scrollY);
 
   await triggerTripleClick(page);
@@ -321,6 +365,7 @@ async function runCase(browser, testCase) {
     scrollBeforeOpen: round(scrollBeforeOpen),
     scrollAfterClose: round(scrollAfterClose),
     readinessState,
+    bottomState,
     menuMetrics,
     closeMetrics,
     menuState,
