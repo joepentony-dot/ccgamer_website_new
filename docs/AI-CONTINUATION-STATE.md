@@ -47,19 +47,21 @@ These deferred gates do not block independent repository work that does not depe
 
 ## Single-game archive presentation checkpoint — 18 September 2026
 
-- Shared individual-game presentation work is in PR **#2146** on `codex/single-game-premium-layout-seo`.
+- Shared individual-game presentation PR **#2146** merged as `50a527599b9521e07ec2c593703fcf7fc26858fb`.
 - It applies through the common single-game CSS/runtime/template/generator owners, so the layout improvement is library-wide rather than Road Rash-specific.
 - The implementation standardises the compact content frame, tightens desktop/mobile browsing, adds available-section navigation, reserves actual generated cover dimensions to reduce CLS, and improves year/platform search-social titles.
 - Current-main reconciliation found no implementation-path overlap with later Dungeon or generated-video work. The only overlap was this continuation index, which has been reconciled onto the latest main checkpoint.
 - Road Rash is now generated through the authoritative publishing chain and its canonical page materialises 21 magazine-review records with source links. Do not hand-edit that generated page; future changes must continue through source data and Reliable Games Publishing.
 
-## Site-wide public layout follow-up — 18 September 2026
+## Site-wide public layout and discovery follow-up — 18 September 2026
 
-- Active PR **#2165** on `codex/sitewide-public-layout-audit` is reconciled onto live `main` `b0c0825010669093b7459bc9b1596cde1602f6e1`.
+- Site-wide public layout PR **#2167** merged as `9cdc9aa8415ae83201704d139feedc97bf215ccd` from exact qualified head `790885738ca67938f26ce683cf3c319de55feda2`.
 - Shared public archive/info density is tightened via scoped `data-ccg-page` rules in `ccg-master.css`; Home, single-game, quiz, admin, community-auth and arcade/game runtimes remain excluded.
-- Indexed coverage also includes collection detail pages, Complete Index, Video Library, retro-video pages and the Zzap!64 awards archive.
-- Cache namespace is `2026-09-18-public-code-v7`, preserving the newer PWA prompt release.
-- Easter Egg viewport CI now follows the live game catalogue and waits for games-index hydration before measuring scroll preservation; protected-file and 2px scroll assertions are unchanged.
+- Exact-head layout qualification passed CCG Site Safety, E3/viewport/WARP/E6, navigation/PWA/SEO and all six Lost Sizzler Chromium shards. Older #2156 is closed as superseded.
+- Site-wide public page SEO/discovery PR **#2170** merged as `a3c06e47857223cf9d155899b3204e6bc881b2d3` from exact head `3d4c6440ce2dd561f09edc5c6f0489ec6fef7634`.
+- #2170 adds missing robots/social/schema/breadcrumb/preconnect coverage to seven bounded public pages and deliberately preserves the protected Home dual-hero preload contract.
+- #2170 passed Site Safety, Structured Data, Social Metadata, SEO, Quiz/Retro Collections, PWA, navigation, year/platform and mouse-wheel validation.
+- Stale #2151 and diagnostic-only #2168 are closed without merge as superseded/completed.
 - This work is independent of Dungeon Carnage and Content Publisher runtime ownership.
 
 ## Historical checkpoint notes
@@ -84,7 +86,7 @@ These deferred gates do not block independent repository work that does not depe
 | Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | Stage 8 #2141 is merged and the verified standalone HTML5 artifact is repository-ready. Public itch.io page creation/upload/final URL remain external; the retired custom commerce/paywall and desktop/Windows graphs stay closed. |
 | Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2150 is merged and the unified Content Publisher no longer exposes game-music upload. Magazine-source recovery is live/archive best-effort and no longer blocks canonical publishing. #2157 materialised the Road Rash archive/reviews and #2159 fixed the successful-refresh counter path. #2110 is closed unmerged as superseded. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | Fresh draft #2143 is the qualified current-main Quest 3 candidate at exact head `15e48c3743775f2ba582134e9e04303e07bb4ea4`; all automated checks are green. Old #2056 is closed as superseded. Hands-on Bedroom + 36% Conversion Bout acceptance remains the merge gate. |
-| SEO and generated output | [seo-and-generated-output.md](ai-work/seo-and-generated-output.md) | PR #2146 owns the current shared individual-game layout/CWV/SEO refinement; later generated SEO/video commits remain separate. #2109 and #2111 are prior merged publication/automation checkpoints. |
+| SEO and generated output | [seo-and-generated-output.md](ai-work/seo-and-generated-output.md) | #2146 individual-game presentation, #2167 site-wide public layout and #2170 bounded public-page discovery metadata are merged. Generated outputs remain workflow-owned; #2169 is the latest generated SEO/video automation merge observed before #2170. |
 
 ## Remaining non-Dungeon-defect PR classes at this checkpoint
 

@@ -7,7 +7,7 @@ Automated SEO/video metadata and generated pages, game/archive output, sitemaps,
 ## Single-game presentation / SEO checkpoint — 2026-09-18
 
 - Live `main` at branch creation: `20ce570a25fcf9ae658539c1f73494f237266d92` (`Add Road Rash via CCG Content Publisher`).
-- Draft PR **#2146**, branch `codex/single-game-premium-layout-seo`, was opened from that exact commit. Do not merge without visual/CI acceptance.
+- PR **#2146**, branch `codex/single-game-premium-layout-seo`, completed qualification and merged as `50a527599b9521e07ec2c593703fcf7fc26858fb`.
 - Shared owners changed: `resources/css/game-pages.css`, `js/load-single-game.js`, `games/game.html`, `scripts/prepare-seo-game-routes.js`, `scripts/generate-slug-pages.js`, plus `tests/single-game-premium-layout.test.mjs`.
 - The shared layout now uses one compact desktop content frame, tighter hero/section spacing, a generated available-section jump navigator, smaller gallery/related presentation, and a mobile identity-first hero. The existing mobile scroll/overflow stability ownership in `games.css` was not changed.
 - Canonical route generation now reserves actual thumbnail dimensions when available, avoiding the previous hard-coded `320x180` hero ratio on portrait artwork.
@@ -18,20 +18,33 @@ Automated SEO/video metadata and generated pages, game/archive output, sitemaps,
 
 ### Next action
 
-1. Requalify #2146 against current `main` `953ff3725bd4be3566893e8253db44be963cbcf1`, which now includes the qualified Dungeon first-visual merge and the latest generated SEO/video output. The current-main advance does not overlap this branch's implementation paths.
-2. Merge #2146 only after the refreshed PR matrix is green or any remaining failure is demonstrated unrelated and non-regressive.
-3. After the Road Rash canonical route is successfully generated/deployed, perform real desktop/mobile visual acceptance and Lighthouse/PageSpeed measurements against the canonical URL.
-4. Keep generated game pages workflow-owned; regenerate them through Reliable Games Publishing rather than editing canonical outputs by hand.
+1. Treat #2146 as merged and repository-complete for shared individual-game presentation/SEO ownership.
+2. Keep generated game pages workflow-owned; regenerate them through Reliable Games Publishing rather than editing canonical outputs by hand.
+3. Real Lighthouse/PageSpeed measurements remain a live-site observation task where required; do not invent scores from source-level inspection.
 
 ## Site-wide public layout follow-up — 2026-09-18
 
-- Active PR: **#2165** on `codex/sitewide-public-layout-audit`, reconciled onto live `main` `b0c0825010669093b7459bc9b1596cde1602f6e1`.
-- The public density pass covers the main archive, category, editorial/video and information page families through scoped `data-ccg-page` selectors in `resources/css/ccg-master.css`.
+- PR **#2167** superseded the earlier #2158/#2165 layout candidates and merged as `9cdc9aa8415ae83201704d139feedc97bf215ccd`.
+- Exact qualified head: `790885738ca67938f26ce683cf3c319de55feda2`.
+- The public density pass covers the main archive, category, editorial/video and information page families through scoped `data-ccg-page` selectors in `resources/css/ccg-master.css`; genre/developer detail pages participate only in the shared frame/rhythm rules while retaining their dedicated hero ownership.
 - Home, single-game, quiz, admin, community-auth and arcade/game runtimes remain outside the generic rules.
-- The concurrent PWA update-prompt release already used public-code-v6, so this candidate advances the cache namespace to `2026-09-18-public-code-v7`.
-- Easter Egg viewport CI was updated to validate the live catalogue without a stale fixed game count, while keeping the protected-file hash contract.
-- The games-index viewport case now waits for the dynamic archive to finish replacing its crawlable fallback before testing modal scroll preservation; the actual scroll-preservation assertion remains unchanged.
+- The candidate retained `2026-09-18-public-code-v7` and reconciled Easter Egg viewport/WARP/E6 catalogue tests against the live catalogue without weakening protected-file or ±2px scroll-preservation assertions.
+- The final viewport harness records Chromium's physically reachable mobile bottom before applying the unchanged ±2px modal open/close preservation requirement.
+- Exact-head qualification passed CCG Site Safety, SEO, PWA, navigation, Easter Egg E3/viewport/WARP/E6 and all six Lost Sizzler Chromium shards.
 - Regression contract: `tests/sitewide-public-density.test.mjs`.
+- Older PR #2156 is closed as superseded.
+
+## Site-wide page quality / discovery follow-up — 2026-09-18
+
+- Stale PR #2151 was re-derived onto current main rather than merged from its 80-commit-behind ancestry.
+- Fresh PR **#2170** on `codex/sitewide-page-quality-current-main` merged as `a3c06e47857223cf9d155899b3204e6bc881b2d3` from exact qualified head `3d4c6440ce2dd561f09edc5c6f0489ec6fef7634`.
+- Scope is limited to About, Contact, Emulation, Install App, Quiz, Community Hub and Find Me a Game plus `tests/sitewide-page-quality.test.mjs`.
+- Missing robots/social-preview metadata, appropriate WebPage/AboutPage/ContactPage/CollectionPage schema, breadcrumbs and selected Google Fonts preconnects were added without changing layouts.
+- Install App retains its existing HowTo schema.
+- The protected Home dual-hero preload behavior was deliberately retained; the stale experimental single-mode preload assumption from #2151 was not carried forward.
+- Exact-head qualification passed Site Safety, Structured Data Validation, Social Metadata Validation, SEO Automation, Quiz/Retro Collections, PWA, navigation, year/platform and mouse-wheel contracts.
+- #2151 is closed without merge as superseded.
+- Generated SEO/video automation subsequently advanced main through #2169/`b770680575ea2289db8db64cefced9ac80ca867a` before #2170 was rebuilt and merged.
 
 ## Verified checkpoint — 2026-09-16
 
