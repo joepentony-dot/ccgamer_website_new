@@ -44,7 +44,7 @@ try{
   for(const required of [
     "index.html","version.json","js/game-core.js","js/game-main.js","js/world.js",
     "js/v10-42-bootstrap.js","js/v10-42-stage7-npc-merchant.js","js/itch-release-runtime.js",
-    "css/game.css"
+    "css/game.css","games/games.json"
   ])assert.ok(listed.has(required),"missing staged runtime file: "+required);
 
   assert.match(sourceIndex,/src="\/js\/ccg-supabase-config\.js/,"canonical website build must retain its website account bootstrap");
@@ -58,13 +58,16 @@ try{
   assert.match(releaseGate,/mode:"itch-html5"/);
   assert.match(releaseGate,/Weekly Vault — CCG Website/);
   assert.match(releaseGate,/event\.stopImmediatePropagation\(\)/,"itch gate must prevent the website-only daily handler from taking over");
-  assert.match(releaseGate,/CCGWeeklyChallenge=Object\.freeze/,"package must provide a safe website-service compatibility owner");
+  assert.match(releaseGate,/CCGWeeklyChallenge=\{/,"package must provide a website-service compatibility owner");
+  assert.doesNotMatch(releaseGate,/CCGWeeklyChallenge=Object\.freeze/,"Weekly compatibility owner must remain mutable because retained runtime layers wrap finish()");
+  assert.match(releaseGate,/finish:async\(\)=>null/,"Weekly compatibility owner must expose the retained finish hook");
   assert.doesNotMatch(releaseGate,/CCG_SUPABASE|supabase\.co|paypal|checkout|entitlement/i,"itch package gate must not recreate custom commerce or account bootstrap");
 
   const forbidden=manifest.files.filter(file=>/(?:^|\/)(?:ccg-supabase-config\.js|ccg-supabase-client\.js|service-account\.json|service_account\.json|\.env(?:\.|$))|(?:\.pem|\.key|\.p12|\.pfx)$/i.test(file.path));
   assert.deepEqual(forbidden,[],"credential/account bootstrap material must not enter the package manifest");
 
   assert.match(sourceBuilder,/INCLUDE_DIRS=\["css","js","assets"\]/,"builder must use an explicit runtime tree");
+  assert.match(sourceBuilder,/EXTERNAL_FILES=\[\["games\/games\.json","games\/games\.json"\]\]/,"builder must explicitly carry the runtime game catalogue dependency");
   assert.doesNotMatch(sourceBuilder,/desktop\/|services\/ccg-backend|paypal|private-download|signed-download/i,"fresh itch builder must not revive retired desktop/private-delivery integration");
 
   console.log("PASS V10.42 Stage 8 itch.io package contract");
