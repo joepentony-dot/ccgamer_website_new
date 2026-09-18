@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "YouTube Data API v3. Verified title, description, thumbnail, uploadDate and duration support video discovery; uploadDate and duration are only emitted into VideoObject when verified here.",
-  "updatedAt": "2026-09-17T05:05:17.873Z",
+  "updatedAt": "2026-09-18T17:51:20.755Z",
   "videos": {
     "_0bKM3s0SMs": {
       "title": "The New Zealand Story C64 – Did Ocean Nail the Arcade Conversion?",
@@ -3213,6 +3213,15 @@
       "uploadDate": "2023-10-06T17:23:10Z",
       "duration": "PT7M57S",
       "thumbnailUrl": "https://i.ytimg.com/vi/JTahw206dyE/maxresdefault.jpg",
+      "channelTitle": "Cheeky Commodore Gamer",
+      "verifiedBy": "youtube-data-api-v3"
+    },
+    "JUXvi0beNxA": {
+      "title": "Road Rash on the Amiga – Better Than the Mega Drive version?",
+      "description": "🕹️ Road Rash (1992) – Commodore Amiga Review & Mega Drive Comparison\nRoad Rash brought Electronic Arts' brilliantly violent motorcycle racing to the Commodore Amiga in 1992 — but how does the Amiga version compare with the classic Sega Mega Drive original?\n\n🌐 Explore the CCG Commodore 64 & Amiga Games Archive:\n👉 https://www.cheekycommodoregamer.co.uk/games/road-rash\n\nRoad Rash mixes motorcycle racing with traffic, police, bike upgrades and the small matter of punching and kicking rival riders at completely irresponsible speeds.\n\nFinish fourth or better across each of the five races and you progress to tougher levels, earning cash for increasingly powerful bikes along the way. Unfortunately, everybody else gets faster too, meaning those expensive upgrades mostly allow you to have the same problems at considerably higher speeds.\n\nIn this review I'm revisiting the Commodore Amiga version of Road Rash and comparing it directly with the Sega Mega Drive version I grew up playing. We look at the handling, combat, crashes, music, sound, bike progression and some of the differences that become much more noticeable when both versions are played alongside each other.\n\nThe Amiga conversion was handled by PeakStar Software and published by Electronic Arts, with Pete J. Hickinson on programming, Mark Edwards on graphics and Jason A. S. Whitely providing the music.  Reviews were generally positive, although opinions varied. Amiga Format awarded Road Rash 84%, Amiga Action 80% and Amiga Computing 73%, while Amiga Action later gave the budget rerelease an impressive 92%.\n\nFor me, the Amiga version remains great fun and is easier to control, but the Mega Drive has stronger sound, more readable combat and crashes with considerably more impact.\n\n💬 Did you play Road Rash on the Amiga or Mega Drive?\n💬 And if you've played both versions, which one do you prefer?\n\n▶️ PLAYLISTS\nhttps://www.youtube.com/playlist?list=PL_TYjnCNYSeyFVw-mXWAkaPiKz7vW7JZp\nhttps://www.youtube.com/playlist?list=PL_TYjnCNYSezgv04kyhHHWVS2-KOpb0yC\nhttps://www.youtube.com/playlist?list=PL_TYjnCNYSewomNoIy0dDfIDtfMKBRr6M\n\n💙 SUPPORT & CONNECT\nPatreon: https://www.patreon.com/CheekyCommodoreGamer\nJoin: https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join\nTwitter: https://twitter.com/CheekyC64Gamer\nFacebook: https://facebook.com/cheekycommodoregamer\nDiscord: https://discord.gg/83Xw9ktAn4\nWebsite: https://www.cheekycommodoregamer.co.uk\n\n#roadrash #amiga #commodoreamiga #megadrive #retrogaming",
+      "uploadDate": "2026-09-18T17:30:01Z",
+      "duration": "PT8M40S",
+      "thumbnailUrl": "https://i.ytimg.com/vi/JUXvi0beNxA/maxresdefault.jpg",
       "channelTitle": "Cheeky Commodore Gamer",
       "verifiedBy": "youtube-data-api-v3"
     },
