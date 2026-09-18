@@ -370,3 +370,110 @@
         width: 100%;
     }
 }
+
+/* CCG SITE-WIDE COMPACT ARCHIVE AUDIT — 2026-09 */
+.ccg-developers-main {
+    width: min(1240px, calc(100% - 28px));
+    padding: 20px 0 48px;
+}
+
+.ccg-developers-hero {
+    padding: clamp(22px, 3.2vw, 40px);
+}
+
+.ccg-developers-hero__title {
+    max-width: 900px;
+    font-size: clamp(1.85rem, 4vw, 3.35rem);
+}
+
+.ccg-developers-hero__intro {
+    max-width: 80ch;
+    margin-top: 12px;
+    line-height: 1.58;
+}
+
+.ccg-developers-hero__stats {
+    margin-top: 18px;
+}
+
+.ccg-developer-breadcrumbs {
+    margin-top: 10px;
+    padding: 8px 0;
+}
+
+.ccg-developers-tools {
+    gap: 10px;
+    margin: 16px 0 22px;
+    padding: 14px;
+}
+
+.ccg-developers-section {
+    margin: 30px 0;
+}
+
+.ccg-developers-section__heading {
+    margin-bottom: 12px;
+}
+
+.ccg-developer-grid,
+.ccg-developer-game-grid {
+    gap: 12px;
+}
+
+.ccg-developer-card {
+    min-height: 138px;
+    padding: 16px;
+}
+
+.ccg-developer-card--featured {
+    min-height: 158px;
+}
+
+.ccg-developer-game-card__body {
+    min-height: 82px;
+    gap: 7px;
+    padding: 12px;
+}
+
+.ccg-developers-wayfinding {
+    margin-top: 34px;
+    padding: 18px;
+}
+
+.ccg-developer-grid > .ccg-developer-card,
+.ccg-developer-game-grid > .ccg-developer-game-card {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 250px;
+}
+
+@media (max-width: 760px) {
+    .ccg-developers-main {
+        width: min(100% - 20px, 720px);
+        padding-top: 12px;
+        padding-bottom: 34px;
+    }
+
+    .ccg-developers-hero {
+        padding: 20px 16px;
+    }
+
+    .ccg-developers-section {
+        margin: 22px 0;
+    }
+
+    .ccg-developer-card {
+        min-height: 126px;
+        padding: 14px;
+    }
+}
+
+@media (max-width: 500px) {
+    .ccg-developers-main {
+        width: calc(100% - 16px);
+    }
+
+    .ccg-developer-game-grid > .ccg-developer-game-card {
+        contain-intrinsic-size: auto 290px;
+    }
+}
+
