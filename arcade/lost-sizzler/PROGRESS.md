@@ -5,14 +5,15 @@
 ## Audit checkpoint
 
 - Audited: **17 September 2026**.
-- Current live `main`: `ee2d6b38e5c5805ee1c906d7f801bda2d8496383`, the merged Stage 2 landing milestone (#2136).
+- Current live `main`: `d3225318ff5cb87664bce96020c790099f53e06a`, the merged Stage 4 elemental-portal foundation (#2137).
 - Stage 1 is converged through #2134 and #2135. #2134 merged as `adc6f96d2ab8d8395b8cae5818b38c101bd846b9`; #2135 merged as `811f67845dbcaa0b4b5c2b83f8860e10a184c1a0`.
 - Stage 2 startup/main-menu polish is merged through #2136 as `ee2d6b38e5c5805ee1c906d7f801bda2d8496383`.
 - The seven-item repository-side live-defect remediation programme remains complete through #2117, #2118, #2119, #2123, #2090, #2125 and #2126; the later freeze/stopped-firing regression remains repository-fixed through #2129.
 - Two hands-on product gates remain unresolved and explicitly deferred. Do not infer acceptance from automated tests and do not let those gates block independent repository work.
-- Active product milestone: Stage 4 elemental portal architecture in PR #2137, branch `codex/dungeon-elemental-portal-foundation-current-main`, based directly on current `main` `ee2d6b38e5c5805ee1c906d7f801bda2d8496383`.
-- #2137 currently establishes Water / Fire / Earth / Air campaign-state ownership, checkpoint persistence/inference and deterministic route seeds without replacing `run.floor`, `floorComplete()` or `descendFloor()`. Large portal-room topology and zone-specific gameplay remain follow-on work.
-- Review found the first #2137 candidate reused the r30 cache identity despite adding a new bootstrap module. The branch now advances the blocking page, direct local asset queries, `version.json` and ordered bootstrap to `V10.42 r31` / `20260917r31`; the historical r30 handoff remains the loader but derives the new token from canonical page metadata.
+- Stage 4 portal foundation #2137 is merged. Exact qualified head: `030af6e9f8c2da98fb618c64ae276b1159adda3f`; merge commit: `d3225318ff5cb87664bce96020c790099f53e06a`.
+- #2137 establishes Water / Fire / Earth / Air campaign-state ownership, checkpoint persistence/inference and deterministic route seeds without replacing `run.floor`, `floorComplete()` or `descendFloor()`. It also seals the V10.42 Solo/Tutorial ready-transition start race without taking over Continue, Weekly or Split Screen.
+- Exact-head qualification passed all eight top-level workflows and all six Chromium shards. Shard 5 required one unchanged retry after the historical `v10-35-layout.mjs` startup timeout; no runtime, assertion or timeout was weakened.
+- Active product milestone: Stage 5 larger procedural world structure on branch `codex/dungeon-stage5-procedural-topology-current-main`, based exactly on merged `main` `d3225318ff5cb87664bce96020c790099f53e06a`.
 - A merged PR is not treated as a closed user-reproduced defect until deployed behaviour is manually accepted where this register explicitly requires that acceptance.
 
 ### Deferred manual acceptance
@@ -80,9 +81,9 @@ The stale `v10-41-r32-solo-monitor-diagnostic.mjs` contract was also reconciled 
 
 PR #2134 is the next bounded Stage 1 candidate. It removes the now-dead `CCGLostSizzlerV141R32SpyLoader.handleSpyFullscreenKey()` pre-dispatch from supported `F` fullscreen input while leaving the real `toggleFullscreen()` owner and fullscreen button behavior unchanged. Static and browser contracts protect that boundary; no retired Spy runtime is restored.
 
-### Stage 4 elemental portal foundation — PR #2137
+### Stage 4 elemental portal foundation — PR #2137 — MERGED
 
-PR #2137 is the active bounded product milestone after Stage 2. It does not create a second progression system.
+#2137 merged from exact qualified head `030af6e9f8c2da98fb618c64ae276b1159adda3f` as `d3225318ff5cb87664bce96020c790099f53e06a`. It does not create a second progression system.
 
 - Water is the route from Floor 1 to Floor 2; Fire 2→3; Earth 3→4; Air 4→5.
 - `run.floor`, `floorComplete()` and `descendFloor()` remain authoritative for campaign depth.
@@ -92,7 +93,8 @@ PR #2137 is the active bounded product milestone after Stage 2. It does not crea
 - Ordered bootstrap placement is immediately after the five-depth campaign owner and before split-campaign state.
 - Focused Node coverage protects route order, legacy checkpoint compatibility and the no-parallel-progression boundary.
 - Initial exact-head CI was green, but automated review correctly identified that the new bootstrap module was still hidden behind the previously deployed r30 cache identity. The branch now advances to `V10.42 r31` / `20260917r31` and replaces the r30 release-identity contract with an r31 contract that also proves the historical r30 handoff derives the canonical cache token.
-- Final exact-head qualification is required after these review corrections. The two manual product gates remain deferred and are not inferred from this milestone.
+- Final exact-head qualification passed all eight top-level workflows and all six Chromium shards. The deterministic immediate Solo/Tutorial browser regression is green on the qualified head; the historical shard-5 layout timeout passed on one unchanged targeted retry.
+- The two manual product gates remain deferred and are not inferred from this milestone.
 
 ### Defect 7 final terminology boundary
 
@@ -161,7 +163,7 @@ These are post-defect product/backlog items. They are **not** additional defects
 
 | Area | Status | Required outcome |
 | --- | --- | --- |
-| Four elemental portals | **PARTIAL — #2137** | Campaign-state foundation is implemented on the active branch: Water maps Floor 1→2, Fire 2→3, Earth 3→4 and Air 4→5, with save/checkpoint persistence and deterministic route seeds. Large visual portal rooms, zone topology and deeper zone-specific mechanics remain. |
+| Four elemental portals | **PARTIAL — FOUNDATION MERGED #2137** | Campaign-state foundation is merged: Water maps Floor 1→2, Fire 2→3, Earth 3→4 and Air 4→5, with save/checkpoint persistence and deterministic route seeds. Large visual portal rooms and deeper zone-specific mechanics remain subsequent work. |
 | Larger/grander procedural topology | **OPEN** | Build materially larger and more distinctive procedural spaces for the portal/zone structure. R24 describes existing generated rooms and does not satisfy this topology request. |
 | Deeper zone-specific content | **OPEN** | Extend enemies, bosses/elites, items/Artefacts, events, secrets and encounter patterns so the zones differ mechanically as well as thematically. |
 | Finished NPC/merchant integration | **OPEN** | Turn existing NPC foundations into finished in-world interactions, merchant/service behaviour and content rewards integrated with the established economy and final zone structure. |
@@ -187,8 +189,8 @@ Horde Survivor, Spy Vs Spy/Sizzler Saboteurs and networked Dungeon Multiplayer a
 1. **Stage 1 retired-mode / legacy-residue cleanup — COMPLETE.** #2134 and #2135 are merged; general residue cleanup is backlog unless it blocks a player-facing milestone.
 2. **Stage 2 — startup/main-menu polish — COMPLETE.** #2136 is merged and the #2127 first-paint/flicker protections remain intact.
 3. **Stage 3 — Banishment terminology preparation — DEFERRED / FOLD INTO SAFE CONTENT WORK.** Keep save-compatible internal identifiers stable and avoid semantic migrations that depend on the deferred Flask acceptance.
-4. **Stage 4 — Water / Fire / Earth / Air portal architecture — ACTIVE IN #2137.** Preserve the five-depth campaign as the sole floor-progression owner. The current foundation adds portal discovery/unlock/traversal metadata and deterministic route seeds; qualify the r31 cache-safe candidate before moving into visual portal rooms or larger topology.
-5. **Stage 5 — larger procedural world structure.** Improve route variety, alternate paths, landmarks, purposeful dead ends, exploration decisions and zone-specific layouts without blindly increasing map size.
+4. **Stage 4 — Water / Fire / Earth / Air portal architecture — FOUNDATION COMPLETE.** #2137 is merged; preserve the five-depth campaign as the sole floor-progression owner and build later visual/mechanical portal work on its saved route state.
+5. **Stage 5 — larger procedural world structure — ACTIVE.** Extend the authoritative `world.js` generator with deterministic route variety, alternate paths, landmarks, purposeful dead ends, exploration decisions and zone-specific layouts without blindly increasing map size. R6/R7/R24 remain consumers of topology rather than topology owners.
 6. **Stage 6 — deeper zone-specific gameplay.** Expand enemies, elites, bosses, telegraphing, traps, events, secrets, treasure, items, hazards and encounter patterns with mechanical purpose.
 7. **Stage 7 — NPC / merchant integration.** Finish useful world encounters, services, rewards, quest/content hooks, zone-specific characters and established-economy integration.
 8. **Stage 8 — itch.io release preparation.** Build release/package artifacts fresh from current `main`, verify version identity/save/startup/assets/documentation and the website → itch.io handoff.

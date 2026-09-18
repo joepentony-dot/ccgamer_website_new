@@ -137,6 +137,169 @@ window.CCGWorld=(()=>{
     return null;
   }
 
+  function stage5Floor(seedText){
+    const match=String(seedText||"").match(/-F([1-5])(?:$|[^0-9])/i);
+    return Math.max(1,Math.min(5,Number(match?.[1]||1)));
+  }
+
+  const STAGE5_TOPOLOGY_PROFILES=Object.freeze({
+    1:{id:"threshold-branches",loopTarget:1,maxPath:34,landmarkTarget:3},
+    2:{id:"iron-crossroads",loopTarget:2,maxPath:38,landmarkTarget:4},
+    3:{id:"crypt-rings",loopTarget:2,maxPath:40,landmarkTarget:4},
+    4:{id:"ember-braids",loopTarget:3,maxPath:44,landmarkTarget:5},
+    5:{id:"sanctum-web",loopTarget:3,maxPath:46,landmarkTarget:5}
+  });
+
+  function stage5PairKey(a,b){return a<b?`${a}:${b}`:`${b}:${a}`}
+  function stage5ExistingPairs(edges){return new Set(edges.map(edge=>stage5PairKey(edge.a,edge.b)))}
+  function stage5GraphDistance(graph,start,end){
+    if(start===end)return 0;
+    const seen=new Set([start]),queue=[{id:start,d:0}];
+    for(let i=0;i<queue.length;i++){
+      const current=queue[i];
+      for(const next of graph[current.id]||[]){
+        if(seen.has(next.to))continue;
+        if(next.to===end)return current.d+1;
+        seen.add(next.to);queue.push({id:next.to,d:current.d+1});
+      }
+    }
+    return Infinity
+  }
+  function stage5Clamp(value,min,max){return Math.max(min,Math.min(max,value))}
+  function stage5FacingPorts(a,b){
+    const ca=centre(a),cb=centre(b),horizontal=Math.abs(cb.x-ca.x)>=Math.abs(cb.y-ca.y);
+    if(horizontal){
+      const east=ca.x<cb.x;
+      return{
+        a:{x:east?a.x+a.w:a.x,y:stage5Clamp(cb.y,a.y+1,a.y+a.h-1)},
+        b:{x:east?b.x:b.x+b.w,y:stage5Clamp(ca.y,b.y+1,b.y+b.h-1)}
+      }
+    }
+    const south=ca.y<cb.y;
+    return{
+      a:{x:stage5Clamp(cb.x,a.x+1,a.x+a.w-1),y:south?a.y+a.h:a.y},
+      b:{x:stage5Clamp(ca.x,b.x+1,b.x+b.w-1),y:south?b.y:b.y+b.h}
+    }
+  }
+  function stage5OrthogonalPath(a,b,horizontalFirst){
+    const out=[],push=(x,y)=>{const last=out[out.length-1];if(!last||last.x!==x||last.y!==y)out.push({x,y})};
+    let x=a.x,y=a.y;push(x,y);
+    const walkX=()=>{while(x!==b.x){x+=Math.sign(b.x-x);push(x,y)}};
+    const walkY=()=>{while(y!==b.y){y+=Math.sign(b.y-y);push(x,y)}};
+    if(horizontalFirst){walkX();walkY()}else{walkY();walkX()}
+    return out
+  }
+  function stage5RouteCandidate(map,rooms,a,b,profile,seedText,protectedCells=new Set()){
+    const ports=stage5FacingPorts(a,b),routes=[stage5OrthogonalPath(ports.a,ports.b,true),stage5OrthogonalPath(ports.a,ports.b,false)];
+    const valid=[];
+    for(const route of routes){
+      if(route.length<4||route.length>profile.maxPath)continue;
+      let walls=0,foreign=false;
+      for(const point of route){
+        if(point.x<=0||point.y<=0||point.x>=C.worldWidth-1||point.y>=C.worldHeight-1||protectedCells.has(cell(point.x,point.y))){foreign=true;break}
+        const room=rooms.find(candidate=>candidate.id!==a.id&&candidate.id!==b.id&&inside(candidate,point));
+        if(room){foreign=true;break}
+        if(map[point.y][point.x]===1)walls++;
+      }
+      if(foreign||walls<3||walls/route.length<.42)continue;
+      valid.push({route,walls});
+    }
+    if(!valid.length)return null;
+    valid.sort((left,right)=>right.walls-left.walls||left.route.length-right.route.length);
+    if(valid.length>1&&valid[0].walls===valid[1].walls&&valid[0].route.length===valid[1].route.length){
+      return valid[hash(`${seedText}-STAGE5-PATH-${a.id}-${b.id}`)%valid.length]
+    }
+    return valid[0]
+  }
+  function stage5SecretReserveCells(seedText,rooms,doorSpecs){
+    const floor=stage5Floor(seedText),secretRoomIds=new Set((doorSpecs||[]).slice(0,Math.max(0,C.dungeon.secretRooms||0)).map(door=>door.roomId)),reserved=new Set();
+    const add=(x,y)=>{if(x>2&&y>2&&x<C.worldWidth-3&&y<C.worldHeight-3)reserved.add(cell(x,y))};
+    for(const room of rooms){
+      if(!room.optional||!secretRoomIds.has(room.id))continue;
+      const insetX=room.x+2+((room.id*7+floor*3)%Math.max(1,room.w-3));
+      const insetY=room.y+2+((room.id*5+floor*7)%Math.max(1,room.h-3));
+      const sides=[
+        {dx:1,dy:0,x:room.x+room.w+1,y:insetY},
+        {dx:-1,dy:0,x:room.x-1,y:insetY},
+        {dx:0,dy:1,x:insetX,y:room.y+room.h+1},
+        {dx:0,dy:-1,x:insetX,y:room.y-1}
+      ];
+      for(const side of sides){
+        for(let step=0;step<=4;step++)add(side.x+side.dx*step,side.y+side.dy*step);
+        const endX=side.x+side.dx*4,endY=side.y+side.dy*4;
+        if(side.dx){
+          for(let yy=endY-1;yy<=endY+1;yy++)for(let step=0;step<=2;step++)add(endX+side.dx*step,yy);
+        }else{
+          for(let xx=endX-1;xx<=endX+1;xx++)for(let step=0;step<=2;step++)add(xx,endY+side.dy*step);
+        }
+      }
+    }
+    return reserved
+  }
+
+  function addStage5Topology(seedText,map,rooms,edges,graph,startRoom,exitRoom,protectedCells=new Set()){
+    const floor=stage5Floor(seedText),profile=STAGE5_TOPOLOGY_PROFILES[floor]||STAGE5_TOPOLOGY_PROFILES[1];
+    const existing=stage5ExistingPairs(edges),candidates=[];
+    const ordinary=rooms.filter(room=>!room.optional&&room.id!==startRoom&&room.id!==exitRoom);
+    for(let i=0;i<ordinary.length;i++)for(let j=i+1;j<ordinary.length;j++){
+      const a=ordinary[i],b=ordinary[j],key=stage5PairKey(a.id,b.id);
+      if(existing.has(key))continue;
+      const graphDistance=stage5GraphDistance(graph,a.id,b.id);
+      if(!Number.isFinite(graphDistance)||graphDistance<3)continue;
+      const route=stage5RouteCandidate(map,rooms,a,b,profile,seedText,protectedCells);
+      if(!route)continue;
+      const degreePenalty=(graph[a.id]?.length||0)+(graph[b.id]?.length||0);
+      const hashTie=hash(`${seedText}-STAGE5-PAIR-${key}`)%997;
+      candidates.push({a,b,key,graphDistance,route,score:graphDistance*100-route.route.length*3-degreePenalty*8+hashTie/1000});
+    }
+    candidates.sort((a,b)=>b.score-a.score||a.key.localeCompare(b.key));
+
+    const loops=[],useCount=new Map();
+    for(const candidate of candidates){
+      if(loops.length>=profile.loopTarget)break;
+      const aUses=useCount.get(candidate.a.id)||0,bUses=useCount.get(candidate.b.id)||0;
+      if(aUses>=2||bUses>=2||(aUses&&bUses))continue;
+      for(const point of candidate.route.route)carveCell(map,point.x,point.y);
+      const edge={a:candidate.a.id,b:candidate.b.id,path:candidate.route.route.map(point=>({x:point.x,y:point.y})),stage5Loop:true,routeKind:"alternate"};
+      edges.push(edge);
+      graph[edge.a].push({to:edge.b,edge});graph[edge.b].push({to:edge.a,edge});
+      existing.add(candidate.key);useCount.set(edge.a,aUses+1);useCount.set(edge.b,bUses+1);
+      loops.push({id:`stage5-loop-${loops.length+1}`,a:edge.a,b:edge.b,graphDistanceBefore:candidate.graphDistance,length:edge.path.length});
+    }
+
+    const deadEnds=ordinary.filter(room=>(graph[room.id]?.length||0)===1).sort((a,b)=>(b.depth||0)-(a.depth||0)||(hash(`${seedText}-DEAD-${a.id}`)-hash(`${seedText}-DEAD-${b.id}`)));
+    const crossroads=ordinary.filter(room=>(graph[room.id]?.length||0)>=3).sort((a,b)=>(graph[b.id]?.length||0)-(graph[a.id]?.length||0)||(b.depth||0)-(a.depth||0));
+    const landmarkIds=[];
+    const addLandmark=id=>{if(Number.isInteger(id)&&!landmarkIds.includes(id)&&id!==startRoom&&id!==exitRoom)landmarkIds.push(id)};
+    for(const loop of loops){addLandmark(loop.a);addLandmark(loop.b)}
+    for(const room of crossroads)addLandmark(room.id);
+    for(const room of deadEnds)addLandmark(room.id);
+    landmarkIds.splice(profile.landmarkTarget);
+
+    const deadEndIds=deadEnds.map(room=>room.id);
+    const crossroadIds=crossroads.map(room=>room.id);
+    for(const room of ordinary){
+      if(deadEndIds.includes(room.id))room.stage5TopologyRole="purposeful-dead-end";
+      else if(crossroadIds.includes(room.id))room.stage5TopologyRole="crossroads";
+      else if(loops.some(loop=>loop.a===room.id||loop.b===room.id))room.stage5TopologyRole="alternate-route";
+      else room.stage5TopologyRole="route";
+      room.stage5Landmark=landmarkIds.includes(room.id);
+    }
+
+    return{
+      version:"stage5-r1",
+      floor,
+      profile:profile.id,
+      loopTarget:profile.loopTarget,
+      loops,
+      deadEnds:deadEndIds,
+      crossroads:crossroadIds,
+      landmarks:landmarkIds,
+      dimensions:{width:C.worldWidth,height:C.worldHeight},
+      protectedSecretCells:protectedCells.size
+    }
+  }
+
   function generate(seedText){
     const random=rng(hash(seedText));
     const map=Array.from({length:C.worldHeight},()=>Array(C.worldWidth).fill(1));
@@ -164,6 +327,7 @@ window.CCGWorld=(()=>{
       hauntedCorridor={id:`haunted-${edge.a}-${edge.b}`,a:edge.a,b:edge.b,roomId:nest.id,cells:path.map(point=>({x:point.x,y:point.y})),triggeredBy:[],torchExtinguishedFor:[]};
       break;
     }
+
     // Classic wrap tunnel on an ordinary connected corridor row.
     let tunnelY=Math.floor(C.worldHeight*.55),found=false;
     for(let off=0;off<22&&!found;off++)for(const y of [tunnelY+off,tunnelY-off]){
@@ -189,7 +353,14 @@ window.CCGWorld=(()=>{
       }
     }
 
-    while(graph.length<rooms.length)graph.push([]);return{map,rooms,edges,graph,start:centre(rooms[startRoom]),exit:centre(rooms[exitRoom]),startRoomId:startRoom,exitRoomId:exitRoom,random,tunnelY,doorSpecs,optionalCells,lockedRooms,hauntedCorridor};
+    // Stage 5 runs only after the established optional-annex set is frozen.
+    // The first optional gates become hidden secret rooms in systems.js, so
+    // reserve the exact wall cells its nested-crack generator may need before
+    // carving any alternate route.
+    const protectedSecretCells=stage5SecretReserveCells(seedText,rooms,doorSpecs);
+    const topology=addStage5Topology(seedText,map,rooms,edges,graph,startRoom,exitRoom,protectedSecretCells);
+
+    while(graph.length<rooms.length)graph.push([]);return{map,rooms,edges,graph,start:centre(rooms[startRoom]),exit:centre(rooms[exitRoom]),startRoomId:startRoom,exitRoomId:exitRoom,random,tunnelY,doorSpecs,optionalCells,lockedRooms,hauntedCorridor,topology};
   }
 
   function allFloorCells(w,allowOptional=false){const a=[];for(let y=1;y<C.worldHeight-1;y++)for(let x=1;x<C.worldWidth-1;x++)if(w.map[y][x]===0&&(allowOptional||!w.optionalCells.has(cell(x,y))))a.push({x,y});return a}
