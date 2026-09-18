@@ -45,6 +45,16 @@ try{
     await route.continue();
   });
 
+  let releaseFiveDepth;
+  const fiveDepthGate=new Promise(resolve=>{releaseFiveDepth=resolve});
+  let fiveDepthSeen;
+  const fiveDepthPaused=new Promise(resolve=>{fiveDepthSeen=resolve});
+  await page.route("**/arcade/lost-sizzler/js/v10-42-five-depth-campaign.js*",async route=>{
+    fiveDepthSeen();
+    await fiveDepthGate;
+    await route.continue();
+  });
+
   await page.goto(`${origin}/arcade/lost-sizzler/?startup-first-visual=1`,{waitUntil:"commit",timeout:90000});
   await firstScriptPaused;
   await page.waitForFunction(()=>{
@@ -97,6 +107,32 @@ try{
 
   releaseFirstScript();
   await page.waitForLoadState("domcontentloaded",{timeout:90000});
+  await fiveDepthPaused;
+  await page.waitForFunction(()=>window.CCGLostSizzlerReleaseGate?.state?.ready===true,null,{timeout:90000});
+  await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap&&window.CCGLostSizzlerV142Bootstrap.ready!==true,null,{timeout:10000});
+
+  const legacyReadyMid=await page.evaluate(()=>{
+    const loader=document.getElementById("ccg-release-loading");
+    const feature=[...document.querySelectorAll("#menu .feature-strip span")].map(node=>String(node.textContent||"").trim());
+    return {
+      legacyReady:Boolean(window.CCGLostSizzlerReleaseGate?.state?.ready),
+      v142Ready:Boolean(window.CCGLostSizzlerV142Bootstrap?.ready),
+      bodyReleaseReady:document.body?.dataset?.releaseReady,
+      v142BootstrapReady:document.body?.dataset?.v142BootstrapReady,
+      loaderHidden:Boolean(loader?.hidden),
+      loaderDisplay:loader?getComputedStyle(loader).display:"",
+      feature
+    };
+  });
+
+  assert.equal(legacyReadyMid.legacyReady,true,"legacy release gate must be ready in the held V10.42 startup window");
+  assert.equal(legacyReadyMid.v142Ready,false,"held five-depth module must keep V10.42 ordered bootstrap unfinished");
+  assert.notEqual(legacyReadyMid.bodyReleaseReady,"true","authoritative release readiness must remain false while V10.42 is unfinished");
+  assert.equal(legacyReadyMid.loaderHidden,false,"legacy readiness alone must not reveal the pre-V10.42 menu");
+  assert.equal(legacyReadyMid.loaderDisplay,"grid","loader must continue covering the old/intermediate menu while V10.42 is unfinished");
+  assert.ok(!legacyReadyMid.feature.some(text=>text.startsWith("5 PROCEDURAL DEPTHS")),"held five-depth owner must prove the final campaign copy has not landed yet");
+
+  releaseFiveDepth();
   await page.waitForFunction(()=>document.body?.dataset?.releaseReady==="true"&&document.body?.dataset?.gameReady==="true",null,{timeout:90000});
   await page.waitForFunction(()=>document.querySelector("#menu .game-mode-buttons")?.dataset?.r55TextLayout==="true",null,{timeout:15000});
   await page.waitForFunction(()=>document.getElementById("ccg-release-loading")?.hidden===true,null,{timeout:15000});
@@ -118,18 +154,22 @@ try{
     return {
       loaderHidden:Boolean(loader?.hidden),
       loaderDisplay:loader?getComputedStyle(loader).display:"",
+      feature:[...document.querySelectorAll("#menu .feature-strip span")].map(node=>String(node.textContent||"").trim()),
       buttons:Object.fromEntries(["solo-btn","split-btn","tutorial-zone-btn","daily-btn"].map(id=>[id,sample(id)]))
     };
   });
 
   assert.equal(settled.loaderHidden,true,"loader must be removed atomically only after the release is ready");
   assert.equal(settled.loaderDisplay,"none","settled release loader must not intercept the ready menu");
+  assert.equal(settled.feature[0]?.startsWith("5 PROCEDURAL DEPTHS"),true,"menu must reveal only after final five-depth campaign copy is installed");
+  assert.equal(settled.feature[1]?.startsWith("RPG CHARACTER BUILD"),true,"RPG campaign copy must be settled before reveal");
+  assert.equal(settled.feature[2]?.startsWith("THREE GLOBAL KEYS"),true,"global-key campaign copy must be settled before reveal");
   for(const id of Object.keys(first.buttons)){
     assert.deepEqual(settled.buttons[id],first.buttons[id],`${id} must not visibly change colour or text geometry between first paint and the settled R55 state`);
   }
   assert.deepEqual(errors,[],`startup first-visual contract must have no uncaught browser errors: ${errors.join("\n")}`);
 
-  console.log("DUNGEON_STARTUP_FIRST_VISUAL",JSON.stringify({first,settled}));
+  console.log("DUNGEON_STARTUP_FIRST_VISUAL",JSON.stringify({first,legacyReadyMid,settled}));
   console.log("Dungeon Carnage startup first-visual browser contract passed.");
   await context.close();
 }finally{
