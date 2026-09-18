@@ -42,7 +42,7 @@ const immediateClickReplacement=`    await withTimeout(state.page.waitForFunctio
     });
     assert.equal(blockedFirstVisual.releaseReady,"false","the immediate-start audit must observe pre-release V10.42 state");
     assert.equal(blockedFirstVisual.loaderVisible,true,"pre-release Solo menu must remain covered rather than accepting a hidden-menu click");
-    assert.ok(blockedFirstVisual.loaderZ>1000000&&blockedFirstVisual.loaderWidth>=blockedFirstVisual.viewport.w&&blockedFirstVisual.loaderHeight>=blockedFirstVisual.viewport.h,`the pre-release loader must own the viewport: ${JSON.stringify(blockedFirstVisual)}`);
+    assert.ok(blockedFirstVisual.loaderZ>1000000&&blockedFirstVisual.loaderWidth>=blockedFirstVisual.viewport.w&&blockedFirstVisual.loaderHeight>=blockedFirstVisual.viewport.h,"the pre-release loader must own the viewport: "+JSON.stringify(blockedFirstVisual));
     await withTimeout(state.page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&window.CCGLostSizzlerV142Bootstrap?.ready===true&&document.getElementById("ccg-release-loading")?.hidden===true,null,{timeout:25000}),STAGE_TIMEOUT_MS,"authoritative Solo menu reveal");
     await withTimeout(state.page.locator("#solo-btn").click({timeout:10000,noWaitAfter:true}),12000,"post-reveal Solo button click");`;
 const immediateClickMatches=source.split(immediateClickTarget).length-1;
