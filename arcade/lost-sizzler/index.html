@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="css/v10-41-r29.css?v=20260918r34">
   <link rel="stylesheet" data-ccg-v136-special-ui="true" href="css/v10-36-special-ui.css?v=20260918r34">
   <link rel="stylesheet" href="css/v10-42-startup-first-visual.css?v=20260918r34">
+  <link rel="stylesheet" data-ccg-v141-r51-style="true" href="css/v10-41-r51-visual-ui-overhaul.css?v=20260918r34">
 </head>
 <body data-game-ready="false" data-release-ready="false" data-run-active="false">
 <div id="ccg-release-loading" class="ccg-release-loading" role="status" aria-live="polite">
@@ -85,7 +86,7 @@
       <div id="quest-list" class="quest-list game-quest-list"></div>
     </aside>
     <div id="menu" class="overlay">
-      <div class="panel">
+      <div class="panel r51-menu-panel">
         <div class="pixel-title-lockup" aria-label="C64 Dungeon Carnage">
           <span class="pixel-title-ccg">CCG</span>
           <span class="pixel-title-quest">CHEEKY COMMODORE GAMER</span>
@@ -101,8 +102,9 @@
           <span><b>DEATH STALKERS</b>Trade 3 artefacts or pay 10,000 score at a shop for a Banishment Flask. The contextual B prompt appears in range.</span>
         </div>
         <div class="menu-config"><label class="field"><span>PLAYER 1 NAME</span><input id="player-name" maxlength="18" value="CCG Player" autocomplete="nickname"></label><label class="field"><span>DIFFICULTY</span><select id="difficulty"><option>CASUAL</option><option selected>ARCADE</option><option>SIZZLER</option><option>GOLD MEDAL</option></select></label></div>
+        <div id="ccg-r51-menu-guide" aria-label="Menu quick guide"><span><b>SOLO</b> saves locally + cloud when signed in</span><span><b>ONLINE</b> room code remains your rejoin key</span><span><b>CONTROLLER</b> D-pad/stick + A works in menus</span><span><b>OPTIONS</b> accessibility and audio are stored in this browser</span></div>
         <div class="mode-select-label"><span>✦</span> CHOOSE YOUR ADVENTURE <span>✦</span></div>
-        <div class="menu-buttons game-mode-buttons" aria-label="Game modes"><button id="solo-btn" class="primary game-mode-button mode-solo">Play Solo</button><button id="tutorial-zone-btn" type="button" class="tutorial-primary-option">Tutorial</button><button id="continue-save-btn" class="save-resume hidden">Resume Saved Run</button><button id="daily-btn">Weekly High-Score Vault</button><button id="split-btn">2P Split Screen</button></div>
+        <div class="menu-buttons game-mode-buttons" aria-label="Game modes"><button id="solo-btn" class="primary game-mode-button mode-solo" data-r51-kicker="SOLO DUNGEON" data-r51-desc="Five floors · full progression · local save">Play Solo</button><button id="tutorial-zone-btn" type="button" class="tutorial-primary-option" data-r51-kicker="LEARN THE DUNGEON" data-r51-desc="Controls, combat, items and objectives">Tutorial</button><button id="continue-save-btn" class="save-resume hidden" data-r51-kicker="CONTINUE" data-r51-desc="Resume your saved Solo floor checkpoint">Resume Saved Run</button><button id="daily-btn" data-r51-kicker="WEEKLY CHALLENGE" data-r51-desc="Shared seed · one ranked attempt per account">Weekly High-Score Vault</button><button id="split-btn" data-r51-kicker="LOCAL TWO PLAYER" data-r51-desc="Two controllers or shared keyboard">2P Split Screen</button></div>
         <section id="weekly-vault" class="weekly-vault-section" aria-labelledby="weekly-vault-title">
         <h3 id="weekly-vault-title">WEEKLY HIGH-SCORE VAULT LEADERBOARD</h3>
         <p class="weekly-leaderboard-note">Check this leaderboard throughout the week to see who is winning. If nobody completes an attempt or nobody plays, no winner is declared and nothing is awarded or announced for that week.</p>
