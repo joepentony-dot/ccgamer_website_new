@@ -6,7 +6,7 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Current checkpoint — 18 September 2026
 
-Live `main` is `53cba902af9dbf1e118f3f274836120f6c30bb40`, the merged Stage 8 itch.io HTML5 release-preparation milestone (#2141).
+Latest verified Dungeon runtime merge checkpoint is `4c56d2bccd73350359c8b3246b0d70142894d353`, the merged startup/first-visual remediation (#2145). Stage 8 itch.io repository preparation remains complete through #2141.
 
 Stage 1 is converged for the current product programme:
 
@@ -19,6 +19,24 @@ The programme is now milestone-first. General legacy residue remains backlog unl
 The original seven-item repository defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The later #2129 sustained-Solo acceptance is also still deferred. For both:
 
 **MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**
+
+### Startup / first-visual flicker remediation — PR #2145 — MERGED
+
+Branch: `codex/dungeon-startup-first-visual-current-main`.
+
+Qualified head: `432af71f6d19612a54e274f9114c6b3ef35e7450`.
+
+Merge commit: `4c56d2bccd73350359c8b3246b0d70142894d353`.
+
+The remaining startup flicker was a first-visual ownership defect. The V10.36 release loader and its stylesheet were being created/loaded only after the body existed, allowing the menu to paint before the loader. The retained R55 owner could then apply its final button presentation before the menu was finally revealed.
+
+#2145 makes the loader part of the original HTML before the game shell, loads the existing V10.36 loader stylesheet as render-blocking head CSS, and pre-aligns the visible R55 button text/presentation before reveal. The existing V10.36 runtime adopts the canonical loader instead of inserting a second one. No artificial delay was introduced.
+
+The production delta is limited to `index.html` plus the new blocking startup CSS. Static and Chromium contracts protect the first-visual state. No world generation, combat, progression, saves, shops/economy, Banishment exchange, NPC/merchant logic, local Split Screen, Weekly Vault, input or release/cache ownership changed.
+
+Exact-head qualification passed all eight triggered workflows. Lost Sizzler Load Safety passed canonical/Node coverage, browser discovery and all six Chromium shards on the exact head. Detailed evidence: `docs/ai-work/dungeon-carnage-startup-first-visual-2026-09-18.md`.
+
+Repository status: **REPOSITORY-COMPLETE — #2145**.
 
 ### Stage 4 elemental portal foundation — PR #2137 — MERGED
 
@@ -273,15 +291,13 @@ The two live gates remain unresolved but are not the current development task:
 
 For both: **MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**.
 
-Exact next repository action:
+Exact next Dungeon action:
 
-1. qualify the Stage 6 r33 branch through focused zone-gameplay/release-identity contracts and the complete retained matrix;
-2. keep special/named/stalker/guardian/quest identities protected and confirm ordinary composition changes do not break campaign gates;
-3. preserve Stage 5 topology, Stage 4 portal/floor progression, checkpoint representation, Split Screen and Tutorial ownership;
-4. reconcile review findings and release/cache assertions on the exact candidate head;
-5. merge the bounded Stage 6 slice only when all required checks are green and the branch is 0 behind current `main`;
-6. after this slice merges, continue Stage 6 with remaining zone-specific events/rewards/content only if they can reuse established runtime primitives; otherwise record the boundary and move to Stage 7;
-7. keep both manual product gates explicitly deferred.
+1. do not reopen #2145 unless the startup/first-visual defect reproduces on the current deployed build;
+2. keep sustained Solo movement/firing/combat/pause-resume acceptance explicitly deferred until hands-on testing is available;
+3. keep the three-Artefact/Essence Banishment Flask exchange acceptance explicitly deferred until hands-on testing is available;
+4. keep public itch.io page creation, artifact upload/publication and the final public URL as external release actions;
+5. no additional autonomous Dungeon repository change is justified solely by the completed #2145 work.
 
 ## Historical live-defect remediation checkpoint — 16 September 2026
 
@@ -317,3 +333,4 @@ Branch `codex/dungeon-projectile-lifecycle-current-main` was created from exact 
 - 2026-09-17: Began #2134 from the #2131 merge to remove the dead shared Spy fullscreen pre-dispatch. Initial CI exposed the stale R59 fullscreen assertion; review also proved the first browser-contract filename was filtered from Chromium by the retained-mode manifest. Both findings were corrected without restoring retired behavior or weakening supported R59 ownership.
 
 - 2026-09-18: Stage 5 #2138 qualified at `819c820b1a908a0e5b20f69a2775b5b056b9ef74` and merged as `94ae72bfbbc2bc9ee4ae58a01dc00e6bf37d4fa9` with all eight workflows and all six Chromium shards green. Stage 6 began from that exact merge with the bounded r33 zone-gameplay owner.
+- 2026-09-18: Startup/first-visual PR #2145 qualified on exact head `432af71f6d19612a54e274f9114c6b3ef35e7450` with all eight triggered workflows green, including all six Chromium shards, and merged as `4c56d2bccd73350359c8b3246b0d70142894d353`. The flicker remediation is repository-complete; both manual product gates remain deferred.

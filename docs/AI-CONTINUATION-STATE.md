@@ -10,7 +10,7 @@ Update this file when a workstream changes category, its active PR/dependency ch
 
 ## Current autonomous Dungeon Carnage checkpoint — 18 September 2026
 
-- Verified live `main`: `53cba902af9dbf1e118f3f274836120f6c30bb40` — merged Stage 8 itch.io HTML5 release preparation (#2141).
+- Verified Dungeon runtime merge checkpoint on live `main`: `4c56d2bccd73350359c8b3246b0d70142894d353` — merged startup/first-visual remediation (#2145).
 - Stage 7 #2140 remains merged as `f4fecd858fab8d43cd9d6732ab56495cfb313116`.
 - Stage 8 #2141 merged from exact qualified head `e5d4333d4e8dc2912b2ffc9c5abc13f79d4b4a2d` as `53cba902af9dbf1e118f3f274836120f6c30bb40`.
 - Exact Stage 8 qualification passed the dedicated itch.io package workflow, CCG Site Safety, Public Code Cache Version, SEO Automation, Native Mouse Wheel Scroll Contract, canonical/Node contracts and all six Lost Sizzler Chromium shards.
@@ -18,6 +18,9 @@ Update this file when a workstream changes category, its active PR/dependency ch
 - The qualified head produced artifact `C64-Dungeon-Carnage-Itch` (artifact ID `10533819282`, 21,109,428 bytes, SHA-256 `5bcb8a915490382327f16fba0ba6ea5dcc20e0b1ba9d156dfc5a5d2a438b3c38`).
 - Stage 8 keeps the canonical CCG website runtime unchanged, excludes website account bootstraps and retired custom commerce from the staged package, preserves Solo/Tutorial/local Split Screen, and hands Weekly Vault back to the canonical website.
 - Repository-side itch.io release preparation is complete. Public itch.io page creation, artifact upload/publication and the final public URL remain external release actions; no URL is invented in source.
+- Startup/first-visual flicker remediation #2145 is repository-complete. Exact qualified head `432af71f6d19612a54e274f9114c6b3ef35e7450` merged as `4c56d2bccd73350359c8b3246b0d70142894d353`.
+- #2145 moves release-loader ownership into the original HTML/render-blocking first visual state and pre-aligns the visible R55 button presentation before reveal. No artificial startup delay or gameplay ownership change was introduced.
+- Exact #2145 qualification passed all eight triggered workflows, including Lost Sizzler Load Safety canonical/Node coverage and all six Chromium shards. Detailed checkpoint: `docs/ai-work/dungeon-carnage-startup-first-visual-2026-09-18.md`.
 - The programme remains milestone-first; broad legacy cleanup stays backlog unless it blocks an active player-facing workstream.
 
 ### Manual acceptance state
@@ -35,9 +38,9 @@ These deferred gates do not block independent repository work that does not depe
 
 ### Exact next action
 
-1. Treat Stage 8 repository work as complete on merged `main` `53cba902af9dbf1e118f3f274836120f6c30bb40`; do not rebuild or requalify it without new evidence.
-2. Keep public itch.io page creation, artifact upload/publication and the final public URL as an external release gate.
-3. Keep the two Dungeon product acceptance checks explicitly deferred until the user is available to perform them.
+1. Treat #2145 startup/first-visual remediation as repository-complete on merge `4c56d2bccd73350359c8b3246b0d70142894d353`; do not reopen it without new current-build evidence.
+2. Keep the two Dungeon product acceptance checks explicitly deferred until the user is available to perform them.
+3. Keep public itch.io page creation, artifact upload/publication and the final public URL as an external release gate.
 4. Commodore Quest 3 repository reconstruction is complete in draft #2143 at exact head `15e48c3743775f2ba582134e9e04303e07bb4ea4`; all automated qualification is green. The next Quest action is the required hands-on browser playtest of The Bedroom and 36% Conversion Bout. Do not merge before that acceptance.
 5. Keep #2110 parked behind its documented Cloudflare configuration blocker; do not rebase or retest it solely because `main` advanced.
 6. Treat #1976 as source material only unless current-main evidence independently justifies re-deriving that optimisation.
@@ -59,7 +62,7 @@ These deferred gates do not block independent repository work that does not depe
 
 | Workstream | Record | Current GitHub state |
 | --- | --- | --- |
-| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) plus [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md) | Stage 8 #2141 is merged as `53cba902af9dbf1e118f3f274836120f6c30bb40`; repository-side release preparation is complete. Two independent manual product gates remain deferred. |
+| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md), [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md), and [#2145 first-visual checkpoint](ai-work/dungeon-carnage-startup-first-visual-2026-09-18.md) | Startup/first-visual remediation #2145 is merged as `4c56d2bccd73350359c8b3246b0d70142894d353` after exact-head full-matrix qualification. Repository-side itch.io preparation remains complete; two independent manual product gates remain deferred. |
 | Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | Stage 8 #2141 is merged and the verified standalone HTML5 artifact is repository-ready. Public itch.io page creation/upload/final URL remain external; the retired custom commerce/paywall and desktop/Windows graphs stay closed. |
 | Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2103 and #2105 are merged; #2073 is closed. #2110 remains the current draft endpoint follow-up but is **BLOCKED** by missing/mismatched Cloudflare runtime configuration. Repository-side work for that blocker is already complete. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | Fresh draft #2143 is the qualified current-main Quest 3 candidate at exact head `15e48c3743775f2ba582134e9e04303e07bb4ea4`; all automated checks are green. Old #2056 is closed as superseded. Hands-on Bedroom + 36% Conversion Bout acceptance remains the merge gate. |

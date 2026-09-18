@@ -5,7 +5,7 @@
 ## Audit checkpoint
 
 - Audited: **18 September 2026**.
-- Current live `main`: `53cba902af9dbf1e118f3f274836120f6c30bb40`, the merged Stage 8 itch.io HTML5 release-preparation milestone (#2141).
+- Latest verified Dungeon runtime merge checkpoint: `4c56d2bccd73350359c8b3246b0d70142894d353`, the merged startup/first-visual remediation (#2145). Stage 8 itch.io repository preparation remains complete through #2141.
 - Stage 1 is converged through #2134 and #2135. #2134 merged as `adc6f96d2ab8d8395b8cae5818b38c101bd846b9`; #2135 merged as `811f67845dbcaa0b4b5c2b83f8860e10a184c1a0`.
 - Stage 2 startup/main-menu polish is merged through #2136 as `ee2d6b38e5c5805ee1c906d7f801bda2d8496383`.
 - The seven-item repository-side live-defect remediation programme remains complete through #2117, #2118, #2119, #2123, #2090, #2125 and #2126; the later freeze/stopped-firing regression remains repository-fixed through #2129.
@@ -16,6 +16,7 @@
 - Stage 5 procedural topology #2138 is merged. Exact qualified head: `819c820b1a908a0e5b20f69a2775b5b056b9ef74`; merge commit: `94ae72bfbbc2bc9ee4ae58a01dc00e6bf37d4fa9`. All eight top-level workflows and all six Chromium shards passed without a retry.\n- Stage 6 zone-specific gameplay #2139 is merged. Exact qualified head: `d0eaaaa772101fbb4f4cd02f33a9d655e54d85ea`; merge commit: `3cb65ffa1ad35a8a0ff5ce854829eba646e78c6b`. All eight top-level workflows, canonical/Node qualification and all six Chromium shards passed.
 - Stage 7 NPC/merchant integration #2140 is merged. Exact qualified head: `e1141fb03e926efcf833268e03f1341dd6ec8fdb`; merge commit: `f4fecd858fab8d43cd9d6732ab56495cfb313116`. All eight top-level workflows, canonical/Node qualification and all six Chromium shards passed.
 - Stage 8 itch.io release preparation #2141 is merged. Exact qualified head: `e5d4333d4e8dc2912b2ffc9c5abc13f79d4b4a2d`; merge commit: `53cba902af9dbf1e118f3f274836120f6c30bb40`. The dedicated package workflow and retained regression set passed; one unchanged Load Safety shard-2 retry resolved the isolated Scout persistence startup timeout. Qualified artifact: `C64-Dungeon-Carnage-Itch`, artifact ID `10533819282`, 21,109,428 bytes, SHA-256 `5bcb8a915490382327f16fba0ba6ea5dcc20e0b1ba9d156dfc5a5d2a438b3c38`. Repository-side release preparation is complete; public itch.io page creation/upload/publication remains external.
+- Startup/first-visual remediation #2145 is merged. Exact qualified head: `432af71f6d19612a54e274f9114c6b3ef35e7450`; merge commit: `4c56d2bccd73350359c8b3246b0d70142894d353`. All eight triggered workflows passed, including Lost Sizzler Load Safety canonical/Node coverage and all six Chromium shards. The release loader now owns the original render-blocking first visual state and the visible R55 button presentation is aligned before reveal; no artificial delay or gameplay ownership change was introduced.
 - A merged PR is not treated as a closed user-reproduced defect until deployed behaviour is manually accepted where this register explicitly requires that acceptance.
 
 ### Deferred manual acceptance
@@ -137,6 +138,7 @@ The exact candidate head `f70f816910fab8d07aaf946f140b593c9220f1ef` passed all r
 | XP source boundary | PRESENT | Progression XP remains intended for combat and explicit XP rewards rather than ordinary doors, switches, chests or traps. |
 | Gold economy | PRESENT | Ordinary shop stock uses Gold with its existing pricing. The separate 10 Gold Banishment Flask route remains available. |
 | Public game identity | PRESENT | #2090 keeps the visible runtime subtitle at `C64 DUNGEON CARNAGE — V10.42`; historical internal/path identifiers remain only where compatibility requires them. |
+| Startup first-visual ownership | **REPOSITORY-COMPLETE — #2145** | The canonical release loader exists before the game shell with render-blocking loader CSS, while the visible R55 button presentation is present before reveal. Exact head `432af71f...` passed the full triggered matrix and merged as `4c56d2bc...`. |
 | Owned Firearms differentiation | PRESENT | #2125 exposes meaningful firearm differences already present in runtime data without changing acquisition, switching or combat ownership. |
 | RPG rarity terminology | PRESENT | #2126 reconciles player-facing rarity/objective terminology while retaining historical internal rarity keys for compatibility. |
 | NPC/content foundations | PRESENT | Existing R7–R16 layers provide room objectives, breakables, encounter direction/progression, combat bridging, NPC data and environment presentation. This is a foundation, not completion of the wider NPC/merchant request. |
@@ -196,7 +198,8 @@ Horde Survivor, Spy Vs Spy/Sizzler Saboteurs and networked Dungeon Multiplayer a
 6. **Stage 6 — deeper zone-specific gameplay — COMPLETE.** #2139 is merged and qualified; keep its downstream zone director subordinate to topology, campaign, save and combat owners.
 7. **Stage 7 — NPC / merchant integration — COMPLETE.** #2140 is merged and qualified; keep merchant presentation subordinate to `buyShopItem()` and the established economy/exchange owners.
 8. **Stage 8 — itch.io release preparation — COMPLETE.** #2141 is merged and qualified; the standalone HTML5 artifact is repository-ready and the retired custom commerce/desktop delivery stack remains excluded. Public itch.io publication is external.
-9. **Final qualification — AUTOMATED PASS / HANDS-ON DEFERRED.** The retained automated regression set passed on the Stage 8 exact head. Complete the two documented hands-on Dungeon acceptance checks when the user is available.
+9. **Startup/first-visual flicker remediation — REPOSITORY-COMPLETE.** #2145 is merged from exact qualified head `432af71f6d19612a54e274f9114c6b3ef35e7450` as `4c56d2bccd73350359c8b3246b0d70142894d353`. The loader owns first visual state and the menu is pre-aligned with retained R55 presentation before reveal.
+10. **Final qualification — AUTOMATED PASS / HANDS-ON DEFERRED.** The current automated regression matrix passed for #2145. Complete the two documented hands-on Dungeon acceptance checks when the user is available.
 
 The deferred #2129 sustained-Solo check and Defect 5 Flask check remain release gates throughout this work order; they are not prerequisites for independent stages that do not depend on their outcomes.
 
