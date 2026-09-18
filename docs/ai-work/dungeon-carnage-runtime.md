@@ -6,7 +6,7 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Current checkpoint — 18 September 2026
 
-Latest verified Dungeon runtime merge checkpoint is `4c56d2bccd73350359c8b3246b0d70142894d353`, the merged startup/first-visual remediation (#2145). Stage 8 itch.io repository preparation remains complete through #2141.
+Latest verified Dungeon runtime merge checkpoint is `ba75374ea45871e24885a0d2cdbd57bb61f1ae95`, the merged final-menu reveal correction (#2153). Stage 8 itch.io repository preparation remains complete through #2141.
 
 Stage 1 is converged for the current product programme:
 
@@ -36,7 +36,9 @@ The production delta is limited to `index.html` plus the new blocking startup CS
 
 Exact-head qualification passed all eight triggered workflows. Lost Sizzler Load Safety passed canonical/Node coverage, browser discovery and all six Chromium shards on the exact head. Detailed evidence: `docs/ai-work/dungeon-carnage-startup-first-visual-2026-09-18.md`.
 
-Repository status: **REPOSITORY-COMPLETE — #2145**.
+Repository status after automated qualification: **REPOSITORY-COMPLETE — #2145 + #2153; DEPLOYED MANUAL RETEST REQUIRED**.
+
+Hands-on acceptance after #2145 reproduced `loader → compact/intermediate menu → final V10.42 five-depth/RPG menu`. #2153 keeps the existing loader visible until the legacy gate and authoritative V10.42 ordered bootstrap/body readiness all agree. Exact qualified head `8a2fc01022612a13d0c4f52f276a4d7d62deee4e` merged as `ba75374ea45871e24885a0d2cdbd57bb61f1ae95`. The new browser regression deliberately pauses the five-depth module, proves the intermediate menu remains covered, then verifies final campaign copy before reveal. One unchanged shard-5 retry resolved the historical `v10-35-layout.mjs` startup timeout; all six shards passed.
 
 ### Stage 4 elemental portal foundation — PR #2137 — MERGED
 
@@ -293,8 +295,8 @@ For both: **MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**.
 
 Exact next Dungeon action:
 
-1. do not reopen #2145 unless the startup/first-visual defect reproduces on the current deployed build;
-2. keep sustained Solo movement/firing/combat/pause-resume acceptance explicitly deferred until hands-on testing is available;
+1. retest the deployed/current build after #2153 and require a direct loader → final V10.42 menu transition with no compact/intermediate menu exposure;
+2. if that passes, continue sustained Solo movement/firing/combat/pause-resume acceptance from the already-proven basic movement checkpoint;
 3. keep the three-Artefact/Essence Banishment Flask exchange acceptance explicitly deferred until hands-on testing is available;
 4. keep public itch.io page creation, artifact upload/publication and the final public URL as external release actions;
 5. no additional autonomous Dungeon repository change is justified solely by the completed #2145 work.
