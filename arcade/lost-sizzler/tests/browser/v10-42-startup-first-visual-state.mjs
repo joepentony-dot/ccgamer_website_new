@@ -50,21 +50,27 @@ try{
   await page.waitForFunction(()=>{
     const loaderCss=document.querySelector('link[data-ccg-v136-special-ui="true"]');
     const startupCss=[...document.querySelectorAll('link[rel="stylesheet"]')].find(link=>String(link.getAttribute("href")||"").includes("v10-42-startup-first-visual.css"));
-    return Boolean(document.getElementById("ccg-release-loading")&&loaderCss?.sheet&&startupCss?.sheet);
+    const r51Css=document.querySelector('link[data-ccg-v141-r51-style="true"]');
+    return Boolean(document.getElementById("ccg-release-loading")&&loaderCss?.sheet&&startupCss?.sheet&&r51Css?.sheet);
   },null,{timeout:10000});
 
   const first=await page.evaluate(()=>{
     const loader=document.getElementById("ccg-release-loading"),rect=loader?.getBoundingClientRect(),style=loader?getComputedStyle(loader):null;
     const sample=id=>{
       const element=document.getElementById(id),computed=element?getComputedStyle(element):null;
+      const before=element?getComputedStyle(element,"::before"):null,after=element?getComputedStyle(element,"::after"):null;
       return element&&computed?{
         color:computed.color,
         minHeight:computed.minHeight,
         padding:computed.padding,
         textShadow:computed.textShadow,
         filter:computed.filter,
-        beforeTop:getComputedStyle(element,"::before").top,
-        afterBottom:getComputedStyle(element,"::after").bottom
+        backgroundImage:computed.backgroundImage,
+        borderTopColor:computed.borderTopColor,
+        beforeContent:before?.content||"",
+        beforeTop:before?.top||"",
+        afterContent:after?.content||"",
+        afterBottom:after?.bottom||""
       }:null;
     };
     return {
@@ -81,6 +87,16 @@ try{
         height:Math.round(rect?.height||0)
       },
       viewport:{width:innerWidth,height:innerHeight},
+      panel:{
+        className:document.querySelector("#menu>.panel")?.className||"",
+        padding:getComputedStyle(document.querySelector("#menu>.panel")).padding,
+        textAlign:getComputedStyle(document.querySelector("#menu>.panel")).textAlign
+      },
+      guide:{
+        exists:Boolean(document.getElementById("ccg-r51-menu-guide")),
+        display:getComputedStyle(document.getElementById("ccg-r51-menu-guide")).display,
+        text:String(document.getElementById("ccg-r51-menu-guide")?.textContent||"").replace(/\s+/g," ").trim()
+      },
       buttons:Object.fromEntries(["solo-btn","split-btn","tutorial-zone-btn","daily-btn"].map(id=>[id,sample(id)]))
     };
   });
@@ -93,39 +109,64 @@ try{
   assert.ok(first.loader.zIndex>1000000,"first visual loader must sit above the game shell");
   assert.equal(first.loader.left,0);assert.equal(first.loader.top,0);
   assert.ok(first.loader.width>=first.viewport.width&&first.loader.height>=first.viewport.height,"first visual loader must cover the complete viewport");
-  for(const [id,state] of Object.entries(first.buttons))assert.ok(state,`${id} must already exist under the loader at the parser-blocked first visual state`);
+  assert.match(first.panel.className,/\br51-menu-panel\b/,"R51 menu panel class must exist before the first runtime script executes");
+  assert.equal(first.guide.exists,true,"R51 menu guide must exist before the first runtime script executes");
+  assert.equal(first.guide.display,"flex","R51 menu guide must already have its settled blocking presentation");
+  for(const [id,state] of Object.entries(first.buttons)){
+    assert.ok(state,`${id} must already exist under the loader at the parser-blocked first visual state`);
+    assert.notEqual(state.beforeContent,"none",`${id} must already expose its R51 kicker before JavaScript`);
+    assert.notEqual(state.afterContent,"none",`${id} must already expose its R51 description before JavaScript`);
+  }
 
   releaseFirstScript();
   await page.waitForLoadState("domcontentloaded",{timeout:90000});
   await page.waitForFunction(()=>document.body?.dataset?.releaseReady==="true"&&document.body?.dataset?.gameReady==="true",null,{timeout:90000});
   await page.waitForFunction(()=>document.querySelector("#menu .game-mode-buttons")?.dataset?.r55TextLayout==="true",null,{timeout:15000});
   await page.waitForFunction(()=>document.getElementById("ccg-release-loading")?.hidden===true,null,{timeout:15000});
+  await page.waitForFunction(()=>document.body?.dataset?.v141R51Menu==="true"&&Boolean(window.CCGLostSizzlerV141R51VisualUIOverhaul),null,{timeout:15000});
 
   const settled=await page.evaluate(()=>{
     const loader=document.getElementById("ccg-release-loading");
     const sample=id=>{
       const element=document.getElementById(id),computed=element?getComputedStyle(element):null;
+      const before=element?getComputedStyle(element,"::before"):null,after=element?getComputedStyle(element,"::after"):null;
       return element&&computed?{
         color:computed.color,
         minHeight:computed.minHeight,
         padding:computed.padding,
         textShadow:computed.textShadow,
         filter:computed.filter,
-        beforeTop:getComputedStyle(element,"::before").top,
-        afterBottom:getComputedStyle(element,"::after").bottom
+        backgroundImage:computed.backgroundImage,
+        borderTopColor:computed.borderTopColor,
+        beforeContent:before?.content||"",
+        beforeTop:before?.top||"",
+        afterContent:after?.content||"",
+        afterBottom:after?.bottom||""
       }:null;
     };
     return {
       loaderHidden:Boolean(loader?.hidden),
       loaderDisplay:loader?getComputedStyle(loader).display:"",
+      panel:{
+        className:document.querySelector("#menu>.panel")?.className||"",
+        padding:getComputedStyle(document.querySelector("#menu>.panel")).padding,
+        textAlign:getComputedStyle(document.querySelector("#menu>.panel")).textAlign
+      },
+      guide:{
+        exists:Boolean(document.getElementById("ccg-r51-menu-guide")),
+        display:getComputedStyle(document.getElementById("ccg-r51-menu-guide")).display,
+        text:String(document.getElementById("ccg-r51-menu-guide")?.textContent||"").replace(/\s+/g," ").trim()
+      },
       buttons:Object.fromEntries(["solo-btn","split-btn","tutorial-zone-btn","daily-btn"].map(id=>[id,sample(id)]))
     };
   });
 
   assert.equal(settled.loaderHidden,true,"loader must be removed atomically only after the release is ready");
   assert.equal(settled.loaderDisplay,"none","settled release loader must not intercept the ready menu");
+  assert.deepEqual(settled.panel,first.panel,"menu panel must not switch into a second R51 layout after the loader is removed");
+  assert.deepEqual(settled.guide,first.guide,"R51 menu guide must not appear or restyle after reveal");
   for(const id of Object.keys(first.buttons)){
-    assert.deepEqual(settled.buttons[id],first.buttons[id],`${id} must not visibly change colour or text geometry between first paint and the settled R55 state`);
+    assert.deepEqual(settled.buttons[id],first.buttons[id],`${id} must not visibly change between parser-blocked first paint and the fully settled R51/R55 state`);
   }
   assert.deepEqual(errors,[],`startup first-visual contract must have no uncaught browser errors: ${errors.join("\n")}`);
 
