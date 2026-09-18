@@ -1539,7 +1539,7 @@ if (IS_ADMIN_PATH) {
         // explicit wheel/touch guard own background interaction instead of
         // changing html/body height or overflow on hydrated archive pages.
         document.documentElement.style.overscrollBehavior = "none";
-        // The fixed modal owns pointer/touch interaction. Keep the document\n        // scrolling surface unchanged so mobile archive offsets cannot clamp.\n        document.body.style.overscrollBehavior = "none";
+        document.body.style.overscrollBehavior = "none";
         if (scrollbarGap > 0) {
             document.body.style.paddingRight = `${computedPaddingRight + scrollbarGap}px`;
         }
@@ -1589,8 +1589,7 @@ if (IS_ADMIN_PATH) {
             if (!modal) return;
             modal.classList.add("is-open");
             modal.setAttribute("aria-hidden", "false");
-            // Capture the live document height and scroll position before the
-            // modal-open class applies overflow clipping on mobile archives.
+            // Capture the underlying page offset without changing its scroll geometry.
             lockSecretModalScroll();
             document.body.classList.add("ccg-secret-modal-open");
 
