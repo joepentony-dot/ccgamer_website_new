@@ -29,3 +29,13 @@ test("changed, discovered and pending Lemon sources are resolved before magazine
   assert.ok(discoveryStep, "automatic source discovery and pending retries must remain best-effort so an external Lemon outage cannot block publishing");
   assert.match(workflow, /retrying only previously unresolved games/);
 });
+
+test("successful Lemon refreshes use separate fetch-result and counter variables", () => {
+  const source = fs.readFileSync(path.join(root, "scripts", "refresh-lemon-game-cache.js"), "utf8");
+
+  assert.match(source, /let fetchedCount = 0;/);
+  assert.match(source, /const fetchResult = await fetchLemonHtml\(/);
+  assert.match(source, /fetchedCount \+= 1;/);
+  assert.match(source, /return \{ fetched: fetchedCount, reused, total: urls\.length \};/);
+  assert.doesNotMatch(source, /const fetched = await fetchLemonHtml\([\s\S]*?fetched \+= 1;/);
+});
