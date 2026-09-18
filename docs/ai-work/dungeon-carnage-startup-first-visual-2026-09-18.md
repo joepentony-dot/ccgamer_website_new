@@ -58,9 +58,9 @@ A historical `v10-35-layout.mjs` 15-second startup timeout appeared on an earlie
 
 ## Status
 
-Repository status: **REPOSITORY-COMPLETE — #2145**.
+Repository status at this checkpoint: **REPOSITORY-COMPLETE — #2145**.
 
-This closes the startup/first-visual flicker remediation in source and automated qualification. It does not silently satisfy either outstanding hands-on Dungeon product gate.
+This did not ultimately close the user-visible startup issue. Later hands-on testing reproduced two additional reveal races, which were fixed in #2153 and #2164 below. Automated success on #2145 is therefore historical evidence, not final deployed acceptance.
 
 ## Deferred manual acceptance
 
@@ -74,3 +74,44 @@ For both:
 **MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**
 
 Repository-side itch.io preparation remains complete. Public itch.io page creation, upload, publication and final URL remain external unless later live evidence proves otherwise.
+
+
+## Hands-on follow-up — PR #2153
+
+After #2145 merged, deployed hands-on testing still showed:
+
+`loader → older compact menu → final V10.42 five-depth/RPG menu`
+
+Root cause: V10.36 could hide the canonical loader when the legacy release gate became ready while the authoritative V10.42 ordered bootstrap was still composing the final menu.
+
+PR #2153 kept the existing loader architecture and required both legacy readiness and authoritative V10.42 ordered-bootstrap/body readiness before reveal.
+
+- exact qualified head: `8a2fc01022612a13d0c4f52f276a4d7d62deee4e`
+- merge commit: `ba75374ea45871e24885a0d2cdbd57bb61f1ae95`
+- no arbitrary delay added
+- no gameplay/economy/save/progression ownership changed
+- strengthened Chromium coverage deliberately held the five-depth module and proved the intermediate menu remained covered
+
+Repository status: **REPOSITORY-COMPLETE — #2153**.
+
+## Hands-on follow-up — PR #2164
+
+A later supplied video still captured a one-/few-frame sequence while modules were loading:
+
+`loader → main page → loader → main page`
+
+Root cause: `v10-41-release-overlay-safety.js` still treated the transient legacy `body[data-release-ready="true"]` pulse as authority to CSS-hide the loader. V10.42 then restored the flag to false while its ordered bootstrap was still active, making the loader disappear and reappear.
+
+PR #2164 removed that obsolete visibility authority and left V10.36 as the normal startup-loader owner.
+
+- exact qualified head: `43b916c3b974628446c2c9eeb55e66f47b8b14e9`
+- merge commit: `38c79b61271be59791fe5f46dbc796b243f317dc`
+- static protection prevents the legacy release-ready selector from returning
+- Chromium coverage injects the transient legacy-ready pulse while V10.42 is unfinished and requires the loader to remain visible
+- all triggered workflows passed, including Lost Sizzler Load Safety and all six Chromium shards
+
+Repository status: **REPOSITORY-COMPLETE — #2164 / DEPLOYED MANUAL RETEST REMAINS**.
+
+No later Dungeon runtime change supersedes #2164 in live GitHub as of `main` `74e6147d28333e0d6082d7fc69a42a20bc0b52f7`.
+
+The required startup acceptance is now simple: on the deployed current build, loading must transition directly to the final V10.42 menu with no compact/intermediate menu flash and no loader → page → loader pulse.

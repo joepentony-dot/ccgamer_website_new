@@ -5,30 +5,29 @@
 ## Audit checkpoint
 
 - Audited: **18 September 2026**.
-- Latest verified Dungeon runtime merge checkpoint: `4c56d2bccd73350359c8b3246b0d70142894d353`, the merged startup/first-visual remediation (#2145). Stage 8 itch.io repository preparation remains complete through #2141.
+- Latest verified Dungeon runtime merge checkpoint: `38c79b61271be59791fe5f46dbc796b243f317dc`, the merged module-startup loader-flicker correction (#2164). Repository `main` has since advanced to `74e6147d28333e0d6082d7fc69a42a20bc0b52f7` without a later Dungeon runtime change. Stage 8 itch.io repository preparation remains complete through #2141.
 - Stage 1 is converged through #2134 and #2135. #2134 merged as `adc6f96d2ab8d8395b8cae5818b38c101bd846b9`; #2135 merged as `811f67845dbcaa0b4b5c2b83f8860e10a184c1a0`.
 - Stage 2 startup/main-menu polish is merged through #2136 as `ee2d6b38e5c5805ee1c906d7f801bda2d8496383`.
 - The seven-item repository-side live-defect remediation programme remains complete through #2117, #2118, #2119, #2123, #2090, #2125 and #2126; the later freeze/stopped-firing regression remains repository-fixed through #2129.
-- Two hands-on product gates remain unresolved and explicitly deferred. Do not infer acceptance from automated tests and do not let those gates block independent repository work.
+- Three hands-on product checks remain unresolved: deployed startup retest after #2164, sustained Solo stability after #2129, and the Defect 5 Banishment Flask exchange. Do not infer acceptance from automated tests.
 - Stage 4 portal foundation #2137 is merged. Exact qualified head: `030af6e9f8c2da98fb618c64ae276b1159adda3f`; merge commit: `d3225318ff5cb87664bce96020c790099f53e06a`.
 - #2137 establishes Water / Fire / Earth / Air campaign-state ownership, checkpoint persistence/inference and deterministic route seeds without replacing `run.floor`, `floorComplete()` or `descendFloor()`. It also seals the V10.42 Solo/Tutorial ready-transition start race without taking over Continue, Weekly or Split Screen.
 - Exact-head qualification passed all eight top-level workflows and all six Chromium shards. Shard 5 required one unchanged retry after the historical `v10-35-layout.mjs` startup timeout; no runtime, assertion or timeout was weakened.
 - Stage 5 procedural topology #2138 is merged. Exact qualified head: `819c820b1a908a0e5b20f69a2775b5b056b9ef74`; merge commit: `94ae72bfbbc2bc9ee4ae58a01dc00e6bf37d4fa9`. All eight top-level workflows and all six Chromium shards passed without a retry.\n- Stage 6 zone-specific gameplay #2139 is merged. Exact qualified head: `d0eaaaa772101fbb4f4cd02f33a9d655e54d85ea`; merge commit: `3cb65ffa1ad35a8a0ff5ce854829eba646e78c6b`. All eight top-level workflows, canonical/Node qualification and all six Chromium shards passed.
 - Stage 7 NPC/merchant integration #2140 is merged. Exact qualified head: `e1141fb03e926efcf833268e03f1341dd6ec8fdb`; merge commit: `f4fecd858fab8d43cd9d6732ab56495cfb313116`. All eight top-level workflows, canonical/Node qualification and all six Chromium shards passed.
-- Stage 8 itch.io release preparation #2141 is merged. Exact qualified head: `e5d4333d4e8dc2912b2ffc9c5abc13f79d4b4a2d`; merge commit: `53cba902af9dbf1e118f3f274836120f6c30bb40`. The dedicated package workflow and retained regression set passed; one unchanged Load Safety shard-2 retry resolved the isolated Scout persistence startup timeout. Qualified artifact: `C64-Dungeon-Carnage-Itch`, artifact ID `10533819282`, 21,109,428 bytes, SHA-256 `5bcb8a915490382327f16fba0ba6ea5dcc20e0b1ba9d156dfc5a5d2a438b3c38`. Repository-side release preparation is complete; public itch.io page creation/upload/publication remains external.
-- Startup/first-visual remediation #2145 is merged. Exact qualified head: `432af71f6d19612a54e274f9114c6b3ef35e7450`; merge commit: `4c56d2bccd73350359c8b3246b0d70142894d353`. All eight triggered workflows passed, including Lost Sizzler Load Safety canonical/Node coverage and all six Chromium shards. The release loader now owns the original render-blocking first visual state and the visible R55 button presentation is aligned before reveal; no artificial delay or gameplay ownership change was introduced.
+- Stage 8 itch.io release preparation #2141 is merged. Its original artifact is historical because later startup fixes changed the canonical runtime. The newest successful package observed after #2164 is `C64-Dungeon-Carnage-Itch`, artifact ID `10561459333`, 21,110,985 bytes, GitHub Actions SHA-256 `f8a2142824b41b85d29006cf72d52c511b2bce9e879178ad9d45f4700a38c464`, workflow run `35380506012`. Repository-side release preparation is complete; public itch.io publication remains external and must wait for hands-on acceptance.
+- Startup/first-visual remediation #2145 is merged. Later hands-on testing proved two additional startup reveal races, fixed by #2153 and #2164. #2153 exact head `8a2fc01022612a13d0c4f52f276a4d7d62deee4e` merged as `ba75374ea45871e24885a0d2cdbd57bb61f1ae95`; #2164 exact head `43b916c3b974628446c2c9eeb55e66f47b8b14e9` merged as `38c79b61271be59791fe5f46dbc796b243f317dc`. The latest fix removes transient legacy loader-hide ownership during V10.42 module startup. Automated qualification passed; deployed manual retest after #2164 remains outstanding.
 - A merged PR is not treated as a closed user-reproduced defect until deployed behaviour is manually accepted where this register explicitly requires that acceptance.
 
-### Deferred manual acceptance
+### Outstanding manual acceptance
 
-The two unresolved hands-on checks are:
+The unresolved hands-on checks are:
 
-1. sustained Solo movement/firing/combat/pause-resume stability after #2129;
-2. three Artefacts/Essences → one Banishment Flask without first buying a Gold Flask, while Gold and Score remain unchanged.
+1. **Startup after #2164** — loading must transition directly to the final V10.42 menu with no compact/intermediate menu flash and no loader → page → loader pulse.
+2. **Sustained Solo after #2129** — meaningful movement/firing/combat session including pause/resume, with no freeze, input loss or stopped-firing regression.
+3. **Defect 5 Banishment Flask exchange** — obtain three Artefacts/Essences, do not buy a Gold Flask first, receive exactly one Banishment Flask, and verify Gold and Score remain unchanged.
 
-For both:
-
-**MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**
+Automated tests do not substitute for these product gates.
 
 ## Authoritative live-defect programme status — 17 September 2026
 
@@ -198,10 +197,10 @@ Horde Survivor, Spy Vs Spy/Sizzler Saboteurs and networked Dungeon Multiplayer a
 6. **Stage 6 — deeper zone-specific gameplay — COMPLETE.** #2139 is merged and qualified; keep its downstream zone director subordinate to topology, campaign, save and combat owners.
 7. **Stage 7 — NPC / merchant integration — COMPLETE.** #2140 is merged and qualified; keep merchant presentation subordinate to `buyShopItem()` and the established economy/exchange owners.
 8. **Stage 8 — itch.io release preparation — COMPLETE.** #2141 is merged and qualified; the standalone HTML5 artifact is repository-ready and the retired custom commerce/desktop delivery stack remains excluded. Public itch.io publication is external.
-9. **Startup/first-visual flicker remediation — REPOSITORY-COMPLETE.** #2145 is merged from exact qualified head `432af71f6d19612a54e274f9114c6b3ef35e7450` as `4c56d2bccd73350359c8b3246b0d70142894d353`. The loader owns first visual state and the menu is pre-aligned with retained R55 presentation before reveal.
-10. **Final qualification — AUTOMATED PASS / HANDS-ON DEFERRED.** The current automated regression matrix passed for #2145. Complete the two documented hands-on Dungeon acceptance checks when the user is available.
+9. **Startup/first-visual flicker remediation — REPOSITORY-COMPLETE THROUGH #2164 / MANUAL RETEST REMAINS.** #2145 established first-paint loader ownership, #2153 prevented reveal before final V10.42 menu composition, and #2164 removed the transient legacy release-ready CSS hide that could still produce loader → page → loader flicker.
+10. **Final qualification — AUTOMATED PASS / HANDS-ON REQUIRED.** Repository coding is complete unless a hands-on gate exposes a new reproducible defect. Complete the #2164 startup retest, sustained Solo acceptance and Defect 5 Flask acceptance before external itch.io publication.
 
-The deferred #2129 sustained-Solo check and Defect 5 Flask check remain release gates throughout this work order; they are not prerequisites for independent stages that do not depend on their outcomes.
+Do not create another Dungeon coding stage solely to keep development active.
 
 ## Closure rule
 

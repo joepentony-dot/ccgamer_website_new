@@ -6,7 +6,7 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Current checkpoint — 18 September 2026
 
-Latest verified Dungeon runtime merge checkpoint is `4c56d2bccd73350359c8b3246b0d70142894d353`, the merged startup/first-visual remediation (#2145). Stage 8 itch.io repository preparation remains complete through #2141.
+Latest verified Dungeon runtime merge checkpoint is `38c79b61271be59791fe5f46dbc796b243f317dc`, the merged module-startup loader-flicker correction (#2164). Live repository `main` has since advanced through documentation/website work to `74e6147d28333e0d6082d7fc69a42a20bc0b52f7` without a later Dungeon runtime change. Stage 8 itch.io repository preparation remains complete through #2141.
 
 Stage 1 is converged for the current product programme:
 
@@ -18,9 +18,15 @@ The programme is now milestone-first. General legacy residue remains backlog unl
 
 Historical integration cleanup: PR #1852 (long-running Solo stabilisation) and PR #1976 (R30 ownership-audit throttle optimisation) are closed without merge. Their Git history remains evidence/source material only; neither is an active current-main integration path.
 
-The original seven-item repository defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The later #2129 sustained-Solo acceptance is also still deferred. For both:
+The original seven-item repository defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The later #2129 sustained-Solo acceptance is also still deferred. In addition, #2164 is repository-complete but the deployed startup sequence has not yet received a successful hands-on retest after that merge.
 
-**MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**
+Outstanding product gates:
+
+1. sustained Solo movement/firing/combat/pause-resume stability after #2129;
+2. three Artefacts/Essences → exactly one Banishment Flask without prior Gold-Flask purchase, with Gold and Score unchanged;
+3. deployed startup retest after #2164: loader must transition directly to the final V10.42 menu with no compact/intermediate menu flash and no loader → page → loader pulse.
+
+**MANUAL ACCEPTANCE REQUIRED — AUTOMATED TESTS DO NOT SUBSTITUTE FOR THESE GATES**
 
 ### Startup / first-visual flicker remediation — PR #2145 — MERGED
 
@@ -38,7 +44,32 @@ The production delta is limited to `index.html` plus the new blocking startup CS
 
 Exact-head qualification passed all eight triggered workflows. Lost Sizzler Load Safety passed canonical/Node coverage, browser discovery and all six Chromium shards on the exact head. Detailed evidence: `docs/ai-work/dungeon-carnage-startup-first-visual-2026-09-18.md`.
 
-Repository status: **REPOSITORY-COMPLETE — #2145**.
+Repository status at the #2145 checkpoint: **REPOSITORY-COMPLETE — #2145**. Later hands-on evidence proved that two additional startup reveal races remained; see #2153/#2164 below.
+
+### Startup reveal follow-up — PR #2153 — MERGED
+
+Hands-on testing after #2145 still exposed `loader → older compact menu → final V10.42 menu`. The legacy release gate could become ready before the authoritative V10.42 ordered bootstrap had finished composing the final menu.
+
+#2153 retained the existing loader architecture but delayed reveal until both the legacy gate and authoritative V10.42 ordered-bootstrap/body readiness agreed.
+
+- exact qualified head: `8a2fc01022612a13d0c4f52f276a4d7d62deee4e`
+- merge commit: `ba75374ea45871e24885a0d2cdbd57bb61f1ae95`
+- no gameplay ownership or arbitrary startup delay added
+- strengthened Chromium coverage held the five-depth module and proved the intermediate menu stayed covered
+
+Repository status: **REPOSITORY-COMPLETE — #2153**.
+
+### Module-startup loader flicker — PR #2164 — MERGED
+
+A later supplied video still captured `loader → main page → loader → main page` for one/few frames during module startup. The retained `v10-41-release-overlay-safety.js` CSS still hid the loader on a transient legacy `data-release-ready=true` pulse before V10.42 ordered startup was actually complete.
+
+#2164 removed that obsolete visibility owner so V10.36 remains the normal startup-loader authority. Its browser regression injects the same transient legacy-ready pulse while V10.42 is deliberately unfinished and requires the loader to remain visible.
+
+- exact qualified head: `43b916c3b974628446c2c9eeb55e66f47b8b14e9`
+- merge commit: `38c79b61271be59791fe5f46dbc796b243f317dc`
+- all triggered workflows passed, including canonical/Node and all six Chromium shards
+
+Repository status: **REPOSITORY-COMPLETE — #2164 / DEPLOYED MANUAL RETEST REMAINS**.
 
 ### Stage 4 elemental portal foundation — PR #2137 — MERGED
 
@@ -55,7 +86,7 @@ The final qualification also resolved two startup/UI ownership issues encountere
 
 Exact-head qualification passed Native Mouse Wheel, Public Code Cache, Social Metadata, Mobile Trap Layout, Structured Data, SEO, CCG Site Safety and Lost Sizzler Load Safety. Load Safety passed canonical/Node, discovery and all six Chromium shards. Shard 5 initially hit the historical `v10-35-layout.mjs` startup wait; one unchanged targeted retry passed.
 
-### Stage 5 larger procedural topology — ACTIVE
+### Stage 5 larger procedural topology — HISTORICAL PRE-MERGE SNAPSHOT
 
 Branch: `codex/dungeon-stage5-procedural-topology-current-main`.
 
@@ -77,7 +108,7 @@ Merge commit/current main: `94ae72bfbbc2bc9ee4ae58a01dc00e6bf37d4fa9`.
 
 #2138 extended the authoritative `world.js` BSP generator with deterministic floor-aware alternate routes/loops, crossroads, purposeful dead ends and landmarks. It preserved the 128×84 dimensions, secret-space reservation, deterministic seed behaviour, existing gameplay RNG stream and guaranteed start→exit connectivity. R6/R7/R24 remain downstream consumers. Exact qualification passed all eight top-level workflows and all six Chromium shards without a retry.
 
-### Stage 6 deeper zone-specific gameplay — ACTIVE
+### Stage 6 deeper zone-specific gameplay — HISTORICAL PRE-MERGE SNAPSHOT
 
 Branch: `codex/dungeon-stage6-zone-gameplay-current-main`.
 
@@ -105,7 +136,7 @@ Merge commit/current main: `3cb65ffa1ad35a8a0ff5ce854829eba646e78c6b`.
 
 #2139 adds the downstream Stage 6 zone-gameplay director while preserving topology, campaign, save, networking and combat authority. It varies ordinary enemy composition, real trap/hazard cadence, generator pressure, guardian/key-guardian patterns and encounter directives by floor/Stage 5 route role. Named followers, stalkers, guardians, CCG boss, treasure goblin and Sigil/Warden identities remain protected from ordinary retyping. Release identity is `V10.42 r33` / `20260918r33`. Exact-head qualification passed all eight top-level workflows, canonical/Node and all six Chromium shards.
 
-### Stage 7 NPC / merchant integration — ACTIVE
+### Stage 7 NPC / merchant integration — HISTORICAL PRE-MERGE SNAPSHOT
 
 Branch: `codex/dungeon-stage7-npc-merchant-current-main`.
 
@@ -295,11 +326,11 @@ For both: **MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**.
 
 Exact next Dungeon action:
 
-1. do not reopen #2145 unless the startup/first-visual defect reproduces on the current deployed build;
-2. keep sustained Solo movement/firing/combat/pause-resume acceptance explicitly deferred until hands-on testing is available;
-3. keep the three-Artefact/Essence Banishment Flask exchange acceptance explicitly deferred until hands-on testing is available;
-4. keep public itch.io page creation, artifact upload/publication and the final public URL as external release actions;
-5. no additional autonomous Dungeon repository change is justified solely by the completed #2145 work.
+1. perform the deployed startup retest for #2164; if the flicker still reproduces, capture the exact sequence and reopen only the smallest responsible startup owner;
+2. if startup passes, complete sustained Solo movement/firing/combat/pause-resume acceptance;
+3. complete the three-Artefact/Essence Banishment Flask exchange acceptance;
+4. after all hands-on gates pass, use the latest qualified itch.io artifact and complete the external itch.io page/upload/launch verification;
+5. do not create another Dungeon coding stage unless one of those hands-on checks exposes a real defect.
 
 ## Historical live-defect remediation checkpoint — 16 September 2026
 
