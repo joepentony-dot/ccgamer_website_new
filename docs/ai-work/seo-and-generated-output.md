@@ -18,9 +18,10 @@ Automated SEO/video metadata and generated pages, game/archive output, sitemaps,
 
 ### Next action
 
-1. Let #2146 run its normal CI matrix and resolve only failures attributable to this branch.
-2. After the Road Rash canonical route is successfully generated/deployed, perform real desktop/mobile visual acceptance and Lighthouse/PageSpeed measurements against the canonical URL.
-3. Keep generated game pages workflow-owned; regenerate them through Reliable Games Publishing rather than editing canonical outputs by hand.
+1. Requalify #2146 against current `main` `953ff3725bd4be3566893e8253db44be963cbcf1`, which now includes the qualified Dungeon first-visual merge and the latest generated SEO/video output. The current-main advance does not overlap this branch's implementation paths.
+2. Merge #2146 only after the refreshed PR matrix is green or any remaining failure is demonstrated unrelated and non-regressive.
+3. After the Road Rash canonical route is successfully generated/deployed, perform real desktop/mobile visual acceptance and Lighthouse/PageSpeed measurements against the canonical URL.
+4. Keep generated game pages workflow-owned; regenerate them through Reliable Games Publishing rather than editing canonical outputs by hand.
 
 ## Verified checkpoint — 2026-09-16
 
