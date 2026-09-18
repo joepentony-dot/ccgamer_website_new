@@ -4,11 +4,11 @@
 
 Dungeon Carnage purchase/download distribution, release packaging, desktop/Windows packaging candidates, and any account-service boundary that must remain separate from product delivery. Primary areas include `scripts/`, `desktop/`, `arcade/lost-sizzler/`, supporting workflows/contracts, and historical `services/ccg-backend/` commerce work.
 
-## Verified checkpoint — 2026-09-16
+## Verified checkpoint — 2026-09-18
 
 The intended distribution route is **itch.io**. `arcade/lost-sizzler/PROGRESS.md` records itch.io as the purchase/download route and marks the old PayPal-specific checkout/paywall/download plan **SUPERSEDED**. The CCG website remains the branded landing/demo experience. CCG account/community services are not a reason to revive the old custom payment-delivery stack.
 
-This record is reconciled through current Dungeon runtime mainline `c3549e6d45b7748f1efcf5c4f4ba134200325a5f` (#2113 merge). The old provider-neutral packaging/Windows PR stack has now also been retired as an integration vehicle; its useful implementation ideas remain available in Git history for selective current-main re-derivation.
+This record is reconciled through current Dungeon runtime mainline `f4fecd858fab8d43cd9d6732ab56495cfb313116` (#2140 Stage 7 merge). The old provider-neutral packaging/Windows PR stack remains retired as an integration vehicle; only bounded ideas such as deterministic staging, integrity manifests and non-overwrite verification were re-derived for a fresh current-main itch.io artifact.
 
 ### Superseded custom commerce and browser paywall — CLOSED
 
@@ -44,9 +44,11 @@ Do not revive the PR stack or retarget it onto current `main`. For an itch.io re
 
 The old instruction to preserve and integrate the custom commerce dependency graph is retired. The repository should not regain PayPal checkout, custom entitlement purchase gating, private signed-download routing or the browser paywall as part of the intended release route.
 
-Next safe distribution stage, when resumed: define the minimal itch.io release artifact from current `main`, then inspect only the historical provider-neutral packaging/Windows source material above for ideas that are still necessary. Rebuild required pieces on current `main` in small stages rather than reopening or merging the stale branches.
+Stage 8 is now active on `codex/dungeon-stage8-itch-release-current-main`. The repository artifact is a standalone HTML5 ZIP built fresh from current `main`: canonical game runtime files only, package-specific offline/account-service gating, SHA-256 release manifest, and Chromium smoke coverage for Solo, Tutorial and local 2P Split Screen. Weekly Vault remains website-origin functionality and the packaged Weekly control hands back to the canonical CCG website.
 
-Before release, perform an end-to-end package check for supported product modes and verify that the CCG website landing/demo experience points to the intended itch.io purchase/download route without coupling product delivery to retired custom commerce.
+The package workflow must not include the site Supabase bootstrap/config, secrets, PayPal checkout, entitlement/private-download code or the retired desktop/Windows stack. The canonical website source is not rewritten for package convenience.
+
+The public itch.io page itself is not yet discoverable in current public search, so page creation/upload and the final website purchase/download URL are external release actions after repository qualification. Do not invent an itch.io URL in source.
 
 ## Session log
 
@@ -55,3 +57,5 @@ Before release, perform an end-to-end package check for supported product modes 
 - 2026-09-16: Closed browser re-download/paywall PRs #1987–#1994 without merge.
 - 2026-09-16: Closed stale packaging/desktop PRs #1958, #1982, #1984, #1985, #1986, #1995 and #1996 without merge. Their Git history remains source material for a fresh itch.io/current-main artifact only.
 - 2026-09-16: Reconciled the distribution checkpoint after runtime merge #2113; no distribution-route change was introduced by the runtime work.
+
+- 2026-09-18: Stage 7 merged as `f4fecd858fab8d43cd9d6732ab56495cfb313116`. Began fresh Stage 8 itch.io HTML5 packaging from that exact main; re-derived deterministic staging/integrity concepts only, kept website account services outside the artifact, and did not revive the retired commerce/desktop graph.

@@ -5,7 +5,7 @@
 ## Audit checkpoint
 
 - Audited: **18 September 2026**.
-- Current live `main`: `3cb65ffa1ad35a8a0ff5ce854829eba646e78c6b`, the merged Stage 6 zone-gameplay milestone (#2139).
+- Current live `main`: `f4fecd858fab8d43cd9d6732ab56495cfb313116`, the merged Stage 7 NPC/merchant milestone (#2140).
 - Stage 1 is converged through #2134 and #2135. #2134 merged as `adc6f96d2ab8d8395b8cae5818b38c101bd846b9`; #2135 merged as `811f67845dbcaa0b4b5c2b83f8860e10a184c1a0`.
 - Stage 2 startup/main-menu polish is merged through #2136 as `ee2d6b38e5c5805ee1c906d7f801bda2d8496383`.
 - The seven-item repository-side live-defect remediation programme remains complete through #2117, #2118, #2119, #2123, #2090, #2125 and #2126; the later freeze/stopped-firing regression remains repository-fixed through #2129.
@@ -14,7 +14,8 @@
 - #2137 establishes Water / Fire / Earth / Air campaign-state ownership, checkpoint persistence/inference and deterministic route seeds without replacing `run.floor`, `floorComplete()` or `descendFloor()`. It also seals the V10.42 Solo/Tutorial ready-transition start race without taking over Continue, Weekly or Split Screen.
 - Exact-head qualification passed all eight top-level workflows and all six Chromium shards. Shard 5 required one unchanged retry after the historical `v10-35-layout.mjs` startup timeout; no runtime, assertion or timeout was weakened.
 - Stage 5 procedural topology #2138 is merged. Exact qualified head: `819c820b1a908a0e5b20f69a2775b5b056b9ef74`; merge commit: `94ae72bfbbc2bc9ee4ae58a01dc00e6bf37d4fa9`. All eight top-level workflows and all six Chromium shards passed without a retry.\n- Stage 6 zone-specific gameplay #2139 is merged. Exact qualified head: `d0eaaaa772101fbb4f4cd02f33a9d655e54d85ea`; merge commit: `3cb65ffa1ad35a8a0ff5ce854829eba646e78c6b`. All eight top-level workflows, canonical/Node qualification and all six Chromium shards passed.
-- Active product milestone: Stage 7 NPC/merchant integration on branch `codex/dungeon-stage7-npc-merchant-current-main`, based exactly on merged `main` `3cb65ffa1ad35a8a0ff5ce854829eba646e78c6b`. The bounded first slice connects established R15 NPC identities/dialogue/optional quest-service hooks to the existing authoritative dungeon shops without changing prices, Score deductions, inventory grants, Artefact exchange ownership, floor progression, saves or networking.
+- Stage 7 NPC/merchant integration #2140 is merged. Exact qualified head: `e1141fb03e926efcf833268e03f1341dd6ec8fdb`; merge commit: `f4fecd858fab8d43cd9d6732ab56495cfb313116`. All eight top-level workflows, canonical/Node qualification and all six Chromium shards passed.
+- Active product milestone: Stage 8 itch.io release preparation on branch `codex/dungeon-stage8-itch-release-current-main`, based exactly on Stage 7 merged `main` `f4fecd858fab8d43cd9d6732ab56495cfb313116`. Repository scope is a fresh standalone HTML5 package, provenance/integrity manifest, package-only website-service gate, browser smoke for Solo/Tutorial/local Split Screen, and CI-produced ZIP artifact. The live website runtime remains unchanged.
 - A merged PR is not treated as a closed user-reproduced defect until deployed behaviour is manually accepted where this register explicitly requires that acceptance.
 
 ### Deferred manual acceptance
@@ -167,8 +168,8 @@ These are post-defect product/backlog items. They are **not** additional defects
 | Four elemental portals | **PARTIAL — FOUNDATION MERGED #2137** | Campaign-state foundation is merged: Water maps Floor 1→2, Fire 2→3, Earth 3→4 and Air 4→5, with save/checkpoint persistence and deterministic route seeds. Large visual portal rooms and deeper zone-specific mechanics remain subsequent work. |
 | Larger/grander procedural topology | **REPOSITORY-COMPLETE — #2138** | Stage 5 is merged: the authoritative `world.js` generator now adds deterministic floor-aware alternate routes, loops, crossroads, purposeful dead ends and landmarks while preserving 128×84 dimensions, seed stability, secret-space reservation and start→exit reachability. |
 | Deeper zone-specific content | **REPOSITORY-COMPLETE — #2139** | Stage 6 is merged: ordinary enemy composition, trap/hazard mechanics, generator pressure and guardian patterns now vary by floor and Stage 5 route role while preserving special identities and established combat/progression ownership. |
-| Finished NPC/merchant integration | **ACTIVE — STAGE 7** | Current-main slice binds named R15 NPCs to existing entrance/hidden shops, exposes contextual dialogue plus optional quest/service hooks, and preserves the existing shop transaction/economy owner. |
-| itch.io release handoff | **OPEN** | itch.io is the intended purchase/download route. Retain the CCG website as the branded landing/demo experience and perform an end-to-end package/release check. |
+| Finished NPC/merchant integration | **REPOSITORY-COMPLETE — #2140** | Stage 7 is merged: named R15 NPCs are bound to existing entrance/hidden shops with contextual dialogue plus optional quest/service hooks while the existing shop transaction/economy owner remains authoritative. |
+| itch.io release handoff | **ACTIVE — STAGE 8** | Fresh current-main HTML5 packaging is in progress. The artifact excludes website-root Supabase/account bootstraps, keeps local Solo/Tutorial/2P Split Screen self-contained, hands Weekly Vault back to the CCG website, records file hashes/build identity, and is browser-smoked before ZIP upload. The public itch.io page URL/upload is an external release step. |
 
 ## Superseded work
 
@@ -191,10 +192,10 @@ Horde Survivor, Spy Vs Spy/Sizzler Saboteurs and networked Dungeon Multiplayer a
 2. **Stage 2 — startup/main-menu polish — COMPLETE.** #2136 is merged and the #2127 first-paint/flicker protections remain intact.
 3. **Stage 3 — Banishment terminology preparation — DEFERRED / FOLD INTO SAFE CONTENT WORK.** Keep save-compatible internal identifiers stable and avoid semantic migrations that depend on the deferred Flask acceptance.
 4. **Stage 4 — Water / Fire / Earth / Air portal architecture — FOUNDATION COMPLETE.** #2137 is merged; preserve the five-depth campaign as the sole floor-progression owner and build later visual/mechanical portal work on its saved route state.
-5. **Stage 5 — larger procedural world structure — ACTIVE.** Extend the authoritative `world.js` generator with deterministic route variety, alternate paths, landmarks, purposeful dead ends, exploration decisions and zone-specific layouts without blindly increasing map size. R6/R7/R24 remain consumers of topology rather than topology owners.
+5. **Stage 5 — larger procedural world structure — COMPLETE.** #2138 is merged and qualified; `world.js` remains the topology owner.
 6. **Stage 6 — deeper zone-specific gameplay — COMPLETE.** #2139 is merged and qualified; keep its downstream zone director subordinate to topology, campaign, save and combat owners.
-7. **Stage 7 — NPC / merchant integration — ACTIVE.** Connect existing R15 NPC state to real world/shop interactions and established economy services without replacing shop transaction authority or destabilising the deferred Banishment exchange path.
-8. **Stage 8 — itch.io release preparation.** Build release/package artifacts fresh from current `main`, verify version identity/save/startup/assets/documentation and the website → itch.io handoff.
+7. **Stage 7 — NPC / merchant integration — COMPLETE.** #2140 is merged and qualified; keep merchant presentation subordinate to `buyShopItem()` and the established economy/exchange owners.
+8. **Stage 8 — itch.io release preparation — ACTIVE.** Build and qualify a fresh current-main standalone HTML5 ZIP, verify release identity/assets/startup/local supported modes and the website-service handoff, and keep retired custom commerce/desktop delivery out of the integration path.
 9. **Final qualification.** Run complete automated regression and hands-on release acceptance when the user is available.
 
 The deferred #2129 sustained-Solo check and Defect 5 Flask check remain release gates throughout this work order; they are not prerequisites for independent stages that do not depend on their outcomes.

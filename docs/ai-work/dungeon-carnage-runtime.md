@@ -6,7 +6,7 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Current checkpoint — 17 September 2026
 
-Live `main` is `3cb65ffa1ad35a8a0ff5ce854829eba646e78c6b`, the merged Stage 6 zone-gameplay milestone (#2139).
+Live `main` is `f4fecd858fab8d43cd9d6732ab56495cfb313116`, the merged Stage 7 NPC/merchant milestone (#2140).
 
 Stage 1 is converged for the current product programme:
 
@@ -99,6 +99,32 @@ Ownership reconciliation before implementation:
 - Stage 7 therefore binds R15 NPC identity/dialogue/service/quest metadata to those existing shops and observes successful transactions only. It must not become economy authority or alter the deferred Defect 5 exchange semantics.
 - The ordered chain loads Stage 7 after R15 and before R16. Release/cache identity advances to `V10.42 r34` / `20260918r34`.
 - Focused contracts prohibit Stage 7 from mutating Score, shop price ladders, sold state, inventory, progression, saves or networking.
+
+### Stage 7 NPC / merchant integration — PR #2140 — MERGED
+
+Qualified head: `e1141fb03e926efcf833268e03f1341dd6ec8fdb`.
+
+Merge commit/current main: `f4fecd858fab8d43cd9d6732ab56495cfb313116`.
+
+#2140 binds established R15 NPC identities/dialogue/service/optional quest metadata to the already-authoritative entrance and hidden dungeon shops. `buyShopItem()` remains the sole owner of prices, Score deductions, Artefact removal, inventory grants, sold state and price ladders. The deferred three-Artefact Banishment Flask exchange semantics were not rewritten. Release/cache identity is `V10.42 r34` / `20260918r34`. Exact-head qualification passed all eight top-level workflows, canonical/Node and all six Chromium shards.
+
+### Stage 8 itch.io release preparation — ACTIVE
+
+Branch: `codex/dungeon-stage8-itch-release-current-main`.
+
+Base: merged Stage 7 main `f4fecd858fab8d43cd9d6732ab56495cfb313116`.
+
+Repository release ownership is deliberately separate from the canonical website runtime:
+
+- the canonical website remains the branded landing/demo and owns CCG account/Weekly Vault services;
+- a fresh package builder stages only `index.html`, `version.json`, `css/`, `js/` and `assets/` from current main;
+- only the staged copy removes the two website-root Supabase bootstraps and the website Weekly client;
+- an itch-only compatibility gate keeps Solo, Tutorial and local 2P Split Screen self-contained and hands Weekly Vault to the canonical CCG website;
+- the package contains a SHA-256 file manifest tied to release/build/cache identity and source revision;
+- a dedicated Chromium smoke must launch all three local supported modes from the staged package and reject local asset failures/page exceptions;
+- a dedicated workflow produces the verified ZIP artifact without credentials or retired custom commerce.
+
+No old PayPal checkout, browser paywall, entitlement/private-download backend, Windows wrapper or stale packaging branch is being merged. Historical package work is source material only.
 
 ### #2129 release/cache ownership remediation
 

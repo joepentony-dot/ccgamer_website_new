@@ -1,0 +1,103 @@
+name: C64 Dungeon Carnage itch.io Package
+
+on:
+  pull_request:
+    paths:
+      - 'arcade/lost-sizzler/**'
+      - 'scripts/build-c64-dungeon-carnage-itch-package.mjs'
+      - 'scripts/verify-c64-dungeon-carnage-itch-browser.mjs'
+      - '.github/workflows/c64-dungeon-carnage-itch-package.yml'
+      - 'docs/AI-CONTINUATION-STATE.md'
+      - 'docs/ai-work/dungeon-carnage-runtime.md'
+      - 'docs/ai-work/dungeon-carnage-commerce-distribution.md'
+  push:
+    branches:
+      - main
+    paths:
+      - 'arcade/lost-sizzler/**'
+      - 'scripts/build-c64-dungeon-carnage-itch-package.mjs'
+      - 'scripts/verify-c64-dungeon-carnage-itch-browser.mjs'
+      - '.github/workflows/c64-dungeon-carnage-itch-package.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: c64-dungeon-carnage-itch-package-\${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    name: Build and verify itch.io HTML5 release
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Build deterministic itch.io package
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/c64-dungeon-carnage-itch"
+          node scripts/build-c64-dungeon-carnage-itch-package.mjs \
+            --output "$output" \
+            --source-sha "$GITHUB_SHA"
+          node scripts/build-c64-dungeon-carnage-itch-package.mjs --verify "$output"
+
+      - name: Verify package policy boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/c64-dungeon-carnage-itch"
+          test -f "$output/index.html"
+          test -f "$output/version.json"
+          test -f "$output/release-manifest.json"
+          test -f "$output/js/itch-release-runtime.js"
+          ! grep -R --line-number -E 'ccg-supabase-config|ccg-supabase-client|/auth/(login|register)' "$output/index.html" "$output/js/itch-release-runtime.js"
+          ! find "$output" -type l -print -quit | grep -q .
+          ! find "$output" -type f \( -name '.env' -o -name '.env.*' -o -name '*.pem' -o -name '*.key' -o -name '*.p12' -o -name '*.pfx' \) -print -quit | grep -q .
+
+      - name: Install Chromium test runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock playwright@1.55.0
+          sudo rm -f /etc/apt/sources.list.d/google-chrome.list
+          sudo apt-get update
+          npx playwright install --with-deps chromium
+
+      - name: Smoke supported packaged modes
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/verify-c64-dungeon-carnage-itch-browser.mjs \
+            --root "$RUNNER_TEMP/c64-dungeon-carnage-itch"
+
+      - name: Assemble upload ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/c64-dungeon-carnage-itch"
+          zipfile="$RUNNER_TEMP/C64-Dungeon-Carnage-Itch.zip"
+          (
+            cd "$output"
+            zip -X -q -r "$zipfile" .
+          )
+          test -s "$zipfile"
+          unzip -l "$zipfile" | grep -q ' index.html$'
+          unzip -l "$zipfile" | grep -q ' release-manifest.json$'
+
+      - name: Upload verified itch.io artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: C64-Dungeon-Carnage-Itch
+          path: ${{ runner.temp }}/C64-Dungeon-Carnage-Itch.zip
+          if-no-files-found: error
+          retention-days: 14
