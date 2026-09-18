@@ -6,7 +6,7 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Current checkpoint — 17 September 2026
 
-Live `main` is `94ae72bfbbc2bc9ee4ae58a01dc00e6bf37d4fa9`, the merged Stage 5 procedural-topology milestone (#2138).
+Live `main` is `3cb65ffa1ad35a8a0ff5ce854829eba646e78c6b`, the merged Stage 6 zone-gameplay milestone (#2139).
 
 Stage 1 is converged for the current product programme:
 
@@ -76,6 +76,29 @@ The first bounded slice adds `v10-42-stage6-zone-gameplay.js` after the establis
 Special enemies (followers, guardians/key guardians, stalkers, CCG boss, treasure goblin and Sigil/Warden owners) are excluded from ordinary retyping. The layer does not carve maps, advance floors/portals, own saves, use storage/network APIs or replace AI/combat authority.
 
 The release/cache identity is advanced to `V10.42 r33` / `20260918r33` so cached clients cannot retain an r32 bootstrap that omits the new ordered module. Focused Stage 6 and r33 release-identity contracts are part of the candidate.
+
+### Stage 6 deeper zone-specific gameplay — PR #2139 — MERGED
+
+Qualified head: `d0eaaaa772101fbb4f4cd02f33a9d655e54d85ea`.
+
+Merge commit/current main: `3cb65ffa1ad35a8a0ff5ce854829eba646e78c6b`.
+
+#2139 adds the downstream Stage 6 zone-gameplay director while preserving topology, campaign, save, networking and combat authority. It varies ordinary enemy composition, real trap/hazard cadence, generator pressure, guardian/key-guardian patterns and encounter directives by floor/Stage 5 route role. Named followers, stalkers, guardians, CCG boss, treasure goblin and Sigil/Warden identities remain protected from ordinary retyping. Release identity is `V10.42 r33` / `20260918r33`. Exact-head qualification passed all eight top-level workflows, canonical/Node and all six Chromium shards.
+
+### Stage 7 NPC / merchant integration — ACTIVE
+
+Branch: `codex/dungeon-stage7-npc-merchant-current-main`.
+
+Base: merged `main` `3cb65ffa1ad35a8a0ff5ce854829eba646e78c6b`.
+
+Ownership reconciliation before implementation:
+
+- R15 already owns deterministic NPC identities, dialogue, rumours, optional quest specs and non-authoritative service offers.
+- `systems.js` already places the real hidden trader and floor-entrance supply desk.
+- `game-core.js -> buyShopItem()` already owns pricing, Score deductions, Artefact removal, Banishment Flask grants, inventory additions and per-shop price ladders.
+- Stage 7 therefore binds R15 NPC identity/dialogue/service/quest metadata to those existing shops and observes successful transactions only. It must not become economy authority or alter the deferred Defect 5 exchange semantics.
+- The ordered chain loads Stage 7 after R15 and before R16. Release/cache identity advances to `V10.42 r34` / `20260918r34`.
+- Focused contracts prohibit Stage 7 from mutating Score, shop price ladders, sold state, inventory, progression, saves or networking.
 
 ### #2129 release/cache ownership remediation
 
