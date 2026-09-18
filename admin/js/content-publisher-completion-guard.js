@@ -1,18 +1,13 @@
 const THUMBNAIL_PREFIX = 'resources/images/thumbnails/all/';
-const MUSIC_UPLOAD_URL = '/api/admin/game-music';
-const MUSIC_STATE_KEY = 'ccg_publisher_music_state_v1';
-
 const form = document.querySelector('[data-game-form]');
 const titleInput = document.querySelector('[data-game-field="title"]');
 const slugInput = document.querySelector('[data-game-field="slug"]');
 const thumbnailPathInput = document.querySelector('[data-game-field="thumbnail"]');
 const thumbnailFileInput = document.querySelector('[data-game-thumbnail-file]');
-const musicFileInput = document.querySelector('[data-game-music-file]');
 const logNode = document.querySelector('[data-publisher-log]');
 
 if (form) {
   installCanonicalThumbnailGuard();
-  installMusicStateGuard();
   installCompletionGuard();
 }
 
@@ -35,60 +30,6 @@ function installCanonicalThumbnailGuard() {
   slugInput?.addEventListener('input', sync);
   titleInput?.addEventListener('input', sync);
   form.addEventListener('submit', sync, { capture: true });
-}
-
-function installMusicStateGuard() {
-  if (!musicFileInput) return;
-
-  const status = document.createElement('small');
-  status.dataset.musicPublishStatus = 'true';
-  status.setAttribute('aria-live', 'polite');
-  status.textContent = 'No game music selected.';
-  musicFileInput.insertAdjacentElement('afterend', status);
-
-  musicFileInput.addEventListener('change', () => {
-    const file = musicFileInput.files?.[0] || null;
-    const slug = slugify(slugInput?.value || titleInput?.value || '');
-    if (!file) {
-      status.textContent = 'No game music selected.';
-      return;
-    }
-    status.textContent = slug
-      ? `Music selected for ${slug}.mp3. Publication will remain incomplete until the upload succeeds.`
-      : 'Music selected. Enter the game title so the destination filename can be fixed.';
-  });
-
-  form.addEventListener('submit', () => {
-    const file = musicFileInput.files?.[0] || null;
-    const slug = slugify(slugInput?.value || titleInput?.value || '');
-    if (!file || !slug) return;
-    writeMusicState({ slug, expected: true, uploaded: false, updatedAt: new Date().toISOString() });
-    status.textContent = `Music upload pending: ${slug}.mp3.`;
-  }, { capture: true });
-
-  if (logNode && typeof MutationObserver === 'function') {
-    const reconcileMusic = () => {
-      const text = String(logNode.textContent || '');
-      const state = readMusicState();
-      if (!state?.slug || !state.expected) return;
-
-      if (text.includes(`Game music uploaded securely: ${state.slug}.mp3`) || text.includes('Game music uploaded securely:')) {
-        writeMusicState({ ...state, uploaded: true, updatedAt: new Date().toISOString() });
-        status.textContent = `Music upload verified by the publisher: ${state.slug}.mp3.`;
-        return;
-      }
-
-      if (/music upload can be retried:/i.test(text)) {
-        status.textContent = `Music upload failed for ${state.slug}.mp3. Reselect the MP3 and publish/update again; this publication is not complete.`;
-        setPipelineStep('validation', 'error', 'Music upload failed');
-        setPipelineStep('live', 'error', 'Incomplete');
-      }
-    };
-
-    const observer = new MutationObserver(() => reconcileMusic());
-    observer.observe(logNode, { childList: true, subtree: true, characterData: true });
-    reconcileMusic();
-  }
 }
 
 function installCompletionGuard() {
@@ -118,9 +59,6 @@ function installCompletionGuard() {
         const node = pipelineNode(step);
         if (!node?.classList.contains('is-ok')) problems.push(`${step} is not complete`);
       });
-
-      const music = readMusicState();
-      if (music?.slug === slug && music.expected && !music.uploaded) problems.push('selected game music has not been uploaded successfully');
 
       const pending = await fetchPendingLemonSlugs();
       if (pending.has(slug)) {
@@ -161,19 +99,6 @@ function readStoredPublicationSlug() {
     return String(parsed?.slug || '');
   } catch (_error) {
     return '';
-  }
-}
-
-function writeMusicState(value) {
-  try { localStorage.setItem(MUSIC_STATE_KEY, JSON.stringify(value)); } catch (_error) { /* optional */ }
-}
-
-function readMusicState() {
-  try {
-    const raw = localStorage.getItem(MUSIC_STATE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch (_error) {
-    return null;
   }
 }
 

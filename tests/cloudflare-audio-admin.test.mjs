@@ -4,14 +4,18 @@ import test from 'node:test';
 
 const read = (path) => fs.readFileSync(new URL('../' + path, import.meta.url), 'utf8');
 
-test('admin publishers never write repository music filename metadata', () => {
+test('admin game publishing exposes no music upload or repository music filename metadata', () => {
   const publisherHtml = read('admin/content-publisher.html');
   const publisherJs = read('admin/js/content-publisher.js');
+  const editJs = read('admin/js/content-publisher-existing-game-update.js');
+  const completionGuard = read('admin/js/content-publisher-completion-guard.js');
   const legacyHtml = read('admin/games-editor.html');
   const legacyJs = read('admin/js/games-editor.js');
 
-  assert.doesNotMatch(publisherHtml, /data-game-field=["']music["']/);
-  assert.doesNotMatch(publisherJs, /gameValue\(["']music["']\)/);
+  assert.doesNotMatch(publisherHtml, /data-game-field=["']music["']|data-game-music-file|Game music file/i);
+  assert.doesNotMatch(publisherJs, /gameValue\(["']music["']\)|game-music|uploadGameMusic|data-game-music-file/i);
+  assert.doesNotMatch(editJs, /game-music|ccgUploadMusic|data-game-music-file/i);
+  assert.doesNotMatch(completionGuard, /game music|music upload|ccg_publisher_music_state/i);
   assert.doesNotMatch(legacyHtml, /data-field=["']music["']/);
   assert.doesNotMatch(legacyHtml, /resources\/audio\/games/);
   assert.doesNotMatch(legacyJs, /state\.draft\.music/);

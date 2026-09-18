@@ -14,16 +14,13 @@ const {
   cacheFileName,
   normalizeLemonGameUrl
 } = require("./refresh-lemon-game-cache.js");
+const { fetchLemonHtml } = require("./lemon-fetch.js");
 
 const ROOT = path.resolve(__dirname, "..");
 const GAMES_PATH = path.join(ROOT, "games", "games.json");
 const CACHE_DIR = path.join(ROOT, "data", "lemon-cache");
 const PENDING_PATH = path.join(ROOT, "data", "lemon-source-pending.json");
 const USER_AGENT = "CheekyCommodoreGamer-MagazineSourceDiscovery/1.0 (+https://www.cheekycommodoregamer.co.uk/)";
-const FETCH_TIMEOUT_MS = 12000;
-const RETRIES = 2;
-const REQUEST_DELAY_MS = 900;
-let lastRequestAt = 0;
 
 function toArray(value) {
   if (Array.isArray(value)) return value;
@@ -182,43 +179,6 @@ function uniqueCandidateMatch(matches) {
   return Array.isArray(matches) && matches.length === 1 ? matches[0] : null;
 }
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function fetchText(url) {
-  let lastError = null;
-  for (let attempt = 1; attempt <= RETRIES; attempt += 1) {
-    const elapsed = Date.now() - lastRequestAt;
-    if (elapsed < REQUEST_DELAY_MS) await sleep(REQUEST_DELAY_MS - elapsed);
-
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-    try {
-      lastRequestAt = Date.now();
-      const response = await fetch(url, {
-        signal: controller.signal,
-        redirect: "follow",
-        headers: {
-          "User-Agent": USER_AGENT,
-          "Accept": "text/html,application/xhtml+xml",
-          "Accept-Language": "en-GB,en;q=0.9"
-        }
-      });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const html = await response.text();
-      if (!html || html.length < 500) throw new Error("response was unexpectedly short");
-      return html;
-    } catch (error) {
-      lastError = error;
-      if (attempt < RETRIES) await sleep(500 * attempt);
-    } finally {
-      clearTimeout(timer);
-    }
-  }
-  throw lastError || new Error("request failed");
-}
-
 function cacheDestination(html, fallbackUrl) {
   const canonical = canonicalFromHtml(html) || normalizeLemonGameUrl(fallbackUrl);
   if (!canonical) return "";
@@ -234,7 +194,13 @@ async function discoverGame(game) {
   for (const candidate of candidates) {
     try {
       console.log(`Trying verified Lemon source candidate for ${game.title}: ${candidate}`);
-      const html = await fetchText(candidate);
+      const fetched = await fetchLemonHtml(candidate, {
+        userAgent: USER_AGENT,
+        timeoutMs: 12000,
+        retries: 2,
+        delayMs: 700
+      });
+      const html = fetched.html;
       if (!sourceMatchesGame(game, html, expectedHost)) {
         console.log(`Rejected Lemon source candidate after title/release validation: ${candidate}`);
         continue;
@@ -243,7 +209,7 @@ async function discoverGame(game) {
       const destination = cacheDestination(html, candidate);
       if (!destination) continue;
       const canonical = canonicalFromHtml(html) || candidate;
-      matches.push({ html, candidate, canonical, destination });
+      matches.push({ html, candidate, canonical, destination, source: fetched.source });
     } catch (error) {
       console.log(`Lemon source candidate unavailable for ${game.title}: ${candidate} (${error.message})`);
     }
@@ -259,7 +225,7 @@ async function discoverGame(game) {
 
   fs.mkdirSync(CACHE_DIR, { recursive: true });
   fs.writeFileSync(match.destination, match.html, "utf8");
-  console.log(`Verified Lemon source cached for ${game.title}: ${match.canonical}`);
+  console.log(`Verified Lemon source cached for ${game.title}: ${match.canonical} (${match.source || "live"})`);
   return { status: "matched", url: match.canonical, destination: match.destination };
 }
 

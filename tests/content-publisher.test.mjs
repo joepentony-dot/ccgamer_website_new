@@ -68,26 +68,23 @@ test('game publisher presents magazine reviews as automatic with Lemon as an opt
 
 test('publisher loads source preflight automation through the image optimiser bootstrap', () => {
   assert.match(html, /admin\/js\/content-publisher-image-optimizer\.js/);
-  assert.match(optimiser, /import ['"]\.\/content-publisher-source-preflight\.mjs['"]/);
+  assert.match(optimiser, /import ['"]\.\/content-publisher-source-preflight\.mjs\?v=publisher-20260918['"]/);
 });
 
-test('publisher keeps the established 3D-box path and separate authenticated music upload', () => {
+test('publisher keeps the established 3D-box path and removes the unavailable game-music uploader', () => {
   assert.match(html, /data-game-box3d-file/);
-  assert.match(html, /data-game-music-file/);
+  assert.doesNotMatch(html, /data-game-music-file|Game music file/i);
   assert.match(js, /resources\/images\/games\/boxes-3d\//);
   assert.match(js, /\$\{slugify\(slug\)\}\.webp/);
-  assert.match(js, /\/api\/admin\/game-music/);
-  assert.match(js, /getSession/);
-  assert.match(js, /\$\{slugify\(slug\)\}\.mp3/);
+  assert.doesNotMatch(js, /game-music|uploadGameMusic|validateMusicFile|data-game-music-file/i);
   assert.doesNotMatch(js, /gameValue\(['"]music['"]\)/);
 });
 
-test('existing-game updates can add 3D boxes and music without creating empty commits', () => {
-  assert.match(optimiser, /content-publisher-existing-game-update\.js/);
+test('existing-game updates can add 3D boxes without retaining game-music upload code or creating empty commits', () => {
+  assert.match(optimiser, /content-publisher-existing-game-update\.js\?v=publisher-20260918/);
   assert.match(editJs, /data-game-box3d-file/);
   assert.match(editJs, /resources\/images\/games\/boxes-3d\//);
-  assert.match(editJs, /data-game-music-file/);
-  assert.match(editJs, /\/api\/admin\/game-music/);
+  assert.doesNotMatch(editJs, /game-music|ccgUploadMusic|ccgValidateMusic|data-game-music-file/i);
   assert.match(editJs, /tree\?\.sha === baseTree/);
   assert.match(editJs, /No empty Git commit was created/);
   assert.match(editJs, /if \(!sourceChanged\)/);

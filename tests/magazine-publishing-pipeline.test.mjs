@@ -37,16 +37,22 @@ test("magazine reviews are materialized after canonical SEO game routes are gene
   );
 });
 
-test("missing Lemon sources retry before magazine import without becoming a publishing prerequisite", () => {
+test("missing Lemon sources retry through live/archive fallback without becoming a publishing prerequisite", () => {
   const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "games-publishing.yml"), "utf8");
   const refreshIndex = workflow.indexOf("node scripts/refresh-lemon-game-cache.js --all-missing");
   const importIndex = workflow.indexOf("node scripts/import-amiga-magazine-reviews.js");
   const refreshStep = workflow.match(/- name: Refresh missing Lemon reference pages \(best effort\)[\s\S]*?continue-on-error:\s*true[\s\S]*?node scripts\/refresh-lemon-game-cache\.js --all-missing/);
+  const discovery = fs.readFileSync(path.join(root, "scripts", "discover-new-lemon-source.js"), "utf8");
+  const refresh = fs.readFileSync(path.join(root, "scripts", "refresh-lemon-game-cache.js"), "utf8");
 
   assert.ok(refreshIndex >= 0, "uncached Lemon sources are not retried before magazine import");
   assert.ok(importIndex >= 0 && refreshIndex < importIndex, "Lemon source refresh must run before magazine import");
   assert.ok(refreshStep, "Lemon refresh must be explicitly best-effort so an external outage cannot block publishing");
+  assert.match(discovery, /fetchLemonHtml/);
+  assert.match(refresh, /fetchLemonHtml/);
   assert.doesNotMatch(workflow, /refresh-lemon-game-cache\.js --check/);
+  assert.doesNotMatch(workflow, /Require new-game enrichment completion/);
+  assert.doesNotMatch(workflow, /node scripts\/validate-new-game-enrichment\.mjs --base HEAD\^/);
   assert.match(workflow, /External Lemon64\/Lemon Amiga availability is optional and cannot block publishing/);
 });
 
@@ -121,6 +127,34 @@ test("Premiere materializes the 15 verified reviews from its local Lemon Amiga c
 
   const runtime = fs.readFileSync(path.join(root, 'js', 'magazine-game-reviews-runtime.js'), 'utf8');
   assert.match(runtime, /if \(!rows\.length\)/);
+});
+
+
+test("Road Rash retains the 21 verified magazine records required by the game page", () => {
+  const supplementPath = path.join(
+    root,
+    "data",
+    "magazine-review-records",
+    "supplements",
+    "road-rash.json"
+  );
+  const supplement = JSON.parse(fs.readFileSync(supplementPath, "utf8"));
+  const rows = supplement.games?.["amiga:road-rash"] || [];
+
+  assert.equal(rows.length, 21);
+  assert.deepEqual(
+    rows.slice(0, 6).map((row) => [row.magazine, row.score, row.scorePercent]),
+    [
+      ["ACAR", "73%", 73],
+      ["Amiga Action", "80%", 80],
+      ["Amiga Action", "92%", 92],
+      ["Amiga Computing", "86%", 86],
+      ["Amiga Computing", "73%", 73],
+      ["Amiga Format", "84%", 84]
+    ]
+  );
+  assert.equal(rows.filter((row) => row.scanStatus === "available" && row.url).length, 19);
+  assert.equal(rows.filter((row) => row.scanStatus === "missing" && !row.url).length, 2);
 });
 
 test("the magazine importer preserves support for existing C64 and Amiga Lemon cache data", () => {
