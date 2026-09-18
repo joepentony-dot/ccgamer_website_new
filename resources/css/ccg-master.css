@@ -4549,6 +4549,17 @@ body.ccg-egg-open {
 }
 
 /* CCG PUBLIC CONTENT DENSITY PASS — 2026-09-18 */
+/* Games archive scroll geometry:
+   ccg-performance-foundations.css applies content-visibility:auto to generic
+   accordion sections. On the collapsed mobile A-Z archive, its 240px intrinsic
+   estimate is substantially taller than the real headers, so Chromium shrinks
+   the scroll range while travelling down the page. Keep these wrappers at
+   their real collapsed height; batched cards and lazy media remain unchanged. */
+html[data-ccg-page="games-index"].ccg-perf-enabled .games-accordion__section {
+    content-visibility: visible;
+    contain-intrinsic-size: none;
+}
+
 /*
    Tightens the shared public browsing/info experience without touching the
    home showcase, individual game pages, quiz, admin or arcade runtimes.
