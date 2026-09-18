@@ -1044,3 +1044,54 @@
   padding: 0;
 }
 
+/* CCG SITE-WIDE MUSIC HUB AUDIT — 2026-09 */
+.ccg-composer-page,
+.ccg-music-hub {
+  max-width: 1040px;
+  padding-top: clamp(0.8rem, 1.6vw, 1.35rem);
+  padding-bottom: 2.2rem;
+}
+
+.ccg-composer-section-title {
+  margin: 1.4rem 0 0.7rem;
+}
+
+.composer-section {
+  margin-top: 1rem;
+}
+
+.composer-grid-featured {
+  gap: 0.7rem;
+}
+
+.composer-info {
+  padding: 0.65rem 0.72rem 0.72rem;
+}
+
+.ccg-composer-games {
+  gap: 0.65rem;
+}
+
+.ccg-composer-games__item {
+  padding: 0.76rem;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 170px;
+}
+
+.ccg-composer-featured {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+}
+
+@media (max-width: 760px) {
+  .ccg-composer-page,
+  .ccg-music-hub {
+    padding-inline: 0.75rem;
+    padding-bottom: 1.8rem;
+  }
+
+  .ccg-composer-games {
+    gap: 0.55rem;
+  }
+}
+
