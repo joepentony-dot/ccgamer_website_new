@@ -161,6 +161,7 @@ try{
     };
   });
 
+  console.log("DUNGEON_STARTUP_FIRST_VISUAL",JSON.stringify({first,settled}));
   assert.equal(settled.loaderHidden,true,"loader must be removed atomically only after the release is ready");
   assert.equal(settled.loaderDisplay,"none","settled release loader must not intercept the ready menu");
   assert.deepEqual(settled.panel,first.panel,"menu panel must not switch into a second R51 layout after the loader is removed");
@@ -170,7 +171,6 @@ try{
   }
   assert.deepEqual(errors,[],`startup first-visual contract must have no uncaught browser errors: ${errors.join("\n")}`);
 
-  console.log("DUNGEON_STARTUP_FIRST_VISUAL",JSON.stringify({first,settled}));
   console.log("Dungeon Carnage startup first-visual browser contract passed.");
   await context.close();
 }finally{
