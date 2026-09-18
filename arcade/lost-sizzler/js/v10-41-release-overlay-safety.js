@@ -1,9 +1,9 @@
 /* The Lost Sizzler V10.41 — release overlay gameplay-input safety.
  *
  * V10.36 owns the release/loading presentation. This compatibility guard may
- * retire the loader only after gameplay has actually begun. It must not use the
- * legacy data-release-ready pulse as a visibility owner because V10.42 can
- * temporarily receive that value before its ordered bootstrap is complete.
+ * retire the loader only after authoritative V10.42 startup has completed and
+ * gameplay/tutorial has actually begun. Premature active-state flags must not
+ * bypass the loader while the ordered bootstrap is still unfinished.
  * Genuine fatal-load presentation remains visible via the .is-error exemption.
  */
 (()=>{
@@ -18,8 +18,8 @@
     const style=document.createElement("style");
     style.id=STYLE_ID;
     style.textContent=`
-      body[data-run-active="true"] #ccg-release-loading:not(.is-error),
-      body[data-tutorial-active="true"] #ccg-release-loading:not(.is-error){
+      body[data-v142-bootstrap-ready="true"][data-release-ready="true"][data-run-active="true"] #ccg-release-loading:not(.is-error),
+      body[data-v142-bootstrap-ready="true"][data-release-ready="true"][data-tutorial-active="true"] #ccg-release-loading:not(.is-error){
         display:none!important;
         visibility:hidden!important;
         pointer-events:none!important;

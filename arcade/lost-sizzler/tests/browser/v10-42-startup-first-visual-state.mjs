@@ -153,6 +153,37 @@ try{
   assert.equal(transientLegacyPulse.display,"grid","legacy readiness pulse must not expose the underlying menu even for one rendered frame");
   assert.notEqual(transientLegacyPulse.visibility,"hidden","legacy readiness pulse must not CSS-hide the loader");
 
+  const transientActivePulse=await page.evaluate(()=>{
+    const loader=document.getElementById("ccg-release-loading");
+    const beforeRun=document.body?.dataset?.runActive;
+    const beforeTutorial=document.body?.dataset?.tutorialActive;
+    const sample=()=>({
+      display:loader?getComputedStyle(loader).display:"",
+      visibility:loader?getComputedStyle(loader).visibility:"",
+      hidden:Boolean(loader?.hidden),
+      releaseReady:document.body?.dataset?.releaseReady,
+      v142BootstrapReady:document.body?.dataset?.v142BootstrapReady
+    });
+    document.body.dataset.runActive="true";
+    document.body.dataset.tutorialActive="false";
+    const run=sample();
+    document.body.dataset.runActive="false";
+    document.body.dataset.tutorialActive="true";
+    const tutorial=sample();
+    document.body.dataset.runActive=beforeRun||"false";
+    if(beforeTutorial==null)delete document.body.dataset.tutorialActive;
+    else document.body.dataset.tutorialActive=beforeTutorial;
+    return {run,tutorial};
+  });
+
+  for(const [kind,state] of Object.entries(transientActivePulse)){
+    assert.notEqual(state.releaseReady,"true",`${kind} active-state probe must run before authoritative release readiness`);
+    assert.notEqual(state.v142BootstrapReady,"true",`${kind} active-state probe must run before V10.42 bootstrap readiness`);
+    assert.equal(state.hidden,false,`${kind} active-state pulse must not set the canonical loader hidden flag before release`);
+    assert.equal(state.display,"grid",`${kind} active-state pulse must not expose the underlying menu before release`);
+    assert.notEqual(state.visibility,"hidden",`${kind} active-state pulse must not CSS-hide the loader before release`);
+  }
+
   releaseFiveDepth();
   await page.waitForFunction(()=>document.body?.dataset?.releaseReady==="true"&&document.body?.dataset?.gameReady==="true",null,{timeout:90000});
   await page.waitForFunction(()=>document.querySelector("#menu .game-mode-buttons")?.dataset?.r55TextLayout==="true",null,{timeout:15000});
