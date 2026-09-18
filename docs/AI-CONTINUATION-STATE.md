@@ -10,16 +10,14 @@ Update this file when a workstream changes category, its active PR/dependency ch
 
 ## Current autonomous Dungeon Carnage checkpoint — 18 September 2026
 
-- Verified live `main`: `94ae72bfbbc2bc9ee4ae58a01dc00e6bf37d4fa9` — merged Stage 5 procedural-topology milestone (#2138).
-- Original seven-item repository-side live-defect remediation remains complete except for the deferred manual Defect 5 product acceptance. The later #2129 sustained-Solo acceptance is also deferred.
-- Stage 4 #2137 remains merged as `d3225318ff5cb87664bce96020c790099f53e06a`.
-- Stage 5 #2138 merged from exact qualified head `819c820b1a908a0e5b20f69a2775b5b056b9ef74` as `94ae72bfbbc2bc9ee4ae58a01dc00e6bf37d4fa9`.
-- Stage 5 kept `world.js` as the topology owner, preserved the 128×84 world, deterministic seed behaviour, secret-space reservation and guaranteed start→exit reachability, and added floor-aware alternate routes/loops, crossroads, purposeful dead ends and landmarks.
-- Exact Stage 5 qualification passed every top-level workflow and all six Chromium shards with no retry.
-- Active work is Stage 6 deeper zone-specific gameplay on `codex/dungeon-stage6-zone-gameplay-current-main`, created directly from the Stage 5 merge.
-- The first Stage 6 slice adds an ordered downstream zone-gameplay director. It consumes the established floor, biome, Stage 5 topology and encounter state and tunes real ordinary-enemy composition, trap/hazard cadence, generator pressure and guardian patterns. Named followers, stalkers, guardians/key-guardians and other special identities are protected from ordinary retyping.
-- Stage 6 advances the release/cache identity to `V10.42 r33` / `20260918r33` because a new ordered production module is introduced.
-- Stage 6 must not carve topology, advance floors/portals, own checkpoint storage or replace AI/combat/network authority.
+- Verified live `main`: `3cb65ffa1ad35a8a0ff5ce854829eba646e78c6b` — merged Stage 6 zone-specific gameplay (#2139).
+- Stage 5 #2138 remains merged as `94ae72bfbbc2bc9ee4ae58a01dc00e6bf37d4fa9`.
+- Stage 6 #2139 merged from exact qualified head `d0eaaaa772101fbb4f4cd02f33a9d655e54d85ea` as `3cb65ffa1ad35a8a0ff5ce854829eba646e78c6b`.
+- Exact Stage 6 qualification passed all eight top-level workflows, canonical/Node contracts and all six Chromium shards.
+- Stage 6 keeps the existing topology/campaign/save/network/combat ownership model and makes the five zones mechanically distinct through existing enemy, trap, hazard, generator and guardian primitives.
+- Active work is Stage 7 NPC/merchant integration on `codex/dungeon-stage7-npc-merchant-current-main`, based exactly on the Stage 6 merge.
+- Stage 7 binds established R15 NPC identities/dialogue/optional quest-service hooks to the already-authoritative entrance and hidden dungeon shops. `buyShopItem()` remains the sole price/Score/Artefact/inventory transaction owner.
+- Stage 7 advances release/cache identity to `V10.42 r34` / `20260918r34` because the ordered production chain gains a new module.
 - The programme remains milestone-first; broad legacy cleanup stays backlog unless it blocks the active player-facing work.
 
 ### Manual acceptance state
@@ -37,12 +35,12 @@ These deferred gates do not block independent repository work that does not depe
 
 ### Exact next action
 
-1. Qualify the bounded Stage 6 zone-gameplay slice on the current-main branch.
-2. Require the focused Stage 6 contract plus the retained canonical/Node suite and all six Chromium shards to pass without weakening assertions, timeouts or ownership boundaries.
-3. Verify r33 page/bootstrap/manifest/cache identity is coherent and the new Stage 6 module is loaded after the established encounter bridge and before later NPC/presentation consumers.
-4. Reconcile review findings and keep special/named/stalker/quest identities protected from ordinary enemy retyping.
-5. Extend Stage 6 only through existing combat/trap/hazard/reward primitives; do not introduce a second topology, campaign progression, persistence or networking system.
-6. Merge only from an exact clean head under the standing merge rule, then continue remaining Stage 6 zone events/rewards or move to Stage 7 once the Stage 6 completion criteria are satisfied.
+1. Qualify the bounded Stage 7 NPC/merchant integration on the current-main branch.
+2. Require the focused Stage 7 contract, r34 release/cache identity checks, retained canonical/Node suite and all six Chromium shards to pass without weakening assertions, timeouts or ownership boundaries.
+3. Verify the new Stage 7 module loads after R15 NPC state and before R16 presentation consumers.
+4. Prove merchant presentation can observe successful transactions while prices, Score deductions, Artefact removal, Flask granting, inventory rules and the deferred Defect 5 exchange path remain owned by the established shop runtime.
+5. Reconcile review findings, changed paths and mergeability; merge only from an exact clean head under the standing merge rule.
+6. After Stage 7 merge, reconcile current main and proceed to Stage 8 itch.io/release preparation rather than reopening broad legacy cleanup.
 7. Keep both manual product gates explicitly deferred until the user is available to perform them.
 
 ## Historical checkpoint notes
@@ -62,7 +60,7 @@ These deferred gates do not block independent repository work that does not depe
 
 | Workstream | Record | Current GitHub state |
 | --- | --- | --- |
-| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) plus [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md) | Stage 5 #2138 is merged as `94ae72bfbbc2bc9ee4ae58a01dc00e6bf37d4fa9`; Stage 6 zone-specific gameplay is active on a fresh current-main branch. Two independent manual product gates remain deferred. |
+| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) plus [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md) | Stage 6 #2139 is merged as `3cb65ffa1ad35a8a0ff5ce854829eba646e78c6b`; Stage 7 NPC/merchant integration is active on the current-main branch. Two independent manual product gates remain deferred. |
 | Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | itch.io is the intended purchase/download route; the custom commerce/paywall and stale packaging/Windows PR graphs are closed. Any package artifact must be rebuilt from current `main`, selectively reusing historical provider-neutral ideas only where necessary. |
 | Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2103 and #2105 are merged; #2073 is closed. #2110 remains the current draft endpoint follow-up but is **BLOCKED** by missing/mismatched Cloudflare runtime configuration. Repository-side work for that blocker is already complete. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | draft rebuild PR #2056 remains based on an old merge base and requires a current-main rebuild/reconciliation before integration. |
