@@ -5337,10 +5337,10 @@
   {
     "name": "Jason A. S. Whitely",
     "slug": "jason-a-s-whitely",
-    "count": 2,
+    "count": 3,
     "c64Count": 0,
-    "amigaCount": 2,
-    "firstYear": 1993,
+    "amigaCount": 3,
+    "firstYear": 1992,
     "lastYear": 1993,
     "existing": false,
     "generated": true,
@@ -5351,6 +5351,7 @@
     ],
     "games": [
       "desert-strike",
+      "road-rash",
       "space-hulk"
     ]
   },

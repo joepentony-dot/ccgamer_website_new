@@ -4,7 +4,7 @@
 
 | Check | Count |
 |---|---:|
-| Game records scanned | **659** |
+| Game records scanned | **660** |
 | Credited composer entities | **273** |
 | Existing dedicated composer pages preserved | **20** |
 | Credited composers with an existing page | **20** |
@@ -12,7 +12,7 @@
 | Indexable generated routes | **63** |
 | Single-game generated noindex routes | **190** |
 | Total static composer routes | **273** |
-| Linked game-credit relationships | **579** |
+| Linked game-credit relationships | **580** |
 | Generated pages written in this run | **253** |
 | Stale generated pages removed | **0** |
 

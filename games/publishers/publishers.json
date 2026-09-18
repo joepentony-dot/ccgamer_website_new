@@ -770,9 +770,9 @@
   {
     "name": "Electronic Arts",
     "slug": "electronic-arts",
-    "count": 25,
+    "count": 26,
     "c64Count": 18,
-    "amigaCount": 7,
+    "amigaCount": 8,
     "firstYear": 1983,
     "lastYear": 1994,
     "indexable": true,

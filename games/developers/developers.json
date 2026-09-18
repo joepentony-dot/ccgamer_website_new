@@ -286,6 +286,17 @@
     "url": "/games/developers/ocean/"
   },
   {
+    "name": "PeakStar Software",
+    "slug": "peakstar-software",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1992,
+    "lastYear": 1992,
+    "indexable": false,
+    "url": "/games/developers/peakstar-software/"
+  },
+  {
     "name": "Probe Software",
     "slug": "probe-software",
     "count": 1,

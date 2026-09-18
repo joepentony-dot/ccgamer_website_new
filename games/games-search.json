@@ -8723,6 +8723,24 @@
     "year": 1984
   },
   {
+    "title": "Road Rash",
+    "slug": "road-rash",
+    "publisher": [
+      "Electronic Arts"
+    ],
+    "genre": [
+      "racing"
+    ],
+    "genres": [
+      "racing"
+    ],
+    "composer": [
+      "Jason A. S. Whitely"
+    ],
+    "music": [],
+    "year": 1992
+  },
+  {
     "title": "Road Runner",
     "slug": "road-runner",
     "publisher": [
