@@ -1525,32 +1525,19 @@ if (IS_ADMIN_PATH) {
         const scrollbarGap = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
         const computedPaddingRight = Number.parseFloat(window.getComputedStyle(document.body).paddingRight) || 0;
 
-        const lockedDocumentHeight = Math.max(
-            document.documentElement.scrollHeight,
-            document.body.scrollHeight,
-            window.innerHeight
-        );
-
         secretState.scrollLock = {
             scrollX,
             scrollY,
             bodyOverflow: document.body.style.overflow,
-            bodyMinHeight: document.body.style.minHeight,
             bodyPaddingRight: document.body.style.paddingRight,
             bodyOverscrollBehavior: document.body.style.overscrollBehavior,
             htmlOverflow: document.documentElement.style.overflow,
-            htmlMinHeight: document.documentElement.style.minHeight,
             htmlOverscrollBehavior: document.documentElement.style.overscrollBehavior,
         };
 
-        // Preserve the pre-lock document height before root overflow changes can
-        // trigger a responsive reflow and clamp the current mobile scroll offset.
-        document.body.style.minHeight = `${lockedDocumentHeight}px`;
-        document.documentElement.style.minHeight = `${lockedDocumentHeight}px`;
-        // Keep the root as the window scrolling element. Hiding root overflow
-        // makes Chromium switch/clamp the effective mobile scroll range on the
-        // hydrated Games archive. The body/modal lock still blocks background
-        // interaction while preserving the exact underlying page offset.
+        // Preserve the document's native scroll geometry. The fixed modal and
+        // explicit wheel/touch guard own background interaction instead of
+        // changing html/body height or overflow on hydrated archive pages.
         document.documentElement.style.overscrollBehavior = "none";
         // The fixed modal owns pointer/touch interaction. Keep the document\n        // scrolling surface unchanged so mobile archive offsets cannot clamp.\n        document.body.style.overscrollBehavior = "none";
         if (scrollbarGap > 0) {
@@ -1563,10 +1550,8 @@ if (IS_ADMIN_PATH) {
         if (!lock) return;
 
         document.documentElement.style.overflow = lock.htmlOverflow;
-        document.documentElement.style.minHeight = lock.htmlMinHeight;
         document.documentElement.style.overscrollBehavior = lock.htmlOverscrollBehavior;
         document.body.style.overflow = lock.bodyOverflow;
-        document.body.style.minHeight = lock.bodyMinHeight;
         document.body.style.paddingRight = lock.bodyPaddingRight;
         document.body.style.overscrollBehavior = lock.bodyOverscrollBehavior;
         secretState.scrollLock = null;
