@@ -1516,16 +1516,26 @@ if (IS_ADMIN_PATH) {
         const scrollbarGap = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
         const computedPaddingRight = Number.parseFloat(window.getComputedStyle(document.body).paddingRight) || 0;
 
+        const lockedDocumentHeight = Math.max(
+            document.documentElement.scrollHeight,
+            document.body.scrollHeight,
+            window.innerHeight
+        );
+
         secretState.scrollLock = {
             scrollX,
             scrollY,
             bodyOverflow: document.body.style.overflow,
+            bodyMinHeight: document.body.style.minHeight,
             bodyPaddingRight: document.body.style.paddingRight,
             bodyOverscrollBehavior: document.body.style.overscrollBehavior,
             htmlOverflow: document.documentElement.style.overflow,
             htmlOverscrollBehavior: document.documentElement.style.overscrollBehavior,
         };
 
+        // Preserve the pre-lock document height before root overflow changes can
+        // trigger a responsive reflow and clamp the current mobile scroll offset.
+        document.body.style.minHeight = `${lockedDocumentHeight}px`;
         document.documentElement.style.overflow = "hidden";
         document.documentElement.style.overscrollBehavior = "none";
         document.body.style.overflow = "hidden";
@@ -1542,6 +1552,7 @@ if (IS_ADMIN_PATH) {
         document.documentElement.style.overflow = lock.htmlOverflow;
         document.documentElement.style.overscrollBehavior = lock.htmlOverscrollBehavior;
         document.body.style.overflow = lock.bodyOverflow;
+        document.body.style.minHeight = lock.bodyMinHeight;
         document.body.style.paddingRight = lock.bodyPaddingRight;
         document.body.style.overscrollBehavior = lock.bodyOverscrollBehavior;
         secretState.scrollLock = null;
