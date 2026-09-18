@@ -1530,12 +1530,14 @@ if (IS_ADMIN_PATH) {
             bodyPaddingRight: document.body.style.paddingRight,
             bodyOverscrollBehavior: document.body.style.overscrollBehavior,
             htmlOverflow: document.documentElement.style.overflow,
+            htmlMinHeight: document.documentElement.style.minHeight,
             htmlOverscrollBehavior: document.documentElement.style.overscrollBehavior,
         };
 
         // Preserve the pre-lock document height before root overflow changes can
         // trigger a responsive reflow and clamp the current mobile scroll offset.
         document.body.style.minHeight = `${lockedDocumentHeight}px`;
+        document.documentElement.style.minHeight = `${lockedDocumentHeight}px`;
         document.documentElement.style.overflow = "hidden";
         document.documentElement.style.overscrollBehavior = "none";
         document.body.style.overflow = "hidden";
@@ -1550,6 +1552,7 @@ if (IS_ADMIN_PATH) {
         if (!lock) return;
 
         document.documentElement.style.overflow = lock.htmlOverflow;
+        document.documentElement.style.minHeight = lock.htmlMinHeight;
         document.documentElement.style.overscrollBehavior = lock.htmlOverscrollBehavior;
         document.body.style.overflow = lock.bodyOverflow;
         document.body.style.minHeight = lock.bodyMinHeight;
