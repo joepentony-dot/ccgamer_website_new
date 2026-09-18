@@ -76,6 +76,22 @@
     node.addEventListener("error",ready,{once:true});
   }
 
+  function authoritativeReleaseReady(){
+    const build=String(document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"").toUpperCase();
+    if(!build.startsWith("V10.42"))return true;
+    const v142=window.CCGLostSizzlerV142Bootstrap;
+    return Boolean(
+      v142?.ready===true&&
+      document.body?.dataset?.releaseReady==="true"&&
+      document.body?.dataset?.v142BootstrapReady==="true"
+    );
+  }
+
+  function authoritativeReleaseFailed(){
+    const v142=window.CCGLostSizzlerV142Bootstrap;
+    return v142?.failed===true?String(v142.error||"V10.42 ordered startup failed"):"";
+  }
+
   function startLoadingWatch(){
     ensureStyles();
     const start=()=>{
@@ -85,9 +101,12 @@
       state.observer.observe(document.documentElement,{childList:true,subtree:true});
       state.loadingTimer=setInterval(()=>{
         const gate=window.CCGLostSizzlerReleaseGate;
-        if(gate?.state?.ready){finishLoading([]);clearInterval(state.loadingTimer);state.loadingTimer=0;return}
+        const authoritativeFailure=authoritativeReleaseFailed();
         if(gate?.state?.failed){finishLoading(gate.state.errors||["load failed"]);clearInterval(state.loadingTimer);state.loadingTimer=0;return}
-        if(state.progress<88)setLoadingProgress(state.progress+1,"Preparing game systems… please wait.");
+        if(authoritativeFailure){finishLoading([authoritativeFailure]);clearInterval(state.loadingTimer);state.loadingTimer=0;return}
+        if(gate?.state?.ready&&authoritativeReleaseReady()){finishLoading([]);clearInterval(state.loadingTimer);state.loadingTimer=0;return}
+        if(gate?.state?.ready)setLoadingProgress(Math.max(state.progress,92),"Finalising Dungeon Carnage menu and game systems…");
+        else if(state.progress<88)setLoadingProgress(state.progress+1,"Preparing game systems… please wait.");
       },420);
     };
     if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
