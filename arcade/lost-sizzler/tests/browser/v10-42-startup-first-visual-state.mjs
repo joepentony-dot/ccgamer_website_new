@@ -45,7 +45,7 @@ try{
     await route.continue();
   });
 
-  const navigation=page.goto(`${origin}/arcade/lost-sizzler/?startup-first-visual=1`,{waitUntil:"domcontentloaded",timeout:90000});
+  await page.goto(`${origin}/arcade/lost-sizzler/?startup-first-visual=1`,{waitUntil:"commit",timeout:90000});
   await firstScriptPaused;
 
   const first=await page.evaluate(()=>{
@@ -91,7 +91,7 @@ try{
   for(const [id,state] of Object.entries(first.buttons))assert.ok(state,`${id} must already exist under the loader at the parser-blocked first visual state`);
 
   releaseFirstScript();
-  await navigation;
+  await page.waitForLoadState("domcontentloaded",{timeout:90000});
   await page.waitForFunction(()=>document.body?.dataset?.releaseReady==="true"&&document.body?.dataset?.gameReady==="true",null,{timeout:90000});
   await page.waitForFunction(()=>document.querySelector("#menu .game-mode-buttons")?.dataset?.r55TextLayout==="true",null,{timeout:15000});
   await page.waitForFunction(()=>document.getElementById("ccg-release-loading")?.hidden===true,null,{timeout:15000});
