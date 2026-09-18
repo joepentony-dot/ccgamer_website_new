@@ -190,12 +190,13 @@ For both: **MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**.
 
 Exact next repository action:
 
-1. reconcile #2137 after the r31 release/cache correction and checkpoint updates;
-2. require the PR-triggered exact-head workflows to pass on that final head, including Lost Sizzler Load Safety canonical/Node contracts, Chromium discovery and all six Chromium shards;
-3. verify the r31 release-identity contract is discovered/executed and that no stale r30 canonical token remains;
-4. reconcile Codex review threads, changed paths and mergeability against current `main`;
-5. if the established merge-authorisation rule is satisfied, merge #2137 and record the exact qualified head and merge SHA; otherwise leave it **READY TO MERGE** without starting a competing branch;
-6. after merge, move to Stage 5 larger procedural topology/zone structure on fresh current `main`, keeping portal state subordinate to the five-depth floor owner.
+1. qualify Stage 5 PR #2138 at its exact current head against merged `main` `d3225318ff5cb87664bce96020c790099f53e06a`;
+2. require the focused Stage 5 topology contract plus the retained canonical/Node suite, Chromium discovery and all six Chromium shards to pass without weakening assertions, timeouts or production ownership;
+3. preserve `world.js` as the only topology owner, the 128×84 world dimensions, deterministic seed behaviour, guaranteed start→exit reachability, existing floor/portal progression and checkpoint semantics;
+4. reconcile every #2138 review thread, changed path and release/cache assertion against the exact qualified r32 head;
+5. if #2138 remains 0 behind `main`, mergeable and fully green under the standing merge-authorisation rule, merge it and record its exact qualified head plus merge SHA;
+6. after the merge, start Stage 6 deeper zone-specific gameplay from the fresh merged `main`, using the Stage 5 topology metadata as a consumer contract rather than reopening topology ownership;
+7. keep the two deployed/manual product gates explicitly deferred until the user is available to perform them.
 
 ## Historical live-defect remediation checkpoint — 16 September 2026
 
