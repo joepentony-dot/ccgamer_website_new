@@ -14,6 +14,10 @@ body[data-run-active="false"] #menu>.panel.r51-menu-panel{
   text-align:center!important;
 }
 
+body[data-run-active="false"] #menu .game-mode-buttons #tutorial-zone-btn{
+  border-color:rgba(108,236,255,.72)!important;
+}
+
 body[data-run-active="false"] #menu .game-mode-buttons button{
   color:#f5eefb!important;
   text-shadow:none!important;
