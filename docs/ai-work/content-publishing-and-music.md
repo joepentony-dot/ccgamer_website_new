@@ -62,7 +62,7 @@ At the audit checkpoint its net diff is exactly three files:
 
 Both new-game and existing-game MP3 upload paths are changed from `/api/admin/game-music` to the verified production Worker URL, and regression assertions require both paths to use that URL. The temporary branch-only patch workflow previously used during repair has been removed.
 
-Focused syntax and publisher/Worker tests passed before the final temporary-workflow cleanup; the production environment blocker, not repository logic, is what prevents merge.
+Focused syntax and publisher/Worker tests passed before the final temporary-workflow cleanup; the production environment blocker, not repository logic, was what prevented merge at that time. #2110 is now closed unmerged.
 
 ## Cloudflare connected-build isolation
 
@@ -104,7 +104,6 @@ Do not alter Dungeon Carnage runtime, Commodore Quest, protected intro-loader fi
 - 2026-09-16: Production probes found missing/mismatched CORS/runtime configuration; #2110 remains blocked and draft.
 - 2026-09-16: Removed an accidentally retained temporary patch workflow from #2110; current net delta is three publisher/test files only at the audit checkpoint.
 - 2026-09-16: Post-#2104 reconciliation stabilized the checkpoint wording; no Content Publisher implementation was changed.
-
 
 ## Completed Content Publisher repair — 2026-09-18
 
