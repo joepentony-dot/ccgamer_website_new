@@ -1590,8 +1590,10 @@ if (IS_ADMIN_PATH) {
             if (!modal) return;
             modal.classList.add("is-open");
             modal.setAttribute("aria-hidden", "false");
-            document.body.classList.add("ccg-secret-modal-open");
+            // Capture the live document height and scroll position before the
+            // modal-open class applies overflow clipping on mobile archives.
             lockSecretModalScroll();
+            document.body.classList.add("ccg-secret-modal-open");
 
             requestAnimationFrame(() => {
                 if (content) content.scrollTop = 0;
