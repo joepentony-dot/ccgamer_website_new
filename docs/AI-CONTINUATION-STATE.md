@@ -53,6 +53,15 @@ These deferred gates do not block independent repository work that does not depe
 - Current-main reconciliation found no implementation-path overlap with later Dungeon or generated-video work. The only overlap was this continuation index, which has been reconciled onto the latest main checkpoint.
 - Road Rash is now generated through the authoritative publishing chain and its canonical page materialises 21 magazine-review records with source links. Do not hand-edit that generated page; future changes must continue through source data and Reliable Games Publishing.
 
+## Site-wide public layout follow-up — 18 September 2026
+
+- Active PR **#2165** on `codex/sitewide-public-layout-audit` is reconciled onto live `main` `b0c0825010669093b7459bc9b1596cde1602f6e1`.
+- Shared public archive/info density is tightened via scoped `data-ccg-page` rules in `ccg-master.css`; Home, single-game, quiz, admin, community-auth and arcade/game runtimes remain excluded.
+- Indexed coverage also includes collection detail pages, Complete Index, Video Library, retro-video pages and the Zzap!64 awards archive.
+- Cache namespace is `2026-09-18-public-code-v7`, preserving the newer PWA prompt release.
+- Easter Egg viewport CI now follows the live game catalogue and waits for games-index hydration before measuring scroll preservation; protected-file and 2px scroll assertions are unchanged.
+- This work is independent of Dungeon Carnage and Content Publisher runtime ownership.
+
 ## Historical checkpoint notes
 
 - PR #2120 was a redundant movement-wrapper proposal and is closed without merge.
