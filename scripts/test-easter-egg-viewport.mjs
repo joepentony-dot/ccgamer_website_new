@@ -65,10 +65,53 @@ async function waitForSecretModalUnlock(page) {
   }, null, { timeout: 5000 });
 }
 
+async function waitForStableGamesGeometry(page) {
+  const deadline = Date.now() + 8000;
+  let previous = null;
+  let stableSamples = 0;
+  let latest = null;
+
+  while (Date.now() < deadline) {
+    latest = await page.evaluate(async () => {
+      if (document.fonts?.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_) {}
+      }
+
+      const root = document.documentElement;
+      return {
+        scrollHeight: Math.max(root.scrollHeight, document.body?.scrollHeight || 0),
+        bodyHeight: Math.round(document.body?.getBoundingClientRect().height || 0),
+        pendingVisuals: root.classList.contains('ccg-mobile-defer-visuals'),
+        shellCount: document.querySelectorAll('.ccg-game-card--shell').length,
+      };
+    });
+
+    const stableHeight = previous
+      && Math.abs(latest.scrollHeight - previous.scrollHeight) <= 1
+      && Math.abs(latest.bodyHeight - previous.bodyHeight) <= 1;
+
+    if (!latest.pendingVisuals && latest.shellCount === 0 && stableHeight) {
+      stableSamples += 1;
+      if (stableSamples >= 5) return latest;
+    } else {
+      stableSamples = 0;
+    }
+
+    previous = latest;
+    await page.waitForTimeout(150);
+  }
+
+  throw new Error(
+    `Games archive geometry did not settle before viewport validation: ${JSON.stringify(latest)}`
+  );
+}
+
 async function waitForTestPageReady(page, testCase) {
   if (testCase.page !== 'games/index.html') {
     await page.waitForTimeout(800);
-    return;
+    return null;
   }
 
   await page.waitForFunction(() => {
@@ -90,6 +133,8 @@ async function waitForTestPageReady(page, testCase) {
   await page.evaluate(() => new Promise(resolve => {
     requestAnimationFrame(() => requestAnimationFrame(resolve));
   }));
+
+  return waitForStableGamesGeometry(page);
 }
 
 async function viewportMetrics(page, selector) {
@@ -148,7 +193,7 @@ async function runCase(browser, testCase) {
 
   const url = new URL(testCase.page, args.baseUrl).toString();
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-  await waitForTestPageReady(page, testCase);
+  const readinessState = await waitForTestPageReady(page, testCase);
   await page.evaluate(() => window.scrollTo(0, Math.max(0, document.documentElement.scrollHeight - window.innerHeight)));
   await page.waitForTimeout(150);
   const scrollBeforeOpen = await page.evaluate(() => window.scrollY);
@@ -282,6 +327,7 @@ async function runCase(browser, testCase) {
     url,
     scrollBeforeOpen: round(scrollBeforeOpen),
     scrollAfterClose: round(scrollAfterClose),
+    readinessState,
     backdropScrollBefore: round(backdropScrollBefore),
     backdropScrollAfter: round(backdropScrollAfter),
     menuMetrics,
