@@ -71,7 +71,7 @@ assert.doesNotMatch(guidance,/SECRET ROUTE|SECRET WALL|SECRET DOOR/,"tutorial in
 assert.match(guidance,/#inventory-close,#inventory-close-top/,"inventory close controls must be highlighted after opening inventory");
 
 /* Start flow: the menu itself is the only chooser after the mobile notice. */
-assert.match(index,/<button id="solo-btn" class="[^"]*primary[^"]*">Play Solo<\/button><button id="tutorial-zone-btn" type="button" class="tutorial-primary-option">Tutorial<\/button>/,"Tutorial must be present in the shipped HTML immediately beside Play Solo");
+assert.match(index,/<button id="solo-btn" class="[^"]*primary[^"]*"[^>]*>Play Solo<\/button><button id="tutorial-zone-btn" type="button" class="tutorial-primary-option"[^>]*>Tutorial<\/button>/,"Tutorial must be present in the shipped HTML immediately beside Play Solo while allowing canonical presentation metadata");
 assert.match(guidance,/function ensurePrimaryTutorialButton\(\)/,"guidance must preserve the permanent Tutorial button if another runtime removes it");
 assert.match(guidance,/if\(!button\)\{[\s\S]*?solo\.insertAdjacentElement\("afterend",button\)/,"a missing Tutorial button must still be restored beside Play Solo as the safe shipped fallback");
 assert.match(guidance,/if\(button\.parentElement!==row\)solo\.insertAdjacentElement\("afterend",button\)/,"a detached Tutorial button must be restored to the supported menu");
