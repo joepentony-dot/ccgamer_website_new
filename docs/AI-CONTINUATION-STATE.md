@@ -10,16 +10,15 @@ Update this file when a workstream changes category, its active PR/dependency ch
 
 ## Current autonomous Dungeon Carnage checkpoint — 18 September 2026
 
-- Verified live `main`: `f4fecd858fab8d43cd9d6732ab56495cfb313116` — merged Stage 7 NPC/merchant integration (#2140).
-- Stage 5 #2138 remains merged as `94ae72bfbbc2bc9ee4ae58a01dc00e6bf37d4fa9`; Stage 6 #2139 remains merged as `3cb65ffa1ad35a8a0ff5ce854829eba646e78c6b`.
-- Stage 7 #2140 merged from exact qualified head `e1141fb03e926efcf833268e03f1341dd6ec8fdb` as `f4fecd858fab8d43cd9d6732ab56495cfb313116`.
-- Exact Stage 7 qualification passed all eight top-level workflows, canonical/Node contracts and all six Chromium shards with no unresolved review threads.
-- Stage 7 keeps `buyShopItem()` authoritative for prices, Score deductions, Artefact removal, inventory grants and the deferred Banishment exchange path while attaching R15 NPC identity/dialogue/service metadata to existing shops.
-- Active work is Stage 8 itch.io release preparation on `codex/dungeon-stage8-itch-release-current-main`, based exactly on Stage 7 merged main.
-- Stage 8 repository scope is a fresh current-main standalone HTML5 package. It copies only the canonical game runtime trees, creates a deterministic integrity/provenance manifest, strips website-root account bootstraps only from the staged copy, injects an itch-only Weekly Vault handoff, browser-smokes Solo/Tutorial/local Split Screen, and produces a CI ZIP artifact.
-- The canonical CCG website build remains unchanged and continues to own Weekly Vault/account services. No PayPal checkout, custom entitlement, signed-download or stale desktop/Windows delivery stack is being restored.
-- No public itch.io game page was found during current verification, so the final public itch URL/upload remains an external release action after repository qualification.
-- The programme remains milestone-first; broad legacy cleanup stays backlog unless it blocks release qualification.
+- Verified live `main`: `53cba902af9dbf1e118f3f274836120f6c30bb40` — merged Stage 8 itch.io HTML5 release preparation (#2141).
+- Stage 7 #2140 remains merged as `f4fecd858fab8d43cd9d6732ab56495cfb313116`.
+- Stage 8 #2141 merged from exact qualified head `e5d4333d4e8dc2912b2ffc9c5abc13f79d4b4a2d` as `53cba902af9dbf1e118f3f274836120f6c30bb40`.
+- Exact Stage 8 qualification passed the dedicated itch.io package workflow, CCG Site Safety, Public Code Cache Version, SEO Automation, Native Mouse Wheel Scroll Contract, canonical/Node contracts and all six Lost Sizzler Chromium shards.
+- Load Safety shard 2 initially timed out only in the unchanged `v10-41-stage8-scout-persistence.mjs` startup wait. The unchanged targeted shard retry passed; no runtime code, assertion or timeout was weakened.
+- The qualified head produced artifact `C64-Dungeon-Carnage-Itch` (artifact ID `10533819282`, 21,109,428 bytes, SHA-256 `5bcb8a915490382327f16fba0ba6ea5dcc20e0b1ba9d156dfc5a5d2a438b3c38`).
+- Stage 8 keeps the canonical CCG website runtime unchanged, excludes website account bootstraps and retired custom commerce from the staged package, preserves Solo/Tutorial/local Split Screen, and hands Weekly Vault back to the canonical website.
+- Repository-side itch.io release preparation is complete. Public itch.io page creation, artifact upload/publication and the final public URL remain external release actions; no URL is invented in source.
+- The programme remains milestone-first; broad legacy cleanup stays backlog unless it blocks an active player-facing workstream.
 
 ### Manual acceptance state
 
@@ -36,13 +35,12 @@ These deferred gates do not block independent repository work that does not depe
 
 ### Exact next action
 
-1. Qualify the fresh Stage 8 package branch from exact Stage 7 merged main.
-2. Require the Stage 8 package contract to build and verify the real runtime tree, prove release/cache identity, exclude website-root Supabase/account bootstraps and credential material, and preserve the canonical website source unchanged.
-3. Require the dedicated Chromium package smoke to launch packaged Solo, Tutorial and local 2P Split Screen and prove Weekly Vault opens the canonical CCG website instead of starting a local ranked run.
-4. Require the retained full Dungeon matrix to remain green; do not weaken existing assertions, timeouts or runtime ownership boundaries for packaging.
-5. Reconcile review findings, branch drift and changed paths; merge only from an exact clean head under the standing merge rule.
-6. After merge, reconcile the new main and record the repository release artifact as ready. The public itch.io page creation/upload/URL handoff remains an external action if no page exists.
-7. Keep the two manual product gates explicitly deferred until the user is available to perform them.
+1. Treat Stage 8 repository work as complete on merged `main` `53cba902af9dbf1e118f3f274836120f6c30bb40`; do not rebuild or requalify it without new evidence.
+2. Keep public itch.io page creation, artifact upload/publication and the final public URL as an external release gate.
+3. Keep the two Dungeon product acceptance checks explicitly deferred until the user is available to perform them.
+4. The next independent actionable repository workstream is Commodore Quest 3 (#2056): reconcile its stale branch against current `main`, re-derive only still-valid Quest 3 changes, and qualify a fresh current-main candidate under its own workstream rules.
+5. Keep #2110 parked behind its documented Cloudflare configuration blocker; do not rebase or retest it solely because `main` advanced.
+6. Treat #1976 as source material only unless current-main evidence independently justifies re-deriving that optimisation.
 
 ## Historical checkpoint notes
 
@@ -61,8 +59,8 @@ These deferred gates do not block independent repository work that does not depe
 
 | Workstream | Record | Current GitHub state |
 | --- | --- | --- |
-| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) plus [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md) | Stage 7 #2140 is merged as `f4fecd858fab8d43cd9d6732ab56495cfb313116`; Stage 8 itch.io release packaging is active on the current-main branch. Two independent manual product gates remain deferred. |
-| Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | itch.io is the intended purchase/download route; the custom commerce/paywall and stale packaging/Windows PR graphs are closed. Any package artifact must be rebuilt from current `main`, selectively reusing historical provider-neutral ideas only where necessary. |
+| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md) plus [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md) | Stage 8 #2141 is merged as `53cba902af9dbf1e118f3f274836120f6c30bb40`; repository-side release preparation is complete. Two independent manual product gates remain deferred. |
+| Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | Stage 8 #2141 is merged and the verified standalone HTML5 artifact is repository-ready. Public itch.io page creation/upload/final URL remain external; the retired custom commerce/paywall and desktop/Windows graphs stay closed. |
 | Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2103 and #2105 are merged; #2073 is closed. #2110 remains the current draft endpoint follow-up but is **BLOCKED** by missing/mismatched Cloudflare runtime configuration. Repository-side work for that blocker is already complete. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | draft rebuild PR #2056 remains based on an old merge base and requires a current-main rebuild/reconciliation before integration. |
 | SEO and generated output | [seo-and-generated-output.md](ai-work/seo-and-generated-output.md) | #2109 is the current merged game/archive publication result; #2111 is a merged SEO/video-page automation result; superseded #2107 and stale #1752/#1759 are closed. |
