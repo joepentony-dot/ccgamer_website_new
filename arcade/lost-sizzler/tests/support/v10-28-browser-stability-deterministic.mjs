@@ -33,14 +33,37 @@ const immediateClickTarget=`    const releaseAtClick=await state.page.evaluate((
     await withTimeout(state.page.locator("#solo-btn").click({timeout:8000,noWaitAfter:true}),10000,"immediate Solo button click");`;
 const immediateClickReplacement=`    await withTimeout(state.page.waitForFunction(()=>{
       const bootstrap=window.CCGLostSizzlerV142Bootstrap;
-      return Boolean(bootstrap&&bootstrap.ready===false&&document.body.dataset.releaseReady==="false");
-    },null,{timeout:25000}),STAGE_TIMEOUT_MS,"V10.42 early Solo gate");
-    const releaseAtClick=await state.page.evaluate(()=>document.body.dataset.releaseReady);
-    assert.equal(releaseAtClick,"false","the immediate-click test must act before the V10.42 enhancement queue is release-ready");
-    await withTimeout(state.page.locator("#solo-btn").click({timeout:10000,noWaitAfter:true}),12000,"immediate Solo button click");`;
+      const loader=document.getElementById("ccg-release-loading");
+      return Boolean(bootstrap&&bootstrap.ready===false&&document.body.dataset.releaseReady==="false"&&loader&&!loader.hidden&&getComputedStyle(loader).display!=="none");
+    },null,{timeout:25000}),STAGE_TIMEOUT_MS,"V10.42 blocking Solo loader gate");
+    const blockedFirstVisual=await state.page.evaluate(()=>{
+      const loader=document.getElementById("ccg-release-loading"),rect=loader?.getBoundingClientRect(),style=loader?getComputedStyle(loader):null;
+      return{releaseReady:document.body.dataset.releaseReady,loaderVisible:Boolean(loader&&!loader.hidden&&style?.display!=="none"),loaderZ:Number(style?.zIndex||0),loaderWidth:Math.round(rect?.width||0),loaderHeight:Math.round(rect?.height||0),viewport:{w:innerWidth,h:innerHeight}};
+    });
+    assert.equal(blockedFirstVisual.releaseReady,"false","the immediate-start audit must observe pre-release V10.42 state");
+    assert.equal(blockedFirstVisual.loaderVisible,true,"pre-release Solo menu must remain covered rather than accepting a hidden-menu click");
+    assert.ok(blockedFirstVisual.loaderZ>1000000&&blockedFirstVisual.loaderWidth>=blockedFirstVisual.viewport.w&&blockedFirstVisual.loaderHeight>=blockedFirstVisual.viewport.h,`the pre-release loader must own the viewport: ${JSON.stringify(blockedFirstVisual)}`);
+    await withTimeout(state.page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&window.CCGLostSizzlerV142Bootstrap?.ready===true&&document.getElementById("ccg-release-loading")?.hidden===true,null,{timeout:25000}),STAGE_TIMEOUT_MS,"authoritative Solo menu reveal");
+    await withTimeout(state.page.locator("#solo-btn").click({timeout:10000,noWaitAfter:true}),12000,"post-reveal Solo button click");`;
 const immediateClickMatches=source.split(immediateClickTarget).length-1;
 assert.equal(immediateClickMatches,1,"the deterministic browser harness must find exactly one immediate-Solo click block");
 source=source.replace(immediateClickTarget,immediateClickReplacement);
+
+const earlyTutorialClickTarget=`    await withTimeout(state.page.locator("#tutorial-zone-btn").click({timeout:8000,noWaitAfter:true}),10000,"early Tutorial button click");`;
+const earlyTutorialClickReplacement=`    await withTimeout(state.page.waitForFunction(()=>{
+      const loader=document.getElementById("ccg-release-loading");
+      return Boolean(window.CCGLostSizzlerV142Bootstrap&&window.CCGLostSizzlerV142Bootstrap.ready===false&&document.body.dataset.releaseReady==="false"&&loader&&!loader.hidden&&getComputedStyle(loader).display!=="none");
+    },null,{timeout:25000}),STAGE_TIMEOUT_MS,"V10.42 blocking Tutorial loader gate");
+    const blockedTutorialVisual=await state.page.evaluate(()=>{
+      const loader=document.getElementById("ccg-release-loading"),style=loader?getComputedStyle(loader):null;
+      return{releaseReady:document.body.dataset.releaseReady,loaderVisible:Boolean(loader&&!loader.hidden&&style?.display!=="none")};
+    });
+    assert.deepEqual(blockedTutorialVisual,{releaseReady:"false",loaderVisible:true},"pre-release Tutorial menu must remain covered by the canonical loader");
+    await withTimeout(state.page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&window.CCGLostSizzlerV142Bootstrap?.ready===true&&document.getElementById("ccg-release-loading")?.hidden===true,null,{timeout:25000}),STAGE_TIMEOUT_MS,"authoritative Tutorial menu reveal");
+    await withTimeout(state.page.locator("#tutorial-zone-btn").click({timeout:10000,noWaitAfter:true}),12000,"post-reveal Tutorial button click");`;
+const earlyTutorialClickMatches=source.split(earlyTutorialClickTarget).length-1;
+assert.equal(earlyTutorialClickMatches,1,"the deterministic browser harness must find exactly one early Tutorial click block");
+source=source.replace(earlyTutorialClickTarget,earlyTutorialClickReplacement);
 
 const splitActivationTarget=`    await withTimeout(state.page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof p2!=="undefined"&&Boolean(p2)&&playMode==="split"&&mode==="playing",null,{timeout:15000}),STAGE_TIMEOUT_MS,"split-screen activation");`;
 const splitActivationReplacement=`    await withTimeout(state.page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof p2!=="undefined"&&Boolean(p2)&&playMode==="split"&&mode==="playing",null,{timeout:25000}),STAGE_TIMEOUT_MS,"split-screen activation");`;
