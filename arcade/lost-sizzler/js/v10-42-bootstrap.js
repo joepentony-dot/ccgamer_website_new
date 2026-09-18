@@ -4,8 +4,8 @@
   if(window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
-  const BUILD="V10.42 r32";
-  const CACHE="20260918r32";
+  const BUILD="V10.42 r33";
+  const CACHE="20260918r33";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-r23-rpg-build-focus.js","CCGLostSizzlerV142R23RpgBuildFocus"],
@@ -23,6 +23,7 @@
     ["v10-42-r12-dynamic-encounter-director.js","CCGLostSizzlerV142R12DynamicEncounterDirector"],
     ["v10-42-r13-encounter-progression-runtime.js","CCGLostSizzlerV142R13EncounterProgressionRuntime"],
     ["v10-42-r14-combat-encounter-bridge.js","CCGLostSizzlerV142R14CombatEncounterBridge"],
+    ["v10-42-stage6-zone-gameplay.js","CCGLostSizzlerV142Stage6ZoneGameplay"],
     ["v10-42-r15-npc-expansion.js","CCGLostSizzlerV142R15NpcExpansion"],
     ["v10-42-r16-environment-presentation.js","CCGLostSizzlerV142R16EnvironmentPresentation"],
     ["v10-42-tutorial-campaign.js","CCGLostSizzlerV142TutorialCampaign"],

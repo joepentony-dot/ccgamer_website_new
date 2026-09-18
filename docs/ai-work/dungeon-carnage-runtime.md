@@ -6,7 +6,7 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Current checkpoint — 17 September 2026
 
-Live `main` is `d3225318ff5cb87664bce96020c790099f53e06a`, the merged Stage 4 elemental-portal foundation (#2137).
+Live `main` is `94ae72bfbbc2bc9ee4ae58a01dc00e6bf37d4fa9`, the merged Stage 5 procedural-topology milestone (#2138).
 
 Stage 1 is converged for the current product programme:
 
@@ -48,6 +48,34 @@ Ownership reconciliation before code changes:
 - Stage 5 therefore extends `world.js` deterministically rather than adding a competing procedural overlay.
 - The requested outcome is route variety, alternate paths, landmarks, purposeful dead ends, exploration decisions and floor-aware structure without simply increasing map dimensions.
 - Required invariants include deterministic seeds, guaranteed start→exit reachability, optional content remaining non-blocking, unchanged authoritative floor/portal progression, checkpoint compatibility and supported Solo/Tutorial/Split behaviour.
+
+### Stage 5 procedural topology — PR #2138 — MERGED
+
+Qualified head: `819c820b1a908a0e5b20f69a2775b5b056b9ef74`.
+
+Merge commit/current main: `94ae72bfbbc2bc9ee4ae58a01dc00e6bf37d4fa9`.
+
+#2138 extended the authoritative `world.js` BSP generator with deterministic floor-aware alternate routes/loops, crossroads, purposeful dead ends and landmarks. It preserved the 128×84 dimensions, secret-space reservation, deterministic seed behaviour, existing gameplay RNG stream and guaranteed start→exit connectivity. R6/R7/R24 remain downstream consumers. Exact qualification passed all eight top-level workflows and all six Chromium shards without a retry.
+
+### Stage 6 deeper zone-specific gameplay — ACTIVE
+
+Branch: `codex/dungeon-stage6-zone-gameplay-current-main`.
+
+Base: merged `main` `94ae72bfbbc2bc9ee4ae58a01dc00e6bf37d4fa9`.
+
+The first bounded slice adds `v10-42-stage6-zone-gameplay.js` after the established R14 combat/encounter bridge. It wraps the established `CCGSystems.decorate()` as a post-decoration consumer and uses deterministic floor/topology metadata to:
+
+- vary ordinary enemy composition among existing supported AI kinds;
+- give crossroads/alternate-route/dead-end rooms different combat pressure;
+- vary real trap kinds and cycle periods by zone;
+- vary dedicated-hazard type/cadence through existing hazard primitives;
+- vary generator spawn cooldown through the existing generator primitive;
+- attach floor-specific guardian/key-guardian pattern metadata and bounded cadence/movement tuning;
+- expose encounter directives for downstream presentation/reward work.
+
+Special enemies (followers, guardians/key guardians, stalkers, CCG boss, treasure goblin and Sigil/Warden owners) are excluded from ordinary retyping. The layer does not carve maps, advance floors/portals, own saves, use storage/network APIs or replace AI/combat authority.
+
+The release/cache identity is advanced to `V10.42 r33` / `20260918r33` so cached clients cannot retain an r32 bootstrap that omits the new ordered module. Focused Stage 6 and r33 release-identity contracts are part of the candidate.
 
 ### #2129 release/cache ownership remediation
 
@@ -190,13 +218,13 @@ For both: **MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**.
 
 Exact next repository action:
 
-1. qualify Stage 5 PR #2138 at its exact current head against merged `main` `d3225318ff5cb87664bce96020c790099f53e06a`;
-2. require the focused Stage 5 topology contract plus the retained canonical/Node suite, Chromium discovery and all six Chromium shards to pass without weakening assertions, timeouts or production ownership;
-3. preserve `world.js` as the only topology owner, the 128×84 world dimensions, deterministic seed behaviour, guaranteed start→exit reachability, existing floor/portal progression and checkpoint semantics;
-4. reconcile every #2138 review thread, changed path and release/cache assertion against the exact qualified r32 head;
-5. if #2138 remains 0 behind `main`, mergeable and fully green under the standing merge-authorisation rule, merge it and record its exact qualified head plus merge SHA;
-6. after the merge, start Stage 6 deeper zone-specific gameplay from the fresh merged `main`, using the Stage 5 topology metadata as a consumer contract rather than reopening topology ownership;
-7. keep the two deployed/manual product gates explicitly deferred until the user is available to perform them.
+1. qualify the Stage 6 r33 branch through focused zone-gameplay/release-identity contracts and the complete retained matrix;
+2. keep special/named/stalker/guardian/quest identities protected and confirm ordinary composition changes do not break campaign gates;
+3. preserve Stage 5 topology, Stage 4 portal/floor progression, checkpoint representation, Split Screen and Tutorial ownership;
+4. reconcile review findings and release/cache assertions on the exact candidate head;
+5. merge the bounded Stage 6 slice only when all required checks are green and the branch is 0 behind current `main`;
+6. after this slice merges, continue Stage 6 with remaining zone-specific events/rewards/content only if they can reuse established runtime primitives; otherwise record the boundary and move to Stage 7;
+7. keep both manual product gates explicitly deferred.
 
 ## Historical live-defect remediation checkpoint — 16 September 2026
 
@@ -230,3 +258,5 @@ Branch `codex/dungeon-projectile-lifecycle-current-main` was created from exact 
 - 2026-09-17: User explicitly deferred both remaining hands-on acceptance gates. Independent Stage 1 work began on #2131; the first candidate exposed hidden R56/R60 supported ownership previously reached through retired special-mode startup ancestry, and the candidate was corrected without restoring the retired Spy startup owners or weakening tests.
 - 2026-09-17: Reconciled the stale R32 Solo-monitor contract, qualified #2131 exact head `21fed121ceb0f72278142ba201f25927c5c6b9b5` across all required workflows and all six Chromium shards, used one unchanged shard-5 retry for the historical `v10-35-layout.mjs` startup flake, and merged #2131 as `3358cddc66725f75213c74dec7459551d8ff02b7`.
 - 2026-09-17: Began #2134 from the #2131 merge to remove the dead shared Spy fullscreen pre-dispatch. Initial CI exposed the stale R59 fullscreen assertion; review also proved the first browser-contract filename was filtered from Chromium by the retained-mode manifest. Both findings were corrected without restoring retired behavior or weakening supported R59 ownership.
+
+- 2026-09-18: Stage 5 #2138 qualified at `819c820b1a908a0e5b20f69a2775b5b056b9ef74` and merged as `94ae72bfbbc2bc9ee4ae58a01dc00e6bf37d4fa9` with all eight workflows and all six Chromium shards green. Stage 6 began from that exact merge with the bounded r33 zone-gameplay owner.

@@ -4,8 +4,8 @@
 
 ## Audit checkpoint
 
-- Audited: **17 September 2026**.
-- Current live `main`: `d3225318ff5cb87664bce96020c790099f53e06a`, the merged Stage 4 elemental-portal foundation (#2137).
+- Audited: **18 September 2026**.
+- Current live `main`: `94ae72bfbbc2bc9ee4ae58a01dc00e6bf37d4fa9`, the merged Stage 5 procedural-topology milestone (#2138).
 - Stage 1 is converged through #2134 and #2135. #2134 merged as `adc6f96d2ab8d8395b8cae5818b38c101bd846b9`; #2135 merged as `811f67845dbcaa0b4b5c2b83f8860e10a184c1a0`.
 - Stage 2 startup/main-menu polish is merged through #2136 as `ee2d6b38e5c5805ee1c906d7f801bda2d8496383`.
 - The seven-item repository-side live-defect remediation programme remains complete through #2117, #2118, #2119, #2123, #2090, #2125 and #2126; the later freeze/stopped-firing regression remains repository-fixed through #2129.
@@ -13,7 +13,7 @@
 - Stage 4 portal foundation #2137 is merged. Exact qualified head: `030af6e9f8c2da98fb618c64ae276b1159adda3f`; merge commit: `d3225318ff5cb87664bce96020c790099f53e06a`.
 - #2137 establishes Water / Fire / Earth / Air campaign-state ownership, checkpoint persistence/inference and deterministic route seeds without replacing `run.floor`, `floorComplete()` or `descendFloor()`. It also seals the V10.42 Solo/Tutorial ready-transition start race without taking over Continue, Weekly or Split Screen.
 - Exact-head qualification passed all eight top-level workflows and all six Chromium shards. Shard 5 required one unchanged retry after the historical `v10-35-layout.mjs` startup timeout; no runtime, assertion or timeout was weakened.
-- Active product milestone: Stage 5 larger procedural world structure on branch `codex/dungeon-stage5-procedural-topology-current-main`, based exactly on merged `main` `d3225318ff5cb87664bce96020c790099f53e06a`.
+- Stage 5 procedural topology #2138 is merged. Exact qualified head: `819c820b1a908a0e5b20f69a2775b5b056b9ef74`; merge commit: `94ae72bfbbc2bc9ee4ae58a01dc00e6bf37d4fa9`. All eight top-level workflows and all six Chromium shards passed without a retry.\n- Active product milestone: Stage 6 deeper zone-specific gameplay on branch `codex/dungeon-stage6-zone-gameplay-current-main`, based exactly on merged `main` `94ae72bfbbc2bc9ee4ae58a01dc00e6bf37d4fa9`. The first bounded slice consumes existing biome/topology/encounter state to vary real enemy composition, trap/hazard cadence, generator pressure and guardian patterns without taking topology/progression/save/network ownership.
 - A merged PR is not treated as a closed user-reproduced defect until deployed behaviour is manually accepted where this register explicitly requires that acceptance.
 
 ### Deferred manual acceptance
@@ -164,8 +164,8 @@ These are post-defect product/backlog items. They are **not** additional defects
 | Area | Status | Required outcome |
 | --- | --- | --- |
 | Four elemental portals | **PARTIAL — FOUNDATION MERGED #2137** | Campaign-state foundation is merged: Water maps Floor 1→2, Fire 2→3, Earth 3→4 and Air 4→5, with save/checkpoint persistence and deterministic route seeds. Large visual portal rooms and deeper zone-specific mechanics remain subsequent work. |
-| Larger/grander procedural topology | **OPEN** | Build materially larger and more distinctive procedural spaces for the portal/zone structure. R24 describes existing generated rooms and does not satisfy this topology request. |
-| Deeper zone-specific content | **OPEN** | Extend enemies, bosses/elites, items/Artefacts, events, secrets and encounter patterns so the zones differ mechanically as well as thematically. |
+| Larger/grander procedural topology | **REPOSITORY-COMPLETE — #2138** | Stage 5 is merged: the authoritative `world.js` generator now adds deterministic floor-aware alternate routes, loops, crossroads, purposeful dead ends and landmarks while preserving 128×84 dimensions, seed stability, secret-space reservation and start→exit reachability. |
+| Deeper zone-specific content | **ACTIVE — STAGE 6** | First current-main slice varies ordinary enemy composition, trap/hazard mechanics, generator pressure, guardian patterns and encounter directives by floor and Stage 5 route role. Further zone events/rewards/content remain within Stage 6. |
 | Finished NPC/merchant integration | **OPEN** | Turn existing NPC foundations into finished in-world interactions, merchant/service behaviour and content rewards integrated with the established economy and final zone structure. |
 | itch.io release handoff | **OPEN** | itch.io is the intended purchase/download route. Retain the CCG website as the branded landing/demo experience and perform an end-to-end package/release check. |
 
