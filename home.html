@@ -51,8 +51,23 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="dns-prefetch" href="//fonts.googleapis.com" />
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
-    <link rel="preload" as="image" href="resources/images/hero/ccg-hero-c64.png" fetchpriority="high" type="image/png">
-    <link rel="preload" as="image" href="resources/images/hero/ccg-hero-amiga.png" fetchpriority="high" type="image/png">
+    <script data-ccg-home-hero-preload>
+        (function () {
+            var href = "resources/images/hero/ccg-hero-c64.png";
+            try {
+                if (localStorage.getItem("ccg-mode") === "amiga") {
+                    href = "resources/images/hero/ccg-hero-amiga.png";
+                }
+            } catch (e) {}
+            var preload = document.createElement("link");
+            preload.rel = "preload";
+            preload.as = "image";
+            preload.href = href;
+            preload.type = "image/png";
+            preload.setAttribute("fetchpriority", "high");
+            document.head.appendChild(preload);
+        })();
+    </script>
     <link rel="preload" as="image" href="resources/images/ccgamer-logo.png" fetchpriority="high" type="image/png" imagesizes="150px">
 
     <script>
