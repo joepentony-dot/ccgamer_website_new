@@ -623,7 +623,7 @@ rgba(0,0,0,0.6)
 }
 
 body.ccg-secret-modal-open {
-    overflow: hidden;
+    overflow: visible;
     overscroll-behavior: none;
     touch-action: auto;
 }
