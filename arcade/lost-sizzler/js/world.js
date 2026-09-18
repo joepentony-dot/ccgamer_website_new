@@ -189,14 +189,14 @@ window.CCGWorld=(()=>{
     if(horizontalFirst){walkX();walkY()}else{walkY();walkX()}
     return out
   }
-  function stage5RouteCandidate(map,rooms,a,b,profile,seedText){
+  function stage5RouteCandidate(map,rooms,a,b,profile,seedText,protectedCells=new Set()){
     const ports=stage5FacingPorts(a,b),routes=[stage5OrthogonalPath(ports.a,ports.b,true),stage5OrthogonalPath(ports.a,ports.b,false)];
     const valid=[];
     for(const route of routes){
       if(route.length<4||route.length>profile.maxPath)continue;
       let walls=0,foreign=false;
       for(const point of route){
-        if(point.x<=0||point.y<=0||point.x>=C.worldWidth-1||point.y>=C.worldHeight-1){foreign=true;break}
+        if(point.x<=0||point.y<=0||point.x>=C.worldWidth-1||point.y>=C.worldHeight-1||protectedCells.has(cell(point.x,point.y))){foreign=true;break}
         const room=rooms.find(candidate=>candidate.id!==a.id&&candidate.id!==b.id&&inside(candidate,point));
         if(room){foreign=true;break}
         if(map[point.y][point.x]===1)walls++;
@@ -211,7 +211,33 @@ window.CCGWorld=(()=>{
     }
     return valid[0]
   }
-  function addStage5Topology(seedText,map,rooms,edges,graph,startRoom,exitRoom){
+  function stage5SecretReserveCells(seedText,rooms,doorSpecs){
+    const floor=stage5Floor(seedText),secretRoomIds=new Set((doorSpecs||[]).slice(0,Math.max(0,C.dungeon.secretRooms||0)).map(door=>door.roomId)),reserved=new Set();
+    const add=(x,y)=>{if(x>2&&y>2&&x<C.worldWidth-3&&y<C.worldHeight-3)reserved.add(cell(x,y))};
+    for(const room of rooms){
+      if(!room.optional||!secretRoomIds.has(room.id))continue;
+      const insetX=room.x+2+((room.id*7+floor*3)%Math.max(1,room.w-3));
+      const insetY=room.y+2+((room.id*5+floor*7)%Math.max(1,room.h-3));
+      const sides=[
+        {dx:1,dy:0,x:room.x+room.w+1,y:insetY},
+        {dx:-1,dy:0,x:room.x-1,y:insetY},
+        {dx:0,dy:1,x:insetX,y:room.y+room.h+1},
+        {dx:0,dy:-1,x:insetX,y:room.y-1}
+      ];
+      for(const side of sides){
+        for(let step=0;step<=4;step++)add(side.x+side.dx*step,side.y+side.dy*step);
+        const endX=side.x+side.dx*4,endY=side.y+side.dy*4;
+        if(side.dx){
+          for(let yy=endY-1;yy<=endY+1;yy++)for(let step=0;step<=2;step++)add(endX+side.dx*step,yy);
+        }else{
+          for(let xx=endX-1;xx<=endX+1;xx++)for(let step=0;step<=2;step++)add(xx,endY+side.dy*step);
+        }
+      }
+    }
+    return reserved
+  }
+
+  function addStage5Topology(seedText,map,rooms,edges,graph,startRoom,exitRoom,protectedCells=new Set()){
     const floor=stage5Floor(seedText),profile=STAGE5_TOPOLOGY_PROFILES[floor]||STAGE5_TOPOLOGY_PROFILES[1];
     const existing=stage5ExistingPairs(edges),candidates=[];
     const ordinary=rooms.filter(room=>!room.optional&&room.id!==startRoom&&room.id!==exitRoom);
@@ -220,7 +246,7 @@ window.CCGWorld=(()=>{
       if(existing.has(key))continue;
       const graphDistance=stage5GraphDistance(graph,a.id,b.id);
       if(!Number.isFinite(graphDistance)||graphDistance<3)continue;
-      const route=stage5RouteCandidate(map,rooms,a,b,profile,seedText);
+      const route=stage5RouteCandidate(map,rooms,a,b,profile,seedText,protectedCells);
       if(!route)continue;
       const degreePenalty=(graph[a.id]?.length||0)+(graph[b.id]?.length||0);
       const hashTie=hash(`${seedText}-STAGE5-PAIR-${key}`)%997;
@@ -269,7 +295,8 @@ window.CCGWorld=(()=>{
       deadEnds:deadEndIds,
       crossroads:crossroadIds,
       landmarks:landmarkIds,
-      dimensions:{width:C.worldWidth,height:C.worldHeight}
+      dimensions:{width:C.worldWidth,height:C.worldHeight},
+      protectedSecretCells:protectedCells.size
     }
   }
 
@@ -301,11 +328,6 @@ window.CCGWorld=(()=>{
       break;
     }
 
-    // Stage 5 enriches the existing BSP tree with a small number of deterministic
-    // shortcuts. It uses a separate hash-derived decision stream, so the main
-    // world RNG remains at the same point for host/enemy/item generation.
-    const topology=addStage5Topology(seedText,map,rooms,edges,graph,startRoom,exitRoom);
-
     // Classic wrap tunnel on an ordinary connected corridor row.
     let tunnelY=Math.floor(C.worldHeight*.55),found=false;
     for(let off=0;off<22&&!found;off++)for(const y of [tunnelY+off,tunnelY-off]){
@@ -330,6 +352,13 @@ window.CCGWorld=(()=>{
         for(let y=room.y;y<=room.y+room.h;y++)for(let x=room.x;x<=room.x+room.w;x++)optionalCells.add(cell(x,y));optionalCells.add(cell(d.x,d.y));bonusIndex++;
       }
     }
+
+    // Stage 5 runs only after the established optional-annex set is frozen.
+    // The first optional gates become hidden secret rooms in systems.js, so
+    // reserve the exact wall cells its nested-crack generator may need before
+    // carving any alternate route.
+    const protectedSecretCells=stage5SecretReserveCells(seedText,rooms,doorSpecs);
+    const topology=addStage5Topology(seedText,map,rooms,edges,graph,startRoom,exitRoom,protectedSecretCells);
 
     while(graph.length<rooms.length)graph.push([]);return{map,rooms,edges,graph,start:centre(rooms[startRoom]),exit:centre(rooms[exitRoom]),startRoomId:startRoom,exitRoomId:exitRoom,random,tunnelY,doorSpecs,optionalCells,lockedRooms,hauntedCorridor,topology};
   }
