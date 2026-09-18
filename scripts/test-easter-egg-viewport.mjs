@@ -65,6 +65,124 @@ async function waitForSecretModalUnlock(page) {
   }, null, { timeout: 5000 });
 }
 
+async function waitForStableGamesGeometry(page) {
+  const deadline = Date.now() + 8000;
+  let previous = null;
+  let stableSamples = 0;
+  let latest = null;
+
+  while (Date.now() < deadline) {
+    latest = await page.evaluate(async () => {
+      if (document.fonts?.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_) {}
+      }
+
+      const root = document.documentElement;
+      return {
+        scrollHeight: Math.max(root.scrollHeight, document.body?.scrollHeight || 0),
+        bodyHeight: Math.round(document.body?.getBoundingClientRect().height || 0),
+        pendingVisuals: root.classList.contains('ccg-mobile-defer-visuals'),
+        shellCount: document.querySelectorAll('.ccg-game-card--shell').length,
+      };
+    });
+
+    const stableHeight = previous
+      && Math.abs(latest.scrollHeight - previous.scrollHeight) <= 1
+      && Math.abs(latest.bodyHeight - previous.bodyHeight) <= 1;
+
+    if (!latest.pendingVisuals && latest.shellCount === 0 && stableHeight) {
+      stableSamples += 1;
+      if (stableSamples >= 5) return latest;
+    } else {
+      stableSamples = 0;
+    }
+
+    previous = latest;
+    await page.waitForTimeout(150);
+  }
+
+  throw new Error(
+    `Games archive geometry did not settle before viewport validation: ${JSON.stringify(latest)}`
+  );
+}
+
+async function waitForTestPageReady(page, testCase) {
+  if (testCase.page !== 'games/index.html') {
+    await page.waitForTimeout(800);
+    return null;
+  }
+
+  await page.waitForFunction(() => {
+    const fallback = document.getElementById('gamesStaticFallback');
+    const accordion = document.getElementById('gamesAccordion');
+    const total = document.getElementById('gamesTotalCount');
+    const totalCount = Number.parseInt(String(total?.textContent || '').replace(/,/g, ''), 10);
+
+    return Boolean(
+      fallback
+      && fallback.hidden
+      && accordion
+      && accordion.children.length > 0
+      && Number.isFinite(totalCount)
+      && totalCount > 0
+    );
+  }, null, { timeout: 15000 });
+
+  await page.evaluate(() => new Promise(resolve => {
+    requestAnimationFrame(() => requestAnimationFrame(resolve));
+  }));
+
+  return waitForStableGamesGeometry(page);
+}
+
+async function settleAtPageBottom(page) {
+  const deadline = Date.now() + 6000;
+  let previous = null;
+  let stableSamples = 0;
+  let latest = null;
+
+  while (Date.now() < deadline) {
+    await page.evaluate(() => {
+      // Use the browser's physically reachable bottom rather than a theoretical
+      // scrollHeight - innerHeight target. Mobile emulation can expose a small
+      // visual/layout viewport delta even after the page geometry has settled.
+      window.scrollTo(0, Number.MAX_SAFE_INTEGER);
+    });
+    await page.waitForTimeout(180);
+
+    latest = await page.evaluate(() => {
+      const scroller = document.scrollingElement || document.documentElement;
+      const theoreticalMax = Math.max(0, scroller.scrollHeight - window.innerHeight);
+      return {
+        scrollY: window.scrollY,
+        scrollHeight: scroller.scrollHeight,
+        clientHeight: scroller.clientHeight,
+        theoreticalMax,
+        distanceFromTheoreticalMax: theoreticalMax - window.scrollY,
+      };
+    });
+
+    const stable = previous
+      && Math.abs(latest.scrollHeight - previous.scrollHeight) <= 1
+      && Math.abs(latest.scrollY - previous.scrollY) <= 1;
+
+    if (stable) {
+      stableSamples += 1;
+      if (stableSamples >= 3) return latest;
+    } else {
+      stableSamples = 0;
+    }
+
+    previous = latest;
+  }
+
+  throw new Error(
+    `Page bottom did not settle before viewport validation: ${JSON.stringify(latest)}`
+  );
+}
+
 async function viewportMetrics(page, selector) {
   return page.evaluate(targetSelector => {
     const element = document.querySelector(targetSelector);
@@ -121,9 +239,8 @@ async function runCase(browser, testCase) {
 
   const url = new URL(testCase.page, args.baseUrl).toString();
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-  await page.waitForTimeout(800);
-  await page.evaluate(() => window.scrollTo(0, Math.max(0, document.documentElement.scrollHeight - window.innerHeight)));
-  await page.waitForTimeout(150);
+  const readinessState = await waitForTestPageReady(page, testCase);
+  const bottomState = await settleAtPageBottom(page);
   const scrollBeforeOpen = await page.evaluate(() => window.scrollY);
 
   await triggerTripleClick(page);
@@ -248,6 +365,8 @@ async function runCase(browser, testCase) {
     url,
     scrollBeforeOpen: round(scrollBeforeOpen),
     scrollAfterClose: round(scrollAfterClose),
+    readinessState,
+    bottomState,
     menuMetrics,
     closeMetrics,
     menuState,
@@ -307,7 +426,7 @@ const rows = results.map(result => {
   return `| ${result.name} | ${result.width}×${result.height} | ${result.passed ? 'PASS' : 'FAIL'} | ${menuHeight} | ${frameHeight} |`;
 }).join('\n');
 
-const report = `# Easter Egg Viewport Positioning Validation\n\n## Verdict\n\n**${evidence.verdict}**\n\nThe three-click command menu, a shared framed result and the direct BSOD overlay were tested from a scrolled page position across phone portrait, small phone, phone landscape, desktop and the Games index.\n\n| Case | Viewport | Result | Menu height | Result frame height |\n|---|---:|---:|---:|---:|\n${rows}\n\n## Required behaviour\n\n- Menu panel, close button, framed result, direct result and exit button remain inside the visible viewport.\n- Long menus scroll internally with the close control remaining visible.\n- Every reopen begins at the top of the command list.\n- Opening and closing does not move the underlying page.\n- The body is no longer changed to fixed positioning or touch-action none.\n- Keyboard focus moves to the active close/exit control.\n\n## Failed checks\n\n${failedChecks.length ? failedChecks.map(item => `- ${item}`).join('\n') : '- None'}\n`;
+const report = `# Easter Egg Viewport Positioning Validation\n\n## Verdict\n\n**${evidence.verdict}**\n\nThe three-click command menu, a shared framed result and the direct BSOD overlay were tested from a scrolled page position across phone portrait, small phone, phone landscape, desktop and the Games index.\n\n| Case | Viewport | Result | Menu height | Result frame height |\n|---|---:|---:|---:|---:|\n${rows}\n\n## Required behaviour\n\n- Menu panel, close button, framed result, direct result and exit button remain inside the visible viewport.\n- Long menus scroll internally with the close control remaining visible.\n- Every reopen begins at the top of the command list.\n- Opening and closing does not move the underlying page.\n- Wheel input on the modal backdrop cannot scroll the underlying page.\n- The body is no longer changed to fixed positioning or touch-action none.\n- Keyboard focus moves to the active close/exit control.\n\n## Failed checks\n\n${failedChecks.length ? failedChecks.map(item => `- ${item}`).join('\n') : '- None'}\n`;
 
 fs.writeFileSync(path.resolve(args.report), report);
 console.log(JSON.stringify({ verdict: evidence.verdict, testedCases: results.length, failedChecks }, null, 2));

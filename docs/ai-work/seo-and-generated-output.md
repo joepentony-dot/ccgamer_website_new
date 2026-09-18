@@ -23,6 +23,16 @@ Automated SEO/video metadata and generated pages, game/archive output, sitemaps,
 3. After the Road Rash canonical route is successfully generated/deployed, perform real desktop/mobile visual acceptance and Lighthouse/PageSpeed measurements against the canonical URL.
 4. Keep generated game pages workflow-owned; regenerate them through Reliable Games Publishing rather than editing canonical outputs by hand.
 
+## Site-wide public layout follow-up — 2026-09-18
+
+- Active PR: **#2165** on `codex/sitewide-public-layout-audit`, reconciled onto live `main` `b0c0825010669093b7459bc9b1596cde1602f6e1`.
+- The public density pass covers the main archive, category, editorial/video and information page families through scoped `data-ccg-page` selectors in `resources/css/ccg-master.css`.
+- Home, single-game, quiz, admin, community-auth and arcade/game runtimes remain outside the generic rules.
+- The concurrent PWA update-prompt release already used public-code-v6, so this candidate advances the cache namespace to `2026-09-18-public-code-v7`.
+- Easter Egg viewport CI was updated to validate the live catalogue without a stale fixed game count, while keeping the protected-file hash contract.
+- The games-index viewport case now waits for the dynamic archive to finish replacing its crawlable fallback before testing modal scroll preservation; the actual scroll-preservation assertion remains unchanged.
+- Regression contract: `tests/sitewide-public-density.test.mjs`.
+
 ## Verified checkpoint — 2026-09-16
 
 This workstream has two current generated-output scopes that must not be conflated:

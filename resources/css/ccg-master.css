@@ -4548,3 +4548,247 @@ body.ccg-egg-open {
     }
 }
 
+/* CCG PUBLIC CONTENT DENSITY PASS — 2026-09-18 */
+/* Games archive scroll geometry:
+   ccg-performance-foundations.css applies content-visibility:auto to generic
+   accordion sections. On the collapsed mobile A-Z archive, its 240px intrinsic
+   estimate is substantially taller than the real headers, so Chromium shrinks
+   the scroll range while travelling down the page. Keep these wrappers at
+   their real collapsed height; batched cards and lazy media remain unchanged. */
+html[data-ccg-page="games-index"].ccg-perf-enabled .games-accordion__section {
+    content-visibility: visible;
+    contain-intrinsic-size: none;
+}
+
+/*
+   Tightens the shared public browsing/info experience without touching the
+   home showcase, individual game pages, quiz, admin or arcade runtimes.
+   Page-specific CSS remains authoritative for bespoke presentation.
+*/
+
+html[data-ccg-page="games-index"],
+html[data-ccg-page="genres-index"],
+html[data-ccg-page="genre-single"],
+html[data-ccg-page="collections-index"],
+html[data-ccg-page="publisher-index"],
+html[data-ccg-page="publisher-single"],
+html[data-ccg-page="developers-index"],
+html[data-ccg-page="developer-single"],
+html[data-ccg-page="years-index"],
+html[data-ccg-page="year-single"],
+html[data-ccg-page="platforms-index"],
+html[data-ccg-page="platform-single"],
+html[data-ccg-page="music-hub"],
+html[data-ccg-page="music-composer"],
+html[data-ccg-page="game-discovery"],
+html[data-ccg-page="about"],
+html[data-ccg-page="contact"],
+html[data-ccg-page="emulation"] {
+    --ccg-section-gap: clamp(14px, 2vw, 22px);
+    --ccg-section-gap-mobile: clamp(12px, 3.6vw, 18px);
+    --ccg-section-pad-y: clamp(10px, 1.8vw, 18px);
+    --ccg-section-pad-y-mobile: clamp(9px, 3vw, 15px);
+    --ccg-page-entry-pad: clamp(14px, 2vw, 20px);
+    --ccg-space-xl: 24px;
+}
+
+/* Detail families keep their dedicated hero CSS; shared rules only tighten frame/rhythm. */
+html[data-ccg-page="games-index"] .ccg-main,
+html[data-ccg-page="genres-index"] .ccg-main,
+html[data-ccg-page="genre-single"] .ccg-main,
+html[data-ccg-page="collections-index"] .ccg-main,
+html[data-ccg-page="publisher-index"] .ccg-main,
+html[data-ccg-page="publisher-single"] .ccg-main,
+html[data-ccg-page="developers-index"] .ccg-main,
+html[data-ccg-page="developer-single"] .ccg-main,
+html[data-ccg-page="years-index"] .ccg-main,
+html[data-ccg-page="year-single"] .ccg-main,
+html[data-ccg-page="platforms-index"] .ccg-main,
+html[data-ccg-page="platform-single"] .ccg-main,
+html[data-ccg-page="music-hub"] .ccg-main,
+html[data-ccg-page="music-composer"] .ccg-main,
+html[data-ccg-page="game-discovery"] .ccg-main,
+html[data-ccg-page="about"] .ccg-main,
+html[data-ccg-page="contact"] .ccg-main,
+html[data-ccg-page="emulation"] .ccg-main {
+    width: min(1240px, 96vw);
+    padding-top: var(--ccg-page-entry-pad);
+    padding-bottom: clamp(22px, 3vw, 30px);
+}
+
+html[data-ccg-page="games-index"] :is(.games-hero, .ccg-hero),
+html[data-ccg-page="genres-index"] :is(.ccg-genre-hero, .ccg-hero),
+html[data-ccg-page="collections-index"] :is(.ccg-hero--collections, .ccg-hero),
+html[data-ccg-page="publisher-index"] .ccg-hero,
+html[data-ccg-page="publisher-single"] .ccg-hero,
+html[data-ccg-page="developers-index"] .ccg-hero,
+html[data-ccg-page="years-index"] .ccg-hero,
+html[data-ccg-page="year-single"] .ccg-hero,
+html[data-ccg-page="platforms-index"] .ccg-hero,
+html[data-ccg-page="platform-single"] .ccg-hero,
+html[data-ccg-page="game-discovery"] .ccg-hero,
+html[data-ccg-page="about"] .ccg-hero,
+html[data-ccg-page="contact"] .ccg-hero,
+html[data-ccg-page="emulation"] .ccg-hero {
+    min-height: clamp(210px, 24vw, 320px);
+    margin-bottom: clamp(14px, 2vw, 20px);
+}
+
+html[data-ccg-page="games-index"] :is(.games-hero__inner, .ccg-hero__inner),
+html[data-ccg-page="genres-index"] :is(.ccg-genre-hero__inner, .ccg-hero__inner),
+html[data-ccg-page="publisher-index"] .ccg-hero__inner,
+html[data-ccg-page="publisher-single"] .ccg-hero__inner,
+html[data-ccg-page="developers-index"] .ccg-hero__inner,
+html[data-ccg-page="years-index"] .ccg-hero__inner,
+html[data-ccg-page="year-single"] .ccg-hero__inner,
+html[data-ccg-page="platforms-index"] .ccg-hero__inner,
+html[data-ccg-page="platform-single"] .ccg-hero__inner,
+html[data-ccg-page="game-discovery"] .ccg-hero__inner,
+html[data-ccg-page="about"] .ccg-hero__inner,
+html[data-ccg-page="contact"] .ccg-hero__inner,
+html[data-ccg-page="emulation"] .ccg-hero__inner {
+    padding: clamp(18px, 2.5vw, 28px);
+}
+
+html[data-ccg-page="games-index"] main > section,
+html[data-ccg-page="genres-index"] main > section,
+html[data-ccg-page="genre-single"] main > section,
+html[data-ccg-page="collections-index"] main > section,
+html[data-ccg-page="publisher-index"] main > section,
+html[data-ccg-page="publisher-single"] main > section,
+html[data-ccg-page="developers-index"] main > section,
+html[data-ccg-page="developer-single"] main > section,
+html[data-ccg-page="years-index"] main > section,
+html[data-ccg-page="year-single"] main > section,
+html[data-ccg-page="platforms-index"] main > section,
+html[data-ccg-page="platform-single"] main > section,
+html[data-ccg-page="music-hub"] main > section,
+html[data-ccg-page="music-composer"] main > section,
+html[data-ccg-page="game-discovery"] main > section,
+html[data-ccg-page="about"] main > section,
+html[data-ccg-page="contact"] main > section,
+html[data-ccg-page="emulation"] main > section {
+    margin-block: var(--ccg-section-gap);
+}
+
+html[data-ccg-page="games-index"] :is(.ccg-section__intro, .games-hero__tagline),
+html[data-ccg-page="genres-index"] :is(.ccg-section__intro, .ccg-genre-hero__tagline),
+html[data-ccg-page="genre-single"] :is(.ccg-section__intro, .ccg-genre-hero__tagline),
+html[data-ccg-page="collections-index"] .ccg-section__intro,
+html[data-ccg-page="publisher-index"] .ccg-section__intro,
+html[data-ccg-page="publisher-single"] .ccg-section__intro,
+html[data-ccg-page="developers-index"] .ccg-section__intro,
+html[data-ccg-page="years-index"] .ccg-section__intro,
+html[data-ccg-page="year-single"] .ccg-section__intro,
+html[data-ccg-page="platforms-index"] .ccg-section__intro,
+html[data-ccg-page="platform-single"] .ccg-section__intro,
+html[data-ccg-page="music-hub"] :is(.ccg-composer-intro, .ccg-composer-subtitle),
+html[data-ccg-page="music-composer"] :is(.ccg-composer-intro, .ccg-composer-subtitle),
+html[data-ccg-page="game-discovery"] .ccg-section__intro,
+html[data-ccg-page="about"] :is(.ccg-section__intro, .about-lead),
+html[data-ccg-page="contact"] .ccg-section__intro,
+html[data-ccg-page="emulation"] .ccg-section__intro {
+    line-height: 1.55;
+}
+
+/* Additional indexed editorial/archive families found in sitemap coverage. */
+html[data-ccg-page="collection-single"],
+html[data-ccg-page="complete-index"],
+html[data-ccg-page="video-library"],
+html[data-ccg-page="retro-video"],
+html[data-ccg-page="zzap64-awards"] {
+    --ccg-section-gap: clamp(14px, 2vw, 22px);
+    --ccg-section-gap-mobile: clamp(12px, 3.6vw, 18px);
+    --ccg-section-pad-y: clamp(10px, 1.8vw, 18px);
+    --ccg-section-pad-y-mobile: clamp(9px, 3vw, 15px);
+    --ccg-page-entry-pad: clamp(14px, 2vw, 20px);
+    --ccg-space-xl: 24px;
+}
+
+html[data-ccg-page="collection-single"] .ccg-main,
+html[data-ccg-page="complete-index"] .ccg-main,
+html[data-ccg-page="video-library"] .ccg-main,
+html[data-ccg-page="retro-video"] .ccg-main,
+html[data-ccg-page="zzap64-awards"] .ccg-main {
+    width: min(1240px, 96vw);
+    padding-top: var(--ccg-page-entry-pad);
+    padding-bottom: clamp(22px, 3vw, 30px);
+}
+
+html[data-ccg-page="collection-single"] main > section,
+html[data-ccg-page="complete-index"] main > section,
+html[data-ccg-page="video-library"] main > section,
+html[data-ccg-page="retro-video"] main > section,
+html[data-ccg-page="zzap64-awards"] main > section {
+    margin-block: var(--ccg-section-gap);
+}
+
+@media (max-width: 640px) {
+    html[data-ccg-page="collection-single"] .ccg-main,
+    html[data-ccg-page="complete-index"] .ccg-main,
+    html[data-ccg-page="video-library"] .ccg-main,
+    html[data-ccg-page="retro-video"] .ccg-main,
+    html[data-ccg-page="zzap64-awards"] .ccg-main {
+        width: 100%;
+        padding: var(--ccg-page-entry-pad) 12px 22px;
+    }
+}
+
+@media (max-width: 640px) {
+    html[data-ccg-page="games-index"] .ccg-main,
+    html[data-ccg-page="genres-index"] .ccg-main,
+    html[data-ccg-page="genre-single"] .ccg-main,
+    html[data-ccg-page="collections-index"] .ccg-main,
+    html[data-ccg-page="publisher-index"] .ccg-main,
+    html[data-ccg-page="publisher-single"] .ccg-main,
+    html[data-ccg-page="developers-index"] .ccg-main,
+    html[data-ccg-page="developer-single"] .ccg-main,
+    html[data-ccg-page="years-index"] .ccg-main,
+    html[data-ccg-page="year-single"] .ccg-main,
+    html[data-ccg-page="platforms-index"] .ccg-main,
+    html[data-ccg-page="platform-single"] .ccg-main,
+    html[data-ccg-page="music-hub"] .ccg-main,
+    html[data-ccg-page="music-composer"] .ccg-main,
+    html[data-ccg-page="game-discovery"] .ccg-main,
+    html[data-ccg-page="about"] .ccg-main,
+    html[data-ccg-page="contact"] .ccg-main,
+    html[data-ccg-page="emulation"] .ccg-main {
+        width: 100%;
+        padding: var(--ccg-page-entry-pad) 12px 22px;
+    }
+
+    html[data-ccg-page="games-index"] :is(.games-hero, .ccg-hero),
+    html[data-ccg-page="genres-index"] :is(.ccg-genre-hero, .ccg-hero),
+    html[data-ccg-page="collections-index"] :is(.ccg-hero--collections, .ccg-hero),
+    html[data-ccg-page="publisher-index"] .ccg-hero,
+    html[data-ccg-page="publisher-single"] .ccg-hero,
+    html[data-ccg-page="developers-index"] .ccg-hero,
+    html[data-ccg-page="years-index"] .ccg-hero,
+    html[data-ccg-page="year-single"] .ccg-hero,
+    html[data-ccg-page="platforms-index"] .ccg-hero,
+    html[data-ccg-page="platform-single"] .ccg-hero,
+    html[data-ccg-page="game-discovery"] .ccg-hero,
+    html[data-ccg-page="about"] .ccg-hero,
+    html[data-ccg-page="contact"] .ccg-hero,
+    html[data-ccg-page="emulation"] .ccg-hero {
+        min-height: 0;
+        margin-bottom: 12px;
+    }
+
+    html[data-ccg-page="games-index"] :is(.games-hero__inner, .ccg-hero__inner),
+    html[data-ccg-page="genres-index"] :is(.ccg-genre-hero__inner, .ccg-hero__inner),
+    html[data-ccg-page="publisher-index"] .ccg-hero__inner,
+    html[data-ccg-page="publisher-single"] .ccg-hero__inner,
+    html[data-ccg-page="developers-index"] .ccg-hero__inner,
+    html[data-ccg-page="years-index"] .ccg-hero__inner,
+    html[data-ccg-page="year-single"] .ccg-hero__inner,
+    html[data-ccg-page="platforms-index"] .ccg-hero__inner,
+    html[data-ccg-page="platform-single"] .ccg-hero__inner,
+    html[data-ccg-page="game-discovery"] .ccg-hero__inner,
+    html[data-ccg-page="about"] .ccg-hero__inner,
+    html[data-ccg-page="contact"] .ccg-hero__inner,
+    html[data-ccg-page="emulation"] .ccg-hero__inner {
+        padding: 16px 14px;
+    }
+}
+
