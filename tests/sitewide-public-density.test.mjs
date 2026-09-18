@@ -28,9 +28,11 @@ test("special runtime pages stay outside the shared density selector set", () =>
 });
 
 
-test("games accordion keeps real scroll geometry instead of off-screen height estimates", () => {
-  assert.match(performanceCss, /html\.ccg-perf-enabled \.games-accordion__section\s*\{[\s\S]*?content-visibility:\s*visible;[\s\S]*?contain-intrinsic-size:\s*none;/);
-  assert.doesNotMatch(performanceCss, /html\.ccg-perf-enabled \.games-accordion__section,\s*html\.ccg-perf-enabled \.ccg-publisher-results/);
+test("games archive overrides deferred accordion height estimates with real geometry", () => {
+  assert.match(
+    css,
+    /html\[data-ccg-page="games-index"\]\.ccg-perf-enabled \.games-accordion__section\s*\{[\s\S]*?content-visibility:\s*visible;[\s\S]*?contain-intrinsic-size:\s*none;/
+  );
 });
 \ntest("public code cache namespace advances with the shared CSS change", () => {
   assert.match(serviceWorker, /CODE_CACHE_VERSION = "2026-09-18-public-code-v7"/);
