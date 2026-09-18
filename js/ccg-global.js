@@ -1538,7 +1538,10 @@ if (IS_ADMIN_PATH) {
         // trigger a responsive reflow and clamp the current mobile scroll offset.
         document.body.style.minHeight = `${lockedDocumentHeight}px`;
         document.documentElement.style.minHeight = `${lockedDocumentHeight}px`;
-        document.documentElement.style.overflow = "hidden";
+        // Keep the root as the window scrolling element. Hiding root overflow
+        // makes Chromium switch/clamp the effective mobile scroll range on the
+        // hydrated Games archive. The body/modal lock still blocks background
+        // interaction while preserving the exact underlying page offset.
         document.documentElement.style.overscrollBehavior = "none";
         document.body.style.overflow = "hidden";
         document.body.style.overscrollBehavior = "none";
