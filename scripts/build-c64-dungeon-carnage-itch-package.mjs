@@ -10,6 +10,7 @@ const CANONICAL_GAME_URL="https://www.cheekycommodoregamer.co.uk/arcade/lost-siz
 const WEEKLY_URL=CANONICAL_GAME_URL+"#weekly-vault";
 const INCLUDE_DIRS=["css","js","assets"];
 const INCLUDE_FILES=["index.html","version.json"];
+const EXTERNAL_FILES=[["games/games.json","games/games.json"]];
 const FORBIDDEN_BASENAMES=new Set([".env","ccg-supabase-config.js","ccg-supabase-client.js","service-account.json","service_account.json"]);
 const FORBIDDEN_SUFFIXES=[".pem",".key",".p12",".pfx"];
 
@@ -72,7 +73,7 @@ function offlineRuntime(cacheToken){
     "document.addEventListener(\"click\",event=>{const button=event.target instanceof Element?event.target.closest(\"#daily-btn\"):null;if(!button)return;event.preventDefault();event.stopImmediatePropagation();openWeekly()},true);",
     "if(document.readyState===\"loading\")document.addEventListener(\"DOMContentLoaded\",render,{once:true});else render();",
     "window.addEventListener(\"ccg:v142-ready\",render);",
-    "window.CCGWeeklyChallenge=Object.freeze({get state(){return state},refresh:async()=>state,refreshGhost:async()=>null,claim:async()=>{openWeekly();throw new Error(\"Weekly Vault is available on the CCG website.\")},finish:async()=>null,render,renderCountdown:()=>false,renderLeaderboard:()=>false});",
+    "window.CCGWeeklyChallenge={get state(){return state},refresh:async()=>state,refreshGhost:async()=>null,claim:async()=>{openWeekly();throw new Error(\"Weekly Vault is available on the CCG website.\")},finish:async()=>null,render,renderCountdown:()=>false,renderLeaderboard:()=>false};",
     "window.CCGDungeonCarnageItchRelease=Object.freeze({mode:\"itch-html5\",cache:"+JSON.stringify(cacheToken)+",weeklyUrl:WEEKLY_URL,openWeekly,render});",
     "})();",
     ""
@@ -193,6 +194,15 @@ async function build(output,sourceSha){
     copied.push(name);
   }
   for(const name of INCLUDE_DIRS)await copyTree(path.join(SOURCE_ROOT,name),path.join(outputRoot,name),name,copied);
+  for(const [sourceRelative,packageRelative] of EXTERNAL_FILES){
+    assertAllowed(packageRelative);
+    const from=path.join(REPO_ROOT,...sourceRelative.split("/"));
+    const to=path.join(outputRoot,...packageRelative.split("/"));
+    await ordinaryFile(from,"External runtime file");
+    await fs.mkdir(path.dirname(to),{recursive:true});
+    await fs.copyFile(from,to);
+    copied.push(packageRelative);
+  }
 
   const version=JSON.parse(await fs.readFile(path.join(outputRoot,"version.json"),"utf8"));
   const indexPath=path.join(outputRoot,"index.html");
