@@ -31,8 +31,10 @@ assert.match(loaderBootstrap,/build\.startsWith\("V10\.42"\)/,'V10.42 builds mus
 assert.match(loaderBootstrap,/v142\?\.ready===true[\s\S]*?dataset\?\.releaseReady==="true"[\s\S]*?dataset\?\.v142BootstrapReady==="true"/,'loader reveal must require V10.42 ordered readiness and matching body readiness markers');
 assert.match(loaderBootstrap,/gate\?\.state\?\.ready&&authoritativeReleaseReady\(\)/,'legacy readiness alone must no longer hide the release loader');
 assert.doesNotMatch(overlaySafety,/body\[data-release-ready="true"\]\s+#ccg-release-loading/,'legacy release-ready pulses must not own loader visibility');
-assert.match(overlaySafety,/body\[data-run-active="true"\]\s+#ccg-release-loading/,'gameplay-start safety may still retire a non-error loader');
-assert.match(overlaySafety,/body\[data-tutorial-active="true"\]\s+#ccg-release-loading/,'tutorial-start safety may still retire a non-error loader');
+assert.doesNotMatch(overlaySafety,/body\[data-run-active="true"\]\s+#ccg-release-loading/,'run-active alone must not own loader visibility');
+assert.doesNotMatch(overlaySafety,/body\[data-tutorial-active="true"\]\s+#ccg-release-loading/,'tutorial-active alone must not own loader visibility');
+assert.match(overlaySafety,/body\[data-v142-bootstrap-ready="true"\]\[data-release-ready="true"\]\[data-run-active="true"\]\s+#ccg-release-loading/,'gameplay-start safety must require authoritative V10.42 readiness');
+assert.match(overlaySafety,/body\[data-v142-bootstrap-ready="true"\]\[data-release-ready="true"\]\[data-tutorial-active="true"\]\s+#ccg-release-loading/,'tutorial-start safety must require authoritative V10.42 readiness');
 
 for(const contract of [
   'color:#f5eefb!important',
