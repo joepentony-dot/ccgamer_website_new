@@ -111,6 +111,7 @@
 
   function syncVersion(){
     if(retireVersionObserver())return false;
+    if(window.CCGLostSizzlerVersion?.state?.outdated===true)return false;
     const subtitle=document.querySelector(".brand p");
     if(subtitle&&subtitle.textContent!==`THE LOST SIZZLER — ${RELEASE}`)subtitle.textContent=`THE LOST SIZZLER — ${RELEASE}`;
     const badge=document.querySelector(".build-badge");
