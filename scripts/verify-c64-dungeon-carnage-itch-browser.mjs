@@ -57,16 +57,32 @@ async function openPackage(browser,url,initWeekly=false){
   page.on("pageerror",error=>pageErrors.push(String(error?.message||error)));
   await page.goto(url,{waitUntil:"domcontentloaded",timeout:60000});
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
+  await page.waitForFunction(()=>{
+    const gate=window.CCGLostSizzlerReleaseGate?.state;
+    return !gate||gate.ready===true||gate.failed===true;
+  },null,{timeout:20000}).catch(()=>{});
   const boot=await page.evaluate(()=>({
     ready:window.CCGLostSizzlerV142Bootstrap?.ready===true,
     failed:window.CCGLostSizzlerV142Bootstrap?.failed===true,
     error:window.CCGLostSizzlerV142Bootstrap?.error||"",
     build:window.CCGLostSizzlerV142Bootstrap?.build||"",
     itch:window.CCGDungeonCarnageItchRelease?.mode||"",
-    weeklyPackage:Boolean(window.CCGWeeklyChallenge?.state?.itchPackage)
+    weeklyPackage:Boolean(window.CCGWeeklyChallenge?.state?.itchPackage),
+    releaseGate:window.CCGLostSizzlerReleaseGate?.state?JSON.parse(JSON.stringify(window.CCGLostSizzlerReleaseGate.state)):null,
+    cacheGuard:window.CCGLostSizzlerCacheGuard?.state?{
+      errors:[...(window.CCGLostSizzlerCacheGuard.state.errors||[])],
+      runtimeErrors:[...(window.CCGLostSizzlerCacheGuard.runtimeErrors||[])]
+    }:null,
+    overlay:{
+      hidden:Boolean(document.getElementById("ccg-release-loading")?.hidden),
+      error:Boolean(document.getElementById("ccg-release-loading")?.classList?.contains("is-error")),
+      status:document.getElementById("ccg-release-loading-status")?.textContent||""
+    }
   }));
-  if(boot.failed||!boot.ready)fail("Packaged bootstrap failed: "+boot.error);
-  if(boot.itch!=="itch-html5"||!boot.weeklyPackage)fail("Packaged itch release gate did not own website-service compatibility");
+  if(boot.failed||!boot.ready)fail("Packaged bootstrap failed: "+JSON.stringify(boot));
+  if(boot.releaseGate?.failed||boot.overlay.error||boot.localFailures?.length)fail("Packaged legacy release gate failed: "+JSON.stringify({boot,localFailures,pageErrors}));
+  if(localFailures.length||pageErrors.length)fail("Packaged startup resource/runtime failure: "+JSON.stringify({localFailures,pageErrors,boot}));
+  if(boot.itch!=="itch-html5"||!boot.weeklyPackage)fail("Packaged itch release gate did not own website-service compatibility: "+JSON.stringify(boot));
   return{context,page,localFailures,pageErrors,boot};
 }
 async function assertHealthy(result,label){
