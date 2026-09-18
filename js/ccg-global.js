@@ -1491,15 +1491,6 @@ if (IS_ADMIN_PATH) {
             }, { capture: true, passive: false });
         });
 
-        // Keep background scroll locked without changing html/body overflow.
-        // The command panel itself remains the only scrollable surface.
-        ["wheel", "touchmove"].forEach(eventName => {
-            modal.addEventListener(eventName, event => {
-                if (event.target instanceof Element && event.target.closest(".ccg-secret-modal__content")) return;
-                event.preventDefault();
-            }, { passive: false });
-        });
-
         modal.addEventListener("pointerdown", event => {
             if (event.target !== modal) return;
             if (!modal.dataset.ccgSecretModalLocked) return;
@@ -1525,20 +1516,29 @@ if (IS_ADMIN_PATH) {
         const scrollbarGap = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
         const computedPaddingRight = Number.parseFloat(window.getComputedStyle(document.body).paddingRight) || 0;
 
+        const lockedDocumentHeight = Math.max(
+            document.documentElement.scrollHeight,
+            document.body.scrollHeight,
+            window.innerHeight
+        );
+
         secretState.scrollLock = {
             scrollX,
             scrollY,
             bodyOverflow: document.body.style.overflow,
+            bodyMinHeight: document.body.style.minHeight,
             bodyPaddingRight: document.body.style.paddingRight,
             bodyOverscrollBehavior: document.body.style.overscrollBehavior,
             htmlOverflow: document.documentElement.style.overflow,
             htmlOverscrollBehavior: document.documentElement.style.overscrollBehavior,
         };
 
-        // Preserve the document's native scroll geometry. The fixed modal and
-        // explicit wheel/touch guard own background interaction instead of
-        // changing html/body height or overflow on hydrated archive pages.
+        // Preserve the pre-lock document height before root overflow changes can
+        // trigger a responsive reflow and clamp the current mobile scroll offset.
+        document.body.style.minHeight = `${lockedDocumentHeight}px`;
+        document.documentElement.style.overflow = "hidden";
         document.documentElement.style.overscrollBehavior = "none";
+        document.body.style.overflow = "hidden";
         document.body.style.overscrollBehavior = "none";
         if (scrollbarGap > 0) {
             document.body.style.paddingRight = `${computedPaddingRight + scrollbarGap}px`;
@@ -1552,6 +1552,7 @@ if (IS_ADMIN_PATH) {
         document.documentElement.style.overflow = lock.htmlOverflow;
         document.documentElement.style.overscrollBehavior = lock.htmlOverscrollBehavior;
         document.body.style.overflow = lock.bodyOverflow;
+        document.body.style.minHeight = lock.bodyMinHeight;
         document.body.style.paddingRight = lock.bodyPaddingRight;
         document.body.style.overscrollBehavior = lock.bodyOverscrollBehavior;
         secretState.scrollLock = null;
@@ -1589,9 +1590,8 @@ if (IS_ADMIN_PATH) {
             if (!modal) return;
             modal.classList.add("is-open");
             modal.setAttribute("aria-hidden", "false");
-            // Capture the underlying page offset without changing its scroll geometry.
-            lockSecretModalScroll();
             document.body.classList.add("ccg-secret-modal-open");
+            lockSecretModalScroll();
 
             requestAnimationFrame(() => {
                 if (content) content.scrollTop = 0;
