@@ -145,26 +145,27 @@ async function settleAtPageBottom(page) {
 
   while (Date.now() < deadline) {
     await page.evaluate(() => {
-      const scroller = document.scrollingElement || document.documentElement;
-      const maxScroll = Math.max(0, scroller.scrollHeight - window.innerHeight);
-      window.scrollTo(0, maxScroll);
+      // Use the browser's physically reachable bottom rather than a theoretical
+      // scrollHeight - innerHeight target. Mobile emulation can expose a small
+      // visual/layout viewport delta even after the page geometry has settled.
+      window.scrollTo(0, Number.MAX_SAFE_INTEGER);
     });
     await page.waitForTimeout(180);
 
     latest = await page.evaluate(() => {
       const scroller = document.scrollingElement || document.documentElement;
-      const maxScroll = Math.max(0, scroller.scrollHeight - window.innerHeight);
+      const theoreticalMax = Math.max(0, scroller.scrollHeight - window.innerHeight);
       return {
         scrollY: window.scrollY,
         scrollHeight: scroller.scrollHeight,
         clientHeight: scroller.clientHeight,
-        maxScroll,
+        theoreticalMax,
+        distanceFromTheoreticalMax: theoreticalMax - window.scrollY,
       };
     });
 
     const stable = previous
       && Math.abs(latest.scrollHeight - previous.scrollHeight) <= 1
-      && Math.abs(latest.maxScroll - previous.maxScroll) <= 1
       && Math.abs(latest.scrollY - previous.scrollY) <= 1;
 
     if (stable) {
