@@ -68,4 +68,5 @@ assert.match(r51Runtime,/document\.querySelector\('link\[data-ccg-v141-r51-style
 assert.match(r51Runtime,/if\(!document\.getElementById\("ccg-r51-menu-guide"\)\)/,'delayed R51 runtime must adopt the canonical quick guide');
 assert.match(r51Runtime,/const STARTUP_DELAY_MS=2200/,'R51 gameplay/cosmetic startup delay remains intact; only menu first-paint ownership moves earlier');
 assert.match(startupCss,/#menu>\.panel\.r51-menu-panel\{[\s\S]*?padding:20px 16px 22px!important;[\s\S]*?text-align:center!important/,'blocking first-visual CSS must own the same settled R51 panel geometry and alignment observed after the late compatibility stack');
+assert.match(startupCss,/#tutorial-zone-btn\{[\s\S]*?border-color:rgba\(108,236,255,\.72\)!important/,'Tutorial border must already match its settled post-startup colour before reveal');
 console.log('Dungeon Carnage startup first-visual static contract passed');
