@@ -4,17 +4,20 @@
 
 Content Publisher administration, asset optimisation, music upload, R2/Worker routing, publishing guardrails, and supporting docs/tests. Key paths include `admin/`, `workers/game-music-upload/`, `tests/`, and `docs/content-publisher-r2-music-setup.md`.
 
-## Verified checkpoint — 2026-09-16
+## Verified checkpoint — 2026-09-18
 
-Repository state for this workstream was reconciled through merged continuation/governance PR #2104. Later generated-output or documentation-only commits do not change the publishing implementation facts below; always refresh live GitHub before acting.
+Repository state for this workstream has been reconciled through the Content Publisher magazine/no-music repair on current `main`. Always refresh live GitHub before acting.
 
 - #2103 **MERGED** — switched the dedicated game-music Worker to its `workers.dev` deployment path while retaining `GAME_MUSIC -> game-music` and `keep_vars = true`.
 - #2105 **MERGED** — current-main 3D-box WebP optimiser repair.
 - #2073 **CLOSED / SUPERSEDED** — do not revive or merge it after #2105.
 - #2109 **MERGED** — authoritative game/archive publication output for that scope.
-- #2110 **OPEN DRAFT / BLOCKED** — endpoint follow-up on `codex/game-music-production-endpoint`, head `969a632a6a2598b8119d9b16b1019c2e932c832c` at the audit checkpoint.
+- #2110 **CLOSED / SUPERSEDED** — the old game-music endpoint follow-up is intentionally unmerged after the unified Content Publisher removed game-music upload.
+- #2150 **MERGED** as `5223f5053bceee18e70e70440992f31ff2510c7d` — resilient magazine-source recovery, Road Rash review materialisation, and removal of game-music upload from the unified Content Publisher.
+- #2157 **MERGED** as `bde682be7311c5206b390a4bcfbd52891bc83fbc` — authoritative generated game/archive output after #2150; Road Rash materialises 21 magazine-review records with source links.
+- #2159 **MERGED** as `13311f9e8b7a0a9376bbd5ca84451eb37d908a40` — fixes the successful Lemon refresh counter path and adds regression coverage.
 
-## Worker deployment and current production blocker
+## Dormant game-music Worker status
 
 Verified production Worker URL:
 
@@ -45,11 +48,11 @@ Production probes on 2026-09-16 show the deployment is **not ready for publisher
 - unauthenticated `POST` returned HTTP 503 `server_not_configured` instead of the expected authentication rejection
 - public HEAD for `legacy-of-the-ancients.mp3` returned HTTP 404
 
-Therefore at least one required runtime binding/variable/secret is missing, and `ALLOWED_ADMIN_ORIGIN` is missing or mismatched. #2110 must remain draft/unmerged until the account configuration is corrected and the Worker returns the expected CORS header plus an unauthenticated 401-style rejection rather than `server_not_configured`.
+Therefore at least one required runtime binding/variable/secret was missing and `ALLOWED_ADMIN_ORIGIN` was missing or mismatched at that checkpoint. This no longer blocks the unified Content Publisher because #2150 removed the game-music upload surface. #2110 is closed unmerged; any future audio-uploader project must be treated as a separate, newly authorised workstream rather than reviving that PR.
 
 Never expose the service-role secret while verifying it.
 
-## #2110 exact repository scope
+## Historical #2110 repository scope
 
 At the audit checkpoint its net diff is exactly three files:
 
@@ -59,7 +62,7 @@ At the audit checkpoint its net diff is exactly three files:
 
 Both new-game and existing-game MP3 upload paths are changed from `/api/admin/game-music` to the verified production Worker URL, and regression assertions require both paths to use that URL. The temporary branch-only patch workflow previously used during repair has been removed.
 
-Focused syntax and publisher/Worker tests passed before the final temporary-workflow cleanup; the production environment blocker, not repository logic, is what prevents merge.
+Focused syntax and publisher/Worker tests passed before the final temporary-workflow cleanup; the production environment blocker, not repository logic, was what prevented merge at that time. #2110 is now closed unmerged.
 
 ## Cloudflare connected-build isolation
 
@@ -85,24 +88,13 @@ Expected public playback URL:
 
 No actual `legacy-of-the-ancients.mp3` source file is present in the repository/project material available to this workstream. Do not fabricate an upload with unrelated audio.
 
-Final sequence after Cloudflare runtime configuration is healthy and the real MP3 is available:
-
-1. verify the R2 binding and required non-secret variables
-2. verify the service-role secret exists without exposing its value
-3. confirm exact-origin CORS from the site
-4. confirm unauthenticated POST fails as authentication failure rather than server configuration failure
-5. requalify #2110 on its exact head/current mainline
-6. merge #2110 when green and unblocked
-7. upload the real file as slug `legacy-of-the-ancients`
-8. verify `201` and key `legacy-of-the-ancients.mp3`
-9. verify R2 object metadata/public playback
-10. verify the live game page no longer reports `TRACK NOT YET UPLOADED`
+That sequence is no longer an active Content Publisher action. If game-audio upload is revisited later, start from current `main`, re-verify the Worker/R2/account configuration, and design it as a separate feature without restoring a broken control to the unified game-publishing form.
 
 ## Guardrails and next action
 
 Do not alter Dungeon Carnage runtime, Commodore Quest, protected intro-loader files, unrelated deployment systems, or generated game data as part of this workstream.
 
-**Current state: BLOCKED.** The exact blocker is Cloudflare account-side runtime/build configuration. The next executable action requires authenticated Cloudflare access; repository changes alone cannot resolve it.
+**Current state: COMPLETE for the requested Content Publisher scope.** New-game publishing no longer depends on the game-music Worker. Magazine enrichment is best-effort and retryable, while canonical game publication continues when Lemon64/Lemon Amiga is temporarily unreachable.
 
 ## Session log
 
@@ -113,10 +105,9 @@ Do not alter Dungeon Carnage runtime, Commodore Quest, protected intro-loader fi
 - 2026-09-16: Removed an accidentally retained temporary patch workflow from #2110; current net delta is three publisher/test files only at the audit checkpoint.
 - 2026-09-16: Post-#2104 reconciliation stabilized the checkpoint wording; no Content Publisher implementation was changed.
 
+## Completed Content Publisher repair — 2026-09-18
 
-## Active Content Publisher repair — 2026-09-18
-
-Live main was reconciled at `9086ae764fd0b142398d72640dc48c883c24ff29` before the repair branch was rebuilt. PR #2150 (`codex/content-publisher-magazine-reliability-no-music-current-main`) supersedes the previous game-music-upload direction for the unified Content Publisher if accepted.
+PR #2150 (`codex/content-publisher-magazine-reliability-no-music-current-main`) was qualified and merged as `5223f5053bceee18e70e70440992f31ff2510c7d`. The generated publishing chain then merged #2157 as `bde682be7311c5206b390a4bcfbd52891bc83fbc`. A post-merge review found a success-path counter shadowing bug in `refresh-lemon-game-cache.js`; #2159 fixed it and merged as `13311f9e8b7a0a9376bbd5ca84451eb37d908a40` after the full triggered PR matrix passed, with one unrelated Site Safety WebDriver timeout passing on unchanged retry.
 
 Road Rash exposed two separate admin defects:
 
@@ -135,4 +126,7 @@ PR #2150 therefore:
 - repairs the Road Rash SEO description and the truncated `ccg_rating_reason`;
 - adds focused regressions for the archived-source fallback, non-blocking publishing contract, Road Rash review set, and absence of the game-music control.
 
-Implementation candidate before this checkpoint documentation update: `7d572dfd0747f619da7dbebd2e56e96d8ca7b794`. The branch is based directly on `9086ae764fd0b142398d72640dc48c883c24ff29`; do not merge #2150 until its final exact head has completed the required PR matrix. #2110 remains open draft for history and must not be merged alongside #2150.
+Current verified result: the admin game form has no game-music upload control; Road Rash is generated with 21 magazine-review records and review links; external Lemon availability no longer blocks canonical publishing; successful live/Wayback refreshes increment their result counter correctly. #2110 is closed unmerged and must not be revived merely to restore the removed uploader.
+
+- 2026-09-18: #2150 merged after exact-head qualification; #2157 materialised Road Rash and its 21 magazine review records; #2110 closed unmerged as superseded.
+- 2026-09-18: #2159 merged after all triggered checks passed; its first Site Safety attempt hit an unrelated WebDriver timeout and the unchanged rerun passed.
