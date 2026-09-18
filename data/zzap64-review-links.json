@@ -14,9 +14,9 @@
     "exactPages": 286,
     "issueFallbacks": 0,
     "directCoveragePercent": 100,
-    "reviewRecords": 830,
-    "additionalReviewRecords": 544,
-    "gameReviewGames": 345,
+    "reviewRecords": 831,
+    "additionalReviewRecords": 545,
+    "gameReviewGames": 346,
     "awardRecordsLinkedToGames": 100,
     "unmatchedCachedReviewPages": 27
   },
@@ -3544,6 +3544,18 @@
       "gameTitle": "Robocop",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/robocop"
+    },
+    "1987|november|c64|Legacy Of The Ancients": {
+      "issue": 31,
+      "page": 104,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=31&page=104",
+      "source": "cached-game-magazine-reference",
+      "scope": "game-review",
+      "gameSlug": "legacy-of-the-ancients",
+      "gameTitle": "Legacy Of The Ancients",
+      "gameSystem": "c64",
+      "lemonUrl": "https://www.lemon64.com/game/legacy-of-the-ancients"
     },
     "1993|july|c64|Park Patrol": {
       "issue": 99,
