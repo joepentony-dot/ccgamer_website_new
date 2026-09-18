@@ -1,0 +1,57 @@
+/* C64 Dungeon Carnage V10.42 — stable startup first visual state.
+ *
+ * The canonical page presents the release loader before any runtime script can
+ * execute. These menu declarations mirror the visible part of the retained R55
+ * compatibility owner so the menu underneath the loader already has its final
+ * button presentation. When R55 runs later it may reapply the same values, but
+ * it must not create a visible colour/text-layout transition at reveal time.
+ */
+body[data-run-active="false"] #menu .game-mode-buttons button{
+  color:#f5eefb!important;
+  text-shadow:none!important;
+  transform:none!important;
+  filter:none!important;
+  -webkit-filter:none!important;
+}
+body[data-run-active="false"] #menu .game-mode-buttons button.primary{
+  color:#160b1e!important;
+}
+body[data-run-active="false"] #menu .game-mode-buttons button::before{
+  position:absolute!important;
+  left:12px!important;
+  right:12px!important;
+  top:9px!important;
+  bottom:auto!important;
+  display:block!important;
+  margin:0!important;
+  font-size:7.5px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  letter-spacing:.8px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  text-shadow:none!important;
+  transform:none!important;
+  filter:none!important;
+}
+body[data-run-active="false"] #menu .game-mode-buttons button::after{
+  position:absolute!important;
+  left:12px!important;
+  right:12px!important;
+  top:auto!important;
+  bottom:8px!important;
+  display:block!important;
+  margin:0!important;
+  max-height:2.3em!important;
+  font-size:7px!important;
+  font-weight:400!important;
+  line-height:1.15!important;
+  letter-spacing:.35px!important;
+  white-space:normal!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+  text-shadow:none!important;
+  transform:none!important;
+  filter:none!important;
+}
