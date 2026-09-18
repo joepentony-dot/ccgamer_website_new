@@ -1,11 +1,11 @@
 {
   "version": 1,
   "counts": {
-    "total": 695,
-    "gameVideos": 659,
+    "total": 696,
+    "gameVideos": 660,
     "retroVideos": 36,
     "c64GameVideos": 558,
-    "amigaGameVideos": 101
+    "amigaGameVideos": 102
   },
   "items": [
     {
@@ -9065,6 +9065,19 @@
       "year": "",
       "publisher": "",
       "collectionLabel": "Amiga Demo Music"
+    },
+    {
+      "id": "JUXvi0beNxA",
+      "kind": "game",
+      "filter": "amiga",
+      "badge": "Amiga Game",
+      "title": "Road Rash",
+      "description": "Road Rash is a 1992 Commodore Amiga game published by Electronic Arts. PeakStar Software is recorded as the developer. It is catalogued on the Cheeky Commodore Gamer site under racing, plac…",
+      "url": "/games/road-rash/",
+      "thumbnail": "https://i.ytimg.com/vi/JUXvi0beNxA/hqdefault.jpg",
+      "platform": "Amiga",
+      "year": 1992,
+      "publisher": "Electronic Arts"
     },
     {
       "id": "ght7u1k_tqw",
