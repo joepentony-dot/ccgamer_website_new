@@ -65,6 +65,33 @@ async function waitForSecretModalUnlock(page) {
   }, null, { timeout: 5000 });
 }
 
+async function waitForTestPageReady(page, testCase) {
+  if (testCase.page !== 'games/index.html') {
+    await page.waitForTimeout(800);
+    return;
+  }
+
+  await page.waitForFunction(() => {
+    const fallback = document.getElementById('gamesStaticFallback');
+    const accordion = document.getElementById('gamesAccordion');
+    const total = document.getElementById('gamesTotalCount');
+    const totalCount = Number.parseInt(String(total?.textContent || '').replace(/,/g, ''), 10);
+
+    return Boolean(
+      fallback
+      && fallback.hidden
+      && accordion
+      && accordion.children.length > 0
+      && Number.isFinite(totalCount)
+      && totalCount > 0
+    );
+  }, null, { timeout: 15000 });
+
+  await page.evaluate(() => new Promise(resolve => {
+    requestAnimationFrame(() => requestAnimationFrame(resolve));
+  }));
+}
+
 async function viewportMetrics(page, selector) {
   return page.evaluate(targetSelector => {
     const element = document.querySelector(targetSelector);
@@ -121,7 +148,7 @@ async function runCase(browser, testCase) {
 
   const url = new URL(testCase.page, args.baseUrl).toString();
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-  await page.waitForTimeout(800);
+  await waitForTestPageReady(page, testCase);
   await page.evaluate(() => window.scrollTo(0, Math.max(0, document.documentElement.scrollHeight - window.innerHeight)));
   await page.waitForTimeout(150);
   const scrollBeforeOpen = await page.evaluate(() => window.scrollY);
