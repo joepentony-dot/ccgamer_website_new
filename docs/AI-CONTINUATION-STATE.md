@@ -10,7 +10,7 @@ Update this file when a workstream changes category, its active PR/dependency ch
 
 ## Current autonomous Dungeon Carnage checkpoint — 18 September 2026
 
-- Verified Dungeon runtime merge checkpoint on live `main`: `4c56d2bccd73350359c8b3246b0d70142894d353` — merged startup/first-visual remediation (#2145).
+- Verified Dungeon runtime merge checkpoint on live `main`: `ba75374ea45871e24885a0d2cdbd57bb61f1ae95` — merged final-menu reveal correction (#2153) after hands-on startup acceptance exposed a remaining intermediate-menu flicker.
 - Stage 7 #2140 remains merged as `f4fecd858fab8d43cd9d6732ab56495cfb313116`.
 - Stage 8 #2141 merged from exact qualified head `e5d4333d4e8dc2912b2ffc9c5abc13f79d4b4a2d` as `53cba902af9dbf1e118f3f274836120f6c30bb40`.
 - Exact Stage 8 qualification passed the dedicated itch.io package workflow, CCG Site Safety, Public Code Cache Version, SEO Automation, Native Mouse Wheel Scroll Contract, canonical/Node contracts and all six Lost Sizzler Chromium shards.
@@ -20,7 +20,8 @@ Update this file when a workstream changes category, its active PR/dependency ch
 - Repository-side itch.io release preparation is complete. Public itch.io page creation, artifact upload/publication and the final public URL remain external release actions; no URL is invented in source.
 - Startup/first-visual flicker remediation #2145 is repository-complete. Exact qualified head `432af71f6d19612a54e274f9114c6b3ef35e7450` merged as `4c56d2bccd73350359c8b3246b0d70142894d353`.
 - #2145 moves release-loader ownership into the original HTML/render-blocking first visual state and pre-aligns the visible R55 button presentation before reveal. No artificial startup delay or gameplay ownership change was introduced.
-- Exact #2145 qualification passed all eight triggered workflows, including Lost Sizzler Load Safety canonical/Node coverage and all six Chromium shards. Detailed checkpoint: `docs/ai-work/dungeon-carnage-startup-first-visual-2026-09-18.md`.
+- Exact #2145 qualification passed all eight triggered workflows, including Lost Sizzler Load Safety canonical/Node coverage and all six Chromium shards. Hands-on testing then reproduced `loader → compact/intermediate menu → final V10.42 menu`.
+- #2153 corrects that remaining reveal race by requiring authoritative V10.42 ordered-bootstrap/body readiness before loader removal. Exact qualified head `8a2fc01022612a13d0c4f52f276a4d7d62deee4e` merged as `ba75374ea45871e24885a0d2cdbd57bb61f1ae95`; the retained matrix passed, with one unchanged retry of the historical `v10-35-layout.mjs` shard-5 timeout. The current qualified itch.io artifact is ID `10544143256`, SHA-256 `8001fc1034a03051ecec70de5c0966a07429b55abd8ae7f43382eecb80576036`. Detailed checkpoint: `docs/ai-work/dungeon-carnage-startup-first-visual-2026-09-18.md`.
 - The programme remains milestone-first; broad legacy cleanup stays backlog unless it blocks an active player-facing workstream.
 
 ### Manual acceptance state
@@ -38,8 +39,8 @@ These deferred gates do not block independent repository work that does not depe
 
 ### Exact next action
 
-1. Treat #2145 startup/first-visual remediation as repository-complete on merge `4c56d2bccd73350359c8b3246b0d70142894d353`; do not reopen it without new current-build evidence.
-2. Keep the two Dungeon product acceptance checks explicitly deferred until the user is available to perform them.
+1. Retest the deployed/current build for the exact startup sequence fixed by #2153: the loader must transition directly to the final V10.42 five-depth/RPG menu with no compact/intermediate menu exposure.
+2. Continue the sustained Solo product acceptance only after that startup retest passes; basic movement was already reported working during the failed first acceptance attempt.
 3. Keep public itch.io page creation, artifact upload/publication and the final public URL as an external release gate.
 4. Commodore Quest 3 repository reconstruction is complete in draft #2143 at exact head `15e48c3743775f2ba582134e9e04303e07bb4ea4`; all automated qualification is green. The next Quest action is the required hands-on browser playtest of The Bedroom and 36% Conversion Bout. Do not merge before that acceptance.
 5. Keep #2110 parked behind its documented Cloudflare configuration blocker; do not rebase or retest it solely because `main` advanced.
