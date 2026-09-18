@@ -53,6 +53,16 @@ These deferred gates do not block independent repository work that does not depe
 - Current-main reconciliation found no implementation-path overlap with later Dungeon or generated-video work. The only overlap was this continuation index, which has been reconciled onto the latest main checkpoint.
 - Road Rash remains a separate publishing-output issue until `/games/road-rash/` is generated successfully; do not hand-edit the canonical generated page.
 
+## Site-wide public layout audit checkpoint — 18 September 2026
+
+- Merged individual-game presentation PR #2146 as `50a527599b9521e07ec2c593703fcf7fc26858fb`; its shared changes apply to all individual game pages.
+- Current-main follow-up branch `codex/site-wide-public-layout-audit-current` audits the remaining public sitemap families after generated game publication #2154.
+- Public sitemap inventory used by the audit: 387 non-game routes + 660 game routes = 1,047 routed public URLs.
+- High-impact shared families changed: publishers, developers, year/platform archives, retro video details (Retro Specials / Retro Events / Amiga Demo Music), and music/composer pages.
+- Home, Games Index, genre/collection Omega pages, info pages, community/account and Complete Index were audited but not broadly overridden because their existing width/density systems already fit the target and another override would add regression risk.
+- Detailed scope and guardrails: `docs/ai-work/site-wide-public-layout-audit-2026-09-18.md`.
+- Do not hand-edit generated page instances; preserve shared CSS/generator ownership.
+
 ## Historical checkpoint notes
 
 - PR #2120 was a redundant movement-wrapper proposal and is closed without merge.
