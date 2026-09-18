@@ -27,6 +27,8 @@ try{
   const manifest=JSON.parse(fs.readFileSync(path.join(output,"release-manifest.json"),"utf8"));
   const stagedIndex=fs.readFileSync(path.join(output,"index.html"),"utf8");
   const releaseGate=fs.readFileSync(path.join(output,"js","itch-release-runtime.js"),"utf8");
+  const stagedPaywall=fs.readFileSync(path.join(output,"js","v10-42-demo-paywall.js"),"utf8");
+  const canonicalPaywall=fs.readFileSync(path.join(repo,"arcade/lost-sizzler/js/v10-42-demo-paywall.js"),"utf8");
 
   assert.equal(manifest.schema,"ccg-c64-dungeon-carnage-itch-package-v1");
   assert.equal(manifest.product,"C64 Dungeon Carnage");
@@ -62,12 +64,18 @@ try{
   assert.doesNotMatch(releaseGate,/CCGWeeklyChallenge=Object\.freeze/,"Weekly compatibility owner must remain mutable because retained runtime layers wrap finish()");
   assert.match(releaseGate,/finish:async\(\)=>null/,"Weekly compatibility owner must expose the retained finish hook");
   assert.doesNotMatch(releaseGate,/CCG_SUPABASE|supabase\.co|paypal|checkout|entitlement/i,"itch package gate must not recreate custom commerce or account bootstrap");
+  assert.match(canonicalPaywall,/PAYPAL CHECKOUT|BUY WITH PAYPAL/,"canonical website source should remain unchanged by package staging");
+  assert.match(stagedPaywall,/demoMode:false/,"staged paywall compatibility owner must disable demo/paywall mode");
+  assert.match(stagedPaywall,/commerce:false/,"staged paywall compatibility owner must explicitly disable commerce");
+  assert.doesNotMatch(stagedPaywall,/paypal|buy with paypal|checkout|\/auth\/|ccg-backend|signed-download|private-download/i,"retired commerce/auth implementation must not ship in the active staged paywall module");
 
   const forbidden=manifest.files.filter(file=>/(?:^|\/)(?:ccg-supabase-config\.js|ccg-supabase-client\.js|service-account\.json|service_account\.json|\.env(?:\.|$))|(?:\.pem|\.key|\.p12|\.pfx)$/i.test(file.path));
   assert.deepEqual(forbidden,[],"credential/account bootstrap material must not enter the package manifest");
 
   assert.match(sourceBuilder,/INCLUDE_DIRS=\["css","js","assets"\]/,"builder must use an explicit runtime tree");
   assert.match(sourceBuilder,/EXTERNAL_FILES=\[\["games\/games\.json","games\/games\.json"\]\]/,"builder must explicitly carry the runtime game catalogue dependency");
+  assert.match(sourceBuilder,/sameOrWithin\(REPO_ROOT,outputRoot\).*sameOrWithin\(outputRoot,REPO_ROOT\)/s,"builder must reject both descendants and ancestors of the repository before recursive deletion");
+  assert.match(sourceBuilder,/packageDemoPaywallRuntime\(\)/,"builder must replace the retired website commerce module only inside the staged artifact");
   assert.doesNotMatch(sourceBuilder,/desktop\/|services\/ccg-backend|paypal|private-download|signed-download/i,"fresh itch builder must not revive retired desktop/private-delivery integration");
 
   console.log("PASS V10.42 Stage 8 itch.io package contract");
