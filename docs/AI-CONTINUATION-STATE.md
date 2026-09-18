@@ -10,40 +10,36 @@ Update this file when a workstream changes category, its active PR/dependency ch
 
 ## Current autonomous Dungeon Carnage checkpoint — 18 September 2026
 
-- Verified Dungeon runtime merge checkpoint on live `main`: `4c56d2bccd73350359c8b3246b0d70142894d353` — merged startup/first-visual remediation (#2145).
+- Verified Dungeon runtime merge checkpoint: `38c79b61271be59791fe5f46dbc796b243f317dc` — merged module-startup loader-flicker correction (#2164). Live repository `main` is now `74e6147d28333e0d6082d7fc69a42a20bc0b52f7`; later commits are documentation/website work, not a newer Dungeon runtime.
 - Stage 7 #2140 remains merged as `f4fecd858fab8d43cd9d6732ab56495cfb313116`.
 - Stage 8 #2141 merged from exact qualified head `e5d4333d4e8dc2912b2ffc9c5abc13f79d4b4a2d` as `53cba902af9dbf1e118f3f274836120f6c30bb40`.
 - Exact Stage 8 qualification passed the dedicated itch.io package workflow, CCG Site Safety, Public Code Cache Version, SEO Automation, Native Mouse Wheel Scroll Contract, canonical/Node contracts and all six Lost Sizzler Chromium shards.
 - Load Safety shard 2 initially timed out only in the unchanged `v10-41-stage8-scout-persistence.mjs` startup wait. The unchanged targeted shard retry passed; no runtime code, assertion or timeout was weakened.
-- The qualified head produced artifact `C64-Dungeon-Carnage-Itch` (artifact ID `10533819282`, 21,109,428 bytes, SHA-256 `5bcb8a915490382327f16fba0ba6ea5dcc20e0b1ba9d156dfc5a5d2a438b3c38`).
+- The original Stage 8 artifact is superseded as the publication candidate by a later successful package after #2164: `C64-Dungeon-Carnage-Itch`, artifact ID `10561459333`, 21,110,985 bytes, GitHub Actions SHA-256 `f8a2142824b41b85d29006cf72d52c511b2bce9e879178ad9d45f4700a38c464`, workflow run `35380506012`.
 - Stage 8 keeps the canonical CCG website runtime unchanged, excludes website account bootstraps and retired custom commerce from the staged package, preserves Solo/Tutorial/local Split Screen, and hands Weekly Vault back to the canonical website.
 - Repository-side itch.io release preparation is complete. Public itch.io page creation, artifact upload/publication and the final public URL remain external release actions; no URL is invented in source.
-- Startup/first-visual flicker remediation #2145 is repository-complete. Exact qualified head `432af71f6d19612a54e274f9114c6b3ef35e7450` merged as `4c56d2bccd73350359c8b3246b0d70142894d353`.
-- #2145 moves release-loader ownership into the original HTML/render-blocking first visual state and pre-aligns the visible R55 button presentation before reveal. No artificial startup delay or gameplay ownership change was introduced.
-- Exact #2145 qualification passed all eight triggered workflows, including Lost Sizzler Load Safety canonical/Node coverage and all six Chromium shards. Detailed checkpoint: `docs/ai-work/dungeon-carnage-startup-first-visual-2026-09-18.md`.
+- Startup remediation progressed beyond #2145 after hands-on evidence. #2153 exact head `8a2fc01022612a13d0c4f52f276a4d7d62deee4e` merged as `ba75374ea45871e24885a0d2cdbd57bb61f1ae95`, preventing reveal before authoritative V10.42 menu composition. #2164 exact head `43b916c3b974628446c2c9eeb55e66f47b8b14e9` merged as `38c79b61271be59791fe5f46dbc796b243f317dc`, removing the transient legacy release-ready CSS hide that caused loader → page → loader flicker. Automated qualification is complete; deployed hands-on startup retest after #2164 remains required. Detailed checkpoint: `docs/ai-work/dungeon-carnage-startup-first-visual-2026-09-18.md`.
 - The programme remains milestone-first; broad legacy cleanup stays backlog unless it blocks an active player-facing workstream.
 
 ### Manual acceptance state
 
-Two product-level checks remain unresolved and must not be inferred from automated tests:
+Three product-level checks remain unresolved and must not be inferred from automated tests:
 
-1. sustained Solo movement/firing/combat/pause-resume stability after #2129;
-2. 3 Artefacts/Essences → 1 Banishment Flask without first buying a Gold Flask, while Gold and Score remain unchanged.
+1. deployed startup retest after #2164: no compact/intermediate menu flash and no loader → page → loader pulse;
+2. sustained Solo movement/firing/combat/pause-resume stability after #2129;
+3. 3 Artefacts/Essences → exactly 1 Banishment Flask without first buying a Gold Flask, while Gold and Score remain unchanged.
 
-For both, record exactly:
+**MANUAL ACCEPTANCE REQUIRED — AUTOMATED QUALIFICATION DOES NOT SUBSTITUTE FOR THESE GATES**
 
-**MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**
-
-These deferred gates do not block independent repository work that does not depend on their outcome.
+No further Dungeon coding stage is justified unless one of these checks exposes a reproducible defect.
 
 ### Exact next action
 
-1. Treat #2145 startup/first-visual remediation as repository-complete on merge `4c56d2bccd73350359c8b3246b0d70142894d353`; do not reopen it without new current-build evidence.
-2. Keep the two Dungeon product acceptance checks explicitly deferred until the user is available to perform them.
-3. Keep public itch.io page creation, artifact upload/publication and the final public URL as an external release gate.
-4. Commodore Quest 3 repository reconstruction is complete in draft #2143 at exact head `15e48c3743775f2ba582134e9e04303e07bb4ea4`; all automated qualification is green. The next Quest action is the required hands-on browser playtest of The Bedroom and 36% Conversion Bout. Do not merge before that acceptance.
-5. Treat the Content Publisher magazine/no-music repair as repository-complete: #2150 merged as `5223f5053bceee18e70e70440992f31ff2510c7d`, generated archive output #2157 merged as `bde682be7311c5206b390a4bcfbd52891bc83fbc`, and the Lemon refresh success-counter follow-up #2159 merged as `13311f9e8b7a0a9376bbd5ca84451eb37d908a40`. #2110 is closed unmerged and must not be revived merely to reintroduce game-music upload into the unified publisher.
-6. PR #1976 is closed without merge. Its R30 optimisation history remains source material only and must be re-derived from current main only if new player-facing evidence justifies it.
+1. Retest the deployed/current Dungeon build after #2164 and require a direct loader → final V10.42 menu transition.
+2. If startup passes, complete sustained Solo acceptance.
+3. Complete the three-Artefact/Essence Banishment Flask exchange acceptance.
+4. After all hands-on gates pass, upload the latest qualified itch.io artifact and verify Solo, Tutorial, local 2P Split Screen and Weekly Vault website handoff before publication.
+5. Do not create new Dungeon repository work merely to keep development active; reopen only for a verified defect or explicit new feature request.
 
 ## Single-game archive presentation checkpoint — 18 September 2026
 
