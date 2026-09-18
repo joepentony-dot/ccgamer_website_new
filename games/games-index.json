@@ -2814,6 +2814,12 @@
     "thumbnail": "resources/images/thumbnails/all/river_raid.jpg"
   },
   {
+    "slug": "road-rash",
+    "title": "Road Rash",
+    "year": 1992,
+    "thumbnail": "resources/images/thumbnails/all/road-rash.png"
+  },
+  {
     "slug": "road-runner",
     "title": "Road Runner",
     "year": 1987,
