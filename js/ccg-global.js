@@ -1491,6 +1491,15 @@ if (IS_ADMIN_PATH) {
             }, { capture: true, passive: false });
         });
 
+        // Keep background scroll locked without changing html/body overflow.
+        // The command panel itself remains the only scrollable surface.
+        ["wheel", "touchmove"].forEach(eventName => {
+            modal.addEventListener(eventName, event => {
+                if (event.target instanceof Element && event.target.closest(".ccg-secret-modal__content")) return;
+                event.preventDefault();
+            }, { passive: false });
+        });
+
         modal.addEventListener("pointerdown", event => {
             if (event.target !== modal) return;
             if (!modal.dataset.ccgSecretModalLocked) return;
@@ -1543,8 +1552,7 @@ if (IS_ADMIN_PATH) {
         // hydrated Games archive. The body/modal lock still blocks background
         // interaction while preserving the exact underlying page offset.
         document.documentElement.style.overscrollBehavior = "none";
-        document.body.style.overflow = "hidden";
-        document.body.style.overscrollBehavior = "none";
+        // The fixed modal owns pointer/touch interaction. Keep the document\n        // scrolling surface unchanged so mobile archive offsets cannot clamp.\n        document.body.style.overscrollBehavior = "none";
         if (scrollbarGap > 0) {
             document.body.style.paddingRight = `${computedPaddingRight + scrollbarGap}px`;
         }
