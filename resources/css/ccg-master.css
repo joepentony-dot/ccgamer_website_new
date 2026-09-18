@@ -4414,7 +4414,7 @@ body.ccg-crt::before {
 }
 
 body.ccg-secret-modal-open {
-    overflow: visible;
+    overflow: hidden;
     overscroll-behavior: none;
     touch-action: auto;
 }
