@@ -4557,10 +4557,12 @@ body.ccg-egg-open {
 
 html[data-ccg-page="games-index"],
 html[data-ccg-page="genres-index"],
+html[data-ccg-page="genre-single"],
 html[data-ccg-page="collections-index"],
 html[data-ccg-page="publisher-index"],
 html[data-ccg-page="publisher-single"],
 html[data-ccg-page="developers-index"],
+html[data-ccg-page="developer-single"],
 html[data-ccg-page="years-index"],
 html[data-ccg-page="year-single"],
 html[data-ccg-page="platforms-index"],
@@ -4579,12 +4581,15 @@ html[data-ccg-page="emulation"] {
     --ccg-space-xl: 24px;
 }
 
+/* Detail families keep their dedicated hero CSS; shared rules only tighten frame/rhythm. */
 html[data-ccg-page="games-index"] .ccg-main,
 html[data-ccg-page="genres-index"] .ccg-main,
+html[data-ccg-page="genre-single"] .ccg-main,
 html[data-ccg-page="collections-index"] .ccg-main,
 html[data-ccg-page="publisher-index"] .ccg-main,
 html[data-ccg-page="publisher-single"] .ccg-main,
 html[data-ccg-page="developers-index"] .ccg-main,
+html[data-ccg-page="developer-single"] .ccg-main,
 html[data-ccg-page="years-index"] .ccg-main,
 html[data-ccg-page="year-single"] .ccg-main,
 html[data-ccg-page="platforms-index"] .ccg-main,
@@ -4636,10 +4641,12 @@ html[data-ccg-page="emulation"] .ccg-hero__inner {
 
 html[data-ccg-page="games-index"] main > section,
 html[data-ccg-page="genres-index"] main > section,
+html[data-ccg-page="genre-single"] main > section,
 html[data-ccg-page="collections-index"] main > section,
 html[data-ccg-page="publisher-index"] main > section,
 html[data-ccg-page="publisher-single"] main > section,
 html[data-ccg-page="developers-index"] main > section,
+html[data-ccg-page="developer-single"] main > section,
 html[data-ccg-page="years-index"] main > section,
 html[data-ccg-page="year-single"] main > section,
 html[data-ccg-page="platforms-index"] main > section,
@@ -4655,6 +4662,7 @@ html[data-ccg-page="emulation"] main > section {
 
 html[data-ccg-page="games-index"] :is(.ccg-section__intro, .games-hero__tagline),
 html[data-ccg-page="genres-index"] :is(.ccg-section__intro, .ccg-genre-hero__tagline),
+html[data-ccg-page="genre-single"] :is(.ccg-section__intro, .ccg-genre-hero__tagline),
 html[data-ccg-page="collections-index"] .ccg-section__intro,
 html[data-ccg-page="publisher-index"] .ccg-section__intro,
 html[data-ccg-page="publisher-single"] .ccg-section__intro,
@@ -4718,10 +4726,12 @@ html[data-ccg-page="zzap64-awards"] main > section {
 @media (max-width: 640px) {
     html[data-ccg-page="games-index"] .ccg-main,
     html[data-ccg-page="genres-index"] .ccg-main,
+    html[data-ccg-page="genre-single"] .ccg-main,
     html[data-ccg-page="collections-index"] .ccg-main,
     html[data-ccg-page="publisher-index"] .ccg-main,
     html[data-ccg-page="publisher-single"] .ccg-main,
     html[data-ccg-page="developers-index"] .ccg-main,
+    html[data-ccg-page="developer-single"] .ccg-main,
     html[data-ccg-page="years-index"] .ccg-main,
     html[data-ccg-page="year-single"] .ccg-main,
     html[data-ccg-page="platforms-index"] .ccg-main,
