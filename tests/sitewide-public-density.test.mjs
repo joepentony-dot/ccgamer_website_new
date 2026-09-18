@@ -3,7 +3,7 @@ import fs from "node:fs";
 import test from "node:test";
 
 const css = fs.readFileSync("resources/css/ccg-master.css", "utf8");
-const serviceWorker = fs.readFileSync("service-worker.js", "utf8");
+const serviceWorker = fs.readFileSync("service-worker.js", "utf8");\nconst performanceCss = fs.readFileSync("resources/css/ccg-performance-foundations.css", "utf8");
 
 test("public content density pass covers the main browse and information families", () => {
   assert.match(css, /CCG PUBLIC CONTENT DENSITY PASS — 2026-09-18/);
@@ -27,6 +27,11 @@ test("special runtime pages stay outside the shared density selector set", () =>
   assert.doesNotMatch(block, /data-ccg-page="admin"/);
 });
 
-test("public code cache namespace advances with the shared CSS change", () => {
+
+test("games accordion keeps real scroll geometry instead of off-screen height estimates", () => {
+  assert.match(performanceCss, /html\.ccg-perf-enabled \.games-accordion__section\s*\{[\s\S]*?content-visibility:\s*visible;[\s\S]*?contain-intrinsic-size:\s*none;/);
+  assert.doesNotMatch(performanceCss, /html\.ccg-perf-enabled \.games-accordion__section,\s*html\.ccg-perf-enabled \.ccg-publisher-results/);
+});
+\ntest("public code cache namespace advances with the shared CSS change", () => {
   assert.match(serviceWorker, /CODE_CACHE_VERSION = "2026-09-18-public-code-v7"/);
 });
