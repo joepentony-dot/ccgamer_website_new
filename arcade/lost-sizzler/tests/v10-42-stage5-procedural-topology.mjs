@@ -92,7 +92,7 @@ assert.match(worldSource,/const protectedSecretCells=stage5SecretReserveCells\(s
 assert.ok(worldSource.indexOf("const protectedSecretCells=stage5SecretReserveCells")>worldSource.lastIndexOf("attachBonusRoom(map,source,bonusIndex,rooms)"),"Stage 5 topology must run after the optional annex set is frozen");
 assert.doesNotMatch(topologySource,/\brandom\s*\(/,"Stage 5 topology decisions must not consume the established world RNG stream");
 assert.doesNotMatch(topologySource,/run\.floor|floorComplete\(|descendFloor\(|saveCheckpoint|loadCheckpoint/,"Stage 5 topology must not become a progression or save owner");
-assert.match(worldSource,/const topology=addStage5Topology\\(seedText,map,rooms,edges,graph,startRoom,exitRoom,protectedSecretCells\\)/,"the authoritative world generator must own Stage 5 topology with the secret-space reserve boundary");
+assert.ok(worldSource.includes("const topology=addStage5Topology(seedText,map,rooms,edges,graph,startRoom,exitRoom,protectedSecretCells)"),"the authoritative world generator must own Stage 5 topology with the secret-space reserve boundary");
 assert.match(worldSource,/return\{map,rooms,edges,graph,[^\n]+hauntedCorridor,topology\}/,"Stage 5 metadata must travel with the authoritative generated world");
 
 console.log("PASS V10.42 Stage 5 deterministic procedural topology");
