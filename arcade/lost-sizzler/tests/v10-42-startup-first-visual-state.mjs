@@ -6,6 +6,7 @@ const startupCss=fs.readFileSync(new URL('../css/v10-42-startup-first-visual.css
 const loaderCss=fs.readFileSync(new URL('../css/v10-36-special-ui.css',import.meta.url),'utf8');
 const loaderBootstrap=fs.readFileSync(new URL('../js/v10-36-bootstrap.js',import.meta.url),'utf8');
 const r55=fs.readFileSync(new URL('../js/v10-41-r55-final-playtest-cleanup.js',import.meta.url),'utf8');
+const overlaySafety=fs.readFileSync(new URL('../js/v10-41-release-overlay-safety.js',import.meta.url),'utf8');
 
 const headEnd=index.indexOf('</head>');
 const bodyStart=index.indexOf('<body ');
@@ -29,6 +30,9 @@ assert.match(loaderBootstrap,/function authoritativeReleaseReady\(\)/,'V10.36 mu
 assert.match(loaderBootstrap,/build\.startsWith\("V10\.42"\)/,'V10.42 builds must use the authoritative ordered-bootstrap reveal gate');
 assert.match(loaderBootstrap,/v142\?\.ready===true[\s\S]*?dataset\?\.releaseReady==="true"[\s\S]*?dataset\?\.v142BootstrapReady==="true"/,'loader reveal must require V10.42 ordered readiness and matching body readiness markers');
 assert.match(loaderBootstrap,/gate\?\.state\?\.ready&&authoritativeReleaseReady\(\)/,'legacy readiness alone must no longer hide the release loader');
+assert.doesNotMatch(overlaySafety,/body\[data-release-ready="true"\]\s+#ccg-release-loading/,'legacy release-ready pulses must not own loader visibility');
+assert.match(overlaySafety,/body\[data-run-active="true"\]\s+#ccg-release-loading/,'gameplay-start safety may still retire a non-error loader');
+assert.match(overlaySafety,/body\[data-tutorial-active="true"\]\s+#ccg-release-loading/,'tutorial-start safety may still retire a non-error loader');
 
 for(const contract of [
   'color:#f5eefb!important',
