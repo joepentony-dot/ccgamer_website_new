@@ -87,7 +87,10 @@
   function tuneTrap(trap,index,profile,seed,worldState){
     if(!trap)return trap;
     const room=worldState?.rooms?.[trap.roomId]||null,role=routeRole(room),salt=hash32(`${seed}|${trap.id}|trap|${role}`);
-    trap.kind=profile.trapKinds[(index+salt)%profile.trapKinds.length];
+    // Ember must always advertise its mechanical identity even on a floor
+    // with only one or two retained traps. Other zones keep deterministic
+    // palette selection, while every even Ember trap is guaranteed fire.
+    trap.kind=profile.id==="ash"&&index%2===0?"fire":profile.trapKinds[(index+salt)%profile.trapKinds.length];
     const roleScale=role==="crossroads"?.90:role==="alternate-route"?.94:role==="purposeful-dead-end"?1.08:1;
     trap.period=Math.round(profile.trapPeriod*roleScale);
     trap.phase=salt%Math.max(1,trap.period);
