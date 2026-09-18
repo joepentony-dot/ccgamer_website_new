@@ -16,6 +16,10 @@ const FORBIDDEN_SUFFIXES=[".pem",".key",".p12",".pfx"];
 
 function fail(message){throw new Error(message)}
 function sha256(buffer){return crypto.createHash("sha256").update(buffer).digest("hex")}
+function sameOrWithin(parent,child){
+  const relative=path.relative(parent,child);
+  return relative===""||(!relative.startsWith(".."+path.sep)&&relative!==".."&&!path.isAbsolute(relative));
+}
 function toPosix(value){return value.split(path.sep).join("/")}
 function safeRelative(value){
   if(!value||path.isAbsolute(value)||value.includes("\\")||value.split("/").some(part=>!part||part==="."||part===".."))return false;
@@ -75,6 +79,22 @@ function offlineRuntime(cacheToken){
     "window.addEventListener(\"ccg:v142-ready\",render);",
     "window.CCGWeeklyChallenge={get state(){return state},refresh:async()=>state,refreshGhost:async()=>null,claim:async()=>{openWeekly();throw new Error(\"Weekly Vault is available on the CCG website.\")},finish:async()=>null,render,renderCountdown:()=>false,renderLeaderboard:()=>false};",
     "window.CCGDungeonCarnageItchRelease=Object.freeze({mode:\"itch-html5\",cache:"+JSON.stringify(cacheToken)+",weeklyUrl:WEEKLY_URL,openWeekly,render});",
+    "})();",
+    ""
+  ].join("\n");
+}
+function packageDemoPaywallRuntime(){
+  return [
+    "(()=>{",
+    "\"use strict\";",
+    "if(window.__CCG_LOST_SIZZLER_V142_DEMO_PAYWALL__)return;",
+    "window.__CCG_LOST_SIZZLER_V142_DEMO_PAYWALL__=true;",
+    "const state={itchPackage:true,demoMode:false,commerce:false};",
+    "function showPaywall(){return false}",
+    "function closePaywall(){return false}",
+    "async function refreshEntitlement(){return false}",
+    "function diagnostics(){return {...state}}",
+    "window.CCGLostSizzlerV142DemoPaywall=Object.freeze({productSlug:\"c64-dungeon-carnage\",demoMode:false,showPaywall,closePaywall,refreshEntitlement,diagnostics});",
     "})();",
     ""
   ].join("\n");
@@ -176,11 +196,16 @@ async function verify(output){
   if(!html.includes(WEEKLY_URL))fail("Website Weekly Vault handoff missing");
   if(!html.includes("https://www.cheekycommodoregamer.co.uk/games/ccg-games/"))fail("Website exit handoff missing");
   if(await exists(path.join(root,"js","ccg-supabase-config.js"))||await exists(path.join(root,"js","ccg-supabase-client.js")))fail("Supabase website bootstrap must not be packaged");
+  const stagedPaywall=await fs.readFile(path.join(root,"js","v10-42-demo-paywall.js"),"utf8");
+  if(!/demoMode:false/.test(stagedPaywall)||!/commerce:false/.test(stagedPaywall))fail("Package demo-paywall compatibility owner is missing its disabled-commerce boundary");
+  if(/paypal|checkout|entitlement provider|\/auth\/|ccg-backend|signed-download|private-download/i.test(stagedPaywall))fail("Retired commerce/auth implementation leaked into staged demo-paywall owner");
   console.log("C64 Dungeon Carnage itch package verified: "+manifest.fileCount+" files, "+manifest.build);
 }
 async function build(output,sourceSha){
   const outputRoot=path.resolve(output);
-  if(outputRoot===REPO_ROOT||outputRoot===SOURCE_ROOT||outputRoot===path.parse(outputRoot).root)fail("Unsafe itch output root: "+outputRoot);
+  if(outputRoot===path.parse(outputRoot).root||sameOrWithin(REPO_ROOT,outputRoot)||sameOrWithin(outputRoot,REPO_ROOT)||sameOrWithin(SOURCE_ROOT,outputRoot)||sameOrWithin(outputRoot,SOURCE_ROOT)){
+    fail("Unsafe itch output root; release staging must be outside the repository tree: "+outputRoot);
+  }
   await fs.rm(outputRoot,{recursive:true,force:true});
   await fs.mkdir(outputRoot,{recursive:true});
 
@@ -209,6 +234,7 @@ async function build(output,sourceSha){
   const sourceIndex=await fs.readFile(indexPath,"utf8");
   await fs.writeFile(indexPath,transformIndex(sourceIndex,version.cacheToken),"utf8");
   await fs.writeFile(path.join(outputRoot,"js","itch-release-runtime.js"),offlineRuntime(version.cacheToken),"utf8");
+  await fs.writeFile(path.join(outputRoot,"js","v10-42-demo-paywall.js"),packageDemoPaywallRuntime(),"utf8");
 
   const manifest=await collectManifest(outputRoot,version,sourceSha);
   await fs.writeFile(path.join(outputRoot,"release-manifest.json"),JSON.stringify(manifest,null,2)+"\n","utf8");
