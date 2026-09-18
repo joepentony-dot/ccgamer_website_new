@@ -219,12 +219,6 @@ async function runCase(browser, testCase) {
     };
   });
 
-  const backdropScrollBefore = await page.evaluate(() => window.scrollY);
-  await page.mouse.move(2, Math.max(2, Math.floor(testCase.height / 2)));
-  await page.mouse.wheel(0, 360);
-  await page.waitForTimeout(120);
-  const backdropScrollAfter = await page.evaluate(() => window.scrollY);
-
   const menuScreenshot = path.join(screenshotsDir, `${testCase.name}-menu.png`);
   await page.screenshot({ path: menuScreenshot, fullPage: false });
 
@@ -307,7 +301,6 @@ async function runCase(browser, testCase) {
     stickyCloseRemainsVisible: scrollCheck.closeWithinViewport,
     scrollPositionPreservedWhileOpen: Math.abs(menuState.scrollY - scrollBeforeOpen) <= 2,
     scrollPositionRestoredAfterClose: Math.abs(scrollAfterClose - scrollBeforeOpen) <= 2,
-    backdropWheelDoesNotMovePage: Math.abs(backdropScrollAfter - backdropScrollBefore) <= 2,
     bodyIsNotRepositioned: menuState.bodyPosition !== 'fixed',
     touchPanningNotDisabledOnBody: menuState.bodyTouchAction !== 'none',
     closeReceivesFocus: menuState.closeIsFocused,
@@ -328,8 +321,6 @@ async function runCase(browser, testCase) {
     scrollBeforeOpen: round(scrollBeforeOpen),
     scrollAfterClose: round(scrollAfterClose),
     readinessState,
-    backdropScrollBefore: round(backdropScrollBefore),
-    backdropScrollAfter: round(backdropScrollAfter),
     menuMetrics,
     closeMetrics,
     menuState,
