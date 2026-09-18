@@ -112,6 +112,42 @@ PR #2164 removed that obsolete visibility authority and left V10.36 as the norma
 
 Repository status: **REPOSITORY-COMPLETE — #2164 / DEPLOYED MANUAL RETEST REMAINS**.
 
-No later Dungeon runtime change supersedes #2164 in live GitHub as of `main` `74e6147d28333e0d6082d7fc69a42a20bc0b52f7`.
+#2164 was later superseded as the final startup checkpoint by #2180 and #2182.
 
-The required startup acceptance is now simple: on the deployed current build, loading must transition directly to the final V10.42 menu with no compact/intermediate menu flash and no loader → page → loader pulse.
+## Later deterministic startup follow-up — PR #2180
+
+Exact-head qualification reproduced one remaining ownership bypass: premature `data-run-active="true"` or `data-tutorial-active="true"` could hide the canonical loader while V10.42 authoritative readiness was still false.
+
+#2180 requires both `data-v142-bootstrap-ready="true"` and `data-release-ready="true"` before those active-state selectors can retire a stale non-error loader.
+
+- exact qualified head: `c51522ab2b9b97046f23ed492d68a94b8fc3233f`
+- merge commit: `bf4cfa4b68f1bc14bf89e81e71fa35fa585b2fb3`
+- static and Chromium coverage protects premature run/tutorial pulses
+- no gameplay, progression, economy, save, package or arbitrary-delay ownership changed
+
+Repository status: **REPOSITORY-COMPLETE — #2180 / DEPLOYED MANUAL RETEST REMAINS**.
+
+## Production smoke alignment — PR #2181
+
+#2181 updates only the production-smoke expected release identity to `V10.42 r34` / `20260918r34`.
+
+- exact qualified head: `275773ccdab4e6ca20b4bae77bff2847fac5b66c`
+- merge commit: `69ba137423b0f435af9b5a6577b77c64668015e1`
+- no runtime/gameplay/loader/package files changed
+
+The post-merge smoke reached the correct release generation but exposed a separate stale-browser badge ownership defect.
+
+## Stale-build badge ownership — PR #2182
+
+The current Update Available panel could be accompanied by a legacy `BUILD V10.41` badge because `v10-41-landing-notification-polish.js` could write release labels before the V10.42 bootstrap object existed.
+
+#2182 adds one guard so the legacy observer stops writing release labels whenever `CCGLostSizzlerVersion.state.outdated === true`.
+
+- exact qualified head: `dfce128672fd90c8edf7900b3bac3a14095e58fe`
+- merge/current `main`: `4319ff84ea8bca41559347915d0ab5d2c1a0e873`
+- all six Chromium shards plus canonical/Node/discovery passed on the exact head
+- latest qualified package artifact: `10566350206`, SHA-256 `147782cb38cab392817b1bd4670f670ca0bcc2d51264839378d50bf229237be6`
+
+Repository status: **REPOSITORY-COMPLETE — #2182**. The push-triggered production smoke on merged `main` remains unverified in this checkpoint.
+
+The required hands-on startup acceptance is now: on the deployed current build, loading must transition directly to the final V10.42 menu with no compact/intermediate menu flash and no loader → page → loader pulse. The stale-browser version path must leave the current Update Available label authoritative rather than reverting the badge to V10.41.
