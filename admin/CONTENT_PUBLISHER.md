@@ -24,10 +24,10 @@ The game form collects the authoritative fields used by `games/games.json`:
 - YouTube URL / ID
 - thumbnail path and optional local thumbnail upload
 - manual/PDF and authorised disk URLs
-- optional direct Zzap!64 review URL
+- optional direct Lemon64/Lemon Amiga source override for magazine-review recovery
 - publisher/developer/programmer/graphics/musician/producer/re-release credits
 
-Lemon64 and Lemon Amiga are no longer required publishing inputs. Historical locally cached Lemon metadata remains usable, but an external Lemon page being unavailable, Cloudflare-protected or absent cannot block a new game. Curated magazine records and official Zzap!64 sources are stored independently in the repository.
+Lemon64 and Lemon Amiga are not required publishing inputs. For a new C64 or Amiga game, Reliable Games Publishing first tries the exact live game source and then an archived Wayback snapshot if the live site blocks GitHub Actions. Every automatically discovered source still has to match the exact title, platform, original release year and original publisher before it can be cached or imported. If neither source is reachable, the game publication continues and the unresolved source remains retryable instead of blocking the entire archive rebuild. Curated magazine records and official Zzap!64 sources remain supported independently in the repository.
 
 The publisher refreshes the current GitHub `games/games.json` immediately before writing, rejects duplicate slug/ID values, rejects thumbnail path collisions and creates an atomic Git commit containing:
 
@@ -35,6 +35,8 @@ The publisher refreshes the current GitHub `games/games.json` immediately before
 - the optional local thumbnail at `resources/images/thumbnails/all/...`
 
 It does **not** write generated game pages or sitemap files itself.
+
+The game form deliberately does **not** expose a game-music uploader. Game audio remains outside `games.json` and is managed separately until a production upload path is available and verified end to end.
 
 After a direct main commit, the existing workflows handle the rest:
 

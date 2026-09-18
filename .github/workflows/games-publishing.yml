@@ -40,6 +40,7 @@ on:
       - "scripts/build-magazine-review-chunks.js"
       - "scripts/import-amiga-magazine-reviews.js"
       - "scripts/refresh-lemon-game-cache.js"
+      - "scripts/lemon-fetch.js"
       - "scripts/discover-new-lemon-source.js"
       - "scripts/validate-new-game-enrichment.mjs"
       - "scripts/ensure-magazine-review-runtime.js"
@@ -132,7 +133,7 @@ jobs:
         run: node --test tests/game-description-enrichment-fallback.test.mjs
 
       - name: Validate magazine publishing pipeline
-        run: node --test tests/magazine-publishing-pipeline.test.mjs tests/lemon-refresh-publishing.test.mjs tests/lemon-source-discovery.test.mjs
+        run: node --test tests/magazine-publishing-pipeline.test.mjs tests/lemon-refresh-publishing.test.mjs tests/lemon-source-discovery.test.mjs tests/lemon-fetch-fallback.test.mjs
 
       - name: Validate Cloudflare audio admin integration
         run: node --test tests/cloudflare-audio-admin.test.mjs
@@ -161,7 +162,7 @@ jobs:
       - name: Discover or retry automatic Lemon sources (best effort)
         continue-on-error: true
         run: |
-          echo "[games-publishing] Trying conservative Lemon source candidates for newly added games and retrying only previously unresolved games. Candidates are cached only after exact title, platform, release-year and original-publisher validation, with exactly one valid inferred candidate required."
+          echo "[games-publishing] Trying conservative Lemon source candidates for newly added games and retrying only previously unresolved games. Live fetches fall back to archived snapshots, and every candidate still requires exact title, platform, release-year and original-publisher validation."
           node scripts/discover-new-lemon-source.js --base HEAD^
 
       - name: Refresh missing Lemon reference pages (best effort)
@@ -174,11 +175,6 @@ jobs:
         run: |
           echo "[games-publishing] Importing locally cached and curated magazine metadata. External Lemon availability is not a publishing prerequisite."
           node scripts/import-amiga-magazine-reviews.js
-
-      - name: Require new-game enrichment completion
-        run: |
-          echo "[games-publishing] Refusing to mark newly added games complete while automatic Lemon discovery is still unresolved."
-          node scripts/validate-new-game-enrichment.mjs --base HEAD^
 
       - name: Sync verified YouTube metadata
         env:

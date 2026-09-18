@@ -7,16 +7,13 @@ const fs = require("fs");
 const path = require("path");
 const { execFileSync } = require("child_process");
 const { extractZzapLinks } = require("./generate-zzap64-review-links.js");
+const { fetchLemonHtml } = require("./lemon-fetch.js");
 
 const ROOT = path.resolve(__dirname, "..");
 const GAMES_PATH = path.join(ROOT, "games", "games.json");
 const CACHE_DIR = path.join(ROOT, "data", "lemon-cache");
 const USER_AGENT = "CheekyCommodoreGamer-ZzapArchive/1.0 (+https://www.cheekycommodoregamer.co.uk/)";
-const REQUEST_DELAY_MS = 900;
-const FETCH_TIMEOUT_MS = 15000;
-const RETRIES = 3;
 const ALLOWED_HOSTS = new Set(["lemon64.com", "lemonamiga.com"]);
-let lastRequestAt = 0;
 
 function toArray(value) {
   if (Array.isArray(value)) return value;
@@ -128,43 +125,6 @@ function cachedUrlMap() {
   return map;
 }
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function fetchText(url) {
-  let lastError = null;
-  for (let attempt = 1; attempt <= RETRIES; attempt += 1) {
-    const elapsed = Date.now() - lastRequestAt;
-    if (elapsed < REQUEST_DELAY_MS) await sleep(REQUEST_DELAY_MS - elapsed);
-
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-    try {
-      lastRequestAt = Date.now();
-      const response = await fetch(url, {
-        signal: controller.signal,
-        redirect: "follow",
-        headers: {
-          "User-Agent": USER_AGENT,
-          "Accept": "text/html,application/xhtml+xml",
-          "Accept-Language": "en-GB,en;q=0.9"
-        }
-      });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const html = await response.text();
-      if (!html || html.length < 500) throw new Error("response was unexpectedly short");
-      return html;
-    } catch (error) {
-      lastError = error;
-      if (attempt < RETRIES) await sleep(500 * attempt);
-    } finally {
-      clearTimeout(timer);
-    }
-  }
-  throw lastError || new Error("request failed");
-}
-
 function requestedBaseRef(args) {
   const index = args.indexOf("--base");
   if (index >= 0 && args[index + 1]) return args[index + 1];
@@ -195,7 +155,13 @@ async function refresh(urls, options = {}) {
 
     try {
       console.log(`Fetching Lemon game page: ${url}`);
-      const html = await fetchText(url);
+      const fetched = await fetchLemonHtml(url, {
+        userAgent: USER_AGENT,
+        timeoutMs: 15000,
+        retries: 3,
+        delayMs: 700
+      });
+      const html = fetched.html;
       const canonical = normalizeLemonGameUrl(extractCanonical(html));
       const destination = existing.get(url)
         || (canonical ? existing.get(canonical) : "")
@@ -204,7 +170,7 @@ async function refresh(urls, options = {}) {
       existing.set(url, destination);
       if (canonical) existing.set(canonical, destination);
       const reviews = extractZzapLinks(html);
-      console.log(`Cached ${path.relative(ROOT, destination)} (${reviews.length} Zzap!64 review link${reviews.length === 1 ? "" : "s"}).`);
+      console.log(`Cached ${path.relative(ROOT, destination)} from ${fetched.source} source (${reviews.length} Zzap!64 review link${reviews.length === 1 ? "" : "s"}).`);
       fetched += 1;
     } catch (error) {
       failures.push(`${url}: ${error.message}`);

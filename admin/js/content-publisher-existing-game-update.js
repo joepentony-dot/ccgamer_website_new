@@ -5,8 +5,6 @@ const DEFAULT_BRANCH = 'main';
 const CCG_EDIT_SOURCE_PATH = 'games/games.json';
 const CCG_EDIT_BOX_PREFIX = 'resources/images/games/boxes-3d/';
 const CCG_EDIT_THUMB_PREFIX = 'resources/images/thumbnails/all/';
-const CCG_EDIT_MUSIC_URL = '/api/admin/game-music';
-const CCG_EDIT_MAX_MUSIC = 25 * 1024 * 1024;
 const CCG_EDIT_STORAGE_KEY = 'ccg_publisher_last_game_publication_v2';
 const CCG_EDIT_POLL_MS = 6000;
 const CCG_EDIT_TIMEOUT_MS = 240000;
@@ -52,11 +50,7 @@ async function ccgUpdateExistingGame() {
 
     const thumbnailFile = document.querySelector('[data-game-thumbnail-file]')?.files?.[0] || null;
     const boxFile = document.querySelector('[data-game-box3d-file]')?.files?.[0] || null;
-    const musicFile = document.querySelector('[data-game-music-file]')?.files?.[0] || null;
     if (boxFile && boxFile.type !== 'image/webp') throw new Error('3D box optimisation has not finished. Wait for the “3D box ready” message and try again.');
-    const musicError = ccgValidateMusic(musicFile);
-    if (musicError) throw new Error(musicError);
-
     const sourceChanged = JSON.stringify(entry) !== JSON.stringify(original);
     const files = [];
     if (sourceChanged) {
@@ -75,7 +69,7 @@ async function ccgUpdateExistingGame() {
     const boxPath = `${CCG_EDIT_BOX_PREFIX}${ccgSlugify(entry.slug)}.webp`;
     if (boxFile) files.push({ path: boxPath, base64: await ccgFileBase64(boxFile) });
 
-    if (!files.length && !musicFile) {
+    if (!files.length) {
       ccgEditStep('source', 'ok', 'No changes');
       ccgEditNotNeeded();
       ccgEditStep('live', 'ok', 'Already live');
@@ -90,7 +84,6 @@ async function ccgUpdateExistingGame() {
       ccgEditStep('source', 'ok', 'PR opened');
       ccgEditLog(`Pull request created: ${result.prUrl}`);
       ['metadata', 'pages', 'library', 'sitemaps', 'validation', 'live'].forEach((step) => ccgEditStep(step, 'running', 'Merge PR first'));
-      if (musicFile) ccgEditLog('Music upload is deferred until the repository update is merged.');
       return;
     }
 
@@ -102,14 +95,9 @@ async function ccgUpdateExistingGame() {
       ccgEditLog(`Source commit created: ${result.commitSha}`);
     }
 
-    if (musicFile) {
-      const upload = await ccgUploadMusic(entry.slug, musicFile);
-      ccgEditLog(`Game music uploaded securely: ${upload.key || `${entry.slug}.mp3`}`);
-    }
-
-    if (result.mode === 'noop' || !files.length) {
+    if (result.mode === 'noop') {
       ccgEditNotNeeded();
-      ccgEditStep('live', 'ok', musicFile ? 'Audio updated' : 'Already live');
+      ccgEditStep('live', 'ok', 'Already live');
       return;
     }
 
@@ -257,27 +245,6 @@ async function ccgMonitorEditWorkflow(config, sha, slug) {
   } catch (error) {
     ccgEditLog(`Publication check failed: ${error.message} The source update is saved; use Publication recovery instead of resubmitting.`, true);
   }
-}
-
-async function ccgUploadMusic(slug, file) {
-  const client = await window.ccgSupabase?.getClient?.();
-  const { data, error } = await client?.auth?.getSession?.() || {};
-  const token = data?.session?.access_token;
-  if (error || !token) throw new Error('Admin session expired before music upload.');
-  const body = new FormData();
-  body.set('slug', slug);
-  body.set('file', file, `${ccgSlugify(slug)}.mp3`);
-  const response = await fetch(CCG_EDIT_MUSIC_URL, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok || !payload.ok) throw new Error(payload.error || `Music upload failed (${response.status}).`);
-  return payload;
-}
-
-function ccgValidateMusic(file) {
-  if (!file) return '';
-  if (file.type !== 'audio/mpeg' || !/\.mp3$/i.test(file.name || '')) return 'Game music must be an MP3 file.';
-  if (!file.size || file.size > CCG_EDIT_MAX_MUSIC) return 'Game music must be between 1 byte and 25 MiB.';
-  return '';
 }
 
 function ccgEditGithubConfig() {

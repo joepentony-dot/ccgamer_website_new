@@ -18825,11 +18825,13 @@
     "pdf": "https://drive.google.com/file/d/1KS2qmEQx_CEx7xwBNclTCdNjRSJ3E3Kh/view?usp=drive_link",
     "disk": [],
     "download_status": "",
-    "lemon": [],
+    "lemon": [
+      "https://www.lemonamiga.com/game/road-rash"
+    ],
     "zzap": [],
-    "description": "Road Rash is a 1992 Commodore Amiga game published by Electronic Arts. PeakStar Software is recorded as the developer. It is catalogued on the Cheeky Commodore Gamer site under racing, placing it among Amiga releases from 1992. The game page brings together the CCG rating, video coverage, verified magazine review scores where available, creator credits, artwork, and manual or authorised download information when those sources have been established. Later re-release labels are kept separate from the publisher details for this 1992 release, helping distinguish the version catalogued here from subsequent issues.",
+    "description": "Road Rash (1992) for the Commodore Amiga is a motorcycle racing game published by Electronic Arts and converted by PeakStar Software. Combining high-speed road racing with rider-to-rider combat, Road Rash has you punching and kicking opponents while avoiding traffic, police, junctions and roadside hazards. Finish high enough to earn prize money, repair your bike and buy faster motorcycles as you progress through five increasingly difficult racing levels. The Amiga version offers smooth, forgiving handling and plenty of arcade action, although its combat, sound and crashes lack some of the impact of the original Sega Mega Drive version.",
     "ccg_rating": 7,
-    "ccg_rating_reason": "ast, addictive and great fun, but weaker combat, sound and crashes keep the Amiga version behind the Mega Drive original.",
+    "ccg_rating_reason": "Fast, addictive and great fun, but weaker combat, sound and crashes keep the Amiga version behind the Mega Drive original.",
     "credits": {
       "publisher": [
         "Electronic Arts"

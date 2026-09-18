@@ -85,7 +85,7 @@
       <div class="publisher-section-heading">
         <div>
           <h2>Add a C64 or Amiga game</h2>
-          <p>The publisher commits the source record only. Existing workflows automatically resolve verified Lemon sources, import available magazine reviews and build the canonical page, archives, search data, video SEO and sitemaps.</p>
+          <p>The publisher commits the source record only. Existing workflows resolve verified magazine sources with live and archived fallbacks, import available magazine reviews and build the canonical page, archives, search data, video SEO and sitemaps.</p>
         </div>
         <button class="ccg-btn ccg-btn--ghost" type="button" data-action="reset-game">Reset Game Form</button>
       </div>
@@ -165,16 +165,12 @@
             <input type="file" accept="image/png,image/jpeg,image/webp" data-game-box3d-file />
             <small>Optimised to <code>resources/images/games/boxes-3d/&lt;slug&gt;.webp</code>. The public game page already discovers this path.</small>
           </label>
-          <label>Game music file (optional)
-            <input type="file" accept="audio/mpeg,.mp3" data-game-music-file />
-            <small>After the GitHub game commit succeeds, the authenticated uploader writes <code>&lt;slug&gt;.mp3</code> to game-music R2. It is never stored in games.json.</small>
-          </label>
           <label>PDF / manual URL
             <input type="url" data-game-field="pdf" />
           </label>
           <label>Lemon source URL (optional override)
             <input type="url" data-game-field="lemonUrl" />
-            <small>Normally leave blank. C64 and Amiga sources are resolved automatically using exact title, platform, original release year and publisher. Use this only when an explicit verified Lemon URL is needed.</small>
+            <small>Normally leave blank. C64 and Amiga sources are resolved automatically using exact title, platform, original release year and publisher, with an archived-source fallback if the live reference site blocks automation. Use this only when an explicit verified Lemon URL is needed.</small>
           </label>
           <label>Download permission
             <select data-game-field="downloadStatus">
@@ -225,7 +221,7 @@
         <div class="publisher-submit-row">
           <div>
             <strong>After publish:</strong>
-            <span>game page → automatic magazine reviews → verified video metadata → VideoObject → video library → sitemaps → validation</span>
+            <span>game page → verified magazine reviews → verified video metadata → VideoObject → video library → sitemaps → validation</span>
           </div>
           <button class="ccg-btn ccg-btn--primary publisher-primary-action" type="submit" data-publish-game>Publish Game</button>
         </div>
@@ -430,8 +426,8 @@
   <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-auth-ui.js?v=admin-stable-20260207" defer></script>
-  <script type="module" src="/admin/js/content-publisher-image-optimizer.js"></script>
-  <script type="module" src="/admin/js/content-publisher.js?v=cloudflare-audio-20260812"></script>
+  <script type="module" src="/admin/js/content-publisher-image-optimizer.js?v=publisher-20260918"></script>
+  <script type="module" src="/admin/js/content-publisher.js?v=publisher-20260918"></script>
   <!-- ADMIN AUTH ISOLATION: do not include /js/ccg-global.js or /js/ccg-community-*.js on admin pages. -->
 </body>
 </html>

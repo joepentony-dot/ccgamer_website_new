@@ -112,3 +112,27 @@ Do not alter Dungeon Carnage runtime, Commodore Quest, protected intro-loader fi
 - 2026-09-16: Production probes found missing/mismatched CORS/runtime configuration; #2110 remains blocked and draft.
 - 2026-09-16: Removed an accidentally retained temporary patch workflow from #2110; current net delta is three publisher/test files only at the audit checkpoint.
 - 2026-09-16: Post-#2104 reconciliation stabilized the checkpoint wording; no Content Publisher implementation was changed.
+
+
+## Active Content Publisher repair — 2026-09-18
+
+Live main was reconciled at `9086ae764fd0b142398d72640dc48c883c24ff29` before the repair branch was rebuilt. PR #2150 (`codex/content-publisher-magazine-reliability-no-music-current-main`) supersedes the previous game-music-upload direction for the unified Content Publisher if accepted.
+
+Road Rash exposed two separate admin defects:
+
+- magazine enrichment still depended on GitHub Actions being able to fetch Lemon Amiga directly; the live Road Rash source returned HTTP 403 to Actions, so no local cache/review records were created and the later "Require new-game enrichment completion" guard contradicted the documented best-effort/non-blocking source policy;
+- the game form still exposed an MP3 upload control even though the production upload path remains unverified and blocked by Cloudflare account-side configuration.
+
+PR #2150 therefore:
+
+- removes the game-music control and all associated new-game/existing-game/completion-state upload code from the unified Content Publisher while leaving the dormant Worker infrastructure untouched;
+- keeps 3D-box upload behaviour unchanged;
+- adds a shared Lemon fetch helper that tries the live source first and then an Internet Archive Wayback snapshot;
+- keeps exact title/platform/original-year/original-publisher validation before any automatic source is trusted;
+- removes the hard workflow gate that let an external source outage fail the entire new-game publication;
+- preserves unresolved sources as retryable enrichment rather than a canonical publishing blocker;
+- adds a verified 21-row Road Rash magazine-review supplement and records the exact Lemon Amiga provenance URL;
+- repairs the Road Rash SEO description and the truncated `ccg_rating_reason`;
+- adds focused regressions for the archived-source fallback, non-blocking publishing contract, Road Rash review set, and absence of the game-music control.
+
+Implementation candidate before this checkpoint documentation update: `7d572dfd0747f619da7dbebd2e56e96d8ca7b794`. The branch is based directly on `9086ae764fd0b142398d72640dc48c883c24ff29`; do not merge #2150 until its final exact head has completed the required PR matrix. #2110 remains open draft for history and must not be merged alongside #2150.
