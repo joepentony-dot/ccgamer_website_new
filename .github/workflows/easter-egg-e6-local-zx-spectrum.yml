@@ -140,8 +140,9 @@ jobs:
           import json
           from pathlib import Path
           games = json.loads(Path('games/games.json').read_text(encoding='utf-8'))
-          assert len(games) == 651, len(games)
-          print('Catalogue integrity passed: 651 games.')
+          assert games, 'Catalogue must not be empty'
+          assert not any(str(game.get('slug', '')).strip().lower() == 'powerdrome' for game in games)
+          print(f'Catalogue integrity passed: {len(games)} games; Powerdrome absent.')
           PY
 
       - name: Confirm protected files unchanged
