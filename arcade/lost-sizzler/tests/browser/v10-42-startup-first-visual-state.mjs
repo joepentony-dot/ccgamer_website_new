@@ -132,6 +132,27 @@ try{
   assert.equal(legacyReadyMid.loaderDisplay,"grid","loader must continue covering the old/intermediate menu while V10.42 is unfinished");
   assert.ok(!legacyReadyMid.feature.some(text=>text.startsWith("5 PROCEDURAL DEPTHS")),"held five-depth owner must prove the final campaign copy has not landed yet");
 
+  const transientLegacyPulse=await page.evaluate(()=>{
+    const loader=document.getElementById("ccg-release-loading");
+    const before=document.body?.dataset?.releaseReady;
+    document.body.dataset.releaseReady="true";
+    const during={
+      display:loader?getComputedStyle(loader).display:"",
+      visibility:loader?getComputedStyle(loader).visibility:"",
+      hidden:Boolean(loader?.hidden),
+      v142Ready:Boolean(window.CCGLostSizzlerV142Bootstrap?.ready),
+      v142BootstrapReady:document.body?.dataset?.v142BootstrapReady
+    };
+    document.body.dataset.releaseReady=before||"false";
+    return during;
+  });
+
+  assert.equal(transientLegacyPulse.v142Ready,false,"legacy pulse probe must run while V10.42 is unfinished");
+  assert.notEqual(transientLegacyPulse.v142BootstrapReady,"true","legacy pulse probe must precede authoritative V10.42 readiness");
+  assert.equal(transientLegacyPulse.hidden,false,"legacy readiness pulse must not set the canonical loader hidden flag");
+  assert.equal(transientLegacyPulse.display,"grid","legacy readiness pulse must not expose the underlying menu even for one rendered frame");
+  assert.notEqual(transientLegacyPulse.visibility,"hidden","legacy readiness pulse must not CSS-hide the loader");
+
   releaseFiveDepth();
   await page.waitForFunction(()=>document.body?.dataset?.releaseReady==="true"&&document.body?.dataset?.gameReady==="true",null,{timeout:90000});
   await page.waitForFunction(()=>document.querySelector("#menu .game-mode-buttons")?.dataset?.r55TextLayout==="true",null,{timeout:15000});
@@ -169,7 +190,7 @@ try{
   }
   assert.deepEqual(errors,[],`startup first-visual contract must have no uncaught browser errors: ${errors.join("\n")}`);
 
-  console.log("DUNGEON_STARTUP_FIRST_VISUAL",JSON.stringify({first,legacyReadyMid,settled}));
+  console.log("DUNGEON_STARTUP_FIRST_VISUAL",JSON.stringify({first,legacyReadyMid,transientLegacyPulse,settled}));
   console.log("Dungeon Carnage startup first-visual browser contract passed.");
   await context.close();
 }finally{
