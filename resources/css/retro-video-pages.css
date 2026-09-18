@@ -466,3 +466,86 @@
     transform: none;
   }
 }
+
+/* CCG SITE-WIDE COMPACT RETRO DETAIL AUDIT — 2026-09 */
+.retro-video-page {
+  width: min(1240px, calc(100% - 28px));
+  padding: clamp(16px, 2.4vw, 28px) 0 48px;
+}
+
+.retro-video-page__breadcrumbs {
+  margin-bottom: 10px;
+}
+
+.retro-video-page__hero {
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: clamp(16px, 2.2vw, 26px);
+  margin-bottom: 16px;
+  padding: clamp(18px, 2.6vw, 30px);
+  border-radius: 16px;
+}
+
+.retro-video-page__eyebrow {
+  margin-bottom: 8px;
+}
+
+.retro-video-page__description {
+  max-width: 80ch;
+  line-height: 1.62;
+}
+
+.retro-video-page__watch,
+.retro-video-page__description-block,
+.retro-video-page__related,
+.retro-video-page__return {
+  margin-bottom: 14px;
+}
+
+.retro-video-page__watch {
+  padding: clamp(12px, 1.6vw, 17px);
+}
+
+.retro-video-page__description-block,
+.retro-video-page__related,
+.retro-video-page__return {
+  padding: clamp(14px, 1.8vw, 20px);
+}
+
+.retro-video-page__related-grid {
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.retro-video-page__related-copy {
+  gap: 6px;
+  padding: 10px;
+}
+
+.retro-video-page__related-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 250px;
+}
+
+@media (max-width: 780px) {
+  .retro-video-page {
+    width: min(100% - 18px, 720px);
+    padding-top: 12px;
+    padding-bottom: 34px;
+  }
+
+  .retro-video-page__hero {
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .retro-video-page__description {
+    line-height: 1.56;
+  }
+}
+
+@media (max-width: 560px) {
+  .retro-video-page {
+    width: calc(100% - 16px);
+  }
+}
+
