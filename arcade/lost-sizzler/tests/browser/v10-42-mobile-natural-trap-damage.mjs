@@ -88,6 +88,10 @@ try{
       if(!match)return{available:false,reason:"no enterable enemy-free trap of kind"};
       const {trap,route}=match;
       const x=Number(trap.x)+route.dx,y=Number(trap.y)+route.dy;
+      for(const enemy of host?.enemies||[])if(enemy?.alive&&Number(enemy.x)===Number(trap.x)&&Number(enemy.y)===Number(trap.y))enemy.alive=false;
+      for(const chest of host?.chests||[])if(chest?.active&&Number(chest.x)===Number(trap.x)&&Number(chest.y)===Number(trap.y))chest.active=false;
+      for(const door of host?.doors||[])if(Number(door.x)===Number(trap.x)&&Number(door.y)===Number(trap.y)){door.open=true;door.locked=false}
+      if(host?.stalker&&Number(host.stalker.x)===Number(trap.x)&&Number(host.stalker.y)===Number(trap.y))host.stalker.awake=false;
       p1.x=x;p1.y=y;p1.rx=x;p1.ry=y;
       p1.health=Math.max(4,Number(p1.health||8));
       p1.maxHealth=Math.max(Number(p1.maxHealth||8),p1.health);
