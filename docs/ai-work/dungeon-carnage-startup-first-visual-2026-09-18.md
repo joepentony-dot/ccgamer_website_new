@@ -151,3 +151,18 @@ The current Update Available panel could be accompanied by a legacy `BUILD V10.4
 Repository status: **REPOSITORY-COMPLETE — #2182**. The push-triggered production smoke later passed on deployed/current `main` `66c2aa8441fc67961e1b3fa116da6537ea41002b` in run `35397906108`, verifying `V10.42 r34 / 20260918r34`, matching `version.json`, the stale-browser Update Available path, feedback validation and Weekly Vault backend response. GitHub Pages deployment, live public navigation and push Load Safety also passed.
 
 The required hands-on startup acceptance is now: on the deployed current build, loading must transition directly to the final V10.42 menu with no compact/intermediate menu flash and no loader → page → loader pulse. The stale-browser version path must leave the current Update Available label authoritative rather than reverting the badge to V10.41.
+
+
+## Final stale-browser writer follow-up — PR #2185
+
+After the #2182/#2184 production-smoke cycle, the live stale-browser path still exposed one later writer: the authoritative V10.42 ordered bootstrap repeatedly restamped the visible subtitle/build badge after the version checker had already established `UPDATE AVAILABLE` ownership.
+
+#2185 keeps authoritative build/cache metadata restamping intact, but does not overwrite the visible subtitle/build badge while `CCGLostSizzlerVersion.state.outdated === true`.
+
+- exact qualified head: `ee8bef501b26271d1e1f38ad33c6c275b3290aba`
+- merge/current main: `073ee3df35cd3982ceb04676619792d69a28e0e3`
+- production-smoke run `35414519454`: passed
+- push Load Safety run `35414519441`: first attempt failed only in unchanged `v10-28-browser-stability-deterministic.mjs` on shard 3; unchanged shard retry passed on attempt 2
+- latest qualified package: artifact `10575312850`, SHA-256 `6425e7f4cdd296843911c78e81a1545c661123bab726c4b2cdd9449d7334d73c`
+
+Repository status: **REPOSITORY-COMPLETE — #2185**. Automated deployment verification is green. The remaining startup gate is still hands-on: current deployed main must show a direct loader → final V10.42 menu transition with no compact/intermediate flash and no loader → page → loader pulse.
