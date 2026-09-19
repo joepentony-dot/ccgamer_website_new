@@ -72,7 +72,7 @@
         border-color:#ffd85a!important;box-shadow:0 0 20px rgba(255,216,90,.2)!important;
       }
       #ccg-tutorial-info-tour{position:fixed;z-index:10150;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(880px,calc(100vw - 28px));max-height:min(46dvh,430px);overflow:auto;padding:15px 17px;border:2px solid rgba(255,216,90,.75);border-radius:14px;background:linear-gradient(150deg,rgba(20,12,30,.98),rgba(4,12,20,.98));box-shadow:0 18px 60px rgba(0,0,0,.72),0 0 32px rgba(255,216,90,.16)}
-      #ccg-tutorial-info-tour.hidden{display:none!important}#ccg-tutorial-info-tour .tour-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}#ccg-tutorial-info-tour small{color:#6cecff;font-weight:900;letter-spacing:.14em}#ccg-tutorial-info-tour h3{margin:3px 0 5px;color:#ffd85a}#ccg-tutorial-info-tour p{margin:0;color:#ddd5e5;font-size:.84rem;line-height:1.4}#ccg-tutorial-info-tour .tour-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px;margin:12px 0}#ccg-tutorial-info-tour .tour-item{display:grid;grid-template-columns:42px 1fr;gap:8px;align-items:center;padding:9px;border:1px solid rgba(108,236,255,.28);border-radius:9px;background:rgba(255,255,255,.045)}#ccg-tutorial-info-tour .tour-symbol{display:grid;place-items:center;width:38px;height:38px;border:1px solid #ffd85a;border-radius:8px;color:#fff3b0;background:#20152c;font:900 .78rem/1 monospace;box-shadow:inset 0 0 12px rgba(255,216,90,.12)}#ccg-tutorial-info-tour .tour-item b{display:block;color:#fff;font-size:.72rem}#ccg-tutorial-info-tour .tour-item span:last-child{display:block;color:#bfb5c9;font-size:.65rem;line-height:1.3}#ccg-tutorial-info-tour button{min-height:42px;padding:9px 15px}
+      #ccg-tutorial-info-tour.hidden{display:none!important}#ccg-tutorial-info-tour .tour-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}#ccg-tutorial-info-tour .tour-head-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}#ccg-tutorial-info-tour small{color:#6cecff;font-weight:900;letter-spacing:.14em}#ccg-tutorial-info-tour h3{margin:3px 0 5px;color:#ffd85a}#ccg-tutorial-info-tour p{margin:0;color:#ddd5e5;font-size:.84rem;line-height:1.4}#ccg-tutorial-info-tour .tour-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px;margin:12px 0}#ccg-tutorial-info-tour .tour-item{display:grid;grid-template-columns:42px 1fr;gap:8px;align-items:center;padding:9px;border:1px solid rgba(108,236,255,.28);border-radius:9px;background:rgba(255,255,255,.045)}#ccg-tutorial-info-tour .tour-symbol{display:grid;place-items:center;width:38px;height:38px;border:1px solid #ffd85a;border-radius:8px;color:#fff3b0;background:#20152c;font:900 .78rem/1 monospace;box-shadow:inset 0 0 12px rgba(255,216,90,.12)}#ccg-tutorial-info-tour .tour-item b{display:block;color:#fff;font-size:.72rem}#ccg-tutorial-info-tour .tour-item span:last-child{display:block;color:#bfb5c9;font-size:.65rem;line-height:1.3}#ccg-tutorial-info-tour button{min-height:42px;padding:9px 15px}
       #menu #tutorial-zone-btn.tutorial-primary-option{
         border-color:rgba(108,236,255,.72)!important;box-shadow:0 0 16px rgba(108,236,255,.14)!important;
       }
@@ -81,7 +81,7 @@
         #ccg-tutorial-stage-modal .ccg-tutorial-modal-card{width:min(94vw,620px);max-height:88dvh;padding:18px 16px}
         #ccg-tutorial-stage-modal .ccg-tutorial-modal-actions{display:grid;grid-template-columns:1fr}
         #ccg-tutorial-stage-modal button{width:100%}
-        #ccg-tutorial-info-tour{bottom:10px;max-height:58dvh;padding:12px}#ccg-tutorial-info-tour .tour-head{display:block}#ccg-tutorial-info-tour .tour-head button{width:100%;margin-top:10px}#ccg-tutorial-info-tour .tour-grid{grid-template-columns:1fr 1fr}
+        #ccg-tutorial-info-tour{bottom:10px;max-height:58dvh;padding:12px}#ccg-tutorial-info-tour .tour-head{display:block}#ccg-tutorial-info-tour .tour-head-actions{display:grid;grid-template-columns:1fr;gap:6px;margin-top:10px}#ccg-tutorial-info-tour .tour-head button{width:100%;margin-top:0}#ccg-tutorial-info-tour .tour-grid{grid-template-columns:1fr 1fr}
         body[data-tutorial-active="true"] #v104-touch-controls .ccg-tutorial-control-highlight{background:#251735!important;border-width:2px!important}
       }
     `;
@@ -102,7 +102,7 @@
   function ensureInformationTour(){let tour=document.getElementById("ccg-tutorial-info-tour");if(tour)return tour;tour=document.createElement("section");tour.id="ccg-tutorial-info-tour";tour.className="hidden";tour.setAttribute("aria-live","polite");(document.querySelector(".ccg-game")||document.body).appendChild(tour);return tour}
   function hideInformationTour(){const tour=document.getElementById("ccg-tutorial-info-tour");if(tour)tour.classList.add("hidden");informationTourStep=-1}
   function completeInformationTour(step){const state=tutorialState();if(!state?.active||Number(state.step)!==step)return;hideInformationTour();clearHighlights();rail()?.querySelector("[data-next]")?.click?.()}
-  function showInformationTour(step){const data=INFO_SHOWCASES.get(step);if(!data)return false;const tour=ensureInformationTour();informationTourStep=step;tour.innerHTML=`<div class="tour-head"><div><small>LIVE VISUAL TOUR · ${step+1}/10</small><h3>${escapeHtml(data.title)}</h3><p>${escapeHtml(data.copy)}</p></div><button type="button" class="ccg-tutorial-primary" data-tour-continue>CONTINUE</button></div><div class="tour-grid">${data.items.map(([symbol,title,copy])=>`<article class="tour-item"><span class="tour-symbol">${escapeHtml(symbol)}</span><span><b>${escapeHtml(title)}</b><span>${escapeHtml(copy)}</span></span></article>`).join("")}</div>`;tour.querySelector("[data-tour-continue]")?.addEventListener("click",()=>completeInformationTour(step));tour.classList.remove("hidden");return true}
+  function showInformationTour(step){const data=INFO_SHOWCASES.get(step);if(!data)return false;const tour=ensureInformationTour();informationTourStep=step;tour.innerHTML=`<div class="tour-head"><div><small>LIVE VISUAL TOUR · ${step+1}/10</small><h3>${escapeHtml(data.title)}</h3><p>${escapeHtml(data.copy)}</p></div><div class="tour-head-actions"><button type="button" class="ccg-tutorial-primary" data-tour-continue>CONTINUE</button><button type="button" data-tour-skip>SKIP TUTORIAL</button></div></div><div class="tour-grid">${data.items.map(([symbol,title,copy])=>`<article class="tour-item"><span class="tour-symbol">${escapeHtml(symbol)}</span><span><b>${escapeHtml(title)}</b><span>${escapeHtml(copy)}</span></span></article>`).join("")}</div>`;tour.querySelector("[data-tour-continue]")?.addEventListener("click",()=>completeInformationTour(step));tour.querySelector("[data-tour-skip]")?.addEventListener("click",exitTutorial);tour.classList.remove("hidden");return true}
 
   function desktopCommand(kind){
     const labels={move:["WASD","MOVE"],fire:["SPACE","FIRE"],dash:["SHIFT","DASH"],inventory:["TAB","ITEMS"]}[kind];
@@ -131,8 +131,13 @@
     desktopCommand(kind);
   }
 
+  function firstRunTutorialRequired(){
+    const api=onboarding();
+    return Boolean(api&&typeof api.isTutorialSeen==="function"&&!api.isTutorialSeen());
+  }
+
   function launchSolo(tutorial){
-    const requested=Boolean(tutorial);
+    const requested=Boolean(tutorial||firstRunTutorialRequired());
     const state=tutorialState();
     if(!state||typeof startSolo!=="function"){
       queuedLaunch=requested;
@@ -157,8 +162,8 @@
        * alive for that entire async period so the retired core chooser cannot
        * reappear after the player has already made a menu choice. */
       state.choiceAccepted=false;
-      if(!tutorial)state.forceTutorial=false;
-      if(tutorial&&!state.active){
+      if(!requested)state.forceTutorial=false;
+      if(requested&&!state.active){
         /* Do not clear tutorialRequested here. The core onboarding activation
          * timer owns it and must still see the request after fullscreen settles. */
         setTimeout(()=>{tutorialLaunchPending=Boolean(state.tutorialRequested&&!state.active)},250);
@@ -289,7 +294,7 @@
       <div class="tutorial-ack-note">${escapeHtml(note)}</div>
       <div class="ccg-tutorial-modal-actions">
         <button type="button" class="ccg-tutorial-primary" data-stage-continue>${step===9?"COMPLETE TUTORIAL":"CONTINUE"}</button>
-        ${step===9?"":'<button type="button" data-stage-exit>EXIT TUTORIAL</button>'}
+        ${step===9?"":'<button type="button" data-stage-exit>SKIP TUTORIAL</button>'}
       </div>
     </div>`;
     modal.querySelector("[data-stage-continue]")?.addEventListener("click",()=>stageAction(step));

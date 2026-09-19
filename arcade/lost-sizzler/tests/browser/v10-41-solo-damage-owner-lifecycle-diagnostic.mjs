@@ -62,6 +62,7 @@ function primitiveState(source,keys){
 
 try{
   const context=await browser.newContext({viewport:{width:1800,height:1000}});
+  await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
   const page=await context.newPage();
   page.setDefaultTimeout(90000);
 
