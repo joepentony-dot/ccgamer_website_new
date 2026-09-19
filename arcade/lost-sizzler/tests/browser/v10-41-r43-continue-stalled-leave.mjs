@@ -46,6 +46,7 @@ async function dismissVisibleDossierBoundary(page){
 
 try{
   const context=await browser.newContext({viewport:{width:1600,height:900}});
+  await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
   const page=await context.newPage();page.setDefaultTimeout(45000);
   const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
