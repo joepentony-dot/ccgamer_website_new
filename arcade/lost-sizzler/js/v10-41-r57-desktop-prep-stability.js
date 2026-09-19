@@ -110,7 +110,17 @@
           state.trapCycles.set(key,true);const before=durability(player);
           try{triggerTrap?.(player)}catch(error){console.warn("[Lost Sizzler r57] canonical trap trigger failed",error)}
           if(durability(player)===before){
-            try{window.hurtPlayer?.(player,1,false,`${String(trap.kind||"floor")} trap`);state.trapFallbacks++}catch(error){console.warn("[Lost Sizzler r57] trap damage fallback failed",error)}
+            /* R19 makes ordinary floor traps cost one HEALTH while preserving
+               armour. If the canonical contact latch misses this frame, R57's
+               fallback must preserve that same rule instead of falling back to
+               ordinary armour-first damage. */
+            const beforeArmor=Number(player.armor||0);
+            player.armor=0;
+            try{
+              window.hurtPlayer?.(player,1,false,`${String(trap.kind||"floor")} trap`);
+              state.trapFallbacks++;
+            }catch(error){console.warn("[Lost Sizzler r57] trap damage fallback failed",error)}
+            finally{player.armor=beforeArmor}
           }
           if(durability(player)<before)state.trapHits++;
         }else if(!active&&was)state.trapCycles.set(key,false);
