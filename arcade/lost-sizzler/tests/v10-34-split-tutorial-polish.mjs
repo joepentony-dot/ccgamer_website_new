@@ -17,7 +17,7 @@ const index=read("index.html");
 assert.match(core,/playMode=online\?"online":split\?"split":"solo";startWorld\(PGR\.floorSeed\(run\),split,false\)/,"run mode must be established before split-screen world generation");
 assert.match(core,/if\(!p1\|\|!p2\|\|playMode!=="split"\)throw new Error\("Both local players could not be initialised\."\)/,"split-screen startup must verify both players before reporting success");
 assert.match(core,/split-screen startup failed safely[\s\S]*?UI\.menu\.classList\.remove\("hidden"\)/,"failed split-screen startup must recover to the menu");
-assert.match(onboarding,/!state\.choiceAccepted&&!daily&&!online&&!split/,"the fallback tutorial chooser must be solo-only");
+assert.match(onboarding,/!state\.choiceAccepted&&!daily&&!online&&!split&&!readFlag\(SEEN\)/,"the fallback tutorial chooser must be solo-only");
 
 assert.match(play,/chest\._lockedFeedbackAt\|\|now-chest\._lockedFeedbackAt>=1200/,"locked chest reports must be input-throttled");
 assert.doesNotMatch(play,/LOCKED CHEST[\s\S]{0,180}shake\s*=/,"a rejected locked chest interaction must not shake the camera");
@@ -29,7 +29,7 @@ assert.equal((guidance.match(/\[\d,\{title:/g)||[]).length,5,"all five informati
 assert.match(guidance,/showInformationTour\(step\);[\s\S]*?return;/,"the first information-stage Continue must open its tour without advancing the lesson");
 assert.match(guidance,/function completeInformationTour\(step\)[\s\S]*?\[data-next\]/,"only the visual tour Continue may advance an information lesson");
 assert.match(onboarding,/You Are Ready To Take On The Adventure!/,"the requested final tutorial message must ship");
-assert.match(guidance,/\$\{step===9\?"":'<button type="button" data-stage-exit>EXIT TUTORIAL<\/button>'\}/,"Exit Tutorial must be absent from the final card");
+assert.match(guidance,/\$\{step===9\?"":'<button type="button" data-stage-exit>SKIP TUTORIAL<\/button>'\}/,"Skip Tutorial must be absent from the final card");
 
 for(const asset of ["assets/pixel/title-dungeon-v10-34.webp","assets/pixel/explorer-sheet-v10-34.png","assets/pixel/chest-sheet-v10-34.png"])assert.ok(fs.existsSync(path.join(root,asset)),`pixel-art asset is missing: ${asset}`);
 assert.match(index,/class="pixel-title-lockup"/,"the menu must use a responsive HTML pixel-title lockup");
