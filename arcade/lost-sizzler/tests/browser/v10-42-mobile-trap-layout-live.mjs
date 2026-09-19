@@ -183,6 +183,7 @@ async function exerciseImmediateDuplicateTrapOwner(page){
 
 async function runViewport(viewport){
   const context=await browser.newContext({viewport,isMobile:true,hasTouch:true,deviceScaleFactor:2});
+  await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
   const page=await context.newPage();
   page.setDefaultTimeout(20000);
   const errors=[];
@@ -299,6 +300,7 @@ async function runViewport(viewport){
 async function runLandscapeGuard(){
   const viewport={width:1024,height:768};
   const context=await browser.newContext({viewport,isMobile:false,hasTouch:false,deviceScaleFactor:1});
+  await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
   const page=await context.newPage();
   page.setDefaultTimeout(20000);
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
