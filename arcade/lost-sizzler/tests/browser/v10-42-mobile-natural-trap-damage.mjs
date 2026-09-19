@@ -67,19 +67,26 @@ try{
 
   for(const kind of kinds.slice(0,3)){
     const fixture=await page.evaluate(kind=>globalThis.eval(`(()=>{
-      const trap=(host?.traps||[]).find(t=>String(t.kind||"floor")===${JSON.stringify(kind)});
-      if(!trap)return{available:false,reason:"kind absent"};
       const dirs=[
         {dx:-1,dy:0,key:"KeyD"},
         {dx:1,dy:0,key:"KeyA"},
         {dx:0,dy:-1,key:"KeyS"},
         {dx:0,dy:1,key:"KeyW"}
       ];
-      const route=dirs.find(d=>{
-        const x=Number(trap.x)+d.dx,y=Number(trap.y)+d.dy;
-        return world?.map?.[y]?.[x]===0&&W.walkable(world.map,x,y,host);
-      });
-      if(!route)return{available:false,reason:"no adjacent route",trap:{id:trap.id,kind:trap.kind,x:trap.x,y:trap.y}};
+      const candidates=(host?.traps||[]).filter(t=>String(t.kind||"floor")===${JSON.stringify(kind)});
+      const match=candidates.map(trap=>{
+        if(!W.walkable(world.map,Number(trap.x),Number(trap.y),host))return null;
+        if((host?.enemies||[]).some(e=>e?.alive&&Number(e.x)===Number(trap.x)&&Number(e.y)===Number(trap.y)))return null;
+        if(host?.stalker?.awake&&Number(host.stalker.x)===Number(trap.x)&&Number(host.stalker.y)===Number(trap.y))return null;
+        const route=dirs.find(d=>{
+          const x=Number(trap.x)+d.dx,y=Number(trap.y)+d.dy;
+          return world?.map?.[y]?.[x]===0&&W.walkable(world.map,x,y,host)&&
+            !(host?.enemies||[]).some(e=>e?.alive&&Number(e.x)===x&&Number(e.y)===y);
+        });
+        return route?{trap,route}:null;
+      }).find(Boolean);
+      if(!match)return{available:false,reason:"no enterable enemy-free trap of kind"};
+      const {trap,route}=match;
       const x=Number(trap.x)+route.dx,y=Number(trap.y)+route.dy;
       p1.x=x;p1.y=y;p1.rx=x;p1.ry=y;
       p1.health=Math.max(4,Number(p1.health||8));
