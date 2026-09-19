@@ -54,8 +54,13 @@ try{
   await page.locator("#solo-btn").click({noWaitAfter:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==="true");
   const notice=page.locator("#ccg-mobile-pc-notice");
-  if(await notice.isVisible())await page.locator("#ccg-mobile-pc-accept").click({noWaitAfter:true});
+  if(await notice.isVisible()){
+    await page.locator("#ccg-mobile-pc-accept").click({noWaitAfter:true});
+    await page.waitForFunction(()=>document.getElementById("ccg-mobile-pc-notice")?.classList.contains("hidden")===true||getComputedStyle(document.getElementById("ccg-mobile-pc-notice")).display==="none");
+  }
   await page.waitForFunction(()=>Boolean(document.getElementById("v104-touch-controls")));
+  await page.waitForTimeout(320);
+  await page.waitForFunction(()=>[...document.querySelectorAll("#v104-touch-controls .v104-touch-pad .v104-touch-btn")].every(button=>button.getBoundingClientRect().width>0&&button.getBoundingClientRect().height>0));
 
   const kinds=await page.evaluate(()=>[...new Set((host?.traps||[]).map(t=>String(t.kind||"floor")))]);
   assert.ok(kinds.length>0,"generated Solo floor must contain real traps");
