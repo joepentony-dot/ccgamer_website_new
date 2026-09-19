@@ -4,7 +4,7 @@
 
 ## Audit checkpoint
 
-- Audited: **18 September 2026**.
+- Audited: **19 September 2026**.
 - Latest verified Dungeon runtime merge checkpoint and current repository `main` is `073ee3df35cd3982ceb04676619792d69a28e0e3`, the merge of #2185 from exact qualified head `ee8bef501b26271d1e1f38ad33c6c275b3290aba`. #2180 closed premature run/tutorial loader-hide ownership; #2181 aligned production smoke; #2182 guarded the legacy V10.41 brand observer; #2185 closes the remaining ordered-bootstrap stale-badge writer. Stage 8 itch.io repository preparation remains complete through #2141.
 - Stage 1 is converged through #2134 and #2135. #2134 merged as `adc6f96d2ab8d8395b8cae5818b38c101bd846b9`; #2135 merged as `811f67845dbcaa0b4b5c2b83f8860e10a184c1a0`.
 - Stage 2 startup/main-menu polish is merged through #2136 as `ee2d6b38e5c5805ee1c906d7f801bda2d8496383`.
@@ -197,7 +197,7 @@ Horde Survivor, Spy Vs Spy/Sizzler Saboteurs and networked Dungeon Multiplayer a
 6. **Stage 6 — deeper zone-specific gameplay — COMPLETE.** #2139 is merged and qualified; keep its downstream zone director subordinate to topology, campaign, save and combat owners.
 7. **Stage 7 — NPC / merchant integration — COMPLETE.** #2140 is merged and qualified; keep merchant presentation subordinate to `buyShopItem()` and the established economy/exchange owners.
 8. **Stage 8 — itch.io release preparation — COMPLETE.** #2141 is merged and qualified; the standalone HTML5 artifact is repository-ready and the retired custom commerce/desktop delivery stack remains excluded. Public itch.io publication is external.
-9. **Startup/first-visual remediation — REPOSITORY-COMPLETE THROUGH #2182 / PRODUCTION SMOKE PASSED / MANUAL RETEST REMAINS.** #2145 established first-paint loader ownership, #2153 prevented reveal before final V10.42 menu composition, #2164 removed the transient legacy release-ready CSS hide, #2180 closed the premature run/tutorial active-state bypass, #2181 aligned the production smoke to r34, and #2182 kept the stale-build Update Available badge authoritative.
+9. **Startup/first-visual remediation — REPOSITORY-COMPLETE THROUGH #2185 / PRODUCTION SMOKE PASSED / MANUAL RETEST REMAINS.** #2145 established first-paint loader ownership, #2153 prevented reveal before final V10.42 menu composition, #2164 removed the transient legacy release-ready CSS hide, #2180 closed the premature run/tutorial active-state bypass, #2181 aligned the production smoke to r34, #2182 protected the stale-build Update Available badge from the legacy brand observer, and #2185 protected that badge from later V10.42 bootstrap restamps.
 10. **Final qualification — EXACT-HEAD + DEPLOYED AUTOMATION PASS / HANDS-ON REQUIRED.** Repository coding is complete unless a hands-on gate exposes a new reproducible defect. Complete current startup, sustained Solo and Defect 5 Flask acceptance before external itch.io publication.
 
 Do not create another Dungeon coding stage solely to keep development active.
