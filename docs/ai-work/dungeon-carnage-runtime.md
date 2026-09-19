@@ -4,7 +4,27 @@
 
 The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
-## Current checkpoint — 18 September 2026
+## Current checkpoint — 19 September 2026
+
+Latest verified Dungeon runtime merge is `073ee3df35cd3982ceb04676619792d69a28e0e3`, the merge of PR #2185 from exact qualified head `ee8bef501b26271d1e1f38ad33c6c275b3290aba`.
+
+#2185 is a bounded presentation-ownership correction. The V10.42 ordered bootstrap still owns build/cache metadata and bootstrap data attributes, but its scheduled identity restamps no longer overwrite the version checker's visible stale-browser `UPDATE AVAILABLE` label after `CCGLostSizzlerVersion.state.outdated === true`. No gameplay, loader visibility, menu ordering, movement, combat, save, progression, shop/economy, Banishment or package-policy ownership changed.
+
+Exact-head qualification passed the triggered package/cache/mouse/mobile checks and Lost Sizzler Load Safety. The initial exact-head shard-5 attempt hit the historical `v10-35-layout.mjs` startup timeout and passed on one unchanged targeted retry; no test/runtime weakening was used.
+
+The merged deployment then passed Lost Sizzler Production Smoke run `35414519454`, Deploy GitHub Pages run `35414519455`, Live Public Navigation Verification run `35414559191`, CCG Site Safety run `35414519437`, Native Mouse Wheel Scroll Contract run `35414519487`, and C64 Dungeon Carnage itch.io Package run `35414519473`. Production smoke verified live `V10.42 r34 / 20260918r34`, matching `version.json`, stale-browser update prompting, feedback validation/CORS and Weekly Vault read/backend projection.
+
+Latest runtime package candidate: `C64-Dungeon-Carnage-Itch`, artifact ID `10575312850`, 21,111,070 bytes, GitHub Actions SHA-256 `6425e7f4cdd296843911c78e81a1545c661123bab726c4b2cdd9449d7334d73c`, workflow run `35414519473`, merged runtime SHA `073ee3df35cd3982ceb04676619792d69a28e0e3`.
+
+The unresolved product gates remain hands-on only:
+
+1. deployed startup transition must show no compact/intermediate menu flash and no loader → page → loader pulse;
+2. sustained Solo movement/firing/combat/pause-resume stability after #2129;
+3. three Artefacts/Essences → exactly one Banishment Flask without prior Gold-Flask purchase, with Gold and Score unchanged.
+
+Do not create a new Dungeon coding stage unless one of those hands-on checks exposes a reproducible defect.
+
+## Historical checkpoint — 18 September 2026
 
 Latest verified Dungeon runtime merge checkpoint is `4319ff84ea8bca41559347915d0ab5d2c1a0e873`, the merge of #2182 from exact qualified head `dfce128672fd90c8edf7900b3bac3a14095e58fe`. Current repository `main` is documentation-only follow-up `66c2aa8441fc67961e1b3fa116da6537ea41002b`. This follows #2180's early active-state loader-authority correction and #2181's production-smoke identity alignment. Stage 8 itch.io repository preparation remains complete through #2141, with the publication artifact now superseded by the qualified post-#2182 runtime artifact recorded below.
 
@@ -376,10 +396,10 @@ For both: **MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**.
 
 Exact next Dungeon action:
 
-1. perform the deployed startup retest for #2164; if the flicker still reproduces, capture the exact sequence and reopen only the smallest responsible startup owner;
+1. perform the deployed startup retest on post-#2185 main; if the flicker still reproduces, capture the exact sequence and reopen only the smallest responsible startup owner;
 2. if startup passes, complete sustained Solo movement/firing/combat/pause-resume acceptance;
 3. complete the three-Artefact/Essence Banishment Flask exchange acceptance;
-4. after all hands-on gates pass, use the latest qualified itch.io artifact and complete the external itch.io page/upload/launch verification;
+4. after all hands-on gates pass, use the latest qualified post-#2185 itch.io artifact and complete the external itch.io page/upload/launch verification;
 5. do not create another Dungeon coding stage unless one of those hands-on checks exposes a real defect.
 
 ## Historical live-defect remediation checkpoint — 16 September 2026
