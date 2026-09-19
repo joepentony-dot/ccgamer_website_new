@@ -16,6 +16,7 @@ const origin=`http://127.0.0.1:${server.address().port}`;
 const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage","--disable-background-networking","--autoplay-policy=no-user-gesture-required"]});
 
 try{
+  await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
   const context=await browser.newContext({viewport:{width:1560,height:800}}),page=await context.newPage();
   page.setDefaultTimeout(45000);
   const pageErrors=[];page.on("pageerror",error=>pageErrors.push(String(error?.stack||error)));
