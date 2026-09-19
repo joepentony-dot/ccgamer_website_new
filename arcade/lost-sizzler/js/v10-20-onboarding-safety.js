@@ -36,6 +36,19 @@
       #ccg-tutorial-live-progress{position:fixed;z-index:10090;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);min-width:min(590px,calc(100vw - 28px));padding:12px 18px;border:1px solid rgba(108,236,255,.78);border-radius:13px;background:linear-gradient(135deg,rgba(19,13,31,.98),rgba(4,12,21,.98));box-shadow:0 12px 38px rgba(0,0,0,.62),inset 0 1px rgba(255,255,255,.06);text-align:center;color:#f1edf7;font:800 .8rem/1.5 monospace;letter-spacing:.04em;animation:ccgTutorialCoachIn .22s ease-out,ccgTutorialCoachPulse 2s ease-in-out infinite}
       #ccg-tutorial-live-progress:before{content:"TRAINING CONTROL";display:block;margin-bottom:5px;color:#6cecff;font-size:.62rem;letter-spacing:.2em}
       #ccg-tutorial-live-progress b{color:#ffd85a;font-size:.88rem}#ccg-tutorial-live-progress .done,#ccg-tutorial-live-progress .todo{display:inline-block;margin:3px 1px;padding:3px 7px;border-radius:6px;background:rgba(255,255,255,.055)}#ccg-tutorial-live-progress .done{color:#72ff9b;border:1px solid rgba(114,255,155,.35)}#ccg-tutorial-live-progress .todo{color:#c8c1d0;border:1px solid rgba(255,255,255,.09)}#ccg-tutorial-live-progress .control-key{display:inline-block;min-width:44px;margin:0 4px;padding:3px 9px;border:1px solid #ffd85a;border-bottom-width:3px;border-radius:6px;background:#20182c;color:#fff5bd;box-shadow:0 0 14px rgba(255,216,90,.16)}
+      #ccg-tutorial-live-progress [data-live-skip]{display:block;margin:7px auto 0;min-height:34px;padding:5px 11px;border:1px solid rgba(255,137,151,.68);border-radius:7px;background:#190a13;color:#ffb7c0;font:900 .66rem/1 monospace;letter-spacing:.08em;pointer-events:auto}
+      @media(max-width:900px),(pointer:coarse){
+        body[data-tutorial-active="true"] #ccg-tutorial-live-progress{
+          top:max(46px,calc(env(safe-area-inset-top) + 38px));bottom:auto;
+          width:calc(100vw - 18px);min-width:0;max-width:620px;
+          max-height:132px;overflow:auto;padding:8px 10px;
+          font-size:.68rem;line-height:1.25;pointer-events:none;
+        }
+        body[data-tutorial-active="true"] #ccg-tutorial-live-progress:before{margin-bottom:3px;font-size:.56rem}
+        body[data-tutorial-active="true"] #ccg-tutorial-live-progress b{font-size:.74rem}
+        body[data-tutorial-active="true"] #ccg-tutorial-live-progress .done,
+        body[data-tutorial-active="true"] #ccg-tutorial-live-progress .todo{margin:2px 1px;padding:2px 5px}
+      }
       #ccg-tutorial-complete-banner{margin:0 0 14px;padding:12px 14px;border:1px solid rgba(114,255,155,.55);border-radius:10px;background:rgba(16,52,34,.46);box-shadow:0 0 22px rgba(114,255,155,.12)}
       #ccg-tutorial-complete-banner b{display:block;color:#72ff9b;letter-spacing:.08em;margin-bottom:4px}#ccg-tutorial-complete-banner span{display:block;line-height:1.4}
       @media(max-width:700px){.ccg-tutorial-rail{padding:10px}.ccg-tutorial-rail p{font-size:.82rem}#ccg-tutorial-choice .tutorial-choice-actions button{width:100%}}
@@ -57,12 +70,12 @@
 
   function ensureChoice(){
     ensureStyle();if(state.choice?.isConnected)return state.choice;
-    const hostNode=document.querySelector(".game-area")||document.body,wrap=document.createElement("div");wrap.id="ccg-tutorial-choice";wrap.className="overlay hidden";wrap.innerHTML=`<div class="panel compact"><span class="tutorial-kicker">START OPTIONS</span><h2>Play or use the Tutorial?</h2><p>The Tutorial Zone is a safe Training Archive that teaches the controls and the important dungeon systems in order.</p><p>You can take the tutorial as often as you like. Choosing Play Game starts the normal dungeon immediately.</p><div class="tutorial-choice-actions"><button type="button" class="primary" data-tutorial-enter>TUTORIAL</button><button type="button" data-tutorial-skip>PLAY GAME</button></div></div>`;hostNode.appendChild(wrap);state.choice=wrap;
+    const hostNode=document.querySelector(".game-area")||document.body,wrap=document.createElement("div");wrap.id="ccg-tutorial-choice";wrap.className="overlay hidden";wrap.innerHTML=`<div class="panel compact"><span class="tutorial-kicker">FIRST-TIME TRAINING</span><h2>Start with the Tutorial</h2><p>New players begin in the safe Training Archive so the movement, combat and dungeon controls are introduced before the main run.</p><p>You can skip training now if you already know the controls. The Tutorial remains available from the main menu at any time.</p><div class="tutorial-choice-actions"><button type="button" class="primary" data-tutorial-enter>START TUTORIAL</button><button type="button" data-tutorial-skip>SKIP TUTORIAL &amp; PLAY</button></div></div>`;hostNode.appendChild(wrap);state.choice=wrap;
     wrap.querySelector("[data-tutorial-enter]")?.addEventListener("click",()=>resolveChoice(true));wrap.querySelector("[data-tutorial-skip]")?.addEventListener("click",()=>resolveChoice(false));return wrap;
   }
   function showChoice(args){state.pendingBegin={args};ensureChoice().classList.remove("hidden");try{input?.clear?.()}catch(_){}}
   function resolveChoice(tutorial){
-    writeFlag(SEEN,true);state.tutorialRequested=Boolean(tutorial);state.choice?.classList.add("hidden");const p=state.pendingBegin;state.pendingBegin=null;if(!p)return false;
+    if(!tutorial)writeFlag(SEEN,true);state.tutorialRequested=Boolean(tutorial);state.choice?.classList.add("hidden");const p=state.pendingBegin;state.pendingBegin=null;if(!p)return false;
     state.choiceAccepted=true;try{return beginRun.apply(window,p.args)}finally{state.choiceAccepted=false}
   }
   function ensureMenuButton(){if(document.getElementById("tutorial-zone-btn"))return;const row=document.querySelector("#menu .secondary-menu")||document.querySelector("#menu .menu-buttons");if(!row)return;const b=document.createElement("button");b.id="tutorial-zone-btn";b.type="button";b.textContent="Tutorial Zone";b.title="Start the safe Lost Sizzler tutorial";b.addEventListener("click",()=>{state.forceTutorial=true;state.tutorialRequested=true;state.choiceAccepted=true;try{startSolo()}finally{state.choiceAccepted=false;setTimeout(()=>state.forceTutorial=false,0)}});row.insertBefore(b,row.firstChild)}
@@ -102,11 +115,11 @@
     if(kind==="inventory")return `<b>INVENTORY COMPLETE</b> <span class="done">✓ OPENED</span> <span class="done">✓ CLOSED</span>`;
     return"";
   }
-  function renderLiveProgress(kind){let panel=state.progressPanel;if(!panel?.isConnected){panel=document.createElement("div");panel.id="ccg-tutorial-live-progress";(document.querySelector(".ccg-game")||document.body).appendChild(panel);state.progressPanel=panel}panel.innerHTML=actionProgress(kind)}
+  function renderLiveProgress(kind){let panel=state.progressPanel;if(!panel?.isConnected){panel=document.createElement("div");panel.id="ccg-tutorial-live-progress";(document.querySelector(".ccg-game")||document.body).appendChild(panel);state.progressPanel=panel}panel.innerHTML=`${actionProgress(kind)}<button type="button" data-live-skip>SKIP TUTORIAL</button>`;panel.querySelector("[data-live-skip]")?.addEventListener("click",()=>finishTutorial(true))}
   function renderStep(){
     if(!state.active)return;const s=STEPS[state.step]||STEPS[STEPS.length-1],isReady=stepReady(s),interactive=["move","fire","dash","inventory"].includes(s[0]),p=ensureTutorialPanel();if(!p)return;const pct=Math.round(((state.step+1)/STEPS.length)*100);
     const progressCopy=interactive?(isReady?'<span class="ccg-tutorial-done">DONE — LOADING NEXT STEP…</span>':'<span class="ccg-tutorial-doit">DO THIS NOW TO CONTINUE</span>'):"";
-    const actionCopy=interactive?'<button type="button" data-skip>Exit Tutorial</button>':s[0]==="finish"?'<button class="primary" type="button" data-finish>Complete Tutorial</button>':'<button class="primary" type="button" data-next>Continue</button><button type="button" data-skip>Exit Tutorial</button>';
+    const actionCopy=interactive?'<button type="button" data-skip>Skip Tutorial</button>':s[0]==="finish"?'<button class="primary" type="button" data-finish>Complete Tutorial</button>':'<button class="primary" type="button" data-next>Continue</button><button type="button" data-skip>Skip Tutorial</button>';
     p.innerHTML=`<span class="tutorial-kicker">TUTORIAL ZONE • ${state.step+1}/${STEPS.length}</span><h3>${s[1]}</h3><p>${s[2]}</p><p class="tutorial-detail">${s[3]}</p><div class="ccg-tutorial-progress"><span style="width:${pct}%"></span></div>${progressCopy}<div class="ccg-tutorial-actions">${actionCopy}</div>`;
     if(interactive)renderLiveProgress(s[0]);else{state.progressPanel?.remove?.();state.progressPanel=null}
     p.querySelector("[data-next]")?.addEventListener("click",advance);p.querySelector("[data-finish]")?.addEventListener("click",()=>finishTutorial(false));p.querySelector("[data-skip]")?.addEventListener("click",()=>finishTutorial(true));
@@ -162,7 +175,7 @@
   }
   function afterRunStarted(daily=false){state.welcomeForRun=false;applyGentleOpening();setTimeout(softenRareOpening,0);if(state.tutorialRequested&&!daily)setTimeout(activateTutorial,80);else announceWelcome(daily,false)}
 
-  function installBegin(){if(state.installed.begin||typeof beginRun!=="function")return;const original=beginRun;beginRun=function(opts={}){const daily=Boolean(opts?.daily),online=Boolean(opts?.online),split=Boolean(opts?.split);if(!state.choiceAccepted&&!daily&&!online&&!split){showChoice(Array.from(arguments));return false}const result=original.apply(this,arguments);afterRunStarted(daily);return result};state.installed.begin=true}
+  function installBegin(){if(state.installed.begin||typeof beginRun!=="function")return;const original=beginRun;beginRun=function(opts={}){const daily=Boolean(opts?.daily),online=Boolean(opts?.online),split=Boolean(opts?.split);if(!state.choiceAccepted&&!daily&&!online&&!split&&!readFlag(SEEN)){showChoice(Array.from(arguments));return false}const result=original.apply(this,arguments);afterRunStarted(daily);return result};state.installed.begin=true}
   function installWorld(){if(state.installed.startWorld||typeof startWorld!=="function")return;const original=startWorld;startWorld=function(){const result=original.apply(this,arguments);try{applyGentleOpening();setTimeout(softenRareOpening,0)}catch(e){console.warn("[Lost Sizzler] gentle opening pass failed",e)}return result};state.installed.startWorld=true}
   function actionChainHasMarker(fn,marker,limit=64){
     const seen=new Set();let current=fn,depth=0;
@@ -206,5 +219,5 @@
   function install(){ensureStyle();ensureChoice();ensureMenuButton();installBegin();installWorld();installActions();installDossier()}
   document.addEventListener("keydown",handleTutorialKeydown,true);document.addEventListener("pointerdown",handleTutorialPointer,true);
   const installTimer=setInterval(install,500);const progressTimer=setInterval(watchTutorialProgress,80);if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",install,{once:true});else install();window.addEventListener("pagehide",()=>{clearInterval(installTimer);clearInterval(progressTimer);document.removeEventListener("keydown",handleTutorialKeydown,true);document.removeEventListener("pointerdown",handleTutorialPointer,true)},{once:true});
-  window.CCGLostSizzlerOnboardingV120={state,replay:()=>{state.forceTutorial=true;state.tutorialRequested=true;state.choiceAccepted=true;try{return typeof startSolo==="function"?startSolo():false}finally{state.choiceAccepted=false}},isTutorialComplete:()=>readFlag(COMPLETE),markVerifiedEnemy:markVerified,stepReadyForTest:stepReady,completeInteractiveForTest:completeInteractive,actionChainHasMarker};
+  window.CCGLostSizzlerOnboardingV120={state,replay:()=>{state.forceTutorial=true;state.tutorialRequested=true;state.choiceAccepted=true;try{return typeof startSolo==="function"?startSolo():false}finally{state.choiceAccepted=false}},isTutorialSeen:()=>readFlag(SEEN),isTutorialComplete:()=>readFlag(COMPLETE),markVerifiedEnemy:markVerified,stepReadyForTest:stepReady,completeInteractiveForTest:completeInteractive,actionChainHasMarker};
 })();
