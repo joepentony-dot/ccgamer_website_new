@@ -113,9 +113,9 @@ assert.match(source,/S\?\.stopAll\?\.\(\)/,"returning from the tutorial must sto
 assert.match(source,/TUTORIAL COMPLETE<\/b>/,"completed training must leave a completion notice");
 assert.match(source,/You Are Ready To Take On The Adventure!/,"tutorial completion must include the requested adventure message");
 assert.match(source,/s\[0\]==="finish"\?'<button class="primary" type="button" data-finish>Complete Tutorial<\/button>'/,"the final rail step must expose only Complete Tutorial");
-assert.match(guidance,/\$\{step===9\?"":'<button type="button" data-stage-exit>EXIT TUTORIAL<\/button>'\}/,"the final centred tutorial card must omit Exit Tutorial");
+assert.match(guidance,/\$\{step===9\?"":'<button type="button" data-stage-exit>SKIP TUTORIAL<\/button>'\}/,"all non-final centred tutorial cards must expose Skip Tutorial");
 assert.match(source,/run\?\.daily\|\|playMode==="online"/,"ranked and online runs must not become tutorial runs");
-assert.match(source,/!state\.choiceAccepted&&!daily&&!online&&!split/,"the solo tutorial chooser must never intercept split-screen startup");
+assert.match(source,/!state\.choiceAccepted&&!daily&&!online&&!split&&!readFlag\(SEEN\)/,"the fallback chooser must apply only to unseen Solo players and never intercept split-screen startup");
 
 assert.match(hardening,/PGR\.makeRun\(\{difficulty,seed,daily:false\}\)/,"leaving training must reconstruct a pristine run");
 assert.match(hardening,/score=0/,"tutorial score must be discarded");
