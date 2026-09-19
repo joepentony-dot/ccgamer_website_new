@@ -26,8 +26,9 @@ const origin=`http://127.0.0.1:${server.address().port}`;
 const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage","--disable-background-networking","--autoplay-policy=no-user-gesture-required"]});
 
 try{
+  const context=await browser.newContext({viewport:{width:1440,height:900}});
   await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
-  const context=await browser.newContext({viewport:{width:1440,height:900}}),page=await context.newPage();page.setDefaultTimeout(30000);
+  const page=await context.newPage();page.setDefaultTimeout(30000);
   const pageErrors=[],crashes=[];page.on("pageerror",error=>pageErrors.push(String(error?.stack||error)));page.on("crash",()=>crashes.push("Chromium page crashed"));
   await page.goto(`${origin}/arcade/lost-sizzler/?runtime-recovery=1`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
