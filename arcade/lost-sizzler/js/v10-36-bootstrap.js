@@ -53,8 +53,23 @@
       setLoadingProgress(100,"A required game system did not load. Refresh the page to retry.");
       return;
     }
+
+    /* Fail closed: legacy release-gate callbacks can arrive before the ordered
+     * V10.42 module bootstrap is complete. Never schedule a hide from those
+     * callbacks. Otherwise the 320 ms hide races the 420 ms progress updater
+     * and produces loader -> menu -> loader flicker during module loading. */
+    if(!authoritativeReleaseReady()){
+      setLoadingProgress(Math.max(state.progress,92),"Finalising Dungeon Carnage menu and game systems…");
+      return;
+    }
+
     setLoadingProgress(100,"Game systems ready.");
-    setTimeout(()=>{const node=document.getElementById("ccg-release-loading");if(node)node.hidden=true},320);
+    setTimeout(()=>{
+      const node=document.getElementById("ccg-release-loading");
+      if(!node)return;
+      if(!authoritativeReleaseReady()){node.hidden=false;return}
+      node.hidden=true;
+    },320);
   }
 
   function enhancementScript(node){
