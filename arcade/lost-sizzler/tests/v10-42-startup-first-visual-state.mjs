@@ -30,6 +30,7 @@ assert.match(loaderBootstrap,/function authoritativeReleaseReady\(\)/,'V10.36 mu
 assert.match(loaderBootstrap,/build\.startsWith\("V10\.42"\)/,'V10.42 builds must use the authoritative ordered-bootstrap reveal gate');
 assert.match(loaderBootstrap,/v142\?\.ready===true[\s\S]*?dataset\?\.releaseReady==="true"[\s\S]*?dataset\?\.v142BootstrapReady==="true"/,'loader reveal must require V10.42 ordered readiness and matching body readiness markers');
 assert.match(loaderBootstrap,/gate\?\.state\?\.ready&&authoritativeReleaseReady\(\)/,'legacy readiness alone must no longer hide the release loader');
+assert.match(loaderBootstrap,/function finishLoading\(errors=\[\]\)\{[\s\S]*?if\(!authoritativeReleaseReady\(\)\)\{[\s\S]*?Finalising Dungeon Carnage menu and game systems…[\s\S]*?return;[\s\S]*?setTimeout\(\(\)=>\{[\s\S]*?if\(!authoritativeReleaseReady\(\)\)\{node\.hidden=false;return\}[\s\S]*?node\.hidden=true/,'every successful loader hide path must fail closed until authoritative V10.42 readiness');
 assert.doesNotMatch(overlaySafety,/body\[data-release-ready="true"\]\s+#ccg-release-loading/,'legacy release-ready pulses must not own loader visibility');
 assert.doesNotMatch(overlaySafety,/body\[data-run-active="true"\]\s+#ccg-release-loading/,'run-active alone must not own loader visibility');
 assert.doesNotMatch(overlaySafety,/body\[data-tutorial-active="true"\]\s+#ccg-release-loading/,'tutorial-active alone must not own loader visibility');
