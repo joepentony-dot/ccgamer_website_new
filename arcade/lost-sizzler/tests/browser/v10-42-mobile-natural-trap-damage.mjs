@@ -130,9 +130,7 @@ try{
     assert.equal(direct.after.health,direct.before.health-1,`one canonical mobile-runtime step onto naturally active ${kind} trap must remove one health: ${JSON.stringify({fixture,direct})}`);
     assert.equal(direct.after.armor,direct.before.armor,`canonical natural ${kind} trap damage must preserve armour`);
 
-    p1.x=fixture.origin.x;p1.y=fixture.origin.y;p1.rx=p1.x;p1.ry=p1.y;
-    p1.health=fixture.before.health;p1.armor=fixture.before.armor;p1.invuln=0;p1.hitStunMs=0;move1=0;input.clear();
-    window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.rearmInactiveTrapContacts?.();
+    await page.evaluate(fixture=>globalThis.eval("(()=>{const f="+JSON.stringify(fixture)+";p1.x=f.origin.x;p1.y=f.origin.y;p1.rx=p1.x;p1.ry=p1.y;p1.health=f.before.health;p1.armor=f.before.armor;p1.invuln=0;p1.hitStunMs=0;move1=0;input.clear();window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.rearmInactiveTrapContacts?.();return true})()"),fixture);
     await page.waitForTimeout(120);
 
     await page.waitForFunction(id=>{
@@ -155,9 +153,7 @@ try{
     assert.equal(after.armor,fixture.before.armor,`real generated ${kind} trap must preserve armour while applying health damage`);
     assert.ok(Math.abs(after.x-fixture.target.x)+Math.abs(after.y-fixture.target.y)<=1,`touch movement must not skip more than one tile beyond a trap contact: ${JSON.stringify({fixture,after})}`);
 
-    p1.x=fixture.origin.x;p1.y=fixture.origin.y;p1.rx=p1.x;p1.ry=p1.y;
-    p1.invuln=0;p1.hitStunMs=0;move1=0;input.clear();
-    window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.rearmInactiveTrapContacts?.();
+    await page.evaluate(fixture=>globalThis.eval("(()=>{const f="+JSON.stringify(fixture)+";p1.x=f.origin.x;p1.y=f.origin.y;p1.rx=p1.x;p1.ry=p1.y;p1.invuln=0;p1.hitStunMs=0;move1=0;input.clear();window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.rearmInactiveTrapContacts?.();return true})()"),fixture);
     await page.waitForTimeout(120);
   }
 
