@@ -8,7 +8,27 @@ For Dungeon Carnage specifically, `arcade/lost-sizzler/PROGRESS.md` is the produ
 
 Update this file when a workstream changes category, its active PR/dependency changes, or a substantial session ends. Keep detailed reasoning, checks, blockers, and next actions in the workstream file.
 
-## Current autonomous Dungeon Carnage checkpoint — 18 September 2026
+## Current autonomous Dungeon Carnage checkpoint — 19 September 2026
+
+- Latest verified Dungeon runtime merge: `073ee3df35cd3982ceb04676619792d69a28e0e3`, the merge of PR #2185 from exact qualified head `ee8bef501b26271d1e1f38ad33c6c275b3290aba`.
+- #2185 closes the stale-browser badge race left after #2182: scheduled V10.42 bootstrap identity restamps no longer overwrite the version checker's authoritative `UPDATE AVAILABLE` presentation once `CCGLostSizzlerVersion.state.outdated === true`. Build/cache metadata and bootstrap data attributes remain owned by V10.42; gameplay, loader visibility, menu ordering, saves, progression, economy and Banishment logic are unchanged.
+- Exact-head qualification passed Native Mouse Wheel Scroll Contract, Public Code Cache Version, C64 Dungeon Carnage itch.io Package, Mobile Trap Layout and Lost Sizzler Load Safety. The first Load Safety shard-5 attempt hit only the historical `v10-35-layout.mjs` 15-second startup timeout; one unchanged targeted retry passed.
+- The merged deployment passed Lost Sizzler Production Smoke run `35414519454`, verifying live `V10.42 r34 / 20260918r34`, matching `version.json`, the stale-browser Update Available path, feedback endpoint validation/CORS and Weekly Vault read/backend projection. Deploy GitHub Pages run `35414519455`, live public-navigation run `35414559191`, CCG Site Safety run `35414519437` and the itch.io package run `35414519473` also passed.
+- Latest runtime publication artifact: `C64-Dungeon-Carnage-Itch`, artifact ID `10575312850`, 21,111,070 bytes, GitHub Actions SHA-256 `6425e7f4cdd296843911c78e81a1545c661123bab726c4b2cdd9449d7334d73c`, workflow run `35414519473`, merged runtime SHA `073ee3df35cd3982ceb04676619792d69a28e0e3`.
+- Three product-level hands-on gates remain unresolved: deployed startup visual acceptance, sustained Solo movement/firing/combat/pause-resume stability, and the three-Artefact/Essence Banishment Flask exchange. Automated smoke/CI does not substitute for these gates.
+- Draft Quest 3 PR #2176 remains manual-gated. #2185 changes none of its 17 candidate paths, so no drift-only rebase/rebuild is justified.
+- Draft Supabase-containment PR #1860 remains deliberately unmerged behind authenticated staging and explicit cut-over/human gates; do not churn or merge it automatically.
+
+### Exact next action
+
+1. On the deployed post-#2185 build, require a direct loader → final V10.42 menu transition with no compact/intermediate flash and no loader → page → loader pulse.
+2. Complete sustained Solo acceptance.
+3. Complete the three-Artefact/Essence Banishment Flask exchange acceptance.
+4. Keep #2176 and #1860 deferred until their documented hands-on/external gates are actually available.
+5. Only after the Dungeon hands-on gates pass, publish the latest qualified runtime itch.io artifact and verify the external launch handoff.
+6. Reopen repository code only for new evidence or an explicit new feature request.
+
+## Historical autonomous Dungeon Carnage checkpoint — 18 September 2026
 
 - Live repository `main`: `66c2aa8441fc67961e1b3fa116da6537ea41002b`, the documentation-only checkpoint merge #2183 on top of runtime merge #2182 (`4319ff84ea8bca41559347915d0ab5d2c1a0e873`; exact runtime head `dfce128672fd90c8edf7900b3bac3a14095e58fe`).
 - #2180 merged from exact head `c51522ab2b9b97046f23ed492d68a94b8fc3233f` as `bf4cfa4b68f1bc14bf89e81e71fa35fa585b2fb3`. It keeps the canonical loader authoritative when premature run/tutorial active-state flags appear before V10.42 release readiness.
@@ -100,7 +120,7 @@ No further Dungeon coding stage is justified unless one of these checks exposes 
 
 | Workstream | Record | Current GitHub state |
 | --- | --- | --- |
-| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md), [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md), and [startup/first-visual checkpoint](ai-work/dungeon-carnage-startup-first-visual-2026-09-18.md) | Runtime is merged through #2182; current main is `66c2aa8441fc67961e1b3fa116da6537ea41002b`. Exact-head qualification, deployment, production smoke, live navigation and push Load Safety are green. Only the three documented hands-on product gates remain. |
+| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md), [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md), and [startup/first-visual checkpoint](ai-work/dungeon-carnage-startup-first-visual-2026-09-18.md) | Runtime is merged through #2185 / `073ee3df35cd3982ceb04676619792d69a28e0e3`. Exact-head qualification, deployed production smoke, Pages, live navigation and Site Safety are green. Three documented hands-on Dungeon gates remain. |
 | Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | Stage 8 #2141 is merged and the verified standalone HTML5 artifact is repository-ready. Public itch.io page creation/upload/final URL remain external; the retired custom commerce/paywall and desktop/Windows graphs stay closed. |
 | Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2150 is merged and the unified Content Publisher no longer exposes game-music upload. Magazine-source recovery is live/archive best-effort and no longer blocks canonical publishing. #2157 materialised the Road Rash archive/reviews and #2159 fixed the successful-refresh counter path. #2110 is closed unmerged as superseded. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | Draft #2176 is the current Quest 3 reconstruction at exact head `09a11f2ce26b4ba5848b29e75ad33534212a0458`; all automated checks are green. Current `main` has advanced without touching any of the 17 candidate paths, so no drift-only rebase is justified. Hands-on Bedroom + 36% Conversion Bout acceptance remains the merge gate. |
