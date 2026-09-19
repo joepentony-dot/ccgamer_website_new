@@ -10,25 +10,24 @@ Update this file when a workstream changes category, its active PR/dependency ch
 
 ## Current autonomous Dungeon Carnage checkpoint — 18 September 2026
 
-- Live repository `main`: `4319ff84ea8bca41559347915d0ab5d2c1a0e873`, the merge of PR #2182 from exact qualified head `dfce128672fd90c8edf7900b3bac3a14095e58fe`.
+- Live repository `main`: `66c2aa8441fc67961e1b3fa116da6537ea41002b`, the documentation-only checkpoint merge #2183 on top of runtime merge #2182 (`4319ff84ea8bca41559347915d0ab5d2c1a0e873`; exact runtime head `dfce128672fd90c8edf7900b3bac3a14095e58fe`).
 - #2180 merged from exact head `c51522ab2b9b97046f23ed492d68a94b8fc3233f` as `bf4cfa4b68f1bc14bf89e81e71fa35fa585b2fb3`. It keeps the canonical loader authoritative when premature run/tutorial active-state flags appear before V10.42 release readiness.
 - #2181 merged from exact head `275773ccdab4e6ca20b4bae77bff2847fac5b66c` as `69ba137423b0f435af9b5a6577b77c64668015e1`. It changes only the production-smoke expected build/cache identity to `V10.42 r34` / `20260918r34`.
 - The post-#2181 production smoke reached the correct release generation but exposed one separate stale-browser presentation defect: the current Update Available badge could be overwritten by the legacy V10.41 brand observer.
 - #2182 adds one guard in `v10-41-landing-notification-polish.js` so the legacy observer stops writing release labels when `CCGLostSizzlerVersion.state.outdated === true`. No gameplay, loader, movement, combat, save, progression, shop, Banishment, packaging or menu-flow ownership changed.
 - #2182 exact-head qualification passed C64 Dungeon Carnage itch.io Package, Public Code Cache Version, Native Mouse Wheel Scroll Contract and Lost Sizzler Load Safety, including canonical/Node, discovery and all six Chromium shards.
 - Latest qualified runtime/package artifact: `C64-Dungeon-Carnage-Itch`, artifact ID `10566350206`, 21,111,022 bytes, GitHub Actions SHA-256 `147782cb38cab392817b1bd4670f670ca0bcc2d51264839378d50bf229237be6`, workflow run `35390021405`, exact head `dfce128672fd90c8edf7900b3bac3a14095e58fe`.
-- The push-triggered production smoke for merged `main` `4319ff84...` remains unverified in this checkpoint. Do not infer a production pass from PR qualification.
+- The push-triggered **Lost Sizzler Production Smoke** passed on deployed current `main` `66c2aa8441fc67961e1b3fa116da6537ea41002b` in workflow run `35397906108`. It verified live `V10.42 r34 / 20260918r34`, matching `version.json`, the stale-browser Update Available prompt, feedback endpoint validation/CORS, and the Weekly Vault read/backend projection. Deploy GitHub Pages, live public-navigation verification and push Load Safety also passed for the same mainline.
 - Three product-level hands-on gates remain unresolved: current deployed startup acceptance, sustained Solo movement/firing/combat/pause-resume stability, and the three-Artefact/Essence Banishment Flask exchange.
-- No new Dungeon coding stage is justified unless one of those gates or the production smoke exposes a reproducible defect.
+- No new Dungeon coding stage is justified unless one of the three remaining hands-on gates exposes a reproducible defect.
 
 ### Exact next action
 
-1. Verify the normal deployment has published `4319ff84ea8bca41559347915d0ab5d2c1a0e873` and require the production smoke to pass against the live V10.42 r34 / `20260918r34` build.
-2. On that deployed build, require a direct loader → final V10.42 menu transition with no compact/intermediate flash and no loader → page → loader pulse.
-3. Complete sustained Solo acceptance.
-4. Complete the three-Artefact/Essence Banishment Flask exchange acceptance.
-5. Only after those gates pass, publish the latest qualified itch.io artifact and verify Solo, Tutorial, local 2P Split Screen and Weekly Vault website handoff.
-6. Reopen repository code only for new evidence or an explicit new feature request.
+1. On deployed current main `66c2aa8441fc67961e1b3fa116da6537ea41002b`, require a direct loader → final V10.42 menu transition with no compact/intermediate flash and no loader → page → loader pulse.
+2. Complete sustained Solo acceptance.
+3. Complete the three-Artefact/Essence Banishment Flask exchange acceptance.
+4. Only after those gates pass, publish the latest qualified runtime itch.io artifact and verify Solo, Tutorial, local 2P Split Screen and Weekly Vault website handoff.
+5. Reopen repository code only for new evidence or an explicit new feature request.
 
 ## Historical Dungeon Carnage checkpoint — earlier 18 September 2026
 
@@ -101,7 +100,7 @@ No further Dungeon coding stage is justified unless one of these checks exposes 
 
 | Workstream | Record | Current GitHub state |
 | --- | --- | --- |
-| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md), [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md), and [startup/first-visual checkpoint](ai-work/dungeon-carnage-startup-first-visual-2026-09-18.md) | Runtime is merged through #2182 / `4319ff84ea8bca41559347915d0ab5d2c1a0e873`. Exact-head qualification is green; push-triggered production smoke plus the three documented hands-on product gates remain unresolved. |
+| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md), [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md), and [startup/first-visual checkpoint](ai-work/dungeon-carnage-startup-first-visual-2026-09-18.md) | Runtime is merged through #2182; current main is `66c2aa8441fc67961e1b3fa116da6537ea41002b`. Exact-head qualification, deployment, production smoke, live navigation and push Load Safety are green. Only the three documented hands-on product gates remain. |
 | Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | Stage 8 #2141 is merged and the verified standalone HTML5 artifact is repository-ready. Public itch.io page creation/upload/final URL remain external; the retired custom commerce/paywall and desktop/Windows graphs stay closed. |
 | Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2150 is merged and the unified Content Publisher no longer exposes game-music upload. Magazine-source recovery is live/archive best-effort and no longer blocks canonical publishing. #2157 materialised the Road Rash archive/reviews and #2159 fixed the successful-refresh counter path. #2110 is closed unmerged as superseded. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | Draft #2176 is the current Quest 3 reconstruction at exact head `09a11f2ce26b4ba5848b29e75ad33534212a0458`; all automated checks are green. Current `main` has advanced without touching any of the 17 candidate paths, so no drift-only rebase is justified. Hands-on Bedroom + 36% Conversion Bout acceptance remains the merge gate. |
