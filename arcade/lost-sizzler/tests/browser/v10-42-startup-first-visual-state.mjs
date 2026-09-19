@@ -132,6 +132,31 @@ try{
   assert.equal(legacyReadyMid.loaderDisplay,"grid","loader must continue covering the old/intermediate menu while V10.42 is unfinished");
   assert.ok(!legacyReadyMid.feature.some(text=>text.startsWith("5 PROCEDURAL DEPTHS")),"held five-depth owner must prove the final campaign copy has not landed yet");
 
+  const heldModuleFrames=await page.evaluate(()=>new Promise(resolve=>{
+    const samples=[],started=performance.now();
+    const sample=()=>{
+      const loader=document.getElementById("ccg-release-loading");
+      const style=loader?getComputedStyle(loader):null;
+      samples.push({
+        at:Math.round(performance.now()-started),
+        hidden:Boolean(loader?.hidden),
+        display:style?.display||"",
+        visibility:style?.visibility||"",
+        releaseReady:document.body?.dataset?.releaseReady||"",
+        v142Ready:Boolean(window.CCGLostSizzlerV142Bootstrap?.ready)
+      });
+      if(performance.now()-started<900)requestAnimationFrame(sample);
+      else resolve(samples);
+    };
+    requestAnimationFrame(sample);
+  }));
+
+  assert.ok(heldModuleFrames.length>=20,"held-module startup probe must observe multiple rendered frames");
+  const exposedFrame=heldModuleFrames.find(frame=>frame.hidden||frame.display==="none"||frame.visibility==="hidden");
+  assert.equal(exposedFrame,undefined,`loader must never disappear for even one rendered frame while V10.42 modules are unfinished: ${JSON.stringify(exposedFrame||{})}`);
+  assert.equal(heldModuleFrames.some(frame=>frame.v142Ready),false,"held-module startup probe must remain entirely before V10.42 readiness");
+  assert.equal(heldModuleFrames.some(frame=>frame.releaseReady==="true"),false,"held-module startup probe must never observe authoritative release readiness");
+
   const transientLegacyPulse=await page.evaluate(()=>{
     const loader=document.getElementById("ccg-release-loading");
     const before=document.body?.dataset?.releaseReady;
