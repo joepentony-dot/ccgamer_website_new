@@ -104,6 +104,7 @@ try{
   // services. Stub production Supabase calls so localhost CORS policy cannot
   // create false console failures after the gameplay assertions have passed.
   await context.route("https://*.supabase.co/**",route=>route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:"{}"}));
+  await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
   const page=await context.newPage();
   page.setDefaultTimeout(60000);
   const pageErrors=[],consoleErrors=[],failedScripts=[],v142Requests=[];
