@@ -6,7 +6,7 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Current checkpoint — 18 September 2026
 
-Latest verified Dungeon runtime merge checkpoint is `4319ff84ea8bca41559347915d0ab5d2c1a0e873`, the merge of #2182 from exact qualified head `dfce128672fd90c8edf7900b3bac3a14095e58fe`. This follows #2180's early active-state loader-authority correction and #2181's production-smoke identity alignment. Stage 8 itch.io repository preparation remains complete through #2141, with the publication artifact now superseded by the qualified post-#2182 runtime artifact recorded below.
+Latest verified Dungeon runtime merge checkpoint is `4319ff84ea8bca41559347915d0ab5d2c1a0e873`, the merge of #2182 from exact qualified head `dfce128672fd90c8edf7900b3bac3a14095e58fe`. Current repository `main` is documentation-only follow-up `66c2aa8441fc67961e1b3fa116da6537ea41002b`. This follows #2180's early active-state loader-authority correction and #2181's production-smoke identity alignment. Stage 8 itch.io repository preparation remains complete through #2141, with the publication artifact now superseded by the qualified post-#2182 runtime artifact recorded below.
 
 Stage 1 is converged for the current product programme:
 
@@ -18,7 +18,7 @@ The programme is now milestone-first. General legacy residue remains backlog unl
 
 Historical integration cleanup: PR #1852 (long-running Solo stabilisation) and PR #1976 (R30 ownership-audit throttle optimisation) are closed without merge. Their Git history remains evidence/source material only; neither is an active current-main integration path.
 
-The original seven-item repository defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The later #2129 sustained-Solo acceptance is also still deferred. Startup ownership has progressed beyond #2164 through #2180 and #2182; exact-head automated qualification is green, but the current deployed build still requires hands-on startup acceptance and the merged #2182 mainline still requires a verified push-triggered production smoke.
+The original seven-item repository defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The later #2129 sustained-Solo acceptance is also still deferred. Startup ownership has progressed beyond #2164 through #2180 and #2182. Exact-head automated qualification is green, and deployed current `main` `66c2aa8441fc67961e1b3fa116da6537ea41002b` passed the push-triggered production smoke, GitHub Pages deployment, live public-navigation verification and push Load Safety. Only the documented hands-on startup acceptance remains for this startup workstream.
 
 Outstanding product gates:
 
@@ -103,7 +103,23 @@ The production delta is one added guard in `v10-41-landing-notification-polish.j
 
 Latest qualified runtime/package artifact: `C64-Dungeon-Carnage-Itch`, artifact ID `10566350206`, 21,111,022 bytes, GitHub Actions SHA-256 `147782cb38cab392817b1bd4670f670ca0bcc2d51264839378d50bf229237be6`, workflow run `35390021405`.
 
-Repository status: **REPOSITORY-COMPLETE — #2182 / POST-MERGE PRODUCTION SMOKE AND DEPLOYED MANUAL ACCEPTANCE REMAIN**.
+Repository status: **REPOSITORY-COMPLETE — #2182 / PRODUCTION SMOKE PASSED / DEPLOYED MANUAL ACCEPTANCE REMAINS**.
+
+Post-merge live verification:
+
+- current deployed/main checkpoint: `66c2aa8441fc67961e1b3fa116da6537ea41002b`
+- Lost Sizzler Production Smoke run `35397906108`: **passed**
+- live runtime identity: `V10.42 r34 / 20260918r34`
+- deployed `version.json`: matched public release identity
+- stale-browser Update Available path: passed
+- feedback endpoint CORS/validation without telemetry creation: passed
+- Weekly Vault read/backend projection: passed
+- Deploy GitHub Pages (Omega Stable): passed
+- Live Public Navigation Verification: passed
+- push-triggered Lost Sizzler Load Safety: passed
+
+These automated/live checks do not substitute for the three hands-on product gates.
+
 
 ### Stage 4 elemental portal foundation — PR #2137 — MERGED
 

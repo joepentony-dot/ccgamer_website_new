@@ -148,6 +148,6 @@ The current Update Available panel could be accompanied by a legacy `BUILD V10.4
 - all six Chromium shards plus canonical/Node/discovery passed on the exact head
 - latest qualified package artifact: `10566350206`, SHA-256 `147782cb38cab392817b1bd4670f670ca0bcc2d51264839378d50bf229237be6`
 
-Repository status: **REPOSITORY-COMPLETE — #2182**. The push-triggered production smoke on merged `main` remains unverified in this checkpoint.
+Repository status: **REPOSITORY-COMPLETE — #2182**. The push-triggered production smoke later passed on deployed/current `main` `66c2aa8441fc67961e1b3fa116da6537ea41002b` in run `35397906108`, verifying `V10.42 r34 / 20260918r34`, matching `version.json`, the stale-browser Update Available path, feedback validation and Weekly Vault backend response. GitHub Pages deployment, live public navigation and push Load Safety also passed.
 
 The required hands-on startup acceptance is now: on the deployed current build, loading must transition directly to the final V10.42 menu with no compact/intermediate menu flash and no loader → page → loader pulse. The stale-browser version path must leave the current Update Available label authoritative rather than reverting the badge to V10.41.
