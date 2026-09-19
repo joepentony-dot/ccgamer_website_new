@@ -151,3 +151,21 @@ The current Update Available panel could be accompanied by a legacy `BUILD V10.4
 Repository status: **REPOSITORY-COMPLETE — #2182**. The push-triggered production smoke later passed on deployed/current `main` `66c2aa8441fc67961e1b3fa116da6537ea41002b` in run `35397906108`, verifying `V10.42 r34 / 20260918r34`, matching `version.json`, the stale-browser Update Available path, feedback validation and Weekly Vault backend response. GitHub Pages deployment, live public navigation and push Load Safety also passed.
 
 The required hands-on startup acceptance is now: on the deployed current build, loading must transition directly to the final V10.42 menu with no compact/intermediate menu flash and no loader → page → loader pulse. The stale-browser version path must leave the current Update Available label authoritative rather than reverting the badge to V10.41.
+
+## Bootstrap stale-update badge ownership — PR #2185
+
+After the documentation-only #2184 merge, the push-triggered production smoke reproduced a stale-browser presentation race even though the live release identity was correct: the current `UPDATE AVAILABLE` badge could be overwritten by a later scheduled V10.42 bootstrap restamp as `BUILD V10.42 R34`.
+
+The remaining writer was the authoritative `v10-42-bootstrap.js` identity restamp schedule, not the legacy V10.41 observer already guarded by #2182. #2185 keeps V10.42 ownership of build/cache metadata and bootstrap data attributes, but skips the visible subtitle/build-badge rewrite whenever `CCGLostSizzlerVersion.state.outdated === true`.
+
+- exact qualified head: `ee8bef501b26271d1e1f38ad33c6c275b3290aba`
+- merge commit: `073ee3df35cd3982ceb04676619792d69a28e0e3`
+- production delta: `v10-42-bootstrap.js` plus one static and one Chromium ownership contract
+- no gameplay, loader visibility, menu ordering, movement, combat, save, progression, economy, Banishment or package-policy ownership changed
+- exact-head Load Safety was green after one unchanged shard-5 retry for the historical `v10-35-layout.mjs` startup timeout
+- deployed production smoke run `35414519454` passed and retained the stale-browser Update Available path while verifying live `V10.42 r34 / 20260918r34`
+- GitHub Pages and live public-navigation verification also passed on the merged runtime
+
+Repository status: **REPOSITORY-COMPLETE — #2185 / DEPLOYED HANDS-ON STARTUP ACCEPTANCE REMAINS**.
+
+The startup manual gate is unchanged: loading on the deployed post-#2185 build must transition directly to the final V10.42 menu with no compact/intermediate menu flash and no loader → page → loader pulse. Automated production smoke does not substitute for that visual hands-on gate.
