@@ -76,14 +76,20 @@
   }
   startReleaseReadyGuard();
 
+  function versionCheckOutdated(){
+    return window.CCGLostSizzlerVersion?.state?.outdated===true;
+  }
+
   function stampBuild(){
     const buildMeta=document.querySelector('meta[name="ccg-lost-sizzler-build"]'),cacheMeta=document.querySelector('meta[name="ccg-lost-sizzler-cache"]');
     if(buildMeta&&buildMeta.content!==BUILD)buildMeta.content=BUILD;
     if(cacheMeta&&cacheMeta.content!==CACHE)cacheMeta.content=CACHE;
-    const subtitle=document.querySelector(".v102-brand p"),expectedSubtitle="C64 DUNGEON CARNAGE — V10.42";
-    if(subtitle&&subtitle.textContent!==expectedSubtitle)subtitle.textContent=expectedSubtitle;
-    const badge=document.querySelector(".build-badge"),expectedBadge=`BUILD ${BUILD.toUpperCase()}`;
-    if(badge&&badge.textContent!==expectedBadge)badge.textContent=expectedBadge;
+    if(!versionCheckOutdated()){
+      const subtitle=document.querySelector(".v102-brand p"),expectedSubtitle="C64 DUNGEON CARNAGE — V10.42";
+      if(subtitle&&subtitle.textContent!==expectedSubtitle)subtitle.textContent=expectedSubtitle;
+      const badge=document.querySelector(".build-badge"),expectedBadge=`BUILD ${BUILD.toUpperCase()}`;
+      if(badge&&badge.textContent!==expectedBadge)badge.textContent=expectedBadge;
+    }
     if(document.body){document.body.dataset.v142Build=BUILD;document.body.dataset.v142BootstrapReady=state.ready?"true":state.failed?"failed":"false"}
     state.identityRestamps+=1;
   }
