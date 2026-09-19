@@ -23,6 +23,8 @@ assert.equal(version.build,BUILD,"version.json must describe the same current bu
 assert.equal(version.cacheToken,CACHE,"version.json must describe the same current cache token as the blocking page and bootstrap");
 assert.match(bootstrap,/const BUILD="V10\.42 r34";/,"ordered bootstrap build identity changed unexpectedly");
 assert.match(bootstrap,/const CACHE="20260918r34";/,"ordered bootstrap cache identity changed unexpectedly");
+assert.match(bootstrap,/function versionCheckOutdated\(\)\{[\s\S]*?CCGLostSizzlerVersion\?\.state\?\.outdated===true/,"ordered bootstrap must observe the version checker's stale-browser ownership");
+assert.match(bootstrap,/if\(!versionCheckOutdated\(\)\)\{[\s\S]*?expectedBadge=`BUILD \${BUILD\.toUpperCase\(\)}`[\s\S]*?badge\.textContent=expectedBadge[\s\S]*?\}/,"ordered bootstrap must not overwrite the stale-browser Update Available presentation while still stamping release metadata");
 assert.match(guard,/ccg-lost-sizzler-cache[^\n]+content/,"cache guard must continue taking its initial token from the blocking page meta");
 assert.match(handoff,/function revision\(\)\{return String\(document\.querySelector\(\x27meta\[name="ccg-lost-sizzler-cache"\]\x27\)\?\.content/,"the historical r30 handoff must derive its module token from the canonical page cache meta");
 assert.match(handoff,/loadScript\("v10-42-bootstrap\.js","data-ccg-v142-bootstrap"\)/,"the historical handoff must continue loading the ordered V10.42 bootstrap through the derived release token");
