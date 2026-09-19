@@ -43,6 +43,7 @@ async function sustainedFire(page,key,holdMs=900){
 }
 
 try{
+  await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
   const context=await browser.newContext({viewport:{width:1440,height:900}}),page=await context.newPage();
   page.setDefaultTimeout(60000);
   const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
