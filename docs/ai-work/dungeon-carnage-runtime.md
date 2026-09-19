@@ -4,7 +4,7 @@
 
 The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
-## Current checkpoint — 18 September 2026
+## Current checkpoint — 19 September 2026
 
 Latest verified Dungeon runtime merge checkpoint is `073ee3df35cd3982ceb04676619792d69a28e0e3`, the merge of #2185 from exact qualified head `ee8bef501b26271d1e1f38ad33c6c275b3290aba`. #2185 follows #2180's early active-state loader-authority correction, #2181's production-smoke identity alignment and #2182's legacy-brand stale-badge guard. It prevents the authoritative V10.42 ordered bootstrap from restamping visible release presentation while the current version checker owns a stale-browser Update Available state. Stage 8 itch.io repository preparation remains complete through #2141, with the publication artifact superseded by the qualified post-#2185 runtime artifact recorded below.
 
@@ -18,7 +18,7 @@ The programme is now milestone-first. General legacy residue remains backlog unl
 
 Historical integration cleanup: PR #1852 (long-running Solo stabilisation) and PR #1976 (R30 ownership-audit throttle optimisation) are closed without merge. Their Git history remains evidence/source material only; neither is an active current-main integration path.
 
-The original seven-item repository defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The later #2129 sustained-Solo acceptance is also still deferred. Startup ownership has progressed beyond #2164 through #2180 and #2182. Exact-head automated qualification is green, and deployed current `main` `073ee3df35cd3982ceb04676619792d69a28e0e3` passed the push-triggered production smoke, GitHub Pages deployment and live public-navigation verification. Push Load Safety passed after one unchanged retry of shard 3, whose first attempt failed only in the existing `v10-28-browser-stability-deterministic.mjs` support contract. Only the documented hands-on startup acceptance remains for this startup workstream.
+The original seven-item repository defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The later #2129 sustained-Solo acceptance is also still deferred. Startup ownership has progressed beyond #2164 through #2180, #2182 and #2185. Exact-head automated qualification is green, and deployed current `main` `073ee3df35cd3982ceb04676619792d69a28e0e3` passed the push-triggered production smoke, GitHub Pages deployment and live public-navigation verification. Push Load Safety passed after one unchanged retry of shard 3, whose first attempt failed only in the existing `v10-28-browser-stability-deterministic.mjs` support contract. Only the documented hands-on startup acceptance remains for this startup workstream.
 
 Outstanding product gates:
 
@@ -389,7 +389,7 @@ For both: **MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**.
 
 Exact next Dungeon action:
 
-1. perform the deployed startup retest for #2164; if the flicker still reproduces, capture the exact sequence and reopen only the smallest responsible startup owner;
+1. perform the deployed startup retest for #2185; if the flicker still reproduces, capture the exact sequence and reopen only the smallest responsible startup owner;
 2. if startup passes, complete sustained Solo movement/firing/combat/pause-resume acceptance;
 3. complete the three-Artefact/Essence Banishment Flask exchange acceptance;
 4. after all hands-on gates pass, use the latest qualified itch.io artifact and complete the external itch.io page/upload/launch verification;
