@@ -143,8 +143,9 @@ async function bankAndDescend(page,{game,domain=null,relic=null,essence=null,sig
 }
 
 try{
+  const context=await browser.newContext({viewport:{width:1600,height:900}});
   await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
-  const context=await browser.newContext({viewport:{width:1600,height:900}}),page=await context.newPage();
+  const page=await context.newPage();
   page.setDefaultTimeout(45000);
   const errors=[],failedScripts=[];
   page.on("pageerror",error=>errors.push(String(error?.stack||error)));
