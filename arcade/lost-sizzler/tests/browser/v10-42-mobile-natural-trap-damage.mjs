@@ -102,24 +102,28 @@ try{
       return SYS.trapActive(trap,performance.now())&&phase<period*.18;
     },fixture.id,{timeout:10000});
 
-    const direct=await page.evaluate(({id,moveDx,moveDy})=>globalThis.eval(`(()=>{
-      const trap=(host?.traps||[]).find(t=>String(t.id)===${JSON.stringify(id)});
-      const rare=window.CCGLostSizzlerRareEventsBalance?.trapRuntime;
-      const r19=window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state;
-      const r57=window.CCGLostSizzlerV141R57DesktopPrepStability?.state;
-      const snap=()=>({
-        x:Number(p1.x),y:Number(p1.y),health:Number(p1.health),armor:Number(p1.armor),
-        invuln:Number(p1.invuln||0),hitStunMs:Number(p1.hitStunMs||0),
-        active:Boolean(trap&&SYS.trapActive(trap,performance.now())),
-        rareContact:[...(rare?.contact||[])],
-        r19:{trapHits:Number(r19?.trapHits||0),contactBlocks:Number(r19?.trapContactBlocks||0),protectionBlocks:Number(r19?.trapProtectionBlocks||0),rearms:Number(r19?.rearms||0)},
-        r57:{trapHits:Number(r57?.trapHits||0),fallbacks:Number(r57?.trapFallbacks||0),cycle:Boolean(r57?.trapCycles?.get?.(`${String(p1?.id||p1?.name||"P1")}|${String(trap?.id||"")}`))}
-      });
-      const before=snap();
-      movePlayer(p1,${Number(moveDx)},${Number(moveDy)},false);
-      const after=snap();
-      return{before,after};
-    })()`),{id:fixture.id,moveDx:fixture.moveDx,moveDy:fixture.moveDy});
+    const direct=await page.evaluate(({id,moveDx,moveDy})=>{
+      const source="(()=>{"+
+        "const targetId="+JSON.stringify(id)+";"+
+        "const trap=(host?.traps||[]).find(t=>String(t.id)===targetId);"+
+        "const rare=window.CCGLostSizzlerRareEventsBalance?.trapRuntime;"+
+        "const r19=window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state;"+
+        "const r57=window.CCGLostSizzlerV141R57DesktopPrepStability?.state;"+
+        "const snap=()=>{const cycleKey=String(p1?.id||p1?.name||\"P1\")+\"|\"+String(trap?.id||\"\");return {"+
+          "x:Number(p1.x),y:Number(p1.y),health:Number(p1.health),armor:Number(p1.armor),"+
+          "invuln:Number(p1.invuln||0),hitStunMs:Number(p1.hitStunMs||0),"+
+          "active:Boolean(trap&&SYS.trapActive(trap,performance.now())),"+
+          "rareContact:[...(rare?.contact||[])],"+
+          "r19:{trapHits:Number(r19?.trapHits||0),contactBlocks:Number(r19?.trapContactBlocks||0),protectionBlocks:Number(r19?.trapProtectionBlocks||0),rearms:Number(r19?.rearms||0)},"+
+          "r57:{trapHits:Number(r57?.trapHits||0),fallbacks:Number(r57?.trapFallbacks||0),cycle:Boolean(r57?.trapCycles?.get?.(cycleKey))}"+
+        "}};"+
+        "const before=snap();"+
+        "movePlayer(p1,"+Number(moveDx)+","+Number(moveDy)+",false);"+
+        "const after=snap();"+
+        "return {before,after};"+
+      "})()";
+      return globalThis.eval(source);
+    },{id:fixture.id,moveDx:fixture.moveDx,moveDy:fixture.moveDy});
 
     console.log("MOBILE_NATURAL_TRAP_DIRECT",JSON.stringify({kind,fixture,direct}));
     assert.deepEqual({x:direct.after.x,y:direct.after.y},fixture.target,`one canonical movePlayer step must land on real generated ${kind} trap`);
