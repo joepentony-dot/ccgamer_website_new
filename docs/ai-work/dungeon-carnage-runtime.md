@@ -6,7 +6,7 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Current checkpoint — 18 September 2026
 
-Latest verified Dungeon runtime merge checkpoint is `4319ff84ea8bca41559347915d0ab5d2c1a0e873`, the merge of #2182 from exact qualified head `dfce128672fd90c8edf7900b3bac3a14095e58fe`. Current repository `main` is documentation-only follow-up `66c2aa8441fc67961e1b3fa116da6537ea41002b`. This follows #2180's early active-state loader-authority correction and #2181's production-smoke identity alignment. Stage 8 itch.io repository preparation remains complete through #2141, with the publication artifact now superseded by the qualified post-#2182 runtime artifact recorded below.
+Latest verified Dungeon runtime merge checkpoint is `073ee3df35cd3982ceb04676619792d69a28e0e3`, the merge of #2185 from exact qualified head `ee8bef501b26271d1e1f38ad33c6c275b3290aba`. #2185 follows #2180's early active-state loader-authority correction, #2181's production-smoke identity alignment and #2182's legacy-brand stale-badge guard. It prevents the authoritative V10.42 ordered bootstrap from restamping visible release presentation while the current version checker owns a stale-browser Update Available state. Stage 8 itch.io repository preparation remains complete through #2141, with the publication artifact superseded by the qualified post-#2185 runtime artifact recorded below.
 
 Stage 1 is converged for the current product programme:
 
@@ -18,13 +18,13 @@ The programme is now milestone-first. General legacy residue remains backlog unl
 
 Historical integration cleanup: PR #1852 (long-running Solo stabilisation) and PR #1976 (R30 ownership-audit throttle optimisation) are closed without merge. Their Git history remains evidence/source material only; neither is an active current-main integration path.
 
-The original seven-item repository defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The later #2129 sustained-Solo acceptance is also still deferred. Startup ownership has progressed beyond #2164 through #2180 and #2182. Exact-head automated qualification is green, and deployed current `main` `66c2aa8441fc67961e1b3fa116da6537ea41002b` passed the push-triggered production smoke, GitHub Pages deployment, live public-navigation verification and push Load Safety. Only the documented hands-on startup acceptance remains for this startup workstream.
+The original seven-item repository defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The later #2129 sustained-Solo acceptance is also still deferred. Startup ownership has progressed beyond #2164 through #2180 and #2182. Exact-head automated qualification is green, and deployed current `main` `073ee3df35cd3982ceb04676619792d69a28e0e3` passed the push-triggered production smoke, GitHub Pages deployment and live public-navigation verification. Push Load Safety passed after one unchanged retry of shard 3, whose first attempt failed only in the existing `v10-28-browser-stability-deterministic.mjs` support contract. Only the documented hands-on startup acceptance remains for this startup workstream.
 
 Outstanding product gates:
 
 1. sustained Solo movement/firing/combat/pause-resume stability after #2129;
 2. three Artefacts/Essences → exactly one Banishment Flask without prior Gold-Flask purchase, with Gold and Score unchanged;
-3. deployed startup retest on current post-#2182 main: loader must transition directly to the final V10.42 menu with no compact/intermediate menu flash and no loader → page → loader pulse.
+3. deployed startup retest on current post-#2185 main: loader must transition directly to the final V10.42 menu with no compact/intermediate menu flash and no loader → page → loader pulse.
 
 **MANUAL ACCEPTANCE REQUIRED — AUTOMATED TESTS DO NOT SUBSTITUTE FOR THESE GATES**
 
@@ -120,6 +120,19 @@ Post-merge live verification:
 
 These automated/live checks do not substitute for the three hands-on product gates.
 
+### Ordered-bootstrap stale badge authority — PR #2185 — MERGED
+
+Exact qualified head: `ee8bef501b26271d1e1f38ad33c6c275b3290aba`.
+
+Merge/current main: `073ee3df35cd3982ceb04676619792d69a28e0e3`.
+
+After #2182, production smoke later proved one remaining competing writer: `v10-42-bootstrap.js` repeatedly restamped the visible subtitle/build badge even after the version checker had established a stale-browser Update Available state. #2185 keeps bootstrap ownership of authoritative build/cache metadata but skips visible subtitle/build-badge restamps while `CCGLostSizzlerVersion.state.outdated === true`.
+
+The production delta is one runtime guard plus static and Chromium regression coverage. Exact-head PR qualification passed. After merge, Lost Sizzler Production Smoke run `35414519454`, GitHub Pages deployment, live public navigation, CCG Site Safety, Native Mouse Wheel and the itch.io package workflow all passed. Push Load Safety run `35414519441` initially failed only in the unchanged deterministic browser-stability support contract on Chromium shard 3; the unchanged shard retry passed on attempt 2.
+
+Latest qualified runtime/package artifact: `C64-Dungeon-Carnage-Itch`, artifact ID `10575312850`, 21,111,070 bytes, GitHub Actions SHA-256 `6425e7f4cdd296843911c78e81a1545c661123bab726c4b2cdd9449d7334d73c`, workflow run `35414519473`, source/main `073ee3df35cd3982ceb04676619792d69a28e0e3`.
+
+Repository status: **REPOSITORY-COMPLETE — #2185 / DEPLOYED AUTOMATED VERIFICATION GREEN / HANDS-ON PRODUCT ACCEPTANCE REMAINS**.
 
 ### Stage 4 elemental portal foundation — PR #2137 — MERGED
 
