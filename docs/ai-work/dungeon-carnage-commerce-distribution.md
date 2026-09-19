@@ -50,7 +50,7 @@ The original Stage 8 exact head passed the dedicated itch.io package workflow pl
 
 The package excludes the site Supabase bootstrap/config, secrets, retired PayPal checkout, custom entitlement/private-download implementation and stale desktop/Windows stack. The canonical website source remains unchanged.
 
-Public itch.io page creation, artifact upload/publication, browser launch verification and the final public URL remain external release actions. Do not invent an itch.io URL in source. Do not publish until the merged #2182 production smoke is verified against the live deployment and the current startup, sustained-Solo and Banishment-Flask hands-on gates pass.
+Public itch.io page creation, artifact upload/publication, browser launch verification and the final public URL remain external release actions. Do not invent an itch.io URL in source. The merged #2182 production smoke is now verified green against deployed current `main` `66c2aa8441fc67961e1b3fa116da6537ea41002b` (run `35397906108`). Do not publish until the current startup, sustained-Solo and Banishment-Flask hands-on gates pass.
 
 ## Session log
 
@@ -66,3 +66,5 @@ Public itch.io page creation, artifact upload/publication, browser launch verifi
 - 2026-09-18: Later startup fixes #2145, #2153 and #2164 superseded the Stage 8 package as the final publication candidate. Package workflow run `35380506012` produced current qualified artifact `10561459333` / SHA-256 `f8a2142824b41b85d29006cf72d52c511b2bce9e879178ad9d45f4700a38c464`. External publication remains blocked on deployed hands-on acceptance.
 
 - 2026-09-18: #2180 and #2182 introduced later qualified runtime changes, superseding the previous package candidate. Workflow run `35390021405` produced artifact `10566350206` / SHA-256 `147782cb38cab392817b1bd4670f670ca0bcc2d51264839378d50bf229237be6` from exact #2182 head `dfce128672fd90c8edf7900b3bac3a14095e58fe`. Public itch.io publication remains blocked on live production smoke plus hands-on acceptance.
+
+- 2026-09-18: Production smoke run `35397906108` passed on deployed current main `66c2aa8441fc67961e1b3fa116da6537ea41002b`, verifying live `V10.42 r34 / 20260918r34`, `version.json`, stale-browser update prompting, feedback validation and Weekly Vault read/backend projection. Deployment, live navigation and push Load Safety also passed. External publication is now blocked only by the documented hands-on acceptance gates.
