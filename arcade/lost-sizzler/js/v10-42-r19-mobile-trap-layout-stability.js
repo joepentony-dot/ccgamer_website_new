@@ -126,6 +126,15 @@
     return true
   }
 
+  function withValidatedTrapContact(player,trap,callback){
+    if(!player||!trap||typeof callback!=="function")return false;
+    const rare=window.CCGLostSizzlerRareEventsBalance||null;
+    const previousValidatedContact=validatedTrapContact;
+    validatedTrapContact={player,trap,key:canonicalTrapKey(player,trap,rare?.trapRuntime)};
+    try{return callback()}
+    finally{validatedTrapContact=previousValidatedContact}
+  }
+
   function guaranteeTrapContactDamage(player,trap,beforeHealth,beforeArmor){
     if(!ordinaryDungeon()||!player||!trap||beforeHealth<=0)return false;
     /* Both callers enter only after proving this exact trap contact was active.
@@ -139,13 +148,9 @@
     }
     const damageOwner=trapDamageOwner||chainOwner(window.hurtPlayer,"__ccgV142R19MobileTrapDamage");
     if(typeof damageOwner!=="function")return false;
-    const rare=window.CCGLostSizzlerRareEventsBalance||null;
-    const previousValidatedContact=validatedTrapContact;
-    validatedTrapContact={player,trap,key:canonicalTrapKey(player,trap,rare?.trapRuntime)};
     try{
-      damageOwner.call(window,player,1,false,`${String(trap.kind||"floor")} trap`);
+      withValidatedTrapContact(player,trap,()=>damageOwner.call(window,player,1,false,`${String(trap.kind||"floor")} trap`));
     }finally{
-      validatedTrapContact=previousValidatedContact;
       if(Number(player.armor||0)!==beforeArmor)player.armor=beforeArmor
     }
     if(Number(player.health||0)<beforeHealth){state.directTrapRepairs++;return true}
@@ -429,5 +434,5 @@
   state.timer=setInterval(()=>{try{tick()}catch(error){console.warn("[C64 Dungeon Carnage r19] mobile stability tick failed safely",error)}},MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
-  window.CCGLostSizzlerV142R19MobileTrapLayoutStability={installPortraitLayout,installTrapDamageOwner,installTrapTriggerOwner,guaranteeTrapContactDamage,rearmInactiveTrapContacts,syncPortraitCanvasAspect,trapActive,get state(){return state}};
+  window.CCGLostSizzlerV142R19MobileTrapLayoutStability={installPortraitLayout,installTrapDamageOwner,installTrapTriggerOwner,withValidatedTrapContact,guaranteeTrapContactDamage,rearmInactiveTrapContacts,syncPortraitCanvasAspect,trapActive,get state(){return state}};
 })();
