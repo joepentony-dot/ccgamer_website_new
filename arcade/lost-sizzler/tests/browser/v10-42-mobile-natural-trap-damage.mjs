@@ -75,7 +75,7 @@ try{
   await page.locator("#solo-btn").click({noWaitAfter:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==="true");
   await page.waitForFunction(()=>document.getElementById("menu")?.classList.contains("hidden")===true);
-  await page.waitForFunction(()=>String(globalThis.playMode||"")==="solo"&&String(globalThis.mode||"")==="playing"&&document.body.dataset.tutorialActive!=="true"&&window.CCGLostSizzlerOnboardingV120?.state?.active!==true);
+  await page.waitForFunction(()=>typeof playMode!=="undefined"&&String(playMode||"")==="solo"&&typeof mode!=="undefined"&&String(mode||"")==="playing"&&document.body.dataset.tutorialActive!=="true"&&window.CCGLostSizzlerOnboardingV120?.state?.active!==true);
   const notice=page.locator("#ccg-mobile-pc-notice");
   if(await notice.isVisible()){
     await page.locator("#ccg-mobile-pc-accept").click({noWaitAfter:true});
