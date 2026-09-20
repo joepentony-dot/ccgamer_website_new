@@ -123,8 +123,11 @@
 
   function guaranteeTrapContactDamage(player,trap,beforeHealth,beforeArmor){
     if(!ordinaryDungeon()||!player||!trap||beforeHealth<=0)return false;
-    const now=performance.now();
-    if(Number(trap.x)!==Number(player.x)||Number(trap.y)!==Number(player.y)||!trapActive(trap,now))return false;
+    /* Both callers enter only after proving this exact trap contact was active.
+       Do not sample the phase clock again here: a contact near the active-window
+       boundary can legitimately become inactive while the normal hurtPlayer
+       chain is still unwinding, but that already-triggered hit must not vanish. */
+    if(Number(trap.x)!==Number(player.x)||Number(trap.y)!==Number(player.y))return false;
     if(Number(player.health||0)<beforeHealth){
       if(Number(player.armor||0)!==beforeArmor)player.armor=beforeArmor;
       return true
