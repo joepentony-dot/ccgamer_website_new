@@ -35,7 +35,7 @@ async function touchButton(page,context,key,trapId){
   const x=box.x+box.width/2,y=box.y+box.height/2;
   const active=()=>page.evaluate(id=>{
     const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
-    return Boolean(trap&&SYS.trapActive(trap,performance.now()));
+    return Boolean(trap?.active&&SYS.trapActive(trap,performance.now()));
   },trapId);
   const cdp=await context.newCDPSession(page);
   let activeBefore=false,activeAfterStart=false;
@@ -180,7 +180,7 @@ try{
   })()`));
 
 
-  const kinds=await page.evaluate(()=>[...new Set((host?.traps||[]).map(t=>String(t.kind||"floor")))]);
+  const kinds=await page.evaluate(()=>[...new Set((host?.traps||[]).filter(t=>t?.active).map(t=>String(t.kind||"floor")))]);
   assert.ok(kinds.length>0,"generated Solo floor must contain real traps");
 
   for(const kind of kinds.slice(0,3)){
@@ -191,7 +191,7 @@ try{
         {dx:0,dy:-1,key:"KeyS"},
         {dx:0,dy:1,key:"KeyW"}
       ];
-      const candidates=(host?.traps||[]).filter(t=>String(t.kind||"floor")===${JSON.stringify(kind)});
+      const candidates=(host?.traps||[]).filter(t=>t?.active&&String(t.kind||"floor")===${JSON.stringify(kind)});
       const match=candidates.map(trap=>{
         if(!W.walkable(world.map,Number(trap.x),Number(trap.y),host))return null;
         if((host?.enemies||[]).some(e=>e?.alive&&Number(e.x)===Number(trap.x)&&Number(e.y)===Number(trap.y)))return null;
@@ -233,7 +233,7 @@ try{
       await page.waitForTimeout(120);
       await page.waitForFunction(id=>{
         const trap=(host?.traps||[]).find(t=>String(t.id)===id);
-        if(!trap)return false;
+        if(!trap?.active)return false;
         const period=Math.max(1,Number(trap.period||1));
         const phase=(performance.now()+Number(trap.phase||0))%period;
         return SYS.trapActive(trap,performance.now())&&phase<Math.min(period*.06,120);
@@ -244,7 +244,7 @@ try{
         const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
         return{
           x:Number(p1.x),y:Number(p1.y),health:Number(p1.health),armor:Number(p1.armor),
-          activeNow:Boolean(trap&&SYS.trapActive(trap,performance.now())),
+          activeNow:Boolean(trap?.active&&SYS.trapActive(trap,performance.now())),
           trapCalls:[...(window.__ccgNaturalTrapProbe?.calls||[])],
           trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0),
           r57Hits:Number(window.CCGLostSizzlerV141R57DesktopPrepStability?.state?.trapHits||0),
