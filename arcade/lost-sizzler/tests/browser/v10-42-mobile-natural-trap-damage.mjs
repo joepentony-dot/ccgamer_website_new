@@ -104,7 +104,7 @@ try{
     const previous=triggerTrap;
     const previousTrapActive=SYS.trapActive;
     const probe={installed:true,targetId:"",calls:[],inTrigger:false,canonical:null};
-    SYS.trapActive=function trapActiveNaturalProbe(trap,now){
+    // Record the first trapActive sample made by canonical triggerTrap; pre-call diagnostics can cross a phase boundary.\n    SYS.trapActive=function trapActiveNaturalProbe(trap,now){
       const active=previousTrapActive.call(this,trap,now);
       if(probe.inTrigger&&probe.canonical===null&&String(trap?.id)===String(probe.targetId)){
         const sampledAt=Number.isFinite(Number(now))?Number(now):performance.now();
