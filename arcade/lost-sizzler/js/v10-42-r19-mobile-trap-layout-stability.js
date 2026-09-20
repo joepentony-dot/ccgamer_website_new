@@ -34,13 +34,13 @@
     }
     return false
   }
-  function canonicalBaseDamageOwner(owner){
-    const seen=new Set();let current=owner,last=owner;
+  function chainOwner(owner,marker){
+    const seen=new Set();let current=owner;
     while(typeof current==="function"&&!seen.has(current)){
-      seen.add(current);last=current;
-      current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null
+      if(current?.[marker]===true)return current;
+      seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null
     }
-    return typeof last==="function"?last:null
+    return null
   }
 
   function activeTrapContact(player){
@@ -81,27 +81,24 @@
       if(contactKey&&trapContacts.has(contactKey)){state.trapContactBlocks++;return false}
       if(contactKey&&trapDamageInFlight.has(contactKey))return current.apply(this,arguments);
       if(contactKey)trapDamageInFlight.add(contactKey);
-      const beforeHealth=Number(player.health||0),beforeArmor=Number(player.armor||0),beforeInvuln=Number(player.invuln||0);
+      const beforeHealth=Number(player.health||0),beforeArmor=Number(player.armor||0);
       player.armor=0;
       let result;
       try{
         result=current.apply(this,arguments);
         /* A validated active trap contact must not disappear inside a stale
-           downstream protection owner. If the complete owner chain accepts the
-           call but leaves HP untouched, retry only this one floor-trap contact
-           through the canonical game damage routine. That routine retains the
-           normal hit feedback, stats, death cache and game-over handling. */
+           outer protection owner. R56 already owns environmental invulnerability
+           recovery, so if the complete chain leaves HP untouched, resume at that
+           established owner instead of bypassing the damage/death pipeline. */
         if(Number(player.health||0)===beforeHealth&&beforeHealth>0){
-          const base=canonicalBaseDamageOwner(current);
-          if(typeof base==="function"&&base!==current){
-            player.invuln=0;
-            base.call(this,player,amount,flash,source);
+          const environmentOwner=chainOwner(current,"__ccgV141R56EnvironmentDamage");
+          if(typeof environmentOwner==="function"&&environmentOwner!==current){
+            environmentOwner.call(this,player,amount,flash,source);
             if(Number(player.health||0)<beforeHealth)state.directTrapRepairs++
           }
         }
       }finally{
         player.armor=beforeArmor;
-        if(Number(player.health||0)===beforeHealth)player.invuln=beforeInvuln;
         if(contactKey)trapDamageInFlight.delete(contactKey)
       }
       if(Number(player.health||0)<beforeHealth){
