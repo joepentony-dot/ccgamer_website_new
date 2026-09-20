@@ -231,13 +231,13 @@ try{
       },fixture.id);
       console.log("MOBILE_NATURAL_TRAP_TOUCH",JSON.stringify({kind,attempt,fixture,touchWindow,after}));
 
-      if(after.health===fixture.before.health-1){
-        assert.equal(after.armor,fixture.before.armor,`real generated ${kind} trap must preserve armour while applying health damage`);
-        qualified={attempt,touchWindow,after};
+      const stableCrossing=after.trapCalls.find(call=>call.active&&Number(call.remainingActiveMs)>=100);
+      if(stableCrossing&&Number(stableCrossing.afterHealth)===fixture.before.health-1){
+        assert.equal(Number(stableCrossing.afterArmor),fixture.before.armor,`real generated ${kind} trap must preserve armour at the exact active trap crossing`);
+        qualified={attempt,touchWindow,stableCrossing,after};
         break;
       }
 
-      const stableCrossing=after.trapCalls.find(call=>call.active&&Number(call.remainingActiveMs)>=100);
       if(stableCrossing){
         assert.fail(`real generated ${kind} trap was naturally active at the exact triggerTrap crossing but did not remove one health: ${JSON.stringify({fixture,touchWindow,stableCrossing,after})}`);
       }
