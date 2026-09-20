@@ -6,7 +6,7 @@
 
   const STYLE_ID="ccg-v142-r19-mobile-trap-layout";
   const MONITOR_MS=80;
-  const state={timer:0,rearms:0,damageOwnerInstalls:0,directTrapRepairs:0,trapHits:0,trapContactBlocks:0,trapProtectionBlocks:0,canvasAspectRepairs:0};
+  const state={timer:0,rearms:0,damageOwnerInstalls:0,trapTriggerOwnerInstalls:0,directTrapRepairs:0,trapHits:0,trapContactBlocks:0,trapProtectionBlocks:0,canvasAspectRepairs:0};
   const trapContacts=new Set();
   const trapDamageInFlight=new Set();
   const trapProtectionUntil=new Map();
@@ -115,6 +115,32 @@
     wrapped.__ccgOriginal=current;
     window.hurtPlayer=wrapped;
     state.damageOwnerInstalls++;
+    return true
+  }
+
+  function installTrapTriggerOwner(){
+    const current=window.triggerTrap;
+    if(typeof current!=="function")return false;
+    if(chainHas(current,"__ccgV142R19TrapTriggerOwner"))return true;
+    const wrapped=function triggerTrapV142R19GuaranteedContact(player){
+      const contact=ordinaryDungeon()&&player?activeTrapContact(player):null;
+      const beforeHealth=Number(player?.health||0),beforeArmor=Number(player?.armor||0);
+      const result=current.apply(this,arguments);
+      if(contact&&beforeHealth>0&&Number(player?.health||0)===beforeHealth){
+        const damageOwner=chainOwner(window.hurtPlayer,"__ccgV142R19MobileTrapDamage");
+        if(typeof damageOwner==="function"){
+          damageOwner.call(this,player,1,false,`${String(contact.trap?.kind||"floor")} trap`);
+          if(Number(player?.health||0)<beforeHealth)state.directTrapRepairs++
+        }
+      }
+      /* R19 owns health semantics only; never let a repair consume armour. */
+      if(contact&&Number(player?.armor||0)!==beforeArmor)player.armor=beforeArmor;
+      return result
+    };
+    wrapped.__ccgV142R19TrapTriggerOwner=true;
+    wrapped.__ccgOriginal=current;
+    window.triggerTrap=wrapped;
+    state.trapTriggerOwnerInstalls++;
     return true
   }
 
@@ -365,15 +391,17 @@
   function tick(){
     installPortraitLayout();
     installTrapDamageOwner();
+    installTrapTriggerOwner();
     rearmInactiveTrapContacts();
     syncPortraitCanvasAspect();
   }
 
   installPortraitLayout();
   installTrapDamageOwner();
+  installTrapTriggerOwner();
   tick();
   state.timer=setInterval(()=>{try{tick()}catch(error){console.warn("[C64 Dungeon Carnage r19] mobile stability tick failed safely",error)}},MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
-  window.CCGLostSizzlerV142R19MobileTrapLayoutStability={installPortraitLayout,installTrapDamageOwner,rearmInactiveTrapContacts,syncPortraitCanvasAspect,trapActive,get state(){return state}};
+  window.CCGLostSizzlerV142R19MobileTrapLayoutStability={installPortraitLayout,installTrapDamageOwner,installTrapTriggerOwner,rearmInactiveTrapContacts,syncPortraitCanvasAspect,trapActive,get state(){return state}};
 })();
