@@ -10,6 +10,7 @@
   const trapContacts=new Set();
   const trapDamageInFlight=new Set();
   let trapDamageOwner=null;
+  let validatedTrapContact=null;
   const trapProtectionUntil=new Map();
 
   const specialType=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")}catch(_){return""}};
@@ -46,6 +47,10 @@
 
   function activeTrapContact(player){
     try{
+      if(validatedTrapContact?.player===player){
+        const trap=validatedTrapContact.trap;
+        if(trap?.active&&Number(trap.x)===Number(player?.x)&&Number(trap.y)===Number(player?.y))return{trap,key:String(validatedTrapContact.key||"")};
+      }
       const now=performance.now();
       const trap=(host?.traps||[]).find(trap=>trap?.active&&Number(trap.x)===Number(player?.x)&&Number(trap.y)===Number(player?.y)&&trapActive(trap,now));
       if(!trap)return null;
@@ -134,8 +139,15 @@
     }
     const damageOwner=trapDamageOwner||chainOwner(window.hurtPlayer,"__ccgV142R19MobileTrapDamage");
     if(typeof damageOwner!=="function")return false;
-    damageOwner.call(window,player,1,false,`${String(trap.kind||"floor")} trap`);
-    if(Number(player.armor||0)!==beforeArmor)player.armor=beforeArmor;
+    const rare=window.CCGLostSizzlerRareEventsBalance||null;
+    const previousValidatedContact=validatedTrapContact;
+    validatedTrapContact={player,trap,key:canonicalTrapKey(player,trap,rare?.trapRuntime)};
+    try{
+      damageOwner.call(window,player,1,false,`${String(trap.kind||"floor")} trap`);
+    }finally{
+      validatedTrapContact=previousValidatedContact;
+      if(Number(player.armor||0)!==beforeArmor)player.armor=beforeArmor
+    }
     if(Number(player.health||0)<beforeHealth){state.directTrapRepairs++;return true}
     return false
   }
