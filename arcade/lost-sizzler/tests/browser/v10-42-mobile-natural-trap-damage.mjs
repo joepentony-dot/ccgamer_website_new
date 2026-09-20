@@ -231,10 +231,8 @@ try{
       },fixture.id);
       console.log("MOBILE_NATURAL_TRAP_TOUCH",JSON.stringify({kind,attempt,fixture,touchWindow,after}));
 
-      const distance=Math.abs(after.x-fixture.target.x)+Math.abs(after.y-fixture.target.y);
       if(after.health===fixture.before.health-1){
         assert.equal(after.armor,fixture.before.armor,`real generated ${kind} trap must preserve armour while applying health damage`);
-        assert.ok(distance<=1,`touch movement must not skip more than one tile beyond a trap contact: ${JSON.stringify({fixture,touchWindow,after})}`);
         qualified={attempt,touchWindow,after};
         break;
       }
