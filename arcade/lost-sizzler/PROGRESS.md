@@ -4,12 +4,13 @@
 
 ## Audit checkpoint
 
-- Audited: **19 September 2026**.
-- Latest verified Dungeon runtime merge checkpoint and current repository `main` is `073ee3df35cd3982ceb04676619792d69a28e0e3`, the merge of #2185 from exact qualified head `ee8bef501b26271d1e1f38ad33c6c275b3290aba`. #2180 closed premature run/tutorial loader-hide ownership; #2181 aligned production smoke; #2182 guarded the legacy V10.41 brand observer; #2185 closes the remaining ordered-bootstrap stale-badge writer. Stage 8 itch.io repository preparation remains complete through #2141.
+- Audited: **20 September 2026**.
+- Latest verified Dungeon runtime merge checkpoint and current repository `main` is `55fdc887bc05faec139b80a2567411b5c4339201`, the merge of #2188 from exact qualified head `57cdb1c24ec09bc266fcfebd3492fcfa3d9ed487`. #2190 is also merged on main as `fab013b320ebdb1d9f2cb873ad26a3588f565655`, making Tutorial mandatory for first-time Solo players with an explicit skip and keeping the mobile D-pad unobstructed.
 - Stage 1 is converged through #2134 and #2135. #2134 merged as `adc6f96d2ab8d8395b8cae5818b38c101bd846b9`; #2135 merged as `811f67845dbcaa0b4b5c2b83f8860e10a184c1a0`.
 - Stage 2 startup/main-menu polish is merged through #2136 as `ee2d6b38e5c5805ee1c906d7f801bda2d8496383`.
 - The seven-item repository-side live-defect remediation programme remains complete through #2117, #2118, #2119, #2123, #2090, #2125 and #2126; the later freeze/stopped-firing regression remains repository-fixed through #2129.
 - Three hands-on product checks remain unresolved: current deployed startup retest after #2185, sustained Solo stability after #2129, and the Defect 5 Banishment Flask exchange. Production smoke is green on current deployed main. Push Load Safety is also green after one unchanged shard-3 retry for the existing deterministic stability support contract; do not infer the three hands-on acceptances from automated tests.
+- Mobile naturally-generated trap damage is **REPOSITORY-COMPLETE — #2188**. The final two-file delta repairs the active floor-trap contact path in R19 and adds a real-touch Chromium regression for natural fire/spike/shock timing. Exact-head Mobile Trap Layout, package, cache, native-wheel, canonical/Node and all six Load Safety Chromium shards passed.
 - Stage 4 portal foundation #2137 is merged. Exact qualified head: `030af6e9f8c2da98fb618c64ae276b1159adda3f`; merge commit: `d3225318ff5cb87664bce96020c790099f53e06a`.
 - #2137 establishes Water / Fire / Earth / Air campaign-state ownership, checkpoint persistence/inference and deterministic route seeds without replacing `run.floor`, `floorComplete()` or `descendFloor()`. It also seals the V10.42 Solo/Tutorial ready-transition start race without taking over Continue, Weekly or Split Screen.
 - Exact-head qualification passed all eight top-level workflows and all six Chromium shards. Shard 5 required one unchanged retry after the historical `v10-35-layout.mjs` startup timeout; no runtime, assertion or timeout was weakened.
@@ -198,7 +199,8 @@ Horde Survivor, Spy Vs Spy/Sizzler Saboteurs and networked Dungeon Multiplayer a
 7. **Stage 7 — NPC / merchant integration — COMPLETE.** #2140 is merged and qualified; keep merchant presentation subordinate to `buyShopItem()` and the established economy/exchange owners.
 8. **Stage 8 — itch.io release preparation — COMPLETE.** #2141 is merged and qualified; the standalone HTML5 artifact is repository-ready and the retired custom commerce/desktop delivery stack remains excluded. Public itch.io publication is external.
 9. **Startup/first-visual remediation — REPOSITORY-COMPLETE THROUGH #2185 / PRODUCTION SMOKE PASSED / MANUAL RETEST REMAINS.** #2145 established first-paint loader ownership, #2153 prevented reveal before final V10.42 menu composition, #2164 removed the transient legacy release-ready CSS hide, #2180 closed the premature run/tutorial active-state bypass, #2181 aligned the production smoke to r34, #2182 protected the stale-build Update Available badge from the legacy brand observer, and #2185 protected that badge from later V10.42 bootstrap restamps.
-10. **Final qualification — EXACT-HEAD + DEPLOYED AUTOMATION PASS / HANDS-ON REQUIRED.** Repository coding is complete unless a hands-on gate exposes a new reproducible defect. Complete current startup, sustained Solo and Defect 5 Flask acceptance before external itch.io publication.
+10. **Mobile naturally-generated trap damage — REPOSITORY-COMPLETE THROUGH #2188.** Active floor-trap contacts now remove exactly one HP, preserve armour and retain R19 duplicate-contact/invulnerability ownership. The real-touch natural-trap regression is part of Load Safety.
+11. **Final qualification — EXACT-HEAD + DEPLOYED AUTOMATION PASS / HANDS-ON REQUIRED.** Repository coding is complete unless a hands-on gate exposes a new reproducible defect. Complete current startup, sustained Solo and Defect 5 Flask acceptance before external itch.io publication.
 
 Do not create another Dungeon coding stage solely to keep development active.
 
