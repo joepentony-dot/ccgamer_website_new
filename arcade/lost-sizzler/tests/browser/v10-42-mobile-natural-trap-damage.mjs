@@ -80,6 +80,38 @@ try{
   await page.waitForTimeout(320);
   await page.waitForFunction(()=>[...document.querySelectorAll("#v104-touch-controls .v104-touch-pad .v104-touch-btn")].every(button=>button.getBoundingClientRect().width>0&&button.getBoundingClientRect().height>0));
 
+  await page.evaluate(()=>globalThis.eval(`(()=>{
+    if(window.__ccgNaturalTrapProbe?.installed)return;
+    const previous=triggerTrap;
+    const probe={installed:true,targetId:"",calls:[]};
+    const wrapped=function triggerTrapNaturalProbe(player){
+      const trap=(host?.traps||[]).find(t=>String(t.id)===String(probe.targetId));
+      let sample=null;
+      if(trap&&player&&Number(player.x)===Number(trap.x)&&Number(player.y)===Number(trap.y)){
+        const now=performance.now(),period=Math.max(1,Number(trap.period||1));
+        const phase=(now+Number(trap.phase||0))%period;
+        const active=Boolean(SYS.trapActive(trap,now));
+        sample={
+          at:now,active,phase,period,
+          remainingActiveMs:active?Math.max(0,period*.46-phase):0,
+          beforeHealth:Number(player.health||0),beforeArmor:Number(player.armor||0),
+          x:Number(player.x),y:Number(player.y)
+        };
+      }
+      const result=previous.apply(this,arguments);
+      if(sample){
+        sample.afterHealth=Number(player.health||0);
+        sample.afterArmor=Number(player.armor||0);
+        probe.calls.push(sample);
+      }
+      return result;
+    };
+    wrapped.__ccgOriginal=previous;
+    triggerTrap=wrapped;
+    window.__ccgNaturalTrapProbe=probe;
+  })()`));
+
+
   const kinds=await page.evaluate(()=>[...new Set((host?.traps||[]).map(t=>String(t.kind||"floor")))]);
   assert.ok(kinds.length>0,"generated Solo floor must contain real traps");
 
@@ -126,6 +158,10 @@ try{
     let qualified=null;
     for(let attempt=1;attempt<=3;attempt++){
       await resetFixture(page,fixture);
+      await page.evaluate(id=>{
+        const probe=window.__ccgNaturalTrapProbe;
+        if(probe){probe.targetId=String(id);probe.calls.length=0}
+      },fixture.id);
       await page.waitForTimeout(120);
       await page.waitForFunction(id=>{
         const trap=(host?.traps||[]).find(t=>String(t.id)===id);
@@ -141,6 +177,7 @@ try{
         return{
           x:Number(p1.x),y:Number(p1.y),health:Number(p1.health),armor:Number(p1.armor),
           activeNow:Boolean(trap&&SYS.trapActive(trap,performance.now())),
+          trapCalls:[...(window.__ccgNaturalTrapProbe?.calls||[])],
           trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0),
           r57Hits:Number(window.CCGLostSizzlerV141R57DesktopPrepStability?.state?.trapHits||0),
           r57Fallbacks:Number(window.CCGLostSizzlerV141R57DesktopPrepStability?.state?.trapFallbacks||0)
@@ -156,8 +193,9 @@ try{
         break;
       }
 
-      if(touchWindow.activeBefore&&touchWindow.activeAfterStart&&distance<=1){
-        assert.fail(`real generated ${kind} trap stayed active through touch entry but did not remove one health: ${JSON.stringify({fixture,touchWindow,after})}`);
+      const stableCrossing=after.trapCalls.find(call=>call.active&&Number(call.remainingActiveMs)>=100);
+      if(stableCrossing){
+        assert.fail(`real generated ${kind} trap was naturally active at the exact triggerTrap crossing but did not remove one health: ${JSON.stringify({fixture,touchWindow,stableCrossing,after})}`);
       }
     }
     assert.ok(qualified,`real generated ${kind} trap did not produce a phase-stable touch contact within three natural active cycles`);
