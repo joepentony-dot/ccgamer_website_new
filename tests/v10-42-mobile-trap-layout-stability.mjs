@@ -30,6 +30,7 @@ assert.match(source,/trapContacts\.has\(contactKey\)/,"trap damage owner must su
 assert.match(source,/trapContacts\.add\(contactKey\)/,"successful trap health damage must latch the active contact");
 assert.match(source,/trapDamageOwner=wrapped/,"a newly installed R19 damage owner must be retained independently of mutable window ownership");
 assert.match(source,/trapDamageOwner\|\|chainOwner\(window\.hurtPlayer,"__ccgV142R19MobileTrapDamage"\)/,"trap repair must prefer the retained R19 owner during a transient wrapper race");
+assert.match(source,/function withValidatedTrapContact\(player,trap,callback\)/,"R19 must expose one synchronous validated-contact scope for canonical trap damage");
 assert.match(source,/function guaranteeTrapContactDamage\(player,trap,beforeHealth,beforeArmor\)/,"R19 must expose one stable synchronous floor-trap repair boundary");
 assert.match(source,/trapContacts\.delete\(contactKey\)/,"leaving or deactivating a trap must re-arm the contact latch");
 assert.match(source,/const beforeHealth=Number\(player\.health\|\|0\),beforeArmor=Number\(player\.armor\|\|0\)/,"trap damage owner must snapshot health and armour");
@@ -61,7 +62,8 @@ assert.match(gameplaySource,/function movePlayer\(p,dx,dy,dash=false\)[\s\S]*?mo
 assert.match(gameplaySource,/function movementTriggers\(p\)[\s\S]*?triggerTrap\(p\)/,"movement trigger boundary must include floor traps");
 const trapFunction=gameplaySource.match(/function triggerTrap\(p\)\{[^\n]+\}/)?.[0]||"";
 assert.match(trapFunction,/SYS\.trapActive\(t,now\)/,"floor trap boundary must require an active trap cycle");
-assert.match(trapFunction,/hurtPlayer\(p,1,false,`\$\{t\.kind\} trap`\)/,"active floor trap movement must delegate one point through hurtPlayer");
+assert.match(trapFunction,/withValidatedTrapContact===["\']function["\'][\s\S]*?withValidatedTrapContact\(p,t,\(\)=>hurtPlayer\(p,1,false,`\$\{t\.kind\} trap`\)\)/,"active floor trap movement must carry the already-validated contact through the first hurtPlayer call");
+assert.match(trapFunction,/else hurtPlayer\(p,1,false,`\$\{t\.kind\} trap`\)/,"canonical trap damage must retain the direct hurtPlayer fallback when the R19 helper is unavailable");
 assert.match(trapFunction,/CCGLostSizzlerV142R19MobileTrapLayoutStability\?\.guaranteeTrapContactDamage\?\.\(p,t,beforeHealth,beforeArmor\)/,"canonical triggerTrap must hand a missed active contact to the stable R19 repair API");
 assert.doesNotMatch(trapFunction,/\b(?:gainXp|addXp|grantXp|awardXp|awardXP)\b/,"canonical floor trap movement must not award progression XP");
 
@@ -177,13 +179,21 @@ context.CCGLostSizzlerV142R19MobileTrapLayoutStability.installTrapDamageOwner();
 assert.deepEqual(chainStats(context.hurtPlayer),afterReinstallStats,"repeated guarded installation must keep wrapper depth and R19 ownership stable");
 
 // A trap that was active at canonical triggerTrap() may cross the phase boundary
-// before the retained R19 owner runs. The validated-contact handoff must still
-// deliver exactly that already-proven hit without re-sampling the clock.
+// before the retained R19 owner runs. Both the first hurtPlayer path and the
+// fallback repair must honor that exact caller-validated contact.
 context.SYS.trapActive=()=>false;
+const primaryValidatedBeforeHealth=player.health,primaryValidatedBeforeArmor=player.armor;
+context.CCGLostSizzlerV142R19MobileTrapLayoutStability.withValidatedTrapContact(player,trap,()=>context.hurtPlayer(player,1,false,"spike trap"));
+assert.equal(player.health,primaryValidatedBeforeHealth-1,"the first canonical trap damage call must honor an already-validated active contact");
+assert.equal(player.armor,primaryValidatedBeforeArmor,"primary validated trap damage must preserve armour");
+player.x=3;
+context.CCGLostSizzlerV142R19MobileTrapLayoutStability.rearmInactiveTrapContacts();
+player.x=4;player.health=primaryValidatedBeforeHealth;player.invuln=0;
+
 const validatedBeforeHealth=player.health,validatedBeforeArmor=player.armor;
 assert.equal(context.CCGLostSizzlerV142R19MobileTrapLayoutStability.guaranteeTrapContactDamage(player,trap,validatedBeforeHealth,validatedBeforeArmor),true,"an already-validated active trap contact must survive a later inactive phase sample");
-assert.equal(player.health,validatedBeforeHealth-1,"validated trap contact must remove exactly one health");
-assert.equal(player.armor,validatedBeforeArmor,"validated trap contact must preserve armour");
+assert.equal(player.health,validatedBeforeHealth-1,"validated trap contact fallback must remove exactly one health");
+assert.equal(player.armor,validatedBeforeArmor,"validated trap contact fallback must preserve armour");
 player.x=3;
 context.CCGLostSizzlerV142R19MobileTrapLayoutStability.rearmInactiveTrapContacts();
 player.x=4;player.health=validatedBeforeHealth;player.invuln=0;
