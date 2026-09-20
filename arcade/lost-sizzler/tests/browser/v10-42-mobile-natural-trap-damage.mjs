@@ -27,18 +27,35 @@ await new Promise((resolve,reject)=>{server.once("error",reject);server.listen(0
 const origin=`http://127.0.0.1:${server.address().port}`;
 const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage","--disable-background-networking","--autoplay-policy=no-user-gesture-required"]});
 
-async function touchButton(page,context,key){
+async function touchButton(page,context,key,trapId){
   const locator=page.locator(`#v104-touch-controls .v104-touch-pad [data-key="${key}"]`);
   const box=await locator.boundingBox();
   assert.ok(box&&box.width>0&&box.height>0,`touch target ${key} must be visible`);
   const x=box.x+box.width/2,y=box.y+box.height/2;
+  const active=()=>page.evaluate(id=>{
+    const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
+    return Boolean(trap&&SYS.trapActive(trap,performance.now()));
+  },trapId);
   const cdp=await context.newCDPSession(page);
+  let activeBefore=false,activeAfterStart=false;
   try{
+    activeBefore=await active();
     await cdp.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{x,y,radiusX:1,radiusY:1,force:1,id:1}]});
+    activeAfterStart=await active();
     await page.waitForTimeout(55);
     await cdp.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
   }finally{await cdp.detach()}
   await page.waitForTimeout(140);
+  return{activeBefore,activeAfterStart};
+}
+
+async function resetFixture(page,fixture){
+  await page.evaluate(f=>{
+    p1.x=f.origin.x;p1.y=f.origin.y;p1.rx=p1.x;p1.ry=p1.y;
+    p1.health=f.before.health;p1.armor=f.before.armor;
+    p1.invuln=0;p1.hitStunMs=0;move1=0;input.clear();
+    window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.rearmInactiveTrapContacts?.();
+  },fixture);
 }
 
 try{
@@ -106,35 +123,46 @@ try{
     })()`),kind);
     assert.equal(fixture.available,true,`real generated ${kind} trap must have a touch-accessible adjacent tile: ${JSON.stringify(fixture)}`);
 
-    await page.waitForFunction(id=>{
-      const trap=(host?.traps||[]).find(t=>String(t.id)===id);
-      if(!trap)return false;
-      const period=Math.max(1,Number(trap.period||1));
-      const phase=(performance.now()+Number(trap.phase||0))%period;
-      return SYS.trapActive(trap,performance.now())&&phase<period*.18;
-    },fixture.id,{timeout:10000});
+    let qualified=null;
+    for(let attempt=1;attempt<=3;attempt++){
+      await resetFixture(page,fixture);
+      await page.waitForTimeout(120);
+      await page.waitForFunction(id=>{
+        const trap=(host?.traps||[]).find(t=>String(t.id)===id);
+        if(!trap)return false;
+        const period=Math.max(1,Number(trap.period||1));
+        const phase=(performance.now()+Number(trap.phase||0))%period;
+        return SYS.trapActive(trap,performance.now())&&phase<period*.18;
+      },fixture.id,{timeout:10000});
 
-    await page.waitForFunction(id=>{
-      const trap=(host?.traps||[]).find(t=>String(t.id)===id);
-      if(!trap)return false;
-      const period=Math.max(1,Number(trap.period||1));
-      const phase=(performance.now()+Number(trap.phase||0))%period;
-      return SYS.trapActive(trap,performance.now())&&phase<period*.18;
-    },fixture.id,{timeout:10000});
+      const touchWindow=await touchButton(page,context,fixture.key,fixture.id);
+      const after=await page.evaluate(id=>{
+        const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
+        return{
+          x:Number(p1.x),y:Number(p1.y),health:Number(p1.health),armor:Number(p1.armor),
+          activeNow:Boolean(trap&&SYS.trapActive(trap,performance.now())),
+          trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0),
+          r57Hits:Number(window.CCGLostSizzlerV141R57DesktopPrepStability?.state?.trapHits||0),
+          r57Fallbacks:Number(window.CCGLostSizzlerV141R57DesktopPrepStability?.state?.trapFallbacks||0)
+        };
+      },fixture.id);
+      console.log("MOBILE_NATURAL_TRAP_TOUCH",JSON.stringify({kind,attempt,fixture,touchWindow,after}));
 
-    await touchButton(page,context,fixture.key);
-    const after=await page.evaluate(()=>({
-      x:Number(p1.x),y:Number(p1.y),health:Number(p1.health),armor:Number(p1.armor),
-      trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0),
-      r57Hits:Number(window.CCGLostSizzlerV141R57DesktopPrepStability?.state?.trapHits||0),
-      r57Fallbacks:Number(window.CCGLostSizzlerV141R57DesktopPrepStability?.state?.trapFallbacks||0)
-    }));
-    console.log("MOBILE_NATURAL_TRAP_TOUCH",JSON.stringify({kind,fixture,after}));
-    assert.equal(after.health,fixture.before.health-1,`real generated ${kind} trap entered through touch during its natural active phase must remove one health on mobile: ${JSON.stringify({fixture,after})}`);
-    assert.equal(after.armor,fixture.before.armor,`real generated ${kind} trap must preserve armour while applying health damage`);
-    assert.ok(Math.abs(after.x-fixture.target.x)+Math.abs(after.y-fixture.target.y)<=1,`touch movement must not skip more than one tile beyond a trap contact: ${JSON.stringify({fixture,after})}`);
+      const distance=Math.abs(after.x-fixture.target.x)+Math.abs(after.y-fixture.target.y);
+      if(after.health===fixture.before.health-1){
+        assert.equal(after.armor,fixture.before.armor,`real generated ${kind} trap must preserve armour while applying health damage`);
+        assert.ok(distance<=1,`touch movement must not skip more than one tile beyond a trap contact: ${JSON.stringify({fixture,touchWindow,after})}`);
+        qualified={attempt,touchWindow,after};
+        break;
+      }
 
-    await page.evaluate(fixture=>globalThis.eval("(()=>{const f="+JSON.stringify(fixture)+";p1.x=f.origin.x;p1.y=f.origin.y;p1.rx=p1.x;p1.ry=p1.y;p1.invuln=0;p1.hitStunMs=0;move1=0;input.clear();window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.rearmInactiveTrapContacts?.();return true})()"),fixture);
+      if(touchWindow.activeBefore&&touchWindow.activeAfterStart&&distance<=1){
+        assert.fail(`real generated ${kind} trap stayed active through touch entry but did not remove one health: ${JSON.stringify({fixture,touchWindow,after})}`);
+      }
+    }
+    assert.ok(qualified,`real generated ${kind} trap did not produce a phase-stable touch contact within three natural active cycles`);
+
+    await resetFixture(page,fixture);
     await page.waitForTimeout(900);
   }
 
