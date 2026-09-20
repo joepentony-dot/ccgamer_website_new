@@ -64,7 +64,7 @@ const trapFunction=gameplaySource.match(/function triggerTrap\(p\)\{[^\n]+\}/)?.
 assert.match(trapFunction,/SYS\.trapActive\(t,now\)/,"floor trap boundary must require an active trap cycle");
 assert.match(trapFunction,/withValidatedTrapContact===["\']function["\'][\s\S]*?withValidatedTrapContact\(p,t,\(\)=>hurtPlayer\(p,1,false,`\$\{t\.kind\} trap`\)\)/,"active floor trap movement must carry the already-validated contact through the first hurtPlayer call");
 assert.match(trapFunction,/else hurtPlayer\(p,1,false,`\$\{t\.kind\} trap`\)/,"canonical trap damage must retain the direct hurtPlayer fallback when the R19 helper is unavailable");
-assert.match(trapFunction,/CCGLostSizzlerV142R19MobileTrapLayoutStability\?\.guaranteeTrapContactDamage\?\.\(p,t,beforeHealth,beforeArmor\)/,"canonical triggerTrap must hand a missed active contact to the stable R19 repair API");
+assert.match(trapFunction,/trapStability\?\.guaranteeTrapContactDamage\?\.\(p,t,beforeHealth,beforeArmor\)/,"canonical triggerTrap must hand a missed active contact to the stable R19 repair API");
 assert.doesNotMatch(trapFunction,/\b(?:gainXp|addXp|grantXp|awardXp|awardXP)\b/,"canonical floor trap movement must not award progression XP");
 
 const player={id:"P1",x:4,y:5,health:8,armor:6,invuln:0,xp:120,totalXp:450};
