@@ -9,6 +9,7 @@
   const state={timer:0,rearms:0,damageOwnerInstalls:0,trapTriggerOwnerInstalls:0,directTrapRepairs:0,trapHits:0,trapContactBlocks:0,trapProtectionBlocks:0,canvasAspectRepairs:0};
   const trapContacts=new Set();
   const trapDamageInFlight=new Set();
+  let trapDamageOwner=null;
   const trapProtectionUntil=new Map();
 
   const specialType=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")}catch(_){return""}};
@@ -60,7 +61,8 @@
        may legitimately sit outside it; re-wrapping them on every lifecycle pass
        grows the chain after repeated mode leave/re-entry and is not required for
        R19's contact/protection state to remain authoritative. */
-    if(chainHas(current,"__ccgV142R19MobileTrapDamage"))return true;
+    const existing=chainOwner(current,"__ccgV142R19MobileTrapDamage");
+    if(existing){trapDamageOwner=existing;return true;}
     const wrapped=function hurtPlayerV142R19MobileTrapDamage(player,amount,flash,source){
       if(!ordinaryDungeon()||!player||!environmentalTrapSource(source))return current.apply(this,arguments);
       /* Floor-trap health damage is one hit per active contact. The independent
@@ -114,6 +116,7 @@
     wrapped.__ccgV142R19MobileTrapDamage=true;
     wrapped.__ccgOriginal=current;
     window.hurtPlayer=wrapped;
+    trapDamageOwner=wrapped;
     state.damageOwnerInstalls++;
     return true
   }
@@ -127,7 +130,7 @@
       const beforeHealth=Number(player?.health||0),beforeArmor=Number(player?.armor||0);
       const result=current.apply(this,arguments);
       if(contact&&beforeHealth>0&&Number(player?.health||0)===beforeHealth){
-        const damageOwner=chainOwner(window.hurtPlayer,"__ccgV142R19MobileTrapDamage");
+        const damageOwner=trapDamageOwner||chainOwner(window.hurtPlayer,"__ccgV142R19MobileTrapDamage");
         if(typeof damageOwner==="function"){
           damageOwner.call(this,player,1,false,`${String(contact.trap?.kind||"floor")} trap`);
           if(Number(player?.health||0)<beforeHealth)state.directTrapRepairs++
