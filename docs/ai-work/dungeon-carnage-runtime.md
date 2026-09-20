@@ -6,7 +6,7 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Current checkpoint — 20 September 2026
 
-Latest verified Dungeon runtime merge checkpoint is `992d19d39cd5ad7d5fb12116dda03d80df623e61`, the merge of #2193 from exact qualified head `03333f6e89381e018197b990664a1e25205e8f78`. Stage 8 itch.io repository preparation remains complete through #2141, with the latest qualified runtime artifact recorded below.
+Latest verified Dungeon runtime merge checkpoint is `992d19d39cd5ad7d5fb12116dda03d80df623e61`, the merge of #2193 from exact qualified head `03333f6e89381e018197b990664a1e25205e8f78`. Documentation/test-probe reconciliation #2194 subsequently merged as `28f0815f9e849090783cd78792c26fcdc8cc5cb9`; it did not change runtime/gameplay ownership. Stage 8 itch.io repository preparation remains complete through #2141, with the latest qualified runtime artifact recorded below.
 
 Stage 1 remains converged through #2134/#2135, Stage 2 through #2136, and the original seven-item live-defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The #2129 sustained-Solo hands-on acceptance and the startup hands-on acceptance also remain outstanding.
 
@@ -415,6 +415,7 @@ Branch `codex/dungeon-projectile-lifecycle-current-main` was created from exact 
 ## Session log
 
 - 2026-09-20: Qualified and merged #2193 from exact head `03333f6e89381e018197b990664a1e25205e8f78` as `992d19d39cd5ad7d5fb12116dda03d80df623e61`, closing the remaining mobile natural-trap detached/global damage-owner race. All required workflows passed; Load Safety shard 4 passed on one unchanged retry after the first attempt sampled a shock crossing only 36.5 ms from the active-phase boundary. Superseded documentation PR #2191 was closed without merge and a fresh post-#2193 reconciliation was started.
+- 2026-09-20: Merged bounded post-#2193 reconciliation #2194 from exact head `d92fda632216cd0e109a458e7094b4f94fada29c` as `28f0815f9e849090783cd78792c26fcdc8cc5cb9`. Scope was progress/continuation documentation plus the natural-trap browser probe only. Exact-head package/cache/mouse-wheel/SEO qualification passed; Load Safety passed after one unchanged targeted shard-6 retry for an unrelated V10.36 loading-progress sample of 92% instead of 100%. No runtime, assertion or timeout was weakened.
 
 - 2026-09-16: Reclassified #2062, #1960, #1959 and #1998 as superseded/obsolete; they were closed without merge.
 - 2026-09-16: Qualified #2102 head `dcb35f3e...`, including a successful unchanged rerun of one transient Site Safety/WebDriver timeout; merged #2102 and completed retained local-runtime extraction.
