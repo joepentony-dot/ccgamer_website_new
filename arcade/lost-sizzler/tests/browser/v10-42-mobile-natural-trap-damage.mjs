@@ -102,18 +102,30 @@ try{
   await page.evaluate(()=>globalThis.eval(`(()=>{
     if(window.__ccgNaturalTrapProbe?.installed)return;
     const previous=triggerTrap;
-    const probe={installed:true,targetId:"",calls:[]};
+    const previousTrapActive=SYS.trapActive;
+    const probe={installed:true,targetId:"",calls:[],inTrigger:false,canonical:null};
+    SYS.trapActive=function trapActiveNaturalProbe(trap,now){
+      const active=previousTrapActive.call(this,trap,now);
+      if(probe.inTrigger&&probe.canonical===null&&String(trap?.id)===String(probe.targetId)){
+        const sampledAt=Number.isFinite(Number(now))?Number(now):performance.now();
+        const period=Math.max(1,Number(trap.period||1));
+        const phase=(sampledAt+Number(trap.phase||0))%period;
+        probe.canonical={
+          at:sampledAt,
+          active:Boolean(active),
+          phase,
+          period,
+          remainingActiveMs:active?Math.max(0,period*.46-phase):0
+        };
+      }
+      return active;
+    };
     const wrapped=function triggerTrapNaturalProbe(player){
       const trap=(host?.traps||[]).find(t=>String(t.id)===String(probe.targetId));
       let sample=null;
       if(trap&&player&&Number(player.x)===Number(trap.x)&&Number(player.y)===Number(trap.y)){
-        const now=performance.now(),period=Math.max(1,Number(trap.period||1));
-        const phase=(now+Number(trap.phase||0))%period;
-        const active=Boolean(SYS.trapActive(trap,now));
         const r19=window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||{};
         sample={
-          at:now,active,phase,period,
-          remainingActiveMs:active?Math.max(0,period*.46-phase):0,
           beforeHealth:Number(player.health||0),beforeArmor:Number(player.armor||0),
           x:Number(player.x),y:Number(player.y),
           r19Before:{
@@ -130,8 +142,18 @@ try{
           canonicalContactsBefore:[...(window.CCGLostSizzlerRareEventsBalance?.trapRuntime?.contact||[])].filter(key=>String(key).endsWith("|"+String(trap?.id||(String(trap?.x)+","+String(trap?.y)))))
         };
       }
-      const result=previous.apply(this,arguments);
+      probe.canonical=null;
+      probe.inTrigger=Boolean(sample);
+      let result;
+      try{result=previous.apply(this,arguments)}
+      finally{probe.inTrigger=false}
       if(sample){
+        const canonical=probe.canonical||{};
+        sample.at=Number(canonical.at||0);
+        sample.active=Boolean(canonical.active);
+        sample.phase=Number(canonical.phase||0);
+        sample.period=Number(canonical.period||0);
+        sample.remainingActiveMs=Number(canonical.remainingActiveMs||0);
         const r19=window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||{};
         sample.afterHealth=Number(player.health||0);
         sample.afterArmor=Number(player.armor||0);
@@ -146,8 +168,8 @@ try{
           triggerOwned:Boolean(globalThis.triggerTrap?.__ccgV142R19TrapTriggerOwner),
           hurtName:String(globalThis.hurtPlayer?.name||"")
         };
-        const trap=(host?.traps||[]).find(t=>String(t.id)===String(probe.targetId));
-        sample.canonicalContactsAfter=[...(window.CCGLostSizzlerRareEventsBalance?.trapRuntime?.contact||[])].filter(key=>String(key).endsWith("|"+String(trap?.id||(String(trap?.x)+","+String(trap?.y)))));
+        const currentTrap=(host?.traps||[]).find(t=>String(t.id)===String(probe.targetId));
+        sample.canonicalContactsAfter=[...(window.CCGLostSizzlerRareEventsBalance?.trapRuntime?.contact||[])].filter(key=>String(key).endsWith("|"+String(currentTrap?.id||(String(currentTrap?.x)+","+String(currentTrap?.y)))));
         probe.calls.push(sample);
       }
       return result;
