@@ -6,7 +6,7 @@
 
   const STYLE_ID="ccg-v142-r19-mobile-trap-layout";
   const MONITOR_MS=80;
-  const state={timer:0,rearms:0,damageOwnerInstalls:0,trapHits:0,trapContactBlocks:0,trapProtectionBlocks:0,canvasAspectRepairs:0};
+  const state={timer:0,rearms:0,damageOwnerInstalls:0,directTrapRepairs:0,trapHits:0,trapContactBlocks:0,trapProtectionBlocks:0,canvasAspectRepairs:0};
   const trapContacts=new Set();
   const trapDamageInFlight=new Set();
   const trapProtectionUntil=new Map();
@@ -34,6 +34,15 @@
     }
     return false
   }
+  function canonicalBaseDamageOwner(owner){
+    const seen=new Set();let current=owner,last=owner;
+    while(typeof current==="function"&&!seen.has(current)){
+      seen.add(current);last=current;
+      current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null
+    }
+    return typeof last==="function"?last:null
+  }
+
   function activeTrapContact(player){
     try{
       const now=performance.now();
@@ -72,11 +81,27 @@
       if(contactKey&&trapContacts.has(contactKey)){state.trapContactBlocks++;return false}
       if(contactKey&&trapDamageInFlight.has(contactKey))return current.apply(this,arguments);
       if(contactKey)trapDamageInFlight.add(contactKey);
-      const beforeHealth=Number(player.health||0),beforeArmor=Number(player.armor||0);
+      const beforeHealth=Number(player.health||0),beforeArmor=Number(player.armor||0),beforeInvuln=Number(player.invuln||0);
       player.armor=0;
       let result;
-      try{result=current.apply(this,arguments)}finally{
+      try{
+        result=current.apply(this,arguments);
+        /* A validated active trap contact must not disappear inside a stale
+           downstream protection owner. If the complete owner chain accepts the
+           call but leaves HP untouched, retry only this one floor-trap contact
+           through the canonical game damage routine. That routine retains the
+           normal hit feedback, stats, death cache and game-over handling. */
+        if(Number(player.health||0)===beforeHealth&&beforeHealth>0){
+          const base=canonicalBaseDamageOwner(current);
+          if(typeof base==="function"&&base!==current){
+            player.invuln=0;
+            base.call(this,player,amount,flash,source);
+            if(Number(player.health||0)<beforeHealth)state.directTrapRepairs++
+          }
+        }
+      }finally{
         player.armor=beforeArmor;
+        if(Number(player.health||0)===beforeHealth)player.invuln=beforeInvuln;
         if(contactKey)trapDamageInFlight.delete(contactKey)
       }
       if(Number(player.health||0)<beforeHealth){
