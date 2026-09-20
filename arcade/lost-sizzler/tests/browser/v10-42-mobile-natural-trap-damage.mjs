@@ -29,6 +29,7 @@ const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usag
 
 async function touchButton(page,context,key,trapId){
   const locator=page.locator(`#v104-touch-controls .v104-touch-pad [data-key="${key}"]`);
+  await locator.waitFor({state:"visible",timeout:5000});
   const box=await locator.boundingBox();
   assert.ok(box&&box.width>0&&box.height>0,`touch target ${key} must be visible`);
   const x=box.x+box.width/2,y=box.y+box.height/2;
