@@ -8,15 +8,17 @@ For Dungeon Carnage specifically, `arcade/lost-sizzler/PROGRESS.md` is the produ
 
 Update this file when a workstream changes category, its active PR/dependency changes, or a substantial session ends. Keep detailed reasoning, checks, blockers, and next actions in the workstream file.
 
-## Current autonomous Dungeon Carnage checkpoint — 19 September 2026
+## Current autonomous Dungeon Carnage checkpoint — 20 September 2026
 
-- Live repository `main`: `073ee3df35cd3982ceb04676619792d69a28e0e3`, the merge of runtime follow-up #2185 from exact head `ee8bef501b26271d1e1f38ad33c6c275b3290aba`. #2185 sits on top of the earlier #2184 documentation checkpoint and #2182 stale-badge guard.
+- Live repository `main`: `55fdc887bc05faec139b80a2567411b5c4339201`, the merge of #2188 from exact qualified head `57cdb1c24ec09bc266fcfebd3492fcfa3d9ed487`. #2188 fixes the user-reproduced mobile floor-trap defect while preserving armour, canonical invulnerability semantics, duplicate-contact protection, XP boundaries and all non-trap damage ownership.
 - #2180 merged from exact head `c51522ab2b9b97046f23ed492d68a94b8fc3233f` as `bf4cfa4b68f1bc14bf89e81e71fa35fa585b2fb3`. It keeps the canonical loader authoritative when premature run/tutorial active-state flags appear before V10.42 release readiness.
 - #2181 merged from exact head `275773ccdab4e6ca20b4bae77bff2847fac5b66c` as `69ba137423b0f435af9b5a6577b77c64668015e1`. It changes only the production-smoke expected build/cache identity to `V10.42 r34` / `20260918r34`.
 - The post-#2181 production smoke reached the correct release generation but exposed one separate stale-browser presentation defect: the current Update Available badge could be overwritten by the legacy V10.41 brand observer.
 - #2182 adds one guard in `v10-41-landing-notification-polish.js` so the legacy observer stops writing release labels when `CCGLostSizzlerVersion.state.outdated === true`. No gameplay, loader, movement, combat, save, progression, shop, Banishment, packaging or menu-flow ownership changed.
 - #2182 exact-head qualification passed C64 Dungeon Carnage itch.io Package, Public Code Cache Version, Native Mouse Wheel Scroll Contract and Lost Sizzler Load Safety, including canonical/Node, discovery and all six Chromium shards.
 - #2185 closes the remaining V10.42 stale-browser badge writer in the ordered bootstrap: release metadata continues to restamp, but visible subtitle/build-badge presentation is not overwritten while `CCGLostSizzlerVersion.state.outdated === true`. Its exact-head PR qualification passed. After merge, Lost Sizzler Production Smoke run `35414519454`, GitHub Pages deployment, live public-navigation verification, Site Safety, package generation and Native Mouse Wheel all passed on `073ee3df35cd3982ceb04676619792d69a28e0e3`. Push Load Safety run `35414519441` initially failed only in the unchanged `v10-28-browser-stability-deterministic.mjs` shard-3 support contract; the unchanged shard-3 retry passed on attempt 2, so no runtime/assertion/timeout weakening was made.
+- #2190 merged as `fab013b320ebdb1d9f2cb873ad26a3588f565655`, making Tutorial mandatory for first-time Solo players with an explicit skip path and removing the mobile Training Control obstruction from the D-pad.
+- #2188 merged as `55fdc887bc05faec139b80a2567411b5c4339201` from exact head `57cdb1c24ec09bc266fcfebd3492fcfa3d9ed487`. The final bounded delta changes only `v10-42-r19-mobile-trap-layout-stability.js` and `v10-42-mobile-natural-trap-damage.mjs`. Exact-head qualification passed the dedicated Mobile Trap Layout workflow, itch.io package, Public Code Cache Version, Native Mouse Wheel Scroll Contract and Lost Sizzler Load Safety including canonical/Node, discovery and all six Chromium shards. The real-touch regression proves naturally generated fire/spike/shock contacts remove exactly one HP, preserve armour and do not award progression XP.
 - Latest qualified runtime/package artifact: `C64-Dungeon-Carnage-Itch`, artifact ID `10575312850`, 21,111,070 bytes, GitHub Actions SHA-256 `6425e7f4cdd296843911c78e81a1545c661123bab726c4b2cdd9449d7334d73c`, workflow run `35414519473`, source/main `073ee3df35cd3982ceb04676619792d69a28e0e3`.
 - The earlier post-#2182 **Lost Sizzler Production Smoke** passed on deployed `main` `66c2aa8441fc67961e1b3fa116da6537ea41002b` in workflow run `35397906108`, verifying `V10.42 r34 / 20260918r34`, matching `version.json`, the stale-browser Update Available prompt, feedback endpoint validation/CORS, and the Weekly Vault read/backend projection. That result is historical; the current post-#2185 deployed verification is recorded above.
 - Three product-level hands-on gates remain unresolved: current deployed startup acceptance, sustained Solo movement/firing/combat/pause-resume stability, and the three-Artefact/Essence Banishment Flask exchange.
@@ -24,7 +26,7 @@ Update this file when a workstream changes category, its active PR/dependency ch
 
 ### Exact next action
 
-1. On deployed current main `073ee3df35cd3982ceb04676619792d69a28e0e3`, require a direct loader → final V10.42 menu transition with no compact/intermediate flash and no loader → page → loader pulse.
+1. On deployed current main `55fdc887bc05faec139b80a2567411b5c4339201`, require a direct loader → final V10.42 menu transition with no compact/intermediate flash and no loader → page → loader pulse.
 2. Complete sustained Solo acceptance.
 3. Complete the three-Artefact/Essence Banishment Flask exchange acceptance.
 4. Only after those gates pass, publish the latest qualified runtime itch.io artifact and verify Solo, Tutorial, local 2P Split Screen and Weekly Vault website handoff.
