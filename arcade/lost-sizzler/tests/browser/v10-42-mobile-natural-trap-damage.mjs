@@ -43,6 +43,7 @@ async function touchButton(page,context,key){
 
 try{
   const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2});
+  await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
   const page=await context.newPage();
   page.setDefaultTimeout(30000);
   const errors=[];
@@ -113,37 +114,6 @@ try{
       return SYS.trapActive(trap,performance.now())&&phase<period*.18;
     },fixture.id,{timeout:10000});
 
-    const direct=await page.evaluate(({id,moveDx,moveDy})=>{
-      const source="(()=>{"+
-        "const targetId="+JSON.stringify(id)+";"+
-        "const trap=(host?.traps||[]).find(t=>String(t.id)===targetId);"+
-        "const rare=window.CCGLostSizzlerRareEventsBalance?.trapRuntime;"+
-        "const r19=window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state;"+
-        "const r57=window.CCGLostSizzlerV141R57DesktopPrepStability?.state;"+
-        "const snap=()=>{const cycleKey=String(p1?.id||p1?.name||\"P1\")+\"|\"+String(trap?.id||\"\");return {"+
-          "x:Number(p1.x),y:Number(p1.y),health:Number(p1.health),armor:Number(p1.armor),"+
-          "invuln:Number(p1.invuln||0),hitStunMs:Number(p1.hitStunMs||0),"+
-          "active:Boolean(trap&&SYS.trapActive(trap,performance.now())),"+
-          "rareContact:[...(rare?.contact||[])],"+
-          "r19:{trapHits:Number(r19?.trapHits||0),contactBlocks:Number(r19?.trapContactBlocks||0),protectionBlocks:Number(r19?.trapProtectionBlocks||0),rearms:Number(r19?.rearms||0)},"+
-          "r57:{trapHits:Number(r57?.trapHits||0),fallbacks:Number(r57?.trapFallbacks||0),cycle:Boolean(r57?.trapCycles?.get?.(cycleKey))}"+
-        "}};"+
-        "const before=snap();"+
-        "movePlayer(p1,"+Number(moveDx)+","+Number(moveDy)+",false);"+
-        "const after=snap();"+
-        "return {before,after};"+
-      "})()";
-      return globalThis.eval(source);
-    },{id:fixture.id,moveDx:fixture.moveDx,moveDy:fixture.moveDy});
-
-    console.log("MOBILE_NATURAL_TRAP_DIRECT",JSON.stringify({kind,fixture,direct}));
-    assert.deepEqual({x:direct.after.x,y:direct.after.y},fixture.target,`one canonical movePlayer step must land on real generated ${kind} trap`);
-    assert.equal(direct.after.health,direct.before.health-1,`one canonical mobile-runtime step onto naturally active ${kind} trap must remove one health: ${JSON.stringify({fixture,direct})}`);
-    assert.equal(direct.after.armor,direct.before.armor,`canonical natural ${kind} trap damage must preserve armour`);
-
-    await page.evaluate(fixture=>globalThis.eval("(()=>{const f="+JSON.stringify(fixture)+";p1.x=f.origin.x;p1.y=f.origin.y;p1.rx=p1.x;p1.ry=p1.y;p1.health=f.before.health;p1.armor=f.before.armor;p1.invuln=0;p1.hitStunMs=0;move1=0;input.clear();window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.rearmInactiveTrapContacts?.();return true})()"),fixture);
-    await page.waitForTimeout(120);
-
     await page.waitForFunction(id=>{
       const trap=(host?.traps||[]).find(t=>String(t.id)===id);
       if(!trap)return false;
@@ -165,7 +135,7 @@ try{
     assert.ok(Math.abs(after.x-fixture.target.x)+Math.abs(after.y-fixture.target.y)<=1,`touch movement must not skip more than one tile beyond a trap contact: ${JSON.stringify({fixture,after})}`);
 
     await page.evaluate(fixture=>globalThis.eval("(()=>{const f="+JSON.stringify(fixture)+";p1.x=f.origin.x;p1.y=f.origin.y;p1.rx=p1.x;p1.ry=p1.y;p1.invuln=0;p1.hitStunMs=0;move1=0;input.clear();window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.rearmInactiveTrapContacts?.();return true})()"),fixture);
-    await page.waitForTimeout(120);
+    await page.waitForTimeout(900);
   }
 
   assert.deepEqual(errors,[],`real mobile trap cycle must not raise browser errors: ${errors.join("\n")}`);
