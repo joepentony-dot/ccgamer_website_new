@@ -103,7 +103,7 @@ try{
             trapProtectionBlocks:Number(r19.trapProtectionBlocks||0),
             damageOwnerInstalls:Number(r19.damageOwnerInstalls||0)
           },
-          canonicalContactsBefore:[...(window.CCGLostSizzlerRareEventsBalance?.trapRuntime?.contact||[])].filter(key=>String(key).endsWith(`|${String(trap?.id||`${trap?.x},${trap?.y}`)}`))
+          canonicalContactsBefore:[...(window.CCGLostSizzlerRareEventsBalance?.trapRuntime?.contact||[])].filter(key=>String(key).endsWith("|"+String(trap?.id||(String(trap?.x)+","+String(trap?.y)))))
         };
       }
       const result=previous.apply(this,arguments);
@@ -118,7 +118,7 @@ try{
           damageOwnerInstalls:Number(r19.damageOwnerInstalls||0)
         };
         const trap=(host?.traps||[]).find(t=>String(t.id)===String(probe.targetId));
-        sample.canonicalContactsAfter=[...(window.CCGLostSizzlerRareEventsBalance?.trapRuntime?.contact||[])].filter(key=>String(key).endsWith(`|${String(trap?.id||`${trap?.x},${trap?.y}`)}`));
+        sample.canonicalContactsAfter=[...(window.CCGLostSizzlerRareEventsBalance?.trapRuntime?.contact||[])].filter(key=>String(key).endsWith("|"+String(trap?.id||(String(trap?.x)+","+String(trap?.y)))));
         probe.calls.push(sample);
       }
       return result;
