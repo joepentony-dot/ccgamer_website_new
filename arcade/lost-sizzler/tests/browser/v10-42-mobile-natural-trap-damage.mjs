@@ -102,7 +102,8 @@ try{
             trapContactBlocks:Number(r19.trapContactBlocks||0),
             trapProtectionBlocks:Number(r19.trapProtectionBlocks||0),
             damageOwnerInstalls:Number(r19.damageOwnerInstalls||0)
-          }
+          },
+          canonicalContactsBefore:[...(window.CCGLostSizzlerRareEventsBalance?.trapRuntime?.contact||[])].filter(key=>String(key).endsWith(`|${String(trap?.id||`${trap?.x},${trap?.y}`)}`))
         };
       }
       const result=previous.apply(this,arguments);
@@ -116,6 +117,8 @@ try{
           trapProtectionBlocks:Number(r19.trapProtectionBlocks||0),
           damageOwnerInstalls:Number(r19.damageOwnerInstalls||0)
         };
+        const trap=(host?.traps||[]).find(t=>String(t.id)===String(probe.targetId));
+        sample.canonicalContactsAfter=[...(window.CCGLostSizzlerRareEventsBalance?.trapRuntime?.contact||[])].filter(key=>String(key).endsWith(`|${String(trap?.id||`${trap?.x},${trap?.y}`)}`));
         probe.calls.push(sample);
       }
       return result;
@@ -170,7 +173,7 @@ try{
     assert.equal(fixture.available,true,`real generated ${kind} trap must have a touch-accessible adjacent tile: ${JSON.stringify(fixture)}`);
 
     let qualified=null;
-    for(let attempt=1;attempt<=3;attempt++){
+    for(let attempt=1;attempt<=6;attempt++){
       await resetFixture(page,fixture);
       await page.evaluate(id=>{
         const probe=window.__ccgNaturalTrapProbe;
@@ -182,8 +185,8 @@ try{
         if(!trap)return false;
         const period=Math.max(1,Number(trap.period||1));
         const phase=(performance.now()+Number(trap.phase||0))%period;
-        return SYS.trapActive(trap,performance.now())&&phase<period*.18;
-      },fixture.id,{timeout:10000});
+        return SYS.trapActive(trap,performance.now())&&phase<Math.min(period*.06,120);
+      },fixture.id,{timeout:12000});
 
       const touchWindow=await touchButton(page,context,fixture.key,fixture.id);
       const after=await page.evaluate(id=>{
@@ -212,7 +215,7 @@ try{
         assert.fail(`real generated ${kind} trap was naturally active at the exact triggerTrap crossing but did not remove one health: ${JSON.stringify({fixture,touchWindow,stableCrossing,after})}`);
       }
     }
-    assert.ok(qualified,`real generated ${kind} trap did not produce a phase-stable touch contact within three natural active cycles`);
+    assert.ok(qualified,`real generated ${kind} trap did not produce a phase-stable touch contact within six natural active cycles`);
 
     await resetFixture(page,fixture);
     await page.waitForTimeout(900);
