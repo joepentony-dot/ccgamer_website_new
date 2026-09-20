@@ -4,13 +4,13 @@
 
 The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
-## Current checkpoint — 20 September 2026
+## Current checkpoint — 21 September 2026
 
-Latest verified Dungeon runtime merge checkpoint is `992d19d39cd5ad7d5fb12116dda03d80df623e61`, the merge of #2193 from exact qualified head `03333f6e89381e018197b990664a1e25205e8f78`. Documentation/test-probe reconciliation #2194 subsequently merged as `28f0815f9e849090783cd78792c26fcdc8cc5cb9`; it did not change runtime/gameplay ownership. Stage 8 itch.io repository preparation remains complete through #2141, with the latest qualified runtime artifact recorded below.
+Latest verified Dungeon runtime merge checkpoint remains `992d19d39cd5ad7d5fb12116dda03d80df623e61`, the merge of #2193 from exact qualified head `03333f6e89381e018197b990664a1e25205e8f78`. Test/documentation follow-ups have since advanced live `main` through #2194 (`28f0815f9e849090783cd78792c26fcdc8cc5cb9`), #2198 (`301afdfe9e39ea2551486c5857260cc607d8a038`) and #2199 (`c0b8eb4a82806d524ce48e97c70888b09b0c327a`). None of those three changed runtime/gameplay ownership. Stage 8 itch.io repository preparation remains complete through #2141, with the latest qualified runtime artifact recorded below.
 
 Stage 1 remains converged through #2134/#2135, Stage 2 through #2136, and the original seven-item live-defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The #2129 sustained-Solo hands-on acceptance and the startup hands-on acceptance also remain outstanding.
 
-### Mobile natural-trap remediation — #2188 / #2192 / #2193
+### Mobile natural-trap remediation — #2188 / #2192 / #2193 / #2198 contract correction
 
 The user-reproduced mobile defect was that naturally generated floor traps could visibly trigger under real touch movement without removing HEALTH.
 
@@ -18,6 +18,7 @@ The user-reproduced mobile defect was that naturally generated floor traps could
 - #2192 added a canonical `triggerTrap()` guarantee after exact-main qualification exposed an active-phase/wrapper race.
 - Repeated current-main qualification then exposed one remaining ownership case: the visible global `hurtPlayer` function could temporarily be the plain canonical owner, allowing armour absorption and invulnerability to occur before the retained R19 trap owner repaired the contact.
 - #2193 fixes that final race by routing a caller-validated active floor-trap contact through the retained R19 damage owner first. Canonical `hurtPlayer()` remains the fallback, and the post-call guarantee remains a backstop. The route preserves one-HEALTH trap damage, armour, XP boundaries and canonical damage/death handling.
+- #2198 is a test-only correction discovered while qualifying startup-smoke work: the natural-contact browser contract could select a generated trap whose `active` flag was false while separately sampling a phase that looked active. #2198 now requires the selected trap itself to be active throughout candidate selection, phase waiting and diagnostics. Exact head `0739e4300b7badf92483572b5c898490893002a3` merged as `301afdfe9e39ea2551486c5857260cc607d8a038`; runtime/gameplay code was unchanged.
 
 Exact #2193 qualification passed CCG Site Safety, SEO Automation, C64 Dungeon Carnage itch.io Package, Public Code Cache Version, Native Mouse Wheel Scroll Contract, both dedicated Mobile Trap Layout jobs, canonical/Node contracts and all six Lost Sizzler Load Safety Chromium shards. The first shard-4 attempt saw one shock crossing sampled with only 36.5 ms left in its active phase; an unchanged shard-4 retry on exact head `03333f6e89381e018197b990664a1e25205e8f78` passed. No runtime, assertion or timeout was weakened.
 
@@ -33,6 +34,19 @@ Outstanding product gates:
 4. deployed mobile trap acceptance: naturally generated active spike/fire/shock contacts must remove exactly one HEALTH while armour remains unchanged.
 
 **MANUAL ACCEPTANCE REQUIRED — AUTOMATED TESTS DO NOT SUBSTITUTE FOR THESE GATES**
+
+### Current-main startup smoke hardening — PR #2199 — MERGED
+
+PR #2199 rebuilt the superseded startup-transition smoke against current main after #2198 landed. It adds rendered-frame sampling to the existing production smoke and fails if the release loader exposes an intermediate menu before authoritative V10.42 readiness, reappears after first valid reveal, or the four main mode buttons change presentation immediately after reveal.
+
+- exact head: `6888ca6e7eb2d872cd9b460e64604f73682da9bf`
+- merge commit: `c0b8eb4a82806d524ce48e97c70888b09b0c327a`
+- changed file: `arcade/lost-sizzler/tests/production/v10-41-r47-production-smoke.mjs` only
+- C64 Dungeon Carnage itch.io Package, Public Code Cache Version, Native Mouse Wheel Scroll Contract and Lost Sizzler Load Safety passed
+- Load Safety canonical/Node and all six Chromium shards passed without retry
+- no runtime, gameplay, CSS, assets, package, save, progression or economy behaviour changed
+
+This strengthens automated evidence for the startup/first-visual chain but does not replace the hands-on startup gate.
 
 ### Startup / first-visual flicker remediation — PR #2145 — MERGED
 
