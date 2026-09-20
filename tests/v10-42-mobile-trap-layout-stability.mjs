@@ -29,7 +29,8 @@ assert.match(source,/if\(!contactKey\)return current\.apply\(this,arguments\)/,"
 assert.match(source,/trapContacts\.has\(contactKey\)/,"trap damage owner must suppress duplicate damage on one active trap contact");
 assert.match(source,/trapContacts\.add\(contactKey\)/,"successful trap health damage must latch the active contact");
 assert.match(source,/trapDamageOwner=wrapped/,"a newly installed R19 damage owner must be retained independently of mutable window ownership");
-assert.match(source,/trapDamageOwner\|\|chainOwner\(window\.hurtPlayer,"__ccgV142R19MobileTrapDamage"\)/,"trigger-boundary repair must prefer the retained R19 owner during a transient wrapper race");
+assert.match(source,/trapDamageOwner\|\|chainOwner\(window\.hurtPlayer,"__ccgV142R19MobileTrapDamage"\)/,"trap repair must prefer the retained R19 owner during a transient wrapper race");
+assert.match(source,/function guaranteeTrapContactDamage\(player,trap,beforeHealth,beforeArmor\)/,"R19 must expose one stable synchronous floor-trap repair boundary");
 assert.match(source,/trapContacts\.delete\(contactKey\)/,"leaving or deactivating a trap must re-arm the contact latch");
 assert.match(source,/const beforeHealth=Number\(player\.health\|\|0\),beforeArmor=Number\(player\.armor\|\|0\)/,"trap damage owner must snapshot health and armour");
 assert.match(source,/player\.armor=0/,"ordinary floor traps must bypass armour for their promised health hit");
@@ -61,6 +62,7 @@ assert.match(gameplaySource,/function movementTriggers\(p\)[\s\S]*?triggerTrap\(
 const trapFunction=gameplaySource.match(/function triggerTrap\(p\)\{[^\n]+\}/)?.[0]||"";
 assert.match(trapFunction,/SYS\.trapActive\(t,now\)/,"floor trap boundary must require an active trap cycle");
 assert.match(trapFunction,/hurtPlayer\(p,1,false,`\$\{t\.kind\} trap`\)/,"active floor trap movement must delegate one point through hurtPlayer");
+assert.match(trapFunction,/CCGLostSizzlerV142R19MobileTrapLayoutStability\?\.guaranteeTrapContactDamage\?\.\(p,t,beforeHealth,beforeArmor\)/,"canonical triggerTrap must hand a missed active contact to the stable R19 repair API");
 assert.doesNotMatch(trapFunction,/\b(?:gainXp|addXp|grantXp|awardXp|awardXP)\b/,"canonical floor trap movement must not award progression XP");
 
 const player={id:"P1",x:4,y:5,health:8,armor:6,invuln:0,xp:120,totalXp:450};
