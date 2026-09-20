@@ -61,7 +61,7 @@ async function resetFixture(page,fixture){
 
 try{
   const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2});
-  await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
+  await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true");localStorage.setItem("ccg-lost-sizzler-tutorial-complete-v1","true")}catch(_){}});
   const page=await context.newPage();
   page.setDefaultTimeout(30000);
   const errors=[];
@@ -75,6 +75,7 @@ try{
   await page.locator("#solo-btn").click({noWaitAfter:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==="true");
   await page.waitForFunction(()=>document.getElementById("menu")?.classList.contains("hidden")===true);
+  await page.waitForFunction(()=>String(globalThis.playMode||"")==="solo"&&String(globalThis.mode||"")==="playing"&&document.body.dataset.tutorialActive!=="true"&&window.CCGLostSizzlerOnboardingV120?.state?.active!==true);
   const notice=page.locator("#ccg-mobile-pc-notice");
   if(await notice.isVisible()){
     await page.locator("#ccg-mobile-pc-accept").click({noWaitAfter:true});
@@ -116,7 +117,12 @@ try{
             trapHits:Number(r19.trapHits||0),
             trapContactBlocks:Number(r19.trapContactBlocks||0),
             trapProtectionBlocks:Number(r19.trapProtectionBlocks||0),
-            damageOwnerInstalls:Number(r19.damageOwnerInstalls||0)
+            damageOwnerInstalls:Number(r19.damageOwnerInstalls||0),
+            trapTriggerOwnerInstalls:Number(r19.trapTriggerOwnerInstalls||0),
+            directTrapRepairs:Number(r19.directTrapRepairs||0),
+            triggerName:String(globalThis.triggerTrap?.name||""),
+            triggerOwned:Boolean(globalThis.triggerTrap?.__ccgV142R19TrapTriggerOwner),
+            hurtName:String(globalThis.hurtPlayer?.name||"")
           },
           canonicalContactsBefore:[...(window.CCGLostSizzlerRareEventsBalance?.trapRuntime?.contact||[])].filter(key=>String(key).endsWith("|"+String(trap?.id||(String(trap?.x)+","+String(trap?.y)))))
         };
@@ -130,7 +136,12 @@ try{
           trapHits:Number(r19.trapHits||0),
           trapContactBlocks:Number(r19.trapContactBlocks||0),
           trapProtectionBlocks:Number(r19.trapProtectionBlocks||0),
-          damageOwnerInstalls:Number(r19.damageOwnerInstalls||0)
+          damageOwnerInstalls:Number(r19.damageOwnerInstalls||0),
+          trapTriggerOwnerInstalls:Number(r19.trapTriggerOwnerInstalls||0),
+          directTrapRepairs:Number(r19.directTrapRepairs||0),
+          triggerName:String(globalThis.triggerTrap?.name||""),
+          triggerOwned:Boolean(globalThis.triggerTrap?.__ccgV142R19TrapTriggerOwner),
+          hurtName:String(globalThis.hurtPlayer?.name||"")
         };
         const trap=(host?.traps||[]).find(t=>String(t.id)===String(probe.targetId));
         sample.canonicalContactsAfter=[...(window.CCGLostSizzlerRareEventsBalance?.trapRuntime?.contact||[])].filter(key=>String(key).endsWith("|"+String(trap?.id||(String(trap?.x)+","+String(trap?.y)))));
