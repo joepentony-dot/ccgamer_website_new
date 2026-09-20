@@ -176,6 +176,18 @@ assert.equal(context.CCGLostSizzlerV142R19MobileTrapLayoutStability.state.damage
 context.CCGLostSizzlerV142R19MobileTrapLayoutStability.installTrapDamageOwner();
 assert.deepEqual(chainStats(context.hurtPlayer),afterReinstallStats,"repeated guarded installation must keep wrapper depth and R19 ownership stable");
 
+// A trap that was active at canonical triggerTrap() may cross the phase boundary
+// before the retained R19 owner runs. The validated-contact handoff must still
+// deliver exactly that already-proven hit without re-sampling the clock.
+context.SYS.trapActive=()=>false;
+const validatedBeforeHealth=player.health,validatedBeforeArmor=player.armor;
+assert.equal(context.CCGLostSizzlerV142R19MobileTrapLayoutStability.guaranteeTrapContactDamage(player,trap,validatedBeforeHealth,validatedBeforeArmor),true,"an already-validated active trap contact must survive a later inactive phase sample");
+assert.equal(player.health,validatedBeforeHealth-1,"validated trap contact must remove exactly one health");
+assert.equal(player.armor,validatedBeforeArmor,"validated trap contact must preserve armour");
+player.x=3;
+context.CCGLostSizzlerV142R19MobileTrapLayoutStability.rearmInactiveTrapContacts();
+player.x=4;player.health=validatedBeforeHealth;player.invuln=0;
+
 context.SYS.trapActive=()=>true;
 const beforeHealth=player.health,beforeArmor=player.armor,beforeXp=player.xp,beforeTotalXp=player.totalXp;
 context.hurtPlayer(player,1,false,"spike trap");
