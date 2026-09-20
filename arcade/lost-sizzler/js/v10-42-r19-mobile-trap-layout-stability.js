@@ -121,6 +121,22 @@
     return true
   }
 
+  function guaranteeTrapContactDamage(player,trap,beforeHealth,beforeArmor){
+    if(!ordinaryDungeon()||!player||!trap||beforeHealth<=0)return false;
+    const now=performance.now();
+    if(Number(trap.x)!==Number(player.x)||Number(trap.y)!==Number(player.y)||!trapActive(trap,now))return false;
+    if(Number(player.health||0)<beforeHealth){
+      if(Number(player.armor||0)!==beforeArmor)player.armor=beforeArmor;
+      return true
+    }
+    const damageOwner=trapDamageOwner||chainOwner(window.hurtPlayer,"__ccgV142R19MobileTrapDamage");
+    if(typeof damageOwner!=="function")return false;
+    damageOwner.call(window,player,1,false,`${String(trap.kind||"floor")} trap`);
+    if(Number(player.armor||0)!==beforeArmor)player.armor=beforeArmor;
+    if(Number(player.health||0)<beforeHealth){state.directTrapRepairs++;return true}
+    return false
+  }
+
   function installTrapTriggerOwner(){
     const current=window.triggerTrap;
     if(typeof current!=="function")return false;
@@ -129,15 +145,7 @@
       const contact=ordinaryDungeon()&&player?activeTrapContact(player):null;
       const beforeHealth=Number(player?.health||0),beforeArmor=Number(player?.armor||0);
       const result=current.apply(this,arguments);
-      if(contact&&beforeHealth>0&&Number(player?.health||0)===beforeHealth){
-        const damageOwner=trapDamageOwner||chainOwner(window.hurtPlayer,"__ccgV142R19MobileTrapDamage");
-        if(typeof damageOwner==="function"){
-          damageOwner.call(this,player,1,false,`${String(contact.trap?.kind||"floor")} trap`);
-          if(Number(player?.health||0)<beforeHealth)state.directTrapRepairs++
-        }
-      }
-      /* R19 owns health semantics only; never let a repair consume armour. */
-      if(contact&&Number(player?.armor||0)!==beforeArmor)player.armor=beforeArmor;
+      if(contact)guaranteeTrapContactDamage(player,contact.trap,beforeHealth,beforeArmor);
       return result
     };
     wrapped.__ccgV142R19TrapTriggerOwner=true;
@@ -406,5 +414,5 @@
   state.timer=setInterval(()=>{try{tick()}catch(error){console.warn("[C64 Dungeon Carnage r19] mobile stability tick failed safely",error)}},MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
-  window.CCGLostSizzlerV142R19MobileTrapLayoutStability={installPortraitLayout,installTrapDamageOwner,installTrapTriggerOwner,rearmInactiveTrapContacts,syncPortraitCanvasAspect,trapActive,get state(){return state}};
+  window.CCGLostSizzlerV142R19MobileTrapLayoutStability={installPortraitLayout,installTrapDamageOwner,installTrapTriggerOwner,guaranteeTrapContactDamage,rearmInactiveTrapContacts,syncPortraitCanvasAspect,trapActive,get state(){return state}};
 })();
