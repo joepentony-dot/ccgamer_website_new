@@ -4,27 +4,33 @@
 
 The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
-## Current checkpoint — 19 September 2026
+## Current checkpoint — 20 September 2026
 
-Latest verified Dungeon runtime merge checkpoint is `073ee3df35cd3982ceb04676619792d69a28e0e3`, the merge of #2185 from exact qualified head `ee8bef501b26271d1e1f38ad33c6c275b3290aba`. #2185 follows #2180's early active-state loader-authority correction, #2181's production-smoke identity alignment and #2182's legacy-brand stale-badge guard. It prevents the authoritative V10.42 ordered bootstrap from restamping visible release presentation while the current version checker owns a stale-browser Update Available state. Stage 8 itch.io repository preparation remains complete through #2141, with the publication artifact superseded by the qualified post-#2185 runtime artifact recorded below.
+Latest verified Dungeon runtime merge checkpoint is `992d19d39cd5ad7d5fb12116dda03d80df623e61`, the merge of #2193 from exact qualified head `03333f6e89381e018197b990664a1e25205e8f78`. Stage 8 itch.io repository preparation remains complete through #2141, with the latest qualified runtime artifact recorded below.
 
-Stage 1 is converged for the current product programme:
+Stage 1 remains converged through #2134/#2135, Stage 2 through #2136, and the original seven-item live-defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The #2129 sustained-Solo hands-on acceptance and the startup hands-on acceptance also remain outstanding.
 
-- #2134 removed the retired Spy fullscreen pre-dispatch and merged as `adc6f96d2ab8d8395b8cae5818b38c101bd846b9`;
-- #2135 trimmed six inert retired network-compatibility owners while retaining the still-called local-session compatibility hooks and merged as `811f67845dbcaa0b4b5c2b83f8860e10a184c1a0`;
-- Stage 2 #2136 consolidated the supported landing/menu hierarchy and merged as `ee2d6b38e5c5805ee1c906d7f801bda2d8496383`.
+### Mobile natural-trap remediation — #2188 / #2192 / #2193
 
-The programme is now milestone-first. General legacy residue remains backlog unless it visibly affects, destabilises or blocks the player-facing milestone being delivered.
+The user-reproduced mobile defect was that naturally generated floor traps could visibly trigger under real touch movement without removing HEALTH.
 
-Historical integration cleanup: PR #1852 (long-running Solo stabilisation) and PR #1976 (R30 ownership-audit throttle optimisation) are closed without merge. Their Git history remains evidence/source material only; neither is an active current-main integration path.
+- #2188 established real-touch spike/fire/shock regression coverage and the first synchronous R19 repair.
+- #2192 added a canonical `triggerTrap()` guarantee after exact-main qualification exposed an active-phase/wrapper race.
+- Repeated current-main qualification then exposed one remaining ownership case: the visible global `hurtPlayer` function could temporarily be the plain canonical owner, allowing armour absorption and invulnerability to occur before the retained R19 trap owner repaired the contact.
+- #2193 fixes that final race by routing a caller-validated active floor-trap contact through the retained R19 damage owner first. Canonical `hurtPlayer()` remains the fallback, and the post-call guarantee remains a backstop. The route preserves one-HEALTH trap damage, armour, XP boundaries and canonical damage/death handling.
 
-The original seven-item repository defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The later #2129 sustained-Solo acceptance is also still deferred. Startup ownership has progressed beyond #2164 through #2180, #2182 and #2185. Exact-head automated qualification is green, and deployed current `main` `073ee3df35cd3982ceb04676619792d69a28e0e3` passed the push-triggered production smoke, GitHub Pages deployment and live public-navigation verification. Push Load Safety passed after one unchanged retry of shard 3, whose first attempt failed only in the existing `v10-28-browser-stability-deterministic.mjs` support contract. Only the documented hands-on startup acceptance remains for this startup workstream.
+Exact #2193 qualification passed CCG Site Safety, SEO Automation, C64 Dungeon Carnage itch.io Package, Public Code Cache Version, Native Mouse Wheel Scroll Contract, both dedicated Mobile Trap Layout jobs, canonical/Node contracts and all six Lost Sizzler Load Safety Chromium shards. The first shard-4 attempt saw one shock crossing sampled with only 36.5 ms left in its active phase; an unchanged shard-4 retry on exact head `03333f6e89381e018197b990664a1e25205e8f78` passed. No runtime, assertion or timeout was weakened.
+
+Latest qualified runtime/package artifact: `C64-Dungeon-Carnage-Itch`, artifact ID `10613960768`, 21,112,798 bytes, GitHub Actions SHA-256 `e930524390ef67cff4279b086e62e263c2f9119b7a25b9b2a36a94936d060d86`, workflow run `35538488484`, exact source head `03333f6e89381e018197b990664a1e25205e8f78`.
+
+Documentation PR #2191 is closed without merge as superseded because it recorded #2192 as the terminal trap checkpoint before #2193 disproved that assumption.
 
 Outstanding product gates:
 
-1. sustained Solo movement/firing/combat/pause-resume stability after #2129;
-2. three Artefacts/Essences → exactly one Banishment Flask without prior Gold-Flask purchase, with Gold and Score unchanged;
-3. deployed startup retest on current post-#2185 main: loader must transition directly to the final V10.42 menu with no compact/intermediate menu flash and no loader → page → loader pulse.
+1. deployed startup retest on current post-#2193 main: loader must transition directly to the final V10.42 menu with no compact/intermediate flash and no loader → page → loader pulse;
+2. sustained Solo movement/firing/combat/pause-resume stability after #2129;
+3. three Artefacts/Essences → exactly one Banishment Flask without prior Gold-Flask purchase, with Gold and Score unchanged;
+4. deployed mobile trap acceptance: naturally generated active spike/fire/shock contacts must remove exactly one HEALTH while armour remains unchanged.
 
 **MANUAL ACCEPTANCE REQUIRED — AUTOMATED TESTS DO NOT SUBSTITUTE FOR THESE GATES**
 
@@ -378,22 +384,23 @@ Historical Horde/Spy source files and acceptance records remain in the repositor
 
 ## Guardrails and exact next action
 
-Preserve Solo, Tutorial, local 2P Split Screen and Weekly Vault/account services. Do not restore retired networked Dungeon Multiplayer, Horde Survivor or Spy/Sizzler Saboteurs behaviour. Do not reopen completed Defects 1, 2, 3, 4, 6 or 7 without new current-build regression evidence. Preserve #2118 projectile lifecycle ownership, #2129 release/cache discipline and the explicit supported R56/R59/R60 startup ownership established by #2131.
+Preserve Solo, Tutorial, local 2P Split Screen and Weekly Vault/account services. Do not restore retired networked Dungeon Multiplayer, Horde Survivor or Spy/Sizzler Saboteurs behaviour. Do not reopen completed Defects 1, 2, 3, 4, 6 or 7 without new current-build regression evidence. Preserve #2118 projectile lifecycle ownership, #2129 release/cache discipline, the supported R56/R59/R60 startup ownership established by #2131, and the retained R19 trap-damage boundary established through #2193.
 
-The two live gates remain unresolved but are not the current development task:
+Repository coding for the currently reproduced Dungeon defects is complete. The remaining gates are hands-on product acceptance:
 
-- sustained Solo movement/firing/combat/pause-resume stability after #2129;
-- 3 Artefacts/Essences → 1 Banishment Flask without prior Gold purchase, with Gold and Score unchanged.
-
-For both: **MANUAL ACCEPTANCE DEFERRED — USER CURRENTLY UNAVAILABLE TO TEST**.
+- current deployed startup/menu transition after #2193;
+- sustained Solo movement/firing/combat/pause-resume stability;
+- 3 Artefacts/Essences → 1 Banishment Flask without prior Gold purchase, with Gold and Score unchanged;
+- deployed mobile natural spike/fire/shock damage with one HEALTH removed and armour preserved.
 
 Exact next Dungeon action:
 
-1. perform the deployed startup retest for #2185; if the flicker still reproduces, capture the exact sequence and reopen only the smallest responsible startup owner;
-2. if startup passes, complete sustained Solo movement/firing/combat/pause-resume acceptance;
+1. retest the deployed startup transition on current post-#2193 main;
+2. complete sustained Solo acceptance;
 3. complete the three-Artefact/Essence Banishment Flask exchange acceptance;
-4. after all hands-on gates pass, use the latest qualified itch.io artifact and complete the external itch.io page/upload/launch verification;
-5. do not create another Dungeon coding stage unless one of those hands-on checks exposes a real defect.
+4. complete deployed mobile natural-trap acceptance;
+5. after all hands-on gates pass, use the latest qualified itch.io artifact and complete the external itch.io page/upload/launch verification;
+6. do not create another Dungeon coding stage unless one of those hands-on checks exposes a reproducible current-build defect.
 
 ## Historical live-defect remediation checkpoint — 16 September 2026
 
@@ -406,6 +413,8 @@ Branch `codex/dungeon-projectile-lifecycle-current-main` was created from exact 
 #2118 added an ordered V10.42 projectile lifecycle owner that retires non-piercing enemy/generator impacts before downstream callbacks and sweeps expired player/enemy projectiles from a `finally` boundary. Focused deterministic coverage included direct enemy hits, 500 repeated impacts, an enemy-death callback fault and 2,400 sustained-fire ticks; the established Chromium held-fire contract remained part of the matrix.
 
 ## Session log
+
+- 2026-09-20: Qualified and merged #2193 from exact head `03333f6e89381e018197b990664a1e25205e8f78` as `992d19d39cd5ad7d5fb12116dda03d80df623e61`, closing the remaining mobile natural-trap detached/global damage-owner race. All required workflows passed; Load Safety shard 4 passed on one unchanged retry after the first attempt sampled a shock crossing only 36.5 ms from the active-phase boundary. Superseded documentation PR #2191 was closed without merge and a fresh post-#2193 reconciliation was started.
 
 - 2026-09-16: Reclassified #2062, #1960, #1959 and #1998 as superseded/obsolete; they were closed without merge.
 - 2026-09-16: Qualified #2102 head `dcb35f3e...`, including a successful unchanged rerun of one transient Site Safety/WebDriver timeout; merged #2102 and completed retained local-runtime extraction.
