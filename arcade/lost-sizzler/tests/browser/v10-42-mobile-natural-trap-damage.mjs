@@ -70,8 +70,11 @@ try{
   await page.goto(`${origin}/arcade/lost-sizzler/?mobile-natural-trap=1`,{waitUntil:"load"});
   await page.waitForFunction(()=>document.body.dataset.gameReady==="true");
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142R19MobileTrapLayoutStability));
+  await page.waitForLoadState("load");
+  await page.waitForFunction(()=>document.body.classList.contains("v104-touch-device")&&Boolean(document.getElementById("v104-touch-controls")));
   await page.locator("#solo-btn").click({noWaitAfter:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==="true");
+  await page.waitForFunction(()=>document.getElementById("menu")?.classList.contains("hidden")===true);
   const notice=page.locator("#ccg-mobile-pc-notice");
   if(await notice.isVisible()){
     await page.locator("#ccg-mobile-pc-accept").click({noWaitAfter:true});
@@ -79,7 +82,18 @@ try{
   }
   await page.waitForFunction(()=>Boolean(document.getElementById("v104-touch-controls")));
   await page.waitForTimeout(320);
-  await page.waitForFunction(()=>[...document.querySelectorAll("#v104-touch-controls .v104-touch-pad .v104-touch-btn")].every(button=>button.getBoundingClientRect().width>0&&button.getBoundingClientRect().height>0));
+  await page.waitForFunction(()=>{
+    const buttons=[...document.querySelectorAll("#v104-touch-controls .v104-touch-pad .v104-touch-btn")];
+    return buttons.length===4&&buttons.every(button=>button.getBoundingClientRect().width>0&&button.getBoundingClientRect().height>0);
+  });
+
+  await page.evaluate(()=>{
+    if(host){
+      host.enemies=[];
+      host.generators=[];
+      if(host.stalker)host.stalker.awake=false;
+    }
+  });
 
   await page.evaluate(()=>globalThis.eval(`(()=>{
     if(window.__ccgNaturalTrapProbe?.installed)return;
@@ -219,7 +233,7 @@ try{
     assert.ok(qualified,`real generated ${kind} trap did not produce a phase-stable touch contact within six natural active cycles`);
 
     await resetFixture(page,fixture);
-    await page.waitForTimeout(900);
+    await page.waitForTimeout(120);
   }
 
   assert.deepEqual(errors,[],`real mobile trap cycle must not raise browser errors: ${errors.join("\n")}`);
