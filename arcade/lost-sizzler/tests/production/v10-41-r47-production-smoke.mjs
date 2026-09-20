@@ -41,6 +41,49 @@ try{
   const context=await browser.newContext({viewport:{width:1440,height:900}}),page=await context.newPage();
   page.setDefaultTimeout(30000);
   const pageErrors=[];page.on("pageerror",error=>pageErrors.push(String(error?.stack||error)));
+  await page.addInitScript(()=>{
+    const audit={samples:0,preReadySamples:0,settledSamples:0,violations:[],postReadyReappear:[],firstReveal:null};
+    Object.defineProperty(window,"__CCGDungeonProductionStartupAudit",{value:audit,configurable:false,writable:false});
+    const buttons=()=>Object.fromEntries(["solo-btn","split-btn","tutorial-zone-btn","daily-btn"].map(id=>{
+      const element=document.getElementById(id),style=element?getComputedStyle(element):null;
+      return [id,style?{
+        color:style.color,
+        backgroundColor:style.backgroundColor,
+        borderTopColor:style.borderTopColor,
+        minHeight:style.minHeight,
+        padding:style.padding,
+        fontSize:style.fontSize,
+        fontFamily:style.fontFamily
+      }:null];
+    }));
+    const sample=()=>{
+      const loader=document.getElementById("ccg-release-loading");
+      const body=document.body;
+      if(loader&&body){
+        audit.samples++;
+        const style=getComputedStyle(loader),rect=loader.getBoundingClientRect();
+        const visible=!loader.hidden&&style.display!=="none"&&style.visibility!=="hidden"&&Number.parseFloat(style.opacity||"1")>0;
+        const coversViewport=style.position==="fixed"&&Number(style.zIndex||0)>1000000&&rect.left<=0&&rect.top<=0&&rect.right>=innerWidth&&rect.bottom>=innerHeight;
+        const releaseReady=body.dataset.releaseReady==="true";
+        const v142Ready=window.CCGLostSizzlerV142Bootstrap?.ready===true;
+        const finalLayout=document.querySelector("#menu .game-mode-buttons")?.dataset?.r55TextLayout==="true";
+        const authoritative=releaseReady&&v142Ready&&finalLayout;
+        const state={at:Math.round(performance.now()),visible,coversViewport,hidden:Boolean(loader.hidden),display:style.display,visibility:style.visibility,releaseReady,v142Ready,finalLayout};
+        if(!authoritative){
+          audit.preReadySamples++;
+          if(!visible||!coversViewport){
+            if(audit.violations.length<12)audit.violations.push(state);
+          }
+        }else if(!visible){
+          audit.settledSamples++;
+          if(!audit.firstReveal)audit.firstReveal={...state,buttons:buttons()};
+        }
+        if(audit.firstReveal&&visible&&audit.postReadyReappear.length<12)audit.postReadyReappear.push(state);
+      }
+      requestAnimationFrame(sample);
+    };
+    addEventListener("DOMContentLoaded",()=>requestAnimationFrame(sample),{once:true});
+  });
 
   console.log("[production smoke] wait for live release browser runtime and release markers");
   let live=null,lastError="",lastSnapshot=null;
@@ -88,6 +131,32 @@ try{
   assert.equal(live.canvas,true);
   assert.ok(["normal","reduced","severe"].includes(live.tier));
   assert.deepEqual(pageErrors,[],`live page emitted uncaught errors: ${pageErrors.join("\n")}`);
+
+  console.log("[production smoke] verify live startup never exposes an intermediate menu frame");
+  await page.waitForFunction(()=>document.querySelector("#menu .game-mode-buttons")?.dataset?.r55TextLayout==="true"&&document.getElementById("ccg-release-loading")?.hidden===true,null,{timeout:15000});
+  await page.evaluate(()=>new Promise(resolve=>setTimeout(resolve,750)));
+  const startupAudit=await page.evaluate(()=>{
+    const audit=window.__CCGDungeonProductionStartupAudit;
+    const buttons=Object.fromEntries(["solo-btn","split-btn","tutorial-zone-btn","daily-btn"].map(id=>{
+      const element=document.getElementById(id),style=element?getComputedStyle(element):null;
+      return [id,style?{
+        color:style.color,
+        backgroundColor:style.backgroundColor,
+        borderTopColor:style.borderTopColor,
+        minHeight:style.minHeight,
+        padding:style.padding,
+        fontSize:style.fontSize,
+        fontFamily:style.fontFamily
+      }:null];
+    }));
+    return {audit,buttons};
+  });
+  assert.ok(startupAudit.audit?.samples>0,"production startup audit must observe rendered frames");
+  assert.ok(startupAudit.audit?.preReadySamples>0,"production startup audit must observe at least one pre-ready rendered frame");
+  assert.deepEqual(startupAudit.audit?.violations||[],[],`loader must cover every rendered frame until final V10.42 menu readiness: ${JSON.stringify(startupAudit.audit?.violations||[])}`);
+  assert.ok(startupAudit.audit?.firstReveal,"production startup audit must observe the first authoritative menu reveal");
+  assert.deepEqual(startupAudit.audit?.postReadyReappear||[],[],`loader must not reappear after authoritative menu reveal: ${JSON.stringify(startupAudit.audit?.postReadyReappear||[])}`);
+  assert.deepEqual(startupAudit.buttons,startupAudit.audit.firstReveal.buttons,"main mode-button presentation must not change after the first authoritative menu reveal");
 
   console.log(`[production smoke] live runtime identity ${live.bootstrapBuild||"unknown"} / ${live.bootstrapCache||"unknown"}; public release identity ${live.current}`);
   console.log("[production smoke] verify deployed version.json matches the public release identity");
