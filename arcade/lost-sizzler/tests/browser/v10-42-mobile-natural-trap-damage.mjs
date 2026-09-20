@@ -44,8 +44,8 @@ async function touchButton(page,context,key,trapId){
     await cdp.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{x,y,radiusX:1,radiusY:1,force:1,id:1}]});
     activeAfterStart=await active();
     await page.waitForFunction(id=>{
-      const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
-      return Boolean(trap&&Number(p1.x)===Number(trap.x)&&Number(p1.y)===Number(trap.y));
+      const probe=window.__ccgNaturalTrapProbe;
+      return Boolean(probe&&String(probe.targetId)===String(id)&&(probe.calls||[]).length>0);
     },trapId,{timeout:1200,polling:"raf"});
     await cdp.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
   }finally{await cdp.detach()}
