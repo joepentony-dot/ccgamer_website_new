@@ -4,9 +4,9 @@
 
 The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
-## Current checkpoint — 19 September 2026
+## Current checkpoint — 20 September 2026
 
-Latest verified Dungeon runtime merge checkpoint is `073ee3df35cd3982ceb04676619792d69a28e0e3`, the merge of #2185 from exact qualified head `ee8bef501b26271d1e1f38ad33c6c275b3290aba`. #2185 follows #2180's early active-state loader-authority correction, #2181's production-smoke identity alignment and #2182's legacy-brand stale-badge guard. It prevents the authoritative V10.42 ordered bootstrap from restamping visible release presentation while the current version checker owns a stale-browser Update Available state. Stage 8 itch.io repository preparation remains complete through #2141, with the publication artifact superseded by the qualified post-#2185 runtime artifact recorded below.
+Latest verified Dungeon runtime merge checkpoint is `55fdc887bc05faec139b80a2567411b5c4339201`, the merge of #2188 from exact qualified head `57cdb1c24ec09bc266fcfebd3492fcfa3d9ed487`. #2190 is also present on main as `fab013b320ebdb1d9f2cb873ad26a3588f565655`, making first-run Tutorial mandatory with an explicit skip and restoring unobstructed mobile controls. #2188 closes the reproduced naturally-generated mobile trap damage defect at the synchronous `triggerTrap()` boundary while keeping R19 as the floor-trap damage semantics owner.
 
 Stage 1 is converged for the current product programme:
 
@@ -18,7 +18,10 @@ The programme is now milestone-first. General legacy residue remains backlog unl
 
 Historical integration cleanup: PR #1852 (long-running Solo stabilisation) and PR #1976 (R30 ownership-audit throttle optimisation) are closed without merge. Their Git history remains evidence/source material only; neither is an active current-main integration path.
 
-The original seven-item repository defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The later #2129 sustained-Solo acceptance is also still deferred. Startup ownership has progressed beyond #2164 through #2180, #2182 and #2185. Exact-head automated qualification is green, and deployed current `main` `073ee3df35cd3982ceb04676619792d69a28e0e3` passed the push-triggered production smoke, GitHub Pages deployment and live public-navigation verification. Push Load Safety passed after one unchanged retry of shard 3, whose first attempt failed only in the existing `v10-28-browser-stability-deterministic.mjs` support contract. Only the documented hands-on startup acceptance remains for this startup workstream.
+The original seven-item repository defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The later user-reproduced mobile trap defect is repository-complete through #2188; its exact-head dedicated mobile contract and the complete Load Safety matrix are green. The later #2129 sustained-Solo acceptance is also still deferred. Startup ownership has progressed beyond #2164 through #2180, #2182 and #2185. Exact-head automated qualification is green, and deployed current `main` `55fdc887bc05faec139b80a2567411b5c4339201` passed the push-triggered production smoke, GitHub Pages deployment and live public-navigation verification. Push Load Safety passed after one unchanged retry of shard 3, whose first attempt failed only in the existing `v10-28-browser-stability-deterministic.mjs` support contract. Only the documented hands-on startup acceptance remains for this startup workstream.
+
+
+Repository-complete mobile trap repair: #2188 proves naturally generated fire/spike/shock contacts remove exactly one HP while preserving armour and XP boundaries. No separate manual trap gate remains unless the defect reproduces again on the deployed build.
 
 Outstanding product gates:
 
