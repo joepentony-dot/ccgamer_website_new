@@ -6,7 +6,7 @@
 
   const STYLE_ID="ccg-v142-r19-mobile-trap-layout";
   const MONITOR_MS=80;
-  const state={timer:0,rearms:0,damageOwnerInstalls:0,trapHits:0,trapContactBlocks:0,trapProtectionBlocks:0,canvasAspectRepairs:0};
+  const state={timer:0,rearms:0,damageOwnerInstalls:0,trapTriggerOwnerInstalls:0,directTrapRepairs:0,trapHits:0,trapContactBlocks:0,trapProtectionBlocks:0,canvasAspectRepairs:0};
   const trapContacts=new Set();
   const trapDamageInFlight=new Set();
   const trapProtectionUntil=new Map();
@@ -34,6 +34,15 @@
     }
     return false
   }
+  function chainOwner(owner,marker){
+    const seen=new Set();let current=owner;
+    while(typeof current==="function"&&!seen.has(current)){
+      if(current?.[marker]===true)return current;
+      seen.add(current);current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null
+    }
+    return null
+  }
+
   function activeTrapContact(player){
     try{
       const now=performance.now();
@@ -75,7 +84,20 @@
       const beforeHealth=Number(player.health||0),beforeArmor=Number(player.armor||0);
       player.armor=0;
       let result;
-      try{result=current.apply(this,arguments)}finally{
+      try{
+        result=current.apply(this,arguments);
+        /* A validated active trap contact must not disappear inside a stale
+           outer protection owner. R56 already owns environmental invulnerability
+           recovery, so if the complete chain leaves HP untouched, resume at that
+           established owner instead of bypassing the damage/death pipeline. */
+        if(Number(player.health||0)===beforeHealth&&beforeHealth>0){
+          const environmentOwner=chainOwner(current,"__ccgV141R56EnvironmentDamage");
+          if(typeof environmentOwner==="function"&&environmentOwner!==current){
+            environmentOwner.call(this,player,amount,flash,source);
+            if(Number(player.health||0)<beforeHealth)state.directTrapRepairs++
+          }
+        }
+      }finally{
         player.armor=beforeArmor;
         if(contactKey)trapDamageInFlight.delete(contactKey)
       }
@@ -93,6 +115,32 @@
     wrapped.__ccgOriginal=current;
     window.hurtPlayer=wrapped;
     state.damageOwnerInstalls++;
+    return true
+  }
+
+  function installTrapTriggerOwner(){
+    const current=window.triggerTrap;
+    if(typeof current!=="function")return false;
+    if(chainHas(current,"__ccgV142R19TrapTriggerOwner"))return true;
+    const wrapped=function triggerTrapV142R19GuaranteedContact(player){
+      const contact=ordinaryDungeon()&&player?activeTrapContact(player):null;
+      const beforeHealth=Number(player?.health||0),beforeArmor=Number(player?.armor||0);
+      const result=current.apply(this,arguments);
+      if(contact&&beforeHealth>0&&Number(player?.health||0)===beforeHealth){
+        const damageOwner=chainOwner(window.hurtPlayer,"__ccgV142R19MobileTrapDamage");
+        if(typeof damageOwner==="function"){
+          damageOwner.call(this,player,1,false,`${String(contact.trap?.kind||"floor")} trap`);
+          if(Number(player?.health||0)<beforeHealth)state.directTrapRepairs++
+        }
+      }
+      /* R19 owns health semantics only; never let a repair consume armour. */
+      if(contact&&Number(player?.armor||0)!==beforeArmor)player.armor=beforeArmor;
+      return result
+    };
+    wrapped.__ccgV142R19TrapTriggerOwner=true;
+    wrapped.__ccgOriginal=current;
+    window.triggerTrap=wrapped;
+    state.trapTriggerOwnerInstalls++;
     return true
   }
 
@@ -343,15 +391,17 @@
   function tick(){
     installPortraitLayout();
     installTrapDamageOwner();
+    installTrapTriggerOwner();
     rearmInactiveTrapContacts();
     syncPortraitCanvasAspect();
   }
 
   installPortraitLayout();
   installTrapDamageOwner();
+  installTrapTriggerOwner();
   tick();
   state.timer=setInterval(()=>{try{tick()}catch(error){console.warn("[C64 Dungeon Carnage r19] mobile stability tick failed safely",error)}},MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
-  window.CCGLostSizzlerV142R19MobileTrapLayoutStability={installPortraitLayout,installTrapDamageOwner,rearmInactiveTrapContacts,syncPortraitCanvasAspect,trapActive,get state(){return state}};
+  window.CCGLostSizzlerV142R19MobileTrapLayoutStability={installPortraitLayout,installTrapDamageOwner,installTrapTriggerOwner,rearmInactiveTrapContacts,syncPortraitCanvasAspect,trapActive,get state(){return state}};
 })();
