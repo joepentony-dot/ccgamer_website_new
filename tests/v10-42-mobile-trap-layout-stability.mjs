@@ -31,6 +31,7 @@ assert.match(source,/trapContacts\.add\(contactKey\)/,"successful trap health da
 assert.match(source,/trapDamageOwner=wrapped/,"a newly installed R19 damage owner must be retained independently of mutable window ownership");
 assert.match(source,/trapDamageOwner\|\|chainOwner\(window\.hurtPlayer,"__ccgV142R19MobileTrapDamage"\)/,"trap repair must prefer the retained R19 owner during a transient wrapper race");
 assert.match(source,/function withValidatedTrapContact\(player,trap,callback\)/,"R19 must expose one synchronous validated-contact scope for canonical trap damage");
+assert.match(source,/function damageValidatedTrapContact\(player,trap\)/,"R19 must expose one stable retained damage route for a caller-validated floor trap");
 assert.match(source,/function guaranteeTrapContactDamage\(player,trap,beforeHealth,beforeArmor\)/,"R19 must expose one stable synchronous floor-trap repair boundary");
 assert.match(source,/trapContacts\.delete\(contactKey\)/,"leaving or deactivating a trap must re-arm the contact latch");
 assert.match(source,/const beforeHealth=Number\(player\.health\|\|0\),beforeArmor=Number\(player\.armor\|\|0\)/,"trap damage owner must snapshot health and armour");
@@ -62,8 +63,8 @@ assert.match(gameplaySource,/function movePlayer\(p,dx,dy,dash=false\)[\s\S]*?mo
 assert.match(gameplaySource,/function movementTriggers\(p\)[\s\S]*?triggerTrap\(p\)/,"movement trigger boundary must include floor traps");
 const trapFunction=gameplaySource.match(/function triggerTrap\(p\)\{[^\n]+\}/)?.[0]||"";
 assert.match(trapFunction,/SYS\.trapActive\(t,now\)/,"floor trap boundary must require an active trap cycle");
-assert.match(trapFunction,/withValidatedTrapContact===["\']function["\'][\s\S]*?withValidatedTrapContact\(p,t,\(\)=>hurtPlayer\(p,1,false,`\$\{t\.kind\} trap`\)\)/,"active floor trap movement must carry the already-validated contact through the first hurtPlayer call");
-assert.match(trapFunction,/else hurtPlayer\(p,1,false,`\$\{t\.kind\} trap`\)/,"canonical trap damage must retain the direct hurtPlayer fallback when the R19 helper is unavailable");
+assert.match(trapFunction,/damageValidatedTrapContact===["\']function["\'][\s\S]*?damageValidatedTrapContact\(p,t\)/,"active floor trap movement must route the already-validated contact through the retained R19 damage owner first");
+assert.match(trapFunction,/if\(!routed\)hurtPlayer\(p,1,false,`\$\{t\.kind\} trap`\)/,"canonical trap damage must retain direct hurtPlayer only as the fallback when R19 cannot route the validated contact");
 assert.match(trapFunction,/trapStability\?\.guaranteeTrapContactDamage\?\.\(p,t,beforeHealth,beforeArmor\)/,"canonical triggerTrap must hand a missed active contact to the stable R19 repair API");
 assert.doesNotMatch(trapFunction,/\b(?:gainXp|addXp|grantXp|awardXp|awardXP)\b/,"canonical floor trap movement must not award progression XP");
 
@@ -177,6 +178,19 @@ assert.equal(afterReinstallStats.depth,beforeReinstallStats.depth,"guard install
 assert.equal(context.CCGLostSizzlerV142R19MobileTrapLayoutStability.state.damageOwnerInstalls,initialInstalls,"bounded ownership must not record a duplicate R19 installation");
 context.CCGLostSizzlerV142R19MobileTrapLayoutStability.installTrapDamageOwner();
 assert.deepEqual(chainStats(context.hurtPlayer),afterReinstallStats,"repeated guarded installation must keep wrapper depth and R19 ownership stable");
+
+// A later owner can temporarily replace the global damage function without
+// retaining R19 in its visible ancestry. Canonical floor traps must still use
+// the retained R19 owner rather than taking an armour-only hit first.
+const detachedGlobalHurt=context.hurtPlayer.__ccgOriginal?.__ccgOriginal||context.hurtPlayer.__ccgOriginal||context.hurtPlayer;
+context.hurtPlayer=detachedGlobalHurt;
+context.SYS.trapActive=()=>false;
+const detachedBeforeHealth=player.health,detachedBeforeArmor=player.armor;
+assert.equal(context.CCGLostSizzlerV142R19MobileTrapLayoutStability.damageValidatedTrapContact(player,trap),true,"retained R19 owner must remain callable when the visible global hurtPlayer owner is detached");
+assert.equal(player.health,detachedBeforeHealth-1,"detached global hurtPlayer must not turn a validated floor trap into an armour-only hit");
+assert.equal(player.armor,detachedBeforeArmor,"retained validated trap route must preserve armour");
+player.x=3;context.CCGLostSizzlerV142R19MobileTrapLayoutStability.rearmInactiveTrapContacts();player.x=4;player.health=detachedBeforeHealth;player.invuln=0;
+context.hurtPlayer=lateRepairOwner;
 
 // A trap that was active at canonical triggerTrap() may cross the phase boundary
 // before the retained R19 owner runs. Both the first hurtPlayer path and the
