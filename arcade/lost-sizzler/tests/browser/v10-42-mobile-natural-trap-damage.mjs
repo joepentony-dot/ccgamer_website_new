@@ -91,17 +91,31 @@ try{
         const now=performance.now(),period=Math.max(1,Number(trap.period||1));
         const phase=(now+Number(trap.phase||0))%period;
         const active=Boolean(SYS.trapActive(trap,now));
+        const r19=window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||{};
         sample={
           at:now,active,phase,period,
           remainingActiveMs:active?Math.max(0,period*.46-phase):0,
           beforeHealth:Number(player.health||0),beforeArmor:Number(player.armor||0),
-          x:Number(player.x),y:Number(player.y)
+          x:Number(player.x),y:Number(player.y),
+          r19Before:{
+            trapHits:Number(r19.trapHits||0),
+            trapContactBlocks:Number(r19.trapContactBlocks||0),
+            trapProtectionBlocks:Number(r19.trapProtectionBlocks||0),
+            damageOwnerInstalls:Number(r19.damageOwnerInstalls||0)
+          }
         };
       }
       const result=previous.apply(this,arguments);
       if(sample){
+        const r19=window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||{};
         sample.afterHealth=Number(player.health||0);
         sample.afterArmor=Number(player.armor||0);
+        sample.r19After={
+          trapHits:Number(r19.trapHits||0),
+          trapContactBlocks:Number(r19.trapContactBlocks||0),
+          trapProtectionBlocks:Number(r19.trapProtectionBlocks||0),
+          damageOwnerInstalls:Number(r19.damageOwnerInstalls||0)
+        };
         probe.calls.push(sample);
       }
       return result;
