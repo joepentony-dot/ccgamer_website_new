@@ -135,6 +135,14 @@
     finally{validatedTrapContact=previousValidatedContact}
   }
 
+  function damageValidatedTrapContact(player,trap){
+    if(!ordinaryDungeon()||!player||!trap)return false;
+    const damageOwner=trapDamageOwner||chainOwner(window.hurtPlayer,"__ccgV142R19MobileTrapDamage");
+    if(typeof damageOwner!=="function")return false;
+    withValidatedTrapContact(player,trap,()=>damageOwner.call(window,player,1,false,`${String(trap.kind||"floor")} trap`));
+    return true
+  }
+
   function guaranteeTrapContactDamage(player,trap,beforeHealth,beforeArmor){
     if(!ordinaryDungeon()||!player||!trap||beforeHealth<=0)return false;
     /* Both callers enter only after proving this exact trap contact was active.
@@ -434,5 +442,5 @@
   state.timer=setInterval(()=>{try{tick()}catch(error){console.warn("[C64 Dungeon Carnage r19] mobile stability tick failed safely",error)}},MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
-  window.CCGLostSizzlerV142R19MobileTrapLayoutStability={installPortraitLayout,installTrapDamageOwner,installTrapTriggerOwner,withValidatedTrapContact,guaranteeTrapContactDamage,rearmInactiveTrapContacts,syncPortraitCanvasAspect,trapActive,get state(){return state}};
+  window.CCGLostSizzlerV142R19MobileTrapLayoutStability={installPortraitLayout,installTrapDamageOwner,installTrapTriggerOwner,withValidatedTrapContact,damageValidatedTrapContact,guaranteeTrapContactDamage,rearmInactiveTrapContacts,syncPortraitCanvasAspect,trapActive,get state(){return state}};
 })();
