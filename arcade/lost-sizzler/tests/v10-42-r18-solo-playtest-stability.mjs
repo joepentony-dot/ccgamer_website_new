@@ -12,6 +12,7 @@ const main=read("js/game-main.js");
 
 assert.match(bootstrap,/v10-42-r1-stability\.js[\s\S]*v10-42-r18-solo-playtest-stability\.js/,"r18 must load after the established V10.42 stability layer");
 assert.match(fix,/installInteractionXPSourceContract/,"r18 composition must install the frozen door and switch XP-source guard");
+assert.match(fix,/function activeRun\(\)[\s\S]*run&&host&&p1[\s\S]*document\.body\.dataset\.runActive="true"/,"late combat repair must remain attached to a real run even if the presentation flag becomes stale");
 assert.match(fix,/Hidden wall opened[\s\S]*Bronze door unlocked[\s\S]*Hidden wall switch[\s\S]*Gate switch opened/,"r18 composition must preserve all four blocked interaction XP reasons");
 assert.match(fix,/CCGLostSizzlerXPSourceContract/,"r18 composition must expose the interaction XP-source contract for browser verification");
 assert.match(fix,/hurtPlayer=function\(player,\.\.\.args\)\{repairPlayer\(player\)/,"player damage must repair stale invulnerability at the damage boundary");
