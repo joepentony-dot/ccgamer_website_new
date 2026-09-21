@@ -439,6 +439,9 @@ try{
   });
   await touchPage.locator("#inventory-close").click();
   await touchPage.waitForFunction(()=>mode==="playing");
+  await touchPage.waitForFunction(()=>document.body.dataset.runActive==="true");
+  await fireButton.waitFor({state:"visible",timeout:5000});
+  assert.equal(await touchPage.evaluate(()=>String(document.body.dataset.v142R20PresentationResume||"").startsWith("inventory-close")),true,"inventory close must restore the live mobile presentation boundary before FIRE");
   assert.equal(await armEnemy(touchPage),true,"post-inventory mobile FIRE enemy unavailable");
   const beforeInventoryFire=await snap(touchPage);
   await fireButton.tap();
@@ -456,6 +459,9 @@ try{
   });
   await touchPage.locator("#resume-btn").click();
   await touchPage.waitForFunction(()=>mode==="playing");
+  await touchPage.waitForFunction(()=>document.body.dataset.runActive==="true");
+  await fireButton.waitFor({state:"visible",timeout:5000});
+  assert.equal(await touchPage.evaluate(()=>String(document.body.dataset.v142R20PresentationResume||"").startsWith("pause-close")),true,"pause close must restore the live mobile presentation boundary before FIRE");
   assert.equal(await armEnemy(touchPage),true,"post-pause mobile FIRE enemy unavailable");
   const beforePauseFire=await snap(touchPage);
   await fireButton.tap();
