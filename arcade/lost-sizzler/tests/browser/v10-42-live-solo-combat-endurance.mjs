@@ -421,14 +421,17 @@ try{
   assert.ok(soakElapsed>=300000,`five-minute mobile FIRE soak ended too early: ${soakElapsed}ms`);
   console.log(`Five-minute mobile FIRE soak completed ${soakShots} individually verified attacks over ${soakElapsed}ms.`);
 
-  const postSoakMode=await touchPage.evaluate(()=>String(typeof mode!=="undefined"?mode:""));
-  if(postSoakMode==="paused"){
-    await touchPage.locator("#resume-btn").click();
-    await touchPage.waitForFunction(()=>mode==="playing");
-  }else{
-    await settleGameplayMode(touchPage,"pre-inventory dwell");
-  }
-  assert.equal(await touchPage.evaluate(()=>String(mode)),"playing","post-soak qualification must resume normal play before inventory dwell");
+  const ratingBoundary=await touchPage.evaluate(()=>({
+    mode:String(typeof mode!=="undefined"?mode:""),
+    visible:!document.getElementById("ccg-rating-panel")?.classList.contains("hidden"),
+    rail:document.getElementById("ccg-rating-panel")?.classList.contains("ccg-rating-rail")===true,
+    overlay:document.getElementById("ccg-rating-panel")?.classList.contains("overlay")===true
+  }));
+  assert.equal(ratingBoundary.mode,"playing",`five-minute rating boundary must not pause active mobile gameplay: ${JSON.stringify(ratingBoundary)}`);
+  assert.equal(ratingBoundary.visible,true,"five-minute rating prompt should become visible after the sustained mobile run");
+  assert.equal(ratingBoundary.rail,true,"five-minute rating prompt must use the non-blocking message rail");
+  assert.equal(ratingBoundary.overlay,false,"five-minute rating prompt must not become a blocking mobile overlay");
+  await settleGameplayMode(touchPage,"pre-inventory dwell");
   await touchPage.evaluate(()=>toggleInventory());
   await touchPage.waitForFunction(()=>mode==="inventory");
   await touchPage.waitForTimeout(5500);
