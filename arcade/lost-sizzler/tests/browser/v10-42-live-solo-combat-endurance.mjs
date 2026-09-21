@@ -98,6 +98,30 @@ async function fireCycle(page,key,round){
   return after;
 }
 
+async function directQueueAttackCycle(page,round){
+  await settleGameplayMode(page,`round ${round} before direct queue attack`);
+  const before=await snap(page);
+  const queued=await page.evaluate(()=>{
+    if(!p1||typeof queueAttack!=="function")return false;
+    queueAttack(p1);
+    input.add("Space");
+    return true;
+  });
+  assert.equal(queued,true,`round ${round}: mobile-style direct queue attack route unavailable`);
+  await page.waitForTimeout(520);
+  await page.evaluate(()=>input.delete("Space"));
+  await page.waitForTimeout(140);
+  await settleGameplayMode(page,`round ${round} after direct queue attack`);
+  const after=await snap(page);
+  assert.equal(after.active,"true",`round ${round}: run deactivated during direct queue attack`);
+  assert.ok(after.elapsed>before.elapsed,`round ${round}: simulation stopped during direct queue attack`);
+  assert.ok(after.projectileSteps>before.projectileSteps||after.mana<before.mana,`round ${round}: mobile-style direct queue attack produced no attack/projectile work`);
+  assert.equal(after.lifecycleOwner,true,`round ${round}: projectile lifecycle ownership changed during direct queue attack`);
+  assert.equal(after.updateFaults,before.updateFaults,`round ${round}: update fault appeared during direct queue attack`);
+  assert.equal(after.renderFaults,before.renderFaults,`round ${round}: render fault appeared during direct queue attack`);
+  return after;
+}
+
 try{
   const context=await browser.newContext({viewport:{width:1440,height:900}});
   // The endurance contract owns runtime/frame/firing behaviour, not live account
@@ -117,11 +141,11 @@ try{
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap&&document.body,null,{timeout:20000});
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
   const boot=await page.evaluate(()=>({ready:CCGLostSizzlerV142Bootstrap.ready,failed:CCGLostSizzlerV142Bootstrap.failed,error:CCGLostSizzlerV142Bootstrap.error||"",build:CCGLostSizzlerV142Bootstrap.build,cache:CCGLostSizzlerV142Bootstrap.cache,metaBuild:document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content,metaCache:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content,ordered:[...document.querySelectorAll('script[data-ccg-v142-ordered="true"]')].map(s=>s.src)}));
-  assert.equal(boot.failed,false,`r39 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r39 ordered bootstrap must complete");
-  assert.equal(boot.build,"V10.42 r39");assert.equal(boot.cache,"20260921r39");assert.equal(boot.metaBuild,"V10.42 r39");assert.equal(boot.metaCache,"20260921r39");
-  assert.ok(boot.ordered.length>=30,"r39 bootstrap must load the complete ordered V10.42 chain");
-  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260921r39"),"every ordered V10.42 module must use the r39 cache token");
-  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260921r39")),"expected r39 projectile lifecycle asset was not requested");
+  assert.equal(boot.failed,false,`r40 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r40 ordered bootstrap must complete");
+  assert.equal(boot.build,"V10.42 r40");assert.equal(boot.cache,"20260921r40");assert.equal(boot.metaBuild,"V10.42 r40");assert.equal(boot.metaCache,"20260921r40");
+  assert.ok(boot.ordered.length>=30,"r40 bootstrap must load the complete ordered V10.42 chain");
+  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260921r40"),"every ordered V10.42 module must use the r39 cache token");
+  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260921r40")),"expected r40 projectile lifecycle asset was not requested");
   assert.equal(await page.evaluate(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.ownsBoundary?.()===true),true,"#2118 lifecycle owner must be authoritative before play");
 
   await page.evaluate(()=>{const hb=window.__ccgEnduranceHeartbeat={frames:0,stalls:0,maxGap:0,last:0};const beat=t=>{if(hb.last){const gap=t-hb.last;hb.maxGap=Math.max(hb.maxGap,gap);if(gap>300)hb.stalls++}hb.last=t;hb.frames++;requestAnimationFrame(beat)};requestAnimationFrame(beat)});
@@ -186,6 +210,51 @@ try{
       assert.equal(await armEnemy(page),true,"extended-pause Numpad0 recovery enemy unavailable");
       await fireCycle(page,"Numpad0",4803);
     }
+    if(round===64){
+      await page.evaluate(()=>toggleInventory());
+      await page.waitForFunction(()=>mode==="inventory"&&!document.getElementById("inventory-panel")?.classList.contains("hidden"));
+      await page.waitForTimeout(5500);
+      const inventoryPoison=await page.evaluate(()=>{
+        fire1=4000;fireBuffer1=700;projectileCD=700;
+        input.add("Space");input.add("KeyF");input.add("Numpad0");
+        window.CCGLostSizzlerV142AttackHoldLiveness?.held?.add?.("KeyF");
+        p1.controlLocked=true;p1.controlsLocked=true;p1.hitStunMs=7000;
+        return{
+          mode:String(mode),fire1:Number(fire1),buffer:Number(fireBuffer1),projectileCD:Number(projectileCD),
+          held:Number(window.CCGLostSizzlerV142AttackHoldLiveness?.held?.size||0),
+          controlLocked:Boolean(p1.controlLocked),controlsLocked:Boolean(p1.controlsLocked),hitStunMs:Number(p1.hitStunMs)
+        };
+      });
+      assert.equal(inventoryPoison.mode,"inventory","extended inventory regression must remain inside the inventory boundary while stale attack state is seeded");
+      assert.ok(inventoryPoison.fire1>0&&inventoryPoison.buffer>0&&inventoryPoison.projectileCD>0&&inventoryPoison.held>0,"extended inventory regression failed to reproduce stale attack ownership");
+      assert.equal(inventoryPoison.controlLocked,true,"extended inventory regression failed to seed the primary control lock");
+      assert.equal(inventoryPoison.controlsLocked,true,"extended inventory regression failed to seed the aliased control lock");
+      await page.locator("#inventory-close").click();
+      await page.waitForFunction(()=>mode==="playing"&&document.getElementById("inventory-panel")?.classList.contains("hidden"));
+      await page.waitForTimeout(120);
+      const inventoryRecovered=await page.evaluate(()=>({
+        fire1:Number(fire1),buffer:Number(fireBuffer1),projectileCD:Number(projectileCD),
+        space:input.has("Space"),keyF:input.has("KeyF"),numpad0:input.has("Numpad0"),
+        held:Number(window.CCGLostSizzlerV142AttackHoldLiveness?.held?.size||0),
+        controlLocked:Boolean(p1.controlLocked),controlsLocked:Boolean(p1.controlsLocked),hitStunMs:Number(p1.hitStunMs),
+        lastReset:String(window.__CCG_PAUSE_ATTACK_LAST_RESET__?.reason||"")
+      }));
+      assert.equal(inventoryRecovered.fire1,0,"extended inventory resume must clear stale P1 fire cadence");
+      assert.equal(inventoryRecovered.buffer,0,"extended inventory resume must clear stale attack buffer");
+      assert.ok(Number.isFinite(inventoryRecovered.projectileCD)&&inventoryRecovered.projectileCD>=0&&inventoryRecovered.projectileCD<=70,`extended inventory resume must restore normal live projectile cadence, got ${inventoryRecovered.projectileCD}`);
+      assert.equal(inventoryRecovered.space,false,"extended inventory resume must clear canonical Space ownership");
+      assert.equal(inventoryRecovered.keyF,false,"extended inventory resume must clear KeyF alias ownership");
+      assert.equal(inventoryRecovered.numpad0,false,"extended inventory resume must clear Numpad0 alias ownership");
+      assert.equal(inventoryRecovered.held,0,"extended inventory resume must clear the independent held-attack owner");
+      assert.equal(inventoryRecovered.controlLocked,false,"extended inventory resume must clear the primary player control lock");
+      assert.equal(inventoryRecovered.controlsLocked,false,"extended inventory resume must clear the aliased player control lock");
+      assert.equal(inventoryRecovered.hitStunMs,0,"extended inventory resume must clear a stale over-limit hit-stun lock");
+      assert.ok(inventoryRecovered.lastReset.startsWith("inventory-close"),`inventory close must own the combat resume reset, got ${inventoryRecovered.lastReset}`);
+      assert.equal(await armEnemy(page),true,"extended-inventory direct queue recovery enemy unavailable");
+      await directQueueAttackCycle(page,6401);
+      assert.equal(await armEnemy(page),true,"extended-inventory keyboard recovery enemy unavailable");
+      await fireCycle(page,"Space",6402);
+    }
   }
 
   await settleGameplayMode(page,"post-cycle");assert.equal(await armEnemy(page),true,"post-cycle enemy unavailable");
@@ -205,7 +274,7 @@ try{
   assert.deepEqual(consoleErrors,[],`console errors:\n${consoleErrors.join("\n")}`);
 
   console.log("DUNGEON_R30_SOLO_ENDURANCE",JSON.stringify({initial,final,requests:v142Requests.length}));
-  console.log("Dungeon Carnage V10.42 r39 live Solo combat endurance regression passed.");
+  console.log("Dungeon Carnage V10.42 r40 live Solo combat endurance regression passed.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
