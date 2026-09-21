@@ -271,8 +271,8 @@ try{
       console.log("MOBILE_NATURAL_TRAP_TOUCH",JSON.stringify({kind,attempt,fixture,touchWindow,after}));
 
       const stableCrossing=after.trapCalls.find(call=>call.active);
-      if(stableCrossing&&Number(stableCrossing.afterHealth)===fixture.before.health-1){
-        assert.equal(Number(stableCrossing.afterArmor),fixture.before.armor,`real generated ${kind} trap must preserve armour at the exact active trap crossing`);
+      if(stableCrossing&&Number(stableCrossing.afterHealth)===Number(stableCrossing.beforeHealth)-1){
+        assert.equal(Number(stableCrossing.afterArmor),Number(stableCrossing.beforeArmor),`real generated ${kind} trap must preserve armour at the exact active trap crossing`);
         qualified={attempt,touchWindow,stableCrossing,after};
         break;
       }
