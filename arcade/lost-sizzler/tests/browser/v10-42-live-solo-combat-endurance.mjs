@@ -440,7 +440,7 @@ try{
     fire1=4000;fireBuffer1=700;projectileCD=700;
     p1.hitStunMs=180;p1.__ccgLastHurtAt=performance.now()-2000;
   });
-  await touchPage.locator("#inventory-close").click();
+  const mobileInventoryReturn=touchPage.locator("#ccg-mobile-inventory-return");\n  await mobileInventoryReturn.waitFor({state:"visible",timeout:5000});\n  await mobileInventoryReturn.click();
   await touchPage.waitForFunction(()=>mode==="playing");
   await touchPage.waitForFunction(()=>document.body.dataset.runActive==="true");
   assert.equal(await touchPage.evaluate(()=>document.getElementById("v104-touch-controls")?.classList.contains("active")===true),true,"inventory close must re-arm the mobile control dock before FIRE");
