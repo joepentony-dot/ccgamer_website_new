@@ -46,7 +46,7 @@
   }
   startV142ReleaseGuard();
 
-  /* Start the 92%-freeze protection before version-check can inject V10.36.
+  /* Start the late-loading freeze protection before version-check can inject V10.36.
    * The guard itself waits for the release gate/V10.36 hook, so loading it this
    * early is safe and removes any race with the sequential enhancement queue. */
   if(!document.querySelector('script[data-ccg-v141-startup-freeze-guard="true"]')){
