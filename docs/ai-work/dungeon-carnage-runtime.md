@@ -25,7 +25,7 @@ Stage 1 remains converged through #2134/#2135, Stage 2 through #2136, and the or
 
 Exact-head qualification passed Site Safety, SEO, structured/social metadata, itch.io package, cache/version, dedicated mobile trap/layout, native mouse-wheel and Lost Sizzler Load Safety. On the first shard-1 attempt, the sustained Solo timing/ownership soak passed, the live Solo combat endurance contract passed, and the real five-minute mobile FIRE soak completed 15 individually verified attacks over 305,028 ms. The contract later hit an unchanged Playwright `#resume-btn` locator timeout during the post-soak pause step. One unchanged failed-job retry on the same exact head passed canonical/Node plus all six Chromium shards. No runtime, gameplay assertion or timeout was weakened.
 
-Latest qualified runtime/package artifact (pre-r46 historical checkpoint): `C64-Dungeon-Carnage-Itch`, artifact ID `10619910820`, 21,113,583 bytes, GitHub Actions SHA-256 `d9c38662244d2a3de40c2f5eeddcdd594e863eb222dfc5ac2b5beb650bf0b624`, workflow run `35553635187`, exact source head `dac8819a646dfd9ec0e0669f669903157a280ff6`.
+Latest qualified runtime/package artifact: `C64-Dungeon-Carnage-Itch`, artifact ID `10665815712`, 21,121,606 bytes, GitHub Actions SHA-256 `df779a234219af99ebfb56da8393defd11db30aca64e956711f4b65884deac50`, workflow run `35656738189`, exact source head `d27d714f5d15757e360ce27b49b4d185e379e56d`, merged by #2222 as `cbbf9a97eb1f83c21eea3a519fd707af28be22bd`.
 
 ### Mobile natural-trap remediation — #2188 / #2192 / #2193 / #2198 / #2201
 
@@ -40,7 +40,7 @@ The user-reproduced mobile defect was that naturally generated floor traps could
 
 Exact #2193 qualification passed CCG Site Safety, SEO Automation, C64 Dungeon Carnage itch.io Package, Public Code Cache Version, Native Mouse Wheel Scroll Contract, both dedicated Mobile Trap Layout jobs, canonical/Node contracts and all six Lost Sizzler Load Safety Chromium shards. The first shard-4 attempt saw one shock crossing sampled with only 36.5 ms left in its active phase; an unchanged shard-4 retry on exact head `03333f6e89381e018197b990664a1e25205e8f78` passed. No runtime, assertion or timeout was weakened.
 
-Latest qualified runtime/package artifact: `C64-Dungeon-Carnage-Itch`, artifact ID `10619910820`, 21,113,583 bytes, GitHub Actions SHA-256 `d9c38662244d2a3de40c2f5eeddcdd594e863eb222dfc5ac2b5beb650bf0b624`, workflow run `35553635187`, exact source head `dac8819a646dfd9ec0e0669f669903157a280ff6`.
+Historical pre-r46 qualified runtime/package artifact: `C64-Dungeon-Carnage-Itch`, artifact ID `10619910820`, 21,113,583 bytes, GitHub Actions SHA-256 `d9c38662244d2a3de40c2f5eeddcdd594e863eb222dfc5ac2b5beb650bf0b624`, workflow run `35553635187`, exact source head `dac8819a646dfd9ec0e0669f669903157a280ff6`.
 
 Documentation PR #2191 is closed without merge as superseded because it recorded #2192 as the terminal trap checkpoint before #2193 disproved that assumption.
 
