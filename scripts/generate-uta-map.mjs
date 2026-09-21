@@ -187,6 +187,7 @@ export function matchGameToUta(game, utaReleases) {
   if (!titleCandidates.length) return { releases: [], review: [] };
 
   const credits = getPublisherCredits(game);
+  const gameYear = Number(game?.year) || null;
   const accepted = [];
   const rejected = [];
 
@@ -195,13 +196,20 @@ export function matchGameToUta(game, utaReleases) {
     if (credits.original.has(release.publisherKey)) sourceRole = "publisher";
     else if (credits.rerelease.has(release.publisherKey)) sourceRole = "re-release";
 
-    if (sourceRole) {
+    const hasKnownYears = Boolean(gameYear && release.year);
+    const yearCompatible = !hasKnownYears
+      || (sourceRole === "publisher" && Math.abs(release.year - gameYear) <= 1)
+      || (sourceRole === "re-release" && release.year >= gameYear - 1);
+
+    if (sourceRole && yearCompatible) {
       accepted.push(releaseForOutput(release, sourceRole));
     } else {
       rejected.push({
         archiveId: release.archiveId,
         publisher: release.publisher,
         yearLabel: release.yearLabel,
+        publisherMatched: Boolean(sourceRole),
+        yearCompatible: yearCompatible,
         url: release.url
       });
     }
@@ -221,9 +229,11 @@ export function matchGameToUta(game, utaReleases) {
     year: Number(game?.year) || null,
     knownPublishers: Array.from(credits.original.values()),
     knownReReleasers: Array.from(credits.rerelease.values()),
-    reason: uniqueAccepted.length
-      ? "additional-title-match-publisher-not-in-game-data"
-      : "title-match-publisher-not-in-game-data",
+    reason: rejected.some((candidate) => candidate.publisherMatched && !candidate.yearCompatible)
+      ? "title-publisher-match-year-needs-review"
+      : (uniqueAccepted.length
+        ? "additional-title-match-publisher-not-in-game-data"
+        : "title-match-publisher-not-in-game-data"),
     excludedCandidates: rejected
   }] : [];
 
