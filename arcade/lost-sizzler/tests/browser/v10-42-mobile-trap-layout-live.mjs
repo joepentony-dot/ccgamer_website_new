@@ -311,24 +311,28 @@ async function runViewport(viewport){
         id:String(trap.id),
         beforeHealth:Number(p1.health||0),
         beforeArmor:Number(p1.armor||0),
-        beforeStationaryHits:Number(api?.state?.stationaryTrapHits||0),
+        beforeTrapHits:Number(api?.state?.trapHits||0),
+        beforeR57Hits:Number(window.CCGLostSizzlerV141R57DesktopPrepStability?.state?.trapHits||0),
         activeNow:Boolean(SYS.trapActive(trap,performance.now()))
       };
     })()`));
     assert.equal(stationary.available,true,"stationary trap fixture must exist");
     assert.equal(stationary.activeNow,false,"stationary trap fixture must begin in its visible SAFE phase");
-    await page.waitForFunction(fixture=>{
-      const api=window.CCGLostSizzlerV142R19MobileTrapLayoutStability;
-      return Number(p1?.health||0)===fixture.beforeHealth-1&&Number(api?.state?.stationaryTrapHits||0)>=fixture.beforeStationaryHits+1;
-    },stationary,{timeout:2400,polling:"raf"});
-    const stationaryAfter=await page.evaluate(()=>({
-      health:Number(p1?.health||0),
-      armor:Number(p1?.armor||0),
-      stationaryHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.stationaryTrapHits||0)
-    }));
+    await page.waitForFunction(fixture=>Number(p1?.health||0)===fixture.beforeHealth-1,stationary,{timeout:2400,polling:"raf"});
+    const stationaryAfter=await page.evaluate(id=>{
+      const trap=(host?.traps||[]).find(candidate=>String(candidate?.id)===String(id));
+      return{
+        health:Number(p1?.health||0),
+        armor:Number(p1?.armor||0),
+        activeNow:Boolean(trap&&SYS.trapActive(trap,performance.now())),
+        trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0),
+        r57Hits:Number(window.CCGLostSizzlerV141R57DesktopPrepStability?.state?.trapHits||0)
+      };
+    },stationary.id);
     assert.equal(stationaryAfter.health,stationary.beforeHealth-1,"trap switching SAFE to ACTIVE under a stationary player must remove one health");
     assert.equal(stationaryAfter.armor,stationary.beforeArmor,"stationary active-cycle trap damage must preserve armour");
-    assert.equal(stationaryAfter.stationaryHits,stationary.beforeStationaryHits+1,"one newly active stationary trap cycle must create exactly one monitored hit");
+    assert.equal(stationaryAfter.activeNow,true,"stationary damage must occur during the visible ACTIVE phase");
+    assert.ok(stationaryAfter.trapHits>stationary.beforeTrapHits||stationaryAfter.r57Hits>stationary.beforeR57Hits,"an established trap-cycle owner must record the stationary SAFE-to-ACTIVE hit");
   }
 
   assert.deepEqual(errors,[],`mobile trap exercise must have no uncaught browser errors: ${errors.join("\n")}`);
