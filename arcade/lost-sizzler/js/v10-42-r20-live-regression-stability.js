@@ -19,16 +19,34 @@
     doorLagFreezes:0,
     frameStalls:0,
     stallClampInstalls:0,
-    duplicateFramesDropped:0
+    duplicateFramesDropped:0,
+    presentationRepairs:0,
+    mobileFireFallbacks:0,
+    mobileFireReleases:0
   };
   const ATTACK_KEYS=new Set(["Space","KeyF","Numpad0"]);
   const STALL_MS=120;
   const CURSOR_IDLE_MS=1600;
   let cursorTimer=0,lastDoorTick=performance.now(),capturedR1FireOwner=null;
 
-  const activeRun=()=>document.body?.dataset?.runActive==="true";
   const panelVisible=id=>{const node=document.getElementById(id);return Boolean(node&&!node.classList.contains("hidden"))};
   const currentMode=()=>{try{return typeof mode!=="undefined"?String(mode):""}catch(_){return""}};
+  const liveSession=()=>{
+    try{
+      const live=Boolean(run&&host&&p1),state=currentMode();
+      return live&&!["menu","end"].includes(state)
+    }catch(_){return false}
+  };
+  function activeRun(){
+    if(document.body?.dataset?.runActive==="true")return true;
+    if(!liveSession())return false;
+    try{
+      document.body.dataset.runActive="true";
+      diagnostics.presentationRepairs++;
+      if(typeof focusGameplayKeyboard==="function")focusGameplayKeyboard()
+    }catch(_){}
+    return true
+  }
   const editableTarget=target=>Boolean(target instanceof Element&&(target.matches("input,textarea,select,[contenteditable='true'],[contenteditable='']")||target.closest("input,textarea,select,[contenteditable='true'],[contenteditable='']")));
   const finePointer=()=>window.matchMedia?.("(pointer: fine)")?.matches!==false;
   const spyActive=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")==="sizzler-saboteurs"}catch(_){return false}};
@@ -178,6 +196,32 @@
   },true);
   document.addEventListener("keyup",event=>{if(ATTACK_KEYS.has(event.code))try{input?.delete?.(event.code)}catch(_){}},true);
 
+  const mobileFirePointers=new Set();
+  document.addEventListener("pointerdown",event=>{
+    const button=event.target instanceof Element?event.target.closest('#v104-touch-controls [data-action="fire"]'):null;
+    if(!button||spyActive())return;
+    mobileFirePointers.add(event.pointerId);
+    const before=diagnostics.attackIntents;
+    queueMicrotask(()=>{
+      if(diagnostics.attackIntents!==before)return;
+      if(!activeRun()||!recoverOrphanedGameplayMode())return;
+      const handled=attackNow("Space");
+      if(handled){
+        diagnostics.mobileFireFallbacks++;
+        try{input?.add?.("Space");button.classList.add("held")}catch(_){}
+      }
+    });
+  },true);
+  const releaseMobileFire=event=>{
+    if(!mobileFirePointers.has(event.pointerId))return;
+    mobileFirePointers.delete(event.pointerId);
+    try{input?.delete?.("Space")}catch(_){}
+    try{document.querySelector('#v104-touch-controls [data-action="fire"]')?.classList.remove("held")}catch(_){}
+    diagnostics.mobileFireReleases++;
+  };
+  document.addEventListener("pointerup",releaseMobileFire,true);
+  document.addEventListener("pointercancel",releaseMobileFire,true);
+
   function interactiveOverlayVisible(){
     return ["menu","pause","inventory-panel","named-dossier-panel","shop-panel","save-panel","level-up","floor-complete","end","artefact-choice-panel","item-info-panel"].some(panelVisible);
   }
@@ -311,12 +355,14 @@
      a second RAF chain; it only clamps the timestamp gap before r29 advances
      the existing simulation loop. */
   addEventListener("ccg:v142-ready",()=>{captureR1FireOwner();installStallClamp()},{once:true});
-  addEventListener("pagehide",()=>{showCursor();if(cursorTimer)clearTimeout(cursorTimer)},{once:true});
+  addEventListener("pagehide",()=>{showCursor();mobileFirePointers.clear();try{input?.delete?.("Space")}catch(_){}if(cursorTimer)clearTimeout(cursorTimer)},{once:true});
 
   window.CCGLostSizzlerV142R20LiveRegressionStability=Object.freeze({
     version:"V10.42-r20",
     diagnostics,
     attackNow,
+    activeRun,
+    liveSession,
     recoverOrphanedGameplayMode,
     showScoreDelta,
     captureR1FireOwner,
