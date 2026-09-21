@@ -24,7 +24,14 @@
   };
 
   const specialType=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")}catch(_){return""}};
-  const running=()=>document.body?.dataset?.runActive==="true";
+  const running=()=>{
+    if(document.body?.dataset?.runActive==="true")return true;
+    try{
+      const state=String(typeof mode!=="undefined"?mode:"");
+      if(run&&host&&p1&&!["menu","end"].includes(state)){document.body.dataset.runActive="true";return true}
+    }catch(_){}
+    return false
+  };
   const ordinaryDungeon=()=>running()&&!SPECIAL_BLOCK.has(specialType());
   const visible=id=>{const n=document.getElementById(id);return Boolean(n&&!n.classList.contains("hidden")&&getComputedStyle(n).display!=="none")};
   const blocked=()=>BLOCKING_PANELS.some(visible);
