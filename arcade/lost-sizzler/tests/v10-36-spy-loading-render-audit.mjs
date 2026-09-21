@@ -24,9 +24,12 @@ assert.match(index,/id="ccg-release-loading-percent" class="ccg-release-loading-
 assert.match(bootstrap,/EXPECTED_LOADING_MODULES=108/,"legacy loading compatibility must use the current 108-module release workload");
 assert.doesNotMatch(bootstrap,/Math\.min\(92|state\.progress\+1/,"legacy loading compatibility must not restore the artificial 92% cap or timer-driven progress");
 assert.match(watchdog,/EXPECTED_MODULES=108/,"the authoritative loading owner must know the current release workload");
-assert.match(watchdog,/Math\.round\(\(ready\/total\)\*99\)/,"pre-ready percentage must be derived from completed modules over total modules");
+assert.match(watchdog,/function orderedProgress\(\)/,"the authoritative loader must consume the V10.42 ordered bootstrap workload");
+assert.match(watchdog,/Math\.round\(25\+ratio\*74\)/,"the V10.42 ordered workload must drive the main 25-99% loading range");
+assert.match(watchdog,/Math\.min\(24/,"legacy/static preparation must stay in the opening loading range instead of jumping near completion");
+assert.match(watchdog,/currentModule/,"the loader must expose the currently loading V10.42 module");
 assert.match(watchdog,/ownsLoadingProgress:true/,"the load watchdog must declare ownership so legacy loaders cannot overwrite module-driven progress");
-assert.match(watchdog,/Finalising game systems… \$\{ready\} \/ \$\{total\} modules ready\./,"99% must represent loaded modules awaiting final runtime readiness");
+assert.match(watchdog,/Loading .*systems ready/,"the loading status must report the current ordered module and completion count");
 assert.doesNotMatch(watchdog,/Math\.min\(90,10\+Math\.floor|loadingStage:10/,"the authoritative loader must not use the former coarse staged percentage model");
 assert.match(bootstrap,/gate\.finish=function finishV136/,"release-gate completion must drive the loading screen to completion");
 assert.match(css,/\.ccg-release-loading/,"loading screen styling must remain in CSS");
