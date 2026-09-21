@@ -292,6 +292,45 @@ async function runViewport(viewport){
   assert.equal(duplicate.after.totalXp,duplicate.before.totalXp,"suppressed duplicate trap damage must not alter total XP");
   assert.equal(duplicate.after.trapHits,duplicate.before.trapHits,"suppressed duplicate trap damage must not be recorded as another health hit");
 
+  // A trap can switch from SAFE to ACTIVE while the player remains on the tile.
+  // The r45 lifecycle monitor must apply that visible active phase without
+  // requiring another movement event, while still preserving one-hit-per-cycle ownership.
+  if(viewport.width===390){
+    const stationary=await page.evaluate(()=>globalThis.eval(`(()=>{
+      const trap=(host?.traps||[])[0];
+      if(!trap)return{available:false};
+      const period=600,now=performance.now(),desiredPhase=period*.70;
+      trap.period=period;
+      trap.phase=(desiredPhase-(now%period)+period)%period;
+      p1.x=trap.x;p1.y=trap.y;p1.rx=trap.x;p1.ry=trap.y;
+      p1.invuln=0;p1.hitStunMs=0;
+      const api=window.CCGLostSizzlerV142R19MobileTrapLayoutStability;
+      api?.rearmInactiveTrapContacts?.();
+      return{
+        available:true,
+        id:String(trap.id),
+        beforeHealth:Number(p1.health||0),
+        beforeArmor:Number(p1.armor||0),
+        beforeStationaryHits:Number(api?.state?.stationaryTrapHits||0),
+        activeNow:Boolean(SYS.trapActive(trap,performance.now()))
+      };
+    })()`));
+    assert.equal(stationary.available,true,"stationary trap fixture must exist");
+    assert.equal(stationary.activeNow,false,"stationary trap fixture must begin in its visible SAFE phase");
+    await page.waitForFunction(fixture=>{
+      const api=window.CCGLostSizzlerV142R19MobileTrapLayoutStability;
+      return Number(p1?.health||0)===fixture.beforeHealth-1&&Number(api?.state?.stationaryTrapHits||0)>=fixture.beforeStationaryHits+1;
+    },stationary,{timeout:1800,polling:"raf"});
+    const stationaryAfter=await page.evaluate(()=>({
+      health:Number(p1?.health||0),
+      armor:Number(p1?.armor||0),
+      stationaryHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.stationaryTrapHits||0)
+    }));
+    assert.equal(stationaryAfter.health,stationary.beforeHealth-1,"trap switching SAFE to ACTIVE under a stationary player must remove one health");
+    assert.equal(stationaryAfter.armor,stationary.beforeArmor,"stationary active-cycle trap damage must preserve armour");
+    assert.equal(stationaryAfter.stationaryHits,stationary.beforeStationaryHits+1,"one newly active stationary trap cycle must create exactly one monitored hit");
+  }
+
   assert.deepEqual(errors,[],`mobile trap exercise must have no uncaught browser errors: ${errors.join("\n")}`);
   console.log(`C64 Dungeon Carnage mobile live contract passed at ${viewport.width}x${viewport.height}.`);
   await context.close();
