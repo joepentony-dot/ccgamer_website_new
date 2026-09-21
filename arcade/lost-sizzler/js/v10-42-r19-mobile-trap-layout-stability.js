@@ -6,7 +6,7 @@
 
   const STYLE_ID="ccg-v142-r19-mobile-trap-layout";
   const MONITOR_MS=80;
-  const state={timer:0,rearms:0,damageOwnerInstalls:0,trapTriggerOwnerInstalls:0,directTrapRepairs:0,trapHits:0,trapContactBlocks:0,trapProtectionBlocks:0,canvasAspectRepairs:0};
+  const state={timer:0,rearms:0,damageOwnerInstalls:0,trapTriggerOwnerInstalls:0,directTrapRepairs:0,trapHits:0,stationaryTrapHits:0,trapContactBlocks:0,trapProtectionBlocks:0,canvasAspectRepairs:0};
   const trapContacts=new Set();
   const trapDamageInFlight=new Set();
   let trapDamageOwner=null;
@@ -268,6 +268,24 @@
     return true
   }
 
+  function damageOccupiedActiveTraps(){
+    if(!ordinaryDungeon())return false;
+    const now=performance.now();let damaged=false;
+    for(const player of players()){
+      if(!player||Number(player.health||0)<=0)continue;
+      const trap=(host?.traps||[]).find(candidate=>candidate?.active&&Number(candidate.x)===Number(player.x)&&Number(candidate.y)===Number(player.y)&&trapActive(candidate,now));
+      if(!trap)continue;
+      const beforeHealth=Number(player.health||0);
+      damageValidatedTrapContact(player,trap);
+      if(Number(player.health||0)<beforeHealth){
+        state.stationaryTrapHits++;damaged=true;
+        try{S?.sfx?.("trap")}catch(_){}
+        try{if(typeof showToast==="function")showToast(`${String(trap.kind||"floor").toUpperCase()} TRAP`,"The trap activated under you. -1 health.","red",4200)}catch(_){}
+      }
+    }
+    return damaged
+  }
+
   function portraitTouchViewport(){
     try{
       const portrait=window.matchMedia?.("(orientation: portrait)")?.matches ?? (Number(window.innerHeight||0)>=Number(window.innerWidth||0));
@@ -490,6 +508,7 @@
     installTrapDamageOwner();
     installTrapTriggerOwner();
     rearmInactiveTrapContacts();
+    damageOccupiedActiveTraps();
     syncPortraitCanvasAspect();
   }
 
@@ -500,5 +519,5 @@
   state.timer=setInterval(()=>{try{tick()}catch(error){console.warn("[C64 Dungeon Carnage r19] mobile stability tick failed safely",error)}},MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
-  window.CCGLostSizzlerV142R19MobileTrapLayoutStability={installPortraitLayout,installTrapDamageOwner,installTrapTriggerOwner,withValidatedTrapContact,damageValidatedTrapContact,guaranteeTrapContactDamage,rearmInactiveTrapContacts,syncPortraitCanvasAspect,trapActive,get state(){return state}};
+  window.CCGLostSizzlerV142R19MobileTrapLayoutStability={installPortraitLayout,installTrapDamageOwner,installTrapTriggerOwner,withValidatedTrapContact,damageValidatedTrapContact,guaranteeTrapContactDamage,rearmInactiveTrapContacts,damageOccupiedActiveTraps,syncPortraitCanvasAspect,trapActive,get state(){return state}};
 })();
