@@ -1,4 +1,4 @@
-/* Home-page Lost Sizzler recognition mark beside the beta-test CTA. */
+/* Home-page C64 Dungeon Carnage artwork inside the game CTA. */
 html[data-ccg-page="home"] .home-hero__game-actions {
   display: flex;
   align-items: center;
@@ -14,9 +14,9 @@ html[data-ccg-page="home"] .home-hero__sizzler-mark {
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  width: clamp(82px, 10vw, 118px);
-  min-height: 58px;
-  padding: 4px 6px;
+  width: clamp(180px, 22vw, 260px);
+  min-height: 104px;
+  padding: 5px;
   border-radius: 12px;
   border: 1px solid rgba(255, 216, 90, 0.42);
   background: rgba(4, 7, 15, 0.76);
@@ -31,7 +31,7 @@ html[data-ccg-page="home"] .home-hero__sizzler-mark img {
   display: block;
   width: 100%;
   height: auto;
-  max-height: 62px;
+  max-height: 138px;
   object-fit: contain;
   pointer-events: none;
   user-select: none;
@@ -41,11 +41,11 @@ html[data-ccg-page="home"] .home-hero__sizzler-mark img {
 
 @media (max-width: 640px) {
   html[data-ccg-page="home"] .home-hero__sizzler-mark {
-    width: 86px;
-    min-height: 50px;
+    width: 150px;
+    min-height: 80px;
   }
 
   html[data-ccg-page="home"] .home-hero__sizzler-mark img {
-    max-height: 52px;
+    max-height: 80px;
   }
 }
