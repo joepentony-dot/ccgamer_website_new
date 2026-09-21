@@ -118,10 +118,10 @@ try{
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
   const boot=await page.evaluate(()=>({ready:CCGLostSizzlerV142Bootstrap.ready,failed:CCGLostSizzlerV142Bootstrap.failed,error:CCGLostSizzlerV142Bootstrap.error||"",build:CCGLostSizzlerV142Bootstrap.build,cache:CCGLostSizzlerV142Bootstrap.cache,metaBuild:document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content,metaCache:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content,ordered:[...document.querySelectorAll('script[data-ccg-v142-ordered="true"]')].map(s=>s.src)}));
   assert.equal(boot.failed,false,`r36 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r36 ordered bootstrap must complete");
-  assert.equal(boot.build,"V10.42 r36");assert.equal(boot.cache,"20260921r36");assert.equal(boot.metaBuild,"V10.42 r36");assert.equal(boot.metaCache,"20260921r36");
+  assert.equal(boot.build,"V10.42 r36");assert.equal(boot.cache,"20260921r36a");assert.equal(boot.metaBuild,"V10.42 r36");assert.equal(boot.metaCache,"20260921r36a");
   assert.ok(boot.ordered.length>=30,"r36 bootstrap must load the complete ordered V10.42 chain");
-  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260921r36"),"every ordered V10.42 module must use the r36 cache token");
-  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260921r36")),"expected r36 projectile lifecycle asset was not requested");
+  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260921r36a"),"every ordered V10.42 module must use the r36 cache token");
+  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260921r36a")),"expected r36 projectile lifecycle asset was not requested");
   assert.equal(await page.evaluate(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.ownsBoundary?.()===true),true,"#2118 lifecycle owner must be authoritative before play");
 
   await page.evaluate(()=>{const hb=window.__ccgEnduranceHeartbeat={frames:0,stalls:0,maxGap:0,last:0};const beat=t=>{if(hb.last){const gap=t-hb.last;hb.maxGap=Math.max(hb.maxGap,gap);if(gap>300)hb.stalls++}hb.last=t;hb.frames++;requestAnimationFrame(beat)};requestAnimationFrame(beat)});
