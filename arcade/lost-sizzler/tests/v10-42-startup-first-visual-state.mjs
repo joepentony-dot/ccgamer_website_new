@@ -39,7 +39,7 @@ assert.match(overlaySafety,/body\[data-v142-bootstrap-ready="true"\]\[data-relea
 
 for(const contract of [
   'color:#f5eefb!important',
-  'button.primary{\n  color:#160b1e!important',
+  'button.primary{\n  color:#f5eefb!important',
   'top:9px!important',
   'bottom:8px!important',
   'text-shadow:none!important',
@@ -48,7 +48,7 @@ for(const contract of [
 
 for(const contract of [
   'color:#f5eefb!important',
-  'button.primary{color:#160b1e!important',
+  'button.primary{color:#f5eefb!important',
   'top:9px!important',
   'bottom:8px!important',
   'text-shadow:none!important',
