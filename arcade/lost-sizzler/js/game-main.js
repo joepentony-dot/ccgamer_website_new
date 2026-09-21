@@ -149,10 +149,10 @@ function settlePauseAttackCadence(reason="resume"){
     try{window.CCGLostSizzlerV142R18SoloPlaytestStability?.repairAttackLiveness?.("pause-resume")}catch(_){}
     return true
   };
-  if(settle())return true;
+  const immediate=settle();
   queueMicrotask(settle);
   setTimeout(settle,0);
-  return false
+  return immediate
 }
 function resumePausedRun(){
   if(mode!=="paused")return false;
