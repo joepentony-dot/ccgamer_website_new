@@ -119,7 +119,16 @@ async function quitToMenu(){
 }
 function showRulebook(){UI.support?.classList.add("hidden");UI.rulebook?.classList.remove("hidden")}
 function showSupport(){UI.rulebook?.classList.add("hidden");UI.support?.classList.remove("hidden")}
-function returnToGameFromPanel(){hideItemInfo();hideNamedDossier();UI.inventory?.classList.add("hidden");if(["inventory","dossier"].includes(mode))mode="playing";input.clear()}
+function returnToGameFromPanel(){
+  const returningFromInventory=mode==="inventory";
+  hideItemInfo();hideNamedDossier();UI.inventory?.classList.add("hidden");
+  if(["inventory","dossier"].includes(mode))mode="playing";
+  input.clear();
+  if(returningFromInventory&&mode==="playing"){
+    settlePauseAttackCadence("inventory-close-top");
+    try{focusGameplayKeyboard()}catch(_){}
+  }
+}
 async function shareQuest(){
   const data={title:"Cheeky's Commodore Quest",text:"Cheeky's Commodore Quest — a CCG dungeon crawl.",url:location.href};
   try{if(navigator.share){await navigator.share(data);return}if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(location.href);showToast("LINK COPIED","Cheeky's Commodore Quest link copied to the clipboard.","green");return}}catch(_){}
@@ -139,6 +148,7 @@ function clearPauseAttackCadence(reason="resume"){
     const r1=window.CCGLostSizzlerV142R1Stability;
     r1?.repairCombatTimers?.();r1?.repairProjectilePool?.()
   }catch(_){}
+  try{window.CCGLostSizzlerV141R56PlaytestCompletion?.rearmCombat?.(reason,0,true)}catch(_){}
   window.__CCG_PAUSE_ATTACK_RESETS__=Math.max(0,Number(window.__CCG_PAUSE_ATTACK_RESETS__)||0)+1;
   window.__CCG_PAUSE_ATTACK_LAST_RESET__={reason:String(reason),mode:String(mode),at:performance.now()};
 }
@@ -154,6 +164,26 @@ function settlePauseAttackCadence(reason="resume"){
   setTimeout(settle,0);
   return immediate
 }
+function installInventoryAttackResumeBoundary(){
+  try{
+    if(typeof toggleInventory!=="function"||toggleInventory.__ccgAttackResumeBoundary)return false;
+    const baseToggleInventory=toggleInventory;
+    toggleInventory=function(...args){
+      const returningFromInventory=mode==="inventory"&&UI.inventory&&!UI.inventory.classList.contains("hidden");
+      const result=baseToggleInventory(...args);
+      if(returningFromInventory&&mode==="playing"){
+        settlePauseAttackCadence("inventory-close");
+        try{focusGameplayKeyboard()}catch(_){}
+      }
+      return result
+    };
+    toggleInventory.__ccgAttackResumeBoundary=true;
+    toggleInventory.__ccgOriginal=baseToggleInventory;
+    return true
+  }catch(_){return false}
+}
+installInventoryAttackResumeBoundary();
+
 function resumePausedRun(){
   if(mode!=="paused")return false;
   clearPauseAttackCadence("handler-before-resume");
