@@ -186,22 +186,18 @@ html body[data-run-active="false"] #menu #tutorial-zone-btn,
 html body[data-run-active="false"] #menu #daily-btn{
   margin-top:3px!important;
 }
-@media(max-width:760px){
-  html body[data-run-active="false"] #menu #continue-save-btn{grid-column:1/-1!important}
-  html body[data-run-active="false"] #menu #solo-btn,
-  html body[data-run-active="false"] #menu #split-btn,
-  html body[data-run-active="false"] #menu #tutorial-zone-btn,
-  html body[data-run-active="false"] #menu #daily-btn{
-    grid-column:span 1!important;
-    min-height:78px!important;
-    padding:29px 12px 25px!important;
-  }
-}
-@media(max-width:520px){
-  html body[data-run-active="false"] #menu .game-mode-buttons{grid-template-columns:1fr!important}
+html body[data-run-active="false"] #menu #solo-btn.primary{color:#f5eefb!important}
+@media(max-width:900px),(pointer:coarse){
+  html body[data-run-active="false"] #menu .game-mode-buttons{grid-template-columns:minmax(0,1fr)!important}
   html body[data-run-active="false"] #menu #continue-save-btn,
   html body[data-run-active="false"] #menu #solo-btn,
   html body[data-run-active="false"] #menu #split-btn,
   html body[data-run-active="false"] #menu #tutorial-zone-btn,
-  html body[data-run-active="false"] #menu #daily-btn{grid-column:1!important}
+  html body[data-run-active="false"] #menu #daily-btn{
+    grid-column:1/-1!important;
+    width:100%!important;
+    min-width:0!important;
+    min-height:78px!important;
+    padding:29px 12px 25px!important;
+  }
 }
