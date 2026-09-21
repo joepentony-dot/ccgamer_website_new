@@ -39,7 +39,7 @@ assert.equal(PGR.inventoryLabel({rarity:"GOLD MEDAL",name:"GOLD MEDAL Restoratio
 for(const legacy of ["UNCOMMON","SIZZLER","GOLD MEDAL","ZZAP! 97%"]){
   assert.match(progression,new RegExp(legacy.replace(/[!.*+?^${}()|[\]\\]/g,"\\$&")),`base progression should retain internal ${legacy} identity`);
 }
-assert.match(bootstrap,/V10\.42 r36/);
+assert.match(bootstrap,/V10\.42 r37/);
 assert.match(bootstrap,/20260921r37/);
 assert.ok(bootstrap.indexOf('v10-42-rpg-terminology.js')<bootstrap.indexOf('v10-42-owned-firearm-clarity.js'),"terminology must load before Owned Firearms presentation");
 
