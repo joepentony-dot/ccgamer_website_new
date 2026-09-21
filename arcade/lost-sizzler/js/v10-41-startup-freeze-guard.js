@@ -1,7 +1,7 @@
 /* The Lost Sizzler V10.41 — startup freeze guard.
  * V10.36 historically rebuilt the chest atlas using synchronous data-URL
  * encoding inside the release-gate finish callback. Large image allocations
- * there can stall the main thread while the loading UI is still showing 92%.
+ * there can stall the main thread while the loading UI is still finalising the runtime.
  * This guard marks that legacy synchronous pass as already handled, then
  * performs the same gutter preparation later using a canvas directly.
  */
