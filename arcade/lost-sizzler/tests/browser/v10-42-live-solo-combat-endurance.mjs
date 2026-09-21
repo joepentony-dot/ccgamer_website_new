@@ -421,7 +421,8 @@ try{
   assert.ok(soakElapsed>=300000,`five-minute mobile FIRE soak ended too early: ${soakElapsed}ms`);
   assert.ok(soakShots>=12,`five-minute mobile FIRE soak completed too few repeated verified attacks: ${soakShots}`);
 
-  await touchPage.locator('#v104-touch-controls [data-action="inventory"]').tap();
+  await settleGameplayMode(touchPage,"pre-inventory dwell");
+  await touchPage.evaluate(()=>toggleInventory());
   await touchPage.waitForFunction(()=>mode==="inventory");
   await touchPage.waitForTimeout(5500);
   await touchPage.evaluate(()=>{
