@@ -421,7 +421,14 @@ try{
   assert.ok(soakElapsed>=300000,`five-minute mobile FIRE soak ended too early: ${soakElapsed}ms`);
   console.log(`Five-minute mobile FIRE soak completed ${soakShots} individually verified attacks over ${soakElapsed}ms.`);
 
-  await settleGameplayMode(touchPage,"pre-inventory dwell");
+  const postSoakMode=await touchPage.evaluate(()=>String(typeof mode!=="undefined"?mode:""));
+  if(postSoakMode==="paused"){
+    await touchPage.locator("#resume-btn").click();
+    await touchPage.waitForFunction(()=>mode==="playing");
+  }else{
+    await settleGameplayMode(touchPage,"pre-inventory dwell");
+  }
+  assert.equal(await touchPage.evaluate(()=>String(mode)),"playing","post-soak qualification must resume normal play before inventory dwell");
   await touchPage.evaluate(()=>toggleInventory());
   await touchPage.waitForFunction(()=>mode==="inventory");
   await touchPage.waitForTimeout(5500);
