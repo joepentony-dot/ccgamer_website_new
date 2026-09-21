@@ -27,7 +27,7 @@
   const ATTACK_KEYS=new Set(["Space","KeyF","Numpad0"]);
   const STALL_MS=120;
   const CURSOR_IDLE_MS=1600;
-  let cursorTimer=0,lastDoorTick=performance.now(),capturedR1FireOwner=null;
+  let cursorTimer=0,lastDoorTick=performance.now(),capturedR1FireOwner=null,presentationResumeObserver=null;
 
   const panelVisible=id=>{const node=document.getElementById(id);return Boolean(node&&!node.classList.contains("hidden"))};
   const currentMode=()=>{try{return typeof mode!=="undefined"?String(mode):""}catch(_){return""}};
@@ -45,6 +45,34 @@
       diagnostics.presentationRepairs++;
       if(typeof focusGameplayKeyboard==="function")focusGameplayKeyboard()
     }catch(_){}
+    return true
+  }
+  function recoverLivePresentation(reason="resume"){
+    const repair=()=>{
+      if(currentMode()!=="playing"||!liveSession())return false;
+      const repaired=activeRun();
+      if(repaired)try{document.body.dataset.v142R20PresentationResume=String(reason)}catch(_){}
+      return repaired
+    };
+    queueMicrotask(repair);
+    setTimeout(repair,0);
+    setTimeout(repair,60);
+    return true
+  }
+  function installPresentationResumeObserver(){
+    if(presentationResumeObserver)return true;
+    const targets=[document.getElementById("inventory-panel"),document.getElementById("pause")].filter(Boolean);
+    if(!targets.length)return false;
+    presentationResumeObserver=new MutationObserver(records=>{
+      for(const record of records){
+        const node=record.target;
+        if(node instanceof Element&&node.classList.contains("hidden")){
+          recoverLivePresentation(node.id==="pause"?"pause-close":"inventory-close");
+          break;
+        }
+      }
+    });
+    for(const node of targets)presentationResumeObserver.observe(node,{attributes:true,attributeFilter:["class"]});
     return true
   }
   const editableTarget=target=>Boolean(target instanceof Element&&(target.matches("input,textarea,select,[contenteditable='true'],[contenteditable='']")||target.closest("input,textarea,select,[contenteditable='true'],[contenteditable='']")));
@@ -352,12 +380,13 @@
     return installed;
   }
   installStallClamp();
+  installPresentationResumeObserver();
 
   /* r20 remains an extension of the established frame owner. It never starts
      a second RAF chain; it only clamps the timestamp gap before r29 advances
      the existing simulation loop. */
-  addEventListener("ccg:v142-ready",()=>{captureR1FireOwner();installStallClamp()},{once:true});
-  addEventListener("pagehide",()=>{showCursor();mobileFirePointers.clear();try{input?.delete?.("Space")}catch(_){}if(cursorTimer)clearTimeout(cursorTimer)},{once:true});
+  addEventListener("ccg:v142-ready",()=>{captureR1FireOwner();installStallClamp();installPresentationResumeObserver()},{once:true});
+  addEventListener("pagehide",()=>{showCursor();mobileFirePointers.clear();presentationResumeObserver?.disconnect?.();presentationResumeObserver=null;try{input?.delete?.("Space")}catch(_){}if(cursorTimer)clearTimeout(cursorTimer)},{once:true});
 
   window.CCGLostSizzlerV142R20LiveRegressionStability=Object.freeze({
     version:"V10.42-r20",
@@ -366,6 +395,8 @@
     activeRun,
     liveSession,
     recoverOrphanedGameplayMode,
+    recoverLivePresentation,
+    installPresentationResumeObserver,
     showScoreDelta,
     captureR1FireOwner,
     installStallClamp
