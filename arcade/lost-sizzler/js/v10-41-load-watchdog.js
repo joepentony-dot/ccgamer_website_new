@@ -4,10 +4,11 @@
   if(window.__CCG_LOST_SIZZLER_V141_LOAD_WATCHDOG__)return;
   window.__CCG_LOST_SIZZLER_V141_LOAD_WATCHDOG__=true;
 
+  const EXPECTED_MODULES=108;
   const state={
     startedAt:performance.now(),lastTick:performance.now(),maxDelay:0,stalls:0,timer:0,finished:false,
     pendingSolo:false,soloReplayQueued:false,soloReplays:0,soloIntentSerial:0,soloRecoveries:0,soloRecoveryTimer:0,soloLivenessObserver:null,
-    moduleObserver:null,loadingTimer:0,modulesReady:0,moduleKeys:new Set(),loadingStage:10,loadingStages:[10],
+    moduleObserver:null,loadingTimer:0,modulesReady:0,moduleKeys:new Set(),moduleTotalKeys:new Set(),expectedModules:EXPECTED_MODULES,loadingStage:0,loadingStages:[0],
     r57Timer:0,r57Loaded:false
   };
 
@@ -23,7 +24,14 @@
   }
 
   function releaseReady(){
-    try{return document.body?.dataset?.releaseReady==="true"||window.CCGLostSizzlerReleaseGate?.state?.ready===true}catch(_){return false}
+    try{
+      const build=String(document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"").toUpperCase();
+      if(build.startsWith("V10.42")){
+        const v142=window.CCGLostSizzlerV142Bootstrap;
+        return Boolean(v142?.ready===true&&document.body?.dataset?.releaseReady==="true"&&document.body?.dataset?.v142BootstrapReady==="true")
+      }
+      return document.body?.dataset?.releaseReady==="true"||window.CCGLostSizzlerReleaseGate?.state?.ready===true
+    }catch(_){return false}
   }
 
   function moduleScript(node){
@@ -34,7 +42,9 @@
   function noteModule(node){
     if(!moduleScript(node))return;
     let key="";try{key=new URL(node.src,location.href).pathname}catch(_){key=String(node.src||"").split("?")[0]}
-    if(!key||state.moduleKeys.has(key))return;
+    if(!key)return;
+    state.moduleTotalKeys.add(key);
+    if(state.moduleKeys.has(key))return;
     const ready=()=>{
       if(state.moduleKeys.has(key))return;
       state.moduleKeys.add(key);state.modulesReady++;
@@ -45,25 +55,33 @@
     node.addEventListener("error",()=>{node.dataset.r57LoadSettled="true";ready()},{once:true});
   }
 
+  function totalModules(){
+    return Math.max(EXPECTED_MODULES,state.moduleTotalKeys.size)
+  }
+
   function calculatedLoadingStage(){
     if(releaseReady())return 100;
-    return Math.min(90,10+Math.floor(Math.max(0,state.modulesReady)/5)*10)
+    const total=totalModules(),ready=Math.min(total,Math.max(0,state.modulesReady));
+    if(!ready)return 0;
+    return Math.min(99,Math.max(1,Math.round((ready/total)*99)))
   }
 
   function writeLoadingStage(stage){
+    const next=Math.max(0,Math.min(100,Math.round(Number(stage)||0)));
+    const value=next===100?100:Math.max(state.loadingStage,next);
     const progress=document.getElementById("ccg-release-loading-progress"),percent=document.getElementById("ccg-release-loading-percent");
-    if(progress&&Number(progress.value)!==stage)progress.value=stage;
-    if(percent&&percent.textContent!==`${stage}%`)percent.textContent=`${stage}%`;
-    const v136=window.CCGLostSizzlerV136?.state;if(v136&&Number(v136.progress)!==stage)v136.progress=stage;
-    if(stage!==state.loadingStage){state.loadingStage=stage;if(state.loadingStages.at(-1)!==stage)state.loadingStages.push(stage)}
+    if(progress&&Number(progress.value)!==value)progress.value=value;
+    if(percent&&percent.textContent!==`${value}%`)percent.textContent=`${value}%`;
+    const v136=window.CCGLostSizzlerV136?.state;if(v136&&Number(v136.progress)!==value)v136.progress=value;
+    if(value!==state.loadingStage){state.loadingStage=value;if(state.loadingStages.at(-1)!==value)state.loadingStages.push(value)}
   }
 
   function syncLoadingStage(){
-    const stage=calculatedLoadingStage();writeLoadingStage(stage);
-    if(stage<100)loadingStatus(`Loading game modules… ${state.modulesReady} ready.`);
-    else loadingStatus("Game systems ready.");
+    const total=totalModules(),ready=Math.min(total,Math.max(0,state.modulesReady)),stage=calculatedLoadingStage();writeLoadingStage(stage);
+    if(stage>=100)loadingStatus("Game systems ready.");
+    else if(ready>=total)loadingStatus(`Finalising game systems… ${ready} / ${total} modules ready.`);
+    else loadingStatus(`Loading game modules… ${ready} / ${total} ready.`);
   }
-
   function installStagedLoader(){
     const start=()=>{
       document.querySelectorAll("script[src]").forEach(noteModule);
@@ -167,7 +185,7 @@
     if(v136?.loadingTimer){clearInterval(v136.loadingTimer);v136.loadingTimer=0}
     try{state.moduleObserver?.disconnect?.()}catch(_){}
     if(state.loadingTimer){clearInterval(state.loadingTimer);state.loadingTimer=0}
-    writeLoadingStage(100);
+    if(releaseReady())writeLoadingStage(100);
     state.finished=true;
     if(state.timer){clearInterval(state.timer);state.timer=0}
   }
@@ -185,8 +203,8 @@
     if(delay>1800)state.stalls++;
     syncCacheStatus();
     const gate=window.CCGLostSizzlerReleaseGate?.state;
-    if(gate?.ready){replayPendingSolo();stopLoaderObservers()}
-    else if(gate?.failed){state.pendingSolo=false;stopLoaderObservers()}
+    if(releaseReady()){replayPendingSolo();stopLoaderObservers()}
+    else if(gate?.failed||window.CCGLostSizzlerV142Bootstrap?.failed===true){state.pendingSolo=false;stopLoaderObservers()}
   }
 
   installStagedLoader();
@@ -202,5 +220,5 @@
   state.timer=setInterval(tick,250);
   state.r57Timer=setInterval(ensureR57,100);
   tick();ensureR57();
-  window.CCGLostSizzlerLoadWatchdog={state,stop:stopLoaderObservers,replayPendingSolo,scheduleSoloLivenessCheck,clearSoloLiveness,syncLoadingStage,publicPlayLocked,publicBetaClosed,ensureR57};
+  window.CCGLostSizzlerLoadWatchdog={state,ownsLoadingProgress:true,expectedModules:EXPECTED_MODULES,totalModules,stop:stopLoaderObservers,replayPendingSolo,scheduleSoloLivenessCheck,clearSoloLiveness,syncLoadingStage,publicPlayLocked,publicBetaClosed,ensureR57};
 })();
