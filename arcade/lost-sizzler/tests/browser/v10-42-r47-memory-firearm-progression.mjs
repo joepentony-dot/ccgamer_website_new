@@ -57,7 +57,9 @@ try{
     const dummy={id:"shock",name:"Legacy Random Gun",displayName:"ZZAP! 97% Random Gun",rarity:"ZZAP! 97%",power:9,delay:.3,shots:8,pierce:4,element:"shock",ttl:30,mods:["legacy"],rating:99,desc:"legacy random weapon"};
     const rows=[];
     const snap=label=>rows.push({label,floor:run.floor,tier:p1.weaponEvolutionTier,name:p1.weapon?.name,power:p1.weapon?.power,shots:p1.weapon?.shots,pierce:p1.weapon?.pierce,owned:(p1.ownedWeapons||[]).length,mana:p1.mana});
-    p1.mana=20;run.floor=1;window.CCGLostSizzlerV142R47FirearmEvolution.collapseOwnership(p1);snap("start");
+    p1.firearmUnlocked=false;p1.weapon=null;p1.weaponEvolutionTier=0;p1.ownedWeapons=[];p1.activeWeaponIndex=-1;p1.mana=0;
+    run.floor=1;window.CCGLostSizzlerV142R47FirearmEvolution.collapseOwnership(p1);snap("sword-start");
+    equipWeapon(p1,dummy);snap("f1-acquire");
     equipWeapon(p1,dummy);snap("f1-upgrade");
     const beforeSalvage=p1.mana;equipWeapon(p1,dummy);snap("f1-salvage");const salvageGain=p1.mana-beforeSalvage;
     run.floor=2;equipWeapon(p1,dummy);snap("f2");
@@ -67,7 +69,11 @@ try{
     return{rows,salvageGain};
   });
   const tiers=Object.fromEntries(firearm.rows.map(row=>[row.label,row]));
-  assert.equal(tiers.start.tier,1);
+  assert.equal(tiers["sword-start"].tier,0);
+  assert.equal(tiers["sword-start"].owned,0);
+  assert.equal(tiers["sword-start"].name,undefined);
+  assert.equal(tiers["f1-acquire"].tier,1);
+  assert.equal(tiers["f1-acquire"].shots,1);
   assert.equal(tiers["f1-upgrade"].tier,2);
   assert.equal(tiers["f1-upgrade"].shots,1);
   assert.equal(tiers["f1-salvage"].tier,2);
@@ -80,7 +86,10 @@ try{
   assert.equal(tiers.f5.shots,3);
   assert.equal(tiers.f5.power,3);
   assert.equal(tiers.f5.pierce,1);
-  for(const row of firearm.rows)assert.equal(row.owned,1,`${row.label} retained more than one firearm`);
+  for(const row of firearm.rows){
+    if(row.label==="sword-start")assert.equal(row.owned,0,"sword-first start must own no firearm");
+    else assert.equal(row.owned,1,`${row.label} retained more than one firearm`);
+  }
 
   console.log("Dungeon Carnage r47 Memory Pad and firearm evolution browser contract passed.");
   await context.close();
