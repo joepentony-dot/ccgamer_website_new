@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "source": "https://uta.pokefinder.org/Ultimate_Tape_Archive/",
-  "matching": "normalized-title + known publisher/re-release publisher",
+  "matching": "normalized-title + known publisher/re-release publisher + compatible release year when known",
   "games": {
     "1942": {
       "title": "1942",
