@@ -40,7 +40,7 @@ async function snap(page){
       enemies:Number(host?.enemies?.length)||0,aliveEnemies:(host?.enemies||[]).filter(e=>e?.alive!==false).length,
       projectileSteps:Number(life.steps)||0,projectileFaultSweeps:Number(life.faultSweeps)||0,
       updateFaults:Number(window.CCGLostSizzlerV141R29?.state?.updateFaults)||0,renderFaults:Number(window.CCGLostSizzlerV141R29?.state?.renderFaults)||0,
-      attackIntents:Number(r20.attackIntents)||0,directAttackErrors:Number(r20.directAttackErrors)||0,staleStunRepairs:Number(r20.staleStunRepairs)||0,controlLockRepairs:Number(r20.controlLockRepairs)||0,r20FrameStalls:Number(r20.frameStalls)||0,
+      attackIntents:Number(r20.attackIntents)||0,directAttackErrors:Number(r20.directAttackErrors)||0,staleStunRepairs:Number(r20.staleStunRepairs)||0,controlLockRepairs:Number(r20.controlLockRepairs)||0,presentationRepairs:Number(r20.presentationRepairs)||0,mobileFireFallbacks:Number(r20.mobileFireFallbacks)||0,mobileFireReleases:Number(r20.mobileFireReleases)||0,r20FrameStalls:Number(r20.frameStalls)||0,
       r22Stalls:Number(r22.stallFrames)||0,r59LongGaps:Number(r59.longGaps)||0,r59Substeps:Number(r59.soloSubsteps)||0,r59Frames:Number(r59.soloFrames)||0,
       lifecycleOwner:Boolean(window.CCGLostSizzlerV142ProjectileLifecycle?.ownsBoundary?.()),
       sealGate:Boolean(seal?.gateActive?.()),sealUnsupported:Boolean(seal?.state?.unsupported),
@@ -353,18 +353,28 @@ try{
     p1.controlLocked=true;p1.controlsLocked=true;
     p1.hitStunMs=180;p1.__ccgLastHurtAt=performance.now()-2000;
     fire1=4000;fireBuffer1=700;projectileCD=700;
+    document.body.dataset.runActive="false";
+    const button=document.querySelector('#v104-touch-controls [data-action="fire"]');
+    if(button){
+      const clone=button.cloneNode(true);
+      button.replaceWith(clone);
+    }
     return{
       controlLocked:Boolean(p1.controlLocked),
       controlsLocked:Boolean(p1.controlsLocked),
       hitStunMs:Number(p1.hitStunMs),
       fire1:Number(fire1),
       buffer:Number(fireBuffer1),
-      projectileCD:Number(projectileCD)
+      projectileCD:Number(projectileCD),
+      runActive:String(document.body.dataset.runActive||""),
+      fireButton:Boolean(document.querySelector('#v104-touch-controls [data-action="fire"]'))
     };
   });
   assert.equal(touchPoison.controlLocked,true,"mobile FIRE regression failed to seed controlLocked");
   assert.equal(touchPoison.controlsLocked,true,"mobile FIRE regression failed to seed controlsLocked");
   assert.equal(touchPoison.hitStunMs,180,"mobile FIRE regression failed to seed stale hit-stun");
+  assert.equal(touchPoison.runActive,"false","mobile FIRE regression failed to seed stale live-run presentation state");
+  assert.equal(touchPoison.fireButton,true,"mobile FIRE regression failed to retain the visible FIRE button after stripping its direct listeners");
 
   await touchPage.locator('#v104-touch-controls [data-action="fire"]').tap();
   await touchPage.waitForTimeout(420);
@@ -376,8 +386,77 @@ try{
   assert.equal(touchAfter.controlsLocked,false,"actual mobile FIRE button must clear controlsLocked");
   assert.equal(touchSpaceHeld,false,"mobile FIRE pointer release must not leave Space held");
   assert.equal(touchAfter.lifecycleOwner,true,"mobile FIRE must preserve projectile lifecycle ownership");
+  assert.ok(touchAfter.presentationRepairs>touchBefore.presentationRepairs,"actual mobile FIRE must repair a stale live-run presentation flag");
+  assert.ok(touchAfter.mobileFireFallbacks>touchBefore.mobileFireFallbacks,"delegated mobile FIRE safety owner must recover a visible button whose direct listener was lost");
+
+  const fireButton=touchPage.locator('#v104-touch-controls [data-action="fire"]');
+  const moveRight=touchPage.locator('#v104-touch-controls [data-key="KeyD"]');
+  const moveLeft=touchPage.locator('#v104-touch-controls [data-key="KeyA"]');
+  const soakStarted=Date.now();
+  let soakShots=0;
+  while(Date.now()-soakStarted<305000){
+    await settleGameplayMode(touchPage,"five-minute mobile FIRE soak");
+    await touchPage.evaluate(()=>{
+      if(p1){
+        p1.maxHealth=Math.max(5000,Number(p1.maxHealth)||0);
+        p1.health=p1.maxHealth;
+        p1.invuln=0;
+        p1.mana=Math.max(80,Number(p1.mana)||0);
+      }
+    });
+    assert.equal(await armEnemy(touchPage),true,"five-minute mobile FIRE soak enemy unavailable");
+    const beforeSoakShot=await snap(touchPage);
+    await fireButton.tap();
+    await touchPage.waitForTimeout(420);
+    const afterSoakShot=await snap(touchPage);
+    assert.ok(afterSoakShot.projectileSteps>beforeSoakShot.projectileSteps||afterSoakShot.mana<beforeSoakShot.mana,`five-minute mobile FIRE soak lost firing at ${Math.round((Date.now()-soakStarted)/1000)}s`);
+    assert.equal(afterSoakShot.controlLocked,false,"five-minute mobile FIRE soak left controlLocked set");
+    assert.equal(afterSoakShot.controlsLocked,false,"five-minute mobile FIRE soak left controlsLocked set");
+    soakShots++;
+    const move=soakShots%2?moveRight:moveLeft;
+    await move.tap().catch(()=>{});
+    await touchPage.waitForTimeout(14580);
+  }
+  assert.ok(soakShots>=19,`five-minute mobile FIRE soak completed too few verified attacks: ${soakShots}`);
+
+  await touchPage.locator('#v104-touch-controls [data-action="inventory"]').tap();
+  await touchPage.waitForFunction(()=>mode==="inventory");
+  await touchPage.waitForTimeout(5500);
+  await touchPage.evaluate(()=>{
+    document.body.dataset.runActive="false";
+    fire1=4000;fireBuffer1=700;projectileCD=700;
+    p1.hitStunMs=180;p1.__ccgLastHurtAt=performance.now()-2000;
+  });
+  await touchPage.locator("#inventory-close").click();
+  await touchPage.waitForFunction(()=>mode==="playing");
+  assert.equal(await armEnemy(touchPage),true,"post-inventory mobile FIRE enemy unavailable");
+  const beforeInventoryFire=await snap(touchPage);
+  await fireButton.tap();
+  await touchPage.waitForTimeout(420);
+  const afterInventoryFire=await snap(touchPage);
+  assert.ok(afterInventoryFire.projectileSteps>beforeInventoryFire.projectileSteps||afterInventoryFire.mana<beforeInventoryFire.mana,"actual mobile FIRE failed after extended inventory dwell");
+
+  await touchPage.evaluate(()=>pause(false));
+  await touchPage.waitForFunction(()=>mode==="paused");
+  await touchPage.waitForTimeout(5500);
+  await touchPage.evaluate(()=>{
+    document.body.dataset.runActive="false";
+    fire1=4000;fireBuffer1=700;projectileCD=700;
+    p1.hitStunMs=180;p1.__ccgLastHurtAt=performance.now()-2000;
+  });
+  await touchPage.locator("#resume-btn").click();
+  await touchPage.waitForFunction(()=>mode==="playing");
+  assert.equal(await armEnemy(touchPage),true,"post-pause mobile FIRE enemy unavailable");
+  const beforePauseFire=await snap(touchPage);
+  await fireButton.tap();
+  await touchPage.waitForTimeout(420);
+  const afterPauseFire=await snap(touchPage);
+  assert.ok(afterPauseFire.projectileSteps>beforePauseFire.projectileSteps||afterPauseFire.mana<beforePauseFire.mana,"actual mobile FIRE failed after extended pause");
+
+  const finalTouchSpaceHeld=await touchPage.evaluate(()=>input.has("Space"));
+  assert.equal(finalTouchSpaceHeld,false,"extended mobile FIRE scenarios must finish with Space released");
   await touchContext.close();
-  console.log("Dungeon Carnage actual mobile FIRE stale-state recovery regression passed.");
+  console.log("Dungeon Carnage five-minute mobile FIRE, inventory and pause liveness regression passed.");
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
 }
