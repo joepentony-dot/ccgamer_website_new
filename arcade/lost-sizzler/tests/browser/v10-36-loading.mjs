@@ -122,7 +122,7 @@ try{
     if(current.value>previous.value)assert.ok(current.modulesReady>previous.modulesReady,`loading percentage must not rise unless another module completed: ${JSON.stringify({previous,current})}`);
   }
   assert.ok(new Set(preReady.map(sample=>sample.value)).size>=3,`module-driven loading should expose multiple intermediate percentages: ${JSON.stringify(preReady)}`);
-  assert.ok(preReady.some(sample=>/Loading module \\d+ \\/ \\d+ —/.test(sample.status)),`visible loader must name the ordered module currently loading: ${JSON.stringify(preReady)}`);
+  assert.ok(preReady.some(sample=>/Loading module \d+ \/ \d+ —/.test(sample.status)),`visible loader must name the ordered module currently loading: ${JSON.stringify(preReady)}`);
 
   /* Retained here as historic source context only: the former field-kit
    * assertions exercised retired Spy UI and must not execute in active CI. */
