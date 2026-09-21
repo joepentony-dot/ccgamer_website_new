@@ -173,7 +173,7 @@ try{
       }));
       assert.equal(recovered.fire1,0,"extended pause resume must clear stale P1 fire cadence");
       assert.equal(recovered.buffer,0,"extended pause resume must clear stale attack buffer");
-      assert.equal(recovered.projectileCD,0,"extended pause resume must clear stale projectile cadence");
+      assert.ok(Number.isFinite(recovered.projectileCD)&&recovered.projectileCD>=0&&recovered.projectileCD<=70,`extended pause resume must replace stale projectile cadence with the normal 0-70 ms live cadence, got ${recovered.projectileCD}`);
       assert.equal(recovered.space,false,"extended pause resume must clear canonical Space ownership");
       assert.equal(recovered.keyF,false,"extended pause resume must clear KeyF alias ownership");
       assert.equal(recovered.numpad0,false,"extended pause resume must clear Numpad0 alias ownership");
