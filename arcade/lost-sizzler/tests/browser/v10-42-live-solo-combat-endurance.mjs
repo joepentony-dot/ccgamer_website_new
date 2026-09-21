@@ -386,7 +386,7 @@ try{
   assert.equal(touchAfter.controlsLocked,false,"actual mobile FIRE button must clear controlsLocked");
   assert.equal(touchSpaceHeld,false,"mobile FIRE pointer release must not leave Space held");
   assert.equal(touchAfter.lifecycleOwner,true,"mobile FIRE must preserve projectile lifecycle ownership");
-  assert.ok(touchAfter.presentationRepairs>touchBefore.presentationRepairs,"actual mobile FIRE must repair a stale live-run presentation flag");
+  assert.equal(touchAfter.active,"true","actual mobile FIRE path must recover a stale live-run presentation flag regardless of which combat owner repairs it first");
   assert.ok(touchAfter.mobileFireFallbacks>touchBefore.mobileFireFallbacks,"delegated mobile FIRE safety owner must recover a visible button whose direct listener was lost");
 
   const fireButton=touchPage.locator('#v104-touch-controls [data-action="fire"]');
