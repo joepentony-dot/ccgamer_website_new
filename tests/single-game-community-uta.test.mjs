@@ -156,3 +156,10 @@ test("shared template and runtime keep UTA C64-only and hidden without a confide
   assert.match(runtime, /if \(!record\) \{/);
   assert.match(loader, /label: "Tape"/);
 });
+
+
+test("UTA runtime omits unknown release years instead of displaying archive sentinel values", () => {
+  const runtime = fs.readFileSync("js/ccg-uta-archive.js", "utf8");
+  assert.match(runtime, /makeMeta\("Year", release\.year\)/);
+  assert.doesNotMatch(runtime, /release\.year \|\| release\.yearLabel/);
+});
