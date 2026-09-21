@@ -8,6 +8,8 @@ const root=path.resolve(here,"..");
 const read=file=>fs.readFileSync(path.join(root,file),"utf8");
 const bootstrap=read("js/v10-42-bootstrap.js");
 const fix=read("js/v10-42-r20-live-regression-stability.js");
+const touch=read("js/v10-4-patch.js");
+const play=read("js/game-play.js");
 const stallElapsed=read("js/v10-42-r22-stall-elapsed-handoff.js");
 const ownerSeal=read("js/v10-42-r21-owner-and-attack-seal.js");
 const controllerSeal=read("js/v10-42-r2-controller-owner-seal.js");
@@ -22,6 +24,11 @@ assert.match(fix,/function attackNow\(code\)[\s\S]*repairAttackBoundary\(\)[\s\S
 assert.match(fix,/if\(fired\)[\s\S]*fireBuffer1=0[\s\S]*else[\s\S]*queueAttack\(player\)/,"a successful direct shot must clear the buffered fallback so one press cannot become two shots");
 assert.match(fix,/if\(spyActive\(\)\)return;/,"Spy Vs Spy must retain ownership of its own attack/fullscreen input instead of r20 intercepting dungeon attack keys");
 assert.match(fix,/attackNow\(event\.code\)[\s\S]*event\.stopImmediatePropagation\(\)/,"normal gameplay attack capture must stop older Space/fullscreen listeners from adding duplicate intents");
+assert.match(play,/p\.__ccgLastHurtAt=performance\.now\(\);p\.hitStunMs=/,"core damage handling must timestamp legitimate hit-stun ownership");
+assert.match(fix,/staleAfter=Math\.max\(540,expected\*3\)[\s\S]*performance\.now\(\)-lastHurt>staleAfter[\s\S]*player\.hitStunMs=0/,"ordinary attack intent must clear a stale hit-stun after the real damage window has expired");
+assert.match(fix,/player\.controlLocked=false[\s\S]*player\.controlsLocked=false/,"ordinary attack intent must recover stale player control locks");
+assert.match(touch,/CCGLostSizzlerV142R20LiveRegressionStability\?\.attackNow\?\.\("Space"\)/,"mobile FIRE must use the same strong attack recovery owner as keyboard attack");
+assert.match(touch,/if\(!handled&&typeof queueAttack === "function"\) queueAttack\(p1\)/,"mobile FIRE must retain the canonical queue as a fallback only when direct recovery cannot fire");
 
 assert.match(fix,/hideNamedDossier=function[\s\S]*focusGame\(\)[\s\S]*scheduleCursorHide\(\)/,"closing the dossier must restore keyboard focus and desktop cursor-idle behaviour");
 assert.match(fix,/CURSOR_IDLE_MS=1600[\s\S]*ccg-game-cursor-idle/,"desktop gameplay must hide an idle pointer after a short delay");
