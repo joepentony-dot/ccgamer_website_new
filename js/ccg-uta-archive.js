@@ -65,7 +65,7 @@
       meta.className = "ccg-uta-release__details";
       [
         makeMeta("Publisher", release.publisher),
-        makeMeta("Year", release.year || release.yearLabel),
+        makeMeta("Year", release.year),
         makeMeta("Tape loader", release.loader)
       ].filter(Boolean).forEach(function (item) { meta.appendChild(item); });
       card.appendChild(meta);
