@@ -29,7 +29,10 @@ assert.match(source,/if\(!contactKey\)return current\.apply\(this,arguments\)/,"
 assert.match(source,/trapContacts\.has\(contactKey\)/,"trap damage owner must suppress duplicate damage on one active trap contact");
 assert.match(source,/trapContacts\.add\(contactKey\)/,"successful trap health damage must latch the active contact");
 assert.match(source,/trapDamageOwner=wrapped/,"a newly installed R19 damage owner must be retained independently of mutable window ownership");
-assert.match(source,/trapDamageOwner\|\|chainOwner\(window\.hurtPlayer,"__ccgV142R19MobileTrapDamage"\)/,"trap repair must prefer the retained R19 owner during a transient wrapper race");
+assert.match(source,/function deepestOriginal\(owner\)/,"validated floor-trap damage must retain a route to the deepest canonical hurtPlayer owner");
+assert.match(source,/baseTrapDamageOwner=deepestOriginal\(current\)\|\|current/,"R19 installation must capture the canonical damage owner before adding its wrapper");
+assert.match(source,/function applyValidatedTrapHealthDamage\(player,trap\)/,"caller-validated floor traps must have a direct canonical health-damage boundary");
+assert.match(source,/owner\.call\(window,player,1,false/,"validated floor-trap damage must call the retained canonical owner instead of trusting the mutable visible wrapper chain");
 assert.match(source,/function withValidatedTrapContact\(player,trap,callback\)/,"R19 must expose one synchronous validated-contact scope for canonical trap damage");
 assert.match(source,/function damageValidatedTrapContact\(player,trap\)/,"R19 must expose one stable retained damage route for a caller-validated floor trap");
 assert.match(source,/function guaranteeTrapContactDamage\(player,trap,beforeHealth,beforeArmor\)/,"R19 must expose one stable synchronous floor-trap repair boundary");
@@ -37,7 +40,9 @@ assert.match(source,/trapContacts\.delete\(contactKey\)/,"leaving or deactivatin
 assert.match(source,/const beforeHealth=Number\(player\.health\|\|0\),beforeArmor=Number\(player\.armor\|\|0\)/,"trap damage owner must snapshot health and armour");
 assert.match(source,/player\.armor=0/,"ordinary floor traps must bypass armour for their promised health hit");
 assert.match(source,/finally\{[\s\S]*?player\.armor=beforeArmor/,"trap damage owner must restore armour after delegating the hit");
-assert.doesNotMatch(source,/player\.invuln=0/,"trap damage must preserve the canonical invulnerability contract");
+assert.match(source,/player\.invuln=0/,"a caller-validated active floor trap must clear stale player invulnerability before the canonical one-health hit");
+assert.match(source,/if\(threw\)player\.invuln=beforeInvuln/,"failed canonical trap damage must restore the pre-contact invulnerability state");
+assert.match(source,/const protectionMs=Math\.max\(0,Number\(player\.invuln\|\|0\)\)/,"successful canonical trap damage must retain the new post-hit invulnerability as duplicate protection");
 assert.match(source,/trapRuntime\?\.contact/,"mobile repair must use the canonical rare-events trap contact latch");
 assert.match(source,/trapCycles\.set\(key,false\)/,"mobile repair must re-arm the r57 trap-cycle latch while inactive");
 assert.match(source,/function syncPortraitCanvasAspect\(\)/,"portrait stability must own a bounded backing-store aspect repair");
@@ -179,16 +184,20 @@ assert.equal(context.CCGLostSizzlerV142R19MobileTrapLayoutStability.state.damage
 context.CCGLostSizzlerV142R19MobileTrapLayoutStability.installTrapDamageOwner();
 assert.deepEqual(chainStats(context.hurtPlayer),afterReinstallStats,"repeated guarded installation must keep wrapper depth and R19 ownership stable");
 
-// A later owner can temporarily replace the global damage function without
-// retaining R19 in its visible ancestry. Canonical floor traps must still use
-// the retained R19 owner rather than taking an armour-only hit first.
+// A real-device late owner can temporarily replace the visible damage function
+// and swallow a trap call without retaining R19 in its visible ancestry. The
+// caller-validated floor-trap route must ignore that mutable top-level owner and
+// reach the retained canonical damage/death pipeline directly.
 const detachedGlobalHurt=context.hurtPlayer.__ccgOriginal?.__ccgOriginal||context.hurtPlayer.__ccgOriginal||context.hurtPlayer;
-context.hurtPlayer=detachedGlobalHurt;
+const swallowingGlobalHurt=function swallowingGlobalHurt(){return false};
+swallowingGlobalHurt.__ccgOriginal=detachedGlobalHurt;
+context.hurtPlayer=swallowingGlobalHurt;
 context.SYS.trapActive=()=>false;
 const detachedBeforeHealth=player.health,detachedBeforeArmor=player.armor;
-assert.equal(context.CCGLostSizzlerV142R19MobileTrapLayoutStability.damageValidatedTrapContact(player,trap),true,"retained R19 owner must remain callable when the visible global hurtPlayer owner is detached");
-assert.equal(player.health,detachedBeforeHealth-1,"detached global hurtPlayer must not turn a validated floor trap into an armour-only hit");
-assert.equal(player.armor,detachedBeforeArmor,"retained validated trap route must preserve armour");
+assert.equal(context.CCGLostSizzlerV142R19MobileTrapLayoutStability.damageValidatedTrapContact(player,trap),true,"validated floor-trap damage must remain handled when the visible global hurtPlayer owner swallows the call");
+assert.equal(player.health,detachedBeforeHealth-1,"a swallowing visible hurtPlayer owner must not prevent the validated floor trap from removing one health");
+assert.equal(player.armor,detachedBeforeArmor,"direct canonical trap damage must preserve armour");
+assert.ok(player.invuln>0,"direct canonical trap damage must leave canonical post-hit invulnerability in place");
 player.x=3;context.CCGLostSizzlerV142R19MobileTrapLayoutStability.rearmInactiveTrapContacts();player.x=4;player.health=detachedBeforeHealth;player.invuln=0;
 context.hurtPlayer=lateRepairOwner;
 
