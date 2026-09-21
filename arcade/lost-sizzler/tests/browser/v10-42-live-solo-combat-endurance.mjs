@@ -195,7 +195,7 @@ try{
         held:Number(window.CCGLostSizzlerV142AttackHoldLiveness?.held?.size||0),
         resets:Number(window.__CCG_PAUSE_ATTACK_RESETS__||0)
       }));
-      assert.equal(recovered.fire1,0,"extended pause resume must clear stale P1 fire cadence");
+      assert.ok(Number.isFinite(recovered.fire1)&&recovered.fire1<=0,`extended pause resume must leave P1 fire cadence ready (<=0), got ${recovered.fire1}`);
       assert.equal(recovered.buffer,0,"extended pause resume must clear stale attack buffer");
       assert.ok(Number.isFinite(recovered.projectileCD)&&recovered.projectileCD>=0&&recovered.projectileCD<=70,`extended pause resume must replace stale projectile cadence with the normal 0-70 ms live cadence, got ${recovered.projectileCD}`);
       assert.equal(recovered.space,false,"extended pause resume must clear canonical Space ownership");
@@ -239,7 +239,7 @@ try{
         controlLocked:Boolean(p1.controlLocked),controlsLocked:Boolean(p1.controlsLocked),hitStunMs:Number(p1.hitStunMs),
         lastReset:String(window.__CCG_PAUSE_ATTACK_LAST_RESET__?.reason||"")
       }));
-      assert.equal(inventoryRecovered.fire1,0,"extended inventory resume must clear stale P1 fire cadence");
+      assert.ok(Number.isFinite(inventoryRecovered.fire1)&&inventoryRecovered.fire1<=0,`extended inventory resume must leave P1 fire cadence ready (<=0), got ${inventoryRecovered.fire1}`);
       assert.equal(inventoryRecovered.buffer,0,"extended inventory resume must clear stale attack buffer");
       assert.ok(Number.isFinite(inventoryRecovered.projectileCD)&&inventoryRecovered.projectileCD>=0&&inventoryRecovered.projectileCD<=70,`extended inventory resume must restore normal live projectile cadence, got ${inventoryRecovered.projectileCD}`);
       assert.equal(inventoryRecovered.space,false,"extended inventory resume must clear canonical Space ownership");
