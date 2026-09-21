@@ -8,6 +8,15 @@ For Dungeon Carnage specifically, `arcade/lost-sizzler/PROGRESS.md` is the produ
 
 Update this file when a workstream changes category, its active PR/dependency changes, or a substantial session ends. Keep detailed reasoning, checks, blockers, and next actions in the workstream file.
 
+## Single-game community and UTA checkpoint — 22 September 2026
+
+- PR #2227 / branch `codex/single-game-community-uta` is the bounded implementation vehicle for the shared individual-game rating/review presentation and C64 Ultimate Tape Archive integration.
+- Community writes remain on the canonical Supabase `ratings`/`comments` tables. New `security invoker` read RPCs provide aggregate rating and 8-review paginated/sorted reads; the existing one-rating-per-game upsert, edit/delete/report/helpful and guest-read model are preserved.
+- C64 UTA links are generated/cache-owned, never live-scraped by game pages. Confident matches require normalised title plus known publisher/re-release evidence and compatible year evidence when known. Multiple releases are preserved; ambiguous candidates are excluded to `data/uta-manual-review.json`. Amiga never requests or renders UTA data.
+- Known seed exclusions requiring verification are 1942 / Encore 1989 archive [10797] and Bangkok Knights / Activision 1987 archive [3551]. The generated manual-review JSON is authoritative after each UTA refresh.
+- The live Supabase migration has passed a transactional compile/dry-run with rollback; production DDL remains gated on final exact-head PR qualification.
+- Detailed record: [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md).
+
 ## Current autonomous Dungeon Carnage checkpoint — 21 September 2026
 
 - Latest verified Dungeon runtime merge checkpoint is now #2222: exact qualified head `d27d714f5d15757e360ce27b49b4d185e379e56d`, merged as `cbbf9a97eb1f83c21eea3a519fd707af28be22bd`. It is based directly on merged #2220 (`f2d5332ceca250861e79185c943b8098c001894a`), which repaired the Level 2 floor-simulation slowdown/trap-cycle liveness regression. #2222 advances build/cache to `V10.42 r46` / `20260921r46`, adds the bounded final visual-maximisation layer, and changes only the Level 3 E/N/W/S torch wrong-answer penalty to exactly one spawned monster.
@@ -110,6 +119,7 @@ No further Dungeon coding stage is justified unless one of these checks exposes 
 | Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | Stage 8 #2141 is merged and the verified standalone HTML5 artifact is repository-ready. Public itch.io page creation/upload/final URL remain external; the retired custom commerce/paywall and desktop/Windows graphs stay closed. |
 | Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2150 is merged and the unified Content Publisher no longer exposes game-music upload. Magazine-source recovery is live/archive best-effort and no longer blocks canonical publishing. #2157 materialised the Road Rash archive/reviews and #2159 fixed the successful-refresh counter path. #2110 is closed unmerged as superseded. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | Draft #2176 is the current Quest 3 reconstruction at exact head `09a11f2ce26b4ba5848b29e75ad33534212a0458`; all automated checks are green. Current `main` has advanced without touching any of the 17 candidate paths, so no drift-only rebase is justified. Hands-on Bedroom + 36% Conversion Bout acceptance remains the merge gate. |
+| Single-game community and C64 UTA | [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md) | PR #2227 is the bounded implementation/qualification vehicle. Ratings/reviews stay on existing Supabase writes with compact read RPCs; UTA is C64-only generated mapping with ambiguous matches excluded to a review queue. |
 | SEO and generated output | [seo-and-generated-output.md](ai-work/seo-and-generated-output.md) | #2146 individual-game presentation, #2167 site-wide public layout and #2170 bounded public-page discovery metadata are merged. Generated outputs remain workflow-owned; #2169 is the latest generated SEO/video automation merge observed before #2170. |
 
 ## Remaining active draft PR classes at this checkpoint
