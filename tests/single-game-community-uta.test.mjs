@@ -103,6 +103,7 @@ test("single-game community runtime uses compact aggregate/read RPCs and preserv
   assert.match(ratings, /ccg-rating-choice-grid/);
   assert.doesNotMatch(ratings, /<select required name="rating"/);
   assert.match(ratings, /upsert\(\{ user_id: activeUser\.id, game_key: slug, rating: rating \}/);
+  assert.match(ratings, /Log in to rate/);
 
   assert.match(comments, /rpc\('ccg_game_reviews'/);
   assert.match(comments, /Most Helpful/);
@@ -115,11 +116,28 @@ test("single-game community runtime uses compact aggregate/read RPCs and preserv
   assert.match(comments, /data-action="delete"/);
   assert.match(comments, /data-action="report"/);
   assert.match(comments, /data-action="helpful"/);
+  assert.match(comments, /from\('comments'\)\.insert/);
+  assert.match(comments, /from\('comment_reports'\)\.insert/);
+  assert.match(comments, /rpc\('submit_helpful_vote'/);
+  assert.match(comments, /Log in to post a review/);
+  assert.match(comments, /Anyone can read reviews/);
 
   assert.match(migration, /security invoker/gi);
   assert.match(migration, /create table if not exists public\.comment_helpful_votes/);
   assert.match(migration, /create or replace function public\.submit_helpful_vote/);
   assert.match(migration, /comment_reports_owner_read/);
+});
+
+test("shared community and tape styles retain compact desktop and mobile layouts", () => {
+  const communityCss = fs.readFileSync("resources/css/ccg-community.css", "utf8");
+  const gameCss = fs.readFileSync("resources/css/game-pages.css", "utf8");
+
+  assert.match(communityCss, /\.ccg-rating-choice-grid\s*\{[\s\S]*grid-template-columns:\s*repeat\(10,/);
+  assert.match(communityCss, /@media \(max-width:\s*760px\)[\s\S]*\.ccg-rating-choice-grid\s*\{[\s\S]*repeat\(5,/);
+  assert.match(communityCss, /\.ccg-review-pagination/);
+
+  assert.match(gameCss, /\.ccg-uta-release-list/);
+  assert.match(gameCss, /@media \(max-width:\s*620px\)[\s\S]*\.ccg-uta-release\s*\{[\s\S]*grid-template-columns:\s*1fr/);
 });
 
 test("shared template and runtime keep UTA C64-only and hidden without a confident map entry", () => {
