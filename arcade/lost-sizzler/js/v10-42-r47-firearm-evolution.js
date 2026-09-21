@@ -108,6 +108,7 @@
       const floor=Math.max(1,Number(currentRun()?.floor||1)),cap=capForFloor(floor),tier=deriveTier(player),panel=document.createElement("div");
       panel.className="ccg-evolving-firearm slot-actions";
       if(!weapon){
+        const status=load.querySelector("small");if(status)status.textContent=String(status.textContent||"").replace(/^[^•]+(?=\s•\sMAP)/,"ARCHIVE SWORD");
         panel.innerHTML=`<b>EVOLVING FIREARM · NOT ACQUIRED</b><span>ARCHIVE SWORD ACTIVE · UNLIMITED MELEE</span><small>Your first weapon pickup becomes Tier 1 Field Pulse. Floor ${floor} allows firearm progression up to Tier ${cap}.</small>`
       }else{
         panel.innerHTML=`<b>EVOLVING FIREARM · TIER ${tier}/6</b><span>${weapon.displayName} — ${weaponSummary(weapon)}</span><small>${tier<cap?`The next weapon pickup upgrades this firearm to Tier ${tier+1}.`:`Floor ${floor} cap reached. Extra weapon pickups become ammunition${floor<5?`; Floor ${floor+1} unlocks the next tier`:"; maximum tier reached"}.`}</small>`
