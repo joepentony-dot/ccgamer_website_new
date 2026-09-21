@@ -6,7 +6,7 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Current checkpoint — 21 September 2026
 
-Latest verified Dungeon runtime merge checkpoint is #2201: exact qualified head `4fa73b27dc2f8e5216ccb326e125615169ece5c0`, merged as `f66274da6cfe6d78732fe3cda901306335ff18d7`. It repairs the live-reproduced mobile trap-damage ownership failure and the narrow coarse/mobile landing menu, and advances the cache token to `20260921r36`. Stage 8 itch.io repository preparation remains complete through #2141, with the latest qualified runtime artifact recorded below.
+Latest verified Dungeon runtime merge checkpoint is #2203: exact qualified head `8e1a18f6ec961cf44fe19800559e91154276ac8d`, merged as `1d875085c07f366561f4ae0dae5c3a8bbcda3019`. It preserves #2201's live mobile trap/menu fixes and adds a renderer-only 1.3x mobile Solo/Tutorial camera while desktop and local split-screen remain at 1x. Build/cache advance to `V10.42 r37` / `20260921r37`. Stage 8 itch.io repository preparation remains complete through #2141, with the latest qualified runtime artifact recorded below.
 
 Stage 1 remains converged through #2134/#2135, Stage 2 through #2136, and the original seven-item live-defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The #2129 sustained-Solo hands-on acceptance and the startup hands-on acceptance also remain outstanding.
 
@@ -23,17 +23,22 @@ The user-reproduced mobile defect was that naturally generated floor traps could
 
 Exact #2193 qualification passed CCG Site Safety, SEO Automation, C64 Dungeon Carnage itch.io Package, Public Code Cache Version, Native Mouse Wheel Scroll Contract, both dedicated Mobile Trap Layout jobs, canonical/Node contracts and all six Lost Sizzler Load Safety Chromium shards. The first shard-4 attempt saw one shock crossing sampled with only 36.5 ms left in its active phase; an unchanged shard-4 retry on exact head `03333f6e89381e018197b990664a1e25205e8f78` passed. No runtime, assertion or timeout was weakened.
 
-Latest qualified runtime/package artifact: `C64-Dungeon-Carnage-Itch`, artifact ID `10617155868`, 21,113,260 bytes, GitHub Actions SHA-256 `be5d3565658eedb56b217204ae884381444732e34ca8140c965a64d7775bbca9`, workflow run `35547446908`, exact source head `4fa73b27dc2f8e5216ccb326e125615169ece5c0`.
+Latest qualified runtime/package artifact: `C64-Dungeon-Carnage-Itch`, artifact ID `10618406437`, 21,113,481 bytes, GitHub Actions SHA-256 `e75dca59819835981adea585def7beccd90d852cd326420eb529a7ebece00b71`, workflow run `35550857671`, exact source head `8e1a18f6ec961cf44fe19800559e91154276ac8d`.
 
 Documentation PR #2191 is closed without merge as superseded because it recorded #2192 as the terminal trap checkpoint before #2193 disproved that assumption.
 
+### Mobile playfield camera — #2203
+
+The deployed mobile screenshot showed the active dungeon occupying too little of the available playfield. #2203 adds a renderer-only camera scale of 1.3x for mobile Solo/Tutorial when the canvas is 900px wide or narrower. Desktop Solo and local 2P remain at the established 1x scale. The change does not alter world generation, collision, movement, combat, traps, saves, economy or input ownership. Exact-head Site Safety, SEO, structured/social metadata, itch.io package, cache/version, dedicated mobile trap/layout, native mouse-wheel, canonical/Node and all six Chromium shards passed.
+
 Outstanding product gates:
 
-1. deployed startup retest on current post-#2201 main: loader must transition directly to the final V10.42 menu with no compact/intermediate flash and no loader → page → loader pulse;
+1. deployed startup retest on current post-#2203 main: loader must transition directly to the final V10.42 menu with no compact/intermediate flash and no loader → page → loader pulse;
 2. sustained Solo movement/firing/combat/pause-resume stability after #2129;
 3. three Artefacts/Essences → exactly one Banishment Flask without prior Gold-Flask purchase, with Gold and Score unchanged;
 4. deployed mobile trap acceptance: naturally generated active spike/fire/shock contacts must remove exactly one HEALTH while armour remains unchanged;
-5. deployed mobile landing acceptance: Continue/Solo/2P/Tutorial/Weekly choices must stack as one full-width column rather than a narrow left column, with readable Solo text.
+5. deployed mobile landing acceptance: Continue/Solo/2P/Tutorial/Weekly choices must stack as one full-width column rather than a narrow left column, with readable Solo text;
+6. deployed mobile playfield acceptance: Solo/Tutorial should visibly use more of the available gameplay area at the intended 1.3x camera while controls remain usable.
 
 Exact #2201 qualification passed CCG Site Safety, SEO Automation, Structured Data Validation, Social Metadata Validation, C64 Dungeon Carnage itch.io Package, Public Code Cache Version, Native Mouse Wheel Scroll Contract, the dedicated C64 Dungeon Carnage Mobile Trap Layout Contract, canonical/Node contracts and all six Lost Sizzler Chromium shards. Load Safety shard 6 initially hit the unchanged V10.36 loading-progress timing sample at 92% rather than 100%; an unchanged targeted shard-6 rerun passed. No runtime assertion or timeout was weakened.
 
