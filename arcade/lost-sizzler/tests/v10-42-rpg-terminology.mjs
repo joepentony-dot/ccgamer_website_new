@@ -40,7 +40,7 @@ for(const legacy of ["UNCOMMON","SIZZLER","GOLD MEDAL","ZZAP! 97%"]){
   assert.match(progression,new RegExp(legacy.replace(/[!.*+?^${}()|[\]\\]/g,"\\$&")),`base progression should retain internal ${legacy} identity`);
 }
 assert.match(bootstrap,/V10\.42 r36/);
-assert.match(bootstrap,/20260921r36/);
+assert.match(bootstrap,/20260921r36a/);
 assert.ok(bootstrap.indexOf('v10-42-rpg-terminology.js')<bootstrap.indexOf('v10-42-owned-firearm-clarity.js'),"terminology must load before Owned Firearms presentation");
 
 console.log("PASS v10-42 RPG terminology reconciliation");
