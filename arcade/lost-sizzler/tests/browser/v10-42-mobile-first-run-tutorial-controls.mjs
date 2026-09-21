@@ -102,7 +102,7 @@ try{
   await page.waitForFunction(()=>document.body.dataset.tutorialActive==="true");
   await page.waitForFunction(()=>Number(window.__ccgDungeonCamera?.zoom)>1);
   const camera=await page.evaluate(()=>({...window.__ccgDungeonCamera}));
-  assert.equal(camera.zoom,1.3,`mobile gameplay must use the focused 1.3x camera: ${JSON.stringify(camera)}`);
+  assert.equal(camera.zoom,1.6,`mobile gameplay must use the focused 1.6x camera: ${JSON.stringify(camera)}`);
   assert.ok(camera.logicalWidth<camera.viewportWidth&&camera.logicalHeight<camera.viewportHeight,`mobile camera must render a smaller logical viewport into the available playfield: ${JSON.stringify(camera)}`);
   assert.ok(Math.abs(camera.viewportWidth/camera.logicalWidth-camera.zoom)<0.01,`mobile horizontal camera scale must match its declared zoom: ${JSON.stringify(camera)}`);
   assert.ok(Math.abs(camera.viewportHeight/camera.logicalHeight-camera.zoom)<0.01,`mobile vertical camera scale must match its declared zoom: ${JSON.stringify(camera)}`);
