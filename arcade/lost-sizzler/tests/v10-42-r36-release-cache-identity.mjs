@@ -17,7 +17,7 @@ const buildMeta=html.match(/<meta name="ccg-lost-sizzler-build" content="([^"]+)
 const cacheMeta=html.match(/<meta name="ccg-lost-sizzler-cache" content="([^"]+)"/i)?.[1]||"";
 const localAssets=[...html.matchAll(/(?:src|href)="((?:js|css)\/[^"?]+\?v=([^"&]+))"/g)].map(match=>({url:match[1],token:match[2]}));
 
-assert.equal(buildMeta,BUILD,"the blocking page identity must already be the current r37 build before any runtime restamp");
+assert.equal(buildMeta,BUILD,"the blocking page identity must already be the current r38 build before any runtime restamp");
 assert.equal(cacheMeta,CACHE,"the cache guard must read the r37 token on its first execution");
 assert.equal(version.build,BUILD,"version.json must describe the same current build as the blocking page and bootstrap");
 assert.equal(version.cacheToken,CACHE,"version.json must describe the same current cache token as the blocking page and bootstrap");
@@ -36,11 +36,11 @@ assert.doesNotMatch(bootstrap,/removeEventListener\("click",blockedStart,true\)/
 assert.match(bootstrap,/Promise\.resolve\(launched\)\.then\(\(\)=>\{[\s\S]*?dataset\?\.runActive==="true"[\s\S]*?finish\(\)[\s\S]*?retry\(\)/,"the ordered bootstrap must retain a buffered local start until the launch owner either activates the run or needs a retry");
 
 assert.ok(localAssets.length>=30,`expected the canonical page to expose its local script/style cache tokens, found ${localAssets.length}`);
-for(const asset of localAssets)assert.equal(asset.token,CACHE,`${asset.url} is not pinned to the current r37 cache token`);
+for(const asset of localAssets)assert.equal(asset.token,CACHE,`${asset.url} is not pinned to the current r38 cache token`);
 assert.match(html,/game-local-runtime\.js\?v=20260921r38/,"the extracted current local runtime must not remain under the obsolete September 10 cache key");
 assert.match(html,/game-main\.js\?v=20260921r38/,"the current input/frame owner must not remain under the obsolete September 10 cache key");
 assert.match(html,/v10-41-cache-guard\.js\?v=20260921r38/,"the cache guard itself must be fetched under the current release token");
 
-assert.match(bootstrap,/v10-42-stage6-zone-gameplay\.js/,"r37 must load the Stage 6 zone gameplay owner through the ordered bootstrap");
+assert.match(bootstrap,/v10-42-stage6-zone-gameplay\.js/,"r38 must load the Stage 6 zone gameplay owner through the ordered bootstrap");
 
-console.log("Dungeon Carnage r37 blocking release/cache identity contract passed.");
+console.log("Dungeon Carnage r38 blocking release/cache identity contract passed.");
