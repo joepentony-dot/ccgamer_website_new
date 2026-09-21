@@ -118,15 +118,20 @@ try{
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
   const boot=await page.evaluate(()=>({ready:CCGLostSizzlerV142Bootstrap.ready,failed:CCGLostSizzlerV142Bootstrap.failed,error:CCGLostSizzlerV142Bootstrap.error||"",build:CCGLostSizzlerV142Bootstrap.build,cache:CCGLostSizzlerV142Bootstrap.cache,metaBuild:document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content,metaCache:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content,ordered:[...document.querySelectorAll('script[data-ccg-v142-ordered="true"]')].map(s=>s.src)}));
   assert.equal(boot.failed,false,`r36 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r36 ordered bootstrap must complete");
-  assert.equal(boot.build,"V10.42 r36");assert.equal(boot.cache,"20260921r36");assert.equal(boot.metaBuild,"V10.42 r36");assert.equal(boot.metaCache,"20260921r36");
+  assert.equal(boot.build,"V10.42 r37");assert.equal(boot.cache,"20260921r37");assert.equal(boot.metaBuild,"V10.42 r37");assert.equal(boot.metaCache,"20260921r37");
   assert.ok(boot.ordered.length>=30,"r36 bootstrap must load the complete ordered V10.42 chain");
-  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260921r36"),"every ordered V10.42 module must use the r36 cache token");
-  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260921r36")),"expected r36 projectile lifecycle asset was not requested");
+  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260921r37"),"every ordered V10.42 module must use the r36 cache token");
+  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260921r37")),"expected r36 projectile lifecycle asset was not requested");
   assert.equal(await page.evaluate(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.ownsBoundary?.()===true),true,"#2118 lifecycle owner must be authoritative before play");
 
   await page.evaluate(()=>{const hb=window.__ccgEnduranceHeartbeat={frames:0,stalls:0,maxGap:0,last:0};const beat=t=>{if(hb.last){const gap=t-hb.last;hb.maxGap=Math.max(hb.maxGap,gap);if(gap>300)hb.stalls++}hb.last=t;hb.frames++;requestAnimationFrame(beat)};requestAnimationFrame(beat)});
   await page.click("#solo-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(p1)&&Boolean(host),null,{timeout:20000});
+  await page.waitForFunction(()=>Number(window.__ccgDungeonCamera?.zoom)>=1);
+  const desktopCamera=await page.evaluate(()=>({...window.__ccgDungeonCamera}));
+  assert.equal(desktopCamera.zoom,1,`desktop Solo must retain the established camera scale: ${JSON.stringify(desktopCamera)}`);
+  assert.equal(desktopCamera.logicalWidth,desktopCamera.viewportWidth,"desktop Solo must retain the full logical viewport width");
+  assert.equal(desktopCamera.logicalHeight,desktopCamera.viewportHeight,"desktop Solo must retain the full logical viewport height");
   const initial=await snap(page);
   assert.equal(initial.lifecycleOwner,true,"#2118 lifecycle owner must remain authoritative in Solo");
   assert.ok(initial.sealGate||initial.sealUnsupported||initial.authoritativeUpdate,"controller owner must be sealed, explicitly unsupported, or already on its authoritative boundary");
@@ -162,7 +167,7 @@ try{
   assert.deepEqual(consoleErrors,[],`console errors:\n${consoleErrors.join("\n")}`);
 
   console.log("DUNGEON_R30_SOLO_ENDURANCE",JSON.stringify({initial,final,requests:v142Requests.length}));
-  console.log("Dungeon Carnage V10.42 r36 live Solo combat endurance regression passed.");
+  console.log("Dungeon Carnage V10.42 r37 live Solo combat endurance regression passed.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
