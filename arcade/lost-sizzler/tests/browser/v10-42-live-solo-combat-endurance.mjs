@@ -127,6 +127,11 @@ try{
   await page.evaluate(()=>{const hb=window.__ccgEnduranceHeartbeat={frames:0,stalls:0,maxGap:0,last:0};const beat=t=>{if(hb.last){const gap=t-hb.last;hb.maxGap=Math.max(hb.maxGap,gap);if(gap>300)hb.stalls++}hb.last=t;hb.frames++;requestAnimationFrame(beat)};requestAnimationFrame(beat)});
   await page.click("#solo-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(p1)&&Boolean(host),null,{timeout:20000});
+  await page.waitForFunction(()=>Number(window.__ccgDungeonCamera?.zoom)>=1);
+  const desktopCamera=await page.evaluate(()=>({...window.__ccgDungeonCamera}));
+  assert.equal(desktopCamera.zoom,1,`desktop Solo must retain the established camera scale: ${JSON.stringify(desktopCamera)}`);
+  assert.equal(desktopCamera.logicalWidth,desktopCamera.viewportWidth,"desktop Solo must retain the full logical viewport width");
+  assert.equal(desktopCamera.logicalHeight,desktopCamera.viewportHeight,"desktop Solo must retain the full logical viewport height");
   const initial=await snap(page);
   assert.equal(initial.lifecycleOwner,true,"#2118 lifecycle owner must remain authoritative in Solo");
   assert.ok(initial.sealGate||initial.sealUnsupported||initial.authoritativeUpdate,"controller owner must be sealed, explicitly unsupported, or already on its authoritative boundary");
