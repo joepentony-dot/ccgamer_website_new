@@ -6,17 +6,17 @@ const version = JSON.parse(fs.readFileSync(new URL('../version.json', import.met
 const identityOwner = fs.readFileSync(new URL('../js/v10-42-r4-release-identity-owner.js', import.meta.url), 'utf8');
 
 assert.equal(version.releaseVersion, 'V10.42');
-assert.equal(version.build, 'V10.42 r42');
-assert.equal(version.cacheToken, '20260921r42');
-assert.match(index, /meta name="ccg-lost-sizzler-build" content="V10\.42 r42"/);
-assert.match(index, /meta name="ccg-lost-sizzler-cache" content="20260921r42"/);
+assert.equal(version.build, 'V10.42 r43');
+assert.equal(version.cacheToken, '20260921r43');
+assert.match(index, /meta name="ccg-lost-sizzler-build" content="V10\.42 r43"/);
+assert.match(index, /meta name="ccg-lost-sizzler-cache" content="20260921r43"/);
 assert.match(index, /C64 Dungeon Carnage/);
 assert.match(index, /BUILD V10\.42/);
 assert.doesNotMatch(index, /20260827r31/);
 assert.match(identityOwner, /expectedSubtitle=`C64 DUNGEON CARNAGE — \$\{activeFamily\(\)\}`/);
 assert.doesNotMatch(identityOwner, /expectedSubtitle=`THE LOST SIZZLER/);
 
-const versionCheckIndex = index.indexOf('js/version-check.js?v=20260921r42');
+const versionCheckIndex = index.indexOf('js/version-check.js?v=20260921r43');
 assert.ok(versionCheckIndex >= 0, 'version-check.js must use the current cache token');
 
 console.log('V10.42 C64 Dungeon Carnage update marker contract passed');
