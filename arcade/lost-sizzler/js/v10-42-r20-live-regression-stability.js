@@ -10,6 +10,8 @@
     directAttackFallbacks:0,
     capturedR1Shots:0,
     directAttackErrors:0,
+    staleStunRepairs:0,
+    controlLockRepairs:0,
     staleModeRecoveries:0,
     dossierKeyboardCloses:0,
     cursorHides:0,
@@ -62,6 +64,13 @@
       if(!Number.isFinite(Number(fire1))||Number(fire1)<0||Number(fire1)>5000)fire1=0;
       if(!Number.isFinite(Number(fireBuffer1))||Number(fireBuffer1)<0||Number(fireBuffer1)>2500)fireBuffer1=0;
       if(!Number.isFinite(Number(projectileCD))||Number(projectileCD)<0||Number(projectileCD)>1000)projectileCD=0;
+      const player=p1||null;
+      if(player){
+        if(player.controlLocked){player.controlLocked=false;diagnostics.controlLockRepairs++}
+        if(player.controlsLocked){player.controlsLocked=false;diagnostics.controlLockRepairs++}
+        const stun=Number(player.hitStunMs||0),lastHurt=Number(player.__ccgLastHurtAt||0),expected=Math.max(1,Number(window.CCG_CONFIG?.player?.hitStunMs||180)),staleAfter=Math.max(540,expected*3);
+        if(stun>0&&(!Number.isFinite(lastHurt)||lastHurt<=0||performance.now()-lastHurt>staleAfter)){player.hitStunMs=0;diagnostics.staleStunRepairs++}
+      }
     }catch(_){}
   }
 
