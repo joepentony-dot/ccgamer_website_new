@@ -261,7 +261,7 @@ export function buildUtaMapping(games, utaReleases) {
     mapping: {
       schemaVersion: 1,
       source: UTA_INDEX_URL,
-      matching: "normalized-title + known publisher/re-release publisher",
+      matching: "normalized-title + known publisher/re-release publisher + compatible release year when known",
       games: publicGames
     },
     manualReview: {
