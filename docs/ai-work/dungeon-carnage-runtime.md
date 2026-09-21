@@ -4,6 +4,21 @@
 
 The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
+## Active r47 pre-release candidate — PR #2226 — 22 September 2026
+
+PR #2226 is the active bounded release-blocker candidate on `codex/dungeon-r47-release-blockers`. It advances build/cache to `V10.42 r47` / `20260922r47` and remains draft until one final exact head passes the complete qualification matrix.
+
+The candidate contains four related changes:
+
+- **Inventory/FIRE recovery:** preserves the existing attack owners, repairs the Inventory-close transition through established stability APIs, restores gameplay focus, verifies the next valid attack intent and uses r20 `attackNow()` only as a fallback when normal FIRE activity is absent. A browser contract repeats Inventory → return → FIRE five times.
+- **Memory Pad redesign:** replaces the 3×3 pressure grid with five numbered pads separated by safe floor plus a dedicated purple replay console. Memory input requires deliberate player movement so forced knockback cannot fail the puzzle. A wrong pad spawns exactly one monster, returns the puzzle to idle and requires a deliberate replay. The browser contract also generates multiple Floor-3 seeds and requires the five-pad puzzle and safe replay console to exist.
+- **Single evolving firearm:** preserves the V10.25 Archive Sword / `firearmUnlocked=false` start. First weapon pickup acquires Tier 1; later pickups advance one tier subject to F1→T2, F2→T3, F3→T4, F4→T5, F5→T6 caps. Tier 4 is the first three-way weapon. A pickup while capped is salvaged into ammunition. Acquired ownership is collapsed to exactly one firearm and switching UI is removed.
+- **Incident recorder:** opt-in `?bugreport=1`, REPORT BUG button and F8 desktop shortcut. The bounded observation-only recorder captures recent inputs, panel/focus/visibility transitions, FIRE state, player/weapon/projectile state, Memory Pad state and runtime errors, then exports copyable text or JSON.
+
+During qualification, the r47 cache bump exposed one stale escaped r46 bootstrap regex in the blocking release-identity contract; that assertion was corrected to r47. The dedicated Mobile Trap Layout workflow then showed its live mobile geometry/trap-damage job still green while its static source check expected legacy `movementTriggers(p)`. The static contract is updated to require r47's deliberate `movementTriggers(p,true)` / `movementTriggers(p,deliberate=false)` signature while every R19 trap-damage assertion remains intact.
+
+The r46 package recorded below remains the publication baseline until the final #2226 exact head is fully green and produces a qualified r47 artifact.
+
 ## Current checkpoint — 21 September 2026
 
 Latest verified Dungeon runtime merge checkpoint is #2222: exact qualified head `d27d714f5d15757e360ce27b49b4d185e379e56d`, merged as `cbbf9a97eb1f83c21eea3a519fd707af28be22bd`. It sits directly on merged #2220 (`f2d5332ceca250861e79185c943b8098c001894a`), the Level 2 floor-simulation/trap-cycle liveness fix. #2222 advances build/cache to `V10.42 r46` / `20260921r46`, adds the final visual-maximisation presentation layer and reduces the separate Level 3 E/N/W/S torch wrong-answer penalty to exactly one spawned monster. Stage 8 itch.io repository preparation remains complete through #2141, with a fresh qualified r46 package artifact recorded below.
