@@ -24,7 +24,14 @@
   }
 
   function releaseReady(){
-    try{return document.body?.dataset?.releaseReady==="true"||window.CCGLostSizzlerReleaseGate?.state?.ready===true}catch(_){return false}
+    try{
+      const build=String(document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"").toUpperCase();
+      if(build.startsWith("V10.42")){
+        const v142=window.CCGLostSizzlerV142Bootstrap;
+        return Boolean(v142?.ready===true&&document.body?.dataset?.releaseReady==="true"&&document.body?.dataset?.v142BootstrapReady==="true")
+      }
+      return document.body?.dataset?.releaseReady==="true"||window.CCGLostSizzlerReleaseGate?.state?.ready===true
+    }catch(_){return false}
   }
 
   function moduleScript(node){
@@ -178,7 +185,7 @@
     if(v136?.loadingTimer){clearInterval(v136.loadingTimer);v136.loadingTimer=0}
     try{state.moduleObserver?.disconnect?.()}catch(_){}
     if(state.loadingTimer){clearInterval(state.loadingTimer);state.loadingTimer=0}
-    writeLoadingStage(100);
+    if(releaseReady())writeLoadingStage(100);
     state.finished=true;
     if(state.timer){clearInterval(state.timer);state.timer=0}
   }
@@ -196,8 +203,8 @@
     if(delay>1800)state.stalls++;
     syncCacheStatus();
     const gate=window.CCGLostSizzlerReleaseGate?.state;
-    if(gate?.ready){replayPendingSolo();stopLoaderObservers()}
-    else if(gate?.failed){state.pendingSolo=false;stopLoaderObservers()}
+    if(releaseReady()){replayPendingSolo();stopLoaderObservers()}
+    else if(gate?.failed||window.CCGLostSizzlerV142Bootstrap?.failed===true){state.pendingSolo=false;stopLoaderObservers()}
   }
 
   installStagedLoader();
