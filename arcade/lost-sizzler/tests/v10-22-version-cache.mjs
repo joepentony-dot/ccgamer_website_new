@@ -29,8 +29,8 @@ assert.ok(metaBuild,"game HTML must publish its loaded Dungeon Carnage build num
 assert.equal(metaBuild,manifest.build,"HTML build number and live version manifest must match");
 assert.equal(metaCache,manifest.cacheToken,"HTML cache token and live version manifest must match");
 assert.equal(manifest.releaseVersion,"V10.42","current semantic release must be V10.42");
-assert.equal(manifest.build,"V10.42 r40","current published build must remain explicit in the regression check");
-assert.equal(manifest.cacheToken,"20260921r40","current release cache token must remain explicit in the live manifest");
+assert.equal(manifest.build,"V10.42 r41","current published build must remain explicit in the regression check");
+assert.equal(manifest.cacheToken,"20260921r41","current release cache token must remain explicit in the live manifest");
 
 const activeAssets=[
   "css/game.css","css/v10-6-gameplay.css","css/v10-41-r28.css","css/v10-41-r29.css",
