@@ -51,7 +51,7 @@
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
     ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"]
   ];
-  const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],pendingStartId:"",pendingStartRetries:0,identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0,r1ChestOwner:null,r1ChestOwnerRestores:0};
+  const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],totalModules:modules.length,currentModule:"",currentIndex:0,pendingStartId:"",pendingStartRetries:0,identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0,r1ChestOwner:null,r1ChestOwnerRestores:0};
   window.CCGLostSizzlerV142Bootstrap=state;
 
   function setReleaseReady(value){
@@ -197,18 +197,24 @@
   }
 
   function alreadyLoaded(marker){return Boolean(marker&&window[marker])}
+  function announceModuleProgress(file,status){
+    state.currentModule=String(file||"");
+    state.currentIndex=Math.min(state.totalModules,status==="loaded"?state.loaded.length:Math.max(state.loaded.length+1,1));
+    try{window.dispatchEvent(new CustomEvent("ccg:v142-module-progress",{detail:{file:state.currentModule,status,loaded:state.loaded.length,total:state.totalModules,index:state.currentIndex}}))}catch(_){}
+  }
   function loadOne(file,marker){
-    if(alreadyLoaded(marker)){state.loaded.push(file);return Promise.resolve()}
+    announceModuleProgress(file,"loading");
+    if(alreadyLoaded(marker)){state.loaded.push(file);announceModuleProgress(file,"loaded");return Promise.resolve()}
     return new Promise((resolve,reject)=>{
       const existing=[...document.scripts].find(script=>String(script.src||"").includes(`/js/${file}`));
       if(existing){
-        if(alreadyLoaded(marker)){state.loaded.push(file);resolve();return}
-        existing.addEventListener("load",()=>{state.loaded.push(file);resolve()},{once:true});
-        existing.addEventListener("error",()=>reject(new Error(`Failed to load ${file}`)),{once:true});
+        if(alreadyLoaded(marker)){state.loaded.push(file);announceModuleProgress(file,"loaded");resolve();return}
+        existing.addEventListener("load",()=>{state.loaded.push(file);announceModuleProgress(file,"loaded");resolve()},{once:true});
+        existing.addEventListener("error",()=>{announceModuleProgress(file,"error");reject(new Error(`Failed to load ${file}`))},{once:true});
         return;
       }
       const script=document.createElement("script");script.async=false;script.src=`js/${file}?v=${CACHE}`;script.dataset.ccgV142Ordered="true";
-      script.onload=()=>{state.loaded.push(file);resolve()};script.onerror=()=>reject(new Error(`Failed to load ${file}`));document.head.appendChild(script);
+      script.onload=()=>{state.loaded.push(file);announceModuleProgress(file,"loaded");resolve()};script.onerror=()=>{announceModuleProgress(file,"error");reject(new Error(`Failed to load ${file}`))};document.head.appendChild(script);
     })
   }
 
@@ -275,7 +281,7 @@
       promoteStage8MerchantOwner();
       observeControllerSeal();
       try{window.CCGLostSizzlerV141R55FinalPlaytestCleanup?.markMenu?.()}catch(_){}
-      state.ready=true;stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";
+      state.ready=true;state.currentModule="";state.currentIndex=state.totalModules;announceModuleProgress("","ready");stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";
       const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five new dungeon floors are loaded in verified order. Solo, Tutorial and 2P Split Screen run locally; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
       replayPendingStart();
