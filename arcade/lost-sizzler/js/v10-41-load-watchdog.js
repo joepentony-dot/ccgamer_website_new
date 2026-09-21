@@ -34,6 +34,37 @@
     }catch(_){return false}
   }
 
+  function isV142Release(){
+    try{return String(document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"").toUpperCase().startsWith("V10.42")}catch(_){return false}
+  }
+  function orderedLoadingSnapshot(){
+    if(!isV142Release())return null;
+    const v142=window.CCGLostSizzlerV142Bootstrap,total=Math.max(0,Number(v142?.totalModules)||0);
+    if(!v142||!total)return{source:"v142-awaiting-bootstrap",ready:0,total:0,current:"",currentNumber:0};
+    return{
+      source:"v142-ordered",
+      ready:Math.min(total,Math.max(0,Number(v142.loaded?.length)||0)),
+      total,
+      current:String(v142.currentModule||""),
+      currentNumber:Math.min(total,Math.max(0,Number(v142.currentModuleNumber)||0))
+    }
+  }
+  function legacyLoadingSnapshot(){
+    const total=Math.max(EXPECTED_MODULES,state.moduleTotalKeys.size);
+    return{source:"legacy",ready:Math.min(total,Math.max(0,state.modulesReady)),total,current:"",currentNumber:0}
+  }
+  function loadingSnapshot(){return orderedLoadingSnapshot()||legacyLoadingSnapshot()}
+  function moduleLabel(file){
+    return String(file||"")
+      .replace(/\.js$/i,"")
+      .replace(/^v10-42-/i,"")
+      .replace(/^r\d+-/i,"")
+      .replace(/^stage\d+-/i,"")
+      .replaceAll("-"," ")
+      .trim()
+      .toUpperCase()
+  }
+
   function moduleScript(node){
     if(!(node instanceof HTMLScriptElement)||!node.src)return false;
     return [...node.attributes].some(attr=>attr.name.startsWith("data-ccg-"));
@@ -56,13 +87,13 @@
   }
 
   function totalModules(){
-    return Math.max(EXPECTED_MODULES,state.moduleTotalKeys.size)
+    return loadingSnapshot().total
   }
 
   function calculatedLoadingStage(){
     if(releaseReady())return 100;
-    const total=totalModules(),ready=Math.min(total,Math.max(0,state.modulesReady));
-    if(!ready)return 0;
+    const snapshot=loadingSnapshot(),total=snapshot.total,ready=snapshot.ready;
+    if(!total||!ready)return 0;
     return Math.min(99,Math.max(1,Math.round((ready/total)*99)))
   }
 
@@ -77,9 +108,13 @@
   }
 
   function syncLoadingStage(){
-    const total=totalModules(),ready=Math.min(total,Math.max(0,state.modulesReady)),stage=calculatedLoadingStage();writeLoadingStage(stage);
+    const snapshot=loadingSnapshot(),total=snapshot.total,ready=snapshot.ready,stage=calculatedLoadingStage();
+    state.loadingSource=snapshot.source;state.modulesReady=ready;state.expectedModules=total;state.currentModule=snapshot.current;state.currentModuleNumber=snapshot.currentNumber;
+    writeLoadingStage(stage);
     if(stage>=100)loadingStatus("Game systems ready.");
+    else if(snapshot.source==="v142-awaiting-bootstrap")loadingStatus("Starting ordered Dungeon Carnage game systems…");
     else if(ready>=total)loadingStatus(`Finalising game systems… ${ready} / ${total} modules ready.`);
+    else if(snapshot.source==="v142-ordered")loadingStatus(`Loading module ${Math.max(1,snapshot.currentNumber)} / ${total} — ${moduleLabel(snapshot.current)||"DUNGEON SYSTEM"}`);
     else loadingStatus(`Loading game modules… ${ready} / ${total} ready.`);
   }
   function installStagedLoader(){
@@ -210,6 +245,7 @@
   installStagedLoader();
   document.addEventListener("click",capturePreReleaseSolo,true);
   window.addEventListener("ccg-lost-sizzler-cache-status",()=>queueMicrotask(syncCacheStatus));
+  window.addEventListener("ccg:v142-module-progress",()=>queueMicrotask(syncLoadingStage));
   window.addEventListener("pagehide",()=>{
     state.pendingSolo=false;clearSoloLiveness(true);
     document.removeEventListener("click",capturePreReleaseSolo,true);
@@ -220,5 +256,5 @@
   state.timer=setInterval(tick,250);
   state.r57Timer=setInterval(ensureR57,100);
   tick();ensureR57();
-  window.CCGLostSizzlerLoadWatchdog={state,ownsLoadingProgress:true,expectedModules:EXPECTED_MODULES,totalModules,stop:stopLoaderObservers,replayPendingSolo,scheduleSoloLivenessCheck,clearSoloLiveness,syncLoadingStage,publicPlayLocked,publicBetaClosed,ensureR57};
+  window.CCGLostSizzlerLoadWatchdog={state,ownsLoadingProgress:true,legacyExpectedModules:EXPECTED_MODULES,get expectedModules(){return totalModules()},totalModules,loadingSnapshot,stop:stopLoaderObservers,replayPendingSolo,scheduleSoloLivenessCheck,clearSoloLiveness,syncLoadingStage,publicPlayLocked,publicBetaClosed,ensureR57};
 })();

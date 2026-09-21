@@ -33,6 +33,7 @@ const server=http.createServer((req,res)=>{
       res.end(data);
     });
     if(pathname.endsWith("/js/v10-35-quality.js")){setTimeout(send,900);return;}
+    if(pathname.endsWith("/js/v10-42-r24-biome-room-grammar.js")){setTimeout(send,180);return;}
     send();
   }catch(error){res.writeHead(500).end(String(error));}
 });
@@ -72,6 +73,9 @@ try{
         stage:Number(watchdog?.state?.loadingStage||0),
         expected:Number(watchdog?.expectedModules||0),
         total:Number(watchdog?.totalModules?.()||0),
+        source:String(watchdog?.state?.loadingSource||""),
+        current:String(watchdog?.state?.currentModule||""),
+        currentNumber:Number(watchdog?.state?.currentModuleNumber||0),
         status:String(document.getElementById("ccg-release-loading-status")?.textContent||"")
       });
     };
@@ -92,7 +96,9 @@ try{
       watchdog:window.CCGLostSizzlerLoadWatchdog?{
         expected:Number(window.CCGLostSizzlerLoadWatchdog.expectedModules||0),
         modulesReady:Number(window.CCGLostSizzlerLoadWatchdog.state?.modulesReady||0),
-        stage:Number(window.CCGLostSizzlerLoadWatchdog.state?.loadingStage||0)
+        stage:Number(window.CCGLostSizzlerLoadWatchdog.state?.loadingStage||0),
+        source:String(window.CCGLostSizzlerLoadWatchdog.state?.loadingSource||""),
+        bootstrapTotal:Number(window.CCGLostSizzlerV142Bootstrap?.totalModules||0)
       }:null,
       samples:[...(window.__ccgLoadingProgressSamples||[])]
     };
@@ -100,11 +106,13 @@ try{
   assert.equal(finished.value,100,"loading progress must reach 100% when the release gate completes");
   assert.equal(finished.hidden,true,"loading overlay must leave the screen after successful preparation");
   assert.equal(finished.runtime,true,"the active ordered runtime must be ready before the loading overlay closes");
-  assert.equal(finished.watchdog?.expected,108,"the loader must use the current 108-module release workload");
-  assert.ok(finished.watchdog?.modulesReady>=108,`the loader must observe the full release workload before completion: ${JSON.stringify(finished.watchdog)}`);
+  assert.ok(finished.watchdog?.bootstrapTotal>=40,`ordered V10.42 bootstrap must publish its real module workload: ${JSON.stringify(finished.watchdog)}`);
+  assert.equal(finished.watchdog?.expected,finished.watchdog?.bootstrapTotal,"visible loader denominator must match the ordered V10.42 bootstrap workload");
+  assert.equal(finished.watchdog?.modulesReady,finished.watchdog?.bootstrapTotal,`the loader must observe every ordered V10.42 module before completion: ${JSON.stringify(finished.watchdog)}`);
+  assert.equal(finished.watchdog?.source,"v142-ordered","V10.42 loader must finish under ordered-bootstrap ownership");
   assert.equal(finished.watchdog?.stage,100,"the authoritative loader stage must finish at 100");
-  const preReady=finished.samples.filter(sample=>sample.expected===108&&!sample.releaseReady);
-  assert.ok(preReady.length>=2,`expected multiple pre-ready module progress samples: ${JSON.stringify(finished.samples)}`);
+  const preReady=finished.samples.filter(sample=>sample.source==="v142-ordered"&&sample.expected>0&&!sample.releaseReady);
+  assert.ok(preReady.length>=2,`expected multiple ordered-module progress samples: ${JSON.stringify(finished.samples)}`);
   assert.ok(preReady.every(sample=>sample.value>=0&&sample.value<=99),"pre-ready module progress must stay in the 0-99 range");
   assert.ok(preReady.every(sample=>sample.value===sample.stage),"the visible progress value must match the authoritative loader stage");
   for(let i=1;i<preReady.length;i++){
@@ -114,6 +122,7 @@ try{
     if(current.value>previous.value)assert.ok(current.modulesReady>previous.modulesReady,`loading percentage must not rise unless another module completed: ${JSON.stringify({previous,current})}`);
   }
   assert.ok(new Set(preReady.map(sample=>sample.value)).size>=3,`module-driven loading should expose multiple intermediate percentages: ${JSON.stringify(preReady)}`);
+  assert.ok(preReady.some(sample=>/Loading module \\d+ \\/ \\d+ —/.test(sample.status)),`visible loader must name the ordered module currently loading: ${JSON.stringify(preReady)}`);
 
   /* Retained here as historic source context only: the former field-kit
    * assertions exercised retired Spy UI and must not execute in active CI. */

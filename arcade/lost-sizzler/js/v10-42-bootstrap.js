@@ -4,8 +4,8 @@
   if(window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
-  const BUILD="V10.42 r46";
-  const CACHE="20260921r46";
+  const BUILD="V10.42 r47";
+  const CACHE="20260921r47";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-r23-rpg-build-focus.js","CCGLostSizzlerV142R23RpgBuildFocus"],
@@ -52,7 +52,7 @@
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
     ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"]
   ];
-  const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],pendingStartId:"",pendingStartRetries:0,identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0,r1ChestOwner:null,r1ChestOwnerRestores:0};
+  const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],totalModules:modules.length,currentModule:"",currentModuleNumber:0,moduleProgress:0,pendingStartId:"",pendingStartRetries:0,identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0,r1ChestOwner:null,r1ChestOwnerRestores:0};
   window.CCGLostSizzlerV142Bootstrap=state;
 
   function setReleaseReady(value){
@@ -197,6 +197,14 @@
     queueMicrotask(attempt);
   }
 
+  function publishModuleProgress(file="",phase="loading"){
+    const total=modules.length,loaded=Math.min(total,state.loaded.length);
+    state.currentModule=String(file||"");
+    state.currentModuleNumber=phase==="ready"?total:Math.min(total,Math.max(0,phase==="loaded"?loaded:loaded+1));
+    state.moduleProgress=total?Math.round((loaded/total)*100):100;
+    try{window.dispatchEvent(new CustomEvent("ccg:v142-module-progress",{detail:{build:BUILD,cache:CACHE,file:state.currentModule,phase,loaded,total,current:state.currentModuleNumber,progress:state.moduleProgress}}))}catch(_){}
+  }
+
   function alreadyLoaded(marker){return Boolean(marker&&window[marker])}
   function loadOne(file,marker){
     if(alreadyLoaded(marker)){state.loaded.push(file);return Promise.resolve()}
@@ -269,14 +277,16 @@
     setReleaseReady(false);stampBuild();
     try{
       for(const [file,marker] of modules){
+        publishModuleProgress(file,"loading");
         await loadOne(file,marker);
+        publishModuleProgress(file,"loaded");
         if(file==="v10-42-r1-stability.js")captureR1ChestOwner();
       }
       promoteR1ChestOwner();
       promoteStage8MerchantOwner();
       observeControllerSeal();
       try{window.CCGLostSizzlerV141R55FinalPlaytestCleanup?.markMenu?.()}catch(_){}
-      state.ready=true;stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";
+      state.ready=true;publishModuleProgress("","ready");stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";
       const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five new dungeon floors are loaded in verified order. Solo, Tutorial and 2P Split Screen run locally; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
       replayPendingStart();
