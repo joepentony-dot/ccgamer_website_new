@@ -332,6 +332,52 @@ try{
   console.log("DUNGEON_R30_SOLO_ENDURANCE",JSON.stringify({initial,final,requests:v142Requests.length}));
   console.log("Dungeon Carnage V10.42 r43 live Solo combat endurance regression passed.");
   await context.close();
+
+  const touchContext=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  await touchContext.route("https://*.supabase.co/**",route=>route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:"{}"}));
+  await touchContext.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
+  const touchPage=await touchContext.newPage();
+  touchPage.setDefaultTimeout(60000);
+  await touchPage.goto(`${origin}/arcade/lost-sizzler/?mobile-fire-runtime-contract=1`,{waitUntil:"domcontentloaded"});
+  await touchPage.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
+  const touchBoot=await touchPage.evaluate(()=>({ready:CCGLostSizzlerV142Bootstrap?.ready===true,failed:CCGLostSizzlerV142Bootstrap?.failed===true,error:String(CCGLostSizzlerV142Bootstrap?.error||"")}));
+  assert.equal(touchBoot.failed,false,`mobile FIRE runtime bootstrap failed: ${touchBoot.error}`);
+  assert.equal(touchBoot.ready,true,"mobile FIRE runtime bootstrap must complete");
+  await touchPage.click("#solo-btn");
+  await touchPage.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(p1)&&Boolean(host),null,{timeout:20000});
+  await touchPage.locator('#v104-touch-controls [data-action="fire"]').waitFor({state:"visible",timeout:10000});
+  assert.equal(await armEnemy(touchPage),true,"mobile FIRE runtime enemy unavailable");
+
+  const touchBefore=await snap(touchPage);
+  const touchPoison=await touchPage.evaluate(()=>{
+    p1.controlLocked=true;p1.controlsLocked=true;
+    p1.hitStunMs=180;p1.__ccgLastHurtAt=performance.now()-2000;
+    fire1=4000;fireBuffer1=700;projectileCD=700;
+    return{
+      controlLocked:Boolean(p1.controlLocked),
+      controlsLocked:Boolean(p1.controlsLocked),
+      hitStunMs:Number(p1.hitStunMs),
+      fire1:Number(fire1),
+      buffer:Number(fireBuffer1),
+      projectileCD:Number(projectileCD)
+    };
+  });
+  assert.equal(touchPoison.controlLocked,true,"mobile FIRE regression failed to seed controlLocked");
+  assert.equal(touchPoison.controlsLocked,true,"mobile FIRE regression failed to seed controlsLocked");
+  assert.equal(touchPoison.hitStunMs,180,"mobile FIRE regression failed to seed stale hit-stun");
+
+  await touchPage.locator('#v104-touch-controls [data-action="fire"]').tap();
+  await touchPage.waitForTimeout(420);
+  const touchAfter=await snap(touchPage);
+  const touchSpaceHeld=await touchPage.evaluate(()=>input.has("Space"));
+  assert.ok(touchAfter.projectileSteps>touchBefore.projectileSteps||touchAfter.mana<touchBefore.mana,"actual mobile FIRE button produced no attack/projectile work after stale-state recovery");
+  assert.equal(touchAfter.hitStun,0,"actual mobile FIRE button must clear stale hit-stun");
+  assert.equal(touchAfter.controlLocked,false,"actual mobile FIRE button must clear controlLocked");
+  assert.equal(touchAfter.controlsLocked,false,"actual mobile FIRE button must clear controlsLocked");
+  assert.equal(touchSpaceHeld,false,"mobile FIRE pointer release must not leave Space held");
+  assert.equal(touchAfter.lifecycleOwner,true,"mobile FIRE must preserve projectile lifecycle ownership");
+  await touchContext.close();
+  console.log("Dungeon Carnage actual mobile FIRE stale-state recovery regression passed.");
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
 }
