@@ -6,11 +6,11 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Current checkpoint — 21 September 2026
 
-Latest verified Dungeon runtime merge checkpoint remains `992d19d39cd5ad7d5fb12116dda03d80df623e61`, the merge of #2193 from exact qualified head `03333f6e89381e018197b990664a1e25205e8f78`. Test/documentation follow-ups have since advanced live `main` through #2194 (`28f0815f9e849090783cd78792c26fcdc8cc5cb9`), #2198 (`301afdfe9e39ea2551486c5857260cc607d8a038`) and #2199 (`c0b8eb4a82806d524ce48e97c70888b09b0c327a`). None of those three changed runtime/gameplay ownership. Stage 8 itch.io repository preparation remains complete through #2141, with the latest qualified runtime artifact recorded below.
+Latest verified Dungeon runtime merge checkpoint is #2201: exact qualified head `4fa73b27dc2f8e5216ccb326e125615169ece5c0`, merged as `f66274da6cfe6d78732fe3cda901306335ff18d7`. It repairs the live-reproduced mobile trap-damage ownership failure and the narrow coarse/mobile landing menu, and advances the cache token to `20260921r36`. Stage 8 itch.io repository preparation remains complete through #2141, with the latest qualified runtime artifact recorded below.
 
 Stage 1 remains converged through #2134/#2135, Stage 2 through #2136, and the original seven-item live-defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The #2129 sustained-Solo hands-on acceptance and the startup hands-on acceptance also remain outstanding.
 
-### Mobile natural-trap remediation — #2188 / #2192 / #2193 / #2198 contract correction
+### Mobile natural-trap remediation — #2188 / #2192 / #2193 / #2198 / #2201
 
 The user-reproduced mobile defect was that naturally generated floor traps could visibly trigger under real touch movement without removing HEALTH.
 
@@ -19,19 +19,23 @@ The user-reproduced mobile defect was that naturally generated floor traps could
 - Repeated current-main qualification then exposed one remaining ownership case: the visible global `hurtPlayer` function could temporarily be the plain canonical owner, allowing armour absorption and invulnerability to occur before the retained R19 trap owner repaired the contact.
 - #2193 fixes that final race by routing a caller-validated active floor-trap contact through the retained R19 damage owner first. Canonical `hurtPlayer()` remains the fallback, and the post-call guarantee remains a backstop. The route preserves one-HEALTH trap damage, armour, XP boundaries and canonical damage/death handling.
 - #2198 is a test-only correction discovered while qualifying startup-smoke work: the natural-contact browser contract could select a generated trap whose `active` flag was false while separately sampling a phase that looked active. #2198 now requires the selected trap itself to be active throughout candidate selection, phase waiting and diagnostics. Exact head `0739e4300b7badf92483572b5c898490893002a3` merged as `301afdfe9e39ea2551486c5857260cc607d8a038`; runtime/gameplay code was unchanged.
+- A subsequent real mobile test still reproduced active traps failing to remove HEALTH. #2201 reproduces the remaining failure with a late visible `hurtPlayer` owner that swallows trap-labelled calls, then routes caller-validated active floor contacts through the retained canonical damage/death owner directly. Armour is restored after the contact, duplicate-contact protection remains owned by R19, and the generated real-touch contract proves the late-owner case.
 
 Exact #2193 qualification passed CCG Site Safety, SEO Automation, C64 Dungeon Carnage itch.io Package, Public Code Cache Version, Native Mouse Wheel Scroll Contract, both dedicated Mobile Trap Layout jobs, canonical/Node contracts and all six Lost Sizzler Load Safety Chromium shards. The first shard-4 attempt saw one shock crossing sampled with only 36.5 ms left in its active phase; an unchanged shard-4 retry on exact head `03333f6e89381e018197b990664a1e25205e8f78` passed. No runtime, assertion or timeout was weakened.
 
-Latest qualified runtime/package artifact: `C64-Dungeon-Carnage-Itch`, artifact ID `10613960768`, 21,112,798 bytes, GitHub Actions SHA-256 `e930524390ef67cff4279b086e62e263c2f9119b7a25b9b2a36a94936d060d86`, workflow run `35538488484`, exact source head `03333f6e89381e018197b990664a1e25205e8f78`.
+Latest qualified runtime/package artifact: `C64-Dungeon-Carnage-Itch`, artifact ID `10617155868`, 21,113,260 bytes, GitHub Actions SHA-256 `be5d3565658eedb56b217204ae884381444732e34ca8140c965a64d7775bbca9`, workflow run `35547446908`, exact source head `4fa73b27dc2f8e5216ccb326e125615169ece5c0`.
 
 Documentation PR #2191 is closed without merge as superseded because it recorded #2192 as the terminal trap checkpoint before #2193 disproved that assumption.
 
 Outstanding product gates:
 
-1. deployed startup retest on current post-#2193 main: loader must transition directly to the final V10.42 menu with no compact/intermediate flash and no loader → page → loader pulse;
+1. deployed startup retest on current post-#2201 main: loader must transition directly to the final V10.42 menu with no compact/intermediate flash and no loader → page → loader pulse;
 2. sustained Solo movement/firing/combat/pause-resume stability after #2129;
 3. three Artefacts/Essences → exactly one Banishment Flask without prior Gold-Flask purchase, with Gold and Score unchanged;
-4. deployed mobile trap acceptance: naturally generated active spike/fire/shock contacts must remove exactly one HEALTH while armour remains unchanged.
+4. deployed mobile trap acceptance: naturally generated active spike/fire/shock contacts must remove exactly one HEALTH while armour remains unchanged;
+5. deployed mobile landing acceptance: Continue/Solo/2P/Tutorial/Weekly choices must stack as one full-width column rather than a narrow left column, with readable Solo text.
+
+Exact #2201 qualification passed CCG Site Safety, SEO Automation, Structured Data Validation, Social Metadata Validation, C64 Dungeon Carnage itch.io Package, Public Code Cache Version, Native Mouse Wheel Scroll Contract, the dedicated C64 Dungeon Carnage Mobile Trap Layout Contract, canonical/Node contracts and all six Lost Sizzler Chromium shards. Load Safety shard 6 initially hit the unchanged V10.36 loading-progress timing sample at 92% rather than 100%; an unchanged targeted shard-6 rerun passed. No runtime assertion or timeout was weakened.
 
 **MANUAL ACCEPTANCE REQUIRED — AUTOMATED TESTS DO NOT SUBSTITUTE FOR THESE GATES**
 
