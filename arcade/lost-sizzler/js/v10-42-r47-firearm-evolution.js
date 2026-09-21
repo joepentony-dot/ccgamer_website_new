@@ -1,6 +1,7 @@
 /* C64 Dungeon Carnage V10.42 r47 — single evolving firearm progression.
- * Dungeon mode only. Every weapon pickup improves one firearm or is salvaged
- * for ammunition when the current floor cap has already been reached.
+ * Dungeon mode only. The established sword-first start is preserved: the first
+ * weapon pickup acquires Tier 1, later pickups improve that one firearm, and a
+ * pickup at the current floor cap is salvaged for ammunition.
  */
 (()=>{
   "use strict";
@@ -16,7 +17,7 @@
     Object.freeze({tier:6,id:"spread",name:"Tri-Pulse III",power:3,delay:.92,shots:3,pierce:1,ttl:20,rating:12,desc:"Final-floor three-way firearm with one point of penetration."})
   ]);
   const FLOOR_CAP=Object.freeze({1:2,2:3,3:4,4:5,5:6});
-  const state={installed:false,weaponInstalls:0,inventoryInstalls:0,upgrades:0,salvages:0,migrations:0};
+  const state={installed:false,weaponInstalls:0,inventoryInstalls:0,acquisitions:0,upgrades:0,salvages:0,migrations:0};
 
   const currentRun=()=>{try{return run||null}catch(_){return null}};
   const dungeonMode=()=>{try{const special=String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"");return special!=="horde-survivor"&&special!=="sizzler-saboteurs"}catch(_){return true}};
@@ -27,9 +28,11 @@
     return{...clone(stage),displayName:`TIER ${stage.tier} · ${stage.name}`,rarity:stage.tier>=6?"GOLD MEDAL":stage.tier>=4?"SIZZLER":stage.tier>=2?"UNCOMMON":"COMMON",colour:stage.tier>=6?"#ffd85a":stage.tier>=4?"#ff5bae":"#6cecff",ammo:1,element:"energy",mods:stage.tier>=4?["THREE-WAY"]:[],evolutionTier:stage.tier}
   }
   function deriveTier(player){
+    if(!player||player.firearmUnlocked===false)return 0;
     const explicit=Math.floor(Number(player?.weaponEvolutionTier||player?.weapon?.evolutionTier||0));
     if(explicit>=1&&explicit<=6)return explicit;
-    const w=player?.weapon||{},shots=Math.max(1,Number(w.shots||1)),power=Math.max(1,Number(w.power||1)),pierce=Math.max(0,Number(w.pierce||0));
+    if(!player.weapon)return 0;
+    const w=player.weapon,shots=Math.max(1,Number(w.shots||1)),power=Math.max(1,Number(w.power||1)),pierce=Math.max(0,Number(w.pierce||0));
     if(shots>=3&&pierce>=1)return 6;
     if(shots>=3&&power>=2)return 5;
     if(shots>=3)return 4;
@@ -39,9 +42,15 @@
   }
   function collapseOwnership(player){
     if(!player||!dungeonMode())return null;
-    const floor=Math.max(1,Number(currentRun()?.floor||1)),cap=capForFloor(floor),tier=Math.min(cap,deriveTier(player));
+    if(player.firearmUnlocked===false){
+      const changed=Boolean(player.weapon||(player.ownedWeapons||[]).length||Number(player.activeWeaponIndex)>=0||Number(player.weaponEvolutionTier||0)>0);
+      player.weapon=null;player.weaponEvolutionTier=0;player.weaponLevel=0;player.ownedWeapons=[];player.activeWeaponIndex=-1;
+      if(changed)state.migrations++;
+      return null
+    }
+    const floor=Math.max(1,Number(currentRun()?.floor||1)),cap=capForFloor(floor),derived=Math.max(1,deriveTier(player)),tier=Math.min(cap,derived);
     const canonical=stageWeapon(tier);
-    const changed=deriveTier(player)!==tier||!player.weapon||Number(player.weapon.shots||1)!==canonical.shots||Number(player.weapon.power||1)!==canonical.power||String(player.weapon.id||"")!==canonical.id;
+    const changed=derived!==tier||!player.weapon||Number(player.weapon.shots||1)!==canonical.shots||Number(player.weapon.power||1)!==canonical.power||Number(player.weapon.pierce||0)!==canonical.pierce||String(player.weapon.id||"")!==canonical.id||(player.ownedWeapons||[]).length!==1;
     player.weapon=canonical;player.weaponEvolutionTier=tier;player.weaponLevel=tier;player.firearmUnlocked=true;
     player.ownedWeapons=[clone(canonical)];player.activeWeaponIndex=0;
     if(changed)state.migrations++;
@@ -58,16 +67,25 @@
     const floor=Math.max(1,Number(currentRun()?.floor||1)),cap=capForFloor(floor);
     collapseOwnership(player);
     const tier=deriveTier(player);
-    if(tier>=cap){
+    if(tier>=cap&&tier>0){
       const ammo=salvageAmmo(player,floor);
       try{stats.weapons++}catch(_){}
       try{S.sfx("pickup");showToast("FIREARM PARTS SALVAGED",`Your Tier ${tier} firearm is already at the Floor ${floor} limit. The duplicate weapon is stripped for ${ammo} ammunition. Deeper floors unlock the next weapon tier.`,"cyan",7600)}catch(_){}
       queueMicrotask(()=>collapseOwnership(player));
       return player.weapon
     }
-    const next=Math.min(cap,tier+1),weapon=stageWeapon(next),result=baseEquip(player,weapon);
-    collapseOwnership(player);state.upgrades++;
-    try{showToast("FIREARM UPGRADED",`Tier ${tier} → Tier ${next}: ${weapon.name}. ${next===4?"Three-way fire is now unlocked.":next<6?`Floor ${floor} cap: Tier ${cap}.`:"Maximum firearm tier reached."}`,"gold",8200)}catch(_){}
+    const next=Math.max(1,Math.min(cap,tier+1)),weapon=stageWeapon(next),first=tier===0;
+    if(first)player.firearmUnlocked=true;
+    const result=baseEquip(player,weapon);
+    player.firearmUnlocked=true;collapseOwnership(player);
+    if(first)state.acquisitions++;else state.upgrades++;
+    try{
+      const title=first?"FIREARM ACQUIRED":"FIREARM UPGRADED";
+      const text=first
+        ?`Tier 1: ${weapon.name}. Your Archive Sword remains the unlimited close-range fallback; later weapon pickups improve this firearm.`
+        :`Tier ${tier} → Tier ${next}: ${weapon.name}. ${next===4?"Three-way fire is now unlocked.":next<6?`Floor ${floor} cap: Tier ${cap}.`:"Maximum firearm tier reached."}`;
+      showToast(title,text,"gold",8200)
+    }catch(_){}
     return result
   }
 
@@ -80,7 +98,7 @@
     }catch(_){return false}
   }
   function weaponSummary(weapon){
-    if(!weapon)return"NO FIREARM";
+    if(!weapon)return"NOT ACQUIRED";
     return`TIER ${weapon.evolutionTier||1}/6 · PWR ${weapon.power||1} · SHOTS ${weapon.shots||1} · FIRE RATE ${Number(weapon.delay||1).toFixed(2)}${weapon.pierce?` · PIERCE ${weapon.pierce}`:""}`;
   }
   function decorateInventory(){
@@ -89,7 +107,11 @@
       const weapon=collapseOwnership(player);load.querySelector(".ccg-owned-weapons")?.remove();load.querySelector(".ccg-evolving-firearm")?.remove();
       const floor=Math.max(1,Number(currentRun()?.floor||1)),cap=capForFloor(floor),tier=deriveTier(player),panel=document.createElement("div");
       panel.className="ccg-evolving-firearm slot-actions";
-      panel.innerHTML=`<b>EVOLVING FIREARM · TIER ${tier}/6</b><span>${weapon.displayName} — ${weaponSummary(weapon)}</span><small>${tier<cap?`The next weapon pickup upgrades this firearm to Tier ${tier+1}.`:`Floor ${floor} cap reached. Extra weapon pickups become ammunition; Floor ${Math.min(5,floor+1)} unlocks the next tier.`}</small>`;
+      if(!weapon){
+        panel.innerHTML=`<b>EVOLVING FIREARM · NOT ACQUIRED</b><span>ARCHIVE SWORD ACTIVE · UNLIMITED MELEE</span><small>Your first weapon pickup becomes Tier 1 Field Pulse. Floor ${floor} allows firearm progression up to Tier ${cap}.</small>`
+      }else{
+        panel.innerHTML=`<b>EVOLVING FIREARM · TIER ${tier}/6</b><span>${weapon.displayName} — ${weaponSummary(weapon)}</span><small>${tier<cap?`The next weapon pickup upgrades this firearm to Tier ${tier+1}.`:`Floor ${floor} cap reached. Extra weapon pickups become ammunition${floor<5?`; Floor ${floor+1} unlocks the next tier`:"; maximum tier reached"}.`}</small>`
+      }
       load.appendChild(panel);return true
     }catch(_){return false}
   }
