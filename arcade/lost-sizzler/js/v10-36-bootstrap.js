@@ -6,8 +6,9 @@
 
   const REV=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
   const BOX_TYPES=new Set(["crate","box","boxes","woodenCrate","cargoCrate","crateStack"]);
+  const EXPECTED_LOADING_MODULES=108;
   const state={
-    loadingStartedAt:performance.now(),observedScripts:new WeakSet(),modulesReady:0,progress:4,gateHooked:false,
+    loadingStartedAt:performance.now(),observedScripts:new WeakSet(),modulesReady:0,progress:0,gateHooked:false,
     runtimeInstalled:false,lastWorld:null,lastRepairSignature:"",loadingTimer:0,hookTimer:0,observer:null,
     legacyInventory:null
   };
@@ -30,13 +31,21 @@
     overlay.className="ccg-release-loading";
     overlay.setAttribute("role","status");
     overlay.setAttribute("aria-live","polite");
-    overlay.innerHTML=`<div class="ccg-release-loading-card"><span class="ccg-release-loading-kicker">CHEEKY COMMODORE QUEST</span><h2>LOADING — PLEASE WAIT</h2><p id="ccg-release-loading-status">Preparing The Lost Sizzler game systems…</p><progress id="ccg-release-loading-progress" max="100" value="4">4%</progress><div class="ccg-release-loading-meta"><span id="ccg-release-loading-percent" class="ccg-release-loading-percent">4%</span><span>THE LOST SIZZLER · PREPARING RUNTIME</span></div></div>`;
+    overlay.innerHTML=`<div class="ccg-release-loading-card"><span class="ccg-release-loading-kicker">CHEEKY COMMODORE QUEST</span><h2>LOADING — PLEASE WAIT</h2><p id="ccg-release-loading-status">Preparing The Lost Sizzler game systems…</p><progress id="ccg-release-loading-progress" max="100" value="0">0%</progress><div class="ccg-release-loading-meta"><span id="ccg-release-loading-percent" class="ccg-release-loading-percent">0%</span><span>THE LOST SIZZLER · PREPARING RUNTIME</span></div></div>`;
     document.body.appendChild(overlay);
     return overlay;
   }
 
   function setLoadingProgress(value,message=""){
     const overlay=ensureLoadingUi();if(!overlay)return;
+    const owner=window.CCGLostSizzlerLoadWatchdog;
+    if(owner?.ownsLoadingProgress===true){
+      if(message){const status=overlay.querySelector("#ccg-release-loading-status");if(status)status.textContent=message}
+      owner.syncLoadingStage?.();
+      state.progress=Number(owner.state?.loadingStage)||0;
+      overlay.hidden=false;
+      return
+    }
     const pct=Math.max(0,Math.min(100,Math.round(Number(value)||0)));
     state.progress=Math.max(state.progress,pct);
     const progress=overlay.querySelector("#ccg-release-loading-progress"),percent=overlay.querySelector("#ccg-release-loading-percent"),status=overlay.querySelector("#ccg-release-loading-status");
@@ -45,7 +54,6 @@
     if(status&&message)status.textContent=message;
     overlay.hidden=false;
   }
-
   function finishLoading(errors=[]){
     const overlay=ensureLoadingUi();
     if(errors.length){
@@ -59,7 +67,7 @@
      * callbacks. Otherwise the 320 ms hide races the 420 ms progress updater
      * and produces loader -> menu -> loader flicker during module loading. */
     if(!authoritativeReleaseReady()){
-      setLoadingProgress(Math.max(state.progress,92),"Finalising Dungeon Carnage menu and game systems…");
+      setLoadingProgress(state.progress,"Finalising Dungeon Carnage menu and game systems…");
       return;
     }
 
@@ -84,8 +92,8 @@
     state.observedScripts.add(node);
     const ready=()=>{
       state.modulesReady++;
-      const pct=Math.min(92,10+state.modulesReady*2);
-      setLoadingProgress(pct,`Preparing game systems… ${state.modulesReady} modules ready.`);
+      const pct=Math.min(99,Math.max(1,Math.round((Math.min(EXPECTED_LOADING_MODULES,state.modulesReady)/EXPECTED_LOADING_MODULES)*99)));
+      setLoadingProgress(pct,`Preparing game systems… ${state.modulesReady} / ${EXPECTED_LOADING_MODULES} modules ready.`);
     };
     node.addEventListener("load",ready,{once:true});
     node.addEventListener("error",ready,{once:true});
@@ -110,7 +118,7 @@
   function startLoadingWatch(){
     ensureStyles();
     const start=()=>{
-      ensureLoadingUi();setLoadingProgress(4,"Preparing The Lost Sizzler game systems…");
+      ensureLoadingUi();setLoadingProgress(0,"Preparing C64 Dungeon Carnage game systems…");
       document.querySelectorAll("script[src]").forEach(watchScript);
       state.observer=new MutationObserver(records=>{for(const record of records)for(const node of record.addedNodes){if(node instanceof HTMLScriptElement)watchScript(node);else if(node?.querySelectorAll)node.querySelectorAll("script[src]").forEach(watchScript)}});
       state.observer.observe(document.documentElement,{childList:true,subtree:true});
@@ -120,8 +128,7 @@
         if(gate?.state?.failed){finishLoading(gate.state.errors||["load failed"]);clearInterval(state.loadingTimer);state.loadingTimer=0;return}
         if(authoritativeFailure){finishLoading([authoritativeFailure]);clearInterval(state.loadingTimer);state.loadingTimer=0;return}
         if(gate?.state?.ready&&authoritativeReleaseReady()){finishLoading([]);clearInterval(state.loadingTimer);state.loadingTimer=0;return}
-        if(gate?.state?.ready)setLoadingProgress(Math.max(state.progress,92),"Finalising Dungeon Carnage menu and game systems…");
-        else if(state.progress<88)setLoadingProgress(state.progress+1,"Preparing game systems… please wait.");
+        if(gate?.state?.ready)setLoadingProgress(state.progress,"Finalising Dungeon Carnage menu and game systems…");
       },420);
     };
     if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
