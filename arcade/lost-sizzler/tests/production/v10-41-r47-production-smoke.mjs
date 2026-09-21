@@ -5,8 +5,8 @@ const gameUrl=process.env.CCG_LOST_SIZZLER_URL||"https://www.cheekycommodoregame
 const supabaseUrl=(process.env.CCG_SUPABASE_URL||"https://lcslgxpgmttaexsorxik.supabase.co").replace(/\/$/,"");
 const origin="https://www.cheekycommodoregamer.co.uk";
 const expectedReleaseVersion="V10.42";
-const expectedBuild="V10.42 r39";
-const expectedCacheToken="20260921r39";
+const expectedBuild="V10.42 r40";
+const expectedCacheToken="20260921r40";
 const syntheticStaleBuild="2026.09.10.0-production-smoke";
 const versionUrl=new URL("version.json",gameUrl).toString();
 const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage","--disable-background-networking","--autoplay-policy=no-user-gesture-required"]});
