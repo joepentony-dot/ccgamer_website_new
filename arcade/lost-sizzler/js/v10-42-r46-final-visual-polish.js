@@ -64,7 +64,7 @@
 
   function noteEntry(player,profile){
     if(!profile||!player)return;
-    const playerKey=String(player.id||player===globalThis.p2?"P2":"P1"),key=profile.floor+":"+profile.roomId;
+    const playerKey=String(player.id||(player===globalThis.p2?"P2":"P1")),key=profile.floor+":"+profile.roomId;
     const current=entries.get(playerKey);
     if(current?.key===key)return;
     const first=!seenRooms.has(key);seenRooms.add(key);
@@ -76,7 +76,7 @@
     if(!active()||typeof ctx==="undefined"||!viewBox)return;
     const profile=roomProfile(player);if(!profile)return;
     syncHud(profile,player);noteEntry(player,profile);
-    const entry=entries.get(String(player.id||player===globalThis.p2?"P2":"P1"));
+    const entry=entries.get(String(player.id||(player===globalThis.p2?"P2":"P1")));
     const now=performance.now(),age=now-num(entry?.at,now),showEntry=Boolean(entry?.first&&age<3100);
     ctx.save();ctx.beginPath();ctx.rect(viewBox.x,viewBox.y,viewBox.w,viewBox.h);ctx.clip();
 
