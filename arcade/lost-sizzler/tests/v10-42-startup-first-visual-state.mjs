@@ -16,7 +16,7 @@ const firstScript=index.indexOf('<script ');
 
 assert.ok(headEnd>0&&bodyStart>headEnd,'canonical document head/body boundary must remain intact');
 assert.ok(index.indexOf('css/v10-36-special-ui.css')>0&&index.indexOf('css/v10-36-special-ui.css')<headEnd,'release-loader CSS must block first paint in the document head');
-assert.match(index,/<link rel="stylesheet" data-ccg-v136-special-ui="true" href="css\/v10-36-special-ui\.css\?v=20260919r36">/,'blocking loader stylesheet must retain the marker used by the V10.36 compatibility bootstrap');
+assert.match(index,/<link rel="stylesheet" data-ccg-v136-special-ui="true" href="css\/v10-36-special-ui\.css\?v=20260921r36a">/,'blocking loader stylesheet must retain the marker used by the V10.36 compatibility bootstrap');
 assert.ok(index.indexOf('css/v10-42-startup-first-visual.css')>0&&index.indexOf('css/v10-42-startup-first-visual.css')<headEnd,'settled menu presentation must exist before body paint');
 assert.ok(loader>bodyStart&&loader<main,'release loader must be static markup before the game shell');
 assert.ok(loader<firstScript,'release loader must exist before any runtime script executes');
