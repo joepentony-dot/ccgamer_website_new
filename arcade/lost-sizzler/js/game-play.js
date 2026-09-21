@@ -201,8 +201,17 @@ function stepProjectiles(){
   for(const b of enemyBullets){if(b.ttl<=0)continue;const nx=b.x+b.dx,ny=b.y+b.dy;if(!projectilePathClear(b,nx,ny)){b.ttl=0;continue}b.x=nx;b.y=ny;b.ttl--;if(b.style==="fire")burst(nx,ny,Math.random()<.5?P.orange:P.gold,3,.6);for(const lp of localPlayers())if(Math.round(nx)===lp.x&&Math.round(ny)===lp.y){b.ttl=0;hurtPlayer(lp,Number(b.power||1),false,b.source||"enemy");const px=lp.x+b.dx,py=lp.y+b.dy;if(W.walkable(world.map,px,py,host)){lp.x=px;lp.y=py}break}}
   for(let i=bullets.length-1;i>=0;i--)if(bullets[i].ttl<=0)bullets.splice(i,1);for(let i=enemyBullets.length-1;i>=0;i--)if(enemyBullets[i].ttl<=0)enemyBullets.splice(i,1)
 }
+function releaseSealedDeathRoom(roomId){
+  if(roomId==null||!host||roomId===host.sigilRoomId)return false;
+  const doors=(host.doors||[]).filter(d=>d?.type==="room"&&d.roomId===roomId);
+  if(!doors.some(d=>d.locked))return false;
+  for(const d of doors){d.locked=false;d.open=true;d.opening=false;d.openingStart=0;d.openAt=0;d.openSoundDone=true}
+  S.sfx("dooropen");
+  showToast("CHALLENGE DOORS REOPENED","The room you died in has been unlocked so you can return to your death box and finish the challenge.","gold",9000);
+  return true
+}
 function hurtPlayer(p,n,friendly=false,source="enemy"){
-  if(!p||p.invuln>0||mode!=="playing")return;p.hitStunMs=Math.max(p.hitStunMs||0,C.player.hitStunMs||180);let left=n;if(p.armor>0){const a=Math.min(p.armor,left);p.armor-=a;left-=a;if(a){S.sfx("armour");floatText(p.x,p.y,"ARMOUR",P.cyan)}}if(left<=0){p.invuln=350;sync();return}
+  if(!p||p.invuln>0||mode!=="playing")return;p.__ccgLastHurtAt=performance.now();p.hitStunMs=Math.max(p.hitStunMs||0,C.player.hitStunMs||180);let left=n;if(p.armor>0){const a=Math.min(p.armor,left);p.armor-=a;left-=a;if(a){S.sfx("armour");floatText(p.x,p.y,"ARMOUR",P.cyan)}}if(left<=0){p.invuln=350;sync();return}
   p.health-=left;p.hpBarMs=3000;run.stats.damageTaken+=left;if(friendly)run.stats.friendlyFire+=left;p.invuln=800;shake=10;damageFlash=.5;S.sfx("hurt");burst(p.x,p.y,P.red,16,1.4);ring(p.x,p.y,P.red,30);
   if(friendly){showToast("FRIENDLY FIRE",`${source} just shot a team-mate. The monsters are delighted.`,"red");say("<strong>FRIENDLY FIRE.</strong> Try pointing the dangerous end elsewhere.","red")}
   if(p.health<=0){
@@ -218,8 +227,9 @@ function hurtPlayer(p,n,friendly=false,source="enemy"){
     }
     const cache=PGR.createDeathCache(p,run,cacheX,cacheY),penalty=PGR.applyDeathPenalty(p,score,run);score=penalty.score;cache.score=penalty.scoreLost||0;cache.xp=penalty.xpLost||0;cache.active=cache.active||cache.score>0||cache.xp>0;run.stats.deaths=(run.stats.deaths||0)+1;run.consecutiveDeaths=(run.consecutiveDeaths||0)+1;
     if(penalty.gameOver){p.health=0;run.xpGameOver=true;host.deathCaches=[];PGR.clearCheckpoint();showToast("XP RESERVE EXHAUSTED — GAME OVER","This is the second death that left your XP reserve at zero. Your final XP warning was already used, so the run is over.","red",12000);endRun("Game over: XP reached zero for the second time after the final warning");return}
+    releaseSealedDeathRoom(W.roomAt(world,deathX,deathY));
     if(cache.active){host.deathCaches=host.deathCaches||[];host.deathCaches.push(cache)}
-    p.health=p.maxHealth;p.hpBarMs=3200;p.mana=Math.max(35,Math.floor(p.maxMana*.6));p.ammoFlashMs=C.player.ammoFlashMs;p.x=world.start.x;p.y=world.start.y;p.rx=p.x;p.ry=p.y;setTimeout(()=>{if(S.isEnabled())S.sfx("respawn")},520);
+    p.health=p.maxHealth;p.hpBarMs=3200;p.mana=Math.max(35,Math.floor(p.maxMana*.6));p.ammoFlashMs=C.player.ammoFlashMs;p.hitStunMs=0;p.controlLocked=false;p.controlsLocked=false;if(p===p1){fire1=0;fireBuffer1=0;input.delete("Space");input.delete("KeyF");input.delete("Numpad0")}else if(p===p2){fire2=0;fireBuffer2=0;input.delete("Enter")}p.x=world.start.x;p.y=world.start.y;p.rx=p.x;p.ry=p.y;setTimeout(()=>{if(S.isEnabled())S.sfx("respawn")},520);
     const explore=Math.round(PGR.roomCompletion(explored.get(p.id)||new Set(),world)*100),objective=SYS.objectiveText(host,run,explore),cacheText=cache.active?` Your death box holds ${Number(cache.score||0).toLocaleString()} score, ${Number(cache.xp||0).toLocaleString()} XP and dropped loot. Recover it before another death.`:" You had nothing to cache.",xpText=penalty.xpLost?` ${penalty.xpLost} XP moved to the death box.${penalty.levelLost?` Level ${penalty.levelBefore} fell to ${penalty.levelAfter}; ${penalty.lostSkill||"the latest upgrade"} was lost until you earn the level again.`:" Your current level was retained."}`:" No XP was available to lose.",zeroText=penalty.zeroWarning?" FINAL XP WARNING: your XP reserve has reached zero once. Recover this death cache or earn more XP. If a later death leaves XP at zero again, the run ends.":"";
     showToast(penalty.zeroWarning?`${p.name.toUpperCase()} RESPAWNS — FINAL XP WARNING`:`${p.name.toUpperCase()} RESPAWNS — SCORE HALVED`,`OBJECTIVE: ${objective}.${xpText}${cacheText}${zeroText}`,"red",penalty.zeroWarning?13000:10000);host.revision++;broadcastWorld();if(run.consecutiveDeaths>=5)setTimeout(()=>{if(mode==="playing")offerFloorSave(true)},650)
   }sync()

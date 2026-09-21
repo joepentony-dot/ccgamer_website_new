@@ -511,7 +511,9 @@
     });
     const holdFire = (button, event) => {
       button.setPointerCapture?.(event.pointerId);
-      if (typeof queueAttack === "function") queueAttack(p1);
+      let handled=false;
+      try{handled=window.CCGLostSizzlerV142R20LiveRegressionStability?.attackNow?.("Space")===true}catch(_){}
+      if(!handled&&typeof queueAttack === "function") queueAttack(p1);
       if (typeof input !== "undefined") input.add("Space");
       button.classList.add("held");
     };

@@ -40,7 +40,7 @@ async function snap(page){
       enemies:Number(host?.enemies?.length)||0,aliveEnemies:(host?.enemies||[]).filter(e=>e?.alive!==false).length,
       projectileSteps:Number(life.steps)||0,projectileFaultSweeps:Number(life.faultSweeps)||0,
       updateFaults:Number(window.CCGLostSizzlerV141R29?.state?.updateFaults)||0,renderFaults:Number(window.CCGLostSizzlerV141R29?.state?.renderFaults)||0,
-      attackIntents:Number(r20.attackIntents)||0,directAttackErrors:Number(r20.directAttackErrors)||0,r20FrameStalls:Number(r20.frameStalls)||0,
+      attackIntents:Number(r20.attackIntents)||0,directAttackErrors:Number(r20.directAttackErrors)||0,staleStunRepairs:Number(r20.staleStunRepairs)||0,controlLockRepairs:Number(r20.controlLockRepairs)||0,r20FrameStalls:Number(r20.frameStalls)||0,
       r22Stalls:Number(r22.stallFrames)||0,r59LongGaps:Number(r59.longGaps)||0,r59Substeps:Number(r59.soloSubsteps)||0,r59Frames:Number(r59.soloFrames)||0,
       lifecycleOwner:Boolean(window.CCGLostSizzlerV142ProjectileLifecycle?.ownsBoundary?.()),
       sealGate:Boolean(seal?.gateActive?.()),sealUnsupported:Boolean(seal?.state?.unsupported),
@@ -141,11 +141,11 @@ try{
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap&&document.body,null,{timeout:20000});
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
   const boot=await page.evaluate(()=>({ready:CCGLostSizzlerV142Bootstrap.ready,failed:CCGLostSizzlerV142Bootstrap.failed,error:CCGLostSizzlerV142Bootstrap.error||"",build:CCGLostSizzlerV142Bootstrap.build,cache:CCGLostSizzlerV142Bootstrap.cache,metaBuild:document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content,metaCache:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content,ordered:[...document.querySelectorAll('script[data-ccg-v142-ordered="true"]')].map(s=>s.src)}));
-  assert.equal(boot.failed,false,`r40 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r40 ordered bootstrap must complete");
-  assert.equal(boot.build,"V10.42 r40");assert.equal(boot.cache,"20260921r40");assert.equal(boot.metaBuild,"V10.42 r40");assert.equal(boot.metaCache,"20260921r40");
-  assert.ok(boot.ordered.length>=30,"r40 bootstrap must load the complete ordered V10.42 chain");
-  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260921r40"),"every ordered V10.42 module must use the r40 cache token");
-  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260921r40")),"expected r40 projectile lifecycle asset was not requested");
+  assert.equal(boot.failed,false,`r42 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r42 ordered bootstrap must complete");
+  assert.equal(boot.build,"V10.42 r42");assert.equal(boot.cache,"20260921r42");assert.equal(boot.metaBuild,"V10.42 r42");assert.equal(boot.metaCache,"20260921r42");
+  assert.ok(boot.ordered.length>=30,"r42 bootstrap must load the complete ordered V10.42 chain");
+  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260921r42"),"every ordered V10.42 module must use the r42 cache token");
+  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260921r42")),"expected r42 projectile lifecycle asset was not requested");
   assert.equal(await page.evaluate(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.ownsBoundary?.()===true),true,"#2118 lifecycle owner must be authoritative before play");
 
   await page.evaluate(()=>{const hb=window.__ccgEnduranceHeartbeat={frames:0,stalls:0,maxGap:0,last:0};const beat=t=>{if(hb.last){const gap=t-hb.last;hb.maxGap=Math.max(hb.maxGap,gap);if(gap>300)hb.stalls++}hb.last=t;hb.frames++;requestAnimationFrame(beat)};requestAnimationFrame(beat)});
@@ -255,7 +255,63 @@ try{
       assert.equal(await armEnemy(page),true,"extended-inventory keyboard recovery enemy unavailable");
       await fireCycle(page,"Space",6402);
     }
+    if(round===80){
+      assert.equal(await armEnemy(page),true,"ordinary-play liveness enemy unavailable");
+      const beforeLiveRepair=await snap(page);
+      const poisoned=await page.evaluate(()=>{
+        p1.controlLocked=true;p1.controlsLocked=true;
+        p1.hitStunMs=180;p1.__ccgLastHurtAt=performance.now()-2000;
+        fire1=4000;fireBuffer1=700;projectileCD=700;
+        return{
+          controlLocked:Boolean(p1.controlLocked),controlsLocked:Boolean(p1.controlsLocked),hitStunMs:Number(p1.hitStunMs),
+          fire1:Number(fire1),buffer:Number(fireBuffer1),projectileCD:Number(projectileCD)
+        };
+      });
+      assert.equal(poisoned.controlLocked,true,"ordinary-play regression failed to seed controlLocked");
+      assert.equal(poisoned.controlsLocked,true,"ordinary-play regression failed to seed controlsLocked");
+      assert.equal(poisoned.hitStunMs,180,"ordinary-play regression failed to seed a numerically valid but stale hit-stun");
+      const handled=await page.evaluate(()=>window.CCGLostSizzlerV142R20LiveRegressionStability?.attackNow?.("Space")===true);
+      assert.equal(handled,true,"ordinary-play attack owner did not recover a stale live-combat lock");
+      await page.waitForTimeout(360);
+      const afterLiveRepair=await snap(page);
+      assert.ok(afterLiveRepair.mana<beforeLiveRepair.mana||afterLiveRepair.projectileSteps>beforeLiveRepair.projectileSteps,"ordinary-play attack recovery produced no shot/projectile work");
+      assert.equal(afterLiveRepair.hitStun,0,"ordinary-play attack recovery must clear stale hit-stun after its real damage window");
+      assert.ok(afterLiveRepair.staleStunRepairs>beforeLiveRepair.staleStunRepairs,"ordinary-play attack recovery did not record stale-stun repair");
+      assert.ok(afterLiveRepair.controlLockRepairs>=beforeLiveRepair.controlLockRepairs+2,"ordinary-play attack recovery did not clear both player control-lock aliases");
+    }
   }
+
+  const sealedDeath=await page.evaluate(()=>{
+    const room=(world.rooms||[]).find(r=>r.id!==host.sigilRoomId&&(host.doors||[]).some(d=>d.type==="room"&&d.roomId===r.id));
+    if(!room)return{ok:false,reason:"no ordinary room with doors"};
+    const pos=[];
+    for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++)if(world.map[y]?.[x]===0){pos.push({x,y});break}
+    const q=pos[0];if(!q)return{ok:false,reason:"no open death cell"};
+    const doors=(host.doors||[]).filter(d=>d.type==="room"&&d.roomId===room.id);
+    for(const d of doors){d.locked=true;d.open=false;d.opening=false;d.openAt=0;d.openingStart=0}
+    p1.x=q.x;p1.y=q.y;p1.rx=q.x;p1.ry=q.y;p1.health=1;p1.invuln=0;
+    p1.totalXp=Math.max(1000,Number(p1.totalXp)||0);p1.xp=Math.max(500,Number(p1.xp)||0);run.everEarnedXp=true;
+    const deathsBefore=Number(run.stats.deaths||0);
+    hurtPlayer(p1,999,false,"sealed-room regression");
+    const cache=(host.deathCaches||[]).at(-1)||null;
+    return{
+      ok:true,roomId:room.id,deathsBefore,deathsAfter:Number(run.stats.deaths||0),
+      mode:String(mode),atStart:p1.x===world.start.x&&p1.y===world.start.y,
+      doors:doors.map(d=>({locked:Boolean(d.locked),open:Boolean(d.open)})),
+      cache:cache?{active:Boolean(cache.active),x:cache.x,y:cache.y,roomId:W.roomAt(world,cache.x,cache.y)}:null,
+      hitStun:Number(p1.hitStunMs||0),controlLocked:Boolean(p1.controlLocked),controlsLocked:Boolean(p1.controlsLocked)
+    };
+  });
+  assert.equal(sealedDeath.ok,true,`sealed-room death regression could not be staged: ${JSON.stringify(sealedDeath)}`);
+  assert.equal(sealedDeath.deathsAfter,sealedDeath.deathsBefore+1,"sealed-room regression must execute a real normal death");
+  assert.equal(sealedDeath.mode,"playing","normal sealed-room death must respawn rather than end the run");
+  assert.equal(sealedDeath.atStart,true,"normal sealed-room death must respawn at the floor start");
+  assert.ok(sealedDeath.doors.length>0&&sealedDeath.doors.every(d=>!d.locked&&d.open),"all ordinary doors for the death room must reopen after respawn");
+  assert.equal(sealedDeath.cache?.active,true,"sealed-room death must leave an active death box");
+  assert.equal(sealedDeath.cache?.roomId,sealedDeath.roomId,"death box must remain in the room where the player died");
+  assert.equal(sealedDeath.hitStun,0,"respawn must clear hit-stun");
+  assert.equal(sealedDeath.controlLocked,false,"respawn must clear controlLocked");
+  assert.equal(sealedDeath.controlsLocked,false,"respawn must clear controlsLocked");
 
   await settleGameplayMode(page,"post-cycle");assert.equal(await armEnemy(page),true,"post-cycle enemy unavailable");
   await fireCycle(page,"Space",97);
@@ -274,7 +330,7 @@ try{
   assert.deepEqual(consoleErrors,[],`console errors:\n${consoleErrors.join("\n")}`);
 
   console.log("DUNGEON_R30_SOLO_ENDURANCE",JSON.stringify({initial,final,requests:v142Requests.length}));
-  console.log("Dungeon Carnage V10.42 r40 live Solo combat endurance regression passed.");
+  console.log("Dungeon Carnage V10.42 r42 live Solo combat endurance regression passed.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
