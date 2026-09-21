@@ -133,15 +133,32 @@ function handleHeaderQuit(){
 }
 function clearPauseAttackCadence(reason="resume"){
   fire1=0;fire2=0;fireBuffer1=0;fireBuffer2=0;projectileCD=0;
-  input.delete("Space");input.delete("Enter");
+  input.delete("Space");input.delete("Enter");input.delete("KeyF");input.delete("Numpad0");
+  try{window.CCGLostSizzlerV142AttackHoldLiveness?.clearHeld?.()}catch(_){}
+  try{
+    const r1=window.CCGLostSizzlerV142R1Stability;
+    r1?.repairCombatTimers?.();r1?.repairProjectilePool?.()
+  }catch(_){}
   window.__CCG_PAUSE_ATTACK_RESETS__=Math.max(0,Number(window.__CCG_PAUSE_ATTACK_RESETS__)||0)+1;
   window.__CCG_PAUSE_ATTACK_LAST_RESET__={reason:String(reason),mode:String(mode),at:performance.now()};
+}
+function settlePauseAttackCadence(reason="resume"){
+  const settle=()=>{
+    if(mode!=="playing"||!run)return false;
+    clearPauseAttackCadence(reason);
+    try{window.CCGLostSizzlerV142R18SoloPlaytestStability?.repairAttackLiveness?.("pause-resume")}catch(_){}
+    return true
+  };
+  if(settle())return true;
+  queueMicrotask(settle);
+  setTimeout(settle,0);
+  return false
 }
 function resumePausedRun(){
   if(mode!=="paused")return false;
   clearPauseAttackCadence("handler-before-resume");
   const resumed=pause(true);
-  if(mode!=="paused"){clearPauseAttackCadence("handler-after-resume");return true}
+  if(mode!=="paused"){settlePauseAttackCadence("handler-after-resume");return true}
   return Boolean(resumed)
 }
 function capturePausedResumeAttackReset(event){
