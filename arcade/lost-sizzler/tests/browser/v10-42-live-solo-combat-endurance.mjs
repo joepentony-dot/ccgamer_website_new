@@ -436,7 +436,7 @@ try{
   const afterInventoryFire=await snap(touchPage);
   assert.ok(afterInventoryFire.projectileSteps>beforeInventoryFire.projectileSteps||afterInventoryFire.mana<beforeInventoryFire.mana,"actual mobile FIRE failed after extended inventory dwell");
 
-  await touchPage.evaluate(()=>pause(false));
+  await touchPage.keyboard.press("KeyP");
   await touchPage.waitForFunction(()=>mode==="paused");
   await touchPage.waitForTimeout(5500);
   await touchPage.evaluate(()=>{
