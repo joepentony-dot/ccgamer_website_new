@@ -18,10 +18,10 @@ const cacheMeta=html.match(/<meta name="ccg-lost-sizzler-cache" content="([^"]+)
 const localAssets=[...html.matchAll(/(?:src|href)="((?:js|css)\/[^"?]+\?v=([^"&]+))"/g)].map(match=>({url:match[1],token:match[2]}));
 
 assert.equal(buildMeta,BUILD,"the blocking page identity must already be the current r38 build before any runtime restamp");
-assert.equal(cacheMeta,CACHE,"the cache guard must read the r37 token on its first execution");
+assert.equal(cacheMeta,CACHE,"the cache guard must read the r38 token on its first execution");
 assert.equal(version.build,BUILD,"version.json must describe the same current build as the blocking page and bootstrap");
 assert.equal(version.cacheToken,CACHE,"version.json must describe the same current cache token as the blocking page and bootstrap");
-assert.match(bootstrap,/const BUILD="V10\.42 r37";/,"ordered bootstrap build identity changed unexpectedly");
+assert.match(bootstrap,/const BUILD="V10\.42 r38";/,"ordered bootstrap build identity changed unexpectedly");
 assert.match(bootstrap,/const CACHE="20260921r38";/,"ordered bootstrap cache identity changed unexpectedly");
 assert.match(bootstrap,/function versionCheckOutdated\(\)\{[\s\S]*?CCGLostSizzlerVersion\?\.state\?\.outdated===true/,"ordered bootstrap must observe the version checker's stale-browser ownership");
 assert.match(bootstrap,/if\(!versionCheckOutdated\(\)\)\{[\s\S]*?expectedBadge=`BUILD \${BUILD\.toUpperCase\(\)}`[\s\S]*?badge\.textContent=expectedBadge[\s\S]*?\}/,"ordered bootstrap must not overwrite the stale-browser Update Available presentation while still stamping release metadata");
