@@ -141,11 +141,11 @@ try{
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap&&document.body,null,{timeout:20000});
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
   const boot=await page.evaluate(()=>({ready:CCGLostSizzlerV142Bootstrap.ready,failed:CCGLostSizzlerV142Bootstrap.failed,error:CCGLostSizzlerV142Bootstrap.error||"",build:CCGLostSizzlerV142Bootstrap.build,cache:CCGLostSizzlerV142Bootstrap.cache,metaBuild:document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content,metaCache:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content,ordered:[...document.querySelectorAll('script[data-ccg-v142-ordered="true"]')].map(s=>s.src)}));
-  assert.equal(boot.failed,false,`r45 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r45 ordered bootstrap must complete");
-  assert.equal(boot.build,"V10.42 r45");assert.equal(boot.cache,"20260921r45");assert.equal(boot.metaBuild,"V10.42 r45");assert.equal(boot.metaCache,"20260921r45");
-  assert.ok(boot.ordered.length>=30,"r45 bootstrap must load the complete ordered V10.42 chain");
-  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260921r45"),"every ordered V10.42 module must use the r45 cache token");
-  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260921r45")),"expected r45 projectile lifecycle asset was not requested");
+  assert.equal(boot.failed,false,`r46 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r46 ordered bootstrap must complete");
+  assert.equal(boot.build,"V10.42 r46");assert.equal(boot.cache,"20260921r46");assert.equal(boot.metaBuild,"V10.42 r46");assert.equal(boot.metaCache,"20260921r46");
+  assert.ok(boot.ordered.length>=30,"r46 bootstrap must load the complete ordered V10.42 chain");
+  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260921r46"),"every ordered V10.42 module must use the r45 cache token");
+  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260921r46")),"expected r46 projectile lifecycle asset was not requested");
   assert.equal(await page.evaluate(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.ownsBoundary?.()===true),true,"#2118 lifecycle owner must be authoritative before play");
 
   await page.evaluate(()=>{const hb=window.__ccgEnduranceHeartbeat={frames:0,stalls:0,maxGap:0,last:0};const beat=t=>{if(hb.last){const gap=t-hb.last;hb.maxGap=Math.max(hb.maxGap,gap);if(gap>300)hb.stalls++}hb.last=t;hb.frames++;requestAnimationFrame(beat)};requestAnimationFrame(beat)});
@@ -330,7 +330,7 @@ try{
   assert.deepEqual(consoleErrors,[],`console errors:\n${consoleErrors.join("\n")}`);
 
   console.log("DUNGEON_R30_SOLO_ENDURANCE",JSON.stringify({initial,final,requests:v142Requests.length}));
-  console.log("Dungeon Carnage V10.42 r45 live Solo combat endurance regression passed.");
+  console.log("Dungeon Carnage V10.42 r46 live Solo combat endurance regression passed.");
   await context.close();
 
   const touchContext=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
