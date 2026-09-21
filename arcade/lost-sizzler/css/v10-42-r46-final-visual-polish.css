@@ -1,0 +1,50 @@
+/* C64 Dungeon Carnage V10.42 r46 — final visual maximisation. */
+body[data-run-active="true"]{
+  --r46-accent:#a66cff;
+  --r46-accent-soft:rgba(166,108,255,.16);
+  --r46-accent-deep:rgba(83,46,128,.30);
+}
+body[data-run-active="true"] .mission{
+  border-bottom-color:var(--r46-accent)!important;
+  box-shadow:inset 0 -1px var(--r46-accent-soft),0 4px 18px rgba(0,0,0,.22)!important;
+}
+body[data-run-active="true"] .mission strong,
+body[data-run-active="true"] .priority-xp-head b{
+  color:var(--r46-accent)!important;
+  text-shadow:0 0 10px var(--r46-accent-soft)!important;
+}
+body[data-run-active="true"] .player-hub{
+  border-top-color:var(--r46-accent)!important;
+  box-shadow:inset 0 1px var(--r46-accent-soft),0 -7px 24px rgba(0,0,0,.22)!important;
+}
+body[data-run-active="true"] .hub-stat,
+body[data-run-active="true"] .run-stat,
+body[data-run-active="true"] .priority-xp{
+  border-color:color-mix(in srgb,var(--r46-accent) 30%,transparent)!important;
+}
+body[data-run-active="true"] .game-message-rail{
+  border-left-color:var(--r46-accent)!important;
+  background:linear-gradient(180deg,var(--r46-accent-soft),rgba(5,3,9,.98) 38%)!important;
+}
+body[data-run-active="true"] .canvas-wrap{
+  box-shadow:inset 0 0 0 1px var(--r46-accent-soft),inset 0 0 56px rgba(0,0,0,.34)!important;
+}
+body[data-run-active="true"][data-v142-r46-room-role="sanctuary"] .mission{
+  background:linear-gradient(90deg,rgba(7,24,20,.98),rgba(15,32,27,.98),rgba(7,14,13,.98))!important;
+}
+body[data-run-active="true"][data-v142-r46-room-role="hazard"] .mission{
+  background:linear-gradient(90deg,rgba(28,7,9,.98),rgba(40,13,11,.98),rgba(18,5,8,.98))!important;
+}
+body[data-run-active="true"][data-v142-r46-room-role="trader"] .mission{
+  background:linear-gradient(90deg,rgba(28,20,6,.98),rgba(37,27,8,.98),rgba(16,10,5,.98))!important;
+}
+body[data-v141-r47-performance-tier="severe"] .canvas-wrap{
+  box-shadow:none!important;
+}
+@media (max-width:900px){
+  body[data-run-active="true"] .mission,
+  body[data-run-active="true"] .player-hub{box-shadow:none!important}
+}
+@media (prefers-reduced-motion:reduce){
+  body[data-run-active="true"] *{transition-duration:0s!important}
+}
