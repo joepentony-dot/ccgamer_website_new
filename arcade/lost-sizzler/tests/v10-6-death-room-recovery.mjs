@@ -5,6 +5,12 @@ import { fileURLToPath } from 'node:url';
 
 const patchPath=fileURLToPath(new URL('../js/v10-6-death-room-recovery.js',import.meta.url));
 const patchSource=fs.readFileSync(patchPath,'utf8');
+const gamePlay=fs.readFileSync(fileURLToPath(new URL('../js/game-play.js',import.meta.url)),'utf8');
+
+assert.match(gamePlay,/function releaseSealedDeathRoom\(roomId\)[\s\S]*door\.locked=false|function releaseSealedDeathRoom\(roomId\)[\s\S]*d\.locked=false/,'core death handling must contain a sealed ordinary-room recovery boundary');
+assert.match(gamePlay,/releaseSealedDeathRoom\(W\.roomAt\(world,deathX,deathY\)\)/,'normal respawn deaths must execute the core sealed-room recovery boundary');
+assert.match(gamePlay,/p\.hitStunMs=0;p\.controlLocked=false;p\.controlsLocked=false/,'respawn must also clear stale combat stun/control locks');
+assert.match(gamePlay,/input\.delete\("Space"\).*input\.delete\("KeyF"\).*input\.delete\("Numpad0"\)/,'P1 respawn must release all normal attack-input aliases');
 
 function makeContext({death=true,modeAfter='playing',sigilRoomId=null}={}){
   let broadcasts=0,toasts=0,doorSounds=0;
