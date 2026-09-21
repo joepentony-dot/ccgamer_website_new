@@ -48,14 +48,17 @@ assert.match(blockingCss,/html body\[data-run-active="false"\] #menu #split-btn\
 assert.match(blockingCss,/html body\[data-run-active="false"\] #menu #tutorial-zone-btn\{[\s\S]*?min-height:70px!important/,'Tutorial first-paint geometry must match the retained R55 owner');
 assert.match(blockingCss,/html body\[data-run-active="false"\] #menu #daily-btn\{[\s\S]*?min-height:70px!important/,'Weekly first-paint geometry must match the retained R55 owner');
 assert.match(blockingCss,/html body\[data-run-active="false"\] #menu \.game-mode-buttons button:not\(\.hidden\)\{[\s\S]*?padding:28px 12px 24px!important/,'blocking CSS must own the same desktop card padding as R55 for visible controls before first paint without forcing hidden controls visible');
-assert.match(blockingCss,/@media\(max-width:760px\)\{[\s\S]*?min-height:78px!important;[\s\S]*?padding:29px 12px 25px!important/,'blocking mobile geometry must match the retained R55 seal');
-assert.match(blockingCss,/@media\(max-width:520px\)\{[\s\S]*?grid-template-columns:1fr!important/,'narrow mobile landing menu must collapse to one column');
+assert.match(blockingCss,/@media\(max-width:900px\),\(pointer:coarse\)\{[\s\S]*?grid-template-columns:minmax\(0,1fr\)!important[\s\S]*?grid-column:1\/-1!important[\s\S]*?width:100%!important[\s\S]*?min-height:78px!important;[\s\S]*?padding:29px 12px 25px!important/,'phone/coarse landing geometry must collapse supported choices to one full-width column');
+assert.match(blockingCss,/#solo-btn\.primary\{color:#f5eefb!important\}/,'Solo primary text must retain readable light contrast on its dark card');
 
 // R55 still owns late card-text sealing. It must agree with the blocking geometry
 // and must reconcile DOM traversal order with the Stage 2 visual hierarchy.
 assert.match(lateLayoutOwner,/if\(id==="solo-btn"\|\|id==="create-btn"\)\{height="82px";font="10\.5px"\}/,'R55 Solo height must remain aligned with first-paint geometry');
 assert.match(lateLayoutOwner,/else if\(id==="continue-save-btn"\)\{height="78px";font="10px"\}/,'R55 Resume height must remain aligned with first-paint geometry');
 assert.match(lateLayoutOwner,/else if\(id==="tutorial-zone-btn"\|\|id==="daily-btn"\)\{height="70px";font="9px"\}/,'R55 secondary heights must remain aligned with first-paint geometry');
+assert.match(lateLayoutOwner,/\(max-width:900px\), \(pointer:coarse\)/,'R55 must use the same phone/coarse breakpoint as the blocking menu geometry');
+assert.match(lateLayoutOwner,/grid-template-columns:minmax\(0,1fr\)!important/,'R55 must keep supported mobile cards in one full-width column after late sealing');
+assert.match(lateLayoutOwner,/button\.primary\{color:#f5eefb!important\}/,'R55 must not restamp the Solo primary label to dark low-contrast text');
 assert.match(lateLayoutOwner,/if\(mobile\)height="78px"/,'R55 mobile height must remain aligned with blocking mobile geometry');
 assert.match(lateLayoutOwner,/const ids=\["continue-save-btn","solo-btn","split-btn","tutorial-zone-btn","daily-btn"\]/,'late owner must put supported buttons into visual/focus order');
 assert.match(lateLayoutOwner,/grid\.insertBefore\(fragment,grid\.firstChild\)/,'late owner must reconcile actual DOM order rather than relying only on CSS order');

@@ -10,6 +10,7 @@
   const trapContacts=new Set();
   const trapDamageInFlight=new Set();
   let trapDamageOwner=null;
+  let baseTrapDamageOwner=null;
   let validatedTrapContact=null;
   const trapProtectionUntil=new Map();
 
@@ -45,6 +46,15 @@
     return null
   }
 
+  function deepestOriginal(owner){
+    const seen=new Set();let current=owner,last=null;
+    while(typeof current==="function"&&!seen.has(current)){
+      seen.add(current);last=current;
+      current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null
+    }
+    return last
+  }
+
   function activeTrapContact(player){
     try{
       if(validatedTrapContact?.player===player){
@@ -67,7 +77,12 @@
        grows the chain after repeated mode leave/re-entry and is not required for
        R19's contact/protection state to remain authoritative. */
     const existing=chainOwner(current,"__ccgV142R19MobileTrapDamage");
-    if(existing){trapDamageOwner=existing;return true;}
+    if(existing){
+      trapDamageOwner=existing;
+      if(typeof baseTrapDamageOwner!=="function")baseTrapDamageOwner=deepestOriginal(existing);
+      return true;
+    }
+    baseTrapDamageOwner=deepestOriginal(current)||current;
     const wrapped=function hurtPlayerV142R19MobileTrapDamage(player,amount,flash,source){
       if(!ordinaryDungeon()||!player||!environmentalTrapSource(source))return current.apply(this,arguments);
       /* Floor-trap health damage is one hit per active contact. The independent
@@ -135,12 +150,60 @@
     finally{validatedTrapContact=previousValidatedContact}
   }
 
+  function applyValidatedTrapHealthDamage(player,trap){
+    if(!ordinaryDungeon()||!player||!trap?.active)return false;
+    if(Number(trap.x)!==Number(player.x)||Number(trap.y)!==Number(player.y))return false;
+    const rare=window.CCGLostSizzlerRareEventsBalance||null;
+    const contactKey=canonicalTrapKey(player,trap,rare?.trapRuntime);
+    const now=performance.now(),protectedUntil=Number(trapProtectionUntil.get(contactKey)||0);
+    if(protectedUntil>now){state.trapProtectionBlocks++;return true}
+    if(protectedUntil>0)trapProtectionUntil.delete(contactKey);
+    if(trapContacts.has(contactKey)){state.trapContactBlocks++;return true}
+    if(trapDamageInFlight.has(contactKey))return true;
+
+    const owner=typeof baseTrapDamageOwner==="function"
+      ?baseTrapDamageOwner
+      :deepestOriginal(trapDamageOwner||window.hurtPlayer);
+    if(typeof owner!=="function")return false;
+    baseTrapDamageOwner=owner;
+
+    const beforeHealth=Number(player.health||0),beforeArmor=Number(player.armor||0),beforeInvuln=Number(player.invuln||0);
+    if(beforeHealth<=0)return false;
+    trapDamageInFlight.add(contactKey);
+    player.armor=0;
+    /* The contact latch above owns duplicate suppression for this exact active
+       floor trap. Clear stale player invulnerability only for the validated
+       contact so the canonical damage/death pipeline cannot silently discard it. */
+    player.invuln=0;
+    let result,threw=false;
+    try{
+      result=owner.call(window,player,1,false,`${String(trap.kind||"floor")} trap`);
+    }catch(error){
+      threw=true;
+      throw error;
+    }finally{
+      player.armor=beforeArmor;
+      trapDamageInFlight.delete(contactKey);
+      if(threw)player.invuln=beforeInvuln;
+    }
+
+    const afterHealth=Number(player.health||0);
+    const canonicalHit=afterHealth!==beforeHealth||Number(player.invuln||0)>0;
+    if(!canonicalHit){
+      player.invuln=beforeInvuln;
+      return false
+    }
+
+    state.trapHits++;
+    trapContacts.add(contactKey);
+    const protectionMs=Math.max(0,Number(player.invuln||0));
+    if(protectionMs>0)trapProtectionUntil.set(contactKey,performance.now()+protectionMs);
+    return true
+  }
+
   function damageValidatedTrapContact(player,trap){
     if(!ordinaryDungeon()||!player||!trap)return false;
-    const damageOwner=trapDamageOwner||chainOwner(window.hurtPlayer,"__ccgV142R19MobileTrapDamage");
-    if(typeof damageOwner!=="function")return false;
-    withValidatedTrapContact(player,trap,()=>damageOwner.call(window,player,1,false,`${String(trap.kind||"floor")} trap`));
-    return true
+    return withValidatedTrapContact(player,trap,()=>applyValidatedTrapHealthDamage(player,trap))===true
   }
 
   function guaranteeTrapContactDamage(player,trap,beforeHealth,beforeArmor){
@@ -154,14 +217,9 @@
       if(Number(player.armor||0)!==beforeArmor)player.armor=beforeArmor;
       return true
     }
-    const damageOwner=trapDamageOwner||chainOwner(window.hurtPlayer,"__ccgV142R19MobileTrapDamage");
-    if(typeof damageOwner!=="function")return false;
-    try{
-      withValidatedTrapContact(player,trap,()=>damageOwner.call(window,player,1,false,`${String(trap.kind||"floor")} trap`));
-    }finally{
-      if(Number(player.armor||0)!==beforeArmor)player.armor=beforeArmor
-    }
-    if(Number(player.health||0)<beforeHealth){state.directTrapRepairs++;return true}
+    const handled=withValidatedTrapContact(player,trap,()=>applyValidatedTrapHealthDamage(player,trap))===true;
+    if(Number(player.armor||0)!==beforeArmor)player.armor=beforeArmor;
+    if(handled){state.directTrapRepairs++;return true}
     return false
   }
 

@@ -47,8 +47,14 @@
         position:absolute!important;left:12px!important;right:12px!important;top:auto!important;bottom:8px!important;display:block!important;margin:0!important;
         max-height:2.3em!important;font-size:7px!important;font-weight:400!important;line-height:1.15!important;letter-spacing:.35px!important;white-space:normal!important;overflow:hidden!important;text-overflow:clip!important;text-shadow:none!important;transform:none!important;filter:none!important
       }
-      body[data-run-active="false"] #menu .game-mode-buttons button.primary{color:#160b1e!important}
-      @media(max-width:760px){
+      body[data-run-active="false"] #menu .game-mode-buttons button.primary{color:#f5eefb!important}
+      @media(max-width:900px),(pointer:coarse){
+        body[data-run-active="false"] #menu .game-mode-buttons{grid-template-columns:minmax(0,1fr)!important}
+        body[data-run-active="false"] #menu .game-mode-buttons #continue-save-btn,
+        body[data-run-active="false"] #menu .game-mode-buttons #solo-btn,
+        body[data-run-active="false"] #menu .game-mode-buttons #split-btn,
+        body[data-run-active="false"] #menu .game-mode-buttons #tutorial-zone-btn,
+        body[data-run-active="false"] #menu .game-mode-buttons #daily-btn{grid-column:1/-1!important;width:100%!important;min-width:0!important}
         body[data-run-active="false"] #menu .game-mode-buttons button,
         body[data-run-active="false"] #menu .game-mode-buttons #solo-btn,
         body[data-run-active="false"] #menu .game-mode-buttons #create-btn,
@@ -70,7 +76,7 @@
     if(id==="solo-btn"||id==="create-btn"){height="82px";font="10.5px"}
     else if(id==="continue-save-btn"){height="78px";font="10px"}
     else if(id==="tutorial-zone-btn"||id==="daily-btn"){height="70px";font="9px"}
-    const mobile=matchMedia?.("(max-width:760px)")?.matches===true;
+    const mobile=matchMedia?.("(max-width:900px), (pointer:coarse)")?.matches===true;
     if(mobile)height="78px";
     const hidden=button.classList.contains("hidden");
     const values={

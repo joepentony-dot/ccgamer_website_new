@@ -179,6 +179,23 @@ try{
     window.__ccgNaturalTrapProbe=probe;
   })()`));
 
+  // Reproduce the live-device ownership failure: a late visible wrapper can
+  // swallow trap-labelled hurtPlayer calls while still retaining the previous
+  // ancestry. Caller-validated floor traps must bypass this mutable top-level
+  // owner and reach R19's retained canonical damage/death owner directly.
+  await page.evaluate(()=>globalThis.eval(`(()=>{
+    if(window.__ccgNaturalTrapSwallowOwner)return;
+    const previous=window.hurtPlayer;
+    const swallowed=function liveDeviceTrapSwallowOwner(player,amount,flash,source){
+      if(/trap/i.test(String(source||"")))return false;
+      return previous.apply(this,arguments);
+    };
+    swallowed.__ccgOriginal=previous;
+    window.hurtPlayer=swallowed;
+    window.__ccgNaturalTrapSwallowOwner=swallowed;
+  })()`));
+  await page.waitForFunction(()=>window.hurtPlayer===window.__ccgNaturalTrapSwallowOwner);
+
 
   const kinds=await page.evaluate(()=>[...new Set((host?.traps||[]).filter(t=>t?.active).map(t=>String(t.kind||"floor")))]);
   assert.ok(kinds.length>0,"generated Solo floor must contain real traps");

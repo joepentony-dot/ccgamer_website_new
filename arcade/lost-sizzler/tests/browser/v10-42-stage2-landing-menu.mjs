@@ -108,6 +108,57 @@ try{
   console.log("DUNGEON_STAGE2_LANDING",JSON.stringify(state));
   console.log("Dungeon Carnage Stage 2 landing menu browser contract passed.");
   await context.close();
+
+  // Reproduce the reported phone landing layout at a wide/coarse viewport.
+  // Coarse input must force one full-width column even when the layout viewport
+  // is wider than the older 760/520px breakpoints.
+  const mobileContext=await browser.newContext({viewport:{width:810,height:1600},isMobile:true,hasTouch:true,deviceScaleFactor:1});
+  await mobileContext.route("https://*.supabase.co/**",route=>route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:"{}"}));
+  const mobilePage=await mobileContext.newPage();
+  mobilePage.setDefaultTimeout(60000);
+  const mobileErrors=[];
+  mobilePage.on("pageerror",error=>mobileErrors.push(String(error?.stack||error)));
+  await mobilePage.goto(`${origin}/arcade/lost-sizzler/?stage2-mobile-landing=1`,{waitUntil:"domcontentloaded"});
+  await mobilePage.waitForFunction(()=>document.body?.dataset?.releaseReady==="true"&&document.body?.dataset?.gameReady==="true",null,{timeout:90000});
+  await mobilePage.waitForFunction(()=>document.querySelector("#menu .game-mode-buttons")?.dataset?.r55TextLayout==="true",null,{timeout:10000});
+
+  const mobileState=await mobilePage.evaluate(()=>{
+    const grid=document.querySelector("#menu .game-mode-buttons");
+    const gridRect=grid?.getBoundingClientRect?.();
+    const ids=["continue-save-btn","solo-btn","split-btn","tutorial-zone-btn","daily-btn"];
+    const controls=ids.map(id=>{
+      const element=document.getElementById(id),style=element?getComputedStyle(element):null,rect=element?.getBoundingClientRect?.();
+      return{
+        id,
+        visible:Boolean(element&&style&&style.display!=="none"&&!element.classList.contains("hidden")),
+        left:rect?Math.round(rect.left):0,
+        top:rect?Math.round(rect.top):0,
+        width:rect?Math.round(rect.width):0,
+        color:style?.color||"",
+        gridColumn:style?.gridColumn||""
+      };
+    }).filter(row=>row.visible);
+    return{
+      coarse:matchMedia("(pointer: coarse)").matches,
+      grid:{left:Math.round(gridRect?.left||0),width:Math.round(gridRect?.width||0),columns:getComputedStyle(grid).gridTemplateColumns},
+      controls,
+      soloColor:getComputedStyle(document.getElementById("solo-btn")).color
+    };
+  });
+
+  assert.equal(mobileState.coarse,true,"mobile landing contract must execute on a coarse-pointer viewport");
+  assert.ok(mobileState.grid.width>0,"mobile landing grid must have measurable width");
+  assert.ok(mobileState.controls.length>=4,"all always-visible supported mobile choices must remain present");
+  for(const control of mobileState.controls){
+    assert.ok(Math.abs(control.left-mobileState.grid.left)<=2,`${control.id} must align to the full-width mobile grid left edge: ${JSON.stringify(mobileState)}`);
+    assert.ok(control.width>=mobileState.grid.width-4,`${control.id} must fill the mobile menu width instead of occupying the left half: ${JSON.stringify(mobileState)}`);
+  }
+  const orderedVisible=mobileState.controls.filter(row=>["solo-btn","split-btn","tutorial-zone-btn","daily-btn"].includes(row.id));
+  for(let i=1;i<orderedVisible.length;i++)assert.ok(orderedVisible[i].top>orderedVisible[i-1].top,`supported mobile cards must stack vertically: ${JSON.stringify(mobileState)}`);
+  assert.equal(mobileState.soloColor,"rgb(245, 238, 251)","Solo primary label must remain readable on the dark/gold mobile card");
+  assert.deepEqual(mobileErrors,[],`mobile Stage 2 landing menu must have no uncaught browser errors: ${mobileErrors.join("\n")}`);
+  console.log("DUNGEON_STAGE2_MOBILE_LANDING",JSON.stringify(mobileState));
+  await mobileContext.close();
 }finally{
   await browser.close();
   for(const socket of sockets)socket.destroy();

@@ -14,7 +14,7 @@ body[data-run-active="false"] #menu .game-mode-buttons button{
   -webkit-filter:none!important;
 }
 body[data-run-active="false"] #menu .game-mode-buttons button.primary{
-  color:#160b1e!important;
+  color:#f5eefb!important;
 }
 body[data-run-active="false"] #menu .game-mode-buttons button::before{
   position:absolute!important;
