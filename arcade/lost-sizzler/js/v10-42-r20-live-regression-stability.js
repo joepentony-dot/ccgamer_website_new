@@ -208,7 +208,9 @@
       const handled=attackNow("Space");
       if(handled){
         diagnostics.mobileFireFallbacks++;
-        try{input?.add?.("Space");button.classList.add("held")}catch(_){}
+        if(mobileFirePointers.has(event.pointerId)){
+          try{input?.add?.("Space");button.classList.add("held")}catch(_){}
+        }
       }
     });
   },true);
