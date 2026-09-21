@@ -2821,6 +2821,7 @@ function buildGameSectionNav(state) {
         { label: "Manual", target: document.getElementById("game-utility-hub-section"), enabled: !!state?.hasManual },
         { label: "Reviews", target: document.getElementById("game-reading-section"), enabled: true },
         { label: "Music", target: document.getElementById("game-music-archive-section"), enabled: true },
+        { label: "Tape", target: document.getElementById("game-tape-archive-section"), enabled: true },
         { label: "Gallery", target: document.querySelector(".game-screenshots"), enabled: !!state?.hasScreenshots, id: "game-gallery" },
         { label: "Similar", target: document.querySelector(".game-section--related"), enabled: !!state?.hasRelated, id: "game-related" },
         { label: "Community", target: document.querySelector(".ccg-community-game-section"), enabled: true, id: "game-community" }
@@ -2874,6 +2875,7 @@ function initGameSectionNav(state) {
     const dynamicSections = [
         document.getElementById("game-reading-section"),
         document.getElementById("game-music-archive-section"),
+        document.getElementById("game-tape-archive-section"),
         document.querySelector(".ccg-community-game-section")
     ].filter(Boolean);
 
