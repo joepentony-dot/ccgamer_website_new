@@ -59,19 +59,61 @@ try{
   }));
   assert.match(during.text,/LOADING.*PLEASE WAIT/i,"loading overlay must give an explicit wait message");
   assert.equal(during.max,100,"loading progress must use a 0-100 scale");
-  assert.ok(during.value>0&&during.value<100,`loading progress must visibly advance before runtime readiness: ${JSON.stringify(during)}`);
+  assert.ok(during.value>=0&&during.value<100,`loading progress must remain pre-ready before runtime readiness: ${JSON.stringify(during)}`);
+
+  await page.evaluate(()=>{
+    window.__ccgLoadingProgressSamples=[];
+    const sample=()=>{
+      const watchdog=window.CCGLostSizzlerLoadWatchdog,progress=document.getElementById("ccg-release-loading-progress");
+      window.__ccgLoadingProgressSamples.push({
+        value:Number(progress?.value||0),
+        releaseReady:document.body?.dataset?.releaseReady==="true",
+        modulesReady:Number(watchdog?.state?.modulesReady||0),
+        stage:Number(watchdog?.state?.loadingStage||0),
+        expected:Number(watchdog?.expectedModules||0),
+        total:Number(watchdog?.totalModules?.()||0),
+        status:String(document.getElementById("ccg-release-loading-status")?.textContent||"")
+      });
+    };
+    sample();
+    window.__ccgLoadingProgressTimer=setInterval(sample,30);
+  });
 
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&window.CCGLostSizzlerV142Bootstrap?.ready===true&&document.getElementById("ccg-release-loading")?.hidden===true);
   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
   await page.waitForFunction(()=>document.getElementById("ccg-release-loading")?.hidden===true);
-  const finished=await page.evaluate(()=>({
-    value:Number(document.getElementById("ccg-release-loading-progress")?.value||0),
-    hidden:Boolean(document.getElementById("ccg-release-loading")?.hidden),
-    runtime:Boolean(window.CCGLostSizzlerV142Bootstrap?.ready)
-  }));
+  const finished=await page.evaluate(()=>{
+    if(window.__ccgLoadingProgressTimer)clearInterval(window.__ccgLoadingProgressTimer);
+    window.__ccgLoadingProgressTimer=0;
+    return{
+      value:Number(document.getElementById("ccg-release-loading-progress")?.value||0),
+      hidden:Boolean(document.getElementById("ccg-release-loading")?.hidden),
+      runtime:Boolean(window.CCGLostSizzlerV142Bootstrap?.ready),
+      watchdog:window.CCGLostSizzlerLoadWatchdog?{
+        expected:Number(window.CCGLostSizzlerLoadWatchdog.expectedModules||0),
+        modulesReady:Number(window.CCGLostSizzlerLoadWatchdog.state?.modulesReady||0),
+        stage:Number(window.CCGLostSizzlerLoadWatchdog.state?.loadingStage||0)
+      }:null,
+      samples:[...(window.__ccgLoadingProgressSamples||[])]
+    };
+  });
   assert.equal(finished.value,100,"loading progress must reach 100% when the release gate completes");
   assert.equal(finished.hidden,true,"loading overlay must leave the screen after successful preparation");
   assert.equal(finished.runtime,true,"the active ordered runtime must be ready before the loading overlay closes");
+  assert.equal(finished.watchdog?.expected,108,"the loader must use the current 108-module release workload");
+  assert.ok(finished.watchdog?.modulesReady>=108,`the loader must observe the full release workload before completion: ${JSON.stringify(finished.watchdog)}`);
+  assert.equal(finished.watchdog?.stage,100,"the authoritative loader stage must finish at 100");
+  const preReady=finished.samples.filter(sample=>sample.expected===108&&!sample.releaseReady);
+  assert.ok(preReady.length>=2,`expected multiple pre-ready module progress samples: ${JSON.stringify(finished.samples)}`);
+  assert.ok(preReady.every(sample=>sample.value>=0&&sample.value<=99),"pre-ready module progress must stay in the 0-99 range");
+  assert.ok(preReady.every(sample=>sample.value===sample.stage),"the visible progress value must match the authoritative loader stage");
+  for(let i=1;i<preReady.length;i++){
+    const previous=preReady[i-1],current=preReady[i];
+    assert.ok(current.value>=previous.value,`loading percentage must never move backwards: ${JSON.stringify({previous,current})}`);
+    assert.ok(current.modulesReady>=previous.modulesReady,`completed module count must never move backwards: ${JSON.stringify({previous,current})}`);
+    if(current.value>previous.value)assert.ok(current.modulesReady>previous.modulesReady,`loading percentage must not rise unless another module completed: ${JSON.stringify({previous,current})}`);
+  }
+  assert.ok(new Set(preReady.map(sample=>sample.value)).size>=3,`module-driven loading should expose multiple intermediate percentages: ${JSON.stringify(preReady)}`);
 
   /* Retained here as historic source context only: the former field-kit
    * assertions exercised retired Spy UI and must not execute in active CI. */
