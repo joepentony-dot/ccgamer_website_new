@@ -47,13 +47,15 @@
     }catch(_){}
     return true
   }
+  function restoreLivePresentationNow(reason="resume"){
+    if(currentMode()!=="playing"||!liveSession())return false;
+    const repaired=activeRun();
+    if(repaired)try{document.body.dataset.v142R20PresentationResume=String(reason)}catch(_){}
+    return repaired
+  }
   function recoverLivePresentation(reason="resume"){
-    const repair=()=>{
-      if(currentMode()!=="playing"||!liveSession())return false;
-      const repaired=activeRun();
-      if(repaired)try{document.body.dataset.v142R20PresentationResume=String(reason)}catch(_){}
-      return repaired
-    };
+    const repair=()=>restoreLivePresentationNow(reason);
+    repair();
     queueMicrotask(repair);
     setTimeout(repair,0);
     setTimeout(repair,60);
@@ -74,6 +76,52 @@
     });
     for(const node of targets)presentationResumeObserver.observe(node,{attributes:true,attributeFilter:["class"]});
     return true
+  }
+  function installPresentationResumeOwners(){
+    let installed=false;
+    try{
+      if(typeof toggleInventory==="function"&&!toggleInventory.__ccgV142R20PresentationResume){
+        const baseToggleInventory=toggleInventory;
+        toggleInventory=function toggleInventoryV142R20PresentationResume(...args){
+          const returning=currentMode()==="inventory";
+          const result=baseToggleInventory.apply(this,args);
+          if(returning&&currentMode()==="playing")restoreLivePresentationNow("inventory-close-owner");
+          return result
+        };
+        toggleInventory.__ccgV142R20PresentationResume=true;
+        toggleInventory.__ccgOriginal=baseToggleInventory;
+        installed=true;
+      }
+    }catch(_){}
+    try{
+      if(typeof returnToGameFromPanel==="function"&&!returnToGameFromPanel.__ccgV142R20PresentationResume){
+        const baseReturnToGame=returnToGameFromPanel;
+        returnToGameFromPanel=function returnToGameFromPanelV142R20PresentationResume(...args){
+          const returning=currentMode()==="inventory";
+          const result=baseReturnToGame.apply(this,args);
+          if(returning&&currentMode()==="playing")restoreLivePresentationNow("inventory-close-top-owner");
+          return result
+        };
+        returnToGameFromPanel.__ccgV142R20PresentationResume=true;
+        returnToGameFromPanel.__ccgOriginal=baseReturnToGame;
+        installed=true;
+      }
+    }catch(_){}
+    try{
+      if(typeof closePauseMenu==="function"&&!closePauseMenu.__ccgV142R20PresentationResume){
+        const baseClosePauseMenu=closePauseMenu;
+        closePauseMenu=function closePauseMenuV142R20PresentationResume(...args){
+          const returning=currentMode()==="paused";
+          const result=baseClosePauseMenu.apply(this,args);
+          if(returning&&currentMode()==="playing")restoreLivePresentationNow("pause-close-owner");
+          return result
+        };
+        closePauseMenu.__ccgV142R20PresentationResume=true;
+        closePauseMenu.__ccgOriginal=baseClosePauseMenu;
+        installed=true;
+      }
+    }catch(_){}
+    return installed
   }
   const editableTarget=target=>Boolean(target instanceof Element&&(target.matches("input,textarea,select,[contenteditable='true'],[contenteditable='']")||target.closest("input,textarea,select,[contenteditable='true'],[contenteditable='']")));
   const finePointer=()=>window.matchMedia?.("(pointer: fine)")?.matches!==false;
@@ -381,11 +429,12 @@
   }
   installStallClamp();
   installPresentationResumeObserver();
+  installPresentationResumeOwners();
 
   /* r20 remains an extension of the established frame owner. It never starts
      a second RAF chain; it only clamps the timestamp gap before r29 advances
      the existing simulation loop. */
-  addEventListener("ccg:v142-ready",()=>{captureR1FireOwner();installStallClamp();installPresentationResumeObserver()},{once:true});
+  addEventListener("ccg:v142-ready",()=>{captureR1FireOwner();installStallClamp();installPresentationResumeObserver();installPresentationResumeOwners()},{once:true});
   addEventListener("pagehide",()=>{showCursor();mobileFirePointers.clear();presentationResumeObserver?.disconnect?.();presentationResumeObserver=null;try{input?.delete?.("Space")}catch(_){}if(cursorTimer)clearTimeout(cursorTimer)},{once:true});
 
   window.CCGLostSizzlerV142R20LiveRegressionStability=Object.freeze({
@@ -395,8 +444,10 @@
     activeRun,
     liveSession,
     recoverOrphanedGameplayMode,
+    restoreLivePresentationNow,
     recoverLivePresentation,
     installPresentationResumeObserver,
+    installPresentationResumeOwners,
     showScoreDelta,
     captureR1FireOwner,
     installStallClamp
