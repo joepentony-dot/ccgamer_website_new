@@ -21,8 +21,10 @@ assert.match(watchdog,/const publicPlayLocked=\(\)=>false/,"the released game mu
 assert.ok(!watchdog.includes("ccg-public-beta-closed"),"the watchdog must not inject the retired public-beta lock class");
 assert.ok(!watchdog.includes("ccg-beta-ended-sash"),"the watchdog must not inject a retired Coming Soon sash");
 assert.ok(!watchdog.includes("from(\"profiles\")"),"the watchdog must not query account profiles to decide public game availability");
-assert.match(watchdog,/Math\.min\(90,10\+Math\.floor\(Math\.max\(0,state\.modulesReady\)\/5\)\*10\)/,"loading progress must advance by real ten-percent module stages instead of sticking at 92%");
-assert.match(watchdog,/state\.loadingStages\.push\(stage\)/,"loader must retain observable stage evidence");
+assert.match(watchdog,/const EXPECTED_MODULES=108/,"loading progress must use the current tracked release workload");
+assert.match(watchdog,/Math\.round\(\(ready\/total\)\*99\)/,"loading progress must advance proportionally with completed modules instead of jumping through coarse ten-percent stages");
+assert.match(watchdog,/state\.loadingStages\.at\(-1\)!==value\)state\.loadingStages\.push\(value\)/,"loader must retain observable proportional progress evidence");
+assert.doesNotMatch(watchdog,/Math\.min\(90,10\+Math\.floor|Math\.min\(92/,"legacy staged and 92-percent loading caps must not return");
 assert.match(watchdog,/scheduleSoloLivenessCheck/,"Solo launch must gain a bounded post-menu liveness check");
 assert.match(watchdog,/resetModeTransient\?\.\("Solo launch liveness recovery"\)/,"a failed post-mode Solo start must reset stale mode transients before its one retry");
 assert.ok(!watchdog.includes("startSolo("),"watchdog must keep replaying canonical menu/tutorial ownership rather than directly owning startSolo");
