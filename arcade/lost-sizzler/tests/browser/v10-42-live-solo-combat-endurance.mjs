@@ -34,7 +34,7 @@ async function snap(page){
     return {
       mode:String(typeof mode!=="undefined"?mode:""),active:document.body?.dataset?.runActive||"",
       elapsed:Number(run?.elapsed)||0,floorElapsed:Number(host?.floorElapsed)||0,
-      mana:Number(p1?.mana)||0,health:Number(p1?.health)||0,hitStun:Number(p1?.hitStunMs)||0,
+      mana:Number(p1?.mana)||0,health:Number(p1?.health)||0,hitStun:Number(p1?.hitStunMs)||0,controlLocked:Boolean(p1?.controlLocked),controlsLocked:Boolean(p1?.controlsLocked),
       fire1:Number(typeof fire1!=="undefined"?fire1:0)||0,buffer:Number(typeof fireBuffer1!=="undefined"?fireBuffer1:0)||0,projectileCD:Number(typeof projectileCD!=="undefined"?projectileCD:0)||0,
       bullets:Number(bullets?.length)||0,enemyBullets:Number(enemyBullets?.length)||0,particles:Number(particles?.length)||0,rings:Number(rings?.length)||0,floaters:Number(floaters?.length)||0,hazards:Number(hazards?.length)||0,
       enemies:Number(host?.enemies?.length)||0,aliveEnemies:(host?.enemies||[]).filter(e=>e?.alive!==false).length,
@@ -276,8 +276,8 @@ try{
       const afterLiveRepair=await snap(page);
       assert.ok(afterLiveRepair.mana<beforeLiveRepair.mana||afterLiveRepair.projectileSteps>beforeLiveRepair.projectileSteps,"ordinary-play attack recovery produced no shot/projectile work");
       assert.equal(afterLiveRepair.hitStun,0,"ordinary-play attack recovery must clear stale hit-stun after its real damage window");
-      assert.ok(afterLiveRepair.staleStunRepairs>beforeLiveRepair.staleStunRepairs,"ordinary-play attack recovery did not record stale-stun repair");
-      assert.ok(afterLiveRepair.controlLockRepairs>=beforeLiveRepair.controlLockRepairs+2,"ordinary-play attack recovery did not clear both player control-lock aliases");
+      assert.equal(afterLiveRepair.controlLocked,false,"ordinary-play attack recovery must clear controlLocked regardless of which repair owner wins the race");
+      assert.equal(afterLiveRepair.controlsLocked,false,"ordinary-play attack recovery must clear controlsLocked regardless of which repair owner wins the race");
     }
   }
 
