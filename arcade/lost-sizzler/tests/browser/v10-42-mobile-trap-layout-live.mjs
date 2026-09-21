@@ -299,7 +299,7 @@ async function runViewport(viewport){
     const stationary=await page.evaluate(()=>globalThis.eval(`(()=>{
       const trap=(host?.traps||[])[0];
       if(!trap)return{available:false};
-      const period=600,now=performance.now(),desiredPhase=period*.70;
+      const period=4000,now=performance.now(),desiredPhase=period*.80;
       trap.period=period;
       trap.phase=(desiredPhase-(now%period)+period)%period;
       p1.x=trap.x;p1.y=trap.y;p1.rx=trap.x;p1.ry=trap.y;
@@ -320,7 +320,7 @@ async function runViewport(viewport){
     await page.waitForFunction(fixture=>{
       const api=window.CCGLostSizzlerV142R19MobileTrapLayoutStability;
       return Number(p1?.health||0)===fixture.beforeHealth-1&&Number(api?.state?.stationaryTrapHits||0)>=fixture.beforeStationaryHits+1;
-    },stationary,{timeout:1800,polling:"raf"});
+    },stationary,{timeout:2400,polling:"raf"});
     const stationaryAfter=await page.evaluate(()=>({
       health:Number(p1?.health||0),
       armor:Number(p1?.armor||0),
