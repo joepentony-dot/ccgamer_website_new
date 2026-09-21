@@ -37,6 +37,15 @@ create index if not exists idx_comments_game_key_created_desc
 create index if not exists idx_ratings_game_key_user
   on public.ratings (game_key, user_id);
 
+drop policy if exists comment_reports_owner_read on public.comment_reports;
+create policy comment_reports_owner_read
+  on public.comment_reports
+  for select
+  to authenticated
+  using (reporter_user_id = (select auth.uid()));
+
+grant select on table public.comment_reports to authenticated;
+
 create or replace function public.ccg_game_rating_summary(p_game_key text)
 returns table (
   average_rating numeric,
