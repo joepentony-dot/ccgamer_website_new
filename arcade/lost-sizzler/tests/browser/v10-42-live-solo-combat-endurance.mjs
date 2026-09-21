@@ -117,11 +117,11 @@ try{
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap&&document.body,null,{timeout:20000});
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
   const boot=await page.evaluate(()=>({ready:CCGLostSizzlerV142Bootstrap.ready,failed:CCGLostSizzlerV142Bootstrap.failed,error:CCGLostSizzlerV142Bootstrap.error||"",build:CCGLostSizzlerV142Bootstrap.build,cache:CCGLostSizzlerV142Bootstrap.cache,metaBuild:document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content,metaCache:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content,ordered:[...document.querySelectorAll('script[data-ccg-v142-ordered="true"]')].map(s=>s.src)}));
-  assert.equal(boot.failed,false,`r38 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r38 ordered bootstrap must complete");
-  assert.equal(boot.build,"V10.42 r38");assert.equal(boot.cache,"20260921r38");assert.equal(boot.metaBuild,"V10.42 r38");assert.equal(boot.metaCache,"20260921r38");
-  assert.ok(boot.ordered.length>=30,"r38 bootstrap must load the complete ordered V10.42 chain");
-  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260921r38"),"every ordered V10.42 module must use the r38 cache token");
-  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260921r38")),"expected r38 projectile lifecycle asset was not requested");
+  assert.equal(boot.failed,false,`r39 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r39 ordered bootstrap must complete");
+  assert.equal(boot.build,"V10.42 r39");assert.equal(boot.cache,"20260921r39");assert.equal(boot.metaBuild,"V10.42 r39");assert.equal(boot.metaCache,"20260921r39");
+  assert.ok(boot.ordered.length>=30,"r39 bootstrap must load the complete ordered V10.42 chain");
+  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260921r39"),"every ordered V10.42 module must use the r39 cache token");
+  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260921r39")),"expected r39 projectile lifecycle asset was not requested");
   assert.equal(await page.evaluate(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.ownsBoundary?.()===true),true,"#2118 lifecycle owner must be authoritative before play");
 
   await page.evaluate(()=>{const hb=window.__ccgEnduranceHeartbeat={frames:0,stalls:0,maxGap:0,last:0};const beat=t=>{if(hb.last){const gap=t-hb.last;hb.maxGap=Math.max(hb.maxGap,gap);if(gap>300)hb.stalls++}hb.last=t;hb.frames++;requestAnimationFrame(beat)};requestAnimationFrame(beat)});
@@ -147,7 +147,45 @@ try{
     assert.ok(moved.elapsed>current.elapsed,`round ${round}: movement/combat simulation failed to progress after attack`);
     assert.ok(moved.projectileSteps>=current.projectileSteps,`round ${round}: projectile simulation regressed`);
     assert.ok(moved.rafFrames>current.rafFrames,`round ${round}: frame loop failed to progress after movement`);
-    if(round===48){await page.keyboard.press("KeyP");await page.waitForFunction(()=>mode==="paused");await page.keyboard.press("KeyP");await page.waitForFunction(()=>mode==="playing");}
+    if(round===48){
+      await page.keyboard.press("KeyP");
+      await page.waitForFunction(()=>mode==="paused");
+      await page.waitForTimeout(5500);
+      const pausedPoison=await page.evaluate(()=>{
+        fire1=4000;fireBuffer1=700;projectileCD=700;
+        input.add("Space");input.add("KeyF");input.add("Numpad0");
+        window.CCGLostSizzlerV142AttackHoldLiveness?.held?.add?.("KeyF");
+        return{
+          mode:String(mode),fire1:Number(fire1),buffer:Number(fireBuffer1),projectileCD:Number(projectileCD),
+          held:Number(window.CCGLostSizzlerV142AttackHoldLiveness?.held?.size||0)
+        };
+      });
+      assert.equal(pausedPoison.mode,"paused","extended-pause regression must remain inside the pause boundary while stale attack state is seeded");
+      assert.ok(pausedPoison.fire1>0&&pausedPoison.buffer>0&&pausedPoison.projectileCD>0&&pausedPoison.held>0,"extended-pause regression failed to reproduce stale attack ownership");
+      await page.keyboard.press("KeyP");
+      await page.waitForFunction(()=>mode==="playing");
+      await page.waitForTimeout(80);
+      const recovered=await page.evaluate(()=>({
+        fire1:Number(fire1),buffer:Number(fireBuffer1),projectileCD:Number(projectileCD),
+        space:input.has("Space"),keyF:input.has("KeyF"),numpad0:input.has("Numpad0"),
+        held:Number(window.CCGLostSizzlerV142AttackHoldLiveness?.held?.size||0),
+        resets:Number(window.__CCG_PAUSE_ATTACK_RESETS__||0)
+      }));
+      assert.equal(recovered.fire1,0,"extended pause resume must clear stale P1 fire cadence");
+      assert.equal(recovered.buffer,0,"extended pause resume must clear stale attack buffer");
+      assert.ok(Number.isFinite(recovered.projectileCD)&&recovered.projectileCD>=0&&recovered.projectileCD<=70,`extended pause resume must replace stale projectile cadence with the normal 0-70 ms live cadence, got ${recovered.projectileCD}`);
+      assert.equal(recovered.space,false,"extended pause resume must clear canonical Space ownership");
+      assert.equal(recovered.keyF,false,"extended pause resume must clear KeyF alias ownership");
+      assert.equal(recovered.numpad0,false,"extended pause resume must clear Numpad0 alias ownership");
+      assert.equal(recovered.held,0,"extended pause resume must clear the independent held-attack owner");
+      assert.ok(recovered.resets>=2,"extended pause resume must execute the guarded attack reset boundary");
+      assert.equal(await armEnemy(page),true,"extended-pause recovery enemy unavailable");
+      await fireCycle(page,"Space",4801);
+      assert.equal(await armEnemy(page),true,"extended-pause KeyF recovery enemy unavailable");
+      await fireCycle(page,"KeyF",4802);
+      assert.equal(await armEnemy(page),true,"extended-pause Numpad0 recovery enemy unavailable");
+      await fireCycle(page,"Numpad0",4803);
+    }
   }
 
   await settleGameplayMode(page,"post-cycle");assert.equal(await armEnemy(page),true,"post-cycle enemy unavailable");
@@ -167,7 +205,7 @@ try{
   assert.deepEqual(consoleErrors,[],`console errors:\n${consoleErrors.join("\n")}`);
 
   console.log("DUNGEON_R30_SOLO_ENDURANCE",JSON.stringify({initial,final,requests:v142Requests.length}));
-  console.log("Dungeon Carnage V10.42 r38 live Solo combat endurance regression passed.");
+  console.log("Dungeon Carnage V10.42 r39 live Solo combat endurance regression passed.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
