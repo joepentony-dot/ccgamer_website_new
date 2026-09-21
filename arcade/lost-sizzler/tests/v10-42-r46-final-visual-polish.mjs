@@ -20,7 +20,7 @@ for(const owner of ["simulationOwnership","collisionOwnership","combatOwnership"
 }
 assert.doesNotMatch(visual,/setInterval\(|requestAnimationFrame\(/,"final visual polish must not add a perpetual animation/polling loop");
 assert.match(visual,/__ccgV142R46FinalVisual/,"r46 must wrap established render owners instead of replacing core rendering");
-assert.match(visual,/data-v141-r47-performance-tier/,"r46 must respect the established performance tier");
+assert.match(visual,/v141R47PerformanceTier/,"r46 must read the established performance tier through body.dataset");
 assert.match(css,/data-v141-r47-performance-tier="severe"/,"severe performance mode must disable nonessential visual framing");
 assert.match(gameplay,/spawnPuzzleAmbush\(z\.roomId,p,1,"torch-fail"\)/,"wrong Level 3 directional inputs must spawn exactly one monster");
 assert.doesNotMatch(gameplay,/spawnPuzzleAmbush\(z\.roomId,p,3\+Math\.min\(2,z\.failures\),"torch-fail"\)/);
