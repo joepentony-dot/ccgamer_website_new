@@ -147,7 +147,45 @@ try{
     assert.ok(moved.elapsed>current.elapsed,`round ${round}: movement/combat simulation failed to progress after attack`);
     assert.ok(moved.projectileSteps>=current.projectileSteps,`round ${round}: projectile simulation regressed`);
     assert.ok(moved.rafFrames>current.rafFrames,`round ${round}: frame loop failed to progress after movement`);
-    if(round===48){await page.keyboard.press("KeyP");await page.waitForFunction(()=>mode==="paused");await page.keyboard.press("KeyP");await page.waitForFunction(()=>mode==="playing");}
+    if(round===48){
+      await page.keyboard.press("KeyP");
+      await page.waitForFunction(()=>mode==="paused");
+      await page.waitForTimeout(5500);
+      const pausedPoison=await page.evaluate(()=>{
+        fire1=4000;fireBuffer1=700;projectileCD=700;
+        input.add("Space");input.add("KeyF");input.add("Numpad0");
+        window.CCGLostSizzlerV142AttackHoldLiveness?.held?.add?.("KeyF");
+        return{
+          mode:String(mode),fire1:Number(fire1),buffer:Number(fireBuffer1),projectileCD:Number(projectileCD),
+          held:Number(window.CCGLostSizzlerV142AttackHoldLiveness?.held?.size||0)
+        };
+      });
+      assert.equal(pausedPoison.mode,"paused","extended-pause regression must remain inside the pause boundary while stale attack state is seeded");
+      assert.ok(pausedPoison.fire1>0&&pausedPoison.buffer>0&&pausedPoison.projectileCD>0&&pausedPoison.held>0,"extended-pause regression failed to reproduce stale attack ownership");
+      await page.keyboard.press("KeyP");
+      await page.waitForFunction(()=>mode==="playing");
+      await page.waitForTimeout(80);
+      const recovered=await page.evaluate(()=>({
+        fire1:Number(fire1),buffer:Number(fireBuffer1),projectileCD:Number(projectileCD),
+        space:input.has("Space"),keyF:input.has("KeyF"),numpad0:input.has("Numpad0"),
+        held:Number(window.CCGLostSizzlerV142AttackHoldLiveness?.held?.size||0),
+        resets:Number(window.__CCG_PAUSE_ATTACK_RESETS__||0)
+      }));
+      assert.equal(recovered.fire1,0,"extended pause resume must clear stale P1 fire cadence");
+      assert.equal(recovered.buffer,0,"extended pause resume must clear stale attack buffer");
+      assert.equal(recovered.projectileCD,0,"extended pause resume must clear stale projectile cadence");
+      assert.equal(recovered.space,false,"extended pause resume must clear canonical Space ownership");
+      assert.equal(recovered.keyF,false,"extended pause resume must clear KeyF alias ownership");
+      assert.equal(recovered.numpad0,false,"extended pause resume must clear Numpad0 alias ownership");
+      assert.equal(recovered.held,0,"extended pause resume must clear the independent held-attack owner");
+      assert.ok(recovered.resets>=2,"extended pause resume must execute the guarded attack reset boundary");
+      assert.equal(await armEnemy(page),true,"extended-pause recovery enemy unavailable");
+      await fireCycle(page,"Space",4801);
+      assert.equal(await armEnemy(page),true,"extended-pause KeyF recovery enemy unavailable");
+      await fireCycle(page,"KeyF",4802);
+      assert.equal(await armEnemy(page),true,"extended-pause Numpad0 recovery enemy unavailable");
+      await fireCycle(page,"Numpad0",4803);
+    }
   }
 
   await settleGameplayMode(page,"post-cycle");assert.equal(await armEnemy(page),true,"post-cycle enemy unavailable");
