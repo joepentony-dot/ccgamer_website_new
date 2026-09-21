@@ -8,7 +8,7 @@
   const state={
     startedAt:performance.now(),lastTick:performance.now(),maxDelay:0,stalls:0,timer:0,finished:false,
     pendingSolo:false,soloReplayQueued:false,soloReplays:0,soloIntentSerial:0,soloRecoveries:0,soloRecoveryTimer:0,soloLivenessObserver:null,
-    moduleObserver:null,loadingTimer:0,modulesReady:0,moduleKeys:new Set(),moduleTotalKeys:new Set(),expectedModules:EXPECTED_MODULES,loadingStage:0,loadingStages:[0],
+    moduleObserver:null,loadingTimer:0,modulesReady:0,moduleKeys:new Set(),moduleTotalKeys:new Set(),expectedModules:EXPECTED_MODULES,orderedLoaded:0,orderedTotal:0,currentModule:"",loadingStage:0,loadingStages:[0],
     r57Timer:0,r57Loaded:false
   };
 
@@ -59,11 +59,23 @@
     return Math.max(EXPECTED_MODULES,state.moduleTotalKeys.size)
   }
 
+  function orderedProgress(){
+    const boot=window.CCGLostSizzlerV142Bootstrap;
+    const total=Math.max(0,Number(boot?.totalModules)||0);
+    const loaded=Math.max(0,Math.min(total,Number(boot?.loaded?.length)||0));
+    state.orderedTotal=total;state.orderedLoaded=loaded;state.currentModule=String(boot?.currentModule||"");
+    return{boot,total,loaded}
+  }
   function calculatedLoadingStage(){
     if(releaseReady())return 100;
+    const ordered=orderedProgress();
+    if(ordered.total>0){
+      const ratio=ordered.loaded/ordered.total;
+      return Math.min(99,Math.max(25,Math.round(25+ratio*74)))
+    }
     const total=totalModules(),ready=Math.min(total,Math.max(0,state.modulesReady));
     if(!ready)return 0;
-    return Math.min(99,Math.max(1,Math.round((ready/total)*99)))
+    return Math.min(24,Math.max(1,Math.round((ready/total)*24)))
   }
 
   function writeLoadingStage(stage){
@@ -77,10 +89,13 @@
   }
 
   function syncLoadingStage(){
-    const total=totalModules(),ready=Math.min(total,Math.max(0,state.modulesReady)),stage=calculatedLoadingStage();writeLoadingStage(stage);
+    const total=totalModules(),ready=Math.min(total,Math.max(0,state.modulesReady)),stage=calculatedLoadingStage(),ordered=orderedProgress();writeLoadingStage(stage);
     if(stage>=100)loadingStatus("Game systems ready.");
-    else if(ready>=total)loadingStatus(`Finalising game systems… ${ready} / ${total} modules ready.`);
-    else loadingStatus(`Loading game modules… ${ready} / ${total} ready.`);
+    else if(ordered.total>0){
+      const label=String(ordered.boot?.currentModule||"").replace(/^v10-42-/,"").replace(/\.js$/,"").replace(/[-_]+/g," ").trim();
+      loadingStatus(label?`Loading ${label}… ${ordered.loaded} / ${ordered.total} systems ready.`:`Loading V10.42 game systems… ${ordered.loaded} / ${ordered.total} ready.`);
+    }else if(ready>=total)loadingStatus("Preparing ordered Dungeon Carnage systems…");
+    else loadingStatus(`Preparing core game files… ${ready} observed.`);
   }
   function installStagedLoader(){
     const start=()=>{
@@ -210,6 +225,7 @@
   installStagedLoader();
   document.addEventListener("click",capturePreReleaseSolo,true);
   window.addEventListener("ccg-lost-sizzler-cache-status",()=>queueMicrotask(syncCacheStatus));
+  window.addEventListener("ccg:v142-module-progress",()=>queueMicrotask(syncLoadingStage));
   window.addEventListener("pagehide",()=>{
     state.pendingSolo=false;clearSoloLiveness(true);
     document.removeEventListener("click",capturePreReleaseSolo,true);
@@ -220,5 +236,5 @@
   state.timer=setInterval(tick,250);
   state.r57Timer=setInterval(ensureR57,100);
   tick();ensureR57();
-  window.CCGLostSizzlerLoadWatchdog={state,ownsLoadingProgress:true,expectedModules:EXPECTED_MODULES,totalModules,stop:stopLoaderObservers,replayPendingSolo,scheduleSoloLivenessCheck,clearSoloLiveness,syncLoadingStage,publicPlayLocked,publicBetaClosed,ensureR57};
+  window.CCGLostSizzlerLoadWatchdog={state,ownsLoadingProgress:true,expectedModules:EXPECTED_MODULES,totalModules,orderedProgress,stop:stopLoaderObservers,replayPendingSolo,scheduleSoloLivenessCheck,clearSoloLiveness,syncLoadingStage,publicPlayLocked,publicBetaClosed,ensureR57};
 })();

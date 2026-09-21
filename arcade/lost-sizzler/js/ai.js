@@ -1,7 +1,7 @@
 window.CCGAI=(()=>{
   "use strict";
   const C=window.CCG_CONFIG,W=window.CCGWorld,DIRS=[[1,0],[-1,0],[0,1],[0,-1]];
-  let activePlayers=[];
+  let activePlayers=[],enemyOccupancy=null,lastSimulationDiagnostics={total:0,active:0,sleeping:0,activeRooms:[]};
   const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y),man=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
   const kind=e=>e.follower?.kind||e.kind;
   const memory=e=>C.enemy.alertMemory[kind(e)]||C.enemy.alertMemory.scout;
@@ -39,7 +39,32 @@ window.CCGAI=(()=>{
     return best?[best,bestD,bestReason]:[null,Infinity,null];
   }
 
-  function occupied(host,x,y,except){return host.enemies.some(o=>o!==except&&o.alive&&o.x===x&&o.y===y)}
+  const cellKey=(x,y)=>`${x},${y}`;
+  function buildEnemyOccupancy(host){
+    const cells=new Map();for(const e of host?.enemies||[])if(e?.alive){const key=cellKey(e.x,e.y),bucket=cells.get(key)||new Set();bucket.add(e);cells.set(key,bucket)}return cells;
+  }
+  function moveEnemyOccupancy(e,fromX,fromY){
+    if(!enemyOccupancy||!e)return;const fromKey=cellKey(fromX,fromY),oldBucket=enemyOccupancy.get(fromKey);if(oldBucket){oldBucket.delete(e);if(!oldBucket.size)enemyOccupancy.delete(fromKey)}
+    if(!e.alive)return;const toKey=cellKey(e.x,e.y),newBucket=enemyOccupancy.get(toKey)||new Set();newBucket.add(e);enemyOccupancy.set(toKey,newBucket);
+  }
+  function occupied(host,x,y,except){
+    if(enemyOccupancy){const bucket=enemyOccupancy.get(cellKey(x,y));if(!bucket||!bucket.size)return false;if(!except)return true;return bucket.size>1||!bucket.has(except)}
+    return host.enemies.some(o=>o!==except&&o.alive&&o.x===x&&o.y===y)
+  }
+  function simulationRoomsForPlayers(world,players){
+    const rooms=new Set();for(const p of players||[]){const roomId=W.roomAt(world,p.x,p.y);if(roomId<0)continue;rooms.add(roomId);for(const neighbor of world.graph?.[roomId]||[]){const raw=typeof neighbor==="object"?(neighbor?.to??neighbor?.id??neighbor?.roomId):neighbor,id=Number(raw);if(Number.isInteger(id)&&id>=0)rooms.add(id)}}return rooms;
+  }
+  function simulationEligible(e,world,players,activeRooms){
+    if(!e?.alive)return false;
+    // The floor's roaming Death Stalker is intentionally global. Ordinary enemies
+    // sleep outside the player's room neighbourhood and wake before they can interact.
+    if(e.deathStalker||e.timedHunter||e.hunting)return true;
+    const roomId=W.roomAt(world,e.x,e.y);if(roomId>=0&&activeRooms.has(roomId))return true;
+    let nearest=Infinity;for(const p of players||[])nearest=Math.min(nearest,dist(e,p));
+    const wakeRange=Math.max(8,Number(C.enemy?.lineOfSightRange||14)+2);if(nearest<=wakeRange)return true;
+    if((e.aiState==="chase"||e.aiState==="search")&&nearest<=Math.max(24,Number(C.enemy?.torchSightRange||20)+4))return true;
+    return false;
+  }
   function occupiedByPlayer(x,y){return activePlayers.some(player=>player&&Number(player.health||0)>0&&player.x===x&&player.y===y)}
   function roomEntered(host,roomId){return roomId<0||(host?.enteredRoomIds||[]).includes(roomId)}
   function roomDoors(host,roomId){return (host?.doors||[]).filter(door=>door.roomId===roomId)}
@@ -235,16 +260,22 @@ window.CCGAI=(()=>{
   }
 
   function stepEnemies(host,map,players,dt,hooks={},world=window.__CCG_WORLD){
-    if(!host?.enemies||!world)return;activePlayers=(players||[]).filter(player=>player&&Number(player.health||0)>0);host.enteredRoomIds=host.enteredRoomIds||[];for(const p of activePlayers){const roomId=W.roomAt(world,p.x,p.y);if(roomId>=0&&!host.enteredRoomIds.includes(roomId))host.enteredRoomIds.push(roomId)}let changed=false;
-    for(const e of host.enemies){
-      const before={x:e.x,y:e.y},didChange=stepOne(e,host,map,activePlayers,dt,hooks,world);changed=didChange||changed;
-      if(e?.alive&&occupiedByPlayer(e.x,e.y)){
-        const fallback=!occupiedByPlayer(before.x,before.y)&&!occupied(host,before.x,before.y,e)&&W.walkable(map,before.x,before.y,host)?before:DIRS.map(([dx,dy])=>({x:e.x+dx,y:e.y+dy})).find(cell=>W.walkable(map,cell.x,cell.y,host)&&!occupied(host,cell.x,cell.y,e)&&!occupiedByPlayer(cell.x,cell.y));
-        if(fallback){e.x=fallback.x;e.y=fallback.y}changed=true;
+    if(!host?.enemies||!world)return;activePlayers=(players||[]).filter(player=>player&&Number(player.health||0)>0);host.enteredRoomIds=host.enteredRoomIds||[];for(const p of activePlayers){const roomId=W.roomAt(world,p.x,p.y);if(roomId>=0&&!host.enteredRoomIds.includes(roomId))host.enteredRoomIds.push(roomId)}
+    const activeRooms=simulationRoomsForPlayers(world,activePlayers),eligible=host.enemies.filter(e=>simulationEligible(e,world,activePlayers,activeRooms));let changed=false;
+    lastSimulationDiagnostics={total:host.enemies.filter(e=>e?.alive).length,active:eligible.length,sleeping:Math.max(0,host.enemies.filter(e=>e?.alive).length-eligible.length),activeRooms:[...activeRooms]};
+    enemyOccupancy=buildEnemyOccupancy(host);
+    try{
+      for(const e of eligible){
+        const before={x:e.x,y:e.y,alive:e.alive},didChange=stepOne(e,host,map,activePlayers,dt,hooks,world);changed=didChange||changed;
+        if(e?.alive&&occupiedByPlayer(e.x,e.y)){
+          const fallback=!occupiedByPlayer(before.x,before.y)&&!occupied(host,before.x,before.y,e)&&W.walkable(map,before.x,before.y,host)?before:DIRS.map(([dx,dy])=>({x:e.x+dx,y:e.y+dy})).find(cell=>W.walkable(map,cell.x,cell.y,host)&&!occupied(host,cell.x,cell.y,e)&&!occupiedByPlayer(cell.x,cell.y));
+          if(fallback){e.x=fallback.x;e.y=fallback.y}changed=true;
+        }
+        if(before.x!==e.x||before.y!==e.y||before.alive!==e.alive)moveEnemyOccupancy(e,before.x,before.y);
       }
-    }
+    }finally{enemyOccupancy=null}
     if(changed)host.revision++;
   }
   function alertEnemy(e,x,y){if(!e?.alive)return;e.aiState="chase";e.lastSeen={x,y};e.memoryMs=memory(e);e.searchMs=0;e.moveCooldown=Math.min(e.moveCooldown,180)}
-  return{lineOfSight,visibleTarget,nextStepAStar:nextStep,tacticalCoverForTest:coverPoint,tacticalSkillForTest:tacticalSkill,stepEnemies,stageUnenteredEnemies,roomEnteredForTest:roomEntered,stalkerDoorForTest:stalkerDoor,occupiedByPlayerForTest:occupiedByPlayer,alertEnemy,kindOf:kind};
+  return{lineOfSight,visibleTarget,nextStepAStar:nextStep,tacticalCoverForTest:coverPoint,tacticalSkillForTest:tacticalSkill,stepEnemies,stageUnenteredEnemies,roomEnteredForTest:roomEntered,stalkerDoorForTest:stalkerDoor,occupiedByPlayerForTest:occupiedByPlayer,simulationEligibleForTest:simulationEligible,simulationRoomsForPlayersForTest:simulationRoomsForPlayers,getSimulationDiagnostics:()=>({...lastSimulationDiagnostics,activeRooms:[...lastSimulationDiagnostics.activeRooms]}),alertEnemy,kindOf:kind};
 })();

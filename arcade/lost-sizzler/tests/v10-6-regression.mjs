@@ -44,7 +44,7 @@ const player={id:"p",x:3,y:5,health:8,torchMs:0,dir:{x:1,y:0}};
 const host={enemies:[enemy],doors:[{x:4,y:5,roomId:0,open:true,locked:false}],blockingDecor:[],enteredRoomIds:[],revision:0,worldRef:world};
 let shots=0;AI.stageUnenteredEnemies(host,world);assert.ok(Math.abs(enemy.x-4)+Math.abs(enemy.y-5)>3,"enemy is staged away from an unopened room door");
 AI.stepEnemies(host,map,[player],5000,{shoot:()=>shots++},world);assert.equal(shots,0,"enemy cannot shoot from an unentered room into its corridor");
-const movedBehindFog={x:enemy.x,y:enemy.y};AI.stepEnemies(host,map,[],5000,{},world);assert.notDeepEqual({x:enemy.x,y:enemy.y},movedBehindFog,"enemy movement is independent of fog/exploration state");
+const movedBehindFog={x:enemy.x,y:enemy.y};AI.stepEnemies(host,map,[player],5000,{},world);assert.notDeepEqual({x:enemy.x,y:enemy.y},movedBehindFog,"awake enemy movement is independent of fog/exploration state");
 host.enteredRoomIds=[0];enemy.x=6;enemy.y=5;enemy.attackCooldown=0;AI.stepEnemies(host,map,[player],5000,{shoot:()=>shots++},world);assert.ok(shots>0,"normal combat resumes after the room is entered");
 host.enteredRoomIds=[];enemy.stalker=true;enemy.deathStalker=true;enemy.voidStalker=true;enemy.x=6;enemy.y=5;AI.stageUnenteredEnemies(host,world);assert.ok(Math.abs(enemy.x-4)+Math.abs(enemy.y-5)>3,"the Death Stalker is also staged away from an unopened room door");delete enemy.stalker;delete enemy.deathStalker;delete enemy.voidStalker;
 

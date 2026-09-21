@@ -14,7 +14,8 @@ const bootStart=source.indexOf('async function boot()');
 const guardInstall=source.indexOf('startReleaseReadyGuard();');
 const zeroServerModule=source.indexOf('["v10-42-zero-server-release.js","CCGLostSizzlerV142ZeroServerRelease"]');
 const finalStability=source.indexOf('["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"]');
-const readyCommit=source.indexOf('state.ready=true;stopReleaseReadyGuard();setReleaseReady(true)');
+const readyStateCommit=source.indexOf('state.ready=true;');
+const releaseReadyCommit=source.indexOf('stopReleaseReadyGuard();setReleaseReady(true)');
 
 assert(guardStart>=0&&guardInstall>=0,'V10.42 bootstrap must install an authoritative release-ready guard.');
 assert(guardInstall<bootStart,'Release-ready ownership must be established before ordered module startup can expose legacy readiness signals.');
@@ -22,7 +23,8 @@ assert(source.includes('if(state.ready)return;'),'Release-ready guard must keep 
 assert(source.includes('document.body?.dataset?.releaseReady==="true"')&&source.includes('setReleaseReady(false);'),'Premature legacy releaseReady=true writes must be corrected to false.');
 assert(source.includes('releaseReadyObserver.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:["data-release-ready"]})'),'Guard must observe the release-ready attribute without adding a polling loop.');
 assert(zeroServerModule>=0&&finalStability>=0&&zeroServerModule<finalStability,'Zero-server release authority must load before final V10.42 stability ownership.');
-assert(readyCommit>zeroServerModule&&readyCommit>finalStability,'Bootstrap may publish releaseReady=true only after zero-server and final stability modules have loaded.');
+assert(readyStateCommit>zeroServerModule&&readyStateCommit>finalStability,'Bootstrap may mark internal readiness only after zero-server and final stability modules have loaded.');
+assert(releaseReadyCommit>readyStateCommit&&releaseReadyCommit>finalStability,'Bootstrap may publish releaseReady=true only after internal readiness and final stability completion.');
 assert(source.includes('function stopReleaseReadyGuard()')&&source.includes('releaseReadyObserver?.disconnect();'),'Successful startup and page teardown must be able to disconnect the bounded readiness observer.');
 assert(!source.includes('setInterval('),'Release-ready ownership must not introduce a polling interval.');
 assert(!source.includes('requestAnimationFrame('),'Release-ready ownership must not introduce another frame owner.');

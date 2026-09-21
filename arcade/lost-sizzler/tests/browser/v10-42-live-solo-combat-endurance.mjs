@@ -141,11 +141,11 @@ try{
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap&&document.body,null,{timeout:20000});
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
   const boot=await page.evaluate(()=>({ready:CCGLostSizzlerV142Bootstrap.ready,failed:CCGLostSizzlerV142Bootstrap.failed,error:CCGLostSizzlerV142Bootstrap.error||"",build:CCGLostSizzlerV142Bootstrap.build,cache:CCGLostSizzlerV142Bootstrap.cache,metaBuild:document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content,metaCache:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content,ordered:[...document.querySelectorAll('script[data-ccg-v142-ordered="true"]')].map(s=>s.src)}));
-  assert.equal(boot.failed,false,`r44 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r44 ordered bootstrap must complete");
-  assert.equal(boot.build,"V10.42 r44");assert.equal(boot.cache,"20260921r44");assert.equal(boot.metaBuild,"V10.42 r44");assert.equal(boot.metaCache,"20260921r44");
-  assert.ok(boot.ordered.length>=30,"r44 bootstrap must load the complete ordered V10.42 chain");
-  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260921r44"),"every ordered V10.42 module must use the r44 cache token");
-  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260921r44")),"expected r44 projectile lifecycle asset was not requested");
+  assert.equal(boot.failed,false,`r45 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r45 ordered bootstrap must complete");
+  assert.equal(boot.build,"V10.42 r45");assert.equal(boot.cache,"20260921r45");assert.equal(boot.metaBuild,"V10.42 r45");assert.equal(boot.metaCache,"20260921r45");
+  assert.ok(boot.ordered.length>=30,"r45 bootstrap must load the complete ordered V10.42 chain");
+  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260921r45"),"every ordered V10.42 module must use the r45 cache token");
+  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260921r45")),"expected r45 projectile lifecycle asset was not requested");
   assert.equal(await page.evaluate(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.ownsBoundary?.()===true),true,"#2118 lifecycle owner must be authoritative before play");
 
   await page.evaluate(()=>{const hb=window.__ccgEnduranceHeartbeat={frames:0,stalls:0,maxGap:0,last:0};const beat=t=>{if(hb.last){const gap=t-hb.last;hb.maxGap=Math.max(hb.maxGap,gap);if(gap>300)hb.stalls++}hb.last=t;hb.frames++;requestAnimationFrame(beat)};requestAnimationFrame(beat)});
@@ -330,7 +330,7 @@ try{
   assert.deepEqual(consoleErrors,[],`console errors:\n${consoleErrors.join("\n")}`);
 
   console.log("DUNGEON_R30_SOLO_ENDURANCE",JSON.stringify({initial,final,requests:v142Requests.length}));
-  console.log("Dungeon Carnage V10.42 r44 live Solo combat endurance regression passed.");
+  console.log("Dungeon Carnage V10.42 r45 live Solo combat endurance regression passed.");
   await context.close();
 
   const touchContext=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
@@ -421,14 +421,17 @@ try{
   assert.ok(soakElapsed>=300000,`five-minute mobile FIRE soak ended too early: ${soakElapsed}ms`);
   console.log(`Five-minute mobile FIRE soak completed ${soakShots} individually verified attacks over ${soakElapsed}ms.`);
 
-  const postSoakMode=await touchPage.evaluate(()=>String(typeof mode!=="undefined"?mode:""));
-  if(postSoakMode==="paused"){
-    await touchPage.locator("#resume-btn").click();
-    await touchPage.waitForFunction(()=>mode==="playing");
-  }else{
-    await settleGameplayMode(touchPage,"pre-inventory dwell");
-  }
-  assert.equal(await touchPage.evaluate(()=>String(mode)),"playing","post-soak qualification must resume normal play before inventory dwell");
+  const ratingBoundary=await touchPage.evaluate(()=>({
+    mode:String(typeof mode!=="undefined"?mode:""),
+    visible:!document.getElementById("ccg-rating-panel")?.classList.contains("hidden"),
+    rail:document.getElementById("ccg-rating-panel")?.classList.contains("ccg-rating-rail")===true,
+    overlay:document.getElementById("ccg-rating-panel")?.classList.contains("overlay")===true
+  }));
+  assert.equal(ratingBoundary.mode,"playing",`five-minute rating boundary must not pause active mobile gameplay: ${JSON.stringify(ratingBoundary)}`);
+  assert.equal(ratingBoundary.visible,true,"five-minute rating prompt should become visible after the sustained mobile run");
+  assert.equal(ratingBoundary.rail,true,"five-minute rating prompt must use the non-blocking message rail");
+  assert.equal(ratingBoundary.overlay,false,"five-minute rating prompt must not become a blocking mobile overlay");
+  await settleGameplayMode(touchPage,"pre-inventory dwell");
   await touchPage.evaluate(()=>toggleInventory());
   await touchPage.waitForFunction(()=>mode==="inventory");
   await touchPage.waitForTimeout(5500);
@@ -437,8 +440,17 @@ try{
     fire1=4000;fireBuffer1=700;projectileCD=700;
     p1.hitStunMs=180;p1.__ccgLastHurtAt=performance.now()-2000;
   });
-  await touchPage.locator("#inventory-close").click();
+  const closedInventory=await touchPage.evaluate(()=>{
+    if(typeof toggleInventory!=="function")return false;
+    toggleInventory();
+    return true;
+  });
+  assert.equal(closedInventory,true,"canonical inventory close owner must remain available after extended mobile dwell");
   await touchPage.waitForFunction(()=>mode==="playing");
+  await touchPage.waitForFunction(()=>document.body.dataset.runActive==="true");
+  assert.equal(await touchPage.evaluate(()=>document.getElementById("v104-touch-controls")?.classList.contains("active")===true),true,"inventory close must re-arm the mobile control dock before FIRE");
+  await fireButton.waitFor({state:"visible",timeout:5000});
+  assert.equal(await touchPage.evaluate(()=>String(document.body.dataset.v142R20PresentationResume||"").startsWith("inventory-close")),true,"inventory close must restore the live mobile presentation boundary before FIRE");
   assert.equal(await armEnemy(touchPage),true,"post-inventory mobile FIRE enemy unavailable");
   const beforeInventoryFire=await snap(touchPage);
   await fireButton.tap();
@@ -456,6 +468,10 @@ try{
   });
   await touchPage.locator("#resume-btn").click();
   await touchPage.waitForFunction(()=>mode==="playing");
+  await touchPage.waitForFunction(()=>document.body.dataset.runActive==="true");
+  assert.equal(await touchPage.evaluate(()=>document.getElementById("v104-touch-controls")?.classList.contains("active")===true),true,"pause close must re-arm the mobile control dock before FIRE");
+  await fireButton.waitFor({state:"visible",timeout:5000});
+  assert.equal(await touchPage.evaluate(()=>String(document.body.dataset.v142R20PresentationResume||"").startsWith("pause-close")),true,"pause close must restore the live mobile presentation boundary before FIRE");
   assert.equal(await armEnemy(touchPage),true,"post-pause mobile FIRE enemy unavailable");
   const beforePauseFire=await snap(touchPage);
   await fireButton.tap();
