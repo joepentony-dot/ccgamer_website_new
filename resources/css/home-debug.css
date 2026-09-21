@@ -272,10 +272,10 @@ html[data-ccg-page="home"] .home-featured-videos .home-video-card:nth-child(2) .
 }
 
 /* ============================================================
-   HOME HERO — KEEP C64 DUNGEON CARNAGE AS THE SINGLE GAME CTA
+   HOME HERO — KEEP THE LOST SIZZLER AS THE SINGLE GAME CTA
    ------------------------------------------------------------
    The Weekly Vault leaderboard remains available inside the game itself, but
-   it must not compete with the Dungeon Carnage game button on the home page.
+   it must not compete with the Lost Sizzler beta button on the home page.
 ============================================================ */
 
 html[data-ccg-page="home"] .home-hero__leaderboard-cta {
