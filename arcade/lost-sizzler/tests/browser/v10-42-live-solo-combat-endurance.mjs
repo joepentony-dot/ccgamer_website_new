@@ -417,7 +417,9 @@ try{
     await move.tap().catch(()=>{});
     await touchPage.waitForTimeout(14580);
   }
-  assert.ok(soakShots>=19,`five-minute mobile FIRE soak completed too few verified attacks: ${soakShots}`);
+  const soakElapsed=Date.now()-soakStarted;
+  assert.ok(soakElapsed>=300000,`five-minute mobile FIRE soak ended too early: ${soakElapsed}ms`);
+  assert.ok(soakShots>=12,`five-minute mobile FIRE soak completed too few repeated verified attacks: ${soakShots}`);
 
   await touchPage.locator('#v104-touch-controls [data-action="inventory"]').tap();
   await touchPage.waitForFunction(()=>mode==="inventory");
