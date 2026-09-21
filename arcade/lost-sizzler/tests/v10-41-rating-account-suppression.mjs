@@ -9,7 +9,7 @@ const client=fs.readFileSync(path.join(root,"js/v10-8-player-insights.js"),"utf8
 const endpoint=fs.readFileSync(path.resolve(root,"../../supabase/functions/lost-sizzler-feedback/index.ts"),"utf8");
 
 assert.match(client,/functions\.invoke\(FUNCTION_NAME,\{body:\{action:"rating_status"\}\}\)/,"the rating prompt must ask the existing server function for account status");
-assert.match(client,/async function showRating\(\)[\s\S]*?if\(await accountHasRating\(\)\)[\s\S]*?return false;[\s\S]*?ensureRatingOverlay\(\)\?\.classList\.remove\("hidden"\)/,"account rating status must be checked before the prompt can become visible");
+assert.match(client,/async function showRating\(\)[\s\S]*?if\(await accountHasRating\(\)\)[\s\S]*?return false;[\s\S]*?const panel=ensureRatingOverlay\(\);[\s\S]*?panel\.classList\.remove\("hidden"\)/,"account rating status must be checked before the prompt can become visible");\nassert.match(client,/panel\.className="ccg-rating-rail hidden"/,"the five-minute rating prompt must use the non-blocking message rail on every device");\nassert.doesNotMatch(client,/async function showRating\(\)[\s\S]*?\bpause\s*\(/,"the five-minute rating prompt must never pause active gameplay");
 assert.match(client,/accountRatingChecked=Boolean\(data\?\.authenticated\)/,"anonymous checks must remain retryable after a later sign-in");
 assert.match(client,/if\(saved\)\{\s*accountRatingChecked=true;accountAlreadyRated=true;/,"a successful rating must suppress later prompts immediately");
 assert.match(endpoint,/action === "rating_status"/,"the feedback function must provide an account rating status action");
