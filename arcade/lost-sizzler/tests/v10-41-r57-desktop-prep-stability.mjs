@@ -21,8 +21,10 @@ assert.match(watchdog,/const publicPlayLocked=\(\)=>false/,"the released game mu
 assert.ok(!watchdog.includes("ccg-public-beta-closed"),"the watchdog must not inject the retired public-beta lock class");
 assert.ok(!watchdog.includes("ccg-beta-ended-sash"),"the watchdog must not inject a retired Coming Soon sash");
 assert.ok(!watchdog.includes("from(\"profiles\")"),"the watchdog must not query account profiles to decide public game availability");
-assert.match(watchdog,/const EXPECTED_MODULES=108/,"loading progress must use the current tracked release workload");
-assert.match(watchdog,/Math\.round\(\(ready\/total\)\*99\)/,"loading progress must advance proportionally with completed modules instead of jumping through coarse ten-percent stages");
+assert.match(watchdog,/function orderedProgress\(\)/,"V10.42 loading must read the actual ordered bootstrap workload");
+assert.match(watchdog,/Math\.round\(25\+ratio\*74\)/,"ordered V10.42 completion must drive the main loading range proportionally");
+assert.match(watchdog,/Math\.min\(24/,"legacy/static preparation must remain bounded to the opening loading range");
+assert.match(watchdog,/currentModule/,"loading status must expose the current V10.42 module rather than a fixed legacy denominator");
 assert.match(watchdog,/state\.loadingStages\.at\(-1\)!==value\)state\.loadingStages\.push\(value\)/,"loader must retain observable proportional progress evidence");
 assert.doesNotMatch(watchdog,/Math\.min\(90,10\+Math\.floor|Math\.min\(92/,"legacy staged and 92-percent loading caps must not return");
 assert.match(watchdog,/scheduleSoloLivenessCheck/,"Solo launch must gain a bounded post-menu liveness check");
