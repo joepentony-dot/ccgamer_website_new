@@ -29,6 +29,31 @@ try{
   await page.click("#solo-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(p1),null,{timeout:20000});
 
+  const generatedMemory=await page.evaluate(()=>{
+    const rows=[];
+    for(let i=0;i<5;i++){
+      run.floor=3;run.seed=`R47-MEMORY-SEED-${i}`;startWorld(PGR.floorSeed(run),false,false);
+      const z=host.memoryPuzzle;
+      rows.push({
+        seed:run.seed,exists:Boolean(z),count:z?.tiles?.length||0,layout:z?.layout||"",
+        labels:(z?.tiles||[]).map(t=>t.label),sequence:[...(z?.sequence||[])],
+        separated:(z?.tiles||[]).every((tile,index,all)=>all.every((other,j)=>j===index||Math.abs(tile.x-other.x)+Math.abs(tile.y-other.y)>=2)),
+        activatorSafe:Boolean(z?.activator&&(z?.tiles||[]).every(tile=>Math.abs(tile.x-z.activator.x)+Math.abs(tile.y-z.activator.y)>=3))
+      });
+    }
+    return rows;
+  });
+  for(const row of generatedMemory){
+    assert.equal(row.exists,true,`${row.seed} did not generate the Floor-3 Memory Pad puzzle`);
+    assert.equal(row.count,5,`${row.seed} did not generate exactly five Memory Pads`);
+    assert.ok(["horizontal","vertical"].includes(row.layout),`${row.seed} produced an invalid Memory Pad layout`);
+    assert.deepEqual(row.labels,["1","2","3","4","5"],`${row.seed} Memory Pad labels changed unexpectedly`);
+    assert.equal(row.sequence.length,5,`${row.seed} Memory sequence length changed unexpectedly`);
+    assert.ok(row.sequence.every(index=>Number.isInteger(index)&&index>=0&&index<5),`${row.seed} Memory sequence referenced a non-existent pad`);
+    assert.equal(row.separated,true,`${row.seed} Memory Pads were not separated by safe floor`);
+    assert.equal(row.activatorSafe,true,`${row.seed} replay console was too close to a Memory Pad`);
+  }
+
   const memory=await page.evaluate(()=>{
     const roomId=W.roomAt(world,p1.x,p1.y),room=world.rooms[roomId];
     const cells=[];for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++)if(world.map[y]?.[x]===0)cells.push({x,y});
