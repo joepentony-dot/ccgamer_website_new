@@ -6,9 +6,26 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 ## Current checkpoint — 21 September 2026
 
-Latest verified Dungeon runtime merge checkpoint is #2205: exact qualified head `dac8819a646dfd9ec0e0669f669903157a280ff6`, merged as `eb25ee72f9c8f2d409e3b8ea7be9ec69240c8f89`. It preserves #2201's live mobile trap/menu fixes and follows #2203's initial 1.3x renderer camera with the user-requested 1.6x mobile Solo/Tutorial camera while desktop and local split-screen remain at 1x. Build/cache advance to `V10.42 r38` / `20260921r38`. Stage 8 itch.io repository preparation remains complete through #2141, with the latest qualified runtime artifact recorded below.
+Latest verified Dungeon runtime merge checkpoint is #2222: exact qualified head `d27d714f5d15757e360ce27b49b4d185e379e56d`, merged as `cbbf9a97eb1f83c21eea3a519fd707af28be22bd`. It sits directly on merged #2220 (`f2d5332ceca250861e79185c943b8098c001894a`), the Level 2 floor-simulation/trap-cycle liveness fix. #2222 advances build/cache to `V10.42 r46` / `20260921r46`, adds the final visual-maximisation presentation layer and reduces the separate Level 3 E/N/W/S torch wrong-answer penalty to exactly one spawned monster. Stage 8 itch.io repository preparation remains complete through #2141, with a fresh qualified r46 package artifact recorded below.
 
 Stage 1 remains converged through #2134/#2135, Stage 2 through #2136, and the original seven-item live-defect programme remains repository-complete except for the deferred hands-on Defect 5 acceptance. The #2129 sustained-Solo hands-on acceptance and the startup hands-on acceptance also remain outstanding.
+
+### Floor-performance foundation and final visual maximisation — #2220 / #2222
+
+#2220 is merged as `f2d5332ceca250861e79185c943b8098c001894a` and is the current simulation foundation for the reproduced Level 2 slowdown/trap-cycle liveness regression.
+
+#2222 is merged from exact head `d27d714f5d15757e360ce27b49b4d185e379e56d` as `cbbf9a97eb1f83c21eea3a519fd707af28be22bd`. Its production scope is bounded:
+
+- biome-linked HUD/frame accents and first-visit room identity/landmark presentation consume established R6/R24 metadata;
+- active traps receive stronger presentation telegraphing through the established render path;
+- no perpetual timer or render loop is introduced; the layer wraps existing render/trap presentation owners;
+- severe-performance and reduced-motion fallbacks remain;
+- the visual layer claims no simulation, collision, combat, progression, save, inventory or economy ownership;
+- an incorrect Level 3 E/N/W/S sequence-torch input now calls the existing ambush owner with exactly one monster instead of the previous escalating 3–5; the separate flashing-floor memory puzzle is unchanged.
+
+Exact-head qualification passed Site Safety, SEO, structured/social metadata, itch.io package, cache/version, dedicated mobile trap/layout, native mouse-wheel and Lost Sizzler Load Safety. On the first shard-1 attempt, the sustained Solo timing/ownership soak passed, the live Solo combat endurance contract passed, and the real five-minute mobile FIRE soak completed 15 individually verified attacks over 305,028 ms. The contract later hit an unchanged Playwright `#resume-btn` locator timeout during the post-soak pause step. One unchanged failed-job retry on the same exact head passed canonical/Node plus all six Chromium shards. No runtime, gameplay assertion or timeout was weakened.
+
+Latest qualified runtime/package artifact (pre-r46 historical checkpoint): `C64-Dungeon-Carnage-Itch`, artifact ID `10619910820`, 21,113,583 bytes, GitHub Actions SHA-256 `d9c38662244d2a3de40c2f5eeddcdd594e863eb222dfc5ac2b5beb650bf0b624`, workflow run `35553635187`, exact source head `dac8819a646dfd9ec0e0669f669903157a280ff6`.
 
 ### Mobile natural-trap remediation — #2188 / #2192 / #2193 / #2198 / #2201
 
@@ -33,12 +50,13 @@ The deployed mobile screenshot showed the active dungeon occupying too little of
 
 Outstanding product gates:
 
-1. deployed startup retest on current post-#2205 main: loader must transition directly to the final V10.42 menu with no compact/intermediate flash and no loader → page → loader pulse;
+1. deployed startup retest on current post-#2222 main: loader must transition directly to the final V10.42 menu with no compact/intermediate flash and no loader → page → loader pulse;
 2. sustained Solo movement/firing/combat/pause-resume stability after #2129;
 3. three Artefacts/Essences → exactly one Banishment Flask without prior Gold-Flask purchase, with Gold and Score unchanged;
 4. deployed mobile trap acceptance: naturally generated active spike/fire/shock contacts must remove exactly one HEALTH while armour remains unchanged;
 5. deployed mobile landing acceptance: Continue/Solo/2P/Tutorial/Weekly choices must stack as one full-width column rather than a narrow left column, with readable Solo text;
-6. deployed mobile playfield acceptance: Solo/Tutorial should visibly use more of the available gameplay area at the intended 1.6x camera while controls remain usable.
+6. deployed mobile playfield acceptance: Solo/Tutorial should visibly use more of the available gameplay area at the intended 1.6x camera while controls remain usable;
+7. deployed r46 acceptance: confirm the biome/room/trap visual polish remains performant and readable, and a wrong Level 3 E/N/W/S torch input spawns exactly one monster.
 
 Exact #2201 qualification passed CCG Site Safety, SEO Automation, Structured Data Validation, Social Metadata Validation, C64 Dungeon Carnage itch.io Package, Public Code Cache Version, Native Mouse Wheel Scroll Contract, the dedicated C64 Dungeon Carnage Mobile Trap Layout Contract, canonical/Node contracts and all six Lost Sizzler Chromium shards. Load Safety shard 6 initially hit the unchanged V10.36 loading-progress timing sample at 92% rather than 100%; an unchanged targeted shard-6 rerun passed. No runtime assertion or timeout was weakened.
 
@@ -436,6 +454,8 @@ Branch `codex/dungeon-projectile-lifecycle-current-main` was created from exact 
 #2118 added an ordered V10.42 projectile lifecycle owner that retires non-piercing enemy/generator impacts before downstream callbacks and sweeps expired player/enemy projectiles from a `finally` boundary. Focused deterministic coverage included direct enemy hits, 500 repeated impacts, an enemy-death callback fault and 2,400 sustained-fire ticks; the established Chromium held-fire contract remained part of the matrix.
 
 ## Session log
+
+- 2026-09-21: Qualified and merged final polish #2222 from exact head `d27d714f5d15757e360ce27b49b4d185e379e56d` as `cbbf9a97eb1f83c21eea3a519fd707af28be22bd`. All triggered workflows passed. Load Safety shard 1 first completed the sustained Solo soak, live combat endurance and five-minute mobile FIRE soak before an unchanged post-soak `#resume-btn` locator timeout; one unchanged failed-job retry passed canonical/Node and all six Chromium shards. No runtime, gameplay assertion or timeout was weakened.
 
 - 2026-09-20: Qualified and merged #2193 from exact head `03333f6e89381e018197b990664a1e25205e8f78` as `992d19d39cd5ad7d5fb12116dda03d80df623e61`, closing the remaining mobile natural-trap detached/global damage-owner race. All required workflows passed; Load Safety shard 4 passed on one unchanged retry after the first attempt sampled a shock crossing only 36.5 ms from the active-phase boundary. Superseded documentation PR #2191 was closed without merge and a fresh post-#2193 reconciliation was started.
 - 2026-09-20: Merged bounded post-#2193 reconciliation #2194 from exact head `d92fda632216cd0e109a458e7094b4f94fada29c` as `28f0815f9e849090783cd78792c26fcdc8cc5cb9`. Scope was progress/continuation documentation plus the natural-trap browser probe only. Exact-head package/cache/mouse-wheel/SEO qualification passed; Load Safety passed after one unchanged targeted shard-6 retry for an unrelated V10.36 loading-progress sample of 92% instead of 100%. No runtime, assertion or timeout was weakened.
