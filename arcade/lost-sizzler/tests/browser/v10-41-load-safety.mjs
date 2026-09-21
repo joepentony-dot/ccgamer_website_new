@@ -71,6 +71,10 @@ try{
     // terminal hidden state after two frames, rather than sampling a transient.
     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
     await page.waitForFunction(()=>document.getElementById("ccg-release-loading")?.hidden===true);
+    // The bounded watchdog polls release readiness every 250ms, so the loader
+    // can already be hidden while its terminal cleanup is still one tick away.
+    // Wait for the real detached state rather than racing that cleanup.
+    await page.waitForFunction(()=>window.CCGLostSizzlerLoadWatchdog?.state?.finished===true&&window.CCGLostSizzlerLoadWatchdog?.state?.timer===0);
     const loadingHiddenAtReady=await page.evaluate(()=>document.getElementById("ccg-release-loading")?.hidden===true);
 
     const audit=await page.evaluate(async()=>{

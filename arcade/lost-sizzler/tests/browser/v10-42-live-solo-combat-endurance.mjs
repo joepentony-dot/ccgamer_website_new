@@ -40,7 +40,7 @@ async function snap(page){
       enemies:Number(host?.enemies?.length)||0,aliveEnemies:(host?.enemies||[]).filter(e=>e?.alive!==false).length,
       projectileSteps:Number(life.steps)||0,projectileFaultSweeps:Number(life.faultSweeps)||0,
       updateFaults:Number(window.CCGLostSizzlerV141R29?.state?.updateFaults)||0,renderFaults:Number(window.CCGLostSizzlerV141R29?.state?.renderFaults)||0,
-      attackIntents:Number(r20.attackIntents)||0,directAttackErrors:Number(r20.directAttackErrors)||0,staleStunRepairs:Number(r20.staleStunRepairs)||0,controlLockRepairs:Number(r20.controlLockRepairs)||0,r20FrameStalls:Number(r20.frameStalls)||0,
+      attackIntents:Number(r20.attackIntents)||0,directAttackErrors:Number(r20.directAttackErrors)||0,staleStunRepairs:Number(r20.staleStunRepairs)||0,controlLockRepairs:Number(r20.controlLockRepairs)||0,presentationRepairs:Number(r20.presentationRepairs)||0,mobileFireFallbacks:Number(r20.mobileFireFallbacks)||0,mobileFireReleases:Number(r20.mobileFireReleases)||0,r20FrameStalls:Number(r20.frameStalls)||0,
       r22Stalls:Number(r22.stallFrames)||0,r59LongGaps:Number(r59.longGaps)||0,r59Substeps:Number(r59.soloSubsteps)||0,r59Frames:Number(r59.soloFrames)||0,
       lifecycleOwner:Boolean(window.CCGLostSizzlerV142ProjectileLifecycle?.ownsBoundary?.()),
       sealGate:Boolean(seal?.gateActive?.()),sealUnsupported:Boolean(seal?.state?.unsupported),
@@ -141,11 +141,11 @@ try{
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap&&document.body,null,{timeout:20000});
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
   const boot=await page.evaluate(()=>({ready:CCGLostSizzlerV142Bootstrap.ready,failed:CCGLostSizzlerV142Bootstrap.failed,error:CCGLostSizzlerV142Bootstrap.error||"",build:CCGLostSizzlerV142Bootstrap.build,cache:CCGLostSizzlerV142Bootstrap.cache,metaBuild:document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content,metaCache:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content,ordered:[...document.querySelectorAll('script[data-ccg-v142-ordered="true"]')].map(s=>s.src)}));
-  assert.equal(boot.failed,false,`r43 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r43 ordered bootstrap must complete");
-  assert.equal(boot.build,"V10.42 r43");assert.equal(boot.cache,"20260921r43");assert.equal(boot.metaBuild,"V10.42 r43");assert.equal(boot.metaCache,"20260921r43");
-  assert.ok(boot.ordered.length>=30,"r43 bootstrap must load the complete ordered V10.42 chain");
-  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260921r43"),"every ordered V10.42 module must use the r43 cache token");
-  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260921r43")),"expected r43 projectile lifecycle asset was not requested");
+  assert.equal(boot.failed,false,`r44 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r44 ordered bootstrap must complete");
+  assert.equal(boot.build,"V10.42 r44");assert.equal(boot.cache,"20260921r44");assert.equal(boot.metaBuild,"V10.42 r44");assert.equal(boot.metaCache,"20260921r44");
+  assert.ok(boot.ordered.length>=30,"r44 bootstrap must load the complete ordered V10.42 chain");
+  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260921r44"),"every ordered V10.42 module must use the r44 cache token");
+  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260921r44")),"expected r44 projectile lifecycle asset was not requested");
   assert.equal(await page.evaluate(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.ownsBoundary?.()===true),true,"#2118 lifecycle owner must be authoritative before play");
 
   await page.evaluate(()=>{const hb=window.__ccgEnduranceHeartbeat={frames:0,stalls:0,maxGap:0,last:0};const beat=t=>{if(hb.last){const gap=t-hb.last;hb.maxGap=Math.max(hb.maxGap,gap);if(gap>300)hb.stalls++}hb.last=t;hb.frames++;requestAnimationFrame(beat)};requestAnimationFrame(beat)});
@@ -330,8 +330,143 @@ try{
   assert.deepEqual(consoleErrors,[],`console errors:\n${consoleErrors.join("\n")}`);
 
   console.log("DUNGEON_R30_SOLO_ENDURANCE",JSON.stringify({initial,final,requests:v142Requests.length}));
-  console.log("Dungeon Carnage V10.42 r43 live Solo combat endurance regression passed.");
+  console.log("Dungeon Carnage V10.42 r44 live Solo combat endurance regression passed.");
   await context.close();
+
+  const touchContext=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  await touchContext.route("https://*.supabase.co/**",route=>route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:"{}"}));
+  await touchContext.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
+  const touchPage=await touchContext.newPage();
+  touchPage.setDefaultTimeout(60000);
+  await touchPage.goto(`${origin}/arcade/lost-sizzler/?mobile-fire-runtime-contract=1`,{waitUntil:"domcontentloaded"});
+  await touchPage.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
+  const touchBoot=await touchPage.evaluate(()=>({ready:CCGLostSizzlerV142Bootstrap?.ready===true,failed:CCGLostSizzlerV142Bootstrap?.failed===true,error:String(CCGLostSizzlerV142Bootstrap?.error||"")}));
+  assert.equal(touchBoot.failed,false,`mobile FIRE runtime bootstrap failed: ${touchBoot.error}`);
+  assert.equal(touchBoot.ready,true,"mobile FIRE runtime bootstrap must complete");
+  await touchPage.click("#solo-btn");
+  await touchPage.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(p1)&&Boolean(host),null,{timeout:20000});
+  await touchPage.locator('#v104-touch-controls [data-action="fire"]').waitFor({state:"visible",timeout:10000});
+  assert.equal(await armEnemy(touchPage),true,"mobile FIRE runtime enemy unavailable");
+
+  const touchBefore=await snap(touchPage);
+  const touchPoison=await touchPage.evaluate(()=>{
+    p1.controlLocked=true;p1.controlsLocked=true;
+    p1.hitStunMs=180;p1.__ccgLastHurtAt=performance.now()-2000;
+    fire1=4000;fireBuffer1=700;projectileCD=700;
+    document.body.dataset.runActive="false";
+    const button=document.querySelector('#v104-touch-controls [data-action="fire"]');
+    if(button){
+      const clone=button.cloneNode(true);
+      button.replaceWith(clone);
+    }
+    return{
+      controlLocked:Boolean(p1.controlLocked),
+      controlsLocked:Boolean(p1.controlsLocked),
+      hitStunMs:Number(p1.hitStunMs),
+      fire1:Number(fire1),
+      buffer:Number(fireBuffer1),
+      projectileCD:Number(projectileCD),
+      runActive:String(document.body.dataset.runActive||""),
+      fireButton:Boolean(document.querySelector('#v104-touch-controls [data-action="fire"]'))
+    };
+  });
+  assert.equal(touchPoison.controlLocked,true,"mobile FIRE regression failed to seed controlLocked");
+  assert.equal(touchPoison.controlsLocked,true,"mobile FIRE regression failed to seed controlsLocked");
+  assert.equal(touchPoison.hitStunMs,180,"mobile FIRE regression failed to seed stale hit-stun");
+  assert.equal(touchPoison.runActive,"false","mobile FIRE regression failed to seed stale live-run presentation state");
+  assert.equal(touchPoison.fireButton,true,"mobile FIRE regression failed to retain the visible FIRE button after stripping its direct listeners");
+
+  await touchPage.locator('#v104-touch-controls [data-action="fire"]').tap();
+  await touchPage.waitForTimeout(420);
+  const touchAfter=await snap(touchPage);
+  const touchSpaceHeld=await touchPage.evaluate(()=>input.has("Space"));
+  assert.ok(touchAfter.projectileSteps>touchBefore.projectileSteps||touchAfter.mana<touchBefore.mana,"actual mobile FIRE button produced no attack/projectile work after stale-state recovery");
+  assert.equal(touchAfter.hitStun,0,"actual mobile FIRE button must clear stale hit-stun");
+  assert.equal(touchAfter.controlLocked,false,"actual mobile FIRE button must clear controlLocked");
+  assert.equal(touchAfter.controlsLocked,false,"actual mobile FIRE button must clear controlsLocked");
+  assert.equal(touchSpaceHeld,false,"mobile FIRE pointer release must not leave Space held");
+  assert.equal(touchAfter.lifecycleOwner,true,"mobile FIRE must preserve projectile lifecycle ownership");
+  assert.equal(touchAfter.active,"true","actual mobile FIRE path must recover a stale live-run presentation flag regardless of which combat owner repairs it first");
+  assert.ok(touchAfter.mobileFireFallbacks>touchBefore.mobileFireFallbacks,"delegated mobile FIRE safety owner must recover a visible button whose direct listener was lost");
+
+  const fireButton=touchPage.locator('#v104-touch-controls [data-action="fire"]');
+  const moveRight=touchPage.locator('#v104-touch-controls [data-key="KeyD"]');
+  const moveLeft=touchPage.locator('#v104-touch-controls [data-key="KeyA"]');
+  const soakStarted=Date.now();
+  let soakShots=0;
+  while(Date.now()-soakStarted<305000){
+    await settleGameplayMode(touchPage,"five-minute mobile FIRE soak");
+    await touchPage.evaluate(()=>{
+      if(p1){
+        p1.maxHealth=Math.max(5000,Number(p1.maxHealth)||0);
+        p1.health=p1.maxHealth;
+        p1.invuln=0;
+        p1.mana=Math.max(80,Number(p1.mana)||0);
+      }
+    });
+    assert.equal(await armEnemy(touchPage),true,"five-minute mobile FIRE soak enemy unavailable");
+    const beforeSoakShot=await snap(touchPage);
+    await fireButton.tap();
+    await touchPage.waitForTimeout(420);
+    const afterSoakShot=await snap(touchPage);
+    assert.ok(afterSoakShot.projectileSteps>beforeSoakShot.projectileSteps||afterSoakShot.mana<beforeSoakShot.mana,`five-minute mobile FIRE soak lost firing at ${Math.round((Date.now()-soakStarted)/1000)}s`);
+    assert.equal(afterSoakShot.controlLocked,false,"five-minute mobile FIRE soak left controlLocked set");
+    assert.equal(afterSoakShot.controlsLocked,false,"five-minute mobile FIRE soak left controlsLocked set");
+    soakShots++;
+    const move=soakShots%2?moveRight:moveLeft;
+    await move.tap().catch(()=>{});
+    await touchPage.waitForTimeout(14580);
+  }
+  const soakElapsed=Date.now()-soakStarted;
+  assert.ok(soakElapsed>=300000,`five-minute mobile FIRE soak ended too early: ${soakElapsed}ms`);
+  console.log(`Five-minute mobile FIRE soak completed ${soakShots} individually verified attacks over ${soakElapsed}ms.`);
+
+  const postSoakMode=await touchPage.evaluate(()=>String(typeof mode!=="undefined"?mode:""));
+  if(postSoakMode==="paused"){
+    await touchPage.locator("#resume-btn").click();
+    await touchPage.waitForFunction(()=>mode==="playing");
+  }else{
+    await settleGameplayMode(touchPage,"pre-inventory dwell");
+  }
+  assert.equal(await touchPage.evaluate(()=>String(mode)),"playing","post-soak qualification must resume normal play before inventory dwell");
+  await touchPage.evaluate(()=>toggleInventory());
+  await touchPage.waitForFunction(()=>mode==="inventory");
+  await touchPage.waitForTimeout(5500);
+  await touchPage.evaluate(()=>{
+    document.body.dataset.runActive="false";
+    fire1=4000;fireBuffer1=700;projectileCD=700;
+    p1.hitStunMs=180;p1.__ccgLastHurtAt=performance.now()-2000;
+  });
+  await touchPage.locator("#inventory-close").click();
+  await touchPage.waitForFunction(()=>mode==="playing");
+  assert.equal(await armEnemy(touchPage),true,"post-inventory mobile FIRE enemy unavailable");
+  const beforeInventoryFire=await snap(touchPage);
+  await fireButton.tap();
+  await touchPage.waitForTimeout(420);
+  const afterInventoryFire=await snap(touchPage);
+  assert.ok(afterInventoryFire.projectileSteps>beforeInventoryFire.projectileSteps||afterInventoryFire.mana<beforeInventoryFire.mana,"actual mobile FIRE failed after extended inventory dwell");
+
+  await touchPage.keyboard.press("KeyP");
+  await touchPage.waitForFunction(()=>mode==="paused");
+  await touchPage.waitForTimeout(5500);
+  await touchPage.evaluate(()=>{
+    document.body.dataset.runActive="false";
+    fire1=4000;fireBuffer1=700;projectileCD=700;
+    p1.hitStunMs=180;p1.__ccgLastHurtAt=performance.now()-2000;
+  });
+  await touchPage.locator("#resume-btn").click();
+  await touchPage.waitForFunction(()=>mode==="playing");
+  assert.equal(await armEnemy(touchPage),true,"post-pause mobile FIRE enemy unavailable");
+  const beforePauseFire=await snap(touchPage);
+  await fireButton.tap();
+  await touchPage.waitForTimeout(420);
+  const afterPauseFire=await snap(touchPage);
+  assert.ok(afterPauseFire.projectileSteps>beforePauseFire.projectileSteps||afterPauseFire.mana<beforePauseFire.mana,"actual mobile FIRE failed after extended pause");
+
+  const finalTouchSpaceHeld=await touchPage.evaluate(()=>input.has("Space"));
+  assert.equal(finalTouchSpaceHeld,false,"extended mobile FIRE scenarios must finish with Space released");
+  await touchContext.close();
+  console.log("Dungeon Carnage five-minute mobile FIRE, inventory and pause liveness regression passed.");
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
 }

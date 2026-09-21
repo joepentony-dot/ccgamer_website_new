@@ -36,7 +36,16 @@
   installInteractionXPSourceContract();
 
   function currentMode(){try{return typeof mode!=="undefined"?String(mode):""}catch(_){return""}}
-  function activeRun(){return document.body?.dataset?.runActive==="true"}
+  function activeRun(){
+    if(document.body?.dataset?.runActive==="true")return true;
+    try{
+      if(run&&host&&p1&&!["menu","end"].includes(currentMode())){
+        document.body.dataset.runActive="true";
+        return true
+      }
+    }catch(_){}
+    return false
+  }
   function localRoster(){
     try{return typeof localPlayers==="function"?(localPlayers()||[]).filter(Boolean):[typeof p1!=="undefined"?p1:null,typeof p2!=="undefined"?p2:null].filter(Boolean)}catch(_){return[]}
   }
