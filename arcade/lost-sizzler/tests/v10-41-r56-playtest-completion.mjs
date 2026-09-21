@@ -20,6 +20,7 @@ assert.match(r56,/SCORE/,'score pickup feedback must be available above the play
 assert.match(r56,/r56-quick-slot-icon/,'bottom Quick Inventory must insert compact graphical icons');
 assert.match(r56,/svg,img\.item-art/,'Quick Inventory must accept canonical inline SVG or image-backed icon art');
 assert.match(r56,/fire>2500/,'combat repair must reject impossible stuck attack cooldowns');
+assert.match(r56,/const running=\(\)=>\{[\s\S]*run&&host&&p1[\s\S]*dataset\.runActive="true"/,'legacy combat repair must recover a stale presentation flag while a real dungeon run still exists');
 assert.match(r56,/p\.controlLocked\|\|p\.controlsLocked/,'attack intent must detect stale player control locks');
 assert.match(r56,/repairBuffer\(index\)/,'combat recovery must validate attack buffers without blanket-clearing them');
 assert.match(r56,/queueAttack\(p\)/,'a repaired live attack intent must be re-queued through the canonical attack buffer');
