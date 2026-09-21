@@ -37,7 +37,7 @@ console.log("[r47 static] pre-release Solo clicks are held and replayed exactly 
 assert.match(loadWatchdog,/pendingSolo:false/);
 assert.match(loadWatchdog,/capturePreReleaseSolo/);
 assert.match(loadWatchdog,/event\.stopImmediatePropagation\(\)/);
-assert.match(loadWatchdog,/gate\?\.ready\)\{replayPendingSolo\(\);stopLoaderObservers\(\)\}/);
+assert.match(loadWatchdog,/if\(releaseReady\(\)\)\{replayPendingSolo\(\);stopLoaderObservers\(\)\}/,"Solo replay must wait for the authoritative runtime-ready boundary, not only the legacy release gate");
 assert.match(loadWatchdog,/state\.pendingSolo=false;state\.soloReplays\+\+;\s*button\.click\(\)/);
 assert.ok(!loadWatchdog.includes("startSolo("),"load watchdog must replay the owned button intent rather than taking startSolo gameplay ownership");
 
