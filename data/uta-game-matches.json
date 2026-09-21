@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "source": "https://uta.pokefinder.org/Ultimate_Tape_Archive/",
+  "matching": "normalized-title + known publisher/re-release publisher",
+  "games": {
+    "1942": {
+      "title": "1942",
+      "releases": [
+        {
+          "archiveId": "951",
+          "publisher": "Elite Systems Ltd",
+          "year": 1986,
+          "yearLabel": "1986",
+          "loader": null,
+          "sourceRole": "publisher",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/1942_(1986_Elite_Systems_Ltd)_[951]/"
+        }
+      ]
+    },
+    "ace-of-aces": {
+      "title": "Ace Of Aces",
+      "releases": [
+        {
+          "archiveId": "730",
+          "publisher": "U.S. Gold",
+          "year": 1986,
+          "yearLabel": "1986",
+          "loader": null,
+          "sourceRole": "publisher",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ace_of_Aces_(1986_U.S._Gold)_[730]/"
+        },
+        {
+          "archiveId": "1258",
+          "publisher": "Kixx",
+          "year": 1988,
+          "yearLabel": "1988",
+          "loader": null,
+          "sourceRole": "re-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ace_of_Aces_(1988_Kixx)_[1258]/"
+        }
+      ]
+    },
+    "bangkok-knights": {
+      "title": "Bangkok Knights",
+      "releases": [
+        {
+          "archiveId": "8568",
+          "publisher": "Summit",
+          "year": null,
+          "yearLabel": "0",
+          "loader": null,
+          "sourceRole": "re-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Bangkok_Knights_(0_Summit)_[8568]/"
+        }
+      ]
+    }
+  }
+}
