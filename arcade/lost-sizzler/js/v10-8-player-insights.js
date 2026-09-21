@@ -37,7 +37,6 @@
   let accountRatingChecked=false;
   let accountAlreadyRated=false;
   let accountRatingPromise=null;
-  let pausedByRating=false;
   let ratingTimer=null;
   let runObserver=null;
 
@@ -173,43 +172,34 @@
   }
 
   function ensureRatingOverlay(){
-    let overlay=document.getElementById("ccg-rating-panel");
-    if(overlay)return overlay;
-    const desktop=isDesktopNotice();
-    overlay=document.createElement("div");
-    overlay.id="ccg-rating-panel";
-    overlay.className=desktop?"ccg-rating-rail hidden":"overlay hidden ccg-insight-overlay";
-    overlay.innerHTML=`<div class="${desktop?"ccg-rating-rail-card":"panel compact ccg-insight-card ccg-rating-card"}">
+    let panel=document.getElementById("ccg-rating-panel");
+    if(panel)return panel;
+    const rail=messageRail();
+    if(!rail)return null;
+    panel=document.createElement("div");
+    panel.id="ccg-rating-panel";
+    panel.className="ccg-rating-rail hidden";
+    panel.innerHTML=`<div class="ccg-rating-rail-card">
       <p class="ccg-insight-kicker">FIVE MINUTES IN</p>
       <h2>RATE THE GAME</h2>
-      <p>How are you finding <strong>The Lost Sizzler</strong> so far?</p>
-      <div class="ccg-star-row" role="group" aria-label="Rate The Lost Sizzler out of five stars">
+      <p>How are you finding <strong>C64 Dungeon Carnage</strong> so far?</p>
+      <div class="ccg-star-row" role="group" aria-label="Rate C64 Dungeon Carnage out of five stars">
         ${[1,2,3,4,5].map(value=>`<button type="button" data-rating="${value}" aria-label="${value} star${value===1?"":"s"}">★</button>`).join("")}
       </div>
       <p id="ccg-rating-status" class="ccg-rating-status">Choose 1 to 5 stars.</p>
       <div class="menu-buttons"><button id="ccg-rating-feedback" type="button">REPORT BUG / GAME SUGGESTION</button><button id="ccg-rating-later" type="button">NOT NOW</button></div>
     </div>`;
-    if(desktop){
-      const rail=messageRail();
-      if(!rail)return null;
-      const toast=rail.querySelector("#pickup-toast");
-      if(toast)rail.insertBefore(overlay,toast);else rail.appendChild(overlay);
-    }else{
-      document.querySelector(".game-area")?.appendChild(overlay);
-    }
+    const toast=rail.querySelector("#pickup-toast");
+    if(toast)rail.insertBefore(panel,toast);else rail.appendChild(panel);
     const finish=()=>{
-      overlay.classList.add("hidden");
+      panel.classList.add("hidden");
       window.CCGLostSizzlerBrowserStability?.resize?.();
-      if(pausedByRating){
-        pausedByRating=false;
-        try{if(typeof pause==="function"&&typeof mode!=="undefined"&&mode==="paused")pause(true);}catch(_){}
-      }
     };
-    overlay.querySelectorAll("[data-rating]").forEach(button=>button.addEventListener("click",async()=>{
+    panel.querySelectorAll("[data-rating]").forEach(button=>button.addEventListener("click",async()=>{
       const rating=Number(button.dataset.rating);
-      const buttons=[...overlay.querySelectorAll("[data-rating]")];
+      const buttons=[...panel.querySelectorAll("[data-rating]")];
       buttons.forEach(star=>{star.classList.toggle("selected",Number(star.dataset.rating)<=rating);star.disabled=true;});
-      const status=overlay.querySelector("#ccg-rating-status");
+      const status=panel.querySelector("#ccg-rating-status");
       if(status)status.textContent="Saving your rating…";
       const saved=await sendTelemetry("rating_submitted",{rating,play_mode:(typeof playMode!=="undefined"?playMode:"unknown")});
       if(saved){
@@ -221,12 +211,12 @@
         buttons.forEach(star=>{star.disabled=false;});
       }
     }));
-    overlay.querySelector("#ccg-rating-feedback")?.addEventListener("click",()=>{finish();setTimeout(openExistingFeedback,60);});
-    overlay.querySelector("#ccg-rating-later")?.addEventListener("click",()=>{
+    panel.querySelector("#ccg-rating-feedback")?.addEventListener("click",()=>{finish();setTimeout(openExistingFeedback,60);});
+    panel.querySelector("#ccg-rating-later")?.addEventListener("click",()=>{
       sendTelemetry("rating_dismissed",{play_mode:(typeof playMode!=="undefined"?playMode:"unknown")});
       finish();
     });
-    return overlay;
+    return panel;
   }
 
   async function showRating(){
@@ -240,18 +230,11 @@
       }
     }finally{ratingCheckPending=false}
     if(ratingShown)return false;
+    const panel=ensureRatingOverlay();
+    if(!panel)return false;
     rememberRatingShown();
-    if(!isDesktopNotice()){
-      try{
-        if(typeof pause==="function"&&typeof mode!=="undefined"&&mode==="playing"){
-          pause();
-          pausedByRating=true;
-        }
-      }catch(_){}
-    }else{
-      document.getElementById("pickup-toast")?.classList.remove("show");
-    }
-    ensureRatingOverlay()?.classList.remove("hidden");
+    document.getElementById("pickup-toast")?.classList.remove("show");
+    panel.classList.remove("hidden");
     window.CCGLostSizzlerBrowserStability?.resize?.();
     return true;
   }
@@ -295,7 +278,7 @@
       .ccg-rating-rail{width:100%;min-width:0}.ccg-rating-rail-card{padding:8px 10px;border:1px solid rgba(255,216,90,.75);background:rgba(8,5,14,.98);text-align:center;overflow-wrap:anywhere}.ccg-rating-rail-card h2{margin:2px 0 3px;font-size:13px;color:#fff}.ccg-rating-rail-card p{margin:2px 0;font-size:9px;line-height:1.25}.ccg-rating-rail-card .menu-buttons{display:flex;justify-content:center;gap:6px;margin:4px 0 0}.ccg-rating-rail-card .menu-buttons button{width:auto;font-size:8px;padding:5px 7px}
       .ccg-star-row{display:flex;justify-content:center;gap:4px;margin:5px 0}.ccg-star-row button{border:1px solid rgba(255,216,90,.5);background:#0b0710;color:#8d7c52;font-size:20px;line-height:1;padding:3px 5px;cursor:pointer}.ccg-star-row button:hover,.ccg-star-row button:focus,.ccg-star-row button.selected{color:#ffd85a;border-color:#ffd85a;transform:translateY(-1px)}.ccg-star-row button:disabled{cursor:wait;opacity:.75}
       .ccg-rating-status{min-height:12px;color:#ffd85a}.ccg-rating-card .menu-buttons{justify-content:center}
-      @media(max-width:900px),(pointer:coarse){.ccg-star-row button{font-size:32px;padding:7px}.ccg-insight-card{max-height:88dvh;overflow:auto}}
+      @media(max-width:900px),(pointer:coarse){.ccg-insight-card{max-height:88dvh;overflow:auto}.ccg-rating-rail-card{padding:6px 7px}.ccg-rating-rail-card h2{font-size:11px}.ccg-rating-rail-card p{font-size:8px}.ccg-rating-rail-card .ccg-star-row{gap:3px;margin:4px 0}.ccg-rating-rail-card .ccg-star-row button{font-size:19px;padding:4px 6px}.ccg-rating-rail-card .menu-buttons{gap:4px}.ccg-rating-rail-card .menu-buttons button{min-height:30px;font-size:7px;padding:4px 5px}}
     `;
     document.head.appendChild(style);
   }
