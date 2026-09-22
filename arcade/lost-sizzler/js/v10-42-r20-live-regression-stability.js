@@ -24,7 +24,7 @@
     mobileFireFallbacks:0,
     mobileFireReleases:0
   };
-  const ATTACK_KEYS=new Set(["Space","KeyF","Numpad0"]);
+  const ATTACK_KEYS=new Set(["Space","Numpad0"]); // KeyF is reserved exclusively for fullscreen.
   const STALL_MS=120;
   const CURSOR_IDLE_MS=1600;
   let cursorTimer=0,lastDoorTick=performance.now(),capturedR1FireOwner=null,presentationResumeObserver=null;
