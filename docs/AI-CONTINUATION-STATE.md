@@ -8,9 +8,18 @@ For Dungeon Carnage specifically, `arcade/lost-sizzler/PROGRESS.md` is the produ
 
 Update this file when a workstream changes category, its active PR/dependency changes, or a substantial session ends. Keep detailed reasoning, checks, blockers, and next actions in the workstream file.
 
+## Mobile CLS / retro watch-page checkpoint — 22 September 2026
+
+- Search Console reports 43 mobile URLs in one CLS > 0.25 group, representative `/retro-specials/50-essential-amiga-games/`, group CLS 0.27.
+- Draft diagnostic #2234 / `codex/mobile-cls-retro-diagnostic` is read-only and extends Phase 8A to the exact representative route.
+- Bounded fix branch `codex/retro-mobile-cls-stability` reserves cold-auth header geometry and makes the final responsive cascade render-blocking in the authoritative retro-video template.
+- The candidate includes a 390×844 browser geometry guard for unresolved/guest/member auth states and keeps generated retro HTML automation-owned.
+- No merge is authorized merely by this checkpoint. Require exact-head green qualification and explicit user approval.
+- Detailed record: [mobile-cls-retro-video-2026-09-22.md](ai-work/mobile-cls-retro-video-2026-09-22.md).
+
 ## Single-game community and UTA checkpoint — 22 September 2026
 
-- PR #2227 / branch `codex/single-game-community-uta` is the bounded implementation vehicle for the shared individual-game rating/review presentation and C64 Ultimate Tape Archive integration.
+- PR #2227 / branch `codex/single-game-community-uta` merged as `ca591d0f22933c66b0771e3586ccccec21fc437b`; the shared individual-game rating/review presentation, C64 Ultimate Tape Archive integration and VideoObject uploadDate correction are now on `main`.
 - Community writes remain on the canonical Supabase `ratings`/`comments` tables. New `security invoker` read RPCs provide aggregate rating and 8-review paginated/sorted reads; the existing one-rating-per-game upsert, edit/delete/report/helpful and guest-read model are preserved.
 - C64 UTA links are generated/cache-owned, never live-scraped by game pages. Confident matches require normalised title plus known publisher/re-release evidence and compatible year evidence when known. Multiple releases are preserved; ambiguous candidates are excluded to `data/uta-manual-review.json`. Amiga never requests or renders UTA data.
 - The Search Console VideoObject warning is traced to the browser runtime duplicating the generated graph and fabricating `uploadDate` from the game release year. #2227 now defers to the static generated game graph, removes the invented runtime video upload date, and tightens video-SEO validation so every emitted `uploadDate` must be a timezone-bearing datetime (`Z` or an explicit offset).
@@ -140,8 +149,8 @@ No further Dungeon coding stage is justified unless one of these checks exposes 
 | Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | Stage 8 #2141 is merged and the verified standalone HTML5 artifact is repository-ready. Public itch.io page creation/upload/final URL remain external; the retired custom commerce/paywall and desktop/Windows graphs stay closed. |
 | Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2150 is merged and the unified Content Publisher no longer exposes game-music upload. Magazine-source recovery is live/archive best-effort and no longer blocks canonical publishing. #2157 materialised the Road Rash archive/reviews and #2159 fixed the successful-refresh counter path. #2110 is closed unmerged as superseded. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | Draft #2176 is the current Quest 3 reconstruction at exact head `09a11f2ce26b4ba5848b29e75ad33534212a0458`; all automated checks are green. Current `main` has advanced without touching any of the 17 candidate paths, so no drift-only rebase is justified. Hands-on Bedroom + 36% Conversion Bout acceptance remains the merge gate. |
-| Single-game community and C64 UTA | [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md) | PR #2227 is the bounded implementation/qualification vehicle. Ratings/reviews stay on existing Supabase writes with compact read RPCs; live migration `20260922015628` is applied and verified. UTA is C64-only generated mapping with ambiguous matches excluded to a review queue. Final documentation-only exact-head qualification remains before merge. |
-| SEO and generated output | [seo-and-generated-output.md](ai-work/seo-and-generated-output.md) | #2146 individual-game presentation, #2167 site-wide public layout and #2170 bounded public-page discovery metadata are merged. Generated outputs remain workflow-owned; #2169 is the latest generated SEO/video automation merge observed before #2170. |
+| Single-game community and C64 UTA | [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md) | #2227 is merged as `ca591d0f22933c66b0771e3586ccccec21fc437b`; live migration `20260922015628` is applied and verified. Ratings/reviews, C64-only UTA mapping and the VideoObject uploadDate correction are on `main`. |
+| Mobile CLS / retro watch pages | [mobile-cls-retro-video-2026-09-22.md](ai-work/mobile-cls-retro-video-2026-09-22.md) | #2234 is the read-only representative-route diagnostic. `codex/retro-mobile-cls-stability` is the bounded implementation candidate; exact-head qualification and user merge authorization remain required. |\n| SEO and generated output | [seo-and-generated-output.md](ai-work/seo-and-generated-output.md) | #2146 individual-game presentation, #2167 site-wide public layout and #2170 bounded public-page discovery metadata are merged. Generated outputs remain workflow-owned; #2169 is the latest generated SEO/video automation merge observed before #2170. |
 
 ## Remaining active draft PR classes at this checkpoint
 
