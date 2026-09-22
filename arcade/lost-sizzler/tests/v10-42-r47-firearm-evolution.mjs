@@ -1,0 +1,23 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+const root=new URL("../",import.meta.url);
+const src=fs.readFileSync(new URL("js/v10-42-r47-firearm-evolution.js",root),"utf8");
+const bootstrap=fs.readFileSync(new URL("js/v10-42-bootstrap.js",root),"utf8");
+
+assert.match(src,/1:2,2:3,3:4,4:5,5:6/,"floor progression caps changed unexpectedly");
+assert.match(src,/Tri-Pulse I/);
+assert.match(src,/shots:3/);
+assert.match(src,/if\(!player\|\|player\.firearmUnlocked===false\)return 0/,"sword-first players must remain at firearm tier zero");
+assert.match(src,/player\.weapon=null;player\.weaponEvolutionTier=0;player\.weaponLevel=0;player\.ownedWeapons=\[\];player\.activeWeaponIndex=-1/,"locked sword-first state must not be converted into a firearm");
+assert.match(src,/const next=Math\.max\(1,Math\.min\(cap,tier\+1\)\)/,"first firearm pickup must start at Tier 1");
+assert.match(src,/player\.ownedWeapons=\[clone\(canonical\)\]/,"only one acquired firearm may remain owned");
+assert.match(src,/FIREARM PARTS SALVAGED/,"capped pickups must still give a useful reward");
+assert.match(src,/FIREARM ACQUIRED/,"first weapon pickup must be distinguished from later upgrades");
+assert.match(src,/ARCHIVE SWORD ACTIVE/,"Inventory must explain the pre-firearm sword state");
+assert.match(src,/salvageAmmo/);
+assert.match(src,/EVOLVING FIREARM/);
+assert.doesNotMatch(src,/data-ccg-equip-weapon/,"r47 UI must not reintroduce weapon switching");
+const clarity=bootstrap.indexOf('v10-42-owned-firearm-clarity.js');
+const evolution=bootstrap.indexOf('v10-42-r47-firearm-evolution.js');
+assert.ok(clarity>=0&&evolution>clarity,"single-firearm evolution must load after the legacy comparison layer");
+console.log("Dungeon Carnage r47 sword-first evolving firearm contract passed.");

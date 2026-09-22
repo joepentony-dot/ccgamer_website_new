@@ -43,7 +43,8 @@ try{
   assert.equal(boot.ready,true,"Ordered V10.42 bootstrap must finish before play is allowed.");
   assert.match(boot.build,/V10\.42/i,"Canonical runtime must stamp a V10.42 build identity.");
   assert.match(boot.badge,/V10\.42/i,"Visible build badge must identify V10.42.");
-  assert.deepEqual(boot.loaded.slice(-2),["v10-42-r1-stability.js","v10-42-r18-solo-playtest-stability.js"],"R1 combat/playtest stability must remain immediately before the final R18 guarded solo playtest layer.");
+  const r1Index=boot.loaded.indexOf("v10-42-r1-stability.js"),r18Index=boot.loaded.indexOf("v10-42-r18-solo-playtest-stability.js");
+  assert.ok(r1Index>=0&&r18Index===r1Index+1,"R1 combat/playtest stability must remain immediately before the R18 guarded solo playtest layer; later observation/recovery modules may follow.");
   assert.equal(boot.cpuName,"CPU Cook","The cook named enemy must be represented as CPU Cook in the live dossier source.");
 
   await page.click("#solo-btn");

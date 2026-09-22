@@ -17,7 +17,26 @@ Update this file when a workstream changes category, its active PR/dependency ch
 - Known seed exclusions requiring verification are 1942 / Encore 1989 archive [10797] and Bangkok Knights / Activision 1987 archive [3551]. The generated manual-review JSON is authoritative after each UTA refresh.
 - The exact implementation head completed all triggered GitHub Actions successfully. The live Supabase migration was then applied as version `20260922015628` (`single_game_community_read_models`); post-apply checks confirmed the helpful-vote table, both read RPCs, the helpful-vote RPC and RLS. Supabase security-advisor findings did not reference any object introduced by this migration.
 - Final documentation-only qualification exposed a Public Code Cache Version harness defect (`git diff origin/main...HEAD` -> `no merge base`) caused by re-fetching `main` with `--depth=1` after a full checkout. #2227 removes only that shallow-history truncation; the cache-version guard and assertions are unchanged.
+- Current `main` advanced through merged #2226 while #2227 was qualifying. The only overlapping path was this continuation index; the current-main reconciliation preserves #2226's Dungeon checkpoint and all #2227 single-game state without touching Dungeon runtime files.
 - Detailed record: [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md).
+
+## Active Dungeon Carnage r47 release-blocker candidate — 22 September 2026
+
+- Draft PR #2226 on branch `codex/dungeon-r47-release-blockers` is the active bounded pre-release candidate. It advances the published identity to `V10.42 r47` / `20260922r47`; it is **not release-qualified or merged until its final exact head is fully green**.
+- The recurring Inventory → return-to-game → FIRE failure is addressed by a transition recovery boundary that preserves the established `firePlayer` / `queueAttack` owners. Inventory closure resets established attack cadence, repairs stale mode/timers through existing stability owners, restores gameplay focus, then verifies the next valid FIRE intent. Only if the normal path produces no activity does it invoke the existing r20 `attackNow()` fallback.
+- The Floor-3 Memory Tile challenge is redesigned from the hazardous 3×3 grid into five numbered, spaced pads in a straight horizontal or vertical line plus a separate purple replay console. Only deliberate player movement counts as a memory input; forced knockback does not. A wrong pad now spawns exactly one monster, pauses the puzzle and waits for deliberate replay.
+- Dungeon firearm progression is now sword-first and single-weapon: Archive Sword remains the initial unlimited-melee state; the first weapon pickup acquires Tier 1 Field Pulse; later weapon pickups improve that one firearm subject to floor caps F1→T2, F2→T3, F3→T4, F4→T5 and F5→T6. Three-way fire first unlocks at Tier 4 / Floor 3. Weapon drops at the current floor cap are salvaged into ammunition instead of accumulating redundant guns.
+- A bounded developer incident recorder is included. Opt in with `?bugreport=1` (persisted locally), then use the **REPORT BUG** control on desktop/mobile or F8 on desktop immediately after a fault. It records recent input/panel/focus transitions, FIRE timers/buffers, ammo/projectiles, player/weapon state, Memory Pad state, runtime errors and relevant stability diagnostics; it produces copyable text plus JSON and does not claim gameplay/input/render ownership.
+- Qualification has already exposed and corrected two stale static-contract assumptions rather than weakening behavior: one r46 release-identity regex after the r47 cache bump, and the mobile trap static source contract expecting legacy `movementTriggers(p)` instead of r47's deliberate `movementTriggers(p,true)`. The dedicated live mobile geometry/trap-damage job remained green while the latter static mismatch was diagnosed.
+- The r46 artifact remains the last qualified publication artifact until #2226's final exact head passes the complete matrix and a new r47 package is produced.
+
+### r47 hands-on acceptance after merge
+
+1. Confirm Inventory can be opened/closed repeatedly on keyboard and mobile, followed immediately by successful FIRE every time; if it fails, capture the incident with REPORT BUG before refreshing.
+2. On Floor 3, confirm the five numbered Memory Pads are spaced, the centre route is safe, the purple console can replay the sequence without penalty, knockback cannot register a pad, and a deliberate wrong pad spawns exactly one enemy.
+3. Confirm the Archive Sword start, first-firearm acquisition, one-firearm-only Inventory presentation, Floor-3 three-way unlock and capped-pickup ammunition salvage feel balanced in real play.
+4. Retain the existing startup, sustained Solo/pause-resume, Banishment Flask, mobile trap, mobile camera/landing, r46 visual-presentation and Level-4 directional-torch acceptance gates.
+5. Only after r47 gameplay/manual acceptance should the latest qualified itch.io package move to final publication verification.
 
 ## Current autonomous Dungeon Carnage checkpoint — 21 September 2026
 
