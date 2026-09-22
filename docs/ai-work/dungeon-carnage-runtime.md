@@ -21,6 +21,12 @@ The supplied r47 incident recorder materially narrows the failure:
 
 The candidate intentionally does not change world generation, collision, damage, traps, progression, saves, economy, firearm balance, projectile lifecycle or the r45 active-room/sleeping-enemy model. Exact-head automation and a new hands-on long-session acceptance run are required before product closure.
 
+## Active strange-audio follow-up — PR #2233 — 22 September 2026
+
+PR #2233 has been rebuilt directly on the current-main r49 line so the newer long-session performance remediation and reporter diagnostics remain intact. The original Floor 3 strange-sound report recorded healthy gameplay but did not capture the exact collected item, SFX sequence or major-threat music state. Code review found a real pickup + immediate level-up SFX overlap and staggers only the level-up sound while leaving rewards, XP, level presentation and level-choice timing immediate.
+
+A later user recollection suggested the audible incident may instead have coincided with a nearby Warden/major threat. Current ownership shows the dedicated proximity-music path belongs to Death Stalker / Count Loadula; the Sigil Warden itself has no dedicated near SFX. #2233 therefore extends the existing current-main reporter with observation-only item, SFX and music-state transitions (room mood, Stalker-near, Stalker-in-sight, named enemy and selected asset). It does **not** claim the original noise is proven fixed and makes no speculative AI, threat-distance or threat-music behavior change. Fresh exact-head qualification is required.
+
 ## Current checkpoint — 22 September 2026
 
 ## Current checkpoint — 21 September 2026
