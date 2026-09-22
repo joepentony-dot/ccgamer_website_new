@@ -99,6 +99,7 @@
 
     shop.weaponUpgradePurchases=Math.max(0,Number(shop.weaponUpgradePurchases||0))+1;
     state.purchases++;
+    try{window.dispatchEvent(new CustomEvent("ccg:shop-firearm-upgrade",{detail:{shopId:String(shop.id||""),floor:offer.floor,beforeTier,afterTier,price:offer.price,goldCoins:offer.goldCoins,scoreBefore:beforeScore,scoreAfter:currentScore()}}))}catch(_){}
     try{host.revision++}catch(_){}
     try{window.CCGLostSizzlerV142Stage7NpcMerchant?.noteTransaction?.(shop,"weapon")}catch(_){}
     try{broadcastWorld()}catch(_){}
