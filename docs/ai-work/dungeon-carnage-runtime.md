@@ -4,6 +4,16 @@
 
 The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
+## Retired public modes cleanup — active candidate — 22 September 2026
+
+The user has retired **all multiplayer game modes** plus the **Weekly High-Score Vault** from the public Dungeon Carnage product. This supersedes the older guardrail that required local 2P Split Screen and Weekly Vault/account surfaces to remain visible or supported.
+
+Fresh branch `codex/dungeon-retired-public-modes-cleanup` is based on merged r49 main `3f273ec8eb881faac1825a6779863c9367faf0d1`. Scope is intentionally presentation/entry-policy first: Solo, Tutorial and Resume remain; Split Screen and Weekly Vault public controls/copy are removed; P2 help and weekly rulebook/reward language are removed; the public developer changelog is removed; and the release-policy owner cannot resurrect retired controls from stale layers.
+
+The branch does **not** broadly delete historical split/network compatibility owners yet. Those owners remain until exact-head qualification proves they can be removed without destabilising Solo/Tutorial. The currently open audio PR #2233 is a separate workstream and is not modified here.
+
+Live Supabase inspection found no scheduled `pg_cron` jobs. Both Weekly Vault Edge Functions are already deployed as HTTP 410 retirement stubs, so stale callers cannot send weekly challenge/result notifications.
+
 ## Active r49 long-session freeze candidate — PR #2231 — 22 September 2026
 
 PR #2226 has now merged as `38c2f7e43233f6a1e6f81cb8d942f1df449feffe`, making `V10.42 r47` / `20260922r47` the live Dungeon baseline. Hands-on acceptance then reproduced a new Floor-3 Solo failure after a long session: severe slowdown progressing to an apparent standstill. PR #2231 on `codex/dungeon-r49-live-freeze-current-main` is the bounded current-main remediation candidate and advances the browser-visible build/cache to `V10.42 r49` / `20260922r49`.
