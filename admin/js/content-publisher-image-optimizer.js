@@ -1,7 +1,7 @@
-import './content-publisher-source-preflight.mjs?v=publisher-20260918';
-import './content-publisher-existing-game-update.js?v=publisher-20260918';
-import './content-publisher-status-reconciler.js?v=publisher-20260918';
-import './content-publisher-completion-guard.js?v=publisher-20260918';
+import './content-publisher-source-preflight.mjs?v=publisher-20260922-archive';
+import './content-publisher-existing-game-update.js?v=publisher-20260922-archive';
+import './content-publisher-status-reconciler.js?v=publisher-20260922-archive';
+import './content-publisher-completion-guard.js?v=publisher-20260922-archive';
 
 const MAX_WIDTH = 1280;
 const MAX_HEIGHT = 960;

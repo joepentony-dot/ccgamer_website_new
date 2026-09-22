@@ -21,6 +21,19 @@ test('detects a release year stated in an Amiga description', () => {
   assert.equal(detectReleaseYear(validBase.description), 1994);
 });
 
+test('detects a conversion year so a mistyped source year cannot silently break enrichment', () => {
+  const description = "Wonder Boy on the Commodore 64 is Activision’s 1987 conversion of Sega’s arcade platformer.";
+  assert.equal(detectReleaseYear(description), 1987);
+  const errors = validateGamePublisherSource({
+    ...validBase,
+    system: 'C64',
+    year: 1979,
+    description,
+    thumbnail: 'resources/images/thumbnails/all/wonder-boy.webp'
+  });
+  assert.ok(errors.some((error) => /Release year conflict/.test(error)));
+});
+
 test('blocks a release-year contradiction before a source commit', () => {
   const errors = validateGamePublisherSource({ ...validBase, year: 1993 });
   assert.ok(errors.some((error) => /Release year conflict/.test(error)));

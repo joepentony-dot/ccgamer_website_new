@@ -1,3 +1,11 @@
+## Active Wonder Boy enrichment regression repair — 22 September 2026
+
+- Draft PR #2262 on `codex/fix-wonder-boy-enrichment-and-uta-audit` repairs the new Wonder Boy source record from the incorrect 1979 year to the verified 1987 C64 release and pins its Lemon64 game source so magazine-review import has an explicit authoritative input.
+- Content Publisher preflight now recognises wording such as “1987 conversion/port/release/version”, preventing a mistyped year from silently defeating downstream magazine and tape matching.
+- The publisher no longer treats the GitHub workflows alone as proof that a game is complete: after they pass it re-checks the pending magazine-source queue, the materialised magazine-review chunk, the C64 UTA mapping and the UTA manual-review queue. A missing required enrichment is surfaced as **Archive enrichment incomplete** rather than a false success.
+- Reliable Games Publishing now requires a fresh full UTA mapping run instead of treating UTA refresh as best-effort. Ambiguous title matches remain excluded to the manual-review queue.
+- Qualification is in progress; do not merge until the exact head is green and the user explicitly authorises merge.
+
 # Content publishing and game music
 
 ## Scope

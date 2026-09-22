@@ -1,3 +1,11 @@
+## Active full-catalogue UTA follow-up — PR #2262
+
+The Wonder Boy publish exposed a source-data error and a completion-reporting hole. Its source record said 1979 even though the description and verified C64 release are 1987; that caused UTA archive [6764] (Activision, 1987) to be rejected on year compatibility while [1677] (Hit Squad, 1991) remained visible.
+
+PR #2262 corrects Wonder Boy to 1987, adds regression coverage requiring both [6764] and [1677], and expands conservative publisher aliases used during the **full C64 catalogue scan** for common label-name variants including Firebird Silver/Gold, CBS/CBS Electronics, Virgin/Virgin Games, Ultimate/Ultimate Play The Game, Mastertronic Added Dimension/MAD, Nexus Productions and Rack-It/Hewson word-order variants. Title matching and year compatibility remain mandatory; title-only matches are still never published.
+
+Reliable Games Publishing now treats the UTA refresh as required before a game publication can be reported complete. The browser-side Content Publisher also re-checks the generated UTA mapping and manual-review queue before it claims archive enrichment has passed.
+
 # Single-game community and Ultimate Tape Archive — 22 September 2026
 
 ## Scope

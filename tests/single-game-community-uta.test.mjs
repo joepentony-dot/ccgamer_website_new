@@ -43,6 +43,76 @@ test("UTA parser preserves multiple releases and normalises known publisher vari
   assert.equal(normalizePublisher("Elite Systems Ltd"), normalizePublisher("Elite"));
 });
 
+test("UTA publisher normalisation covers common C64 label variants without title-only guessing", () => {
+  assert.equal(normalizePublisher("Firebird Silver"), normalizePublisher("Firebird"));
+  assert.equal(normalizePublisher("CBS Software"), normalizePublisher("CBS Electronics Software"));
+  assert.equal(normalizePublisher("Virgin Games"), normalizePublisher("Virgin"));
+  assert.equal(normalizePublisher("Ultimate Play The Game"), normalizePublisher("Ultimate"));
+  assert.equal(normalizePublisher("Mastertronic Added Dimension"), normalizePublisher("Mastertronic"));
+  assert.equal(normalizePublisher("MAD (Mastertronic)"), normalizePublisher("Mastertronic"));
+  assert.equal(normalizePublisher("Rack-It (Hewson)"), normalizePublisher("Hewson (Rack IT)"));
+});
+
+test("Wonder Boy resolves both the Activision original and Hit Squad cassette re-release", () => {
+  const releases = parseUtaIndex(`
+<a href="Wonder_Boy_(1987_Activision)_[6764]/">Wonder Boy Activision</a>
+<a href="Wonder_Boy_(1991_Hit_Squad)_[1677]/">Wonder Boy Hit Squad</a>
+`);
+  const wonderBoy = {
+    system: "C64",
+    slug: "wonder-boy",
+    title: "Wonder Boy",
+    year: 1987,
+    credits: { publisher: ["Activision"], re_releaser: ["The Hit Squad"] }
+  };
+  const result = matchGameToUta(wonderBoy, releases);
+  assert.deepEqual(result.releases.map((row) => row.archiveId), ["6764", "1677"]);
+  assert.deepEqual(result.releases.map((row) => row.sourceRole), ["publisher", "re-release"]);
+  assert.deepEqual(result.review, []);
+});
+
+test("composite re-release credits expose each explicit label component to UTA matching", () => {
+  const releases = parseUtaIndex(`
+<a href="Silkworm_(1992_Tronix)_[5873]/">Silkworm Tronix</a>
+<a href="Silkworm_(1989_Virgin)_[9783]/">Silkworm Virgin</a>
+`);
+  const game = {
+    system: "C64",
+    slug: "silkworm",
+    title: "Silkworm",
+    year: 1989,
+    credits: { publisher: ["The Sales Curve"], re_releaser: ["Tronix (Virgin Games)"] }
+  };
+  const result = matchGameToUta(game, releases);
+  assert.deepEqual(result.releases.map((row) => row.archiveId), ["9783", "5873"]);
+  assert.ok(result.releases.every((row) => row.sourceRole === "re-release"));
+});
+
+test("later tapes from an explicitly known publisher are retained instead of being dropped by an arbitrary one-year ceiling", () => {
+  const releases = parseUtaIndex(`
+<a href="Choplifter!_(1984_Ariolasoft)_[4263]/">Choplifter Ariolasoft</a>
+<a href="Soccer_Boss_(1987_Alternative_Software)_[24133]/">Soccer Boss Alternative</a>
+`);
+  const choplifter = matchGameToUta({
+    system: "C64",
+    slug: "choplifter",
+    title: "Choplifter",
+    year: 1982,
+    credits: { publisher: ["Ariolasoft", "Brøderbund"], re_releaser: [] }
+  }, releases);
+  assert.deepEqual(choplifter.releases.map((row) => row.archiveId), ["4263"]);
+
+  const soccerBoss = matchGameToUta({
+    system: "C64",
+    slug: "soccer-boss",
+    title: "Soccer Boss",
+    year: 1984,
+    credits: { publisher: ["Alternative Software"], re_releaser: ["Alternative Software"] }
+  }, releases);
+  assert.deepEqual(soccerBoss.releases.map((row) => row.archiveId), ["24133"]);
+  assert.equal(soccerBoss.releases[0].sourceRole, "re-release");
+});
+
 test("C64 matching requires title plus known publisher/re-release evidence and uses year confidence", () => {
   const releases = parseUtaIndex(sampleIndex);
   const result = matchGameToUta(ace, releases);
