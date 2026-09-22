@@ -40,6 +40,26 @@ try{
     await page.waitForFunction(before=>Number(p1.mana)<before.mana||bullets.filter(b=>b.owner===p1.id&&b.ttl>0).length>before.shots||Number(fire1)>0,before,{timeout:3000});
     await page.waitForTimeout(250);
   }
+  await page.evaluate(()=>{
+    p1.firearmUnlocked=true;
+    p1.mana=Math.max(80,p1.mana||0);
+    p1.hitStunMs=5000;
+    p1.__ccgLastHurtAt=performance.now();
+    fire1=0;fireBuffer1=0;input.clear();
+  });
+  const stuckBefore=await page.evaluate(()=>Number(p1.mana));
+  for(let attempt=0;attempt<6;attempt++){
+    await page.keyboard.press("Space");
+    await page.waitForTimeout(180);
+  }
+  await page.waitForFunction(before=>Number(p1.mana)<before,before=stuckBefore,{timeout:3000});
+  const p0=await page.evaluate(()=>({
+    stun:Number(p1.hitStunMs||0),
+    repairs:Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.persistentFireBlockRepairs||0)
+  }));
+  assert.ok(p0.repairs>=1,`expected persistent FIRE blocker repair, got ${p0.repairs}`);
+  assert.ok(p0.stun<5000,`expected stale hit-stun to be cleared or decaying, got ${p0.stun}`);
+
   const state=await page.evaluate(()=>window.CCGLostSizzlerV142R47InventoryFireRecovery.state);
   assert.ok(state.inventoryClosures>=5,`expected at least five observed Inventory closes, got ${state.inventoryClosures}`);
   assert.equal(await page.evaluate(()=>mode),"playing");
