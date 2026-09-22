@@ -4,22 +4,19 @@
 
 The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
-## Active r49 long-session freeze candidate — PR #2231 — 22 September 2026
+## Active r50 fullscreen/input follow-up — PR #2241 — 22 September 2026
 
-PR #2226 has now merged as `38c2f7e43233f6a1e6f81cb8d942f1df449feffe`, making `V10.42 r47` / `20260922r47` the live Dungeon baseline. Hands-on acceptance then reproduced a new Floor-3 Solo failure after a long session: severe slowdown progressing to an apparent standstill. PR #2231 on `codex/dungeon-r49-live-freeze-current-main` is the bounded current-main remediation candidate and advances the browser-visible build/cache to `V10.42 r49` / `20260922r49`.
+PR #2231 is merged as `3f273ec8eb881faac1825a6779863c9367faf0d1`, making `V10.42 r49` / `20260922r49` the current live runtime. Immediate hands-on testing then exposed two desktop fullscreen issues.
 
-The supplied r47 incident recorder materially narrows the failure:
+First, the visible instruction says **Press F if needed** for fullscreen and the canonical `game-main.js` handler does own `KeyF` for `toggleFullscreen()`. However, three later combat-recovery layers still treated `KeyF` as a P1 attack alias. The r20 capture-phase listener could therefore stop propagation and fire before the canonical fullscreen listener ran. #2241 removes `KeyF` from r20 attack recovery, held-attack liveness and r47 Inventory/FIRE verification. Space and Numpad0 remain attack inputs; stale historical `KeyF` state is still cleared at pause/inventory recovery boundaries.
 
-- capture occurred after roughly 24 minutes of active Solo play on Floor 3;
-- the r47 performance governor was already in `severe`;
-- browser JS heap usage was only about 31 MB used against a multi-gigabyte limit, so the report does not support a normal heap-exhaustion explanation;
-- r18 diagnostics had accumulated 18,219 Warden HUD repairs and 3,558 stale enemy-cooldown repairs;
-- the Warden-domain sync and r18 stability layer were proven to be competing over the same `quickSpecials` text: one appended Warden state and the other removed it into the dedicated Warden status node on repeated HUD syncs;
-- r18 also treated normal negative AI countdowns as invalid and the player attack boundary called a repair that scanned the complete enemy roster.
+Second, the supplied fullscreen screenshot shows the active dungeon occupying only the upper portion of the available canvas with a large unused black region below. #2241 changes only renderer camera scale: normal desktop Solo remains 1x, mobile Solo/Tutorial remains 1.6x, split-screen remains 1x, and desktop Solo while browser fullscreen is active uses 1.35x. This also reduces the north-edge camera clamp that left the starting room high in the viewport.
 
-#2231 therefore removes those two sources of avoidable long-session work without replacing established owners. Warden state remains visible through the existing dedicated `quick-warden-status` node. Enemy safety repair remains available on the periodic stability path, but ordinary negative countdowns are left alone and each player attack repairs local combat state without a full-dungeon enemy scan. REPORT BUG is extended with r47/r37 frame diagnostics, AI simulation counts and live array sizes.
+Regression coverage now exercises a focused real F key through document capture listeners and requires that fullscreen receives it without increasing r20 attack intents. Static ownership coverage also prevents late attack layers from reclaiming `KeyF`. The candidate advances build/cache to `V10.42 r50` / `20260922r50`.
 
-The candidate intentionally does not change world generation, collision, damage, traps, progression, saves, economy, firearm balance, projectile lifecycle or the r45 active-room/sleeping-enemy model. Exact-head automation and a new hands-on long-session acceptance run are required before product closure.
+No world generation, collision, damage, traps, progression, save, economy, projectile lifecycle or combat-balance owner is changed.
+
+## Current checkpoint — 22 September 2026
 
 ## Current checkpoint — 22 September 2026
 
