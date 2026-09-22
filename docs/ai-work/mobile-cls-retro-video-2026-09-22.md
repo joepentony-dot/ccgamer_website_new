@@ -11,16 +11,16 @@ This is field data and must not be treated as equivalent to one Lighthouse run, 
 ## Reconciled baseline
 
 - Implementation base: current `main` at `d0d4130136a94dad884d93de4255217c72345d6c`.
-- Read-only diagnostic PR: **#2234** / `codex/mobile-cls-retro-diagnostic`. It adds the Search Console representative route to the existing Phase 8A mobile LCP/CLS harness and changes no public presentation code.
+- Read-only diagnostic PR: **#2234** / `codex/mobile-cls-retro-diagnostic`. Its completed evidence run on current main measured the representative retro route at browser CLS **0.944** and Lighthouse CLS **0.743** under the deterministic 390×844 throttled profile. This is lab evidence rather than Search Console field CLS, but it reproduced a severe shared layout shift.
 - Existing Phase 8A evidence already identified the shared header/main handoff as a material mobile CLS source on other public routes, including `.ccg-header-actions`, `.ccg-header-socials`, the mobile nav toggle and `main#ccg-main-content`.
 - The retro player itself already reserves a 16:9 box in `retro-video-pages.css`; it is not being changed as part of this fix.
 
 ## Root-cause path addressed
 
-Two shared first-paint races are bounded here:
+Three shared first-paint races are bounded here:
 
 1. A cold session can paint `.ccg-auth-slot` empty while authentication is restored, then insert Join/Login or Profile/Logout later. The mobile slot had no reserved block height.
-2. Retro watch pages did not directly load the final responsive safety/polish/layout styles. `ccg-responsive-safety.js` added/reordered those styles after DOMContentLoaded, allowing a late responsive-geometry handoff.
+2. The mode identity strip (`aside#ccgModeIdentityBar`) was created only after DOMContentLoaded. #2234 ranked it among the strongest representative-route shift sources (browser source value 0.817), alongside `main#ccg-main-content` (0.864), `.ccg-header-actions` (0.781) and `header.ccg-header` (0.396). The retro template now emits that strip statically and loads its CSS before first paint; the existing mode-identity runtime reuses and updates it instead of creating a second bar.\n3. Retro watch pages did not directly load the final responsive safety/polish/layout styles. `ccg-responsive-safety.js` added/reordered those styles after DOMContentLoaded, allowing a late responsive-geometry handoff.
 
 ## Implementation branch
 
@@ -29,7 +29,7 @@ Branch: `codex/retro-mobile-cls-stability`
 The bounded candidate:
 
 - reserves the mobile/tablet auth row at the same height as its resolved controls;
-- directly loads `ccg-responsive-safety.css`, `ccg-responsive-page-polish.css` and `ccg-sitewide-layout-optimization.css` from the authoritative retro-video template before first paint;
+- emits the mode identity strip statically and directly loads `ccg-mode-identity.css` before first paint;\n- directly loads `ccg-responsive-safety.css`, `ccg-responsive-page-polish.css` and `ccg-sitewide-layout-optimization.css` from the authoritative retro-video template before first paint;
 - preserves the same runtime cascade order used by `ccg-responsive-safety.js`;
 - adds a 390×844 browser regression that compares pending, guest and member auth geometry on the Search Console representative retro page;
 - regenerates retro pages inside the navigation validation job before that browser audit, so the test exercises the authoritative template output rather than a hand-edited generated page;
