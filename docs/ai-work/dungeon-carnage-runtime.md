@@ -4,7 +4,22 @@
 
 The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
-## Active r50 fullscreen/input follow-up — PR #2241 — 22 September 2026
+## Active V10.42 R50 combined blocker candidate — 22 September 2026
+
+Branch `codex/dungeon-r50-combined-blockers` consolidates the user-reproduced R50 blockers on top of the already-qualified #2241 fullscreen/input/layout candidate rather than releasing partial fixes.
+
+Implemented repository-side changes:
+- reconciled #2233's qualified pickup/audio diagnostics and pickup-level-up SFX staggering;
+- removed V10.4 collectible horror's independent AudioContext and recurring oscillator beat owner, replaced its reused Death Stalker sting with the established alert cue, and reduced its effect observer to 250 ms;
+- exposed Archive Wraith horror-active transitions to REPORT BUG;
+- added simulation-owned Memory Console edge detection so entry reliably starts/replays the sequence without per-frame restart;
+- centred the unresolved Memory Pad footprint in the camera, based ordinary mobile zoom on the real browser viewport rather than the sidebar-reduced canvas width, and kept the pads/console readable while the player remains in the puzzle room;
+- changed the release loader artwork to `resources/images/hero/c64-dungeon-carnage-home-v2.webp`;
+- added the R50 combined static contract and carried forward the #2233 pickup-audio diagnostic contract.
+
+Exact-head qualification is pending. #2241 and #2233 remain unmerged while the combined candidate is qualified.
+
+## Historical r50 fullscreen/input follow-up — PR #2241 — 22 September 2026
 
 PR #2231 is merged as `3f273ec8eb881faac1825a6779863c9367faf0d1`, making `V10.42 r49` / `20260922r49` the current live runtime. Immediate hands-on testing then exposed two desktop fullscreen issues.
 
