@@ -110,6 +110,17 @@
         <div class="menu-buttons secondary-menu"><button id="rulebook-btn">Objectives &amp; Rulebook</button><button id="support-btn">Support / Donate / Share</button><a class="menu-exit-link" href="/games/ccg-games/">Exit to CCG Games</a></div>
         <p id="collection-summary" class="collection-summary">Unique C64 titles permanently saved on this device: 0. Duplicates count once; clearing browser data resets this list.</p>
         <p id="release-note" class="note">C64 Dungeon Carnage runs directly in your browser. Solo play and the Tutorial are the supported game modes. Starting a run requests fullscreen automatically. Sound begins when play starts.</p><p id="menu-note" hidden aria-hidden="true" style="display:none!important"></p>
+        <details id="developer-changelog" class="menu-details developer-changelog" data-latest-build-only="true">
+          <summary>Latest Build Changes · V10.42 R51</summary>
+          <div class="developer-changelog-current">
+            <p><strong>ACTIVE BUILD: V10.42 R51</strong></p>
+            <ul>
+              <li>Solo and Tutorial are the supported release modes; retired Weekly Vault and 2P public entry points have been removed.</li>
+              <li>Owner-only maintenance preview remains available for Cheeky Commodore Gamer live testing while ordinary visitors stay gated.</li>
+              <li>Release cache, loader artwork and itch.io packaging now track the R51 build.</li>
+            </ul>
+          </div>
+        </details>
         <p class="game-copyright">© 2026 CHEEKY COMMODORE GAMER · ALL RIGHTS RESERVED</p>
         <div class="keys-help"><kbd>P1: WASD / ARROWS MOVE • SPACE ATTACK • L-SHIFT DASH • E POTION • Q TORCH</kbd><kbd>R TELEPORT • C CLOSE DOOR • B BANISH • M MAP • TAB INVENTORY</kbd></div>
       </div>
@@ -247,7 +258,7 @@
 <script src="js/v10-41-r29-runtime-repair.js?v=20260922r51"></script>
   <script src="js/v10-41-r30-global-movement-guard.js?v=20260922r51"></script>
 <script>
-(()=>{const purge=()=>document.querySelectorAll("#developer-changelog,.developer-changelog").forEach(node=>node.remove());purge();addEventListener("DOMContentLoaded",purge,{once:true});addEventListener("load",purge,{once:true});setTimeout(purge,2000)})();
+(()=>{const purgeLegacy=()=>document.querySelectorAll("#developer-changelog,.developer-changelog").forEach(node=>{if(node.dataset.latestBuildOnly!=="true")node.remove()});purgeLegacy();addEventListener("DOMContentLoaded",purgeLegacy,{once:true});addEventListener("load",purgeLegacy,{once:true});setTimeout(purgeLegacy,2000)})();
 </script>
 </body>
 </html>
