@@ -4,6 +4,14 @@
 
 The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
+## R51 supported-runtime handoff reconciliation — 22 September 2026
+
+PR #2256 exposed a hidden dependency while qualifying the owner-preview build. The R51 public-UI cleanup correctly retired `v10-41-r30-buglog.js` from canonical HTML, but that historically named file also contained the dynamic handoff that loaded supported Solo runtime ownership: the mode controller, Solo diagnostics, post-playtest/R56/R59 recovery, the Solo-facing R60 integrity bridge, and Stage 8/13 encounter owners. With the buglog removed, the first full R51 Chromium matrix showed empty `dungeon-solo` controller markers, missing supported owners, broad startup/soak timeouts and the focused FIRE-lockout contract timing out.
+
+The repair keeps the retired buglog absent and unchanged. `v10-42-bootstrap.js` now loads those supported prerequisites explicitly and fails closed if any prerequisite does not initialise before ordered V10.42 modules run. Browser contracts that still required retired public Split Screen/Weekly Vault or R50 build identity were reconciled to the authorised R51 release boundary: Solo and Tutorial remain public; `split-btn` and `daily-btn` remain hidden inert compatibility anchors. Supported Solo/FIRE, loader, movement, rendering, trap, pause/inventory and endurance checks remain active.
+
+Status: **IMPLEMENTED ON DRAFT PR #2256 / FINAL EXACT-HEAD QUALIFICATION REQUIRED BEFORE MERGE**.
+
 ## P0 FIRE lockout remediation — 22 September 2026
 
 A hands-on `V10.42 r50` Solo report captured the current worst game-breaking regression: firing worked and then stopped during the same active Floor 3 run. At failure the player still had 117 ammo, Tier 4 Tri-Pulse I equipped, zero of seven allowed player projectiles active, gameplay mode/run ownership intact, inventory hidden and canvas focus retained. Repeated Space presses continued to queue FIRE buffer state but produced neither ammo consumption nor projectiles.
