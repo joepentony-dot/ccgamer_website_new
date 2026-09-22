@@ -5,12 +5,12 @@
   window.__CCG_LOST_SIZZLER_V142_ZERO_SERVER_RELEASE__=true;
 
   const ONLINE_BUTTON_IDS=["create-btn","horde-mode-btn","saboteurs-mode-btn","join-btn"];
-  const LOCAL_BUTTON_IDS=["solo-btn","tutorial-zone-btn","split-btn"];
-  const ONLINE_ONLY_SELECTORS=[".online-howto",".join-row","#online-lobby"];
+  const LOCAL_BUTTON_IDS=["solo-btn","tutorial-zone-btn"];
+  const ONLINE_ONLY_SELECTORS=[".online-howto",".join-row","#online-lobby","#weekly-vault","#developer-changelog",".developer-changelog"];
   const RELEASE_STYLE_ID="v142-zero-server-release-style";
   const RELEASE_BLURB="A five-floor pixel dungeon crawl filled with shifting objectives, rare loot, hidden routes, dangerous events and things in the dark that ordinary weapons cannot finish.";
   const RELEASE_MODE_LABEL_HTML="<span>✦</span> CHOOSE YOUR ADVENTURE <span>✦</span>";
-  const RELEASE_NOTE="V10.42 uses a zero-server-cost release model: Solo, Tutorial and 2P Split Screen run locally in your browser. Supabase remains available for CCG account features such as the Weekly High-Score Vault, but core gameplay never requires an online multiplayer server.";
+  const RELEASE_NOTE="C64 Dungeon Carnage runs directly in your browser. Solo play and the Tutorial do not require a multiplayer server.";
   const state={enabled:true,removedButtons:[],hiddenPanels:[],networkLocked:false,lastReason:"",enforcementPasses:0,releaseStyleReady:false,onlineTeardowns:0,localBootTeardownsSkipped:0,localMenuRecoveries:0,localButtonRecoveries:0,observerSkips:0,localFocusRequests:0,localFocusAssignments:0};
 
   function ensureReleaseStyle(){
@@ -18,7 +18,7 @@
     if(!style){
       style=document.createElement("style");
       style.id=RELEASE_STYLE_ID;
-      style.textContent="#create-btn,#horde-mode-btn,#saboteurs-mode-btn,#join-btn,.online-howto,.join-row,#online-lobby{display:none!important;}";
+      style.textContent="#create-btn,#horde-mode-btn,#saboteurs-mode-btn,#join-btn,#daily-btn,#split-btn,#weekly-vault,#developer-changelog,.developer-changelog,.online-howto,.join-row,#online-lobby{display:none!important;}";
       (document.head||document.documentElement).appendChild(style);
     }
     state.releaseStyleReady=true;
