@@ -595,6 +595,10 @@ async function auditSitewideWheelPage(sessionId, sitePort, page) {
 
     const result = await readSitewideWheelProbe(sessionId);
     if (result.error) fail(`sitewide wheel ${page.label}: ${result.error}`);
+
+    const totalLongTaskMs = (result.longTasks || []).reduce((sum, entry) => sum + Number(entry.duration || 0), 0);
+    console.log(`METRIC sitewide wheel ${page.label}: movement=${result.movement}px latency=${result.firstLatency}ms scrollEvents=${result.scrollEvents} perfClassTransitions=${result.classTransitions} longTasks=${result.longTasks.length}/${totalLongTaskMs}ms`);
+
     if (result.firstLatency === null || result.firstLatency > MAX_FIRST_SCROLL_LATENCY_MS) {
         fail(`sitewide wheel ${page.label}: first native scroll response was too slow (${result.firstLatency}ms)`);
     }
@@ -602,15 +606,24 @@ async function auditSitewideWheelPage(sessionId, sitePort, page) {
         fail(`sitewide wheel ${page.label}: four physical wheel steps moved only ${result.movement}px`);
     }
 
-    const totalLongTaskMs = (result.longTasks || []).reduce((sum, entry) => sum + Number(entry.duration || 0), 0);
-    console.log(`PASS sitewide wheel ${page.label}: movement=${result.movement}px latency=${result.firstLatency}ms scrollEvents=${result.scrollEvents} perfClassTransitions=${result.classTransitions} longTasks=${result.longTasks.length}/${totalLongTaskMs}ms`);
+    console.log(`PASS sitewide wheel ${page.label}`);
 }
 
 async function auditSitewideWheelPages(sessionId, sitePort) {
     await setViewport(sessionId, SITEWIDE_WHEEL_VIEWPORT);
     console.log(`SITEWIDE physical mouse-wheel audit: ${SITEWIDE_WHEEL_PAGES.length} representative pages at ${SITEWIDE_WHEEL_VIEWPORT.width}x${SITEWIDE_WHEEL_VIEWPORT.height}`);
+    const failures = [];
     for (const page of SITEWIDE_WHEEL_PAGES) {
-        await auditSitewideWheelPage(sessionId, sitePort, page);
+        try {
+            await auditSitewideWheelPage(sessionId, sitePort, page);
+        } catch (error) {
+            const message=String(error?.message||error);
+            failures.push(`${page.label}: ${message}`);
+            console.error(`FAIL sitewide wheel ${page.label}: ${message}`);
+        }
+    }
+    if (failures.length) {
+        fail(`sitewide physical mouse-wheel audit found ${failures.length} failure(s): ${failures.join(" | ")}`);
     }
 }
 
