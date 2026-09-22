@@ -316,10 +316,6 @@ if (IS_ADMIN_PATH) {
         const root = document.documentElement;
         if (!root?.hasAttribute?.("data-ccg-page")) return;
 
-        const finePointer = typeof window.matchMedia !== "function"
-            || window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-        if (!finePointer) return;
-
         const selector = [
             "iframe[src*=\"youtube.com/embed\"]",
             "iframe[src*=\"youtube-nocookie.com/embed\"]"
