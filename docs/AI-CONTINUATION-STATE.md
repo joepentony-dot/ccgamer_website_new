@@ -31,6 +31,14 @@ Update this file when a workstream changes category, its active PR/dependency ch
 - Exact-head CI plus a fresh 20–30+ minute hands-on Solo run are required before this regression can be considered closed.
 - Detailed record: [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md).
 
+## Active Dungeon strange-audio follow-up — PR #2233
+
+- Draft PR #2233 / branch `codex/dungeon-r47-pickup-audio-diagnostic` has been rebuilt on the current-main r49 line rather than merging its stale r47 base.
+- The old Floor 3 report was healthy but lacked exact item/SFX and major-threat music context. A genuine pickup + immediate level-up overlap is corrected without changing reward/progression timing.
+- User recollection later suggested the sound may have coincided with a nearby Warden/major threat. Runtime review shows the dedicated proximity-music path belongs to Death Stalker / Count Loadula; Sigil Warden has no dedicated near SFX.
+- The current-main reporter keeps the r49 performance diagnostics and now also records `ccg:sfx`, exact item collection and observation-only `ccg:music-state` transitions including room mood, Stalker-near/in-sight, named enemy and selected asset.
+- Do not state that the original strange noise is proven fixed. No speculative threat AI/proximity/music behavior change is included. Fresh exact-head qualification is required before merge consideration.
+
 ## Current autonomous Dungeon Carnage checkpoint — 22 September 2026
 
 ## Current autonomous Dungeon Carnage checkpoint — 21 September 2026
