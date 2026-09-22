@@ -71,6 +71,19 @@ test("affiliate picks remain a compact bottom accordion with one click owner", (
   assert.match(css, /\.ccg-hardware-panel\[hidden\]/);
 });
 
+
+test("single-game hero credits stay aligned in tidy rows", () => {
+  const css = read("resources/css/game-pages.css");
+  const badges = read("resources/css/ccg-game-badges.css");
+
+  assert.match(css, /SINGLE-GAME HERO IDENTITY TIDY/);
+  assert.match(css, /\.ccg-behind-pixels-inline__item\s*\{\s*display:\s*contents;/);
+  assert.match(css, /grid-template-columns:\s*minmax\(120px,\s*155px\)\s*minmax\(0,\s*1fr\)/);
+  assert.match(css, /\.game-hero__actions \.ccg-btn\.ccg-btn--share/);
+  assert.match(css, /@media \(min-width:\s*901px\)[\s\S]*\.game-hero__inner\s*\{\s*align-items:\s*start;/);
+  assert.match(badges, /\.ccg-game-badges\s*\{[\s\S]*width:\s*100%;[\s\S]*max-width:\s*none;/);
+});
+
 test("public cache version covers the shared CSS and JavaScript change", () => {
   const sw = read("service-worker.js");
   assert.match(sw, /CODE_CACHE_VERSION = "2026-09-22-public-code-v4"/);
