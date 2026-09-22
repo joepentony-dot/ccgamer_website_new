@@ -103,9 +103,10 @@ function transformIndex(source,cacheToken){
   let html=source;
   html=html.replace(/^\s*<script src="\/js\/ccg-supabase-config\.js\?v=[^"]+"><\/script>\s*$/m,"");
   html=html.replace(/^\s*<script src="\/js\/ccg-supabase-client\.js\?v=[^"]+"><\/script>\s*$/m,"");
+  html=html.replace(/^\s*<script src="\/js\/ccg-play-maintenance-owner-gate\.js\?v=[^"]+"[^>]*><\/script>\s*$/m,"");
   html=html.replace(/^\s*<script src="js\/weekly-challenge\.js\?v=[^"]+"><\/script>\s*$/m,"");
   html=html.replace(/href="\/games\/ccg-games\/"/g,'href="https://www.cheekycommodoregamer.co.uk/games/ccg-games/" target="_blank" rel="noopener noreferrer"');
-  html=html.replace(/src="\/resources\/images\/hero\/c64-dungeon-carnage-home-v2\.webp"/g,'src="assets/c64-dungeon-carnage-loader.webp"');
+  html=html.replace(/src="\/resources\/images\/hero\/c64-dungeon-carnage-home-v2\.webp(?:\?[^"]*)?"/g,'src="assets/c64-dungeon-carnage-loader.webp"');
   html=html.replace(/<div id="weekly-auth-actions" class="weekly-auth-actions">[\s\S]*?<\/div>/,'<div id="weekly-auth-actions" class="weekly-auth-actions"><a href="'+WEEKLY_URL+'" target="_blank" rel="noopener noreferrer">Open Weekly Vault on CCG Website</a></div>');
   html=html.replace(/<p id="weekly-status" class="collection-summary">[\s\S]*?<\/p>/,'<p id="weekly-status" class="collection-summary">Weekly ranked play is available on the Cheeky Commodore Gamer website. Solo, Tutorial and local 2P Split Screen remain available in this itch.io build.</p>');
   html=html.replace(/<script src="js\/v10-41-load-watchdog\.js\?v=([^"]+)"><\/script>/,'<script src="js/v10-41-load-watchdog.js?v=$1"></script>\n<script src="js/itch-release-runtime.js?v='+cacheToken+'"></script>');
