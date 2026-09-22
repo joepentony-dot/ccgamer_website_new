@@ -8,6 +8,15 @@ For Dungeon Carnage specifically, `arcade/lost-sizzler/PROGRESS.md` is the produ
 
 Update this file when a workstream changes category, its active PR/dependency changes, or a substantial session ends. Keep detailed reasoning, checks, blockers, and next actions in the workstream file.
 
+## Dungeon Carnage R51 retired-mode cleanup — 22 September 2026
+
+- Merged R50 `4f300919e6acb15bbd291bbc82f3a4f762aa3a4e` is the current runtime base.
+- Fresh branch `codex/dungeon-r51-retired-modes-current-main` carries the current-main retirement release and supersedes stale draft #2240.
+- Public supported choices are Solo, Tutorial and saved-run Resume. Weekly Vault, Split Screen, multiplayer wording and developer changelog presentation are removed from Dungeon, Home and the CCG Games maintenance hub.
+- Release identity advances to `V10.42 r51` / `20260922r51`.
+- Supabase has no active weekly cron jobs; Weekly challenge/results Edge Functions are already fail-closed HTTP 410 retirement stubs.
+- Exact-head canonical/Chromium/package qualification is required before merge.
+
 ## Temporary CCG play-games maintenance — 22 September 2026
 
 - PR #2232 / branch `codex/temporary-play-games-maintenance` temporarily takes both CCG original browser games offline on the production CCG hostname without changing their gameplay/runtime logic.
