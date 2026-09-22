@@ -130,6 +130,34 @@ test("Premiere materializes the 15 verified reviews from its local Lemon Amiga c
 });
 
 
+test("Wonder Boy retains all eight verified contemporary magazine review links", () => {
+  const supplementPath = path.join(
+    root,
+    "data",
+    "magazine-review-records",
+    "supplements",
+    "wonder-boy.json"
+  );
+  const supplement = JSON.parse(fs.readFileSync(supplementPath, "utf8"));
+  const rows = supplement.games?.["c64:wonder-boy"] || [];
+
+  assert.equal(rows.length, 8);
+  assert.deepEqual(
+    rows.map((row) => [row.magazine, row.score, row.scorePercent]),
+    [
+      ["C&VG", "62%", 62],
+      ["Commodore Force", "63%", 63],
+      ["Commodore User", "6/10", 60],
+      ["Datormagazin", "2.3/5", 46],
+      ["Your Commodore", "8/10", 80],
+      ["Your Commodore", "3/5", 60],
+      ["Zzap!64", "52%", 52],
+      ["Zzap!64", "63%", 63]
+    ]
+  );
+  assert.equal(rows.every((row) => row.scanStatus === "available" && row.url), true);
+});
+
 test("Road Rash retains the 21 verified magazine records required by the game page", () => {
   const supplementPath = path.join(
     root,
