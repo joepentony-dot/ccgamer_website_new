@@ -17,6 +17,8 @@ const ccgGamesHub = fs.readFileSync('games/ccg-games/index.html', 'utf8');
 const discoverJs = fs.readFileSync('js/game-discovery.js', 'utf8');
 const discoverCss = fs.readFileSync('resources/css/game-discovery.css', 'utf8');
 const scrollCss = fs.readFileSync('resources/css/ccg-scroll-authority.css', 'utf8');
+const responsivePolishCss = fs.readFileSync('resources/css/ccg-responsive-page-polish.css', 'utf8');
+const retroVideoTemplate = fs.readFileSync('admin/templates/retro-video-template.html', 'utf8');
 const headers = fs.readFileSync('_headers', 'utf8');
 
 test('public navigation has one final authoritative structure', () => {
@@ -115,6 +117,29 @@ test('mobile navigation cannot expose the desktop row before responsive runtime 
   assert.match(navFitCss, /@media \(max-width:\s*520px\)[\s\S]*\.ccg-header \.ccg-brand__logo\s*\{[\s\S]*height:\s*40px\s*!important/);
   assert.match(navFitCss, /@media \(max-width:\s*520px\)[\s\S]*\.ccg-header \.ccg-nav-toggle\s*\{[\s\S]*width:\s*44px\s*!important/);
   assert.match(navFitCss, /\.ccg-header \.ccg-nav-toggle__label\s*\{[\s\S]*display:\s*none\s*!important/);
+});
+
+test('retro watch pages settle mobile responsive and auth geometry before first paint', () => {
+  const firstPaintStyles = [
+    '/resources/css/ccg-responsive-safety.css',
+    '/resources/css/ccg-responsive-page-polish.css',
+    '/resources/css/ccg-sitewide-layout-optimization.css'
+  ];
+
+  for (const href of firstPaintStyles) {
+    assert.ok(retroVideoTemplate.includes(`href="${href}"`), `Retro template must load ${href} directly`);
+  }
+
+  assert.ok(
+    firstPaintStyles.every((href, index) => index === 0 || retroVideoTemplate.indexOf(firstPaintStyles[index - 1]) < retroVideoTemplate.indexOf(href)),
+    'Retro first-paint responsive styles must preserve the runtime cascade order'
+  );
+
+  for (const css of [navFitCss, responsivePolishCss]) {
+    assert.match(css, /MOBILE AUTH GEOMETRY RESERVATION — CLS GUARD/);
+    assert.match(css, /@media \(max-width: 520px\)[\s\S]*\.ccg-header \.ccg-auth-slot\s*\{[\s\S]*min-height:\s*34px\s*!important/);
+    assert.match(css, /@media \(min-width: 521px\) and \(max-width: 700px\)[\s\S]*\.ccg-header \.ccg-auth-slot\s*\{[\s\S]*min-height:\s*35px\s*!important/);
+  }
 });
 
 test('music waits for adaptive navigation CSS before exposing its injected header', () => {
