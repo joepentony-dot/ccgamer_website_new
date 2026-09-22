@@ -265,18 +265,42 @@
     panel.classList.remove("hidden");
   }
 
+  let staleBadgeObserver=null;
+  function ownStaleBadge(){
+    if(!state.outdated)return false;
+    const badge=document.querySelector(".build-badge");if(!badge)return false;
+    staleBadgeObserver?.disconnect();
+    if(badge.textContent!=="UPDATE AVAILABLE")badge.textContent="UPDATE AVAILABLE";
+    badge.title=`Loaded ${current}; latest ${state.latest}`;
+    staleBadgeObserver?.observe(badge,{childList:true,characterData:true,subtree:true});
+    return true;
+  }
+
+  function startStaleBadgeOwnership(){
+    if(typeof MutationObserver!=="function")return ownStaleBadge();
+    const badge=document.querySelector(".build-badge");if(!badge)return false;
+    if(!staleBadgeObserver)staleBadgeObserver=new MutationObserver(()=>ownStaleBadge());
+    ownStaleBadge();
+    return true;
+  }
+
+  function stopStaleBadgeOwnership(){
+    staleBadgeObserver?.disconnect();
+    staleBadgeObserver=null;
+  }
+
   function markOutdated(){
     state.outdated=true;
     const button=ensureButton();
     if(button){button.textContent="Update Available — Refresh";button.title=`Loaded ${current}; latest ${state.latest}`}
-    const badge=document.querySelector(".build-badge");
-    if(badge){badge.textContent="UPDATE AVAILABLE";badge.title=`Loaded ${current}; latest ${state.latest}`}
+    startStaleBadgeOwnership();
     const subtitle=document.querySelector(".brand p");if(subtitle)subtitle.textContent=`C64 DUNGEON CARNAGE — ${RELEASE_VERSION}`;
     if(menuVisible())renderPanel("outdated");
   }
 
   function markCurrent(){
     state.outdated=false;
+    stopStaleBadgeOwnership();
     const button=ensureButton();
     if(button){button.textContent="Check / Refresh Game";button.title=`${RELEASE_VERSION} · latest build loaded: ${current}`}
     setReleaseLabels();
@@ -332,7 +356,7 @@
   },180);
   setTimeout(()=>checkLatest(false),900);
   const timer=setInterval(()=>{checkLatest(false);if(state.outdated&&menuVisible())renderPanel("outdated")},300000);
-  window.addEventListener("pagehide",()=>{clearInterval(timer);clearInterval(labelTimer);for(const handle of labelRestampTimers.splice(0))clearTimeout(handle)},{once:true});
+  window.addEventListener("pagehide",()=>{clearInterval(timer);clearInterval(labelTimer);stopStaleBadgeOwnership();for(const handle of labelRestampTimers.splice(0))clearTimeout(handle)},{once:true});
   window.CCGLostSizzlerVersion={state,releaseVersion:RELEASE_VERSION,check:()=>checkLatest(true),refresh:()=>reloadFresh(state.latest||current)};
   window.CCGLostSizzlerTutorialDeepLink={state:tutorialDeepLinkState,launch:()=>launchTutorialDeepLink(true)};
 })();
