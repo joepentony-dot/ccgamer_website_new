@@ -205,10 +205,11 @@
     const button=document.createElement("button");
     button.id="ccg-bug-report-btn";button.type="button";button.innerHTML='REPORT BUG <span id="ccg-bug-report-count" aria-hidden="true"></span>';
     button.title="Capture the current Dungeon Carnage state and recent diagnostic history (F8)";
+    button.style.cssText="position:fixed!important;right:max(10px,env(safe-area-inset-right));top:max(74px,calc(env(safe-area-inset-top) + 10px));z-index:2147483647!important;pointer-events:auto!important;touch-action:manipulation;";
     button.hidden=!reporterEnabled();
     document.body.appendChild(button);
 
-    const modal=document.createElement("div");modal.id="ccg-bug-report-modal";modal.className="hidden";modal.innerHTML=`
+    const modal=document.createElement("div");modal.id="ccg-bug-report-modal";modal.className="hidden";modal.style.cssText="position:fixed!important;inset:0;z-index:2147483647!important;pointer-events:auto!important;";modal.innerHTML=`
       <section class="ccg-bug-report-card" role="dialog" aria-modal="true" aria-labelledby="ccg-bug-report-title">
         <div class="ccg-bug-report-head"><h2 id="ccg-bug-report-title">DUNGEON BUG REPORT</h2><button type="button" data-bug-close aria-label="Close bug report">×</button></div>
         <p>Capture this immediately after the fault, before refreshing. Paste the text into the development chat, or attach the JSON file.</p>
