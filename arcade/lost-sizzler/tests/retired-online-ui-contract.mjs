@@ -23,13 +23,25 @@ for (const retiredSurface of [
 for (const retainedSurface of [
   'id="solo-btn"',
   'id="tutorial-zone-btn"',
-  'id="continue-save-btn"',
-  'id="daily-btn"',
-  'id="split-btn"',
-  'id="weekly-vault"',
-  'WEEKLY HIGH-SCORE VAULT LEADERBOARD'
+  'id="continue-save-btn"'
 ]) {
-  assert.equal(html.includes(retainedSurface),true,`retained local/release UI stays present: ${retainedSurface}`);
+  assert.equal(html.includes(retainedSurface),true,`retained Solo/Tutorial UI stays present: ${retainedSurface}`);
+}
+
+for (const retiredSurface of [
+  'id="weekly-vault"',
+  'WEEKLY HIGH-SCORE VAULT LEADERBOARD',
+  'Weekly High-Score Vault',
+  '2P Split Screen',
+  'P2:'
+]) {
+  assert.equal(html.includes(retiredSurface),false,`retired Weekly/Split UI stays absent: ${retiredSurface}`);
+}
+
+for (const compatibilityAnchor of ['id="daily-btn"','id="split-btn"']) {
+  const tag=html.match(new RegExp(`<button[^>]*${compatibilityAnchor}[^>]*>`,"i"))?.[0]||"";
+  assert.match(tag,/hidden/i,`retired compatibility anchor stays hidden: ${compatibilityAnchor}`);
+  assert.match(tag,/aria-hidden="true"/i,`retired compatibility anchor stays aria-hidden: ${compatibilityAnchor}`);
 }
 
 console.log("Dungeon Carnage retired online UI contract checks passed");
