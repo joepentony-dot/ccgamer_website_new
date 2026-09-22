@@ -88,7 +88,8 @@ export function detectReleaseYear(description) {
   const patterns = [
     /\b(?:released|published|launched)(?:\s+[A-Za-z’'&.-]+){0,6}\s+(?:in\s+)?((?:19|20)\d{2})\b/i,
     /\b((?:19|20)\d{2})\s+(?:Commodore\s+64|C64|Commodore\s+Amiga|Amiga)\b/i,
-    /\b(?:Commodore\s+64|C64|Commodore\s+Amiga|Amiga)(?:\s+[A-Za-z’'&.-]+){0,4}\s+(?:from|released\s+in)\s+((?:19|20)\d{2})\b/i
+    /\b(?:Commodore\s+64|C64|Commodore\s+Amiga|Amiga)(?:\s+[A-Za-z’'&.-]+){0,4}\s+(?:from|released\s+in)\s+((?:19|20)\d{2})\b/i,
+    /\b(?:Commodore\s+64|C64|Commodore\s+Amiga|Amiga)\b[^.!?\n]{0,80}\b((?:19|20)\d{2})\b/i
   ];
   for (const pattern of patterns) {
     const match = text.match(pattern);
