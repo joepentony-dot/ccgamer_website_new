@@ -2,7 +2,15 @@
 
 > Legacy repository path: `arcade/lost-sizzler/`. The customer-facing game name is **C64 Dungeon Carnage**. Historical internal identifiers may still use `Lost Sizzler` where compatibility requires them.
 
-## Active V10.42 R50 combined blocker candidate — 22 September 2026
+## Owner-only production preview follow-up — 22 September 2026
+
+- R50 is merged on `main`; the temporary public maintenance gate remains active.
+- Production Dungeon access now allows only the authenticated Supabase profile `cheekycommodoregamer` / `Cheeky Commodore Gamer` with role `admin`. All other visitors continue to the maintenance hub.
+- The supplied `c64-dungeon-carnage-home-v2.webp` is cache-busted on both the homepage CTA and release loader to prevent the replaced artwork being masked by an older cached response.
+- Production smoke is updated to expect `V10.42 r50` / `20260922r50` and to validate the maintenance redirect when running anonymously.
+- Focused contract: `tests/v10-42-r50-owner-preview-maintenance.mjs`.
+
+## Historical V10.42 R50 combined blocker candidate — 22 September 2026
 
 - **Branch:** `codex/dungeon-r50-combined-blockers`.
 - Built on the already-green #2241 R50 fullscreen/input/layout head; current `main` remains authoritative at merge time.
