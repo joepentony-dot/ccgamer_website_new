@@ -311,25 +311,28 @@
     }catch(_){window.location.reload()}
   }
 
-  let badgeObserver=null;
-  function installBadgeOwnership(){
-    if(badgeObserver||typeof MutationObserver!=="function")return;
-    const badge=document.querySelector(".build-badge");if(!badge)return;
-    badgeObserver=new MutationObserver(()=>queueMicrotask(setReleaseLabels));
-    badgeObserver.observe(badge,{childList:true,characterData:true,subtree:true});
-    addEventListener("pagehide",()=>{badgeObserver?.disconnect();badgeObserver=null},{once:true});
+  const labelRestampTimers=[];
+  function scheduleLabelRestamps(){
+    for(const delay of [0,32,120,360,900,1800]){
+      const handle=setTimeout(()=>{
+        const index=labelRestampTimers.indexOf(handle);if(index>=0)labelRestampTimers.splice(index,1);
+        setReleaseLabels();
+      },delay);
+      labelRestampTimers.push(handle);
+    }
   }
 
-  function install(){ensureButton();ensurePanel();setReleaseLabels();installBadgeOwnership()}
+  function install(){ensureButton();ensurePanel();setReleaseLabels();scheduleLabelRestamps()}
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",install,{once:true});else install();
+  addEventListener("ccg:v142-ready",scheduleLabelRestamps,{once:true});
   const labelTimer=setInterval(()=>{
     setReleaseLabels();
     const gate=window.CCGLostSizzlerReleaseGate;
-    if(gate?.state?.ready||gate?.state?.failed){clearInterval(labelTimer);setReleaseLabels()}
+    if(gate?.state?.ready||gate?.state?.failed){clearInterval(labelTimer);setReleaseLabels();scheduleLabelRestamps()}
   },180);
   setTimeout(()=>checkLatest(false),900);
   const timer=setInterval(()=>{checkLatest(false);if(state.outdated&&menuVisible())renderPanel("outdated")},300000);
-  window.addEventListener("pagehide",()=>{clearInterval(timer);clearInterval(labelTimer)},{once:true});
+  window.addEventListener("pagehide",()=>{clearInterval(timer);clearInterval(labelTimer);for(const handle of labelRestampTimers.splice(0))clearTimeout(handle)},{once:true});
   window.CCGLostSizzlerVersion={state,releaseVersion:RELEASE_VERSION,check:()=>checkLatest(true),refresh:()=>reloadFresh(state.latest||current)};
   window.CCGLostSizzlerTutorialDeepLink={state:tutorialDeepLinkState,launch:()=>launchTutorialDeepLink(true)};
 })();
