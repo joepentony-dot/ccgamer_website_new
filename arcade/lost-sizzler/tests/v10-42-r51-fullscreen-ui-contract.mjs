@@ -12,10 +12,11 @@ const main=read("js/game-main.js");
 const landing=read("js/v10-41-landing-notification-polish.js");
 const geometry=read("css/v10-41-r29.css");
 const css=read("css/game.css");
+const render=read("js/game-render.js");
 
 assert.equal((html.match(/id="shop-close"/g)||[]).length,1,"Leave Shop control must remain singular");
-assert.match(html,/class="shop-panel-head"[sS]*id="shop-close"[^>]*>Leave Shop</,"Leave Shop must be in the shop header");
-assert.doesNotMatch(html,/class="shop-note"[sS]*id="shop-close"/,"Leave Shop must not remain below the long shop note");
+assert.match(html,/class="shop-panel-head"[\s\S]*id="shop-close"[^>]*>Leave Shop</,"Leave Shop must be in the shop header");
+assert.doesNotMatch(html,/class="shop-note"[\s\S]*id="shop-close"/,"Leave Shop must not remain below the long shop note");
 
 assert.match(main,/$("solo-btn").addEventListener("click",()=>{void requestPlayFullscreen();startSolo()})/,"Solo launch must request fullscreen from the click gesture");
 assert.match(main,/$("tutorial-zone-btn")?.addEventListener("click",()=>{void requestPlayFullscreen()},{capture:true})/,"Tutorial launch must request fullscreen from the click gesture");
@@ -26,9 +27,9 @@ assert.match(geometry,/grid-template-rows:minmax(0,1fr) 78px!important/,"fullscr
 assert.match(geometry,/.ccg-game:fullscreen>.game-area>.game-message-rail/);
 assert.match(geometry,/grid-row:2!important/,"message rail must sit below the play area");
 assert.match(geometry,/>#ccg-major-notification/,"major notification must be constrained to the rail");
-assert.doesNotMatch(geometry,/R51 FULLSCREEN MESSAGE RAIL[sS]*#ccg-major-notification{[^}]*top:12px/,"R51 fullscreen major notice must not overlay the playfield");
+assert.doesNotMatch(geometry,/R51 FULLSCREEN MESSAGE RAIL[\s\S]*#ccg-major-notification{[^}]*top:12px/,"R51 fullscreen major notice must not overlay the playfield");
 
 assert.match(css,/R51 SHOP HEADER EXIT/);
-assert.match(css,/.shop-panel-head{[sS]*position:sticky/,"shop header must keep Leave Shop accessible while shop content scrolls");
+assert.match(css,/.shop-panel-head{[\s\S]*position:sticky/,"shop header must keep Leave Shop accessible while shop content scrolls");
 
 console.log("PASS V10.42 R51 fullscreen shop and notification layout contract");
