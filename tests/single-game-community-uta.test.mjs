@@ -18,6 +18,8 @@ const sampleIndex = `
 <a href="1942_(1989_Encore)_[10797]/">1942 Encore</a>
 <a href="Bangkok_Knights_(0_Summit)_[8568]/">Bangkok Knights Summit</a>
 <a href="Bangkok_Knights_(1987_Activision)_[3551]/">Bangkok Knights Activision</a>
+<a href="Wonder_Boy_(1987_Activision)_[6764]/">Wonder Boy Activision</a>
+<a href="Wonder_Boy_(1991_Hit_Squad)_[1677]/">Wonder Boy Hit Squad</a>
 </body></html>`;
 
 const ace = {
@@ -38,9 +40,13 @@ const amiga = {
 
 test("UTA parser preserves multiple releases and normalises known publisher variants", () => {
   const releases = parseUtaIndex(sampleIndex);
-  assert.equal(releases.length, 7);
+  assert.equal(releases.length, 9);
   assert.equal(normalizePublisher("U.S. Gold"), normalizePublisher("US Gold"));
   assert.equal(normalizePublisher("Elite Systems Ltd"), normalizePublisher("Elite"));
+  assert.equal(normalizePublisher("Edge, The"), normalizePublisher("The Edge"));
+  assert.equal(normalizePublisher("Hewson (Rack IT)"), normalizePublisher("Rack-It (Hewson)"));
+  assert.equal(normalizePublisher("CBS Software"), normalizePublisher("CBS Electronics Software"));
+  assert.equal(normalizePublisher("Firebird Silver"), normalizePublisher("Firebird"));
 });
 
 test("C64 matching requires title plus known publisher/re-release evidence and uses year confidence", () => {
@@ -57,6 +63,21 @@ test("Amiga games are excluded from UTA mapping", () => {
   const result = matchGameToUta(amiga, parseUtaIndex(sampleIndex));
   assert.deepEqual(result.releases, []);
   assert.deepEqual(result.review, []);
+});
+
+test("Wonder Boy maps both the 1987 Activision tape and 1991 Hit Squad re-release", () => {
+  const releases = parseUtaIndex(sampleIndex);
+  const result = matchGameToUta({
+    system: "C64",
+    slug: "wonder-boy",
+    title: "Wonder Boy",
+    year: 1987,
+    credits: { publisher: ["Activision"], re_releaser: ["The Hit Squad"] }
+  }, releases);
+
+  assert.deepEqual(result.releases.map((row) => row.archiveId), ["6764", "1677"]);
+  assert.deepEqual(result.releases.map((row) => row.sourceRole), ["publisher", "re-release"]);
+  assert.equal(result.review.length, 0);
 });
 
 test("build mapping keeps ambiguous title-only matches out of public data", () => {
