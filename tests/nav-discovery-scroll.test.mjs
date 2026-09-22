@@ -120,6 +120,9 @@ test('mobile navigation cannot expose the desktop row before responsive runtime 
 });
 
 test('retro watch pages settle mobile responsive and auth geometry before first paint', () => {
+  assert.match(retroVideoTemplate, /href="\/resources\/css\/ccg-mode-identity\.css"/);
+  assert.match(retroVideoTemplate, /id="ccgModeIdentityBar"[\s\S]*data-ccg-retro-static-mode-identity="true"/);
+
   const firstPaintStyles = [
     '/resources/css/ccg-responsive-safety.css',
     '/resources/css/ccg-responsive-page-polish.css',
