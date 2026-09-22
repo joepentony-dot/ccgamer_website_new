@@ -44,6 +44,18 @@ test("UTA parser preserves multiple releases and normalises known publisher vari
   assert.equal(normalizePublisher("Elite Systems Ltd"), normalizePublisher("Elite"));
 });
 
+test("UTA parser keeps apostrophes inside double-quoted paths and accepts generalized decade labels", () => {
+  const releases = parseUtaIndex(`
+<a href="Ghosts_'n_Goblins_(1985_Elite_Systems_Ltd)_[976]/">Ghosts n Goblins</a>
+<a href="Ghosts_'n_Goblins_(199x_Encore)_[3065]/">Ghosts n Goblins Encore</a>
+<a href='Rock_&_Wrestle_(198x_Firebird_Silver)_[2296]/'>Rock & Wrestle</a>
+`);
+
+  assert.deepEqual(releases.map((row) => row.archiveId), ["976", "3065", "2296"]);
+  assert.equal(releases.find((row) => row.archiveId === "3065").year, null);
+  assert.equal(releases.find((row) => row.archiveId === "3065").yearLabel, "199x");
+});
+
 test("UTA publisher normalisation covers common C64 label variants without title-only guessing", () => {
   assert.equal(normalizePublisher("Firebird Silver"), normalizePublisher("Firebird"));
   assert.equal(normalizePublisher("CBS Software"), normalizePublisher("CBS Electronics Software"));
