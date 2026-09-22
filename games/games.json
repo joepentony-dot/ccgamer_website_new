@@ -21139,7 +21139,7 @@
     "slug": "smash-tv",
     "title": "Smash TV",
     "sorttitle": "Smash TV",
-    "year": 1992,
+    "year": 1991,
     "genres": [
       "arcade"
     ],
@@ -21150,23 +21150,29 @@
     "thumbnail": "resources/images/thumbnails/all/smash_tv.jpg",
     "pdf": "https://drive.google.com/file/d/1YxXHT9lS8naHvsSNJaW-POFHngnlLJG9/view?usp=drive_link",
     "disk": [],
-    "description": "Smash T.V. is a 1992 Commodore 64 arcade shooter from Ocean Software that delivers intense arena combat, twin-stick-style action, and relentless enemy waves inspired by the arcade hit.",
+    "description": "Smash T.V. is Ocean Software’s 1991 Commodore 64 conversion of the Williams arcade shooter, delivering arena combat, twin-stick-style action and relentless enemy waves.",
     "ccg_rating": 7,
     "ccg_rating_reason": "",
     "credits": {
       "publisher": [
-        "Codemasters"
+        "Ocean"
       ],
-      "producer": "",
-      "coder": [],
-      "graphics": [],
+      "producer": "Neil Young",
+      "coder": [
+        "Nick Jones"
+      ],
+      "graphics": [
+        "Lee Ames"
+      ],
       "musician": [
-        "Allister Brimble"
+        "Jeroen Tel"
       ],
-      "re_releaser": [],
-      "developer": "Ocean"
+      "re_releaser": [
+        "The Hit Squad"
+      ],
+      "developer": "Probe Software"
     },
-    "developer": "Ocean",
+    "developer": "Probe Software",
     "_ccg_enforced": false,
     "_ccg_migrated": true
   },
