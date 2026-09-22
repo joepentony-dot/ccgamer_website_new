@@ -1,5 +1,5 @@
 const lostSizzlerPixelAssets=(()=>{const make=src=>{if(typeof Image!=="function")return null;const image=new Image();image.decoding="async";image.src=src;return image};return{explorer:make("assets/pixel/explorer-sheet-v10-34.png?v=20260824r8"),chests:make("assets/pixel/chest-sheet-v10-34.png?v=20260824r8")}})();
-function camFor(p,v){let c=cameras.get(p.id)||{x:0,y:0};const tx=Math.max(0,Math.min(C.worldWidth*C.tile-v.w,p.rx*C.tile+C.tile/2-v.w/2)),ty=Math.max(0,Math.min(C.worldHeight*C.tile-v.h,p.ry*C.tile+C.tile/2-v.h/2));c.x=tx;c.y=ty;cameras.set(p.id,c);return c}
+function camFor(p,v){let c=cameras.get(p.id)||{x:0,y:0},targetX=p.rx,targetY=p.ry;const mem=host.memoryPuzzle;if(mem&&!mem.solved&&W.roomAt(world,p.x,p.y)===mem.roomId){const points=[...(mem.tiles||[]),mem.activator].filter(Boolean);if(points.length){const minX=Math.min(...points.map(q=>q.x)),maxX=Math.max(...points.map(q=>q.x)),minY=Math.min(...points.map(q=>q.y)),maxY=Math.max(...points.map(q=>q.y));targetX=(minX+maxX)/2;targetY=(minY+maxY)/2}}const tx=Math.max(0,Math.min(C.worldWidth*C.tile-v.w,targetX*C.tile+C.tile/2-v.w/2)),ty=Math.max(0,Math.min(C.worldHeight*C.tile-v.h,targetY*C.tile+C.tile/2-v.h/2));c.x=tx;c.y=ty;cameras.set(p.id,c);return c}
 function ws(x,y){return{x:view.x+x*C.tile-cam.x+renderShake.x,y:view.y+y*C.tile-cam.y+renderShake.y}}
 function tileHash(x,y,salt=0){let h=Math.imul(x+17,73856093)^Math.imul(y+31,19349663)^Math.imul(salt+7,83492791);h^=h>>>13;h=Math.imul(h,1274126177);return(h^(h>>>16))>>>0}
 function drawTile(x,y){
@@ -394,14 +394,14 @@ function drawSpecialObjects(){
   const clue=host.bloodClue;if(clue&&visibleTo(focus,clue.x,clue.y)){const s=ws(clue.x,clue.y);ctx.save();ctx.globalAlpha=.42;ctx.strokeStyle="#7f2637";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(s.x+7,s.y+10);ctx.lineTo(s.x+15,s.y+6);ctx.lineTo(s.x+21,s.y+15);ctx.lineTo(s.x+28,s.y+9);ctx.moveTo(s.x+10,s.y+27);ctx.lineTo(s.x+18,s.y+22);ctx.lineTo(s.x+25,s.y+30);ctx.lineTo(s.x+34,s.y+24);ctx.stroke();ctx.restore();if(md(clue,focus)<=2)label(clue.seen?`BLOOD CLUE — ${(clue.sequence||[]).join(" → ")}`:"FADED BLOOD MARKS",s,P.red)}
   const mem=host.memoryPuzzle;if(mem){
     for(const tile of mem.tiles||[]){
-      if(!visibleTo(focus,tile.x,tile.y))continue;
+      const memoryRoomVisible=W.roomAt(world,focus.x,focus.y)===mem.roomId;if(!memoryRoomVisible&&!visibleTo(focus,tile.x,tile.y))continue;
       const s=ws(tile.x,tile.y),flash=mem.phase==="show"&&mem.flashTile===tile.index,col=mem.solved?P.green:flash?P.gold:P.cyan;
       ctx.save();ctx.globalAlpha=mem.solved?.58:flash?1:.72;ctx.fillStyle=flash?"rgba(255,216,90,.52)":"rgba(30,60,82,.44)";ctx.strokeStyle=col;ctx.lineWidth=flash?3:2;ctx.shadowColor=flash?P.gold:"rgba(108,206,255,.22)";ctx.shadowBlur=flash?18:5;
       ctx.fillRect(s.x+5,s.y+5,C.tile-10,C.tile-10);ctx.strokeRect(s.x+6,s.y+6,C.tile-12,C.tile-12);
       ctx.shadowBlur=0;ctx.globalAlpha=1;ctx.fillStyle=flash?"#fff7c8":P.white;ctx.font='bold 12px "Courier New"';ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(tile.label||String(Number(tile.index||0)+1),s.x+C.tile/2,s.y+C.tile/2+1);ctx.restore();
       if(md(tile,focus)<=1)label(`MEMORY PAD ${tile.label||Number(tile.index||0)+1}`,s,flash?P.gold:P.cyan)
     }
-    if(mem.activator&&visibleTo(focus,mem.activator.x,mem.activator.y)){
+    if(mem.activator&&(W.roomAt(world,focus.x,focus.y)===mem.roomId||visibleTo(focus,mem.activator.x,mem.activator.y))){
       const a=ws(mem.activator.x,mem.activator.y),pulse=.65+.25*Math.sin(performance.now()/190);
       ctx.save();ctx.globalAlpha=pulse;ctx.fillStyle="rgba(126,70,180,.45)";ctx.strokeStyle=P.purple;ctx.lineWidth=2.5;ctx.shadowColor=P.purple;ctx.shadowBlur=14;ctx.beginPath();ctx.arc(a.x+C.tile/2,a.y+C.tile/2,Math.max(8,C.tile*.26),0,Math.PI*2);ctx.fill();ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle=P.white;ctx.font='bold 9px "Courier New"';ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("↻",a.x+C.tile/2,a.y+C.tile/2+1);ctx.restore();
       if(md(mem.activator,focus)<=2)label(mem.phase==="show"?"MEMORY CONSOLE — REPLAYING":"MEMORY CONSOLE — STEP ON TO REPLAY",a,P.purple)
@@ -523,8 +523,10 @@ function renderRadarPanel(p){
 function dungeonCameraZoom(v){
   if(p2)return 1;
   try{
-    const cssWidth=Number(document.querySelector(".canvas-wrap")?.getBoundingClientRect?.().width||window.innerWidth||0);
-    if(cssWidth>0&&cssWidth<=900)return 1.6;
+    const mem=host.memoryPuzzle;
+    if(mem&&!mem.solved&&focus&&W.roomAt(world,focus.x,focus.y)===mem.roomId)return 1;
+    const viewportWidth=Number(window.innerWidth||0),coarse=Boolean(window.matchMedia?.("(pointer: coarse)")?.matches);
+    if(coarse||(viewportWidth>0&&viewportWidth<=900))return 1.6;
     if(document.fullscreenElement)return 1.35
   }catch(_){}
   return 1
