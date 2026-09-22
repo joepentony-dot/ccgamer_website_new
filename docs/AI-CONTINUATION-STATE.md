@@ -12,14 +12,21 @@ Update this file when a workstream changes category, its active PR/dependency ch
 
 - Search Console reports 43 mobile URLs in one CLS > 0.25 group, representative `/retro-specials/50-essential-amiga-games/`, group CLS 0.27.
 - Read-only diagnostic #2234 reproduced the representative route at browser CLS 0.944 / Lighthouse CLS 0.743 under the deterministic 390×844 profile. Its highest shared sources include `main#ccg-main-content`, `aside#ccgModeIdentityBar`, `.ccg-header-actions` and `header.ccg-header`; this is lab evidence, not a replacement for Search Console field data.
-- Bounded fix branch `codex/retro-mobile-cls-stability` reserves cold-auth header geometry, emits the mode identity strip statically, and makes the mode-identity/final responsive cascade render-blocking in the authoritative retro-video template.
+- Draft PR #2235 / branch `codex/retro-mobile-cls-stability` reserves cold-auth header geometry, emits the mode identity strip statically, and makes the mode-identity/final responsive cascade render-blocking in the authoritative retro-video template.
 - The candidate includes a 390×844 browser geometry guard for unresolved/guest/member auth states and keeps generated retro HTML automation-owned.
-- No merge is authorized merely by this checkpoint. Require exact-head green qualification and explicit user approval.
+- #2235 has been reconciled onto current `main` after #2236. The only current-main overlaps were this continuation index and an already-identical `service-worker.js` code-cache version; no mouse-wheel fix was overwritten. Require fresh exact-head green qualification and explicit user approval before merge.
 - Detailed record: [mobile-cls-retro-video-2026-09-22.md](ai-work/mobile-cls-retro-video-2026-09-22.md).
 
+## Temporary CCG play-games maintenance — 22 September 2026
+
+- PR #2232 / branch `codex/temporary-play-games-maintenance` temporarily takes both CCG original browser games offline on the production CCG hostname without changing their gameplay/runtime logic.
+- A shared production-only gate is loaded by the Commodore Quest public/runtime entries and C64 Dungeon Carnage. Localhost and non-production previews remain usable for development and acceptance testing.
+- `/games/ccg-games/` becomes the maintenance destination and links to the existing CCG Trivia League and Game Box Hangman instead of duplicating Hangman code.
+- Longer-term direction is a distinct `Play Games` hub for interactive experiences while `/games/` remains the established C64/Amiga archive.
+- Detailed record: [play-games-maintenance-2026-09-22.md](ai-work/play-games-maintenance-2026-09-22.md).
 ## Single-game community and UTA checkpoint — 22 September 2026
 
-- PR #2227 / branch `codex/single-game-community-uta` merged as `ca591d0f22933c66b0771e3586ccccec21fc437b`; the shared individual-game rating/review presentation, C64 Ultimate Tape Archive integration and VideoObject uploadDate correction are now on `main`.
+- PR #2227 / branch `codex/single-game-community-uta` is the bounded implementation vehicle for the shared individual-game rating/review presentation and C64 Ultimate Tape Archive integration.
 - Community writes remain on the canonical Supabase `ratings`/`comments` tables. New `security invoker` read RPCs provide aggregate rating and 8-review paginated/sorted reads; the existing one-rating-per-game upsert, edit/delete/report/helpful and guest-read model are preserved.
 - C64 UTA links are generated/cache-owned, never live-scraped by game pages. Confident matches require normalised title plus known publisher/re-release evidence and compatible year evidence when known. Multiple releases are preserved; ambiguous candidates are excluded to `data/uta-manual-review.json`. Amiga never requests or renders UTA data.
 - The Search Console VideoObject warning is traced to the browser runtime duplicating the generated graph and fabricating `uploadDate` from the game release year. #2227 now defers to the static generated game graph, removes the invented runtime video upload date, and tightens video-SEO validation so every emitted `uploadDate` must be a timezone-bearing datetime (`Z` or an explicit offset).
@@ -29,23 +36,18 @@ Update this file when a workstream changes category, its active PR/dependency ch
 - Current `main` advanced through merged #2226 while #2227 was qualifying. The only overlapping path was this continuation index; the current-main reconciliation preserves #2226's Dungeon checkpoint and all #2227 single-game state without touching Dungeon runtime files.
 - Detailed record: [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md).
 
-## Active Dungeon Carnage r47 release-blocker candidate — 22 September 2026
+## Active Dungeon Carnage r49 long-session freeze candidate — 22 September 2026
 
-- Draft PR #2226 on branch `codex/dungeon-r47-release-blockers` is the active bounded pre-release candidate. It advances the published identity to `V10.42 r47` / `20260922r47`; it is **not release-qualified or merged until its final exact head is fully green**.
-- The recurring Inventory → return-to-game → FIRE failure is addressed by a transition recovery boundary that preserves the established `firePlayer` / `queueAttack` owners. Inventory closure resets established attack cadence, repairs stale mode/timers through existing stability owners, restores gameplay focus, then verifies the next valid FIRE intent. Only if the normal path produces no activity does it invoke the existing r20 `attackNow()` fallback.
-- The Floor-3 Memory Tile challenge is redesigned from the hazardous 3×3 grid into five numbered, spaced pads in a straight horizontal or vertical line plus a separate purple replay console. Only deliberate player movement counts as a memory input; forced knockback does not. A wrong pad now spawns exactly one monster, pauses the puzzle and waits for deliberate replay.
-- Dungeon firearm progression is now sword-first and single-weapon: Archive Sword remains the initial unlimited-melee state; the first weapon pickup acquires Tier 1 Field Pulse; later weapon pickups improve that one firearm subject to floor caps F1→T2, F2→T3, F3→T4, F4→T5 and F5→T6. Three-way fire first unlocks at Tier 4 / Floor 3. Weapon drops at the current floor cap are salvaged into ammunition instead of accumulating redundant guns.
-- A bounded developer incident recorder is included. Opt in with `?bugreport=1` (persisted locally), then use the **REPORT BUG** control on desktop/mobile or F8 on desktop immediately after a fault. It records recent input/panel/focus transitions, FIRE timers/buffers, ammo/projectiles, player/weapon state, Memory Pad state, runtime errors and relevant stability diagnostics; it produces copyable text plus JSON and does not claim gameplay/input/render ownership.
-- Qualification has already exposed and corrected two stale static-contract assumptions rather than weakening behavior: one r46 release-identity regex after the r47 cache bump, and the mobile trap static source contract expecting legacy `movementTriggers(p)` instead of r47's deliberate `movementTriggers(p,true)`. The dedicated live mobile geometry/trap-damage job remained green while the latter static mismatch was diagnosed.
-- The r46 artifact remains the last qualified publication artifact until #2226's final exact head passes the complete matrix and a new r47 package is produced.
+- PR #2226 is merged as `38c2f7e43233f6a1e6f81cb8d942f1df449feffe`; `V10.42 r47` / `20260922r47` is the current live Dungeon baseline.
+- Hands-on testing on that build reproduced a new Solo Floor-3 slowdown progressing to a complete standstill after a long run. The supplied incident recorder captured the performance tier as `severe` after roughly 24 minutes while browser heap usage remained low.
+- The same report exposed unusually high stability churn: 18,219 Warden HUD repairs and 3,558 enemy-cooldown repairs. Source reconciliation proved the Warden domain layer and r18 stability layer were alternately adding/removing Warden text on repeated HUD syncs, while r18 also rewrote legitimate negative AI countdown values and made every player attack scan the full enemy roster.
+- Draft PR #2231 / branch `codex/dungeon-r49-live-freeze-current-main` is the bounded remediation candidate. It retires the competing shared Warden HUD writer, leaves normal negative countdowns alone, keeps full enemy repair on the maintenance path rather than every FIRE request, and extends REPORT BUG with performance/AI/live-array diagnostics.
+- #2231 advances the public identity to `V10.42 r49` / `20260922r49`. r48 is skipped because an older stale unmerged branch already used that label.
+- No world generation, collision, damage, trap, progression, save, economy, firearm-balance or projectile-lifecycle ownership is changed. The merged r45 sleeping-enemy simulation remains the performance foundation.
+- Exact-head CI plus a fresh 20–30+ minute hands-on Solo run are required before this regression can be considered closed.
+- Detailed record: [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md).
 
-### r47 hands-on acceptance after merge
-
-1. Confirm Inventory can be opened/closed repeatedly on keyboard and mobile, followed immediately by successful FIRE every time; if it fails, capture the incident with REPORT BUG before refreshing.
-2. On Floor 3, confirm the five numbered Memory Pads are spaced, the centre route is safe, the purple console can replay the sequence without penalty, knockback cannot register a pad, and a deliberate wrong pad spawns exactly one enemy.
-3. Confirm the Archive Sword start, first-firearm acquisition, one-firearm-only Inventory presentation, Floor-3 three-way unlock and capped-pickup ammunition salvage feel balanced in real play.
-4. Retain the existing startup, sustained Solo/pause-resume, Banishment Flask, mobile trap, mobile camera/landing, r46 visual-presentation and Level-4 directional-torch acceptance gates.
-5. Only after r47 gameplay/manual acceptance should the latest qualified itch.io package move to final publication verification.
+## Current autonomous Dungeon Carnage checkpoint — 22 September 2026
 
 ## Current autonomous Dungeon Carnage checkpoint — 21 September 2026
 
@@ -149,8 +151,9 @@ No further Dungeon coding stage is justified unless one of these checks exposes 
 | Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | Stage 8 #2141 is merged and the verified standalone HTML5 artifact is repository-ready. Public itch.io page creation/upload/final URL remain external; the retired custom commerce/paywall and desktop/Windows graphs stay closed. |
 | Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2150 is merged and the unified Content Publisher no longer exposes game-music upload. Magazine-source recovery is live/archive best-effort and no longer blocks canonical publishing. #2157 materialised the Road Rash archive/reviews and #2159 fixed the successful-refresh counter path. #2110 is closed unmerged as superseded. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | Draft #2176 is the current Quest 3 reconstruction at exact head `09a11f2ce26b4ba5848b29e75ad33534212a0458`; all automated checks are green. Current `main` has advanced without touching any of the 17 candidate paths, so no drift-only rebase is justified. Hands-on Bedroom + 36% Conversion Bout acceptance remains the merge gate. |
-| Single-game community and C64 UTA | [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md) | #2227 is merged as `ca591d0f22933c66b0771e3586ccccec21fc437b`; live migration `20260922015628` is applied and verified. Ratings/reviews, C64-only UTA mapping and the VideoObject uploadDate correction are on `main`. |
-| Mobile CLS / retro watch pages | [mobile-cls-retro-video-2026-09-22.md](ai-work/mobile-cls-retro-video-2026-09-22.md) | #2234 is the read-only representative-route diagnostic. `codex/retro-mobile-cls-stability` is the bounded implementation candidate; exact-head qualification and user merge authorization remain required. |\n| SEO and generated output | [seo-and-generated-output.md](ai-work/seo-and-generated-output.md) | #2146 individual-game presentation, #2167 site-wide public layout and #2170 bounded public-page discovery metadata are merged. Generated outputs remain workflow-owned; #2169 is the latest generated SEO/video automation merge observed before #2170. |
+| Single-game community and C64 UTA | [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md) | PR #2227 is the bounded implementation/qualification vehicle. Ratings/reviews stay on existing Supabase writes with compact read RPCs; live migration `20260922015628` is applied and verified. UTA is C64-only generated mapping with ambiguous matches excluded to a review queue. Final documentation-only exact-head qualification remains before merge. |
+| Mobile CLS / retro watch pages | [mobile-cls-retro-video-2026-09-22.md](ai-work/mobile-cls-retro-video-2026-09-22.md) | #2234 completed the read-only representative-route diagnostic. Draft #2235 is reconciled onto current main; fresh exact-head qualification and explicit user merge authorization remain required. |
+| SEO and generated output | [seo-and-generated-output.md](ai-work/seo-and-generated-output.md) | #2146 individual-game presentation, #2167 site-wide public layout and #2170 bounded public-page discovery metadata are merged. Generated outputs remain workflow-owned; #2169 is the latest generated SEO/video automation merge observed before #2170. |
 
 ## Remaining active draft PR classes at this checkpoint
 

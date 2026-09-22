@@ -10,7 +10,8 @@ This is field data and must not be treated as equivalent to one Lighthouse run, 
 
 ## Reconciled baseline
 
-- Implementation base: current `main` at `d0d4130136a94dad884d93de4255217c72345d6c`.
+- Original implementation base: `main` at `d0d4130136a94dad884d93de4255217c72345d6c`.
+- Current-main reconciliation: #2235 is now based on `7a64fbef9e2d0d84f0326d6f36a95fa3e9f97f23` after merged #2236. The only overlapping paths were `docs/AI-CONTINUATION-STATE.md` and `service-worker.js`; the service-worker content/cache version was already identical, and the continuation index was merged so the mouse-wheel checkpoint remains intact.
 - Read-only diagnostic PR: **#2234** / `codex/mobile-cls-retro-diagnostic`. Its completed evidence run on current main measured the representative retro route at browser CLS **0.944** and Lighthouse CLS **0.743** under the deterministic 390×844 throttled profile. This is lab evidence rather than Search Console field CLS, but it reproduced a severe shared layout shift.
 - Existing Phase 8A evidence already identified the shared header/main handoff as a material mobile CLS source on other public routes, including `.ccg-header-actions`, `.ccg-header-socials`, the mobile nav toggle and `main#ccg-main-content`.
 - The retro player itself already reserves a 16:9 box in `retro-video-pages.css`; it is not being changed as part of this fix.
@@ -42,7 +43,7 @@ No game data, intro-loader files, Dungeon runtime, routes or video content are c
 Before merge:
 
 1. Read-only #2234 should finish and record the representative route's current layout-shift sources.
-2. The implementation PR exact head must pass Navigation Discovery Scroll Validation, Public Code Cache Version, SEO Automation, Site Safety and every other triggered required check.
+2. The reconciled implementation PR #2235 exact head must pass Navigation Discovery Scroll Validation, Public Code Cache Version, SEO Automation, Site Safety and every other triggered required check.
 3. The 390×844 retro browser regression must show no material header/main-top change when auth moves from unresolved to guest or member state.
 4. SEO Automation must regenerate the retro family successfully from the authoritative template.
 5. Merge still requires explicit user authorization.

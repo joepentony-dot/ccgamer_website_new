@@ -66,7 +66,7 @@
     let changed=false;
     for(const key of ["attackCooldown","chargeCooldown","chargeTelegraphMs"]){
       const value=Number(enemy[key]);
-      if(!Number.isFinite(value)||value<0||value>MAX_ENEMY_ATTACK_COOLDOWN_MS){enemy[key]=0;changed=true}
+      if(!Number.isFinite(value)||value>MAX_ENEMY_ATTACK_COOLDOWN_MS){enemy[key]=0;changed=true}
     }
     if(changed)diagnostics.staleEnemyCooldownRepairs++;
     return changed;
@@ -90,11 +90,11 @@
     return changed;
   }
 
-  function repairCombatState(){
+  function repairCombatState(includeEnemies=true){
     if(!activeRun()||currentMode()!=="playing")return false;
     let changed=false;
     for(const player of localRoster())changed=repairPlayer(player)||changed;
-    try{for(const enemy of host?.enemies||[])changed=repairEnemy(enemy)||changed}catch(_){}
+    if(includeEnemies)try{for(const enemy of host?.enemies||[])changed=repairEnemy(enemy)||changed}catch(_){}
     try{
       const r1=window.CCGLostSizzlerV142R1Stability;
       r1?.repairCombatTimers?.();
@@ -154,7 +154,10 @@
     if(typeof queueAttack==="function"&&!queueAttack.__ccgV142R18){
       const baseQueueAttack=queueAttack;
       queueAttack=function(player,...args){
-        repairCombatState();
+        // Player FIRE must not rescan every enemy in the dungeon. Enemy timer
+        // repair remains on the bounded maintenance path; this boundary only
+        // repairs the local combat state needed by the attack being requested.
+        repairCombatState(false);
         diagnostics.attackBoundaryRepairs++;
         return baseQueueAttack(player,...args);
       };
