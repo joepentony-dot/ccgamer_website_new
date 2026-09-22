@@ -188,10 +188,9 @@ jobs:
           echo "[games-publishing] Retrying uncached Lemon reference pages before magazine import. Existing cache files are reused. External Lemon64/Lemon Amiga availability is optional and cannot block publishing."
           node scripts/refresh-lemon-game-cache.js --all-missing
 
-      - name: Refresh Ultimate Tape Archive mapping (best effort)
-        continue-on-error: true
+      - name: Refresh Ultimate Tape Archive mapping
         run: |
-          echo "[games-publishing] Refreshing the cached C64 Ultimate Tape Archive mapping. Public game pages never scrape UTA at runtime, and an external UTA outage cannot block publishing."
+          echo "[games-publishing] Refreshing the full C64 Ultimate Tape Archive mapping before publication can be considered complete. Every C64 catalogue entry is rescanned; ambiguous matches remain in data/uta-manual-review.json instead of being exposed."
           node scripts/generate-uta-map.mjs
 
       - name: Import cached and curated magazine reviews
