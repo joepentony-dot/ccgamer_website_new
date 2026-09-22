@@ -341,6 +341,17 @@
     "url": "/games/developers/reaktor-software/"
   },
   {
+    "name": "Sega",
+    "slug": "sega",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1979,
+    "lastYear": 1979,
+    "indexable": false,
+    "url": "/games/developers/sega/"
+  },
+  {
     "name": "Sensible Software",
     "slug": "sensible-software",
     "count": 5,

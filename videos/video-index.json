@@ -1,10 +1,10 @@
 {
   "version": 1,
   "counts": {
-    "total": 696,
-    "gameVideos": 660,
+    "total": 697,
+    "gameVideos": 661,
     "retroVideos": 36,
-    "c64GameVideos": 558,
+    "c64GameVideos": 559,
     "amigaGameVideos": 102
   },
   "items": [
@@ -8319,7 +8319,7 @@
       "kind": "game",
       "filter": "amiga",
       "badge": "Amiga Game",
-      "title": "Gods – Why Did Pirated Amiga Copies Make the First Boss Nearly Impossible",
+      "title": "Gods on the Commodore Amiga – Was It Really as Good as We Remember?",
       "description": "Gods is an Amiga action platform game blending combat, exploration, and puzzle elements. Large sprites, atmospheric visuals, and deliberate pacing define its mythological setting.",
       "url": "/games/gods/",
       "thumbnail": "https://i.ytimg.com/vi/t_eJvreqNcc/maxresdefault.jpg",
@@ -9091,6 +9091,19 @@
       "platform": "Commodore 64",
       "year": 1986,
       "publisher": "Firebird"
+    },
+    {
+      "id": "raMcxhNFUCI",
+      "kind": "game",
+      "filter": "c64",
+      "badge": "C64 Game",
+      "title": "Wonder Boy",
+      "description": "Wonder Boy on the Commodore 64 is Activision’s 1987 conversion of Sega’s popular arcade platformer, bringing its fast-paced running, jumping, fruit collecting, axe throwing and infamous ska…",
+      "url": "/games/wonder-boy/",
+      "thumbnail": "https://i.ytimg.com/vi/raMcxhNFUCI/hqdefault.jpg",
+      "platform": "Commodore 64",
+      "year": 1979,
+      "publisher": "Activision"
     }
   ]
 }

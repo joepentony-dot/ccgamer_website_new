@@ -4535,6 +4535,25 @@
     ]
   },
   {
+    "name": "James Smart",
+    "slug": "james-smart",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1979,
+    "lastYear": 1979,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "James Smart"
+    ],
+    "games": [
+      "wonder-boy"
+    ]
+  },
+  {
     "name": "Doug Smith",
     "slug": "doug-smith",
     "count": 1,

@@ -5,7 +5,7 @@
 | Check | Count |
 |---|---:|
 | Browse Games archive shortcuts | **2** |
-| Year routes with previous/next navigation | **15** |
+| Year routes with previous/next navigation | **16** |
 | Indexable year routes registered | **14** |
 | Archive hubs registered | **2** |
 | Platform routes registered | **2** |

@@ -12002,6 +12002,26 @@
     "year": 1987
   },
   {
+    "title": "Wonder Boy",
+    "slug": "wonder-boy",
+    "publisher": [
+      "Activision"
+    ],
+    "genre": [
+      "arcade",
+      "platform"
+    ],
+    "genres": [
+      "arcade",
+      "platform"
+    ],
+    "composer": [
+      "James Smart"
+    ],
+    "music": [],
+    "year": 1979
+  },
+  {
     "title": "World Games",
     "slug": "world-games",
     "publisher": [
