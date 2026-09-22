@@ -253,7 +253,7 @@ async function webdriver(method, pathname, body) {
         method,
         headers: body === undefined ? undefined : { "content-type": "application/json" },
         body: body === undefined ? undefined : JSON.stringify(body),
-        signal: AbortSignal.timeout(20000)
+        signal: AbortSignal.timeout(45000)
     });
 
     const text = await response.text();
