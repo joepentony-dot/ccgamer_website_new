@@ -117,6 +117,13 @@ async function fetchText(url) {
   }
 }
 
+function archiveIdsInIndex(html) {
+  const ids = new Set();
+  const pattern = /(?:\\[|%5[bB])(\\d+)(?:\\]|%5[dD])/g;
+  for (const match of String(html || "").matchAll(pattern)) ids.add(match[1]);
+  return ids;
+}
+
 function markdownTable(headers, rows) {
   const escape = (value) => String(value ?? "")
     .replaceAll("|", "\\|")
@@ -138,9 +145,18 @@ async function main() {
     : { schemaVersion: 1, games: {} };
 
   const html = await fetchText(UTA_INDEX_URL);
+  const indexArchiveIds = archiveIdsInIndex(html);
   const releases = parseUtaIndex(html);
-  if (releases.length < 1000) {
+  if (releases.length < 2800) {
     throw new Error(`UTA audit parsed only ${releases.length} releases; refusing incomplete audit.`);
+  }
+  if (indexArchiveIds.size && releases.length !== indexArchiveIds.size) {
+    const parsedIds = new Set(releases.map((release) => String(release.archiveId)));
+    const missingIds = [...indexArchiveIds].filter((id) => !parsedIds.has(id));
+    throw new Error(
+      `UTA parser coverage mismatch: parsed ${releases.length} of ${indexArchiveIds.size} archive IDs; ` +
+      `unparsed IDs: ${missingIds.slice(0, 25).join(", ")}`
+    );
   }
 
   const built = buildUtaMapping(games, releases, overrides);
@@ -253,6 +269,7 @@ async function main() {
 
     const gameNorms = [...variants];
     const containment = releases
+      .filter((release) => !excludedIds.has(String(release.archiveId)))
       .map((release) => ({ release, relation: candidateRole(game, release) }))
       .filter(({ relation }) => relation.publisherMatched && relation.yearCompatible)
       .filter(({ release }) => {
@@ -276,6 +293,7 @@ async function main() {
     }
 
     const fuzzy = releases
+      .filter((release) => !excludedIds.has(String(release.archiveId)))
       .map((release) => ({
         release,
         relation: candidateRole(game, release),
@@ -314,6 +332,7 @@ async function main() {
     // labels and source-data errors for human verification.
     const gameYear = Number(game?.year) || null;
     const fuzzyTitleOnly = releases
+      .filter((release) => !excludedIds.has(String(release.archiveId)))
       .map((release) => ({
         release,
         relation: candidateRole(game, release),
@@ -352,6 +371,7 @@ async function main() {
   const summary = {
     auditedAt: new Date().toISOString(),
     source: UTA_INDEX_URL,
+    utaArchiveIdsSeen: indexArchiveIds.size,
     utaReleasesParsed: releases.length,
     gamesTotal: games.length,
     c64Games: c64Games.length,
