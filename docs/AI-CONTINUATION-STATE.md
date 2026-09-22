@@ -27,16 +27,19 @@ Update this file when a workstream changes category, its active PR/dependency ch
 - Current `main` advanced through merged #2226 while #2227 was qualifying. The only overlapping path was this continuation index; the current-main reconciliation preserves #2226's Dungeon checkpoint and all #2227 single-game state without touching Dungeon runtime files.
 - Detailed record: [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md).
 
-## Active Dungeon Carnage r49 long-session freeze candidate — 22 September 2026
+## Active Dungeon Carnage r50 fullscreen/input follow-up — 22 September 2026
 
-- PR #2226 is merged as `38c2f7e43233f6a1e6f81cb8d942f1df449feffe`; `V10.42 r47` / `20260922r47` is the current live Dungeon baseline.
-- Hands-on testing on that build reproduced a new Solo Floor-3 slowdown progressing to a complete standstill after a long run. The supplied incident recorder captured the performance tier as `severe` after roughly 24 minutes while browser heap usage remained low.
-- The same report exposed unusually high stability churn: 18,219 Warden HUD repairs and 3,558 enemy-cooldown repairs. Source reconciliation proved the Warden domain layer and r18 stability layer were alternately adding/removing Warden text on repeated HUD syncs, while r18 also rewrote legitimate negative AI countdown values and made every player attack scan the full enemy roster.
-- Draft PR #2231 / branch `codex/dungeon-r49-live-freeze-current-main` is the bounded remediation candidate. It retires the competing shared Warden HUD writer, leaves normal negative countdowns alone, keeps full enemy repair on the maintenance path rather than every FIRE request, and extends REPORT BUG with performance/AI/live-array diagnostics.
-- #2231 advances the public identity to `V10.42 r49` / `20260922r49`. r48 is skipped because an older stale unmerged branch already used that label.
-- No world generation, collision, damage, trap, progression, save, economy, firearm-balance or projectile-lifecycle ownership is changed. The merged r45 sleeping-enemy simulation remains the performance foundation.
-- Exact-head CI plus a fresh 20–30+ minute hands-on Solo run are required before this regression can be considered closed.
+- PR #2231 is merged as `3f273ec8eb881faac1825a6779863c9367faf0d1`; `V10.42 r49` / `20260922r49` is the current live Dungeon baseline.
+- Hands-on r49 testing exposed that the displayed **Press F** fullscreen shortcut fired the weapon instead. Source reconciliation found the canonical fullscreen owner intact in `game-main.js`, but r20, held-attack liveness and r47 Inventory/FIRE recovery still claimed `KeyF` as an attack alias at later capture boundaries.
+- Draft PR #2241 / branch `codex/dungeon-r50-fullscreen-input-layout` removes `KeyF` from those attack sets while keeping Space/Numpad0 attack recovery and stale historical-key cleanup.
+- The same hands-on fullscreen test showed a large unused black lower playfield. #2241 adds a renderer-only 1.35x desktop Solo fullscreen camera; normal desktop stays 1x, mobile stays 1.6x and split-screen stays 1x.
+- Browser coverage now sends a real focused F key through document capture and requires fullscreen dispatch with no attack-intent increment. Static coverage prevents the late recovery layers reclaiming `KeyF`.
+- #2241 advances release identity to `V10.42 r50` / `20260922r50`.
+- No world generation, collision, damage, traps, progression, saves, economy, projectile lifecycle or combat balance is changed.
+- Exact-head qualification plus hands-on fullscreen acceptance are required before closure.
 - Detailed record: [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md).
+
+## Current autonomous Dungeon Carnage checkpoint — 22 September 2026
 
 ## Current autonomous Dungeon Carnage checkpoint — 22 September 2026
 
