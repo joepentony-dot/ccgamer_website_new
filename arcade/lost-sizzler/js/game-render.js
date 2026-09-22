@@ -524,7 +524,8 @@ function dungeonCameraZoom(v){
   if(p2)return 1;
   try{
     const cssWidth=Number(document.querySelector(".canvas-wrap")?.getBoundingClientRect?.().width||window.innerWidth||0);
-    if(cssWidth>0&&cssWidth<=900)return 1.6
+    if(cssWidth>0&&cssWidth<=900)return 1.6;
+    if(document.fullscreenElement)return 1.35
   }catch(_){}
   return 1
 }
