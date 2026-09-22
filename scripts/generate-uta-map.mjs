@@ -297,9 +297,12 @@ export function matchGameToUta(game, utaReleases, override = null) {
   if (!slug || !titles.size) return { releases: [], review: [] };
 
   const excludedIds = new Set(toArray(override?.exclude).map((item) => String(item?.archiveId || "")));
+  const includedIds = new Set(toArray(override?.include).map((item) => String(item?.archiveId || "")));
   const releaseMap = new Map(utaReleases.map((release) => [String(release.archiveId), release]));
   const titleCandidates = utaReleases.filter((release) =>
-    !excludedIds.has(String(release.archiveId)) && titleMatches(titles, release)
+    !excludedIds.has(String(release.archiveId))
+    && !includedIds.has(String(release.archiveId))
+    && titleMatches(titles, release)
   );
 
   const credits = getPublisherCredits(game);
