@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "games": {
+    "c64:wonder-boy": [
+      {
+        "magazine": "C&VG",
+        "issue": "103",
+        "date": "June 1990",
+        "page": 66,
+        "reviewer": "",
+        "score": "62%",
+        "scorePercent": 62,
+        "url": "https://archive.org/details/Computer_Video_Games_Issue_103_1990-06_EMAP_Publishing_GB/page/n65/mode/2up?view=theater",
+        "language": "English",
+        "scanStatus": "available",
+        "era": "contemporary"
+      },
+      {
+        "magazine": "Commodore Force",
+        "issue": "5",
+        "date": "May 1993",
+        "page": 18,
+        "reviewer": "",
+        "score": "63%",
+        "scorePercent": 63,
+        "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=95&page=18",
+        "language": "English",
+        "scanStatus": "available",
+        "era": "contemporary"
+      },
+      {
+        "magazine": "Commodore User",
+        "issue": "46",
+        "date": "July 1987",
+        "page": 29,
+        "reviewer": "Eugene Lacey",
+        "score": "6/10",
+        "scorePercent": 60,
+        "url": "https://amr.abime.net/review_15998",
+        "language": "English",
+        "scanStatus": "available",
+        "era": "contemporary"
+      },
+      {
+        "magazine": "Datormagazin",
+        "issue": "4-5",
+        "date": "June-July 1987",
+        "page": 8,
+        "reviewer": "Pekka Hedqvst",
+        "score": "2.3/5",
+        "scorePercent": 46,
+        "url": "https://amr.abime.net/review_33131",
+        "language": "Swedish",
+        "scanStatus": "available",
+        "era": "contemporary"
+      },
+      {
+        "magazine": "Your Commodore",
+        "issue": "35",
+        "date": "August 1987",
+        "page": 66,
+        "reviewer": "Kirk Rutter",
+        "score": "8/10",
+        "scorePercent": 80,
+        "url": "https://archive.org/details/35-your-commodore-magazine/page/n65/mode/2up?view=theater",
+        "language": "English",
+        "scanStatus": "available",
+        "era": "contemporary"
+      },
+      {
+        "magazine": "Your Commodore",
+        "issue": "75",
+        "date": "January 1991",
+        "page": 36,
+        "reviewer": "",
+        "score": "3/5",
+        "scorePercent": 60,
+        "url": "https://archive.org/details/75-your-commodore-magazine/page/n35/mode/2up?view=theater",
+        "language": "English",
+        "scanStatus": "available",
+        "era": "contemporary"
+      },
+      {
+        "magazine": "Zzap!64",
+        "issue": "28",
+        "date": "August 1987",
+        "page": 28,
+        "reviewer": "Julian Rignall, Paul Sumner & Steve Jarratt",
+        "score": "52%",
+        "scorePercent": 52,
+        "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=28&page=28",
+        "language": "English",
+        "scanStatus": "available",
+        "era": "contemporary"
+      },
+      {
+        "magazine": "Zzap!64",
+        "issue": "61",
+        "date": "May 1990",
+        "page": 48,
+        "reviewer": "",
+        "score": "63%",
+        "scorePercent": 63,
+        "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=61&page=48",
+        "language": "English",
+        "scanStatus": "available",
+        "era": "contemporary"
+      }
+    ]
+  }
+}
