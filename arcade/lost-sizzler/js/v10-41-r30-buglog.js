@@ -72,7 +72,12 @@
     }
     return true;
   }
-  let timer=setInterval(()=>{if(mount()){clearInterval(timer);timer=0}},80);mount();
+  const latestBuildOnly=()=>document.getElementById("developer-changelog")?.dataset?.latestBuildOnly==="true";
+  let timer=0;
+  if(!latestBuildOnly()){
+    timer=setInterval(()=>{if(latestBuildOnly()||mount()){clearInterval(timer);timer=0}},80);
+    mount();
+  }
   addEventListener("pagehide",()=>{if(timer)clearInterval(timer)},{once:true});
   window.CCGLostSizzlerV141R30BugLog={entries,mount};
 })();
