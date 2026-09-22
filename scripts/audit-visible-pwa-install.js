@@ -72,7 +72,10 @@ function isApprovedDungeonHomeCtaMigration(relativePath) {
   if (!currentMatch[0].includes("c64-dungeon-carnage-home-feature.webp")) return false;
   if (/#weekly-vault|VIEW LEADERBOARD|WEEKLY VAULT/.test(currentMatch[0])) return false;
 
-  return baseline.replace(blockPattern, currentMatch[0]) === current;
+  const expected = baseline
+    .replace('/resources/css/home-lost-sizzler-cta.css"', '/resources/css/home-lost-sizzler-cta.css?v=20260922-carnage-feature"')
+    .replace(blockPattern, currentMatch[0]);
+  return expected === current;
 }
 
 function isCanonicalShellMigration(relativePath) {
