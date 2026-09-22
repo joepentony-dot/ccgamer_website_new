@@ -102,7 +102,18 @@ try{
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(p1),null,{timeout:20000});
 
   await assertSingleShot(page,"Space"," ");
-  await assertSingleShot(page,"KeyF","f");
+  const beforeFullscreenKey=await prepareAttack(page);
+  const attackIntentsBeforeFullscreen=await page.evaluate(()=>Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.attackIntents||0));
+  await dispatchKey(page,"KeyF","f");
+  await page.waitForTimeout(150);
+  const fullscreenKeyState=await page.evaluate(()=>({
+    mana:Number(p1.mana),
+    attackIntents:Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.attackIntents||0),
+    keyFHeld:Boolean(window.CCGLostSizzlerV142AttackHoldLiveness?.held?.has?.("KeyF"))
+  }));
+  assert.equal(fullscreenKeyState.mana,beforeFullscreenKey,"fullscreen F must not spend ammunition");
+  assert.equal(fullscreenKeyState.attackIntents,attackIntentsBeforeFullscreen,"fullscreen F must not enter r20 attack recovery");
+  assert.equal(fullscreenKeyState.keyFHeld,false,"fullscreen F must not enter held-attack state");
   await assertSingleShot(page,"Numpad0","0");
 
   await page.evaluate(()=>showNamedDossier("",true));

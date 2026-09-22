@@ -15,6 +15,8 @@ assert.match(src,/MutationObserver/);
 assert.match(src,/inventory-panel/);
 assert.match(src,/validAttack/);
 assert.match(src,/setTimeout\(\(\)=>\{/);
+assert.match(src,/ATTACK_KEYS=new Set\(\["Space","Numpad0"\]\)/,"inventory FIRE recovery must not claim fullscreen F");
+assert.doesNotMatch(src,/ATTACK_KEYS=new Set\([^\n]*"KeyF"/,"fullscreen F must not arm the inventory FIRE fallback");
 const r18=bootstrap.indexOf('v10-42-r18-solo-playtest-stability.js');
 const recovery=bootstrap.indexOf('v10-42-r47-inventory-fire-recovery.js');
 const reporter=bootstrap.indexOf('v10-42-bug-reporter.js');

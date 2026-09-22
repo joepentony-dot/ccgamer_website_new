@@ -7,7 +7,7 @@
   "use strict";
   if(window.CCGLostSizzlerV142R47InventoryFireRecovery)return;
 
-  const ATTACK_KEYS=new Set(["Space","KeyF","Numpad0"]);
+  const ATTACK_KEYS=new Set(["Space","Numpad0"]); // KeyF is reserved exclusively for fullscreen.
   const state={installed:false,inventoryClosures:0,boundaryRepairs:0,verifiedAttacks:0,fallbackAttacks:0,failedFallbacks:0,armed:false,lastCloseAt:0,lastFallbackAt:0};
   const activeRun=()=>document.body?.dataset?.runActive==="true";
   const currentMode=()=>{try{return String(mode||"")}catch(_){return""}};
