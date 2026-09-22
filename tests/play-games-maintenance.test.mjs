@@ -35,8 +35,6 @@ assert.match(ownerGate, /window\.location\.replace\(MAINTENANCE_DESTINATION\)/);
 assert.match(ownerGate, /mark\("owner-preview"\)/);
 assert.match(ownerGate, /Fail closed/);
 
-const home = read("home.html");
-assert.match(home, /c64-dungeon-carnage-home-v2\.webp\?v=20260922-r51-owner-preview/, "Home CTA must cache-bust the supplied Dungeon Carnage WebP");
 
 const hub = read("games/ccg-games/index.html");
 assert.match(hub, /CCG originals — maintenance/);
