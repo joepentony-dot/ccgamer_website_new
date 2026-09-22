@@ -199,6 +199,9 @@ jobs:
           echo "[games-publishing] Importing locally cached and curated magazine metadata. External fetches remain retryable, but new/changed games cannot be marked complete while known enrichment is unresolved."
           node scripts/import-amiga-magazine-reviews.js
 
+      - name: Audit full magazine-review coverage
+        run: node scripts/audit-magazine-review-coverage.js --verbose
+
       - name: Audit all C64 UTA enrichment candidates
         run: node scripts/validate-new-game-enrichment.mjs --audit-all-c64
 
