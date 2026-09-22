@@ -38,7 +38,7 @@ Implemented:
 - the retired `game_slug` field is no longer sent when inserting into the live canonical `comments` table;
 - normal review reads use the paginated `ccg_game_reviews` RPC, with a page-scoped fallback for migration safety.
 
-The database additions use RLS and `security invoker` functions. The full migration compiled successfully against the live production schema inside a transaction and was rolled back during qualification; production DDL must only be applied once PR qualification is green.
+The database additions use RLS and `security invoker` functions. After the exact implementation head completed all triggered GitHub Actions successfully, the migration was applied to the live Supabase project as migration version `20260922015628` (`single_game_community_read_models`). Post-apply verification confirmed the helpful-vote table, both read RPCs and `submit_helpful_vote(uuid)` exist, and RLS is enabled on `comment_helpful_votes`. The Supabase security advisor reported no finding against any object introduced by this migration; its reported warnings concern other pre-existing project objects.
 
 ## Ultimate Tape Archive integration
 
@@ -117,8 +117,7 @@ The repository's Public Code Cache Version guard requires this public JS/CSS cha
 
 ## Next action
 
-1. Require all PR #2227 checks to pass on the final exact head.
-2. Apply `20260922003000_single_game_community_read_models.sql` to the live Supabase project and verify the two read RPCs/helpful-vote function and security advisors.
-3. Mark PR #2227 ready and merge only if the exact head remains green and mergeable.
-4. Monitor Reliable Games Publishing on `main`; its best-effort UTA refresh may expand both the confident mapping and the manual-review queue without making UTA availability a publishing blocker.
-5. Reconcile the generated `data/uta-manual-review.json` queue before manually promoting any additional release.
+1. Re-run exact-head qualification after this final documentation checkpoint.
+2. Mark PR #2227 ready and merge only if that exact head remains fully green and mergeable.
+3. Monitor Reliable Games Publishing on `main`; its best-effort UTA refresh may expand both the confident mapping and the manual-review queue without making UTA availability a publishing blocker.
+4. Reconcile the generated `data/uta-manual-review.json` queue before manually promoting any additional release.
