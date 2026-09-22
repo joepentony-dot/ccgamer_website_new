@@ -1123,3 +1123,258 @@
         text-align: center;
     }
 }
+
+
+/* ============================================================
+   SINGLE-GAME COMPACT CONTENT FLOW — 2026-09-22
+   Keeps editorial content prominent while secondary utilities
+   stay dense and low-profile on every generated game page.
+============================================================ */
+
+.ccg-page--single-game #game-video-section:not([hidden]) {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+    grid-template-areas:
+        "kicker kicker"
+        "title title"
+        "description video";
+    gap: 7px clamp(16px, 2vw, 28px);
+    align-items: start;
+    padding: clamp(10px, 1.15vw, 14px);
+}
+
+.ccg-page--single-game #game-video-section > .game-section__kicker {
+    grid-area: kicker;
+    margin: 0;
+}
+
+.ccg-page--single-game #game-video-section > .game-section__title {
+    grid-area: title;
+    margin: 0 0 5px;
+}
+
+.ccg-page--single-game #game-video-section > [data-ccg-video-description] {
+    grid-area: description;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 2px 0;
+    font-size: clamp(0.88rem, 1vw, 0.97rem);
+    line-height: 1.58;
+    text-align: left;
+    hyphens: none;
+}
+
+.ccg-page--single-game #game-video-section > .game-video {
+    grid-area: video;
+    width: min(100%, 500px);
+    max-width: 500px;
+    margin: 0;
+    justify-self: end;
+}
+
+.ccg-page--single-game #game-video-section .game-video__frame {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    border-radius: 10px;
+}
+
+.ccg-page--single-game #game-video-section .game-video__actions {
+    margin-top: 6px;
+}
+
+.ccg-page--single-game #game-video-section .game-video__actions .game-pill {
+    min-height: 34px;
+    padding: 7px 11px;
+    font-size: 0.72rem;
+}
+
+/* When a page has a video but no overview copy, keep the player centred. */
+.ccg-page--single-game #game-video-section:not(:has([data-ccg-video-description]:not([hidden]))) {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+        "kicker"
+        "title"
+        "video";
+}
+
+.ccg-page--single-game #game-video-section:not(:has([data-ccg-video-description]:not([hidden]))) > .game-video {
+    justify-self: center;
+}
+
+/* Manual: one slim action row rather than a large standalone panel. */
+.ccg-page--single-game #game-utility-hub-section:not([hidden]) {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 8px 14px;
+    padding: 8px 12px;
+}
+
+.ccg-page--single-game #game-utility-hub-section > .game-section__title {
+    margin: 0;
+    font-size: clamp(0.9rem, 1.2vw, 1rem);
+    white-space: nowrap;
+}
+
+.ccg-page--single-game #game-utility-hub-section .ccg-game-utility-hub__grid {
+    width: auto;
+    margin: 0;
+    display: block;
+}
+
+.ccg-page--single-game #game-manual-card:not([hidden]) {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.ccg-page--single-game #game-manual-card > .ccg-utility-card__title {
+    display: none;
+}
+
+.ccg-page--single-game #gameManualBtn:not([hidden]) {
+    width: auto;
+    min-height: 34px;
+    padding: 7px 11px;
+    font-size: 0.72rem;
+}
+
+/* Music stays fully functional but loses the oversized double-card treatment. */
+.ccg-page--single-game #game-music-archive-section {
+    padding: 9px 12px;
+}
+
+.ccg-page--single-game #game-music-archive-section > .game-section__title {
+    margin-bottom: 6px;
+    font-size: clamp(0.92rem, 1.2vw, 1.05rem);
+}
+
+.ccg-page--single-game #game-music-archive-section .ccg-game-resource-section__body {
+    width: 100%;
+}
+
+.ccg-page--single-game #game-music-card:not([hidden]) {
+    padding: 8px 10px;
+    border-radius: 10px;
+}
+
+.ccg-page--single-game #gameMusicSection > .ccg-utility-card__title {
+    display: none;
+}
+
+.ccg-page--single-game .ccg-music-tracks {
+    gap: 6px;
+}
+
+.ccg-page--single-game .ccg-music-tracks .ccg-game-audio-player {
+    margin-top: 4px;
+}
+
+/* Continue Exploring becomes a compact strip of useful archive links. */
+.ccg-page--single-game #game-discovery-links:not([hidden]) {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px 10px;
+    padding: 8px 12px;
+}
+
+.ccg-page--single-game #game-discovery-links > .game-section__kicker,
+.ccg-page--single-game #game-discovery-links > .ccg-section__intro {
+    display: none;
+}
+
+.ccg-page--single-game #game-discovery-links > .game-section__title {
+    flex: 0 0 auto;
+    margin: 0 4px 0 0;
+    font-size: clamp(0.9rem, 1.1vw, 1rem);
+}
+
+.ccg-page--single-game #game-discovery-links .game-downloads {
+    margin: 0;
+    gap: 6px;
+    justify-content: flex-start;
+}
+
+.ccg-page--single-game #game-discovery-links .game-pill {
+    min-height: 32px;
+    padding: 6px 10px;
+    font-size: 0.7rem;
+}
+
+/* Related/Keep Exploring carousel also uses a smaller footprint. */
+.ccg-page--single-game .game-section--related {
+    padding: 9px 12px;
+}
+
+.ccg-page--single-game .game-section--related > .game-section__kicker {
+    display: none;
+}
+
+.ccg-page--single-game .game-section--related > .game-section__title {
+    margin-bottom: 5px;
+    font-size: clamp(0.92rem, 1.25vw, 1.08rem);
+}
+
+.ccg-page--single-game .game-section--related .related-carousel {
+    --related-card-size: clamp(138px, 15vw, 164px);
+    --related-gap: 8px;
+}
+
+.ccg-page--single-game .game-section--related .related-carousel__viewport {
+    padding-block: 4px;
+}
+
+@media (max-width: 820px) {
+    .ccg-page--single-game #game-video-section:not([hidden]) {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "kicker"
+            "title"
+            "video"
+            "description";
+        gap: 7px;
+    }
+
+    .ccg-page--single-game #game-video-section > .game-video {
+        width: min(100%, 520px);
+        max-width: 520px;
+        justify-self: center;
+    }
+
+    .ccg-page--single-game #game-video-section > [data-ccg-video-description] {
+        margin-top: 3px;
+    }
+
+    .ccg-page--single-game #game-utility-hub-section:not([hidden]) {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    .ccg-page--single-game #game-utility-hub-section > .game-section__title {
+        white-space: normal;
+    }
+}
+
+@media (max-width: 560px) {
+    .ccg-page--single-game #game-video-section .game-video__frame {
+        aspect-ratio: 16 / 10;
+    }
+
+    .ccg-page--single-game #game-discovery-links:not([hidden]) {
+        align-items: flex-start;
+    }
+
+    .ccg-page--single-game #game-discovery-links > .game-section__title {
+        width: 100%;
+    }
+}
