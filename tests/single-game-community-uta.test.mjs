@@ -146,7 +146,7 @@ test("shared template and runtime keep UTA C64-only and hidden without a confide
   const loader = fs.readFileSync("js/load-single-game.js", "utf8");
 
   assert.match(template, /id="game-tape-archive-section"/);
-  assert.match(template, /ccg-community-rating-panel" open/);
+  assert.doesNotMatch(template, /ccg-community-rating-panel" open/);
   assert.match(template, /ccg-uta-archive\.js/);
   assert.ok(template.indexOf("ccg-uta-archive.js") < template.indexOf("load-single-game.js"));
 
@@ -174,4 +174,37 @@ test("UTA runtime omits unknown release years instead of displaying archive sent
   const runtime = fs.readFileSync("js/ccg-uta-archive.js", "utf8");
   assert.match(runtime, /makeMeta\("Year", release\.year\)/);
   assert.doesNotMatch(runtime, /release\.year \|\| release\.yearLabel/);
+});
+
+
+test("single-game presentation keeps primary content compact and secondary sections collapsed", () => {
+  const template = fs.readFileSync("games/game.html", "utf8");
+  const loader = fs.readFileSync("js/load-single-game.js", "utf8");
+  const ratings = fs.readFileSync("js/ccg-community-ratings.js", "utf8");
+  const affiliate = fs.readFileSync("js/affiliate-products.js", "utf8");
+  const gameCss = fs.readFileSync("resources/css/game-pages.css", "utf8");
+  const communityCss = fs.readFileSync("resources/css/ccg-community.css", "utf8");
+  const affiliateCss = fs.readFileSync("resources/css/ccg-affiliate-showcase.css", "utf8");
+
+  assert.match(template, /data-ccg-video-description hidden/);
+  assert.doesNotMatch(template, /ccg-community-rating-panel" open/);
+  assert.match(loader, /if \(hasVideo && overview\)/);
+  assert.match(loader, /videoDescription\.hidden = false/);
+
+  assert.match(gameCss, /SINGLE-GAME COMPACT CONTENT FLOW/);
+  assert.match(gameCss, /grid-template-areas:[\s\S]*"description video"/);
+  assert.match(gameCss, /aspect-ratio:\s*4\s*\/\s*3/);
+  assert.match(gameCss, /#game-utility-hub-section:not\(\[hidden\]\)/);
+  assert.match(gameCss, /#game-discovery-links:not\(\[hidden\]\)/);
+
+  assert.match(communityCss, /SINGLE-GAME COMPACT COMMUNITY ACCORDION/);
+  assert.match(ratings, /panel\.open = false/);
+  assert.match(ratings, /meta\.hidden = true/);
+  assert.match(ratings, /toFixed\(1\) \+ '\/10'/);
+
+  assert.match(affiliate, /const communitySection = document\.querySelector\("\.ccg-community-game-section"\)/);
+  assert.match(affiliate, /panel\.hidden = true/);
+  assert.match(affiliate, /toggle\.hidden = false/);
+  assert.match(affiliateCss, /SINGLE-GAME COMPACT AMAZON ACCORDION/);
+  assert.match(affiliateCss, /\.ccg-hardware-panel\[hidden\]/);
 });

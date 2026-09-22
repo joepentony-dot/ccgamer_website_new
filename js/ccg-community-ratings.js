@@ -187,9 +187,36 @@
 
   function updateRatingMeta(averageValue, count) {
     const meta = document.getElementById('ccg-rating-summary-meta');
-    if (!meta) return;
-    if (!count) { meta.textContent = 'No ratings yet'; return; }
-    meta.textContent = Number(averageValue || 0).toFixed(1) + '/10 · ' + count + (count === 1 ? ' vote' : ' votes');
+    const compact = document.getElementById('ccg-community-compact-score');
+    const average = Number(averageValue || 0);
+
+    if (!count || average <= 0) {
+      if (meta) {
+        meta.textContent = '';
+        meta.hidden = true;
+        meta.removeAttribute('title');
+      }
+      if (compact) {
+        compact.textContent = '';
+        compact.hidden = true;
+        compact.removeAttribute('title');
+      }
+      return;
+    }
+
+    const score = average.toFixed(1) + '/10';
+    const votes = count + (count === 1 ? ' community vote' : ' community votes');
+
+    if (meta) {
+      meta.hidden = false;
+      meta.textContent = score;
+      meta.title = votes;
+    }
+    if (compact) {
+      compact.hidden = false;
+      compact.textContent = score;
+      compact.title = votes;
+    }
   }
 
   async function render() {
@@ -355,16 +382,19 @@
     }
     const panel = getRatingPanel();
     if (panel) {
+      panel.open = false;
+      panel.removeAttribute('open');
+      panel.dataset.ccgCompactDefault = 'true';
       panel.addEventListener('toggle', function () {
         if (panel.open) render();
       });
-      if (panel.open) render();
-    } else {
-      render();
     }
 
-    window.addEventListener('ccg:auth-ready', function () { if (!panel || panel.open) render(); });
-    window.addEventListener('ccg:auth-changed', function () { if (!panel || panel.open) render(); });
+    // Populate the subtle collapsed score even before the accordion is opened.
+    render();
+
+    window.addEventListener('ccg:auth-ready', function () { render(); });
+    window.addEventListener('ccg:auth-changed', function () { render(); });
     window.addEventListener('ccg:rating-updated', function () { if (!panel || panel.open) render(); });
   });
 })();

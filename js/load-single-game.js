@@ -1655,10 +1655,18 @@ function renderGame(game) {
     }
 
     const videoDescription = videoSection?.querySelector("[data-ccg-video-description]");
-    if (videoDescription && game._ccgEnrichedDescription) {
-        videoDescription.textContent = game.description;
+    if (videoDescription) {
+        const overview = String(game.description || "").trim();
+        if (hasVideo && overview) {
+            if (game._ccgEnrichedDescription) videoDescription.textContent = overview;
+            else videoDescription.innerHTML = overview;
+            videoDescription.hidden = false;
+        } else {
+            videoDescription.textContent = "";
+            videoDescription.hidden = true;
+        }
     }
-    const videoIncludesOverview = !!(videoDescription && videoDescription.textContent.trim());
+    const videoIncludesOverview = !!(videoDescription && !videoDescription.hidden && videoDescription.textContent.trim());
     if (hasVideo && videoIncludesOverview && descriptionSection) {
         descriptionSection.hidden = true;
         hasOverview = false;
@@ -2888,7 +2896,51 @@ function initGameSectionNav(state) {
     nav.dataset.visibilityObserver = "true";
 }
 
+function initCompactCommunityShell() {
+    const community = document.querySelector(".ccg-community-game-section");
+    if (!community) return;
+
+    let shell = community.querySelector(".ccg-community-compact-shell");
+    const rating = document.getElementById("ccg-community-rating-panel");
+    const comments = document.getElementById("ccg-community-comments-panel");
+
+    if (!shell) {
+        shell = document.createElement("details");
+        shell.className = "ccg-community-compact-shell";
+        shell.id = "ccg-community-compact-panel";
+
+        const summary = document.createElement("summary");
+        summary.className = "ccg-community-compact-summary";
+        summary.innerHTML =
+            '<span class="ccg-community-compact-icon" aria-hidden="true">★</span>' +
+            '<span class="ccg-community-compact-copy"><strong id="ccg-community-game-title">CCG Community Rating &amp; Review</strong><small>See what other retro gamers think.</small></span>' +
+            '<span class="ccg-community-compact-score" id="ccg-community-compact-score" hidden></span>' +
+            '<span class="ccg-community-compact-chevron" aria-hidden="true">⌄</span>';
+
+        const body = document.createElement("div");
+        body.className = "ccg-community-compact-body";
+
+        const intro = community.querySelector(":scope > .ccg-section__intro");
+        if (intro) {
+            intro.textContent = "Everyone can read ratings and reviews; members must log in to rate or comment.";
+            body.appendChild(intro);
+        }
+
+        if (rating) body.appendChild(rating);
+        if (comments) body.appendChild(comments);
+
+        community.querySelectorAll(":scope > .game-section__kicker, :scope > .game-section__title").forEach((node) => node.remove());
+        shell.append(summary, body);
+        community.appendChild(shell);
+    }
+
+    shell.open = false;
+    if (rating) rating.open = false;
+    if (comments) comments.open = false;
+}
+
 function initSingleGameUX(state) {
+    initCompactCommunityShell();
     initScrollProgress();
     initBackToTop();
     initScreenshotModalEnhancements();

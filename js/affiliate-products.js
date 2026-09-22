@@ -250,15 +250,10 @@
     function positionGameSection(section) {
         if (!section || !section.parentElement) return;
 
-        const descriptionSection = document.getElementById("game-description-section");
-        const videoSection = document.getElementById("game-video-section");
-        const heroSection = document.querySelector(".game-hero");
-
-        const anchor = descriptionSection && !descriptionSection.hidden
-            ? descriptionSection
-            : videoSection && !videoSection.hidden
-                ? videoSection
-                : heroSection;
+        const communitySection = document.querySelector(".ccg-community-game-section");
+        const discoverySection = document.getElementById("game-discovery-links");
+        const relatedSection = document.querySelector(".game-section--related");
+        const anchor = communitySection || discoverySection || relatedSection;
 
         if (!anchor || anchor.parentElement !== section.parentElement) return;
         if (anchor.nextElementSibling !== section) {
@@ -311,8 +306,11 @@
             return;
         }
 
-        if (title) title.textContent = toSafeString(group.heading) || "CCG Recommended Gear";
-        if (intro) intro.textContent = toSafeString(group.intro) || "A small set of CCG picks matched to the system you're browsing.";
+        if (title) {
+            title.textContent = "CCG Picks";
+            title.title = toSafeString(group.heading) || "Compatible retro hardware";
+        }
+        if (intro) intro.textContent = toSafeString(group.intro) || "Optional Amazon affiliate recommendations matched to this system.";
 
         section.querySelectorAll(".affiliate-products-legal").forEach((node) => node.remove());
         panel.appendChild(createDisclosure(config, "affiliate-products-legal"));
@@ -321,13 +319,27 @@
         section.classList.remove("is-hardware-open");
         section.hidden = false;
         section.removeAttribute("aria-hidden");
-        section.setAttribute("aria-label", `${toSafeString(group.heading) || "CCG recommended gear"} - Amazon affiliate links`);
+        section.setAttribute("aria-label", "CCG Picks - Amazon affiliate recommendations");
 
-        panel.hidden = false;
+        panel.hidden = true;
         if (toggle) {
-            toggle.hidden = true;
-            toggle.disabled = true;
-            toggle.setAttribute("aria-expanded", "true");
+            toggle.hidden = false;
+            toggle.disabled = false;
+            toggle.setAttribute("aria-expanded", "false");
+            const label = toggle.querySelector("span:first-child");
+            if (label) label.textContent = "Amazon Picks";
+
+            if (toggle.dataset.ccgAffiliateToggleBound !== "true") {
+                toggle.dataset.ccgAffiliateToggleBound = "true";
+                toggle.addEventListener("click", () => {
+                    const expanded = toggle.getAttribute("aria-expanded") === "true";
+                    const next = !expanded;
+                    toggle.setAttribute("aria-expanded", String(next));
+                    panel.hidden = !next;
+                    section.classList.toggle("is-hardware-open", next);
+                    if (label) label.textContent = next ? "Hide Amazon Picks" : "Amazon Picks";
+                });
+            }
         }
 
         positionGameSection(section);
