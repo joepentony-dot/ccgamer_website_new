@@ -2905,6 +2905,17 @@ function initGameSectionNav(state) {
 }
 
 function initCompactSingleGamePanels() {
+    const discovery = document.getElementById("game-discovery-links");
+    if (discovery) {
+        const kicker = discovery.querySelector(".game-section__kicker");
+        const title = discovery.querySelector(".game-section__title");
+        const intro = discovery.querySelector(".ccg-section__intro");
+        if (kicker) kicker.textContent = "Keep Exploring";
+        if (title) title.textContent = "More From The Archive";
+        if (intro) intro.textContent = "More games, genres and collections you might enjoy.";
+        discovery.classList.add("ccg-compact-explore");
+    }
+
     const community = document.querySelector(".ccg-community-game-section");
     if (community) {
         let shell = community.querySelector(".ccg-community-compact-shell");
