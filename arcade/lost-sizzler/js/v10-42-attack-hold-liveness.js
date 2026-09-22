@@ -35,28 +35,25 @@
   function attackSnapshot(){
     let player=null;try{player=p1||null}catch(_){}
     let shots=0;
-    try{shots=(host?.projectiles||[]).filter(projectile=>projectile?.active!==false&&(!player||projectile.owner===player.id)).length}catch(_){
-      try{shots=(bullets||[]).filter(projectile=>projectile?.ttl>0&&(!player||projectile.owner===player.id)).length}catch(_){}
-    }
-    return{
-      mana:Math.max(0,Number(player?.mana||0)),
-      shots,
-      fire:Number(typeof fire1!=="undefined"?fire1:0),
-      buffer:Number(typeof fireBuffer1!=="undefined"?fireBuffer1:0)
-    };
+    try{shots=(bullets||[]).filter(projectile=>projectile?.ttl>0&&(!player||projectile.owner===player.id)).length}catch(_){}
+    return{mana:Math.max(0,Number(player?.mana||0)),shots};
   }
+
+  const shotObserved=(before,after)=>after.mana<before.mana||after.shots>before.shots;
 
   function verifyFreshPress(code,before){
     setTimeout(()=>{
-      if(!held.has(code)||!activeRun()||currentMode()!=="playing"||spyActive())return;
+      // A quick tap is still a valid attack intent. Keyup must not cancel
+      // verification of the press that already happened.
+      if(!activeRun()||currentMode()!=="playing"||spyActive())return;
       diagnostics.pressVerifications++;
       const after=attackSnapshot();
-      const handled=after.mana<before.mana||after.shots>before.shots||after.fire>0||after.buffer>0;
-      if(handled)return;
+      if(shotObserved(before,after))return;
       const r20=window.CCGLostSizzlerV142R20LiveRegressionStability;
       if(typeof r20?.attackNow!=="function"){diagnostics.pressRecoveryFailures++;return}
-      let repaired=false;
-      try{repaired=Boolean(r20.attackNow(code))}catch(_){repaired=false}
+      const repairBefore=attackSnapshot();
+      try{r20.attackNow(code)}catch(_){}
+      const repaired=shotObserved(repairBefore,attackSnapshot());
       if(repaired)diagnostics.pressRecoveries++;
       else diagnostics.pressRecoveryFailures++;
       scheduleSync();

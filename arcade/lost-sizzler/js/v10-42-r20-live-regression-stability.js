@@ -183,11 +183,13 @@
     }catch(_){return null}
   }
 
+  function activePlayerBulletCount(player){
+    try{return (bullets||[]).filter(projectile=>projectile?.ttl>0&&(!player?.id||projectile.owner===player.id)).length}catch(_){return 0}
+  }
+
   function shotCompleted(player,beforeMana,beforeBullets){
     const mana=Math.max(0,Number(player?.mana)||0);
-    let bullets=beforeBullets;
-    try{bullets=(host?.projectiles||[]).filter(projectile=>projectile?.active!==false).length}catch(_){}
-    return mana<beforeMana||bullets>beforeBullets
+    return mana<beforeMana||activePlayerBulletCount(player)>beforeBullets
   }
 
   function attackNow(code){
@@ -197,7 +199,7 @@
     repairAttackBoundary();
     try{input?.add?.(code)}catch(_){}
     const beforeMana=Math.max(0,Number(player.mana)||0);
-    let beforeBullets=0;try{beforeBullets=(host?.projectiles||[]).filter(projectile=>projectile?.active!==false).length}catch(_){}
+    const beforeBullets=activePlayerBulletCount(player);
     const direction=typeof attackDirection==="function"?attackDirection(player):player.dir;
     let fired=false;
 
@@ -242,7 +244,7 @@
       if(queued)diagnostics.queuedAttackRepairs++;
     }
     diagnostics.attackIntents++;
-    return fired||Boolean(fireBuffer1>0)
+    return fired
   }
 
   try{

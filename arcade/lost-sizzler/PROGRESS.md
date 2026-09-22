@@ -2,6 +2,16 @@
 
 > Legacy repository path: `arcade/lost-sizzler/`. The customer-facing game name is **C64 Dungeon Carnage**. Historical internal identifiers may still use `Lost Sizzler` where compatibility requires them.
 
+## P0 — sudden FIRE lockout — 22 September 2026
+
+- **Priority:** highest / game-breaking.
+- **Live reproduction:** `V10.42 r50`, Solo Floor 3. Firing transitions from successful shots to repeated failed Space presses while ammo remains available, the equipped weapon remains valid, zero player projectiles are active, gameplay stays focused/visible and the Inventory is closed.
+- **Active vehicle:** draft PR #2256 / `codex/dungeon-r51-owner-preview-current-main`.
+- **R51 recovery flaw found:** the 120 ms verifier could skip quick taps after keyup, and queued FIRE buffer/cooldown state could be mistaken for a successful shot.
+- **Correction:** fresh presses remain verifiable after keyup; only ammo consumption or a live player projectile counts as shot completion; R20 inspects the authoritative `bullets` collection and no longer returns success merely because a buffer was queued; Inventory recovery uses the same actual-shot rule.
+- **Scope:** FIRE liveness only. No weapon balance, maps, traps, saves, progression, economy, navigation or fullscreen redesign.
+- **Status:** IMPLEMENTED ON R51 CANDIDATE / EXACT-HEAD QUALIFICATION PENDING. Keep #2256 draft and do not merge until fully green and explicitly authorised.
+
 ## Active V10.42 R50 combined blocker candidate — 22 September 2026
 
 - **Branch:** `codex/dungeon-r50-combined-blockers`.

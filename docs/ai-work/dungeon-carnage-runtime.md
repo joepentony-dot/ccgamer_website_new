@@ -4,6 +4,18 @@
 
 The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
+## P0 FIRE lockout remediation — 22 September 2026
+
+A hands-on `V10.42 r50` Solo report captured the current worst game-breaking regression: firing worked and then stopped during the same active Floor 3 run. At failure the player still had 117 ammo, Tier 4 Tri-Pulse I equipped, zero of seven allowed player projectiles active, gameplay mode/run ownership intact, inventory hidden and canvas focus retained. Repeated Space presses continued to queue FIRE buffer state but produced neither ammo consumption nor projectiles.
+
+Current remediation is being applied to draft PR #2256 / `codex/dungeon-r51-owner-preview-current-main`, the already-active R51 integration vehicle. Investigation found two defects in its intended global FIRE recovery:
+- the delayed fresh-press verifier returned early when a normal quick tap had already received keyup before the 120 ms verification point;
+- both the global and Inventory recovery paths accepted FIRE buffer/cooldown activity as proof that a shot had been handled, matching the exact false-positive state seen in the live report.
+
+The bounded correction keeps Space/Numpad0 ownership and all weapon balance unchanged. It verifies a fresh tap even after keyup, counts only ammo consumption or a live player projectile as completed-shot evidence, uses the authoritative `bullets` collection in the R20 direct-fire check, and prevents R20 from returning success merely because `fireBuffer1` was queued. The focused R51 contract protects those semantics. No navigation, fullscreen, world generation, collision, traps, progression, saves, economy or projectile-lifecycle rules are being redesigned.
+
+Status: **P0 IMPLEMENTED ON ACTIVE R51 CANDIDATE / EXACT-HEAD QUALIFICATION REQUIRED BEFORE MERGE**.
+
 ## Active V10.42 R50 combined blocker candidate — 22 September 2026
 
 Branch `codex/dungeon-r50-combined-blockers` consolidates the user-reproduced R50 blockers on top of the already-qualified #2241 fullscreen/input/layout candidate rather than releasing partial fixes.

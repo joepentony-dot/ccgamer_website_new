@@ -8,6 +8,14 @@ For Dungeon Carnage specifically, `arcade/lost-sizzler/PROGRESS.md` is the produ
 
 Update this file when a workstream changes category, its active PR/dependency changes, or a substantial session ends. Keep detailed reasoning, checks, blockers, and next actions in the workstream file.
 
+## P0 Dungeon Carnage FIRE lockout remediation — 22 September 2026
+
+- Hands-on `V10.42 r50` evidence reproduced a game-breaking Solo state where Space continued to generate attack intent with 117 ammo, a live weapon, zero active projectiles, visible/focused gameplay and no blocking inventory, yet no projectile or ammo consumption followed.
+- Active integration vehicle is draft PR #2256 / branch `codex/dungeon-r51-owner-preview-current-main`, already carrying the R51 owner-preview and final liveness pass.
+- Reconciliation found two false-success paths in the R51 FIRE safety net: fresh-press verification was cancelled if a normal tap was released before its 120 ms check, and non-zero FIRE buffer/cooldown state was accepted as proof of a completed shot.
+- The P0 correction verifies every valid fresh press even after keyup, requires actual ammo consumption or an authoritative live player projectile as shot evidence, aligns the Inventory FIRE recovery boundary to the same rule, and makes R20 report success only for a completed direct shot rather than a queued buffer.
+- Focused R51 coverage is strengthened around the reproduced failure signature. PR #2256 remains draft and must not merge until the exact patched head completes the required qualification matrix and the user authorises merge.
+
 ## Temporary CCG play-games maintenance — 22 September 2026
 
 - PR #2232 / branch `codex/temporary-play-games-maintenance` temporarily takes both CCG original browser games offline on the production CCG hostname without changing their gameplay/runtime logic.
