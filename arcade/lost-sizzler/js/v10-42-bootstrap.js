@@ -104,8 +104,8 @@
     if(!versionCheckOutdated()){
       const subtitle=document.querySelector(".v102-brand p"),expectedSubtitle="C64 DUNGEON CARNAGE — V10.42";
       if(subtitle&&subtitle.textContent!==expectedSubtitle)subtitle.textContent=expectedSubtitle;
-      const badge=document.querySelector(".build-badge"),expectedBadge=`BUILD ${BUILD.toUpperCase()}`;
-      if(badge&&badge.textContent!==expectedBadge)badge.textContent=expectedBadge;
+      const badge=document.querySelector(".build-badge"),expectedBadge=`BUILD ${BUILD.toUpperCase()}`,updateOwned=String(badge?.textContent||"").trim().toUpperCase()==="UPDATE AVAILABLE";
+      if(badge&&!updateOwned&&badge.textContent!==expectedBadge)badge.textContent=expectedBadge;
     }
     if(document.body){document.body.dataset.v142Build=BUILD;document.body.dataset.v142BootstrapReady=state.ready?"true":state.failed?"failed":"false"}
     state.identityRestamps+=1;
@@ -213,21 +213,31 @@
     queueMicrotask(attempt);
   }
 
-  function alreadyLoaded(marker){return Boolean(marker&&window[marker])}
+  function prerequisiteReady(marker){
+    const value=marker&&window[marker];
+    if(!value)return false;
+    if(marker==="CCGLostSizzlerModeRuntime"){
+      return typeof value.detect==="function"&&typeof value.sync==="function"&&typeof value.snapshot==="function"&&Boolean(value.state)
+    }
+    return true
+  }
+  function alreadyLoaded(marker){return prerequisiteReady(marker)}
+  function resetBrokenPrerequisite(file,marker,existing){
+    try{existing?.remove?.()}catch(_){}
+    try{delete window[marker]}catch(_){try{window[marker]=undefined}catch(__){}}
+    if(marker==="CCGLostSizzlerModeRuntime"){
+      try{delete window.__CCG_LOST_SIZZLER_V141_MODE_RUNTIME__}catch(_){try{window.__CCG_LOST_SIZZLER_V141_MODE_RUNTIME__=false}catch(__){}}
+    }
+  }
   function loadPrerequisite(file,marker){
-    if(alreadyLoaded(marker))return Promise.resolve();
+    if(prerequisiteReady(marker))return Promise.resolve();
     return new Promise((resolve,reject)=>{
-      const existing=[...document.scripts].find(script=>String(script.src||"").includes(`/js/${file}`));
+      let existing=[...document.scripts].find(script=>String(script.src||"").includes(`/js/${file}`));
+      if(existing&&!prerequisiteReady(marker)){resetBrokenPrerequisite(file,marker,existing);existing=null}
       const verify=()=>{
-        if(alreadyLoaded(marker)){resolve();return}
-        reject(new Error(`Supported runtime prerequisite did not initialise: ${file}`));
+        if(prerequisiteReady(marker)){resolve();return}
+        reject(new Error(`Supported runtime prerequisite did not initialise completely: ${file}`));
       };
-      if(existing){
-        if(alreadyLoaded(marker)){resolve();return}
-        existing.addEventListener("load",verify,{once:true});
-        existing.addEventListener("error",()=>reject(new Error(`Failed to load supported runtime prerequisite: ${file}`)),{once:true});
-        return;
-      }
       const script=document.createElement("script");
       script.async=false;
       script.src=`js/${file}?v=${CACHE}`;
@@ -320,6 +330,9 @@
       }
       promoteR1ChestOwner();
       promoteStage8MerchantOwner();
+      const modeRuntime=window.CCGLostSizzlerModeRuntime;
+      if(!prerequisiteReady("CCGLostSizzlerModeRuntime"))throw new Error("Authoritative dungeon mode runtime is incomplete");
+      try{modeRuntime.sync("V10.42 ordered bootstrap finalisation")}catch(error){throw new Error(`Authoritative dungeon mode runtime could not synchronise: ${String(error?.message||error)}`)}
       observeControllerSeal();
       try{window.CCGLostSizzlerV141R55FinalPlaytestCleanup?.markMenu?.()}catch(_){}
       state.ready=true;state.currentModule="";state.currentIndex=state.totalModules;announceModuleProgress("","ready");stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";
