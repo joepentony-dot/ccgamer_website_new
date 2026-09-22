@@ -70,13 +70,23 @@ try{
     const before=host.enemies.filter(e=>e.alive).length;
     activateMemoryTile(p1,4);
     const after=host.enemies.filter(e=>e.alive).length;
-    return{forcedIgnored,started,inputReady,spawned:after-before,phase:host.memoryPuzzle.phase,failures:host.memoryPuzzle.failures};
+    const failedPhase=host.memoryPuzzle.phase;
+    p1.x=host.memoryPuzzle.tiles[0].x;p1.y=host.memoryPuzzle.tiles[0].y;updateMemoryPuzzle(16);
+    p1.x=host.memoryPuzzle.activator.x;p1.y=host.memoryPuzzle.activator.y;updateMemoryPuzzle(16);
+    const recoveredReplay=host.memoryPuzzle.phase==="show";
+    const allPuzzleCellsVisible=[...host.memoryPuzzle.tiles,host.memoryPuzzle.activator].every(q=>visibleTo(p1,q.x,q.y));
+    render();
+    const framed=Boolean(window.__ccgDungeonCamera?.memoryPuzzleFramed);
+    return{forcedIgnored,started,inputReady,spawned:after-before,failedPhase,failures:host.memoryPuzzle.failures,recoveredReplay,allPuzzleCellsVisible,framed};
   });
   assert.equal(memory.forcedIgnored,true,"non-deliberate movement must not activate memory pads");
   assert.equal(memory.started,true,"replay console must start the sequence");
   assert.equal(memory.inputReady,true,"sequence replay must transition to player input");
   assert.equal(memory.spawned,1,"wrong Memory Pad input must spawn exactly one enemy");
-  assert.equal(memory.phase,"idle","wrong Memory Pad input must wait for deliberate replay");
+  assert.equal(memory.failedPhase,"idle","wrong Memory Pad input must wait for deliberate replay");
+  assert.equal(memory.recoveredReplay,true,"leaving and re-entering the purple console must replay even when the movement trigger boundary is missed");
+  assert.equal(memory.allPuzzleCellsVisible,true,"all Memory Pad sequence cells must remain visible while the player is in the puzzle room");
+  assert.equal(memory.framed,true,"Solo rendering in the Memory Pad room must frame the complete puzzle");
 
   const firearm=await page.evaluate(()=>{
     const dummy={id:"shock",name:"Legacy Random Gun",displayName:"ZZAP! 97% Random Gun",rarity:"ZZAP! 97%",power:9,delay:.3,shots:8,pierce:4,element:"shock",ttl:30,mods:["legacy"],rating:99,desc:"legacy random weapon"};
