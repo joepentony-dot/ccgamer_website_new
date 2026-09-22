@@ -77,7 +77,7 @@
     const next=Math.max(1,Math.min(cap,tier+1)),weapon=stageWeapon(next),first=tier===0;
     if(first)player.firearmUnlocked=true;
     const result=baseEquip(player,weapon);
-    player.firearmUnlocked=true;collapseOwnership(player);
+    player.firearmUnlocked=true;player.weaponEvolutionTier=next;player.weaponLevel=next;player.weapon=stageWeapon(next);collapseOwnership(player);
     if(first)state.acquisitions++;else state.upgrades++;
     try{
       const title=first?"FIREARM ACQUIRED":"FIREARM UPGRADED";
