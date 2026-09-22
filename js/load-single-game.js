@@ -3247,6 +3247,13 @@ function normaliseSchemaValue(value) {
 function injectGameSchema(game) {
     if (!game) return;
 
+    // Canonical game routes already contain the authoritative generated JSON-LD
+    // graph. Do not add a second runtime VideoGame/VideoObject graph on top of it.
+    const staticGameGraph = document.querySelector(
+        'script[type="application/ld+json"][data-ccg-schema="game-graph"]'
+    );
+    if (staticGameGraph) return;
+
     const existing = document.getElementById('ccg-schema');
     if (existing) existing.remove();
 
@@ -3270,17 +3277,6 @@ function injectGameSchema(game) {
                 "ratingValue": String(game.ccg_rating),
                 "bestRating": "10",
                 "ratingCount": "1"
-            }
-            : undefined,
-        "video": game.videoid
-            ? {
-                "@type": "VideoObject",
-                "name": `${game.title} Gameplay Video`,
-                "description": game.description || "",
-                "thumbnailUrl": `https://img.youtube.com/vi/${game.videoid}/hqdefault.jpg`,
-                "uploadDate": game.year ? `${game.year}-01-01` : undefined,
-                "embedUrl": `https://www.youtube.com/embed/${game.videoid}`,
-                "contentUrl": `https://www.youtube.com/watch?v=${game.videoid}`
             }
             : undefined
     };
