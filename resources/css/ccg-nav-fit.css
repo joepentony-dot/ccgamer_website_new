@@ -474,3 +474,34 @@
         min-height: 30px !important;
     }
 }
+ 
+/* ============================================================
+   MOBILE AUTH GEOMETRY RESERVATION — CLS GUARD
+   ------------------------------------------------------------
+   The auth slot is intentionally empty while a cold session is
+   restored. Reserve the same row height used by the resolved
+   controls so Join/Login or Profile/Logout cannot push the page.
+============================================================ */
+@media (min-width: 901px) and (max-width: 1199px) {
+    .ccg-header .ccg-auth-slot {
+        min-height: 36px !important;
+    }
+}
+
+@media (min-width: 701px) and (max-width: 900px) {
+    .ccg-header .ccg-auth-slot {
+        min-height: 40px !important;
+    }
+}
+
+@media (min-width: 521px) and (max-width: 700px) {
+    .ccg-header .ccg-auth-slot {
+        min-height: 35px !important;
+    }
+}
+
+@media (max-width: 520px) {
+    .ccg-header .ccg-auth-slot {
+        min-height: 34px !important;
+    }
+}
