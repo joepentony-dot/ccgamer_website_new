@@ -75,6 +75,22 @@ try{
   assert.equal(result.controller,"dungeon-solo","fullscreen input must not change Solo mode ownership");
   assert.equal(result.specialMode,"","fullscreen input must not activate retired special-mode state");
 
+  // Exercise a real focused keyboard event. Unlike the historical window-only
+  // synthetic event, this traverses document capture listeners first and guards
+  // against a late attack-recovery layer stealing F before game-main receives it.
+  const attackIntentsBeforeF=await page.evaluate(()=>Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.attackIntents||0));
+  await page.locator("#game").focus();
+  await page.keyboard.press("f");
+  await page.waitForFunction(()=>window.__ccgStage1KeyFullscreenCalls===2,null,{timeout:5000});
+  const focusedF=await page.evaluate(()=>({
+    fullscreenCalls:Number(window.__ccgStage1KeyFullscreenCalls||0),
+    attackIntents:Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.attackIntents||0),
+    held:[...(window.CCGLostSizzlerV142AttackHoldLiveness?.held||[])]
+  }));
+  assert.equal(focusedF.fullscreenCalls,2,"focused gameplay F must reach fullscreen after document capture listeners");
+  assert.equal(focusedF.attackIntents,attackIntentsBeforeF,"focused gameplay F must not create an attack intent");
+  assert.equal(focusedF.held.includes("KeyF"),false,"fullscreen F must not enter held-attack ownership");
+
   // The fullscreen button captured the original supported owner when game-main
   // installed its click listener. Restore the global binding and instrument the
   // shell request to prove that button path remains intact independently of Spy.
