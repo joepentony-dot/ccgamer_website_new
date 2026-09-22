@@ -50,6 +50,7 @@
     ["v10-42-rpg-terminology.js","CCGLostSizzlerV142RpgTerminology"],
     ["v10-42-owned-firearm-clarity.js","CCGLostSizzlerV142OwnedFirearmClarity"],
     ["v10-42-r47-firearm-evolution.js","CCGLostSizzlerV142R47FirearmEvolution"],
+    ["v10-42-r48-shop-firearm-upgrade.js","CCGLostSizzlerV142R48ShopFirearmUpgrade"],
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
     ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"],
     ["v10-42-r47-inventory-fire-recovery.js","CCGLostSizzlerV142R47InventoryFireRecovery"],
