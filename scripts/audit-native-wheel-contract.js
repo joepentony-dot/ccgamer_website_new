@@ -128,6 +128,7 @@ function assertStaticContract() {
         ["SITE-WIDE WHEEL PERFORMANCE CONTRACT", "wheel performance contract marker"],
         ["EMBEDDED MEDIA WHEEL PASS-THROUGH", "embedded media wheel guard marker"],
         [".ccg-wheel-guard", "embedded media wheel guard style"],
+        ["@media (any-hover: hover) and (any-pointer: fine)", "mouse-capable pointer activation"],
         ["body[data-collection=\"Retro Specials\"]", "Retro Specials scope"],
         [".ccg-game-card--retro-event", "Retro Specials card scope"],
         ["transform: none;", "Retro Specials compositor reset"],
@@ -451,6 +452,11 @@ return (function () {
     var host = frame.parentElement;
     var shield = host ? host.querySelector('.ccg-wheel-guard') : null;
     if (!shield) return { error: 'game video wheel shield missing' };
+
+    // Headless Chromium exposes no physical pointer media capability. Force
+    // only the already-installed shield visible here so the browser contract
+    // can drive the exact desktop/fine-pointer interaction geometry.
+    shield.style.setProperty('display', 'block', 'important');
 
     root.style.setProperty('scroll-behavior', 'auto', 'important');
     if (body) body.style.setProperty('scroll-behavior', 'auto', 'important');
