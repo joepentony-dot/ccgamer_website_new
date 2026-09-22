@@ -1246,10 +1246,11 @@ async function verifyGameArchiveEnrichment(config, job) {
   if (!slug) return { complete: false, messages: ['published game slug is unavailable for enrichment verification'] };
 
   const keyPrefix = String(job.system || '').toUpperCase() === 'AMIGA' ? 'amiga' : 'c64';
-  const [games, pendingPayload, reviews, uta, utaReview] = await Promise.all([
+  const [games, pendingPayload, reviews, reviewSupplement, uta, utaReview] = await Promise.all([
     fetchGithubJsonOptional(config, SOURCE_PATHS.games, []),
     fetchGithubJsonOptional(config, 'data/lemon-source-pending.json', []),
     fetchGithubJsonOptional(config, `data/magazine-review-records/${magazineRecordChunk(slug)}.json`, { games: {} }),
+    fetchGithubJsonOptional(config, `data/magazine-review-records/supplements/${slug}.json`, { games: {} }),
     fetchGithubJsonOptional(config, 'data/uta-game-matches.json', { games: {} }),
     fetchGithubJsonOptional(config, 'data/uta-manual-review.json', { entries: [] })
   ]);
@@ -1257,7 +1258,11 @@ async function verifyGameArchiveEnrichment(config, job) {
   const game = Array.isArray(games) ? games.find((item) => String(item?.slug || '') === slug) : null;
   const pendingRows = Array.isArray(pendingPayload) ? pendingPayload : [];
   const pending = pendingRows.map((item) => slugify(item?.slug || item?.gameSlug || item)).filter(Boolean);
-  const reviewRows = reviews?.games?.[`${keyPrefix}:${slug}`] || [];
+  const recordKey = `${keyPrefix}:${slug}`;
+  const reviewRows = [
+    ...(Array.isArray(reviews?.games?.[recordKey]) ? reviews.games[recordKey] : []),
+    ...(Array.isArray(reviewSupplement?.games?.[recordKey]) ? reviewSupplement.games[recordKey] : [])
+  ];
   const utaReleases = uta?.games?.[slug]?.releases || [];
   const utaManual = Array.isArray(utaReview?.entries)
     ? utaReview.entries.find((entry) => String(entry?.gameSlug || '') === slug)
