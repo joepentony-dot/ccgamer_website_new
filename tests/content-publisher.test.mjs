@@ -60,7 +60,7 @@ test('game publishing writes authoritative source data and optional thumbnail on
 });
 
 test('game publisher presents magazine reviews as automatic with Lemon as an optional override', () => {
-  assert.match(html, /verified magazine-review coverage/i);
+  assert.match(html, /automatic magazine-review coverage/i);
   assert.match(html, /Ultimate Tape Archive links where available/i);
   assert.match(html, /Lemon source URL \(optional override\)/i);
   assert.match(html, /original release year and publisher/i);
