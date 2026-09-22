@@ -6,7 +6,8 @@ import {
   buildUtaMapping,
   matchGameToUta,
   normalizePublisher,
-  parseUtaIndex
+  parseUtaIndex,
+  validateUtaOverrides
 } from "../scripts/generate-uta-map.mjs";
 
 const sampleIndex = `
@@ -51,6 +52,8 @@ test("UTA publisher normalisation covers common C64 label variants without title
   assert.equal(normalizePublisher("Mastertronic Added Dimension"), normalizePublisher("Mastertronic"));
   assert.equal(normalizePublisher("MAD (Mastertronic)"), normalizePublisher("Mastertronic"));
   assert.equal(normalizePublisher("Rack-It (Hewson)"), normalizePublisher("Hewson (Rack IT)"));
+  assert.equal(normalizePublisher("Hi-Tec Software"), normalizePublisher("HiTEC Software"));
+  assert.equal(normalizePublisher("Sparklers"), normalizePublisher("Creative Sparks"));
 });
 
 test("Wonder Boy resolves both the Activision original and Hit Squad cassette re-release", () => {
@@ -111,6 +114,125 @@ test("later tapes from an explicitly known publisher are retained instead of bei
   }, releases);
   assert.deepEqual(soccerBoss.releases.map((row) => row.archiveId), ["24133"]);
   assert.equal(soccerBoss.releases[0].sourceRole, "re-release");
+});
+
+test("compact title matching recovers verified punctuation and spacing variants without weakening publisher evidence", () => {
+  const releases = parseUtaIndex(`
+<a href="Highnoon_(1985_Ocean)_[2141]/">Highnoon Ocean</a>
+<a href="Highnoon_(1985_Random_Label)_[9998]/">Highnoon wrong publisher</a>
+`);
+  const result = matchGameToUta({
+    system: "C64",
+    slug: "high-noon",
+    title: "High Noon",
+    year: 1985,
+    credits: { publisher: ["Ocean"], re_releaser: [] }
+  }, releases);
+
+  assert.deepEqual(result.releases.map((row) => row.archiveId), ["2141"]);
+  assert.ok(result.review[0].excludedCandidates.some((row) => row.archiveId === "9998"));
+});
+
+test("curated exact archive overrides add independently verified releases and exclude known title collisions", () => {
+  const releases = parseUtaIndex(`
+<a href="After_Burner_(1988_Activision)_[5084]/">After Burner Activision</a>
+<a href="After_Burner_(1990_Hit_Squad)_[1441]/">After Burner Hit Squad</a>
+<a href="Sentinel_(1984_Synapse_Software)_[5181]/">Different Sentinel</a>
+<a href="Sentinel,_The_(1987_Firebird)_[9997]/">The Sentinel Firebird</a>
+`);
+
+  const games = [
+    {
+      system: "C64",
+      slug: "after-burner",
+      title: "After Burner",
+      year: 1988,
+      credits: { publisher: ["Sega"], re_releaser: [] }
+    },
+    {
+      system: "C64",
+      slug: "the-sentinel",
+      title: "The Sentinel",
+      year: 1987,
+      credits: { publisher: ["Firebird"], re_releaser: ["US Gold"] }
+    }
+  ];
+
+  const overrides = {
+    schemaVersion: 1,
+    games: {
+      "after-burner": {
+        include: [
+          { archiveId: "5084", sourceRole: "publisher" },
+          { archiveId: "1441", sourceRole: "re-release" }
+        ]
+      },
+      "the-sentinel": {
+        exclude: [
+          { archiveId: "5181", reason: "Different Synapse game with the same title." }
+        ]
+      }
+    }
+  };
+
+  const built = buildUtaMapping(games, releases, overrides);
+  assert.deepEqual(
+    built.mapping.games["after-burner"].releases.map((row) => row.archiveId),
+    ["5084", "1441"]
+  );
+  assert.deepEqual(
+    built.mapping.games["the-sentinel"].releases.map((row) => row.archiveId),
+    ["9997"]
+  );
+  assert.ok(built.manualReview.curatedExclusions.some((row) =>
+    row.gameSlug === "the-sentinel" && row.archiveId === "5181"
+  ));
+});
+
+test("UTA override validation fails closed for unknown archive IDs and conflicting include/exclude rules", () => {
+  const releases = parseUtaIndex(`
+<a href="Highnoon_(1985_Ocean)_[2141]/">Highnoon Ocean</a>
+`);
+  const games = [{
+    system: "C64",
+    slug: "high-noon",
+    title: "High Noon",
+    year: 1985,
+    credits: { publisher: ["Ocean"], re_releaser: [] }
+  }];
+
+  assert.throws(
+    () => validateUtaOverrides(games, releases, {
+      games: { "high-noon": { include: [{ archiveId: "999999", sourceRole: "publisher" }] } }
+    }),
+    /unknown archive ID/
+  );
+
+  assert.throws(
+    () => validateUtaOverrides(games, releases, {
+      games: {
+        "high-noon": {
+          include: [{ archiveId: "2141", sourceRole: "publisher" }],
+          exclude: [{ archiveId: "2141", reason: "conflict" }]
+        }
+      }
+    }),
+    /cannot be both included and excluded/
+  );
+});
+
+test("committed UTA override registry has the expected schema and no duplicate archive IDs per game", () => {
+  const overrides = JSON.parse(fs.readFileSync("data/uta-match-overrides.json", "utf8"));
+  assert.equal(overrides.schemaVersion, 1);
+  assert.ok(Object.keys(overrides.games || {}).length >= 80);
+
+  for (const [slug, rule] of Object.entries(overrides.games || {})) {
+    const includeIds = (rule.include || []).map((row) => String(row.archiveId));
+    const excludeIds = (rule.exclude || []).map((row) => String(row.archiveId));
+    assert.equal(new Set(includeIds).size, includeIds.length, `${slug} has duplicate include IDs`);
+    assert.equal(new Set(excludeIds).size, excludeIds.length, `${slug} has duplicate exclude IDs`);
+    assert.equal(includeIds.some((id) => excludeIds.includes(id)), false, `${slug} includes and excludes the same ID`);
+  }
 });
 
 test("C64 matching requires title plus known publisher/re-release evidence and uses year confidence", () => {
