@@ -311,7 +311,16 @@
         }
 
         if (title) title.textContent = "CCG Picks";
-        if (intro) intro.textContent = toSafeString(group.intro) || "A small set of CCG picks matched to the system you're browsing.";
+        if (intro) intro.textContent = "Hand-picked retro gear, books and hardware.";
+
+        const header = section.querySelector(".ccg-hardware-accordion__header");
+        if (header && !header.querySelector(".ccg-amazon-mark")) {
+            const mark = document.createElement("span");
+            mark.className = "ccg-amazon-mark";
+            mark.setAttribute("aria-hidden", "true");
+            mark.textContent = "a";
+            header.prepend(mark);
+        }
 
         section.querySelectorAll(".affiliate-products-legal").forEach((node) => node.remove());
         panel.appendChild(createDisclosure(config, "affiliate-products-legal"));
