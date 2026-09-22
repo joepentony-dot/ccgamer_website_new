@@ -324,7 +324,7 @@
         body[data-run-active="true"] .ccg-game,
         body[data-run-active="true"] .ccg-game:fullscreen,
         body[data-run-active="true"] .ccg-game:-webkit-full-screen{
-          grid-template-rows:28px minmax(0,1fr) 74px!important;
+          grid-template-rows:28px minmax(0,1fr) 146px!important;
         }
         body[data-run-active="true"] .ccg-game>.v102-topbar,
         body[data-run-active="true"] .ccg-game>.critical-strip,
@@ -346,20 +346,51 @@
         body[data-run-active="true"] .ccg-game>.player-hub{
           grid-row:3!important;
           display:grid!important;
-          grid-template-columns:minmax(0,1.18fr) minmax(0,1fr)!important;
-          grid-template-rows:minmax(0,1fr)!important;
-          gap:3px!important;
-          height:74px!important;
-          min-height:74px!important;
-          max-height:74px!important;
+          grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+          grid-template-rows:60px 78px!important;
+          gap:4px!important;
+          height:146px!important;
+          min-height:146px!important;
+          max-height:146px!important;
           padding:3px max(4px,env(safe-area-inset-right)) max(3px,env(safe-area-inset-bottom)) max(4px,env(safe-area-inset-left))!important;
           overflow:hidden!important;
         }
-        body[data-run-active="true"] .ccg-game>.player-hub>.hub-inventory,
         body[data-run-active="true"] .ccg-game>.player-hub>.hub-telemetry{
           display:none!important;
         }
+        body[data-run-active="true"] .ccg-game>.player-hub>.hub-inventory{
+          display:block!important;
+          grid-column:1 / -1!important;
+          grid-row:2!important;
+          min-width:0!important;
+          padding:4px 5px!important;
+          overflow:hidden!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub .hub-inventory-head{
+          margin-bottom:3px!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub .hub-inventory-head b{
+          font-size:6.5px!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub .hub-inventory-head span{
+          font-size:6px!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub .quick-slots{
+          grid-template-columns:repeat(6,minmax(0,1fr))!important;
+          gap:3px!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub .quick-slot{
+          height:50px!important;
+          min-height:50px!important;
+          padding-top:3px!important;
+        }
+        body[data-run-active="true"] .ccg-game>.player-hub .quick-slot .item-art-wrap{
+          width:34px!important;
+          height:34px!important;
+        }
         body[data-run-active="true"] .ccg-game>.player-hub>.core-stats{
+          grid-column:1!important;
+          grid-row:1!important;
           grid-template-columns:repeat(4,minmax(0,1fr))!important;
           gap:2px!important;
           min-width:0!important;
@@ -377,7 +408,8 @@
           font-size:9px!important;
         }
         body[data-run-active="true"] .ccg-game>.player-hub>.hub-progress{
-          grid-column:auto!important;
+          grid-column:2!important;
+          grid-row:1!important;
           display:grid!important;
           grid-template-columns:minmax(78px,1.35fr) repeat(3,minmax(38px,.55fr))!important;
           grid-template-rows:minmax(0,1fr)!important;
