@@ -55,6 +55,10 @@ function main() {
   const reviewKeys = loadReviewKeys();
   const catalogueKeys = [];
   const missing = [];
+  const platform = {
+    c64: { total: 0, missing: [] },
+    amiga: { total: 0, missing: [] }
+  };
 
   games.forEach((game) => {
     const system = normaliseSystem(game?.system);
@@ -62,17 +66,28 @@ function main() {
     if (!system || !slug) return;
     const key = `${system}:${slug}`;
     catalogueKeys.push(key);
-    if (!reviewKeys.has(key)) missing.push(key);
+    platform[system].total += 1;
+    if (!reviewKeys.has(key)) {
+      missing.push(key);
+      platform[system].missing.push(key);
+    }
   });
 
   const covered = catalogueKeys.length - missing.length;
   console.log(`[magazine-review-coverage] Catalogue games checked: ${catalogueKeys.length}`);
   console.log(`[magazine-review-coverage] Games with curated magazine review records: ${covered}`);
   console.log(`[magazine-review-coverage] Games without a curated review record: ${missing.length}`);
-  console.log("[magazine-review-coverage] New games automatically receive magazine reviews when a matching source record exists; missing reviews are never invented.");
+  console.log(`[magazine-review-coverage] C64: ${platform.c64.total - platform.c64.missing.length}/${platform.c64.total} with review records; ${platform.c64.missing.length} without.`);
+  console.log(`[magazine-review-coverage] Amiga: ${platform.amiga.total - platform.amiga.missing.length}/${platform.amiga.total} with review records; ${platform.amiga.missing.length} without.`);
+  console.log("[magazine-review-coverage] New or enrichment-relevant changed games are validated separately before publishing can be marked complete; missing historical reviews are reported but never invented.");
 
   if (process.argv.includes("--verbose") && missing.length) {
-    console.log(`[magazine-review-coverage] Missing source records: ${missing.join(", ")}`);
+    if (platform.c64.missing.length) {
+      console.log(`[magazine-review-coverage] Missing C64 source records: ${platform.c64.missing.join(", ")}`);
+    }
+    if (platform.amiga.missing.length) {
+      console.log(`[magazine-review-coverage] Missing Amiga source records: ${platform.amiga.missing.join(", ")}`);
+    }
   }
 }
 
