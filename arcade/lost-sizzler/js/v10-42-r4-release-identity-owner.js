@@ -26,9 +26,10 @@
     const badge=document.querySelector(".build-badge");
     const expectedSubtitle=`C64 DUNGEON CARNAGE — ${activeFamily()}`;
     const expectedBadge=`BUILD ${activeBuild().toUpperCase()}`;
+    const updateOwned=String(badge?.textContent||"").trim().toUpperCase()==="UPDATE AVAILABLE";
     let changed=false;
     if(subtitle&&subtitle.textContent!==expectedSubtitle){subtitle.textContent=expectedSubtitle;changed=true}
-    if(badge&&badge.textContent!==expectedBadge){badge.textContent=expectedBadge;changed=true}
+    if(badge&&!updateOwned&&badge.textContent!==expectedBadge){badge.textContent=expectedBadge;changed=true}
     state.stamps+=1;
     return changed;
   }
