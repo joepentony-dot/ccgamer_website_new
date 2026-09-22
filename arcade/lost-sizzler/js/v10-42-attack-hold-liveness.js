@@ -5,7 +5,7 @@
 
   const ATTACK_KEYS=new Set(["Space","Numpad0"]); // KeyF is reserved exclusively for fullscreen.
   const held=new Set();
-  const diagnostics={keydowns:0,keyups:0,normalisedHolds:0,clears:0};
+  const diagnostics={keydowns:0,keyups:0,normalisedHolds:0,clears:0,pressVerifications:0,pressRecoveries:0,pressRecoveryFailures:0};
 
   const activeRun=()=>document.body?.dataset?.runActive==="true";
   const currentMode=()=>{try{return typeof mode!=="undefined"?String(mode):""}catch(_){return""}};
@@ -32,6 +32,37 @@
     try{input?.delete?.("Space");input?.delete?.("KeyF");input?.delete?.("Numpad0")}catch(_){}
   }
 
+  function attackSnapshot(){
+    let player=null;try{player=p1||null}catch(_){}
+    let shots=0;
+    try{shots=(host?.projectiles||[]).filter(projectile=>projectile?.active!==false&&(!player||projectile.owner===player.id)).length}catch(_){
+      try{shots=(bullets||[]).filter(projectile=>projectile?.ttl>0&&(!player||projectile.owner===player.id)).length}catch(_){}
+    }
+    return{
+      mana:Math.max(0,Number(player?.mana||0)),
+      shots,
+      fire:Number(typeof fire1!=="undefined"?fire1:0),
+      buffer:Number(typeof fireBuffer1!=="undefined"?fireBuffer1:0)
+    };
+  }
+
+  function verifyFreshPress(code,before){
+    setTimeout(()=>{
+      if(!held.has(code)||!activeRun()||currentMode()!=="playing"||spyActive())return;
+      diagnostics.pressVerifications++;
+      const after=attackSnapshot();
+      const handled=after.mana<before.mana||after.shots>before.shots||after.fire>0||after.buffer>0;
+      if(handled)return;
+      const r20=window.CCGLostSizzlerV142R20LiveRegressionStability;
+      if(typeof r20?.attackNow!=="function"){diagnostics.pressRecoveryFailures++;return}
+      let repaired=false;
+      try{repaired=Boolean(r20.attackNow(code))}catch(_){repaired=false}
+      if(repaired)diagnostics.pressRecoveries++;
+      else diagnostics.pressRecoveryFailures++;
+      scheduleSync();
+    },120);
+  }
+
   /*
     R20 owns the immediate capture-phase attack repair. Its successful direct
     shot deliberately removes the triggering key from the shared input Set.
@@ -42,7 +73,9 @@
   */
   addEventListener("keydown",event=>{
     if(!ATTACK_KEYS.has(event.code)||editableTarget(event.target)||!activeRun()||spyActive())return;
+    const fresh=!event.repeat&&!held.has(event.code),before=fresh?attackSnapshot():null;
     held.add(event.code);diagnostics.keydowns++;scheduleSync();
+    if(fresh)verifyFreshPress(event.code,before);
   },true);
 
   addEventListener("keyup",event=>{
