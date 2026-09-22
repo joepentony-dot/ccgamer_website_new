@@ -4,6 +4,14 @@
 
 Dungeon Carnage purchase/download distribution, release packaging, desktop/Windows packaging candidates, and any account-service boundary that must remain separate from product delivery. Primary areas include `scripts/`, `desktop/`, `arcade/lost-sizzler/`, supporting workflows/contracts, and historical `services/ccg-backend/` commerce work.
 
+## Retired-mode release-policy change — 22 September 2026
+
+The product policy has changed after the earlier Stage 8 package: public Dungeon Carnage now supports **Solo and Tutorial only**. Local 2P Split Screen and the Weekly High-Score Vault are retired public modes, and the old package handoff that preserved or advertised them is superseded.
+
+The existing Stage 8 artifact remains historical qualification evidence but is **not** the final publication candidate under this new policy. After the public retired-mode cleanup qualifies and merges, regenerate the itch.io artifact from that exact current runtime and verify that no Split Screen or Weekly Vault entry point is exposed.
+
+Live Supabase inspection confirms no active `pg_cron` jobs, while the Weekly challenge/results Edge Functions are deployed as fail-closed HTTP 410 retirement stubs.
+
 ## Verified checkpoint — 2026-09-18
 
 The intended distribution route is **itch.io**. `arcade/lost-sizzler/PROGRESS.md` records itch.io as the purchase/download route and marks the old PayPal-specific checkout/paywall/download plan **SUPERSEDED**. The CCG website remains the branded landing/demo experience. CCG account/community services are not a reason to revive the old custom payment-delivery stack.
