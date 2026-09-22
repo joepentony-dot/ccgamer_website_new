@@ -2,7 +2,7 @@
  *
  * Production remains closed to ordinary visitors while maintenance is active.
  * The signed-in Cheeky Commodore Gamer admin profile is allowed through so the
- * live R51 build can be acceptance-tested without reopening the game publicly.
+ * live build can be acceptance-tested without reopening the game publicly.
  */
 (function () {
   "use strict";
@@ -64,7 +64,7 @@
 
     const profileResult = await client
       .from("profiles")
-      .select("username, display_name, role")
+      .select("username, display_name, role, is_admin, banned")
       .eq("id", user.id)
       .maybeSingle();
 
@@ -76,7 +76,9 @@
     if (!profile) return false;
     return normalise(profile.username) === OWNER_USERNAME
       && normalise(profile.display_name) === OWNER_DISPLAY_NAME
-      && normalise(profile.role) === OWNER_ROLE;
+      && normalise(profile.role) === OWNER_ROLE
+      && profile.is_admin === true
+      && profile.banned !== true;
   }
 
   async function checkOwner() {
