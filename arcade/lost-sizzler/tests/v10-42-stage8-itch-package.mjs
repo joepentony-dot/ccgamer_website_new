@@ -55,7 +55,7 @@ try{
   assert.match(stagedIndex,/js\/itch-release-runtime\.js\?v=/,"staged itch build must load its package-only gate");
   assert.match(stagedIndex,/https:\/\/www\.cheekycommodoregamer\.co\.uk\/games\/ccg-games\//,"exit links must leave itch safely for the CCG website");
   assert.doesNotMatch(stagedIndex,/weekly-vault|Weekly High-Score Vault|Weekly Dungeon|2P Split Screen|P2:/i,"standalone itch index must keep retired Weekly/Split surfaces absent");
-  assert.match(sourceIndex,/src="\/resources\/images\/hero\/c64-dungeon-carnage-home-v2\.webp"/,"canonical website loader must use the current Dungeon Carnage artwork");
+  assert.match(sourceIndex,/src="\/resources\/images\/hero\/c64-dungeon-carnage-home-v2\.webp(?:\?[^"]*)?"/,"canonical website loader must use the current Dungeon Carnage artwork");
   assert.match(stagedIndex,/src="assets\/c64-dungeon-carnage-loader\.webp"/,"standalone itch loader must use the packaged current Dungeon Carnage artwork");
   assert.doesNotMatch(stagedIndex,/(?:href|src)="\/(?!\/)/,"standalone itch index must not depend on root-relative website paths");
 
