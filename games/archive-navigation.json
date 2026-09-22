@@ -4,14 +4,6 @@
   "platformHub": "/games/platforms/",
   "years": [
     {
-      "year": 1979,
-      "count": 1,
-      "c64Count": 1,
-      "amigaCount": 0,
-      "indexable": false,
-      "url": "/games/years/1979/"
-    },
-    {
       "year": 1982,
       "count": 10,
       "c64Count": 10,
@@ -37,8 +29,8 @@
     },
     {
       "year": 1985,
-      "count": 97,
-      "c64Count": 97,
+      "count": 98,
+      "c64Count": 98,
       "amigaCount": 0,
       "indexable": true,
       "url": "/games/years/1985/"
@@ -137,9 +129,9 @@
       "key": "c64",
       "name": "Commodore 64",
       "count": 559,
-      "firstYear": 1979,
+      "firstYear": 1982,
       "lastYear": 2023,
-      "yearCount": 13,
+      "yearCount": 12,
       "url": "/games/platforms/c64/"
     },
     {
