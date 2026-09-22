@@ -373,8 +373,8 @@
     // Populate the subtle collapsed score even before the accordion is opened.
     render();
 
-    window.addEventListener('ccg:auth-ready', render);
-    window.addEventListener('ccg:auth-changed', render);
-    window.addEventListener('ccg:rating-updated', render);
+    window.addEventListener('ccg:auth-ready', function () { render(); });
+    window.addEventListener('ccg:auth-changed', function () { render(); });
+    window.addEventListener('ccg:rating-updated', function () { if (!panel || panel.open) render(); });
   });
 })();
