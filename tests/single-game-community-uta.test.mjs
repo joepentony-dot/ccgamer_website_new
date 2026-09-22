@@ -43,6 +43,34 @@ test("UTA parser preserves multiple releases and normalises known publisher vari
   assert.equal(normalizePublisher("Elite Systems Ltd"), normalizePublisher("Elite"));
 });
 
+test("UTA publisher normalisation covers common C64 label variants without title-only guessing", () => {
+  assert.equal(normalizePublisher("Firebird Silver"), normalizePublisher("Firebird"));
+  assert.equal(normalizePublisher("CBS Software"), normalizePublisher("CBS Electronics Software"));
+  assert.equal(normalizePublisher("Virgin Games"), normalizePublisher("Virgin"));
+  assert.equal(normalizePublisher("Ultimate Play The Game"), normalizePublisher("Ultimate"));
+  assert.equal(normalizePublisher("Mastertronic Added Dimension"), normalizePublisher("Mastertronic"));
+  assert.equal(normalizePublisher("MAD (Mastertronic)"), normalizePublisher("Mastertronic"));
+  assert.equal(normalizePublisher("Rack-It (Hewson)"), normalizePublisher("Hewson (Rack IT)"));
+});
+
+test("Wonder Boy resolves both the Activision original and Hit Squad cassette re-release", () => {
+  const releases = parseUtaIndex(`
+<a href="Wonder_Boy_(1987_Activision)_[6764]/">Wonder Boy Activision</a>
+<a href="Wonder_Boy_(1991_Hit_Squad)_[1677]/">Wonder Boy Hit Squad</a>
+`);
+  const wonderBoy = {
+    system: "C64",
+    slug: "wonder-boy",
+    title: "Wonder Boy",
+    year: 1987,
+    credits: { publisher: ["Activision"], re_releaser: ["The Hit Squad"] }
+  };
+  const result = matchGameToUta(wonderBoy, releases);
+  assert.deepEqual(result.releases.map((row) => row.archiveId), ["6764", "1677"]);
+  assert.deepEqual(result.releases.map((row) => row.sourceRole), ["publisher", "re-release"]);
+  assert.deepEqual(result.review, []);
+});
+
 test("C64 matching requires title plus known publisher/re-release evidence and uses year confidence", () => {
   const releases = parseUtaIndex(sampleIndex);
   const result = matchGameToUta(ace, releases);
