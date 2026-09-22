@@ -4,6 +4,16 @@
 
 The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
+## Active V10.42 R51 retired-mode candidate — 22 September 2026
+
+Branch `codex/dungeon-r51-retired-modes-current-main` starts from merged R50 main `4f300919e6acb15bbd291bbc82f3a4f762aa3a4e` and supersedes stale draft #2240.
+
+Public policy is now Solo/Tutorial/Resume only. Weekly High-Score Vault, Split Screen and public developer/active-work presentation are removed from the Dungeon page, Home and CCG Games maintenance hub. Historical `daily-btn`/`split-btn` DOM anchors remain hidden/inert solely because `game-main.js` still binds legacy listeners during startup; deleting the split anchor before core wiring can destabilise packaged startup.
+
+The itch package now declares only Solo/Tutorial, with no Weekly handoff or public Split ownership. An inert `CCGWeeklyChallenge` compatibility stub remains package-only for historical runtime references and cannot reserve attempts or advertise the retired feature.
+
+Live Supabase verification: no active cron rows; both Weekly Edge Functions are deployed HTTP 410 retirement stubs.
+
 ## Active V10.42 R50 combined blocker candidate — 22 September 2026
 
 Branch `codex/dungeon-r50-combined-blockers` consolidates the user-reproduced R50 blockers on top of the already-qualified #2241 fullscreen/input/layout candidate rather than releasing partial fixes.
