@@ -2,17 +2,17 @@
 
 > Legacy repository path: `arcade/lost-sizzler/`. The customer-facing game name is **C64 Dungeon Carnage**. Historical internal identifiers may still use `Lost Sizzler` where compatibility requires them.
 
-## Active V10.42 R50 combined blocker candidate — 22 September 2026
+## V10.42 R50 combined blocker release — MERGED 22 September 2026
 
-- **Branch:** `codex/dungeon-r50-combined-blockers`.
-- Built on the already-green #2241 R50 fullscreen/input/layout head; current `main` remains authoritative at merge time.
-- Reconciles the qualified #2233 pickup/audio diagnostic changes without merging that older draft independently.
-- **Nightmare cassette / horror path:** Archive Wraith spawn no longer reuses the Death Stalker `stalker` sting. It uses the normal alert cue, and V10.4 no longer owns a second AudioContext or recurring beat oscillators. Horror state only lowers the established central music level while a Wraith is alive, checked on a bounded 250 ms cadence and reported to the bug recorder.
-- **Memory Pad:** the purple console now uses simulation-owned edge detection, so stepping onto it reliably starts/replays the sequence without restarting every frame while stationary. The unresolved puzzle camera centres the pad/console footprint, avoids sidebar-driven false mobile zoom, and keeps every pad/console readable while the player is in the room.
-- **Loader:** release loading now uses `/resources/images/hero/c64-dungeon-carnage-home-v2.webp`.
-- **Audio diagnostics:** exact SFX, item collection, music state and collectible-horror state are retained. The pickup-caused immediate level-up SFX staggering from #2233 is included.
-- Added `tests/v10-42-r50-combined-blockers.mjs` and carried forward the #2233 pickup-audio contract.
-- **Status:** IMPLEMENTED / EXACT-HEAD QUALIFICATION PENDING. Do not merge until the combined head is fully green and safe.
+- **PR #2243** exact head `18a909cdd28b57906151925bee67a5e165f27b52` passed all nine triggered pre-merge workflows, including canonical/Node contracts, all six Chromium shards, itch.io packaging and CCG Site Safety.
+- Merged to `main` as `4f300919e6acb15bbd291bbc82f3a4f762aa3a4e`, publishing `V10.42 r50` / `20260922r50`.
+- **Nightmare cassette / horror path:** Archive Wraith spawn no longer reuses the Death Stalker `stalker` sting. It uses the normal alert cue, V10.4 no longer owns a second AudioContext or recurring beat oscillators, and the horror-state observer is bounded to 250 ms while using the established central music owner.
+- **Memory Pad:** the purple replay console is simulation-owned and edge-triggered; stepping onto it reliably starts/replays the sequence without per-frame restart. The unresolved puzzle camera centres the complete pad/console footprint, avoids sidebar-driven false mobile zoom and keeps the pads/console readable in the room.
+- **Loader:** the release loader uses `/resources/images/hero/c64-dungeon-carnage-home-v2.webp`; the itch.io packager carries the same artwork as `assets/c64-dungeon-carnage-loader.webp`.
+- **Audio diagnostics:** exact SFX, item collection, music state and collectible-horror state are retained. Pickup-caused immediate level-up SFX staggering from #2233 is included.
+- #2233 is closed as superseded by the combined release. #2241's work is contained in the merged R50 ancestry.
+- Post-merge GitHub Pages deployment and live public navigation verification passed. A follow-up production-smoke-only correction updates its hard-coded expected identity from r46 to r50; runtime/gameplay files are unchanged.
+- **Manual acceptance still required:** reproduce the Nightmare cassette pickup during a meaningful Floor 3 run, verify no severe slowdown/standstill follows, verify the Memory Console replays on entry and all five pads are visible, and verify fullscreen/F behaves correctly on the deployed build.
 
 ## Historical r50 fullscreen/input follow-up — PR #2241
 
