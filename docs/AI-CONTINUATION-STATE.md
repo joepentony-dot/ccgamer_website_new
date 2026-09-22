@@ -8,6 +8,13 @@ For Dungeon Carnage specifically, `arcade/lost-sizzler/PROGRESS.md` is the produ
 
 Update this file when a workstream changes category, its active PR/dependency changes, or a substantial session ends. Keep detailed reasoning, checks, blockers, and next actions in the workstream file.
 
+## Temporary CCG play-games maintenance — 22 September 2026
+
+- PR #2232 / branch `codex/temporary-play-games-maintenance` temporarily takes both CCG original browser games offline on the production CCG hostname without changing their gameplay/runtime logic.
+- A shared production-only gate is loaded by the Commodore Quest public/runtime entries and C64 Dungeon Carnage. Localhost and non-production previews remain usable for development and acceptance testing.
+- `/games/ccg-games/` becomes the maintenance destination and links to the existing CCG Trivia League and Game Box Hangman instead of duplicating Hangman code.
+- Longer-term direction is a distinct `Play Games` hub for interactive experiences while `/games/` remains the established C64/Amiga archive.
+- Detailed record: [play-games-maintenance-2026-09-22.md](ai-work/play-games-maintenance-2026-09-22.md).
 ## Single-game community and UTA checkpoint — 22 September 2026
 
 - PR #2227 / branch `codex/single-game-community-uta` is the bounded implementation vehicle for the shared individual-game rating/review presentation and C64 Ultimate Tape Archive integration.
