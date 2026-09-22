@@ -83,6 +83,14 @@ Known seed exclusions at this checkpoint:
 
 The Summit Bangkok Knights archive `[8568]` is included because Summit is already a known CCG re-release publisher for that game. Its UTA year is unknown (`0`), so the UI omits a definitive year rather than inventing one.
 
+## Search Console VideoObject uploadDate correction
+
+The affected canonical game pages already contain the verified YouTube `uploadDate` emitted by the static video-SEO generator with a UTC `Z` suffix. The warning was caused by the browser runtime adding a second nested `VideoObject` whose `uploadDate` was incorrectly fabricated from the game's release year as `YYYY-01-01`.
+
+This branch now makes the generated `data-ccg-schema="game-graph"` authoritative on canonical game routes and skips the legacy runtime schema when that graph exists. The runtime fallback no longer emits a VideoObject at all, so it cannot invent a YouTube upload date from a game release year. `scripts/validate-video-seo.js` also rejects datetime upload dates that contain a time but omit `Z` or an explicit `±HH:MM` offset.
+
+This applies through the shared individual-game runtime rather than editing the Search Console example pages individually.
+
 ## Qualification
 
 Focused regression coverage is in `tests/single-game-community-uta.test.mjs` and runs together with the existing rating single-refresh and community-summary critical-path guards.
@@ -100,6 +108,9 @@ The test contract covers:
 - edit/delete/report/helpful preservation;
 - removal of the invalid `game_slug` comment insert;
 - shared-template UTA placement and C64-only runtime gating;
+- canonical game pages do not receive a duplicate runtime schema graph;
+- runtime schema never fabricates `uploadDate` from the game release year;
+- datetime `uploadDate` validation requires `Z` or an explicit timezone offset;
 - responsive community/tape CSS remains owned by the existing shared stylesheets.
 
 The repository's Public Code Cache Version guard requires this public JS/CSS change to ship with a new `CODE_CACHE_VERSION`, so PR #2227 also contains the corresponding `service-worker.js` cache namespace bump. This is a deployment-supporting change only, not an unrelated PWA redesign.
