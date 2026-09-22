@@ -57,7 +57,7 @@ try{
   assert.ok(report.recentEvents.some(event=>event.type==="fire-probe"),"report must retain post-attack liveness evidence");
 
   await page.click("#ccg-bug-report-btn");
-  await page.waitForFunction(()=>!document.getElementById("ccg-bug-report-modal")?.classList.contains("hidden"));
+  await page.waitForFunction(()=>document.getElementById("ccg-bug-report-modal")?.open===true);
   const text=await page.locator("#ccg-bug-report-text").inputValue();
   assert.match(text,/CCG DUNGEON CARNAGE BUG REPORT/);
   assert.match(text,/Fire state:/);
