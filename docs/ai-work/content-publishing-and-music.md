@@ -130,3 +130,24 @@ Current verified result: the admin game form has no game-music upload control; R
 
 - 2026-09-18: #2150 merged after exact-head qualification; #2157 materialised Road Rash and its 21 magazine review records; #2110 closed unmerged as superseded.
 - 2026-09-18: #2159 merged after all triggered checks passed; its first Site Safety attempt hit an unrelated WebDriver timeout and the unchanged rerun passed.
+
+
+## Active Content Publisher enrichment regression repair — 22 September 2026
+
+PR #2263 / branch `codex/fix-content-publisher-enrichment-regression` is the bounded repair for the Wonder Boy publication and the systemic game-enrichment contract.
+
+The source publication commit for Wonder Boy exposed three separate failures that must be treated together:
+
+- the Content Publisher accepted `year: 1979` even though the supplied description identified the C64 conversion as 1987;
+- automatic Lemon discovery tried only the hyphenated `/game/wonder-boy` candidate, while the verified Lemon64 page uses `/game/wonderboy`, leaving magazine discovery pending while Reliable Games Publishing still reported success;
+- the bad year caused the UTA generator to accept only the 1991 Hit Squad re-release and reject the verified 1987 Activision tape as a year mismatch.
+
+#2263 corrects Wonder Boy to the 1987 Activision C64 release, stores its verified Lemon64 source, adds eight verified magazine-review records, and requires both UTA releases (Activision 1987 archive 6764 and Hit Squad 1991 archive 1677). It also broadens Lemon candidate discovery to compact legacy slugs while retaining exact title/platform/year/publisher validation.
+
+The repair is systemic rather than Wonder Boy-only. Reliable Games Publishing now performs explicit full-catalog magazine and C64 UTA audits, then applies a strict completion gate to new or enrichment-relevant changed games. Known unresolved magazine or UTA enrichment can no longer be silently treated as a complete publication. The browser completion guard also now understands the current string-array Lemon retry queue.
+
+Full-catalog evidence gathered before the repair: 559 C64 records; 306 confidently mapped UTA games; 114 UTA manual-review candidates; 471/559 C64 games with magazine-review records and 88 historical C64 records without a verified review row. Publisher-label normalisation added in #2263 identifies 36 historical C64 UTA candidates recoverable through known-equivalent label forms while retaining title/year confidence. Historical missing magazine rows remain an audit queue and are not fabricated.
+
+The first #2263 qualification head exposed one stale wording assertion in `tests/game-zzap-links.test.mjs`; the implementation was unchanged and the established “automatic magazine-review coverage” wording was restored. The subsequent head passed Content Publisher Validation, Phase 6B magazine/UTA regressions, SEO, structured/social metadata, cache, image, wheel, download and category/index checks while CCG Site Safety was still running. Any later head must be re-qualified before merge.
+
+Guardrails: no Dungeon Carnage runtime, intro loader, public navigation, logo/mode toggle or unrelated layout is in scope. Do not merge #2263 until its exact current head is fully green and merge authorization is confirmed.
