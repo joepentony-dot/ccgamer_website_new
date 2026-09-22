@@ -76,3 +76,12 @@ There is no current generated-output integration candidate requiring manual acti
 - 2026-09-16: Initial checkpoint classified #1752/#1759 as stale relative to then-current #2101 output.
 - 2026-09-16: Live re-audit found newer merged #2109 and classified #2107 as superseded; #2107/#1759/#1752 were closed without merge.
 - 2026-09-16: Post-#2104 reconciliation identified merged #2111 as the newer SEO/video-page automation result while preserving #2109 as the separate authoritative game/archive publication result.
+
+## Mobile CLS / retro watch-page follow-up — 22 September 2026
+
+Search Console now groups 43 mobile URLs under CLS > 0.25 with `/retro-specials/50-essential-amiga-games/` as the representative page and a field group value of 0.27. This is being handled as a shared generated retro-page/header stability issue, not as an individual-page edit.
+
+- Read-only diagnostic: draft #2234 extends the existing Phase 8A harness to the representative retro route.
+- Bounded implementation: `codex/retro-mobile-cls-stability` reserves unresolved auth geometry and moves the retro family’s final responsive CSS cascade into render-blocking template output.
+- Generated retro HTML remains automation-owned. Source changes are made in `admin/templates/retro-video-template.html` and shared CSS; SEO Automation materialises the family after merge.
+- Detailed record: [mobile-cls-retro-video-2026-09-22.md](mobile-cls-retro-video-2026-09-22.md).
