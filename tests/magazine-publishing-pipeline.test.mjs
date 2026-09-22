@@ -51,9 +51,9 @@ test("missing Lemon sources retry through live/archive fallback without becoming
   assert.match(discovery, /fetchLemonHtml/);
   assert.match(refresh, /fetchLemonHtml/);
   assert.doesNotMatch(workflow, /refresh-lemon-game-cache\.js --check/);
-  assert.doesNotMatch(workflow, /Require new-game enrichment completion/);
-  assert.doesNotMatch(workflow, /node scripts\/validate-new-game-enrichment\.mjs --base HEAD\^/);
-  assert.match(workflow, /External Lemon64\/Lemon Amiga availability is optional and cannot block publishing/);
+  assert.match(workflow, /Require new or changed game enrichment completion/);
+  assert.match(workflow, /node scripts\/validate-new-game-enrichment\.mjs --base HEAD\^/);
+  assert.match(workflow, /Audit all C64 UTA enrichment candidates/);
 });
 
 test("Speed King migration establishes the original Digital Integration release before source refresh", () => {
@@ -129,6 +129,36 @@ test("Premiere materializes the 15 verified reviews from its local Lemon Amiga c
   assert.match(runtime, /if \(!rows\.length\)/);
 });
 
+
+
+
+test("Wonder Boy retains the eight verified magazine reviews required by the C64 game page", () => {
+  const supplementPath = path.join(
+    root,
+    "data",
+    "magazine-review-records",
+    "supplements",
+    "wonder-boy.json"
+  );
+  const supplement = JSON.parse(fs.readFileSync(supplementPath, "utf8"));
+  const rows = supplement.games?.["c64:wonder-boy"] || [];
+
+  assert.equal(rows.length, 8);
+  assert.deepEqual(
+    rows.map((row) => [row.magazine, row.score, row.scorePercent]),
+    [
+      ["C&VG", "62%", 62],
+      ["Commodore Force", "63%", 63],
+      ["Commodore User", "6/10", 60],
+      ["Datormagazin", "2.3/5", 46],
+      ["Your Commodore", "8/10", 80],
+      ["Your Commodore", "3/5", 60],
+      ["Zzap!64", "52%", 52],
+      ["Zzap!64", "63%", 63]
+    ]
+  );
+  assert.equal(rows.every((row) => row.scanStatus === "available" && row.url), true);
+});
 
 test("Road Rash retains the 21 verified magazine records required by the game page", () => {
   const supplementPath = path.join(
