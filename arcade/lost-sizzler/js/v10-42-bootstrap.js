@@ -6,6 +6,19 @@
 
   const BUILD="V10.42 r51";
   const CACHE="20260922r51";
+  const prerequisites=[
+    ["v10-41-r30-owner-seal.js","CCGLostSizzlerV141R30OwnerSeal"],
+    ["v10-41-mode-runtime.js","CCGLostSizzlerModeRuntime"],
+    ["v10-41-solo-stability-diagnostics.js","CCGLostSizzlerSoloDiagnostics"],
+    ["v10-41-post-playtest-stability.js","CCGLostSizzlerV141PostPlaytestStability"],
+    ["v10-41-r56-playtest-completion.js","CCGLostSizzlerV141R56PlaytestCompletion"],
+    ["v10-41-r59-live-regression-fixes.js","CCGLostSizzlerV141R59LiveRegressionFixes"],
+    ["v10-41-r31-solo-dungeon-regressions.js","CCGLostSizzlerV141R31SoloDungeon"],
+    ["v10-41-horde-frame-performance.js","CCGLostSizzlerV141HordeFramePerformance"],
+    ["v10-41-r60-horde-owner-composition.js","CCGLostSizzlerV141R60HordeOwnerComposition"],
+    ["v10-41-stage8-npc-dialogue.js","CCGLostSizzlerStage8NpcDialogue"],
+    ["v10-41-stage13-encounter-completion.js","CCGLostSizzlerStage13EncounterCompletion"]
+  ];
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-r23-rpg-build-focus.js","CCGLostSizzlerV142R23RpgBuildFocus"],
@@ -201,6 +214,29 @@
   }
 
   function alreadyLoaded(marker){return Boolean(marker&&window[marker])}
+  function loadPrerequisite(file,marker){
+    if(alreadyLoaded(marker))return Promise.resolve();
+    return new Promise((resolve,reject)=>{
+      const existing=[...document.scripts].find(script=>String(script.src||"").includes(`/js/${file}`));
+      const verify=()=>{
+        if(alreadyLoaded(marker)){resolve();return}
+        reject(new Error(`Supported runtime prerequisite did not initialise: ${file}`));
+      };
+      if(existing){
+        if(alreadyLoaded(marker)){resolve();return}
+        existing.addEventListener("load",verify,{once:true});
+        existing.addEventListener("error",()=>reject(new Error(`Failed to load supported runtime prerequisite: ${file}`)),{once:true});
+        return;
+      }
+      const script=document.createElement("script");
+      script.async=false;
+      script.src=`js/${file}?v=${CACHE}`;
+      script.dataset.ccgV142Prerequisite="true";
+      script.onload=verify;
+      script.onerror=()=>reject(new Error(`Failed to load supported runtime prerequisite: ${file}`));
+      document.head.appendChild(script);
+    })
+  }
   function announceModuleProgress(file,status){
     state.currentModule=String(file||"");
     state.currentIndex=Math.min(state.totalModules,status==="loaded"?state.loaded.length:Math.max(state.loaded.length+1,1));
@@ -277,6 +313,7 @@
   async function boot(){
     setReleaseReady(false);stampBuild();
     try{
+      for(const [file,marker] of prerequisites)await loadPrerequisite(file,marker);
       for(const [file,marker] of modules){
         await loadOne(file,marker);
         if(file==="v10-42-r1-stability.js")captureR1ChestOwner();
