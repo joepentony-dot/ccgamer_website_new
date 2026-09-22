@@ -71,6 +71,48 @@ test("Wonder Boy resolves both the Activision original and Hit Squad cassette re
   assert.deepEqual(result.review, []);
 });
 
+test("composite re-release credits expose each explicit label component to UTA matching", () => {
+  const releases = parseUtaIndex(`
+<a href="Silkworm_(1992_Tronix)_[5873]/">Silkworm Tronix</a>
+<a href="Silkworm_(1989_Virgin)_[9783]/">Silkworm Virgin</a>
+`);
+  const game = {
+    system: "C64",
+    slug: "silkworm",
+    title: "Silkworm",
+    year: 1989,
+    credits: { publisher: ["The Sales Curve"], re_releaser: ["Tronix (Virgin Games)"] }
+  };
+  const result = matchGameToUta(game, releases);
+  assert.deepEqual(result.releases.map((row) => row.archiveId), ["9783", "5873"]);
+  assert.ok(result.releases.every((row) => row.sourceRole === "re-release"));
+});
+
+test("later tapes from an explicitly known publisher are retained instead of being dropped by an arbitrary one-year ceiling", () => {
+  const releases = parseUtaIndex(`
+<a href="Choplifter!_(1984_Ariolasoft)_[4263]/">Choplifter Ariolasoft</a>
+<a href="Soccer_Boss_(1987_Alternative_Software)_[24133]/">Soccer Boss Alternative</a>
+`);
+  const choplifter = matchGameToUta({
+    system: "C64",
+    slug: "choplifter",
+    title: "Choplifter",
+    year: 1982,
+    credits: { publisher: ["Ariolasoft", "Brøderbund"], re_releaser: [] }
+  }, releases);
+  assert.deepEqual(choplifter.releases.map((row) => row.archiveId), ["4263"]);
+
+  const soccerBoss = matchGameToUta({
+    system: "C64",
+    slug: "soccer-boss",
+    title: "Soccer Boss",
+    year: 1984,
+    credits: { publisher: ["Alternative Software"], re_releaser: ["Alternative Software"] }
+  }, releases);
+  assert.deepEqual(soccerBoss.releases.map((row) => row.archiveId), ["24133"]);
+  assert.equal(soccerBoss.releases[0].sourceRole, "re-release");
+});
+
 test("C64 matching requires title plus known publisher/re-release evidence and uses year confidence", () => {
   const releases = parseUtaIndex(sampleIndex);
   const result = matchGameToUta(ace, releases);
