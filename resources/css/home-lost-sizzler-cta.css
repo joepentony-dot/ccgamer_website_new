@@ -1,27 +1,62 @@
-/* Home-page C64 Dungeon Carnage artwork inside the game CTA. */
+/* Compact home-page C64 Dungeon Carnage art link.
+   This file intentionally overrides the shared yellow beta-button treatment on home only. */
 html[data-ccg-page="home"] .home-hero__game-actions {
-  display: flex;
+  display: flex !important;
   align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
-  gap: 12px;
+  width: 100% !important;
+  margin: 4px auto 0 !important;
+  gap: 0 !important;
   touch-action: pan-y;
   overscroll-behavior: auto;
 }
 
+html[data-ccg-page="home"] .home-hero__beta-cta,
+html[data-ccg-page="home"] body[data-ccg-mode="c64"] .home-hero__beta-cta,
+html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .home-hero__beta-cta {
+  display: block !important;
+  width: min(440px, 100%) !important;
+  min-height: 0 !important;
+  margin: 0 auto !important;
+  padding: 4px !important;
+  color: inherit !important;
+  background: rgba(3, 7, 15, 0.86) !important;
+  border: 1px solid rgba(108, 236, 255, 0.34) !important;
+  border-radius: 13px !important;
+  box-shadow:
+    0 9px 22px rgba(0, 0, 0, 0.48),
+    0 0 14px rgba(108, 236, 255, 0.12) !important;
+  text-shadow: none !important;
+  overflow: hidden;
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+html[data-ccg-page="home"] .home-hero__beta-cta:hover,
+html[data-ccg-page="home"] .home-hero__beta-cta:focus-visible {
+  transform: translateY(-2px);
+  color: inherit !important;
+  background: rgba(3, 7, 15, 0.92) !important;
+  border-color: rgba(108, 236, 255, 0.62) !important;
+  box-shadow:
+    0 13px 26px rgba(0, 0, 0, 0.56),
+    0 0 20px rgba(108, 236, 255, 0.2) !important;
+}
+
+html[data-ccg-page="home"] .home-hero__beta-cta:focus-visible {
+  outline: 2px solid rgba(108, 236, 255, 0.66);
+  outline-offset: 3px;
+}
+
 html[data-ccg-page="home"] .home-hero__sizzler-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  width: clamp(180px, 22vw, 260px);
-  min-height: 104px;
-  padding: 5px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 216, 90, 0.42);
-  background: rgba(4, 7, 15, 0.76);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55), 0 0 16px rgba(255, 216, 90, 0.18);
-  text-decoration: none;
+  display: block;
+  width: 100%;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  box-shadow: none;
+  overflow: hidden;
   pointer-events: none;
   user-select: none;
   -webkit-user-select: none;
@@ -31,8 +66,9 @@ html[data-ccg-page="home"] .home-hero__sizzler-mark img {
   display: block;
   width: 100%;
   height: auto;
-  max-height: 138px;
-  object-fit: contain;
+  max-height: none;
+  border-radius: 9px;
+  object-fit: cover;
   pointer-events: none;
   user-select: none;
   -webkit-user-select: none;
@@ -40,12 +76,18 @@ html[data-ccg-page="home"] .home-hero__sizzler-mark img {
 }
 
 @media (max-width: 640px) {
-  html[data-ccg-page="home"] .home-hero__sizzler-mark {
-    width: 150px;
-    min-height: 80px;
+  html[data-ccg-page="home"] .home-hero__game-actions {
+    margin-top: 2px !important;
   }
 
+  html[data-ccg-page="home"] .home-hero__beta-cta {
+    width: min(400px, 100%) !important;
+    padding: 3px !important;
+    border-radius: 10px !important;
+  }
+
+  html[data-ccg-page="home"] .home-hero__sizzler-mark,
   html[data-ccg-page="home"] .home-hero__sizzler-mark img {
-    max-height: 80px;
+    border-radius: 7px;
   }
 }
