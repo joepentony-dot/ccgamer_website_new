@@ -1,0 +1,40 @@
+name: Ultimate Tape Archive Full Catalogue Audit
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "scripts/audit-uta-catalogue.mjs"
+      - "scripts/generate-uta-map.mjs"
+      - "games/games.json"
+      - "data/uta-game-matches.json"
+      - "data/uta-manual-review.json"
+      - ".github/workflows/uta-full-catalogue-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run live UTA full-catalogue audit
+        run: node scripts/audit-uta-catalogue.mjs
+
+      - name: Upload audit evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: uta-full-catalogue-audit
+          path: |
+            reports/uta-full-catalogue-audit.json
+            reports/uta-full-catalogue-audit.md
+            reports/uta-live-generated-mapping.json
+            reports/uta-live-manual-review.json
+          if-no-files-found: error
+          retention-days: 14
