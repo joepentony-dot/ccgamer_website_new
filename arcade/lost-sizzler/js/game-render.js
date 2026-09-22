@@ -528,7 +528,7 @@ function dungeonCameraZoom(v,p){
     const viewportWidth=Number(window.innerWidth||0),coarse=Boolean(window.matchMedia?.("(pointer: coarse)")?.matches);
     if(coarse||(viewportWidth>0&&viewportWidth<=900))return 1.6;
     if(document.fullscreenElement){
-      const preferred=1.35;
+      const preferred=1.2;
       if(room){
         const roomPixelW=Math.max(C.tile,(room.w+2)*C.tile),roomPixelH=Math.max(C.tile,(room.h+2)*C.tile);
         const fit=Math.min(v.w/roomPixelW,v.h/roomPixelH,preferred);
