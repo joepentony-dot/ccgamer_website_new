@@ -531,10 +531,17 @@ async function main() {
 
     try {
         await waitForDriver();
-        sessionId = await createSession();
         for (const viewport of VIEWPORTS) {
-            await auditViewport(sessionId, sitePort, viewport);
-            await auditGameMediaWheel(sessionId, sitePort, viewport);
+            sessionId = await createSession();
+            try {
+                await auditViewport(sessionId, sitePort, viewport);
+                await auditGameMediaWheel(sessionId, sitePort, viewport);
+            } finally {
+                try {
+                    await webdriver("DELETE", `/session/${sessionId}`);
+                } catch {}
+                sessionId = "";
+            }
         }
         console.log("Native mouse-wheel scroll contract passed.");
     } finally {
