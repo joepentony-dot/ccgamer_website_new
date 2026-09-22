@@ -183,6 +183,7 @@ async function assertRetroMobileClsStability(sessionId) {
   const result = await execute(sessionId, `
     return (function () {
       const expectedStyles = [
+        '/resources/css/ccg-mode-identity.css',
         '/resources/css/ccg-responsive-safety.css',
         '/resources/css/ccg-responsive-page-polish.css',
         '/resources/css/ccg-sitewide-layout-optimization.css',
@@ -198,7 +199,11 @@ async function assertRetroMobileClsStability(sessionId) {
       const header = document.querySelector('[data-ccg-header]');
       const main = document.querySelector('main');
       const slot = header && header.querySelector('.ccg-auth-slot');
+      const identity = document.getElementById('ccgModeIdentityBar');
       if (!header || !main || !slot) return { error: 'missing header/main/auth slot', stylePositions };
+      if (!identity || identity.getAttribute('data-ccg-retro-static-mode-identity') !== 'true') {
+        return { error: 'retro mode identity was not present in static HTML', stylePositions };
+      }
 
       const saved = {
         html: slot.innerHTML,
