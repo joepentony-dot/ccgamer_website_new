@@ -3,19 +3,20 @@ import fs from "node:fs";
 
 const read = (path) => fs.readFileSync(new URL("../" + path, import.meta.url), "utf8");
 
-const gate = read("js/ccg-play-maintenance-gate.js");
-assert.match(gate, /www\.cheekycommodoregamer\.co\.uk/);
-assert.match(gate, /cheekycommodoregamer\.co\.uk/);
-assert.match(gate, /location\.replace\(maintenancePath\)/);
-
 for (const path of [
   "games/commodore-quest/index.html",
   "arcade/quest/index.html",
   "arcade/lost-sizzler/index.html"
 ]) {
   const html = read(path);
-  assert.match(html, /<script src="\/js\/ccg-play-maintenance-gate\.js"><\/script>/, path + " must load the maintenance gate");
+  assert.match(html, /data-ccg-play-maintenance-gate="true"/, path + " must contain the maintenance gate");
+  assert.match(html, /www\.cheekycommodoregamer\.co\.uk/);
+  assert.match(html, /cheekycommodoregamer\.co\.uk/);
+  assert.match(html, /window\.location\.replace\("\/games\/ccg-games\/"\)/);
 }
+
+const dungeon = read("arcade/lost-sizzler/index.html");
+assert.doesNotMatch(dungeon, /src="\/js\/ccg-play-maintenance-gate\.js"/, "itch package must not inherit a root-relative maintenance script");
 
 const hub = read("games/ccg-games/index.html");
 assert.match(hub, /CCG originals — maintenance/);
