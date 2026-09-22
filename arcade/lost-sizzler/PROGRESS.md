@@ -2,6 +2,15 @@
 
 > Legacy repository path: `arcade/lost-sizzler/`. The customer-facing game name is **C64 Dungeon Carnage**. Historical internal identifiers may still use `Lost Sizzler` where compatibility requires them.
 
+## R51 runtime ownership qualification repair — 22 September 2026
+
+- **Active vehicle:** draft PR #2256 / `codex/dungeon-r51-owner-preview-current-main`.
+- R51 intentionally removed the retired public `v10-41-r30-buglog.js` asset, but qualification proved that file had also been the hidden loader for still-supported Solo ownership.
+- The first R51 six-shard run therefore showed empty `dungeon-solo` controller identity, missing R56/R59/R60-era supported ownership, widespread startup/soak timeouts and a FIRE lockout regression timeout.
+- The retired buglog remains absent. `v10-42-bootstrap.js` now explicitly and fail-closed loads the supported ownership prerequisites before ordered V10.42 modules.
+- Stale browser assertions were updated only where they contradicted R51's authorised public modes or current build identity. Solo/Tutorial remain supported; Split/Weekly remain hidden compatibility anchors.
+- **Status:** IMPLEMENTED / FINAL EXACT-HEAD QUALIFICATION PENDING. Do not merge #2256 until the complete current-head matrix is green.
+
 ## P0 — sudden FIRE lockout — 22 September 2026
 
 - **Priority:** highest / game-breaking.
