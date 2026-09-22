@@ -3870,6 +3870,12 @@
     "thumbnail": "resources/images/thumbnails/all/wizball.jpg"
   },
   {
+    "slug": "wonder-boy",
+    "title": "Wonder Boy",
+    "year": 1979,
+    "thumbnail": "resources/images/thumbnails/all/wonder-boy.jpg"
+  },
+  {
     "slug": "world-games",
     "title": "World Games",
     "year": 1986,

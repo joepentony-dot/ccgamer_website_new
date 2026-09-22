@@ -25906,6 +25906,53 @@
   },
   {
     "system": "C64",
+    "id": "wonder_boy",
+    "slug": "wonder-boy",
+    "title": "Wonder Boy",
+    "sorttitle": "Wonder Boy",
+    "year": 1979,
+    "genres": [
+      "arcade",
+      "platform"
+    ],
+    "collections": [
+      "licensed"
+    ],
+    "videoid": "raMcxhNFUCI",
+    "thumbnail": "resources/images/thumbnails/all/wonder-boy.jpg",
+    "pdf": "https://drive.google.com/file/d/1fSAuYmULHRBJRHSUrKAWgtoMS1zwRaWm/view?usp=drive_link",
+    "disk": [],
+    "download_status": "",
+    "lemon": [],
+    "zzap": [],
+    "description": "Wonder Boy on the Commodore 64 is Activision’s 1987 conversion of Sega’s popular arcade platformer, bringing its fast-paced running, jumping, fruit collecting, axe throwing and infamous skateboard to the C64. The conversion retains plenty of the arcade game’s personality with large colourful sprites, smooth scrolling and familiar enemies, although repetitive stages, floaty jumping and limited music stop it from matching the original machine. Zzap!64 famously awarded the full-price release just 52%, while other reviews were considerably kinder. It remains an enjoyable slice of 1980s arcade nostalgia, particularly for C64 players who grew up with this version at home.",
+    "ccg_rating": 6,
+    "ccg_rating_reason": "Wonder Boy is still enjoyable and the C64 conversion captures enough of the arcade original to keep me coming back, but nostalgia can’t hide the repetition, awkward jumping, irritating skateboard and music that wears thin surprisingly quickly",
+    "credits": {
+      "publisher": [
+        "Activision"
+      ],
+      "producer": "Jonathan Dean",
+      "coder": [
+        "James Smart"
+      ],
+      "graphics": [
+        "Andrew Pang"
+      ],
+      "musician": [
+        "James Smart"
+      ],
+      "re_releaser": [
+        "The Hit Squad"
+      ],
+      "developer": "Sega"
+    },
+    "developer": "Sega",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+  {
+    "system": "C64",
     "id": "world_games",
     "slug": "world-games",
     "title": "World Games",

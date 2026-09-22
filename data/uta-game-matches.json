@@ -5214,6 +5214,20 @@
         }
       ]
     },
+    "wonder-boy": {
+      "title": "Wonder Boy",
+      "releases": [
+        {
+          "archiveId": "1677",
+          "publisher": "Hit Squad",
+          "year": 1991,
+          "yearLabel": "1991",
+          "loader": null,
+          "sourceRole": "re-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Wonder_Boy_(1991_Hit_Squad)_%5b1677%5d/"
+        }
+      ]
+    },
     "world-games": {
       "title": "World Games",
       "releases": [
