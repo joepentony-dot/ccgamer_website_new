@@ -302,6 +302,127 @@ if (IS_ADMIN_PATH) {
         });
     }
 
+
+    /* ======================================================
+       EMBEDDED MEDIA WHEEL PASS-THROUGH
+       ------------------------------------------------------
+       Cross-origin YouTube iframes can consume physical wheel
+       input while the pointer is over the player. A lightweight
+       parent-layer shield leaves document scrolling native until
+       the user deliberately clicks to interact with video controls.
+       The shield re-arms as soon as the pointer leaves the player.
+    ====================================================== */
+    function setupEmbeddedFrameWheelGuards() {
+        const root = document.documentElement;
+        if (!root?.hasAttribute?.("data-ccg-page")) return;
+
+        const finePointer = typeof window.matchMedia !== "function"
+            || window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+        if (!finePointer) return;
+
+        const selector = [
+            "iframe[src*=\"youtube.com/embed\"]",
+            "iframe[src*=\"youtube-nocookie.com/embed\"]"
+        ].join(",");
+        const guarded = new WeakSet();
+
+        const isInlinePlayer = (frame) => !frame.closest([
+            "dialog",
+            "[role=\"dialog\"]",
+            ".ccg-egg-overlay",
+            ".ccg-warp-overlay"
+        ].join(","));
+
+        const installGuard = (frame) => {
+            if (!(frame instanceof HTMLIFrameElement) || guarded.has(frame) || !isInlinePlayer(frame)) return;
+
+            const source = String(frame.getAttribute("src") || "");
+            if (!/youtube(?:-nocookie)?\.com\/embed\//i.test(source)) return;
+
+            const host = frame.parentElement;
+            if (!host) return;
+
+            guarded.add(frame);
+            frame.classList.add("ccg-wheel-guard-frame");
+            frame.dataset.ccgWheelGuard = "ready";
+            host.classList.add("ccg-wheel-guard-host");
+
+            const shield = document.createElement("button");
+            shield.type = "button";
+            shield.className = "ccg-wheel-guard";
+            shield.setAttribute("aria-label", "Activate embedded video controls");
+            shield.innerHTML = "<span class=\"ccg-wheel-guard__hint\">Click to use video controls</span>";
+            host.appendChild(shield);
+
+            const syncShield = () => {
+                if (!frame.isConnected || !shield.isConnected) return;
+                const frameRect = frame.getBoundingClientRect();
+                const hostRect = host.getBoundingClientRect();
+                shield.style.left = `${frameRect.left - hostRect.left + host.scrollLeft}px`;
+                shield.style.top = `${frameRect.top - hostRect.top + host.scrollTop}px`;
+                shield.style.width = `${frameRect.width}px`;
+                shield.style.height = `${frameRect.height}px`;
+            };
+
+            const deactivate = () => {
+                if (!host.classList.contains("ccg-wheel-guard-host--active")) return;
+                host.classList.remove("ccg-wheel-guard-host--active");
+                shield.hidden = false;
+            };
+
+            shield.addEventListener("click", () => {
+                host.classList.add("ccg-wheel-guard-host--active");
+                shield.hidden = true;
+                try {
+                    frame.focus({ preventScroll: true });
+                } catch (error) {
+                    frame.focus();
+                }
+            });
+
+            host.addEventListener("pointerleave", deactivate, { passive: true });
+            window.addEventListener("resize", syncShield, { passive: true });
+
+            if (typeof ResizeObserver === "function") {
+                const resizeObserver = new ResizeObserver(syncShield);
+                resizeObserver.observe(frame);
+                resizeObserver.observe(host);
+            }
+
+            requestAnimationFrame(syncShield);
+        };
+
+        const scan = (scope) => {
+            if (!scope) return;
+            if (scope instanceof HTMLIFrameElement && scope.matches(selector)) {
+                installGuard(scope);
+            }
+            scope.querySelectorAll?.(selector).forEach(installGuard);
+        };
+
+        scan(document);
+
+        if (typeof MutationObserver === "function") {
+            const observer = new MutationObserver((records) => {
+                records.forEach((record) => {
+                    if (record.type === "attributes" && record.target instanceof HTMLIFrameElement) {
+                        installGuard(record.target);
+                    }
+                    record.addedNodes.forEach((node) => {
+                        if (node instanceof Element) scan(node);
+                    });
+                });
+            });
+
+            observer.observe(root, {
+                subtree: true,
+                childList: true,
+                attributes: true,
+                attributeFilter: ["src"]
+            });
+        }
+    }
+
     /* ======================================================
        SCROLL PERFORMANCE PAUSE (DESKTOP-FIRST)
        ------------------------------------------------------
@@ -2757,6 +2878,7 @@ function setupFooterSignatureRotator() {
 
         setupParticleField();
         enableEmbeddedVideoSharePermissions();
+        setupEmbeddedFrameWheelGuards();
         // Native browser wheel scrolling is authoritative. The previous
         // document-wide wheel fallback could add a delayed correction after
         // compositor scrolling and make physical mouse-wheel input feel uneven.
