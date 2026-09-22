@@ -45,6 +45,20 @@ on:
       - .github/workflows/game-downloads.yml
       - .github/workflows/year-platform-archives.yml
       - games/index.html
+      - games/game.html
+      - js/ccg-community-ratings.js
+      - js/ccg-community-comments.js
+      - js/ccg-uta-archive.js
+      - js/load-single-game.js
+      - resources/css/ccg-community.css
+      - resources/css/game-pages.css
+      - scripts/generate-uta-map.mjs
+      - data/uta-game-matches.json
+      - data/uta-manual-review.json
+      - supabase/migrations/20260922003000_single_game_community_read_models.sql
+      - supabase/migrations/20260922030000_single_game_community_review_hardening.sql
+      - tests/single-game-community-uta.test.mjs
+      - package.json
       - games/genres/**
       - games/collections/**
       - games/publishers/**
@@ -128,6 +142,10 @@ jobs:
           node --check scripts/integrate-year-platform-discovery.js
           node --check scripts/validate-year-platform-discovery.js
           node --check scripts/migrate-ruff-n-tumble-thumbnail.js
+          node --check scripts/generate-uta-map.mjs
+          node --check js/ccg-community-ratings.js
+          node --check js/ccg-community-comments.js
+          node --check js/ccg-uta-archive.js
           node --check admin/js/games-editor.js
 
       - name: Run editor package regression
@@ -135,6 +153,9 @@ jobs:
 
       - name: Run magazine publishing regression
         run: node --test tests/magazine-publishing-pipeline.test.mjs
+
+      - name: Run single-game community and UTA regression
+        run: node --test tests/community-ratings-single-refresh.mjs tests/community-summary-critical-path.mjs tests/single-game-community-uta.test.mjs
 
       - name: Run current catalogue publishing chain unchanged
         run: |
