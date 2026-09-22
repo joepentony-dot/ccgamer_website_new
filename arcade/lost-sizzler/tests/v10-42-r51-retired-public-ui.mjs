@@ -46,3 +46,5 @@ assert.match(release,/getElementById\("release-note"\)/);
 assert.doesNotMatch(release,/Weekly High-Score Vault|2P Split Screen|Supabase remains available/i);
 
 console.log("PASS V10.42 R51 retired public-mode contract");
+
+assert.match(html,/src="\/resources\/images\/hero\/c64-dungeon-carnage-home-v2\.webp(?:\?[^"]*)?"/,"canonical website loader must use the current Dungeon Carnage artwork");
