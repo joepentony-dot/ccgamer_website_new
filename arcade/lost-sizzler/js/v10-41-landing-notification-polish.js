@@ -94,9 +94,9 @@
       body[data-run-active="false"] #menu .developer-changelog,
       body[data-run-active="false"] #menu [class*="developer-changelog"]{box-shadow:none!important}
 
-      /* Major gameplay notifications own the top of the screen. */
-      #ccg-major-notification{position:absolute;top:12px;left:50%;z-index:118;display:grid;grid-template-columns:48px minmax(0,1fr);align-items:center;gap:12px;width:min(760px,88%);min-height:74px;padding:11px 15px;transform:translate(-50%,-18px) scale(.985);border:2px solid #ffd85a;background:linear-gradient(100deg,rgba(27,14,8,.98),rgba(10,6,15,.985));box-shadow:0 14px 46px rgba(0,0,0,.72),0 0 25px rgba(255,216,90,.14);opacity:0;pointer-events:none;transition:opacity .13s ease,transform .13s ease}
-      #ccg-major-notification[data-visible="true"]{opacity:1;transform:translate(-50%,0) scale(1)}
+      /* Major gameplay notifications live in the reserved message rail below the canvas. */
+      #ccg-major-notification{position:static;z-index:2;display:none;grid-template-columns:42px minmax(0,1fr);align-items:center;gap:10px;width:100%;min-height:64px;padding:9px 12px;transform:none;border:1px solid #ffd85a;background:linear-gradient(100deg,rgba(27,14,8,.98),rgba(10,6,15,.985));box-shadow:inset 0 0 22px rgba(255,216,90,.08);opacity:0;pointer-events:none}
+      #ccg-major-notification[data-visible="true"]{display:grid;opacity:1;transform:none}
       #ccg-major-notification .major-icon{display:grid;place-items:center;width:44px;height:44px;border:1px solid currentColor;background:#07050b;color:#ffd85a;font:900 22px/1 "Courier New",monospace;box-shadow:inset 0 0 18px rgba(255,216,90,.08)}
       #ccg-major-notification .major-copy{min-width:0}.major-copy b{display:block;margin:0 0 4px;color:#ffd85a;font:900 13px/1.15 "Courier New",monospace;letter-spacing:.07em;text-transform:uppercase}.major-copy span{display:block;color:#f2eaf5;font:700 9px/1.45 "Courier New",monospace}
       #ccg-major-notification[data-tone="red"]{border-color:#ff6868;box-shadow:0 14px 46px rgba(0,0,0,.72),0 0 28px rgba(255,104,104,.18)}#ccg-major-notification[data-tone="red"] .major-icon,#ccg-major-notification[data-tone="red"] b{color:#ff6868}
@@ -104,7 +104,7 @@
       #ccg-major-notification[data-tone="green"]{border-color:#72ff9b}#ccg-major-notification[data-tone="green"] .major-icon,#ccg-major-notification[data-tone="green"] b{color:#72ff9b}
       body[data-ccg-major-notification="true"] #pickup-toast{visibility:hidden!important;opacity:0!important}
 
-      @media(max-width:760px){body[data-run-active="false"] #menu .game-mode-buttons{grid-template-columns:1fr 1fr!important}body[data-run-active="false"] #menu #solo-btn,body[data-run-active="false"] #menu #create-btn{grid-column:span 1!important}body[data-run-active="false"] #menu #horde-solo-btn,body[data-run-active="false"] #menu #horde-mode-btn,body[data-run-active="false"] #menu #saboteurs-mode-btn,body[data-run-active="false"] #menu #split-btn{grid-column:span 1!important}body[data-run-active="false"] #menu .feature-strip{grid-template-columns:1fr!important}#ccg-major-notification{grid-template-columns:38px minmax(0,1fr);gap:8px;width:92%;min-height:62px;padding:9px 10px}#ccg-major-notification .major-icon{width:34px;height:34px;font-size:17px}.major-copy b{font-size:10px!important}.major-copy span{font-size:7.5px!important}}
+      @media(max-width:760px){body[data-run-active="false"] #menu .game-mode-buttons{grid-template-columns:1fr 1fr!important}body[data-run-active="false"] #menu #solo-btn,body[data-run-active="false"] #menu #create-btn{grid-column:span 1!important}body[data-run-active="false"] #menu #horde-solo-btn,body[data-run-active="false"] #menu #horde-mode-btn,body[data-run-active="false"] #menu #saboteurs-mode-btn,body[data-run-active="false"] #menu #split-btn{grid-column:span 1!important}body[data-run-active="false"] #menu .feature-strip{grid-template-columns:1fr!important}#ccg-major-notification{grid-template-columns:34px minmax(0,1fr);gap:7px;width:100%;min-height:56px;padding:7px 9px}#ccg-major-notification .major-icon{width:30px;height:30px;font-size:15px}.major-copy b{font-size:9px!important}.major-copy span{font-size:7px!important}}
     `;
     document.head.appendChild(style);
   }
@@ -134,7 +134,7 @@
   function ensureMajorPanel(){
     let panel=document.getElementById("ccg-major-notification");if(panel)return panel;
     panel=document.createElement("div");panel.id="ccg-major-notification";panel.dataset.visible="false";panel.dataset.tone="gold";panel.setAttribute("role","status");panel.setAttribute("aria-live","assertive");panel.innerHTML=`<div class="major-icon" aria-hidden="true">!</div><div class="major-copy"><b>IMPORTANT UPDATE</b><span></span></div>`;
-    (document.querySelector(".game-area")||document.querySelector(".ccg-game")||document.body).appendChild(panel);return panel;
+    (document.querySelector(".game-message-rail")||document.querySelector(".game-area")||document.querySelector(".ccg-game")||document.body).appendChild(panel);return panel;
   }
 
   function majorPriority(title){
