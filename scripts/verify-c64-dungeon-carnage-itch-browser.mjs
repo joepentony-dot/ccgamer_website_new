@@ -32,14 +32,8 @@ function serverFor(root){
     }catch(error){res.writeHead(500);res.end(String(error?.message||error))}
   });
 }
-async function openPackage(browser,url,initWeekly=false){
+async function openPackage(browser,url){
   const context=await browser.newContext({viewport:{width:1440,height:960}});
-  if(initWeekly){
-    await context.addInitScript(()=>{
-      window.__ccgItchOpened=[];
-      window.open=(url)=>{window.__ccgItchOpened.push(String(url));return{closed:false}};
-    });
-  }
   const page=await context.newPage();
   const localFailures=[],pageErrors=[];
   page.on("response",response=>{
@@ -67,7 +61,6 @@ async function openPackage(browser,url,initWeekly=false){
     error:window.CCGLostSizzlerV142Bootstrap?.error||"",
     build:window.CCGLostSizzlerV142Bootstrap?.build||"",
     itch:window.CCGDungeonCarnageItchRelease?.mode||"",
-    weeklyPackage:Boolean(window.CCGWeeklyChallenge?.state?.itchPackage),
     releaseGate:window.CCGLostSizzlerReleaseGate?.state?JSON.parse(JSON.stringify(window.CCGLostSizzlerReleaseGate.state)):null,
     cacheGuard:window.CCGLostSizzlerCacheGuard?.state?{
       errors:[...(window.CCGLostSizzlerCacheGuard.state.errors||[])],
@@ -82,7 +75,7 @@ async function openPackage(browser,url,initWeekly=false){
   if(boot.failed||!boot.ready)fail("Packaged bootstrap failed: "+JSON.stringify(boot));
   if(boot.releaseGate?.failed||boot.overlay.error||boot.localFailures?.length)fail("Packaged legacy release gate failed: "+JSON.stringify({boot,localFailures,pageErrors}));
   if(localFailures.length||pageErrors.length)fail("Packaged startup resource/runtime failure: "+JSON.stringify({localFailures,pageErrors,boot}));
-  if(boot.itch!=="itch-html5"||!boot.weeklyPackage)fail("Packaged itch release gate did not own website-service compatibility: "+JSON.stringify(boot));
+  if(boot.itch!=="itch-html5")fail("Packaged itch release identity missing: "+JSON.stringify(boot));
   return{context,page,localFailures,pageErrors,boot};
 }
 async function assertHealthy(result,label){
@@ -115,23 +108,18 @@ async function main(){
     }
     {
       const result=await openPackage(browser,url);
-      await result.page.click("#split-btn");
-      await result.page.waitForFunction(()=>document.body?.dataset?.runActive==="true",null,{timeout:30000});
-      await result.page.waitForFunction(()=>/^P2\s+\d+/.test(document.getElementById("hud-p2")?.textContent||""),null,{timeout:10000});
-      await assertHealthy(result,"Split Screen");
+      const retired=await result.page.evaluate(()=>({
+        splitExists:Boolean(document.getElementById("split-btn")),
+        dailyExists:Boolean(document.getElementById("daily-btn")),
+        weeklyExists:Boolean(document.getElementById("weekly-vault")),
+        publicText:document.body?.innerText||""
+      }));
+      if(retired.splitExists||retired.dailyExists||retired.weeklyExists)fail("Retired mode controls survived packaged startup: "+JSON.stringify(retired));
+      if(/Weekly High-Score Vault|Weekly Dungeon|2P Split Screen|P2:/i.test(retired.publicText))fail("Retired mode copy is visible in packaged release");
+      await assertHealthy(result,"Retired-mode absence");
       await result.context.close();
     }
-    {
-      const result=await openPackage(browser,url,true);
-      await result.page.click("#daily-btn");
-      await result.page.waitForFunction(()=>Array.isArray(window.__ccgItchOpened)&&window.__ccgItchOpened.length>0,null,{timeout:5000});
-      const opened=await result.page.evaluate(()=>window.__ccgItchOpened[0]);
-      if(opened!=="https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/#weekly-vault")fail("Weekly Vault handoff target changed: "+opened);
-      if(await result.page.evaluate(()=>document.body?.dataset?.runActive==="true"))fail("Weekly website handoff must not start a local ranked run");
-      await assertHealthy(result,"Weekly handoff");
-      await result.context.close();
-    }
-    console.log("PASS C64 Dungeon Carnage Stage 8 itch package browser smoke");
+    console.log("PASS C64 Dungeon Carnage Solo/Tutorial itch package browser smoke");
   }finally{
     await browser.close();
     await new Promise(resolve=>server.close(()=>resolve()));
