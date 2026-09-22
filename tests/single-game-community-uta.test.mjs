@@ -146,7 +146,9 @@ test("shared template and runtime keep UTA C64-only and hidden without a confide
   const loader = fs.readFileSync("js/load-single-game.js", "utf8");
 
   assert.match(template, /id="game-tape-archive-section"/);
-  assert.match(template, /ccg-community-rating-panel" open/);
+  assert.match(template, /ccg-community-compact-shell/);
+  assert.match(template, /id="ccg-community-rating-panel"/);
+  assert.doesNotMatch(template, /ccg-community-rating-panel" open/);
   assert.match(template, /ccg-uta-archive\.js/);
   assert.ok(template.indexOf("ccg-uta-archive.js") < template.indexOf("load-single-game.js"));
 
