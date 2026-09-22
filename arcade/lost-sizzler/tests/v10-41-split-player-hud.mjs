@@ -9,7 +9,7 @@ const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const index=read("index.html");
 const hud=read("js/split-player-hud.js");
 
-assert.match(index,/split-player-hud\.js\?v=/,"split-screen player HUD must be loaded by the game page");
+assert.doesNotMatch(index,/split-player-hud\.js\?v=/,"retired split-screen player HUD must not load on the public game page");
 assert.match(hud,/data-split-player="1"/,"split HUD must contain a dedicated Player 1 panel");
 assert.match(hud,/data-split-player="2"/,"split HUD must contain a dedicated Player 2 panel");
 assert.match(hud,/playMode==="split"&&Boolean\(p1&&p2&&run\)/,"split HUD must only replace the combat deck during an active local split-screen run");
@@ -26,4 +26,4 @@ assert.match(hud,/ref\.armour\.textContent=String\(player\.armor\|\|0\)/,"armour
 assert.match(hud,/ref\.xpTotal\.textContent=`XP \$\{player\.totalXp\|\|0\}`/,"XP display must use the individual player's progression state");
 assert.match(hud,/SHARED SCORE/,"run score should remain explicitly shared between the two local players");
 
-console.log("Lost Sizzler split-screen individual player HUD checks passed.");
+console.log("Lost Sizzler historical split-screen HUD integrity and public-retirement checks passed.");
