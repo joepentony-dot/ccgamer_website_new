@@ -14,6 +14,16 @@
 - **Scope boundary:** no world generation, collision, damage, trap, progression, save, economy, firearm balance or projectile ownership is redesigned. The merged r45 room-sleeping optimisation remains in place.
 - **Manual gate after merge:** repeat a meaningful 20–30+ minute Solo run through Floors 2–3 with movement, combat, repeated FIRE, Inventory and pause/resume. The performance tier must not collapse into a sustained standstill. Use REPORT BUG immediately if it does.
 
+## Active audio-incident follow-up — PR #2233
+
+- **Status:** DRAFT / REQUALIFYING on current main after the r49 work advanced.
+- A Floor 3 hands-on report captured a strange sound without a gameplay anomaly.
+- A real pickup + immediate level-up audio overlap is corrected by delaying only the level-up SFX; reward, XP and level-choice timing remain immediate.
+- The original report did not record enough audio/threat context to prove that overlap caused the user's incident.
+- Later recollection suggests the sound may have occurred around a major threat. The dedicated proximity-music owner is Death Stalker / Count Loadula rather than the Sigil Warden.
+- REPORT BUG now captures exact item/SFX context plus music state, Stalker-near and Stalker-in-sight transitions while preserving the newer r49 performance diagnostics already on main.
+- No speculative Warden/Stalker AI, threat-distance or music-behaviour change is included. The original strange noise is not claimed as proven fixed.
+
 ## Audit checkpoint
 
 - Audited: **21 September 2026**.
