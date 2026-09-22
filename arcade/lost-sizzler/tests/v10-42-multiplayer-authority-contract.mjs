@@ -33,4 +33,4 @@ assert(zeroServer.includes('net.setSolo?.(\"TITLE\")'),'Release policy must norm
 assert(!network.includes('function onCollectRequest(p)'),'Completed extraction must remove local collection handling from the legacy transport file.');
 assert(localRuntime.includes('function onCollectRequest(p)'),'Local collection handling must remain present in the retained local runtime after extraction.');
 
-console.log('Lost Sizzler V10.42 zero-server retirement contract passed: obsolete V10.42 network adapters are deleted while Solo, Tutorial and local 2P Split Screen remain the supported release modes.');
+console.log('Lost Sizzler V10.42 zero-server retirement contract passed: obsolete V10.42 network adapters are deleted while Solo and Tutorial remain the supported public release modes.');
