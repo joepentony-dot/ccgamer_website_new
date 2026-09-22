@@ -63,6 +63,8 @@ const PUBLISHER_ALIASES = new Map([
   ["mastertronic added dimension", "mastertronic"],
   ["mad mastertronic", "mastertronic"],
   ["mastertronic plus", "mastertronic"],
+  ["players premier", "players"],
+  ["players software", "players"],
   ["micro prose", "microprose"],
   ["microprose", "microprose"],
   ["system 3", "system 3"],
@@ -152,18 +154,34 @@ function toArray(value) {
   return [value];
 }
 
+function publisherCreditKeys(value) {
+  const raw = String(value || "").trim();
+  const keys = new Set();
+  const add = (part) => {
+    const key = normalizePublisher(part);
+    if (key) keys.add(key);
+  };
+
+  add(raw);
+  add(raw.replace(/\([^)]*\)/g, " "));
+
+  for (const match of raw.matchAll(/\(([^)]+)\)/g)) {
+    add(match[1]);
+  }
+
+  return [...keys];
+}
+
 export function getPublisherCredits(game) {
   const original = new Map();
   const rerelease = new Map();
 
   toArray(game?.credits?.publisher || game?.publisher).forEach((name) => {
-    const key = normalizePublisher(name);
-    if (key) original.set(key, String(name));
+    publisherCreditKeys(name).forEach((key) => original.set(key, String(name)));
   });
 
   toArray(game?.credits?.re_releaser).forEach((name) => {
-    const key = normalizePublisher(name);
-    if (key) rerelease.set(key, String(name));
+    publisherCreditKeys(name).forEach((key) => rerelease.set(key, String(name)));
   });
 
   return { original, rerelease };
@@ -204,14 +222,21 @@ export function matchGameToUta(game, utaReleases) {
   const rejected = [];
 
   titleCandidates.forEach((release) => {
+    const originalMatch = credits.original.has(release.publisherKey);
+    const rereleaseMatch = credits.rerelease.has(release.publisherKey);
     let sourceRole = "";
-    if (credits.original.has(release.publisherKey)) sourceRole = "publisher";
-    else if (credits.rerelease.has(release.publisherKey)) sourceRole = "re-release";
+
+    if (rereleaseMatch && (!originalMatch || (gameYear && release.year && release.year > gameYear + 1))) {
+      sourceRole = "re-release";
+    } else if (originalMatch) {
+      sourceRole = "publisher";
+    } else if (rereleaseMatch) {
+      sourceRole = "re-release";
+    }
 
     const hasKnownYears = Boolean(gameYear && release.year);
     const yearCompatible = !hasKnownYears
-      || (sourceRole === "publisher" && Math.abs(release.year - gameYear) <= 1)
-      || (sourceRole === "re-release" && release.year >= gameYear - 1);
+      || (Boolean(sourceRole) && release.year >= gameYear - 1);
 
     if (sourceRole && yearCompatible) {
       accepted.push(releaseForOutput(release, sourceRole));
@@ -239,8 +264,8 @@ export function matchGameToUta(game, utaReleases) {
     gameSlug: slug,
     title: String(game?.title || slug),
     year: Number(game?.year) || null,
-    knownPublishers: Array.from(credits.original.values()),
-    knownReReleasers: Array.from(credits.rerelease.values()),
+    knownPublishers: [...new Set(credits.original.values())],
+    knownReReleasers: [...new Set(credits.rerelease.values())],
     reason: rejected.some((candidate) => candidate.publisherMatched && !candidate.yearCompatible)
       ? "title-publisher-match-year-needs-review"
       : (uniqueAccepted.length
@@ -273,7 +298,7 @@ export function buildUtaMapping(games, utaReleases) {
     mapping: {
       schemaVersion: 1,
       source: UTA_INDEX_URL,
-      matching: "normalized-title + known publisher/re-release publisher + compatible release year when known",
+      matching: "normalized-title + known publisher/re-release publisher or explicit composite-label component + release not predating the catalogued game by more than one year when both years are known",
       games: publicGames
     },
     manualReview: {
