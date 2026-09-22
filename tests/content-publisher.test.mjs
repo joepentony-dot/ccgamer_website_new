@@ -7,6 +7,7 @@ const adminIndex = fs.readFileSync('admin/index.html', 'utf8');
 const js = fs.readFileSync('admin/js/content-publisher.js', 'utf8');
 const editJs = fs.readFileSync('admin/js/content-publisher-existing-game-update.js', 'utf8');
 const optimiser = fs.readFileSync('admin/js/content-publisher-image-optimizer.js', 'utf8');
+const completionGuard = fs.readFileSync('admin/js/content-publisher-completion-guard.js', 'utf8');
 const announceJs = fs.readFileSync('admin/js/announce.js', 'utf8');
 const retroLoader = fs.readFileSync('js/retro-specials-loader.js', 'utf8');
 const retroSpecials = JSON.parse(fs.readFileSync('data/retro-specials.json', 'utf8'));
@@ -59,16 +60,22 @@ test('game publishing writes authoritative source data and optional thumbnail on
 });
 
 test('game publisher presents magazine reviews as automatic with Lemon as an optional override', () => {
-  assert.match(html, /automatic magazine-review coverage/i);
+  assert.match(html, /verified magazine-review coverage/i);
+  assert.match(html, /Ultimate Tape Archive links where available/i);
   assert.match(html, /Lemon source URL \(optional override\)/i);
-  assert.match(html, /exact title, platform, original release year and publisher/i);
+  assert.match(html, /original release year and publisher/i);
   assert.doesNotMatch(html, /data-game-field="zzapUrl"/i);
   assert.doesNotMatch(html, /Zzap!64 review URL \(optional\)/i);
 });
 
 test('publisher loads source preflight automation through the image optimiser bootstrap', () => {
   assert.match(html, /admin\/js\/content-publisher-image-optimizer\.js/);
-  assert.match(optimiser, /import ['"]\.\/content-publisher-source-preflight\.mjs\?v=publisher-20260918['"]/);
+  assert.match(optimiser, /import ['"]\.\/content-publisher-source-preflight\.mjs\?v=publisher-20260922-enrichment1['"]/);
+});
+
+test('publisher completion guard recognises the string-array magazine retry queue', () => {
+  assert.match(completionGuard, /typeof row === 'string' \? row/);
+  assert.match(completionGuard, /Magazine reviews unresolved/);
 });
 
 test('publisher keeps the established 3D-box path and removes the unavailable game-music uploader', () => {
@@ -81,7 +88,7 @@ test('publisher keeps the established 3D-box path and removes the unavailable ga
 });
 
 test('existing-game updates can add 3D boxes without retaining game-music upload code or creating empty commits', () => {
-  assert.match(optimiser, /content-publisher-existing-game-update\.js\?v=publisher-20260918/);
+  assert.match(optimiser, /content-publisher-existing-game-update\.js\?v=publisher-20260922-enrichment1/);
   assert.match(editJs, /data-game-box3d-file/);
   assert.match(editJs, /resources\/images\/games\/boxes-3d\//);
   assert.doesNotMatch(editJs, /game-music|ccgUploadMusic|ccgValidateMusic|data-game-music-file/i);
