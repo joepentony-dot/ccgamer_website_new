@@ -28,7 +28,10 @@
     renderInFlight: null,
     retryTimer: null,
     retryCount: 0,
-    maxRetries: 3
+    maxRetries: 3,
+    reviewSort: 'newest',
+    reviewOffset: 0,
+    reviewPageSize: 8
   };
 
   const summaryState = {
@@ -177,10 +180,12 @@
     const code = String(error && error.code || '');
     const message = String(error && error.message || '').toLowerCase();
     return code === '42P01'
+      || code === 'PGRST202'
       || code === 'PGRST205'
       || code === 'PGRST301'
       || code === '404'
       || message.includes('relation')
+      || message.includes('function')
       || message.includes('does not exist')
       || message.includes('not found');
   }
@@ -200,25 +205,39 @@
     const identity = resolveCommentIdentity(comment, context);
     const username = window.ccgCommunityAuth.esc(identity.handle);
     const content = comment.deleted
-      ? '<em>This comment has been removed by moderation.</em>'
+      ? '<em>This review has been removed by moderation.</em>'
       : window.ccgCommunityAuth.esc(comment.body || '');
     const canDelete = identity.own && !comment.deleted;
     const reportDisabled = Boolean(reportState && reportState[comment.id]);
+    const rating = Number(comment.rating);
+    const ratingBadge = Number.isInteger(rating) && rating >= 1 && rating <= 10
+      ? '<span class="ccg-review-rating" aria-label="Reviewer rated this game ' + rating + ' out of 10">' + rating + '/10</span>'
+      : '';
+    const helpfulCount = Math.max(0, Number(comment.helpful_count || 0));
+    const helpfulActive = Boolean(comment.viewer_helpful);
+    const date = comment.created_at ? new Date(comment.created_at) : null;
+    const dateLabel = date && !Number.isNaN(date.getTime())
+      ? date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+      : 'Date unavailable';
 
     return '' +
-      '<article class="ccg-comment-card" data-comment-id="' + comment.id + '">' +
-      '  <header class="ccg-comment-card__head">' +
-      '    <div class="ccg-comment-card__identity">' +
+      '<article class="ccg-comment-card ccg-review-card" data-comment-id="' + comment.id + '">' +
+      '  <header class="ccg-comment-card__head ccg-review-card__head">' +
+      '    <div class="ccg-comment-card__identity ccg-review-card__identity">' +
       '      <span class="ccg-comment-card__profile-link">@' + username + '</span>' +
+             ratingBadge +
       '    </div>' +
-      '    <time datetime="' + window.ccgCommunityAuth.esc(comment.created_at || '') + '">' + new Date(comment.created_at).toLocaleString() + '</time>' +
+      '    <time datetime="' + window.ccgCommunityAuth.esc(comment.created_at || '') + '">' + window.ccgCommunityAuth.esc(dateLabel) + '</time>' +
       '  </header>' +
       '  <p class="ccg-comment-card__body">' + content + '</p>' +
       '  <div class="ccg-comment-card__actions">' +
       (identity.own && !comment.deleted ? '<button type="button" data-action="edit">Edit</button>' : '') +
       (canDelete ? '<button type="button" data-action="delete">Delete</button>' : '') +
       (!identity.own && context.user && !comment.deleted ? '<button type="button" data-action="report"' + (reportDisabled ? ' disabled' : '') + '>' + (reportDisabled ? 'Reported' : 'Report') + '</button>' : '') +
-      (context.user && !comment.deleted ? '<button type="button" data-action="helpful">Helpful</button>' : '') +
+      (context.user && !comment.deleted
+        ? '<button type="button" data-action="helpful"' + (helpfulActive ? ' disabled aria-pressed="true"' : ' aria-pressed="false"') + '>' +
+          (helpfulActive ? 'Helpful ✓' : 'Helpful') + (helpfulCount ? ' · ' + helpfulCount : '') + '</button>'
+        : (helpfulCount ? '<span class="ccg-review-helpful-count">' + helpfulCount + (helpfulCount === 1 ? ' helpful vote' : ' helpful votes') + '</span>' : '')) +
       '  </div>' +
       '</article>';
   }
@@ -281,6 +300,110 @@
     }, backoff);
   }
 
+  async function fetchReviewPage(supabase, contextKey, context) {
+    const rpcResult = await runQueryWithAuthRetry(function () {
+      return supabase.rpc('ccg_game_reviews', {
+        p_game_key: contextKey,
+        p_sort: state.reviewSort,
+        p_offset: state.reviewOffset,
+        p_limit: state.reviewPageSize
+      });
+    });
+
+    if (!rpcResult.error) {
+      const comments = (rpcResult.data || []).map(function (row) {
+        return Object.assign({}, row, {
+          deleted: Boolean(row.deleted),
+          page_type: row.page_type || 'game',
+          page_id: row.page_id || row.game_key || contextKey,
+          profiles: {
+            username: row.username || '',
+            display_name: row.display_name || ''
+          }
+        });
+      });
+      return {
+        comments: comments,
+        totalCount: comments.length ? Number(comments[0].total_count || 0) : 0,
+        source: 'rpc'
+      };
+    }
+
+    if (!isNotConfiguredError(rpcResult.error)) {
+      return { error: rpcResult.error };
+    }
+
+    // Migration-safe fallback: keep reviews readable without downloading the
+    // full review/rating history. Advanced sorting becomes available once the
+    // compact read-model RPC is deployed.
+    const fallbackResult = await runQueryWithAuthRetry(function () {
+      return supabase
+        .from('comments')
+        .select('id,user_id,body,created_at,updated_at,deleted,page_type,page_id,game_key', { count: 'exact' })
+        .eq('game_key', contextKey)
+        .order('created_at', { ascending: false })
+        .range(state.reviewOffset, state.reviewOffset + state.reviewPageSize - 1);
+    });
+
+    if (fallbackResult.error) return { error: fallbackResult.error };
+
+    const comments = (fallbackResult.data || []).map(function (row) {
+      const resolvedPageId = row.page_id || row.game_key || contextKey;
+      return Object.assign({
+        deleted: false,
+        page_type: row.page_type || 'game',
+        page_id: resolvedPageId,
+        helpful_count: 0,
+        viewer_helpful: false,
+        rating: null
+      }, row);
+    });
+
+    const userIds = Array.from(new Set(comments.map(function (comment) {
+      return comment.user_id;
+    }).filter(Boolean)));
+    const profileMap = {};
+    const ratingMap = {};
+
+    if (userIds.length) {
+      const profileRes = await runQueryWithAuthRetry(function () {
+        return supabase.from('profiles').select('id,username,display_name').in('id', userIds);
+      });
+      (profileRes.data || []).forEach(function (row) { profileMap[row.id] = row; });
+
+      const ratingRes = await runQueryWithAuthRetry(function () {
+        return supabase
+          .from('ratings')
+          .select('user_id,rating')
+          .eq('game_key', contextKey)
+          .in('user_id', userIds);
+      });
+      (ratingRes.data || []).forEach(function (row) { ratingMap[row.user_id] = row.rating; });
+    }
+
+    comments.forEach(function (row) {
+      row.profiles = profileMap[row.user_id] || {};
+      row.rating = ratingMap[row.user_id] || null;
+    });
+
+    return {
+      comments: comments,
+      totalCount: Number(fallbackResult.count || 0),
+      source: 'fallback'
+    };
+  }
+
+  function reviewSortOptions() {
+    return [
+      ['newest', 'Newest'],
+      ['helpful', 'Most Helpful'],
+      ['highest', 'Highest Rating'],
+      ['lowest', 'Lowest Rating']
+    ].map(function (option) {
+      return '<option value="' + option[0] + '"' + (state.reviewSort === option[0] ? ' selected' : '') + '>' + option[1] + '</option>';
+    }).join('');
+  }
+
   async function renderComments(slug) {
     const mount = getMount();
     if (!mount) return;
@@ -313,14 +436,9 @@
       setDeferredMessage('Browsing comments as guest. Log in to join the discussion.');
     }
 
-    const { data, error } = await runQueryWithAuthRetry(function () {
-      return supabase
-        .from('comments')
-        .select('id,user_id,body,created_at,updated_at,deleted,page_type,page_id,game_key')
-        .eq('game_key', normalizeGameKey({ slug: slug, id: state.activeGameId }))
-        .order('created_at', { ascending: false })
-        .limit(100);
-    });
+    const contextKey = normalizeGameKey({ slug: slug, id: state.activeGameId });
+    const pageResult = await fetchReviewPage(supabase, contextKey, context);
+    const error = pageResult.error;
 
     if (error && isNotConfiguredError(error)) {
       setFailureMessage('Endpoint missing / not deployed');
@@ -340,23 +458,11 @@
       return;
     }
 
-    const comments = (data || []).map(function (row) {
-      const resolvedPageId = row.page_id || row.game_key || normalizeGameKey({ slug: slug, id: state.activeGameId });
-      return Object.assign({ deleted: false, page_type: row.page_type || 'game', page_id: resolvedPageId }, row);
-    });
+    const comments = pageResult.comments || [];
+    const totalCount = Number(pageResult.totalCount || 0);
     logCommentsLoaded(comments.length, slug);
 
-    const userIds = Array.from(new Set(comments.map(function (comment) { return comment.user_id; }).filter(Boolean)));
-    const profileMap = {};
     const reportState = {};
-
-    if (userIds.length) {
-      const profileRes = await runQueryWithAuthRetry(function () {
-        return supabase.from('profiles').select('id,username,display_name').in('id', userIds);
-      });
-      (profileRes.data || []).forEach(function (row) { profileMap[row.id] = row; });
-      comments.forEach(function (row) { row.profiles = profileMap[row.user_id] || {}; });
-    }
 
     if (user && comments.length) {
       const reportRes = await runQueryWithAuthRetry(function () {
@@ -371,21 +477,58 @@
       });
     }
 
+    const currentPage = Math.floor(state.reviewOffset / state.reviewPageSize) + 1;
+    const pageCount = Math.max(1, Math.ceil(totalCount / state.reviewPageSize));
+    const hasPrevious = state.reviewOffset > 0;
+    const hasNext = state.reviewOffset + comments.length < totalCount;
+
     mount.innerHTML = '' +
-      '<div class="ccg-community-card">' +
-      '  <h3>Member Reviews</h3>' +
-      '  <p class="ccg-community-muted">Status: ' + (user ? ('Logged in as @' + window.ccgCommunityAuth.esc((context.profile && context.profile.username) || (window.CCG_AUTH && window.CCG_AUTH.username) || 'member')) : 'Guest (read-only)') + '</p>' +
+      '<div class="ccg-community-card ccg-community-reviews-card">' +
+      '  <div class="ccg-community-card__heading ccg-review-heading">' +
+      '    <div><p class="ccg-community-eyebrow">Member Reviews</p><h3>' + totalCount + (totalCount === 1 ? ' review' : ' reviews') + '</h3></div>' +
+      '    <p class="ccg-community-muted">' + (user ? ('Signed in as @' + window.ccgCommunityAuth.esc((context.profile && context.profile.username) || (window.CCG_AUTH && window.CCG_AUTH.username) || 'member')) : 'Anyone can read reviews. Sign in only to post or vote.') + '</p>' +
+      '  </div>' +
       (user
-        ? '<form id="ccg-comment-form" class="ccg-community-form"><label>Write your review<textarea name="content" required maxlength="600"></textarea></label><button type="submit" class="ccg-community-btn"' + (canComment ? '' : ' disabled') + '>Post review</button><span id="ccg-comment-status" class="ccg-community-muted" aria-live="polite"></span></form>'
-        : '<p class="ccg-community-muted">Log in to post a review.</p><p><button class="ccg-community-btn" id="ccg-login-to-comment" type="button">Log in</button></p>') +
+        ? '<form id="ccg-comment-form" class="ccg-community-form ccg-review-form"><label>Write your review<textarea name="content" required maxlength="600" placeholder="What did you think of the game?"></textarea></label><div class="ccg-review-form__actions"><button type="submit" class="ccg-community-btn"' + (canComment ? '' : ' disabled') + '>Post review</button><span id="ccg-comment-status" class="ccg-community-muted" aria-live="polite"></span></div></form>'
+        : '<div class="ccg-community-guest-action"><p class="ccg-community-muted">Have your say?</p><button class="ccg-community-btn" id="ccg-login-to-comment" type="button">Log in to post a review</button></div>') +
+      '  <div class="ccg-review-toolbar">' +
+      '    <label for="ccg-review-sort">Sort reviews</label>' +
+      '    <select id="ccg-review-sort" class="ccg-review-sort">' + reviewSortOptions() + '</select>' +
+      '  </div>' +
       '  <div class="ccg-comment-list">' +
       (comments.length
         ? comments.map(function (comment) {
           return commentCard(comment, context, reportState);
         }).join('')
-        : '<p class="ccg-community-muted">No reviews yet. Start the discussion.</p>') +
+        : '<div class="ccg-review-empty"><strong>No member reviews yet.</strong><span>Be the first to add a review for this game.</span></div>') +
       '  </div>' +
+      (totalCount > state.reviewPageSize
+        ? '<nav class="ccg-review-pagination" aria-label="Member review pages">' +
+          '<button type="button" class="ccg-community-btn ccg-community-btn--ghost" id="ccg-review-prev"' + (hasPrevious ? '' : ' disabled') + '>Previous</button>' +
+          '<span>Page ' + currentPage + ' of ' + pageCount + '</span>' +
+          '<button type="button" class="ccg-community-btn ccg-community-btn--ghost" id="ccg-review-next"' + (hasNext ? '' : ' disabled') + '>Next</button>' +
+          '</nav>'
+        : '') +
       '</div>';
+
+    const sortSelect = document.getElementById('ccg-review-sort');
+    if (sortSelect) sortSelect.addEventListener('change', function () {
+      state.reviewSort = sortSelect.value || 'newest';
+      state.reviewOffset = 0;
+      runSafeInit('review-sort');
+    });
+
+    const previousButton = document.getElementById('ccg-review-prev');
+    if (previousButton) previousButton.addEventListener('click', function () {
+      state.reviewOffset = Math.max(0, state.reviewOffset - state.reviewPageSize);
+      runSafeInit('review-previous');
+    });
+
+    const nextButton = document.getElementById('ccg-review-next');
+    if (nextButton) nextButton.addEventListener('click', function () {
+      state.reviewOffset += state.reviewPageSize;
+      runSafeInit('review-next');
+    });
 
     if (!user) {
       const loginBtn = document.getElementById('ccg-login-to-comment');
@@ -433,7 +576,6 @@
       const { error: insertError } = await runQueryWithAuthRetry(function () {
         return supabase.from('comments').insert({
           user_id: liveContext.user.id,
-          game_slug: slug,
           game_key: normalizeGameKey({ slug: slug, id: state.activeGameId }),
           page_type: 'game',
           page_id: normalizeGameKey({ slug: slug, id: state.activeGameId }),
@@ -455,6 +597,8 @@
       }
 
       form.reset();
+      state.reviewSort = 'newest';
+      state.reviewOffset = 0;
       status.textContent = 'Posted.';
       notify('Comment posted successfully.', 'success');
       window.dispatchEvent(new CustomEvent('ccg:comments-updated', { detail: { gameSlug: slug } }));
@@ -502,16 +646,20 @@
 
         if (action === 'helpful') {
           btn.disabled = true;
-          const { error: helpfulError } = await runQueryWithAuthRetry(function () {
+          const helpfulResult = await runQueryWithAuthRetry(function () {
             return supabase.rpc('submit_helpful_vote', { p_comment_id: commentId });
           });
+          const helpfulError = helpfulResult.error;
           if (helpfulError) {
             notify(explainError(helpfulError, 'Unable to register helpful vote.'), 'error');
             btn.disabled = false;
             return;
           }
-          btn.textContent = 'Helpful ✓';
-          notify('Helpful vote added (+REP for the author).', 'success');
+          const nextHelpfulCount = Number(helpfulResult.data || 0);
+          btn.textContent = 'Helpful ✓' + (nextHelpfulCount ? ' · ' + nextHelpfulCount : '');
+          btn.setAttribute('aria-pressed', 'true');
+          notify('Helpful vote added.', 'success');
+          if (state.reviewSort === 'helpful') runSafeInit('review-helpful-sort');
           return;
         }
 
@@ -603,6 +751,10 @@
 
   function onGameLoaded(event) {
     const detail = event && event.detail ? event.detail : {};
+    if (detail.gameSlug && state.activeSlug && String(detail.gameSlug) !== state.activeSlug) {
+      state.reviewSort = 'newest';
+      state.reviewOffset = 0;
+    }
     if (detail.gameSlug) state.activeSlug = String(detail.gameSlug);
     if (detail.gameId !== undefined && detail.gameId !== null) state.activeGameId = String(detail.gameId);
     state.lastGameEventAt = Date.now();
