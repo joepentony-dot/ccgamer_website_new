@@ -288,6 +288,8 @@
   addEventListener("blur",()=>push("window-blur",{mode:safe(()=>String(mode),""),input:safe(()=>[...input].map(String),[])}),true);
   document.addEventListener("visibilitychange",()=>push("visibility",{state:document.visibilityState,mode:safe(()=>String(mode),"")}));
   document.addEventListener("fullscreenchange",()=>push("fullscreen",{active:Boolean(document.fullscreenElement)}));
+  addEventListener("ccg:sfx",event=>push("sfx",{name:String(event?.detail?.name||""),enabled:event?.detail?.enabled!==false,mode:safe(()=>String(mode),"")}),true);
+  addEventListener("ccg:shop-firearm-upgrade",event=>push("shop-firearm-upgrade",event?.detail||{}),true);
   addEventListener("error",event=>push("window-error",{message:String(event.message||""),file:String(event.filename||""),line:Number(event.lineno||0),column:Number(event.colno||0)}));
   addEventListener("unhandledrejection",event=>push("unhandled-rejection",{reason:String(event.reason?.stack||event.reason||"").slice(0,2000)}));
   document.addEventListener("click",event=>{
