@@ -64,8 +64,8 @@ for(const key of ["KeyW","KeyA","KeyD","KeyS"])assert.match(touchSource,new RegE
 assert.match(touchSource,/querySelectorAll\("\[data-key\]"\)[\s\S]*?addEventListener\("pointerdown"[\s\S]*?input\.add\(button\.dataset\.key\)/,"touch pointerdown must feed movement into the canonical input Set");
 const d1Function=gameplaySource.match(/function d1\(\)\{[^\n]+\}/)?.[0]||"";
 for(const key of ["KeyW","KeyA","KeyD","KeyS"])assert.match(d1Function,new RegExp(`input\\.has\\(["']${key}["']\\)`),`P1 movement resolver must consume ${key} from mobile touch input`);
-assert.match(gameplaySource,/function movePlayer\(p,dx,dy,dash=false\)[\s\S]*?movementTriggers\(p\)/,"successful player movement must enter the shared movement trigger boundary");
-assert.match(gameplaySource,/function movementTriggers\(p\)[\s\S]*?triggerTrap\(p\)/,"movement trigger boundary must include floor traps");
+assert.match(gameplaySource,/function movePlayer\(p,dx,dy,dash=false\)[\s\S]*?movementTriggers\(p,true\)/,"successful deliberate player movement must enter the shared movement trigger boundary");
+assert.match(gameplaySource,/function movementTriggers\(p,deliberate=false\)[\s\S]*?triggerTrap\(p\)/,"movement trigger boundary must include floor traps while exposing deliberate puzzle input separately");
 const trapFunction=gameplaySource.match(/function triggerTrap\(p\)\{[^\n]+\}/)?.[0]||"";
 assert.match(trapFunction,/SYS\.trapActive\(t,now\)/,"floor trap boundary must require an active trap cycle");
 assert.match(trapFunction,/damageValidatedTrapContact===["\']function["\'][\s\S]*?damageValidatedTrapContact\(p,t\)/,"active floor trap movement must route the already-validated contact through the retained R19 damage owner first");

@@ -4,8 +4,8 @@
   if(window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
-  const BUILD="V10.42 r46";
-  const CACHE="20260921r46";
+  const BUILD="V10.42 r47";
+  const CACHE="20260922r47";
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-r23-rpg-build-focus.js","CCGLostSizzlerV142R23RpgBuildFocus"],
@@ -49,8 +49,11 @@
     ["v10-42-projectile-lifecycle.js","CCGLostSizzlerV142ProjectileLifecycle"],
     ["v10-42-rpg-terminology.js","CCGLostSizzlerV142RpgTerminology"],
     ["v10-42-owned-firearm-clarity.js","CCGLostSizzlerV142OwnedFirearmClarity"],
+    ["v10-42-r47-firearm-evolution.js","CCGLostSizzlerV142R47FirearmEvolution"],
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
-    ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"]
+    ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"],
+    ["v10-42-r47-inventory-fire-recovery.js","CCGLostSizzlerV142R47InventoryFireRecovery"],
+    ["v10-42-bug-reporter.js","CCGLostSizzlerBugReporter"]
   ];
   const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],totalModules:modules.length,currentModule:"",currentIndex:0,pendingStartId:"",pendingStartRetries:0,identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0,r1ChestOwner:null,r1ChestOwnerRestores:0};
   window.CCGLostSizzlerV142Bootstrap=state;

@@ -2,6 +2,17 @@
 
 > Legacy repository path: `arcade/lost-sizzler/`. The customer-facing game name is **C64 Dungeon Carnage**. Historical internal identifiers may still use `Lost Sizzler` where compatibility requires them.
 
+## Active r47 release-blocker candidate — PR #2226
+
+- **Status:** DRAFT / QUALIFYING. Do not treat r47 as merged or publication-ready until the final exact head is fully green.
+- **Published candidate identity:** `V10.42 r47` / `20260922r47`.
+- **Inventory → FIRE:** release-blocking recurrence is covered by an Inventory-close recovery boundary plus repeated live browser regression; existing FIRE owners remain authoritative and r20 `attackNow()` is fallback-only.
+- **Memory Pads:** old 3×3 grid is retired. Floor 3 uses five numbered, spaced pads plus a purple replay console; only deliberate movement counts, knockback is ignored, replay is penalty-free, and a wrong deliberate pad spawns exactly one monster.
+- **Firearms:** Archive Sword remains the initial state. First gun pickup acquires Tier 1; one firearm evolves under floor caps F1 T2 / F2 T3 / F3 T4 / F4 T5 / F5 T6, with three-way fire at T4 and capped drops salvaged into ammo. Redundant owned-gun switching is removed.
+- **Developer reporter:** `?bugreport=1` enables a persistent REPORT BUG control (F8 on desktop) that records bounded recent state/events and exports text/JSON without owning gameplay/input/render behavior.
+- **Manual gate after merge:** repeatedly open/close Inventory and FIRE; test Memory Pad replay/wrong/knockback behavior; validate firearm pacing; use REPORT BUG immediately if FIRE or another intermittent state failure reproduces.
+- The last qualified publication artifact remains r46 until this candidate completes exact-head qualification.
+
 ## Audit checkpoint
 
 - Audited: **21 September 2026**.

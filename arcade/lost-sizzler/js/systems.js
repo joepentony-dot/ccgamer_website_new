@@ -200,8 +200,8 @@ window.CCGSystems=(()=>{
     if(run)run.torchSequence=[...seq];return seq
   }
   function memorySequenceFor(run){
-    const r=PGR.seededRandom(`${run?.seed||"CCG"}-F${run?.floor||1}-V10.1-MEMORY`),out=[];
-    while(out.length<5){const n=Math.floor(r()*9);if(n!==out[out.length-1])out.push(n)}return out
+    const r=PGR.seededRandom(`${run?.seed||"CCG"}-F${run?.floor||1}-V10.42-R47-MEMORY`),out=[];
+    while(out.length<5){const n=Math.floor(r()*5);if(n!==out[out.length-1])out.push(n)}return out
   }
   function roomHasCoreFeature(host,roomId){
     return (host.generators||[]).some(x=>x.roomId===roomId)||host.rescue?.roomId===roomId||(host.guardian&&host.worldRef&&W.roomAt(host.worldRef,host.guardian.x,host.guardian.y)===roomId)||(host.arenas||[]).some(x=>x.roomId===roomId)||(host.timedRooms||[]).some(x=>x.roomId===roomId)
@@ -209,10 +209,34 @@ window.CCGSystems=(()=>{
   function puzzleRoomPool(world,host,rooms){
     return rooms.filter(r=>r.id!==world.startRoomId&&r.id!==world.exitRoomId&&!r.sanctuary&&!roomHasCoreFeature(host,r.id))
   }
-  function findClearSquare(world,room,used,size=3){
-    for(let y=room.y+2;y<=room.y+room.h-size-1;y++)for(let x=room.x+2;x<=room.x+room.w-size-1;x++){
-      const cells=[];let ok=true;for(let yy=0;yy<size;yy++)for(let xx=0;xx<size;xx++){const q={x:x+xx,y:y+yy};if(world.map[q.y]?.[q.x]!==0||used.has(cell(q.x,q.y))){ok=false;break}cells.push(q)}if(ok)return cells
-    }return null
+  function memoryPadLayout(world,room,used){
+    const free=q=>Boolean(q&&world.map[q.y]?.[q.x]===0&&!used.has(cell(q.x,q.y)));
+    const layouts=[];
+    // Five pads with one clear tile between each pad. The line is deliberately
+    // kept to one side of the room so the player never has to cut diagonally
+    // through a 3x3 pressure grid.
+    for(let y=room.y+2;y<=room.y+room.h-2;y++){
+      for(let x=room.x+1;x+8<=room.x+room.w-1;x++){
+        layouts.push({axis:"horizontal",pads:[0,2,4,6,8].map(n=>({x:x+n,y}))})
+      }
+    }
+    for(let x=room.x+2;x<=room.x+room.w-2;x++){
+      for(let y=room.y+1;y+8<=room.y+room.h-1;y++){
+        layouts.push({axis:"vertical",pads:[0,2,4,6,8].map(n=>({x,y:y+n}))})
+      }
+    }
+    layouts.sort((a,b)=>{
+      const ac=a.axis==="horizontal"?(a.pads[0].y-room.y):(a.pads[0].x-room.x);
+      const bc=b.axis==="horizontal"?(b.pads[0].y-room.y):(b.pads[0].x-room.x);
+      return ac-bc
+    });
+    for(const layout of layouts){
+      if(layout.pads.some(q=>!free(q)))continue;
+      const activator=firstFreeCell(world,room,used,q=>layout.pads.every(p=>md(p,q)>=3));
+      if(!activator)continue;
+      return{axis:layout.axis,pads:layout.pads,activator}
+    }
+    return null
   }
   function torchSetForRoom(world,room,used){
     const c=centre(room),pts=[{dir:"N",x:c.x,y:room.y+1},{dir:"E",x:room.x+room.w-1,y:c.y},{dir:"S",x:c.x,y:room.y+room.h-1},{dir:"W",x:room.x+1,y:c.y}];
@@ -240,7 +264,7 @@ window.CCGSystems=(()=>{
   function installOptionalPuzzles(world,host,run,rooms,used){
     host.bloodClue=null;host.memoryPuzzle=null;host.sequenceTorchPuzzle=null;host.weightBridge=null;const floor=run?.floor||1,seq=torchSequenceFor(run),pool=puzzleRoomPool(world,host,rooms);
     if(floor===C.dungeon.clueFloor){const room=pool[0]||rooms[0],q=room&&freeInRoom(world,room,used);if(room&&q){host.bloodClue={id:"faded-blood-clue",...q,roomId:room.id,sequence:[...seq],seen:false};room.bloodClueRoom=true}}
-    if(floor===C.dungeon.memoryPuzzleFloor){for(const room of pool){const tiles=findClearSquare(world,room,used,3);if(!tiles)continue;for(const q of tiles)used.add(cell(q.x,q.y));let reward=firstFreeCell(world,room,used,q=>!tiles.some(t=>md(t,q)<2));if(!reward)reward=centre(room);used.add(cell(reward.x,reward.y));const chest={id:"memory-puzzle-chest",...reward,locked:false,active:false,depth:(room.depth||0)+7,roomId:room.id,memoryPuzzleReward:true};host.chests.push(chest);host.memoryPuzzle={id:"memory-puzzle",roomId:room.id,tiles:tiles.map((q,i)=>({...q,index:i})),sequence:memorySequenceFor(run),phase:"idle",flashElapsed:0,flashTile:-1,inputIndex:0,solved:false,failures:0,rewardPos:{...reward},chestId:chest.id};room.memoryPuzzleRoom=true;break}}
+    if(floor===C.dungeon.memoryPuzzleFloor){for(const room of pool){const layout=memoryPadLayout(world,room,used);if(!layout)continue;const tiles=layout.pads;for(const q of tiles)used.add(cell(q.x,q.y));used.add(cell(layout.activator.x,layout.activator.y));let reward=firstFreeCell(world,room,used,q=>!tiles.some(t=>md(t,q)<2)&&md(layout.activator,q)>=2);if(!reward)reward=centre(room);used.add(cell(reward.x,reward.y));const chest={id:"memory-puzzle-chest",...reward,locked:false,active:false,depth:(room.depth||0)+7,roomId:room.id,memoryPuzzleReward:true};host.chests.push(chest);host.memoryPuzzle={id:"memory-puzzle",roomId:room.id,tiles:tiles.map((q,i)=>({...q,index:i,label:String(i+1)})),activator:{...layout.activator},layout:layout.axis,sequence:memorySequenceFor(run),phase:"idle",flashElapsed:0,flashTile:-1,inputIndex:0,solved:false,failures:0,rewardPos:{...reward},chestId:chest.id};room.memoryPuzzleRoom=true;break}}
     if(floor===C.dungeon.torchPuzzleFloor){for(const room of pool){const torches=torchSetForRoom(world,room,used);if(!torches)continue;for(const q of torches)used.add(cell(q.x,q.y));let reward=firstFreeCell(world,room,used,q=>torches.every(t=>md(t,q)>2));if(!reward)continue;used.add(cell(reward.x,reward.y));const chest={id:"sequence-torch-vault",...reward,locked:false,active:false,depth:(room.depth||0)+9,roomId:room.id,torchPuzzleReward:true};host.chests.push(chest);host.sequenceTorchPuzzle={id:"sequence-torch-puzzle",roomId:room.id,sequence:[...seq],torches:torches.map(q=>({...q,lit:false})),progress:0,solved:false,failures:0,rewardPos:{...reward},chestId:chest.id};room.sequenceTorchRoom=true;break}}
     if(floor===C.dungeon.weightBridgeFloor){const choices=world.rooms.filter(r=>r.optional&&r.id!==host.sigilRoomId&&r.id!==host.trader?.roomId).map(room=>({room,gate:(host.doors||[]).find(d=>d.roomId===room.id&&!d.sigilGate)})).filter(x=>x.gate).sort((a,b)=>(b.room.depth||0)-(a.room.depth||0));for(const x of choices){const b=makeWeightBridge(world,host,x.room,x.gate,used);if(b){host.weightBridge=b;break}}}
   }
