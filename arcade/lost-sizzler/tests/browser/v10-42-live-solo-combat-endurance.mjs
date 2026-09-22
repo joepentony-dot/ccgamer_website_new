@@ -144,7 +144,7 @@ try{
   assert.equal(boot.failed,false,`r47 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r47 ordered bootstrap must complete");
   assert.equal(boot.build,"V10.42 r51");assert.equal(boot.cache,"20260922r51");assert.equal(boot.metaBuild,"V10.42 r51");assert.equal(boot.metaCache,"20260922r51");
   assert.ok(boot.ordered.length>=30,"r47 bootstrap must load the complete ordered V10.42 chain");
-  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260922r51"),"every ordered V10.42 module must use the r50 cache token");
+  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260922r51"),"every ordered V10.42 module must use the r51 cache token");
   assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260922r51")),"expected r49 projectile lifecycle asset was not requested");
   assert.equal(await page.evaluate(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.ownsBoundary?.()===true),true,"#2118 lifecycle owner must be authoritative before play");
 
