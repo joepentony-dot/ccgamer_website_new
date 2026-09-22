@@ -67,7 +67,8 @@ try{
   assert.equal(audit.networkConnected,false,"Canonical zero-server page must not connect to an online room.");
   assert.equal(audit.networkTransport,"solo","Canonical network object must remain in inert Solo transport state.");
   for(const id of ["create-btn","horde-mode-btn","saboteurs-mode-btn","join-btn"])assert.equal(audit.onlineButtons[id],false,`${id} must remain unavailable in production.`);
-  for(const id of ["solo-btn","tutorial-zone-btn"])assert.equal(audit.localButtons[id],true,`${id} must remain available in production.`);\n  assert.equal(audit.localButtons["split-btn"],false,"retired split-btn compatibility anchor must remain hidden in production.");
+  for(const id of ["solo-btn","tutorial-zone-btn"])assert.equal(audit.localButtons[id],true,`${id} must remain available in production.`);
+  assert.equal(audit.localButtons["split-btn"],false,"retired split-btn compatibility anchor must remain hidden in production.");
   assert.deepEqual(pageErrors,[],`Canonical V10.42 zero-server startup must not raise page errors: ${pageErrors.join("\n")}`);
   assert.deepEqual(failedScripts,[],`Canonical V10.42 ordered scripts must load without same-origin request failures: ${failedScripts.join("\n")}`);
   console.log("Lost Sizzler V10.42 zero-server canonical loader browser contract passed.");
