@@ -520,6 +520,13 @@
             </div>
         </section>
 
+        <section id="game-tape-archive-section" class="game-section ccg-game-resource-section ccg-game-resource-section--tape" hidden aria-labelledby="game-tape-archive-title">
+            <p class="game-section__kicker">Original Cassette</p>
+            <h2 class="game-section__title" id="game-tape-archive-title">Tape Archive</h2>
+            <p class="ccg-section__intro">Verified C64 cassette releases linked to the Ultimate Tape Archive. CCG does not host or duplicate the tape files.</p>
+            <div id="game-tape-archive-list" class="ccg-uta-release-list"></div>
+        </section>
+
         <!-- SCREENSHOTS -->
         <section class="game-section game-screenshots" hidden>
             <p class="game-section__kicker">See the pixels</p>
@@ -564,7 +571,7 @@
             <h2 class="game-section__title" id="ccg-community-game-title">Rate &amp; Review This Game</h2>
             <p class="ccg-section__intro">Share your verdict with other Commodore fans. Everyone can read the reviews; members must log in to rate or comment.</p>
 
-            <details class="ccg-comments-panel" id="ccg-community-rating-panel">
+            <details class="ccg-comments-panel ccg-comments-panel--rating" id="ccg-community-rating-panel" open>
                 <summary class="ccg-comments-panel__summary">
                     <span>Community Rating</span>
                     <span class="ccg-comments-panel__meta" id="ccg-rating-summary-meta">Loading rating…</span>
@@ -676,6 +683,7 @@
 <script src="/js/ccg-music-config.js" defer></script>
 <script src="/js/ccg-shared-music-player.js" defer></script>
 <script src="/js/ccg-game-music-player.js" defer></script>
+<script src="/js/ccg-uta-archive.js" defer></script>
 <script src="/js/load-single-game.js" defer></script>
 <script src="/js/game-secondary-publisher-runtime.js" defer></script>
 <script src="/js/magazine-game-reviews-runtime.js" defer></script>
