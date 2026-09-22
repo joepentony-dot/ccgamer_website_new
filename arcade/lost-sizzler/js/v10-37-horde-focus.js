@@ -124,6 +124,18 @@
         }
         body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area .game-message-rail #pickup-toast.show{opacity:1!important;background:#110b12!important}
       }
+      @media(min-width:821px) and (max-height:500px){
+        body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area{
+          grid-template-rows:minmax(0,1fr) 40px!important;
+        }
+        body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area .game-message-rail{
+          height:40px!important;min-height:40px!important;max-height:40px!important;
+        }
+        body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area .game-message-rail #pickup-toast{
+          height:39px!important;min-height:39px!important;max-height:39px!important;
+          padding:3px 10px!important;
+        }
+      }
 
       /* Horde owns its own HUD. Ordinary dungeon objectives, inventory,
          keyring, shops and item controls are deliberately absent. */
