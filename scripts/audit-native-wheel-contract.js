@@ -27,6 +27,7 @@ const HOST = "127.0.0.1";
 const DRIVER_PORT = 9517;
 const TARGET_PAGE = "/games/collections/retro-specials.html";
 const GAME_MEDIA_PAGE = "/games/1942/index.html";
+const HOME_PAGE = "/home.html";
 const CSS_PATH = path.join(ROOT, "resources/css/ccg-scroll-authority.css");
 const GLOBAL_JS_PATH = path.join(ROOT, "js/ccg-global.js");
 const PAGE_PATH = path.join(ROOT, "games/collections/retro-specials.html");
@@ -313,16 +314,24 @@ async function cdp(sessionId, cmd, params = {}) {
     return payload.value;
 }
 
-async function wheelDown(sessionId, x, y) {
+async function wheel(sessionId, x, y, deltaY) {
     await cdp(sessionId, "Input.dispatchMouseEvent", {
         type: "mouseWheel",
         x,
         y,
         deltaX: 0,
-        deltaY: WHEEL_DELTA,
+        deltaY,
         pointerType: "mouse"
     });
     await new Promise((resolve) => setTimeout(resolve, 250));
+}
+
+async function wheelDown(sessionId, x, y) {
+    await wheel(sessionId, x, y, WHEEL_DELTA);
+}
+
+async function wheelUp(sessionId, x, y) {
+    await wheel(sessionId, x, y, -WHEEL_DELTA);
 }
 
 async function prepareWheelTarget(sessionId) {
@@ -514,6 +523,117 @@ async function auditGameMediaWheel(sessionId, sitePort, viewport) {
     console.log(`PASS ${viewport.label}: native mouse wheel moved the document ${movement}px over the game video guard.`);
 }
 
+
+async function prepareHomeWheelTarget(sessionId, selector, block = "center") {
+    return execute(sessionId, String.raw`
+return (function (selector, block) {
+    var root = document.documentElement;
+    var body = document.body;
+    var target = document.querySelector(selector);
+    if (!target) return { error: 'home target missing: ' + selector };
+
+    root.style.setProperty('scroll-behavior', 'auto', 'important');
+    if (body) body.style.setProperty('scroll-behavior', 'auto', 'important');
+    target.scrollIntoView({ block: block || 'center', inline: 'center', behavior: 'instant' });
+
+    var rect = target.getBoundingClientRect();
+    var x = Math.max(2, Math.min(window.innerWidth - 3, Math.round(rect.left + rect.width / 2)));
+    var y = Math.max(2, Math.min(window.innerHeight - 3, Math.round(rect.top + Math.min(rect.height / 2, window.innerHeight * 0.35))));
+    var hit = document.elementFromPoint(x, y);
+    var scrolling = document.scrollingElement || root;
+
+    return {
+        selector: selector,
+        x: x,
+        y: y,
+        scrollY: Math.round(window.scrollY),
+        maxScroll: Math.max(0, Math.round(scrolling.scrollHeight - window.innerHeight)),
+        hit: hit ? hit.tagName.toLowerCase() + (hit.id ? '#' + hit.id : '') + (hit.classList?.length ? '.' + Array.from(hit.classList).slice(0, 4).join('.') : '') : 'none',
+        htmlOverflowY: getComputedStyle(root).overflowY,
+        bodyOverflowY: body ? getComputedStyle(body).overflowY : '',
+        nestedPageScrollers: Array.from(document.querySelectorAll('main, .ccg-main, .ccg-page')).filter(function (el) {
+            var style = getComputedStyle(el);
+            return /^(auto|scroll)$/i.test(style.overflowY || '') && el.scrollHeight > el.clientHeight + 24;
+        }).map(function (el) {
+            return el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') + (el.classList.length ? '.' + Array.from(el.classList).slice(0, 4).join('.') : '');
+        })
+    };
+})(arguments[0], arguments[1]);`, [selector, block]);
+}
+
+async function auditHomeTarget(sessionId, viewport, selector, label) {
+    const target = await prepareHomeWheelTarget(sessionId, selector);
+    if (target.error) fail(`${viewport.label}: ${target.error}`);
+    if (target.nestedPageScrollers?.length) {
+        fail(`${viewport.label}: home has nested page scroller(s) at ${label}: ${target.nestedPageScrollers.join(", ")}`);
+    }
+
+    // Ensure there is room in both directions so one page boundary cannot
+    // masquerade as a wheel-input stall.
+    await execute(sessionId, "window.scrollBy(0,-Math.min(240,window.scrollY)); return Math.round(window.scrollY);");
+    const beforeDown = await readY(sessionId);
+    const maxScroll = await execute(sessionId, "return Math.max(0,Math.round((document.scrollingElement||document.documentElement).scrollHeight-window.innerHeight));");
+    if (maxScroll <= beforeDown + MIN_WHEEL_DELTA * 2) {
+        await execute(sessionId, "window.scrollTo(0,Math.max(0,Math.round(((document.scrollingElement||document.documentElement).scrollHeight-window.innerHeight)*0.5)));");
+    }
+    const before = await readY(sessionId);
+
+    await wheelDown(sessionId, target.x, target.y);
+    const afterDown = await readY(sessionId);
+    if (afterDown - before < MIN_WHEEL_DELTA) {
+        fail(`${viewport.label}: home mouse wheel stalled DOWN over ${label} (${target.hit}, ${before}px -> ${afterDown}px)`);
+    }
+
+    await wheelUp(sessionId, target.x, target.y);
+    const afterUp = await readY(sessionId);
+    if (afterDown - afterUp < MIN_WHEEL_DELTA) {
+        fail(`${viewport.label}: home mouse wheel stalled UP over ${label} (${target.hit}, ${afterDown}px -> ${afterUp}px)`);
+    }
+
+    console.log(`PASS ${viewport.label}: home mouse wheel moved down/up over ${label} (hit ${target.hit}).`);
+}
+
+async function auditHomeWheel(sessionId, sitePort, viewport) {
+    await setViewport(sessionId, viewport);
+    await navigate(sessionId, `http://${HOST}:${sitePort}${HOME_PAGE}`);
+
+    const targets = [
+        [".home-hero__content", "hero centre"],
+        [".home-hero__game-actions", "Dungeon Carnage CTA area"],
+        [".home-section--highlights", "highlights section"],
+        [".home-community-latest", "community section"],
+        [".home-cta-upgrade", "support CTA section"],
+        [".home-visitor-callout", "visitor callout"]
+    ];
+
+    for (const [selector, label] of targets) {
+        await auditHomeTarget(sessionId, viewport, selector, label);
+    }
+
+    // Also exercise literal viewport-centre input at several page depths,
+    // matching the reported "cursor in the middle of the screen" failure.
+    for (const fraction of [0.2, 0.5, 0.8]) {
+        const state = await execute(sessionId, String.raw`
+var root=document.scrollingElement||document.documentElement;
+var max=Math.max(0,root.scrollHeight-window.innerHeight);
+window.scrollTo(0,Math.round(max*arguments[0]));
+return {y:Math.round(window.scrollY),max:Math.round(max),x:Math.round(window.innerWidth/2),py:Math.round(window.innerHeight/2),hit:(function(){var e=document.elementFromPoint(Math.round(window.innerWidth/2),Math.round(window.innerHeight/2));return e?e.tagName.toLowerCase()+(e.id?'#'+e.id:'')+(e.classList?.length?'.'+Array.from(e.classList).slice(0,4).join('.'):''):'none'})()};`, [fraction]);
+        if (state.max < MIN_WHEEL_DELTA * 4) fail(`${viewport.label}: home page is not tall enough for centre-screen wheel audit`);
+
+        await wheelDown(sessionId, state.x, state.py);
+        const down = await readY(sessionId);
+        if (down - state.y < MIN_WHEEL_DELTA && state.y < state.max - MIN_WHEEL_DELTA * 2) {
+            fail(`${viewport.label}: home centre-screen wheel stalled DOWN at ${Math.round(fraction*100)}% (hit ${state.hit}, ${state.y}px -> ${down}px)`);
+        }
+        await wheelUp(sessionId, state.x, state.py);
+        const up = await readY(sessionId);
+        if (down - up < MIN_WHEEL_DELTA && down > MIN_WHEEL_DELTA * 2) {
+            fail(`${viewport.label}: home centre-screen wheel stalled UP at ${Math.round(fraction*100)}% (hit ${state.hit}, ${down}px -> ${up}px)`);
+        }
+        console.log(`PASS ${viewport.label}: home centre-screen wheel works at ${Math.round(fraction*100)}% depth (hit ${state.hit}).`);
+    }
+}
+
 async function main() {
     assertStaticContract();
     console.log("PASS static native-wheel contract: scroll authority, Retro Specials scope and local script ownership are intact.");
@@ -535,6 +655,7 @@ async function main() {
         for (const viewport of VIEWPORTS) {
             await auditViewport(sessionId, sitePort, viewport);
             await auditGameMediaWheel(sessionId, sitePort, viewport);
+            await auditHomeWheel(sessionId, sitePort, viewport);
         }
         console.log("Native mouse-wheel scroll contract passed.");
     } finally {
