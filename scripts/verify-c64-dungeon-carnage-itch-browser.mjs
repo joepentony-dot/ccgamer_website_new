@@ -50,7 +50,24 @@ async function openPackage(browser,url){
   });
   page.on("pageerror",error=>pageErrors.push(String(error?.message||error)));
   await page.goto(url,{waitUntil:"domcontentloaded",timeout:60000});
-  await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
+  try{
+    await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
+  }catch(error){
+    const startup=await page.evaluate(()=>({
+      gameReady:document.body?.dataset?.gameReady||"",
+      releaseReady:document.body?.dataset?.releaseReady||"",
+      bootstrap:window.CCGLostSizzlerV142Bootstrap?{
+        ready:window.CCGLostSizzlerV142Bootstrap.ready===true,
+        failed:window.CCGLostSizzlerV142Bootstrap.failed===true,
+        error:window.CCGLostSizzlerV142Bootstrap.error||"",
+        currentModule:window.CCGLostSizzlerV142Bootstrap.currentModule||"",
+        loaded:[...(window.CCGLostSizzlerV142Bootstrap.loaded||[])],
+        totalModules:window.CCGLostSizzlerV142Bootstrap.totalModules||0
+      }:null,
+      loader:document.getElementById("ccg-release-loading-status")?.textContent||""
+    }));
+    fail("Packaged bootstrap timeout: "+JSON.stringify({startup,localFailures,pageErrors,error:String(error?.message||error)}));
+  }
   await page.waitForFunction(()=>{
     const gate=window.CCGLostSizzlerReleaseGate?.state;
     return !gate||gate.ready===true||gate.failed===true;
