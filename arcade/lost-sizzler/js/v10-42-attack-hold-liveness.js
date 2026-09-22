@@ -3,7 +3,7 @@
   "use strict";
   if(window.CCGLostSizzlerV142AttackHoldLiveness)return;
 
-  const ATTACK_KEYS=new Set(["Space","KeyF","Numpad0"]);
+  const ATTACK_KEYS=new Set(["Space","Numpad0"]); // KeyF is reserved exclusively for fullscreen.
   const held=new Set();
   const diagnostics={keydowns:0,keyups:0,normalisedHolds:0,clears:0};
 
