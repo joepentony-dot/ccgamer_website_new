@@ -46,90 +46,54 @@ try{
 
   const before=await page.evaluate(()=>{
     p1.firearmUnlocked=true;
-    p1.hitStunMs=0;
-    p1.controlLocked=false;
-    p1.controlsLocked=false;
+    p1.weapon=p1.weapon||baseWeapon();
     p1.maxMana=Math.max(120,Number(p1.maxMana)||0);
     p1.mana=117;
+    p1.controlLocked=true;
+    p1.controlsLocked=true;
+    p1.hitStunMs=180;
+    p1.__ccgLastHurtAt=performance.now()-2000;
     bullets.length=0;
-    fire1=0;
-    fireBuffer1=0;
-    projectileCD=0;
+    fire1=Number.POSITIVE_INFINITY;
+    fireBuffer1=Number.POSITIVE_INFINITY;
+    projectileCD=Number.POSITIVE_INFINITY;
     input.clear();
-
-    const original=firePlayer;
-    const blocked=function(..._args){
-      window.__ccgP0BlockedFireCalls=(window.__ccgP0BlockedFireCalls||0)+1;
-      return undefined;
-    };
-    blocked.__ccgOriginal=original;
-    window.__ccgP0OriginalFirePlayer=original;
-    firePlayer=blocked;
-
-    const blocker=event=>{
-      if(event.code!=="Space")return;
-      try{fireBuffer1=700;input.add("Space")}catch(_){}
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      removeEventListener("keydown",blocker,true);
-    };
-    addEventListener("keydown",blocker,true);
-
-    const diag=window.CCGLostSizzlerV142AttackHoldLiveness.diagnostics;
+    document.body.dataset.runActive="false";
+    const r20=window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics||{};
+    const hold=window.CCGLostSizzlerV142AttackHoldLiveness?.diagnostics||{};
     return{
       mana:Number(p1.mana),
-      verifications:Number(diag.pressVerifications||0),
-      recoveries:Number(diag.pressRecoveries||0),
-      failures:Number(diag.pressRecoveryFailures||0)
+      staleRepairs:Number(r20.staleStunRepairs||0),
+      controlRepairs:Number(r20.controlLockRepairs||0),
+      verifications:Number(hold.pressVerifications||0)
     };
   });
 
-  await page.keyboard.down("Space");
-  await page.waitForTimeout(30);
-  await page.keyboard.up("Space");
-  await page.waitForTimeout(45);
+  await page.keyboard.press("Space");
+  await page.waitForFunction(before=>Number(p1?.mana||0)<before.mana,before,{timeout:4000});
 
-  const stalled=await page.evaluate(()=>({
+  const recovered=await page.evaluate(()=>({
     mana:Number(p1.mana),
+    hitStun:Number(p1.hitStunMs||0),
+    controlLocked:Boolean(p1.controlLocked),
+    controlsLocked:Boolean(p1.controlsLocked),
+    fire1:Number(fire1),
     buffer:Number(fireBuffer1),
+    active:String(document.body.dataset.runActive||""),
     shots:bullets.filter(b=>b&&b.ttl>0&&b.owner===p1.id).length,
-    blockedCalls:Number(window.__ccgP0BlockedFireCalls||0),
-    held:Number(window.CCGLostSizzlerV142AttackHoldLiveness?.held?.size||0)
+    r20:{...window.CCGLostSizzlerV142R20LiveRegressionStability.diagnostics},
+    hold:{...window.CCGLostSizzlerV142AttackHoldLiveness.diagnostics}
   }));
-  assert.equal(stalled.mana,before.mana,"staged lockout must not fire before delayed verification");
-  assert.ok(stalled.buffer>0,"staged lockout must retain a queued FIRE buffer");
-  assert.equal(stalled.shots,0,"staged lockout must have zero live player projectiles");
-  assert.ok(stalled.blockedCalls>0,"staged lockout must block the normal frame fire owner");
-  assert.equal(stalled.held,0,"quick tap must already be released before delayed verification");
 
-  await page.waitForFunction(before=>{
-    const diag=window.CCGLostSizzlerV142AttackHoldLiveness?.diagnostics||{};
-    return Number(diag.pressRecoveries||0)>before.recoveries&&Number(p1?.mana||0)<before.mana;
-  },before,{timeout:4000});
+  assert.ok(recovered.mana<before.mana,"a fresh FIRE press must recover the poisoned combat boundary and consume ammo");
+  assert.equal(recovered.hitStun,0,"stale hit-stun must not permanently disable FIRE");
+  assert.equal(recovered.controlLocked,false,"stale controlLocked must be cleared before FIRE");
+  assert.equal(recovered.controlsLocked,false,"stale controlsLocked must be cleared before FIRE");
+  assert.equal(recovered.active,"true","FIRE recovery must restore the live-run presentation flag");
+  assert.ok(recovered.r20.staleStunRepairs>before.staleRepairs,"stale hit-stun repair must be recorded");
+  assert.ok(recovered.r20.controlLockRepairs>before.controlRepairs,"control-lock repair must be recorded");
 
-  const recovered=await page.evaluate(()=>{
-    const diag=window.CCGLostSizzlerV142AttackHoldLiveness.diagnostics;
-    const result={
-      mana:Number(p1.mana),
-      buffer:Number(fireBuffer1),
-      shots:bullets.filter(b=>b&&b.ttl>0&&b.owner===p1.id).length,
-      verifications:Number(diag.pressVerifications||0),
-      recoveries:Number(diag.pressRecoveries||0),
-      failures:Number(diag.pressRecoveryFailures||0),
-      held:Number(window.CCGLostSizzlerV142AttackHoldLiveness?.held?.size||0)
-    };
-    if(window.__ccgP0OriginalFirePlayer)firePlayer=window.__ccgP0OriginalFirePlayer;
-    delete window.__ccgP0OriginalFirePlayer;
-    return result;
-  });
-
-  assert.ok(recovered.mana<before.mana,"delayed FIRE recovery must consume ammo for a real shot");
-  assert.ok(recovered.verifications>before.verifications,"quick tap must still be verified after keyup");
-  assert.ok(recovered.recoveries>before.recoveries,"buffer-without-shot state must invoke R20 recovery");
-  assert.equal(recovered.failures,before.failures,"successful P0 recovery must not count as a failed recovery");
-  assert.equal(recovered.held,0,"recovery must not leave the released key held");
-
-  const normalBefore=await page.evaluate(()=>Number(p1.mana));
+  const normalBefore=Number(recovered.mana);
   await page.keyboard.press("Space");
   await page.waitForFunction(mana=>Number(p1?.mana||0)<mana,normalBefore,{timeout:3000});
   assert.equal(await page.evaluate(()=>input.has("Space")),false,"normal follow-up tap must release Space");
