@@ -107,6 +107,8 @@ assert.match(legacyPolish,/RELEASE_VERSION="V10\.41"/,"legacy polish must retain
 assert.doesNotMatch(legacyPolish,/keepSubtitleCurrent/,"legacy polish must not reinstall a persistent subtitle observer");
 assert.doesNotMatch(legacyPolish,/new MutationObserver/,"legacy V10.30 polish must never observe/rewrite release branding again");
 assert.match(assetOverrides,/const CCG_RELEASE_REV=/,"enhancement queue must derive one release-wide cache revision");
+assert.match(assetOverrides,/v10-42-bootstrap\\.js\\?v=\\$\\{CCG_RELEASE_REV\\}/,"V10.42 bootstrap must be release-tokened and owned by the enhancement queue");
+assert.ok(assetOverrides.indexOf("v10-35-quality.js")<assetOverrides.indexOf("v10-42-bootstrap.js"),"V10.42 ordered bootstrap must remain the final enhancement queue entry");
 assert.match(assetOverrides,/v10-4-death-cache\.js\?v=\$\{CCG_RELEASE_REV\}/,"death-cache code must remain release-tokened");
 assert.match(assetOverrides,/v10-6-runtime\.js\?v=\$\{CCG_RELEASE_REV\}/,"multiplayer runtime must remain release-tokened");
 assert.match(assetOverrides,/CCGLostSizzlerCacheGuard\?\.runtimeErrors/,"uncaught startup module errors must fail the release gate");
