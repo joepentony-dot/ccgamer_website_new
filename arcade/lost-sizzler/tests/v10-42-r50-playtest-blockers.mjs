@@ -27,11 +27,12 @@ assert.match(reporter,/rapidMs:Number\(event\.detail\?\.rapidMs\|\|0\)/);
 assert.match(play,/function memoryConsoleContact\(p\)/,"Memory Pad replay console needs a dedicated contact edge");
 assert.match(play,/z\.consoleOccupants=Array\.isArray\(z\.consoleOccupants\)/,"Memory Pad console contact must be edge-triggered rather than restarting every frame");
 assert.match(play,/for\(const player of localPlayers\(\)\)memoryConsoleContact\(player\)/,"Memory Pad replay must be recovered even if a movement wrapper misses the contact boundary");
-assert.match(core,/function memoryPuzzleVisibleTo\(p,x,y\)/,"Memory Pad visibility must bypass ordinary darkness only for puzzle cells");
+assert.match(core,/function memoryPuzzleVisibleTo\(p,x,y\)/,"Memory Pad visibility must have a dedicated room-scoped owner");
+assert.match(core,/return W\.roomAt\(world,x,y\)===z\.roomId/,"the complete Memory Pad room must bypass ordinary dungeon darkness while the puzzle is active");
 assert.match(core,/memoryPuzzleVisibleTo\(p,x,y\)\|\|permanentLightVisibleTo/);
 
 assert.match(render,/function memoryPuzzleFrame\(p\)/,"Memory Pad room must have a bounded framing target");
-assert.match(render,/return Math\.max\(\.65,Math\.min\(1,v\.w\/requiredW,v\.h\/requiredH\)\)/,"Memory Pad camera may zoom out enough to show the complete sequence");
+assert.match(render,/return Math\.max\(\.65,Math\.min\(1,v\.w\/requiredW,v\.h\/requiredH\)\)/,"Memory Pad camera may zoom out enough to show the complete room");
 assert.match(render,/const viewportWidth=Number\(window\.innerWidth\|\|0\)/,"mobile zoom must use the actual viewport rather than the sidebar-narrowed canvas");
 assert.doesNotMatch(render,/querySelector\("\.canvas-wrap"\).*<=900/,"desktop camera must not become mobile-zoomed just because the sidebar narrows the canvas");
 assert.match(render,/memoryPuzzleFramed:Boolean\(memoryPuzzleFrame\(p\)\)/,"camera diagnostics must expose puzzle framing");
