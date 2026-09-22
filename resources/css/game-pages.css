@@ -1056,3 +1056,70 @@
     }
 }
 
+
+
+/* C64 ULTIMATE TAPE ARCHIVE — generated mapping, no live archive scraping */
+.ccg-game-resource-section--tape .ccg-section__intro {
+    margin: -2px 0 10px;
+    color: rgba(214, 235, 248, 0.76);
+    font-size: 0.82rem;
+}
+
+.ccg-uta-release-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 10px;
+}
+
+.ccg-uta-release {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 9px 12px;
+    align-items: center;
+    padding: 11px;
+    border: 1px solid rgba(var(--accent-rgb), 0.28);
+    border-radius: 12px;
+    background: linear-gradient(145deg, rgba(var(--accent-rgb), 0.07), rgba(4, 11, 23, 0.78));
+}
+
+.ccg-uta-release__title {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: #fff;
+    font-family: var(--ccg-font-main);
+    font-size: 0.84rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.ccg-uta-release__details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px 12px;
+    min-width: 0;
+}
+
+.ccg-uta-release__meta {
+    color: rgba(220, 239, 250, 0.82);
+    font-size: 0.78rem;
+}
+
+.ccg-uta-release__meta strong {
+    color: rgba(242, 250, 255, 0.96);
+}
+
+.ccg-uta-release__button {
+    white-space: nowrap;
+}
+
+@media (max-width: 620px) {
+    .ccg-uta-release {
+        grid-template-columns: 1fr;
+    }
+
+    .ccg-uta-release__button {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+}
