@@ -492,6 +492,10 @@ async function auditGameMediaWheel(sessionId, sitePort, viewport) {
     await waitForGameMediaGuard(sessionId);
 
     const target = await prepareGameMediaWheelTarget(sessionId);
+    // Give Chromium one compositor turn after the shield is forced visible and
+    // the iframe is scrolled into place. elementFromPoint can already report
+    // the shield while the compositor's wheel hit-test region is still stale.
+    await new Promise((resolve) => setTimeout(resolve, 120));
     if (target.error) fail(`${viewport.label}: ${target.error}`);
     if (target.guardState !== "ready") fail(`${viewport.label}: game video guard state is ${target.guardState || "missing"}`);
     if (target.shieldHidden || target.shieldDisplay === "none") fail(`${viewport.label}: game video wheel shield is not active`);
