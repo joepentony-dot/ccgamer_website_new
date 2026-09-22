@@ -78,7 +78,8 @@ test("single-game hero credits stay aligned in tidy rows", () => {
 
   assert.match(css, /SINGLE-GAME HERO IDENTITY TIDY/);
   assert.match(css, /\.ccg-behind-pixels-inline__item\s*\{\s*display:\s*contents;/);
-  assert.match(css, /grid-template-columns:\s*minmax\(120px,\s*155px\)\s*minmax\(0,\s*1fr\)/);
+  assert.match(css, /grid-template-columns:[\s\S]*minmax\(105px,\s*135px\)[\s\S]*minmax\(105px,\s*165px\)/);
+  assert.match(css, /@media \(max-width:\s*1180px\)[\s\S]*minmax\(120px,\s*155px\)\s*minmax\(0,\s*1fr\)/);
   assert.match(css, /\.game-hero__actions \.ccg-btn\.ccg-btn--share/);
   assert.match(css, /@media \(min-width:\s*901px\)[\s\S]*\.game-hero__inner\s*\{\s*align-items:\s*start;/);
   assert.match(badges, /\.ccg-game-badges\s*\{[\s\S]*width:\s*100%;[\s\S]*max-width:\s*none;/);
