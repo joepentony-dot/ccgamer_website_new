@@ -15,6 +15,14 @@ Update this file when a workstream changes category, its active PR/dependency ch
 - `/games/ccg-games/` becomes the maintenance destination and links to the existing CCG Trivia League and Game Box Hangman instead of duplicating Hangman code.
 - Longer-term direction is a distinct `Play Games` hub for interactive experiences while `/games/` remains the established C64/Amiga archive.
 - Detailed record: [play-games-maintenance-2026-09-22.md](ai-work/play-games-maintenance-2026-09-22.md).
+## Single-game hero/presentation follow-up — 22 September 2026
+
+- PR #2248 is merged and remains the compact shared individual-game presentation baseline.
+- Draft PR #2253 / branch `codex/fix-amazon-picks-accordion-double-toggle` is the current bounded follow-up. It fixes the duplicate CCG Picks accordion click owner and tidies the shared hero/details block requested after hands-on review.
+- The hero follow-up is presentation-only: desktop cover/content/3D-box alignment is normalised, actions/award spacing is tightened, and Game Credits now render as consistent label/value rows. Existing Secondary Publisher links participate in the same grid without changing game data.
+- Navigation, logo, C64/Amiga toggle, community/UTA data contracts, Home and Dungeon Carnage are explicitly outside this candidate.
+- Public code cache is `2026-09-22-public-code-v4`. Exact-head qualification is required before #2253 can leave draft or be considered for merge.
+
 ## Single-game community and UTA checkpoint — 22 September 2026
 
 - PR #2227 / branch `codex/single-game-community-uta` is the bounded implementation vehicle for the shared individual-game rating/review presentation and C64 Ultimate Tape Archive integration.
