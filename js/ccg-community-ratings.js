@@ -188,8 +188,15 @@
   function updateRatingMeta(averageValue, count) {
     const meta = document.getElementById('ccg-rating-summary-meta');
     if (!meta) return;
-    if (!count) { meta.textContent = 'No ratings yet'; return; }
-    meta.textContent = Number(averageValue || 0).toFixed(1) + '/10 · ' + count + (count === 1 ? ' vote' : ' votes');
+    if (!count || Number(averageValue || 0) <= 0) {
+      meta.textContent = '';
+      meta.hidden = true;
+      meta.removeAttribute('title');
+      return;
+    }
+    meta.hidden = false;
+    meta.textContent = Number(averageValue || 0).toFixed(1) + '/10';
+    meta.title = count + (count === 1 ? ' community vote' : ' community votes');
   }
 
   async function render() {
@@ -355,16 +362,19 @@
     }
     const panel = getRatingPanel();
     if (panel) {
+      panel.open = false;
+      panel.removeAttribute('open');
+      panel.dataset.ccgCompactDefault = 'true';
       panel.addEventListener('toggle', function () {
         if (panel.open) render();
       });
-      if (panel.open) render();
-    } else {
-      render();
     }
 
-    window.addEventListener('ccg:auth-ready', function () { if (!panel || panel.open) render(); });
-    window.addEventListener('ccg:auth-changed', function () { if (!panel || panel.open) render(); });
-    window.addEventListener('ccg:rating-updated', function () { if (!panel || panel.open) render(); });
+    // Populate the subtle collapsed score even before the accordion is opened.
+    render();
+
+    window.addEventListener('ccg:auth-ready', render);
+    window.addEventListener('ccg:auth-changed', render);
+    window.addEventListener('ccg:rating-updated', render);
   });
 })();
