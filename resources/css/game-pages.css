@@ -1306,9 +1306,7 @@
 .ccg-page--single-game #game-discovery-links.ccg-compact-explore:not([hidden]) {
     display: grid;
     grid-template-columns: minmax(190px, 0.34fr) minmax(0, 1fr);
-    grid-template-areas:
-        "heading links"
-        "intro links";
+
     align-items: center;
     column-gap: 16px;
     row-gap: 2px;
@@ -1317,21 +1315,24 @@
 }
 
 .ccg-page--single-game #game-discovery-links.ccg-compact-explore .game-section__kicker {
-    grid-area: heading;
+    grid-column: 1;
+    grid-row: 1;
     margin: 0;
     color: rgb(var(--accent-rgb));
     font-size: 0.65rem;
 }
 
 .ccg-page--single-game #game-discovery-links.ccg-compact-explore .game-section__title {
-    grid-area: heading;
+    grid-column: 1;
+    grid-row: 1;
     align-self: end;
     margin: 14px 0 0;
     font-size: clamp(0.88rem, 1.2vw, 1rem);
 }
 
 .ccg-page--single-game #game-discovery-links.ccg-compact-explore > .ccg-section__intro {
-    grid-area: intro;
+    grid-column: 1;
+    grid-row: 2;
     align-self: start;
     max-width: none;
     margin: 2px 0 0;
@@ -1343,15 +1344,21 @@
 
 .ccg-page--single-game #game-discovery-links.ccg-compact-explore #gameGenreLinks,
 .ccg-page--single-game #game-discovery-links.ccg-compact-explore #gameCollectionLinks {
-    grid-area: links;
+    grid-column: 2;
     justify-content: flex-end;
     align-content: center;
     gap: 6px;
     margin: 0;
 }
 
-.ccg-page--single-game #game-discovery-links.ccg-compact-explore #gameCollectionLinks {
+.ccg-page--single-game #game-discovery-links.ccg-compact-explore #gameGenreLinks {
+    grid-row: 1;
     align-self: end;
+}
+
+.ccg-page--single-game #game-discovery-links.ccg-compact-explore #gameCollectionLinks {
+    grid-row: 2;
+    align-self: start;
 }
 
 .ccg-page--single-game #game-discovery-links.ccg-compact-explore .game-pill,
@@ -1402,14 +1409,14 @@
     .ccg-page--single-game #game-music-archive-section:not([hidden]),
     .ccg-page--single-game #game-discovery-links.ccg-compact-explore:not([hidden]) {
         grid-template-columns: 1fr;
-        grid-template-areas: none;
         gap: 7px;
     }
 
     .ccg-page--single-game #game-discovery-links.ccg-compact-explore > *,
     .ccg-page--single-game #game-discovery-links.ccg-compact-explore #gameGenreLinks,
     .ccg-page--single-game #game-discovery-links.ccg-compact-explore #gameCollectionLinks {
-        grid-area: auto;
+        grid-column: auto;
+        grid-row: auto;
         justify-content: flex-start;
         align-self: auto;
     }
