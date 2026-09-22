@@ -2,16 +2,17 @@
 
 > Legacy repository path: `arcade/lost-sizzler/`. The customer-facing game name is **C64 Dungeon Carnage**. Historical internal identifiers may still use `Lost Sizzler` where compatibility requires them.
 
-## Active r47 release-blocker candidate — PR #2226
+## Active r49 long-session freeze candidate — PR #2231
 
-- **Status:** DRAFT / QUALIFYING. Do not treat r47 as merged or publication-ready until the final exact head is fully green.
-- **Published candidate identity:** `V10.42 r47` / `20260922r47`.
-- **Inventory → FIRE:** release-blocking recurrence is covered by an Inventory-close recovery boundary plus repeated live browser regression; existing FIRE owners remain authoritative and r20 `attackNow()` is fallback-only.
-- **Memory Pads:** old 3×3 grid is retired. Floor 3 uses five numbered, spaced pads plus a purple replay console; only deliberate movement counts, knockback is ignored, replay is penalty-free, and a wrong deliberate pad spawns exactly one monster.
-- **Firearms:** Archive Sword remains the initial state. First gun pickup acquires Tier 1; one firearm evolves under floor caps F1 T2 / F2 T3 / F3 T4 / F4 T5 / F5 T6, with three-way fire at T4 and capped drops salvaged into ammo. Redundant owned-gun switching is removed.
-- **Developer reporter:** `?bugreport=1` enables a persistent REPORT BUG control (F8 on desktop) that records bounded recent state/events and exports text/JSON without owning gameplay/input/render behavior.
-- **Manual gate after merge:** repeatedly open/close Inventory and FIRE; test Memory Pad replay/wrong/knockback behavior; validate firearm pacing; use REPORT BUG immediately if FIRE or another intermittent state failure reproduces.
-- The last qualified publication artifact remains r46 until this candidate completes exact-head qualification.
+- **Status:** DRAFT / QUALIFYING. The user reproduced a current deployed r47 Solo session slowing to a complete standstill on Floor 3; this is a new hands-on defect and therefore reopens bounded Dungeon runtime work.
+- **Current live baseline:** PR #2226 is merged on `main` as `38c2f7e43233f6a1e6f81cb8d942f1df449feffe`, publishing `V10.42 r47` / `20260922r47`.
+- **Incident evidence:** the supplied r47 report was captured after about 24 minutes of active Solo play. The performance governor had entered `severe` while browser heap usage remained low, so this is not consistent with an ordinary JS-heap exhaustion failure. The same report recorded 18,219 Warden HUD repairs and 3,558 enemy-cooldown repairs.
+- **Warden HUD fix:** r47 had two competing writers: Warden domain progression appended Warden state into `quickSpecials`, while r18 immediately stripped that same text into the dedicated `quick-warden-status` node. #2231 retires the shared-effects writer so one owner remains and the repeated add/remove DOM churn stops.
+- **Combat maintenance fix:** normal negative enemy countdown values are no longer treated as corrupt state, and a player FIRE request no longer scans the complete dungeon enemy roster. The full enemy safety repair remains on the bounded maintenance path.
+- **Diagnostics:** REPORT BUG now captures the r47 performance governor, r37 frame diagnostics, AI active/sleeping simulation counts and live enemy/particle/ring/floater/hazard/projectile array sizes so a future slowdown report identifies pressure directly.
+- **Candidate identity:** `V10.42 r49` / `20260922r49`. r48 is deliberately skipped because an older stale unmerged branch already used that label.
+- **Scope boundary:** no world generation, collision, damage, trap, progression, save, economy, firearm balance or projectile ownership is redesigned. The merged r45 room-sleeping optimisation remains in place.
+- **Manual gate after merge:** repeat a meaningful 20–30+ minute Solo run through Floors 2–3 with movement, combat, repeated FIRE, Inventory and pause/resume. The performance tier must not collapse into a sustained standstill. Use REPORT BUG immediately if it does.
 
 ## Audit checkpoint
 
