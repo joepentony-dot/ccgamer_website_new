@@ -10,6 +10,15 @@ on:
       - "games/index.html"
       - "games/game.html"
       - "games/games.json"
+      - "js/ccg-community-ratings.js"
+      - "js/ccg-community-comments.js"
+      - "js/ccg-uta-archive.js"
+      - "resources/css/ccg-community.css"
+      - "resources/css/game-pages.css"
+      - "scripts/generate-uta-map.mjs"
+      - "data/uta-game-matches.json"
+      - "data/uta-manual-review.json"
+      - "tests/single-game-community-uta.test.mjs"
       - "games/genres/**"
       - "games/collections/**"
       - "resources/images/thumbnails/all/**"
@@ -141,6 +150,14 @@ jobs:
       - name: Validate manual viewer publishing contract
         run: node --test tests/manual-viewer-polish.test.mjs
 
+      - name: Validate single-game community and UTA integration
+        run: |
+          node --check scripts/generate-uta-map.mjs
+          node --check js/ccg-community-ratings.js
+          node --check js/ccg-community-comments.js
+          node --check js/ccg-uta-archive.js
+          node --test tests/community-ratings-single-refresh.mjs tests/community-summary-critical-path.mjs tests/single-game-community-uta.test.mjs
+
       - name: Validate SEO opportunity plan
         run: node --test tests/seo-opportunity-plan.test.mjs
 
@@ -170,6 +187,12 @@ jobs:
         run: |
           echo "[games-publishing] Retrying uncached Lemon reference pages before magazine import. Existing cache files are reused. External Lemon64/Lemon Amiga availability is optional and cannot block publishing."
           node scripts/refresh-lemon-game-cache.js --all-missing
+
+      - name: Refresh Ultimate Tape Archive mapping (best effort)
+        continue-on-error: true
+        run: |
+          echo "[games-publishing] Refreshing the cached C64 Ultimate Tape Archive mapping. Public game pages never scrape UTA at runtime, and an external UTA outage cannot block publishing."
+          node scripts/generate-uta-map.mjs
 
       - name: Import cached and curated magazine reviews
         run: |

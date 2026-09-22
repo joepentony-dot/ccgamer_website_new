@@ -45,7 +45,8 @@ function videoIdFor(game) {
 
 function hasValidUploadDate(value) {
   const text = String(value || "").trim();
-  return /^\d{4}-\d{2}-\d{2}(?:T.*)?$/.test(text) && !Number.isNaN(Date.parse(text));
+  return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})$/i.test(text)
+    && !Number.isNaN(Date.parse(text));
 }
 
 function schemaObjects(html) {

@@ -17,6 +17,7 @@
     "build:magazine-reviews": "node scripts/build-magazine-review-chunks.js",
     "import:magazine-reviews": "node scripts/import-amiga-magazine-reviews.js",
     "validate:magazine-reviews": "node scripts/build-magazine-review-chunks.js --check",
-    "build:sitemaps": "npm run generate:publishers && npm run generate:video-seo && npm run generate:retro-video-seo && npm run generate:video-library && npm run generate:sitemaps && npm run apply:seo-growth && npm run validate:sitemaps && npm run validate:video-seo && npm run validate:retro-video-seo && npm run validate:video-library && npm run validate:seo-growth"
+    "build:sitemaps": "npm run generate:publishers && npm run generate:video-seo && npm run generate:retro-video-seo && npm run generate:video-library && npm run generate:sitemaps && npm run apply:seo-growth && npm run validate:sitemaps && npm run validate:video-seo && npm run validate:retro-video-seo && npm run validate:video-library && npm run validate:seo-growth",
+    "generate:uta": "node scripts/generate-uta-map.mjs"
   }
 }
