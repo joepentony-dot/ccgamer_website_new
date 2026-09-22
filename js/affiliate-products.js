@@ -250,20 +250,19 @@
     function positionGameSection(section) {
         if (!section || !section.parentElement) return;
 
-        const descriptionSection = document.getElementById("game-description-section");
-        const videoSection = document.getElementById("game-video-section");
-        const heroSection = document.querySelector(".game-hero");
+        const parent = section.parentElement;
+        const quickActions = parent.querySelector(":scope > .game-quick-actions");
+        const community = parent.querySelector(":scope > .ccg-community-game-section");
 
-        const anchor = descriptionSection && !descriptionSection.hidden
-            ? descriptionSection
-            : videoSection && !videoSection.hidden
-                ? videoSection
-                : heroSection;
-
-        if (!anchor || anchor.parentElement !== section.parentElement) return;
-        if (anchor.nextElementSibling !== section) {
-            anchor.insertAdjacentElement("afterend", section);
+        if (quickActions) {
+            parent.insertBefore(section, quickActions);
+            return;
         }
+        if (community && community !== section) {
+            community.insertAdjacentElement("afterend", section);
+            return;
+        }
+        parent.appendChild(section);
     }
 
     function renderGameShowcase(config) {
@@ -311,7 +310,7 @@
             return;
         }
 
-        if (title) title.textContent = toSafeString(group.heading) || "CCG Recommended Gear";
+        if (title) title.textContent = "CCG Picks";
         if (intro) intro.textContent = toSafeString(group.intro) || "A small set of CCG picks matched to the system you're browsing.";
 
         section.querySelectorAll(".affiliate-products-legal").forEach((node) => node.remove());
@@ -321,13 +320,26 @@
         section.classList.remove("is-hardware-open");
         section.hidden = false;
         section.removeAttribute("aria-hidden");
-        section.setAttribute("aria-label", `${toSafeString(group.heading) || "CCG recommended gear"} - Amazon affiliate links`);
+        section.setAttribute("aria-label", "CCG Picks - Amazon affiliate links");
 
-        panel.hidden = false;
+        panel.hidden = true;
         if (toggle) {
-            toggle.hidden = true;
-            toggle.disabled = true;
-            toggle.setAttribute("aria-expanded", "true");
+            toggle.hidden = false;
+            toggle.disabled = false;
+            toggle.setAttribute("aria-expanded", "false");
+            const label = toggle.querySelector("span:first-child");
+            if (label) label.textContent = "View Amazon Picks";
+
+            if (toggle.dataset.ccgAffiliateToggleWired !== "true") {
+                toggle.dataset.ccgAffiliateToggleWired = "true";
+                toggle.addEventListener("click", () => {
+                    const nextOpen = panel.hidden;
+                    panel.hidden = !nextOpen;
+                    section.classList.toggle("is-hardware-open", nextOpen);
+                    toggle.setAttribute("aria-expanded", nextOpen ? "true" : "false");
+                    if (label) label.textContent = nextOpen ? "Hide Amazon Picks" : "View Amazon Picks";
+                });
+            }
         }
 
         positionGameSection(section);
