@@ -27,7 +27,15 @@ Update this file when a workstream changes category, its active PR/dependency ch
 - Current `main` advanced through merged #2226 while #2227 was qualifying. The only overlapping path was this continuation index; the current-main reconciliation preserves #2226's Dungeon checkpoint and all #2227 single-game state without touching Dungeon runtime files.
 - Detailed record: [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md).
 
-## Active Dungeon Carnage r50 fullscreen/input follow-up — 22 September 2026
+## Active Dungeon Carnage V10.42 R50 combined blocker candidate — 22 September 2026
+
+- Branch `codex/dungeon-r50-combined-blockers` carries the R50 fullscreen/input/layout base from #2241, the qualified #2233 audio diagnostics, and the newly implemented Nightmare cassette horror-audio, Memory Pad replay/framing and loader-artwork fixes.
+- V10.4 Archive Wraith handling no longer creates a separate recurring oscillator soundtrack or reuses the Death Stalker sting. Memory Console entry is edge-triggered in simulation and the camera frames/reveals the complete unresolved Memory Pad puzzle.
+- Release loader artwork now uses `resources/images/hero/c64-dungeon-carnage-home-v2.webp`.
+- New combined and pickup-audio contracts are present. Exact-head qualification is required before merge; #2241/#2233 remain unmerged.
+- Detailed record: [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md).
+
+## Historical Dungeon Carnage r50 fullscreen/input follow-up — 22 September 2026
 
 - PR #2231 is merged as `3f273ec8eb881faac1825a6779863c9367faf0d1`; `V10.42 r49` / `20260922r49` is the current live Dungeon baseline.
 - Hands-on r49 testing exposed that the displayed **Press F** fullscreen shortcut fired the weapon instead. Source reconciliation found the canonical fullscreen owner intact in `game-main.js`, but r20, held-attack liveness and r47 Inventory/FIRE recovery still claimed `KeyF` as an attack alias at later capture boundaries.
