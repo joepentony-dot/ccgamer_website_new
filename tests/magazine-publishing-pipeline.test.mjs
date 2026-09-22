@@ -53,6 +53,8 @@ test("missing Lemon sources retry through live/archive fallback without becoming
   assert.doesNotMatch(workflow, /refresh-lemon-game-cache\.js --check/);
   assert.match(workflow, /Require new or changed game enrichment completion/);
   assert.match(workflow, /node scripts\/validate-new-game-enrichment\.mjs --base HEAD\^/);
+  assert.match(workflow, /Audit full magazine-review coverage/);
+  assert.match(workflow, /audit-magazine-review-coverage\.js --verbose/);
   assert.match(workflow, /Audit all C64 UTA enrichment candidates/);
 });
 
