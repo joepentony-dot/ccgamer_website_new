@@ -49,28 +49,16 @@ try{
 
   await page.evaluate(async()=>{await quitToMenu()});
   await page.waitForFunction(()=>String(mode)==="menu");
-  await page.waitForFunction(()=>{const menu=document.getElementById("menu"),button=document.getElementById("split-btn");if(!menu||!button||button.disabled)return false;const menuStyle=getComputedStyle(menu),buttonStyle=getComputedStyle(button),rect=button.getBoundingClientRect();return menuStyle.display!=="none"&&menuStyle.visibility!=="hidden"&&buttonStyle.display!=="none"&&buttonStyle.visibility!=="hidden"&&rect.width>1&&rect.height>1});
-  await page.bringToFront();
-  await page.locator("#split-btn").focus();
-  const splitStart=await page.evaluate(async()=>{
-    const button=document.getElementById("split-btn");const focused=document.hasFocus()&&document.activeElement===button;
-    const started=await startSplit();
-    return{started:Boolean(started),focused,runActive:String(document.body.dataset.runActive||""),mode:String(mode||""),playMode:String(playMode||""),hasP1:Boolean(p1),hasP2:Boolean(p2)}
+  const retiredSplit=await page.evaluate(()=>{
+    const button=document.getElementById("split-btn");
+    if(!button)return{exists:false,visible:false};
+    const style=getComputedStyle(button),rect=button.getBoundingClientRect();
+    return{exists:true,visible:style.display!=="none"&&style.visibility!=="hidden"&&rect.width>1&&rect.height>1}
   });
-  assert.equal(splitStart.focused,true,"Split Screen must accept menu focus before deterministic startup");
-  assert.equal(splitStart.started,true,`Split Screen startup must resolve successfully: ${JSON.stringify(splitStart)}`);
-  assert.equal(splitStart.runActive,"true",`Split Screen startup must publish an active run: ${JSON.stringify(splitStart)}`);
-  assert.equal(splitStart.mode,"playing",`Split Screen startup must enter playing mode: ${JSON.stringify(splitStart)}`);
-  assert.equal(splitStart.playMode,"split",`Split Screen startup must select split play mode: ${JSON.stringify(splitStart)}`);
-  assert.equal(splitStart.hasP1&&splitStart.hasP2,true,`Split Screen startup must initialise both local players: ${JSON.stringify(splitStart)}`);
-
-  const splitResult=await page.evaluate(()=>{
-    const api=window.CCGLostSizzlerV141R49GamepadInput,b=Array.from({length:16},()=>({pressed:false,value:0}));api.processSnapshot(1,{connected:true,axes:[1,0],buttons:b},performance.now()+1200);const held=input.has("ArrowRight");api.processSnapshot(1,{connected:true,axes:[0,0],buttons:b},performance.now()+1220);return{held,released:!input.has("ArrowRight")}
-  });
-  assert.equal(splitResult.held,true,"Pad 2 stick-right must use canonical ArrowRight split input");
-  assert.equal(splitResult.released,true,"Pad 2 neutral stick must release ArrowRight");
+  assert.equal(retiredSplit.exists,true,"R51 keeps the inert Split Screen compatibility anchor for older startup listeners");
+  assert.equal(retiredSplit.visible,false,"R51 must keep retired Split Screen unavailable in the public menu");
   assert.deepEqual(errors,[],`r49 browser test must not raise page errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 r49 menu, Solo and two-controller Split Screen input passed in Chromium.");
+  console.log("Lost Sizzler V10.41 r49 menu and Solo controller input passed; retired Split Screen remains hidden in R51.");
   await context.close();
 }finally{
   await browser.close().catch(()=>{});for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
