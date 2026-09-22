@@ -157,6 +157,18 @@ test("shared template and runtime keep UTA C64-only and hidden without a confide
   assert.match(loader, /label: "Tape"/);
 });
 
+test("single-game runtime defers to generated schema and never invents a video upload date from the game release year", () => {
+  const loader = fs.readFileSync("js/load-single-game.js", "utf8");
+  const validator = fs.readFileSync("scripts/validate-video-seo.js", "utf8");
+
+  assert.match(loader, /data-ccg-schema="game-graph"/);
+  assert.match(loader, /if \(staticGameGraph\) return/);
+  assert.doesNotMatch(loader, /"uploadDate":\s*game\.year/);
+  assert.doesNotMatch(loader, /\$\{game\.year\}-01-01/);
+
+  assert.match(validator, /\(\?:Z\|\[\+\-\]\\d\{2\}:\\d\{2\}\)/);
+});
+
 
 test("UTA runtime omits unknown release years instead of displaying archive sentinel values", () => {
   const runtime = fs.readFileSync("js/ccg-uta-archive.js", "utf8");
