@@ -32,6 +32,9 @@
   function temp(player,key,duration,config={}){if(!player)return;ensureBase(player);player._v105Effects=player._v105Effects||{};player._v105Effects[key]={until:now()+Math.max(1,Number(duration||1)),config:{...config}}}
   function overhead(player,text,colour=P.gold){if(!player||!text)return;setTimeout(()=>{const label=String(text).toUpperCase();try{if(typeof floatPickupText==="function")floatPickupText(player,label,colour);else floatText(player.x,player.y,label,colour)}catch(_){}},420)}
   function toast(title,text,tone="cyan",duration=7200){try{showToast(title,text,tone,duration)}catch(_){}}
+  function publishCollectibleEffect(title,rule,player){
+    try{window.dispatchEvent(new CustomEvent("ccg:collectible-effect",{detail:{source:"v10-5",title:String(title||""),effectType:String(rule?.effect_type||""),durationMs:Number(rule?.duration_ms||0),playerId:String(player?.id||""),floor:Number(run?.floor||0),horrorAlive:Number((host?.enemies||[]).filter(enemy=>enemy?.alive&&enemy.horrorCreature).length),rapidMs:Number(player?.rapidMs||0),at:performance.now()}}))}catch(_){}
+  }
 
   async function loadData(){
     try{
@@ -108,6 +111,7 @@
       case"colour_burst":colourBurst(player);break;
     }
     overhead(player,popup,rule.effect_type==="underpants_mode"?P.red:rule.effect_type==="bubble_shield"?P.cyan:P.gold);
+    publishCollectibleEffect(title,rule,player);
     try{sync()}catch(_){}
   }
 
