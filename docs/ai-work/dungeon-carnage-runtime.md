@@ -4,20 +4,26 @@
 
 The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
-## Active V10.42 R50 combined blocker candidate — 22 September 2026
+## V10.42 R50 combined blocker release — merged 22 September 2026
 
-Branch `codex/dungeon-r50-combined-blockers` consolidates the user-reproduced R50 blockers on top of the already-qualified #2241 fullscreen/input/layout candidate rather than releasing partial fixes.
+PR #2243 / branch `codex/dungeon-r50-combined-blockers` consolidated the hands-on R50 blockers and merged to `main` as `4f300919e6acb15bbd291bbc82f3a4f762aa3a4e` from exact qualified head `18a909cdd28b57906151925bee67a5e165f27b52`.
 
-Implemented repository-side changes:
-- reconciled #2233's qualified pickup/audio diagnostics and pickup-level-up SFX staggering;
-- removed V10.4 collectible horror's independent AudioContext and recurring oscillator beat owner, replaced its reused Death Stalker sting with the established alert cue, and reduced its effect observer to 250 ms;
+The exact PR head passed every triggered pre-merge workflow: Public Code Cache Version, Native Mouse Wheel Scroll Contract, Mobile Trap Layout, Social Metadata, Structured Data, SEO, itch.io Package, CCG Site Safety and Lost Sizzler Load Safety. Load Safety passed canonical/Node coverage plus all six Chromium shards, including the long Solo combat/mobile FIRE endurance shard.
+
+Merged production scope:
+- retained #2241's F/fullscreen ownership correction and desktop fullscreen camera improvement;
+- reconciled #2233's pickup/audio diagnostics and pickup-level-up SFX staggering;
+- removed V10.4 collectible horror's independent AudioContext and recurring oscillator beat owner, replaced the reused Death Stalker sting with the established alert cue and bounded its observer to 250 ms;
 - exposed Archive Wraith horror-active transitions to REPORT BUG;
-- added simulation-owned Memory Console edge detection so entry reliably starts/replays the sequence without per-frame restart;
-- centred the unresolved Memory Pad footprint in the camera, based ordinary mobile zoom on the real browser viewport rather than the sidebar-reduced canvas width, and kept the pads/console readable while the player remains in the puzzle room;
+- made Memory Console entry simulation-owned and edge-triggered so it reliably starts/replays without per-frame restart;
+- centred the unresolved Memory Pad footprint, based ordinary mobile zoom on the real browser viewport rather than sidebar-reduced canvas width and kept the pads/console readable in the puzzle room;
 - changed the release loader artwork to `resources/images/hero/c64-dungeon-carnage-home-v2.webp`;
-- added the R50 combined static contract and carried forward the #2233 pickup-audio diagnostic contract.
+- extended the itch.io package to carry the same loader art as `assets/c64-dungeon-carnage-loader.webp`;
+- added the R50 combined static contract and carried forward the #2233 pickup-audio contract.
 
-Exact-head qualification is pending. #2241 and #2233 remain unmerged while the combined candidate is qualified.
+Post-merge Pages deployment and Live Public Navigation Verification passed. The legacy production smoke still contained r46 hard-coded expected build/cache constants, so a test-only post-merge correction updates those constants to r50; this is not a runtime regression.
+
+#2233 is closed as superseded. Hands-on acceptance still remains for the user's exact Nightmare cassette slowdown reproduction, Memory Console replay/full-pad visibility and fullscreen/F behaviour on the deployed R50 build.
 
 ## Historical r50 fullscreen/input follow-up — PR #2241 — 22 September 2026
 
