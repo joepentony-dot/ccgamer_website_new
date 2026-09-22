@@ -1,5 +1,5 @@
 const lostSizzlerPixelAssets=(()=>{const make=src=>{if(typeof Image!=="function")return null;const image=new Image();image.decoding="async";image.src=src;return image};return{explorer:make("assets/pixel/explorer-sheet-v10-34.png?v=20260824r8"),chests:make("assets/pixel/chest-sheet-v10-34.png?v=20260824r8")}})();
-function camFor(p,v){let c=cameras.get(p.id)||{x:0,y:0},targetX=p.rx,targetY=p.ry;const mem=host.memoryPuzzle;if(mem&&!mem.solved&&W.roomAt(world,p.x,p.y)===mem.roomId){const points=[...(mem.tiles||[]),mem.activator].filter(Boolean);if(points.length){const minX=Math.min(...points.map(q=>q.x)),maxX=Math.max(...points.map(q=>q.x)),minY=Math.min(...points.map(q=>q.y)),maxY=Math.max(...points.map(q=>q.y));targetX=(minX+maxX)/2;targetY=(minY+maxY)/2}}const tx=Math.max(0,Math.min(C.worldWidth*C.tile-v.w,targetX*C.tile+C.tile/2-v.w/2)),ty=Math.max(0,Math.min(C.worldHeight*C.tile-v.h,targetY*C.tile+C.tile/2-v.h/2));c.x=tx;c.y=ty;cameras.set(p.id,c);return c}
+function camFor(p,v){let c=cameras.get(p.id)||{x:0,y:0},targetX=p.rx,targetY=p.ry;const roomId=W.roomAt(world,p.x,p.y),room=world.rooms?.[roomId],mem=host.memoryPuzzle;if(mem&&!mem.solved&&roomId===mem.roomId){const points=[...(mem.tiles||[]),mem.activator].filter(Boolean);if(points.length){const minX=Math.min(...points.map(q=>q.x)),maxX=Math.max(...points.map(q=>q.x)),minY=Math.min(...points.map(q=>q.y)),maxY=Math.max(...points.map(q=>q.y));targetX=(minX+maxX)/2;targetY=(minY+maxY)/2}}else if(document.fullscreenElement&&room){const roomPixelW=(room.w+2)*C.tile,roomPixelH=(room.h+2)*C.tile;if(roomPixelW<=v.w&&roomPixelH<=v.h){targetX=room.x+room.w/2;targetY=room.y+room.h/2}}const tx=Math.max(0,Math.min(C.worldWidth*C.tile-v.w,targetX*C.tile+C.tile/2-v.w/2)),ty=Math.max(0,Math.min(C.worldHeight*C.tile-v.h,targetY*C.tile+C.tile/2-v.h/2));c.x=tx;c.y=ty;cameras.set(p.id,c);return c}
 function ws(x,y){return{x:view.x+x*C.tile-cam.x+renderShake.x,y:view.y+y*C.tile-cam.y+renderShake.y}}
 function tileHash(x,y,salt=0){let h=Math.imul(x+17,73856093)^Math.imul(y+31,19349663)^Math.imul(salt+7,83492791);h^=h>>>13;h=Math.imul(h,1274126177);return(h^(h>>>16))>>>0}
 function drawTile(x,y){
@@ -523,11 +523,19 @@ function renderRadarPanel(p){
 function dungeonCameraZoom(v,p){
   if(p2)return 1;
   try{
-    const mem=host.memoryPuzzle;
-    if(mem&&!mem.solved&&p&&W.roomAt(world,p.x,p.y)===mem.roomId)return 1;
+    const roomId=p?W.roomAt(world,p.x,p.y):-1,room=world.rooms?.[roomId],mem=host.memoryPuzzle;
+    if(mem&&!mem.solved&&p&&roomId===mem.roomId)return 1;
     const viewportWidth=Number(window.innerWidth||0),coarse=Boolean(window.matchMedia?.("(pointer: coarse)")?.matches);
     if(coarse||(viewportWidth>0&&viewportWidth<=900))return 1.6;
-    if(document.fullscreenElement)return 1.35
+    if(document.fullscreenElement){
+      const preferred=1.35;
+      if(room){
+        const roomPixelW=Math.max(C.tile,(room.w+2)*C.tile),roomPixelH=Math.max(C.tile,(room.h+2)*C.tile);
+        const fit=Math.min(v.w/roomPixelW,v.h/roomPixelH,preferred);
+        return Math.max(1,fit)
+      }
+      return preferred
+    }
   }catch(_){}
   return 1
 }
