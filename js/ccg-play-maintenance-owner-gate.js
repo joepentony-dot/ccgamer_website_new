@@ -2,7 +2,7 @@
  *
  * Production remains closed to ordinary visitors while maintenance is active.
  * The signed-in Cheeky Commodore Gamer admin profile is allowed through so the
- * live R50 build can be acceptance-tested without reopening the game publicly.
+ * live R51 build can be acceptance-tested without reopening the game publicly.
  */
 (function () {
   "use strict";
