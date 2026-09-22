@@ -11,7 +11,7 @@ Temporary public maintenance gating for the two CCG original browser games, the 
 - The public Commodore Quest entry, direct Quest runtime entry and C64 Dungeon Carnage entry load the gate synchronously before their game runtime. Localhost and non-production previews remain usable for development and hands-on testing.
 - `/games/ccg-games/` is the temporary maintenance destination. It removes launch links for both originals and links instead to the existing CCG Trivia League and Game Box Hangman routes.
 - Hangman remains single-owned at `/quiz/pack-6.html`; it is linked from the games hub rather than duplicated.
-- No Quest or Dungeon gameplay/runtime owner is changed by this maintenance work.
+- No Quest or Dungeon gameplay/runtime owner is changed by this maintenance work.\n- Public code cache ownership advances from `2026-09-22-public-code-v1` to `2026-09-22-public-code-v2` because the maintenance gate adds a new public JavaScript asset.
 
 ## Architecture direction
 
