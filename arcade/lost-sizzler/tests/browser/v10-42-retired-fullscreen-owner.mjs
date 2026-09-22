@@ -111,7 +111,7 @@ try{
     buttonFullscreenCalls:Number(window.__ccgStage1ButtonFullscreenCalls||0),
     retiredSpyCalls:Number(window.__ccgStage1RetiredSpyFullscreenCalls||0)
   }));
-  assert.equal(result.keyFullscreenCalls,1,"keyboard path must reach the supported fullscreen binding exactly once");
+  assert.equal(result.keyFullscreenCalls,2,"both synthetic-window and focused-gameplay F paths must reach the supported fullscreen binding exactly once each");
   assert.equal(result.buttonFullscreenCalls,1,"fullscreen button must retain the supported shell fullscreen owner");
   assert.equal(result.retiredSpyCalls,0,"supported fullscreen controls must remain independent of retired Spy ownership");
   assert.deepEqual(errors,[],`fullscreen retirement boundary must have no uncaught browser errors: ${errors.join("\n")}`);
