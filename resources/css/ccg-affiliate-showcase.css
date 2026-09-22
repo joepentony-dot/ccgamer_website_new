@@ -489,6 +489,7 @@
 /* SINGLE-GAME COMPACT AFFILIATE ACCORDION — 2026-09-22 */
 .ccg-page--single-game .affiliate-products-section--showcase {
     margin: 0;
+    padding: 0 !important;
     border-radius: 12px;
     background: linear-gradient(145deg, rgba(var(--ccg-affiliate-accent), 0.055), rgba(4, 10, 22, 0.84));
     box-shadow: 0 0 14px rgba(var(--ccg-affiliate-accent), 0.07);
