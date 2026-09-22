@@ -2540,6 +2540,28 @@
       ]
     },
     {
+      "gameSlug": "wonder-boy",
+      "title": "Wonder Boy",
+      "year": 1979,
+      "knownPublishers": [
+        "Activision"
+      ],
+      "knownReReleasers": [
+        "The Hit Squad"
+      ],
+      "reason": "title-publisher-match-year-needs-review",
+      "excludedCandidates": [
+        {
+          "archiveId": "6764",
+          "publisher": "Activision",
+          "yearLabel": "1987",
+          "publisherMatched": true,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Wonder_Boy_(1987_Activision)_%5b6764%5d/"
+        }
+      ]
+    },
+    {
       "gameSlug": "yie-ar-kung-fu",
       "title": "Yie Ar Kung-Fu",
       "year": 1985,

@@ -2556,7 +2556,7 @@
     <loc>https://www.cheekycommodoregamer.co.uk/games/gods/</loc>
     <video:video>
       <video:thumbnail_loc>https://i.ytimg.com/vi/t_eJvreqNcc/maxresdefault.jpg</video:thumbnail_loc>
-      <video:title>Gods – Why Did Pirated Amiga Copies Make the First Boss Nearly Impossible</video:title>
+      <video:title>Gods on the Commodore Amiga – Was It Really as Good as We Remember?</video:title>
       <video:description>️ Gods (1991) – Commodore Amiga Precision Platforming with Mythic Depth Released in 1991 by The Bitmap Brothers and published by Renegade Software, Gods is a demanding action-platform adventure that casts you as Hercules on a quest for immortality. Progress unfolds across four expansive realms packed with enemies, traps, secrets, and carefully layered puzzles. Every move matters. Precise jumping, measured combat, and deliberate pacing are essential, especially with limited inventory space forcing tough choices about keys, weapons, and upgrades. Weapons range from throwing knives to fireballs and bouncing axes, each suited to different situations and enemy patterns, rewarding experimentation and planning. Levels are built to be learned and mastered, with clever layouts that encourage observation and route optimisation. Certain enemies react to your behaviour, adding tension and pushing you to adapt rather than brute-force your way through.</video:description>
       <video:player_loc>https://www.youtube.com/embed/t_eJvreqNcc</video:player_loc>
       <video:duration>342</video:duration>
@@ -7102,6 +7102,15 @@
       <video:player_loc>https://www.youtube.com/embed/ioJLJmz2rHU</video:player_loc>
       <video:duration>611</video:duration>
       <video:publication_date>2023-05-30T17:30:06Z</video:publication_date>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.cheekycommodoregamer.co.uk/games/wonder-boy/</loc>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/raMcxhNFUCI/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>Wonder Boy – C64 Gameplay &amp; Review | Cheeky Commodore Gamer</video:title>
+      <video:description>Wonder Boy on the Commodore 64 is Activision’s 1987 conversion of Sega’s popular arcade platformer, bringing its fast-paced running, jumping, fruit collecting, axe throwing and infamous skateboard to the C64. The conversion retains plenty of the arcade game’s personality with large colourful sprites, smooth scrolling and familiar enemies, although repetitive stages, floaty jumping and limited music stop it from matching the original machine. Zzap!64 famously awarded the full-price release just 52%, while other reviews were considerably kinder. It remains an enjoyable slice of 1980s arcade nostalgia, particularly for C64 players who grew up with this version at home.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/raMcxhNFUCI</video:player_loc>
     </video:video>
   </url>
   <url>
