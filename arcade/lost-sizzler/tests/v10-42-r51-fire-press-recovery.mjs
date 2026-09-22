@@ -12,6 +12,7 @@ assert.match(src,/CCGLostSizzlerV142R20LiveRegressionStability/);
 assert.match(src,/r20\.attackNow\(code\)/);
 assert.match(src,/const fresh=!event\.repeat&&!held\.has\(event\.code\)/);
 assert.match(src,/if\(fresh\)verifyFreshPress\(event\.code,before\)/);
-assert.doesNotMatch(src,/KeyF/,"F must remain reserved for fullscreen and must not become an attack key");
+assert.match(src,/const ATTACK_KEYS=new Set\(\["Space","Numpad0"\]\)/,"only Space and Numpad0 may be attack keys");
+assert.doesNotMatch(src,/ATTACK_KEYS=new Set\([^\n]*"KeyF"/,"F must remain reserved for fullscreen and must not become an attack key");
 
 console.log("PASS V10.42 R51 fresh FIRE press recovery contract");
