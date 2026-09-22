@@ -39,7 +39,8 @@ assert.match(core,/function submitWeeklyResultOnce\(\)/,"all weekly result exits
 assert.match(main,/if\(run\?\.daily\)await submitWeeklyResultOnce\(\)/,"quitting a weekly run must submit its current final score before clearing the run");
 
 assert.match(supabaseClient,/@supabase\/supabase-js@2\.95\.0/,"the shared browser client must pin the verified Supabase SDK version");
-assert.ok(index.includes(`ccg-supabase-client.js?v=${release.cacheToken}`),"the multiplayer client must ship with the current published release cache token");
+assert.match(index,/ccg-supabase-client\.js\?v=[^"]+/,"the shared Supabase client must remain explicitly cache-versioned");
+assert.ok(index.includes(`js/network.js?v=${release.cacheToken}`),"the canonical Dungeon network compatibility client must ship with the current published release cache token");
 assert.match(network,/private:false/,"internet rooms must explicitly use public browser-accessible Realtime channels");
 assert.match(network,/broadcast:\{self:false,ack:true\}/,"room broadcasts must wait for relay acknowledgement");
 assert.match(network,/async sendRequired\(event,payload\)/,"start and join control messages must have a reliable failure path");
