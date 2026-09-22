@@ -290,6 +290,19 @@ test("build mapping keeps ambiguous title-only matches out of public data", () =
   ));
 });
 
+test("Smash TV source identity matches the verified C64 Ocean release family", () => {
+  const games = JSON.parse(fs.readFileSync("games/games.json", "utf8"));
+  const game = games.find((row) => row.slug === "smash-tv");
+
+  assert.ok(game, "Smash TV source record is missing");
+  assert.equal(game.year, 1991);
+  assert.deepEqual(game.credits?.publisher, ["Ocean"]);
+  assert.deepEqual(game.credits?.re_releaser, ["The Hit Squad"]);
+  assert.equal(game.developer, "Probe Software");
+  assert.equal(game.credits?.developer, "Probe Software");
+  assert.deepEqual(game.credits?.musician, ["Jeroen Tel"]);
+});
+
 test("seed mapping covers match, multiple releases, no-match and Amiga exclusion cases", () => {
   const mapping = JSON.parse(fs.readFileSync("data/uta-game-matches.json", "utf8"));
   assert.equal(mapping.games["bangkok-knights"].releases.length, 1);
