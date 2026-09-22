@@ -2,17 +2,16 @@
 
 > Legacy repository path: `arcade/lost-sizzler/`. The customer-facing game name is **C64 Dungeon Carnage**. Historical internal identifiers may still use `Lost Sizzler` where compatibility requires them.
 
-## Active r49 long-session freeze candidate — PR #2231
+## Active r50 fullscreen/input follow-up — PR #2241
 
-- **Status:** DRAFT / QUALIFYING. The user reproduced a current deployed r47 Solo session slowing to a complete standstill on Floor 3; this is a new hands-on defect and therefore reopens bounded Dungeon runtime work.
-- **Current live baseline:** PR #2226 is merged on `main` as `38c2f7e43233f6a1e6f81cb8d942f1df449feffe`, publishing `V10.42 r47` / `20260922r47`.
-- **Incident evidence:** the supplied r47 report was captured after about 24 minutes of active Solo play. The performance governor had entered `severe` while browser heap usage remained low, so this is not consistent with an ordinary JS-heap exhaustion failure. The same report recorded 18,219 Warden HUD repairs and 3,558 enemy-cooldown repairs.
-- **Warden HUD fix:** r47 had two competing writers: Warden domain progression appended Warden state into `quickSpecials`, while r18 immediately stripped that same text into the dedicated `quick-warden-status` node. #2231 retires the shared-effects writer so one owner remains and the repeated add/remove DOM churn stops.
-- **Combat maintenance fix:** normal negative enemy countdown values are no longer treated as corrupt state, and a player FIRE request no longer scans the complete dungeon enemy roster. The full enemy safety repair remains on the bounded maintenance path.
-- **Diagnostics:** REPORT BUG now captures the r47 performance governor, r37 frame diagnostics, AI active/sleeping simulation counts and live enemy/particle/ring/floater/hazard/projectile array sizes so a future slowdown report identifies pressure directly.
-- **Candidate identity:** `V10.42 r49` / `20260922r49`. r48 is deliberately skipped because an older stale unmerged branch already used that label.
-- **Scope boundary:** no world generation, collision, damage, trap, progression, save, economy, firearm balance or projectile ownership is redesigned. The merged r45 room-sleeping optimisation remains in place.
-- **Manual gate after merge:** repeat a meaningful 20–30+ minute Solo run through Floors 2–3 with movement, combat, repeated FIRE, Inventory and pause/resume. The performance tier must not collapse into a sustained standstill. Use REPORT BUG immediately if it does.
+- **Status:** DRAFT / QUALIFYING. Hands-on r49 testing exposed two desktop fullscreen defects.
+- **Current live baseline:** PR #2231 is merged as `3f273ec8eb881faac1825a6779863c9367faf0d1`, publishing `V10.42 r49` / `20260922r49`.
+- **Fullscreen key conflict:** the canonical shared handler already owns `F` for fullscreen, but later r20/held-attack/r47 recovery layers still listed `KeyF` as a P1 attack alias and could intercept it first during live play. #2241 removes `KeyF` from those attack sets while preserving Space/Numpad0 FIRE and legacy stale-key cleanup.
+- **Focused-key regression:** the fullscreen browser contract now sends a real focused keyboard F event through document capture listeners and requires fullscreen ownership without increasing attack intents.
+- **Desktop fullscreen framing:** Solo desktop fullscreen now uses a renderer-only 1.35x camera so the active dungeon consumes substantially more of the otherwise empty lower playfield. Normal desktop remains 1x, mobile remains 1.6x and split-screen remains 1x.
+- **Candidate identity:** `V10.42 r50` / `20260922r50`.
+- **Scope boundary:** no world generation, collision, damage, traps, progression, saves, economy, projectile lifecycle or combat balance is changed.
+- **Manual gate after merge:** verify F enters/exits fullscreen without firing and confirm the large lower black gap is materially removed while the HUD/radar remain usable.
 
 ## Audit checkpoint
 
