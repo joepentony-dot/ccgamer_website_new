@@ -8,6 +8,14 @@ For Dungeon Carnage specifically, `arcade/lost-sizzler/PROGRESS.md` is the produ
 
 Update this file when a workstream changes category, its active PR/dependency changes, or a substantial session ends. Keep detailed reasoning, checks, blockers, and next actions in the workstream file.
 
+## Dungeon Carnage retired public modes cleanup — 22 September 2026
+
+- r49 slowdown remediation #2231 is merged as `3f273ec8eb881faac1825a6779863c9367faf0d1` and is the base for the new retired-mode cleanup.
+- Branch `codex/dungeon-retired-public-modes-cleanup` is the bounded current-main vehicle for removing obsolete public Split Screen, Weekly High-Score Vault and developer/active-work presentation.
+- Product policy has changed: the public release now exposes Solo and Tutorial only. Older continuation text requiring local 2P Split Screen or Weekly Vault to remain supported is historical and superseded.
+- Live Supabase has no active `cron.job` entries. `ccq-weekly-challenge` and `ccq-weekly-results` are already deployed 410 retirement stubs and do not send weekly member notifications.
+- The existing Stage 8 itch.io artifact is stale with respect to this public-mode policy and must not be treated as the final publication output until a fresh qualified package is produced from the retired-mode-cleaned runtime.
+
 ## Single-game community and UTA checkpoint — 22 September 2026
 
 - PR #2227 / branch `codex/single-game-community-uta` is the bounded implementation vehicle for the shared individual-game rating/review presentation and C64 Ultimate Tape Archive integration.
