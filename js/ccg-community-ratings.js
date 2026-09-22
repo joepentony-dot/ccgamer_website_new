@@ -187,9 +187,24 @@
 
   function updateRatingMeta(averageValue, count) {
     const meta = document.getElementById('ccg-rating-summary-meta');
-    if (!meta) return;
-    if (!count) { meta.textContent = 'No ratings yet'; return; }
-    meta.textContent = Number(averageValue || 0).toFixed(1) + '/10 · ' + count + (count === 1 ? ' vote' : ' votes');
+    const compact = document.getElementById('ccg-community-compact-score');
+    const average = Number(averageValue || 0);
+
+    if (!count || average <= 0) {
+      if (meta) meta.textContent = 'No ratings yet';
+      if (compact) {
+        compact.textContent = '';
+        compact.hidden = true;
+      }
+      return;
+    }
+
+    const score = average.toFixed(1) + '/10';
+    if (meta) meta.textContent = score + ' · ' + count + (count === 1 ? ' vote' : ' votes');
+    if (compact) {
+      compact.textContent = score;
+      compact.hidden = false;
+    }
   }
 
   async function render() {
