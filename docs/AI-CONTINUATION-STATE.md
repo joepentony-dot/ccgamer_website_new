@@ -8,6 +8,14 @@ For Dungeon Carnage specifically, `arcade/lost-sizzler/PROGRESS.md` is the produ
 
 Update this file when a workstream changes category, its active PR/dependency changes, or a substantial session ends. Keep detailed reasoning, checks, blockers, and next actions in the workstream file.
 
+## Dungeon Carnage owner-only maintenance preview — 22 September 2026
+
+- Branch `codex/dungeon-r50-owner-preview` keeps the public production maintenance redirect in place for everyone except the authenticated CCG owner profile.
+- Owner access is verified against the live Supabase profile: username `cheekycommodoregamer`, display name `Cheeky Commodore Gamer`, role `admin`. No localStorage/display-text-only bypass is accepted.
+- The supplied Dungeon Carnage homepage/loader WEBP remains `resources/images/hero/c64-dungeon-carnage-home-v2.webp`; both live references now carry a blob-derived cache key so the previous image cannot survive as a stale browser/CDN response.
+- Production smoke is updated to R50 and aware of the intentional anonymous maintenance redirect.
+- Detailed record: [play-games-maintenance-2026-09-22.md](ai-work/play-games-maintenance-2026-09-22.md).
+
 ## Temporary CCG play-games maintenance — 22 September 2026
 
 - PR #2232 / branch `codex/temporary-play-games-maintenance` temporarily takes both CCG original browser games offline on the production CCG hostname without changing their gameplay/runtime logic.
