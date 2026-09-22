@@ -21,7 +21,9 @@ await new Promise((resolve,reject)=>{server.once("error",reject);server.listen(0
 const origin=`http://127.0.0.1:${server.address().port}`;
 const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage","--disable-background-networking","--autoplay-policy=no-user-gesture-required"]});
 try{
-  const context=await browser.newContext({viewport:{width:1280,height:800}}),page=await context.newPage();
+  const context=await browser.newContext({viewport:{width:1280,height:800}});
+  await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
+  const page=await context.newPage();
   page.setDefaultTimeout(60000);
   await page.goto(`${origin}/arcade/lost-sizzler/?bugreport=1&r47-inventory-fire=1`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&window.CCGLostSizzlerV142R47InventoryFireRecovery?.state?.installed===true);
