@@ -14,7 +14,7 @@ Update this file when a workstream changes category, its active PR/dependency ch
 - Read-only diagnostic #2234 reproduced the representative route at browser CLS 0.944 / Lighthouse CLS 0.743 under the deterministic 390×844 profile. Its highest shared sources include `main#ccg-main-content`, `aside#ccgModeIdentityBar`, `.ccg-header-actions` and `header.ccg-header`; this is lab evidence, not a replacement for Search Console field data.
 - Draft PR #2235 / branch `codex/retro-mobile-cls-stability` reserves cold-auth header geometry, emits the mode identity strip statically, and makes the mode-identity/final responsive cascade render-blocking in the authoritative retro-video template.
 - The candidate includes a 390×844 browser geometry guard for unresolved/guest/member auth states and keeps generated retro HTML automation-owned.
-- #2235 has been reconciled onto current `main` after #2236. The only current-main overlaps were this continuation index and an already-identical `service-worker.js` code-cache version; no mouse-wheel fix was overwritten. Require fresh exact-head green qualification and explicit user approval before merge.
+- #2235 has been reconciled onto current `main` after #2236. The only current-main overlaps were this continuation index and `service-worker.js`; no mouse-wheel fix was overwritten. Current `main` already uses public-code cache namespace `v2`, so #2235 advances only its cache namespace to `2026-09-22-public-code-v3` for the changed shared CSS. Require fresh exact-head green qualification and explicit user approval before merge.
 - Detailed record: [mobile-cls-retro-video-2026-09-22.md](ai-work/mobile-cls-retro-video-2026-09-22.md).
 
 ## Temporary CCG play-games maintenance — 22 September 2026
