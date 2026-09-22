@@ -26,7 +26,9 @@ const ROOT = path.resolve(__dirname, "..");
 const HOST = "127.0.0.1";
 const DRIVER_PORT = 9517;
 const TARGET_PAGE = "/games/collections/retro-specials.html";
+const GAME_MEDIA_PAGE = "/games/1942/index.html";
 const CSS_PATH = path.join(ROOT, "resources/css/ccg-scroll-authority.css");
+const GLOBAL_JS_PATH = path.join(ROOT, "js/ccg-global.js");
 const PAGE_PATH = path.join(ROOT, "games/collections/retro-specials.html");
 const MIN_WHEEL_DELTA = 100;
 const WHEEL_DELTA = 560;
@@ -115,6 +117,7 @@ function assertNoLocalWheelOwners(html) {
 
 function assertStaticContract() {
     const css = fs.readFileSync(CSS_PATH, "utf8");
+    const globalJs = fs.readFileSync(GLOBAL_JS_PATH, "utf8");
     const html = fs.readFileSync(PAGE_PATH, "utf8");
 
     const requiredCss = [
@@ -123,6 +126,8 @@ function assertStaticContract() {
         ["html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-open)", "document/body scroll-root selector"],
         ["overflow-y: visible !important;", "body/page-shell vertical overflow release"],
         ["SITE-WIDE WHEEL PERFORMANCE CONTRACT", "wheel performance contract marker"],
+        ["EMBEDDED MEDIA WHEEL PASS-THROUGH", "embedded media wheel guard marker"],
+        [".ccg-wheel-guard", "embedded media wheel guard style"],
         ["body[data-collection=\"Retro Specials\"]", "Retro Specials scope"],
         [".ccg-game-card--retro-event", "Retro Specials card scope"],
         ["transform: none;", "Retro Specials compositor reset"],
@@ -132,6 +137,10 @@ function assertStaticContract() {
     ];
 
     for (const [needle, label] of requiredCss) requireText(css, needle, label);
+
+    requireText(globalJs, "function setupEmbeddedFrameWheelGuards()", "embedded frame wheel guard runtime");
+    requireText(globalJs, "ccg-wheel-guard-host", "embedded frame guard host class");
+    requireText(globalJs, "youtube(?:-nocookie)?\\.com\\/embed\\/", "YouTube-only guard scope");
 
     requireText(html, "data-ccg-page=\"collection-single\"", "Retro Specials page identity");
     requireText(html, "data-collection=\"Retro Specials\"", "Retro Specials body identity");
@@ -400,6 +409,105 @@ async function auditViewport(sessionId, sitePort, viewport) {
     console.log(`PASS ${viewport.label}: native mouse wheel moved the document ${movement}px over the Retro Specials card grid.`);
 }
 
+
+async function waitForGameMediaGuard(sessionId) {
+    let last = null;
+
+    for (let attempt = 0; attempt < 24; attempt += 1) {
+        last = await execute(sessionId, String.raw`
+return (function () {
+    var frame = document.querySelector('#game-video-embed');
+    if (!frame) return { ready: false, reason: 'game video iframe missing' };
+
+    var source = frame.getAttribute('src') || '';
+    var host = frame.parentElement;
+    var shield = host ? host.querySelector('.ccg-wheel-guard') : null;
+
+    return {
+        ready: /youtube(?:-nocookie)?\\.com\\/embed\\//i.test(source)
+            && frame.dataset.ccgWheelGuard === 'ready'
+            && !!shield,
+        source: source,
+        guardState: frame.dataset.ccgWheelGuard || '',
+        shieldPresent: !!shield
+    };
+})();`);
+
+        if (last?.ready) return last;
+        await new Promise((resolve) => setTimeout(resolve, 150));
+    }
+
+    fail(`single-game media guard did not initialise: ${JSON.stringify(last)}`);
+}
+
+async function prepareGameMediaWheelTarget(sessionId) {
+    return execute(sessionId, String.raw`
+return (function () {
+    var root = document.documentElement;
+    var body = document.body;
+    var frame = document.querySelector('#game-video-embed');
+    if (!frame) return { error: 'game video iframe missing' };
+
+    var host = frame.parentElement;
+    var shield = host ? host.querySelector('.ccg-wheel-guard') : null;
+    if (!shield) return { error: 'game video wheel shield missing' };
+
+    root.style.setProperty('scroll-behavior', 'auto', 'important');
+    if (body) body.style.setProperty('scroll-behavior', 'auto', 'important');
+
+    frame.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' });
+
+    var rect = frame.getBoundingClientRect();
+    var shieldRect = shield.getBoundingClientRect();
+    var x = Math.max(1, Math.min(window.innerWidth - 2, Math.round(rect.left + rect.width / 2)));
+    var y = Math.max(1, Math.min(window.innerHeight - 2, Math.round(rect.top + rect.height / 2)));
+    var hit = document.elementFromPoint(x, y);
+
+    return {
+        x: x,
+        y: y,
+        scrollY: Math.round(window.scrollY),
+        maxScroll: Math.max(0, Math.round((document.scrollingElement || root).scrollHeight - window.innerHeight)),
+        frameWidth: Math.round(rect.width),
+        frameHeight: Math.round(rect.height),
+        shieldWidth: Math.round(shieldRect.width),
+        shieldHeight: Math.round(shieldRect.height),
+        shieldHidden: !!shield.hidden,
+        shieldDisplay: getComputedStyle(shield).display,
+        hitIsShield: hit === shield || !!hit?.closest?.('.ccg-wheel-guard'),
+        guardState: frame.dataset.ccgWheelGuard || ''
+    };
+})();`);
+}
+
+async function auditGameMediaWheel(sessionId, sitePort, viewport) {
+    await setViewport(sessionId, viewport);
+    await navigate(sessionId, `http://${HOST}:${sitePort}${GAME_MEDIA_PAGE}`);
+    await waitForGameMediaGuard(sessionId);
+
+    const target = await prepareGameMediaWheelTarget(sessionId);
+    if (target.error) fail(`${viewport.label}: ${target.error}`);
+    if (target.guardState !== "ready") fail(`${viewport.label}: game video guard state is ${target.guardState || "missing"}`);
+    if (target.shieldHidden || target.shieldDisplay === "none") fail(`${viewport.label}: game video wheel shield is not active`);
+    if (!target.hitIsShield) fail(`${viewport.label}: game video centre is not covered by the wheel shield`);
+    if (Math.abs(target.frameWidth - target.shieldWidth) > 4 || Math.abs(target.frameHeight - target.shieldHeight) > 4) {
+        fail(`${viewport.label}: game video wheel shield geometry does not match iframe`);
+    }
+    if (target.maxScroll <= target.scrollY + MIN_WHEEL_DELTA * 2) {
+        fail(`${viewport.label}: not enough scroll room below the game video to verify mouse-wheel scrolling`);
+    }
+
+    await wheelDown(sessionId, target.x, target.y);
+    const afterDown = await readY(sessionId);
+    const movement = afterDown - target.scrollY;
+
+    if (movement < MIN_WHEEL_DELTA) {
+        fail(`${viewport.label}: native mouse wheel stalled over game video (${target.scrollY}px -> ${afterDown}px)`);
+    }
+
+    console.log(`PASS ${viewport.label}: native mouse wheel moved the document ${movement}px over the game video guard.`);
+}
+
 async function main() {
     assertStaticContract();
     console.log("PASS static native-wheel contract: scroll authority, Retro Specials scope and local script ownership are intact.");
@@ -420,6 +528,7 @@ async function main() {
         sessionId = await createSession();
         for (const viewport of VIEWPORTS) {
             await auditViewport(sessionId, sitePort, viewport);
+            await auditGameMediaWheel(sessionId, sitePort, viewport);
         }
         console.log("Native mouse-wheel scroll contract passed.");
     } finally {
