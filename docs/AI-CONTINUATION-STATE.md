@@ -27,16 +27,15 @@ Update this file when a workstream changes category, its active PR/dependency ch
 - Current `main` advanced through merged #2226 while #2227 was qualifying. The only overlapping path was this continuation index; the current-main reconciliation preserves #2226's Dungeon checkpoint and all #2227 single-game state without touching Dungeon runtime files.
 - Detailed record: [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md).
 
-## Active Dungeon Carnage r50 fullscreen/input follow-up — 22 September 2026
+## Active Dungeon Carnage V10.42 r50 consolidation — PR #2242 — 22 September 2026
 
-- PR #2231 is merged as `3f273ec8eb881faac1825a6779863c9367faf0d1`; `V10.42 r49` / `20260922r49` is the current live Dungeon baseline.
-- Hands-on r49 testing exposed that the displayed **Press F** fullscreen shortcut fired the weapon instead. Source reconciliation found the canonical fullscreen owner intact in `game-main.js`, but r20, held-attack liveness and r47 Inventory/FIRE recovery still claimed `KeyF` as an attack alias at later capture boundaries.
-- Draft PR #2241 / branch `codex/dungeon-r50-fullscreen-input-layout` removes `KeyF` from those attack sets while keeping Space/Numpad0 attack recovery and stale historical-key cleanup.
-- The same hands-on fullscreen test showed a large unused black lower playfield. #2241 adds a renderer-only 1.35x desktop Solo fullscreen camera; normal desktop stays 1x, mobile stays 1.6x and split-screen stays 1x.
-- Browser coverage now sends a real focused F key through document capture and requires fullscreen dispatch with no attack-intent increment. Static coverage prevents the late recovery layers reclaiming `KeyF`.
-- #2241 advances release identity to `V10.42 r50` / `20260922r50`.
-- No world generation, collision, damage, traps, progression, saves, economy, projectile lifecycle or combat balance is changed.
-- Exact-head qualification plus hands-on fullscreen acceptance are required before closure.
+- Branch: `codex/dungeon-r50-playtest-blockers`, based on current `main` and carrying the already-qualified #2241 fullscreen/input delta.
+- #2233's green pickup/level-up audio staggering plus SFX/item/music diagnostics are carried into the combined branch without merging #2233 independently.
+- The reported Floor 3 Memory Pad console failure is repaired with edge-triggered console occupancy plus frame-update recovery; Chromium coverage now proves leave/re-enter replay after a missed movement boundary.
+- Puzzle fairness is repaired by making only the five Memory Pad cells and replay console visible through ordinary dungeon darkness while the player is in that room, and by framing the complete puzzle with bounded Solo zoom-out.
+- The A Nightmare On Elm Street cassette is confirmed as a dual legacy-horror + V10.5 arcade-effect case. Archive Wraith arrival now uses a separate creak cue rather than the Death Stalker sting, the legacy recurring beat-node allocator is removed, ambience retires outside active gameplay, and the bug reporter records both composed effects.
+- The r50 loader now displays the newer `c64-dungeon-carnage-home-v2.webp`; the itch builder carries the same asset into the offline package.
+- Candidate identity remains `V10.42 r50` / `20260922r50`. #2242 is draft and must pass the complete exact-head qualification matrix before any merge. #2241/#2233 remain open/unmerged until #2242 disposition is known.
 - Detailed record: [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md).
 
 ## Current autonomous Dungeon Carnage checkpoint — 22 September 2026
