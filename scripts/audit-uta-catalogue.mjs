@@ -15,6 +15,7 @@ import {
 const ROOT = path.resolve(import.meta.dirname, "..");
 const GAMES_PATH = path.join(ROOT, "games", "games.json");
 const COMMITTED_MAPPING_PATH = path.join(ROOT, "data", "uta-game-matches.json");
+const OVERRIDES_PATH = path.join(ROOT, "data", "uta-match-overrides.json");
 const REPORT_DIR = path.join(ROOT, "reports");
 const REPORT_JSON = path.join(REPORT_DIR, "uta-full-catalogue-audit.json");
 const REPORT_MD = path.join(REPORT_DIR, "uta-full-catalogue-audit.md");
@@ -28,6 +29,31 @@ function isC64(game) {
 
 function compactTitle(value) {
   return normalizeText(value).replace(/\s+/g, "");
+}
+
+function bigrams(value) {
+  const text = compactTitle(value);
+  if (text.length < 2) return text ? [text] : [];
+  const out = [];
+  for (let i = 0; i < text.length - 1; i += 1) out.push(text.slice(i, i + 2));
+  return out;
+}
+
+function diceSimilarity(a, b) {
+  const aa = bigrams(a);
+  const bb = bigrams(b);
+  if (!aa.length || !bb.length) return 0;
+  const counts = new Map();
+  for (const gram of aa) counts.set(gram, (counts.get(gram) || 0) + 1);
+  let overlap = 0;
+  for (const gram of bb) {
+    const count = counts.get(gram) || 0;
+    if (count > 0) {
+      overlap += 1;
+      counts.set(gram, count - 1);
+    }
+  }
+  return (2 * overlap) / (aa.length + bb.length);
 }
 
 function candidateRole(game, release) {
@@ -107,6 +133,9 @@ async function main() {
   const games = JSON.parse(fs.readFileSync(GAMES_PATH, "utf8"));
   const c64Games = games.filter(isC64);
   const committed = JSON.parse(fs.readFileSync(COMMITTED_MAPPING_PATH, "utf8"));
+  const overrides = fs.existsSync(OVERRIDES_PATH)
+    ? JSON.parse(fs.readFileSync(OVERRIDES_PATH, "utf8"))
+    : { schemaVersion: 1, games: {} };
 
   const html = await fetchText(UTA_INDEX_URL);
   const releases = parseUtaIndex(html);
@@ -114,7 +143,7 @@ async function main() {
     throw new Error(`UTA audit parsed only ${releases.length} releases; refusing incomplete audit.`);
   }
 
-  const built = buildUtaMapping(games, releases);
+  const built = buildUtaMapping(games, releases, overrides);
   const live = built.mapping;
   const manual = built.manualReview;
 
@@ -171,12 +200,16 @@ async function main() {
   const exactTitleUnresolved = [];
   const strongCompactTitleCandidates = [];
   const publisherVerifiedContainmentCandidates = [];
+  const fuzzyPublisherCandidates = [];
   const noTitleCandidate = [];
 
   for (const game of c64Games) {
     const variants = gameTitleSet(game);
-    const exactCandidates = [...new Set([...variants].flatMap((key) => releasesByTitle.get(key) || []))];
-    const matched = matchGameToUta(game, releases);
+    const override = overrides?.games?.[game.slug] || null;
+    const excludedIds = new Set((override?.exclude || []).map((row) => String(row?.archiveId || "")));
+    const exactCandidates = [...new Set([...variants].flatMap((key) => releasesByTitle.get(key) || []))]
+      .filter((release) => !excludedIds.has(String(release.archiveId)));
+    const matched = matchGameToUta(game, releases, override);
 
     if (exactCandidates.length && !matched.releases.length) {
       exactTitleUnresolved.push({
@@ -237,6 +270,39 @@ async function main() {
       continue;
     }
 
+    const fuzzy = releases
+      .map((release) => ({
+        release,
+        relation: candidateRole(game, release),
+        similarity: Math.max(
+          ...[game?.title, game?.sorttitle]
+            .filter(Boolean)
+            .map((title) => diceSimilarity(title, release.title))
+        )
+      }))
+      .filter(({ relation, similarity }) =>
+        relation.publisherMatched
+        && relation.yearCompatible
+        && similarity >= 0.68
+      )
+      .sort((a, b) =>
+        b.similarity - a.similarity
+        || Number(a.release.archiveId) - Number(b.release.archiveId)
+      )
+      .slice(0, 3);
+
+    if (fuzzy.length) {
+      fuzzyPublisherCandidates.push({
+        slug: game.slug,
+        title: game.title,
+        year: game.year,
+        candidates: fuzzy.map(({ release, relation, similarity }) =>
+          releaseSummary(release, { ...relation, similarity: Number(similarity.toFixed(3)) })
+        )
+      });
+      continue;
+    }
+
     noTitleCandidate.push({ slug: game.slug, title: game.title, year: game.year });
   }
 
@@ -251,11 +317,18 @@ async function main() {
     liveConfidentMappedGames: Object.keys(live.games || {}).length,
     liveConfidentMappedReleases: Object.values(live.games || {}).reduce((sum, record) => sum + (record.releases?.length || 0), 0),
     liveManualReviewGames: manual.entries.length,
+    curatedOverrideGames: Object.keys(overrides?.games || {}).length,
+    curatedIncludeReleases: Object.values(overrides?.games || {}).reduce(
+      (sum, rule) => sum + (Array.isArray(rule?.include) ? rule.include.length : 0),
+      0
+    ),
+    curatedExcludedReleases: Array.isArray(manual.curatedExclusions) ? manual.curatedExclusions.length : 0,
     missingConfidentGamesInCommitted: missingConfidentInCommitted.length,
     staleCommittedGames: staleCommitted.length,
     exactTitleUnresolvedGames: exactTitleUnresolved.length,
     strongCompactTitleCandidateGames: strongCompactTitleCandidates.length,
     publisherVerifiedContainmentCandidateGames: publisherVerifiedContainmentCandidates.length,
+    fuzzyPublisherCandidateGames: fuzzyPublisherCandidates.length,
     noTitleCandidateGames: noTitleCandidate.length
   };
 
@@ -267,6 +340,7 @@ async function main() {
     exactTitleUnresolved,
     strongCompactTitleCandidates,
     publisherVerifiedContainmentCandidates,
+    fuzzyPublisherCandidates,
     noTitleCandidate
   };
 
@@ -339,6 +413,37 @@ async function main() {
         row.title,
         row.year,
         row.candidates.map((c) => `${c.archiveId} ${c.title} / ${c.publisher} ${c.yearLabel}`).join("; ")
+      ])
+    ),
+    "",
+    "## Fuzzy publisher/year-backed title candidates",
+    "",
+    "These are diagnostic only. The title similarity is approximate; no candidate in this section is auto-published.",
+    "",
+    markdownTable(
+      ["Slug", "Title", "Year", "UTA candidates"],
+      fuzzyPublisherCandidates.map((row) => [
+        row.slug,
+        row.title,
+        row.year,
+        row.candidates.map((candidate) =>
+          `${candidate.archiveId} ${candidate.title} / ${candidate.publisher} ${candidate.yearLabel} (similarity=${candidate.similarity})`
+        ).join("; ")
+      ])
+    ),
+    "",
+    "## Curated same-title/different-game exclusions",
+    "",
+    markdownTable(
+      ["Slug", "Title", "UTA archive ID", "UTA title", "Publisher", "Year", "Reason"],
+      (manual.curatedExclusions || []).map((row) => [
+        row.gameSlug,
+        row.title,
+        row.archiveId,
+        row.utaTitle,
+        row.publisher,
+        row.yearLabel,
+        row.reason
       ])
     ),
     "",
