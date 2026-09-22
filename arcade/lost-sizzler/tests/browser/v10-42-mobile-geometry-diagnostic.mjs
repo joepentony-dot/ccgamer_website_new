@@ -31,7 +31,25 @@ try{
   const page=await context.newPage();
   page.setDefaultTimeout(20000);
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.gameReady==="true");
+  try{
+    await page.waitForFunction(()=>document.body.dataset.gameReady==="true");
+  }catch(error){
+    const startup=await page.evaluate(()=>({
+      gameReady:document.body?.dataset?.gameReady||"",
+      releaseReady:document.body?.dataset?.releaseReady||"",
+      bootstrap:window.CCGLostSizzlerV142Bootstrap?{
+        ready:window.CCGLostSizzlerV142Bootstrap.ready===true,
+        failed:window.CCGLostSizzlerV142Bootstrap.failed===true,
+        error:window.CCGLostSizzlerV142Bootstrap.error||"",
+        currentModule:window.CCGLostSizzlerV142Bootstrap.currentModule||"",
+        loaded:[...(window.CCGLostSizzlerV142Bootstrap.loaded||[])],
+        totalModules:window.CCGLostSizzlerV142Bootstrap.totalModules||0
+      }:null,
+      gate:document.documentElement?.dataset?.ccgPlayMaintenanceGate||"",
+      loader:document.getElementById("ccg-release-loading-status")?.textContent||""
+    }));
+    throw new Error("mobile startup timeout: "+JSON.stringify(startup)+" :: "+String(error?.message||error));
+  }
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142R19MobileTrapLayoutStability));
   await page.waitForLoadState("load");
   await page.waitForFunction(()=>document.body.classList.contains("v104-touch-device")&&Boolean(document.getElementById("v104-touch-controls")));
