@@ -594,7 +594,40 @@ return {
     await wheelDown(sessionId, target.x, target.y);
     const afterDown = await readY(sessionId);
     if (afterDown - before < MIN_WHEEL_DELTA) {
-        fail(`${viewport.label}: home mouse wheel stalled DOWN over ${label} (${beforeState.hit}, ${before}px -> ${afterDown}px) state=${JSON.stringify(beforeState)}`);
+        const probes = [];
+        const classSets = [
+            ["ccg-home-perf-paused", "ccg-perf-paused"],
+            ["ccg-perf-compact"],
+            ["ccg-mobile-lite", "ccg-mobile-defer-visuals"],
+            ["ccg-home-perf-paused", "ccg-perf-paused", "ccg-perf-compact", "ccg-mobile-lite", "ccg-mobile-defer-visuals"]
+        ];
+
+        for (const classes of classSets) {
+            const probeStart = await readY(sessionId);
+            await execute(sessionId, String.raw`
+for (const cls of arguments[0]) {
+  document.documentElement.classList.remove(cls);
+  document.body?.classList.remove(cls);
+}
+return {
+  htmlClass:document.documentElement.className,
+  bodyClass:document.body?.className||'',
+  media:{
+    max900:matchMedia('(max-width: 900px)').matches,
+    coarse:matchMedia('(pointer: coarse)').matches,
+    fine:matchMedia('(pointer: fine)').matches,
+    anyFine:matchMedia('(any-pointer: fine)').matches,
+    hover:matchMedia('(hover: hover)').matches,
+    reduced:matchMedia('(prefers-reduced-motion: reduce)').matches
+  }
+};`, [classes]);
+            await wheelDown(sessionId, target.x, target.y);
+            const probeEnd = await readY(sessionId);
+            probes.push({ classes, from: probeStart, to: probeEnd, moved: probeEnd - probeStart });
+            if (probeEnd - probeStart >= MIN_WHEEL_DELTA) break;
+        }
+
+        fail(`${viewport.label}: home mouse wheel stalled DOWN over ${label} (${beforeState.hit}, ${before}px -> ${afterDown}px) state=${JSON.stringify(beforeState)} probes=${JSON.stringify(probes)}`);
     }
 
     await wheelUp(sessionId, target.x, target.y);
