@@ -1,5 +1,12 @@
 # AI continuation state
 
+## Dungeon Carnage post-R51 narrow regression candidate — 23 September 2026
+
+- Branch `codex/dungeon-r51-regression-fixes` was created from refreshed `origin/main` `f719717824f2caa1cb89dc84a2ad7f2438f042a2`, after PR #2256 merged.
+- The bounded repair restores desktop fullscreen from the original Solo/Tutorial click, keeps routine pickup/tutorial notices in the compact lower rail rather than a dungeon-obscuring overlay, and makes a Tutorial touch FIRE a single direct action without weakening normal FIRE liveness/lockout recovery.
+- Focused Node contracts and the targeted Chromium contract are green, and a final `origin/main` refresh remained `f719717824f2caa1cb89dc84a2ad7f2438f042a2`. The broader `v10-9-stability.mjs` Chromium launch hit local Playwright `spawn UNKNOWN`; the itch packager also has a local Windows source-path defect. Do not treat either as green or the candidate as merge-safe until CI completes them.
+- Detailed record: [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md). No merge is authorised by this checkpoint.
+
 ## Content Publisher / C64 archive enrichment regression — 22 September 2026
 
 - Draft PR #2262 / branch `codex/fix-wonder-boy-enrichment-and-uta-audit` repairs Wonder Boy's incorrect 1979 source year to 1987, pins its Lemon64 source, and closes the silent-completion gap that allowed game publishing to report success while magazine review or UTA enrichment was still unresolved.

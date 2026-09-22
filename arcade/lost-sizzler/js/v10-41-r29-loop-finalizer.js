@@ -63,6 +63,14 @@
 
   function setNotificationRailDisplay(rail,live){
     if(!rail)return false;
+    /* Solo and Tutorial reserve a compact, stable lower rail. Reintroducing
+       * the historical display:contents owner here promotes routine reports
+       * back into the canvas and turns a short pickup into a large overlay. */
+    if(String(document.body?.dataset?.specialMode||"")!=="horde-survivor"){
+      rail.style.setProperty("display","block","important");
+      state.notificationRail=rail;state.notificationRailReady=true;state.notificationLive=Boolean(live);
+      return true;
+    }
     rail.style.setProperty("display",live?"contents":"none","important");
     state.notificationRail=rail;state.notificationRailReady=true;state.notificationLive=Boolean(live);
     return true;
