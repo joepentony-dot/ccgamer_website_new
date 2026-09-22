@@ -286,6 +286,7 @@
   window.CCGLostSizzlerCollectibleEffects={
     reload:async()=>{await loadRulesAndMetadata();return rules.length},
     getRules:()=>rules.map(rule=>({...rule,config:{...(rule.config||{})}})),
-    trigger:(title,player)=>triggerGameEffects(title,player)
+    trigger:(title,player)=>triggerGameEffects(title,player),
+    diagnostics:()=>({horrorMusicActive,horrorNodeCount:horrorNodes.length,horrorCreatureCount:Number((host?.enemies||[]).filter(enemy=>enemy?.alive&&enemy.horrorCreature).length)})
   };
 })();
