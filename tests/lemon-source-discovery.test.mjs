@@ -24,7 +24,24 @@ test('builds a conservative Lemon64 candidate from a new C64 game slug', () => {
     year: 1985,
     credits: { publisher: ['Digital Integration'] }
   });
-  assert.deepEqual(urls, ['https://www.lemon64.com/game/speed-king']);
+  assert.deepEqual(urls, [
+    'https://www.lemon64.com/game/speed-king',
+    'https://www.lemon64.com/game/speedking'
+  ]);
+});
+
+test('tries the legacy compact Lemon64 slug used by Wonder Boy', () => {
+  const urls = candidateUrlsForGame({
+    title: 'Wonder Boy',
+    slug: 'wonder-boy',
+    system: 'C64',
+    year: 1987,
+    credits: { publisher: ['Activision'] }
+  });
+  assert.deepEqual(urls, [
+    'https://www.lemon64.com/game/wonder-boy',
+    'https://www.lemon64.com/game/wonderboy'
+  ]);
 });
 
 test('builds a Lemon Amiga candidate and does not cross platforms', () => {
