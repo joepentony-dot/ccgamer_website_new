@@ -117,6 +117,17 @@ The repository's Public Code Cache Version guard requires this public JS/CSS cha
 
 The final documentation-only qualification exposed an unrelated checkout-history defect in the Public Code Cache Version workflow: after a full checkout it re-fetched `main` with `--depth=1`, causing `git diff origin/main...HEAD` to fail with `no merge base` on the synthetic PR merge commit. The workflow now fetches the `main` baseline without truncating history. No cache-version assertion or public-code requirement was weakened.
 
+## Presentation follow-up after compact-layout merge
+
+PR #2248 has merged as the shared compact individual-game baseline. A later hands-on pass exposed two bounded presentation issues now carried by draft PR #2253 on `codex/fix-amazon-picks-accordion-double-toggle`:
+
+- CCG Picks had two click owners, causing an open action to be immediately reversed; #2253 keeps `affiliate-products.js` as the sole accordion owner.
+- The hero/details block looked uneven because each normal Game Credits label/value pair was wrapped as one grid child, so entire credit pairs alternated across columns while Secondary Publisher used direct `dt`/`dd` nodes. #2253 makes the wrapper participate via `display: contents`, giving every credit one consistent label/value row.
+- The same shared CSS top-aligns the desktop cover, central identity block and 3D box, tightens the Share/Favourites and Zzap!64 award spacing, and preserves compact stacked credits on small screens.
+- No community write/read model, UTA mapping, game record, award source, favourite/share behaviour, navigation, logo or platform-toggle ownership changes.
+
+#2253 uses the already-required public cache namespace `2026-09-22-public-code-v4`. It remains draft pending exact-head qualification and explicit merge authorisation.
+
 ## Next action
 
 1. Re-run exact-head qualification after this final documentation checkpoint.

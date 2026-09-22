@@ -1378,3 +1378,139 @@
         width: 100%;
     }
 }
+
+
+/* ============================================================
+   SINGLE-GAME HERO IDENTITY TIDY — 2026-09-22
+   ------------------------------------------------------------
+   Keeps cover art, identity, actions, awards and credits on a
+   predictable shared grid without changing any game data or
+   interaction owners.
+============================================================ */
+
+.ccg-page--single-game .game-hero__title-row,
+.ccg-page--single-game .game-hero__badges,
+.ccg-page--single-game .game-hero__actions,
+.ccg-page--single-game .ccg-behind-pixels-inline {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.ccg-page--single-game .game-hero__badges {
+    gap: 6px;
+}
+
+.ccg-page--single-game .game-hero__badges .game-badge {
+    padding: 5px 9px;
+    font-size: 0.7rem;
+}
+
+.ccg-page--single-game .game-hero__actions {
+    gap: 6px;
+}
+
+.ccg-page--single-game .game-hero__actions .ccg-btn.ccg-btn--share {
+    flex: 0 0 auto;
+    width: auto;
+    min-height: 36px;
+    padding: 7px 12px;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline {
+    gap: 6px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(3, 7, 14, 0.72);
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__title {
+    font-size: 0.78rem;
+    line-height: 1.25;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__list {
+    width: 100%;
+    grid-template-columns:
+        minmax(105px, 135px) minmax(0, 1fr)
+        minmax(105px, 165px) minmax(0, 1fr);
+    gap: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__item {
+    display: contents;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__list dt,
+.ccg-page--single-game .ccg-behind-pixels-inline__list dd {
+    min-width: 0;
+    padding: 7px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__list dt {
+    font-size: 0.7rem;
+    line-height: 1.35;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__list dd {
+    font-size: 0.86rem;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__list dd a {
+    display: inline;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: rgba(var(--accent-rgb), 0.45);
+    text-underline-offset: 0.16em;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__list dd a:hover,
+.ccg-page--single-game .ccg-behind-pixels-inline__list dd a:focus-visible {
+    text-decoration-color: rgba(var(--accent-rgb), 0.9);
+}
+
+@media (max-width: 1180px) {
+    .ccg-page--single-game .ccg-behind-pixels-inline__list {
+        grid-template-columns: minmax(120px, 155px) minmax(0, 1fr);
+    }
+}
+
+@media (min-width: 901px) {
+    .ccg-page--single-game .game-hero__inner {
+        align-items: start;
+    }
+
+    .ccg-page--single-game .game-hero__media,
+    .ccg-page--single-game .game-hero__content,
+    .ccg-page--single-game .game-hero__box3d {
+        align-self: start;
+    }
+
+    .ccg-page--single-game .game-hero__content {
+        padding-top: 2px;
+    }
+}
+
+@media (max-width: 560px) {
+    .ccg-page--single-game .ccg-behind-pixels-inline__list {
+        grid-template-columns: 1fr;
+    }
+
+    .ccg-page--single-game .ccg-behind-pixels-inline__list dt {
+        padding-bottom: 2px;
+        border-bottom: 0;
+    }
+
+    .ccg-page--single-game .ccg-behind-pixels-inline__list dd {
+        padding-top: 0;
+    }
+}

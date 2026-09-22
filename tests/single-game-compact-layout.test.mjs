@@ -53,21 +53,39 @@ test("overview shares a compact desktop row with a 4 by 3 video", () => {
   assert.match(css, /#game-discovery-links/);
 });
 
-test("affiliate picks remain a compact bottom accordion", () => {
+test("affiliate picks remain a compact bottom accordion with one click owner", () => {
   const affiliate = read("js/affiliate-products.js");
+  const loader = read("js/load-single-game.js");
   const css = read("resources/css/ccg-affiliate-showcase.css");
 
   assert.match(affiliate, /const communitySection = document\.querySelector\("\.ccg-community-game-section"\)/);
   assert.match(affiliate, /title\.textContent = "CCG Picks"/);
   assert.match(affiliate, /panel\.hidden = true/);
   assert.match(affiliate, /ccgAffiliateToggleBound/);
+  assert.match(affiliate, /toggle\.addEventListener\("click"/);
+  assert.doesNotMatch(loader, /initHardwareAccordion/);
+  assert.doesNotMatch(loader, /hardwareAccordionBound/);
   assert.match(css, /SINGLE-GAME COMPACT AMAZON ACCORDION/);
   assert.match(css, /\.ccg-hardware-toggle::before/);
   assert.match(css, /content:\s*"a"/);
   assert.match(css, /\.ccg-hardware-panel\[hidden\]/);
 });
 
+
+test("single-game hero credits stay aligned in tidy rows", () => {
+  const css = read("resources/css/game-pages.css");
+  const badges = read("resources/css/ccg-game-badges.css");
+
+  assert.match(css, /SINGLE-GAME HERO IDENTITY TIDY/);
+  assert.match(css, /\.ccg-behind-pixels-inline__item\s*\{\s*display:\s*contents;/);
+  assert.match(css, /grid-template-columns:[\s\S]*minmax\(105px,\s*135px\)[\s\S]*minmax\(105px,\s*165px\)/);
+  assert.match(css, /@media \(max-width:\s*1180px\)[\s\S]*minmax\(120px,\s*155px\)\s*minmax\(0,\s*1fr\)/);
+  assert.match(css, /\.game-hero__actions \.ccg-btn\.ccg-btn--share/);
+  assert.match(css, /@media \(min-width:\s*901px\)[\s\S]*\.game-hero__inner\s*\{\s*align-items:\s*start;/);
+  assert.match(badges, /\.ccg-game-badges\s*\{[\s\S]*width:\s*100%;[\s\S]*max-width:\s*none;/);
+});
+
 test("public cache version covers the shared CSS and JavaScript change", () => {
   const sw = read("service-worker.js");
-  assert.match(sw, /CODE_CACHE_VERSION = "2026-09-22-public-code-v3"/);
+  assert.match(sw, /CODE_CACHE_VERSION = "2026-09-22-public-code-v4"/);
 });

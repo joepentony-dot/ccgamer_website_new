@@ -6,19 +6,20 @@
 
 .ccg-game-badges {
     display: flex;
-    max-width: 760px;
+    width: 100%;
+    max-width: none;
     flex-wrap: wrap;
     align-items: center;
-    gap: 10px;
-    margin: 14px 0 0;
+    gap: 8px;
+    margin: 2px 0 0;
 }
 
 .ccg-game-badge {
     display: inline-flex;
-    min-height: 46px;
+    min-height: 42px;
     align-items: center;
-    gap: 9px;
-    padding: 7px 10px;
+    gap: 8px;
+    padding: 6px 9px;
     border: 1px solid rgba(255, 255, 255, .17);
     background: rgba(3, 7, 18, .78);
     box-shadow: 0 8px 24px rgba(0, 0, 0, .26);
@@ -69,7 +70,7 @@
 .ccg-game-badge--gold .ccg-game-badge__image,
 .ccg-game-badge--silver .ccg-game-badge__image {
     width: auto;
-    height: 52px;
+    height: 46px;
 }
 
 .ccg-game-badge--sizzler .ccg-game-badge__image {
@@ -98,8 +99,8 @@
 
 @media (max-width: 620px) {
     .ccg-game-badges {
-        gap: 8px;
-        margin-top: 12px;
+        gap: 7px;
+        margin-top: 2px;
     }
 
     .ccg-game-badge {
