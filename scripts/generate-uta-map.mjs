@@ -50,11 +50,29 @@ const PUBLISHER_ALIASES = new Map([
   ["the hit squad", "hit squad"],
   ["hit squad the", "hit squad"],
   ["hewson consultants", "hewson"],
-  ["hewson rack it", "hewson"],
+  ["hewson rack it", "hewson rack it"],
+  ["rack it hewson", "hewson rack it"],
   ["micro prose", "microprose"],
   ["microprose", "microprose"],
   ["system 3", "system 3"],
-  ["system three", "system 3"]
+  ["system three", "system 3"],
+  ["the edge", "edge"],
+  ["edge the", "edge"],
+  ["virgin games", "virgin"],
+  ["virgin", "virgin"],
+  ["cbs electronics", "cbs"],
+  ["cbs", "cbs"],
+  ["ultimate", "ultimate"],
+  ["ultimate play the game", "ultimate"],
+  ["hi tec", "hi tec"],
+  ["hitec", "hi tec"],
+  ["mad mastertronic", "mastertronic added dimension"],
+  ["mastertronic added dimension", "mastertronic added dimension"],
+  ["nexus", "nexus"],
+  ["nexus productions", "nexus"],
+  ["firebird", "firebird"],
+  ["firebird silver", "firebird"],
+  ["firebird gold", "firebird"]
 ]);
 
 export function normalizePublisher(value) {
