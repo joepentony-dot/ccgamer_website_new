@@ -1,5 +1,14 @@
 # AI continuation state
 
+## Content Publisher / C64 archive enrichment regression — 22 September 2026
+
+- Draft PR #2262 / branch `codex/fix-wonder-boy-enrichment-and-uta-audit` repairs Wonder Boy's incorrect 1979 source year to 1987, pins its Lemon64 source, and closes the silent-completion gap that allowed game publishing to report success while magazine review or UTA enrichment was still unresolved.
+- Wonder Boy regression coverage requires both UTA releases: Activision 1987 archive [6764] and Hit Squad 1991 archive [1677].
+- Content Publisher now validates conversion-year wording and re-checks magazine review materialisation plus UTA mapping/manual-review state before claiming a game is complete.
+- Reliable Games Publishing now requires a fresh full-catalogue UTA scan. Conservative publisher aliases are expanded while title/year evidence remains required; ambiguous title-only matches stay excluded.
+- Exact-head qualification and explicit user merge authorisation remain required.
+- Detailed records: [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) and [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md).
+
 ## How to use this record
 
 This is the repository-level index for Codex continuation. Read it before making a change, then read the applicable `docs/ai-work/*.md` file before working in that area. Treat it as a dated checkpoint, not a substitute for a fresh live GitHub review when the repository may have moved.
