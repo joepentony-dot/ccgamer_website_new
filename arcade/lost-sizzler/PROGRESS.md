@@ -2,6 +2,16 @@
 
 > Legacy repository path: `arcade/lost-sizzler/`. The customer-facing game name is **C64 Dungeon Carnage**. Historical internal identifiers may still use `Lost Sizzler` where compatibility requires them.
 
+## V10.42 R51 retired-mode release — 22 September 2026
+
+R51 is the current-main retirement candidate built on merged R50 `4f300919e6acb15bbd291bbc82f3a4f762aa3a4e`. The public product now exposes **Solo, Tutorial and Resume only**. Weekly High-Score Vault, local 2P Split Screen, public developer changelogs and all old multiplayer presentation are retired.
+
+The old `daily-btn` and `split-btn` IDs remain only as hidden, aria-hidden compatibility anchors because historical core startup still binds listeners to those elements. They are never visible or advertised and the release-policy layer treats them as retired. Weekly/Split engine files may remain for historical compatibility but are no longer loaded by the public page.
+
+The CCG Games maintenance hub and Home no longer advertise Weekly Vault, split-screen or co-op. The itch.io manifest/package advertises only Solo and Tutorial and keeps only an inert non-public Weekly compatibility object for retained runtime references.
+
+Live Supabase has no active `cron.job` rows. `ccq-weekly-challenge` and `ccq-weekly-results` remain fail-closed HTTP 410 retirement stubs, so weekly member notifications are already disabled.
+
 ## Active V10.42 R50 combined blocker candidate — 22 September 2026
 
 - **Branch:** `codex/dungeon-r50-combined-blockers`.
