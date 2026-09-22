@@ -1511,36 +1511,6 @@ function renderAffiliateSection(game) {
     }
 }
 
-function initHardwareAccordion() {
-    const section = document.getElementById("affiliate-products-section");
-    if (!section) return;
-
-    const toggle = section.querySelector("[data-hardware-toggle]");
-    const panel = section.querySelector("[data-hardware-panel]");
-    if (!toggle || !panel) return;
-
-    if (section.dataset.hardwareAccordionBound === "true") return;
-
-    const setExpanded = (expanded) => {
-        toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
-        panel.hidden = !expanded;
-        section.classList.toggle("is-hardware-open", expanded);
-
-        const label = toggle.querySelector("span");
-        if (label) {
-            label.textContent = expanded ? "Hide Hardware" : "Show Hardware";
-        }
-    };
-
-    setExpanded(false);
-    toggle.addEventListener("click", () => {
-        const expanded = toggle.getAttribute("aria-expanded") === "true";
-        setExpanded(!expanded);
-    });
-
-    section.dataset.hardwareAccordionBound = "true";
-}
-
 function renderGame(game) {
 
     const preloaded = isPreloadedSingleGame();
@@ -1765,7 +1735,6 @@ function renderGame(game) {
     void renderGameMusicCard({ game, musicArchiveSection });
 
     renderAffiliateSection(game);
-    initHardwareAccordion();
 
     /* SCREENSHOTS */
     const shots = Array.isArray(game.screenshots) ? game.screenshots : [];
