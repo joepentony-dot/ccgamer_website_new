@@ -187,16 +187,36 @@
 
   function updateRatingMeta(averageValue, count) {
     const meta = document.getElementById('ccg-rating-summary-meta');
-    if (!meta) return;
-    if (!count || Number(averageValue || 0) <= 0) {
-      meta.textContent = '';
-      meta.hidden = true;
-      meta.removeAttribute('title');
+    const compact = document.getElementById('ccg-community-compact-score');
+    const average = Number(averageValue || 0);
+
+    if (!count || average <= 0) {
+      if (meta) {
+        meta.textContent = '';
+        meta.hidden = true;
+        meta.removeAttribute('title');
+      }
+      if (compact) {
+        compact.textContent = '';
+        compact.hidden = true;
+        compact.removeAttribute('title');
+      }
       return;
     }
-    meta.hidden = false;
-    meta.textContent = Number(averageValue || 0).toFixed(1) + '/10';
-    meta.title = count + (count === 1 ? ' community vote' : ' community votes');
+
+    const score = average.toFixed(1) + '/10';
+    const votes = count + (count === 1 ? ' community vote' : ' community votes');
+
+    if (meta) {
+      meta.hidden = false;
+      meta.textContent = score;
+      meta.title = votes;
+    }
+    if (compact) {
+      compact.hidden = false;
+      compact.textContent = score;
+      compact.title = votes;
+    }
   }
 
   async function render() {
