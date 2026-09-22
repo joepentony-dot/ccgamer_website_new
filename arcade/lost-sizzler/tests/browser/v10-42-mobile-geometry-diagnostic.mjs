@@ -50,7 +50,24 @@ try{
     }));
     throw new Error("mobile startup timeout: "+JSON.stringify(startup)+" :: "+String(error?.message||error));
   }
-  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142R19MobileTrapLayoutStability));
+  try{
+    await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:60000});
+  }catch(error){
+    const startup=await page.evaluate(()=>({
+      bootstrap:window.CCGLostSizzlerV142Bootstrap?{
+        ready:window.CCGLostSizzlerV142Bootstrap.ready===true,
+        failed:window.CCGLostSizzlerV142Bootstrap.failed===true,
+        error:window.CCGLostSizzlerV142Bootstrap.error||"",
+        currentModule:window.CCGLostSizzlerV142Bootstrap.currentModule||"",
+        loaded:[...(window.CCGLostSizzlerV142Bootstrap.loaded||[])],
+        totalModules:window.CCGLostSizzlerV142Bootstrap.totalModules||0
+      }:null,
+      r19:Boolean(window.CCGLostSizzlerV142R19MobileTrapLayoutStability)
+    }));
+    throw new Error("mobile ordered-bootstrap timeout: "+JSON.stringify(startup)+" :: "+String(error?.message||error));
+  }
+  if(window.CCGLostSizzlerV142Bootstrap?.failed===true)throw new Error("mobile ordered bootstrap failed: "+String(window.CCGLostSizzlerV142Bootstrap.error||"unknown"));
+  if(!window.CCGLostSizzlerV142R19MobileTrapLayoutStability)throw new Error("R19 mobile trap layout module missing after ordered bootstrap readiness");
   await page.waitForLoadState("load");
   await page.waitForFunction(()=>document.body.classList.contains("v104-touch-device")&&Boolean(document.getElementById("v104-touch-controls")));
   await page.locator("#solo-btn").click({noWaitAfter:true});
