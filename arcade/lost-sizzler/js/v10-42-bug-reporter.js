@@ -110,7 +110,19 @@
         pauseAttackLastReset:safe(()=>window.__CCG_PAUSE_ATTACK_LAST_RESET__||null,null),
         attackHold:safe(()=>window.CCGLostSizzlerV142AttackHoldLiveness?.diagnostics||null,null),
         soloStability:safe(()=>window.CCGLostSizzlerV142R18SoloPlaytestStability?.diagnostics||null,null),
-        projectileLifecycle:safe(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.state||null,null)
+        projectileLifecycle:safe(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.state||null,null),
+        performanceGovernor:safe(()=>window.CCGLostSizzlerV141R47AllModeOptimisation?.getDiagnostics?.()||null,null),
+        globalPerformance:safe(()=>window.CCGLostSizzlerV141R37GlobalPerformance?.getDiagnostics?.()||null,null),
+        enemySimulation:safe(()=>window.CCGAI?.getSimulationDiagnostics?.()||null,null),
+        liveArrays:safe(()=>({
+          enemies:Array.isArray(host?.enemies)?host.enemies.length:0,
+          particles:Array.isArray(particles)?particles.length:0,
+          rings:Array.isArray(rings)?rings.length:0,
+          floaters:Array.isArray(floaters)?floaters.length:0,
+          hazards:Array.isArray(hazards)?hazards.length:0,
+          bullets:Array.isArray(bullets)?bullets.length:0,
+          enemyBullets:Array.isArray(enemyBullets)?enemyBullets.length:0
+        }),null)
       }
     };
   }
