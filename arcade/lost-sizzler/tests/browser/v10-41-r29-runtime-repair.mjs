@@ -57,9 +57,21 @@ try{
       while(performance.now()-started<timeout){if(predicate())return true;await new Promise(resolve=>setTimeout(resolve,16))}
       return Boolean(predicate());
     };
+    const waitForStableGeometry=async(timeout=2500)=>{
+      const started=performance.now();let previous="",stableFrames=0;
+      while(performance.now()-started<timeout){
+        const current=sample();
+        const key=[current.bw,current.bh,current.w.toFixed(2),current.h.toFixed(2),current.railDisplay].join("|");
+        if(key===previous)stableFrames++;else{previous=key;stableFrames=0}
+        if(stableFrames>=6)return true;
+        await new Promise(resolve=>requestAnimationFrame(resolve));
+      }
+      return false;
+    };
     await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
     toast?.classList.remove("show");
     await waitFor(()=>!toast?.classList.contains("show")&&getComputedStyle(rail).display==="block");
+    const geometrySettled=await waitForStableGeometry();
     const before=sample(),visibleSamples=[],hiddenSamples=[],visibleReady=[],hiddenReady=[];
     for(let index=0;index<8;index++){
       window.showToast(`R29 GEOMETRY ${index}`,"Notification appearance must remain inside the reserved lower rail.","cyan",200);
@@ -68,8 +80,9 @@ try{
       hiddenReady.push(await waitFor(()=>!toast?.classList.contains("show")&&getComputedStyle(rail).display==="block"));hiddenSamples.push(sample());
     }
     const after=sample();
-    return{before,after,visibleSamples,hiddenSamples,visibleReady,hiddenReady,toastPosition:getComputedStyle(toast).position,toastOwnerStable:Boolean(window.showToast?.__ccgV141Priority)}
+    return{before,after,visibleSamples,hiddenSamples,visibleReady,hiddenReady,geometrySettled,toastPosition:getComputedStyle(toast).position,toastOwnerStable:Boolean(window.showToast?.__ccgV141Priority)}
   });
+  assert.equal(geometry.geometrySettled,true,"gameplay canvas geometry must settle before toast churn is measured");
   assert.equal(geometry.toastPosition,"static","retained r29 gameplay toasts must stay inside the reserved lower message rail");
   assert.equal(geometry.toastOwnerStable,true,"retained r29 notification ownership must remain stable under r30");
   assert.ok(geometry.visibleReady.every(Boolean),"every retained r29 toast must become visibly live in Chromium before it is sampled");
