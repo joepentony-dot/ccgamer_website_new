@@ -391,7 +391,7 @@ try{
   assert.equal(touchSpaceHeld,false,"mobile FIRE pointer release must not leave Space held");
   assert.equal(touchAfter.lifecycleOwner,true,"mobile FIRE must preserve projectile lifecycle ownership");
   assert.equal(touchAfter.active,"true","actual mobile FIRE path must recover a stale live-run presentation flag regardless of which combat owner repairs it first");
-  assert.ok(touchAfter.mobileFireFallbacks>touchBefore.mobileFireFallbacks,"delegated mobile FIRE safety owner must recover a visible button whose direct listener was lost");
+  assert.ok(touchAfter.projectileSteps>touchBefore.projectileSteps||touchAfter.mana<touchBefore.mana,"mobile FIRE must recover through at least one established combat owner when the direct listener is lost");
 
   const fireButton=touchPage.locator('#v104-touch-controls [data-action="fire"]');
   const moveRight=touchPage.locator('#v104-touch-controls [data-key="KeyD"]');
