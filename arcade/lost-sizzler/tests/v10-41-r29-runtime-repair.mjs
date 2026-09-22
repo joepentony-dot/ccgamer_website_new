@@ -18,7 +18,7 @@ assert.ok(index.includes(`ccg-lost-sizzler-build" content="${manifest.build}"`),
 assert.ok(index.includes(`ccg-lost-sizzler-cache" content="${manifest.cacheToken}"`),"canonical page must expose the published cache generation");
 assert.doesNotMatch(index,/\?v=20260825r28/,"canonical page must not request stale r28 runtime assets");
 assert.ok(index.includes(`css/v10-41-r29.css?v=${manifest.cacheToken}`),"r29 stable geometry CSS must load under the current cache generation");
-assert.ok(index.includes(`js/v10-41-r29-buglog.js?v=${manifest.cacheToken}`),"r29 developer buglog additions must load under the current cache generation");
+assert.equal(index.includes("js/v10-41-r29-buglog.js"),false,"historical r29 developer buglog must not load in the public runtime");
 assert.ok(index.includes(`js/v10-41-r29-runtime-repair.js?v=${manifest.cacheToken}`),"r29 runtime repair must load under the current cache generation");
 const activeEnemyFireUrl=`v10-41-active-enemy-fire.js?v=${manifest.cacheToken}`;
 const r29Url=`v10-41-r29-runtime-repair.js?v=${manifest.cacheToken}`;
