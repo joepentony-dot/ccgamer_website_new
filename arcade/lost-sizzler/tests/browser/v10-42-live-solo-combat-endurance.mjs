@@ -152,10 +152,16 @@ try{
   await page.click("#solo-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(p1)&&Boolean(host),null,{timeout:20000});
   await page.waitForFunction(()=>Number(window.__ccgDungeonCamera?.zoom)>=1);
-  const desktopCamera=await page.evaluate(()=>({...window.__ccgDungeonCamera}));
-  assert.equal(desktopCamera.zoom,1,`desktop Solo must retain the established camera scale: ${JSON.stringify(desktopCamera)}`);
-  assert.equal(desktopCamera.logicalWidth,desktopCamera.viewportWidth,"desktop Solo must retain the full logical viewport width");
-  assert.equal(desktopCamera.logicalHeight,desktopCamera.viewportHeight,"desktop Solo must retain the full logical viewport height");
+  const desktopCamera=await page.evaluate(()=>({...window.__ccgDungeonCamera,fullscreen:Boolean(document.fullscreenElement)}));
+  if(desktopCamera.fullscreen){
+    assert.equal(desktopCamera.zoom,1.35,`desktop fullscreen Solo must use the focused 1.35x camera: ${JSON.stringify(desktopCamera)}`);
+    assert.ok(desktopCamera.logicalWidth<desktopCamera.viewportWidth,"desktop fullscreen Solo must render a smaller logical viewport into the available playfield");
+    assert.ok(desktopCamera.logicalHeight<desktopCamera.viewportHeight,"desktop fullscreen Solo must reduce the unused vertical playfield");
+  }else{
+    assert.equal(desktopCamera.zoom,1,`non-fullscreen desktop Solo must retain the established 1x camera: ${JSON.stringify(desktopCamera)}`);
+    assert.equal(desktopCamera.logicalWidth,desktopCamera.viewportWidth,"non-fullscreen desktop Solo must retain the full logical viewport width");
+    assert.equal(desktopCamera.logicalHeight,desktopCamera.viewportHeight,"non-fullscreen desktop Solo must retain the full logical viewport height");
+  }
   const initial=await snap(page);
   assert.equal(initial.lifecycleOwner,true,"#2118 lifecycle owner must remain authoritative in Solo");
   assert.ok(initial.sealGate||initial.sealUnsupported||initial.authoritativeUpdate,"controller owner must be sealed, explicitly unsupported, or already on its authoritative boundary");
