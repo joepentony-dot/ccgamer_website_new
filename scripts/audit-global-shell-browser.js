@@ -175,6 +175,95 @@ async function assertPageShell(sessionId, name, route) {
   await waitUntil(sessionId, canonicalExpression, `${name} canonical navigation after refresh`);
 }
 
+async function assertRetroMobileClsStability(sessionId) {
+  await webdriver("POST", `/session/${sessionId}/window/rect`, { width: 390, height: 844 });
+  await webdriver("POST", `/session/${sessionId}/url`, { url: `http://${HOST}:${SITE_PORT}/retro-specials/50-essential-amiga-games/` });
+  await waitUntil(sessionId, "document.querySelector('[data-ccg-header]') && document.querySelector('.retro-video-page')", "retro mobile shell");
+
+  const result = await execute(sessionId, `
+    return (function () {
+      const expectedStyles = [
+        '/resources/css/ccg-responsive-safety.css',
+        '/resources/css/ccg-responsive-page-polish.css',
+        '/resources/css/ccg-sitewide-layout-optimization.css',
+        '/resources/css/ccg-nav-labelled-bridge.css'
+      ];
+      const styles = Array.from(document.querySelectorAll('link[rel~="stylesheet"]'))
+        .map((link) => {
+          try { return new URL(link.href, location.href).pathname; }
+          catch (_error) { return link.getAttribute('href') || ''; }
+        });
+      const stylePositions = expectedStyles.map((href) => styles.indexOf(href));
+
+      const header = document.querySelector('[data-ccg-header]');
+      const main = document.querySelector('main');
+      const slot = header && header.querySelector('.ccg-auth-slot');
+      if (!header || !main || !slot) return { error: 'missing header/main/auth slot', stylePositions };
+
+      const saved = {
+        html: slot.innerHTML,
+        pending: slot.getAttribute('data-ccg-auth-pending'),
+        provisional: slot.getAttribute('data-ccg-auth-provisional')
+      };
+
+      const measure = (html, pending) => {
+        slot.innerHTML = html;
+        if (pending) slot.setAttribute('data-ccg-auth-pending', 'true');
+        else slot.removeAttribute('data-ccg-auth-pending');
+        slot.removeAttribute('data-ccg-auth-provisional');
+        void document.documentElement.offsetHeight;
+        return {
+          headerHeight: header.getBoundingClientRect().height,
+          mainTop: main.getBoundingClientRect().top,
+          slotHeight: slot.getBoundingClientRect().height
+        };
+      };
+
+      const pending = measure('', true);
+      const guest = measure('<button type="button" class="ccg-btn ccg-btn-auth">Join / Login</button>', false);
+      const member = measure(
+        '<a class="ccg-btn ccg-btn-auth ccg-profile-link" href="/community/profile.html"><span class="ccg-profile-link__label">Profile:</span> <span class="ccg-profile-link__name">@member</span></a><button type="button" class="ccg-btn ccg-btn-auth">Logout</button>',
+        false
+      );
+
+      slot.innerHTML = saved.html;
+      if (saved.pending === null) slot.removeAttribute('data-ccg-auth-pending');
+      else slot.setAttribute('data-ccg-auth-pending', saved.pending);
+      if (saved.provisional === null) slot.removeAttribute('data-ccg-auth-provisional');
+      else slot.setAttribute('data-ccg-auth-provisional', saved.provisional);
+
+      return { stylePositions, pending, guest, member };
+    })();
+  `);
+
+  if (result.error) throw new Error(`Retro mobile CLS audit: ${result.error}`);
+  if (result.stylePositions.some((position) => position < 0)) {
+    throw new Error(`Retro mobile CLS audit: missing first-paint responsive stylesheet: ${JSON.stringify(result.stylePositions)}`);
+  }
+  for (let index = 1; index < result.stylePositions.length; index += 1) {
+    if (result.stylePositions[index] <= result.stylePositions[index - 1]) {
+      throw new Error(`Retro mobile CLS audit: responsive stylesheet cascade order changed: ${JSON.stringify(result.stylePositions)}`);
+    }
+  }
+
+  const variants = [result.pending, result.guest, result.member];
+  const headerHeights = variants.map((item) => item.headerHeight);
+  const mainTops = variants.map((item) => item.mainTop);
+  const slotHeights = variants.map((item) => item.slotHeight);
+  const spread = (values) => Math.max(...values) - Math.min(...values);
+
+  if (Math.min(...slotHeights) < 33.5) {
+    throw new Error(`Retro mobile CLS audit: unresolved auth row is not reserved: ${JSON.stringify(result)}`);
+  }
+  if (spread(headerHeights) > 1 || spread(mainTops) > 1) {
+    throw new Error(`Retro mobile CLS audit: auth resolution changes page geometry: ${JSON.stringify(result)}`);
+  }
+
+  console.log("Retro mobile CLS geometry audit passed.");
+  console.log(`- pending/guest/member header spread: ${spread(headerHeights).toFixed(2)}px`);
+  console.log(`- pending/guest/member main-top spread: ${spread(mainTops).toFixed(2)}px`);
+}
+
 async function main() {
   const driverPath = findChromeDriver();
   const siteServer = createServer();
@@ -200,6 +289,7 @@ async function main() {
     await webdriver("POST", `/session/${sessionId}/window/rect`, { width: 1440, height: 1000 });
 
     for (const [name, route] of PAGES) await assertPageShell(sessionId, name, route);
+    await assertRetroMobileClsStability(sessionId);
 
     console.log("Global shell browser audit passed.");
     console.log(`- ${PAGES.length} major public sections retain one visible canonical navigation across load and refresh`);
