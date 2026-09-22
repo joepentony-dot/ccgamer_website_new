@@ -98,6 +98,14 @@
         }
       ]
     },
+    "barbarian-2-the-dungeon-of-drax": {
+      "include": [
+        {
+          "archiveId": "5918",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
     "beach-head": {
       "include": [
         {
@@ -231,6 +239,18 @@
         {
           "archiveId": "2762",
           "reason": "Activision Decathlon, not Daley Thompson's Decathlon."
+        },
+        {
+          "archiveId": "7556",
+          "reason": "Misspelled Firebird Decathlon release; different game from Daley Thompson's Decathlon."
+        }
+      ]
+    },
+    "defender": {
+      "exclude": [
+        {
+          "archiveId": "68",
+          "reason": "Interceptor Software's Defender 64 is a different Defender clone, not the Atarisoft arcade conversion."
         }
       ]
     },
@@ -531,6 +551,10 @@
         {
           "archiveId": "5519",
           "reason": "Different Five Ways/Macmillan/Alternative Popeye conversion; this slug is Parker Brothers' 1984 conversion."
+        },
+        {
+          "archiveId": "5091",
+          "reason": "Popeye 2 is a sequel/different game, not the Parker Brothers Popeye conversion."
         }
       ]
     },
@@ -664,6 +688,14 @@
         }
       ]
     },
+    "street-fighter": {
+      "exclude": [
+        {
+          "archiveId": "1233",
+          "reason": "Street Fighter II is the sequel, not the original Street Fighter."
+        }
+      ]
+    },
     "summer-games": {
       "include": [
         {
@@ -739,6 +771,14 @@
         {
           "archiveId": "2981",
           "sourceRole": "publisher"
+        }
+      ]
+    },
+    "teenage-mutant-hero-turtles-the-coin-op": {
+      "exclude": [
+        {
+          "archiveId": "3160",
+          "reason": "Image Works Teenage Mutant Hero Turtles is the separate 1990 NES-style conversion, not The Coin-Op."
         }
       ]
     },
@@ -818,6 +858,14 @@
         }
       ]
     },
+    "v-the-computer-game": {
+      "exclude": [
+        {
+          "archiveId": "2609",
+          "reason": "Aliens - The Computer Game is unrelated; shared subtitle wording only."
+        }
+      ]
+    },
     "vendetta": {
       "include": [
         {
@@ -835,6 +883,14 @@
         {
           "archiveId": "10956",
           "sourceRole": "publisher"
+        }
+      ]
+    },
+    "wizard": {
+      "exclude": [
+        {
+          "archiveId": "2099",
+          "reason": "The Edge's Wizardry is a different game from Ariolasoft's Wizard."
         }
       ]
     },
