@@ -4,20 +4,24 @@
 
 The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
-## Active r47 pre-release candidate — PR #2226 — 22 September 2026
+## Active r49 long-session freeze candidate — PR #2231 — 22 September 2026
 
-PR #2226 is the active bounded release-blocker candidate on `codex/dungeon-r47-release-blockers`. It advances build/cache to `V10.42 r47` / `20260922r47` and remains draft until one final exact head passes the complete qualification matrix.
+PR #2226 has now merged as `38c2f7e43233f6a1e6f81cb8d942f1df449feffe`, making `V10.42 r47` / `20260922r47` the live Dungeon baseline. Hands-on acceptance then reproduced a new Floor-3 Solo failure after a long session: severe slowdown progressing to an apparent standstill. PR #2231 on `codex/dungeon-r49-live-freeze-current-main` is the bounded current-main remediation candidate and advances the browser-visible build/cache to `V10.42 r49` / `20260922r49`.
 
-The candidate contains four related changes:
+The supplied r47 incident recorder materially narrows the failure:
 
-- **Inventory/FIRE recovery:** preserves the existing attack owners, repairs the Inventory-close transition through established stability APIs, restores gameplay focus, verifies the next valid attack intent and uses r20 `attackNow()` only as a fallback when normal FIRE activity is absent. A browser contract repeats Inventory → return → FIRE five times.
-- **Memory Pad redesign:** replaces the 3×3 pressure grid with five numbered pads separated by safe floor plus a dedicated purple replay console. Memory input requires deliberate player movement so forced knockback cannot fail the puzzle. A wrong pad spawns exactly one monster, returns the puzzle to idle and requires a deliberate replay. The browser contract also generates multiple Floor-3 seeds and requires the five-pad puzzle and safe replay console to exist.
-- **Single evolving firearm:** preserves the V10.25 Archive Sword / `firearmUnlocked=false` start. First weapon pickup acquires Tier 1; later pickups advance one tier subject to F1→T2, F2→T3, F3→T4, F4→T5, F5→T6 caps. Tier 4 is the first three-way weapon. A pickup while capped is salvaged into ammunition. Acquired ownership is collapsed to exactly one firearm and switching UI is removed.
-- **Incident recorder:** opt-in `?bugreport=1`, REPORT BUG button and F8 desktop shortcut. The bounded observation-only recorder captures recent inputs, panel/focus/visibility transitions, FIRE state, player/weapon/projectile state, Memory Pad state and runtime errors, then exports copyable text or JSON.
+- capture occurred after roughly 24 minutes of active Solo play on Floor 3;
+- the r47 performance governor was already in `severe`;
+- browser JS heap usage was only about 31 MB used against a multi-gigabyte limit, so the report does not support a normal heap-exhaustion explanation;
+- r18 diagnostics had accumulated 18,219 Warden HUD repairs and 3,558 stale enemy-cooldown repairs;
+- the Warden-domain sync and r18 stability layer were proven to be competing over the same `quickSpecials` text: one appended Warden state and the other removed it into the dedicated Warden status node on repeated HUD syncs;
+- r18 also treated normal negative AI countdowns as invalid and the player attack boundary called a repair that scanned the complete enemy roster.
 
-During qualification, the r47 cache bump exposed one stale escaped r46 bootstrap regex in the blocking release-identity contract; that assertion was corrected to r47. The dedicated Mobile Trap Layout workflow then showed its live mobile geometry/trap-damage job still green while its static source check expected legacy `movementTriggers(p)`. The static contract is updated to require r47's deliberate `movementTriggers(p,true)` / `movementTriggers(p,deliberate=false)` signature while every R19 trap-damage assertion remains intact.
+#2231 therefore removes those two sources of avoidable long-session work without replacing established owners. Warden state remains visible through the existing dedicated `quick-warden-status` node. Enemy safety repair remains available on the periodic stability path, but ordinary negative countdowns are left alone and each player attack repairs local combat state without a full-dungeon enemy scan. REPORT BUG is extended with r47/r37 frame diagnostics, AI simulation counts and live array sizes.
 
-The r46 package recorded below remains the publication baseline until the final #2226 exact head is fully green and produces a qualified r47 artifact.
+The candidate intentionally does not change world generation, collision, damage, traps, progression, saves, economy, firearm balance, projectile lifecycle or the r45 active-room/sleeping-enemy model. Exact-head automation and a new hands-on long-session acceptance run are required before product closure.
+
+## Current checkpoint — 22 September 2026
 
 ## Current checkpoint — 21 September 2026
 
