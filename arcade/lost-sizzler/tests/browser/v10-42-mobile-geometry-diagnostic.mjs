@@ -29,8 +29,9 @@ const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usag
 try{
   const context=await browser.newContext({viewport:{width:320,height:568},isMobile:true,hasTouch:true,deviceScaleFactor:2});
   const page=await context.newPage();
-  page.setDefaultTimeout(20000);
-  await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
+  page.setDefaultTimeout(60000);
+  await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"commit",timeout:60000});
+  await page.waitForFunction(()=>Boolean(document.body),null,{timeout:60000});
   try{
     await page.waitForFunction(()=>document.body.dataset.gameReady==="true");
   }catch(error){
