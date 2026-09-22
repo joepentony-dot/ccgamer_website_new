@@ -27,12 +27,14 @@ Update this file when a workstream changes category, its active PR/dependency ch
 - Current `main` advanced through merged #2226 while #2227 was qualifying. The only overlapping path was this continuation index; the current-main reconciliation preserves #2226's Dungeon checkpoint and all #2227 single-game state without touching Dungeon runtime files.
 - Detailed record: [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md).
 
-## Active Dungeon Carnage V10.42 R50 combined blocker candidate — 22 September 2026
+## Dungeon Carnage V10.42 R50 merged checkpoint — 22 September 2026
 
-- Branch `codex/dungeon-r50-combined-blockers` carries the R50 fullscreen/input/layout base from #2241, the qualified #2233 audio diagnostics, and the newly implemented Nightmare cassette horror-audio, Memory Pad replay/framing and loader-artwork fixes.
-- V10.4 Archive Wraith handling no longer creates a separate recurring oscillator soundtrack or reuses the Death Stalker sting. Memory Console entry is edge-triggered in simulation and the camera frames/reveals the complete unresolved Memory Pad puzzle.
-- Release loader artwork now uses `resources/images/hero/c64-dungeon-carnage-home-v2.webp`.
-- New combined and pickup-audio contracts are present. Exact-head qualification is required before merge; #2241/#2233 remain unmerged.
+- PR #2243 exact head `18a909cdd28b57906151925bee67a5e165f27b52` passed all triggered pre-merge qualification, including all six Chromium shards, and merged to `main` as `4f300919e6acb15bbd291bbc82f3a4f762aa3a4e`.
+- Public identity is now `V10.42 r50` / `20260922r50`.
+- R50 contains the F/fullscreen and desktop playfield correction, #2233 pickup/audio diagnostics and level-up SFX staggering, bounded Archive Wraith horror audio ownership, Memory Console replay ownership, Memory Pad framing/visibility and the new Dungeon Carnage loader WEBP.
+- The itch.io package now carries the same loader artwork locally and passed the exact-head package workflow.
+- GitHub Pages deployment and Live Public Navigation Verification passed after merge. A test-only follow-up updates the production-smoke expected build/cache constants from r46 to r50.
+- #2233 is closed as superseded by #2243. User hands-on acceptance remains required for the exact Nightmare cassette slowdown reproduction, Memory Pad replay/full-pad visibility and fullscreen/F behaviour.
 - Detailed record: [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md).
 
 ## Historical Dungeon Carnage r50 fullscreen/input follow-up — 22 September 2026
