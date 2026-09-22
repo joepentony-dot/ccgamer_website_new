@@ -6,7 +6,7 @@
 
   const ONLINE_BUTTON_IDS=["create-btn","horde-mode-btn","saboteurs-mode-btn","join-btn","daily-btn","split-btn"];
   const LOCAL_BUTTON_IDS=["solo-btn","tutorial-zone-btn"];
-  const ONLINE_ONLY_SELECTORS=[".online-howto",".join-row","#online-lobby","#weekly-vault","#developer-changelog",".developer-changelog"];
+  const ONLINE_ONLY_SELECTORS=[".online-howto",".join-row","#online-lobby","#weekly-vault"];
   const RELEASE_STYLE_ID="v142-zero-server-release-style";
   const RELEASE_BLURB="A five-floor pixel dungeon crawl filled with shifting objectives, rare loot, hidden routes, dangerous events and things in the dark that ordinary weapons cannot finish.";
   const RELEASE_MODE_LABEL_HTML="<span>✦</span> CHOOSE YOUR ADVENTURE <span>✦</span>";
@@ -18,7 +18,7 @@
     if(!style){
       style=document.createElement("style");
       style.id=RELEASE_STYLE_ID;
-      style.textContent="#create-btn,#horde-mode-btn,#saboteurs-mode-btn,#join-btn,#daily-btn,#split-btn,#weekly-vault,#developer-changelog,.developer-changelog,.online-howto,.join-row,#online-lobby{display:none!important;}";
+      style.textContent="#create-btn,#horde-mode-btn,#saboteurs-mode-btn,#join-btn,#daily-btn,#split-btn,#weekly-vault,.online-howto,.join-row,#online-lobby{display:none!important;}";
       (document.head||document.documentElement).appendChild(style);
     }
     state.releaseStyleReady=true;
