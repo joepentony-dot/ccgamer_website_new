@@ -4,7 +4,7 @@
   if(window.__CCG_LOST_SIZZLER_V142_ZERO_SERVER_RELEASE__)return;
   window.__CCG_LOST_SIZZLER_V142_ZERO_SERVER_RELEASE__=true;
 
-  const ONLINE_BUTTON_IDS=["create-btn","horde-mode-btn","saboteurs-mode-btn","join-btn"];
+  const ONLINE_BUTTON_IDS=["create-btn","horde-mode-btn","saboteurs-mode-btn","join-btn","daily-btn","split-btn"];
   const LOCAL_BUTTON_IDS=["solo-btn","tutorial-zone-btn"];
   const ONLINE_ONLY_SELECTORS=[".online-howto",".join-row","#online-lobby","#weekly-vault","#developer-changelog",".developer-changelog"];
   const RELEASE_STYLE_ID="v142-zero-server-release-style";
@@ -122,7 +122,7 @@
     const error=new Error("Online multiplayer is not part of the zero-server-cost Lost Sizzler release.");
     error.code="online_multiplayer_disabled";
     state.lastReason=error.code;
-    try{showToast?.("ONLINE MULTIPLAYER DISABLED","Solo, Tutorial and 2P Split Screen remain available. The released game does not require a paid multiplayer server.","cyan",7000)}catch(_){}
+    try{showToast?.("RETIRED MODE","Solo and Tutorial are the supported game modes. Retired multiplayer and Weekly Vault entry points are unavailable.","cyan",7000)}catch(_){}
     return Promise.reject(error);
   }
 
