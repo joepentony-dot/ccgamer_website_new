@@ -52,7 +52,7 @@ try{
     await page.keyboard.press("Space");
     await page.waitForTimeout(180);
   }
-  await page.waitForFunction(before=>Number(p1.mana)<before,before=stuckBefore,{timeout:3000});
+  await page.waitForFunction(before=>Number(p1.mana)<before,stuckBefore,{timeout:3000});
   const p0=await page.evaluate(()=>({
     stun:Number(p1.hitStunMs||0),
     repairs:Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.persistentFireBlockRepairs||0)
