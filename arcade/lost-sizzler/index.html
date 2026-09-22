@@ -17,11 +17,14 @@
   <link rel="stylesheet" href="css/v10-41-r29.css?v=20260922r50">
   <link rel="stylesheet" data-ccg-v136-special-ui="true" href="css/v10-36-special-ui.css?v=20260922r50">
   <link rel="stylesheet" href="css/v10-42-startup-first-visual.css?v=20260922r50">
+  <script src="/js/ccg-supabase-config.js"></script>
+  <script src="/js/ccg-supabase-client.js"></script>
+  <style id="ccg-owner-preview-gate-style">html[data-ccg-maintenance-pending="true"] .ccg-game{visibility:hidden!important}</style>
 </head>
 <body data-game-ready="false" data-release-ready="false" data-run-active="false">
 <div id="ccg-release-loading" class="ccg-release-loading" role="status" aria-live="polite">
   <div class="ccg-release-loading-card">
-    <img class="ccg-release-loading-art" src="/resources/images/hero/c64-dungeon-carnage-home-v2.webp" alt="C64 Dungeon Carnage">
+    <img class="ccg-release-loading-art" src="/resources/images/hero/c64-dungeon-carnage-home-v2.webp?v=b26ce0d2" alt="C64 Dungeon Carnage">
     <span class="ccg-release-loading-kicker">C64 DUNGEON CARNAGE</span>
     <h2>LOADING — PLEASE WAIT</h2>
     <p id="ccg-release-loading-status">Preparing C64 Dungeon Carnage game systems…</p>
@@ -29,13 +32,56 @@
     <div class="ccg-release-loading-meta"><span id="ccg-release-loading-percent" class="ccg-release-loading-percent">0%</span><span>C64 DUNGEON CARNAGE · PREPARING RUNTIME</span></div>
   </div>
 </div>
-  <script data-ccg-play-maintenance-gate="true">
-    (function () {
+  <script data-ccg-play-maintenance-gate="true" data-ccg-owner-preview="cheekycommodoregamer">
+    (async function () {
       "use strict";
       var host = String(window.location.hostname || "").toLowerCase();
-      if (host === "www.cheekycommodoregamer.co.uk" || host === "cheekycommodoregamer.co.uk") {
-        window.location.replace("/games/ccg-games/");
+      var production = host === "www.cheekycommodoregamer.co.uk" || host === "cheekycommodoregamer.co.uk";
+      if (!production) return;
+
+      document.documentElement.setAttribute("data-ccg-maintenance-pending", "true");
+
+      async function ownerPreviewAllowed() {
+        if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== "function") return false;
+        try {
+          await window.ccgSupabase.waitForAuth();
+          var client = await window.ccgSupabase.getClient();
+          var userResult = await client.auth.getUser();
+          var user = userResult && userResult.data ? userResult.data.user : null;
+          if (!user || !user.id) return false;
+
+          var profileResult = await client
+            .from("profiles")
+            .select("username, display_name, role")
+            .eq("id", user.id)
+            .maybeSingle();
+
+          if (profileResult && profileResult.error) return false;
+          var profile = profileResult && profileResult.data ? profileResult.data : null;
+          var username = String(profile && profile.username || "").trim().toLowerCase();
+          var displayName = String(profile && profile.display_name || "").trim().toLowerCase();
+          var role = String(profile && profile.role || "").trim().toLowerCase();
+
+          return username === "cheekycommodoregamer"
+            && displayName === "cheeky commodore gamer"
+            && role === "admin";
+        } catch (_error) {
+          return false;
+        }
       }
+
+      var allowed = await Promise.race([
+        ownerPreviewAllowed(),
+        new Promise(function (resolve) { window.setTimeout(function () { resolve(false); }, 8000); })
+      ]);
+
+      if (allowed) {
+        window.__CCG_DUNGEON_OWNER_PREVIEW__ = true;
+        document.documentElement.removeAttribute("data-ccg-maintenance-pending");
+        return;
+      }
+
+      window.location.replace("/games/ccg-games/");
     })();
   </script>
 <main class="ccg-game">
