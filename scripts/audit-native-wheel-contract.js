@@ -38,6 +38,28 @@ const VIEWPORTS = [
     { width: 1440, height: 1000, label: "desktop-1440" }
 ];
 
+const SITEWIDE_WHEEL_VIEWPORT = { width: 1440, height: 1000, label: "desktop-sitewide-1440" };
+const SITEWIDE_WHEEL_PAGES = [
+    { path: "/home.html", label: "Home" },
+    { path: "/games/index.html", label: "Browse Games" },
+    { path: "/games/game.html?id=1942", label: "Single Game" },
+    { path: "/games/genres/index.html", label: "Genres" },
+    { path: "/games/publishers/index.html", label: "Publishers" },
+    { path: "/games/collections/index.html", label: "Collections" },
+    { path: "/games/discover/index.html", label: "Find Me a Game" },
+    { path: "/videos/index.html", label: "Videos" },
+    { path: "/zzap64/index.html", label: "Zzap 64" },
+    { path: "/about.html", label: "About" },
+    { path: "/emulation.html", label: "Emulation" },
+    { path: "/quiz/quiz.html", label: "Quiz" },
+    { path: "/contact.html", label: "Contact" },
+    { path: "/support.html", label: "Support" }
+];
+const SITEWIDE_WHEEL_DELTA = 360;
+const SITEWIDE_WHEEL_STEPS = 4;
+const SITEWIDE_WHEEL_GAP_MS = 220;
+const MAX_FIRST_SCROLL_LATENCY_MS = 250;
+
 const MIME = Object.freeze({
     ".html": "text/html; charset=utf-8",
     ".css": "text/css; charset=utf-8",
@@ -411,6 +433,187 @@ async function auditViewport(sessionId, sitePort, viewport) {
 }
 
 
+
+async function dispatchWheel(sessionId, x, y, deltaY) {
+    await cdp(sessionId, "Input.dispatchMouseEvent", {
+        type: "mouseWheel",
+        x,
+        y,
+        deltaX: 0,
+        deltaY,
+        pointerType: "mouse"
+    });
+}
+
+async function prepareSitewideWheelProbe(sessionId) {
+    return execute(sessionId, String.raw`
+return (function () {
+    var root = document.documentElement;
+    var body = document.body;
+    var scroller = document.scrollingElement || root;
+    root.style.setProperty('scroll-behavior', 'auto', 'important');
+    if (body) body.style.setProperty('scroll-behavior', 'auto', 'important');
+
+    var maxScroll = Math.max(0, Math.round(scroller.scrollHeight - window.innerHeight));
+    if (maxScroll < 320) {
+        return { skip: true, reason: 'page has less than 320px of vertical scroll range', maxScroll: maxScroll };
+    }
+
+    var startY = Math.max(0, Math.min(maxScroll - 220, Math.round(maxScroll * 0.28)));
+    window.scrollTo(0, startY);
+
+    var x = Math.max(2, Math.min(window.innerWidth - 3, Math.round(window.innerWidth * 0.5)));
+    var y = Math.max(2, Math.min(window.innerHeight - 3, Math.round(window.innerHeight * 0.58)));
+    var hit = document.elementFromPoint(x, y);
+    var nested = [];
+    for (var node = hit; node && node !== body && node !== root; node = node.parentElement) {
+        var style = getComputedStyle(node);
+        if (/^(auto|scroll)$/i.test(style.overflowY || '') && node.scrollHeight > node.clientHeight + 24) {
+            nested.push(node.tagName.toLowerCase() + (node.id ? '#' + node.id : '') + (node.classList.length ? '.' + Array.from(node.classList).slice(0, 3).join('.') : ''));
+        }
+    }
+
+    if (window.__ccgSitewideWheelProbe && window.__ccgSitewideWheelProbe.cleanup) {
+        try { window.__ccgSitewideWheelProbe.cleanup(); } catch (_) {}
+    }
+
+    var state = {
+        armedAt: 0,
+        firstScrollAt: 0,
+        scrollEvents: 0,
+        classTransitions: 0,
+        pausedTransitions: [],
+        longTasks: [],
+        startY: Math.round(window.scrollY),
+        x: x,
+        y: y,
+        maxScroll: maxScroll,
+        nestedAtPointer: nested
+    };
+
+    var lastPaused = root.classList.contains('ccg-perf-paused');
+    var mutationObserver = new MutationObserver(function () {
+        var nextPaused = root.classList.contains('ccg-perf-paused');
+        if (nextPaused === lastPaused) return;
+        lastPaused = nextPaused;
+        state.classTransitions += 1;
+        if (state.pausedTransitions.length < 20) state.pausedTransitions.push({ at: Math.round(performance.now()), paused: nextPaused });
+    });
+    mutationObserver.observe(root, { attributes: true, attributeFilter: ['class'] });
+
+    var onScroll = function () {
+        state.scrollEvents += 1;
+        if (!state.firstScrollAt && state.armedAt) state.firstScrollAt = performance.now();
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    var longTaskObserver = null;
+    try {
+        longTaskObserver = new PerformanceObserver(function (list) {
+            list.getEntries().forEach(function (entry) {
+                if (!state.armedAt || entry.startTime < state.armedAt - 10) return;
+                if (state.longTasks.length < 20) state.longTasks.push({ start: Math.round(entry.startTime), duration: Math.round(entry.duration) });
+            });
+        });
+        longTaskObserver.observe({ entryTypes: ['longtask'] });
+    } catch (_) {}
+
+    state.cleanup = function () {
+        mutationObserver.disconnect();
+        window.removeEventListener('scroll', onScroll);
+        try { longTaskObserver && longTaskObserver.disconnect(); } catch (_) {}
+    };
+    window.__ccgSitewideWheelProbe = state;
+
+    return {
+        skip: false,
+        title: document.title,
+        startY: state.startY,
+        maxScroll: maxScroll,
+        x: x,
+        y: y,
+        nestedAtPointer: nested,
+        htmlOverflowY: getComputedStyle(root).overflowY,
+        bodyOverflowY: body ? getComputedStyle(body).overflowY : ''
+    };
+})();`);
+}
+
+async function armSitewideWheelProbe(sessionId) {
+    await execute(sessionId, "window.__ccgSitewideWheelProbe.armedAt=performance.now(); return window.__ccgSitewideWheelProbe.armedAt;");
+}
+
+async function readSitewideWheelProbe(sessionId) {
+    return execute(sessionId, String.raw`
+return (function () {
+    var state = window.__ccgSitewideWheelProbe;
+    if (!state) return { error: 'probe missing' };
+    var result = {
+        armedAt: state.armedAt,
+        firstScrollAt: state.firstScrollAt,
+        firstLatency: state.firstScrollAt && state.armedAt ? Math.round((state.firstScrollAt - state.armedAt) * 10) / 10 : null,
+        scrollEvents: state.scrollEvents,
+        classTransitions: state.classTransitions,
+        pausedTransitions: state.pausedTransitions,
+        longTasks: state.longTasks,
+        startY: state.startY,
+        endY: Math.round(window.scrollY),
+        movement: Math.round(window.scrollY) - state.startY,
+        perfPausedNow: document.documentElement.classList.contains('ccg-perf-paused')
+    };
+    try { state.cleanup(); } catch (_) {}
+    return result;
+})();`);
+}
+
+async function auditSitewideWheelPage(sessionId, sitePort, page) {
+    await navigate(sessionId, `http://${HOST}:${sitePort}${page.path}`);
+    const target = await prepareSitewideWheelProbe(sessionId);
+    if (target.skip) {
+        console.log(`SKIP sitewide wheel ${page.label}: ${target.reason} (maxScroll=${target.maxScroll}px)`);
+        return;
+    }
+    if (target.title === "CCG_WHEEL_404" || target.title === "CCG_WHEEL_500") {
+        fail(`sitewide wheel ${page.label}: local server returned ${target.title}`);
+    }
+    if (!/^(auto|scroll|visible)$/i.test(target.htmlOverflowY || "")) {
+        fail(`sitewide wheel ${page.label}: unexpected html overflow-y ${target.htmlOverflowY}`);
+    }
+    if (!/^(visible|auto)$/i.test(target.bodyOverflowY || "")) {
+        fail(`sitewide wheel ${page.label}: unexpected body overflow-y ${target.bodyOverflowY}`);
+    }
+    if (target.nestedAtPointer?.length) {
+        fail(`sitewide wheel ${page.label}: pointer is over nested vertical scroller(s): ${target.nestedAtPointer.join(", ")}`);
+    }
+
+    await armSitewideWheelProbe(sessionId);
+    for (let step = 0; step < SITEWIDE_WHEEL_STEPS; step += 1) {
+        await dispatchWheel(sessionId, target.x, target.y, SITEWIDE_WHEEL_DELTA);
+        await new Promise((resolve) => setTimeout(resolve, SITEWIDE_WHEEL_GAP_MS));
+    }
+    await new Promise((resolve) => setTimeout(resolve, 260));
+
+    const result = await readSitewideWheelProbe(sessionId);
+    if (result.error) fail(`sitewide wheel ${page.label}: ${result.error}`);
+    if (result.firstLatency === null || result.firstLatency > MAX_FIRST_SCROLL_LATENCY_MS) {
+        fail(`sitewide wheel ${page.label}: first native scroll response was too slow (${result.firstLatency}ms)`);
+    }
+    if (result.movement < MIN_WHEEL_DELTA * 2) {
+        fail(`sitewide wheel ${page.label}: four physical wheel steps moved only ${result.movement}px`);
+    }
+
+    const totalLongTaskMs = (result.longTasks || []).reduce((sum, entry) => sum + Number(entry.duration || 0), 0);
+    console.log(`PASS sitewide wheel ${page.label}: movement=${result.movement}px latency=${result.firstLatency}ms scrollEvents=${result.scrollEvents} perfClassTransitions=${result.classTransitions} longTasks=${result.longTasks.length}/${totalLongTaskMs}ms`);
+}
+
+async function auditSitewideWheelPages(sessionId, sitePort) {
+    await setViewport(sessionId, SITEWIDE_WHEEL_VIEWPORT);
+    console.log(`SITEWIDE physical mouse-wheel audit: ${SITEWIDE_WHEEL_PAGES.length} representative pages at ${SITEWIDE_WHEEL_VIEWPORT.width}x${SITEWIDE_WHEEL_VIEWPORT.height}`);
+    for (const page of SITEWIDE_WHEEL_PAGES) {
+        await auditSitewideWheelPage(sessionId, sitePort, page);
+    }
+}
+
 async function waitForGameMediaGuard(sessionId) {
     let last = null;
 
@@ -536,6 +739,7 @@ async function main() {
             await auditViewport(sessionId, sitePort, viewport);
             await auditGameMediaWheel(sessionId, sitePort, viewport);
         }
+        await auditSitewideWheelPages(sessionId, sitePort);
         console.log("Native mouse-wheel scroll contract passed.");
     } finally {
         if (sessionId) {
