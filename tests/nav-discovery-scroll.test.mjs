@@ -74,10 +74,12 @@ test('desktop More is functional and deliberately owns CCG Games, Install, About
   assert.match(modeIdentityCss, /\.ccg-mode-identity__inner\s*\{[\s\S]*pointer-events:\s*none/);
 });
 
-test('CCG Games hub links the public Commodore Quest route', () => {
+test('CCG Games hub retains Commodore Quest identity while respecting maintenance state', () => {
   assert.match(ccgGamesHub, /<link rel="canonical" href="https:\/\/www\.cheekycommodoregamer\.co\.uk\/games\/ccg-games\/">/);
-  assert.match(ccgGamesHub, /href="\/games\/commodore-quest\/"/);
   assert.match(ccgGamesHub, /Cheeky's Commodore Quest/);
+  const publicLink=/href="\/games\/commodore-quest\/"/.test(ccgGamesHub);
+  const maintenance=/CCG originals — maintenance/i.test(ccgGamesHub)&&/Temporarily unavailable/i.test(ccgGamesHub);
+  assert.ok(publicLink||maintenance,'CCG Games hub must either link Commodore Quest or explicitly mark the originals as under maintenance');
 });
 
 test('navigation never hides during refresh or fitting', () => {
