@@ -25910,7 +25910,7 @@
     "slug": "wonder-boy",
     "title": "Wonder Boy",
     "sorttitle": "Wonder Boy",
-    "year": 1979,
+    "year": 1987,
     "genres": [
       "arcade",
       "platform"
@@ -25923,7 +25923,9 @@
     "pdf": "https://drive.google.com/file/d/1fSAuYmULHRBJRHSUrKAWgtoMS1zwRaWm/view?usp=drive_link",
     "disk": [],
     "download_status": "",
-    "lemon": [],
+    "lemon": [
+      "https://www.lemon64.com/game/wonderboy"
+    ],
     "zzap": [],
     "description": "Wonder Boy on the Commodore 64 is Activision’s 1987 conversion of Sega’s popular arcade platformer, bringing its fast-paced running, jumping, fruit collecting, axe throwing and infamous skateboard to the C64. The conversion retains plenty of the arcade game’s personality with large colourful sprites, smooth scrolling and familiar enemies, although repetitive stages, floaty jumping and limited music stop it from matching the original machine. Zzap!64 famously awarded the full-price release just 52%, while other reviews were considerably kinder. It remains an enjoyable slice of 1980s arcade nostalgia, particularly for C64 players who grew up with this version at home.",
     "ccg_rating": 6,
