@@ -20,13 +20,25 @@
     if (section) section.hidden = true;
   }
 
-  function loadData() {
+  function fetchData(cacheMode) {
+    return fetch(DATA_URL, { credentials: "same-origin", cache: cacheMode })
+      .then(function (response) {
+        if (!response.ok) throw new Error("UTA map HTTP " + response.status);
+        return response.json();
+      });
+  }
+
+  function loadData(forceRefresh) {
+    if (forceRefresh) {
+      dataPromise = fetchData("reload");
+      return dataPromise;
+    }
+
     if (!dataPromise) {
-      dataPromise = fetch(DATA_URL, { credentials: "same-origin", cache: "force-cache" })
-        .then(function (response) {
-          if (!response.ok) throw new Error("UTA map HTTP " + response.status);
-          return response.json();
-        });
+      // UTA mappings are regenerated as games and re-releases are added. Always
+      // revalidate the JSON instead of allowing an old browser HTTP cache entry
+      // to hide a newly published Tape Archive section.
+      dataPromise = fetchData("no-cache");
     }
     return dataPromise;
   }
@@ -98,8 +110,17 @@
     }
 
     try {
-      const data = await loadData();
-      const record = data && data.games ? data.games[slug] : null;
+      let data = await loadData(false);
+      let record = data && data.games ? data.games[slug] : null;
+
+      // A visitor may still have a pre-fix mapping in the browser's HTTP cache.
+      // If this slug is absent, bypass that cache once before deciding that the
+      // game genuinely has no confident UTA release.
+      if (!record) {
+        data = await loadData(true);
+        record = data && data.games ? data.games[slug] : null;
+      }
+
       if (!record) {
         hideSection();
         return;
