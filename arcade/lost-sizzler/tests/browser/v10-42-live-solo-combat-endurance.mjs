@@ -154,9 +154,13 @@ try{
   await page.waitForFunction(()=>Number(window.__ccgDungeonCamera?.zoom)>=1);
   const desktopCamera=await page.evaluate(()=>({...window.__ccgDungeonCamera,fullscreen:Boolean(document.fullscreenElement)}));
   if(desktopCamera.fullscreen){
-    assert.equal(desktopCamera.zoom,1.2,`desktop fullscreen Solo must use the focused 1.2x camera: ${JSON.stringify(desktopCamera)}`);
-    assert.ok(desktopCamera.logicalWidth<desktopCamera.viewportWidth,"desktop fullscreen Solo must render a smaller logical viewport into the available playfield");
-    assert.ok(desktopCamera.logicalHeight<desktopCamera.viewportHeight,"desktop fullscreen Solo must reduce the unused vertical playfield");
+    assert.ok(desktopCamera.zoom>=1&&desktopCamera.zoom<=1.2,`desktop fullscreen Solo must use the room-fit camera up to the preferred 1.2x zoom: ${JSON.stringify(desktopCamera)}`);
+    assert.ok(desktopCamera.logicalWidth<=desktopCamera.viewportWidth,"desktop fullscreen Solo logical width must remain inside the available playfield");
+    assert.ok(desktopCamera.logicalHeight<=desktopCamera.viewportHeight,"desktop fullscreen Solo logical height must remain inside the available playfield");
+    if(desktopCamera.zoom>1){
+      assert.ok(desktopCamera.logicalWidth<desktopCamera.viewportWidth,"zoomed fullscreen Solo must render a smaller logical viewport into the available playfield");
+      assert.ok(desktopCamera.logicalHeight<desktopCamera.viewportHeight,"zoomed fullscreen Solo must reduce the unused vertical playfield");
+    }
   }else{
     assert.equal(desktopCamera.zoom,1,`non-fullscreen desktop Solo must retain the established 1x camera: ${JSON.stringify(desktopCamera)}`);
     assert.equal(desktopCamera.logicalWidth,desktopCamera.viewportWidth,"non-fullscreen desktop Solo must retain the full logical viewport width");
