@@ -295,16 +295,31 @@ try{
   }
 
   {
-    logStage("split-screen startup: create and navigate");
+    logStage("retired split-screen entry: create and navigate");
     const state=await newGamePage();
-    await withTimeout(state.page.goto(canonical,{waitUntil:"domcontentloaded",timeout:15000}),STAGE_TIMEOUT_MS,"split-screen navigation");
-    await waitForReady(state,"split-screen");
-    await state.page.locator("#split-btn").click({noWaitAfter:true});
-    await withTimeout(state.page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof p2!=="undefined"&&Boolean(p2)&&playMode==="split"&&mode==="playing",null,{timeout:15000}),STAGE_TIMEOUT_MS,"split-screen activation");
-    const split=await state.page.evaluate(()=>({p1:Boolean(p1),p2:Boolean(p2),sameTile:Boolean(p1&&p2&&p1.x===p2.x&&p1.y===p2.y),playMode,mode,menuHidden:document.getElementById("menu")?.classList.contains("hidden"),fallbackChoiceHidden:document.getElementById("ccg-tutorial-choice")?.classList.contains("hidden")}));
-    assert.deepEqual(split,{p1:true,p2:true,sameTile:false,playMode:"split",mode:"playing",menuHidden:true,fallbackChoiceHidden:true},`split-screen must start both players without the retired tutorial chooser: ${JSON.stringify(split)}`);
-    await assertHealthy(state,"active split-screen run");
-    logStage("split-screen startup: complete");
+    await withTimeout(state.page.goto(canonical,{waitUntil:"domcontentloaded",timeout:15000}),STAGE_TIMEOUT_MS,"retired split-screen navigation");
+    await waitForReady(state,"retired split-screen");
+    const split=await state.page.evaluate(()=>{
+      const button=document.getElementById("split-btn"),style=button?getComputedStyle(button):null;
+      return{
+        exists:Boolean(button),
+        hidden:Boolean(button?.hidden),
+        ariaHidden:button?.getAttribute("aria-hidden")||"",
+        tabIndex:Number(button?.tabIndex),
+        display:style?.display||"",
+        localModes:[...(window.CCGLostSizzlerV142ZeroServerRelease?.localModes||[])],
+        runActive:document.body.dataset.runActive
+      };
+    });
+    assert.equal(split.exists,true,"retired split compatibility anchor must remain available for legacy code");
+    assert.equal(split.hidden,true,"retired split compatibility anchor must stay hidden");
+    assert.equal(split.ariaHidden,"true","retired split compatibility anchor must stay aria-hidden");
+    assert.equal(split.tabIndex,-1,"retired split compatibility anchor must stay outside keyboard focus order");
+    assert.equal(split.display,"none","retired split compatibility anchor must not occupy menu layout");
+    assert.deepEqual(split.localModes,["solo","tutorial"],"R51 must expose only Solo and Tutorial as supported public modes");
+    assert.equal(split.runActive,"false","checking the retired Split anchor must not start a run");
+    await assertHealthy(state,"retired split-screen entry");
+    logStage("retired split-screen entry: complete");
   }
 
   {
