@@ -8,7 +8,7 @@ The browser game under `arcade/lost-sizzler/`, including retained local runtime 
 
 The user has retired **all multiplayer game modes** plus the **Weekly High-Score Vault** from the public Dungeon Carnage product. This supersedes the older guardrail that required local 2P Split Screen and Weekly Vault/account surfaces to remain visible or supported.
 
-Fresh branch `codex/dungeon-retired-public-modes-cleanup` is based on merged r49 main `3f273ec8eb881faac1825a6779863c9367faf0d1`. Scope is intentionally presentation/entry-policy first: Solo, Tutorial and Resume remain; Split Screen and Weekly Vault public controls/copy are removed; P2 help and weekly rulebook/reward language are removed; the public developer changelog is removed; and the release-policy owner cannot resurrect retired controls from stale layers.
+Fresh branch `codex/dungeon-retired-public-modes-cleanup-current-main` is based on merged r49 main `3f273ec8eb881faac1825a6779863c9367faf0d1`. Scope is intentionally presentation/entry-policy first: Solo, Tutorial and Resume remain; Split Screen and Weekly Vault public controls/copy are removed; P2 help and weekly rulebook/reward language are removed; the public developer changelog is removed; and the release-policy owner cannot resurrect retired controls from stale layers.
 
 The branch does **not** broadly delete historical split/network compatibility owners yet. Those owners remain until exact-head qualification proves they can be removed without destabilising Solo/Tutorial. The currently open audio PR #2233 is a separate workstream and is not modified here.
 
