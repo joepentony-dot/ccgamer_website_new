@@ -31,7 +31,7 @@ try{
     retiredJoin:Boolean(document.getElementById("join-btn")),
     retiredRoom:Boolean(document.getElementById("room-code")),
     retiredLobby:Boolean(document.getElementById("online-lobby")),
-    focusLabel:document.getElementById("split-btn")?.getAttribute("aria-label")
+    focusLabel:document.getElementById("tutorial-zone-btn")?.getAttribute("aria-label")
   }));
   assert.equal(menu.styled,true);
   assert.equal(menu.panel,true);
@@ -42,7 +42,7 @@ try{
   assert.equal(menu.retiredRoom,false,"retired room-code input must stay absent from the R51 menu");
   assert.equal(menu.retiredLobby,false,"retired online lobby must stay absent from the R51 menu");
   assert.doesNotMatch(menu.guideText,/Dungeon Multiplayer|Join Online Room|ONLINE MULTIPLAYER|four players/i,"R51 menu guidance must not restore retired online multiplayer copy");
-  assert.match(menu.focusLabel,/Two controllers/i);
+  assert.match(menu.focusLabel,/Controls, combat, items and objectives/i);
 
   await page.locator("#solo-btn").click({noWaitAfter:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof p1!=="undefined"&&Boolean(p1));
@@ -90,9 +90,9 @@ try{
   assert.ok(visual.diag.enemyFrames>=0);
   assert.ok(visual.diag.lightingUpdates>0);
 
-  const focus=await page.evaluate(async()=>{await quitToMenu();const api=window.CCGLostSizzlerV141R51MenuFocus,before=api.state.focusMoves,button=document.getElementById("split-btn");button.focus();await new Promise(resolve=>setTimeout(resolve,40));const style=getComputedStyle(button);return{active:document.activeElement?.id,outline:style.outlineStyle,outlineWidth:style.outlineWidth,moves:api.state.focusMoves-before,createPresent:Boolean(document.getElementById("create-btn"))}});
+  const focus=await page.evaluate(async()=>{await quitToMenu();const api=window.CCGLostSizzlerV141R51MenuFocus,before=api.state.focusMoves,button=document.getElementById("tutorial-zone-btn");button.focus();await new Promise(resolve=>setTimeout(resolve,40));const style=getComputedStyle(button);return{active:document.activeElement?.id,outline:style.outlineStyle,outlineWidth:style.outlineWidth,moves:api.state.focusMoves-before,createPresent:Boolean(document.getElementById("create-btn"))}});
   assert.equal(focus.createPresent,false,"zero-server release must keep retired Create Online absent");
-  assert.equal(focus.active,"split-btn","focus helper must work on a supported local gameplay action");
+  assert.equal(focus.active,"tutorial-zone-btn","focus helper must work on a supported local gameplay action");
   assert.notEqual(focus.outline,"none","keyboard/controller focus must remain visually obvious");
   assert.ok(focus.moves>=1,"menu focus helper must keep keyboard/controller focus visible");
   assert.deepEqual(errors,[],`r51 browser test must not raise page errors: ${errors.join("\n")}`);
