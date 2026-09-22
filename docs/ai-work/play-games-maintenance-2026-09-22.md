@@ -4,7 +4,16 @@
 
 Temporary public maintenance gating for the two CCG original browser games, the `/games/ccg-games/` landing page, and the longer-term navigation decision around Quiz/Hangman and playable browser experiences. This workstream does not change either game's runtime logic.
 
-## Active checkpoint — 22 September 2026
+## Owner-only Dungeon Carnage preview — 22 September 2026
+
+- C64 Dungeon Carnage remains behind the production maintenance gate for normal visitors.
+- The production Dungeon entry now performs an authoritative Supabase user/profile check and allows access only when the signed-in profile is exactly username `cheekycommodoregamer`, display name `Cheeky Commodore Gamer`, and role `admin`.
+- Signed-out users, other members, and any failed/timeout auth check continue to redirect to `/games/ccg-games/`.
+- Localhost and non-production preview behaviour is unchanged.
+- The homepage and in-game loader now cache-bust the already-supplied `c64-dungeon-carnage-home-v2.webp` asset so an older cached dark placeholder cannot remain stuck after the asset replacement.
+- Production smoke is maintenance-aware and still verifies the deployed R50 version identity while anonymous production access is intentionally redirected.
+
+## Historical active checkpoint — 22 September 2026
 
 - PR #2232 / branch `codex/temporary-play-games-maintenance` starts from live `main` `d0d4130136a94dad884d93de4255217c72345d6c`.
 - The production-only maintenance gate is an intentionally tiny inline head guard on each public/runtime entrypoint and activates only for `www.cheekycommodoregamer.co.uk` or `cheekycommodoregamer.co.uk`.
