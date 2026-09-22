@@ -4,17 +4,22 @@
 
 The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
-## Active r50 fullscreen/input follow-up — PR #2241 — 22 September 2026
+## Active V10.42 r50 playtest-blocker consolidation — PR #2242 — 22 September 2026
 
-PR #2231 is merged as `3f273ec8eb881faac1825a6779863c9367faf0d1`, making `V10.42 r49` / `20260922r49` the current live runtime. Immediate hands-on testing then exposed two desktop fullscreen issues.
+PR #2242 / branch `codex/dungeon-r50-playtest-blockers` is the current combined candidate. It starts from current `main`, carries the complete already-qualified #2241 fullscreen/F-key delta, and carries the non-documentation implementation from green PR #2233 so those fixes can be qualified together rather than merged piecemeal.
 
-First, the visible instruction says **Press F if needed** for fullscreen and the canonical `game-main.js` handler does own `KeyF` for `toggleFullscreen()`. However, three later combat-recovery layers still treated `KeyF` as a P1 attack alias. The r20 capture-phase listener could therefore stop propagation and fire before the canonical fullscreen listener ran. #2241 removes `KeyF` from r20 attack recovery, held-attack liveness and r47 Inventory/FIRE verification. Space and Numpad0 remain attack inputs; stale historical `KeyF` state is still cleared at pause/inventory recovery boundaries.
+Hands-on Floor 3 testing added two new evidence-backed boundaries. The Memory Pad replay console previously depended only on a successful `movementTriggers(..., true)` boundary. The combined candidate adds per-player console occupancy so replay is edge-triggered, clears occupancy when the player leaves, and also checks console contact from `updateMemoryPuzzle()`. This recovers a missed movement-boundary contact without restarting the sequence on every frame while the player stands still. The existing wrong-pad penalty remains exactly one spawned enemy.
 
-Second, the supplied fullscreen screenshot shows the active dungeon occupying only the upper portion of the available canvas with a large unused black region below. #2241 changes only renderer camera scale: normal desktop Solo remains 1x, mobile Solo/Tutorial remains 1.6x, split-screen remains 1x, and desktop Solo while browser fullscreen is active uses 1.35x. This also reduces the north-edge camera clamp that left the starting room high in the viewport.
+The same room could hide sequence pads behind ordinary fog and could inherit the 1.6x mobile camera merely because the desktop sidebar narrowed `.canvas-wrap` below 900px. The combined candidate gives only the active Memory Pad cells and purple replay console puzzle visibility while the player is in the room. Renderer framing centres the complete pad/console bounds and can zoom out to a bounded 0.65 minimum when needed. Ordinary responsive 1.6x zoom now keys from the actual browser viewport/coarse pointer, not the post-layout canvas width; the #2241 1.35x desktop fullscreen camera remains the normal fullscreen presentation outside the puzzle room.
 
-Regression coverage now exercises a focused real F key through document capture listeners and requires that fullscreen receives it without increasing r20 attack intents. Static ownership coverage also prevents late attack layers from reclaiming `KeyF`. The candidate advances build/cache to `V10.42 r50` / `20260922r50`.
+The reproduced strange sound now has a concrete cassette boundary. `A Nightmare On Elm Street` is tagged both `horror` and `arcade`, so V10.4 can summon an Archive Wraith while V10.5 grants ARCADE FRENZY from the same game pickup. V10.4 had also reused `S.sfx("stalker")` for the Wraith and maintained a separate horror AudioContext with an every-1050ms interval that continuously created temporary oscillator/gain pairs. #2242 changes the Wraith arrival cue to the existing `creak` SFX, keeps the three persistent horror drone voices but removes recurring oscillator allocation, and stops/disconnects those nodes outside active gameplay, on page hide, or while the document is hidden. ARCADE FRENZY remains intact. Both layers now publish `ccg:collectible-effect`, and the incident recorder retains effect type, horror-creature count and rapid-fire state alongside #2233's SFX/item/music tracing.
 
-No world generation, collision, damage, traps, progression, save, economy, projectile lifecycle or combat-balance owner is changed.
+The loader now displays the existing newer `resources/images/hero/c64-dungeon-carnage-home-v2.webp` instead of the text-only dark identity block. The itch builder packages that same WEBP as `assets/c64-dungeon-carnage-loader.webp` and rewrites the staged HTML path so offline delivery does not depend on the website root.
+
+Regression coverage includes `v10-42-r50-playtest-blockers.mjs`, an expanded existing Memory Pad Chromium contract for missed-boundary replay/visibility/framing, and a new Nightmare cassette browser contract that requires both horror + ARCADE FRENZY effects, the non-Stalker cue, a bounded stable horror node set over time, and complete node retirement after leaving active play.
+
+Candidate identity remains `V10.42 r50` / `20260922r50`. #2242 remains draft until its exact final head passes canonical/Node contracts, all retained Chromium shards and companion package/site gates. #2241 and #2233 remain open/unmerged while #2242 qualifies.
+
 
 ## Current checkpoint — 22 September 2026
 
