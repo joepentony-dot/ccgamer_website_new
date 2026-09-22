@@ -25,6 +25,18 @@
   box-shadow:0 0 42px rgba(185,120,255,.18),inset 0 0 26px rgba(108,236,255,.045);
 }
 
+.ccg-release-loading-art{
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:220px;
+  margin:0 0 18px;
+  border-radius:10px;
+  object-fit:contain;
+  background:#040208;
+  box-shadow:0 0 24px rgba(185,120,255,.16);
+}
+
 .ccg-release-loading-kicker{
   display:block;
   margin-bottom:8px;
