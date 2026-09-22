@@ -49,7 +49,8 @@ async function openPackage(browser,url){
     }catch(_){}
   });
   page.on("pageerror",error=>pageErrors.push(String(error?.message||error)));
-  await page.goto(url,{waitUntil:"domcontentloaded",timeout:60000});
+  await page.goto(url,{waitUntil:"commit",timeout:90000});
+  await page.waitForFunction(()=>Boolean(document.body),null,{timeout:90000});
   try{
     await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
   }catch(error){
