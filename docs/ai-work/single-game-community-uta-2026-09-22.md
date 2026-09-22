@@ -87,7 +87,7 @@ The Summit Bangkok Knights archive `[8568]` is included because Summit is alread
 
 The affected canonical game pages already contain the verified YouTube `uploadDate` emitted by the static video-SEO generator with a UTC `Z` suffix. The warning was caused by the browser runtime adding a second nested `VideoObject` whose `uploadDate` was incorrectly fabricated from the game's release year as `YYYY-01-01`.
 
-This branch now makes the generated `data-ccg-schema="game-graph"` authoritative on canonical game routes and skips the legacy runtime schema when that graph exists. The runtime fallback no longer emits a VideoObject at all, so it cannot invent a YouTube upload date from a game release year. `scripts/validate-video-seo.js` also rejects datetime upload dates that contain a time but omit `Z` or an explicit `±HH:MM` offset.
+This branch now makes the generated `data-ccg-schema="game-graph"` authoritative on canonical game routes and skips the legacy runtime schema when that graph exists. The runtime fallback no longer emits a VideoObject at all, so it cannot invent a YouTube upload date from a game release year. `scripts/validate-video-seo.js` now requires a verified timezone-bearing datetime for every emitted `uploadDate` (`Z` or an explicit `±HH:MM` offset), so date-only release values cannot regress into VideoObject metadata.
 
 This applies through the shared individual-game runtime rather than editing the Search Console example pages individually.
 
@@ -110,7 +110,7 @@ The test contract covers:
 - shared-template UTA placement and C64-only runtime gating;
 - canonical game pages do not receive a duplicate runtime schema graph;
 - runtime schema never fabricates `uploadDate` from the game release year;
-- datetime `uploadDate` validation requires `Z` or an explicit timezone offset;
+- `uploadDate` validation requires a timezone-bearing datetime (`Z` or an explicit offset);
 - responsive community/tape CSS remains owned by the existing shared stylesheets.
 
 The repository's Public Code Cache Version guard requires this public JS/CSS change to ship with a new `CODE_CACHE_VERSION`, so PR #2227 also contains the corresponding `service-worker.js` cache namespace bump. This is a deployment-supporting change only, not an unrelated PWA redesign.
