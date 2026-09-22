@@ -794,7 +794,9 @@ async function publishGame(event) {
       type: 'game',
       sourceSha: result.commitSha,
       liveUrl: `${SITE_ORIGIN}/games/${entry.slug}/`,
-      videoId: entry.videoid
+      videoId: entry.videoid,
+      slug: entry.slug,
+      system: entry.system
     });
   } catch (error) {
     setPipelineStep('source', 'error', 'Failed');
@@ -1174,8 +1176,25 @@ async function monitorPublish(config, job) {
     setPipelineStep('pages', 'ok', 'Generated');
     setPipelineStep('library', 'ok', 'Updated');
     setPipelineStep('sitemaps', 'ok', 'Updated');
-    setPipelineStep('validation', 'ok', 'Passed');
-    writeLog('Automated metadata, page, library, sitemap and validation workflows completed successfully.');
+
+    let enrichment = { complete: true, messages: [] };
+    if (job.type === 'game') {
+      setPipelineStep('validation', 'running', 'Checking reviews & tape archive');
+      enrichment = await verifyGameArchiveEnrichment(config, job);
+      if (enrichment.complete) {
+        setPipelineStep('validation', 'ok', 'Passed + archive enrichment');
+        writeLog(`Game archive enrichment verified: ${enrichment.messages.join(' · ') || 'no applicable external archive records'}.`);
+      } else {
+        setPipelineStep('validation', 'error', 'Archive enrichment incomplete');
+        writeLog(`Game publishing is not complete: ${enrichment.messages.join('; ')}.`, true);
+      }
+    } else {
+      setPipelineStep('validation', 'ok', 'Passed');
+    }
+
+    if (enrichment.complete) {
+      writeLog('Automated metadata, page, library, sitemap and validation workflows completed successfully.');
+    }
 
     await sleep(8000);
     const live = await waitForLiveUrl(job.liveUrl);
@@ -1202,6 +1221,79 @@ async function monitorPublish(config, job) {
     });
     writeLog(`Automated publishing check failed: ${error.message}`, true);
   }
+}
+
+function magazineRecordChunk(slug) {
+  const first = String(slug || '').charAt(0).toLowerCase();
+  if (!first || /\d/.test(first) || first < 'e') return '0-d';
+  if (first < 'i') return 'e-h';
+  if (first < 'm') return 'i-l';
+  if (first < 'q') return 'm-p';
+  if (first < 'u') return 'q-t';
+  return 'u-z';
+}
+
+async function fetchGithubJsonOptional(config, path, fallback) {
+  try {
+    return await fetchGithubJsonFile(config, path);
+  } catch (_error) {
+    return fallback;
+  }
+}
+
+async function verifyGameArchiveEnrichment(config, job) {
+  const slug = String(job.slug || '').trim();
+  if (!slug) return { complete: false, messages: ['published game slug is unavailable for enrichment verification'] };
+
+  const keyPrefix = String(job.system || '').toUpperCase() === 'AMIGA' ? 'amiga' : 'c64';
+  const [games, pendingPayload, reviews, uta, utaReview] = await Promise.all([
+    fetchGithubJsonOptional(config, SOURCE_PATHS.games, []),
+    fetchGithubJsonOptional(config, 'data/lemon-source-pending.json', []),
+    fetchGithubJsonOptional(config, \`data/magazine-review-records/\${magazineRecordChunk(slug)}.json\`, { games: {} }),
+    fetchGithubJsonOptional(config, 'data/uta-game-matches.json', { games: {} }),
+    fetchGithubJsonOptional(config, 'data/uta-manual-review.json', { entries: [] })
+  ]);
+
+  const game = Array.isArray(games) ? games.find((item) => String(item?.slug || '') === slug) : null;
+  const pendingRows = Array.isArray(pendingPayload) ? pendingPayload : [];
+  const pending = pendingRows.map((item) => slugify(item?.slug || item?.gameSlug || item)).filter(Boolean);
+  const reviewRows = reviews?.games?.[\`\${keyPrefix}:\${slug}\`] || [];
+  const utaReleases = uta?.games?.[slug]?.releases || [];
+  const utaManual = Array.isArray(utaReview?.entries)
+    ? utaReview.entries.find((entry) => String(entry?.gameSlug || '') === slug)
+    : null;
+
+  const problems = [];
+  const messages = [];
+
+  if (pending.includes(slug)) {
+    problems.push('automatic magazine-review source discovery is still unresolved');
+  } else if (Array.isArray(reviewRows) && reviewRows.length) {
+    messages.push(\`\${reviewRows.length} magazine review\${reviewRows.length === 1 ? '' : 's'}\`);
+  } else if (Array.isArray(game?.lemon) && game.lemon.length) {
+    problems.push('the verified Lemon source is present but no magazine review rows were materialised');
+  } else {
+    messages.push('no verified magazine reviews found');
+  }
+
+  if (String(job.system || '').toUpperCase() === 'C64') {
+    if (Array.isArray(utaReleases) && utaReleases.length) {
+      messages.push(\`\${utaReleases.length} Ultimate Tape Archive release\${utaReleases.length === 1 ? '' : 's'}\`);
+    } else {
+      const publisherMatched = Array.isArray(utaManual?.excludedCandidates)
+        && utaManual.excludedCandidates.some((candidate) => candidate?.publisherMatched);
+      if (publisherMatched) {
+        problems.push('Ultimate Tape Archive has a matching publisher/title candidate that was excluded by release metadata and needs correction');
+      } else {
+        messages.push('no confident Ultimate Tape Archive release found');
+      }
+    }
+  }
+
+  return {
+    complete: problems.length === 0,
+    messages: problems.length ? problems : messages
+  };
 }
 
 async function waitForWorkflow(config, workflowFile, sourceSha) {
