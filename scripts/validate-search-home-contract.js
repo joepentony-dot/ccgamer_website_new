@@ -76,8 +76,33 @@ function assertExactHead(html) {
   }
 }
 
+function stripApprovedRetiredWeeklyVaultCta(html) {
+  return String(html).replace(
+    /\s*<a\s+href=["']\/arcade\/lost-sizzler\/#weekly-vault["'][\s\S]*?class=["'][^"']*home-hero__leaderboard-cta[^"']*["'][\s\S]*?<\/a>/i,
+    ""
+  );
+}
+
+function stripApprovedDungeonCarnageHomeCta(html) {
+  return String(html).replace(
+    /\s*<a\s+href=["']\/arcade\/lost-sizzler\/["'][\s\S]*?class=["'][^"']*home-hero__beta-cta[^"']*["'][\s\S]*?<\/a>/i,
+    ""
+  );
+}
+
+function stripApprovedDungeonCarnageCssCacheBust(html) {
+  return String(html).replace(
+    /home-lost-sizzler-cta\.css(?:\?v=[^"']+)?/i,
+    "home-lost-sizzler-cta.css"
+  );
+}
+
 function stripApprovedSeoHead(html) {
-  return String(html)
+  return stripApprovedDungeonCarnageCssCacheBust(
+    stripApprovedDungeonCarnageHomeCta(
+      stripApprovedRetiredWeeklyVaultCta(String(html))
+    )
+  )
     .replace(/<title>[\s\S]*?<\/title>/i, "")
     .replace(/<meta\b(?=[^>]*\bname=["']description["'])[^>]*>/i, "")
     .replace(/<meta\b(?=[^>]*\bname=["']robots["'])[^>]*>/i, "")
@@ -111,7 +136,7 @@ const baseline = readBaseline();
 assertExactHead(current);
 
 if (stripApprovedSeoHead(current) !== stripApprovedSeoHead(baseline)) {
-  fail("home.html changed outside the approved SEO-head fields.");
+  fail("home.html changed outside the approved SEO-head and Dungeon Carnage home-CTA fields.");
 }
 
-console.log("[search-home-contract] home.html differs from baseline only by the approved SEO-head migration.");
+console.log("[search-home-contract] home.html differs from baseline only by the approved SEO-head / Dungeon Carnage CTA changes.");

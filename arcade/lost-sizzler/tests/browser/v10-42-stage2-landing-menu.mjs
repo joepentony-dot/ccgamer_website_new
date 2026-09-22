@@ -49,6 +49,7 @@ try{
       return [id,element?{
         exists:true,
         display:style.display,
+        visible:Boolean(style.display!=="none"&&!element.hidden&&!element.classList.contains("hidden")),
         order:Number(style.order||0),
         gridColumn:style.gridColumn,
         top:Math.round(rect.top),
@@ -82,24 +83,23 @@ try{
   assert.deepEqual(state.retired,[],"retired online/Horde/Saboteur controls must not return to the canonical menu");
   for(const [id,control] of Object.entries(state.controls))assert.equal(control.exists,true,`${id} must remain available in the supported landing DOM`);
 
-  assert.deepEqual(state.domOrder,["continue-save-btn","solo-btn","split-btn","tutorial-zone-btn","daily-btn"],"supported DOM/focus order must match the Stage 2 visual hierarchy");
-  assert.equal(state.controls["continue-save-btn"].order,10,"Resume Saved Run must own the first priority slot when it becomes visible");
-  assert.equal(state.controls["solo-btn"].order,11,"Solo must be the first always-visible adventure choice");
-  assert.equal(state.controls["split-btn"].order,12,"local Split Screen must sit beside Solo in the adventure row");
-  assert.equal(state.controls["tutorial-zone-btn"].order,21,"Tutorial must remain a secondary supported choice");
-  assert.equal(state.controls["daily-btn"].order,22,"Weekly Vault must remain a secondary supported choice");
+  assert.deepEqual(state.domOrder,["continue-save-btn","solo-btn","split-btn","tutorial-zone-btn","daily-btn"],"legacy compatibility anchors must retain stable DOM order without becoming public actions");
+  assert.equal(state.controls["continue-save-btn"].order,10,"Resume Saved Run must retain its priority slot when available");
+  assert.equal(state.controls["solo-btn"].order,11,"Solo must remain the first visible adventure choice");
+  assert.equal(state.controls["tutorial-zone-btn"].order,21,"Tutorial must remain the second supported choice");
+  assert.equal(state.controls["solo-btn"].visible,true,"Solo must remain visible on the R51 landing menu");
+  assert.equal(state.controls["tutorial-zone-btn"].visible,true,"Tutorial must remain visible on the R51 landing menu");
+  assert.equal(state.controls["split-btn"].visible,false,"retired Split compatibility anchor must remain hidden");
+  assert.equal(state.controls["daily-btn"].visible,false,"retired Weekly compatibility anchor must remain hidden");
+  assert.ok(state.controls["tutorial-zone-btn"].top>state.controls["solo-btn"].top,"Tutorial must sit below Solo in the supported landing flow");
 
-  assert.equal(state.controls["solo-btn"].top,state.controls["split-btn"].top,"Solo and Split Screen must occupy the same primary adventure row");
-  assert.ok(state.controls["tutorial-zone-btn"].top>state.controls["solo-btn"].top,"Tutorial must sit below the primary adventure row");
-  assert.equal(state.controls["tutorial-zone-btn"].top,state.controls["daily-btn"].top,"Tutorial and Weekly Vault must share the secondary row");
-
-  const settledHeights={"continue-save-btn":"78px","solo-btn":"82px","split-btn":"74px","tutorial-zone-btn":"70px","daily-btn":"70px"};
+  const settledHeights={"continue-save-btn":"78px","solo-btn":"82px","tutorial-zone-btn":"70px"};
   for(const [id,height] of Object.entries(settledHeights)){
     assert.equal(state.controls[id].inlineMinHeight,height,`${id} late R55 min-height must agree with Stage 2 blocking geometry`);
     assert.equal(state.controls[id].inlinePadding,"28px 12px 24px",`${id} late R55 padding must agree with Stage 2 blocking geometry`);
   }
   assert.ok(state.controls["solo-btn"].height>=82,"Solo must retain its settled primary-card height");
-  assert.ok(state.controls["split-btn"].height>=74,"Split Screen must retain its settled supported-card height");
+  assert.ok(state.controls["tutorial-zone-btn"].height>=70,"Tutorial must retain its settled supported-card height");
 
   assert.ok(state.tiers.length>=3,"historical compatibility layer should still be allowed to create its tier nodes");
   assert.ok(state.tiers.every(tier=>tier.display==="none"),`runtime-injected historical tier labels must remain visually retired: ${JSON.stringify(state.tiers)}`);
@@ -148,12 +148,12 @@ try{
 
   assert.equal(mobileState.coarse,true,"mobile landing contract must execute on a coarse-pointer viewport");
   assert.ok(mobileState.grid.width>0,"mobile landing grid must have measurable width");
-  assert.ok(mobileState.controls.length>=4,"all always-visible supported mobile choices must remain present");
+  assert.ok(mobileState.controls.length>=2,"Solo and Tutorial must remain visible on mobile");
   for(const control of mobileState.controls){
     assert.ok(Math.abs(control.left-mobileState.grid.left)<=2,`${control.id} must align to the full-width mobile grid left edge: ${JSON.stringify(mobileState)}`);
     assert.ok(control.width>=mobileState.grid.width-4,`${control.id} must fill the mobile menu width instead of occupying the left half: ${JSON.stringify(mobileState)}`);
   }
-  const orderedVisible=mobileState.controls.filter(row=>["solo-btn","split-btn","tutorial-zone-btn","daily-btn"].includes(row.id));
+  const orderedVisible=mobileState.controls.filter(row=>["solo-btn","tutorial-zone-btn"].includes(row.id));
   for(let i=1;i<orderedVisible.length;i++)assert.ok(orderedVisible[i].top>orderedVisible[i-1].top,`supported mobile cards must stack vertically: ${JSON.stringify(mobileState)}`);
   assert.equal(mobileState.soloColor,"rgb(245, 238, 251)","Solo primary label must remain readable on the dark/gold mobile card");
   assert.deepEqual(mobileErrors,[],`mobile Stage 2 landing menu must have no uncaught browser errors: ${mobileErrors.join("\n")}`);

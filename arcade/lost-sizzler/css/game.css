@@ -533,3 +533,43 @@ body{padding:0;font-family:Consolas,"Lucida Console","Courier New",monospace;bac
 .game-copyright{margin:14px 0 2px;color:rgba(250,244,255,.62);font:700 10px/1.4 "Courier New",monospace;letter-spacing:.12em;text-align:center}
 body[data-special-mode="sizzler-saboteurs"] .radar-card{visibility:hidden;position:relative}
 body[data-special-mode="sizzler-saboteurs"] .radar-card::after{content:"SPY VS SPY · TACTICAL RADAR DISABLED";visibility:visible;position:absolute;inset:0;display:grid;place-items:center;border:1px solid #b978ff;background:#05030a;color:#b978ff;font:700 12px/1.4 "Courier New",monospace;text-align:center;padding:12px}
+
+
+/* R51 SHOP HEADER EXIT — KEEP LEAVE SHOP IMMEDIATELY ACCESSIBLE */
+.shop-panel-card{
+  position:relative;
+}
+.shop-panel-head{
+  position:sticky;
+  top:0;
+  z-index:6;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin:-2px -2px 10px;
+  padding:8px 2px 10px;
+  border-bottom:1px solid rgba(108,236,255,.2);
+  background:linear-gradient(180deg,rgba(6,3,10,.99),rgba(6,3,10,.94));
+}
+.shop-panel-head h2{
+  margin:0!important;
+}
+.shop-close-top{
+  flex:0 0 auto;
+  min-width:132px;
+  margin:0!important;
+}
+@media(max-width:700px){
+  .shop-panel-head{
+    top:0;
+    gap:8px;
+  }
+  .shop-panel-head h2{
+    font-size:16px!important;
+  }
+  .shop-close-top{
+    min-width:110px;
+    padding-inline:10px!important;
+  }
+}

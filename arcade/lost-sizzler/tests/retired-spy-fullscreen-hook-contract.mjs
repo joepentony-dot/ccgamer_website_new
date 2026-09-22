@@ -16,7 +16,8 @@ assert.match(main,/if\(e\.code==="KeyF"\)\{\s*toggleFullscreen\(\);return\s*\}/,
 assert.match(main,/\$\("fullscreen-btn"\)\?\.addEventListener\("click",toggleFullscreen\)/,"fullscreen button must retain the same supported owner");
 assert.match(render,/async function toggleFullscreen\(\)\{const shell=document\.querySelector\("\.ccg-game"\);try\{if\(!document\.fullscreenElement\)await shell\.requestFullscreen\(\);else await document\.exitFullscreen\(\)\}/,"supported fullscreen owner must still request/exit browser fullscreen directly");
 
-assert.match(render,/if\(document\.fullscreenElement\)return 1\.35/,"desktop fullscreen Solo must use the focused 1.35x camera to consume the otherwise empty lower playfield");
+assert.match(render,/const preferred=1\.2;/,"desktop fullscreen Solo must use the slightly wider 1.2x preferred camera");
+assert.match(render,/const fit=Math\.min\(v\.w\/roomPixelW,v\.h\/roomPixelH,preferred\)/,"fullscreen zoom must yield to current-room fit instead of cropping room edges");
 for(const [name,source] of [["r20",r20],["held attack",hold],["inventory recovery",inventoryRecovery]]){
   assert.doesNotMatch(source,/ATTACK_KEYS=new Set\([^\n]*"KeyF"/,`${name} must not claim fullscreen F as an attack key`);
 }

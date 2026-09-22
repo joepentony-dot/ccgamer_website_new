@@ -50,15 +50,15 @@
   function verifyAttack(code,before){
     setTimeout(()=>{
       const p=player();if(!p||!state.armed||!activeRun()||currentMode()!=="playing")return;
-      const afterMana=Number(p.mana||0),afterBullets=bulletCount(p),afterFire=Number(typeof fire1!=="undefined"?fire1:0),afterBuffer=Number(typeof fireBuffer1!=="undefined"?fireBuffer1:0);
-      const handled=afterMana<before.mana||afterBullets>before.bullets||afterFire>0||afterBuffer>0;
+      const afterMana=Number(p.mana||0),afterBullets=bulletCount(p);
+      const handled=afterMana<before.mana||afterBullets>before.bullets;
       if(handled){state.verifiedAttacks++;return}
       if(!validAttack(p))return;
       const r20=window.CCGLostSizzlerV142R20LiveRegressionStability;
       if(typeof r20?.attackNow!=="function"){state.failedFallbacks++;return}
       const fallbackBeforeMana=Number(p.mana||0),fallbackBeforeBullets=bulletCount(p);
-      let result=false;try{result=Boolean(r20.attackNow(code))}catch(_){result=false}
-      const succeeded=result||Number(p.mana||0)<fallbackBeforeMana||bulletCount(p)>fallbackBeforeBullets||Number(typeof fire1!=="undefined"?fire1:0)>0||Number(typeof fireBuffer1!=="undefined"?fireBuffer1:0)>0;
+      try{r20.attackNow(code)}catch(_){}
+      const succeeded=Number(p.mana||0)<fallbackBeforeMana||bulletCount(p)>fallbackBeforeBullets;
       if(succeeded){state.fallbackAttacks++;state.lastFallbackAt=performance.now()}else state.failedFallbacks++;
     },90);
   }
@@ -76,7 +76,7 @@
     const p=player();if(!validAttack(p))return;
     const target=event.target;
     if(target instanceof Element&&(target.matches("input,textarea,select,[contenteditable='true'],[contenteditable='']")||target.closest("input,textarea,select,[contenteditable='true'],[contenteditable='']")))return;
-    verifyAttack(event.code,{mana:Number(p.mana||0),bullets:bulletCount(p),fire:Number(typeof fire1!=="undefined"?fire1:0),buffer:Number(typeof fireBuffer1!=="undefined"?fireBuffer1:0)});
+    verifyAttack(event.code,{mana:Number(p.mana||0),bullets:bulletCount(p)});
   },true);
 
   document.addEventListener("click",event=>{

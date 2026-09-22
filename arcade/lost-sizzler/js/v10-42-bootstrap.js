@@ -4,8 +4,21 @@
   if(window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
-  const BUILD="V10.42 r50";
-  const CACHE="20260922r50";
+  const BUILD="V10.42 r51";
+  const CACHE="20260922r51";
+  const prerequisites=[
+    ["v10-41-r30-owner-seal.js","CCGLostSizzlerV141R30OwnerSeal"],
+    ["v10-41-mode-runtime.js","CCGLostSizzlerModeRuntime"],
+    ["v10-41-solo-stability-diagnostics.js","CCGLostSizzlerSoloDiagnostics"],
+    ["v10-41-post-playtest-stability.js","CCGLostSizzlerV141PostPlaytestStability"],
+    ["v10-41-r56-playtest-completion.js","CCGLostSizzlerV141R56PlaytestCompletion"],
+    ["v10-41-r59-live-regression-fixes.js","CCGLostSizzlerV141R59LiveRegressionFixes"],
+    ["v10-41-r31-solo-dungeon-regressions.js","CCGLostSizzlerV141R31SoloDungeon"],
+    ["v10-41-horde-frame-performance.js","CCGLostSizzlerV141HordeFramePerformance"],
+    ["v10-41-r60-horde-owner-composition.js","CCGLostSizzlerV141R60HordeOwnerComposition"],
+    ["v10-41-stage8-npc-dialogue.js","CCGLostSizzlerStage8NpcDialogue"],
+    ["v10-41-stage13-encounter-completion.js","CCGLostSizzlerStage13EncounterCompletion"]
+  ];
   const modules=[
     ["v10-42-procedural-overhaul.js","CCGLostSizzlerV142ProceduralOverhaul"],
     ["v10-42-r23-rpg-build-focus.js","CCGLostSizzlerV142R23RpgBuildFocus"],
@@ -91,8 +104,8 @@
     if(!versionCheckOutdated()){
       const subtitle=document.querySelector(".v102-brand p"),expectedSubtitle="C64 DUNGEON CARNAGE — V10.42";
       if(subtitle&&subtitle.textContent!==expectedSubtitle)subtitle.textContent=expectedSubtitle;
-      const badge=document.querySelector(".build-badge"),expectedBadge=`BUILD ${BUILD.toUpperCase()}`;
-      if(badge&&badge.textContent!==expectedBadge)badge.textContent=expectedBadge;
+      const badge=document.querySelector(".build-badge"),expectedBadge=`BUILD ${BUILD.toUpperCase()}`,updateOwned=String(badge?.textContent||"").trim().toUpperCase()==="UPDATE AVAILABLE";
+      if(badge&&!updateOwned&&badge.textContent!==expectedBadge)badge.textContent=expectedBadge;
     }
     if(document.body){document.body.dataset.v142Build=BUILD;document.body.dataset.v142BootstrapReady=state.ready?"true":state.failed?"failed":"false"}
     state.identityRestamps+=1;
@@ -200,7 +213,40 @@
     queueMicrotask(attempt);
   }
 
-  function alreadyLoaded(marker){return Boolean(marker&&window[marker])}
+  function prerequisiteReady(marker){
+    const value=marker&&window[marker];
+    if(!value)return false;
+    if(marker==="CCGLostSizzlerModeRuntime"){
+      return typeof value.detect==="function"&&typeof value.sync==="function"&&typeof value.snapshot==="function"&&Boolean(value.state)
+    }
+    return true
+  }
+  function alreadyLoaded(marker){return prerequisiteReady(marker)}
+  function resetBrokenPrerequisite(file,marker,existing){
+    try{existing?.remove?.()}catch(_){}
+    try{delete window[marker]}catch(_){try{window[marker]=undefined}catch(__){}}
+    if(marker==="CCGLostSizzlerModeRuntime"){
+      try{delete window.__CCG_LOST_SIZZLER_V141_MODE_RUNTIME__}catch(_){try{window.__CCG_LOST_SIZZLER_V141_MODE_RUNTIME__=false}catch(__){}}
+    }
+  }
+  function loadPrerequisite(file,marker){
+    if(prerequisiteReady(marker))return Promise.resolve();
+    return new Promise((resolve,reject)=>{
+      let existing=[...document.scripts].find(script=>String(script.src||"").includes(`/js/${file}`));
+      if(existing&&!prerequisiteReady(marker)){resetBrokenPrerequisite(file,marker,existing);existing=null}
+      const verify=()=>{
+        if(prerequisiteReady(marker)){resolve();return}
+        reject(new Error(`Supported runtime prerequisite did not initialise completely: ${file}`));
+      };
+      const script=document.createElement("script");
+      script.async=false;
+      script.src=`js/${file}?v=${CACHE}`;
+      script.dataset.ccgV142Prerequisite="true";
+      script.onload=verify;
+      script.onerror=()=>reject(new Error(`Failed to load supported runtime prerequisite: ${file}`));
+      document.head.appendChild(script);
+    })
+  }
   function announceModuleProgress(file,status){
     state.currentModule=String(file||"");
     state.currentIndex=Math.min(state.totalModules,status==="loaded"?state.loaded.length:Math.max(state.loaded.length+1,1));
@@ -277,16 +323,20 @@
   async function boot(){
     setReleaseReady(false);stampBuild();
     try{
+      for(const [file,marker] of prerequisites)await loadPrerequisite(file,marker);
       for(const [file,marker] of modules){
         await loadOne(file,marker);
         if(file==="v10-42-r1-stability.js")captureR1ChestOwner();
       }
       promoteR1ChestOwner();
       promoteStage8MerchantOwner();
+      const modeRuntime=window.CCGLostSizzlerModeRuntime;
+      if(!prerequisiteReady("CCGLostSizzlerModeRuntime"))throw new Error("Authoritative dungeon mode runtime is incomplete");
+      try{modeRuntime.sync("V10.42 ordered bootstrap finalisation")}catch(error){throw new Error(`Authoritative dungeon mode runtime could not synchronise: ${String(error?.message||error)}`)}
       observeControllerSeal();
       try{window.CCGLostSizzlerV141R55FinalPlaytestCleanup?.markMenu?.()}catch(_){}
       state.ready=true;state.currentModule="";state.currentIndex=state.totalModules;announceModuleProgress("","ready");stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";
-      const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five new dungeon floors are loaded in verified order. Solo, Tutorial and 2P Split Screen run locally; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
+      const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — five dungeon floors are loaded in verified order. Solo and Tutorial are the supported local modes; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
       replayPendingStart();
     }catch(error){

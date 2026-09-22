@@ -84,18 +84,19 @@ try{
     await page.setViewportSize(size);await page.waitForTimeout(90);
   }
 
-  console.log("[r47 active modes] Split Screen starts with the same governor and keeps a dedicated budget");
+  console.log("[r47 active modes] retired Split Screen remains unavailable in R51");
   await page.evaluate(()=>quitToMenu());
   await page.waitForFunction(()=>typeof mode!=="undefined"&&mode==="menu");
-  await page.locator("#split-btn").click({noWaitAfter:true});
-  await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof playMode!=="undefined"&&playMode==="split");
-  await page.waitForTimeout(500);
-  const split=await page.evaluate(()=>({mode:window.CCGLostSizzlerV141R47AllModeOptimisation.snapshot().mode,hasP2:Boolean(p2),tier:document.body.dataset.v141R47PerformanceTier}));
-  assert.equal(split.mode,"split");assert.equal(split.hasP2,true);assert.ok(["normal","reduced","severe"].includes(split.tier));
+  const splitRetired=await page.evaluate(()=>{
+    const button=document.getElementById("split-btn");
+    return{hidden:Boolean(button?.hidden),display:button?getComputedStyle(button).display:"missing"};
+  });
+  assert.equal(splitRetired.hidden,true,"R51 must keep the Split Screen compatibility anchor hidden");
+  assert.equal(splitRetired.display,"none","R51 must not expose Split Screen as a playable menu mode");
 
   console.log("[r47 active modes] bounded soak cycles active diagnostics without installing extra gameplay ownership");
   const soak=await page.evaluate(async()=>{
-    const api=window.CCGLostSizzlerV141R47AllModeOptimisation,modes=["solo","split","daily","tutorial","dungeon"];
+    const api=window.CCGLostSizzlerV141R47AllModeOptimisation,modes=["solo","tutorial","dungeon"];
     let snapshots=0,cycles=0;
     // Count completed diagnostic cycles instead of relying on a CPU-dependent
     // wall-clock soak; every cycle still samples every supported active mode.
@@ -103,7 +104,7 @@ try{
     return{snapshots,cycles,diag:api.getDiagnostics(),loopGuard:Boolean(window.loop?.__ccgV141R29Stable),networkOwner:Boolean(window.net?.send?.__ccgV141R47AllModeOptimisation)};
   });
   assert.equal(soak.cycles,24,`bounded soak must complete every active-mode diagnostic cycle: ${JSON.stringify(soak)}`);
-  assert.equal(soak.snapshots,120,`bounded soak must sample every active mode in every cycle: ${JSON.stringify(soak)}`);
+  assert.equal(soak.snapshots,72,`bounded soak must sample every supported active mode in every cycle: ${JSON.stringify(soak)}`);
   assert.equal(soak.loopGuard,true,"R47 must leave the existing stable RAF owner intact");
   assert.equal(soak.networkOwner,false,"R47 must not wrap multiplayer transport");
 
@@ -111,7 +112,7 @@ try{
   assert.deepEqual(retirement,{horde:false,spy:false},"retired special-mode controls must remain absent during active-mode optimisation coverage");
   assert.deepEqual(crashes,[],`Chromium must not crash during R47 active-mode coverage: ${crashes.join("\n")}`);
   assert.deepEqual(errors,[],`R47 active-mode coverage must not emit uncaught page errors: ${errors.join("\n")}`);
-  console.log("C64 Dungeon Carnage V10.41 r47 active-mode governor, gameplay ownership, Split/Solo and bounded-soak checks passed in Chromium.");
+  console.log("C64 Dungeon Carnage V10.41 r47 active-mode governor, gameplay ownership, R51 Solo/Tutorial and bounded-soak checks passed in Chromium.");
   await context.close();
 }finally{
   await browser.close();

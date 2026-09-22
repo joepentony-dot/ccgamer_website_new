@@ -17,6 +17,10 @@ assert.match(play,/if\(!z\|\|z\.solved\|\|!deliberate\)return/,"forced movement 
 assert.match(play,/spawnPuzzleAmbush\(z\.roomId,p,1,"memory-fail"\)/,"wrong memory input must spawn exactly one enemy");
 assert.doesNotMatch(play,/spawnPuzzleAmbush\(z\.roomId,p,3\+Math\.min\(2,z\.failures\),"memory-fail"\)/);
 assert.match(play,/z\.phase="idle"/,"wrong input must wait for deliberate replay");
+assert.match(play,/z\.consoleOccupant=String\(p\.id\|\|""\)/,"console entry must seal one replay to one occupant");
+assert.match(play,/z\.replayToken=\(z\.replayToken\|\|0\)\+1/,"each deliberate console entry must create one replay generation");
+assert.match(play,/if\(String\(z\.consoleOccupant\|\|""\)!==String\(p\.id\|\|""\)\)startMemoryPuzzle\(p\)/,"deliberate movement must not double-start the same replay");
+assert.match(play,/Math\.max\(0,Number\(dt\|\|0\)\)/,"replay timing must reject invalid negative or non-numeric frame deltas");
 assert.match(play,/movementTriggers\(p,true\)/,"player movement must explicitly identify deliberate puzzle input");
 
 assert.match(render,/MEMORY CONSOLE — STEP ON TO REPLAY/);

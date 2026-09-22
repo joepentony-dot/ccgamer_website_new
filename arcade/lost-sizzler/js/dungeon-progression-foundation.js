@@ -231,6 +231,7 @@
   function renderGoldShop(){
     if(!activeShop||!currentP1()||!UI?.shopItems)return false;
     const player=currentP1(),runState=currentRun();ensureRunGold(runState);
+    const evolution=window.CCGLostSizzlerV142R47FirearmEvolution||null,weaponTier=evolution?.deriveTier?.(player)||0,weaponCap=evolution?.capForFloor?.(runState?.floor||1)||0,weaponMaxed=Boolean(evolution&&weaponTier>0&&weaponTier>=weaponCap);
     const artefacts=PGR.inventoryKindCount(player,"artefact"),price=shopGoldPrice(activeShop),sold=activeShop.sold||{},inventoryFull=PGR.inventoryCapacity(player)>=C.player.inventorySlots;
     UI.shopTitle.textContent=activeShop.title||"DUNGEON SUPPLY SHOP";
     UI.shopCopy.textContent=activeShop.shopType==="hidden"?"Hidden trader. Gold buys repeatable supplies; rare artefacts can still be exchanged for a Banishment Flask.":"Quartermaster. Gold buys repeatable supplies; each standard purchase raises this shop's next price by 1 Gold.";
@@ -248,7 +249,7 @@
       {id:"inventorySlot",name:"INVENTORY SLOT",kind:"inventorySlot",price:`${price} GOLD`,desc:`Expands this run's inventory by one slot, up to ${C.player.inventorySlots}.`,sold:inventoryFull,maxed:inventoryFull},
       {id:"ammo",name:"AMMO CRATE",kind:"ammo",price:`${price} GOLD`,desc:"Restores 50 ammunition immediately.",sold:false},
       {id:"armour",name:"ARMOUR REPAIR",kind:"armour",price:`${price} GOLD`,desc:"Adds 3 armour immediately, up to the normal armour limit.",sold:false},
-      {id:"weapon",name:"WEAPON CACHE",kind:"weapon",price:`${price} GOLD`,desc:"Rolls a fresh firearm and keeps previous firearms in your weapon collection.",sold:false}
+      {id:"weapon",name:"WEAPON CACHE · FIREARM UPGRADE",kind:"weapon",price:`${price} GOLD`,desc:weaponMaxed?`Current firearm is already at this floor\'s Tier ${weaponCap} cap. Deeper floors unlock the next upgrade.`:weaponTier>0?`Upgrade your current evolving firearm from Tier ${weaponTier} to Tier ${Math.min(6,weaponTier+1)}. No extra gun is added.`:"Acquire Tier 1 Field Pulse as your single evolving firearm.",sold:weaponMaxed,maxed:weaponMaxed}
     ];
     UI.shopItems.innerHTML=defs.map(d=>`<article class="shop-item ${d.sold?"sold":""}"><div class="shop-item-icon">${itemIconSVG(d.kind,d.name)}</div><div><h3>${esc(d.name)}</h3><span class="price">${esc(d.price)}</span><p>${esc(d.desc)}</p><button data-shop-buy="${d.id}" ${d.sold?"disabled":""}>${d.maxed?"MAXIMUM REACHED":d.sold?"SOLD / TRADED":"BUY / TRADE"}</button></div></article>`).join("");
     UI.shopItems.querySelectorAll?.("[data-shop-buy]").forEach(button=>button.addEventListener("click",()=>buyShopItem(button.dataset.shopBuy)));
@@ -272,6 +273,10 @@
       const allowed=new Set(["potion","torch","bronze","teleport","inventorySlot","ammo","armour","weapon"]);if(!allowed.has(id))return false;
       const price=shopGoldPrice(activeShop);
       if(id==="inventorySlot"&&PGR.inventoryCapacity(player)>=C.player.inventorySlots){showToast("INVENTORY FULLY EXPANDED",`All ${C.player.inventorySlots} inventory slots are already open.`,"cyan",5200);return false}
+      if(id==="weapon"){
+        const evolution=window.CCGLostSizzlerV142R47FirearmEvolution||null,tier=evolution?.deriveTier?.(player)||0,cap=evolution?.capForFloor?.(runState.floor||1)||0;
+        if(evolution&&tier>0&&tier>=cap){showToast("FIREARM TIER CAPPED",`Your Tier ${tier} firearm is already at the Floor ${runState.floor||1} limit. Keep your Gold; the next tier unlocks deeper in the dungeon.`,"cyan",6200);return false}
+      }
       if(!canAffordGold(runState,price)){showToast("NOT ENOUGH GOLD",`${id.toUpperCase()} costs ${price} Gold. You have ${goldBalance(runState)}.`,"red",6000);return false}
       if(["potion","torch","teleport"].includes(id)&&!PGR.inventoryCanAdd(player,{kind:id})){showToast("INVENTORY FULL",`The ${id} cannot fit under its stack rule. Free or expand a slot.`,"red",6000);return false}
       if(!spendGold(runState,price))return false;
@@ -283,7 +288,20 @@
       else if(id==="inventorySlot"){player.inventorySlots=Math.min(C.player.inventorySlots,PGR.inventoryCapacity(player)+1);boughtName=`Inventory Expansion (${player.inventorySlots} slots)`}
       else if(id==="ammo"){const before=player.mana;player.mana=Math.min(player.maxMana,player.mana+50);player.ammoFlashMs=C.player.ammoFlashMs;boughtName=`Ammo Crate (+${player.mana-before})`}
       else if(id==="armour"){const before=player.armor||0;player.armor=Math.min(12,before+3);boughtName=`Armour Repair (+${player.armor-before})`}
-      else if(id==="weapon"){const weapon=PGR.generateWeapon(6+(runState.floor||1)*2,runState.floor||1,Math.random,.08);equipWeapon(player,weapon);boughtName=weapon.displayName||"Weapon Cache"}
+      else if(id==="weapon"){
+        const evolution=window.CCGLostSizzlerV142R47FirearmEvolution||null;
+        if(evolution?.applyPickup){
+          const before=evolution.deriveTier(player),result=evolution.applyPickup(player,null,(target,weapon)=>{
+            target.firearmUnlocked=true;target.weapon=weapon;target.ownedWeapons=[cloneWeapon(weapon)];target.activeWeaponIndex=0;return weapon
+          });
+          evolution.collapseOwnership(player);
+          const after=evolution.deriveTier(player);
+          boughtName=before>0?`Firearm Upgrade · Tier ${before} → Tier ${after}`:`Firearm Acquired · Tier ${after}`;
+          if(!result||(after<=before&&before>0)){earnGold(runState,price);showToast("FIREARM UPGRADE UNAVAILABLE","No weapon tier was gained. Your Gold has been returned.","cyan",6200);return false}
+        }else{
+          const weapon=PGR.generateWeapon(6+(runState.floor||1)*2,runState.floor||1,Math.random,.08);equipWeapon(player,weapon);boughtName=weapon.displayName||"Weapon Cache"
+        }
+      }
       activeShop.goldPurchases=nonNegativeInt(activeShop.goldPurchases??activeShop.scorePurchases)+1;delete activeShop.scorePurchases;state.shopPurchases++;
       S.sfx("pickup");showToast("SHOP PURCHASE",`${boughtName} purchased for ${price} Gold. Next standard item: ${shopGoldPrice(activeShop)} Gold.`,"green",7200);
     }
