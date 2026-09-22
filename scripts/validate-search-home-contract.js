@@ -76,8 +76,15 @@ function assertExactHead(html) {
   }
 }
 
+function stripApprovedRetiredWeeklyVaultCta(html) {
+  return String(html).replace(
+    /\s*<a\s+href=["']\/arcade\/lost-sizzler\/#weekly-vault["'][\s\S]*?class=["'][^"']*home-hero__leaderboard-cta[^"']*["'][\s\S]*?<\/a>/i,
+    ""
+  );
+}
+
 function stripApprovedSeoHead(html) {
-  return String(html)
+  return stripApprovedRetiredWeeklyVaultCta(String(html))
     .replace(/<title>[\s\S]*?<\/title>/i, "")
     .replace(/<meta\b(?=[^>]*\bname=["']description["'])[^>]*>/i, "")
     .replace(/<meta\b(?=[^>]*\bname=["']robots["'])[^>]*>/i, "")
