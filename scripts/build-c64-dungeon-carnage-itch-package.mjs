@@ -101,8 +101,8 @@ function packageDemoPaywallRuntime(){
 }
 function transformIndex(source,cacheToken){
   let html=source;
-  html=html.replace(/^\s*<script src="\/js\/ccg-supabase-config\.js(?:\?v=[^"]+)?"><\/script>\s*$/m,"");
-  html=html.replace(/^\s*<script src="\/js\/ccg-supabase-client\.js(?:\?v=[^"]+)?"><\/script>\s*$/m,"");
+  html=html.replace(/^\s*<script src="\/js\/ccg-supabase-config\.js(?:\?v=[^"]+)?"><\/script>\s*$/gm,"");
+  html=html.replace(/^\s*<script src="\/js\/ccg-supabase-client\.js(?:\?v=[^"]+)?"><\/script>\s*$/gm,"");
   html=html.replace(/^\s*<script src="\/js\/ccg-play-maintenance-owner-gate\.js"[^>]*><\/script>\s*$/m,"");
   html=html.replace(/^\s*<script src="js\/weekly-challenge\.js\?v=[^"]+"><\/script>\s*$/m,"");
   html=html.replace(/href="\/games\/ccg-games\/"/g,'href="https://www.cheekycommodoregamer.co.uk/games/ccg-games/" target="_blank" rel="noopener noreferrer"');
