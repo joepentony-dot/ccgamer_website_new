@@ -1,10 +1,12 @@
-## Active full-catalogue UTA follow-up — PR #2262
+## Live Tape Archive visibility follow-up — PR #2269
 
-The Wonder Boy publish exposed a source-data error and a completion-reporting hole. Its source record said 1979 even though the description and verified C64 release are 1987; that caused UTA archive [6764] (Activision, 1987) to be rejected on year compatibility while [1677] (Hit Squad, 1991) remained visible.
+PR #2262 is merged. Wonder Boy is now correctly catalogued as C64 / 1987, its eight verified magazine-review records are materialised, and the generated UTA mapping on `main` contains both required releases: Activision 1987 archive [6764] and Hit Squad 1991 archive [1677].
 
-PR #2262 corrects Wonder Boy to 1987, adds regression coverage requiring both [6764] and [1677], and expands conservative publisher aliases used during the **full C64 catalogue scan** for common label-name variants including Firebird Silver/Gold, CBS/CBS Electronics, Virgin/Virgin Games, Ultimate/Ultimate Play The Game, Mastertronic Added Dimension/MAD, Nexus Productions and Rack-It/Hewson word-order variants. Title matching and year compatibility remain mandatory; title-only matches are still never published.
+Hands-on production testing then showed the Tape Archive section could remain hidden even though the current mapping was correct. The browser runtime was fetching `/data/uta-game-matches.json` with `cache: "force-cache"`, so a visitor could retain an older HTTP-cache copy that predated the game's UTA entry.
 
-Reliable Games Publishing now treats the UTA refresh as required before a game publication can be reported complete. The browser-side Content Publisher also re-checks the generated UTA mapping and manual-review queue before it claims archive enrichment has passed.
+Draft PR #2269 / branch `codex/fix-uta-runtime-cache-refresh` changes only the shared UTA runtime/cache delivery path: normal loads revalidate the generated JSON with `cache: "no-cache"`; if the requested C64 slug is still absent, the runtime performs one `cache: "reload"` retry before deciding there is no confident mapping. The existing C64-only and confident-match rules remain unchanged. The public code cache namespace is bumped to `2026-09-23-public-code-v7` so visitors receive the corrected runtime.
+
+Exact-head qualification and explicit merge authorisation are required before #2269 merges.
 
 # Single-game community and Ultimate Tape Archive — 22 September 2026
 
