@@ -1,14 +1,17 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import {chromium} from "playwright";
 
 const gameUrl=process.env.CCG_LOST_SIZZLER_URL||"https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/";
 const supabaseUrl=(process.env.CCG_SUPABASE_URL||"https://lcslgxpgmttaexsorxik.supabase.co").replace(/\/$/,"");
 const origin="https://www.cheekycommodoregamer.co.uk";
 const expectedReleaseVersion="V10.42";
-const expectedBuild="V10.42 r46";
-const expectedCacheToken="20260921r46";
+const expectedBuild="V10.42 r51";
+const expectedCacheToken="20260922r51";
 const syntheticStaleBuild="2026.09.10.0-production-smoke";
 const versionUrl=new URL("version.json",gameUrl).toString();
+const checkedOutGameSource=fs.readFileSync(new URL("../../index.html",import.meta.url),"utf8");
+const maintenanceExpected=/data-ccg-play-maintenance-gate="true"/.test(checkedOutGameSource);
 const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage","--disable-background-networking","--autoplay-policy=no-user-gesture-required"]});
 
 async function sleep(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
@@ -85,6 +88,23 @@ try{
     addEventListener("DOMContentLoaded",()=>requestAnimationFrame(sample),{once:true});
   });
 
+  if(maintenanceExpected){
+    console.log("[production smoke] production game maintenance gate is intentionally active");
+    await page.goto(`${gameUrl}${gameUrl.includes("?")?"&":"?"}release-smoke=${Date.now()}`,{waitUntil:"domcontentloaded",timeout:30000});
+    await page.waitForURL(url=>new URL(url).pathname==="/games/ccg-games/",{timeout:15000});
+    const redirected=new URL(page.url());
+    assert.equal(redirected.hostname,"www.cheekycommodoregamer.co.uk","maintenance redirect must stay on the production CCG hostname");
+    assert.equal(redirected.pathname,"/games/ccg-games/","maintenance gate must land on the temporary CCG games hub");
+
+    const versionResponse=await fetch(`${versionUrl}${versionUrl.includes("?")?"&":"?"}release-smoke=${Date.now()}`,{headers:{"Cache-Control":"no-cache"}});
+    assert.equal(versionResponse.status,200,"public Dungeon Carnage version.json must remain reachable during maintenance");
+    const versionPayload=await versionResponse.json();
+    assert.equal(String(versionPayload?.releaseVersion||""),expectedReleaseVersion);
+    assert.equal(String(versionPayload?.build||""),expectedBuild);
+    assert.equal(String(versionPayload?.cacheToken||""),expectedCacheToken);
+    console.log(`[production smoke] maintenance gate passed; deployed package identity is ${expectedBuild} / ${expectedCacheToken}`);
+    await context.close();
+  }else{
   console.log("[production smoke] wait for live release browser runtime and release markers");
   let live=null,lastError="",lastSnapshot=null;
   for(let attempt=1;attempt<=18;attempt++){
@@ -215,13 +235,13 @@ try{
   assert.equal(invalid.status,400,"invalid telemetry must be rejected without writing a gameplay event");
   const invalidBody=await invalid.json();assert.equal(invalidBody.success,false);assert.match(String(invalidBody.error),/Unknown telemetry event/i);
 
-  console.log("[production smoke] verify Weekly Vault read path and database projection");
+  console.log("[production smoke] verify retired Weekly Vault endpoint fails closed");
   const weekly=await fetch(`${supabaseUrl}/functions/v1/ccq-weekly-challenge`,{method:"POST",headers:{Origin:origin,"Content-Type":"application/json"},body:JSON.stringify({action:"status"})});
-  assert.equal(weekly.status,200);
-  const weeklyBody=await weekly.json();assert.equal(weeklyBody.ok,true);assert.equal(weeklyBody.ready,true);assert.ok(/^\d{4}-\d{2}-\d{2}$/.test(String(weeklyBody.weekStart||"")));assert.ok(Array.isArray(weeklyBody.leaderboard));
+  assert.equal(weekly.status,410,"retired Weekly Vault endpoint must remain gone and cannot resume scheduled/member-facing service");
 
-  console.log(`Lost Sizzler production smoke passed: ${expectedReleaseVersion} public release identity, stale-browser update prompt, live R47/V10.42 browser runtime, feedback validation and Weekly Vault backend are responding.`);
+  console.log(`Lost Sizzler production smoke passed: ${expectedReleaseVersion} public release identity, stale-browser update prompt, live R47/V10.42 browser runtime, feedback validation and retired Weekly endpoint are responding as expected.`);
   await context.close();
+  }
 }finally{
   await browser.close();
 }
