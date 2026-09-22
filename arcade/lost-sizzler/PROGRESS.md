@@ -2,7 +2,19 @@
 
 > Legacy repository path: `arcade/lost-sizzler/`. The customer-facing game name is **C64 Dungeon Carnage**. Historical internal identifiers may still use `Lost Sizzler` where compatibility requires them.
 
-## Active r50 fullscreen/input follow-up — PR #2241
+## Active V10.42 R50 combined blocker candidate — 22 September 2026
+
+- **Branch:** `codex/dungeon-r50-combined-blockers`.
+- Built on the already-green #2241 R50 fullscreen/input/layout head; current `main` remains authoritative at merge time.
+- Reconciles the qualified #2233 pickup/audio diagnostic changes without merging that older draft independently.
+- **Nightmare cassette / horror path:** Archive Wraith spawn no longer reuses the Death Stalker `stalker` sting. It uses the normal alert cue, and V10.4 no longer owns a second AudioContext or recurring beat oscillators. Horror state only lowers the established central music level while a Wraith is alive, checked on a bounded 250 ms cadence and reported to the bug recorder.
+- **Memory Pad:** the purple console now uses simulation-owned edge detection, so stepping onto it reliably starts/replays the sequence without restarting every frame while stationary. The unresolved puzzle camera centres the pad/console footprint, avoids sidebar-driven false mobile zoom, and keeps every pad/console readable while the player is in the room.
+- **Loader:** release loading now uses `/resources/images/hero/c64-dungeon-carnage-home-v2.webp`.
+- **Audio diagnostics:** exact SFX, item collection, music state and collectible-horror state are retained. The pickup-caused immediate level-up SFX staggering from #2233 is included.
+- Added `tests/v10-42-r50-combined-blockers.mjs` and carried forward the #2233 pickup-audio contract.
+- **Status:** IMPLEMENTED / EXACT-HEAD QUALIFICATION PENDING. Do not merge until the combined head is fully green and safe.
+
+## Historical r50 fullscreen/input follow-up — PR #2241
 
 - **Status:** DRAFT / QUALIFYING. Hands-on r49 testing exposed two desktop fullscreen defects.
 - **Current live baseline:** PR #2231 is merged as `3f273ec8eb881faac1825a6779863c9367faf0d1`, publishing `V10.42 r49` / `20260922r49`.
