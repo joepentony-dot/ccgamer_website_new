@@ -111,7 +111,7 @@
 
     setTextIfChanged(document.querySelector(".menu-blurb"),RELEASE_BLURB);
     setHtmlIfChanged(document.querySelector(".mode-select-label"),RELEASE_MODE_LABEL_HTML);
-    setTextIfChanged(document.getElementById("menu-note"),RELEASE_NOTE);
+    setTextIfChanged(document.getElementById("release-note"),RELEASE_NOTE);
     ensureLocalMenuAvailability();
 
     document.body.dataset.onlineMultiplayer="disabled";
