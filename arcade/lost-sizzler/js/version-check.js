@@ -266,19 +266,24 @@
   }
 
   let staleBadgeObserver=null;
+  function staleBadgeRoot(){
+    return document.querySelector(".brand")||document.querySelector(".v102-brand")||document.body||document.documentElement;
+  }
+
   function ownStaleBadge(){
     if(!state.outdated)return false;
     const badge=document.querySelector(".build-badge");if(!badge)return false;
     staleBadgeObserver?.disconnect();
     if(badge.textContent!=="UPDATE AVAILABLE")badge.textContent="UPDATE AVAILABLE";
     badge.title=`Loaded ${current}; latest ${state.latest}`;
-    staleBadgeObserver?.observe(badge,{childList:true,characterData:true,subtree:true});
+    const root=staleBadgeRoot();
+    if(staleBadgeObserver&&root)staleBadgeObserver.observe(root,{childList:true,characterData:true,subtree:true});
     return true;
   }
 
   function startStaleBadgeOwnership(){
     if(typeof MutationObserver!=="function")return ownStaleBadge();
-    const badge=document.querySelector(".build-badge");if(!badge)return false;
+    if(!document.querySelector(".build-badge"))return false;
     if(!staleBadgeObserver)staleBadgeObserver=new MutationObserver(()=>ownStaleBadge());
     ownStaleBadge();
     return true;
