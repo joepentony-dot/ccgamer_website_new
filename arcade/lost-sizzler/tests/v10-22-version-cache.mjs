@@ -34,19 +34,29 @@ assert.equal(manifest.cacheToken,"20260922r49","current release cache token must
 
 const activeAssets=[
   "css/game.css","css/v10-6-gameplay.css","css/v10-41-r28.css","css/v10-41-r29.css",
-  "js/v10-41-cache-guard.js","js/v10-41-load-watchdog.js","js/version-check.js","js/weekly-challenge.js",
+  "js/v10-41-cache-guard.js","js/v10-41-load-watchdog.js","js/version-check.js",
   "js/v10-23-tutorial-guidance.js","js/asset-overrides.js","js/avatar-data.js","js/config.js","js/progression.js",
   "js/audio-assets.js","js/audio.js","js/world.js","js/network.js","js/ai.js","js/systems.js","js/game-core.js",
-  "js/game-network.js","js/game-play.js","js/game-render.js","js/game-main.js","js/split-player-hud.js",
+  "js/game-network.js","js/game-play.js","js/game-render.js","js/game-main.js",
   "js/v10-41-lake-item-safety.js","js/v10-41-gambler-devroom.js","js/v10-41-developer-vault-hardening.js",
   "js/v10-41-developer-asset-catalog.js","js/v10-41-split-friendly-fire.js","js/v10-41-landing-notification-polish.js",
-  "js/v10-41-major-notification-hardening.js","js/v10-41-active-enemy-fire.js","js/v10-41-r29-buglog.js",
-  "js/v10-41-r29-runtime-repair.js","js/v10-41-r30-global-movement-guard.js","js/v10-41-r30-buglog.js"
+  "js/v10-41-major-notification-hardening.js","js/v10-41-active-enemy-fire.js",
+  "js/v10-41-r29-runtime-repair.js","js/v10-41-r30-global-movement-guard.js",
 ];
 for(const asset of activeAssets){
   const escaped=asset.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
   assert.match(index,new RegExp(`${escaped}\\?v=${manifest.cacheToken}`),`release cache token missing from ${asset}`);
 }
+const retiredPublicAssets=[
+  "js/weekly-challenge.js",
+  "js/split-player-hud.js",
+  "js/v10-41-r29-buglog.js",
+  "js/v10-41-r30-buglog.js"
+];
+for(const asset of retiredPublicAssets){
+  assert.equal(index.includes(asset),false,"retired public asset must not be requested by canonical HTML: "+asset);
+}
+
 
 const retiredDirectAssets=[
   "js/v10-41-horde-leaderboard-polish.js",
