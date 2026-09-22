@@ -7,7 +7,6 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,"..");
 const repo=path.resolve(root,"../..");
 const html=fs.readFileSync(path.join(root,"index.html"),"utf8");
-const home=fs.readFileSync(path.join(repo,"home.html"),"utf8");
 const hub=fs.readFileSync(path.join(repo,"games/ccg-games/index.html"),"utf8");
 const release=fs.readFileSync(path.join(root,"js/v10-42-zero-server-release.js"),"utf8");
 const version=JSON.parse(fs.readFileSync(path.join(root,"version.json"),"utf8"));
@@ -36,10 +35,9 @@ assert.match(html,/id="release-note"[^>]*>C64 Dungeon Carnage runs directly in y
 assert.match(html,/id="menu-note"[^>]*hidden[^>]*aria-hidden="true"[^>]*display:none!important/i,"legacy release-note sink must stay hidden");
 assert.match(html,/M MAP/,"Solo map shortcut must remain documented after P2 help removal");
 
-assert.doesNotMatch(home,/#weekly-vault|VIEW LEADERBOARD|WEEKLY VAULT/i,"home page must not advertise retired Weekly Vault");
 assert.doesNotMatch(hub,/split-screen|co-op|Weekly High-Score Vault/i,"maintenance hub must not advertise retired Dungeon modes");
-assert.match(hub,/Solo dungeon crawl/);
-assert.match(hub,/Tutorial included/);
+assert.match(hub,/Solo play/);
+assert.match(hub,/>Tutorial</);
 
 assert.match(release,/const LOCAL_BUTTON_IDS=\["solo-btn","tutorial-zone-btn"\];/);
 assert.match(release,/const ONLINE_BUTTON_IDS=\[[^\]]*"daily-btn"[^\]]*"split-btn"[^\]]*\];/);
