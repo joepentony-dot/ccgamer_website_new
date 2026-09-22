@@ -1,0 +1,782 @@
+{
+  "schemaVersion": 1,
+  "note": "Curated CCG UTA identity overrides. Includes are exact archive IDs independently verified as the same C64 release family. Excludes are documented title collisions that must never be auto-promoted.",
+  "games": {
+    "1942": {
+      "include": [
+        {
+          "archiveId": "10797",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
+    "a-question-of-sport": {
+      "include": [
+        {
+          "archiveId": "965",
+          "sourceRole": "publisher"
+        },
+        {
+          "archiveId": "3078",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
+    "action-biker": {
+      "include": [
+        {
+          "archiveId": "6254",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "after-burner": {
+      "include": [
+        {
+          "archiveId": "5084",
+          "sourceRole": "publisher"
+        },
+        {
+          "archiveId": "1441",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
+    "arkanoid": {
+      "include": [
+        {
+          "archiveId": "6369",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "army-moves": {
+      "include": [
+        {
+          "archiveId": "8539",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "automania": {
+      "include": [
+        {
+          "archiveId": "2617",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "aztec-challenge": {
+      "include": [
+        {
+          "archiveId": "733",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "back-to-the-future": {
+      "include": [
+        {
+          "archiveId": "6591",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "bangkok-knights": {
+      "include": [
+        {
+          "archiveId": "3551",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "beach-head": {
+      "include": [
+        {
+          "archiveId": "735",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "beach-head-2": {
+      "include": [
+        {
+          "archiveId": "6018",
+          "sourceRole": "publisher"
+        },
+        {
+          "archiveId": "736",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "beyond-the-forbidden-forest": {
+      "include": [
+        {
+          "archiveId": "1242",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "blockbusters": {
+      "exclude": [
+        {
+          "archiveId": "6218",
+          "reason": "Different Blockbusters game: Macsen 1984, not the TV Games 1988 title."
+        }
+      ]
+    },
+    "boulder-dash": {
+      "include": [
+        {
+          "archiveId": "411",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "bounder": {
+      "include": [
+        {
+          "archiveId": "3035",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
+    "breakdance": {
+      "include": [
+        {
+          "archiveId": "1359",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
+    "breakthru": {
+      "include": [
+        {
+          "archiveId": "6162",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "california-games": {
+      "include": [
+        {
+          "archiveId": "5915",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "championship-wrestling": {
+      "include": [
+        {
+          "archiveId": "20567",
+          "sourceRole": "publisher"
+        },
+        {
+          "archiveId": "20480",
+          "sourceRole": "publisher"
+        },
+        {
+          "archiveId": "2814",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "chopper": {
+      "include": [
+        {
+          "archiveId": "1036",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "combat-school": {
+      "include": [
+        {
+          "archiveId": "5897",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "crossfire": {
+      "exclude": [
+        {
+          "archiveId": "10965",
+          "reason": "Different Crossfire game: Atlantis 1989, not the Sierra 1983 title."
+        }
+      ]
+    },
+    "cybernoid": {
+      "include": [
+        {
+          "archiveId": "1273",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
+    "daley-thompsons-decathlon": {
+      "exclude": [
+        {
+          "archiveId": "2319",
+          "reason": "Firebird Decathlon, not Daley Thompson's Decathlon."
+        },
+        {
+          "archiveId": "2762",
+          "reason": "Activision Decathlon, not Daley Thompson's Decathlon."
+        }
+      ]
+    },
+    "donkey-kong": {
+      "exclude": [
+        {
+          "archiveId": "5473",
+          "reason": "Later Ocean conversion, not the Atarisoft conversion catalogued here."
+        },
+        {
+          "archiveId": "6607",
+          "reason": "Later Ocean conversion family, not the Atarisoft conversion catalogued here."
+        }
+      ]
+    },
+    "double-dragon": {
+      "exclude": [
+        {
+          "archiveId": "2511",
+          "reason": "Re-release of the Melbourne House/Binary Design conversion, not Ocean's separate 1991 conversion."
+        },
+        {
+          "archiveId": "3951",
+          "reason": "Re-release of the Melbourne House/Binary Design conversion, not Ocean's separate 1991 conversion."
+        },
+        {
+          "archiveId": "8670",
+          "reason": "Melbourne House/Binary Design conversion, not Ocean's separate 1991 C64 conversion."
+        },
+        {
+          "archiveId": "10075",
+          "reason": "Melbourne House/Binary Design conversion, not Ocean's separate 1991 C64 conversion."
+        }
+      ]
+    },
+    "double-dragon-2-the-revenge": {
+      "include": [
+        {
+          "archiveId": "25890",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "forbidden-forest": {
+      "include": [
+        {
+          "archiveId": "766",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "friday-the-13th": {
+      "include": [
+        {
+          "archiveId": "7027",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "gauntlet": {
+      "include": [
+        {
+          "archiveId": "6627",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "hacker": {
+      "include": [
+        {
+          "archiveId": "6631",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "halls-of-the-things": {
+      "include": [
+        {
+          "archiveId": "2324",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
+    "he-man-and-the-masters-of-the-universe-the-movie": {
+      "include": [
+        {
+          "archiveId": "1319",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "ik-c64": {
+      "include": [
+        {
+          "archiveId": "3496",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "ikari-warriors": {
+      "include": [
+        {
+          "archiveId": "2976",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "indiana-jones-and-the-temple-of-doom": {
+      "include": [
+        {
+          "archiveId": "7072",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "indiana-jones-in-the-lost-kingdom": {
+      "include": [
+        {
+          "archiveId": "4218",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "international-soccer": {
+      "include": [
+        {
+          "archiveId": "3215",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
+    "international-tennis": {
+      "exclude": [
+        {
+          "archiveId": "6104",
+          "reason": "Different 1992 Zeppelin Games title with the same name; this slug is Commodore's 1985 game."
+        }
+      ]
+    },
+    "joe-blade-2": {
+      "exclude": [
+        {
+          "archiveId": "2850",
+          "reason": "Archive is the first Joe Blade, not Joe Blade II."
+        }
+      ]
+    },
+    "karateka": {
+      "include": [
+        {
+          "archiveId": "2866",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "labyrinth": {
+      "exclude": [
+        {
+          "archiveId": "4952",
+          "reason": "Different Commodore 1983 maze game; this slug is the Activision/Lucasfilm 1986 game."
+        }
+      ]
+    },
+    "last-ninja-2-back-with-a-vengeance": {
+      "include": [
+        {
+          "archiveId": "3449",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "leader-board": {
+      "include": [
+        {
+          "archiveId": "6678",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "live-and-let-die": {
+      "include": [
+        {
+          "archiveId": "2954",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
+    "magic-carpet": {
+      "include": [
+        {
+          "archiveId": "797",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
+    "manic-miner": {
+      "include": [
+        {
+          "archiveId": "663",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
+    "mr-robot-and-his-robot-factory": {
+      "include": [
+        {
+          "archiveId": "3211",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "nebulus": {
+      "include": [
+        {
+          "archiveId": "6721",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "nemesis": {
+      "include": [
+        {
+          "archiveId": "1542",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
+    "ninja": {
+      "include": [
+        {
+          "archiveId": "2849",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "ninja-massacre": {
+      "include": [
+        {
+          "archiveId": "10405",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
+    "pitstop-2": {
+      "include": [
+        {
+          "archiveId": "20730",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "platoon": {
+      "include": [
+        {
+          "archiveId": "6359",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "popeye-c64": {
+      "exclude": [
+        {
+          "archiveId": "5450",
+          "reason": "Different Five Ways/Macmillan Popeye conversion; this slug is Parker Brothers' 1984 conversion."
+        },
+        {
+          "archiveId": "5519",
+          "reason": "Different Five Ways/Macmillan/Alternative Popeye conversion; this slug is Parker Brothers' 1984 conversion."
+        }
+      ]
+    },
+    "popeye-c64-popeye-donpriestley": {
+      "include": [
+        {
+          "archiveId": "5450",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "raid-on-bungeling-bay": {
+      "include": [
+        {
+          "archiveId": "5360",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "raid-over-moscow": {
+      "include": [
+        {
+          "archiveId": "529",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "rastan": {
+      "include": [
+        {
+          "archiveId": "1564",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
+    "renegade": {
+      "include": [
+        {
+          "archiveId": "4149",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "saboteur": {
+      "include": [
+        {
+          "archiveId": "11471",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "saboteur-2-avenging-angel": {
+      "include": [
+        {
+          "archiveId": "5517",
+          "sourceRole": "re-release"
+        }
+      ],
+      "exclude": [
+        {
+          "archiveId": "5353",
+          "reason": "Encore re-release of the first Saboteur, not Saboteur II."
+        },
+        {
+          "archiveId": "8544",
+          "reason": "Archive is the first Saboteur, not Saboteur II."
+        }
+      ]
+    },
+    "short-circuit": {
+      "include": [
+        {
+          "archiveId": "6041",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "silent-service": {
+      "include": [
+        {
+          "archiveId": "1110",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "skate-or-die": {
+      "include": [
+        {
+          "archiveId": "24185",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "space-harrier": {
+      "include": [
+        {
+          "archiveId": "8177",
+          "sourceRole": "re-release"
+        },
+        {
+          "archiveId": "9535",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "spitting-image": {
+      "include": [
+        {
+          "archiveId": "2652",
+          "sourceRole": "publisher"
+        },
+        {
+          "archiveId": "1638",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
+    "star-wars-droids": {
+      "include": [
+        {
+          "archiveId": "2529",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "summer-games": {
+      "include": [
+        {
+          "archiveId": "19164",
+          "sourceRole": "publisher"
+        },
+        {
+          "archiveId": "6753",
+          "sourceRole": "publisher"
+        },
+        {
+          "archiveId": "569",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "summer-games-2": {
+      "include": [
+        {
+          "archiveId": "2090",
+          "sourceRole": "publisher"
+        },
+        {
+          "archiveId": "6954",
+          "sourceRole": "publisher"
+        },
+        {
+          "archiveId": "11718",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "super-cycle": {
+      "include": [
+        {
+          "archiveId": "6375",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "super-gran-the-adventure": {
+      "exclude": [
+        {
+          "archiveId": "10406",
+          "reason": "Archive is the Super Gran action game, not Super Gran: The Adventure."
+        }
+      ]
+    },
+    "super-pipeline": {
+      "include": [
+        {
+          "archiveId": "6490",
+          "sourceRole": "publisher"
+        }
+      ],
+      "exclude": [
+        {
+          "archiveId": "5591",
+          "reason": "Archive is Super Pipeline II, not Super Pipeline."
+        }
+      ]
+    },
+    "target-renegade": {
+      "include": [
+        {
+          "archiveId": "2981",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "the-goonies": {
+      "include": [
+        {
+          "archiveId": "841",
+          "sourceRole": "publisher"
+        },
+        {
+          "archiveId": "6951",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "the-great-escape": {
+      "include": [
+        {
+          "archiveId": "5924",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "the-sentinel": {
+      "exclude": [
+        {
+          "archiveId": "1245",
+          "reason": "Different Synapse Software game Sentinel, not Geoff Crammond's The Sentinel."
+        },
+        {
+          "archiveId": "5181",
+          "reason": "Different Synapse Software game Sentinel, not Geoff Crammond's The Sentinel."
+        }
+      ]
+    },
+    "the-sword-of-fargoal": {
+      "include": [
+        {
+          "archiveId": "7724",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
+    "they-stole-a-million": {
+      "include": [
+        {
+          "archiveId": "12597",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "thunder-blade": {
+      "include": [
+        {
+          "archiveId": "5917",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "vendetta": {
+      "include": [
+        {
+          "archiveId": "1427",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
+    "winter-games": {
+      "include": [
+        {
+          "archiveId": "6164",
+          "sourceRole": "publisher"
+        },
+        {
+          "archiveId": "10956",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "yie-ar-kung-fu": {
+      "include": [
+        {
+          "archiveId": "6767",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "zorro": {
+      "include": [
+        {
+          "archiveId": "717",
+          "sourceRole": "publisher"
+        }
+      ]
+    }
+  }
+}
