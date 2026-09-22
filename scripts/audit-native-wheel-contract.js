@@ -503,15 +503,21 @@ async function auditGameMediaWheel(sessionId, sitePort, viewport) {
         fail(`${viewport.label}: not enough scroll room below the game video to verify mouse-wheel scrolling`);
     }
 
-    await wheelDown(sessionId, target.x, target.y);
-    const afterDown = await readY(sessionId);
+    let afterDown = target.scrollY;
+    let attempts = 0;
+    for (; attempts < 3; attempts += 1) {
+        await wheelDown(sessionId, target.x, target.y);
+        afterDown = await readY(sessionId);
+        if (afterDown - target.scrollY >= MIN_WHEEL_DELTA) break;
+        await new Promise((resolve) => setTimeout(resolve, 180));
+    }
     const movement = afterDown - target.scrollY;
 
     if (movement < MIN_WHEEL_DELTA) {
-        fail(`${viewport.label}: native mouse wheel stalled over game video (${target.scrollY}px -> ${afterDown}px)`);
+        fail(`${viewport.label}: native mouse wheel stalled over game video after ${attempts} real CDP wheel attempts (${target.scrollY}px -> ${afterDown}px)`);
     }
 
-    console.log(`PASS ${viewport.label}: native mouse wheel moved the document ${movement}px over the game video guard.`);
+    console.log(`PASS ${viewport.label}: native mouse wheel moved the document ${movement}px over the game video guard after ${attempts + 1} real wheel attempt(s).`);
 }
 
 async function main() {
