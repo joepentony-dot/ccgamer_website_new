@@ -16,7 +16,7 @@
 
   let rules=[...FALLBACK_RULES];
   let gameMeta=new Map();
-  let horrorCtx=null,horrorGain=null,horrorNodes=[],horrorBeatTimer=null,horrorMusicActive=false;
+  let horrorCtx=null,horrorGain=null,horrorNodes=[],horrorMusicActive=false;
 
   const normalise=value=>String(value||"")
     .toLowerCase()
@@ -37,6 +37,9 @@
   function overhead(player,text,colour){
     if(!player||!text)return;
     setTimeout(()=>{const label=String(text).toUpperCase();try{if(typeof floatPickupText==="function")floatPickupText(player,label,colour||P.gold);else floatText(player.x,player.y,label,colour||P.gold)}catch(_){}},420);
+  }
+  function publishCollectibleEffect(source,title,rule,player,extra={}){
+    try{window.dispatchEvent(new CustomEvent("ccg:collectible-effect",{detail:{source:String(source||""),title:String(title||""),effectType:String(rule?.effect_type||""),durationMs:Number(rule?.duration_ms||0),playerId:String(player?.id||""),floor:Number(run?.floor||0),horrorAlive:Number((host?.enemies||[]).filter(enemy=>enemy?.alive&&enemy.horrorCreature).length),rapidMs:Number(player?.rapidMs||0),...extra,at:performance.now()}}))}catch(_){}
   }
 
   async function loadRulesAndMetadata(){
@@ -132,7 +135,7 @@
       flash:0,hpBarMs:3600,moveSpeedScale:.48,_v104BaseMaxHp:1
     };
     host.enemies.push(creature);host.revision=(host.revision||0)+1;
-    try{S.sfx("stalker");showToast("HORROR GAME DISTURBED THE ARCHIVE",`${title} has dragged an Archive Wraith into the dungeon. 50 HP, no armour — and it only wants to stalk you down.`,"red",10000);if(typeof floatPickupText==="function")floatPickupText(player,"ARCHIVE WRAITH SUMMONED",P.red);else floatText(player.x,player.y,"SOMETHING FOLLOWED YOU OUT...",P.red);broadcastWorld()}catch(_){}
+    try{S.sfx("creak");showToast("HORROR GAME DISTURBED THE ARCHIVE",`${title} has dragged an Archive Wraith into the dungeon. 50 HP, no armour — and it only wants to stalk you down.`,"red",10000);if(typeof floatPickupText==="function")floatPickupText(player,"ARCHIVE WRAITH SUMMONED",P.red);else floatText(player.x,player.y,"SOMETHING FOLLOWED YOU OUT...",P.red);broadcastWorld()}catch(_){}
   }
 
   function applyRule(rule,player,title){
@@ -151,6 +154,7 @@
       case "spawn_horror_creature":
         spawnArchiveWraith(player,title,config);break;
     }
+    publishCollectibleEffect("v10-4",title,rule,player);
   }
 
   async function triggerGameEffects(title,player){
@@ -253,19 +257,17 @@
     horrorMusicActive=true;horrorCtx.resume?.().catch(()=>{});horrorGain.gain.cancelScheduledValues(horrorCtx.currentTime);horrorGain.gain.setTargetAtTime(.035,horrorCtx.currentTime,.35);
     const makeDrone=(freq,type,detune)=>{const osc=horrorCtx.createOscillator(),gain=horrorCtx.createGain();osc.type=type;osc.frequency.value=freq;osc.detune.value=detune;gain.gain.value=.26;osc.connect(gain).connect(horrorGain);osc.start();horrorNodes.push(osc,gain)};
     makeDrone(46,"sawtooth",-8);makeDrone(69,"triangle",7);makeDrone(92,"sine",-13);
-    horrorBeatTimer=setInterval(()=>{if(!horrorMusicActive||!S?.isEnabled?.())return;const t=horrorCtx.currentTime;for(const offset of [0,.17]){const osc=horrorCtx.createOscillator(),gain=horrorCtx.createGain();osc.type="sine";osc.frequency.setValueAtTime(58,t+offset);osc.frequency.exponentialRampToValueAtTime(38,t+offset+.13);gain.gain.setValueAtTime(.0001,t+offset);gain.gain.exponentialRampToValueAtTime(.18,t+offset+.02);gain.gain.exponentialRampToValueAtTime(.0001,t+offset+.18);osc.connect(gain).connect(horrorGain);osc.start(t+offset);osc.stop(t+offset+.2)}},1050);
     try{S.setMusicLevel?.(.035)}catch(_){}
   }
   function stopHorrorMusic(){
     if(!horrorMusicActive)return;horrorMusicActive=false;
-    if(horrorBeatTimer){clearInterval(horrorBeatTimer);horrorBeatTimer=null}
-    if(horrorGain&&horrorCtx)horrorGain.gain.setTargetAtTime(.0001,horrorCtx.currentTime,.35);
+    if(horrorGain&&horrorCtx)horrorGain.gain.setTargetAtTime(.0001,horrorCtx.currentTime,.2);
     for(const node of horrorNodes){try{node.stop?.()}catch(_){}try{node.disconnect?.()}catch(_){}}horrorNodes=[];
     try{S.setMusicLevel?.(.075)}catch(_){}
   }
 
   setInterval(()=>{
-    if(typeof mode==="undefined"||mode!=="playing")return;
+    if(typeof mode==="undefined"||mode!=="playing"){stopHorrorMusic();return}
     const t=now();
     for(const player of localPlayersSafe()){
       if(effectActive(player,"slippery")&&player._v104SlideDir&&t>=Number(player._v104NextSlide||0)){
@@ -278,6 +280,8 @@
     const horrorAlive=(host?.enemies||[]).some(enemy=>enemy?.alive&&enemy.horrorCreature);
     if(horrorAlive)startHorrorMusic();else stopHorrorMusic();
   },80);
+  addEventListener("pagehide",stopHorrorMusic);
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")stopHorrorMusic()});
 
   window.CCGLostSizzlerCollectibleEffects={
     reload:async()=>{await loadRulesAndMetadata();return rules.length},
