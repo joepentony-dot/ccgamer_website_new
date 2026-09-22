@@ -10,6 +10,12 @@ for(const owner of ["firePlayer","queueAttack","movePlayer","toggleInventory"]){
   assert.doesNotMatch(src,new RegExp(String.raw`\\b${owner}\\s*=`),`r47 recovery must not replace ${owner}`);
 }
 assert.match(src,/CCGLostSizzlerV142R20LiveRegressionStability/);
+const r20src=fs.readFileSync(new URL("js/v10-42-r20-live-regression-stability.js",root),"utf8");
+assert.match(r20src,/function livePlayerBulletCount/);
+assert.match(r20src,/function recoverPersistentFireBlock/);
+assert.match(r20src,/persistentFireBlockRepairs/);
+assert.match(r20src,/failedFireIntentCount<3\|\|now-failedFireIntentSince<650/);
+assert.doesNotMatch(r20src,/host\?\.projectiles/,"FIRE success detection must use the authoritative bullets array");
 assert.match(src,/attackNow/);
 assert.match(src,/MutationObserver/);
 assert.match(src,/inventory-panel/);
