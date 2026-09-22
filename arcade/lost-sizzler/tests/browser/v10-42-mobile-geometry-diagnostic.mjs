@@ -29,10 +29,51 @@ const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usag
 try{
   const context=await browser.newContext({viewport:{width:320,height:568},isMobile:true,hasTouch:true,deviceScaleFactor:2});
   const page=await context.newPage();
-  page.setDefaultTimeout(20000);
-  await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.gameReady==="true");
-  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142R19MobileTrapLayoutStability));
+  page.setDefaultTimeout(60000);
+  await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"commit",timeout:60000});
+  await page.waitForFunction(()=>Boolean(document.body),null,{timeout:60000});
+  try{
+    await page.waitForFunction(()=>document.body.dataset.gameReady==="true");
+  }catch(error){
+    const startup=await page.evaluate(()=>({
+      gameReady:document.body?.dataset?.gameReady||"",
+      releaseReady:document.body?.dataset?.releaseReady||"",
+      bootstrap:window.CCGLostSizzlerV142Bootstrap?{
+        ready:window.CCGLostSizzlerV142Bootstrap.ready===true,
+        failed:window.CCGLostSizzlerV142Bootstrap.failed===true,
+        error:window.CCGLostSizzlerV142Bootstrap.error||"",
+        currentModule:window.CCGLostSizzlerV142Bootstrap.currentModule||"",
+        loaded:[...(window.CCGLostSizzlerV142Bootstrap.loaded||[])],
+        totalModules:window.CCGLostSizzlerV142Bootstrap.totalModules||0
+      }:null,
+      gate:document.documentElement?.dataset?.ccgPlayMaintenanceGate||"",
+      loader:document.getElementById("ccg-release-loading-status")?.textContent||""
+    }));
+    throw new Error("mobile startup timeout: "+JSON.stringify(startup)+" :: "+String(error?.message||error));
+  }
+  try{
+    await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:60000});
+  }catch(error){
+    const startup=await page.evaluate(()=>({
+      bootstrap:window.CCGLostSizzlerV142Bootstrap?{
+        ready:window.CCGLostSizzlerV142Bootstrap.ready===true,
+        failed:window.CCGLostSizzlerV142Bootstrap.failed===true,
+        error:window.CCGLostSizzlerV142Bootstrap.error||"",
+        currentModule:window.CCGLostSizzlerV142Bootstrap.currentModule||"",
+        loaded:[...(window.CCGLostSizzlerV142Bootstrap.loaded||[])],
+        totalModules:window.CCGLostSizzlerV142Bootstrap.totalModules||0
+      }:null,
+      r19:Boolean(window.CCGLostSizzlerV142R19MobileTrapLayoutStability)
+    }));
+    throw new Error("mobile ordered-bootstrap timeout: "+JSON.stringify(startup)+" :: "+String(error?.message||error));
+  }
+  const orderedState=await page.evaluate(()=>({
+    failed:window.CCGLostSizzlerV142Bootstrap?.failed===true,
+    error:window.CCGLostSizzlerV142Bootstrap?.error||"",
+    r19:Boolean(window.CCGLostSizzlerV142R19MobileTrapLayoutStability)
+  }));
+  if(orderedState.failed)throw new Error("mobile ordered bootstrap failed: "+String(orderedState.error||"unknown"));
+  if(!orderedState.r19)throw new Error("R19 mobile trap layout module missing after ordered bootstrap readiness");
   await page.waitForLoadState("load");
   await page.waitForFunction(()=>document.body.classList.contains("v104-touch-device")&&Boolean(document.getElementById("v104-touch-controls")));
   await page.locator("#solo-btn").click({noWaitAfter:true});

@@ -65,12 +65,6 @@ const earlyTutorialClickMatches=source.split(earlyTutorialClickTarget).length-1;
 assert.equal(earlyTutorialClickMatches,1,"the deterministic browser harness must find exactly one early Tutorial click block");
 source=source.replace(earlyTutorialClickTarget,earlyTutorialClickReplacement);
 
-const splitActivationTarget=`    await withTimeout(state.page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof p2!=="undefined"&&Boolean(p2)&&playMode==="split"&&mode==="playing",null,{timeout:15000}),STAGE_TIMEOUT_MS,"split-screen activation");`;
-const splitActivationReplacement=`    await withTimeout(state.page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof p2!=="undefined"&&Boolean(p2)&&playMode==="split"&&mode==="playing",null,{timeout:25000}),STAGE_TIMEOUT_MS,"split-screen activation");`;
-const splitActivationMatches=source.split(splitActivationTarget).length-1;
-assert.equal(splitActivationMatches,1,"the deterministic browser harness must find exactly one split-screen activation timeout target");
-source=source.replace(splitActivationTarget,splitActivationReplacement);
-
 const stationaryGunSetupTarget=`      input.clear();bullets.length=0;p1.firearmUnlocked=true;p1.weapon={id:"browser-facing-gun",shots:1,power:1,ttl:40,delay:1,element:"energy"};p1.mana=5;p1.maxMana=Math.max(5,Number(p1.maxMana||5));p1.dir={...dir};p1.hitStunMs=0;fire1=0;fireBuffer1=0;
       return{position:{x:p1.x,y:p1.y},dir:{...p1.dir},mode};`;
 const stationaryGunSetupReplacement=`      input.clear();bullets.length=0;p1.firearmUnlocked=true;p1.weapon={id:"browser-facing-gun",shots:1,power:1,ttl:40,delay:1,element:"energy"};p1.mana=5;p1.maxMana=Math.max(5,Number(p1.maxMana||5));p1.dir={...dir};p1.hitStunMs=0;fire1=0;fireBuffer1=0;

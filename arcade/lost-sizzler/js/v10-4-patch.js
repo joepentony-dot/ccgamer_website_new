@@ -624,7 +624,12 @@
   }
 
   function updateBuildLabels() {
-    document.querySelectorAll(".build-badge").forEach((node) => { node.textContent = `BUILD ${BUILD}`; });
+    const newerIdentityOwner = Boolean(window.CCGLostSizzlerV142Bootstrap || window.CCGLostSizzlerVersion);
+    const updateOwned = window.CCGLostSizzlerVersion?.state?.outdated === true;
+    if (newerIdentityOwner || updateOwned) return;
+    document.querySelectorAll(".build-badge").forEach((node) => {
+      if (!/UPDATE AVAILABLE/i.test(node.textContent || "")) node.textContent = `BUILD ${BUILD}`;
+    });
     const subtitle = document.querySelector(".brand p");
     if (subtitle) subtitle.textContent = `THE LOST SIZZLER — ${BUILD}`;
   }

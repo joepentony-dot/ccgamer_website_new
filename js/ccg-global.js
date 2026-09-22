@@ -340,7 +340,7 @@ if (IS_ADMIN_PATH) {
 
             guarded.add(frame);
             frame.classList.add("ccg-wheel-guard-frame");
-            frame.dataset.ccgWheelGuard = "ready";
+            frame.dataset.ccgWheelGuard = "pending";
             host.classList.add("ccg-wheel-guard-host");
 
             const shield = document.createElement("button");
@@ -351,13 +351,15 @@ if (IS_ADMIN_PATH) {
             host.appendChild(shield);
 
             const syncShield = () => {
-                if (!frame.isConnected || !shield.isConnected) return;
+                if (!frame.isConnected || !shield.isConnected) return false;
                 const frameRect = frame.getBoundingClientRect();
                 const hostRect = host.getBoundingClientRect();
                 shield.style.left = `${frameRect.left - hostRect.left + host.scrollLeft}px`;
                 shield.style.top = `${frameRect.top - hostRect.top + host.scrollTop}px`;
                 shield.style.width = `${frameRect.width}px`;
                 shield.style.height = `${frameRect.height}px`;
+                frame.dataset.ccgWheelGuard = "ready";
+                return true;
             };
 
             const deactivate = () => {
@@ -385,6 +387,10 @@ if (IS_ADMIN_PATH) {
                 resizeObserver.observe(host);
             }
 
+            // Size the shield before advertising readiness. The previous
+            // ordering exposed a brief "ready" state with default button geometry,
+            // which could leave a physical wheel event over the iframe unshielded.
+            syncShield();
             requestAnimationFrame(syncShield);
         };
 

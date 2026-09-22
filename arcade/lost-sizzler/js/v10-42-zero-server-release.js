@@ -4,13 +4,13 @@
   if(window.__CCG_LOST_SIZZLER_V142_ZERO_SERVER_RELEASE__)return;
   window.__CCG_LOST_SIZZLER_V142_ZERO_SERVER_RELEASE__=true;
 
-  const ONLINE_BUTTON_IDS=["create-btn","horde-mode-btn","saboteurs-mode-btn","join-btn"];
-  const LOCAL_BUTTON_IDS=["solo-btn","tutorial-zone-btn","split-btn"];
-  const ONLINE_ONLY_SELECTORS=[".online-howto",".join-row","#online-lobby"];
+  const ONLINE_BUTTON_IDS=["create-btn","horde-mode-btn","saboteurs-mode-btn","join-btn","daily-btn","split-btn"];
+  const LOCAL_BUTTON_IDS=["solo-btn","tutorial-zone-btn"];
+  const ONLINE_ONLY_SELECTORS=[".online-howto",".join-row","#online-lobby","#weekly-vault"];
   const RELEASE_STYLE_ID="v142-zero-server-release-style";
   const RELEASE_BLURB="A five-floor pixel dungeon crawl filled with shifting objectives, rare loot, hidden routes, dangerous events and things in the dark that ordinary weapons cannot finish.";
   const RELEASE_MODE_LABEL_HTML="<span>✦</span> CHOOSE YOUR ADVENTURE <span>✦</span>";
-  const RELEASE_NOTE="V10.42 uses a zero-server-cost release model: Solo, Tutorial and 2P Split Screen run locally in your browser. Supabase remains available for CCG account features such as the Weekly High-Score Vault, but core gameplay never requires an online multiplayer server.";
+  const RELEASE_NOTE="C64 Dungeon Carnage runs directly in your browser. Solo play and the Tutorial are the supported game modes.";
   const state={enabled:true,removedButtons:[],hiddenPanels:[],networkLocked:false,lastReason:"",enforcementPasses:0,releaseStyleReady:false,onlineTeardowns:0,localBootTeardownsSkipped:0,localMenuRecoveries:0,localButtonRecoveries:0,observerSkips:0,localFocusRequests:0,localFocusAssignments:0};
 
   function ensureReleaseStyle(){
@@ -18,7 +18,7 @@
     if(!style){
       style=document.createElement("style");
       style.id=RELEASE_STYLE_ID;
-      style.textContent="#create-btn,#horde-mode-btn,#saboteurs-mode-btn,#join-btn,.online-howto,.join-row,#online-lobby{display:none!important;}";
+      style.textContent="#create-btn,#horde-mode-btn,#saboteurs-mode-btn,#join-btn,#daily-btn,#split-btn,#weekly-vault,.online-howto,.join-row,#online-lobby{display:none!important;}";
       (document.head||document.documentElement).appendChild(style);
     }
     state.releaseStyleReady=true;
@@ -111,7 +111,7 @@
 
     setTextIfChanged(document.querySelector(".menu-blurb"),RELEASE_BLURB);
     setHtmlIfChanged(document.querySelector(".mode-select-label"),RELEASE_MODE_LABEL_HTML);
-    setTextIfChanged(document.getElementById("menu-note"),RELEASE_NOTE);
+    setTextIfChanged(document.getElementById("release-note"),RELEASE_NOTE);
     ensureLocalMenuAvailability();
 
     document.body.dataset.onlineMultiplayer="disabled";
@@ -122,7 +122,7 @@
     const error=new Error("Online multiplayer is not part of the zero-server-cost Lost Sizzler release.");
     error.code="online_multiplayer_disabled";
     state.lastReason=error.code;
-    try{showToast?.("ONLINE MULTIPLAYER DISABLED","Solo, Tutorial and 2P Split Screen remain available. The released game does not require a paid multiplayer server.","cyan",7000)}catch(_){}
+    try{showToast?.("RETIRED MODE","Solo and Tutorial are the supported game modes. Retired multiplayer and Weekly Vault entry points are unavailable.","cyan",7000)}catch(_){}
     return Promise.reject(error);
   }
 
@@ -211,7 +211,7 @@
       if(!(node instanceof Element))continue;
       if(node.id==="menu"||ONLINE_BUTTON_IDS.includes(node.id)||LOCAL_BUTTON_IDS.includes(node.id))return true;
       if(node.matches?.(".online-howto,.join-row,#online-lobby"))return true;
-      if(node.querySelector?.("#menu,#create-btn,#horde-mode-btn,#saboteurs-mode-btn,#join-btn,#solo-btn,#tutorial-zone-btn,#split-btn,.online-howto,.join-row,#online-lobby"))return true;
+      if(node.querySelector?.("#menu,#create-btn,#horde-mode-btn,#saboteurs-mode-btn,#join-btn,#solo-btn,#tutorial-zone-btn,#daily-btn,#split-btn,.online-howto,.join-row,#online-lobby"))return true;
     }
     return false;
   }
@@ -239,7 +239,7 @@
   window.CCGLostSizzlerV142ZeroServerRelease=Object.freeze({
     enabled:true,
     onlineMultiplayer:false,
-    localModes:Object.freeze(["solo","tutorial","split-screen"]),
+    localModes:Object.freeze(["solo","tutorial"]),
     supabaseAccountFeatures:true,
     focusRecoveredLocalMenu,
     diagnostics:()=>Object.freeze({...state,removedButtons:[...state.removedButtons],hiddenPanels:[...state.hiddenPanels]})

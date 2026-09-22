@@ -29,23 +29,33 @@ assert.ok(metaBuild,"game HTML must publish its loaded Dungeon Carnage build num
 assert.equal(metaBuild,manifest.build,"HTML build number and live version manifest must match");
 assert.equal(metaCache,manifest.cacheToken,"HTML cache token and live version manifest must match");
 assert.equal(manifest.releaseVersion,"V10.42","current semantic release must be V10.42");
-assert.equal(manifest.build,"V10.42 r50","current published build must remain explicit in the regression check");
-assert.equal(manifest.cacheToken,"20260922r50","current release cache token must remain explicit in the live manifest");
+assert.equal(manifest.build,"V10.42 r51","current published build must remain explicit in the regression check");
+assert.equal(manifest.cacheToken,"20260922r51","current release cache token must remain explicit in the live manifest");
 
 const activeAssets=[
   "css/game.css","css/v10-6-gameplay.css","css/v10-41-r28.css","css/v10-41-r29.css",
-  "js/v10-41-cache-guard.js","js/v10-41-load-watchdog.js","js/version-check.js","js/weekly-challenge.js",
+  "js/v10-41-cache-guard.js","js/v10-41-load-watchdog.js","js/version-check.js",
   "js/v10-23-tutorial-guidance.js","js/asset-overrides.js","js/avatar-data.js","js/config.js","js/progression.js",
   "js/audio-assets.js","js/audio.js","js/world.js","js/network.js","js/ai.js","js/systems.js","js/game-core.js",
-  "js/game-network.js","js/game-play.js","js/game-render.js","js/game-main.js","js/split-player-hud.js",
+  "js/game-network.js","js/game-play.js","js/game-render.js","js/game-main.js",
   "js/v10-41-lake-item-safety.js","js/v10-41-gambler-devroom.js","js/v10-41-developer-vault-hardening.js",
   "js/v10-41-developer-asset-catalog.js","js/v10-41-split-friendly-fire.js","js/v10-41-landing-notification-polish.js",
-  "js/v10-41-major-notification-hardening.js","js/v10-41-active-enemy-fire.js","js/v10-41-r29-buglog.js",
-  "js/v10-41-r29-runtime-repair.js","js/v10-41-r30-global-movement-guard.js","js/v10-41-r30-buglog.js"
+  "js/v10-41-major-notification-hardening.js","js/v10-41-active-enemy-fire.js",
+  "js/v10-41-r29-runtime-repair.js","js/v10-41-r30-global-movement-guard.js",
 ];
 for(const asset of activeAssets){
   const escaped=asset.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
   assert.match(index,new RegExp(`${escaped}\\?v=${manifest.cacheToken}`),`release cache token missing from ${asset}`);
+}
+
+const retiredPublicAssets=[
+  "js/weekly-challenge.js",
+  "js/split-player-hud.js",
+  "js/v10-41-r29-buglog.js",
+  "js/v10-41-r30-buglog.js"
+];
+for(const asset of retiredPublicAssets){
+  assert.equal(index.includes(asset),false,"retired public asset must not be requested by canonical HTML: "+asset);
 }
 
 const retiredDirectAssets=[
@@ -97,6 +107,8 @@ assert.match(legacyPolish,/RELEASE_VERSION="V10\.41"/,"legacy polish must retain
 assert.doesNotMatch(legacyPolish,/keepSubtitleCurrent/,"legacy polish must not reinstall a persistent subtitle observer");
 assert.doesNotMatch(legacyPolish,/new MutationObserver/,"legacy V10.30 polish must never observe/rewrite release branding again");
 assert.match(assetOverrides,/const CCG_RELEASE_REV=/,"enhancement queue must derive one release-wide cache revision");
+assert.match(assetOverrides,/v10-42-bootstrap\.js\?v=\$\{CCG_RELEASE_REV\}/,"V10.42 bootstrap must be release-tokened and owned by the enhancement queue");
+assert.ok(assetOverrides.indexOf("v10-35-quality.js")<assetOverrides.indexOf("v10-42-bootstrap.js"),"V10.42 ordered bootstrap must remain the final enhancement queue entry");
 assert.match(assetOverrides,/v10-4-death-cache\.js\?v=\$\{CCG_RELEASE_REV\}/,"death-cache code must remain release-tokened");
 assert.match(assetOverrides,/v10-6-runtime\.js\?v=\$\{CCG_RELEASE_REV\}/,"multiplayer runtime must remain release-tokened");
 assert.match(assetOverrides,/CCGLostSizzlerCacheGuard\?\.runtimeErrors/,"uncaught startup module errors must fail the release gate");

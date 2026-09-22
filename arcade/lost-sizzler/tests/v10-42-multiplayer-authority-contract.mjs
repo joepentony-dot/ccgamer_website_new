@@ -25,7 +25,7 @@ for(const id of ['create-btn','horde-mode-btn','saboteurs-mode-btn','join-btn'])
   assert(zeroServer.includes(`\"${id}\"`),`${id} must remain retired from the production release entry surface until its legacy markup is physically removed.`);
 }
 assert(zeroServer.includes('onlineMultiplayer:false'),'Production release diagnostics must declare online multiplayer disabled.');
-assert(zeroServer.includes('localModes:Object.freeze([\"solo\",\"tutorial\",\"split-screen\"])'),'Solo, Tutorial and local split-screen must remain the supported release modes.');
+assert(zeroServer.includes('localModes:Object.freeze(["solo","tutorial"])'),'Solo and Tutorial must remain the supported public release modes.');
 assert(zeroServer.includes('supabaseAccountFeatures:true'),'Supabase-backed account features must remain explicitly permitted.');
 assert(zeroServer.includes('online_multiplayer_disabled'),'Direct legacy multiplayer calls must fail with an explicit release-policy error.');
 assert(zeroServer.includes('net.setSolo?.(\"TITLE\")'),'Release policy must normalize the legacy network object back to local Solo state.');
@@ -33,4 +33,4 @@ assert(zeroServer.includes('net.setSolo?.(\"TITLE\")'),'Release policy must norm
 assert(!network.includes('function onCollectRequest(p)'),'Completed extraction must remove local collection handling from the legacy transport file.');
 assert(localRuntime.includes('function onCollectRequest(p)'),'Local collection handling must remain present in the retained local runtime after extraction.');
 
-console.log('Lost Sizzler V10.42 zero-server retirement contract passed: obsolete V10.42 network adapters are deleted while Solo, Tutorial and local 2P Split Screen remain the supported release modes.');
+console.log('Lost Sizzler V10.42 zero-server retirement contract passed: obsolete V10.42 network adapters are deleted while Solo and Tutorial remain the supported public release modes.');

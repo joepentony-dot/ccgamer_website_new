@@ -265,18 +265,47 @@
     panel.classList.remove("hidden");
   }
 
+  let staleBadgeObserver=null;
+  function staleBadgeRoot(){
+    return document.querySelector(".brand")||document.querySelector(".v102-brand")||document.body||document.documentElement;
+  }
+
+  function ownStaleBadge(){
+    if(!state.outdated)return false;
+    const badge=document.querySelector(".build-badge");if(!badge)return false;
+    staleBadgeObserver?.disconnect();
+    if(badge.textContent!=="UPDATE AVAILABLE")badge.textContent="UPDATE AVAILABLE";
+    badge.title=`Loaded ${current}; latest ${state.latest}`;
+    const root=staleBadgeRoot();
+    if(staleBadgeObserver&&root)staleBadgeObserver.observe(root,{childList:true,characterData:true,subtree:true});
+    return true;
+  }
+
+  function startStaleBadgeOwnership(){
+    if(typeof MutationObserver!=="function")return ownStaleBadge();
+    if(!document.querySelector(".build-badge"))return false;
+    if(!staleBadgeObserver)staleBadgeObserver=new MutationObserver(()=>ownStaleBadge());
+    ownStaleBadge();
+    return true;
+  }
+
+  function stopStaleBadgeOwnership(){
+    staleBadgeObserver?.disconnect();
+    staleBadgeObserver=null;
+  }
+
   function markOutdated(){
     state.outdated=true;
     const button=ensureButton();
     if(button){button.textContent="Update Available — Refresh";button.title=`Loaded ${current}; latest ${state.latest}`}
-    const badge=document.querySelector(".build-badge");
-    if(badge){badge.textContent="UPDATE AVAILABLE";badge.title=`Loaded ${current}; latest ${state.latest}`}
+    startStaleBadgeOwnership();
     const subtitle=document.querySelector(".brand p");if(subtitle)subtitle.textContent=`C64 DUNGEON CARNAGE — ${RELEASE_VERSION}`;
     if(menuVisible())renderPanel("outdated");
   }
 
   function markCurrent(){
     state.outdated=false;
+    stopStaleBadgeOwnership();
     const button=ensureButton();
     if(button){button.textContent="Check / Refresh Game";button.title=`${RELEASE_VERSION} · latest build loaded: ${current}`}
     setReleaseLabels();
@@ -311,16 +340,28 @@
     }catch(_){window.location.reload()}
   }
 
-  function install(){ensureButton();ensurePanel();setReleaseLabels()}
+  const labelRestampTimers=[];
+  function scheduleLabelRestamps(){
+    for(const delay of [0,32,120,360,900,1800]){
+      const handle=setTimeout(()=>{
+        const index=labelRestampTimers.indexOf(handle);if(index>=0)labelRestampTimers.splice(index,1);
+        setReleaseLabels();
+      },delay);
+      labelRestampTimers.push(handle);
+    }
+  }
+
+  function install(){ensureButton();ensurePanel();setReleaseLabels();scheduleLabelRestamps()}
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",install,{once:true});else install();
+  addEventListener("ccg:v142-ready",scheduleLabelRestamps,{once:true});
   const labelTimer=setInterval(()=>{
     setReleaseLabels();
     const gate=window.CCGLostSizzlerReleaseGate;
-    if(gate?.state?.ready||gate?.state?.failed){clearInterval(labelTimer);setReleaseLabels()}
+    if(gate?.state?.ready||gate?.state?.failed){clearInterval(labelTimer);setReleaseLabels();scheduleLabelRestamps()}
   },180);
   setTimeout(()=>checkLatest(false),900);
   const timer=setInterval(()=>{checkLatest(false);if(state.outdated&&menuVisible())renderPanel("outdated")},300000);
-  window.addEventListener("pagehide",()=>{clearInterval(timer);clearInterval(labelTimer)},{once:true});
+  window.addEventListener("pagehide",()=>{clearInterval(timer);clearInterval(labelTimer);stopStaleBadgeOwnership();for(const handle of labelRestampTimers.splice(0))clearTimeout(handle)},{once:true});
   window.CCGLostSizzlerVersion={state,releaseVersion:RELEASE_VERSION,check:()=>checkLatest(true),refresh:()=>reloadFresh(state.latest||current)};
   window.CCGLostSizzlerTutorialDeepLink={state:tutorialDeepLinkState,launch:()=>launchTutorialDeepLink(true)};
 })();

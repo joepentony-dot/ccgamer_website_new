@@ -32,8 +32,8 @@ try{
     const continueButton=document.getElementById("continue-save-btn");
     continueButton?.classList.remove("hidden");
     if(continueButton)continueButton.textContent="Continue Solo — Floor 1";
-    const visibleIds=["solo-btn","continue-save-btn","split-btn","tutorial-zone-btn","daily-btn"];
-    const retiredOnlineIds=["create-btn","horde-mode-btn","saboteurs-mode-btn"];
+    const visibleIds=["solo-btn","continue-save-btn","tutorial-zone-btn"];
+    const retiredOnlineIds=["create-btn","horde-mode-btn","saboteurs-mode-btn","split-btn","daily-btn"];
     const retiredOnline=retiredOnlineIds.map(id=>{
       const button=document.getElementById(id);if(!button)return{id,missing:true};
       return{id,missing:false,hidden:button.hidden,display:getComputedStyle(button).display,ariaHidden:button.getAttribute("aria-hidden")};

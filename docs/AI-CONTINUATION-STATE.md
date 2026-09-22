@@ -8,6 +8,22 @@ For Dungeon Carnage specifically, `arcade/lost-sizzler/PROGRESS.md` is the produ
 
 Update this file when a workstream changes category, its active PR/dependency changes, or a substantial session ends. Keep detailed reasoning, checks, blockers, and next actions in the workstream file.
 
+## Dungeon Carnage R51 qualification repair — 22 September 2026
+
+- Draft PR #2256 remains the active R51 owner-preview/FIRE candidate.
+- Qualification proved that retiring `v10-41-r30-buglog.js` from public HTML also accidentally removed its hidden supported-runtime loader side effects. The resulting browser state had no active `dungeon-solo` controller marker and was missing supported Solo stability ownership.
+- The fix does **not** restore the retired buglog. `v10-42-bootstrap.js` now explicitly loads the supported controller/diagnostic/R56/R59/R60/encounter prerequisites and fails closed if they cannot initialise.
+- Browser tests were reconciled only for intentional R51 product changes: public modes are Solo + Tutorial, Split/Weekly compatibility anchors stay hidden, and R51 build/cache/camera expectations use the current values.
+- Final exact-head qualification is still required; keep #2256 draft and do not merge on partial or superseded CI evidence.
+
+## P0 Dungeon Carnage FIRE lockout remediation — 22 September 2026
+
+- Hands-on `V10.42 r50` evidence reproduced a game-breaking Solo state where Space continued to generate attack intent with 117 ammo, a live weapon, zero active projectiles, visible/focused gameplay and no blocking inventory, yet no projectile or ammo consumption followed.
+- Active integration vehicle is draft PR #2256 / branch `codex/dungeon-r51-owner-preview-current-main`, already carrying the R51 owner-preview and final liveness pass.
+- Reconciliation found two false-success paths in the R51 FIRE safety net: fresh-press verification was cancelled if a normal tap was released before its 120 ms check, and non-zero FIRE buffer/cooldown state was accepted as proof of a completed shot.
+- The P0 correction verifies every valid fresh press even after keyup, requires actual ammo consumption or an authoritative live player projectile as shot evidence, aligns the Inventory FIRE recovery boundary to the same rule, and makes R20 report success only for a completed direct shot rather than a queued buffer.
+- Focused R51 coverage is strengthened around the reproduced failure signature. PR #2256 remains draft and must not merge until the exact patched head completes the required qualification matrix and the user authorises merge.
+
 ## Temporary CCG play-games maintenance — 22 September 2026
 
 - PR #2232 / branch `codex/temporary-play-games-maintenance` temporarily takes both CCG original browser games offline on the production CCG hostname without changing their gameplay/runtime logic.

@@ -12,6 +12,13 @@ Temporary public maintenance gating for the two CCG original browser games, the 
 - `/games/ccg-games/` is the temporary maintenance destination. It removes launch links for both originals and links instead to the existing CCG Trivia League and Game Box Hangman routes.
 - Hangman remains single-owned at `/quiz/pack-6.html`; it is linked from the games hub rather than duplicated.
 - No Quest or Dungeon gameplay/runtime owner is changed by this maintenance work.\n
+## Home presentation refinement — 22 September 2026
+
+- PR #2256 also replaces the oversized yellow Dungeon Carnage home CTA with a compact artwork-only link using the supplied banner.
+- The home-only artwork is `resources/images/hero/c64-dungeon-carnage-home-feature.webp` (400×133 WebP); the old repeated `C64 DUNGEON CARNAGE / PLAY MY NEW GAME` text is removed from the CTA.
+- The Dungeon release loader remains on `resources/images/hero/c64-dungeon-carnage-home-v2.webp`; this keeps the home presentation change isolated from loader/runtime behaviour.
+- The change does not alter the site navigation, logo, C64/Amiga toggle, game runtime or maintenance access rules.
+
 ## Architecture direction
 
 - Keep `/games/` as the established C64/Amiga archive and review database.

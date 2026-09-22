@@ -127,7 +127,7 @@ try{
   assert.equal(shopResult.hudText,String(shopResult.score).padStart(6,"0"),"live Solo HUD Score must remain unchanged by shopping");
   assert.equal(shopResult.nextText,shopResult.nextExpected,"open shop next-Gold price must update after a purchase");
   assert.equal(shopResult.nextExpected,"6","the next same-shop price after four purchases must be 6 Gold");
-  assert.equal(shopResult.weaponDisabled,false,"weapons must still be purchasable after two same-shop weapon purchases");
+  assert.equal(shopResult.weaponDisabled,true,"Weapon Cache must disable after the evolving firearm reaches the current floor cap");
   assert.deepEqual(shopResult.soldKeys,[],"normal purchases must not write any sold flags");
   assert.equal(shopResult.purchases,4,"the Gold purchase ladder must advance for every repeat purchase");
   assert.equal(shopResult.capacity,5,"the two inventory expansion purchases must persist");
