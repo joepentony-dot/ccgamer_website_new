@@ -82,6 +82,14 @@
         }
       ]
     },
+    "bad-dudes-vs-dragonninja": {
+      "include": [
+        {
+          "archiveId": "5638",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
     "bangkok-knights": {
       "include": [
         {
@@ -266,6 +274,14 @@
         }
       ]
     },
+    "flunky": {
+      "include": [
+        {
+          "archiveId": "5141",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
     "forbidden-forest": {
       "include": [
         {
@@ -370,10 +386,26 @@
         }
       ]
     },
+    "kamikaze": {
+      "exclude": [
+        {
+          "archiveId": "219",
+          "reason": "Different Supersoft 1984 game (Kami-Kaze), not Codemasters' 1990 Kamikaze."
+        }
+      ]
+    },
     "karateka": {
       "include": [
         {
           "archiveId": "2866",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "kikstart-2": {
+      "include": [
+        {
+          "archiveId": "2868",
           "sourceRole": "publisher"
         }
       ]
@@ -423,6 +455,14 @@
         {
           "archiveId": "663",
           "sourceRole": "re-release"
+        }
+      ]
+    },
+    "micro-mouse-goes-debugging": {
+      "include": [
+        {
+          "archiveId": "291",
+          "sourceRole": "publisher"
         }
       ]
     },
@@ -531,6 +571,14 @@
         {
           "archiveId": "4149",
           "sourceRole": "publisher"
+        }
+      ]
+    },
+    "rock-n-wrestle": {
+      "include": [
+        {
+          "archiveId": "2296",
+          "sourceRole": "re-release"
         }
       ]
     },
@@ -678,6 +726,14 @@
         }
       ]
     },
+    "switchblade": {
+      "include": [
+        {
+          "archiveId": "2673",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
     "target-renegade": {
       "include": [
         {
@@ -706,6 +762,18 @@
         }
       ]
     },
+    "the-new-zealand-story": {
+      "include": [
+        {
+          "archiveId": "2154",
+          "sourceRole": "publisher"
+        },
+        {
+          "archiveId": "1543",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
     "the-sentinel": {
       "exclude": [
         {
@@ -723,6 +791,14 @@
         {
           "archiveId": "7724",
           "sourceRole": "re-release"
+        }
+      ]
+    },
+    "the-train-escape-to-normandy": {
+      "include": [
+        {
+          "archiveId": "5396",
+          "sourceRole": "publisher"
         }
       ]
     },
