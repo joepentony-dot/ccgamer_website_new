@@ -249,7 +249,7 @@ try{
       assert.equal(inventoryRecovered.controlLocked,false,"extended inventory resume must clear the primary player control lock");
       assert.equal(inventoryRecovered.controlsLocked,false,"extended inventory resume must clear the aliased player control lock");
       assert.equal(inventoryRecovered.hitStunMs,0,"extended inventory resume must clear a stale over-limit hit-stun lock");
-      assert.ok(inventoryRecovered.lastReset.startsWith("inventory-close"),`inventory close must own the combat resume reset, got ${inventoryRecovered.lastReset}`);
+      assert.equal(inventoryRecovered.lastReset,"r47-inventory-close",`r47 inventory-close recovery must own the combat resume reset, got ${inventoryRecovered.lastReset}`);
       assert.equal(await armEnemy(page),true,"extended-inventory direct queue recovery enemy unavailable");
       await directQueueAttackCycle(page,6401);
       assert.equal(await armEnemy(page),true,"extended-inventory keyboard recovery enemy unavailable");
