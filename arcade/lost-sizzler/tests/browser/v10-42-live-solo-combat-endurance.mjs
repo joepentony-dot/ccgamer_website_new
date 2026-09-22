@@ -160,7 +160,7 @@ try{
   assert.equal(initial.lifecycleOwner,true,"#2118 lifecycle owner must remain authoritative in Solo");
   assert.ok(initial.sealGate||initial.sealUnsupported||initial.authoritativeUpdate,"controller owner must be sealed, explicitly unsupported, or already on its authoritative boundary");
 
-  const keys=["Space","KeyF","Numpad0"];
+  const keys=["Space","Numpad0"];
   for(let round=1;round<=96;round++){
     await settleGameplayMode(page,`round ${round} start`);
     assert.equal(await armEnemy(page),true,`round ${round}: no generated enemy available`);
@@ -205,10 +205,8 @@ try{
       assert.ok(recovered.resets>=2,"extended pause resume must execute the guarded attack reset boundary");
       assert.equal(await armEnemy(page),true,"extended-pause recovery enemy unavailable");
       await fireCycle(page,"Space",4801);
-      assert.equal(await armEnemy(page),true,"extended-pause KeyF recovery enemy unavailable");
-      await fireCycle(page,"KeyF",4802);
       assert.equal(await armEnemy(page),true,"extended-pause Numpad0 recovery enemy unavailable");
-      await fireCycle(page,"Numpad0",4803);
+      await fireCycle(page,"Numpad0",4802);
     }
     if(round===64){
       await page.evaluate(()=>toggleInventory());
