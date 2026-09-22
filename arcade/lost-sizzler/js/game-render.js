@@ -1,6 +1,8 @@
 const lostSizzlerPixelAssets=(()=>{const make=src=>{if(typeof Image!=="function")return null;const image=new Image();image.decoding="async";image.src=src;return image};return{explorer:make("assets/pixel/explorer-sheet-v10-34.png?v=20260824r8"),chests:make("assets/pixel/chest-sheet-v10-34.png?v=20260824r8")}})();
 function memoryPuzzleFrame(p){
   const z=host?.memoryPuzzle;if(!p||!z||z.solved||p2||W.roomAt(world,p.x,p.y)!==z.roomId)return null;
+  const room=world.rooms?.[z.roomId];
+  if(room)return{minX:room.x-.75,maxX:room.x+room.w+1.75,minY:room.y-.75,maxY:room.y+room.h+1.75};
   const points=[...(z.tiles||[]),z.activator].filter(Boolean);if(!points.length)return null;
   const xs=points.map(q=>q.x),ys=points.map(q=>q.y),pad=1.25;
   return{minX:Math.min(...xs)-pad,maxX:Math.max(...xs)+1+pad,minY:Math.min(...ys)-pad,maxY:Math.max(...ys)+1+pad}
