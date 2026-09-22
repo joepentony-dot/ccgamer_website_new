@@ -2,6 +2,14 @@
 
 > Legacy repository path: `arcade/lost-sizzler/`. The customer-facing game name is **C64 Dungeon Carnage**. Historical internal identifiers may still use `Lost Sizzler` where compatibility requires them.
 
+## Retired public modes / Weekly Vault cleanup — 22 September 2026
+
+**Current product policy overrides older historical checkpoints below:** the public C64 Dungeon Carnage release now exposes **Solo and Tutorial only**. Local 2P Split Screen and the Weekly High-Score Vault are retired public modes. Historical runtime code may remain temporarily where removing it would risk supported Solo/Tutorial ownership, but no public menu, rulebook, help text, leaderboard or release copy should advertise or re-enable those retired modes.
+
+Branch `codex/dungeon-retired-public-modes-cleanup` starts from merged r49 main `3f273ec8eb881faac1825a6779863c9367faf0d1`. The public menu removes Weekly Vault presentation, P2 guidance and visible Split Screen entry; the V10.42 release-policy owner removes stale retired controls after startup and no longer restores Split Screen. The public developer changelog/active-work presentation is also retired.
+
+Live Supabase verification found **no active `cron.job` rows**. The deployed `ccq-weekly-challenge` and `ccq-weekly-results` Edge Functions are already retirement stubs that return HTTP 410 and do not send weekly results or member notifications. Retaining those 410 stubs is intentional fail-closed compatibility for stale callers.
+
 ## Active r49 long-session freeze candidate — PR #2231
 
 - **Status:** DRAFT / QUALIFYING. The user reproduced a current deployed r47 Solo session slowing to a complete standstill on Floor 3; this is a new hands-on defect and therefore reopens bounded Dungeon runtime work.
