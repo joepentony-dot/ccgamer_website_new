@@ -201,6 +201,7 @@ async function main() {
   const strongCompactTitleCandidates = [];
   const publisherVerifiedContainmentCandidates = [];
   const fuzzyPublisherCandidates = [];
+  const fuzzyTitleOnlyCandidates = [];
   const noTitleCandidate = [];
 
   for (const game of c64Games) {
@@ -224,6 +225,10 @@ async function main() {
     }
 
     if (exactCandidates.length) continue;
+
+    // A compact-title or curated exact-ID rule may already have resolved this
+    // game even though there was no exact normalized-title candidate.
+    if (matched.releases.length) continue;
 
     const compactKeys = new Set(
       [game?.title, game?.sorttitle]
@@ -303,6 +308,44 @@ async function main() {
       continue;
     }
 
+    // Final diagnostic pass: high title similarity even when the CCG publisher
+    // metadata does not currently recognise the UTA label. This never changes
+    // the public mapping; it exists to expose regional publishers, budget
+    // labels and source-data errors for human verification.
+    const gameYear = Number(game?.year) || null;
+    const fuzzyTitleOnly = releases
+      .map((release) => ({
+        release,
+        relation: candidateRole(game, release),
+        similarity: Math.max(
+          ...[game?.title, game?.sorttitle]
+            .filter(Boolean)
+            .map((title) => diceSimilarity(title, release.title))
+        )
+      }))
+      .filter(({ release, similarity }) => {
+        if (similarity < 0.78) return false;
+        if (!gameYear || !release.year) return true;
+        return release.year >= gameYear - 1 && release.year <= gameYear + 12;
+      })
+      .sort((a, b) =>
+        b.similarity - a.similarity
+        || Number(a.release.archiveId) - Number(b.release.archiveId)
+      )
+      .slice(0, 3);
+
+    if (fuzzyTitleOnly.length) {
+      fuzzyTitleOnlyCandidates.push({
+        slug: game.slug,
+        title: game.title,
+        year: game.year,
+        candidates: fuzzyTitleOnly.map(({ release, relation, similarity }) =>
+          releaseSummary(release, { ...relation, similarity: Number(similarity.toFixed(3)) })
+        )
+      });
+      continue;
+    }
+
     noTitleCandidate.push({ slug: game.slug, title: game.title, year: game.year });
   }
 
@@ -329,6 +372,7 @@ async function main() {
     strongCompactTitleCandidateGames: strongCompactTitleCandidates.length,
     publisherVerifiedContainmentCandidateGames: publisherVerifiedContainmentCandidates.length,
     fuzzyPublisherCandidateGames: fuzzyPublisherCandidates.length,
+    fuzzyTitleOnlyCandidateGames: fuzzyTitleOnlyCandidates.length,
     noTitleCandidateGames: noTitleCandidate.length
   };
 
@@ -341,6 +385,7 @@ async function main() {
     strongCompactTitleCandidates,
     publisherVerifiedContainmentCandidates,
     fuzzyPublisherCandidates,
+    fuzzyTitleOnlyCandidates,
     noTitleCandidate
   };
 
@@ -428,6 +473,22 @@ async function main() {
         row.year,
         row.candidates.map((candidate) =>
           `${candidate.archiveId} ${candidate.title} / ${candidate.publisher} ${candidate.yearLabel} (similarity=${candidate.similarity})`
+        ).join("; ")
+      ])
+    ),
+    "",
+    "## High-similarity title-only candidates",
+    "",
+    "These are deliberately not auto-published. They are high-similarity title candidates where publisher evidence is absent or conflicts, and are the final human-review queue for regional labels/source-data errors.",
+    "",
+    markdownTable(
+      ["Slug", "Title", "Year", "UTA candidates"],
+      fuzzyTitleOnlyCandidates.map((row) => [
+        row.slug,
+        row.title,
+        row.year,
+        row.candidates.map((candidate) =>
+          `${candidate.archiveId} ${candidate.title} / ${candidate.publisher} ${candidate.yearLabel} (similarity=${candidate.similarity}, publisher=${candidate.publisherMatched})`
         ).join("; ")
       ])
     ),
