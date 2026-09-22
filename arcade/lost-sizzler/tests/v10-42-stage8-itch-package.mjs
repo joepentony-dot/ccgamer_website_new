@@ -46,7 +46,7 @@ try{
   for(const required of [
     "index.html","version.json","js/game-core.js","js/game-main.js","js/world.js",
     "js/v10-42-bootstrap.js","js/v10-42-stage7-npc-merchant.js","js/itch-release-runtime.js",
-    "css/game.css","games/games.json"
+    "css/game.css","games/games.json","assets/c64-dungeon-carnage-loader.webp"
   ])assert.ok(listed.has(required),"missing staged runtime file: "+required);
 
   assert.match(sourceIndex,/src="\/js\/ccg-supabase-config\.js/,"canonical website build must retain its website account bootstrap");
@@ -55,6 +55,8 @@ try{
   assert.match(stagedIndex,/js\/itch-release-runtime\.js\?v=/,"staged itch build must load its package-only gate");
   assert.match(stagedIndex,/https:\/\/www\.cheekycommodoregamer\.co\.uk\/games\/ccg-games\//,"exit links must leave itch safely for the CCG website");
   assert.match(stagedIndex,/https:\/\/www\.cheekycommodoregamer\.co\.uk\/arcade\/lost-sizzler\/#weekly-vault/,"Weekly Vault must hand back to the website");
+  assert.match(sourceIndex,/src="\/resources\/images\/hero\/c64-dungeon-carnage-home-v2\.webp"/,"canonical website loader must use the current Dungeon Carnage artwork");
+  assert.match(stagedIndex,/src="assets\/c64-dungeon-carnage-loader\.webp"/,"standalone itch loader must use the packaged current Dungeon Carnage artwork");
   assert.doesNotMatch(stagedIndex,/(?:href|src)="\/(?!\/)/,"standalone itch index must not depend on root-relative website paths");
 
   assert.match(releaseGate,/mode:"itch-html5"/);
@@ -73,7 +75,7 @@ try{
   assert.deepEqual(forbidden,[],"credential/account bootstrap material must not enter the package manifest");
 
   assert.match(sourceBuilder,/INCLUDE_DIRS=\["css","js","assets"\]/,"builder must use an explicit runtime tree");
-  assert.match(sourceBuilder,/EXTERNAL_FILES=\[\["games\/games\.json","games\/games\.json"\]\]/,"builder must explicitly carry the runtime game catalogue dependency");
+  assert.match(sourceBuilder,/EXTERNAL_FILES=\[\["games\/games\.json","games\/games\.json"\],\["resources\/images\/hero\/c64-dungeon-carnage-home-v2\.webp","assets\/c64-dungeon-carnage-loader\.webp"\]\]/,"builder must explicitly carry the runtime game catalogue and current loader artwork dependencies");
   assert.match(sourceBuilder,/sameOrWithin\(REPO_ROOT,outputRoot\).*sameOrWithin\(outputRoot,REPO_ROOT\)/s,"builder must reject both descendants and ancestors of the repository before recursive deletion");
   assert.match(sourceBuilder,/packageDemoPaywallRuntime\(\)/,"builder must replace the retired website commerce module only inside the staged artifact");
   assert.doesNotMatch(sourceBuilder,/path\.join\(REPO_ROOT[^\n]*(?:desktop|services\/ccg-backend|private-download|signed-download)/i,"fresh itch builder must not source files from retired desktop/private-delivery integration");

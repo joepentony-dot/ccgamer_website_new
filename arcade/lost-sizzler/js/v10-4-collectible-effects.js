@@ -16,7 +16,7 @@
 
   let rules=[...FALLBACK_RULES];
   let gameMeta=new Map();
-  let horrorCtx=null,horrorGain=null,horrorNodes=[],horrorBeatTimer=null,horrorMusicActive=false;
+  let horrorMusicActive=false;
 
   const normalise=value=>String(value||"")
     .toLowerCase()
@@ -132,7 +132,7 @@
       flash:0,hpBarMs:3600,moveSpeedScale:.48,_v104BaseMaxHp:1
     };
     host.enemies.push(creature);host.revision=(host.revision||0)+1;
-    try{S.sfx("stalker");showToast("HORROR GAME DISTURBED THE ARCHIVE",`${title} has dragged an Archive Wraith into the dungeon. 50 HP, no armour — and it only wants to stalk you down.`,"red",10000);if(typeof floatPickupText==="function")floatPickupText(player,"ARCHIVE WRAITH SUMMONED",P.red);else floatText(player.x,player.y,"SOMETHING FOLLOWED YOU OUT...",P.red);broadcastWorld()}catch(_){}
+    try{S.sfx("alert");showToast("HORROR GAME DISTURBED THE ARCHIVE",`${title} has dragged an Archive Wraith into the dungeon. 50 HP, no armour — and it only wants to stalk you down.`,"red",10000);if(typeof floatPickupText==="function")floatPickupText(player,"ARCHIVE WRAITH SUMMONED",P.red);else floatText(player.x,player.y,"SOMETHING FOLLOWED YOU OUT...",P.red);broadcastWorld()}catch(_){}
   }
 
   function applyRule(rule,player,title){
@@ -241,27 +241,17 @@
     };
   }
 
-  function ensureHorrorAudio(){
-    if(horrorCtx)return true;
-    try{
-      horrorCtx=new (window.AudioContext||window.webkitAudioContext)();
-      horrorGain=horrorCtx.createGain();horrorGain.gain.value=.0001;horrorGain.connect(horrorCtx.destination);return true;
-    }catch(_){return false}
-  }
   function startHorrorMusic(){
-    if(horrorMusicActive||!S?.isEnabled?.()||!ensureHorrorAudio())return;
-    horrorMusicActive=true;horrorCtx.resume?.().catch(()=>{});horrorGain.gain.cancelScheduledValues(horrorCtx.currentTime);horrorGain.gain.setTargetAtTime(.035,horrorCtx.currentTime,.35);
-    const makeDrone=(freq,type,detune)=>{const osc=horrorCtx.createOscillator(),gain=horrorCtx.createGain();osc.type=type;osc.frequency.value=freq;osc.detune.value=detune;gain.gain.value=.26;osc.connect(gain).connect(horrorGain);osc.start();horrorNodes.push(osc,gain)};
-    makeDrone(46,"sawtooth",-8);makeDrone(69,"triangle",7);makeDrone(92,"sine",-13);
-    horrorBeatTimer=setInterval(()=>{if(!horrorMusicActive||!S?.isEnabled?.())return;const t=horrorCtx.currentTime;for(const offset of [0,.17]){const osc=horrorCtx.createOscillator(),gain=horrorCtx.createGain();osc.type="sine";osc.frequency.setValueAtTime(58,t+offset);osc.frequency.exponentialRampToValueAtTime(38,t+offset+.13);gain.gain.setValueAtTime(.0001,t+offset);gain.gain.exponentialRampToValueAtTime(.18,t+offset+.02);gain.gain.exponentialRampToValueAtTime(.0001,t+offset+.18);osc.connect(gain).connect(horrorGain);osc.start(t+offset);osc.stop(t+offset+.2)}},1050);
-    try{S.setMusicLevel?.(.035)}catch(_){}
+    if(horrorMusicActive||!S?.isEnabled?.())return;
+    horrorMusicActive=true;
+    try{S.setMusicLevel?.(.045)}catch(_){}
+    try{window.dispatchEvent(new CustomEvent("ccg:collectible-effect",{detail:{effect:"archive-wraith-horror",active:true,at:performance.now()}}))}catch(_){}
   }
   function stopHorrorMusic(){
-    if(!horrorMusicActive)return;horrorMusicActive=false;
-    if(horrorBeatTimer){clearInterval(horrorBeatTimer);horrorBeatTimer=null}
-    if(horrorGain&&horrorCtx)horrorGain.gain.setTargetAtTime(.0001,horrorCtx.currentTime,.35);
-    for(const node of horrorNodes){try{node.stop?.()}catch(_){}try{node.disconnect?.()}catch(_){}}horrorNodes=[];
+    if(!horrorMusicActive)return;
+    horrorMusicActive=false;
     try{S.setMusicLevel?.(.075)}catch(_){}
+    try{window.dispatchEvent(new CustomEvent("ccg:collectible-effect",{detail:{effect:"archive-wraith-horror",active:false,at:performance.now()}}))}catch(_){}
   }
 
   setInterval(()=>{
@@ -277,7 +267,9 @@
     }
     const horrorAlive=(host?.enemies||[]).some(enemy=>enemy?.alive&&enemy.horrorCreature);
     if(horrorAlive)startHorrorMusic();else stopHorrorMusic();
-  },80);
+  },250);
+
+  addEventListener("pagehide",stopHorrorMusic,{once:true});
 
   window.CCGLostSizzlerCollectibleEffects={
     reload:async()=>{await loadRulesAndMetadata();return rules.length},

@@ -42,6 +42,32 @@ async function sustainedFire(page,key,holdMs=900){
   assert.equal(after.active,"true",`${key} firing must not deactivate the run`);
 }
 
+async function fullscreenKeyDoesNotFire(page){
+  const beforeMana=await prepareFire(page);
+  const before=await page.evaluate(()=>({
+    fullscreen:Boolean(document.fullscreenElement),
+    attackIntents:Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.attackIntents||0)
+  }));
+  await page.keyboard.press("f");
+  await page.waitForFunction(previous=>Boolean(document.fullscreenElement)!==previous,before.fullscreen,{timeout:5000});
+  const after=await page.evaluate(()=>({
+    mana:Number(p1.mana),
+    fullscreen:Boolean(document.fullscreenElement),
+    held:Boolean(input.has("Space")),
+    keyFHeld:Boolean(window.CCGLostSizzlerV142AttackHoldLiveness?.held?.has?.("KeyF")),
+    attackIntents:Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.attackIntents||0),
+    mode:String(mode),
+    active:String(document.body.dataset.runActive||"")
+  }));
+  assert.equal(after.fullscreen,!before.fullscreen,"F must toggle browser fullscreen during active gameplay");
+  assert.equal(after.mana,beforeMana,"F fullscreen must not spend ammunition");
+  assert.equal(after.attackIntents,before.attackIntents,"F fullscreen must not increment attack intents");
+  assert.equal(after.held,false,"F fullscreen must not hold canonical Space");
+  assert.equal(after.keyFHeld,false,"F fullscreen must not enter held-attack ownership");
+  assert.equal(after.mode,"playing","fullscreen F must leave gameplay active");
+  assert.equal(after.active,"true","fullscreen F must not deactivate the run");
+}
+
 try{
   const context=await browser.newContext({viewport:{width:1440,height:900}});
   await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
@@ -58,7 +84,7 @@ try{
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(p1),null,{timeout:20000});
 
   await sustainedFire(page,"Space");
-  await sustainedFire(page,"f");
+  await fullscreenKeyDoesNotFire(page);
   await sustainedFire(page,"Numpad0");
 
   await page.keyboard.press("KeyP");

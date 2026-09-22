@@ -22,7 +22,8 @@ assert.match(bootstrap,/legacyGatePending=window\.CCGLostSizzlerReleaseGate\?\.s
 assert.match(bootstrap,/if\(!button\|\|!button\.isConnected\)\{retry\(\);return\}\s*if\(button\.disabled\|\|legacyGatePending\)\{retry\(\);return\}/,"queued starts must survive missing, detached or transiently disabled buttons and the legacy-gate handoff");
 assert.match(bootstrap,/state\.pendingStartRetries\+=1;\s*setTimeout\(attempt,50\)/,"queued starts must retain the canonical fixed retry cadence until dispatch becomes safe");
 
-assert.match(attack,/new Set\(\["Space","KeyF","Numpad0"\]\)/,"all supported P1 attack keys must share the held-fire normalisation");
+assert.match(attack,/new Set\(\["Space","Numpad0"\]\)/,"supported P1 attack keys must share the held-fire normalisation without claiming fullscreen F");
+assert.doesNotMatch(attack,/new Set\([^\n]*"KeyF"/,"held-fire liveness must leave F exclusively to fullscreen");
 assert.match(attack,/input\?\.add\?\.\("Space"\)/,"held attack aliases must normalise to the canonical Space input consumed by the frame loop");
 assert.doesNotMatch(attack,/firePlayer\s*=|function\s+firePlayer/,"held-fire liveness must not replace or wrap the combat owner");
 assert.match(attack,/addEventListener\("blur",clearHeld/,"focus loss must clear held attack state");

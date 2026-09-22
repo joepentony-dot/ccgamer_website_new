@@ -302,6 +302,10 @@
   document.addEventListener("fullscreenchange",()=>push("fullscreen",{active:Boolean(document.fullscreenElement)}));
   addEventListener("error",event=>push("window-error",{message:String(event.message||""),file:String(event.filename||""),line:Number(event.lineno||0),column:Number(event.colno||0)}));
   addEventListener("unhandledrejection",event=>push("unhandled-rejection",{reason:String(event.reason?.stack||event.reason||"").slice(0,2000)}));
+  addEventListener("ccg:sfx",event=>push("sfx",{name:String(event.detail?.name||""),at:Number(event.detail?.at||0)}));
+  addEventListener("ccg:music-state",event=>push("music-state",{reason:String(event.detail?.reason||""),state:String(event.detail?.state||""),roomMood:String(event.detail?.roomMood||""),stalkerNear:Boolean(event.detail?.stalkerNear),stalkerSight:Boolean(event.detail?.stalkerSight),namedEnemy:String(event.detail?.namedEnemy||""),asset:String(event.detail?.asset||""),useMusicAssets:Boolean(event.detail?.useMusicAssets),at:Number(event.detail?.at||0)}));
+  addEventListener("ccg:item-collected",event=>push("item-collected",{kind:String(event.detail?.kind||""),name:String(event.detail?.name||""),lootKind:String(event.detail?.lootKind||""),collector:String(event.detail?.collector||""),floor:Number(event.detail?.floor||0)}));
+  addEventListener("ccg:collectible-effect",event=>push("collectible-effect",{effect:String(event.detail?.effect||""),active:Boolean(event.detail?.active),at:Number(event.detail?.at||0)}));
   document.addEventListener("click",event=>{
     const target=event.target instanceof Element?event.target.closest("#inventory-close,#inventory-close-top,#resume-btn,[data-ccg-equip-weapon],[data-bug-close]"):null;
     if(!target)return;
