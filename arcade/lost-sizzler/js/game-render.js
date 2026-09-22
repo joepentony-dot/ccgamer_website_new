@@ -1,5 +1,11 @@
 const lostSizzlerPixelAssets=(()=>{const make=src=>{if(typeof Image!=="function")return null;const image=new Image();image.decoding="async";image.src=src;return image};return{explorer:make("assets/pixel/explorer-sheet-v10-34.png?v=20260824r8"),chests:make("assets/pixel/chest-sheet-v10-34.png?v=20260824r8")}})();
-function camFor(p,v){let c=cameras.get(p.id)||{x:0,y:0};const tx=Math.max(0,Math.min(C.worldWidth*C.tile-v.w,p.rx*C.tile+C.tile/2-v.w/2)),ty=Math.max(0,Math.min(C.worldHeight*C.tile-v.h,p.ry*C.tile+C.tile/2-v.h/2));c.x=tx;c.y=ty;cameras.set(p.id,c);return c}
+function memoryPuzzleFrame(p){
+  const z=host?.memoryPuzzle;if(!p||!z||z.solved||p2||W.roomAt(world,p.x,p.y)!==z.roomId)return null;
+  const points=[...(z.tiles||[]),z.activator].filter(Boolean);if(!points.length)return null;
+  const xs=points.map(q=>q.x),ys=points.map(q=>q.y),pad=1.25;
+  return{minX:Math.min(...xs)-pad,maxX:Math.max(...xs)+1+pad,minY:Math.min(...ys)-pad,maxY:Math.max(...ys)+1+pad}
+}
+function camFor(p,v){let c=cameras.get(p.id)||{x:0,y:0};const frame=memoryPuzzleFrame(p),cx=frame?((frame.minX+frame.maxX)/2)*C.tile:p.rx*C.tile+C.tile/2,cy=frame?((frame.minY+frame.maxY)/2)*C.tile:p.ry*C.tile+C.tile/2,tx=Math.max(0,Math.min(C.worldWidth*C.tile-v.w,cx-v.w/2)),ty=Math.max(0,Math.min(C.worldHeight*C.tile-v.h,cy-v.h/2));c.x=tx;c.y=ty;cameras.set(p.id,c);return c}
 function ws(x,y){return{x:view.x+x*C.tile-cam.x+renderShake.x,y:view.y+y*C.tile-cam.y+renderShake.y}}
 function tileHash(x,y,salt=0){let h=Math.imul(x+17,73856093)^Math.imul(y+31,19349663)^Math.imul(salt+7,83492791);h^=h>>>13;h=Math.imul(h,1274126177);return(h^(h>>>16))>>>0}
 function drawTile(x,y){
@@ -520,21 +526,26 @@ function renderRadarPanel(p){
   if(ex.has(`${world.exit.x},${world.exit.y}`)&&inside(world.exit)){radarCtx.fillStyle=host.exitOpen?P.purple:"#71637d";radarCtx.fillRect(px(world.exit)-2,py(world.exit)-2,5,5)}
   radarCtx.strokeStyle="rgba(108,236,255,.24)";radarCtx.strokeRect(ox+.5,oy+.5,mw-1,mh-1);radarCtx.fillStyle=P.cyan;radarCtx.strokeStyle=P.white;radarCtx.lineWidth=1;radarCtx.fillRect(px(p)-3,py(p)-3,7,7);radarCtx.strokeRect(px(p)-3,py(p)-3,7,7)
 }
-function dungeonCameraZoom(v){
+function dungeonCameraZoom(p,v){
   if(p2)return 1;
+  const frame=memoryPuzzleFrame(p);
+  if(frame){
+    const requiredW=Math.max(C.tile,(frame.maxX-frame.minX)*C.tile),requiredH=Math.max(C.tile,(frame.maxY-frame.minY)*C.tile);
+    return Math.max(.65,Math.min(1,v.w/requiredW,v.h/requiredH))
+  }
   try{
-    const cssWidth=Number(document.querySelector(".canvas-wrap")?.getBoundingClientRect?.().width||window.innerWidth||0);
-    if(cssWidth>0&&cssWidth<=900)return 1.6;
+    const viewportWidth=Number(window.innerWidth||0),coarse=Boolean(window.matchMedia?.("(pointer: coarse)")?.matches);
+    if(coarse||(viewportWidth>0&&viewportWidth<=900))return 1.6;
     if(document.fullscreenElement)return 1.35
   }catch(_){}
   return 1
 }
 function renderView(p,v){
-  const zoom=dungeonCameraZoom(v),logical=zoom>1?{x:v.x,y:v.y,w:v.w/zoom,h:v.h/zoom}:v;
+  const zoom=dungeonCameraZoom(p,v),logical=zoom!==1?{x:v.x,y:v.y,w:v.w/zoom,h:v.h/zoom}:v;
   view=logical;focus=p;cam=camFor(p,logical);
-  window.__ccgDungeonCamera={zoom,viewportWidth:v.w,viewportHeight:v.h,logicalWidth:logical.w,logicalHeight:logical.h,tile:C.tile};
+  window.__ccgDungeonCamera={zoom,viewportWidth:v.w,viewportHeight:v.h,logicalWidth:logical.w,logicalHeight:logical.h,tile:C.tile,memoryPuzzleFramed:Boolean(memoryPuzzleFrame(p))};
   ctx.save();ctx.beginPath();ctx.rect(v.x,v.y,v.w,v.h);ctx.clip();ctx.fillStyle=P.black;ctx.fillRect(v.x,v.y,v.w,v.h);
-  if(zoom>1){ctx.translate(v.x,v.y);ctx.scale(zoom,zoom);ctx.translate(-v.x,-v.y)}
+  if(zoom!==1){ctx.translate(v.x,v.y);ctx.scale(zoom,zoom);ctx.translate(-v.x,-v.y)}
   const x0=Math.max(0,Math.floor(cam.x/C.tile)-1),x1=Math.min(C.worldWidth-1,Math.ceil((cam.x+logical.w)/C.tile)+1),y0=Math.max(0,Math.floor(cam.y/C.tile)-1),y1=Math.min(C.worldHeight-1,Math.ceil((cam.y+logical.h)/C.tile)+1);
   for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)drawTile(x,y);drawWindyCorridor();drawDedicatedHazards();drawFurniture();drawDoors();drawExit();drawWallLights();drawHazards();drawBoulderTrap();drawTraps();drawGenerators();drawShrinesSwitches();drawChests();drawSpecialObjects();host.items.forEach(drawItem);host.enemies.forEach(drawEnemy);drawStalker();drawRescue();drawShots();for(const r of remote.values())if(performance.now()-r.lastSeen<2600&&visibleTo(p,r.x,r.y))drawPlayer(r,"remote");for(const lp of localPlayers())drawPlayer(lp,lp===p2?"p2":"p1");drawAmbientMotes();drawFog();drawEffects();drawThreatEdgeIndicators(p);ctx.restore()
 }
