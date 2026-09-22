@@ -95,7 +95,7 @@ html[data-ccg-page] .ccg-wheel-guard-host {
 html[data-ccg-page] .ccg-wheel-guard {
     position: absolute;
     z-index: 20;
-    display: block;
+    display: none;
     margin: 0;
     padding: 0;
     border: 0;
@@ -143,9 +143,9 @@ html[data-ccg-page] .ccg-wheel-guard:focus-visible {
     outline-offset: -3px;
 }
 
-@media (hover: none), (pointer: coarse) {
-    html[data-ccg-page] .ccg-wheel-guard {
-        display: none !important;
+@media (any-hover: hover) and (any-pointer: fine) {
+    html[data-ccg-page] .ccg-wheel-guard:not([hidden]) {
+        display: block;
     }
 }
 
