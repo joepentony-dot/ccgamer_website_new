@@ -66,8 +66,13 @@ try{
     }));
     throw new Error("mobile ordered-bootstrap timeout: "+JSON.stringify(startup)+" :: "+String(error?.message||error));
   }
-  if(window.CCGLostSizzlerV142Bootstrap?.failed===true)throw new Error("mobile ordered bootstrap failed: "+String(window.CCGLostSizzlerV142Bootstrap.error||"unknown"));
-  if(!window.CCGLostSizzlerV142R19MobileTrapLayoutStability)throw new Error("R19 mobile trap layout module missing after ordered bootstrap readiness");
+  const orderedState=await page.evaluate(()=>({
+    failed:window.CCGLostSizzlerV142Bootstrap?.failed===true,
+    error:window.CCGLostSizzlerV142Bootstrap?.error||"",
+    r19:Boolean(window.CCGLostSizzlerV142R19MobileTrapLayoutStability)
+  }));
+  if(orderedState.failed)throw new Error("mobile ordered bootstrap failed: "+String(orderedState.error||"unknown"));
+  if(!orderedState.r19)throw new Error("R19 mobile trap layout module missing after ordered bootstrap readiness");
   await page.waitForLoadState("load");
   await page.waitForFunction(()=>document.body.classList.contains("v104-touch-device")&&Boolean(document.getElementById("v104-touch-controls")));
   await page.locator("#solo-btn").click({noWaitAfter:true});
