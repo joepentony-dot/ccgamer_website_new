@@ -48,11 +48,13 @@ assert.match(source,/trapCycles\.set\(key,false\)/,"mobile repair must re-arm th
 assert.match(source,/function syncPortraitCanvasAspect\(\)/,"portrait stability must own a bounded backing-store aspect repair");
 assert.match(source,/Math\.max\(1,640\/cssW,360\/cssH\)/,"portrait backing store must scale both axes together from the canonical minimums");
 assert.match(source,/aspect-ratio:auto!important/,"portrait playfield must use the live viewport geometry instead of forcing a desktop 16:9 frame");
-assert.match(source,/grid-template-rows:28px minmax\(0,1fr\) 74px!important/,"portrait mission, dungeon and HUD must own the active phone shell rows");
+assert.match(source,/grid-template-rows:28px minmax\(0,1fr\) 146px!important/,"portrait mission, dungeon and reclaimed HUD must own the active phone shell rows");
 assert.match(source,/\.ccg-game>\.v102-topbar,[\s\S]*?\.ccg-game>\.tactical-zone\{[\s\S]*?display:none!important/,"portrait active play must remove desktop-only direct rows instead of leaving implicit grid rows");
 assert.match(source,/\.ccg-game>\.game-area\{[\s\S]*?grid-row:2!important/,"portrait dungeon must own the flexible middle grid row");
 assert.match(source,/\.ccg-game>\.player-hub\{[\s\S]*?grid-row:3!important/,"portrait combat HUD must own the final explicit grid row");
-assert.match(source,/\.player-hub>\.hub-inventory,[\s\S]*?\.player-hub>\.hub-telemetry\{[\s\S]*?display:none!important/,"portrait combat HUD must omit duplicate desktop inventory and telemetry panels");
+assert.match(source,/\.player-hub>\.hub-telemetry\{[\s\S]*?display:none!important/,"portrait combat HUD must omit desktop-only telemetry");
+assert.match(source,/\.player-hub>\.hub-inventory\{[\s\S]*?display:block!important[\s\S]*?grid-column:1 \/ -1!important/,"portrait combat HUD must restore Quick Inventory across the reclaimed lower row");
+assert.match(source,/\.player-hub \.quick-slot\{[\s\S]*?height:50px!important/,"portrait Quick Inventory slots must remain visible and useful");
 assert.match(source,/min-width:44px!important/,"portrait movement controls must retain a 44px touch target");
 assert.match(source,/min-height:44px!important/,"portrait controls must retain a 44px touch target");
 assert.doesNotMatch(source,/\b(?:gainXp|addXp|grantXp|awardXp|awardXP)\b/,"mobile repair must not introduce an XP source");
@@ -141,7 +143,8 @@ assert.equal(trapCycles.get("P1|trap-1"),false,"inactive trap cycle must clear t
 assert.equal(typeof intervalHandler,"function","mobile stability owner must retain its small periodic re-arm check");
 assert.match(insertedStyle,/aspect-ratio:auto!important/,"runtime style must avoid a forced desktop aspect ratio on portrait phones");
 assert.match(insertedStyle,/grid-template-columns:repeat\(3,44px\)!important/,"runtime style must preserve usable movement controls");
-assert.match(insertedStyle,/grid-template-rows:28px minmax\(0,1fr\) 74px!important/,"runtime style must retain definite portrait shell rows");
+assert.match(insertedStyle,/grid-template-rows:28px minmax\(0,1fr\) 146px!important/,"runtime style must retain definite portrait shell rows with reclaimed HUD space");
+assert.match(insertedStyle,/\.player-hub>\.hub-inventory\{[\s\S]*?display:block!important/,"runtime style must expose Quick Inventory in portrait play");
 
 const cssAspect=360/520;
 const canvasAspect=canvas.width/canvas.height;
