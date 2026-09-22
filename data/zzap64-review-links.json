@@ -14,9 +14,9 @@
     "exactPages": 286,
     "issueFallbacks": 0,
     "directCoveragePercent": 100,
-    "reviewRecords": 831,
-    "additionalReviewRecords": 545,
-    "gameReviewGames": 346,
+    "reviewRecords": 834,
+    "additionalReviewRecords": 548,
+    "gameReviewGames": 347,
     "awardRecordsLinkedToGames": 100,
     "unmatchedCachedReviewPages": 27
   },
@@ -9064,6 +9064,42 @@
       "gameTitle": "Predator",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/predator"
+    },
+    "1993|march|c64|Wonder Boy": {
+      "issue": 95,
+      "page": 18,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=95&page=18",
+      "source": "cached-game-magazine-reference",
+      "scope": "game-review",
+      "gameSlug": "wonder-boy",
+      "gameTitle": "Wonder Boy",
+      "gameSystem": "c64",
+      "lemonUrl": "https://www.lemon64.com/game/wonderboy"
+    },
+    "1987|august|c64|Wonder Boy": {
+      "issue": 28,
+      "page": 28,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=28&page=28",
+      "source": "cached-game-magazine-reference",
+      "scope": "game-review",
+      "gameSlug": "wonder-boy",
+      "gameTitle": "Wonder Boy",
+      "gameSystem": "c64",
+      "lemonUrl": "https://www.lemon64.com/game/wonderboy"
+    },
+    "1990|may|c64|Wonder Boy": {
+      "issue": 61,
+      "page": 48,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=61&page=48",
+      "source": "cached-game-magazine-reference",
+      "scope": "game-review",
+      "gameSlug": "wonder-boy",
+      "gameTitle": "Wonder Boy",
+      "gameSystem": "c64",
+      "lemonUrl": "https://www.lemon64.com/game/wonderboy"
     },
     "1991|september|c64|American 3D Pool": {
       "issue": 77,
