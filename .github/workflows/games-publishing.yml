@@ -18,6 +18,7 @@ on:
       - "scripts/generate-uta-map.mjs"
       - "data/uta-game-matches.json"
       - "data/uta-manual-review.json"
+      - "data/uta-match-overrides.json"
       - "tests/single-game-community-uta.test.mjs"
       - "games/genres/**"
       - "games/collections/**"
