@@ -465,6 +465,11 @@ return (function () {
     var x = Math.max(2, Math.min(window.innerWidth - 3, Math.round(window.innerWidth * 0.5)));
     var y = Math.max(2, Math.min(window.innerHeight - 3, Math.round(window.innerHeight * 0.58)));
     var hit = document.elementFromPoint(x, y);
+    var hitDescriptor = hit
+        ? hit.tagName.toLowerCase() + (hit.id ? '#' + hit.id : '') + (hit.classList && hit.classList.length ? '.' + Array.from(hit.classList).slice(0, 4).join('.') : '')
+        : 'none';
+    var hitFrame = hit && hit.tagName === 'IFRAME';
+    var hitGuard = !!hit?.closest?.('.ccg-wheel-guard');
     var nested = [];
     for (var node = hit; node && node !== body && node !== root; node = node.parentElement) {
         var style = getComputedStyle(node);
@@ -533,6 +538,9 @@ return (function () {
         x: x,
         y: y,
         nestedAtPointer: nested,
+        hitDescriptor: hitDescriptor,
+        hitFrame: hitFrame,
+        hitGuard: hitGuard,
         htmlOverflowY: getComputedStyle(root).overflowY,
         bodyOverflowY: body ? getComputedStyle(body).overflowY : ''
     };
@@ -586,6 +594,10 @@ async function auditSitewideWheelPage(sessionId, sitePort, page) {
         fail(`sitewide wheel ${page.label}: pointer is over nested vertical scroller(s): ${target.nestedAtPointer.join(", ")}`);
     }
 
+    // Let the programmatic positioning and any newly exposed lazy content
+    // settle before timing physical wheel input. This measures steady wheel
+    // responsiveness rather than the one-off cost of the audit positioning.
+    await new Promise((resolve) => setTimeout(resolve, 450));
     await armSitewideWheelProbe(sessionId);
     for (let step = 0; step < SITEWIDE_WHEEL_STEPS; step += 1) {
         await dispatchWheel(sessionId, target.x, target.y, SITEWIDE_WHEEL_DELTA);
@@ -597,7 +609,7 @@ async function auditSitewideWheelPage(sessionId, sitePort, page) {
     if (result.error) fail(`sitewide wheel ${page.label}: ${result.error}`);
 
     const totalLongTaskMs = (result.longTasks || []).reduce((sum, entry) => sum + Number(entry.duration || 0), 0);
-    console.log(`METRIC sitewide wheel ${page.label}: movement=${result.movement}px latency=${result.firstLatency}ms scrollEvents=${result.scrollEvents} perfClassTransitions=${result.classTransitions} longTasks=${result.longTasks.length}/${totalLongTaskMs}ms`);
+    console.log(`METRIC sitewide wheel ${page.label}: hit=${target.hitDescriptor} iframe=${target.hitFrame} guard=${target.hitGuard} movement=${result.movement}px latency=${result.firstLatency}ms scrollEvents=${result.scrollEvents} perfClassTransitions=${result.classTransitions} longTasks=${result.longTasks.length}/${totalLongTaskMs}ms`);
 
     if (result.firstLatency === null || result.firstLatency > MAX_FIRST_SCROLL_LATENCY_MS) {
         fail(`sitewide wheel ${page.label}: first native scroll response was too slow (${result.firstLatency}ms)`);
