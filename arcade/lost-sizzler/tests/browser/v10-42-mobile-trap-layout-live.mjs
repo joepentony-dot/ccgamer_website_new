@@ -230,6 +230,9 @@ async function runViewport(viewport){
       gameArea:box(".ccg-game>.game-area"),
       canvasWrap:box(".ccg-game>.game-area>.canvas-wrap"),
       playerHub:box(".ccg-game>.player-hub"),
+      hubInventory:box(".ccg-game>.player-hub>.hub-inventory"),
+      hubProgress:box(".ccg-game>.player-hub>.hub-progress"),
+      quickSlots:[...document.querySelectorAll(".ccg-game>.player-hub .quick-slot")].map(slot=>{const r=slot.getBoundingClientRect();return{width:r.width,height:r.height}}),
       touch:box("#v104-touch-controls"),
       movement,
       hiddenRows:{
@@ -246,13 +249,17 @@ async function runViewport(viewport){
   });
 
   assert.deepEqual(errors,[],`portrait launch must have no uncaught browser errors: ${errors.join("\n")}`);
-  for(const key of ["shell","mission","gameArea","canvasWrap","playerHub","touch"])assert.ok(layout[key],`${key} must exist at ${viewport.width}x${viewport.height}`);
+  for(const key of ["shell","mission","gameArea","canvasWrap","playerHub","hubInventory","hubProgress","touch"])assert.ok(layout[key],`${key} must exist at ${viewport.width}x${viewport.height}`);
   assert.ok(layout.bodyScrollWidth<=layout.viewport.width+2,`portrait layout must not create horizontal page overflow: ${JSON.stringify(layout)}`);
   assert.ok(layout.shell.width<=layout.viewport.width+2,`game shell must fit the portrait viewport: ${JSON.stringify(layout)}`);
   assert.ok(layout.shell.height<=layout.viewport.height+2,`game shell must fit the portrait viewport height: ${JSON.stringify(layout)}`);
   assert.ok(layout.mission.height<=30,`portrait mission strip should remain compact: ${JSON.stringify(layout)}`);
-  assert.ok(layout.playerHub.height<=78,`portrait player HUD should remain compact: ${JSON.stringify(layout)}`);
-  assert.ok(layout.gameArea.height>layout.viewport.height*.55,`dungeon playfield must own most active portrait height: ${JSON.stringify(layout)}`);
+  assert.ok(layout.playerHub.height>=140&&layout.playerHub.height<=152,`portrait player HUD should reclaim lower portrait space without taking over the screen: ${JSON.stringify(layout)}`);
+  assert.ok(layout.hubInventory.height>=70,`portrait Quick Inventory should be visible and usable in the reclaimed lower HUD: ${JSON.stringify(layout)}`);
+  assert.ok(layout.hubProgress.height>=48,`portrait progression information should remain visible beside core stats: ${JSON.stringify(layout)}`);
+  assert.equal(layout.quickSlots.length,6,"portrait Quick Inventory should expose all six slot positions");
+  for(const slot of layout.quickSlots)assert.ok(slot.height>=48,`portrait Quick Inventory slots should remain visually useful: ${JSON.stringify({slot,layout})}`);
+  assert.ok(layout.gameArea.height>layout.viewport.height*.55,`dungeon playfield must still own most active portrait height: ${JSON.stringify(layout)}`);
   assert.ok(layout.gameArea.height>layout.mission.height+layout.playerHub.height,`gameplay area must retain the majority of active vertical space: ${JSON.stringify(layout)}`);
   assert.ok(layout.canvasWrap.width>0&&layout.canvasWrap.height>0,`portrait canvas must have usable geometry: ${JSON.stringify(layout)}`);
   assert.ok(layout.touch.width>0&&layout.touch.height>0,`touch dock must have rendered portrait geometry: ${JSON.stringify(layout)}`);
