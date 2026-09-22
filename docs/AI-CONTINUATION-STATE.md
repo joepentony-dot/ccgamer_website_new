@@ -8,6 +8,14 @@ For Dungeon Carnage specifically, `arcade/lost-sizzler/PROGRESS.md` is the produ
 
 Update this file when a workstream changes category, its active PR/dependency changes, or a substantial session ends. Keep detailed reasoning, checks, blockers, and next actions in the workstream file.
 
+## Content Publisher magazine / C64 tape enrichment repair — 22 September 2026
+
+- Draft PR #2263 / branch `codex/fix-content-publisher-enrichment-regression` repairs the Wonder Boy publication and hardens the shared game-enrichment pipeline.
+- Wonder Boy source identity is corrected from the erroneous 1979 value to the 1987 Activision C64 release; eight verified magazine-review rows and both verified UTA releases (Activision 1987 [6764], Hit Squad 1991 [1677]) are part of the candidate.
+- Reliable Games Publishing now runs explicit full-catalog magazine/UTA audits and a strict completion gate for new or enrichment-relevant changed games. Known unresolved magazine or UTA enrichment cannot be reported as a complete publication.
+- Full pre-repair audit: 559 C64 games; 306 UTA-mapped games; 114 UTA manual-review candidates; 471 C64 games with magazine rows and 88 without. Safe publisher-label aliases identify 36 historical C64 UTA candidates for automatic recovery on regeneration.
+- Exact-current-head qualification is required before merge. Detailed record: [content-publishing-and-music.md](ai-work/content-publishing-and-music.md).
+
 ## Temporary CCG play-games maintenance — 22 September 2026
 
 - PR #2232 / branch `codex/temporary-play-games-maintenance` temporarily takes both CCG original browser games offline on the production CCG hostname without changing their gameplay/runtime logic.
