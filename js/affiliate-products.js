@@ -307,7 +307,7 @@
         }
 
         if (title) {
-            title.textContent = "Amazon Picks";
+            title.textContent = "CCG Picks";
             title.title = toSafeString(group.heading) || "Compatible retro hardware";
         }
         if (intro) intro.textContent = toSafeString(group.intro) || "Optional Amazon affiliate recommendations matched to this system.";
@@ -319,7 +319,7 @@
         section.classList.remove("is-hardware-open");
         section.hidden = false;
         section.removeAttribute("aria-hidden");
-        section.setAttribute("aria-label", "Amazon affiliate recommendations");
+        section.setAttribute("aria-label", "CCG Picks - Amazon affiliate recommendations");
 
         panel.hidden = true;
         if (toggle) {
