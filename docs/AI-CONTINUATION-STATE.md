@@ -32,7 +32,7 @@ Update this file when a workstream changes category, its active PR/dependency ch
 - Branch: `codex/dungeon-r50-playtest-blockers`, based on current `main` and carrying the already-qualified #2241 fullscreen/input delta.
 - #2233's green pickup/level-up audio staggering plus SFX/item/music diagnostics are carried into the combined branch without merging #2233 independently.
 - The reported Floor 3 Memory Pad console failure is repaired with edge-triggered console occupancy plus frame-update recovery; Chromium coverage now proves leave/re-enter replay after a missed movement boundary.
-- Puzzle fairness is repaired by making only the five Memory Pad cells and replay console visible through ordinary dungeon darkness while the player is in that room, and by framing the complete puzzle with bounded Solo zoom-out.
+- Puzzle fairness is repaired by making the complete Memory Pad room visible through ordinary dungeon darkness while the unsolved puzzle is active, and by framing the complete room with bounded Solo zoom-out.
 - The A Nightmare On Elm Street cassette is confirmed as a dual legacy-horror + V10.5 arcade-effect case. Archive Wraith arrival now uses a separate creak cue rather than the Death Stalker sting, the legacy recurring beat-node allocator is removed, ambience retires outside active gameplay, and the bug reporter records both composed effects.
 - The r50 loader now displays the newer `c64-dungeon-carnage-home-v2.webp`; the itch builder carries the same asset into the offline package.
 - Candidate identity remains `V10.42 r50` / `20260922r50`. #2242 is draft and must pass the complete exact-head qualification matrix before any merge. #2241/#2233 remain open/unmerged until #2242 disposition is known.
