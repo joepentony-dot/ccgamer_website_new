@@ -7,7 +7,6 @@ import process from "node:process";
 const REPO_ROOT=path.resolve(new URL("..",import.meta.url).pathname);
 const SOURCE_ROOT=path.join(REPO_ROOT,"arcade","lost-sizzler");
 const CANONICAL_GAME_URL="https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/";
-const WEEKLY_URL=CANONICAL_GAME_URL+"#weekly-vault";
 const INCLUDE_DIRS=["css","js","assets"];
 const INCLUDE_FILES=["index.html","version.json"];
 const EXTERNAL_FILES=[["games/games.json","games/games.json"],["resources/images/hero/c64-dungeon-carnage-home-v2.webp","assets/c64-dungeon-carnage-loader.webp"]];
@@ -65,20 +64,9 @@ function offlineRuntime(cacheToken){
   return [
     "(()=>{",
     "\"use strict\";",
-    "const WEEKLY_URL="+JSON.stringify(WEEKLY_URL)+";",
-    "const state={ready:true,signedIn:false,locked:false,weekStart:\"\",playerName:\"\",seed:\"\",attempt:null,leaderboard:[],ghost:null,itchPackage:true};",
-    "function openWeekly(){try{const opened=window.open(WEEKLY_URL,\"_blank\",\"noopener,noreferrer\");if(opened)return true}catch(_){}try{window.location.href=WEEKLY_URL}catch(_){}return false}",
-    "function render(){",
-    "const button=document.getElementById(\"daily-btn\");if(button){button.disabled=false;button.textContent=\"Weekly Vault — CCG Website\";button.title=\"Weekly ranked play uses your CCG website account and opens in the browser.\"}",
-    "const status=document.getElementById(\"weekly-status\");if(status)status.textContent=\"Weekly ranked play remains on the Cheeky Commodore Gamer website. This itch.io build keeps Solo, Tutorial and local 2P Split Screen self-contained.\";",
-    "const actions=document.getElementById(\"weekly-auth-actions\");if(actions)actions.innerHTML='<a href=\"'+WEEKLY_URL+'\" target=\"_blank\" rel=\"noopener noreferrer\">Open Weekly Vault on CCG Website</a>';",
-    "const board=document.getElementById(\"weekly-leaderboard\");if(board)board.innerHTML=\"<li><span>Online leaderboard data is available on the CCG website.</span></li>\";",
-    "}",
-    "document.addEventListener(\"click\",event=>{const button=event.target instanceof Element?event.target.closest(\"#daily-btn\"):null;if(!button)return;event.preventDefault();event.stopImmediatePropagation();openWeekly()},true);",
-    "if(document.readyState===\"loading\")document.addEventListener(\"DOMContentLoaded\",render,{once:true});else render();",
-    "window.addEventListener(\"ccg:v142-ready\",render);",
-    "window.CCGWeeklyChallenge={get state(){return state},refresh:async()=>state,refreshGhost:async()=>null,claim:async()=>{openWeekly();throw new Error(\"Weekly Vault is available on the CCG website.\")},finish:async()=>null,render,renderCountdown:()=>false,renderLeaderboard:()=>false};",
-    "window.CCGDungeonCarnageItchRelease=Object.freeze({mode:\"itch-html5\",cache:"+JSON.stringify(cacheToken)+",weeklyUrl:WEEKLY_URL,openWeekly,render});",
+    "const retiredState=Object.freeze({ready:true,signedIn:false,locked:true,weekStart:\"\",playerName:\"\",seed:\"\",attempt:null,leaderboard:[],ghost:null,itchPackage:true,retired:true});",
+    "window.CCGWeeklyChallenge={get state(){return retiredState},refresh:async()=>retiredState,refreshGhost:async()=>null,claim:async()=>{throw new Error(\"Retired feature\")},finish:async()=>null,render:()=>false,renderCountdown:()=>false,renderLeaderboard:()=>false};",
+    "window.CCGDungeonCarnageItchRelease=Object.freeze({mode:\"itch-html5\",cache:"+JSON.stringify(cacheToken)+",supportedModes:Object.freeze([\"Solo\",\"Tutorial\"])});",
     "})();",
     ""
   ].join("\n");
@@ -101,13 +89,12 @@ function packageDemoPaywallRuntime(){
 }
 function transformIndex(source,cacheToken){
   let html=source;
-  html=html.replace(/^\s*<script src="\/js\/ccg-supabase-config\.js\?v=[^"]+"><\/script>\s*$/m,"");
-  html=html.replace(/^\s*<script src="\/js\/ccg-supabase-client\.js\?v=[^"]+"><\/script>\s*$/m,"");
+  html=html.replace(/^\s*<script src="\/js\/ccg-supabase-config\.js(?:\?v=[^"]+)?"><\/script>\s*$/m,"");
+  html=html.replace(/^\s*<script src="\/js\/ccg-supabase-client\.js(?:\?v=[^"]+)?"><\/script>\s*$/m,"");
+  html=html.replace(/^\s*<script src="\/js\/ccg-play-maintenance-owner-gate\.js"[^>]*><\/script>\s*$/m,"");
   html=html.replace(/^\s*<script src="js\/weekly-challenge\.js\?v=[^"]+"><\/script>\s*$/m,"");
   html=html.replace(/href="\/games\/ccg-games\/"/g,'href="https://www.cheekycommodoregamer.co.uk/games/ccg-games/" target="_blank" rel="noopener noreferrer"');
   html=html.replace(/src="\/resources\/images\/hero\/c64-dungeon-carnage-home-v2\.webp"/g,'src="assets/c64-dungeon-carnage-loader.webp"');
-  html=html.replace(/<div id="weekly-auth-actions" class="weekly-auth-actions">[\s\S]*?<\/div>/,'<div id="weekly-auth-actions" class="weekly-auth-actions"><a href="'+WEEKLY_URL+'" target="_blank" rel="noopener noreferrer">Open Weekly Vault on CCG Website</a></div>');
-  html=html.replace(/<p id="weekly-status" class="collection-summary">[\s\S]*?<\/p>/,'<p id="weekly-status" class="collection-summary">Weekly ranked play is available on the Cheeky Commodore Gamer website. Solo, Tutorial and local 2P Split Screen remain available in this itch.io build.</p>');
   html=html.replace(/<script src="js\/v10-41-load-watchdog\.js\?v=([^"]+)"><\/script>/,'<script src="js/v10-41-load-watchdog.js?v=$1"></script>\n<script src="js/itch-release-runtime.js?v='+cacheToken+'"></script>');
   if(!html.includes("js/itch-release-runtime.js"))fail("Could not inject itch release runtime");
   if(/src="\/js\/ccg-supabase-|js\/weekly-challenge\.js/.test(html))fail("Website account scripts remain in staged itch index");
@@ -142,8 +129,8 @@ async function collectManifest(root,version,sourceSha){
     build:version.build,
     cacheToken:version.cacheToken,
     canonicalGameUrl:CANONICAL_GAME_URL,
-    websiteAccountFeatures:["Weekly High-Score Vault"],
-    localModes:["Solo","Tutorial","2P Split Screen"],
+    websiteAccountFeatures:[],
+    localModes:["Solo","Tutorial"],
     fileCount:files.length,
     totalBytes:files.reduce((sum,file)=>sum+file.bytes,0),
     files
@@ -192,10 +179,12 @@ async function verify(output){
   if(!html.includes('ccg-lost-sizzler-build" content="'+version.build+'"'))fail("Staged index build identity mismatch");
   if(!html.includes('ccg-lost-sizzler-cache" content="'+version.cacheToken+'"'))fail("Staged index cache identity mismatch");
   if(!html.includes("js/itch-release-runtime.js"))fail("Itch offline gate missing");
-  if(/ccg-supabase-config|ccg-supabase-client|js\/weekly-challenge\.js/.test(html))fail("Website account bootstrap leaked into itch package");
+  if(/ccg-supabase-config|ccg-supabase-client|ccg-play-maintenance-owner-gate|js\/weekly-challenge\.js/.test(html))fail("Website account bootstrap leaked into itch package");
   if(/(?:href|src)="\/(?!\/)/.test(html))fail("Root-relative URL remains in itch package");
-  if(!html.includes(WEEKLY_URL))fail("Website Weekly Vault handoff missing");
   if(!html.includes("https://www.cheekycommodoregamer.co.uk/games/ccg-games/"))fail("Website exit handoff missing");
+  if(/Weekly High-Score Vault|Weekly Dungeon|2P Split Screen|P2:|#weekly-vault/i.test(html))fail("Retired public mode copy leaked into itch package");
+  if(!Array.isArray(manifest.localModes)||manifest.localModes.join("|")!=="Solo|Tutorial")fail("Itch manifest must expose Solo and Tutorial only");
+  if(!Array.isArray(manifest.websiteAccountFeatures)||manifest.websiteAccountFeatures.length!==0)fail("Retired Weekly Vault account feature must not remain in itch manifest");
   if(await exists(path.join(root,"js","ccg-supabase-config.js"))||await exists(path.join(root,"js","ccg-supabase-client.js")))fail("Supabase website bootstrap must not be packaged");
   const stagedPaywall=await fs.readFile(path.join(root,"js","v10-42-demo-paywall.js"),"utf8");
   if(!/demoMode:false/.test(stagedPaywall)||!/commerce:false/.test(stagedPaywall))fail("Package demo-paywall compatibility owner is missing its disabled-commerce boundary");
