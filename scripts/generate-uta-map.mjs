@@ -104,7 +104,7 @@ function decodeDirectoryName(href) {
 
 export function parseUtaReleaseDirectory(directoryName, href = "") {
   const decoded = decodeHtmlEntities(String(directoryName || "").replace(/\/$/, ""));
-  const match = decoded.match(/^(.*?)_\(((?:19|20)\d{2}|19xx|198x|0)_([\s\S]+)\)_\[(\d+)\]$/i);
+  const match = decoded.match(/^(.*?)_\(((?:19|20)(?:\d{2}|\d[xX]|[xX]{2})|0)_([\s\S]+)\)_\[(\d+)\]$/i);
   if (!match) return null;
 
   const titleRaw = match[1].replace(/_/g, " ").trim();
@@ -134,11 +134,11 @@ export function parseUtaReleaseDirectory(directoryName, href = "") {
 export function parseUtaIndex(html) {
   const releases = [];
   const seen = new Set();
-  const hrefPattern = /href=["']([^"']+\/?)["']/gi;
+  const hrefPattern = /href=(["'])(.*?)\1/gi;
   let match;
 
   while ((match = hrefPattern.exec(String(html || "")))) {
-    const href = decodeHtmlEntities(match[1]);
+    const href = decodeHtmlEntities(match[2]);
     if (!href || href === "../" || href.startsWith("?") || href.startsWith("#")) continue;
 
     const directoryName = decodeDirectoryName(href);
