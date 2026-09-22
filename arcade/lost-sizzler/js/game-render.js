@@ -520,11 +520,11 @@ function renderRadarPanel(p){
   if(ex.has(`${world.exit.x},${world.exit.y}`)&&inside(world.exit)){radarCtx.fillStyle=host.exitOpen?P.purple:"#71637d";radarCtx.fillRect(px(world.exit)-2,py(world.exit)-2,5,5)}
   radarCtx.strokeStyle="rgba(108,236,255,.24)";radarCtx.strokeRect(ox+.5,oy+.5,mw-1,mh-1);radarCtx.fillStyle=P.cyan;radarCtx.strokeStyle=P.white;radarCtx.lineWidth=1;radarCtx.fillRect(px(p)-3,py(p)-3,7,7);radarCtx.strokeRect(px(p)-3,py(p)-3,7,7)
 }
-function dungeonCameraZoom(v){
+function dungeonCameraZoom(v,p){
   if(p2)return 1;
   try{
     const mem=host.memoryPuzzle;
-    if(mem&&!mem.solved&&focus&&W.roomAt(world,focus.x,focus.y)===mem.roomId)return 1;
+    if(mem&&!mem.solved&&p&&W.roomAt(world,p.x,p.y)===mem.roomId)return 1;
     const viewportWidth=Number(window.innerWidth||0),coarse=Boolean(window.matchMedia?.("(pointer: coarse)")?.matches);
     if(coarse||(viewportWidth>0&&viewportWidth<=900))return 1.6;
     if(document.fullscreenElement)return 1.35
@@ -532,7 +532,7 @@ function dungeonCameraZoom(v){
   return 1
 }
 function renderView(p,v){
-  const zoom=dungeonCameraZoom(v),logical=zoom>1?{x:v.x,y:v.y,w:v.w/zoom,h:v.h/zoom}:v;
+  const zoom=dungeonCameraZoom(v,p),logical=zoom>1?{x:v.x,y:v.y,w:v.w/zoom,h:v.h/zoom}:v;
   view=logical;focus=p;cam=camFor(p,logical);
   window.__ccgDungeonCamera={zoom,viewportWidth:v.w,viewportHeight:v.h,logicalWidth:logical.w,logicalHeight:logical.h,tile:C.tile};
   ctx.save();ctx.beginPath();ctx.rect(v.x,v.y,v.w,v.h);ctx.clip();ctx.fillStyle=P.black;ctx.fillRect(v.x,v.y,v.w,v.h);
