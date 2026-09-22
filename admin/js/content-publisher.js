@@ -1249,7 +1249,7 @@ async function verifyGameArchiveEnrichment(config, job) {
   const [games, pendingPayload, reviews, uta, utaReview] = await Promise.all([
     fetchGithubJsonOptional(config, SOURCE_PATHS.games, []),
     fetchGithubJsonOptional(config, 'data/lemon-source-pending.json', []),
-    fetchGithubJsonOptional(config, \`data/magazine-review-records/\${magazineRecordChunk(slug)}.json\`, { games: {} }),
+    fetchGithubJsonOptional(config, `data/magazine-review-records/${magazineRecordChunk(slug)}.json`, { games: {} }),
     fetchGithubJsonOptional(config, 'data/uta-game-matches.json', { games: {} }),
     fetchGithubJsonOptional(config, 'data/uta-manual-review.json', { entries: [] })
   ]);
@@ -1257,7 +1257,7 @@ async function verifyGameArchiveEnrichment(config, job) {
   const game = Array.isArray(games) ? games.find((item) => String(item?.slug || '') === slug) : null;
   const pendingRows = Array.isArray(pendingPayload) ? pendingPayload : [];
   const pending = pendingRows.map((item) => slugify(item?.slug || item?.gameSlug || item)).filter(Boolean);
-  const reviewRows = reviews?.games?.[\`\${keyPrefix}:\${slug}\`] || [];
+  const reviewRows = reviews?.games?.[`${keyPrefix}:${slug}`] || [];
   const utaReleases = uta?.games?.[slug]?.releases || [];
   const utaManual = Array.isArray(utaReview?.entries)
     ? utaReview.entries.find((entry) => String(entry?.gameSlug || '') === slug)
@@ -1269,7 +1269,7 @@ async function verifyGameArchiveEnrichment(config, job) {
   if (pending.includes(slug)) {
     problems.push('automatic magazine-review source discovery is still unresolved');
   } else if (Array.isArray(reviewRows) && reviewRows.length) {
-    messages.push(\`\${reviewRows.length} magazine review\${reviewRows.length === 1 ? '' : 's'}\`);
+    messages.push(`${reviewRows.length} magazine review${reviewRows.length === 1 ? '' : 's'}`);
   } else if (Array.isArray(game?.lemon) && game.lemon.length) {
     problems.push('the verified Lemon source is present but no magazine review rows were materialised');
   } else {
@@ -1278,7 +1278,7 @@ async function verifyGameArchiveEnrichment(config, job) {
 
   if (String(job.system || '').toUpperCase() === 'C64') {
     if (Array.isArray(utaReleases) && utaReleases.length) {
-      messages.push(\`\${utaReleases.length} Ultimate Tape Archive release\${utaReleases.length === 1 ? '' : 's'}\`);
+      messages.push(`${utaReleases.length} Ultimate Tape Archive release${utaReleases.length === 1 ? '' : 's'}`);
     } else {
       const publisherMatched = Array.isArray(utaManual?.excludedCandidates)
         && utaManual.excludedCandidates.some((candidate) => candidate?.publisherMatched);
