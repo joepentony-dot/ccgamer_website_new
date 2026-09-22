@@ -79,6 +79,77 @@ html[data-ccg-page] :where(
 }
 
 /* ============================================================
+   EMBEDDED MEDIA WHEEL PASS-THROUGH
+   ------------------------------------------------------------
+   Cross-origin video players sit in their own browsing context, so physical
+   wheel input over them may never reach the page. The shared JS guard places
+   a transparent parent-layer control over inline YouTube players on desktop.
+   Native page scrolling remains available until the viewer deliberately
+   activates the embedded controls; leaving the player re-arms the guard.
+============================================================ */
+
+html[data-ccg-page] .ccg-wheel-guard-host {
+    position: relative;
+}
+
+html[data-ccg-page] .ccg-wheel-guard {
+    position: absolute;
+    z-index: 20;
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    touch-action: auto;
+}
+
+html[data-ccg-page] .ccg-wheel-guard[hidden],
+html[data-ccg-page] .ccg-wheel-guard-host--active > .ccg-wheel-guard {
+    display: none !important;
+}
+
+html[data-ccg-page] .ccg-wheel-guard__hint {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    max-width: calc(100% - 20px);
+    padding: 6px 9px;
+    border: 1px solid rgba(var(--accent-rgb), 0.34);
+    border-radius: 999px;
+    background: rgba(2, 6, 14, 0.88);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.7rem;
+    line-height: 1.2;
+    letter-spacing: 0.04em;
+    opacity: 0;
+    transform: translateY(3px);
+    transition: opacity 120ms ease, transform 120ms ease;
+    pointer-events: none;
+}
+
+html[data-ccg-page] .ccg-wheel-guard:hover .ccg-wheel-guard__hint,
+html[data-ccg-page] .ccg-wheel-guard:focus-visible .ccg-wheel-guard__hint {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+html[data-ccg-page] .ccg-wheel-guard:focus-visible {
+    outline: 2px solid rgba(var(--accent-rgb), 0.78);
+    outline-offset: -3px;
+}
+
+@media (hover: none), (pointer: coarse) {
+    html[data-ccg-page] .ccg-wheel-guard {
+        display: none !important;
+    }
+}
+
+/* ============================================================
    SITE-WIDE WHEEL PERFORMANCE CONTRACT
    ------------------------------------------------------------
    Mouse-wheel scrolling remains fully native. Expensive background-position
