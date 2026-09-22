@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "source": "https://uta.pokefinder.org/Ultimate_Tape_Archive/",
+  "note": "Excluded UTA title matches that need source-data verification before they can be exposed.",
+  "entries": [
+    {
+      "gameSlug": "1942",
+      "title": "1942",
+      "year": 1986,
+      "knownPublishers": [
+        "Elite"
+      ],
+      "knownReReleasers": [],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "10797",
+          "publisher": "Encore",
+          "yearLabel": "1989",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/1942_(1989_Encore)_[10797]/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "bangkok-knights",
+      "title": "Bangkok Knights",
+      "year": 1987,
+      "knownPublishers": [
+        "System 3"
+      ],
+      "knownReReleasers": [
+        "Summit"
+      ],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "3551",
+          "publisher": "Activision",
+          "yearLabel": "1987",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Bangkok_Knights_(1987_Activision)_[3551]/"
+        }
+      ]
+    }
+  ]
+}

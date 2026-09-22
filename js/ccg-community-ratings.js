@@ -41,7 +41,13 @@
   function isNotConfiguredError(error) {
     const code = String(error && error.code || '');
     const message = String(error && error.message || '').toLowerCase();
-    return code === '42P01' || code === 'PGRST205' || message.includes('relation') || message.includes('does not exist');
+    return code === '42P01'
+      || code === 'PGRST202'
+      || code === 'PGRST205'
+      || message.includes('relation')
+      || message.includes('function')
+      || message.includes('does not exist')
+      || message.includes('not found');
   }
 
   function isServerError(error) {
@@ -120,7 +126,15 @@
   function meterMarkup(averageValue, count) {
     const clamped = Math.max(0, Math.min(10, Number(averageValue) || 0));
     const pct = (clamped / 10) * 100;
+    const voteLabel = count === 1 ? '1 community vote' : count + ' community votes';
+
     return '' +
+      '<div class="ccg-rating-overview">' +
+      '  <div class="ccg-rating-score" aria-label="' + (count ? clamped.toFixed(1) + ' out of 10 from ' + voteLabel : 'No community ratings yet') + '">' +
+      '    <strong>' + (count ? clamped.toFixed(1) : '—') + '</strong><span>/10</span>' +
+      '  </div>' +
+      '  <p class="ccg-rating-votes">' + voteLabel + '</p>' +
+      '</div>' +
       '<div class="ccg-community-meter" aria-label="Community rating meter" role="img">' +
       '  <div class="ccg-community-meter__track">' +
       '    <div class="ccg-community-meter__fill" style="--ccg-meter-target:' + pct.toFixed(2) + '%"></div>' +
@@ -130,11 +144,27 @@
         return '<span class="ccg-community-meter__segment' + (i < Math.round(clamped) ? ' is-active' : '') + '"></span>';
       }).join('') +
       '  </div>' +
-      '  <p class="ccg-community-meter__label"><strong>' + (count ? clamped.toFixed(1) : '—') + '</strong>/10 · ' + count + ' ratings</p>' +
       '</div>';
   }
 
   async function fetchRatingSummary(supabase, slug) {
+    const rpcRes = await supabase.rpc('ccg_game_rating_summary', { p_game_key: slug });
+
+    if (!rpcRes.error) {
+      const row = Array.isArray(rpcRes.data) ? rpcRes.data[0] : rpcRes.data;
+      return {
+        count: Number(row && row.rating_count || 0),
+        averageValue: Number(row && row.average_rating || 0),
+        source: 'rpc'
+      };
+    }
+
+    if (!isNotConfiguredError(rpcRes.error)) {
+      return { error: rpcRes.error };
+    }
+
+    // Compatibility fallback while the read-model migration reaches production.
+    // The normal path above keeps the browser from downloading every rating row.
     const avgRes = await supabase.from('ratings').select('rating').eq('game_key', slug);
     if (avgRes.error) return { error: avgRes.error };
 
@@ -145,9 +175,9 @@
       : 0;
 
     return {
-      rows: rows,
       count: count,
-      averageValue: averageValue
+      averageValue: averageValue,
+      source: 'fallback'
     };
   }
 
@@ -159,7 +189,7 @@
     const meta = document.getElementById('ccg-rating-summary-meta');
     if (!meta) return;
     if (!count) { meta.textContent = 'No ratings yet'; return; }
-    meta.textContent = Number(averageValue || 0).toFixed(1) + '/10 · ' + count + ' ratings';
+    meta.textContent = Number(averageValue || 0).toFixed(1) + '/10 · ' + count + (count === 1 ? ' vote' : ' votes');
   }
 
   async function render() {
@@ -222,23 +252,31 @@
 
     mount.innerHTML = '' +
       '<div class="ccg-community-card ccg-community-rating-card">' +
-      '  <h3>Community Rating</h3>' +
+      '  <div class="ccg-community-card__heading">' +
+      '    <div><p class="ccg-community-eyebrow">Community score</p><h3>Player Rating</h3></div>' +
+      '    <p class="ccg-community-muted">Separate from the CCG editorial score.</p>' +
+      '  </div>' +
       meterMarkup(summary.averageValue, summary.count) +
       (user
-        ? ('<form id="ccg-rating-form" class="ccg-community-inline-form">' +
-           '  <label>Your Rating (1–10 stars)' +
-           '    <select required name="rating" aria-label="Rate this game out of 10 stars">' +
-           '      <option value="">Choose a score</option>' +
+        ? ('<form id="ccg-rating-form" class="ccg-community-rating-form">' +
+           '  <fieldset class="ccg-rating-fieldset">' +
+           '    <legend>' + (yourRating ? 'Change your rating' : 'Rate this game') + '</legend>' +
+           '    <div class="ccg-rating-choice-grid" role="radiogroup" aria-label="Rate this game from 1 to 10">' +
            Array.from({ length: 10 }, function (_unused, index) {
              var score = index + 1;
-             return '<option value="' + score + '"' + (yourRating === String(score) ? ' selected' : '') + '>' + score + '/10 ' + '★'.repeat(score) + '</option>';
+             return '<label class="ccg-rating-choice">' +
+               '<input type="radio" name="rating" value="' + score + '"' + (yourRating === String(score) ? ' checked' : '') + ' required>' +
+               '<span>' + score + '</span>' +
+               '</label>';
            }).join('') +
-           '    </select>' +
-           '  </label>' +
-           '  <button class="ccg-community-btn" type="submit">Save rating</button>' +
-           '  <span id="ccg-rating-status" class="ccg-community-muted" aria-live="polite"></span>' +
+           '    </div>' +
+           '  </fieldset>' +
+           '  <div class="ccg-rating-form__actions">' +
+           '    <button class="ccg-community-btn" type="submit">' + (yourRating ? 'Update rating' : 'Save rating') + '</button>' +
+           '    <span id="ccg-rating-status" class="ccg-community-muted" aria-live="polite"></span>' +
+           '  </div>' +
            '</form>')
-        : '<p><button class="ccg-community-btn" id="ccg-login-to-rate" type="button">Log in to rate</button></p>') +
+        : '<div class="ccg-community-guest-action"><p class="ccg-community-muted">Ratings are public to read. Log in only when you want to add your own score.</p><button class="ccg-community-btn" id="ccg-login-to-rate" type="button">Log in to rate</button></div>') +
       '</div>';
 
     if (!user) {
