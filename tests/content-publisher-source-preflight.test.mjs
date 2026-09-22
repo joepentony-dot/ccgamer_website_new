@@ -26,6 +26,23 @@ test('blocks a release-year contradiction before a source commit', () => {
   assert.ok(errors.some((error) => /Release year conflict/.test(error)));
 });
 
+test('detects a release year that appears after the platform name in natural copy', () => {
+  const description = 'Wonder Boy on the Commodore 64 is Activision’s 1987 conversion of Sega’s arcade platformer. This sentence contains enough additional archive context to satisfy the publisher preflight word requirement while preserving the natural wording used by the CCG description.';
+  assert.equal(detectReleaseYear(description), 1987);
+});
+
+test('blocks the Wonder Boy 1979/1987 contradiction that previously reached main', () => {
+  const description = 'Wonder Boy on the Commodore 64 is Activision’s 1987 conversion of Sega’s popular arcade platformer, bringing its running, jumping, fruit collecting and axe throwing to the C64. The conversion retains the arcade game’s personality and enough archive context for this regression fixture to satisfy the publisher description length requirement.';
+  const errors = validateGamePublisherSource({
+    system: 'C64',
+    year: 1979,
+    description,
+    thumbnail: 'resources/images/thumbnails/all/wonder-boy.jpg',
+    lemonUrl: ''
+  });
+  assert.ok(errors.some((error) => /Year field says 1979/.test(error) && /1987/.test(error)));
+});
+
 test('does not require a Lemon64 or Lemon Amiga URL', () => {
   assert.deepEqual(validateGamePublisherSource(validBase), []);
   assert.deepEqual(validateGamePublisherSource({ ...validBase, lemonUrl: '' }), []);
