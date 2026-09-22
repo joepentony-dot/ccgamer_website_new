@@ -311,7 +311,16 @@
     }catch(_){window.location.reload()}
   }
 
-  function install(){ensureButton();ensurePanel();setReleaseLabels()}
+  let badgeObserver=null;
+  function installBadgeOwnership(){
+    if(badgeObserver||typeof MutationObserver!=="function")return;
+    const badge=document.querySelector(".build-badge");if(!badge)return;
+    badgeObserver=new MutationObserver(()=>queueMicrotask(setReleaseLabels));
+    badgeObserver.observe(badge,{childList:true,characterData:true,subtree:true});
+    addEventListener("pagehide",()=>{badgeObserver?.disconnect();badgeObserver=null},{once:true});
+  }
+
+  function install(){ensureButton();ensurePanel();setReleaseLabels();installBadgeOwnership()}
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",install,{once:true});else install();
   const labelTimer=setInterval(()=>{
     setReleaseLabels();
