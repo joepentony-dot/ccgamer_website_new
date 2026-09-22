@@ -2,16 +2,18 @@
 
 > Legacy repository path: `arcade/lost-sizzler/`. The customer-facing game name is **C64 Dungeon Carnage**. Historical internal identifiers may still use `Lost Sizzler` where compatibility requires them.
 
-## Active r50 fullscreen/input follow-up — PR #2241
+## Active V10.42 r50 playtest-blocker consolidation — PR #2242
 
-- **Status:** DRAFT / QUALIFYING. Hands-on r49 testing exposed two desktop fullscreen defects.
-- **Current live baseline:** PR #2231 is merged as `3f273ec8eb881faac1825a6779863c9367faf0d1`, publishing `V10.42 r49` / `20260922r49`.
-- **Fullscreen key conflict:** the canonical shared handler already owns `F` for fullscreen, but later r20/held-attack/r47 recovery layers still listed `KeyF` as a P1 attack alias and could intercept it first during live play. #2241 removes `KeyF` from those attack sets while preserving Space/Numpad0 FIRE and legacy stale-key cleanup.
-- **Focused-key regression:** the fullscreen browser contract now sends a real focused keyboard F event through document capture listeners and requires fullscreen ownership without increasing attack intents.
-- **Desktop fullscreen framing:** Solo desktop fullscreen now uses a renderer-only 1.35x camera so the active dungeon consumes substantially more of the otherwise empty lower playfield. Normal desktop remains 1x, mobile remains 1.6x and split-screen remains 1x.
+- **Status:** DRAFT / QUALIFYING on branch `codex/dungeon-r50-playtest-blockers`.
+- **Current live baseline:** r49 remains live on `main`; #2241 and #2233 are retained as green source candidates but are intentionally unmerged while their work is consolidated here.
+- **Fullscreen/input:** carries the already-qualified #2241 F-key ownership repair and desktop-fullscreen 1.35x presentation onto current main.
+- **Memory Pad replay:** the purple console now has an edge-triggered contact owner plus update-loop recovery, so leaving and re-entering the console replays the five-pad sequence even if a movement wrapper misses the contact boundary.
+- **Memory Pad visibility/framing:** all five pads plus the replay console remain visible while the player is in the puzzle room; Solo camera framing centres the full puzzle and can zoom out to fit it. Mobile detection now uses the real viewport/coarse pointer instead of the sidebar-narrowed canvas.
+- **Nightmare cassette:** the dual `horror` + `arcade` collectible composition is retained, but Archive Wraith arrival no longer reuses the Death Stalker sting. The legacy horror ambience no longer creates oscillator pairs every 1.05 seconds and is stopped/disconnected outside active play.
+- **Diagnostics:** #2233 pickup/SFX/music-state tracing is preserved and `ccg:collectible-effect` now records both the horror and ARCADE FRENZY halves, active horror-creature count and rapid-fire state.
+- **Loader:** the static release loader now uses `resources/images/hero/c64-dungeon-carnage-home-v2.webp`; the itch package copies the same WEBP into its local assets and rewrites the staged path.
 - **Candidate identity:** `V10.42 r50` / `20260922r50`.
-- **Scope boundary:** no world generation, collision, damage, traps, progression, saves, economy, projectile lifecycle or combat balance is changed.
-- **Manual gate after merge:** verify F enters/exits fullscreen without firing and confirm the large lower black gap is materially removed while the HUD/radar remain usable.
+- **Qualification:** new static and Chromium regressions cover the reported boundaries. Do not merge until the exact final #2242 head is fully green.
 
 ## Audit checkpoint
 
