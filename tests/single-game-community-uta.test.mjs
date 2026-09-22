@@ -221,8 +221,13 @@ test("shared template and runtime keep UTA C64-only and hidden without a confide
   assert.ok(template.indexOf("ccg-uta-archive.js") < template.indexOf("load-single-game.js"));
 
   assert.match(runtime, /if \(!game \|\| !isC64\(game\)\)/);
-  assert.match(runtime, /loadData\(\)/);
-  assert.ok(runtime.indexOf("if (!game || !isC64(game))") < runtime.indexOf("const data = await loadData()"));
+  assert.match(runtime, /loadData\(false\)/);
+  assert.match(runtime, /loadData\(true\)/);
+  assert.match(runtime, /cache:\s*cacheMode/);
+  assert.match(runtime, /fetchData\("no-cache"\)/);
+  assert.match(runtime, /fetchData\("reload"\)/);
+  assert.doesNotMatch(runtime, /force-cache/);
+  assert.ok(runtime.indexOf("if (!game || !isC64(game))") < runtime.indexOf("let data = await loadData(false)"));
   assert.match(runtime, /if \(!record\) \{/);
   assert.match(loader, /label: "Tape"/);
 });
