@@ -1654,11 +1654,27 @@ function renderGame(game) {
         if (kicker && hasVideo) kicker.textContent = "Video Archive";
     }
 
-    const videoDescription = videoSection?.querySelector("[data-ccg-video-description]");
+    let videoDescription = videoSection?.querySelector("[data-ccg-video-description]");
     if (videoDescription && game._ccgEnrichedDescription) {
         videoDescription.textContent = game.description;
     }
+
+    // Compact single-game intro: pair the overview with a squarer video player.
+    // Older generated pages can lack the inline video overview, so reuse the
+    // canonical description instead of leaving a second full-width block.
+    if (hasVideo && videoSection && !videoDescription && descriptionEl && descriptionEl.textContent.trim()) {
+        videoDescription = document.createElement("div");
+        videoDescription.className = "game-video__overview";
+        videoDescription.setAttribute("data-ccg-video-description", "");
+        videoDescription.innerHTML = descriptionEl.innerHTML;
+        const videoBox = videoSection.querySelector(".game-video");
+        if (videoBox) videoSection.insertBefore(videoDescription, videoBox);
+    }
+
     const videoIncludesOverview = !!(videoDescription && videoDescription.textContent.trim());
+    if (videoSection) {
+        videoSection.classList.toggle("ccg-game-intro-section", Boolean(hasVideo && videoIncludesOverview));
+    }
     if (hasVideo && videoIncludesOverview && descriptionSection) {
         descriptionSection.hidden = true;
         hasOverview = false;
@@ -2888,7 +2904,69 @@ function initGameSectionNav(state) {
     nav.dataset.visibilityObserver = "true";
 }
 
+function initCompactSingleGamePanels() {
+    const community = document.querySelector(".ccg-community-game-section");
+    if (community) {
+        let shell = community.querySelector(".ccg-community-compact-shell");
+        if (!shell) {
+            shell = document.createElement("details");
+            shell.className = "ccg-community-compact-shell";
+            shell.id = "ccg-community-compact-panel";
+
+            const summary = document.createElement("summary");
+            summary.className = "ccg-community-compact-summary";
+            summary.innerHTML = '<span class="ccg-community-compact-icon" aria-hidden="true">★</span>' +
+                '<span class="ccg-community-compact-copy"><strong id="ccg-community-game-title-compact">CCG Community Rating &amp; Review</strong><small>See what other retro gamers think.</small></span>' +
+                '<span class="ccg-community-compact-score" id="ccg-community-compact-score" hidden></span>' +
+                '<span class="ccg-community-compact-chevron" aria-hidden="true">⌄</span>';
+
+            const body = document.createElement("div");
+            body.className = "ccg-community-compact-body";
+
+            const intro = community.querySelector(":scope > .ccg-section__intro");
+            if (intro) body.appendChild(intro);
+
+            const rating = document.getElementById("ccg-community-rating-panel");
+            const comments = document.getElementById("ccg-community-comments-panel");
+            if (rating) {
+                rating.open = false;
+                body.appendChild(rating);
+            }
+            if (comments) {
+                comments.open = false;
+                body.appendChild(comments);
+            }
+
+            community.querySelectorAll(":scope > .game-section__kicker, :scope > .game-section__title").forEach((node) => node.remove());
+            shell.append(summary, body);
+            community.appendChild(shell);
+        } else {
+            const rating = document.getElementById("ccg-community-rating-panel");
+            const comments = document.getElementById("ccg-community-comments-panel");
+            if (rating) rating.open = false;
+            if (comments) comments.open = false;
+        }
+        shell.open = false;
+    }
+
+    const affiliate = document.getElementById("affiliate-products-section");
+    if (affiliate) {
+        const panel = affiliate.querySelector("[data-hardware-panel]");
+        const toggle = affiliate.querySelector("[data-hardware-toggle]");
+        affiliate.classList.remove("is-hardware-open");
+        if (panel) panel.hidden = true;
+        if (toggle) {
+            toggle.hidden = false;
+            toggle.disabled = false;
+            toggle.setAttribute("aria-expanded", "false");
+            const label = toggle.querySelector("span:first-child");
+            if (label) label.textContent = "View Amazon Picks";
+        }
+    }
+}
+
 function initSingleGameUX(state) {
+    initCompactSingleGamePanels();
     initScrollProgress();
     initBackToTop();
     initScreenshotModalEnhancements();
