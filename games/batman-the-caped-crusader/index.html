@@ -599,27 +599,38 @@
         </section>
 
         <section class="game-section ccg-community-game-section" aria-labelledby="ccg-community-game-title">
-            <p class="game-section__kicker">The CCG Community</p>
-            <h2 class="game-section__title" id="ccg-community-game-title">Rate &amp; Review This Game</h2>
-            <p class="ccg-section__intro">Share your verdict with other Commodore fans. Everyone can read the reviews; members must log in to rate or comment.</p>
-
-            <details class="ccg-comments-panel ccg-comments-panel--rating" id="ccg-community-rating-panel" open>
-                <summary class="ccg-comments-panel__summary">
-                    <span>Community Rating</span>
-                    <span class="ccg-comments-panel__meta" id="ccg-rating-summary-meta">Loading rating…</span>
+            <details class="ccg-community-compact-shell" id="ccg-community-compact-panel">
+                <summary class="ccg-community-compact-summary">
+                    <span class="ccg-community-compact-icon" aria-hidden="true">★</span>
+                    <span class="ccg-community-compact-copy">
+                        <strong id="ccg-community-game-title">CCG Community Rating &amp; Review</strong>
+                        <small>See what other retro gamers think.</small>
+                    </span>
+                    <span class="ccg-community-compact-score" id="ccg-community-compact-score" hidden></span>
+                    <span class="ccg-community-compact-chevron" aria-hidden="true">⌄</span>
                 </summary>
-                <div class="ccg-comments-panel__body" id="ccg-community-rating">
-                    <div class="ccg-community-card"><p class="ccg-community-muted">Preparing ratings…</p></div>
-                </div>
-            </details>
+                <div class="ccg-community-compact-body">
+                    <p class="ccg-section__intro">Everyone can read ratings and reviews; members must log in to rate or comment.</p>
 
-            <details class="ccg-comments-panel" id="ccg-community-comments-panel">
-                <summary class="ccg-comments-panel__summary">
-                    <span>Member Reviews</span>
-                    <span class="ccg-comments-panel__meta" id="ccg-comments-summary-meta">Loading reviews…</span>
-                </summary>
-                <div class="ccg-comments-panel__body" id="ccg-community-comments">
-                    <div class="ccg-community-card"><p class="ccg-community-muted">Preparing reviews…</p></div>
+                    <details class="ccg-comments-panel ccg-comments-panel--rating" id="ccg-community-rating-panel">
+                        <summary class="ccg-comments-panel__summary">
+                            <span>Community Rating</span>
+                            <span class="ccg-comments-panel__meta" id="ccg-rating-summary-meta">Loading rating…</span>
+                        </summary>
+                        <div class="ccg-comments-panel__body" id="ccg-community-rating">
+                            <div class="ccg-community-card"><p class="ccg-community-muted">Preparing ratings…</p></div>
+                        </div>
+                    </details>
+
+                    <details class="ccg-comments-panel" id="ccg-community-comments-panel">
+                        <summary class="ccg-comments-panel__summary">
+                            <span>Member Reviews</span>
+                            <span class="ccg-comments-panel__meta" id="ccg-comments-summary-meta">Loading reviews…</span>
+                        </summary>
+                        <div class="ccg-comments-panel__body" id="ccg-community-comments">
+                            <div class="ccg-community-card"><p class="ccg-community-muted">Preparing reviews…</p></div>
+                        </div>
+                    </details>
                 </div>
             </details>
         </section>
@@ -634,7 +645,7 @@
             <div class="game-facts__inner affiliate-products-inner">
                 <div class="ccg-hardware-accordion">
                     <div class="ccg-hardware-accordion__header">
-                        <h2 class="game-facts__hardware-title affiliate-products-title">Need New Commodore Peripherals?</h2>
+                        <h2 class="game-facts__hardware-title affiliate-products-title">CCG Picks</h2>
                         <p class="affiliate-products-disclosure">Compatible hardware and controllers for modern retro setups.</p>
                     </div>
                     <button
@@ -643,7 +654,7 @@
                         data-hardware-toggle
                         aria-expanded="false"
                         aria-controls="ccg-hardware-panel">
-                        <span>Show Hardware</span>
+                        <span>Amazon Picks</span>
                         <span class="ccg-hardware-toggle__icon" aria-hidden="true">▼</span>
                     </button>
                     <div id="ccg-hardware-panel" class="ccg-hardware-panel game-facts__hardware" data-hardware-panel hidden>
