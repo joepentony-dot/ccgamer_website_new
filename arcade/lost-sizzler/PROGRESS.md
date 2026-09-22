@@ -2,7 +2,7 @@
 
 > Legacy repository path: `arcade/lost-sizzler/`. The customer-facing game name is **C64 Dungeon Carnage**. Historical internal identifiers may still use `Lost Sizzler` where compatibility requires them.
 
-## Active V10.42 R50 combined blocker candidate — 22 September 2026
+## P0 — sudden FIRE lockout hotfix — 22 September 2026\n\n- **Priority:** highest / game-breaking.\n- **Live reproduction:** `V10.42 r50`, Solo Floor 3; valid Space input transitions from successful fire to repeated no-shot attempts while ammo remains available and zero player projectiles are active.\n- **Isolation:** `codex/dungeon-p0-fire-lockout-hotfix`, based directly on current live main so unrelated R51 Home/PWA failures cannot block this defect.\n- **Release identity:** `V10.42 r51` / `20260922r51`, used to force a fresh canonical runtime rather than reusing broken r50 URLs.\n- **Correction:** quick taps remain eligible for delayed verification after keyup; only ammo consumption or a live player projectile proves firing; R20 no longer returns success merely because a FIRE buffer was queued; Inventory recovery follows the same rule.\n- **Browser regression:** deliberately stages a released quick tap plus a 700 ms queued buffer while suppressing the normal immediate shot, then requires the delayed R20 route to produce an actual shot.\n- **Status:** IMPLEMENTED / EXACT-HEAD QUALIFICATION PENDING. Do not merge until green and explicitly authorised.\n\n## Active V10.42 R50 combined blocker candidate — 22 September 2026
 
 - **Branch:** `codex/dungeon-r50-combined-blockers`.
 - Built on the already-green #2241 R50 fullscreen/input/layout head; current `main` remains authoritative at merge time.
