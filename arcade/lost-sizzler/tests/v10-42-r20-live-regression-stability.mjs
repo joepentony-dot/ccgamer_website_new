@@ -17,7 +17,8 @@ const controllerSeal=read("js/v10-42-r2-controller-owner-seal.js");
 assert.match(bootstrap,/v10-42-r20-live-regression-stability\.js[\s\S]*v10-42-r22-stall-elapsed-handoff\.js[\s\S]*v10-42-r1-stability\.js[\s\S]*v10-42-r18-solo-playtest-stability\.js/,"r20 and its elapsed writer handoff must load before the established final r1/r18 stability pair");
 assert.match(bootstrap,/const BUILD="V10\.42 r(\d+)"[\s\S]*const CACHE="\d{8}r\1"/,"the ordered bootstrap must retain a matching visible V10.42 build/cache identity while carrying the r20 stability module forward");
 
-assert.match(fix,/ATTACK_KEYS=new Set\(\["Space","KeyF","Numpad0"\]\)/,"normal gameplay must recover all supported P1 attack keys");
+assert.match(fix,/ATTACK_KEYS=new Set\(\["Space","Numpad0"\]\)/,"normal gameplay must recover supported P1 attack keys without stealing fullscreen F");
+assert.doesNotMatch(fix,/ATTACK_KEYS=new Set\([^\n]*"KeyF"/,"F must remain exclusively owned by the fullscreen handler");
 assert.match(fix,/function activeRun\(\)[\s\S]*liveSession\(\)[\s\S]*document\.body\.dataset\.runActive="true"/,"attack recovery must repair a stale presentation flag from the actual live run state instead of refusing FIRE");
 assert.match(fix,/mobileFirePointers=new Set\(\)[\s\S]*#v104-touch-controls \[data-action="fire"\][\s\S]*queueMicrotask[\s\S]*attackNow\("Space"\)/,"a delegated mobile FIRE safety owner must recover a visible button whose original listener stops delivering attack intents");
 assert.match(fix,/pointerup",releaseMobileFire,true[\s\S]*pointercancel",releaseMobileFire,true/,"delegated mobile FIRE recovery must always release its canonical Space hold");
