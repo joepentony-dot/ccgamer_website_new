@@ -92,7 +92,7 @@
           <h2><span>C64 DUNGEON</span><strong>CARNAGE</strong></h2>
           <em>A RETRO C64 DUNGEON CRAWLER</em>
         </div>
-        <p class="menu-blurb">A five-floor pixel dungeon crawl filled with shifting objectives, rare loot, hidden routes, dangerous events, co-op expeditions and things in the dark that ordinary weapons cannot finish.</p>
+        <p class="menu-blurb">A five-floor pixel dungeon crawl filled with shifting objectives, rare loot, hidden routes, dangerous events and things in the dark that ordinary weapons cannot finish.</p>
         <p class="beta-stage-disclaimer">This Game Is Currently In BETA Stages - This Will Not Reflect On Final Game Once Completed</p>
         <p class="desktop-play-recommendation"><strong>BETTER PLAYED ON DESKTOP PC</strong><span>Mobile play is supported, but a larger screen and keyboard give the best experience.</span></p>
         <div class="feature-strip">
@@ -102,19 +102,12 @@
         </div>
         <div class="menu-config"><label class="field"><span>PLAYER 1 NAME</span><input id="player-name" maxlength="18" value="CCG Player" autocomplete="nickname"></label><label class="field"><span>DIFFICULTY</span><select id="difficulty"><option>CASUAL</option><option selected>ARCADE</option><option>SIZZLER</option><option>GOLD MEDAL</option></select></label></div>
         <div class="mode-select-label"><span>✦</span> CHOOSE YOUR ADVENTURE <span>✦</span></div>
-        <div class="menu-buttons game-mode-buttons" aria-label="Game modes"><button id="solo-btn" class="primary game-mode-button mode-solo">Play Solo</button><button id="tutorial-zone-btn" type="button" class="tutorial-primary-option">Tutorial</button><button id="continue-save-btn" class="save-resume hidden">Resume Saved Run</button><button id="daily-btn">Weekly High-Score Vault</button><button id="split-btn">2P Split Screen</button></div>
-        <section id="weekly-vault" class="weekly-vault-section" aria-labelledby="weekly-vault-title">
-        <h3 id="weekly-vault-title">WEEKLY HIGH-SCORE VAULT LEADERBOARD</h3>
-        <p class="weekly-leaderboard-note">Check this leaderboard throughout the week to see who is winning. If nobody completes an attempt or nobody plays, no winner is declared and nothing is awarded or announced for that week.</p>
-        <p id="weekly-status" class="collection-summary">Sign in with your CCG website account for one shared-seed leaderboard attempt each week.</p>
-        <div id="weekly-auth-actions" class="weekly-auth-actions"><a href="/auth/register.html?returnTo=%2Farcade%2Flost-sizzler%2F%23weekly-vault">Create Free Website Account</a><a href="/auth/login.html?returnTo=%2Farcade%2Flost-sizzler%2F%23weekly-vault">Sign In</a></div>
-        <ol id="weekly-leaderboard" class="weekly-leaderboard" aria-label="Weekly High-Score Vault leaderboard"></ol>
-        </section>
+        <div class="menu-buttons game-mode-buttons" aria-label="Game modes"><button id="solo-btn" class="primary game-mode-button mode-solo">Play Solo</button><button id="tutorial-zone-btn" type="button" class="tutorial-primary-option">Tutorial</button><button id="continue-save-btn" class="save-resume hidden">Resume Saved Run</button><button id="daily-btn" type="button" hidden aria-hidden="true" tabindex="-1" style="display:none!important"></button><button id="split-btn" type="button" hidden aria-hidden="true" tabindex="-1" style="display:none!important"></button></div>
         <div class="menu-buttons secondary-menu"><button id="rulebook-btn">Objectives &amp; Rulebook</button><button id="support-btn">Support / Donate / Share</button><a class="menu-exit-link" href="/games/ccg-games/">Exit to CCG Games</a></div>
         <p id="collection-summary" class="collection-summary">Unique C64 titles permanently saved on this device: 0. Duplicates count once; clearing browser data resets this list.</p>
-        <p id="menu-note" class="note">Starting a run requests fullscreen automatically. Collectible games are shuffled into a seeded random order for every run. Weekly High-Score Vault allows one registered-account attempt per week, resets Monday at 00:00 UTC, uses Arcade rules, and death or completion ends the attempt. Sound begins when play starts.</p>
+        <p id="menu-note" class="note">Starting a run requests fullscreen automatically. Collectible games are shuffled into a seeded random order for every run. Sound begins when play starts.</p>
         <p class="game-copyright">© 2026 CHEEKY COMMODORE GAMER · ALL RIGHTS RESERVED</p>
-        <div class="keys-help"><kbd>P1: WASD / ARROWS MOVE • SPACE ATTACK • L-SHIFT DASH • E POTION • Q TORCH</kbd><kbd>R TELEPORT • C CLOSE DOOR • B BANISH • TAB INVENTORY</kbd><kbd>P2: IJKL MOVE • ENTER ATTACK • R-CTRL DASH • O POTION • M MAP • F FULLSCREEN</kbd></div>
+        <div class="keys-help"><kbd>P1: WASD / ARROWS MOVE • SPACE ATTACK • L-SHIFT DASH • E POTION • Q TORCH</kbd><kbd>R TELEPORT • C CLOSE DOOR • B BANISH • TAB INVENTORY</kbd></div>
       </div>
     </div>
 
@@ -125,7 +118,7 @@
     <div id="artefact-choice-panel" class="overlay hidden"><div class="panel compact artefact-choice-card">
       <div class="artefact-choice-glyph" aria-hidden="true">✦</div><h2>Banishment Artefact</h2>
       <p id="artefact-choice-name">Choose how to convert this rare reward.</p>
-      <div class="artefact-reward-grid"><button id="artefact-score-btn" class="primary"><b>10,000 SCORE</b><span>Best for Weekly Vault rankings</span></button><button id="artefact-xp-btn"><b>10 XP</b><span>The maximum XP allowed from one item</span></button></div>
+      <div class="artefact-reward-grid"><button id="artefact-score-btn" class="primary"><b>10,000 SCORE</b><span>Convert this rare reward into score</span></button><button id="artefact-xp-btn"><b>10 XP</b><span>The maximum XP allowed from one item</span></button></div>
     </div></div>
 
     <div id="floor-complete" class="overlay hidden"><div class="panel compact"><h2 id="floor-title">Floor Cleared</h2><p id="floor-summary"></p><div class="menu-buttons"><button id="descend-btn" class="primary">Descend Deeper</button><button id="extract-btn">Bank Loot & Exit</button></div></div></div>
@@ -162,8 +155,8 @@
         <section><div class="rulebook-icon">✦</div><h3>DEATH STALKER</h3><p>Exactly one can appear on each floor. It can open ordinary room doors, and normal weapons only knock it back. A lit carried torch frightens it away and stops its pursuit until the flame expires or is extinguished. Trade 3 artefacts or pay 10,000 score at a shop for a Banishment Flask, then press B nearby. Permanent banishment awards 15,000 score and 250 XP, and drops a Banishment Artefact with its existing reward choice.</p></section>
         <section><div class="rulebook-icon">▣</div><h3>DOORS &amp; SECRETS</h3><p>Enemies stay clear of unopened room entrances and cannot shoot into the waiting corridor. Once you enter, they move normally. Cracked walls hide secrets; 5% of secret rooms conceal another cracked pocket.</p></section>
         <section><div class="rulebook-icon">★</div><h3>LOOT, AMMO &amp; XP</h3><p>You begin with the Archive Sword and no firearm. Firearms are found or bought, and each floor receives ammunition based on the enemies actually generated, including named enemies, armour and generator pressure, with allowance for roughly 50% missed shots. At zero ammo ATTACK automatically returns to melee.</p></section>
-        <section><div class="rulebook-icon">£</div><h3>THE GAMBLER</h3><p>A rare one-use Gambler can appear during an ordinary dungeon run. Stand beside him and press G to stake 1,000 score on his animated reel. One position pays 2,000 score, two positions reduce your health to 2 HP, and three positions simply take the stake. The Gambler never appears in the Weekly High-Score Vault.</p></section>
-        <section><div class="rulebook-icon">⚠</div><h3>DEATH, ZERO XP &amp; WEEKLY VAULT</h3><p>Normal death moves half your score, the XP penalty and carried loot into one recoverable cache. Recover it before dying again; a second death permanently erases the old cache's non-essential contents, while essential keys or an Exit Sigil are returned safely to the floor and marked on the maps. You can lose at most one level and your most recent upgrade. The first death that leaves your total XP at zero gives a final warning. If any later death leaves total XP at zero a second time, the run ends—even if you recovered the earlier cache. Weekly Vault death ends that week’s attempt immediately.</p></section>
+        <section><div class="rulebook-icon">£</div><h3>THE GAMBLER</h3><p>A rare one-use Gambler can appear during an ordinary dungeon run. Stand beside him and press G to stake 1,000 score on his animated reel. One position pays 2,000 score, two positions reduce your health to 2 HP, and three positions simply take the stake.</p></section>
+        <section><div class="rulebook-icon">⚠</div><h3>DEATH &amp; ZERO XP</h3><p>Normal death moves half your score, the XP penalty and carried loot into one recoverable cache. Recover it before dying again; a second death permanently erases the old cache's non-essential contents, while essential keys or an Exit Sigil are returned safely to the floor and marked on the maps. You can lose at most one level and your most recent upgrade. The first death that leaves your total XP at zero gives a final warning. If any later death leaves total XP at zero a second time, the run ends—even if you recovered the earlier cache.</p></section>
         <section><div class="rulebook-icon">?</div><h3>ENEMY TACTICS &amp; OPTIONAL CHALLENGES</h3><p>Enemies can reposition, flank and hide behind solid furniture. Tougher enemies assess cover more often and re-plan faster, but smarter tactics do not grant extra speed or damage. Player shots can smash ordinary furniture to open a route; enemy fire cannot destroy it. Clues, memory tiles, torch sequences, arenas, boulders, bridges and secret rooms offer extra score and stronger loot.</p></section>
         <section><div class="rulebook-icon">♨</div><h3>WIND, SPIDERS &amp; FIRELIGHT</h3><p>About one corridor in twenty becomes a haunted windy passage. Its whistle warns of an adjoining webbed chamber crowded with fragile one-HP spiders. The wind snuffs an active torch with a pssst and visible gust, while fireplaces illuminate two rooms on every floor.</p></section>
         <section><div class="rulebook-icon">☠</div><h3>HORDES &amp; ARMOURED KNIGHTS</h3><p>One low-health skeleton horde can rise on each floor and bursts into flying bones when defeated. Archive Knights carry heavy armour and high health: they cannot shoot, but their sword strike is dangerous at close range.</p></section>
@@ -224,7 +217,6 @@
 <script src="/js/ccg-supabase-config.js?v=20260922r49"></script>
 <script src="/js/ccg-supabase-client.js?v=20260922r49"></script>
 <script src="js/version-check.js?v=20260922r49"></script>
-<script src="js/weekly-challenge.js?v=20260922r49"></script>
 <script src="js/v10-23-tutorial-guidance.js?v=20260922r49"></script>
 <script src="js/asset-overrides.js?v=20260922r49"></script>
 <script src="js/avatar-data.js?v=20260922r49"></script>
@@ -242,7 +234,6 @@
 <script src="js/game-play.js?v=20260922r49"></script>
 <script src="js/game-render.js?v=20260922r49"></script>
 <script src="js/game-main.js?v=20260922r49"></script>
-<script src="js/split-player-hud.js?v=20260922r49"></script>
 <script src="js/v10-41-lake-item-safety.js?v=20260922r49"></script>
 <script src="js/v10-41-gambler-devroom.js?v=20260922r49"></script>
 <script src="js/v10-41-developer-vault-hardening.js?v=20260922r49"></script>
@@ -251,9 +242,10 @@
 <script src="js/v10-41-landing-notification-polish.js?v=20260922r49"></script>
 <script src="js/v10-41-major-notification-hardening.js?v=20260922r49"></script>
 <script src="js/v10-41-active-enemy-fire.js?v=20260922r49"></script>
-<script src="js/v10-41-r29-buglog.js?v=20260922r49"></script>
 <script src="js/v10-41-r29-runtime-repair.js?v=20260922r49"></script>
   <script src="js/v10-41-r30-global-movement-guard.js?v=20260922r49"></script>
-  <script src="js/v10-41-r30-buglog.js?v=20260922r49"></script>
+<script>
+(()=>{const purge=()=>document.querySelectorAll("#developer-changelog,.developer-changelog").forEach(node=>node.remove());purge();addEventListener("DOMContentLoaded",purge,{once:true});addEventListener("load",purge,{once:true});setTimeout(purge,2000)})();
+</script>
 </body>
 </html>
