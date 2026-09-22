@@ -90,6 +90,11 @@
     <link rel="stylesheet" href="/resources/css/retro-video-discovery.css" />
     <link rel="stylesheet" href="/resources/css/ccg-nav-fit.css" data-ccg-static-shell-style="true">
     <link rel="stylesheet" href="/resources/css/ccg-community.css" data-ccg-static-shell-style="true">
+    <!-- Keep the final responsive geometry render-blocking on retro watch pages.
+         ccg-responsive-safety.js later reasserts this same cascade order. -->
+    <link rel="stylesheet" href="/resources/css/ccg-responsive-safety.css" data-ccg-retro-first-paint-style="true">
+    <link rel="stylesheet" href="/resources/css/ccg-responsive-page-polish.css" data-ccg-retro-first-paint-style="true">
+    <link rel="stylesheet" href="/resources/css/ccg-sitewide-layout-optimization.css" data-ccg-retro-first-paint-style="true">
     <script src="/js/ccg-nav-fit.js" defer data-ccg-static-shell-script="true"></script>
     <script src="/js/ccg-header-auth-loader.js" defer data-ccg-static-shell-script="true"></script>
 </head>
