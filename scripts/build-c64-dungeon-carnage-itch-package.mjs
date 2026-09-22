@@ -91,7 +91,7 @@ function transformIndex(source,cacheToken){
   let html=source;
   html=html.replace(/^\s*<script src="\/js\/ccg-supabase-config\.js(?:\?v=[^"]+)?"><\/script>\s*$/m,"");
   html=html.replace(/^\s*<script src="\/js\/ccg-supabase-client\.js(?:\?v=[^"]+)?"><\/script>\s*$/m,"");
-  html=html.replace(/^\s*<script src="\/js\/ccg-play-maintenance-owner-gate\.js"[^>]*><\/script>\s*$/m,"");
+  html=html.replace(/^\s*<script src="\/js\/ccg-play-maintenance-owner-gate\.js(?:\?v=[^"]+)?"[^>]*><\/script>\s*$/m,"");
   html=html.replace(/^\s*<script src="js\/weekly-challenge\.js\?v=[^"]+"><\/script>\s*$/m,"");
   html=html.replace(/href="\/games\/ccg-games\/"/g,'href="https://www.cheekycommodoregamer.co.uk/games/ccg-games/" target="_blank" rel="noopener noreferrer"');
   html=html.replace(/src="\/resources\/images\/hero\/c64-dungeon-carnage-home-v2\.webp(?:\?v=[^"]*)?"/g,'src="assets/c64-dungeon-carnage-loader.webp"');
