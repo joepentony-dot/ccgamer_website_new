@@ -202,18 +202,18 @@
   function ensureUi(){
     installStylesheet();
     if(document.getElementById("ccg-bug-report-btn"))return;
-    const host=document.createElement("div");
-    host.id="ccg-bug-report-host";host.setAttribute("popover","manual");
-    host.style.cssText="position:fixed!important;top:max(74px,calc(env(safe-area-inset-top) + 10px));right:max(10px,env(safe-area-inset-right));bottom:auto!important;left:auto!important;margin:0!important;border:0!important;padding:0!important;background:transparent!important;overflow:visible!important;pointer-events:auto!important;z-index:2147483647!important;";
+    const controls=document.querySelector(".system-buttons")||document.body;
     const button=document.createElement("button");
-    button.id="ccg-bug-report-btn";button.type="button";button.innerHTML='REPORT BUG <span id="ccg-bug-report-count" aria-hidden="true"></span>';
+    button.id="ccg-bug-report-btn";button.type="button";button.className="sound-toggle ccg-bug-report-trigger";
+    button.innerHTML='REPORT BUG <span id="ccg-bug-report-count" aria-hidden="true"></span>';
     button.title="Capture the current Dungeon Carnage state and recent diagnostic history (F8)";
     button.style.cssText="position:static!important;inset:auto!important;z-index:auto!important;pointer-events:auto!important;touch-action:manipulation;";
-    const enabled=reporterEnabled();button.hidden=!enabled;host.appendChild(button);document.body.appendChild(host);
-    if(enabled&&typeof host.showPopover==="function")try{host.showPopover()}catch(_){}
+    button.hidden=!reporterEnabled();
+    const quit=document.getElementById("quit-btn");
+    if(quit&&quit.parentElement===controls)controls.insertBefore(button,quit);else controls.appendChild(button);
 
-    const modal=document.createElement("div");modal.id="ccg-bug-report-modal";modal.setAttribute("popover","manual");modal.className="hidden";modal.style.cssText="position:fixed!important;inset:0;z-index:2147483647!important;pointer-events:auto!important;";modal.innerHTML=`
-      <section class="ccg-bug-report-card" role="dialog" aria-modal="true" aria-labelledby="ccg-bug-report-title">
+    const modal=document.createElement("dialog");modal.id="ccg-bug-report-modal";modal.className="ccg-bug-report-dialog";modal.innerHTML=`
+      <section class="ccg-bug-report-card" aria-labelledby="ccg-bug-report-title">
         <div class="ccg-bug-report-head"><h2 id="ccg-bug-report-title">DUNGEON BUG REPORT</h2><button type="button" data-bug-close aria-label="Close bug report">×</button></div>
         <p>Capture this immediately after the fault, before refreshing. Paste the text into the development chat, or attach the JSON file.</p>
         <textarea id="ccg-bug-report-text" spellcheck="false" readonly></textarea>
@@ -233,6 +233,7 @@
     modal.querySelectorAll("[data-bug-close]").forEach(node=>node.addEventListener("click",closeReporter));
     modal.querySelector("[data-bug-copy]")?.addEventListener("click",copyReport);
     modal.querySelector("[data-bug-save]")?.addEventListener("click",saveReport);
+    modal.addEventListener("cancel",event=>{event.preventDefault();closeReporter()});
   }
   function updateBadge(){
     const badge=document.getElementById("ccg-bug-report-count");
@@ -243,14 +244,12 @@
     const report=createReport(reason,snapshot||currentSnapshot(reason));
     const textarea=document.getElementById("ccg-bug-report-text"),modal=document.getElementById("ccg-bug-report-modal");
     if(textarea)textarea.value=formatReport(report);
-    modal?.classList.remove("hidden");
-    if(modal&&typeof modal.showPopover==="function")try{modal.showPopover()}catch(_){}
+    if(modal&&!modal.open&&typeof modal.showModal==="function")try{modal.showModal()}catch(_){}
     document.getElementById("ccg-bug-report-status").textContent=`Captured ${report.recentEvents.length} recent events and ${report.anomalies} anomaly flag${report.anomalies===1?"":"s"}.`;
   }
   function closeReporter(){
     const modal=document.getElementById("ccg-bug-report-modal");
-    if(modal&&typeof modal.hidePopover==="function")try{modal.hidePopover()}catch(_){}
-    modal?.classList.add("hidden");
+    if(modal?.open&&typeof modal.close==="function")try{modal.close()}catch(_){}
     if(safe(()=>mode==="playing",false))try{focusGameplayKeyboard()}catch(_){}
   }
   async function copyReport(){
@@ -310,7 +309,7 @@
     version:"V10.42-bug-reporter-v1",observationOnly:true,gameplayOwnership:false,inputOwnership:false,renderOwnership:false,
     get state(){return state},get events(){return [...events]},
     snapshot:currentSnapshot,createReport,formatReport,open:openReporter,close:closeReporter,
-    enable(){try{localStorage.setItem("ccg-dungeon-bug-reporter","1")}catch(_){}ensureUi();const b=document.getElementById("ccg-bug-report-btn"),h=document.getElementById("ccg-bug-report-host");if(b)b.hidden=false;if(h&&typeof h.showPopover==="function")try{h.showPopover()}catch(_){}},
-    disable(){try{localStorage.removeItem("ccg-dungeon-bug-reporter")}catch(_){}const b=document.getElementById("ccg-bug-report-btn"),h=document.getElementById("ccg-bug-report-host");if(b)b.hidden=true;if(h&&typeof h.hidePopover==="function")try{h.hidePopover()}catch(_){}}
+    enable(){try{localStorage.setItem("ccg-dungeon-bug-reporter","1")}catch(_){}ensureUi();const b=document.getElementById("ccg-bug-report-btn");if(b)b.hidden=false},
+    disable(){try{localStorage.removeItem("ccg-dungeon-bug-reporter")}catch(_){}const b=document.getElementById("ccg-bug-report-btn");if(b)b.hidden=true;closeReporter()}
   });
 })();
