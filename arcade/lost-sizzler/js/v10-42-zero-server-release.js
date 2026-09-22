@@ -239,7 +239,7 @@
   window.CCGLostSizzlerV142ZeroServerRelease=Object.freeze({
     enabled:true,
     onlineMultiplayer:false,
-    localModes:Object.freeze(["solo","tutorial","split-screen"]),
+    localModes:Object.freeze(["solo","tutorial"]),
     supabaseAccountFeatures:true,
     focusRecoveredLocalMenu,
     diagnostics:()=>Object.freeze({...state,removedButtons:[...state.removedButtons],hiddenPanels:[...state.hiddenPanels]})
