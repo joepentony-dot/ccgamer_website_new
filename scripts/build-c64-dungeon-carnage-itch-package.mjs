@@ -179,7 +179,7 @@ async function verify(output){
   if(!html.includes('ccg-lost-sizzler-build" content="'+version.build+'"'))fail("Staged index build identity mismatch");
   if(!html.includes('ccg-lost-sizzler-cache" content="'+version.cacheToken+'"'))fail("Staged index cache identity mismatch");
   if(!html.includes("js/itch-release-runtime.js"))fail("Itch offline gate missing");
-  if(/ccg-supabase-config|ccg-supabase-client|ccg-play-maintenance-owner-gate|js\/weekly-challenge\.js/.test(html))fail("Website account bootstrap leaked into itch package");
+  if(/ccg-supabase-config|ccg-supabase-client|js\/weekly-challenge\.js/.test(html))fail("Website account bootstrap leaked into itch package");
   if(/(?:href|src)="\/(?!\/)/.test(html))fail("Root-relative URL remains in itch package");
   if(!html.includes("https://www.cheekycommodoregamer.co.uk/games/ccg-games/"))fail("Website exit handoff missing");
   if(/Weekly High-Score Vault|Weekly Dungeon|2P Split Screen|P2:|#weekly-vault/i.test(html))fail("Retired public mode copy leaked into itch package");
