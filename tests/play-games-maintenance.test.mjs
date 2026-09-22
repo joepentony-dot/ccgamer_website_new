@@ -30,7 +30,7 @@ assert.match(ownerGate, /sessionStorage\.getItem\("ccg_header_auth_snapshot"\)/)
 assert.match(ownerGate, /client\.auth\.getSession\(\)/);
 assert.match(ownerGate, /client\.auth\.getUser\(\)/);
 assert.match(ownerGate, /\.from\("profiles"\)/);
-assert.match(ownerGate, /\.select\("username, display_name, role"\)/);
+assert.match(ownerGate, /\.select\("username, display_name, role, is_admin, banned"\)/);
 assert.match(ownerGate, /window\.location\.replace\(MAINTENANCE_DESTINATION\)/);
 assert.match(ownerGate, /mark\("owner-preview"\)/);
 assert.match(ownerGate, /Fail closed/);
