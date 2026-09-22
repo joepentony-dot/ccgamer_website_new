@@ -1,9 +1,12 @@
 /* C64 Dungeon Carnage — developer bug reporter. */
 #ccg-bug-report-btn{
-  position:fixed;
+  position:fixed!important;
   right:max(10px,env(safe-area-inset-right));
   top:max(74px,calc(env(safe-area-inset-top) + 10px));
-  z-index:2147483000;
+  z-index:2147483647!important;
+  isolation:isolate;
+  pointer-events:auto!important;
+  touch-action:manipulation;
   min-height:34px;
   padding:7px 10px;
   border:1px solid #ff6868;
@@ -30,9 +33,11 @@
   color:#090205;
 }
 #ccg-bug-report-modal{
-  position:fixed;
+  position:fixed!important;
   inset:0;
-  z-index:2147483640;
+  z-index:2147483647!important;
+  isolation:isolate;
+  pointer-events:auto!important;
   display:grid;
   place-items:center;
   padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
