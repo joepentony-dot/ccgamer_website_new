@@ -69,8 +69,11 @@ assert.equal((index.match(/src="js\/game-local-runtime\.js/g)||[]).length,1,"gam
 assert.match(main,/new window\.CCGNetwork\.RoomNetwork\(\{onMembers,onPacket\}\)/,"local session shell must retain its explicit compatibility callbacks");
 assert.doesNotMatch(index,/id="create-btn"|id="join-btn"|id="room-code"/,"retired online room controls must not return to the public menu");
 assert.match(index,/id="solo-btn"/,"Solo must remain available");
-assert.match(index,/id="split-btn"/,"local 2P Split Screen must remain available");
-assert.match(index,/id="weekly-vault"/,"Weekly High-Score Vault/account UI must remain available");
+assert.match(index,/id="tutorial-zone-btn"/,"Tutorial must remain available");
+assert.match(index,/id="split-btn"[^>]*hidden[^>]*aria-hidden="true"/,"retired split compatibility anchor must remain inert until startup policy removes it");
+assert.match(index,/id="daily-btn"[^>]*hidden[^>]*aria-hidden="true"/,"retired weekly compatibility anchor must remain inert until startup policy removes it");
+assert.doesNotMatch(index,/id="weekly-vault"|weekly-challenge\.js|Weekly High-Score Vault/i,"retired Weekly Vault public UI/client must stay removed");
+assert.doesNotMatch(index,/2P Split Screen|P2:/i,"retired Split Screen public copy must stay removed");
 assert.doesNotMatch(main,/getElementById\(["']create-btn["']\)|getElementById\(["']join-btn["']\)/,"game-main.js must not restore retired online controls");
 
 console.log("Dungeon Carnage retired-network runtime retirement contract passed.");
