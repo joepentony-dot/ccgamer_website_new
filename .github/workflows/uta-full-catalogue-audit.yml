@@ -10,6 +10,7 @@ on:
       - "games/games.json"
       - "data/uta-game-matches.json"
       - "data/uta-manual-review.json"
+      - "data/uta-match-overrides.json"
       - ".github/workflows/uta-full-catalogue-audit.yml"
   workflow_dispatch:
 
