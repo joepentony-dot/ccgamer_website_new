@@ -26,7 +26,7 @@ The existing Supabase-backed `comments` table remains the canonical review write
 
 Implemented:
 
-- guests can read reviews without logging in;
+- guests can read reviews, sort them and page through them without logging in;
 - reviewer handle/name, date and the reviewer's current game rating are shown where available;
 - review count is shown;
 - review pages are limited to 8 records at a time;
@@ -38,7 +38,7 @@ Implemented:
 - the retired `game_slug` field is no longer sent when inserting into the live canonical `comments` table;
 - normal review reads use the paginated `ccg_game_reviews` RPC, with a page-scoped fallback for migration safety.
 
-The database additions use RLS and `security invoker` functions. The full migration compiled successfully against the live production schema inside a transaction and was rolled back during qualification; production DDL must only be applied once PR qualification is green.
+The historical `20260922003000_single_game_community_read_models.sql` migration has already been recorded in production as `single_game_community_read_models` and is preserved unchanged. Review qualification then exposed follow-up hardening needs. Those are isolated in the forward-only `20260922030000_single_game_community_review_hardening.sql` migration: the public review RPC becomes a narrow fixed-search-path `security definer` read endpoint so reviewer identity does not depend on caller profile grants, and helpful votes enforce `user_soft_bans` through a current-user guard. The hardening migration has compiled successfully against the live production schema in a rollback-only transaction and must only be applied once the final #2228 exact head is green.
 
 ## Ultimate Tape Archive integration
 
@@ -59,7 +59,7 @@ Matching rules:
 - multiple confident tape releases are retained rather than choosing one arbitrarily;
 - if no confident match exists, the page shows no tape section.
 
-The browser does not scrape UTA. For a C64 game it reads the locally generated mapping once, using normal browser cache behaviour. For an Amiga game the UTA mapping is not requested at all.
+The browser does not scrape UTA. For a C64 game it reads the locally generated mapping once per page load and requests normal HTTP revalidation (`cache: "no-cache"`) so refreshed mappings are not permanently hidden behind a stale browser cache entry. For an Amiga game the UTA mapping is not requested at all.
 
 Matched pages show a compact Original Cassette / Tape Archive panel with publisher, year where known, tape loader when mapping data provides one, and an external **View Tape Archive** link.
 
@@ -106,8 +106,8 @@ The repository's Public Code Cache Version guard requires this public JS/CSS cha
 
 ## Next action
 
-1. Require all PR #2228 checks to pass on the final exact head.
-2. Apply `20260922003000_single_game_community_read_models.sql` to the live Supabase project and verify the two read RPCs/helpful-vote function and security advisors.
+1. Require all PR #2228 checks to pass on the final exact head reconciled onto current `main`.
+2. Apply the forward-only `20260922030000_single_game_community_review_hardening.sql` migration to the live Supabase project and verify guest review reads, soft-ban helpful-vote enforcement and security advisors.
 3. Merge PR #2228 only if the exact head remains green and mergeable.
 4. Monitor Reliable Games Publishing on `main`; its best-effort UTA refresh may expand both the confident mapping and the manual-review queue without making UTA availability a publishing blocker.
 5. Reconcile the generated `data/uta-manual-review.json` queue before manually promoting any additional release.
