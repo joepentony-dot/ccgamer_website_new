@@ -1655,10 +1655,18 @@ function renderGame(game) {
     }
 
     const videoDescription = videoSection?.querySelector("[data-ccg-video-description]");
-    if (videoDescription && game._ccgEnrichedDescription) {
-        videoDescription.textContent = game.description;
+    if (videoDescription) {
+        const overview = String(game.description || "").trim();
+        if (hasVideo && overview) {
+            if (game._ccgEnrichedDescription) videoDescription.textContent = overview;
+            else videoDescription.innerHTML = overview;
+            videoDescription.hidden = false;
+        } else {
+            videoDescription.textContent = "";
+            videoDescription.hidden = true;
+        }
     }
-    const videoIncludesOverview = !!(videoDescription && videoDescription.textContent.trim());
+    const videoIncludesOverview = !!(videoDescription && !videoDescription.hidden && videoDescription.textContent.trim());
     if (hasVideo && videoIncludesOverview && descriptionSection) {
         descriptionSection.hidden = true;
         hasOverview = false;
