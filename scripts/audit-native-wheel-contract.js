@@ -578,10 +578,23 @@ async function auditHomeTarget(sessionId, viewport, selector, label) {
     }
     const before = await readY(sessionId);
 
+    const beforeState = await execute(sessionId, String.raw`
+var e=document.elementFromPoint(arguments[0],arguments[1]);
+return {
+  hit:e?e.tagName.toLowerCase()+(e.id?'#'+e.id:'')+(e.classList?.length?'.'+Array.from(e.classList).slice(0,6).join('.'):''):'none',
+  bodyClass:document.body?.className||'',
+  htmlClass:document.documentElement.className||'',
+  htmlOverflow:getComputedStyle(document.documentElement).overflowY,
+  bodyOverflow:document.body?getComputedStyle(document.body).overflowY:'',
+  bodyPosition:document.body?getComputedStyle(document.body).position:'',
+  navOpen:Boolean(document.body?.classList.contains('ccg-body--nav-open')),
+  bodyLocked:Boolean(document.body?.classList.contains('ccg-body--locked'))
+};`, [target.x,target.y]);
+
     await wheelDown(sessionId, target.x, target.y);
     const afterDown = await readY(sessionId);
     if (afterDown - before < MIN_WHEEL_DELTA) {
-        fail(`${viewport.label}: home mouse wheel stalled DOWN over ${label} (${target.hit}, ${before}px -> ${afterDown}px)`);
+        fail(`${viewport.label}: home mouse wheel stalled DOWN over ${label} (${beforeState.hit}, ${before}px -> ${afterDown}px) state=${JSON.stringify(beforeState)}`);
     }
 
     await wheelUp(sessionId, target.x, target.y);
