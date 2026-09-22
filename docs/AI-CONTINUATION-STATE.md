@@ -11,8 +11,8 @@ Update this file when a workstream changes category, its active PR/dependency ch
 ## Mobile CLS / retro watch-page checkpoint — 22 September 2026
 
 - Search Console reports 43 mobile URLs in one CLS > 0.25 group, representative `/retro-specials/50-essential-amiga-games/`, group CLS 0.27.
-- Draft diagnostic #2234 / `codex/mobile-cls-retro-diagnostic` is read-only and extends Phase 8A to the exact representative route.
-- Bounded fix branch `codex/retro-mobile-cls-stability` reserves cold-auth header geometry and makes the final responsive cascade render-blocking in the authoritative retro-video template.
+- Read-only diagnostic #2234 reproduced the representative route at browser CLS 0.944 / Lighthouse CLS 0.743 under the deterministic 390×844 profile. Its highest shared sources include `main#ccg-main-content`, `aside#ccgModeIdentityBar`, `.ccg-header-actions` and `header.ccg-header`; this is lab evidence, not a replacement for Search Console field data.
+- Bounded fix branch `codex/retro-mobile-cls-stability` reserves cold-auth header geometry, emits the mode identity strip statically, and makes the mode-identity/final responsive cascade render-blocking in the authoritative retro-video template.
 - The candidate includes a 390×844 browser geometry guard for unresolved/guest/member auth states and keeps generated retro HTML automation-owned.
 - No merge is authorized merely by this checkpoint. Require exact-head green qualification and explicit user approval.
 - Detailed record: [mobile-cls-retro-video-2026-09-22.md](ai-work/mobile-cls-retro-video-2026-09-22.md).
