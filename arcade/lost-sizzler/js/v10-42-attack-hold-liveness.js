@@ -42,22 +42,31 @@
   const shotObserved=(before,after)=>after.mana<before.mana||after.shots>before.shots;
 
   function verifyFreshPress(code,before){
-    setTimeout(()=>{
-      // A quick tap is still a valid attack intent. Keyup must not cancel
-      // verification of the press that already happened.
-      if(!activeRun()||currentMode()!=="playing"||spyActive())return;
-      diagnostics.pressVerifications++;
-      const after=attackSnapshot();
-      if(shotObserved(before,after))return;
-      const r20=window.CCGLostSizzlerV142R20LiveRegressionStability;
-      if(typeof r20?.attackNow!=="function"){diagnostics.pressRecoveryFailures++;return}
-      const repairBefore=attackSnapshot();
-      try{r20.attackNow(code)}catch(_){}
-      const repaired=shotObserved(repairBefore,attackSnapshot());
-      if(repaired)diagnostics.pressRecoveries++;
-      else diagnostics.pressRecoveryFailures++;
-      scheduleSync();
-    },120);
+    const MAX_ATTEMPTS=5;
+    const attempt=number=>{
+      setTimeout(()=>{
+        // A quick tap is still a valid attack intent. Keyup must not cancel
+        // verification of the press that already happened. Retry briefly so a
+        // normal hit-stun/cadence boundary cannot swallow the whole press.
+        if(!activeRun()||currentMode()!=="playing"||spyActive())return;
+        diagnostics.pressVerifications++;
+        const after=attackSnapshot();
+        if(shotObserved(before,after))return;
+        const r20=window.CCGLostSizzlerV142R20LiveRegressionStability;
+        if(typeof r20?.attackNow!=="function"){
+          if(number<MAX_ATTEMPTS){attempt(number+1);return}
+          diagnostics.pressRecoveryFailures++;return
+        }
+        const repairBefore=attackSnapshot();
+        try{r20.attackNow(code)}catch(_){}
+        const repaired=shotObserved(repairBefore,attackSnapshot());
+        if(repaired){diagnostics.pressRecoveries++;return}
+        scheduleSync();
+        if(number<MAX_ATTEMPTS){attempt(number+1);return}
+        diagnostics.pressRecoveryFailures++;
+      },number===1?120:180);
+    };
+    attempt(1);
   }
 
   /*
