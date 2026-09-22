@@ -204,11 +204,11 @@
     if(document.getElementById("ccg-bug-report-btn"))return;
     const host=document.createElement("div");
     host.id="ccg-bug-report-host";host.setAttribute("popover","manual");
-    host.style.cssText="position:fixed!important;inset:auto max(10px,env(safe-area-inset-right)) auto auto;margin:0!important;border:0!important;padding:0!important;background:transparent!important;overflow:visible!important;pointer-events:none!important;";
+    host.style.cssText="position:fixed!important;top:max(74px,calc(env(safe-area-inset-top) + 10px));right:max(10px,env(safe-area-inset-right));bottom:auto!important;left:auto!important;margin:0!important;border:0!important;padding:0!important;background:transparent!important;overflow:visible!important;pointer-events:auto!important;z-index:2147483647!important;";
     const button=document.createElement("button");
     button.id="ccg-bug-report-btn";button.type="button";button.innerHTML='REPORT BUG <span id="ccg-bug-report-count" aria-hidden="true"></span>';
     button.title="Capture the current Dungeon Carnage state and recent diagnostic history (F8)";
-    button.style.cssText="position:fixed!important;right:max(10px,env(safe-area-inset-right));top:max(74px,calc(env(safe-area-inset-top) + 10px));z-index:2147483647!important;pointer-events:auto!important;touch-action:manipulation;";
+    button.style.cssText="position:static!important;inset:auto!important;z-index:auto!important;pointer-events:auto!important;touch-action:manipulation;";
     const enabled=reporterEnabled();button.hidden=!enabled;host.appendChild(button);document.body.appendChild(host);
     if(enabled&&typeof host.showPopover==="function")try{host.showPopover()}catch(_){}
 
