@@ -9,7 +9,7 @@ assert.equal(manifest.releaseVersion,"V10.42");
 assert.ok(index.includes(`ccg-lost-sizzler-build" content="${manifest.build}"`));
 assert.ok(index.includes(`ccg-lost-sizzler-cache" content="${manifest.cacheToken}"`));
 assert.ok(index.includes(`v10-41-r30-global-movement-guard.js?v=${manifest.cacheToken}`));
-assert.ok(index.includes(`v10-41-r30-buglog.js?v=${manifest.cacheToken}`));
+assert.equal(index.includes("v10-41-r30-buglog.js"),false,"historical r30 developer buglog must not load in the retired public UI");
 assert.match(guard,/clearInterval\(api\.state\.timer\)/,"r30 must stop the competing r29 installer timer");
 assert.match(guard,/__ccgV141R30Cooperative/,"r30 must replace r29 maintenance with cooperative mode ownership");
 assert.match(guard,/if\(api\.install\.__ccgV141R30Cooperative\)\{[\s\S]*return true[\s\S]*\}/,"r30 must keep an already-cooperative r29 installer without re-running it every monitor tick");
