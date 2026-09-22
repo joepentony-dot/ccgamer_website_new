@@ -1,13 +1,12 @@
 # AI continuation state
 
-## Content Publisher / C64 archive enrichment regression — 22 September 2026
+## C64 Tape Archive live visibility follow-up — 23 September 2026
 
-- Draft PR #2262 / branch `codex/fix-wonder-boy-enrichment-and-uta-audit` repairs Wonder Boy's incorrect 1979 source year to 1987, pins its Lemon64 source, and closes the silent-completion gap that allowed game publishing to report success while magazine review or UTA enrichment was still unresolved.
-- Wonder Boy regression coverage requires both UTA releases: Activision 1987 archive [6764] and Hit Squad 1991 archive [1677].
-- Content Publisher now validates conversion-year wording and re-checks magazine review materialisation plus UTA mapping/manual-review state before claiming a game is complete.
-- Reliable Games Publishing now requires a fresh full-catalogue UTA scan. Conservative publisher aliases are expanded while title/year evidence remains required; ambiguous title-only matches stay excluded.
-- Exact-head qualification and explicit user merge authorisation remain required.
-- Detailed records: [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) and [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md).
+- PR #2262 is merged. Wonder Boy is now C64 / 1987 on `main`, with eight materialised magazine reviews and both required UTA mappings: Activision 1987 [6764] and Hit Squad 1991 [1677].
+- Hands-on production testing still showed no Tape Archive section. The remaining defect is browser delivery, not source data: `js/ccg-uta-archive.js` used `cache: "force-cache"` for `data/uta-game-matches.json`, allowing a pre-enrichment HTTP-cache copy to hide newly published mappings.
+- Draft PR #2269 / branch `codex/fix-uta-runtime-cache-refresh` revalidates the UTA JSON on normal loads and performs one forced reload when the current C64 slug is absent. UTA matching rules and unrelated page/runtime systems are unchanged.
+- #2269 bumps `CODE_CACHE_VERSION` to `2026-09-23-public-code-v7`. Exact-head qualification and explicit user merge authorisation remain required.
+- Detailed record: [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md).
 
 ## How to use this record
 
