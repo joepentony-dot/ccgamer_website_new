@@ -94,7 +94,7 @@ function transformIndex(source,cacheToken){
   html=html.replace(/^\s*<script src="\/js\/ccg-play-maintenance-owner-gate\.js"[^>]*><\/script>\s*$/m,"");
   html=html.replace(/^\s*<script src="js\/weekly-challenge\.js\?v=[^"]+"><\/script>\s*$/m,"");
   html=html.replace(/href="\/games\/ccg-games\/"/g,'href="https://www.cheekycommodoregamer.co.uk/games/ccg-games/" target="_blank" rel="noopener noreferrer"');
-  html=html.replace(/src="\/resources\/images\/hero\/c64-dungeon-carnage-home-v2\.webp"/g,'src="assets/c64-dungeon-carnage-loader.webp"');
+  html=html.replace(/src="\/resources\/images\/hero\/c64-dungeon-carnage-home-v2\.webp(?:\?v=[^"]*)?"/g,'src="assets/c64-dungeon-carnage-loader.webp"');
   html=html.replace(/<script src="js\/v10-41-load-watchdog\.js\?v=([^"]+)"><\/script>/,'<script src="js/v10-41-load-watchdog.js?v=$1"></script>\n<script src="js/itch-release-runtime.js?v='+cacheToken+'"></script>');
   if(!html.includes("js/itch-release-runtime.js"))fail("Could not inject itch release runtime");
   if(/src="\/js\/ccg-supabase-|js\/weekly-challenge\.js/.test(html))fail("Website account scripts remain in staged itch index");
