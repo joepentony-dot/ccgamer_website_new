@@ -115,6 +115,8 @@ The test contract covers:
 
 The repository's Public Code Cache Version guard requires this public JS/CSS change to ship with a new `CODE_CACHE_VERSION`, so PR #2227 also contains the corresponding `service-worker.js` cache namespace bump. This is a deployment-supporting change only, not an unrelated PWA redesign.
 
+The final documentation-only qualification exposed an unrelated checkout-history defect in the Public Code Cache Version workflow: after a full checkout it re-fetched `main` with `--depth=1`, causing `git diff origin/main...HEAD` to fail with `no merge base` on the synthetic PR merge commit. The workflow now fetches the `main` baseline without truncating history. No cache-version assertion or public-code requirement was weakened.
+
 ## Next action
 
 1. Re-run exact-head qualification after this final documentation checkpoint.
