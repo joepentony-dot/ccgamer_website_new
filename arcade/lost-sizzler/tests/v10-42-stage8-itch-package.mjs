@@ -37,8 +37,8 @@ try{
   assert.equal(manifest.releaseVersion,version.releaseVersion);
   assert.equal(manifest.build,version.build);
   assert.equal(manifest.cacheToken,version.cacheToken);
-  assert.deepEqual(manifest.localModes,["Solo","Tutorial","2P Split Screen"]);
-  assert.deepEqual(manifest.websiteAccountFeatures,["Weekly High-Score Vault"]);
+  assert.deepEqual(manifest.localModes,["Solo","Tutorial"]);
+  assert.deepEqual(manifest.websiteAccountFeatures,[]);
   assert.ok(manifest.fileCount>100,"itch package should contain the complete current runtime, not a miniature shell");
   assert.ok(manifest.totalBytes>100000,"itch package should include real game assets");
 
@@ -50,19 +50,16 @@ try{
   ])assert.ok(listed.has(required),"missing staged runtime file: "+required);
 
   assert.match(sourceIndex,/src="\/js\/ccg-supabase-config\.js/,"canonical website build must retain its website account bootstrap");
-  assert.match(sourceIndex,/src="js\/weekly-challenge\.js/,"canonical website build must retain Weekly Vault");
+  assert.doesNotMatch(sourceIndex,/src="js\/weekly-challenge\.js|Weekly High-Score Vault|2P Split Screen/i,"canonical public build must keep retired Weekly/Split surfaces absent");
   assert.doesNotMatch(stagedIndex,/ccg-supabase-config|ccg-supabase-client|js\/weekly-challenge\.js/,"staged itch build must not carry website account bootstraps");
   assert.match(stagedIndex,/js\/itch-release-runtime\.js\?v=/,"staged itch build must load its package-only gate");
   assert.match(stagedIndex,/https:\/\/www\.cheekycommodoregamer\.co\.uk\/games\/ccg-games\//,"exit links must leave itch safely for the CCG website");
-  assert.match(stagedIndex,/https:\/\/www\.cheekycommodoregamer\.co\.uk\/arcade\/lost-sizzler\/#weekly-vault/,"Weekly Vault must hand back to the website");
+  assert.doesNotMatch(stagedIndex,/weekly-vault|Weekly High-Score Vault|Weekly Dungeon|2P Split Screen|P2:/i,"standalone itch index must keep retired Weekly/Split surfaces absent");
   assert.doesNotMatch(stagedIndex,/(?:href|src)="\/(?!\/)/,"standalone itch index must not depend on root-relative website paths");
 
   assert.match(releaseGate,/mode:"itch-html5"/);
-  assert.match(releaseGate,/Weekly Vault — CCG Website/);
-  assert.match(releaseGate,/event\.stopImmediatePropagation\(\)/,"itch gate must prevent the website-only daily handler from taking over");
-  assert.match(releaseGate,/CCGWeeklyChallenge=\{/,"package must provide a website-service compatibility owner");
-  assert.doesNotMatch(releaseGate,/CCGWeeklyChallenge=Object\.freeze/,"Weekly compatibility owner must remain mutable because retained runtime layers wrap finish()");
-  assert.match(releaseGate,/finish:async\(\)=>null/,"Weekly compatibility owner must expose the retained finish hook");
+  assert.match(releaseGate,/supportedModes:Object\.freeze\(\["Solo","Tutorial"\]\)/,"itch gate must advertise only supported public modes");
+  assert.doesNotMatch(releaseGate,/Weekly|CCGWeeklyChallenge|split/i,"itch gate must not recreate retired Weekly or Split ownership");
   assert.doesNotMatch(releaseGate,/CCG_SUPABASE|supabase\.co|paypal|checkout|entitlement/i,"itch package gate must not recreate custom commerce or account bootstrap");
   assert.match(canonicalPaywall,/PAYPAL CHECKOUT|BUY WITH PAYPAL/,"canonical website source should remain unchanged by package staging");
   assert.match(stagedPaywall,/demoMode:false/,"staged paywall compatibility owner must disable demo/paywall mode");
@@ -78,7 +75,7 @@ try{
   assert.match(sourceBuilder,/packageDemoPaywallRuntime\(\)/,"builder must replace the retired website commerce module only inside the staged artifact");
   assert.doesNotMatch(sourceBuilder,/path\.join\(REPO_ROOT[^\n]*(?:desktop|services\/ccg-backend|private-download|signed-download)/i,"fresh itch builder must not source files from retired desktop/private-delivery integration");
 
-  console.log("PASS V10.42 Stage 8 itch.io package contract");
+  console.log("PASS V10.42 Solo/Tutorial itch.io package contract");
 }finally{
   fs.rmSync(temp,{recursive:true,force:true});
 }
