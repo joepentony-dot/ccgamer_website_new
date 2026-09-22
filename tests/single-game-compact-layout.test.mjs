@@ -53,14 +53,18 @@ test("overview shares a compact desktop row with a 4 by 3 video", () => {
   assert.match(css, /#game-discovery-links/);
 });
 
-test("affiliate picks remain a compact bottom accordion", () => {
+test("affiliate picks remain a compact bottom accordion with one click owner", () => {
   const affiliate = read("js/affiliate-products.js");
+  const loader = read("js/load-single-game.js");
   const css = read("resources/css/ccg-affiliate-showcase.css");
 
   assert.match(affiliate, /const communitySection = document\.querySelector\("\.ccg-community-game-section"\)/);
   assert.match(affiliate, /title\.textContent = "CCG Picks"/);
   assert.match(affiliate, /panel\.hidden = true/);
   assert.match(affiliate, /ccgAffiliateToggleBound/);
+  assert.match(affiliate, /toggle\.addEventListener\("click"/);
+  assert.doesNotMatch(loader, /initHardwareAccordion/);
+  assert.doesNotMatch(loader, /hardwareAccordionBound/);
   assert.match(css, /SINGLE-GAME COMPACT AMAZON ACCORDION/);
   assert.match(css, /\.ccg-hardware-toggle::before/);
   assert.match(css, /content:\s*"a"/);
@@ -69,5 +73,5 @@ test("affiliate picks remain a compact bottom accordion", () => {
 
 test("public cache version covers the shared CSS and JavaScript change", () => {
   const sw = read("service-worker.js");
-  assert.match(sw, /CODE_CACHE_VERSION = "2026-09-22-public-code-v3"/);
+  assert.match(sw, /CODE_CACHE_VERSION = "2026-09-22-public-code-v4"/);
 });
