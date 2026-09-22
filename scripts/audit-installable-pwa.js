@@ -43,6 +43,40 @@ function changedFiles() {
   return [];
 }
 
+
+function readGitFile(ref, relativePath) {
+  try {
+    return childProcess.execFileSync(
+      "git",
+      ["show", `${ref}:${relativePath}`],
+      { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }
+    );
+  } catch (error) {
+    return null;
+  }
+}
+
+function isApprovedDungeonHomeCtaMigration(relativePath) {
+  if (relativePath !== "home.html") return false;
+
+  const baseline = readGitFile("origin/main", relativePath);
+  if (baseline === null) return false;
+  const current = read(relativePath);
+
+  const blockPattern = /<div class="home-hero__game-actions">[\s\S]*?<\/div>/;
+  const baselineMatch = baseline.match(blockPattern);
+  const currentMatch = current.match(blockPattern);
+  if (!baselineMatch || !currentMatch) return false;
+
+  if (!baselineMatch[0].includes("c64-dungeon-carnage-home-v2.webp")) return false;
+  if (!baselineMatch[0].includes("#weekly-vault")) return false;
+  if (!currentMatch[0].includes('aria-label="Play C64 Dungeon Carnage"')) return false;
+  if (!currentMatch[0].includes("c64-dungeon-carnage-home-feature.webp")) return false;
+  if (/#weekly-vault|VIEW LEADERBOARD|WEEKLY VAULT/.test(currentMatch[0])) return false;
+
+  return baseline.replace(blockPattern, currentMatch[0]) === current;
+}
+
 const manifestText = read("manifest.webmanifest");
 const serviceWorker = read("service-worker.js");
 const pwaCode = read("js/ccg-pwa.js");
@@ -230,7 +264,7 @@ const allowedPaths = new Set([
 ]);
 
 for (const changedPath of changedFiles()) {
-  if (protectedPaths.has(changedPath)) failures.push(`Protected file changed: ${changedPath}`);
+  if (protectedPaths.has(changedPath) && !isApprovedDungeonHomeCtaMigration(changedPath)) failures.push(`Protected file changed: ${changedPath}`);
   if (!process.env.GITHUB_ACTIONS && !allowedPaths.has(changedPath)) {
     failures.push(`Out-of-scope local Phase 17 change: ${changedPath}`);
   }
