@@ -305,6 +305,7 @@
   addEventListener("ccg:sfx",event=>push("sfx",{name:String(event.detail?.name||""),at:Number(event.detail?.at||0)}));
   addEventListener("ccg:music-state",event=>push("music-state",{reason:String(event.detail?.reason||""),state:String(event.detail?.state||""),roomMood:String(event.detail?.roomMood||""),stalkerNear:Boolean(event.detail?.stalkerNear),stalkerSight:Boolean(event.detail?.stalkerSight),namedEnemy:String(event.detail?.namedEnemy||""),asset:String(event.detail?.asset||""),useMusicAssets:Boolean(event.detail?.useMusicAssets),at:Number(event.detail?.at||0)}));
   addEventListener("ccg:item-collected",event=>push("item-collected",{kind:String(event.detail?.kind||""),name:String(event.detail?.name||""),lootKind:String(event.detail?.lootKind||""),collector:String(event.detail?.collector||""),floor:Number(event.detail?.floor||0)}));
+  addEventListener("ccg:collectible-effect",event=>push("collectible-effect",{source:String(event.detail?.source||""),title:String(event.detail?.title||""),effectType:String(event.detail?.effectType||""),durationMs:Number(event.detail?.durationMs||0),playerId:String(event.detail?.playerId||""),floor:Number(event.detail?.floor||0),horrorAlive:Number(event.detail?.horrorAlive||0),rapidMs:Number(event.detail?.rapidMs||0),at:Number(event.detail?.at||0)}));
   document.addEventListener("click",event=>{
     const target=event.target instanceof Element?event.target.closest("#inventory-close,#inventory-close-top,#resume-btn,[data-ccg-equip-weapon],[data-bug-close]"):null;
     if(!target)return;
