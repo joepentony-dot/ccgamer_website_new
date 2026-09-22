@@ -1432,7 +1432,9 @@
 
 .ccg-page--single-game .ccg-behind-pixels-inline__list {
     width: 100%;
-    grid-template-columns: minmax(120px, 155px) minmax(0, 1fr);
+    grid-template-columns:
+        minmax(105px, 135px) minmax(0, 1fr)
+        minmax(105px, 165px) minmax(0, 1fr);
     gap: 0;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -1474,6 +1476,12 @@
 .ccg-page--single-game .ccg-behind-pixels-inline__list dd a:hover,
 .ccg-page--single-game .ccg-behind-pixels-inline__list dd a:focus-visible {
     text-decoration-color: rgba(var(--accent-rgb), 0.9);
+}
+
+@media (max-width: 1180px) {
+    .ccg-page--single-game .ccg-behind-pixels-inline__list {
+        grid-template-columns: minmax(120px, 155px) minmax(0, 1fr);
+    }
 }
 
 @media (min-width: 901px) {
