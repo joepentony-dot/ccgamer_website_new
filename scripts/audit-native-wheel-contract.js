@@ -424,7 +424,7 @@ return (function () {
     var shield = host ? host.querySelector('.ccg-wheel-guard') : null;
 
     return {
-        ready: /youtube(?:-nocookie)?\\.com\\/embed\\//i.test(source)
+        ready: /youtube(?:-nocookie)?\.com\/embed\//i.test(source)
             && frame.dataset.ccgWheelGuard === 'ready'
             && !!shield,
         source: source,
