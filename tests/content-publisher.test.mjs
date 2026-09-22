@@ -70,6 +70,7 @@ test('publisher refuses to claim a game is complete until magazine and UTA enric
   assert.match(js, /verifyGameArchiveEnrichment/);
   assert.match(js, /data\/lemon-source-pending\.json/);
   assert.match(js, /data\/magazine-review-records\/\$\{magazineRecordChunk\(slug\)\}\.json/);
+  assert.match(js, /data\/magazine-review-records\/supplements\/\$\{slug\}\.json/);
   assert.match(js, /data\/uta-game-matches\.json/);
   assert.match(js, /data\/uta-manual-review\.json/);
   assert.match(js, /Archive enrichment incomplete/);
