@@ -68,26 +68,36 @@ async function firearmTap(page,cycle){
 
 async function swordTap(page,cycle){
   await settle(page);
-  const before=await page.evaluate(cycle=>{
+  const before=await page.evaluate(()=>{
     p1.firearmUnlocked=false;p1.weapon=null;p1.mana=0;
     const dirs=[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
-    const dir=dirs.find(d=>W.walkable(world.map,p1.x+d.x,p1.y+d.y,host));
-    if(!dir)return null;
-    const target=(host.enemies||[]).find(Boolean);if(!target)return null;
+    const candidates=(host.enemies||[]).filter(enemy=>enemy&&!enemy.deathStalker&&!enemy.voidStalker&&!enemy.guardian&&!enemy.follower&&!enemy.exitWarden&&!enemy.sigilDefender&&!enemy.champion&&!enemy.spider&&!enemy.skeleton&&!enemy.treasureGoblin&&!enemy.horrorCreature&&!enemy.generatorId);
+    let target=null,dir=null,playerCell=null;
+    for(const enemy of candidates){
+      const found=dirs.find(d=>{
+        const x=Number(enemy.x)-d.x,y=Number(enemy.y)-d.y;
+        if(!W.walkable(world.map,x,y,host))return false;
+        if((host.blockingDecor||[]).some(item=>item?.x===x&&item?.y===y))return false;
+        return true;
+      });
+      if(found){target=enemy;dir=found;playerCell={x:Number(enemy.x)-found.x,y:Number(enemy.y)-found.y};break}
+    }
+    if(!target||!dir||!playerCell)return null;
     for(const enemy of host.enemies||[])enemy.alive=false;
     Object.assign(target,{
-      id:`r53-desktop-soak-target-${cycle}`,
-      kind:"scout",alive:true,x:p1.x+dir.x,y:p1.y+dir.y,rx:p1.x+dir.x,ry:p1.y+dir.y,
-      hp:50,maxHp:50,armor:0,maxArmor:0,weakness:null,resistance:null,
-      deathStalker:false,voidStalker:false,guardian:false,follower:null,exitWarden:false,
-      sigilDefender:false,champion:false,spider:false,skeleton:false,treasureGoblin:false,generatorId:null,
+      alive:true,hp:50,maxHp:50,armor:0,maxArmor:0,weakness:null,resistance:null,
       flash:0,hpBarMs:0,hitStunMs:0,aiState:"idle",facing:{x:0,y:0},lastSeen:null,memoryMs:0,searchMs:0,
-      moveCooldown:10000,attackCooldown:10000,chargeCooldown:10000,healCooldown:10000
+      moveCooldown:1000000,attackCooldown:1000000,chargeCooldown:1000000,healCooldown:1000000
     });
-    p1.dir={...dir};
-    return{targetId:target.id,hp:Number(target.hp),swing:Number(p1._meleeSwingAt||0),damage:Number(window.CCGLostSizzlerMeleeAmmoV125?.meleeDamageFor?.(p1)||1)};
-  },cycle);
-  assert.ok(before,`cycle ${cycle}: desktop sword soak needs a walkable adjacent target`);
+    target.rx=target.x;target.ry=target.y;
+    p1.x=p1.rx=playerCell.x;p1.y=p1.ry=playerCell.y;p1.dir={...dir};
+    return{
+      targetId:target.id,hp:Number(target.hp),swing:Number(p1._meleeSwingAt||0),
+      damage:Number(window.CCGLostSizzlerMeleeAmmoV125?.meleeDamageFor?.(p1)||1),
+      player:{x:Number(p1.x),y:Number(p1.y)},target:{x:Number(target.x),y:Number(target.y)}
+    };
+  });
+  assert.ok(before,`cycle ${cycle}: desktop sword soak needs a generated ordinary enemy with a walkable adjacent cell`);
   await page.keyboard.press("Space");
   await page.waitForFunction(swing=>Number(p1?._meleeSwingAt||0)>swing,before.swing,{timeout:3000});
   await page.waitForTimeout(120);
@@ -101,7 +111,7 @@ async function swordTap(page,cycle){
       attackIntents:Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.attackIntents||0)
     };
   },before.targetId);
-  assert.ok(first.hp<before.hp,`cycle ${cycle}: sword swung but the adjacent ordinary enemy did not take damage: ${JSON.stringify(first)}`);
+  assert.ok(first.hp<before.hp,`cycle ${cycle}: sword swung but the adjacent ordinary enemy did not take damage: ${JSON.stringify({before,first})}`);
   await page.waitForTimeout(1200);
   const after=await page.evaluate(targetId=>{
     const target=(host?.enemies||[]).find(enemy=>String(enemy.id)===String(targetId));
