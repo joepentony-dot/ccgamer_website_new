@@ -70,12 +70,11 @@
   }
 
   /*
-    R20 owns the immediate capture-phase attack repair. Its successful direct
-    shot deliberately removes the triggering key from the shared input Set.
-    That made a held fire button depend on browser/OS repeat keydown events.
-    Normalise every supported attack key back to the canonical Space hold after
-    the R20 event finishes so the ordinary frame cadence keeps firing until the
-    physical key is released. This does not wrap or replace firePlayer.
+    R20 owns the immediate capture-phase attack attempt while this module owns
+    physical held-key state. Normalise every supported attack key to the
+    canonical Space hold while the physical key remains down so the ordinary
+    frame cadence can sustain attack without making recovery code synthesize a
+    held input. This does not wrap or replace firePlayer.
   */
   addEventListener("keydown",event=>{
     if(!ATTACK_KEYS.has(event.code)||editableTarget(event.target)||!activeRun()||spyActive())return;
