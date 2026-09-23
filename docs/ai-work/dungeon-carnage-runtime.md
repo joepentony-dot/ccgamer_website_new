@@ -1,3 +1,16 @@
+## R53 ATTACK liveness and crowded-impact qualification — 23 September 2026
+
+Active candidate: draft PR #2294 / branch `codex/dungeon-r53-attack-rail-current-main-20260923`, based on current `main` and retaining the merged R53 global FIRE/SPIKE/SHOCK trap-cycle repair.
+
+The candidate keeps attack ownership bounded: a physical desktop Space/Numpad0 press is recognised as complete when it performs real firearm work or advances the established melee swing owner, stale finite combat locks can recover without resetting healthy cadence, and held-fire ownership remains separate from recovery. Crowded projectile impacts retain damage and knockback while redundant burst/ring presentation is suppressed only under effect pressure; ring and floating-text pools are bounded alongside the existing particle cap. Major notices remain inside the reserved lower report rail.
+
+The first exact-head qualification of code head `3530a77d2ea2045cffb7304e22f253a31eb78a21` exposed three blockers that must not be conflated:
+- the new >3-minute desktop sword/firearm soak failed on cycle 3 after a sword swing because its test fixture had renamed and teleported a real generated enemy; by the assertion that object had been reconciled back to its generated coordinates while the player remained elsewhere. Commit `8c65b5fbffb48cc08d20b5c31c7bea253aa57889` corrects only the fixture: it now preserves an ordinary generated enemy's canonical ID/location, freezes its movement timers, and places the player in a walkable adjacent cell before each sword tap;
+- SEO Automation failed on a YouTube Data API 403 referring to `myRating`, although the repository metadata request sets only `part=snippet,contentDetails`, IDs and the API key. This is not attributed to the Dungeon change without fresh exact-head evidence;
+- Native Mouse Wheel passed its static contract and three browser positions but stalled once over the game video at desktop 1440. The same workflow passed on contemporaneous PR #2295, so a fresh exact-head result is required before treating it as a product regression.
+
+No production gameplay behaviour was changed by the soak-fixture correction. #2294 remains draft and must be 0 commits behind `main` with the full exact-head matrix green before any merge; merge still requires explicit user authorisation.
+
 ## R53 global cyclic floor-trap reliability — 23 September 2026
 
 Owner testing after R52 reproduced an ordinary SHOCK floor trap visibly labelled ACTIVE while the player remained on its tile without losing HEALTH. Investigation of generation, rendering and damage ownership confirms FIRE, SPIKE and SHOCK all use the same `host.traps` model and the same `SYS.trapActive()` period/phase clock, so the repair is global rather than kind-specific.
