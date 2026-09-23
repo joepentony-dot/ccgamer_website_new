@@ -11,6 +11,7 @@ const core=read("js/game-core.js");
 const world=read("js/world.js");
 const systems=read("js/systems.js");
 const play=read("js/game-play.js");
+const ai=read("js/ai.js");
 const local=read("js/game-local-runtime.js");
 const render=read("js/game-render.js");
 
@@ -26,7 +27,7 @@ assert.doesNotMatch(core,/const totalKeys=\(host\.keysCollected/,"the Bronze HUD
 assert.match(css,/\.keys-card strong\{[^}]*font-size:17px!important[^}]*overflow:visible!important[^}]*text-overflow:clip!important/,"Bronze Key count styling must not ellipsize the value");
 assert.match(css,/\.keys-card span\{[^}]*white-space:normal!important[^}]*overflow:visible!important/,"key detail text must remain readable rather than clipped");
 
-assert.doesNotMatch(world,/kind:cycle\[i%C\.cycle\.length\],title:C\.c64Loot/,"generic gameplay pickups must not inherit C64 collectible titles");
+assert.doesNotMatch(world,/kind:cycle\[i%cycle\.length\],title:C\.c64Loot/,"generic gameplay pickups must not inherit C64 collectible titles");
 assert.match(world,/kind:"game",title:C\.c64Loot/,"actual rescued C64 game collectibles must retain their game title");
 
 assert.match(systems,/const bronzeRewardRooms=new Set\(bonus\.filter\(d=>d\.type==="bronze"\)\.map\(d=>d\.roomId\)\)/,"bronze-gated reward rooms must be identified after door mechanics are assigned");
@@ -58,4 +59,36 @@ assert.match(render,/pixelSheet\?\.complete&&pixelSheet\.naturalWidth>=160/,"the
 assert.match(render,/The authored chest sheet is authoritative/,"loading presentation must explicitly retain chest-sheet ownership");
 assert.doesNotMatch(render,/chunky traditional wooden chest body/,"the old inferior wooden chest fallback must not be the normal renderer");
 
-console.log("PASS V10.42 R54 graphics/UI first-batch contract");
+assert.match(render,/function drawPickupGlyph\(i,col\)/,"R54 must keep one renderer-owned pickup illustration boundary");
+for(const token of ["HEALTH POTION","AMMUNITION","BANISHMENT FLASK","BRONZE KEY","WEAPON CACHE","+10 XP"]){
+  assert.ok(render.includes(token),`pickup renderer/labels must retain ${token}`);
+}
+assert.match(render,/function drawCorridorDetail\(s,x,y,h,th\)/,"corridor detail must be renderer-owned");
+for(const phrase of ["Threshold corridors","Iron Keep corridors","Bone\/Moss corridors","Ember corridors","Sigil corridors"]){
+  assert.ok(render.includes(phrase.replace("\\/","/")),`corridor presentation must cover ${phrase}`);
+}
+assert.match(render,/if\(roomId<0\)drawCorridorDetail\(s,x,y,h,th\)/,"corridor detail must apply only outside generated rooms and remain presentation-only");
+assert.match(render,/function drawMerchantNpc\(t,s,col\)/,"shops must render merchant characters");
+assert.match(render,/quartermaster_bex/,"Bex Harrow must receive a distinct merchant visual");
+assert.match(render,/collector_nix/,"Nix Calder must receive a distinct merchant visual");
+assert.match(render,/archivist_orin/,"Orin Vale must receive a distinct merchant visual");
+assert.doesNotMatch(render,/fillText\("SHOP",0,9\)/,"the old generic SHOP square must not remain");
+
+assert.match(ai,/function markAttackAnimation\(e,kind="attack",ms=360\)/,"enemy attacks must expose timestamped renderer poses");
+assert.match(ai,/e\._attackAnimAt=performance\.now\(\)/,"enemy attack animation must be timestamp based");
+assert.doesNotMatch(ai,/setInterval\(/,"enemy animation state must not add a timer loop");
+assert.match(play,/p\._fireAnimAt=performance\.now\(\)/,"successful player fire must expose recoil timing to the renderer");
+assert.match(render,/PLAYER_WALK_RENDER_SEQUENCE=Object\.freeze\(\[/,"player movement must use an expanded render sequence");
+assert.match(render,/PLAYER_MELEE_RENDER_SEQUENCE=Object\.freeze\(\[/,"player melee must use an expanded render sequence");
+assert.match(render,/function playerAnimationPose\(p,moving,now=performance\.now\(\)\)/,"player animation must be derived from current state and time");
+assert.match(render,/ENEMY_WALK_RENDER_FRAMES=Object\.freeze\(\[-3,-2,0,2,3,2,0,-2\]\)/,"enemy locomotion must expose eight renderer poses");
+assert.match(render,/ENEMY_ATTACK_RENDER_FRAMES=Object\.freeze\(\[/,"enemy attacks must expose staged renderer poses");
+assert.match(render,/function enemyAnimationPose\(e,time=performance\.now\(\)\)/,"enemy animation must be state/time derived");
+assert.doesNotMatch(render,/setInterval\(/,"R54 rendering must not add a second animation timer loop");
+assert.match(render,/const enemyDefeatVisuals=\[\]/,"enemy defeat frames must reuse the normal renderer");
+assert.match(render,/if\(enemyDefeatVisuals\.length>12\)/,"defeat snapshots must remain bounded");
+assert.match(render,/drawEnemyDefeatVisuals\(\)/,"defeat poses must participate in the existing render pass");
+assert.match(local,/window\.CCGQueueEnemyDefeatVisual\?\.\(p\)/,"existing enemy FX must feed the renderer-owned defeat sequence");
+
+
+console.log("PASS V10.42 R54 graphics/UI and animation contract");
