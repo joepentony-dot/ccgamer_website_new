@@ -54,7 +54,7 @@ on:
       - resources/css/game-pages.css
       - scripts/generate-uta-map.mjs
       - data/uta-game-matches.json
-      - data/uta-manual-review.json
+      - data/uta-manual-review.json\n      - data/uta-curated-release-overrides.json
       - supabase/migrations/20260922003000_single_game_community_read_models.sql
       - tests/single-game-community-uta.test.mjs
       - package.json
