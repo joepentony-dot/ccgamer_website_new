@@ -102,10 +102,54 @@ try{
     "fresh FIRE recovery must pass through an established liveness/repair owner"
   );
 
-  const normalBefore=Number(recovered.mana);
+  const normalTapBefore=await page.evaluate(()=>{
+    p1.firearmUnlocked=true;
+    p1.weapon=baseWeapon();
+    p1.maxMana=Math.max(120,Number(p1.maxMana)||0);
+    p1.mana=117;
+    bullets.length=0;
+    fire1=0;
+    fireBuffer1=0;
+    projectileCD=0;
+    input.clear();
+    window.__ccgR51TapShots=0;
+    window.__ccgR51TapPush=bullets.push;
+    bullets.push=function(...shots){
+      window.__ccgR51TapShots+=shots.filter(shot=>shot&&shot.owner===p1.id).length;
+      return window.__ccgR51TapPush.apply(this,shots);
+    };
+    return Number(p1.mana);
+  });
   await page.keyboard.press("Space");
-  await page.waitForFunction(mana=>Number(p1?.mana||0)<mana,normalBefore,{timeout:3000});
-  assert.equal(await page.evaluate(()=>input.has("Space")),false,"normal follow-up tap must release Space");
+  await page.waitForTimeout(650);
+  const normalTap=await page.evaluate(before=>{
+    const result={
+      before,
+      after:Number(p1.mana),
+      launched:Number(window.__ccgR51TapShots||0),
+      held:input.has("Space"),
+      heldOwner:[...window.CCGLostSizzlerV142AttackHoldLiveness.held]
+    };
+    bullets.push=window.__ccgR51TapPush;
+    delete window.__ccgR51TapPush;
+    delete window.__ccgR51TapShots;
+    return result;
+  },normalTapBefore);
+  assert.equal(normalTap.before-normalTap.after,1,`one quick keyboard FIRE tap must consume exactly one ammo unit: ${JSON.stringify(normalTap)}`);
+  assert.equal(normalTap.launched,1,`one quick keyboard FIRE tap must spawn exactly one projectile: ${JSON.stringify(normalTap)}`);
+  assert.equal(normalTap.held,false,"normal follow-up tap must release Space");
+  assert.equal(normalTap.heldOwner.length,0,"quick tap must not remain armed in the held-FIRE owner");
+
+  const heldBefore=await page.evaluate(()=>{
+    p1.weapon=baseWeapon();p1.mana=117;bullets.length=0;fire1=0;fireBuffer1=0;input.clear();return Number(p1.mana);
+  });
+  await page.keyboard.down("Space");
+  await page.waitForTimeout(700);
+  await page.keyboard.up("Space");
+  const heldResult=await page.evaluate(before=>({spent:before-Number(p1.mana),held:input.has("Space"),ownerHeld:window.CCGLostSizzlerV142AttackHoldLiveness.held.size}),heldBefore);
+  assert.ok(heldResult.spent>=2,`deliberately holding FIRE must still sustain ordinary autofire: ${JSON.stringify(heldResult)}`);
+  assert.equal(heldResult.held,false,"releasing deliberate held FIRE must clear Space");
+  assert.equal(heldResult.ownerHeld,0,"releasing deliberate held FIRE must clear the hold owner");
 
   await page.evaluate(async()=>{await quitToMenu()});
   await page.waitForFunction(()=>mode==="menu"&&document.body.dataset.runActive!=="true",null,{timeout:10000});
