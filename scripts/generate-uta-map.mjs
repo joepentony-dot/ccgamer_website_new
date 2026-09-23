@@ -179,7 +179,7 @@ const PUBLISHER_ALIASES = new Map([
 ]);
 
 export function normalizePublisher(value) {
-  let normalized = normalizeText(value)
+  let normalized = compactInitialisms(normalizeText(value))
     .replace(/\b(software|systems?|limited|ltd|incorporated|inc|corporation|corp|company|co)\b/g, " ")
     .replace(/\s+/g, " ")
     .trim();
