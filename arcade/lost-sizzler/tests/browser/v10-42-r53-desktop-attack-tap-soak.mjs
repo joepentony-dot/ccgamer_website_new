@@ -73,29 +73,34 @@ async function swordTap(page,cycle){
     const dirs=[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
     const dir=dirs.find(d=>W.walkable(world.map,p1.x+d.x,p1.y+d.y,host));
     if(!dir)return null;
+    const target=(host.enemies||[]).find(Boolean);if(!target)return null;
     for(const enemy of host.enemies||[])enemy.alive=false;
-    const target={
-      id:"r53-desktop-soak-target",kind:"scout",alive:true,
-      x:p1.x+dir.x,y:p1.y+dir.y,hp:50,maxHp:50,armor:0,maxArmor:0,
-      weakness:null,resistance:null,flash:0,hpBarMs:0,hitStunMs:0,
-      aiState:"idle",facing:{x:0,y:0},lastSeen:null,memoryMs:0,searchMs:0,
+    Object.assign(target,{
+      kind:"scout",alive:true,x:p1.x+dir.x,y:p1.y+dir.y,rx:p1.x+dir.x,ry:p1.y+dir.y,
+      hp:50,maxHp:50,armor:0,maxArmor:0,weakness:null,resistance:null,
+      deathStalker:false,voidStalker:false,guardian:false,follower:null,exitWarden:false,
+      sigilDefender:false,champion:false,spider:false,skeleton:false,treasureGoblin:false,generatorId:null,
+      flash:0,hpBarMs:0,hitStunMs:0,aiState:"idle",facing:{x:0,y:0},lastSeen:null,memoryMs:0,searchMs:0,
       moveCooldown:10000,attackCooldown:10000,chargeCooldown:10000,healCooldown:10000
-    };
-    host.enemies=(host.enemies||[]).filter(enemy=>enemy?.id!=="r53-desktop-soak-target");
-    host.enemies.push(target);
+    });
     p1.dir={...dir};
     return{targetId:target.id,hp:Number(target.hp),swing:Number(p1._meleeSwingAt||0),damage:Number(window.CCGLostSizzlerMeleeAmmoV125?.meleeDamageFor?.(p1)||1)};
   });
   assert.ok(before,`cycle ${cycle}: desktop sword soak needs a walkable adjacent target`);
   await page.keyboard.press("Space");
-  await page.waitForFunction(({targetId,hp,swing})=>{
-    const target=(host?.enemies||[]).find(enemy=>String(enemy.id)===String(targetId));
-    return Number(p1?._meleeSwingAt||0)>swing&&Number(target?.hp||0)<hp;
-  },before,{timeout:3000});
+  await page.waitForFunction(swing=>Number(p1?._meleeSwingAt||0)>swing,before.swing,{timeout:3000});
+  await page.waitForTimeout(120);
   const first=await page.evaluate(targetId=>{
     const target=(host?.enemies||[]).find(enemy=>String(enemy.id)===String(targetId));
-    return{swing:Number(p1._meleeSwingAt||0),hp:Number(target?.hp||0)};
+    return{
+      swing:Number(p1._meleeSwingAt||0),hp:Number(target?.hp||0),alive:Boolean(target?.alive),
+      player:{x:Number(p1.x),y:Number(p1.y),dir:{...p1.dir}},
+      target:target?{x:Number(target.x),y:Number(target.y),kind:String(target.kind||"")} : null,
+      fire:Number(fire1||0),buffer:Number(fireBuffer1||0),
+      attackIntents:Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.attackIntents||0)
+    };
   },before.targetId);
+  assert.ok(first.hp<before.hp,`cycle ${cycle}: sword swung but the adjacent ordinary enemy did not take damage: ${JSON.stringify(first)}`);
   await page.waitForTimeout(1200);
   const after=await page.evaluate(targetId=>{
     const target=(host?.enemies||[]).find(enemy=>String(enemy.id)===String(targetId));
