@@ -111,6 +111,8 @@
         attackHold:safe(()=>window.CCGLostSizzlerV142AttackHoldLiveness?.diagnostics||null,null),
         soloStability:safe(()=>window.CCGLostSizzlerV142R18SoloPlaytestStability?.diagnostics||null,null),
         fireRecovery:safe(()=>window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics||null,null),
+        runtimeRepair:safe(()=>window.CCGLostSizzlerV141R29?.state||null,null),
+        trapStability:safe(()=>window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||null,null),
         projectileLifecycle:safe(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.state||null,null),
         performanceGovernor:safe(()=>window.CCGLostSizzlerV141R47AllModeOptimisation?.getDiagnostics?.()||null,null),
         globalPerformance:safe(()=>window.CCGLostSizzlerV141R37GlobalPerformance?.getDiagnostics?.()||null,null),
