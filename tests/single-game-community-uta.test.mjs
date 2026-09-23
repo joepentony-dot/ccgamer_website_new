@@ -107,6 +107,50 @@ test("full-catalogue title normalisation recovers verified punctuation, numeral 
   }
 });
 
+test("full-catalogue matching tolerates safe word-spacing variants with publisher evidence", () => {
+  const releases = parseUtaIndex(`
+<a href="Bad_Dudes_vs_Dragon_Ninja_(1989_Imagine)_[4305]/">Bad Dudes</a>
+<a href="Bad_Dudes_vs_Dragon_Ninja_(1991_Hit_Squad)_[1152]/">Bad Dudes Hit Squad</a>
+<a href="Newzealand_Story,_The_(1989_Ocean_Software_Ltd)_[2154]/">New Zealand Story</a>
+<a href="Night_Breed_(1992_Hit_Squad)_[1544]/">Night Breed</a>
+`);
+
+  const cases = [
+    {
+      game: { system: "C64", slug: "bad-dudes-vs-dragonninja", title: "Bad Dudes Vs Dragonninja", year: 1989, credits: { publisher: ["Imagine"], re_releaser: ["The Hit Squad"] } },
+      expected: ["4305", "1152"]
+    },
+    {
+      game: { system: "C64", slug: "the-new-zealand-story", title: "The New Zealand Story", year: 1989, credits: { publisher: ["Ocean"], re_releaser: ["The Hit Squad"] } },
+      expected: ["2154"]
+    },
+    {
+      game: { system: "C64", slug: "nightbreed-the-action-game", title: "Nightbreed: The Action Game", sorttitle: "Nightbreed", year: 1990, credits: { publisher: ["Ocean"], re_releaser: ["The Hit Squad"] } },
+      expected: ["1544"]
+    }
+  ];
+
+  for (const { game, expected } of cases) {
+    const result = matchGameToUta(game, releases);
+    assert.deepEqual(result.releases.map((row) => row.archiveId), expected, game.slug);
+  }
+});
+
+test("UTA comma-article subtitle notation matches the canonical leading-article title", () => {
+  const releases = parseUtaIndex(`
+<a href="Train,_The-_Escape_to_Normandy_(1988_Electronic_Arts)_[5396]/">The Train</a>
+`);
+  const game = {
+    system: "C64",
+    slug: "the-train-escape-to-normandy",
+    title: "The Train: Escape To Normandy",
+    year: 1987,
+    credits: { publisher: ["Accolade", "Electronic Arts"], re_releaser: [] }
+  };
+  const result = matchGameToUta(game, releases);
+  assert.deepEqual(result.releases.map((row) => row.archiveId), ["5396"]);
+});
+
 test("publisher-qualified prefix matching does not collapse numbered sequels into the wrong game", () => {
   const releases = parseUtaIndex(`
 <a href="Dragon's_Lair_(1986_Software_Projects)_[9100]/">Dragon's Lair</a>
