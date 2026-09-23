@@ -1,5 +1,16 @@
 # AI continuation state
 
+## Unified Dungeon Carnage live reconciliation — 23 September 2026
+
+- Live `main` at this checkpoint is `88df63430f275a37553a821c2511b1296dd13f8e`. PR #2271 is merged and the public gameplay generation remains **V10.42 R51**.
+- Draft PR **#2284** is the active public-route migration. Keep the repository/runtime source at `arcade/lost-sizzler/`; publish `/arcade/c64-dungeon-carnage/` as canonical and retain the old public path only as a compatibility redirect.
+- #2284's route audit now covers all active route owners rather than only the source canonical: Home HTML + runtime, legacy entry redirects, deployment staging, service worker, game cache sanitation, V10.18 canonical restamp, critical module diagnostics, retained auth return paths, itch manifest and production smoke.
+- The shared public-code namespace advances to `2026-09-23-public-code-v7`. The visible game build remains **V10.42 R51** while its route-owner cache token advances to **`20260923r51`**.
+- Draft PR **#2283** is the fresh current-main FIRE/active-trap/render-corruption repair. Its required triggered workflows were green on head `f1cfd58501a65eab783a13ae2836108a18a4243a` when checked at 0 commits behind main, including a successful rerun of its initially cancelled wheel job. It remains a separate runtime candidate and must be reconciled/requalified if main moves.
+- Draft PR **#2282** is the separate R52 unused-level-up entitlement candidate. It must not be merged from a head that predates a main-moving route/runtime merge without reconciliation and exact-head requalification.
+- The historical #2256 and earlier Dungeon sections below are evidence, not current status. Current GitHub state overrides their old “pending” labels.
+- #2284 remains draft and unmerged until its final exact head is 0 behind and the complete matrix is green. No merge is authorised merely by this documentation checkpoint.
+
 ## Dungeon Carnage post-R51 narrow regression candidate — 23 September 2026
 
 - Branch `codex/dungeon-r51-regression-fixes` was created from refreshed `origin/main` `f719717824f2caa1cb89dc84a2ad7f2438f042a2`, after PR #2256 merged.
