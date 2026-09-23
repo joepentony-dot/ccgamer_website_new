@@ -11,6 +11,7 @@
   const RELEASE_BLURB="A five-floor pixel dungeon crawl filled with shifting objectives, rare loot, hidden routes, dangerous events and things in the dark that ordinary weapons cannot finish.";
   const RELEASE_MODE_LABEL_HTML="<span>✦</span> CHOOSE YOUR ADVENTURE <span>✦</span>";
   const RELEASE_NOTE="C64 Dungeon Carnage runs directly in your browser. Solo play and the Tutorial are the supported game modes.";
+  const RELEASE_GUIDE_HTML="<span><b>SOLO</b> saves locally + cloud when signed in</span><span><b>TUTORIAL</b> teaches controls, combat, items and objectives</span><span><b>CONTROLLER</b> D-pad/stick + A works in menus</span><span><b>OPTIONS</b> accessibility and audio are stored in this browser</span>";
   const state={enabled:true,removedButtons:[],hiddenPanels:[],networkLocked:false,lastReason:"",enforcementPasses:0,releaseStyleReady:false,onlineTeardowns:0,localBootTeardownsSkipped:0,localMenuRecoveries:0,localButtonRecoveries:0,observerSkips:0,localFocusRequests:0,localFocusAssignments:0};
 
   function ensureReleaseStyle(){
@@ -112,6 +113,7 @@
     setTextIfChanged(document.querySelector(".menu-blurb"),RELEASE_BLURB);
     setHtmlIfChanged(document.querySelector(".mode-select-label"),RELEASE_MODE_LABEL_HTML);
     setTextIfChanged(document.getElementById("release-note"),RELEASE_NOTE);
+    setHtmlIfChanged(document.getElementById("ccg-r51-menu-guide"),RELEASE_GUIDE_HTML);
     ensureLocalMenuAvailability();
 
     document.body.dataset.onlineMultiplayer="disabled";
@@ -203,15 +205,15 @@
     if(record.type==="attributes"){
       const target=record.target;
       if(!(target instanceof Element))return false;
-      if(target.id==="menu"||ONLINE_BUTTON_IDS.includes(target.id)||LOCAL_BUTTON_IDS.includes(target.id))return true;
+      if(target.id==="menu"||target.id==="ccg-r51-menu-guide"||ONLINE_BUTTON_IDS.includes(target.id)||LOCAL_BUTTON_IDS.includes(target.id))return true;
       return target.matches?.(".online-howto,.join-row,#online-lobby")||false;
     }
     if(record.type!=="childList")return false;
     for(const node of record.addedNodes){
       if(!(node instanceof Element))continue;
-      if(node.id==="menu"||ONLINE_BUTTON_IDS.includes(node.id)||LOCAL_BUTTON_IDS.includes(node.id))return true;
+      if(node.id==="menu"||node.id==="ccg-r51-menu-guide"||ONLINE_BUTTON_IDS.includes(node.id)||LOCAL_BUTTON_IDS.includes(node.id))return true;
       if(node.matches?.(".online-howto,.join-row,#online-lobby"))return true;
-      if(node.querySelector?.("#menu,#create-btn,#horde-mode-btn,#saboteurs-mode-btn,#join-btn,#solo-btn,#tutorial-zone-btn,#daily-btn,#split-btn,.online-howto,.join-row,#online-lobby"))return true;
+      if(node.querySelector?.("#menu,#ccg-r51-menu-guide,#create-btn,#horde-mode-btn,#saboteurs-mode-btn,#join-btn,#solo-btn,#tutorial-zone-btn,#daily-btn,#split-btn,.online-howto,.join-row,#online-lobby"))return true;
     }
     return false;
   }
