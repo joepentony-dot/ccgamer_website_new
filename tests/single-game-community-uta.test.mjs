@@ -56,6 +56,18 @@ test("UTA parser preserves distinct release directories that share archive ID ze
   assert.equal(new Set(releases.map((row) => row.url)).size, 3);
 });
 
+test("UTA parser preserves distinct non-zero release directories when UTA reuses an archive ID", () => {
+  const releases = parseUtaIndex(`
+<a href="Solomon's_Key_(1987_ERBE_Software)_[1987]/">Solomon's Key</a>
+<a href="Spy_vs_Spy_II-_The_Island_Caper_(19xx_HiTEC_Software)_[1987]/">Spy vs Spy II</a>
+`);
+
+  assert.equal(releases.length, 2);
+  assert.deepEqual(releases.map((row) => row.archiveId), ["1987", "1987"]);
+  assert.equal(new Set(releases.map((row) => row.url)).size, 2);
+});
+
+
 test("UTA parser keeps apostrophes inside double-quoted paths and accepts generalized decade labels", () => {
   const releases = parseUtaIndex(`
 <a href="Ghosts_'n_Goblins_(1985_Elite_Systems_Ltd)_[976]/">Ghosts n Goblins</a>
@@ -242,6 +254,43 @@ test("UTA override validation fails closed for unknown archive IDs and conflicti
       }
     }),
     /cannot be both included and excluded/
+  );
+
+  const duplicateIdReleases = parseUtaIndex(`
+<a href="Solomon's_Key_(1987_ERBE_Software)_[1987]/">Solomon's Key</a>
+<a href="Spy_vs_Spy_II-_The_Island_Caper_(19xx_HiTEC_Software)_[1987]/">Spy vs Spy II</a>
+`);
+  const spyGame = [{
+    system: "C64",
+    slug: "spy-vs-spy-2-the-island-caper",
+    title: "Spy Vs Spy II: The Island Caper",
+    year: 1985,
+    credits: { publisher: ["First Star Software"], re_releaser: ["Hi-Tec Software"] }
+  }];
+
+  assert.throws(
+    () => validateUtaOverrides(spyGame, duplicateIdReleases, {
+      games: {
+        "spy-vs-spy-2-the-island-caper": {
+          include: [{ archiveId: "1987", sourceRole: "re-release" }]
+        }
+      }
+    }),
+    /archive ID 1987 is ambiguous/
+  );
+
+  assert.doesNotThrow(
+    () => validateUtaOverrides(spyGame, duplicateIdReleases, {
+      games: {
+        "spy-vs-spy-2-the-island-caper": {
+          include: [{
+            archiveId: "1987",
+            directory: "Spy_vs_Spy_II-_The_Island_Caper_(19xx_HiTEC_Software)_[1987]",
+            sourceRole: "re-release"
+          }]
+        }
+      }
+    })
   );
 });
 
