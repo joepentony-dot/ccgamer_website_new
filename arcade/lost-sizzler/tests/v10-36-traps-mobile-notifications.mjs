@@ -24,6 +24,13 @@ assert.match(balance,/drawSpecialObjectsV115ReliableTraps/,"trap plates are atta
 assert.match(r19,/function damageOccupiedActiveTraps\(\)/,"R19 must damage a player already occupying a trap when its active cycle begins");
 assert.match(r19,/rearmInactiveTrapContacts\(\);[\s\S]*damageOccupiedActiveTraps\(\);/,"R19 must rearm inactive contacts before checking newly active occupied traps");
 assert.match(r19,/damageValidatedTrapContact\(player,trap\)/,"stationary active-cycle damage must use the same validated one-health trap owner");
+assert.match(r19,/const trapContactCycles=new Map\(\)/,"floor-trap duplicate protection must remember the specific active cycle that produced the hit");
+assert.match(r19,/function trapCycleId\(trap,now=performance\.now\(\)\)/,"floor traps must derive a stable cycle identity from their period and phase");
+assert.match(r19,/previous!=null&&previous!==cycle[\s\S]*state\.cycleRearms\+\+/,"a new active cycle must rearm stale contact latches even if no inactive frame was sampled");
+assert.match(r19,/CCGLostSizzlerV141R56PlaytestCompletion[\s\S]*CCGLostSizzlerV141R57DesktopPrepStability/,"cycle rearm must reconcile both retained trap-cycle owners");
+assert.match(r19,/afterHurtAt>beforeHurtAt/,"validated trap damage must require canonical hit evidence instead of treating stale invulnerability as a successful hit");
+assert.match(r19,/trapHitsByKind:\{fire:0,spike:0,shock:0,other:0\}/,"global trap diagnostics must distinguish FIRE, SPIKE and SHOCK hits");
+
 
 assert.match(polish,/@media \(max-width:900px\),\(pointer:coarse\)/,"mobile notification correction applies to phones and coarse pointers");
 assert.match(polish,/game-message-rail,[\s\S]*position:relative!important;[\s\S]*min-height:52px!important;/,"mobile message rail retains a visible notification row");

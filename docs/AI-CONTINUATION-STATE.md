@@ -1,3 +1,12 @@
+## Dungeon Carnage R53 global floor-trap reliability — 23 September 2026
+
+- New owner playtest evidence on deployed R52 shows a visibly **SHOCK TRAP — ACTIVE** tile can leave HEALTH unchanged.
+- All ordinary FIRE/SPIKE/SHOCK floor traps share `SYS.trapActive()` and the retained contact-latch stack. The remaining failure is cycle ownership: a runtime/frame stall can skip the inactive window, leaving an old contact latch alive when the renderer has already advanced to the next ACTIVE cycle.
+- Branch `codex/dungeon-r53-global-trap-reliability-20260923` makes R19 cycle-aware. It derives a cycle identity from the same period/phase clock, retires stale R19/canonical/R56/R57 contact ownership at the next cycle, keeps one-hit-per-active-contact suppression inside the current cycle, preserves armour, and retries rather than latching a hit without canonical damage evidence.
+- The focused browser regression uses real generated FIRE, SPIKE and SHOCK traps and deliberately advances a full period without presenting an inactive sample. Each kind must remove exactly one HEALTH in the next ACTIVE cycle and must not double-hit inside one cycle.
+- Dedicated hazard rooms and the rolling boulder remain separate damage paths and were not found to share this latch defect.
+- Public candidate identity is `V10.42 r53` / `20260923r53`. Do not merge until exact-head CI is fully green and merge is explicitly authorised.
+
 ## Dungeon Carnage R51 live incident — FIRE / traps / renderer — 23 September 2026
 
 - Branch `codex/dungeon-r51-fire-wall-incident-20260923` was created from current `main` `88df63430f275a37553a821c2511b1296dd13f8e` after a new owner playtest report.

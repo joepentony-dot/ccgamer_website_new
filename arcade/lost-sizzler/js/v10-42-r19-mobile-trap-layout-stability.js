@@ -6,8 +6,9 @@
 
   const STYLE_ID="ccg-v142-r19-mobile-trap-layout";
   const MONITOR_MS=80;
-  const state={timer:0,rearms:0,damageOwnerInstalls:0,trapTriggerOwnerInstalls:0,directTrapRepairs:0,trapHits:0,trapContactBlocks:0,trapProtectionBlocks:0,canvasAspectRepairs:0};
+  const state={timer:0,rearms:0,cycleRearms:0,damageOwnerInstalls:0,trapTriggerOwnerInstalls:0,directTrapRepairs:0,damageRetries:0,trapHits:0,trapHitsByKind:{fire:0,spike:0,shock:0,other:0},trapContactBlocks:0,trapProtectionBlocks:0,canvasAspectRepairs:0};
   const trapContacts=new Set();
+  const trapContactCycles=new Map();
   const trapDamageInFlight=new Set();
   let trapDamageOwner=null;
   let baseTrapDamageOwner=null;
@@ -26,6 +27,53 @@
   function trapActive(trap,now=performance.now()){
     if(!trap?.active)return false;
     try{return typeof SYS?.trapActive==="function"?Boolean(SYS.trapActive(trap,now)):true}catch(_){return true}
+  }
+
+  /* A floor-trap contact latch must be tied to the trap cycle, not merely to
+     whether an inactive frame happened to be sampled. A long frame/runtime
+     stall can skip the complete inactive window while the next rendered frame
+     is already ACTIVE. The renderer and SYS.trapActive() then advance correctly,
+     but the old contact latch would otherwise suppress the new hit. */
+  function trapCycleId(trap,now=performance.now()){
+    const period=Number(trap?.period),phase=Number(trap?.phase)||0,stamp=Number(now);
+    if(!Number.isFinite(period)||period<=0||!Number.isFinite(stamp))return 0;
+    return Math.floor((stamp+phase)/period)
+  }
+
+  function clearTrapCycleOwners(player,trap,contactKey){
+    let changed=false;
+    const rare=window.CCGLostSizzlerRareEventsBalance||null;
+    if(trapContacts.delete(contactKey))changed=true;
+    trapDamageInFlight.delete(contactKey);
+    if(trapProtectionUntil.delete(contactKey))changed=true;
+    if(rare?.trapRuntime?.contact?.delete?.(contactKey))changed=true;
+    const key=r57TrapKey(player,trap);
+    for(const api of [window.CCGLostSizzlerV141R56PlaytestCompletion,window.CCGLostSizzlerV141R57DesktopPrepStability]){
+      if(api?.state?.trapCycles?.get?.(key)===true){api.state.trapCycles.set(key,false);changed=true}
+    }
+    return changed
+  }
+
+  function rearmStaleCycleContact(player,trap,now=performance.now()){
+    const rare=window.CCGLostSizzlerRareEventsBalance||null;
+    const contactKey=canonicalTrapKey(player,trap,rare?.trapRuntime),cycle=trapCycleId(trap,now);
+    const previous=trapContactCycles.get(contactKey);
+    if(previous!=null&&previous!==cycle){
+      clearTrapCycleOwners(player,trap,contactKey);
+      trapContactCycles.delete(contactKey);
+      state.cycleRearms++
+    }
+    return{contactKey,cycle}
+  }
+
+  function recordTrapHit(player,trap,contactKey,cycle){
+    state.trapHits++;
+    const rawKind=String(trap?.kind||"other").toLowerCase(),kind=["fire","spike","shock"].includes(rawKind)?rawKind:"other";
+    state.trapHitsByKind[kind]=(Number(state.trapHitsByKind[kind])||0)+1;
+    trapContacts.add(contactKey);
+    trapContactCycles.set(contactKey,cycle);
+    const protectionMs=Math.max(0,Number(player.invuln||0));
+    if(protectionMs>0)trapProtectionUntil.set(contactKey,performance.now()+protectionMs)
   }
 
   function environmentalTrapSource(source){return /trap/i.test(String(source||""))}
@@ -88,18 +136,18 @@
       /* Floor-trap health damage is one hit per active contact. The independent
          contact/protection guard prevents duplicate damage while established
          downstream environment owners retain their stale-invulnerability rules. */
-      const contact=activeTrapContact(player),contactKey=String(contact?.key||"");
+      const contact=activeTrapContact(player);
       /* R19 owns occupied floor-trap contacts only. Environmental owners such as
          R56 deliberately accept trap-labelled damage without an occupied floor
          trap (for example stale-invulnerability recovery). Delegating that case
          preserves their established ownership instead of swallowing it here. */
+      if(!contact?.trap)return current.apply(this,arguments);
+      const now=performance.now(),cycleState=rearmStaleCycleContact(player,contact.trap,now);
+      const contactKey=String(cycleState.contactKey||""),cycle=cycleState.cycle;
       if(!contactKey)return current.apply(this,arguments);
-      const now=performance.now();
-      if(contactKey){
-        const protectedUntil=Number(trapProtectionUntil.get(contactKey)||0);
-        if(protectedUntil>now){state.trapProtectionBlocks++;return false}
-        if(protectedUntil>0)trapProtectionUntil.delete(contactKey);
-      }
+      const protectedUntil=Number(trapProtectionUntil.get(contactKey)||0);
+      if(protectedUntil>now){state.trapProtectionBlocks++;return false}
+      if(protectedUntil>0)trapProtectionUntil.delete(contactKey);
       if(contactKey&&trapContacts.has(contactKey)){state.trapContactBlocks++;return false}
       if(contactKey&&trapDamageInFlight.has(contactKey))return current.apply(this,arguments);
       if(contactKey)trapDamageInFlight.add(contactKey);
@@ -123,14 +171,7 @@
         player.armor=beforeArmor;
         if(contactKey)trapDamageInFlight.delete(contactKey)
       }
-      if(Number(player.health||0)<beforeHealth){
-        state.trapHits++;
-        if(contactKey){
-          trapContacts.add(contactKey);
-          const protectionMs=Math.max(0,Number(player.invuln||0));
-          if(protectionMs>0)trapProtectionUntil.set(contactKey,performance.now()+protectionMs)
-        }
-      }
+      if(Number(player.health||0)<beforeHealth)recordTrapHit(player,contact.trap,contactKey,cycle);
       return result
     };
     wrapped.__ccgV142R19MobileTrapDamage=true;
@@ -153,9 +194,9 @@
   function applyValidatedTrapHealthDamage(player,trap){
     if(!ordinaryDungeon()||!player||!trap?.active)return false;
     if(Number(trap.x)!==Number(player.x)||Number(trap.y)!==Number(player.y))return false;
-    const rare=window.CCGLostSizzlerRareEventsBalance||null;
-    const contactKey=canonicalTrapKey(player,trap,rare?.trapRuntime);
-    const now=performance.now(),protectedUntil=Number(trapProtectionUntil.get(contactKey)||0);
+    const now=performance.now(),cycleState=rearmStaleCycleContact(player,trap,now);
+    const contactKey=cycleState.contactKey,cycle=cycleState.cycle;
+    const protectedUntil=Number(trapProtectionUntil.get(contactKey)||0);
     if(protectedUntil>now){state.trapProtectionBlocks++;return true}
     if(protectedUntil>0)trapProtectionUntil.delete(contactKey);
     if(trapContacts.has(contactKey)){state.trapContactBlocks++;return true}
@@ -167,7 +208,7 @@
     if(typeof owner!=="function")return false;
     baseTrapDamageOwner=owner;
 
-    const beforeHealth=Number(player.health||0),beforeArmor=Number(player.armor||0),beforeInvuln=Number(player.invuln||0);
+    const beforeHealth=Number(player.health||0),beforeArmor=Number(player.armor||0),beforeInvuln=Number(player.invuln||0),beforeHurtAt=Number(player.__ccgLastHurtAt||0);
     if(beforeHealth<=0)return false;
     trapDamageInFlight.add(contactKey);
     player.armor=0;
@@ -187,17 +228,15 @@
       if(threw)player.invuln=beforeInvuln;
     }
 
-    const afterHealth=Number(player.health||0);
-    const canonicalHit=afterHealth!==beforeHealth||Number(player.invuln||0)>0;
+    const afterHealth=Number(player.health||0),afterHurtAt=Number(player.__ccgLastHurtAt||0);
+    const canonicalHit=afterHealth!==beforeHealth||afterHurtAt>beforeHurtAt;
     if(!canonicalHit){
       player.invuln=beforeInvuln;
+      state.damageRetries++;
       return false
     }
 
-    state.trapHits++;
-    trapContacts.add(contactKey);
-    const protectionMs=Math.max(0,Number(player.invuln||0));
-    if(protectionMs>0)trapProtectionUntil.set(contactKey,performance.now()+protectionMs);
+    recordTrapHit(player,trap,contactKey,cycle);
     return true
   }
 
@@ -260,7 +299,6 @@
 
   function rearmInactiveTrapContacts(){
     if(!ordinaryDungeon())return false;
-    const r57=window.CCGLostSizzlerV141R57DesktopPrepStability||null;
     const rare=window.CCGLostSizzlerRareEventsBalance||null;
     const canonical=rare?.trapRuntime?.contact;
     const now=performance.now();
@@ -272,13 +310,9 @@
         if(protectedUntil>0&&protectedUntil<=now)trapProtectionUntil.delete(contactKey);
         const occupied=Number(trap.x)===Number(player.x)&&Number(trap.y)===Number(player.y);
         if(occupied&&trapActive(trap,now))continue;
-        let changed=false;
-        if(trapContacts.delete(contactKey))changed=true;
-        trapDamageInFlight.delete(contactKey);
-        if(trapProtectionUntil.delete(contactKey))changed=true;
+        let changed=clearTrapCycleOwners(player,trap,contactKey);
+        if(trapContactCycles.delete(contactKey))changed=true;
         if(canonical?.delete?.(contactKey))changed=true;
-        const key=r57TrapKey(player,trap);
-        if(r57?.state?.trapCycles?.get?.(key)===true){r57.state.trapCycles.set(key,false);changed=true}
         if(changed)state.rearms++;
       }
     }
@@ -518,5 +552,5 @@
   state.timer=setInterval(()=>{try{tick()}catch(error){console.warn("[C64 Dungeon Carnage r19] mobile stability tick failed safely",error)}},MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
-  window.CCGLostSizzlerV142R19MobileTrapLayoutStability={installPortraitLayout,installTrapDamageOwner,installTrapTriggerOwner,withValidatedTrapContact,damageValidatedTrapContact,guaranteeTrapContactDamage,damageOccupiedActiveTraps,rearmInactiveTrapContacts,syncPortraitCanvasAspect,trapActive,get state(){return state}};
+  window.CCGLostSizzlerV142R19MobileTrapLayoutStability={installPortraitLayout,installTrapDamageOwner,installTrapTriggerOwner,withValidatedTrapContact,damageValidatedTrapContact,guaranteeTrapContactDamage,damageOccupiedActiveTraps,rearmInactiveTrapContacts,rearmStaleCycleContact,syncPortraitCanvasAspect,trapActive,trapCycleId,get state(){return state}};
 })();

@@ -322,6 +322,79 @@ try{
   assert.equal(stationaryAfter.armor,stationary.before.armor,"stationary active-cycle trap damage must preserve armour");
   assert.deepEqual({x:stationaryAfter.x,y:stationaryAfter.y},{x:stationary.before.x,y:stationary.before.y},"stationary active-cycle damage must not require movement");
 
+  await page.evaluate(fixture=>{
+    const trap=(host?.traps||[]).find(t=>String(t.id)===String(fixture.id));
+    if(trap){trap.period=fixture.original.period;trap.phase=fixture.original.phase}
+    p1.x=world.start.x;p1.y=world.start.y;p1.rx=p1.x;p1.ry=p1.y;p1.invuln=0;p1.hitStunMs=0;
+    window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.rearmInactiveTrapContacts?.();
+  },stationary);
+
+  // Global cyclic-floor-trap regression. Keep the player on each real generated
+  // FIRE/SPIKE/SHOCK tile, land one hit, prove the same active cycle cannot
+  // double-hit, then advance the trap by a complete period without ever exposing
+  // an inactive sample. The next still-visible ACTIVE cycle must inflict exactly
+  // one new HP. This reproduces the stale-latch shape seen after a runtime stall.
+  const globalCycle=await page.evaluate(()=>globalThis.eval(`(()=>{
+    const api=window.CCGLostSizzlerV142R19MobileTrapLayoutStability;
+    const required=["fire","spike","shock"],results=[];
+    if(!api?.damageOccupiedActiveTraps||!api?.trapCycleId)return{available:false,reason:"R19 cycle API unavailable"};
+    const cycleRearmsBefore=Number(api.state?.cycleRearms||0);
+    for(const kind of required){
+      const trap=(host?.traps||[]).find(t=>t?.active&&String(t.kind||"").toLowerCase()===kind);
+      if(!trap){results.push({kind,available:false});continue}
+      const original={period:Number(trap.period),phase:Number(trap.phase)};
+      for(const enemy of host?.enemies||[])if(enemy?.alive&&Number(enemy.x)===Number(trap.x)&&Number(enemy.y)===Number(trap.y))enemy.alive=false;
+      p1.x=Number(trap.x);p1.y=Number(trap.y);p1.rx=p1.x;p1.ry=p1.y;
+      p1.maxHealth=Math.max(8,Number(p1.maxHealth||8));p1.health=p1.maxHealth;
+      p1.armor=Math.max(3,Number(p1.armor||0));p1.invuln=0;p1.hitStunMs=0;move1=0;input.clear();
+      const period=100000,phaseAt=fraction=>{
+        const now=performance.now();
+        return((period*fraction)-(now%period)+period)%period
+      };
+      trap.period=period;trap.phase=phaseAt(.70);
+      api.rearmInactiveTrapContacts();
+      trap.phase=phaseAt(.10);
+      const active1=Boolean(SYS.trapActive(trap,performance.now())),cycle1=api.trapCycleId(trap,performance.now());
+      const before={health:Number(p1.health),armor:Number(p1.armor)};
+      const firstHandled=api.damageOccupiedActiveTraps();
+      const afterFirst={health:Number(p1.health),armor:Number(p1.armor)};
+      const duplicateHandled=api.damageOccupiedActiveTraps();
+      const afterDuplicate={health:Number(p1.health),armor:Number(p1.armor)};
+      trap.phase+=period;
+      const active2=Boolean(SYS.trapActive(trap,performance.now())),cycle2=api.trapCycleId(trap,performance.now());
+      const secondHandled=api.damageOccupiedActiveTraps();
+      const afterSecond={health:Number(p1.health),armor:Number(p1.armor)};
+      results.push({kind,available:true,active1,active2,cycle1,cycle2,before,afterFirst,afterDuplicate,afterSecond,firstHandled,duplicateHandled,secondHandled});
+      trap.period=original.period;trap.phase=original.phase;
+      p1.x=world.start.x;p1.y=world.start.y;p1.rx=p1.x;p1.ry=p1.y;p1.invuln=0;p1.hitStunMs=0;
+      api.rearmInactiveTrapContacts();
+    }
+    return{
+      available:true,
+      results,
+      cycleRearmsBefore,
+      cycleRearmsAfter:Number(api.state?.cycleRearms||0),
+      hitsByKind:{...(api.state?.trapHitsByKind||{})},
+      damageRetries:Number(api.state?.damageRetries||0)
+    };
+  })()`));
+  assert.equal(globalCycle.available,true,`global trap cycle probe unavailable: ${JSON.stringify(globalCycle)}`);
+  assert.deepEqual(globalCycle.results.map(row=>row.kind),["fire","spike","shock"],"global floor-trap regression must cover FIRE, SPIKE and SHOCK");
+  for(const row of globalCycle.results){
+    assert.equal(row.available,true,`generated Solo floor must contain a real ${row.kind} trap`);
+    assert.equal(row.active1,true,`${row.kind} trap must be visibly active for its first contact`);
+    assert.equal(row.active2,true,`${row.kind} trap must remain visibly active after the synthetic skipped inactive window`);
+    assert.equal(row.cycle2,row.cycle1+1,`${row.kind} trap cycle identity must advance exactly once while its visible phase remains active`);
+    assert.equal(row.afterFirst.health,row.before.health-1,`${row.kind} ACTIVE must remove exactly one HP`);
+    assert.equal(row.afterFirst.armor,row.before.armor,`${row.kind} ACTIVE must not consume armour`);
+    assert.equal(row.afterDuplicate.health,row.afterFirst.health,`${row.kind} must not double-hit during one active cycle`);
+    assert.equal(row.afterDuplicate.armor,row.before.armor,`${row.kind} duplicate guard must preserve armour`);
+    assert.equal(row.afterSecond.health,row.before.health-2,`${row.kind} must remove one new HP in the next active cycle even when no inactive frame was sampled`);
+    assert.equal(row.afterSecond.armor,row.before.armor,`${row.kind} next-cycle hit must preserve armour`);
+  }
+  assert.ok(globalCycle.cycleRearmsAfter-globalCycle.cycleRearmsBefore>=3,`expected one stale-cycle rearm for each floor-trap kind: ${JSON.stringify(globalCycle)}`);
+  for(const kind of ["fire","spike","shock"])assert.ok(Number(globalCycle.hitsByKind?.[kind]||0)>=2,`expected R19 diagnostics to record both ${kind} cycle hits`);
+
   assert.deepEqual(errors,[],`real mobile trap cycle must not raise browser errors: ${errors.join("\n")}`);
   console.log("DUNGEON_MOBILE_NATURAL_TRAPS",JSON.stringify({kinds}));
   console.log("C64 Dungeon Carnage real generated mobile trap damage passed.");

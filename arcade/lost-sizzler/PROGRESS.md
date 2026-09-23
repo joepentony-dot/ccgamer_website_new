@@ -1,3 +1,13 @@
+## LIVE INCIDENT — global active floor-trap cycle reliability — 23 September 2026
+
+- **Active candidate:** `codex/dungeon-r53-global-trap-reliability-20260923`, created from current `main` after the owner reproduced a visibly **SHOCK TRAP — ACTIVE** tile that did not remove HEALTH.
+- The investigation covers all generated cyclic floor-trap kinds: **FIRE, SPIKE and SHOCK**. They share the same `SYS.trapActive()` period/phase clock and the same contact-latch ownership, so this is a global floor-trap reliability defect rather than a shock-only rule.
+- Root cause: the retained contact owners rearmed a trap only after sampling an inactive/unoccupied state. A long frame/runtime stall can skip the complete inactive interval; the renderer then correctly reaches the next ACTIVE cycle while an old contact latch still suppresses damage.
+- R19 now records the exact trap cycle that produced a hit. If a later ACTIVE cycle is observed, stale R19/canonical/R56/R57 latches are synchronously retired even when no inactive frame was sampled. One active cycle still gives one hit per continuous contact, armour remains unchanged, and accepted damage requires canonical hit evidence.
+- Browser coverage exercises real generated FIRE, SPIKE and SHOCK traps: first ACTIVE contact = exactly -1 HEALTH, repeated check in the same active cycle = no duplicate hit, and the next ACTIVE cycle = exactly -1 new HEALTH even when the inactive interval is deliberately skipped.
+- Dedicated hazard rooms and the rolling boulder were inspected as separate damage systems; they do not use the stale ordinary-floor-trap contact latch changed here.
+- Candidate identity is **V10.42 r53 / 20260923r53**. Exact-head GitHub Actions qualification is required before merge.
+
 ## LIVE INCIDENT — intermittent FIRE, active spikes, garbled renderer — 23 September 2026
 
 - **Active candidate:** `codex/dungeon-r51-fire-wall-incident-20260923`, created from current `main` `88df63430f275a37553a821c2511b1296dd13f8e`.
