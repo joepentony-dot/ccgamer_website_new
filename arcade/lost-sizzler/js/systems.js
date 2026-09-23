@@ -317,6 +317,8 @@ window.CCGSystems=(()=>{
     // Every room gets a visible threshold door. Optional branches are then assigned distinct lock mechanics.
     const bonus=host.doors.filter(d=>d.type!=="room");
     bonus.forEach((d,i)=>{if(i<C.dungeon.secretRooms){d.type="secret";d.locked=true;d.hidden=true}else if(i===C.dungeon.secretRooms){d.type="switch";d.locked=true;d.hidden=false}else{d.type="bronze";d.locked=true;d.hidden=false}});
+    const bronzeRewardRooms=new Set(bonus.filter(d=>d.type==="bronze").map(d=>d.roomId));
+    for(const chest of host.chests||[])if(bronzeRewardRooms.has(chest.roomId)){chest.locked=false;chest.bronzeDoorReward=true}
     // Additional hidden wall passages create optional shortcuts/loot pockets without touching the mandatory route.
     carveSecretPassages(world,host,used,run);
 
