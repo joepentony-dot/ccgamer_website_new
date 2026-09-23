@@ -399,6 +399,7 @@ test("residual curated decisions remain source-evidenced and exact-ID scoped", (
     ["ninja", ["2849"]],
     ["spy-vs-spy-2-the-island-caper", ["3935"]],
     ["strip-poker-a-sizzling-game-of-chance", ["7489", "513"]],
+    ["super-pipeline", ["6490"]],
     ["the-sword-of-fargoal", ["7724"]]
   ]);
 
