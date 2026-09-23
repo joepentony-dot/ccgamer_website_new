@@ -82,6 +82,27 @@
       ]
     },
     {
+      "gameSlug": "he-man-and-the-masters-of-the-universe-the-movie",
+      "archiveIds": [
+        "1319"
+      ],
+      "titleAliases": [
+        "Masters of the Universe: The Movie"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/masters-of-the-universe-the-movie",
+          "note": "Lemon64 identifies Masters of the Universe: The Movie as the 1987 Gremlin Graphics C64 release and confirms a Gremlin tape release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Masters_of_the_Universe-_The_Movie_(1987_Gremlin_Graphics)_%5b1319%5d/",
+          "note": "UTA archive entry for the same Gremlin Graphics 1987 cassette under the shortened release title."
+        }
+      ]
+    },
+    {
       "gameSlug": "indiana-jones-in-the-lost-kingdom",
       "archiveIds": [
         "4218"
@@ -175,6 +196,32 @@
           "source": "Lemon64",
           "url": "https://www.lemon64.com/game/they-stole-a-million",
           "note": "Lemon64 identifies 39 Steps as developer and the tape entry used in the 39 Steps release."
+        }
+      ]
+    },
+    {
+      "gameSlug": "v-the-computer-game",
+      "archiveIds": [
+        "2651"
+      ],
+      "titleAliases": [
+        "V"
+      ],
+      "evidence": [
+        {
+          "source": "MobyGames",
+          "url": "https://www.mobygames.com/game/41758/v/",
+          "note": "MobyGames lists the C64 title as V with V: The Computer Game as an alternate title and Ocean as publisher."
+        },
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/v-the-computer-game",
+          "note": "Lemon64 confirms the 1986 Ocean C64 cassette release and Novaload tape entry."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/V_(1985_Ocean_Software_Ltd)_%5b2651%5d/",
+          "note": "UTA archive directory contains V.tap for the Ocean release."
         }
       ]
     },
