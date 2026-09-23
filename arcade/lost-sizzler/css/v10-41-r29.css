@@ -301,7 +301,8 @@ body[data-run-active="true"][data-ccg-major-notification="true"] .ccg-game:fulls
   }
   .v102-game-area .game-message-context,.v102-game-area #message,.v102-game-area #quest-list{display:none!important}
   body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail #pickup-toast{
-    position:static!important;inset:auto!important;transform:none!important;display:flex!important;
+    position:static!important;inset:auto!important;transform:none!important;display:grid!important;
+    grid-template-columns:48px minmax(0,1fr)!important;grid-template-rows:1fr!important;align-items:center!important;gap:11px!important;
     width:100%!important;min-width:0!important;max-width:none!important;
     height:73px!important;min-height:73px!important;max-height:73px!important;
     margin:0!important;padding:7px 14px!important;opacity:.38!important;visibility:visible!important;pointer-events:none!important;
@@ -309,7 +310,21 @@ body[data-run-active="true"][data-ccg-major-notification="true"] .ccg-game:fulls
     background:#0a060d!important;box-shadow:none!important;text-align:left!important;overflow:hidden!important;
   }
   body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail #pickup-toast.show{opacity:1!important;background:#110b12!important}
-  body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail #pickup-toast b,body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail #pickup-toast span{width:100%!important;text-align:left!important}
+  body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail #pickup-toast .pickup-toast-icon{grid-column:1!important;grid-row:1!important;align-self:center!important;justify-self:center!important;margin:0!important}
+  body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail #pickup-toast .pickup-toast-copy{grid-column:2!important;grid-row:1!important;align-self:center!important;min-width:0!important;width:100%!important}
+  body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail #pickup-toast b,
+  body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail #pickup-toast span{width:100%!important;text-align:left!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;-webkit-line-clamp:unset!important}
+  body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail #ccg-major-notification[data-visible="true"]{
+    display:grid!important;grid-template-columns:48px minmax(0,1fr)!important;grid-template-rows:1fr!important;align-items:center!important;gap:11px!important;
+    width:100%!important;height:73px!important;min-height:73px!important;max-height:73px!important;margin:0!important;padding:7px 14px!important;overflow:hidden!important
+  }
+  body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail #ccg-major-notification[data-visible="true"] .major-icon{grid-column:1!important;grid-row:1!important;align-self:center!important;justify-self:center!important;margin:0!important}
+  body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail #ccg-major-notification[data-visible="true"] .major-copy{grid-column:2!important;grid-row:1!important;align-self:center!important;min-width:0!important;width:100%!important}
+  body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail #ccg-major-notification[data-visible="true"] .major-copy b,
+  body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail #ccg-major-notification[data-visible="true"] .major-copy span{width:100%!important;text-align:left!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
+  body[data-run-active="true"][data-ccg-major-notification="true"] .ccg-game .v102-game-area .game-message-rail #pickup-toast{
+    display:none!important;visibility:hidden!important;opacity:0!important
+  }
 }
 
 /* Short landscape viewports still keep the message rail below the dungeon,
