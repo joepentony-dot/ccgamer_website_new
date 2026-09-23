@@ -31,7 +31,7 @@
     overlay.className="ccg-release-loading";
     overlay.setAttribute("role","status");
     overlay.setAttribute("aria-live","polite");
-    overlay.innerHTML=`<div class="ccg-release-loading-card"><span class="ccg-release-loading-kicker">CHEEKY COMMODORE QUEST</span><h2>LOADING — PLEASE WAIT</h2><p id="ccg-release-loading-status">Preparing The Lost Sizzler game systems…</p><progress id="ccg-release-loading-progress" max="100" value="0">0%</progress><div class="ccg-release-loading-meta"><span id="ccg-release-loading-percent" class="ccg-release-loading-percent">0%</span><span>THE LOST SIZZLER · PREPARING RUNTIME</span></div></div>`;
+    overlay.innerHTML=`<div class="ccg-release-loading-card"><span class="ccg-release-loading-kicker">C64 DUNGEON CARNAGE</span><h2>LOADING — PLEASE WAIT</h2><p id="ccg-release-loading-status">Preparing C64 Dungeon Carnage game systems…</p><progress id="ccg-release-loading-progress" max="100" value="0">0%</progress><div class="ccg-release-loading-meta"><span id="ccg-release-loading-percent" class="ccg-release-loading-percent">0%</span><span>C64 DUNGEON CARNAGE · PREPARING RUNTIME</span></div></div>`;
     document.body.appendChild(overlay);
     return overlay;
   }
