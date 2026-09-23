@@ -134,15 +134,24 @@ try{
   assert.equal(swordAfter.buffer,0,"a successful sword tap must not leave a queued attack buffer");
   assert.ok(swordAfter.meleeRepairs>=1,"R53 must recognise melee as successful attack work");
 
-  const finiteBefore=await page.evaluate(()=>Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.finiteCooldownRepairs||0));
-  await page.evaluate(()=>{p1.firearmUnlocked=true;p1.weapon=baseWeapon();p1.mana=100;p1.maxMana=Math.max(120,Number(p1.maxMana)||0);fireBuffer1=0;input.clear()});
-  for(let attempt=0;attempt<3;attempt++){
-    await page.evaluate(()=>{fire1=390;fireBuffer1=0});
-    await page.keyboard.press("Space");
-    await page.waitForTimeout(480);
+  const finiteBefore=await page.evaluate(()=>{
+    p1.firearmUnlocked=true;p1.weapon=baseWeapon();p1.mana=100;p1.maxMana=Math.max(120,Number(p1.maxMana)||0);fireBuffer1=0;input.clear();
+    window.__ccgR53FrozenFire=setInterval(()=>{fire1=390},12);
+    return Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.finiteCooldownRepairs||0);
+  });
+  try{
+    for(let attempt=0;attempt<5;attempt++){
+      await page.keyboard.press("Space");
+      await page.waitForTimeout(310);
+    }
+  }finally{
+    await page.evaluate(()=>{clearInterval(window.__ccgR53FrozenFire);delete window.__ccgR53FrozenFire;fire1=0;fireBuffer1=0});
   }
   const finiteAfter=await page.evaluate(()=>Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.finiteCooldownRepairs||0));
   assert.ok(finiteAfter>finiteBefore,"repeated unchanged finite cooldown evidence must recover instead of leaving ATTACK permanently blocked");
+  const postFiniteMana=await page.evaluate(()=>Number(p1.mana));
+  await page.keyboard.press("Space");
+  await page.waitForFunction(mana=>Number(p1.mana)<mana,postFiniteMana,{timeout:3000});
 
   await page.evaluate(async()=>{await quitToMenu()});
   await page.waitForFunction(()=>mode==="menu"&&document.body.dataset.runActive!=="true",null,{timeout:10000});
