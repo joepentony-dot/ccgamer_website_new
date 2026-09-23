@@ -1,0 +1,2703 @@
+{
+  "schemaVersion": 1,
+  "generatedFrom": {
+    "games": "games/games.json",
+    "utaAudit": "data/uta-audit.json",
+    "utaSource": "https://uta.pokefinder.org/Ultimate_Tape_Archive/",
+    "baselineSummary": {
+      "c64Games": 559,
+      "archiveReleasesScanned": 2892,
+      "matchedGames": 395,
+      "manualReviewGames": 23,
+      "noTitleCandidateGames": 141,
+      "unmatchedGames": 164
+    }
+  },
+  "definitions": {
+    "verified-additional-tape": "A source-verified UTA cassette relationship safe to expose after matcher/curation qualification.",
+    "catalogue-metadata-correction": "UTA evidence points to the intended game, but games.json identity/metadata must be repaired first.",
+    "different-c64-version": "The UTA title candidate belongs to another C64 conversion, game, or release lineage and must not be attached.",
+    "genuinely-no-uta-release": "No verified compatible UTA cassette directory remains for the exact catalogue record after the residual audit. This does not imply that no commercial cassette ever existed."
+  },
+  "summary": {
+    "reviewed": 164,
+    "classifications": {
+      "verified-additional-tape": 16,
+      "catalogue-metadata-correction": 4,
+      "different-c64-version": 11,
+      "genuinely-no-uta-release": 133
+    },
+    "verifiedAdditionalTapePages": 16,
+    "verifiedAdditionalTapeReleases": 19,
+    "expectedMatchedGamesAfterQualifiedRefresh": 411,
+    "expectedUnmatchedAfterQualifiedRefresh": 148
+  },
+  "entries": [
+    {
+      "gameSlug": "20-tons",
+      "title": "20 Tons",
+      "year": 1985,
+      "publishers": [
+        "64 Tape Computing"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "a-nightmare-on-elm-street",
+      "title": "A Nightmare On Elm Street",
+      "year": 1989,
+      "publishers": [
+        "Monarch Software"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "accolades-comics",
+      "title": "Accolade's Comics",
+      "year": 1987,
+      "publishers": [
+        "Accolade"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "disk-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is documented as disk-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "action-biker",
+      "title": "Action Biker",
+      "year": 1985,
+      "publishers": [
+        "Mastertronic"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "verified-additional-tape",
+      "reasonSubtype": "source-verified-uta-relationship",
+      "confidence": "high",
+      "archiveIds": [
+        "6254"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/action-biker",
+          "note": "Lemon64 lists Action Biker as also known as KP Skips Action Biker with Clumsy Colin and identifies the 1985 Mastertronic tape release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/KP_Skips_Action_Biker_with_Clumsy_Colin_(1985_Mastertronic)_%5b6254%5d/",
+          "note": "UTA archive entry for the same Mastertronic 1985 cassette under the licensed full title."
+        }
+      ],
+      "reason": "Independent release evidence identifies the UTA cassette as the same C64 game; any semantic alias is scoped to this game and exact archive ID."
+    },
+    {
+      "gameSlug": "action-service",
+      "title": "Action Service",
+      "year": 1989,
+      "publishers": [
+        "Infogrames"
+      ],
+      "reReleasers": [
+        "Players Premier",
+        "Players Software"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "after-burner",
+      "title": "After Burner",
+      "year": 1989,
+      "publishers": [
+        "Mindscape"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "manual-review",
+      "classification": "different-c64-version",
+      "reasonSubtype": "different-conversion",
+      "confidence": "high",
+      "reason": "games.json represents the 1989 Mindscape US conversion; UTA's Activision/Hit Squad tapes are the separate European conversion."
+    },
+    {
+      "gameSlug": "alter-ego",
+      "title": "Alter Ego",
+      "year": 1986,
+      "publishers": [
+        "Activision"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "android-nim",
+      "title": "Android Nim",
+      "year": 1985,
+      "publishers": [
+        "64 Tape Computing"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "ant-attack",
+      "title": "Ant Attack",
+      "year": 1984,
+      "publishers": [
+        "Quicksilva"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "apollo-18-mission-to-the-moon",
+      "title": "Apollo 18: Mission To The Moon",
+      "year": 1987,
+      "publishers": [
+        "Accolade",
+        "Electronic Arts"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "arachnophobia",
+      "title": "Arachnophobia",
+      "year": 1991,
+      "publishers": [
+        "Titus Software"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "arctic-shipwreck",
+      "title": "Arctic Shipwreck",
+      "year": 1983,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "badlands",
+      "title": "Badlands",
+      "year": 1990,
+      "publishers": [
+        "Domark"
+      ],
+      "reReleasers": [
+        "The Hit Squad"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "barbarian-2-the-dungeon-of-drax",
+      "title": "Barbarian II: The Dungeon Of Drax",
+      "year": 1988,
+      "publishers": [
+        "Palace Software"
+      ],
+      "reReleasers": [
+        "Kixx"
+      ],
+      "originalAuditStatus": "manual-review",
+      "classification": "verified-additional-tape",
+      "reasonSubtype": "source-verified-uta-relationship",
+      "confidence": "high",
+      "archiveIds": [
+        "5918"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/barbarian-2",
+          "note": "Lemon64 identifies Barbarian II: The Dungeon of Drax and states its tape entry was used in the 1988 ERBE Software Spanish release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Barbarian_II_(1988_ERBE_Software)_%5b5918%5d/",
+          "note": "UTA archive entry for Barbarian II, ERBE Software, 1988."
+        }
+      ],
+      "reason": "Independent release evidence identifies the UTA cassette as the same C64 game; any semantic alias is scoped to this game and exact archive ID."
+    },
+    {
+      "gameSlug": "bc2-grogs-revenge",
+      "title": "B.C. II: Grog's Revenge",
+      "year": 1984,
+      "publishers": [
+        "Software Projects"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "manual-review",
+      "classification": "catalogue-metadata-correction",
+      "reasonSubtype": "source-record-repair-required",
+      "confidence": "high",
+      "archiveIds": [
+        "734",
+        "6593"
+      ],
+      "reason": "The current catalogue record carries incompatible publisher/credit lineage. The US Gold [734] and Power House [6593] cassettes belong to the intended B.C. II game, but the games.json identity should be repaired before exposing them."
+    },
+    {
+      "gameSlug": "below-the-root",
+      "title": "Below The Root",
+      "year": 1984,
+      "publishers": [
+        "Windham Classics"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "disk-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is documented as disk-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "bionic-commando",
+      "title": "Bionic Commando",
+      "year": 1988,
+      "publishers": [
+        "GO!"
+      ],
+      "reReleasers": [
+        "Kixx"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "bismark",
+      "title": "Bismark",
+      "year": 1984,
+      "publishers": [
+        "Argus Press Software"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "black-knight",
+      "title": "Black Knight",
+      "year": 1984,
+      "publishers": [
+        "Interdisc"
+      ],
+      "reReleasers": [
+        "ECP"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "blade-runner",
+      "title": "Blade Runner",
+      "year": 1985,
+      "publishers": [
+        "CRL"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "blades-of-steel",
+      "title": "Blades Of Steel",
+      "year": 1990,
+      "publishers": [
+        "Konami"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "blockbusters",
+      "title": "Blockbusters",
+      "year": 1988,
+      "publishers": [
+        "TV Games"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "manual-review",
+      "classification": "different-c64-version",
+      "reasonSubtype": "different-game-version",
+      "confidence": "high",
+      "reason": "The 1988 TV Games catalogue record does not match UTA's 1984 Macsen Software Blockbusters/Gold Run releases."
+    },
+    {
+      "gameSlug": "bocce",
+      "title": "Bocce",
+      "year": 1987,
+      "publishers": [
+        "Simulmondo"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "boulder-dash",
+      "title": "Boulder Dash",
+      "year": 1984,
+      "publishers": [
+        "First Star Software"
+      ],
+      "reReleasers": [
+        "Prism Leisure"
+      ],
+      "originalAuditStatus": "manual-review",
+      "classification": "verified-additional-tape",
+      "reasonSubtype": "source-verified-uta-relationship",
+      "confidence": "high",
+      "archiveIds": [
+        "411"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/boulder-dash",
+          "note": "Lemon64 identifies the State Soft 1984 tape release of Boulder Dash."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Boulder_Dash_(1984_State_Soft)_%5b411%5d/",
+          "note": "UTA archive entry for Boulder Dash, State Soft, 1984."
+        }
+      ],
+      "reason": "Independent release evidence identifies the UTA cassette as the same C64 game; any semantic alias is scoped to this game and exact archive ID."
+    },
+    {
+      "gameSlug": "by-fair-means-or-foul",
+      "title": "By Fair Means Or Foul",
+      "year": 1988,
+      "publishers": [
+        "Superior Software"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "verified-additional-tape",
+      "reasonSubtype": "source-verified-uta-relationship",
+      "confidence": "high",
+      "archiveIds": [
+        "2952"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/by-fair-means-or-foul",
+          "note": "Lemon64 documents the 1988 C64 game By Fair Means... or Foul! and links it to Pro Boxing Simulator."
+        },
+        {
+          "source": "The Codemasters Archive",
+          "url": "https://thecodemastersarchive.co.uk/games/pro-boxing-simulator/",
+          "note": "The Codemasters Archive states that By Fair Means... Or Foul was later re-released by Codemasters as Pro Boxing Simulator, including the Commodore 64 version."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Pro_Boxing_Simulator_(1990_Codemasters)_%5b2952%5d/",
+          "note": "UTA archive entry for the 1990 Codemasters cassette re-release under the Pro Boxing Simulator title."
+        }
+      ],
+      "reason": "Independent release evidence identifies the UTA cassette as the same C64 game; any semantic alias is scoped to this game and exact archive ID."
+    },
+    {
+      "gameSlug": "cave-of-the-word-wizard",
+      "title": "Cave Of The Word Wizard",
+      "year": 1983,
+      "publishers": [
+        "Timeworks"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "caveman-ugh-lympics",
+      "title": "Caveman Ugh-Lympics",
+      "year": 1988,
+      "publishers": [
+        "Electronic Arts"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "chomp",
+      "title": "Chomp!",
+      "year": 1989,
+      "publishers": [
+        "Cosmi"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "cosmic-tunnels",
+      "title": "Cosmic Tunnels",
+      "year": 1984,
+      "publishers": [
+        "Datamost"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "crossfire",
+      "title": "Crossfire",
+      "year": 1983,
+      "publishers": [
+        "Sierra On-Line"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "manual-review",
+      "classification": "different-c64-version",
+      "reasonSubtype": "different-game",
+      "confidence": "high",
+      "reason": "The 1983 Sierra On-Line Crossfire catalogue record is not the 1989 Atlantis Software game in UTA."
+    },
+    {
+      "gameSlug": "curse-of-ra",
+      "title": "Curse Of Ra",
+      "year": 1990,
+      "publishers": [
+        "Rainbow Arts"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "curse-of-the-azure-bonds",
+      "title": "Curse of the Azure Bonds",
+      "year": 1989,
+      "publishers": [
+        "Strategic Simulations Inc."
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "disk-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is documented as disk-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "dan-dare-iii-the-escape",
+      "title": "Dan Dare III - The Escape",
+      "year": 1990,
+      "publishers": [
+        "Virgin Mastertronic"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "davy-king-of-the-wild-frontier",
+      "title": "Davy: King Of The Wild Frontier",
+      "year": 1985,
+      "publishers": [
+        "Cascade Games"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "deactivators",
+      "title": "Deactivators",
+      "year": 1986,
+      "publishers": [
+        "Reaktör Software"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "defender",
+      "title": "Defender",
+      "year": 1983,
+      "publishers": [
+        "Atarisoft"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "cartridge-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is cartridge-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "defender-of-the-crown",
+      "title": "Defender Of The Crown",
+      "year": 1987,
+      "publishers": [
+        "Cinemaware",
+        "Mirrorsoft"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "die-hard",
+      "title": "Die Hard",
+      "year": 1990,
+      "publishers": [
+        "Activision"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "disk-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is documented as disk-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "dino-eggs",
+      "title": "Dino Eggs",
+      "year": 1984,
+      "publishers": [
+        "Micro Fun"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "doctor-who-and-the-mines-of-terror",
+      "title": "Doctor Who And The Mines Of Terror",
+      "year": 1986,
+      "publishers": [
+        "Micro Power"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "donkey-kong",
+      "title": "Donkey Kong",
+      "year": 1983,
+      "publishers": [
+        "Atarisoft"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "manual-review",
+      "classification": "different-c64-version",
+      "reasonSubtype": "different-conversion",
+      "confidence": "high",
+      "reason": "The catalogue page is the 1983 Atarisoft conversion; UTA's 1986 Ocean/ERBE tapes are the separate Ocean conversion."
+    },
+    {
+      "gameSlug": "double-dragon",
+      "title": "Double Dragon",
+      "year": 1991,
+      "publishers": [
+        "Ocean"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "manual-review",
+      "classification": "different-c64-version",
+      "reasonSubtype": "different-conversion",
+      "confidence": "high",
+      "reason": "The catalogue page is the 1991 Ocean cartridge conversion; UTA's Melbourne House/Mastertronic Plus/Tronix/Dro Soft tapes belong to the earlier conversion."
+    },
+    {
+      "gameSlug": "dragons-lair-2-escape-from-singes-castle",
+      "title": "Dragon's Lair II : Escape From Singe'S Castle",
+      "year": 1987,
+      "publishers": [
+        "Electronic Arts",
+        "Software Projects"
+      ],
+      "reReleasers": [
+        "Encore"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "verified-additional-tape",
+      "reasonSubtype": "source-verified-uta-relationship",
+      "confidence": "high",
+      "archiveIds": [
+        "395",
+        "5078"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/dragons-lair-2",
+          "note": "Lemon64 identifies Dragon's Lair II: Escape from Singe's Castle as the 1987 Electronic Arts / Software Projects game and confirms a Software Projects tape release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Dragon's_Lair_Part_II-_Escape_from_Singe's_Castle_(1987_Software_Projects)_%5b395%5d/",
+          "note": "UTA archive entry for the same Software Projects 1987 cassette using the Part II title form."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Escape_from_Singe's_Castle_(1987_Encore)_%5b5078%5d/",
+          "note": "UTA archive entry for the documented Encore 1987 cassette re-release under the shortened Escape from Singe's Castle title."
+        }
+      ],
+      "reason": "Independent release evidence identifies the UTA cassette as the same C64 game; any semantic alias is scoped to this game and exact archive ID."
+    },
+    {
+      "gameSlug": "entombed",
+      "title": "Entombed",
+      "year": 1985,
+      "publishers": [
+        "Ultimate"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "exile",
+      "title": "Exile",
+      "year": 1991,
+      "publishers": [
+        "Audiogenic"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "face-off",
+      "title": "Face Off!",
+      "year": 1989,
+      "publishers": [
+        "Activision"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "fernandez-must-die",
+      "title": "Fernandez Must Die",
+      "year": 1988,
+      "publishers": [
+        "Image Works"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "fiendish-freddys-big-top-o-fun",
+      "title": "Fiendish Freddy's Big Top O' Fun",
+      "year": 1990,
+      "publishers": [
+        "Mindscape"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "first-samurai",
+      "title": "First Samurai",
+      "year": 1992,
+      "publishers": [
+        "Image Works"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "floyd-of-the-jungle",
+      "title": "Floyd Of The Jungle",
+      "year": 1983,
+      "publishers": [
+        "MicroProse Software"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "flunky",
+      "title": "Flunky",
+      "year": 1987,
+      "publishers": [
+        "Piranha"
+      ],
+      "reReleasers": [
+        "Alternative Software"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "force-seven",
+      "title": "Force Seven",
+      "year": 1987,
+      "publishers": [
+        "Datasoft"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "galactic-gardener",
+      "title": "Galactic Gardener",
+      "year": 1984,
+      "publishers": [
+        "Software Projects"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "gateway-to-apshai",
+      "title": "Gateway To Apshai",
+      "year": 1983,
+      "publishers": [
+        "CBS Electronics Software",
+        "Epyx"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "gemstone-warrior",
+      "title": "Gemstone Warrior",
+      "year": 1984,
+      "publishers": [
+        "Strategic Simulations Inc."
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "give-my-regards-to-broad-street",
+      "title": "Give My Regards To Broad Street",
+      "year": 1985,
+      "publishers": [
+        "Argus Press Software"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "verified-additional-tape",
+      "reasonSubtype": "source-verified-uta-relationship",
+      "confidence": "high",
+      "archiveIds": [
+        "8446"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/give-my-regards-to-broad-street",
+          "note": "Lemon64 lists Paul McCartney's Give My Regards to Broad Street as an alternate title and identifies the 1985 Mind Games European tape release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Paul_McCartney's_Give_My_Regards_to_Broad_Street_(1985_Mind_Games)_%5b8446%5d/",
+          "note": "UTA archive entry for the same 1985 Mind Games cassette under the Paul McCartney title form."
+        }
+      ],
+      "reason": "Independent release evidence identifies the UTA cassette as the same C64 game; any semantic alias is scoped to this game and exact archive ID."
+    },
+    {
+      "gameSlug": "gorf",
+      "title": "Gorf",
+      "year": 1983,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "grannys-garden",
+      "title": "Granny's Garden",
+      "year": 1987,
+      "publishers": [
+        "Satchel Software"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "he-man-and-the-masters-of-the-universe-the-ilearth-stone",
+      "title": "He-Man and the Masters of the Universe: The Ilearth Stone",
+      "year": 1987,
+      "publishers": [
+        "US Gold"
+      ],
+      "reReleasers": [
+        "Americana"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "heart-of-africa",
+      "title": "Heart Of Africa",
+      "year": 1985,
+      "publishers": [
+        "Ariolasoft",
+        "Electronic Arts"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "disk-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is documented as disk-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "herberts-dummy-run",
+      "title": "Herbert's Dummy Run",
+      "year": 1985,
+      "publishers": [
+        "Mikro-Gen"
+      ],
+      "reReleasers": [
+        "Sparklers"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "indiana-jones-and-the-fate-of-atlantis",
+      "title": "Indiana Jones And The Fate Of Atlantis",
+      "year": 1992,
+      "publishers": [
+        "US Gold"
+      ],
+      "reReleasers": [
+        "Kixx"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "infernal-runner",
+      "title": "Infernal Runner",
+      "year": 1985,
+      "publishers": [
+        "Loriciels"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "insects-in-space",
+      "title": "Insects In Space",
+      "year": 1989,
+      "publishers": [
+        "Hewson"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "international-soccer",
+      "title": "International Soccer",
+      "year": 1983,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "manual-review",
+      "classification": "verified-additional-tape",
+      "reasonSubtype": "source-verified-uta-relationship",
+      "confidence": "high",
+      "archiveIds": [
+        "3215"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/international-soccer-commodore",
+          "note": "Lemon64 states the original 1983 Commodore cartridge game was later reissued by CRL on tape and disk in 1988."
+        },
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/international-soccer-crl",
+          "note": "Lemon64 documents the 1988 CRL cassette re-release of the original International Soccer."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/International_Soccer_(1988_CRL)_%5b3215%5d/",
+          "note": "UTA archive entry for the CRL 1988 cassette re-release."
+        }
+      ],
+      "reason": "Independent release evidence identifies the UTA cassette as the same C64 game; any semantic alias is scoped to this game and exact archive ID."
+    },
+    {
+      "gameSlug": "invade-a-load",
+      "title": "Invade-A-Load",
+      "year": 1987,
+      "publishers": [
+        "Mastertronic"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "jungle-hunt",
+      "title": "Jungle Hunt",
+      "year": 1983,
+      "publishers": [
+        "Atarisoft"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "cartridge-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is cartridge-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "jupiter-lander",
+      "title": "Jupiter Lander",
+      "year": 1982,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "kamikaze",
+      "title": "Kamikaze",
+      "year": 1990,
+      "publishers": [
+        "Codemasters"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "manual-review",
+      "classification": "different-c64-version",
+      "reasonSubtype": "different-game",
+      "confidence": "high",
+      "reason": "The 1990 Codemasters game in games.json is not UTA's 1984 Supersoft Kami-Kaze."
+    },
+    {
+      "gameSlug": "kane-kane-2",
+      "title": "Kane & Kane 2",
+      "year": 1985,
+      "publishers": [
+        "Mastertronic"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "catalogue-metadata-correction",
+      "reasonSubtype": "combined-record-needs-splitting",
+      "confidence": "high",
+      "archiveIds": [
+        "7916"
+      ],
+      "reason": "The catalogue page combines Kane and Kane 2 as one record. UTA contains Kane [7916], but attaching it to a combined Kane/Kane 2 identity would blur two distinct releases."
+    },
+    {
+      "gameSlug": "kawasaki-rhythm-rocker",
+      "title": "Kawasaki Rhythm Rocker",
+      "year": 1984,
+      "publishers": [
+        "Sight & Sound Music Software"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "kickman",
+      "title": "Kickman",
+      "year": 1982,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "kings-bounty",
+      "title": "King's Bounty",
+      "year": 1990,
+      "publishers": [
+        "New World Computing"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "disk-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is documented as disk-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "las-vegas-casino",
+      "title": "Las Vegas Casino",
+      "year": 1989,
+      "publishers": [
+        "Zeppelin Games"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "lazarian",
+      "title": "Lazarian",
+      "year": 1983,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "cartridge-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is cartridge-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "le-mans",
+      "title": "Le Mans",
+      "year": 1982,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "leader-board",
+      "title": "Leader Board",
+      "year": 1986,
+      "publishers": [
+        "Access Software"
+      ],
+      "reReleasers": [
+        "Kixx"
+      ],
+      "originalAuditStatus": "manual-review",
+      "classification": "verified-additional-tape",
+      "reasonSubtype": "source-verified-uta-relationship",
+      "confidence": "high",
+      "archiveIds": [
+        "6678"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/leaderboard-golf",
+          "note": "Lemon64 lists Leaderboard Golf as also known as Leader Board and identifies the tape entry used in the 1986 ERBE Software Spanish release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Leader_Board_(1986_ERBE_Software)_%5b6678%5d/",
+          "note": "UTA archive entry for Leader Board, ERBE Software, 1986."
+        }
+      ],
+      "reason": "Independent release evidence identifies the UTA cassette as the same C64 game; any semantic alias is scoped to this game and exact archive ID."
+    },
+    {
+      "gameSlug": "legacy-of-the-ancients",
+      "title": "Legacy Of The Ancients",
+      "year": 1987,
+      "publishers": [
+        "Electronic Arts"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "disk-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is documented as disk-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "live-and-let-die",
+      "title": "Live And Let Die",
+      "year": 1988,
+      "publishers": [
+        "Domark"
+      ],
+      "reReleasers": [
+        "Encore"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "verified-additional-tape",
+      "reasonSubtype": "source-verified-uta-relationship",
+      "confidence": "high",
+      "archiveIds": [
+        "2954"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/live-and-let-die",
+          "note": "Lemon64 identifies Live and Let Die: The Computer Game as the 1988 Domark title and confirms the Encore cassette re-release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/James_Bond_007_in_Live_and_Let_Die_-_The_Computer_Game_(19xx_Encore)_%5b2954%5d/",
+          "note": "UTA archive entry for the Encore cassette under the longer James Bond title."
+        }
+      ],
+      "reason": "Independent release evidence identifies the UTA cassette as the same C64 game; any semantic alias is scoped to this game and exact archive ID."
+    },
+    {
+      "gameSlug": "lode-runner",
+      "title": "Lode Runner",
+      "year": 1983,
+      "publishers": [
+        "Brøderbund"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "mad-doctor",
+      "title": "Mad Doctor",
+      "year": 1985,
+      "publishers": [
+        "Creative Sparks"
+      ],
+      "reReleasers": [
+        "Sparklers"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "mail-order-monsters",
+      "title": "Mail Order Monsters",
+      "year": 1985,
+      "publishers": [
+        "Ariolasoft",
+        "Electronic Arts"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "disk-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is documented as disk-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "maniac-mansion",
+      "title": "Maniac Mansion",
+      "year": 1987,
+      "publishers": [
+        "Lucasfilm Games"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "disk-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is documented as disk-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "marias-christmas-box",
+      "title": "Maria's Christmas Box",
+      "year": 1988,
+      "publishers": [
+        "Anco"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "mean-streets",
+      "title": "Mean Streets",
+      "year": 1989,
+      "publishers": [
+        "Access Software"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "disk-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is documented as disk-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "miner-2049er",
+      "title": "Miner 2049er",
+      "year": 1983,
+      "publishers": [
+        "Big Five Software"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "cartridge-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is cartridge-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "montezumas-revenge",
+      "title": "Montezuma's Revenge",
+      "year": 1984,
+      "publishers": [
+        "Parker Brothers"
+      ],
+      "reReleasers": [
+        "Databyte"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "mountie-micks-death-ride",
+      "title": "Mountie Mick's Death Ride",
+      "year": 1987,
+      "publishers": [
+        "Reaktör Software"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "mr-weems-and-the-she-vampires",
+      "title": "Mr Weems And The She Vampires",
+      "year": 1987,
+      "publishers": [
+        "Piranha"
+      ],
+      "reReleasers": [
+        "Alternative Software"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "mule",
+      "title": "M.U.L.E.",
+      "year": 1983,
+      "publishers": [
+        "Ariolasoft",
+        "Electronic Arts"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "murder-on-the-mississippi",
+      "title": "Murder On The Mississippi",
+      "year": 1986,
+      "publishers": [
+        "Activision"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "manual-review",
+      "classification": "different-c64-version",
+      "reasonSubtype": "different-game",
+      "confidence": "high",
+      "reason": "UTA's 1983 Rabbit Software title Murder is not Activision's Murder on the Mississippi."
+    },
+    {
+      "gameSlug": "nebulus",
+      "title": "Nebulus",
+      "year": 1987,
+      "publishers": [
+        "Hewson"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "manual-review",
+      "classification": "verified-additional-tape",
+      "reasonSubtype": "source-verified-uta-relationship",
+      "confidence": "high",
+      "archiveIds": [
+        "6721"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/nebulus",
+          "note": "Lemon64 identifies the tape entry used in the 1987 ERBE Software Spanish release of Nebulus."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Nebulus_(1987_ERBE_Software)_%5b6721%5d/",
+          "note": "UTA archive entry for Nebulus, ERBE Software, 1987."
+        }
+      ],
+      "reason": "Independent release evidence identifies the UTA cassette as the same C64 game; any semantic alias is scoped to this game and exact archive ID."
+    },
+    {
+      "gameSlug": "nemesis",
+      "title": "Nemesis",
+      "year": 1986,
+      "publishers": [
+        "Konami"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "manual-review",
+      "classification": "catalogue-metadata-correction",
+      "reasonSubtype": "source-record-repair-required",
+      "confidence": "high",
+      "archiveIds": [
+        "1542"
+      ],
+      "reason": "The Hit Squad cassette [1542] is a valid re-release of Konami's C64 Nemesis, but the catalogue year/re-release metadata needs correction before the tape is exposed."
+    },
+    {
+      "gameSlug": "neuromancer",
+      "title": "Neuromancer",
+      "year": 1988,
+      "publishers": [
+        "Electronic Arts"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "disk-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is documented as disk-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "night-driver",
+      "title": "Night Driver",
+      "year": 1982,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "nightbreed-the-action-game",
+      "title": "Nightbreed: The Action Game",
+      "year": 1990,
+      "publishers": [
+        "Ocean"
+      ],
+      "reReleasers": [
+        "The Hit Squad"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "verified-additional-tape",
+      "reasonSubtype": "source-verified-uta-relationship",
+      "confidence": "high",
+      "archiveIds": [
+        "1544"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/night-breed",
+          "note": "Lemon64 lists Night Breed as the same game, also known as Clive Barker's Nightbreed: The Action Game, and identifies the 1992 Hit Squad cassette re-release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Night_Breed_(1992_Hit_Squad)_%5b1544%5d/",
+          "note": "UTA archive entry for the Hit Squad 1992 cassette under the Night Breed title."
+        }
+      ],
+      "reason": "Independent release evidence identifies the UTA cassette as the same C64 game; any semantic alias is scoped to this game and exact archive ID."
+    },
+    {
+      "gameSlug": "ninja",
+      "title": "Ninja",
+      "year": 1986,
+      "publishers": [
+        "Mastertronic"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "manual-review",
+      "classification": "verified-additional-tape",
+      "reasonSubtype": "source-verified-uta-relationship",
+      "confidence": "high",
+      "archiveIds": [
+        "2849"
+      ],
+      "secondaryIssues": [
+        "games.json publisher field should be reconciled with its Entertainment USA / Mastertronic release history."
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/ninja-mastertronic",
+          "note": "Lemon64 identifies Entertainment USA and Mastertronic as publishers of the same 1986 Ninja / Ninja Mission game and the Entertainment USA tape release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ninja_(1986_Entertainment_USA)_%5b2849%5d/",
+          "note": "UTA archive entry for the Entertainment USA 1986 cassette."
+        }
+      ],
+      "reason": "Independent release evidence identifies the UTA cassette as the same C64 game; any semantic alias is scoped to this game and exact archive ID."
+    },
+    {
+      "gameSlug": "ninja-massacre",
+      "title": "Ninja Massacre",
+      "year": 1989,
+      "publishers": [
+        "Codemasters"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "manual-review",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "unverified-title-match-excluded",
+      "confidence": "medium",
+      "archiveIds": [
+        "10405"
+      ],
+      "reason": "UTA contains an EDOS title match [10405], but the audit has not established independent C64-specific evidence that it is a release of this catalogue record; it remains excluded."
+    },
+    {
+      "gameSlug": "nosferatu-the-vampyre",
+      "title": "Nosferatu The Vampyre",
+      "year": 1986,
+      "publishers": [
+        "Piranha"
+      ],
+      "reReleasers": [
+        "Alternative Software",
+        "System 4 Software"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "omega-race",
+      "title": "Omega Race",
+      "year": 1982,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "painterboy",
+      "title": "Painterboy",
+      "year": 1986,
+      "publishers": [
+        "Tikkurila"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "pit-fighter",
+      "title": "Pit-Fighter",
+      "year": 1991,
+      "publishers": [
+        "Domark"
+      ],
+      "reReleasers": [
+        "The Hit Squad"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "pneumatic-hammers",
+      "title": "Pneumatic Hammers",
+      "year": 1987,
+      "publishers": [
+        "Firebird"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "popeye-c64",
+      "title": "Popeye",
+      "year": 1984,
+      "publishers": [
+        "Parker Brothers"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "manual-review",
+      "classification": "different-c64-version",
+      "reasonSubtype": "different-conversion",
+      "confidence": "high",
+      "reason": "The catalogue page represents the 1984 Parker Brothers C64 release; the Alternative/Macmillan UTA tapes are a different Popeye release lineage."
+    },
+    {
+      "gameSlug": "project-firestart",
+      "title": "Project Firestart",
+      "year": 1989,
+      "publishers": [
+        "Electronic Arts"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "disk-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is documented as disk-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "project-stealth-fighter",
+      "title": "Project Stealth Fighter",
+      "year": 1987,
+      "publishers": [
+        "MicroProse Software"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "q-bert",
+      "title": "Q*Bert",
+      "year": 1983,
+      "publishers": [
+        "Parker Brothers"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "radar-rat-race",
+      "title": "Radar Rat Race",
+      "year": 1982,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "rags-to-riches",
+      "title": "Rags To Riches",
+      "year": 1985,
+      "publishers": [
+        "Melody Hall Publishing"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "rampart",
+      "title": "Rampart",
+      "year": 1992,
+      "publishers": [
+        "Domark"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "rebel",
+      "title": "Rebel",
+      "year": 1987,
+      "publishers": [
+        "Virgin Games"
+      ],
+      "reReleasers": [
+        "Ricochet"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "rocket-ranger",
+      "title": "Rocket Ranger",
+      "year": 1988,
+      "publishers": [
+        "Cinemaware",
+        "Mirrorsoft"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "roller-coaster-rumbler",
+      "title": "Roller Coaster Rumbler",
+      "year": 1989,
+      "publishers": [
+        "Tynesoft"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "rtype",
+      "title": "R-Type",
+      "year": 1988,
+      "publishers": [
+        "Electric Dreams"
+      ],
+      "reReleasers": [
+        "The Hit Squad"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "saint-dragon",
+      "title": "Saint Dragon",
+      "year": 1990,
+      "publishers": [
+        "Storm"
+      ],
+      "reReleasers": [
+        "Kixx"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "savage-pond",
+      "title": "Savage Pond",
+      "year": 1984,
+      "publishers": [
+        "Argus Press Software"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "manual-review",
+      "classification": "different-c64-version",
+      "reasonSubtype": "different-game",
+      "confidence": "high",
+      "reason": "UTA's Savage is unrelated to Savage Pond."
+    },
+    {
+      "gameSlug": "schizofrenia",
+      "title": "Schizofrenia",
+      "year": 1985,
+      "publishers": [
+        "Quicksilva"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "serenade",
+      "title": "Serenade",
+      "year": 1986,
+      "publishers": [
+        "VIFI International"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "shadow-dancer",
+      "title": "Shadow Dancer",
+      "year": 1991,
+      "publishers": [
+        "US Gold"
+      ],
+      "reReleasers": [
+        "Kixx"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "shadow-of-the-beast",
+      "title": "Shadow Of The Beast",
+      "year": 1990,
+      "publishers": [
+        "Ocean"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "cartridge-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is cartridge-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "shoot-out",
+      "title": "Shoot-Out",
+      "year": 1988,
+      "publishers": [
+        "Martech"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "simcity",
+      "title": "Simcity",
+      "year": 1989,
+      "publishers": [
+        "Infogrames"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "disk-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is documented as disk-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "slalom",
+      "title": "Slalom!",
+      "year": 1983,
+      "publishers": [
+        "Tronix Publishing"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "smash-tv",
+      "title": "Smash TV",
+      "year": 1992,
+      "publishers": [
+        "Codemasters"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "manual-review",
+      "classification": "catalogue-metadata-correction",
+      "reasonSubtype": "source-record-repair-required",
+      "confidence": "high",
+      "archiveIds": [
+        "2239"
+      ],
+      "reason": "UTA [2239] is the Ocean C64 Smash T.V. cassette. The current games.json record has incorrect year/publisher/music metadata and should be repaired rather than bypassed with an override."
+    },
+    {
+      "gameSlug": "space-taxi",
+      "title": "Space Taxi",
+      "year": 1984,
+      "publishers": [
+        "Muse Software"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "spartacus-the-swordslayer",
+      "title": "Spartacus: The Swordslayer",
+      "year": 1988,
+      "publishers": [
+        "Players Software"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "spy-vs-spy-2-the-island-caper",
+      "title": "Spy Vs Spy II: The Island Caper",
+      "year": 1985,
+      "publishers": [
+        "First Star Software"
+      ],
+      "reReleasers": [
+        "Avantage",
+        "Beyond",
+        "Databyte",
+        "EDOS",
+        "Hi-Tec Software",
+        "SoftExpress",
+        "Wicked Software",
+        "World Wide Software"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "verified-additional-tape",
+      "reasonSubtype": "source-verified-uta-relationship",
+      "confidence": "high",
+      "archiveIds": [
+        "3935",
+        "1987"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/spy-vs-spy-2",
+          "note": "Lemon64 identifies Beyond and Hi-Tec Software as re-releasers of Spy vs Spy II: The Island Caper and confirms tape entries for both."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Spy_vs_Spy-_The_Island_Caper_(1985_Beyond)_%5b3935%5d/",
+          "note": "UTA archive entry for the Beyond cassette, whose directory title omits the II."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Spy_vs_Spy_II-_The_Island_Caper_(19xx_HiTEC_Software)_%5b1987%5d/",
+          "note": "UTA also contains the HiTEC cassette with the canonical sequel number; this release is expected to match automatically once duplicate archive IDs are preserved."
+        }
+      ],
+      "reason": "Independent release evidence identifies the UTA cassette as the same C64 game; any semantic alias is scoped to this game and exact archive ID."
+    },
+    {
+      "gameSlug": "street-fighter",
+      "title": "Street Fighter",
+      "year": 1988,
+      "publishers": [
+        "GO!"
+      ],
+      "reReleasers": [
+        "Kixx"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "strip-poker-a-sizzling-game-of-chance",
+      "title": "Strip Poker: A Sizzling Game Of Chance",
+      "year": 1984,
+      "publishers": [
+        "Artworx Software"
+      ],
+      "reReleasers": [
+        "Blue Ribbon"
+      ],
+      "originalAuditStatus": "manual-review",
+      "classification": "verified-additional-tape",
+      "reasonSubtype": "source-verified-uta-relationship",
+      "confidence": "high",
+      "archiveIds": [
+        "7489",
+        "513"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/strip-poker",
+          "note": "Lemon64 identifies Strip Poker: A Sizzling Game of Chance and states its tape entries were used in CDS Software and US Gold releases."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Strip_Poker_(19xx_CDS_Software_Ltd.)_%5b7489%5d/",
+          "note": "UTA archive entry for the CDS Software cassette."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Strip_Poker_(198x_U.S._Gold)_%5b513%5d/",
+          "note": "UTA archive entry for the US Gold cassette."
+        }
+      ],
+      "reason": "Independent release evidence identifies the UTA cassette as the same C64 game; any semantic alias is scoped to this game and exact archive ID."
+    },
+    {
+      "gameSlug": "super-pipeline",
+      "title": "Super Pipeline",
+      "year": 1983,
+      "publishers": [
+        "Taskset"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "verified-additional-tape",
+      "reasonSubtype": "source-verified-uta-relationship",
+      "confidence": "high",
+      "archiveIds": [
+        "6490"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/super-pipeline",
+          "note": "Lemon64 identifies Super Pipeline as also known as Pipeline and documents the 1983 Taskset cassette release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Pipeline_(1983_Taskset_Ltd.)_%5b6490%5d/",
+          "note": "UTA archive entry for the same 1983 Taskset cassette under the shorter Pipeline title."
+        }
+      ],
+      "reason": "Independent release evidence identifies the UTA cassette as the same C64 game; any semantic alias is scoped to this game and exact archive ID."
+    },
+    {
+      "gameSlug": "system-15000",
+      "title": "System 15000",
+      "year": 1984,
+      "publishers": [
+        "Craig Communications"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "teenage-mutant-hero-turtles-the-coin-op",
+      "title": "Teenage Mutant Hero Turtles: The Coin-Op",
+      "year": 1991,
+      "publishers": [
+        "Konami"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "manual-review",
+      "classification": "different-c64-version",
+      "reasonSubtype": "different-game-version",
+      "confidence": "high",
+      "reason": "The 1991 Coin-Op conversion is distinct from the 1990 Image Works Teenage Mutant Hero Turtles title in UTA."
+    },
+    {
+      "gameSlug": "thanatos",
+      "title": "Thanatos",
+      "year": 1987,
+      "publishers": [
+        "Durell Software"
+      ],
+      "reReleasers": [
+        "Encore"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "the-castles-of-dr-creep",
+      "title": "The Castles Of Dr. Creep",
+      "year": 1984,
+      "publishers": [
+        "Ariolasoft",
+        "Brøderbund"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "the-dolphins-rune",
+      "title": "The Dolphin's Rune",
+      "year": 1985,
+      "publishers": [
+        "Mindscape"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "the-faces-of-haarne",
+      "title": "The Faces Of Haarne",
+      "year": 1984,
+      "publishers": [
+        "Software Projects"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "the-hitchhikers-guide-to-the-galaxy",
+      "title": "The Hitchhikers Guide To The Galaxy",
+      "year": 1984,
+      "publishers": [
+        "Infocom"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "disk-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is documented as disk-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "the-lords-of-midnight",
+      "title": "The Lords Of Midnight",
+      "year": 1985,
+      "publishers": [
+        "Beyond"
+      ],
+      "reReleasers": [
+        "Mindscape"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "the-movie-monster-game",
+      "title": "The Movie Monster Game",
+      "year": 1986,
+      "publishers": [
+        "Epyx",
+        "US Gold"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "the-rats",
+      "title": "The Rats",
+      "year": 1985,
+      "publishers": [
+        "Hodder and Stoughton"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "the-running-man",
+      "title": "The Running Man",
+      "year": 1989,
+      "publishers": [
+        "Grandslam"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "the-sacred-armour-of-antiriad",
+      "title": "The Sacred Armour Of Antiriad",
+      "year": 1986,
+      "publishers": [
+        "Palace Software"
+      ],
+      "reReleasers": [
+        "Hi-Tec Software"
+      ],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "the-smiths-are-dead",
+      "title": "The Smiths Are Dead",
+      "year": 2023,
+      "publishers": [
+        "Commodore Plus"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "modern-non-tape-c64-release",
+      "confidence": "high",
+      "reason": "The modern C64 release is distributed in non-cassette formats; no compatible UTA cassette directory applies."
+    },
+    {
+      "gameSlug": "the-staff-of-karnath",
+      "title": "The Staff Of Karnath",
+      "year": 1984,
+      "publishers": [
+        "Ultimate"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "the-sword-of-fargoal",
+      "title": "The Sword Of Fargoal",
+      "year": 1983,
+      "publishers": [
+        "Epyx"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "manual-review",
+      "classification": "verified-additional-tape",
+      "reasonSubtype": "source-verified-uta-relationship",
+      "confidence": "high",
+      "archiveIds": [
+        "7724"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/sword-of-fargoal",
+          "note": "Lemon64 identifies Sword of Fargoal as the 1983 Epyx C64 game released on tape and disk."
+        },
+        {
+          "source": "Archeogaming",
+          "url": "https://archeogaming.blogspot.com/2012/10/sword-of-fargoal-euro-gold-version-fail.html",
+          "note": "A collector documents and tests the Euro Gold C64 budget cassette of Sword of Fargoal and shows its inlay/tape."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Sword_of_Fargoal_(19xx_Euro_Gold)_%5b7724%5d/",
+          "note": "UTA archive entry for the Euro Gold cassette."
+        }
+      ],
+      "reason": "Independent release evidence identifies the UTA cassette as the same C64 game; any semantic alias is scoped to this game and exact archive ID."
+    },
+    {
+      "gameSlug": "the-wombles",
+      "title": "The Wombles",
+      "year": 1990,
+      "publishers": [
+        "Alternative Software"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "the-young-ones",
+      "title": "The Young Ones",
+      "year": 1986,
+      "publishers": [
+        "Orpheus"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "thunderbirds",
+      "title": "Thunderbirds",
+      "year": 1985,
+      "publishers": [
+        "Firebird"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "times-of-lore",
+      "title": "Times Of Lore",
+      "year": 1988,
+      "publishers": [
+        "Origin Systems"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "to-be-on-top",
+      "title": "To Be On Top",
+      "year": 1987,
+      "publishers": [
+        "Rainbow Arts"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "toki",
+      "title": "Toki",
+      "year": 1991,
+      "publishers": [
+        "Ocean"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "cartridge-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is cartridge-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "tooth-invaders",
+      "title": "Tooth Invaders",
+      "year": 1982,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "track-field",
+      "title": "Track & Field",
+      "year": 1984,
+      "publishers": [
+        "Konami"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "trains",
+      "title": "Trains",
+      "year": 1983,
+      "publishers": [
+        "Spinnaker Software"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "trolls-and-tribulations",
+      "title": "Trolls And Tribulations",
+      "year": 1984,
+      "publishers": [
+        "Creative Software"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "ultima-1-the-first-age-of-darkness",
+      "title": "Ultima I: The First Age Of Darkness",
+      "year": 1986,
+      "publishers": [
+        "Origin Systems"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "disk-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is documented as disk-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "up-up-and-away",
+      "title": "Up Up And Away",
+      "year": 1984,
+      "publishers": [
+        "Argus Press Software"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "confidence": "high",
+      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+    },
+    {
+      "gameSlug": "uuno-turhapuro-muuttaa-maalle",
+      "title": "Uuno Turhapuro Muuttaa Maalle",
+      "year": 1986,
+      "publishers": [
+        "Amersoft"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "visible-solar-system",
+      "title": "Visible Solar System",
+      "year": 1982,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "cartridge-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is cartridge-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "wizard",
+      "title": "Wizard",
+      "year": 1984,
+      "publishers": [
+        "Ariolasoft"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "manual-review",
+      "classification": "different-c64-version",
+      "reasonSubtype": "different-game",
+      "confidence": "high",
+      "reason": "UTA's Wizard's Lair and Wizard Warz are unrelated to the 1984 Ariolasoft Wizard catalogue record."
+    },
+    {
+      "gameSlug": "wizard-of-wor",
+      "title": "Wizard Of Wor",
+      "year": 1983,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "cartridge-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is cartridge-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "zak-mckracken-and-the-alien-mindbenders",
+      "title": "Zak Mckracken And The Alien Mindbenders",
+      "year": 1988,
+      "publishers": [
+        "Lucasfilm Games"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "disk-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is documented as disk-based; no compatible UTA cassette directory was found."
+    },
+    {
+      "gameSlug": "zone-trooper",
+      "title": "Zone Trooper",
+      "year": 1988,
+      "publishers": [
+        "Gamebusters"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "high",
+      "reason": "The full live UTA scan and residual title/alias review found no source-verified cassette directory compatible with this exact games.json record."
+    },
+    {
+      "gameSlug": "zork-trilogy",
+      "title": "Zork Trilogy",
+      "year": 1983,
+      "publishers": [
+        "Commodore",
+        "Infocom"
+      ],
+      "reReleasers": [],
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "disk-only-catalogue-release",
+      "confidence": "high",
+      "reason": "The audited C64 release is documented as disk-based; no compatible UTA cassette directory was found."
+    }
+  ]
+}
