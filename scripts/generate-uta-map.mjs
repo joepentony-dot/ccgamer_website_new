@@ -114,7 +114,8 @@ function prefixTitleMatch(gameTitles, releaseTitles) {
       if (!gameTitle || !releaseTitle || gameTitle === releaseTitle) continue;
       const shorter = gameTitle.length < releaseTitle.length ? gameTitle : releaseTitle;
       const longer = shorter === gameTitle ? releaseTitle : gameTitle;
-      const shortNumericTitle = /^\\d{3,}$/.test(shorter);\n      if ((shorter.length < 4 && !shortNumericTitle) || !longer.startsWith(shorter + " ")) continue;
+      const shortNumericTitle = /^\d{3,}$/.test(shorter);
+      if ((shorter.length < 4 && !shortNumericTitle) || !longer.startsWith(shorter + " ")) continue;
       if (numberSignature(gameTitle) !== numberSignature(releaseTitle)) continue;
       return true;
     }
