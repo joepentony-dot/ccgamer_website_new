@@ -69,6 +69,28 @@ jobs:
             --exclude='Thumbs.db' \
             ./ _site/
 
+          # Publish the current product URL without a risky source-tree rename.
+          # Keep the legacy asset tree available, but make its landing page a redirect.
+          test -d _site/arcade/lost-sizzler
+          rm -rf _site/arcade/c64-dungeon-carnage
+          cp -a _site/arcade/lost-sizzler _site/arcade/c64-dungeon-carnage
+          cat > _site/arcade/lost-sizzler/index.html <<'EOF'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="robots" content="noindex,follow">
+            <meta http-equiv="refresh" content="0; url=/arcade/c64-dungeon-carnage/">
+            <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/arcade/c64-dungeon-carnage/">
+            <title>C64 Dungeon Carnage</title>
+          </head>
+          <body>
+            <p>C64 Dungeon Carnage has moved. <a href="/arcade/c64-dungeon-carnage/">Continue to the game.</a></p>
+            <script>location.replace("/arcade/c64-dungeon-carnage/"+location.search+location.hash);</script>
+          </body>
+          </html>
+          EOF
+
           touch _site/.nojekyll
 
       - name: Build and validate canonical game, retro, genre and sitemap SEO
@@ -134,6 +156,12 @@ jobs:
             grep -Fq 'src="/js/ccg-header-auth-loader.js"' "$page"
             grep -Fq 'src="/js/ccg-nav-fit.js"' "$page"
           done
+
+          # Dungeon Carnage must publish under the current public product route.
+          test -f _site/arcade/c64-dungeon-carnage/index.html
+          grep -Fq 'https://www.cheekycommodoregamer.co.uk/arcade/c64-dungeon-carnage/' _site/arcade/c64-dungeon-carnage/index.html
+          test -f _site/arcade/lost-sizzler/index.html
+          grep -Fq 'url=/arcade/c64-dungeon-carnage/' _site/arcade/lost-sizzler/index.html
 
           # Retro editorial collections must publish the unified collection presentation.
           for page in \
@@ -273,6 +301,8 @@ jobs:
           retro_css_target="${PAGE_URL%/}/resources/css/retro-events.css?deployment=${GITHUB_SHA}"
           quiz_js_target="${PAGE_URL%/}/resources/js/quiz-ui-fixes.js?deployment=${GITHUB_SHA}"
           quiz_css_target="${PAGE_URL%/}/resources/css/quiz-experience.css?deployment=${GITHUB_SHA}"
+          dungeon_target="${PAGE_URL%/}/arcade/c64-dungeon-carnage/?deployment=${GITHUB_SHA}"
+          dungeon_legacy_target="${PAGE_URL%/}/arcade/lost-sizzler/?deployment=${GITHUB_SHA}"
 
           game_targets=(
             "${PAGE_URL%/}/games/1942/?deployment=${GITHUB_SHA}"
@@ -301,6 +331,8 @@ jobs:
             retro_css_body="$(curl --fail --silent --show-error --max-time 30 "$retro_css_target" || true)"
             quiz_js_body="$(curl --fail --silent --show-error --max-time 30 "$quiz_js_target" || true)"
             quiz_css_body="$(curl --fail --silent --show-error --max-time 30 "$quiz_css_target" || true)"
+            dungeon_body="$(curl --fail --silent --show-error --location --max-time 30 "$dungeon_target" || true)"
+            dungeon_legacy_body="$(curl --fail --silent --show-error --max-time 30 "$dungeon_legacy_target" || true)"
 
             games_ok=true
             for target in "${game_targets[@]}"; do
@@ -330,6 +362,14 @@ jobs:
                 break
               fi
             done
+
+            dungeon_ok=false
+            if grep -Fq 'C64 DUNGEON' <<< "$dungeon_body" \
+              && grep -Fq 'https://www.cheekycommodoregamer.co.uk/arcade/c64-dungeon-carnage/' <<< "$dungeon_body" \
+              && ! grep -Fq 'ONLINE</b> room code remains your rejoin key' <<< "$dungeon_body" \
+              && grep -Fq 'url=/arcade/c64-dungeon-carnage/' <<< "$dungeon_legacy_body"; then
+              dungeon_ok=true
+            fi
 
             genre_ok=false
             if grep -Fq '<!-- CCG STATIC GENRE FALLBACK START -->' <<< "$genre_body" \
@@ -376,6 +416,7 @@ jobs:
               && ! grep -Fq 'Retro Merchandise' <<< "$shop_body" \
               && ! grep -Fq 'Digital Products' <<< "$shop_body" \
               && [ "$games_ok" = true ] \
+              && [ "$dungeon_ok" = true ] \
               && [ "$shell_ok" = true ] \
               && [ "$genre_ok" = true ] \
               && [ "$retro_ok" = true ] \
