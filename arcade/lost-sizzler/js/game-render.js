@@ -2,6 +2,45 @@ const lostSizzlerPixelAssets=(()=>{const make=src=>{if(typeof Image!=="function"
 function camFor(p,v){let c=cameras.get(p.id)||{x:0,y:0},targetX=p.rx,targetY=p.ry;const roomId=W.roomAt(world,p.x,p.y),room=world.rooms?.[roomId],mem=host.memoryPuzzle;if(mem&&!mem.solved&&roomId===mem.roomId){const points=[...(mem.tiles||[]),mem.activator].filter(Boolean);if(points.length){const minX=Math.min(...points.map(q=>q.x)),maxX=Math.max(...points.map(q=>q.x)),minY=Math.min(...points.map(q=>q.y)),maxY=Math.max(...points.map(q=>q.y));targetX=(minX+maxX)/2;targetY=(minY+maxY)/2}}else if(document.fullscreenElement&&room){const roomPixelW=(room.w+2)*C.tile,roomPixelH=(room.h+2)*C.tile;if(roomPixelW<=v.w&&roomPixelH<=v.h){targetX=room.x+room.w/2;targetY=room.y+room.h/2}}const tx=Math.max(0,Math.min(C.worldWidth*C.tile-v.w,targetX*C.tile+C.tile/2-v.w/2)),ty=Math.max(0,Math.min(C.worldHeight*C.tile-v.h,targetY*C.tile+C.tile/2-v.h/2));c.x=tx;c.y=ty;cameras.set(p.id,c);return c}
 function ws(x,y){return{x:view.x+x*C.tile-cam.x+renderShake.x,y:view.y+y*C.tile-cam.y+renderShake.y}}
 function tileHash(x,y,salt=0){let h=Math.imul(x+17,73856093)^Math.imul(y+31,19349663)^Math.imul(salt+7,83492791);h^=h>>>13;h=Math.imul(h,1274126177);return(h^(h>>>16))>>>0}
+function drawCorridorDetail(s,x,y,h,th){
+  const floor=Math.max(1,Math.min(5,Number(run?.floor)||1)),open=(dx,dy)=>world.map[y+dy]?.[x+dx]===0,horizontal=open(-1,0)&&open(1,0),vertical=open(0,-1)&&open(0,1),cx=s.x+C.tile/2,cy=s.y+C.tile/2;
+  ctx.save();ctx.lineWidth=1;ctx.lineCap="square";
+  if(floor===1){
+    // Threshold corridors: rain-dark drainage lanes, chipped guide stones and puddles.
+    ctx.fillStyle="rgba(37,55,61,.22)";if(horizontal)ctx.fillRect(s.x+3,cy-4,C.tile-6,8);else if(vertical)ctx.fillRect(cx-4,s.y+3,8,C.tile-6);
+    ctx.strokeStyle="rgba(121,164,171,.28)";if(horizontal){ctx.beginPath();ctx.moveTo(s.x+3,cy);ctx.lineTo(s.x+C.tile-3,cy);ctx.stroke()}else if(vertical){ctx.beginPath();ctx.moveTo(cx,s.y+3);ctx.lineTo(cx,s.y+C.tile-3);ctx.stroke()}
+    if(h%7===0){ctx.fillStyle="rgba(103,151,166,.18)";ctx.beginPath();ctx.ellipse(cx+((h>>>5)%9)-4,cy+((h>>>9)%7)-3,8,3,.2,0,Math.PI*2);ctx.fill()}
+    if(h%19===0){ctx.fillStyle="#66745b";ctx.fillRect(s.x+5,s.y+5,5,3);ctx.fillRect(s.x+C.tile-11,s.y+C.tile-8,6,3)}
+  }else if(floor===2){
+    // Iron Keep corridors: worn steel runners, rivets and occasional guard-lane plates.
+    ctx.fillStyle="rgba(48,54,59,.42)";if(horizontal)ctx.fillRect(s.x,cy-5,C.tile,10);else if(vertical)ctx.fillRect(cx-5,s.y,10,C.tile);
+    ctx.strokeStyle="rgba(184,161,112,.32)";if(horizontal){ctx.beginPath();ctx.moveTo(s.x,cy-5);ctx.lineTo(s.x+C.tile,cy-5);ctx.moveTo(s.x,cy+5);ctx.lineTo(s.x+C.tile,cy+5);ctx.stroke()}else{ctx.beginPath();ctx.moveTo(cx-5,s.y);ctx.lineTo(cx-5,s.y+C.tile);ctx.moveTo(cx+5,s.y);ctx.lineTo(cx+5,s.y+C.tile);ctx.stroke()}
+    ctx.fillStyle="#93866b";for(const [rx,ry] of [[6,6],[C.tile-8,6],[6,C.tile-8],[C.tile-8,C.tile-8]])if((h+rx+ry)%3)ctx.fillRect(s.x+rx,s.y+ry,2,2);
+    if(h%17===0){ctx.strokeStyle="rgba(225,183,92,.42)";ctx.strokeRect(s.x+7,s.y+7,C.tile-14,C.tile-14)}
+  }else if(floor===3){
+    // Bone/Moss corridors: root veins, inset burial stones and pale bone markers.
+    ctx.strokeStyle="rgba(83,112,65,.45)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(s.x+4,s.y+7+((h>>>3)%6));ctx.quadraticCurveTo(cx,cy+((h>>>8)%9)-4,s.x+C.tile-4,s.y+C.tile-8);ctx.stroke();
+    ctx.strokeStyle="rgba(146,153,112,.25)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx-2,cy);ctx.lineTo(cx-10,cy-8);ctx.moveTo(cx+2,cy+2);ctx.lineTo(cx+11,cy+9);ctx.stroke();
+    if(h%13===0){ctx.fillStyle="rgba(185,178,142,.28)";ctx.fillRect(s.x+8,s.y+8,C.tile-16,C.tile-16);ctx.fillStyle="rgba(52,72,44,.42)";ctx.fillRect(s.x+11,s.y+11,C.tile-22,3)}
+    if(h%23===0){ctx.fillStyle="#c7c09d";ctx.fillRect(cx-7,cy-1,14,2);ctx.fillRect(cx-5,cy-4,3,8);ctx.fillRect(cx+3,cy-4,3,8)}
+  }else if(floor===4){
+    // Ember corridors: copper service grates and heat seams.
+    ctx.fillStyle="rgba(61,33,25,.55)";if(horizontal)ctx.fillRect(s.x+2,cy-6,C.tile-4,12);else if(vertical)ctx.fillRect(cx-6,s.y+2,12,C.tile-4);
+    ctx.strokeStyle="rgba(192,103,61,.48)";for(let n=-1;n<=1;n++){if(horizontal){ctx.beginPath();ctx.moveTo(s.x+4,cy+n*4);ctx.lineTo(s.x+C.tile-4,cy+n*4);ctx.stroke()}else{ctx.beginPath();ctx.moveTo(cx+n*4,s.y+4);ctx.lineTo(cx+n*4,s.y+C.tile-4);ctx.stroke()}}
+    if(h%8===0){ctx.save();ctx.shadowColor=P.orange;ctx.shadowBlur=8;ctx.strokeStyle="rgba(255,107,62,.62)";ctx.beginPath();ctx.moveTo(s.x+5,s.y+C.tile-7);ctx.lineTo(cx-3,cy+2);ctx.lineTo(cx+4,cy-4);ctx.lineTo(s.x+C.tile-5,s.y+8);ctx.stroke();ctx.restore()}
+    if(h%21===0){ctx.fillStyle="#8d6044";ctx.fillRect(s.x+6,s.y+6,5,5);ctx.fillRect(s.x+C.tile-11,s.y+C.tile-11,5,5)}
+  }else{
+    // Sigil corridors: directional rune rails and occasional ritual nodes.
+    ctx.strokeStyle="rgba(132,104,199,.5)";ctx.lineWidth=2;if(horizontal){ctx.beginPath();ctx.moveTo(s.x+2,cy-6);ctx.lineTo(s.x+C.tile-2,cy-6);ctx.moveTo(s.x+2,cy+6);ctx.lineTo(s.x+C.tile-2,cy+6);ctx.stroke()}else{ctx.beginPath();ctx.moveTo(cx-6,s.y+2);ctx.lineTo(cx-6,s.y+C.tile-2);ctx.moveTo(cx+6,s.y+2);ctx.lineTo(cx+6,s.y+C.tile-2);ctx.stroke()}
+    ctx.fillStyle="rgba(108,236,255,.34)";if(horizontal){ctx.fillRect(cx-3,cy-8,6,2);ctx.fillRect(cx-1,cy-3,2,6)}else{ctx.fillRect(cx-8,cy-3,2,6);ctx.fillRect(cx-3,cy-1,6,2)}
+    if(h%11===0){ctx.save();ctx.translate(cx,cy);ctx.rotate(Math.PI/4);ctx.strokeStyle="rgba(185,120,255,.62)";ctx.strokeRect(-7,-7,14,14);ctx.restore()}
+    if(h%29===0){ctx.save();ctx.shadowColor=P.cyan;ctx.shadowBlur=10;ctx.fillStyle="rgba(108,236,255,.58)";ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fill();ctx.restore()}
+  }
+  // Junctions receive a stronger deterministic landmark without adding blockers.
+  const exits=[open(-1,0),open(1,0),open(0,-1),open(0,1)].filter(Boolean).length;
+  if(exits>=3&&h%3===0){ctx.strokeStyle=th.accent+"70";ctx.lineWidth=2;ctx.strokeRect(s.x+6,s.y+6,C.tile-12,C.tile-12);ctx.fillStyle=th.accent+"45";ctx.fillRect(cx-3,cy-3,6,6)}
+  ctx.restore()
+}
 function drawTile(x,y){
   const s=ws(x,y),th=W.themeAt(world,x,y),wall=world.map[y][x]!==0,roomId=W.roomAt(world,x,y),room=world.rooms[roomId],variant=room?.variant||0;
   if(wall){
@@ -30,6 +69,7 @@ function drawTile(x,y){
   // Layered flagstone: recessed seams, fine grain, scuffs and theme inlays.
   ctx.fillStyle="rgba(255,255,255,.035)";ctx.fillRect(s.x+2,s.y+2,C.tile-5,2);ctx.fillRect(s.x+2,s.y+4,2,C.tile-7);ctx.fillStyle="rgba(0,0,0,.18)";ctx.fillRect(s.x,s.y+C.tile-4,C.tile,4);ctx.fillRect(s.x+C.tile-4,s.y,4,C.tile);ctx.strokeStyle="rgba(0,0,0,.22)";ctx.lineWidth=1;ctx.strokeRect(s.x+.5,s.y+.5,C.tile-1,C.tile-1);
   for(let grain=0;grain<3;grain++){const gx=4+((h>>>(grain*5))%(C.tile-9)),gy=5+((h>>>(grain*7+3))%(C.tile-10));ctx.fillStyle=grain===0?"rgba(255,255,255,.035)":"rgba(0,0,0,.07)";ctx.fillRect(s.x+gx,s.y+gy,1+(h>>grain)%3,1)}
+  if(roomId<0)drawCorridorDetail(s,x,y,h,th);
   if(h%9===0){ctx.strokeStyle="rgba(7,4,10,.38)";ctx.beginPath();ctx.moveTo(s.x+5+(h%8),s.y+9);ctx.lineTo(s.x+17,s.y+18);ctx.lineTo(s.x+13+(h%11),s.y+30);ctx.stroke();ctx.strokeStyle=th.hi+"22";ctx.beginPath();ctx.moveTo(s.x+6+(h%8),s.y+9);ctx.lineTo(s.x+18,s.y+18);ctx.stroke()}
   if(h%13===0){ctx.fillStyle="rgba(8,4,12,.16)";ctx.beginPath();ctx.ellipse(s.x+10+(h%22),s.y+9+((h>>>6)%20),6+(h%4),3+(h%3),0,0,Math.PI*2);ctx.fill()}
   if(["IRON_KEEP","MOSS_CRYPT","EMBER_DUNGEON"].includes(theme)){ctx.strokeStyle="rgba(14,8,7,.44)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(s.x+3,s.y+C.tile/2);ctx.lineTo(s.x+C.tile-3,s.y+C.tile/2);ctx.moveTo(s.x+C.tile/2,s.y+3);ctx.lineTo(s.x+C.tile/2,s.y+C.tile-3);ctx.stroke();ctx.fillStyle=th.hi+"28";ctx.fillRect(s.x+4,s.y+4,C.tile/2-7,C.tile/2-7);ctx.fillRect(s.x+C.tile/2+2,s.y+C.tile/2+2,C.tile/2-6,C.tile/2-6)}
