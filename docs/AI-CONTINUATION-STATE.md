@@ -1,3 +1,19 @@
+## Site-wide VideoObject uploadDate timezone compliance — 23 September 2026
+
+- New queued SEO/publishing workstream: `codex/video-upload-date-timezone-compliance-20260923`.
+- Search Console still reports the non-critical structured-data warning: **Datetime property `uploadDate` is missing a time zone**.
+- Existing game-page validation already requires a timezone-bearing ISO datetime (`Z` or explicit `+/-HH:MM`) for verified YouTube VideoObject metadata, so this work must find and close the remaining coverage gap rather than repeat the earlier single-game fix.
+- Required scope is site-wide:
+  - audit every public page family that can emit `VideoObject`, including generated game pages, Retro Specials, Retro Events, Amiga Demo Music and any other video-bearing editorial routes;
+  - audit `data/video-metadata.json`, video overrides, templates, generators and generated JSON-LD for date-only or timezone-less values;
+  - normalize all emitted `uploadDate` values to a valid timezone-bearing ISO 8601 datetime sourced from verified video metadata rather than game release dates or guessed dates;
+  - correct all existing generated game/video pages through their authoritative generators/workflows, never by hand-editing generated output;
+  - make the Content Publisher / new-video pipeline fail closed if a new video would generate a timezone-less `uploadDate`;
+  - extend SEO validation so every public `VideoObject` in every supported route is covered, not only canonical game pages;
+  - regenerate and validate video sitemaps / structured data after the correction;
+  - re-audit the full site so no valid public VideoObject remains with a timezone-less `uploadDate`.
+- This is separate from Dungeon Carnage R54 and UTA residual work. Exact-head CI is required before merge.
+
 ## UTA live freshness #2295 rebuilt on merged R53 baseline — 23 September 2026
 
 - PR #2294 merged as `d0570158b71b155676365c9cb717ad8ab114bba2`; its exact-head Dungeon ATTACK/crowded-impact qualification is now part of `main`.
