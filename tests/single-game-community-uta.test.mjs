@@ -412,6 +412,35 @@ test("residual curated decisions remain source-evidenced and exact-ID scoped", (
   }
 });
 
+test("residual review classifies every baseline unmatched C64 record exactly once", () => {
+  const audit = JSON.parse(fs.readFileSync("data/uta-audit.json", "utf8"));
+  const review = JSON.parse(fs.readFileSync("data/uta-residual-review-2026-09-23.json", "utf8"));
+  const allowed = new Set([
+    "verified-additional-tape",
+    "catalogue-metadata-correction",
+    "different-c64-version",
+    "genuinely-no-uta-release"
+  ]);
+
+  assert.equal(review.entries.length, 164);
+  assert.equal(new Set(review.entries.map((entry) => entry.gameSlug)).size, 164);
+  assert.deepEqual(
+    review.entries.map((entry) => entry.gameSlug).sort(),
+    audit.unmatched.map((entry) => entry.slug).sort()
+  );
+  assert.ok(review.entries.every((entry) => allowed.has(entry.classification)));
+  assert.deepEqual(review.summary.classifications, {
+    "verified-additional-tape": 16,
+    "catalogue-metadata-correction": 4,
+    "different-c64-version": 11,
+    "genuinely-no-uta-release": 133
+  });
+  assert.equal(review.summary.verifiedAdditionalTapeReleases, 19);
+  assert.ok(review.entries
+    .filter((entry) => entry.classification === "verified-additional-tape")
+    .every((entry) => Array.isArray(entry.archiveIds) && entry.archiveIds.length > 0));
+});
+
 test("curated approvals remain scoped to the named game slug", () => {
   const releases = parseUtaIndex(`
 <a href="Karateka_(1985_Ariolasoft)_[2866]/">Karateka Ariolasoft</a>
