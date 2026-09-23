@@ -11,6 +11,17 @@
 
 > Legacy repository path: `arcade/lost-sizzler/`. The customer-facing game name is **C64 Dungeon Carnage**. Historical internal identifiers may still use `Lost Sizzler` where compatibility requires them.
 
+## V10.42 R52 unused level-up entitlement — 23 September 2026
+
+- **Active vehicle:** draft PR #2282 / `codex/dungeon-unused-level-up-entitlement`, based directly on current `main` `88df63430f275a37553a821c2511b1296dd13f8e` after #2271 merged.
+- Player feedback reproduced a UI ownership gap: `pendingLevels` already recorded earned upgrades, but dismissing the Level Up overlay could leave the entitlement with no visible/reliable reopen path. Multiple levels earned in one XP award could also be represented by `pendingLevels` but collapsed by the one-entry player queue.
+- R52 keeps `pendingLevels` authoritative, adds **Choose Later**, treats backdrop/Escape as safe deferral, exposes a counted **LEVEL-UP AVAILABLE** control in the XP panel, and rebuilds the transient queue from player state after world/checkpoint restoration.
+- One skill selection consumes exactly one entitlement. If a death removes a level while an entitlement is still unused, that unused level is consumed before an older selected skill is removed.
+- Checkpoint cloning already carries the full player object, so no new save schema is introduced. The floor-entry checkpoint model remains unchanged.
+- Release/cache identity is `V10.42 r52` / `20260923r52`. Static and Chromium regression coverage is included.
+- **Status:** IMPLEMENTED ON DRAFT #2282 / EXACT-HEAD CI REQUIRED. Do not merge without explicit user authorisation.
+
+
 ## R51 runtime ownership qualification repair — 22 September 2026
 
 - **Active vehicle:** draft PR #2256 / `codex/dungeon-r51-owner-preview-current-main`.

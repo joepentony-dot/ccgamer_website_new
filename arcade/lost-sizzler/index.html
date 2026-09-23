@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="ccg-lost-sizzler-build" content="V10.42 r51">
-  <meta name="ccg-lost-sizzler-cache" content="20260922r51">
+  <meta name="ccg-lost-sizzler-build" content="V10.42 r52">
+  <meta name="ccg-lost-sizzler-cache" content="20260923r52">
   <meta name="theme-color" content="#09040f">
   <meta name="robots" content="index,follow">
   <meta name="description" content="Play C64 Dungeon Carnage, a free retro Commodore 64-inspired browser dungeon crawler. Fight tactical enemies, collect loot and survive five floors.">
   <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/">
   <title>C64 Dungeon Carnage | Free Retro C64 Dungeon Game</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/game.css?v=20260922r51">
-  <link rel="stylesheet" href="css/v10-6-gameplay.css?v=20260922r51">
-  <link rel="stylesheet" href="css/v10-41-r28.css?v=20260922r51">
-  <link rel="stylesheet" href="css/v10-41-r29.css?v=20260922r51">
-  <link rel="stylesheet" data-ccg-v136-special-ui="true" href="css/v10-36-special-ui.css?v=20260922r51">
-  <link rel="stylesheet" href="css/v10-42-startup-first-visual.css?v=20260922r51">
+  <link rel="stylesheet" href="css/game.css?v=20260923r52">
+  <link rel="stylesheet" href="css/v10-6-gameplay.css?v=20260923r52">
+  <link rel="stylesheet" href="css/v10-41-r28.css?v=20260923r52">
+  <link rel="stylesheet" href="css/v10-41-r29.css?v=20260923r52">
+  <link rel="stylesheet" data-ccg-v136-special-ui="true" href="css/v10-36-special-ui.css?v=20260923r52">
+  <link rel="stylesheet" href="css/v10-42-startup-first-visual.css?v=20260923r52">
 </head>
 <body data-game-ready="false" data-release-ready="false" data-run-active="false">
 <div id="ccg-release-loading" class="ccg-release-loading" role="status" aria-live="polite">
@@ -29,9 +29,9 @@
     <div class="ccg-release-loading-meta"><span id="ccg-release-loading-percent" class="ccg-release-loading-percent">0%</span><span>C64 DUNGEON CARNAGE · PREPARING RUNTIME</span></div>
   </div>
 </div>
-  <script src="/js/ccg-supabase-config.js?v=20260922r51"></script>
-  <script src="/js/ccg-supabase-client.js?v=20260922r51"></script>
-  <script src="/js/ccg-play-maintenance-owner-gate.js?v=20260922r51" data-ccg-play-maintenance-gate="owner-preview"></script>
+  <script src="/js/ccg-supabase-config.js?v=20260923r52"></script>
+  <script src="/js/ccg-supabase-client.js?v=20260923r52"></script>
+  <script src="/js/ccg-play-maintenance-owner-gate.js?v=20260923r52" data-ccg-play-maintenance-gate="owner-preview"></script>
 <main class="ccg-game">
   <header class="topbar v102-topbar">
     <div class="brand v102-brand">
@@ -111,10 +111,11 @@
         <p id="collection-summary" class="collection-summary">Unique C64 titles permanently saved on this device: 0. Duplicates count once; clearing browser data resets this list.</p>
         <p id="release-note" class="note">C64 Dungeon Carnage runs directly in your browser. Solo play and the Tutorial are the supported game modes. Starting a run requests fullscreen automatically. Sound begins when play starts.</p><p id="menu-note" hidden aria-hidden="true" style="display:none!important"></p>
         <details id="developer-changelog" class="menu-details developer-changelog" data-latest-build-only="true">
-          <summary>Latest Build Changes · V10.42 R51</summary>
+          <summary>Latest Build Changes · V10.42 R52</summary>
           <div class="developer-changelog-current">
-            <p><strong>ACTIVE BUILD: V10.42 R51</strong></p>
+            <p><strong>ACTIVE BUILD: V10.42 R52</strong></p>
             <ul>
+              <li>Unused level-ups now remain banked until chosen, with a persistent XP-panel reminder and a Choose Later option.</li>
               <li>FIRE liveness now verifies every fresh attack press and recovers the established attack owner if a valid press produces no shot.</li>
               <li>Memory Pad replay/input ownership is sealed so one console entry starts one sequence and retries reset cleanly.</li>
               <li>Fullscreen starts from Solo/Tutorial launch, uses a slightly wider room-aware camera, and keeps the full room visible vertically.</li>
@@ -131,7 +132,7 @@
 
     <div id="pause" class="overlay hidden"><div class="panel compact"><h2>Paused</h2><p>Continue the run, abandon its unsaved live state and return to the title screen, or leave C64 Dungeon Carnage completely.</p><div class="menu-buttons"><button id="resume-btn" class="primary">Continue</button><button id="pause-quit-btn" class="danger-button">Quit to Main Menu</button><a class="menu-exit-link" href="/games/ccg-games/">Exit to CCG Games</a></div><small>Saved floor checkpoints and permanently banked C64 titles are not removed.</small></div></div>
 
-    <div id="level-up" class="overlay hidden"><div class="panel compact"><h2>Level Up</h2><p id="level-up-copy">Choose an upgrade.</p><div id="level-up-choices" class="choice-grid"></div></div></div>
+    <div id="level-up" class="overlay hidden"><div class="panel compact"><h2>Level Up</h2><p id="level-up-copy">Choose an upgrade.</p><div id="level-up-choices" class="choice-grid"></div><div class="level-up-actions"><button id="level-up-later" type="button">Choose Later</button></div><small class="level-up-note">Unused level-ups stay available for this run and can be reopened from the XP panel.</small></div></div>
 
     <div id="artefact-choice-panel" class="overlay hidden"><div class="panel compact artefact-choice-card">
       <div class="artefact-choice-glyph" aria-hidden="true">✦</div><h2>Banishment Artefact</h2>
@@ -214,7 +215,7 @@
       <div class="priority-xp">
         <div class="priority-xp-head"><b id="quick-level">LEVEL 1</b><strong id="quick-xp-text">XP TOTAL 0</strong></div>
         <div class="xp-track"><i id="quick-xp-fill"></i></div>
-        <small id="quick-xp-next">1425 TO NEXT · FLOOR CAP 5</small>
+        <small id="quick-xp-next">1425 TO NEXT · FLOOR CAP 5</small><button id="quick-level-up" class="pending-level-up hidden" type="button" aria-live="polite">LEVEL-UP AVAILABLE</button>
       </div>
       <div class="run-stat"><span>OBJECTIVE</span><b id="hud-keys">0/3</b></div>
       <div class="run-stat"><span>SCORE</span><b id="hud-score">000000</b></div>
@@ -229,36 +230,36 @@
     <div class="hub-hidden-data" aria-hidden="true"><div id="loadout"></div><div id="player-list"></div></div>
   </section>
 </main>
-<script src="js/v10-41-cache-guard.js?v=20260922r51"></script>
-<script src="js/v10-41-load-watchdog.js?v=20260922r51"></script>
-<script src="js/version-check.js?v=20260922r51"></script>
-<script src="js/v10-23-tutorial-guidance.js?v=20260922r51"></script>
-<script src="js/asset-overrides.js?v=20260922r51"></script>
-<script src="js/avatar-data.js?v=20260922r51"></script>
-<script src="js/config.js?v=20260922r51"></script>
-<script src="js/progression.js?v=20260922r51"></script>
-<script src="js/audio-assets.js?v=20260922r51"></script>
-<script src="js/audio.js?v=20260922r51"></script>
-<script src="js/world.js?v=20260922r51"></script>
-<script src="js/network.js?v=20260922r51"></script>
-<script src="js/ai.js?v=20260922r51"></script>
-<script src="js/systems.js?v=20260922r51"></script>
-<script src="js/game-core.js?v=20260922r51"></script>
-<script src="js/game-network.js?v=20260922r51"></script>
-<script src="js/game-local-runtime.js?v=20260922r51"></script>
-<script src="js/game-play.js?v=20260922r51"></script>
-<script src="js/game-render.js?v=20260922r51"></script>
-<script src="js/game-main.js?v=20260922r51"></script>
-<script src="js/v10-41-lake-item-safety.js?v=20260922r51"></script>
-<script src="js/v10-41-gambler-devroom.js?v=20260922r51"></script>
-<script src="js/v10-41-developer-vault-hardening.js?v=20260922r51"></script>
-<script src="js/v10-41-developer-asset-catalog.js?v=20260922r51"></script>
-<script src="js/v10-41-split-friendly-fire.js?v=20260922r51"></script>
-<script src="js/v10-41-landing-notification-polish.js?v=20260922r51"></script>
-<script src="js/v10-41-major-notification-hardening.js?v=20260922r51"></script>
-<script src="js/v10-41-active-enemy-fire.js?v=20260922r51"></script>
-<script src="js/v10-41-r29-runtime-repair.js?v=20260922r51"></script>
-  <script src="js/v10-41-r30-global-movement-guard.js?v=20260922r51"></script>
+<script src="js/v10-41-cache-guard.js?v=20260923r52"></script>
+<script src="js/v10-41-load-watchdog.js?v=20260923r52"></script>
+<script src="js/version-check.js?v=20260923r52"></script>
+<script src="js/v10-23-tutorial-guidance.js?v=20260923r52"></script>
+<script src="js/asset-overrides.js?v=20260923r52"></script>
+<script src="js/avatar-data.js?v=20260923r52"></script>
+<script src="js/config.js?v=20260923r52"></script>
+<script src="js/progression.js?v=20260923r52"></script>
+<script src="js/audio-assets.js?v=20260923r52"></script>
+<script src="js/audio.js?v=20260923r52"></script>
+<script src="js/world.js?v=20260923r52"></script>
+<script src="js/network.js?v=20260923r52"></script>
+<script src="js/ai.js?v=20260923r52"></script>
+<script src="js/systems.js?v=20260923r52"></script>
+<script src="js/game-core.js?v=20260923r52"></script>
+<script src="js/game-network.js?v=20260923r52"></script>
+<script src="js/game-local-runtime.js?v=20260923r52"></script>
+<script src="js/game-play.js?v=20260923r52"></script>
+<script src="js/game-render.js?v=20260923r52"></script>
+<script src="js/game-main.js?v=20260923r52"></script>
+<script src="js/v10-41-lake-item-safety.js?v=20260923r52"></script>
+<script src="js/v10-41-gambler-devroom.js?v=20260923r52"></script>
+<script src="js/v10-41-developer-vault-hardening.js?v=20260923r52"></script>
+<script src="js/v10-41-developer-asset-catalog.js?v=20260923r52"></script>
+<script src="js/v10-41-split-friendly-fire.js?v=20260923r52"></script>
+<script src="js/v10-41-landing-notification-polish.js?v=20260923r52"></script>
+<script src="js/v10-41-major-notification-hardening.js?v=20260923r52"></script>
+<script src="js/v10-41-active-enemy-fire.js?v=20260923r52"></script>
+<script src="js/v10-41-r29-runtime-repair.js?v=20260923r52"></script>
+  <script src="js/v10-41-r30-global-movement-guard.js?v=20260923r52"></script>
 <script>
 (()=>{const purgeLegacy=()=>document.querySelectorAll("#developer-changelog,.developer-changelog").forEach(node=>{if(node.dataset.latestBuildOnly!=="true")node.remove()});purgeLegacy();addEventListener("DOMContentLoaded",purgeLegacy,{once:true});addEventListener("load",purgeLegacy,{once:true});setTimeout(purgeLegacy,2000)})();
 </script>

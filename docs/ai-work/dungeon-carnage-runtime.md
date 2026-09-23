@@ -21,6 +21,17 @@ No second RAF loop, trap balance redesign, weapon rebalance, world-generation ch
 
 The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
+## R52 unused level-up entitlement candidate — 23 September 2026
+
+Draft PR #2282 / branch `codex/dungeon-unused-level-up-entitlement` starts from current `main` `88df63430f275a37553a821c2511b1296dd13f8e`. PR #2271 is merged as `b3a5b8977acf023a602e300778358b62def9859d`; its fullscreen/message-rail/Tutorial-FIRE repair is therefore part of this candidate's baseline rather than an open dependency.
+
+The player-reported edge case is bounded to level-up entitlement/UI ownership. `CCGProgression.gainXP()` already increments `player.pendingLevels` once per earned level and checkpoints clone that field, but the transient `levelQueue` stored only one player reference and had no supported defer/reopen route. That could strand a still-valid entitlement after a dismissed overlay and collapse multiple pending level choices into one visible interaction.
+
+R52 keeps `pendingLevels` authoritative. The Level Up overlay gains **Choose Later**; backdrop click and Escape defer without decrementing the entitlement; the XP panel exposes a counted **LEVEL-UP AVAILABLE** button; reopening reconstructs the queue from the player's stored count; one chosen skill consumes exactly one pending level; floor/world restoration replaces stale queue references with the current preserved player object. A level lost to the existing death penalty consumes an unused entitlement before removing a previously selected skill, preserving the level/skill invariant introduced by deferral.
+
+No new save schema, XP curve, floor cap, weapon/combat balance, world generation, FIRE ownership, navigation or account behaviour is introduced. Candidate identity advances to `V10.42 r52` / `20260923r52`. New static and Chromium contracts cover defer/reopen/spend, multiple pending levels, death-level-loss handling and checkpoint cloning. Exact-head GitHub Actions qualification remains required before the draft can be considered merge-safe; no merge is authorised by this checkpoint.
+
+
 ## R51 desktop/message-rail/Tutorial-FIRE regression candidate — 23 September 2026
 
 Current candidate branch: `codex/dungeon-r51-regression-fixes`, created from refreshed `origin/main` at `f719717824f2caa1cb89dc84a2ad7f2438f042a2` after merged PR #2256. It is deliberately a narrow post-R51 repair: no navigation, owner-preview gate, C64/Amiga selection, retired-mode boundary, world, combat balance or camera-scale redesign.
