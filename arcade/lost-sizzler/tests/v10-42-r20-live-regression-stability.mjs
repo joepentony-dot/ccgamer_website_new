@@ -34,6 +34,8 @@ assert.match(fix,/if\(spyActive\(\)\)return;/,"Spy Vs Spy must retain ownership 
 assert.match(fix,/attackNow\(event\.code\)[\s\S]*event\.stopImmediatePropagation\(\)/,"normal gameplay attack capture must stop older Space/fullscreen listeners from adding duplicate intents");
 assert.match(play,/p\.__ccgLastHurtAt=performance\.now\(\);p\.hitStunMs=/,"core damage handling must timestamp legitimate hit-stun ownership");
 assert.match(fix,/staleAfter=Math\.max\(540,expected\*3\)[\s\S]*performance\.now\(\)-lastHurt>staleAfter[\s\S]*player\.hitStunMs=0/,"ordinary attack intent must clear a stale hit-stun after the real damage window has expired");
+assert.match(fix,/Number\(fire1\)>2500[\s\S]*fire1=0/,"an actual attack intent must clear only an out-of-range stale fire cooldown, not healthy sword/gun cadence");
+assert.match(fix,/Number\(projectileCD\)>140[\s\S]*projectileCD=0/,"an actual attack intent must clear a projectile cadence far beyond the canonical 70 ms step");
 assert.match(fix,/player\.controlLocked=false[\s\S]*player\.controlsLocked=false/,"ordinary attack intent must recover stale player control locks");
 assert.match(touch,/CCGLostSizzlerV142R20LiveRegressionStability\?\.attackNow\?\.\("Space"\)/,"mobile FIRE must use the same strong attack recovery owner as keyboard attack");
 assert.match(touch,/if\(!tutorialActive&&!handled&&typeof queueAttack === "function"\) queueAttack\(p1\)/,"ordinary mobile FIRE must retain the canonical queue as a fallback only when direct recovery cannot fire");
