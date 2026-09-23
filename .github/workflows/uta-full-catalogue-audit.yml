@@ -37,5 +37,6 @@ jobs:
             reports/uta-full-catalogue-audit.md
             reports/uta-live-generated-mapping.json
             reports/uta-live-manual-review.json
+            reports/uta-live-release-inventory.json
           if-no-files-found: error
           retention-days: 14
