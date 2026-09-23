@@ -1,3 +1,14 @@
+## LIVE INCIDENT — R52 desktop ATTACK lockout / repeats / clipped notice rail — 23 September 2026
+
+- **Active candidate:** `codex/dungeon-r53-attack-rail-live-defects-20260923`, based directly on current `main` `442435e4e1725038beff1d6d9420ae52280350b2`.
+- **P0 ATTACK lockout:** hands-on R52 testing reports that after roughly three minutes both sword and firearm ATTACK can stop responding, leaving an enemy impossible to attack.
+- **P1 repeated tap:** one normal desktop SPACE press can produce repeated attacks. Investigation found R20 and the held-attack verifier treated only ammo/projectile changes as successful work, so a valid sword swing looked like a miss and triggered delayed recovery retries. R20 also synthesised shared input and could bypass contextual wrappers during fallback.
+- **R53 attack repair:** recovery now invokes the authoritative top-level `firePlayer` chain once, recognises `_meleeSwingAt` as valid attack work, never manufactures a held SPACE/Numpad0 state, and detects finite-but-unchanged fire cooldown/hit-stun blockers after a bounded persistence window.
+- **P1 notice rail:** the reserved 74–78px black rail had enough area but final fullscreen layout could stack the alert icon above its copy, clipping titles/messages such as PATROL SHIFT. R53 uses a horizontal icon + full-width copy grid for ordinary and major notices.
+- **Regression coverage:** focused Chromium now asserts one firearm tap = one round, one sword tap = one swing, no delayed repeat, real enemy sword damage, finite lockout recovery, and full-width ordinary/major notice geometry. A new 190-second desktop quick-tap soak alternates sword/firearm attacks and crosses the reported three-minute failure window.
+- **Candidate identity:** `V10.42 r53` / `20260923r53`.
+- **Status:** IMPLEMENTED ON FRESH CURRENT-MAIN CANDIDATE / EXACT-HEAD QUALIFICATION PENDING. Do not merge until the required matrix is green.
+
 ## LIVE INCIDENT — intermittent FIRE, active spikes, garbled renderer — 23 September 2026
 
 - **Active candidate:** `codex/dungeon-r51-fire-wall-incident-20260923`, created from current `main` `88df63430f275a37553a821c2511b1296dd13f8e`.
