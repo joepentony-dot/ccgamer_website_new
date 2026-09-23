@@ -126,14 +126,24 @@
       }
       @media(min-width:821px) and (max-height:500px){
         body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area{
-          grid-template-rows:minmax(0,1fr) 40px!important;
+          grid-template-rows:minmax(0,1fr) 20px!important;
         }
         body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area .game-message-rail{
-          height:40px!important;min-height:40px!important;max-height:40px!important;
+          height:20px!important;min-height:20px!important;max-height:20px!important;
         }
         body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area .game-message-rail #pickup-toast{
-          height:39px!important;min-height:39px!important;max-height:39px!important;
-          padding:3px 10px!important;
+          height:19px!important;min-height:19px!important;max-height:19px!important;
+          padding:1px 8px!important;display:flex!important;flex-direction:row!important;
+          align-items:center!important;justify-content:flex-start!important;gap:8px!important;
+          white-space:nowrap!important;
+        }
+        body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area .game-message-rail #pickup-toast b{
+          width:auto!important;flex:0 0 auto!important;font-size:9px!important;line-height:1!important;white-space:nowrap!important;
+        }
+        body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area .game-message-rail #pickup-toast span{
+          width:auto!important;min-width:0!important;flex:1 1 auto!important;margin:0!important;
+          font-size:7.5px!important;line-height:1!important;white-space:nowrap!important;
+          overflow:hidden!important;text-overflow:ellipsis!important;display:block!important;
         }
       }
 
