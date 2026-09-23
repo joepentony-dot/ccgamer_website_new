@@ -1,3 +1,17 @@
+## R53 live incident: desktop ATTACK lockout, repeat tap and notice rail — 23 September 2026
+
+Current candidate: `codex/dungeon-r53-attack-rail-live-defects-20260923`, based directly on `main` `442435e4e1725038beff1d6d9420ae52280350b2`.
+
+Hands-on R52 evidence supersedes the previous FIRE-only acceptance state: a normal desktop SPACE tap can repeat several times, and after roughly three minutes both sword and firearm ATTACK can become unavailable, preventing an enemy from being attacked. The lower reserved black notification rail also clips/wastes important notice content.
+
+Investigation mapped the shared attack chain through the base firearm owner, voice wrapper, contextual melee wrapper, achievements wrapper, R1 safety owner, R20 recovery and the R52 physical-hold verifier. The previous recovery regarded only ammo consumption or a projectile as successful work. A valid melee swing therefore looked like a missed FIRE press, causing delayed retries. R20 also added the triggering key into shared input and could descend through wrapper ancestry during recovery. Separately, the retired R56 periodic watchdog had been the only layer that detected a finite but unchanged attack cooldown/stun, leaving a remaining long-session lockout gap after R57 retired that timer.
+
+R53 keeps one authoritative top-level attack call, counts the melee swing marker as completed attack work, leaves physical held-state ownership to the hold-liveness module, and adds bounded finite-stuck cooldown/stun detection without resetting healthy cadence on each press. The persistent firearm recovery remains firearm-specific. Hidden orphan gameplay modes now include paused/level-up panels when their owning UI is actually absent.
+
+The notification rail now uses its full width as a horizontal icon/copy grid for both pickup and major notices. Focused Chromium covers exact single-tap firearm/melee semantics, adjacent-enemy sword damage, finite blocker recovery and PATROL SHIFT-style major-notice geometry. A dedicated 190-second desktop quick-tap soak alternates sword and firearm taps and must finish with ATTACK still live after the reported three-minute boundary.
+
+Candidate identity is `V10.42 r53` / `20260923r53`. Exact-head GitHub qualification and a deployed hands-on retest are required before this incident can be closed.
+
 ## R51 live incident: FIRE anomaly, active spikes, render corruption — 23 September 2026
 
 Current candidate: `codex/dungeon-r51-fire-wall-incident-20260923`, based on refreshed `main` `88df63430f275a37553a821c2511b1296dd13f8e`.
