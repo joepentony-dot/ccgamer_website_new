@@ -3,11 +3,11 @@
   "source": "https://uta.pokefinder.org/Ultimate_Tape_Archive/",
   "summary": {
     "c64Games": 559,
-    "archiveReleasesScanned": 2890,
-    "matchedGames": 370,
-    "manualReviewGames": 35,
-    "noTitleCandidateGames": 154,
-    "unmatchedGames": 189
+    "archiveReleasesScanned": 2892,
+    "matchedGames": 395,
+    "manualReviewGames": 23,
+    "noTitleCandidateGames": 141,
+    "unmatchedGames": 164
   },
   "unmatched": [
     {
@@ -135,28 +135,6 @@
       "status": "no-title-candidate"
     },
     {
-      "slug": "aussie-games",
-      "title": "Aussie Games",
-      "year": 1989,
-      "publishers": [
-        "Mindscape"
-      ],
-      "reReleasers": [],
-      "status": "no-title-candidate"
-    },
-    {
-      "slug": "bad-dudes-vs-dragonninja",
-      "title": "Bad Dudes Vs Dragonninja",
-      "year": 1989,
-      "publishers": [
-        "Imagine"
-      ],
-      "reReleasers": [
-        "The Hit Squad"
-      ],
-      "status": "no-title-candidate"
-    },
-    {
       "slug": "badlands",
       "title": "Badlands",
       "year": 1990,
@@ -199,16 +177,6 @@
       ],
       "reReleasers": [],
       "status": "no-title-candidate"
-    },
-    {
-      "slug": "beyond-the-forbidden-forest",
-      "title": "Beyond The Forbidden Forest",
-      "year": 1985,
-      "publishers": [
-        "Cosmi"
-      ],
-      "reReleasers": [],
-      "status": "manual-review"
     },
     {
       "slug": "bionic-commando",
@@ -275,16 +243,6 @@
       "status": "manual-review"
     },
     {
-      "slug": "blood-n-guts",
-      "title": "Blood 'N Guts",
-      "year": 1986,
-      "publishers": [
-        "American Action"
-      ],
-      "reReleasers": [],
-      "status": "manual-review"
-    },
-    {
       "slug": "bocce",
       "title": "Bocce",
       "year": 1987,
@@ -345,16 +303,6 @@
       ],
       "reReleasers": [],
       "status": "no-title-candidate"
-    },
-    {
-      "slug": "chopper",
-      "title": "Chopper",
-      "year": 1985,
-      "publishers": [
-        "Sparklers"
-      ],
-      "reReleasers": [],
-      "status": "manual-review"
     },
     {
       "slug": "cosmic-tunnels",
@@ -478,16 +426,6 @@
       "status": "no-title-candidate"
     },
     {
-      "slug": "donald-ducks-playground",
-      "title": "Donald Duck's Playground",
-      "year": 1984,
-      "publishers": [
-        "Sierra On-Line"
-      ],
-      "reReleasers": [],
-      "status": "manual-review"
-    },
-    {
       "slug": "donkey-kong",
       "title": "Donkey Kong",
       "year": 1983,
@@ -508,18 +446,6 @@
       "status": "manual-review"
     },
     {
-      "slug": "dragon-skulle",
-      "title": "Dragon Skulle",
-      "year": 1986,
-      "publishers": [
-        "Ultimate"
-      ],
-      "reReleasers": [
-        "Ricochet"
-      ],
-      "status": "no-title-candidate"
-    },
-    {
       "slug": "dragons-lair-2-escape-from-singes-castle",
       "title": "Dragon's Lair II : Escape From Singe'S Castle",
       "year": 1987,
@@ -529,19 +455,6 @@
       ],
       "reReleasers": [
         "Encore"
-      ],
-      "status": "no-title-candidate"
-    },
-    {
-      "slug": "dropzone",
-      "title": "Dropzone",
-      "year": 1985,
-      "publishers": [
-        "US Gold"
-      ],
-      "reReleasers": [
-        "Americana",
-        "Microdaft"
       ],
       "status": "no-title-candidate"
     },
@@ -711,18 +624,6 @@
       "status": "no-title-candidate"
     },
     {
-      "slug": "he-man-and-the-masters-of-the-universe-the-movie",
-      "title": "He-Man and the Masters of the Universe: The Movie",
-      "year": 1987,
-      "publishers": [
-        "Gremlin Graphics"
-      ],
-      "reReleasers": [
-        "Kixx"
-      ],
-      "status": "no-title-candidate"
-    },
-    {
       "slug": "heart-of-africa",
       "title": "Heart Of Africa",
       "year": 1985,
@@ -746,26 +647,6 @@
       "status": "no-title-candidate"
     },
     {
-      "slug": "heroquest",
-      "title": "Heroquest",
-      "year": 1991,
-      "publishers": [
-        "Gremlin Graphics"
-      ],
-      "reReleasers": [],
-      "status": "no-title-candidate"
-    },
-    {
-      "slug": "high-noon",
-      "title": "High Noon",
-      "year": 1984,
-      "publishers": [
-        "Ocean"
-      ],
-      "reReleasers": [],
-      "status": "no-title-candidate"
-    },
-    {
       "slug": "indiana-jones-and-the-fate-of-atlantis",
       "title": "Indiana Jones And The Fate Of Atlantis",
       "year": 1992,
@@ -776,16 +657,6 @@
         "Kixx"
       ],
       "status": "no-title-candidate"
-    },
-    {
-      "slug": "indiana-jones-in-the-lost-kingdom",
-      "title": "Indiana Jones In The Lost Kingdom",
-      "year": 1984,
-      "publishers": [
-        "Mindscape"
-      ],
-      "reReleasers": [],
-      "status": "manual-review"
     },
     {
       "slug": "infernal-runner",
@@ -855,7 +726,7 @@
         "Codemasters"
       ],
       "reReleasers": [],
-      "status": "no-title-candidate"
+      "status": "manual-review"
     },
     {
       "slug": "kane-kane-2",
@@ -866,16 +737,6 @@
       ],
       "reReleasers": [],
       "status": "no-title-candidate"
-    },
-    {
-      "slug": "karateka",
-      "title": "Karateka",
-      "year": 1985,
-      "publishers": [
-        "Brøderbund"
-      ],
-      "reReleasers": [],
-      "status": "manual-review"
     },
     {
       "slug": "kawasaki-rhythm-rocker",
@@ -1035,16 +896,6 @@
       "status": "no-title-candidate"
     },
     {
-      "slug": "micro-mouse-goes-debugging",
-      "title": "Micro Mouse Goes Debugging",
-      "year": 1983,
-      "publishers": [
-        "MC Lothlorien"
-      ],
-      "reReleasers": [],
-      "status": "manual-review"
-    },
-    {
       "slug": "miner-2049er",
       "title": "Miner 2049er",
       "year": 1983,
@@ -1075,16 +926,6 @@
       ],
       "reReleasers": [],
       "status": "no-title-candidate"
-    },
-    {
-      "slug": "mr-robot-and-his-robot-factory",
-      "title": "Mr Robot And His Robot Factory",
-      "year": 1984,
-      "publishers": [
-        "Datamost"
-      ],
-      "reReleasers": [],
-      "status": "manual-review"
     },
     {
       "slug": "mr-weems-and-the-she-vampires",
@@ -1307,30 +1148,6 @@
       "status": "no-title-candidate"
     },
     {
-      "slug": "raid-on-bungeling-bay",
-      "title": "Raid On Bungeling Bay",
-      "year": 1984,
-      "publishers": [
-        "Brøderbund"
-      ],
-      "reReleasers": [
-        "Aackosoft"
-      ],
-      "status": "manual-review"
-    },
-    {
-      "slug": "raid-over-moscow",
-      "title": "Raid Over Moscow",
-      "year": 1984,
-      "publishers": [
-        "Access Software"
-      ],
-      "reReleasers": [
-        "Americana"
-      ],
-      "status": "manual-review"
-    },
-    {
       "slug": "rampart",
       "title": "Rampart",
       "year": 1992,
@@ -1529,16 +1346,6 @@
       "status": "no-title-candidate"
     },
     {
-      "slug": "stormbringer",
-      "title": "Stormbringer",
-      "year": 1987,
-      "publishers": [
-        "MAD (Mastertronic)"
-      ],
-      "reReleasers": [],
-      "status": "no-title-candidate"
-    },
-    {
       "slug": "street-fighter",
       "title": "Street Fighter",
       "year": 1988,
@@ -1570,18 +1377,6 @@
         "Taskset"
       ],
       "reReleasers": [],
-      "status": "no-title-candidate"
-    },
-    {
-      "slug": "switchblade",
-      "title": "Switchblade",
-      "year": 1991,
-      "publishers": [
-        "Gremlin Graphics"
-      ],
-      "reReleasers": [
-        "GBH"
-      ],
       "status": "no-title-candidate"
     },
     {
@@ -1648,16 +1443,6 @@
       "status": "no-title-candidate"
     },
     {
-      "slug": "the-goonies",
-      "title": "The Goonies",
-      "year": 1985,
-      "publishers": [
-        "Datasoft"
-      ],
-      "reReleasers": [],
-      "status": "manual-review"
-    },
-    {
       "slug": "the-hitchhikers-guide-to-the-galaxy",
       "title": "The Hitchhikers Guide To The Galaxy",
       "year": 1984,
@@ -1688,18 +1473,6 @@
         "US Gold"
       ],
       "reReleasers": [],
-      "status": "no-title-candidate"
-    },
-    {
-      "slug": "the-new-zealand-story",
-      "title": "The New Zealand Story",
-      "year": 1989,
-      "publishers": [
-        "Ocean"
-      ],
-      "reReleasers": [
-        "The Hit Squad"
-      ],
       "status": "no-title-candidate"
     },
     {
@@ -1765,17 +1538,6 @@
       "status": "manual-review"
     },
     {
-      "slug": "the-train-escape-to-normandy",
-      "title": "The Train: Escape To Normandy",
-      "year": 1987,
-      "publishers": [
-        "Accolade",
-        "Electronic Arts"
-      ],
-      "reReleasers": [],
-      "status": "no-title-candidate"
-    },
-    {
       "slug": "the-wombles",
       "title": "The Wombles",
       "year": 1990,
@@ -1794,16 +1556,6 @@
       ],
       "reReleasers": [],
       "status": "no-title-candidate"
-    },
-    {
-      "slug": "they-stole-a-million",
-      "title": "They Stole A Million",
-      "year": 1986,
-      "publishers": [
-        "Ariolasoft"
-      ],
-      "reReleasers": [],
-      "status": "manual-review"
     },
     {
       "slug": "thunderbirds",
@@ -1916,16 +1668,6 @@
       "status": "no-title-candidate"
     },
     {
-      "slug": "v-the-computer-game",
-      "title": "V: The Computer Game",
-      "year": 1986,
-      "publishers": [
-        "Ocean"
-      ],
-      "reReleasers": [],
-      "status": "no-title-candidate"
-    },
-    {
       "slug": "visible-solar-system",
       "title": "Visible Solar System",
       "year": 1982,
@@ -1985,18 +1727,6 @@
       ],
       "reReleasers": [],
       "status": "no-title-candidate"
-    },
-    {
-      "slug": "zorro",
-      "title": "Zorro",
-      "year": 1985,
-      "publishers": [
-        "Datasoft"
-      ],
-      "reReleasers": [
-        "Americana"
-      ],
-      "status": "manual-review"
     }
   ]
 }
