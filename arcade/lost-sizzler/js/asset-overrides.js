@@ -269,7 +269,8 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
       [`js/v10-42-bootstrap.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerV142Bootstrap"]
     ];
     const criticalFailures=[];
-    const criticalPaths=new Set(["/arcade/lost-sizzler/js/v10-25-melee-ammo-balance.js","/arcade/lost-sizzler/js/v10-26-ammo-budget.js","/arcade/lost-sizzler/js/v10-29-achievements.js","/arcade/lost-sizzler/js/v10-30-polish.js","/arcade/lost-sizzler/js/v10-31-multiplayer-sync.js","/arcade/lost-sizzler/js/v10-35-quality.js","/arcade/lost-sizzler/js/v10-42-bootstrap.js"]);
+    const criticalFiles=["v10-25-melee-ammo-balance.js","v10-26-ammo-budget.js","v10-29-achievements.js","v10-30-polish.js","v10-31-multiplayer-sync.js","v10-35-quality.js","v10-42-bootstrap.js"];
+    const criticalPaths=new Set(["/arcade/lost-sizzler/","/arcade/c64-dungeon-carnage/"].flatMap(prefix=>criticalFiles.map(file=>`${prefix}js/${file}`)));
 
     /* Dynamic scripts with async=false execute in insertion order but may fetch
      * in parallel. This keeps the long-established module ownership order while
