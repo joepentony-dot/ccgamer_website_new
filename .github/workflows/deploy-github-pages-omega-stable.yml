@@ -73,7 +73,7 @@ jobs:
           # retaining the historical source folder for runtime/tests in git.
           test -d _site/arcade/lost-sizzler
           rm -rf _site/arcade/c64-dungeon-carnage
-          mv _site/arcade/lost-sizzler _site/arcade/c64-dungeon-carnage
+          cp -a _site/arcade/lost-sizzler _site/arcade/c64-dungeon-carnage
           mkdir -p _site/arcade/lost-sizzler
           cat > _site/arcade/lost-sizzler/index.html <<'EOF'
           <!doctype html>
