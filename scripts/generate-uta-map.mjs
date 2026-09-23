@@ -105,7 +105,8 @@ export function titleVariants(...values) {
 }
 
 function numberSignature(value) {
-  return [...String(value || "").matchAll(/(?:^|\s)(\d+)(?=\s|$)/g)].map((match) => match[1]).join(",");
+  const normalized = normalizeNumberTokens(String(value || ""));
+  return [...normalized.matchAll(/(?:^|\s)(\d+)(?=\s|$)/g)].map((match) => match[1]).join(",");
 }
 
 function prefixTitleMatch(gameTitles, releaseTitles) {
