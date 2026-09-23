@@ -391,6 +391,7 @@ test("residual curated decisions remain source-evidenced and exact-ID scoped", (
     ["by-fair-means-or-foul", ["2952"]],
     ["dragons-lair-2-escape-from-singes-castle", ["395", "5078"]],
     ["give-my-regards-to-broad-street", ["8446"]],
+    ["flunky", ["5141"]],
     ["international-soccer", ["3215"]],
     ["leader-board", ["6678"]],
     ["live-and-let-die", ["2954"]],
@@ -430,12 +431,12 @@ test("residual review classifies every baseline unmatched C64 record exactly onc
   );
   assert.ok(review.entries.every((entry) => allowed.has(entry.classification)));
   assert.deepEqual(review.summary.classifications, {
-    "verified-additional-tape": 16,
+    "verified-additional-tape": 17,
     "catalogue-metadata-correction": 4,
     "different-c64-version": 11,
-    "genuinely-no-uta-release": 133
+    "genuinely-no-uta-release": 132
   });
-  assert.equal(review.summary.verifiedAdditionalTapeReleases, 19);
+  assert.equal(review.summary.verifiedAdditionalTapeReleases, 20);
   assert.ok(review.entries
     .filter((entry) => entry.classification === "verified-additional-tape")
     .every((entry) => Array.isArray(entry.archiveIds) && entry.archiveIds.length > 0));
