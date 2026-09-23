@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "source": "https://uta.pokefinder.org/Ultimate_Tape_Archive/",
-  "matching": "normalized-title variants (punctuation, article order, roman numerals, initialisms) plus known publisher/re-release evidence; conservative publisher-qualified subtitle/prefix matching; release must not predate the catalogued game by more than one year when both years are known",
+  "matching": "normalized-title variants (punctuation, article order, roman numerals, initialisms) plus known publisher/re-release evidence; exact-title archive IDs may be source-verified in the curated override file; conservative publisher-qualified subtitle/prefix matching; release must not predate the catalogued game by more than one year when both years are known",
   "games": {
     "1942": {
       "title": "1942",
@@ -463,6 +463,22 @@
         }
       ]
     },
+    "aussie-games": {
+      "title": "Aussie Games",
+      "releases": [
+        {
+          "archiveId": "20824",
+          "publisher": "ERBE Software",
+          "year": 1990,
+          "yearLabel": "1990",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Australian_Games_(1990_ERBE_Software)_%5b20824%5d/",
+          "titleMatch": "curated-title-alias",
+          "verification": "curated-archive-id"
+        }
+      ]
+    },
     "automania": {
       "title": "Automania",
       "releases": [
@@ -519,6 +535,31 @@
           "loader": null,
           "sourceRole": "publisher",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Back_to_the_Future_(1986_Electric_Dreams)_%5b4349%5d/",
+          "titleMatch": "exact"
+        }
+      ]
+    },
+    "bad-dudes-vs-dragonninja": {
+      "title": "Bad Dudes Vs Dragonninja",
+      "releases": [
+        {
+          "archiveId": "4305",
+          "publisher": "Imagine",
+          "year": 1989,
+          "yearLabel": "1989",
+          "loader": null,
+          "sourceRole": "publisher",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Bad_Dudes_vs_Dragon_Ninja_(1989_Imagine)_%5b4305%5d/",
+          "titleMatch": "exact"
+        },
+        {
+          "archiveId": "1152",
+          "publisher": "Hit Squad",
+          "year": 1991,
+          "yearLabel": "1991",
+          "loader": null,
+          "sourceRole": "re-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Bad_Dudes_vs_Dragon_Ninja_(1991_Hit_Squad)_%5b1152%5d/",
           "titleMatch": "exact"
         }
       ]
@@ -748,6 +789,22 @@
         }
       ]
     },
+    "beyond-the-forbidden-forest": {
+      "title": "Beyond The Forbidden Forest",
+      "releases": [
+        {
+          "archiveId": "1242",
+          "publisher": "U.S. Gold",
+          "year": null,
+          "yearLabel": "198x",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Beyond_the_Forbidden_Forest_(198x_U.S._Gold)_%5b1242%5d/",
+          "titleMatch": "exact",
+          "verification": "curated-archive-id"
+        }
+      ]
+    },
     "big-trouble-in-little-china": {
       "title": "Big Trouble In Little China",
       "releases": [
@@ -885,6 +942,22 @@
           "sourceRole": "publisher",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Blagger_Goes_to_Hollywood_(1985_Alligata)_%5b380%5d/",
           "titleMatch": "exact"
+        }
+      ]
+    },
+    "blood-n-guts": {
+      "title": "Blood 'N Guts",
+      "releases": [
+        {
+          "archiveId": "2809",
+          "publisher": "American Action AB",
+          "year": 1987,
+          "yearLabel": "1987",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Blood_'n_Guts_(1987_American_Action_AB)_%5b2809%5d/",
+          "titleMatch": "exact",
+          "verification": "curated-archive-id"
         }
       ]
     },
@@ -1458,6 +1531,22 @@
         }
       ]
     },
+    "chopper": {
+      "title": "Chopper",
+      "releases": [
+        {
+          "archiveId": "1036",
+          "publisher": "Creative Sparks",
+          "year": 1985,
+          "yearLabel": "1985",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Chopper_(1985_Creative_Sparks)_%5b1036%5d/",
+          "titleMatch": "exact",
+          "verification": "curated-archive-id"
+        }
+      ]
+    },
     "chuckie-egg": {
       "title": "Chuckie Egg",
       "releases": [
@@ -1943,6 +2032,22 @@
         }
       ]
     },
+    "donald-ducks-playground": {
+      "title": "Donald Duck's Playground",
+      "releases": [
+        {
+          "archiveId": "1240",
+          "publisher": "U.S. Gold",
+          "year": null,
+          "yearLabel": "198x",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Donald_Duck's_Playground_(198x_U.S._Gold)_%5b1240%5d/",
+          "titleMatch": "exact",
+          "verification": "curated-archive-id"
+        }
+      ]
+    },
     "doriath": {
       "title": "Doriath",
       "releases": [
@@ -1988,6 +2093,21 @@
         }
       ]
     },
+    "dragon-skulle": {
+      "title": "Dragon Skulle",
+      "releases": [
+        {
+          "archiveId": "3263",
+          "publisher": "Ricochet",
+          "year": null,
+          "yearLabel": "0",
+          "loader": null,
+          "sourceRole": "re-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Dragonskulle_(0_Ricochet)_%5b3263%5d/",
+          "titleMatch": "exact"
+        }
+      ]
+    },
     "dragons-lair": {
       "title": "Dragon's Lair",
       "releases": [
@@ -2009,6 +2129,21 @@
           "loader": null,
           "sourceRole": "re-release",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Dragon's_Lair_(1988_Encore)_%5b7503%5d/",
+          "titleMatch": "exact"
+        }
+      ]
+    },
+    "dropzone": {
+      "title": "Dropzone",
+      "releases": [
+        {
+          "archiveId": "4424",
+          "publisher": "U.S. Gold",
+          "year": 1984,
+          "yearLabel": "1984",
+          "loader": null,
+          "sourceRole": "publisher",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Drop_Zone_(1984_U.S._Gold)_%5b4424%5d/",
           "titleMatch": "exact"
         }
       ]
@@ -2515,6 +2650,16 @@
           "sourceRole": "publisher",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Gary_Lineker's_Superstar_Soccer_(1987_Gremlin_Graphics)_%5b5074%5d/",
           "titleMatch": "exact"
+        },
+        {
+          "archiveId": "1286",
+          "publisher": "Kixx",
+          "year": 1987,
+          "yearLabel": "1987",
+          "loader": null,
+          "sourceRole": "re-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Gary_Lineker's_Super_Star_Soccer_(1987_Kixx)_%5b1286%5d/",
+          "titleMatch": "exact"
         }
       ]
     },
@@ -2654,6 +2799,16 @@
           "loader": null,
           "sourceRole": "publisher",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ghosts_'n_Goblins_(1985_Elite_Systems_Ltd)_%5b976%5d/",
+          "titleMatch": "exact"
+        },
+        {
+          "archiveId": "3065",
+          "publisher": "Encore",
+          "year": null,
+          "yearLabel": "199x",
+          "loader": null,
+          "sourceRole": "re-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ghosts_'n_Goblins_(199x_Encore)_%5b3065%5d/",
           "titleMatch": "exact"
         }
       ]
@@ -2893,6 +3048,22 @@
         }
       ]
     },
+    "he-man-and-the-masters-of-the-universe-the-movie": {
+      "title": "He-Man and the Masters of the Universe: The Movie",
+      "releases": [
+        {
+          "archiveId": "1319",
+          "publisher": "Gremlin Graphics",
+          "year": 1987,
+          "yearLabel": "1987",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Masters_of_the_Universe-_The_Movie_(1987_Gremlin_Graphics)_%5b1319%5d/",
+          "titleMatch": "curated-title-alias",
+          "verification": "curated-archive-id"
+        }
+      ]
+    },
     "head-over-heels": {
       "title": "Head Over Heels",
       "releases": [
@@ -2984,6 +3155,36 @@
           "loader": null,
           "sourceRole": "publisher",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Hero_of_the_Golden_Talisman_(1985_Mastertronic_Added_Dimension)_%5b5039%5d/",
+          "titleMatch": "exact"
+        }
+      ]
+    },
+    "heroquest": {
+      "title": "Heroquest",
+      "releases": [
+        {
+          "archiveId": "3167",
+          "publisher": "Gremlin Graphics",
+          "year": 1991,
+          "yearLabel": "1991",
+          "loader": null,
+          "sourceRole": "publisher",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Hero_Quest_(1991_Gremlin_Graphics)_%5b3167%5d/",
+          "titleMatch": "exact"
+        }
+      ]
+    },
+    "high-noon": {
+      "title": "High Noon",
+      "releases": [
+        {
+          "archiveId": "2141",
+          "publisher": "Ocean Software Ltd",
+          "year": 1984,
+          "yearLabel": "1984",
+          "loader": null,
+          "sourceRole": "publisher",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Highnoon_(1984_Ocean_Software_Ltd)_%5b2141%5d/",
           "titleMatch": "exact"
         }
       ]
@@ -3258,6 +3459,22 @@
         }
       ]
     },
+    "indiana-jones-in-the-lost-kingdom": {
+      "title": "Indiana Jones In The Lost Kingdom",
+      "releases": [
+        {
+          "archiveId": "4218",
+          "publisher": "U.S. Gold",
+          "year": 1984,
+          "yearLabel": "1984",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Indiana_Jones_in_the_Lost_Kingdom_(1984_U.S._Gold)_%5b4218%5d/",
+          "titleMatch": "exact",
+          "verification": "curated-archive-id"
+        }
+      ]
+    },
     "infiltrator": {
       "title": "Infiltrator",
       "releases": [
@@ -3344,6 +3561,16 @@
           "loader": null,
           "sourceRole": "re-release",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ivan_'Ironman'_Stewart's_Super_Off_Road_(1990_Virgin)_%5b6113%5d/",
+          "titleMatch": "exact"
+        },
+        {
+          "archiveId": "1155",
+          "publisher": "Tronix",
+          "year": null,
+          "yearLabel": "199x",
+          "loader": null,
+          "sourceRole": "re-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ivan_'Ironman'_Stewart's_Super_Off_Road_(199x_Tronix)_%5b1155%5d/",
           "titleMatch": "exact"
         }
       ]
@@ -3505,6 +3732,22 @@
           "sourceRole": "re-release",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Jumpman_(198x_Euro_Gold)_%5b4272%5d/",
           "titleMatch": "exact"
+        }
+      ]
+    },
+    "karateka": {
+      "title": "Karateka",
+      "releases": [
+        {
+          "archiveId": "2866",
+          "publisher": "Ariolasoft",
+          "year": 1985,
+          "yearLabel": "1985",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Karateka_(1985_Ariolasoft)_%5b2866%5d/",
+          "titleMatch": "exact",
+          "verification": "curated-archive-id"
         }
       ]
     },
@@ -3878,6 +4121,21 @@
         }
       ]
     },
+    "micro-mouse-goes-debugging": {
+      "title": "Micro Mouse Goes Debugging",
+      "releases": [
+        {
+          "archiveId": "291",
+          "publisher": "M.C. Lothlorien",
+          "year": 1983,
+          "yearLabel": "1983",
+          "loader": null,
+          "sourceRole": "publisher",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Micro_Mouse_Goes_De-Bugging_(1983_M.C._Lothlorien)_%5b291%5d/",
+          "titleMatch": "exact"
+        }
+      ]
+    },
     "microprose-soccer": {
       "title": "Microprose Soccer",
       "releases": [
@@ -4020,6 +4278,22 @@
           "sourceRole": "re-release",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Moon_Shuttle_(1986_Americana)_%5b2189%5d/",
           "titleMatch": "exact"
+        }
+      ]
+    },
+    "mr-robot-and-his-robot-factory": {
+      "title": "Mr Robot And His Robot Factory",
+      "releases": [
+        {
+          "archiveId": "3211",
+          "publisher": "Beyond",
+          "year": 1984,
+          "yearLabel": "1984",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Mr._Robot_and_his_Robot_Factory_(1984_Beyond)_%5b3211%5d/",
+          "titleMatch": "exact",
+          "verification": "curated-archive-id"
         }
       ]
     },
@@ -4345,6 +4619,16 @@
           "sourceRole": "publisher",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Pitfall_II_-_Lost_Caverns_(1984_Activision)_%5b542%5d/",
           "titleMatch": "exact"
+        },
+        {
+          "archiveId": "2309",
+          "publisher": "Firebird Silver",
+          "year": null,
+          "yearLabel": "19xx",
+          "loader": null,
+          "sourceRole": "re-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Pit_Fall_II_(19xx_Firebird_Silver)_%5b2309%5d/",
+          "titleMatch": "exact"
         }
       ]
     },
@@ -4590,6 +4874,38 @@
           "sourceRole": "publisher",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Raging_Beast_(1985_Firebird_Silver)_%5b2342%5d/",
           "titleMatch": "exact"
+        }
+      ]
+    },
+    "raid-on-bungeling-bay": {
+      "title": "Raid On Bungeling Bay",
+      "releases": [
+        {
+          "archiveId": "5360",
+          "publisher": "Ariolasoft",
+          "year": 1984,
+          "yearLabel": "1984",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Raid_on_Bungeling_Bay_(1984_Ariolasoft)_%5b5360%5d/",
+          "titleMatch": "exact",
+          "verification": "curated-archive-id"
+        }
+      ]
+    },
+    "raid-over-moscow": {
+      "title": "Raid Over Moscow",
+      "releases": [
+        {
+          "archiveId": "529",
+          "publisher": "U.S. Gold",
+          "year": null,
+          "yearLabel": "198x",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Raid_over_Moscow_(198x_U.S._Gold)_%5b529%5d/",
+          "titleMatch": "exact",
+          "verification": "curated-archive-id"
         }
       ]
     },
@@ -5698,6 +6014,21 @@
         }
       ]
     },
+    "stormbringer": {
+      "title": "Stormbringer",
+      "releases": [
+        {
+          "archiveId": "6028",
+          "publisher": "Mastertronic Added Dimension",
+          "year": 1987,
+          "yearLabel": "1987",
+          "loader": null,
+          "sourceRole": "publisher",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Storm_Bringer_(1987_Mastertronic_Added_Dimension)_%5b6028%5d/",
+          "titleMatch": "exact"
+        }
+      ]
+    },
     "street-hassle": {
       "title": "Street Hassle",
       "releases": [
@@ -5899,6 +6230,21 @@
           "loader": null,
           "sourceRole": "publisher",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Super_Trolley_(1987_Mastertronic)_%5b3087%5d/",
+          "titleMatch": "exact"
+        }
+      ]
+    },
+    "switchblade": {
+      "title": "Switchblade",
+      "releases": [
+        {
+          "archiveId": "2673",
+          "publisher": "Gremlin Graphics (GBH)",
+          "year": 1992,
+          "yearLabel": "1992",
+          "loader": null,
+          "sourceRole": "re-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Switch_Blade_(1992_Gremlin_Graphics_(GBH))_%5b2673%5d/",
           "titleMatch": "exact"
         }
       ]
@@ -6143,6 +6489,33 @@
         }
       ]
     },
+    "the-goonies": {
+      "title": "The Goonies",
+      "releases": [
+        {
+          "archiveId": "841",
+          "publisher": "U.S. Gold",
+          "year": 1985,
+          "yearLabel": "1985",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Goonies,_The_(1985_U.S._Gold)_%5b841%5d/",
+          "titleMatch": "exact",
+          "verification": "curated-archive-id"
+        },
+        {
+          "archiveId": "6951",
+          "publisher": "American Action AB",
+          "year": 1986,
+          "yearLabel": "1986",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Goonies,_The_(1986_American_Action_AB)_%5b6951%5d/",
+          "titleMatch": "exact",
+          "verification": "curated-archive-id"
+        }
+      ]
+    },
     "the-great-escape": {
       "title": "The Great Escape",
       "releases": [
@@ -6283,6 +6656,31 @@
         }
       ]
     },
+    "the-new-zealand-story": {
+      "title": "The New Zealand Story",
+      "releases": [
+        {
+          "archiveId": "2154",
+          "publisher": "Ocean Software Ltd",
+          "year": 1989,
+          "yearLabel": "1989",
+          "loader": null,
+          "sourceRole": "publisher",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Newzealand_Story,_The_(1989_Ocean_Software_Ltd)_%5b2154%5d/",
+          "titleMatch": "exact"
+        },
+        {
+          "archiveId": "1543",
+          "publisher": "Hit Squad",
+          "year": 1991,
+          "yearLabel": "1991",
+          "loader": null,
+          "sourceRole": "re-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Newzealand_Story,_The_(1991_Hit_Squad)_%5b1543%5d/",
+          "titleMatch": "exact"
+        }
+      ]
+    },
     "the-official-father-christmas": {
       "title": "The Official Father Christmas",
       "releases": [
@@ -6379,6 +6777,21 @@
           "loader": null,
           "sourceRole": "publisher",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Snowman,_The_(1984_Quicksilva)_%5b553%5d/",
+          "titleMatch": "exact"
+        }
+      ]
+    },
+    "the-train-escape-to-normandy": {
+      "title": "The Train: Escape To Normandy",
+      "releases": [
+        {
+          "archiveId": "5396",
+          "publisher": "Electronic Arts",
+          "year": 1988,
+          "yearLabel": "1988",
+          "loader": null,
+          "sourceRole": "publisher",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Train,_The-_Escape_to_Normandy_(1988_Electronic_Arts)_%5b5396%5d/",
           "titleMatch": "exact"
         }
       ]
@@ -6505,6 +6918,22 @@
           "sourceRole": "publisher",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Willow_Pattern_(1985_Firebird)_%5b420%5d/",
           "titleMatch": "exact"
+        }
+      ]
+    },
+    "they-stole-a-million": {
+      "title": "They Stole A Million",
+      "releases": [
+        {
+          "archiveId": "12597",
+          "publisher": "39 Steps",
+          "year": 1986,
+          "yearLabel": "1986",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/They_Stole_a_Million_(1986_39_Steps)_%5b12597%5d/",
+          "titleMatch": "exact",
+          "verification": "curated-archive-id"
         }
       ]
     },
@@ -6913,6 +7342,22 @@
         }
       ]
     },
+    "v-the-computer-game": {
+      "title": "V: The Computer Game",
+      "releases": [
+        {
+          "archiveId": "2651",
+          "publisher": "Ocean Software Ltd",
+          "year": 1985,
+          "yearLabel": "1985",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/V_(1985_Ocean_Software_Ltd)_%5b2651%5d/",
+          "titleMatch": "curated-title-alias",
+          "verification": "curated-archive-id"
+        }
+      ]
+    },
     "vendetta": {
       "title": "Vendetta",
       "releases": [
@@ -7230,6 +7675,22 @@
           "sourceRole": "publisher",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Zenji_(1984_Activision)_%5b526%5d/",
           "titleMatch": "exact"
+        }
+      ]
+    },
+    "zorro": {
+      "title": "Zorro",
+      "releases": [
+        {
+          "archiveId": "717",
+          "publisher": "U.S. Gold",
+          "year": null,
+          "yearLabel": "198x",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Zorro_(198x_U.S._Gold)_%5b717%5d/",
+          "titleMatch": "exact",
+          "verification": "curated-archive-id"
         }
       ]
     }

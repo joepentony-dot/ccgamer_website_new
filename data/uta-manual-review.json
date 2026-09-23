@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "source": "https://uta.pokefinder.org/Ultimate_Tape_Archive/",
-  "note": "Excluded UTA title matches that need source-data verification before they can be exposed.",
+  "note": "Excluded UTA title matches that need source-data verification before they can be exposed. Exact-title archive IDs listed in the curated override file are treated as independently verified release relationships while retaining year safeguards.",
   "entries": [
     {
       "gameSlug": "1942",
@@ -223,6 +223,30 @@
       ]
     },
     {
+      "gameSlug": "bad-dudes-vs-dragonninja",
+      "title": "Bad Dudes Vs Dragonninja",
+      "year": 1989,
+      "knownPublishers": [
+        "Imagine"
+      ],
+      "knownReReleasers": [
+        "The Hit Squad"
+      ],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "5638",
+          "title": "Bad Dudes vs Dragon Ninja",
+          "publisher": "ERBE Software",
+          "yearLabel": "1988",
+          "titleMatch": "exact",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Bad_Dudes_vs_Dragon_Ninja_(1988_ERBE_Software)_%5b5638%5d/"
+        }
+      ]
+    },
+    {
       "gameSlug": "bangkok-knights",
       "title": "Bangkok Knights",
       "year": 1987,
@@ -289,6 +313,16 @@
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/B.C._II-_Grog's_Revenge_(1984_U.S._Gold)_%5b734%5d/"
+        },
+        {
+          "archiveId": "6593",
+          "title": "BCII- Grog's Revenge",
+          "publisher": "Power House",
+          "yearLabel": "1988",
+          "titleMatch": "exact",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/BCII-_Grog's_Revenge_(1988_Power_House)_%5b6593%5d/"
         }
       ]
     },
@@ -351,28 +385,6 @@
       ]
     },
     {
-      "gameSlug": "beyond-the-forbidden-forest",
-      "title": "Beyond The Forbidden Forest",
-      "year": 1985,
-      "knownPublishers": [
-        "Cosmi"
-      ],
-      "knownReReleasers": [],
-      "reason": "title-match-publisher-not-in-game-data",
-      "excludedCandidates": [
-        {
-          "archiveId": "1242",
-          "title": "Beyond the Forbidden Forest",
-          "publisher": "U.S. Gold",
-          "yearLabel": "198x",
-          "titleMatch": "exact",
-          "publisherMatched": false,
-          "yearCompatible": true,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Beyond_the_Forbidden_Forest_(198x_U.S._Gold)_%5b1242%5d/"
-        }
-      ]
-    },
-    {
       "gameSlug": "blagger-goes-to-hollywood",
       "title": "Blagger Goes To Hollywood",
       "year": 1985,
@@ -423,28 +435,6 @@
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Blockbusters_Gold_Run_(1984_Macsen_Software)_%5b6114%5d/"
-        }
-      ]
-    },
-    {
-      "gameSlug": "blood-n-guts",
-      "title": "Blood 'N Guts",
-      "year": 1986,
-      "knownPublishers": [
-        "American Action"
-      ],
-      "knownReReleasers": [],
-      "reason": "title-match-publisher-not-in-game-data",
-      "excludedCandidates": [
-        {
-          "archiveId": "2809",
-          "title": "Blood 'n Guts",
-          "publisher": "American Action AB",
-          "yearLabel": "1987",
-          "titleMatch": "exact",
-          "publisherMatched": false,
-          "yearCompatible": false,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Blood_'n_Guts_(1987_American_Action_AB)_%5b2809%5d/"
         }
       ]
     },
@@ -636,18 +626,8 @@
         "Sparklers"
       ],
       "knownReReleasers": [],
-      "reason": "title-match-publisher-not-in-game-data",
+      "reason": "additional-title-match-publisher-not-in-game-data",
       "excludedCandidates": [
-        {
-          "archiveId": "1036",
-          "title": "Chopper",
-          "publisher": "Creative Sparks",
-          "yearLabel": "1985",
-          "titleMatch": "exact",
-          "publisherMatched": false,
-          "yearCompatible": false,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Chopper_(1985_Creative_Sparks)_%5b1036%5d/"
-        },
         {
           "archiveId": "8026",
           "title": "Chopper Commander",
@@ -819,28 +799,6 @@
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Dizzy_Dice_(1987_Players)_%5b6540%5d/"
-        }
-      ]
-    },
-    {
-      "gameSlug": "donald-ducks-playground",
-      "title": "Donald Duck's Playground",
-      "year": 1984,
-      "knownPublishers": [
-        "Sierra On-Line"
-      ],
-      "knownReReleasers": [],
-      "reason": "title-match-publisher-not-in-game-data",
-      "excludedCandidates": [
-        {
-          "archiveId": "1240",
-          "title": "Donald Duck's Playground",
-          "publisher": "U.S. Gold",
-          "yearLabel": "198x",
-          "titleMatch": "exact",
-          "publisherMatched": false,
-          "yearCompatible": true,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Donald_Duck's_Playground_(198x_U.S._Gold)_%5b1240%5d/"
         }
       ]
     },
@@ -1274,28 +1232,6 @@
       ]
     },
     {
-      "gameSlug": "indiana-jones-in-the-lost-kingdom",
-      "title": "Indiana Jones In The Lost Kingdom",
-      "year": 1984,
-      "knownPublishers": [
-        "Mindscape"
-      ],
-      "knownReReleasers": [],
-      "reason": "title-match-publisher-not-in-game-data",
-      "excludedCandidates": [
-        {
-          "archiveId": "4218",
-          "title": "Indiana Jones in the Lost Kingdom",
-          "publisher": "U.S. Gold",
-          "yearLabel": "1984",
-          "titleMatch": "exact",
-          "publisherMatched": false,
-          "yearCompatible": false,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Indiana_Jones_in_the_Lost_Kingdom_(1984_U.S._Gold)_%5b4218%5d/"
-        }
-      ]
-    },
-    {
       "gameSlug": "international-soccer",
       "title": "International Soccer",
       "year": 1983,
@@ -1362,24 +1298,24 @@
       ]
     },
     {
-      "gameSlug": "karateka",
-      "title": "Karateka",
-      "year": 1985,
+      "gameSlug": "kamikaze",
+      "title": "Kamikaze",
+      "year": 1990,
       "knownPublishers": [
-        "Brøderbund"
+        "Codemasters"
       ],
       "knownReReleasers": [],
       "reason": "title-match-publisher-not-in-game-data",
       "excludedCandidates": [
         {
-          "archiveId": "2866",
-          "title": "Karateka",
-          "publisher": "Ariolasoft",
-          "yearLabel": "1985",
+          "archiveId": "219",
+          "title": "Kami-Kaze",
+          "publisher": "Supersoft",
+          "yearLabel": "1984",
           "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Karateka_(1985_Ariolasoft)_%5b2866%5d/"
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Kami-Kaze_(1984_Supersoft)_%5b219%5d/"
         }
       ]
     },
@@ -1501,7 +1437,7 @@
         "MC Lothlorien"
       ],
       "knownReReleasers": [],
-      "reason": "title-match-publisher-not-in-game-data",
+      "reason": "additional-title-match-publisher-not-in-game-data",
       "excludedCandidates": [
         {
           "archiveId": "2827",
@@ -1512,28 +1448,6 @@
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Micro_Mouse_(1989_Mastertronic_Plus)_%5b2827%5d/"
-        }
-      ]
-    },
-    {
-      "gameSlug": "mr-robot-and-his-robot-factory",
-      "title": "Mr Robot And His Robot Factory",
-      "year": 1984,
-      "knownPublishers": [
-        "Datamost"
-      ],
-      "knownReReleasers": [],
-      "reason": "title-match-publisher-not-in-game-data",
-      "excludedCandidates": [
-        {
-          "archiveId": "3211",
-          "title": "Mr. Robot and his Robot Factory",
-          "publisher": "Beyond",
-          "yearLabel": "1984",
-          "titleMatch": "exact",
-          "publisherMatched": false,
-          "yearCompatible": false,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Mr._Robot_and_his_Robot_Factory_(1984_Beyond)_%5b3211%5d/"
         }
       ]
     },
@@ -1886,54 +1800,6 @@
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Popeye_(1986_Macmillan_Software)_%5b5450%5d/"
-        }
-      ]
-    },
-    {
-      "gameSlug": "raid-on-bungeling-bay",
-      "title": "Raid On Bungeling Bay",
-      "year": 1984,
-      "knownPublishers": [
-        "Brøderbund"
-      ],
-      "knownReReleasers": [
-        "Aackosoft"
-      ],
-      "reason": "title-match-publisher-not-in-game-data",
-      "excludedCandidates": [
-        {
-          "archiveId": "5360",
-          "title": "Raid on Bungeling Bay",
-          "publisher": "Ariolasoft",
-          "yearLabel": "1984",
-          "titleMatch": "exact",
-          "publisherMatched": false,
-          "yearCompatible": false,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Raid_on_Bungeling_Bay_(1984_Ariolasoft)_%5b5360%5d/"
-        }
-      ]
-    },
-    {
-      "gameSlug": "raid-over-moscow",
-      "title": "Raid Over Moscow",
-      "year": 1984,
-      "knownPublishers": [
-        "Access Software"
-      ],
-      "knownReReleasers": [
-        "Americana"
-      ],
-      "reason": "title-match-publisher-not-in-game-data",
-      "excludedCandidates": [
-        {
-          "archiveId": "529",
-          "title": "Raid over Moscow",
-          "publisher": "U.S. Gold",
-          "yearLabel": "198x",
-          "titleMatch": "exact",
-          "publisherMatched": false,
-          "yearCompatible": true,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Raid_over_Moscow_(198x_U.S._Gold)_%5b529%5d/"
         }
       ]
     },
@@ -2551,38 +2417,6 @@
       ]
     },
     {
-      "gameSlug": "the-goonies",
-      "title": "The Goonies",
-      "year": 1985,
-      "knownPublishers": [
-        "Datasoft"
-      ],
-      "knownReReleasers": [],
-      "reason": "title-match-publisher-not-in-game-data",
-      "excludedCandidates": [
-        {
-          "archiveId": "6951",
-          "title": "Goonies, The",
-          "publisher": "American Action AB",
-          "yearLabel": "1986",
-          "titleMatch": "exact",
-          "publisherMatched": false,
-          "yearCompatible": false,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Goonies,_The_(1986_American_Action_AB)_%5b6951%5d/"
-        },
-        {
-          "archiveId": "841",
-          "title": "Goonies, The",
-          "publisher": "U.S. Gold",
-          "yearLabel": "1985",
-          "titleMatch": "exact",
-          "publisherMatched": false,
-          "yearCompatible": false,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Goonies,_The_(1985_U.S._Gold)_%5b841%5d/"
-        }
-      ]
-    },
-    {
       "gameSlug": "the-great-escape",
       "title": "The Great Escape",
       "year": 1986,
@@ -2735,28 +2569,6 @@
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Trap_(1986_Alligata)_%5b383%5d/"
-        }
-      ]
-    },
-    {
-      "gameSlug": "they-stole-a-million",
-      "title": "They Stole A Million",
-      "year": 1986,
-      "knownPublishers": [
-        "Ariolasoft"
-      ],
-      "knownReReleasers": [],
-      "reason": "title-match-publisher-not-in-game-data",
-      "excludedCandidates": [
-        {
-          "archiveId": "12597",
-          "title": "They Stole a Million",
-          "publisher": "39 Steps",
-          "yearLabel": "1986",
-          "titleMatch": "exact",
-          "publisherMatched": false,
-          "yearCompatible": false,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/They_Stole_a_Million_(1986_39_Steps)_%5b12597%5d/"
         }
       ]
     },
@@ -2950,30 +2762,6 @@
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Yogi_Bear_&_Friends_in_the_Greed_Monster-_A_Treasure_Hunt_(1990_HiTEC_Software)_%5b684%5d/"
-        }
-      ]
-    },
-    {
-      "gameSlug": "zorro",
-      "title": "Zorro",
-      "year": 1985,
-      "knownPublishers": [
-        "Datasoft"
-      ],
-      "knownReReleasers": [
-        "Americana"
-      ],
-      "reason": "title-match-publisher-not-in-game-data",
-      "excludedCandidates": [
-        {
-          "archiveId": "717",
-          "title": "Zorro",
-          "publisher": "U.S. Gold",
-          "yearLabel": "198x",
-          "titleMatch": "exact",
-          "publisherMatched": false,
-          "yearCompatible": true,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Zorro_(198x_U.S._Gold)_%5b717%5d/"
         }
       ]
     }
