@@ -1,3 +1,11 @@
+## Current-main residual reconciliation — PR #2297 — 23 September 2026
+
+Draft PR #2297 supersedes stale #2279. It was rebuilt from the post-#2295/post-generated-output `main`, whose authoritative audit remains 395/559 mapped with 164 unmatched C64 records across 2,892 retained UTA directories.
+
+The rebuild preserves the verified residual evidence and parser fix without replacing newer live-freshness work. It carries the curated release additions, `data/uta-residual-review-2026-09-23.json`, URL-based release de-duplication for reused archive IDs, the four residual regression blocks merged into the current test file, and workflow triggers for curated evidence changes. `games/games.json` remains untouched.
+
+#2297 must complete exact-head qualification before it can be considered for merge.
+
 ## PR #2295 current-main rebuild after #2294 merge — 23 September 2026
 
 PR #2294 merged first as authorised. That moved `main` ahead of the previously-qualified #2295 head and made the old branch diverged/non-mergeable. #2295 has therefore been rebuilt on the new `main` while preserving the existing PR.
