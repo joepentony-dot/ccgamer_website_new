@@ -68,7 +68,7 @@ async function firearmTap(page,cycle){
 
 async function swordTap(page,cycle){
   await settle(page);
-  const before=await page.evaluate(()=>{
+  const before=await page.evaluate(cycle=>{
     p1.firearmUnlocked=false;p1.weapon=null;p1.mana=0;
     const dirs=[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
     const dir=dirs.find(d=>W.walkable(world.map,p1.x+d.x,p1.y+d.y,host));
@@ -76,6 +76,7 @@ async function swordTap(page,cycle){
     const target=(host.enemies||[]).find(Boolean);if(!target)return null;
     for(const enemy of host.enemies||[])enemy.alive=false;
     Object.assign(target,{
+      id:`r53-desktop-soak-target-${cycle}`,
       kind:"scout",alive:true,x:p1.x+dir.x,y:p1.y+dir.y,rx:p1.x+dir.x,ry:p1.y+dir.y,
       hp:50,maxHp:50,armor:0,maxArmor:0,weakness:null,resistance:null,
       deathStalker:false,voidStalker:false,guardian:false,follower:null,exitWarden:false,
@@ -85,7 +86,7 @@ async function swordTap(page,cycle){
     });
     p1.dir={...dir};
     return{targetId:target.id,hp:Number(target.hp),swing:Number(p1._meleeSwingAt||0),damage:Number(window.CCGLostSizzlerMeleeAmmoV125?.meleeDamageFor?.(p1)||1)};
-  });
+  },cycle);
   assert.ok(before,`cycle ${cycle}: desktop sword soak needs a walkable adjacent target`);
   await page.keyboard.press("Space");
   await page.waitForFunction(swing=>Number(p1?._meleeSwingAt||0)>swing,before.swing,{timeout:3000});
