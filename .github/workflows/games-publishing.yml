@@ -19,6 +19,7 @@ on:
       - "data/uta-game-matches.json"
       - "data/uta-manual-review.json"
       - "data/uta-audit.json"
+      - "data/uta-curated-release-overrides.json"
       - "tests/single-game-community-uta.test.mjs"
       - "games/genres/**"
       - "games/collections/**"
