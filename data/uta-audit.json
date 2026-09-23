@@ -3,11 +3,11 @@
   "source": "https://uta.pokefinder.org/Ultimate_Tape_Archive/",
   "summary": {
     "c64Games": 559,
-    "archiveReleasesScanned": 2892,
-    "matchedGames": 395,
-    "manualReviewGames": 23,
-    "noTitleCandidateGames": 141,
-    "unmatchedGames": 164
+    "archiveReleasesScanned": 2900,
+    "matchedGames": 413,
+    "manualReviewGames": 15,
+    "noTitleCandidateGames": 131,
+    "unmatchedGames": 146
   },
   "unmatched": [
     {
@@ -36,16 +36,6 @@
       "year": 1987,
       "publishers": [
         "Accolade"
-      ],
-      "reReleasers": [],
-      "status": "no-title-candidate"
-    },
-    {
-      "slug": "action-biker",
-      "title": "Action Biker",
-      "year": 1985,
-      "publishers": [
-        "Mastertronic"
       ],
       "reReleasers": [],
       "status": "no-title-candidate"
@@ -147,18 +137,6 @@
       "status": "no-title-candidate"
     },
     {
-      "slug": "barbarian-2-the-dungeon-of-drax",
-      "title": "Barbarian II: The Dungeon Of Drax",
-      "year": 1988,
-      "publishers": [
-        "Palace Software"
-      ],
-      "reReleasers": [
-        "Kixx"
-      ],
-      "status": "manual-review"
-    },
-    {
       "slug": "bc2-grogs-revenge",
       "title": "B.C. II: Grog's Revenge",
       "year": 1984,
@@ -248,28 +226,6 @@
       "year": 1987,
       "publishers": [
         "Simulmondo"
-      ],
-      "reReleasers": [],
-      "status": "no-title-candidate"
-    },
-    {
-      "slug": "boulder-dash",
-      "title": "Boulder Dash",
-      "year": 1984,
-      "publishers": [
-        "First Star Software"
-      ],
-      "reReleasers": [
-        "Prism Leisure"
-      ],
-      "status": "manual-review"
-    },
-    {
-      "slug": "by-fair-means-or-foul",
-      "title": "By Fair Means Or Foul",
-      "year": 1988,
-      "publishers": [
-        "Superior Software"
       ],
       "reReleasers": [],
       "status": "no-title-candidate"
@@ -446,19 +402,6 @@
       "status": "manual-review"
     },
     {
-      "slug": "dragons-lair-2-escape-from-singes-castle",
-      "title": "Dragon's Lair II : Escape From Singe'S Castle",
-      "year": 1987,
-      "publishers": [
-        "Electronic Arts",
-        "Software Projects"
-      ],
-      "reReleasers": [
-        "Encore"
-      ],
-      "status": "no-title-candidate"
-    },
-    {
       "slug": "entombed",
       "title": "Entombed",
       "year": 1985,
@@ -529,18 +472,6 @@
       "status": "no-title-candidate"
     },
     {
-      "slug": "flunky",
-      "title": "Flunky",
-      "year": 1987,
-      "publishers": [
-        "Piranha"
-      ],
-      "reReleasers": [
-        "Alternative Software"
-      ],
-      "status": "no-title-candidate"
-    },
-    {
       "slug": "force-seven",
       "title": "Force Seven",
       "year": 1987,
@@ -577,16 +508,6 @@
       "year": 1984,
       "publishers": [
         "Strategic Simulations Inc."
-      ],
-      "reReleasers": [],
-      "status": "no-title-candidate"
-    },
-    {
-      "slug": "give-my-regards-to-broad-street",
-      "title": "Give My Regards To Broad Street",
-      "year": 1985,
-      "publishers": [
-        "Argus Press Software"
       ],
       "reReleasers": [],
       "status": "no-title-candidate"
@@ -677,16 +598,6 @@
       ],
       "reReleasers": [],
       "status": "no-title-candidate"
-    },
-    {
-      "slug": "international-soccer",
-      "title": "International Soccer",
-      "year": 1983,
-      "publishers": [
-        "Commodore"
-      ],
-      "reReleasers": [],
-      "status": "manual-review"
     },
     {
       "slug": "invade-a-load",
@@ -799,18 +710,6 @@
       "status": "no-title-candidate"
     },
     {
-      "slug": "leader-board",
-      "title": "Leader Board",
-      "year": 1986,
-      "publishers": [
-        "Access Software"
-      ],
-      "reReleasers": [
-        "Kixx"
-      ],
-      "status": "manual-review"
-    },
-    {
       "slug": "legacy-of-the-ancients",
       "title": "Legacy Of The Ancients",
       "year": 1987,
@@ -818,18 +717,6 @@
         "Electronic Arts"
       ],
       "reReleasers": [],
-      "status": "no-title-candidate"
-    },
-    {
-      "slug": "live-and-let-die",
-      "title": "Live And Let Die",
-      "year": 1988,
-      "publishers": [
-        "Domark"
-      ],
-      "reReleasers": [
-        "Encore"
-      ],
       "status": "no-title-candidate"
     },
     {
@@ -961,16 +848,6 @@
       "status": "manual-review"
     },
     {
-      "slug": "nebulus",
-      "title": "Nebulus",
-      "year": 1987,
-      "publishers": [
-        "Hewson"
-      ],
-      "reReleasers": [],
-      "status": "manual-review"
-    },
-    {
       "slug": "nemesis",
       "title": "Nemesis",
       "year": 1986,
@@ -999,28 +876,6 @@
       ],
       "reReleasers": [],
       "status": "no-title-candidate"
-    },
-    {
-      "slug": "nightbreed-the-action-game",
-      "title": "Nightbreed: The Action Game",
-      "year": 1990,
-      "publishers": [
-        "Ocean"
-      ],
-      "reReleasers": [
-        "The Hit Squad"
-      ],
-      "status": "no-title-candidate"
-    },
-    {
-      "slug": "ninja",
-      "title": "Ninja",
-      "year": 1986,
-      "publishers": [
-        "Mastertronic"
-      ],
-      "reReleasers": [],
-      "status": "manual-review"
     },
     {
       "slug": "ninja-massacre",
@@ -1181,16 +1036,6 @@
       "status": "no-title-candidate"
     },
     {
-      "slug": "roller-coaster-rumbler",
-      "title": "Roller Coaster Rumbler",
-      "year": 1989,
-      "publishers": [
-        "Tynesoft"
-      ],
-      "reReleasers": [],
-      "status": "no-title-candidate"
-    },
-    {
       "slug": "rtype",
       "title": "R-Type",
       "year": 1988,
@@ -1327,25 +1172,6 @@
       "status": "no-title-candidate"
     },
     {
-      "slug": "spy-vs-spy-2-the-island-caper",
-      "title": "Spy Vs Spy II: The Island Caper",
-      "year": 1985,
-      "publishers": [
-        "First Star Software"
-      ],
-      "reReleasers": [
-        "Avantage",
-        "Beyond",
-        "Databyte",
-        "EDOS",
-        "Hi-Tec Software",
-        "SoftExpress",
-        "Wicked Software",
-        "World Wide Software"
-      ],
-      "status": "no-title-candidate"
-    },
-    {
       "slug": "street-fighter",
       "title": "Street Fighter",
       "year": 1988,
@@ -1355,28 +1181,6 @@
       "reReleasers": [
         "Kixx"
       ],
-      "status": "no-title-candidate"
-    },
-    {
-      "slug": "strip-poker-a-sizzling-game-of-chance",
-      "title": "Strip Poker: A Sizzling Game Of Chance",
-      "year": 1984,
-      "publishers": [
-        "Artworx Software"
-      ],
-      "reReleasers": [
-        "Blue Ribbon"
-      ],
-      "status": "manual-review"
-    },
-    {
-      "slug": "super-pipeline",
-      "title": "Super Pipeline",
-      "year": 1983,
-      "publishers": [
-        "Taskset"
-      ],
-      "reReleasers": [],
       "status": "no-title-candidate"
     },
     {
@@ -1526,16 +1330,6 @@
       ],
       "reReleasers": [],
       "status": "no-title-candidate"
-    },
-    {
-      "slug": "the-sword-of-fargoal",
-      "title": "The Sword Of Fargoal",
-      "year": 1983,
-      "publishers": [
-        "Epyx"
-      ],
-      "reReleasers": [],
-      "status": "manual-review"
     },
     {
       "slug": "the-wombles",
