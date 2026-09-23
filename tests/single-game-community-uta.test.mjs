@@ -304,7 +304,13 @@ test("curated UTA overrides resolve the final independently verified catalogue g
     "spy-vs-spy-2-the-island-caper": [["3935", "re-release"], ["1987", "re-release"]],
     "joe-blade-2": [["6305", "publisher"]],
     "cops-n-robbers": [["2857", "publisher"]],
-    "give-my-regards-to-broad-street": [["8446", "publisher"]]
+    "give-my-regards-to-broad-street": [["8446", "publisher"]],
+    "720-degrees": [["729", "publisher"], ["20298", "publisher"], ["1257", "re-release"]],
+    "alcazar-the-forgotten-fortress": [["2616", "re-release"]],
+    "batman-the-movie": [["2245", "publisher"], ["2246", "publisher"], ["1447", "re-release"]],
+    "nightbreed-the-action-game": [["1544", "re-release"]],
+    "spartacus-the-swordslayer": [["2830", "publisher"]],
+    "v-the-computer-game": [["2651", "publisher"]]
   };
 
   for (const [slug, rows] of Object.entries(expected)) {
@@ -319,6 +325,15 @@ test("curated UTA overrides resolve the final independently verified catalogue g
     (overrides.games?.["spy-vs-spy-2-the-island-caper"]?.exclude || []).map((row) => String(row.archiveId)).sort(),
     ["681", "8959"]
   );
+});
+
+test("Batman The Movie source identity matches the verified 1989 C64 release", () => {
+  const games = JSON.parse(fs.readFileSync("games/games.json", "utf8"));
+  const batman = games.find((game) => game.slug === "batman-the-movie");
+  assert.ok(batman);
+  assert.equal(batman.year, 1989);
+  assert.deepEqual(batman.credits?.publisher, ["Ocean"]);
+  assert.deepEqual(batman.credits?.re_releaser, ["The Hit Squad"]);
 });
 
 test("committed UTA override registry has the expected schema and no duplicate archive IDs per game", () => {
