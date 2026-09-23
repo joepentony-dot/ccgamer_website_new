@@ -1,3 +1,11 @@
+## UTA live freshness #2295 rebuilt on merged R53 baseline — 23 September 2026
+
+- PR #2294 merged as `d0570158b71b155676365c9cb717ad8ab114bba2`; its exact-head Dungeon ATTACK/crowded-impact qualification is now part of `main`.
+- Draft PR #2295 / `codex/uta-live-runtime-freshness-20260923` was rebuilt directly on that new `main` rather than merging a 14-commit-behind branch.
+- Only the intended UTA scope was carried forward: browser revalidation of `/data/uta-game-matches.json` with `cache: "no-cache"`, public code cache `2026-09-23-public-code-v7`, and full committed-map/Gary Lineker regression coverage.
+- The older #2295-only natural-trap harness divergence was deliberately dropped; the merged #2294 exact-green trap/runtime baseline remains authoritative.
+- Require a new complete exact-head matrix on this rebuilt branch before merge. User authorisation to proceed in this order has already been given.
+
 ## Dungeon Carnage R53 ATTACK/crowded-impact candidate — 23 September 2026
 
 - Draft PR #2294 / branch `codex/dungeon-r53-attack-rail-current-main-20260923` is the active ATTACK-lockout/repeat-fire/crowded-impact candidate on top of the merged R53 global trap repair.

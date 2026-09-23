@@ -22,7 +22,7 @@
 
   function loadData() {
     if (!dataPromise) {
-      dataPromise = fetch(DATA_URL, { credentials: "same-origin", cache: "force-cache" })
+      dataPromise = fetch(DATA_URL, { credentials: "same-origin", cache: "no-cache" })
         .then(function (response) {
           if (!response.ok) throw new Error("UTA map HTTP " + response.status);
           return response.json();

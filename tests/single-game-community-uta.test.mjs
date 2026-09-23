@@ -403,6 +403,48 @@ test("seed mapping covers match, multiple releases, no-match and Amiga exclusion
   assert.equal(mapping.games.agony, undefined);
 });
 
+test("committed UTA mapping is wired into every mapped canonical C64 page", () => {
+  const games = JSON.parse(fs.readFileSync("games/games.json", "utf8"));
+  const mapping = JSON.parse(fs.readFileSync("data/uta-game-matches.json", "utf8"));
+  const audit = JSON.parse(fs.readFileSync("data/uta-audit.json", "utf8"));
+  const gamesBySlug = new Map(games.map((game) => [game.slug, game]));
+  const mappedEntries = Object.entries(mapping.games || {});
+
+  assert.equal(mappedEntries.length, audit.summary.matchedGames);
+
+  for (const [slug, record] of mappedEntries) {
+    const game = gamesBySlug.get(slug);
+    assert.ok(game, `${slug}: mapping must reference a current game record`);
+    assert.match(String(game.system || ""), /^(?:C64|Commodore 64)$/i, `${slug}: UTA mapping must remain C64-only`);
+    assert.ok(Array.isArray(record.releases) && record.releases.length > 0, `${slug}: mapping must contain at least one release`);
+
+    const pagePath = `games/${slug}/index.html`;
+    assert.ok(fs.existsSync(pagePath), `${slug}: canonical generated page must exist`);
+    const page = fs.readFileSync(pagePath, "utf8");
+    assert.match(page, /id="game-tape-archive-section"/, `${slug}: canonical page must contain the UTA mount`);
+    assert.match(page, /\/js\/ccg-uta-archive\.js/, `${slug}: canonical page must load the UTA runtime`);
+    assert.match(page, /\/js\/load-single-game\.js/, `${slug}: canonical page must load the game runtime`);
+    assert.ok(
+      page.indexOf("/js/ccg-uta-archive.js") < page.indexOf("/js/load-single-game.js"),
+      `${slug}: UTA listener must load before the game-loaded event owner`
+    );
+
+    for (const release of record.releases) {
+      assert.match(String(release.archiveId || ""), /^\d+$/, `${slug}: archive ID must be numeric`);
+      assert.match(
+        String(release.url || ""),
+        /^https:\/\/uta\.pokefinder\.org\/Ultimate_Tape_Archive\/.+\/$/,
+        `${slug}: release must point at the Ultimate Tape Archive`
+      );
+    }
+  }
+
+  assert.deepEqual(
+    mapping.games["gary-linekers-superstar-soccer"].releases.map((release) => release.archiveId),
+    ["5074", "1286"]
+  );
+});
+
 test("single-game community runtime uses compact aggregate/read RPCs and preserves write paths", () => {
   const ratings = fs.readFileSync("js/ccg-community-ratings.js", "utf8");
   const comments = fs.readFileSync("js/ccg-community-comments.js", "utf8");
@@ -461,6 +503,8 @@ test("shared template and runtime keep UTA C64-only and hidden without a confide
 
   assert.match(runtime, /if \(!game \|\| !isC64\(game\)\)/);
   assert.match(runtime, /loadData\(\)/);
+  assert.match(runtime, /cache:\s*"no-cache"/);
+  assert.doesNotMatch(runtime, /cache:\s*"force-cache"/);
   assert.ok(runtime.indexOf("if (!game || !isC64(game))") < runtime.indexOf("const data = await loadData()"));
   assert.match(runtime, /if \(!record\) \{/);
   assert.match(loader, /label: "Tape"/);
