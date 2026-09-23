@@ -1,3 +1,12 @@
+## Dungeon Carnage R54 graphics/UI overhaul — 23 September 2026
+
+- PR #2298 residual UTA reconciliation merged as `fcdca219ca06f1e00c19114ac142e4cbb1f46214`; R54 PR #2299 has been rebuilt from that current-main baseline.
+- R54 begins with Bronze Key HUD readability, literal mechanic/item pickup names, no second Bronze Key cost for a chest already gated by a Bronze door, established chest-sheet presentation, and synchronized Rulebook wording.
+- Subsequent R54 batches cover pickup/icon art, corridor presentation, NPC/shop character graphics, expanded renderer-owned animation states, lower message-rail/black-rectangle cleanup and obsolete ONLINE wording.
+- Preserve R53 ATTACK/FIRE/trap/performance owners; do not add per-entity animation timers or another render loop.
+- NPC dialogue and quest-content rewriting remain deferred until R54 is complete.
+- Exact-head CI and explicit user merge authorisation are required.
+
 ## UTA residual reconciliation rebuilt on current main — 23 September 2026
 
 - PR #2294 merged the qualified Dungeon Carnage R53 ATTACK/crowded-impact repair as `d0570158b71b155676365c9cb717ad8ab114bba2`.
