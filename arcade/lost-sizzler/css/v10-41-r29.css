@@ -319,9 +319,12 @@ body[data-run-active="true"][data-ccg-major-notification="true"] .ccg-game:fulls
     grid-template-rows:minmax(0,1fr) 20px!important;
   }
   body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail{
+    box-sizing:border-box!important;
     height:20px!important;min-height:20px!important;max-height:20px!important;
+    padding:0!important;
   }
   body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail #pickup-toast{
+    box-sizing:border-box!important;
     height:19px!important;min-height:19px!important;max-height:19px!important;
     padding:1px 8px!important;display:flex!important;flex-direction:row!important;
     align-items:center!important;justify-content:flex-start!important;gap:8px!important;
