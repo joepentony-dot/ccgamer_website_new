@@ -19,6 +19,15 @@
 - Qualification found and fixed three audit-path defects: 720-style numeric prefixes, apostrophes in double-quoted UTA hrefs, and Roman-numeral sequel-signature handling. Code head `4a7b9e6b374baeea6a9eaba3484b63ca40f3dc57` passed the focused UTA regression plus the full current-catalogue and deterministic-output stages; the documentation-inclusive head must complete the full matrix before merge.
 - Detailed record: [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md).
 
+## UTA curated release reconciliation — 23 September 2026
+
+- PR #2272 and generated-output PR #2273 are merged. The authoritative fresh scan now covers 370 of 559 C64 games, with 35 unmatched manual-review games and 154 games with no compatible title candidate across 2,890 scanned UTA releases.
+- Draft PR #2275 / branch `codex/uta-curated-release-reconciliation-20260923` adds a source-evidenced, game-slug + exact-archive-ID curation path for verified regional/re-release cassette relationships that are not yet represented in the game record.
+- Curated IDs do not create global publisher aliases: exact normalized title matching and the existing year safeguard remain mandatory, prefix/subtitle matches cannot be unlocked by curation, and approvals cannot apply to another game slug.
+- The first verified batch contains 12 C64 games / 13 UTA release IDs. Unsafe lookalikes remain excluded to manual review.
+- #2275 must complete exact-head qualification and still requires explicit user merge authorisation. After any merge, Reliable Games Publishing remains responsible for the authoritative live UTA rescan and generated-output merge.
+- Detailed record: [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md).
+
 ## How to use this record
 
 This is the repository-level index for Codex continuation. Read it before making a change, then read the applicable `docs/ai-work/*.md` file before working in that area. Treat it as a dated checkpoint, not a substitute for a fresh live GitHub review when the repository may have moved.
