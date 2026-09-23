@@ -117,11 +117,26 @@ async function fetchText(url) {
   }
 }
 
-function archiveIdsInIndex(html) {
-  const ids = new Set();
-  const pattern = /(?:\\[|%5[bB])(\\d+)(?:\\]|%5[dD])/g;
-  for (const match of String(html || "").matchAll(pattern)) ids.add(match[1]);
-  return ids;
+function releaseDirectoriesInIndex(html) {
+  const directories = [];
+  const hrefPattern = /href=(["'])(.*?)\1/gi;
+  let match;
+
+  while ((match = hrefPattern.exec(String(html || "")))) {
+    const href = String(match[2] || "");
+    if (!href || href === "../" || href.startsWith("?") || href.startsWith("#")) continue;
+
+    try {
+      const absolute = new URL(href, UTA_INDEX_URL);
+      const segment = absolute.pathname.split("/").filter(Boolean).pop() || "";
+      const decoded = decodeURIComponent(segment);
+      if (/_\[\d+\]$/i.test(decoded)) directories.push(decoded);
+    } catch (_error) {
+      // Malformed non-release links are irrelevant to the archive count.
+    }
+  }
+
+  return directories;
 }
 
 function markdownTable(headers, rows) {
@@ -145,17 +160,23 @@ async function main() {
     : { schemaVersion: 1, games: {} };
 
   const html = await fetchText(UTA_INDEX_URL);
-  const indexArchiveIds = archiveIdsInIndex(html);
+  const indexReleaseDirectories = releaseDirectoriesInIndex(html);
   const releases = parseUtaIndex(html);
   if (releases.length < 2800) {
     throw new Error(`UTA audit parsed only ${releases.length} releases; refusing incomplete audit.`);
   }
-  if (indexArchiveIds.size && releases.length !== indexArchiveIds.size) {
-    const parsedIds = new Set(releases.map((release) => String(release.archiveId)));
-    const missingIds = [...indexArchiveIds].filter((id) => !parsedIds.has(id));
+  if (indexReleaseDirectories.length && releases.length !== indexReleaseDirectories.length) {
+    const parsedUrls = new Set(releases.map((release) => {
+      try {
+        return decodeURIComponent(new URL(release.url).pathname.split("/").filter(Boolean).pop() || "");
+      } catch (_error) {
+        return "";
+      }
+    }));
+    const missingDirectories = indexReleaseDirectories.filter((directory) => !parsedUrls.has(directory));
     throw new Error(
-      `UTA parser coverage mismatch: parsed ${releases.length} of ${indexArchiveIds.size} archive IDs; ` +
-      `unparsed IDs: ${missingIds.slice(0, 25).join(", ")}`
+      `UTA parser coverage mismatch: parsed ${releases.length} of ${indexReleaseDirectories.length} release directories; ` +
+      `unparsed directories: ${missingDirectories.slice(0, 25).join(", ")}`
     );
   }
 
@@ -371,7 +392,11 @@ async function main() {
   const summary = {
     auditedAt: new Date().toISOString(),
     source: UTA_INDEX_URL,
-    utaArchiveIdsSeen: indexArchiveIds.size,
+    utaReleaseDirectoriesSeen: indexReleaseDirectories.length,
+    utaUniqueNonZeroArchiveIds: new Set(
+      releases.filter((release) => String(release.archiveId) !== "0").map((release) => String(release.archiveId))
+    ).size,
+    utaZeroIdDirectories: releases.filter((release) => String(release.archiveId) === "0").length,
     utaReleasesParsed: releases.length,
     gamesTotal: games.length,
     c64Games: c64Games.length,
