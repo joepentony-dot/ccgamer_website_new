@@ -12,6 +12,9 @@
     directAttackErrors:0,
     staleStunRepairs:0,
     persistentFireBlockRepairs:0,
+    finiteCooldownRepairs:0,
+    finiteStunRepairs:0,
+    meleeAttackRepairs:0,
     controlLockRepairs:0,
     staleModeRecoveries:0,
     dossierKeyboardCloses:0,
@@ -30,6 +33,7 @@
   const CURSOR_IDLE_MS=1600;
   let cursorTimer=0,lastDoorTick=performance.now(),capturedR1FireOwner=null,presentationResumeObserver=null;
   let failedFireIntentSince=0,failedFireIntentCount=0;
+  const finiteAttackWatch={fire:null,fireSince:0,stun:null,stunSince:0};
 
   const panelVisible=id=>{const node=document.getElementById(id);return Boolean(node&&!node.classList.contains("hidden"))};
   const currentMode=()=>{try{return typeof mode!=="undefined"?String(mode):""}catch(_){return""}};
@@ -140,8 +144,16 @@
 
   function recoverOrphanedGameplayMode(){
     if(!activeRun())return false;
-    const stale=(currentMode()==="dossier"&&!panelVisible("named-dossier-panel"))||(currentMode()==="inventory"&&!panelVisible("inventory-panel"))||(currentMode()==="shop"&&!panelVisible("shop-panel"));
-    if(stale){try{mode="playing";diagnostics.staleModeRecoveries++}catch(_){} }
+    const state=currentMode();
+    const panelForMode={
+      dossier:"named-dossier-panel",
+      inventory:"inventory-panel",
+      shop:"shop-panel",
+      paused:"pause",
+      "level-up":"level-up"
+    };
+    const panelId=panelForMode[state];
+    if(panelId&&!panelVisible(panelId)){try{mode="playing";diagnostics.staleModeRecoveries++}catch(_){}}
     return currentMode()==="playing";
   }
 
@@ -157,14 +169,40 @@
     return capturedR1FireOwner
   }
 
+  function repairFiniteAttackBlock(player){
+    if(!player)return false;
+    const now=performance.now();
+    let repaired=false;
+    try{
+      const fire=Number(fire1||0);
+      if(Number.isFinite(fire)&&fire>0&&fire<=2500){
+        if(finiteAttackWatch.fire===null||Math.abs(fire-finiteAttackWatch.fire)>.5){
+          finiteAttackWatch.fire=fire;finiteAttackWatch.fireSince=now;
+        }else if(now-finiteAttackWatch.fireSince>900){
+          fire1=0;finiteAttackWatch.fire=null;finiteAttackWatch.fireSince=now;diagnostics.finiteCooldownRepairs++;repaired=true;
+        }
+      }else{finiteAttackWatch.fire=null;finiteAttackWatch.fireSince=now}
+    }catch(_){}
+    try{
+      const stun=Number(player.hitStunMs||0),lastHurt=Number(player.__ccgLastHurtAt||0),expected=Math.max(1,Number(window.CCG_CONFIG?.player?.hitStunMs||180)),freshDamage=Number.isFinite(lastHurt)&&lastHurt>0&&now-lastHurt<=Math.max(540,expected*3);
+      if(Number.isFinite(stun)&&stun>0&&stun<=5000&&!freshDamage){
+        if(finiteAttackWatch.stun===null||Math.abs(stun-finiteAttackWatch.stun)>.5){
+          finiteAttackWatch.stun=stun;finiteAttackWatch.stunSince=now;
+        }else if(now-finiteAttackWatch.stunSince>900){
+          player.hitStunMs=0;finiteAttackWatch.stun=null;finiteAttackWatch.stunSince=now;diagnostics.finiteStunRepairs++;repaired=true;
+        }
+      }else{finiteAttackWatch.stun=null;finiteAttackWatch.stunSince=now}
+    }catch(_){}
+    return repaired
+  }
+
   function repairAttackBoundary(){
-    try{window.CCGLostSizzlerV142R18SoloPlaytestStability?.repairAttackLiveness?.("r20-input")}catch(_){}
     try{window.CCGLostSizzlerV142R1Stability?.repairCombatTimers?.()}catch(_){}
     try{window.CCGLostSizzlerV142R1Stability?.repairProjectilePool?.()}catch(_){}
     try{
-      if(!Number.isFinite(Number(fire1))||Number(fire1)<0||Number(fire1)>5000)fire1=0;
+      if(!Number.isFinite(Number(fire1))||Number(fire1)<0||Number(fire1)>2500){fire1=0;diagnostics.finiteCooldownRepairs++}
       if(!Number.isFinite(Number(fireBuffer1))||Number(fireBuffer1)<0||Number(fireBuffer1)>2500)fireBuffer1=0;
-      if(!Number.isFinite(Number(projectileCD))||Number(projectileCD)<0||Number(projectileCD)>1000)projectileCD=0;
+      if(!Number.isFinite(Number(projectileCD))||Number(projectileCD)<0||Number(projectileCD)>140)projectileCD=0;
       const player=p1||null;
       if(player){
         if(player.controlLocked){player.controlLocked=false;diagnostics.controlLockRepairs++}
@@ -190,13 +228,13 @@
     try{return (bullets||[]).filter(projectile=>projectile?.ttl>0&&(!player?.id||projectile.owner===player.id)).length}catch(_){return 0}
   }
 
-  function shotCompleted(player,beforeMana,beforeBullets){
-    const mana=Math.max(0,Number(player?.mana)||0);
-    return mana<beforeMana||activePlayerBulletCount(player)>beforeBullets
+  function attackCompleted(player,beforeMana,beforeBullets,beforeMelee,result){
+    const mana=Math.max(0,Number(player?.mana)||0),melee=Number(player?._meleeSwingAt||0);
+    return result===true||mana<beforeMana||activePlayerBulletCount(player)>beforeBullets||melee>beforeMelee
   }
 
-  function recoverPersistentFireBlock(player,direction,beforeMana,beforeBullets){
-    if(!player||currentMode()!=="playing"||Math.max(0,Number(player.mana)||0)<=0)return false;
+  function recoverPersistentFireBlock(player,direction,beforeMana,beforeBullets,beforeMelee){
+    if(!player||currentMode()!=="playing"||player.firearmUnlocked===false||!player.weapon||Math.max(0,Number(player.mana)||0)<=0)return false;
     let cd=0;try{cd=Number(fire1||0)}catch(_){}
     if(Number.isFinite(cd)&&cd>0)return false;
     const weapon=player.weapon||{};
@@ -214,10 +252,10 @@
     try{fire1=0;fireBuffer1=0}catch(_){}
     diagnostics.persistentFireBlockRepairs++;
 
-    const owner=deepestFireOwner()||captureR1FireOwner()||(typeof firePlayer==="function"?firePlayer:null);
-    if(typeof owner!=="function")return false;
-    try{owner(player,direction)}catch(_){diagnostics.directAttackErrors++;return false}
-    const fired=shotCompleted(player,beforeMana,beforeBullets);
+    if(typeof firePlayer!=="function")return false;
+    let result=false;
+    try{result=firePlayer(player,direction)}catch(_){diagnostics.directAttackErrors++;return false}
+    const fired=attackCompleted(player,beforeMana,beforeBullets,beforeMelee,result);
     if(fired){failedFireIntentSince=0;failedFireIntentCount=0}
     return fired
   }
@@ -226,50 +264,28 @@
     if(!activeRun()||!recoverOrphanedGameplayMode())return false;
     let player=null;try{player=p1}catch(_){}
     if(!player)return false;
+    repairFiniteAttackBlock(player);
     repairAttackBoundary();
-    try{input?.add?.(code)}catch(_){}
     const beforeMana=Math.max(0,Number(player.mana)||0);
     const beforeBullets=activePlayerBulletCount(player);
+    const beforeMelee=Number(player._meleeSwingAt||0);
     const direction=typeof attackDirection==="function"?attackDirection(player):player.dir;
-    let fired=false;
+    let fired=false,result=false;
 
-    const r1Owner=captureR1FireOwner();
-    if(typeof r1Owner==="function"){
+    if(typeof firePlayer==="function"){
       try{
-        repairAttackBoundary();
-        r1Owner(player,direction);
-        fired=shotCompleted(player,beforeMana,beforeBullets);
-        if(fired)diagnostics.capturedR1Shots++;
+        result=firePlayer(player,direction);
+        fired=attackCompleted(player,beforeMana,beforeBullets,beforeMelee,result);
+        if(fired&&Number(player._meleeSwingAt||0)>beforeMelee)diagnostics.meleeAttackRepairs++;
+        if(fired&&captureR1FireOwner())diagnostics.capturedR1Shots++;
       }catch(_){diagnostics.directAttackErrors++}
     }
 
-    if(!fired){
-      try{
-        if(typeof firePlayer==="function"&&firePlayer!==r1Owner){
-          repairAttackBoundary();
-          firePlayer(player,direction);
-          fired=shotCompleted(player,beforeMana,beforeBullets);
-        }
-      }catch(_){diagnostics.directAttackErrors++}
-    }
-
-    if(!fired){
-      const fallback=deepestFireOwner();
-      if(fallback&&fallback!==firePlayer&&fallback!==r1Owner){
-        try{
-          repairAttackBoundary();
-          fallback(player,direction);
-          fired=shotCompleted(player,beforeMana,beforeBullets);
-          if(fired)diagnostics.directAttackFallbacks++;
-        }catch(_){diagnostics.directAttackErrors++}
-      }
-    }
-
-    if(!fired)fired=recoverPersistentFireBlock(player,direction,beforeMana,beforeBullets);
+    if(!fired)fired=recoverPersistentFireBlock(player,direction,beforeMana,beforeBullets,beforeMelee);
 
     if(fired){
       failedFireIntentSince=0;failedFireIntentCount=0;
-      try{fireBuffer1=0;input?.delete?.(code)}catch(_){}
+      try{fireBuffer1=0}catch(_){}
       diagnostics.directAttackRepairs++;
     }else{
       let queued=false;
