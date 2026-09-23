@@ -1,8 +1,16 @@
 ## R54 graphics/UI implementation checkpoint — 23 September 2026
 
-PR #2299 / `codex/dungeon-r54-graphics-ui-overhaul-20260923` is the current presentation/mechanics follow-up rebuilt from main after #2298. The first bounded batch owns Bronze Key HUD readability, pickup naming/feedback, Bronze-door chest cost semantics, established chest sprite presentation and matching Rulebook text. It must not change R53 combat/trap ownership or introduce extra simulation/render timers.
+Draft PR #2302 / `codex/dungeon-r54-graphics-ui-overhaul-20260923` is the active R54 implementation vehicle. Original scoping PR #2299 closed unmerged when its branch briefly matched `main`. Candidate identity is **V10.42 r54 / 20260923r54**.
 
-Later R54 batches will handle richer pickup art, corridor presentation, NPC/shop character graphics, expanded renderer-owned character/enemy animation, the lower message-rail/black-rectangle presentation issue, and obsolete ONLINE wording. Dialogue/quest-content expansion is intentionally later.
+Implemented mechanics/presentation are bounded to the requested follow-up: Bronze Key HUD readability; literal pickup feedback with actual generated weapon names; one-key ownership for a Bronze-door reward chest; authored chest-sheet presentation; richer pickup glyphs; deterministic, nonblocking biome-specific corridor detail; named merchant character sprites; and expanded renderer-owned player/enemy animation. Player movement/melee/firearm/hurt presentation and enemy idle/move/attack/hit/defeat presentation derive from existing state plus timestamps and run through the established renderer. Enemy defeat snapshots are bounded; no new RAF, per-entity interval or simulation cadence is introduced.
+
+The lower report rail is also repaired. Desktop and compact layouts reserve readable notice space outside the canvas, text wraps/scrolls rather than clipping, and the major-notice owner is inserted ahead of the routine pickup card while suppressing that routine card's layout footprint for the duration. This addresses the reported obscured important notices / large dark rectangle without returning alerts to an overlay over gameplay.
+
+The canonical public HTML and zero-server release note contain no retired `ONLINE room code remains your rejoin key` guidance. Dormant networking compatibility internals are left intact rather than removed as presentation cleanup.
+
+Static qualification caught stale assertions for the old pickup diagnostic signature and old two-frame player animation. Those tests are being reconciled to the intentional R54 contracts, not weakened. The branch currently predates generated-output #2301 by one commit, so a fresh current-main rebuild/reconciliation and complete exact-head matrix are mandatory before merge. R53 combat/trap/performance ownership remains protected.
+
+NPC dialogue rewriting and individual quest-content expansion remain the next phase after R54.
 
 ## R53 ATTACK liveness and crowded-impact qualification — 23 September 2026
 
