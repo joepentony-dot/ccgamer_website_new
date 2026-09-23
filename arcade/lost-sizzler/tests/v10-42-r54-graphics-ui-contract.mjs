@@ -14,6 +14,7 @@ const play=read("js/game-play.js");
 const ai=read("js/ai.js");
 const local=read("js/game-local-runtime.js");
 const render=read("js/game-render.js");
+const landing=read("js/v10-41-landing-notification-polish.js");
 
 assert.match(html,/preload" as="image" href="assets\/pixel\/chest-sheet-v10-34\.png\?v=20260824r8"/,"the authored chest sheet must be preloaded");
 assert.match(html,/id="hud-bronze">BRONZE 0<\/strong>/,"the critical HUD must name the Bronze Key count explicitly");
@@ -89,6 +90,16 @@ assert.match(render,/const enemyDefeatVisuals=\[\]/,"enemy defeat frames must re
 assert.match(render,/if\(enemyDefeatVisuals\.length>12\)/,"defeat snapshots must remain bounded");
 assert.match(render,/drawEnemyDefeatVisuals\(\)/,"defeat poses must participate in the existing render pass");
 assert.match(local,/window\.CCGQueueEnemyDefeatVisual\?\.\(p\)/,"existing enemy FX must feed the renderer-owned defeat sequence");
+
+assert.match(css,/\/\* R54 message-rail repair\./,"R54 must own the final notice-rail layout");
+assert.match(css,/@media\(max-width:820px\)\{[\s\S]*?\.game-message-rail\{[\s\S]*?display:block!important/,"compact layouts must keep the message rail visible below the canvas");
+assert.match(css,/\.game-message-rail \.pickup-toast span\{[\s\S]*?white-space:normal!important;[\s\S]*?overflow:auto!important/,"notice copy must wrap/scroll rather than disappear behind the dark rail");
+assert.match(landing,/rail\.insertBefore\(panel,pickup\)/,"major notices must occupy the message rail before the ordinary pickup slot");
+assert.match(landing,/body\[data-ccg-major-notification="true"\] #pickup-toast\{display:none!important/,"major notices must release the ordinary toast's layout space");
+assert.match(landing,/\.major-copy span\{[^}]*white-space:normal;[^}]*overflow:auto/,"major notice copy must remain readable when long");
+assert.doesNotMatch(html,/ONLINE room code remains your rejoin key/i,"retired online rejoin wording must not return to the public page");
+assert.doesNotMatch(html,/rejoin key/i,"public Dungeon Carnage HTML must not advertise a retired rejoin key");
+
 
 
 console.log("PASS V10.42 R54 graphics/UI and animation contract");
