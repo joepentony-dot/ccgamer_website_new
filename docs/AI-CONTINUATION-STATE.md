@@ -1,3 +1,11 @@
+## Dungeon Carnage R54 automatic trap-failure capture — 23 September 2026
+
+Live R53 testing shows both SHOCK and FIRE floor traps can display ACTIVE while failing to remove HEALTH. A repository-wide active-path audit found one ordinary trap collection (`host.traps`) but several overlapping historical owners/renderers acting on it: core trigger/render, V10.15 trap contact + duplicate reliable rendering, R56, R57, R19, R20, and environmental hurtPlayer wrappers. Spy/Saboteurs traps and dedicated hazard rooms are separate isolated systems.
+
+Branch `codex/dungeon-r54-trap-walk-diagnostics-20260923` adds observation-only trap walking diagnostics to the existing bug reporter. Every ordinary trap crossing is sampled at 40 ms, active contacts are verified after 220 ms, and a missing 1 HP loss automatically records `ANOMALY_ACTIVE_TRAP_NO_DAMAGE` with the exact trap clock, contact latches, per-kind R19 counters and damage/trigger owner chains. It also detects duplicate trap objects sharing one tile.
+
+The diagnostic is deliberately non-owning: it does not replace movement, update, triggerTrap, hurtPlayer or rendering. Candidate identity is **V10.42 r54 / 20260923r54**. Qualify and merge before the next live reproduction so the resulting bug report can identify which retained trap owner failed.
+
 ## Dungeon Carnage R53 global floor-trap reliability — 23 September 2026
 
 - New owner playtest evidence on deployed R52 shows a visibly **SHOCK TRAP — ACTIVE** tile can leave HEALTH unchanged.
