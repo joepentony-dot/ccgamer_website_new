@@ -259,6 +259,33 @@ test("curated exact archive IDs approve verified releases without weakening titl
   ));
 });
 
+test("curated semantic title aliases remain archive-ID scoped", () => {
+  const releases = parseUtaIndex(`
+<a href="Australian_Games_(1990_ERBE_Software)_[20824]/">Australian Games ERBE</a>
+<a href="Australian_Games_(1990_Random_Label)_[20825]/">Australian Games random</a>
+`);
+  const game = {
+    system: "C64",
+    slug: "aussie-games",
+    title: "Aussie Games",
+    year: 1989,
+    credits: { publisher: ["Mindscape"], re_releaser: [] }
+  };
+  const curated = parseCuratedApprovals({
+    entries: [{
+      gameSlug: "aussie-games",
+      archiveIds: ["20824"],
+      titleAliases: ["Australian Games"]
+    }]
+  });
+  const result = buildUtaMapping([game], releases, curated);
+
+  assert.deepEqual(result.mapping.games["aussie-games"].releases.map((row) => row.archiveId), ["20824"]);
+  assert.equal(result.mapping.games["aussie-games"].releases[0].titleMatch, "curated-title-alias");
+  assert.equal(result.mapping.games["aussie-games"].releases[0].sourceRole, "verified-release");
+  assert.ok(!result.mapping.games["aussie-games"].releases.some((row) => row.archiveId === "20825"));
+});
+
 test("curated approvals remain scoped to the named game slug", () => {
   const releases = parseUtaIndex(`
 <a href="Karateka_(1985_Ariolasoft)_[2866]/">Karateka Ariolasoft</a>
