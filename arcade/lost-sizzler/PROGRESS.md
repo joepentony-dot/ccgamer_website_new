@@ -1,3 +1,12 @@
+## R54 graphics/UI overhaul — 23 September 2026
+
+- **Active branch / PR:** `codex/dungeon-r54-graphics-ui-overhaul-20260923` / #2299, rebuilt from current `main` after qualified residual UTA PR #2298 merged as `fcdca219ca06f1e00c19114ac142e4cbb1f46214`.
+- First implementation batch: Bronze Key HUD readability, literal pickup feedback, Bronze-door chest key ownership, and established chest-sheet presentation.
+- Later R54 batches remain: upgraded item/pickup graphics, corridor presentation, character graphics for shops/NPCs, expanded renderer-owned player/enemy animation, lower-rail/black-rectangle presentation cleanup, obsolete ONLINE wording cleanup, and Rulebook synchronization throughout.
+- Preserve the merged R53 ATTACK/FIRE/trap/performance ownership. Do not add per-entity timers or a second render loop.
+- NPC dialogue rewriting and individual quest-content expansion remain the next phase after R54.
+- Exact-head qualification and explicit user merge authorisation remain mandatory.
+
 ## LIVE INCIDENT — global active floor-trap cycle reliability — 23 September 2026
 
 - **Active candidate:** `codex/dungeon-r53-global-trap-reliability-20260923`, created from current `main` after the owner reproduced a visibly **SHOCK TRAP — ACTIVE** tile that did not remove HEALTH.
