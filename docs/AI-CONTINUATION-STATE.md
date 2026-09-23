@@ -1,3 +1,11 @@
+## Dungeon Carnage R53 ATTACK/crowded-impact candidate — 23 September 2026
+
+- Draft PR #2294 / branch `codex/dungeon-r53-attack-rail-current-main-20260923` is the active ATTACK-lockout/repeat-fire/crowded-impact candidate on top of the merged R53 global trap repair.
+- It recognises established melee swing work as a completed fresh attack, preserves real held-fire behaviour, recovers only stale finite combat blocks, keeps major notices in the lower rail, and bounds redundant projectile-impact presentation under effect pressure without suppressing damage or knockback.
+- Initial qualification on code head `3530a77d2ea2045cffb7304e22f253a31eb78a21` found the new >3-minute desktop soak using an invalid fixture: it renamed/teleported a generated enemy, which later returned to its canonical coordinates before the damage assertion. Commit `8c65b5fbffb48cc08d20b5c31c7bea253aa57889` changes only the test to preserve a normal generated enemy at its real location and move the player beside it.
+- The same qualification also saw an external YouTube API 403 in SEO Automation and one desktop-1440 mouse-wheel video stall. Neither is assigned to the Dungeon runtime without fresh exact-head evidence.
+- Keep #2294 draft. Require current-main freshness plus the complete exact-head GitHub Actions matrix before merge, and merge only with explicit user authorisation.
+
 ## Dungeon Carnage R53 global floor-trap reliability — 23 September 2026
 
 - New owner playtest evidence on deployed R52 shows a visibly **SHOCK TRAP — ACTIVE** tile can leave HEALTH unchanged.
