@@ -322,6 +322,9 @@ body[data-run-active="true"][data-ccg-major-notification="true"] .ccg-game:fulls
   body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail #ccg-major-notification[data-visible="true"] .major-copy{grid-column:2!important;grid-row:1!important;align-self:center!important;min-width:0!important;width:100%!important}
   body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail #ccg-major-notification[data-visible="true"] .major-copy b,
   body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail #ccg-major-notification[data-visible="true"] .major-copy span{width:100%!important;text-align:left!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
+  body[data-run-active="true"][data-ccg-major-notification="true"] .ccg-game .v102-game-area .game-message-rail #pickup-toast{
+    display:none!important;visibility:hidden!important;opacity:0!important
+  }
 }
 
 /* Short landscape viewports still keep the message rail below the dungeon,
