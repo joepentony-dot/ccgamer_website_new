@@ -42,13 +42,16 @@
 
 ## UTA games.json residual reconciliation — 23 September 2026
 
-- Active branch: `codex/uta-games-json-residual-reconciliation-20260923`, based on post-#2278 main `16a30183b40d3698564458401d309f385261e2f6`.
-- The 164 residual unmatched C64 records are being checked against the original `games/games.json` identity rather than accepting title similarity alone.
-- Thirteen additional same-game pages / fifteen cassette releases are currently source-verified: Action Biker [6254], Barbarian II [5918], Boulder Dash [411], Dragon's Lair II [395], International Soccer [3215], Leader Board [6678], Live and Let Die [2954], Nebulus [6721], Nightbreed [1544], Ninja [2849], Spy vs Spy II [3935] plus HiTEC [1987], Strip Poker [7489]/[513], and Sword of Fargoal [7724]. The curated file adds 13 games / 14 IDs; Spy vs Spy II [1987] should match automatically from existing Hi-Tec re-release evidence.
+- Active branch: `codex/uta-games-json-residual-reconciliation-20260923`, continuing from the authoritative post-#2278 395/559 mapping baseline.
+- The 164 residual unmatched C64 records are now explicitly classified in `data/uta-residual-review-2026-09-23.json`; regression coverage requires every baseline unmatched slug to appear exactly once.
+- Current classification: 16 verified additional tape pages / 19 releases; 4 catalogue-metadata corrections; 11 different-C64-version/game collisions; 133 records with no verified compatible UTA directory. The last category does not imply that no commercial cassette existed.
+- Verified additions now include Action Biker [6254], Barbarian II [5918], Boulder Dash [411], By Fair Means or Foul / Pro Boxing Simulator [2952], Dragon's Lair II [395]/[5078], Give My Regards to Broad Street [8446], International Soccer [3215], Leader Board [6678], Live and Let Die [2954], Nebulus [6721], Nightbreed [1544], Ninja [2849], Spy vs Spy II [3935] plus automatic HiTEC [1987], Strip Poker [7489]/[513], Super Pipeline / Pipeline [6490], and Sword of Fargoal [7724].
+- The curated evidence file now contains 31 games / 34 curated IDs in total. Semantic aliases remain scoped by game slug plus exact UTA archive ID.
 - A parser defect was found: UTA archive IDs are not globally unique. [1987] is used by both Solomon's Key / ERBE and Spy vs Spy II / HiTEC. The generator now de-duplicates by UTA directory URL instead of bare archive ID, with regression coverage preserving both distinct directories.
-- The audit rejects same-name false positives where `games.json` represents another conversion, including the 1989 Mindscape After Burner and 1991 Ocean cartridge Double Dragon.
-- B.C. II: Grog's Revenge, Nemesis and Smash T.V. are source-data repair candidates rather than override candidates and are intentionally not changed on this branch. Ninja Massacre / EDOS remains excluded pending independent C64-specific evidence.
-- `data/uta-curated-release-overrides.json` is now an explicit trigger for both Phase 6B and Reliable Games Publishing, so future curated UTA evidence updates automatically enter the validation/publishing flow.
+- The audit rejects false joins where `games.json` represents another conversion/game, including After Burner, Double Dragon, Donkey Kong, Blockbusters, Crossfire and other same-name collisions.
+- B.C. II: Grog's Revenge, Nemesis, Smash T.V. and the combined Kane & Kane 2 record are source-data repair candidates rather than override candidates. Ninja has a valid UTA mapping but still has a secondary publisher-field cleanup item. Ninja Massacre / EDOS remains a medium-confidence exclusion pending independent C64-specific evidence.
+- If the 16 verified new pages materialise in the authoritative refresh, provisional coverage becomes 411/559 matched with 148 unmatched. Do not treat those counts as authoritative until the live UTA publishing scan completes.
+- `data/uta-curated-release-overrides.json` explicitly triggers both Phase 6B and Reliable Games Publishing so future curated evidence updates enter validation/publishing automatically.
 - This branch does not modify `games/games.json`. Exact-head qualification and explicit user merge authorisation remain required.
 - Detailed record: [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md).
 
