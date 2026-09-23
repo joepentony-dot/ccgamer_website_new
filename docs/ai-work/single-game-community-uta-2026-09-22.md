@@ -1,3 +1,11 @@
+## PR #2295 current-main rebuild after #2294 merge — 23 September 2026
+
+PR #2294 merged first as authorised. That moved `main` ahead of the previously-qualified #2295 head and made the old branch diverged/non-mergeable. #2295 has therefore been rebuilt on the new `main` while preserving the existing PR.
+
+The rebuilt scope is intentionally narrower than the old divergent head: it carries only the UTA production fix (`cache: "no-cache"` for the stable generated mapping URL), the required public-code cache bump, and the catalogue-wide/Gary Lineker regression coverage. The temporary #2295-only natural-trap fixture modification is not carried forward because #2294's merged exact-green Dungeon baseline now owns that shared test area.
+
+A fresh exact-head GitHub Actions matrix is mandatory before #2295 can merge.
+
 ## Active full-catalogue UTA follow-up — PR #2262
 
 The Wonder Boy publish exposed a source-data error and a completion-reporting hole. Its source record said 1979 even though the description and verified C64 release are 1987; that caused UTA archive [6764] (Activision, 1987) to be rejected on year compatibility while [1677] (Hit Squad, 1991) remained visible.
