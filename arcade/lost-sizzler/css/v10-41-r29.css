@@ -347,3 +347,167 @@ body[data-run-active="true"][data-ccg-major-notification="true"] .ccg-game:fulls
     padding:1px 4px!important;
   }
 }
+
+
+/* R51 LIVE DEFECT GUARD — lower-rail icon/text separation */
+@media(min-width:821px){
+  body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail>#pickup-toast,
+  body[data-run-active="true"] .ccg-game:fullscreen>.game-area>.game-message-rail>#pickup-toast{
+    box-sizing:border-box!important;
+    display:grid!important;
+    grid-template-columns:52px minmax(0,1fr)!important;
+    grid-template-rows:minmax(0,1fr)!important;
+    column-gap:12px!important;
+    align-items:center!important;
+    justify-items:stretch!important;
+    width:100%!important;
+    padding:6px 14px!important;
+    text-align:left!important;
+  }
+  body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail>#pickup-toast>.pickup-toast-icon,
+  body[data-run-active="true"] .ccg-game:fullscreen>.game-area>.game-message-rail>#pickup-toast>.pickup-toast-icon{
+    position:static!important;
+    grid-column:1!important;
+    grid-row:1!important;
+    place-self:center!important;
+    box-sizing:border-box!important;
+    width:44px!important;
+    min-width:44px!important;
+    max-width:44px!important;
+    height:44px!important;
+    min-height:44px!important;
+    max-height:44px!important;
+    margin:0!important;
+    transform:none!important;
+    overflow:hidden!important;
+  }
+  body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail>#pickup-toast>.pickup-toast-copy,
+  body[data-run-active="true"] .ccg-game:fullscreen>.game-area>.game-message-rail>#pickup-toast>.pickup-toast-copy{
+    grid-column:2!important;
+    grid-row:1!important;
+    box-sizing:border-box!important;
+    min-width:0!important;
+    width:100%!important;
+    height:100%!important;
+    margin:0!important;
+    padding:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    justify-content:center!important;
+    overflow:hidden!important;
+  }
+  body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail>#pickup-toast>.pickup-toast-copy>b,
+  body[data-run-active="true"] .ccg-game:fullscreen>.game-area>.game-message-rail>#pickup-toast>.pickup-toast-copy>b{
+    width:auto!important;
+    max-width:100%!important;
+    margin:0 0 3px!important;
+    font-size:11px!important;
+    line-height:1.08!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    text-align:left!important;
+  }
+  body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail>#pickup-toast>.pickup-toast-copy>span,
+  body[data-run-active="true"] .ccg-game:fullscreen>.game-area>.game-message-rail>#pickup-toast>.pickup-toast-copy>span{
+    width:auto!important;
+    max-width:100%!important;
+    margin:0!important;
+    font-size:9px!important;
+    line-height:1.28!important;
+    white-space:normal!important;
+    overflow:hidden!important;
+    text-overflow:clip!important;
+    display:block!important;
+    text-align:left!important;
+  }
+
+  body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail>#ccg-major-notification,
+  body[data-run-active="true"] .ccg-game:fullscreen>.game-area>.game-message-rail>#ccg-major-notification{
+    box-sizing:border-box!important;
+    grid-template-columns:52px minmax(0,1fr)!important;
+    grid-template-rows:minmax(0,1fr)!important;
+    column-gap:12px!important;
+    align-items:center!important;
+    width:100%!important;
+    height:73px!important;
+    min-height:73px!important;
+    max-height:73px!important;
+    padding:6px 14px!important;
+    overflow:hidden!important;
+  }
+  body[data-run-active="true"] .game-message-rail>#ccg-major-notification>.major-icon{
+    grid-column:1!important;
+    grid-row:1!important;
+    place-self:center!important;
+    width:44px!important;
+    height:44px!important;
+    margin:0!important;
+  }
+  body[data-run-active="true"] .game-message-rail>#ccg-major-notification>.major-copy{
+    grid-column:2!important;
+    grid-row:1!important;
+    min-width:0!important;
+    width:100%!important;
+    overflow:hidden!important;
+  }
+  body[data-run-active="true"] .game-message-rail>#ccg-major-notification>.major-copy>b{
+    margin:0 0 3px!important;
+    font-size:11px!important;
+    line-height:1.08!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  body[data-run-active="true"] .game-message-rail>#ccg-major-notification>.major-copy>span{
+    margin:0!important;
+    font-size:9px!important;
+    line-height:1.28!important;
+    white-space:normal!important;
+    overflow:hidden!important;
+  }
+}
+
+@media(min-width:821px) and (max-height:500px){
+  body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail>#pickup-toast,
+  body[data-run-active="true"] .ccg-game:fullscreen>.game-area>.game-message-rail>#pickup-toast,
+  body[data-run-active="true"] .ccg-game .v102-game-area .game-message-rail>#ccg-major-notification,
+  body[data-run-active="true"] .ccg-game:fullscreen>.game-area>.game-message-rail>#ccg-major-notification{
+    grid-template-columns:minmax(0,1fr)!important;
+    column-gap:0!important;
+    height:19px!important;
+    min-height:19px!important;
+    max-height:19px!important;
+    padding:1px 8px!important;
+  }
+  body[data-run-active="true"] .game-message-rail .pickup-toast-icon,
+  body[data-run-active="true"] .game-message-rail #ccg-major-notification>.major-icon{
+    display:none!important;
+  }
+  body[data-run-active="true"] .game-message-rail .pickup-toast-copy,
+  body[data-run-active="true"] .game-message-rail #ccg-major-notification>.major-copy{
+    grid-column:1!important;
+    display:flex!important;
+    flex-direction:row!important;
+    align-items:center!important;
+    gap:8px!important;
+  }
+  body[data-run-active="true"] .game-message-rail .pickup-toast-copy>b,
+  body[data-run-active="true"] .game-message-rail #ccg-major-notification>.major-copy>b{
+    flex:0 0 auto!important;
+    margin:0!important;
+    font-size:8px!important;
+  }
+  body[data-run-active="true"] .game-message-rail .pickup-toast-copy>span,
+  body[data-run-active="true"] .game-message-rail #ccg-major-notification>.major-copy>span{
+    flex:1 1 auto!important;
+    min-width:0!important;
+    margin:0!important;
+    font-size:7px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+}
