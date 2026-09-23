@@ -6,7 +6,7 @@
 
   const STYLE_ID="ccg-v142-r19-mobile-trap-layout";
   const MONITOR_MS=80;
-  const state={timer:0,rearms:0,damageOwnerInstalls:0,trapTriggerOwnerInstalls:0,directTrapRepairs:0,trapHits:0,trapContactBlocks:0,trapProtectionBlocks:0,canvasAspectRepairs:0};
+  const state={timer:0,rearms:0,damageOwnerInstalls:0,trapTriggerOwnerInstalls:0,directTrapRepairs:0,trapHits:0,trapContactBlocks:0,trapProtectionBlocks:0,simulationPasses:0,monitorPasses:0,canvasAspectRepairs:0};
   const trapContacts=new Set();
   const trapDamageInFlight=new Set();
   let trapDamageOwner=null;
@@ -285,6 +285,15 @@
     return true
   }
 
+  function updateTrapContacts(source="simulation"){
+    if(!ordinaryDungeon())return false;
+    rearmInactiveTrapContacts();
+    const handled=damageOccupiedActiveTraps();
+    if(source==="monitor")state.monitorPasses++;
+    else state.simulationPasses++;
+    return handled
+  }
+
   function portraitTouchViewport(){
     try{
       const portrait=window.matchMedia?.("(orientation: portrait)")?.matches ?? (Number(window.innerHeight||0)>=Number(window.innerWidth||0));
@@ -506,8 +515,7 @@
     installPortraitLayout();
     installTrapDamageOwner();
     installTrapTriggerOwner();
-    rearmInactiveTrapContacts();
-    damageOccupiedActiveTraps();
+    updateTrapContacts("monitor");
     syncPortraitCanvasAspect();
   }
 
@@ -518,5 +526,5 @@
   state.timer=setInterval(()=>{try{tick()}catch(error){console.warn("[C64 Dungeon Carnage r19] mobile stability tick failed safely",error)}},MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
-  window.CCGLostSizzlerV142R19MobileTrapLayoutStability={installPortraitLayout,installTrapDamageOwner,installTrapTriggerOwner,withValidatedTrapContact,damageValidatedTrapContact,guaranteeTrapContactDamage,damageOccupiedActiveTraps,rearmInactiveTrapContacts,syncPortraitCanvasAspect,trapActive,get state(){return state}};
+  window.CCGLostSizzlerV142R19MobileTrapLayoutStability={installPortraitLayout,installTrapDamageOwner,installTrapTriggerOwner,withValidatedTrapContact,damageValidatedTrapContact,guaranteeTrapContactDamage,damageOccupiedActiveTraps,rearmInactiveTrapContacts,updateTrapContacts,syncPortraitCanvasAspect,trapActive,get state(){return state}};
 })();
