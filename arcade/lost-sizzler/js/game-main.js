@@ -206,7 +206,7 @@ $("solo-btn").addEventListener("click",()=>{void requestPlayFullscreen();startSo
 $("rulebook-btn")?.addEventListener("click",showRulebook);$("rulebook-close-btn")?.addEventListener("click",()=>UI.rulebook?.classList.add("hidden"));$("support-btn")?.addEventListener("click",showSupport);$("support-close-btn")?.addEventListener("click",()=>UI.support?.classList.add("hidden"));$("share-btn")?.addEventListener("click",shareQuest);$("item-info-close")?.addEventListener("click",hideItemInfo);$("named-dossier-btn")?.addEventListener("click",showNamedDossier);
 $("inventory-dossier-btn")?.addEventListener("click",showNamedDossier);$("named-dossier-close")?.addEventListener("click",hideNamedDossier);$("shop-close")?.addEventListener("click",closeShop);$("save-now-btn")?.addEventListener("click",()=>{saveFloorCheckpoint(false);closeSavePrompt()});$("save-continue-btn")?.addEventListener("click",()=>{if(savePromptReason==="rest"&&run)run.consecutiveDeaths=0;closeSavePrompt()});$("save-return-btn")?.addEventListener("click",()=>{if(run)run.consecutiveDeaths=0;saveFloorCheckpoint(true)});
 $("inventory-close-top")?.addEventListener("click",returnToGameFromPanel);$("named-dossier-close-top")?.addEventListener("click",returnToGameFromPanel);
-$("artefact-score-btn")?.addEventListener("click",()=>claimBanishmentArtefact("score"));$("artefact-xp-btn")?.addEventListener("click",()=>claimBanishmentArtefact("xp"));
+$("artefact-score-btn")?.addEventListener("click",()=>claimBanishmentArtefact("score"));$("artefact-xp-btn")?.addEventListener("click",()=>claimBanishmentArtefact("xp"));$("level-up-later")?.addEventListener("click",deferLevelChoice);$("quick-level-up")?.addEventListener("click",()=>reopenPendingLevelChoice(p1));UI.levelUp?.addEventListener("click",event=>{if(event.target===UI.levelUp)deferLevelChoice()});
 UI.sound.addEventListener("click",toggleSound);$("fullscreen-btn")?.addEventListener("click",toggleFullscreen);UI.descend?.addEventListener("click",descendFloor);UI.extract?.addEventListener("click",extractRun);UI.inventoryClose?.addEventListener("click",toggleInventory);
 $("again-btn").addEventListener("click",quitToMenu);
 
@@ -223,6 +223,7 @@ addEventListener("keydown",e=>{
   if(isEditableKeyboardTarget(e.target))return;
   if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space","Tab"].includes(e.code))e.preventDefault();
   if(e.code==="Escape"){
+    if(mode==="levelup"){deferLevelChoice();return}
     if(mode==="paused"){resumePausedRun();return}
     if(UI.itemInfo&&!UI.itemInfo.classList.contains("hidden")){hideItemInfo();return}
     if(UI.namedDossier&&!UI.namedDossier.classList.contains("hidden")){hideNamedDossier();return}
