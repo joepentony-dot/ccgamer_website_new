@@ -394,7 +394,7 @@ window.CCGWorld=(()=>{
     keyRooms.forEach((room,i)=>{const p=pickInRoom(w,room,used);items.push({id:`key${i}`,...p,kind:"key",active:true})});
 
     const cycle=["health","credits","torch","armour","potion","weapon","rapid","xpOrb","teleport","health","credits","torch","armour","potion","weapon","credits"];
-    for(let i=0;i<42;i++){const p=pick(w,used,9,false);items.push({id:`p${i}`,...p,kind:cycle[i%cycle.length],title:C.c64Loot[i%C.c64Loot.length],active:true})}
+    for(let i=0;i<42;i++){const p=pick(w,used,9,false);items.push({id:`p${i}`,...p,kind:cycle[i%cycle.length],active:true})}
     const collectibleCount=1+(w.random()<.4?1:0);
     for(let i=0;i<collectibleCount;i++){const p=pick(w,used,9,false);items.push({id:`game${i}`,...p,kind:"game",title:C.c64Loot[(floor*97+i*211)%C.c64Loot.length],active:true})}
 
