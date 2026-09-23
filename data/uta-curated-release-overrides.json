@@ -1,8 +1,29 @@
 {
   "schemaVersion": 1,
   "source": "https://uta.pokefinder.org/Ultimate_Tape_Archive/",
-  "note": "Exact UTA archive IDs independently verified as releases of the specified C64 game. These approvals do not create global publisher aliases and only apply when the archive title still matches the game exactly after normalisation and the existing year safeguard passes.",
+  "note": "Exact UTA archive IDs independently verified as releases of the specified C64 game. Optional titleAliases are game-specific verified archive-title aliases; they never become global title substitutions. Curated approvals still require the listed archive ID, an exact normalized canonical/curated title match, and the existing year safeguard.",
   "entries": [
+    {
+      "gameSlug": "aussie-games",
+      "archiveIds": [
+        "20824"
+      ],
+      "titleAliases": [
+        "Australian Games"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/aussie-games",
+          "note": "Lemon64 states Aussie Games is also known as Australian Games and identifies the Procass tape entry used in the 1990 ERBE Software Spanish release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Australian_Games_(1990_ERBE_Software)_%5b20824%5d/",
+          "note": "UTA archive entry for Australian Games, ERBE Software, 1990."
+        }
+      ]
+    },
     {
       "gameSlug": "beyond-the-forbidden-forest",
       "archiveIds": [
