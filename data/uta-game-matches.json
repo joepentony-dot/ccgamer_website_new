@@ -93,6 +93,22 @@
         }
       ]
     },
+    "action-biker": {
+      "title": "Action Biker",
+      "releases": [
+        {
+          "archiveId": "6254",
+          "publisher": "Mastertronic",
+          "year": 1985,
+          "yearLabel": "1985",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/KP_Skips_Action_Biker_with_Clumsy_Colin_(1985_Mastertronic)_%5b6254%5d/",
+          "titleMatch": "curated-title-alias",
+          "verification": "curated-archive-id"
+        }
+      ]
+    },
     "airborne-ranger": {
       "title": "Airborne Ranger",
       "releases": [
@@ -576,6 +592,22 @@
           "sourceRole": "re-release",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Bangkok_Knights_(0_Summit)_%5b8568%5d/",
           "titleMatch": "exact"
+        }
+      ]
+    },
+    "barbarian-2-the-dungeon-of-drax": {
+      "title": "Barbarian II: The Dungeon Of Drax",
+      "releases": [
+        {
+          "archiveId": "5918",
+          "publisher": "ERBE Software",
+          "year": 1988,
+          "yearLabel": "1988",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Barbarian_II_(1988_ERBE_Software)_%5b5918%5d/",
+          "titleMatch": "exact",
+          "verification": "curated-archive-id"
         }
       ]
     },
@@ -1071,6 +1103,22 @@
         }
       ]
     },
+    "boulder-dash": {
+      "title": "Boulder Dash",
+      "releases": [
+        {
+          "archiveId": "411",
+          "publisher": "State Soft",
+          "year": 1984,
+          "yearLabel": "1984",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Boulder_Dash_(1984_State_Soft)_%5b411%5d/",
+          "titleMatch": "exact",
+          "verification": "curated-archive-id"
+        }
+      ]
+    },
     "bounces": {
       "title": "Bounces",
       "releases": [
@@ -1263,6 +1311,22 @@
           "sourceRole": "publisher",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Bully's_Sporting_Darts_(1992_Alternative_Software)_%5b5164%5d/",
           "titleMatch": "exact"
+        }
+      ]
+    },
+    "by-fair-means-or-foul": {
+      "title": "By Fair Means Or Foul",
+      "releases": [
+        {
+          "archiveId": "2952",
+          "publisher": "Codemasters",
+          "year": 1990,
+          "yearLabel": "1990",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Pro_Boxing_Simulator_(1990_Codemasters)_%5b2952%5d/",
+          "titleMatch": "curated-title-alias",
+          "verification": "curated-archive-id"
         }
       ]
     },
@@ -2112,6 +2176,16 @@
       "title": "Dragon's Lair",
       "releases": [
         {
+          "archiveId": "0",
+          "publisher": "Software Projects",
+          "year": 1986,
+          "yearLabel": "1986",
+          "loader": null,
+          "sourceRole": "publisher",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Dragon's_Lair_Preview_(1986_Software_Projects)_%5b0%5d/",
+          "titleMatch": "publisher-qualified-prefix"
+        },
+        {
           "archiveId": "398",
           "publisher": "Software Projects",
           "year": 1986,
@@ -2130,6 +2204,33 @@
           "sourceRole": "re-release",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Dragon's_Lair_(1988_Encore)_%5b7503%5d/",
           "titleMatch": "exact"
+        }
+      ]
+    },
+    "dragons-lair-2-escape-from-singes-castle": {
+      "title": "Dragon's Lair II : Escape From Singe'S Castle",
+      "releases": [
+        {
+          "archiveId": "5078",
+          "publisher": "Encore",
+          "year": 1987,
+          "yearLabel": "1987",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Escape_from_Singe's_Castle_(1987_Encore)_%5b5078%5d/",
+          "titleMatch": "curated-title-alias",
+          "verification": "curated-archive-id"
+        },
+        {
+          "archiveId": "395",
+          "publisher": "Software Projects",
+          "year": 1987,
+          "yearLabel": "1987",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Dragon's_Lair_Part_II-_Escape_from_Singe's_Castle_(1987_Software_Projects)_%5b395%5d/",
+          "titleMatch": "curated-title-alias",
+          "verification": "curated-archive-id"
         }
       ]
     },
@@ -2473,6 +2574,22 @@
         }
       ]
     },
+    "flunky": {
+      "title": "Flunky",
+      "releases": [
+        {
+          "archiveId": "5141",
+          "publisher": "Alternative Software",
+          "year": 1988,
+          "yearLabel": "1988",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Mad_Flunky_(1988_Alternative_Software)_%5b5141%5d/",
+          "titleMatch": "curated-title-alias",
+          "verification": "curated-archive-id"
+        }
+      ]
+    },
     "flying-feathers": {
       "title": "Flying Feathers",
       "releases": [
@@ -2810,6 +2927,22 @@
           "sourceRole": "re-release",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ghosts_'n_Goblins_(199x_Encore)_%5b3065%5d/",
           "titleMatch": "exact"
+        }
+      ]
+    },
+    "give-my-regards-to-broad-street": {
+      "title": "Give My Regards To Broad Street",
+      "releases": [
+        {
+          "archiveId": "8446",
+          "publisher": "Mind Games",
+          "year": 1985,
+          "yearLabel": "1985",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Paul_McCartney's_Give_My_Regards_to_Broad_Street_(1985_Mind_Games)_%5b8446%5d/",
+          "titleMatch": "curated-title-alias",
+          "verification": "curated-archive-id"
         }
       ]
     },
@@ -3505,6 +3638,22 @@
         }
       ]
     },
+    "international-soccer": {
+      "title": "International Soccer",
+      "releases": [
+        {
+          "archiveId": "3215",
+          "publisher": "CRL",
+          "year": 1988,
+          "yearLabel": "1988",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/International_Soccer_(1988_CRL)_%5b3215%5d/",
+          "titleMatch": "exact",
+          "verification": "curated-archive-id"
+        }
+      ]
+    },
     "international-tennis": {
       "title": "International Tennis",
       "releases": [
@@ -3966,6 +4115,22 @@
         }
       ]
     },
+    "leader-board": {
+      "title": "Leader Board",
+      "releases": [
+        {
+          "archiveId": "6678",
+          "publisher": "ERBE Software",
+          "year": 1986,
+          "yearLabel": "1986",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Leader_Board_(1986_ERBE_Software)_%5b6678%5d/",
+          "titleMatch": "exact",
+          "verification": "curated-archive-id"
+        }
+      ]
+    },
     "little-computer-people": {
       "title": "Little Computer People",
       "releases": [
@@ -3988,6 +4153,22 @@
           "sourceRole": "re-release",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Little_Computer_People_(19xx_Ricochet)_%5b2185%5d/",
           "titleMatch": "exact"
+        }
+      ]
+    },
+    "live-and-let-die": {
+      "title": "Live And Let Die",
+      "releases": [
+        {
+          "archiveId": "2954",
+          "publisher": "Encore",
+          "year": null,
+          "yearLabel": "19xx",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/James_Bond_007_in_Live_and_Let_Die_-_The_Computer_Game_(19xx_Encore)_%5b2954%5d/",
+          "titleMatch": "curated-title-alias",
+          "verification": "curated-archive-id"
         }
       ]
     },
@@ -4352,6 +4533,22 @@
         }
       ]
     },
+    "nebulus": {
+      "title": "Nebulus",
+      "releases": [
+        {
+          "archiveId": "6721",
+          "publisher": "ERBE Software",
+          "year": 1987,
+          "yearLabel": "1987",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Nebulus_(1987_ERBE_Software)_%5b6721%5d/",
+          "titleMatch": "exact",
+          "verification": "curated-archive-id"
+        }
+      ]
+    },
     "nemesis-the-warlock": {
       "title": "Nemesis The Warlock",
       "releases": [
@@ -4382,6 +4579,22 @@
         }
       ]
     },
+    "nightbreed-the-action-game": {
+      "title": "Nightbreed: The Action Game",
+      "releases": [
+        {
+          "archiveId": "1544",
+          "publisher": "Hit Squad",
+          "year": 1992,
+          "yearLabel": "1992",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Night_Breed_(1992_Hit_Squad)_%5b1544%5d/",
+          "titleMatch": "curated-title-alias",
+          "verification": "curated-archive-id"
+        }
+      ]
+    },
     "nightshade": {
       "title": "Nightshade",
       "releases": [
@@ -4394,6 +4607,22 @@
           "sourceRole": "publisher",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Nightshade_(1985_Firebird)_%5b2207%5d/",
           "titleMatch": "exact"
+        }
+      ]
+    },
+    "ninja": {
+      "title": "Ninja",
+      "releases": [
+        {
+          "archiveId": "2849",
+          "publisher": "Entertainment USA",
+          "year": 1986,
+          "yearLabel": "1986",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ninja_(1986_Entertainment_USA)_%5b2849%5d/",
+          "titleMatch": "exact",
+          "verification": "curated-archive-id"
         }
       ]
     },
@@ -5214,6 +5443,21 @@
         }
       ]
     },
+    "roller-coaster-rumbler": {
+      "title": "Roller Coaster Rumbler",
+      "releases": [
+        {
+          "archiveId": "0",
+          "publisher": "Tynesoft",
+          "year": 1989,
+          "yearLabel": "1989",
+          "loader": null,
+          "sourceRole": "publisher",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Rollercoaster_Rumbler_(1989_Tynesoft)_%5b0%5d/",
+          "titleMatch": "exact"
+        }
+      ]
+    },
     "rolling-thunder": {
       "title": "Rolling Thunder",
       "releases": [
@@ -5894,6 +6138,32 @@
         }
       ]
     },
+    "spy-vs-spy-2-the-island-caper": {
+      "title": "Spy Vs Spy II: The Island Caper",
+      "releases": [
+        {
+          "archiveId": "3935",
+          "publisher": "Beyond",
+          "year": 1985,
+          "yearLabel": "1985",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Spy_vs_Spy-_The_Island_Caper_(1985_Beyond)_%5b3935%5d/",
+          "titleMatch": "curated-title-alias",
+          "verification": "curated-archive-id"
+        },
+        {
+          "archiveId": "1987",
+          "publisher": "HiTEC Software",
+          "year": null,
+          "yearLabel": "19xx",
+          "loader": null,
+          "sourceRole": "re-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Spy_vs_Spy_II-_The_Island_Caper_(19xx_HiTEC_Software)_%5b1987%5d/",
+          "titleMatch": "exact"
+        }
+      ]
+    },
     "spy-vs-spy-3-arctic-antics": {
       "title": "Spy Vs Spy III: Arctic Antics",
       "releases": [
@@ -6079,6 +6349,33 @@
         }
       ]
     },
+    "strip-poker-a-sizzling-game-of-chance": {
+      "title": "Strip Poker: A Sizzling Game Of Chance",
+      "releases": [
+        {
+          "archiveId": "7489",
+          "publisher": "CDS Software Ltd.",
+          "year": null,
+          "yearLabel": "19xx",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Strip_Poker_(19xx_CDS_Software_Ltd.)_%5b7489%5d/",
+          "titleMatch": "curated-title-alias",
+          "verification": "curated-archive-id"
+        },
+        {
+          "archiveId": "513",
+          "publisher": "U.S. Gold",
+          "year": null,
+          "yearLabel": "198x",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Strip_Poker_(198x_U.S._Gold)_%5b513%5d/",
+          "titleMatch": "curated-title-alias",
+          "verification": "curated-archive-id"
+        }
+      ]
+    },
     "strontium-dog-and-the-death-gauntlet": {
       "title": "Strontium Dog And The Death Gauntlet",
       "releases": [
@@ -6201,6 +6498,22 @@
           "sourceRole": "publisher",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Super_Gridder_(1983_Terminal_Software)_%5b618%5d/",
           "titleMatch": "exact"
+        }
+      ]
+    },
+    "super-pipeline": {
+      "title": "Super Pipeline",
+      "releases": [
+        {
+          "archiveId": "6490",
+          "publisher": "Taskset Ltd.",
+          "year": 1983,
+          "yearLabel": "1983",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Pipeline_(1983_Taskset_Ltd.)_%5b6490%5d/",
+          "titleMatch": "curated-title-alias",
+          "verification": "curated-archive-id"
         }
       ]
     },
@@ -6778,6 +7091,22 @@
           "sourceRole": "publisher",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Snowman,_The_(1984_Quicksilva)_%5b553%5d/",
           "titleMatch": "exact"
+        }
+      ]
+    },
+    "the-sword-of-fargoal": {
+      "title": "The Sword Of Fargoal",
+      "releases": [
+        {
+          "archiveId": "7724",
+          "publisher": "Euro Gold",
+          "year": null,
+          "yearLabel": "19xx",
+          "loader": null,
+          "sourceRole": "verified-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Sword_of_Fargoal_(19xx_Euro_Gold)_%5b7724%5d/",
+          "titleMatch": "exact",
+          "verification": "curated-archive-id"
         }
       ]
     },

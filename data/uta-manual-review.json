@@ -271,30 +271,6 @@
       ]
     },
     {
-      "gameSlug": "barbarian-2-the-dungeon-of-drax",
-      "title": "Barbarian II: The Dungeon Of Drax",
-      "year": 1988,
-      "knownPublishers": [
-        "Palace Software"
-      ],
-      "knownReReleasers": [
-        "Kixx"
-      ],
-      "reason": "title-match-publisher-not-in-game-data",
-      "excludedCandidates": [
-        {
-          "archiveId": "5918",
-          "title": "Barbarian II",
-          "publisher": "ERBE Software",
-          "yearLabel": "1988",
-          "titleMatch": "exact",
-          "publisherMatched": false,
-          "yearCompatible": false,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Barbarian_II_(1988_ERBE_Software)_%5b5918%5d/"
-        }
-      ]
-    },
-    {
       "gameSlug": "bc2-grogs-revenge",
       "title": "B.C. II: Grog's Revenge",
       "year": 1984,
@@ -448,18 +424,8 @@
       "knownReReleasers": [
         "Prism Leisure"
       ],
-      "reason": "title-match-publisher-not-in-game-data",
+      "reason": "additional-title-match-publisher-not-in-game-data",
       "excludedCandidates": [
-        {
-          "archiveId": "411",
-          "title": "Boulder Dash",
-          "publisher": "State Soft",
-          "yearLabel": "1984",
-          "titleMatch": "exact",
-          "publisherMatched": false,
-          "yearCompatible": false,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Boulder_Dash_(1984_State_Soft)_%5b411%5d/"
-        },
         {
           "archiveId": "1525",
           "title": "Boulder Dash Construction Kit",
@@ -1232,28 +1198,6 @@
       ]
     },
     {
-      "gameSlug": "international-soccer",
-      "title": "International Soccer",
-      "year": 1983,
-      "knownPublishers": [
-        "Commodore"
-      ],
-      "knownReReleasers": [],
-      "reason": "title-match-publisher-not-in-game-data",
-      "excludedCandidates": [
-        {
-          "archiveId": "3215",
-          "title": "International Soccer",
-          "publisher": "CRL",
-          "yearLabel": "1988",
-          "titleMatch": "exact",
-          "publisherMatched": false,
-          "yearCompatible": false,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/International_Soccer_(1988_CRL)_%5b3215%5d/"
-        }
-      ]
-    },
-    {
       "gameSlug": "international-tennis",
       "title": "International Tennis",
       "year": 1985,
@@ -1361,18 +1305,8 @@
       "knownReReleasers": [
         "Kixx"
       ],
-      "reason": "title-match-publisher-not-in-game-data",
+      "reason": "additional-title-match-publisher-not-in-game-data",
       "excludedCandidates": [
-        {
-          "archiveId": "6678",
-          "title": "Leader Board",
-          "publisher": "ERBE Software",
-          "yearLabel": "1986",
-          "titleMatch": "exact",
-          "publisherMatched": false,
-          "yearCompatible": false,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Leader_Board_(1986_ERBE_Software)_%5b6678%5d/"
-        },
         {
           "archiveId": "1042",
           "title": "Leader Board Executive Edition",
@@ -1484,28 +1418,6 @@
       ]
     },
     {
-      "gameSlug": "nebulus",
-      "title": "Nebulus",
-      "year": 1987,
-      "knownPublishers": [
-        "Hewson"
-      ],
-      "knownReReleasers": [],
-      "reason": "title-match-publisher-not-in-game-data",
-      "excludedCandidates": [
-        {
-          "archiveId": "6721",
-          "title": "Nebulus",
-          "publisher": "ERBE Software",
-          "yearLabel": "1987",
-          "titleMatch": "exact",
-          "publisherMatched": false,
-          "yearCompatible": false,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Nebulus_(1987_ERBE_Software)_%5b6721%5d/"
-        }
-      ]
-    },
-    {
       "gameSlug": "nemesis",
       "title": "Nemesis",
       "year": 1986,
@@ -1567,18 +1479,8 @@
         "Mastertronic"
       ],
       "knownReReleasers": [],
-      "reason": "title-match-publisher-not-in-game-data",
+      "reason": "additional-title-match-publisher-not-in-game-data",
       "excludedCandidates": [
-        {
-          "archiveId": "2849",
-          "title": "Ninja",
-          "publisher": "Entertainment USA",
-          "yearLabel": "1986",
-          "titleMatch": "exact",
-          "publisherMatched": false,
-          "yearCompatible": false,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ninja_(1986_Entertainment_USA)_%5b2849%5d/"
-        },
         {
           "archiveId": "10405",
           "title": "Ninja Massacre",
@@ -2202,40 +2104,6 @@
       ]
     },
     {
-      "gameSlug": "strip-poker-a-sizzling-game-of-chance",
-      "title": "Strip Poker: A Sizzling Game Of Chance",
-      "year": 1984,
-      "knownPublishers": [
-        "Artworx Software"
-      ],
-      "knownReReleasers": [
-        "Blue Ribbon"
-      ],
-      "reason": "title-match-publisher-not-in-game-data",
-      "excludedCandidates": [
-        {
-          "archiveId": "7489",
-          "title": "Strip Poker",
-          "publisher": "CDS Software Ltd.",
-          "yearLabel": "19xx",
-          "titleMatch": "publisher-qualified-prefix",
-          "publisherMatched": false,
-          "yearCompatible": true,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Strip_Poker_(19xx_CDS_Software_Ltd.)_%5b7489%5d/"
-        },
-        {
-          "archiveId": "513",
-          "title": "Strip Poker",
-          "publisher": "U.S. Gold",
-          "yearLabel": "198x",
-          "titleMatch": "publisher-qualified-prefix",
-          "publisherMatched": false,
-          "yearCompatible": true,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Strip_Poker_(198x_U.S._Gold)_%5b513%5d/"
-        }
-      ]
-    },
-    {
       "gameSlug": "summer-games",
       "title": "Summer Games",
       "year": 1984,
@@ -2495,28 +2363,6 @@
       ]
     },
     {
-      "gameSlug": "the-sword-of-fargoal",
-      "title": "The Sword Of Fargoal",
-      "year": 1983,
-      "knownPublishers": [
-        "Epyx"
-      ],
-      "knownReReleasers": [],
-      "reason": "title-match-publisher-not-in-game-data",
-      "excludedCandidates": [
-        {
-          "archiveId": "7724",
-          "title": "Sword of Fargoal",
-          "publisher": "Euro Gold",
-          "yearLabel": "19xx",
-          "titleMatch": "exact",
-          "publisherMatched": false,
-          "yearCompatible": true,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Sword_of_Fargoal_(19xx_Euro_Gold)_%5b7724%5d/"
-        }
-      ]
-    },
-    {
       "gameSlug": "the-transformers",
       "title": "The Transformers",
       "year": 1985,
@@ -2714,6 +2560,31 @@
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Wizard's_Lair_(1985_Bubble_Bus_Software)_%5b3192%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "world-games",
+      "title": "World Games",
+      "year": 1986,
+      "knownPublishers": [
+        "Epyx",
+        "US Gold"
+      ],
+      "knownReReleasers": [
+        "Kixx"
+      ],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "0",
+          "title": "World Games",
+          "publisher": "Scandomatic",
+          "yearLabel": "198x",
+          "titleMatch": "exact",
+          "publisherMatched": false,
+          "yearCompatible": true,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/World_Games_(198x_Scandomatic)_%5b0%5d/"
         }
       ]
     },
