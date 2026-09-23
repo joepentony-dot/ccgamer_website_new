@@ -11,18 +11,18 @@ const bootstrap=fs.readFileSync(path.join(root,"js/v10-42-bootstrap.js"),"utf8")
 const handoff=fs.readFileSync(path.join(root,"js/v10-41-r30-buglog.js"),"utf8");
 const guard=fs.readFileSync(path.join(root,"js/v10-41-cache-guard.js"),"utf8");
 
-const BUILD="V10.42 r52";
-const CACHE="20260923r52";
+const BUILD="V10.42 r53";
+const CACHE="20260923r53";
 const buildMeta=html.match(/<meta name="ccg-lost-sizzler-build" content="([^"]+)"/i)?.[1]||"";
 const cacheMeta=html.match(/<meta name="ccg-lost-sizzler-cache" content="([^"]+)"/i)?.[1]||"";
 const localAssets=[...html.matchAll(/(?:src|href)="((?:js|css)\/[^"?]+\?v=([^"&]+))"/g)].map(match=>({url:match[1],token:match[2]}));
 
-assert.equal(buildMeta,BUILD,"the blocking page identity must already be the current r52 build before any runtime restamp");
-assert.equal(cacheMeta,CACHE,"the cache guard must read the r52 token on its first execution");
+assert.equal(buildMeta,BUILD,"the blocking page identity must already be the current r53 build before any runtime restamp");
+assert.equal(cacheMeta,CACHE,"the cache guard must read the r53 token on its first execution");
 assert.equal(version.build,BUILD,"version.json must describe the same current build as the blocking page and bootstrap");
 assert.equal(version.cacheToken,CACHE,"version.json must describe the same current cache token as the blocking page and bootstrap");
 assert.match(bootstrap,/const BUILD="V10\.42 r52";/,"ordered bootstrap build identity changed unexpectedly");
-assert.match(bootstrap,/const CACHE="20260923r52";/,"ordered bootstrap cache identity changed unexpectedly");
+assert.match(bootstrap,/const CACHE="20260923r53";/,"ordered bootstrap cache identity changed unexpectedly");
 assert.match(bootstrap,/function versionCheckOutdated\(\)\{[\s\S]*?CCGLostSizzlerVersion\?\.state\?\.outdated===true/,"ordered bootstrap must observe the version checker's stale-browser ownership");
 assert.match(bootstrap,/if\(!versionCheckOutdated\(\)\)\{[\s\S]*?expectedBadge=`BUILD \${BUILD\.toUpperCase\(\)}`[\s\S]*?badge\.textContent=expectedBadge[\s\S]*?\}/,"ordered bootstrap must not overwrite the stale-browser Update Available presentation while still stamping release metadata");
 assert.match(guard,/ccg-lost-sizzler-cache[^\n]+content/,"cache guard must continue taking its initial token from the blocking page meta");
@@ -37,10 +37,10 @@ assert.match(bootstrap,/Promise\.resolve\(launched\)\.then\(\(\)=>\{[\s\S]*?data
 
 assert.ok(localAssets.length>=30,`expected the canonical page to expose its local script/style cache tokens, found ${localAssets.length}`);
 for(const asset of localAssets)assert.equal(asset.token,CACHE,`${asset.url} is not pinned to the current r52 cache token`);
-assert.match(html,/game-local-runtime\.js\?v=20260923r52/,"the extracted current local runtime must not remain under the obsolete September 10 cache key");
-assert.match(html,/game-main\.js\?v=20260923r52/,"the current input/frame owner must not remain under the obsolete September 10 cache key");
-assert.match(html,/v10-41-cache-guard\.js\?v=20260923r52/,"the cache guard itself must be fetched under the current release token");
+assert.match(html,/game-local-runtime\.js\?v=20260923r53/,"the extracted current local runtime must not remain under the obsolete September 10 cache key");
+assert.match(html,/game-main\.js\?v=20260923r53/,"the current input/frame owner must not remain under the obsolete September 10 cache key");
+assert.match(html,/v10-41-cache-guard\.js\?v=20260923r53/,"the cache guard itself must be fetched under the current release token");
 
 assert.match(bootstrap,/v10-42-stage6-zone-gameplay\.js/,"r52 must load the Stage 6 zone gameplay owner through the ordered bootstrap");
 
-console.log("Dungeon Carnage r52 blocking release/cache identity contract passed.");
+console.log("Dungeon Carnage r53 blocking release/cache identity contract passed.");
