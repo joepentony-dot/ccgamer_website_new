@@ -29,8 +29,8 @@ assert.ok(metaBuild,"game HTML must publish its loaded Dungeon Carnage build num
 assert.equal(metaBuild,manifest.build,"HTML build number and live version manifest must match");
 assert.equal(metaCache,manifest.cacheToken,"HTML cache token and live version manifest must match");
 assert.equal(manifest.releaseVersion,"V10.42","current semantic release must be V10.42");
-assert.equal(manifest.build,"V10.42 r52","current published build must remain explicit in the regression check");
-assert.equal(manifest.cacheToken,"20260923r52","current release cache token must remain explicit in the live manifest");
+assert.equal(manifest.build,"V10.42 r53","current published build must remain explicit in the regression check");
+assert.equal(manifest.cacheToken,"20260923r53","current release cache token must remain explicit in the live manifest");
 
 const activeAssets=[
   "css/game.css","css/v10-6-gameplay.css","css/v10-41-r28.css","css/v10-41-r29.css",
@@ -141,4 +141,4 @@ assert.doesNotMatch(homeScript,/addEventListener\(["']wheel["']/,"home recogniti
 assert.match(homeCtaCss,/touch-action:\s*pan-y/,"home hero actions must explicitly allow vertical touch scrolling");
 assert.match(homeCtaCss,/\.home-hero__sizzler-mark[\s\S]*?pointer-events:\s*none/,"decorative game mark must never capture pointer or wheel targeting");
 
-console.log("Dungeon Carnage V10.42 build/cache/startup and retired-mode boundary contract passed.");
+console.log("Dungeon Carnage V10.42 R53 build/cache/startup and retired-mode boundary contract passed.");
