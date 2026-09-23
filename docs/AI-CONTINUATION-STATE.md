@@ -1,10 +1,13 @@
 ## Dungeon Carnage R54 graphics/UI overhaul — 23 September 2026
 
-- PR #2298 residual UTA reconciliation merged as `fcdca219ca06f1e00c19114ac142e4cbb1f46214`; R54 PR #2299 has been rebuilt from that current-main baseline.
-- R54 begins with Bronze Key HUD readability, literal mechanic/item pickup names, no second Bronze Key cost for a chest already gated by a Bronze door, established chest-sheet presentation, and synchronized Rulebook wording.
-- Subsequent R54 batches cover pickup/icon art, corridor presentation, NPC/shop character graphics, expanded renderer-owned animation states, lower message-rail/black-rectangle cleanup and obsolete ONLINE wording.
-- Preserve R53 ATTACK/FIRE/trap/performance owners; do not add per-entity animation timers or another render loop.
-- NPC dialogue and quest-content rewriting remain deferred until R54 is complete.
+- Active implementation vehicle is draft PR #2302 / `codex/dungeon-r54-graphics-ui-overhaul-20260923`. The earlier #2299 scoping PR closed when its head temporarily matched `main`; it was not merged.
+- Public candidate identity is `V10.42 r54` / `20260923r54`.
+- R54 now implements the requested Bronze Key HUD readability, literal pickup names/amounts and actual weapon names, no second Bronze Key cost behind a Bronze door, authored chest presentation, richer pickup art, biome-specific corridor decoration, merchant character sprites, expanded renderer-owned player/enemy animation including defeat poses, and repaired lower message/major-notice presentation.
+- The message rail remains outside the dungeon canvas. Compact layouts retain a bounded notice strip instead of hiding it; long copy wraps/scrolls; a major notice temporarily removes the ordinary toast from layout so the two cards cannot form the previous large dark block.
+- Public Solo/Tutorial presentation contains no obsolete rejoin-key guidance. Retired networking compatibility code is not being treated as public functionality.
+- Animation uses existing simulation state plus timestamps and the existing render loop only. No second RAF or per-entity interval is added.
+- R53 ATTACK/FIRE/trap/effect-pool fixes remain preserved. NPC dialogue and individual quest-content expansion remain deferred until R54 is complete.
+- Current branch was created before generated-output PR #2301 advanced `main`, so final qualification must run only after R54 is reconciled onto latest `main`.
 - Exact-head CI and explicit user merge authorisation are required.
 
 ## UTA residual reconciliation rebuilt on current main — 23 September 2026
