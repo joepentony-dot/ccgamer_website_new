@@ -248,9 +248,10 @@ export function parseUtaIndexWithDiagnostics(html) {
       if (looksLikeRelease) rejectedReleaseDirectories.push(directoryName);
       continue;
     }
-    if (seen.has(parsed.archiveId)) continue;
+    const releaseKey = parsed.url || directoryName;
+    if (seen.has(releaseKey)) continue;
 
-    seen.add(parsed.archiveId);
+    seen.add(releaseKey);
     releases.push(parsed);
   }
 
@@ -409,7 +410,7 @@ export function matchGameToUta(game, utaReleases, curatedApproval = {}) {
   });
 
   const uniqueAccepted = Array.from(
-    new Map(accepted.map((release) => [release.archiveId, release])).values()
+    new Map(accepted.map((release) => [release.url || `${release.archiveId}|${release.publisher}|${release.yearLabel}`, release])).values()
   ).sort((a, b) =>
     (a.year || 9999) - (b.year || 9999)
     || a.publisher.localeCompare(b.publisher)
