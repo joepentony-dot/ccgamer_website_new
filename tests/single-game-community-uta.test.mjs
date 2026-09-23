@@ -561,3 +561,117 @@ test("single-game presentation keeps primary content compact and secondary secti
   assert.match(affiliateCss, /SINGLE-GAME COMPACT AMAZON ACCORDION/);
   assert.match(affiliateCss, /\.ccg-hardware-panel\[hidden\]/);
 });
+
+test("UTA parser preserves distinct release directories even when UTA reuses an archive ID", () => {
+  const releases = parseUtaIndex(`
+<a href="Solomon's_Key_(1987_ERBE_Software)_[1987]/">Solomon's Key</a>
+<a href="Spy_vs_Spy_II-_The_Island_Caper_(19xx_HiTEC_Software)_[1987]/">Spy vs Spy II</a>
+<a href="Spy_vs_Spy_II-_The_Island_Caper_(19xx_HiTEC_Software)_[1987]/">Duplicate href</a>
+`);
+
+  assert.equal(releases.length, 2);
+  assert.deepEqual(
+    releases.map((release) => [release.title, release.archiveId]),
+    [["Solomon's Key", "1987"], ["Spy vs Spy II- The Island Caper", "1987"]]
+  );
+});
+
+test("residual catalogue reconciliation keeps Spy vs Spy II releases distinct and accepts only verified aliases", () => {
+  const releases = parseUtaIndex(`
+<a href="Solomon's_Key_(1987_ERBE_Software)_[1987]/">Solomon's Key</a>
+<a href="Spy_vs_Spy_II-_The_Island_Caper_(19xx_HiTEC_Software)_[1987]/">Spy vs Spy II HiTEC</a>
+<a href="Spy_vs_Spy-_The_Island_Caper_(1985_Beyond)_[3935]/">Spy vs Spy Beyond</a>
+<a href="Spy_vs_Spy_II-_The_Island_Caper_(1985_Random_Label)_[93935]/">Unverified exact title</a>
+<a href="Spy_vs_Spy-_The_Island_Caper_(1985_Random_Label)_[93936]/">Unverified alias</a>
+`);
+  const game = {
+    system: "C64",
+    slug: "spy-vs-spy-2-the-island-caper",
+    title: "Spy Vs Spy II: The Island Caper",
+    sorttitle: "Spy Vs Spy 2",
+    year: 1985,
+    credits: {
+      publisher: ["First Star Software"],
+      re_releaser: ["Beyond", "Hi-Tec Software"]
+    }
+  };
+  const curated = parseCuratedApprovals({
+    entries: [{
+      gameSlug: "spy-vs-spy-2-the-island-caper",
+      archiveIds: ["3935"],
+      titleAliases: ["Spy vs Spy: The Island Caper"]
+    }]
+  });
+  const result = buildUtaMapping([game], releases, curated);
+
+  assert.deepEqual(result.mapping.games[game.slug].releases.map((row) => row.archiveId), ["3935", "1987"]);
+  assert.equal(result.mapping.games[game.slug].releases.find((row) => row.archiveId === "1987").sourceRole, "re-release");
+  assert.equal(result.mapping.games[game.slug].releases.find((row) => row.archiveId === "3935").verification, "curated-archive-id");
+  assert.ok(result.manualReview.entries.some((entry) =>
+    entry.gameSlug === game.slug
+      && entry.excludedCandidates.some((row) => row.archiveId === "93935")
+  ));
+  assert.ok(!result.mapping.games[game.slug].releases.some((row) => row.archiveId === "93936"));
+  assert.ok(!result.mapping.games[game.slug].releases.some((row) => row.title === "Solomon's Key"));
+});
+
+test("residual curated decisions remain source-evidenced and exact-ID scoped", () => {
+  const curated = JSON.parse(fs.readFileSync("data/uta-curated-release-overrides.json", "utf8"));
+  const bySlug = new Map(curated.entries.map((entry) => [entry.gameSlug, entry]));
+  const expected = new Map([
+    ["action-biker", ["6254"]],
+    ["barbarian-2-the-dungeon-of-drax", ["5918"]],
+    ["boulder-dash", ["411"]],
+    ["by-fair-means-or-foul", ["2952"]],
+    ["dragons-lair-2-escape-from-singes-castle", ["395", "5078"]],
+    ["give-my-regards-to-broad-street", ["8446"]],
+    ["flunky", ["5141"]],
+    ["international-soccer", ["3215"]],
+    ["leader-board", ["6678"]],
+    ["live-and-let-die", ["2954"]],
+    ["nebulus", ["6721"]],
+    ["nightbreed-the-action-game", ["1544"]],
+    ["ninja", ["2849"]],
+    ["spy-vs-spy-2-the-island-caper", ["3935"]],
+    ["strip-poker-a-sizzling-game-of-chance", ["7489", "513"]],
+    ["super-pipeline", ["6490"]],
+    ["the-sword-of-fargoal", ["7724"]]
+  ]);
+
+  for (const [slug, archiveIds] of expected) {
+    const entry = bySlug.get(slug);
+    assert.ok(entry, slug);
+    assert.deepEqual(entry.archiveIds, archiveIds, slug);
+    assert.ok(Array.isArray(entry.evidence) && entry.evidence.length > 0, slug);
+    assert.ok(entry.evidence.every((item) => /^https?:\/\//.test(item.url || "")), slug);
+  }
+});
+
+test("residual review classifies every baseline unmatched C64 record exactly once", () => {
+  const audit = JSON.parse(fs.readFileSync("data/uta-audit.json", "utf8"));
+  const review = JSON.parse(fs.readFileSync("data/uta-residual-review-2026-09-23.json", "utf8"));
+  const allowed = new Set([
+    "verified-additional-tape",
+    "catalogue-metadata-correction",
+    "different-c64-version",
+    "genuinely-no-uta-release"
+  ]);
+
+  assert.equal(review.entries.length, 164);
+  assert.equal(new Set(review.entries.map((entry) => entry.gameSlug)).size, 164);
+  assert.deepEqual(
+    review.entries.map((entry) => entry.gameSlug).sort(),
+    audit.unmatched.map((entry) => entry.slug).sort()
+  );
+  assert.ok(review.entries.every((entry) => allowed.has(entry.classification)));
+  assert.deepEqual(review.summary.classifications, {
+    "verified-additional-tape": 17,
+    "catalogue-metadata-correction": 4,
+    "different-c64-version": 11,
+    "genuinely-no-uta-release": 132
+  });
+  assert.equal(review.summary.verifiedAdditionalTapeReleases, 20);
+  assert.ok(review.entries
+    .filter((entry) => entry.classification === "verified-additional-tape")
+    .every((entry) => Array.isArray(entry.archiveIds) && entry.archiveIds.length > 0));
+});
