@@ -22,15 +22,15 @@
   "summary": {
     "reviewed": 164,
     "classifications": {
-      "verified-additional-tape": 16,
+      "verified-additional-tape": 17,
       "catalogue-metadata-correction": 4,
       "different-c64-version": 11,
-      "genuinely-no-uta-release": 133
+      "genuinely-no-uta-release": 132
     },
-    "verifiedAdditionalTapePages": 16,
-    "verifiedAdditionalTapeReleases": 19,
-    "expectedMatchedGamesAfterQualifiedRefresh": 411,
-    "expectedUnmatchedAfterQualifiedRefresh": 148
+    "verifiedAdditionalTapePages": 17,
+    "verifiedAdditionalTapeReleases": 20,
+    "expectedMatchedGamesAfterQualifiedRefresh": 412,
+    "expectedUnmatchedAfterQualifiedRefresh": 147
   },
   "entries": [
     {
@@ -852,10 +852,25 @@
         "Alternative Software"
       ],
       "originalAuditStatus": "no-title-candidate",
-      "classification": "genuinely-no-uta-release",
-      "reasonSubtype": "commercial-cassette-absent-from-uta",
+      "classification": "verified-additional-tape",
+      "reasonSubtype": "source-verified-uta-relationship",
       "confidence": "high",
-      "reason": "Independent C64 release evidence supports a commercial cassette, but the live UTA index contains no compatible directory under the known title/alias forms."
+      "reason": "Independent release evidence identifies Mad Flunky as the Alternative Software cassette re-release of this C64 game; the alias is scoped to this game and exact archive ID.",
+      "archiveIds": [
+        "5141"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/flunky",
+          "note": "Lemon64 lists Flunky as also known as Mad Flunky, identifies Alternative Software as re-releaser, and documents the 1988 Alternative cassette tape entry."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Mad_Flunky_(1988_Alternative_Software)_%5b5141%5d/",
+          "note": "UTA archive entry for the Alternative Software cassette under the Mad Flunky re-release title."
+        }
+      ]
     },
     {
       "gameSlug": "force-seven",
