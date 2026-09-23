@@ -125,14 +125,24 @@ try{
     projectileCD=0;
     input.clear();
     const mana=Number(p1.mana);
-    // This is the mobile/tutorial FIRE owner.  Wait beyond a normal held
+    let launched=0;
+    const nativePush=bullets.push;
+    bullets.push=function(...shots){
+      launched+=shots.filter(shot=>shot&&shot.owner===p1.id).length;
+      return nativePush.apply(this,shots);
+    };
+    // This is the mobile/tutorial FIRE owner. Wait beyond a normal held
     // repeat interval: one clean press may shoot once but must not latch.
+    // Count the projectile at spawn time because a valid Tutorial shot can
+    // immediately hit nearby room geometry and disappear before sampling.
     const fire=document.querySelector('#v104-touch-controls [data-action="fire"]');
-    fire.dispatchEvent(new PointerEvent("pointerdown",{bubbles:true,pointerId:71}));
-    await new Promise(resolve=>setTimeout(resolve,30));
-    const launched=bullets.filter(b=>b&&b.ttl>0&&b.owner===p1.id).length;
-    await new Promise(resolve=>setTimeout(resolve,420));
-    fire.dispatchEvent(new PointerEvent("pointerup",{bubbles:true,pointerId:71}));
+    try{
+      fire.dispatchEvent(new PointerEvent("pointerdown",{bubbles:true,pointerId:71}));
+      await new Promise(resolve=>setTimeout(resolve,450));
+      fire.dispatchEvent(new PointerEvent("pointerup",{bubbles:true,pointerId:71}));
+    }finally{
+      bullets.push=nativePush;
+    }
     return{mana,afterMana:Number(p1.mana),held:input.has("Space"),launched};
   });
   assert.equal(tutorialFire.mana-tutorialFire.afterMana,1,"one Tutorial FIRE press must produce exactly one ammo-consuming action");
