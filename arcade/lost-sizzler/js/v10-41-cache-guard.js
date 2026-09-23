@@ -73,8 +73,8 @@
   function errorText(value){return String(value?.stack||value?.message||value||"Unknown startup error").slice(0,1200)}
   function sourceLooksLocal(source="",message=""){
     const raw=String(source||"");
-    if(raw)return gamePath(raw)||/lost-sizzler|v10-|horde-survivor|sizzler-saboteurs/i.test(raw);
-    return /lost-sizzler|v10-|horde-survivor|sizzler-saboteurs/i.test(String(message||""));
+    if(raw)return gamePath(raw)||/lost-sizzler|c64-dungeon-carnage|v10-|horde-survivor|sizzler-saboteurs/i.test(raw);
+    return /lost-sizzler|c64-dungeon-carnage|v10-|horde-survivor|sizzler-saboteurs/i.test(String(message||""));
   }
 
   function recordRuntimeError(error,source=""){
