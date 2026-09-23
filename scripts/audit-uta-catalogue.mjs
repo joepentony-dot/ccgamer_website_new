@@ -21,6 +21,7 @@ const REPORT_JSON = path.join(REPORT_DIR, "uta-full-catalogue-audit.json");
 const REPORT_MD = path.join(REPORT_DIR, "uta-full-catalogue-audit.md");
 const LIVE_MAPPING_JSON = path.join(REPORT_DIR, "uta-live-generated-mapping.json");
 const LIVE_REVIEW_JSON = path.join(REPORT_DIR, "uta-live-manual-review.json");
+const LIVE_RELEASES_JSON = path.join(REPORT_DIR, "uta-live-release-inventory.json");
 
 function isC64(game) {
   const key = normalizeText(game?.system);
@@ -240,6 +241,7 @@ async function main() {
   const fuzzyPublisherCandidates = [];
   const fuzzyTitleOnlyCandidates = [];
   const noTitleCandidate = [];
+  const broadTitleDiagnostics = [];
 
   for (const game of c64Games) {
     const variants = gameTitleSet(game);
@@ -386,6 +388,40 @@ async function main() {
       continue;
     }
 
+    const broadCandidates = releases
+      .map((release) => ({
+        release,
+        relation: candidateRole(game, release),
+        similarity: Math.max(
+          ...[game?.title, game?.sorttitle]
+            .filter(Boolean)
+            .map((title) => diceSimilarity(title, release.title))
+        )
+      }))
+      .filter(({ release, similarity }) => {
+        if (similarity < 0.5) return false;
+        const gameYear = Number(game?.year) || null;
+        if (!gameYear || !release.year) return true;
+        return release.year >= gameYear - 2 && release.year <= gameYear + 12;
+      })
+      .sort((a, b) =>
+        Number(b.relation.publisherMatched) - Number(a.relation.publisherMatched)
+        || b.similarity - a.similarity
+        || Number(a.release.archiveId) - Number(b.release.archiveId)
+      )
+      .slice(0, 5);
+
+    if (broadCandidates.length) {
+      broadTitleDiagnostics.push({
+        slug: game.slug,
+        title: game.title,
+        year: game.year,
+        candidates: broadCandidates.map(({ release, relation, similarity }) =>
+          releaseSummary(release, { ...relation, similarity: Number(similarity.toFixed(3)) })
+        )
+      });
+    }
+
     noTitleCandidate.push({ slug: game.slug, title: game.title, year: game.year });
   }
 
@@ -418,7 +454,8 @@ async function main() {
     publisherVerifiedContainmentCandidateGames: publisherVerifiedContainmentCandidates.length,
     fuzzyPublisherCandidateGames: fuzzyPublisherCandidates.length,
     fuzzyTitleOnlyCandidateGames: fuzzyTitleOnlyCandidates.length,
-    noTitleCandidateGames: noTitleCandidate.length
+    noTitleCandidateGames: noTitleCandidate.length,
+    broadTitleDiagnosticGames: broadTitleDiagnostics.length
   };
 
   const report = {
@@ -431,6 +468,7 @@ async function main() {
     publisherVerifiedContainmentCandidates,
     fuzzyPublisherCandidates,
     fuzzyTitleOnlyCandidates,
+    broadTitleDiagnostics,
     noTitleCandidate
   };
 
@@ -438,6 +476,12 @@ async function main() {
   fs.writeFileSync(REPORT_JSON, JSON.stringify(report, null, 2) + "\n");
   fs.writeFileSync(LIVE_MAPPING_JSON, JSON.stringify(live, null, 2) + "\n");
   fs.writeFileSync(LIVE_REVIEW_JSON, JSON.stringify(manual, null, 2) + "\n");
+  fs.writeFileSync(LIVE_RELEASES_JSON, JSON.stringify({
+    schemaVersion: 1,
+    source: UTA_INDEX_URL,
+    generatedAt: summary.auditedAt,
+    releases
+  }, null, 2) + "\n");
 
   const md = [
     "# Ultimate Tape Archive full C64 catalogue audit",
@@ -529,6 +573,22 @@ async function main() {
     markdownTable(
       ["Slug", "Title", "Year", "UTA candidates"],
       fuzzyTitleOnlyCandidates.map((row) => [
+        row.slug,
+        row.title,
+        row.year,
+        row.candidates.map((candidate) =>
+          `${candidate.archiveId} ${candidate.title} / ${candidate.publisher} ${candidate.yearLabel} (similarity=${candidate.similarity}, publisher=${candidate.publisherMatched})`
+        ).join("; ")
+      ])
+    ),
+    "",
+    "## Broad diagnostics for otherwise unmatched C64 games",
+    "",
+    "These are deliberately non-publishing diagnostics. They expose the five closest live UTA titles at similarity 0.50 or better for games that otherwise had no candidate, so alternate titles and source-data gaps can be reviewed rather than silently missed.",
+    "",
+    markdownTable(
+      ["Slug", "Title", "Year", "Closest UTA candidates"],
+      broadTitleDiagnostics.map((row) => [
         row.slug,
         row.title,
         row.year,
