@@ -202,7 +202,7 @@ function decodeDirectoryName(href) {
 
 export function parseUtaReleaseDirectory(directoryName, href = "") {
   const decoded = decodeHtmlEntities(String(directoryName || "").replace(/\/$/, ""));
-  const match = decoded.match(/^(.*?)_\(((?:19|20)\d{2}|19xx|198x|0)_([\s\S]+)\)_\[(\d+)\]$/i);
+  const match = decoded.match(/^(.*?)_\(((?:19|20)(?:\d{2}|\dx|xx)|0)_([\s\S]+)\)_\[(\d+)\]$/i);
   if (!match) return null;
 
   const titleRaw = match[1].replace(/_/g, " ").trim();
@@ -229,8 +229,9 @@ export function parseUtaReleaseDirectory(directoryName, href = "") {
   };
 }
 
-export function parseUtaIndex(html) {
+export function parseUtaIndexWithDiagnostics(html) {
   const releases = [];
+  const rejectedReleaseDirectories = [];
   const seen = new Set();
   const hrefPattern = /href=(["'])(.*?)\1/gi;
   let match;
@@ -241,18 +242,31 @@ export function parseUtaIndex(html) {
 
     const directoryName = decodeDirectoryName(href);
     const parsed = parseUtaReleaseDirectory(directoryName, href);
-    if (!parsed || seen.has(parsed.archiveId)) continue;
+    const looksLikeRelease = /_\[\d+\]$/.test(String(directoryName || "").replace(/\/$/, ""));
+
+    if (!parsed) {
+      if (looksLikeRelease) rejectedReleaseDirectories.push(directoryName);
+      continue;
+    }
+    if (seen.has(parsed.archiveId)) continue;
 
     seen.add(parsed.archiveId);
     releases.push(parsed);
   }
 
-  return releases.sort((a, b) =>
-    a.titleKey.localeCompare(b.titleKey)
-    || String(a.publisherKey).localeCompare(String(b.publisherKey))
-    || String(a.yearLabel).localeCompare(String(b.yearLabel))
-    || Number(a.archiveId) - Number(b.archiveId)
-  );
+  return {
+    releases: releases.sort((a, b) =>
+      a.titleKey.localeCompare(b.titleKey)
+      || String(a.publisherKey).localeCompare(String(b.publisherKey))
+      || String(a.yearLabel).localeCompare(String(b.yearLabel))
+      || Number(a.archiveId) - Number(b.archiveId)
+    ),
+    rejectedReleaseDirectories
+  };
+}
+
+export function parseUtaIndex(html) {
+  return parseUtaIndexWithDiagnostics(html).releases;
 }
 
 function toArray(value) {
@@ -535,8 +549,12 @@ export async function main(argv = process.argv.slice(2)) {
   const curatedApprovals = parseCuratedApprovals(curatedData);
 
   const html = await loadIndex(options);
-  const utaReleases = parseUtaIndex(html);
+  const parsedIndex = parseUtaIndexWithDiagnostics(html);
+  const utaReleases = parsedIndex.releases;
   if (!utaReleases.length) throw new Error("No UTA release directories were parsed; refusing to replace cached mapping.");
+  if (parsedIndex.rejectedReleaseDirectories.length) {
+    throw new Error(`UTA index contains ${parsedIndex.rejectedReleaseDirectories.length} release-like director${parsedIndex.rejectedReleaseDirectories.length === 1 ? "y" : "ies"} that could not be parsed: ${parsedIndex.rejectedReleaseDirectories.slice(0, 10).join(", ")}`);
+  }
 
   const result = buildUtaMapping(games, utaReleases, curatedApprovals);
   writeJson(options.output, result.mapping);
