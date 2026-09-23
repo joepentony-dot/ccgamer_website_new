@@ -131,6 +131,16 @@ export function parseUtaReleaseDirectory(directoryName, href = "") {
   };
 }
 
+function releaseIdentity(release) {
+  const archiveId = String(release?.archiveId || "");
+  // UTA uses archive ID 0 as an unassigned sentinel on multiple distinct
+  // directories, so those entries must be distinguished by URL instead of
+  // being collapsed as if 0 were globally unique.
+  return archiveId && archiveId !== "0"
+    ? `id:${archiveId}`
+    : `url:${String(release?.url || "")}`;
+}
+
 export function parseUtaIndex(html) {
   const releases = [];
   const seen = new Set();
@@ -143,9 +153,12 @@ export function parseUtaIndex(html) {
 
     const directoryName = decodeDirectoryName(href);
     const parsed = parseUtaReleaseDirectory(directoryName, href);
-    if (!parsed || seen.has(parsed.archiveId)) continue;
+    if (!parsed) continue;
 
-    seen.add(parsed.archiveId);
+    const identity = releaseIdentity(parsed);
+    if (seen.has(identity)) continue;
+
+    seen.add(identity);
     releases.push(parsed);
   }
 
@@ -236,7 +249,15 @@ export function validateUtaOverrides(games, utaReleases, overrides = {}) {
       .filter((game) => game && game.slug)
       .map((game) => [String(game.slug), game])
   );
-  const releaseMap = new Map(utaReleases.map((release) => [String(release.archiveId), release]));
+  const releaseMap = new Map();
+  for (const release of utaReleases) {
+    const archiveId = String(release.archiveId);
+    if (archiveId === "0") continue;
+    if (releaseMap.has(archiveId)) {
+      throw new Error(`UTA index contains duplicate non-zero archive ID: ${archiveId}`);
+    }
+    releaseMap.set(archiveId, release);
+  }
   const curatedExclusions = [];
 
   for (const [slug, rule] of Object.entries(overrides?.games || {})) {
@@ -298,7 +319,15 @@ export function matchGameToUta(game, utaReleases, override = null) {
 
   const excludedIds = new Set(toArray(override?.exclude).map((item) => String(item?.archiveId || "")));
   const includedIds = new Set(toArray(override?.include).map((item) => String(item?.archiveId || "")));
-  const releaseMap = new Map(utaReleases.map((release) => [String(release.archiveId), release]));
+  const releaseMap = new Map();
+  for (const release of utaReleases) {
+    const archiveId = String(release.archiveId);
+    if (archiveId === "0") continue;
+    if (releaseMap.has(archiveId)) {
+      throw new Error(`UTA index contains duplicate non-zero archive ID: ${archiveId}`);
+    }
+    releaseMap.set(archiveId, release);
+  }
   const titleCandidates = utaReleases.filter((release) =>
     !excludedIds.has(String(release.archiveId))
     && !includedIds.has(String(release.archiveId))
@@ -349,7 +378,7 @@ export function matchGameToUta(game, utaReleases, override = null) {
   });
 
   const uniqueAccepted = Array.from(
-    new Map(accepted.map((release) => [release.archiveId, release])).values()
+    new Map(accepted.map((release) => [releaseIdentity(release), release])).values()
   ).sort((a, b) =>
     (a.year || 9999) - (b.year || 9999)
     || a.publisher.localeCompare(b.publisher)
