@@ -1,3 +1,11 @@
+## Current-main residual UTA rebuild — 23 September 2026
+
+The stale #2279 residual-reconciliation branch was 71 commits behind and has been closed without merge. After qualified #2294 and #2295 merged and generated-output #2296 advanced `main`, the verified residual work is being rebuilt on `codex/uta-residual-rebuild-current-main-20260923`.
+
+The rebuild intentionally carries forward only the verified residual UTA work: 17 additional mapped game pages covering 20 cassette releases, the 164-record residual review dataset, archive-directory rather than bare-ID de-duplication for UTA's reused archive IDs, workflow triggers for curated evidence changes, and the associated regression contracts. It preserves newer current-main UTA freshness/cache coverage and does not modify `games/games.json`.
+
+Exact-head qualification is required before merge. After merge, Reliable Games Publishing must perform the authoritative live UTA refresh before final catalogue counts are treated as current.
+
 ## PR #2295 current-main rebuild after #2294 merge — 23 September 2026
 
 PR #2294 merged first as authorised. That moved `main` ahead of the previously-qualified #2295 head and made the old branch diverged/non-mergeable. #2295 has therefore been rebuilt on the new `main` while preserving the existing PR.
