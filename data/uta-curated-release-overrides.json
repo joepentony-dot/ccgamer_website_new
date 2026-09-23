@@ -193,6 +193,27 @@
       ]
     },
     {
+      "gameSlug": "flunky",
+      "archiveIds": [
+        "5141"
+      ],
+      "titleAliases": [
+        "Mad Flunky"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/flunky",
+          "note": "Lemon64 lists Flunky as also known as Mad Flunky, identifies Alternative Software as re-releaser, and documents the 1988 Alternative cassette tape entry."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Mad_Flunky_(1988_Alternative_Software)_%5b5141%5d/",
+          "note": "UTA archive entry for the Alternative Software cassette under the Mad Flunky re-release title."
+        }
+      ]
+    },
+    {
       "gameSlug": "give-my-regards-to-broad-street",
       "archiveIds": [
         "8446"
