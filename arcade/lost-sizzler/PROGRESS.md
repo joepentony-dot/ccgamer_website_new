@@ -2,6 +2,21 @@
 
 > Legacy repository path: `arcade/lost-sizzler/`. The customer-facing game name is **C64 Dungeon Carnage**. Historical internal identifiers may still use `Lost Sizzler` where compatibility requires them.
 
+## Unified live checkpoint — 23 September 2026
+
+- Live `main` at this reconciliation is `88df63430f275a37553a821c2511b1296dd13f8e`. PR #2271 is merged; the published gameplay generation remains **V10.42 R51**.
+- Draft PR **#2284** / `codex/dungeon-carnage-public-route-cleanup` is the active public-route migration. The repository source tree deliberately remains `arcade/lost-sizzler/`; deployment publishes the game at `/arcade/c64-dungeon-carnage/` and retains `/arcade/lost-sizzler/` as a noindex compatibility redirect with legacy assets available for stale clients.
+- Route reconciliation covers the static canonical, Home CTA and Home runtime owner, both legacy game-entry redirects, service-worker routing, the Dungeon cache guard, the late canonical owner, critical-module diagnostics, retained auth return paths, itch manifest and production smoke. The public-code cache namespace advances to `2026-09-23-public-code-v7`.
+- The visible gameplay build stays **V10.42 R51**. Route-owner JavaScript uses fresh cache token **`20260923r51`** so browsers cannot combine the renamed deployment with stale R51 route code.
+- The obsolete public menu wording `ONLINE room code remains your rejoin key` is removed in #2284; supported public play remains Solo + Tutorial.
+- Draft PR **#2283** / `codex/dungeon-r51-fire-wall-incident-20260923` is the fresh current-main repair for the reproduced FIRE lockout, active-trap and renderer-corruption incident. Its triggered Load Safety, mobile-trap, package, SEO, cache and rerun wheel checks were green on head `f1cfd58501a65eab783a13ae2836108a18a4243a` while it was 0 commits behind `main`; it remains separate from the route migration and still requires current-head reconciliation if `main` moves plus hands-on acceptance after merge.
+- Draft PR **#2282** is the separate R52 unused-level-up entitlement candidate. Do not fold it into R51 route work or merge a pre-route head after #2284 changes `main`; reconcile and requalify it in sequence.
+- Historical #2256/#2241/R50 sections below are retained as evidence only. They are not the current integration vehicles.
+
+### Current closure boundary
+
+#2284 is not merge-safe until its final exact head is 0 commits behind `main` and every triggered check, including canonical/Node and all six Chromium shards, is green. Repository qualification does not replace the remaining deployed/hands-on Dungeon checks: sustained Solo FIRE/stability, active trap damage, renderer stability, fullscreen/UI presentation, startup transition, the Banishment Flask exchange and the other explicitly recorded live acceptance gates.
+
 ## R51 runtime ownership qualification repair — 22 September 2026
 
 - **Active vehicle:** draft PR #2256 / `codex/dungeon-r51-owner-preview-current-main`.
