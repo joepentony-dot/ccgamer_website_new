@@ -24,6 +24,7 @@
 - PR #2272 and generated-output PR #2273 are merged. The authoritative fresh scan now covers 370 of 559 C64 games, with 35 unmatched manual-review games and 154 games with no compatible title candidate across 2,890 scanned UTA releases.
 - Draft PR #2275 / branch `codex/uta-curated-release-reconciliation-20260923` adds a source-evidenced, game-slug + exact-archive-ID curation path for verified regional/re-release cassette relationships that are not yet represented in the game record.
 - Curated IDs do not create global publisher aliases: exact normalized title matching and the existing year safeguard remain mandatory, prefix/subtitle matches cannot be unlocked by curation, and approvals cannot apply to another game slug.
+- The follow-up no-title-candidate pass also adds publisher-qualified exact-equivalence for spacing-only title variants and the explicit UTA `X, The- subtitle` article notation, covering verified gaps such as Bad Dudes vs Dragon Ninja, The New Zealand Story, Nightbreed and The Train without relaxing sequel or publisher safeguards.
 - The first verified batch contains 12 C64 games / 13 UTA release IDs. Unsafe lookalikes remain excluded to manual review.
 - #2275 must complete exact-head qualification and still requires explicit user merge authorisation. After any merge, Reliable Games Publishing remains responsible for the authoritative live UTA rescan and generated-output merge.
 - Detailed record: [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md).
