@@ -50,8 +50,13 @@ async function firearmTap(page,cycle){
   const before=await page.evaluate(()=>{
     p1.firearmUnlocked=true;p1.weapon=baseWeapon();p1.maxMana=Math.max(100000,Number(p1.maxMana)||0);p1.mana=100000;
     bullets.length=0;
+    const dirs=[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
+    const dir=dirs.find(d=>W.walkable(world.map,p1.x+d.x,p1.y+d.y,host)&&!(host?.blockingDecor||[]).some(item=>item?.x===p1.x+d.x&&item?.y===p1.y+d.y));
+    if(!dir)return null;
+    p1.dir={...dir};
     return{mana:Number(p1.mana),swing:Number(p1._meleeSwingAt||0)};
   });
+  assert.ok(before,`cycle ${cycle}: desktop firearm soak needs a clear firing direction`);
   await page.keyboard.press("Space");
   await page.waitForTimeout(950);
   const after=await page.evaluate(()=>({mana:Number(p1.mana),swing:Number(p1._meleeSwingAt||0),space:input.has("Space"),held:Number(window.CCGLostSizzlerV142AttackHoldLiveness?.held?.size||0)}));
