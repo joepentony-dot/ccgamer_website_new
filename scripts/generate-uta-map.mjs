@@ -83,13 +83,35 @@ function addArticleVariants(variants, normalized) {
   }
 }
 
+function sourceArticleVariants(value) {
+  const source = decodeHtmlEntities(String(value || "")).trim();
+  const variants = new Set([source]);
+  const inlineArticle = source.match(/^(.+?),\s*the\s*[-:\u2013\u2014]\s*(.+)$/i);
+  if (inlineArticle) {
+    variants.add(`The ${inlineArticle[1]} ${inlineArticle[2]}`);
+  }
+  return variants;
+}
+
+function compactTitleSpacing(value) {
+  return String(value || "").replace(/\s+/g, "");
+}
+
+function exactTitleMatch(gameTitles, releaseTitles) {
+  const gameCompact = new Set([...gameTitles].map(compactTitleSpacing).filter(Boolean));
+  return [...releaseTitles].some((value) =>
+    gameTitles.has(value) || gameCompact.has(compactTitleSpacing(value))
+  );
+}
+
 export function titleVariants(...values) {
   const variants = new Set();
   values.filter(Boolean).forEach((value) => {
-    const bases = new Set([
-      normalizeText(value),
-      normalizeTextWithPunctuationSpacing(value)
-    ]);
+    const bases = new Set();
+    sourceArticleVariants(value).forEach((source) => {
+      bases.add(normalizeText(source));
+      bases.add(normalizeTextWithPunctuationSpacing(source));
+    });
 
     [...bases].forEach((base) => {
       if (!base) return;
@@ -303,7 +325,7 @@ export function matchGameToUta(game, utaReleases, curatedArchiveIds = new Set())
   const titleCandidates = utaReleases
     .map((release) => {
       const releaseTitles = titleVariants(release.title);
-      const exact = [...releaseTitles].some((value) => titles.has(value));
+      const exact = exactTitleMatch(titles, releaseTitles);
       const prefix = !exact && prefixTitleMatch(titles, releaseTitles);
       return exact || prefix ? { release, matchKind: exact ? "exact" : "publisher-qualified-prefix" } : null;
     })
