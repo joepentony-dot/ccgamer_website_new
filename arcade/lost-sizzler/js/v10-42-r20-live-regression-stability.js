@@ -200,9 +200,9 @@
     try{window.CCGLostSizzlerV142R1Stability?.repairCombatTimers?.()}catch(_){}
     try{window.CCGLostSizzlerV142R1Stability?.repairProjectilePool?.()}catch(_){}
     try{
-      if(!Number.isFinite(Number(fire1))||Number(fire1)<0||Number(fire1)>5000)fire1=0;
+      if(!Number.isFinite(Number(fire1))||Number(fire1)<0||Number(fire1)>2500){fire1=0;diagnostics.finiteCooldownRepairs++}
       if(!Number.isFinite(Number(fireBuffer1))||Number(fireBuffer1)<0||Number(fireBuffer1)>2500)fireBuffer1=0;
-      if(!Number.isFinite(Number(projectileCD))||Number(projectileCD)<0||Number(projectileCD)>1000)projectileCD=0;
+      if(!Number.isFinite(Number(projectileCD))||Number(projectileCD)<0||Number(projectileCD)>140)projectileCD=0;
       const player=p1||null;
       if(player){
         if(player.controlLocked){player.controlLocked=false;diagnostics.controlLockRepairs++}
