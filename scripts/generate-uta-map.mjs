@@ -7,6 +7,7 @@ export const DEFAULT_GAMES_PATH = "games/games.json";
 export const DEFAULT_OUTPUT_PATH = "data/uta-game-matches.json";
 export const DEFAULT_REVIEW_PATH = "data/uta-manual-review.json";
 export const DEFAULT_AUDIT_PATH = "data/uta-audit.json";
+export const DEFAULT_CURATED_PATH = "data/uta-curated-release-overrides.json";
 
 function decodeHtmlEntities(value) {
   return String(value || "")
@@ -288,7 +289,7 @@ function releaseForOutput(release, sourceRole) {
   };
 }
 
-export function matchGameToUta(game, utaReleases) {
+export function matchGameToUta(game, utaReleases, curatedArchiveIds = new Set()) {
   if (!isC64(game)) {
     return { releases: [], review: [] };
   }
@@ -313,11 +314,14 @@ export function matchGameToUta(game, utaReleases) {
   const rejected = [];
 
   titleCandidates.forEach(({ release, matchKind }) => {
+    const curatedMatch = curatedArchiveIds.has(String(release.archiveId));
     const originalMatch = credits.original.has(release.publisherKey);
     const rereleaseMatch = credits.rerelease.has(release.publisherKey);
     let sourceRole = "";
 
-    if (rereleaseMatch && (!originalMatch || (gameYear && release.year && release.year > gameYear + 1))) {
+    if (curatedMatch && matchKind === "exact") {
+      sourceRole = "verified-release";
+    } else if (rereleaseMatch && (!originalMatch || (gameYear && release.year && release.year > gameYear + 1))) {
       sourceRole = "re-release";
     } else if (originalMatch) {
       sourceRole = "publisher";
@@ -332,7 +336,11 @@ export function matchGameToUta(game, utaReleases) {
     const titleCompatible = matchKind === "exact" || Boolean(sourceRole);
 
     if (sourceRole && yearCompatible && titleCompatible) {
-      accepted.push({ ...releaseForOutput(release, sourceRole), titleMatch: matchKind });
+      accepted.push({
+        ...releaseForOutput(release, sourceRole),
+        titleMatch: matchKind,
+        ...(curatedMatch ? { verification: "curated-archive-id" } : {})
+      });
     } else {
       rejected.push({
         archiveId: release.archiveId,
@@ -372,7 +380,7 @@ export function matchGameToUta(game, utaReleases) {
   return { releases: uniqueAccepted, review };
 }
 
-export function buildUtaMapping(games, utaReleases) {
+export function buildUtaMapping(games, utaReleases, curatedApprovals = new Map()) {
   const publicGames = {};
   const manualReview = [];
   const c64Games = [...games].filter(isC64);
@@ -380,7 +388,8 @@ export function buildUtaMapping(games, utaReleases) {
   [...games]
     .sort((a, b) => String(a?.slug || "").localeCompare(String(b?.slug || "")))
     .forEach((game) => {
-      const result = matchGameToUta(game, utaReleases);
+      const curatedArchiveIds = curatedApprovals.get(String(game?.slug || "")) || new Set();
+      const result = matchGameToUta(game, utaReleases, curatedArchiveIds);
       if (result.releases.length) {
         publicGames[game.slug] = {
           title: String(game.title || game.slug),
@@ -408,13 +417,13 @@ export function buildUtaMapping(games, utaReleases) {
     mapping: {
       schemaVersion: 1,
       source: UTA_INDEX_URL,
-      matching: "normalized-title variants (punctuation, article order, roman numerals, initialisms) plus known publisher/re-release evidence; conservative publisher-qualified subtitle/prefix matching; release must not predate the catalogued game by more than one year when both years are known",
+      matching: "normalized-title variants (punctuation, article order, roman numerals, initialisms) plus known publisher/re-release evidence; exact-title archive IDs may be source-verified in the curated override file; conservative publisher-qualified subtitle/prefix matching; release must not predate the catalogued game by more than one year when both years are known",
       games: publicGames
     },
     manualReview: {
       schemaVersion: 1,
       source: UTA_INDEX_URL,
-      note: "Excluded UTA title matches that need source-data verification before they can be exposed.",
+      note: "Excluded UTA title matches that need source-data verification before they can be exposed. Exact-title archive IDs listed in the curated override file are treated as independently verified release relationships while retaining year safeguards.",
       entries: manualReview.sort((a, b) => a.gameSlug.localeCompare(b.gameSlug))
     },
     audit: {
@@ -439,6 +448,7 @@ function parseArgs(argv) {
     output: DEFAULT_OUTPUT_PATH,
     reviewOutput: DEFAULT_REVIEW_PATH,
     auditOutput: DEFAULT_AUDIT_PATH,
+    curated: DEFAULT_CURATED_PATH,
     indexUrl: UTA_INDEX_URL,
     indexFile: ""
   };
@@ -450,6 +460,7 @@ function parseArgs(argv) {
     else if (arg === "--output" && next) options.output = next, i += 1;
     else if (arg === "--review-output" && next) options.reviewOutput = next, i += 1;
     else if (arg === "--audit-output" && next) options.auditOutput = next, i += 1;
+    else if (arg === "--curated" && next) options.curated = next, i += 1;
     else if (arg === "--index-url" && next) options.indexUrl = next, i += 1;
     else if (arg === "--index-file" && next) options.indexFile = next, i += 1;
   }
@@ -472,6 +483,20 @@ async function loadIndex(options) {
   return response.text();
 }
 
+export function parseCuratedApprovals(value) {
+  const map = new Map();
+  const entries = Array.isArray(value?.entries) ? value.entries : [];
+
+  entries.forEach((entry) => {
+    const slug = String(entry?.gameSlug || "").trim();
+    const archiveIds = Array.isArray(entry?.archiveIds) ? entry.archiveIds : [];
+    if (!slug || !archiveIds.length) return;
+    map.set(slug, new Set(archiveIds.map((id) => String(id).trim()).filter(Boolean)));
+  });
+
+  return map;
+}
+
 function writeJson(filePath, value) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, JSON.stringify(value, null, 2) + "\n", "utf8");
@@ -482,11 +507,16 @@ export async function main(argv = process.argv.slice(2)) {
   const games = JSON.parse(fs.readFileSync(options.games, "utf8"));
   if (!Array.isArray(games)) throw new Error("games/games.json must contain an array.");
 
+  const curatedData = fs.existsSync(options.curated)
+    ? JSON.parse(fs.readFileSync(options.curated, "utf8"))
+    : { entries: [] };
+  const curatedApprovals = parseCuratedApprovals(curatedData);
+
   const html = await loadIndex(options);
   const utaReleases = parseUtaIndex(html);
   if (!utaReleases.length) throw new Error("No UTA release directories were parsed; refusing to replace cached mapping.");
 
-  const result = buildUtaMapping(games, utaReleases);
+  const result = buildUtaMapping(games, utaReleases, curatedApprovals);
   writeJson(options.output, result.mapping);
   writeJson(options.reviewOutput, result.manualReview);
   writeJson(options.auditOutput, result.audit);
