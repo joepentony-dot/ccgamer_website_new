@@ -12,8 +12,8 @@ const html=read("index.html");
 const css=read("css/game.css");
 const version=JSON.parse(read("version.json"));
 
-assert.equal(version.build,"V10.42 r52","unused level-up delivery must ship under the r52 build identity");
-assert.equal(version.cacheToken,"20260923r52","unused level-up delivery must use a fresh release-wide cache token");
+assert.equal(version.build,"V10.42 r53","the retained unused level-up feature must ship under the current r53 build identity");
+assert.equal(version.cacheToken,"20260923r53","the retained unused level-up feature must use the current release-wide cache token");
 
 assert.match(progression,/player\.pendingLevels=\(player\.pendingLevels\|\|0\)\+1/,"every earned level must create one unused level-up entitlement");
 assert.match(progression,/player\.pendingLevels=Math\.max\(0,\(player\.pendingLevels\|\|1\)-1\)/,"applying one skill must consume one entitlement");
@@ -40,4 +40,4 @@ assert.match(main,/\$\("quick-level-up"\)\?\.addEventListener\("click",\(\)=>reo
 assert.match(main,/if\(event\.target===UI\.levelUp\)deferLevelChoice\(\)/,"clicking the level-up backdrop must defer rather than discard");
 assert.match(main,/if\(mode==="levelup"\)\{deferLevelChoice\(\);return\}/,"Escape must defer a level-up without entering pause or losing it");
 
-console.log("PASS V10.42 R52 unused level-up entitlement contract");
+console.log("PASS V10.42 R52 unused level-up entitlement contract under current R53 build");
