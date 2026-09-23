@@ -1,8 +1,29 @@
 {
   "schemaVersion": 1,
   "source": "https://uta.pokefinder.org/Ultimate_Tape_Archive/",
-  "note": "Exact UTA archive IDs independently verified as releases of the specified C64 game. Optional titleAliases are game-specific verified archive-title aliases; they never become global title substitutions. Curated approvals still require the listed archive ID, an exact normalized canonical/curated title match, and the existing year safeguard.",
+  "note": "Exact UTA archive IDs independently verified as releases of the specified C64 game. Optional titleAliases are game-specific verified archive-title aliases; they never become global title substitutions. Curated approvals still require the listed archive ID, an exact normalized canonical/curated title match, and the existing year safeguard. Archive IDs are not assumed globally unique; release identity is preserved by its UTA directory URL.",
   "entries": [
+    {
+      "gameSlug": "action-biker",
+      "archiveIds": [
+        "6254"
+      ],
+      "titleAliases": [
+        "KP Skips Action Biker with Clumsy Colin"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/action-biker",
+          "note": "Lemon64 lists Action Biker as also known as KP Skips Action Biker with Clumsy Colin and identifies the 1985 Mastertronic tape release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/KP_Skips_Action_Biker_with_Clumsy_Colin_(1985_Mastertronic)_%5b6254%5d/",
+          "note": "UTA archive entry for the same Mastertronic 1985 cassette under the licensed full title."
+        }
+      ]
+    },
     {
       "gameSlug": "aussie-games",
       "archiveIds": [
@@ -21,6 +42,24 @@
           "source": "UTA",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Australian_Games_(1990_ERBE_Software)_%5b20824%5d/",
           "note": "UTA archive entry for Australian Games, ERBE Software, 1990."
+        }
+      ]
+    },
+    {
+      "gameSlug": "barbarian-2-the-dungeon-of-drax",
+      "archiveIds": [
+        "5918"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/barbarian-2",
+          "note": "Lemon64 identifies Barbarian II: The Dungeon of Drax and states its tape entry was used in the 1988 ERBE Software Spanish release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Barbarian_II_(1988_ERBE_Software)_%5b5918%5d/",
+          "note": "UTA archive entry for Barbarian II, ERBE Software, 1988."
         }
       ]
     },
@@ -56,6 +95,50 @@
       ]
     },
     {
+      "gameSlug": "boulder-dash",
+      "archiveIds": [
+        "411"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/boulder-dash",
+          "note": "Lemon64 identifies the State Soft 1984 tape release of Boulder Dash."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Boulder_Dash_(1984_State_Soft)_%5b411%5d/",
+          "note": "UTA archive entry for Boulder Dash, State Soft, 1984."
+        }
+      ]
+    },
+    {
+      "gameSlug": "by-fair-means-or-foul",
+      "archiveIds": [
+        "2952"
+      ],
+      "titleAliases": [
+        "Pro Boxing Simulator"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/by-fair-means-or-foul",
+          "note": "Lemon64 documents the 1988 C64 game By Fair Means... or Foul! and links it to Pro Boxing Simulator."
+        },
+        {
+          "source": "The Codemasters Archive",
+          "url": "https://thecodemastersarchive.co.uk/games/pro-boxing-simulator/",
+          "note": "The Codemasters Archive states that By Fair Means... Or Foul was later re-released by Codemasters as Pro Boxing Simulator, including the Commodore 64 version."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Pro_Boxing_Simulator_(1990_Codemasters)_%5b2952%5d/",
+          "note": "UTA archive entry for the 1990 Codemasters cassette re-release under the Pro Boxing Simulator title."
+        }
+      ]
+    },
+    {
       "gameSlug": "chopper",
       "archiveIds": [
         "1036"
@@ -78,6 +161,76 @@
           "source": "Lemon64",
           "url": "https://www.lemon64.com/game/donald-ducks-playground",
           "note": "Lemon64 identifies the US Gold tape entry and US Gold full-price reviews for this game."
+        }
+      ]
+    },
+    {
+      "gameSlug": "dragons-lair-2-escape-from-singes-castle",
+      "archiveIds": [
+        "395",
+        "5078"
+      ],
+      "titleAliases": [
+        "Dragon's Lair Part II: Escape from Singe's Castle",
+        "Escape from Singe's Castle"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/dragons-lair-2",
+          "note": "Lemon64 identifies Dragon's Lair II: Escape from Singe's Castle as the 1987 Electronic Arts / Software Projects game and confirms a Software Projects tape release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Dragon's_Lair_Part_II-_Escape_from_Singe's_Castle_(1987_Software_Projects)_%5b395%5d/",
+          "note": "UTA archive entry for the same Software Projects 1987 cassette using the Part II title form."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Escape_from_Singe's_Castle_(1987_Encore)_%5b5078%5d/",
+          "note": "UTA archive entry for the documented Encore 1987 cassette re-release under the shortened Escape from Singe's Castle title."
+        }
+      ]
+    },
+    {
+      "gameSlug": "flunky",
+      "archiveIds": [
+        "5141"
+      ],
+      "titleAliases": [
+        "Mad Flunky"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/flunky",
+          "note": "Lemon64 lists Flunky as also known as Mad Flunky, identifies Alternative Software as re-releaser, and documents the 1988 Alternative cassette tape entry."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Mad_Flunky_(1988_Alternative_Software)_%5b5141%5d/",
+          "note": "UTA archive entry for the Alternative Software cassette under the Mad Flunky re-release title."
+        }
+      ]
+    },
+    {
+      "gameSlug": "give-my-regards-to-broad-street",
+      "archiveIds": [
+        "8446"
+      ],
+      "titleAliases": [
+        "Paul McCartney's Give My Regards to Broad Street"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/give-my-regards-to-broad-street",
+          "note": "Lemon64 lists Paul McCartney's Give My Regards to Broad Street as an alternate title and identifies the 1985 Mind Games European tape release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Paul_McCartney's_Give_My_Regards_to_Broad_Street_(1985_Mind_Games)_%5b8446%5d/",
+          "note": "UTA archive entry for the same 1985 Mind Games cassette under the Paul McCartney title form."
         }
       ]
     },
@@ -116,6 +269,29 @@
       ]
     },
     {
+      "gameSlug": "international-soccer",
+      "archiveIds": [
+        "3215"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/international-soccer-commodore",
+          "note": "Lemon64 states the original 1983 Commodore cartridge game was later reissued by CRL on tape and disk in 1988."
+        },
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/international-soccer-crl",
+          "note": "Lemon64 documents the 1988 CRL cassette re-release of the original International Soccer."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/International_Soccer_(1988_CRL)_%5b3215%5d/",
+          "note": "UTA archive entry for the CRL 1988 cassette re-release."
+        }
+      ]
+    },
+    {
       "gameSlug": "karateka",
       "archiveIds": [
         "2866"
@@ -129,6 +305,45 @@
       ]
     },
     {
+      "gameSlug": "leader-board",
+      "archiveIds": [
+        "6678"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/leaderboard-golf",
+          "note": "Lemon64 lists Leaderboard Golf as also known as Leader Board and identifies the tape entry used in the 1986 ERBE Software Spanish release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Leader_Board_(1986_ERBE_Software)_%5b6678%5d/",
+          "note": "UTA archive entry for Leader Board, ERBE Software, 1986."
+        }
+      ]
+    },
+    {
+      "gameSlug": "live-and-let-die",
+      "archiveIds": [
+        "2954"
+      ],
+      "titleAliases": [
+        "James Bond 007 in Live and Let Die - The Computer Game"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/live-and-let-die",
+          "note": "Lemon64 identifies Live and Let Die: The Computer Game as the 1988 Domark title and confirms the Encore cassette re-release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/James_Bond_007_in_Live_and_Let_Die_-_The_Computer_Game_(19xx_Encore)_%5b2954%5d/",
+          "note": "UTA archive entry for the Encore cassette under the longer James Bond title."
+        }
+      ]
+    },
+    {
       "gameSlug": "mr-robot-and-his-robot-factory",
       "archiveIds": [
         "3211"
@@ -138,6 +353,63 @@
           "source": "Lemon64",
           "url": "https://www.lemon64.com/game/mr-robot-and-his-robot-factory",
           "note": "Lemon64 identifies Beyond as the European publisher and its 1984 tape release."
+        }
+      ]
+    },
+    {
+      "gameSlug": "nebulus",
+      "archiveIds": [
+        "6721"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/nebulus",
+          "note": "Lemon64 identifies the tape entry used in the 1987 ERBE Software Spanish release of Nebulus."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Nebulus_(1987_ERBE_Software)_%5b6721%5d/",
+          "note": "UTA archive entry for Nebulus, ERBE Software, 1987."
+        }
+      ]
+    },
+    {
+      "gameSlug": "nightbreed-the-action-game",
+      "archiveIds": [
+        "1544"
+      ],
+      "titleAliases": [
+        "Night Breed"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/night-breed",
+          "note": "Lemon64 lists Night Breed as the same game, also known as Clive Barker's Nightbreed: The Action Game, and identifies the 1992 Hit Squad cassette re-release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Night_Breed_(1992_Hit_Squad)_%5b1544%5d/",
+          "note": "UTA archive entry for the Hit Squad 1992 cassette under the Night Breed title."
+        }
+      ]
+    },
+    {
+      "gameSlug": "ninja",
+      "archiveIds": [
+        "2849"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/ninja-mastertronic",
+          "note": "Lemon64 identifies Entertainment USA and Mastertronic as publishers of the same 1986 Ninja / Ninja Mission game and the Entertainment USA tape release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ninja_(1986_Entertainment_USA)_%5b2849%5d/",
+          "note": "UTA archive entry for the Entertainment USA 1986 cassette."
         }
       ]
     },
@@ -173,6 +445,80 @@
       ]
     },
     {
+      "gameSlug": "spy-vs-spy-2-the-island-caper",
+      "archiveIds": [
+        "3935"
+      ],
+      "titleAliases": [
+        "Spy vs Spy: The Island Caper"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/spy-vs-spy-2",
+          "note": "Lemon64 identifies Beyond and Hi-Tec Software as re-releasers of Spy vs Spy II: The Island Caper and confirms tape entries for both."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Spy_vs_Spy-_The_Island_Caper_(1985_Beyond)_%5b3935%5d/",
+          "note": "UTA archive entry for the Beyond cassette, whose directory title omits the II."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Spy_vs_Spy_II-_The_Island_Caper_(19xx_HiTEC_Software)_%5b1987%5d/",
+          "note": "UTA also contains the HiTEC cassette with the canonical sequel number; this release is expected to match automatically once duplicate archive IDs are preserved."
+        }
+      ]
+    },
+    {
+      "gameSlug": "strip-poker-a-sizzling-game-of-chance",
+      "archiveIds": [
+        "7489",
+        "513"
+      ],
+      "titleAliases": [
+        "Strip Poker"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/strip-poker",
+          "note": "Lemon64 identifies Strip Poker: A Sizzling Game of Chance and states its tape entries were used in CDS Software and US Gold releases."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Strip_Poker_(19xx_CDS_Software_Ltd.)_%5b7489%5d/",
+          "note": "UTA archive entry for the CDS Software cassette."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Strip_Poker_(198x_U.S._Gold)_%5b513%5d/",
+          "note": "UTA archive entry for the US Gold cassette."
+        }
+      ]
+    },
+    {
+      "gameSlug": "super-pipeline",
+      "archiveIds": [
+        "6490"
+      ],
+      "titleAliases": [
+        "Pipeline"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/super-pipeline",
+          "note": "Lemon64 identifies Super Pipeline as also known as Pipeline and documents the 1983 Taskset cassette release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Pipeline_(1983_Taskset_Ltd.)_%5b6490%5d/",
+          "note": "UTA archive entry for the same 1983 Taskset cassette under the shorter Pipeline title."
+        }
+      ]
+    },
+    {
       "gameSlug": "the-goonies",
       "archiveIds": [
         "841",
@@ -183,6 +529,29 @@
           "source": "Lemon64",
           "url": "https://www.lemon64.com/game/goonies",
           "note": "Lemon64 identifies US Gold and American Action as European publishers and both corresponding tape entries."
+        }
+      ]
+    },
+    {
+      "gameSlug": "the-sword-of-fargoal",
+      "archiveIds": [
+        "7724"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/sword-of-fargoal",
+          "note": "Lemon64 identifies Sword of Fargoal as the 1983 Epyx C64 game released on tape and disk."
+        },
+        {
+          "source": "Archeogaming",
+          "url": "https://archeogaming.blogspot.com/2012/10/sword-of-fargoal-euro-gold-version-fail.html",
+          "note": "A collector documents and tests the Euro Gold C64 budget cassette of Sword of Fargoal and shows its inlay/tape."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Sword_of_Fargoal_(19xx_Euro_Gold)_%5b7724%5d/",
+          "note": "UTA archive entry for the Euro Gold cassette."
         }
       ]
     },
