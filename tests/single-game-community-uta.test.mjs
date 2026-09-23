@@ -7,7 +7,8 @@ import {
   matchGameToUta,
   normalizePublisher,
   parseCuratedApprovals,
-  parseUtaIndex
+  parseUtaIndex,
+  parseUtaIndexWithDiagnostics
 } from "../scripts/generate-uta-map.mjs";
 
 const sampleIndex = `
@@ -36,6 +37,25 @@ const amiga = {
   year: 1992,
   credits: { publisher: ["Psygnosis"], re_releaser: [] }
 };
+
+test("UTA parser accepts decade-unknown 199x releases without inventing a year", () => {
+  const parsed = parseUtaIndex(`
+<a href="Ivan_'Ironman'_Stewart's_Super_Off_Road_(199x_Tronix)_[99901]/">Ivan Ironman Stewart</a>
+`);
+  assert.equal(parsed.length, 1);
+  assert.equal(parsed[0].yearLabel, "199x");
+  assert.equal(parsed[0].year, null);
+  assert.equal(parsed[0].publisher, "Tronix");
+});
+
+test("UTA parser diagnostics expose release-looking directories that would otherwise be silently skipped", () => {
+  const parsed = parseUtaIndexWithDiagnostics(`
+<a href="Valid_Game_(1989_Ocean_Software_Ltd)_[99902]/">Valid</a>
+<a href="Future_Format_(unknown_Label)_[99903]/">Future</a>
+`);
+  assert.equal(parsed.releases.length, 1);
+  assert.deepEqual(parsed.rejectedReleaseDirectories, ["Future_Format_(unknown_Label)_[99903]"]);
+});
 
 test("UTA parser preserves multiple releases and normalises known publisher variants", () => {
   const releases = parseUtaIndex(sampleIndex);
