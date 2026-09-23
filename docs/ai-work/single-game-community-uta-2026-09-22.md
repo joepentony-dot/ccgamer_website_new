@@ -6,6 +6,18 @@ PR #2262 corrects Wonder Boy to 1987, adds regression coverage requiring both [6
 
 Reliable Games Publishing now treats the UTA refresh as required before a game publication can be reported complete. The browser-side Content Publisher also re-checks the generated UTA mapping and manual-review queue before it claims archive enrichment has passed.
 
+## Full C64 Ultimate Tape Archive audit — 23 September 2026
+
+A catalogue-wide audit is now active on branch `codex/full-c64-uta-audit-20260923`. The current committed mapping covers 333 of 559 C64 games, with 75 manual-review entries. Of the 226 C64 games without a public mapping, 28 already have exact-title UTA candidates in the manual queue and 198 have no candidate under the previous strict title normalisation.
+
+The audit expands title handling conservatively rather than promoting title-only guesses. It adds punctuation-spacing variants, Roman-numeral/Arabic-number variants, compact initialisms, and publisher-qualified subtitle/prefix matching with sequel-number protection. It also normalises known label spelling variants such as HiTEC/Hi-Tec and Atlantis Gold/Atlantis Software.
+
+`scripts/generate-uta-map.mjs` now writes `data/uta-audit.json` on every full UTA scan. The audit records the number of C64 games, total UTA release directories scanned, matched games, games still requiring manual review, and games for which the current UTA index contains no compatible title candidate. This makes the full-catalogue coverage measurable rather than relying on spot checks.
+
+Live UTA evidence used for the regression set includes 720 / U.S. Gold [729], Cops'n'Robbers / Atlantis Gold [2857], Cybernoid: The Fighting Machine / Kixx [1273], and the existing Wonder Boy Activision/Hit Squad pair. Ambiguous publisher-mismatch candidates remain excluded until independently verified.
+
+Qualification exposed and repaired three matcher/parser defects before merge: numeric-only archive titles such as 720 were blocked by the minimum prefix length; apostrophes inside double-quoted UTA directory hrefs were prematurely terminating the parser; and a Roman-numeral title variant could bypass sequel-number protection before numeral normalisation. The fixes keep publisher/re-release evidence mandatory for prefix matches, allow three-or-more-digit numeric prefixes, parse hrefs by their actual quote delimiter, and normalise Roman numerals before number-signature comparison. On code head `4a7b9e6b374baeea6a9eaba3484b63ca40f3dc57`, the focused UTA regression, current-catalogue publishing chain, and deterministic-output check all passed; final documentation-inclusive exact-head qualification remains required.
+
 # Single-game community and Ultimate Tape Archive — 22 September 2026
 
 ## Scope

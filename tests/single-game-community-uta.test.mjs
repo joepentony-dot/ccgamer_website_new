@@ -51,6 +51,8 @@ test("UTA publisher normalisation covers common C64 label variants without title
   assert.equal(normalizePublisher("Mastertronic Added Dimension"), normalizePublisher("Mastertronic"));
   assert.equal(normalizePublisher("MAD (Mastertronic)"), normalizePublisher("Mastertronic"));
   assert.equal(normalizePublisher("Rack-It (Hewson)"), normalizePublisher("Hewson (Rack IT)"));
+  assert.equal(normalizePublisher("HiTEC Software"), normalizePublisher("Hi-Tec Software"));
+  assert.equal(normalizePublisher("Atlantis Gold"), normalizePublisher("Atlantis Software"));
 });
 
 test("Wonder Boy resolves both the Activision original and Hit Squad cassette re-release", () => {
@@ -69,6 +71,54 @@ test("Wonder Boy resolves both the Activision original and Hit Squad cassette re
   assert.deepEqual(result.releases.map((row) => row.archiveId), ["6764", "1677"]);
   assert.deepEqual(result.releases.map((row) => row.sourceRole), ["publisher", "re-release"]);
   assert.deepEqual(result.review, []);
+});
+
+test("full-catalogue title normalisation recovers verified punctuation, numeral and subtitle variants", () => {
+  const releases = parseUtaIndex(`
+<a href="720_(1987_U.S._Gold)_[729]/">720 US Gold</a>
+<a href="Cops'n'Robbers_(1985_Atlantis_Gold)_[2857]/">Cops n Robbers</a>
+<a href="Cybernoid-_The_Fighting_Machine_(19xx_Kixx)_[1273]/">Cybernoid Kixx</a>
+<a href="Hunchback_II_(1985_Ocean_Software_Ltd)_[9001]/">Hunchback II</a>
+`);
+
+  const cases = [
+    {
+      game: { system: "C64", slug: "720-degrees", title: "720 Degrees", year: 1987, credits: { publisher: ["US Gold"], re_releaser: ["Kixx"] } },
+      expected: "729"
+    },
+    {
+      game: { system: "C64", slug: "cops-n-robbers", title: "Cops 'N' Robbers", year: 1985, credits: { publisher: ["Atlantis Software"], re_releaser: [] } },
+      expected: "2857"
+    },
+    {
+      game: { system: "C64", slug: "cybernoid", title: "Cybernoid", year: 1988, credits: { publisher: ["Hewson"], re_releaser: ["Kixx"] } },
+      expected: "1273"
+    },
+    {
+      game: { system: "C64", slug: "hunchback-2-quasimodos-revenge", title: "Hunchback 2", year: 1985, credits: { publisher: ["Ocean Software"], re_releaser: [] } },
+      expected: "9001"
+    }
+  ];
+
+  for (const { game, expected } of cases) {
+    const result = matchGameToUta(game, releases);
+    assert.equal(result.releases.some((row) => row.archiveId === expected), true, game.slug);
+  }
+});
+
+test("publisher-qualified prefix matching does not collapse numbered sequels into the wrong game", () => {
+  const releases = parseUtaIndex(`
+<a href="Dragon's_Lair_(1986_Software_Projects)_[9100]/">Dragon's Lair</a>
+`);
+  const game = {
+    system: "C64",
+    slug: "dragons-lair-2-escape-from-singes-castle",
+    title: "Dragon's Lair II: Escape From Singe's Castle",
+    year: 1987,
+    credits: { publisher: ["Software Projects"], re_releaser: ["Encore"] }
+  };
+  const result = matchGameToUta(game, releases);
+  assert.deepEqual(result.releases, []);
 });
 
 test("composite re-release credits expose each explicit label component to UTA matching", () => {
@@ -154,6 +204,9 @@ test("build mapping keeps ambiguous title-only matches out of public data", () =
   assert.ok(result.manualReview.entries.some((entry) =>
     entry.gameSlug === "1942" && entry.excludedCandidates.some((row) => row.archiveId === "10797")
   ));
+  assert.equal(result.audit.summary.c64Games, 3);
+  assert.equal(result.audit.summary.matchedGames, 3);
+  assert.equal(result.audit.summary.unmatchedGames, 0);
 });
 
 test("seed mapping covers match, multiple releases, no-match and Amiga exclusion cases", () => {
