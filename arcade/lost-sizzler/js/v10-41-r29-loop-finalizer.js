@@ -61,6 +61,23 @@
     return Boolean(rail.querySelector("#pickup-toast.show,.ccg-rating-rail:not(.hidden),.ccg-important-notice.show"));
   }
 
+  function clearOrdinaryRailGeometry(rail){
+    const area=rail?.closest?.(".v102-game-area");
+    const toast=rail?.querySelector?.("#pickup-toast");
+    if(area?.dataset?.ccgR51ShortRail==="true"){
+      for(const prop of ["display","grid-template-columns","grid-template-rows","gap"])area.style.removeProperty(prop);
+      delete area.dataset.ccgR51ShortRail;
+    }
+    if(rail?.dataset?.ccgR51ShortRail==="true"){
+      for(const prop of ["box-sizing","height","min-height","max-height","padding"])rail.style.removeProperty(prop);
+      delete rail.dataset.ccgR51ShortRail;
+    }
+    if(toast?.dataset?.ccgR51ShortRail==="true"){
+      for(const prop of ["box-sizing","position","inset","transform","display","flex-direction","align-items","justify-content","height","min-height","max-height","padding","overflow"])toast.style.removeProperty(prop);
+      delete toast.dataset.ccgR51ShortRail;
+    }
+  }
+
   function enforceOrdinaryRailGeometry(rail){
     const area=rail?.closest?.(".v102-game-area");
     const toast=rail?.querySelector?.("#pickup-toast");
@@ -97,32 +114,30 @@
       }
       return true;
     }
-    if(area?.dataset?.ccgR51ShortRail==="true"){
-      for(const prop of ["display","grid-template-columns","grid-template-rows","gap"])area.style.removeProperty(prop);
-      delete area.dataset.ccgR51ShortRail;
-    }
-    if(rail.dataset?.ccgR51ShortRail==="true"){
-      for(const prop of ["box-sizing","height","min-height","max-height","padding"])rail.style.removeProperty(prop);
-      delete rail.dataset.ccgR51ShortRail;
-    }
-    if(toast?.dataset?.ccgR51ShortRail==="true"){
-      for(const prop of ["box-sizing","position","inset","transform","display","flex-direction","align-items","justify-content","height","min-height","max-height","padding","overflow"])toast.style.removeProperty(prop);
-      delete toast.dataset.ccgR51ShortRail;
-    }
+    clearOrdinaryRailGeometry(rail);
     return false;
   }
 
   function setNotificationRailDisplay(rail,live){
     if(!rail)return false;
-    /* Solo and Tutorial reserve a compact, stable lower rail. Reintroducing
-       * the historical display:contents owner here promotes routine reports
-       * back into the canvas and turns a short pickup into a large overlay. */
-    if(String(document.body?.dataset?.specialMode||"")!=="horde-survivor"){
-      rail.style.setProperty("display","block","important");
-      enforceOrdinaryRailGeometry(rail);
+    const specialMode=String(document.body?.dataset?.specialMode||"");
+    const ratingVisible=Boolean(rail.querySelector(".ccg-rating-rail:not(.hidden)"));
+    const routineToastVisible=Boolean(rail.querySelector("#pickup-toast.show"));
+    /* Solo and Tutorial reserve a compact, stable lower rail for routine
+       reports. The separate five-minute rating prompt retains its historical
+       overlay geometry so it does not become trapped inside the compact rail. */
+    if(specialMode!=="horde-survivor"){
+      if(ratingVisible&&!routineToastVisible){
+        clearOrdinaryRailGeometry(rail);
+        rail.style.setProperty("display","contents","important");
+      }else{
+        rail.style.setProperty("display","block","important");
+        enforceOrdinaryRailGeometry(rail);
+      }
       state.notificationRail=rail;state.notificationRailReady=true;state.notificationLive=Boolean(live);
       return true;
     }
+    clearOrdinaryRailGeometry(rail);
     rail.style.setProperty("display",live?"contents":"none","important");
     state.notificationRail=rail;state.notificationRailReady=true;state.notificationLive=Boolean(live);
     return true;
