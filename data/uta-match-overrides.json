@@ -10,6 +10,22 @@
         }
       ]
     },
+    "720-degrees": {
+      "include": [
+        {
+          "archiveId": "729",
+          "sourceRole": "publisher"
+        },
+        {
+          "archiveId": "20298",
+          "sourceRole": "publisher"
+        },
+        {
+          "archiveId": "1257",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
     "a-question-of-sport": {
       "include": [
         {
@@ -38,6 +54,14 @@
         },
         {
           "archiveId": "1441",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
+    "alcazar-the-forgotten-fortress": {
+      "include": [
+        {
+          "archiveId": "2616",
           "sourceRole": "re-release"
         }
       ]
@@ -106,11 +130,31 @@
         }
       ]
     },
+    "batman-the-movie": {
+      "include": [
+        {
+          "archiveId": "2245",
+          "sourceRole": "publisher"
+        },
+        {
+          "archiveId": "2246",
+          "sourceRole": "publisher"
+        },
+        {
+          "archiveId": "1447",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
     "bc2-grogs-revenge": {
       "include": [
         {
           "archiveId": "734",
           "sourceRole": "publisher"
+        },
+        {
+          "archiveId": "6593",
+          "sourceRole": "re-release"
         }
       ]
     },
@@ -568,6 +612,14 @@
         }
       ]
     },
+    "nightbreed-the-action-game": {
+      "include": [
+        {
+          "archiveId": "1544",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
     "ninja": {
       "include": [
         {
@@ -690,6 +742,14 @@
         }
       ]
     },
+    "shao-lins-road": {
+      "include": [
+        {
+          "archiveId": "2979",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
     "short-circuit": {
       "include": [
         {
@@ -722,6 +782,14 @@
         },
         {
           "archiveId": "9535",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "spartacus-the-swordslayer": {
+      "include": [
+        {
+          "archiveId": "2830",
           "sourceRole": "publisher"
         }
       ]
@@ -945,6 +1013,12 @@
           "archiveId": "2609",
           "reason": "Aliens - The Computer Game is unrelated; shared subtitle wording only."
         }
+      ],
+      "include": [
+        {
+          "archiveId": "2651",
+          "sourceRole": "publisher"
+        }
       ]
     },
     "vendetta": {
@@ -972,6 +1046,15 @@
         {
           "archiveId": "2099",
           "reason": "The Edge's Wizardry is a different game from Ariolasoft's Wizard."
+        }
+      ]
+    },
+    "world-games": {
+      "include": [
+        {
+          "archiveId": "0",
+          "directory": "World_Games_(198x_Scandomatic)_[0]",
+          "sourceRole": "publisher"
         }
       ]
     },
