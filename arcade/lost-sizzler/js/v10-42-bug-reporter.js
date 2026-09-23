@@ -88,6 +88,7 @@
       const markers=[];
       for(const marker of [
         "__ccgV142R19MobileTrapDamage","__ccgV142R19TrapTriggerOwner","__ccgV141R56EnvironmentDamage",
+        "__ccgV141R60EnvironmentSeal","__ccgV142R18","__ccgV141PostPlaytestHurt",
         "__ccgV141R57DesktopPrepStability","__ccgV141R54","__ccgV141PostPlaytestStability"
       ])if(current?.[marker]===true)markers.push(marker);
       rows.push({depth,name:String(current.name||"anonymous"),markers});
@@ -115,8 +116,17 @@
     const stamp=performance.now(),matches=safe(()=>(host?.traps||[]).filter(trap=>trap?.active!==false&&Number(trap.x)===Number(player.x)&&Number(trap.y)===Number(player.y)),[]);
     return{
       at:{x:Number(player.x),y:Number(player.y)},
+      totalOrdinaryTraps:safe(()=>Number(host?.traps?.length||0),0),
       matches:matches.map(trap=>trapOwnerSnapshot(player,trap,stamp)),
-      duplicateCount:matches.length
+      duplicateCount:matches.length,
+      layers:{
+        rareEvents:Boolean(window.CCGLostSizzlerRareEventsBalance),
+        r56:Boolean(window.CCGLostSizzlerV141R56PlaytestCompletion),
+        r57:Boolean(window.CCGLostSizzlerV141R57DesktopPrepStability),
+        r60:Boolean(window.CCGLostSizzlerV141R60LivePlayIntegrity),
+        r19:Boolean(window.CCGLostSizzlerV142R19MobileTrapLayoutStability),
+        r20:Boolean(window.CCGLostSizzlerV142R20TrapCycleHandoffStability)
+      }
     };
   }
   function currentSnapshot(reason="snapshot"){
@@ -138,6 +148,7 @@
       },
       game:{
         mode:safe(()=>String(mode),""),playMode:safe(()=>String(playMode),""),
+        specialMode:safe(()=>String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||""),""),
         runActive:document.body?.dataset?.runActive==="true",
         floor:safe(()=>Number(run?.floor||0),0),elapsed:safe(()=>Number(run?.elapsed||0),0),
         alert:safe(()=>Number(run?.alert||0),0),floorComplete:safe(()=>Boolean(run?.floorComplete),false),
