@@ -35,7 +35,7 @@ assert.match(html,/id="quick-level-up"[^>]*>LEVEL-UP AVAILABLE<\/button>/,"the X
 assert.match(html,/Unused level-ups stay available for this run/,"the level-up panel must explain deferred entitlement behaviour");
 assert.match(css,/V10\.42 r52 — deferred level-up entitlement/,"the r52 HUD reminder must have bounded styling");
 
-assert.match(main,/getElementById|\$\("level-up-later"\)\?\.addEventListener\("click",deferLevelChoice\)/,"Choose Later must use the canonical defer owner");
+assert.match(main,/\$\("level-up-later"\)\?\.addEventListener\("click",deferLevelChoice\)/,"Choose Later must use the canonical defer owner");
 assert.match(main,/\$\("quick-level-up"\)\?\.addEventListener\("click",\(\)=>reopenPendingLevelChoice\(p1\)\)/,"the HUD reminder must reopen P1's stored choice");
 assert.match(main,/if\(event\.target===UI\.levelUp\)deferLevelChoice\(\)/,"clicking the level-up backdrop must defer rather than discard");
 assert.match(main,/if\(mode==="levelup"\)\{deferLevelChoice\(\);return\}/,"Escape must defer a level-up without entering pause or losing it");
