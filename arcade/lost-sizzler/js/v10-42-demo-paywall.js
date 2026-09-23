@@ -6,7 +6,7 @@
 
   const PRODUCT_SLUG="the-lost-sizzler-full-game";
   const FALLBACK_PRICE="£1.99";
-  const RETURN_TO="/arcade/lost-sizzler/?purchase=1";
+  const RETURN_TO="/arcade/c64-dungeon-carnage/?purchase=1";
   const LOGIN_URL=`/auth/login.html?returnTo=${encodeURIComponent(RETURN_TO)}`;
   const REGISTER_URL=`/auth/register.html?returnTo=${encodeURIComponent(RETURN_TO)}`;
   const DEMO_MODE=window.CCG_LOST_SIZZLER_DEMO_MODE===true;
