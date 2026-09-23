@@ -1,3 +1,14 @@
+## R54 trap-walk diagnostics and repository trap audit — 23 September 2026
+
+- Owner live testing after R53 reports both SHOCK and FIRE floor traps visibly ACTIVE without removing HEALTH. The failure is therefore not shock-specific.
+- Repository audit confirms there is one ordinary dungeon trap data set, `host.traps`, generated in `systems.js` with FIRE/SPIKE/SHOCK kinds. There are not two independent ordinary dungeon trap arrays.
+- There are, however, multiple retained systems acting on the same ordinary trap objects: the core `triggerTrap` / `drawTraps` path, V10.15 continuous trap contact + reliable trap renderer, R56 trap cycle recovery, R57 contact recovery, R19 floor-trap damage/contact ownership, R20 cycle handoff, plus retained environmental `hurtPlayer` wrappers. The core renderer, V10.15 renderer and R46 telegraph can all render the same `host.traps` object. This layered ownership explains why a visual ACTIVE state can coexist with a failed damage path even though the underlying trap object is the same.
+- Sizzler Saboteurs / Spy trap systems are separate special-mode data models and are isolated by special-mode checks; dedicated hazard rooms and the rolling boulder are also separate systems.
+- R54 does not change gameplay yet. The bug reporter now polls real player/trap overlap every 40 ms, records every trap entry/exit and every active-cycle boundary, verifies that active FIRE/SPIKE/SHOCK contact removes HEALTH within 220 ms, and raises `ANOMALY_ACTIVE_TRAP_NO_DAMAGE` automatically if it does not.
+- Each anomaly records trap id/kind/position, period/phase/cycle, HP/armour/invulnerability, canonical rare-event contact latch, R56/R57 cycle latches, R19 counters including per-kind hits, live hurtPlayer/triggerTrap owner ancestry, special-mode state, and whether multiple ordinary trap objects occupy the same tile.
+- Duplicate ordinary traps on one tile raise `ANOMALY_MULTIPLE_TRAPS_SAME_TILE`.
+- Candidate identity: **V10.42 r54 / 20260923r54**. This diagnostic build is intended to capture the exact live failure before the ownership stack is simplified.
+
 ## LIVE INCIDENT — global active floor-trap cycle reliability — 23 September 2026
 
 - **Active candidate:** `codex/dungeon-r53-global-trap-reliability-20260923`, created from current `main` after the owner reproduced a visibly **SHOCK TRAP — ACTIVE** tile that did not remove HEALTH.
