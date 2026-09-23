@@ -10,6 +10,7 @@ const read=relative=>fs.readFileSync(path.join(gameDir,relative),"utf8");
 const balance=read("js/v10-15-rare-events-balance.js");
 const polish=read("css/v10-30-polish.css");
 const loader=read("js/asset-overrides.js");
+const r19=read("js/v10-42-r19-mobile-trap-layout-stability.js");
 
 assert.match(balance,/const TRAP_WARNING_DISTANCE=3;/,"ordinary trap warnings use a three-tile radius");
 assert.match(balance,/trapMd\(player,trap\)<=TRAP_WARNING_DISTANCE/,"trap warning is raised when the player enters the three-tile danger radius");
@@ -20,6 +21,9 @@ assert.match(balance,/resolveTrapContact\(player,now\)/,"standing players are ch
 assert.match(balance,/updateV115TrapRuntime/,"trap checks run continuously instead of only on movement triggers");
 assert.match(balance,/drawReliableTrap/,"ordinary floor traps have a dedicated visible renderer");
 assert.match(balance,/drawSpecialObjectsV115ReliableTraps/,"trap plates are attached to the live special-object render path");
+assert.match(r19,/function damageOccupiedActiveTraps\(\)/,"R19 must damage a player already occupying a trap when its active cycle begins");
+assert.match(r19,/rearmInactiveTrapContacts\(\);[\s\S]*damageOccupiedActiveTraps\(\);/,"R19 must rearm inactive contacts before checking newly active occupied traps");
+assert.match(r19,/damageValidatedTrapContact\(player,trap\)/,"stationary active-cycle damage must use the same validated one-health trap owner");
 
 assert.match(polish,/@media \(max-width:900px\),\(pointer:coarse\)/,"mobile notification correction applies to phones and coarse pointers");
 assert.match(polish,/game-message-rail,[\s\S]*position:relative!important;[\s\S]*min-height:52px!important;/,"mobile message rail retains a visible notification row");

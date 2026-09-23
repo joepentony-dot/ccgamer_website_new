@@ -1,3 +1,12 @@
+## Dungeon Carnage R51 live incident — FIRE / traps / renderer — 23 September 2026
+
+- Branch `codex/dungeon-r51-fire-wall-incident-20260923` was created from current `main` `88df63430f275a37553a821c2511b1296dd13f8e` after a new owner playtest report.
+- The bug report recorded one real FIRE anomaly even though later Space presses completed normally. Current `main` had the R51 real-shot verification but not the separate persistent/reasserted hit-stun recovery left on stale draft #2260; this candidate carries only that missing bounded guard forward.
+- A new screenshot reproduced active spikes failing to remove HEALTH while the player remained on the trap tile. R19 now checks occupied traps on its existing 80 ms monitor after rearming inactive contacts, so an inactive-to-active cycle applies the same validated one-HEALTH trap damage without requiring a movement event.
+- The same screenshot showed severe canvas smearing/garbling and apparent stalls. R29 already contains render faults and keeps RAF alive; `renderView()` previously could leak its clip/transform when a draw stage threw. The candidate restores the canvas state in `finally` and resets transform/compositing at each frame boundary, without creating a second render loop.
+- Bug reports now retain all anomaly events separately from the tail and include R20 FIRE, R19 trap and R29 render diagnostics.
+- Focused static/browser regression coverage is being extended. This checkpoint does not authorise merge.
+
 # AI continuation state
 
 ## Dungeon Carnage R52 unused level-up entitlement — 23 September 2026

@@ -1,3 +1,20 @@
+## R51 live incident: FIRE anomaly, active spikes, render corruption — 23 September 2026
+
+Current candidate: `codex/dungeon-r51-fire-wall-incident-20260923`, based on refreshed `main` `88df63430f275a37553a821c2511b1296dd13f8e`.
+
+New hands-on evidence changes the previous acceptance state:
+- the developer bug report recorded one `ANOMALY_POSSIBLE_FIRE_FAILURE`; subsequent shots in the exported tail were successful, so this is intermittent rather than a current permanent lockout;
+- current `main` contains R51 fresh-press/real-shot verification, but the stronger repeated-miss recovery for a persistently reasserted hit-stun remained stranded on stale draft #2260;
+- a screenshot shows visibly active spike tiles with no HEALTH loss while occupied and severe whole-canvas smearing/stalling.
+
+Bounded repairs on this candidate:
+- R20 now counts repeated verified FIRE misses and, only after the normal owners have failed for a persistence window, clears a still-reasserted hit-stun and retries the deepest established FIRE owner. Normal hit-stun, ammo, projectile-cap, weapon cadence and real-shot semantics remain unchanged.
+- R19 now checks already-occupied trap tiles from its existing 80 ms maintenance tick. It rearms inactive contacts first and then routes a newly active occupied trap through the same validated one-HEALTH/no-armour-consumption path, so standing still on a cycling spike cannot bypass damage.
+- `renderView()` restores its canvas save/clip/transform state in `finally`. The base frame begins from identity transform, source-over compositing and normal alpha/filter state. This addresses the case where R29 contains a render exception but the failed draw previously poisoned later frames.
+- The developer reporter now emits real-shot-only FIRE probes, preserves anomaly entries even if they are older than the 120-line text tail, and includes R20/R19/R29 diagnostics.
+
+No second RAF loop, trap balance redesign, weapon rebalance, world-generation change, save/progression change or navigation change is introduced. Exact-head CI plus a new deployed/manual retest are required before merge.
+
 # Dungeon Carnage runtime
 
 ## Scope

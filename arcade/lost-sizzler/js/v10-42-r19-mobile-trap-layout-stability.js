@@ -241,6 +241,23 @@
     return true
   }
 
+  function damageOccupiedActiveTraps(){
+    if(!ordinaryDungeon())return false;
+    const now=performance.now();
+    let handled=false;
+    for(const player of players()){
+      if(!player||Number(player.health||0)<=0)continue;
+      for(const trap of host?.traps||[]){
+        if(!trap?.active||Number(trap.x)!==Number(player.x)||Number(trap.y)!==Number(player.y)||!trapActive(trap,now))continue;
+        const beforeHealth=Number(player.health||0);
+        const result=damageValidatedTrapContact(player,trap);
+        if(result===true)handled=true;
+        if(Number(player.health||0)<beforeHealth)break;
+      }
+    }
+    return handled
+  }
+
   function rearmInactiveTrapContacts(){
     if(!ordinaryDungeon())return false;
     const r57=window.CCGLostSizzlerV141R57DesktopPrepStability||null;
@@ -490,6 +507,7 @@
     installTrapDamageOwner();
     installTrapTriggerOwner();
     rearmInactiveTrapContacts();
+    damageOccupiedActiveTraps();
     syncPortraitCanvasAspect();
   }
 
@@ -500,5 +518,5 @@
   state.timer=setInterval(()=>{try{tick()}catch(error){console.warn("[C64 Dungeon Carnage r19] mobile stability tick failed safely",error)}},MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
-  window.CCGLostSizzlerV142R19MobileTrapLayoutStability={installPortraitLayout,installTrapDamageOwner,installTrapTriggerOwner,withValidatedTrapContact,damageValidatedTrapContact,guaranteeTrapContactDamage,rearmInactiveTrapContacts,syncPortraitCanvasAspect,trapActive,get state(){return state}};
+  window.CCGLostSizzlerV142R19MobileTrapLayoutStability={installPortraitLayout,installTrapDamageOwner,installTrapTriggerOwner,withValidatedTrapContact,damageValidatedTrapContact,guaranteeTrapContactDamage,damageOccupiedActiveTraps,rearmInactiveTrapContacts,syncPortraitCanvasAspect,trapActive,get state(){return state}};
 })();
