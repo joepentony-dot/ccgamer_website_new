@@ -16,6 +16,7 @@
 - The candidate expands conservative title normalisation (punctuation spacing, Roman/Arabic numerals, compact initialisms, publisher-qualified subtitle/prefix matching with sequel protection) and known publisher spelling aliases, while retaining publisher/re-release evidence and year safeguards.
 - Every full scan now generates `data/uta-audit.json` so matched/manual/no-title-candidate coverage is measurable and can be re-audited whenever UTA changes.
 - No title-only ambiguous candidate is auto-published. Exact-head qualification and explicit merge authorisation remain required.
+- Qualification found and fixed three audit-path defects: 720-style numeric prefixes, apostrophes in double-quoted UTA hrefs, and Roman-numeral sequel-signature handling. Code head `4a7b9e6b374baeea6a9eaba3484b63ca40f3dc57` passed the focused UTA regression plus the full current-catalogue and deterministic-output stages; the documentation-inclusive head must complete the full matrix before merge.
 - Detailed record: [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md).
 
 ## How to use this record
