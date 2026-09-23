@@ -363,11 +363,18 @@ export function matchGameToUta(game, utaReleases, curatedApproval = {}) {
     const releasePublisherKeys = publisherCreditKeys(release.publisher);
     const originalMatch = releasePublisherKeys.some((key) => credits.original.has(key));
     const rereleaseMatch = releasePublisherKeys.some((key) => credits.rerelease.has(key));
+    const explicitRereleaseComponent = releasePublisherKeys.some((key) =>
+      credits.rerelease.has(key) && !credits.original.has(key)
+    );
     let sourceRole = "";
 
     if (curatedMatch && (matchKind === "exact" || matchKind === "curated-title-alias")) {
       sourceRole = "verified-release";
-    } else if (rereleaseMatch && (!originalMatch || (gameYear && release.year && release.year > gameYear + 1))) {
+    } else if (rereleaseMatch && (
+      !originalMatch
+      || explicitRereleaseComponent
+      || (gameYear && release.year && release.year > gameYear + 1)
+    )) {
       sourceRole = "re-release";
     } else if (originalMatch) {
       sourceRole = "publisher";
