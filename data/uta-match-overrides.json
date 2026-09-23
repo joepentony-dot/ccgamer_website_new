@@ -746,7 +746,8 @@
         },
         {
           "archiveId": "1987",
-          "sourceRole": "re-release"
+          "sourceRole": "re-release",
+          "directory": "Spy_vs_Spy_II-_The_Island_Caper_(19xx_HiTEC_Software)_[1987]"
         }
       ],
       "exclude": [
