@@ -73,9 +73,16 @@ async function swordTap(page,cycle){
     const dirs=[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
     const dir=dirs.find(d=>W.walkable(world.map,p1.x+d.x,p1.y+d.y,host));
     if(!dir)return null;
-    const target=(host.enemies||[])[0];if(!target)return null;
-    for(const enemy of host.enemies)enemy.alive=false;
-    Object.assign(target,{alive:true,x:p1.x+dir.x,y:p1.y+dir.y,hp:50,maxHp:50,armor:0,maxArmor:0,aiState:"idle",moveCooldown:10000,attackCooldown:10000,chargeCooldown:10000,hitStunMs:0});
+    for(const enemy of host.enemies||[])enemy.alive=false;
+    const target={
+      id:"r53-desktop-soak-target",kind:"scout",alive:true,
+      x:p1.x+dir.x,y:p1.y+dir.y,hp:50,maxHp:50,armor:0,maxArmor:0,
+      weakness:null,resistance:null,flash:0,hpBarMs:0,hitStunMs:0,
+      aiState:"idle",facing:{x:0,y:0},lastSeen:null,memoryMs:0,searchMs:0,
+      moveCooldown:10000,attackCooldown:10000,chargeCooldown:10000,healCooldown:10000
+    };
+    host.enemies=(host.enemies||[]).filter(enemy=>enemy?.id!=="r53-desktop-soak-target");
+    host.enemies.push(target);
     p1.dir={...dir};
     return{targetId:target.id,hp:Number(target.hp),swing:Number(p1._meleeSwingAt||0),damage:Number(window.CCGLostSizzlerMeleeAmmoV125?.meleeDamageFor?.(p1)||1)};
   });
