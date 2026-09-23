@@ -82,6 +82,14 @@
         }
       ]
     },
+    "aussie-games": {
+      "include": [
+        {
+          "archiveId": "20824",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
     "automania": {
       "include": [
         {
@@ -513,6 +521,14 @@
         {
           "archiveId": "219",
           "reason": "Different Supersoft 1984 game (Kami-Kaze), not Codemasters' 1990 Kamikaze."
+        }
+      ]
+    },
+    "kane-kane-2": {
+      "include": [
+        {
+          "archiveId": "7916",
+          "sourceRole": "publisher"
         }
       ]
     },
