@@ -20,7 +20,8 @@ assert.match(css,/R51 regression guard: ordinary reports belong in a compact rai
 assert.match(css,/\.game-message-rail #pickup-toast\{[\s\S]*position:static!important/,"routine notices must be static within the message rail");
 assert.doesNotMatch(css,/R51 regression guard[\s\S]*\.pickup-toast\{[\s\S]*position:absolute!important/,"the regression guard must not restore an in-canvas overlay");
 assert.match(latePresentation,/R51 ordinary Dungeon reports use the reserved lower rail[\s\S]*#pickup-toast\{[\s\S]*position:static!important/,"late presentation ownership must preserve the lower message rail");
-assert.match(railFinalizer,/specialMode\|\|""\)!=="horde-survivor"[\s\S]*setProperty\("display","block","important"\)/,"the runtime rail owner must retain the lower rail for Solo and Tutorial");
+assert.match(railFinalizer,/ratingVisible=Boolean\(rail\.querySelector\("\.ccg-rating-rail:not\(\.hidden\)"\)\)[\s\S]*routineToastVisible=Boolean\(rail\.querySelector\("#pickup-toast\.show"\)\)/,"the runtime rail owner must distinguish the rating prompt from routine gameplay reports");
+assert.match(railFinalizer,/ratingVisible&&!routineToastVisible\)[\s\S]*setProperty\("display","contents","important"\)[\s\S]*else\{[\s\S]*setProperty\("display","block","important"\)[\s\S]*enforceOrdinaryRailGeometry\(rail\)/,"Solo and Tutorial must keep routine reports in the lower rail while allowing the retained rating prompt to overlay independently");
 assert.match(touch,/const tutorialActive=document\.body\?\.dataset\?\.tutorialActive==="true"/,"touch FIRE must detect the Tutorial path");
 assert.match(touch,/if\(!tutorialActive&&!handled&&typeof queueAttack === "function"\) queueAttack\(p1\)/,"Tutorial FIRE must not queue a delayed repeat");
 assert.match(touch,/if\(!tutorialActive&&typeof input !== "undefined"\) input\.add\("Space"\)/,"Tutorial FIRE must not become a held repeat");
