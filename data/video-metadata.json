@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "YouTube Data API v3. Verified title, description, thumbnail, uploadDate and duration support video discovery; uploadDate and duration are only emitted into VideoObject when verified here.",
-  "updatedAt": "2026-09-22T12:42:20.159Z",
+  "updatedAt": "2026-09-23T01:40:01.938Z",
   "videos": {
     "_0bKM3s0SMs": {
       "title": "The New Zealand Story C64 – Did Ocean Nail the Arcade Conversion?",
@@ -4752,6 +4752,15 @@
       "uploadDate": "2024-07-22T17:30:07Z",
       "duration": "PT5M25S",
       "thumbnailUrl": "https://i.ytimg.com/vi/r7MkMrIo_iI/maxresdefault.jpg",
+      "channelTitle": "Cheeky Commodore Gamer",
+      "verifiedBy": "youtube-data-api-v3"
+    },
+    "raMcxhNFUCI": {
+      "title": "Wonder Boy – Why Did Zzap!64 Give the C64 Version Just 52%?",
+      "description": "🕹️ Wonder Boy (1987) – Commodore 64 Arcade Conversion by Activision\nWhy did Zzap!64 give Wonder Boy on the Commodore 64 just 52%? I loved Sega’s arcade game, pumped plenty of 10p pieces into it and couldn't wait to get the C64 conversion home – so nearly forty years later, I’m going back to see whether that score was really deserved.\n\n🌐 Explore the CCG Commodore 64 & Amiga Games Archive:\n👉 https://www.cheekycommodoregamer.co.uk/games/wonder-boy/\n\nReleased for the C64 by Activision in 1987, Wonder Boy takes the Sega arcade platformer and squeezes its fruit collecting, axes, skateboards, fairies, enemies and rapidly disappearing vitality bar onto the Commodore.  The C64 conversion was programmed by James Smart, who also handled the music, with graphics by Andrew Pang and the C64 version credited to Images Design.\n\nThere’s plenty here I still enjoy: big colourful sprites, smooth scrolling, familiar arcade details and that constant pressure to keep moving and collecting food. But coming back to it now also exposes some of its weaknesses. The jumping can feel floaty, losing the axe at the wrong moment can make life miserable, the skateboard often causes more trouble than it solves and the music certainly makes its presence known after a lengthy session.\n\nZzap!64 originally awarded Wonder Boy just 52% at full price. When the game returned as a budget release, the magazine gave it 63%. Other contemporary reviews were more positive, including 8/10 from Your Commodore, so opinion on this conversion was far from unanimous\n\nIn this video I revisit the C64 version, compare my memories with how it plays today, briefly put it alongside the Spectrum conversion, and decide whether Zzap!64 really was too harsh.\n\n💬 Did you play Wonder Boy on the Commodore 64?\n💬 Was 52% justified, or did Zzap!64 give this conversion a kicking?\n💬 And was anybody actually good enough to make that skateboard useful?\n\n▶️ PLAYLISTS\nhttps://www.youtube.com/playlist?list=PL_TYjnCNYSewjVfw7IxvRAn-7PHzebE_c\nhttps://www.youtube.com/playlist?list=PL_TYjnCNYSezOSr2S4clduF5gfyTwQiY3\nhttps://www.youtube.com/playlist?list=PL_TYjnCNYSewGKECdSLhArvJpsjX0jgZG\n\n💙 SUPPORT & CONNECT\nPatreon: https://www.patreon.com/CheekyCommodoreGamer\nJoin: https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join\nTwitter: https://twitter.com/CheekyC64Gamer\nFacebook: https://facebook.com/cheekycommodoregamer\nDiscord: https://discord.gg/83Xw9ktAn4\nWebsite: https://www.cheekycommodoregamer.co.uk\n\n#wonderboy #commodore64 #c64 #zzap64 #retrogaming",
+      "uploadDate": "2026-09-22T17:30:36Z",
+      "duration": "PT9M",
+      "thumbnailUrl": "https://i.ytimg.com/vi/raMcxhNFUCI/maxresdefault.jpg",
       "channelTitle": "Cheeky Commodore Gamer",
       "verifiedBy": "youtube-data-api-v3"
     },

@@ -15,11 +15,37 @@
       "excludedCandidates": [
         {
           "archiveId": "10797",
+          "title": "1942",
           "publisher": "Encore",
           "yearLabel": "1989",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/1942_(1989_Encore)_%5b10797%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "720-degrees",
+      "title": "720 Degrees",
+      "year": 1987,
+      "knownPublishers": [
+        "US Gold"
+      ],
+      "knownReReleasers": [
+        "Kixx"
+      ],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "20298",
+          "title": "720",
+          "publisher": "ERBE Software",
+          "yearLabel": "1987",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/720_(1987_ERBE_Software)_%5b20298%5d/"
         }
       ]
     },
@@ -35,19 +61,67 @@
       "excludedCandidates": [
         {
           "archiveId": "5084",
+          "title": "After Burner",
           "publisher": "Activision",
           "yearLabel": "1988",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/After_Burner_(1988_Activision)_%5b5084%5d/"
         },
         {
           "archiveId": "1441",
+          "title": "After Burner",
           "publisher": "Hit Squad",
           "yearLabel": "1990",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/After_Burner_(1990_Hit_Squad)_%5b1441%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "alien",
+      "title": "Alien",
+      "year": 1984,
+      "knownPublishers": [
+        "Mind Games"
+      ],
+      "knownReReleasers": [
+        "Bug-Byte"
+      ],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "38",
+          "title": "Alien Rescue",
+          "publisher": "dk'tronics",
+          "yearLabel": "1983",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Alien_Rescue_(1983_dk'tronics)_%5b38%5d/"
+        },
+        {
+          "archiveId": "7779",
+          "title": "Alien Storm",
+          "publisher": "U.S. Gold",
+          "yearLabel": "1991",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Alien_Storm_(1991_U.S._Gold)_%5b7779%5d/"
+        },
+        {
+          "archiveId": "4948",
+          "title": "Alien Syndrome",
+          "publisher": "RAD",
+          "yearLabel": "1989",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Alien_Syndrome_(1989_RAD)_%5b4948%5d/"
         }
       ]
     },
@@ -66,8 +140,10 @@
       "excludedCandidates": [
         {
           "archiveId": "6369",
+          "title": "Arkanoid",
           "publisher": "ERBE Software",
           "yearLabel": "1987",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Arkanoid_(1987_ERBE_Software)_%5b6369%5d/"
@@ -88,8 +164,10 @@
       "excludedCandidates": [
         {
           "archiveId": "8539",
+          "title": "Army Moves",
           "publisher": "Dinamic",
           "yearLabel": "1986",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Army_Moves_(1986_Dinamic)_%5b8539%5d/"
@@ -110,8 +188,10 @@
       "excludedCandidates": [
         {
           "archiveId": "733",
+          "title": "Aztec Challenge",
           "publisher": "U.S. Gold",
           "yearLabel": "198x",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": true,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Aztec_Challenge_(198x_U.S._Gold)_%5b733%5d/"
@@ -132,8 +212,10 @@
       "excludedCandidates": [
         {
           "archiveId": "6591",
+          "title": "Back to the Future",
           "publisher": "MCM Software",
           "yearLabel": "19xx",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": true,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Back_to_the_Future_(19xx_MCM_Software)_%5b6591%5d/"
@@ -154,11 +236,59 @@
       "excludedCandidates": [
         {
           "archiveId": "3551",
+          "title": "Bangkok Knights",
           "publisher": "Activision",
           "yearLabel": "1987",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Bangkok_Knights_(1987_Activision)_%5b3551%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "barbarian-2-the-dungeon-of-drax",
+      "title": "Barbarian II: The Dungeon Of Drax",
+      "year": 1988,
+      "knownPublishers": [
+        "Palace Software"
+      ],
+      "knownReReleasers": [
+        "Kixx"
+      ],
+      "reason": "title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "5918",
+          "title": "Barbarian II",
+          "publisher": "ERBE Software",
+          "yearLabel": "1988",
+          "titleMatch": "exact",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Barbarian_II_(1988_ERBE_Software)_%5b5918%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "bc2-grogs-revenge",
+      "title": "B.C. II: Grog's Revenge",
+      "year": 1984,
+      "knownPublishers": [
+        "Software Projects"
+      ],
+      "knownReReleasers": [],
+      "reason": "title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "734",
+          "title": "B.C. II- Grog's Revenge",
+          "publisher": "U.S. Gold",
+          "yearLabel": "1984",
+          "titleMatch": "exact",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/B.C._II-_Grog's_Revenge_(1984_U.S._Gold)_%5b734%5d/"
         }
       ]
     },
@@ -176,8 +306,10 @@
       "excludedCandidates": [
         {
           "archiveId": "735",
+          "title": "Beach-Head",
           "publisher": "U.S. Gold",
           "yearLabel": "1985",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Beach-Head_(1985_U.S._Gold)_%5b735%5d/"
@@ -198,16 +330,20 @@
       "excludedCandidates": [
         {
           "archiveId": "6018",
+          "title": "Beach-Head II",
           "publisher": "ERBE Software",
           "yearLabel": "1985",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Beach-Head_II_(1985_ERBE_Software)_%5b6018%5d/"
         },
         {
           "archiveId": "736",
+          "title": "Beach-Head II",
           "publisher": "U.S. Gold",
           "yearLabel": "198x",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": true,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Beach-Head_II_(198x_U.S._Gold)_%5b736%5d/"
@@ -226,11 +362,35 @@
       "excludedCandidates": [
         {
           "archiveId": "1242",
+          "title": "Beyond the Forbidden Forest",
           "publisher": "U.S. Gold",
           "yearLabel": "198x",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": true,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Beyond_the_Forbidden_Forest_(198x_U.S._Gold)_%5b1242%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "blagger-goes-to-hollywood",
+      "title": "Blagger Goes To Hollywood",
+      "year": 1985,
+      "knownPublishers": [
+        "Alligata Software"
+      ],
+      "knownReReleasers": [],
+      "reason": "title-publisher-match-year-needs-review",
+      "excludedCandidates": [
+        {
+          "archiveId": "364",
+          "title": "Blagger",
+          "publisher": "Alligata",
+          "yearLabel": "1983",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": true,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Blagger_(1983_Alligata)_%5b364%5d/"
         }
       ]
     },
@@ -246,11 +406,45 @@
       "excludedCandidates": [
         {
           "archiveId": "6218",
+          "title": "Blockbusters",
           "publisher": "Macsen Software",
           "yearLabel": "1984",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Blockbusters_(1984_Macsen_Software)_%5b6218%5d/"
+        },
+        {
+          "archiveId": "6114",
+          "title": "Blockbusters Gold Run",
+          "publisher": "Macsen Software",
+          "yearLabel": "1984",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Blockbusters_Gold_Run_(1984_Macsen_Software)_%5b6114%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "blood-n-guts",
+      "title": "Blood 'N Guts",
+      "year": 1986,
+      "knownPublishers": [
+        "American Action"
+      ],
+      "knownReReleasers": [],
+      "reason": "title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "2809",
+          "title": "Blood 'n Guts",
+          "publisher": "American Action AB",
+          "yearLabel": "1987",
+          "titleMatch": "exact",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Blood_'n_Guts_(1987_American_Action_AB)_%5b2809%5d/"
         }
       ]
     },
@@ -268,11 +462,33 @@
       "excludedCandidates": [
         {
           "archiveId": "411",
+          "title": "Boulder Dash",
           "publisher": "State Soft",
           "yearLabel": "1984",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Boulder_Dash_(1984_State_Soft)_%5b411%5d/"
+        },
+        {
+          "archiveId": "1525",
+          "title": "Boulder Dash Construction Kit",
+          "publisher": "Databyte",
+          "yearLabel": "1986",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Boulder_Dash_Construction_Kit_(1986_Databyte)_%5b1525%5d/"
+        },
+        {
+          "archiveId": "5452",
+          "title": "Boulder Dash Construction Kit",
+          "publisher": "World Wide Software",
+          "yearLabel": "1986",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Boulder_Dash_Construction_Kit_(1986_World_Wide_Software)_%5b5452%5d/"
         }
       ]
     },
@@ -288,8 +504,10 @@
       "excludedCandidates": [
         {
           "archiveId": "3035",
+          "title": "Bounder",
           "publisher": "Boots",
           "yearLabel": "1985",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Bounder_(1985_Boots)_%5b3035%5d/"
@@ -309,8 +527,10 @@
       "excludedCandidates": [
         {
           "archiveId": "1359",
+          "title": "Breakdance",
           "publisher": "Americana",
           "yearLabel": "1986",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Breakdance_(1986_Americana)_%5b1359%5d/"
@@ -329,8 +549,10 @@
       "excludedCandidates": [
         {
           "archiveId": "6162",
+          "title": "Breakthru",
           "publisher": "ERBE Software",
           "yearLabel": "1986",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Breakthru_(1986_ERBE_Software)_%5b6162%5d/"
@@ -352,8 +574,10 @@
       "excludedCandidates": [
         {
           "archiveId": "5915",
+          "title": "California Games",
           "publisher": "ERBE Software",
           "yearLabel": "1987",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/California_Games_(1987_ERBE_Software)_%5b5915%5d/"
@@ -374,24 +598,30 @@
       "excludedCandidates": [
         {
           "archiveId": "20567",
+          "title": "Championship Wrestling",
           "publisher": "ERBE Software",
           "yearLabel": "1987",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Championship_Wrestling_(1987_ERBE_Software)_%5b20567%5d/"
         },
         {
           "archiveId": "20480",
+          "title": "Championship Wrestling",
           "publisher": "Scandomatic",
           "yearLabel": "19xx",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": true,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Championship_Wrestling_(19xx_Scandomatic)_%5b20480%5d/"
         },
         {
           "archiveId": "2814",
+          "title": "Championship Wrestling",
           "publisher": "U.S. Gold",
           "yearLabel": "1986",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Championship_Wrestling_(1986_U.S._Gold)_%5b2814%5d/"
@@ -410,11 +640,57 @@
       "excludedCandidates": [
         {
           "archiveId": "1036",
+          "title": "Chopper",
           "publisher": "Creative Sparks",
           "yearLabel": "1985",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Chopper_(1985_Creative_Sparks)_%5b1036%5d/"
+        },
+        {
+          "archiveId": "8026",
+          "title": "Chopper Commander",
+          "publisher": "Zeppelin Games",
+          "yearLabel": "1988",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Chopper_Commander_(1988_Zeppelin_Games)_%5b8026%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "cobra",
+      "title": "Cobra",
+      "year": 1986,
+      "knownPublishers": [
+        "Ocean"
+      ],
+      "knownReReleasers": [
+        "The Hit Squad"
+      ],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "475",
+          "title": "Cobra Force",
+          "publisher": "Players Premier",
+          "yearLabel": "1989",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Cobra_Force_(1989_Players_Premier)_%5b475%5d/"
+        },
+        {
+          "archiveId": "32498",
+          "title": "Cobra Force",
+          "publisher": "Topshots",
+          "yearLabel": "19xx",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": true,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Cobra_Force_(19xx_Topshots)_%5b32498%5d/"
         }
       ]
     },
@@ -432,11 +708,39 @@
       "excludedCandidates": [
         {
           "archiveId": "5897",
+          "title": "Combat School",
           "publisher": "ERBE Software",
           "yearLabel": "1987",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Combat_School_(1987_ERBE_Software)_%5b5897%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "countdown-to-meltdown",
+      "title": "Countdown To Meltdown",
+      "year": 1984,
+      "knownPublishers": [
+        "Activision",
+        "Creative Sparks"
+      ],
+      "knownReReleasers": [
+        "Compulogical",
+        "MAD (Mastertronic)"
+      ],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "6297",
+          "title": "Countdown",
+          "publisher": "TV Games",
+          "yearLabel": "1987",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Countdown_(1987_TV_Games)_%5b6297%5d/"
         }
       ]
     },
@@ -452,8 +756,10 @@
       "excludedCandidates": [
         {
           "archiveId": "10965",
+          "title": "Crossfire",
           "publisher": "Atlantis Software Limited",
           "yearLabel": "1989",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Crossfire_(1989_Atlantis_Software_Limited)_%5b10965%5d/"
@@ -470,20 +776,24 @@
       "knownReReleasers": [
         "The Hit Squad"
       ],
-      "reason": "title-match-publisher-not-in-game-data",
+      "reason": "additional-title-match-publisher-not-in-game-data",
       "excludedCandidates": [
         {
           "archiveId": "2762",
+          "title": "Decathlon",
           "publisher": "Activision",
           "yearLabel": "1984",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Decathlon_(1984_Activision)_%5b2762%5d/"
         },
         {
           "archiveId": "2319",
+          "title": "Decathlon",
           "publisher": "Firebird Silver",
           "yearLabel": "1987",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Decathlon_(1987_Firebird_Silver)_%5b2319%5d/"
@@ -491,24 +801,46 @@
       ]
     },
     {
-      "gameSlug": "defenders-of-the-earth",
-      "title": "Defenders Of The Earth",
-      "year": 1990,
+      "gameSlug": "dizzy",
+      "title": "Dizzy",
+      "year": 1988,
       "knownPublishers": [
-        "Enigma Variations"
+        "Codemasters"
       ],
-      "knownReReleasers": [
-        "Hi-Tec Software"
-      ],
+      "knownReReleasers": [],
       "reason": "additional-title-match-publisher-not-in-game-data",
       "excludedCandidates": [
         {
-          "archiveId": "1968",
-          "publisher": "HiTEC Software",
-          "yearLabel": "1990",
+          "archiveId": "6540",
+          "title": "Dizzy Dice",
+          "publisher": "Players",
+          "yearLabel": "1987",
+          "titleMatch": "publisher-qualified-prefix",
           "publisherMatched": false,
           "yearCompatible": false,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Defenders_of_the_Earth_(1990_HiTEC_Software)_%5b1968%5d/"
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Dizzy_Dice_(1987_Players)_%5b6540%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "donald-ducks-playground",
+      "title": "Donald Duck's Playground",
+      "year": 1984,
+      "knownPublishers": [
+        "Sierra On-Line"
+      ],
+      "knownReReleasers": [],
+      "reason": "title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "1240",
+          "title": "Donald Duck's Playground",
+          "publisher": "U.S. Gold",
+          "yearLabel": "198x",
+          "titleMatch": "exact",
+          "publisherMatched": false,
+          "yearCompatible": true,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Donald_Duck's_Playground_(198x_U.S._Gold)_%5b1240%5d/"
         }
       ]
     },
@@ -524,16 +856,20 @@
       "excludedCandidates": [
         {
           "archiveId": "6607",
+          "title": "Donkey Kong",
           "publisher": "ERBE Software",
           "yearLabel": "1986",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Donkey_Kong_(1986_ERBE_Software)_%5b6607%5d/"
         },
         {
           "archiveId": "5473",
+          "title": "Donkey Kong",
           "publisher": "Ocean Software Ltd",
           "yearLabel": "1986",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Donkey_Kong_(1986_Ocean_Software_Ltd)_%5b5473%5d/"
@@ -552,32 +888,40 @@
       "excludedCandidates": [
         {
           "archiveId": "8670",
+          "title": "Double Dragon",
           "publisher": "Dro Soft",
           "yearLabel": "1988",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Double_Dragon_(1988_Dro_Soft)_%5b8670%5d/"
         },
         {
           "archiveId": "3951",
+          "title": "Double Dragon",
           "publisher": "Mastertronic Plus",
           "yearLabel": "1990",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Double_Dragon_(1990_Mastertronic_Plus)_%5b3951%5d/"
         },
         {
           "archiveId": "10075",
+          "title": "Double Dragon",
           "publisher": "Melbourne House",
           "yearLabel": "1988",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Double_Dragon_(1988_Melbourne_House)_%5b10075%5d/"
         },
         {
           "archiveId": "2511",
+          "title": "Double Dragon",
           "publisher": "Tronix",
           "yearLabel": "1991",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Double_Dragon_(1991_Tronix)_%5b2511%5d/"
@@ -598,11 +942,47 @@
       "excludedCandidates": [
         {
           "archiveId": "25890",
+          "title": "Double Dragon II- The Revenge",
           "publisher": "Dro Soft",
           "yearLabel": "19xx",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": true,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Double_Dragon_II-_The_Revenge_(19xx_Dro_Soft)_%5b25890%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "escape-from-the-planet-of-the-robot-monsters",
+      "title": "Escape From The Planet Of The Robot Monsters",
+      "year": 1990,
+      "knownPublishers": [
+        "Domark"
+      ],
+      "knownReReleasers": [
+        "The Hit Squad"
+      ],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "12391",
+          "title": "Escape",
+          "publisher": "Ocean Software Ltd",
+          "yearLabel": "1986",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Escape_(1986_Ocean_Software_Ltd)_%5b12391%5d/"
+        },
+        {
+          "archiveId": "550",
+          "title": "Escape",
+          "publisher": "Quicksilva",
+          "yearLabel": "1984",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Escape_(1984_Quicksilva)_%5b550%5d/"
         }
       ]
     },
@@ -620,11 +1000,35 @@
       "excludedCandidates": [
         {
           "archiveId": "766",
+          "title": "Forbidden Forest",
           "publisher": "U.S. Gold",
           "yearLabel": "1983",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Forbidden_Forest_(1983_U.S._Gold)_%5b766%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "friday-the-13th",
+      "title": "Friday The 13th",
+      "year": 1986,
+      "knownPublishers": [
+        "Domark"
+      ],
+      "knownReReleasers": [],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "7139",
+          "title": "Friday the 13th- The Computer Game",
+          "publisher": "Bug-Byte",
+          "yearLabel": "1988",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Friday_the_13th-_The_Computer_Game_(1988_Bug-Byte)_%5b7139%5d/"
         }
       ]
     },
@@ -642,8 +1046,10 @@
       "excludedCandidates": [
         {
           "archiveId": "6627",
+          "title": "Gauntlet",
           "publisher": "ERBE Software",
           "yearLabel": "1986",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Gauntlet_(1986_ERBE_Software)_%5b6627%5d/"
@@ -664,11 +1070,133 @@
       "excludedCandidates": [
         {
           "archiveId": "6631",
+          "title": "Hacker",
           "publisher": "Proein Soft Line",
           "yearLabel": "198x",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": true,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Hacker_(198x_Proein_Soft_Line)_%5b6631%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "hero",
+      "title": "H.E.R.O.",
+      "year": 1984,
+      "knownPublishers": [
+        "Activision"
+      ],
+      "knownReReleasers": [
+        "Firebird"
+      ],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "5039",
+          "title": "Hero of the Golden Talisman",
+          "publisher": "Mastertronic Added Dimension",
+          "yearLabel": "1985",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Hero_of_the_Golden_Talisman_(1985_Mastertronic_Added_Dimension)_%5b5039%5d/"
+        },
+        {
+          "archiveId": "3167",
+          "title": "Hero Quest",
+          "publisher": "Gremlin Graphics",
+          "yearLabel": "1991",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Hero_Quest_(1991_Gremlin_Graphics)_%5b3167%5d/"
+        },
+        {
+          "archiveId": "9663",
+          "title": "Hero Quest - Return of the Witch Lord",
+          "publisher": "Gremlin Graphics",
+          "yearLabel": "1991",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Hero_Quest_-_Return_of_the_Witch_Lord_(1991_Gremlin_Graphics)_%5b9663%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "hero-of-the-golden-talisman",
+      "title": "Hero Of The Golden Talisman",
+      "year": 1985,
+      "knownPublishers": [
+        "MAD (Mastertronic)"
+      ],
+      "knownReReleasers": [],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "528",
+          "title": "H.E.R.O.",
+          "publisher": "Activision",
+          "yearLabel": "1984",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/H.E.R.O._(1984_Activision)_%5b528%5d/"
+        },
+        {
+          "archiveId": "2270",
+          "title": "H.E.R.O.",
+          "publisher": "Firebird Silver",
+          "yearLabel": "1987",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/H.E.R.O._(1987_Firebird_Silver)_%5b2270%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "hunchback",
+      "title": "Hunchback",
+      "year": 1983,
+      "knownPublishers": [
+        "Ocean"
+      ],
+      "knownReReleasers": [],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "389",
+          "title": "Hunchback at the Olympics",
+          "publisher": "Software Projects",
+          "yearLabel": "1985",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Hunchback_at_the_Olympics_(1985_Software_Projects)_%5b389%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "hunchback-at-the-olympics",
+      "title": "Hunchback At The Olympics",
+      "year": 1985,
+      "knownPublishers": [
+        "Software Projects"
+      ],
+      "knownReReleasers": [],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "25323",
+          "title": "Hunchback",
+          "publisher": "Ocean Software Ltd",
+          "yearLabel": "1983",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Hunchback_(1983_Ocean_Software_Ltd)_%5b25323%5d/"
         }
       ]
     },
@@ -686,8 +1214,10 @@
       "excludedCandidates": [
         {
           "archiveId": "3496",
+          "title": "IK+",
           "publisher": "Activision",
           "yearLabel": "1987",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/IK+_(1987_Activision)_%5b3496%5d/"
@@ -709,8 +1239,10 @@
       "excludedCandidates": [
         {
           "archiveId": "2976",
+          "title": "Ikari Warriors",
           "publisher": "MCM Software",
           "yearLabel": "1988",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ikari_Warriors_(1988_MCM_Software)_%5b2976%5d/"
@@ -731,8 +1263,10 @@
       "excludedCandidates": [
         {
           "archiveId": "7072",
+          "title": "Indiana Jones and the Temple of Doom",
           "publisher": "ERBE Software",
           "yearLabel": "1987",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Indiana_Jones_and_the_Temple_of_Doom_(1987_ERBE_Software)_%5b7072%5d/"
@@ -751,8 +1285,10 @@
       "excludedCandidates": [
         {
           "archiveId": "4218",
+          "title": "Indiana Jones in the Lost Kingdom",
           "publisher": "U.S. Gold",
           "yearLabel": "1984",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Indiana_Jones_in_the_Lost_Kingdom_(1984_U.S._Gold)_%5b4218%5d/"
@@ -771,8 +1307,10 @@
       "excludedCandidates": [
         {
           "archiveId": "3215",
+          "title": "International Soccer",
           "publisher": "CRL",
           "yearLabel": "1988",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/International_Soccer_(1988_CRL)_%5b3215%5d/"
@@ -791,11 +1329,35 @@
       "excludedCandidates": [
         {
           "archiveId": "6104",
+          "title": "International Tennis",
           "publisher": "Zeppelin Games",
           "yearLabel": "1992",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/International_Tennis_(1992_Zeppelin_Games)_%5b6104%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "jet-set-willy",
+      "title": "Jet Set Willy",
+      "year": 1984,
+      "knownPublishers": [
+        "Software Projects"
+      ],
+      "knownReReleasers": [],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "3345",
+          "title": "Jet Set Willy- The Final Frontier!",
+          "publisher": "Ricochet",
+          "yearLabel": "19xx",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": true,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Jet_Set_Willy-_The_Final_Frontier!_(19xx_Ricochet)_%5b3345%5d/"
         }
       ]
     },
@@ -811,8 +1373,10 @@
       "excludedCandidates": [
         {
           "archiveId": "2866",
+          "title": "Karateka",
           "publisher": "Ariolasoft",
           "yearLabel": "1985",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Karateka_(1985_Ariolasoft)_%5b2866%5d/"
@@ -831,11 +1395,23 @@
       "excludedCandidates": [
         {
           "archiveId": "4952",
+          "title": "Labyrinth",
           "publisher": "Commodore",
           "yearLabel": "1983",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Labyrinth_(1983_Commodore)_%5b4952%5d/"
+        },
+        {
+          "archiveId": "120",
+          "title": "Labyrinth of the Creator",
+          "publisher": "Mogul",
+          "yearLabel": "1983",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Labyrinth_of_the_Creator_(1983_Mogul)_%5b120%5d/"
         }
       ]
     },
@@ -853,11 +1429,23 @@
       "excludedCandidates": [
         {
           "archiveId": "6678",
+          "title": "Leader Board",
           "publisher": "ERBE Software",
           "yearLabel": "1986",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Leader_Board_(1986_ERBE_Software)_%5b6678%5d/"
+        },
+        {
+          "archiveId": "1042",
+          "title": "Leader Board Executive Edition",
+          "publisher": "U.S. Gold",
+          "yearLabel": "1987",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Leader_Board_Executive_Edition_(1987_U.S._Gold)_%5b1042%5d/"
         }
       ]
     },
@@ -873,8 +1461,10 @@
       "excludedCandidates": [
         {
           "archiveId": "797",
+          "title": "Magic Carpet",
           "publisher": "Hitech Games Plus",
           "yearLabel": "19xx",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": true,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Magic_Carpet_(19xx_Hitech_Games_Plus)_%5b797%5d/"
@@ -893,11 +1483,35 @@
       "excludedCandidates": [
         {
           "archiveId": "663",
+          "title": "Manic Miner",
           "publisher": "Mastertronic Added Dimension",
           "yearLabel": "1989",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Manic_Miner_(1989_Mastertronic_Added_Dimension)_%5b663%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "micro-mouse-goes-debugging",
+      "title": "Micro Mouse Goes Debugging",
+      "year": 1983,
+      "knownPublishers": [
+        "MC Lothlorien"
+      ],
+      "knownReReleasers": [],
+      "reason": "title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "2827",
+          "title": "Micro Mouse",
+          "publisher": "Mastertronic Plus",
+          "yearLabel": "1989",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Micro_Mouse_(1989_Mastertronic_Plus)_%5b2827%5d/"
         }
       ]
     },
@@ -913,11 +1527,45 @@
       "excludedCandidates": [
         {
           "archiveId": "3211",
+          "title": "Mr. Robot and his Robot Factory",
           "publisher": "Beyond",
           "yearLabel": "1984",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Mr._Robot_and_his_Robot_Factory_(1984_Beyond)_%5b3211%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "murder-on-the-mississippi",
+      "title": "Murder On The Mississippi",
+      "year": 1986,
+      "knownPublishers": [
+        "Activision"
+      ],
+      "knownReReleasers": [],
+      "reason": "title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "123",
+          "title": "Murder",
+          "publisher": "Rabbit Software",
+          "yearLabel": "1983",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Murder_(1983_Rabbit_Software)_%5b123%5d/"
+        },
+        {
+          "archiveId": "174",
+          "title": "Murder",
+          "publisher": "Rabbit Software",
+          "yearLabel": "1983",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Murder_(1983_Rabbit_Software)_%5b174%5d/"
         }
       ]
     },
@@ -933,8 +1581,10 @@
       "excludedCandidates": [
         {
           "archiveId": "6721",
+          "title": "Nebulus",
           "publisher": "ERBE Software",
           "yearLabel": "1987",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Nebulus_(1987_ERBE_Software)_%5b6721%5d/"
@@ -953,8 +1603,42 @@
       "excludedCandidates": [
         {
           "archiveId": "1542",
+          "title": "Nemesis",
           "publisher": "Hit Squad",
           "yearLabel": "1990",
+          "titleMatch": "exact",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Nemesis_(1990_Hit_Squad)_%5b1542%5d/"
+        },
+        {
+          "archiveId": "4146",
+          "title": "Nemesis the Warlock",
+          "publisher": "Martech",
+          "yearLabel": "1987",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Nemesis_the_Warlock_(1987_Martech)_%5b4146%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "nemesis-the-warlock",
+      "title": "Nemesis The Warlock",
+      "year": 1987,
+      "knownPublishers": [
+        "Martech"
+      ],
+      "knownReReleasers": [],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "1542",
+          "title": "Nemesis",
+          "publisher": "Hit Squad",
+          "yearLabel": "1990",
+          "titleMatch": "publisher-qualified-prefix",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Nemesis_(1990_Hit_Squad)_%5b1542%5d/"
@@ -973,11 +1657,73 @@
       "excludedCandidates": [
         {
           "archiveId": "2849",
+          "title": "Ninja",
           "publisher": "Entertainment USA",
           "yearLabel": "1986",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ninja_(1986_Entertainment_USA)_%5b2849%5d/"
+        },
+        {
+          "archiveId": "10405",
+          "title": "Ninja Massacre",
+          "publisher": "EDOS",
+          "yearLabel": "19xx",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": true,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ninja_Massacre_(19xx_EDOS)_%5b10405%5d/"
+        },
+        {
+          "archiveId": "25041",
+          "title": "Ninja Master",
+          "publisher": "Firebird Silver",
+          "yearLabel": "1986",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ninja_Master_(1986_Firebird_Silver)_%5b25041%5d/"
+        },
+        {
+          "archiveId": "1704",
+          "title": "Ninja Rabbits",
+          "publisher": "MicroValue",
+          "yearLabel": "1991",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ninja_Rabbits_(1991_MicroValue)_%5b1704%5d/"
+        },
+        {
+          "archiveId": "3499",
+          "title": "Ninja Remix",
+          "publisher": "System 3",
+          "yearLabel": "1990",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ninja_Remix_(1990_System_3)_%5b3499%5d/"
+        },
+        {
+          "archiveId": "2822",
+          "title": "Ninja Warriors",
+          "publisher": "Tronix",
+          "yearLabel": "1991",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ninja_Warriors_(1991_Tronix)_%5b2822%5d/"
+        },
+        {
+          "archiveId": "9843",
+          "title": "Ninja Warriors, The",
+          "publisher": "Virgin",
+          "yearLabel": "1989",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ninja_Warriors,_The_(1989_Virgin)_%5b9843%5d/"
         }
       ]
     },
@@ -992,12 +1738,48 @@
       "reason": "title-match-publisher-not-in-game-data",
       "excludedCandidates": [
         {
+          "archiveId": "2849",
+          "title": "Ninja",
+          "publisher": "Entertainment USA",
+          "yearLabel": "1986",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ninja_(1986_Entertainment_USA)_%5b2849%5d/"
+        },
+        {
           "archiveId": "10405",
+          "title": "Ninja Massacre",
           "publisher": "EDOS",
           "yearLabel": "19xx",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": true,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ninja_Massacre_(19xx_EDOS)_%5b10405%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "ninja-rabbits",
+      "title": "Ninja Rabbits",
+      "year": 1991,
+      "knownPublishers": [
+        "MicroValue"
+      ],
+      "knownReReleasers": [
+        "EDOS"
+      ],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "2849",
+          "title": "Ninja",
+          "publisher": "Entertainment USA",
+          "yearLabel": "1986",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ninja_(1986_Entertainment_USA)_%5b2849%5d/"
         }
       ]
     },
@@ -1017,8 +1799,10 @@
       "excludedCandidates": [
         {
           "archiveId": "20730",
+          "title": "Pitstop II",
           "publisher": "Rushware",
           "yearLabel": "19xx",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": true,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Pitstop_II_(19xx_Rushware)_%5b20730%5d/"
@@ -1039,8 +1823,10 @@
       "excludedCandidates": [
         {
           "archiveId": "6359",
+          "title": "Platoon",
           "publisher": "ERBE Software",
           "yearLabel": "1987",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Platoon_(1987_ERBE_Software)_%5b6359%5d/"
@@ -1059,16 +1845,20 @@
       "excludedCandidates": [
         {
           "archiveId": "5519",
+          "title": "Popeye",
           "publisher": "Alternative Software",
           "yearLabel": "1987",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Popeye_(1987_Alternative_Software)_%5b5519%5d/"
         },
         {
           "archiveId": "5450",
+          "title": "Popeye",
           "publisher": "Macmillan Software",
           "yearLabel": "1986",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Popeye_(1986_Macmillan_Software)_%5b5450%5d/"
@@ -1089,31 +1879,13 @@
       "excludedCandidates": [
         {
           "archiveId": "5450",
+          "title": "Popeye",
           "publisher": "Macmillan Software",
           "yearLabel": "1986",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Popeye_(1986_Macmillan_Software)_%5b5450%5d/"
-        }
-      ]
-    },
-    {
-      "gameSlug": "quick-draw-mcgraw",
-      "title": "Quick Draw Mcgraw",
-      "year": 1990,
-      "knownPublishers": [
-        "Hi-Tec Software"
-      ],
-      "knownReReleasers": [],
-      "reason": "title-match-publisher-not-in-game-data",
-      "excludedCandidates": [
-        {
-          "archiveId": "1976",
-          "publisher": "HiTEC Software",
-          "yearLabel": "1991",
-          "publisherMatched": false,
-          "yearCompatible": false,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Quick_Draw_McGraw_(1991_HiTEC_Software)_%5b1976%5d/"
         }
       ]
     },
@@ -1131,8 +1903,10 @@
       "excludedCandidates": [
         {
           "archiveId": "5360",
+          "title": "Raid on Bungeling Bay",
           "publisher": "Ariolasoft",
           "yearLabel": "1984",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Raid_on_Bungeling_Bay_(1984_Ariolasoft)_%5b5360%5d/"
@@ -1153,8 +1927,10 @@
       "excludedCandidates": [
         {
           "archiveId": "529",
+          "title": "Raid over Moscow",
           "publisher": "U.S. Gold",
           "yearLabel": "198x",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": true,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Raid_over_Moscow_(198x_U.S._Gold)_%5b529%5d/"
@@ -1175,11 +1951,36 @@
       "excludedCandidates": [
         {
           "archiveId": "1564",
+          "title": "Rastan",
           "publisher": "Ocean Software Ltd",
           "yearLabel": "1990",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Rastan_(1990_Ocean_Software_Ltd)_%5b1564%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "realm-of-impossibility",
+      "title": "Realm Of Impossibility",
+      "year": 1984,
+      "knownPublishers": [
+        "Ariolasoft",
+        "Electronic Arts"
+      ],
+      "knownReReleasers": [],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "2313",
+          "title": "Realm",
+          "publisher": "Firebird",
+          "yearLabel": "1987",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Realm_(1987_Firebird)_%5b2313%5d/"
         }
       ]
     },
@@ -1197,11 +1998,37 @@
       "excludedCandidates": [
         {
           "archiveId": "4149",
+          "title": "Renegade",
           "publisher": "ERBE Software",
           "yearLabel": "19xx",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": true,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Renegade_(19xx_ERBE_Software)_%5b4149%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "road-runner",
+      "title": "Road Runner",
+      "year": 1987,
+      "knownPublishers": [
+        "US Gold"
+      ],
+      "knownReReleasers": [
+        "Kixx"
+      ],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "671",
+          "title": "Road Runner and Wile E. Coyote",
+          "publisher": "HiTEC Software",
+          "yearLabel": "1991",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Road_Runner_and_Wile_E._Coyote_(1991_HiTEC_Software)_%5b671%5d/"
         }
       ]
     },
@@ -1219,11 +2046,59 @@
       "excludedCandidates": [
         {
           "archiveId": "11471",
+          "title": "Saboteur!",
           "publisher": "ERBE Software",
           "yearLabel": "1986",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Saboteur!_(1986_ERBE_Software)_%5b11471%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "savage-pond",
+      "title": "Savage Pond",
+      "year": 1984,
+      "knownPublishers": [
+        "Argus Press Software"
+      ],
+      "knownReReleasers": [],
+      "reason": "title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "2220",
+          "title": "Savage",
+          "publisher": "Firebird",
+          "yearLabel": "1988",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Savage_(1988_Firebird)_%5b2220%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "shao-lins-road",
+      "title": "Shao-Lin's Road",
+      "year": 1986,
+      "knownPublishers": [
+        "The Edge"
+      ],
+      "knownReReleasers": [
+        "The Hit Squad"
+      ],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "2979",
+          "title": "Shao-Lin's Road",
+          "publisher": "ERBE Software",
+          "yearLabel": "1986",
+          "titleMatch": "exact",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Shao-Lin's_Road_(1986_ERBE_Software)_%5b2979%5d/"
         }
       ]
     },
@@ -1241,8 +2116,10 @@
       "excludedCandidates": [
         {
           "archiveId": "6041",
+          "title": "Short Circuit",
           "publisher": "ERBE Software",
           "yearLabel": "1987",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Short_Circuit_(1987_ERBE_Software)_%5b6041%5d/"
@@ -1263,8 +2140,10 @@
       "excludedCandidates": [
         {
           "archiveId": "1110",
+          "title": "Silent Service",
           "publisher": "U.S. Gold",
           "yearLabel": "1985",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Silent_Service_(1985_U.S._Gold)_%5b1110%5d/"
@@ -1283,11 +2162,59 @@
       "excludedCandidates": [
         {
           "archiveId": "24185",
+          "title": "Skate or Die!",
           "publisher": "Dro Soft",
           "yearLabel": "1990",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Skate_or_Die!_(1990_Dro_Soft)_%5b24185%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "skull-crossbones",
+      "title": "Skull & Crossbones",
+      "year": 1991,
+      "knownPublishers": [
+        "Domark"
+      ],
+      "knownReReleasers": [
+        "The Hit Squad"
+      ],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "106",
+          "title": "Skull",
+          "publisher": "Games Machine",
+          "yearLabel": "1984",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Skull_(1984_Games_Machine)_%5b106%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "smash-tv",
+      "title": "Smash TV",
+      "year": 1992,
+      "knownPublishers": [
+        "Codemasters"
+      ],
+      "knownReReleasers": [],
+      "reason": "title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "2239",
+          "title": "Smash T.V.",
+          "publisher": "Ocean Software Ltd",
+          "yearLabel": "1990",
+          "titleMatch": "exact",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Smash_T.V._(1990_Ocean_Software_Ltd)_%5b2239%5d/"
         }
       ]
     },
@@ -1303,16 +2230,20 @@
       "excludedCandidates": [
         {
           "archiveId": "8177",
+          "title": "Space Harrier",
           "publisher": "Encore",
           "yearLabel": "19xx",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": true,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Space_Harrier_(19xx_Encore)_%5b8177%5d/"
         },
         {
           "archiveId": "9535",
+          "title": "Space Harrier",
           "publisher": "Zafiro Software Division",
           "yearLabel": "198x",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": true,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Space_Harrier_(198x_Zafiro_Software_Division)_%5b9535%5d/"
@@ -1337,67 +2268,104 @@
       "reason": "additional-title-match-publisher-not-in-game-data",
       "excludedCandidates": [
         {
-          "archiveId": "681",
-          "publisher": "HiTEC Software",
-          "yearLabel": "19xx",
+          "archiveId": "3018",
+          "title": "Spy vs Spy Trilogy",
+          "publisher": "Databyte",
+          "yearLabel": "1988",
+          "titleMatch": "publisher-qualified-prefix",
           "publisherMatched": false,
-          "yearCompatible": true,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Spy_vs_Spy_(19xx_HiTEC_Software)_%5b681%5d/"
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Spy_vs_Spy_Trilogy_(1988_Databyte)_%5b3018%5d/"
         }
       ]
     },
     {
-      "gameSlug": "spy-vs-spy-2-the-island-caper",
-      "title": "Spy Vs Spy II: The Island Caper",
-      "year": 1985,
+      "gameSlug": "star-wars",
+      "title": "Star Wars",
+      "year": 1988,
       "knownPublishers": [
-        "First Star Software"
+        "Domark"
       ],
       "knownReReleasers": [
-        "Avantage",
-        "Beyond",
-        "Databyte",
-        "EDOS",
-        "Hi-Tec Software",
-        "SoftExpress",
-        "Wicked Software",
-        "World Wide Software"
+        "The Hit Squad"
       ],
-      "reason": "title-match-publisher-not-in-game-data",
+      "reason": "additional-title-match-publisher-not-in-game-data",
       "excludedCandidates": [
         {
-          "archiveId": "1987",
-          "publisher": "HiTEC Software",
-          "yearLabel": "19xx",
+          "archiveId": "2529",
+          "title": "Star Wars Droids- The Adventures of R2-D2 and C-3PO",
+          "publisher": "Mastertronic Added Dimension",
+          "yearLabel": "1988",
+          "titleMatch": "publisher-qualified-prefix",
           "publisherMatched": false,
-          "yearCompatible": true,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Spy_vs_Spy_II-_The_Island_Caper_(19xx_HiTEC_Software)_%5b1987%5d/"
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Star_Wars_Droids-_The_Adventures_of_R2-D2_and_C-3PO_(1988_Mastertronic_Added_Dimension)_%5b2529%5d/"
         }
       ]
     },
     {
-      "gameSlug": "spy-vs-spy-3-arctic-antics",
-      "title": "Spy Vs Spy III: Arctic Antics",
-      "year": 1987,
+      "gameSlug": "star-wars-droids",
+      "title": "Star Wars: Droids",
+      "year": 1988,
       "knownPublishers": [
-        "First Star Software"
+        "MAD (Mastertronic)"
+      ],
+      "knownReReleasers": [],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "1183",
+          "title": "Star Wars",
+          "publisher": "Domark",
+          "yearLabel": "1988",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Star_Wars_(1988_Domark)_%5b1183%5d/"
+        },
+        {
+          "archiveId": "1184",
+          "title": "Star Wars",
+          "publisher": "Hit Squad",
+          "yearLabel": "1990",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Star_Wars_(1990_Hit_Squad)_%5b1184%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "strip-poker-a-sizzling-game-of-chance",
+      "title": "Strip Poker: A Sizzling Game Of Chance",
+      "year": 1984,
+      "knownPublishers": [
+        "Artworx Software"
       ],
       "knownReReleasers": [
-        "Databyte",
-        "Epyx",
-        "Hi-Tec Software",
-        "Softgold",
-        "World Wide Software"
+        "Blue Ribbon"
       ],
       "reason": "title-match-publisher-not-in-game-data",
       "excludedCandidates": [
         {
-          "archiveId": "682",
-          "publisher": "HiTEC Software",
+          "archiveId": "7489",
+          "title": "Strip Poker",
+          "publisher": "CDS Software Ltd.",
           "yearLabel": "19xx",
+          "titleMatch": "publisher-qualified-prefix",
           "publisherMatched": false,
           "yearCompatible": true,
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Spy_vs_Spy_III-_Arctic_Antics_(19xx_HiTEC_Software)_%5b682%5d/"
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Strip_Poker_(19xx_CDS_Software_Ltd.)_%5b7489%5d/"
+        },
+        {
+          "archiveId": "513",
+          "title": "Strip Poker",
+          "publisher": "U.S. Gold",
+          "yearLabel": "198x",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": true,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Strip_Poker_(198x_U.S._Gold)_%5b513%5d/"
         }
       ]
     },
@@ -1416,24 +2384,30 @@
       "excludedCandidates": [
         {
           "archiveId": "19164",
+          "title": "Summer Games",
           "publisher": "CBS Software",
           "yearLabel": "1984",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Summer_Games_(1984_CBS_Software)_%5b19164%5d/"
         },
         {
           "archiveId": "6753",
+          "title": "Summer Games",
           "publisher": "d3m Software",
           "yearLabel": "1984",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Summer_Games_(1984_d3m_Software)_%5b6753%5d/"
         },
         {
           "archiveId": "569",
+          "title": "Summer Games",
           "publisher": "Quicksilva",
           "yearLabel": "1984",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Summer_Games_(1984_Quicksilva)_%5b569%5d/"
@@ -1453,24 +2427,30 @@
       "excludedCandidates": [
         {
           "archiveId": "2090",
+          "title": "Summer Games II",
           "publisher": "d3m Software",
           "yearLabel": "1985",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Summer_Games_II_(1985_d3m_Software)_%5b2090%5d/"
         },
         {
           "archiveId": "6954",
+          "title": "Summer Games II",
           "publisher": "Rushware",
           "yearLabel": "1985",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Summer_Games_II_(1985_Rushware)_%5b6954%5d/"
         },
         {
           "archiveId": "11718",
+          "title": "Summer Games II",
           "publisher": "Scandomatic",
           "yearLabel": "198x",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": true,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Summer_Games_II_(198x_Scandomatic)_%5b11718%5d/"
@@ -1492,11 +2472,35 @@
       "excludedCandidates": [
         {
           "archiveId": "6375",
+          "title": "Super Cycle",
           "publisher": "Rushware",
           "yearLabel": "1986",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Super_Cycle_(1986_Rushware)_%5b6375%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "super-gran-the-adventure",
+      "title": "Super Gran: The Adventure",
+      "year": 1985,
+      "knownPublishers": [
+        "Tynesoft"
+      ],
+      "knownReReleasers": [],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "7818",
+          "title": "Super Gran",
+          "publisher": "Dixons",
+          "yearLabel": "19xx",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": true,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Super_Gran_(19xx_Dixons)_%5b7818%5d/"
         }
       ]
     },
@@ -1514,11 +2518,35 @@
       "excludedCandidates": [
         {
           "archiveId": "2981",
+          "title": "Target Renegade",
           "publisher": "ERBE Software",
           "yearLabel": "1988",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Target_Renegade_(1988_ERBE_Software)_%5b2981%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "teenage-mutant-hero-turtles-the-coin-op",
+      "title": "Teenage Mutant Hero Turtles: The Coin-Op",
+      "year": 1991,
+      "knownPublishers": [
+        "Konami"
+      ],
+      "knownReReleasers": [],
+      "reason": "title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "3160",
+          "title": "Teenage Mutant Hero Turtles",
+          "publisher": "Image Works",
+          "yearLabel": "1990",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Teenage_Mutant_Hero_Turtles_(1990_Image_Works)_%5b3160%5d/"
         }
       ]
     },
@@ -1534,16 +2562,20 @@
       "excludedCandidates": [
         {
           "archiveId": "6951",
+          "title": "Goonies, The",
           "publisher": "American Action AB",
           "yearLabel": "1986",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Goonies,_The_(1986_American_Action_AB)_%5b6951%5d/"
         },
         {
           "archiveId": "841",
+          "title": "Goonies, The",
           "publisher": "U.S. Gold",
           "yearLabel": "1985",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Goonies,_The_(1985_U.S._Gold)_%5b841%5d/"
@@ -1564,11 +2596,35 @@
       "excludedCandidates": [
         {
           "archiveId": "5924",
+          "title": "Great Escape, The",
           "publisher": "ERBE Software",
           "yearLabel": "1986",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Great_Escape,_The_(1986_ERBE_Software)_%5b5924%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "the-prince",
+      "title": "The Prince",
+      "year": 1986,
+      "knownPublishers": [
+        "Firebird"
+      ],
+      "knownReReleasers": [],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "6154",
+          "title": "Prince Clumsy",
+          "publisher": "Codemasters",
+          "yearLabel": "19xx",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": true,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Prince_Clumsy_(19xx_Codemasters)_%5b6154%5d/"
         }
       ]
     },
@@ -1584,16 +2640,20 @@
       "excludedCandidates": [
         {
           "archiveId": "5181",
+          "title": "Sentinel",
           "publisher": "Americana",
           "yearLabel": "1986",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Sentinel_(1986_Americana)_%5b5181%5d/"
         },
         {
           "archiveId": "1245",
+          "title": "Sentinel",
           "publisher": "U.S. Gold",
           "yearLabel": "198x",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": true,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Sentinel_(198x_U.S._Gold)_%5b1245%5d/"
@@ -1612,11 +2672,69 @@
       "excludedCandidates": [
         {
           "archiveId": "7724",
+          "title": "Sword of Fargoal",
           "publisher": "Euro Gold",
           "yearLabel": "19xx",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": true,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Sword_of_Fargoal_(19xx_Euro_Gold)_%5b7724%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "the-transformers",
+      "title": "The Transformers",
+      "year": 1985,
+      "knownPublishers": [
+        "Ocean"
+      ],
+      "knownReReleasers": [],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "7734",
+          "title": "Transformers - Battle to Save the Earth",
+          "publisher": "Activision",
+          "yearLabel": "1986",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Transformers_-_Battle_to_Save_the_Earth_(1986_Activision)_%5b7734%5d/"
+        },
+        {
+          "archiveId": "6118",
+          "title": "Transformers, The- The Computer Game",
+          "publisher": "Mastertronic Plus",
+          "yearLabel": "1989",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Transformers,_The-_The_Computer_Game_(1989_Mastertronic_Plus)_%5b6118%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "the-trap-door",
+      "title": "The Trap Door",
+      "year": 1986,
+      "knownPublishers": [
+        "Piranha"
+      ],
+      "knownReReleasers": [
+        "Alternative Software"
+      ],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "383",
+          "title": "Trap",
+          "publisher": "Alligata",
+          "yearLabel": "1986",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Trap_(1986_Alligata)_%5b383%5d/"
         }
       ]
     },
@@ -1632,8 +2750,10 @@
       "excludedCandidates": [
         {
           "archiveId": "12597",
+          "title": "They Stole a Million",
           "publisher": "39 Steps",
           "yearLabel": "1986",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/They_Stole_a_Million_(1986_39_Steps)_%5b12597%5d/"
@@ -1654,8 +2774,10 @@
       "excludedCandidates": [
         {
           "archiveId": "5917",
+          "title": "Thunder Blade",
           "publisher": "ERBE Software",
           "yearLabel": "1988",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Thunder_Blade_(1988_ERBE_Software)_%5b5917%5d/"
@@ -1674,11 +2796,35 @@
       "excludedCandidates": [
         {
           "archiveId": "1427",
+          "title": "Vendetta",
           "publisher": "Kixx",
           "yearLabel": "19xx",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": true,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Vendetta_(19xx_Kixx)_%5b1427%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "west-bank",
+      "title": "West Bank",
+      "year": 1987,
+      "knownPublishers": [
+        "Gremlin Graphics"
+      ],
+      "knownReReleasers": [],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "2479",
+          "title": "West",
+          "publisher": "Talent Computer Systems",
+          "yearLabel": "1986",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/West_(1986_Talent_Computer_Systems)_%5b2479%5d/"
         }
       ]
     },
@@ -1697,19 +2843,65 @@
       "excludedCandidates": [
         {
           "archiveId": "6164",
+          "title": "Winter Games",
           "publisher": "ERBE Software",
           "yearLabel": "1987",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Winter_Games_(1987_ERBE_Software)_%5b6164%5d/"
         },
         {
           "archiveId": "10956",
+          "title": "Winter Games",
           "publisher": "Rushware",
           "yearLabel": "1985",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": false,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Winter_Games_(1985_Rushware)_%5b10956%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "wizard",
+      "title": "Wizard",
+      "year": 1984,
+      "knownPublishers": [
+        "Ariolasoft"
+      ],
+      "knownReReleasers": [],
+      "reason": "title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "5593",
+          "title": "Wizard Warz",
+          "publisher": "Go!",
+          "yearLabel": "1987",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Wizard_Warz_(1987_Go!)_%5b5593%5d/"
+        },
+        {
+          "archiveId": "6718",
+          "title": "Wizard's Lair",
+          "publisher": "Blue Ribbon",
+          "yearLabel": "1988",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Wizard's_Lair_(1988_Blue_Ribbon)_%5b6718%5d/"
+        },
+        {
+          "archiveId": "3192",
+          "title": "Wizard's Lair",
+          "publisher": "Bubble Bus Software",
+          "yearLabel": "1985",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Wizard's_Lair_(1985_Bubble_Bus_Software)_%5b3192%5d/"
         }
       ]
     },
@@ -1727,11 +2919,37 @@
       "excludedCandidates": [
         {
           "archiveId": "6767",
+          "title": "Yie Ar Kung-Fu",
           "publisher": "ERBE Software",
           "yearLabel": "19xx",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": true,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Yie_Ar_Kung-Fu_(19xx_ERBE_Software)_%5b6767%5d/"
+        }
+      ]
+    },
+    {
+      "gameSlug": "yogi-bear",
+      "title": "Yogi Bear",
+      "year": 1987,
+      "knownPublishers": [
+        "Piranha"
+      ],
+      "knownReReleasers": [
+        "Alternative Software"
+      ],
+      "reason": "additional-title-match-publisher-not-in-game-data",
+      "excludedCandidates": [
+        {
+          "archiveId": "684",
+          "title": "Yogi Bear & Friends in the Greed Monster- A Treasure Hunt",
+          "publisher": "HiTEC Software",
+          "yearLabel": "1990",
+          "titleMatch": "publisher-qualified-prefix",
+          "publisherMatched": false,
+          "yearCompatible": false,
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Yogi_Bear_&_Friends_in_the_Greed_Monster-_A_Treasure_Hunt_(1990_HiTEC_Software)_%5b684%5d/"
         }
       ]
     },
@@ -1749,8 +2967,10 @@
       "excludedCandidates": [
         {
           "archiveId": "717",
+          "title": "Zorro",
           "publisher": "U.S. Gold",
           "yearLabel": "198x",
+          "titleMatch": "exact",
           "publisherMatched": false,
           "yearCompatible": true,
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Zorro_(198x_U.S._Gold)_%5b717%5d/"

@@ -1,0 +1,2002 @@
+{
+  "schemaVersion": 1,
+  "source": "https://uta.pokefinder.org/Ultimate_Tape_Archive/",
+  "summary": {
+    "c64Games": 559,
+    "archiveReleasesScanned": 2890,
+    "matchedGames": 370,
+    "manualReviewGames": 35,
+    "noTitleCandidateGames": 154,
+    "unmatchedGames": 189
+  },
+  "unmatched": [
+    {
+      "slug": "20-tons",
+      "title": "20 Tons",
+      "year": 1985,
+      "publishers": [
+        "64 Tape Computing"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "a-nightmare-on-elm-street",
+      "title": "A Nightmare On Elm Street",
+      "year": 1989,
+      "publishers": [
+        "Monarch Software"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "accolades-comics",
+      "title": "Accolade's Comics",
+      "year": 1987,
+      "publishers": [
+        "Accolade"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "action-biker",
+      "title": "Action Biker",
+      "year": 1985,
+      "publishers": [
+        "Mastertronic"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "action-service",
+      "title": "Action Service",
+      "year": 1989,
+      "publishers": [
+        "Infogrames"
+      ],
+      "reReleasers": [
+        "Players Premier",
+        "Players Software"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "after-burner",
+      "title": "After Burner",
+      "year": 1989,
+      "publishers": [
+        "Mindscape"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "alter-ego",
+      "title": "Alter Ego",
+      "year": 1986,
+      "publishers": [
+        "Activision"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "android-nim",
+      "title": "Android Nim",
+      "year": 1985,
+      "publishers": [
+        "64 Tape Computing"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "ant-attack",
+      "title": "Ant Attack",
+      "year": 1984,
+      "publishers": [
+        "Quicksilva"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "apollo-18-mission-to-the-moon",
+      "title": "Apollo 18: Mission To The Moon",
+      "year": 1987,
+      "publishers": [
+        "Accolade",
+        "Electronic Arts"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "arachnophobia",
+      "title": "Arachnophobia",
+      "year": 1991,
+      "publishers": [
+        "Titus Software"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "arctic-shipwreck",
+      "title": "Arctic Shipwreck",
+      "year": 1983,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "aussie-games",
+      "title": "Aussie Games",
+      "year": 1989,
+      "publishers": [
+        "Mindscape"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "bad-dudes-vs-dragonninja",
+      "title": "Bad Dudes Vs Dragonninja",
+      "year": 1989,
+      "publishers": [
+        "Imagine"
+      ],
+      "reReleasers": [
+        "The Hit Squad"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "badlands",
+      "title": "Badlands",
+      "year": 1990,
+      "publishers": [
+        "Domark"
+      ],
+      "reReleasers": [
+        "The Hit Squad"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "barbarian-2-the-dungeon-of-drax",
+      "title": "Barbarian II: The Dungeon Of Drax",
+      "year": 1988,
+      "publishers": [
+        "Palace Software"
+      ],
+      "reReleasers": [
+        "Kixx"
+      ],
+      "status": "manual-review"
+    },
+    {
+      "slug": "bc2-grogs-revenge",
+      "title": "B.C. II: Grog's Revenge",
+      "year": 1984,
+      "publishers": [
+        "Software Projects"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "below-the-root",
+      "title": "Below The Root",
+      "year": 1984,
+      "publishers": [
+        "Windham Classics"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "beyond-the-forbidden-forest",
+      "title": "Beyond The Forbidden Forest",
+      "year": 1985,
+      "publishers": [
+        "Cosmi"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "bionic-commando",
+      "title": "Bionic Commando",
+      "year": 1988,
+      "publishers": [
+        "GO!"
+      ],
+      "reReleasers": [
+        "Kixx"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "bismark",
+      "title": "Bismark",
+      "year": 1984,
+      "publishers": [
+        "Argus Press Software"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "black-knight",
+      "title": "Black Knight",
+      "year": 1984,
+      "publishers": [
+        "Interdisc"
+      ],
+      "reReleasers": [
+        "ECP"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "blade-runner",
+      "title": "Blade Runner",
+      "year": 1985,
+      "publishers": [
+        "CRL"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "blades-of-steel",
+      "title": "Blades Of Steel",
+      "year": 1990,
+      "publishers": [
+        "Konami"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "blockbusters",
+      "title": "Blockbusters",
+      "year": 1988,
+      "publishers": [
+        "TV Games"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "blood-n-guts",
+      "title": "Blood 'N Guts",
+      "year": 1986,
+      "publishers": [
+        "American Action"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "bocce",
+      "title": "Bocce",
+      "year": 1987,
+      "publishers": [
+        "Simulmondo"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "boulder-dash",
+      "title": "Boulder Dash",
+      "year": 1984,
+      "publishers": [
+        "First Star Software"
+      ],
+      "reReleasers": [
+        "Prism Leisure"
+      ],
+      "status": "manual-review"
+    },
+    {
+      "slug": "by-fair-means-or-foul",
+      "title": "By Fair Means Or Foul",
+      "year": 1988,
+      "publishers": [
+        "Superior Software"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "cave-of-the-word-wizard",
+      "title": "Cave Of The Word Wizard",
+      "year": 1983,
+      "publishers": [
+        "Timeworks"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "caveman-ugh-lympics",
+      "title": "Caveman Ugh-Lympics",
+      "year": 1988,
+      "publishers": [
+        "Electronic Arts"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "chomp",
+      "title": "Chomp!",
+      "year": 1989,
+      "publishers": [
+        "Cosmi"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "chopper",
+      "title": "Chopper",
+      "year": 1985,
+      "publishers": [
+        "Sparklers"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "cosmic-tunnels",
+      "title": "Cosmic Tunnels",
+      "year": 1984,
+      "publishers": [
+        "Datamost"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "crossfire",
+      "title": "Crossfire",
+      "year": 1983,
+      "publishers": [
+        "Sierra On-Line"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "curse-of-ra",
+      "title": "Curse Of Ra",
+      "year": 1990,
+      "publishers": [
+        "Rainbow Arts"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "curse-of-the-azure-bonds",
+      "title": "Curse of the Azure Bonds",
+      "year": 1989,
+      "publishers": [
+        "Strategic Simulations Inc."
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "dan-dare-iii-the-escape",
+      "title": "Dan Dare III - The Escape",
+      "year": 1990,
+      "publishers": [
+        "Virgin Mastertronic"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "davy-king-of-the-wild-frontier",
+      "title": "Davy: King Of The Wild Frontier",
+      "year": 1985,
+      "publishers": [
+        "Cascade Games"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "deactivators",
+      "title": "Deactivators",
+      "year": 1986,
+      "publishers": [
+        "Reaktör Software"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "defender",
+      "title": "Defender",
+      "year": 1983,
+      "publishers": [
+        "Atarisoft"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "defender-of-the-crown",
+      "title": "Defender Of The Crown",
+      "year": 1987,
+      "publishers": [
+        "Cinemaware",
+        "Mirrorsoft"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "die-hard",
+      "title": "Die Hard",
+      "year": 1990,
+      "publishers": [
+        "Activision"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "dino-eggs",
+      "title": "Dino Eggs",
+      "year": 1984,
+      "publishers": [
+        "Micro Fun"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "doctor-who-and-the-mines-of-terror",
+      "title": "Doctor Who And The Mines Of Terror",
+      "year": 1986,
+      "publishers": [
+        "Micro Power"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "donald-ducks-playground",
+      "title": "Donald Duck's Playground",
+      "year": 1984,
+      "publishers": [
+        "Sierra On-Line"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "donkey-kong",
+      "title": "Donkey Kong",
+      "year": 1983,
+      "publishers": [
+        "Atarisoft"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "double-dragon",
+      "title": "Double Dragon",
+      "year": 1991,
+      "publishers": [
+        "Ocean"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "dragon-skulle",
+      "title": "Dragon Skulle",
+      "year": 1986,
+      "publishers": [
+        "Ultimate"
+      ],
+      "reReleasers": [
+        "Ricochet"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "dragons-lair-2-escape-from-singes-castle",
+      "title": "Dragon's Lair II : Escape From Singe'S Castle",
+      "year": 1987,
+      "publishers": [
+        "Electronic Arts",
+        "Software Projects"
+      ],
+      "reReleasers": [
+        "Encore"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "dropzone",
+      "title": "Dropzone",
+      "year": 1985,
+      "publishers": [
+        "US Gold"
+      ],
+      "reReleasers": [
+        "Americana",
+        "Microdaft"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "entombed",
+      "title": "Entombed",
+      "year": 1985,
+      "publishers": [
+        "Ultimate"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "exile",
+      "title": "Exile",
+      "year": 1991,
+      "publishers": [
+        "Audiogenic"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "face-off",
+      "title": "Face Off!",
+      "year": 1989,
+      "publishers": [
+        "Activision"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "fernandez-must-die",
+      "title": "Fernandez Must Die",
+      "year": 1988,
+      "publishers": [
+        "Image Works"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "fiendish-freddys-big-top-o-fun",
+      "title": "Fiendish Freddy's Big Top O' Fun",
+      "year": 1990,
+      "publishers": [
+        "Mindscape"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "first-samurai",
+      "title": "First Samurai",
+      "year": 1992,
+      "publishers": [
+        "Image Works"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "floyd-of-the-jungle",
+      "title": "Floyd Of The Jungle",
+      "year": 1983,
+      "publishers": [
+        "MicroProse Software"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "flunky",
+      "title": "Flunky",
+      "year": 1987,
+      "publishers": [
+        "Piranha"
+      ],
+      "reReleasers": [
+        "Alternative Software"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "force-seven",
+      "title": "Force Seven",
+      "year": 1987,
+      "publishers": [
+        "Datasoft"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "galactic-gardener",
+      "title": "Galactic Gardener",
+      "year": 1984,
+      "publishers": [
+        "Software Projects"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "gateway-to-apshai",
+      "title": "Gateway To Apshai",
+      "year": 1983,
+      "publishers": [
+        "CBS Electronics Software",
+        "Epyx"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "gemstone-warrior",
+      "title": "Gemstone Warrior",
+      "year": 1984,
+      "publishers": [
+        "Strategic Simulations Inc."
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "give-my-regards-to-broad-street",
+      "title": "Give My Regards To Broad Street",
+      "year": 1985,
+      "publishers": [
+        "Argus Press Software"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "gorf",
+      "title": "Gorf",
+      "year": 1983,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "grannys-garden",
+      "title": "Granny's Garden",
+      "year": 1987,
+      "publishers": [
+        "Satchel Software"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "he-man-and-the-masters-of-the-universe-the-ilearth-stone",
+      "title": "He-Man and the Masters of the Universe: The Ilearth Stone",
+      "year": 1987,
+      "publishers": [
+        "US Gold"
+      ],
+      "reReleasers": [
+        "Americana"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "he-man-and-the-masters-of-the-universe-the-movie",
+      "title": "He-Man and the Masters of the Universe: The Movie",
+      "year": 1987,
+      "publishers": [
+        "Gremlin Graphics"
+      ],
+      "reReleasers": [
+        "Kixx"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "heart-of-africa",
+      "title": "Heart Of Africa",
+      "year": 1985,
+      "publishers": [
+        "Ariolasoft",
+        "Electronic Arts"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "herberts-dummy-run",
+      "title": "Herbert's Dummy Run",
+      "year": 1985,
+      "publishers": [
+        "Mikro-Gen"
+      ],
+      "reReleasers": [
+        "Sparklers"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "heroquest",
+      "title": "Heroquest",
+      "year": 1991,
+      "publishers": [
+        "Gremlin Graphics"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "high-noon",
+      "title": "High Noon",
+      "year": 1984,
+      "publishers": [
+        "Ocean"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "indiana-jones-and-the-fate-of-atlantis",
+      "title": "Indiana Jones And The Fate Of Atlantis",
+      "year": 1992,
+      "publishers": [
+        "US Gold"
+      ],
+      "reReleasers": [
+        "Kixx"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "indiana-jones-in-the-lost-kingdom",
+      "title": "Indiana Jones In The Lost Kingdom",
+      "year": 1984,
+      "publishers": [
+        "Mindscape"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "infernal-runner",
+      "title": "Infernal Runner",
+      "year": 1985,
+      "publishers": [
+        "Loriciels"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "insects-in-space",
+      "title": "Insects In Space",
+      "year": 1989,
+      "publishers": [
+        "Hewson"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "international-soccer",
+      "title": "International Soccer",
+      "year": 1983,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "invade-a-load",
+      "title": "Invade-A-Load",
+      "year": 1987,
+      "publishers": [
+        "Mastertronic"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "jungle-hunt",
+      "title": "Jungle Hunt",
+      "year": 1983,
+      "publishers": [
+        "Atarisoft"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "jupiter-lander",
+      "title": "Jupiter Lander",
+      "year": 1982,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "kamikaze",
+      "title": "Kamikaze",
+      "year": 1990,
+      "publishers": [
+        "Codemasters"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "kane-kane-2",
+      "title": "Kane & Kane 2",
+      "year": 1985,
+      "publishers": [
+        "Mastertronic"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "karateka",
+      "title": "Karateka",
+      "year": 1985,
+      "publishers": [
+        "Brøderbund"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "kawasaki-rhythm-rocker",
+      "title": "Kawasaki Rhythm Rocker",
+      "year": 1984,
+      "publishers": [
+        "Sight & Sound Music Software"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "kickman",
+      "title": "Kickman",
+      "year": 1982,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "kings-bounty",
+      "title": "King's Bounty",
+      "year": 1990,
+      "publishers": [
+        "New World Computing"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "las-vegas-casino",
+      "title": "Las Vegas Casino",
+      "year": 1989,
+      "publishers": [
+        "Zeppelin Games"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "lazarian",
+      "title": "Lazarian",
+      "year": 1983,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "le-mans",
+      "title": "Le Mans",
+      "year": 1982,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "leader-board",
+      "title": "Leader Board",
+      "year": 1986,
+      "publishers": [
+        "Access Software"
+      ],
+      "reReleasers": [
+        "Kixx"
+      ],
+      "status": "manual-review"
+    },
+    {
+      "slug": "legacy-of-the-ancients",
+      "title": "Legacy Of The Ancients",
+      "year": 1987,
+      "publishers": [
+        "Electronic Arts"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "live-and-let-die",
+      "title": "Live And Let Die",
+      "year": 1988,
+      "publishers": [
+        "Domark"
+      ],
+      "reReleasers": [
+        "Encore"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "lode-runner",
+      "title": "Lode Runner",
+      "year": 1983,
+      "publishers": [
+        "Brøderbund"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "mad-doctor",
+      "title": "Mad Doctor",
+      "year": 1985,
+      "publishers": [
+        "Creative Sparks"
+      ],
+      "reReleasers": [
+        "Sparklers"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "mail-order-monsters",
+      "title": "Mail Order Monsters",
+      "year": 1985,
+      "publishers": [
+        "Ariolasoft",
+        "Electronic Arts"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "maniac-mansion",
+      "title": "Maniac Mansion",
+      "year": 1987,
+      "publishers": [
+        "Lucasfilm Games"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "marias-christmas-box",
+      "title": "Maria's Christmas Box",
+      "year": 1988,
+      "publishers": [
+        "Anco"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "mean-streets",
+      "title": "Mean Streets",
+      "year": 1989,
+      "publishers": [
+        "Access Software"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "micro-mouse-goes-debugging",
+      "title": "Micro Mouse Goes Debugging",
+      "year": 1983,
+      "publishers": [
+        "MC Lothlorien"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "miner-2049er",
+      "title": "Miner 2049er",
+      "year": 1983,
+      "publishers": [
+        "Big Five Software"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "montezumas-revenge",
+      "title": "Montezuma's Revenge",
+      "year": 1984,
+      "publishers": [
+        "Parker Brothers"
+      ],
+      "reReleasers": [
+        "Databyte"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "mountie-micks-death-ride",
+      "title": "Mountie Mick's Death Ride",
+      "year": 1987,
+      "publishers": [
+        "Reaktör Software"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "mr-robot-and-his-robot-factory",
+      "title": "Mr Robot And His Robot Factory",
+      "year": 1984,
+      "publishers": [
+        "Datamost"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "mr-weems-and-the-she-vampires",
+      "title": "Mr Weems And The She Vampires",
+      "year": 1987,
+      "publishers": [
+        "Piranha"
+      ],
+      "reReleasers": [
+        "Alternative Software"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "mule",
+      "title": "M.U.L.E.",
+      "year": 1983,
+      "publishers": [
+        "Ariolasoft",
+        "Electronic Arts"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "murder-on-the-mississippi",
+      "title": "Murder On The Mississippi",
+      "year": 1986,
+      "publishers": [
+        "Activision"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "nebulus",
+      "title": "Nebulus",
+      "year": 1987,
+      "publishers": [
+        "Hewson"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "nemesis",
+      "title": "Nemesis",
+      "year": 1986,
+      "publishers": [
+        "Konami"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "neuromancer",
+      "title": "Neuromancer",
+      "year": 1988,
+      "publishers": [
+        "Electronic Arts"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "night-driver",
+      "title": "Night Driver",
+      "year": 1982,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "nightbreed-the-action-game",
+      "title": "Nightbreed: The Action Game",
+      "year": 1990,
+      "publishers": [
+        "Ocean"
+      ],
+      "reReleasers": [
+        "The Hit Squad"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "ninja",
+      "title": "Ninja",
+      "year": 1986,
+      "publishers": [
+        "Mastertronic"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "ninja-massacre",
+      "title": "Ninja Massacre",
+      "year": 1989,
+      "publishers": [
+        "Codemasters"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "nosferatu-the-vampyre",
+      "title": "Nosferatu The Vampyre",
+      "year": 1986,
+      "publishers": [
+        "Piranha"
+      ],
+      "reReleasers": [
+        "Alternative Software",
+        "System 4 Software"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "omega-race",
+      "title": "Omega Race",
+      "year": 1982,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "painterboy",
+      "title": "Painterboy",
+      "year": 1986,
+      "publishers": [
+        "Tikkurila"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "pit-fighter",
+      "title": "Pit-Fighter",
+      "year": 1991,
+      "publishers": [
+        "Domark"
+      ],
+      "reReleasers": [
+        "The Hit Squad"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "pneumatic-hammers",
+      "title": "Pneumatic Hammers",
+      "year": 1987,
+      "publishers": [
+        "Firebird"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "popeye-c64",
+      "title": "Popeye",
+      "year": 1984,
+      "publishers": [
+        "Parker Brothers"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "project-firestart",
+      "title": "Project Firestart",
+      "year": 1989,
+      "publishers": [
+        "Electronic Arts"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "project-stealth-fighter",
+      "title": "Project Stealth Fighter",
+      "year": 1987,
+      "publishers": [
+        "MicroProse Software"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "q-bert",
+      "title": "Q*Bert",
+      "year": 1983,
+      "publishers": [
+        "Parker Brothers"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "radar-rat-race",
+      "title": "Radar Rat Race",
+      "year": 1982,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "rags-to-riches",
+      "title": "Rags To Riches",
+      "year": 1985,
+      "publishers": [
+        "Melody Hall Publishing"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "raid-on-bungeling-bay",
+      "title": "Raid On Bungeling Bay",
+      "year": 1984,
+      "publishers": [
+        "Brøderbund"
+      ],
+      "reReleasers": [
+        "Aackosoft"
+      ],
+      "status": "manual-review"
+    },
+    {
+      "slug": "raid-over-moscow",
+      "title": "Raid Over Moscow",
+      "year": 1984,
+      "publishers": [
+        "Access Software"
+      ],
+      "reReleasers": [
+        "Americana"
+      ],
+      "status": "manual-review"
+    },
+    {
+      "slug": "rampart",
+      "title": "Rampart",
+      "year": 1992,
+      "publishers": [
+        "Domark"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "rebel",
+      "title": "Rebel",
+      "year": 1987,
+      "publishers": [
+        "Virgin Games"
+      ],
+      "reReleasers": [
+        "Ricochet"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "rocket-ranger",
+      "title": "Rocket Ranger",
+      "year": 1988,
+      "publishers": [
+        "Cinemaware",
+        "Mirrorsoft"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "roller-coaster-rumbler",
+      "title": "Roller Coaster Rumbler",
+      "year": 1989,
+      "publishers": [
+        "Tynesoft"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "rtype",
+      "title": "R-Type",
+      "year": 1988,
+      "publishers": [
+        "Electric Dreams"
+      ],
+      "reReleasers": [
+        "The Hit Squad"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "saint-dragon",
+      "title": "Saint Dragon",
+      "year": 1990,
+      "publishers": [
+        "Storm"
+      ],
+      "reReleasers": [
+        "Kixx"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "savage-pond",
+      "title": "Savage Pond",
+      "year": 1984,
+      "publishers": [
+        "Argus Press Software"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "schizofrenia",
+      "title": "Schizofrenia",
+      "year": 1985,
+      "publishers": [
+        "Quicksilva"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "serenade",
+      "title": "Serenade",
+      "year": 1986,
+      "publishers": [
+        "VIFI International"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "shadow-dancer",
+      "title": "Shadow Dancer",
+      "year": 1991,
+      "publishers": [
+        "US Gold"
+      ],
+      "reReleasers": [
+        "Kixx"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "shadow-of-the-beast",
+      "title": "Shadow Of The Beast",
+      "year": 1990,
+      "publishers": [
+        "Ocean"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "shoot-out",
+      "title": "Shoot-Out",
+      "year": 1988,
+      "publishers": [
+        "Martech"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "simcity",
+      "title": "Simcity",
+      "year": 1989,
+      "publishers": [
+        "Infogrames"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "slalom",
+      "title": "Slalom!",
+      "year": 1983,
+      "publishers": [
+        "Tronix Publishing"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "smash-tv",
+      "title": "Smash TV",
+      "year": 1992,
+      "publishers": [
+        "Codemasters"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "space-taxi",
+      "title": "Space Taxi",
+      "year": 1984,
+      "publishers": [
+        "Muse Software"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "spartacus-the-swordslayer",
+      "title": "Spartacus: The Swordslayer",
+      "year": 1988,
+      "publishers": [
+        "Players Software"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "spy-vs-spy-2-the-island-caper",
+      "title": "Spy Vs Spy II: The Island Caper",
+      "year": 1985,
+      "publishers": [
+        "First Star Software"
+      ],
+      "reReleasers": [
+        "Avantage",
+        "Beyond",
+        "Databyte",
+        "EDOS",
+        "Hi-Tec Software",
+        "SoftExpress",
+        "Wicked Software",
+        "World Wide Software"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "stormbringer",
+      "title": "Stormbringer",
+      "year": 1987,
+      "publishers": [
+        "MAD (Mastertronic)"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "street-fighter",
+      "title": "Street Fighter",
+      "year": 1988,
+      "publishers": [
+        "GO!"
+      ],
+      "reReleasers": [
+        "Kixx"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "strip-poker-a-sizzling-game-of-chance",
+      "title": "Strip Poker: A Sizzling Game Of Chance",
+      "year": 1984,
+      "publishers": [
+        "Artworx Software"
+      ],
+      "reReleasers": [
+        "Blue Ribbon"
+      ],
+      "status": "manual-review"
+    },
+    {
+      "slug": "super-pipeline",
+      "title": "Super Pipeline",
+      "year": 1983,
+      "publishers": [
+        "Taskset"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "switchblade",
+      "title": "Switchblade",
+      "year": 1991,
+      "publishers": [
+        "Gremlin Graphics"
+      ],
+      "reReleasers": [
+        "GBH"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "system-15000",
+      "title": "System 15000",
+      "year": 1984,
+      "publishers": [
+        "Craig Communications"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "teenage-mutant-hero-turtles-the-coin-op",
+      "title": "Teenage Mutant Hero Turtles: The Coin-Op",
+      "year": 1991,
+      "publishers": [
+        "Konami"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "thanatos",
+      "title": "Thanatos",
+      "year": 1987,
+      "publishers": [
+        "Durell Software"
+      ],
+      "reReleasers": [
+        "Encore"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "the-castles-of-dr-creep",
+      "title": "The Castles Of Dr. Creep",
+      "year": 1984,
+      "publishers": [
+        "Ariolasoft",
+        "Brøderbund"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "the-dolphins-rune",
+      "title": "The Dolphin's Rune",
+      "year": 1985,
+      "publishers": [
+        "Mindscape"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "the-faces-of-haarne",
+      "title": "The Faces Of Haarne",
+      "year": 1984,
+      "publishers": [
+        "Software Projects"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "the-goonies",
+      "title": "The Goonies",
+      "year": 1985,
+      "publishers": [
+        "Datasoft"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "the-hitchhikers-guide-to-the-galaxy",
+      "title": "The Hitchhikers Guide To The Galaxy",
+      "year": 1984,
+      "publishers": [
+        "Infocom"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "the-lords-of-midnight",
+      "title": "The Lords Of Midnight",
+      "year": 1985,
+      "publishers": [
+        "Beyond"
+      ],
+      "reReleasers": [
+        "Mindscape"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "the-movie-monster-game",
+      "title": "The Movie Monster Game",
+      "year": 1986,
+      "publishers": [
+        "Epyx",
+        "US Gold"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "the-new-zealand-story",
+      "title": "The New Zealand Story",
+      "year": 1989,
+      "publishers": [
+        "Ocean"
+      ],
+      "reReleasers": [
+        "The Hit Squad"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "the-rats",
+      "title": "The Rats",
+      "year": 1985,
+      "publishers": [
+        "Hodder and Stoughton"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "the-running-man",
+      "title": "The Running Man",
+      "year": 1989,
+      "publishers": [
+        "Grandslam"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "the-sacred-armour-of-antiriad",
+      "title": "The Sacred Armour Of Antiriad",
+      "year": 1986,
+      "publishers": [
+        "Palace Software"
+      ],
+      "reReleasers": [
+        "Hi-Tec Software"
+      ],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "the-smiths-are-dead",
+      "title": "The Smiths Are Dead",
+      "year": 2023,
+      "publishers": [
+        "Commodore Plus"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "the-staff-of-karnath",
+      "title": "The Staff Of Karnath",
+      "year": 1984,
+      "publishers": [
+        "Ultimate"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "the-sword-of-fargoal",
+      "title": "The Sword Of Fargoal",
+      "year": 1983,
+      "publishers": [
+        "Epyx"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "the-train-escape-to-normandy",
+      "title": "The Train: Escape To Normandy",
+      "year": 1987,
+      "publishers": [
+        "Accolade",
+        "Electronic Arts"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "the-wombles",
+      "title": "The Wombles",
+      "year": 1990,
+      "publishers": [
+        "Alternative Software"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "the-young-ones",
+      "title": "The Young Ones",
+      "year": 1986,
+      "publishers": [
+        "Orpheus"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "they-stole-a-million",
+      "title": "They Stole A Million",
+      "year": 1986,
+      "publishers": [
+        "Ariolasoft"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "thunderbirds",
+      "title": "Thunderbirds",
+      "year": 1985,
+      "publishers": [
+        "Firebird"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "times-of-lore",
+      "title": "Times Of Lore",
+      "year": 1988,
+      "publishers": [
+        "Origin Systems"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "to-be-on-top",
+      "title": "To Be On Top",
+      "year": 1987,
+      "publishers": [
+        "Rainbow Arts"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "toki",
+      "title": "Toki",
+      "year": 1991,
+      "publishers": [
+        "Ocean"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "tooth-invaders",
+      "title": "Tooth Invaders",
+      "year": 1982,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "track-field",
+      "title": "Track & Field",
+      "year": 1984,
+      "publishers": [
+        "Konami"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "trains",
+      "title": "Trains",
+      "year": 1983,
+      "publishers": [
+        "Spinnaker Software"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "trolls-and-tribulations",
+      "title": "Trolls And Tribulations",
+      "year": 1984,
+      "publishers": [
+        "Creative Software"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "ultima-1-the-first-age-of-darkness",
+      "title": "Ultima I: The First Age Of Darkness",
+      "year": 1986,
+      "publishers": [
+        "Origin Systems"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "up-up-and-away",
+      "title": "Up Up And Away",
+      "year": 1984,
+      "publishers": [
+        "Argus Press Software"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "uuno-turhapuro-muuttaa-maalle",
+      "title": "Uuno Turhapuro Muuttaa Maalle",
+      "year": 1986,
+      "publishers": [
+        "Amersoft"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "v-the-computer-game",
+      "title": "V: The Computer Game",
+      "year": 1986,
+      "publishers": [
+        "Ocean"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "visible-solar-system",
+      "title": "Visible Solar System",
+      "year": 1982,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "wizard",
+      "title": "Wizard",
+      "year": 1984,
+      "publishers": [
+        "Ariolasoft"
+      ],
+      "reReleasers": [],
+      "status": "manual-review"
+    },
+    {
+      "slug": "wizard-of-wor",
+      "title": "Wizard Of Wor",
+      "year": 1983,
+      "publishers": [
+        "Commodore"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "zak-mckracken-and-the-alien-mindbenders",
+      "title": "Zak Mckracken And The Alien Mindbenders",
+      "year": 1988,
+      "publishers": [
+        "Lucasfilm Games"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "zone-trooper",
+      "title": "Zone Trooper",
+      "year": 1988,
+      "publishers": [
+        "Gamebusters"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "zork-trilogy",
+      "title": "Zork Trilogy",
+      "year": 1983,
+      "publishers": [
+        "Commodore",
+        "Infocom"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "zorro",
+      "title": "Zorro",
+      "year": 1985,
+      "publishers": [
+        "Datasoft"
+      ],
+      "reReleasers": [
+        "Americana"
+      ],
+      "status": "manual-review"
+    }
+  ]
+}
