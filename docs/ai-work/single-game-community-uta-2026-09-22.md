@@ -16,6 +16,8 @@ The audit expands title handling conservatively rather than promoting title-only
 
 Live UTA evidence used for the regression set includes 720 / U.S. Gold [729], Cops'n'Robbers / Atlantis Gold [2857], Cybernoid: The Fighting Machine / Kixx [1273], and the existing Wonder Boy Activision/Hit Squad pair. Ambiguous publisher-mismatch candidates remain excluded until independently verified.
 
+Qualification exposed and repaired three matcher/parser defects before merge: numeric-only archive titles such as 720 were blocked by the minimum prefix length; apostrophes inside double-quoted UTA directory hrefs were prematurely terminating the parser; and a Roman-numeral title variant could bypass sequel-number protection before numeral normalisation. The fixes keep publisher/re-release evidence mandatory for prefix matches, allow three-or-more-digit numeric prefixes, parse hrefs by their actual quote delimiter, and normalise Roman numerals before number-signature comparison. On code head `4a7b9e6b374baeea6a9eaba3484b63ca40f3dc57`, the focused UTA regression, current-catalogue publishing chain, and deterministic-output check all passed; final documentation-inclusive exact-head qualification remains required.
+
 # Single-game community and Ultimate Tape Archive — 22 September 2026
 
 ## Scope
