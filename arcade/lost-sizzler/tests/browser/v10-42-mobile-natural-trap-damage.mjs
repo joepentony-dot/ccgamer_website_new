@@ -287,6 +287,41 @@ try{
     await page.waitForTimeout(120);
   }
 
+  const stationary=await page.evaluate(()=>globalThis.eval(`(()=>{
+    const trap=(host?.traps||[]).find(t=>t?.active);
+    if(!trap)return{available:false};
+    const original={period:Number(trap.period),phase:Number(trap.phase)};
+    for(const enemy of host?.enemies||[])if(enemy?.alive&&Number(enemy.x)===Number(trap.x)&&Number(enemy.y)===Number(trap.y))enemy.alive=false;
+    p1.x=Number(trap.x);p1.y=Number(trap.y);p1.rx=p1.x;p1.ry=p1.y;
+    p1.health=Math.max(4,Number(p1.health||8));p1.maxHealth=Math.max(Number(p1.maxHealth||8),p1.health);
+    p1.armor=Math.max(2,Number(p1.armor||0));p1.invuln=0;p1.hitStunMs=0;move1=0;input.clear();
+    const period=100000,now=performance.now();
+    trap.period=period;
+    trap.phase=((period*.70)-(now%period)+period)%period;
+    window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.rearmInactiveTrapContacts?.();
+    return{available:true,id:String(trap.id),before:{health:Number(p1.health),armor:Number(p1.armor),x:Number(p1.x),y:Number(p1.y)},original};
+  })()`));
+  assert.equal(stationary.available,true,"generated Solo floor must provide a trap for stationary active-cycle validation");
+  await page.waitForTimeout(180);
+  await page.evaluate(id=>{
+    const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
+    const period=Math.max(1000,Number(trap?.period||100000)),now=performance.now();
+    trap.phase=((period*.10)-(now%period)+period)%period;
+  },stationary.id);
+  await page.waitForFunction(before=>Number(p1.health)===Number(before.health)-1,stationary.before,{timeout:1800,polling:40});
+  const stationaryAfter=await page.evaluate(id=>{
+    const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
+    return{
+      health:Number(p1.health),armor:Number(p1.armor),x:Number(p1.x),y:Number(p1.y),
+      active:Boolean(trap?.active&&SYS.trapActive(trap,performance.now())),
+      trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0)
+    };
+  },stationary.id);
+  assert.equal(stationaryAfter.active,true,"stationary trap must be visibly/live active when damage lands");
+  assert.equal(stationaryAfter.health,stationary.before.health-1,"a player already standing on a trap must lose exactly one health when its active cycle begins");
+  assert.equal(stationaryAfter.armor,stationary.before.armor,"stationary active-cycle trap damage must preserve armour");
+  assert.deepEqual({x:stationaryAfter.x,y:stationaryAfter.y},{x:stationary.before.x,y:stationary.before.y},"stationary active-cycle damage must not require movement");
+
   assert.deepEqual(errors,[],`real mobile trap cycle must not raise browser errors: ${errors.join("\n")}`);
   console.log("DUNGEON_MOBILE_NATURAL_TRAPS",JSON.stringify({kinds}));
   console.log("C64 Dungeon Carnage real generated mobile trap damage passed.");
