@@ -4,6 +4,20 @@
 
 The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
+## Public-route migration and unified R51 checkpoint — 23 September 2026
+
+Live `main` at reconciliation is `88df63430f275a37553a821c2511b1296dd13f8e`. PR #2271 is merged and the gameplay build remains **V10.42 R51**. The active route candidate is draft PR #2284 / `codex/dungeon-carnage-public-route-cleanup`.
+
+The repository path remains `arcade/lost-sizzler/` for compatibility with the established runtime/tests. #2284 publishes a copy at `/arcade/c64-dungeon-carnage/`, keeps the old public path as a noindex redirect, and retains the legacy asset tree so stale R51 pages can still resolve relative game assets while they transition.
+
+A live route-ownership audit found that changing only the static canonical/Home href was insufficient. The Home community script would rewrite the CTA back to the old route; the service worker and game cache guard only recognised the old arcade prefix; V10.18 would restamp the old canonical; critical-module diagnostics were old-prefix-only; retained auth return paths, the itch manifest and production smoke still advertised the old URL. Those owners are reconciled in #2284. Shared public JavaScript receives `2026-09-23-public-code-v7`; the gameplay build stays R51 but its route-owner cache token advances to `20260923r51`.
+
+The route change does not rename the source directory, redesign navigation, alter the logo/C64-Amiga toggle, change saves, rebalance combat, or reactivate retired online modes. A focused `tests/dungeon-carnage-public-route.test.mjs` contract protects the source/public split and the compatibility route.
+
+Separate active runtime work remains draft PR #2283 for the 23 September FIRE/trap/render incident. The separate #2282 R52 candidate preserves unused level-up entitlements. These branches must be reconciled against whatever lands first; do not merge a branch that becomes behind `main`.
+
+Status: **#2284 FINAL EXACT-HEAD QUALIFICATION REQUIRED; NO MERGE ON PARTIAL CI.**
+
 ## R51 desktop/message-rail/Tutorial-FIRE regression candidate — 23 September 2026
 
 Current candidate branch: `codex/dungeon-r51-regression-fixes`, created from refreshed `origin/main` at `f719717824f2caa1cb89dc84a2ad7f2438f042a2` after merged PR #2256. It is deliberately a narrow post-R51 repair: no navigation, owner-preview gate, C64/Amiga selection, retired-mode boundary, world, combat balance or camera-scale redesign.
