@@ -208,11 +208,11 @@ export function parseUtaReleaseDirectory(directoryName, href = "") {
 export function parseUtaIndex(html) {
   const releases = [];
   const seen = new Set();
-  const hrefPattern = /href=["']([^"']+\/?)["']/gi;
+  const hrefPattern = /href=(["'])(.*?)\1/gi;
   let match;
 
   while ((match = hrefPattern.exec(String(html || "")))) {
-    const href = decodeHtmlEntities(match[1]);
+    const href = decodeHtmlEntities(match[2]);
     if (!href || href === "../" || href.startsWith("?") || href.startsWith("#")) continue;
 
     const directoryName = decodeDirectoryName(href);
