@@ -68,8 +68,30 @@ function resourcePickupBlock(i,p,snapshot=null){const holder=p||snapshot;if(!i||
 function reserveAmmoCollection(i,p,snapshot=null){if(!i?.v130ReserveAmmo)return null;const holder=p||snapshot,max=Math.max(1,Number(holder?.maxMana||C.player.maxMana||1)),free=Math.max(0,max-Number(holder?.mana||0)),available=Math.max(1,Number(i.ammoRounds||1)),rounds=Math.min(available,free),item={...i,ammoRounds:rounds,title:`FINAL OBJECTIVE AMMO RESERVE · ${rounds} ROUNDS`};i.ammoRounds=Math.max(0,available-rounds);i.active=i.ammoRounds>0;if(i.active)i.title=`FINAL OBJECTIVE AMMO RESERVE · ${i.ammoRounds} ROUNDS`;return item}
 function onCollectRequest(p){if(!net.isHost||!p?.itemId)return;const i=host.items.find(x=>x.id===p.itemId&&x.active);if(!i)return;const collector=findLocal(p.collector),resourceBlock=resourcePickupBlock(i,collector,p.resourceSnapshot);if(resourceBlock){if(collector)showToast(resourceBlock.title,resourceBlock.text,"cyan",6000);return}if(inventoryFullForPickup(i,collector,p.inventorySnapshot)){if(collector)showToast("INVENTORY FULL","That item stays on the floor. Matching stackable items can still be collected; otherwise free a stack slot first.","red",6500);return}const collectedItem=i.v130ReserveAmmo?reserveAmmoCollection(i,collector,p.resourceSnapshot):{...i};if(!i.v130ReserveAmmo)i.active=false;if(i.kind==="key")host.keysCollected=Math.min(C.keyTarget,host.keysCollected+1);if(i.kind==="exitSigil"){host.exitSigilCollected=true;host.radarSigilSeen=host.radarSigilSeen||{x:i.x,y:i.y}}host.revision++;SYS.updateObjective(host,run,Math.round(PGR.roomCompletion(explored.get(p1.id)||new Set(),world)*100));const ev={item:collectedItem,collector:p.collector};onCollected(ev);if(playMode==="online")net.send("collected",ev);broadcastWorld();sync()}
 function requestCollect(i,p){if(!i?.active||pendingItems.has(i.id))return false;const resourceBlock=resourcePickupBlock(i,p);if(resourceBlock){showToast(resourceBlock.title,resourceBlock.text,"cyan",6000);S.sfx("empty");return false}if(inventoryFullForPickup(i,p)){showToast("INVENTORY FULL","That item stays on the floor. Matching stackable items can still merge; otherwise press TAB and free a stack slot.","red",6500);S.sfx("empty");return false}pendingItems.add(i.id);const req={itemId:i.id,collector:p.id,inventorySnapshot:(p.inventory||[]).map(x=>({kind:x.kind,name:x.name,qty:x.qty||1})),resourceSnapshot:{health:p.health,maxHealth:p.maxHealth,mana:p.mana,maxMana:p.maxMana}};if(playMode==="online"&&p.id===p1.id&&!net.isHost)net.send("collect",req);else onCollectRequest(req);setTimeout(()=>pendingItems.delete(i.id),500);return true}
-function collectedName(i){if(i.kind==="loot")return i.loot?.weapon?.displayName||i.loot?.name||i.title||"LOOT";return i.title||({health:"HEALTH PACK",mana:"AMMO PACK",ammo:"AMMO PACK",game:"C64 GAME",credits:"GOLD SCORE COIN",xpOrb:"XP ORB",torch:"FLAMING TORCH",teleport:"TELEPORT SPELL",banishment:"BANISHMENT FLASK",armour:"ARMOUR PLATE",potion:"RESTORATION POTION",weapon:"WEAPON",rapid:"RAPID FIRE",bronze:"BRONZE KEY",exitSigil:"EXIT SIGIL",key:"MAIN VAULT KEY"}[i.kind]||i.kind)}
-function onCollected(ev){const i=ev?.item;if(!i)return;try{window.CCGLostSizzlerRareEvents?.noteActivity?.("pickup")}catch(_){}const p=findLocal(ev.collector);if(p){p._ccgPickupAudioAt=performance.now();try{window.dispatchEvent(new CustomEvent("ccg:item-collected",{detail:{kind:String(i.kind||""),name:collectedName(i),lootKind:String(i.loot?.kind||""),collector:String(ev.collector||""),floor:Number(run?.floor||0)}}))}catch(_){}}const col=(i.kind==="key"||i.kind==="exitSigil"||i.kind==="bronze")?P.gold:i.kind==="health"?P.green:i.kind==="ammo"||i.kind==="mana"?P.cyan:i.kind==="loot"&&i.loot?.rarity==="ZZAP! 97%"?P.pink:P.white;ring(i.x,i.y,col,34);burst(i.x,i.y,P.gold,14,1.2);if(!p){if(i.kind==="key"){S.sfx("mainKey");say(`<strong>TEAM KEY FOUND.</strong> ${host.keysCollected}/${C.keyTarget}.`,"gold")}return}floatPickupText(p,collectedName(i),col);applyItem(i,p);sync()}
+function collectedName(i){
+  if(!i)return"ITEM";
+  if(i.kind==="loot")return i.loot?.weapon?.displayName||i.loot?.name||"LOOT";
+  if(i.kind==="game")return i.title||"C64 GAME";
+  if(i.kind==="weapon")return i.generatedWeapon?.displayName||"WEAPON CACHE";
+  return({health:"POTION",mana:"AMMO",ammo:"AMMO",credits:"+125 SCORE",xpOrb:"+10 XP",torch:"TORCH",teleport:"TELEPORT SPELL",banishment:"BANISHMENT FLASK",armour:"+1 ARMOUR",potion:"POTION",rapid:"RAPID FIRE",bronze:"BRONZE KEY",exitSigil:"EXIT SIGIL",key:"MAIN VAULT KEY",inventorySlot:"INVENTORY SLOT"}[i.kind]||String(i.kind||"ITEM").toUpperCase())
+}
+function onCollected(ev){
+  const i=ev?.item;if(!i)return;
+  try{window.CCGLostSizzlerRareEvents?.noteActivity?.("pickup")}catch(_){}
+  const p=findLocal(ev.collector);
+  if(p&&i.kind==="weapon"&&!i.generatedWeapon){
+    const room=world?.rooms?.[W.roomAt(world,Number(i.x),Number(i.y))]||world?.rooms?.[W.roomAt(world,p.x,p.y)]||null;
+    i.generatedWeapon=PGR.generateWeapon(Number(room?.depth||0),run.floor,Math.random);
+  }
+  if(p){
+    p._ccgPickupAudioAt=performance.now();
+    try{window.dispatchEvent(new CustomEvent("ccg:item-collected",{detail:{kind:String(i.kind||""),name:collectedName(i),lootKind:String(i.loot?.kind||""),collector:String(ev.collector||""),floor:Number(run?.floor||0)}}))}catch(_){}
+  }
+  const col=(i.kind==="key"||i.kind==="exitSigil"||i.kind==="bronze")?P.gold:i.kind==="health"?P.green:i.kind==="ammo"||i.kind==="mana"||i.kind==="xpOrb"?P.cyan:i.kind==="armour"?P.blue:i.kind==="weapon"?P.orange:i.kind==="loot"&&i.loot?.rarity==="ZZAP! 97%"?P.pink:P.white;
+  ring(i.x,i.y,col,34);burst(i.x,i.y,P.gold,14,1.2);
+  if(!p){if(i.kind==="key"){S.sfx("mainKey");say(`<strong>TEAM KEY FOUND.</strong> ${host.keysCollected}/${C.keyTarget}.`,"gold")}return}
+  floatPickupText(p,collectedName(i),col);applyItem(i,p);sync()
+}
 function storeConsumable(p,item,title,text,tone="gold"){
   if(!PGR.inventoryAdd(p,item)){showToast("INVENTORY FULL",`${title} cannot be carried. Free a slot and collect it again.`,"red");return false}
   S.sfx(item.kind==="potion"?"potion":item.kind==="torch"?"torch":"pickup");showToast(title,text,tone);return true
@@ -78,8 +100,8 @@ function equipWeapon(p,weapon){const old=p.weapon;p.weapon={...weapon};p.weaponL
 function applyLoot(loot,p){
   if(!loot)return;
   if(loot.kind==="weaponLoot")equipWeapon(p,loot.weapon);
-  else if(loot.kind==="armour"){p.armor=Math.min(12,p.armor+(loot.amount||2));S.sfx("armour");showToast(loot.name||"ARMOUR",`+${loot.amount||2} armour.`,"cyan")}
-  else if(loot.kind==="ammo"){const n=Math.round((loot.amount||40)*(1+(p.scavenger||0))*PGR.difficulty(run).ammo);p.mana=Math.min(p.maxMana,p.mana+n);p.ammoFlashMs=C.player.ammoFlashMs;showToast(loot.name||"AMMO CACHE",`+${n} ammunition.`,"cyan")}
+  else if(loot.kind==="armour"){const amount=Math.max(1,Number(loot.amount||2));p.armor=Math.min(12,p.armor+amount);S.sfx("armour");showToast("ARMOUR",`+${amount} ARMOUR`,"cyan")}
+  else if(loot.kind==="ammo"){const n=Math.round((loot.amount||40)*(1+(p.scavenger||0))*PGR.difficulty(run).ammo);p.mana=Math.min(p.maxMana,p.mana+n);p.ammoFlashMs=C.player.ammoFlashMs;showToast("AMMO",`+${n} AMMO`,"cyan")}
   else if(loot.kind==="potion")storeConsumable(p,{kind:"potion",name:loot.name||"Restoration Potion",short:"POTION"},loot.name||"RESTORATION POTION","Added to your inventory stack.","green");
   else if(loot.kind==="torch")storeConsumable(p,{kind:"torch",name:loot.name||"Flaming Torch",short:"TORCH"},loot.name||"FLAMING TORCH","Stored in its own slot. Press Q to light a torch.","gold");
   else if(loot.kind==="teleport")storeConsumable(p,{kind:"teleport",name:loot.name||"Teleport Spell",short:"WARP"},loot.name||"TELEPORT SPELL","Stacked in inventory. Press R to warp to a safe explored room.","purple");
@@ -93,20 +115,20 @@ function applyItem(i,p){
   const who=p===p2?"P2":"P1";
   if(i.carriedItem){if(!PGR.inventoryAdd(p,{...i.carriedItem})){showToast("INVENTORY FULL","The dropped item stays on the floor until you free a slot.","red");return false}S.sfx("pickup");showToast("ITEM RECOVERED",`${i.carriedItem.name||i.carriedItem.kind} returned to your inventory.`,"green");awardXP(p,pickupXP("carried"),"Item recovered");updateQuests();return true}
   if(i.kind==="loot")applyLoot(i.loot,p);
-  else if(i.kind==="health"){p.health=Math.min(p.maxHealth,p.health+3);p.hpBarMs=2800;S.sfx("pickup");showToast("HEALTH PACK",`${who} restores 3 health.`,"green")}
-  else if(i.kind==="mana"||i.kind==="ammo"){const n=Math.round(30*(1+(p.scavenger||0))*PGR.difficulty(run).ammo);p.mana=Math.min(p.maxMana,p.mana+n);p.ammoFlashMs=C.player.ammoFlashMs;S.sfx("pickup");showToast("AMMO PACK",`${who} gains ${n} shots.`,"cyan")}
+  else if(i.kind==="health"){p.health=Math.min(p.maxHealth,p.health+3);p.hpBarMs=2800;S.sfx("pickup");showToast("POTION","+3 HEALTH","green")}
+  else if(i.kind==="mana"||i.kind==="ammo"){const n=Math.round(30*(1+(p.scavenger||0))*PGR.difficulty(run).ammo);p.mana=Math.min(p.maxMana,p.mana+n);p.ammoFlashMs=C.player.ammoFlashMs;S.sfx("pickup");showToast("AMMO",`+${n} AMMO`,"cyan")}
   else if(i.kind==="game"){score+=250;stats.games++;run.floorGames.push(i.title);S.sfx("pickup");showToast(`C64 RESCUED: ${i.title}`,"Unbanked until this floor is cleared or you extract. +250 score.","gold",6500)}
-  else if(i.kind==="credits"){score+=125;S.sfx("pickup");showToast("GOLD SCORE COIN","+125 score.","gold")}
-  else if(i.kind==="xpOrb"){S.sfx("pickup");showToast("XP ORB","+10 XP unless your current floor cap has been reached.","cyan")}
+  else if(i.kind==="credits"){score+=125;S.sfx("pickup");showToast("SCORE COIN","+125 SCORE","gold")}
+  else if(i.kind==="xpOrb"){S.sfx("pickup");showToast("XP","+10 XP","cyan")}
   else if(i.kind==="torch")storeConsumable(p,{kind:"torch",name:"Flaming Torch",short:"TORCH"},"FLAMING TORCH","Stored in its own inventory slot. Press Q to light it.","gold");
   else if(i.kind==="teleport")storeConsumable(p,{kind:"teleport",name:"Teleport Spell",short:"WARP"},"TELEPORT SPELL","Stored. Press R to warp to a safe explored room.","purple");
   else if(i.kind==="banishment")storeConsumable(p,{kind:"banishment",name:"Banishment Flask",short:"BANISH"},"BANISHMENT FLASK","Stacked in inventory. Watch for the flashing Banishment prompt near a Death Stalker or Count Loadula.","purple");
-  else if(i.kind==="armour"){p.armor=Math.min(12,p.armor+2);S.sfx("armour");showToast("ARMOUR PLATE",`${who} gains 2 armour.`,"cyan")}
+  else if(i.kind==="armour"){p.armor=Math.min(12,p.armor+1);S.sfx("armour");showToast("ARMOUR","+1 ARMOUR","cyan")}
   else if(i.kind==="potion")storeConsumable(p,{kind:"potion",name:"Restoration Potion",short:"POTION"},"RESTORATION POTION","Stored. Press E to drink it.","green");
-  else if(i.kind==="weapon")equipWeapon(p,PGR.generateWeapon(world.rooms[W.roomAt(world,p.x,p.y)]?.depth||0,run.floor,Math.random));
+  else if(i.kind==="weapon")equipWeapon(p,i.generatedWeapon||PGR.generateWeapon(world.rooms[W.roomAt(world,p.x,p.y)]?.depth||0,run.floor,Math.random));
   else if(i.kind==="rapid"){p.rapidMs=12000;S.sfx("weapon");showToast("RAPID FIRE","Fire delay reduced for 12 seconds.","gold")}
   else if(i.kind==="inventorySlot"){const before=PGR.inventoryCapacity(p);p.inventorySlots=Math.min(C.player.inventorySlots,before+1);S.sfx("level");showToast("RARE INVENTORY EXPANSION",p.inventorySlots>before?`Inventory expanded to ${p.inventorySlots} slots for this run.`:"Inventory is already fully expanded.","gold",8000)}
-  else if(i.kind==="bronze"){p.bronzeKeys++;S.sfx("bronze");showToast("BRONZE KEY","Opens one bronze door or locked chest. Main objectives never depend on these.","gold")}
+  else if(i.kind==="bronze"){p.bronzeKeys++;S.sfx("bronze");showToast("BRONZE KEY","+1 BRONZE KEY · OPENS ONE OPTIONAL BRONZE DOOR","gold")}
   else if(i.kind==="exitSigil"){host.exitSigilCollected=true;score+=650;S.sfx("exitSigil");shake=9;SYS.updateObjective(host,run,Math.round(PGR.roomCompletion(explored.get(p.id)||new Set(),world)*100));showToast("EXIT SIGIL ACQUIRED","The floor exit can now be unlocked once the main objective is complete. Getting back alive is the final problem.","gold",10000)}
   else if(i.kind==="key"){score+=400;S.sfx("mainKey");shake=7;showToast("MAIN VAULT KEY",`${host.keysCollected}/${C.keyTarget} recovered. The Exit Sigil is a separate requirement.`,"gold",9000)}
   if(!(i.kind==="loot"&&i.loot?.kind==="bountyArtefact"))awardXP(p,pickupXP(i.kind),`${collectedName(i)} collected`);updateQuests();PGR.checkAchievements(run,p)
