@@ -63,7 +63,10 @@ function tryDoor(p,x,y){
 }
 function chestScoreReward(chest){return 100+Math.min(400,Math.max(0,Math.floor(Number(chest?.depth)||0))*25)}
 function openChest(p,chest){
-  if(!chest?.active)return true;if(chest.locked&&p.bronzeKeys<=0){const now=performance.now();if(!chest._lockedFeedbackAt||now-chest._lockedFeedbackAt>=1200){chest._lockedFeedbackAt=now;S.sfx("locked");showToast("LOCKED CHEST","A bronze key opens it. Come back after finding one.","red",4200)}return false}
+  if(!chest?.active)return true;
+  const bronzeDoorReward=Boolean(chest.bronzeDoorReward||(host.doors||[]).some(d=>d.type==="bronze"&&d.roomId===chest.roomId));
+  if(bronzeDoorReward&&chest.locked){chest.locked=false;chest.bronzeDoorReward=true}
+  if(chest.locked&&p.bronzeKeys<=0){const now=performance.now();if(!chest._lockedFeedbackAt||now-chest._lockedFeedbackAt>=1200){chest._lockedFeedbackAt=now;S.sfx("locked");showToast("LOCKED CHEST","This standalone chest needs a bronze key.","red",4200)}return false}
   if(chest.locked)p.bronzeKeys--;
   chest.opened=true;chest.openedAt=performance.now();chest.active=false;host.revision++;run.stats.chests++;S.sfx("chest");shake=4;
   const loot=chest.loot||PGR.lootForChest(chest,run,Math.random),name=loot.weapon?.displayName||loot.name||loot.kind.toUpperCase(),col=loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan,scoreReward=chestScoreReward(chest);
