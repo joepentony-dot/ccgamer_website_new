@@ -137,6 +137,8 @@ test("full-catalogue matching tolerates safe word-spacing variants with publishe
 <a href="Hero_Quest_(1991_Gremlin_Graphics)_[3167]/">Hero Quest</a>
 <a href="Highnoon_(1984_Ocean_Software_Ltd)_[2141]/">Highnoon</a>
 <a href="Micro_Mouse_Goes_De-Bugging_(1983_M.C._Lothlorien)_[291]/">Micro Mouse Goes De-Bugging</a>
+<a href="Storm_Bringer_(1987_Mastertronic_Added_Dimension)_[3201]/">Storm Bringer</a>
+<a href="Switch_Blade_(1992_Gremlin_Graphics_(GBH))_[3202]/">Switch Blade</a>
 `);
 
   const cases = [
@@ -163,6 +165,14 @@ test("full-catalogue matching tolerates safe word-spacing variants with publishe
     {
       game: { system: "C64", slug: "micro-mouse-goes-debugging", title: "Micro Mouse Goes Debugging", year: 1983, credits: { publisher: ["MC Lothlorien"], re_releaser: [] } },
       expected: ["291"]
+    },
+    {
+      game: { system: "C64", slug: "stormbringer", title: "Stormbringer", year: 1987, credits: { publisher: ["MAD (Mastertronic)"], re_releaser: [] } },
+      expected: ["3201"]
+    },
+    {
+      game: { system: "C64", slug: "switchblade", title: "Switchblade", year: 1991, credits: { publisher: ["Gremlin Graphics"], re_releaser: ["GBH"] } },
+      expected: ["3202"]
     }
   ];
 
@@ -200,6 +210,22 @@ test("publisher-qualified prefix matching does not collapse numbered sequels int
   };
   const result = matchGameToUta(game, releases);
   assert.deepEqual(result.releases, []);
+});
+
+test("composite UTA publisher credits can match either catalogue publisher component", () => {
+  const releases = parseUtaIndex(`
+<a href="Switch_Blade_(1992_Gremlin_Graphics_(GBH))_[3202]/">Switch Blade</a>
+`);
+  const game = {
+    system: "C64",
+    slug: "switchblade",
+    title: "Switchblade",
+    year: 1991,
+    credits: { publisher: ["Gremlin Graphics"], re_releaser: ["GBH"] }
+  };
+  const result = matchGameToUta(game, releases);
+  assert.deepEqual(result.releases.map((row) => row.archiveId), ["3202"]);
+  assert.equal(result.releases[0].sourceRole, "re-release");
 });
 
 test("composite re-release credits expose each explicit label component to UTA matching", () => {
