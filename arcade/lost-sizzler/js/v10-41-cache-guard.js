@@ -7,7 +7,7 @@
   const BUILD=String(document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"unknown").trim();
   const CACHE_TOKEN=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||BUILD||"latest").trim();
   const STORAGE_KEY="ccg-lost-sizzler:last-sanitised-cache";
-  const GAME_PREFIXES=["/arcade/lost-sizzler/","/games/ccg-games/cheeky-commodore-quest/"];
+  const GAME_PREFIXES=["/arcade/c64-dungeon-carnage/","/arcade/lost-sizzler/","/games/ccg-games/cheeky-commodore-quest/"];
   const state={build:BUILD,cacheToken:CACHE_TOKEN,previous:"",needed:false,running:false,done:false,timedOut:false,deletedEntries:0,checkedCaches:0,serviceWorkersChecked:0,runtimeErrors:[],errors:[],startedAt:performance.now(),finishedAt:0,v142ReleaseHeld:false,v142ReleaseReleased:false};
 
   /* V10.42 production is zero-server-cost, but this guard is the first static
