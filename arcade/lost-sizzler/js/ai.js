@@ -146,14 +146,15 @@ window.CCGAI=(()=>{
     if(Math.abs(ax)>.5&&Math.abs(ay)>.5)return{x:dx,y:dy};
     return Math.abs(ax)>=Math.abs(ay)?{x:dx,y:0}:{x:0,y:dy};
   }
-  function shootAt(e,p,style,power,ttl,hooks){const d=shotDirection(e,p);e.facing=d;hooks.shoot?.({x:e.x,y:e.y,dx:d.x,dy:d.y,power,style,ttl,source:e.follower?.name||e.kind,enemyId:e.id,damageScale:e.namedDamageScale||1})}
+  function markAttackAnimation(e,kind="attack",ms=360){if(!e)return;e._attackAnimAt=performance.now();e._attackAnimKind=kind;e._attackAnimMs=Math.max(180,Number(ms)||360)}
+  function shootAt(e,p,style,power,ttl,hooks){const d=shotDirection(e,p);e.facing=d;markAttackAnimation(e,style==="fire"?"breath":"ranged",style==="fire"?560:360);hooks.shoot?.({x:e.x,y:e.y,dx:d.x,dy:d.y,power,style,ttl,source:e.follower?.name||e.kind,enemyId:e.id,damageScale:e.namedDamageScale||1})}
 
   function executeCharge(e,p,host,map,hooks){
     const target=e.chargeTarget||p;let moved=false;
     for(let i=0;i<3;i++){
-      if(man(e,p)<=1){hooks.melee?.(e,p,2);break}
+      if(man(e,p)<=1){markAttackAnimation(e,"charge-melee",420);hooks.melee?.(e,p,2);break}
       if(!moveToward(e,host,map,target,window.__CCG_WORLD)&&!moveToward(e,host,map,p,window.__CCG_WORLD))break;moved=true;
-      if(man(e,p)<=1){hooks.melee?.(e,p,2);break}
+      if(man(e,p)<=1){markAttackAnimation(e,"charge-melee",420);hooks.melee?.(e,p,2);break}
     }
     e.chargeTarget=null;return moved;
   }
@@ -167,7 +168,7 @@ window.CCGAI=(()=>{
   function attackDelay(e,base){const named=e.follower?(C.enemy.namedAttackMultiplier||.7)*(e.namedCadenceScale||1):1;return Math.max(240,Math.round(base*named))}
   function attack(e,map,p,range,host,hooks){
     if(!p||e.attackCooldown>0)return false;const world=host?.worldRef||window.__CCG_WORLD,enemyRoom=W.roomAt(world,e.x,e.y),playerRoom=W.roomAt(world,p.x,p.y);if(enemyRoom>=0&&playerRoom<0&&!roomEntered(host,enemyRoom))return false;const k=kind(e),hasLOS=lineOfSight(map,e,p,p.torchMs>0?C.enemy.torchSightRange:C.enemy.lineOfSightRange,host);
-    if(["spider","skeleton","knight","scout","hunter","ambusher","charger","ghost","guardian","champion"].includes(k)&&range<=1.5){e.attackCooldown=attackDelay(e,k==="guardian"?520:k==="hunter"?700:k==="charger"?850:k==="spider"?820:k==="skeleton"?930:k==="knight"?1080:950);if(k==="knight")e.meleeSwingMs=420;hooks.melee?.(e,p,k==="guardian"?3:(k==="knight"||k==="hunter"||k==="charger"||e.champion)?2:1);return true}
+    if(["spider","skeleton","knight","scout","hunter","ambusher","charger","ghost","guardian","champion"].includes(k)&&range<=1.5){e.attackCooldown=attackDelay(e,k==="guardian"?520:k==="hunter"?700:k==="charger"?850:k==="spider"?820:k==="skeleton"?930:k==="knight"?1080:950);if(k==="knight")e.meleeSwingMs=420;markAttackAnimation(e,"melee",k==="knight"?420:k==="spider"?300:360);hooks.melee?.(e,p,k==="guardian"?3:(k==="knight"||k==="hunter"||k==="charger"||e.champion)?2:1);return true}
     if(!hasLOS)return false;
     if(k==="ranger"&&range<=10){shootAt(e,p,"normal",1,13,hooks);e.attackCooldown=attackDelay(e,1000);return true}
     if(k==="root"&&range<=9){shootAt(e,p,"root",1,11,hooks);e.attackCooldown=attackDelay(e,1220);return true}
@@ -181,7 +182,7 @@ window.CCGAI=(()=>{
   function support(e,host,dt,hooks){
     if(kind(e)!=="cook")return false;e.healCooldown-=dt;if(e.healCooldown>0)return false;let n=0;
     for(const a of host.enemies){if(a===e||!a.alive||a.hp>=a.maxHp||man(a,e)>4)continue;a.hp=Math.min(a.maxHp,a.hp+1);a.flash=120;a.hpBarMs=2600;n++}
-    e.healCooldown=6500;if(n){hooks.notice?.("<strong>CPU SERVES DINNER.</strong> Nearby enemies regain health. Stop the chef.","heal",e);return true}return false;
+    e.healCooldown=6500;if(n){markAttackAnimation(e,"cast",520);hooks.notice?.("<strong>CPU SERVES DINNER.</strong> Nearby enemies regain health. Stop the chef.","heal",e);return true}return false;
   }
   function retreatAndRestore(e,seen,host,map,hooks,world){
     if(!e.follower||e.restoreUsed||!e.restorePotion||e.hp<=0||e.hp>e.maxHp*.32)return false;
