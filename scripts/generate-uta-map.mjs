@@ -468,7 +468,7 @@ export function buildUtaMapping(games, utaReleases, overrides = {}) {
     mapping: {
       schemaVersion: 1,
       source: UTA_INDEX_URL,
-      matching: "normalized or compact-title match + known publisher/re-release evidence, with curated exact archive-ID overrides for independently verified regional/re-release/alternate-title cases",
+      matching: "normalized or compact-title match + known publisher/re-release evidence, with curated exact release overrides (directory-qualified when an upstream archive ID is reused) for independently verified regional/re-release/alternate-title cases",
       games: publicGames
     },
     manualReview: {
