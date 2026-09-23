@@ -491,17 +491,19 @@ async function auditGameMediaWheel(sessionId, sitePort, viewport) {
     await navigate(sessionId, `http://${HOST}:${sitePort}${GAME_MEDIA_PAGE}`);
     await waitForGameMediaGuard(sessionId);
 
-    const target = await prepareGameMediaWheelTarget(sessionId);
+    let target = await prepareGameMediaWheelTarget(sessionId);
     // Give Chromium one compositor turn after the shield is forced visible and
-    // the iframe is scrolled into place. elementFromPoint can already report
-    // the shield while the compositor's wheel hit-test region is still stale.
+    // the iframe is scrolled into place. ResizeObserver may also resync the
+    // guard during this window, so re-read geometry afterwards rather than
+    // validating the pre-settle snapshot.
     await new Promise((resolve) => setTimeout(resolve, 120));
+    target = await prepareGameMediaWheelTarget(sessionId);
     if (target.error) fail(`${viewport.label}: ${target.error}`);
     if (target.guardState !== "ready") fail(`${viewport.label}: game video guard state is ${target.guardState || "missing"}`);
     if (target.shieldHidden || target.shieldDisplay === "none") fail(`${viewport.label}: game video wheel shield is not active`);
     if (!target.hitIsShield) fail(`${viewport.label}: game video centre is not covered by the wheel shield`);
     if (Math.abs(target.frameWidth - target.shieldWidth) > 4 || Math.abs(target.frameHeight - target.shieldHeight) > 4) {
-        fail(`${viewport.label}: game video wheel shield geometry does not match iframe`);
+        fail(`${viewport.label}: game video wheel shield geometry does not match iframe (frame ${target.frameWidth}x${target.frameHeight}, shield ${target.shieldWidth}x${target.shieldHeight})`);
     }
     if (target.maxScroll <= target.scrollY + MIN_WHEEL_DELTA * 2) {
         fail(`${viewport.label}: not enough scroll room below the game video to verify mouse-wheel scrolling`);
