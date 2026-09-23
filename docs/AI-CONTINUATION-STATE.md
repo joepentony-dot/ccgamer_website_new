@@ -37,7 +37,19 @@
 - Exact-head testing caught a presentation-role edge case in that composite credit: because Gremlin Graphics matched the original publisher and GBH matched the re-release label, the tape was initially classified as an original release. Role selection now prefers any archive publisher component that is explicitly re-release-only in CCG data, so the same Switch Blade tape is correctly classified as a re-release.
 - A live archive-count cross-check found UTA currently advertises 2,900 C64 releases while the previous generated audit parsed 2,890. The parser previously rejected decade-unknown labels such as `199x`; #2275 accepts these as year-neutral and adds a fail-closed diagnostic for any future release-looking directory that cannot be parsed.
 - The curated evidence file now contains 15 C64 games / 16 exact UTA release IDs. It includes three game-specific semantic title aliases—Aussie Games / Australian Games [20824], He-Man and the Masters of the Universe: The Movie / Masters of the Universe: The Movie [1319], and V: The Computer Game / V [2651]—without turning those names into global aliases. Unsafe lookalikes remain excluded to manual review.
-- #2275 must complete exact-head qualification and still requires explicit user merge authorisation. After any merge, Reliable Games Publishing remains responsible for the authoritative live UTA rescan and generated-output merge.
+- #2275 completed exact-head qualification and merged as `b40233c4d4debd6c50223582ff0a54eb9e5890ba`; Reliable Games Publishing run `35813642070` succeeded and generated-output PR #2278 merged as `16a30183b40d3698564458401d309f385261e2f6`. The resulting authoritative audit is 395/559 matched, 23 unmatched manual-review games, 141 no-title-candidate games and 164 unmatched total across 2,892 retained UTA directories.
+- Detailed record: [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md).
+
+## UTA games.json residual reconciliation — 23 September 2026
+
+- Active branch: `codex/uta-games-json-residual-reconciliation-20260923`, based on post-#2278 main `16a30183b40d3698564458401d309f385261e2f6`.
+- The 164 residual unmatched C64 records are being checked against the original `games/games.json` identity rather than accepting title similarity alone.
+- Thirteen additional same-game pages / fifteen cassette releases are currently source-verified: Action Biker [6254], Barbarian II [5918], Boulder Dash [411], Dragon's Lair II [395], International Soccer [3215], Leader Board [6678], Live and Let Die [2954], Nebulus [6721], Nightbreed [1544], Ninja [2849], Spy vs Spy II [3935] plus HiTEC [1987], Strip Poker [7489]/[513], and Sword of Fargoal [7724]. The curated file adds 13 games / 14 IDs; Spy vs Spy II [1987] should match automatically from existing Hi-Tec re-release evidence.
+- A parser defect was found: UTA archive IDs are not globally unique. [1987] is used by both Solomon's Key / ERBE and Spy vs Spy II / HiTEC. The generator now de-duplicates by UTA directory URL instead of bare archive ID, with regression coverage preserving both distinct directories.
+- The audit rejects same-name false positives where `games.json` represents another conversion, including the 1989 Mindscape After Burner and 1991 Ocean cartridge Double Dragon.
+- B.C. II: Grog's Revenge, Nemesis and Smash T.V. are source-data repair candidates rather than override candidates and are intentionally not changed on this branch. Ninja Massacre / EDOS remains excluded pending independent C64-specific evidence.
+- `data/uta-curated-release-overrides.json` is now an explicit trigger for both Phase 6B and Reliable Games Publishing, so future curated UTA evidence updates automatically enter the validation/publishing flow.
+- This branch does not modify `games/games.json`. Exact-head qualification and explicit user merge authorisation remain required.
 - Detailed record: [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md).
 
 ## How to use this record
