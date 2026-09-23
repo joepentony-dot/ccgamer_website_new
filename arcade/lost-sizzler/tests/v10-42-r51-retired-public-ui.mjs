@@ -12,7 +12,7 @@ const release=fs.readFileSync(path.join(root,"js/v10-42-zero-server-release.js")
 const version=JSON.parse(fs.readFileSync(path.join(root,"version.json"),"utf8"));
 
 assert.equal(version.build,"V10.42 r51");
-assert.equal(version.cacheToken,"20260922r51");
+assert.equal(version.cacheToken,"20260923r51");
 
 for(const retiredCopy of [
   "Weekly High-Score Vault",
