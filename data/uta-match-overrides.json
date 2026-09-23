@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "note": "Curated CCG UTA identity overrides. Includes are exact archive IDs independently verified as the same C64 release family. Excludes are documented title collisions that must never be auto-promoted.",
+  "note": "Curated CCG UTA identity overrides. Includes are independently verified C64 release-family matches; exact directory selectors disambiguate UTA archive IDs when the upstream index reuses an ID. Excludes are documented title collisions that must never be auto-promoted.",
   "games": {
     "1942": {
       "include": [
