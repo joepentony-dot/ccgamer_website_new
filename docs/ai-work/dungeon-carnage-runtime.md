@@ -1,3 +1,13 @@
+## R54 trap ownership audit and live anomaly recorder — 23 September 2026
+
+The apparent “two sets of traps” has been traced at repository level. Ordinary dungeon floor traps are generated once in `systems.js` into `host.traps` as FIRE, SPIKE and SHOCK objects. No second ordinary dungeon trap array was found in the active Solo runtime. The apparent split is instead caused by layered historical ownership over the same objects.
+
+The active ordinary trap stack includes the core `drawTraps` / `triggerTrap` path, the V10.15 continuous contact owner and its second reliable renderer, R56 cycle recovery, dynamically loaded R57 contact recovery, R19 validated floor-trap damage/contact ownership, R20 cycle handoff, and retained environmental `hurtPlayer` wrappers. R46 adds another active visual telegraph over the core trap rendering. The Sizzler Saboteurs / Spy trap model is independent and special-mode isolated; dedicated hazard rooms, transient hazards and the rolling boulder are also separate from `host.traps`.
+
+Because the remaining live failure is intermittent and occurs despite the renderer reporting the same `SYS.trapActive()` state used by damage checks, R54 instruments the existing bounded bug reporter rather than adding another repair owner. A 40 ms observer records trap entry/exit, active-cycle boundaries and exact trap period/phase/cycle. Each active contact is checked 220 ms later for the promised health loss. Failure produces `ANOMALY_ACTIVE_TRAP_NO_DAMAGE` with pre/post HEALTH, last-hurt timestamp, R19 per-kind hit counters, rare-event contact latch, R56/R57 cycle latches, current special-mode state and the complete linked `hurtPlayer` / `triggerTrap` ancestry. Multiple ordinary trap objects on one coordinate produce `ANOMALY_MULTIPLE_TRAPS_SAME_TILE`.
+
+This observer has no gameplay, input or render ownership. Candidate identity is **V10.42 r54 / 20260923r54**.
+
 ## R53 global cyclic floor-trap reliability — 23 September 2026
 
 Owner testing after R52 reproduced an ordinary SHOCK floor trap visibly labelled ACTIVE while the player remained on its tile without losing HEALTH. Investigation of generation, rendering and damage ownership confirms FIRE, SPIKE and SHOCK all use the same `host.traps` model and the same `SYS.trapActive()` period/phase clock, so the repair is global rather than kind-specific.
