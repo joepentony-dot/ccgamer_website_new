@@ -9,6 +9,19 @@
   },
   "items": [
     {
+      "id": "raMcxhNFUCI",
+      "kind": "game",
+      "filter": "c64",
+      "badge": "C64 Game",
+      "title": "Wonder Boy – Why Did Zzap!64 Give the C64 Version Just 52%?",
+      "description": "Wonder Boy on the Commodore 64 is Activision’s 1987 conversion of Sega’s popular arcade platformer, bringing its fast-paced running, jumping, fruit collecting, axe throwing and infamous ska…",
+      "url": "/games/wonder-boy/",
+      "thumbnail": "https://i.ytimg.com/vi/raMcxhNFUCI/maxresdefault.jpg",
+      "platform": "Commodore 64",
+      "year": 1987,
+      "publisher": "Activision"
+    },
+    {
       "id": "JUXvi0beNxA",
       "kind": "game",
       "filter": "amiga",
@@ -9091,19 +9104,6 @@
       "platform": "Commodore 64",
       "year": 1986,
       "publisher": "Firebird"
-    },
-    {
-      "id": "raMcxhNFUCI",
-      "kind": "game",
-      "filter": "c64",
-      "badge": "C64 Game",
-      "title": "Wonder Boy",
-      "description": "Wonder Boy on the Commodore 64 is Activision’s 1987 conversion of Sega’s popular arcade platformer, bringing its fast-paced running, jumping, fruit collecting, axe throwing and infamous ska…",
-      "url": "/games/wonder-boy/",
-      "thumbnail": "https://i.ytimg.com/vi/raMcxhNFUCI/hqdefault.jpg",
-      "platform": "Commodore 64",
-      "year": 1987,
-      "publisher": "Activision"
     }
   ]
 }
