@@ -133,6 +133,9 @@ test("full-catalogue matching tolerates safe word-spacing variants with publishe
 <a href="Bad_Dudes_vs_Dragon_Ninja_(1991_Hit_Squad)_[1152]/">Bad Dudes Hit Squad</a>
 <a href="Newzealand_Story,_The_(1989_Ocean_Software_Ltd)_[2154]/">New Zealand Story</a>
 <a href="Night_Breed_(1992_Hit_Squad)_[1544]/">Night Breed</a>
+<a href="Hero_Quest_(1991_Gremlin_Graphics)_[3167]/">Hero Quest</a>
+<a href="Highnoon_(1984_Ocean_Software_Ltd)_[2141]/">Highnoon</a>
+<a href="Micro_Mouse_Goes_De-Bugging_(1983_M.C._Lothlorien)_[291]/">Micro Mouse Goes De-Bugging</a>
 `);
 
   const cases = [
@@ -147,6 +150,18 @@ test("full-catalogue matching tolerates safe word-spacing variants with publishe
     {
       game: { system: "C64", slug: "nightbreed-the-action-game", title: "Nightbreed: The Action Game", sorttitle: "Nightbreed", year: 1990, credits: { publisher: ["Ocean"], re_releaser: ["The Hit Squad"] } },
       expected: ["1544"]
+    },
+    {
+      game: { system: "C64", slug: "heroquest", title: "Heroquest", year: 1991, credits: { publisher: ["Gremlin Graphics"], re_releaser: [] } },
+      expected: ["3167"]
+    },
+    {
+      game: { system: "C64", slug: "high-noon", title: "High Noon", year: 1984, credits: { publisher: ["Ocean"], re_releaser: [] } },
+      expected: ["2141"]
+    },
+    {
+      game: { system: "C64", slug: "micro-mouse-goes-debugging", title: "Micro Mouse Goes Debugging", year: 1983, credits: { publisher: ["MC Lothlorien"], re_releaser: [] } },
+      expected: ["291"]
     }
   ];
 
