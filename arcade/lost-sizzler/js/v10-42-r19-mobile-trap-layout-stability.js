@@ -35,8 +35,9 @@
      is already ACTIVE. The renderer and SYS.trapActive() then advance correctly,
      but the old contact latch would otherwise suppress the new hit. */
   function trapCycleId(trap,now=performance.now()){
-    const period=Math.max(1,Number(trap?.period)||1),phase=Number(trap?.phase)||0,stamp=Number(now);
-    return Number.isFinite(stamp)?Math.floor((stamp+phase)/period):0
+    const period=Number(trap?.period),phase=Number(trap?.phase)||0,stamp=Number(now);
+    if(!Number.isFinite(period)||period<=0||!Number.isFinite(stamp))return 0;
+    return Math.floor((stamp+phase)/period)
   }
 
   function clearTrapCycleOwners(player,trap,contactKey){
@@ -71,7 +72,7 @@
     state.trapHitsByKind[kind]=(Number(state.trapHitsByKind[kind])||0)+1;
     trapContacts.add(contactKey);
     trapContactCycles.set(contactKey,cycle);
-    const protectionMs=Math.max(0,Number(player?.invuln||0));
+    const protectionMs=Math.max(0,Number(player.invuln||0));
     if(protectionMs>0)trapProtectionUntil.set(contactKey,performance.now()+protectionMs)
   }
 
