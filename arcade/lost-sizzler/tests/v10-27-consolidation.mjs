@@ -21,8 +21,8 @@ assert.match(inputFixes,/returnTo/,'weekly auth return path must be migrated at 
 assert.match(index,/C64 Dungeon Carnage/,'canonical runtime must contain the live game name');
 assert.match(oldPrimary,/location\.replace\(destination\.href\)/,'previous production URL must redirect');
 assert.match(oldTest,/location\.replace\(destination\.href\)/,'obsolete test URL must redirect');
-assert.match(oldPrimary,/\/arcade\/c64-dungeon-carnage\///,'previous production URL must target canonical arcade path');
-assert.match(oldTest,/\/arcade\/c64-dungeon-carnage\///,'obsolete test URL must target canonical arcade path');
+assert.match(oldPrimary,/\/arcade\/c64-dungeon-carnage\//,'previous production URL must target canonical arcade path');
+assert.match(oldTest,/\/arcade\/c64-dungeon-carnage\//,'obsolete test URL must target canonical arcade path');
 assert.match(voice,/welcomeRare/,'rare recorded welcome support must remain wired');
 assert.match(voice,/Math\.random\(\)<\.1/,'rare welcome should remain uncommon');
 assert.match(voice,/playSprite/,'bundled recorded voice fallback must be present');
