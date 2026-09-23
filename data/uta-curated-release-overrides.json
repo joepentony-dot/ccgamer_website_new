@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "source": "https://uta.pokefinder.org/Ultimate_Tape_Archive/",
+  "note": "Exact UTA archive IDs independently verified as releases of the specified C64 game. Optional titleAliases are game-specific verified archive-title aliases; they never become global title substitutions. Curated approvals still require the listed archive ID, an exact normalized canonical/curated title match, and the existing year safeguard.",
+  "entries": [
+    {
+      "gameSlug": "aussie-games",
+      "archiveIds": [
+        "20824"
+      ],
+      "titleAliases": [
+        "Australian Games"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/aussie-games",
+          "note": "Lemon64 states Aussie Games is also known as Australian Games and identifies the Procass tape entry used in the 1990 ERBE Software Spanish release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Australian_Games_(1990_ERBE_Software)_%5b20824%5d/",
+          "note": "UTA archive entry for Australian Games, ERBE Software, 1990."
+        }
+      ]
+    },
+    {
+      "gameSlug": "beyond-the-forbidden-forest",
+      "archiveIds": [
+        "1242"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/beyond-the-forbidden-forest",
+          "note": "Lemon64 identifies a US Gold tape entry/release for this game."
+        }
+      ]
+    },
+    {
+      "gameSlug": "blood-n-guts",
+      "archiveIds": [
+        "2809"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/blood-n-guts",
+          "note": "Lemon64 identifies the American Action tape release; the manual credits American Action AB."
+        },
+        {
+          "source": "Lemon64 manual",
+          "url": "https://www.lemon64.com/doc/blood-n-guts/103",
+          "note": "Manual copyright names American Action AB."
+        }
+      ]
+    },
+    {
+      "gameSlug": "chopper",
+      "archiveIds": [
+        "1036"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/chopper",
+          "note": "Lemon64 identifies Creative Sparks as copyright and the Creative Sparks tape entry for the Sparklers release."
+        }
+      ]
+    },
+    {
+      "gameSlug": "donald-ducks-playground",
+      "archiveIds": [
+        "1240"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/donald-ducks-playground",
+          "note": "Lemon64 identifies the US Gold tape entry and US Gold full-price reviews for this game."
+        }
+      ]
+    },
+    {
+      "gameSlug": "he-man-and-the-masters-of-the-universe-the-movie",
+      "archiveIds": [
+        "1319"
+      ],
+      "titleAliases": [
+        "Masters of the Universe: The Movie"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/masters-of-the-universe-the-movie",
+          "note": "Lemon64 identifies Masters of the Universe: The Movie as the 1987 Gremlin Graphics C64 release and confirms a Gremlin tape release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Masters_of_the_Universe-_The_Movie_(1987_Gremlin_Graphics)_%5b1319%5d/",
+          "note": "UTA archive entry for the same Gremlin Graphics 1987 cassette under the shortened release title."
+        }
+      ]
+    },
+    {
+      "gameSlug": "indiana-jones-in-the-lost-kingdom",
+      "archiveIds": [
+        "4218"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/indiana-jones-in-the-lost-kingdom",
+          "note": "Lemon64 identifies the US Gold tape entry for the 1984 game."
+        }
+      ]
+    },
+    {
+      "gameSlug": "karateka",
+      "archiveIds": [
+        "2866"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/karateka",
+          "note": "Lemon64 identifies the Ariolasoft tape entry/release for the 1985 game."
+        }
+      ]
+    },
+    {
+      "gameSlug": "mr-robot-and-his-robot-factory",
+      "archiveIds": [
+        "3211"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/mr-robot-and-his-robot-factory",
+          "note": "Lemon64 identifies Beyond as the European publisher and its 1984 tape release."
+        }
+      ]
+    },
+    {
+      "gameSlug": "raid-on-bungeling-bay",
+      "archiveIds": [
+        "5360"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/raid-on-bungeling-bay",
+          "note": "Lemon64 magazine metadata identifies Ariolasoft/Ariolasoft-Brøderbund full-price C64 releases."
+        },
+        {
+          "source": "C64-Wiki",
+          "url": "https://www.c64-wiki.com/wiki/Raid_on_Bungeling_Bay",
+          "note": "C64-Wiki identifies Ariolasoft as the UK publisher."
+        }
+      ]
+    },
+    {
+      "gameSlug": "raid-over-moscow",
+      "archiveIds": [
+        "529"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/raid-over-moscow",
+          "note": "Lemon64 identifies US Gold as the European publisher and the Novaload tape entry used in the US Gold release."
+        }
+      ]
+    },
+    {
+      "gameSlug": "the-goonies",
+      "archiveIds": [
+        "841",
+        "6951"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/goonies",
+          "note": "Lemon64 identifies US Gold and American Action as European publishers and both corresponding tape entries."
+        }
+      ]
+    },
+    {
+      "gameSlug": "they-stole-a-million",
+      "archiveIds": [
+        "12597"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/they-stole-a-million",
+          "note": "Lemon64 identifies 39 Steps as developer and the tape entry used in the 39 Steps release."
+        }
+      ]
+    },
+    {
+      "gameSlug": "v-the-computer-game",
+      "archiveIds": [
+        "2651"
+      ],
+      "titleAliases": [
+        "V"
+      ],
+      "evidence": [
+        {
+          "source": "MobyGames",
+          "url": "https://www.mobygames.com/game/41758/v/",
+          "note": "MobyGames lists the C64 title as V with V: The Computer Game as an alternate title and Ocean as publisher."
+        },
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/v-the-computer-game",
+          "note": "Lemon64 confirms the 1986 Ocean C64 cassette release and Novaload tape entry."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/V_(1985_Ocean_Software_Ltd)_%5b2651%5d/",
+          "note": "UTA archive directory contains V.tap for the Ocean release."
+        }
+      ]
+    },
+    {
+      "gameSlug": "zorro",
+      "archiveIds": [
+        "717"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/zorro",
+          "note": "Lemon64 identifies US Gold as the European publisher and the US Gold/Datasoft tape entry."
+        }
+      ]
+    }
+  ]
+}

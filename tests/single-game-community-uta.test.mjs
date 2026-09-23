@@ -6,7 +6,9 @@ import {
   buildUtaMapping,
   matchGameToUta,
   normalizePublisher,
-  parseUtaIndex
+  parseCuratedApprovals,
+  parseUtaIndex,
+  parseUtaIndexWithDiagnostics
 } from "../scripts/generate-uta-map.mjs";
 
 const sampleIndex = `
@@ -36,6 +38,25 @@ const amiga = {
   credits: { publisher: ["Psygnosis"], re_releaser: [] }
 };
 
+test("UTA parser accepts decade-unknown 199x releases without inventing a year", () => {
+  const parsed = parseUtaIndex(`
+<a href="Ivan_'Ironman'_Stewart's_Super_Off_Road_(199x_Tronix)_[99901]/">Ivan Ironman Stewart</a>
+`);
+  assert.equal(parsed.length, 1);
+  assert.equal(parsed[0].yearLabel, "199x");
+  assert.equal(parsed[0].year, null);
+  assert.equal(parsed[0].publisher, "Tronix");
+});
+
+test("UTA parser diagnostics expose release-looking directories that would otherwise be silently skipped", () => {
+  const parsed = parseUtaIndexWithDiagnostics(`
+<a href="Valid_Game_(1989_Ocean_Software_Ltd)_[99902]/">Valid</a>
+<a href="Future_Format_(unknown_Label)_[99903]/">Future</a>
+`);
+  assert.equal(parsed.releases.length, 1);
+  assert.deepEqual(parsed.rejectedReleaseDirectories, ["Future_Format_(unknown_Label)_[99903]"]);
+});
+
 test("UTA parser preserves multiple releases and normalises known publisher variants", () => {
   const releases = parseUtaIndex(sampleIndex);
   assert.equal(releases.length, 7);
@@ -53,6 +74,7 @@ test("UTA publisher normalisation covers common C64 label variants without title
   assert.equal(normalizePublisher("Rack-It (Hewson)"), normalizePublisher("Hewson (Rack IT)"));
   assert.equal(normalizePublisher("HiTEC Software"), normalizePublisher("Hi-Tec Software"));
   assert.equal(normalizePublisher("Atlantis Gold"), normalizePublisher("Atlantis Software"));
+  assert.equal(normalizePublisher("M.C. Lothlorien"), normalizePublisher("MC Lothlorien"));
 });
 
 test("Wonder Boy resolves both the Activision original and Hit Squad cassette re-release", () => {
@@ -106,6 +128,75 @@ test("full-catalogue title normalisation recovers verified punctuation, numeral 
   }
 });
 
+test("full-catalogue matching tolerates safe word-spacing variants with publisher evidence", () => {
+  const releases = parseUtaIndex(`
+<a href="Bad_Dudes_vs_Dragon_Ninja_(1989_Imagine)_[4305]/">Bad Dudes</a>
+<a href="Bad_Dudes_vs_Dragon_Ninja_(1991_Hit_Squad)_[1152]/">Bad Dudes Hit Squad</a>
+<a href="Newzealand_Story,_The_(1989_Ocean_Software_Ltd)_[2154]/">New Zealand Story</a>
+<a href="Night_Breed_(1992_Hit_Squad)_[1544]/">Night Breed</a>
+<a href="Hero_Quest_(1991_Gremlin_Graphics)_[3167]/">Hero Quest</a>
+<a href="Highnoon_(1984_Ocean_Software_Ltd)_[2141]/">Highnoon</a>
+<a href="Micro_Mouse_Goes_De-Bugging_(1983_M.C._Lothlorien)_[291]/">Micro Mouse Goes De-Bugging</a>
+<a href="Storm_Bringer_(1987_Mastertronic_Added_Dimension)_[3201]/">Storm Bringer</a>
+<a href="Switch_Blade_(1992_Gremlin_Graphics_(GBH))_[3202]/">Switch Blade</a>
+`);
+
+  const cases = [
+    {
+      game: { system: "C64", slug: "bad-dudes-vs-dragonninja", title: "Bad Dudes Vs Dragonninja", year: 1989, credits: { publisher: ["Imagine"], re_releaser: ["The Hit Squad"] } },
+      expected: ["4305", "1152"]
+    },
+    {
+      game: { system: "C64", slug: "the-new-zealand-story", title: "The New Zealand Story", year: 1989, credits: { publisher: ["Ocean"], re_releaser: ["The Hit Squad"] } },
+      expected: ["2154"]
+    },
+    {
+      game: { system: "C64", slug: "nightbreed-the-action-game", title: "Nightbreed: The Action Game", sorttitle: "Nightbreed", year: 1990, credits: { publisher: ["Ocean"], re_releaser: ["The Hit Squad"] } },
+      expected: ["1544"]
+    },
+    {
+      game: { system: "C64", slug: "heroquest", title: "Heroquest", year: 1991, credits: { publisher: ["Gremlin Graphics"], re_releaser: [] } },
+      expected: ["3167"]
+    },
+    {
+      game: { system: "C64", slug: "high-noon", title: "High Noon", year: 1984, credits: { publisher: ["Ocean"], re_releaser: [] } },
+      expected: ["2141"]
+    },
+    {
+      game: { system: "C64", slug: "micro-mouse-goes-debugging", title: "Micro Mouse Goes Debugging", year: 1983, credits: { publisher: ["MC Lothlorien"], re_releaser: [] } },
+      expected: ["291"]
+    },
+    {
+      game: { system: "C64", slug: "stormbringer", title: "Stormbringer", year: 1987, credits: { publisher: ["MAD (Mastertronic)"], re_releaser: [] } },
+      expected: ["3201"]
+    },
+    {
+      game: { system: "C64", slug: "switchblade", title: "Switchblade", year: 1991, credits: { publisher: ["Gremlin Graphics"], re_releaser: ["GBH"] } },
+      expected: ["3202"]
+    }
+  ];
+
+  for (const { game, expected } of cases) {
+    const result = matchGameToUta(game, releases);
+    assert.deepEqual(result.releases.map((row) => row.archiveId), expected, game.slug);
+  }
+});
+
+test("UTA comma-article subtitle notation matches the canonical leading-article title", () => {
+  const releases = parseUtaIndex(`
+<a href="Train,_The-_Escape_to_Normandy_(1988_Electronic_Arts)_[5396]/">The Train</a>
+`);
+  const game = {
+    system: "C64",
+    slug: "the-train-escape-to-normandy",
+    title: "The Train: Escape To Normandy",
+    year: 1987,
+    credits: { publisher: ["Accolade", "Electronic Arts"], re_releaser: [] }
+  };
+  const result = matchGameToUta(game, releases);
+  assert.deepEqual(result.releases.map((row) => row.archiveId), ["5396"]);
+});
+
 test("publisher-qualified prefix matching does not collapse numbered sequels into the wrong game", () => {
   const releases = parseUtaIndex(`
 <a href="Dragon's_Lair_(1986_Software_Projects)_[9100]/">Dragon's Lair</a>
@@ -119,6 +210,22 @@ test("publisher-qualified prefix matching does not collapse numbered sequels int
   };
   const result = matchGameToUta(game, releases);
   assert.deepEqual(result.releases, []);
+});
+
+test("composite UTA publisher credits can match either catalogue publisher component", () => {
+  const releases = parseUtaIndex(`
+<a href="Switch_Blade_(1992_Gremlin_Graphics_(GBH))_[3202]/">Switch Blade</a>
+`);
+  const game = {
+    system: "C64",
+    slug: "switchblade",
+    title: "Switchblade",
+    year: 1991,
+    credits: { publisher: ["Gremlin Graphics"], re_releaser: ["GBH"] }
+  };
+  const result = matchGameToUta(game, releases);
+  assert.deepEqual(result.releases.map((row) => row.archiveId), ["3202"]);
+  assert.equal(result.releases[0].sourceRole, "re-release");
 });
 
 test("composite re-release credits expose each explicit label component to UTA matching", () => {
@@ -161,6 +268,85 @@ test("later tapes from an explicitly known publisher are retained instead of bei
   }, releases);
   assert.deepEqual(soccerBoss.releases.map((row) => row.archiveId), ["24133"]);
   assert.equal(soccerBoss.releases[0].sourceRole, "re-release");
+});
+
+test("curated exact archive IDs approve verified releases without weakening title or publisher safeguards", () => {
+  const releases = parseUtaIndex(`
+<a href="Karateka_(1985_Ariolasoft)_[2866]/">Karateka Ariolasoft</a>
+<a href="Karateka_(1985_Random_Label)_[9999]/">Karateka random label</a>
+<a href="Karateka_Championship_(1985_Ariolasoft)_[7777]/">Karateka Championship</a>
+`);
+  const game = {
+    system: "C64",
+    slug: "karateka",
+    title: "Karateka",
+    year: 1985,
+    credits: { publisher: ["Brøderbund"], re_releaser: [] }
+  };
+  const curated = parseCuratedApprovals({
+    entries: [{ gameSlug: "karateka", archiveIds: ["2866", "7777"] }]
+  });
+  const result = buildUtaMapping([game], releases, curated);
+
+  assert.deepEqual(result.mapping.games.karateka.releases.map((row) => row.archiveId), ["2866"]);
+  assert.equal(result.mapping.games.karateka.releases[0].sourceRole, "verified-release");
+  assert.equal(result.mapping.games.karateka.releases[0].verification, "curated-archive-id");
+  assert.ok(result.manualReview.entries.some((entry) =>
+    entry.gameSlug === "karateka"
+      && entry.excludedCandidates.some((row) => row.archiveId === "9999")
+  ));
+  assert.ok(result.manualReview.entries.some((entry) =>
+    entry.gameSlug === "karateka"
+      && entry.excludedCandidates.some((row) => row.archiveId === "7777")
+  ));
+});
+
+test("curated semantic title aliases remain archive-ID scoped", () => {
+  const releases = parseUtaIndex(`
+<a href="Australian_Games_(1990_ERBE_Software)_[20824]/">Australian Games ERBE</a>
+<a href="Australian_Games_(1990_Random_Label)_[20825]/">Australian Games random</a>
+`);
+  const game = {
+    system: "C64",
+    slug: "aussie-games",
+    title: "Aussie Games",
+    year: 1989,
+    credits: { publisher: ["Mindscape"], re_releaser: [] }
+  };
+  const curated = parseCuratedApprovals({
+    entries: [{
+      gameSlug: "aussie-games",
+      archiveIds: ["20824"],
+      titleAliases: ["Australian Games"]
+    }]
+  });
+  const result = buildUtaMapping([game], releases, curated);
+
+  assert.deepEqual(result.mapping.games["aussie-games"].releases.map((row) => row.archiveId), ["20824"]);
+  assert.equal(result.mapping.games["aussie-games"].releases[0].titleMatch, "curated-title-alias");
+  assert.equal(result.mapping.games["aussie-games"].releases[0].sourceRole, "verified-release");
+  assert.ok(!result.mapping.games["aussie-games"].releases.some((row) => row.archiveId === "20825"));
+});
+
+test("curated approvals remain scoped to the named game slug", () => {
+  const releases = parseUtaIndex(`
+<a href="Karateka_(1985_Ariolasoft)_[2866]/">Karateka Ariolasoft</a>
+`);
+  const game = {
+    system: "C64",
+    slug: "karateka-copy",
+    title: "Karateka",
+    year: 1985,
+    credits: { publisher: ["Brøderbund"], re_releaser: [] }
+  };
+  const curated = parseCuratedApprovals({
+    entries: [{ gameSlug: "karateka", archiveIds: ["2866"] }]
+  });
+  const result = buildUtaMapping([game], releases, curated);
+
+  assert.equal(result.mapping.games["karateka-copy"], undefined);
+  assert.equal(result.audit.summary.matchedGames, 0);
+  assert.equal(result.audit.summary.manualReviewGames, 1);
 });
 
 test("C64 matching requires title plus known publisher/re-release evidence and uses year confidence", () => {
