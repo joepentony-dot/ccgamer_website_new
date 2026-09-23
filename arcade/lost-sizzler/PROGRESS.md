@@ -1,3 +1,12 @@
+## LIVE INCIDENT — intermittent FIRE, active spikes, garbled renderer — 23 September 2026
+
+- **Active candidate:** `codex/dungeon-r51-fire-wall-incident-20260923`, created from current `main` `88df63430f275a37553a821c2511b1296dd13f8e`.
+- **FIRE:** a new owner bug report recorded one real FIRE anomaly. The R51 real-shot verifier is present on `main`, but the persistent/reasserted hit-stun fallback from stale draft #2260 is not. This candidate carries that bounded recovery forward while preserving actual-ammo/projectile evidence as the only successful-shot rule.
+- **Spikes:** hands-on screenshot evidence shows visibly active spikes not removing HEALTH while the player remains on the tile. R19 now handles inactive-to-active occupied contacts from its existing monitor, using the same exactly-one-HEALTH validated damage route and preserving armour.
+- **Renderer:** the same playtest shows whole-canvas smearing/garbling and stalls. R29 contains render exceptions and keeps RAF running, but `renderView()` previously skipped `ctx.restore()` when a nested draw threw. The candidate uses `try/finally` for viewport state and resets frame transform/compositing before clearing.
+- **Diagnostics:** bug reports preserve anomaly entries independently of the recent-event text tail and now include FIRE/trap/render recovery state.
+- **Status:** IMPLEMENTED ON FRESH CURRENT-MAIN CANDIDATE / EXACT-HEAD QUALIFICATION PENDING. Do not merge until the required matrix is green and the user authorises merge.
+
 # C64 Dungeon Carnage — Current Work Register
 
 > Legacy repository path: `arcade/lost-sizzler/`. The customer-facing game name is **C64 Dungeon Carnage**. Historical internal identifiers may still use `Lost Sizzler` where compatibility requires them.

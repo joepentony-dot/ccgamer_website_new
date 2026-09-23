@@ -10,6 +10,11 @@ for(const owner of ["firePlayer","queueAttack","movePlayer","toggleInventory"]){
   assert.doesNotMatch(src,new RegExp(String.raw`\\b${owner}\\s*=`),`r47 recovery must not replace ${owner}`);
 }
 assert.match(src,/CCGLostSizzlerV142R20LiveRegressionStability/);
+const r20src=fs.readFileSync(new URL("js/v10-42-r20-live-regression-stability.js",root),"utf8");
+assert.match(r20src,/function recoverPersistentFireBlock/,"R20 must retain the persistent FIRE blocker recovery");
+assert.match(r20src,/persistentFireBlockRepairs/,"persistent FIRE recovery must be diagnosable");
+assert.match(r20src,/failedFireIntentCount<3\|\|now-failedFireIntentSince<650/,"persistent FIRE recovery must require repeated verified misses before clearing hit-stun");
+assert.match(r20src,/if\(!fired\)fired=recoverPersistentFireBlock/,"persistent FIRE recovery must run only after normal FIRE owners fail");
 assert.match(src,/attackNow/);
 assert.match(src,/MutationObserver/);
 assert.match(src,/inventory-panel/);

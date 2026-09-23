@@ -26,6 +26,10 @@ assert.match(r20Src,/\(bullets\|\|\[\]\)\.filter\(projectile=>projectile\?\.ttl>
 assert.match(r20Src,/const beforeBullets=activePlayerBulletCount\(player\)/);
 assert.match(r20Src,/return fired\n  }/);
 assert.doesNotMatch(r20Src,/return fired\|\|Boolean\(fireBuffer1>0\)/,"a queued attack buffer is not a successful direct-fire repair");
+assert.match(r20Src,/function recoverPersistentFireBlock\(player,direction,beforeMana,beforeBullets\)/);
+assert.match(r20Src,/failedFireIntentCount<3\|\|now-failedFireIntentSince<650/);
+assert.match(r20Src,/player\.hitStunMs=0/);
+assert.match(r20Src,/diagnostics\.persistentFireBlockRepairs\+\+/);
 
 assert.match(inventorySrc,/const handled=afterMana<before\.mana\|\|afterBullets>before\.bullets/);
 assert.doesNotMatch(inventorySrc,/const handled=[^\n]*(?:afterFire|afterBuffer)/,"inventory recovery must require actual shot evidence");

@@ -12,6 +12,7 @@ const manifest=JSON.parse(read("version.json"));
 const repair=read("js/v10-41-r29-runtime-repair.js");
 const css=read("css/v10-41-r29.css");
 const buglog=read("js/v10-41-r29-buglog.js");
+const renderer=read("js/game-render.js");
 
 assert.equal(manifest.releaseVersion,"V10.42","current manifest must publish V10.42 while retaining r29 runtime protections");
 assert.ok(index.includes(`ccg-lost-sizzler-build" content="${manifest.build}"`),"canonical page must expose the published build");
@@ -31,6 +32,9 @@ assert.doesNotMatch(repair,/setTimeout\([^\n]*90|faultBurst/,"r29 must not throt
 assert.match(repair,/fault contained without clearing input, reallocating the canvas or throttling play/,"r29 diagnostics must describe the non-destructive recovery contract");
 assert.match(repair,/function payDownCombatGap/,"r29 must retain frame-gap combat recovery");
 assert.match(repair,/duplicateFramesSkipped\+\+/,"r29 must continue rejecting duplicate RAF timestamps");
+assert.match(renderer,/function renderView\(p,v\)[\s\S]*ctx\.save\(\);[\s\S]*try\{[\s\S]*\}finally\{ctx\.restore\(\)\}/,"a contained render fault must not leak the viewport clip/transform into later frames");
+assert.match(renderer,/function resetFrameContext\(\)[\s\S]*ctx\.setTransform\(1,0,0,1,0,0\)[\s\S]*globalCompositeOperation="source-over"/,"each frame must restart from a neutral canvas transform/compositing state");
+assert.match(renderer,/function render\(\)\{if\(!world\|\|!p1\)return;resetFrameContext\(\)/,"frame rendering must reset poisoned canvas state before clearing and drawing");
 
 assert.match(repair,/quitToMenuV141R29Silent/,"all quit-to-menu paths must receive the final audio guard");
 assert.match(repair,/S\.stopMusic\(\)/,"ordinary dungeon music must be stopped on return to menu");

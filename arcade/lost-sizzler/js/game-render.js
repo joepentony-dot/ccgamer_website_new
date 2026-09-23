@@ -543,12 +543,19 @@ function renderView(p,v){
   const zoom=dungeonCameraZoom(v,p),logical=zoom>1?{x:v.x,y:v.y,w:v.w/zoom,h:v.h/zoom}:v;
   view=logical;focus=p;cam=camFor(p,logical);
   window.__ccgDungeonCamera={zoom,viewportWidth:v.w,viewportHeight:v.h,logicalWidth:logical.w,logicalHeight:logical.h,tile:C.tile};
-  ctx.save();ctx.beginPath();ctx.rect(v.x,v.y,v.w,v.h);ctx.clip();ctx.fillStyle=P.black;ctx.fillRect(v.x,v.y,v.w,v.h);
-  if(zoom>1){ctx.translate(v.x,v.y);ctx.scale(zoom,zoom);ctx.translate(-v.x,-v.y)}
-  const x0=Math.max(0,Math.floor(cam.x/C.tile)-1),x1=Math.min(C.worldWidth-1,Math.ceil((cam.x+logical.w)/C.tile)+1),y0=Math.max(0,Math.floor(cam.y/C.tile)-1),y1=Math.min(C.worldHeight-1,Math.ceil((cam.y+logical.h)/C.tile)+1);
-  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)drawTile(x,y);drawWindyCorridor();drawDedicatedHazards();drawFurniture();drawDoors();drawExit();drawWallLights();drawHazards();drawBoulderTrap();drawTraps();drawGenerators();drawShrinesSwitches();drawChests();drawSpecialObjects();host.items.forEach(drawItem);host.enemies.forEach(drawEnemy);drawStalker();drawRescue();drawShots();for(const r of remote.values())if(performance.now()-r.lastSeen<2600&&visibleTo(p,r.x,r.y))drawPlayer(r,"remote");for(const lp of localPlayers())drawPlayer(lp,lp===p2?"p2":"p1");drawAmbientMotes();drawFog();drawEffects();drawThreatEdgeIndicators(p);ctx.restore()
+  ctx.save();
+  try{
+    ctx.beginPath();ctx.rect(v.x,v.y,v.w,v.h);ctx.clip();ctx.fillStyle=P.black;ctx.fillRect(v.x,v.y,v.w,v.h);
+    if(zoom>1){ctx.translate(v.x,v.y);ctx.scale(zoom,zoom);ctx.translate(-v.x,-v.y)}
+    const x0=Math.max(0,Math.floor(cam.x/C.tile)-1),x1=Math.min(C.worldWidth-1,Math.ceil((cam.x+logical.w)/C.tile)+1),y0=Math.max(0,Math.floor(cam.y/C.tile)-1),y1=Math.min(C.worldHeight-1,Math.ceil((cam.y+logical.h)/C.tile)+1);
+    for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)drawTile(x,y);drawWindyCorridor();drawDedicatedHazards();drawFurniture();drawDoors();drawExit();drawWallLights();drawHazards();drawBoulderTrap();drawTraps();drawGenerators();drawShrinesSwitches();drawChests();drawSpecialObjects();host.items.forEach(drawItem);host.enemies.forEach(drawEnemy);drawStalker();drawRescue();drawShots();for(const r of remote.values())if(performance.now()-r.lastSeen<2600&&visibleTo(p,r.x,r.y))drawPlayer(r,"remote");for(const lp of localPlayers())drawPlayer(lp,lp===p2?"p2":"p1");drawAmbientMotes();drawFog();drawEffects();drawThreatEdgeIndicators(p)
+  }finally{ctx.restore()}
 }
-function render(){if(!world||!p1)return;renderShake=shake>0?{x:(Math.random()-.5)*shake,y:(Math.random()-.5)*shake}:{x:0,y:0};if(shake>0){shake*=.84;if(shake<.25)shake=0}ctx.fillStyle=P.black;ctx.fillRect(0,0,canvas.width,canvas.height);if(p2){renderView(p1,{x:0,y:0,w:canvas.width/2,h:canvas.height});renderView(p2,{x:canvas.width/2,y:0,w:canvas.width/2,h:canvas.height});ctx.fillStyle=P.purple;ctx.fillRect(canvas.width/2-2,0,4,canvas.height)}else renderView(p1,{x:0,y:0,w:canvas.width,h:canvas.height});buildReferenceGuide();renderRadarPanel(p1);if(damageFlash>0){ctx.fillStyle=`rgba(255,50,70,${Math.min(.18,damageFlash*.18)})`;ctx.fillRect(0,0,canvas.width,canvas.height)}}
+function resetFrameContext(){
+  try{ctx.setTransform(1,0,0,1,0,0)}catch(_){try{ctx.resetTransform?.()}catch(__){}}
+  try{ctx.globalAlpha=1;ctx.globalCompositeOperation="source-over";ctx.filter="none";ctx.shadowBlur=0;ctx.shadowColor="rgba(0,0,0,0)"}catch(_){}
+}
+function render(){if(!world||!p1)return;resetFrameContext();renderShake=shake>0?{x:(Math.random()-.5)*shake,y:(Math.random()-.5)*shake}:{x:0,y:0};if(shake>0){shake*=.84;if(shake<.25)shake=0}ctx.fillStyle=P.black;ctx.fillRect(0,0,canvas.width,canvas.height);if(p2){renderView(p1,{x:0,y:0,w:canvas.width/2,h:canvas.height});renderView(p2,{x:canvas.width/2,y:0,w:canvas.width/2,h:canvas.height});ctx.fillStyle=P.purple;ctx.fillRect(canvas.width/2-2,0,4,canvas.height)}else renderView(p1,{x:0,y:0,w:canvas.width,h:canvas.height});buildReferenceGuide();renderRadarPanel(p1);if(damageFlash>0){ctx.fillStyle=`rgba(255,50,70,${Math.min(.18,damageFlash*.18)})`;ctx.fillRect(0,0,canvas.width,canvas.height)}}
 function resizeGameCanvas(){
   const area=document.querySelector(".canvas-wrap");if(!area)return;const r=area.getBoundingClientRect(),w=Math.max(640,Math.floor(r.width)),h=Math.max(360,Math.floor(r.height));
   if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;ctx.imageSmoothingEnabled=false;cameras.clear()}

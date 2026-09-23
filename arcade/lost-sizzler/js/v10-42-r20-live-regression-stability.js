@@ -11,6 +11,7 @@
     capturedR1Shots:0,
     directAttackErrors:0,
     staleStunRepairs:0,
+    persistentFireBlockRepairs:0,
     controlLockRepairs:0,
     staleModeRecoveries:0,
     dossierKeyboardCloses:0,
@@ -28,6 +29,7 @@
   const STALL_MS=120;
   const CURSOR_IDLE_MS=1600;
   let cursorTimer=0,lastDoorTick=performance.now(),capturedR1FireOwner=null,presentationResumeObserver=null;
+  let failedFireIntentSince=0,failedFireIntentCount=0;
 
   const panelVisible=id=>{const node=document.getElementById(id);return Boolean(node&&!node.classList.contains("hidden"))};
   const currentMode=()=>{try{return typeof mode!=="undefined"?String(mode):""}catch(_){return""}};
@@ -193,6 +195,33 @@
     return mana<beforeMana||activePlayerBulletCount(player)>beforeBullets
   }
 
+  function recoverPersistentFireBlock(player,direction,beforeMana,beforeBullets){
+    if(!player||currentMode()!=="playing"||Math.max(0,Number(player.mana)||0)<=0)return false;
+    let cd=0;try{cd=Number(fire1||0)}catch(_){}
+    if(Number.isFinite(cd)&&cd>0)return false;
+    const weapon=player.weapon||{};
+    const max=Math.max(1,Number(C?.player?.maxProjectiles||0)+Math.max(0,Number(weapon.shots||1)-1));
+    if(activePlayerBulletCount(player)>=max)return false;
+
+    const now=performance.now();
+    if(!failedFireIntentSince||now-failedFireIntentSince>1800){failedFireIntentSince=now;failedFireIntentCount=1}
+    else failedFireIntentCount++;
+    if(failedFireIntentCount<3||now-failedFireIntentSince<650)return false;
+
+    const stun=Math.max(0,Number(player.hitStunMs)||0);
+    if(stun<=0)return false;
+    player.hitStunMs=0;
+    try{fire1=0;fireBuffer1=0}catch(_){}
+    diagnostics.persistentFireBlockRepairs++;
+
+    const owner=deepestFireOwner()||captureR1FireOwner()||(typeof firePlayer==="function"?firePlayer:null);
+    if(typeof owner!=="function")return false;
+    try{owner(player,direction)}catch(_){diagnostics.directAttackErrors++;return false}
+    const fired=shotCompleted(player,beforeMana,beforeBullets);
+    if(fired){failedFireIntentSince=0;failedFireIntentCount=0}
+    return fired
+  }
+
   function attackNow(code){
     if(!activeRun()||!recoverOrphanedGameplayMode())return false;
     let player=null;try{player=p1}catch(_){}
@@ -236,7 +265,10 @@
       }
     }
 
+    if(!fired)fired=recoverPersistentFireBlock(player,direction,beforeMana,beforeBullets);
+
     if(fired){
+      failedFireIntentSince=0;failedFireIntentCount=0;
       try{fireBuffer1=0;input?.delete?.(code)}catch(_){}
       diagnostics.directAttackRepairs++;
     }else{
