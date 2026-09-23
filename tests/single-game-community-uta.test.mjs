@@ -74,6 +74,7 @@ test("UTA publisher normalisation covers common C64 label variants without title
   assert.equal(normalizePublisher("Rack-It (Hewson)"), normalizePublisher("Hewson (Rack IT)"));
   assert.equal(normalizePublisher("HiTEC Software"), normalizePublisher("Hi-Tec Software"));
   assert.equal(normalizePublisher("Atlantis Gold"), normalizePublisher("Atlantis Software"));
+  assert.equal(normalizePublisher("M.C. Lothlorien"), normalizePublisher("MC Lothlorien"));
 });
 
 test("Wonder Boy resolves both the Activision original and Hit Squad cassette re-release", () => {
