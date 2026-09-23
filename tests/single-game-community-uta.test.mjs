@@ -562,6 +562,7 @@ test("single-game presentation keeps primary content compact and secondary secti
   assert.match(affiliateCss, /\.ccg-hardware-panel\[hidden\]/);
 });
 
+// PR #2297 current-main residual reconciliation regression.
 test("UTA parser preserves distinct release directories even when UTA reuses an archive ID", () => {
   const releases = parseUtaIndex(`
 <a href="Solomon's_Key_(1987_ERBE_Software)_[1987]/">Solomon's Key</a>
