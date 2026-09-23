@@ -1,3 +1,9 @@
+## R54 graphics/UI implementation checkpoint — 23 September 2026
+
+PR #2299 / `codex/dungeon-r54-graphics-ui-overhaul-20260923` is the current presentation/mechanics follow-up rebuilt from main after #2298. The first bounded batch owns Bronze Key HUD readability, pickup naming/feedback, Bronze-door chest cost semantics, established chest sprite presentation and matching Rulebook text. It must not change R53 combat/trap ownership or introduce extra simulation/render timers.
+
+Later R54 batches will handle richer pickup art, corridor presentation, NPC/shop character graphics, expanded renderer-owned character/enemy animation, the lower message-rail/black-rectangle presentation issue, and obsolete ONLINE wording. Dialogue/quest-content expansion is intentionally later.
+
 ## R53 ATTACK liveness and crowded-impact qualification — 23 September 2026
 
 Active candidate: draft PR #2294 / branch `codex/dungeon-r53-attack-rail-current-main-20260923`, based on current `main` and retaining the merged R53 global FIRE/SPIKE/SHOCK trap-cycle repair.
