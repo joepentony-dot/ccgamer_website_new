@@ -1,3 +1,15 @@
+## R53 global cyclic floor-trap reliability — 23 September 2026
+
+Owner testing after R52 reproduced an ordinary SHOCK floor trap visibly labelled ACTIVE while the player remained on its tile without losing HEALTH. Investigation of generation, rendering and damage ownership confirms FIRE, SPIKE and SHOCK all use the same `host.traps` model and the same `SYS.trapActive()` period/phase clock, so the repair is global rather than kind-specific.
+
+The remaining race is a stale contact latch across a missed inactive interval. The canonical rare-events owner, R56/R57 cycle owners and R19 all historically cleared their duplicate-contact state after observing the trap inactive or the player leave the tile. If a long frame/runtime stall spans that complete inactive window, the next frame can correctly render the following cycle as ACTIVE while the previous cycle's contact latch still suppresses the hit.
+
+R53 keeps the established damage pipeline and cadence but associates each accepted R19 floor-trap hit with an explicit cycle identity derived from the trap's period/phase clock. When the next ACTIVE cycle is seen, stale R19, canonical rare-events, R56 and R57 contact state is synchronously rearmed even if no inactive frame was sampled. Same-cycle duplicate suppression remains intact, armour remains unchanged for floor-trap health damage, and a failed canonical damage attempt is not recorded as a successful contact merely because stale invulnerability exists.
+
+Regression coverage now validates real generated FIRE, SPIKE and SHOCK traps individually: the first ACTIVE contact removes exactly one HEALTH, another check during the same cycle does not double-hit, and a deliberately advanced next cycle removes exactly one additional HEALTH without exposing an inactive frame. Dedicated blade/ember/arrow hazard rooms and the rolling boulder use separate damage paths and are outside this stale floor-trap latch.
+
+Candidate release identity is **V10.42 r53 / 20260923r53**. Exact-head full qualification remains mandatory before merge.
+
 ## R51 live incident: FIRE anomaly, active spikes, render corruption — 23 September 2026
 
 Current candidate: `codex/dungeon-r51-fire-wall-incident-20260923`, based on refreshed `main` `88df63430f275a37553a821c2511b1296dd13f8e`.
