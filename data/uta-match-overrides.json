@@ -106,6 +106,14 @@
         }
       ]
     },
+    "bc2-grogs-revenge": {
+      "include": [
+        {
+          "archiveId": "734",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
     "beach-head": {
       "include": [
         {
@@ -139,6 +147,14 @@
         {
           "archiveId": "6218",
           "reason": "Different Blockbusters game: Macsen 1984, not the TV Games 1988 title."
+        }
+      ]
+    },
+    "blood-n-guts": {
+      "include": [
+        {
+          "archiveId": "2809",
+          "sourceRole": "publisher"
         }
       ]
     },
@@ -214,6 +230,14 @@
         }
       ]
     },
+    "cops-n-robbers": {
+      "include": [
+        {
+          "archiveId": "2857",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
     "crossfire": {
       "exclude": [
         {
@@ -251,6 +275,14 @@
         {
           "archiveId": "68",
           "reason": "Interceptor Software's Defender 64 is a different Defender clone, not the Atarisoft arcade conversion."
+        }
+      ]
+    },
+    "donald-ducks-playground": {
+      "include": [
+        {
+          "archiveId": "1240",
+          "sourceRole": "re-release"
         }
       ]
     },
@@ -294,6 +326,18 @@
         }
       ]
     },
+    "dragons-lair-2-escape-from-singes-castle": {
+      "include": [
+        {
+          "archiveId": "395",
+          "sourceRole": "publisher"
+        },
+        {
+          "archiveId": "5078",
+          "sourceRole": "re-release"
+        }
+      ]
+    },
     "flunky": {
       "include": [
         {
@@ -322,6 +366,14 @@
       "include": [
         {
           "archiveId": "6627",
+          "sourceRole": "publisher"
+        }
+      ]
+    },
+    "give-my-regards-to-broad-street": {
+      "include": [
+        {
+          "archiveId": "8446",
           "sourceRole": "publisher"
         }
       ]
@@ -403,6 +455,12 @@
         {
           "archiveId": "2850",
           "reason": "Archive is the first Joe Blade, not Joe Blade II."
+        }
+      ],
+      "include": [
+        {
+          "archiveId": "6305",
+          "sourceRole": "publisher"
         }
       ]
     },
@@ -677,6 +735,28 @@
         {
           "archiveId": "1638",
           "sourceRole": "re-release"
+        }
+      ]
+    },
+    "spy-vs-spy-2-the-island-caper": {
+      "include": [
+        {
+          "archiveId": "3935",
+          "sourceRole": "re-release"
+        },
+        {
+          "archiveId": "1987",
+          "sourceRole": "re-release"
+        }
+      ],
+      "exclude": [
+        {
+          "archiveId": "8959",
+          "reason": "Archive is the first Spy vs Spy, not Spy vs Spy II: The Island Caper."
+        },
+        {
+          "archiveId": "681",
+          "reason": "Archive is the first Spy vs Spy, not Spy vs Spy II: The Island Caper."
         }
       ]
     },
