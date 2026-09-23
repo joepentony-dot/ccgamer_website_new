@@ -5,7 +5,7 @@
   window.__CCG_LOST_SIZZLER_INPUT_UI_BUGFIXES_V118__=true;
 
   const REINFORCED_WARNING_COOLDOWN_MS=1800;
-  const CANONICAL_PATH="/arcade/lost-sizzler/";
+  const CANONICAL_PATH="/arcade/c64-dungeon-carnage/";
   const CANONICAL_ORIGIN="https://www.cheekycommodoregamer.co.uk";
   let lastReinforcedWarningAt=-Infinity;
 
