@@ -36,10 +36,10 @@
     let player=null;try{player=p1||null}catch(_){}
     let shots=0;
     try{shots=(bullets||[]).filter(projectile=>projectile?.ttl>0&&(!player||projectile.owner===player.id)).length}catch(_){}
-    return{mana:Math.max(0,Number(player?.mana||0)),shots};
+    return{mana:Math.max(0,Number(player?.mana||0)),shots,meleeAt:Number(player?._meleeSwingAt||0)};
   }
 
-  const shotObserved=(before,after)=>after.mana<before.mana||after.shots>before.shots;
+  const attackObserved=(before,after)=>after.mana<before.mana||after.shots>before.shots||after.meleeAt>before.meleeAt;
 
   function verifyFreshPress(code,before){
     const MAX_ATTEMPTS=5;
@@ -51,7 +51,7 @@
         if(!activeRun()||currentMode()!=="playing"||spyActive())return;
         diagnostics.pressVerifications++;
         const after=attackSnapshot();
-        if(shotObserved(before,after))return;
+        if(attackObserved(before,after))return;
         const r20=window.CCGLostSizzlerV142R20LiveRegressionStability;
         if(typeof r20?.attackNow!=="function"){
           if(number<MAX_ATTEMPTS){attempt(number+1);return}
@@ -59,7 +59,7 @@
         }
         const repairBefore=attackSnapshot();
         try{r20.attackNow(code)}catch(_){}
-        const repaired=shotObserved(repairBefore,attackSnapshot());
+        const repaired=attackObserved(repairBefore,attackSnapshot());
         if(repaired){diagnostics.pressRecoveries++;return}
         scheduleSync();
         if(number<MAX_ATTEMPTS){attempt(number+1);return}
