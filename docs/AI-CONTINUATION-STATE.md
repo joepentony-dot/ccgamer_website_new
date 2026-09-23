@@ -9,6 +9,15 @@
 - Exact-head qualification and explicit user merge authorisation remain required.
 - Detailed records: [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) and [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md).
 
+## Full C64 Ultimate Tape Archive audit — 23 September 2026
+
+- Branch `codex/full-c64-uta-audit-20260923` performs a complete C64 catalogue audit against the live Ultimate Tape Archive index.
+- Current baseline before the expanded audit: 559 C64 games, 333 public UTA mappings, 75 manual-review entries, 226 games without a public mapping; 28 of those already have exact-title manual candidates and 198 had no candidate under the old strict title normalisation.
+- The candidate expands conservative title normalisation (punctuation spacing, Roman/Arabic numerals, compact initialisms, publisher-qualified subtitle/prefix matching with sequel protection) and known publisher spelling aliases, while retaining publisher/re-release evidence and year safeguards.
+- Every full scan now generates `data/uta-audit.json` so matched/manual/no-title-candidate coverage is measurable and can be re-audited whenever UTA changes.
+- No title-only ambiguous candidate is auto-published. Exact-head qualification and explicit merge authorisation remain required.
+- Detailed record: [single-game-community-uta-2026-09-22.md](ai-work/single-game-community-uta-2026-09-22.md).
+
 ## How to use this record
 
 This is the repository-level index for Codex continuation. Read it before making a change, then read the applicable `docs/ai-work/*.md` file before working in that area. Treat it as a dated checkpoint, not a substitute for a fresh live GitHub review when the repository may have moved.
