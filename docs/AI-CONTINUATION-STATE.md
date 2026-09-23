@@ -9,6 +9,15 @@
 
 # AI continuation state
 
+## Dungeon Carnage R52 unused level-up entitlement — 23 September 2026
+
+- Draft PR #2282 / branch `codex/dungeon-unused-level-up-entitlement` is the active bounded Dungeon follow-up, based from current main `88df63430f275a37553a821c2511b1296dd13f8e` after #2271 merged.
+- Existing `player.pendingLevels` remains the source of truth. R52 adds a safe Choose Later path, backdrop/Escape deferral, a counted XP-panel LEVEL-UP AVAILABLE reopen control, correct handling of multiple pending levels, and queue reconstruction after preserved/checkpoint player restoration.
+- Death-level loss now consumes an unused level-up before removing a previously selected skill. Checkpoint schema is unchanged because the complete player object was already cloned.
+- Candidate public identity is `V10.42 r52` / `20260923r52`. Static and Chromium entitlement regressions are included.
+- PR #2282 remains draft pending exact-head qualification and explicit user merge authorisation.
+
+
 ## Dungeon Carnage post-R51 narrow regression candidate — 23 September 2026
 
 - Branch `codex/dungeon-r51-regression-fixes` was created from refreshed `origin/main` `f719717824f2caa1cb89dc84a2ad7f2438f042a2`, after PR #2256 merged.

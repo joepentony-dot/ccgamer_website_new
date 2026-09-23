@@ -296,7 +296,7 @@
   }
   if(typeof showNextLevelChoice==="function"){
     const baseShowNextLevelChoice=showNextLevelChoice;
-    showNextLevelChoice=function(...args){const result=baseShowNextLevelChoice(...args),player=levelQueue?.[0]||currentPlayer();if(UI?.levelCopy&&player)UI.levelCopy.textContent=`${player.name} reached Level ${player.level}. Choose one RPG attribute to increase. ${statSummary(player)}.`;return result};
+    showNextLevelChoice=function(...args){const result=baseShowNextLevelChoice(...args),player=levelQueue?.[0]||currentPlayer(),pending=Math.max(0,Math.floor(Number(player?.pendingLevels)||0));if(UI?.levelCopy&&player&&pending>0)UI.levelCopy.textContent=pending===1?`${player.name} has an unused level-up. Choose one RPG attribute to increase now or choose later. ${statSummary(player)}.`:`${player.name} has ${pending} unused level-ups. Choose one RPG attribute to increase now or choose later. ${statSummary(player)}.`;return result};
   }
 
   function updateSigilAndRelics(){
