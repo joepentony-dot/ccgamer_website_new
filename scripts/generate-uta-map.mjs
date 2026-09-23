@@ -325,13 +325,15 @@ function releaseForOutput(release, sourceRole) {
   };
 }
 
-export function matchGameToUta(game, utaReleases, curatedArchiveIds = new Set()) {
+export function matchGameToUta(game, utaReleases, curatedApproval = {}) {
   if (!isC64(game)) {
     return { releases: [], review: [] };
   }
 
   const slug = String(game?.slug || "").trim();
   const titles = titleVariants(game?.title, game?.sorttitle);
+  const curatedArchiveIds = curatedApproval?.archiveIds instanceof Set ? curatedApproval.archiveIds : new Set();
+  const curatedTitles = curatedApproval?.titleAliases instanceof Set ? titleVariants(...curatedApproval.titleAliases) : new Set();
   if (!slug || !titles.size) return { releases: [], review: [] };
 
   const credits = getPublisherCredits(game);
@@ -340,8 +342,15 @@ export function matchGameToUta(game, utaReleases, curatedArchiveIds = new Set())
     .map((release) => {
       const releaseTitles = titleVariants(release.title);
       const exact = exactTitleMatch(titles, releaseTitles);
-      const prefix = !exact && prefixTitleMatch(titles, releaseTitles);
-      return exact || prefix ? { release, matchKind: exact ? "exact" : "publisher-qualified-prefix" } : null;
+      const curatedAlias = !exact
+        && curatedArchiveIds.has(String(release.archiveId))
+        && curatedTitles.size > 0
+        && exactTitleMatch(curatedTitles, releaseTitles);
+      const prefix = !exact && !curatedAlias && prefixTitleMatch(titles, releaseTitles);
+      return exact || curatedAlias || prefix ? {
+        release,
+        matchKind: exact ? "exact" : (curatedAlias ? "curated-title-alias" : "publisher-qualified-prefix")
+      } : null;
     })
     .filter(Boolean);
 
@@ -355,7 +364,7 @@ export function matchGameToUta(game, utaReleases, curatedArchiveIds = new Set())
     const rereleaseMatch = credits.rerelease.has(release.publisherKey);
     let sourceRole = "";
 
-    if (curatedMatch && matchKind === "exact") {
+    if (curatedMatch && (matchKind === "exact" || matchKind === "curated-title-alias")) {
       sourceRole = "verified-release";
     } else if (rereleaseMatch && (!originalMatch || (gameYear && release.year && release.year > gameYear + 1))) {
       sourceRole = "re-release";
@@ -424,8 +433,8 @@ export function buildUtaMapping(games, utaReleases, curatedApprovals = new Map()
   [...games]
     .sort((a, b) => String(a?.slug || "").localeCompare(String(b?.slug || "")))
     .forEach((game) => {
-      const curatedArchiveIds = curatedApprovals.get(String(game?.slug || "")) || new Set();
-      const result = matchGameToUta(game, utaReleases, curatedArchiveIds);
+        const curatedApproval = curatedApprovals.get(String(game?.slug || "")) || {};
+      const result = matchGameToUta(game, utaReleases, curatedApproval);
       if (result.releases.length) {
         publicGames[game.slug] = {
           title: String(game.title || game.slug),
@@ -526,8 +535,12 @@ export function parseCuratedApprovals(value) {
   entries.forEach((entry) => {
     const slug = String(entry?.gameSlug || "").trim();
     const archiveIds = Array.isArray(entry?.archiveIds) ? entry.archiveIds : [];
+    const titleAliases = Array.isArray(entry?.titleAliases) ? entry.titleAliases : [];
     if (!slug || !archiveIds.length) return;
-    map.set(slug, new Set(archiveIds.map((id) => String(id).trim()).filter(Boolean)));
+    map.set(slug, {
+      archiveIds: new Set(archiveIds.map((id) => String(id).trim()).filter(Boolean)),
+      titleAliases: new Set(titleAliases.map((title) => String(title).trim()).filter(Boolean))
+    });
   });
 
   return map;
