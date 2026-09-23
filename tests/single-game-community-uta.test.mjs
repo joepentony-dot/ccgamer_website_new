@@ -6,6 +6,7 @@ import {
   buildUtaMapping,
   matchGameToUta,
   normalizePublisher,
+  parseCuratedApprovals,
   parseUtaIndex
 } from "../scripts/generate-uta-map.mjs";
 
@@ -161,6 +162,58 @@ test("later tapes from an explicitly known publisher are retained instead of bei
   }, releases);
   assert.deepEqual(soccerBoss.releases.map((row) => row.archiveId), ["24133"]);
   assert.equal(soccerBoss.releases[0].sourceRole, "re-release");
+});
+
+test("curated exact archive IDs approve verified releases without weakening title or publisher safeguards", () => {
+  const releases = parseUtaIndex(`
+<a href="Karateka_(1985_Ariolasoft)_[2866]/">Karateka Ariolasoft</a>
+<a href="Karateka_(1985_Random_Label)_[9999]/">Karateka random label</a>
+<a href="Karateka_Championship_(1985_Ariolasoft)_[7777]/">Karateka Championship</a>
+`);
+  const game = {
+    system: "C64",
+    slug: "karateka",
+    title: "Karateka",
+    year: 1985,
+    credits: { publisher: ["Brøderbund"], re_releaser: [] }
+  };
+  const curated = parseCuratedApprovals({
+    entries: [{ gameSlug: "karateka", archiveIds: ["2866", "7777"] }]
+  });
+  const result = buildUtaMapping([game], releases, curated);
+
+  assert.deepEqual(result.mapping.games.karateka.releases.map((row) => row.archiveId), ["2866"]);
+  assert.equal(result.mapping.games.karateka.releases[0].sourceRole, "verified-release");
+  assert.equal(result.mapping.games.karateka.releases[0].verification, "curated-archive-id");
+  assert.ok(result.manualReview.entries.some((entry) =>
+    entry.gameSlug === "karateka"
+      && entry.excludedCandidates.some((row) => row.archiveId === "9999")
+  ));
+  assert.ok(result.manualReview.entries.some((entry) =>
+    entry.gameSlug === "karateka"
+      && entry.excludedCandidates.some((row) => row.archiveId === "7777")
+  ));
+});
+
+test("curated approvals remain scoped to the named game slug", () => {
+  const releases = parseUtaIndex(`
+<a href="Karateka_(1985_Ariolasoft)_[2866]/">Karateka Ariolasoft</a>
+`);
+  const game = {
+    system: "C64",
+    slug: "karateka-copy",
+    title: "Karateka",
+    year: 1985,
+    credits: { publisher: ["Brøderbund"], re_releaser: [] }
+  };
+  const curated = parseCuratedApprovals({
+    entries: [{ gameSlug: "karateka", archiveIds: ["2866"] }]
+  });
+  const result = buildUtaMapping([game], releases, curated);
+
+  assert.equal(result.mapping.games["karateka-copy"], undefined);
+  assert.equal(result.audit.summary.matchedGames, 0);
+  assert.equal(result.audit.summary.manualReviewGames, 1);
 });
 
 test("C64 matching requires title plus known publisher/re-release evidence and uses year confidence", () => {
