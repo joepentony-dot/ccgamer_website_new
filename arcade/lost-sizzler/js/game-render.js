@@ -385,6 +385,23 @@ function renderEnemyCreditAvatar(target,row){
   out.clearRect(0,0,size,size);out.imageSmoothingEnabled=false;out.drawImage(canvas,0,0,size,size,0,0,size,size);ctx.restore();return true
 }
 window.CCGRenderEnemyCreditAvatar=renderEnemyCreditAvatar;
+const enemyDefeatVisuals=[];
+function queueEnemyDefeatVisual(fx){
+  if(!fx||!Number.isFinite(Number(fx.x))||!Number.isFinite(Number(fx.y)))return;
+  enemyDefeatVisuals.push({...fx,startedAt:performance.now()});
+  if(enemyDefeatVisuals.length>12)enemyDefeatVisuals.splice(0,enemyDefeatVisuals.length-12)
+}
+window.CCGQueueEnemyDefeatVisual=queueEnemyDefeatVisual;
+function drawEnemyDefeatVisuals(){
+  const now=performance.now(),duration=540;
+  for(let i=enemyDefeatVisuals.length-1;i>=0;i--){
+    const q=enemyDefeatVisuals[i],age=now-Number(q.startedAt||now);if(age>=duration){enemyDefeatVisuals.splice(i,1);continue}
+    if(age<0||!visibleTo(focus,q.x,q.y))continue;
+    const progress=Math.max(0,Math.min(.999999,age/duration)),frame=Math.min(5,Math.floor(progress*6)),s=ws(q.x,q.y),cx=s.x+C.tile/2,cy=s.y+C.tile/2,lean=[0,.12,.28,.48,.72,.9][frame]*(q.facing?.x<0?-1:1),scaleY=[1,.98,.9,.72,.48,.2][frame],scaleX=[1,1.03,1.08,1.12,1.16,1.2][frame],alpha=[1,.94,.8,.62,.4,.16][frame],ghost={id:`defeat-${i}`,kind:q.kind||"guardian",follower:q.followerKind?{kind:q.followerKind}:null,champion:Boolean(q.champion),guardian:Boolean(q.guardian),exitWarden:Boolean(q.exitWarden),deathStalker:Boolean(q.deathStalker),voidStalker:Boolean(q.voidStalker),facing:q.facing||{x:1,y:0},aiState:"idle",hitStunMs:0,flash:0,armor:0};
+    ctx.save();ctx.globalAlpha=alpha;ctx.translate(cx,cy+12*progress);ctx.rotate(lean);ctx.scale(scaleX,scaleY);ctx.translate(-cx,-cy);drawPixelEnemySprite(ghost,cx,cy);ctx.restore();
+    if(frame>=3){ctx.save();ctx.globalAlpha=(1-progress)*.7;ctx.fillStyle=q.color||P.pink;for(let n=0;n<4;n++){const a=n*Math.PI/2+now/130,r=8+progress*12;ctx.fillRect(cx+Math.cos(a)*r-1,cy+Math.sin(a)*r-1,3,3)}ctx.restore()}
+  }
+}
 function drawEnemy(e){
   if(!e.alive||!visibleTo(focus,e.x,e.y))return;const s=enemyScreen(e),f=e.follower,isDeathStalker=Boolean(e.deathStalker&&e.voidStalker),cx=s.x+C.tile/2,cy=s.y+C.tile/2;
   if(f){const r=(C.enemy.followerLightRadius||5)*C.tile,g=ctx.createRadialGradient(cx,cy,8,cx,cy,r);g.addColorStop(0,"rgba(255,213,112,.13)");g.addColorStop(.45,"rgba(255,160,70,.05)");g.addColorStop(1,"rgba(255,140,50,0)");ctx.fillStyle=g;ctx.fillRect(s.x-r,s.y-r,r*2,r*2)}
@@ -708,7 +725,7 @@ function renderView(p,v){
     ctx.beginPath();ctx.rect(v.x,v.y,v.w,v.h);ctx.clip();ctx.fillStyle=P.black;ctx.fillRect(v.x,v.y,v.w,v.h);
     if(zoom>1){ctx.translate(v.x,v.y);ctx.scale(zoom,zoom);ctx.translate(-v.x,-v.y)}
     const x0=Math.max(0,Math.floor(cam.x/C.tile)-1),x1=Math.min(C.worldWidth-1,Math.ceil((cam.x+logical.w)/C.tile)+1),y0=Math.max(0,Math.floor(cam.y/C.tile)-1),y1=Math.min(C.worldHeight-1,Math.ceil((cam.y+logical.h)/C.tile)+1);
-    for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)drawTile(x,y);drawWindyCorridor();drawDedicatedHazards();drawFurniture();drawDoors();drawExit();drawWallLights();drawHazards();drawBoulderTrap();drawTraps();drawGenerators();drawShrinesSwitches();drawChests();drawSpecialObjects();host.items.forEach(drawItem);host.enemies.forEach(drawEnemy);drawStalker();drawRescue();drawShots();for(const r of remote.values())if(performance.now()-r.lastSeen<2600&&visibleTo(p,r.x,r.y))drawPlayer(r,"remote");for(const lp of localPlayers())drawPlayer(lp,lp===p2?"p2":"p1");drawAmbientMotes();drawFog();drawEffects();drawThreatEdgeIndicators(p)
+    for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)drawTile(x,y);drawWindyCorridor();drawDedicatedHazards();drawFurniture();drawDoors();drawExit();drawWallLights();drawHazards();drawBoulderTrap();drawTraps();drawGenerators();drawShrinesSwitches();drawChests();drawSpecialObjects();host.items.forEach(drawItem);host.enemies.forEach(drawEnemy);drawEnemyDefeatVisuals();drawStalker();drawRescue();drawShots();for(const r of remote.values())if(performance.now()-r.lastSeen<2600&&visibleTo(p,r.x,r.y))drawPlayer(r,"remote");for(const lp of localPlayers())drawPlayer(lp,lp===p2?"p2":"p1");drawAmbientMotes();drawFog();drawEffects();drawThreatEdgeIndicators(p)
   }finally{ctx.restore()}
 }
 function resetFrameContext(){
