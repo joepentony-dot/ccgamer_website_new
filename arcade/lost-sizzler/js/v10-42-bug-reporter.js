@@ -110,6 +110,7 @@
         pauseAttackLastReset:safe(()=>window.__CCG_PAUSE_ATTACK_LAST_RESET__||null,null),
         attackHold:safe(()=>window.CCGLostSizzlerV142AttackHoldLiveness?.diagnostics||null,null),
         soloStability:safe(()=>window.CCGLostSizzlerV142R18SoloPlaytestStability?.diagnostics||null,null),
+        fireRecovery:safe(()=>window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics||null,null),
         projectileLifecycle:safe(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.state||null,null),
         performanceGovernor:safe(()=>window.CCGLostSizzlerV141R47AllModeOptimisation?.getDiagnostics?.()||null,null),
         globalPerformance:safe(()=>window.CCGLostSizzlerV141R37GlobalPerformance?.getDiagnostics?.()||null,null),
@@ -145,13 +146,13 @@
     setTimeout(()=>{
       const after=currentSnapshot("fire-probe");
       const fired=Number(after.player1?.mana)<Number(before.player1?.mana)||
-        Number(after.game.activeProjectiles)>Number(before.game.activeProjectiles)||
-        Number(after.game.fire1)>0;
-      push("fire-probe",{code,fired,before:{mana:before.player1?.mana,fire1:before.game.fire1,buffer:before.game.fireBuffer1,projectiles:before.game.activeProjectiles,mode:before.game.mode},after:{mana:after.player1?.mana,fire1:after.game.fire1,buffer:after.game.fireBuffer1,projectiles:after.game.activeProjectiles,mode:after.game.mode}});
+        Number(after.game.activeProjectiles)>Number(before.game.activeProjectiles);
+      push("fire-probe",{code,fired,before:{mana:before.player1?.mana,hitStunMs:before.player1?.hitStunMs,fire1:before.game.fire1,buffer:before.game.fireBuffer1,projectiles:before.game.activeProjectiles,mode:before.game.mode},after:{mana:after.player1?.mana,hitStunMs:after.player1?.hitStunMs,fire1:after.game.fire1,buffer:after.game.fireBuffer1,projectiles:after.game.activeProjectiles,mode:after.game.mode}});
       if(!fired&&after.game.mode==="playing"&&after.game.runActive&&after.browser.visibility==="visible"){
         state.anomalies++;
         push("ANOMALY_POSSIBLE_FIRE_FAILURE",{
           code,ammo:after.player1?.mana,weapon:after.player1?.weapon?.name||"",input:after.game.inputKeys,
+          hitStunMs:after.player1?.hitStunMs,lastHurtAt:safe(()=>Number(p1?.__ccgLastHurtAt||0),0),
           fire1:after.game.fire1,buffer:after.game.fireBuffer1,projectiles:after.game.activeProjectiles,
           inventoryHidden:after.panels.inventory.hidden,activeElement:after.browser.activeElement
         });
@@ -188,10 +189,17 @@
       `Input: ${g.inputKeys.join(", ")||"none"}`,
       `Inventory hidden: ${s.panels.inventory.hidden} | Pause hidden: ${s.panels.pause.hidden} | Focus: ${s.browser.hasFocus} | Active element: ${s.browser.activeElement?.tag||""}#${s.browser.activeElement?.id||""}`,
       `Memory puzzle: ${mem?`phase=${mem.phase} input=${mem.inputIndex}/${mem.sequence.length} failures=${mem.failures} flash=${mem.flashTile}`:"none"}`,
-      `Recorded anomalies: ${report.anomalies}`,
-      "",
-      `RECENT EVENTS (latest ${Math.min(TEXT_EVENTS,report.recentEvents.length)})`
+      `Recorded anomalies: ${report.anomalies}`
     ];
+    const anomalyEvents=report.recentEvents.filter(event=>String(event.type||"").startsWith("ANOMALY_"));
+    if(anomalyEvents.length){
+      lines.push("","ANOMALY EVENTS");
+      for(const event of anomalyEvents){
+        let detail="";try{detail=JSON.stringify(event.detail)}catch(_){detail=String(event.detail)}
+        lines.push(`[${event.at}] ${event.type} ${detail}`);
+      }
+    }
+    lines.push("",`RECENT EVENTS (latest ${Math.min(TEXT_EVENTS,report.recentEvents.length)})`);
     for(const event of report.recentEvents.slice(-TEXT_EVENTS)){
       let detail="";try{detail=JSON.stringify(event.detail)}catch(_){detail=String(event.detail)}
       lines.push(`[${event.at}] ${event.type} ${detail}`);
