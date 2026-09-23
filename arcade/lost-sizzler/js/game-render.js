@@ -149,27 +149,33 @@ function drawPickupGlyph(i,col){
   else if(k==="loot"){ctx.beginPath();for(let n=0;n<8;n++){const a=-Math.PI/2+n*Math.PI/4,r=n%2?4:11,x=Math.cos(a)*r,y=Math.sin(a)*r;if(n===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.closePath();ctx.fill()}
   else{ctx.fillRect(-8,-8,16,16)}ctx.restore()
 }
+function groundItemLabel(i){
+  if(i.kind==="loot")return i.loot?.weapon?.displayName||i.loot?.name||"LOOT";
+  if(i.kind==="game")return i.title||"C64 GAME";
+  return({health:"HEALTH POTION",mana:"AMMUNITION",ammo:"AMMUNITION",exitSigil:"EXIT SIGIL",key:"MAIN KEY",credits:"GOLD SCORE COIN",xpOrb:"+10 XP",torch:"TORCH",teleport:"TELEPORT SPELL",banishment:"BANISHMENT FLASK",inventorySlot:"INVENTORY SLOT",armour:"+2 ARMOUR",potion:"POTION",bronze:"BRONZE KEY",weapon:"WEAPON CACHE",rapid:"RAPID FIRE"}[i.kind]||String(i.kind||"ITEM").toUpperCase())
+}
 function drawItem(i){
   if(!i.active||!visibleTo(focus,i.x,i.y))return;const s=ws(i.x,i.y),[txt,col]=itemInfo(i),pulse=1+Math.sin(performance.now()/155+i.x)*.08;
   ctx.save();ctx.translate(s.x+C.tile/2,s.y+C.tile/2);ctx.scale(pulse,pulse);ctx.shadowColor=col;ctx.shadowBlur=11;drawPickupGlyph(i,col);ctx.restore();
-  if(md(i,focus)<=3)label(i.title||({health:"HEALTH PACK",ammo:"AMMO PACK",exitSigil:"EXIT SIGIL",key:"MAIN KEY",game:"C64 GAME",credits:"GOLD SCORE COIN",xpOrb:"XP ORB",torch:"TORCH",teleport:"TELEPORT SPELL",armour:"ARMOUR",potion:"POTION",bronze:"BRONZE KEY",weapon:"WEAPON",rapid:"RAPID FIRE"}[i.kind]||i.kind.toUpperCase()),{x:s.x,y:s.y-1},col)
+  if(md(i,focus)<=3)label(groundItemLabel(i),{x:s.x,y:s.y-1},col)
 }
 function drawChests(){
-  const now=performance.now();
+  const now=performance.now(),pixelSheet=lostSizzlerPixelAssets.chests;
   for(const c of host.chests||[]){
     const anim=c.openedAt?Math.max(0,Math.min(1,(now-c.openedAt)/650)):0;if(!c.active&&!c.openedAt)continue;if(!visibleTo(focus,c.x,c.y))continue;
     const s=ws(c.x,c.y),rar=c.loot?.rarity,col=PGR.colourForRarity(rar),cx=s.x+C.tile/2,pulse=.6+.4*Math.sin(now/180+c.x*3);
-    const pixelSheet=lostSizzlerPixelAssets.chests;if(pixelSheet?.complete&&pixelSheet.naturalWidth>=160){const rare=/ZZAP|GOLD|SIZZLER/i.test(String(rar||"")),row=c.locked?2:rare?1:0,column=c.openedAt?Math.min(4,2+Math.floor(anim*3)):(Math.sin(now/260+c.x*2+c.y)>.72?1:0);ctx.save();ctx.imageSmoothingEnabled=false;ctx.fillStyle="rgba(0,0,0,.48)";ctx.beginPath();ctx.ellipse(cx,s.y+C.tile-2,14,4,0,0,Math.PI*2);ctx.fill();ctx.shadowColor=c.locked?P.gold:col;ctx.shadowBlur=c.active?8+pulse*7:10;ctx.drawImage(pixelSheet,column*32,row*32,32,32,Math.round(s.x),Math.round(s.y),C.tile,C.tile);if(c.active){ctx.globalAlpha=.34+pulse*.3;ctx.strokeStyle=c.locked?P.gold:col;ctx.strokeRect(s.x+2,s.y+2,C.tile-4,C.tile-4)}if(anim>0){ctx.globalAlpha=1-anim*.25;ctx.fillStyle=c.locked?P.gold:col;for(let n=0;n<8;n++){const a=n*1.7+now/180,r=5+anim*(8+n%3*3);ctx.fillRect(cx+Math.cos(a)*r,s.y+10+Math.sin(a)*r*.5,2,2)}}ctx.restore();if(md(c,focus)<=2)label(c.active?(c.locked?"LOCKED DUNGEON CHEST":`${rar||"COMMON"} CHEST`):"CHEST OPENED",{x:s.x,y:s.y-1},c.locked?P.gold:col);continue}
-    ctx.save();ctx.fillStyle="rgba(0,0,0,.48)";ctx.beginPath();ctx.ellipse(cx,s.y+C.tile-3,19,5,0,0,Math.PI*2);ctx.fill();ctx.shadowColor=col;ctx.shadowBlur=c.active?10+pulse*8:16;ctx.imageSmoothingEnabled=false;
-    // chunky traditional wooden chest body
-    ctx.fillStyle="#3b2115";ctx.fillRect(s.x+5,s.y+17,C.tile-10,16);ctx.fillStyle="#75431f";ctx.fillRect(s.x+7,s.y+18,C.tile-14,12);ctx.fillStyle="#9a5d2b";ctx.fillRect(s.x+7,s.y+19,C.tile-14,3);
-    ctx.fillStyle="#c39a46";ctx.fillRect(s.x+5,s.y+17,3,16);ctx.fillRect(s.x+C.tile-8,s.y+17,3,16);ctx.fillRect(cx-2,s.y+17,4,16);ctx.fillRect(s.x+5,s.y+30,C.tile-10,3);ctx.fillStyle="#f1c96e";ctx.fillRect(s.x+6,s.y+18,2,11);ctx.fillRect(s.x+C.tile-8,s.y+18,2,11);ctx.fillStyle="#2b170f";ctx.fillRect(s.x+10,s.y+23,7,2);ctx.fillRect(s.x+C.tile-17,s.y+23,7,2);
-    // arched lid swings upward during the opening animation
-    ctx.save();ctx.translate(cx,s.y+17);ctx.rotate(-anim*.62);ctx.fillStyle="#4a2918";ctx.beginPath();ctx.moveTo(-16,0);ctx.lineTo(-14,-8);ctx.quadraticCurveTo(0,-17,14,-8);ctx.lineTo(16,0);ctx.closePath();ctx.fill();ctx.strokeStyle="#c39a46";ctx.lineWidth=2;ctx.stroke();ctx.fillStyle="#9a5d2b";ctx.fillRect(-12,-7,24,4);ctx.restore();
-    ctx.fillStyle=c.locked?P.gold:col;ctx.fillRect(cx-4,s.y+19,8,9);ctx.strokeStyle="#fff0a8";ctx.lineWidth=1;ctx.strokeRect(cx-4,s.y+19,8,9);ctx.fillStyle="#1c1010";ctx.fillRect(cx-1,s.y+22,2,4);
-    if(c.active){ctx.globalAlpha=.32+pulse*.28;ctx.strokeStyle=col;ctx.lineWidth=1;ctx.strokeRect(s.x+2,s.y+14,C.tile-4,21);for(let n=0;n<4;n++){const a=now/500+n*Math.PI/2;ctx.fillStyle=n%2?col:P.gold;ctx.fillRect(cx+Math.cos(a)*18-1,s.y+22+Math.sin(a)*9-1,3,3)}}
-    if(anim>0){ctx.globalAlpha=1-anim*.35;ctx.fillStyle=col;for(let n=0;n<12;n++){const a=n*1.7+now/180,r=6+anim*(10+n%4*3);ctx.fillRect(cx+Math.cos(a)*r,s.y+9+Math.sin(a)*r*.55,2+n%2,2+n%2)}}
-    ctx.restore();if(md(c,focus)<=2)label(c.active?(c.locked?"LOCKED DUNGEON CHEST":`${rar||"COMMON"} CHEST`):"CHEST OPENED",{x:s.x,y:s.y-1},c.locked?P.gold:col)
+    if(pixelSheet?.complete&&pixelSheet.naturalWidth>=160){
+      const rare=/ZZAP|GOLD|SIZZLER/i.test(String(rar||"")),row=c.locked?2:rare?1:0,column=c.openedAt?Math.min(4,2+Math.floor(anim*3)):(Math.sin(now/260+c.x*2+c.y)>.72?1:0);
+      ctx.save();ctx.imageSmoothingEnabled=false;ctx.fillStyle="rgba(0,0,0,.48)";ctx.beginPath();ctx.ellipse(cx,s.y+C.tile-2,14,4,0,0,Math.PI*2);ctx.fill();ctx.shadowColor=c.locked?P.gold:col;ctx.shadowBlur=c.active?8+pulse*7:10;ctx.drawImage(pixelSheet,column*32,row*32,32,32,Math.round(s.x),Math.round(s.y),C.tile,C.tile);
+      if(c.active){ctx.globalAlpha=.34+pulse*.3;ctx.strokeStyle=c.locked?P.gold:col;ctx.strokeRect(s.x+2,s.y+2,C.tile-4,C.tile-4)}
+      if(anim>0){ctx.globalAlpha=1-anim*.25;ctx.fillStyle=c.locked?P.gold:col;for(let n=0;n<8;n++){const a=n*1.7+now/180,r=5+anim*(8+n%3*3);ctx.fillRect(cx+Math.cos(a)*r,s.y+10+Math.sin(a)*r*.5,2,2)}}
+      ctx.restore();if(md(c,focus)<=2)label(c.active?(c.locked?"LOCKED DUNGEON CHEST":`${rar||"COMMON"} CHEST`):"CHEST OPENED",{x:s.x,y:s.y-1},c.locked?P.gold:col);continue
+    }
+    // The authored chest sheet is authoritative. While it is still decoding,
+    // show only a light marker rather than dropping back to the older wooden
+    // chest drawing that visually replaced the intended asset.
+    ctx.save();ctx.translate(cx,s.y+C.tile/2);ctx.globalAlpha=pixelSheet?.complete?.9:.38+.16*pulse;ctx.strokeStyle=pixelSheet?.complete?P.red:(c.locked?P.gold:col);ctx.lineWidth=2;ctx.shadowColor=c.locked?P.gold:col;ctx.shadowBlur=10;ctx.strokeRect(-11,-8,22,16);ctx.beginPath();ctx.moveTo(-8,-8);ctx.quadraticCurveTo(0,-16,8,-8);ctx.stroke();ctx.fillStyle=c.locked?P.gold:col;ctx.fillRect(-2,-1,4,6);ctx.restore();
+    if(md(c,focus)<=2)label(pixelSheet?.complete?"CHEST ART UNAVAILABLE":"CHEST",{x:s.x,y:s.y-1},pixelSheet?.complete?P.red:(c.locked?P.gold:col))
   }
 }
 function label(text,s,col=P.white){ctx.save();ctx.font='bold 14px Consolas, "Courier New"';const w=Math.min(260,ctx.measureText(text).width+16);ctx.fillStyle="rgba(5,3,8,.94)";ctx.fillRect(s.x+C.tile/2-w/2,s.y-21,w,20);ctx.fillStyle=col;ctx.textAlign="center";ctx.fillText(text,s.x+C.tile/2,s.y-6);ctx.restore()}
