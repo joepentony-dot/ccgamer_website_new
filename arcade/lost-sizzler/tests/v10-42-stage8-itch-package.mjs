@@ -37,6 +37,7 @@ try{
   assert.equal(manifest.releaseVersion,version.releaseVersion);
   assert.equal(manifest.build,version.build);
   assert.equal(manifest.cacheToken,version.cacheToken);
+  assert.equal(manifest.canonicalGameUrl,"https://www.cheekycommodoregamer.co.uk/arcade/c64-dungeon-carnage/");
   assert.deepEqual(manifest.localModes,["Solo","Tutorial"]);
   assert.deepEqual(manifest.websiteAccountFeatures,[]);
   assert.ok(manifest.fileCount>100,"itch package should contain the complete current runtime, not a miniature shell");
