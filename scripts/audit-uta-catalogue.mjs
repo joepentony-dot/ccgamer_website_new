@@ -119,25 +119,30 @@ async function fetchText(url) {
 }
 
 function releaseDirectoriesInIndex(html) {
-  const directories = [];
+  const directories = new Set();
   const hrefPattern = /href=(["'])(.*?)\1/gi;
   let match;
 
   while ((match = hrefPattern.exec(String(html || "")))) {
-    const href = String(match[2] || "");
+    const href = String(match[2] || "")
+      .replace(/&amp;/gi, "&")
+      .replace(/&quot;/gi, '"')
+      .replace(/&#39;|&apos;/gi, "'")
+      .replace(/&lt;/gi, "<")
+      .replace(/&gt;/gi, ">");
     if (!href || href === "../" || href.startsWith("?") || href.startsWith("#")) continue;
 
     try {
       const absolute = new URL(href, UTA_INDEX_URL);
       const segment = absolute.pathname.split("/").filter(Boolean).pop() || "";
       const decoded = decodeURIComponent(segment);
-      if (/_\[\d+\]$/i.test(decoded)) directories.push(decoded);
+      if (/_\[\d+\]$/i.test(decoded)) directories.add(decoded);
     } catch (_error) {
       // Malformed non-release links are irrelevant to the archive count.
     }
   }
 
-  return directories;
+  return [...directories].sort((a, b) => a.localeCompare(b));
 }
 
 function markdownTable(headers, rows) {
