@@ -6,18 +6,16 @@ const holdSrc=read("js/v10-42-attack-hold-liveness.js");
 const r20Src=read("js/v10-42-r20-live-regression-stability.js");
 const inventorySrc=read("js/v10-42-r47-inventory-fire-recovery.js");
 
-assert.match(holdSrc,/pressVerifications:0/);
-assert.match(holdSrc,/pressRecoveries:0/);
-assert.match(holdSrc,/function attackSnapshot\(\)/);
-assert.match(holdSrc,/const shotObserved=\(before,after\)=>after\.mana<before\.mana\|\|after\.shots>before\.shots/);
-assert.match(holdSrc,/function verifyFreshPress\(code,before\)/);
-assert.doesNotMatch(holdSrc,/if\(!held\.has\(code\)\|\|/,"keyup must not cancel verification of a fresh tap");
-assert.doesNotMatch(holdSrc,/shotObserved[^\n]*(?:fire|buffer)/,"queued/cooldown state must not count as a completed shot");
-assert.match(holdSrc,/const repairBefore=attackSnapshot\(\)/);
-assert.match(holdSrc,/r20\.attackNow\(code\)/);
-assert.match(holdSrc,/const repaired=shotObserved\(repairBefore,attackSnapshot\(\)\)/);
+assert.match(holdSrc,/const HOLD_ARM_MS=180/,"held FIRE must have a deliberate hold threshold");
+assert.match(holdSrc,/const holdTimers=new Map\(\)/);
+assert.match(holdSrc,/const tutorialActive=\(\)=>document\.body\?\.dataset\?\.tutorialActive==="true"/);
+assert.match(holdSrc,/function armHeldAttack\(code\)/);
+assert.match(holdSrc,/if\(tutorialActive\(\)\)return false/,"Tutorial must never arm held FIRE");
 assert.match(holdSrc,/const fresh=!event\.repeat&&!held\.has\(event\.code\)/);
-assert.match(holdSrc,/if\(fresh\)verifyFreshPress\(event\.code,before\)/);
+assert.match(holdSrc,/if\(tutorialActive\(\)\)\{[\s\S]*input\?\.delete\?\.\("Space"\)[\s\S]*return;/,"Tutorial keyboard FIRE must remain a single action");
+assert.match(holdSrc,/held\.add\(event\.code\);[\s\S]*armHeldAttack\(event\.code\)/,"normal play may arm deliberate hold-to-fire");
+assert.match(holdSrc,/disarmHold\(event\.code\);[\s\S]*held\.delete\(event\.code\)/,"keyup must cancel a pending held-fire arm");
+assert.doesNotMatch(holdSrc,/MAX_ATTEMPTS|verifyFreshPress|r20\.attackNow\(code\)/,"the hold owner must not retry a single press into multiple direct attacks");
 assert.match(holdSrc,/const ATTACK_KEYS=new Set\(\["Space","Numpad0"\]\)/,"only Space and Numpad0 may be attack keys");
 assert.doesNotMatch(holdSrc,/ATTACK_KEYS=new Set\([^\n]*"KeyF"/,"F must remain reserved for fullscreen and must not become an attack key");
 
