@@ -1,3 +1,21 @@
+## Queued site-wide uploadDate timezone remediation — 2026-09-23
+
+Google Search Console still reports: **Datetime property `uploadDate` is missing a time zone**. The issue is non-critical for validity but can reduce eligibility for richer presentation, so the remediation target is full compliance across every public VideoObject rather than silencing one example page.
+
+Current repository protection is only partial: `scripts/validate-video-seo.js` already rejects canonical game-page VideoObject dates unless they contain `Z` or an explicit UTC offset. The remaining work therefore has to audit every video-emitting route and every publishing path, including generated editorial/video collections.
+
+Implementation requirements:
+1. Inventory every generator/template/runtime that can emit `VideoObject`.
+2. Audit existing metadata and generated HTML for date-only or timezone-less `uploadDate` values.
+3. Require verified timezone-bearing ISO 8601 datetimes at the source/pipeline boundary for newly added videos.
+4. Never synthesize a VideoObject `uploadDate` from a game release year or other non-video date.
+5. Correct all affected existing game/video pages through the authoritative generator/workflow.
+6. Extend validation beyond canonical game pages to Retro Specials, Retro Events, Amiga Demo Music and any other public VideoObject route.
+7. Regenerate video sitemap/generated SEO output and run a full-site structured-data audit.
+8. Acceptance gate: zero public supported VideoObjects with missing/invalid timezone information, while pages without verified video upload metadata must omit VideoObject rather than invent a date.
+
+This workstream is independent of the active Dungeon graphics/UI and UTA residual candidates.
+
 # SEO and generated output
 
 ## Scope
