@@ -411,7 +411,10 @@ function drawPlayerResources(p,s,col,kind){if(kind==="remote"||!p||!(p.ammoFlash
 function drawPlayerWeapon(p,cx,cy,d){
   const hasLiveGun=Boolean(p?.firearmUnlocked&&p?.weapon&&Number(p?.mana||0)>0);
   if(hasLiveGun){
-    const gx=d.x?d.x*10:0,gy=d.y?d.y*10:0;ctx.fillStyle=P.cyan;ctx.fillRect(cx+gx-3-(d.x<0?5:0),cy+gy-2-(d.y<0?5:0),d.x?8:5,d.y?8:5);ctx.fillStyle="#dcefff";ctx.fillRect(cx+gx+(d.x>0?4:d.x<0?-5:-1),cy+gy+(d.y>0?4:d.y<0?-5:-1),2,2);return;
+    const now=performance.now(),fireMs=Math.max(120,Number(p?._fireAnimMs||180)),fireAge=now-Number(p?._fireAnimAt||-Infinity),fireActive=fireAge>=0&&fireAge<fireMs,frame=fireActive?Math.min(4,Math.floor((fireAge/fireMs)*5)):4,recoil=fireActive?[0,3,2,1,0][frame]:0,gx=d.x?d.x*(10-recoil):0,gy=d.y?d.y*(10-recoil):0;
+    ctx.fillStyle=P.cyan;ctx.fillRect(cx+gx-3-(d.x<0?5:0),cy+gy-2-(d.y<0?5:0),d.x?8:5,d.y?8:5);ctx.fillStyle="#dcefff";ctx.fillRect(cx+gx+(d.x>0?4:d.x<0?-5:-1),cy+gy+(d.y>0?4:d.y<0?-5:-1),2,2);
+    if(fireActive&&frame<=2){const mx=cx+(d.x?d.x*17:0),my=cy+(d.y?d.y*17:0);ctx.save();ctx.shadowColor=P.gold;ctx.shadowBlur=10;ctx.fillStyle=frame===0?"#fff7c4":P.gold;ctx.fillRect(mx-2,my-2,5,5);ctx.fillStyle=P.orange;ctx.fillRect(mx+(d.x*3)-1,my+(d.y*3)-1,3,3);ctx.restore()}
+    return;
   }
   const now=performance.now(),swingMs=Math.max(1,Number(p?._meleeSwingMs||260)),age=now-Number(p?._meleeSwingAt||-Infinity),active=age>=0&&age<swingMs,dir=active&&p?._meleeSwingDir?p._meleeSwingDir:d,base=Math.atan2(dir.y||0,dir.x||1),progress=active?Math.max(0,Math.min(1,age/swingMs)):1,eased=1-Math.pow(1-progress,3),swing=active?(-1.02+eased*1.92):-.08,angle=base+swing,bladeCol=p?._meleeSwingColour||p?.meleeWeapon?.colour||P.gold;
   const handX=cx+(dir.x||0)*6-(dir.y||0)*3,handY=cy+(dir.y||0)*6+(dir.x||0)*3;
@@ -425,18 +428,48 @@ function drawPlayerWeapon(p,cx,cy,d){
   const grad=ctx.createLinearGradient(3,-4,24,4);grad.addColorStop(0,"#7e8795");grad.addColorStop(.35,"#f7fbff");grad.addColorStop(.72,bladeCol);grad.addColorStop(1,"#c8d2dd");ctx.fillStyle=grad;ctx.beginPath();ctx.moveTo(3,-4);ctx.lineTo(21,-3);ctx.lineTo(27,0);ctx.lineTo(21,3);ctx.lineTo(3,4);ctx.closePath();ctx.fill();
   ctx.strokeStyle="#eff8ff";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(5,-2);ctx.lineTo(22,-1);ctx.stroke();ctx.fillStyle=bladeCol;ctx.globalAlpha=.75;ctx.fillRect(4,2,16,1);ctx.restore();
 }
+const PLAYER_WALK_RENDER_SEQUENCE=Object.freeze([
+  Object.freeze({column:1,x:-1,y:0,label:"left-plant"}),
+  Object.freeze({column:1,x:-2,y:-1,label:"left-rise"}),
+  Object.freeze({column:0,x:0,y:-2,label:"centre-cross-a"}),
+  Object.freeze({column:2,x:1,y:-1,label:"right-plant"}),
+  Object.freeze({column:2,x:2,y:0,label:"right-drive"}),
+  Object.freeze({column:0,x:0,y:-1,label:"centre-cross-b"}),
+  Object.freeze({column:1,x:-1,y:-2,label:"left-return"}),
+  Object.freeze({column:0,x:0,y:0,label:"settle"})
+]);
+const PLAYER_MELEE_RENDER_SEQUENCE=Object.freeze([
+  Object.freeze({column:0,x:0,y:0,label:"ready"}),
+  Object.freeze({column:3,x:-1,y:-1,label:"wind-up"}),
+  Object.freeze({column:3,x:-2,y:-2,label:"draw"}),
+  Object.freeze({column:4,x:1,y:-2,label:"cut-a"}),
+  Object.freeze({column:4,x:2,y:-1,label:"impact"}),
+  Object.freeze({column:4,x:1,y:0,label:"follow-through"}),
+  Object.freeze({column:3,x:0,y:-1,label:"recover-a"}),
+  Object.freeze({column:0,x:0,y:0,label:"recover-b"})
+]);
+function playerAnimationPose(p,moving,now=performance.now()){
+  const hurt=Number(p?.hitStunMs||0)>0;
+  if(hurt){const frame=Math.floor(Math.max(0,Number(p.hitStunMs||0))/45)%4;return{state:"hurt",frame,column:5,x:[-1,1,-1,0][frame],y:[0,-1,0,0][frame]}}
+  const swingMs=Math.max(1,Number(p?._meleeSwingMs||260)),swingAge=now-Number(p?._meleeSwingAt||-Infinity);
+  if(swingAge>=0&&swingAge<swingMs){const progress=Math.max(0,Math.min(.999999,swingAge/swingMs)),frame=Math.min(PLAYER_MELEE_RENDER_SEQUENCE.length-1,Math.floor(progress*PLAYER_MELEE_RENDER_SEQUENCE.length));return{state:"melee",frame,...PLAYER_MELEE_RENDER_SEQUENCE[frame]}}
+  const fireMs=Math.max(120,Number(p?._fireAnimMs||180)),fireAge=now-Number(p?._fireAnimAt||-Infinity);
+  if(fireAge>=0&&fireAge<fireMs){const progress=Math.max(0,Math.min(.999999,fireAge/fireMs)),frame=Math.min(4,Math.floor(progress*5)),d=p?.dir||{x:1,y:0},recoil=[0,2,2,1,0][frame];return{state:"fire",frame,column:0,x:-Number(d.x||0)*recoil,y:-Number(d.y||0)*recoil-(frame===1?1:0)}}
+  if(moving){const seed=String(p?.id||p?.name||"player").length%PLAYER_WALK_RENDER_SEQUENCE.length,frame=(Math.floor(now/76)+seed)%PLAYER_WALK_RENDER_SEQUENCE.length;return{state:"move",frame,...PLAYER_WALK_RENDER_SEQUENCE[frame]}}
+  const frame=Math.floor(now/220)%6;return{state:"idle",frame,column:0,x:0,y:[0,0,-1,0,0,0][frame]}
+}
 function drawPlayer(p,kind="p1"){
-  const s=ws(p.rx,p.ry),col=kind==="p2"?P.green:kind==="remote"?P.cyan:P.gold,cx=s.x+C.tile/2,moving=Math.abs((p.x??p.rx)-p.rx)+Math.abs((p.y??p.ry)-p.ry)>.025,phase=performance.now()/105+(String(p.id||kind).length%7),step=moving?Math.sin(phase)*3:0,bob=moving?-Math.abs(Math.sin(phase))*2:Math.sin(phase*.18)*.4,cy=s.y+C.tile/2+bob,d=p.dir||{x:1,y:0};ctx.save();ctx.imageSmoothingEnabled=false;
-  ctx.fillStyle="rgba(0,0,0,.45)";ctx.beginPath();ctx.ellipse(cx,s.y+C.tile-2,13,4,0,0,Math.PI*2);ctx.fill();ctx.shadowColor=col;ctx.shadowBlur=p.torchMs>0?13:6;
-  const sheet=lostSizzlerPixelAssets.explorer,now=performance.now(),swingMs=Math.max(1,Number(p?._meleeSwingMs||260)),swingAge=now-Number(p?._meleeSwingAt||-Infinity),swingActive=swingAge>=0&&swingAge<swingMs,hasGun=Boolean(p?.firearmUnlocked&&p?.weapon&&Number(p?.mana||0)>0),hurt=(p.hitStunMs||0)>0;
-  if(sheet?.complete&&sheet.naturalWidth>=192){const row=d.y>0?0:d.x>0?1:d.y<0?2:3,column=hurt?5:swingActive?(swingAge/swingMs<.42?3:4):moving?(Math.floor(now/145)%2?1:2):0;ctx.drawImage(sheet,column*32,row*32,32,32,Math.round(s.x),Math.round(s.y+bob),C.tile,C.tile);if(!hurt&&(!swingActive||hasGun))drawPlayerWeapon(p,cx,cy,d);}else{
-    // Fallback remains available while the sprite sheet decodes or if an old browser rejects it.
+  const now=performance.now(),s=ws(p.rx,p.ry),col=kind==="p2"?P.green:kind==="remote"?P.cyan:P.gold,moving=Math.abs((p.x??p.rx)-p.rx)+Math.abs((p.y??p.ry)-p.ry)>.025,pose=playerAnimationPose(p,moving,now),phase=now/105+(String(p.id||kind).length%7),step=moving?Math.sin(phase)*3:0,bob=Number(pose.y||0),cx=s.x+C.tile/2+Number(pose.x||0),cy=s.y+C.tile/2+bob,d=p.dir||{x:1,y:0};ctx.save();ctx.imageSmoothingEnabled=false;
+  ctx.fillStyle="rgba(0,0,0,.45)";ctx.beginPath();ctx.ellipse(s.x+C.tile/2,s.y+C.tile-2,13,4,0,0,Math.PI*2);ctx.fill();ctx.shadowColor=col;ctx.shadowBlur=p.torchMs>0?13:6;
+  const sheet=lostSizzlerPixelAssets.explorer,swingActive=pose.state==="melee",hasGun=Boolean(p?.firearmUnlocked&&p?.weapon&&Number(p?.mana||0)>0),hurt=pose.state==="hurt";
+  if(sheet?.complete&&sheet.naturalWidth>=192){const row=d.y>0?0:d.x>0?1:d.y<0?2:3,column=Math.max(0,Math.min(5,Number(pose.column)||0));ctx.drawImage(sheet,column*32,row*32,32,32,Math.round(s.x+Number(pose.x||0)),Math.round(s.y+bob),C.tile,C.tile);if(!hurt&&(!swingActive||hasGun))drawPlayerWeapon(p,cx,cy,d);}else{
+    // Fallback uses the same eight-stage movement/attack offsets as the sheet.
     px(cx,cy,-8,-15,16,3,"#21182a");px(cx,cy,-7,-12,14,7,"#c49372");px(cx,cy,-6,-13,12,3,"#392641");px(cx,cy,-5,-9,2,2,"#1a111b");px(cx,cy,3,-9,2,2,"#1a111b");
     px(cx,cy,-11,-6-step*.25,4,15,"#32233d");px(cx,cy,7,-6+step*.25,4,15,"#32233d");px(cx,cy,-9,-6,18,17,"#56366e");px(cx,cy,-8,-5,4,13,"#79509b");px(cx,cy,4,-5,4,13,"#79509b");
     px(cx,cy,-12,-4-step*.25,4,7,"#a5863d");px(cx,cy,8,-4+step*.25,4,7,"#a5863d");px(cx,cy,-8+step,10,6,7,"#25202b");px(cx,cy,2-step,10,6,7,"#25202b");px(cx,cy,-9+step,15,7,3,"#111015");px(cx,cy,2-step,15,7,3,"#111015");px(cx,cy,-5,-2,10,8,"#17101e");ctx.strokeStyle=col;ctx.lineWidth=1;ctx.strokeRect(cx-5,cy-2,10,8);ctx.fillStyle=col;ctx.font='bold 6px "Courier New"';ctx.textAlign="center";ctx.fillText("CCG",cx,cy+4);drawPlayerWeapon(p,cx,cy,d);
   }
   if(p.torchMs>0){const tx=cx-d.y*12-d.x*5,ty=cy+d.x*12-d.y*5;ctx.fillStyle="#76512a";ctx.fillRect(tx-1,ty-1,3,10);ctx.fillStyle=P.orange;ctx.fillRect(tx-4,ty-9,8,8);ctx.fillStyle=P.gold;ctx.fillRect(tx-2,ty-11,4,8)}
-  if((p.hitStunMs||0)>0){ctx.fillStyle=P.cyan;ctx.fillRect(cx-12,cy-19,4,3);ctx.fillRect(cx+8,cy-18,4,3)}ctx.restore();if(kind==="remote")label(p.name,{x:s.x,y:s.y-2},col);drawTransientHealth(p,s,col);drawPlayerResources(p,s,col,kind)
+  if(hurt){ctx.fillStyle=P.cyan;ctx.fillRect(cx-12,cy-19,4,3);ctx.fillRect(cx+8,cy-18,4,3)}ctx.restore();if(kind==="remote")label(p.name,{x:s.x,y:s.y-2},col);drawTransientHealth(p,s,col);drawPlayerResources(p,s,col,kind)
 }
 function drawWallLights(){for(const l of world.wallLights||[]){if(!visibleTo(focus,l.x,l.y)&&md(focus,l)>12)continue;const s=ws(l.x,l.y),now=performance.now(),phase=now/70+l.x*2.7+l.y,f=4+Math.sin(phase)*2,cx=s.x+C.tile/2;ctx.save();ctx.imageSmoothingEnabled=false;ctx.fillStyle="#241712";ctx.fillRect(cx-7,s.y+13,14,4);ctx.fillRect(cx-3,s.y+10,6,17);ctx.fillStyle="#8b6031";ctx.fillRect(cx-5,s.y+14,10,2);ctx.fillRect(cx-2,s.y+11,4,14);ctx.fillStyle="#d2a35a";ctx.fillRect(cx-1,s.y+12,2,10);ctx.shadowColor=P.orange;ctx.shadowBlur=22;ctx.fillStyle="#b42e1f";ctx.beginPath();ctx.moveTo(cx,s.y+12);ctx.quadraticCurveTo(cx-f-2,s.y+2,cx+Math.sin(phase*.7)*3,s.y-9);ctx.quadraticCurveTo(cx+f+2,s.y+2,cx,s.y+12);ctx.fill();ctx.fillStyle=P.orange;ctx.beginPath();ctx.moveTo(cx,s.y+10);ctx.quadraticCurveTo(cx-f,s.y+1,cx-Math.sin(phase*.8)*2,s.y-5);ctx.quadraticCurveTo(cx+f,s.y+2,cx,s.y+10);ctx.fill();ctx.fillStyle=P.gold;ctx.beginPath();ctx.moveTo(cx,s.y+8);ctx.quadraticCurveTo(cx-3,s.y+1,cx,s.y-2);ctx.quadraticCurveTo(cx+3,s.y+1,cx,s.y+8);ctx.fill();ctx.fillStyle="#fff3bd";ctx.fillRect(cx-1,s.y+1,2,5);for(let n=0;n<5;n++){const a=phase*.34+n*1.8,r=7+n*2;ctx.globalAlpha=.35+n*.1;ctx.fillStyle=n%2?P.gold:P.orange;ctx.fillRect(cx+Math.sin(a)*r,s.y-4-(n*5+now/55)%24,2,2)}ctx.restore()}}
 function drawFurniture(){
