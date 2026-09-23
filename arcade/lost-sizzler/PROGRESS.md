@@ -1,11 +1,15 @@
 ## R54 graphics/UI overhaul — 23 September 2026
 
-- **Active branch / PR:** `codex/dungeon-r54-graphics-ui-overhaul-20260923` / #2299, rebuilt from current `main` after qualified residual UTA PR #2298 merged as `fcdca219ca06f1e00c19114ac142e4cbb1f46214`.
-- First implementation batch: Bronze Key HUD readability, literal pickup feedback, Bronze-door chest key ownership, and established chest-sheet presentation.
-- Later R54 batches remain: upgraded item/pickup graphics, corridor presentation, character graphics for shops/NPCs, expanded renderer-owned player/enemy animation, lower-rail/black-rectangle presentation cleanup, obsolete ONLINE wording cleanup, and Rulebook synchronization throughout.
-- Preserve the merged R53 ATTACK/FIRE/trap/performance ownership. Do not add per-entity timers or a second render loop.
-- NPC dialogue rewriting and individual quest-content expansion remain the next phase after R54.
-- Exact-head qualification and explicit user merge authorisation remain mandatory.
+- **Active vehicle:** draft PR #2302 / `codex/dungeon-r54-graphics-ui-overhaul-20260923`. Original scoping PR #2299 closed when its branch briefly matched `main`; it was not merged. PR #2302 is the implementation candidate.
+- **Public candidate identity:** `V10.42 r54` / `20260923r54`.
+- Implemented R54 scope: dedicated readable Bronze Key HUD count; literal pickup naming/amounts; actual generated weapon names; no second Bronze Key charge for a reward chest behind a Bronze door; authored chest-sheet ownership; upgraded in-world pickup illustrations; five biome-specific corridor treatments; named merchant character sprites for Bex Harrow, Nix Calder and Orin Vale; expanded renderer-owned player movement/melee/firearm/hurt poses; expanded enemy idle/movement/attack/hit/defeat presentation; and lower message-rail/major-notice repair so important text remains outside the dungeon canvas and readable on compact layouts.
+- Generic gameplay pickups no longer inherit unrelated C64 collectible titles. Real `kind:"game"` collectibles retain their C64 titles.
+- Animation remains state/time derived inside the existing render pass. No per-enemy animation timer or second render loop has been introduced; defeat snapshots are bounded.
+- The public page no longer contains the obsolete `ONLINE room code remains your rejoin key` wording. Retired online compatibility internals remain isolated behind the zero-server release policy rather than being deleted blindly.
+- The R54 static contract covers pickup naming/art, Bronze-door chest semantics, corridor presentation, merchant characters, player/enemy animation, message-rail behavior and retired-online public wording.
+- Qualification has already caught and reconciled two stale tests whose old assertions described the replaced pickup-name and two-frame player animation implementations; exact-head CI must still complete on the final current-main candidate.
+- Preserve merged R53 ATTACK/FIRE/trap/performance ownership. NPC dialogue rewriting and individual quest-content expansion remain the next phase after R54.
+- **Merge gate:** rebuild/reconcile onto latest `main`, complete the full exact-head matrix, then merge only with explicit user authorisation.
 
 ## LIVE INCIDENT — global active floor-trap cycle reliability — 23 September 2026
 
