@@ -88,13 +88,14 @@ try{
   await page.locator("#solo-btn").click();
   await page.waitForFunction(()=>document.body.dataset.runActive==="true");
   await page.evaluate(()=>document.getElementById("pickup-toast")?.classList.remove("show"));
-  await page.waitForFunction(()=>getComputedStyle(document.querySelector(".game-message-rail")).display==="none",null,{timeout:3000});
+  await page.waitForFunction(()=>getComputedStyle(document.querySelector(".game-message-rail")).display!=="none",null,{timeout:3000});
   const baseGeometry=await page.evaluate(()=>{
     const wrap=document.querySelector(".canvas-wrap"),canvas=document.getElementById("game"),rail=document.querySelector(".game-message-rail");
     const box=element=>{const rect=element.getBoundingClientRect();return{x:rect.x,y:rect.y,width:rect.width,height:rect.height,bottom:rect.bottom}};
-    return{canvas:box(wrap),backing:{width:canvas.width,height:canvas.height},railDisplay:getComputedStyle(rail).display}
+    return{canvas:box(wrap),rail:box(rail),backing:{width:canvas.width,height:canvas.height},railDisplay:getComputedStyle(rail).display}
   });
-  assert.equal(baseGeometry.railDisplay,"none","idle retained r29 notification rail collapses completely");
+  assert.notEqual(baseGeometry.railDisplay,"none","R51 keeps a reserved lower notification rail during active play");
+  assert.ok(baseGeometry.rail.y>=baseGeometry.canvas.bottom-2,`R51 notification rail stays below the canvas: ${JSON.stringify(baseGeometry)}`);
 
   await page.evaluate(()=>showToast("STABILITY TEST","This banner must overlay without resizing the playfield.","cyan",9000));
   await page.locator("#pickup-toast.show").waitFor();
@@ -105,12 +106,12 @@ try{
     return{toast:box(toast),canvas:box(wrap),backing:{width:canvas.width,height:canvas.height},railDisplay:getComputedStyle(rail).display,toastPosition:getComputedStyle(toast).position}
   });
   assert.ok(toastGeometry.toast&&toastGeometry.canvas,"toast and canvas have measurable boxes");
-  assert.equal(toastGeometry.railDisplay,"contents","visible retained r29 notification rail uses contents-only geometry");
-  assert.equal(toastGeometry.toastPosition,"absolute","retained r29 gameplay toast overlays instead of resizing the canvas row");
+  assert.notEqual(toastGeometry.railDisplay,"none","R51 lower notification rail remains reserved while a toast is visible");
+  assert.equal(toastGeometry.toastPosition,"static","R51 routine gameplay toast is laid out inside the reserved lower rail");
   assert.equal(toastGeometry.backing.width,baseGeometry.backing.width,"toast appearance must not change canvas backing width");
   assert.equal(toastGeometry.backing.height,baseGeometry.backing.height,"toast appearance must not change canvas backing height");
   assert.ok(Math.abs(toastGeometry.canvas.width-baseGeometry.canvas.width)<1&&Math.abs(toastGeometry.canvas.height-baseGeometry.canvas.height)<1,`toast appearance must not resize the canvas host: ${JSON.stringify({before:baseGeometry,after:toastGeometry})}`);
-  assert.ok(toastGeometry.toast.y>=toastGeometry.canvas.y-2&&toastGeometry.toast.bottom<=toastGeometry.canvas.bottom+2,`toast overlay must stay inside the canvas host bounds: ${JSON.stringify(toastGeometry)}`);
+  assert.ok(toastGeometry.toast.y>=toastGeometry.canvas.bottom-2,`routine toast must stay below the dungeon canvas instead of covering it: ${JSON.stringify(toastGeometry)}`);
   assert.equal(await page.locator("#ccg-important-notices").count(),0,"legacy stacked notice container is absent");
 
   await page.evaluate(()=>{for(let i=0;i<40;i++)showToast(`NOTICE ${i}`,"Burst replacement test.","gold",9000)});
@@ -152,7 +153,7 @@ try{
 
   assert.equal(page.isClosed(),false,"page remains alive after popup and rapid resize stress");
   assert.deepEqual(pageErrors,[],`no uncaught page errors during stability stress: ${pageErrors.join("\n")}`);
-  console.log("V10.9 popup non-overlap and browser stability checks passed");
+  console.log("V10.9 reserved lower-rail notification and browser stability checks passed");
 }finally{
   await page.close().catch(()=>{});
   await context.close();
