@@ -310,7 +310,9 @@ test("curated UTA overrides resolve the final independently verified catalogue g
     "batman-the-movie": [["2245", "publisher"], ["2246", "publisher"], ["1447", "re-release"]],
     "nightbreed-the-action-game": [["1544", "re-release"]],
     "spartacus-the-swordslayer": [["2830", "publisher"]],
-    "v-the-computer-game": [["2651", "publisher"]]
+    "v-the-computer-game": [["2651", "publisher"]],
+    "aussie-games": [["20824", "publisher"]],
+    "kane-kane-2": [["7916", "publisher"]]
   };
 
   for (const [slug, rows] of Object.entries(expected)) {
