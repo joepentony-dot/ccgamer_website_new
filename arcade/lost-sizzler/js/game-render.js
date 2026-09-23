@@ -277,9 +277,26 @@ function drawEnemyTorch(x,y,phase){
 function drawEnemyArmour(e,pal){
   if(!(e.armor>0||e.guardian||e.champion||e.exitWarden))return;ctx.save();ctx.globalAlpha=.92;px(0,0,-13,-5,6,7,pal.light);px(0,0,7,-5,6,7,pal.light);px(0,0,-10,-3,3,11,pal.dark);px(0,0,7,-3,3,11,pal.dark);ctx.fillStyle=pal.accent;ctx.fillRect(-2,-1,4,4);ctx.restore()
 }
+const ENEMY_WALK_RENDER_FRAMES=Object.freeze([-3,-2,0,2,3,2,0,-2]);
+const ENEMY_ATTACK_RENDER_FRAMES=Object.freeze([
+  Object.freeze({lunge:0,bob:0,lean:-.05,scaleX:1,scaleY:1}),
+  Object.freeze({lunge:-1,bob:-1,lean:-.1,scaleX:.98,scaleY:1.02}),
+  Object.freeze({lunge:2,bob:-2,lean:.08,scaleX:1.04,scaleY:.98}),
+  Object.freeze({lunge:4,bob:-1,lean:.13,scaleX:1.07,scaleY:.96}),
+  Object.freeze({lunge:2,bob:0,lean:.06,scaleX:1.03,scaleY:.98}),
+  Object.freeze({lunge:0,bob:0,lean:0,scaleX:1,scaleY:1})
+]);
+function enemyAnimationPose(e,time=performance.now()){
+  const seed=enemySpriteSeed(e),walking=e.aiState==="chase"||e.aiState==="search",hit=Number(e.hitStunMs||0)>0;
+  if(hit){const frame=Math.floor(Math.max(0,Number(e.hitStunMs||0))/70)%4,jolt=[-2,2,-1,0][frame];return{state:"hit",frame,stride:0,bob:frame===1?-1:0,lunge:jolt,lean:jolt*.025,scaleX:1.04,scaleY:.96}}
+  const attackMs=Math.max(180,Number(e._attackAnimMs||360)),attackAge=time-Number(e._attackAnimAt||-Infinity);
+  if(attackAge>=0&&attackAge<attackMs){const progress=Math.max(0,Math.min(.999999,attackAge/attackMs)),frame=Math.min(ENEMY_ATTACK_RENDER_FRAMES.length-1,Math.floor(progress*ENEMY_ATTACK_RENDER_FRAMES.length)),pose=ENEMY_ATTACK_RENDER_FRAMES[frame];return{state:String(e._attackAnimKind||"attack"),frame,stride:frame<3?-1:frame===3?2:0,...pose}}
+  if(walking){const frame=(Math.floor(time/78)+(seed%ENEMY_WALK_RENDER_FRAMES.length))%ENEMY_WALK_RENDER_FRAMES.length,stride=ENEMY_WALK_RENDER_FRAMES[frame];return{state:"move",frame,stride,bob:[0,-1,-2,-1,0,-1,-2,-1][frame],lunge:0,lean:stride*.008,scaleX:1,scaleY:1}}
+  const frame=(Math.floor(time/180)+(seed%6))%6;return{state:"idle",frame,stride:0,bob:[0,0,-1,0,0,1][frame],lunge:0,lean:[0,-.01,0,.01,0,0][frame],scaleX:1,scaleY:1}
+}
 function drawPixelEnemySprite(e,cx,cy){
-  const f=e.follower,k=f?.kind||e.kind||"guardian",isDeath=Boolean(e.deathStalker&&e.voidStalker),elite=Boolean(f||e.champion||e.guardian||e.exitWarden),seed=enemySpriteSeed(e),phase=performance.now()/210+(seed%37),walking=e.aiState==="chase"||e.aiState==="search",stride=walking?Math.sin(phase*1.35):Math.sin(phase*.38)*.25,bob=walking?Math.round(Math.abs(stride)*-2):Math.round(Math.sin(phase*.45)),facing=(e.facing?.x||(seed%2?1:-1))<0?-1:1,pal=enemyPalette(k,e);
-  ctx.save();ctx.imageSmoothingEnabled=false;ctx.translate(Math.round(cx),Math.round(cy+bob));ctx.scale(facing,1);ctx.shadowColor=isDeath?"#ff183f":elite?pal.accent:pal.main;ctx.shadowBlur=isDeath?22:elite?13:7;
+  const f=e.follower,k=f?.kind||e.kind||"guardian",isDeath=Boolean(e.deathStalker&&e.voidStalker),elite=Boolean(f||e.champion||e.guardian||e.exitWarden),seed=enemySpriteSeed(e),now=performance.now(),phase=now/210+(seed%37),walking=e.aiState==="chase"||e.aiState==="search",anim=enemyAnimationPose(e,now),stride=anim.stride,bob=anim.bob,facing=(e.facing?.x||(seed%2?1:-1))<0?-1:1,pal=enemyPalette(k,e);
+  ctx.save();ctx.imageSmoothingEnabled=false;ctx.translate(Math.round(cx+facing*(anim.lunge||0)),Math.round(cy+bob));ctx.scale(facing*(anim.scaleX||1),anim.scaleY||1);ctx.rotate((anim.lean||0)*facing);ctx.shadowColor=isDeath?"#ff183f":elite?pal.accent:pal.main;ctx.shadowBlur=isDeath?22:elite?13:7;
   if(elite){ctx.save();ctx.globalAlpha=.42+.18*Math.sin(phase);ctx.strokeStyle=pal.accent;ctx.lineWidth=1.5;ctx.rotate(phase*.08);ctx.strokeRect(-18,-18,36,36);ctx.rotate(Math.PI/4);ctx.strokeRect(-13,-13,26,26);ctx.restore()}
   if(isDeath){
     // Death Stalker: layered void cloak, crown spikes, tendrils and four burning eyes.
