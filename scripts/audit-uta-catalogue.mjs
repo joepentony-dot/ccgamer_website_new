@@ -247,6 +247,7 @@ async function main() {
   const fuzzyTitleOnlyCandidates = [];
   const noTitleCandidate = [];
   const broadTitleDiagnostics = [];
+  const lowSimilarityPublisherDiagnostics = [];
 
   for (const game of c64Games) {
     const variants = gameTitleSet(game);
@@ -393,6 +394,38 @@ async function main() {
       continue;
     }
 
+    const lowPublisherCandidates = releases
+      .map((release) => ({
+        release,
+        relation: candidateRole(game, release),
+        similarity: Math.max(
+          ...[game?.title, game?.sorttitle]
+            .filter(Boolean)
+            .map((title) => diceSimilarity(title, release.title))
+        )
+      }))
+      .filter(({ relation, similarity }) =>
+        relation.publisherMatched
+        && relation.yearCompatible
+        && similarity >= 0.25
+      )
+      .sort((a, b) =>
+        b.similarity - a.similarity
+        || Number(a.release.archiveId) - Number(b.release.archiveId)
+      )
+      .slice(0, 5);
+
+    if (lowPublisherCandidates.length) {
+      lowSimilarityPublisherDiagnostics.push({
+        slug: game.slug,
+        title: game.title,
+        year: game.year,
+        candidates: lowPublisherCandidates.map(({ release, relation, similarity }) =>
+          releaseSummary(release, { ...relation, similarity: Number(similarity.toFixed(3)) })
+        )
+      });
+    }
+
     const broadCandidates = releases
       .map((release) => ({
         release,
@@ -460,7 +493,8 @@ async function main() {
     fuzzyPublisherCandidateGames: fuzzyPublisherCandidates.length,
     fuzzyTitleOnlyCandidateGames: fuzzyTitleOnlyCandidates.length,
     noTitleCandidateGames: noTitleCandidate.length,
-    broadTitleDiagnosticGames: broadTitleDiagnostics.length
+    broadTitleDiagnosticGames: broadTitleDiagnostics.length,
+    lowSimilarityPublisherDiagnosticGames: lowSimilarityPublisherDiagnostics.length
   };
 
   const report = {
@@ -474,6 +508,7 @@ async function main() {
     fuzzyPublisherCandidates,
     fuzzyTitleOnlyCandidates,
     broadTitleDiagnostics,
+    lowSimilarityPublisherDiagnostics,
     noTitleCandidate
   };
 
@@ -583,6 +618,22 @@ async function main() {
         row.year,
         row.candidates.map((candidate) =>
           `${candidate.archiveId} ${candidate.title} / ${candidate.publisher} ${candidate.yearLabel} (similarity=${candidate.similarity}, publisher=${candidate.publisherMatched})`
+        ).join("; ")
+      ])
+    ),
+    "",
+    "## Low-similarity publisher-backed diagnostics",
+    "",
+    "These are deliberately non-publishing diagnostics for otherwise unmatched games. They show live UTA entries from a known publisher/re-release label with compatible year evidence even when the title similarity is only 0.25 or better, exposing radical alternate-title cases without auto-publishing them.",
+    "",
+    markdownTable(
+      ["Slug", "Title", "Year", "Publisher-backed UTA candidates"],
+      lowSimilarityPublisherDiagnostics.map((row) => [
+        row.slug,
+        row.title,
+        row.year,
+        row.candidates.map((candidate) =>
+          `${candidate.archiveId} ${candidate.title} / ${candidate.publisher} ${candidate.yearLabel} (similarity=${candidate.similarity}, role=${candidate.role})`
         ).join("; ")
       ])
     ),
