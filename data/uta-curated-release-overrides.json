@@ -113,6 +113,32 @@
       ]
     },
     {
+      "gameSlug": "by-fair-means-or-foul",
+      "archiveIds": [
+        "2952"
+      ],
+      "titleAliases": [
+        "Pro Boxing Simulator"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/by-fair-means-or-foul",
+          "note": "Lemon64 documents the 1988 C64 game By Fair Means... or Foul! and links it to Pro Boxing Simulator."
+        },
+        {
+          "source": "The Codemasters Archive",
+          "url": "https://thecodemastersarchive.co.uk/games/pro-boxing-simulator/",
+          "note": "The Codemasters Archive states that By Fair Means... Or Foul was later re-released by Codemasters as Pro Boxing Simulator, including the Commodore 64 version."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Pro_Boxing_Simulator_(1990_Codemasters)_%5b2952%5d/",
+          "note": "UTA archive entry for the 1990 Codemasters cassette re-release under the Pro Boxing Simulator title."
+        }
+      ]
+    },
+    {
       "gameSlug": "chopper",
       "archiveIds": [
         "1036"
@@ -141,10 +167,12 @@
     {
       "gameSlug": "dragons-lair-2-escape-from-singes-castle",
       "archiveIds": [
-        "395"
+        "395",
+        "5078"
       ],
       "titleAliases": [
-        "Dragon's Lair Part II: Escape from Singe's Castle"
+        "Dragon's Lair Part II: Escape from Singe's Castle",
+        "Escape from Singe's Castle"
       ],
       "evidence": [
         {
@@ -156,6 +184,32 @@
           "source": "UTA",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Dragon's_Lair_Part_II-_Escape_from_Singe's_Castle_(1987_Software_Projects)_%5b395%5d/",
           "note": "UTA archive entry for the same Software Projects 1987 cassette using the Part II title form."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Escape_from_Singe's_Castle_(1987_Encore)_%5b5078%5d/",
+          "note": "UTA archive entry for the documented Encore 1987 cassette re-release under the shortened Escape from Singe's Castle title."
+        }
+      ]
+    },
+    {
+      "gameSlug": "give-my-regards-to-broad-street",
+      "archiveIds": [
+        "8446"
+      ],
+      "titleAliases": [
+        "Paul McCartney's Give My Regards to Broad Street"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/give-my-regards-to-broad-street",
+          "note": "Lemon64 lists Paul McCartney's Give My Regards to Broad Street as an alternate title and identifies the 1985 Mind Games European tape release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Paul_McCartney's_Give_My_Regards_to_Broad_Street_(1985_Mind_Games)_%5b8446%5d/",
+          "note": "UTA archive entry for the same 1985 Mind Games cassette under the Paul McCartney title form."
         }
       ]
     },
