@@ -23,9 +23,13 @@ assert.match(fix,/function activeRun\(\)[\s\S]*liveSession\(\)[\s\S]*document\.b
 assert.match(fix,/mobileFirePointers=new Set\(\)[\s\S]*#v104-touch-controls \[data-action="fire"\][\s\S]*queueMicrotask[\s\S]*attackNow\("Space"\)/,"a delegated mobile FIRE safety owner must recover a visible button whose original listener stops delivering attack intents");
 assert.match(fix,/pointerup",releaseMobileFire,true[\s\S]*pointercancel",releaseMobileFire,true/,"delegated mobile FIRE recovery must always release its canonical Space hold");
 assert.match(fix,/function recoverOrphanedGameplayMode\(\)[\s\S]*dossier[\s\S]*inventory[\s\S]*shop[\s\S]*mode="playing"/,"hidden transient panels must not leave gameplay stranded outside playing mode");
-assert.match(fix,/function captureR1FireOwner\(\)[\s\S]*__ccgV142R1===true[\s\S]*capturedR1FireOwner=owner/,"r20 must retain the verified r1 fire owner before legacy maintenance can replace the global reference");
-assert.match(fix,/function attackNow\(code\)[\s\S]*repairAttackBoundary\(\)[\s\S]*r1Owner\(player,direction\)[\s\S]*firePlayer\(player,direction\)[\s\S]*queueAttack\(player\)/,"an attack intent must prefer the captured r1 owner, then the current canonical owner, while retaining the canonical queue as fallback");
-assert.match(fix,/if\(fired\)[\s\S]*fireBuffer1=0[\s\S]*else[\s\S]*queueAttack\(player\)/,"a successful direct shot must clear the buffered fallback so one press cannot become two shots");
+assert.match(fix,/function captureR1FireOwner\(\)[\s\S]*__ccgV142R1===true[\s\S]*capturedR1FireOwner=owner/,"r20 may retain the verified r1 marker for diagnostics without bypassing the canonical attack chain");
+assert.match(fix,/function attackCompleted\(player,beforeMana,beforeBullets,beforeMelee,result\)[\s\S]*melee>beforeMelee/,"r20 must recognise a real melee swing as completed attack work");
+assert.match(fix,/function repairFiniteAttackBlock\(player\)[\s\S]*finiteCooldownRepairs[\s\S]*finiteStunRepairs/,"r20 must recover finite-but-unchanged attack blockers after bounded persistence");
+assert.match(fix,/function attackNow\(code\)[\s\S]*repairFiniteAttackBlock\(player\)[\s\S]*repairAttackBoundary\(\)[\s\S]*firePlayer\(player,direction\)[\s\S]*queueAttack\(player\)/,"an attack intent must use one authoritative top-level attack owner and retain the canonical queue only as fallback");
+assert.doesNotMatch(fix,/function attackNow\(code\)[\s\S]*deepestFireOwner\(/,"r20 attackNow must not bypass contextual melee, voice or achievement wrappers");
+assert.doesNotMatch(fix,/function attackNow\(code\)[\s\S]*input\?\.add\?\.\(code\)/,"r20 must not manufacture a physical held-key state");
+assert.match(fix,/if\(fired\)[\s\S]*fireBuffer1=0[\s\S]*else[\s\S]*queueAttack\(player\)/,"a successful direct attack must clear the buffered fallback so one press cannot become two attacks");
 assert.match(fix,/if\(spyActive\(\)\)return;/,"Spy Vs Spy must retain ownership of its own attack/fullscreen input instead of r20 intercepting dungeon attack keys");
 assert.match(fix,/attackNow\(event\.code\)[\s\S]*event\.stopImmediatePropagation\(\)/,"normal gameplay attack capture must stop older Space/fullscreen listeners from adding duplicate intents");
 assert.match(play,/p\.__ccgLastHurtAt=performance\.now\(\);p\.hitStunMs=/,"core damage handling must timestamp legitimate hit-stun ownership");
