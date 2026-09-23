@@ -1,3 +1,12 @@
+## V10.42 R53 global floor-trap activation investigation — 23 September 2026
+
+- **New current-build evidence:** owner playtesting on R52 shows a visibly `SHOCK TRAP — ACTIVE` under the player without the required 1 HP loss. Treat this as a global floor-trap defect rather than a shock-only exception.
+- **Root boundary:** fire, spike and shock already share `SYS.trapActive()` for rendering and damage eligibility, but stationary occupied contacts still depended on R19's independent 80 ms maintenance timer. That made the repair observational rather than simulation-owned and left real-play timing vulnerable.
+- **R53 correction:** R19 now exposes one ordered `updateTrapContacts()` boundary that rearms safe/inactive contacts before damaging occupied active contacts. The authoritative gameplay `update(dt)` calls that boundary every live simulation frame; the existing 80 ms monitor remains only as a fallback. The established one-health-per-active-cycle latch, armour preservation and canonical death/damage path are unchanged.
+- **Global regression:** the retained Chromium natural-trap contract now iterates every generated floor trap, requires fire/spike/shock coverage, proves one HP on the first active transition, no repeated damage during the same active phase, and exactly one further HP after a safe-cycle rearm. A new Node contract also prevents any trap kind from acquiring a separate damage rule.
+- **Candidate:** `codex/dungeon-r53-global-trap-activation-20260923`, based on main `442435e4e1725038beff1d6d9420ae52280350b2`. Release/cache identity advances to `V10.42 r53` / `20260923r53`.
+- **Status:** IMPLEMENTED / EXACT-HEAD QUALIFICATION REQUIRED. Do not merge until the current candidate head passes the full required matrix and the user explicitly authorises merge.
+
 ## Dungeon Carnage R51 live incident — FIRE / traps / renderer — 23 September 2026
 
 - Branch `codex/dungeon-r51-fire-wall-incident-20260923` was created from current `main` `88df63430f275a37553a821c2511b1296dd13f8e` after a new owner playtest report.
