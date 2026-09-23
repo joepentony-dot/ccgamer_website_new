@@ -195,11 +195,25 @@ jobs:
             passed=false
             for attempt in $(seq 1 "$attempts"); do
               echo "::group::$test_file (attempt $attempt/$attempts)"
-              echo "=== $test_file attempt $attempt/$attempts ===" | tee -a "$log"
-              if node "$test_file" 2>&1 | tee -a "$log"; then
+              started_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+              started_epoch="$(date +%s)"
+              echo "=== $test_file attempt $attempt/$attempts started $started_at ===" | tee -a "$log"
+              set +e
+              timeout --signal=TERM --kill-after=30s 12m node "$test_file" 2>&1 | tee -a "$log"
+              test_status=${PIPESTATUS[0]}
+              set -e
+              elapsed="$(( $(date +%s) - started_epoch ))"
+              if [ "$test_status" -eq 0 ]; then
+                echo "PASS $test_file in ${elapsed}s" | tee -a "$log"
                 passed=true
                 echo "::endgroup::"
                 break
+              fi
+              if [ "$test_status" -eq 124 ] || [ "$test_status" -eq 137 ]; then
+                echo "::error title=Lost Sizzler browser contract timeout::$test_file exceeded the 12-minute per-contract limit in Chromium shard $SHARD"
+                echo "TIMEOUT $test_file after ${elapsed}s (exit $test_status)" | tee -a "$log"
+              else
+                echo "FAIL $test_file after ${elapsed}s (exit $test_status)" | tee -a "$log"
               fi
               echo "::endgroup::"
               if [ "$attempt" -lt "$attempts" ]; then

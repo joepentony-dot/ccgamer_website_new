@@ -31,7 +31,11 @@ const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usag
 try{
   const context=await browser.newContext({viewport:{width:1280,height:800}});
   await context.route("https://*.supabase.co/**",route=>route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:"{}"}));
-  await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
+  await context.addInitScript(()=>{
+    try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}
+    Object.defineProperty(navigator,"maxTouchPoints",{configurable:true,value:1});
+    HTMLElement.prototype.requestFullscreen=function(){window.__ccgFullscreenRequests=(window.__ccgFullscreenRequests||0)+1;return Promise.resolve()};
+  });
   const page=await context.newPage();
   page.setDefaultTimeout(60000);
   await page.goto(`${origin}/arcade/lost-sizzler/?r51-fire-lockout=1`,{waitUntil:"domcontentloaded"});
@@ -43,6 +47,7 @@ try{
 
   await page.click("#solo-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(p1)&&Boolean(host),null,{timeout:20000});
+  assert.ok(await page.evaluate(()=>Number(window.__ccgFullscreenRequests||0))>=1,"Solo launch must request fullscreen from the click gesture");
 
   const before=await page.evaluate(()=>{
     p1.firearmUnlocked=true;
@@ -102,7 +107,62 @@ try{
   await page.waitForFunction(mana=>Number(p1?.mana||0)<mana,normalBefore,{timeout:3000});
   assert.equal(await page.evaluate(()=>input.has("Space")),false,"normal follow-up tap must release Space");
 
-  console.log("Dungeon Carnage R51 quick-tap buffer-without-shot FIRE recovery browser regression passed.");
+  await page.evaluate(async()=>{await quitToMenu()});
+  await page.waitForFunction(()=>mode==="menu"&&document.body.dataset.runActive!=="true",null,{timeout:10000});
+  const beforeTutorialFullscreen=await page.evaluate(()=>Number(window.__ccgFullscreenRequests||0));
+  await page.click("#tutorial-zone-btn");
+  await page.waitForFunction(()=>document.body.dataset.tutorialActive==="true"&&mode==="playing"&&Boolean(p1),null,{timeout:20000});
+  assert.ok(await page.evaluate(before=>Number(window.__ccgFullscreenRequests||0)>before,beforeTutorialFullscreen),"Tutorial launch must request fullscreen from the click gesture");
+
+  const tutorialFire=await page.evaluate(async()=>{
+    p1.firearmUnlocked=true;
+    p1.weapon=p1.weapon||baseWeapon();
+    p1.maxMana=Math.max(120,Number(p1.maxMana)||0);
+    p1.mana=117;
+    bullets.length=0;
+    fire1=0;
+    fireBuffer1=0;
+    projectileCD=0;
+    input.clear();
+    const mana=Number(p1.mana);
+    let launched=0;
+    const nativePush=bullets.push;
+    bullets.push=function(...shots){
+      launched+=shots.filter(shot=>shot&&shot.owner===p1.id).length;
+      return nativePush.apply(this,shots);
+    };
+    // This is the mobile/tutorial FIRE owner. Wait beyond a normal held
+    // repeat interval: one clean press may shoot once but must not latch.
+    // Count the projectile at spawn time because a valid Tutorial shot can
+    // immediately hit nearby room geometry and disappear before sampling.
+    const fire=document.querySelector('#v104-touch-controls [data-action="fire"]');
+    try{
+      fire.dispatchEvent(new PointerEvent("pointerdown",{bubbles:true,pointerId:71}));
+      await new Promise(resolve=>setTimeout(resolve,450));
+      fire.dispatchEvent(new PointerEvent("pointerup",{bubbles:true,pointerId:71}));
+    }finally{
+      bullets.push=nativePush;
+    }
+    return{mana,afterMana:Number(p1.mana),held:input.has("Space"),launched};
+  });
+  assert.equal(tutorialFire.mana-tutorialFire.afterMana,1,"one Tutorial FIRE press must produce exactly one ammo-consuming action");
+  assert.equal(tutorialFire.held,false,"Tutorial FIRE must not leave the held/repeat input latched");
+  assert.equal(tutorialFire.launched,1,"one Tutorial FIRE press must create exactly one projectile");
+
+  await page.evaluate(()=>showToast("AMMO PICKUP","Reserve shots collected.","cyan",6000));
+  const rail=await page.evaluate(()=>{
+    const canvas=document.querySelector(".canvas-wrap")?.getBoundingClientRect();
+    const rail=document.querySelector(".game-message-rail")?.getBoundingClientRect();
+    const toast=document.getElementById("pickup-toast")?.getBoundingClientRect();
+    const style=getComputedStyle(document.getElementById("pickup-toast"));
+    return{canvas,rail,toast,position:style.position,pointerEvents:style.pointerEvents,railDisplay:getComputedStyle(document.querySelector(".game-message-rail")).display};
+  });
+  assert.equal(rail.position,"static","routine pickup must be static in the message rail");
+  assert.ok(rail.toast.top>=rail.canvas.bottom-1,"routine pickup rail must be beneath the dungeon canvas");
+  assert.ok(rail.toast.bottom<=rail.rail.bottom+1,`routine pickup must remain inside the lower rail: ${JSON.stringify(rail)}`);
+  assert.equal(rail.pointerEvents,"none","routine pickup must remain non-blocking");
+
+  console.log("Dungeon Carnage R51 fullscreen, lower-rail pickup, Tutorial single FIRE and normal FIRE regression passed in Chromium.");
   await context.close();
 }finally{
   await browser.close();

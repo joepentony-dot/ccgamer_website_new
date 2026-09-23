@@ -32,7 +32,8 @@ assert.match(play,/p\.__ccgLastHurtAt=performance\.now\(\);p\.hitStunMs=/,"core 
 assert.match(fix,/staleAfter=Math\.max\(540,expected\*3\)[\s\S]*performance\.now\(\)-lastHurt>staleAfter[\s\S]*player\.hitStunMs=0/,"ordinary attack intent must clear a stale hit-stun after the real damage window has expired");
 assert.match(fix,/player\.controlLocked=false[\s\S]*player\.controlsLocked=false/,"ordinary attack intent must recover stale player control locks");
 assert.match(touch,/CCGLostSizzlerV142R20LiveRegressionStability\?\.attackNow\?\.\("Space"\)/,"mobile FIRE must use the same strong attack recovery owner as keyboard attack");
-assert.match(touch,/if\(!handled&&typeof queueAttack === "function"\) queueAttack\(p1\)/,"mobile FIRE must retain the canonical queue as a fallback only when direct recovery cannot fire");
+assert.match(touch,/if\(!tutorialActive&&!handled&&typeof queueAttack === "function"\) queueAttack\(p1\)/,"ordinary mobile FIRE must retain the canonical queue as a fallback only when direct recovery cannot fire");
+assert.doesNotMatch(touch,/if\(!handled&&typeof queueAttack === "function"\) queueAttack\(p1\)/,"Tutorial FIRE must not retain the unconditional queued fallback that can turn one press into multiple shots");
 
 assert.match(fix,/hideNamedDossier=function[\s\S]*focusGame\(\)[\s\S]*scheduleCursorHide\(\)/,"closing the dossier must restore keyboard focus and desktop cursor-idle behaviour");
 assert.match(fix,/CURSOR_IDLE_MS=1600[\s\S]*ccg-game-cursor-idle/,"desktop gameplay must hide an idle pointer after a short delay");

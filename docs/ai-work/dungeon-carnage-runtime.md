@@ -4,6 +4,19 @@
 
 The browser game under `arcade/lost-sizzler/`, including retained local runtime extraction, campaign/biome work, UI, gameplay defects, and runtime contracts. Read `arcade/lost-sizzler/PROGRESS.md` for the product backlog, but prefer live `main` when later merges or automation have advanced beyond a recorded checkpoint.
 
+## R51 desktop/message-rail/Tutorial-FIRE regression candidate — 23 September 2026
+
+Current candidate branch: `codex/dungeon-r51-regression-fixes`, created from refreshed `origin/main` at `f719717824f2caa1cb89dc84a2ad7f2438f042a2` after merged PR #2256. It is deliberately a narrow post-R51 repair: no navigation, owner-preview gate, C64/Amiga selection, retired-mode boundary, world, combat balance or camera-scale redesign.
+
+- The guidance capture owner now requests desktop fullscreen in the original Solo/Tutorial launch click. The core request remains browser-safe and coalesces duplicate requests while retaining the promise rejection/time-limit fallback.
+- Routine `showToast` notices are restored to a static, non-interactive compact rail below the desktop canvas. The R29 finalizer now keeps that rail block-owned outside the retained historical Horde presentation, and the late presentation stylesheet cannot promote standard pickup notices back over the dungeon. Major notifications remain separately owned.
+- Tutorial mobile FIRE no longer queues a future attack or leaves `Space` held after a direct touch action. R20's mobile fallback respects the same Tutorial-only boundary; its established direct-shot, stale-lock and liveness protections are unchanged for normal combat.
+- Added/extended deterministic checks: the static R51 regression contract, Fire recovery contract, and Chromium runtime path cover Solo/Tutorial fullscreen requests, lower-rail pickup geometry/non-blocking behavior, a Tutorial touch FIRE that consumes exactly one ammo and leaves no held input, and a normal follow-up FIRE.
+
+Completed checks: `v10-42-r51-regression-fixes.mjs`, `v10-42-r51-fullscreen-ui-contract.mjs`, `v10-42-r51-fire-press-recovery.mjs`, `v10-41-r29-runtime-repair.mjs`, `v10-22-version-cache.mjs`, `v10-42-r36-release-cache-identity.mjs`, `v10-42-r51-retired-public-ui.mjs`, syntax checks for every edited runtime module, `git diff --check`, the public-code cache guard, and the focused Chromium contract all pass. The focused Chromium run proves the two launch requests, pickup geometry/non-blocking behavior, actual Tutorial touch FIRE single-shot behavior, and normal follow-up FIRE.
+
+`origin/main` was re-fetched after qualification and remains `f719717824f2caa1cb89dc84a2ad7f2438f042a2`. A broader unrelated `v10-9-stability.mjs` Chromium launch failed locally with Playwright `spawn UNKNOWN`; the itch package script also cannot construct a Windows source path (`C:\\C:\\...`) in this shell. Neither is represented as a green check. Re-run those environment-blocked jobs in CI before calling this candidate merge-safe. Do not merge without explicit user authorisation.
+
 ## R51 supported-runtime handoff reconciliation — 22 September 2026
 
 PR #2256 exposed a hidden dependency while qualifying the owner-preview build. The R51 public-UI cleanup correctly retired `v10-41-r30-buglog.js` from canonical HTML, but that historically named file also contained the dynamic handoff that loaded supported Solo runtime ownership: the mode controller, Solo diagnostics, post-playtest/R56/R59 recovery, the Solo-facing R60 integrity bridge, and Stage 8/13 encounter owners. With the buglog removed, the first full R51 Chromium matrix showed empty `dungeon-solo` controller markers, missing supported owners, broad startup/soak timeouts and the focused FIRE-lockout contract timing out.

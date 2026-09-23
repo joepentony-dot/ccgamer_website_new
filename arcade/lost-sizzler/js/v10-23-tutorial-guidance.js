@@ -151,6 +151,10 @@
     tutorialLaunchPending=requested;
     let result;
     try{
+      // This must happen in the original menu-click task.  The normal
+      // startSolo path also asks for fullscreen, but this guidance capture
+      // handler intentionally stops the legacy click listeners first.
+      void requestPlayFullscreen();
       result=startSolo();
     }catch(error){
       state.choiceAccepted=false;

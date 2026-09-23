@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 const root=new URL("../",import.meta.url);
-const holdSrc=fs.readFileSync(new URL("js/v10-42-attack-hold-liveness.js",root),"utf8");
-const r20Src=fs.readFileSync(new URL("js/v10-42-r20-live-regression-stability.js",root),"utf8");
-const inventorySrc=fs.readFileSync(new URL("js/v10-42-r47-inventory-fire-recovery.js",root),"utf8");
+const read=file=>fs.readFileSync(new URL(file,root),"utf8").replace(/\r\n/g,"\n");
+const holdSrc=read("js/v10-42-attack-hold-liveness.js");
+const r20Src=read("js/v10-42-r20-live-regression-stability.js");
+const inventorySrc=read("js/v10-42-r47-inventory-fire-recovery.js");
 
 assert.match(holdSrc,/pressVerifications:0/);
 assert.match(holdSrc,/pressRecoveries:0/);

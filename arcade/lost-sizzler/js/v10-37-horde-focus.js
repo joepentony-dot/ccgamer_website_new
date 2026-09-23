@@ -97,6 +97,59 @@
         margin:0!important;
       }
 
+      /* R51 ordinary Dungeon reports use the reserved lower rail. The older
+         overlay rules above remain available to the historical Horde shell,
+         but Solo and Tutorial must leave the dungeon visible and unblocked. */
+      @media(min-width:821px){
+        body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area{
+          display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+          grid-template-rows:minmax(0,1fr) 74px!important;gap:0!important;
+        }
+        body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area .canvas-wrap{grid-column:1!important;grid-row:1!important}
+        body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area .game-message-rail{
+          grid-column:1!important;grid-row:2!important;display:block!important;
+          height:74px!important;min-height:74px!important;max-height:74px!important;
+          padding:0!important;border:0!important;border-top:1px solid #553b68!important;overflow:hidden!important;
+        }
+        body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area .game-message-context,
+        body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area #message,
+        body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area #quest-list{display:none!important}
+        body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area .game-message-rail #pickup-toast{
+          position:static!important;inset:auto!important;transform:none!important;display:flex!important;
+          width:100%!important;min-width:0!important;max-width:none!important;
+          height:73px!important;min-height:73px!important;max-height:73px!important;
+          margin:0!important;padding:7px 14px!important;opacity:.38!important;visibility:visible!important;pointer-events:none!important;
+          border:0!important;border-left:3px solid var(--gold)!important;border-bottom:0!important;
+          background:#0a060d!important;box-shadow:none!important;text-align:left!important;overflow:hidden!important;
+        }
+        body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area .game-message-rail #pickup-toast.show{opacity:1!important;background:#110b12!important}
+      }
+      @media(min-width:821px) and (max-height:500px){
+        body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area{
+          grid-template-rows:minmax(0,1fr) 20px!important;
+        }
+        body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area .game-message-rail{
+          box-sizing:border-box!important;
+          height:20px!important;min-height:20px!important;max-height:20px!important;
+          padding:0!important;
+        }
+        body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area .game-message-rail #pickup-toast{
+          box-sizing:border-box!important;
+          height:19px!important;min-height:19px!important;max-height:19px!important;
+          padding:1px 8px!important;display:flex!important;flex-direction:row!important;
+          align-items:center!important;justify-content:flex-start!important;gap:8px!important;
+          white-space:nowrap!important;
+        }
+        body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area .game-message-rail #pickup-toast b{
+          width:auto!important;flex:0 0 auto!important;font-size:9px!important;line-height:1!important;white-space:nowrap!important;
+        }
+        body[data-run-active="true"]:not([data-special-mode="horde-survivor"]) .ccg-game .v102-game-area .game-message-rail #pickup-toast span{
+          width:auto!important;min-width:0!important;flex:1 1 auto!important;margin:0!important;
+          font-size:7.5px!important;line-height:1!important;white-space:nowrap!important;
+          overflow:hidden!important;text-overflow:ellipsis!important;display:block!important;
+        }
+      }
+
       /* Horde owns its own HUD. Ordinary dungeon objectives, inventory,
          keyring, shops and item controls are deliberately absent. */
       body[data-special-mode="horde-survivor"] .ccg-game>.mission,

@@ -43,38 +43,62 @@ try{
   const geometry=await page.evaluate(async()=>{
     document.body.dataset.runActive="true";
     const canvas=document.getElementById("game"),wrap=document.querySelector(".canvas-wrap"),toast=document.getElementById("pickup-toast"),rail=document.querySelector(".game-message-rail");
-    const sample=()=>({bw:canvas.width,bh:canvas.height,w:wrap.getBoundingClientRect().width,h:wrap.getBoundingClientRect().height,railDisplay:getComputedStyle(rail).display});
+    const sample=()=>{
+      const canvasRect=canvas.getBoundingClientRect(),railRect=rail.getBoundingClientRect(),toastRect=toast.getBoundingClientRect();
+      return{
+        bw:canvas.width,bh:canvas.height,w:wrap.getBoundingClientRect().width,h:wrap.getBoundingClientRect().height,
+        railDisplay:getComputedStyle(rail).display,
+        canvasBottom:canvasRect.bottom,railTop:railRect.top,railBottom:railRect.bottom,
+        toastTop:toastRect.top,toastBottom:toastRect.bottom
+      }
+    };
     const waitFor=async(predicate,timeout=1500)=>{
       const started=performance.now();
       while(performance.now()-started<timeout){if(predicate())return true;await new Promise(resolve=>setTimeout(resolve,16))}
       return Boolean(predicate());
     };
+    const waitForStableGeometry=async(timeout=2500)=>{
+      const started=performance.now();let previous="",stableFrames=0;
+      while(performance.now()-started<timeout){
+        const current=sample();
+        const key=[current.bw,current.bh,current.w.toFixed(2),current.h.toFixed(2),current.railDisplay].join("|");
+        if(key===previous)stableFrames++;else{previous=key;stableFrames=0}
+        if(stableFrames>=6)return true;
+        await new Promise(resolve=>requestAnimationFrame(resolve));
+      }
+      return false;
+    };
     await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
     toast?.classList.remove("show");
-    await waitFor(()=>getComputedStyle(rail).display==="none");
+    await waitFor(()=>!toast?.classList.contains("show")&&getComputedStyle(rail).display==="block");
+    const geometrySettled=await waitForStableGeometry();
     const before=sample(),visibleSamples=[],hiddenSamples=[],visibleReady=[],hiddenReady=[];
     for(let index=0;index<8;index++){
-      window.showToast(`R29 GEOMETRY ${index}`,"Notification appearance must not resize the canvas.","cyan",200);
-      visibleReady.push(await waitFor(()=>toast?.classList.contains("show")&&getComputedStyle(rail).display==="contents"));
+      window.showToast(`R29 GEOMETRY ${index}`,"Notification appearance must remain inside the reserved lower rail.","cyan",200);
+      visibleReady.push(await waitFor(()=>toast?.classList.contains("show")&&getComputedStyle(rail).display==="block"));
       visibleSamples.push(sample());toast?.classList.remove("show");
-      hiddenReady.push(await waitFor(()=>getComputedStyle(rail).display==="none"));hiddenSamples.push(sample());
+      hiddenReady.push(await waitFor(()=>!toast?.classList.contains("show")&&getComputedStyle(rail).display==="block"));hiddenSamples.push(sample());
     }
     const after=sample();
-    return{before,after,visibleSamples,hiddenSamples,visibleReady,hiddenReady,toastPosition:getComputedStyle(toast).position,toastOwnerStable:Boolean(window.showToast?.__ccgV141Priority)}
+    return{before,after,visibleSamples,hiddenSamples,visibleReady,hiddenReady,geometrySettled,toastPosition:getComputedStyle(toast).position,toastOwnerStable:Boolean(window.showToast?.__ccgV141Priority)}
   });
-  assert.equal(geometry.toastPosition,"absolute","retained r29 gameplay toasts must overlay the canvas");
+  assert.equal(geometry.geometrySettled,true,"gameplay canvas geometry must settle before toast churn is measured");
+  assert.equal(geometry.toastPosition,"static","retained r29 gameplay toasts must stay inside the reserved lower message rail");
   assert.equal(geometry.toastOwnerStable,true,"retained r29 notification ownership must remain stable under r30");
   assert.ok(geometry.visibleReady.every(Boolean),"every retained r29 toast must become visibly live in Chromium before it is sampled");
-  assert.ok(geometry.hiddenReady.every(Boolean),"every retained r29 toast must collapse its notification rail after closing");
-  assert.equal(geometry.before.railDisplay,"none","an idle notification rail must collapse completely instead of reserving a gameplay row");
-  assert.equal(geometry.after.railDisplay,"none","the notification rail must collapse again after the toast closes");
+  assert.ok(geometry.hiddenReady.every(Boolean),"every retained r29 toast must return to its idle lower-rail state after closing");
+  assert.equal(geometry.before.railDisplay,"block","ordinary dungeon play must retain the lower message rail while idle");
+  assert.equal(geometry.after.railDisplay,"block","the lower message rail must remain reserved after toast churn");
   for(const sample of geometry.visibleSamples){
-    assert.equal(sample.railDisplay,"contents","a visible retained r29 toast must use a contents-only rail so it overlays without creating a gameplay row");
+    assert.equal(sample.railDisplay,"block","a visible retained r29 toast must remain inside the reserved lower rail");
+    assert.ok(sample.railTop>=sample.canvasBottom-1,"the message rail must remain beneath the dungeon canvas");
+    assert.ok(sample.toastTop>=sample.canvasBottom-1,"a routine toast must not overlay the dungeon canvas");
+    assert.ok(sample.toastBottom<=sample.railBottom+1,"a routine toast must remain inside the lower rail");
     assert.equal(sample.bw,geometry.before.bw,"toast churn must not change canvas backing width");assert.equal(sample.bh,geometry.before.bh,"toast churn must not change canvas backing height");
     assert.ok(Math.abs(sample.w-geometry.before.w)<1,"toast churn must not change canvas host width");assert.ok(Math.abs(sample.h-geometry.before.h)<1,"toast churn must not change canvas host height");
   }
   for(const sample of geometry.hiddenSamples){
-    assert.equal(sample.railDisplay,"none","a hidden toast must leave no notification grid row behind");
+    assert.equal(sample.railDisplay,"block","an idle toast must leave the reserved lower rail stable");
     assert.equal(sample.bw,geometry.before.bw,"closing a toast must not change canvas backing width");assert.equal(sample.bh,geometry.before.bh,"closing a toast must not change canvas backing height");
     assert.ok(Math.abs(sample.w-geometry.before.w)<1,"closing a toast must not change canvas host width");assert.ok(Math.abs(sample.h-geometry.before.h)<1,"closing a toast must not change canvas host height");
   }

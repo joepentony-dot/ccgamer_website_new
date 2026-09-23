@@ -31,6 +31,7 @@
 
   const panelVisible=id=>{const node=document.getElementById(id);return Boolean(node&&!node.classList.contains("hidden"))};
   const currentMode=()=>{try{return typeof mode!=="undefined"?String(mode):""}catch(_){return""}};
+  const tutorialActive=()=>document.body?.dataset?.tutorialActive==="true";
   const liveSession=()=>{
     try{
       const live=Boolean(run&&host&&p1),state=currentMode();
@@ -290,7 +291,7 @@
       const handled=attackNow("Space");
       if(handled){
         diagnostics.mobileFireFallbacks++;
-        if(mobileFirePointers.has(event.pointerId)){
+        if(!tutorialActive()&&mobileFirePointers.has(event.pointerId)){
           try{input?.add?.("Space");button.classList.add("held")}catch(_){}
         }
       }
