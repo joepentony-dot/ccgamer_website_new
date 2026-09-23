@@ -1,3 +1,11 @@
+## UTA residual reconciliation rebuilt on current main — 23 September 2026
+
+- PR #2294 merged the qualified Dungeon Carnage R53 ATTACK/crowded-impact repair as `d0570158b71b155676365c9cb717ad8ab114bba2`.
+- PR #2295 then merged the qualified live UTA freshness repair as `1d41d4c25f462eec543edd5b3e61ffacb14cfdb7`; generated archive output followed through #2296 on current `main`.
+- Stale residual PR #2279 was closed unmerged rather than revived. Its verified evidence is being rebuilt from current `main` on branch `codex/uta-residual-rebuild-current-main-20260923`.
+- The rebuild restores the 17 verified residual game-page mappings / 20 releases, the 164-record residual classification, the duplicate-archive-ID parser correction, curation-triggered publishing workflows and focused regression coverage without reverting newer UTA freshness tests or generated output.
+- Keep this candidate separate from the upcoming Dungeon Carnage graphics/UI overhaul. Exact-head qualification and explicit user merge authorisation remain required.
+
 ## UTA live freshness #2295 rebuilt on merged R53 baseline — 23 September 2026
 
 - PR #2294 merged as `d0570158b71b155676365c9cb717ad8ab114bba2`; its exact-head Dungeon ATTACK/crowded-impact qualification is now part of `main`.
