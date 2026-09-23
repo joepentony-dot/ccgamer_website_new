@@ -136,17 +136,16 @@ try{
 
   const finiteBefore=await page.evaluate(()=>{
     p1.firearmUnlocked=true;p1.weapon=baseWeapon();p1.mana=100;p1.maxMana=Math.max(120,Number(p1.maxMana)||0);fireBuffer1=0;input.clear();
-    window.__ccgR53FrozenFire=setInterval(()=>{fire1=390},12);
     return Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.finiteCooldownRepairs||0);
   });
-  try{
-    for(let attempt=0;attempt<5;attempt++){
-      await page.keyboard.press("Space");
-      await page.waitForTimeout(310);
-    }
-  }finally{
-    await page.evaluate(()=>{clearInterval(window.__ccgR53FrozenFire);delete window.__ccgR53FrozenFire;fire1=0;fireBuffer1=0});
+  for(let attempt=0;attempt<5;attempt++){
+    await page.evaluate(()=>{
+      fire1=390;fireBuffer1=0;
+      window.CCGLostSizzlerV142R20LiveRegressionStability.attackNow("Space");
+    });
+    await page.waitForTimeout(310);
   }
+  await page.evaluate(()=>{fire1=0;fireBuffer1=0});
   const finiteAfter=await page.evaluate(()=>Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.finiteCooldownRepairs||0));
   assert.ok(finiteAfter>finiteBefore,"repeated unchanged finite cooldown evidence must recover instead of leaving ATTACK permanently blocked");
   const postFiniteMana=await page.evaluate(()=>Number(p1.mana));
