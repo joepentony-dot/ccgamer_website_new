@@ -29,6 +29,8 @@ assert.match(reporter,/trap-active-damage-confirmed/,"reporter must distinguish 
 assert.match(reporter,/trapHitsByKind/,"trap diagnostics must retain per-kind FIRE SPIKE and SHOCK hit evidence");
 assert.match(reporter,/CCGLostSizzlerV141R56PlaytestCompletion/,"trap report must capture the retained R56 cycle latch");
 assert.match(reporter,/CCGLostSizzlerV141R57DesktopPrepStability/,"trap report must capture the retained R57 cycle latch");
+assert.match(reporter,/__ccgV141R60EnvironmentSeal/,"trap report must expose the retained R60 environmental damage owner");
+assert.match(reporter,/__ccgV142R18/,"trap report must expose the later R18 damage wrapper");
 assert.match(reporter,/owners:\{hurtPlayer:ownerChain\(window\.hurtPlayer\),triggerTrap:ownerChain\(window\.triggerTrap\)\}/,"trap report must capture live hurt/trigger ownership chains");
 assert.match(reporter,/fire1:/);
 assert.match(reporter,/fireBuffer1:/);
