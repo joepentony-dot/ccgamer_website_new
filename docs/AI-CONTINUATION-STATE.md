@@ -1,3 +1,12 @@
+## UTA residual reconciliation rebuilt — PR #2297 — 23 September 2026
+
+- Stale draft #2279 has been superseded by draft PR #2297 / `codex/uta-residual-reconciliation-current-main-20260923`, rebuilt directly on the post-#2295/post-generated-output `main`.
+- Authoritative baseline remains 559 C64 games, 395 mapped, 23 manual-review unmatched, 141 no-title-candidate unmatched, 164 unmatched total, and 2,892 retained UTA directories.
+- #2297 carries forward the source-evidenced residual curation set, the complete 164-game classification artifact, and the parser correction that preserves distinct UTA directory releases when archive IDs are reused.
+- The rebuild keeps #2295's live-freshness regression coverage and does not restore the stale branch's old file versions wholesale.
+- Curated evidence changes now explicitly trigger both publishing validation workflows. `games/games.json` is unchanged.
+- Keep #2297 draft until its exact current head is 0 behind `main` and the full triggered matrix is green. Merge still requires explicit user authorisation.
+
 ## UTA live freshness #2295 rebuilt on merged R53 baseline — 23 September 2026
 
 - PR #2294 merged as `d0570158b71b155676365c9cb717ad8ab114bba2`; its exact-head Dungeon ATTACK/crowded-impact qualification is now part of `main`.
