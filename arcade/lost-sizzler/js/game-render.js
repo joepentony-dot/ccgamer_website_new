@@ -129,25 +129,59 @@ function drawExit(){
 }
 function itemInfo(i){if(i.kind==="loot")return["★",i.loot?.rarity==="GOLD MEDAL"?P.gold:i.loot?.rarity==="ZZAP! 97%"?P.pink:P.cyan];return{key:["KEY",P.gold],exitSigil:["SIG",P.gold],health:["+",P.green],mana:["AM",P.cyan],ammo:["AM",P.cyan],game:["C64",P.white],credits:["COIN",P.gold],xpOrb:["XP",P.cyan],torch:["T",P.gold],teleport:["WARP",P.purple],banishment:["B",P.purple],inventorySlot:["SLOT",P.gold],armour:["A",P.blue],potion:["P",P.green],weapon:["W",P.orange],rapid:["RF",P.orange],bronze:["BK",P.gold]}[i.kind]||["?",P.white]}
 function drawPickupGlyph(i,col){
-  ctx.save();ctx.lineWidth=2;ctx.strokeStyle=col;ctx.fillStyle=col;
-  const k=i.kind;
-  const custom=pickupOverrideImages.get(k);if(custom?.complete&&custom.naturalWidth){ctx.drawImage(custom,-14,-14,28,28);ctx.restore();return}
-  if(k==="health"){ctx.fillRect(-3,-10,6,20);ctx.fillRect(-10,-3,20,6)}
-  else if(k==="mana"||k==="ammo"){ctx.strokeRect(-11,-7,22,14);ctx.fillRect(-7,-3,5,6);ctx.fillRect(2,-3,5,6)}
-  else if(k==="potion"){ctx.strokeRect(-7,-5,14,14);ctx.fillRect(-4,-10,8,5);ctx.fillRect(-5,1,10,6)}
-  else if(k==="banishment"){ctx.strokeRect(-8,-6,16,15);ctx.fillRect(-4,-11,8,5);ctx.beginPath();ctx.moveTo(-5,1);ctx.lineTo(-1,5);ctx.lineTo(6,-4);ctx.stroke()}
-  else if(k==="torch"){ctx.fillRect(-2,-1,4,12);ctx.beginPath();ctx.moveTo(0,-12);ctx.quadraticCurveTo(-9,-4,0,1);ctx.quadraticCurveTo(9,-5,0,-12);ctx.fill()}
-  else if(k==="teleport"){ctx.beginPath();ctx.arc(0,0,11,.4,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.moveTo(7,-9);ctx.lineTo(12,-3);ctx.lineTo(4,-2);ctx.stroke();ctx.fillRect(-2,-7,4,14);ctx.fillRect(-7,-2,14,4)}
-  else if(k==="armour"){ctx.beginPath();ctx.moveTo(0,-11);ctx.lineTo(10,-6);ctx.lineTo(8,5);ctx.lineTo(0,11);ctx.lineTo(-8,5);ctx.lineTo(-10,-6);ctx.closePath();ctx.stroke()}
-  else if(k==="key"||k==="bronze"||k==="exitSigil"){ctx.beginPath();ctx.arc(-5,-2,5,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.moveTo(0,-2);ctx.lineTo(11,-2);ctx.lineTo(11,3);ctx.moveTo(7,-2);ctx.lineTo(7,3);ctx.stroke();if(k==="exitSigil"){ctx.beginPath();ctx.arc(-5,-2,9,0,Math.PI*2);ctx.stroke()}}
-  else if(k==="weapon"){ctx.fillRect(-11,-4,15,7);ctx.fillRect(2,-1,9,3);ctx.fillRect(-5,3,5,7)}
-  else if(k==="rapid"){ctx.beginPath();ctx.moveTo(3,-12);ctx.lineTo(-7,1);ctx.lineTo(-1,1);ctx.lineTo(-4,12);ctx.lineTo(8,-3);ctx.lineTo(2,-3);ctx.closePath();ctx.fill()}
-  else if(k==="game"){ctx.save();ctx.shadowColor=col;ctx.shadowBlur=10;ctx.fillStyle="rgba(10,5,16,.82)";ctx.fillRect(-13,-9,26,18);ctx.strokeStyle=col;ctx.strokeRect(-13,-9,26,18);ctx.fillStyle=col;ctx.fillRect(-10,-6,20,3);ctx.strokeRect(-9,-1,18,6);ctx.beginPath();ctx.arc(-4,2,2,0,Math.PI*2);ctx.arc(4,2,2,0,Math.PI*2);ctx.stroke();ctx.font='bold 5px "Courier New"';ctx.textAlign="center";ctx.fillText("C64",0,-3);ctx.fillRect(-10,7,20,2);ctx.restore()}
-  else if(k==="credits"){ctx.fillStyle="#9a6718";ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();ctx.fillStyle=col;ctx.beginPath();ctx.arc(0,0,8,0,Math.PI*2);ctx.fill();ctx.fillStyle="#51350c";ctx.font='bold 11px Consolas';ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("S",0,1)}
-  else if(k==="xpOrb"){const g=ctx.createRadialGradient(-3,-3,1,0,0,12);g.addColorStop(0,"#fff");g.addColorStop(.35,P.cyan);g.addColorStop(1,"#2d3ea0");ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,10,0,Math.PI*2);ctx.fill();ctx.fillStyle="#08101d";ctx.font='bold 9px Consolas';ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("XP",0,1)}
-  else if(k==="inventorySlot"){ctx.strokeRect(-11,-9,22,18);ctx.strokeRect(-7,-5,6,6);ctx.strokeRect(2,-5,6,6);ctx.strokeRect(-7,3,6,6);ctx.strokeRect(2,3,6,6)}
-  else if(k==="loot"){ctx.beginPath();for(let n=0;n<8;n++){const a=-Math.PI/2+n*Math.PI/4,r=n%2?4:11,x=Math.cos(a)*r,y=Math.sin(a)*r;if(n===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.closePath();ctx.fill()}
-  else{ctx.fillRect(-8,-8,16,16)}ctx.restore()
+  ctx.save();ctx.lineWidth=1.5;ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineJoin="round";ctx.lineCap="round";
+  const k=i.kind,custom=pickupOverrideImages.get(k);
+  if(custom?.complete&&custom.naturalWidth){ctx.drawImage(custom,-15,-15,30,30);ctx.restore();return}
+
+  // R54 fallback icons are deliberately illustrated at pickup scale rather than
+  // generic letters/boxes. Owner-provided image overrides still take priority.
+  if(k==="health"||k==="potion"){
+    const liquid=k==="health"?P.green:"#56d98d";
+    ctx.fillStyle="#e8eef5";ctx.fillRect(-4,-12,8,4);ctx.fillStyle="#7b5b3b";ctx.fillRect(-3,-14,6,3);
+    ctx.fillStyle="#d6e2e8";ctx.beginPath();ctx.moveTo(-6,-8);ctx.lineTo(6,-8);ctx.lineTo(9,8);ctx.quadraticCurveTo(0,13,-9,8);ctx.closePath();ctx.fill();
+    ctx.strokeStyle="#f7fbff";ctx.stroke();ctx.fillStyle=liquid;ctx.beginPath();ctx.moveTo(-7,1);ctx.lineTo(7,1);ctx.lineTo(8,8);ctx.quadraticCurveTo(0,11,-8,8);ctx.closePath();ctx.fill();
+    ctx.fillStyle="#fff";ctx.globalAlpha=.75;ctx.fillRect(-4,-5,2,7);ctx.globalAlpha=1;
+    ctx.strokeStyle="#183426";ctx.beginPath();ctx.moveTo(-3,5);ctx.lineTo(3,5);ctx.moveTo(0,2);ctx.lineTo(0,8);ctx.stroke()
+  }else if(k==="mana"||k==="ammo"){
+    ctx.fillStyle="#39434d";ctx.fillRect(-13,-9,26,18);ctx.fillStyle="#65717e";ctx.fillRect(-11,-7,22,14);ctx.strokeStyle="#c8d5df";ctx.strokeRect(-13,-9,26,18);
+    ctx.fillStyle=P.gold;for(const x of [-7,0,7]){ctx.fillRect(x-2,-4,4,9);ctx.fillStyle="#fff0ad";ctx.fillRect(x-1,-4,2,2);ctx.fillStyle=P.gold}
+    ctx.fillStyle="#1a2027";ctx.fillRect(-12,5,24,3);ctx.strokeStyle=P.cyan;ctx.strokeRect(-4,-7,8,4)
+  }else if(k==="banishment"){
+    ctx.fillStyle="#cbc4e5";ctx.fillRect(-4,-13,8,4);ctx.fillStyle="#49325d";ctx.beginPath();ctx.moveTo(-7,-8);ctx.lineTo(7,-8);ctx.lineTo(10,8);ctx.quadraticCurveTo(0,13,-10,8);ctx.closePath();ctx.fill();ctx.strokeStyle=P.purple;ctx.stroke();
+    ctx.fillStyle="#b16bff";ctx.beginPath();ctx.arc(0,3,6,0,Math.PI*2);ctx.fill();ctx.fillStyle="#fff";ctx.fillRect(-1,-2,2,10);ctx.fillRect(-5,2,10,2)
+  }else if(k==="torch"){
+    ctx.fillStyle="#70401f";ctx.fillRect(-3,-1,6,14);ctx.fillStyle="#b77b36";ctx.fillRect(-5,8,10,3);ctx.fillStyle="#3b2618";ctx.fillRect(-2,11,4,4);
+    ctx.save();ctx.shadowColor=P.orange;ctx.shadowBlur=14;ctx.fillStyle="#d94b2b";ctx.beginPath();ctx.moveTo(0,-14);ctx.quadraticCurveTo(-10,-5,-5,2);ctx.quadraticCurveTo(0,6,5,1);ctx.quadraticCurveTo(10,-6,0,-14);ctx.fill();ctx.fillStyle=P.gold;ctx.beginPath();ctx.moveTo(0,-10);ctx.quadraticCurveTo(-5,-3,-1,2);ctx.quadraticCurveTo(4,-3,0,-10);ctx.fill();ctx.restore()
+  }else if(k==="teleport"){
+    ctx.save();ctx.shadowColor=P.purple;ctx.shadowBlur=12;ctx.strokeStyle=P.purple;ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,12,0,Math.PI*2);ctx.stroke();ctx.strokeStyle=P.cyan;ctx.beginPath();ctx.arc(0,0,8,Math.PI*.2,Math.PI*1.75);ctx.stroke();
+    ctx.fillStyle="#e9d8ff";for(let n=0;n<4;n++){const a=Math.PI/4+n*Math.PI/2;ctx.fillRect(Math.cos(a)*10-1,Math.sin(a)*10-1,3,3)}
+    ctx.beginPath();ctx.moveTo(-4,5);ctx.lineTo(3,-6);ctx.lineTo(3,-1);ctx.lineTo(8,-1);ctx.lineTo(-1,8);ctx.lineTo(-1,3);ctx.closePath();ctx.fill();ctx.restore()
+  }else if(k==="armour"){
+    ctx.fillStyle="#374b69";ctx.beginPath();ctx.moveTo(0,-13);ctx.lineTo(11,-8);ctx.lineTo(9,5);ctx.quadraticCurveTo(5,11,0,14);ctx.quadraticCurveTo(-5,11,-9,5);ctx.lineTo(-11,-8);ctx.closePath();ctx.fill();ctx.strokeStyle="#a8c8ef";ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle=P.blue;ctx.beginPath();ctx.moveTo(0,-9);ctx.lineTo(6,-6);ctx.lineTo(5,3);ctx.quadraticCurveTo(2,7,0,9);ctx.closePath();ctx.fill();ctx.fillStyle="#d8efff";ctx.fillRect(-1,-8,2,13);ctx.fillRect(-5,-2,10,2)
+  }else if(k==="key"||k==="bronze"||k==="exitSigil"){
+    const keyCol=k==="bronze"?"#d69a43":P.gold;ctx.strokeStyle=keyCol;ctx.fillStyle=keyCol;ctx.lineWidth=3;ctx.beginPath();ctx.arc(-6,-3,6,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(-6,-3,2,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.moveTo(0,-3);ctx.lineTo(13,-3);ctx.lineTo(13,2);ctx.moveTo(8,-3);ctx.lineTo(8,3);ctx.stroke();
+    if(k==="exitSigil"){ctx.strokeStyle="#fff0a8";ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(-6,-3,10,0,Math.PI*2);ctx.stroke();for(let n=0;n<4;n++){const a=n*Math.PI/2;ctx.fillRect(-6+Math.cos(a)*12-1,-3+Math.sin(a)*12-1,3,3)}}
+  }else if(k==="weapon"){
+    ctx.fillStyle="#232933";ctx.fillRect(-13,-8,26,17);ctx.strokeStyle="#aeb8c4";ctx.strokeRect(-13,-8,26,17);ctx.fillStyle=P.orange;ctx.fillRect(-10,-5,13,5);ctx.fillStyle="#e0e6ec";ctx.fillRect(2,-4,9,3);ctx.fillStyle="#596573";ctx.fillRect(-4,0,6,7);ctx.fillStyle=P.cyan;ctx.fillRect(-8,-3,3,2);ctx.fillStyle="#161a20";ctx.fillRect(-11,6,22,2)
+  }else if(k==="rapid"){
+    ctx.save();ctx.shadowColor=P.orange;ctx.shadowBlur=9;ctx.beginPath();ctx.moveTo(3,-14);ctx.lineTo(-8,1);ctx.lineTo(-2,1);ctx.lineTo(-5,14);ctx.lineTo(9,-4);ctx.lineTo(2,-4);ctx.closePath();ctx.fillStyle=P.orange;ctx.fill();ctx.strokeStyle="#ffe2a3";ctx.stroke();ctx.restore()
+  }else if(k==="game"){
+    ctx.save();ctx.shadowColor=col;ctx.shadowBlur=10;ctx.fillStyle="#19141f";ctx.fillRect(-14,-10,28,20);ctx.strokeStyle="#d7dce2";ctx.strokeRect(-14,-10,28,20);
+    ctx.fillStyle="#b7b8ba";ctx.fillRect(-11,-7,22,5);ctx.fillStyle="#25212b";ctx.fillRect(-9,-5,18,2);ctx.fillStyle="#d9d1bc";ctx.fillRect(-10,1,20,6);ctx.strokeStyle="#60566d";ctx.strokeRect(-10,1,20,6);
+    ctx.fillStyle="#24202a";ctx.beginPath();ctx.arc(-5,4,2.5,0,Math.PI*2);ctx.arc(5,4,2.5,0,Math.PI*2);ctx.fill();ctx.fillStyle=P.cyan;ctx.font='bold 5px "Courier New"';ctx.textAlign="center";ctx.fillText("C64",0,-3);ctx.fillStyle="#77717e";ctx.fillRect(-12,8,24,2);ctx.restore()
+  }else if(k==="credits"){
+    ctx.save();ctx.shadowColor=P.gold;ctx.shadowBlur=8;ctx.fillStyle="#835716";ctx.beginPath();ctx.arc(0,0,12,0,Math.PI*2);ctx.fill();ctx.fillStyle=P.gold;ctx.beginPath();ctx.arc(0,0,9,0,Math.PI*2);ctx.fill();ctx.strokeStyle="#fff0a8";ctx.stroke();ctx.fillStyle="#6a4511";ctx.font='bold 12px Consolas';ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("S",0,1);ctx.restore()
+  }else if(k==="xpOrb"){
+    ctx.save();ctx.shadowColor=P.cyan;ctx.shadowBlur=14;const g=ctx.createRadialGradient(-4,-4,1,0,0,13);g.addColorStop(0,"#fff");g.addColorStop(.28,"#b8fbff");g.addColorStop(.58,P.cyan);g.addColorStop(1,"#29358a");ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();ctx.strokeStyle="#d9ffff";ctx.stroke();ctx.fillStyle="#071522";ctx.font='bold 9px Consolas';ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("XP",0,1);ctx.restore()
+  }else if(k==="inventorySlot"){
+    ctx.fillStyle="#1e1726";ctx.fillRect(-12,-10,24,20);ctx.strokeStyle=P.gold;ctx.strokeRect(-12,-10,24,20);ctx.fillStyle="#473657";for(const [x,y] of [[-8,-6],[2,-6],[-8,3],[2,3]])ctx.fillRect(x,y,6,5);ctx.strokeStyle="#9c7bbb";ctx.strokeRect(-8,-6,6,5);ctx.strokeRect(2,-6,6,5);ctx.strokeRect(-8,3,6,5);ctx.strokeRect(2,3,6,5)
+  }else if(k==="loot"){
+    ctx.save();ctx.shadowColor=col;ctx.shadowBlur=12;ctx.beginPath();for(let n=0;n<16;n++){const a=-Math.PI/2+n*Math.PI/8,r=n%2?5:12,x=Math.cos(a)*r,y=Math.sin(a)*r;if(n===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.closePath();ctx.fillStyle=col;ctx.fill();ctx.fillStyle="#fff";ctx.globalAlpha=.65;ctx.fillRect(-1,-8,2,8);ctx.fillRect(-5,-4,10,2);ctx.restore()
+  }else{
+    ctx.fillStyle="#30283a";ctx.fillRect(-9,-9,18,18);ctx.strokeStyle=col;ctx.strokeRect(-9,-9,18,18)
+  }
+  ctx.restore()
 }
 function groundItemLabel(i){
   if(i.kind==="loot")return i.loot?.weapon?.displayName||i.loot?.name||"LOOT";
