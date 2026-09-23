@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import {chromium} from "playwright";
 
-const gameUrl=process.env.CCG_LOST_SIZZLER_URL||"https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/";
+const gameUrl=process.env.CCG_LOST_SIZZLER_URL||"https://www.cheekycommodoregamer.co.uk/arcade/c64-dungeon-carnage/";
 const supabaseUrl=(process.env.CCG_SUPABASE_URL||"https://lcslgxpgmttaexsorxik.supabase.co").replace(/\/$/,"");
 const origin="https://www.cheekycommodoregamer.co.uk";
 const expectedReleaseVersion="V10.42";
@@ -172,10 +172,10 @@ try{
   const stalePage=await context.newPage();
   stalePage.setDefaultTimeout(30000);
   let documentRewritten=false;
-  await stalePage.route("**/arcade/lost-sizzler/**",async route=>{
+  await stalePage.route("**/arcade/c64-dungeon-carnage/**",async route=>{
     const request=route.request();
     const requestUrl=new URL(request.url());
-    if(documentRewritten||request.resourceType()!=="document"||!requestUrl.pathname.endsWith("/arcade/lost-sizzler/")){await route.continue();return}
+    if(documentRewritten||request.resourceType()!=="document"||!requestUrl.pathname.endsWith("/arcade/c64-dungeon-carnage/")){await route.continue();return}
     const response=await route.fetch();
     const html=await response.text();
     const expectedBuildMeta=`<meta name="ccg-lost-sizzler-build" content="${expectedBuild}">`;
