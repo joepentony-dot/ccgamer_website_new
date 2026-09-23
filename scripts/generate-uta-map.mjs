@@ -360,8 +360,9 @@ export function matchGameToUta(game, utaReleases, curatedApproval = {}) {
 
   titleCandidates.forEach(({ release, matchKind }) => {
     const curatedMatch = curatedArchiveIds.has(String(release.archiveId));
-    const originalMatch = credits.original.has(release.publisherKey);
-    const rereleaseMatch = credits.rerelease.has(release.publisherKey);
+    const releasePublisherKeys = publisherCreditKeys(release.publisher);
+    const originalMatch = releasePublisherKeys.some((key) => credits.original.has(key));
+    const rereleaseMatch = releasePublisherKeys.some((key) => credits.rerelease.has(key));
     let sourceRole = "";
 
     if (curatedMatch && (matchKind === "exact" || matchKind === "curated-title-alias")) {
