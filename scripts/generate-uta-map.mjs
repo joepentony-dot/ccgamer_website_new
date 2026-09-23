@@ -433,7 +433,7 @@ export function buildUtaMapping(games, utaReleases, curatedApprovals = new Map()
   [...games]
     .sort((a, b) => String(a?.slug || "").localeCompare(String(b?.slug || "")))
     .forEach((game) => {
-        const curatedApproval = curatedApprovals.get(String(game?.slug || "")) || {};
+      const curatedApproval = curatedApprovals.get(String(game?.slug || "")) || {};
       const result = matchGameToUta(game, utaReleases, curatedApproval);
       if (result.releases.length) {
         publicGames[game.slug] = {
