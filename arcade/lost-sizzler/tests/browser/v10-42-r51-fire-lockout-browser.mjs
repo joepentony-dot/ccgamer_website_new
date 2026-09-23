@@ -105,7 +105,52 @@ try{
   const normalBefore=Number(recovered.mana);
   await page.keyboard.press("Space");
   await page.waitForFunction(mana=>Number(p1?.mana||0)<mana,normalBefore,{timeout:3000});
-  assert.equal(await page.evaluate(()=>input.has("Space")),false,"normal follow-up tap must release Space");
+  await page.waitForTimeout(950);
+  const normalAfter=await page.evaluate(()=>({mana:Number(p1.mana),held:input.has("Space"),physicalHeld:Number(window.CCGLostSizzlerV142AttackHoldLiveness?.held?.size||0)}));
+  assert.equal(normalBefore-normalAfter.mana,1,"one desktop firearm tap must consume exactly one round");
+  assert.equal(normalAfter.held,false,"normal follow-up tap must release Space");
+  assert.equal(normalAfter.physicalHeld,0,"normal follow-up tap must not leave the physical hold owner latched");
+
+  const swordBefore=await page.evaluate(()=>{
+    p1.firearmUnlocked=false;p1.weapon=null;p1.mana=0;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
+    fire1=0;fireBuffer1=0;projectileCD=0;bullets.length=0;input.clear();
+    window.CCGLostSizzlerV142AttackHoldLiveness?.clearHeld?.();
+    return Number(p1._meleeSwingAt||0);
+  });
+  await page.keyboard.press("Space");
+  await page.waitForFunction(before=>Number(p1?._meleeSwingAt||0)>before,swordBefore,{timeout:3000});
+  const firstSwordSwing=await page.evaluate(()=>Number(p1._meleeSwingAt||0));
+  await page.waitForTimeout(1200);
+  const swordAfter=await page.evaluate(()=>({
+    swing:Number(p1._meleeSwingAt||0),
+    held:input.has("Space"),
+    physicalHeld:Number(window.CCGLostSizzlerV142AttackHoldLiveness?.held?.size||0),
+    buffer:Number(fireBuffer1||0),
+    meleeRepairs:Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.meleeAttackRepairs||0)
+  }));
+  assert.equal(swordAfter.swing,firstSwordSwing,"one desktop sword tap must produce one melee swing, not delayed recovery repeats");
+  assert.equal(swordAfter.held,false,"a completed sword tap must not synthetically latch Space");
+  assert.equal(swordAfter.physicalHeld,0,"a completed sword tap must release the physical hold owner");
+  assert.equal(swordAfter.buffer,0,"a successful sword tap must not leave a queued attack buffer");
+  assert.ok(swordAfter.meleeRepairs>=1,"R53 must recognise melee as successful attack work");
+
+  const finiteBefore=await page.evaluate(()=>{
+    p1.firearmUnlocked=true;p1.weapon=baseWeapon();p1.mana=100;p1.maxMana=Math.max(120,Number(p1.maxMana)||0);fireBuffer1=0;input.clear();
+    return Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.finiteCooldownRepairs||0);
+  });
+  for(let attempt=0;attempt<5;attempt++){
+    await page.evaluate(()=>{
+      fire1=390;fireBuffer1=0;
+      window.CCGLostSizzlerV142R20LiveRegressionStability.attackNow("Space");
+    });
+    await page.waitForTimeout(310);
+  }
+  await page.evaluate(()=>{fire1=0;fireBuffer1=0});
+  const finiteAfter=await page.evaluate(()=>Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.finiteCooldownRepairs||0));
+  assert.ok(finiteAfter>finiteBefore,"repeated unchanged finite cooldown evidence must recover instead of leaving ATTACK permanently blocked");
+  const postFiniteMana=await page.evaluate(()=>Number(p1.mana));
+  await page.keyboard.press("Space");
+  await page.waitForFunction(mana=>Number(p1.mana)<mana,postFiniteMana,{timeout:3000});
 
   await page.evaluate(async()=>{await quitToMenu()});
   await page.waitForFunction(()=>mode==="menu"&&document.body.dataset.runActive!=="true",null,{timeout:10000});
@@ -154,15 +199,36 @@ try{
     const canvas=document.querySelector(".canvas-wrap")?.getBoundingClientRect();
     const rail=document.querySelector(".game-message-rail")?.getBoundingClientRect();
     const toast=document.getElementById("pickup-toast")?.getBoundingClientRect();
+    const icon=document.getElementById("pickup-icon")?.getBoundingClientRect();
+    const copy=document.querySelector("#pickup-toast .pickup-toast-copy")?.getBoundingClientRect();
     const style=getComputedStyle(document.getElementById("pickup-toast"));
-    return{canvas,rail,toast,position:style.position,pointerEvents:style.pointerEvents,railDisplay:getComputedStyle(document.querySelector(".game-message-rail")).display};
+    return{canvas,rail,toast,icon,copy,position:style.position,display:style.display,pointerEvents:style.pointerEvents,railDisplay:getComputedStyle(document.querySelector(".game-message-rail")).display};
   });
   assert.equal(rail.position,"static","routine pickup must be static in the message rail");
+  assert.equal(rail.display,"grid","routine pickup must use the full rail as a horizontal icon/copy grid");
   assert.ok(rail.toast.top>=rail.canvas.bottom-1,"routine pickup rail must be beneath the dungeon canvas");
   assert.ok(rail.toast.bottom<=rail.rail.bottom+1,`routine pickup must remain inside the lower rail: ${JSON.stringify(rail)}`);
+  assert.ok(rail.icon.right<=rail.copy.left+1,`routine pickup icon must sit to the left of its copy: ${JSON.stringify(rail)}`);
+  assert.ok(rail.copy.width>rail.rail.width*.5,`routine pickup copy must use the majority of the black notification rail: ${JSON.stringify(rail)}`);
   assert.equal(rail.pointerEvents,"none","routine pickup must remain non-blocking");
 
-  console.log("Dungeon Carnage R51 fullscreen, lower-rail pickup, Tutorial single FIRE and normal FIRE regression passed in Chromium.");
+  await page.evaluate(()=>window.CCGLostSizzlerV141LandingNotificationPolish?.showMajor?.("PATROL SHIFT","Enemy patrol routes have changed. Watch the corridor before advancing.","red",6000));
+  const major=await page.evaluate(()=>{
+    const rail=document.querySelector(".game-message-rail")?.getBoundingClientRect();
+    const panel=document.getElementById("ccg-major-notification")?.getBoundingClientRect();
+    const icon=document.querySelector("#ccg-major-notification .major-icon")?.getBoundingClientRect();
+    const copy=document.querySelector("#ccg-major-notification .major-copy")?.getBoundingClientRect();
+    const style=getComputedStyle(document.getElementById("ccg-major-notification"));
+    return{rail,panel,icon,copy,display:style.display,title:document.querySelector("#ccg-major-notification .major-copy b")?.textContent||"",text:document.querySelector("#ccg-major-notification .major-copy span")?.textContent||""};
+  });
+  assert.equal(major.display,"grid","major notices must use the same full-width horizontal rail");
+  assert.equal(major.title,"PATROL SHIFT","major notice title must remain visible");
+  assert.ok(major.text.includes("patrol routes"),"major notice explanatory copy must remain visible");
+  assert.ok(major.icon.right<=major.copy.left+1,`major-notice icon must sit beside, not above, the copy: ${JSON.stringify(major)}`);
+  assert.ok(major.copy.width>major.rail.width*.5,`major-notice copy must use the majority of the black rail: ${JSON.stringify(major)}`);
+  assert.ok(major.panel.bottom<=major.rail.bottom+1,`major notice must remain inside the reserved lower rail: ${JSON.stringify(major)}`);
+
+  console.log("Dungeon Carnage R53 single-tap FIRE/melee, finite-lockout recovery and full-width notification rail regression passed in Chromium.");
   await context.close();
 }finally{
   await browser.close();
