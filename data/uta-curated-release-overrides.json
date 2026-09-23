@@ -477,6 +477,27 @@
       ]
     },
     {
+      "gameSlug": "super-pipeline",
+      "archiveIds": [
+        "6490"
+      ],
+      "titleAliases": [
+        "Pipeline"
+      ],
+      "evidence": [
+        {
+          "source": "Lemon64",
+          "url": "https://www.lemon64.com/game/super-pipeline",
+          "note": "Lemon64 identifies Super Pipeline as also known as Pipeline and documents the 1983 Taskset cassette release."
+        },
+        {
+          "source": "UTA",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Pipeline_(1983_Taskset_Ltd.)_%5b6490%5d/",
+          "note": "UTA archive entry for the same 1983 Taskset cassette under the shorter Pipeline title."
+        }
+      ]
+    },
+    {
       "gameSlug": "the-goonies",
       "archiveIds": [
         "841",
