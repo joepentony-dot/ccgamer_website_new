@@ -8,9 +8,14 @@
   const MAX_EVENTS=240;
   const TEXT_EVENTS=120;
   const SAMPLE_MS=3000;
+  const TRAP_PROBE_MS=40;
+  const TRAP_VERIFY_MS=220;
   const STYLE_PATH="css/v10-42-bug-reporter.css";
   const events=[];
-  const state={installed:false,reports:0,anomalies:0,lastReport:null,preReportSnapshot:null,sampleTimer:0};
+  const trapObservations=new Map();
+  const trapChecks=new Set();
+  const duplicateTrapTiles=new Set();
+  const state={installed:false,reports:0,anomalies:0,trapAnomalies:0,trapContacts:0,trapVerifiedHits:0,lastTrap:null,lastReport:null,preReportSnapshot:null,sampleTimer:0,trapProbeTimer:0};
 
   const safe=(fn,fallback=null)=>{try{const value=fn();return value===undefined?fallback:value}catch(_){return fallback}};
   const nowIso=()=>new Date().toISOString();
@@ -63,6 +68,57 @@
       activeWeaponIndex:Number.isInteger(player.activeWeaponIndex)?player.activeWeaponIndex:null
     };
   }
+
+  const trapId=trap=>String(trap?.id||`${trap?.x},${trap?.y}`);
+  const trapPlayerId=player=>String(player?.id||player?.name||"P1");
+  const trapWorldKey=()=>safe(()=>`${String(run?.seed||"run")}|F${Math.max(1,Number(run?.floor||1))}`,"run|F1");
+  const trapContactKey=(player,trap)=>`${trapWorldKey()}|${trapPlayerId(player)}|${trapId(trap)}`;
+  const trapCycleKey=(player,trap)=>`${trapPlayerId(player)}|${trapId(trap)}`;
+  function trapClock(trap,stamp=performance.now()){
+    const period=Math.max(1,Number(trap?.period)||1),phaseOffset=Number(trap?.phase)||0;
+    const phase=((Number(stamp)+phaseOffset)%period+period)%period;
+    const active=Boolean(trap?.active!==false&&safe(()=>typeof SYS?.trapActive==="function"?SYS.trapActive(trap,stamp):phase<period*.46,false));
+    const cycle=safe(()=>window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.trapCycleId?.(trap,stamp),Math.floor((Number(stamp)+phaseOffset)/period));
+    return{period,phaseOffset,phase,activeWindow:period*.46,active,cycle:Number(cycle||0)};
+  }
+  function ownerChain(fn){
+    const rows=[],seen=new Set();let current=fn,depth=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth<16){
+      seen.add(current);
+      const markers=[];
+      for(const marker of [
+        "__ccgV142R19MobileTrapDamage","__ccgV142R19TrapTriggerOwner","__ccgV141R56EnvironmentDamage",
+        "__ccgV141R57DesktopPrepStability","__ccgV141R54","__ccgV141PostPlaytestStability"
+      ])if(current?.[marker]===true)markers.push(marker);
+      rows.push({depth,name:String(current.name||"anonymous"),markers});
+      current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null;depth++;
+    }
+    return rows;
+  }
+  function trapOwnerSnapshot(player,trap,stamp=performance.now()){
+    const rare=window.CCGLostSizzlerRareEventsBalance?.trapRuntime||null;
+    const contactKey=trapContactKey(player,trap),cycleKey=trapCycleKey(player,trap),clock=trapClock(trap,stamp);
+    return{
+      trap:{id:trapId(trap),kind:String(trap?.kind||"floor"),x:Number(trap?.x),y:Number(trap?.y),activeFlag:trap?.active!==false,...clock},
+      player:{id:trapPlayerId(player),x:Number(player?.x),y:Number(player?.y),health:Number(player?.health),armor:Number(player?.armor||0),invuln:Number(player?.invuln||0),hitStunMs:Number(player?.hitStunMs||0),lastHurtAt:Number(player?.__ccgLastHurtAt||0)},
+      latches:{
+        rareContact:safe(()=>Boolean(rare?.contact?.has?.(contactKey)),false),
+        r56Cycle:safe(()=>window.CCGLostSizzlerV141R56PlaytestCompletion?.state?.trapCycles?.get?.(cycleKey)??null,null),
+        r57Cycle:safe(()=>window.CCGLostSizzlerV141R57DesktopPrepStability?.state?.trapCycles?.get?.(cycleKey)??null,null)
+      },
+      r19:compact(safe(()=>window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||null,null)),
+      owners:{hurtPlayer:ownerChain(window.hurtPlayer),triggerTrap:ownerChain(window.triggerTrap)}
+    };
+  }
+  function trapSnapshot(player){
+    if(!player)return null;
+    const stamp=performance.now(),matches=safe(()=>(host?.traps||[]).filter(trap=>trap?.active!==false&&Number(trap.x)===Number(player.x)&&Number(trap.y)===Number(player.y)),[]);
+    return{
+      at:{x:Number(player.x),y:Number(player.y)},
+      matches:matches.map(trap=>trapOwnerSnapshot(player,trap,stamp)),
+      duplicateCount:matches.length
+    };
+  }
   function currentSnapshot(reason="snapshot"){
     const player=safe(()=>p1,null),second=safe(()=>p2,null);
     const playerId=player?.id;
@@ -95,6 +151,7 @@
         performanceTier:document.body?.dataset?.v141R47PerformanceTier||"normal"
       },
       player1:playerState(player),player2:playerState(second),
+      trapUnderPlayer:trapSnapshot(player),
       panels:{
         inventory:panelState("inventory-panel"),pause:panelState("pause-panel"),shop:panelState("shop-panel"),
         itemInfo:panelState("item-info-panel"),dossier:panelState("named-dossier-panel"),save:panelState("save-panel")
@@ -140,6 +197,7 @@
       projectiles:s.game.activeProjectiles,input:s.game.inputKeys,inventoryHidden:s.panels.inventory.hidden,
       performanceTier:s.game.performanceTier,
       trapHits:s.diagnostics.trapStability?.trapHits??null,trapRepairs:s.diagnostics.trapStability?.directTrapRepairs??null,
+      trapUnderPlayer:s.trapUnderPlayer,trapAnomalies:state.trapAnomalies,
       loopReassertions:s.diagnostics.loopFinalizer?.reassertions??null,renderRepairs:s.diagnostics.renderOwnership?.repairs??null,
       visibility:s.browser.visibility,focus:s.browser.hasFocus
     });
@@ -166,6 +224,78 @@
         updateBadge();
       }
     },650);
+  }
+
+  function trapProbe(){
+    const playing=document.body?.dataset?.runActive==="true"&&safe(()=>String(mode)==="playing",false);
+    const players=playing?safe(()=>typeof localPlayers==="function"?localPlayers():[safe(()=>p1,null),safe(()=>p2,null)].filter(Boolean),[]):[];
+    const stamp=performance.now(),seen=new Set();
+    if(!playing||!safe(()=>Array.isArray(host?.traps),false)){
+      for(const row of trapObservations.values())row.occupied=false;
+      return false
+    }
+
+    for(const player of players){
+      if(!player||Number(player.health||0)<=0)continue;
+      const overlaps=(host.traps||[]).filter(trap=>trap?.active!==false&&Number(trap.x)===Number(player.x)&&Number(trap.y)===Number(player.y));
+      const tileKey=`${trapWorldKey()}|${trapPlayerId(player)}|${Number(player.x)},${Number(player.y)}`;
+      if(overlaps.length>1&&!duplicateTrapTiles.has(tileKey)){
+        duplicateTrapTiles.add(tileKey);state.anomalies++;state.trapAnomalies++;
+        push("ANOMALY_MULTIPLE_TRAPS_SAME_TILE",{tileKey,count:overlaps.length,traps:overlaps.map(trap=>({id:trapId(trap),kind:String(trap.kind||""),period:Number(trap.period||0),phase:Number(trap.phase||0)}))});
+        updateBadge();
+      }
+
+      for(const trap of overlaps){
+        const key=trapContactKey(player,trap),clock=trapClock(trap,stamp),previous=trapObservations.get(key)||{occupied:false,active:false,cycle:null,visit:0};
+        const entered=!previous.occupied,visit=Number(previous.visit||0)+(entered?1:0);
+        seen.add(key);
+        const owner=trapOwnerSnapshot(player,trap,stamp);
+        if(entered){
+          state.trapContacts++;state.lastTrap=owner;
+          push("trap-enter",{visit,...owner});
+        }
+        const activeBoundary=clock.active&&(entered||previous.active!==true||Number(previous.cycle)!==Number(clock.cycle));
+        trapObservations.set(key,{occupied:true,active:clock.active,cycle:clock.cycle,visit,lastHealth:Number(player.health||0),kind:String(trap.kind||"floor"),x:Number(trap.x),y:Number(trap.y)});
+
+        if(!activeBoundary)continue;
+        const checkKey=`${key}|cycle:${clock.cycle}|visit:${visit}`;
+        if(trapChecks.has(checkKey))continue;
+        trapChecks.add(checkKey);
+
+        const beforeHealth=Number(player.health||0),beforeHurtAt=Number(player.__ccgLastHurtAt||0),kind=String(trap.kind||"floor").toLowerCase();
+        const beforeHits=Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHitsByKind?.[kind]||0);
+        push("trap-active-contact-observed",{checkKey,visit,beforeHealth,beforeHits,...owner});
+
+        setTimeout(()=>{
+          const afterStamp=performance.now(),afterHealth=Number(player.health||0),afterHurtAt=Number(player.__ccgLastHurtAt||0);
+          const afterHits=Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHitsByKind?.[kind]||0);
+          const healthLoss=beforeHealth-afterHealth,stillOnTile=Number(player.x)===Number(trap.x)&&Number(player.y)===Number(trap.y);
+          const afterOwner=trapOwnerSnapshot(player,trap,afterStamp);
+          if(healthLoss<1){
+            state.anomalies++;state.trapAnomalies++;state.lastTrap=afterOwner;
+            push("ANOMALY_ACTIVE_TRAP_NO_DAMAGE",{
+              checkKey,visit,expectedHealthLoss:1,actualHealthLoss:healthLoss,beforeHealth,afterHealth,
+              beforeHurtAt,afterHurtAt,beforeHits,afterHits,stillOnTile,elapsedMs:Math.round(afterStamp-stamp),
+              before:owner,after:afterOwner
+            });
+            updateBadge();
+          }else{
+            state.trapVerifiedHits++;
+            push("trap-active-damage-confirmed",{checkKey,visit,kind,healthLoss,beforeHealth,afterHealth,beforeHits,afterHits,stillOnTile});
+          }
+        },TRAP_VERIFY_MS);
+      }
+    }
+
+    for(const [key,row] of trapObservations){
+      if(!row.occupied||seen.has(key))continue;
+      row.occupied=false;row.active=false;
+      push("trap-exit",{key,visit:row.visit,kind:row.kind,x:row.x,y:row.y,lastHealth:row.lastHealth});
+    }
+    if(trapChecks.size>500){
+      const keep=[...trapChecks].slice(-250);trapChecks.clear();for(const key of keep)trapChecks.add(key);
+    }
+    return true
   }
 
   function createReport(reason="manual",snapshot=null){
@@ -196,6 +326,7 @@
       `Input: ${g.inputKeys.join(", ")||"none"}`,
       `Inventory hidden: ${s.panels.inventory.hidden} | Pause hidden: ${s.panels.pause.hidden} | Focus: ${s.browser.hasFocus} | Active element: ${s.browser.activeElement?.tag||""}#${s.browser.activeElement?.id||""}`,
       `Memory puzzle: ${mem?`phase=${mem.phase} input=${mem.inputIndex}/${mem.sequence.length} failures=${mem.failures} flash=${mem.flashTile}`:"none"}`,
+      `Trap monitor: contacts=${state.trapContacts} verifiedHits=${state.trapVerifiedHits} trapAnomalies=${state.trapAnomalies}`,
       `Recorded anomalies: ${report.anomalies}`
     ];
     const anomalyEvents=report.recentEvents.filter(event=>String(event.type||"").startsWith("ANOMALY_"));
@@ -333,13 +464,14 @@
   state.sampleTimer=setInterval(()=>{
     if(document.body?.dataset?.runActive==="true"||safe(()=>String(mode)!=="menu",false))snapshotSummary("periodic");
   },SAMPLE_MS);
-  addEventListener("pagehide",()=>{if(state.sampleTimer)clearInterval(state.sampleTimer)},{once:true});
+  state.trapProbeTimer=setInterval(()=>{try{trapProbe()}catch(error){push("trap-probe-error",{message:String(error?.stack||error||"").slice(0,1600)})}},TRAP_PROBE_MS);
+  addEventListener("pagehide",()=>{if(state.sampleTimer)clearInterval(state.sampleTimer);if(state.trapProbeTimer)clearInterval(state.trapProbeTimer)},{once:true});
   state.installed=true;
 
   window.CCGLostSizzlerBugReporter=Object.freeze({
-    version:"V10.42-bug-reporter-v1",observationOnly:true,gameplayOwnership:false,inputOwnership:false,renderOwnership:false,
+    version:"V10.42-bug-reporter-v2",observationOnly:true,gameplayOwnership:false,inputOwnership:false,renderOwnership:false,
     get state(){return state},get events(){return [...events]},
-    snapshot:currentSnapshot,createReport,formatReport,open:openReporter,close:closeReporter,
+    snapshot:currentSnapshot,trapProbe,trapSnapshot,createReport,formatReport,open:openReporter,close:closeReporter,
     enable(){try{localStorage.setItem("ccg-dungeon-bug-reporter","1")}catch(_){}ensureUi();const b=document.getElementById("ccg-bug-report-btn");if(b)b.hidden=false},
     disable(){try{localStorage.removeItem("ccg-dungeon-bug-reporter")}catch(_){}const b=document.getElementById("ccg-bug-report-btn");if(b)b.hidden=true;closeReporter()}
   });
