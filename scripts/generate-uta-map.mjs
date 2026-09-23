@@ -131,14 +131,71 @@ export function parseUtaReleaseDirectory(directoryName, href = "") {
   };
 }
 
+function releaseDirectory(release) {
+  try {
+    const absolute = new URL(String(release?.url || ""), UTA_INDEX_URL);
+    return decodeURIComponent(absolute.pathname.split("/").filter(Boolean).pop() || "");
+  } catch (_error) {
+    return "";
+  }
+}
+
 function releaseIdentity(release) {
-  const archiveId = String(release?.archiveId || "");
-  // UTA uses archive ID 0 as an unassigned sentinel on multiple distinct
-  // directories, so those entries must be distinguished by URL instead of
-  // being collapsed as if 0 were globally unique.
-  return archiveId && archiveId !== "0"
-    ? `id:${archiveId}`
-    : `url:${String(release?.url || "")}`;
+  const directory = releaseDirectory(release);
+  if (directory) return `directory:${directory}`;
+  return [
+    String(release?.archiveId || ""),
+    String(release?.titleKey || ""),
+    String(release?.publisherKey || ""),
+    String(release?.yearLabel || "")
+  ].join("|");
+}
+
+function releasesByArchiveId(utaReleases) {
+  const map = new Map();
+  for (const release of utaReleases) {
+    const archiveId = String(release?.archiveId || "").trim();
+    if (!archiveId) continue;
+    const rows = map.get(archiveId) || [];
+    rows.push(release);
+    map.set(archiveId, rows);
+  }
+  return map;
+}
+
+function releaseByOverrideSelector(item, utaReleases, slug = "") {
+  const directory = String(item?.directory || "").trim();
+  const archiveId = String(item?.archiveId || "").trim();
+
+  if (directory) {
+    const matches = utaReleases.filter((release) => releaseDirectory(release) === directory);
+    if (matches.length !== 1) {
+      throw new Error(
+        `UTA override ${slug || "(unknown)"} directory selector must resolve exactly one release: ${directory}`
+      );
+    }
+    if (archiveId && String(matches[0].archiveId) !== archiveId) {
+      throw new Error(
+        `UTA override ${slug || "(unknown)"} directory/archiveId mismatch: ${directory} / ${archiveId}`
+      );
+    }
+    return matches[0];
+  }
+
+  if (!archiveId) {
+    throw new Error(`UTA override ${slug || "(unknown)"} is missing archiveId or directory`);
+  }
+
+  const matches = releasesByArchiveId(utaReleases).get(archiveId) || [];
+  if (!matches.length) {
+    throw new Error(`UTA override ${slug || "(unknown)"} references unknown archive ID: ${archiveId}`);
+  }
+  if (matches.length !== 1) {
+    throw new Error(
+      `UTA override ${slug || "(unknown)"} archive ID ${archiveId} is ambiguous across ${matches.length} live UTA directories; add an exact directory selector`
+    );
+  }
+  return matches[0];
 }
 
 export function parseUtaIndex(html) {
@@ -249,15 +306,6 @@ export function validateUtaOverrides(games, utaReleases, overrides = {}) {
       .filter((game) => game && game.slug)
       .map((game) => [String(game.slug), game])
   );
-  const releaseMap = new Map();
-  for (const release of utaReleases) {
-    const archiveId = String(release.archiveId);
-    if (archiveId === "0") continue;
-    if (releaseMap.has(archiveId)) {
-      throw new Error(`UTA index contains duplicate non-zero archive ID: ${archiveId}`);
-    }
-    releaseMap.set(archiveId, release);
-  }
   const curatedExclusions = [];
 
   for (const [slug, rule] of Object.entries(overrides?.games || {})) {
@@ -265,35 +313,37 @@ export function validateUtaOverrides(games, utaReleases, overrides = {}) {
     if (!game) throw new Error(`UTA override references unknown game slug: ${slug}`);
     if (!isC64(game)) throw new Error(`UTA override references non-C64 game: ${slug}`);
 
-    const includeIds = new Set();
-    const excludeIds = new Set();
+    const includeKeys = new Set();
+    const excludeKeys = new Set();
 
     for (const item of toArray(rule?.include)) {
-      const archiveId = String(item?.archiveId || "").trim();
-      if (!archiveId || !releaseMap.has(archiveId)) {
-        throw new Error(`UTA override ${slug} includes unknown archive ID: ${archiveId || "(blank)"}`);
-      }
+      const release = releaseByOverrideSelector(item, utaReleases, slug);
       if (!["publisher", "re-release"].includes(String(item?.sourceRole || ""))) {
-        throw new Error(`UTA override ${slug}/${archiveId} has invalid sourceRole`);
+        throw new Error(`UTA override ${slug}/${release.archiveId} has invalid sourceRole`);
       }
-      if (includeIds.has(archiveId)) throw new Error(`UTA override ${slug} duplicates include ID ${archiveId}`);
-      includeIds.add(archiveId);
+      const key = releaseIdentity(release);
+      if (includeKeys.has(key)) {
+        throw new Error(`UTA override ${slug} duplicates include release ${releaseDirectory(release) || release.archiveId}`);
+      }
+      includeKeys.add(key);
     }
 
     for (const item of toArray(rule?.exclude)) {
-      const archiveId = String(item?.archiveId || "").trim();
-      if (!archiveId || !releaseMap.has(archiveId)) {
-        throw new Error(`UTA override ${slug} excludes unknown archive ID: ${archiveId || "(blank)"}`);
+      const release = releaseByOverrideSelector(item, utaReleases, slug);
+      const key = releaseIdentity(release);
+      if (excludeKeys.has(key)) {
+        throw new Error(`UTA override ${slug} duplicates exclude release ${releaseDirectory(release) || release.archiveId}`);
       }
-      if (excludeIds.has(archiveId)) throw new Error(`UTA override ${slug} duplicates exclude ID ${archiveId}`);
-      if (includeIds.has(archiveId)) throw new Error(`UTA override ${slug}/${archiveId} cannot be both included and excluded`);
-      excludeIds.add(archiveId);
+      if (includeKeys.has(key)) {
+        throw new Error(`UTA override ${slug}/${release.archiveId} cannot be both included and excluded`);
+      }
+      excludeKeys.add(key);
 
-      const release = releaseMap.get(archiveId);
       curatedExclusions.push({
         gameSlug: slug,
         title: String(game.title || slug),
-        archiveId,
+        archiveId: release.archiveId,
+        directory: releaseDirectory(release),
         utaTitle: release.title,
         publisher: release.publisher,
         yearLabel: release.yearLabel,
@@ -304,6 +354,7 @@ export function validateUtaOverrides(games, utaReleases, overrides = {}) {
 
   return curatedExclusions.sort((a, b) =>
     a.gameSlug.localeCompare(b.gameSlug)
+    || String(a.directory || "").localeCompare(String(b.directory || ""))
     || Number(a.archiveId) - Number(b.archiveId)
   );
 }
@@ -317,20 +368,15 @@ export function matchGameToUta(game, utaReleases, override = null) {
   const titles = titleVariants(game?.title, game?.sorttitle);
   if (!slug || !titles.size) return { releases: [], review: [] };
 
-  const excludedIds = new Set(toArray(override?.exclude).map((item) => String(item?.archiveId || "")));
-  const includedIds = new Set(toArray(override?.include).map((item) => String(item?.archiveId || "")));
-  const releaseMap = new Map();
-  for (const release of utaReleases) {
-    const archiveId = String(release.archiveId);
-    if (archiveId === "0") continue;
-    if (releaseMap.has(archiveId)) {
-      throw new Error(`UTA index contains duplicate non-zero archive ID: ${archiveId}`);
-    }
-    releaseMap.set(archiveId, release);
-  }
+  const excludedKeys = new Set(
+    toArray(override?.exclude).map((item) => releaseIdentity(releaseByOverrideSelector(item, utaReleases, slug)))
+  );
+  const includedKeys = new Set(
+    toArray(override?.include).map((item) => releaseIdentity(releaseByOverrideSelector(item, utaReleases, slug)))
+  );
   const titleCandidates = utaReleases.filter((release) =>
-    !excludedIds.has(String(release.archiveId))
-    && !includedIds.has(String(release.archiveId))
+    !excludedKeys.has(releaseIdentity(release))
+    && !includedKeys.has(releaseIdentity(release))
     && titleMatches(titles, release)
   );
 
@@ -340,9 +386,7 @@ export function matchGameToUta(game, utaReleases, override = null) {
   const rejected = [];
 
   toArray(override?.include).forEach((item) => {
-    const archiveId = String(item?.archiveId || "");
-    const release = releaseMap.get(archiveId);
-    if (!release) throw new Error(`UTA override ${slug} includes unknown archive ID: ${archiveId}`);
+    const release = releaseByOverrideSelector(item, utaReleases, slug);
     accepted.push(releaseForOutput(release, String(item.sourceRole)));
   });
 
