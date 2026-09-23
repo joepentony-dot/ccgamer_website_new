@@ -113,6 +113,8 @@
         fireRecovery:safe(()=>window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics||null,null),
         runtimeRepair:safe(()=>window.CCGLostSizzlerV141R29?.state||null,null),
         trapStability:safe(()=>window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||null,null),
+        loopFinalizer:safe(()=>window.CCGLostSizzlerV141R29LoopFinalizer?.state||null,null),
+        renderOwnership:safe(()=>window.CCGLostSizzlerV141R51RenderOwnershipFinalizer?.state||null,null),
         projectileLifecycle:safe(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.state||null,null),
         performanceGovernor:safe(()=>window.CCGLostSizzlerV141R47AllModeOptimisation?.getDiagnostics?.()||null,null),
         globalPerformance:safe(()=>window.CCGLostSizzlerV141R37GlobalPerformance?.getDiagnostics?.()||null,null),
@@ -136,6 +138,9 @@
       reason,mode:s.game.mode,floor:s.game.floor,pos:s.player1?{x:s.player1.x,y:s.player1.y}:null,
       mana:s.player1?.mana,weapon:s.player1?.weapon?.name||"",fire1:s.game.fire1,buffer:s.game.fireBuffer1,
       projectiles:s.game.activeProjectiles,input:s.game.inputKeys,inventoryHidden:s.panels.inventory.hidden,
+      performanceTier:s.game.performanceTier,
+      trapHits:s.diagnostics.trapStability?.trapHits??null,trapRepairs:s.diagnostics.trapStability?.directTrapRepairs??null,
+      loopReassertions:s.diagnostics.loopFinalizer?.reassertions??null,renderRepairs:s.diagnostics.renderOwnership?.repairs??null,
       visibility:s.browser.visibility,focus:s.browser.hasFocus
     });
     return s;
