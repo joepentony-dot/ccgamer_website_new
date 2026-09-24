@@ -14,6 +14,9 @@ assert.match(mod,/NOT ENOUGH GOLD/,"Dungeon shop fallback must respect the Gold 
 assert.match(mod,/NOT ENOUGH SCORE/,"legacy non-Dungeon fallback must remain available outside the Gold economy");
 assert.match(mod,/CCGDungeonProgressionFoundation/,"shop feedback must consult the authoritative Dungeon Gold economy before falling back");
 assert.match(mod,/INVENTORY FULL/);
+assert.match(mod,/let serial=0,purchaseDepth=0/,"shop feedback must distinguish active purchase feedback from unrelated global toasts");
+assert.match(mod,/shopVisible\(\)&&purchaseDepth>0&&\!\/\^ACHIEVEMENT\\b\/i\.test\(heading\)/,"achievement toasts must never overwrite inline purchase feedback");
+assert.match(mod,/purchaseDepth\+\+;[\s\S]*buyOwner\.call\(this,id,\.\.\.rest\)[\s\S]*purchaseDepth=Math\.max\(0,purchaseDepth-1\)/,"purchase-scoped toast mirroring must be bounded to the buy call");
 assert.match(mod,/result===false&&serial===before/,"silent false purchase results must receive a fallback explanation");
 assert.match(reporter,/shopState:/,"bug reports must capture live shop state");
 assert.match(reporter,/ccg:shop-feedback/,"bug reports must capture shop feedback events");
