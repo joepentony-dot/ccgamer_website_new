@@ -90,6 +90,12 @@
     <link rel="stylesheet" href="/resources/css/retro-video-discovery.css" />
     <link rel="stylesheet" href="/resources/css/ccg-nav-fit.css" data-ccg-static-shell-style="true">
     <link rel="stylesheet" href="/resources/css/ccg-community.css" data-ccg-static-shell-style="true">
+    <link rel="stylesheet" href="/resources/css/ccg-mode-identity.css" data-ccg-retro-first-paint-style="true">
+    <!-- Keep the final responsive geometry render-blocking on retro watch pages.
+         ccg-responsive-safety.js later reasserts this same cascade order. -->
+    <link rel="stylesheet" href="/resources/css/ccg-responsive-safety.css" data-ccg-retro-first-paint-style="true">
+    <link rel="stylesheet" href="/resources/css/ccg-responsive-page-polish.css" data-ccg-retro-first-paint-style="true">
+    <link rel="stylesheet" href="/resources/css/ccg-sitewide-layout-optimization.css" data-ccg-retro-first-paint-style="true">
     <script src="/js/ccg-nav-fit.js" defer data-ccg-static-shell-script="true"></script>
     <script src="/js/ccg-header-auth-loader.js" defer data-ccg-static-shell-script="true"></script>
   <link rel="stylesheet" href="/resources/css/ccg-nav-labelled-bridge.css" data-ccg-public-header-first-paint-style="true">
@@ -253,6 +259,24 @@
   </div>
   <div class="ccg-header-neon-strip"></div>
 </header>
+
+<aside id="ccgModeIdentityBar" class="ccg-mode-identity" role="status" aria-live="polite" aria-label="Current Commodore display mode" data-mode="c64" data-ccg-retro-static-mode-identity="true">
+  <div class="ccg-mode-identity__inner">
+    <div class="ccg-mode-identity__name">
+      <span class="ccg-mode-identity__icon" aria-hidden="true">
+        <span class="ccg-mode-identity__c64-mark"><i></i><i></i><i></i><i></i></span>
+        <span class="ccg-mode-identity__amiga-mark"><i></i></span>
+      </span>
+      <span class="ccg-mode-identity__eyebrow">COMMODORE 64 MODE</span>
+      <span class="ccg-mode-identity__primary">READY.</span>
+    </div>
+    <div class="ccg-mode-identity__details">
+      <span class="ccg-mode-identity__secondary">64K RAM SYSTEM</span>
+      <span class="ccg-mode-identity__separator">•</span>
+      <span class="ccg-mode-identity__tertiary">C64 ARCHIVE ONLINE</span>
+    </div>
+  </div>
+</aside>
 
 <main class="ccg-main">
   <article class="retro-video-page">
