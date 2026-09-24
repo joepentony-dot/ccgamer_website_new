@@ -1,5 +1,5 @@
 "use strict";
-net=new window.CCGNetwork.RoomNetwork({onMembers,onPacket});window.net=net;
+net=new window.CCGNetwork.RoomNetwork({onMembers,onPacket});
 
 function installEarlyStableResize(){
   if(window.__CCG_LOST_SIZZLER_EARLY_RESIZE_GUARD__)return;
