@@ -1,0 +1,18 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+const read=p=>fs.readFileSync(p,"utf8");
+const html=read("arcade/lost-sizzler/index.html");
+const alias=read("arcade/c64-dungeon-carnage/index.html");
+const css=read("arcade/lost-sizzler/css/game.css");
+const bootstrap=read("arcade/lost-sizzler/js/v10-42-bootstrap.js");
+const mod=read("arcade/lost-sizzler/js/v10-42-r55-shop-feedback.js");
+const reporter=read("arcade/lost-sizzler/js/v10-42-bug-reporter.js");
+for(const source of [html,alias])assert.match(source,/id="shop-status"/,"both public routes must expose inline shop feedback");
+assert.match(css,/\.shop-status\{/,"shop feedback must have an in-overlay presentation");
+assert.match(bootstrap,/v10-42-r55-shop-feedback\.js/,"shop feedback owner must load after established purchase owners");
+assert.match(mod,/NOT ENOUGH SCORE/);
+assert.match(mod,/INVENTORY FULL/);
+assert.match(mod,/result===false&&serial===before/,"silent false purchase results must receive a fallback explanation");
+assert.match(reporter,/shopState:/,"bug reports must capture live shop state");
+assert.match(reporter,/ccg:shop-feedback/,"bug reports must capture shop feedback events");
+console.log("PASS shop feedback contract");

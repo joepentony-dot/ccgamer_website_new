@@ -5,7 +5,7 @@
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
   const BUILD="V10.42 r54";
-  const CACHE="20260923r54";
+  const CACHE="20260924r54-critical3";
   const prerequisites=[
     ["v10-41-r30-owner-seal.js","CCGLostSizzlerV141R30OwnerSeal"],
     ["v10-41-mode-runtime.js","CCGLostSizzlerModeRuntime"],
@@ -68,6 +68,7 @@
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
     ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"],
     ["v10-42-r47-inventory-fire-recovery.js","CCGLostSizzlerV142R47InventoryFireRecovery"],
+    ["v10-42-r55-shop-feedback.js","CCGLostSizzlerV142R55ShopFeedback"],
     ["v10-42-bug-reporter.js","CCGLostSizzlerBugReporter"]
   ];
   const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],totalModules:modules.length,currentModule:"",currentIndex:0,pendingStartId:"",pendingStartRetries:0,identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0,r1ChestOwner:null,r1ChestOwnerRestores:0};
