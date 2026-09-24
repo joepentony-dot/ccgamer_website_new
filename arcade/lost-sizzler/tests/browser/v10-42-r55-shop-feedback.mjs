@@ -17,11 +17,11 @@ try{
  const page=await context.newPage();await page.goto(`${origin}/arcade/lost-sizzler/?shop-feedback=1`,{waitUntil:"load"});
  await page.waitForFunction(()=>document.body.dataset.v142BootstrapReady==="true"&&Boolean(window.CCGLostSizzlerV142R55ShopFeedback));
  await page.locator("#solo-btn").click({noWaitAfter:true});await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&String(mode)==="playing");
- await page.evaluate(()=>{const shop=host?.shops?.[0]||host?.trader;if(!shop)throw new Error("shop fixture missing");openShop(shop,p1);score=0;renderShop()});
+ await page.evaluate(()=>{const shop=host?.shops?.[0]||host?.trader;if(!shop)throw new Error("shop fixture missing");openShop(shop,p1);score=0;if(run)run.gold=0;renderShop()});
  await page.locator('[data-shop-buy="potion"]').click();
  await page.waitForFunction(()=>!document.getElementById("shop-status")?.classList.contains("hidden"));
- let status=await page.locator("#shop-status").innerText();assert.match(status,/NOT ENOUGH SCORE/i);
- await page.evaluate(()=>{score=999999;const cap=Math.max(1,Number(PGR.inventoryCapacity(p1)||3));p1.inventory=Array.from({length:cap},(_,i)=>({kind:`blocked-${i}`,name:`Blocked ${i}`,qty:1}));renderShop()});
+ let status=await page.locator("#shop-status").innerText();assert.match(status,/NOT ENOUGH GOLD/i);
+ await page.evaluate(()=>{score=999999;if(run)run.gold=999;const cap=Math.max(1,Number(PGR.inventoryCapacity(p1)||3));p1.inventory=Array.from({length:cap},(_,i)=>({kind:`blocked-${i}`,name:`Blocked ${i}`,qty:1}));renderShop()});
  await page.locator('[data-shop-buy="potion"]').click();
  await page.waitForFunction(()=>/INVENTORY FULL/i.test(document.getElementById("shop-status")?.innerText||""));
  status=await page.locator("#shop-status").innerText();assert.match(status,/INVENTORY FULL/i);
