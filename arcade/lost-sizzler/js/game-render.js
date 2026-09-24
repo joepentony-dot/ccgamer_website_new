@@ -4,7 +4,7 @@ const lostSizzlerPixelAssets=(()=>{
     if(typeof Image!=="function")return null;
     const image=new Image();image.decoding="async";
     try{image.fetchPriority="high"}catch(_){}
-    const packageRoot=window.CCGDungeonCarnageItchRelease?.itchPackage===true?"":"/arcade/lost-sizzler/";
+    const packageRoot=window.CCGDungeonCarnageItchPackage===true?"":"/arcade/lost-sizzler/";
     image.src=`${packageRoot}${path}?v=${encodeURIComponent(cache)}`;
     return image
   };
