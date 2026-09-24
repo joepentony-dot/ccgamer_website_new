@@ -65,7 +65,8 @@
       invuln:Number(player.invuln||0),controlLocked:Boolean(player.controlLocked),controlsLocked:Boolean(player.controlsLocked),
       firearmUnlocked:player.firearmUnlocked!==false,weaponLevel:Number(player.weaponLevel||0),
       weapon:weaponState(player),ownedWeaponCount:Array.isArray(player.ownedWeapons)?player.ownedWeapons.length:0,
-      activeWeaponIndex:Number.isInteger(player.activeWeaponIndex)?player.activeWeaponIndex:null
+      activeWeaponIndex:Number.isInteger(player.activeWeaponIndex)?player.activeWeaponIndex:null,
+      meleeSwingAt:Number(player._meleeSwingAt||0)
     };
   }
 
@@ -129,6 +130,19 @@
       }
     };
   }
+  function dedicatedHazardSnapshot(player){
+    if(!player)return null;
+    return safe(()=>{
+      const elapsed=Number(host?.floorElapsed||run?.elapsed||0);
+      const roomId=typeof W?.roomAt==="function"?W.roomAt(world,Number(player.x),Number(player.y)):null;
+      const matches=(host?.hazardRooms||[]).filter(hazard=>hazard&&hazard.roomId===roomId).map(hazard=>{
+        const state=typeof SYS?.hazardCellState==="function"?SYS.hazardCellState(hazard,Number(player.x),Number(player.y),elapsed):{active:false,warning:false,group:-1};
+        return{id:String(hazard.id||""),type:String(hazard.type||""),title:String(hazard.title||""),roomId:Number(hazard.roomId),active:Boolean(state?.active),warning:Boolean(state?.warning),group:Number(state?.group??-1),elapsed,hitCooldown:Number(player.hazardHitCooldown||0)};
+      }).filter(row=>row.active||row.warning);
+      return{at:{x:Number(player.x),y:Number(player.y)},matches};
+    },null);
+  }
+
   function currentSnapshot(reason="snapshot"){
     const player=safe(()=>p1,null),second=safe(()=>p2,null);
     const playerId=player?.id;
@@ -163,6 +177,15 @@
       },
       player1:playerState(player),player2:playerState(second),
       trapUnderPlayer:trapSnapshot(player),
+      shopState:safe(()=>({
+        open:Boolean(activeShop&&UI?.shop&&!UI.shop.classList.contains("hidden")),
+        shopId:String(activeShop?.id||""),shopType:String(activeShop?.shopType||""),
+        score:Number(score||0),artefacts:Number(PGR?.inventoryKindCount?.(player,"artefact")||0),
+        inventoryUsed:Array.isArray(player?.inventory)?player.inventory.length:0,
+        inventoryCapacity:Number(PGR?.inventoryCapacity?.(player)||0),
+        feedback:window.CCGLostSizzlerV142R55ShopFeedback?.state?.last||null
+      }),null),
+      dedicatedHazardUnderPlayer:dedicatedHazardSnapshot(player),
       panels:{
         inventory:panelState("inventory-panel"),pause:panelState("pause-panel"),shop:panelState("shop-panel"),
         itemInfo:panelState("item-info-panel"),dossier:panelState("named-dossier-panel"),save:panelState("save-panel")
@@ -183,6 +206,7 @@
         trapStability:safe(()=>window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||null,null),
         loopFinalizer:safe(()=>window.CCGLostSizzlerV141R29LoopFinalizer?.state||null,null),
         renderOwnership:safe(()=>window.CCGLostSizzlerV141R51RenderOwnershipFinalizer?.state||null,null),
+        chestRender:safe(()=>window.__CCG_CHEST_RENDER_DIAGNOSTICS__||null,null),
         projectileLifecycle:safe(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.state||null,null),
         performanceGovernor:safe(()=>window.CCGLostSizzlerV141R47AllModeOptimisation?.getDiagnostics?.()||null,null),
         globalPerformance:safe(()=>window.CCGLostSizzlerV141R37GlobalPerformance?.getDiagnostics?.()||null,null),
@@ -217,24 +241,29 @@
 
   function fireProbe(code,before){
     if(!before?.player1||before.game.mode!=="playing"||!before.game.runActive)return;
-    if(!before.player1.firearmUnlocked||!before.player1.weapon||before.player1.mana<=0||before.player1.hitStunMs>0)return;
-    if(Number(before.game.activeProjectiles)>=Number(before.game.maxProjectiles||Infinity))return;
     setTimeout(()=>{
-      const after=currentSnapshot("fire-probe");
+      const after=currentSnapshot("attack-probe");
       const fired=Number(after.player1?.mana)<Number(before.player1?.mana)||
-        Number(after.game.activeProjectiles)>Number(before.game.activeProjectiles);
-      push("fire-probe",{code,fired,before:{mana:before.player1?.mana,hitStunMs:before.player1?.hitStunMs,fire1:before.game.fire1,buffer:before.game.fireBuffer1,projectiles:before.game.activeProjectiles,mode:before.game.mode},after:{mana:after.player1?.mana,hitStunMs:after.player1?.hitStunMs,fire1:after.game.fire1,buffer:after.game.fireBuffer1,projectiles:after.game.activeProjectiles,mode:after.game.mode}});
+        Number(after.game.activeProjectiles)>Number(before.game.activeProjectiles)||
+        Number(after.player1?.meleeSwingAt||0)>Number(before.player1?.meleeSwingAt||0);
+      push("attack-probe",{code,fired,before:{mana:before.player1?.mana,hitStunMs:before.player1?.hitStunMs,meleeSwingAt:before.player1?.meleeSwingAt,fire1:before.game.fire1,buffer:before.game.fireBuffer1,projectiles:before.game.activeProjectiles,mode:before.game.mode},after:{mana:after.player1?.mana,hitStunMs:after.player1?.hitStunMs,meleeSwingAt:after.player1?.meleeSwingAt,fire1:after.game.fire1,buffer:after.game.fireBuffer1,projectiles:after.game.activeProjectiles,mode:after.game.mode}});
       if(!fired&&after.game.mode==="playing"&&after.game.runActive&&after.browser.visibility==="visible"){
         state.anomalies++;
-        push("ANOMALY_POSSIBLE_FIRE_FAILURE",{
-          code,ammo:after.player1?.mana,weapon:after.player1?.weapon?.name||"",input:after.game.inputKeys,
+        const anomalyDetail={
+          code,ammo:after.player1?.mana,weapon:after.player1?.weapon?.name||"MELEE",input:after.game.inputKeys,
           hitStunMs:after.player1?.hitStunMs,lastHurtAt:safe(()=>Number(p1?.__ccgLastHurtAt||0),0),
-          fire1:after.game.fire1,buffer:after.game.fireBuffer1,projectiles:after.game.activeProjectiles,
+          meleeSwingAt:after.player1?.meleeSwingAt,fire1:after.game.fire1,buffer:after.game.fireBuffer1,projectiles:after.game.activeProjectiles,
+          deepOwnerFallbacks:after.diagnostics.fireRecovery?.deepOwnerFallbacks??null,
+          deepOwnerFallbackSuccesses:after.diagnostics.fireRecovery?.deepOwnerFallbackSuccesses??null,
           inventoryHidden:after.panels.inventory.hidden,activeElement:after.browser.activeElement
-        });
+        };
+        push("ANOMALY_POSSIBLE_ATTACK_FAILURE",anomalyDetail);
+        if(String(after.player1?.weapon?.kind||"").toLowerCase()==="firearm"||Number(after.player1?.mana)>0){
+          push("ANOMALY_POSSIBLE_FIRE_FAILURE",anomalyDetail);
+        }
         updateBadge();
       }
-    },650);
+    },900);
   }
 
   function trapProbe(){
@@ -461,13 +490,14 @@
   addEventListener("unhandledrejection",event=>push("unhandled-rejection",{reason:String(event.reason?.stack||event.reason||"").slice(0,2000)}));
   addEventListener("ccg:sfx",event=>push("sfx",{name:String(event.detail?.name||""),at:Number(event.detail?.at||0)}));
   addEventListener("ccg:shop-firearm-upgrade",event=>push("shop-firearm-upgrade",{shopId:String(event.detail?.shopId||""),floor:Number(event.detail?.floor||0),beforeTier:Number(event.detail?.beforeTier||0),afterTier:Number(event.detail?.afterTier||0),price:Number(event.detail?.price||0),goldCoins:Number(event.detail?.goldCoins||0),scoreBefore:Number(event.detail?.scoreBefore||0),scoreAfter:Number(event.detail?.scoreAfter||0)}));
+  addEventListener("ccg:shop-feedback",event=>push("shop-feedback",event.detail||{}));
   addEventListener("ccg:music-state",event=>push("music-state",{reason:String(event.detail?.reason||""),state:String(event.detail?.state||""),roomMood:String(event.detail?.roomMood||""),stalkerNear:Boolean(event.detail?.stalkerNear),stalkerSight:Boolean(event.detail?.stalkerSight),namedEnemy:String(event.detail?.namedEnemy||""),asset:String(event.detail?.asset||""),useMusicAssets:Boolean(event.detail?.useMusicAssets),at:Number(event.detail?.at||0)}));
   addEventListener("ccg:item-collected",event=>push("item-collected",{kind:String(event.detail?.kind||""),name:String(event.detail?.name||""),lootKind:String(event.detail?.lootKind||""),collector:String(event.detail?.collector||""),floor:Number(event.detail?.floor||0)}));
   addEventListener("ccg:collectible-effect",event=>push("collectible-effect",{effect:String(event.detail?.effect||""),active:Boolean(event.detail?.active),at:Number(event.detail?.at||0)}));
   document.addEventListener("click",event=>{
-    const target=event.target instanceof Element?event.target.closest("#inventory-close,#inventory-close-top,#resume-btn,[data-ccg-equip-weapon],[data-bug-close]"):null;
+    const target=event.target instanceof Element?event.target.closest("#inventory-close,#inventory-close-top,#resume-btn,[data-ccg-equip-weapon],[data-shop-buy],[data-bug-close]"):null;
     if(!target)return;
-    push("ui-click",{id:target.id||"",action:target.getAttribute("data-ccg-equip-weapon")!=null?"equip-weapon":target.hasAttribute("data-bug-close")?"bug-close":"",mode:safe(()=>String(mode),"")});
+    push("ui-click",{id:target.id||"",action:target.getAttribute("data-shop-buy")!=null?`shop-buy:${target.getAttribute("data-shop-buy")}`:target.getAttribute("data-ccg-equip-weapon")!=null?"equip-weapon":target.hasAttribute("data-bug-close")?"bug-close":"",mode:safe(()=>String(mode),"")});
     setTimeout(()=>snapshotSummary(`after-click-${target.id||"control"}`),80);
   },true);
 
@@ -481,7 +511,7 @@
   state.installed=true;
 
   window.CCGLostSizzlerBugReporter=Object.freeze({
-    version:"V10.42-bug-reporter-v2",observationOnly:true,gameplayOwnership:false,inputOwnership:false,renderOwnership:false,
+    version:"V10.42-bug-reporter-v3",observationOnly:true,gameplayOwnership:false,inputOwnership:false,renderOwnership:false,
     get state(){return state},get events(){return [...events]},
     snapshot:currentSnapshot,trapProbe,trapSnapshot,createReport,formatReport,open:openReporter,close:closeReporter,
     enable(){try{localStorage.setItem("ccg-dungeon-bug-reporter","1")}catch(_){}ensureUi();const b=document.getElementById("ccg-bug-report-btn");if(b)b.hidden=false},

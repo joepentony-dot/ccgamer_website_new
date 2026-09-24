@@ -6,21 +6,21 @@
   <base href="/arcade/lost-sizzler/">
   <!-- Raw-main Pages fallback: keeps the public Dungeon Carnage URL live while assets remain canonical in arcade/lost-sizzler/. -->
   <meta name="ccg-lost-sizzler-build" content="V10.42 r54">
-  <meta name="ccg-lost-sizzler-cache" content="20260923r54">
+  <meta name="ccg-lost-sizzler-cache" content="20260924r54">
   <meta name="theme-color" content="#09040f">
   <meta name="robots" content="index,follow">
   <meta name="description" content="Play C64 Dungeon Carnage, a free retro Commodore 64-inspired browser dungeon crawler. Fight tactical enemies, collect loot and survive five floors.">
   <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/arcade/c64-dungeon-carnage/">
   <title>C64 Dungeon Carnage | Free Retro C64 Dungeon Game</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="preload" as="image" href="assets/pixel/explorer-sheet-v10-34.png?v=20260923r54" fetchpriority="high">
-  <link rel="preload" as="image" href="assets/pixel/chest-sheet-v10-34.png?v=20260923r54" fetchpriority="high">
-  <link rel="stylesheet" href="css/game.css?v=20260923r54">
-  <link rel="stylesheet" href="css/v10-6-gameplay.css?v=20260923r54">
-  <link rel="stylesheet" href="css/v10-41-r28.css?v=20260923r54">
-  <link rel="stylesheet" href="css/v10-41-r29.css?v=20260923r54">
-  <link rel="stylesheet" data-ccg-v136-special-ui="true" href="css/v10-36-special-ui.css?v=20260923r54">
-  <link rel="stylesheet" href="css/v10-42-startup-first-visual.css?v=20260923r54">
+  <link rel="preload" as="image" href="assets/pixel/explorer-sheet-v10-34.png?v=20260924r54" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/pixel/chest-sheet-v10-34.png?v=20260924r54" fetchpriority="high">
+  <link rel="stylesheet" href="css/game.css?v=20260924r54">
+  <link rel="stylesheet" href="css/v10-6-gameplay.css?v=20260924r54">
+  <link rel="stylesheet" href="css/v10-41-r28.css?v=20260924r54">
+  <link rel="stylesheet" href="css/v10-41-r29.css?v=20260924r54">
+  <link rel="stylesheet" data-ccg-v136-special-ui="true" href="css/v10-36-special-ui.css?v=20260924r54">
+  <link rel="stylesheet" href="css/v10-42-startup-first-visual.css?v=20260924r54">
 </head>
 <body data-game-ready="false" data-release-ready="false" data-run-active="false">
 <div id="ccg-release-loading" class="ccg-release-loading" role="status" aria-live="polite">
@@ -33,9 +33,9 @@
     <div class="ccg-release-loading-meta"><span id="ccg-release-loading-percent" class="ccg-release-loading-percent">0%</span><span>C64 DUNGEON CARNAGE · PREPARING RUNTIME</span></div>
   </div>
 </div>
-  <script src="/js/ccg-supabase-config.js?v=20260923r54"></script>
-  <script src="/js/ccg-supabase-client.js?v=20260923r54"></script>
-  <script src="/js/ccg-play-maintenance-owner-gate.js?v=20260923r54" data-ccg-play-maintenance-gate="owner-preview"></script>
+  <script src="/js/ccg-supabase-config.js?v=20260924r54"></script>
+  <script src="/js/ccg-supabase-client.js?v=20260924r54"></script>
+  <script src="/js/ccg-play-maintenance-owner-gate.js?v=20260924r54" data-ccg-play-maintenance-gate="owner-preview"></script>
 <main class="ccg-game">
   <header class="topbar v102-topbar">
     <div class="brand v102-brand">
@@ -152,6 +152,7 @@
       <div class="shop-panel-head"><h2 id="shop-title">Dungeon Supply Shop</h2><button id="shop-close" class="primary shop-close-top" type="button">Leave Shop</button></div>
       <p id="shop-copy">Choose what you actually need. Normal score stock can be bought repeatedly, with the price doubling after every purchase at this shop.</p>
       <div class="shop-wallet"><span>SCORE <b id="shop-score">000000</b></span><span>ARTEFACTS <b id="shop-artefacts">0</b></span><span>NEXT SCORE PRICE <b id="shop-next-price">1000</b></span></div>
+      <div id="shop-status" class="shop-status hidden" role="status" aria-live="assertive" aria-atomic="true"><b id="shop-status-title">SHOP READY</b><span id="shop-status-text">Purchase feedback will appear here.</span></div>
       <div id="shop-items" class="shop-grid"></div>
       <p class="shop-note">Normal score items can be bought repeatedly at the same shop. The shared price ladder is 1,000, 2,000, 4,000, 8,000 and so on. Stock: Potion, Torch, Teleport Spell, Inventory Slot, Ammo, Armour and a floor-gated Firearm Upgrade. Inventory expansions stop only when all six slots are open. The Firearm Upgrade starts at 2,500 score (20 Gold Score Coins) and rises by 1,250 score per tier without affecting the normal shop price ladder. A Banishment Flask can be traded repeatedly for 3 artefacts or bought once per shop for a fixed 10,000 score.</p>
     </div></div>
@@ -236,36 +237,36 @@
     <div class="hub-hidden-data" aria-hidden="true"><div id="loadout"></div><div id="player-list"></div></div>
   </section>
 </main>
-<script src="js/v10-41-cache-guard.js?v=20260923r54"></script>
-<script src="js/v10-41-load-watchdog.js?v=20260923r54"></script>
-<script src="js/version-check.js?v=20260923r54"></script>
-<script src="js/v10-23-tutorial-guidance.js?v=20260923r54"></script>
-<script src="js/asset-overrides.js?v=20260923r54"></script>
-<script src="js/avatar-data.js?v=20260923r54"></script>
-<script src="js/config.js?v=20260923r54"></script>
-<script src="js/progression.js?v=20260923r54"></script>
-<script src="js/audio-assets.js?v=20260923r54"></script>
-<script src="js/audio.js?v=20260923r54"></script>
-<script src="js/world.js?v=20260923r54"></script>
-<script src="js/network.js?v=20260923r54"></script>
-<script src="js/ai.js?v=20260923r54"></script>
-<script src="js/systems.js?v=20260923r54"></script>
-<script src="js/game-core.js?v=20260923r54"></script>
-<script src="js/game-network.js?v=20260923r54"></script>
-<script src="js/game-local-runtime.js?v=20260923r54"></script>
-<script src="js/game-play.js?v=20260923r54"></script>
-<script src="js/game-render.js?v=20260923r54"></script>
-<script src="js/game-main.js?v=20260923r54"></script>
-<script src="js/v10-41-lake-item-safety.js?v=20260923r54"></script>
-<script src="js/v10-41-gambler-devroom.js?v=20260923r54"></script>
-<script src="js/v10-41-developer-vault-hardening.js?v=20260923r54"></script>
-<script src="js/v10-41-developer-asset-catalog.js?v=20260923r54"></script>
-<script src="js/v10-41-split-friendly-fire.js?v=20260923r54"></script>
-<script src="js/v10-41-landing-notification-polish.js?v=20260923r54"></script>
-<script src="js/v10-41-major-notification-hardening.js?v=20260923r54"></script>
-<script src="js/v10-41-active-enemy-fire.js?v=20260923r54"></script>
-<script src="js/v10-41-r29-runtime-repair.js?v=20260923r54"></script>
-  <script src="js/v10-41-r30-global-movement-guard.js?v=20260923r54"></script>
+<script src="js/v10-41-cache-guard.js?v=20260924r54"></script>
+<script src="js/v10-41-load-watchdog.js?v=20260924r54"></script>
+<script src="js/version-check.js?v=20260924r54"></script>
+<script src="js/v10-23-tutorial-guidance.js?v=20260924r54"></script>
+<script src="js/asset-overrides.js?v=20260924r54"></script>
+<script src="js/avatar-data.js?v=20260924r54"></script>
+<script src="js/config.js?v=20260924r54"></script>
+<script src="js/progression.js?v=20260924r54"></script>
+<script src="js/audio-assets.js?v=20260924r54"></script>
+<script src="js/audio.js?v=20260924r54"></script>
+<script src="js/world.js?v=20260924r54"></script>
+<script src="js/network.js?v=20260924r54"></script>
+<script src="js/ai.js?v=20260924r54"></script>
+<script src="js/systems.js?v=20260924r54"></script>
+<script src="js/game-core.js?v=20260924r54"></script>
+<script src="js/game-network.js?v=20260924r54"></script>
+<script src="js/game-local-runtime.js?v=20260924r54"></script>
+<script src="js/game-play.js?v=20260924r54"></script>
+<script src="js/game-render.js?v=20260924r54"></script>
+<script src="js/game-main.js?v=20260924r54"></script>
+<script src="js/v10-41-lake-item-safety.js?v=20260924r54"></script>
+<script src="js/v10-41-gambler-devroom.js?v=20260924r54"></script>
+<script src="js/v10-41-developer-vault-hardening.js?v=20260924r54"></script>
+<script src="js/v10-41-developer-asset-catalog.js?v=20260924r54"></script>
+<script src="js/v10-41-split-friendly-fire.js?v=20260924r54"></script>
+<script src="js/v10-41-landing-notification-polish.js?v=20260924r54"></script>
+<script src="js/v10-41-major-notification-hardening.js?v=20260924r54"></script>
+<script src="js/v10-41-active-enemy-fire.js?v=20260924r54"></script>
+<script src="js/v10-41-r29-runtime-repair.js?v=20260924r54"></script>
+  <script src="js/v10-41-r30-global-movement-guard.js?v=20260924r54"></script>
 <script>
 (()=>{const purgeLegacy=()=>document.querySelectorAll("#developer-changelog,.developer-changelog").forEach(node=>{if(node.dataset.latestBuildOnly!=="true")node.remove()});purgeLegacy();addEventListener("DOMContentLoaded",purgeLegacy,{once:true});addEventListener("load",purgeLegacy,{once:true});setTimeout(purgeLegacy,2000)})();
 </script>

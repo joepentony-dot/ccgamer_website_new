@@ -8,6 +8,8 @@
     queuedAttackRepairs:0,
     directAttackRepairs:0,
     directAttackFallbacks:0,
+    deepOwnerFallbacks:0,
+    deepOwnerFallbackSuccesses:0,
     capturedR1Shots:0,
     directAttackErrors:0,
     staleStunRepairs:0,
@@ -260,6 +262,20 @@
     return fired
   }
 
+  function recoverThroughDeepFireOwner(player,direction,beforeMana,beforeBullets,beforeMelee){
+    if(!player||currentMode()!=="playing")return false;
+    let owner=null,current=null;
+    try{current=typeof firePlayer==="function"?firePlayer:null;owner=deepestFireOwner()}catch(_){return false}
+    if(typeof owner!=="function"||owner===current)return false;
+    repairAttackBoundary();
+    diagnostics.deepOwnerFallbacks++;
+    let result=false;
+    try{result=owner(player,direction)}catch(_){diagnostics.directAttackErrors++;return false}
+    const fired=attackCompleted(player,beforeMana,beforeBullets,beforeMelee,result);
+    if(fired)diagnostics.deepOwnerFallbackSuccesses++;
+    return fired
+  }
+
   function attackNow(code){
     if(!activeRun()||!recoverOrphanedGameplayMode())return false;
     let player=null;try{player=p1}catch(_){}
@@ -282,6 +298,7 @@
     }
 
     if(!fired)fired=recoverPersistentFireBlock(player,direction,beforeMana,beforeBullets,beforeMelee);
+    if(!fired)fired=recoverThroughDeepFireOwner(player,direction,beforeMana,beforeBullets,beforeMelee);
 
     if(fired){
       failedFireIntentSince=0;failedFireIntentCount=0;
@@ -505,6 +522,8 @@
     installPresentationResumeOwners,
     showScoreDelta,
     captureR1FireOwner,
+    deepestFireOwner,
+    recoverThroughDeepFireOwner,
     installStallClamp
   });
 })();

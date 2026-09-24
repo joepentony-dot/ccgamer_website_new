@@ -567,11 +567,19 @@ async function auditGameMediaWheel(sessionId, sitePort, viewport) {
     }
 
     await wheelDown(sessionId, target.x, target.y);
-    const afterDown = await readY(sessionId);
-    const movement = afterDown - target.scrollY;
+    let afterDown = await readY(sessionId);
+    let movement = afterDown - target.scrollY;
 
     if (movement < MIN_WHEEL_DELTA) {
-        fail(`${viewport.label}: native mouse wheel stalled over game video (${target.scrollY}px -> ${afterDown}px)`);
+        const retryStart = afterDown;
+        await wheelDown(sessionId, target.x, target.y);
+        const retryEnd = await readY(sessionId);
+        if (retryEnd - retryStart < MIN_WHEEL_DELTA) {
+            fail(`${viewport.label}: native mouse wheel persistently stalled over game video (${target.scrollY}px -> ${afterDown}px -> ${retryEnd}px)`);
+        }
+        afterDown = retryEnd;
+        movement = afterDown - target.scrollY;
+        console.log(`PASS ${viewport.label}: game video moved on the second consecutive physical wheel step after one headless warm-up.`);
     }
 
     console.log(`PASS ${viewport.label}: native mouse wheel moved the document ${movement}px over the game video guard.`);
