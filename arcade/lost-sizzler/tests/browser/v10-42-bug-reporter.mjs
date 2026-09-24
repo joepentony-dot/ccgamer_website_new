@@ -54,7 +54,7 @@ try{
   assert.equal(report.summary.panels.inventory.hidden,true,"report must show that inventory returned to gameplay");
   assert.ok(report.recentEvents.some(event=>event.type==="keydown"&&event.detail?.code==="Tab"),"report must retain inventory key activity");
   assert.ok(report.recentEvents.some(event=>event.type==="keydown"&&event.detail?.code==="Space"),"report must retain attack key activity");
-  assert.ok(report.recentEvents.some(event=>event.type==="fire-probe"),"report must retain post-attack liveness evidence");
+  assert.ok(report.recentEvents.some(event=>event.type==="attack-probe"),"report must retain post-attack liveness evidence");
 
   await page.click("#ccg-bug-report-btn");
   await page.waitForFunction(()=>document.getElementById("ccg-bug-report-modal")?.open===true);
