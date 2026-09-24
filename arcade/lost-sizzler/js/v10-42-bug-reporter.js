@@ -195,7 +195,8 @@
       const healthLoss=before.beforeHealth-finalHealth,armorLoss=before.beforeArmor-finalArmor,sourceAdvanced=finalDamageAt>before.beforeDamageAt,normalizedSource=finalDamageSource.toLowerCase();
       const trapKinds=before.activeTraps.map(row=>String(row?.trap?.kind||"").toLowerCase()).filter(Boolean);
       const trapSourceMatched=sourceAdvanced&&(normalizedSource.includes("dungeon trap")||normalizedSource.includes("floor trap")||trapKinds.some(kind=>normalizedSource.includes(`${kind} trap`)));
-      const hazardSourceMatched=sourceAdvanced&&before.activeHazards.some(row=>{const title=String(row?.title||"").trim().toLowerCase(),type=String(row?.type||"").trim().toLowerCase();if(title)return normalizedSource.includes(`${title} trap`);if(type)return normalizedSource.includes(`${type} trap`);return normalizedSource.includes("hazard chamber trap")});
+      const hazardContact=safe(()=>player.__ccgLastHazardDamageContact||null,null);
+      const hazardSourceMatched=sourceAdvanced&&before.activeHazards.some(row=>Boolean(hazardContact&&Number(hazardContact.at)===finalDamageAt&&String(hazardContact.id||"")===String(row?.id||"")&&Number(hazardContact.x)===before.x&&Number(hazardContact.y)===before.y));
       const trapDamageObserved=trapSourceMatched;
       if(before.activeTraps.length&&!trapDamageObserved){
         state.anomalies++;state.trapAnomalies++;state.environmentAnomalies++;
@@ -400,27 +401,27 @@
         if(trapChecks.has(checkKey))continue;
         trapChecks.add(checkKey);
 
-        const beforeHealth=Number(player.health||0),beforeHurtAt=Number(player.__ccgLastHurtAt||0),kind=String(trap.kind||"floor").toLowerCase();
+        const beforeHealth=Number(player.health||0),beforeHurtAt=Number(player.__ccgLastHurtAt||0),beforeDamageAt=Number(player.__ccgLastDamageAt||0),kind=String(trap.kind||"floor").toLowerCase();
         const beforeHits=Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHitsByKind?.[kind]||0);
         push("trap-active-contact-observed",{checkKey,visit,beforeHealth,beforeHits,...owner});
 
         setTimeout(()=>{
-          const afterStamp=performance.now(),afterHealth=Number(player.health||0),afterHurtAt=Number(player.__ccgLastHurtAt||0);
+          const afterStamp=performance.now(),afterHealth=Number(player.health||0),afterHurtAt=Number(player.__ccgLastHurtAt||0),afterDamageAt=Number(player.__ccgLastDamageAt||0),afterDamageSource=String(player.__ccgLastDamageSource||"").toLowerCase();
           const afterHits=Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHitsByKind?.[kind]||0);
           const healthLoss=beforeHealth-afterHealth,stillOnTile=Number(player.x)===Number(trap.x)&&Number(player.y)===Number(trap.y);
-          const damageObserved=healthLoss>=1||afterHurtAt>beforeHurtAt||afterHits>beforeHits;
+          const sourceMatched=afterDamageAt>beforeDamageAt&&afterDamageSource.includes(`${kind} trap`),damageObserved=afterHits>beforeHits||sourceMatched;
           const afterOwner=trapOwnerSnapshot(player,trap,afterStamp);
           if(!damageObserved){
             state.anomalies++;state.trapAnomalies++;state.lastTrap=afterOwner;
             push("ANOMALY_ACTIVE_TRAP_NO_DAMAGE",{
               checkKey,visit,expectedHealthLoss:1,actualHealthLoss:healthLoss,beforeHealth,afterHealth,
-              beforeHurtAt,afterHurtAt,beforeHits,afterHits,stillOnTile,elapsedMs:Math.round(afterStamp-stamp),
+              beforeHurtAt,afterHurtAt,beforeDamageAt,afterDamageAt,damageSource:afterDamageSource,beforeHits,afterHits,stillOnTile,elapsedMs:Math.round(afterStamp-stamp),
               before:owner,after:afterOwner
             });
             updateBadge();
           }else{
             state.trapVerifiedHits++;
-            push("trap-active-damage-confirmed",{checkKey,visit,kind,healthLoss,beforeHealth,afterHealth,beforeHits,afterHits,stillOnTile});
+            push("trap-active-damage-confirmed",{checkKey,visit,kind,healthLoss,beforeHealth,afterHealth,beforeHits,afterHits,sourceMatched,damageSource:afterDamageSource,stillOnTile});
           }
         },TRAP_VERIFY_MS);
       }
