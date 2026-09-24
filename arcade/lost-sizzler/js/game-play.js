@@ -30,7 +30,12 @@ function gamepadDirection(){
 }
 function updateGamepad(){
   if(mode!=="playing"||!p1)return;const state=gamepadDirection();if(!state){gamepadDashDown=false;return}const {gp,dir}=state;if(dir){p1.dir=dir;if(move1<=0){movePlayer(p1,dir.x,dir.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}
-  if(gp.buttons?.[0]?.pressed&&fire1<=0)firePlayer(p1,attackDirection(p1,dir));const dash=Boolean(gp.buttons?.[1]?.pressed);if(dash&&!gamepadDashDown)dashPlayer(p1,dir||p1.dir);gamepadDashDown=dash
+  if(gp.buttons?.[0]?.pressed){
+    const recovery=window.CCGLostSizzlerV142R20LiveRegressionStability;
+    if(typeof recovery?.attackNow==="function")recovery.attackNow("Gamepad0");
+    else if(fire1<=0)firePlayer(p1,attackDirection(p1,dir));
+  }
+  const dash=Boolean(gp.buttons?.[1]?.pressed);if(dash&&!gamepadDashDown)dashPlayer(p1,dir||p1.dir);gamepadDashDown=dash
 }
 function setDir(p,code){const m=p===p2?{KeyJ:{x:-1,y:0},KeyL:{x:1,y:0},KeyI:{x:0,y:-1},KeyK:{x:0,y:1}}:{ArrowLeft:{x:-1,y:0},KeyA:{x:-1,y:0},ArrowRight:{x:1,y:0},KeyD:{x:1,y:0},ArrowUp:{x:0,y:-1},KeyW:{x:0,y:-1},ArrowDown:{x:0,y:1},KeyS:{x:0,y:1}};if(m[code])p.dir=m[code]}
 function beginDoorOpening(d,delay=900){
