@@ -78,6 +78,6 @@ const gamePlay=fs.readFileSync(new URL("js/game-play.js",root),"utf8");
 assert.match(gamePlay,/CCGLostSizzlerBugReporter\?\.observeMovementBoundary\?\.\(p,"before"/,"movement boundary must snapshot environmental contact before trap resolution");
 assert.match(gamePlay,/triggerTrap\(p\);\s*try\{window\.CCGLostSizzlerBugReporter\?\.observeMovementBoundary\?\.\(p,"after"/s,"movement boundary must verify environmental contact immediately after trap resolution");
 assert.match(gamePlay,/__ccgLastDamageAt=damageAt/,"canonical player damage must expose a timestamp for source-attributed diagnostics");
-assert.ok(gamePlay.includes('p.__ccgLastDamageSource=String(source||"enemy")'),"canonical player damage must expose its latest source as supporting diagnostic evidence");
+assert.match(gamePlay,/damageSource=String\(source\|\|"enemy"\);p\.__ccgLastHurtAt=damageAt;p\.__ccgLastDamageAt=damageAt;p\.__ccgLastDamageSource=damageSource/,"canonical player damage must expose its latest source as supporting diagnostic evidence");
 assert.match(gamePlay,/new CustomEvent\("ccg:trap-damage"[\s\S]*trapId:String\(t\.id\|\|\`\$\{t\.x\},\$\{t\.y\}\`\)[\s\S]*x:Number\(t\.x\),y:Number\(t\.y\),at:damageAt/,"ordinary traps must emit an exact accepted-damage contact signal");
 assert.match(gamePlay,/new CustomEvent\("ccg:hazard-damage"[\s\S]*hazardId:String\(hazard\.id\|\|""\)[\s\S]*x:contactX,y:contactY,at:damageAfter/,"dedicated hazards must emit an exact accepted-damage cell signal");
