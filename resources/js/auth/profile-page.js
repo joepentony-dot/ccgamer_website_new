@@ -100,12 +100,28 @@ async function ensureProfileRow(supabaseClient, user) {
   return { profile: secondRead.data, error: null };
 }
 
+function isLegacyIdFallback(value, user) {
+  const text = String(value || '').trim().toLowerCase();
+  const prefix = String(user?.id || '').slice(0, 8).toLowerCase();
+  return Boolean(text && prefix && text === prefix);
+}
+
+function resolveProfileDisplayName(user, profile) {
+  const candidates = [profile?.display_name, profile?.username];
+  for (const candidate of candidates) {
+    const text = String(candidate || '').trim();
+    if (!text || isLegacyIdFallback(text, user)) continue;
+    return text;
+  }
+  return 'Member';
+}
+
 function renderProfile(user, profile) {
   const displayNameEl = document.getElementById('displayName');
   const emailValueEl = document.getElementById('emailValue');
   const joinDateEl = document.getElementById('joinDate');
 
-  if (displayNameEl) displayNameEl.textContent = profile.display_name || '—';
+  if (displayNameEl) displayNameEl.textContent = resolveProfileDisplayName(user, profile);
   if (emailValueEl) emailValueEl.textContent = 'Hidden for privacy';
   if (joinDateEl) joinDateEl.textContent = formatJoinDate(profile.created_at || profile.joined_at || user.created_at);
 
