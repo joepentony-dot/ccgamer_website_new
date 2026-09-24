@@ -443,7 +443,7 @@
             signal.serial>beforeDamageSignalSerial&&signal.type==="trap"&&signal.playerId===trapPlayerId(player)&&
             signal.trapId===trapId(trap)&&signal.x===Number(trap.x)&&signal.y===Number(trap.y)
           )||null;
-          const damageObserved=Boolean(exactSignal)||afterHits>beforeHits;
+          const damageObserved=Boolean(exactSignal);
           const afterOwner=trapOwnerSnapshot(player,trap,afterStamp);
           if(!damageObserved){
             state.anomalies++;state.trapAnomalies++;state.lastTrap=afterOwner;
