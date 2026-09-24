@@ -165,6 +165,17 @@
     "url": "/games/developers/erbe-software-spain/"
   },
   {
+    "name": "Fanda",
+    "slug": "fanda",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "indexable": false,
+    "url": "/games/developers/fanda/"
+  },
+  {
     "name": "Firebird",
     "slug": "firebird",
     "count": 1,
