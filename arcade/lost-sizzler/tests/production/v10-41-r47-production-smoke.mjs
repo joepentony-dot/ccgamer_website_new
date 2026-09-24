@@ -7,11 +7,11 @@ const supabaseUrl=(process.env.CCG_SUPABASE_URL||"https://lcslgxpgmttaexsorxik.s
 const origin="https://www.cheekycommodoregamer.co.uk";
 const expectedReleaseVersion="V10.42";
 const expectedBuild="V10.42 r54";
-const expectedCacheToken="20260923r54";
+const expectedCacheToken="20260924r54";
 const syntheticStaleBuild="2026.09.10.0-production-smoke";
-const versionUrl=new URL("version.json",gameUrl).toString();
+const versionUrl=new URL("/arcade/lost-sizzler/version.json",gameUrl).toString();
 const checkedOutGameSource=fs.readFileSync(new URL("../../index.html",import.meta.url),"utf8");
-const maintenanceExpected=/data-ccg-play-maintenance-gate="true"/.test(checkedOutGameSource);
+const maintenanceExpected=/data-ccg-play-maintenance-gate=(?:"true"|"owner-preview")/.test(checkedOutGameSource);
 const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage","--disable-background-networking","--autoplay-policy=no-user-gesture-required"]});
 
 async function sleep(ms){return new Promise(resolve=>setTimeout(resolve,ms))}

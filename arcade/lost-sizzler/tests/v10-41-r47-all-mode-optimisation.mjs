@@ -75,7 +75,7 @@ assert.match(limiterFix,/security invoker/i);
 assert.match(limiterFix,/grant execute on function public\.consume_lost_sizzler_request_budget[\s\S]*to service_role/i);
 
 console.log("[r47 static] post-deployment smoke workflow is present");
-assert.match(smokeWorkflow,/Lost Sizzler Production Smoke/);
+assert.match(smokeWorkflow,/C64 Dungeon Carnage Production Smoke/);
 assert.match(smokeWorkflow,/v10-41-r47-production-smoke\.mjs/);
 
 console.log("Lost Sizzler V10.41 r47 static reliability, security and ownership contracts passed.");

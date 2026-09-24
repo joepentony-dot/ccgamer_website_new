@@ -279,21 +279,91 @@ window.CCGSystems=(()=>{
     for(const feature of [host.bloodClue,host.memoryPuzzle,host.sequenceTorchPuzzle,host.weightBridge])if(feature?.roomId!=null)busy.add(feature.roomId);
     const choices=rooms.filter(room=>!room.optional&&!room.sanctuary&&!room.sigilRoom&&!room.spiderNest&&!busy.has(room.id)&&room.w>=8&&room.h>=7).map(room=>({room,key:world.random()})).sort((a,b)=>a.key-b.key),types=["blade","embers","arrows"];host.hazardRooms=[];
     const ordinaryTrapKinds=["fire","spike","shock"];
-    const preservesOrdinaryTrapKinds=room=>{
-      const remaining=(host.traps||[]).filter(trap=>trap?.active&&trap.roomId!==room.id);
-      return ordinaryTrapKinds.every(kind=>remaining.some(trap=>String(trap.kind||"").toLowerCase()===kind))
+    const activeTrapKind=(trap,kind)=>Boolean(trap?.active)&&String(trap.kind||"").toLowerCase()===kind;
+    const preservesOrdinaryTrapKinds=room=>ordinaryTrapKinds.every(kind=>(host.traps||[]).some(trap=>trap.roomId!==room.id&&activeTrapKind(trap,kind)));
+    const reserveLastOrdinaryTrapKinds=room=>{
+      const preservedIds=new Set(),outside=(host.traps||[]).filter(trap=>trap?.active&&trap.roomId!==room.id);
+      const endangered=ordinaryTrapKinds.filter(kind=>!outside.some(trap=>activeTrapKind(trap,kind)));
+      if(!endangered.length)return preservedIds;
+
+      let relocationRoom=rooms.find(candidate=>
+        candidate.id!==room.id
+        && !candidate.sanctuary
+        && !candidate.sigilRoom
+        && !candidate.spiderNest
+        && !candidate.dedicatedHazard
+        && !busy.has(candidate.id)
+        && candidate.optional
+      )||rooms.find(candidate=>
+        candidate.id!==room.id
+        && !candidate.sanctuary
+        && !candidate.sigilRoom
+        && !candidate.spiderNest
+        && !candidate.dedicatedHazard
+        && !busy.has(candidate.id)
+      )||null;
+
+      if(relocationRoom){
+        const reservedChoice=choices.findIndex(choice=>choice.room.id===relocationRoom.id);
+        if(reservedChoice>=0)choices.splice(reservedChoice,1);
+        busy.add(relocationRoom.id);
+      }
+
+      for(const kind of endangered){
+        const trap=(host.traps||[]).find(candidate=>candidate.roomId===room.id&&activeTrapKind(candidate,kind));
+        if(!trap)continue;
+        if(relocationRoom){
+          const q=freeInRoom(world,relocationRoom,used);
+          trap.x=q.x;trap.y=q.y;trap.roomId=relocationRoom.id;
+          relocationRoom.dangerous=true;
+        }else preservedIds.add(trap.id);
+      }
+      return preservedIds;
     };
     for(let i=0;i<count&&choices.length;i++){
-      const choiceIndex=choices.findIndex(choice=>preservesOrdinaryTrapKinds(choice.room));
-      if(choiceIndex<0)break;
-      const room=choices.splice(choiceIndex,1)[0].room,type=types[(floor+i)%types.length],groups=type==="embers"?2:type==="blade"?3:4,cells=[];
+      let choiceIndex=choices.findIndex(choice=>preservesOrdinaryTrapKinds(choice.room));
+      if(choiceIndex<0)choiceIndex=0;
+      const room=choices.splice(choiceIndex,1)[0].room,preservedTrapIds=reserveLastOrdinaryTrapKinds(room),type=types[(floor+i)%types.length],groups=type==="embers"?2:type==="blade"?3:4,cells=[];
       for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++){
         const group=type==="embers"?(x+y)%2:type==="blade"?(x-room.x)%3:(y-room.y)%4;cells.push({x,y,group})
       }
       const hazard={id:`hazard-${floor}-${i}`,roomId:room.id,type,cells,groups,period:type==="arrows"?2050:type==="blade"?2300:2550,warningMs:type==="arrows"?780:700,activeMs:type==="embers"?760:560,phase:Math.floor(world.random()*1200),title:type==="blade"?"PENDULUM BLADE GALLERY":type==="embers"?"EMBER-TILE VAULT":"ARROW-SLIT CROSSING"};host.hazardRooms.push(hazard);room.dedicatedHazard=true;room.hazardType=type;room.dangerous=true;
-      host.traps=(host.traps||[]).filter(trap=>trap.roomId!==room.id);
+      host.traps=(host.traps||[]).filter(trap=>trap.roomId!==room.id||preservedTrapIds.has(trap.id));
       const q=freeInRoom(world,room,used),hp=10+floor*2,armour=5+floor;host.enemies.push({id:`archive-knight-${floor}-${i}`,...q,kind:"knight",hp,maxHp:hp,armor:armour,maxArmor:armour,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:980,attackCooldown:800,chargeCooldown:999999,healCooldown:999999,flash:0,hpBarMs:0,knight:true,meleeOnly:true,moveSpeedScale:1.18})
     }
+
+    // Dedicated hazard rooms may replace ordinary trap placements. The public
+    // rulebook and live trap diagnostics require every generated floor to retain
+    // at least one FIRE, SPIKE and SHOCK trap, so restore any missing kind in a
+    // non-hazard room after hazard conversion has finished.
+    const hazardRoomIds=new Set((host.hazardRooms||[]).map(h=>h.roomId));
+    const reserveRooms=rooms.filter(room=>
+      !room.optional
+      && !room.sanctuary
+      && !room.sigilRoom
+      && !room.spiderNest
+      && !hazardRoomIds.has(room.id)
+      && room.id!==world.startRoomId
+      && room.id!==world.exitRoomId
+    );
+    ordinaryTrapKinds.forEach((kind,kindIndex)=>{
+      if((host.traps||[]).some(trap=>activeTrapKind(trap,kind)))return;
+      const room=reserveRooms[(floor+kindIndex)%Math.max(1,reserveRooms.length)]
+        || rooms.find(candidate=>!hazardRoomIds.has(candidate.id)&&candidate.id!==world.exitRoomId)
+        || null;
+      if(!room)return;
+      const q=freeInRoom(world,room,used);
+      host.traps.push({
+        id:`trap-${kind}-reserve-f${floor}`,
+        ...q,
+        roomId:room.id,
+        kind,
+        phase:Math.floor(world.random()*1800),
+        period:kind==="fire"?1800:kind==="spike"?2150:2500,
+        active:true
+      });
+      room.dangerous=true;
+    });
   }
 
   function installSkeletonHorde(world,host,run,rooms,used){

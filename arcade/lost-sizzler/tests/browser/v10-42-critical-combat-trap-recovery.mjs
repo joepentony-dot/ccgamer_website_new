@@ -68,12 +68,14 @@ try{
     const state=SYS.hazardCellState(h,p1.x,p1.y,host.floorElapsed||run.elapsed);
     const before={health:Number(p1.health),invuln:Number(p1.invuln),active:Boolean(state.active),type:String(h.type||""),title:String(h.title||"")};
     updateDedicatedHazards(16);
-    return{available:true,before,after:{health:Number(p1.health),invuln:Number(p1.invuln),cooldown:Number(p1.hazardHitCooldown||0)}};
+    const trapKinds=Object.fromEntries(["fire","spike","shock"].map(kind=>[kind,(host.traps||[]).filter(trap=>trap?.active&&String(trap.kind||"").toLowerCase()===kind).length]));
+    return{available:true,before,after:{health:Number(p1.health),invuln:Number(p1.invuln),cooldown:Number(p1.hazardHitCooldown||0)},trapKinds};
   })()`));
   assert.equal(hazard.available,true,"generated Solo floor must contain a dedicated hazard room");
   assert.equal(hazard.before.active,true,`fixture must place the player on an ACTIVE dedicated hazard cell: ${JSON.stringify(hazard)}`);
   assert.equal(hazard.after.health,hazard.before.health-1,`active dedicated hazard must remove one health even when stale invulnerability was present: ${JSON.stringify(hazard)}`);
   assert.ok(hazard.after.cooldown>0,"dedicated hazard must retain its normal hit cooldown after confirmed damage");
+  for(const kind of ["fire","spike","shock"])assert.ok(Number(hazard.trapKinds?.[kind]||0)>0,`dedicated hazard generation must retain at least one active ${kind.toUpperCase()} floor trap: ${JSON.stringify(hazard)}`);
 
   assert.deepEqual(errors,[],"critical combat/trap recovery browser contract must not produce page errors");
   console.log("PASS critical combat owner recovery and dedicated hazard damage");

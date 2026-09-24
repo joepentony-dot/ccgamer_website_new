@@ -1,4 +1,4 @@
-name: Lost Sizzler Production Smoke
+name: C64 Dungeon Carnage Production Smoke
 
 on:
   push:
@@ -40,7 +40,7 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.55.0
           npx playwright install --with-deps chromium
 
-      - name: Verify deployed Lost Sizzler browser and backend
+      - name: Verify deployed C64 Dungeon Carnage browser and backend
         shell: bash
         run: |
           set -euo pipefail
