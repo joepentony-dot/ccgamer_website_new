@@ -27,7 +27,7 @@ The game form collects the authoritative fields used by `games/games.json`:
 - optional direct Lemon64/Lemon Amiga source override for magazine-review recovery
 - publisher/developer/programmer/graphics/musician/producer/re-release credits
 
-Lemon64 and Lemon Amiga are not required publishing inputs. For a new C64 or Amiga game, Reliable Games Publishing first tries the exact live game source and then an archived Wayback snapshot if the live site blocks GitHub Actions. Every automatically discovered source still has to match the exact title, platform, original release year and original publisher before it can be cached or imported. If neither source is reachable, the game publication continues and the unresolved source remains retryable instead of blocking the entire archive rebuild. Curated magazine records and official Zzap!64 sources remain supported independently in the repository.
+Lemon64 and Lemon Amiga are not required publishing inputs. For a new C64 or Amiga game, Reliable Games Publishing tries verified live/archive source candidates and imports available magazine-review records. C64 games also refresh the Ultimate Tape Archive mapping using title, publisher/re-release and release-year evidence. External source outages remain retryable, but a new or enrichment-relevant changed game is not allowed to be marked complete while a known magazine source or a known UTA title match is unresolved. Curated magazine records and official Zzap!64 sources remain supported independently in the repository.
 
 The publisher refreshes the current GitHub `games/games.json` immediately before writing, rejects duplicate slug/ID values, rejects thumbnail path collisions and creates an atomic Git commit containing:
 
@@ -40,12 +40,14 @@ The game form deliberately does **not** expose a game-music uploader. Game audio
 
 After a direct main commit, the existing workflows handle the rest:
 
-1. Reliable Games Publishing imports locally cached/curated magazine metadata and rebuilds canonical game routes, archives, search/index data and normal sitemap coverage.
-2. SEO Automation securely refreshes verified YouTube metadata.
-3. Video SEO generates verified `VideoObject` data where YouTube supplies an upload date.
-4. The Video Library and video sitemaps are regenerated.
-5. Sitemap/SEO/protected-file validation runs.
-6. The publisher polls the matching workflow runs and then checks the final live URL.
+1. Reliable Games Publishing refreshes verified magazine metadata and, for C64 games, the Ultimate Tape Archive mapping.
+2. A completion gate checks new/enrichment-relevant changed games and stops publication from being marked complete if known magazine or UTA enrichment is unresolved.
+3. Reliable Games Publishing rebuilds canonical game routes, archives, search/index data and normal sitemap coverage.
+4. SEO Automation securely refreshes verified YouTube metadata.
+5. Video SEO generates verified `VideoObject` data where YouTube supplies an upload date.
+6. The Video Library and video sitemaps are regenerated.
+7. Sitemap/SEO/protected-file validation runs.
+8. The publisher polls the matching workflow runs and then checks the final live URL.
 
 ## Adding a video / feature
 

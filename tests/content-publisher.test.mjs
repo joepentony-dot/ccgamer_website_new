@@ -60,6 +60,7 @@ test('game publishing writes authoritative source data and optional thumbnail on
 
 test('game publisher presents magazine reviews as automatic with Lemon as an optional override', () => {
   assert.match(html, /automatic magazine-review coverage/i);
+  assert.match(html, /Ultimate Tape Archive links where available/i);
   assert.match(html, /Lemon source URL \(optional override\)/i);
   assert.match(html, /exact title, platform, original release year and publisher/i);
   assert.doesNotMatch(html, /data-game-field="zzapUrl"/i);
@@ -79,7 +80,7 @@ test('publisher refuses to claim a game is complete until magazine and UTA enric
 
 test('publisher loads source preflight automation through the image optimiser bootstrap', () => {
   assert.match(html, /admin\/js\/content-publisher-image-optimizer\.js/);
-  assert.match(optimiser, /import ['"]\.\/content-publisher-source-preflight\.mjs\?v=publisher-20260922-archive['"]/);
+  assert.match(optimiser, /import ['"]\.\/content-publisher-source-preflight\.mjs\?v=publisher-20260924-completion-guard['"]/);
 });
 
 test('publisher keeps the established 3D-box path and removes the unavailable game-music uploader', () => {
@@ -92,7 +93,7 @@ test('publisher keeps the established 3D-box path and removes the unavailable ga
 });
 
 test('existing-game updates can add 3D boxes without retaining game-music upload code or creating empty commits', () => {
-  assert.match(optimiser, /content-publisher-existing-game-update\.js\?v=publisher-20260922-archive/);
+  assert.match(optimiser, /content-publisher-existing-game-update\.js\?v=publisher-20260924-completion-guard/);
   assert.match(editJs, /data-game-box3d-file/);
   assert.match(editJs, /resources\/images\/games\/boxes-3d\//);
   assert.doesNotMatch(editJs, /game-music|ccgUploadMusic|ccgValidateMusic|data-game-music-file/i);
