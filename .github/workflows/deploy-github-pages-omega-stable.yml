@@ -106,6 +106,7 @@ jobs:
           node scripts/prepare-seo-game-routes.js --output-root _site
           node scripts/prepare-seo-genre-links.js --root _site
           node scripts/generate-retro-pages.js --root _site
+          (cd _site && node scripts/generate-sitemaps.js)
           node scripts/validate-seo-game-routes.js --root _site
           node scripts/validate-seo-genre-links.js --root _site
           (cd _site && node ../scripts/validate-sitemaps.js)
