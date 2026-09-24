@@ -154,7 +154,12 @@ function stripApprovedHomeDiscoveryTransformation(html, role) {
     fail("The baseline Home highlights section is not a recognized archive-navigation layout.");
   }
 
-  return source.replace(section, "<section data-ccg-approved-home-discovery-placeholder></section>");
+  return source
+    .replace(section, "<section data-ccg-approved-home-discovery-placeholder></section>")
+    .replace(
+      /<!--\s*(?:PRIMARY ARCHIVE DISCOVERY DASHBOARD|THREE STABLE SECONDARY ROUTES: NO DUPLICATE SITE MAP)\s*-->/gi,
+      ""
+    );
 }
 
 function stripApprovedSeoHead(html) {
