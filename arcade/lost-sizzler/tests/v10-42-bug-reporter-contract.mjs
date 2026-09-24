@@ -5,6 +5,7 @@ const root=new URL("../",import.meta.url);
 const reporter=fs.readFileSync(new URL("js/v10-42-bug-reporter.js",root),"utf8");
 const css=fs.readFileSync(new URL("css/v10-42-bug-reporter.css",root),"utf8");
 const bootstrap=fs.readFileSync(new URL("js/v10-42-bootstrap.js",root),"utf8");
+const r19=fs.readFileSync(new URL("js/v10-42-r19-mobile-trap-layout-stability.js",root),"utf8");
 
 const r18=bootstrap.indexOf('v10-42-r18-solo-playtest-stability.js');
 const bug=bootstrap.indexOf('v10-42-bug-reporter.js');
@@ -81,3 +82,5 @@ assert.match(gamePlay,/__ccgLastDamageAt=damageAt/,"canonical player damage must
 assert.match(gamePlay,/damageSource=String\(source\|\|"enemy"\);p\.__ccgLastHurtAt=damageAt;p\.__ccgLastDamageAt=damageAt;p\.__ccgLastDamageSource=damageSource/,"canonical player damage must expose its latest source as supporting diagnostic evidence");
 assert.match(gamePlay,/new CustomEvent\("ccg:trap-damage"[\s\S]*trapId:String\(t\.id\|\|\`\$\{t\.x\},\$\{t\.y\}\`\)[\s\S]*x:Number\(t\.x\),y:Number\(t\.y\),at:damageAt/,"ordinary traps must emit an exact accepted-damage contact signal");
 assert.match(gamePlay,/new CustomEvent\("ccg:hazard-damage"[\s\S]*hazardId:String\(hazard\.id\|\|""\)[\s\S]*x:contactX,y:contactY,at:damageAfter/,"dedicated hazards must emit an exact accepted-damage cell signal");
+assert.match(r19,/function recordTrapHit\(player,trap,contactKey,cycle\)[\s\S]*new CustomEvent\("ccg:trap-damage"[\s\S]*playerId:playerId\(player\)[\s\S]*trapId:trapId\(trap\)[\s\S]*x:Number\(trap\.x\),y:Number\(trap\.y\)/,"the authoritative R19 trap owner must emit the exact accepted player/trap contact signal");
+assert.match(gamePlay,/if\(!routed&&damageAt>beforeDamageAt\)[\s\S]*new CustomEvent\("ccg:trap-damage"/,"canonical triggerTrap must emit fallback contact evidence only when R19 did not route the hit");
