@@ -331,6 +331,39 @@ window.CCGSystems=(()=>{
       host.traps=(host.traps||[]).filter(trap=>trap.roomId!==room.id||preservedTrapIds.has(trap.id));
       const q=freeInRoom(world,room,used),hp=10+floor*2,armour=5+floor;host.enemies.push({id:`archive-knight-${floor}-${i}`,...q,kind:"knight",hp,maxHp:hp,armor:armour,maxArmor:armour,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:980,attackCooldown:800,chargeCooldown:999999,healCooldown:999999,flash:0,hpBarMs:0,knight:true,meleeOnly:true,moveSpeedScale:1.18})
     }
+
+    // Dedicated hazard rooms may replace ordinary trap placements. The public
+    // rulebook and live trap diagnostics require every generated floor to retain
+    // at least one FIRE, SPIKE and SHOCK trap, so restore any missing kind in a
+    // non-hazard room after hazard conversion has finished.
+    const hazardRoomIds=new Set((host.hazardRooms||[]).map(h=>h.roomId));
+    const reserveRooms=rooms.filter(room=>
+      !room.optional
+      && !room.sanctuary
+      && !room.sigilRoom
+      && !room.spiderNest
+      && !hazardRoomIds.has(room.id)
+      && room.id!==world.startRoomId
+      && room.id!==world.exitRoomId
+    );
+    ordinaryTrapKinds.forEach((kind,kindIndex)=>{
+      if((host.traps||[]).some(trap=>activeTrapKind(trap,kind)))return;
+      const room=reserveRooms[(floor+kindIndex)%Math.max(1,reserveRooms.length)]
+        || rooms.find(candidate=>!hazardRoomIds.has(candidate.id)&&candidate.id!==world.exitRoomId)
+        || null;
+      if(!room)return;
+      const q=freeInRoom(world,room,used);
+      host.traps.push({
+        id:`trap-${kind}-reserve-f${floor}`,
+        ...q,
+        roomId:room.id,
+        kind,
+        phase:Math.floor(world.random()*1800),
+        period:kind==="fire"?1800:kind==="spike"?2150:2500,
+        active:true
+      });
+      room.dangerous=true;
+    });
   }
 
   function installSkeletonHorde(world,host,run,rooms,used){
