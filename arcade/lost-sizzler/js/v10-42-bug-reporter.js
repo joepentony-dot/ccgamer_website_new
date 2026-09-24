@@ -177,6 +177,14 @@
       },
       player1:playerState(player),player2:playerState(second),
       trapUnderPlayer:trapSnapshot(player),
+      shopState:safe(()=>({
+        open:Boolean(activeShop&&UI?.shop&&!UI.shop.classList.contains("hidden")),
+        shopId:String(activeShop?.id||""),shopType:String(activeShop?.shopType||""),
+        score:Number(score||0),artefacts:Number(PGR?.inventoryKindCount?.(player,"artefact")||0),
+        inventoryUsed:Array.isArray(player?.inventory)?player.inventory.length:0,
+        inventoryCapacity:Number(PGR?.inventoryCapacity?.(player)||0),
+        feedback:window.CCGLostSizzlerV142R55ShopFeedback?.state?.last||null
+      }),null),
       dedicatedHazardUnderPlayer:dedicatedHazardSnapshot(player),
       panels:{
         inventory:panelState("inventory-panel"),pause:panelState("pause-panel"),shop:panelState("shop-panel"),
@@ -477,13 +485,14 @@
   addEventListener("unhandledrejection",event=>push("unhandled-rejection",{reason:String(event.reason?.stack||event.reason||"").slice(0,2000)}));
   addEventListener("ccg:sfx",event=>push("sfx",{name:String(event.detail?.name||""),at:Number(event.detail?.at||0)}));
   addEventListener("ccg:shop-firearm-upgrade",event=>push("shop-firearm-upgrade",{shopId:String(event.detail?.shopId||""),floor:Number(event.detail?.floor||0),beforeTier:Number(event.detail?.beforeTier||0),afterTier:Number(event.detail?.afterTier||0),price:Number(event.detail?.price||0),goldCoins:Number(event.detail?.goldCoins||0),scoreBefore:Number(event.detail?.scoreBefore||0),scoreAfter:Number(event.detail?.scoreAfter||0)}));
+  addEventListener("ccg:shop-feedback",event=>push("shop-feedback",event.detail||{}));
   addEventListener("ccg:music-state",event=>push("music-state",{reason:String(event.detail?.reason||""),state:String(event.detail?.state||""),roomMood:String(event.detail?.roomMood||""),stalkerNear:Boolean(event.detail?.stalkerNear),stalkerSight:Boolean(event.detail?.stalkerSight),namedEnemy:String(event.detail?.namedEnemy||""),asset:String(event.detail?.asset||""),useMusicAssets:Boolean(event.detail?.useMusicAssets),at:Number(event.detail?.at||0)}));
   addEventListener("ccg:item-collected",event=>push("item-collected",{kind:String(event.detail?.kind||""),name:String(event.detail?.name||""),lootKind:String(event.detail?.lootKind||""),collector:String(event.detail?.collector||""),floor:Number(event.detail?.floor||0)}));
   addEventListener("ccg:collectible-effect",event=>push("collectible-effect",{effect:String(event.detail?.effect||""),active:Boolean(event.detail?.active),at:Number(event.detail?.at||0)}));
   document.addEventListener("click",event=>{
-    const target=event.target instanceof Element?event.target.closest("#inventory-close,#inventory-close-top,#resume-btn,[data-ccg-equip-weapon],[data-bug-close]"):null;
+    const target=event.target instanceof Element?event.target.closest("#inventory-close,#inventory-close-top,#resume-btn,[data-ccg-equip-weapon],[data-shop-buy],[data-bug-close]"):null;
     if(!target)return;
-    push("ui-click",{id:target.id||"",action:target.getAttribute("data-ccg-equip-weapon")!=null?"equip-weapon":target.hasAttribute("data-bug-close")?"bug-close":"",mode:safe(()=>String(mode),"")});
+    push("ui-click",{id:target.id||"",action:target.getAttribute("data-shop-buy")!=null?`shop-buy:${target.getAttribute("data-shop-buy")}`:target.getAttribute("data-ccg-equip-weapon")!=null?"equip-weapon":target.hasAttribute("data-bug-close")?"bug-close":"",mode:safe(()=>String(mode),"")});
     setTimeout(()=>snapshotSummary(`after-click-${target.id||"control"}`),80);
   },true);
 
