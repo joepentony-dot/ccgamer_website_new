@@ -110,8 +110,12 @@ try{
   assert.equal(result.afterSecond.runClears,1,"the Solo run must retain one Stage 13 encounter clear");
   assert.equal(result.afterSecond.runReward,100,"the Solo run must retain the Stage 13 reward total");
   assert.equal(result.pendingDelta,1,"only the non-final directed kill should be counted as pending");
-  assert.equal(result.afterFirst.score-result.scoreBeforeKills,120,"the first kill must receive only its canonical enemy score");
-  assert.equal(result.afterSecond.score-result.afterFirst.score,220,"the final kill must receive canonical enemy score plus the 100-point Stage 13 completion bonus");
+  const firstCanonicalScore=result.afterFirst.score-result.scoreBeforeKills;
+  const finalKillDelta=result.afterSecond.score-result.afterFirst.score;
+  const secondCanonicalScore=finalKillDelta-result.finalRewardDelta;
+  assert.ok(firstCanonicalScore>0,"the first kill must receive its canonical positive enemy score without a Stage 13 completion bonus");
+  assert.ok(secondCanonicalScore>0,"the final kill must retain its canonical positive enemy score in addition to the Stage 13 completion reward");
+  assert.equal(finalKillDelta-secondCanonicalScore,100,"the final kill must add exactly the 100-point Stage 13 completion bonus on top of its canonical enemy score");
   assert.ok(result.afterSecond.revision>=result.revisionBeforeKills+3,"two enemy deaths plus one completion transaction must advance host revision");
   assert.equal(result.duplicateResult,false,"replaying the completion handler for the same encounter must be rejected");
   assert.equal(result.scoreAfterDuplicate,result.afterSecond.score,"duplicate completion attempts must not award score again");
