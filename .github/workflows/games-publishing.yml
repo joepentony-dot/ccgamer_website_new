@@ -18,8 +18,6 @@ on:
       - "scripts/generate-uta-map.mjs"
       - "data/uta-game-matches.json"
       - "data/uta-manual-review.json"
-      - "data/uta-audit.json"
-      - "data/uta-curated-release-overrides.json"
       - "tests/single-game-community-uta.test.mjs"
       - "games/genres/**"
       - "games/collections/**"
@@ -190,15 +188,27 @@ jobs:
           echo "[games-publishing] Retrying uncached Lemon reference pages before magazine import. Existing cache files are reused. External Lemon64/Lemon Amiga availability is optional and cannot block publishing."
           node scripts/refresh-lemon-game-cache.js --all-missing
 
-      - name: Refresh Ultimate Tape Archive mapping
+      - name: Refresh Ultimate Tape Archive mapping (best effort)
+        continue-on-error: true
         run: |
-          echo "[games-publishing] Refreshing the full C64 Ultimate Tape Archive mapping before publication can be considered complete. Every C64 catalogue entry is rescanned; ambiguous matches remain in data/uta-manual-review.json instead of being exposed."
+          echo "[games-publishing] Refreshing the cached C64 Ultimate Tape Archive mapping. Public game pages never scrape UTA at runtime, and an external UTA outage cannot block publishing."
           node scripts/generate-uta-map.mjs
 
       - name: Import cached and curated magazine reviews
         run: |
-          echo "[games-publishing] Importing locally cached and curated magazine metadata. External Lemon availability is not a publishing prerequisite."
+          echo "[games-publishing] Importing locally cached and curated magazine metadata. External fetches remain retryable, but new/changed games cannot be marked complete while known enrichment is unresolved."
           node scripts/import-amiga-magazine-reviews.js
+
+      - name: Audit full magazine-review coverage
+        run: node scripts/audit-magazine-review-coverage.js --verbose
+
+      - name: Audit all C64 UTA enrichment candidates
+        run: node scripts/validate-new-game-enrichment.mjs --audit-all-c64
+
+      - name: Require new or changed game enrichment completion
+        run: |
+          echo "[games-publishing] Verifying magazine-review enrichment and C64 Ultimate Tape Archive coverage before publication can be marked complete."
+          node scripts/validate-new-game-enrichment.mjs --base HEAD^
 
       - name: Sync verified YouTube metadata
         env:
@@ -282,7 +292,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          PR_BODY="Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, locally cached/curated magazine-review import, YouTube metadata sync, publisher generation, manual-viewer materialization, download-index validation, video-library generation, sitemap checks, SEO validation, canonical shared-header validation and protected-file checks all passed before this PR was created. External Lemon64/Lemon Amiga availability is optional and cannot block publishing. Any historical game-source migration is applied before the protected hashes are recorded."
+          PR_BODY="Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, magazine-review import, C64 Ultimate Tape Archive refresh, new/changed-game enrichment completion gate, YouTube metadata sync, publisher generation, manual-viewer materialization, download-index validation, video-library generation, sitemap checks, SEO validation, canonical shared-header validation and protected-file checks all passed before this PR was created. External source fetches may be retried, but a new/changed game with known unresolved magazine or UTA enrichment is not marked complete. Any historical game-source migration is applied before the protected hashes are recorded."
           PR_URL=""
 
           for attempt in 1 2 3; do

@@ -37,7 +37,7 @@ test("magazine reviews are materialized after canonical SEO game routes are gene
   );
 });
 
-test("missing Lemon sources retry through live/archive fallback without becoming a publishing prerequisite", () => {
+test("missing Lemon sources retry through live/archive fallback before the enrichment completion gate", () => {
   const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "games-publishing.yml"), "utf8");
   const refreshIndex = workflow.indexOf("node scripts/refresh-lemon-game-cache.js --all-missing");
   const importIndex = workflow.indexOf("node scripts/import-amiga-magazine-reviews.js");
@@ -51,8 +51,13 @@ test("missing Lemon sources retry through live/archive fallback without becoming
   assert.match(discovery, /fetchLemonHtml/);
   assert.match(refresh, /fetchLemonHtml/);
   assert.doesNotMatch(workflow, /refresh-lemon-game-cache\.js --check/);
-  assert.doesNotMatch(workflow, /Require new-game enrichment completion/);
-  assert.doesNotMatch(workflow, /node scripts\/validate-new-game-enrichment\.mjs --base HEAD\^/);
+  const completionIndex = workflow.indexOf("node scripts/validate-new-game-enrichment.mjs --base HEAD^");
+  assert.ok(
+    completionIndex > importIndex,
+    "new-game enrichment completion validation must run after best-effort Lemon refresh and magazine import"
+  );
+  assert.match(workflow, /Require new or changed game enrichment completion/);
+  assert.match(workflow, /node scripts\/validate-new-game-enrichment\.mjs --base HEAD\^/);
   assert.match(workflow, /External Lemon64\/Lemon Amiga availability is optional and cannot block publishing/);
 });
 

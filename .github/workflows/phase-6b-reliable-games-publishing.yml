@@ -22,8 +22,12 @@ on:
       - scripts/ensure-magazine-review-runtime.js
       - scripts/import-amiga-magazine-reviews.js
       - scripts/refresh-lemon-game-cache.js
+      - scripts/discover-new-lemon-source.js
+      - scripts/validate-new-game-enrichment.mjs
       - js/magazine-game-reviews-runtime.js
       - tests/magazine-publishing-pipeline.test.mjs
+      - tests/lemon-source-discovery.test.mjs
+      - tests/new-game-enrichment-validation.test.mjs
       - data/magazine-review-records/**
       - data/lemon-cache/**
       - data/lemon-source-pending.json
@@ -55,7 +59,6 @@ on:
       - scripts/generate-uta-map.mjs
       - data/uta-game-matches.json
       - data/uta-manual-review.json
-      - data/uta-curated-release-overrides.json
       - supabase/migrations/20260922003000_single_game_community_read_models.sql
       - tests/single-game-community-uta.test.mjs
       - package.json
@@ -135,6 +138,8 @@ jobs:
           node --check scripts/build-magazine-review-chunks.js
           node --check scripts/audit-magazine-review-coverage.js
           node --check scripts/ensure-magazine-review-runtime.js
+          node --check scripts/discover-new-lemon-source.js
+          node --check scripts/validate-new-game-enrichment.mjs
           node --check scripts/mark-rerelease-publishers.js
           node --check scripts/link-publisher-strength-genres.js
           node --check scripts/generate-composer-pages.js
@@ -152,7 +157,7 @@ jobs:
         run: node --test tests/games-editor-package.test.mjs
 
       - name: Run magazine publishing regression
-        run: node --test tests/magazine-publishing-pipeline.test.mjs
+        run: node --test tests/magazine-publishing-pipeline.test.mjs tests/lemon-source-discovery.test.mjs tests/new-game-enrichment-validation.test.mjs
 
       - name: Run single-game community and UTA regression
         run: node --test tests/community-ratings-single-refresh.mjs tests/community-summary-critical-path.mjs tests/single-game-community-uta.test.mjs

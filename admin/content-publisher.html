@@ -26,7 +26,7 @@
       <div>
         <p class="publisher-kicker">CHEEKY COMMODORE GAMER · ADMIN</p>
         <h1>CCG Content Publisher</h1>
-        <p class="publisher-intro">Add a game, video or Zzap!64 award year once. The existing GitHub publishing chain then regenerates pages, automatic magazine-review coverage, verified YouTube metadata, VideoObject markup, chapters, the video library, sitemaps and validation.</p>
+        <p class="publisher-intro">Add a game, video or Zzap!64 award year once. The existing GitHub publishing chain then regenerates pages, automatic magazine-review coverage from verified sources, C64 Ultimate Tape Archive links where available, verified YouTube metadata, VideoObject markup, chapters, the video library, sitemaps and validation.</p>
       </div>
       <div class="publisher-header-actions">
         <a class="ccg-btn ccg-btn--ghost" href="/admin/admin.html">Admin Home</a>
@@ -85,7 +85,7 @@
       <div class="publisher-section-heading">
         <div>
           <h2>Add a C64 or Amiga game</h2>
-          <p>The publisher commits the source record only. Existing workflows resolve verified magazine sources with live and archived fallbacks, import available magazine reviews and build the canonical page, archives, search data, video SEO and sitemaps.</p>
+          <p>The publisher commits the source record only. Existing workflows resolve verified magazine sources, import available review links, refresh C64 Ultimate Tape Archive matches and refuse to mark a new or changed game complete while known magazine or tape-archive enrichment remains unresolved.</p>
         </div>
         <button class="ccg-btn ccg-btn--ghost" type="button" data-action="reset-game">Reset Game Form</button>
       </div>
@@ -221,7 +221,7 @@
         <div class="publisher-submit-row">
           <div>
             <strong>After publish:</strong>
-            <span>game page → verified magazine reviews → verified video metadata → VideoObject → video library → sitemaps → validation</span>
+            <span>game page → verified magazine reviews → C64 tape archive → verified video metadata → VideoObject → video library → sitemaps → validation</span>
           </div>
           <button class="ccg-btn ccg-btn--primary publisher-primary-action" type="submit" data-publish-game>Publish Game</button>
         </div>
@@ -370,7 +370,7 @@
         <li data-pipeline-step="pages"><span>3</span><div><strong>Pages & structured data</strong><small>canonical page, VideoGame/VideoObject and Clip markup</small></div><b>Waiting</b></li>
         <li data-pipeline-step="library"><span>4</span><div><strong>Video Library</strong><small>/videos/ refreshed</small></div><b>Waiting</b></li>
         <li data-pipeline-step="sitemaps"><span>5</span><div><strong>Sitemaps</strong><small>existing page/game/video sitemap files regenerated</small></div><b>Waiting</b></li>
-        <li data-pipeline-step="validation"><span>6</span><div><strong>Validation</strong><small>SEO, sitemaps and protected-file checks</small></div><b>Waiting</b></li>
+        <li data-pipeline-step="validation"><span>6</span><div><strong>Validation</strong><small>magazine/UTA enrichment, SEO, sitemaps and protected-file checks</small></div><b>Waiting</b></li>
         <li data-pipeline-step="live"><span>7</span><div><strong>Live site</strong><small>final canonical URL responds successfully</small></div><b>Waiting</b></li>
       </ol>
 
@@ -426,8 +426,8 @@
   <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-auth-ui.js?v=admin-stable-20260207" defer></script>
-  <script type="module" src="/admin/js/content-publisher-image-optimizer.js?v=publisher-20260922-archive"></script>
-  <script type="module" src="/admin/js/content-publisher.js?v=publisher-20260922-archive"></script>
+  <script type="module" src="/admin/js/content-publisher-image-optimizer.js?v=publisher-20260924-completion-guard"></script>
+  <script type="module" src="/admin/js/content-publisher.js?v=publisher-20260924-completion-guard"></script>
   <!-- ADMIN AUTH ISOLATION: do not include /js/ccg-global.js or /js/ccg-community-*.js on admin pages. -->
 </body>
 </html>

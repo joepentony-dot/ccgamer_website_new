@@ -86,7 +86,9 @@ async function fetchPendingLemonSlugs() {
     if (!response.ok) return new Set();
     const payload = await response.json();
     const rows = Array.isArray(payload) ? payload : Array.isArray(payload?.pending) ? payload.pending : Array.isArray(payload?.entries) ? payload.entries : [];
-    return new Set(rows.map((row) => slugify(row?.slug || row?.gameSlug || row?.id || '')).filter(Boolean));
+    return new Set(rows.map((row) => slugify(
+      typeof row === 'string' ? row : (row?.slug || row?.gameSlug || row?.id || '')
+    )).filter(Boolean));
   } catch (_error) {
     return new Set();
   }
