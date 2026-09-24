@@ -62,6 +62,11 @@ try{
     // the player crossed an ACTIVE trap but gameplay produced no damage.
     reporter.observeMovementBoundary(p1,"after",{source:"browser-contract",deliberate:true});
     host.traps=host.traps.filter(row=>row!==trap);
+    // Unrelated damage inside the verification window must not mask the missed
+    // trap hit. This reproduces the review case where an enemy attacks at the
+    // same moment as a broken environmental contact.
+    p1.invuln=0;p1.health=Math.max(4,Number(p1.health||8));
+    hurtPlayer(p1,1,false,"unrelated enemy");
     return before;
   });
   await page.waitForFunction(before=>{
@@ -74,6 +79,8 @@ try{
   }));
   assert.ok(environmentalEvidence.events.some(event=>event.type==="environment-boundary-contact"),"reporter must capture exact active-trap contact at the movement boundary");
   assert.ok(environmentalEvidence.events.some(event=>event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE"),"reporter must flag an active trap crossing that produced no health loss");
+  const missedTrap=environmentalEvidence.events.find(event=>event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE");
+  assert.equal(missedTrap?.detail?.damageSource,"unrelated enemy","unrelated damage must be retained as evidence but must not satisfy trap confirmation");
 
   const report=await page.evaluate(()=>window.CCGLostSizzlerBugReporter.createReport("browser-contract"));
   assert.equal(report.schema,"CCG-DUNGEON-BUG-REPORT-v1");
