@@ -6,8 +6,8 @@ const bootstrap=fs.readFileSync(new URL("js/v10-42-bootstrap.js",root),"utf8");
 const portal=fs.readFileSync(new URL("js/v10-42-r48-elemental-portal-presentation.js",root),"utf8");
 const version=JSON.parse(fs.readFileSync(new URL("version.json",root),"utf8"));
 
-assert.equal(version.build,"V10.42 r54");
-assert.equal(version.cacheToken,"20260924r54");
+assert.equal(version.build,"V10.42 r55");
+assert.equal(version.cacheToken,"20260924r55");
 const visual=bootstrap.indexOf('v10-42-r46-final-visual-polish.js');
 const r48=bootstrap.indexOf('v10-42-r48-elemental-portal-presentation.js');
 const tutorial=bootstrap.indexOf('v10-42-tutorial-campaign.js');
