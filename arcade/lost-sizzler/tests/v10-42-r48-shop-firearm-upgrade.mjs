@@ -7,8 +7,8 @@ const bootstrap=fs.readFileSync(new URL("js/v10-42-bootstrap.js",root),"utf8");
 const html=fs.readFileSync(new URL("index.html",root),"utf8");
 const version=JSON.parse(fs.readFileSync(new URL("version.json",root),"utf8"));
 
-assert.equal(version.build,"V10.42 r54");
-assert.equal(version.cacheToken,"20260924r54");
+assert.equal(version.build,"V10.42 r55");
+assert.equal(version.cacheToken,"20260924r55");
 assert.match(src,/BASE_UPGRADE_PRICE=2500/);
 assert.match(src,/UPGRADE_PRICE_STEP=1250/);
 assert.match(src,/GOLD_SCORE_COIN_VALUE=125/);

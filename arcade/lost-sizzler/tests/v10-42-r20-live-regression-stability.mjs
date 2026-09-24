@@ -21,12 +21,19 @@ assert.match(fix,/ATTACK_KEYS=new Set\(\["Space","Numpad0"\]\)/,"normal gameplay
 assert.doesNotMatch(fix,/ATTACK_KEYS=new Set\([^\n]*"KeyF"/,"F must remain exclusively owned by the fullscreen handler");
 assert.match(fix,/function activeRun\(\)[\s\S]*liveSession\(\)[\s\S]*document\.body\.dataset\.runActive="true"/,"attack recovery must repair a stale presentation flag from the actual live run state instead of refusing FIRE");
 assert.match(fix,/mobileFirePointers=new Set\(\)[\s\S]*#v104-touch-controls \[data-action="fire"\][\s\S]*queueMicrotask[\s\S]*attackNow\("Space"\)/,"a delegated mobile FIRE safety owner must recover a visible button whose original listener stops delivering attack intents");
+assert.match(fix,/const RESUME_ATTACK_GUARD_MS=5000/,"post-pause FIRE recovery must retain a bounded first-attack guard window");
+assert.match(fix,/function recentPauseReset\(\)[\s\S]*__CCG_PAUSE_ATTACK_LAST_RESET__[\s\S]*RESUME_ATTACK_GUARD_MS/,"R20 must recognise the core pause-resume reset even if a later compatibility layer rewrites transient cadence state");
+assert.match(fix,/const resumeGuard=performance\.now\(\)<=resumeAttackGuardUntil\|\|recentPauseReset\(\)[\s\S]*repairAttackBoundary\(resumeGuard\)/,"the first real attack after resume must force transient attack cadence back to a fireable state immediately before the canonical fire owner runs");
+assert.match(fix,/if\(forceResumeCadence\)[\s\S]*fire1=0;fireBuffer1=0;projectileCD=0/,"resume attack guard must reset only transient fire cadence, not player ammo or progression");
+assert.match(fix,/if\(resumeGuard\)\{[\s\S]*resumeAttackGuardUntil=0[\s\S]*consumedPauseResetAt=Math\.max/,"pause-resume cadence recovery must be consumed by the first real attack so held FIRE cannot bypass the normal weapon cooldown");
+assert.match(play,/firePressed&&\(!gamepadFireDown\|\|fire1<=0\)[\s\S]*CCGLostSizzlerV142R20LiveRegressionStability[\s\S]*attackNow\("Gamepad0"\)/,"gamepad FIRE must enter post-pause recovery on the first press while retaining normal held-fire cadence");
+
 assert.match(fix,/pointerup",releaseMobileFire,true[\s\S]*pointercancel",releaseMobileFire,true/,"delegated mobile FIRE recovery must always release its canonical Space hold");
 assert.match(fix,/function recoverOrphanedGameplayMode\(\)[\s\S]*dossier[\s\S]*inventory[\s\S]*shop[\s\S]*mode="playing"/,"hidden transient panels must not leave gameplay stranded outside playing mode");
 assert.match(fix,/function captureR1FireOwner\(\)[\s\S]*__ccgV142R1===true[\s\S]*capturedR1FireOwner=owner/,"r20 may retain the verified r1 marker for diagnostics without bypassing the canonical attack chain");
 assert.match(fix,/function attackCompleted\(player,beforeMana,beforeBullets,beforeMelee,result\)[\s\S]*melee>beforeMelee/,"r20 must recognise a real melee swing as completed attack work");
 assert.match(fix,/function repairFiniteAttackBlock\(player\)[\s\S]*finiteCooldownRepairs[\s\S]*finiteStunRepairs/,"r20 must recover finite-but-unchanged attack blockers after bounded persistence");
-assert.match(fix,/function attackNow\(code\)[\s\S]*repairFiniteAttackBlock\(player\)[\s\S]*repairAttackBoundary\(\)[\s\S]*firePlayer\(player,direction\)[\s\S]*queueAttack\(player\)/,"an attack intent must use one authoritative top-level attack owner and retain the canonical queue only as fallback");
+assert.match(fix,/function attackNow\(code\)[\s\S]*repairFiniteAttackBlock\(player\)[\s\S]*repairAttackBoundary\(resumeGuard\)[\s\S]*firePlayer\(player,direction\)[\s\S]*queueAttack\(player\)/,"an attack intent must use one authoritative top-level attack owner and retain the canonical queue only as fallback");
 assert.doesNotMatch(fix,/function attackNow\(code\)[\s\S]*deepestFireOwner\(/,"r20 attackNow must not bypass contextual melee, voice or achievement wrappers");
 assert.doesNotMatch(fix,/function attackNow\(code\)[\s\S]*input\?\.add\?\.\(code\)/,"r20 must not manufacture a physical held-key state");
 assert.match(fix,/if\(fired\)[\s\S]*fireBuffer1=0[\s\S]*else[\s\S]*queueAttack\(player\)/,"a successful direct attack must clear the buffered fallback so one press cannot become two attacks");

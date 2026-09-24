@@ -28,13 +28,16 @@
     duplicateFramesDropped:0,
     presentationRepairs:0,
     mobileFireFallbacks:0,
-    mobileFireReleases:0
+    mobileFireReleases:0,
+    resumeAttackGuards:0,
+    resumeAttackGuardFires:0
   };
   const ATTACK_KEYS=new Set(["Space","Numpad0"]); // KeyF is reserved exclusively for fullscreen.
+  const RESUME_ATTACK_GUARD_MS=5000;
   const STALL_MS=120;
   const CURSOR_IDLE_MS=1600;
   let cursorTimer=0,lastDoorTick=performance.now(),capturedR1FireOwner=null,presentationResumeObserver=null;
-  let failedFireIntentSince=0,failedFireIntentCount=0;
+  let failedFireIntentSince=0,failedFireIntentCount=0,resumeAttackGuardUntil=0,consumedPauseResetAt=0;
   const finiteAttackWatch={fire:null,fireSince:0,stun:null,stunSince:0};
 
   const panelVisible=id=>{const node=document.getElementById(id);return Boolean(node&&!node.classList.contains("hidden"))};
@@ -56,9 +59,23 @@
     }catch(_){}
     return true
   }
+  function armResumeAttackGuard(reason="resume"){
+    resumeAttackGuardUntil=Math.max(resumeAttackGuardUntil,performance.now()+RESUME_ATTACK_GUARD_MS);
+    diagnostics.resumeAttackGuards++;
+    try{document.body.dataset.v142R20ResumeAttackGuard=String(reason)}catch(_){}
+    return resumeAttackGuardUntil
+  }
+  function recentPauseReset(){
+    try{
+      const row=window.__CCG_PAUSE_ATTACK_LAST_RESET__;
+      const at=Number(row?.at||0);
+      return at>consumedPauseResetAt&&performance.now()-at<=RESUME_ATTACK_GUARD_MS
+    }catch(_){return false}
+  }
   function restoreLivePresentationNow(reason="resume"){
     if(currentMode()!=="playing"||!liveSession())return false;
     const repaired=activeRun();
+    if(repaired&&/pause|resume|visibility|focus/i.test(String(reason||"")))armResumeAttackGuard(reason);
     try{
       const menu=document.getElementById("menu"),touch=document.getElementById("v104-touch-controls");
       if(touch&&menu?.classList.contains("hidden"))touch.classList.add("active");
@@ -198,13 +215,18 @@
     return repaired
   }
 
-  function repairAttackBoundary(){
+  function repairAttackBoundary(forceResumeCadence=false){
     try{window.CCGLostSizzlerV142R1Stability?.repairCombatTimers?.()}catch(_){}
     try{window.CCGLostSizzlerV142R1Stability?.repairProjectilePool?.()}catch(_){}
     try{
-      if(!Number.isFinite(Number(fire1))||Number(fire1)<0||Number(fire1)>2500){fire1=0;diagnostics.finiteCooldownRepairs++}
-      if(!Number.isFinite(Number(fireBuffer1))||Number(fireBuffer1)<0||Number(fireBuffer1)>2500)fireBuffer1=0;
-      if(!Number.isFinite(Number(projectileCD))||Number(projectileCD)<0||Number(projectileCD)>140)projectileCD=0;
+      if(forceResumeCadence){
+        fire1=0;fireBuffer1=0;projectileCD=0;
+        diagnostics.resumeAttackGuardFires++;
+      }else{
+        if(!Number.isFinite(Number(fire1))||Number(fire1)<0||Number(fire1)>2500){fire1=0;diagnostics.finiteCooldownRepairs++}
+        if(!Number.isFinite(Number(fireBuffer1))||Number(fireBuffer1)<0||Number(fireBuffer1)>2500)fireBuffer1=0;
+        if(!Number.isFinite(Number(projectileCD))||Number(projectileCD)<0||Number(projectileCD)>140)projectileCD=0;
+      }
       const player=p1||null;
       if(player){
         if(player.controlLocked){player.controlLocked=false;diagnostics.controlLockRepairs++}
@@ -280,8 +302,13 @@
     if(!activeRun()||!recoverOrphanedGameplayMode())return false;
     let player=null;try{player=p1}catch(_){}
     if(!player)return false;
+    const resumeGuard=performance.now()<=resumeAttackGuardUntil||recentPauseReset();
     repairFiniteAttackBlock(player);
-    repairAttackBoundary();
+    repairAttackBoundary(resumeGuard);
+    if(resumeGuard){
+      resumeAttackGuardUntil=0;
+      try{consumedPauseResetAt=Math.max(consumedPauseResetAt,Number(window.__CCG_PAUSE_ATTACK_LAST_RESET__?.at||0))}catch(_){}
+    }
     const beforeMana=Math.max(0,Number(player.mana)||0);
     const beforeBullets=activePlayerBulletCount(player);
     const beforeMelee=Number(player._meleeSwingAt||0);
@@ -394,7 +421,8 @@
   addEventListener("pointermove",scheduleCursorHide,{passive:true});
   addEventListener("pointerdown",scheduleCursorHide,{passive:true});
   addEventListener("keydown",()=>{if(activeRun()&&!interactiveOverlayVisible())scheduleCursorHide()},{passive:true});
-  document.addEventListener("visibilitychange",()=>{showCursor();lastDoorTick=performance.now()});
+  document.addEventListener("visibilitychange",()=>{showCursor();lastDoorTick=performance.now();if(!document.hidden&&liveSession())armResumeAttackGuard("visibility-return")});
+  addEventListener("focus",()=>{if(liveSession())armResumeAttackGuard("focus-return")},{passive:true});
 
   function ensureScoreFeedback(){
     let rail=document.getElementById("shop-score-delta-rail");if(rail)return rail;
