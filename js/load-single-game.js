@@ -1540,8 +1540,12 @@ function renderGame(game) {
     const heroBg = document.getElementById("gameHeroBG");
     const heroThumb = document.getElementById("gameHeroThumb");
     const heroTitle = document.getElementById("gameHeroTitle");
+    // Generated canonical pages now carry the hero background in source. Keep this
+    // fallback for legacy/unregenerated pages and the dynamic query-string route.
+    if (heroBg && !heroBg.style.backgroundImage) {
+        heroBg.style.backgroundImage = `url('${thumb}')`;
+    }
     if (!preloaded || !(heroTitle && heroTitle.textContent.trim())) {
-        if (heroBg) heroBg.style.backgroundImage = `url('${thumb}')`;
         if (heroThumb) {
             heroThumb.src = thumb;
             heroThumb.alt = `${resolveCanonicalGameTitle(game)} cover art`;
