@@ -377,13 +377,13 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Agony (1992) – Commodore Amiga Atmospheric Horizontal Shoot ’Em Up Released in 1992, Agony is a horizontally scrolling shooter for the Commodore Amiga developed by Art &amp; Magic and published by Psygnosis. Players take control of Alestes, a magician’s apprentice transformed into an owl, journeying through a dark, surreal fantasy world filled with twisted creatures and nightmarish landscapes. Unlike many shooters of the era, Agony places less emphasis on relentless speed and more on exploration, positioning, and deliberate combat. Levels are densely detailed and encourage careful movement, with enemies and hazards woven into the environment rather than simply streamed in waves. Boss encounters are visually striking and contribute heavily to the game’s oppressive atmosphere. One of Agony’s defining features is its audiovisual presentation. The richly illustrated backgrounds, fluid animations, and distinctive art style showcase the Amiga’s strengths, while the atmospheric soundtrack enhances the sense of unease and immersion throughout the journey.</div>
         </section>
 
-        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub">
+        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub" hidden>
             <h2 class="game-section__title">Game Manual</h2>
 
             <div class="ccg-game-utility-hub__grid ccg-utility-hub">
@@ -398,7 +398,13 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading">
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews">
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews">
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_START -->
       <section class="ccg-magazine-reviews ccg-magazine-reviews--static" data-ccg-magazine-review-panel="static" data-ccg-static-magazine-reviews="true" aria-label="Magazine reviews">
         <div class="ccg-magazine-reviews__heading">
@@ -534,6 +540,8 @@
         </div>
       </section>
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_END --></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

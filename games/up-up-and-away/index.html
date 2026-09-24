@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Up Up and Away (1985) – Commodore 64 Hot Air Balloon Action Survival Released in 1985 by Starcade Software and developed by Gwyll Jones, Up Up and Away is a distinctive side-scrolling action game for the Commodore 64 that puts you in control of a hot air balloon drifting across a hazardous landscape. Its unusual theme and mechanics set it apart from more conventional arcade titles of the era. Gameplay revolves around careful balloon control as the screen scrolls relentlessly forward. You must dodge clouds, trees, kites, birds, and even people hurling rocks from below, all while managing a limited fuel supply that drains whenever the balloon ascends. To stay aloft, you can drop sandbags to reduce weight—these also double as weapons, used to hit targets marked with a “P” for bonus points. Strategic planning is key, as landing at checkpoints allows you to refuel and restock sandbags before pressing on.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

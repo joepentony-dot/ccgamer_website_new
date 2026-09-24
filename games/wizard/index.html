@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Wizard (1984) – Commodore 64 Single-Screen Spellcasting Platformer Released in 1984 by Progressive Peripherals and Software for the Commodore 64, Wizard is a single-screen action platformer developed by Sean A. Moore and Steve Luedders-Dieckbrader. You take control of Wilfrid the Wizard, navigating compact levels packed with enemies, hazards, and carefully placed obstacles. Progress revolves around collecting keys that unlock magical abilities, turning spells into the core mechanic rather than simple power-ups. Fireballs, teleportation, and other spells must be used thoughtfully to defeat enemies and reach the exit, blending arcade action with light puzzle-solving. Each screen features its own layout and challenges, encouraging experimentation and planning rather than brute force. The game offers six difficulty levels and nine speed settings, letting you fine-tune the experience to their skill level and preferred pace. A standout feature is the built-in level editor, allowing you to design and share custom stages.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

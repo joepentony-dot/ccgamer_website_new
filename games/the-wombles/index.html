@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ The Wombles (1990) – Commodore 64 Action Adventure | Classic TV Tie-In The Wombles is a 1990 action-adventure game for the Commodore 64, developed by Enigma Variations and published by Alternative Software. In this charming licensed title, you play as Orinoco — one of the famous Wombles — exploring Wimbledon Common and the underground burrow to collect litter and special items, including a television, suitcase, telephone, and even a copy of The Times. Along the way, you must avoid humans, squirrels, rats, bees, and the mischievous Womble Wellington, who is racing you to grab items first. Gameplay blends exploration with timed fetch-quests and item collection. The screen scrolls through a horizontally laid-out maze, where you navigate with the joystick, collect objects, and return them before the clock runs out. Collisions with enemies or running out of time cost you valuable pie-slice lives.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

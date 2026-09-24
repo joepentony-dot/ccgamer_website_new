@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Double Dragon (1988) – Commodore 64 Arcade Beat ’Em Up Street Brawler Released in 1988 for the Commodore 64, Double Dragon is a home conversion of Technōs Japan’s hugely influential 1987 arcade hit, published on the C64 by Melbourne House. You take control of martial artist Billy or Jimmy Lee, fighting your way through a hostile city to rescue a kidnapped girl. The game delivers side-scrolling brawling action built around punches, kicks, and stolen enemy weapons like whips and baseball bats. Movement is left-to-right through a series of urban stages, with combat focused on timing, spacing, and crowd control rather than button-mashing. While the C64 version removes cooperative play and some arcade mechanics such as climbing, it still captures the core rhythm of the original. The presentation is scaled back, but the action remains clear and readable, supported by a moody soundtrack composed by Charles Deenen.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

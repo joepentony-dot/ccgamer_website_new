@@ -377,13 +377,13 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Commando (1985) – Commodore 64 Run-and-Gun Arcade Action Released in 1985 by Elite Systems for the Commodore 64, Commando is a vertical-scrolling run-and-gun shooter that adapts Capcom’s arcade hit for home computers. You take on the role of Super Joe, a lone soldier battling through enemy territory with the mission to survive, push forward, and rescue captured hostages. The gameplay is fast, direct, and relentless. Armed with a machine gun and limited grenades, you must clear waves of enemy soldiers, avoid ambushes from bunkers, and keep moving upward through hostile environments. With only three stages, the focus is firmly on reflexes, positioning, and efficient use of firepower rather than exploration or progression systems. On the Commodore 64, Commando delivers solid sprite work and confident vertical scrolling that keeps the action flowing smoothly. The real highlight is Rob Hubbard’s iconic soundtrack, which injects urgency and atmosphere into every firefight and remains one of the most celebrated pieces of C64 game music.</div>
         </section>
 
-        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub">
+        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub" hidden>
             <h2 class="game-section__title">Game Manual</h2>
 
             <div class="ccg-game-utility-hub__grid ccg-utility-hub">
@@ -398,7 +398,13 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading">
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews">
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews">
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_START -->
       <section class="ccg-magazine-reviews ccg-magazine-reviews--static" data-ccg-magazine-review-panel="static" data-ccg-static-magazine-reviews="true" aria-label="Magazine reviews">
         <div class="ccg-magazine-reviews__heading">
@@ -506,6 +512,8 @@
         </div>
       </section>
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_END --></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ GORF (1983) – Commodore 64 Multi-Stage Fixed Shooter Arcade Classic Released in 1983 for the Commodore 64, GORF is a home conversion of the 1981 arcade hit originally developed by Dave Nutting Associates and produced by Midway, with its name standing for Galactic Orbiting Robot Force. You pilot a starship in a series of fixed-screen shooting missions, combining fast reflexes with tactical positioning in the lower portion of the screen. The game features four distinct mission styles inspired by classics such as Space Invaders, Galaxian, and Phoenix, creating a varied and constantly evolving arcade experience. A unique gameplay mechanic allows the quark laser to cancel existing shots when fired again, adding an extra layer of strategy to defensive play. Stages range from classic alien formations to hyperspace warp sequences and intense boss encounters, keeping each round fresh and challenging.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

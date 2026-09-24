@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Arachnophobia (1991) – Commodore 64 Horror Action Platform Shooter Classic Released in 1991 by BlueSky Software and published by Disney Software for the Commodore 64, Arachnophobia is an action-packed adaptation of the horror-comedy film that casts players as fearless exterminator Delbert McClintock. The mission takes you across eight spider-infested towns in the USA and deep into the Amazon, battling a growing infestation that threatens every location. Gameplay blends top-down van exploration with tense side-view platform stages set inside houses, farms, schools, and graveyards. You wield the versatile Toxi-Max pesticide in spray or flame mode, alongside powerful bombs, to destroy spiders and their constantly regenerating egg sacs. An onboard arachno-detector warns of nearby threats, while rescuing trapped civilians adds extra scoring and risk-reward strategy. Enemy behaviour varies, with spiders crawling on ceilings, leaping from hiding places, and ambushing from multiple angles.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

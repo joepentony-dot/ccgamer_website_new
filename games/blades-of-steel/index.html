@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Blades of Steel (1990) – Commodore 64 Ice Hockey Sports Action Classic Released in 1990 by Konami for the Commodore 64, Blades of Steel delivers fast-paced, arcade-style ice hockey action that captures the intensity and excitement of the rink. Known for its responsive controls and distinctive features, it stands out as one of the most memorable sports titles on the C64. You can choose from eight teams representing major hockey cities such as New York, Chicago, Toronto, and Montreal, and compete in exhibition matches or tournament play. The side-scrolling presentation keeps the action flowing at high speed, rewarding quick reflexes, sharp passing, and tactical positioning. Progression relies on mastering puck control, defensive awareness, and well-timed shots on goal. Strategic line changes and smart player movement become increasingly important as matches grow more competitive, especially in two-player showdowns.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Android 2 (1983) – Commodore 64 Sci-Fi Maze Shooter Arcade Hybrid Released in 1983 for the Commodore 64, Android 2 (also known as Android Two) is a top-down sci-fi maze shooter developed by Costa Panayi and published by Vortex Software. You control a lone android dropped into a hostile, futuristic maze with one objective: eliminate five deadly Millitoids before time runs out. Gameplay blends fast maze navigation with careful combat. The wrap-around arena design keeps enemies constantly in play, while hazards like landmines, indestructible robots, and hostile aliens force you to think several moves ahead. Ammunition is limited, so success depends on positioning, timing, and knowing when to engage or evade. What truly sets Android 2 apart is its technical ambition. The scrolling, pseudo-3D maze was highly unusual for early 1980s home computers, giving the game a strong arcade feel and a real sense of depth and motion.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

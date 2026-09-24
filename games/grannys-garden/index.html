@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Granny’s Garden (1987) – Commodore 64 Educational Adventure with a Dark Fairy-Tale Edge Released on the Commodore 64 in 1987, Granny’s Garden is an educational adventure game developed by 4Mation Educational Resources and published by the Angle Park Computing Centre in South Australia. Originally created for the BBC Micro in 1983, it was later ported to multiple platforms and became a familiar sight in UK schools throughout the 1980s and 1990s. You embark on a text-driven quest to rescue six missing children from the clutches of an evil witch. Progress is made by navigating locations, answering questions, and solving logic-based puzzles using one-word typed responses, encouraging problem-solving, reading comprehension, and memory skills. The Commodore 64 version preserves the simplicity and structure of the original, with minimal graphics and sound used effectively to support the atmosphere.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

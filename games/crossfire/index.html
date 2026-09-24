@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Crossfire (1983) – Commodore 64 Multi-Directional Arcade Shooter Released in 1983 by Sierra On-Line for the Commodore 64, Crossfire is a fast-paced arcade shooter originally developed by Jay Sullivan and Charles Benton. First appearing on the Apple II in 1981, the game made a strong transition to the C64 with its sharp, reflex-driven gameplay intact. You pilot a ship through a grid-based maze, facing relentless waves of alien enemies attacking from all directions. Movement and firing are possible in four directions, forcing you to think quickly at intersections while staying one step ahead of incoming threats. A key twist comes from limited ammunition, meaning survival depends as much on positioning and timing as it does on fast reactions. Charging blindly into danger is rarely rewarded, making Crossfire a tense and strategic experience despite its simple presentation.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

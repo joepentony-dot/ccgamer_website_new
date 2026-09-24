@@ -377,13 +377,13 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Mean Streets (1989) – Commodore 64 Cyberpunk Detective Adventure Released in 1989 by Access Software for the Commodore 64, Mean Streets introduced us to Tex Murphy, a down-on-his-luck private investigator navigating a bleak, cyberpunk vision of post-apocalyptic San Francisco. Hired to uncover the truth behind the suspicious death of scientist Dr. Carl Linsky, Tex is drawn into a conspiracy involving advanced technology, corruption, and corporate secrecy. Gameplay blends classic adventure mechanics with several innovative ideas. You explore the city using Tex’s flying car, travelling between locations to gather clues and piece together the investigation. Conversations with suspects and informants require careful dialogue choices to extract useful information, while certain moments escalate into side-scrolling combat sequences that demand quick reactions and careful positioning. One of the game’s most ambitious features is its use of digitised imagery and sound, including early full-motion video elements and Access Software’s RealSound technology, which delivered sampled voices and audio without extra hardware.</div>
         </section>
 
-        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub">
+        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub" hidden>
             <h2 class="game-section__title">Game Manual</h2>
 
             <div class="ccg-game-utility-hub__grid ccg-utility-hub">
@@ -398,7 +398,13 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading">
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews">
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews">
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_START -->
       <section class="ccg-magazine-reviews ccg-magazine-reviews--static" data-ccg-magazine-review-panel="static" data-ccg-static-magazine-reviews="true" aria-label="Magazine reviews">
         <div class="ccg-magazine-reviews__heading">
@@ -427,6 +433,8 @@
         </div>
       </section>
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_END --></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

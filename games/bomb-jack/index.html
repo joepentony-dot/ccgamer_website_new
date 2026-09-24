@@ -377,13 +377,13 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Bomb Jack (1986) – Commodore 64 Arcade Platformer | Retro Classic Bomb Jack (1986), developed by Elite and based on Tehkan’s 1984 arcade hit, is one of the most successful arcade conversions ever released on the Commodore 64. You control the agile hero Jack as he leaps between platforms collecting red bombs while avoiding birds, mummies, flying saucers, and other roaming enemies. The game’s precise jumping, mid-air “flutter” ability, and strategic bomb-collection order create fast-paced, skill-based gameplay. Building bonus meters rewards careful play, while special power-ups can temporarily turn enemies into collectible coins. Each set of stages features distinctive themed backdrops, including pyramids in Cairo, the Greek Acropolis, Neuschwanstein Castle, and city nightscapes, giving the game strong visual variety. Mark Cooksey’s energetic soundtrack, including a rendition of Jean-Michel Jarre’s Magnetic Fields Part II, adds to the game’s memorable presentation.</div>
         </section>
 
-        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub">
+        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub" hidden>
             <h2 class="game-section__title">Game Manual</h2>
 
             <div class="ccg-game-utility-hub__grid ccg-utility-hub">
@@ -398,7 +398,13 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading">
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews">
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews">
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_START -->
       <section class="ccg-magazine-reviews ccg-magazine-reviews--static" data-ccg-magazine-review-panel="static" data-ccg-static-magazine-reviews="true" aria-label="Magazine reviews">
         <div class="ccg-magazine-reviews__heading">
@@ -478,6 +484,8 @@
         </div>
       </section>
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_END --></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

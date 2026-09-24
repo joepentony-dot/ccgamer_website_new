@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Bocce (1987) – Commodore 64 Classic Italian Sports Simulation Released in 1987 for the Commodore 64, Bocce is a digital adaptation of the traditional Italian lawn bowling game, developed and published by Simulmondo. As the company’s debut title, it holds an important place in European gaming history and helped introduce Italian-developed games to the wider home computer scene. Gameplay faithfully recreates the real-world sport of bocce, tasking you with rolling large balls as close as possible to the smaller target ball, known as the jack. You can fine-tune each throw by adjusting direction, power, and spin, with success relying more on precision and strategy than speed. Matches can be played across different environments, including outdoor courts with uneven terrain and indoor bocciodromes that offer more controlled conditions. A distinctive split-screen interface enhances the experience, combining a top-down tactical view of the court with a 3D-style perspective of each throw.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

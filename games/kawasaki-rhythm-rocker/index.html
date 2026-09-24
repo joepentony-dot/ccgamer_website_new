@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Kawasaki Rhythm Rocker (1984) – Commodore 64 Interactive Music Sequencer SID Classic Released in June 1984 by Sight &amp; Sound Music for the Commodore 64, Kawasaki Rhythm Rocker is a unique interactive music-making tool created by jazz fusion musician and programmer Ryo Kawasaki. Rather than focusing on traditional gameplay, the software allows users to compose and perform music in real time using four independent tracks: drums, bass, synthesiser, and vocal-style effects. Players select an instrument channel, input rhythms and notes, and loop their creations while adjusting tempo, bass levels, and dub-style effects on the fly. The interface is designed to be intuitive and expressive, encouraging experimentation and live-style performance rather than rigid composition. High-resolution animated visuals pulse and react to the music, creating a hypnotic, psychedelic display that enhances the creative experience. Powered by the SID chip, Rhythm Rocker showcases the sound hardware’s expressive range, blending sequencing, synthesis, and performance into one package.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

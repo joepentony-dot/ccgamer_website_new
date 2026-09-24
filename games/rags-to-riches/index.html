@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Rags to Riches (1985) – Commodore 64 Life Simulation with Social Commentary Released in 1985, Rags to Riches is an ambitious life simulation for the Commodore 64 developed by Bob Keener and published by Melody Hall Publishing. Unusually for its time, the game places you in the role of a homeless character with a single long-term objective: work your way up from nothing and accumulate one million dollars. The journey begins on the streets, where survival comes first. You collect bottles, search for spare change, and take on low-paying jobs to build a small income. Gradual progression allows lifestyle upgrades such as getting a haircut, pursuing education, and securing better employment, turning small decisions into meaningful long-term consequences. The city is divided into distinct districts, each presenting its own opportunities and risks. Navigating these areas requires careful planning, as threats like police, thieves, and the IRS can quickly undo progress.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

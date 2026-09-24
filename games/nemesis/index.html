@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Nemesis (1986) – Commodore 64 Side-Scrolling Shoot ’Em Up Classic Released in 1986 by Konami for the Commodore 64, Nemesis is the European home-computer release of the arcade classic known worldwide as Gradius. You take control of the iconic Vic Viper starfighter, battling through hostile alien territory to defeat the Bacterion forces in a relentless side-scrolling assault. Gameplay unfolds across horizontally scrolling stages packed with enemy formations, terrain hazards, and screen-filling bosses. A defining feature is Nemesis’s revolutionary power-up system, where collected capsules activate upgrades along a selectable meter, including speed boosts, missiles, double shots, lasers, and defensive shields. Choosing when to trigger each upgrade adds a strong tactical layer to the fast-paced action. The Commodore 64 version was coded by Simon Pick, with graphics by Bob Stevenson, and is widely praised for capturing the feel of the arcade original despite hardware constraints.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Southern Belle (1986) – Commodore 64 Steam Train Simulation Classic Released in 1986 by Hewson Consultants for the Commodore 64, Southern Belle is a pioneering train simulation programmed by Mike Male and Bob Hillyer during the height of the 8-bit era. It stands out as one of the earliest serious attempts to recreate the operation of a real steam locomotive on a home computer. You take on the demanding roles of both driver and fireman aboard a King Arthur class steam passenger locomotive, tasked with completing the famous journey from London Victoria to Brighton. Success depends on carefully managing speed, coal, water levels and braking while keeping to a strict timetable and avoiding derailment. The game uses a first-person, vector-style presentation and focuses on measured control rather than arcade reflexes. Multiple levels of complexity allows you to observe automated runs or take full command of the locomotive, balancing realism with accessibility on limited C64 hardware.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

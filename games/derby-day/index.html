@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Derby Day (1984) – Commodore 64 Horse Racing Betting Simulation Classic Released in 1984 by Pete G. Curtis and published by CRL Group PLC for the Commodore 64, Derby Day is an early horse racing betting simulation that recreates the excitement of a day at the races in a simple, accessible format. You are presented with a race card featuring seven fictional horses and must decide how to place their wagers. Gameplay centres on managing a virtual bankroll and choosing between different betting options, including win, each-way, and forecast bets. Once selections are made, an animated race sequence plays out, determining the results and updating your balance based on their predictions. Rather than focusing on complex statistics or deep simulation systems, Derby Day emphasises quick decision-making and the suspense of uncertain outcomes. Success depends on reading form, judging odds, and knowing when to take risks or play it safe.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

@@ -377,13 +377,13 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Robinson’s Requiem (1994) – Commodore Amiga Survival RPG Simulation Released in 1994 by Silmarils for the Commodore Amiga, Robinson’s Requiem is a deeply ambitious survival RPG that drops players onto a hostile alien planet with little more than their wits. Controlling two stranded astronauts, the goal is simple in theory but brutal in practice: survive. Gameplay revolves around a complex survival simulation rarely seen at the time. Players must manage hunger, thirst, fatigue, injuries, infections, and even detailed medical treatment, alongside exploration, crafting, and combat. Every decision carries weight, and mistakes can spiral into life-threatening consequences. The isometric presentation reinforces the sense of isolation, with bleak alien landscapes and threatening wildlife creating constant tension. Sound design and ambient effects further heighten the atmosphere, making exploration feel dangerous and unpredictable rather than heroic. Notorious for its steep learning curve, Robinson’s Requiem rewards patience and persistence.</div>
         </section>
 
-        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub">
+        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub" hidden>
             <h2 class="game-section__title">Game Manual</h2>
 
             <div class="ccg-game-utility-hub__grid ccg-utility-hub">
@@ -398,7 +398,13 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading">
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews">
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews">
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_START -->
       <section class="ccg-magazine-reviews ccg-magazine-reviews--static" data-ccg-magazine-review-panel="static" data-ccg-static-magazine-reviews="true" aria-label="Magazine reviews">
         <div class="ccg-magazine-reviews__heading">
@@ -463,6 +469,8 @@
         </div>
       </section>
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_END --></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

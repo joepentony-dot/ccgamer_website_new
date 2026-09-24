@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">Released in 1983 by Terminal Software for the Commodore 64, Super Gridder is a minimalist arcade-style puzzle game developed and programmed by R. W. Stevens. Also published by Microdigital Ltd. , it delivers a deceptively simple concept built around precision, timing, and risk management. Gameplay takes place on a single 8×8 grid where you control a character tracing the grid’s boundaries. Successfully enclosing a square fills it in, pushing you closer to completion, but danger lurks within the grid itself. Scorpions roam the interior, and a single touch costs a life, forcing careful planning and steady movement. The challenge comes from balancing speed and accuracy under constant time pressure. Complete the grid before the timer expires to earn bonus points, but rush too much and mistakes can quickly end a run. Every movement matters, turning simple line-drawing into a tense arcade puzzle.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

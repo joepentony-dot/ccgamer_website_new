@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Space Harrier (1987) – Commodore 64 Arcade Shooter Classic Released in 1987 by Elite Systems for the Commodore 64, Space Harrier is the home computer adaptation of Sega’s groundbreaking 1985 arcade hit, developed by Sega AM2 using “Super Scaler” technology. You control Harri as he flies through the surreal world of Dragonland, battling waves of enemies and gigantic bosses using fast-paced shooting and evasive movement. The gameplay centres on constant motion, reflexes, and precise positioning. The C64 version delivers a scaled-down interpretation of the arcade’s pseudo-3D visuals, adapting the experience to 8-bit hardware while preserving the game’s core intensity and pace. Two regional versions were released. The European version features flat terrain and simplified scrolling, while the North American release adds raster effects to simulate movement and includes alternative graphics and sound. Despite technical limitations, the game captures much of the arcade original’s energy.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

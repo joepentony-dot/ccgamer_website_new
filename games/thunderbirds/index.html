@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Thunderbirds (1985) – Commodore 64 Puzzle Adventure Based on the TV Classic Released in 1985 for the Commodore 64, Thunderbirds is a puzzle-adventure game developed by Teque Software and published by Firebird Software. Based on Gerry Anderson’s iconic 1960s TV series, the game places you in control of International Rescue’s most famous vehicles as they tackle a series of logic-based rescue scenarios. Gameplay centres on controlling Thunderbird 1 and Thunderbird 2 within maze-like environments. Progress depends on manipulating coloured blocks to clear routes and solve puzzles, with each vehicle limited to moving specific block types. This creates a deliberate, strategic pace where careful planning is essential to avoid dead ends and complete each screen. The presentation uses a clear top-down perspective, making puzzle layouts easy to read and understand. While the visuals are functional rather than flashy, they suit the methodical gameplay well.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

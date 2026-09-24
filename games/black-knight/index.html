@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Black Knight (1984) – Commodore 64 Challenging Arcade Platform Adventure Released in 1984 by Interdisc for the Commodore 64, Black Knight is a tough-as-nails arcade-style platformer that embodies the unforgiving spirit of early home computer gaming. You take control of the armoured Black Knight, battling through dangerous medieval environments packed with enemies and deadly traps. Gameplay focuses on precise movement, careful timing, and fast reactions. Each screen presents new hazards, from hostile creatures to narrow platforms and sudden drops, forcing you to learn patterns and master positioning in order to survive. Progress depends heavily on skill and persistence. The game’s level design encourages strategic play, rewarding patience and memorisation. Mistakes are costly, and success comes from learning enemy behaviour, judging jumps accurately, and choosing when to advance or retreat. Visually, Black Knight makes strong use of the C64’s capabilities, featuring detailed character sprites and smoothly animated medieval settings.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

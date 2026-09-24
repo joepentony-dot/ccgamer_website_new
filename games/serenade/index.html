@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Serenade (1986) – Commodore 64 Experimental Music Curiosity Released in 1986 by VIFI International for the Commodore 64, Serenade is a highly unusual and experimental title developed by French studio Jawx. You take on the role of a lovesick troubadour, depicted as a silhouetted figure, attempting to win the affection of a lady by performing music with a selection of instruments. The game is presented entirely in French, adding to its distinctive atmosphere and reinforcing its European art-game sensibility. Rather than following traditional arcade or adventure conventions, Serenade focuses on mood and presentation. Gameplay revolves around choosing musical pieces and attempting to perform them using four available instruments. However, interaction is deliberately minimal, and progress can feel ambiguous or even confusing. Many players find it difficult to produce clear musical results, leading some to interpret the game as more of an interactive demo or artistic experiment than a conventional game.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

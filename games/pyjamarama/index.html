@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Pyjamarama (1984) – Commodore 64 Dreamlike Platform Puzzle Adventure Released in 1984 by Mikro-Gen, Pyjamarama is the second game in the Wally Week series and places you inside a bizarre dream version of Wally’s own house. Still fast asleep, Wally must navigate this surreal landscape to wind up his alarm clock and wake up in time for work. Gameplay blends platforming with puzzle-solving as you explore interconnected rooms filled with strange hazards, moving platforms, and oddball enemies. You can only carry two items at once, forcing careful planning and experimentation to work out how each object fits into the wider puzzle. The Commodore 64 version stands out for its bold use of colour and its imaginative level design, creating a dreamlike atmosphere that feels playful and slightly unsettling. Progress relies on memory, logic, and patience rather than fast reactions.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

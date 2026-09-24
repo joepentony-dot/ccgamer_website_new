@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Dan Dare III: The Escape (1990) – Commodore 64 Sci-Fi Platform Shooter Released in 1990 by Probe Software and published by Virgin Mastertronic, Dan Dare III: The Escape is a sci-fi platform shoot-’em-up based on the classic British comic book hero. In the final chapter of the Dan Dare trilogy, you take control of the legendary space adventurer after he is captured by the evil Treens and imprisoned aboard their orbiting experimental station. His only goal is to escape. Gameplay revolves around exploring five large, maze-like levels, collecting fuel canisters, navigating teleporters, and battling alien enemies using a plasma rifle and jet pack. Progress requires careful navigation and smart resource management. The game blends fast-paced platforming with side-view shooting and multi-directional scrolling. The Commodore 64 version stands out for its responsive joystick controls and atmospheric soundtrack by Maniacs of Noise.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

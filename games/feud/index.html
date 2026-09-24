@@ -377,13 +377,13 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Feud (1987) – Commodore 64 Spellcasting Adventure | Retro Classic Released in 1987 by Binary Design and published under Mastertronic’s Bulldog Software label, Feud is a unique action-adventure built around magical rivalry and spellcraft. In the Commodore 64 version, you play as the sorcerer Learic, locked in a deadly feud with your evil brother Leanoric. To win, you must explore the map, gather herbs and ingredients, brew powerful spells, and hunt down your rival. Spells range from fireballs and lightning to invisibility and zombification, giving the game a strong tactical element. Success depends on learning spell recipes, managing resources, and predicting your opponent’s movements. The C64 edition differs notably from the Spectrum and Amstrad versions, featuring altered object placement and more unpredictable enemy tracking, which makes each encounter more tense and unpredictable. Visually, Feud features bold character sprites, a striking title screen by Ste Pickford, and an atmospheric soundtrack by David Whittaker that reinforces the game’s mystical tone.</div>
         </section>
 
-        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub">
+        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub" hidden>
             <h2 class="game-section__title">Game Manual</h2>
 
             <div class="ccg-game-utility-hub__grid ccg-utility-hub">
@@ -398,7 +398,13 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading">
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews">
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews">
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_START -->
       <section class="ccg-magazine-reviews ccg-magazine-reviews--static" data-ccg-magazine-review-panel="static" data-ccg-static-magazine-reviews="true" aria-label="Magazine reviews">
         <div class="ccg-magazine-reviews__heading">
@@ -436,6 +442,8 @@
         </div>
       </section>
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_END --></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

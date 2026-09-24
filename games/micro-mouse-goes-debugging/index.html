@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Micro Mouse Goes De-Bugging (1984) – Commodore 64 Educational Action with Arcade Gameplay Released in 1984 by MC Lothlorien, Micro Mouse Goes De-Bugging is a distinctive action-educational title for the Commodore 64 that blends arcade gameplay with early programming concepts. You take control of Micro Mouse, a digital fixer tasked with repairing corrupted BASIC code inside a malfunctioning computer system. The action unfolds across side-view, flip-screen stages where you must retrieve missing characters from cages positioned around the screen and return them to their correct places in the code. At the same time, hostile bugs roam the area, attempting to steal characters and undo progress, forcing you to balance speed, accuracy, and survival. A key mechanic is resource management. Micro Mouse can either carry a code character or a can of “datakill” to eliminate bugs, but never both at once.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Force 7 (1987) – Commodore 64 Action-Strategy Shooter | Squad-Based Sci-Fi Classic Released in October 1987 by Superior Quality Software and published by Datasoft, Force 7 is a unique hybrid of arcade shooting and squad-based strategy on the Commodore 64. In this sci-fi action game, you command a crack special-forces team of seven operatives sent to infiltrate an alien-infested energy facility on the planet Karis and rescue trapped Earth colonists. Only one operative is active at a time, and each squad member has specialised abilities — including welding tools, flame-throwers, hydro-guns, and demolition equipment — requiring tactical switching to survive. Gameplay focuses on navigating multi-level rooms using teleporters, collecting ammo and health packs, battling alien “mother” units, and deploying the powerful Battle Unit (BU) mech turret for temporary invincibility. The C64 version delivers strong graphics for the platform and features an atmospheric soundtrack by Rob Sisinni that builds tension throughout each mission.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

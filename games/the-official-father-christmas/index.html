@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ The Official Father Christmas (1989) – Commodore 64 Festive Arcade Christmas Classic Released in 1989 by Alternative Software for the Commodore 64, The Official Father Christmas is a cheerful seasonal arcade game designed to capture the fun and magic of Christmas. Aimed at younger players and families, it delivers light-hearted gameplay wrapped in festive charm. Players take control of Father Christmas as he delivers presents across a snow-covered town. The game is split into short arcade-style sequences, including loading gifts, running across rooftops, and dropping presents down chimneys while avoiding hazards such as icy ledges and troublesome animals. Each section is simple to understand and quick to play, making it ideal for pick-up-and-play sessions. On the C64, the game features colourful winter-themed graphics and bright, friendly sprites that give it a strong festive identity.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

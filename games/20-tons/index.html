@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ 20 Tons (1985) – Commodore 64 Puzzle Action Maze Challenge Released in 1985 by Chris Newcombe and published by Argus Press Software for the Commodore 64, 20 Tons is a single-player puzzle-action game inspired by the maze-based mechanics popularised in the mid-1980s. You are tasked with navigating compact underground levels while collecting all the rings needed to progress. Gameplay revolves around careful movement and planning. Falling boulders can be pushed to clear paths, trigger chain reactions, or eliminate threats, but a single misstep can result in being crushed. Timing is crucial, as each level demands observation, patience, and an understanding of how the environment reacts to your actions. The C64 version features bright, colourful graphics and a lively soundtrack that keeps the pace engaging while you work through increasingly demanding layouts. Although often compared to Boulder Dash, 20 Tons has its own identity, with tighter spaces and a greater emphasis on controlled movement and risk management.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

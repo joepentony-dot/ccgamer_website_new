@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">Released in 1987 by Rainbow Arts for the Commodore 64, To Be on Top is an unusual music-themed action game that challenges players to create a chart-topping hit single. You roam a busy street, dodging pedestrians, traffic, and roller skaters while visiting locations such as their home, disco, recording studio, and TV station in search of musical inspiration. Throughout the adventure, mini-games appear on television screens, allowing players to collect bass lines, melodies, accompaniments, and sequences. These elements are then combined using a synthesiser, along with one of sixteen drum patterns, to produce a finished demo track. Success in the charts unlocks a live television performance, where audience applause determines whether your song reaches number one. This adds a unique performance element rarely seen in 8-bit games. Visually, the game features colourful characters and lively urban environments that reflect its playful tone.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

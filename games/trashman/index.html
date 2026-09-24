@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Trashman (1984) – Commodore 64 Arcade Street-Cleaning Challenge Released in 1984 by New Generation Software and developed by Malcolm Evans, Trashman is an arcade-style action game that turns an everyday British job into a tense and memorable challenge. Set across suburban streets, you take on the role of a refuse collector racing against the clock to keep each road spotless. Each of the seven levels represents a street lined with houses, where bins must be collected and thrown into a constantly moving garbage truck. Efficiency is everything, as time is tight and mistakes are costly. Stepping onto the grass rapidly drains the bonus timer, while getting hit by passing cars results in an instant game over. Additional hazards such as dogs and cyclists add pressure, disrupting movement and forcing careful planning of each run.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

@@ -377,13 +377,13 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Monkey Island 2: LeChuck’s Revenge (1992) – Commodore Amiga Point-and-Click Adventure Classic Released in 1992 by LucasArts for the Commodore Amiga, Monkey Island 2: LeChuck’s Revenge continues the legendary adventures of Guybrush Threepwood in one of the most celebrated sequels in gaming history. Picking up after the events of The Secret of Monkey Island, you set off on a globe-trotting quest to uncover the mythical treasure of Big Whoop, all while dealing with pirates, curses, and unfinished business with LeChuck. Built using the SCUMM engine, the game refines the point-and-click formula with deeper puzzles, sharper writing, and a much larger world to explore. You travel between multiple islands, combining inventory items, outwitting rivals, and engaging in some of the most memorable dialogue ever written for an adventure game. The Amiga version shines with richly detailed hand-painted visuals and smooth presentation, while the innovative iMUSE system dynamically adjusts the music to match on-screen action, creating a seamless and immersive atmosphere.</div>
         </section>
 
-        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub">
+        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub" hidden>
             <h2 class="game-section__title">Game Manual</h2>
 
             <div class="ccg-game-utility-hub__grid ccg-utility-hub">
@@ -398,7 +398,13 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading">
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews">
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews">
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_START -->
       <section class="ccg-magazine-reviews ccg-magazine-reviews--static" data-ccg-magazine-review-panel="static" data-ccg-static-magazine-reviews="true" aria-label="Magazine reviews">
         <div class="ccg-magazine-reviews__heading">
@@ -544,6 +550,8 @@
         </div>
       </section>
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_END --></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>
