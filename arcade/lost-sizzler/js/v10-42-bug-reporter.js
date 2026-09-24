@@ -160,6 +160,7 @@
       const record={
         serial:++movementBoundarySerial,world:trapWorldKey(),playerId:trapPlayerId(player),x,y,at:stamp,
         beforeHealth:Number(player.health||0),beforeArmor:Number(player.armor||0),beforeHurtAt:Number(player.__ccgLastHurtAt||0),
+        beforeDamageAt:Number(player.__ccgLastDamageAt||0),beforeDamageSource:String(player.__ccgLastDamageSource||""),
         activeTraps,activeHazards,meta:compact(meta)
       };
       movementBoundaryChecks.set(player,record);
@@ -190,15 +191,19 @@
 
     setTimeout(()=>{
       const finalHealth=Number(player.health||0),finalArmor=Number(player.armor||0),finalHurtAt=Number(player.__ccgLastHurtAt||0);
-      const healthLoss=before.beforeHealth-finalHealth,armorLoss=before.beforeArmor-finalArmor;
-      const trapDamageObserved=healthLoss>=1||finalHurtAt>before.beforeHurtAt;
+      const finalDamageAt=Number(player.__ccgLastDamageAt||0),finalDamageSource=String(player.__ccgLastDamageSource||"");
+      const healthLoss=before.beforeHealth-finalHealth,armorLoss=before.beforeArmor-finalArmor,sourceAdvanced=finalDamageAt>before.beforeDamageAt,normalizedSource=finalDamageSource.toLowerCase();
+      const trapKinds=before.activeTraps.map(row=>String(row?.trap?.kind||"").toLowerCase()).filter(Boolean);
+      const trapSourceMatched=sourceAdvanced&&(normalizedSource.includes("dungeon trap")||normalizedSource.includes("floor trap")||trapKinds.some(kind=>normalizedSource.includes(`${kind} trap`)));
+      const hazardSourceMatched=sourceAdvanced&&before.activeHazards.some(row=>{const title=String(row?.title||"").trim().toLowerCase(),type=String(row?.type||"").trim().toLowerCase();return Boolean(title&&normalizedSource.includes(`${title} trap`)||type&&normalizedSource.includes(type))});
+      const trapDamageObserved=trapSourceMatched;
       if(before.activeTraps.length&&!trapDamageObserved){
         state.anomalies++;state.trapAnomalies++;state.environmentAnomalies++;
         const detail={
           serial:before.serial,world:before.world,playerId:before.playerId,contact:{x:before.x,y:before.y},
           expectedHealthLoss:1,actualHealthLoss:healthLoss,armorLoss,
           beforeHealth:before.beforeHealth,afterHealth:finalHealth,beforeArmor:before.beforeArmor,afterArmor:finalArmor,
-          beforeHurtAt:before.beforeHurtAt,afterHurtAt:finalHurtAt,
+          beforeHurtAt:before.beforeHurtAt,afterHurtAt:finalHurtAt,beforeDamageAt:before.beforeDamageAt,afterDamageAt:finalDamageAt,damageSource:finalDamageSource,
           movedAway:Number(player.x)!==before.x||Number(player.y)!==before.y,
           traps:before.activeTraps,meta:before.meta
         };
@@ -214,11 +219,11 @@
       }
 
       const dedicatedDamage=healthLoss+Math.max(0,armorLoss);
-      if(before.activeHazards.length&&dedicatedDamage<1&&finalHurtAt<=before.beforeHurtAt){
+      if(before.activeHazards.length&&!hazardSourceMatched){
         state.anomalies++;state.environmentAnomalies++;
         const detail={
           serial:before.serial,world:before.world,playerId:before.playerId,contact:{x:before.x,y:before.y},
-          expectedDamageSignal:1,healthLoss,armorLoss,beforeHurtAt:before.beforeHurtAt,afterHurtAt:finalHurtAt,
+          expectedDamageSignal:1,healthLoss,armorLoss,beforeHurtAt:before.beforeHurtAt,afterHurtAt:finalHurtAt,beforeDamageAt:before.beforeDamageAt,afterDamageAt:finalDamageAt,damageSource:finalDamageSource,
           movedAway:Number(player.x)!==before.x||Number(player.y)!==before.y,
           hazards:before.activeHazards,meta:before.meta
         };
