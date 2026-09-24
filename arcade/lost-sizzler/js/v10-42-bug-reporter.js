@@ -64,7 +64,7 @@
       id:player.id||"",x:Number(player.x),y:Number(player.y),rx:Number(player.rx),ry:Number(player.ry),
       health:Number(player.health),maxHealth:Number(player.maxHealth),mana:Number(player.mana),maxMana:Number(player.maxMana),
       armor:Number(player.armor||0),level:Number(player.level||0),hitStunMs:Number(player.hitStunMs||0),
-      invuln:Number(player.invuln||0),controlLocked:Boolean(player.controlLocked),controlsLocked:Boolean(player.controlsLocked),
+      invuln:Number(player.invuln||0),lastDamageAt:Number(player.__ccgLastDamageAt||0),lastDamageSource:String(player.__ccgLastDamageSource||""),controlLocked:Boolean(player.controlLocked),controlsLocked:Boolean(player.controlsLocked),
       firearmUnlocked:player.firearmUnlocked!==false,weaponLevel:Number(player.weaponLevel||0),
       weapon:weaponState(player),ownedWeaponCount:Array.isArray(player.ownedWeapons)?player.ownedWeapons.length:0,
       activeWeaponIndex:Number.isInteger(player.activeWeaponIndex)?player.activeWeaponIndex:null,
@@ -195,7 +195,7 @@
       const healthLoss=before.beforeHealth-finalHealth,armorLoss=before.beforeArmor-finalArmor,sourceAdvanced=finalDamageAt>before.beforeDamageAt,normalizedSource=finalDamageSource.toLowerCase();
       const trapKinds=before.activeTraps.map(row=>String(row?.trap?.kind||"").toLowerCase()).filter(Boolean);
       const trapSourceMatched=sourceAdvanced&&(normalizedSource.includes("dungeon trap")||normalizedSource.includes("floor trap")||trapKinds.some(kind=>normalizedSource.includes(`${kind} trap`)));
-      const hazardSourceMatched=sourceAdvanced&&before.activeHazards.some(row=>{const title=String(row?.title||"").trim().toLowerCase(),type=String(row?.type||"").trim().toLowerCase();return Boolean(title&&normalizedSource.includes(`${title} trap`)||type&&normalizedSource.includes(type))});
+      const hazardSourceMatched=sourceAdvanced&&before.activeHazards.some(row=>{const title=String(row?.title||"").trim().toLowerCase(),type=String(row?.type||"").trim().toLowerCase();if(title)return normalizedSource.includes(`${title} trap`);if(type)return normalizedSource.includes(`${type} trap`);return normalizedSource.includes("hazard chamber trap")});
       const trapDamageObserved=trapSourceMatched;
       if(before.activeTraps.length&&!trapDamageObserved){
         state.anomalies++;state.trapAnomalies++;state.environmentAnomalies++;
