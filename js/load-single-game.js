@@ -1647,11 +1647,11 @@ function renderGame(game) {
     if (videoDescription) {
         const overview = String(game.description || "").trim();
         const prefilledVideoDescription = preloaded && videoDescription.textContent.trim();
-        if (hasVideo && overview) {
-            if (!prefilledVideoDescription) {
-                if (game._ccgEnrichedDescription) videoDescription.textContent = overview;
-                else videoDescription.innerHTML = overview;
-            }
+        if (prefilledVideoDescription) {
+            videoDescription.hidden = false;
+        } else if (hasVideo && overview) {
+            if (game._ccgEnrichedDescription) videoDescription.textContent = overview;
+            else videoDescription.innerHTML = overview;
             videoDescription.hidden = false;
         } else {
             videoDescription.textContent = "";
@@ -1824,7 +1824,9 @@ function renderGame(game) {
         console.warn("[CCG SINGLE] Optional UX enhancements skipped.", error);
     }
 
-    injectGameSchema(game);
+    if (!preloaded) {
+        injectGameSchema(game);
+    }
 
     if (typeof document !== "undefined" && document.body) {
         const slug = String(game?.slug || "").trim();
