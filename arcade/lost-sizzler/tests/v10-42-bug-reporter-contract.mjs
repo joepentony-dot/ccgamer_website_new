@@ -34,8 +34,9 @@ assert.match(reporter,/ANOMALY_ACTIVE_HAZARD_CROSSING_NO_DAMAGE/,"reporter must 
 assert.match(reporter,/environment-boundary-contact/,"reporter must retain contact evidence even when the player leaves the tile before the polling loop sees it");
 assert.match(reporter,/environment-trap-crossing-damage-confirmed/,"reporter must distinguish a successful crossing hit from a failed crossing");
 assert.match(reporter,/row\?\.active===true&&Number\(row\?\.hitCooldown\|\|0\)<=0/,"dedicated hazard crossings under the normal hit cooldown must not be misreported as failures");
+assert.match(reporter,/hazardContact&&Number\(hazardContact\.at\)===finalDamageAt[\s\S]*String\(hazardContact\.id\|\|""\)===String\(row\?\.id\|\|""\)[\s\S]*Number\(hazardContact\.x\)===before\.x[\s\S]*Number\(hazardContact\.y\)===before\.y/,"dedicated hazard confirmation must match the exact hazard and contact cell");
 assert.match(reporter,/trapDamageObserved=trapSourceMatched/,"ordinary trap confirmation must require a trap-attributed damage source rather than unrelated player damage");
-assert.match(reporter,/damageObserved=healthLoss>=1\|\|afterHurtAt>beforeHurtAt\|\|afterHits>beforeHits/,"polling diagnostics must accept hurt timestamps or trap hit counters as proof of lethal trap damage");
+assert.match(reporter,/sourceMatched=afterDamageAt>beforeDamageAt&&afterDamageSource\.includes\(`\$\{kind\} trap`\),damageObserved=afterHits>beforeHits\|\|sourceMatched/,"polling diagnostics must require trap-attributed source evidence or the retained trap-hit counter, never unrelated health loss");
 
 
 assert.match(reporter,/trapHitsByKind/,"trap diagnostics must retain per-kind FIRE SPIKE and SHOCK hit evidence");
@@ -71,3 +72,4 @@ assert.match(gamePlay,/CCGLostSizzlerBugReporter\?\.observeMovementBoundary\?\.\
 assert.match(gamePlay,/triggerTrap\(p\);\s*try\{window\.CCGLostSizzlerBugReporter\?\.observeMovementBoundary\?\.\(p,"after"/s,"movement boundary must verify environmental contact immediately after trap resolution");
 assert.match(gamePlay,/__ccgLastDamageAt=damageAt/,"canonical player damage must expose a timestamp for source-attributed diagnostics");
 assert.match(gamePlay,/__ccgLastDamageSource=String\(source\|\|"enemy"\)/,"canonical player damage must expose its source for trap/hazard attribution");
+assert.match(gamePlay,/__ccgLastHazardDamageContact=\{id:String\(hazard\.id\|\|""\),x:contactX,y:contactY,at:damageAfter\}/,"dedicated hazards must stamp the exact damaging cell only after canonical damage is accepted");
