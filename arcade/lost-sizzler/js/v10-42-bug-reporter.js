@@ -156,7 +156,7 @@
         .map(trap=>trapOwnerSnapshot(player,trap,stamp)),[]);
       const activeTraps=ordinary.filter(row=>row?.trap?.active===true);
       const dedicated=dedicatedHazardSnapshot(player);
-      const activeHazards=(dedicated?.matches||[]).filter(row=>row?.active===true);
+      const activeHazards=(dedicated?.matches||[]).filter(row=>row?.active===true&&Number(row?.hitCooldown||0)<=0);
       const record={
         serial:++movementBoundarySerial,world:trapWorldKey(),playerId:trapPlayerId(player),x,y,at:stamp,
         beforeHealth:Number(player.health||0),beforeArmor:Number(player.armor||0),beforeHurtAt:Number(player.__ccgLastHurtAt||0),
@@ -191,7 +191,8 @@
     setTimeout(()=>{
       const finalHealth=Number(player.health||0),finalArmor=Number(player.armor||0),finalHurtAt=Number(player.__ccgLastHurtAt||0);
       const healthLoss=before.beforeHealth-finalHealth,armorLoss=before.beforeArmor-finalArmor;
-      if(before.activeTraps.length&&healthLoss<1){
+      const trapDamageObserved=healthLoss>=1||finalHurtAt>before.beforeHurtAt;
+      if(before.activeTraps.length&&!trapDamageObserved){
         state.anomalies++;state.trapAnomalies++;state.environmentAnomalies++;
         const detail={
           serial:before.serial,world:before.world,playerId:before.playerId,contact:{x:before.x,y:before.y},
@@ -402,8 +403,9 @@
           const afterStamp=performance.now(),afterHealth=Number(player.health||0),afterHurtAt=Number(player.__ccgLastHurtAt||0);
           const afterHits=Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHitsByKind?.[kind]||0);
           const healthLoss=beforeHealth-afterHealth,stillOnTile=Number(player.x)===Number(trap.x)&&Number(player.y)===Number(trap.y);
+          const damageObserved=healthLoss>=1||afterHurtAt>beforeHurtAt||afterHits>beforeHits;
           const afterOwner=trapOwnerSnapshot(player,trap,afterStamp);
-          if(healthLoss<1){
+          if(!damageObserved){
             state.anomalies++;state.trapAnomalies++;state.lastTrap=afterOwner;
             push("ANOMALY_ACTIVE_TRAP_NO_DAMAGE",{
               checkKey,visit,expectedHealthLoss:1,actualHealthLoss:healthLoss,beforeHealth,afterHealth,
