@@ -46,8 +46,8 @@ assert.match(render,/drawPlayerWeapon\(p,cx,cy,d\);/,"every player render must d
 assert.match(play,/const ATTACK_BUFFER_MS=700/,"quick fire taps must remain buffered through the longest melee cooldown");
 assert.match(play,/function queueAttack\(p\)/,"keyboard and touch attacks must share a one-shot input buffer");
 assert.match(play,/input\.has\("Space"\)\|\|fireBuffer1>0[\s\S]*?firePlayer\(p1,attackDirection\(p1,d1\(\)\)\)/,"holding or tapping desktop fire must attack at the weapon cooldown in the movement direction or last facing direction");
-assert.match(play,/gp\.buttons\?\.\[0\]\?\.pressed&&fire1<=0/,"holding the joystick fire button must repeat attacks at the weapon cooldown");
-assert.match(play,/firePlayer\(p1,attackDirection\(p1,dir\)\)/,"stationary joystick fire must use the player's last facing direction");
+assert.match(play,/gp\.buttons\?\.\[0\]\?\.pressed[\s\S]*CCGLostSizzlerV142R20LiveRegressionStability[\s\S]*attackNow\("Gamepad0"\)/,"holding the joystick fire button must repeat through the authoritative attack recovery owner");
+assert.match(play,/else if\(fire1<=0\)firePlayer\(p1,attackDirection\(p1,dir\)\)/,"gamepad fallback must retain the weapon cooldown and the player's last facing direction");
 assert.match(play,/const source=requested&&\(requested\.x\|\|requested\.y\)\?requested:p\?\.dir/,"stationary attacks must fall back to the player's facing direction");
 assert.match(touch,/queueAttack\(p1\)/,"a quick touch FIRE tap must not be lost between animation frames");
 assert.match(touch,/input\.add\("Space"\)/,"holding the touch FIRE button must use the same repeat-fire state as the keyboard");
