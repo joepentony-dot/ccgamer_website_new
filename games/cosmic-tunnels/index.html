@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Cosmic Tunnels (1984) – Commodore 64 Multi-Stage Space Action Adventure Released in 1984 by Tim Ferris and published by Datamost for the Commodore 64, Cosmic Tunnels is a distinctive space-themed action game that blends several gameplay styles into one ambitious sci-fi adventure. You take on the role of a pilot tasked with travelling from the planet Sirref and recovering vital energy resources from hostile asteroids. The journey begins with a launch sequence where you dodge falling meteors before entering one of four cosmic tunnels. This leads into a fast-paced 3D tunnel section, requiring quick reflexes to avoid or destroy incoming mines within strict time limits. After exiting the tunnel, you must carefully land on an asteroid platform while battling enemy defences. The final stage switches perspective again, placing you in control of an astronaut who must collect energy bars while avoiding hostile creatures and making use of speed boosts and jetcopters.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

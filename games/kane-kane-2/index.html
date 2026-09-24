@@ -377,13 +377,13 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Kane &amp; Kane II (1986–1988) – Commodore 64 Wild West Action Duology Released by Mastertronic in 1986 and 1988, Kane and Kane II are Western-themed arcade action games developed by John Darnell for the Commodore 64. Both titles place you in the boots of lawman Marshall McGraw as he rides into danger to restore order across the frontier. The original Kane mixes fast-paced shooting with horseback riding stages, throwing a variety of arcade-style challenges your way. Gunfights test reflexes and positioning, while the riding sections demand precision and timing, earning a reputation for being tough but memorable. Kane II follows the same structure, offering more shootouts and riding sequences with familiar mechanics. While it sticks closely to the formula of the first game, it expands on the action and delivers another dose of Wild West arcade gameplay.</div>
         </section>
 
-        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub">
+        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub" hidden>
             <h2 class="game-section__title">Game Manual</h2>
 
             <div class="ccg-game-utility-hub__grid ccg-utility-hub">
@@ -398,7 +398,13 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading">
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews">
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews">
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_START -->
       <section class="ccg-magazine-reviews ccg-magazine-reviews--static" data-ccg-magazine-review-panel="static" data-ccg-static-magazine-reviews="true" aria-label="Magazine reviews">
         <div class="ccg-magazine-reviews__heading">
@@ -445,6 +451,8 @@
         </div>
       </section>
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_END --></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

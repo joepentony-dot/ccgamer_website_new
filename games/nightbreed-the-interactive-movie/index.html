@@ -377,13 +377,13 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Clive Barker’s Nightbreed (1990) – Commodore Amiga Interactive Horror Adventure Released in 1990 by Ocean Software and developed by Impact Software for the Commodore Amiga, Clive Barker’s Nightbreed: The Interactive Movie adapts the dark fantasy world of Barker’s film and novella Cabal into a cinematic arcade adventure set in the underground city of Midian. Players take on the role of Aaron Boone, navigating graveyards, crypts, and the twisted corridors of Midian while confronting enemies and the menacing Dr. Decker. The game presents a sequence of arcade-style scenes inspired directly by the film, blending platforming, combat, and light puzzle elements to progress the story. A major focus is atmosphere, with gothic visuals, stylised character designs, and digitised speech helping to reinforce the horror tone. The Amiga hardware is used to deliver moody presentation and cinematic flair, aiming to blur the line between film and game.</div>
         </section>
 
-        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub">
+        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub" hidden>
             <h2 class="game-section__title">Game Manual</h2>
 
             <div class="ccg-game-utility-hub__grid ccg-utility-hub">
@@ -398,7 +398,13 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading">
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews">
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews">
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_START -->
       <section class="ccg-magazine-reviews ccg-magazine-reviews--static" data-ccg-magazine-review-panel="static" data-ccg-static-magazine-reviews="true" aria-label="Magazine reviews">
         <div class="ccg-magazine-reviews__heading">
@@ -463,6 +469,8 @@
         </div>
       </section>
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_END --></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

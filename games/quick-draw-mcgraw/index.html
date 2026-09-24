@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Quick Draw McGraw (1990) – Commodore 64 Side-Scrolling Western Action Released in 1990 by Hi-Tec Software and developed by PAL Developments, Quick Draw McGraw brings the classic Hanna-Barbera cartoon star to the Commodore 64 in a fast-moving western action adventure. You step into the hooves of the fastest gun in the West, racing across moving trains to keep them safe from bandits and outlaws. Gameplay mixes horizontal side-scrolling action with constant forward momentum as you run along carriage roofs and sides, leaping gaps and dodging hazards like smoke plumes and swooping birds. Timing and positioning are key, as one mistimed jump can quickly bring your train-top heroics to an end. At key moments, the game switches perspective inside the train carriages, dropping you into first-person shooting sections where quick reactions matter most. Clearing these interiors and reaching the engine allows you to face off against the boss controlling each train, before moving on to the next challenge.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

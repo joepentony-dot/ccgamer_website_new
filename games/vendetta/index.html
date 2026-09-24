@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Vendetta (1990) – Commodore 64 Action-Adventure | Isometric Crime Thriller Classic Released in 1990 by System 3 and developed by Stanley Schembri, Vendetta is an ambitious hybrid action-adventure for the Commodore 64, blending exploration, combat, and vehicle sequences into one gritty experience. In the game, you play as an ex-soldier whose brother and niece have been kidnapped by a terrorist/mafia organisation. Your mission is to track them down and rescue them across seven dangerous levels. Gameplay combines isometric “Last Ninja–style” exploration — featuring rooms, items, weapons, and light puzzle elements — with fast-paced driving and shoot-’em-up sections including car chases, helicopter attacks, and police roadblocks. The game features detailed backgrounds and a moody introduction sequence, with music composed by Matt Gray. While in-game animation and controls can feel clunky at times, the atmosphere and ambition remain strong.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

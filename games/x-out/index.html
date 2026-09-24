@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ X-Out (1989) – Commodore 64 Underwater Shoot ’Em Up with Strategic Loadouts Released in 1989 by Rainbow Arts and developed by Arc Developments, X-Out is a horizontally scrolling shoot ’em up that swaps deep space for the depths of the ocean. You pilot advanced submarines through alien-infested underwater environments, facing relentless enemy waves and screen-filling bosses. What truly sets X-Out apart is its shop system. Between missions, you spend earned credits on submarines, weapons, and upgrades, carefully balancing firepower, shields, and support craft. Success depends as much on smart preparation as it does on sharp reflexes once the action begins. The game pushes the Commodore 64 hard, delivering detailed underwater visuals, smooth scrolling, and dense enemy patterns. Chris Hülsbeck’s driving soundtrack adds urgency and atmosphere, perfectly matching the intensity of the on-screen mayhem. Famously tough and unapologetically demanding, X-Out rewards mastery and planning over brute force.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

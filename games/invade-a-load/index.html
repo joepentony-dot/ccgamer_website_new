@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Invade-a-Load (1987) – Commodore 64 Cassette Loader Shoot-’Em-Up Released in 1987 by Mastertronic and developed by Richard Aplin, Invade-a-Load is one of the most inventive ideas to appear on the Commodore 64. Rather than staring at a static loading screen, you’re dropped straight into a Space Invaders-style shooter that runs while the main game loads from cassette in the background. You control a small ship at the bottom of the screen, blasting descending alien waves as they speed up and become more aggressive. It’s simple, immediate, and surprisingly addictive, turning unavoidable loading time into a playable challenge instead of dead air. What makes Invade-a-Load truly special is how seamlessly it integrates with the fast loader itself, running without slowing the loading process. Add Rob Hubbard’s unmistakable SID music into the mix and you’ve got a loading screen that became more memorable than some full games.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

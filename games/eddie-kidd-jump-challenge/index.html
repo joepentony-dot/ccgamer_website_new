@@ -377,13 +377,13 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Eddie Kidd Jump Challenge (1984) – Commodore 64 Motorcycle Stunt Skill Test Released in 1984 by Martech Games Ltd. for the Commodore 64, Eddie Kidd Jump Challenge is a licensed stunt game based on the exploits of British daredevil Eddie Kidd. You take control of Eddie as he attempts a series of increasingly dangerous jumps, beginning on BMX bikes before progressing to powerful motorbikes. Gameplay is built entirely around timing and precision. Each challenge requires careful control of speed, positioning, and take-off angle in order to clear obstacles such as oil barrels and rows of cars. As the game advances, the jumps become longer and more demanding, leaving little margin for error. Rather than relying on gauges or on-screen indicators, you must judge speed instinctively, using visual cues and engine sound to time each run-up perfectly.</div>
         </section>
 
-        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub">
+        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub" hidden>
             <h2 class="game-section__title">Game Manual</h2>
 
             <div class="ccg-game-utility-hub__grid ccg-utility-hub">
@@ -398,7 +398,13 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading">
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews">
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews">
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_START -->
       <section class="ccg-magazine-reviews ccg-magazine-reviews--static" data-ccg-magazine-review-panel="static" data-ccg-static-magazine-reviews="true" aria-label="Magazine reviews">
         <div class="ccg-magazine-reviews__heading">
@@ -454,6 +460,8 @@
         </div>
       </section>
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_END --></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

@@ -377,13 +377,13 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Bruce Lee (1984) – Commodore 64 Martial Arts Platform Action Classic Released in 1984 by Datasoft, Bruce Lee is a highly regarded action-platformer for the Commodore 64 that blends precise platforming with beat ’em up combat. Designed by Ron J. Fortier, with graphics by Kelly Day and music by John A. Fitzpatrick, the game draws inspiration from martial arts cinema while delivering tight, skill-based gameplay. You guide Bruce Lee through a series of 20 single-screen rooms, collecting lanterns to unlock new areas on the path to confronting an evil wizard. Each room is carefully designed, combining vertical movement, environmental hazards, and enemy encounters that demand timing and control rather than brute force. Bruce is constantly pursued by two iconic foes: the agile Ninja and the powerful Green Yamo, a sumo wrestler. Combat revolves around punches and flying kicks, while you must also contend with electrified walls, collapsing floors, and explosive traps that punish careless movement.</div>
         </section>
 
-        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub">
+        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub" hidden>
             <h2 class="game-section__title">Game Manual</h2>
 
             <div class="ccg-game-utility-hub__grid ccg-utility-hub">
@@ -398,7 +398,13 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading">
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews">
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews">
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_START -->
       <section class="ccg-magazine-reviews ccg-magazine-reviews--static" data-ccg-magazine-review-panel="static" data-ccg-static-magazine-reviews="true" aria-label="Magazine reviews">
         <div class="ccg-magazine-reviews__heading">
@@ -507,6 +513,8 @@
         </div>
       </section>
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_END --></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

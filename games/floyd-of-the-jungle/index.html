@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Floyd of the Jungle (1984) – Commodore 64 Competitive Jungle Platform Action Released in 1984 by MicroProse for the Commodore 64, Floyd of the Jungle is a fast-paced action-platformer designed by Sid Meier, making it a fascinating early example of his work outside strategy and simulation. Set in a colourful jungle environment, the game mixes arcade action with competitive scoring. You control Floyd as he leaps through the jungle, avoiding hazards such as alligators, elephants, and hostile pygmies. The goal is to rescue Janice, but competition is fierce, as rivals George and another Floyd are also racing to impress her. Points are earned by collecting birds and knocking out pygmies, with victory going to the first player to reach the target score. The game supports simultaneous two-player action on the C64, turning each session into a frantic race for points rather than a simple rescue mission.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

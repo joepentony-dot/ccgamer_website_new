@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Alcazar: The Forgotten Fortress (1985) – Commodore 64 Action Adventure Classic Released in 1985 by Activision for the Commodore 64, Alcazar: The Forgotten Fortress is an ambitious action-adventure game designed and programmed by Tom Loughry. You set out on a quest to recover a stolen crown by navigating a dynamically generated world map filled with twenty-two castles, each containing unique layouts, hazards, and hidden treasures. Gameplay is presented from a top-down perspective, with every castle forming a maze of interconnected rooms. You must overcome traps, enemies, and environmental puzzles in order to progress. A variety of tools and items aid exploration and combat, including pistols, grappling hooks, magic carpets, and secret passages. Limited ammunition and careful resource management add a strong strategic element. The game features multiple difficulty levels and a built-in demonstration mode, both of which were advanced features for home computer games of the mid-1980s.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

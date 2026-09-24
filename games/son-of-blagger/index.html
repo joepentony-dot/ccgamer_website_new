@@ -377,13 +377,13 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Son of Blagger (1984) – Commodore 64 Scrolling Platform Challenge Released in 1984 by Alligata Software and developed by Tony Crowther, Son of Blagger is the sequel to the original Blagger and expands the formula into a more demanding scrolling platform experience. You control Slippery Sid, the son of the infamous burglar, on a mission to collect keys scattered across a large, interconnected landscape. Unlike the single-screen design of its predecessor, the game features continuous scrolling levels that require careful planning and precise movement. Sid must navigate complex platforms, avoid robotic enemies, and manage risky jumps, with long falls and instant-death hazards keeping tension high throughout each stage. The challenge is relentless, as all keys must be collected within a time limit to progress. Route choice and timing are critical, rewarding those who memorise layouts and master movement.</div>
         </section>
 
-        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub">
+        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub" hidden>
             <h2 class="game-section__title">Game Manual</h2>
 
             <div class="ccg-game-utility-hub__grid ccg-utility-hub">
@@ -398,7 +398,13 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading">
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews">
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews">
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_START -->
       <section class="ccg-magazine-reviews ccg-magazine-reviews--static" data-ccg-magazine-review-panel="static" data-ccg-static-magazine-reviews="true" aria-label="Magazine reviews">
         <div class="ccg-magazine-reviews__heading">
@@ -418,6 +424,8 @@
         </div>
       </section>
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_END --></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

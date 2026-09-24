@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ The Dolphin’s Rune (1985) – Commodore 64 Artistic Action Exploration Classic Released in 1985 by Mindscape for the Commodore 64 and developed by John O’Neill under the Admacadiam label, The Dolphin’s Rune: A Poetic Odyssey is a highly unconventional action-puzzle game that prioritises atmosphere and reflection over traditional arcade thrills. Designed as an interactive art experience, it stands apart from most titles of its era. You take control of a dolphin swimming through a vast ocean environment, where survival depends on awareness and restraint rather than speed. Avoiding sharks, surfacing for air, and steering clear of dangerous fishing nets form the core challenges, encouraging slow, thoughtful exploration from the dolphin’s perspective. Progression is shaped by observation, rhythm, and environmental understanding. Instead of score-chasing or time pressure, the game rewards patience and immersion, inviting you to absorb its unusual tone and subtle mechanics.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

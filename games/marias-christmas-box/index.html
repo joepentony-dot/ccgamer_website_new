@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Maria’s Christmas Box (1988) – Commodore 64 Adult Strip Poker Curiosity Released in 1988 by Anco Software for the Commodore 64, Maria’s Christmas Box is an adult-themed strip poker game that arrived during the festive season, tapping into the popularity of celebrity-inspired titles of the era. The game features British model Maria Whittaker, well known to Commodore fans for her appearance in Barbarian: The Ultimate Warrior. Gameplay centres on a one-on-one strip poker match, with Maria initially dressed in a Santa Claus outfit to fit the Christmas theme. You wager credits, bluff, and trade clothing items in familiar fashion, closely following the mechanics established in Anco’s earlier Strip Poker II+. Two difficulty levels are available, with the harder mode offering a more aggressive and challenging AI opponent. Presentation is basic, using static pixel artwork, limited animation, and a very simple interface built around the standard C64 system font.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

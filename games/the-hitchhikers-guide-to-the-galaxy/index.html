@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ The Hitchhiker’s Guide to the Galaxy (1984) – Commodore 64 Sci-Fi Text Adventure Classic Released in 1984 by Infocom and designed by Douglas Adams alongside Steve Meretzky, The Hitchhiker’s Guide to the Galaxy arrived on the Commodore 64 as one of the most ambitious interactive fiction titles of the 8-bit era. Based directly on Adams’ bestselling novel, the C64 version faithfully recreated the absurd humour and unpredictable sci-fi storytelling that made the book a cult phenomenon. On the Commodore 64, gameplay is entirely text-driven, powered by Infocom’s advanced Z-machine engine. Players must type precise commands to explore environments, solve layered puzzles, and survive increasingly bizarre situations — from escaping a bulldozer to navigating interstellar travel. The parser is famously demanding, often requiring exact phrasing and lateral thinking, making experimentation essential. The C64 release also shipped with Infocom’s signature “feelies” in the box, physical props that enhanced immersion and reinforced its narrative depth.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

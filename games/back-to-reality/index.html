@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Back to Reality (1986) – Commodore 64 Maze Action Adventure Survival Released in 1986 by Mastertronic for the Commodore 64, Back to Reality is a tense action-adventure that drops you into a hostile alien maze with little guidance and even less time. You play as an astronaut trapped deep within an unfamiliar environment, where survival depends on memory, precision, and calm decision-making under pressure. Gameplay centres on navigating a complex maze, learning safe routes, and avoiding hazards while racing against the clock. With no hand-holding and a deliberately stripped-back presentation, progress comes from careful observation and mastering the layout through repetition. The minimalist design heightens the sense of isolation and urgency, turning each run into a test of focus and spatial awareness. Difficulty is unforgiving, but success feels earned as you slowly build knowledge of the maze and push closer to escape.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

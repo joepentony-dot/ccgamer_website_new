@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ A Nightmare on Elm Street (1989) – Commodore 64 Horror Action-Adventure with RPG Elements Released in 1989 and developed by Westwood Associates, A Nightmare on Elm Street brings the iconic horror film series to the Commodore 64 in an unusual top-down action-adventure format. Loosely inspired by the Dream Warriors era of the films, the game blends exploration, combat, and light RPG mechanics into a tense and atmospheric experience. You choose from six characters, each equipped with a unique dream power that influences how the game unfolds. The main objective is to explore Elm Street, locate Freddy Krueger’s house, and navigate its maze-like interior while rescuing trapped friends and surviving a range of nightmarish enemies. Progress relies on careful exploration, item use, and learning how each character’s abilities affect combat and puzzle-solving. The gameplay runs in real time, with Freddy able to appear suddenly and attack without warning, keeping tension high throughout.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

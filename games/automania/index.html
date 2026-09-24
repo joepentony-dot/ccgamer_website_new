@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Automania (1984) – Commodore 64 Arcade Platformer Factory Frenzy Released in 1984 by Mikro-Gen for the Commodore 64, Automania (also known as Manic Mechanic) is a fast-paced arcade platformer starring the unlucky Wally Week. You’re dropped onto a chaotic car assembly line with one job: build cars piece by piece before time runs out. Each level tasks you with collecting six scattered car parts and placing them in the correct positions on the production line. The challenge comes from the factory itself, packed with lethal hazards including rogue robots, bouncing tyres, and spinning air blades that demand sharp timing and precise movement. As the game progresses, layouts become more complex and the pressure ramps up, turning every run into a test of memory, reflexes, and nerve. There’s no combat here—survival is all about learning the patterns and keeping one step ahead of the machinery.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

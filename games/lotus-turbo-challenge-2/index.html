@@ -377,13 +377,13 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Lotus Turbo Challenge 2 (1991) – Commodore Amiga Arcade Racing Time Trial Classic Released in 1991 and developed by Magnetic Fields, Lotus Turbo Challenge 2 is the high-octane sequel that redefined the series on the Commodore Amiga. Moving away from traditional circuit racing, the game embraces checkpoint-based, arcade-style action inspired by classics like OutRun. You race against the clock across a wide range of global locations, alternating between two Lotus cars: the Elan SE on odd-numbered stages and the Esprit SE on even-numbered ones. Each course demands speed, precision, and split-second reactions as traffic, sharp bends, and environmental hazards stand between you and the next checkpoint. The Amiga version is especially celebrated for its fluid scrolling, varied scenery, and dynamic weather effects that keep races visually fresh and challenging. Barry Leitch’s iconic soundtrack, particularly the instantly recognisable intro theme, adds an extra layer of energy and remains one of the most memorable pieces of Amiga game music.</div>
         </section>
 
-        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub">
+        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub" hidden>
             <h2 class="game-section__title">Game Manual</h2>
 
             <div class="ccg-game-utility-hub__grid ccg-utility-hub">
@@ -398,7 +398,13 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading">
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews">
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews">
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_START -->
       <section class="ccg-magazine-reviews ccg-magazine-reviews--static" data-ccg-magazine-review-panel="static" data-ccg-static-magazine-reviews="true" aria-label="Magazine reviews">
         <div class="ccg-magazine-reviews__heading">
@@ -594,6 +600,8 @@
         </div>
       </section>
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_END --></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

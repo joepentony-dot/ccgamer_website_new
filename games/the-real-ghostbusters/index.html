@@ -377,13 +377,13 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ The Real Ghostbusters (1989) – Commodore 64 Top-Down Ghost-Busting Action Released in 1989 by Activision, The Real Ghostbusters brings the animated series to the Commodore 64 with fast-paced, top-down, multi-scrolling action. You take control of one of the four Ghostbusters—Peter, Ray, Egon, or Winston—tasked with clearing New York City of spectral trouble. Gameplay revolves around navigating maze-like locations, stunning ghosts with the Proton Pack, and collecting items to progress. Each area introduces new hazards, tighter layouts, and tougher enemies, pushing you to balance movement, positioning, and quick reactions. The inclusion of a two-player cooperative mode adds an extra layer of mayhem and teamwork. Visually, the game captures the look and feel of the cartoon with colourful sprites and detailed environments, while David Whittaker’s music delivers a memorable take on the iconic Ghostbusters theme. Though the controls can feel demanding at times, the challenge keeps the pressure high.</div>
         </section>
 
-        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub">
+        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub" hidden>
             <h2 class="game-section__title">Game Manual</h2>
 
             <div class="ccg-game-utility-hub__grid ccg-utility-hub">
@@ -398,7 +398,13 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading">
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews">
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews">
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_START -->
       <section class="ccg-magazine-reviews ccg-magazine-reviews--static" data-ccg-magazine-review-panel="static" data-ccg-static-magazine-reviews="true" aria-label="Magazine reviews">
         <div class="ccg-magazine-reviews__heading">
@@ -481,6 +487,8 @@
         </div>
       </section>
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_END --></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

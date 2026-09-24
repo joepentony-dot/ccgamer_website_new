@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Gateway to Apshai (1983) – Commodore 64 Action RPG Dungeon Classic Released in 1983 by Epyx for the Commodore 64, Gateway to Apshai is a pioneering action role-playing game developed by The Connelley Group and designed as a prequel to the classic Temple of Apshai. You take on the role of the heir to Apshai’s greatest warrior, embarking on a dangerous journey through a vast network of dungeons in search of treasure, power, and survival. The game features eight main levels, each containing multiple interconnected dungeons and over sixty individual rooms. Armed initially with basic equipment, players must battle monsters, collect gold, and discover magical items such as potions and scrolls. Unlike many early RPGs, Gateway to Apshai uses real-time combat and movement, combining arcade-style action with traditional dungeon exploration. Each level is also governed by a time limit, adding pressure and urgency to every expedition.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

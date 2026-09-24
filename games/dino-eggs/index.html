@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Dino Eggs (1984) – Commodore 64 Platform Puzzle Classic Dino Eggs is a classic platform puzzle originally by David H. Schroeder and published by Micro Fun, with the Commodore 64 version converted by Leonard Bertoni. Many references list the C64 release as 1983, but Commodore 64 database sources record an official February 1984 launch — and I didn’t get my hands on a copy here in the UK until 1984. You play Time Master Tim, journeying into the prehistoric past to collect dinosaur eggs and rescue baby dinos while dodging proto-snakes, spiders and the colossal threat of Dino Mom’s stomp. Gameplay blends platforming precision with thoughtful strategy. You must build and maintain fire to keep Mama Dino at bay while navigating multi-screen levels full of hazards. Planning routes, managing your load of eggs, and timing your retreats to the time warp add tactical depth that sets this title apart from many early 8-bit action games.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

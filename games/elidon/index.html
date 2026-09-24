@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Elidon (1985) – Commodore 64 Fantasy Exploration Adventure Released in 1985 by Orpheus, Elidon is an atmospheric fantasy adventure for the Commodore 64 that sends you fluttering through an enormous enchanted world of forests, flowers, strange creatures and hidden pathways. You control a fairy tasked with preparing for the return of the Fairy Queen. Her crown, Finvarra, needs seven magical flowers before the celebrations can begin – but first you must explore Elidon and track down seven bottles of magic water needed to make them bloom. And there is plenty of exploring to do. Elidon contains over 300 flick-screen locations, creating a surprisingly large maze for a C64 game from 1985. Your fairy can walk or fly between screens, squeezing through narrow passages and avoiding enemies and obstacles that gradually drain her energy. Various objects can be collected along the way, although you can only carry three at once.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

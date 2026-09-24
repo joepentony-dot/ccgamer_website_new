@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Lazarian (1983) – Commodore 64 Arcade-Style Space Shooter Classic Released in 1983 by Commodore for the Commodore 64, Lazarian is an early arcade-style shoot-’em-up programmed and scored by Andy Finkel and inspired by Bally Midway’s 1981 arcade title. You pilot a spacecraft through a series of increasingly challenging combat zones, battling waves of alien enemies, navigating dense meteor fields, and surviving fast-paced attack patterns. The game unfolds across five distinct stages, each introducing new mechanics and enemy behaviours. Progression requires sharp reflexes, precise movement, and careful positioning. The final phase culminates in a showdown with the powerful “Evil Eye” boss, providing a demanding conclusion to the multi-stage campaign. Visually, Lazarian delivers simple but effective space-themed graphics that suit its fast-moving gameplay. Enemy formations and environmental hazards are plainly presented, allowing players to react quickly.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

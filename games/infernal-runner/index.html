@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Infernal Runner (1985) – Commodore 64 Horror Platform Survival Classic Released in 1985 by Loriciels, Infernal Runner is a darkly satirical platform game for the Commodore 64 developed by Michel Koell and Yves Korta. Set inside a nightmarish labyrinth, the game drops you into a surreal world of deadly traps, grotesque surprises, and pitch-black humour, where survival is never guaranteed. Gameplay is deliberately non-linear, allowing you to move freely between interconnected rooms packed with hazards. The objective is to locate keys and open chests in order to escape, all while managing a constantly draining hunger meter that forces you to hunt for food scattered throughout the maze. Every screen introduces new ways to die, often suddenly and brutally. Infernal Runner became infamous for its exaggerated death animations and macabre tone, which were strikingly graphic for the mid-1980s.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

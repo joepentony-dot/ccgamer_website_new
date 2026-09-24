@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Trains (1983) – Commodore 64 Management Simulation | Retro Review Trains (1983), developed by Interactive Picture Systems and published by Spinnaker Software, is a top-down management simulation where you run a steam locomotive hauling goods across shifting industrial landscapes. You transport resources such as oil and coal to factories and depots while balancing supply and demand, refuelling your engine, avoiding crashes, and managing payroll costs. Progress depends on uncovering hidden track segments, planning efficient routes, and keeping your operation profitable as each new level increases in complexity. For its time, the game delivers clear graphics, engaging sound effects with whistles and engine chugs, and surprisingly deep economic mechanics. While more modest than later transport simulators, Trains remains a smart and rewarding early example of strategy-based management on the Commodore 64.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

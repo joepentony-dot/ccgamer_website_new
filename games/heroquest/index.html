@@ -377,13 +377,13 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ HeroQuest (1991) – Commodore 64 Turn-Based Fantasy Dungeon Crawler Released in 1991 by Gremlin Graphics for the Commodore 64, HeroQuest is a faithful digital adaptation of the hugely popular Games Workshop board game. Developed by 221B Software Development, it brings classic fantasy dungeon crawling and tabletop strategy to the 8-bit home computer. You command a party of four iconic heroes — the Barbarian, Dwarf, Elf, and Wizard — as they venture into grid-based dungeons to defeat monsters, uncover treasure, and ultimately thwart the evil sorcerer Morcar. Gameplay closely mirrors the board game, blending turn-based movement, combat, exploration, and character progression across a series of structured quests. Despite the C64’s limitations, HeroQuest delivers atmospheric visuals with detailed sprites and dungeon layouts that successfully capture the look and feel of the tabletop experience. The music and sound effects reinforce the fantasy setting, adding tension and drama as each room is revealed.</div>
         </section>
 
-        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub">
+        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub" hidden>
             <h2 class="game-section__title">Game Manual</h2>
 
             <div class="ccg-game-utility-hub__grid ccg-utility-hub">
@@ -398,7 +398,13 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading">
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews">
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews">
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_START -->
       <section class="ccg-magazine-reviews ccg-magazine-reviews--static" data-ccg-magazine-review-panel="static" data-ccg-static-magazine-reviews="true" aria-label="Magazine reviews">
         <div class="ccg-magazine-reviews__heading">
@@ -452,6 +458,8 @@
         </div>
       </section>
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_END --></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

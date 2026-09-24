@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Psycho Santa (1993) – Commodore Amiga Festive Shoot-’Em-Up mayhem Released in 1993 by Bullfrog Productions as a coverdisk title for The One Amiga magazine, Psycho Santa is a playful horizontal-scrolling shoot-’em-up with a distinctly festive twist. Players take control of a heavily armed Santa Claus battling waves of mischievous elves and other Christmas-themed enemies in a mission to save the holiday season. The gameplay sticks to classic side-scrolling shooter conventions, focusing on fast reactions, enemy patterns, and screen control. Levels are compact and action-packed, making the game easy to jump into while still delivering satisfying arcade-style challenge. Psycho Santa stands out thanks to its colourful presentation and tongue-in-cheek tone. The experience is boosted by a lively ProTracker soundtrack by Kevin Earl, which adds energy and personality to the festive mayhem. Although short in length, Psycho Santa became a memorable Amiga oddity, fondly remembered for its humour, polish, and seasonal novelty.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

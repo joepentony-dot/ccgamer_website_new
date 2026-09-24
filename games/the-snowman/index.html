@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ The Snowman (1984) – Commodore 64 Festive Platformer from a Classic Tale Released in 1984 by Quicksilva for the Commodore 64, The Snowman is a charming single-screen platform game inspired by Raymond Briggs’ beloved picture book and its iconic animated adaptation. Rather than focusing on action, the game delivers a gentle, thoughtful experience that reflects the warmth and magic of the original story. Gameplay centres on collecting items such as snow, clothing, toys, and ice to assemble the snowman piece by piece. You must carefully navigate layered platform layouts while avoiding hazards, particularly gas flames that can melt collected snow. Strategic use of items like ice lollies allows flames to be frozen, adding a subtle puzzle element to progression. The presentation plays a huge role in the game’s appeal.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

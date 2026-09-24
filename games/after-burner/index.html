@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ After Burner (1988) – Commodore 64 Arcade Air Combat Shoot ’Em Up Released in 1988 by Activision, After Burner brings Sega’s high-speed arcade jet combat to the Commodore 64. You take control of an F-14 Tomcat, diving straight into intense dogfights viewed from a behind-the-plane perspective that aims to recreate the thrill of supersonic flight. Gameplay focuses on fast reactions and positioning as you blast enemy aircraft with machine guns and homing missiles while weaving through incoming fire. Stages escalate quickly, throwing waves of enemies at you to test your reflexes and endurance as you chase high scores. On the C64, the game captures the core feel of the arcade experience, though hardware limits mean simpler visuals and no in-game music. Even so, the sense of speed and constant pressure remains intact, making it a solid example of ambitious arcade conversion design.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

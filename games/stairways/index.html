@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Stairways (1985) – Commodore 64 Action Shooter | Retro Review Stairways (1985), developed and published by Thor Computer Software, is a quirky and highly distinctive action-shooter for the Commodore 64, set almost entirely inside a chaotic pub. You play as a bar patron on a mission to collect seven fragments of the legendary amulet of the great budgie WONGA — all while trying to avoid being thrown out by the doorman. Gameplay takes place in a side-view scrolling environment where you must balance three key attributes: energy, hunger, and drunkenness. Hallucinations drain your energy, spilled drinks anger staff, and sobering up makes defending yourself more difficult. To survive, you can return to the bar to get more intoxicated, grab food from a burger kiosk, and carefully manage your condition while shooting “thought bubble” enemies.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ SAS Combat Simulator (1989) – Commodore 64 Military Action Genre Mash-Up Released in 1989 by Optimus Software and published by Codemasters for the Commodore 64, SAS Combat Simulator delivers a hard-edged military action experience inspired by elite special forces operations. Rather than sticking to a single style, the game blends two distinct action formats into one fast-moving campaign. Each of the four levels is split into two phases. The first drops you into a top-down shooter where constant movement and enemy management are key, echoing classic arcade run-and-gun design. The second phase switches perspective to a side-scrolling beat ’em up, demanding close-quarters combat and careful positioning as enemy soldiers swarm in. Across jungle, desert, and swamp environments, you make use of machine guns, grenades, and heavy firepower, with the added ability to commandeer vehicles such as jeeps and tanks.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

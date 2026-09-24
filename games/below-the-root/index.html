@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Below the Root (1984) – Commodore 64 Peaceful Fantasy Adventure Classic Released in 1984 by Windham Classics and developed by Dale Disharoon, Below the Root is a distinctive adventure game based on Zilpha Keatley Snyder’s Green-Sky Trilogy. Set in the tranquil, tree-dwelling world of Green-Sky, the game offers a thoughtful alternative to the combat-heavy adventures common at the time. You choose from five different characters, each with their own strengths and abilities, and set out to investigate mysterious visions that threaten the harmony of their society. Exploration takes place across a large, interconnected world of platforms, villages, and natural environments, encouraging curiosity and careful observation. Rather than relying on violence, Below the Root introduces unique mechanics such as pens (telepathy), kiniporting (telekinesis), and grunspreking (plant manipulation). Progress depends on communication, puzzle-solving, and understanding the world and its inhabitants, making every interaction meaningful.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

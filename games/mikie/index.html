@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Mikie (1986) – Commodore 64 Schoolyard Arcade Stealth Classic Originally developed by Konami and released in arcades in 1984, Mikie arrived on the Commodore 64 in 1986 via Imagine Software, bringing its unusual school-based action to home computers. Instead of battling aliens or monsters, you take control of Mikie, a lovestruck student determined to deliver a heartfelt letter to his girlfriend. Gameplay unfolds across a series of school locations including classrooms, locker rooms, the cafeteria, dance studio, and the playground. Mikie must collect scattered hearts to complete his message, all while avoiding or dealing with teachers, janitors, and other authority figures who are determined to stop his romantic mission. Each room presents its own hazards and opportunities, encouraging careful movement, timing, and quick thinking. Doors can be opened to reveal surprises, items can be collected for points, and some staff members can be temporarily neutralised, adding a light strategic layer to the action.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ The Prince (1986) – Commodore 64 Fantasy Action Adventure Released in 1986 by Firebird Software and developed by Marcus Charleville, The Prince is a fantasy-themed action-adventure for the Commodore 64 that blends arcade-style challenges with light puzzle elements. You take on the role of a wealthy prince determined to rescue his captive princess from the depths of the ominous Black Castle. Gameplay unfolds from a side-scrolling perspective as the prince navigates dangerous corridors filled with traps, enemies, and environmental hazards. Progress depends on precise timing, quick reactions, and careful movement, as mistakes are often punished immediately. The castle’s layout encourages exploration and memorisation, with each area presenting new threats and requiring you to balance risk and caution. While combat is straightforward, positioning and agility play a key role in surviving the castle’s many dangers.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

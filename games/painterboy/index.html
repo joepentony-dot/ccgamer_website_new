@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Painterboy (1986) – Commodore 64 Advergame Action Adventure Cult Classic Released in 1986 by Chart Top Design and published by Finnish paint company Tikkurila for the Commodore 64, Painterboy is one of the earliest examples of an advergame. Based on the company’s “Father and Son” television commercials, it stars a master painter and his apprentice in a lighthearted promotional adventure. The game is structured around three main gameplay sections. First, players must select the correct type of paint for each job, with mistakes resulting in stern feedback from the Father. Choosing wisely is essential before progressing to the next stage. The second phase places players behind the wheel of a pickup truck in a top-down driving sequence. Navigating to the job site requires careful steering and obstacle avoidance, including dodging trains, buildings, and environmental hazards along the route.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

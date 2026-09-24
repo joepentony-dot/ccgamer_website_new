@@ -377,7 +377,7 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Night Driver (1982) – Commodore 64 First-Person Racing Pioneer Released in 1982 by HAL Laboratory and published by Commodore for the Commodore 64, Night Driver is an early milestone in racing games, bringing first-person driving to home computers. Originally debuting as a 1976 Atari arcade title, it helped define the foundations of the genre long before modern racing sims existed. Gameplay drops you behind the wheel on a pitch-black road, guided only by glowing roadside reflectors. The aim is simple but demanding: cover as much distance as possible within a strict 90-second time limit without crashing. Four track modes—beginner, pro, expert, and random—gradually increase the challenge, while manual gear shifting adds an extra layer of skill and tension. The Commodore 64 version improves on the arcade original with higher resolution visuals and smoother scrolling, enhancing the sensation of speed as the road twists ahead.</div>
@@ -398,7 +398,15 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>

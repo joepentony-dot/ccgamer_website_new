@@ -377,13 +377,13 @@
         </section>
 
         <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
-        <section id="game-description-section" class="game-section">
+        <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
             <div id="gameDescription" class="game-description">️ Wings of Fury (1990) – Commodore Amiga WWII Arcade Flight Combat Originally developed by Steve Waldo and released by Brøderbund in 1987, Wings of Fury arrived on the Commodore Amiga in 1990 via Unlimited Software Inc. , bringing its World War II Pacific air combat to a new level of audiovisual polish. Players take on the role of a US Navy pilot flying the F6F Hellcat, launching from the USS Wasp to strike Japanese targets across a chain of hostile islands. Gameplay blends fast-paced arcade shooting with light simulation elements. Missions involve strafing ground installations, bombing bunkers, and torpedoing enemy ships, while carefully managing fuel, ammunition, and aircraft damage. Successful pilots must return safely to the carrier to refuel, rearm, and make repairs before heading back into combat. The Amiga version stands out for its smooth animation, detailed visuals by John Boechler, and an atmospheric soundtrack composed by Kris Hatlelid, all of which enhance the sense of scale and tension during each sortie.</div>
         </section>
 
-        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub">
+        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub" hidden>
             <h2 class="game-section__title">Game Manual</h2>
 
             <div class="ccg-game-utility-hub__grid ccg-utility-hub">
@@ -398,7 +398,13 @@
             <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading">
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
-                    <div class="ccg-utility-card__actions" id="gameMagazineReviews">
+                    <details class="ccg-game-resource-disclosure" id="game-reading-disclosure">
+                        <summary class="ccg-game-resource-disclosure__summary">
+                            <span class="ccg-game-resource-disclosure__title">Magazine Reviews</span>
+                            <span class="ccg-game-resource-disclosure__meta">Scores, issue details and original review links</span>
+                        </summary>
+                        <div class="ccg-game-resource-disclosure__body">
+                            <div class="ccg-utility-card__actions" id="gameMagazineReviews">
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_START -->
       <section class="ccg-magazine-reviews ccg-magazine-reviews--static" data-ccg-magazine-review-panel="static" data-ccg-static-magazine-reviews="true" aria-label="Magazine reviews">
         <div class="ccg-magazine-reviews__heading">
@@ -480,6 +486,8 @@
         </div>
       </section>
 <!-- CCG_MAGAZINE_REVIEWS_STATIC_END --></div>
+                        </div>
+                    </details>
                 </article>
             </div>
         </section>
