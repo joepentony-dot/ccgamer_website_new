@@ -33,6 +33,10 @@ assert.match(reporter,/ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE/,"reporter must ca
 assert.match(reporter,/ANOMALY_ACTIVE_HAZARD_CROSSING_NO_DAMAGE/,"reporter must catch fast crossings through active dedicated hazards");
 assert.match(reporter,/environment-boundary-contact/,"reporter must retain contact evidence even when the player leaves the tile before the polling loop sees it");
 assert.match(reporter,/environment-trap-crossing-damage-confirmed/,"reporter must distinguish a successful crossing hit from a failed crossing");
+assert.match(reporter,/row\?\.active===true&&Number\(row\?\.hitCooldown\|\|0\)<=0/,"dedicated hazard crossings under the normal hit cooldown must not be misreported as failures");
+assert.match(reporter,/trapDamageObserved=healthLoss>=1\|\|finalHurtAt>before\.beforeHurtAt/,"lethal ordinary trap hits must count as confirmed damage even if respawn restores health before verification");
+assert.match(reporter,/damageObserved=healthLoss>=1\|\|afterHurtAt>beforeHurtAt\|\|afterHits>beforeHits/,"polling diagnostics must accept hurt timestamps or trap hit counters as proof of lethal trap damage");
+
 
 assert.match(reporter,/trapHitsByKind/,"trap diagnostics must retain per-kind FIRE SPIKE and SHOCK hit evidence");
 assert.match(reporter,/CCGLostSizzlerV141R56PlaytestCompletion/,"trap report must capture the retained R56 cycle latch");
