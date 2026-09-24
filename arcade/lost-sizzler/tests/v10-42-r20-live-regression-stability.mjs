@@ -26,7 +26,7 @@ assert.match(fix,/function recentPauseReset\(\)[\s\S]*__CCG_PAUSE_ATTACK_LAST_RE
 assert.match(fix,/const resumeGuard=performance\.now\(\)<=resumeAttackGuardUntil\|\|recentPauseReset\(\)[\s\S]*repairAttackBoundary\(resumeGuard\)/,"the first real attack after resume must force transient attack cadence back to a fireable state immediately before the canonical fire owner runs");
 assert.match(fix,/if\(forceResumeCadence\)[\s\S]*fire1=0;fireBuffer1=0;projectileCD=0/,"resume attack guard must reset only transient fire cadence, not player ammo or progression");
 assert.match(fix,/if\(resumeGuard\)\{[\s\S]*resumeAttackGuardUntil=0[\s\S]*consumedPauseResetAt=Math\.max/,"pause-resume cadence recovery must be consumed by the first real attack so held FIRE cannot bypass the normal weapon cooldown");
-assert.match(play,/gp\.buttons\?\.\[0\]\?\.pressed[\s\S]*CCGLostSizzlerV142R20LiveRegressionStability[\s\S]*attackNow\("Gamepad0"\)/,"gamepad FIRE must use the same post-pause recovery owner as keyboard/mobile FIRE instead of being blocked outside recovery by stale fire1");
+assert.match(play,/firePressed&&\(!gamepadFireDown\|\|fire1<=0\)[\s\S]*CCGLostSizzlerV142R20LiveRegressionStability[\s\S]*attackNow\("Gamepad0"\)/,"gamepad FIRE must enter post-pause recovery on the first press while retaining normal held-fire cadence");
 
 assert.match(fix,/pointerup",releaseMobileFire,true[\s\S]*pointercancel",releaseMobileFire,true/,"delegated mobile FIRE recovery must always release its canonical Space hold");
 assert.match(fix,/function recoverOrphanedGameplayMode\(\)[\s\S]*dossier[\s\S]*inventory[\s\S]*shop[\s\S]*mode="playing"/,"hidden transient panels must not leave gameplay stranded outside playing mode");
