@@ -30,6 +30,7 @@ const PUBLIC_SHELL = Object.freeze([
   "/resources/css/ccg-responsive-safety.css",
   "/resources/css/ccg-responsive-page-polish.css",
   "/resources/css/ccg-sitewide-layout-optimization.css",
+  "/resources/css/ccg-archive-directory.css",
   "/resources/css/ccg-socials.css",
   "/resources/css/ccg-footer.css",
   "/resources/css/ccg-pwa-install-page.css",

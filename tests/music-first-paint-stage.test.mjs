@@ -62,6 +62,7 @@ test('Music first-paint styles include maintained Music and global final-layout 
     '/resources/css/ccg-nav.css',
     '/resources/css/ccg-nav-fit.css',
     '/resources/css/ccg-buttons.css',
+    '/resources/css/ccg-archive-directory.css',
     '/resources/css/ccg-footer.css',
     '/resources/css/ccg-community.css',
     '/resources/css/ccg-socials.css',

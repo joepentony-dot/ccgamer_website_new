@@ -22,6 +22,21 @@
     "russell-lieblich": { name: "Russell Lieblich", slug: "russell-lieblich", bio: "Russell Lieblich is known for SID music work on the Commodore 64, including his score for Mutants." }
   };
 
+  const ARCHIVE_DIRECTORY_CSS = "/resources/css/ccg-archive-directory.css";
+
+  function enableArchiveDirectory() {
+    if (!document.querySelector('link[href="' + ARCHIVE_DIRECTORY_CSS + '"]')) {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = ARCHIVE_DIRECTORY_CSS;
+      link.dataset.ccgArchiveDirectoryStyle = "true";
+      document.head.appendChild(link);
+    }
+
+    const pageId = String(document.documentElement.getAttribute("data-ccg-page") || "").toLowerCase();
+    document.body.dataset.ccgDirectory = pageId.startsWith("music-hub") ? "music-index" : "music-record";
+  }
+
   const ASSET_EXISTS_CACHE = new Map();
   const COMPOSER_IMAGE_CACHE = new Map();
   const DEDICATED_COMPOSER_SLUGS = new Set(Object.keys(PROFILE_DATA));
@@ -1005,6 +1020,7 @@ function composerSortLetter(name) {
   }
 
   document.addEventListener("DOMContentLoaded", async () => {
+    enableArchiveDirectory();
     initBackToTop();
     ensureBackButton();
 

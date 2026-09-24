@@ -14,6 +14,7 @@
     if (!isGenre && !isCollection) return;
 
     const CSS_PATH = "/resources/css/ccg-category-omega.css";
+    const DIRECTORY_CSS_PATH = "/resources/css/ccg-archive-directory.css";
     const SITE = "Cheeky Commodore Gamer";
     const ORIGIN = "https://www.cheekycommodoregamer.co.uk";
 
@@ -50,12 +51,18 @@
         return { name: tuple[0], theme: tuple[1], icon: tuple[2], tagline: tuple[3], description: tuple[4], card: tuple[5], related: tuple[6] || [] };
     }
 
-    function ensureCss() {
-        if (document.querySelector(`link[href="${CSS_PATH}"]`)) return;
+    function ensureStylesheet(href, marker) {
+        if (document.querySelector('link[href="' + href + '"]')) return;
         const link = document.createElement("link");
         link.rel = "stylesheet";
-        link.href = CSS_PATH;
+        link.href = href;
+        if (marker) link.dataset[marker] = "true";
         document.head.appendChild(link);
+    }
+
+    function ensureCss() {
+        ensureStylesheet(CSS_PATH, "ccgCategoryOmegaStyle");
+        ensureStylesheet(DIRECTORY_CSS_PATH, "ccgArchiveDirectoryStyle");
     }
 
     function fileName() {
@@ -149,6 +156,7 @@
         addSchema(item, kind);
         document.body.dataset.ccgCategoryTheme = item.theme;
         document.body.dataset.ccgCategoryKind = kind;
+        document.body.dataset.ccgDirectory = kind + "-record";
 
         const hero = document.querySelector(".ccg-genre-hero, .ccg-collection-hero");
         const heroInner = hero?.querySelector(".ccg-genre-hero__inner, .ccg-hero-inner");
@@ -180,6 +188,7 @@
         ensureCss();
         document.body.dataset.ccgCategoryTheme = kind === "genre" ? "genre-index" : "collection-index";
         document.body.dataset.ccgCategoryKind = `${kind}-index`;
+        document.body.dataset.ccgDirectory = kind + "-index";
 
         if (kind === "genre") {
             const title = `C64 & Amiga Games by Genre | ${SITE}`;
