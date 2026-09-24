@@ -92,3 +92,18 @@ test("prefilled editorial video copy is preserved during canonical hydration", (
     "runtime data must not overwrite generated editorial video copy"
   );
 });
+
+
+test("prefilled canonical routes preserve generated SEO metadata and schema", () => {
+  const renderStart = source.indexOf("function renderGame(game)");
+  const renderEnd = source.indexOf("\nfunction slugifyBrowseToken", renderStart);
+  assert.notEqual(renderStart, -1, "renderGame must exist");
+  assert.notEqual(renderEnd, -1, "renderGame boundary must remain discoverable");
+  const render = source.slice(renderStart, renderEnd);
+
+  assert.match(
+    render,
+    /if \(!preloaded\) \{\s*updateMeta\(game\);[\s\S]*?ccgSchemaGame[\s\S]*?ccgSchemaBreadcrumb[\s\S]*?\}/,
+    "runtime metadata/schema rewriting must be limited to the non-prefilled fallback route"
+  );
+});
