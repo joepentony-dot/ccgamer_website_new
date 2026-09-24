@@ -227,7 +227,7 @@ function releaseSealedDeathRoom(roomId){
   return true
 }
 function hurtPlayer(p,n,friendly=false,source="enemy"){
-  if(!p||p.invuln>0||mode!=="playing")return;p.__ccgLastHurtAt=performance.now();p.hitStunMs=Math.max(p.hitStunMs||0,C.player.hitStunMs||180);let left=n;if(p.armor>0){const a=Math.min(p.armor,left);p.armor-=a;left-=a;if(a){S.sfx("armour");floatText(p.x,p.y,"ARMOUR",P.cyan)}}if(left<=0){p.invuln=350;sync();return}
+  if(!p||p.invuln>0||mode!=="playing")return;const damageAt=performance.now();p.__ccgLastHurtAt=damageAt;p.__ccgLastDamageAt=damageAt;p.__ccgLastDamageSource=String(source||"enemy");p.hitStunMs=Math.max(p.hitStunMs||0,C.player.hitStunMs||180);let left=n;if(p.armor>0){const a=Math.min(p.armor,left);p.armor-=a;left-=a;if(a){S.sfx("armour");floatText(p.x,p.y,"ARMOUR",P.cyan)}}if(left<=0){p.invuln=350;sync();return}
   p.health-=left;p.hpBarMs=3000;run.stats.damageTaken+=left;if(friendly)run.stats.friendlyFire+=left;p.invuln=800;shake=10;damageFlash=.5;S.sfx("hurt");burst(p.x,p.y,P.red,16,1.4);ring(p.x,p.y,P.red,30);
   if(friendly){showToast("FRIENDLY FIRE",`${source} just shot a team-mate. The monsters are delighted.`,"red");say("<strong>FRIENDLY FIRE.</strong> Try pointing the dangerous end elsewhere.","red")}
   if(p.health<=0){
