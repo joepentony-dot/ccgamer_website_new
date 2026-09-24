@@ -1514,3 +1514,413 @@
         padding-top: 0;
     }
 }
+
+
+/* ============================================================
+   CCG GAME RECORD — DENSE ARCHIVE LAYOUT
+   2026-09-23
+   ------------------------------------------------------------
+   Treat each game as an information-rich archive record rather
+   than a sequence of oversized full-width feature panels.
+============================================================ */
+
+@media (min-width: 901px) {
+    .ccg-page--single-game .game-shell {
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .ccg-page--single-game .game-shell > :is(
+        .game-hero,
+        #gameNotFound,
+        [data-game-section-nav],
+        #game-video-section,
+        #game-description-section,
+        .game-screenshots,
+        .game-section--related,
+        #game-discovery-links,
+        .ccg-community-game-section,
+        .affiliate-products-section,
+        .game-quick-actions
+    ) {
+        grid-column: 1 / -1;
+    }
+
+    .ccg-page--single-game .game-shell > :is(
+        #game-utility-hub-section,
+        #game-download-section,
+        #game-reading-section,
+        #game-music-archive-section,
+        #game-tape-archive-section
+    ) {
+        grid-column: span 6;
+        min-width: 0;
+    }
+
+    .ccg-page--single-game #game-utility-hub-section[hidden] + #game-reading-section:not([hidden]) {
+        grid-column: 1 / -1;
+    }
+
+    .ccg-page--single-game #game-music-archive-section:not([hidden]):has(+ #game-tape-archive-section[hidden]),
+    .ccg-page--single-game #game-music-archive-section[hidden] + #game-tape-archive-section:not([hidden]) {
+        grid-column: 1 / -1;
+    }
+}
+
+.ccg-page--single-game .game-media-anchor {
+    display: none;
+}
+
+.ccg-page--single-game .game-hero {
+    padding: 11px 13px;
+    border-radius: 13px;
+}
+
+.ccg-page--single-game .game-hero__inner {
+    gap: 12px;
+}
+
+@media (min-width: 901px) {
+    .ccg-page--single-game .game-hero--has-box3d .game-hero__inner {
+        grid-template-columns: minmax(145px, 190px) minmax(0, 1fr) minmax(115px, 155px);
+    }
+
+    .ccg-page--single-game .game-hero__media {
+        width: 100%;
+        max-width: 190px;
+    }
+
+    .ccg-page--single-game .game-hero__box3d {
+        width: 100%;
+        max-width: 155px;
+    }
+}
+
+.ccg-page--single-game .game-hero__title {
+    font-size: clamp(1.55rem, 2.25vw, 2.35rem);
+    line-height: 1.02;
+}
+
+.ccg-page--single-game .ccg-game-section-nav {
+    position: sticky;
+    top: calc(var(--ccg-header-height, 0px) + 6px);
+    z-index: 55;
+    min-height: 42px;
+    padding: 6px 8px;
+    border-radius: 10px;
+    background: rgba(4, 8, 17, 0.96);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+}
+
+.ccg-page--single-game .ccg-game-section-nav__links {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+}
+
+.ccg-page--single-game .ccg-game-section-nav__links::-webkit-scrollbar {
+    display: none;
+}
+
+.ccg-page--single-game .ccg-game-section-nav__link {
+    flex: 0 0 auto;
+    min-height: 30px;
+    padding: 5px 9px;
+    font-size: 0.69rem;
+}
+
+.ccg-page--single-game :is(
+    .game-section,
+    .ccg-game-utility-hub,
+    .ccg-game-resource-section,
+    .ccg-community-game-section
+) {
+    padding: 9px 11px;
+    border-radius: 11px;
+}
+
+.ccg-page--single-game .game-section__kicker {
+    margin-bottom: 2px;
+    font-size: 0.64rem;
+}
+
+.ccg-page--single-game .game-section__title {
+    margin-bottom: 6px;
+    font-size: clamp(0.98rem, 1.4vw, 1.18rem);
+}
+
+.ccg-page--single-game #game-video-section:not([hidden]) {
+    gap: 5px clamp(14px, 1.8vw, 24px);
+    padding: 10px 11px;
+}
+
+.ccg-page--single-game #game-video-section > .game-section__title {
+    font-size: clamp(1rem, 1.45vw, 1.22rem);
+}
+
+.ccg-page--single-game #game-video-section > [data-ccg-video-description] {
+    font-size: 0.91rem;
+    line-height: 1.5;
+}
+
+.ccg-page--single-game #game-video-section > .game-video {
+    width: min(100%, 460px);
+    max-width: 460px;
+}
+
+.ccg-page--single-game #game-video-section .game-video__frame {
+    border-radius: 8px;
+    box-shadow: 0 9px 24px rgba(0, 0, 0, 0.48);
+}
+
+.ccg-page--single-game .game-shell > :is(
+    #game-utility-hub-section,
+    #game-download-section,
+    #game-reading-section,
+    #game-music-archive-section,
+    #game-tape-archive-section
+) {
+    align-self: start;
+    min-height: 0;
+    text-align: left;
+    border: 1px solid rgba(var(--accent-rgb), 0.22);
+    background:
+        linear-gradient(145deg, rgba(var(--accent-rgb), 0.055), rgba(5, 10, 20, 0.82)),
+        rgba(4, 8, 16, 0.9);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.34);
+}
+
+.ccg-page--single-game .game-shell > :is(
+    #game-utility-hub-section,
+    #game-download-section,
+    #game-reading-section,
+    #game-music-archive-section,
+    #game-tape-archive-section
+) > .game-section__title {
+    justify-content: flex-start;
+    margin: 0 0 6px;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+.ccg-page--single-game #game-reading-section > .game-section__title {
+    display: none;
+}
+
+.ccg-page--single-game #game-reading-card {
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.ccg-page--single-game #game-reading-card > .ccg-utility-card__title {
+    display: none !important;
+}
+
+.ccg-page--single-game .ccg-game-resource-section__body,
+.ccg-page--single-game .ccg-game-utility-hub__grid {
+    width: 100%;
+    margin: 0;
+}
+
+.ccg-page--single-game .ccg-game-resource-disclosure {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+}
+
+.ccg-page--single-game .ccg-game-resource-disclosure__summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 4px 12px;
+    min-height: 44px;
+    padding: 8px 9px;
+    border: 1px solid rgba(var(--accent-rgb), 0.28);
+    border-radius: 9px;
+    background: rgba(3, 8, 17, 0.68);
+    cursor: pointer;
+    list-style: none;
+}
+
+.ccg-page--single-game .ccg-game-resource-disclosure__summary::-webkit-details-marker {
+    display: none;
+}
+
+.ccg-page--single-game .ccg-game-resource-disclosure__summary::after {
+    content: "▾";
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+    color: rgba(var(--accent-rgb), 0.92);
+    font-size: 0.9rem;
+    transition: transform 150ms ease;
+}
+
+.ccg-page--single-game .ccg-game-resource-disclosure[open] > .ccg-game-resource-disclosure__summary::after {
+    transform: rotate(180deg);
+}
+
+.ccg-page--single-game .ccg-game-resource-disclosure__title {
+    min-width: 0;
+    font-family: var(--ccg-font-main);
+    color: #f5fbff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.ccg-page--single-game .ccg-game-resource-disclosure__meta {
+    grid-column: 1;
+    min-width: 0;
+    color: rgba(210, 229, 243, 0.74);
+    font-size: 0.72rem;
+    line-height: 1.35;
+}
+
+.ccg-page--single-game .ccg-game-resource-disclosure__body {
+    padding-top: 7px;
+}
+
+.ccg-page--single-game .ccg-magazine-reviews {
+    width: 100%;
+    margin: 0;
+    padding: 8px;
+    gap: 7px;
+    border-radius: 8px;
+}
+
+.ccg-page--single-game .ccg-magazine-reviews--static .ccg-magazine-reviews__heading {
+    margin-bottom: 2px;
+}
+
+.ccg-page--single-game .ccg-magazine-reviews__static-list {
+    display: grid;
+    gap: 6px;
+}
+
+.ccg-page--single-game .ccg-magazine-review {
+    gap: 8px;
+}
+
+.ccg-page--single-game .ccg-magazine-review__score {
+    min-width: 54px;
+    min-height: 40px;
+    padding: 5px 7px;
+}
+
+.ccg-page--single-game #game-utility-hub-section:not([hidden]) {
+    grid-template-columns: minmax(110px, auto) minmax(0, 1fr);
+    gap: 6px 10px;
+    padding: 9px 11px;
+}
+
+.ccg-page--single-game #game-utility-hub-section > .game-section__title {
+    font-size: 0.88rem;
+}
+
+.ccg-page--single-game #gameManualBtn:not([hidden]) {
+    min-height: 32px;
+    padding: 6px 10px;
+    font-size: 0.68rem;
+}
+
+.ccg-page--single-game #game-music-archive-section {
+    padding: 9px 11px;
+}
+
+.ccg-page--single-game #game-music-card:not([hidden]) {
+    padding: 7px 8px;
+}
+
+.ccg-page--single-game .ccg-music-composer {
+    gap: 5px;
+}
+
+.ccg-page--single-game .ccg-music-tracks .ccg-game-audio-player {
+    margin-top: 3px;
+}
+
+.ccg-page--single-game #game-tape-archive-section .ccg-section__intro {
+    margin: 0 0 7px;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    text-align: left;
+}
+
+.ccg-page--single-game .ccg-uta-release-list {
+    gap: 7px;
+}
+
+.ccg-page--single-game .ccg-uta-release {
+    padding: 8px;
+    gap: 6px 9px;
+}
+
+.ccg-page--single-game .game-screenshots__strip {
+    grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+    gap: 7px;
+}
+
+.ccg-page--single-game .game-section--related,
+.ccg-page--single-game #game-discovery-links {
+    padding: 8px 10px;
+}
+
+.ccg-page--single-game .game-section--related .related-carousel {
+    --related-card-size: clamp(126px, 13vw, 150px);
+    --related-gap: 7px;
+}
+
+.ccg-page--single-game .ccg-community-game-section,
+.ccg-page--single-game .affiliate-products-section {
+    padding: 7px 10px;
+}
+
+@media (max-width: 900px) {
+    .ccg-page--single-game .ccg-game-section-nav {
+        top: 4px;
+    }
+
+    .ccg-page--single-game .game-shell > :is(
+        #game-utility-hub-section,
+        #game-download-section,
+        #game-reading-section,
+        #game-music-archive-section,
+        #game-tape-archive-section
+    ) {
+        width: 100%;
+    }
+}
+
+@media (max-width: 560px) {
+    .ccg-page--single-game .game-shell {
+        gap: 7px;
+    }
+
+    .ccg-page--single-game .game-hero {
+        padding: 9px;
+    }
+
+    .ccg-page--single-game :is(
+        .game-section,
+        .ccg-game-utility-hub,
+        .ccg-game-resource-section,
+        .ccg-community-game-section
+    ) {
+        padding: 8px 9px;
+    }
+
+    .ccg-page--single-game .ccg-game-section-nav {
+        margin-inline: 0;
+        border-radius: 8px;
+    }
+
+    .ccg-page--single-game .ccg-game-resource-disclosure__summary {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+}

@@ -109,7 +109,6 @@ async function initHomeDynamic() {
                 initModeObserver();
             }
         },
-        { name: "Scroll perf pause", fn: setupHomeScrollPerfPause },
         { name: "Stay a while callout", fn: initStayAwhileCallout },
         { name: "Mobile dock effects", fn: initMobileDockEffects },
         { name: "Hero parallax", fn: initHeroParallaxLite },
@@ -446,31 +445,8 @@ function shouldUseMobileLite() {
     return Boolean(isMobileViewport() || MOBILE_MEDIA?.matches || COARSE_POINTER?.matches || smallViewport);
 }
 
-function setupHomeScrollPerfPause() {
-    const root = document.documentElement;
-    if (!root?.matches?.('[data-ccg-page="home"]')) return;
-
-    const PAUSE_CLASS = "ccg-home-perf-paused";
-    const resumeDelay = 200;
-    let resumeTimer = null;
-
-    const setPaused = (paused) => {
-        root.classList.toggle(PAUSE_CLASS, paused);
-        window.dispatchEvent(new CustomEvent("ccg-home-perf-pause", { detail: { paused } }));
-    };
-
-    const onScroll = () => {
-        setPaused(true);
-        if (resumeTimer) {
-            window.clearTimeout(resumeTimer);
-        }
-        resumeTimer = window.setTimeout(() => setPaused(false), resumeDelay);
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("touchmove", onScroll, { passive: true });
-}
-
+/* Home scrolling now relies on the shared native-scroll performance owner.
+   Do not add a second Home-only scroll pause class/listener here. */
 function initMobileDockEffects() {
     const dock = document.querySelector("[data-omega-mobile-dock]");
     if (!dock || !isMobileViewport()) return;

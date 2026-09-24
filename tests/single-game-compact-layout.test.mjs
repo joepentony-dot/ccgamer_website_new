@@ -85,7 +85,32 @@ test("single-game hero credits stay aligned in tidy rows", () => {
   assert.match(badges, /\.ccg-game-badges\s*\{[\s\S]*width:\s*100%;[\s\S]*max-width:\s*none;/);
 });
 
+
+
+test("game record layout keeps rich resources compact and reviews opt-in", () => {
+  const template = read("games/game.html");
+  const loader = read("js/load-single-game.js");
+  const css = read("resources/css/game-pages.css");
+  const seoRoutes = read("scripts/prepare-seo-game-routes.js");
+  const magazinePublisher = read("scripts/ensure-magazine-review-runtime.js");
+
+  assert.match(template, /id="game-reading-disclosure"/);
+  assert.match(template, /ccg-game-resource-disclosure__summary/);
+  assert.match(loader, /function ensureMagazineReviewDisclosure\(\)/);
+  assert.match(loader, /ensureMagazineReviewDisclosure\(\);/);
+  assert.match(css, /CCG GAME RECORD — DENSE ARCHIVE LAYOUT/);
+  assert.match(css, /grid-template-columns:\s*repeat\(12,\s*minmax\(0,\s*1fr\)\)/);
+  assert.match(css, /#game-reading-section,[\s\S]*#game-music-archive-section,[\s\S]*#game-tape-archive-section[\s\S]*grid-column:\s*span 6/);
+  assert.match(css, /\.ccg-game-section-nav\s*\{[\s\S]*position:\s*sticky/);
+  assert.match(seoRoutes, /const hasEditorialVideo = Boolean/);
+  assert.match(seoRoutes, /if \(!hasEditorialVideo\)/);
+  assert.doesNotMatch(
+    magazinePublisher,
+    /setElementHidden\(output, \["game-utility-hub-section"\], false\)/
+  );
+});
+
 test("public cache version covers the shared CSS and JavaScript change", () => {
   const sw = read("service-worker.js");
-  assert.match(sw, /CODE_CACHE_VERSION = "2026-09-22-public-code-v5"/);
+  assert.match(sw, /CODE_CACHE_VERSION = "2026-09-23-public-code-v14"/);
 });

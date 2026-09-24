@@ -113,8 +113,12 @@ jobs:
               "js/index-intro.js",
               "games/games.json",
           }
+          # The checked-out PR head is the read-only baseline for this run.
+          # A consolidated PR may legitimately differ from origin/main in many
+          # unrelated files; only mutations made by this diagnostic job belong
+          # in the Phase 8A scope check.
           tracked = subprocess.check_output(
-              ["git", "diff", "--name-only", "origin/main"], text=True
+              ["git", "diff", "--name-only", "HEAD"], text=True
           ).splitlines()
           untracked = subprocess.check_output(
               ["git", "ls-files", "--others", "--exclude-standard"], text=True
@@ -141,20 +145,10 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
-      - name: Commit generated report to PR branch
-        if: success() && github.event_name == 'pull_request'
+      - name: Keep pull-request qualification head immutable
+        if: github.event_name == 'pull_request'
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
-            docs/seo-baseline/phase-8a-lcp-cls-diagnostic.md \
-            docs/seo-baseline/phase-8a-lcp-cls-evidence.json
-          if git diff --cached --quiet; then
-            echo "Phase 8A report already current."
-          else
-            git commit -m "Add Phase 8A LCP and CLS evidence"
-            git push origin "HEAD:${{ github.head_ref }}"
-          fi
+          echo "Phase 8A evidence is attached as a workflow artifact; PR qualification does not push generated evidence back onto its own head."
 
       - name: Publish diagnostic summary
         if: always()

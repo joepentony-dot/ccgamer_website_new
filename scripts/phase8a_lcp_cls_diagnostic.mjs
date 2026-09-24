@@ -103,6 +103,7 @@ function buildRoutes() {
     { label: 'Games', url: 'https://www.cheekycommodoregamer.co.uk/games/', family: 'archive' },
     { label: 'Genres', url: 'https://www.cheekycommodoregamer.co.uk/games/genres/', family: 'archive' },
     { label: 'Quiz', url: 'https://www.cheekycommodoregamer.co.uk/quiz/quiz.html', family: 'utility' },
+    { label: 'Retro Special: 50 Essential Amiga Games', url: 'https://www.cheekycommodoregamer.co.uk/retro-specials/50-essential-amiga-games/', family: 'retro-video' },
   ];
   return [...core, ...selectGameRoutes()];
 }

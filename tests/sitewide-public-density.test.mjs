@@ -3,7 +3,9 @@ import fs from "node:fs";
 import test from "node:test";
 
 const css = fs.readFileSync("resources/css/ccg-master.css", "utf8");
-const serviceWorker = fs.readFileSync("service-worker.js", "utf8");\nconst performanceCss = fs.readFileSync("resources/css/ccg-performance-foundations.css", "utf8");
+const serviceWorker = fs.readFileSync("service-worker.js", "utf8");
+const performanceCss = fs.readFileSync("resources/css/ccg-performance-foundations.css", "utf8");
+const scrollCss = fs.readFileSync("resources/css/ccg-scroll-authority.css", "utf8");
 
 test("public content density pass covers the main browse and information families", () => {
   assert.match(css, /CCG PUBLIC CONTENT DENSITY PASS — 2026-09-18/);
@@ -34,6 +36,16 @@ test("games archive overrides deferred accordion height estimates with real geom
     /html\[data-ccg-page="games-index"\]\.ccg-perf-enabled \.games-accordion__section\s*\{[\s\S]*?content-visibility:\s*visible;[\s\S]*?contain-intrinsic-size:\s*none;/
   );
 });
-\ntest("public code cache namespace advances with the shared CSS change", () => {
-  assert.match(serviceWorker, /CODE_CACHE_VERSION = "2026-09-18-public-code-v7"/);
+
+
+
+test("editorial collection cards avoid compositor churn during wheel scrolling", () => {
+  assert.match(scrollCss, /\[data-collection="Retro Specials"\]/);
+  assert.match(scrollCss, /\[data-collection="Retro Events"\]/);
+  assert.match(scrollCss, /\[data-collection="Amiga Demo Music"\]/);
+  assert.match(scrollCss, /\.ccg-game-card--retro-event\s*\{[\s\S]*transform:\s*none;[\s\S]*content-visibility:\s*auto;/);
+});
+
+test("public code cache namespace advances with the shared CSS change", () => {
+  assert.match(serviceWorker, /CODE_CACHE_VERSION = "2026-09-23-public-code-v14"/);
 });

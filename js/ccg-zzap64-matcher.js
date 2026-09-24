@@ -240,17 +240,27 @@
 
     function buildGameIndex(games) {
         const byTitle = new Map();
+        const byToken = new Map();
         const list = Array.isArray(games) ? games : [];
 
         list.forEach((game) => {
+            const seenTokens = new Set();
             gameCandidates(game).forEach((key) => {
                 const bucket = byTitle.get(key) || [];
                 if (!bucket.includes(game)) bucket.push(game);
                 byTitle.set(key, bucket);
+
+                canonicalTitle(key).split(" ").filter(Boolean).forEach((token) => {
+                    if (seenTokens.has(token)) return;
+                    seenTokens.add(token);
+                    const tokenBucket = byToken.get(token) || [];
+                    tokenBucket.push(game);
+                    byToken.set(token, tokenBucket);
+                });
             });
         });
 
-        return { games: list, byTitle };
+        return { games: list, byTitle, byToken };
     }
 
     function tokenSet(value) {
@@ -348,7 +358,15 @@
             if (exactList.length === 1) return exactList[0];
         }
 
-        const ranked = index.games
+        const tokenCandidates = new Set();
+        if (index.byToken instanceof Map) {
+            tokenSet(entry?.title).forEach((token) => {
+                (index.byToken.get(token) || []).forEach((game) => tokenCandidates.add(game));
+            });
+        }
+        const fuzzyPool = tokenCandidates.size ? Array.from(tokenCandidates) : index.games;
+
+        const ranked = fuzzyPool
             .map((game) => ({ game, score: scoreGame(entry, game) }))
             .filter((item) => item.score >= 92)
             .sort((a, b) => b.score - a.score || String(a.game?.title || "").localeCompare(String(b.game?.title || ""), "en-GB"));

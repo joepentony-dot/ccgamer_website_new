@@ -299,7 +299,6 @@ function materializeMagazineReviewsHtml(html, rows) {
     output = output.replace(containerPattern, `$1\n${renderStaticPanel(rows)}`);
     output = setElementHidden(output, ["game-reading-section", "gameReadingSection"], false);
     output = setElementHidden(output, ["game-reading-card", "gameReadingCard"], false);
-    output = setElementHidden(output, ["game-utility-hub-section"], false);
   }
 
   return { html: output, changed: output !== html, foundContainer: true };
