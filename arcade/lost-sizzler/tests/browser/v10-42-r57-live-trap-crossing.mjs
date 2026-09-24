@@ -124,7 +124,8 @@ try{
           const exitChest=(host.chests||[]).some(chest=>chest?.active&&Number(chest.x)===q.ex&&Number(chest.y)===q.ey);
           const exitDoor=(host.doors||[]).some(door=>!door?.open&&Number(door.x)===q.ex&&Number(door.y)===q.ey);
           const exitTrap=(host.traps||[]).some(other=>other!==candidate&&other?.active&&Number(other.x)===q.ex&&Number(other.y)===q.ey);
-          return entryOpen&&exitOpen&&!exitChest&&!exitDoor&&!exitTrap
+          const exitItem=(host.items||[]).some(item=>item?.active&&Number(item.x)===q.ex&&Number(item.y)===q.ey);
+          return entryOpen&&exitOpen&&!exitChest&&!exitDoor&&!exitTrap&&!exitItem
         });
       if(found){trap=candidate;dir=found;break}
     }
