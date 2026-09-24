@@ -16,7 +16,8 @@ assert.match(dialogue,/meta\.deadEnds\|\|\[\]/,"dead-end interactions must reuse
 assert.match(dialogue,/\[\"shortcut\",meta\.shortcuts\]/,"shortcut interactions must reuse existing shortcut geometry");
 assert.match(dialogue,/\[\"gallery\",meta\.galleries\]/,"gallery interactions must reuse existing gallery geometry");
 assert.match(dialogue,/function onMovementBoundary\(player\)/,"Stage 8 must expose an event-driven movement interaction boundary");
-assert.match(gameplay,/rememberTrail\(p\);try\{window\.CCGLostSizzlerStage8NpcDialogue\?\.onMovementBoundary\?\.\(p\)\}/,"canonical movement triggers must publish the optional Stage 8 exploration event");
+assert.match(gameplay,/rememberTrail\(p\);\s*try\{window\.CCGLostSizzlerStage8NpcDialogue\?\.onMovementBoundary\?\.\(p\)\}/s,"canonical movement triggers must still publish the optional Stage 8 exploration event");
+assert.match(gameplay,/CCGLostSizzlerBugReporter\?\.observeMovementBoundary\?\.\(p,"before"[\s\S]*?triggerTrap\(p\);[\s\S]*?CCGLostSizzlerBugReporter\?\.observeMovementBoundary\?\.\(p,"after"/,"environment diagnostics must wrap ordinary trap resolution without displacing Stage 8 movement interactions");
 assert.doesNotMatch(dialogue,/\bsetInterval\s*\(/,"exploration interactions must not add a polling interval");
 assert.doesNotMatch(dialogue,/\brequestAnimationFrame\s*\(/,"exploration interactions must not add a frame owner");
 assert.doesNotMatch(dialogue,/window\.(?:update|movePlayer|hurtPlayer)\s*=/,"exploration interactions must not replace protected gameplay owners");
