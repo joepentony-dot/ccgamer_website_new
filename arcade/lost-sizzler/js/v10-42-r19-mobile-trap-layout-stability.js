@@ -70,6 +70,7 @@
     state.trapHits++;
     const rawKind=String(trap?.kind||"other").toLowerCase(),kind=["fire","spike","shock"].includes(rawKind)?rawKind:"other";
     state.trapHitsByKind[kind]=(Number(state.trapHitsByKind[kind])||0)+1;
+    try{dispatchEvent(new CustomEvent("ccg:trap-damage",{detail:{playerId:playerId(player),trapId:trapId(trap),kind,x:Number(trap.x),y:Number(trap.y),at:Number(player.__ccgLastDamageAt||performance.now())}}))}catch(_){}
     trapContacts.add(contactKey);
     trapContactCycles.set(contactKey,cycle);
     const protectionMs=Math.max(0,Number(player.invuln||0));
