@@ -21,6 +21,12 @@ assert.match(fix,/ATTACK_KEYS=new Set\(\["Space","Numpad0"\]\)/,"normal gameplay
 assert.doesNotMatch(fix,/ATTACK_KEYS=new Set\([^\n]*"KeyF"/,"F must remain exclusively owned by the fullscreen handler");
 assert.match(fix,/function activeRun\(\)[\s\S]*liveSession\(\)[\s\S]*document\.body\.dataset\.runActive="true"/,"attack recovery must repair a stale presentation flag from the actual live run state instead of refusing FIRE");
 assert.match(fix,/mobileFirePointers=new Set\(\)[\s\S]*#v104-touch-controls \[data-action="fire"\][\s\S]*queueMicrotask[\s\S]*attackNow\("Space"\)/,"a delegated mobile FIRE safety owner must recover a visible button whose original listener stops delivering attack intents");
+assert.match(fix,/const RESUME_ATTACK_GUARD_MS=5000/,"post-pause FIRE recovery must retain a bounded first-attack guard window");
+assert.match(fix,/function recentPauseReset\(\)[\s\S]*__CCG_PAUSE_ATTACK_LAST_RESET__[\s\S]*RESUME_ATTACK_GUARD_MS/,"R20 must recognise the core pause-resume reset even if a later compatibility layer rewrites transient cadence state");
+assert.match(fix,/const resumeGuard=performance\.now\(\)<=resumeAttackGuardUntil\|\|recentPauseReset\(\)[\s\S]*repairAttackBoundary\(resumeGuard\)/,"the first real attack after resume must force transient attack cadence back to a fireable state immediately before the canonical fire owner runs");
+assert.match(fix,/if\(forceResumeCadence\)[\s\S]*fire1=0;fireBuffer1=0;projectileCD=0/,"resume attack guard must reset only transient fire cadence, not player ammo or progression");
+assert.match(play,/gp\.buttons\?\.\[0\]\?\.pressed[\s\S]*CCGLostSizzlerV142R20LiveRegressionStability[\s\S]*attackNow\("Gamepad0"\)/,"gamepad FIRE must use the same post-pause recovery owner as keyboard/mobile FIRE instead of being blocked outside recovery by stale fire1");
+
 assert.match(fix,/pointerup",releaseMobileFire,true[\s\S]*pointercancel",releaseMobileFire,true/,"delegated mobile FIRE recovery must always release its canonical Space hold");
 assert.match(fix,/function recoverOrphanedGameplayMode\(\)[\s\S]*dossier[\s\S]*inventory[\s\S]*shop[\s\S]*mode="playing"/,"hidden transient panels must not leave gameplay stranded outside playing mode");
 assert.match(fix,/function captureR1FireOwner\(\)[\s\S]*__ccgV142R1===true[\s\S]*capturedR1FireOwner=owner/,"r20 may retain the verified r1 marker for diagnostics without bypassing the canonical attack chain");
