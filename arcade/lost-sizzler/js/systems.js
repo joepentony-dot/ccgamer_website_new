@@ -277,7 +277,7 @@ window.CCGSystems=(()=>{
     const floor=Math.max(1,run?.floor||1),count=floor>=3?2:1,busy=new Set([world.startRoomId,world.exitRoomId,host.sigilRoomId,host.trader?.roomId,host.startShop?.roomId,host.spiderNest?.roomId].filter(x=>x!=null));
     for(const g of host.generators||[])busy.add(g.roomId);for(const a of host.arenas||[])busy.add(a.roomId);for(const t of host.timedRooms||[])busy.add(t.roomId);if(host.rescue)busy.add(host.rescue.roomId);if(host.guardian)busy.add(W.roomAt(world,host.guardian.x,host.guardian.y));
     for(const feature of [host.bloodClue,host.memoryPuzzle,host.sequenceTorchPuzzle,host.weightBridge])if(feature?.roomId!=null)busy.add(feature.roomId);
-    const choices=rooms.filter(room=>!room.optional&&!room.sanctuary&&!room.sigilRoom&&!room.spiderNest&&!busy.has(room.id)&&room.w>=8&&room.h>=7).map(room=>({room,key:world.random()})).sort((a,b)=>a.key-b.key),types=["blade","embers","arrows"];host.hazardRooms=[];
+    const hazardEligible=(room,minW=8,minH=7)=>Boolean(room&&!room.sanctuary&&!room.sigilRoom&&!room.spiderNest&&!busy.has(room.id)&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=minW&&room.h>=minH),primaryHazardRooms=rooms.filter(room=>hazardEligible(room)),fallbackHazardRooms=primaryHazardRooms.length>=count?[]:(world.rooms||[]).filter(room=>hazardEligible(room)&&!primaryHazardRooms.some(candidate=>candidate.id===room.id)),strictHazardRoomIds=new Set([...primaryHazardRooms,...fallbackHazardRooms].map(room=>room.id)),relaxedHazardRooms=primaryHazardRooms.length+fallbackHazardRooms.length>=count?[]:(world.rooms||[]).filter(room=>hazardEligible(room,6,5)&&!strictHazardRoomIds.has(room.id)),shuffleHazardRooms=list=>list.map(room=>({room,key:world.random()})).sort((a,b)=>a.key-b.key),choices=[...shuffleHazardRooms(primaryHazardRooms),...shuffleHazardRooms(fallbackHazardRooms),...shuffleHazardRooms(relaxedHazardRooms)],types=["blade","embers","arrows"];host.hazardRooms=[];
     const ordinaryTrapKinds=["fire","spike","shock"];
     const activeTrapKind=(trap,kind)=>Boolean(trap?.active)&&String(trap.kind||"").toLowerCase()===kind;
     const preservesOrdinaryTrapKinds=room=>ordinaryTrapKinds.every(kind=>(host.traps||[]).some(trap=>trap.roomId!==room.id&&activeTrapKind(trap,kind)));
@@ -553,6 +553,35 @@ window.CCGSystems=(()=>{
     for(const d of host.doors||[])used.add(cell(d.x,d.y));
     decorateFurniture(world,host,rooms,used,run);
     installBoulderTrap(world,host,run);
+
+    // Final generation invariant: every finished floor must still expose one
+    // active FIRE, SPIKE and SHOCK floor trap after hazard-room conversion and
+    // all later room decoration. This runs at the end of world decoration so a
+    // late room owner cannot silently erase one of the public trap families.
+    const finalTrapKinds=["fire","spike","shock"],finalHazardRoomIds=new Set((host.hazardRooms||[]).map(row=>row.roomId));
+    const finalTrapRooms=[...(world.rooms||[])].filter(room=>
+      room
+      && room.id!==world.startRoomId
+      && room.id!==world.exitRoomId
+      && !room.sanctuary
+      && !room.sigilRoom
+      && !room.spiderNest
+      && !finalHazardRoomIds.has(room.id)
+    );
+    for(const [kind,index] of finalTrapKinds.entries()){
+      if((host.traps||[]).some(trap=>trap?.active&&String(trap.kind||"").toLowerCase()===kind))continue;
+      const room=finalTrapRooms[(Math.max(1,Number(run?.floor||1))+index)%Math.max(1,finalTrapRooms.length)]||null;
+      if(!room)continue;
+      const q=freeInRoom(world,room,used);
+      host.traps.push({
+        id:`trap-${kind}-final-f${Math.max(1,Number(run?.floor||1))}`,
+        ...q,roomId:room.id,kind,
+        phase:Math.floor(world.random()*1800),
+        period:kind==="fire"?1800:kind==="spike"?2150:2500,
+        active:true
+      });
+      room.dangerous=true;
+    }
     for(const room of world.rooms){room.dangerous=Boolean(room.spiderNest||room.dedicatedHazard||room.skeletonHorde);room.verminRoom=Boolean(room.spiderNest);room.voidRoom=false}
     for(const t of host.traps||[]){const r=world.rooms[t.roomId];if(r)r.dangerous=true}
     for(const g of host.generators||[]){const r=world.rooms[g.roomId];if(r)r.dangerous=true}

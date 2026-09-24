@@ -7,10 +7,11 @@
   if(window.CCGLostSizzlerV142R55ShopFeedback)return;
 
   const state={installed:false,feedback:0,fallbacks:0,last:null};
-  let serial=0;
+  let serial=0,purchaseDepth=0;
 
   const shopVisible=()=>{try{return Boolean(activeShop&&UI?.shop&&!UI.shop.classList.contains("hidden"))}catch(_){return false}};
   const scoreNow=()=>{try{return Math.max(0,Math.floor(Number(score)||0))}catch(_){return 0}};
+  const revisionNow=()=>{try{return Math.max(0,Number(host?.revision)||0)}catch(_){return 0}};
   const player=()=>{try{return p1||null}catch(_){return null}};
   const node=id=>document.getElementById(id);
 
@@ -41,7 +42,7 @@
     try{return !PGR.inventoryCanAdd(p,{kind})}catch(_){return false}
   }
 
-  function fallbackFeedback(id){
+  function fallbackFeedback(id,allowGeneric=true){
     const key=String(id||""),p=player(),shop=typeof activeShop!=="undefined"?activeShop:null;
     if(!p||!shop)return false;
     const foundation=window.CCGDungeonProgressionFoundation;
@@ -74,6 +75,7 @@
       state.fallbacks++;
       return setStatus("INVENTORY FULL","There is no room for this item. Free a stack slot or expand your inventory before buying it.","red","inventory-full")
     }
+    if(!allowGeneric)return false;
     state.fallbacks++;
     return setStatus("PURCHASE BLOCKED","That item cannot be bought right now. Check its price, inventory space and any floor or tier restriction shown on the item card.","red","blocked")
   }
@@ -84,15 +86,29 @@
 
     const toastOwner=showToast;
     showToast=function shopVisibleToastMirror(title,text,tone,duration){
-      const result=toastOwner.apply(this,arguments);
-      if(shopVisible())setStatus(title,text,tone==="red"?"red":tone==="green"?"green":tone==="gold"?"gold":"cyan","toast");
+      const result=toastOwner.apply(this,arguments),heading=String(title||"");
+      if(shopVisible()&&purchaseDepth>0&&!/^ACHIEVEMENT\b/i.test(heading))setStatus(title,text,tone==="red"?"red":tone==="green"?"green":tone==="gold"?"gold":"cyan","purchase-toast");
       return result
     };
     showToast.__ccgR55ShopFeedback=true;showToast.__ccgOriginal=toastOwner;
 
+    document.addEventListener("click",event=>{
+      const target=event.target instanceof Element?event.target.closest("[data-shop-buy]"):null;
+      if(!target||!shopVisible())return;
+      const id=String(target.getAttribute("data-shop-buy")||""),before=serial,beforeRevision=revisionNow();
+      purchaseDepth++;
+      setTimeout(()=>{
+        purchaseDepth=Math.max(0,purchaseDepth-1);
+        if(shopVisible()&&serial===before&&revisionNow()<=beforeRevision)fallbackFeedback(id)
+      },0)
+    },true);
+
     const buyOwner=buyShopItem;
     buyShopItem=function buyShopItemR55Feedback(id,...rest){
-      const before=serial,result=buyOwner.call(this,id,...rest);
+      const before=serial;let result;
+      purchaseDepth++;
+      try{result=buyOwner.call(this,id,...rest)}
+      finally{purchaseDepth=Math.max(0,purchaseDepth-1)}
       if(shopVisible()&&result===false&&serial===before)fallbackFeedback(id);
       return result
     };
