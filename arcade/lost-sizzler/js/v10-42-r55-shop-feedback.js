@@ -44,15 +44,31 @@
   function fallbackFeedback(id){
     const key=String(id||""),p=player(),shop=typeof activeShop!=="undefined"?activeShop:null;
     if(!p||!shop)return false;
-    let price=0;
-    try{
-      if(key==="banishmentScore")price=Number(window.CCGLostSizzlerStalkerShopBalanceV106?.FLASK_SCORE_PRICE||8000);
-      else if(key==="weapon")price=Number(window.CCGLostSizzlerV142R48ShopFirearmUpgrade?.offerFor?.(p)?.price||0);
-      else price=typeof shopScorePrice==="function"?Number(shopScorePrice(shop)||0):0;
-    }catch(_){}
-    if(price>0&&scoreNow()<price){
-      state.fallbacks++;
-      return setStatus("NOT ENOUGH SCORE",`This purchase costs ${price.toLocaleString()} score. You currently have ${scoreNow().toLocaleString()}.`,"red","insufficient-score")
+    const foundation=window.CCGDungeonProgressionFoundation;
+    const goldOwned=Boolean(foundation?.ready&&typeof foundation.goldBalance==="function"&&typeof foundation.shopGoldPrice==="function"&&typeof run!=="undefined"&&run);
+    if(goldOwned&&key!=="banishment"){
+      let goldPrice=0;
+      try{
+        goldPrice=(key==="banishmentGold"||key==="banishmentScore")
+          ?Number(foundation.GOLD?.banishment||10)
+          :Number(foundation.shopGoldPrice(shop)||0);
+      }catch(_){}
+      const goldNow=Number(foundation.goldBalance(run)||0);
+      if(goldPrice>0&&goldNow<goldPrice){
+        state.fallbacks++;
+        return setStatus("NOT ENOUGH GOLD",`This purchase costs ${goldPrice.toLocaleString()} Gold. You currently have ${goldNow.toLocaleString()}.`,"red","insufficient-gold")
+      }
+    }else{
+      let price=0;
+      try{
+        if(key==="banishmentScore")price=Number(window.CCGLostSizzlerStalkerShopBalanceV106?.FLASK_SCORE_PRICE||8000);
+        else if(key==="weapon")price=Number(window.CCGLostSizzlerV142R48ShopFirearmUpgrade?.offerFor?.(p)?.price||0);
+        else price=typeof shopScorePrice==="function"?Number(shopScorePrice(shop)||0):0;
+      }catch(_){}
+      if(price>0&&scoreNow()<price){
+        state.fallbacks++;
+        return setStatus("NOT ENOUGH SCORE",`This purchase costs ${price.toLocaleString()} score. You currently have ${scoreNow().toLocaleString()}.`,"red","insufficient-score")
+      }
     }
     if(inventoryBlocked(key)){
       state.fallbacks++;
