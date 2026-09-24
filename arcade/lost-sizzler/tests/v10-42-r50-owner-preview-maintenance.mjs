@@ -10,7 +10,7 @@ const index=fs.readFileSync(path.join(root,"index.html"),"utf8");
 const gate=fs.readFileSync(path.join(repoRoot,"js/ccg-play-maintenance-owner-gate.js"),"utf8");
 const smoke=fs.readFileSync(path.join(root,"tests/production/v10-41-r47-production-smoke.mjs"),"utf8");
 
-assert.match(index,/ccg-play-maintenance-owner-gate\.js\?v=20260923r54/,"Dungeon page must load the shared owner-preview gate under the current cache token");
+assert.match(index,/ccg-play-maintenance-owner-gate\.js\?v=20260924r54/,"Dungeon page must load the shared owner-preview gate under the current cache token");
 assert.match(index,/data-ccg-play-maintenance-gate="owner-preview"/,"Dungeon page must declare owner-preview maintenance ownership");
 assert.match(gate,/OWNER_USERNAME = "cheekycommodoregamer"/);
 assert.match(gate,/OWNER_DISPLAY_NAME = "cheeky commodore gamer"/);
