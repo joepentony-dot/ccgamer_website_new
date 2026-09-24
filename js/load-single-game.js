@@ -451,7 +451,8 @@ async function hydrateSingleGamePage() {
 
     try {
         const { games, source } = await fetchGamesLibrary({
-            includeDescriptionEnrichments: !preloaded
+            includeDescriptionEnrichments: !preloaded,
+            cacheMode: preloaded ? "no-cache" : "no-store"
         });
         CCG_SINGLE_ALL_GAMES = games;
 
@@ -705,6 +706,7 @@ function resolveGamesDataFallbackUrls() {
 async function fetchGamesLibrary(options = {}) {
     const urls = resolveGamesDataFallbackUrls();
     const includeDescriptionEnrichments = options.includeDescriptionEnrichments !== false;
+    const cacheMode = options.cacheMode === "no-cache" ? "no-cache" : "no-store";
     let lastError = null;
     // Dynamic/query-string routes still need runtime editorial enrichment. Canonical
     // generated pages already contain that copy, so avoid downloading it a second time.
@@ -715,7 +717,7 @@ async function fetchGamesLibrary(options = {}) {
 
     for (const url of urls) {
         try {
-            const response = await fetch(url, { cache: "no-cache" });
+            const response = await fetch(url, { cache: cacheMode });
             if (!response.ok) {
                 lastError = new Error(`games.json ${response.status} via ${url}`);
                 continue;
