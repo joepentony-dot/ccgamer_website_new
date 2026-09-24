@@ -2,7 +2,7 @@
   "use strict";
 
   const mountId = "homeCommunityLatestCard";
-  const lostSizzlerUrl = "/arcade/lost-sizzler/";
+  const lostSizzlerUrl = "/arcade/c64-dungeon-carnage/";
 
   function text(value) {
     return String(value == null ? "" : value);
@@ -42,7 +42,7 @@
     mark.setAttribute("aria-hidden", "true");
 
     const image = document.createElement("img");
-    image.src = "/arcade/lost-sizzler/assets/lost-sizzler.webp";
+    image.src = "/arcade/c64-dungeon-carnage/assets/lost-sizzler.webp";
     image.alt = "";
     image.width = 240;
     image.height = 132;

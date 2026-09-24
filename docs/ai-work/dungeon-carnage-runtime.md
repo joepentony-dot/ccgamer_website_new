@@ -1,3 +1,15 @@
+## R54 graphics/UI and pickup semantics — 23 September 2026
+
+The active visual/mechanical follow-up is `codex/dungeon-r54-graphics-ui-current-main-20260923`, created from current main after the R53 gameplay repair and UTA publication work completed. It advances the public candidate to `V10.42 r54` / `20260923r54`.
+
+The first slice removes the root cause of unrelated C64 titles appearing on ordinary pickups: generic world pickups no longer receive `C.c64Loot` titles, and runtime/ground-label owners now use mechanic-led names while true rescued-game collectibles retain their title. Health, ammo, XP and armour feedback exposes the actual mechanic/value; firearm pickups continue through `generateWeapon()` and `equipWeapon()`, which presents the real generated weapon display name.
+
+Bronze-key ownership is also reconciled. The HUD now exposes the Bronze count directly and without ellipsis clipping. A standalone locked chest still consumes one Bronze key, but a chest whose room has already been unlocked through its Bronze door treats that door payment as the room payment and does not consume a second key. The rulebook records this contract.
+
+Presentation work in the same candidate keeps animation renderer-owned: the existing explorer sheet is isolated through the established r48 atlas wrapper and now exposes eight-stage walk and melee presentation sequences; procedural enemy locomotion uses eight discrete phases plus the existing meleeSwingMs/hit-stun state for attack/recoil presentation. Corridor cells inherit the WARP_GALLERY visual identity, pickup glyphs receive a layered icon backing, and supply/secret shops use named, identity-seeded merchant characters with role-specific props instead of the former generic SHOP block. No new per-entity timer owner or second render loop was added.
+
+The established explorer and chest sprite sheets are now release-tokened, preloaded and given high fetch priority so the designed chest art is available before the old fallback path. Exact-head qualification is still required before R54 is considered merge-ready. NPC dialogue/quest-content expansion remains a later phase.
+
 ## R53 ATTACK liveness and crowded-impact qualification — 23 September 2026
 
 Active candidate: draft PR #2294 / branch `codex/dungeon-r53-attack-rail-current-main-20260923`, based on current `main` and retaining the merged R53 global FIRE/SPIKE/SHOCK trap-cycle repair.

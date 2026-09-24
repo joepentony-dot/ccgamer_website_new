@@ -9,7 +9,17 @@
   function currentPlayer(){try{return typeof p1!=="undefined"?p1:null}catch(_){return null}}
   function progression(){return window.CCGProgression||null}
   function currentShopOwner(){try{return typeof buyShopItem==="function"?buyShopItem:null}catch(_){return null}}
-  function ownsCurrentBoundary(){const owner=currentShopOwner();return Boolean(owner?.__ccgArtefactShopStability)}
+  function chainOwnsArtefactBoundary(owner=currentShopOwner()){
+    const seen=new Set();
+    let current=owner;
+    for(let depth=0;typeof current==="function"&&depth<24&&!seen.has(current);depth++){
+      if(current.__ccgArtefactShopStability)return true;
+      seen.add(current);
+      current=current.__ccgOriginal;
+    }
+    return false;
+  }
+  function ownsCurrentBoundary(){return chainOwnsArtefactBoundary()}
   const nonNegativeInt=value=>Math.max(0,Math.floor(Number(value)||0));
   const cloneItem=item=>item&&typeof item==="object"?{...item}:item;
 
@@ -95,7 +105,7 @@
     try{
       const liveOwner=currentShopOwner();
       if(!liveOwner)return false;
-      if(liveOwner.__ccgArtefactShopStability){installed=true;return true}
+      if(chainOwnsArtefactBoundary(liveOwner)){installed=true;return true}
 
       /*
         Later ordered modules (notably R1 shop-counter stability) legitimately

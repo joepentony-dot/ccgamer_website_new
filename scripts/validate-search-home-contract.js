@@ -85,7 +85,7 @@ function stripApprovedRetiredWeeklyVaultCta(html) {
 
 function stripApprovedDungeonCarnageHomeCta(html) {
   return String(html).replace(
-    /\s*<a\s+href=["']\/arcade\/lost-sizzler\/["'][\s\S]*?class=["'][^"']*home-hero__beta-cta[^"']*["'][\s\S]*?<\/a>/i,
+    /\s*<a\s+href=["']\/arcade\/(?:lost-sizzler|c64-dungeon-carnage)\/["'][\s\S]*?class=["'][^"']*home-hero__beta-cta[^"']*["'][\s\S]*?<\/a>/i,
     ""
   );
 }

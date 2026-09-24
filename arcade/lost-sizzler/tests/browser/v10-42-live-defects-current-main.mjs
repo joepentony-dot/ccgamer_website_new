@@ -76,7 +76,35 @@ try{
   const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
 
   await page.goto(`${origin}/arcade/lost-sizzler/?live-defects-current-main=1`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&window.CCGLostSizzlerV142Bootstrap?.ready===true&&Boolean(window.CCGLostSizzlerV142AttackHoldLiveness)&&window.CCGDungeonProgressionFoundation?.ready===true&&window.CCGLostSizzlerV142ArtefactShopStability?.isInstalled?.()===true,null,{timeout:90000});
+  try{
+    await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&window.CCGLostSizzlerV142Bootstrap?.ready===true&&Boolean(window.CCGLostSizzlerV142AttackHoldLiveness)&&window.CCGDungeonProgressionFoundation?.ready===true&&window.CCGLostSizzlerV142ArtefactShopStability?.isInstalled?.()===true,null,{timeout:90000});
+  }catch(error){
+    const readiness=await page.evaluate(()=>({
+      releaseReady:String(document.body.dataset.releaseReady||""),
+      gameReady:String(document.body.dataset.gameReady||""),
+      bootstrap:{
+        present:Boolean(window.CCGLostSizzlerV142Bootstrap),
+        ready:Boolean(window.CCGLostSizzlerV142Bootstrap?.ready),
+        failed:Boolean(window.CCGLostSizzlerV142Bootstrap?.failed),
+        error:String(window.CCGLostSizzlerV142Bootstrap?.error||""),
+        currentModule:String(window.CCGLostSizzlerV142Bootstrap?.currentModule||""),
+        currentIndex:Number(window.CCGLostSizzlerV142Bootstrap?.currentIndex||0),
+        loaded:Number(window.CCGLostSizzlerV142Bootstrap?.loaded?.length||0),
+        totalModules:Number(window.CCGLostSizzlerV142Bootstrap?.totalModules||0)
+      },
+      attackHold:Boolean(window.CCGLostSizzlerV142AttackHoldLiveness),
+      progressionFoundation:{
+        present:Boolean(window.CCGDungeonProgressionFoundation),
+        ready:Boolean(window.CCGDungeonProgressionFoundation?.ready)
+      },
+      artefactShop:{
+        present:Boolean(window.CCGLostSizzlerV142ArtefactShopStability),
+        installed:Boolean(window.CCGLostSizzlerV142ArtefactShopStability?.isInstalled?.())
+      }
+    }));
+    console.error("DUNGEON_LIVE_DEFECT_READINESS_TIMEOUT "+JSON.stringify(readiness));
+    throw error;
+  }
   await page.waitForTimeout(1900);
   assert.equal(await page.locator(".v102-brand p").textContent(),"C64 DUNGEON CARNAGE — V10.42","late bootstrap restamps must retain the C64 Dungeon Carnage identity");
 

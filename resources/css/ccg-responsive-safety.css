@@ -50,8 +50,11 @@ body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
     box-sizing: border-box;
 }
 
-:where(.ccg-page, .ccg-main) {
-    overflow-y: visible;
+html[data-ccg-page] > body.ccg-body :where(.ccg-page, .ccg-main, main) {
+    height: auto !important;
+    max-height: none !important;
+    overflow-y: visible !important;
+    overscroll-behavior-y: auto !important;
 }
 
 /* Grid and flex children are allowed to shrink instead of escaping. */

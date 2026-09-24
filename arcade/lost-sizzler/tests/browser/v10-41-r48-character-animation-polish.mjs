@@ -48,21 +48,21 @@ try{
   assert.equal(atlas.width,216,"six padded player cells must occupy the expected atlas width");
   assert.equal(atlas.height,144,"four padded player rows must occupy the expected atlas height");
   assert.equal(atlas.frames,24,"all 24 directional/action source cells must be isolated");
-  assert.equal(new Set(atlas.walk).size,4,"walk presentation must expose four distinct cadence stages");
-  assert.equal(atlas.attack.length,6,"melee presentation must expose six cadence stages");
+  assert.equal(new Set(atlas.walk).size,8,"walk presentation must expose eight distinct cadence stages");
+  assert.equal(atlas.attack.length,8,"melee presentation must expose eight cadence stages");
   assert.ok(atlas.builds>=1,"padded player atlas must be constructed in the real browser runtime");
 
   const timing=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R48CharacterAnimation;
     const walker={id:"r48-walker",x:2,y:1,rx:1,ry:1,hitStunMs:0,_meleeSwingAt:-Infinity};
-    const walk=[];for(let n=0;n<4;n++)walk.push(api.playerPose(walker,1,n*api.WALK_FRAME_MS).label);
-    const attacker={id:"r48-attacker",x:1,y:1,rx:1,ry:1,hitStunMs:0,_meleeSwingAt:1000,_meleeSwingMs:600};
-    const attack=[];for(let n=0;n<6;n++)attack.push(api.playerPose(attacker,3,1000+n*100+1).label);
+    const walk=[];for(let n=0;n<8;n++)walk.push(api.playerPose(walker,1,n*api.WALK_FRAME_MS).label);
+    const attacker={id:"r48-attacker",x:1,y:1,rx:1,ry:1,hitStunMs:0,_meleeSwingAt:1000,_meleeSwingMs:800};
+    const attack=[];for(let n=0;n<8;n++)attack.push(api.playerPose(attacker,3,1000+n*100+1).label);
     const full=api.interpolationRate(.26,16.6667),half=api.interpolationRate(.26,8.33335),combined=1-(1-half)*(1-half),highRefresh=api.interpolationRate(.26,6.9444);
     return{walk,attack,full,half,combined,highRefresh}
   });
-  assert.equal(new Set(timing.walk).size,4,"deterministic walk sampling must visit all four stages");
-  assert.deepEqual(timing.attack,["wind-up","draw-back","early-swing","impact","follow-through","recover"],"melee animation must progress through all six stages in order");
+  assert.equal(new Set(timing.walk).size,8,"deterministic walk sampling must visit all eight stages");
+  assert.deepEqual(timing.attack,["wind-up","draw-back","early-swing","impact-rise","impact","follow-through","recover-blade","recover"],"melee animation must progress through all eight stages in order");
   assert.ok(Math.abs(timing.full-.26)<.001,"60 Hz enemy interpolation must preserve the existing movement feel");
   assert.ok(Math.abs(timing.combined-.26)<.002,"two 120 Hz updates must cover the same movement fraction as one 60 Hz update");
   assert.ok(timing.highRefresh<timing.full,"high-refresh enemy interpolation must use a smaller per-frame step rather than moving too fast");

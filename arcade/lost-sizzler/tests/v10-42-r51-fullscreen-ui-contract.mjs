@@ -21,7 +21,8 @@ assert.doesNotMatch(html,/class="shop-note"[\s\S]*id="shop-close"/,"Leave Shop m
 assert.ok(main.includes('$("solo-btn").addEventListener("click",()=>{void requestPlayFullscreen();startSolo()})'),"Solo launch must request fullscreen from the click gesture");
 assert.ok(main.includes('$("tutorial-zone-btn")?.addEventListener("click",()=>{void requestPlayFullscreen()},{capture:true})'),"Tutorial launch must request fullscreen from the click gesture");
 
-assert.ok(landing.includes('document.querySelector(".game-message-rail")||document.querySelector(".game-area")'),"major notifications must prefer the message rail owner");
+assert.ok(landing.includes('const rail=document.querySelector(".game-message-rail"),pickup=document.getElementById("pickup-toast")'),"major notifications must resolve the message rail owner explicitly");
+assert.ok(landing.includes("rail.insertBefore(panel,pickup)"),"major notifications must occupy the message rail before the ordinary pickup slot");
 assert.match(geometry,/R51 FULLSCREEN MESSAGE RAIL/);
 assert.ok(geometry.includes("grid-template-rows:minmax(0,1fr) 78px!important"),"fullscreen must reserve a fixed notice row beneath the canvas");
 assert.ok(geometry.includes('.ccg-game:fullscreen>.game-area>.game-message-rail'),"fullscreen must own a message rail beneath the canvas");

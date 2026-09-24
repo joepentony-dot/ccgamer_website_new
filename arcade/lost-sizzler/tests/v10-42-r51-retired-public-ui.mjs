@@ -11,8 +11,8 @@ const hub=fs.readFileSync(path.join(repo,"games/ccg-games/index.html"),"utf8");
 const release=fs.readFileSync(path.join(root,"js/v10-42-zero-server-release.js"),"utf8");
 const version=JSON.parse(fs.readFileSync(path.join(root,"version.json"),"utf8"));
 
-assert.equal(version.build,"V10.42 r53");
-assert.equal(version.cacheToken,"20260923r53");
+assert.equal(version.build,"V10.42 r54");
+assert.equal(version.cacheToken,"20260923r54");
 
 for(const retiredCopy of [
   "Weekly High-Score Vault",
@@ -44,12 +44,12 @@ assert.match(release,/const ONLINE_BUTTON_IDS=\[[^\]]*"daily-btn"[^\]]*"split-bt
 assert.match(release,/#daily-btn,#split-btn,#weekly-vault,\.online-howto/);
 assert.doesNotMatch(release,/#developer-changelog|\.developer-changelog/,"current-build changelog must remain visible");
 assert.match(html,/id="developer-changelog"[^>]*data-latest-build-only="true"/,"one canonical latest-build changelog must remain");
-assert.match(html,/Latest Build Changes · V10\.42 R53/);
-assert.match(html,/ACTIVE BUILD: V10\.42 R53/);
+assert.match(html,/Latest Build Changes · V10\.42 R54/);
+assert.match(html,/ACTIVE BUILD: V10\.42 R54/);
 assert.doesNotMatch(html,/AUGUST|JULY|JUNE|MAY|APRIL|MARCH|FEBRUARY|JANUARY/i,"public changelog must not retain pre-September periodic history");
 assert.match(release,/getElementById\("release-note"\)/);
 assert.doesNotMatch(release,/Weekly High-Score Vault|2P Split Screen|Supabase remains available/i);
 
-console.log("PASS V10.42 R51 retired public-mode boundary under current R53 build");
+console.log("PASS V10.42 R51 retired public-mode boundary under current R54 build");
 
 assert.match(html,/src="\/resources\/images\/hero\/c64-dungeon-carnage-home-v2\.webp(?:\?[^"]*)?"/,"canonical website loader must use the current Dungeon Carnage artwork");

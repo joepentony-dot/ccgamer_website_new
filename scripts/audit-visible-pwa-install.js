@@ -61,6 +61,13 @@ function isApprovedDungeonHomeCtaMigration(relativePath) {
   if (baseline === null) return false;
   const current = read(relativePath);
 
+  const routeOnlyMigration = baseline.replace(
+    'href="/arcade/lost-sizzler/"',
+    'href="/arcade/c64-dungeon-carnage/"'
+  );
+  if (current === routeOnlyMigration) return true;
+
+
   const blockPattern = /<div class="home-hero__game-actions">[\s\S]*?<\/div>/;
   const baselineMatch = baseline.match(blockPattern);
   const currentMatch = current.match(blockPattern);

@@ -6,7 +6,7 @@ import process from "node:process";
 
 const REPO_ROOT=path.resolve(new URL("..",import.meta.url).pathname);
 const SOURCE_ROOT=path.join(REPO_ROOT,"arcade","lost-sizzler");
-const CANONICAL_GAME_URL="https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/";
+const CANONICAL_GAME_URL="https://www.cheekycommodoregamer.co.uk/arcade/c64-dungeon-carnage/";
 const INCLUDE_DIRS=["css","js","assets"];
 const INCLUDE_FILES=["index.html","version.json"];
 const EXTERNAL_FILES=[["games/games.json","games/games.json"],["resources/images/hero/c64-dungeon-carnage-home-v2.webp","assets/c64-dungeon-carnage-loader.webp"]];

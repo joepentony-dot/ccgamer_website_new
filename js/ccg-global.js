@@ -343,9 +343,13 @@ if (IS_ADMIN_PATH) {
             frame.dataset.ccgWheelGuard = "pending";
             host.classList.add("ccg-wheel-guard-host");
 
-            const shield = document.createElement("button");
-            shield.type = "button";
+            // Use a neutral element rather than a site-wide styled <button>.
+            // Global CTA/button minimum sizing can otherwise make the transparent
+            // wheel shield larger than the iframe it is meant to cover.
+            const shield = document.createElement("span");
             shield.className = "ccg-wheel-guard";
+            shield.setAttribute("role", "button");
+            shield.setAttribute("tabindex", "0");
             shield.setAttribute("aria-label", "Activate embedded video controls");
             shield.innerHTML = "<span class=\"ccg-wheel-guard__hint\">Click to use video controls</span>";
             host.appendChild(shield);
@@ -354,10 +358,31 @@ if (IS_ADMIN_PATH) {
                 if (!frame.isConnected || !shield.isConnected) return false;
                 const frameRect = frame.getBoundingClientRect();
                 const hostRect = host.getBoundingClientRect();
-                shield.style.left = `${frameRect.left - hostRect.left + host.scrollLeft}px`;
-                shield.style.top = `${frameRect.top - hostRect.top + host.scrollTop}px`;
-                shield.style.width = `${frameRect.width}px`;
-                shield.style.height = `${frameRect.height}px`;
+                // Size and place the shield in the host's local layout coordinate
+                // system. getBoundingClientRect() is already transformed into
+                // viewport pixels; feeding those dimensions back into an
+                // absolutely-positioned child inside a scaled ancestor applies
+                // the ancestor scale twice. Prefer offset geometry whenever the
+                // host owns the frame's offset coordinates, with a transform-
+                // aware fallback for unusual wrappers.
+                const hostScaleX = host.offsetWidth > 0 ? hostRect.width / host.offsetWidth : 1;
+                const hostScaleY = host.offsetHeight > 0 ? hostRect.height / host.offsetHeight : 1;
+                const safeScaleX = Number.isFinite(hostScaleX) && hostScaleX > 0 ? hostScaleX : 1;
+                const safeScaleY = Number.isFinite(hostScaleY) && hostScaleY > 0 ? hostScaleY : 1;
+                const hostOwnsFrameOffsets = frame.offsetParent === host;
+                // When the iframe is positioned directly by this host, offset
+                // geometry is already expressed in the host's local coordinate
+                // system and both elements inherit the same ancestor scaling.
+                // Only fall back to viewport/scale reconstruction for wrappers
+                // where the iframe's offsets belong to a different ancestor.
+                const localLeft = hostOwnsFrameOffsets ? frame.offsetLeft : (frameRect.left - hostRect.left) / safeScaleX + host.scrollLeft;
+                const localTop = hostOwnsFrameOffsets ? frame.offsetTop : (frameRect.top - hostRect.top) / safeScaleY + host.scrollTop;
+                const localWidth = hostOwnsFrameOffsets ? frame.offsetWidth : frameRect.width / safeScaleX;
+                const localHeight = hostOwnsFrameOffsets ? frame.offsetHeight : frameRect.height / safeScaleY;
+                shield.style.setProperty("left", `${localLeft}px`, "important");
+                shield.style.setProperty("top", `${localTop}px`, "important");
+                shield.style.setProperty("width", `${localWidth}px`, "important");
+                shield.style.setProperty("height", `${localHeight}px`, "important");
                 frame.dataset.ccgWheelGuard = "ready";
                 return true;
             };
@@ -368,7 +393,7 @@ if (IS_ADMIN_PATH) {
                 shield.hidden = false;
             };
 
-            shield.addEventListener("click", () => {
+            const activate = () => {
                 host.classList.add("ccg-wheel-guard-host--active");
                 shield.hidden = true;
                 try {
@@ -376,6 +401,13 @@ if (IS_ADMIN_PATH) {
                 } catch (error) {
                     frame.focus();
                 }
+            };
+
+            shield.addEventListener("click", activate);
+            shield.addEventListener("keydown", (event) => {
+                if (event.key !== "Enter" && event.key !== " ") return;
+                event.preventDefault();
+                activate();
             });
 
             host.addEventListener("pointerleave", deactivate, { passive: true });

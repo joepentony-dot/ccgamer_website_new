@@ -1,3 +1,21 @@
+## R54 graphics/UI implementation — 23 September 2026
+
+- **Active branch:** `codex/dungeon-r54-graphics-ui-current-main-20260923`, rebuilt from current `main` after #2298 and generated-output #2301 merged. The older R54 scoping PR #2299 is closed and must not be revived.
+- Public candidate identity is now **V10.42 r54** / `20260923r54`.
+- First implementation slice is in place:
+  - generic pickups no longer inherit unrelated C64 game titles; only real rescued-game collectibles retain game names;
+  - pickup labels/toasts are mechanic-led (health potion, actual ammo count, +10 XP, +2 armour) while weapon pickups use the generated weapon display name;
+  - Bronze Keys are explicit and unclipped in the carried-essentials HUD;
+  - a Bronze door pays for the optional room: a locked chest inside that already-unlocked Bronze room consumes no second key, while standalone locked chests still do;
+  - the Objectives & Rulebook documents the Bronze room/chest rule;
+  - procedural pickup glyphs have a stronger layered icon treatment;
+  - corridor floor/wall rendering now receives the intended WARP_GALLERY material identity outside rooms;
+  - shop markers are rendered as identity-seeded merchant characters rather than a generic SHOP rectangle;
+  - player movement/melee now uses an expanded eight-stage presentation sequence, while enemy locomotion uses an eight-stage cadence plus shared melee/hit presentation from existing state; no new per-entity timer owner or render loop was added.
+- Regression contract: `tests/v10-42-r54-pickup-bronze-contract.mjs`.
+- High-quality explorer/chest sprite sheets are now release-tokened, preloaded and high-priority so the established chest art wins before the legacy fallback path. Remaining R54 scope before merge is exact-head qualification plus any evidence-driven corridor/presentation correction uncovered by that matrix.
+- NPC dialogue and individual quest-writing remain deferred until R54 is complete.
+
 ## LIVE INCIDENT — global active floor-trap cycle reliability — 23 September 2026
 
 - **Active candidate:** `codex/dungeon-r53-global-trap-reliability-20260923`, created from current `main` after the owner reproduced a visibly **SHOCK TRAP — ACTIVE** tile that did not remove HEALTH.
