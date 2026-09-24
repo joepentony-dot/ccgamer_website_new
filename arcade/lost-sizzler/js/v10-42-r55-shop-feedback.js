@@ -7,7 +7,7 @@
   if(window.CCGLostSizzlerV142R55ShopFeedback)return;
 
   const state={installed:false,feedback:0,fallbacks:0,last:null};
-  let serial=0;
+  let serial=0,purchaseDepth=0;
 
   const shopVisible=()=>{try{return Boolean(activeShop&&UI?.shop&&!UI.shop.classList.contains("hidden"))}catch(_){return false}};
   const scoreNow=()=>{try{return Math.max(0,Math.floor(Number(score)||0))}catch(_){return 0}};
@@ -84,15 +84,18 @@
 
     const toastOwner=showToast;
     showToast=function shopVisibleToastMirror(title,text,tone,duration){
-      const result=toastOwner.apply(this,arguments);
-      if(shopVisible())setStatus(title,text,tone==="red"?"red":tone==="green"?"green":tone==="gold"?"gold":"cyan","toast");
+      const result=toastOwner.apply(this,arguments),heading=String(title||"");
+      if(shopVisible()&&purchaseDepth>0&&!/^ACHIEVEMENT\b/i.test(heading))setStatus(title,text,tone==="red"?"red":tone==="green"?"green":tone==="gold"?"gold":"cyan","purchase-toast");
       return result
     };
     showToast.__ccgR55ShopFeedback=true;showToast.__ccgOriginal=toastOwner;
 
     const buyOwner=buyShopItem;
     buyShopItem=function buyShopItemR55Feedback(id,...rest){
-      const before=serial,result=buyOwner.call(this,id,...rest);
+      const before=serial;let result;
+      purchaseDepth++;
+      try{result=buyOwner.call(this,id,...rest)}
+      finally{purchaseDepth=Math.max(0,purchaseDepth-1)}
       if(shopVisible()&&result===false&&serial===before)fallbackFeedback(id);
       return result
     };
