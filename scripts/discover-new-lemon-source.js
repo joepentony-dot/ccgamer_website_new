@@ -122,10 +122,16 @@ function candidateUrlsForGame(game) {
   const host = lemonHostForGame(game);
   if (!host || hasManualLemonSource(game)) return [];
 
-  const slugs = [
+  const canonicalSlugs = [
     String(game?.slug || "").trim().toLowerCase(),
     slugifyTitle(game?.title)
   ].filter((value) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value));
+
+  const slugs = [...canonicalSlugs];
+  canonicalSlugs.forEach((slug) => {
+    const compact = slug.replace(/-/g, "");
+    if (compact && compact !== slug) slugs.push(compact);
+  });
 
   return [...new Set(slugs)].map((slug) => `https://www.${host}/game/${slug}`);
 }
