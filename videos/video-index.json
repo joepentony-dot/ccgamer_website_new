@@ -1,10 +1,10 @@
 {
   "version": 1,
   "counts": {
-    "total": 697,
-    "gameVideos": 661,
+    "total": 698,
+    "gameVideos": 662,
     "retroVideos": 36,
-    "c64GameVideos": 559,
+    "c64GameVideos": 560,
     "amigaGameVideos": 102
   },
   "items": [
@@ -9091,6 +9091,19 @@
       "year": "",
       "publisher": "",
       "collectionLabel": "Amiga Demo Music"
+    },
+    {
+      "id": "V9JD67SRm8w",
+      "kind": "game",
+      "filter": "c64",
+      "badge": "C64 Game",
+      "title": "Ollie's Follies",
+      "description": "Ollie’s Follies is a challenging platform game for the Commodore 64, created by Frank Cohen of Fanda and originally released by Access Software in 1984 before being reissued by Americana in…",
+      "url": "/games/ollie-s-follies/",
+      "thumbnail": "https://i.ytimg.com/vi/V9JD67SRm8w/hqdefault.jpg",
+      "platform": "Commodore 64",
+      "year": 1984,
+      "publisher": "Access Software"
     },
     {
       "id": "ght7u1k_tqw",
