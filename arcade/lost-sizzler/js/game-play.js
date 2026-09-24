@@ -21,7 +21,7 @@ function d2(){const l=input.has("KeyJ"),r=input.has("KeyL"),u=input.has("KeyI"),
 function attackDirection(p,requested){const source=requested&&(requested.x||requested.y)?requested:p?.dir;const x=Math.sign(Number(source?.x||0)),y=Math.sign(Number(source?.y||0));return x||y?{x,y}:{x:1,y:0}}
 const ATTACK_BUFFER_MS=700;
 function queueAttack(p){if(!p)return false;if(p===p2)fireBuffer2=ATTACK_BUFFER_MS;else fireBuffer1=ATTACK_BUFFER_MS;return true}
-let gamepadDashDown=false;
+let gamepadDashDown=false,gamepadFireDown=false;
 function gamepadDirection(){
   const pads=typeof navigator!=="undefined"&&navigator.getGamepads?navigator.getGamepads():[];const gp=pads&&[...pads].find(Boolean);if(!gp)return null;
   let x=Number(gp.axes?.[0]||0),y=Number(gp.axes?.[1]||0);const dead=.35;x=Math.abs(x)>=dead?Math.sign(x):0;y=Math.abs(y)>=dead?Math.sign(y):0;
@@ -29,12 +29,14 @@ function gamepadDirection(){
   return{x,y,gp,dir:x||y?{x,y}:null}
 }
 function updateGamepad(){
-  if(mode!=="playing"||!p1)return;const state=gamepadDirection();if(!state){gamepadDashDown=false;return}const {gp,dir}=state;if(dir){p1.dir=dir;if(move1<=0){movePlayer(p1,dir.x,dir.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}
-  if(gp.buttons?.[0]?.pressed){
+  if(mode!=="playing"||!p1)return;const state=gamepadDirection();if(!state){gamepadDashDown=false;gamepadFireDown=false;return}const {gp,dir}=state;if(dir){p1.dir=dir;if(move1<=0){movePlayer(p1,dir.x,dir.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}
+  const firePressed=Boolean(gp.buttons?.[0]?.pressed);
+  if(firePressed&&(!gamepadFireDown||fire1<=0)){
     const recovery=window.CCGLostSizzlerV142R20LiveRegressionStability;
     if(typeof recovery?.attackNow==="function")recovery.attackNow("Gamepad0");
     else if(fire1<=0)firePlayer(p1,attackDirection(p1,dir));
   }
+  gamepadFireDown=firePressed;
   const dash=Boolean(gp.buttons?.[1]?.pressed);if(dash&&!gamepadDashDown)dashPlayer(p1,dir||p1.dir);gamepadDashDown=dash
 }
 function setDir(p,code){const m=p===p2?{KeyJ:{x:-1,y:0},KeyL:{x:1,y:0},KeyI:{x:0,y:-1},KeyK:{x:0,y:1}}:{ArrowLeft:{x:-1,y:0},KeyA:{x:-1,y:0},ArrowRight:{x:1,y:0},KeyD:{x:1,y:0},ArrowUp:{x:0,y:-1},KeyW:{x:0,y:-1},ArrowDown:{x:0,y:1},KeyS:{x:0,y:1}};if(m[code])p.dir=m[code]}
