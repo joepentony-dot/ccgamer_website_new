@@ -322,6 +322,73 @@ try{
   assert.equal(stationaryAfter.armor,stationary.before.armor,"stationary active-cycle trap damage must preserve armour");
   assert.deepEqual({x:stationaryAfter.x,y:stationaryAfter.y},{x:stationary.before.x,y:stationary.before.y},"stationary active-cycle damage must not require movement");
 
+  const globalTrapAudit=await page.evaluate(()=>({
+    origin:{x:Number(p1.x),y:Number(p1.y),health:Number(p1.health),maxHealth:Number(p1.maxHealth),armor:Number(p1.armor)},
+    traps:(host?.traps||[]).filter(trap=>trap?.active).map(trap=>({id:String(trap.id),kind:String(trap.kind||"floor"),period:Number(trap.period),phase:Number(trap.phase)})),
+    simulationPasses:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.simulationPasses||0)
+  }));
+  assert.ok(globalTrapAudit.traps.length>=3,`global trap audit expected at least three generated floor traps, got ${globalTrapAudit.traps.length}`);
+  assert.deepEqual(new Set(globalTrapAudit.traps.map(trap=>trap.kind)),new Set(["fire","spike","shock"]),"generated global trap audit must cover fire, spike and shock");
+
+  for(const auditTrap of globalTrapAudit.traps){
+    const staged=await page.evaluate(id=>globalThis.eval(`(()=>{
+      const trap=(host?.traps||[]).find(t=>String(t.id)===${JSON.stringify(id)});
+      if(!trap)return{available:false};
+      const original={period:Number(trap.period),phase:Number(trap.phase)};
+      for(const enemy of host?.enemies||[])if(enemy?.alive&&Number(enemy.x)===Number(trap.x)&&Number(enemy.y)===Number(trap.y))enemy.alive=false;
+      p1.x=Number(trap.x);p1.y=Number(trap.y);p1.rx=p1.x;p1.ry=p1.y;
+      p1.maxHealth=Math.max(20,Number(p1.maxHealth||8));p1.health=20;p1.armor=3;p1.invuln=0;p1.hitStunMs=0;move1=0;input.clear();
+      const period=100000,now=performance.now();
+      trap.period=period;trap.phase=((period*.70)-(now%period)+period)%period;
+      return{available:true,id:String(trap.id),kind:String(trap.kind||"floor"),original,before:{health:Number(p1.health),armor:Number(p1.armor)}};
+    })()`),auditTrap.id);
+    assert.equal(staged.available,true,`generated trap ${auditTrap.id} must remain available for global cycle audit`);
+    await page.waitForTimeout(180);
+
+    await page.evaluate(id=>{
+      const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
+      const period=Math.max(1000,Number(trap?.period||100000)),now=performance.now();
+      trap.phase=((period*.10)-(now%period)+period)%period;
+    },auditTrap.id);
+    await page.waitForFunction(before=>Number(p1.health)===Number(before)-1,staged.before.health,{timeout:1600,polling:25});
+    const first=await page.evaluate(id=>{
+      const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
+      return{health:Number(p1.health),armor:Number(p1.armor),active:Boolean(trap?.active&&SYS.trapActive(trap,performance.now()))};
+    },auditTrap.id);
+    assert.equal(first.active,true,`${auditTrap.kind} ${auditTrap.id} must be active when its first stationary hit lands`);
+    assert.equal(first.health,staged.before.health-1,`${auditTrap.kind} ${auditTrap.id} must remove exactly one health on active transition`);
+    assert.equal(first.armor,staged.before.armor,`${auditTrap.kind} ${auditTrap.id} must not consume armour`);
+
+    await page.waitForTimeout(240);
+    assert.equal(await page.evaluate(()=>Number(p1.health)),first.health,`${auditTrap.kind} ${auditTrap.id} must not repeatedly damage during one active phase`);
+
+    const rearmBefore=await page.evaluate(()=>Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.rearms||0));
+    await page.evaluate(id=>{
+      const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
+      const period=Math.max(1000,Number(trap?.period||100000)),now=performance.now();
+      trap.phase=((period*.70)-(now%period)+period)%period;
+    },auditTrap.id);
+    await page.waitForFunction(before=>Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.rearms||0)>Number(before),rearmBefore,{timeout:2000,polling:25});
+    const safeHealth=await page.evaluate(()=>Number(p1.health));
+    await page.evaluate(id=>{
+      const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
+      const period=Math.max(1000,Number(trap?.period||100000)),now=performance.now();
+      trap.phase=((period*.10)-(now%period)+period)%period;
+    },auditTrap.id);
+    await page.waitForFunction(before=>Number(p1.health)===Number(before)-1,safeHealth,{timeout:2000,polling:25});
+    assert.equal(await page.evaluate(()=>Number(p1.health)),safeHealth-1,`${auditTrap.kind} ${auditTrap.id} must rearm and remove one health on the next active cycle`);
+
+    await page.evaluate(({id,original,origin})=>{
+      p1.x=origin.x;p1.y=origin.y;p1.rx=p1.x;p1.ry=p1.y;p1.health=Math.max(4,origin.health);p1.maxHealth=Math.max(origin.maxHealth,p1.health);p1.armor=origin.armor;p1.invuln=0;
+      const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
+      if(trap){trap.period=original.period;trap.phase=original.phase}
+    },{id:auditTrap.id,original:staged.original,origin:globalTrapAudit.origin});
+    await page.waitForTimeout(100);
+  }
+
+  const globalTrapState=await page.evaluate(()=>window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||{});
+  assert.ok(Number(globalTrapState.simulationPasses||0)>globalTrapAudit.simulationPasses,"global trap checks must run from the gameplay simulation, not only the fallback monitor");
+
   await page.evaluate(fixture=>{
     const trap=(host?.traps||[]).find(t=>String(t.id)===String(fixture.id));
     if(trap){trap.period=fixture.original.period;trap.phase=fixture.original.phase}

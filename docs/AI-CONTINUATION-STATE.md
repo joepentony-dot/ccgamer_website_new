@@ -1,3 +1,12 @@
+## Dungeon Carnage R54 current-main implementation — 23 September 2026
+
+- Active branch: `codex/dungeon-r54-graphics-ui-current-main-20260923`, based on current main after residual UTA #2298 and generated archive #2301 merged. Old scoping PR #2299 is closed.
+- Candidate identity: `V10.42 r54` / `20260923r54`.
+- Implemented R54 slice: remove C64-title leakage from generic pickups; mechanic/value pickup feedback; explicit readable Bronze HUD; no second key for a chest behind an already-paid Bronze door; rulebook sync; stronger pickup glyph treatment; WARP_GALLERY corridor material identity; named merchant characters with role-specific props; high-priority release-tokened explorer/chest art; eight-stage player walk/melee presentation and eight-stage enemy locomotion plus existing-state melee/hit animation.
+- Focused regression: `arcade/lost-sizzler/tests/v10-42-r54-pickup-bronze-contract.mjs`.
+- Preserve the exact-green R53 ATTACK/FIRE/trap/performance ownership. R54 implementation scope is now substantially present; exact-head qualification is the active gate, with only evidence-driven visual corrections to follow. Dialogue/quest writing remains deferred.
+- UTA residual reconciliation is no longer outstanding: #2298 merged as `fcdca219ca06f1e00c19114ac142e4cbb1f46214` and generated archive publication #2301 advanced main.
+
 ## UTA residual reconciliation rebuilt on current main — 23 September 2026
 
 - PR #2294 merged the qualified Dungeon Carnage R53 ATTACK/crowded-impact repair as `d0570158b71b155676365c9cb717ad8ab114bba2`.

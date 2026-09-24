@@ -59,9 +59,10 @@ jobs:
           test -d arcade/lost-sizzler/assets/audio/music
           test -d arcade/lost-sizzler/assets/audio/voice
           grep -q 'C64 Dungeon Carnage' arcade/lost-sizzler/index.html
-          grep -q 'https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/' arcade/lost-sizzler/index.html
-          grep -q '/arcade/lost-sizzler/' games/ccg-games/cheeky-commodore-quest/index.html
-          grep -q '/arcade/lost-sizzler/' games/the-lost-sizzler/index.html
+          grep -q 'https://www.cheekycommodoregamer.co.uk/arcade/c64-dungeon-carnage/' arcade/lost-sizzler/index.html
+          grep -q '/arcade/c64-dungeon-carnage/' games/ccg-games/cheeky-commodore-quest/index.html
+          grep -q '/arcade/c64-dungeon-carnage/' games/the-lost-sizzler/index.html
+          node tests/dungeon-carnage-public-route.test.mjs
           grep -q 'isEditableKeyboardTarget' arcade/lost-sizzler/js/game-main.js
           if grep -R --line-number --fixed-strings '/games/ccg-games/cheeky-commodore-quest/' arcade/lost-sizzler/js arcade/lost-sizzler/index.html arcade/lost-sizzler/version.json --include='*.html' --include='*.js' --include='*.json' --exclude='v10-41-cache-guard.js'; then
             echo 'Stale Lost Sizzler self-reference found inside canonical arcade runtime.' >&2

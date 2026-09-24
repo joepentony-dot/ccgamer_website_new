@@ -4,31 +4,67 @@
   if(window.CCGLostSizzlerV142AttackHoldLiveness)return;
 
   const ATTACK_KEYS=new Set(["Space","Numpad0"]); // KeyF is reserved exclusively for fullscreen.
+  const HOLD_ACTIVATION_MS=220;
   const held=new Set();
-  const diagnostics={keydowns:0,keyups:0,normalisedHolds:0,clears:0,pressVerifications:0,pressRecoveries:0,pressRecoveryFailures:0};
+  const heldSince=new Map();
+  let holdActivationTimer=0;
+  const diagnostics={keydowns:0,keyups:0,normalisedHolds:0,holdActivations:0,clears:0,pressVerifications:0,pressRecoveries:0,pressRecoveryFailures:0};
 
   const activeRun=()=>document.body?.dataset?.runActive==="true";
   const currentMode=()=>{try{return typeof mode!=="undefined"?String(mode):""}catch(_){return""}};
   const editableTarget=target=>Boolean(target instanceof Element&&(target.matches("input,textarea,select,[contenteditable='true'],[contenteditable='']")||target.closest("input,textarea,select,[contenteditable='true'],[contenteditable='']")));
   const spyActive=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")==="sizzler-saboteurs"}catch(_){return false}};
 
+  function holdReady(){
+    if(!held.size)return false;
+    const now=performance.now();
+    for(const code of held){
+      const since=Number(heldSince.get(code)||now);
+      if(now-since>=HOLD_ACTIVATION_MS)return true;
+    }
+    return false;
+  }
+
   function syncHeldAttack(){
     try{
-      if(held.size&&activeRun()&&currentMode()==="playing"&&!spyActive()){
+      const shouldHold=holdReady()&&activeRun()&&currentMode()==="playing"&&!spyActive();
+      const wasHeld=Boolean(input?.has?.("Space"));
+      if(shouldHold){
         input?.add?.("Space");
         diagnostics.normalisedHolds++;
+        if(!wasHeld)diagnostics.holdActivations++;
       }else input?.delete?.("Space");
     }catch(_){}
+  }
+
+  function scheduleHoldActivation(){
+    if(holdActivationTimer){
+      clearTimeout(holdActivationTimer);
+      holdActivationTimer=0;
+    }
+    if(!held.size)return;
+    const now=performance.now();
+    let wait=HOLD_ACTIVATION_MS;
+    for(const code of held){
+      const since=Number(heldSince.get(code)||now);
+      wait=Math.min(wait,Math.max(0,HOLD_ACTIVATION_MS-(now-since)));
+    }
+    holdActivationTimer=setTimeout(()=>{
+      holdActivationTimer=0;
+      syncHeldAttack();
+    },Math.ceil(wait)+8);
   }
 
   function scheduleSync(){
     queueMicrotask(syncHeldAttack);
     requestAnimationFrame(()=>syncHeldAttack());
+    scheduleHoldActivation();
   }
 
   function clearHeld(){
     if(held.size)diagnostics.clears++;
-    held.clear();
+    held.clear();heldSince.clear();
+    if(holdActivationTimer){clearTimeout(holdActivationTimer);holdActivationTimer=0}
     try{input?.delete?.("Space");input?.delete?.("KeyF");input?.delete?.("Numpad0")}catch(_){}
   }
 
@@ -79,13 +115,15 @@
   addEventListener("keydown",event=>{
     if(!ATTACK_KEYS.has(event.code)||editableTarget(event.target)||!activeRun()||spyActive())return;
     const fresh=!event.repeat&&!held.has(event.code),before=fresh?attackSnapshot():null;
-    held.add(event.code);diagnostics.keydowns++;scheduleSync();
+    held.add(event.code);
+    if(fresh)heldSince.set(event.code,performance.now());
+    diagnostics.keydowns++;scheduleSync();
     if(fresh)verifyFreshPress(event.code,before);
   },true);
 
   addEventListener("keyup",event=>{
     if(!ATTACK_KEYS.has(event.code))return;
-    held.delete(event.code);diagnostics.keyups++;scheduleSync();
+    held.delete(event.code);heldSince.delete(event.code);diagnostics.keyups++;scheduleSync();
   },true);
 
   addEventListener("blur",clearHeld,{passive:true});
@@ -96,6 +134,7 @@
     version:"V10.42-attack-hold-liveness",
     diagnostics,
     held,
+    HOLD_ACTIVATION_MS,
     syncHeldAttack,
     clearHeld
   });

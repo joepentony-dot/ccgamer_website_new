@@ -278,8 +278,15 @@ window.CCGSystems=(()=>{
     for(const g of host.generators||[])busy.add(g.roomId);for(const a of host.arenas||[])busy.add(a.roomId);for(const t of host.timedRooms||[])busy.add(t.roomId);if(host.rescue)busy.add(host.rescue.roomId);if(host.guardian)busy.add(W.roomAt(world,host.guardian.x,host.guardian.y));
     for(const feature of [host.bloodClue,host.memoryPuzzle,host.sequenceTorchPuzzle,host.weightBridge])if(feature?.roomId!=null)busy.add(feature.roomId);
     const choices=rooms.filter(room=>!room.optional&&!room.sanctuary&&!room.sigilRoom&&!room.spiderNest&&!busy.has(room.id)&&room.w>=8&&room.h>=7).map(room=>({room,key:world.random()})).sort((a,b)=>a.key-b.key),types=["blade","embers","arrows"];host.hazardRooms=[];
+    const ordinaryTrapKinds=["fire","spike","shock"];
+    const preservesOrdinaryTrapKinds=room=>{
+      const remaining=(host.traps||[]).filter(trap=>trap?.active&&trap.roomId!==room.id);
+      return ordinaryTrapKinds.every(kind=>remaining.some(trap=>String(trap.kind||"").toLowerCase()===kind))
+    };
     for(let i=0;i<count&&choices.length;i++){
-      const room=choices.shift().room,type=types[(floor+i)%types.length],groups=type==="embers"?2:type==="blade"?3:4,cells=[];
+      const choiceIndex=choices.findIndex(choice=>preservesOrdinaryTrapKinds(choice.room));
+      if(choiceIndex<0)break;
+      const room=choices.splice(choiceIndex,1)[0].room,type=types[(floor+i)%types.length],groups=type==="embers"?2:type==="blade"?3:4,cells=[];
       for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++){
         const group=type==="embers"?(x+y)%2:type==="blade"?(x-room.x)%3:(y-room.y)%4;cells.push({x,y,group})
       }
@@ -317,6 +324,10 @@ window.CCGSystems=(()=>{
     // Every room gets a visible threshold door. Optional branches are then assigned distinct lock mechanics.
     const bonus=host.doors.filter(d=>d.type!=="room");
     bonus.forEach((d,i)=>{if(i<C.dungeon.secretRooms){d.type="secret";d.locked=true;d.hidden=true}else if(i===C.dungeon.secretRooms){d.type="switch";d.locked=true;d.hidden=false}else{d.type="bronze";d.locked=true;d.hidden=false}});
+    // A Bronze Key pays for the optional room entrance. Any reward chest inside
+    // that bronze-gated room is therefore unlocked and must not charge a second key.
+    const bronzeRewardRooms=new Set(bonus.filter(d=>d.type==="bronze").map(d=>d.roomId));
+    for(const chest of host.chests||[])if(bronzeRewardRooms.has(chest.roomId)){chest.locked=false;chest.bronzeDoorReward=true}
     // Additional hidden wall passages create optional shortcuts/loot pockets without touching the mandatory route.
     carveSecretPassages(world,host,used,run);
 

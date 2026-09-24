@@ -10,7 +10,7 @@ const reporter=fs.readFileSync(new URL("js/v10-42-bug-reporter.js",root),"utf8")
 assert.match(local,/_ccgPickupAudioAt=performance\.now\(\)/,"collection boundary must timestamp pickup audio");
 assert.match(local,/CustomEvent\("ccg:item-collected"/,"collection boundary must expose item identity to diagnostics");
 assert.match(local,/kind:String\(i\.kind\|\|""\)/);
-assert.match(local,/name:collectedName\(i\)/);
+assert.match(local,/name:collectedName\(i,p\)/,"collection diagnostics must report the same resolved pickup name shown to the player");
 assert.match(local,/lootKind:String\(i\.loot\?\.kind\|\|""\)/);
 
 assert.match(core,/pickupAge=performance\.now\(\)-pickupAt/,"level audio must measure distance from the collection sound");

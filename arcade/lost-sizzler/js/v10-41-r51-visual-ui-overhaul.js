@@ -49,7 +49,7 @@
     buttonMeta("daily-btn","WEEKLY CHALLENGE","Shared seed · one ranked attempt per account");
     buttonMeta("split-btn","LOCAL TWO PLAYER","Two controllers or shared keyboard");
     if(!document.getElementById("ccg-r51-menu-guide")){
-      const guide=document.createElement("div");guide.id="ccg-r51-menu-guide";guide.setAttribute("aria-label","Menu quick guide");guide.innerHTML="<span><b>SOLO</b> saves locally + cloud when signed in</span><span><b>ONLINE</b> room code remains your rejoin key</span><span><b>CONTROLLER</b> D-pad/stick + A works in menus</span><span><b>OPTIONS</b> accessibility and audio are stored in this browser</span>";
+      const guide=document.createElement("div");guide.id="ccg-r51-menu-guide";guide.setAttribute("aria-label","Menu quick guide");guide.innerHTML="<span><b>SOLO</b> saves locally + cloud when signed in</span><span><b>CONTINUE</b> resume your latest Solo floor checkpoint</span><span><b>CONTROLLER</b> D-pad/stick + A works in menus</span><span><b>OPTIONS</b> accessibility and audio are stored in this browser</span>";
       panel.querySelector(".mode-select-label")?.insertAdjacentElement("beforebegin",guide)
     }
     const modeButtons=panel.querySelectorAll(".game-mode-buttons button");for(const button of modeButtons){if(!button.getAttribute("type"))button.type="button";const desc=button.dataset.r51Desc;if(desc&&!button.getAttribute("aria-label"))button.setAttribute("aria-label",`${button.textContent.trim()}. ${desc}`)}

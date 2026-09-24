@@ -36,7 +36,10 @@ assert.match(index,/class="pixel-title-lockup"/,"the menu must use a responsive 
 assert.match(css,/title-dungeon-v10-34\.webp/,"the menu must load the new dungeon title background");
 assert.match(render,/explorer-sheet-v10-34\.png/,'the renderer must load the directional explorer sheet');
 assert.match(render,/chest-sheet-v10-34\.png/,'the renderer must load the animated chest sheet');
-assert.match(render,/column=hurt\?5:swingActive\?\(swingAge\/swingMs<\.42\?3:4\):moving\?\(Math\.floor\(now\/145\)%2\?1:2\):0/,"explorer animation must select hurt, sword and walk frames");
+assert.match(render,/function playerAnimationPose\(p,moving,now=performance\.now\(\)\)/,"explorer animation must derive hurt, sword, firearm, walk and idle poses from live state");
+assert.match(render,/PLAYER_WALK_RENDER_SEQUENCE=Object\.freeze\(\[/,"explorer movement must retain an explicit multi-stage walk sequence");
+assert.match(render,/PLAYER_MELEE_RENDER_SEQUENCE=Object\.freeze\(\[/,"explorer sword animation must retain an explicit multi-stage melee sequence");
+assert.match(render,/state:"hurt"[\s\S]{0,260}column:5/,"explorer hurt animation must still select the hurt sprite frame");
 assert.match(render,/column=c\.openedAt\?Math\.min\(4,2\+Math\.floor\(anim\*3\)\)/,"chest animation must progress through opening frames");
 
 console.log("Lost Sizzler V10.34 split-screen, locked-chest, incremental tutorial and visual-tour checks passed.");

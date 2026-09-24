@@ -498,6 +498,12 @@ async function auditGameMediaWheel(sessionId, sitePort, viewport) {
     // validating the pre-settle snapshot.
     await new Promise((resolve) => setTimeout(resolve, 120));
     target = await prepareGameMediaWheelTarget(sessionId);
+
+    // prepareGameMediaWheelTarget() calls scrollIntoView(), which deliberately
+    // arms the shared short performance-pause state. Let the audit's own
+    // positioning settle before measuring the physical wheel event.
+    await new Promise((resolve) => setTimeout(resolve, 450));
+
     if (target.error) fail(`${viewport.label}: ${target.error}`);
     if (target.guardState !== "ready") fail(`${viewport.label}: game video guard state is ${target.guardState || "missing"}`);
     if (target.shieldHidden || target.shieldDisplay === "none") fail(`${viewport.label}: game video wheel shield is not active`);

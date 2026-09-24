@@ -7,7 +7,7 @@
   const BUILD=String(document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"unknown").trim();
   const CACHE_TOKEN=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||BUILD||"latest").trim();
   const STORAGE_KEY="ccg-lost-sizzler:last-sanitised-cache";
-  const GAME_PREFIXES=["/arcade/lost-sizzler/","/games/ccg-games/cheeky-commodore-quest/"];
+  const GAME_PREFIXES=["/arcade/c64-dungeon-carnage/","/arcade/lost-sizzler/","/games/ccg-games/cheeky-commodore-quest/"];
   const state={build:BUILD,cacheToken:CACHE_TOKEN,previous:"",needed:false,running:false,done:false,timedOut:false,deletedEntries:0,checkedCaches:0,serviceWorkersChecked:0,runtimeErrors:[],errors:[],startedAt:performance.now(),finishedAt:0,v142ReleaseHeld:false,v142ReleaseReleased:false};
 
   /* V10.42 production is zero-server-cost, but this guard is the first static
@@ -73,8 +73,8 @@
   function errorText(value){return String(value?.stack||value?.message||value||"Unknown startup error").slice(0,1200)}
   function sourceLooksLocal(source="",message=""){
     const raw=String(source||"");
-    if(raw)return gamePath(raw)||/lost-sizzler|v10-|horde-survivor|sizzler-saboteurs/i.test(raw);
-    return /lost-sizzler|v10-|horde-survivor|sizzler-saboteurs/i.test(String(message||""));
+    if(raw)return gamePath(raw)||/lost-sizzler|c64-dungeon-carnage|v10-|horde-survivor|sizzler-saboteurs/i.test(raw);
+    return /lost-sizzler|c64-dungeon-carnage|v10-|horde-survivor|sizzler-saboteurs/i.test(String(message||""));
   }
 
   function recordRuntimeError(error,source=""){
@@ -129,7 +129,7 @@
     state.needed=Boolean(force||state.previous!==CACHE_TOKEN);
     if(!state.needed){state.done=true;state.finishedAt=performance.now();announce("current","Cached game files already match this build.");resolveReady(state);return state}
     state.running=true;
-    announce("cleaning","Refreshing cached Lost Sizzler files…");
+    announce("cleaning","Refreshing cached C64 Dungeon Carnage files…");
     activePromise=(async()=>{
       try{
         await clearCacheStorage();
@@ -158,7 +158,7 @@
   function ensureManualButton(){
     if(document.getElementById("clean-game-cache-btn"))return true;
     const row=document.querySelector("#menu .secondary-menu");if(!row)return false;
-    const button=document.createElement("button");button.id="clean-game-cache-btn";button.type="button";button.textContent="Clean Game Cache";button.title="Remove cached Lost Sizzler game files and reload the current published build. Saves, settings, achievements and leaderboard data are kept.";
+    const button=document.createElement("button");button.id="clean-game-cache-btn";button.type="button";button.textContent="Clean Game Cache";button.title="Remove cached C64 Dungeon Carnage game files and reload the current published build. Saves, settings, achievements and leaderboard data are kept.";
     button.addEventListener("click",async()=>{
       if(button.disabled)return;button.disabled=true;button.textContent="Cleaning Game Cache…";
       try{await cleanNow({reload:true})}catch(error){button.disabled=false;button.textContent="Clean Game Cache";console.warn("[Lost Sizzler] manual game-cache clean failed",error)}

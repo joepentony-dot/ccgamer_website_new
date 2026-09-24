@@ -69,6 +69,34 @@ jobs:
             --exclude='Thumbs.db' \
             ./ _site/
 
+          # Publish C64 Dungeon Carnage at its permanent public route while
+          # retaining the historical source folder for runtime/tests in git.
+          test -d _site/arcade/lost-sizzler
+          rm -rf _site/arcade/c64-dungeon-carnage
+          cp -a _site/arcade/lost-sizzler _site/arcade/c64-dungeon-carnage
+          mkdir -p _site/arcade/lost-sizzler
+          cat > _site/arcade/lost-sizzler/index.html <<'EOF'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1">
+            <meta name="robots" content="noindex,follow">
+            <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/arcade/c64-dungeon-carnage/">
+            <meta http-equiv="refresh" content="0;url=/arcade/c64-dungeon-carnage/">
+            <title>C64 Dungeon Carnage</title>
+          </head>
+          <body>
+            <p>C64 Dungeon Carnage has moved. <a href="/arcade/c64-dungeon-carnage/">Continue to the game</a>.</p>
+            <script>location.replace("/arcade/c64-dungeon-carnage/"+location.search+location.hash);</script>
+          </body>
+          </html>
+          EOF
+
+          test -f _site/arcade/c64-dungeon-carnage/index.html
+          grep -Fq 'https://www.cheekycommodoregamer.co.uk/arcade/c64-dungeon-carnage/' _site/arcade/c64-dungeon-carnage/index.html
+          grep -Fq 'location.replace("/arcade/c64-dungeon-carnage/"' _site/arcade/lost-sizzler/index.html
+
           touch _site/.nojekyll
 
       - name: Build and validate canonical game, retro, genre and sitemap SEO

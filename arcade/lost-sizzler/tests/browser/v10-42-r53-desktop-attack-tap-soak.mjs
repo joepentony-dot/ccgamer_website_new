@@ -85,8 +85,19 @@ async function swordTap(page,cycle){
     if(!target||!dir||!playerCell)return null;
     for(const enemy of host.enemies||[])enemy.alive=false;
     Object.assign(target,{
-      alive:true,hp:50,maxHp:50,armor:0,maxArmor:0,weakness:null,resistance:null,
-      flash:0,hpBarMs:0,hitStunMs:0,aiState:"idle",facing:{x:0,y:0},lastSeen:null,memoryMs:0,searchMs:0,
+      // Freeze the soak target through the canonical stationary guard AI path.
+      // Attack noise can clamp ordinary enemies' moveCooldown via alertEnemy(),
+      // which made this liveness test intermittently measure a legitimate dodge
+      // rather than ATTACK ownership. Keep natural map placement, but remove
+      // unrelated tactical/charge state so every sword tap has a stable adjacent
+      // ordinary enemy to prove one-hit/one-tap behaviour.
+      kind:"guard",alive:true,hp:50,maxHp:50,armor:0,maxArmor:0,weakness:null,resistance:null,
+      follower:null,deathStalker:false,voidStalker:false,guardian:false,exitWarden:false,
+      sigilDefender:false,champion:false,spider:false,skeleton:false,treasureGoblin:false,
+      horrorCreature:false,generatorId:null,flash:0,hpBarMs:0,hitStunMs:0,
+      aiState:"idle",facing:{x:0,y:0},lastSeen:null,memoryMs:0,searchMs:0,
+      coverTarget:null,flankTarget:null,tacticalMode:"pressure",tacticalDecisionMs:1000000,
+      tacticalHoldMs:0,chargeTelegraphMs:0,chargeTarget:null,retreating:false,
       moveCooldown:1000000,attackCooldown:1000000,chargeCooldown:1000000,healCooldown:1000000
     });
     target.rx=target.x;target.ry=target.y;

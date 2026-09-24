@@ -56,7 +56,10 @@ const sockets=new Set();
 const server=http.createServer((req,res)=>{
   try{
     const pathname=decodeURIComponent(new URL(req.url,"http://local").pathname);
-    const relative=pathname.endsWith("/")?`${pathname}index.html`:pathname;
+    const sourcePathname=pathname.startsWith("/arcade/c64-dungeon-carnage/")
+      ? pathname.replace(/^\/arcade\/c64-dungeon-carnage\//,"/arcade/lost-sizzler/")
+      : pathname;
+    const relative=sourcePathname.endsWith("/")?`${sourcePathname}index.html`:sourcePathname;
     const file=path.resolve(repo,`.${relative}`);
     if(!file.startsWith(`${repo}${path.sep}`)&&file!==repo){res.writeHead(403).end("forbidden");return;}
     fs.readFile(file,(error,data)=>{
@@ -135,7 +138,7 @@ try{
 
     logStage("canonical desktop: metadata and script dedupe");
     const canonicalHref=await withTimeout(state.page.locator('link[rel="canonical"]').getAttribute("href"),5000,"canonical metadata read");
-    assert.equal(canonicalHref,"https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/","canonical metadata uses the arcade URL");
+    assert.equal(canonicalHref,"https://www.cheekycommodoregamer.co.uk/arcade/c64-dungeon-carnage/","canonical metadata uses the arcade URL");
     const scriptSources=await withTimeout(state.page.evaluate(()=>[...document.scripts].map(script=>script.src).filter(Boolean)),5000,"script source audit");
     const duplicateSources=scriptSources.filter((src,index)=>scriptSources.indexOf(src)!==index);
     assert.deepEqual(duplicateSources,[],`startup does not load the same script twice: ${duplicateSources.join(", ")}`);
@@ -515,11 +518,11 @@ try{
     const state=await newGamePage();
     await withTimeout(state.page.goto(legacy,{waitUntil:"domcontentloaded",timeout:15000}),STAGE_TIMEOUT_MS,"legacy navigation");
     logStage("legacy redirect: wait for canonical URL");
-    await withTimeout(state.page.waitForURL(url=>url.pathname==="/arcade/lost-sizzler/",{timeout:10000}),12000,"legacy redirect");
+    await withTimeout(state.page.waitForURL(url=>url.pathname==="/arcade/c64-dungeon-carnage/",{timeout:10000}),12000,"legacy redirect");
     logStage("legacy redirect: wait for gameReady");
     await waitForReady(state,"legacy redirect");
     await assertHealthy(state,"legacy redirect launch");
-    assert.equal(new URL(state.page.url()).pathname,"/arcade/lost-sizzler/","legacy URL redirects once to canonical arcade runtime");
+    assert.equal(new URL(state.page.url()).pathname,"/arcade/c64-dungeon-carnage/","legacy URL redirects once to the deployed C64 Dungeon Carnage route");
     logStage("legacy redirect: complete");
   }
 

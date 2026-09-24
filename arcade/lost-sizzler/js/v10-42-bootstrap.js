@@ -4,8 +4,8 @@
   if(window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
-  const BUILD="V10.42 r53";
-  const CACHE="20260923r53";
+  const BUILD="V10.42 r54";
+  const CACHE="20260923r54";
   const prerequisites=[
     ["v10-41-r30-owner-seal.js","CCGLostSizzlerV141R30OwnerSeal"],
     ["v10-41-mode-runtime.js","CCGLostSizzlerModeRuntime"],
@@ -41,6 +41,7 @@
     ["v10-42-stage7-npc-merchant.js","CCGLostSizzlerV142Stage7NpcMerchant"],
     ["v10-42-r16-environment-presentation.js","CCGLostSizzlerV142R16EnvironmentPresentation"],
     ["v10-42-r46-final-visual-polish.js","CCGLostSizzlerV142R46FinalVisualPolish"],
+    ["v10-42-r48-elemental-portal-presentation.js","CCGLostSizzlerV142R48ElementalPortalPresentation"],
     ["v10-42-tutorial-campaign.js","CCGLostSizzlerV142TutorialCampaign"],
     ["v10-42-demo-paywall.js","CCGLostSizzlerV142DemoPaywall"],
     ["v10-42-zero-server-release.js","CCGLostSizzlerV142ZeroServerRelease"],
@@ -63,6 +64,7 @@
     ["v10-42-rpg-terminology.js","CCGLostSizzlerV142RpgTerminology"],
     ["v10-42-owned-firearm-clarity.js","CCGLostSizzlerV142OwnedFirearmClarity"],
     ["v10-42-r47-firearm-evolution.js","CCGLostSizzlerV142R47FirearmEvolution"],
+    ["v10-42-r48-shop-firearm-upgrade.js","CCGLostSizzlerV142R48ShopFirearmUpgrade"],
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
     ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"],
     ["v10-42-r47-inventory-fire-recovery.js","CCGLostSizzlerV142R47InventoryFireRecovery"],

@@ -17,7 +17,7 @@ assert.match(loader,/data-ccg-v141-r48-character-animation-polish/,"late loader 
 assert.match(render,/explorer-sheet-v10-34\.png/,"canonical player renderer must still own the explorer sprite source");
 assert.match(render,/sheet\.naturalWidth>=192/,"canonical player renderer must retain the six-column explorer sheet contract");
 assert.match(render,/column\*32,row\*32,32,32/,"canonical player renderer must use exact 32px source cells");
-assert.match(render,/Math\.floor\(now\/145\)%2\?1:2/,"baseline player walk animation must remain a two-pose source that r48 expands safely");
+assert.match(render,/PLAYER_WALK_RENDER_SEQUENCE=Object\.freeze\(\[/,"canonical player renderer must retain isolated idle and stride source poses through the expanded R54 cadence");
 assert.match(render,/function drawPixelEnemySprite\(/,"enemy families must remain procedural renderers rather than becoming fragile atlas ownership");
 assert.match(render,/Math\.sin\(phase/,"procedural enemies must retain continuously animated pose components");
 
@@ -36,8 +36,8 @@ assert.match(source,/opaqueGutterPixels/,"runtime diagnostics must detect any ac
 
 const walkBlock=source.match(/const WALK_SEQUENCE=Object\.freeze\(\[([\s\S]*?)\]\);/)?.[1]||"";
 const attackBlock=source.match(/const ATTACK_SEQUENCE=Object\.freeze\(\[([\s\S]*?)\]\);/)?.[1]||"";
-assert.ok((walkBlock.match(/column:/g)||[]).length>=4,"player walk cycle must expose at least four presentation stages");
-assert.ok((attackBlock.match(/column:/g)||[]).length>=6,"player melee cycle must expose at least six presentation stages");
+assert.ok((walkBlock.match(/column:/g)||[]).length>=8,"player walk cycle must expose at least eight presentation stages");
+assert.ok((attackBlock.match(/column:/g)||[]).length>=8,"player melee cycle must expose at least eight presentation stages");
 assert.match(walkBlock,/column:0/,"walk animation must use the centred pose between stride extremes for smoother stepping");
 assert.match(attackBlock,/wind-up/,"attack animation must include an explicit wind-up stage");
 assert.match(attackBlock,/recover/,"attack animation must include an explicit recovery stage");

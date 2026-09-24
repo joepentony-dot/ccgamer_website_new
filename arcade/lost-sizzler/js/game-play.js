@@ -62,9 +62,10 @@ function tryDoor(p,x,y){
   showToast("BRONZE DOOR UNLOCKED","The lock releases. The door is opening now.","gold",8500);updateQuests();broadcastWorld();beginDoorOpening(d,1050);return false
 }
 function chestScoreReward(chest){return 100+Math.min(400,Math.max(0,Math.floor(Number(chest?.depth)||0))*25)}
+function chestBronzeDoorAlreadyPaid(chest){const roomId=Number(chest?.roomId);if(!Number.isFinite(roomId))return false;return(host.doors||[]).some(d=>d.type==="bronze"&&Number(d.roomId)===roomId&&!d.locked)}
 function openChest(p,chest){
-  if(!chest?.active)return true;if(chest.locked&&p.bronzeKeys<=0){const now=performance.now();if(!chest._lockedFeedbackAt||now-chest._lockedFeedbackAt>=1200){chest._lockedFeedbackAt=now;S.sfx("locked");showToast("LOCKED CHEST","A bronze key opens it. Come back after finding one.","red",4200)}return false}
-  if(chest.locked)p.bronzeKeys--;
+  if(!chest?.active)return true;const roomKeyPaid=chestBronzeDoorAlreadyPaid(chest);if(chest.locked&&!roomKeyPaid&&p.bronzeKeys<=0){const now=performance.now();if(!chest._lockedFeedbackAt||now-chest._lockedFeedbackAt>=1200){chest._lockedFeedbackAt=now;S.sfx("locked");showToast("LOCKED CHEST","A bronze key opens it. Come back after finding one.","red",4200)}return false}
+  if(chest.locked&&!roomKeyPaid)p.bronzeKeys--;chest.locked=false;
   chest.opened=true;chest.openedAt=performance.now();chest.active=false;host.revision++;run.stats.chests++;S.sfx("chest");shake=4;
   const loot=chest.loot||PGR.lootForChest(chest,run,Math.random),name=loot.weapon?.displayName||loot.name||loot.kind.toUpperCase(),col=loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan,scoreReward=chestScoreReward(chest);
   chest.rewardScore=scoreReward;score+=scoreReward;
@@ -138,7 +139,7 @@ function weaponDirections(p,d){const w=p.weapon||{};if(w.id==="shock")return[{x:
 function firePlayer(p,d){
   if(!p||mode!=="playing"||(p.hitStunMs||0)>0)return;const cd=p===p2?fire2:fire1;if(cd>0)return;const w=p.weapon||baseWeapon(),active=bullets.filter(b=>b.owner===p.id&&b.ttl>0).length,max=C.player.maxProjectiles+Math.max(0,(w.shots||1)-1);if(active>=max){S.sfx("empty");return}
   const ammoCost=1;if(p.mana<ammoCost){S.sfx("empty");if(p.mana<=0&&!(p.emergencyRechargeMs>0)){p.emergencyRechargeMs=C.player.emergencyRechargeMs;showToast("EMERGENCY CAPACITOR CHARGING",`You are completely dry. Survive for ${Math.ceil(C.player.emergencyRechargeMs/1000)} seconds and the reserve capacitor will restore ${C.player.emergencyAmmo} emergency shots.`,"red",8500)}else showToast("LOW AMMO","Find a supply pack or switch tactics.","red");return}
-  d=attackDirection(p,d);p.dir=d;p.mana-=ammoCost;p.ammoFlashMs=C.player.ammoFlashMs;run.alert=Math.min(100,run.alert+1.8);const delay=(p.rapidMs>0?88:C.player.fireDelay)*(w.delay||1);if(p===p2)fire2=delay;else fire1=delay;
+  d=attackDirection(p,d);p.dir=d;p.mana-=ammoCost;p.ammoFlashMs=C.player.ammoFlashMs;p._fireAnimAt=performance.now();p._fireAnimMs=Math.max(120,Math.min(260,Number((p.rapidMs>0?88:C.player.fireDelay)*(w.delay||1))||180));run.alert=Math.min(100,run.alert+1.8);const delay=(p.rapidMs>0?88:C.player.fireDelay)*(w.delay||1);if(p===p2)fire2=delay;else fire1=delay;
   const dirs=weaponDirections(p,d);for(const z of dirs.slice(0,Math.max(1,max-active))){const b={id:`${p.id}-${Date.now()}-${Math.random()}`,owner:p.id,ownerName:p.name,x:p.x,y:p.y,dx:z.x,dy:z.y,ttl:w.ttl||18,power:(w.power||1)+(p.damageBonus||0),pierce:w.pierce||0,element:w.element||"energy",style:w.id||"pulse"};spawnBullet(b,false);if(playMode==="online"&&p===p1)net.send("shot",b)}S.sfx("fire");muzzle(p.x,p.y,d);sync()
 }
 function spawnBullet(b,remoteShot){if(b)bullets.push({...b,remote:!!remoteShot})}
@@ -358,6 +359,7 @@ function update(dt){
   if(move1<=0){const d=d1();if(d){movePlayer(p1,d.x,d.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}if(p2&&move2<=0){const d=d2();if(d){movePlayer(p2,d.x,d.y);move2=C.player.moveDelay*(p2.moveMultiplier||1)}}
   if((input.has("Space")||fireBuffer1>0)&&fire1<=0){firePlayer(p1,attackDirection(p1,d1()));if(fire1>0)fireBuffer1=0}if(p2&&(input.has("Enter")||fireBuffer2>0)&&fire2<=0){firePlayer(p2,attackDirection(p2,d2()));if(fire2>0)fireBuffer2=0}
   if(projectileCD<=0){stepProjectiles();projectileCD=70}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendPlayer();sendCD=100}if(worldCD<=0&&net.isHost){broadcastWorld();worldCD=350}
+  window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.updateTrapContacts?.("simulation");
   updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBoulder(dt);updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
   if(surroundCD<=0){surroundingsTick();surroundCD=20000}inventoryReminderMs-=dt;if(inventoryReminderMs<=0){inventoryReminderMs=300000;showToast("DON'T FORGET TO HIT TAB TO CHECK YOUR INVENTORY","TAB ALSO EXPLAINS ARTEFACTS, THE BANISHMENT FLASK AND YOUR CURRENT OBJECTIVE.","cyan",8000)}
   const seen=host.enemies.filter(e=>e.alive&&e.aiState==="chase"&&localPlayers().some(p=>visibleTo(p,e.x,e.y))).length;S.setDanger(Math.min(1,(seen+run.alert/45)/4));updateNamedEncounters();

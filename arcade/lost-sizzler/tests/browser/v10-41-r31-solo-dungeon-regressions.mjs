@@ -110,16 +110,16 @@ try{
   assert.equal(secondSlot.capacity,5,"a second inventory expansion in the same shop must open another slot");
   assert.equal(secondSlot.next,4,"the third standard purchase must cost 4 Gold");
   assert.equal(secondSlot.disabled,false,"the fifth slot must leave the final expansion available");
-  await page.click('[data-shop-buy="weapon"]');
+  await page.click('[data-shop-buy="ammo"]');
   await page.waitForFunction(()=>window.__r31Shop.goldPurchases===3);
-  const firstWeapon=await page.evaluate(()=>({next:shopScorePrice(window.__r31Shop),disabled:document.querySelector('[data-shop-buy="weapon"]')?.disabled,sold:Boolean(window.__r31Shop.sold.weapon)}));
-  assert.equal(firstWeapon.next,5,"the fourth standard purchase must cost 5 Gold");
-  assert.equal(firstWeapon.disabled,false,"a weapon cache must remain available after buying one");
-  assert.equal(firstWeapon.sold,false,"repeatable weapon caches must not enter sold state");
-  await page.click('[data-shop-buy="weapon"]');
+  const firstSupply=await page.evaluate(()=>({next:shopScorePrice(window.__r31Shop),disabled:document.querySelector('[data-shop-buy="ammo"]')?.disabled,sold:Boolean(window.__r31Shop.sold.ammo)}));
+  assert.equal(firstSupply.next,5,"the fourth standard purchase must cost 5 Gold");
+  assert.equal(firstSupply.disabled,false,"Ammo must remain available after buying it once");
+  assert.equal(firstSupply.sold,false,"repeatable Ammo purchases must not enter sold state");
+  await page.click('[data-shop-buy="armour"]');
   await page.waitForFunction(()=>window.__r31Shop.goldPurchases===4);
   const shopResult=await page.evaluate(()=>({
-    score:Number(score),gold:PGR.goldBalance(run),scoreText:document.getElementById("shop-score")?.textContent||"",hudText:document.getElementById("hud-score")?.textContent||"",nextText:document.getElementById("shop-next-price")?.textContent||"",nextExpected:String(shopScorePrice(window.__r31Shop)),weaponDisabled:document.querySelector('[data-shop-buy="weapon"]')?.disabled,soldKeys:Object.keys(window.__r31Shop.sold).filter(key=>!["banishmentScore","banishmentGold"].includes(key)),purchases:Number(window.__r31Shop.goldPurchases||0),capacity:PGR.inventoryCapacity(p1),refreshes:window.CCGLostSizzlerV141R31SoloDungeon.state.shopWalletRefreshes
+    score:Number(score),gold:PGR.goldBalance(run),scoreText:document.getElementById("shop-score")?.textContent||"",hudText:document.getElementById("hud-score")?.textContent||"",nextText:document.getElementById("shop-next-price")?.textContent||"",nextExpected:String(shopScorePrice(window.__r31Shop)),ammoDisabled:document.querySelector('[data-shop-buy="ammo"]')?.disabled,armourDisabled:document.querySelector('[data-shop-buy="armour"]')?.disabled,soldKeys:Object.keys(window.__r31Shop.sold).filter(key=>!["banishmentScore","banishmentGold"].includes(key)),purchases:Number(window.__r31Shop.goldPurchases||0),capacity:PGR.inventoryCapacity(p1),refreshes:window.CCGLostSizzlerV141R31SoloDungeon.state.shopWalletRefreshes
   }));
   assert.equal(shopResult.score,100000,"shop purchases must not spend Score");
   assert.equal(shopResult.gold,86,"four repeated purchases must spend the exact 2 + 3 + 4 + 5 Gold prices");
@@ -127,7 +127,8 @@ try{
   assert.equal(shopResult.hudText,String(shopResult.score).padStart(6,"0"),"live Solo HUD Score must remain unchanged by shopping");
   assert.equal(shopResult.nextText,shopResult.nextExpected,"open shop next-Gold price must update after a purchase");
   assert.equal(shopResult.nextExpected,"6","the next same-shop price after four purchases must be 6 Gold");
-  assert.equal(shopResult.weaponDisabled,true,"Weapon Cache must disable after the evolving firearm reaches the current floor cap");
+  assert.equal(shopResult.ammoDisabled,false,"Ammo must remain repeatable after the Gold ladder advances");
+  assert.equal(shopResult.armourDisabled,false,"Armour must remain repeatable after the Gold ladder advances");
   assert.deepEqual(shopResult.soldKeys,[],"normal purchases must not write any sold flags");
   assert.equal(shopResult.purchases,4,"the Gold purchase ladder must advance for every repeat purchase");
   assert.equal(shopResult.capacity,5,"the two inventory expansion purchases must persist");

@@ -35,9 +35,12 @@ assert.match(shop,/inventoryRemove\(player,slot,1\)/,"physical Artefacts must be
 assert.match(shop,/snapshotPaymentState\(player\)/,"Artefact exchange must snapshot both payment stores before spending");
 assert.match(shop,/restorePaymentState\(player,snapshot\)/,"failed exchange must restore physical Artefacts and essence exactly");
 assert.match(shop,/snapshot\.hadEssence/,"rollback must preserve whether the essence field existed before the transaction");
-assert.match(shop,/liveOwner\.__ccgArtefactShopStability/,"Artefact repair must verify current buyShopItem ownership rather than trusting a historical install flag");
-assert.match(shop,/wrapped\.__ccgOriginal=base/,"Artefact repair must preserve the latest non-Flask shop owner chain when re-binding");
-assert.match(shop,/if\(installed\)diagnostics\.rebinds\+\+/,"later shop wrappers must be detectable as an explicit Artefact-boundary rebind");
+assert.match(shop,/function chainOwnsArtefactBoundary\(owner=currentShopOwner\(\)\)/,"Artefact repair must verify the live buyShopItem wrapper chain rather than trusting a historical install flag");
+assert.match(shop,/depth<24&&!seen\.has\(current\)/,"Artefact wrapper-chain inspection must be bounded and cycle-safe");
+assert.match(shop,/current=current\.__ccgOriginal/,"Artefact ownership must follow preserved shop-wrapper ownership links");
+assert.match(shop,/if\(chainOwnsArtefactBoundary\(liveOwner\)\)\{installed=true;return true\}/,"later shop wrappers must preserve an existing Artefact boundary without adding duplicate wrappers");
+assert.match(shop,/wrapped\.__ccgOriginal=base/,"Artefact repair must preserve the latest non-Flask shop owner chain when a real re-bind is required");
+assert.match(shop,/if\(installed\)diagnostics\.rebinds\+\+/,"a genuinely displaced Artefact boundary must still be recorded as an explicit rebind");
 assert.match(shop,/10 Gold purchase remains available separately/,"Artefact repair must preserve the current 10 Gold Flask alternative");
 assert.doesNotMatch(shop,/spendGold|shopGoldPrice/,"Artefact exchange repair must not rewrite the normal Gold economy");
 

@@ -21,16 +21,22 @@
   const WALK_FRAME_MS=92;
   const WALK_SEQUENCE=Object.freeze([
     Object.freeze({column:1,x:-1,y:0,label:"left-stride"}),
+    Object.freeze({column:1,x:0,y:-1,label:"left-rise"}),
     Object.freeze({column:0,x:0,y:-1,label:"centre-rise"}),
+    Object.freeze({column:0,x:0,y:0,label:"centre-settle-a"}),
     Object.freeze({column:2,x:1,y:0,label:"right-stride"}),
-    Object.freeze({column:0,x:0,y:0,label:"centre-settle"})
+    Object.freeze({column:2,x:0,y:-1,label:"right-rise"}),
+    Object.freeze({column:0,x:0,y:-1,label:"centre-return"}),
+    Object.freeze({column:0,x:0,y:0,label:"centre-settle-b"})
   ]);
   const ATTACK_SEQUENCE=Object.freeze([
     Object.freeze({column:0,x:0,y:0,label:"wind-up"}),
     Object.freeze({column:3,x:-1,y:-1,label:"draw-back"}),
-    Object.freeze({column:3,x:0,y:-1,label:"early-swing"}),
-    Object.freeze({column:4,x:1,y:0,label:"impact"}),
-    Object.freeze({column:4,x:0,y:-1,label:"follow-through"}),
+    Object.freeze({column:3,x:0,y:-2,label:"early-swing"}),
+    Object.freeze({column:4,x:1,y:-1,label:"impact-rise"}),
+    Object.freeze({column:4,x:2,y:0,label:"impact"}),
+    Object.freeze({column:4,x:1,y:0,label:"follow-through"}),
+    Object.freeze({column:3,x:0,y:-1,label:"recover-blade"}),
     Object.freeze({column:0,x:0,y:0,label:"recover"})
   ]);
 

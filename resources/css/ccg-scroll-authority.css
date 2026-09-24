@@ -96,16 +96,25 @@ html[data-ccg-page] .ccg-wheel-guard {
     position: absolute;
     z-index: 20;
     display: none;
-    margin: 0;
-    padding: 0;
-    border: 0;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
     border-radius: inherit;
     appearance: none;
     -webkit-appearance: none;
-    background: transparent;
+    background: transparent !important;
     color: inherit;
     cursor: pointer;
     touch-action: auto;
+    transform: none !important;
+    scale: 1 !important;
+    animation: none !important;
+    transition: none !important;
 }
 
 html[data-ccg-page] .ccg-wheel-guard[hidden],
