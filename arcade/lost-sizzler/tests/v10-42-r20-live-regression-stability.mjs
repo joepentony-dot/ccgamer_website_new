@@ -15,7 +15,7 @@ const ownerSeal=read("js/v10-42-r21-owner-and-attack-seal.js");
 const controllerSeal=read("js/v10-42-r2-controller-owner-seal.js");
 
 assert.match(bootstrap,/v10-42-r20-live-regression-stability\.js[\s\S]*v10-42-r22-stall-elapsed-handoff\.js[\s\S]*v10-42-r1-stability\.js[\s\S]*v10-42-r18-solo-playtest-stability\.js/,"r20 and its elapsed writer handoff must load before the established final r1/r18 stability pair");
-assert.match(bootstrap,/const BUILD="V10\.42 r(\d+)"[\s\S]*const CACHE="\d{8}r\1"/,"the ordered bootstrap must retain a matching visible V10.42 build/cache identity while carrying the r20 stability module forward");
+assert.match(bootstrap,/const BUILD="V10\.42 r(\d+)"[\s\S]*const CACHE="\d{8}r\1(?:-[A-Za-z0-9][A-Za-z0-9-]*)?"/,"the ordered bootstrap must retain a matching visible V10.42 build/cache revision while allowing a bounded repair suffix");
 
 assert.match(fix,/ATTACK_KEYS=new Set\(\["Space","Numpad0"\]\)/,"normal gameplay must recover supported P1 attack keys without stealing fullscreen F");
 assert.doesNotMatch(fix,/ATTACK_KEYS=new Set\([^\n]*"KeyF"/,"F must remain exclusively owned by the fullscreen handler");
