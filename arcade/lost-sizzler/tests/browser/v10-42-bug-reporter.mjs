@@ -82,6 +82,30 @@ try{
   const missedTrap=environmentalEvidence.events.find(event=>event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE");
   assert.equal(missedTrap?.detail?.damageSource,"unrelated enemy","unrelated damage must be retained as evidence but must not satisfy trap confirmation");
 
+  const successfulTrapProbe=await page.evaluate(()=>{
+    const reporter=window.CCGLostSizzlerBugReporter,stamp=performance.now();
+    const trap={id:"bug-report-confirmed-trap",kind:"shock",x:Number(p1.x),y:Number(p1.y),active:true,period:1000000,phase:-stamp};
+    p1.invuln=0;p1.health=Math.max(6,Number(p1.health||8));p1.armor=0;
+    const before={anomalies:Number(reporter.state.environmentAnomalies||0),verified:Number(reporter.state.environmentVerifiedHits||0)};
+    host.traps.push(trap);
+    reporter.observeMovementBoundary(p1,"before",{source:"confirmed-trap"});
+    triggerTrap(p1);
+    reporter.observeMovementBoundary(p1,"after",{source:"confirmed-trap"});
+    host.traps=host.traps.filter(row=>row!==trap);
+    // A later enemy hit deliberately overwrites the global last-damage fields.
+    // The already-emitted exact trap signal must still confirm the earlier hit.
+    p1.invuln=0;
+    hurtPlayer(p1,1,false,"enemy after confirmed trap");
+    return before;
+  });
+  await page.waitForFunction(before=>Number(window.CCGLostSizzlerBugReporter?.state?.environmentVerifiedHits||0)>before.verified,successfulTrapProbe,{timeout:3000});
+  const successfulTrapEvents=await page.evaluate(()=>window.CCGLostSizzlerBugReporter.events.filter(event=>
+    event.detail?.trapSignal?.trapId==="bug-report-confirmed-trap"||
+    event.detail?.traps?.some?.(row=>row?.id==="bug-report-confirmed-trap"||row?.trap?.id==="bug-report-confirmed-trap")
+  ));
+  assert.ok(successfulTrapEvents.some(event=>event.type==="environment-trap-crossing-damage-confirmed"&&event.detail?.trapSignal?.trapId==="bug-report-confirmed-trap"),"later unrelated damage must not invalidate a successful ordinary-trap contact signal");
+  assert.equal(successfulTrapEvents.some(event=>event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE"),false,"a confirmed ordinary trap hit must not be reclassified after later damage");
+
   const hazardProbe=await page.evaluate(()=>{
     const reporter=window.CCGLostSizzlerBugReporter,original={x:p1.x,y:p1.y,health:p1.health,cooldown:Number(p1.hazardHitCooldown||0)};
     const roomId=W.roomAt(world,Number(p1.x),Number(p1.y));
@@ -99,8 +123,14 @@ try{
     reporter.observeMovementBoundary(p1,"after",{source:"hazard-cell-two"});
     const damageAt=performance.now()+1;
     p1.__ccgLastHurtAt=damageAt;p1.__ccgLastDamageAt=damageAt;p1.__ccgLastDamageSource="BUG REPORT EXACT HAZARD trap";
-    p1.__ccgLastHazardDamageContact={id:hazard.id,x:adjacent.x,y:adjacent.y,at:damageAt};
-    p1.health=Math.max(1,Number(p1.health||8)-1);
+    p1.health=Math.max(2,Number(p1.health||8)-1);
+    dispatchEvent(new CustomEvent("ccg:hazard-damage",{detail:{
+      playerId:String(p1.id||p1.name||"P1"),hazardId:hazard.id,type:hazard.type,
+      x:adjacent.x,y:adjacent.y,at:damageAt
+    }}));
+    const laterAt=damageAt+1;
+    p1.__ccgLastHurtAt=laterAt;p1.__ccgLastDamageAt=laterAt;p1.__ccgLastDamageSource="unrelated enemy after hazard";
+    p1.health=Math.max(1,Number(p1.health||2)-1);
     host.hazardRooms=host.hazardRooms.filter(row=>row!==hazard);
     setTimeout(()=>{p1.x=original.x;p1.y=original.y;p1.rx=p1.x;p1.ry=p1.y;p1.health=Math.max(1,original.health);p1.hazardHitCooldown=original.cooldown},500);
     return{available:true,beforeAnomalies,beforeVerified,start,adjacent};
@@ -112,7 +142,7 @@ try{
   },hazardProbe,{timeout:3000});
   const hazardEvents=await page.evaluate(()=>window.CCGLostSizzlerBugReporter.events.filter(event=>String(event.detail?.hazards?.[0]?.id||"")==="bug-report-exact-hazard"));
   assert.ok(hazardEvents.some(event=>event.type==="ANOMALY_ACTIVE_HAZARD_CROSSING_NO_DAMAGE"&&event.detail?.contact?.x===hazardProbe.start.x&&event.detail?.contact?.y===hazardProbe.start.y),"damage on a later cell of the same hazard must not confirm an earlier missed contact");
-  assert.ok(hazardEvents.some(event=>event.type==="environment-hazard-crossing-damage-confirmed"&&event.detail?.contact?.x===hazardProbe.adjacent.x&&event.detail?.contact?.y===hazardProbe.adjacent.y),"hazard confirmation must match the exact damaging cell");
+  assert.ok(hazardEvents.some(event=>event.type==="environment-hazard-crossing-damage-confirmed"&&event.detail?.contact?.x===hazardProbe.adjacent.x&&event.detail?.contact?.y===hazardProbe.adjacent.y&&event.detail?.hazardSignal?.hazardId==="bug-report-exact-hazard"),"hazard confirmation must retain the exact damaging cell signal even after a later unrelated hit");
 
   const report=await page.evaluate(()=>window.CCGLostSizzlerBugReporter.createReport("browser-contract"));
   assert.equal(report.schema,"CCG-DUNGEON-BUG-REPORT-v1");
