@@ -279,3 +279,30 @@ test("Stifflip & Co retains four independently curated contemporary magazine sco
     ]
   );
 });
+
+test("Ollie's Follies retains its verified Zzap!64 budget review", () => {
+  const recordsPath = path.join(root, "data", "magazine-review-records", "m-p.json");
+  const records = JSON.parse(fs.readFileSync(recordsPath, "utf8"));
+  const rows = records.games?.["c64:ollie-s-follies"] || [];
+
+  assert.deepEqual(
+    rows.map((row) => [row.magazine, row.issue, row.page, row.score, row.scorePercent]),
+    [["Zzap!64", "15", 104, "70%", 70]]
+  );
+  assert.match(rows[0]?.url || "", /zzap64\.co\.uk\/cgi-bin\/displaypage\.pl\?issue=15&page=104/);
+});
+
+
+test("GitHub Pages regenerates game sitemaps after canonical routes and before validation", () => {
+  const workflow = fs.readFileSync(
+    path.join(root, ".github", "workflows", "deploy-github-pages-omega-stable.yml"),
+    "utf8"
+  );
+  const routes = workflow.indexOf("node scripts/prepare-seo-game-routes.js --output-root _site");
+  const sitemap = workflow.indexOf("(cd _site && node scripts/generate-sitemaps.js)");
+  const validation = workflow.indexOf("node scripts/validate-seo-game-routes.js --root _site");
+
+  assert.ok(routes >= 0, "Pages deployment must generate canonical game routes");
+  assert.ok(sitemap > routes, "Pages deployment must regenerate sitemaps after the new canonical routes exist");
+  assert.ok(validation > sitemap, "Pages deployment must validate game routes only after the sitemap is regenerated");
+});

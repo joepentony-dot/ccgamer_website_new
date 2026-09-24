@@ -4666,6 +4666,21 @@
         }
       ]
     },
+    "ollie-s-follies": {
+      "title": "Ollie's Follies",
+      "releases": [
+        {
+          "archiveId": "4183",
+          "publisher": "Americana",
+          "year": 1986,
+          "yearLabel": "1986",
+          "loader": null,
+          "sourceRole": "re-release",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Ollie's_Follies_(1986_Americana)_%5b4183%5d/",
+          "titleMatch": "exact"
+        }
+      ]
+    },
     "one-man-and-his-droid": {
       "title": "One Man And His Droid",
       "releases": [
