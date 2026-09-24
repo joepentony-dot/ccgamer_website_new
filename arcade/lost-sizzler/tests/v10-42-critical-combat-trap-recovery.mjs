@@ -8,7 +8,7 @@ const reporter=read("arcade/lost-sizzler/js/v10-42-bug-reporter.js");
 const canonical=read("arcade/lost-sizzler/index.html");
 const alias=read("arcade/c64-dungeon-carnage/index.html");
 const version=JSON.parse(read("arcade/lost-sizzler/version.json"));
-const cache="20260924r54";
+const cache="20260924r55";
 
 assert.match(play,/hurtPlayer\(p,1,false,\`\$\{hazard\.title\|\|"hazard chamber"\} trap\`\)/,"dedicated hazard rooms must identify their damage as trap damage so the hardened environmental owner applies");
 assert.match(r20,/function recoverThroughDeepFireOwner\(/,"R20 must expose a retained-owner attack recovery path");
