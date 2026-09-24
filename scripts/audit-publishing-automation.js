@@ -65,6 +65,9 @@ requireText(seoWorkflow, "npm run generate:retro-video-seo", "SEO Automation doe
 requireText(seoWorkflow, "npm run generate:video-library", "SEO Automation does not regenerate the video library.");
 requireText(seoWorkflow, "npm run generate:sitemaps", "SEO Automation does not regenerate sitemaps.");
 requireText(seoWorkflow, "authoritative_game_publish", "SEO Automation is missing its game-publishing ownership guard.");
+requireText(seoWorkflow, "PUBLISH_PATHS=$(awk", "SEO Automation no longer derives ownership from Reliable Games Publishing push paths.");
+requireText(seoWorkflow, ".github/workflows/games-publishing.yml", "SEO Automation no longer reads the authoritative game-publishing workflow.");
+requireText(seoWorkflow, '[[ "$file" == $pattern ]]', "SEO Automation no longer matches changed files against authoritative publishing path patterns.");
 requireText(seoWorkflow, "gh pr merge", "SEO Automation does not merge generated SEO/video output.");
 
 requireManualValidationOnly(

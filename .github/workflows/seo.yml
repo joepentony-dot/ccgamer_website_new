@@ -61,10 +61,39 @@ jobs:
             FILES=$(git show --pretty='' --name-only "$GITHUB_SHA")
           fi
 
-          if printf '%s\n' "$FILES" | grep -Eq '^(games/games\.json|games/game\.html|data/magazine-review-records/|data/publisher-secondary-credits\.json|data/publisher-histories\.json|resources/images/publishers/|scripts/rebuild-games\.js|scripts/ensure-magazine-review-runtime\.js|scripts/ensure-secondary-publisher-runtime\.js|scripts/ensure-publisher-history-runtime\.js|scripts/validate-secondary-publisher-credits\.js|scripts/validate-downloads-page\.js|scripts/generate-downloads-page\.js|scripts/publisher-utils\.js|\.github/workflows/games-publishing\.yml)'; then
-            echo "authoritative_game_publish=true" >> "$GITHUB_OUTPUT"
-            echo "[seo] Authoritative game publishing input detected; SEO will validate but will not race the game publisher for generated output."
+          # Keep SEO output ownership aligned with Reliable Games Publishing
+          # automatically. The publishing workflow's push.paths list is the
+          # authoritative source: if this push would trigger that workflow,
+          # SEO validates only and must not create a competing generated-output PR.
+          PUBLISH_PATHS=$(awk '
+            /^  push:$/ { in_push = 1; next }
+            in_push && /^    paths:$/ { in_paths = 1; next }
+            in_paths && /^      - / {
+              line = $0
+              sub(/^      - /, "", line)
+              gsub(/"/, "", line)
+              print line
+              next
+            }
+            in_paths { exit }
+          ' .github/workflows/games-publishing.yml)
+
+          if [ -z "$PUBLISH_PATHS" ]; then
+            echo "::error::Unable to read Reliable Games Publishing push paths; refusing competing SEO output."
+            exit 1
           fi
+
+          while IFS= read -r file; do
+            [ -n "$file" ] || continue
+            while IFS= read -r pattern; do
+              [ -n "$pattern" ] || continue
+              if [[ "$file" == $pattern ]]; then
+                echo "authoritative_game_publish=true" >> "$GITHUB_OUTPUT"
+                echo "[seo] Authoritative game publishing input detected (${file} matches ${pattern}); SEO will validate but will not race the game publisher for generated output."
+                exit 0
+              fi
+            done <<< "$PUBLISH_PATHS"
+          done <<< "$FILES"
 
       - name: Setup Node
         uses: actions/setup-node@v5
