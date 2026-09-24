@@ -282,6 +282,7 @@ function drawChests(){
   for(const c of host.chests||[]){
     const anim=c.openedAt?Math.max(0,Math.min(1,(now-c.openedAt)/650)):0;if(!c.active&&!c.openedAt)continue;if(!visibleTo(focus,c.x,c.y))continue;
     const s=ws(c.x,c.y),rar=c.loot?.rarity,col=PGR.colourForRarity(rar),cx=s.x+C.tile/2,pulse=.6+.4*Math.sin(now/180+c.x*3);
+    // The authored chest sheet is authoritative when it is available; the rich fallback below is only a loading/error fallback.
     if(pixelSheet?.complete&&pixelSheet.naturalWidth>=160){
       const rare=/ZZAP|GOLD|SIZZLER/i.test(String(rar||"")),row=c.locked?2:rare?1:0,column=c.openedAt?Math.min(4,2+Math.floor(anim*3)):(Math.sin(now/260+c.x*2+c.y)>.72?1:0);
       ctx.save();ctx.imageSmoothingEnabled=false;ctx.fillStyle="rgba(0,0,0,.48)";ctx.beginPath();ctx.ellipse(cx,s.y+C.tile-2,14,4,0,0,Math.PI*2);ctx.fill();ctx.shadowColor=c.locked?P.gold:col;ctx.shadowBlur=c.active?8+pulse*7:10;ctx.drawImage(pixelSheet,column*32,row*32,32,32,Math.round(s.x),Math.round(s.y),C.tile,C.tile);
