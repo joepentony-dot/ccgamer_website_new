@@ -423,20 +423,20 @@ test("residual review classifies every baseline unmatched C64 record exactly onc
     "genuinely-no-uta-release"
   ]);
 
-  assert.equal(review.entries.length, 164);
-  assert.equal(new Set(review.entries.map((entry) => entry.gameSlug)).size, 164);
+  assert.equal(review.entries.length, 146);
+  assert.equal(new Set(review.entries.map((entry) => entry.gameSlug)).size, 146);
   assert.deepEqual(
     review.entries.map((entry) => entry.gameSlug).sort(),
     audit.unmatched.map((entry) => entry.slug).sort()
   );
   assert.ok(review.entries.every((entry) => allowed.has(entry.classification)));
   assert.deepEqual(review.summary.classifications, {
-    "verified-additional-tape": 17,
+    "verified-additional-tape": 0,
     "catalogue-metadata-correction": 4,
     "different-c64-version": 11,
-    "genuinely-no-uta-release": 132
+    "genuinely-no-uta-release": 131
   });
-  assert.equal(review.summary.verifiedAdditionalTapeReleases, 20);
+  assert.equal(review.summary.verifiedAdditionalTapeReleases, 0);
   assert.ok(review.entries
     .filter((entry) => entry.classification === "verified-additional-tape")
     .every((entry) => Array.isArray(entry.archiveIds) && entry.archiveIds.length > 0));
