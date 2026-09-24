@@ -94,7 +94,7 @@ jobs:
         shell: bash
         run: |
           test -s games/downloads/index.html
-          if grep -q 'home-explore-grid' home.html; then
+          if grep -Eq 'home-explore-grid|home-archive-launchpad' home.html; then
             echo "Streamlined homepage detected; manuals discovery is intentionally routed through Browse Games."
           else
             grep -q 'data-home-downloads-card="true"' home.html

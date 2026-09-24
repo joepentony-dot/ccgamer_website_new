@@ -87,6 +87,27 @@ function isApprovedDungeonHomeCtaMigration(relativePath) {
   return expected === current;
 }
 
+function isApprovedHomeDiscoveryDashboard(relativePath) {
+  if (relativePath !== "home.html") return false;
+
+  const current = read(relativePath);
+  const requiredTokens = [
+    "<!-- PRIMARY ARCHIVE DISCOVERY DASHBOARD -->",
+    "home-section--archive-dashboard",
+    "home-archive-launchpad",
+    'href="/games/"',
+    'href="/games/discover/"',
+    'href="/games/genres/"',
+    'href="/games/publishers/"',
+    'href="/games/collections/"',
+    'href="/music/"',
+    'href="/zzap64/"',
+    'href="/games/collections/retro-specials.html"'
+  ];
+
+  return requiredTokens.every((token) => current.includes(token));
+}
+
 const manifestText = read("manifest.webmanifest");
 const serviceWorker = read("service-worker.js");
 const pwaCode = read("js/ccg-pwa.js");
@@ -274,7 +295,7 @@ const allowedPaths = new Set([
 ]);
 
 for (const changedPath of changedFiles()) {
-  if (protectedPaths.has(changedPath) && !isApprovedDungeonHomeCtaMigration(changedPath)) failures.push(`Protected file changed: ${changedPath}`);
+  if (protectedPaths.has(changedPath) && !isApprovedDungeonHomeCtaMigration(changedPath) && !isApprovedHomeDiscoveryDashboard(changedPath)) failures.push(`Protected file changed: ${changedPath}`);
   if (!process.env.GITHUB_ACTIONS && !allowedPaths.has(changedPath)) {
     failures.push(`Out-of-scope local Phase 17 change: ${changedPath}`);
   }

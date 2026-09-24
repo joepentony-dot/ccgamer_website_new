@@ -24,7 +24,8 @@ function writeIfChanged(filePath, nextContent) {
 }
 
 function hasStreamlinedHomeHierarchy(html) {
-    return html.includes("home-explore-grid");
+    return html.includes("home-explore-grid")
+        || html.includes("home-archive-launchpad");
 }
 
 function renderHomeManualsCard() {

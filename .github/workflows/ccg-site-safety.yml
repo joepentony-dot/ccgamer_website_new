@@ -148,6 +148,9 @@ jobs:
       - name: Run archive directory system regression guard
         run: node --test tests/archive-directory-system.test.mjs
 
+      - name: Run home discovery dashboard regression guard
+        run: node --test tests/home-discovery-dashboard.test.mjs
+
       - name: Run game box-dialog runtime extraction guard
         run: node tests/ccg-game-box-dialog-runtime.mjs
 
