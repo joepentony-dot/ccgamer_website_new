@@ -337,63 +337,112 @@
                 <span class="ccg-omega-core"></span>
             </div>
 
-            <!-- THREE STABLE SECONDARY ROUTES: NO DUPLICATE SITE MAP -->
-            <section class="home-section home-section--highlights home-section--streamlined ccg-chapter" aria-labelledby="home-highlights-title">
+            <!-- PRIMARY ARCHIVE DISCOVERY DASHBOARD -->
+            <section class="home-section home-section--highlights home-section--streamlined home-section--archive-dashboard ccg-chapter" aria-labelledby="home-highlights-title">
                 <header class="home-section__header home-section__header--focused">
                     <p class="home-section__eyebrow">Explore the archive</p>
-                    <h2 class="home-section__title" id="home-highlights-title">Choose How to Explore</h2>
-                    <p class="home-section__intro">Three quick routes when you want something more specific than the full game library.</p>
+                    <h2 class="home-section__title" id="home-highlights-title">Find Your Way Around CCG</h2>
+                    <p class="home-section__intro">Jump straight into the part of the Commodore archive you want without working through the whole site.</p>
                     <div class="home-section__divider"></div>
                 </header>
 
-                <div class="home-video-grid home-explore-grid">
-                    <a href="/games/discover/" class="ccg-card home-highlight-card home-highlight-card--feature home-highlight-card--picks">
-                        <span class="home-highlight-card__icon" aria-hidden="true">
-                            <svg viewBox="0 0 32 32" focusable="false">
-                                <circle cx="16" cy="16" r="10"></circle>
-                                <path d="M16 2v5M16 25v5M2 16h5M25 16h5M20.5 11.5l-2.7 6.3-6.3 2.7 2.7-6.3 6.3-2.7Z"></path>
-                            </svg>
+                <nav class="home-archive-launchpad" aria-label="Explore the Cheeky Commodore Gamer archive">
+                    <a href="/games/" class="home-archive-route">
+                        <span class="home-archive-route__icon" aria-hidden="true">
+                            <svg viewBox="0 0 32 32" focusable="false"><rect x="4" y="7" width="24" height="18" rx="3"></rect><path d="M9 16h6M12 13v6M21 14h.1M24 18h.1"></path></svg>
                         </span>
-                        <div class="ccg-card__body">
-                            <span class="home-highlight-card__eyebrow">Game finder</span>
-                            <h3 class="ccg-card__title">Find Me a Game</h3>
-                            <p class="ccg-card__text">Choose a system, year, genre or publisher and get a tailored archive pick.</p>
-                            <span class="home-highlight-card__cta">Find a game →</span>
-                        </div>
+                        <span class="home-archive-route__body">
+                            <span class="home-archive-route__eyebrow">Full database</span>
+                            <strong class="home-archive-route__title">Games</strong>
+                            <span class="home-archive-route__text">Browse the complete C64 and Amiga game archive.</span>
+                            <span class="home-archive-route__cta">Open games →</span>
+                        </span>
                     </a>
 
-                    <a href="/games/genres/" class="ccg-card home-highlight-card home-highlight-card--feature home-highlight-card--downloads">
-                        <span class="home-highlight-card__icon" aria-hidden="true">
-                            <svg viewBox="0 0 32 32" focusable="false">
-                                <rect x="4" y="4" width="9" height="9" rx="1"></rect>
-                                <rect x="19" y="4" width="9" height="9" rx="1"></rect>
-                                <rect x="4" y="19" width="9" height="9" rx="1"></rect>
-                                <rect x="19" y="19" width="9" height="9" rx="1"></rect>
-                            </svg>
+                    <a href="/games/discover/" class="home-archive-route">
+                        <span class="home-archive-route__icon" aria-hidden="true">
+                            <svg viewBox="0 0 32 32" focusable="false"><circle cx="16" cy="16" r="10"></circle><path d="M16 2v5M16 25v5M2 16h5M25 16h5M20.5 11.5l-2.7 6.3-6.3 2.7 2.7-6.3 6.3-2.7Z"></path></svg>
                         </span>
-                        <div class="ccg-card__body">
-                            <span class="home-highlight-card__eyebrow">Browse your way</span>
-                            <h3 class="ccg-card__title">Browse Genres</h3>
-                            <p class="ccg-card__text">Jump to platformers, shooters, adventures, strategy and more.</p>
-                            <span class="home-highlight-card__cta">Browse genres →</span>
-                        </div>
+                        <span class="home-archive-route__body">
+                            <span class="home-archive-route__eyebrow">Game finder</span>
+                            <strong class="home-archive-route__title">Find Me a Game</strong>
+                            <span class="home-archive-route__text">Filter by system, year, genre or publisher.</span>
+                            <span class="home-archive-route__cta">Find a game →</span>
+                        </span>
                     </a>
 
-                    <a href="/zzap64/" class="ccg-card home-highlight-card home-highlight-card--feature home-highlight-card--zzap">
-                        <span class="home-highlight-card__icon" aria-hidden="true">
-                            <svg viewBox="0 0 32 32" focusable="false">
-                                <path d="M7 3h15l4 4v22H7V3Z"></path>
-                                <path d="M22 3v5h5M11 12h11M11 17h7M16 21l1.4 2.8 3.1.5-2.2 2.2.5 3.1-2.8-1.5-2.8 1.5.5-3.1-2.2-2.2 3.1-.5L16 21Z"></path>
-                            </svg>
+                    <a href="/games/genres/" class="home-archive-route">
+                        <span class="home-archive-route__icon" aria-hidden="true">
+                            <svg viewBox="0 0 32 32" focusable="false"><rect x="4" y="4" width="9" height="9" rx="1"></rect><rect x="19" y="4" width="9" height="9" rx="1"></rect><rect x="4" y="19" width="9" height="9" rx="1"></rect><rect x="19" y="19" width="9" height="9" rx="1"></rect></svg>
                         </span>
-                        <div class="ccg-card__body">
-                            <span class="home-highlight-card__eyebrow">Magazine archive</span>
-                            <h3 class="ccg-card__title">Zzap!64 Awards</h3>
-                            <p class="ccg-card__text">Explore Sizzlers, medals and original magazine review links.</p>
-                            <span class="home-highlight-card__cta">Explore Zzap!64 →</span>
-                        </div>
+                        <span class="home-archive-route__body">
+                            <span class="home-archive-route__eyebrow">Browse by type</span>
+                            <strong class="home-archive-route__title">Genres</strong>
+                            <span class="home-archive-route__text">Platformers, shooters, adventures, strategy and more.</span>
+                            <span class="home-archive-route__cta">Browse genres →</span>
+                        </span>
                     </a>
-                </div>
+
+                    <a href="/games/publishers/" class="home-archive-route">
+                        <span class="home-archive-route__icon" aria-hidden="true">
+                            <svg viewBox="0 0 32 32" focusable="false"><path d="M5 27V9l11-5 11 5v18H5Z"></path><path d="M10 13h4v4h-4zM18 13h4v4h-4zM10 20h4v4h-4zM18 20h4v4h-4z"></path></svg>
+                        </span>
+                        <span class="home-archive-route__body">
+                            <span class="home-archive-route__eyebrow">Who published it?</span>
+                            <strong class="home-archive-route__title">Publishers</strong>
+                            <span class="home-archive-route__text">Explore games by the companies behind the releases.</span>
+                            <span class="home-archive-route__cta">Browse publishers →</span>
+                        </span>
+                    </a>
+
+                    <a href="/games/collections/" class="home-archive-route">
+                        <span class="home-archive-route__icon" aria-hidden="true">
+                            <svg viewBox="0 0 32 32" focusable="false"><path d="M5 8h22v18H5z"></path><path d="M9 4h14v4H9zM10 13h12M10 18h12M10 23h8"></path></svg>
+                        </span>
+                        <span class="home-archive-route__body">
+                            <span class="home-archive-route__eyebrow">Curated routes</span>
+                            <strong class="home-archive-route__title">Collections</strong>
+                            <span class="home-archive-route__text">Top picks, licensed games, cartridges and specialist archives.</span>
+                            <span class="home-archive-route__cta">Open collections →</span>
+                        </span>
+                    </a>
+
+                    <a href="/music/" class="home-archive-route">
+                        <span class="home-archive-route__icon" aria-hidden="true">
+                            <svg viewBox="0 0 32 32" focusable="false"><path d="M13 7v16M13 10l12-3v13"></path><circle cx="9" cy="24" r="4"></circle><circle cx="21" cy="21" r="4"></circle></svg>
+                        </span>
+                        <span class="home-archive-route__body">
+                            <span class="home-archive-route__eyebrow">SID &amp; Amiga audio</span>
+                            <strong class="home-archive-route__title">Music Hub</strong>
+                            <span class="home-archive-route__text">Find composers, game music and Commodore soundtrack links.</span>
+                            <span class="home-archive-route__cta">Explore music →</span>
+                        </span>
+                    </a>
+
+                    <a href="/zzap64/" class="home-archive-route">
+                        <span class="home-archive-route__icon" aria-hidden="true">
+                            <svg viewBox="0 0 32 32" focusable="false"><path d="M7 3h15l4 4v22H7V3Z"></path><path d="M22 3v5h5M11 12h11M11 17h7M16 21l1.4 2.8 3.1.5-2.2 2.2.5 3.1-2.8-1.5-2.8 1.5.5-3.1-2.2-2.2 3.1-.5L16 21Z"></path></svg>
+                        </span>
+                        <span class="home-archive-route__body">
+                            <span class="home-archive-route__eyebrow">Magazine archive</span>
+                            <strong class="home-archive-route__title">Zzap!64</strong>
+                            <span class="home-archive-route__text">Review scores, Sizzlers, Gold Medals and original magazine links.</span>
+                            <span class="home-archive-route__cta">Explore Zzap!64 →</span>
+                        </span>
+                    </a>
+
+                    <a href="/games/collections/retro-specials.html" class="home-archive-route">
+                        <span class="home-archive-route__icon" aria-hidden="true">
+                            <svg viewBox="0 0 32 32" focusable="false"><path d="M6 6h20v20H6z"></path><path d="M10 11h12M10 16h12M10 21h7"></path></svg>
+                        </span>
+                        <span class="home-archive-route__body">
+                            <span class="home-archive-route__eyebrow">Long-form archive</span>
+                            <strong class="home-archive-route__title">Retro Specials</strong>
+                            <span class="home-archive-route__text">Rankings, retrospectives and CCG feature projects.</span>
+                            <span class="home-archive-route__cta">Browse specials →</span>
+                        </span>
+                    </a>
+                </nav>
 
                 <div class="home-featured-videos" aria-labelledby="home-videos-heading">
                     <div class="home-featured-videos__copy">
