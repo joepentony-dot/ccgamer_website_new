@@ -43,7 +43,7 @@ assert.match(reporter,/beforeDamageSignalSerial:environmentDamageSerial/,"moveme
 assert.match(reporter,/signal\.playerId===String\(before\?\.playerId\|\|""\)[\s\S]*signal\.x===Number\(before\?\.x\)&&signal\.y===Number\(before\?\.y\)/,"movement verification must restrict evidence to the exact player and contact cell");
 assert.match(reporter,/trapSignal=contactSignals\.find\(signal=>signal\.type==="trap"[\s\S]*trapIds\.has\(signal\.trapId\)/,"ordinary trap confirmation must retain the exact trap contact signal even if later damage overwrites global last-hit fields");
 assert.match(reporter,/hazardSignal=contactSignals\.find\(signal=>signal\.type==="hazard"&&hazardIds\.has\(signal\.hazardId\)/,"dedicated hazard confirmation must retain the exact hazard contact signal");
-assert.match(reporter,/damageObserved=Boolean\(exactSignal\)\|\|afterHits>beforeHits/,"polling diagnostics must require exact trap-contact evidence or the retained R19 hit counter, never unrelated health loss");
+assert.match(reporter,/damageObserved=Boolean\(exactSignal\)/,"polling diagnostics must require exact player-and-trap contact evidence so another player's same-kind hit cannot mask a failure");
 
 
 assert.match(reporter,/trapHitsByKind/,"trap diagnostics must retain per-kind FIRE SPIKE and SHOCK hit evidence");
