@@ -82,6 +82,38 @@ try{
   const missedTrap=environmentalEvidence.events.find(event=>event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE");
   assert.equal(missedTrap?.detail?.damageSource,"unrelated enemy","unrelated damage must be retained as evidence but must not satisfy trap confirmation");
 
+  const hazardProbe=await page.evaluate(()=>{
+    const reporter=window.CCGLostSizzlerBugReporter,original={x:p1.x,y:p1.y,health:p1.health,cooldown:Number(p1.hazardHitCooldown||0)};
+    const roomId=W.roomAt(world,Number(p1.x),Number(p1.y));
+    const adjacent=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>({x:Number(p1.x)+dx,y:Number(p1.y)+dy}))
+      .find(q=>W.roomAt(world,q.x,q.y)===roomId&&W.walkable(world.map,q.x,q.y,host));
+    if(!adjacent)return{available:false};
+    const start={x:Number(p1.x),y:Number(p1.y)},elapsed=Number(host.floorElapsed||run.elapsed||0),period=1000000,group=Math.floor(elapsed/period)%2;
+    const hazard={id:"bug-report-exact-hazard",roomId,type:"embers",title:"BUG REPORT EXACT HAZARD",cells:[{...start,group},{...adjacent,group}],groups:2,period,warningMs:0,activeMs:999999,phase:0};
+    host.hazardRooms.push(hazard);p1.hazardHitCooldown=0;
+    const beforeAnomalies=Number(reporter.state.environmentAnomalies||0),beforeVerified=Number(reporter.state.environmentVerifiedHits||0);
+    reporter.observeMovementBoundary(p1,"before",{source:"hazard-cell-one"});
+    reporter.observeMovementBoundary(p1,"after",{source:"hazard-cell-one"});
+    p1.x=adjacent.x;p1.y=adjacent.y;p1.rx=p1.x;p1.ry=p1.y;p1.hazardHitCooldown=0;
+    reporter.observeMovementBoundary(p1,"before",{source:"hazard-cell-two"});
+    reporter.observeMovementBoundary(p1,"after",{source:"hazard-cell-two"});
+    const damageAt=performance.now()+1;
+    p1.__ccgLastHurtAt=damageAt;p1.__ccgLastDamageAt=damageAt;p1.__ccgLastDamageSource="BUG REPORT EXACT HAZARD trap";
+    p1.__ccgLastHazardDamageContact={id:hazard.id,x:adjacent.x,y:adjacent.y,at:damageAt};
+    p1.health=Math.max(1,Number(p1.health||8)-1);
+    host.hazardRooms=host.hazardRooms.filter(row=>row!==hazard);
+    setTimeout(()=>{p1.x=original.x;p1.y=original.y;p1.rx=p1.x;p1.ry=p1.y;p1.health=Math.max(1,original.health);p1.hazardHitCooldown=original.cooldown},500);
+    return{available:true,beforeAnomalies,beforeVerified,start,adjacent};
+  });
+  assert.equal(hazardProbe.available,true,"hazard attribution fixture requires two adjacent cells in one room");
+  await page.waitForFunction(probe=>{
+    const state=window.CCGLostSizzlerBugReporter?.state;
+    return Number(state?.environmentAnomalies||0)>probe.beforeAnomalies&&Number(state?.environmentVerifiedHits||0)>probe.beforeVerified;
+  },hazardProbe,{timeout:3000});
+  const hazardEvents=await page.evaluate(()=>window.CCGLostSizzlerBugReporter.events.filter(event=>String(event.detail?.hazards?.[0]?.id||"")==="bug-report-exact-hazard"));
+  assert.ok(hazardEvents.some(event=>event.type==="ANOMALY_ACTIVE_HAZARD_CROSSING_NO_DAMAGE"&&event.detail?.contact?.x===hazardProbe.start.x&&event.detail?.contact?.y===hazardProbe.start.y),"damage on a later cell of the same hazard must not confirm an earlier missed contact");
+  assert.ok(hazardEvents.some(event=>event.type==="environment-hazard-crossing-damage-confirmed"&&event.detail?.contact?.x===hazardProbe.adjacent.x&&event.detail?.contact?.y===hazardProbe.adjacent.y),"hazard confirmation must match the exact damaging cell");
+
   const report=await page.evaluate(()=>window.CCGLostSizzlerBugReporter.createReport("browser-contract"));
   assert.equal(report.schema,"CCG-DUNGEON-BUG-REPORT-v1");
   assert.equal(report.summary.game.mode,"playing");
