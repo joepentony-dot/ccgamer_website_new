@@ -16439,6 +16439,48 @@
   },
   {
     "system": "C64",
+    "id": "ollie_s_follies",
+    "slug": "ollie-s-follies",
+    "title": "Ollie's Follies",
+    "sorttitle": "Ollie's Follies",
+    "year": 1984,
+    "genres": [
+      "platform"
+    ],
+    "collections": [],
+    "videoid": "V9JD67SRm8w",
+    "thumbnail": "resources/images/thumbnails/all/ollie-s-follies.jpg",
+    "pdf": "https://drive.google.com/file/d/1atymeV3vGPT8_6DmlmjgEFltx_VN7uLo/view?usp=drive_link",
+    "disk": [],
+    "download_status": "",
+    "lemon": [],
+    "zzap": [],
+    "description": "Ollie’s Follies is a challenging platform game for the Commodore 64, created by Frank Cohen of Fanda and originally released by Access Software in 1984 before being reissued by Americana in 1986. You guide Ollie through 24 single-screen rooms filled with platforms, robots, lifts, fans, trampolines, teleporters, lasers and other hazards while searching for each exit. Every room tests your timing, movement and route planning, with later stages becoming increasingly demanding. The controls can take some getting used to, especially when precise jumps and stopping distances are required, and the difficulty can occasionally become frustrating. Despite its simple presentation, Ollie’s Follies offers plenty of variety and some clever level design, making it an interesting early C64 platformer for players who enjoy tough, old-school Commodore 64 games.",
+    "ccg_rating": 6,
+    "ccg_rating_reason": "A clever and surprisingly varied early C64 platformer, but awkward movement and some frustratingly unforgiving sections stop it from scoring higher.",
+    "credits": {
+      "publisher": [
+        "Access Software"
+      ],
+      "producer": "",
+      "coder": [
+        "Frank Cohen"
+      ],
+      "graphics": [
+        "Frank Cohen"
+      ],
+      "musician": [],
+      "re_releaser": [
+        "Americana"
+      ],
+      "developer": "Fanda"
+    },
+    "developer": "Fanda",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+  {
+    "system": "C64",
     "id": "omega_race",
     "slug": "omega-race",
     "title": "Omega Race",
