@@ -41,7 +41,7 @@
     try{return !PGR.inventoryCanAdd(p,{kind})}catch(_){return false}
   }
 
-  function fallbackFeedback(id){
+  function fallbackFeedback(id,allowGeneric=true){
     const key=String(id||""),p=player(),shop=typeof activeShop!=="undefined"?activeShop:null;
     if(!p||!shop)return false;
     const foundation=window.CCGDungeonProgressionFoundation;
@@ -74,6 +74,7 @@
       state.fallbacks++;
       return setStatus("INVENTORY FULL","There is no room for this item. Free a stack slot or expand your inventory before buying it.","red","inventory-full")
     }
+    if(!allowGeneric)return false;
     state.fallbacks++;
     return setStatus("PURCHASE BLOCKED","That item cannot be bought right now. Check its price, inventory space and any floor or tier restriction shown on the item card.","red","blocked")
   }
@@ -89,6 +90,17 @@
       return result
     };
     showToast.__ccgR55ShopFeedback=true;showToast.__ccgOriginal=toastOwner;
+
+    document.addEventListener("click",event=>{
+      const target=event.target instanceof Element?event.target.closest("[data-shop-buy]"):null;
+      if(!target||!shopVisible())return;
+      const id=String(target.getAttribute("data-shop-buy")||"");
+      purchaseDepth++;
+      setTimeout(()=>{
+        purchaseDepth=Math.max(0,purchaseDepth-1);
+        if(shopVisible())fallbackFeedback(id,false)
+      },0)
+    },true);
 
     const buyOwner=buyShopItem;
     buyShopItem=function buyShopItemR55Feedback(id,...rest){
