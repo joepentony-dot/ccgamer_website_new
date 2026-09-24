@@ -206,6 +206,7 @@
         trapStability:safe(()=>window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||null,null),
         loopFinalizer:safe(()=>window.CCGLostSizzlerV141R29LoopFinalizer?.state||null,null),
         renderOwnership:safe(()=>window.CCGLostSizzlerV141R51RenderOwnershipFinalizer?.state||null,null),
+        chestRender:safe(()=>window.__CCG_CHEST_RENDER_DIAGNOSTICS__||null,null),
         projectileLifecycle:safe(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.state||null,null),
         performanceGovernor:safe(()=>window.CCGLostSizzlerV141R47AllModeOptimisation?.getDiagnostics?.()||null,null),
         globalPerformance:safe(()=>window.CCGLostSizzlerV141R37GlobalPerformance?.getDiagnostics?.()||null,null),

@@ -1,0 +1,11 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+const render=fs.readFileSync("arcade/lost-sizzler/js/game-render.js","utf8");
+const reporter=fs.readFileSync("arcade/lost-sizzler/js/v10-42-bug-reporter.js","utf8");
+assert.match(render,/\/arcade\/lost-sizzler\/\$\{path\}\?v=/,"pixel assets must use the stable absolute Dungeon Carnage asset path");
+assert.match(render,/function drawAnimatedChestFallback\(/,"rich animated fallback must exist");
+assert.doesNotMatch(render,/CHEST ART UNAVAILABLE/,"player-facing chest renderer must not expose the old missing-art placeholder");
+assert.match(render,/richFallbackFrames\+\+/,"fallback usage must be diagnosable");
+assert.match(render,/ctx\.fillRect\(-15,-4,30,18\)/,"fallback must render a filled chest body rather than a wireframe outline");
+assert.match(reporter,/chestRender:/,"bug reports must capture chest render ownership/fallback state");
+console.log("PASS chest visual resilience contract");
