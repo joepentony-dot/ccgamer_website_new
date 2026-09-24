@@ -1,3 +1,14 @@
+## Dungeon Carnage R56 environmental diagnostics — 24 September 2026
+
+- Active PR: #2333 / `codex/dungeon-environment-diagnostics-r56`, rebuilt from current `main` after the merged R55 long-pause FIRE recovery.
+- Candidate identity remains `V10.42 r56` / `20260924r56`.
+- R56 adds exact movement-boundary observation around ordinary trap resolution, dedicated-hazard contact capture, bounded anomaly reporting, and Chromium coverage for missed ACTIVE trap damage. The reporter remains observation-only.
+- Review-driven hardening now requires source-attributed damage evidence so unrelated enemy/projectile damage inside the 220 ms verification window cannot hide a missed trap/hazard hit. Canonical player damage records `__ccgLastDamageAt` and `__ccgLastDamageSource` for diagnostics only.
+- Current Load Safety evidence found real generation gaps: some Floor 1 seeds could finish without a dedicated hazard room or without one of FIRE/SPIKE/SHOCK. The candidate now broadens safe hazard-room candidate selection and performs a final post-decoration invariant pass that restores any missing active FIRE/SPIKE/SHOCK family.
+- Previous exact-head qualification had 9/10 top-level workflows green; Load Safety still failed in Chromium on the generation gaps plus two unrelated runtime regressions (Floor 1 Continue resume and shop INVENTORY FULL feedback). The new exact head must rerun the complete matrix; do not merge on prior green runs.
+- Preserve the merged R55 FIRE repair, R19/R56/R57 trap ownership, native mouse-wheel behavior, mobile layout, save/progression ownership and all unrelated current-main behavior. Never weaken tests to obtain green.
+- Next action: inspect the exact-head Load Safety result. If remaining failures persist, diagnose the precise runtime owner before changing code. Merge only when the exact current head is 0 behind current main, mergeable, fully green across all required workflows/all Chromium shards, and no review blocker remains.
+
 ## R54 graphics/UI and pickup semantics — 23 September 2026
 
 The active visual/mechanical follow-up is `codex/dungeon-r54-graphics-ui-current-main-20260923`, created from current main after the R53 gameplay repair and UTA publication work completed. It advances the public candidate to `V10.42 r54` / `20260923r54`.
