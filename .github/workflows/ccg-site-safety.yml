@@ -136,10 +136,17 @@ jobs:
           node --check scripts/audit-member-hub-health.js
           node --check scripts/audit-responsive-layout.js
           node --check scripts/audit-responsive-browser.js
+          node --check js/publisher-pages.js
+          node --check js/ccg-category-omega.js
+          node --check js/ccg-music-navigation.js
+          node --check js/music-composer-pages.js
           node --check scripts/audit-scroll-reachability.js
 
       - name: Run mobile-lite startup regression guard
         run: node tests/ccg-mobile-lite-startup.mjs
+
+      - name: Run archive directory system regression guard
+        run: node --test tests/archive-directory-system.test.mjs
 
       - name: Run game box-dialog runtime extraction guard
         run: node tests/ccg-game-box-dialog-runtime.mjs

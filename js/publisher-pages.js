@@ -8,6 +8,22 @@
 (function () {
     "use strict";
 
+    const ARCHIVE_DIRECTORY_CSS = "/resources/css/ccg-archive-directory.css";
+
+    function enableArchiveDirectory(kind) {
+        if (typeof document === "undefined") return;
+
+        if (!document.querySelector('link[href="' + ARCHIVE_DIRECTORY_CSS + '"]')) {
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = ARCHIVE_DIRECTORY_CSS;
+            link.dataset.ccgArchiveDirectoryStyle = "true";
+            document.head.appendChild(link);
+        }
+
+        if (document.body) document.body.dataset.ccgDirectory = kind;
+    }
+
     function normalize(value) {
         return String(value || "").trim().toLowerCase();
     }
@@ -88,10 +104,71 @@
         } catch (error) {}
     }
 
+    function publisherInitial(card) {
+        const name = String(getPublisherCardData(card).name || "").trim();
+        const first = name.charAt(0).toUpperCase();
+        return /^[A-Z]$/.test(first) ? first : "#";
+    }
+
+    function ensurePublisherAlphabetNav(cards, tools) {
+        if (!tools || !cards.length || tools.querySelector("[data-publisher-alphabet]")) return;
+
+        const firstByInitial = new Map();
+
+        cards.forEach((card) => {
+            const initial = publisherInitial(card);
+            card.dataset.publisherInitial = initial;
+
+            if (!firstByInitial.has(initial)) {
+                firstByInitial.set(initial, card);
+                card.id = "publisher-letter-" + (initial === "#" ? "other" : initial.toLowerCase());
+            }
+        });
+
+        const nav = document.createElement("nav");
+        nav.className = "ccg-directory-jump";
+        nav.dataset.publisherAlphabet = "true";
+        nav.setAttribute("aria-label", "Jump to publisher letter");
+
+        const label = document.createElement("span");
+        label.className = "ccg-directory-jump__label";
+        label.textContent = "Jump";
+        nav.appendChild(label);
+
+        ["#", ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"].forEach((initial) => {
+            const target = firstByInitial.get(initial);
+
+            if (!target) {
+                const disabled = document.createElement("span");
+                disabled.className = "ccg-directory-jump__disabled";
+                disabled.textContent = initial;
+                disabled.setAttribute("aria-hidden", "true");
+                nav.appendChild(disabled);
+                return;
+            }
+
+            const link = document.createElement("a");
+            link.className = "ccg-directory-jump__link";
+            link.href = "#" + target.id;
+            link.textContent = initial;
+            link.setAttribute(
+                "aria-label",
+                initial === "#"
+                    ? "Jump to publishers beginning with a number or symbol"
+                    : "Jump to publishers beginning with " + initial
+            );
+            nav.appendChild(link);
+        });
+
+        tools.appendChild(nav);
+    }
+
     function createSearchResultCard(card) {
         const clone = card.cloneNode(true);
         clone.hidden = false;
         clone.dataset.publisherSearchResult = "true";
+        clone.removeAttribute("id");
+        delete clone.dataset.publisherInitial;
         clone.classList.remove("ccg-publisher-card--featured");
         clone.querySelector(".ccg-publisher-card__eyebrow")?.remove();
         return clone;
@@ -100,6 +177,7 @@
     function initPublisherIndex() {
         const grid = document.getElementById("publisherGrid");
         if (!grid) return;
+        enableArchiveDirectory("publisher-index");
 
         const search = document.getElementById("publisherSearchInput");
         const count = document.getElementById("publisherVisibleCount");
@@ -120,6 +198,7 @@
            belongs on individual publisher game pages, where it is useful. */
         document.querySelector(".ccg-publishers-tools .ccg-publishers-filter")?.remove();
         updateSystemQuery("all");
+        ensurePublisherAlphabetNav(archiveCards, document.querySelector(".ccg-publishers-tools"));
 
         function clearSearchResults() {
             grid.querySelectorAll("[data-publisher-search-result]").forEach((card) => card.remove());
@@ -137,6 +216,8 @@
             }
 
             archiveSection?.classList.toggle("ccg-publishers-section--search-results", hasSearch);
+            const alphabetNav = document.querySelector("[data-publisher-alphabet]");
+            if (alphabetNav) alphabetNav.hidden = hasSearch;
         }
 
         function renderSearchResults(query) {
@@ -212,6 +293,7 @@
     function initPublisherGames() {
         const grid = document.getElementById("publisherGameGrid");
         if (!grid) return;
+        enableArchiveDirectory("publisher-record");
 
         const search = document.getElementById("publisherGameSearchInput");
         const count = document.getElementById("publisherGameVisibleCount");

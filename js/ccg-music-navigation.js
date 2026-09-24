@@ -19,6 +19,7 @@
         "/resources/css/ccg-nav.css",
         "/resources/css/ccg-nav-fit.css",
         "/resources/css/ccg-buttons.css",
+        "/resources/css/ccg-archive-directory.css",
         "/resources/css/ccg-footer.css",
         "/resources/css/ccg-community.css",
         "/resources/css/ccg-socials.css",
@@ -269,8 +270,14 @@
         });
     }
 
+    function markArchiveDirectory() {
+        const pageId = String(document.documentElement.getAttribute("data-ccg-page") || "").toLowerCase();
+        document.body.dataset.ccgDirectory = pageId.startsWith("music-hub") ? "music-index" : "music-record";
+    }
+
     async function init() {
         await Promise.all(STYLES.map(waitForStyle));
+        markArchiveDirectory();
         const header = ensureHeader();
         if (!header) return;
         bindDrawer(header);

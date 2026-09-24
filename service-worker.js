@@ -2,7 +2,7 @@
 "use strict";
 
 const CACHE_VERSION = "2026-08-25-public-release-v10";
-const CODE_CACHE_VERSION = "2026-09-24-public-code-v16";
+const CODE_CACHE_VERSION = "2026-09-24-public-code-v17";
 const SHELL_CACHE = `ccg-shell-${CACHE_VERSION}-${CODE_CACHE_VERSION}`;
 const PAGE_CACHE = `ccg-pages-${CACHE_VERSION}`;
 const CODE_CACHE = `ccg-code-${CODE_CACHE_VERSION}`;
@@ -30,6 +30,7 @@ const PUBLIC_SHELL = Object.freeze([
   "/resources/css/ccg-responsive-safety.css",
   "/resources/css/ccg-responsive-page-polish.css",
   "/resources/css/ccg-sitewide-layout-optimization.css",
+  "/resources/css/ccg-archive-directory.css",
   "/resources/css/ccg-socials.css",
   "/resources/css/ccg-footer.css",
   "/resources/css/ccg-pwa-install-page.css",

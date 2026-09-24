@@ -1,0 +1,478 @@
+/* ============================================================
+   CCG ARCHIVE DIRECTORY SYSTEM — 2026-09-23
+   Shared density and wayfinding layer for archive directories.
+   Keeps existing static links/data intact and avoids synthetic scrolling.
+============================================================ */
+
+body[data-ccg-directory] {
+    --ccg-directory-accent: var(--accent-rgb, 0, 220, 255);
+    --ccg-directory-header-offset: var(--ccg-header-offset, 112px);
+    --ccg-directory-muted: rgba(255, 255, 255, 0.72);
+}
+
+body[data-ccg-directory] .ccg-publishers-main,
+body[data-ccg-directory="music-index"] .ccg-music-hub,
+body[data-ccg-directory="music-record"] .ccg-composer-page {
+    width: min(1320px, calc(100% - 28px));
+    margin-inline: auto;
+    padding-top: clamp(14px, 2vw, 24px);
+    padding-bottom: clamp(36px, 5vw, 58px);
+}
+
+body[data-ccg-directory] .ccg-publisher-breadcrumbs,
+body[data-ccg-directory] .ccg-composer-breadcrumbs {
+    margin-block: 10px 12px;
+    padding-block: 6px;
+}
+
+body[data-ccg-directory] .ccg-publishers-section,
+body[data-ccg-directory="music-index"] .composer-section {
+    margin-top: clamp(18px, 2.5vw, 30px);
+    margin-bottom: clamp(18px, 2.5vw, 30px);
+}
+
+body[data-ccg-directory] .ccg-publishers-section__heading {
+    margin-bottom: 10px;
+}
+
+body[data-ccg-directory] .ccg-publishers-section__heading h2,
+body[data-ccg-directory] .ccg-publishers-wayfinding h2,
+body[data-ccg-directory] .ccg-publisher-playlist h2 {
+    font-size: clamp(1.05rem, 2vw, 1.5rem);
+}
+
+/* Publisher directory and publisher records */
+
+body[data-ccg-directory^="publisher"] .ccg-publishers-hero {
+    padding: clamp(18px, 3vw, 30px);
+    border-radius: 16px;
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+body[data-ccg-directory^="publisher"] .ccg-publishers-hero__kicker {
+    margin-bottom: 6px;
+    font-size: 0.68rem;
+}
+
+body[data-ccg-directory^="publisher"] .ccg-publishers-hero__title {
+    max-width: 22ch;
+    font-size: clamp(1.55rem, 3.8vw, 2.75rem);
+    line-height: 1.06;
+}
+
+body[data-ccg-directory^="publisher"] .ccg-publishers-hero__intro {
+    max-width: 78ch;
+    margin-top: 10px;
+    font-size: clamp(0.86rem, 1.25vw, 0.98rem);
+    line-height: 1.52;
+}
+
+body[data-ccg-directory^="publisher"] .ccg-publishers-hero__stats {
+    gap: 6px;
+    margin-top: 14px;
+}
+
+body[data-ccg-directory^="publisher"] .ccg-publishers-hero__stats span {
+    min-height: 30px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+}
+
+body[data-ccg-directory^="publisher"] .ccg-publishers-tools {
+    position: sticky;
+    top: calc(var(--ccg-directory-header-offset) + 6px);
+    z-index: 80;
+    grid-template-columns: minmax(220px, 1fr) auto;
+    gap: 8px 12px;
+    margin: 10px 0 18px;
+    padding: 9px;
+    border-color: rgba(var(--ccg-directory-accent), 0.22);
+    border-radius: 12px;
+    background: rgba(3, 8, 18, 0.97);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.36);
+}
+
+body[data-ccg-directory^="publisher"] .ccg-publishers-search input {
+    min-height: 38px;
+    padding: 7px 11px;
+    border-radius: 8px;
+    font-size: 0.84rem;
+}
+
+body[data-ccg-directory^="publisher"] .ccg-publishers-visible-count {
+    margin: 0;
+    font-size: 0.75rem;
+}
+
+.ccg-directory-jump {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    overflow-x: auto;
+    padding-top: 7px;
+    border-top: 1px solid rgba(var(--ccg-directory-accent), 0.13);
+    scrollbar-width: none;
+}
+
+.ccg-directory-jump::-webkit-scrollbar {
+    display: none;
+}
+
+.ccg-directory-jump__label {
+    flex: 0 0 auto;
+    margin-right: 4px;
+    color: var(--ccg-directory-muted);
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.ccg-directory-jump__link,
+.ccg-directory-jump__disabled {
+    display: grid;
+    place-items: center;
+    flex: 0 0 28px;
+    width: 28px;
+    height: 26px;
+    border: 1px solid rgba(var(--ccg-directory-accent), 0.2);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.035);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.68rem;
+    font-weight: 800;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.ccg-directory-jump__link:hover,
+.ccg-directory-jump__link:focus-visible {
+    border-color: rgba(var(--ccg-directory-accent), 0.68);
+    background: rgba(var(--ccg-directory-accent), 0.12);
+    outline: none;
+}
+
+.ccg-directory-jump__disabled {
+    opacity: 0.28;
+}
+
+body[data-ccg-directory="publisher-index"] #publisherGrid > [data-publisher-card] {
+    scroll-margin-top: calc(var(--ccg-directory-header-offset) + 118px);
+}
+
+body[data-ccg-directory^="publisher"] .ccg-publisher-grid {
+    grid-template-columns: repeat(auto-fill, minmax(205px, 1fr));
+    gap: 8px;
+}
+
+body[data-ccg-directory^="publisher"] .ccg-publisher-grid--featured {
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 10px;
+}
+
+body[data-ccg-directory^="publisher"] .ccg-publisher-card {
+    min-height: 112px;
+    padding: 13px;
+    border-radius: 10px;
+    transition: border-color 130ms ease, background 130ms ease;
+}
+
+body[data-ccg-directory^="publisher"] .ccg-publisher-card:hover,
+body[data-ccg-directory^="publisher"] .ccg-publisher-card:focus-visible {
+    transform: none;
+}
+
+body[data-ccg-directory^="publisher"] .ccg-publisher-card--featured {
+    min-height: 132px;
+}
+
+body[data-ccg-directory^="publisher"] .ccg-publisher-card__title,
+body[data-ccg-directory^="publisher"] .ccg-publisher-card__name {
+    font-size: 0.86rem;
+    line-height: 1.25;
+}
+
+body[data-ccg-directory^="publisher"] .ccg-publisher-card__stats,
+body[data-ccg-directory^="publisher"] .ccg-publisher-card__meta,
+body[data-ccg-directory^="publisher"] .ccg-publisher-card__count {
+    margin-top: 5px;
+    font-size: 0.72rem;
+}
+
+body[data-ccg-directory="publisher-record"] .ccg-publisher-game-grid {
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 10px;
+}
+
+body[data-ccg-directory="publisher-record"] .ccg-publisher-game-card__body {
+    min-height: 72px;
+    gap: 6px;
+    padding: 10px 11px;
+}
+
+body[data-ccg-directory="publisher-record"] .ccg-publisher-game-card__title {
+    font-size: 0.82rem;
+}
+
+body[data-ccg-directory="publisher-record"] .ccg-publisher-game-card__meta {
+    font-size: 0.7rem;
+}
+
+body[data-ccg-directory="publisher-record"] .ccg-publisher-playlist,
+body[data-ccg-directory="publisher-record"] .ccg-publishers-wayfinding {
+    margin-block: 18px;
+    padding: 14px;
+}
+
+/* Genre + collection indexes and records */
+
+body[data-ccg-directory="genre-index"] .ccg-genre-card,
+body[data-ccg-directory="collection-index"] .ccg-collection-card {
+    border-radius: 12px;
+    transition: border-color 130ms ease, background 130ms ease;
+}
+
+body[data-ccg-directory="genre-index"] .ccg-genre-card:hover,
+body[data-ccg-directory="collection-index"] .ccg-collection-card:hover {
+    transform: none;
+}
+
+body[data-ccg-directory="genre-index"] .ccg-category-omega__card-description,
+body[data-ccg-directory="collection-index"] .ccg-collection-card__description {
+    padding-bottom: 10px;
+    font-size: 0.72rem;
+    line-height: 1.38;
+}
+
+body[data-ccg-directory="genre-record"] .ccg-category-omega__hero,
+body[data-ccg-directory="collection-record"] .ccg-category-omega__hero {
+    margin-bottom: 12px;
+}
+
+body[data-ccg-directory="genre-record"] .ccg-category-omega__discovery,
+body[data-ccg-directory="collection-record"] .ccg-category-omega__discovery {
+    margin-block: 14px 22px;
+    padding: 14px 16px;
+}
+
+body[data-ccg-directory="genre-record"] .ccg-category-omega__discovery-heading p,
+body[data-ccg-directory="collection-record"] .ccg-category-omega__discovery-heading p {
+    line-height: 1.48;
+}
+
+/* Dense category indexes and game-record grids */
+
+body[data-ccg-directory="genre-index"] .ccg-genre-grid,
+body[data-ccg-directory="collection-index"] .ccg-genre-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+}
+
+body[data-ccg-directory="genre-record"] .ccg-genre-main,
+body[data-ccg-directory="collection-record"]:not([data-collection="Retro Specials"]):not([data-collection="Retro Events"]):not([data-collection="Amiga Demo Music"]) .ccg-genre-main {
+    margin-top: 18px;
+}
+
+body[data-ccg-directory="genre-record"] .ccg-genre-grid,
+body[data-ccg-directory="collection-record"]:not([data-collection="Retro Specials"]):not([data-collection="Retro Events"]):not([data-collection="Amiga Demo Music"]) .ccg-genre-grid {
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 10px;
+}
+
+body[data-ccg-directory="genre-record"] .ccg-game-card,
+body[data-ccg-directory="collection-record"]:not([data-collection="Retro Specials"]):not([data-collection="Retro Events"]):not([data-collection="Amiga Demo Music"]) .ccg-game-card {
+    gap: 6px;
+    padding: 9px;
+    border-radius: 11px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.58), 0 0 12px rgba(var(--ccg-directory-accent), 0.1);
+    transition: border-color 130ms ease, background 130ms ease;
+}
+
+body[data-ccg-directory="genre-record"] .ccg-game-card::before,
+body[data-ccg-directory="collection-record"]:not([data-collection="Retro Specials"]):not([data-collection="Retro Events"]):not([data-collection="Amiga Demo Music"]) .ccg-game-card::before {
+    display: none;
+}
+
+body[data-ccg-directory="genre-record"] .ccg-game-card:hover,
+body[data-ccg-directory="genre-record"] .ccg-game-card:focus-within,
+body[data-ccg-directory="collection-record"]:not([data-collection="Retro Specials"]):not([data-collection="Retro Events"]):not([data-collection="Amiga Demo Music"]) .ccg-game-card:hover,
+body[data-ccg-directory="collection-record"]:not([data-collection="Retro Specials"]):not([data-collection="Retro Events"]):not([data-collection="Amiga Demo Music"]) .ccg-game-card:focus-within {
+    transform: none;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.62), 0 0 14px rgba(var(--ccg-directory-accent), 0.13);
+}
+
+body[data-ccg-directory="genre-record"] .ccg-game-card__thumb,
+body[data-ccg-directory="collection-record"]:not([data-collection="Retro Specials"]):not([data-collection="Retro Events"]):not([data-collection="Amiga Demo Music"]) .ccg-game-card__thumb {
+    padding: 3px;
+    border-radius: 8px;
+}
+
+body[data-ccg-directory="genre-record"] .ccg-game-card__body,
+body[data-ccg-directory="collection-record"]:not([data-collection="Retro Specials"]):not([data-collection="Retro Events"]):not([data-collection="Amiga Demo Music"]) .ccg-game-card__body {
+    gap: 6px;
+}
+
+body[data-ccg-directory="genre-record"] .ccg-game-card__title,
+body[data-ccg-directory="collection-record"]:not([data-collection="Retro Specials"]):not([data-collection="Retro Events"]):not([data-collection="Amiga Demo Music"]) .ccg-game-card__title {
+    font-size: 0.84rem;
+    line-height: 1.28;
+    letter-spacing: 0.045em;
+}
+
+body[data-ccg-directory="genre-record"] .ccg-game-card__meta,
+body[data-ccg-directory="collection-record"]:not([data-collection="Retro Specials"]):not([data-collection="Retro Events"]):not([data-collection="Amiga Demo Music"]) .ccg-game-card__meta {
+    font-size: 0.72rem;
+    line-height: 1.3;
+}
+
+body[data-ccg-directory="genre-record"] .ccg-game-card__btn,
+body[data-ccg-directory="collection-record"]:not([data-collection="Retro Specials"]):not([data-collection="Retro Events"]):not([data-collection="Amiga Demo Music"]) .ccg-game-card__btn {
+    max-width: none;
+    min-height: 32px;
+    padding: 7px 9px;
+    border-radius: 7px;
+    font-size: 0.66rem;
+    letter-spacing: 0.07em;
+}
+
+body[data-ccg-directory="genre-record"] .ccg-list-load-more,
+body[data-ccg-directory="collection-record"]:not([data-collection="Retro Specials"]):not([data-collection="Retro Events"]):not([data-collection="Amiga Demo Music"]) .ccg-list-load-more {
+    margin-top: 12px;
+}
+
+/* Music hub and composer records */
+
+body[data-ccg-directory="music-index"] .ccg-music-hub {
+    max-width: 1320px;
+}
+
+body[data-ccg-directory="music-index"] .ccg-music-hub__hero {
+    padding: 14px 16px;
+    border-radius: 14px;
+}
+
+body[data-ccg-directory="music-index"] .ccg-music-hub__hero .ccg-composer-title {
+    font-size: clamp(1.35rem, 2.6vw, 1.95rem);
+}
+
+body[data-ccg-directory="music-index"] .ccg-music-hub__hero .ccg-composer-intro {
+    margin-block: 0.26rem 0.38rem;
+    font-size: 0.82rem;
+}
+
+body[data-ccg-directory="music-index"] .composer-grid-featured-omega {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.45rem;
+}
+
+body[data-ccg-directory="music-index"] .composer-grid-featured-omega .composer-info {
+    padding: 0.48rem 0.55rem 0.54rem;
+}
+
+body[data-ccg-directory="music-index"] .composer-discovery {
+    padding: 0.5rem;
+    border-radius: 12px;
+}
+
+body[data-ccg-directory="music-index"] .composer-discovery__search-wrap {
+    position: sticky;
+    top: calc(var(--ccg-directory-header-offset) + 6px);
+    z-index: 70;
+    margin-bottom: 0.42rem;
+    padding: 0.36rem 0.42rem;
+    background: rgba(3, 9, 19, 0.98);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.32);
+}
+
+body[data-ccg-directory="music-index"] .composer-accordion {
+    gap: 0.2rem;
+}
+
+body[data-ccg-directory="music-index"] .composer-accordion__header {
+    min-height: 36px;
+}
+
+body[data-ccg-directory="music-index"] .composer-accordion__body .ccg-composer-chip-list {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.24rem;
+}
+
+body[data-ccg-directory="music-record"] .ccg-composer-title {
+    margin-bottom: 6px;
+    font-size: clamp(1.35rem, 3vw, 2rem);
+}
+
+body[data-ccg-directory="music-record"] .ccg-composer-subtitle,
+body[data-ccg-directory="music-record"] .ccg-composer-intro {
+    margin-block: 5px 9px;
+}
+
+@media (max-width: 760px) {
+    body[data-ccg-directory] {
+        --ccg-directory-header-offset: var(--ccg-header-offset, 104px);
+    }
+
+    body[data-ccg-directory] .ccg-publishers-main,
+    body[data-ccg-directory="music-index"] .ccg-music-hub,
+    body[data-ccg-directory="music-record"] .ccg-composer-page {
+        width: min(100% - 16px, 1320px);
+    }
+
+    body[data-ccg-directory^="publisher"] .ccg-publishers-tools {
+        top: calc(var(--ccg-directory-header-offset) + 3px);
+        grid-template-columns: 1fr auto;
+        padding: 7px;
+    }
+
+    body[data-ccg-directory^="publisher"] .ccg-publisher-grid,
+    body[data-ccg-directory^="publisher"] .ccg-publisher-grid--featured,
+    body[data-ccg-directory="publisher-record"] .ccg-publisher-game-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px;
+    }
+
+    body[data-ccg-directory^="publisher"] .ccg-publisher-card {
+        min-height: 98px;
+        padding: 10px;
+    }
+
+    .ccg-directory-jump__label {
+        display: none;
+    }
+
+    body[data-ccg-directory="music-index"] .composer-discovery__search-wrap {
+        top: calc(var(--ccg-directory-header-offset) + 3px);
+    }
+}
+
+@media (max-width: 470px) {
+    body[data-ccg-directory^="publisher"] .ccg-publisher-grid,
+    body[data-ccg-directory^="publisher"] .ccg-publisher-grid--featured,
+    body[data-ccg-directory="publisher-record"] .ccg-publisher-game-grid {
+        grid-template-columns: 1fr;
+    }
+
+    body[data-ccg-directory^="publisher"] .ccg-publishers-tools {
+        grid-template-columns: 1fr;
+    }
+
+    body[data-ccg-directory^="publisher"] .ccg-publishers-visible-count {
+        justify-self: start;
+    }
+
+    body[data-ccg-directory="music-index"] .composer-grid-featured-omega {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body[data-ccg-directory] .ccg-publisher-card,
+    body[data-ccg-directory] .ccg-publisher-game-card,
+    body[data-ccg-directory] .ccg-genre-card,
+    body[data-ccg-directory] .ccg-collection-card {
+        transition: none;
+    }
+}
