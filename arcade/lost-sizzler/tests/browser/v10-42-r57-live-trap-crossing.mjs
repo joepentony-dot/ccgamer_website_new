@@ -118,7 +118,14 @@ try{
     for(const candidate of host?.traps||[]){
       if(!candidate?.active)continue;
       const found=directions.map(([dx,dy])=>({dx,dy,sx:Number(candidate.x)-dx,sy:Number(candidate.y)-dy,ex:Number(candidate.x)+dx,ey:Number(candidate.y)+dy}))
-        .find(q=>W.walkable(world.map,q.sx,q.sy,host)&&W.walkable(world.map,q.ex,q.ey,host));
+        .find(q=>{
+          const entryOpen=W.walkable(world.map,q.sx,q.sy,host);
+          const exitOpen=W.walkable(world.map,q.ex,q.ey,host);
+          const exitChest=(host.chests||[]).some(chest=>chest?.active&&Number(chest.x)===q.ex&&Number(chest.y)===q.ey);
+          const exitDoor=(host.doors||[]).some(door=>!door?.open&&Number(door.x)===q.ex&&Number(door.y)===q.ey);
+          const exitTrap=(host.traps||[]).some(other=>other!==candidate&&other?.active&&Number(other.x)===q.ex&&Number(other.y)===q.ey);
+          return entryOpen&&exitOpen&&!exitChest&&!exitDoor&&!exitTrap
+        });
       if(found){trap=candidate;dir=found;break}
     }
     if(!trap||!dir)return{available:false,reason:"no dashable trap"};
