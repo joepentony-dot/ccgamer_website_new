@@ -28,6 +28,12 @@ assert.match(reporter,/ANOMALY_ACTIVE_TRAP_NO_DAMAGE/,"reporter must flag an act
 assert.match(reporter,/ANOMALY_MULTIPLE_TRAPS_SAME_TILE/,"reporter must expose duplicate ordinary trap objects occupying one tile");
 assert.match(reporter,/trap-active-contact-observed/,"reporter must record the exact active trap contact before delayed verification");
 assert.match(reporter,/trap-active-damage-confirmed/,"reporter must distinguish verified trap health loss from a failed contact");
+assert.match(reporter,/function observeMovementBoundary\(player,stage="after"/,"environment diagnostics must receive exact movement-boundary contacts");
+assert.match(reporter,/ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE/,"reporter must catch fast crossings over active ordinary traps");
+assert.match(reporter,/ANOMALY_ACTIVE_HAZARD_CROSSING_NO_DAMAGE/,"reporter must catch fast crossings through active dedicated hazards");
+assert.match(reporter,/environment-boundary-contact/,"reporter must retain contact evidence even when the player leaves the tile before the polling loop sees it");
+assert.match(reporter,/environment-trap-crossing-damage-confirmed/,"reporter must distinguish a successful crossing hit from a failed crossing");
+
 assert.match(reporter,/trapHitsByKind/,"trap diagnostics must retain per-kind FIRE SPIKE and SHOCK hit evidence");
 assert.match(reporter,/CCGLostSizzlerV141R56PlaytestCompletion/,"trap report must capture the retained R56 cycle latch");
 assert.match(reporter,/CCGLostSizzlerV141R57DesktopPrepStability/,"trap report must capture the retained R57 cycle latch");
@@ -55,3 +61,7 @@ assert.match(css,/#ccg-bug-report-modal/);
 assert.match(css,/@media \(max-width:700px\)/,"reporter must remain usable on mobile");
 
 console.log("Dungeon Carnage bounded incident reporter contract passed.");
+
+const gamePlay=fs.readFileSync(new URL("js/game-play.js",root),"utf8");
+assert.match(gamePlay,/CCGLostSizzlerBugReporter\?\.observeMovementBoundary\?\.\(p,"before"/,"movement boundary must snapshot environmental contact before trap resolution");
+assert.match(gamePlay,/triggerTrap\(p\);\s*try\{window\.CCGLostSizzlerBugReporter\?\.observeMovementBoundary\?\.\(p,"after"/s,"movement boundary must verify environmental contact immediately after trap resolution");
