@@ -70,12 +70,18 @@
     }
   }
 
+  function isLegacyIdFallback(value, user) {
+    const text = readSafeValue(value).toLowerCase();
+    const prefix = String(user && user.id || '').slice(0, 8).toLowerCase();
+    return Boolean(text && prefix && text === prefix);
+  }
+
   function getDisplayName(profile, user) {
     const profileDisplayName = readSafeValue(profile && profile.display_name);
-    if (profileDisplayName) return profileDisplayName;
+    if (profileDisplayName && !isLegacyIdFallback(profileDisplayName, user)) return profileDisplayName;
 
     const profileUsername = readSafeValue(profile && profile.username);
-    if (profileUsername) return profileUsername;
+    if (profileUsername && !isLegacyIdFallback(profileUsername, user)) return profileUsername;
 
     const metadataName = readSafeValue(user && user.user_metadata && (user.user_metadata.name || user.user_metadata.full_name || user.user_metadata.display_name));
     if (metadataName) return metadataName;

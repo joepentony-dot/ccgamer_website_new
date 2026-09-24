@@ -162,8 +162,7 @@
       metadata.username,
       metadata.display_name,
       metadata.full_name,
-      metadata.name,
-      user.id ? user.id.slice(0, 8) : ''
+      metadata.name
     ];
 
     for (const candidate of candidates) {
@@ -173,7 +172,19 @@
       return text;
     }
 
-    return 'member';
+    return '';
+  }
+
+  function isLegacyIdFallback(value, user) {
+    const text = String(value || '').trim().toLowerCase();
+    const prefix = String(user && user.id || '').slice(0, 8).toLowerCase();
+    return Boolean(text && prefix && text === prefix);
+  }
+
+  function shouldReplaceDisplayName(value, user) {
+    const text = String(value || '').trim();
+    if (!text || text.toLowerCase() === 'member') return true;
+    return isLegacyIdFallback(text, user);
   }
 
   function toggleView(view) {
@@ -329,9 +340,14 @@
       const supabase = await safeGetClient();
       if (!supabase) return;
 
+      const currentDisplayName = state.currentProfile && state.currentProfile.display_name;
+      const displayName = shouldReplaceDisplayName(currentDisplayName, state.currentUser)
+        ? username
+        : String(currentDisplayName).trim();
+
       const { error } = await supabase
         .from('profiles')
-        .upsert({ id: state.currentUser.id, username, avatar_url: null }, { onConflict: 'id' });
+        .upsert({ id: state.currentUser.id, username, display_name: displayName, avatar_url: null }, { onConflict: 'id' });
 
       if (error) {
         if (isCommunityUnavailableError(error)) return setMessage(communityUnavailableMessage(), 'error');
@@ -371,12 +387,18 @@
       safeProfileSeed(user)
     );
 
+    const metadataDisplayName = user.user_metadata && (
+      user.user_metadata.display_name
+      || user.user_metadata.full_name
+      || user.user_metadata.name
+    );
+
     const payload = {
       id: user.id,
       username: fallbackUsername,
-      display_name: user.user_metadata && user.user_metadata.display_name
-        ? String(user.user_metadata.display_name).slice(0, 42)
-        : fallbackUsername,
+      display_name: metadataDisplayName
+        ? String(metadataDisplayName).slice(0, 42)
+        : 'Member',
       bio: null,
       avatar_url: user.user_metadata && user.user_metadata.avatar_url ? String(user.user_metadata.avatar_url) : null
     };
@@ -416,7 +438,7 @@
       if (state.currentUser) {
         const profile = await fetchProfile(state.currentUser.id);
         state.currentProfile = profile || await createFallbackProfile(state.currentUser);
-        if (!profile || !profile.username) {
+        if (!profile || !profile.username || isLegacyIdFallback(profile.username, state.currentUser)) {
           openModal('username');
           setMessage('Welcome! Please choose your public username.');
         }
