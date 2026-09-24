@@ -1,6 +1,6 @@
-// SAFETY: prevent preload crash
+// Canonical /games/<slug>/ pages are generated with their primary content already present.
 function isPreloadedSingleGame() {
-    return false;
+    return hasPrefilledSingleGameContent();
 }
 
 /* ============================================================
@@ -398,6 +398,7 @@ async function hydrateSingleGamePage() {
     }
 
     const params = new URLSearchParams(window.location.search);
+    const preloaded = isPreloadedSingleGame();
     // Regression note: slug routing was skipped for /games/<slug>/index.html because the
     // ".html" guard blocked slug parsing, leaving the render gate locked and the page blank.
     // We now normalize slug tokens from the pathname first, then query params, then legacy IDs.
@@ -449,7 +450,9 @@ async function hydrateSingleGamePage() {
     };
 
     try {
-        const { games, source } = await fetchGamesLibrary();
+        const { games, source } = await fetchGamesLibrary({
+            includeDescriptionEnrichments: !preloaded
+        });
         CCG_SINGLE_ALL_GAMES = games;
 
         if (isDevMode()) {
@@ -699,17 +702,20 @@ function resolveGamesDataFallbackUrls() {
     return urls;
 }
 
-async function fetchGamesLibrary() {
+async function fetchGamesLibrary(options = {}) {
     const urls = resolveGamesDataFallbackUrls();
+    const includeDescriptionEnrichments = options.includeDescriptionEnrichments !== false;
     let lastError = null;
-    // Editorial enrichments are required before the existing render gate opens,
-    // but they do not depend on games.json. Start both network paths together so
-    // the 700KB+ enrichment payload does not begin only after games.json parses.
-    const enrichmentsPromise = fetchGameDescriptionEnrichments();
+    // Dynamic/query-string routes still need runtime editorial enrichment. Canonical
+    // generated pages already contain that copy, so avoid downloading it a second time.
+    // When enrichment is needed, keep both network paths overlapped.
+    const enrichmentsPromise = includeDescriptionEnrichments
+        ? fetchGameDescriptionEnrichments()
+        : Promise.resolve({});
 
     for (const url of urls) {
         try {
-            const response = await fetch(url, { cache: "no-store" });
+            const response = await fetch(url, { cache: "no-cache" });
             if (!response.ok) {
                 lastError = new Error(`games.json ${response.status} via ${url}`);
                 continue;
@@ -1628,9 +1634,12 @@ function renderGame(game) {
     const videoDescription = videoSection?.querySelector("[data-ccg-video-description]");
     if (videoDescription) {
         const overview = String(game.description || "").trim();
+        const prefilledVideoDescription = preloaded && videoDescription.textContent.trim();
         if (hasVideo && overview) {
-            if (game._ccgEnrichedDescription) videoDescription.textContent = overview;
-            else videoDescription.innerHTML = overview;
+            if (!prefilledVideoDescription) {
+                if (game._ccgEnrichedDescription) videoDescription.textContent = overview;
+                else videoDescription.innerHTML = overview;
+            }
             videoDescription.hidden = false;
         } else {
             videoDescription.textContent = "";
