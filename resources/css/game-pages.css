@@ -1924,3 +1924,29 @@
         grid-template-columns: minmax(0, 1fr) auto;
     }
 }
+
+
+/* OMEGA SINGLE-GAME BACK NAVIGATION — 2026-09-24 */
+.ccg-page--single-game .game-page-backbar {
+    grid-column: 1 / -1;
+    display: flex;
+    width: 100%;
+    margin: 0;
+    justify-content: flex-start;
+    box-sizing: border-box;
+}
+
+.ccg-page--single-game .game-page-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 38px;
+    padding: 8px 14px;
+}
+
+@media (max-width: 560px) {
+    .ccg-page--single-game .game-page-back {
+        min-height: 36px;
+        padding: 7px 12px;
+    }
+}

@@ -44,6 +44,8 @@ const apache = read("games/.htaccess");
 const navCore = read("js/ccg-nav-core.js");
 const consolidation = read("js/ccg-legacy-url-consolidation.js");
 const handler = read("games/game.html");
+const gameLoader = read("js/load-single-game.js");
+const dungeonCarnageAlias = read("arcade/c64-dungeon-carnage/index.html");
 const sitemap = read("sitemap-games.xml");
 const gamesSearch = read("games/games-search.json");
 const games = readJson("games/games.json");
@@ -63,6 +65,10 @@ if (!/permanent\s+two-way\s+reload\s+loop/i.test(consolidation)) {
 }
 requireText(handler, '<meta name="robots" content="noindex,follow">', "The shared game handler meta noindex is missing.");
 requireText(handler, '<link rel="canonical" id="game-canonical"', "The runtime canonical link is missing.");
+requireText(handler, 'data-ccg-game-back', "The shared individual-game Back control is missing.");
+requireText(gameLoader, "function initGameBackNavigation()", "The shared individual-game Back navigation runtime is missing.");
+requireText(dungeonCarnageAlias, '<base href="/arcade/lost-sizzler/">', "The raw-main Dungeon Carnage route alias is missing its canonical asset base.");
+requireText(dungeonCarnageAlias, '<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/arcade/c64-dungeon-carnage/">', "The Dungeon Carnage route alias must preserve the public canonical URL.");
 
 if (/consolidateLegacyGameUrl|replaceLocation\(`games\/\$\{canonicalSlug\}\//.test(consolidation)) {
     errors.push("The shared game handler redirects back to canonical game folders and can create a reciprocal reload loop.");
