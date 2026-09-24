@@ -263,6 +263,10 @@ function removeStaticNotFoundCopy(html) {
 
 function prefillStaticContent(html, game, title, imagePath, imageMetadata) {
   const description = stripHtml(game?.description || "");
+  html = html.replace(
+    /<div id="gameHeroBG" class="game-hero__bg" aria-hidden="true"><\/div>/i,
+    `<div id="gameHeroBG" class="game-hero__bg" aria-hidden="true" style="background-image: url(&quot;${escapeHtml(imagePath)}&quot;);"></div>`
+  );
   const videoId = String(
     game?.videoid
     || game?.videoId
