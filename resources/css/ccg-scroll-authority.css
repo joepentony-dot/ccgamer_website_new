@@ -177,13 +177,23 @@ html[data-ccg-page] .ccg-bg-starfield::after {
     will-change: opacity !important;
 }
 
-/* Retro Specials previously promoted every video card into a compositor
-   layer. Keep that specific optimisation because the collection can be large. */
+/* Editorial/video collections share the same card component. Do not promote
+   every card into its own compositor layer: on long collection pages that turns
+   normal wheel scrolling into unnecessary layer management. Off-screen cards
+   may also skip rendering work until they approach the viewport. */
 html[data-ccg-page="collection-single"]
 > body[data-collection="Retro Specials"]
+.ccg-game-card--retro-event,
+html[data-ccg-page="collection-single"]
+> body[data-collection="Retro Events"]
+.ccg-game-card--retro-event,
+html[data-ccg-page="collection-single"]
+> body[data-collection="Amiga Demo Music"]
 .ccg-game-card--retro-event {
     transform: none;
     will-change: auto;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 340px;
 }
 
 /* During active document scrolling the shared `ccg-perf-paused` state pauses

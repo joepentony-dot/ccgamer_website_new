@@ -20,6 +20,11 @@ on:
       - "js/game-discovery.js"
       - "resources/css/game-discovery.css"
       - "resources/css/ccg-nav-fit.css"
+      - "resources/css/ccg-responsive-safety.css"
+      - "resources/css/ccg-responsive-page-polish.css"
+      - "resources/css/ccg-sitewide-layout-optimization.css"
+      - "admin/templates/retro-video-template.html"
+      - "scripts/generate-retro-pages.js"
       - "resources/css/ccg-mode-identity.css"
       - "resources/css/ccg-scroll-authority.css"
       - "resources/css/ccg-socials.css"
@@ -50,6 +55,11 @@ on:
       - "js/game-discovery.js"
       - "resources/css/game-discovery.css"
       - "resources/css/ccg-nav-fit.css"
+      - "resources/css/ccg-responsive-safety.css"
+      - "resources/css/ccg-responsive-page-polish.css"
+      - "resources/css/ccg-sitewide-layout-optimization.css"
+      - "admin/templates/retro-video-template.html"
+      - "scripts/generate-retro-pages.js"
       - "resources/css/ccg-mode-identity.css"
       - "resources/css/ccg-scroll-authority.css"
       - "resources/css/ccg-socials.css"
@@ -121,6 +131,13 @@ jobs:
 
       - name: Run desktop More browser interaction audit
         run: node scripts/audit-nav-more-browser.js
+
+      - name: Regenerate retro watch pages for mobile CLS audit
+        run: |
+          node scripts/generate-retro-pages.js
+          node scripts/normalize-public-header-shell.js --root retro-events --check
+          node scripts/normalize-public-header-shell.js --root retro-specials --check
+          node scripts/normalize-public-header-shell.js --root amiga-demo-music --check
 
       - name: Run multi-page global shell browser audit
         run: node scripts/audit-global-shell-browser.js

@@ -100,6 +100,13 @@
         });
     }
 
+    function announceArchiveReady(status = "ready") {
+        window.CCG_ZZAP64_AWARDS_ARCHIVE_READY = true;
+        try {
+            window.dispatchEvent(new CustomEvent("ccg:zzap64-awards-ready", { detail: { status } }));
+        } catch (_error) {}
+    }
+
     function updateProgress(percent, label, detail, options = {}) {
         const loading = document.getElementById("zzapLoading");
         const progress = document.getElementById("zzapLoadingProgress");
@@ -605,6 +612,7 @@
             setControlsEnabled(true);
 
             updateProgress(100, "Archive ready", "Awards, scores, original magazine links, filters and reviewed-game links are available.");
+            announceArchiveReady("ready");
         } catch (error) {
             state.linksStatus = "failed";
             await render();
@@ -615,6 +623,7 @@
                 "The awards and original magazine links loaded, but CCG reviewed-game links could not be checked on this visit.",
                 { state: "warning", delay: 1200 }
             );
+            announceArchiveReady("warning");
             console.warn("[CCG] Zzap reviewed-game links were unavailable:", error);
         }
     }
@@ -647,6 +656,7 @@
                 "The award records could not be loaded. Refresh the page to try again.",
                 { state: "error", hide: false }
             );
+            announceArchiveReady("error");
             console.error("[CCG] Zzap!64 awards archive failed:", error);
         }
     }

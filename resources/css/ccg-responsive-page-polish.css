@@ -1283,3 +1283,32 @@ html.ccg-has-floating-nav body:not(:has(.ccg-footer)) .ccg-main {
         transition: none !important;
     }
 }
+
+/* ============================================================
+   MOBILE AUTH GEOMETRY RESERVATION — CLS GUARD
+   Keep the final responsive cascade dimensionally identical to
+   the render-blocking nav-fit reservation.
+============================================================ */
+@media (min-width: 901px) and (max-width: 1199px) {
+    .ccg-header .ccg-auth-slot {
+        min-height: 36px !important;
+    }
+}
+
+@media (min-width: 701px) and (max-width: 900px) {
+    .ccg-header .ccg-auth-slot {
+        min-height: 40px !important;
+    }
+}
+
+@media (min-width: 521px) and (max-width: 700px) {
+    .ccg-header .ccg-auth-slot {
+        min-height: 35px !important;
+    }
+}
+
+@media (max-width: 520px) {
+    .ccg-header .ccg-auth-slot {
+        min-height: 34px !important;
+    }
+}

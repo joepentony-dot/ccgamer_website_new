@@ -160,6 +160,26 @@
         }
     }
 
-    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
-    else init();
+    let scheduled = false;
+    function scheduleInit() {
+        if (scheduled) return;
+        scheduled = true;
+        const run = () => init();
+        if (typeof window.requestIdleCallback === "function") {
+            window.requestIdleCallback(run, { timeout: 1800 });
+        } else {
+            window.setTimeout(run, 240);
+        }
+    }
+
+    function waitForPrimaryArchive() {
+        if (window.CCG_ZZAP64_AWARDS_ARCHIVE_READY) {
+            scheduleInit();
+            return;
+        }
+        window.addEventListener("ccg:zzap64-awards-ready", scheduleInit, { once: true });
+    }
+
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", waitForPrimaryArchive, { once: true });
+    else waitForPrimaryArchive();
 })();

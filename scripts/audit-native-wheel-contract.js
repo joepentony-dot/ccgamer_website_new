@@ -27,6 +27,24 @@ const HOST = "127.0.0.1";
 const DRIVER_PORT = 9517;
 const TARGET_PAGE = "/games/collections/retro-specials.html";
 const GAME_MEDIA_PAGE = "/games/1942/index.html";
+const HOME_PAGE = "/home.html";
+const SITEWIDE_WHEEL_PAGES = [
+    { path: "/home.html", label: "Home" },
+    { path: "/games/index.html", label: "Browse Games" },
+    { path: "/games/1942/index.html", label: "Single Game" },
+    { path: "/games/genres/index.html", label: "Genres" },
+    { path: "/games/publishers/index.html", label: "Publishers" },
+    { path: "/games/collections/index.html", label: "Collections" },
+    { path: "/games/discover/index.html", label: "Find Me a Game" },
+    { path: "/videos/index.html", label: "Videos" },
+    { path: "/zzap64/index.html", label: "Zzap 64" },
+    { path: "/about.html", label: "About" },
+    { path: "/emulation.html", label: "Emulation" },
+    { path: "/quiz/quiz.html", label: "Quiz" },
+    { path: "/contact.html", label: "Contact" },
+    { path: "/support.html", label: "Support" }
+];
+const MAX_FIRST_SCROLL_LATENCY_MS = 250;
 const CSS_PATH = path.join(ROOT, "resources/css/ccg-scroll-authority.css");
 const GLOBAL_JS_PATH = path.join(ROOT, "js/ccg-global.js");
 const PAGE_PATH = path.join(ROOT, "games/collections/retro-specials.html");
@@ -119,6 +137,8 @@ function assertStaticContract() {
     const css = fs.readFileSync(CSS_PATH, "utf8");
     const globalJs = fs.readFileSync(GLOBAL_JS_PATH, "utf8");
     const html = fs.readFileSync(PAGE_PATH, "utf8");
+    const zzapAwards = fs.readFileSync(path.join(ROOT, "js/zzap64-awards.js"), "utf8");
+    const zzapAliasFix = fs.readFileSync(path.join(ROOT, "js/zzap64-game-link-fix.js"), "utf8");
 
     const requiredCss = [
         ["@supports (overflow: clip)", "overflow-x clip support"],
@@ -147,6 +167,10 @@ function assertStaticContract() {
     requireText(html, "data-collection=\"Retro Specials\"", "Retro Specials body identity");
     requireText(html, "ccg-game-card--retro-event", "Retro Specials card markup");
     assertNoLocalWheelOwners(html);
+
+    requireText(zzapAwards, 'window.dispatchEvent(new CustomEvent("ccg:zzap64-awards-ready"', "Zzap archive ready signal");
+    requireText(zzapAliasFix, 'window.addEventListener("ccg:zzap64-awards-ready", scheduleInit', "deferred Zzap alias scan ownership");
+    requireText(zzapAliasFix, 'window.requestIdleCallback(run, { timeout: 1800 })', "idle Zzap alias scan scheduling");
 }
 
 function commandPath(command) {
@@ -313,16 +337,43 @@ async function cdp(sessionId, cmd, params = {}) {
     return payload.value;
 }
 
-async function wheelDown(sessionId, x, y) {
+async function movePointer(sessionId, x, y) {
+    await cdp(sessionId, "Input.dispatchMouseEvent", {
+        type: "mouseMoved",
+        x,
+        y,
+        button: "none",
+        buttons: 0,
+        pointerType: "mouse"
+    });
+    // Match the real-world case this contract protects: the cursor is already
+    // resting over the content before the user turns the physical wheel.
+    await new Promise((resolve) => setTimeout(resolve, 120));
+}
+
+async function dispatchWheel(sessionId, x, y, deltaY) {
     await cdp(sessionId, "Input.dispatchMouseEvent", {
         type: "mouseWheel",
         x,
         y,
         deltaX: 0,
-        deltaY: WHEEL_DELTA,
+        deltaY,
         pointerType: "mouse"
     });
     await new Promise((resolve) => setTimeout(resolve, 250));
+}
+
+async function wheel(sessionId, x, y, deltaY) {
+    await movePointer(sessionId, x, y);
+    await dispatchWheel(sessionId, x, y, deltaY);
+}
+
+async function wheelDown(sessionId, x, y) {
+    await wheel(sessionId, x, y, WHEEL_DELTA);
+}
+
+async function wheelUp(sessionId, x, y) {
+    await wheel(sessionId, x, y, -WHEEL_DELTA);
 }
 
 async function prepareWheelTarget(sessionId) {
@@ -526,6 +577,441 @@ async function auditGameMediaWheel(sessionId, sitePort, viewport) {
     console.log(`PASS ${viewport.label}: native mouse wheel moved the document ${movement}px over the game video guard.`);
 }
 
+async function prepareGenericWheelTarget(sessionId, depth = 0.35) {
+    return execute(sessionId, String.raw`
+return (function (depth) {
+    var root = document.documentElement;
+    var body = document.body;
+    var scroller = document.scrollingElement || root;
+    root.style.setProperty('scroll-behavior', 'auto', 'important');
+    if (body) body.style.setProperty('scroll-behavior', 'auto', 'important');
+
+    var maxScroll = Math.max(0, Math.round(scroller.scrollHeight - window.innerHeight));
+    if (maxScroll < 400) {
+        return { skip: true, reason: 'insufficient vertical scroll range', maxScroll: maxScroll };
+    }
+
+    var targetY = Math.max(0, Math.min(maxScroll - 200, Math.round(maxScroll * depth)));
+    window.scrollTo(0, targetY);
+
+    var x = Math.max(2, Math.min(window.innerWidth - 3, Math.round(window.innerWidth * 0.5)));
+    var y = Math.max(2, Math.min(window.innerHeight - 3, Math.round(window.innerHeight * 0.5)));
+    var hit = document.elementFromPoint(x, y);
+    var nested = [];
+    for (var node = hit; node && node !== body && node !== root; node = node.parentElement) {
+        var style = getComputedStyle(node);
+        if (/^(auto|scroll)$/i.test(style.overflowY || '') && node.scrollHeight > node.clientHeight + 24) {
+            nested.push(node.tagName.toLowerCase() + (node.id ? '#' + node.id : '') + (node.classList.length ? '.' + Array.from(node.classList).slice(0, 3).join('.') : ''));
+        }
+    }
+
+    return {
+        skip: false,
+        title: document.title,
+        x: x,
+        y: y,
+        scrollY: Math.round(window.scrollY),
+        maxScroll: maxScroll,
+        hit: hit ? hit.tagName.toLowerCase() + (hit.id ? '#' + hit.id : '') + (hit.classList?.length ? '.' + Array.from(hit.classList).slice(0, 4).join('.') : '') : 'none',
+        nestedAtPointer: nested,
+        htmlOverflowY: getComputedStyle(root).overflowY,
+        bodyOverflowY: body ? getComputedStyle(body).overflowY : ''
+    };
+})(arguments[0]);`, [depth]);
+}
+
+function assertGenericWheelTarget(target, label) {
+    if (target.skip) return;
+    if (target.title === "CCG_WHEEL_404" || target.title === "CCG_WHEEL_500") {
+        fail(`${label}: local server returned ${target.title}`);
+    }
+    if (target.nestedAtPointer?.length) {
+        fail(`${label}: pointer is over nested vertical scroller(s): ${target.nestedAtPointer.join(", ")}`);
+    }
+    if (!/^(auto|scroll|visible)$/i.test(target.htmlOverflowY || "")) {
+        fail(`${label}: unexpected html overflow-y ${target.htmlOverflowY}`);
+    }
+    if (!/^(visible|auto)$/i.test(target.bodyOverflowY || "")) {
+        fail(`${label}: unexpected body overflow-y ${target.bodyOverflowY}`);
+    }
+}
+
+async function auditGenericPageWheel(sessionId, sitePort, page, depth, labelPrefix) {
+    await navigate(sessionId, `http://${HOST}:${sitePort}${page.path}`);
+
+    // The Zzap!64 archive progressively builds its award cards and reviewed-game
+    // index after navigation, then publishes an explicit steady-state ready flag.
+    // Measure native wheel latency after that documented startup boundary rather
+    // than charging archive construction time to the scrolling contract.
+    if (page.path === "/zzap64/index.html") {
+        const readyDeadline = Date.now() + 12000;
+        while (Date.now() < readyDeadline) {
+            const ready = await execute(sessionId, "return window.CCG_ZZAP64_AWARDS_ARCHIVE_READY===true;");
+            if (ready) break;
+            await new Promise((resolve) => setTimeout(resolve, 120));
+        }
+        const ready = await execute(sessionId, "return window.CCG_ZZAP64_AWARDS_ARCHIVE_READY===true;");
+        if (!ready) fail(`${labelPrefix} ${page.label}: Zzap archive did not reach its documented ready boundary before wheel qualification`);
+        await new Promise((resolve) => setTimeout(resolve, 180));
+    }
+
+    if (page.path === GAME_MEDIA_PAGE || page.path.startsWith("/games/game.html")) {
+        const readyDeadline = Date.now() + 10000;
+        while (Date.now() < readyDeadline) {
+            const ready = await execute(sessionId, "return window.CCG_SINGLE_GAME_READY===true;");
+            if (ready) break;
+            await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+        const ready = await execute(sessionId, "return window.CCG_SINGLE_GAME_READY===true;");
+        if (!ready) fail(`${labelPrefix} ${page.label}: single-game runtime did not reach its documented ready boundary before wheel qualification`);
+        await new Promise((resolve) => setTimeout(resolve, 120));
+    }
+
+    const target = await prepareGenericWheelTarget(sessionId, depth);
+    if (target.skip) {
+        console.log(`SKIP ${labelPrefix} ${page.label}: ${target.reason} (maxScroll=${target.maxScroll}px)`);
+        return;
+    }
+    assertGenericWheelTarget(target, `${labelPrefix} ${page.label}`);
+
+    await movePointer(sessionId, target.x, target.y);
+    await execute(sessionId, String.raw`
+window.__ccgWheelLatencyProbe = { armedAt: performance.now(), firstScrollAt: 0, scrollEvents: 0 };
+window.__ccgWheelLatencyHandler && window.removeEventListener('scroll', window.__ccgWheelLatencyHandler);
+window.__ccgWheelLatencyHandler = function () {
+    var state = window.__ccgWheelLatencyProbe;
+    if (!state) return;
+    state.scrollEvents += 1;
+    if (!state.firstScrollAt) state.firstScrollAt = performance.now();
+};
+window.addEventListener('scroll', window.__ccgWheelLatencyHandler, { passive: true });
+return window.__ccgWheelLatencyProbe.armedAt;`);
+
+    await dispatchWheel(sessionId, target.x, target.y, WHEEL_DELTA);
+    let latency = await execute(sessionId, String.raw`
+var state = window.__ccgWheelLatencyProbe || {};
+if (window.__ccgWheelLatencyHandler) window.removeEventListener('scroll', window.__ccgWheelLatencyHandler);
+window.__ccgWheelLatencyHandler = null;
+return {
+    firstLatency: state.firstScrollAt && state.armedAt ? Math.round((state.firstScrollAt - state.armedAt) * 10) / 10 : null,
+    scrollEvents: state.scrollEvents || 0
+};`);
+    let afterDown = await readY(sessionId);
+    if (afterDown - target.scrollY < MIN_WHEEL_DELTA) {
+        await movePointer(sessionId, target.x, target.y);
+        await execute(sessionId, String.raw`
+window.__ccgWheelLatencyProbe = { armedAt: performance.now(), firstScrollAt: 0, scrollEvents: 0 };
+window.__ccgWheelLatencyHandler && window.removeEventListener('scroll', window.__ccgWheelLatencyHandler);
+window.__ccgWheelLatencyHandler = function () {
+    var state = window.__ccgWheelLatencyProbe;
+    if (!state) return;
+    state.scrollEvents += 1;
+    if (!state.firstScrollAt) state.firstScrollAt = performance.now();
+};
+window.addEventListener('scroll', window.__ccgWheelLatencyHandler, { passive: true });
+return window.__ccgWheelLatencyProbe.armedAt;`);
+        const retryStart = afterDown;
+        await dispatchWheel(sessionId, target.x, target.y, WHEEL_DELTA);
+        const retryEnd = await readY(sessionId);
+        const retryLatency = await execute(sessionId, String.raw`
+var state = window.__ccgWheelLatencyProbe || {};
+if (window.__ccgWheelLatencyHandler) window.removeEventListener('scroll', window.__ccgWheelLatencyHandler);
+window.__ccgWheelLatencyHandler = null;
+return {
+    firstLatency: state.firstScrollAt && state.armedAt ? Math.round((state.firstScrollAt - state.armedAt) * 10) / 10 : null,
+    scrollEvents: state.scrollEvents || 0
+};`);
+        if (retryEnd - retryStart >= MIN_WHEEL_DELTA) {
+            afterDown = retryEnd;
+            latency = retryLatency;
+            console.log(`PASS ${labelPrefix} ${page.label}: DOWN moved on the second consecutive physical wheel step after one headless warm-up.`);
+        } else {
+            fail(`${labelPrefix} ${page.label}: physical mouse wheel persistently stalled DOWN at viewport centre (hit ${target.hit}, ${target.scrollY}px -> ${afterDown}px -> ${retryEnd}px)`);
+        }
+    }
+    if (latency.firstLatency === null || latency.firstLatency > MAX_FIRST_SCROLL_LATENCY_MS) {
+        fail(`${labelPrefix} ${page.label}: first native scroll response was too slow (${latency.firstLatency}ms)`);
+    }
+
+    await wheelUp(sessionId, target.x, target.y);
+    let afterUp = await readY(sessionId);
+    if (afterDown - afterUp < MIN_WHEEL_DELTA) {
+        const retryUpStart = afterUp;
+        await wheelUp(sessionId, target.x, target.y);
+        const retryUpEnd = await readY(sessionId);
+        if (retryUpStart - retryUpEnd >= MIN_WHEEL_DELTA) {
+            afterUp = retryUpEnd;
+            console.log(`PASS ${labelPrefix} ${page.label}: UP moved on the second consecutive physical wheel step after one headless direction-change warm-up.`);
+        } else {
+            fail(`${labelPrefix} ${page.label}: physical mouse wheel persistently stalled UP at viewport centre (hit ${target.hit}, ${afterDown}px -> ${afterUp}px -> ${retryUpEnd}px)`);
+        }
+    }
+
+    console.log(`PASS ${labelPrefix} ${page.label}: native wheel moved down/up at viewport centre (hit ${target.hit}, first response ${latency.firstLatency}ms, scrollEvents=${latency.scrollEvents}).`);
+}
+
+async function prepareHomeWheelTarget(sessionId, selector, block = "center") {
+    return execute(sessionId, String.raw`
+return (function (selector, block) {
+    var root = document.documentElement;
+    var body = document.body;
+    var target = document.querySelector(selector);
+    if (!target) return { error: 'home target missing: ' + selector };
+
+    root.style.setProperty('scroll-behavior', 'auto', 'important');
+    if (body) body.style.setProperty('scroll-behavior', 'auto', 'important');
+    if (selector !== '.home-hero__content') target.scrollIntoView({ block: block || 'center', inline: 'center', behavior: 'instant' });
+
+    var rect = target.getBoundingClientRect();
+    var x = Math.max(2, Math.min(window.innerWidth - 3, Math.round(rect.left + rect.width / 2)));
+    var y = Math.max(2, Math.min(window.innerHeight - 3, Math.round(rect.top + Math.min(rect.height / 2, window.innerHeight * 0.35))));
+    var hit = document.elementFromPoint(x, y);
+    var scrolling = document.scrollingElement || root;
+
+    return {
+        selector: selector,
+        x: x,
+        y: y,
+        scrollY: Math.round(window.scrollY),
+        maxScroll: Math.max(0, Math.round(scrolling.scrollHeight - window.innerHeight)),
+        hit: hit ? hit.tagName.toLowerCase() + (hit.id ? '#' + hit.id : '') + (hit.classList?.length ? '.' + Array.from(hit.classList).slice(0, 4).join('.') : '') : 'none',
+        htmlOverflowY: getComputedStyle(root).overflowY,
+        bodyOverflowY: body ? getComputedStyle(body).overflowY : '',
+        nestedPageScrollers: Array.from(document.querySelectorAll('main, .ccg-main, .ccg-page')).filter(function (el) {
+            var style = getComputedStyle(el);
+            return /^(auto|scroll)$/i.test(style.overflowY || '') && el.scrollHeight > el.clientHeight + 24;
+        }).map(function (el) {
+            return el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') + (el.classList.length ? '.' + Array.from(el.classList).slice(0, 4).join('.') : '');
+        })
+    };
+})(arguments[0], arguments[1]);`, [selector, block]);
+}
+
+async function auditHomeTarget(sessionId, viewport, selector, label) {
+    const target = await prepareHomeWheelTarget(sessionId, selector);
+    if (target.error) fail(`${viewport.label}: ${target.error}`);
+    if (target.nestedPageScrollers?.length) {
+        fail(`${viewport.label}: home has nested page scroller(s) at ${label}: ${target.nestedPageScrollers.join(", ")}`);
+    }
+
+    // The hero-centre probe is intentionally measured from a natural page
+    // load with no synthetic scroll setup. Lower-page targets still need
+    // positioning before their own wheel checks.
+    if (selector !== ".home-hero__content") {
+        // Ensure there is room in both directions so one page boundary cannot
+        // masquerade as a wheel-input stall.
+        await execute(sessionId, "window.scrollBy(0,-Math.min(240,window.scrollY)); return Math.round(window.scrollY);");
+        const beforeDown = await readY(sessionId);
+        const maxScroll = await execute(sessionId, "return Math.max(0,Math.round((document.scrollingElement||document.documentElement).scrollHeight-window.innerHeight));");
+        if (maxScroll <= beforeDown + MIN_WHEEL_DELTA * 2) {
+            await execute(sessionId, "window.scrollTo(0,Math.max(0,Math.round(((document.scrollingElement||document.documentElement).scrollHeight-window.innerHeight)*0.5)));");
+        }
+
+        // Do not time the physical wheel inside the audit's own positioning.
+        await new Promise((resolve) => setTimeout(resolve, 450));
+    }
+
+    // The boundary positioning above changes viewport-relative coordinates.
+    // Re-read the target's hit point without scrolling again so the physical
+    // wheel is dispatched over the element named by this probe.
+    const point = await execute(sessionId, String.raw`
+var target=document.querySelector(arguments[0]);
+if(!target)return {error:'home target missing after positioning: '+arguments[0]};
+var rect=target.getBoundingClientRect();
+var x=Math.max(2,Math.min(window.innerWidth-3,Math.round(rect.left+rect.width/2)));
+var y=Math.max(2,Math.min(window.innerHeight-3,Math.round(rect.top+Math.min(rect.height/2,window.innerHeight*.35))));
+var hit=document.elementFromPoint(x,y);
+return {
+  x:x,
+  y:y,
+  hit:hit?hit.tagName.toLowerCase()+(hit.id?'#'+hit.id:'')+(hit.classList?.length?'.'+Array.from(hit.classList).slice(0,4).join('.'):''):'none'
+};`, [selector]);
+    if (point.error) fail(`${viewport.label}: ${point.error}`);
+
+    const before = await readY(sessionId);
+
+    await execute(sessionId, String.raw`
+window.__ccgHomeWheelProbe = {
+  wheelEvents: 0,
+  scrollEvents: 0,
+  wheels: [],
+  scrolls: []
+};
+window.__ccgHomeWheelProbeWheelHandler = function(event) {
+  var probe = window.__ccgHomeWheelProbe;
+  if (!probe) return;
+  probe.wheelEvents += 1;
+  var target = event.target;
+  var path = typeof event.composedPath === 'function' ? event.composedPath().slice(0, 8) : [];
+  probe.wheels.push({
+    at: Math.round(performance.now() * 10) / 10,
+    deltaY: Number(event.deltaY || 0),
+    cancelable: Boolean(event.cancelable),
+    defaultPrevented: Boolean(event.defaultPrevented),
+    target: target ? target.tagName.toLowerCase() + (target.id ? '#' + target.id : '') + (target.classList?.length ? '.' + Array.from(target.classList).slice(0, 5).join('.') : '') : 'none',
+    path: path.map(function(node) {
+      if (node === window) return 'window';
+      if (node === document) return 'document';
+      if (!node || !node.tagName) return String(node?.nodeName || 'unknown');
+      return node.tagName.toLowerCase() + (node.id ? '#' + node.id : '') + (node.classList?.length ? '.' + Array.from(node.classList).slice(0, 4).join('.') : '');
+    })
+  });
+};
+window.__ccgHomeWheelProbeScrollHandler = function() {
+  var probe = window.__ccgHomeWheelProbe;
+  if (!probe) return;
+  probe.scrollEvents += 1;
+  probe.scrolls.push({ at: Math.round(performance.now() * 10) / 10, y: Math.round(window.scrollY) });
+};
+window.addEventListener('wheel', window.__ccgHomeWheelProbeWheelHandler, { capture: true, passive: true });
+window.addEventListener('scroll', window.__ccgHomeWheelProbeScrollHandler, { capture: true, passive: true });
+return true;`);
+
+    const beforeState = await execute(sessionId, String.raw`
+var e=document.elementFromPoint(arguments[0],arguments[1]);
+return {
+  hit:e?e.tagName.toLowerCase()+(e.id?'#'+e.id:'')+(e.classList?.length?'.'+Array.from(e.classList).slice(0,6).join('.'):''):'none',
+  bodyClass:document.body?.className||'',
+  htmlClass:document.documentElement.className||'',
+  htmlOverflow:getComputedStyle(document.documentElement).overflowY,
+  bodyOverflow:document.body?getComputedStyle(document.body).overflowY:'',
+  bodyPosition:document.body?getComputedStyle(document.body).position:'',
+  navOpen:Boolean(document.body?.classList.contains('ccg-body--nav-open')),
+  bodyLocked:Boolean(document.body?.classList.contains('ccg-body--locked'))
+};`, [point.x,point.y]);
+
+    await wheelDown(sessionId, point.x, point.y);
+    let afterDown = await readY(sessionId);
+    const wheelProbe = await execute(sessionId, String.raw`
+var probe = window.__ccgHomeWheelProbe || {};
+if (window.__ccgHomeWheelProbeWheelHandler) {
+  window.removeEventListener('wheel', window.__ccgHomeWheelProbeWheelHandler, true);
+}
+if (window.__ccgHomeWheelProbeScrollHandler) {
+  window.removeEventListener('scroll', window.__ccgHomeWheelProbeScrollHandler, true);
+}
+window.__ccgHomeWheelProbeWheelHandler = null;
+window.__ccgHomeWheelProbeScrollHandler = null;
+var e = document.elementFromPoint(arguments[0], arguments[1]);
+var chain = [];
+for (var node = e; node && chain.length < 8; node = node.parentElement) {
+  var style = getComputedStyle(node);
+  chain.push({
+    node: node.tagName.toLowerCase() + (node.id ? '#' + node.id : '') + (node.classList?.length ? '.' + Array.from(node.classList).slice(0, 4).join('.') : ''),
+    overflowY: style.overflowY,
+    overscrollY: style.overscrollBehaviorY,
+    touchAction: style.touchAction,
+    pointerEvents: style.pointerEvents,
+    position: style.position,
+    zIndex: style.zIndex
+  });
+}
+return {
+  wheelEvents: Number(probe.wheelEvents || 0),
+  scrollEvents: Number(probe.scrollEvents || 0),
+  wheels: probe.wheels || [],
+  scrolls: probe.scrolls || [],
+  chain: chain
+};`, [point.x, point.y]);
+
+    if (afterDown - before < MIN_WHEEL_DELTA) {
+        const retryStart = afterDown;
+        await wheelDown(sessionId, point.x, point.y);
+        const retryEnd = await readY(sessionId);
+
+        if (retryEnd - retryStart >= MIN_WHEEL_DELTA) {
+            afterDown = retryEnd;
+            console.log(`PASS ${viewport.label}: home ${label} moved on the second consecutive physical wheel step after one headless top-boundary warm-up.`);
+        } else {
+            fail(`${viewport.label}: home mouse wheel persistently stalled DOWN over ${label} (${beforeState.hit}, ${before}px -> ${afterDown}px -> ${retryEnd}px) state=${JSON.stringify(beforeState)} eventProbe=${JSON.stringify(wheelProbe)}`);
+        }
+    }
+
+    await wheelUp(sessionId, point.x, point.y);
+    let afterUp = await readY(sessionId);
+    if (afterDown - afterUp < MIN_WHEEL_DELTA) {
+        const retryUpStart = afterUp;
+        await wheelUp(sessionId, point.x, point.y);
+        const retryUpEnd = await readY(sessionId);
+        if (retryUpStart - retryUpEnd >= MIN_WHEEL_DELTA) {
+            afterUp = retryUpEnd;
+            console.log(`PASS ${viewport.label}: home ${label} moved UP on the second consecutive physical wheel step after one headless direction-change warm-up.`);
+        } else {
+            fail(`${viewport.label}: home mouse wheel persistently stalled UP over ${label} (${point.hit}, ${afterDown}px -> ${afterUp}px -> ${retryUpEnd}px)`);
+        }
+    }
+
+    console.log(`PASS ${viewport.label}: home mouse wheel moved down/up over ${label} (hit ${point.hit}).`);
+}
+
+async function auditHomeWheel(sessionId, sitePort, viewport) {
+    await setViewport(sessionId, viewport);
+    await navigate(sessionId, `http://${HOST}:${sitePort}${HOME_PAGE}`);
+
+    const targets = [
+        [".home-hero__content", "hero centre"],
+        [".home-hero__game-actions", "Dungeon Carnage CTA area"],
+        [".home-section--highlights", "highlights section"],
+        [".home-community-latest", "community section"],
+        [".home-cta-upgrade", "support CTA section"],
+        [".home-visitor-callout", "visitor callout"]
+    ];
+
+    for (const [selector, label] of targets) {
+        await auditHomeTarget(sessionId, viewport, selector, label);
+    }
+
+    // Also exercise literal viewport-centre input at several page depths,
+    // matching the reported "cursor in the middle of the screen" failure.
+    for (const fraction of [0.2, 0.5, 0.8]) {
+        const state = await execute(sessionId, String.raw`
+var root=document.scrollingElement||document.documentElement;
+var max=Math.max(0,root.scrollHeight-window.innerHeight);
+window.scrollTo(0,Math.round(max*arguments[0]));
+return {y:Math.round(window.scrollY),max:Math.round(max),x:Math.round(window.innerWidth/2),py:Math.round(window.innerHeight/2),hit:(function(){var e=document.elementFromPoint(Math.round(window.innerWidth/2),Math.round(window.innerHeight/2));return e?e.tagName.toLowerCase()+(e.id?'#'+e.id:'')+(e.classList?.length?'.'+Array.from(e.classList).slice(0,4).join('.'):''):'none'})()};`, [fraction]);
+        if (state.max < MIN_WHEEL_DELTA * 4) fail(`${viewport.label}: home page is not tall enough for centre-screen wheel audit`);
+
+        // Avoid timing the wheel step inside the audit's own scrollTo()
+        // transition for the same reason as the section-target probes above.
+        await new Promise((resolve) => setTimeout(resolve, 450));
+        await wheelDown(sessionId, state.x, state.py);
+        let down = await readY(sessionId);
+        if (down - state.y < MIN_WHEEL_DELTA && state.y < state.max - MIN_WHEEL_DELTA * 2) {
+            const retryDownStart = down;
+            await wheelDown(sessionId, state.x, state.py);
+            const retryDownEnd = await readY(sessionId);
+            if (retryDownEnd - retryDownStart >= MIN_WHEEL_DELTA) {
+                down = retryDownEnd;
+                console.log(`PASS ${viewport.label}: home centre-screen DOWN at ${Math.round(fraction*100)}% moved on the second consecutive physical wheel step after one headless warm-up.`);
+            } else {
+                fail(`${viewport.label}: home centre-screen wheel persistently stalled DOWN at ${Math.round(fraction*100)}% (hit ${state.hit}, ${state.y}px -> ${down}px -> ${retryDownEnd}px)`);
+            }
+        }
+        await wheelUp(sessionId, state.x, state.py);
+        let up = await readY(sessionId);
+        if (down - up < MIN_WHEEL_DELTA && down > MIN_WHEEL_DELTA * 2) {
+            const retryUpStart = up;
+            await wheelUp(sessionId, state.x, state.py);
+            const retryUpEnd = await readY(sessionId);
+            if (retryUpStart - retryUpEnd >= MIN_WHEEL_DELTA) {
+                up = retryUpEnd;
+                console.log(`PASS ${viewport.label}: home centre-screen UP at ${Math.round(fraction*100)}% moved on the second consecutive physical wheel step after one headless direction-change warm-up.`);
+            } else {
+                fail(`${viewport.label}: home centre-screen wheel persistently stalled UP at ${Math.round(fraction*100)}% (hit ${state.hit}, ${down}px -> ${up}px -> ${retryUpEnd}px)`);
+            }
+        }
+        console.log(`PASS ${viewport.label}: home centre-screen wheel works at ${Math.round(fraction*100)}% depth (hit ${state.hit}).`);
+    }
+}
+
+async function auditSitewideWheelPages(sessionId, sitePort) {
+    const viewport = VIEWPORTS[VIEWPORTS.length - 1];
+    await setViewport(sessionId, viewport);
+    for (const page of SITEWIDE_WHEEL_PAGES) {
+        await auditGenericPageWheel(sessionId, sitePort, page, 0.35, "sitewide");
+    }
+}
+
 async function main() {
     assertStaticContract();
     console.log("PASS static native-wheel contract: scroll authority, Retro Specials scope and local script ownership are intact.");
@@ -548,6 +1034,7 @@ async function main() {
             try {
                 await auditViewport(sessionId, sitePort, viewport);
                 await auditGameMediaWheel(sessionId, sitePort, viewport);
+                await auditHomeWheel(sessionId, sitePort, viewport);
             } finally {
                 try {
                     await webdriver("DELETE", `/session/${sessionId}`);
@@ -555,6 +1042,17 @@ async function main() {
                 sessionId = "";
             }
         }
+
+        sessionId = await createSession();
+        try {
+            await auditSitewideWheelPages(sessionId, sitePort);
+        } finally {
+            try {
+                await webdriver("DELETE", `/session/${sessionId}`);
+            } catch {}
+            sessionId = "";
+        }
+
         console.log("Native mouse-wheel scroll contract passed.");
     } finally {
         if (sessionId) {

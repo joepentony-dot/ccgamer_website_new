@@ -1666,6 +1666,7 @@ function renderGame(game) {
         card: readingCard,
         after: downloadSection || utilityHubSection
     });
+    ensureMagazineReviewDisclosure();
     const musicArchiveSection = ensureGameResourceSection({
         id: "game-music-archive-section",
         title: "Game Music",
@@ -1830,6 +1831,7 @@ function renderGame(game) {
     }
 
     if (typeof window !== "undefined") {
+        window.CCG_SINGLE_GAME_READY = true;
         window.dispatchEvent(new CustomEvent("ccg:game-loaded", {
             detail: {
                 game: game || null,
@@ -2776,6 +2778,56 @@ function smoothScrollTo(target) {
 function resolveCreditValue(game, key) {
     const credits = (game?.credits && typeof game.credits === "object") ? game.credits : null;
     return formatFactValue(credits?.[key] || game?.[key]);
+}
+
+function ensureMagazineReviewDisclosure() {
+    const card = document.getElementById("game-reading-card");
+    const container = document.getElementById("gameMagazineReviews")
+        || document.getElementById("gameLemonLinks");
+    if (!card || !container) return null;
+
+    let disclosure = document.getElementById("game-reading-disclosure");
+    if (!disclosure) {
+        disclosure = document.createElement("details");
+        disclosure.id = "game-reading-disclosure";
+        disclosure.className = "ccg-game-resource-disclosure";
+
+        const summary = document.createElement("summary");
+        summary.className = "ccg-game-resource-disclosure__summary";
+
+        const title = document.createElement("span");
+        title.className = "ccg-game-resource-disclosure__title";
+        title.textContent = "Magazine Reviews";
+
+        const meta = document.createElement("span");
+        meta.className = "ccg-game-resource-disclosure__meta";
+        meta.textContent = "Scores, issue details and original review links";
+
+        const existingTitle = container.querySelector(".ccg-magazine-reviews__title")?.textContent?.trim();
+        const existingMeta = container.querySelector(".ccg-magazine-reviews__summary")?.textContent?.trim();
+        if (existingTitle) title.textContent = existingTitle;
+        if (existingMeta) meta.textContent = existingMeta;
+
+        summary.append(title, meta);
+
+        const body = document.createElement("div");
+        body.className = "ccg-game-resource-disclosure__body";
+
+        container.parentNode.insertBefore(disclosure, container);
+        body.appendChild(container);
+        disclosure.append(summary, body);
+    }
+
+    const summaryTitle = disclosure.querySelector(".ccg-game-resource-disclosure__title");
+    const summaryMeta = disclosure.querySelector(".ccg-game-resource-disclosure__meta");
+    const panelTitle = container.querySelector(".ccg-magazine-reviews__title")?.textContent?.trim();
+    const panelMeta = container.querySelector(".ccg-magazine-reviews__summary")?.textContent?.trim();
+    if (summaryTitle && panelTitle) summaryTitle.textContent = panelTitle;
+    if (summaryMeta && panelMeta) summaryMeta.textContent = panelMeta;
+
+    const legacyTitle = card.querySelector(":scope > .ccg-utility-card__title");
+    if (legacyTitle) legacyTitle.hidden = true;
+    return disclosure;
 }
 
 function buildGameSectionNav(state) {

@@ -263,6 +263,14 @@ function removeStaticNotFoundCopy(html) {
 
 function prefillStaticContent(html, game, title, imagePath, imageMetadata) {
   const description = stripHtml(game?.description || "");
+  const videoId = String(
+    game?.videoid
+    || game?.videoId
+    || game?.youtube_id
+    || game?.youtubeId
+    || ""
+  ).trim();
+  const hasEditorialVideo = Boolean(videoId || String(game?.id || "").trim() === "the_happiest_days_of_your_life");
 
   html = html.replace(
     /<img id="gameHeroThumb"[\s\S]*?>/i,
@@ -273,10 +281,12 @@ function prefillStaticContent(html, game, title, imagePath, imageMetadata) {
     `<h1 id="gameHeroTitle" class="game-hero__title">${escapeHtml(title)}</h1>`
   );
   if (description) {
-    html = html.replace(
-      /<section id="game-description-section" class="game-section" hidden>/i,
-      '<section id="game-description-section" class="game-section">'
-    );
+    if (!hasEditorialVideo) {
+      html = html.replace(
+        /<section id="game-description-section" class="game-section" hidden>/i,
+        '<section id="game-description-section" class="game-section">'
+      );
+    }
     html = html.replace(
       /<div id="gameDescription" class="game-description">[\s\S]*?<\/div>/i,
       `<div id="gameDescription" class="game-description">${escapeHtml(description)}</div>`
