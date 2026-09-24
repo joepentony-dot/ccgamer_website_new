@@ -11,6 +11,7 @@
 
   const shopVisible=()=>{try{return Boolean(activeShop&&UI?.shop&&!UI.shop.classList.contains("hidden"))}catch(_){return false}};
   const scoreNow=()=>{try{return Math.max(0,Math.floor(Number(score)||0))}catch(_){return 0}};
+  const revisionNow=()=>{try{return Math.max(0,Number(host?.revision)||0)}catch(_){return 0}};
   const player=()=>{try{return p1||null}catch(_){return null}};
   const node=id=>document.getElementById(id);
 
@@ -94,11 +95,11 @@
     document.addEventListener("click",event=>{
       const target=event.target instanceof Element?event.target.closest("[data-shop-buy]"):null;
       if(!target||!shopVisible())return;
-      const id=String(target.getAttribute("data-shop-buy")||"");
+      const id=String(target.getAttribute("data-shop-buy")||""),before=serial,beforeRevision=revisionNow();
       purchaseDepth++;
       setTimeout(()=>{
         purchaseDepth=Math.max(0,purchaseDepth-1);
-        if(shopVisible())fallbackFeedback(id,false)
+        if(shopVisible()&&serial===before&&revisionNow()<=beforeRevision)fallbackFeedback(id)
       },0)
     },true);
 
