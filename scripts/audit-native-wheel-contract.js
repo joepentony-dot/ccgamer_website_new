@@ -655,7 +655,7 @@ async function auditGenericPageWheel(sessionId, sitePort, page, depth, labelPref
         await new Promise((resolve) => setTimeout(resolve, 180));
     }
 
-    if (page.path.startsWith("/games/game.html")) {
+    if (page.path === GAME_MEDIA_PAGE || page.path.startsWith("/games/game.html")) {
         const readyDeadline = Date.now() + 10000;
         while (Date.now() < readyDeadline) {
             const ready = await execute(sessionId, "return window.CCG_SINGLE_GAME_READY===true;");
