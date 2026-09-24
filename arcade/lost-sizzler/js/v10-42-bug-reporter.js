@@ -16,7 +16,10 @@
   const trapChecks=new Set();
   const duplicateTrapTiles=new Set();
   const movementBoundaryChecks=new WeakMap();
+  const environmentDamageSignals=[];
+  const MAX_ENVIRONMENT_DAMAGE_SIGNALS=80;
   let movementBoundarySerial=0;
+  let environmentDamageSerial=0;
   const state={installed:false,reports:0,anomalies:0,trapAnomalies:0,trapContacts:0,trapVerifiedHits:0,environmentContacts:0,environmentAnomalies:0,environmentVerifiedHits:0,lastTrap:null,lastEnvironment:null,lastReport:null,preReportSnapshot:null,sampleTimer:0,trapProbeTimer:0};
 
   const safe=(fn,fallback=null)=>{try{const value=fn();return value===undefined?fallback:value}catch(_){return fallback}};
@@ -38,6 +41,28 @@
     events.push({at:nowIso(),ms:Math.round(performance.now()),type:String(type),detail:compact(detail)});
     if(events.length>MAX_EVENTS)events.splice(0,events.length-MAX_EVENTS);
   }
+  function recordEnvironmentDamageSignal(type,event){
+    const detail=event?.detail||{};
+    const signal={
+      serial:++environmentDamageSerial,type:String(type),
+      playerId:String(detail.playerId||""),trapId:String(detail.trapId||""),hazardId:String(detail.hazardId||""),
+      kind:String(detail.kind||detail.type||""),x:Number(detail.x),y:Number(detail.y),at:Number(detail.at||0)
+    };
+    environmentDamageSignals.push(signal);
+    if(environmentDamageSignals.length>MAX_ENVIRONMENT_DAMAGE_SIGNALS)environmentDamageSignals.splice(0,environmentDamageSignals.length-MAX_ENVIRONMENT_DAMAGE_SIGNALS);
+    push(`environment-${signal.type}-damage-signal`,signal);
+    return signal
+  }
+  function contactDamageSignalsSince(before){
+    const serial=Number(before?.beforeDamageSignalSerial||0);
+    return environmentDamageSignals.filter(signal=>
+      signal.serial>serial&&
+      signal.playerId===String(before?.playerId||"")&&
+      signal.x===Number(before?.x)&&signal.y===Number(before?.y)
+    )
+  }
+  addEventListener("ccg:trap-damage",event=>recordEnvironmentDamageSignal("trap",event));
+  addEventListener("ccg:hazard-damage",event=>recordEnvironmentDamageSignal("hazard",event));
 
   function panelState(id){
     const node=document.getElementById(id);
@@ -161,6 +186,7 @@
         serial:++movementBoundarySerial,world:trapWorldKey(),playerId:trapPlayerId(player),x,y,at:stamp,
         beforeHealth:Number(player.health||0),beforeArmor:Number(player.armor||0),beforeHurtAt:Number(player.__ccgLastHurtAt||0),
         beforeDamageAt:Number(player.__ccgLastDamageAt||0),beforeDamageSource:String(player.__ccgLastDamageSource||""),
+        beforeDamageSignalSerial:environmentDamageSerial,
         activeTraps,activeHazards,meta:compact(meta)
       };
       movementBoundaryChecks.set(player,record);
@@ -192,12 +218,14 @@
     setTimeout(()=>{
       const finalHealth=Number(player.health||0),finalArmor=Number(player.armor||0),finalHurtAt=Number(player.__ccgLastHurtAt||0);
       const finalDamageAt=Number(player.__ccgLastDamageAt||0),finalDamageSource=String(player.__ccgLastDamageSource||"");
-      const healthLoss=before.beforeHealth-finalHealth,armorLoss=before.beforeArmor-finalArmor,sourceAdvanced=finalDamageAt>before.beforeDamageAt,normalizedSource=finalDamageSource.toLowerCase();
-      const trapKinds=before.activeTraps.map(row=>String(row?.trap?.kind||"").toLowerCase()).filter(Boolean);
-      const trapSourceMatched=sourceAdvanced&&(normalizedSource.includes("dungeon trap")||normalizedSource.includes("floor trap")||trapKinds.some(kind=>normalizedSource.includes(`${kind} trap`)));
-      const hazardContact=safe(()=>player.__ccgLastHazardDamageContact||null,null);
-      const hazardSourceMatched=sourceAdvanced&&before.activeHazards.some(row=>Boolean(hazardContact&&Number(hazardContact.at)===finalDamageAt&&String(hazardContact.id||"")===String(row?.id||"")&&Number(hazardContact.x)===before.x&&Number(hazardContact.y)===before.y));
-      const trapDamageObserved=trapSourceMatched;
+      const healthLoss=before.beforeHealth-finalHealth,armorLoss=before.beforeArmor-finalArmor;
+      const contactSignals=contactDamageSignalsSince(before);
+      const trapIds=new Set(before.activeTraps.map(row=>String(row?.trap?.id||"")));
+      const trapKinds=new Set(before.activeTraps.map(row=>String(row?.trap?.kind||"").toLowerCase()).filter(Boolean));
+      const trapSignal=contactSignals.find(signal=>signal.type==="trap"&&(trapIds.has(signal.trapId)||trapKinds.has(String(signal.kind||"").toLowerCase())))||null;
+      const hazardIds=new Set(before.activeHazards.map(row=>String(row?.id||"")));
+      const hazardSignal=contactSignals.find(signal=>signal.type==="hazard"&&hazardIds.has(signal.hazardId))||null;
+      const trapDamageObserved=Boolean(trapSignal),hazardDamageObserved=Boolean(hazardSignal);
       if(before.activeTraps.length&&!trapDamageObserved){
         state.anomalies++;state.trapAnomalies++;state.environmentAnomalies++;
         const detail={
@@ -205,6 +233,7 @@
           expectedHealthLoss:1,actualHealthLoss:healthLoss,armorLoss,
           beforeHealth:before.beforeHealth,afterHealth:finalHealth,beforeArmor:before.beforeArmor,afterArmor:finalArmor,
           beforeHurtAt:before.beforeHurtAt,afterHurtAt:finalHurtAt,beforeDamageAt:before.beforeDamageAt,afterDamageAt:finalDamageAt,damageSource:finalDamageSource,
+          contactSignals,trapSignal,
           movedAway:Number(player.x)!==before.x||Number(player.y)!==before.y,
           traps:before.activeTraps,meta:before.meta
         };
@@ -215,16 +244,17 @@
         state.environmentVerifiedHits++;
         push("environment-trap-crossing-damage-confirmed",{
           serial:before.serial,world:before.world,playerId:before.playerId,contact:{x:before.x,y:before.y},
-          healthLoss,armorLoss,traps:before.activeTraps.map(row=>row.trap)
+          healthLoss,armorLoss,traps:before.activeTraps.map(row=>row.trap),trapSignal,contactSignals
         });
       }
 
       const dedicatedDamage=healthLoss+Math.max(0,armorLoss);
-      if(before.activeHazards.length&&!hazardSourceMatched){
+      if(before.activeHazards.length&&!hazardDamageObserved){
         state.anomalies++;state.environmentAnomalies++;
         const detail={
           serial:before.serial,world:before.world,playerId:before.playerId,contact:{x:before.x,y:before.y},
           expectedDamageSignal:1,healthLoss,armorLoss,beforeHurtAt:before.beforeHurtAt,afterHurtAt:finalHurtAt,beforeDamageAt:before.beforeDamageAt,afterDamageAt:finalDamageAt,damageSource:finalDamageSource,
+          contactSignals,hazardSignal,
           movedAway:Number(player.x)!==before.x||Number(player.y)!==before.y,
           hazards:before.activeHazards,meta:before.meta
         };
@@ -235,7 +265,7 @@
         state.environmentVerifiedHits++;
         push("environment-hazard-crossing-damage-confirmed",{
           serial:before.serial,world:before.world,playerId:before.playerId,contact:{x:before.x,y:before.y},
-          healthLoss,armorLoss,hazards:before.activeHazards
+          healthLoss,armorLoss,hazards:before.activeHazards,hazardSignal,contactSignals
         });
       }
     },TRAP_VERIFY_MS);
@@ -401,7 +431,7 @@
         if(trapChecks.has(checkKey))continue;
         trapChecks.add(checkKey);
 
-        const beforeHealth=Number(player.health||0),beforeHurtAt=Number(player.__ccgLastHurtAt||0),beforeDamageAt=Number(player.__ccgLastDamageAt||0),kind=String(trap.kind||"floor").toLowerCase();
+        const beforeHealth=Number(player.health||0),beforeHurtAt=Number(player.__ccgLastHurtAt||0),beforeDamageAt=Number(player.__ccgLastDamageAt||0),beforeDamageSignalSerial=environmentDamageSerial,kind=String(trap.kind||"floor").toLowerCase();
         const beforeHits=Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHitsByKind?.[kind]||0);
         push("trap-active-contact-observed",{checkKey,visit,beforeHealth,beforeHits,...owner});
 
@@ -409,19 +439,23 @@
           const afterStamp=performance.now(),afterHealth=Number(player.health||0),afterHurtAt=Number(player.__ccgLastHurtAt||0),afterDamageAt=Number(player.__ccgLastDamageAt||0),afterDamageSource=String(player.__ccgLastDamageSource||"").toLowerCase();
           const afterHits=Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHitsByKind?.[kind]||0);
           const healthLoss=beforeHealth-afterHealth,stillOnTile=Number(player.x)===Number(trap.x)&&Number(player.y)===Number(trap.y);
-          const sourceMatched=afterDamageAt>beforeDamageAt&&afterDamageSource.includes(`${kind} trap`),damageObserved=afterHits>beforeHits||sourceMatched;
+          const exactSignal=environmentDamageSignals.find(signal=>
+            signal.serial>beforeDamageSignalSerial&&signal.type==="trap"&&signal.playerId===trapPlayerId(player)&&
+            signal.trapId===trapId(trap)&&signal.x===Number(trap.x)&&signal.y===Number(trap.y)
+          )||null;
+          const damageObserved=Boolean(exactSignal)||afterHits>beforeHits;
           const afterOwner=trapOwnerSnapshot(player,trap,afterStamp);
           if(!damageObserved){
             state.anomalies++;state.trapAnomalies++;state.lastTrap=afterOwner;
             push("ANOMALY_ACTIVE_TRAP_NO_DAMAGE",{
               checkKey,visit,expectedHealthLoss:1,actualHealthLoss:healthLoss,beforeHealth,afterHealth,
-              beforeHurtAt,afterHurtAt,beforeDamageAt,afterDamageAt,damageSource:afterDamageSource,beforeHits,afterHits,stillOnTile,elapsedMs:Math.round(afterStamp-stamp),
+              beforeHurtAt,afterHurtAt,beforeDamageAt,afterDamageAt,damageSource:afterDamageSource,beforeHits,afterHits,exactSignal,stillOnTile,elapsedMs:Math.round(afterStamp-stamp),
               before:owner,after:afterOwner
             });
             updateBadge();
           }else{
             state.trapVerifiedHits++;
-            push("trap-active-damage-confirmed",{checkKey,visit,kind,healthLoss,beforeHealth,afterHealth,beforeHits,afterHits,sourceMatched,damageSource:afterDamageSource,stillOnTile});
+            push("trap-active-damage-confirmed",{checkKey,visit,kind,healthLoss,beforeHealth,afterHealth,beforeHits,afterHits,exactSignal,damageSource:afterDamageSource,stillOnTile});
           }
         },TRAP_VERIFY_MS);
       }
