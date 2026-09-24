@@ -1524,17 +1524,23 @@ function renderGame(game) {
 
     const preloaded = isPreloadedSingleGame();
     updatePrettyUrlAfterResolve(game);
-    updateMeta(game);
 
-    if (typeof window.ccgSchemaGame === 'function') {
-        window.ccgSchemaGame(game);
-    }
-    if (typeof window.ccgSchemaBreadcrumb === 'function') {
-        window.ccgSchemaBreadcrumb([
-            { name: 'Home', url: 'https://www.cheekycommodoregamer.co.uk/' },
-            { name: 'Games', url: 'https://www.cheekycommodoregamer.co.uk/games/' },
-            { name: resolveCanonicalGameTitle(game), url: `https://www.cheekycommodoregamer.co.uk/games/${game.slug}/` }
-        ]);
+    // Canonical generated pages already carry authoritative title, description,
+    // canonical/social metadata and JSON-LD. Do not replace that richer build-time
+    // output with the lighter runtime record from games.json.
+    if (!preloaded) {
+        updateMeta(game);
+
+        if (typeof window.ccgSchemaGame === 'function') {
+            window.ccgSchemaGame(game);
+        }
+        if (typeof window.ccgSchemaBreadcrumb === 'function') {
+            window.ccgSchemaBreadcrumb([
+                { name: 'Home', url: 'https://www.cheekycommodoregamer.co.uk/' },
+                { name: 'Games', url: 'https://www.cheekycommodoregamer.co.uk/games/' },
+                { name: resolveCanonicalGameTitle(game), url: `https://www.cheekycommodoregamer.co.uk/games/${game.slug}/` }
+            ]);
+        }
     }
 
     /* HERO */
