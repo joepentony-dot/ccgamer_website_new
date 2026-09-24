@@ -111,7 +111,51 @@
     }
   }
 
+  function canonicalSlugFromLocation() {
+    try {
+      const pathname = String(window.location.pathname || "");
+      const match = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
+      if (!match || !match[1]) return "";
+      const slug = decodeURIComponent(match[1]).trim().toLowerCase();
+      return /^[a-z0-9-]+$/.test(slug) ? slug : "";
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function canonicalTitle() {
+    const title = document.getElementById("gameHeroTitle")?.textContent
+      || document.querySelector("h1")?.textContent
+      || document.title
+      || "this game";
+    return String(title).trim();
+  }
+
+  async function hydrateCanonicalRoute() {
+    const slug = canonicalSlugFromLocation();
+    if (!slug) return;
+
+    try {
+      const data = await loadData();
+      const record = data && data.games ? data.games[slug] : null;
+      if (!record) {
+        hideSection();
+        return;
+      }
+
+      // The committed UTA map is C64-only, so a canonical slug match is enough
+      // to render immediately. This avoids making Tape Archive visibility depend
+      // on the much larger games.json hydration path completing first.
+      render({ slug: slug, title: canonicalTitle(), system: "C64" }, record);
+    } catch (error) {
+      console.warn("[CCG UTA] Canonical tape archive bootstrap unavailable.", error);
+      hideSection();
+    }
+  }
+
   window.addEventListener("ccg:game-loaded", function (event) {
     handleGame(event && event.detail ? event.detail.game : null);
   });
+
+  hydrateCanonicalRoute();
 })();
