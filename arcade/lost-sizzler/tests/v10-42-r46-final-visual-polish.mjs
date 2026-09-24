@@ -9,7 +9,7 @@ const gameplay=fs.readFileSync(new URL("js/game-play.js",root),"utf8");
 const version=JSON.parse(fs.readFileSync(new URL("version.json",root),"utf8"));
 
 assert.equal(version.build,"V10.42 r54");
-assert.equal(version.cacheToken,"20260923r54");
+assert.equal(version.cacheToken,"20260924r54");
 const r16=bootstrap.indexOf('v10-42-r16-environment-presentation.js');
 const r46=bootstrap.indexOf('v10-42-r46-final-visual-polish.js');
 const tutorial=bootstrap.indexOf('v10-42-tutorial-campaign.js');
