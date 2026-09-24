@@ -48,6 +48,33 @@ try{
   await page.waitForFunction(before=>Number(p1.mana)<before||Number(fire1)>0||Number(fireBuffer1)>0,manaBefore,{timeout:3000});
   await page.waitForTimeout(750);
 
+  const environmentalBefore=await page.evaluate(()=>{
+    const reporter=window.CCGLostSizzlerBugReporter;
+    const before={
+      anomalies:Number(reporter.state.environmentAnomalies||0),
+      contacts:Number(reporter.state.environmentContacts||0)
+    };
+    const stamp=performance.now();
+    const trap={id:"bug-report-crossing",kind:"spike",x:Number(p1.x),y:Number(p1.y),active:true,period:1000000,phase:-stamp};
+    host.traps.push(trap);
+    reporter.observeMovementBoundary(p1,"before",{source:"browser-contract",deliberate:true});
+    // Deliberately omit triggerTrap/hurtPlayer to model the live regression:
+    // the player crossed an ACTIVE trap but gameplay produced no damage.
+    reporter.observeMovementBoundary(p1,"after",{source:"browser-contract",deliberate:true});
+    host.traps=host.traps.filter(row=>row!==trap);
+    return before;
+  });
+  await page.waitForFunction(before=>{
+    const state=window.CCGLostSizzlerBugReporter?.state;
+    return Number(state?.environmentContacts||0)>before.contacts&&Number(state?.environmentAnomalies||0)>before.anomalies;
+  },environmentalBefore,{timeout:3000});
+  const environmentalEvidence=await page.evaluate(()=>({
+    state:{...window.CCGLostSizzlerBugReporter.state},
+    events:window.CCGLostSizzlerBugReporter.events.filter(event=>String(event.type).includes("environment")||String(event.type).includes("ACTIVE_TRAP_CROSSING"))
+  }));
+  assert.ok(environmentalEvidence.events.some(event=>event.type==="environment-boundary-contact"),"reporter must capture exact active-trap contact at the movement boundary");
+  assert.ok(environmentalEvidence.events.some(event=>event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE"),"reporter must flag an active trap crossing that produced no health loss");
+
   const report=await page.evaluate(()=>window.CCGLostSizzlerBugReporter.createReport("browser-contract"));
   assert.equal(report.schema,"CCG-DUNGEON-BUG-REPORT-v1");
   assert.equal(report.summary.game.mode,"playing");
