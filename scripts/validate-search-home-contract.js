@@ -97,6 +97,66 @@ function stripApprovedDungeonCarnageCssCacheBust(html) {
   );
 }
 
+const HOME_DISCOVERY_ROUTES = Object.freeze([
+  "/games/",
+  "/games/discover/",
+  "/games/genres/",
+  "/games/publishers/",
+  "/games/collections/",
+  "/music/",
+  "/zzap64/",
+  "/games/collections/retro-specials.html"
+]);
+
+function extractHomeHighlightsSection(html) {
+  const match = String(html).match(
+    /<section\b[^>]*aria-labelledby=["']home-highlights-title["'][^>]*>[\s\S]*?<\/section>/i
+  );
+  return match ? match[0] : "";
+}
+
+function hasApprovedHomeDiscoveryDashboard(section) {
+  const source = String(section || "");
+  if (!source.includes("<!-- PRIMARY ARCHIVE DISCOVERY DASHBOARD -->")
+      && !source.includes("home-section--archive-dashboard")) {
+    return false;
+  }
+
+  if (!source.includes('class="home-archive-launchpad"')) return false;
+  if (!source.includes('id="home-highlights-title">Find Your Way Around CCG</')) return false;
+
+  const routeMatches = [...source.matchAll(/<a\b[^>]*class=["'][^"']*\bhome-archive-route\b[^"']*["'][^>]*href=["']([^"']+)["'][^>]*>|<a\b[^>]*href=["']([^"']+)["'][^>]*class=["'][^"']*\bhome-archive-route\b[^"']*["'][^>]*>/gi)];
+  const routes = routeMatches.map((match) => match[1] || match[2]).filter(Boolean);
+
+  if (routes.length !== HOME_DISCOVERY_ROUTES.length) return false;
+  if (routes.some((route, index) => route !== HOME_DISCOVERY_ROUTES[index])) return false;
+
+  if (/<(?:script|iframe|form|audio|video)\b/i.test(source)) return false;
+  return true;
+}
+
+function isLegacyHomeHighlightsSection(section) {
+  const source = String(section || "");
+  return source.includes("home-explore-grid")
+    && source.includes("Choose How to Explore");
+}
+
+function stripApprovedHomeDiscoveryTransformation(html, role) {
+  const source = String(html);
+  const section = extractHomeHighlightsSection(source);
+  if (!section) return source;
+
+  if (role === "current") {
+    if (!hasApprovedHomeDiscoveryDashboard(section)) {
+      fail("The Home highlights section changed without matching the approved archive dashboard contract.");
+    }
+  } else if (!isLegacyHomeHighlightsSection(section) && !hasApprovedHomeDiscoveryDashboard(section)) {
+    fail("The baseline Home highlights section is not a recognized archive-navigation layout.");
+  }
+
+  return source.replace(section, "<section data-ccg-approved-home-discovery-placeholder></section>");
+}
+
 function stripApprovedSeoHead(html) {
   return stripApprovedDungeonCarnageCssCacheBust(
     stripApprovedDungeonCarnageHomeCta(
@@ -135,8 +195,15 @@ const current = fs.readFileSync(HOME_PATH, "utf8");
 const baseline = readBaseline();
 assertExactHead(current);
 
-if (stripApprovedSeoHead(current) !== stripApprovedSeoHead(baseline)) {
-  fail("home.html changed outside the approved SEO-head and Dungeon Carnage home-CTA fields.");
+const normalizedCurrent = stripApprovedSeoHead(
+  stripApprovedHomeDiscoveryTransformation(current, "current")
+);
+const normalizedBaseline = stripApprovedSeoHead(
+  stripApprovedHomeDiscoveryTransformation(baseline, "baseline")
+);
+
+if (normalizedCurrent !== normalizedBaseline) {
+  fail("home.html changed outside the approved SEO-head, Dungeon Carnage CTA and archive-dashboard fields.");
 }
 
-console.log("[search-home-contract] home.html differs from baseline only by the approved SEO-head / Dungeon Carnage CTA changes.");
+console.log("[search-home-contract] home.html differs from baseline only by the approved SEO-head / Dungeon Carnage CTA / archive-dashboard changes.");
