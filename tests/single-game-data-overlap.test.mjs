@@ -88,8 +88,8 @@ test("prefilled editorial video copy is preserved during canonical hydration", (
   );
   assert.match(
     source,
-    /if \(!prefilledVideoDescription\) \{[\s\S]*?_ccgEnrichedDescription[\s\S]*?\}/,
-    "runtime data must not overwrite generated editorial video copy"
+    /if \(prefilledVideoDescription\) \{\s*videoDescription\.hidden = false;\s*\} else if \(hasVideo && overview\)/,
+    "generated editorial video copy must survive even when the base games.json description is empty"
   );
 });
 
@@ -105,5 +105,17 @@ test("prefilled canonical routes preserve generated SEO metadata and schema", ()
     render,
     /if \(!preloaded\) \{\s*updateMeta\(game\);[\s\S]*?ccgSchemaGame[\s\S]*?ccgSchemaBreadcrumb[\s\S]*?\}/,
     "runtime metadata/schema rewriting must be limited to the non-prefilled fallback route"
+  );
+});
+
+test("prefilled canonical routes do not replace generated JSON-LD with runtime schema", () => {
+  const renderStart = source.indexOf("function renderGame(game)");
+  const renderEnd = source.indexOf("\nfunction slugifyBrowseToken", renderStart);
+  const render = source.slice(renderStart, renderEnd);
+
+  assert.match(
+    render,
+    /if \(!preloaded\) \{\s*injectGameSchema\(game\);\s*\}/,
+    "runtime JSON-LD injection must stay disabled on generated canonical pages"
   );
 });
