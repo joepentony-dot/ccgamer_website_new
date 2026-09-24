@@ -37,7 +37,7 @@
   const STALL_MS=120;
   const CURSOR_IDLE_MS=1600;
   let cursorTimer=0,lastDoorTick=performance.now(),capturedR1FireOwner=null,presentationResumeObserver=null;
-  let failedFireIntentSince=0,failedFireIntentCount=0,resumeAttackGuardUntil=0;
+  let failedFireIntentSince=0,failedFireIntentCount=0,resumeAttackGuardUntil=0,consumedPauseResetAt=0;
   const finiteAttackWatch={fire:null,fireSince:0,stun:null,stunSince:0};
 
   const panelVisible=id=>{const node=document.getElementById(id);return Boolean(node&&!node.classList.contains("hidden"))};
@@ -69,7 +69,7 @@
     try{
       const row=window.__CCG_PAUSE_ATTACK_LAST_RESET__;
       const at=Number(row?.at||0);
-      return at>0&&performance.now()-at<=RESUME_ATTACK_GUARD_MS
+      return at>consumedPauseResetAt&&performance.now()-at<=RESUME_ATTACK_GUARD_MS
     }catch(_){return false}
   }
   function restoreLivePresentationNow(reason="resume"){
@@ -305,6 +305,10 @@
     const resumeGuard=performance.now()<=resumeAttackGuardUntil||recentPauseReset();
     repairFiniteAttackBlock(player);
     repairAttackBoundary(resumeGuard);
+    if(resumeGuard){
+      resumeAttackGuardUntil=0;
+      try{consumedPauseResetAt=Math.max(consumedPauseResetAt,Number(window.__CCG_PAUSE_ATTACK_LAST_RESET__?.at||0))}catch(_){}
+    }
     const beforeMana=Math.max(0,Number(player.mana)||0);
     const beforeBullets=activePlayerBulletCount(player);
     const beforeMelee=Number(player._meleeSwingAt||0);
