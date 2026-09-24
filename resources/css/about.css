@@ -385,6 +385,15 @@
     background: rgba(0, 0, 0, 0.52);
 }
 
+.about-audio__player {
+    display: block;
+    width: 100%;
+    min-height: 54px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.52);
+    accent-color: rgb(var(--accent-rgb));
+}
+
 .about-audio__caption {
     color: var(--about-muted);
     font-size: 0.68rem;

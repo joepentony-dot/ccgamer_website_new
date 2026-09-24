@@ -28,6 +28,7 @@
     const state = {
         gamesPromise: null,
         renderTimer: null,
+        idleHandle: null,
         currentGame: null,
         renderedSlug: ""
     };
@@ -438,13 +439,38 @@
 
     function schedule(game) {
         window.clearTimeout(state.renderTimer);
-        state.renderTimer = window.setTimeout(() => void run(game), 120);
+        state.renderTimer = null;
+
+        if (state.idleHandle !== null && "cancelIdleCallback" in window) {
+            window.cancelIdleCallback(state.idleHandle);
+            state.idleHandle = null;
+        }
+
+        // Smart discovery is below-the-fold enrichment, not startup-critical UI.
+        // Keep its games.json fetch/parse out of the first interaction window so
+        // native scrolling remains responsive immediately after game readiness.
+        state.renderTimer = window.setTimeout(() => {
+            state.renderTimer = null;
+
+            const start = () => {
+                state.idleHandle = null;
+                void run(game);
+            };
+
+            if ("requestIdleCallback" in window) {
+                state.idleHandle = window.requestIdleCallback(start, { timeout: 1200 });
+            } else {
+                start();
+            }
+        }, 700);
     }
 
     function init() {
         if (!isSingleGamePage()) return;
         document.addEventListener("ccg:game-loaded", (event) => schedule(event.detail?.game || null));
-        window.setTimeout(() => schedule(null), 900);
+        window.setTimeout(() => {
+            if (!state.currentGame && !state.renderedSlug) schedule(null);
+        }, 1500);
     }
 
     if (document.readyState === "loading") {

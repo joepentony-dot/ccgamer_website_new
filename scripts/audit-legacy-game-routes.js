@@ -44,6 +44,10 @@ const apache = read("games/.htaccess");
 const navCore = read("js/ccg-nav-core.js");
 const consolidation = read("js/ccg-legacy-url-consolidation.js");
 const handler = read("games/game.html");
+const gameLoader = read("js/load-single-game.js");
+const dungeonCarnageAlias = read("arcade/c64-dungeon-carnage/index.html");
+const gamePagesCss = read("resources/css/game-pages.css");
+const aboutPage = read("about.html");
 const sitemap = read("sitemap-games.xml");
 const gamesSearch = read("games/games-search.json");
 const games = readJson("games/games.json");
@@ -63,6 +67,16 @@ if (!/permanent\s+two-way\s+reload\s+loop/i.test(consolidation)) {
 }
 requireText(handler, '<meta name="robots" content="noindex,follow">', "The shared game handler meta noindex is missing.");
 requireText(handler, '<link rel="canonical" id="game-canonical"', "The runtime canonical link is missing.");
+requireText(handler, 'data-ccg-game-back', "The shared individual-game Back control is missing.");
+requireText(gameLoader, "function initGameBackNavigation()", "The shared individual-game Back navigation runtime is missing.");
+requireText(dungeonCarnageAlias, '<base href="/arcade/lost-sizzler/">', "The raw-main Dungeon Carnage route alias is missing its canonical asset base.");
+requireText(dungeonCarnageAlias, '<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/arcade/c64-dungeon-carnage/">', "The Dungeon Carnage route alias must preserve the public canonical URL.");
+requireText(gamePagesCss, ".game-shell > .ccg-game-discovery-links", "The engagement discovery panel must span the complete single-game grid.");
+requireText(gamePagesCss, "grid-column: 1 / -1;", "The engagement discovery panel full-width grid contract is missing.");
+requireText(aboutPage, "https://pub-2f6ac7261f6347f59524930d84e71a92.r2.dev/master-of-magic.mp3", "The About page favourite SID track must use the maintained R2 Master of Magic source.");
+if (/drive\.google\.com\/file\/d\/1dtw9gMzwhP9n9wlQwrxyQhq4IO75sfgT/i.test(aboutPage)) {
+    errors.push("The deleted Google Drive favourite-SID embed is still present on the About page.");
+}
 
 if (/consolidateLegacyGameUrl|replaceLocation\(`games\/\$\{canonicalSlug\}\//.test(consolidation)) {
     errors.push("The shared game handler redirects back to canonical game folders and can create a reciprocal reload loop.");

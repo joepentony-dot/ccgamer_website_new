@@ -27,6 +27,7 @@ let CCG_MODAL_KEY_HANDLER = null;
 let CCG_MODAL_TOUCH_START = null;
 let CCG_SCROLL_PROGRESS_READY = false;
 let CCG_BACK_TO_TOP_READY = false;
+let CCG_GAME_BACK_READY = false;
 let CCG_QUICK_ACTIONS_READY = false;
 let CCG_RELATED_OBSERVER = null;
 let CCG_FAVOURITES_INIT = false;
@@ -2962,6 +2963,7 @@ function initCompactCommunityShell() {
 
 function initSingleGameUX(state) {
     initCompactCommunityShell();
+    initGameBackNavigation();
     initScrollProgress();
     initBackToTop();
     initScreenshotModalEnhancements();
@@ -2994,6 +2996,30 @@ function initScrollProgress() {
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     update();
+}
+
+function initGameBackNavigation() {
+    if (CCG_GAME_BACK_READY) return;
+    const button = document.querySelector("[data-ccg-game-back]");
+    if (!button) return;
+    CCG_GAME_BACK_READY = true;
+
+    button.addEventListener("click", () => {
+        const fallbackUrl = "/games/";
+
+        try {
+            const referrer = document.referrer ? new URL(document.referrer) : null;
+            const cameFromThisSite = referrer && referrer.origin === window.location.origin;
+            const cameFromDifferentPage = cameFromThisSite && referrer.href !== window.location.href;
+
+            if (cameFromDifferentPage && window.history.length > 1) {
+                window.history.back();
+                return;
+            }
+        } catch (_error) {}
+
+        window.location.assign(fallbackUrl);
+    });
 }
 
 function initBackToTop() {
