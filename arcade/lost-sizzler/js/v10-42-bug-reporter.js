@@ -249,14 +249,18 @@
       push("attack-probe",{code,fired,before:{mana:before.player1?.mana,hitStunMs:before.player1?.hitStunMs,meleeSwingAt:before.player1?.meleeSwingAt,fire1:before.game.fire1,buffer:before.game.fireBuffer1,projectiles:before.game.activeProjectiles,mode:before.game.mode},after:{mana:after.player1?.mana,hitStunMs:after.player1?.hitStunMs,meleeSwingAt:after.player1?.meleeSwingAt,fire1:after.game.fire1,buffer:after.game.fireBuffer1,projectiles:after.game.activeProjectiles,mode:after.game.mode}});
       if(!fired&&after.game.mode==="playing"&&after.game.runActive&&after.browser.visibility==="visible"){
         state.anomalies++;
-        push("ANOMALY_POSSIBLE_ATTACK_FAILURE",{
+        const anomalyDetail={
           code,ammo:after.player1?.mana,weapon:after.player1?.weapon?.name||"MELEE",input:after.game.inputKeys,
           hitStunMs:after.player1?.hitStunMs,lastHurtAt:safe(()=>Number(p1?.__ccgLastHurtAt||0),0),
           meleeSwingAt:after.player1?.meleeSwingAt,fire1:after.game.fire1,buffer:after.game.fireBuffer1,projectiles:after.game.activeProjectiles,
           deepOwnerFallbacks:after.diagnostics.fireRecovery?.deepOwnerFallbacks??null,
           deepOwnerFallbackSuccesses:after.diagnostics.fireRecovery?.deepOwnerFallbackSuccesses??null,
           inventoryHidden:after.panels.inventory.hidden,activeElement:after.browser.activeElement
-        });
+        };
+        push("ANOMALY_POSSIBLE_ATTACK_FAILURE",anomalyDetail);
+        if(String(after.player1?.weapon?.kind||"").toLowerCase()==="firearm"||Number(after.player1?.mana)>0){
+          push("ANOMALY_POSSIBLE_FIRE_FAILURE",anomalyDetail);
+        }
         updateBadge();
       }
     },900);
