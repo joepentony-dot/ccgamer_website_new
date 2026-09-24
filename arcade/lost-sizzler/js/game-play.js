@@ -274,7 +274,7 @@ function updateRoomMessage(p,force){
   try{window.CCGLostSizzlerStage8NpcDialogue?.onRoomEntered?.(p,r,room,{force:false})}catch(_){}
 }
 
-function updateDedicatedHazards(dt){for(const p of localPlayers()){p.hazardHitCooldown=Math.max(0,(p.hazardHitCooldown||0)-dt);if(p.hazardHitCooldown>0)continue;for(const hazard of host.hazardRooms||[]){if(W.roomAt(world,p.x,p.y)!==hazard.roomId)continue;const state=SYS.hazardCellState(hazard,p.x,p.y,host.floorElapsed||run.elapsed);if(!state.active)continue;p.hazardHitCooldown=1050;S.sfx("trap");burst(p.x,p.y,hazard.type==="embers"?P.orange:P.red,18,1.3);floatText(p.x,p.y,"HAZARD -1",P.red);hurtPlayer(p,1,false,`${hazard.title||"hazard chamber"} trap`);break}}}
+function updateDedicatedHazards(dt){for(const p of localPlayers()){p.hazardHitCooldown=Math.max(0,(p.hazardHitCooldown||0)-dt);if(p.hazardHitCooldown>0)continue;for(const hazard of host.hazardRooms||[]){if(W.roomAt(world,p.x,p.y)!==hazard.roomId)continue;const state=SYS.hazardCellState(hazard,p.x,p.y,host.floorElapsed||run.elapsed);if(!state.active)continue;const contactX=Number(p.x),contactY=Number(p.y),damageBefore=Number(p.__ccgLastDamageAt||0);p.hazardHitCooldown=1050;S.sfx("trap");burst(p.x,p.y,hazard.type==="embers"?P.orange:P.red,18,1.3);floatText(p.x,p.y,"HAZARD -1",P.red);hurtPlayer(p,1,false,`${hazard.title||"hazard chamber"} trap`);const damageAfter=Number(p.__ccgLastDamageAt||0);if(damageAfter>damageBefore)p.__ccgLastHazardDamageContact={id:String(hazard.id||""),x:contactX,y:contactY,at:damageAfter};break}}}
 function surroundingsTick(){
   if(!p1)return;const room=W.roomAt(world,p1.x,p1.y),hidden=host.enemies.filter(e=>e.alive&&W.roomAt(world,e.x,e.y)===room&&!visibleTo(p1,e.x,e.y)).length;
   let text;
