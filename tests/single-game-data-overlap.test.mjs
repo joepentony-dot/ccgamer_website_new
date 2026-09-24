@@ -33,8 +33,8 @@ test("canonical prefilled pages skip duplicate description enrichment downloads"
   assert.match(hydrate, /const preloaded = isPreloadedSingleGame\(\);/);
   assert.match(
     hydrate,
-    /fetchGamesLibrary\(\{\s*includeDescriptionEnrichments: !preloaded\s*\}\)/,
-    "prefilled canonical pages must opt out of runtime description enrichment"
+    /fetchGamesLibrary\(\{\s*includeDescriptionEnrichments: !preloaded,\s*cacheMode: preloaded \? "no-cache" : "no-store"\s*\}\)/,
+    "prefilled canonical pages must skip enrichment and allow validated game-library reuse"
   );
 
   const block = fetchGamesLibraryBlock();
@@ -57,10 +57,14 @@ test("dynamic single-game routes still merge enrichment before returning games",
   assert.doesNotMatch(block, /const enrichments = await fetchGameDescriptionEnrichments\(\);/, "do not restore sequential enrichment fetching");
 });
 
-test("games library revalidates instead of forcing a full no-store transfer", () => {
+test("canonical routes can revalidate the library while dynamic routes stay forced-fresh", () => {
   const block = fetchGamesLibraryBlock();
-  assert.match(block, /fetch\(url, \{ cache: "no-cache" \}\)/, "games.json fetch must permit validated browser reuse");
-  assert.doesNotMatch(block, /cache: "no-store"/, "games.json must not force a complete fresh transfer on every navigation");
+  assert.match(
+    block,
+    /const cacheMode = options\.cacheMode === "no-cache" \? "no-cache" : "no-store";/,
+    "dynamic routes must retain no-store unless canonical hydration explicitly enables revalidation"
+  );
+  assert.match(block, /fetch\(url, \{ cache: cacheMode \}\)/, "games.json fetch must use the route-specific cache policy");
 });
 
 function fetchDescriptionEnrichmentBlock() {
