@@ -15,7 +15,18 @@
     return document.getElementById("game-tape-archive-list");
   }
 
-  function hideSection() {
+  function hasStaticArchive() {
+    const mount = getMount();
+    return Boolean(
+      mount
+      && mount.dataset.ccgUtaStatic === "true"
+      && mount.querySelector(".ccg-uta-release__button")
+    );
+  }
+
+  function hideSection(options) {
+    const preserveStatic = Boolean(options && options.preserveStatic);
+    if (preserveStatic && hasStaticArchive()) return;
     const section = getSection();
     if (section) section.hidden = true;
   }
@@ -107,7 +118,7 @@
       render(game, record);
     } catch (error) {
       console.warn("[CCG UTA] Tape archive mapping unavailable.", error);
-      hideSection();
+      hideSection({ preserveStatic: true });
     }
   }
 
@@ -149,7 +160,7 @@
       render({ slug: slug, title: canonicalTitle(), system: "C64" }, record);
     } catch (error) {
       console.warn("[CCG UTA] Canonical tape archive bootstrap unavailable.", error);
-      hideSection();
+      hideSection({ preserveStatic: true });
     }
   }
 
