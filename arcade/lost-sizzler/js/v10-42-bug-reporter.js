@@ -15,7 +15,9 @@
   const trapObservations=new Map();
   const trapChecks=new Set();
   const duplicateTrapTiles=new Set();
-  const state={installed:false,reports:0,anomalies:0,trapAnomalies:0,trapContacts:0,trapVerifiedHits:0,lastTrap:null,lastReport:null,preReportSnapshot:null,sampleTimer:0,trapProbeTimer:0};
+  const movementBoundaryChecks=new WeakMap();
+  let movementBoundarySerial=0;
+  const state={installed:false,reports:0,anomalies:0,trapAnomalies:0,trapContacts:0,trapVerifiedHits:0,environmentContacts:0,environmentAnomalies:0,environmentVerifiedHits:0,lastTrap:null,lastEnvironment:null,lastReport:null,preReportSnapshot:null,sampleTimer:0,trapProbeTimer:0};
 
   const safe=(fn,fallback=null)=>{try{const value=fn();return value===undefined?fallback:value}catch(_){return fallback}};
   const nowIso=()=>new Date().toISOString();
@@ -141,6 +143,96 @@
       }).filter(row=>row.active||row.warning);
       return{at:{x:Number(player.x),y:Number(player.y)},matches};
     },null);
+  }
+
+  function observeMovementBoundary(player,stage="after",meta={}){
+    const playing=document.body?.dataset?.runActive==="true"&&safe(()=>String(mode)==="playing",false);
+    if(!playing||!player||Number(player.health||0)<=0)return false;
+    const stamp=performance.now(),x=Number(player.x),y=Number(player.y);
+
+    if(stage==="before"){
+      const ordinary=safe(()=>(host?.traps||[])
+        .filter(trap=>trap?.active!==false&&Number(trap.x)===x&&Number(trap.y)===y)
+        .map(trap=>trapOwnerSnapshot(player,trap,stamp)),[]);
+      const activeTraps=ordinary.filter(row=>row?.trap?.active===true);
+      const dedicated=dedicatedHazardSnapshot(player);
+      const activeHazards=(dedicated?.matches||[]).filter(row=>row?.active===true);
+      const record={
+        serial:++movementBoundarySerial,world:trapWorldKey(),playerId:trapPlayerId(player),x,y,at:stamp,
+        beforeHealth:Number(player.health||0),beforeArmor:Number(player.armor||0),beforeHurtAt:Number(player.__ccgLastHurtAt||0),
+        activeTraps,activeHazards,meta:compact(meta)
+      };
+      movementBoundaryChecks.set(player,record);
+      if(activeTraps.length||activeHazards.length){
+        state.environmentContacts++;
+        state.lastEnvironment=record;
+        push("environment-boundary-contact",record);
+      }
+      return true
+    }
+
+    const before=movementBoundaryChecks.get(player);
+    movementBoundaryChecks.delete(player);
+    if(!before)return false;
+    if(!before.activeTraps.length&&!before.activeHazards.length)return true;
+
+    const immediate={
+      health:Number(player.health||0),armor:Number(player.armor||0),hurtAt:Number(player.__ccgLastHurtAt||0),
+      x:Number(player.x),y:Number(player.y),at:performance.now()
+    };
+    push("environment-boundary-result",{
+      serial:before.serial,world:before.world,playerId:before.playerId,
+      contact:{x:before.x,y:before.y},after:immediate,
+      healthLoss:before.beforeHealth-immediate.health,armorLoss:before.beforeArmor-immediate.armor,
+      activeTrapKinds:before.activeTraps.map(row=>String(row?.trap?.kind||"floor")),
+      activeHazards:before.activeHazards.map(row=>({id:row.id,type:row.type,title:row.title}))
+    });
+
+    setTimeout(()=>{
+      const finalHealth=Number(player.health||0),finalArmor=Number(player.armor||0),finalHurtAt=Number(player.__ccgLastHurtAt||0);
+      const healthLoss=before.beforeHealth-finalHealth,armorLoss=before.beforeArmor-finalArmor;
+      if(before.activeTraps.length&&healthLoss<1){
+        state.anomalies++;state.trapAnomalies++;state.environmentAnomalies++;
+        const detail={
+          serial:before.serial,world:before.world,playerId:before.playerId,contact:{x:before.x,y:before.y},
+          expectedHealthLoss:1,actualHealthLoss:healthLoss,armorLoss,
+          beforeHealth:before.beforeHealth,afterHealth:finalHealth,beforeArmor:before.beforeArmor,afterArmor:finalArmor,
+          beforeHurtAt:before.beforeHurtAt,afterHurtAt:finalHurtAt,
+          movedAway:Number(player.x)!==before.x||Number(player.y)!==before.y,
+          traps:before.activeTraps,meta:before.meta
+        };
+        state.lastEnvironment=detail;
+        push("ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE",detail);
+        updateBadge();
+      }else if(before.activeTraps.length){
+        state.environmentVerifiedHits++;
+        push("environment-trap-crossing-damage-confirmed",{
+          serial:before.serial,world:before.world,playerId:before.playerId,contact:{x:before.x,y:before.y},
+          healthLoss,armorLoss,traps:before.activeTraps.map(row=>row.trap)
+        });
+      }
+
+      const dedicatedDamage=healthLoss+Math.max(0,armorLoss);
+      if(before.activeHazards.length&&dedicatedDamage<1&&finalHurtAt<=before.beforeHurtAt){
+        state.anomalies++;state.environmentAnomalies++;
+        const detail={
+          serial:before.serial,world:before.world,playerId:before.playerId,contact:{x:before.x,y:before.y},
+          expectedDamageSignal:1,healthLoss,armorLoss,beforeHurtAt:before.beforeHurtAt,afterHurtAt:finalHurtAt,
+          movedAway:Number(player.x)!==before.x||Number(player.y)!==before.y,
+          hazards:before.activeHazards,meta:before.meta
+        };
+        state.lastEnvironment=detail;
+        push("ANOMALY_ACTIVE_HAZARD_CROSSING_NO_DAMAGE",detail);
+        updateBadge();
+      }else if(before.activeHazards.length){
+        state.environmentVerifiedHits++;
+        push("environment-hazard-crossing-damage-confirmed",{
+          serial:before.serial,world:before.world,playerId:before.playerId,contact:{x:before.x,y:before.y},
+          healthLoss,armorLoss,hazards:before.activeHazards
+        });
+      }
+    },TRAP_VERIFY_MS);
+    return true
   }
 
   function currentSnapshot(reason="snapshot"){
@@ -511,9 +603,9 @@
   state.installed=true;
 
   window.CCGLostSizzlerBugReporter=Object.freeze({
-    version:"V10.42-bug-reporter-v3",observationOnly:true,gameplayOwnership:false,inputOwnership:false,renderOwnership:false,
+    version:"V10.42-bug-reporter-v4",observationOnly:true,gameplayOwnership:false,inputOwnership:false,renderOwnership:false,
     get state(){return state},get events(){return [...events]},
-    snapshot:currentSnapshot,trapProbe,trapSnapshot,createReport,formatReport,open:openReporter,close:closeReporter,
+    snapshot:currentSnapshot,trapProbe,trapSnapshot,observeMovementBoundary,createReport,formatReport,open:openReporter,close:closeReporter,
     enable(){try{localStorage.setItem("ccg-dungeon-bug-reporter","1")}catch(_){}ensureUi();const b=document.getElementById("ccg-bug-report-btn");if(b)b.hidden=false},
     disable(){try{localStorage.removeItem("ccg-dungeon-bug-reporter")}catch(_){}const b=document.getElementById("ccg-bug-report-btn");if(b)b.hidden=true;closeReporter()}
   });
