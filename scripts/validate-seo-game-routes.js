@@ -69,6 +69,10 @@ function hasPrefilledGameMarker(html) {
   return /\bdata-ccg-prefilled=["']true["']/i.test(html);
 }
 
+function hasStaticHeroBackground(html) {
+  return /<div\b[^>]*\bid=["']gameHeroBG["'][^>]*\bstyle=["'][^"']*background-image\s*:/i.test(html);
+}
+
 function extractSitemapLocs(xml) {
   return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => unescapeXml(match[1].trim()));
 }
@@ -119,6 +123,7 @@ function validateCanonicalPage(root, game, sitemapLocs, errors) {
   expect(heroTitle.length > 0, `${rel}: static H1 is missing.`, errors);
   expect(hasCanonicalReadyBody(html), `${rel}: canonical page is not server-visible on first load (missing ccg-single-ready body class).`, errors);
   expect(hasPrefilledGameMarker(html), `${rel}: canonical page is missing the prefilled-content marker.`, errors);
+  expect(hasStaticHeroBackground(html), `${rel}: canonical page is missing its generated hero background.`, errors);
   expect(!/http-equiv=["']refresh["']/i.test(html), `${rel}: canonical page still contains a meta refresh.`, errors);
   expect(!/\/games\/game\.html\?id=/i.test(html), `${rel}: canonical page still points to the query-string game route.`, errors);
   expect(!/\bGame not found\b/i.test(html), `${rel}: canonical page contains crawlable Game not found copy.`, errors);
