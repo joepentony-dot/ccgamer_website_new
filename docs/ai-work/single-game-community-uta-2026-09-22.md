@@ -1,3 +1,17 @@
+## Authoritative UTA status — 25 September 2026
+
+The catalogue-wide Ultimate Tape Archive programme is **merged and published**, not an active implementation branch.
+
+- #2262 Wonder Boy/source-data and publishing-chain repair merged as `c544338841458cd0ce0a4011f88e89566ae760e4`.
+- #2272 full C64 catalogue audit merged as `011c2c0f73677a47b43d13aba8f7ee00337b4b2a`.
+- #2275 curated regional/re-release reconciliation merged as `b40233c4d4debd6c50223582ff0a54eb9e5890ba`.
+- #2295 live UTA freshness repair merged as `1d41d4c25f462eec543edd5b3e61ffacb14cfdb7`.
+- #2298 residual current-main reconciliation merged as `fcdca219ca06f1e00c19114ac142e4cbb1f46214`.
+- Generated game/archive publication #2301 then merged as `ca0829e213d63372e954dce5f04311234e08910a`.
+- There is no surviving UTA implementation PR to merge during repository consolidation. Reliable Games Publishing owns future refreshes; `data/uta-manual-review.json` remains the evidence-driven curation queue for ambiguous releases.
+
+Older sections below are historical implementation checkpoints and must not be read as saying #2262/#2275/#2295/#2298 are still active.
+
 ## Current-main residual UTA rebuild — 23 September 2026
 
 The stale #2279 residual-reconciliation branch was 71 commits behind and has been closed without merge. After qualified #2294 and #2295 merged and generated-output #2296 advanced `main`, the verified residual work is being rebuilt on `codex/uta-residual-rebuild-current-main-20260923`.
