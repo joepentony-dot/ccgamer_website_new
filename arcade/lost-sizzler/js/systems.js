@@ -277,7 +277,7 @@ window.CCGSystems=(()=>{
     const floor=Math.max(1,run?.floor||1),count=floor>=3?2:1,busy=new Set([world.startRoomId,world.exitRoomId,host.sigilRoomId,host.trader?.roomId,host.startShop?.roomId,host.spiderNest?.roomId].filter(x=>x!=null));
     for(const g of host.generators||[])busy.add(g.roomId);for(const a of host.arenas||[])busy.add(a.roomId);for(const t of host.timedRooms||[])busy.add(t.roomId);if(host.rescue)busy.add(host.rescue.roomId);if(host.guardian)busy.add(W.roomAt(world,host.guardian.x,host.guardian.y));
     for(const feature of [host.bloodClue,host.memoryPuzzle,host.sequenceTorchPuzzle,host.weightBridge])if(feature?.roomId!=null)busy.add(feature.roomId);
-    const hazardEligible=(room,minW=8,minH=7)=>Boolean(room&&!room.sanctuary&&!room.sigilRoom&&!room.spiderNest&&!busy.has(room.id)&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=minW&&room.h>=minH),primaryHazardRooms=rooms.filter(room=>hazardEligible(room)),fallbackHazardRooms=primaryHazardRooms.length>=count?[]:(world.rooms||[]).filter(room=>hazardEligible(room)&&!primaryHazardRooms.some(candidate=>candidate.id===room.id)),strictHazardRoomIds=new Set([...primaryHazardRooms,...fallbackHazardRooms].map(room=>room.id)),relaxedHazardRooms=primaryHazardRooms.length+fallbackHazardRooms.length>=count?[]:(world.rooms||[]).filter(room=>hazardEligible(room,6,5)&&!strictHazardRoomIds.has(room.id)),shuffleHazardRooms=list=>list.map(room=>({room,key:world.random()})).sort((a,b)=>a.key-b.key),choices=[...shuffleHazardRooms(primaryHazardRooms),...shuffleHazardRooms(fallbackHazardRooms),...shuffleHazardRooms(relaxedHazardRooms)],types=["blade","embers","arrows"];host.hazardRooms=[];
+    const hazardEligible=(room,minW=8,minH=7)=>Boolean(room&&!room.sanctuary&&!room.sigilRoom&&!room.spiderNest&&!busy.has(room.id)&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=minW&&room.h>=minH),reservedHazardRooms=rooms.filter(room=>room?.dedicatedHazardReserved&&hazardEligible(room,6,5)),reservedHazardRoomIds=new Set(reservedHazardRooms.map(room=>room.id)),primaryHazardRooms=rooms.filter(room=>!reservedHazardRoomIds.has(room.id)&&hazardEligible(room)),fallbackHazardRooms=reservedHazardRooms.length+primaryHazardRooms.length>=count?[]:(world.rooms||[]).filter(room=>hazardEligible(room)&&!reservedHazardRoomIds.has(room.id)&&!primaryHazardRooms.some(candidate=>candidate.id===room.id)),strictHazardRoomIds=new Set([...reservedHazardRooms,...primaryHazardRooms,...fallbackHazardRooms].map(room=>room.id)),relaxedHazardRooms=reservedHazardRooms.length+primaryHazardRooms.length+fallbackHazardRooms.length>=count?[]:(world.rooms||[]).filter(room=>hazardEligible(room,6,5)&&!strictHazardRoomIds.has(room.id)),shuffleHazardRooms=list=>list.map(room=>({room,key:world.random()})).sort((a,b)=>a.key-b.key),choices=[...shuffleHazardRooms(reservedHazardRooms),...shuffleHazardRooms(primaryHazardRooms),...shuffleHazardRooms(fallbackHazardRooms),...shuffleHazardRooms(relaxedHazardRooms)],types=["blade","embers","arrows"];host.hazardRooms=[];
     const ordinaryTrapKinds=["fire","spike","shock"];
     const activeTrapKind=(trap,kind)=>Boolean(trap?.active)&&String(trap.kind||"").toLowerCase()===kind;
     const preservesOrdinaryTrapKinds=room=>ordinaryTrapKinds.every(kind=>(host.traps||[]).some(trap=>trap.roomId!==room.id&&activeTrapKind(trap,kind)));
@@ -388,6 +388,18 @@ window.CCGSystems=(()=>{
     const used=new Set([cell(world.start.x,world.start.y),cell(world.exit.x,world.exit.y)]);
     for(const i of host.items||[])used.add(cell(i.x,i.y));for(const e of host.enemies||[])used.add(cell(e.x,e.y));for(const c of host.chests||[])used.add(cell(c.x,c.y));
     const rooms=deepRooms(world),ordinary=roomDoorSet(world);
+    // Reserve dedicated-hazard capacity before later room owners claim the
+    // same spaces. The reservation is deterministic and does not consume RNG.
+    // Floors 1-2 require one dedicated hazard room; floors 3-5 require two.
+    const hazardReserveCount=(Math.max(1,Number(run?.floor||1))>=3?2:1);
+    const hauntedCorridorRoomIds=new Set([world.hauntedCorridor?.a,world.hauntedCorridor?.b].filter(id=>id!=null));
+    const hazardReserveRooms=[...rooms]
+      .filter(room=>room&&room.id!==world.exitRoomId&&!hauntedCorridorRoomIds.has(room.id)&&room.w>=6&&room.h>=5)
+      .sort((a,b)=>(b.w*b.h)-(a.w*a.h)||Number(b.depth||0)-Number(a.depth||0)||Number(a.id)-Number(b.id))
+      .slice(0,hazardReserveCount);
+    const hazardReservedRoomIds=new Set(hazardReserveRooms.map(room=>room.id));
+    for(const room of hazardReserveRooms)room.dedicatedHazardReserved=true;
+    const featureRooms=rooms.filter(room=>!hazardReservedRoomIds.has(room.id));
     host.doors=[...ordinary,...(host.doors||[])];
     host.doors.forEach(d=>{inferDoorGeometry(world,d);d.open=false;d.opening=false;d.openingStart=0;d.openAt=0});
 
@@ -402,7 +414,7 @@ window.CCGSystems=(()=>{
     carveSecretPassages(world,host,used,run);
 
     world.sanctuaryRooms=[];world.wallLights=[];
-    const sanctuaryPool=rooms.filter(r=>r.id!==world.exitRoomId).slice(-Math.min(10,rooms.length));
+    const sanctuaryPool=featureRooms.filter(r=>r.id!==world.exitRoomId).slice(-Math.min(10,featureRooms.length));
     for(let i=0;i<Math.min(C.dungeon.sanctuaryRooms,sanctuaryPool.length);i++){
       const room=sanctuaryPool[(i*3+1)%sanctuaryPool.length];if(!room)continue;room.sanctuary=true;world.sanctuaryRooms.push(room.id);
       for(const q of wallTorchPositions(room))world.wallLights.push({...q,roomId:room.id,radius:10,permanent:true,kind:"sanctuary"});
@@ -420,8 +432,8 @@ window.CCGSystems=(()=>{
 
     host.generators=[];
     const genCount=PGR.objectiveFor(run)==="generators"?C.dungeon.generatorCount:Math.min(2,C.dungeon.generatorCount);
-    for(let i=0;i<Math.min(genCount,rooms.length);i++){
-      const room=rooms[i],q=freeInRoom(world,room,used);host.generators.push({id:`gen${i}`,...q,roomId:room.id,hp:5+(run.floor||1),maxHp:5+(run.floor||1),alive:true,spawnCooldown:6000+Math.floor(world.random()*2500),spawnKills:0,spawnTotal:0});
+    for(let i=0;i<Math.min(genCount,featureRooms.length);i++){
+      const room=featureRooms[i],q=freeInRoom(world,room,used);host.generators.push({id:`gen${i}`,...q,roomId:room.id,hp:5+(run.floor||1),maxHp:5+(run.floor||1),alive:true,spawnCooldown:6000+Math.floor(world.random()*2500),spawnKills:0,spawnTotal:0});
     }
 
     host.shrines=[];
@@ -435,12 +447,12 @@ window.CCGSystems=(()=>{
     // Per-floor persistent knowledge/state. These reset only when a new floor is generated.
     host.radarSigilSeen=null;host.radarSigilGateSeen=null;host.defeatedDeathStalkers=[];
 
-    host.arenas=[];if(rooms.length){const room=rooms[Math.floor(rooms.length*.55)];host.arenas.push({id:"arena0",roomId:room.id,triggered:false,cleared:false,wave:0,rewarded:false})}
-    host.timedRooms=[];if(rooms.length>3){const room=rooms[Math.floor(rooms.length*.7)];host.timedRooms.push({id:"timed0",roomId:room.id,triggered:false,cleared:false,timeLeft:30000,rewarded:false})}
+    host.arenas=[];if(featureRooms.length){const room=featureRooms[Math.floor(featureRooms.length*.55)];host.arenas.push({id:"arena0",roomId:room.id,triggered:false,cleared:false,wave:0,rewarded:false})}
+    host.timedRooms=[];if(featureRooms.length>3){const room=featureRooms[Math.floor(featureRooms.length*.7)];host.timedRooms.push({id:"timed0",roomId:room.id,triggered:false,cleared:false,timeLeft:30000,rewarded:false})}
 
     const obj=PGR.objectiveFor(run);
     host.objective={type:obj,progress:0,target:obj==="keys"?C.keyTarget:obj==="generators"?host.generators.length:obj==="rescue"?1:obj==="explore_guardian"?70:1,complete:false};
-    host.rescue=null;if(obj==="rescue"&&rooms.length){const room=rooms[0],q=freeInRoom(world,room,used);host.rescue={id:"rescue0",...q,roomId:room.id,name:"Trapped CCG Scout",found:false,following:false,rescued:false,x0:q.x,y0:q.y}}
+    host.rescue=null;if(obj==="rescue"&&featureRooms.length){const room=featureRooms[0],q=freeInRoom(world,room,used);host.rescue={id:"rescue0",...q,roomId:room.id,name:"Trapped CCG Scout",found:false,following:false,rescued:false,x0:q.x,y0:q.y}}
 
     host.guardian=null;
     if(obj==="guardian"||obj==="explore_guardian"){
@@ -493,14 +505,14 @@ window.CCGSystems=(()=>{
     }
 
     // V10.2 retains the optional puzzle chain. These rooms never replace the mandatory objective or Sigil route.
-    installOptionalPuzzles(world,host,run,rooms,used);
+    installOptionalPuzzles(world,host,run,featureRooms,used);
 
     // A rare windy corridor can feed one adjoining Dustweb Nest. Spiders are
     // numerous and mobile, but each has exactly 1 HP and a small vermin reward
     // so the room is tense without becoming an XP-level shortcut.
     host.spiderNest=null;
     if(world.hauntedCorridor){
-      const haunted=world.hauntedCorridor,candidates=[world.rooms[haunted.a],world.rooms[haunted.b]].filter(room=>room&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&!roomHasCoreFeature(host,room.id)).sort((a,b)=>(b.depth||0)-(a.depth||0)),room=candidates[0];
+      const haunted=world.hauntedCorridor,candidates=[world.rooms[haunted.a],world.rooms[haunted.b]].filter(room=>room&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&!room.dedicatedHazardReserved&&!roomHasCoreFeature(host,room.id)).sort((a,b)=>(b.depth||0)-(a.depth||0)),room=candidates[0];
       if(room){
         for(const candidate of [world.rooms[haunted.a],world.rooms[haunted.b]])if(candidate?.spiderNest&&candidate!==room){candidate.spiderNest=false;candidate.theme=candidate.originalTheme||"C64_ARCHIVE"}
         haunted.roomId=room.id;room.theme="SPIDER_NEST";room.spiderNest=true;room.dangerous=true;room.verminRoom=true;
@@ -568,9 +580,26 @@ window.CCGSystems=(()=>{
       && !room.spiderNest
       && !finalHazardRoomIds.has(room.id)
     );
+    const fallbackFinalTrapRooms=[...(world.rooms||[])].filter(room=>
+      room
+      && room.id!==world.startRoomId
+      && room.id!==world.exitRoomId
+      && !room.sanctuary
+      && !finalHazardRoomIds.has(room.id)
+    );
+    const emergencyFinalTrapRooms=[...(world.rooms||[])].filter(room=>
+      room
+      && room.id!==world.startRoomId
+      && room.id!==world.exitRoomId
+      && !finalHazardRoomIds.has(room.id)
+    );
     for(const [kind,index] of finalTrapKinds.entries()){
       if((host.traps||[]).some(trap=>trap?.active&&String(trap.kind||"").toLowerCase()===kind))continue;
-      const room=finalTrapRooms[(Math.max(1,Number(run?.floor||1))+index)%Math.max(1,finalTrapRooms.length)]||null;
+      const offset=Math.max(1,Number(run?.floor||1))+index;
+      const room=finalTrapRooms[offset%Math.max(1,finalTrapRooms.length)]
+        || fallbackFinalTrapRooms[offset%Math.max(1,fallbackFinalTrapRooms.length)]
+        || emergencyFinalTrapRooms[offset%Math.max(1,emergencyFinalTrapRooms.length)]
+        || null;
       if(!room)continue;
       const q=freeInRoom(world,room,used);
       host.traps.push({
