@@ -55,6 +55,19 @@
       const pending=movementBoundarySignals.get(signal.playerId);
       const exact=pending?.activeTraps?.some(row=>String(row?.trap?.id||"")===signal.trapId&&Number(row?.trap?.x)===signal.x&&Number(row?.trap?.y)===signal.y);
       if(pending&&signal.serial>Number(pending.beforeDamageSignalSerial||0)&&exact)pending.acceptedTrapSignal=signal;
+      else if(!pending){
+        const trap=safe(()=>(host?.traps||[]).find(row=>
+          String(row?.id||`${row?.x},${row?.y}`)===signal.trapId
+          && Number(row?.x)===signal.x
+          && Number(row?.y)===signal.y
+        )||null,null);
+        state.environmentVerifiedHits++;
+        push("environment-trap-crossing-damage-confirmed",{
+          world:trapWorldKey(),playerId:signal.playerId,contact:{x:signal.x,y:signal.y},
+          healthLoss:1,armorLoss:0,traps:trap?[trapOwnerSnapshot(safe(()=>players?.find?.(p=>trapPlayerId(p)===signal.playerId)||p1,null),trap).trap]:[],
+          trapSignal:signal,contactSignals:[signal],source:"direct-exact-signal"
+        });
+      }
     }
     push(`environment-${signal.type}-damage-signal`,signal);
     return signal
