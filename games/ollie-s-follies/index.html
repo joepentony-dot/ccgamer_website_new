@@ -30,7 +30,7 @@
     <script src="/js/analytics.js" defer></script>
     <meta name="description"
           id="game-meta-description"
-          content="Ollie&#39;s Follies (1984) from Access Software — Ollie’s Follies is a challenging platform game for the Commodore 64, created by Frank Cohen of Fanda and…">
+          content="Ollie&#39;s Follies (1984) from Access Software — ️ Ollie’s Follies (1984) – Commodore 64 Platformer by Frank Cohen Ollie’s Follies is a 1984 Commodore 64…">
     <meta name="robots" content="index,follow">
     <link rel="canonical" id="game-canonical" href="https://www.cheekycommodoregamer.co.uk/games/ollie-s-follies/">
     <script>
@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/ollie-s-follies/#game","name":"Ollie's Follies","description":"Ollie’s Follies is a challenging platform game for the Commodore 64, created by Frank Cohen of Fanda and originally released by Access Software in 1984 before being reissued by Americana in 1986. You guide Ollie through 24 single-screen rooms filled with platforms, robots, lifts, fans…","url":"https://www.cheekycommodoregamer.co.uk/games/ollie-s-follies/","datePublished":"1984","gamePlatform":"Commodore 64","genre":"platform","publisher":{"@type":"Organization","name":"Access Software"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/ollie-s-follies.jpg","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/ollie-s-follies/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/ollie-s-follies/#video","name":"Ollie’s Follies – 24 Rooms of C64 Platforming Pain","description":"Ollie’s Follies is a challenging platform game for the Commodore 64, created by Frank Cohen of Fanda and originally released by Access Software in 1984 before being reissued by Americana in 1986. You guide Ollie through 24 single-screen rooms filled with platforms, robots, lifts, fans, trampolines, teleporters, lasers and other hazards while searching for each exit. Every room tests your timing, movement and route planning, with later stages becoming increasingly demanding. The controls can take some getting used to, especially when precise jumps and stopping distances are required, and the difficulty can occasionally become frustrating. Despite its simple presentation, Ollie’s Follies offers plenty of variety and some clever level design, making it an interesting early C64 platformer for players who enjoy tough, old-school Commodore 64 games.","thumbnailUrl":"https://i.ytimg.com/vi/V9JD67SRm8w/maxresdefault.jpg","uploadDate":"2026-09-24T17:30:07Z","embedUrl":"https://www.youtube.com/embed/V9JD67SRm8w","url":"https://www.cheekycommodoregamer.co.uk/games/ollie-s-follies/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/ollie-s-follies/#game"},"duration":"PT9M"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/ollie-s-follies/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Ollie's Follies","item":"https://www.cheekycommodoregamer.co.uk/games/ollie-s-follies/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/ollie-s-follies/#game","name":"Ollie's Follies","description":"️ Ollie’s Follies (1984) – Commodore 64 Platformer by Frank Cohen Ollie’s Follies is a 1984 Commodore 64 platform game created by Frank Cohen under the Fanda name and originally published on the C64 by Access Software. Your job sounds innocent enough: get Ollie through a factory run entirely by…","url":"https://www.cheekycommodoregamer.co.uk/games/ollie-s-follies/","datePublished":"1984","gamePlatform":"Commodore 64","genre":"platform","publisher":{"@type":"Organization","name":"Access Software"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/ollie-s-follies.jpg","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/ollie-s-follies/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":6,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/ollie-s-follies/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/ollie-s-follies/#video","name":"Ollie’s Follies – 24 Rooms of C64 Platforming Pain","description":"️ Ollie’s Follies (1984) – Commodore 64 Platformer by Frank Cohen Ollie’s Follies is a 1984 Commodore 64 platform game created by Frank Cohen under the Fanda name and originally published on the C64 by Access Software. Your job sounds innocent enough: get Ollie through a factory run entirely by hostile robots. Unfortunately, between you and freedom are 24 increasingly awkward single-screen rooms designed to make even walking in a straight line feel ambitious. Each room brings another mixture of platforms, robots and machinery to negotiate, with moving ledges, fans, teleporters, springboards, laser walls, keys and energisers gradually joining the fun. The energisers temporarily allow Ollie to destroy the robots instead of being destroyed by them, but much of the challenge still comes down to timing your movement and judging exactly where the little bugger is going to stop.","thumbnailUrl":"https://i.ytimg.com/vi/V9JD67SRm8w/maxresdefault.jpg","uploadDate":"2026-09-24T17:30:07Z","embedUrl":"https://www.youtube.com/embed/V9JD67SRm8w","url":"https://www.cheekycommodoregamer.co.uk/games/ollie-s-follies/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/ollie-s-follies/#game"},"duration":"PT9M"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/ollie-s-follies/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Ollie's Follies","item":"https://www.cheekycommodoregamer.co.uk/games/ollie-s-follies/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -117,7 +145,7 @@
     <meta property="og:site_name" content="Cheeky Commodore Gamer">
     <meta property="og:url" id="game-og-url" content="https://www.cheekycommodoregamer.co.uk/games/ollie-s-follies/">
     <meta property="og:title" id="game-og-title" content="Ollie&#39;s Follies (1984) – C64 | Review, Screens &amp; History">
-    <meta property="og:description" id="game-og-description" content="Ollie&#39;s Follies (1984) from Access Software — Ollie’s Follies is a challenging platform game for the Commodore 64, created by Frank Cohen of Fanda and…">
+    <meta property="og:description" id="game-og-description" content="Ollie&#39;s Follies (1984) from Access Software — ️ Ollie’s Follies (1984) – Commodore 64 Platformer by Frank Cohen Ollie’s Follies is a 1984 Commodore 64…">
     <meta property="og:image" id="game-og-image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/ollie-s-follies.jpg">
     <meta property="og:image:secure_url" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/ollie-s-follies.jpg">
     <meta property="og:image:type" content="image/jpeg">
@@ -126,7 +154,7 @@
     <meta property="og:image:alt" content="Ollie&#39;s Follies (1984) – C64 | Review, Screens &amp; History game preview on Cheeky Commodore Gamer">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" id="game-twitter-title" content="Ollie&#39;s Follies (1984) – C64 | Review, Screens &amp; History">
-    <meta name="twitter:description" id="game-twitter-description" content="Ollie&#39;s Follies (1984) from Access Software — Ollie’s Follies is a challenging platform game for the Commodore 64, created by Frank Cohen of Fanda and…">
+    <meta name="twitter:description" id="game-twitter-description" content="Ollie&#39;s Follies (1984) from Access Software — ️ Ollie’s Follies (1984) – Commodore 64 Platformer by Frank Cohen Ollie’s Follies is a 1984 Commodore 64…">
     <meta name="twitter:image" id="game-twitter-image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/ollie-s-follies.jpg">
     <meta name="twitter:image:alt" content="Ollie&#39;s Follies (1984) – C64 | Review, Screens &amp; History game preview on Cheeky Commodore Gamer">
     <meta name="twitter:url" content="https://www.cheekycommodoregamer.co.uk/games/ollie-s-follies/">
@@ -338,6 +366,10 @@
                         <h1 id="gameHeroTitle" class="game-hero__title">Ollie&#39;s Follies</h1>
                     </div>
 
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 6/10" title="Cheeky Commodore Gamer rating">6/10</span>
+                    </div>
+
                     <div class="game-hero__actions ccg-share" data-ccg-share>
                         <button class="ccg-btn ccg-btn--share" type="button" data-ccg-share-btn aria-label="Share this game">
                             <span class="ccg-btn__icon" aria-hidden="true">🔗</span>
@@ -368,7 +400,7 @@
         <section id="game-video-section" class="game-section">
             <p class="game-section__kicker">Video Archive</p>
             <h2 class="game-section__title">Ollie’s Follies – 24 Rooms of C64 Platforming Pain</h2>
-            <p class="ccg-section__intro" data-ccg-video-description>Ollie’s Follies is a challenging platform game for the Commodore 64, created by Frank Cohen of Fanda and originally released by Access Software in 1984 before being reissued by Americana in 1986. You guide Ollie through 24 single-screen rooms filled with platforms, robots, lifts, fans, trampolines, teleporters, lasers and other hazards while searching for each exit. Every room tests your timing, movement and route planning, with later stages becoming increasingly demanding. The controls can take some getting used to, especially when precise jumps and stopping distances are required, and the difficulty can occasionally become frustrating. Despite its simple presentation, Ollie’s Follies offers plenty of variety and some clever level design, making it an interesting early C64 platformer for players who enjoy tough, old-school Commodore 64 games.</p>
+            <p class="ccg-section__intro" data-ccg-video-description>️ Ollie’s Follies (1984) – Commodore 64 Platformer by Frank Cohen Ollie’s Follies is a 1984 Commodore 64 platform game created by Frank Cohen under the Fanda name and originally published on the C64 by Access Software. Your job sounds innocent enough: get Ollie through a factory run entirely by hostile robots. Unfortunately, between you and freedom are 24 increasingly awkward single-screen rooms designed to make even walking in a straight line feel ambitious. Each room brings another mixture of platforms, robots and machinery to negotiate, with moving ledges, fans, teleporters, springboards, laser walls, keys and energisers gradually joining the fun. The energisers temporarily allow Ollie to destroy the robots instead of being destroyed by them, but much of the challenge still comes down to timing your movement and judging exactly where the little bugger is going to stop.</p>
 
             <div class="game-video">
                 <iframe id="game-video-embed"
@@ -387,7 +419,7 @@
         <section id="game-description-section" class="game-section" hidden>
             <p class="game-section__kicker">Game Overview</p>
             <h2 class="game-section__title">About the Game</h2>
-            <div id="gameDescription" class="game-description">Ollie’s Follies is a challenging platform game for the Commodore 64, created by Frank Cohen of Fanda and originally released by Access Software in 1984 before being reissued by Americana in 1986. You guide Ollie through 24 single-screen rooms filled with platforms, robots, lifts, fans, trampolines, teleporters, lasers and other hazards while searching for each exit. Every room tests your timing, movement and route planning, with later stages becoming increasingly demanding. The controls can take some getting used to, especially when precise jumps and stopping distances are required, and the difficulty can occasionally become frustrating. Despite its simple presentation, Ollie’s Follies offers plenty of variety and some clever level design, making it an interesting early C64 platformer for players who enjoy tough, old-school Commodore 64 games.</div>
+            <div id="gameDescription" class="game-description">️ Ollie’s Follies (1984) – Commodore 64 Platformer by Frank Cohen Ollie’s Follies is a 1984 Commodore 64 platform game created by Frank Cohen under the Fanda name and originally published on the C64 by Access Software. Your job sounds innocent enough: get Ollie through a factory run entirely by hostile robots. Unfortunately, between you and freedom are 24 increasingly awkward single-screen rooms designed to make even walking in a straight line feel ambitious. Each room brings another mixture of platforms, robots and machinery to negotiate, with moving ledges, fans, teleporters, springboards, laser walls, keys and energisers gradually joining the fun. The energisers temporarily allow Ollie to destroy the robots instead of being destroyed by them, but much of the challenge still comes down to timing your movement and judging exactly where the little bugger is going to stop.</div>
         </section>
 
         <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub" hidden>

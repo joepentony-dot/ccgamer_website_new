@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/bullys-sporting-darts/#game","name":"Bully's Sporting Darts","description":"️ Bully’s Sporting Darts (1992) – Commodore 64 Darts & Quiz Show Classic Released in 1992 by Alternative Software for the Commodore 64, Bully’s Sporting Darts is a light-hearted darts simulation inspired by the hugely popular UK television game show Bullseye. It blends pub-style darts action with…","url":"https://www.cheekycommodoregamer.co.uk/games/bullys-sporting-darts/","datePublished":"1992","gamePlatform":"Commodore 64","genre":"sports","publisher":{"@type":"Organization","name":"Alternative Software"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/bully_s_sporting_darts.jpg","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/bullys-sporting-darts/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/bullys-sporting-darts/#video","name":"Bully’s Sporting Darts – Bully Came to the C64… But Was It Anything Like Bullseye?","description":"️ Bully’s Sporting Darts (1992) – Commodore 64 Darts & Quiz Show Classic Released in 1992 by Alternative Software for the Commodore 64, Bully’s Sporting Darts is a light-hearted darts simulation inspired by the hugely popular UK television game show Bullseye. It blends pub-style darts action with quiz elements and the unmistakable tone of early ’90s British TV entertainment. Gameplay offers several modes, including traditional 501 darts, a sports quiz section based directly on the show’s format, and the famous Bully’s Prize Board. You take turns throwing darts with simple, accessible controls, making it easy to pick up whether playing solo or against friends. Presentation leans heavily into cartoon-style visuals and digitised speech samples that echo the personality and humour of the TV show. This faithful recreation of Bullseye’s atmosphere is what gives the game its charm, capturing the spirit of the programme rather than aiming for strict darts realism.","thumbnailUrl":"https://i.ytimg.com/vi/O6HGpZtdsOc/maxresdefault.jpg","uploadDate":"2024-10-18T17:00:16Z","embedUrl":"https://www.youtube.com/embed/O6HGpZtdsOc","url":"https://www.cheekycommodoregamer.co.uk/games/bullys-sporting-darts/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/bullys-sporting-darts/#game"},"duration":"PT6M44S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/bullys-sporting-darts/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Bully's Sporting Darts","item":"https://www.cheekycommodoregamer.co.uk/games/bullys-sporting-darts/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/bullys-sporting-darts/#game","name":"Bully's Sporting Darts","description":"️ Bully’s Sporting Darts (1992) – Commodore 64 Darts & Quiz Show Classic Released in 1992 by Alternative Software for the Commodore 64, Bully’s Sporting Darts is a light-hearted darts simulation inspired by the hugely popular UK television game show Bullseye. It blends pub-style darts action with…","url":"https://www.cheekycommodoregamer.co.uk/games/bullys-sporting-darts/","datePublished":"1992","gamePlatform":"Commodore 64","genre":"sports","publisher":{"@type":"Organization","name":"Alternative Software"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/bully_s_sporting_darts.jpg","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/bullys-sporting-darts/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":9,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/bullys-sporting-darts/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/bullys-sporting-darts/#video","name":"Bully’s Sporting Darts – Bully Came to the C64… But Was It Anything Like Bullseye?","description":"️ Bully’s Sporting Darts (1992) – Commodore 64 Darts & Quiz Show Classic Released in 1992 by Alternative Software for the Commodore 64, Bully’s Sporting Darts is a light-hearted darts simulation inspired by the hugely popular UK television game show Bullseye. It blends pub-style darts action with quiz elements and the unmistakable tone of early ’90s British TV entertainment. Gameplay offers several modes, including traditional 501 darts, a sports quiz section based directly on the show’s format, and the famous Bully’s Prize Board. You take turns throwing darts with simple, accessible controls, making it easy to pick up whether playing solo or against friends. Presentation leans heavily into cartoon-style visuals and digitised speech samples that echo the personality and humour of the TV show. This faithful recreation of Bullseye’s atmosphere is what gives the game its charm, capturing the spirit of the programme rather than aiming for strict darts realism.","thumbnailUrl":"https://i.ytimg.com/vi/O6HGpZtdsOc/maxresdefault.jpg","uploadDate":"2024-10-18T17:00:16Z","embedUrl":"https://www.youtube.com/embed/O6HGpZtdsOc","url":"https://www.cheekycommodoregamer.co.uk/games/bullys-sporting-darts/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/bullys-sporting-darts/#game"},"duration":"PT6M44S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/bullys-sporting-darts/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Bully's Sporting Darts","item":"https://www.cheekycommodoregamer.co.uk/games/bullys-sporting-darts/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Bully&#39;s Sporting Darts</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 9/10" title="Cheeky Commodore Gamer rating">9/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

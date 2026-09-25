@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/street-hassle/#game","name":"Street Hassle","description":"️ Street Hassle (1987) – Commodore 64 Side-Scrolling Beat ’Em Up Oddity Released in 1987, developed by Beam Software and published by Melbourne House, Street Hassle is a side-scrolling beat ’em up that takes the usual street-fighting formula and makes it considerably stranger. Your job is simple…","url":"https://www.cheekycommodoregamer.co.uk/games/street-hassle/","datePublished":"1987","gamePlatform":"Commodore 64","genre":"fighting","publisher":{"@type":"Organization","name":"Melbourne House"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/street_hassle_new.png","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/street-hassle/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/street-hassle/#video","name":"Street Hassle – The C64 Beat ’Em Up That Was Anything but Polite","description":"️ Street Hassle (1987) – Commodore 64 Side-Scrolling Beat ’Em Up Oddity Released in 1987, developed by Beam Software and published by Melbourne House, Street Hassle is a side-scrolling beat ’em up that takes the usual street-fighting formula and makes it considerably stranger. Your job is simple enough: walk through the city and deal with anybody foolish enough to get in your way. The opposition, however, is anything but ordinary. Alongside the expected street thugs you’ll encounter gorillas, towering basketball players, dogs, motorcyclists and elderly ladies armed with handbags. Combat gives you a surprisingly varied selection of attacks, with punches, kicks and some decidedly unconventional moves available as you work your way through each stage. There’s also a two-player option, with players taking turns to tackle the streets. Street Hassle was developed by Australian studio Beam Software and was also released under the names Bop ’N Rumble and Bad Street Brawler in other territories.","thumbnailUrl":"https://i.ytimg.com/vi/F55Y_917VhE/maxresdefault.jpg","uploadDate":"2023-04-26T17:30:02Z","embedUrl":"https://www.youtube.com/embed/F55Y_917VhE","url":"https://www.cheekycommodoregamer.co.uk/games/street-hassle/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/street-hassle/#game"},"duration":"PT5M15S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/street-hassle/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Street Hassle","item":"https://www.cheekycommodoregamer.co.uk/games/street-hassle/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/street-hassle/#game","name":"Street Hassle","description":"️ Street Hassle (1987) – Commodore 64 Side-Scrolling Beat ’Em Up Oddity Released in 1987, developed by Beam Software and published by Melbourne House, Street Hassle is a side-scrolling beat ’em up that takes the usual street-fighting formula and makes it considerably stranger. Your job is simple…","url":"https://www.cheekycommodoregamer.co.uk/games/street-hassle/","datePublished":"1987","gamePlatform":"Commodore 64","genre":"fighting","publisher":{"@type":"Organization","name":"Melbourne House"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/street_hassle_new.png","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/street-hassle/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":6,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/street-hassle/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/street-hassle/#video","name":"Street Hassle – The C64 Beat ’Em Up That Was Anything but Polite","description":"️ Street Hassle (1987) – Commodore 64 Side-Scrolling Beat ’Em Up Oddity Released in 1987, developed by Beam Software and published by Melbourne House, Street Hassle is a side-scrolling beat ’em up that takes the usual street-fighting formula and makes it considerably stranger. Your job is simple enough: walk through the city and deal with anybody foolish enough to get in your way. The opposition, however, is anything but ordinary. Alongside the expected street thugs you’ll encounter gorillas, towering basketball players, dogs, motorcyclists and elderly ladies armed with handbags. Combat gives you a surprisingly varied selection of attacks, with punches, kicks and some decidedly unconventional moves available as you work your way through each stage. There’s also a two-player option, with players taking turns to tackle the streets. Street Hassle was developed by Australian studio Beam Software and was also released under the names Bop ’N Rumble and Bad Street Brawler in other territories.","thumbnailUrl":"https://i.ytimg.com/vi/F55Y_917VhE/maxresdefault.jpg","uploadDate":"2023-04-26T17:30:02Z","embedUrl":"https://www.youtube.com/embed/F55Y_917VhE","url":"https://www.cheekycommodoregamer.co.uk/games/street-hassle/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/street-hassle/#game"},"duration":"PT5M15S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/street-hassle/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Street Hassle","item":"https://www.cheekycommodoregamer.co.uk/games/street-hassle/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Street Hassle</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 6/10" title="Cheeky Commodore Gamer rating">6/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>
