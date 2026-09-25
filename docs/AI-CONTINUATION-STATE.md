@@ -1,3 +1,12 @@
+## Search Console remediation current-main rebuild — 25 September 2026
+
+- PR #2339 completed its fresh exact-head qualification on repaired Dungeon Carnage main and merged as `1caed6ef7759134a33379867d4c13085e99fd2aa`; all six Chromium shards, Site Safety, Native Mouse Wheel, SEO, itch.io package and fast Dungeon PR qualification were green.
+- Draft PR #2343 / `codex/search-console-seo-remediation-20260925` was then rebuilt directly onto that current main. The 16 Search Console/SEO files had zero overlap with every file merged since its old base, so the rebuild preserves the newer #2342/#2344 Dungeon repairs and #2339 CI policy without manual conflict resolution.
+- Reconciliation code/tree head `0115a53c46d921a01873f301e70e7af54bbe8769` is 0 commits behind main and retains the intended redirect, canonical-route, sitemap, Review/Rating JSON-LD, publishing validation and cache changes.
+- The previous #2343 Load Safety failure was the now-fixed dedicated-hazard generation defect; its previous mouse-wheel failure was an isolated Quiz first-response timing sample after the other audited pages passed. Neither is being hidden or weakened: the rebuilt exact head must complete a fresh full qualification matrix.
+- This documentation update creates the final qualification candidate. Keep #2343 draft until the resulting exact head is still 0 behind current main, mergeable, every triggered workflow completes successfully, and no material review finding remains.
+- Open website PR count after #2339 merge: **7**.
+
 ## CI qualification optimisation — 25 September 2026
 
 - PR #2339 / `codex/ci-qualification-optimisation` is the active CI-policy candidate.
