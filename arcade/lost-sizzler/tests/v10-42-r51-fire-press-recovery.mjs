@@ -37,6 +37,11 @@ assert.match(r20Src,/function recoverPersistentFireBlock\(player,direction,befor
 assert.match(r20Src,/failedFireIntentCount<3\|\|now-failedFireIntentSince<650/);
 assert.match(r20Src,/player\.hitStunMs=0/);
 assert.match(r20Src,/diagnostics\.persistentFireBlockRepairs\+\+/);
+assert.match(r20Src,/function recoverThroughCapturedR1FireOwner\(player,direction,beforeMana,beforeBullets,beforeMelee\)/);
+assert.match(r20Src,/const owner=captureR1FireOwner\(\)/,"final recovery must resolve the established R1 canonical FIRE owner");
+assert.match(r20Src,/if\(!fired\)fired=recoverThroughCapturedR1FireOwner/,"captured R1 recovery must run only after earlier attack owners fail");
+assert.match(r20Src,/capturedR1FallbackSuccesses/,"captured R1 recovery must be diagnosable");
+assert.doesNotMatch(r20Src,/recoverThroughCapturedR1FireOwner[\s\S]*?spawnBullet\(/,"R1 recovery must not create a parallel projectile path");
 const attackNowBlock=r20Src.match(/function attackNow\(code\)\{[\s\S]*?\n  \}/)?.[0]||"";
 assert.match(attackNowBlock,/firePlayer\(player,direction\)/,"R53 must invoke the authoritative top-level attack owner");
 assert.doesNotMatch(attackNowBlock,/deepestFireOwner\(/,"R53 attack recovery must not bypass contextual melee/voice/achievement wrappers");
