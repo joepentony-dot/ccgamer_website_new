@@ -392,8 +392,9 @@ window.CCGSystems=(()=>{
     // same spaces. The reservation is deterministic and does not consume RNG.
     // Floors 1-2 require one dedicated hazard room; floors 3-5 require two.
     const hazardReserveCount=(Math.max(1,Number(run?.floor||1))>=3?2:1);
+    const hauntedCorridorRoomIds=new Set([world.hauntedCorridor?.a,world.hauntedCorridor?.b].filter(id=>id!=null));
     const hazardReserveRooms=[...rooms]
-      .filter(room=>room&&room.id!==world.exitRoomId&&room.w>=6&&room.h>=5)
+      .filter(room=>room&&room.id!==world.exitRoomId&&!hauntedCorridorRoomIds.has(room.id)&&room.w>=6&&room.h>=5)
       .sort((a,b)=>(b.w*b.h)-(a.w*a.h)||Number(b.depth||0)-Number(a.depth||0)||Number(a.id)-Number(b.id))
       .slice(0,hazardReserveCount);
     const hazardReservedRoomIds=new Set(hazardReserveRooms.map(room=>room.id));
