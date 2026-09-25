@@ -36,6 +36,10 @@ assert.match(reporter,/environment-boundary-contact/,"reporter must retain conta
 assert.match(reporter,/environment-trap-crossing-damage-confirmed/,"reporter must distinguish a successful crossing hit from a failed crossing");
 assert.match(reporter,/row\?\.active===true&&Number\(row\?\.hitCooldown\|\|0\)<=0/,"dedicated hazard crossings under the normal hit cooldown must not be misreported as failures");
 assert.match(reporter,/const environmentDamageSignals=\[\]/,"environmental contact evidence must use its own bounded signal history");
+assert.match(reporter,/const confirmedEnvironmentDamageSignals=new Set\(\)/,"accepted environmental signals must be de-duplicated across boundary and fast-traversal confirmation paths");
+assert.match(reporter,/function scheduleUnboundTrapSignalConfirmation\(signal\)/,"reporter must recover exact accepted trap evidence when fast traversal leaves the contact tile before boundary verification");
+assert.match(reporter,/confirmedEnvironmentDamageSignals\.has\(Number\(signal\.serial\|\|0\)\)/,"fast-traversal fallback must not duplicate a confirmation already owned by the movement boundary");
+assert.match(reporter,/signalFallback:true/,"fast-traversal confirmation must identify when exact damage-signal evidence supplied the boundary fallback");
 assert.match(reporter,/const MAX_ENVIRONMENT_DAMAGE_SIGNALS=80/,"environmental contact signal history must remain bounded");
 assert.match(reporter,/environmentDamageSignals\.length>MAX_ENVIRONMENT_DAMAGE_SIGNALS/,"old environmental contact signals must be discarded");
 assert.match(reporter,/addEventListener\("ccg:trap-damage"/,"reporter must capture exact ordinary-trap damage signals");
