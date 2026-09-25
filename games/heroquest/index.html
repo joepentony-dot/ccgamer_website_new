@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/heroquest/#game","name":"Heroquest","description":"️ HeroQuest (1991) – Commodore 64 Turn-Based Fantasy Dungeon Crawler Released in 1991 by Gremlin Graphics for the Commodore 64, HeroQuest is a faithful digital adaptation of the hugely popular Games Workshop board game. Developed by 221B Software Development, it brings classic fantasy dungeon…","url":"https://www.cheekycommodoregamer.co.uk/games/heroquest/","datePublished":"1991","gamePlatform":"Commodore 64","genre":["role-playing","strategy"],"publisher":{"@type":"Organization","name":"Gremlin Graphics"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/hero_quest.jpg","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/heroquest/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/heroquest/#video","name":"HeroQuest – Games Workshop’s Board Game Became a Four-Hero C64 Dungeon Crawl","description":"️ HeroQuest (1991) – Commodore 64 Turn-Based Fantasy Dungeon Crawler Released in 1991 by Gremlin Graphics for the Commodore 64, HeroQuest is a faithful digital adaptation of the hugely popular Games Workshop board game. Developed by 221B Software Development, it brings classic fantasy dungeon crawling and tabletop strategy to the 8-bit home computer. You command a party of four iconic heroes — the Barbarian, Dwarf, Elf, and Wizard — as they venture into grid-based dungeons to defeat monsters, uncover treasure, and ultimately thwart the evil sorcerer Morcar. Gameplay closely mirrors the board game, blending turn-based movement, combat, exploration, and character progression across a series of structured quests. Despite the C64’s limitations, HeroQuest delivers atmospheric visuals with detailed sprites and dungeon layouts that successfully capture the look and feel of the tabletop experience. The music and sound effects reinforce the fantasy setting, adding tension and drama as each room is revealed.","thumbnailUrl":"https://i.ytimg.com/vi/UcHYz9jW1z4/maxresdefault.jpg","uploadDate":"2024-11-12T18:30:21Z","embedUrl":"https://www.youtube.com/embed/UcHYz9jW1z4","url":"https://www.cheekycommodoregamer.co.uk/games/heroquest/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/heroquest/#game"},"duration":"PT5M53S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/heroquest/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Heroquest","item":"https://www.cheekycommodoregamer.co.uk/games/heroquest/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/heroquest/#game","name":"Heroquest","description":"️ HeroQuest (1991) – Commodore 64 Turn-Based Fantasy Dungeon Crawler Released in 1991 by Gremlin Graphics for the Commodore 64, HeroQuest is a faithful digital adaptation of the hugely popular Games Workshop board game. Developed by 221B Software Development, it brings classic fantasy dungeon…","url":"https://www.cheekycommodoregamer.co.uk/games/heroquest/","datePublished":"1991","gamePlatform":"Commodore 64","genre":["role-playing","strategy"],"publisher":{"@type":"Organization","name":"Gremlin Graphics"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/hero_quest.jpg","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/heroquest/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":7,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/heroquest/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/heroquest/#video","name":"HeroQuest – Games Workshop’s Board Game Became a Four-Hero C64 Dungeon Crawl","description":"️ HeroQuest (1991) – Commodore 64 Turn-Based Fantasy Dungeon Crawler Released in 1991 by Gremlin Graphics for the Commodore 64, HeroQuest is a faithful digital adaptation of the hugely popular Games Workshop board game. Developed by 221B Software Development, it brings classic fantasy dungeon crawling and tabletop strategy to the 8-bit home computer. You command a party of four iconic heroes — the Barbarian, Dwarf, Elf, and Wizard — as they venture into grid-based dungeons to defeat monsters, uncover treasure, and ultimately thwart the evil sorcerer Morcar. Gameplay closely mirrors the board game, blending turn-based movement, combat, exploration, and character progression across a series of structured quests. Despite the C64’s limitations, HeroQuest delivers atmospheric visuals with detailed sprites and dungeon layouts that successfully capture the look and feel of the tabletop experience. The music and sound effects reinforce the fantasy setting, adding tension and drama as each room is revealed.","thumbnailUrl":"https://i.ytimg.com/vi/UcHYz9jW1z4/maxresdefault.jpg","uploadDate":"2024-11-12T18:30:21Z","embedUrl":"https://www.youtube.com/embed/UcHYz9jW1z4","url":"https://www.cheekycommodoregamer.co.uk/games/heroquest/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/heroquest/#game"},"duration":"PT5M53S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/heroquest/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Heroquest","item":"https://www.cheekycommodoregamer.co.uk/games/heroquest/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Heroquest</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 7/10" title="Cheeky Commodore Gamer rating">7/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

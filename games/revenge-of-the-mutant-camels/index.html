@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/revenge-of-the-mutant-camels/#game","name":"Revenge Of The Mutant Camels","description":"️ Revenge of the Mutant Camels (1984) – Commodore 64 Psychedelic Shoot ’Em Up mayhem Released in 1984 by Llamasoft and developed by Jeff Minter, Revenge of the Mutant Camels is a horizontally scrolling shoot ’em up that cranks the absurdity to full blast. A direct sequel to Attack of the Mutant…","url":"https://www.cheekycommodoregamer.co.uk/games/revenge-of-the-mutant-camels/","datePublished":"1984","gamePlatform":"Commodore 64","genre":["arcade","shooting"],"publisher":{"@type":"Organization","name":"Aackosoft"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/revenge_of_the_mutant_camels.jpg","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/revenge-of-the-mutant-camels/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/revenge-of-the-mutant-camels/#video","name":"Revenge of the Mutant Camels – Jeff Minter Gets Even Weirder on C64","description":"️ Revenge of the Mutant Camels (1984) – Commodore 64 Psychedelic Shoot ’Em Up mayhem Released in 1984 by Llamasoft and developed by Jeff Minter, Revenge of the Mutant Camels is a horizontally scrolling shoot ’em up that cranks the absurdity to full blast. A direct sequel to Attack of the Mutant Camels, the game puts you in control of a heavily armed camel battling through 42 waves of surreal and unpredictable enemies. Gameplay is fast, frantic, and deliberately offbeat. You fire basic blue shots while weaving through enemies that range from falling umbrellas and vending machines to flying toilets, all rendered in Minter’s unmistakable psychedelic style. Power-ups boost firepower, but danger also comes in the form of tokens that can poison you or reverse controls, keeping every moment unpredictable. A standout feature is the optional two-player mode, where a second player controls a bipedal goat riding atop the camel, doubling firepower and adding a unique cooperative twist rarely seen in shooters of the era.","thumbnailUrl":"https://i.ytimg.com/vi/F4HhsPtCl8c/maxresdefault.jpg","uploadDate":"2024-01-09T18:19:22Z","embedUrl":"https://www.youtube.com/embed/F4HhsPtCl8c","url":"https://www.cheekycommodoregamer.co.uk/games/revenge-of-the-mutant-camels/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/revenge-of-the-mutant-camels/#game"},"duration":"PT5M32S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/revenge-of-the-mutant-camels/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Revenge Of The Mutant Camels","item":"https://www.cheekycommodoregamer.co.uk/games/revenge-of-the-mutant-camels/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/revenge-of-the-mutant-camels/#game","name":"Revenge Of The Mutant Camels","description":"️ Revenge of the Mutant Camels (1984) – Commodore 64 Psychedelic Shoot ’Em Up mayhem Released in 1984 by Llamasoft and developed by Jeff Minter, Revenge of the Mutant Camels is a horizontally scrolling shoot ’em up that cranks the absurdity to full blast. A direct sequel to Attack of the Mutant…","url":"https://www.cheekycommodoregamer.co.uk/games/revenge-of-the-mutant-camels/","datePublished":"1984","gamePlatform":"Commodore 64","genre":["arcade","shooting"],"publisher":{"@type":"Organization","name":"Aackosoft"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/revenge_of_the_mutant_camels.jpg","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/revenge-of-the-mutant-camels/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":7,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/revenge-of-the-mutant-camels/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/revenge-of-the-mutant-camels/#video","name":"Revenge of the Mutant Camels – Jeff Minter Gets Even Weirder on C64","description":"️ Revenge of the Mutant Camels (1984) – Commodore 64 Psychedelic Shoot ’Em Up mayhem Released in 1984 by Llamasoft and developed by Jeff Minter, Revenge of the Mutant Camels is a horizontally scrolling shoot ’em up that cranks the absurdity to full blast. A direct sequel to Attack of the Mutant Camels, the game puts you in control of a heavily armed camel battling through 42 waves of surreal and unpredictable enemies. Gameplay is fast, frantic, and deliberately offbeat. You fire basic blue shots while weaving through enemies that range from falling umbrellas and vending machines to flying toilets, all rendered in Minter’s unmistakable psychedelic style. Power-ups boost firepower, but danger also comes in the form of tokens that can poison you or reverse controls, keeping every moment unpredictable. A standout feature is the optional two-player mode, where a second player controls a bipedal goat riding atop the camel, doubling firepower and adding a unique cooperative twist rarely seen in shooters of the era.","thumbnailUrl":"https://i.ytimg.com/vi/F4HhsPtCl8c/maxresdefault.jpg","uploadDate":"2024-01-09T18:19:22Z","embedUrl":"https://www.youtube.com/embed/F4HhsPtCl8c","url":"https://www.cheekycommodoregamer.co.uk/games/revenge-of-the-mutant-camels/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/revenge-of-the-mutant-camels/#game"},"duration":"PT5M32S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/revenge-of-the-mutant-camels/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Revenge Of The Mutant Camels","item":"https://www.cheekycommodoregamer.co.uk/games/revenge-of-the-mutant-camels/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Revenge Of The Mutant Camels</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 7/10" title="Cheeky Commodore Gamer rating">7/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

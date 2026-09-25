@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/turbo-out-run/#game","name":"Turbo Out Run","description":"️ Turbo Out Run (1989) – Commodore 64 Arcade Racing with Turbo Boost Released in 1989, Turbo Out Run is a high-speed arcade racer developed by Sega AM2 and expertly converted to the Commodore 64 by Probe Software. Acting as a sequel to Out Run, the game sends you on a coast-to-coast race from New…","url":"https://www.cheekycommodoregamer.co.uk/games/turbo-out-run/","datePublished":"1989","gamePlatform":"Commodore 64","genre":["arcade","racing"],"publisher":{"@type":"Organization","name":"Sega"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/turbo_out_run.jpg","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/turbo-out-run/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/turbo-out-run/#video","name":"Turbo Out Run – New York to LA at Full Boost on the Commodore 64","description":"️ Turbo Out Run (1989) – Commodore 64 Arcade Racing with Turbo Boost Released in 1989, Turbo Out Run is a high-speed arcade racer developed by Sega AM2 and expertly converted to the Commodore 64 by Probe Software. Acting as a sequel to Out Run, the game sends you on a coast-to-coast race from New York City to Los Angeles, battling a rival Porsche 959 while dodging traffic and police along the way. Gameplay builds on the original formula with the introduction of a turbo boost system, allowing brief bursts of extreme speed at critical moments. Across 16 stages, you can upgrade their Ferrari F40 every fourth level, choosing improvements such as engine power, turbo performance, and tyre grip to stay competitive as the difficulty ramps up. The Commodore 64 version is widely praised for its sense of speed and smooth scrolling, delivering an impressive arcade-style experience on 8-bit hardware.","thumbnailUrl":"https://i.ytimg.com/vi/nEkPszDpVAQ/maxresdefault.jpg","uploadDate":"2024-10-09T17:30:07Z","embedUrl":"https://www.youtube.com/embed/nEkPszDpVAQ","url":"https://www.cheekycommodoregamer.co.uk/games/turbo-out-run/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/turbo-out-run/#game"},"duration":"PT6M9S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/turbo-out-run/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Turbo Out Run","item":"https://www.cheekycommodoregamer.co.uk/games/turbo-out-run/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/turbo-out-run/#game","name":"Turbo Out Run","description":"️ Turbo Out Run (1989) – Commodore 64 Arcade Racing with Turbo Boost Released in 1989, Turbo Out Run is a high-speed arcade racer developed by Sega AM2 and expertly converted to the Commodore 64 by Probe Software. Acting as a sequel to Out Run, the game sends you on a coast-to-coast race from New…","url":"https://www.cheekycommodoregamer.co.uk/games/turbo-out-run/","datePublished":"1989","gamePlatform":"Commodore 64","genre":["arcade","racing"],"publisher":{"@type":"Organization","name":"Sega"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/turbo_out_run.jpg","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/turbo-out-run/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":10,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/turbo-out-run/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/turbo-out-run/#video","name":"Turbo Out Run – New York to LA at Full Boost on the Commodore 64","description":"️ Turbo Out Run (1989) – Commodore 64 Arcade Racing with Turbo Boost Released in 1989, Turbo Out Run is a high-speed arcade racer developed by Sega AM2 and expertly converted to the Commodore 64 by Probe Software. Acting as a sequel to Out Run, the game sends you on a coast-to-coast race from New York City to Los Angeles, battling a rival Porsche 959 while dodging traffic and police along the way. Gameplay builds on the original formula with the introduction of a turbo boost system, allowing brief bursts of extreme speed at critical moments. Across 16 stages, you can upgrade their Ferrari F40 every fourth level, choosing improvements such as engine power, turbo performance, and tyre grip to stay competitive as the difficulty ramps up. The Commodore 64 version is widely praised for its sense of speed and smooth scrolling, delivering an impressive arcade-style experience on 8-bit hardware.","thumbnailUrl":"https://i.ytimg.com/vi/nEkPszDpVAQ/maxresdefault.jpg","uploadDate":"2024-10-09T17:30:07Z","embedUrl":"https://www.youtube.com/embed/nEkPszDpVAQ","url":"https://www.cheekycommodoregamer.co.uk/games/turbo-out-run/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/turbo-out-run/#game"},"duration":"PT6M9S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/turbo-out-run/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Turbo Out Run","item":"https://www.cheekycommodoregamer.co.uk/games/turbo-out-run/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Turbo Out Run</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 10/10" title="Cheeky Commodore Gamer rating">10/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

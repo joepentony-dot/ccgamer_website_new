@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/quinx/#game","name":"Quinx","description":"️ Quinx (1984) – Commodore 64 Surreal Single-Screen Arcade Oddity Released in 1984 by Supersoft for the Commodore 64, Quinx is a bizarre and memorable arcade game built around a dreamlike premise. You take on the role of Arthur Crown, a student at the London School of Economics, trapped in a…","url":"https://www.cheekycommodoregamer.co.uk/games/quinx/","datePublished":"1984","gamePlatform":"Commodore 64","genre":["arcade","miscellaneous"],"publisher":{"@type":"Organization","name":"Supersoft"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/QUINX_NEW.png","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/quinx/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/quinx/#video","name":"Quinx – The Bizarre C64 Game Set Inside a Student’s Exam Nightmare","description":"️ Quinx (1984) – Commodore 64 Surreal Single-Screen Arcade Oddity Released in 1984 by Supersoft for the Commodore 64, Quinx is a bizarre and memorable arcade game built around a dreamlike premise. You take on the role of Arthur Crown, a student at the London School of Economics, trapped in a nightmare where ink worms threaten to consume the very paper he stands on. Gameplay takes place on a single screen viewed from above, with worms emerging from the edges and leaving trails of ink as they move. The goal is simple but demanding: squash the worms before they hatch. If a worm survives too long, it destroys part of the paper, steadily shrinking the playable area and pushing the game toward failure. The challenge comes from speed and positioning, as multiple worms can appear at once and hesitation quickly leads to irreversible damage.","thumbnailUrl":"https://i.ytimg.com/vi/qgA5R-JZrKo/maxresdefault.jpg","uploadDate":"2024-07-03T17:30:14Z","embedUrl":"https://www.youtube.com/embed/qgA5R-JZrKo","url":"https://www.cheekycommodoregamer.co.uk/games/quinx/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/quinx/#game"},"duration":"PT7M3S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/quinx/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Quinx","item":"https://www.cheekycommodoregamer.co.uk/games/quinx/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/quinx/#game","name":"Quinx","description":"️ Quinx (1984) – Commodore 64 Surreal Single-Screen Arcade Oddity Released in 1984 by Supersoft for the Commodore 64, Quinx is a bizarre and memorable arcade game built around a dreamlike premise. You take on the role of Arthur Crown, a student at the London School of Economics, trapped in a…","url":"https://www.cheekycommodoregamer.co.uk/games/quinx/","datePublished":"1984","gamePlatform":"Commodore 64","genre":["arcade","miscellaneous"],"publisher":{"@type":"Organization","name":"Supersoft"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/QUINX_NEW.png","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/quinx/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":4,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/quinx/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/quinx/#video","name":"Quinx – The Bizarre C64 Game Set Inside a Student’s Exam Nightmare","description":"️ Quinx (1984) – Commodore 64 Surreal Single-Screen Arcade Oddity Released in 1984 by Supersoft for the Commodore 64, Quinx is a bizarre and memorable arcade game built around a dreamlike premise. You take on the role of Arthur Crown, a student at the London School of Economics, trapped in a nightmare where ink worms threaten to consume the very paper he stands on. Gameplay takes place on a single screen viewed from above, with worms emerging from the edges and leaving trails of ink as they move. The goal is simple but demanding: squash the worms before they hatch. If a worm survives too long, it destroys part of the paper, steadily shrinking the playable area and pushing the game toward failure. The challenge comes from speed and positioning, as multiple worms can appear at once and hesitation quickly leads to irreversible damage.","thumbnailUrl":"https://i.ytimg.com/vi/qgA5R-JZrKo/maxresdefault.jpg","uploadDate":"2024-07-03T17:30:14Z","embedUrl":"https://www.youtube.com/embed/qgA5R-JZrKo","url":"https://www.cheekycommodoregamer.co.uk/games/quinx/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/quinx/#game"},"duration":"PT7M3S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/quinx/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Quinx","item":"https://www.cheekycommodoregamer.co.uk/games/quinx/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Quinx</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 4/10" title="Cheeky Commodore Gamer rating">4/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

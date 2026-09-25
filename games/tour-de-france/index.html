@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/tour-de-france/#game","name":"Tour De France","description":"️ Tour de France (1985) – Commodore 64 Cycling Simulation Classic Released in 1985 by Activision and developed by Novotrade Software, Tour de France is one of the earliest officially licensed cycling games to appear on the Commodore 64. It places you in the saddle for a gruelling race against the…","url":"https://www.cheekycommodoregamer.co.uk/games/tour-de-france/","datePublished":"1985","gamePlatform":"Commodore 64","genre":"racing","publisher":{"@type":"Organization","name":"Activision"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/tour_de_france_usa.jpg","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/tour-de-france/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/tour-de-france/#video","name":"Tour de France – Could You Survive Cycling’s Toughest Race on the C64?","description":"️ Tour de France (1985) – Commodore 64 Cycling Simulation Classic Released in 1985 by Activision and developed by Novotrade Software, Tour de France is one of the earliest officially licensed cycling games to appear on the Commodore 64. It places you in the saddle for a gruelling race against the clock, recreating the endurance and rhythm of professional stage racing rather than head-to-head competition. The game’s defining feature is its unusual control system. Speed is built by rapidly moving the joystick left and right, while steering is handled by holding the fire button and adjusting direction. Gear changes play an important role too, forcing you to manage effort carefully as terrain and pace shift throughout each stage. Rather than racing visible opponents, Tour de France focuses entirely on time trials. Success depends on efficiency, stamina management, and maintaining a smooth rhythm, with overall victory decided by cumulative stage times rather than single-race wins.","thumbnailUrl":"https://i.ytimg.com/vi/TWFbsc-phQg/maxresdefault.jpg","uploadDate":"2023-08-16T17:30:05Z","embedUrl":"https://www.youtube.com/embed/TWFbsc-phQg","url":"https://www.cheekycommodoregamer.co.uk/games/tour-de-france/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/tour-de-france/#game"},"duration":"PT5M43S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/tour-de-france/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Tour De France","item":"https://www.cheekycommodoregamer.co.uk/games/tour-de-france/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/tour-de-france/#game","name":"Tour De France","description":"️ Tour de France (1985) – Commodore 64 Cycling Simulation Classic Released in 1985 by Activision and developed by Novotrade Software, Tour de France is one of the earliest officially licensed cycling games to appear on the Commodore 64. It places you in the saddle for a gruelling race against the…","url":"https://www.cheekycommodoregamer.co.uk/games/tour-de-france/","datePublished":"1985","gamePlatform":"Commodore 64","genre":"racing","publisher":{"@type":"Organization","name":"Activision"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/tour_de_france_usa.jpg","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/tour-de-france/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":4,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/tour-de-france/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/tour-de-france/#video","name":"Tour de France – Could You Survive Cycling’s Toughest Race on the C64?","description":"️ Tour de France (1985) – Commodore 64 Cycling Simulation Classic Released in 1985 by Activision and developed by Novotrade Software, Tour de France is one of the earliest officially licensed cycling games to appear on the Commodore 64. It places you in the saddle for a gruelling race against the clock, recreating the endurance and rhythm of professional stage racing rather than head-to-head competition. The game’s defining feature is its unusual control system. Speed is built by rapidly moving the joystick left and right, while steering is handled by holding the fire button and adjusting direction. Gear changes play an important role too, forcing you to manage effort carefully as terrain and pace shift throughout each stage. Rather than racing visible opponents, Tour de France focuses entirely on time trials. Success depends on efficiency, stamina management, and maintaining a smooth rhythm, with overall victory decided by cumulative stage times rather than single-race wins.","thumbnailUrl":"https://i.ytimg.com/vi/TWFbsc-phQg/maxresdefault.jpg","uploadDate":"2023-08-16T17:30:05Z","embedUrl":"https://www.youtube.com/embed/TWFbsc-phQg","url":"https://www.cheekycommodoregamer.co.uk/games/tour-de-france/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/tour-de-france/#game"},"duration":"PT5M43S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/tour-de-france/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Tour De France","item":"https://www.cheekycommodoregamer.co.uk/games/tour-de-france/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Tour De France</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 4/10" title="Cheeky Commodore Gamer rating">4/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

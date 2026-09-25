@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/kane-kane-2/#game","name":"Kane & Kane 2","description":"️ Kane & Kane II (1986–1988) – Commodore 64 Wild West Action Duology Released by Mastertronic in 1986 and 1988, Kane and Kane II are Western-themed arcade action games developed by John Darnell for the Commodore 64. Both titles place you in the boots of lawman Marshall McGraw as he rides into…","url":"https://www.cheekycommodoregamer.co.uk/games/kane-kane-2/","datePublished":"1985","gamePlatform":"Commodore 64","genre":"arcade","publisher":{"@type":"Organization","name":"Mastertronic"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/kane1.jpg","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/kane-kane-2/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/kane-kane-2/#video","name":"Kane & Kane 2 – Cowboys, Shooting Galleries and C64 Western Oddness","description":"️ Kane & Kane II (1986–1988) – Commodore 64 Wild West Action Duology Released by Mastertronic in 1986 and 1988, Kane and Kane II are Western-themed arcade action games developed by John Darnell for the Commodore 64. Both titles place you in the boots of lawman Marshall McGraw as he rides into danger to restore order across the frontier. The original Kane mixes fast-paced shooting with horseback riding stages, throwing a variety of arcade-style challenges your way. Gunfights test reflexes and positioning, while the riding sections demand precision and timing, earning a reputation for being tough but memorable. Kane II follows the same structure, offering more shootouts and riding sequences with familiar mechanics. While it sticks closely to the formula of the first game, it expands on the action and delivers another dose of Wild West arcade gameplay.","thumbnailUrl":"https://i.ytimg.com/vi/ppePHqdVdeE/maxresdefault.jpg","uploadDate":"2023-03-30T17:01:38Z","embedUrl":"https://www.youtube.com/embed/ppePHqdVdeE","url":"https://www.cheekycommodoregamer.co.uk/games/kane-kane-2/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/kane-kane-2/#game"},"duration":"PT8M42S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/kane-kane-2/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Kane & Kane 2","item":"https://www.cheekycommodoregamer.co.uk/games/kane-kane-2/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/kane-kane-2/#game","name":"Kane & Kane 2","description":"️ Kane & Kane II (1986–1988) – Commodore 64 Wild West Action Duology Released by Mastertronic in 1986 and 1988, Kane and Kane II are Western-themed arcade action games developed by John Darnell for the Commodore 64. Both titles place you in the boots of lawman Marshall McGraw as he rides into…","url":"https://www.cheekycommodoregamer.co.uk/games/kane-kane-2/","datePublished":"1985","gamePlatform":"Commodore 64","genre":"arcade","publisher":{"@type":"Organization","name":"Mastertronic"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/kane1.jpg","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/kane-kane-2/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":7,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/kane-kane-2/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/kane-kane-2/#video","name":"Kane & Kane 2 – Cowboys, Shooting Galleries and C64 Western Oddness","description":"️ Kane & Kane II (1986–1988) – Commodore 64 Wild West Action Duology Released by Mastertronic in 1986 and 1988, Kane and Kane II are Western-themed arcade action games developed by John Darnell for the Commodore 64. Both titles place you in the boots of lawman Marshall McGraw as he rides into danger to restore order across the frontier. The original Kane mixes fast-paced shooting with horseback riding stages, throwing a variety of arcade-style challenges your way. Gunfights test reflexes and positioning, while the riding sections demand precision and timing, earning a reputation for being tough but memorable. Kane II follows the same structure, offering more shootouts and riding sequences with familiar mechanics. While it sticks closely to the formula of the first game, it expands on the action and delivers another dose of Wild West arcade gameplay.","thumbnailUrl":"https://i.ytimg.com/vi/ppePHqdVdeE/maxresdefault.jpg","uploadDate":"2023-03-30T17:01:38Z","embedUrl":"https://www.youtube.com/embed/ppePHqdVdeE","url":"https://www.cheekycommodoregamer.co.uk/games/kane-kane-2/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/kane-kane-2/#game"},"duration":"PT8M42S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/kane-kane-2/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Kane & Kane 2","item":"https://www.cheekycommodoregamer.co.uk/games/kane-kane-2/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Kane &amp; Kane 2</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 7/10" title="Cheeky Commodore Gamer rating">7/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

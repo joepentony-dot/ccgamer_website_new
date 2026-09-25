@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/escape-from-the-planet-of-the-robot-monsters/#game","name":"Escape From The Planet Of The Robot Monsters","description":"️ Escape from the Planet of the Robot Monsters (1990) – Commodore 64 Isometric Arcade Shooter Released in 1990 by Teque Software Development and published by Domark, Escape from the Planet of the Robot Monsters is a multidirectional shooter for the Commodore 64, adapted from Atari Games’ 1989…","url":"https://www.cheekycommodoregamer.co.uk/games/escape-from-the-planet-of-the-robot-monsters/","datePublished":"1990","gamePlatform":"Commodore 64","genre":"arcade","publisher":{"@type":"Organization","name":"Domark"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/escape_from_the_planet_of_the_robot_monsters.jpg","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/escape-from-the-planet-of-the-robot-monsters/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/escape-from-the-planet-of-the-robot-monsters/#video","name":"Escape from the Planet of the Robot Monsters – C64 B-Movie Madness","description":"️ Escape from the Planet of the Robot Monsters (1990) – Commodore 64 Isometric Arcade Shooter Released in 1990 by Teque Software Development and published by Domark, Escape from the Planet of the Robot Monsters is a multidirectional shooter for the Commodore 64, adapted from Atari Games’ 1989 arcade release. The game embraces a tongue-in-cheek 1950s sci-fi theme, blending action with humour and distinctive presentation. Set on Planet X, you control interplanetary agents Jake and Duke on a mission to rescue Dr. Sarah Bellum and other hostages from the evil Reptilons. Using an isometric viewpoint, the game tasks you with navigating maze-like environments, destroying robotic enemies, and activating switches and mechanisms to progress through each level. Combat introduces an extra layer of strategy, allowing you to crouch, rotate, and fire in eight directions while stationary.","thumbnailUrl":"https://i.ytimg.com/vi/y-wu-CIpcd4/maxresdefault.jpg","uploadDate":"2023-11-02T18:30:45Z","embedUrl":"https://www.youtube.com/embed/y-wu-CIpcd4","url":"https://www.cheekycommodoregamer.co.uk/games/escape-from-the-planet-of-the-robot-monsters/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/escape-from-the-planet-of-the-robot-monsters/#game"},"duration":"PT6M27S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/escape-from-the-planet-of-the-robot-monsters/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Escape From The Planet Of The Robot Monsters","item":"https://www.cheekycommodoregamer.co.uk/games/escape-from-the-planet-of-the-robot-monsters/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/escape-from-the-planet-of-the-robot-monsters/#game","name":"Escape From The Planet Of The Robot Monsters","description":"️ Escape from the Planet of the Robot Monsters (1990) – Commodore 64 Isometric Arcade Shooter Released in 1990 by Teque Software Development and published by Domark, Escape from the Planet of the Robot Monsters is a multidirectional shooter for the Commodore 64, adapted from Atari Games’ 1989…","url":"https://www.cheekycommodoregamer.co.uk/games/escape-from-the-planet-of-the-robot-monsters/","datePublished":"1990","gamePlatform":"Commodore 64","genre":"arcade","publisher":{"@type":"Organization","name":"Domark"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/escape_from_the_planet_of_the_robot_monsters.jpg","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/escape-from-the-planet-of-the-robot-monsters/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":7,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/escape-from-the-planet-of-the-robot-monsters/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/escape-from-the-planet-of-the-robot-monsters/#video","name":"Escape from the Planet of the Robot Monsters – C64 B-Movie Madness","description":"️ Escape from the Planet of the Robot Monsters (1990) – Commodore 64 Isometric Arcade Shooter Released in 1990 by Teque Software Development and published by Domark, Escape from the Planet of the Robot Monsters is a multidirectional shooter for the Commodore 64, adapted from Atari Games’ 1989 arcade release. The game embraces a tongue-in-cheek 1950s sci-fi theme, blending action with humour and distinctive presentation. Set on Planet X, you control interplanetary agents Jake and Duke on a mission to rescue Dr. Sarah Bellum and other hostages from the evil Reptilons. Using an isometric viewpoint, the game tasks you with navigating maze-like environments, destroying robotic enemies, and activating switches and mechanisms to progress through each level. Combat introduces an extra layer of strategy, allowing you to crouch, rotate, and fire in eight directions while stationary.","thumbnailUrl":"https://i.ytimg.com/vi/y-wu-CIpcd4/maxresdefault.jpg","uploadDate":"2023-11-02T18:30:45Z","embedUrl":"https://www.youtube.com/embed/y-wu-CIpcd4","url":"https://www.cheekycommodoregamer.co.uk/games/escape-from-the-planet-of-the-robot-monsters/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/escape-from-the-planet-of-the-robot-monsters/#game"},"duration":"PT6M27S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/escape-from-the-planet-of-the-robot-monsters/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Escape From The Planet Of The Robot Monsters","item":"https://www.cheekycommodoregamer.co.uk/games/escape-from-the-planet-of-the-robot-monsters/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Escape From The Planet Of The Robot Monsters</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 7/10" title="Cheeky Commodore Gamer rating">7/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

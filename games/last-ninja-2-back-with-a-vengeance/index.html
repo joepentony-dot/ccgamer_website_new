@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/last-ninja-2-back-with-a-vengeance/#game","name":"Last Ninja 2: Back With A Vengeance","description":"️ Last Ninja 2: Back with a Vengeance (1988) – Commodore 64 Isometric Action-Adventure Classic Released in 1988 by System 3 for the Commodore 64, Last Ninja 2: Back with a Vengeance boldly shifts the series from feudal Japan to the streets of modern-day New York City. Armakuni is torn from his own…","url":"https://www.cheekycommodoregamer.co.uk/games/last-ninja-2-back-with-a-vengeance/","datePublished":"1988","gamePlatform":"Commodore 64","genre":"action-adventure","publisher":{"@type":"Organization","name":"Activision"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/last_ninja_ii.jpg","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/last-ninja-2-back-with-a-vengeance/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/last-ninja-2-back-with-a-vengeance/#video","name":"Last Ninja 2 – System 3 Sent the C64’s Ninja to New York","description":"️ Last Ninja 2: Back with a Vengeance (1988) – Commodore 64 Isometric Action-Adventure Classic Released in 1988 by System 3 for the Commodore 64, Last Ninja 2: Back with a Vengeance boldly shifts the series from feudal Japan to the streets of modern-day New York City. Armakuni is torn from his own time and dropped into an urban battleground where his ancient enemy Kunitoki has rebuilt his power in a new era. The game expands on the original’s isometric design, letting you move freely in eight directions while navigating locations such as Central Park, city streets, sewers, and hidden laboratories. Progress depends on careful exploration, precise movement, and understanding how each area connects to the next. Combat plays a major role, with Armakuni using shuriken, nunchaku, staffs, and other tools to overcome enemies. Some foes require specific weapons, encouraging tactical thinking rather than brute force.","thumbnailUrl":"https://i.ytimg.com/vi/KfTlU0ikYc8/maxresdefault.jpg","uploadDate":"2023-04-18T17:30:03Z","embedUrl":"https://www.youtube.com/embed/KfTlU0ikYc8","url":"https://www.cheekycommodoregamer.co.uk/games/last-ninja-2-back-with-a-vengeance/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/last-ninja-2-back-with-a-vengeance/#game"},"duration":"PT5M28S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/last-ninja-2-back-with-a-vengeance/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Last Ninja 2: Back With A Vengeance","item":"https://www.cheekycommodoregamer.co.uk/games/last-ninja-2-back-with-a-vengeance/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/last-ninja-2-back-with-a-vengeance/#game","name":"Last Ninja 2: Back With A Vengeance","description":"️ Last Ninja 2: Back with a Vengeance (1988) – Commodore 64 Isometric Action-Adventure Classic Released in 1988 by System 3 for the Commodore 64, Last Ninja 2: Back with a Vengeance boldly shifts the series from feudal Japan to the streets of modern-day New York City. Armakuni is torn from his own…","url":"https://www.cheekycommodoregamer.co.uk/games/last-ninja-2-back-with-a-vengeance/","datePublished":"1988","gamePlatform":"Commodore 64","genre":"action-adventure","publisher":{"@type":"Organization","name":"Activision"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/last_ninja_ii.jpg","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/last-ninja-2-back-with-a-vengeance/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":7,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/last-ninja-2-back-with-a-vengeance/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/last-ninja-2-back-with-a-vengeance/#video","name":"Last Ninja 2 – System 3 Sent the C64’s Ninja to New York","description":"️ Last Ninja 2: Back with a Vengeance (1988) – Commodore 64 Isometric Action-Adventure Classic Released in 1988 by System 3 for the Commodore 64, Last Ninja 2: Back with a Vengeance boldly shifts the series from feudal Japan to the streets of modern-day New York City. Armakuni is torn from his own time and dropped into an urban battleground where his ancient enemy Kunitoki has rebuilt his power in a new era. The game expands on the original’s isometric design, letting you move freely in eight directions while navigating locations such as Central Park, city streets, sewers, and hidden laboratories. Progress depends on careful exploration, precise movement, and understanding how each area connects to the next. Combat plays a major role, with Armakuni using shuriken, nunchaku, staffs, and other tools to overcome enemies. Some foes require specific weapons, encouraging tactical thinking rather than brute force.","thumbnailUrl":"https://i.ytimg.com/vi/KfTlU0ikYc8/maxresdefault.jpg","uploadDate":"2023-04-18T17:30:03Z","embedUrl":"https://www.youtube.com/embed/KfTlU0ikYc8","url":"https://www.cheekycommodoregamer.co.uk/games/last-ninja-2-back-with-a-vengeance/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/last-ninja-2-back-with-a-vengeance/#game"},"duration":"PT5M28S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/last-ninja-2-back-with-a-vengeance/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Last Ninja 2: Back With A Vengeance","item":"https://www.cheekycommodoregamer.co.uk/games/last-ninja-2-back-with-a-vengeance/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Last Ninja 2: Back With A Vengeance</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 7/10" title="Cheeky Commodore Gamer rating">7/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/road-rash/#game","name":"Road Rash","description":"️ Road Rash (1992) – Commodore Amiga Review & Mega Drive Comparison Road Rash brought Electronic Arts' brilliantly violent motorcycle racing to the Commodore Amiga in 1992 — but how does the Amiga version compare with the classic Sega Mega Drive original? Road Rash mixes motorcycle racing with…","url":"https://www.cheekycommodoregamer.co.uk/games/road-rash/","datePublished":"1992","gamePlatform":"Amiga","genre":"racing","publisher":{"@type":"Organization","name":"Electronic Arts"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/road-rash.png","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/road-rash/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/road-rash/#video","name":"Road Rash on the Amiga – Better Than the Mega Drive version?","description":"️ Road Rash (1992) – Commodore Amiga Review & Mega Drive Comparison Road Rash brought Electronic Arts' brilliantly violent motorcycle racing to the Commodore Amiga in 1992 — but how does the Amiga version compare with the classic Sega Mega Drive original? Road Rash mixes motorcycle racing with traffic, police, bike upgrades and the small matter of punching and kicking rival riders at completely irresponsible speeds. Finish fourth or better across each of the five races and you progress to tougher levels, earning cash for increasingly powerful bikes along the way. Unfortunately, everybody else gets faster too, meaning those expensive upgrades mostly allow you to have the same problems at considerably higher speeds. In this review I'm revisiting the Commodore Amiga version of Road Rash and comparing it directly with the Sega Mega Drive version I grew up playing.","thumbnailUrl":"https://i.ytimg.com/vi/JUXvi0beNxA/maxresdefault.jpg","uploadDate":"2026-09-18T17:30:01Z","embedUrl":"https://www.youtube.com/embed/JUXvi0beNxA","url":"https://www.cheekycommodoregamer.co.uk/games/road-rash/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/road-rash/#game"},"duration":"PT8M40S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/road-rash/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Road Rash","item":"https://www.cheekycommodoregamer.co.uk/games/road-rash/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/road-rash/#game","name":"Road Rash","description":"️ Road Rash (1992) – Commodore Amiga Review & Mega Drive Comparison Road Rash brought Electronic Arts' brilliantly violent motorcycle racing to the Commodore Amiga in 1992 — but how does the Amiga version compare with the classic Sega Mega Drive original? Road Rash mixes motorcycle racing with…","url":"https://www.cheekycommodoregamer.co.uk/games/road-rash/","datePublished":"1992","gamePlatform":"Amiga","genre":"racing","publisher":{"@type":"Organization","name":"Electronic Arts"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/road-rash.png","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/road-rash/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":7,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/road-rash/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/road-rash/#video","name":"Road Rash on the Amiga – Better Than the Mega Drive version?","description":"️ Road Rash (1992) – Commodore Amiga Review & Mega Drive Comparison Road Rash brought Electronic Arts' brilliantly violent motorcycle racing to the Commodore Amiga in 1992 — but how does the Amiga version compare with the classic Sega Mega Drive original? Road Rash mixes motorcycle racing with traffic, police, bike upgrades and the small matter of punching and kicking rival riders at completely irresponsible speeds. Finish fourth or better across each of the five races and you progress to tougher levels, earning cash for increasingly powerful bikes along the way. Unfortunately, everybody else gets faster too, meaning those expensive upgrades mostly allow you to have the same problems at considerably higher speeds. In this review I'm revisiting the Commodore Amiga version of Road Rash and comparing it directly with the Sega Mega Drive version I grew up playing.","thumbnailUrl":"https://i.ytimg.com/vi/JUXvi0beNxA/maxresdefault.jpg","uploadDate":"2026-09-18T17:30:01Z","embedUrl":"https://www.youtube.com/embed/JUXvi0beNxA","url":"https://www.cheekycommodoregamer.co.uk/games/road-rash/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/road-rash/#game"},"duration":"PT8M40S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/road-rash/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Road Rash","item":"https://www.cheekycommodoregamer.co.uk/games/road-rash/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Road Rash</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 7/10" title="Cheeky Commodore Gamer rating">7/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>
