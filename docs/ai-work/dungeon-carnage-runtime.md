@@ -1,3 +1,11 @@
+## R57 deployed FIRE lockout recovery — 25 September 2026
+
+- Deployed V10.42 r56 bug-report evidence captured a sustained complete attack lockout: 52 attack anomalies, full 120 ammo, zero live projectiles, zero hit-stun and repeated 650–700 ms attack buffers while the existing deep-owner fallback recorded 15 attempts with 0 successes.
+- This excludes the ordinary empty-ammo, projectile-cap and hit-stun cases. The current and deepest retained FIRE owners can both refuse an otherwise-valid intent.
+- R57 adds one final bounded fallback inside R20. Only after the normal FIRE owner, persistent-block recovery and deepest-owner recovery all fail, it resolves and invokes the already-established R1 canonical FIRE owner from the existing `__ccgOriginal` chain.
+- The fallback does not call `spawnBullet` directly, create another input loop, alter ammo, projectile caps, cadence or weapon balance.
+- Release/cache identity advances to `V10.42 r57` / `20260925r57`. Full exact-head qualification and deployed hands-on FIRE acceptance remain mandatory.
+
 ## Priority live acceptance blockers — 2026-09-25
 
 Hands-on deployed testing on current V10.42 r56 has disproved the previous assumption that repository coding for the current Dungeon defects is complete. Two current-build defects are now **priority / release-blocking** in the CCG development queue:
