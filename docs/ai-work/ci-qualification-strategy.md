@@ -20,8 +20,29 @@ The existing legacy-path workflow file, `.github/workflows/lost-sizzler-load-saf
 
 The full qualification includes the complete retained Chromium matrix split across six shards. It runs:
 
+- automatically **before merge** when a PR changes high-risk Dungeon Carnage engine/gameplay surfaces
 - automatically after relevant changes reach `main`
 - manually through `workflow_dispatch` when a full pre-merge or release qualification is wanted
+
+### Risk-based pre-merge rule
+
+Small and isolated changes stay on the fast PR path. Examples include copy, documentation, artwork/audio assets, isolated presentation/UI work, and other changes that do not touch the core runtime surfaces below.
+
+A PR automatically receives the full six-shard pre-merge qualification when it touches core engine/gameplay areas such as:
+
+- game engine/runtime and bootstrap code
+- enemy AI
+- combat, attack, projectile or ownership code
+- player state and inventory architecture
+- saving/loading and cloud state
+- progression
+- floor, room, biome, zone or procedural generation
+- campaign or encounter logic
+- networking
+- the Dungeon Carnage browser/Node qualification tests themselves
+- service-worker/PWA code that can affect game loading
+
+This is enforced by the workflow path rules rather than relying on a manual decision.
 
 ## Native mouse-wheel contract
 
@@ -39,4 +60,4 @@ Pull requests continue to build and structurally verify the deterministic itch.i
 
 ## Safety principle
 
-The optimisation changes when expensive tests run; it does not delete the full regression suites. Full qualification remains available at any time and continues to run automatically on the integrated main branch.
+The optimisation changes when expensive tests run; it does not delete the full regression suites. High-risk changes retain full pre-merge qualification, small changes use the faster targeted path, and the integrated main branch receives the final full qualification.
