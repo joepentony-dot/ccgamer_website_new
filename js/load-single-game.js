@@ -1,6 +1,6 @@
-// SAFETY: prevent preload crash
+// Canonical /games/<slug>/ pages are generated with their primary content already present.
 function isPreloadedSingleGame() {
-    return false;
+    return hasPrefilledSingleGameContent();
 }
 
 /* ============================================================
@@ -398,6 +398,7 @@ async function hydrateSingleGamePage() {
     }
 
     const params = new URLSearchParams(window.location.search);
+    const preloaded = isPreloadedSingleGame();
     // Regression note: slug routing was skipped for /games/<slug>/index.html because the
     // ".html" guard blocked slug parsing, leaving the render gate locked and the page blank.
     // We now normalize slug tokens from the pathname first, then query params, then legacy IDs.
@@ -449,7 +450,10 @@ async function hydrateSingleGamePage() {
     };
 
     try {
-        const { games, source } = await fetchGamesLibrary();
+        const { games, source } = await fetchGamesLibrary({
+            includeDescriptionEnrichments: !preloaded,
+            cacheMode: preloaded ? "no-cache" : "no-store"
+        });
         CCG_SINGLE_ALL_GAMES = games;
 
         if (isDevMode()) {
@@ -699,17 +703,21 @@ function resolveGamesDataFallbackUrls() {
     return urls;
 }
 
-async function fetchGamesLibrary() {
+async function fetchGamesLibrary(options = {}) {
     const urls = resolveGamesDataFallbackUrls();
+    const includeDescriptionEnrichments = options.includeDescriptionEnrichments !== false;
+    const cacheMode = options.cacheMode === "no-cache" ? "no-cache" : "no-store";
     let lastError = null;
-    // Editorial enrichments are required before the existing render gate opens,
-    // but they do not depend on games.json. Start both network paths together so
-    // the 700KB+ enrichment payload does not begin only after games.json parses.
-    const enrichmentsPromise = fetchGameDescriptionEnrichments();
+    // Dynamic/query-string routes still need runtime editorial enrichment. Canonical
+    // generated pages already contain that copy, so avoid downloading it a second time.
+    // When enrichment is needed, keep both network paths overlapped.
+    const enrichmentsPromise = includeDescriptionEnrichments
+        ? fetchGameDescriptionEnrichments()
+        : Promise.resolve({});
 
     for (const url of urls) {
         try {
-            const response = await fetch(url, { cache: "no-store" });
+            const response = await fetch(url, { cache: cacheMode });
             if (!response.ok) {
                 lastError = new Error(`games.json ${response.status} via ${url}`);
                 continue;
@@ -1516,17 +1524,23 @@ function renderGame(game) {
 
     const preloaded = isPreloadedSingleGame();
     updatePrettyUrlAfterResolve(game);
-    updateMeta(game);
 
-    if (typeof window.ccgSchemaGame === 'function') {
-        window.ccgSchemaGame(game);
-    }
-    if (typeof window.ccgSchemaBreadcrumb === 'function') {
-        window.ccgSchemaBreadcrumb([
-            { name: 'Home', url: 'https://www.cheekycommodoregamer.co.uk/' },
-            { name: 'Games', url: 'https://www.cheekycommodoregamer.co.uk/games/' },
-            { name: resolveCanonicalGameTitle(game), url: `https://www.cheekycommodoregamer.co.uk/games/${game.slug}/` }
-        ]);
+    // Canonical generated pages already carry authoritative title, description,
+    // canonical/social metadata and JSON-LD. Do not replace that richer build-time
+    // output with the lighter runtime record from games.json.
+    if (!preloaded) {
+        updateMeta(game);
+
+        if (typeof window.ccgSchemaGame === 'function') {
+            window.ccgSchemaGame(game);
+        }
+        if (typeof window.ccgSchemaBreadcrumb === 'function') {
+            window.ccgSchemaBreadcrumb([
+                { name: 'Home', url: 'https://www.cheekycommodoregamer.co.uk/' },
+                { name: 'Games', url: 'https://www.cheekycommodoregamer.co.uk/games/' },
+                { name: resolveCanonicalGameTitle(game), url: `https://www.cheekycommodoregamer.co.uk/games/${game.slug}/` }
+            ]);
+        }
     }
 
     /* HERO */
@@ -1534,8 +1548,12 @@ function renderGame(game) {
     const heroBg = document.getElementById("gameHeroBG");
     const heroThumb = document.getElementById("gameHeroThumb");
     const heroTitle = document.getElementById("gameHeroTitle");
+    // Generated canonical pages now carry the hero background in source. Keep this
+    // fallback for legacy/unregenerated pages and the dynamic query-string route.
+    if (heroBg && !heroBg.style.backgroundImage) {
+        heroBg.style.backgroundImage = `url('${thumb}')`;
+    }
     if (!preloaded || !(heroTitle && heroTitle.textContent.trim())) {
-        if (heroBg) heroBg.style.backgroundImage = `url('${thumb}')`;
         if (heroThumb) {
             heroThumb.src = thumb;
             heroThumb.alt = `${resolveCanonicalGameTitle(game)} cover art`;
@@ -1628,7 +1646,10 @@ function renderGame(game) {
     const videoDescription = videoSection?.querySelector("[data-ccg-video-description]");
     if (videoDescription) {
         const overview = String(game.description || "").trim();
-        if (hasVideo && overview) {
+        const prefilledVideoDescription = preloaded && videoDescription.textContent.trim();
+        if (prefilledVideoDescription) {
+            videoDescription.hidden = false;
+        } else if (hasVideo && overview) {
             if (game._ccgEnrichedDescription) videoDescription.textContent = overview;
             else videoDescription.innerHTML = overview;
             videoDescription.hidden = false;
@@ -1803,7 +1824,9 @@ function renderGame(game) {
         console.warn("[CCG SINGLE] Optional UX enhancements skipped.", error);
     }
 
-    injectGameSchema(game);
+    if (!preloaded) {
+        injectGameSchema(game);
+    }
 
     if (typeof document !== "undefined" && document.body) {
         const slug = String(game?.slug || "").trim();
