@@ -117,7 +117,7 @@ try{
   }
 
 
-  const timestampOnly=await page.evaluate(()=>globalThis.eval(\`(()=>{
+  const timestampOnly=await page.evaluate(()=>globalThis.eval(`(()=>{
     const api=window.CCGLostSizzlerV142R19MobileTrapLayoutStability;
     const reporter=window.CCGLostSizzlerBugReporter;
     const rare=window.CCGLostSizzlerRareEventsBalance;
@@ -162,7 +162,7 @@ try{
     p1.x=world.start.x;p1.y=world.start.y;p1.rx=p1.x;p1.ry=p1.y;p1.invuln=0;p1.hitStunMs=0;
     api.rearmInactiveTrapContacts();
     return{available:true,before,blocked,retryBefore,retryAfter,retryHandled};
-  })()\`));
+  })()`));
   assert.equal(timestampOnly.available,true,"timestamp-only SPIKE fixture must be available: "+JSON.stringify(timestampOnly));
   assert.ok(timestampOnly.blocked.hurtAt>timestampOnly.before.hurtAt,"fixture must prove the damage pipeline advanced its timestamp while HEALTH was blocked: "+JSON.stringify(timestampOnly));
   assert.equal(timestampOnly.blocked.health,timestampOnly.before.health,"timestamp-only contact must not manufacture HEALTH loss");
