@@ -54,8 +54,18 @@
     if(signal.type==="trap"){
       const pending=movementBoundarySignals.get(signal.playerId);
       const exact=pending?.activeTraps?.some(row=>String(row?.trap?.id||"")===signal.trapId&&Number(row?.trap?.x)===signal.x&&Number(row?.trap?.y)===signal.y);
-      if(pending&&signal.serial>Number(pending.beforeDamageSignalSerial||0)&&exact)pending.acceptedTrapSignal=signal;
-      else if(!pending){
+      if(pending&&signal.serial>Number(pending.beforeDamageSignalSerial||0)&&exact){
+        pending.acceptedTrapSignal=signal;
+        if(!pending.trapConfirmedAtSignal){
+          pending.trapConfirmedAtSignal=true;
+          state.environmentVerifiedHits++;
+          push("environment-trap-crossing-damage-confirmed",{
+            serial:pending.serial,world:pending.world,playerId:pending.playerId,contact:{x:pending.x,y:pending.y},
+            healthLoss:1,armorLoss:0,traps:pending.activeTraps.map(row=>row.trap),
+            trapSignal:signal,contactSignals:[signal],source:"pending-exact-signal"
+          });
+        }
+      }else if(!pending){
         const trap=safe(()=>(host?.traps||[]).find(row=>
           String(row?.id||`${row?.x},${row?.y}`)===signal.trapId
           && Number(row?.x)===signal.x
@@ -241,8 +251,8 @@
     const boundaryTrapIds=new Set(before.activeTraps.map(row=>String(row?.trap?.id||"")));
     const boundaryTrapKinds=new Set(before.activeTraps.map(row=>String(row?.trap?.kind||"").toLowerCase()).filter(Boolean));
     const boundaryTrapSignal=before.acceptedTrapSignal||boundaryContactSignals.find(signal=>signal.type==="trap"&&(boundaryTrapIds.has(signal.trapId)||boundaryTrapKinds.has(String(signal.kind||"").toLowerCase())))||null;
-    let trapConfirmedAtBoundary=false;
-    if(before.activeTraps.length&&boundaryTrapSignal){
+    let trapConfirmedAtBoundary=Boolean(before.trapConfirmedAtSignal);
+    if(before.activeTraps.length&&boundaryTrapSignal&&!trapConfirmedAtBoundary){
       state.environmentVerifiedHits++;
       push("environment-trap-crossing-damage-confirmed",{
         serial:before.serial,world:before.world,playerId:before.playerId,contact:{x:before.x,y:before.y},
