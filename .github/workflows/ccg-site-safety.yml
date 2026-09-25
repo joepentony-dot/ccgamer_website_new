@@ -152,6 +152,9 @@ jobs:
       - name: Run smart emulation hub regression guard
         run: node --test tests/emulation-smart-hub.test.mjs
 
+      - name: Run deployment and production identity regression guard
+        run: node --test tests/deployment-current-main-contract.mjs
+
       - name: Run home discovery dashboard regression guard
         run: node --test tests/home-discovery-dashboard.test.mjs
 

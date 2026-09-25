@@ -1,3 +1,12 @@
+## Current-main post-merge qualification repair — 2026-09-25
+
+- Current main `bd5c5308722ffd27003fcc7260b8645a238684d1` can still produce rare compact Solo seeds without the documented dedicated hazard, and a separate seed was observed with only FIRE and SHOCK active ordinary trap families.
+- The generation lifecycle was traced: `startWorld()` completes `SYS.decorate()` synchronously before `runActive=true`, so these are procedural-generation holes rather than browser readiness races.
+- Hazard reservation continues to prefer non-haunted rooms, but mandatory floor hazard count now supplements from otherwise eligible haunted-corridor endpoints before optional room identity is allowed to win.
+- Stage 6 still retunes ordinary traps first and reconciles families afterwards. Its family repair now mirrors the base generator's layered fallback policy: strict ordinary rooms first, then non-sanctuary special rooms, then any non-start/non-exit/non-dedicated-hazard emergency room.
+- The static R53 trap contract guards both fallbacks. Full six-shard Chromium qualification remains mandatory before merge.
+- No protected Dungeon HTML was changed for this repair; service-worker public code cache v23 is already part of the same unmerged consolidation candidate and Lost Sizzler assets use network-first reload semantics.
+
 ## Dungeon dedicated-hazard reservation authority follow-up — 25 September 2026
 
 - Current-main qualification after merged #2348 repeatedly failed the unchanged browser contract `v10-42-critical-combat-trap-recovery.mjs`: a generated Solo floor contained no dedicated hazard room.

@@ -104,34 +104,39 @@
     let repairs=0;
     const occupied=new Set(traps.map(trap=>`${Number(trap.x)},${Number(trap.y)}`));
     const hazardRooms=new Set((hostState?.hazardRooms||[]).map(hazard=>hazard?.roomId).filter(id=>id!=null));
-    const eligibleRooms=(worldState?.rooms||[]).filter(room=>
+    const baseEligibleRooms=(worldState?.rooms||[]).filter(room=>
       room
       && room.id!==worldState?.startRoomId
       && room.id!==worldState?.exitRoomId
-      && !room.sanctuary
-      && !room.sigilRoom
-      && !room.spiderNest
       && !room.dedicatedHazard
       && !hazardRooms.has(room.id)
       && Number(room.w)>=3
       && Number(room.h)>=3
     );
+    const strictEligibleRooms=baseEligibleRooms.filter(room=>!room.sanctuary&&!room.sigilRoom&&!room.spiderNest);
+    const fallbackEligibleRooms=baseEligibleRooms.filter(room=>!room.sanctuary);
+    const emergencyEligibleRooms=baseEligibleRooms;
     const reserveCell=kind=>{
-      const ordered=eligibleRooms
-        .map(room=>({room,key:hash32(`${seed}|${room.id}|stage6-family-room|${kind}`)}))
-        .sort((a,b)=>a.key-b.key);
-      for(const {room} of ordered){
-        const cells=[];
-        for(let y=Number(room.y)+1;y<Number(room.y)+Number(room.h);y++){
-          for(let x=Number(room.x)+1;x<Number(room.x)+Number(room.w);x++){
-            if(worldState?.map?.[y]?.[x]!==0)continue;
-            if(occupied.has(`${x},${y}`))continue;
-            cells.push({x,y});
+      const visited=new Set();
+      for(const pool of [strictEligibleRooms,fallbackEligibleRooms,emergencyEligibleRooms]){
+        const ordered=pool
+          .filter(room=>!visited.has(room.id))
+          .map(room=>({room,key:hash32(`${seed}|${room.id}|stage6-family-room|${kind}`)}))
+          .sort((a,b)=>a.key-b.key);
+        for(const {room} of ordered){
+          visited.add(room.id);
+          const cells=[];
+          for(let y=Number(room.y)+1;y<Number(room.y)+Number(room.h);y++){
+            for(let x=Number(room.x)+1;x<Number(room.x)+Number(room.w);x++){
+              if(worldState?.map?.[y]?.[x]!==0)continue;
+              if(occupied.has(`${x},${y}`))continue;
+              cells.push({x,y});
+            }
           }
+          if(!cells.length)continue;
+          cells.sort((a,b)=>hash32(`${seed}|${room.id}|${kind}|${a.x},${a.y}`)-hash32(`${seed}|${room.id}|${kind}|${b.x},${b.y}`));
+          return{room,cell:cells[0]};
         }
-        if(!cells.length)continue;
-        cells.sort((a,b)=>hash32(`${seed}|${room.id}|${kind}|${a.x},${a.y}`)-hash32(`${seed}|${room.id}|${kind}|${b.x},${b.y}`));
-        return{room,cell:cells[0]};
       }
       return null;
     };

@@ -1,3 +1,14 @@
+## Current-main qualification repairs on #2341 — 25 September 2026
+
+- Post-merge audit of `bd5c5308722ffd27003fcc7260b8645a238684d1` found three independent current-main qualification defects that must be repaired before the Smart Emulation Hub can merge:
+  - Omega Stable Pages staged `_site` without `scripts/` and then tried to execute `_site/scripts/generate-sitemaps.js`; the candidate now stages the complete scripts directory only for sitemap generation and removes it before upload.
+  - Dungeon production smoke hardcoded R54 while the checked-out/live release is R56; expected release/build/cache identity is now derived from `version.json` and checked against the source document.
+  - procedural Dungeon seeds can exhaust strict room candidates and omit either a required dedicated hazard or one of FIRE/SPIKE/SHOCK. Mandatory hazard reservation now supplements from haunted-corridor candidates when necessary, and Stage 6 trap-family repair uses strict, fallback and emergency non-start/non-exit room pools.
+- These are current-main qualification repairs, not Smart Emulation Hub feature regressions. They are being reconciled onto #2341 to avoid another parallel branch and another stale-base cycle.
+- Protected root intro files and Dungeon `index.html` remain untouched. The already-unmerged public cache v23 candidate remains the deployment cache advance for this combined exact head.
+- Static regression coverage now guards compact-floor hazard/trap-family fallbacks, temporary sitemap tooling and version-derived production smoke.
+- Re-run the full exact-head matrix after the new #2341 head is published. Do not merge on the earlier `c4c53900a5c6725f651275aeb996496dfa56e1af` failure state.
+
 ## Master consolidation current state — 25 September 2026
 
 - Current `main` after the latest qualified consolidation merge is `bd5c5308722ffd27003fcc7260b8645a238684d1` (PR #2351).
