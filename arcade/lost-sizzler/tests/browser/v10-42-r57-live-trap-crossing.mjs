@@ -75,7 +75,7 @@ try{
       trap.period=period;trap.phase=((period*.10)-(now%period)+period)%period;
       api.rearmInactiveTrapContacts();
       const active=Boolean(SYS.trapActive(trap,performance.now()));
-      const before={health:Number(p1.health),armor:Number(p1.armor),eventMs:Math.max(0,...reporter.events.map(event=>Number(event?.ms||0))),verified:Number(reporter.state.environmentVerifiedHits||0)};
+      const before={health:Number(p1.health),armor:Number(p1.armor),verified:Number(reporter.state.environmentVerifiedHits||0),anomalies:Number(reporter.state.environmentAnomalies||0)};
       movePlayer(p1,entry.dx,entry.dy,false);
       const immediate={x:Number(p1.x),y:Number(p1.y),health:Number(p1.health),armor:Number(p1.armor)};
       return{available:true,id:String(trap.id),kind:String(trap.kind),active,entry,target:{x:Number(trap.x),y:Number(trap.y)},original,before,immediate};
@@ -88,21 +88,27 @@ try{
     assert.equal(result.immediate.armor,result.before.armor,kind+" ACTIVE crossing must preserve armour");
 
     await page.waitForFunction(args=>{
-      const events=window.CCGLostSizzlerBugReporter.events.filter(event=>Number(event?.ms||0)>Number(args.beforeEventMs||0));
-      return events.some(event=>
+      const reporter=window.CCGLostSizzlerBugReporter;
+      const advanced=Number(reporter.state.environmentVerifiedHits||0)>Number(args.beforeVerified||0)||Number(reporter.state.environmentAnomalies||0)>Number(args.beforeAnomalies||0);
+      if(!advanced)return false;
+      return reporter.events.some(event=>
         (event.type==="environment-trap-crossing-damage-confirmed"||event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE")&&
         event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y
       );
-    },{beforeEventMs:result.before.eventMs,target:result.target},{timeout:2500,polling:25});
+    },{beforeVerified:result.before.verified,beforeAnomalies:result.before.anomalies,target:result.target},{timeout:2500,polling:25});
     const evidence=await page.evaluate(args=>{
       const reporter=window.CCGLostSizzlerBugReporter;
-      const events=reporter.events.filter(event=>Number(event?.ms||0)>Number(args.beforeEventMs||0));
+      const relevant=reporter.events.filter(event=>
+        (event.type==="environment-trap-crossing-damage-confirmed"||event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE")&&
+        event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y
+      );
+      const latest=relevant[relevant.length-1]||null;
       return{
-        confirmed:events.some(event=>event.type==="environment-trap-crossing-damage-confirmed"&&event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y&&(event.detail?.traps||[]).some(trap=>String(trap?.id||"")===String(args.id)&&String(trap?.kind||"").toLowerCase()===args.kind)),
-        missed:events.some(event=>event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE"&&event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y),
+        confirmed:latest?.type==="environment-trap-crossing-damage-confirmed"&&(latest.detail?.traps||[]).some(trap=>String(trap?.id||"")===String(args.id)&&String(trap?.kind||"").toLowerCase()===args.kind),
+        missed:latest?.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE",
         verified:Number(reporter.state.environmentVerifiedHits||0)
       };
-    },{beforeEventMs:result.before.eventMs,kind,id:result.id,target:result.target});
+    },{kind,id:result.id,target:result.target});
     assert.equal(evidence.confirmed,true,kind+" crossing must be confirmed by exact-contact diagnostics: "+JSON.stringify(evidence));
     assert.equal(evidence.missed,false,kind+" successful crossing must not be reported as a missed active trap hit");
     assert.ok(evidence.verified>result.before.verified,kind+" crossing must increment verified environmental hits");
@@ -204,7 +210,7 @@ try{
     const period=100000,now=performance.now();
     trap.period=period;trap.phase=((period*.10)-(now%period)+period)%period;
     api.rearmInactiveTrapContacts();
-    const before={health:Number(p1.health),armor:Number(p1.armor),eventMs:Math.max(0,...reporter.events.map(event=>Number(event?.ms||0)))};
+    const before={health:Number(p1.health),armor:Number(p1.armor),verified:Number(reporter.state.environmentVerifiedHits||0),anomalies:Number(reporter.state.environmentAnomalies||0)};
     movePlayer(p1,dir.dx,dir.dy,true);
     return{available:true,id:String(trap.id),kind:String(trap.kind||""),original,dir,target:{x:Number(trap.x),y:Number(trap.y)},before,after:{x:Number(p1.x),y:Number(p1.y),health:Number(p1.health),armor:Number(p1.armor)}};
   });
@@ -214,19 +220,26 @@ try{
   assert.equal(dash.after.health,dash.before.health-1,"fast dash across an ACTIVE trap must still remove exactly one HP");
   assert.equal(dash.after.armor,dash.before.armor,"fast dash trap damage must preserve armour");
   await page.waitForFunction(args=>{
-    const events=window.CCGLostSizzlerBugReporter.events.filter(event=>Number(event?.ms||0)>Number(args.beforeEventMs||0));
-    return events.some(event=>
+    const reporter=window.CCGLostSizzlerBugReporter;
+    const advanced=Number(reporter.state.environmentVerifiedHits||0)>Number(args.beforeVerified||0)||Number(reporter.state.environmentAnomalies||0)>Number(args.beforeAnomalies||0);
+    if(!advanced)return false;
+    return reporter.events.some(event=>
       (event.type==="environment-trap-crossing-damage-confirmed"||event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE")&&
       event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y
     );
-  },{beforeEventMs:dash.before.eventMs,target:dash.target},{timeout:2500,polling:25});
+  },{beforeVerified:dash.before.verified,beforeAnomalies:dash.before.anomalies,target:dash.target},{timeout:2500,polling:25});
   const dashEvidence=await page.evaluate(args=>{
-    const events=window.CCGLostSizzlerBugReporter.events.filter(event=>Number(event?.ms||0)>Number(args.beforeEventMs||0));
+    const reporter=window.CCGLostSizzlerBugReporter;
+    const relevant=reporter.events.filter(event=>
+      (event.type==="environment-trap-crossing-damage-confirmed"||event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE")&&
+      event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y
+    );
+    const latest=relevant[relevant.length-1]||null;
     return{
-      confirmed:events.some(event=>event.type==="environment-trap-crossing-damage-confirmed"&&event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y&&(event.detail?.traps||[]).some(trap=>String(trap?.id||"")===String(args.id))),
-      missed:events.some(event=>event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE"&&event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y)
+      confirmed:latest?.type==="environment-trap-crossing-damage-confirmed"&&(latest.detail?.traps||[]).some(trap=>String(trap?.id||"")===String(args.id)),
+      missed:latest?.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE"
     };
-  },{beforeEventMs:dash.before.eventMs,target:dash.target,id:dash.id});
+  },{target:dash.target,id:dash.id});
   assert.equal(dashEvidence.confirmed,true,"fast dash crossing must retain exact confirmed contact evidence: "+JSON.stringify(dashEvidence));
   assert.equal(dashEvidence.missed,false,"fast dash crossing must not be misreported as a no-damage contact");
 
