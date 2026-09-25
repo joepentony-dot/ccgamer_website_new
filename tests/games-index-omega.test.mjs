@@ -62,7 +62,7 @@ test('games index catalogue count and crawlable fallback are derived from games.
   const fallback = rebuilt.match(/<section id="gamesStaticFallback"[^>]*>[\s\S]*?<ul>([\s\S]*?)<\/ul>[\s\S]*?<\/section>/i);
   assert.ok(fallback, 'crawlable games fallback is present');
 
-  const fallbackSlugs = [...fallback[1].matchAll(/href="\\/games\\/([^"/]+)\\/"/g)].map((match) => match[1]);
+  const fallbackSlugs = [...fallback[1].matchAll(new RegExp('href="/games/([^"/]+)/"', 'g'))].map((match) => match[1]);
   const sourceSlugs = sourceGames.map((game) => String(game.slug || '').trim()).filter(Boolean);
   assert.equal(fallbackSlugs.length, sourceSlugs.length, 'fallback contains one link per source game');
   assert.deepEqual(new Set(fallbackSlugs), new Set(sourceSlugs), 'fallback slugs match the authoritative catalogue');
