@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/the-sword-of-fargoal/#game","name":"The Sword Of Fargoal","description":"️ Sword of Fargoal (1983) – Commodore 64 Dungeon-Crawling Roguelike Classic Released in 1983 by Epyx and designed by Jeff McCord, Sword of Fargoal is one of the most influential dungeon-crawling RPGs on the Commodore 64. You descend into a deadly, ever-changing dungeon on a quest to recover the…","url":"https://www.cheekycommodoregamer.co.uk/games/the-sword-of-fargoal/","datePublished":"1983","gamePlatform":"Commodore 64","genre":"role-playing","publisher":{"@type":"Organization","name":"Epyx"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/sword_of_fargoal_the.jpg","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/the-sword-of-fargoal/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/the-sword-of-fargoal/#video","name":"Sword of Fargoal – One of the C64’s Earliest Dungeon Crawlers","description":"️ Sword of Fargoal (1983) – Commodore 64 Dungeon-Crawling Roguelike Classic Released in 1983 by Epyx and designed by Jeff McCord, Sword of Fargoal is one of the most influential dungeon-crawling RPGs on the Commodore 64. You descend into a deadly, ever-changing dungeon on a quest to recover the legendary Sword of Fargoal, stolen by the evil wizard Umla. Each playthrough features randomly generated dungeon layouts, ensuring no two adventures are ever the same. You explore between 15 and 20 levels, facing over 30 different monster types including ogres, trolls, wyverns, and fearsome shadow dragons. A key feature is the fog-of-war system, which hides unexplored areas and creates constant tension as new threats emerge from the darkness. Progression is driven by experience, levelling, and careful resource management, with temples on each level offering healing, protection, or experience in exchange for gold.","thumbnailUrl":"https://i.ytimg.com/vi/-HboijbzCDc/maxresdefault.jpg","uploadDate":"2023-10-13T17:30:00Z","embedUrl":"https://www.youtube.com/embed/-HboijbzCDc","url":"https://www.cheekycommodoregamer.co.uk/games/the-sword-of-fargoal/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/the-sword-of-fargoal/#game"},"duration":"PT9M5S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/the-sword-of-fargoal/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"The Sword Of Fargoal","item":"https://www.cheekycommodoregamer.co.uk/games/the-sword-of-fargoal/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/the-sword-of-fargoal/#game","name":"The Sword Of Fargoal","description":"️ Sword of Fargoal (1983) – Commodore 64 Dungeon-Crawling Roguelike Classic Released in 1983 by Epyx and designed by Jeff McCord, Sword of Fargoal is one of the most influential dungeon-crawling RPGs on the Commodore 64. You descend into a deadly, ever-changing dungeon on a quest to recover the…","url":"https://www.cheekycommodoregamer.co.uk/games/the-sword-of-fargoal/","datePublished":"1983","gamePlatform":"Commodore 64","genre":"role-playing","publisher":{"@type":"Organization","name":"Epyx"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/sword_of_fargoal_the.jpg","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/the-sword-of-fargoal/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":10,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/the-sword-of-fargoal/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/the-sword-of-fargoal/#video","name":"Sword of Fargoal – One of the C64’s Earliest Dungeon Crawlers","description":"️ Sword of Fargoal (1983) – Commodore 64 Dungeon-Crawling Roguelike Classic Released in 1983 by Epyx and designed by Jeff McCord, Sword of Fargoal is one of the most influential dungeon-crawling RPGs on the Commodore 64. You descend into a deadly, ever-changing dungeon on a quest to recover the legendary Sword of Fargoal, stolen by the evil wizard Umla. Each playthrough features randomly generated dungeon layouts, ensuring no two adventures are ever the same. You explore between 15 and 20 levels, facing over 30 different monster types including ogres, trolls, wyverns, and fearsome shadow dragons. A key feature is the fog-of-war system, which hides unexplored areas and creates constant tension as new threats emerge from the darkness. Progression is driven by experience, levelling, and careful resource management, with temples on each level offering healing, protection, or experience in exchange for gold.","thumbnailUrl":"https://i.ytimg.com/vi/-HboijbzCDc/maxresdefault.jpg","uploadDate":"2023-10-13T17:30:00Z","embedUrl":"https://www.youtube.com/embed/-HboijbzCDc","url":"https://www.cheekycommodoregamer.co.uk/games/the-sword-of-fargoal/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/the-sword-of-fargoal/#game"},"duration":"PT9M5S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/the-sword-of-fargoal/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"The Sword Of Fargoal","item":"https://www.cheekycommodoregamer.co.uk/games/the-sword-of-fargoal/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">The Sword Of Fargoal</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 10/10" title="Cheeky Commodore Gamer rating">10/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

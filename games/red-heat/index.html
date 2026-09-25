@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/red-heat/#game","name":"Red Heat","description":"️ Red Heat (1989) – Commodore 64 Movie Tie-In Beat ’Em Up Released in 1989 by Ocean Software and developed by Special FX, Red Heat is a side-scrolling beat ’em up based on the 1988 action film starring Arnold Schwarzenegger and James Belushi. The game aims to translate the film’s hard-edged tone…","url":"https://www.cheekycommodoregamer.co.uk/games/red-heat/","datePublished":"1989","gamePlatform":"Commodore 64","genre":"arcade","publisher":{"@type":"Organization","name":"Ocean"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/red_heat.jpg","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/red-heat/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/red-heat/#video","name":"Red Heat – Schwarzenegger’s Soviet Beat ’Em Up Comes to the C64","description":"️ Red Heat (1989) – Commodore 64 Movie Tie-In Beat ’Em Up Released in 1989 by Ocean Software and developed by Special FX, Red Heat is a side-scrolling beat ’em up based on the 1988 action film starring Arnold Schwarzenegger and James Belushi. The game aims to translate the film’s hard-edged tone to the Commodore 64, placing story and presentation firmly at the forefront. You take control of Soviet police officer Viktor Rostavili as he teams up with Chicago detective Art Ridzik, moving through a series of stages inspired by key moments from the movie. Progression is linear, with each section focused on clearing enemies using punches, kicks, and occasional weapons. Visually, Red Heat was impressive for its time, featuring large character sprites and smooth animation that gave the game a cinematic feel. Jonathan Dunn’s soundtrack adds atmosphere and weight to the action, reinforcing the gritty setting even as it repeats during longer play sessions.","thumbnailUrl":"https://i.ytimg.com/vi/adtijYvhxCs/maxresdefault.jpg","uploadDate":"2023-06-21T17:30:00Z","embedUrl":"https://www.youtube.com/embed/adtijYvhxCs","url":"https://www.cheekycommodoregamer.co.uk/games/red-heat/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/red-heat/#game"},"duration":"PT5M2S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/red-heat/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Red Heat","item":"https://www.cheekycommodoregamer.co.uk/games/red-heat/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/red-heat/#game","name":"Red Heat","description":"️ Red Heat (1989) – Commodore 64 Movie Tie-In Beat ’Em Up Released in 1989 by Ocean Software and developed by Special FX, Red Heat is a side-scrolling beat ’em up based on the 1988 action film starring Arnold Schwarzenegger and James Belushi. The game aims to translate the film’s hard-edged tone…","url":"https://www.cheekycommodoregamer.co.uk/games/red-heat/","datePublished":"1989","gamePlatform":"Commodore 64","genre":"arcade","publisher":{"@type":"Organization","name":"Ocean"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/red_heat.jpg","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/red-heat/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":6,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/red-heat/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/red-heat/#video","name":"Red Heat – Schwarzenegger’s Soviet Beat ’Em Up Comes to the C64","description":"️ Red Heat (1989) – Commodore 64 Movie Tie-In Beat ’Em Up Released in 1989 by Ocean Software and developed by Special FX, Red Heat is a side-scrolling beat ’em up based on the 1988 action film starring Arnold Schwarzenegger and James Belushi. The game aims to translate the film’s hard-edged tone to the Commodore 64, placing story and presentation firmly at the forefront. You take control of Soviet police officer Viktor Rostavili as he teams up with Chicago detective Art Ridzik, moving through a series of stages inspired by key moments from the movie. Progression is linear, with each section focused on clearing enemies using punches, kicks, and occasional weapons. Visually, Red Heat was impressive for its time, featuring large character sprites and smooth animation that gave the game a cinematic feel. Jonathan Dunn’s soundtrack adds atmosphere and weight to the action, reinforcing the gritty setting even as it repeats during longer play sessions.","thumbnailUrl":"https://i.ytimg.com/vi/adtijYvhxCs/maxresdefault.jpg","uploadDate":"2023-06-21T17:30:00Z","embedUrl":"https://www.youtube.com/embed/adtijYvhxCs","url":"https://www.cheekycommodoregamer.co.uk/games/red-heat/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/red-heat/#game"},"duration":"PT5M2S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/red-heat/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Red Heat","item":"https://www.cheekycommodoregamer.co.uk/games/red-heat/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Red Heat</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 6/10" title="Cheeky Commodore Gamer rating">6/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/ant-attack/#game","name":"Ant Attack","description":"️ Ant Attack (1984) – Commodore 64 Isometric 3D Rescue Adventure Classic Released in 1984 for the Commodore 64 by Quicksilva, following its original 1983 Spectrum debut by Sandy White, Ant Attack is a pioneering isometric adventure that introduced true three-dimensional movement to home computer…","url":"https://www.cheekycommodoregamer.co.uk/games/ant-attack/","datePublished":"1984","gamePlatform":"Commodore 64","genre":["arcade","horror"],"publisher":{"@type":"Organization","name":"Quicksilva"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/ant_attack_new.png","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/ant-attack/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/ant-attack/#video","name":"Ant Attack – Why Did This C64 Game Feel So Unsettling?","description":"️ Ant Attack (1984) – Commodore 64 Isometric 3D Rescue Adventure Classic Released in 1984 for the Commodore 64 by Quicksilva, following its original 1983 Spectrum debut by Sandy White, Ant Attack is a pioneering isometric adventure that introduced true three-dimensional movement to home computer gaming. Set in the surreal walled city of Antescher, inspired by the artwork of M. C. Escher, players choose to control either a boy or a girl on a dangerous rescue mission. The objective is to navigate the maze-like city, avoid towering hostile ants, and locate your captured partner before time runs out. Movement allows players to travel forward, backward, sideways, and vertically, creating a genuine sense of height and depth rarely seen at the time. Ants can be temporarily stunned by jumping on them or by using limited grenades, though careless use can put both characters at risk.","thumbnailUrl":"https://i.ytimg.com/vi/CLTWgodkg-Q/maxresdefault.jpg","uploadDate":"2025-07-30T17:30:02Z","embedUrl":"https://www.youtube.com/embed/CLTWgodkg-Q","url":"https://www.cheekycommodoregamer.co.uk/games/ant-attack/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/ant-attack/#game"},"duration":"PT6M30S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/ant-attack/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Ant Attack","item":"https://www.cheekycommodoregamer.co.uk/games/ant-attack/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/ant-attack/#game","name":"Ant Attack","description":"️ Ant Attack (1984) – Commodore 64 Isometric 3D Rescue Adventure Classic Released in 1984 for the Commodore 64 by Quicksilva, following its original 1983 Spectrum debut by Sandy White, Ant Attack is a pioneering isometric adventure that introduced true three-dimensional movement to home computer…","url":"https://www.cheekycommodoregamer.co.uk/games/ant-attack/","datePublished":"1984","gamePlatform":"Commodore 64","genre":["arcade","horror"],"publisher":{"@type":"Organization","name":"Quicksilva"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/ant_attack_new.png","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/ant-attack/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":7,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/ant-attack/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/ant-attack/#video","name":"Ant Attack – Why Did This C64 Game Feel So Unsettling?","description":"️ Ant Attack (1984) – Commodore 64 Isometric 3D Rescue Adventure Classic Released in 1984 for the Commodore 64 by Quicksilva, following its original 1983 Spectrum debut by Sandy White, Ant Attack is a pioneering isometric adventure that introduced true three-dimensional movement to home computer gaming. Set in the surreal walled city of Antescher, inspired by the artwork of M. C. Escher, players choose to control either a boy or a girl on a dangerous rescue mission. The objective is to navigate the maze-like city, avoid towering hostile ants, and locate your captured partner before time runs out. Movement allows players to travel forward, backward, sideways, and vertically, creating a genuine sense of height and depth rarely seen at the time. Ants can be temporarily stunned by jumping on them or by using limited grenades, though careless use can put both characters at risk.","thumbnailUrl":"https://i.ytimg.com/vi/CLTWgodkg-Q/maxresdefault.jpg","uploadDate":"2025-07-30T17:30:02Z","embedUrl":"https://www.youtube.com/embed/CLTWgodkg-Q","url":"https://www.cheekycommodoregamer.co.uk/games/ant-attack/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/ant-attack/#game"},"duration":"PT6M30S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/ant-attack/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Ant Attack","item":"https://www.cheekycommodoregamer.co.uk/games/ant-attack/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Ant Attack</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 7/10" title="Cheeky Commodore Gamer rating">7/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

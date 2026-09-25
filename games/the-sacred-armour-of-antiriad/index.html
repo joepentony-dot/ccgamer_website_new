@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/the-sacred-armour-of-antiriad/#game","name":"The Sacred Armour Of Antiriad","description":"️ The Sacred Armour of Antiriad (1986) – Commodore 64 Post-Apocalyptic Action Adventure Released in 1986 by Palace Software, The Sacred Armour of Antiriad is a landmark action-adventure on the Commodore 64, blending exploration, combat, and progression in a way that was ahead of its time. Set in a…","url":"https://www.cheekycommodoregamer.co.uk/games/the-sacred-armour-of-antiriad/","datePublished":"1986","gamePlatform":"Commodore 64","genre":"action-adventure","publisher":{"@type":"Organization","name":"Palace Software"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/sacred_armour_of_antiriad_new.png","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/the-sacred-armour-of-antiriad/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/the-sacred-armour-of-antiriad/#video","name":"The Sacred Armour of Antiriad – C64 Sci-Fi Adventuring with Big Box Energy","description":"️ The Sacred Armour of Antiriad (1986) – Commodore 64 Post-Apocalyptic Action Adventure Released in 1986 by Palace Software, The Sacred Armour of Antiriad is a landmark action-adventure on the Commodore 64, blending exploration, combat, and progression in a way that was ahead of its time. Set in a distant post-apocalyptic future, the game casts you as Tal, a lone warrior facing an alien threat that has devastated the world. Progression is driven by exploration across interconnected environments, with access to new areas tied directly to abilities gained along the way. Central to this is the legendary Antiriad battlesuit, which grants Tal the power to fly, survive radiation zones, and engage enemies more effectively. Recovering and upgrading the suit transforms both movement and combat, encouraging careful backtracking and discovery. Energy management plays a key role, as both Tal and the armour draw from limited reserves.","thumbnailUrl":"https://i.ytimg.com/vi/MzZ-uzenHXI/maxresdefault.jpg","uploadDate":"2024-03-27T18:30:15Z","embedUrl":"https://www.youtube.com/embed/MzZ-uzenHXI","url":"https://www.cheekycommodoregamer.co.uk/games/the-sacred-armour-of-antiriad/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/the-sacred-armour-of-antiriad/#game"},"duration":"PT5M26S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/the-sacred-armour-of-antiriad/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"The Sacred Armour Of Antiriad","item":"https://www.cheekycommodoregamer.co.uk/games/the-sacred-armour-of-antiriad/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/the-sacred-armour-of-antiriad/#game","name":"The Sacred Armour Of Antiriad","description":"️ The Sacred Armour of Antiriad (1986) – Commodore 64 Post-Apocalyptic Action Adventure Released in 1986 by Palace Software, The Sacred Armour of Antiriad is a landmark action-adventure on the Commodore 64, blending exploration, combat, and progression in a way that was ahead of its time. Set in a…","url":"https://www.cheekycommodoregamer.co.uk/games/the-sacred-armour-of-antiriad/","datePublished":"1986","gamePlatform":"Commodore 64","genre":"action-adventure","publisher":{"@type":"Organization","name":"Palace Software"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/sacred_armour_of_antiriad_new.png","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/the-sacred-armour-of-antiriad/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":8,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/the-sacred-armour-of-antiriad/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/the-sacred-armour-of-antiriad/#video","name":"The Sacred Armour of Antiriad – C64 Sci-Fi Adventuring with Big Box Energy","description":"️ The Sacred Armour of Antiriad (1986) – Commodore 64 Post-Apocalyptic Action Adventure Released in 1986 by Palace Software, The Sacred Armour of Antiriad is a landmark action-adventure on the Commodore 64, blending exploration, combat, and progression in a way that was ahead of its time. Set in a distant post-apocalyptic future, the game casts you as Tal, a lone warrior facing an alien threat that has devastated the world. Progression is driven by exploration across interconnected environments, with access to new areas tied directly to abilities gained along the way. Central to this is the legendary Antiriad battlesuit, which grants Tal the power to fly, survive radiation zones, and engage enemies more effectively. Recovering and upgrading the suit transforms both movement and combat, encouraging careful backtracking and discovery. Energy management plays a key role, as both Tal and the armour draw from limited reserves.","thumbnailUrl":"https://i.ytimg.com/vi/MzZ-uzenHXI/maxresdefault.jpg","uploadDate":"2024-03-27T18:30:15Z","embedUrl":"https://www.youtube.com/embed/MzZ-uzenHXI","url":"https://www.cheekycommodoregamer.co.uk/games/the-sacred-armour-of-antiriad/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/the-sacred-armour-of-antiriad/#game"},"duration":"PT5M26S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/the-sacred-armour-of-antiriad/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"The Sacred Armour Of Antiriad","item":"https://www.cheekycommodoregamer.co.uk/games/the-sacred-armour-of-antiriad/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">The Sacred Armour Of Antiriad</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 8/10" title="Cheeky Commodore Gamer rating">8/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>
