@@ -24,11 +24,13 @@ test("single-game runtime builds available-section navigation without replacing 
   assert.doesNotMatch(runtime, /heroThumb\.height\s*=\s*180/);
 });
 
-test("canonical game routes reserve the real hero artwork dimensions", () => {
+test("canonical game routes reserve hero dimensions and emit the background in source", () => {
   assert.match(seoRoutes, /function prefillStaticContent\(html, game, title, imagePath, imageMetadata\)/);
+  assert.match(seoRoutes, /gameHeroBG[\s\S]*background-image: url\(&quot;\$\{escapeHtml\(imagePath\)\}&quot;\)/);
   assert.match(seoRoutes, /width="\$\{Number\(imageMetadata\?\.width \|\| 300\)\}"/);
   assert.match(seoRoutes, /height="\$\{Number\(imageMetadata\?\.height \|\| 400\)\}"/);
   assert.match(seoRoutes, /prefillStaticContent\(html, game, title, imagePath, imageMetadata\)/);
+  assert.match(runtime, /if \(heroBg && !heroBg\.style\.backgroundImage\)/);
 });
 
 test("single-game SEO titles include the release year and normalized platform label", () => {
