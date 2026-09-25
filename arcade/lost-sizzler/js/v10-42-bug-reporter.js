@@ -53,10 +53,10 @@
     push(`environment-${signal.type}-damage-signal`,signal);
     return signal
   }
-  function contactDamageSignalsSince(before){
-    const serial=Number(before?.beforeDamageSignalSerial||0);
+  function contactDamageSignalsSince(before,throughSerial=Infinity){
+    const serial=Number(before?.beforeDamageSignalSerial||0),upper=Number.isFinite(Number(throughSerial))?Number(throughSerial):Infinity;
     return environmentDamageSignals.filter(signal=>
-      signal.serial>serial&&
+      signal.serial>serial&&signal.serial<=upper&&
       signal.playerId===String(before?.playerId||"")&&
       signal.x===Number(before?.x)&&signal.y===Number(before?.y)
     )
@@ -215,17 +215,34 @@
       activeHazards:before.activeHazards.map(row=>({id:row.id,type:row.type,title:row.title}))
     });
 
+    const boundaryDamageSignalSerial=environmentDamageSerial;
+    const boundaryContactSignals=contactDamageSignalsSince(before,boundaryDamageSignalSerial);
+    const boundaryTrapIds=new Set(before.activeTraps.map(row=>String(row?.trap?.id||"")));
+    const boundaryTrapKinds=new Set(before.activeTraps.map(row=>String(row?.trap?.kind||"").toLowerCase()).filter(Boolean));
+    const boundaryTrapSignal=boundaryContactSignals.find(signal=>signal.type==="trap"&&(boundaryTrapIds.has(signal.trapId)||boundaryTrapKinds.has(String(signal.kind||"").toLowerCase())))||null;
+    let trapConfirmedAtBoundary=false;
+    if(before.activeTraps.length&&boundaryTrapSignal){
+      state.environmentVerifiedHits++;
+      push("environment-trap-crossing-damage-confirmed",{
+        serial:before.serial,world:before.world,playerId:before.playerId,contact:{x:before.x,y:before.y},
+        healthLoss:before.beforeHealth-immediate.health,armorLoss:before.beforeArmor-immediate.armor,
+        traps:before.activeTraps.map(row=>row.trap),trapSignal:boundaryTrapSignal,contactSignals:boundaryContactSignals
+      });
+      trapConfirmedAtBoundary=true;
+    }
+
     setTimeout(()=>{
       const finalHealth=Number(player.health||0),finalArmor=Number(player.armor||0),finalHurtAt=Number(player.__ccgLastHurtAt||0);
       const finalDamageAt=Number(player.__ccgLastDamageAt||0),finalDamageSource=String(player.__ccgLastDamageSource||"");
       const healthLoss=before.beforeHealth-finalHealth,armorLoss=before.beforeArmor-finalArmor;
       const contactSignals=contactDamageSignalsSince(before);
+      const trapContactSignals=contactDamageSignalsSince(before,boundaryDamageSignalSerial);
       const trapIds=new Set(before.activeTraps.map(row=>String(row?.trap?.id||"")));
       const trapKinds=new Set(before.activeTraps.map(row=>String(row?.trap?.kind||"").toLowerCase()).filter(Boolean));
-      const trapSignal=contactSignals.find(signal=>signal.type==="trap"&&(trapIds.has(signal.trapId)||trapKinds.has(String(signal.kind||"").toLowerCase())))||null;
+      const trapSignal=trapContactSignals.find(signal=>signal.type==="trap"&&(trapIds.has(signal.trapId)||trapKinds.has(String(signal.kind||"").toLowerCase())))||null;
       const hazardIds=new Set(before.activeHazards.map(row=>String(row?.id||"")));
       const hazardSignal=contactSignals.find(signal=>signal.type==="hazard"&&hazardIds.has(signal.hazardId))||null;
-      const trapDamageObserved=Boolean(trapSignal),hazardDamageObserved=Boolean(hazardSignal);
+      const trapDamageObserved=trapConfirmedAtBoundary||Boolean(trapSignal),hazardDamageObserved=Boolean(hazardSignal);
       if(before.activeTraps.length&&!trapDamageObserved){
         state.anomalies++;state.trapAnomalies++;state.environmentAnomalies++;
         const detail={
@@ -240,7 +257,7 @@
         state.lastEnvironment=detail;
         push("ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE",detail);
         updateBadge();
-      }else if(before.activeTraps.length){
+      }else if(before.activeTraps.length&&!trapConfirmedAtBoundary){
         state.environmentVerifiedHits++;
         push("environment-trap-crossing-damage-confirmed",{
           serial:before.serial,world:before.world,playerId:before.playerId,contact:{x:before.x,y:before.y},
