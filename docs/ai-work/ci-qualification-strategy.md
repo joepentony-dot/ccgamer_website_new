@@ -11,6 +11,7 @@ Dungeon Carnage pull requests run a fast qualification path:
 - retained Node regression contracts
 - one focused Chromium job using a single browser installation
 - high-value browser smoke coverage for loading, campaign loading, current live defects, bug reporting, and shop feedback
+- deterministic itch.io staging plus a browser boot of the staged supported modes in that same Chromium job, so package-only breakage is caught before merge without installing Chromium twice
 
 The PR path is intended to catch likely regressions without running the complete browser matrix after every small game edit.
 
@@ -58,7 +59,7 @@ Full CCG Site Safety no longer runs on pull requests whose changes are isolated 
 
 ## itch.io package
 
-Pull requests continue to build and structurally verify the deterministic itch.io package. The packaged Chromium smoke is reserved for `main` and manual qualification, avoiding a second browser installation on every game PR.
+Pull requests continue to build and structurally verify the deterministic itch.io package in the package workflow. The focused Dungeon Carnage PR Chromium job also builds a temporary staged package and boots its supported modes using the Chromium installation that job already owns. The package workflow keeps its own packaged Chromium smoke for `main` and manual qualification, avoiding a second browser installation on pull requests while retaining pre-merge staged-artifact coverage.
 
 ## Safety principle
 
