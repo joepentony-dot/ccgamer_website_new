@@ -1,3 +1,11 @@
+## Post-consolidation generated-output deployment handoff — 25 September 2026
+
+- Live follow-through on current main `e61bc047c31bfd9226f5b8edeeefb1bfc041fcce` found that Reliable Games Publishing run `36151892128` correctly rebuilt and merged generated output as #2354, including the repaired 662-game Games Index.
+- The generated PR is created and merged with `github.token`. That merge produced GitHub's branch-based Pages run but did not trigger the authoritative **Deploy GitHub Pages (Omega Stable)** push workflow, whose staging step regenerates/validates canonical routes and sitemaps and whose deployment is followed by the custom-domain navigation audit.
+- Current-main repair: Reliable Games Publishing retains its existing validated generated-output PR flow, then explicitly dispatches `deploy-github-pages-omega-stable.yml` on `main` after a successful generated-output merge. The workflow receives only the additional `actions: write` permission required for that dispatch.
+- `scripts/audit-publishing-automation.js` now fails if the explicit post-merge Omega deployment handoff or required permission is removed. No game data, generated output, Dungeon runtime, Quest runtime, auth/backend code, or protected intro-loader file changes in this repair.
+- Qualification must prove the publishing-automation audit and all triggered repository checks on the exact candidate head before merge.
+
 ## Active Wonder Boy enrichment regression repair — 22 September 2026
 
 - Draft PR #2262 on `codex/fix-wonder-boy-enrichment-and-uta-audit` repairs the new Wonder Boy source record from the incorrect 1979 year to the verified 1987 C64 release and pins its Lemon64 game source so magazine-review import has an explicit authoritative input.
