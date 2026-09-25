@@ -26,9 +26,11 @@ The full qualification includes the complete retained Chromium matrix split acro
 
 ### Risk-based pre-merge rule
 
-Small and isolated changes stay on the fast PR path. Examples include copy, documentation, artwork/audio assets, isolated presentation/UI work, and other changes that do not touch the core runtime surfaces below.
+Small and isolated changes stay on the fast PR path. Examples include copy, documentation, artwork/audio assets, and CSS-only presentation work that does not modify the Dungeon runtime.
 
-A PR automatically receives the full six-shard pre-merge qualification when it touches core engine/gameplay areas such as:
+Every JavaScript file under `arcade/lost-sizzler/js/**` is treated as high risk by default. This deliberately avoids filename-based gaps: newly named or versioned gameplay modules cannot silently bypass the full gate. A PR also receives the full six-shard pre-merge qualification when it touches the Dungeon entry page, tests, service-worker/PWA loading code, or the qualification workflows themselves.
+
+The high-risk runtime surface includes areas such as:
 
 - game engine/runtime and bootstrap code
 - enemy AI
@@ -42,7 +44,7 @@ A PR automatically receives the full six-shard pre-merge qualification when it t
 - the Dungeon Carnage browser/Node qualification tests themselves
 - service-worker/PWA code that can affect game loading
 
-This is enforced by the workflow path rules rather than relying on a manual decision.
+This is enforced by the workflow path rules rather than relying on a manual decision. The fast path therefore remains available for non-runtime assets, copy, documentation and CSS-only work, while runtime JavaScript defaults to the complete pre-merge matrix.
 
 ## Native mouse-wheel contract
 
