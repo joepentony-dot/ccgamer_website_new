@@ -568,9 +568,26 @@ window.CCGSystems=(()=>{
       && !room.spiderNest
       && !finalHazardRoomIds.has(room.id)
     );
+    const fallbackFinalTrapRooms=[...(world.rooms||[])].filter(room=>
+      room
+      && room.id!==world.startRoomId
+      && room.id!==world.exitRoomId
+      && !room.sanctuary
+      && !finalHazardRoomIds.has(room.id)
+    );
+    const emergencyFinalTrapRooms=[...(world.rooms||[])].filter(room=>
+      room
+      && room.id!==world.startRoomId
+      && room.id!==world.exitRoomId
+      && !finalHazardRoomIds.has(room.id)
+    );
     for(const [kind,index] of finalTrapKinds.entries()){
       if((host.traps||[]).some(trap=>trap?.active&&String(trap.kind||"").toLowerCase()===kind))continue;
-      const room=finalTrapRooms[(Math.max(1,Number(run?.floor||1))+index)%Math.max(1,finalTrapRooms.length)]||null;
+      const offset=Math.max(1,Number(run?.floor||1))+index;
+      const room=finalTrapRooms[offset%Math.max(1,finalTrapRooms.length)]
+        || fallbackFinalTrapRooms[offset%Math.max(1,fallbackFinalTrapRooms.length)]
+        || emergencyFinalTrapRooms[offset%Math.max(1,emergencyFinalTrapRooms.length)]
+        || null;
       if(!room)continue;
       const q=freeInRoom(world,room,used);
       host.traps.push({
