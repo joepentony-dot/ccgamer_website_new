@@ -30,7 +30,7 @@ assert.match(
 );
 assert.match(
   systems,
-  /hardHazardEligible=\(room,minW=6,minH=5\)=>Boolean\([\s\S]*reservedHazardRooms=rooms\.filter\(room=>Boolean\(room\?\.dedicatedHazardReserved&&room\.id!==world\.startRoomId&&room\.id!==world\.exitRoomId&&room\.w>=6&&room\.h>=5\)\)[\s\S]*choices=\[\.\.\.shuffleHazardRooms\(reservedHazardRooms\),/,
+  /hardHazardEligible=\(room,minW=6,minH=5\)=>Boolean\([\s\S]*reservedHazardRooms=\(world\.rooms\|\|\[\]\)\.filter\(room=>Boolean\(room\?\.dedicatedHazardReserved&&room\.id!==world\.startRoomId&&room\.id!==world\.exitRoomId&&room\.w>=3&&room\.h>=3\)\)[\s\S]*choices=\[\.\.\.shuffleHazardRooms\(reservedHazardRooms\),/,
   "reserved dedicated-hazard rooms must remain authoritative even if stale soft room-owner flags survive a repeated decoration pass"
 );
 assert.match(
