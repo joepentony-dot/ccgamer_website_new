@@ -1,19 +1,9 @@
-name: Lost Sizzler Load Safety
+name: C64 Dungeon Carnage Full Qualification
 
 on:
   push:
     branches:
       - main
-    paths:
-      - 'arcade/lost-sizzler/**'
-      - 'games/ccg-games/cheeky-commodore-quest/index.html'
-      - 'games/the-lost-sizzler/index.html'
-      - 'js/ccg-home-community.js'
-      - 'resources/css/home-lost-sizzler-cta.css'
-      - 'service-worker.js'
-      - 'js/ccg-pwa.js'
-      - '.github/workflows/lost-sizzler-load-safety.yml'
-  pull_request:
     paths:
       - 'arcade/lost-sizzler/**'
       - 'games/ccg-games/cheeky-commodore-quest/index.html'
@@ -29,7 +19,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: lost-sizzler-load-safety-${{ github.ref }}
+  group: dungeon-carnage-full-qualification-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -46,7 +36,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Validate canonical Lost Sizzler structure
+      - name: Validate canonical Dungeon Carnage structure
         shell: bash
         run: |
           set -euo pipefail
@@ -69,7 +59,7 @@ jobs:
             exit 1
           fi
 
-      - name: Syntax check every canonical Lost Sizzler JavaScript file
+      - name: Syntax check every canonical Dungeon Carnage JavaScript file
         shell: bash
         run: |
           set -euo pipefail
@@ -182,7 +172,7 @@ jobs:
           TESTS_JSON: ${{ matrix.tests }}
         run: |
           set -uo pipefail
-          log="$RUNNER_TEMP/lost-sizzler-browser-shard-$SHARD.log"
+          log="$RUNNER_TEMP/dungeon-carnage-browser-shard-$SHARD.log"
           : > "$log"
           failures=()
           while IFS= read -r test_file; do
@@ -211,7 +201,7 @@ jobs:
                 break
               fi
               if [ "$test_status" -eq 124 ] || [ "$test_status" -eq 137 ]; then
-                echo "::error title=Lost Sizzler browser contract timeout::$test_file exceeded the 12-minute per-contract limit in Chromium shard $SHARD"
+                echo "::error title=Dungeon Carnage browser contract timeout::$test_file exceeded the 12-minute per-contract limit in Chromium shard $SHARD"
                 echo "TIMEOUT $test_file after ${elapsed}s (exit $test_status)" | tee -a "$log"
               else
                 echo "FAIL $test_file after ${elapsed}s (exit $test_status)" | tee -a "$log"
@@ -228,7 +218,7 @@ jobs:
           done < <(node -e 'JSON.parse(process.env.TESTS_JSON).forEach(test => console.log(test))')
           if [ "${#failures[@]}" -gt 0 ]; then
             for test_file in "${failures[@]}"; do
-              echo "::error title=Lost Sizzler browser regression::$test_file failed in Chromium shard $SHARD"
+              echo "::error title=Dungeon Carnage browser regression::$test_file failed in Chromium shard $SHARD"
             done
             echo "Chromium shard $SHARD failed contracts: ${failures[*]}" | tee -a "$log"
             exit 1
@@ -238,7 +228,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: lost-sizzler-browser-shard-${{ matrix.shard }}-failure
-          path: ${{ runner.temp }}/lost-sizzler-browser-shard-${{ matrix.shard }}.log
+          name: dungeon-carnage-browser-shard-${{ matrix.shard }}-failure
+          path: ${{ runner.temp }}/dungeon-carnage-browser-shard-${{ matrix.shard }}.log
           if-no-files-found: error
           retention-days: 7
