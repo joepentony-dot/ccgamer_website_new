@@ -35,7 +35,17 @@ assert.match(
 );
 assert.match(
   systems,
-  /const traderRoom=\[\.\.\.world\.rooms\]\.filter\(r=>r\.optional&&r\.id!==host\.sigilRoomId\)[\s\S]*\|\|featureRooms\.find\(r=>r\.id!==world\.exitRoomId&&!r\.dedicatedHazardReserved\)\|\|null;/,
+  /const sigilChoices=world\.rooms\.filter\(r=>r\.optional&&!r\.dedicatedHazardReserved\)/,
+  "Sigil annex selection must not claim a room reserved for a dedicated hazard"
+);
+assert.match(
+  systems,
+  /const traderRoom=\[\.\.\.world\.rooms\]\.filter\(r=>r\.optional&&r\.id!==host\.sigilRoomId&&!r\.dedicatedHazardReserved\)/,
+  "preferred hidden-trader room selection must not claim a dedicated-hazard reservation"
+);
+assert.match(
+  systems,
+  /const traderRoom=\[\.\.\.world\.rooms\]\.filter\(r=>r\.optional&&r\.id!==host\.sigilRoomId&&!r\.dedicatedHazardReserved\)[\s\S]*\|\|featureRooms\.find\(r=>r\.id!==world\.exitRoomId&&!r\.dedicatedHazardReserved\)\|\|null;/,
   "hidden trader fallback must stay outside rooms reserved for dedicated hazards"
 );
 assert.doesNotMatch(
