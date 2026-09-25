@@ -1,3 +1,10 @@
+## Generated-output custom-domain navigation handoff — 25 September 2026
+
+- #2355 is merged and its real generated-output follow-through produced #2356 / `b3b9a22b5ebb1bcb4f461cf2970273d38d9ba6fe`. The new explicit Omega deployment dispatch worked and deployed successfully.
+- Live evidence exposed one final Actions-recursion gap: the dispatched Omega run did not start the existing `workflow_run` custom-domain navigation follower.
+- Current bounded candidate makes **workflow-dispatched** Omega deployments explicitly dispatch **Live Public Navigation Verification** after deployed-page checks pass, while normal push deployments continue using the existing follower. Publishing integrity pins the contract.
+- This remains SEO/deployment follow-through only. #2176 and #2329 stay preserved/deferred; UTA remains complete; Dungeon runtime is unchanged.
+
 ## Generated-output Omega deployment handoff — 25 September 2026
 
 - Post-consolidation live follow-through identified one publishing/deployment gap after generated archive PR #2354 merged as `e61bc047c31bfd9226f5b8edeeefb1bfc041fcce`: the bot-authored merge did not start the authoritative **Deploy GitHub Pages (Omega Stable)** push workflow.
