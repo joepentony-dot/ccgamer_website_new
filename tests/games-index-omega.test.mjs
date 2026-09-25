@@ -59,7 +59,7 @@ test('games index catalogue count and crawlable fallback are derived from games.
   assert.match(rebuilt, new RegExp(`<strong id="gamesResultsCount">${expectedCount}<\\/strong>`));
   assert.match(rebuilt, new RegExp(`<span class="games-focus-panel__count">${expectedCount} total<\\/span>`));
 
-  const fallback = rebuilt.match(/<section id="gamesStaticFallback"\\b[\\s\\S]*?<ul>([\\s\\S]*?)<\\/ul>[\\s\\S]*?<\\/section>/i);
+  const fallback = rebuilt.match(/<section id="gamesStaticFallback"[^>]*>[\s\S]*?<ul>([\s\S]*?)<\/ul>[\s\S]*?<\/section>/i);
   assert.ok(fallback, 'crawlable games fallback is present');
 
   const fallbackSlugs = [...fallback[1].matchAll(/href="\\/games\\/([^"/]+)\\/"/g)].map((match) => match[1]);
