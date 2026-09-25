@@ -17,6 +17,46 @@
   <meta name="twitter:description" content="Explore C64 and Amiga game music composer archives on Cheeky Commodore Gamer.">
   <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/og/c64_neon.png">
   <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/music/composer.html">
+  <script data-ccg-legacy-composer-redirect="true">
+    (function () {
+      try {
+        if (typeof URLSearchParams === 'undefined') return;
+        var params = new URLSearchParams(window.location.search || '');
+        var name = String(params.get('name') || '').trim();
+        if (!name) return;
+
+        function composerKey(value) {
+          return String(value || "")
+            .toLowerCase()
+            .replace(/ø/g, "o")
+            .replace(/ł/g, "l")
+            .replace(/[đð]/g, "d")
+            .replace(/þ/g, "th")
+            .replace(/æ/g, "ae")
+            .replace(/œ/g, "oe")
+            .replace(/ß/g, "ss")
+            .replace(/[’‘]/g, "'")
+            .replace(/&/g, " and ")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9]+/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+        }
+
+        var key = composerKey(name);
+        if (!key) return;
+        var aliases = {
+          "chris hulsbeck": "chris-huelsbeck",
+          "chris huelsbeck": "chris-huelsbeck",
+          "clint bajakain": "clint-bajakian"
+        };
+        var slug = aliases[key] || key.replace(/\s+/g, "-");
+        if (!/^[a-z0-9-]+$/.test(slug)) return;
+        window.location.replace('/music/' + slug + '/' + window.location.hash);
+      } catch (error) {}
+    })();
+  </script>
   <link rel="stylesheet" href="/resources/css/ccg-master.css">
   <link rel="stylesheet" href="/resources/css/ccg-buttons.css">
   <link rel="stylesheet" href="/resources/css/music-composer.css">
