@@ -12,8 +12,8 @@ const html=read("index.html");
 const css=read("css/game.css");
 const version=JSON.parse(read("version.json"));
 
-assert.equal(version.build,"V10.42 r56","the retained unused level-up feature must remain present under the current r55 build identity");
-assert.equal(version.cacheToken,"20260924r56","the retained unused level-up feature must follow the current release-wide cache token");
+assert.equal(version.build,"V10.42 r57","the retained unused level-up feature must remain present under the current r55 build identity");
+assert.equal(version.cacheToken,"20260925r57","the retained unused level-up feature must follow the current release-wide cache token");
 
 assert.match(progression,/player\.pendingLevels=\(player\.pendingLevels\|\|0\)\+1/,"every earned level must create one unused level-up entitlement");
 assert.match(progression,/player\.pendingLevels=Math\.max\(0,\(player\.pendingLevels\|\|1\)-1\)/,"applying one skill must consume one entitlement");
