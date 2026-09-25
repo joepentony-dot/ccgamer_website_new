@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/fruit-machine-simulator/#game","name":"Fruit Machine Simulator","description":"️ Fruit Machine Simulator (1987) – Commodore 64 Slot Machine Simulation Classic Released in 1987 by Codemasters for the Commodore 64, Fruit Machine Simulator gives you the full British fruit machine experience without risking your pocket money. Designed for one to four players, everyone starts…","url":"https://www.cheekycommodoregamer.co.uk/games/fruit-machine-simulator/","datePublished":"1987","gamePlatform":"Commodore 64","genre":"casino","publisher":{"@type":"Organization","name":"Codemasters"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/fruit_machine_simulator.jpg","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/fruit-machine-simulator/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/fruit-machine-simulator/#video","name":"Fruit Machine Simulator – When the C64 Turned into a Pub Corner","description":"️ Fruit Machine Simulator (1987) – Commodore 64 Slot Machine Simulation Classic Released in 1987 by Codemasters for the Commodore 64, Fruit Machine Simulator gives you the full British fruit machine experience without risking your pocket money. Designed for one to four players, everyone starts with £1.50 and takes turns testing their luck on a virtual slot machine packed with familiar features. Gameplay focuses on mastering the mechanics rather than pure chance. You can nudge reels, hold symbols, climb skill ladders, gamble winnings, and trigger features like Cash Box, Mega-hold, Winning Streak, and more. Knowing when to play safe and when to push your luck is key to keeping your credits alive. Rather than flashy presentation, the game leans into authenticity, closely mimicking the logic and tension of real pub fruit machines. Every spin feels deliberate, and learning the feature behaviour becomes part of the challenge.","thumbnailUrl":"https://i.ytimg.com/vi/rGdAl2b2M04/maxresdefault.jpg","uploadDate":"2023-02-03T18:30:58Z","embedUrl":"https://www.youtube.com/embed/rGdAl2b2M04","url":"https://www.cheekycommodoregamer.co.uk/games/fruit-machine-simulator/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/fruit-machine-simulator/#game"},"duration":"PT4M4S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/fruit-machine-simulator/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Fruit Machine Simulator","item":"https://www.cheekycommodoregamer.co.uk/games/fruit-machine-simulator/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/fruit-machine-simulator/#game","name":"Fruit Machine Simulator","description":"️ Fruit Machine Simulator (1987) – Commodore 64 Slot Machine Simulation Classic Released in 1987 by Codemasters for the Commodore 64, Fruit Machine Simulator gives you the full British fruit machine experience without risking your pocket money. Designed for one to four players, everyone starts…","url":"https://www.cheekycommodoregamer.co.uk/games/fruit-machine-simulator/","datePublished":"1987","gamePlatform":"Commodore 64","genre":"casino","publisher":{"@type":"Organization","name":"Codemasters"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/fruit_machine_simulator.jpg","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/fruit-machine-simulator/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":5,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/fruit-machine-simulator/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/fruit-machine-simulator/#video","name":"Fruit Machine Simulator – When the C64 Turned into a Pub Corner","description":"️ Fruit Machine Simulator (1987) – Commodore 64 Slot Machine Simulation Classic Released in 1987 by Codemasters for the Commodore 64, Fruit Machine Simulator gives you the full British fruit machine experience without risking your pocket money. Designed for one to four players, everyone starts with £1.50 and takes turns testing their luck on a virtual slot machine packed with familiar features. Gameplay focuses on mastering the mechanics rather than pure chance. You can nudge reels, hold symbols, climb skill ladders, gamble winnings, and trigger features like Cash Box, Mega-hold, Winning Streak, and more. Knowing when to play safe and when to push your luck is key to keeping your credits alive. Rather than flashy presentation, the game leans into authenticity, closely mimicking the logic and tension of real pub fruit machines. Every spin feels deliberate, and learning the feature behaviour becomes part of the challenge.","thumbnailUrl":"https://i.ytimg.com/vi/rGdAl2b2M04/maxresdefault.jpg","uploadDate":"2023-02-03T18:30:58Z","embedUrl":"https://www.youtube.com/embed/rGdAl2b2M04","url":"https://www.cheekycommodoregamer.co.uk/games/fruit-machine-simulator/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/fruit-machine-simulator/#game"},"duration":"PT4M4S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/fruit-machine-simulator/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Fruit Machine Simulator","item":"https://www.cheekycommodoregamer.co.uk/games/fruit-machine-simulator/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Fruit Machine Simulator</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 5/10" title="Cheeky Commodore Gamer rating">5/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

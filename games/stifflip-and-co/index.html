@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/stifflip-and-co/#game","name":"Stifflip & Co.","description":"️ Stifflip & Co (1987) – Commodore 64 / C64 Released in 1987 by Palace Software, Stifflip & Co is a wonderfully British icon-driven graphic adventure for the Commodore 64, developed by Binary Vision and packed with cricket, stiff upper lips, ridiculous names and a plot that takes saving the Empire…","url":"https://www.cheekycommodoregamer.co.uk/games/stifflip-and-co/","datePublished":"1987","gamePlatform":"Commodore 64","genre":"adventure","publisher":{"@type":"Organization","name":"Palace Software"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/stifflip-and-co.webp","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/stifflip-and-co/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/stifflip-and-co/#video","name":"Stifflip & Co – The Commodore 64’s Brilliantly British Adventure!","description":"️ Stifflip & Co (1987) – Commodore 64 / C64 Released in 1987 by Palace Software, Stifflip & Co is a wonderfully British icon-driven graphic adventure for the Commodore 64, developed by Binary Vision and packed with cricket, stiff upper lips, ridiculous names and a plot that takes saving the Empire rather seriously. You control four different characters — Viscount Sebastian Stifflip, Professor Braindeath, Colonel R. G. Bargie and Miss Palmyra Primbottom — as they attempt to stop the dastardly Count Chameleon. His latest invention is the Rubbertronic Ray, a device capable of altering the properties of rubber. Naturally, his grand plan involves using it against cricket balls, potentially destroying the game and apparently bringing the British Empire down with it. You couldn't accuse Stifflip & Co of lacking ambition. Rather than controlling just one hero, you can switch between all four members of the group, with different characters and abilities needed to solve the game's puzzles.","thumbnailUrl":"https://i.ytimg.com/vi/zqqIctCq73o/maxresdefault.jpg","uploadDate":"2026-09-02T18:03:14Z","embedUrl":"https://www.youtube.com/embed/zqqIctCq73o","url":"https://www.cheekycommodoregamer.co.uk/games/stifflip-and-co/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/stifflip-and-co/#game"},"duration":"PT8M39S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/stifflip-and-co/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Stifflip & Co.","item":"https://www.cheekycommodoregamer.co.uk/games/stifflip-and-co/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/stifflip-and-co/#game","name":"Stifflip & Co.","description":"️ Stifflip & Co (1987) – Commodore 64 / C64 Released in 1987 by Palace Software, Stifflip & Co is a wonderfully British icon-driven graphic adventure for the Commodore 64, developed by Binary Vision and packed with cricket, stiff upper lips, ridiculous names and a plot that takes saving the Empire…","url":"https://www.cheekycommodoregamer.co.uk/games/stifflip-and-co/","datePublished":"1987","gamePlatform":"Commodore 64","genre":"adventure","publisher":{"@type":"Organization","name":"Palace Software"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/stifflip-and-co.webp","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/stifflip-and-co/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":6,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/stifflip-and-co/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/stifflip-and-co/#video","name":"Stifflip & Co – The Commodore 64’s Brilliantly British Adventure!","description":"️ Stifflip & Co (1987) – Commodore 64 / C64 Released in 1987 by Palace Software, Stifflip & Co is a wonderfully British icon-driven graphic adventure for the Commodore 64, developed by Binary Vision and packed with cricket, stiff upper lips, ridiculous names and a plot that takes saving the Empire rather seriously. You control four different characters — Viscount Sebastian Stifflip, Professor Braindeath, Colonel R. G. Bargie and Miss Palmyra Primbottom — as they attempt to stop the dastardly Count Chameleon. His latest invention is the Rubbertronic Ray, a device capable of altering the properties of rubber. Naturally, his grand plan involves using it against cricket balls, potentially destroying the game and apparently bringing the British Empire down with it. You couldn't accuse Stifflip & Co of lacking ambition. Rather than controlling just one hero, you can switch between all four members of the group, with different characters and abilities needed to solve the game's puzzles.","thumbnailUrl":"https://i.ytimg.com/vi/zqqIctCq73o/maxresdefault.jpg","uploadDate":"2026-09-02T18:03:14Z","embedUrl":"https://www.youtube.com/embed/zqqIctCq73o","url":"https://www.cheekycommodoregamer.co.uk/games/stifflip-and-co/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/stifflip-and-co/#game"},"duration":"PT8M39S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/stifflip-and-co/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Stifflip & Co.","item":"https://www.cheekycommodoregamer.co.uk/games/stifflip-and-co/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Stifflip &amp; Co.</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 6/10" title="Cheeky Commodore Gamer rating">6/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

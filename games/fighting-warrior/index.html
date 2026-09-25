@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/fighting-warrior/#game","name":"Fighting Warrior","description":"️ Fighting Warrior (1985) – Commodore 64 Martial Arts Beat ’Em Up in Ancient Egypt Released in 1985 by Melbourne House and developed by Studio B Ltd. , Fighting Warrior drops you into a myth-soaked vision of ancient Egypt where a lone hero sets out to rescue Princess Thaya from a Pharaoh’s temple…","url":"https://www.cheekycommodoregamer.co.uk/games/fighting-warrior/","datePublished":"1985","gamePlatform":"Commodore 64","genre":"fighting","publisher":{"@type":"Organization","name":"Melbourne House"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/fighting_warrior_new.png","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/fighting-warrior/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/fighting-warrior/#video","name":"Fighting Warrior – A Pharaoh, a Kidnapped Princess and One Brutal C64 Rescue","description":"️ Fighting Warrior (1985) – Commodore 64 Martial Arts Beat ’Em Up in Ancient Egypt Released in 1985 by Melbourne House and developed by Studio B Ltd. , Fighting Warrior drops you into a myth-soaked vision of ancient Egypt where a lone hero sets out to rescue Princess Thaya from a Pharaoh’s temple stronghold. Combat is strictly one-on-one, with enemies drawn from Egyptian-inspired fantasy, including winged beasts, dog-headed warriors, and strange half-human creatures. You control high, middle, and low strikes, along with jumping, ducking, and stepping back, making timing and spacing central to survival. Scattered throughout the levels are magical containers that can either help or hinder your progress, adding an unpredictable edge to each encounter. The game places emphasis on reactions and rhythm rather than crowd control, giving fights a deliberate, almost duel-like feel.","thumbnailUrl":"https://i.ytimg.com/vi/9GhHqc-IuW8/maxresdefault.jpg","uploadDate":"2023-02-24T18:30:09Z","embedUrl":"https://www.youtube.com/embed/9GhHqc-IuW8","url":"https://www.cheekycommodoregamer.co.uk/games/fighting-warrior/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/fighting-warrior/#game"},"duration":"PT4M20S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/fighting-warrior/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Fighting Warrior","item":"https://www.cheekycommodoregamer.co.uk/games/fighting-warrior/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/fighting-warrior/#game","name":"Fighting Warrior","description":"️ Fighting Warrior (1985) – Commodore 64 Martial Arts Beat ’Em Up in Ancient Egypt Released in 1985 by Melbourne House and developed by Studio B Ltd. , Fighting Warrior drops you into a myth-soaked vision of ancient Egypt where a lone hero sets out to rescue Princess Thaya from a Pharaoh’s temple…","url":"https://www.cheekycommodoregamer.co.uk/games/fighting-warrior/","datePublished":"1985","gamePlatform":"Commodore 64","genre":"fighting","publisher":{"@type":"Organization","name":"Melbourne House"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/fighting_warrior_new.png","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/fighting-warrior/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":4,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/fighting-warrior/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/fighting-warrior/#video","name":"Fighting Warrior – A Pharaoh, a Kidnapped Princess and One Brutal C64 Rescue","description":"️ Fighting Warrior (1985) – Commodore 64 Martial Arts Beat ’Em Up in Ancient Egypt Released in 1985 by Melbourne House and developed by Studio B Ltd. , Fighting Warrior drops you into a myth-soaked vision of ancient Egypt where a lone hero sets out to rescue Princess Thaya from a Pharaoh’s temple stronghold. Combat is strictly one-on-one, with enemies drawn from Egyptian-inspired fantasy, including winged beasts, dog-headed warriors, and strange half-human creatures. You control high, middle, and low strikes, along with jumping, ducking, and stepping back, making timing and spacing central to survival. Scattered throughout the levels are magical containers that can either help or hinder your progress, adding an unpredictable edge to each encounter. The game places emphasis on reactions and rhythm rather than crowd control, giving fights a deliberate, almost duel-like feel.","thumbnailUrl":"https://i.ytimg.com/vi/9GhHqc-IuW8/maxresdefault.jpg","uploadDate":"2023-02-24T18:30:09Z","embedUrl":"https://www.youtube.com/embed/9GhHqc-IuW8","url":"https://www.cheekycommodoregamer.co.uk/games/fighting-warrior/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/fighting-warrior/#game"},"duration":"PT4M20S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/fighting-warrior/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Fighting Warrior","item":"https://www.cheekycommodoregamer.co.uk/games/fighting-warrior/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Fighting Warrior</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 4/10" title="Cheeky Commodore Gamer rating">4/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

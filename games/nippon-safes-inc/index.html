@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/nippon-safes-inc/#game","name":"Nippon Safes Inc.","description":"️ Nippon Safes Inc. (1993) – Commodore Amiga Point-and-Click Adventure Classic Released in 1993 by Italian studio Dynabyte for the Commodore Amiga, Nippon Safes Inc. is a distinctive point-and-click adventure that blends European humour with a satirical take on Japanese pop culture. Set in the…","url":"https://www.cheekycommodoregamer.co.uk/games/nippon-safes-inc/","datePublished":"1992","gamePlatform":"Amiga","genre":"adventure","publisher":{"@type":"Organization","name":"Dynabyte"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/nippon_safes_inc.png","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/nippon-safes-inc/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/nippon-safes-inc/#video","name":"Nippon Safes Inc. – Three Heroes, One Very Strange Amiga Adventure","description":"️ Nippon Safes Inc. (1993) – Commodore Amiga Point-and-Click Adventure Classic Released in 1993 by Italian studio Dynabyte for the Commodore Amiga, Nippon Safes Inc. is a distinctive point-and-click adventure that blends European humour with a satirical take on Japanese pop culture. Set in the fictional city of Tyoko, the game follows three eccentric protagonists: Doug Nuts, a socially awkward safecracker; Dino Fagioli, a dim-witted former boxer; and Donna Fatale, a glamorous club dancer. Each character pursues their own storyline while becoming entangled in a larger criminal plot. The game runs on the Parallaction engine, allowing players to switch between characters and tackle puzzles from multiple perspectives. Progression is largely non-linear, with each storyline offering unique locations, challenges, and interactions. Gameplay uses an intuitive icon-based interface, encouraging exploration, item experimentation, and logical problem-solving. The interconnected narrative structure gives the adventure a dynamic, replayable feel.","thumbnailUrl":"https://i.ytimg.com/vi/9j4dwgt3U3M/maxresdefault.jpg","uploadDate":"2025-06-05T17:30:02Z","embedUrl":"https://www.youtube.com/embed/9j4dwgt3U3M","url":"https://www.cheekycommodoregamer.co.uk/games/nippon-safes-inc/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/nippon-safes-inc/#game"},"duration":"PT6M8S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/nippon-safes-inc/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Nippon Safes Inc.","item":"https://www.cheekycommodoregamer.co.uk/games/nippon-safes-inc/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/nippon-safes-inc/#game","name":"Nippon Safes Inc.","description":"️ Nippon Safes Inc. (1993) – Commodore Amiga Point-and-Click Adventure Classic Released in 1993 by Italian studio Dynabyte for the Commodore Amiga, Nippon Safes Inc. is a distinctive point-and-click adventure that blends European humour with a satirical take on Japanese pop culture. Set in the…","url":"https://www.cheekycommodoregamer.co.uk/games/nippon-safes-inc/","datePublished":"1992","gamePlatform":"Amiga","genre":"adventure","publisher":{"@type":"Organization","name":"Dynabyte"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/nippon_safes_inc.png","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/nippon-safes-inc/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":6,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/nippon-safes-inc/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/nippon-safes-inc/#video","name":"Nippon Safes Inc. – Three Heroes, One Very Strange Amiga Adventure","description":"️ Nippon Safes Inc. (1993) – Commodore Amiga Point-and-Click Adventure Classic Released in 1993 by Italian studio Dynabyte for the Commodore Amiga, Nippon Safes Inc. is a distinctive point-and-click adventure that blends European humour with a satirical take on Japanese pop culture. Set in the fictional city of Tyoko, the game follows three eccentric protagonists: Doug Nuts, a socially awkward safecracker; Dino Fagioli, a dim-witted former boxer; and Donna Fatale, a glamorous club dancer. Each character pursues their own storyline while becoming entangled in a larger criminal plot. The game runs on the Parallaction engine, allowing players to switch between characters and tackle puzzles from multiple perspectives. Progression is largely non-linear, with each storyline offering unique locations, challenges, and interactions. Gameplay uses an intuitive icon-based interface, encouraging exploration, item experimentation, and logical problem-solving. The interconnected narrative structure gives the adventure a dynamic, replayable feel.","thumbnailUrl":"https://i.ytimg.com/vi/9j4dwgt3U3M/maxresdefault.jpg","uploadDate":"2025-06-05T17:30:02Z","embedUrl":"https://www.youtube.com/embed/9j4dwgt3U3M","url":"https://www.cheekycommodoregamer.co.uk/games/nippon-safes-inc/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/nippon-safes-inc/#game"},"duration":"PT6M8S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/nippon-safes-inc/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Nippon Safes Inc.","item":"https://www.cheekycommodoregamer.co.uk/games/nippon-safes-inc/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Nippon Safes Inc.</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 6/10" title="Cheeky Commodore Gamer rating">6/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

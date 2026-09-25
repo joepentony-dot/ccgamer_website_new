@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/the-great-escape/#game","name":"The Great Escape","description":"️ The Great Escape (1986) – Commodore 64 Isometric POW Adventure Released in 1986 by Ocean Software and developed by Denton Designs, The Great Escape is an isometric action-adventure for the Commodore 64 inspired by the classic 1963 war film. You take on the role of a prisoner of war held in a…","url":"https://www.cheekycommodoregamer.co.uk/games/the-great-escape/","datePublished":"1986","gamePlatform":"Commodore 64","genre":"action-adventure","publisher":{"@type":"Organization","name":"Ocean"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/great_escape_the.jpg","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/the-great-escape/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/the-great-escape/#video","name":"The Great Escape – Follow the Camp Routine… Then Plan Your C64 Breakout","description":"️ The Great Escape (1986) – Commodore 64 Isometric POW Adventure Released in 1986 by Ocean Software and developed by Denton Designs, The Great Escape is an isometric action-adventure for the Commodore 64 inspired by the classic 1963 war film. You take on the role of a prisoner of war held in a heavily guarded German camp during World War II, with one goal in mind: escape without raising suspicion. The game centres around a strict daily routine. Roll calls, exercise periods, and mealtimes must all be attended, and ignoring camp rules quickly draws the attention of guards. Within these constraints, you must carefully plan your breakout, balancing obedience with secret preparation. Multiple escape routes are available, including digging tunnels, forging documents, bribing guards, or navigating underground drains. Each method requires patience, exploration, and clever use of limited resources, creating a constant sense of tension and risk.","thumbnailUrl":"https://i.ytimg.com/vi/GFgp2ToRer8/maxresdefault.jpg","uploadDate":"2023-09-15T17:30:04Z","embedUrl":"https://www.youtube.com/embed/GFgp2ToRer8","url":"https://www.cheekycommodoregamer.co.uk/games/the-great-escape/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/the-great-escape/#game"},"duration":"PT4M25S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/the-great-escape/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"The Great Escape","item":"https://www.cheekycommodoregamer.co.uk/games/the-great-escape/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/the-great-escape/#game","name":"The Great Escape","description":"️ The Great Escape (1986) – Commodore 64 Isometric POW Adventure Released in 1986 by Ocean Software and developed by Denton Designs, The Great Escape is an isometric action-adventure for the Commodore 64 inspired by the classic 1963 war film. You take on the role of a prisoner of war held in a…","url":"https://www.cheekycommodoregamer.co.uk/games/the-great-escape/","datePublished":"1986","gamePlatform":"Commodore 64","genre":"action-adventure","publisher":{"@type":"Organization","name":"Ocean"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/great_escape_the.jpg","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/the-great-escape/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":6,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/the-great-escape/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/the-great-escape/#video","name":"The Great Escape – Follow the Camp Routine… Then Plan Your C64 Breakout","description":"️ The Great Escape (1986) – Commodore 64 Isometric POW Adventure Released in 1986 by Ocean Software and developed by Denton Designs, The Great Escape is an isometric action-adventure for the Commodore 64 inspired by the classic 1963 war film. You take on the role of a prisoner of war held in a heavily guarded German camp during World War II, with one goal in mind: escape without raising suspicion. The game centres around a strict daily routine. Roll calls, exercise periods, and mealtimes must all be attended, and ignoring camp rules quickly draws the attention of guards. Within these constraints, you must carefully plan your breakout, balancing obedience with secret preparation. Multiple escape routes are available, including digging tunnels, forging documents, bribing guards, or navigating underground drains. Each method requires patience, exploration, and clever use of limited resources, creating a constant sense of tension and risk.","thumbnailUrl":"https://i.ytimg.com/vi/GFgp2ToRer8/maxresdefault.jpg","uploadDate":"2023-09-15T17:30:04Z","embedUrl":"https://www.youtube.com/embed/GFgp2ToRer8","url":"https://www.cheekycommodoregamer.co.uk/games/the-great-escape/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/the-great-escape/#game"},"duration":"PT4M25S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/the-great-escape/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"The Great Escape","item":"https://www.cheekycommodoregamer.co.uk/games/the-great-escape/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">The Great Escape</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 6/10" title="Cheeky Commodore Gamer rating">6/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

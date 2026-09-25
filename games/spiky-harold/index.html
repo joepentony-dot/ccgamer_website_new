@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/spiky-harold/#game","name":"Spiky Harold","description":"️ Spiky Harold (1986) – Commodore 64 Platform Adventure Beneath the Hedgerow Released in 1986 by Firebird Software and developed by Andrew Rogers, Spiky Harold is a distinctive single-screen platform adventure for the Commodore 64. You take control of Harold the hedgehog, who must gather enough…","url":"https://www.cheekycommodoregamer.co.uk/games/spiky-harold/","datePublished":"1986","gamePlatform":"Commodore 64","genre":"platform","publisher":{"@type":"Organization","name":"Firebird"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/spiky_harold.jpg","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/spiky-harold/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/spiky-harold/#video","name":"Spiky Harold – Eat Enough Food to Hibernate Before Winter Arrives | C64","description":"️ Spiky Harold (1986) – Commodore 64 Platform Adventure Beneath the Hedgerow Released in 1986 by Firebird Software and developed by Andrew Rogers, Spiky Harold is a distinctive single-screen platform adventure for the Commodore 64. You take control of Harold the hedgehog, who must gather enough food to survive hibernation while navigating an underground maze of interconnected screens. The game spans 57 linked areas beneath a hedgerow, each filled with hazards, collectables, and routes that demand careful planning. Food keeps Harold going, coins earn extra lives, and enemies such as wasps, rodents, and drifting sulfur clouds constantly threaten progress. A unique twist comes from the wine glasses scattered throughout the maze. If Harold drinks one, he becomes drunk, making movement unpredictable and turning simple platforming into a risky balancing act. This mechanic adds humour while increasing the challenge at exactly the wrong moment.","thumbnailUrl":"https://i.ytimg.com/vi/yUbH27-1UTY/maxresdefault.jpg","uploadDate":"2023-04-05T17:23:24Z","embedUrl":"https://www.youtube.com/embed/yUbH27-1UTY","url":"https://www.cheekycommodoregamer.co.uk/games/spiky-harold/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/spiky-harold/#game"},"duration":"PT3M42S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/spiky-harold/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Spiky Harold","item":"https://www.cheekycommodoregamer.co.uk/games/spiky-harold/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/spiky-harold/#game","name":"Spiky Harold","description":"️ Spiky Harold (1986) – Commodore 64 Platform Adventure Beneath the Hedgerow Released in 1986 by Firebird Software and developed by Andrew Rogers, Spiky Harold is a distinctive single-screen platform adventure for the Commodore 64. You take control of Harold the hedgehog, who must gather enough…","url":"https://www.cheekycommodoregamer.co.uk/games/spiky-harold/","datePublished":"1986","gamePlatform":"Commodore 64","genre":"platform","publisher":{"@type":"Organization","name":"Firebird"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/spiky_harold.jpg","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/spiky-harold/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":4,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/spiky-harold/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/spiky-harold/#video","name":"Spiky Harold – Eat Enough Food to Hibernate Before Winter Arrives | C64","description":"️ Spiky Harold (1986) – Commodore 64 Platform Adventure Beneath the Hedgerow Released in 1986 by Firebird Software and developed by Andrew Rogers, Spiky Harold is a distinctive single-screen platform adventure for the Commodore 64. You take control of Harold the hedgehog, who must gather enough food to survive hibernation while navigating an underground maze of interconnected screens. The game spans 57 linked areas beneath a hedgerow, each filled with hazards, collectables, and routes that demand careful planning. Food keeps Harold going, coins earn extra lives, and enemies such as wasps, rodents, and drifting sulfur clouds constantly threaten progress. A unique twist comes from the wine glasses scattered throughout the maze. If Harold drinks one, he becomes drunk, making movement unpredictable and turning simple platforming into a risky balancing act. This mechanic adds humour while increasing the challenge at exactly the wrong moment.","thumbnailUrl":"https://i.ytimg.com/vi/yUbH27-1UTY/maxresdefault.jpg","uploadDate":"2023-04-05T17:23:24Z","embedUrl":"https://www.youtube.com/embed/yUbH27-1UTY","url":"https://www.cheekycommodoregamer.co.uk/games/spiky-harold/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/spiky-harold/#game"},"duration":"PT3M42S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/spiky-harold/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Spiky Harold","item":"https://www.cheekycommodoregamer.co.uk/games/spiky-harold/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Spiky Harold</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 4/10" title="Cheeky Commodore Gamer rating">4/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

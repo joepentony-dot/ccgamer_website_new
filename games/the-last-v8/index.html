@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/the-last-v8/#game","name":"The Last V8","description":"️ The Last V8 (1985) – Commodore 64 Racing | Retro Classic The Last V8 (1985) is a futuristic, post-apocalyptic racing game for the Commodore 64, developed by David Darling, with graphics by Jim Wilson and music by Rob Hubbard. Released under Mastertronic’s MAD label, you pilot a…","url":"https://www.cheekycommodoregamer.co.uk/games/the-last-v8/","datePublished":"1985","gamePlatform":"Commodore 64","genre":["arcade","racing"],"publisher":{"@type":"Organization","name":"Mastertronic"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/last_v8_the.jpg","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/the-last-v8/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/the-last-v8/#video","name":"The Last V8 – One Crash and Your Post-Apocalyptic C64 Drive Was Over","description":"️ The Last V8 (1985) – Commodore 64 Racing | Retro Classic The Last V8 (1985) is a futuristic, post-apocalyptic racing game for the Commodore 64, developed by David Darling, with graphics by Jim Wilson and music by Rob Hubbard. Released under Mastertronic’s MAD label, you pilot a radiation-shielded V8 through a nuclear wasteland, balancing speed, fuel, and shield power in a race for survival. Gameplay features a split-screen display with action view and dashboard, precise steering, and a steep difficulty curve. The famous “V8, return to base immediately” intro sets the tone. Rob Hubbard’s soundtrack is a highlight, despite a small sync glitch later fixed in the HVSC archive. Visually, the game delivers striking post-apocalyptic imagery. Despite its flaws, The Last V8 remains a cult classic, remembered for its atmosphere, soundtrack, and brutal challenge.","thumbnailUrl":"https://i.ytimg.com/vi/gKdrM75TWwY/maxresdefault.jpg","uploadDate":"2025-08-13T17:30:25Z","embedUrl":"https://www.youtube.com/embed/gKdrM75TWwY","url":"https://www.cheekycommodoregamer.co.uk/games/the-last-v8/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/the-last-v8/#game"},"duration":"PT5M20S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/the-last-v8/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"The Last V8","item":"https://www.cheekycommodoregamer.co.uk/games/the-last-v8/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/the-last-v8/#game","name":"The Last V8","description":"️ The Last V8 (1985) – Commodore 64 Racing | Retro Classic The Last V8 (1985) is a futuristic, post-apocalyptic racing game for the Commodore 64, developed by David Darling, with graphics by Jim Wilson and music by Rob Hubbard. Released under Mastertronic’s MAD label, you pilot a…","url":"https://www.cheekycommodoregamer.co.uk/games/the-last-v8/","datePublished":"1985","gamePlatform":"Commodore 64","genre":["arcade","racing"],"publisher":{"@type":"Organization","name":"Mastertronic"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/last_v8_the.jpg","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/the-last-v8/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":6,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/the-last-v8/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/the-last-v8/#video","name":"The Last V8 – One Crash and Your Post-Apocalyptic C64 Drive Was Over","description":"️ The Last V8 (1985) – Commodore 64 Racing | Retro Classic The Last V8 (1985) is a futuristic, post-apocalyptic racing game for the Commodore 64, developed by David Darling, with graphics by Jim Wilson and music by Rob Hubbard. Released under Mastertronic’s MAD label, you pilot a radiation-shielded V8 through a nuclear wasteland, balancing speed, fuel, and shield power in a race for survival. Gameplay features a split-screen display with action view and dashboard, precise steering, and a steep difficulty curve. The famous “V8, return to base immediately” intro sets the tone. Rob Hubbard’s soundtrack is a highlight, despite a small sync glitch later fixed in the HVSC archive. Visually, the game delivers striking post-apocalyptic imagery. Despite its flaws, The Last V8 remains a cult classic, remembered for its atmosphere, soundtrack, and brutal challenge.","thumbnailUrl":"https://i.ytimg.com/vi/gKdrM75TWwY/maxresdefault.jpg","uploadDate":"2025-08-13T17:30:25Z","embedUrl":"https://www.youtube.com/embed/gKdrM75TWwY","url":"https://www.cheekycommodoregamer.co.uk/games/the-last-v8/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/the-last-v8/#game"},"duration":"PT5M20S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/the-last-v8/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"The Last V8","item":"https://www.cheekycommodoregamer.co.uk/games/the-last-v8/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">The Last V8</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 6/10" title="Cheeky Commodore Gamer rating">6/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

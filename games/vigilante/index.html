@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/vigilante/#game","name":"Vigilante","description":"️ Vigilante (1988) – Commodore 64 Street Brawler with Arcade Roots Released in 1988 by Irem, Vigilante brings raw, street-level action to the Commodore 64 as a direct follow-up in spirit to Kung-Fu Master. You play a lone martial artist battling through the mean streets of New York with one goal…","url":"https://www.cheekycommodoregamer.co.uk/games/vigilante/","datePublished":"1989","gamePlatform":"Commodore 64","genre":"fighting","publisher":{"@type":"Organization","name":"US Gold"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/vigilante_europe.jpg","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/vigilante/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/vigilante/#video","name":"Vigilante – Rescue Madonna from the Skinheads in This C64 Arcade Brawler","description":"️ Vigilante (1988) – Commodore 64 Street Brawler with Arcade Roots Released in 1988 by Irem, Vigilante brings raw, street-level action to the Commodore 64 as a direct follow-up in spirit to Kung-Fu Master. You play a lone martial artist battling through the mean streets of New York with one goal in mind: rescue Maria from the Rogues gang. The action is immediate and uncompromising. You push through five stages packed with thugs attacking from both sides, mixing punches and kicks while managing spacing and timing to avoid being swarmed. Nunchaku add extra bite when you can grab them, and the infamous grab mechanic forces quick reactions to escape enemy holds. On the C64, Vigilante focuses on delivering the feel of the arcade rather than spectacle. The presentation is stripped back, but the core mechanics remain intact, keeping the emphasis firmly on reflexes, positioning, and endurance.","thumbnailUrl":"https://i.ytimg.com/vi/emQAfIIBiqk/maxresdefault.jpg","uploadDate":"2023-02-28T17:56:40Z","embedUrl":"https://www.youtube.com/embed/emQAfIIBiqk","url":"https://www.cheekycommodoregamer.co.uk/games/vigilante/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/vigilante/#game"},"duration":"PT3M31S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/vigilante/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Vigilante","item":"https://www.cheekycommodoregamer.co.uk/games/vigilante/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/vigilante/#game","name":"Vigilante","description":"️ Vigilante (1988) – Commodore 64 Street Brawler with Arcade Roots Released in 1988 by Irem, Vigilante brings raw, street-level action to the Commodore 64 as a direct follow-up in spirit to Kung-Fu Master. You play a lone martial artist battling through the mean streets of New York with one goal…","url":"https://www.cheekycommodoregamer.co.uk/games/vigilante/","datePublished":"1989","gamePlatform":"Commodore 64","genre":"fighting","publisher":{"@type":"Organization","name":"US Gold"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/vigilante_europe.jpg","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/vigilante/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":2,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/vigilante/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/vigilante/#video","name":"Vigilante – Rescue Madonna from the Skinheads in This C64 Arcade Brawler","description":"️ Vigilante (1988) – Commodore 64 Street Brawler with Arcade Roots Released in 1988 by Irem, Vigilante brings raw, street-level action to the Commodore 64 as a direct follow-up in spirit to Kung-Fu Master. You play a lone martial artist battling through the mean streets of New York with one goal in mind: rescue Maria from the Rogues gang. The action is immediate and uncompromising. You push through five stages packed with thugs attacking from both sides, mixing punches and kicks while managing spacing and timing to avoid being swarmed. Nunchaku add extra bite when you can grab them, and the infamous grab mechanic forces quick reactions to escape enemy holds. On the C64, Vigilante focuses on delivering the feel of the arcade rather than spectacle. The presentation is stripped back, but the core mechanics remain intact, keeping the emphasis firmly on reflexes, positioning, and endurance.","thumbnailUrl":"https://i.ytimg.com/vi/emQAfIIBiqk/maxresdefault.jpg","uploadDate":"2023-02-28T17:56:40Z","embedUrl":"https://www.youtube.com/embed/emQAfIIBiqk","url":"https://www.cheekycommodoregamer.co.uk/games/vigilante/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/vigilante/#game"},"duration":"PT3M31S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/vigilante/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Vigilante","item":"https://www.cheekycommodoregamer.co.uk/games/vigilante/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Vigilante</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 2/10" title="Cheeky Commodore Gamer rating">2/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

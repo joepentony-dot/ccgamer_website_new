@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/spy-vs-spy-3-arctic-antics/#game","name":"Spy Vs Spy III: Arctic Antics","description":"️ Spy vs Spy III: Arctic Antics (1986) – Commodore 64 Slapstick Espionage in the Arctic Released in 1986 for the Commodore 64, Spy vs Spy III: Arctic Antics is the third entry in First Star Software’s classic series inspired by MAD Magazine’s iconic comic strip. This time, the Black Spy and White…","url":"https://www.cheekycommodoregamer.co.uk/games/spy-vs-spy-3-arctic-antics/","datePublished":"1987","gamePlatform":"Commodore 64","genre":"strategy","publisher":{"@type":"Organization","name":"First Star Software"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/spy_vs_spy_iii_arctic_antics.jpg","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/spy-vs-spy-3-arctic-antics/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/spy-vs-spy-3-arctic-antics/#video","name":"Spy vs Spy III: Arctic Antics – The C64 Feud That Froze Both Spies Solid","description":"️ Spy vs Spy III: Arctic Antics (1986) – Commodore 64 Slapstick Espionage in the Arctic Released in 1986 for the Commodore 64, Spy vs Spy III: Arctic Antics is the third entry in First Star Software’s classic series inspired by MAD Magazine’s iconic comic strip. This time, the Black Spy and White Spy trade tropical islands for the freezing Arctic, where survival is as important as sabotage. The goal remains familiar: assemble a rocket by locating a Gyroscope, Fuel Canister, and Key Card before your rival does. The icy setting introduces new challenges, including managing body heat, navigating slippery terrain, and avoiding traps hidden beneath the snow. You must balance exploration with constant interference from the opposing spy. New tools and mechanics add extra depth and humour, such as snowball fights, snowshoes, ice picks, and the plunger detonator.","thumbnailUrl":"https://i.ytimg.com/vi/L8trvISvFYw/maxresdefault.jpg","uploadDate":"2023-08-09T17:30:03Z","embedUrl":"https://www.youtube.com/embed/L8trvISvFYw","url":"https://www.cheekycommodoregamer.co.uk/games/spy-vs-spy-3-arctic-antics/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/spy-vs-spy-3-arctic-antics/#game"},"duration":"PT4M43S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/spy-vs-spy-3-arctic-antics/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Spy Vs Spy III: Arctic Antics","item":"https://www.cheekycommodoregamer.co.uk/games/spy-vs-spy-3-arctic-antics/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/spy-vs-spy-3-arctic-antics/#game","name":"Spy Vs Spy III: Arctic Antics","description":"️ Spy vs Spy III: Arctic Antics (1986) – Commodore 64 Slapstick Espionage in the Arctic Released in 1986 for the Commodore 64, Spy vs Spy III: Arctic Antics is the third entry in First Star Software’s classic series inspired by MAD Magazine’s iconic comic strip. This time, the Black Spy and White…","url":"https://www.cheekycommodoregamer.co.uk/games/spy-vs-spy-3-arctic-antics/","datePublished":"1987","gamePlatform":"Commodore 64","genre":"strategy","publisher":{"@type":"Organization","name":"First Star Software"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/spy_vs_spy_iii_arctic_antics.jpg","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/spy-vs-spy-3-arctic-antics/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":6,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/spy-vs-spy-3-arctic-antics/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/spy-vs-spy-3-arctic-antics/#video","name":"Spy vs Spy III: Arctic Antics – The C64 Feud That Froze Both Spies Solid","description":"️ Spy vs Spy III: Arctic Antics (1986) – Commodore 64 Slapstick Espionage in the Arctic Released in 1986 for the Commodore 64, Spy vs Spy III: Arctic Antics is the third entry in First Star Software’s classic series inspired by MAD Magazine’s iconic comic strip. This time, the Black Spy and White Spy trade tropical islands for the freezing Arctic, where survival is as important as sabotage. The goal remains familiar: assemble a rocket by locating a Gyroscope, Fuel Canister, and Key Card before your rival does. The icy setting introduces new challenges, including managing body heat, navigating slippery terrain, and avoiding traps hidden beneath the snow. You must balance exploration with constant interference from the opposing spy. New tools and mechanics add extra depth and humour, such as snowball fights, snowshoes, ice picks, and the plunger detonator.","thumbnailUrl":"https://i.ytimg.com/vi/L8trvISvFYw/maxresdefault.jpg","uploadDate":"2023-08-09T17:30:03Z","embedUrl":"https://www.youtube.com/embed/L8trvISvFYw","url":"https://www.cheekycommodoregamer.co.uk/games/spy-vs-spy-3-arctic-antics/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/spy-vs-spy-3-arctic-antics/#game"},"duration":"PT4M43S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/spy-vs-spy-3-arctic-antics/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Spy Vs Spy III: Arctic Antics","item":"https://www.cheekycommodoregamer.co.uk/games/spy-vs-spy-3-arctic-antics/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Spy Vs Spy III: Arctic Antics</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 6/10" title="Cheeky Commodore Gamer rating">6/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

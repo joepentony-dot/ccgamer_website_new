@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/donkey-kong/#game","name":"Donkey Kong","description":"️ Donkey Kong (1983 / 1986) – Commodore 64 Arcade Platforming Legend Donkey Kong is one of the most iconic arcade games of all time, and on the Commodore 64 it arrived in two very different forms. The first port, released in 1983 by Atarisoft, aimed to replicate the arcade original as closely as…","url":"https://www.cheekycommodoregamer.co.uk/games/donkey-kong/","datePublished":"1983","gamePlatform":"Commodore 64","genre":"arcade","publisher":{"@type":"Organization","name":"Atarisoft"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/donkey_kong.jpg","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/donkey-kong/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/donkey-kong/#video","name":"Donkey Kong – Why Did the C64 Get TWO Different Official Arcade Conversions?","description":"️ Donkey Kong (1983 / 1986) – Commodore 64 Arcade Platforming Legend Donkey Kong is one of the most iconic arcade games of all time, and on the Commodore 64 it arrived in two very different forms. The first port, released in 1983 by Atarisoft, aimed to replicate the arcade original as closely as possible, delivering familiar layouts, bold colours, and a faithful sense of challenge that many players still regard as the most authentic C64 version. In 1986, Ocean Software released their own take on Donkey Kong, featuring more detailed graphics and enhanced sound. While visually more polished, this version takes a few liberties with the arcade feel, making it a fascinating comparison for long-time fans of the game. In both releases, you control Jumpman as he climbs girders, ladders, and elevators to rescue Lady from the clutches of Donkey Kong.","thumbnailUrl":"https://i.ytimg.com/vi/n11taRLnacg/maxresdefault.jpg","uploadDate":"2023-01-31T18:30:46Z","embedUrl":"https://www.youtube.com/embed/n11taRLnacg","url":"https://www.cheekycommodoregamer.co.uk/games/donkey-kong/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/donkey-kong/#game"},"duration":"PT5M23S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/donkey-kong/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Donkey Kong","item":"https://www.cheekycommodoregamer.co.uk/games/donkey-kong/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/donkey-kong/#game","name":"Donkey Kong","description":"️ Donkey Kong (1983 / 1986) – Commodore 64 Arcade Platforming Legend Donkey Kong is one of the most iconic arcade games of all time, and on the Commodore 64 it arrived in two very different forms. The first port, released in 1983 by Atarisoft, aimed to replicate the arcade original as closely as…","url":"https://www.cheekycommodoregamer.co.uk/games/donkey-kong/","datePublished":"1983","gamePlatform":"Commodore 64","genre":"arcade","publisher":{"@type":"Organization","name":"Atarisoft"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/donkey_kong.jpg","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/donkey-kong/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":7,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/donkey-kong/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/donkey-kong/#video","name":"Donkey Kong – Why Did the C64 Get TWO Different Official Arcade Conversions?","description":"️ Donkey Kong (1983 / 1986) – Commodore 64 Arcade Platforming Legend Donkey Kong is one of the most iconic arcade games of all time, and on the Commodore 64 it arrived in two very different forms. The first port, released in 1983 by Atarisoft, aimed to replicate the arcade original as closely as possible, delivering familiar layouts, bold colours, and a faithful sense of challenge that many players still regard as the most authentic C64 version. In 1986, Ocean Software released their own take on Donkey Kong, featuring more detailed graphics and enhanced sound. While visually more polished, this version takes a few liberties with the arcade feel, making it a fascinating comparison for long-time fans of the game. In both releases, you control Jumpman as he climbs girders, ladders, and elevators to rescue Lady from the clutches of Donkey Kong.","thumbnailUrl":"https://i.ytimg.com/vi/n11taRLnacg/maxresdefault.jpg","uploadDate":"2023-01-31T18:30:46Z","embedUrl":"https://www.youtube.com/embed/n11taRLnacg","url":"https://www.cheekycommodoregamer.co.uk/games/donkey-kong/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/donkey-kong/#game"},"duration":"PT5M23S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/donkey-kong/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Donkey Kong","item":"https://www.cheekycommodoregamer.co.uk/games/donkey-kong/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Donkey Kong</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 7/10" title="Cheeky Commodore Gamer rating">7/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>

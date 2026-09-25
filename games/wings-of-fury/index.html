@@ -41,10 +41,39 @@
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
 
-                var ogUrl = document.getElementById('game-og-url');
                 var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
                 var slug = '';
+                var legacyIdAliases = {
+                          "willow_pattern": "the-willow-pattern-adventure",
+                          "h.e.r.o.": "hero",
+                          "flimbo's_quest": "flimbos-quest",
+                          "barbarian_ii:_the_dungeon_of_drax": "barbarian-2-the-dungeon-of-drax",
+                          "last_ninja_2:_back_with_a_vengeance": "last-ninja-2-back-with-a-vengeance",
+                          "s.w.i.v.": "swiv",
+                          "d/generation": "d-generation",
+                          "maria's_christmas_box": "marias-christmas-box",
+                          "target:_renegade": "target-renegade",
+                          "hunchback_2": "hunchback-2-quasimodos-revenge",
+                          "north_&_south": "north-south",
+                          "manic_mansion": "maniac-mansion",
+                          "santa's_xmas_caper": "santas-xmas-caper",
+                          "summer_games_ii": "summer-games-2",
+                          "nightbreed:_the_action_game": "nightbreed-the-action-game",
+                          "spartacus:_the_swordslayer": "spartacus-the-swordslayer",
+                          "everyone's_a_wally": "everyones-a-wally",
+                          "bully's_sporting_darts": "bullys-sporting-darts",
+                          "shao-lin's_road": "shao-lins-road",
+                          "cops_'n'_robbers": "cops-n-robbers"
+                };
+
+                function legacySlugFor(value) {
+                    var raw = String(value || '').trim().toLowerCase();
+                    if (!raw) return '';
+                    if (legacyIdAliases[raw]) return legacyIdAliases[raw];
+                    var candidate = raw.replace(/_/g, '-');
+                    return /^[a-z0-9-]+$/.test(candidate) ? candidate : '';
+                }
 
                 var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
                 if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
@@ -60,24 +89,23 @@
 
                 if (!slug) {
                     var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
+                    if (id) slug = legacySlugFor(id);
                 }
 
                 if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
+                var origin = window.location.origin || '';
+                canonical.setAttribute('href', origin ? (origin + path) : path);
 
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                var legacyLoader = /\/games\/game\.html$/i.test(pathname);
+                if (legacyLoader && (params.has('id') || params.has('slug'))) {
+                    window.location.replace(path + window.location.hash);
                 }
             } catch (e) {}
         })();
     </script>
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/wings-of-fury/#game","name":"Wings Of Fury","description":"️ Wings of Fury (1990) – Commodore Amiga WWII Arcade Flight Combat Originally developed by Steve Waldo and released by Brøderbund in 1987, Wings of Fury arrived on the Commodore Amiga in 1990 via Unlimited Software Inc. , bringing its World War II Pacific air combat to a new level of audiovisual…","url":"https://www.cheekycommodoregamer.co.uk/games/wings-of-fury/","datePublished":"1990","gamePlatform":"Amiga","genre":["arcade","strategy"],"publisher":{"@type":"Organization","name":"Brøderbund"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/wings_of_fury.png","subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/wings-of-fury/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/wings-of-fury/#video","name":"Wings of Fury – The Amiga WWII Shooter That Launched You from an Aircraft Carrier","description":"️ Wings of Fury (1990) – Commodore Amiga WWII Arcade Flight Combat Originally developed by Steve Waldo and released by Brøderbund in 1987, Wings of Fury arrived on the Commodore Amiga in 1990 via Unlimited Software Inc. , bringing its World War II Pacific air combat to a new level of audiovisual polish. Players take on the role of a US Navy pilot flying the F6F Hellcat, launching from the USS Wasp to strike Japanese targets across a chain of hostile islands. Gameplay blends fast-paced arcade shooting with light simulation elements. Missions involve strafing ground installations, bombing bunkers, and torpedoing enemy ships, while carefully managing fuel, ammunition, and aircraft damage. Successful pilots must return safely to the carrier to refuel, rearm, and make repairs before heading back into combat. The Amiga version stands out for its smooth animation, detailed visuals by John Boechler, and an atmospheric soundtrack composed by Kris Hatlelid, all of which enhance the sense of scale and tension during each sortie.","thumbnailUrl":"https://i.ytimg.com/vi/TTyNi8PgJQ4/maxresdefault.jpg","uploadDate":"2023-09-28T17:30:05Z","embedUrl":"https://www.youtube.com/embed/TTyNi8PgJQ4","url":"https://www.cheekycommodoregamer.co.uk/games/wings-of-fury/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/wings-of-fury/#game"},"duration":"PT5M46S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/wings-of-fury/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Wings Of Fury","item":"https://www.cheekycommodoregamer.co.uk/games/wings-of-fury/"}]}]}</script>
+    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/wings-of-fury/#game","name":"Wings Of Fury","description":"️ Wings of Fury (1990) – Commodore Amiga WWII Arcade Flight Combat Originally developed by Steve Waldo and released by Brøderbund in 1987, Wings of Fury arrived on the Commodore Amiga in 1990 via Unlimited Software Inc. , bringing its World War II Pacific air combat to a new level of audiovisual…","url":"https://www.cheekycommodoregamer.co.uk/games/wings-of-fury/","datePublished":"1990","gamePlatform":"Amiga","genre":["arcade","strategy"],"publisher":{"@type":"Organization","name":"Brøderbund"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/wings_of_fury.png","review":{"@type":"Review","@id":"https://www.cheekycommodoregamer.co.uk/games/wings-of-fury/#ccg-review","author":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/about.html"},"reviewRating":{"@type":"Rating","ratingValue":8,"bestRating":10,"worstRating":1}},"subjectOf":{"@id":"https://www.cheekycommodoregamer.co.uk/games/wings-of-fury/#video"}},{"@type":"VideoObject","@id":"https://www.cheekycommodoregamer.co.uk/games/wings-of-fury/#video","name":"Wings of Fury – The Amiga WWII Shooter That Launched You from an Aircraft Carrier","description":"️ Wings of Fury (1990) – Commodore Amiga WWII Arcade Flight Combat Originally developed by Steve Waldo and released by Brøderbund in 1987, Wings of Fury arrived on the Commodore Amiga in 1990 via Unlimited Software Inc. , bringing its World War II Pacific air combat to a new level of audiovisual polish. Players take on the role of a US Navy pilot flying the F6F Hellcat, launching from the USS Wasp to strike Japanese targets across a chain of hostile islands. Gameplay blends fast-paced arcade shooting with light simulation elements. Missions involve strafing ground installations, bombing bunkers, and torpedoing enemy ships, while carefully managing fuel, ammunition, and aircraft damage. Successful pilots must return safely to the carrier to refuel, rearm, and make repairs before heading back into combat. The Amiga version stands out for its smooth animation, detailed visuals by John Boechler, and an atmospheric soundtrack composed by Kris Hatlelid, all of which enhance the sense of scale and tension during each sortie.","thumbnailUrl":"https://i.ytimg.com/vi/TTyNi8PgJQ4/maxresdefault.jpg","uploadDate":"2023-09-28T17:30:05Z","embedUrl":"https://www.youtube.com/embed/TTyNi8PgJQ4","url":"https://www.cheekycommodoregamer.co.uk/games/wings-of-fury/","about":{"@id":"https://www.cheekycommodoregamer.co.uk/games/wings-of-fury/#game"},"duration":"PT5M46S"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/wings-of-fury/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"Wings Of Fury","item":"https://www.cheekycommodoregamer.co.uk/games/wings-of-fury/"}]}]}</script>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -336,6 +364,10 @@
                 <div class="game-hero__content">
                     <div class="game-hero__title-row">
                         <h1 id="gameHeroTitle" class="game-hero__title">Wings Of Fury</h1>
+                    </div>
+
+                    <div class="game-hero__badges" data-ccg-static-editorial-rating="true">
+                        <span class="game-badge game-badge--rating" aria-label="Cheeky Commodore Gamer rating: 8/10" title="Cheeky Commodore Gamer rating">8/10</span>
                     </div>
 
                     <div class="game-hero__actions ccg-share" data-ccg-share>
