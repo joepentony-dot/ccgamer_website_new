@@ -11,6 +11,7 @@ const systems=read("js/systems.js");
 const stage6=read("js/v10-42-stage6-zone-gameplay.js");
 const play=read("js/game-play.js");
 const r19=read("js/v10-42-r19-mobile-trap-layout-stability.js");
+const rare=read("js/v10-15-rare-events-balance.js");
 const render=read("js/game-render.js");
 
 assert.match(systems,/kind:i%3===0\?"fire":i%3===1\?"spike":"shock"/,"generated floor traps must still cover fire, spike and shock");
@@ -33,6 +34,11 @@ assert.match(r19,/function updateTrapContacts\(source="simulation"\)/,"R19 must 
 assert.match(r19,/rearmInactiveTrapContacts\(\);[\s\S]*const handled=damageOccupiedActiveTraps\(\)/,"the global cycle must rearm an inactive contact before checking active occupancy");
 assert.match(r19,/owner\.call\(window,player,1,false,/,"validated floor-trap damage must remain exactly one health");
 assert.match(r19,/player\.armor=0;[\s\S]*player\.armor=beforeArmor/,"floor-trap health damage must preserve armour");
+assert.match(r19,/const canonicalHit=afterHealth<beforeHealth/,"R19 must count a trap hit only when HEALTH actually falls");
+assert.doesNotMatch(r19,/canonicalHit=[^\n]*(?:afterHurtAt|lastHurtAt|lastDamageAt)/,"damage timestamps must not substitute for the required HEALTH loss");
+assert.match(r19,/trapContacts\.add\(contactKey\)[\s\S]*trapRuntime\?\.contact\?\.add/,"a verified R19 hit must synchronise the canonical trap latch only after HEALTH loss");
+assert.match(rare,/beforeHealth=Number\(player\.health\|\|0\)[\s\S]*hurtPlayer\(player,1,false,[\s\S]*Number\(player\.health\|\|0\)>=beforeHealth\)continue;[\s\S]*trapRuntime\.contact\.add\(key\)/,"the legacy reliable-trap owner must not latch a contact before proving HEALTH loss");
+assert.match(play,/healthLost=Number\(p\.health\|\|0\)<beforeHealth[\s\S]*!routed&&healthLost&&damageAt>beforeDamageAt/,"base movement diagnostics must emit trap damage only after real HEALTH loss");
 assert.match(r19,/trapContacts\.add\(contactKey\)/,"an active contact must latch after one hit");
 assert.match(r19,/if\(occupied&&trapActive\(trap,now\)\)continue;/,"the latch must remain armed for the complete active phase");
 assert.match(r19,/trapContacts\.delete\(contactKey\)/,"the contact must rearm after leaving the tile or entering a safe cycle");
