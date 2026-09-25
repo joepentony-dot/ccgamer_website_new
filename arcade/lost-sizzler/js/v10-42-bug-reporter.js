@@ -43,11 +43,13 @@
     if(events.length>MAX_EVENTS)events.splice(0,events.length-MAX_EVENTS);
   }
   function recordEnvironmentDamageSignal(type,event){
-    const detail=event?.detail||{};
+    const detail=event?.detail||{},signalType=String(type),playerId=String(detail.playerId||""),trapIdValue=String(detail.trapId||""),hazardIdValue=String(detail.hazardId||""),x=Number(detail.x),y=Number(detail.y),at=Number(detail.at||0);
+    const previous=environmentDamageSignals[environmentDamageSignals.length-1];
+    if(previous&&previous.type===signalType&&previous.playerId===playerId&&previous.trapId===trapIdValue&&previous.hazardId===hazardIdValue&&previous.x===x&&previous.y===y&&previous.at===at)return previous;
     const signal={
-      serial:++environmentDamageSerial,type:String(type),
-      playerId:String(detail.playerId||""),trapId:String(detail.trapId||""),hazardId:String(detail.hazardId||""),
-      kind:String(detail.kind||detail.type||""),x:Number(detail.x),y:Number(detail.y),at:Number(detail.at||0)
+      serial:++environmentDamageSerial,type:signalType,
+      playerId,trapId:trapIdValue,hazardId:hazardIdValue,
+      kind:String(detail.kind||detail.type||""),x,y,at
     };
     environmentDamageSignals.push(signal);
     if(environmentDamageSignals.length>MAX_ENVIRONMENT_DAMAGE_SIGNALS)environmentDamageSignals.splice(0,environmentDamageSignals.length-MAX_ENVIRONMENT_DAMAGE_SIGNALS);
