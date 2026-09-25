@@ -51,6 +51,9 @@ requireText(gamesPublishing, "node scripts/rebuild-games.js", "Reliable Games Pu
 requireText(gamesPublishing, "sitemap.xml", "Reliable Games Publishing does not stage the root sitemap index.");
 requireText(gamesPublishing, "sitemap-*.xml", "Reliable Games Publishing does not stage child sitemaps.");
 requireText(gamesPublishing, "gh pr merge", "Reliable Games Publishing does not merge its generated-output PR.");
+requirePattern(gamesPublishing, /permissions:\s*[\s\S]*?actions:\s*write\b/, "Reliable Games Publishing cannot dispatch the authoritative Pages deployment.");
+requireText(gamesPublishing, "gh workflow run deploy-github-pages-omega-stable.yml", "Reliable Games Publishing does not dispatch Omega Pages after merging generated output.");
+requireText(gamesPublishing, "--ref main", "Reliable Games Publishing does not dispatch Omega Pages from the merged main branch.");
 
 const rebuildGames = read("scripts/rebuild-games.js");
 requireText(rebuildGames, '["integrate-year-platform-discovery.js"]', "The authoritative game rebuild no longer integrates year/platform discovery.");
