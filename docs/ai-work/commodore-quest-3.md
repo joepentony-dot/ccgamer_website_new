@@ -1,3 +1,13 @@
+## Live consolidation status — 25 September 2026
+
+- Draft PR #2176 remains the authoritative preservation vehicle on `codex/commodore-quest-v3-current-main-r2`.
+- Current preserved head is `a31bb2cb41ea646f5ba9cb6b50cfd5b9567d6779`.
+- Against pre-#2341 current main `bd5c5308722ffd27003fcc7260b8645a238684d1`, the preserved Quest delta is 2 commits ahead and 23 behind; do not drag the historical ancestry forward merely to reduce that count.
+- Its established exact-head automated matrix is green, but the mandatory hands-on **The Bedroom** and **36% Conversion Bout** gate remains outstanding.
+- CCG master-development priority deliberately defers Quest until C64 Dungeon Carnage is substantially finished. Do not spend the active consolidation cycle rebasing or completing #2176; when Quest resumes, refresh live main and salvage only the still-required Quest-owned delta.
+
+The older verified checkpoint below records the reconstruction history but contains historical SHAs/drift counts.
+
 # Commodore Quest 3
 
 ## Scope

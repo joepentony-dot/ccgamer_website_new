@@ -106,7 +106,15 @@ jobs:
           node scripts/prepare-seo-game-routes.js --output-root _site
           node scripts/prepare-seo-genre-links.js --root _site
           node scripts/generate-retro-pages.js --root _site
+
+          # The sitemap owner resolves sibling helpers relative to __dirname__.
+          # Keep scripts out of the public artifact, but stage the complete tool
+          # directory temporarily so generation runs against _site as its root.
+          rm -rf _site/scripts
+          cp -a scripts _site/scripts
           (cd _site && node scripts/generate-sitemaps.js)
+          rm -rf _site/scripts
+
           node scripts/validate-seo-game-routes.js --root _site
           node scripts/validate-seo-genre-links.js --root _site
           (cd _site && node ../scripts/validate-sitemaps.js)

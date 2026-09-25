@@ -1,3 +1,44 @@
+## Final compact-floor dedicated-hazard repair on #2341 — 25 September 2026
+
+- Final-head qualification of pre-fix head `9da0a1e100b2e22046b1d66b8bb7d711f6bc10a3` reproduced the unchanged shard-1 assertion `generated Solo floor must contain a dedicated hazard room`. This is not classified as a flake.
+- The earlier fallback still imposed a 6x5 minimum on every reservation tier and the installer only re-read reservations from `deepRooms(world)`. A sufficiently compact seed could therefore have zero reservable 6x5 non-optional rooms even after haunted-corridor supplementation.
+- The authoritative reservation chain now prefers 6x5+ non-optional rooms, falls back to 3x3+ non-optional rooms, and only then uses 3x3+ optional rooms. Start and exit remain hard-excluded. The installer reads reserved rooms from the complete `world.rooms` set so an emergency optional reservation cannot disappear before installation.
+- The existing browser assertion is unchanged. Static coverage now guards the layered size/ownership fallback. A fresh complete exact-head matrix is mandatory before #2341 can leave draft or merge.
+
+## Current-main qualification repairs on #2341 — 25 September 2026
+
+- Post-merge audit of `bd5c5308722ffd27003fcc7260b8645a238684d1` found three independent current-main qualification defects that must be repaired before the Smart Emulation Hub can merge:
+  - Omega Stable Pages staged `_site` without `scripts/` and then tried to execute `_site/scripts/generate-sitemaps.js`; the candidate now stages the complete scripts directory only for sitemap generation and removes it before upload.
+  - Dungeon production smoke hardcoded R54 while the checked-out/live release is R56; expected release/build/cache identity is now derived from `version.json` and checked against the source document.
+  - procedural Dungeon seeds can exhaust strict room candidates and omit either a required dedicated hazard or one of FIRE/SPIKE/SHOCK. Mandatory hazard reservation now supplements from haunted-corridor candidates when necessary, and Stage 6 trap-family repair uses strict, fallback and emergency non-start/non-exit room pools.
+- These are current-main qualification repairs, not Smart Emulation Hub feature regressions. They are being reconciled onto #2341 to avoid another parallel branch and another stale-base cycle.
+- Protected root intro files and Dungeon `index.html` remain untouched. The already-unmerged public cache v23 candidate remains the deployment cache advance for this combined exact head.
+- Static regression coverage now guards compact-floor hazard/trap-family fallbacks, temporary sitemap tooling and version-derived production smoke.
+- Re-run the full exact-head matrix after the new #2341 head is published. Do not merge on the earlier `c4c53900a5c6725f651275aeb996496dfa56e1af` failure state.
+
+## Authoritative post-consolidation backlog — 25 September 2026
+
+This is the single future-work list to use after repository flattening. Do **not** start these items while the current consolidation/qualification cycle is still active. Historical sections below are evidence, not separate active queues.
+
+1. **SEO / Google / Lighthouse live follow-through.** Search Console remediation #2343 and Lighthouse Stage 1 #2346 are already merged. After the flattened main is deployed and qualified, verify live Search Console/indexing behaviour and live Lighthouse/PageSpeed results against that deployed baseline. Continue later performance work only from reproducible live evidence; do not resurrect stale Lighthouse branches.
+2. **C64 Dungeon Carnage hands-on acceptance and external release completion.** Repository coding for the current reproduced defects is complete once the current #2341 qualification repairs merge. Retain the documented hands-on gates: deployed startup/menu transition; sustained Solo movement/firing/combat/pause-resume; 3 Artefacts/Essences → exactly 1 Banishment Flask without prior Gold purchase and with Gold/Score unchanged; deployed mobile natural FIRE/SPIKE/SHOCK damage. When those pass, use the latest qualified itch.io artifact and complete external upload/launch/handoff verification. NPC dialogue/quest-content expansion remains a later product phase and must not be mixed into consolidation.
+3. **Commodore Quest 3.** #2176 remains the preservation vehicle for the unique Quest 3 work and stays deferred until Dungeon Carnage is substantially finished. When resumed, reconcile only the still-required Quest delta onto then-current main and retain the mandatory hands-on **The Bedroom** and **36% Conversion Bout** acceptance gate before merge.
+4. **CCG backend containment, only if deliberately resumed.** #2329 preserves the experimental CCG backend/migration/staging work. Production browser auth remains Supabase-authoritative. Do not switch production auth or revive retired Dungeon online/realtime scope through consolidation; resume only with an explicit backend programme and complete its documented staging/runtime cut-over gates first.
+5. **UTA is not a new development backlog item.** The full-catalogue audit, curated reconciliation, freshness repair, residual reconciliation and generated publication have already merged through #2298/#2301. Future UTA activity is routine Reliable Games Publishing refresh plus manual-review curation when new evidence appears; do not restart the completed audit as a separate project.
+
+Dependencies/order: flatten and qualify current main first → SEO/Google/Lighthouse live observation → Dungeon hands-on/release completion → Commodore Quest 3 → optional backend programme. Routine UTA publishing continues through its existing owner and does not block the sequence above.
+
+## Master consolidation current state — 25 September 2026
+
+- Current `main` after the latest qualified consolidation merge is `bd5c5308722ffd27003fcc7260b8645a238684d1` (PR #2351).
+- #2351 exact head `454a64fd9bfb95b5970b88dc748891f13474d2ce` was 0 commits behind, mergeable, had no review threads, and passed the complete triggered matrix including C64 Dungeon Carnage Full Qualification before merge.
+- Open PR inventory is now three: #2341 Smart Emulation Hub, #2329 CCG backend containment, and #2176 Commodore Quest 3.
+- #2341 is the next consolidation survivor. Rebuild it in place directly on this `main`, preserve only its unique emulation HTML/CSS/JavaScript, Site Safety hooks and focused regressions, and advance the public code cache to v23 because v22 has already shipped through #2351.
+- #2329 remains valuable preserved backend work but retains its documented staging/production cut-over gates; classify and preserve it rather than forcing a production merge merely to reduce PR count.
+- #2176 remains deliberately deferred until C64 Dungeon Carnage is substantially finished; do not spend priority effort rebasing or completing it now.
+- Search Console remediation #2343 is already merged as `ece6c9d942036bde9979bf6515cf3627c23e5206`. Automated SEO/video output #2350 then merged as `d728434c4e0ebef4675c911951f67167eb071985` before #2351.
+- Older sections below are historical checkpoints where they still describe now-merged PRs as candidates. Live GitHub and this current-state block take precedence.
+
 ## Dungeon dedicated-hazard reservation authority follow-up — 25 September 2026
 
 - Current-main qualification after merged #2348 repeatedly failed the unchanged browser contract `v10-42-critical-combat-trap-recovery.mjs`: a generated Solo floor contained no dedicated hazard room.

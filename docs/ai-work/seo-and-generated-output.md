@@ -1,5 +1,14 @@
 # SEO and generated output
 
+## Smart Emulation Hub current-main reconciliation — 2026-09-25
+
+- Search Console remediation PR #2343 has merged as `ece6c9d942036bde9979bf6515cf3627c23e5206`; automated SEO/video output #2350 subsequently merged as `d728434c4e0ebef4675c911951f67167eb071985`.
+- PR #2341 is being rebuilt in place on current main after the qualified Dungeon hazard repair #2351. Preserve its updated emulation title/description/social metadata and WebPage/Breadcrumb schema together with the smart emulator picker, tutorial/referral links, community surface and focused regression coverage.
+- Do not carry stale generated-output ancestry into #2341. Generated canonical game pages remain workflow-owned.
+- Public code cache v22 has already shipped through #2351, so the reconciled Smart Emulation Hub candidate advances the namespace and exact guards to `2026-09-25-public-code-v23` for its new public HTML/CSS/JavaScript.
+- Exact-head SEO, structured/social metadata, Site Safety, Native Mouse Wheel and every other triggered current-main qualification remain mandatory before merge.
+- The older Search Console checkpoint below is historical where it still describes #2343 as draft; current live state is the merged state recorded above.
+
 ## Search Console remediation current-main rebuild — 2026-09-25
 
 - PR **#2339** merged as `1caed6ef7759134a33379867d4c13085e99fd2aa` after its complete repaired-main qualification passed.
