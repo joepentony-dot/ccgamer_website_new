@@ -73,6 +73,8 @@
     try{dispatchEvent(new CustomEvent("ccg:trap-damage",{detail:{playerId:playerId(player),trapId:trapId(trap),kind,x:Number(trap.x),y:Number(trap.y),at:Number(player.__ccgLastDamageAt||performance.now())}}))}catch(_){}
     trapContacts.add(contactKey);
     trapContactCycles.set(contactKey,cycle);
+    const rare=window.CCGLostSizzlerRareEventsBalance||null;
+    try{rare?.trapRuntime?.contact?.add?.(contactKey)}catch(_){}
     const protectionMs=Math.max(0,Number(player.invuln||0));
     if(protectionMs>0)trapProtectionUntil.set(contactKey,performance.now()+protectionMs)
   }
@@ -229,8 +231,8 @@
       if(threw)player.invuln=beforeInvuln;
     }
 
-    const afterHealth=Number(player.health||0),afterHurtAt=Number(player.__ccgLastHurtAt||0);
-    const canonicalHit=afterHealth!==beforeHealth||afterHurtAt>beforeHurtAt;
+    const afterHealth=Number(player.health||0);
+    const canonicalHit=afterHealth<beforeHealth;
     if(!canonicalHit){
       player.invuln=beforeInvuln;
       state.damageRetries++;
