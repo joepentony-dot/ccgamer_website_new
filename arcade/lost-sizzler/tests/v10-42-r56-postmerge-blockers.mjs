@@ -35,6 +35,16 @@ assert.match(
 );
 assert.match(
   systems,
+  /const traderRoom=\[\.\.\.world\.rooms\]\.filter\(r=>r\.optional&&r\.id!==host\.sigilRoomId\)[\s\S]*\|\|featureRooms\.find\(r=>r\.id!==world\.exitRoomId&&!r\.dedicatedHazardReserved\)\|\|null;/,
+  "hidden trader fallback must stay outside rooms reserved for dedicated hazards"
+);
+assert.doesNotMatch(
+  systems,
+  /const traderRoom=[^\n]*\|\|rooms\[rooms\.length-1\]/,
+  "hidden trader fallback must not reclaim a reserved mandatory room"
+);
+assert.match(
+  systems,
   /fallbackHazardRooms=reservedHazardRooms\.length\+primaryHazardRooms\.length>=count\?\[\]:/,
   "fallback hazard rooms must only be considered when reserved and primary rooms are insufficient"
 );
