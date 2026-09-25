@@ -1,3 +1,12 @@
+## Dungeon dedicated-hazard reservation authority follow-up — 25 September 2026
+
+- Current-main qualification after merged #2348 repeatedly failed the unchanged browser contract `v10-42-critical-combat-trap-recovery.mjs`: a generated Solo floor contained no dedicated hazard room.
+- One unchanged exact-head retry reproduced the same assertion, so the failure is treated as a genuine mainline regression rather than a transient Chromium sample.
+- Root cause candidate: the pre-reserved hazard room was still re-screened through soft room-owner flags (`sanctuary`, `sigilRoom`, `spiderNest`) during later decoration. On stacked/repeated decoration those stale flags could defeat the reservation even though the room had already been deliberately reserved before soft owners ran.
+- Candidate branch `codex/dungeon-hazard-reservation-authority-20260925` now makes `dedicatedHazardReserved` authoritative over those soft flags while retaining hard start/exit and minimum-size guards. The existing browser assertion is unchanged; focused static coverage now guards the stronger ownership boundary.
+- Public code cache advances to `2026-09-25-public-code-v22`.
+- Do not merge until the exact candidate head is 0 behind current `main`, mergeable, and the complete required qualification matrix is green.
+
 ## Dungeon hazard reservation authority repair — 25 September 2026
 
 - Current-main baseline at branch creation: `c411925e095ec03bc724bd3ef190e86b2717b9de`.
