@@ -45,6 +45,9 @@ assert.doesNotMatch(r20Src,/recoverThroughCapturedR1FireOwner[\s\S]*?spawnBullet
 const attackNowBlock=r20Src.match(/function attackNow\(code\)\{[\s\S]*?\n  \}/)?.[0]||"";
 assert.match(attackNowBlock,/firePlayer\(player,direction\)/,"R53 must invoke the authoritative top-level attack owner");
 assert.doesNotMatch(attackNowBlock,/deepestFireOwner\(/,"R53 attack recovery must not bypass contextual melee/voice/achievement wrappers");
+assert.match(r20Src,/const errorsBefore=diagnostics\.directAttackErrors/,"capture-phase attack ownership must remember whether the current owner threw");
+assert.match(r20Src,/if\(handled\|\|diagnostics\.directAttackErrors===errorsBefore\)event\.stopImmediatePropagation\(\)/,"an unrecovered throwing FIRE owner must fall through to the established stable-loop containment path");
+assert.doesNotMatch(r20Src,/attackNow\(event\.code\);\s*event\.stopImmediatePropagation\(\)/,"R20 must not hide an unrecovered attack-owner exception from the canonical containment path");
 
 assert.match(inventorySrc,/const handled=afterMana<before\.mana\|\|afterBullets>before\.bullets/);
 assert.doesNotMatch(inventorySrc,/const handled=[^\n]*(?:afterFire|afterBuffer)/,"inventory recovery must require actual shot evidence");
