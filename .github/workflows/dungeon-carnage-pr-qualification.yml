@@ -12,6 +12,9 @@ on:
       - 'resources/css/home-lost-sizzler-cta.css'
       - 'service-worker.js'
       - 'js/ccg-pwa.js'
+      - 'scripts/build-c64-dungeon-carnage-itch-package.mjs'
+      - 'scripts/verify-c64-dungeon-carnage-itch-browser.mjs'
+      - '.github/workflows/c64-dungeon-carnage-itch-package.yml'
       - '.github/workflows/dungeon-carnage-pr-qualification.yml'
       - '.github/workflows/lost-sizzler-load-safety.yml'
 
@@ -105,6 +108,23 @@ jobs:
           sudo rm -f /etc/apt/sources.list.d/google-chrome.list
           sudo apt-get update
           npx playwright install --with-deps chromium
+
+      - name: Build and statically verify staged itch.io package
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/c64-dungeon-carnage-itch"
+          node scripts/build-c64-dungeon-carnage-itch-package.mjs \
+            --output "$output" \
+            --source-sha "$GITHUB_SHA"
+          node scripts/build-c64-dungeon-carnage-itch-package.mjs --verify "$output"
+
+      - name: Boot supported staged itch.io modes
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/verify-c64-dungeon-carnage-itch-browser.mjs \
+            --root "$RUNNER_TEMP/c64-dungeon-carnage-itch"
 
       - name: Run focused Dungeon Carnage browser contracts
         shell: bash
