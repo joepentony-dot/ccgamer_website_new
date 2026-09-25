@@ -30,8 +30,8 @@ assert.match(
 );
 assert.match(
   systems,
-  /reservedHazardRooms=rooms\.filter\(room=>room\?\.dedicatedHazardReserved&&hazardEligible\(room,6,5\)\)[\s\S]*choices=\[\.\.\.shuffleHazardRooms\(reservedHazardRooms\),/,
-  "reserved dedicated-hazard rooms must be consumed before ordinary hazard candidates"
+  /hardHazardEligible=\(room,minW=6,minH=5\)=>Boolean\([\s\S]*reservedHazardRooms=rooms\.filter\(room=>room\?\.dedicatedHazardReserved&&hardHazardEligible\(room,6,5\)\)[\s\S]*choices=\[\.\.\.shuffleHazardRooms\(reservedHazardRooms\),/,
+  "reserved dedicated-hazard rooms must remain authoritative over later soft room owners and be consumed before ordinary hazard candidates"
 );
 assert.match(
   systems,

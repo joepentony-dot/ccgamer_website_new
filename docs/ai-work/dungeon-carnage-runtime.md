@@ -1,3 +1,12 @@
+## Dungeon hazard reservation authority repair — 25 September 2026
+
+- Current-main baseline at branch creation: `c411925e095ec03bc724bd3ef190e86b2717b9de`.
+- Consolidation qualification reproduced `generated Solo floor must contain a dedicated hazard room` independently on unrelated Lighthouse #2346 and Emulation #2341 exact heads, while another seed on Commodore Quest #2176 passed. This established a seed-dependent current-main generation defect rather than a feature-branch regression.
+- Root cause: `decorate()` marks `dedicatedHazardReserved` before later room ownership, but `installDedicatedHazardRooms()` re-tested those reservations through the general soft-`busy` filter. A reservation therefore was not authoritative at installation time and could disappear from the candidate set.
+- Repair PR #2348 / `codex/dungeon-hazard-reservation-authority-20260925` separates hard structural eligibility from soft room-owner eligibility. Reserved rooms bypass only the soft-`busy` exclusion; start/exit, sanctuary, Sigil, spider-nest and minimum-geometry exclusions remain enforced. Non-reserved candidates still use the full soft-`busy` rule.
+- The existing R56 blocker contract now pins the authoritative reservation boundary. No timeout, assertion, CI policy, publishing, game-data, intro-loader or unrelated gameplay code is weakened or changed.
+- #2348 is the sole current owner of this baseline blocker. Do not merge #2346, #2341 or other affected candidates around the known defect; merge #2348 only after its final exact head is 0 behind current main, mergeable, all required workflows are green and no material review finding remains.
+
 ## R56 reserved optional-room ownership repair — 25 September 2026
 
 - Fresh #2339 qualification on merged #2342 main reproduced the dedicated-hazard absence again in Chromium shard 1 even though the #2342 runtime/test blobs were preserved exactly.

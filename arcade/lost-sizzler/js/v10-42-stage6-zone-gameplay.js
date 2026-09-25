@@ -98,22 +98,77 @@
     trap.v142Zone=profile.id;trap.v142ZoneRouteRole=role;
     state.trapsTuned++;return trap;
   }
-  function reconcileTrapFamilies(hostState,seed){
+  function reconcileTrapFamilies(hostState,seed,worldState,profile){
     const traps=(hostState?.traps||[]).filter(trap=>trap?.active);
-    if(traps.length<TRAP_FAMILIES.length)return 0;
     const counts=Object.fromEntries(TRAP_FAMILIES.map(kind=>[kind,traps.filter(trap=>String(trap.kind||"").toLowerCase()===kind).length]));
     let repairs=0;
+    const occupied=new Set(traps.map(trap=>`${Number(trap.x)},${Number(trap.y)}`));
+    const hazardRooms=new Set((hostState?.hazardRooms||[]).map(hazard=>hazard?.roomId).filter(id=>id!=null));
+    const eligibleRooms=(worldState?.rooms||[]).filter(room=>
+      room
+      && room.id!==worldState?.startRoomId
+      && room.id!==worldState?.exitRoomId
+      && !room.sanctuary
+      && !room.sigilRoom
+      && !room.spiderNest
+      && !room.dedicatedHazard
+      && !hazardRooms.has(room.id)
+      && Number(room.w)>=3
+      && Number(room.h)>=3
+    );
+    const reserveCell=kind=>{
+      const ordered=eligibleRooms
+        .map(room=>({room,key:hash32(`${seed}|${room.id}|stage6-family-room|${kind}`)}))
+        .sort((a,b)=>a.key-b.key);
+      for(const {room} of ordered){
+        const cells=[];
+        for(let y=Number(room.y)+1;y<Number(room.y)+Number(room.h);y++){
+          for(let x=Number(room.x)+1;x<Number(room.x)+Number(room.w);x++){
+            if(worldState?.map?.[y]?.[x]!==0)continue;
+            if(occupied.has(`${x},${y}`))continue;
+            cells.push({x,y});
+          }
+        }
+        if(!cells.length)continue;
+        cells.sort((a,b)=>hash32(`${seed}|${room.id}|${kind}|${a.x},${a.y}`)-hash32(`${seed}|${room.id}|${kind}|${b.x},${b.y}`));
+        return{room,cell:cells[0]};
+      }
+      return null;
+    };
     for(const kind of TRAP_FAMILIES){
       if(counts[kind]>0)continue;
       const donor=traps
         .filter(trap=>counts[String(trap.kind||"").toLowerCase()]>1)
         .map(trap=>({trap,key:hash32(`${seed}|${trap.id}|stage6-family|${kind}`)}))
         .sort((a,b)=>a.key-b.key)[0]?.trap||null;
-      if(!donor)continue;
-      const previous=String(donor.kind||"").toLowerCase();
-      counts[previous]=Math.max(0,Number(counts[previous]||0)-1);
-      donor.kind=kind;
-      donor.v142ZoneFamilyReconciled=true;
+      if(donor){
+        const previous=String(donor.kind||"").toLowerCase();
+        counts[previous]=Math.max(0,Number(counts[previous]||0)-1);
+        donor.kind=kind;
+        donor.v142ZoneFamilyReconciled=true;
+        counts[kind]=1;
+        repairs++;
+        continue;
+      }
+      const reserve=reserveCell(kind);
+      if(!reserve)continue;
+      const trap={
+        id:`stage6-family-reserve-${kind}-f${floorOf({floor:profile?.floor||1})}`,
+        x:reserve.cell.x,
+        y:reserve.cell.y,
+        roomId:reserve.room.id,
+        kind,
+        phase:hash32(`${seed}|${kind}|stage6-family-phase`)%1800,
+        period:Number(profile?.trapPeriod||2200),
+        active:true,
+        v142Zone:String(profile?.id||"threshold"),
+        v142ZoneRouteRole:routeRole(reserve.room),
+        v142ZoneFamilyReconciled:true,
+        v142ZoneFamilyReserve:true
+      };
+      hostState.traps.push(trap);
+      traps.push(trap);
+      occupied.add(`${trap.x},${trap.y}`);
       counts[kind]=1;
       repairs++;
     }
@@ -157,7 +212,7 @@
     const floor=floorOf(runState),profile=profileForFloor(floor),seed=String(runState.seed||"CCG");
     for(const enemy of hostState.enemies||[]){tuneGuardian(enemy,profile);tuneEnemy(enemy,profile,seed,worldState)}
     (hostState.traps||[]).forEach((trap,index)=>tuneTrap(trap,index,profile,seed,worldState));
-    reconcileTrapFamilies(hostState,seed);
+    reconcileTrapFamilies(hostState,seed,worldState,{...profile,floor});
     for(const hazard of hostState.hazardRooms||[])tuneHazard(hazard,profile,seed,worldState);
     for(const generator of hostState.generators||[])tuneGenerator(generator,profile);
     hostState.v142ZoneGameplay={
