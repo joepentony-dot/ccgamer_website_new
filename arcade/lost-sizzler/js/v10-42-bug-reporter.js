@@ -16,6 +16,7 @@
   const trapChecks=new Set();
   const duplicateTrapTiles=new Set();
   const movementBoundaryChecks=new WeakMap();
+  const movementBoundarySignals=new Map();
   const environmentDamageSignals=[];
   const MAX_ENVIRONMENT_DAMAGE_SIGNALS=80;
   let movementBoundarySerial=0;
@@ -50,6 +51,11 @@
     };
     environmentDamageSignals.push(signal);
     if(environmentDamageSignals.length>MAX_ENVIRONMENT_DAMAGE_SIGNALS)environmentDamageSignals.splice(0,environmentDamageSignals.length-MAX_ENVIRONMENT_DAMAGE_SIGNALS);
+    if(signal.type==="trap"){
+      const pending=movementBoundarySignals.get(signal.playerId);
+      const exact=pending?.activeTraps?.some(row=>String(row?.trap?.id||"")===signal.trapId&&Number(row?.trap?.x)===signal.x&&Number(row?.trap?.y)===signal.y);
+      if(pending&&signal.serial>Number(pending.beforeDamageSignalSerial||0)&&exact)pending.acceptedTrapSignal=signal;
+    }
     push(`environment-${signal.type}-damage-signal`,signal);
     return signal
   }
@@ -190,6 +196,7 @@
         activeTraps,activeHazards,meta:compact(meta)
       };
       movementBoundaryChecks.set(player,record);
+      if(activeTraps.length)movementBoundarySignals.set(record.playerId,record);
       if(activeTraps.length||activeHazards.length){
         state.environmentContacts++;
         state.lastEnvironment=record;
@@ -200,6 +207,7 @@
 
     const before=movementBoundaryChecks.get(player);
     movementBoundaryChecks.delete(player);
+    if(before&&movementBoundarySignals.get(before.playerId)===before)movementBoundarySignals.delete(before.playerId);
     if(!before)return false;
     if(!before.activeTraps.length&&!before.activeHazards.length)return true;
 
@@ -219,7 +227,7 @@
     const boundaryContactSignals=contactDamageSignalsSince(before,boundaryDamageSignalSerial);
     const boundaryTrapIds=new Set(before.activeTraps.map(row=>String(row?.trap?.id||"")));
     const boundaryTrapKinds=new Set(before.activeTraps.map(row=>String(row?.trap?.kind||"").toLowerCase()).filter(Boolean));
-    const boundaryTrapSignal=boundaryContactSignals.find(signal=>signal.type==="trap"&&(boundaryTrapIds.has(signal.trapId)||boundaryTrapKinds.has(String(signal.kind||"").toLowerCase())))||null;
+    const boundaryTrapSignal=before.acceptedTrapSignal||boundaryContactSignals.find(signal=>signal.type==="trap"&&(boundaryTrapIds.has(signal.trapId)||boundaryTrapKinds.has(String(signal.kind||"").toLowerCase())))||null;
     let trapConfirmedAtBoundary=false;
     if(before.activeTraps.length&&boundaryTrapSignal){
       state.environmentVerifiedHits++;
