@@ -39,7 +39,7 @@ assert.match(r19,/const canonicalHit=afterHealth<beforeHealth/,"R19 must count a
 assert.doesNotMatch(r19,/canonicalHit=[^\n]*(?:afterHurtAt|lastHurtAt|lastDamageAt)/,"damage timestamps must not substitute for the required HEALTH loss");
 assert.match(r19,/trapContacts\.add\(contactKey\)[\s\S]*trapRuntime\?\.contact\?\.add/,"a verified R19 hit must synchronise the canonical trap latch only after HEALTH loss");
 assert.match(rare,/beforeHealth=Number\(player\.health\|\|0\)[\s\S]*hurtPlayer\(player,1,false,[\s\S]*Number\(player\.health\|\|0\)>=beforeHealth\)continue;[\s\S]*trapRuntime\.contact\.add\(key\)/,"the legacy reliable-trap owner must not latch a contact before proving HEALTH loss");
-assert.match(play,/healthLost=Number\(p\.health\|\|0\)<beforeHealth[\s\S]*!routed&&healthLost&&damageAt>beforeDamageAt/,"base movement diagnostics must emit trap damage evidence only after real HEALTH loss");
+assert.match(play,/healthLost=Number\(p\.health\|\|0\)<beforeHealth[\s\S]*if\(healthLost&&damageAt>beforeDamageAt\)/,"base movement diagnostics must emit trap damage evidence only after real HEALTH loss");
 assert.match(r19,/trapContacts\.add\(contactKey\)/,"an active contact must latch after one hit");
 assert.match(r19,/if\(occupied&&trapActive\(trap,now\)\)continue;/,"the latch must remain armed for the complete active phase");
 assert.match(r19,/trapContacts\.delete\(contactKey\)/,"the contact must rearm after leaving the tile or entering a safe cycle");
