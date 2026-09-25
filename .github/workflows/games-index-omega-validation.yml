@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "games/index.html"
+      - "games/games.json"
       - "js/ccg-nav-fit.js"
       - "resources/css/ccg-nav-fit.css"
       - "resources/css/ccg-games-index-omega.css"
@@ -17,6 +18,7 @@ on:
     branches: [main]
     paths:
       - "games/index.html"
+      - "games/games.json"
       - "js/ccg-nav-fit.js"
       - "resources/css/ccg-nav-fit.css"
       - "resources/css/ccg-games-index-omega.css"
