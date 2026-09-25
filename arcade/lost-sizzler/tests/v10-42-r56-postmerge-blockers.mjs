@@ -5,6 +5,7 @@ const root=new URL("../",import.meta.url);
 const repoRoot=new URL("../../",root);
 
 const systems=fs.readFileSync(new URL("js/systems.js",root),"utf8");
+const stage6=fs.readFileSync(new URL("js/v10-42-stage6-zone-gameplay.js",root),"utf8");
 const reporter=fs.readFileSync(new URL("js/v10-42-bug-reporter.js",root),"utf8");
 const shop=fs.readFileSync(new URL("js/v10-42-r55-shop-feedback.js",root),"utf8");
 const canonical=fs.readFileSync(new URL("index.html",root),"utf8");
@@ -31,6 +32,11 @@ assert.match(
   systems,
   /fallbackFinalTrapRooms=\[\.\.\.\(world\.rooms\|\|\[\]\)\][\s\S]*emergencyFinalTrapRooms=\[\.\.\.\(world\.rooms\|\|\[\]\)\][\s\S]*fallbackFinalTrapRooms\[offset%Math\.max\(1,fallbackFinalTrapRooms\.length\)\][\s\S]*emergencyFinalTrapRooms\[offset%Math\.max\(1,emergencyFinalTrapRooms\.length\)\]/,
   "final trap-family restoration must fall back to progressively relaxed non-hazard rooms when the strict pool is empty"
+);
+assert.match(
+  stage6,
+  /TRAP_FAMILIES=Object\.freeze\(\["fire","spike","shock"\]\)[\s\S]*function reconcileTrapFamilies\(hostState,seed\)[\s\S]*counts\[String\(trap\.kind\|\|""\)\.toLowerCase\(\)\]>1[\s\S]*donor\.kind=kind[\s\S]*reconcileTrapFamilies\(hostState,seed\)/,
+  "Stage 6 zone retuning must preserve at least one active FIRE, SPIKE and SHOCK family by retagging only a surplus duplicate"
 );
 assert.match(
   reporter,
