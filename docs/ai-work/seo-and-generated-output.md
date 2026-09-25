@@ -1,5 +1,13 @@
 # SEO and generated output
 
+## Search Console remediation current-main rebuild — 2026-09-25
+
+- PR **#2339** merged as `1caed6ef7759134a33379867d4c13085e99fd2aa` after its complete repaired-main qualification passed.
+- Draft PR **#2343** was reconstructed from that exact current main rather than merging its stale ancestry. Its 16 intended Search Console/SEO paths do not overlap the files changed by #2342, #2344 or #2339.
+- Reconciliation head `0115a53c46d921a01873f301e70e7af54bbe8769` preserves the guarded historical redirects, legacy game/composer routing, sitemap corrections, editorial Review/Rating JSON-LD, server-visible score badge, deterministic validators and publishing hooks.
+- Old red evidence is classified rather than suppressed: Load Safety failed on the dedicated-hazard generation defect now repaired on main, while Native Mouse Wheel failed only the Quiz first-response timing sample. The rebuilt documentation-inclusive head must rerun every triggered current workflow before merge.
+- Generated canonical game output remains workflow-owned. Do not hand-edit generated game pages as part of this Search Console repair.
+
 ## Scope
 
 Automated SEO/video metadata and generated pages, game/archive output, sitemaps, video library output, and generation validation. Generated artifacts must be changed through their intended generator/workflow unless a documented exception applies.
