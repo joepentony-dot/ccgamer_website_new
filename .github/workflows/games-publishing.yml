@@ -115,6 +115,7 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 permissions:
+  actions: write
   contents: write
   pull-requests: write
 
@@ -339,17 +340,26 @@ jobs:
 
           echo "Generated-output PR: $PR_URL"
 
+          MERGED=false
           for attempt in 1 2 3; do
             if gh pr merge "$PR_URL" \
               --repo "$GITHUB_REPOSITORY" \
               --squash \
               --delete-branch; then
-              exit 0
+              MERGED=true
+              break
             fi
 
             echo "::warning::Generated-output PR merge attempt ${attempt} failed; retrying without altering the validated branch."
             sleep $((attempt * 5))
           done
 
-          echo "::error::Unable to merge the generated-output PR after 3 attempts. The validated PR remains open for recovery."
-          exit 1
+          if [ "$MERGED" != "true" ]; then
+            echo "::error::Unable to merge the generated-output PR after 3 attempts. The validated PR remains open for recovery."
+            exit 1
+          fi
+
+          echo "Dispatching the authoritative Omega Pages deployment for the newly merged generated output."
+          gh workflow run deploy-github-pages-omega-stable.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main
