@@ -25,8 +25,18 @@ assert.match(
 );
 assert.match(
   systems,
-  /fallbackHazardRooms=primaryHazardRooms\.length>=count\?\[\]:/,
-  "fallback hazard rooms must only be considered when primary rooms are insufficient"
+  /hazardReserveCount=.*>=3\?2:1[\s\S]*dedicatedHazardReserved=true[\s\S]*featureRooms=rooms\.filter\(room=>!hazardReservedRoomIds\.has\(room\.id\)\)/,
+  "dedicated hazard capacity must be reserved before later room owners claim the same floor spaces"
+);
+assert.match(
+  systems,
+  /reservedHazardRooms=rooms\.filter\(room=>room\?\.dedicatedHazardReserved&&hazardEligible\(room,6,5\)\)[\s\S]*choices=\[\.\.\.shuffleHazardRooms\(reservedHazardRooms\),/,
+  "reserved dedicated-hazard rooms must be consumed before ordinary hazard candidates"
+);
+assert.match(
+  systems,
+  /fallbackHazardRooms=reservedHazardRooms\.length\+primaryHazardRooms\.length>=count\?\[\]:/,
+  "fallback hazard rooms must only be considered when reserved and primary rooms are insufficient"
 );
 assert.match(
   systems,
