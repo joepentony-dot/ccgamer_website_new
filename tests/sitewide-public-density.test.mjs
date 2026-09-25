@@ -47,5 +47,5 @@ test("editorial collection cards avoid compositor churn during wheel scrolling",
 });
 
 test("public code cache namespace advances with the shared CSS change", () => {
-  assert.match(serviceWorker, /CODE_CACHE_VERSION = "2026-09-25-public-code-v19"/);
+  assert.match(serviceWorker, /CODE_CACHE_VERSION = "2026-09-24-public-code-v19"/);
 });
