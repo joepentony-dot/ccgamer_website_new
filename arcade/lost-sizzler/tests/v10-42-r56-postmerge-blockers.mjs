@@ -20,8 +20,8 @@ for(const html of [canonical,publicAlias]){
 
 assert.match(
   systems,
-  /strictHazardRoomIds=new Set\(\[\.\.\.primaryHazardRooms,\.\.\.fallbackHazardRooms\]\.map\(room=>room\.id\)\)[\s\S]*relaxedHazardRooms=[\s\S]*!strictHazardRoomIds\.has\(room\.id\)/,
-  "relaxed hazard-room candidates must exclude every strict candidate so one room cannot receive duplicate dedicated hazards"
+  /strictHazardRoomIds=new Set\(\[\.\.\.reservedHazardRooms,\.\.\.primaryHazardRooms,\.\.\.fallbackHazardRooms\]\.map\(room=>room\.id\)\)[\s\S]*relaxedHazardRooms=[\s\S]*!strictHazardRoomIds\.has\(room\.id\)/,
+  "relaxed hazard-room candidates must exclude reserved and strict candidates so one room cannot receive duplicate dedicated hazards"
 );
 assert.match(
   systems,
