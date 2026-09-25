@@ -493,7 +493,7 @@ window.CCGSystems=(()=>{
     // Dungeon shops. Floor 1 has one hidden trader. Floors 2-5 add a guaranteed shop near
     // the floor entrance while still retaining one hidden trader elsewhere on the map.
     host.shops=[];host.trader=null;host.startShop=null;
-    const traderRoom=[...world.rooms].filter(r=>r.optional&&r.id!==host.sigilRoomId).sort((a,b)=>(b.depth||0)-(a.depth||0))[0]||rooms[rooms.length-1];
+    const traderRoom=[...world.rooms].filter(r=>r.optional&&r.id!==host.sigilRoomId).sort((a,b)=>(b.depth||0)-(a.depth||0))[0]||featureRooms.find(r=>r.id!==world.exitRoomId&&!r.dedicatedHazardReserved)||null;
     if(traderRoom){const q=freeInRoom(world,traderRoom,used);host.trader={id:"secret-artefact-trader",...q,roomId:traderRoom.id,active:true,cost:C.stalker.flaskArtefacts,shopType:"hidden",title:"SECRET ARTEFACT TRADER",scorePurchases:0,sold:{potion:false,bronze:false,torch:false,ammo:false,armour:false,weapon:false}};host.shops.push(host.trader);traderRoom.traderRoom=true}
     if((run.floor||1)>1){const startRoom=world.rooms[world.startRoomId],q=startRoom&&freeNear(world,startRoom,world.start,used,2,5);if(startRoom&&q){host.startShop={id:`floor-${run.floor}-entrance-shop`,...q,roomId:startRoom.id,active:true,cost:C.stalker.flaskArtefacts,shopType:"entrance",title:`FLOOR ${run.floor} SUPPLY DESK`,scorePurchases:0,sold:{potion:false,bronze:false,torch:false,ammo:false,armour:false,weapon:false}};host.shops.push(host.startShop);startRoom.shopRoom=true}}
 
