@@ -9,6 +9,18 @@
 - Static regression coverage now guards compact-floor hazard/trap-family fallbacks, temporary sitemap tooling and version-derived production smoke.
 - Re-run the full exact-head matrix after the new #2341 head is published. Do not merge on the earlier `c4c53900a5c6725f651275aeb996496dfa56e1af` failure state.
 
+## Authoritative post-consolidation backlog — 25 September 2026
+
+This is the single future-work list to use after repository flattening. Do **not** start these items while the current consolidation/qualification cycle is still active. Historical sections below are evidence, not separate active queues.
+
+1. **SEO / Google / Lighthouse live follow-through.** Search Console remediation #2343 and Lighthouse Stage 1 #2346 are already merged. After the flattened main is deployed and qualified, verify live Search Console/indexing behaviour and live Lighthouse/PageSpeed results against that deployed baseline. Continue later performance work only from reproducible live evidence; do not resurrect stale Lighthouse branches.
+2. **C64 Dungeon Carnage hands-on acceptance and external release completion.** Repository coding for the current reproduced defects is complete once the current #2341 qualification repairs merge. Retain the documented hands-on gates: deployed startup/menu transition; sustained Solo movement/firing/combat/pause-resume; 3 Artefacts/Essences → exactly 1 Banishment Flask without prior Gold purchase and with Gold/Score unchanged; deployed mobile natural FIRE/SPIKE/SHOCK damage. When those pass, use the latest qualified itch.io artifact and complete external upload/launch/handoff verification. NPC dialogue/quest-content expansion remains a later product phase and must not be mixed into consolidation.
+3. **Commodore Quest 3.** #2176 remains the preservation vehicle for the unique Quest 3 work and stays deferred until Dungeon Carnage is substantially finished. When resumed, reconcile only the still-required Quest delta onto then-current main and retain the mandatory hands-on **The Bedroom** and **36% Conversion Bout** acceptance gate before merge.
+4. **CCG backend containment, only if deliberately resumed.** #2329 preserves the experimental CCG backend/migration/staging work. Production browser auth remains Supabase-authoritative. Do not switch production auth or revive retired Dungeon online/realtime scope through consolidation; resume only with an explicit backend programme and complete its documented staging/runtime cut-over gates first.
+5. **UTA is not a new development backlog item.** The full-catalogue audit, curated reconciliation, freshness repair, residual reconciliation and generated publication have already merged through #2298/#2301. Future UTA activity is routine Reliable Games Publishing refresh plus manual-review curation when new evidence appears; do not restart the completed audit as a separate project.
+
+Dependencies/order: flatten and qualify current main first → SEO/Google/Lighthouse live observation → Dungeon hands-on/release completion → Commodore Quest 3 → optional backend programme. Routine UTA publishing continues through its existing owner and does not block the sequence above.
+
 ## Master consolidation current state — 25 September 2026
 
 - Current `main` after the latest qualified consolidation merge is `bd5c5308722ffd27003fcc7260b8645a238684d1` (PR #2351).
