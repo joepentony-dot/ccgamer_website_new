@@ -1,3 +1,10 @@
+## Dungeon FIRE lockout priority — 25 September 2026
+
+- Current priority is the reproduced deployed Solo FIRE lockout.
+- The 15:53 bug report proves a persistent r56 attack failure with full ammo, zero projectiles, no hit-stun and repeated unsuccessful deep-owner recovery.
+- Active candidate `codex/dungeon-r57-fire-lockout-recovery-20260925` is based on exact main `c25e80464a9dec08787eaa4bb569ef5528731061` and adds only a final existing-owner fallback through the captured R1 canonical FIRE owner.
+- Build/cache advance to `V10.42 r57` / `20260925r57`. Do not close the defect until exact-head full Dungeon qualification passes and deployed hands-on firing remains reliable.
+
 ## Dungeon Carnage priority live blockers — 25 September 2026
 
 - Hands-on deployed acceptance has now reproduced two **P0 / release-blocking** Dungeon Carnage defects on V10.42 r56:
