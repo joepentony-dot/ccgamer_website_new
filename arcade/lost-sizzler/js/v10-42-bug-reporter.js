@@ -699,6 +699,8 @@
   window.CCGLostSizzlerBugReporter=Object.freeze({
     version:"V10.42-bug-reporter-v4",observationOnly:true,gameplayOwnership:false,inputOwnership:false,renderOwnership:false,
     get state(){return state},get events(){return [...events]},
+    recordTrapDamage(detail={}){return recordEnvironmentDamageSignal("trap",{detail})},
+    recordHazardDamage(detail={}){return recordEnvironmentDamageSignal("hazard",{detail})},
     snapshot:currentSnapshot,trapProbe,trapSnapshot,observeMovementBoundary,createReport,formatReport,open:openReporter,close:closeReporter,
     enable(){try{localStorage.setItem("ccg-dungeon-bug-reporter","1")}catch(_){}ensureUi();const b=document.getElementById("ccg-bug-report-btn");if(b)b.hidden=false},
     disable(){try{localStorage.removeItem("ccg-dungeon-bug-reporter")}catch(_){}const b=document.getElementById("ccg-bug-report-btn");if(b)b.hidden=true;closeReporter()}
