@@ -10,6 +10,8 @@
     directAttackFallbacks:0,
     deepOwnerFallbacks:0,
     deepOwnerFallbackSuccesses:0,
+    capturedR1Fallbacks:0,
+    capturedR1FallbackSuccesses:0,
     capturedR1Shots:0,
     directAttackErrors:0,
     staleStunRepairs:0,
@@ -298,6 +300,25 @@
     return fired
   }
 
+
+  function recoverThroughCapturedR1FireOwner(player,direction,beforeMana,beforeBullets,beforeMelee){
+    if(!player||currentMode()!=="playing"||Math.max(0,Number(player.mana)||0)<=0)return false;
+    let cd=0;try{cd=Number(fire1||0)}catch(_){}
+    if(Number.isFinite(cd)&&cd>0)return false;
+    const weapon=player.weapon||{};
+    const max=Math.max(1,Number(C?.player?.maxProjectiles||0)+Math.max(0,Number(weapon.shots||1)-1));
+    if(activePlayerBulletCount(player)>=max)return false;
+    const owner=captureR1FireOwner();
+    if(typeof owner!=="function")return false;
+    repairAttackBoundary();
+    diagnostics.capturedR1Fallbacks++;
+    let result=false;
+    try{result=owner(player,direction)}catch(_){diagnostics.directAttackErrors++;return false}
+    const fired=attackCompleted(player,beforeMana,beforeBullets,beforeMelee,result);
+    if(fired)diagnostics.capturedR1FallbackSuccesses++;
+    return fired
+  }
+
   function attackNow(code){
     if(!activeRun()||!recoverOrphanedGameplayMode())return false;
     let player=null;try{player=p1}catch(_){}
@@ -326,6 +347,7 @@
 
     if(!fired)fired=recoverPersistentFireBlock(player,direction,beforeMana,beforeBullets,beforeMelee);
     if(!fired)fired=recoverThroughDeepFireOwner(player,direction,beforeMana,beforeBullets,beforeMelee);
+    if(!fired)fired=recoverThroughCapturedR1FireOwner(player,direction,beforeMana,beforeBullets,beforeMelee);
 
     if(fired){
       failedFireIntentSince=0;failedFireIntentCount=0;
