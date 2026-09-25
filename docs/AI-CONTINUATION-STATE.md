@@ -1,3 +1,10 @@
+## Generated-output Omega deployment handoff — 25 September 2026
+
+- Post-consolidation live follow-through identified one publishing/deployment gap after generated archive PR #2354 merged as `e61bc047c31bfd9226f5b8edeeefb1bfc041fcce`: the bot-authored merge did not start the authoritative **Deploy GitHub Pages (Omega Stable)** push workflow.
+- A bounded current-main repair makes Reliable Games Publishing explicitly dispatch that Omega deployment on `main` after a successful generated-output merge and pins the handoff in the publishing-automation integrity audit.
+- This is a deployment handoff correction only. Generated output remains workflow-owned; #2176 and #2329 remain preserved/deferred; UTA stays complete; Dungeon product/runtime scope is unchanged.
+- Do not merge the repair until its exact head is current, mergeable and all triggered checks are green.
+
 ## Final compact-floor dedicated-hazard repair on #2341 — 25 September 2026
 
 - Final-head qualification of pre-fix head `9da0a1e100b2e22046b1d66b8bb7d711f6bc10a3` reproduced the unchanged shard-1 assertion `generated Solo floor must contain a dedicated hazard room`. This is not classified as a flake.
