@@ -8,6 +8,7 @@ const ROOT = process.env.CCG_REPO_ROOT
     ? path.resolve(process.env.CCG_REPO_ROOT)
     : path.resolve(__dirname, "..");
 const FILE = path.join(ROOT, "games", "index.html");
+const GAMES_FILE = path.join(ROOT, "games", "games.json");
 const CHECK_ONLY = process.argv.includes("--check");
 const SITE = "Cheeky Commodore Gamer";
 const CANONICAL = "https://www.cheekycommodoregamer.co.uk/games/";
@@ -28,7 +29,58 @@ function escapeHtml(value) {
         .replace(/>/g, "&gt;");
 }
 
-function isCurrentGamesIndex(html) {
+function loadGames() {
+    let parsed;
+    try {
+        parsed = JSON.parse(fs.readFileSync(GAMES_FILE, "utf8"));
+    } catch (error) {
+        fail(`Unable to read games/games.json: ${error.message}`);
+    }
+    if (!Array.isArray(parsed)) fail("games/games.json must contain a top-level array");
+    return parsed;
+}
+
+function renderStaticFallback(games) {
+    return games.map((game) => {
+        const slug = String(game?.slug || "").trim();
+        const title = String(game?.title || "").trim();
+        if (!slug || !title) fail("games/games.json contains an entry without a slug or title");
+        const system = String(game?.system || game?.platform || "").trim();
+        const year = String(game?.year || "").trim();
+        return `                <li><a href="/games/${escapeHtml(slug)}/" data-system="${escapeHtml(system)}" data-year="${escapeHtml(year)}">${escapeHtml(title)}</a></li>`;
+    }).join("\n");
+}
+
+function syncArchiveData(html, games) {
+    const count = games.length;
+    let output = html;
+
+    const totalPattern = /(<strong id="gamesTotalCount">)\d+(<\/strong>)/i;
+    const resultsPattern = /(<strong id="gamesResultsCount">)\d+(<\/strong>)/i;
+    const focusPattern = /(<span class="games-focus-panel__count">)\d+ total(<\/span>)/i;
+    if (!totalPattern.test(output) || !resultsPattern.test(output) || !focusPattern.test(output)) {
+        fail("games index count markers are missing");
+    }
+
+    output = output.replace(totalPattern, `$1${count}$2`);
+    output = output.replace(resultsPattern, `$1${count}$2`);
+    output = output.replace(focusPattern, `$1${count} total$2`);
+
+    const fallbackPattern = /(<section id="gamesStaticFallback"\b[\s\S]*?<ul>)[\s\S]*?(<\/ul>[\s\S]*?<\/section>)/i;
+    if (!fallbackPattern.test(output)) fail("games static fallback section is missing");
+    output = output.replace(
+        fallbackPattern,
+        `$1\n${renderStaticFallback(games)}\n                $2`
+    );
+
+    return output;
+}
+
+function archiveContentIsCurrent(html, games) {
+    return syncArchiveData(html, games) === html;
+}
+
+function isCurrentGamesIndex(html, games = loadGames()) {
     const signatures = [
         `<title>${escapeHtml(TITLE)}</title>`,
         `content="${escapeHtml(DESCRIPTION)}"`,
@@ -45,7 +97,7 @@ function isCurrentGamesIndex(html) {
         'Search &amp; Filter C64 and Amiga Games',
         'aria-label="More ways to browse the C64 and Amiga games archive"'
     ];
-    return signatures.every((signature) => html.includes(signature));
+    return signatures.every((signature) => html.includes(signature)) && archiveContentIsCurrent(html, games);
 }
 
 function replaceTitle(html) {
@@ -208,8 +260,8 @@ function normalizeWhitespace(html) {
     return html.replace(/[ \t]+$/gm, "").replace(/\n{4,}/g, "\n\n\n");
 }
 
-function build(input) {
-    if (isCurrentGamesIndex(input)) return input;
+function build(input, games = loadGames()) {
+    if (isCurrentGamesIndex(input, games)) return input;
 
     let html = input;
     html = replaceTitle(html);
@@ -226,27 +278,40 @@ function build(input) {
     html = upsertDiscovery(html);
     html = upsertToolsHeading(html);
     html = upgradeArchiveShortcuts(html);
+    html = syncArchiveData(html, games);
     return normalizeWhitespace(html);
 }
 
-if (!fs.existsSync(FILE)) fail("games/index.html is missing");
-const before = fs.readFileSync(FILE, "utf8");
-const after = build(before);
+function main() {
+    if (!fs.existsSync(FILE)) fail("games/index.html is missing");
+    const games = loadGames();
+    const before = fs.readFileSync(FILE, "utf8");
+    const after = build(before, games);
 
-if (CHECK_ONLY) {
-    if (after !== before) {
-        console.error("[upgrade-games-index] games/index.html is stale; run node scripts/upgrade-games-index.js");
-        process.exit(1);
+    if (CHECK_ONLY) {
+        if (after !== before) {
+            console.error("[upgrade-games-index] games/index.html is stale; run node scripts/upgrade-games-index.js");
+            process.exit(1);
+        }
+        console.log(`[upgrade-games-index] games/index.html is current for ${games.length} games.`);
+        return;
     }
-    console.log("[upgrade-games-index] games/index.html is current.");
-    process.exit(0);
+
+    if (after !== before) {
+        fs.writeFileSync(FILE, after, "utf8");
+        console.log(`[upgrade-games-index] Updated games/index.html for ${games.length} games.`);
+    } else {
+        console.log(`[upgrade-games-index] games/index.html already current for ${games.length} games.`);
+    }
 }
 
-if (after !== before) {
-    fs.writeFileSync(FILE, after, "utf8");
-    console.log("[upgrade-games-index] Updated games/index.html.");
-} else {
-    console.log("[upgrade-games-index] games/index.html already current.");
-}
+if (require.main === module) main();
 
-module.exports = { build, isCurrentGamesIndex };
+module.exports = {
+    archiveContentIsCurrent,
+    build,
+    isCurrentGamesIndex,
+    loadGames,
+    renderStaticFallback,
+    syncArchiveData
+};
