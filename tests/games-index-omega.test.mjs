@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import test from 'node:test';
+
+const require = createRequire(import.meta.url);
+const { build: buildGamesIndex } = require('../scripts/upgrade-games-index.js');
 
 const games = fs.readFileSync('games/index.html', 'utf8');
 const css = fs.readFileSync('resources/css/ccg-games-index-omega.css', 'utf8');
@@ -44,6 +48,24 @@ test('Omega games archive presentation is responsive and scoped', () => {
   assert.match(css, /\.games-omega-discovery__grid/);
   assert.match(css, /@media \(max-width: 620px\)/);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
+});
+
+test('games index catalogue count and crawlable fallback are derived from games.json', () => {
+  const sourceGames = JSON.parse(fs.readFileSync('games/games.json', 'utf8'));
+  const rebuilt = buildGamesIndex(games, sourceGames);
+  const expectedCount = sourceGames.length;
+
+  assert.match(rebuilt, new RegExp(`<strong id="gamesTotalCount">${expectedCount}<\\/strong>`));
+  assert.match(rebuilt, new RegExp(`<strong id="gamesResultsCount">${expectedCount}<\\/strong>`));
+  assert.match(rebuilt, new RegExp(`<span class="games-focus-panel__count">${expectedCount} total<\\/span>`));
+
+  const fallback = rebuilt.match(/<section id="gamesStaticFallback"\\b[\\s\\S]*?<ul>([\\s\\S]*?)<\\/ul>[\\s\\S]*?<\\/section>/i);
+  assert.ok(fallback, 'crawlable games fallback is present');
+
+  const fallbackSlugs = [...fallback[1].matchAll(/href="\\/games\\/([^"/]+)\\/"/g)].map((match) => match[1]);
+  const sourceSlugs = sourceGames.map((game) => String(game.slug || '').trim()).filter(Boolean);
+  assert.equal(fallbackSlugs.length, sourceSlugs.length, 'fallback contains one link per source game');
+  assert.deepEqual(new Set(fallbackSlugs), new Set(sourceSlugs), 'fallback slugs match the authoritative catalogue');
 });
 
 test('games index upgrade survives authoritative rebuilds', () => {
