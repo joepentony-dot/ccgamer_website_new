@@ -17,43 +17,12 @@ on:
     branches:
       - main
     paths:
-      # Risk-based pre-merge gate. Small/cosmetic Dungeon Carnage changes use
-      # the fast PR workflow; core engine/gameplay changes get the complete
-      # six-shard Chromium qualification before merge.
+      # Risk-based pre-merge gate. Non-runtime assets/copy/docs/CSS can use
+      # the fast PR workflow. Every Dungeon Carnage runtime JavaScript change
+      # is treated as high risk by default so newly named/versioned gameplay
+      # modules cannot bypass the complete six-shard Chromium qualification.
       - 'arcade/lost-sizzler/index.html'
-      - 'arcade/lost-sizzler/js/ai.js'
-      - 'arcade/lost-sizzler/js/config.js'
-      - 'arcade/lost-sizzler/js/dungeon-progression-foundation.js'
-      - 'arcade/lost-sizzler/js/game-*.js'
-      - 'arcade/lost-sizzler/js/network.js'
-      - 'arcade/lost-sizzler/js/progression.js'
-      - 'arcade/lost-sizzler/js/systems.js'
-      - 'arcade/lost-sizzler/js/world.js'
-      - 'arcade/lost-sizzler/js/*ai*.js'
-      - 'arcade/lost-sizzler/js/*attack*.js'
-      - 'arcade/lost-sizzler/js/*biome*.js'
-      - 'arcade/lost-sizzler/js/*bootstrap*.js'
-      - 'arcade/lost-sizzler/js/*campaign*.js'
-      - 'arcade/lost-sizzler/js/*cloud*.js'
-      - 'arcade/lost-sizzler/js/*combat*.js'
-      - 'arcade/lost-sizzler/js/*encounter*.js'
-      - 'arcade/lost-sizzler/js/*enemy*.js'
-      - 'arcade/lost-sizzler/js/*floor*.js'
-      - 'arcade/lost-sizzler/js/*inventory*.js'
-      - 'arcade/lost-sizzler/js/*load*.js'
-      - 'arcade/lost-sizzler/js/*network*.js'
-      - 'arcade/lost-sizzler/js/*owner*.js'
-      - 'arcade/lost-sizzler/js/*player*.js'
-      - 'arcade/lost-sizzler/js/*procedural*.js'
-      - 'arcade/lost-sizzler/js/*progression*.js'
-      - 'arcade/lost-sizzler/js/*projectile*.js'
-      - 'arcade/lost-sizzler/js/*room*.js'
-      - 'arcade/lost-sizzler/js/*runtime*.js'
-      - 'arcade/lost-sizzler/js/*save*.js'
-      - 'arcade/lost-sizzler/js/*state*.js'
-      - 'arcade/lost-sizzler/js/*world*.js'
-      - 'arcade/lost-sizzler/js/*zone*.js'
-      - 'arcade/lost-sizzler/js/v10-41-r47-all-mode-optimisation.js'
+      - 'arcade/lost-sizzler/js/**'
       - 'arcade/lost-sizzler/tests/**'
       - 'service-worker.js'
       - 'js/ccg-pwa.js'
