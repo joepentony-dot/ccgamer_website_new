@@ -1,0 +1,137 @@
+name: C64 Dungeon Carnage PR Qualification
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'arcade/lost-sizzler/**'
+      - 'games/ccg-games/cheeky-commodore-quest/index.html'
+      - 'games/the-lost-sizzler/index.html'
+      - 'js/ccg-home-community.js'
+      - 'resources/css/home-lost-sizzler-cta.css'
+      - 'service-worker.js'
+      - 'js/ccg-pwa.js'
+      - '.github/workflows/dungeon-carnage-pr-qualification.yml'
+      - '.github/workflows/lost-sizzler-load-safety.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dungeon-carnage-pr-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fast-contracts:
+    name: Fast structure, syntax and Node contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate canonical Dungeon Carnage structure
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f arcade/lost-sizzler/index.html
+          test -f arcade/lost-sizzler/version.json
+          test -f arcade/lost-sizzler/js/asset-overrides.js
+          test -f arcade/lost-sizzler/js/game-main.js
+          test -f arcade/lost-sizzler/js/v10-16-voice-director.js
+          test -f arcade/lost-sizzler/js/v10-41-r47-all-mode-optimisation.js
+          test -d arcade/lost-sizzler/assets/audio/music
+          test -d arcade/lost-sizzler/assets/audio/voice
+          grep -q 'C64 Dungeon Carnage' arcade/lost-sizzler/index.html
+          grep -q 'https://www.cheekycommodoregamer.co.uk/arcade/c64-dungeon-carnage/' arcade/lost-sizzler/index.html
+          grep -q '/arcade/c64-dungeon-carnage/' games/ccg-games/cheeky-commodore-quest/index.html
+          grep -q '/arcade/c64-dungeon-carnage/' games/the-lost-sizzler/index.html
+          node tests/dungeon-carnage-public-route.test.mjs
+          grep -q 'isEditableKeyboardTarget' arcade/lost-sizzler/js/game-main.js
+          if grep -R --line-number --fixed-strings '/games/ccg-games/cheeky-commodore-quest/' arcade/lost-sizzler/js arcade/lost-sizzler/index.html arcade/lost-sizzler/version.json --include='*.html' --include='*.js' --include='*.json' --exclude='v10-41-cache-guard.js'; then
+            echo 'Stale legacy self-reference found inside canonical Dungeon Carnage runtime.' >&2
+            exit 1
+          fi
+
+      - name: Syntax check canonical Dungeon Carnage JavaScript
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check service-worker.js
+          node --check js/ccg-pwa.js
+          find arcade/lost-sizzler/js -type f -name '*.js' -print0 | sort -z | xargs -0 -n1 node --check
+          find arcade/lost-sizzler/tests -type f -name '*.mjs' -print0 | sort -z | xargs -0 -n1 node --check
+
+      - name: Run canonical Node regression contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          for test in arcade/lost-sizzler/tests/*.mjs; do
+            case "$(basename "$test")" in
+              v10-6-browser.mjs|v10-28-browser-stability.mjs|horde-survivor-contract.mjs|sizzler-saboteurs-contract.mjs|v10-33-special-modes-polish.mjs|v10-37-horde-*.mjs|v10-38-horde-*.mjs|v10-39-horde-*.mjs|v10-40-horde-*.mjs|v10-41-horde-*.mjs|v10-41-r25-spy-*.mjs|v10-41-r26-spy-*.mjs|v10-41-r27-spy-*.mjs|v10-41-r29-spy-*.mjs|v10-41-r36-spy-*.mjs|v10-41-r41-colyseus-spy.mjs|v10-41-r45-spy-*.mjs|v10-41-r58-spy-*.mjs|v10-41-spy-*.mjs|v10-41-ui-spy-*.mjs|v10-42-r11-spy-*.mjs)
+                continue
+                ;;
+            esac
+            echo "::group::$test"
+            node "$test"
+            echo "::endgroup::"
+          done
+
+  browser-smoke:
+    name: Focused Chromium regression smoke
+    needs: fast-contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Chromium test runtime once
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock playwright@1.55.0
+          sudo rm -f /etc/apt/sources.list.d/google-chrome.list
+          sudo apt-get update
+          npx playwright install --with-deps chromium
+
+      - name: Run focused Dungeon Carnage browser contracts
+        shell: bash
+        run: |
+          set -uo pipefail
+          tests=(
+            "arcade/lost-sizzler/tests/v10-6-browser.mjs"
+            "arcade/lost-sizzler/tests/browser/v10-41-load-safety.mjs"
+            "arcade/lost-sizzler/tests/browser/v10-42-campaign-loader.mjs"
+            "arcade/lost-sizzler/tests/browser/v10-42-live-defects-current-main.mjs"
+            "arcade/lost-sizzler/tests/browser/v10-42-bug-reporter.mjs"
+            "arcade/lost-sizzler/tests/browser/v10-42-r55-shop-feedback.mjs"
+          )
+          failures=()
+          for test_file in "${tests[@]}"; do
+            echo "::group::$test_file"
+            set +e
+            timeout --signal=TERM --kill-after=30s 8m node "$test_file"
+            status=$?
+            set -e
+            echo "::endgroup::"
+            if [ "$status" -ne 0 ]; then
+              failures+=("$test_file")
+            fi
+          done
+          if [ "${#failures[@]}" -gt 0 ]; then
+            printf 'Focused Chromium regression failures:\n'
+            printf ' - %s\n' "${failures[@]}"
+            exit 1
+          fi

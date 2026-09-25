@@ -29,7 +29,7 @@ concurrency:
 
 jobs:
   package:
-    name: Build and verify itch.io HTML5 release
+    name: Build itch.io HTML5 release (browser verify on main/manual)
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -65,6 +65,7 @@ jobs:
           ! find "$output" -type f \( -name '.env' -o -name '.env.*' -o -name '*.pem' -o -name '*.key' -o -name '*.p12' -o -name '*.pfx' \) -print -quit | grep -q .
 
       - name: Install Chromium test runtime
+        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
@@ -74,6 +75,7 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: Smoke supported packaged modes
+        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
@@ -94,7 +96,7 @@ jobs:
           unzip -l "$zipfile" | grep -q ' index.html$'
           unzip -l "$zipfile" | grep -q ' release-manifest.json$'
 
-      - name: Upload verified itch.io artifact
+      - name: Upload itch.io qualification artifact
         uses: actions/upload-artifact@v4
         with:
           name: C64-Dungeon-Carnage-Itch
