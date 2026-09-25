@@ -8,12 +8,15 @@ const reporter=read("arcade/lost-sizzler/js/v10-42-bug-reporter.js");
 const canonical=read("arcade/lost-sizzler/index.html");
 const alias=read("arcade/c64-dungeon-carnage/index.html");
 const version=JSON.parse(read("arcade/lost-sizzler/version.json"));
-const cache="20260924r56";
+const cache="20260925r57";
 
 assert.match(play,/hurtPlayer\(p,1,false,\`\$\{hazard\.title\|\|"hazard chamber"\} trap\`\)/,"dedicated hazard rooms must identify their damage as trap damage so the hardened environmental owner applies");
 assert.match(r20,/function recoverThroughDeepFireOwner\(/,"R20 must expose a retained-owner attack recovery path");
 assert.match(r20,/if\(!fired\)fired=recoverThroughDeepFireOwner\(/,"attackNow must actually invoke the retained-owner fallback when the live outer owner swallows an attack");
 assert.match(r20,/deepOwnerFallbackSuccesses/,"retained-owner recovery must be diagnosable");
+assert.match(r20,/function recoverThroughCapturedR1FireOwner\(/,"R20 must expose the final canonical R1 FIRE recovery boundary");
+assert.match(r20,/if\(!fired\)fired=recoverThroughCapturedR1FireOwner\(/,"attackNow must invoke the captured R1 fallback after the existing recovery chain fails");
+assert.match(r20,/capturedR1FallbackSuccesses/,"captured R1 fallback must be diagnosable");
 assert.match(reporter,/dedicatedHazardUnderPlayer:dedicatedHazardSnapshot\(player\)/,"bug reporter must capture dedicated hazard state under the player");
 assert.match(reporter,/meleeSwingAt:Number\(player\._meleeSwingAt\|\|0\)/,"bug reporter must observe melee as a valid ATTACK result");
 assert.match(reporter,/ANOMALY_POSSIBLE_ATTACK_FAILURE/,"bug reporter must flag complete attack failures, not firearm-only failures");
