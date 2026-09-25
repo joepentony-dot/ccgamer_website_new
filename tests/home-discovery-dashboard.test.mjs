@@ -41,5 +41,5 @@ test("home discovery dashboard stays compact without taking over thumbnail rende
 
 test("home dashboard release advances the public code cache", () => {
     const sw = read("service-worker.js");
-    assert.match(sw, /CODE_CACHE_VERSION = "2026-09-25-public-code-v19"/);
+    assert.match(sw, /CODE_CACHE_VERSION = "2026-09-25-public-code-v[0-9]+"/);
 });

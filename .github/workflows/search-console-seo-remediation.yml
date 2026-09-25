@@ -1,0 +1,109 @@
+name: Search Console SEO Remediation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "data/seo-legacy-redirects.json"
+      - "games/game.html"
+      - "music/composer.html"
+      - "package.json"
+      - "scripts/apply-game-review-seo.js"
+      - "scripts/generate-legacy-seo-redirects.js"
+      - "scripts/generate-sitemaps.js"
+      - "scripts/generate-video-seo.js"
+      - "scripts/rebuild-games.js"
+      - "scripts/validate-game-review-seo.js"
+      - "scripts/validate-legacy-seo-redirects.js"
+      - "tests/search-console-seo-remediation.test.mjs"
+      - "tools/seo/generate-sitemap.js"
+      - ".github/workflows/search-console-seo-remediation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: search-console-seo-remediation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Record protected hashes
+        run: |
+          sha256sum \
+            index.html \
+            home.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            games/games.json \
+            > "$RUNNER_TEMP/protected.sha256"
+
+      - name: Validate remediation syntax
+        run: |
+          node --check scripts/apply-game-review-seo.js
+          node --check scripts/generate-legacy-seo-redirects.js
+          node --check scripts/validate-game-review-seo.js
+          node --check scripts/validate-legacy-seo-redirects.js
+          node --check scripts/generate-sitemaps.js
+          node --check tools/seo/generate-sitemap.js
+          node --check scripts/rebuild-games.js
+
+      - name: Run focused remediation regressions
+        run: node --test tests/search-console-seo-remediation.test.mjs
+
+      - name: Generate remediated SEO output
+        run: |
+          npm run generate:video-seo
+          npm run generate:sitemaps
+          npm run validate:video-seo
+          npm run validate:sitemaps
+
+      - name: Capture deterministic output
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --binary > "$RUNNER_TEMP/first.diff"
+
+          npm run generate:video-seo
+          npm run generate:sitemaps
+          npm run validate:video-seo
+          npm run validate:sitemaps
+
+          git diff --check
+          git diff --binary > "$RUNNER_TEMP/second.diff"
+          cmp "$RUNNER_TEMP/first.diff" "$RUNNER_TEMP/second.diff"
+
+      - name: Confirm protected files are unchanged
+        run: sha256sum --check "$RUNNER_TEMP/protected.sha256"
+
+      - name: Summarize qualification
+        shell: bash
+        run: |
+          {
+            echo "### Search Console SEO remediation"
+            echo
+            echo "- Legacy redirect generation: PASS"
+            echo "- Editorial game Review markup: PASS"
+            echo "- Video SEO validation: PASS"
+            echo "- Sitemap indexability validation: PASS"
+            echo "- Deterministic regeneration: PASS"
+            echo "- Protected source files: unchanged"
+          } >> "$GITHUB_STEP_SUMMARY"

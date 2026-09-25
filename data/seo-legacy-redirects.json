@@ -1,0 +1,87 @@
+[
+  {
+    "source": "retro-events/index.html",
+    "target": "/games/collections/retro-events.html",
+    "title": "Retro Events"
+  },
+  {
+    "source": "amiga-demo-music/index.html",
+    "target": "/games/collections/amiga-demo-music.html",
+    "title": "Amiga Demo Music"
+  },
+  {
+    "source": "games/genres/miscellaneous-games.html",
+    "target": "/games/genres/miscellaneous.html",
+    "title": "Miscellaneous Games"
+  },
+  {
+    "source": "games/action-adventure/index.html",
+    "target": "/games/genres/action-adventure-games.html",
+    "title": "Action Adventure Games"
+  },
+  {
+    "source": "games/horror-games/index.html",
+    "target": "/games/genres/horror-games.html",
+    "title": "Horror Games"
+  },
+  {
+    "source": "games/smash-t-v/index.html",
+    "target": "/games/smash-tv/",
+    "title": "Smash TV"
+  },
+  {
+    "source": "games/fist-ii-the-legend-continues/index.html",
+    "target": "/games/fist-2-the-legend-continues/",
+    "title": "Fist II: The Legend Continues"
+  },
+  {
+    "source": "amiga-demo-music/amiga-demo-music-track-02/index.html",
+    "target": "/amiga-demo-music/9-fingers-spaceballs/",
+    "title": "9 Fingers Spaceballs"
+  },
+  {
+    "source": "amiga-demo-music/amiga-demo-music-track-03/index.html",
+    "target": "/amiga-demo-music/jesus-on-es/",
+    "title": "Jesus On E's"
+  },
+  {
+    "source": "amiga-demo-music/amiga-demo-music-track-04/index.html",
+    "target": "/amiga-demo-music/cryonics-neverwhere/",
+    "title": "Cryonics - Neverwhere"
+  },
+  {
+    "source": "amiga-demo-music/amiga-demo-music-track-05/index.html",
+    "target": "/amiga-demo-music/odyssey-alzatraz/",
+    "title": "Odyssey - Alzatraz"
+  },
+  {
+    "source": "amiga-demo-music/amiga-demo-music-track-06/index.html",
+    "target": "/amiga-demo-music/enigma-phenomena/",
+    "title": "Enigma - Phenomena"
+  },
+  {
+    "source": "amiga-demo-music/amiga-demo-music-track-07/index.html",
+    "target": "/amiga-demo-music/crionics-hardwired/",
+    "title": "Crionics - Hardwired"
+  },
+  {
+    "source": "amiga-demo-music/amiga-demo-music-track-08/index.html",
+    "target": "/amiga-demo-music/sounds-of-silents/",
+    "title": "Sounds of Silents"
+  },
+  {
+    "source": "amiga-demo-music/amiga-demo-music-track-09/index.html",
+    "target": "/amiga-demo-music/desert-dream-kefrens/",
+    "title": "Desert Dream - Kefrens"
+  },
+  {
+    "source": "amiga-demo-music/amiga-demo-music-track-10/index.html",
+    "target": "/amiga-demo-music/red-sector-folow-me/",
+    "title": "Red Sector - Folow Me"
+  },
+  {
+    "source": "amiga-demo-music/amiga-demo-music-state-of-the-art-1992-commodore-amiga-demo-scene/index.html",
+    "target": "/amiga-demo-music/state-of-the-art/",
+    "title": "State of the Art"
+  }
+]

@@ -571,19 +571,30 @@ function collectCuratedRetroEntries(siteUrl, warnings) {
       continue;
     }
 
-    const rootEntries = entries.filter((entry) => entry.loc.startsWith(`${siteUrl}/${root}/`));
-    if (rootEntries.length > 0) {
-      const latestLastmod = rootEntries
-        .map((entry) => entry.lastmod)
-        .slice()
-        .sort()
-        .pop();
-      entries.push({
-        loc: `${siteUrl}/${root}/`,
-        lastmod: latestLastmod,
-        filePath: rootPath,
-      });
+    const rootIndexPath = path.join(rootPath, 'index.html');
+    if (!fs.existsSync(rootIndexPath)) {
+      warnings.push(`Root landing page is not indexable because it is missing: ${root}/index.html. Excluding ${siteUrl}/${root}/ from the sitemap.`);
+      continue;
     }
+
+    const expectedRootLoc = `${siteUrl}/${root}/`;
+    const rootLoc = resolveCanonicalLoc(rootIndexPath, expectedRootLoc, siteUrl, warnings);
+    if (!rootLoc) {
+      warnings.push(`Root landing page is not indexable: ${root}/index.html. Excluding ${expectedRootLoc} from the sitemap.`);
+      continue;
+    }
+
+    const normalizedRootLoc = normalizeCanonicalUrl(rootLoc);
+    if (normalizedRootLoc !== expectedRootLoc) {
+      warnings.push(`Root landing page canonical points elsewhere: ${root}/index.html -> ${normalizedRootLoc}. Excluding alias root ${expectedRootLoc} from the sitemap.`);
+      continue;
+    }
+
+    entries.push({
+      loc: normalizedRootLoc,
+      lastmod: getGitLastMod(rootIndexPath),
+      filePath: rootIndexPath,
+    });
   }
 
   return { entries, errors };
