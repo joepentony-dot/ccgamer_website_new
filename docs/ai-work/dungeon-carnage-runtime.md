@@ -1,3 +1,10 @@
+## R56 reserved optional-room ownership repair — 25 September 2026
+
+- Fresh #2339 qualification on merged #2342 main reproduced the dedicated-hazard absence again in Chromium shard 1 even though the #2342 runtime/test blobs were preserved exactly.
+- The remaining reservation leaks are the Sigil annex selector and the hidden trader's preferred optional-room selector. Both can claim a room marked `dedicatedHazardReserved` on some seeds because they select directly from `world.rooms` rather than the reservation-safe `featureRooms` pool.
+- Repair branch `codex/dungeon-hazard-reserved-optional-owners-20260925` starts directly from merged #2342 main `e362d3a8e1d2002a300cd8c1dc006db9ab92f2b0`. It excludes reserved rooms from both selectors and extends the R56 static regression contract. No CI-policy files are changed.
+- #2339 remains blocked until this focused runtime repair is fully qualified and merged; then #2339 must be reconciled again and fully requalified.
+
 ## R56 dedicated-hazard reservation repair — 25 September 2026
 
 - PR #2339 exact-head qualification exposed a seed-dependent current-main product failure in Chromium shard 1: `v10-42-critical-combat-trap-recovery.mjs` generated a Solo floor with no dedicated hazard room. The CI-policy diff itself was not the owner; every other #2339 full-qualification job passed.

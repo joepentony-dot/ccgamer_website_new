@@ -470,7 +470,7 @@ window.CCGSystems=(()=>{
     // The Sigil chamber uses a generated optional annex rather than an ordinary BSP room.
     // Optional annexes are carved as isolated one-door pockets, so sealing this gate cannot sever
     // the main dungeon route even when unrelated corridors cross elsewhere in the carved map.
-    const sigilChoices=world.rooms.filter(r=>r.optional).map(room=>({room,gate:host.doors.find(d=>d.roomId===room.id&&d.type!=="room")})).filter(x=>x.gate).sort((a,b)=>(b.room.w*b.room.h)-(a.room.w*a.room.h)||((b.room.depth||0)-(a.room.depth||0)));
+    const sigilChoices=world.rooms.filter(r=>r.optional&&!r.dedicatedHazardReserved).map(room=>({room,gate:host.doors.find(d=>d.roomId===room.id&&d.type!=="room")})).filter(x=>x.gate).sort((a,b)=>(b.room.w*b.room.h)-(a.room.w*a.room.h)||((b.room.depth||0)-(a.room.depth||0)));
     const sigilChoice=sigilChoices[0]||null,wardenRoom=sigilChoice?.room||null;
     host.sigilRoomId=wardenRoom?.id??null;host.sigilLockdown=false;host.sigilResolved=false;host.sigilDropPos=null;host.sigilDefenderIds=[];host.sigilGateIds=[];
     if(wardenRoom&&sigilChoice?.gate){
@@ -493,7 +493,7 @@ window.CCGSystems=(()=>{
     // Dungeon shops. Floor 1 has one hidden trader. Floors 2-5 add a guaranteed shop near
     // the floor entrance while still retaining one hidden trader elsewhere on the map.
     host.shops=[];host.trader=null;host.startShop=null;
-    const traderRoom=[...world.rooms].filter(r=>r.optional&&r.id!==host.sigilRoomId).sort((a,b)=>(b.depth||0)-(a.depth||0))[0]||featureRooms.find(r=>r.id!==world.exitRoomId&&!r.dedicatedHazardReserved)||null;
+    const traderRoom=[...world.rooms].filter(r=>r.optional&&r.id!==host.sigilRoomId&&!r.dedicatedHazardReserved).sort((a,b)=>(b.depth||0)-(a.depth||0))[0]||featureRooms.find(r=>r.id!==world.exitRoomId&&!r.dedicatedHazardReserved)||null;
     if(traderRoom){const q=freeInRoom(world,traderRoom,used);host.trader={id:"secret-artefact-trader",...q,roomId:traderRoom.id,active:true,cost:C.stalker.flaskArtefacts,shopType:"hidden",title:"SECRET ARTEFACT TRADER",scorePurchases:0,sold:{potion:false,bronze:false,torch:false,ammo:false,armour:false,weapon:false}};host.shops.push(host.trader);traderRoom.traderRoom=true}
     if((run.floor||1)>1){const startRoom=world.rooms[world.startRoomId],q=startRoom&&freeNear(world,startRoom,world.start,used,2,5);if(startRoom&&q){host.startShop={id:`floor-${run.floor}-entrance-shop`,...q,roomId:startRoom.id,active:true,cost:C.stalker.flaskArtefacts,shopType:"entrance",title:`FLOOR ${run.floor} SUPPLY DESK`,scorePurchases:0,sold:{potion:false,bronze:false,torch:false,ammo:false,armour:false,weapon:false}};host.shops.push(host.startShop);startRoom.shopRoom=true}}
 
