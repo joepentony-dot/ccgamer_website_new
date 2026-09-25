@@ -112,5 +112,5 @@ test("game record layout keeps rich resources compact and reviews opt-in", () =>
 
 test("public cache version covers the shared CSS and JavaScript change", () => {
   const sw = read("service-worker.js");
-  assert.match(sw, /CODE_CACHE_VERSION = "2026-09-25-public-code-v19"/);
+  assert.match(sw, /CODE_CACHE_VERSION = "2026-09-25-public-code-v23"/);
 });

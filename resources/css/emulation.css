@@ -564,6 +564,594 @@
         0 0 18px rgba(var(--accent-rgb), 0.18);
 }
 
+
+/* Smart emulation hub — interactive picker, tutorial referrals and community */
+
+.ccg-page--emulation #smart-picker,
+.ccg-page--emulation #c64-options,
+.ccg-page--emulation #amiga-options,
+.ccg-page--emulation #video-tutorials,
+.ccg-page--emulation #emulation-community,
+.ccg-page--emulation #hardware-options {
+    scroll-margin-top: 88px;
+}
+
+.ccg-page--emulation .emu-smart-nav {
+    position: sticky;
+    top: 0.65rem;
+    z-index: 25;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    padding: 0.55rem;
+    border: 1px solid rgba(var(--accent-rgb), 0.28);
+    border-radius: 12px;
+    background: rgba(2, 7, 18, 0.94);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.38);
+    backdrop-filter: blur(14px);
+}
+
+.ccg-page--emulation .emu-smart-nav a {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.42rem;
+    padding: 0.5rem 0.72rem;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--emu-muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.ccg-page--emulation .emu-smart-nav a:hover,
+.ccg-page--emulation .emu-smart-nav a:focus-visible,
+.ccg-page--emulation .emu-smart-nav a[aria-current="location"] {
+    border-color: rgba(var(--accent-rgb), 0.38);
+    background: rgba(var(--accent-rgb), 0.1);
+    color: #fff;
+}
+
+.ccg-page--emulation .emu-section-heading-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.ccg-page--emulation .emu-section-kicker {
+    margin: 0 0 0.35rem;
+    color: var(--emu-amber);
+    font-family: var(--ccg-font-main);
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.ccg-page--emulation .emu-smart-badge {
+    flex: 0 0 auto;
+    padding: 0.36rem 0.55rem;
+    border: 1px solid rgba(var(--accent-rgb), 0.34);
+    border-radius: 6px;
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+    font-family: var(--ccg-font-main);
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+}
+
+.ccg-page--emulation .emu-choice-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 0.62rem;
+}
+
+.ccg-page--emulation .emu-choice-card {
+    min-width: 0;
+    min-height: 82px;
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.8rem;
+    border: 1px solid rgba(var(--accent-rgb), 0.2);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.025);
+    color: #fff;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+}
+
+.ccg-page--emulation .emu-choice-card:hover,
+.ccg-page--emulation .emu-choice-card:focus-visible,
+.ccg-page--emulation .emu-choice-card[aria-pressed="true"] {
+    border-color: rgba(var(--accent-rgb), 0.62);
+    background: rgba(var(--accent-rgb), 0.1);
+    box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.12);
+    outline: none;
+}
+
+.ccg-page--emulation .emu-choice-card__icon,
+.ccg-page--emulation .emu-link-card__icon,
+.ccg-page--emulation .emu-tutorial-link__icon,
+.ccg-page--emulation .emu-smart-result__icon,
+.ccg-page--emulation .emu-community-intro__icon,
+.ccg-page--emulation .emu-support-card__icon {
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+}
+
+.ccg-page--emulation .emu-choice-card__icon {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 9px;
+    background: rgba(var(--accent-rgb), 0.1);
+    font-size: 1.35rem;
+}
+
+.ccg-page--emulation .emu-choice-card__copy {
+    display: grid;
+    gap: 0.25rem;
+}
+
+.ccg-page--emulation .emu-choice-card__copy strong {
+    font-size: 0.9rem;
+    line-height: 1.3;
+}
+
+.ccg-page--emulation .emu-choice-card__copy small {
+    color: var(--emu-muted);
+    font-size: 0.78rem;
+    line-height: 1.4;
+}
+
+.ccg-page--emulation .emu-smart-result {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 0.9rem;
+    align-items: start;
+    padding: 1rem;
+    border: 1px solid rgba(255, 212, 92, 0.24);
+    border-left: 4px solid var(--emu-amber);
+    border-radius: 11px;
+    background: rgba(255, 212, 92, 0.05);
+}
+
+.ccg-page--emulation .emu-smart-result__icon {
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(var(--accent-rgb), 0.24);
+    border-radius: 11px;
+    background: rgba(var(--accent-rgb), 0.08);
+    font-size: 1.65rem;
+}
+
+.ccg-page--emulation .emu-smart-result__copy {
+    min-width: 0;
+}
+
+.ccg-page--emulation .emu-smart-result__eyebrow {
+    color: var(--emu-amber);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+}
+
+.ccg-page--emulation .emu-smart-result h3 {
+    margin: 0.28rem 0 0.35rem;
+    color: #fff;
+    font-size: 1.05rem;
+}
+
+.ccg-page--emulation .emu-smart-result p {
+    margin: 0;
+    color: var(--emu-copy);
+    line-height: 1.55;
+}
+
+.ccg-page--emulation .emu-smart-result__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 0.8rem;
+}
+
+.ccg-page--emulation .emu-smart-result__actions[hidden] {
+    display: none;
+}
+
+.ccg-page--emulation .emu-smart-result__actions .ccg-btn {
+    min-height: 42px;
+    min-width: 0;
+    border-radius: 7px;
+}
+
+.ccg-page--emulation .emu-link-card.ccg-btn {
+    grid-template-columns: 44px minmax(0, 1fr);
+    justify-items: stretch;
+}
+
+.ccg-page--emulation .emu-link-card__icon {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.055);
+    font-size: 1.35rem;
+}
+
+.ccg-page--emulation .emu-link-card__copy {
+    min-width: 0;
+    display: grid;
+    gap: 0.25rem;
+}
+
+.ccg-page--emulation .emu-tutorial-cluster {
+    display: grid;
+    gap: 0.65rem;
+    padding: 0.8rem;
+    border: 1px solid rgba(var(--accent-rgb), 0.18);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.ccg-page--emulation .emu-tutorial-cluster__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    color: #fff;
+    font-size: 0.86rem;
+}
+
+.ccg-page--emulation .emu-tutorial-cluster__heading > div {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.ccg-page--emulation .emu-tutorial-cluster__heading a {
+    font-size: 0.78rem;
+}
+
+.ccg-page--emulation .emu-tutorial-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55rem;
+}
+
+.ccg-page--emulation .emu-tutorial-list--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ccg-page--emulation .emu-tutorial-link {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.68rem 0.72rem;
+    border: 1px solid rgba(var(--accent-rgb), 0.18);
+    border-radius: 8px;
+    background: rgba(var(--accent-rgb), 0.045);
+    color: #fff !important;
+    text-decoration: none !important;
+}
+
+.ccg-page--emulation .emu-tutorial-link:hover,
+.ccg-page--emulation .emu-tutorial-link:focus-visible {
+    border-color: rgba(var(--accent-rgb), 0.58);
+    background: rgba(var(--accent-rgb), 0.09);
+}
+
+.ccg-page--emulation .emu-tutorial-link__icon {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 1.05rem;
+}
+
+.ccg-page--emulation .emu-tutorial-link > span:nth-child(2) {
+    min-width: 0;
+    display: grid;
+    gap: 0.18rem;
+}
+
+.ccg-page--emulation .emu-tutorial-link strong {
+    font-size: 0.82rem;
+    line-height: 1.3;
+}
+
+.ccg-page--emulation .emu-tutorial-link small {
+    color: var(--emu-muted);
+    font-size: 0.72rem;
+    line-height: 1.35;
+}
+
+.ccg-page--emulation .emu-tutorial-link__arrow {
+    color: var(--accent);
+    font-size: 1rem;
+}
+
+.ccg-page--emulation .emu-referral-note {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding-top: 0.15rem;
+    color: var(--emu-muted);
+    font-size: 0.78rem;
+    line-height: 1.45;
+}
+
+.ccg-page--emulation .emu-referral-note strong {
+    color: #fff;
+}
+
+.ccg-page--emulation .emu-copy-referral {
+    flex: 0 0 auto;
+    min-height: 34px;
+    padding: 0.38rem 0.58rem;
+    border: 1px solid rgba(var(--accent-rgb), 0.3);
+    border-radius: 6px;
+    background: rgba(var(--accent-rgb), 0.07);
+    color: var(--accent);
+    font: inherit;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.ccg-page--emulation .emu-copy-referral:hover,
+.ccg-page--emulation .emu-copy-referral:focus-visible {
+    border-color: rgba(var(--accent-rgb), 0.7);
+    color: #fff;
+    outline: none;
+}
+
+.ccg-page--emulation .emu-community-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(240px, 0.5fr);
+    gap: 0.8rem;
+    align-items: start;
+}
+
+.ccg-page--emulation .emu-community-main,
+.ccg-page--emulation .emu-support-card {
+    min-width: 0;
+    padding: 0.9rem;
+    border: 1px solid rgba(var(--accent-rgb), 0.18);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.ccg-page--emulation .emu-community-intro {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 0.75rem;
+    align-items: start;
+    margin-bottom: 0.85rem;
+}
+
+.ccg-page--emulation .emu-community-intro__icon,
+.ccg-page--emulation .emu-support-card__icon {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 9px;
+    background: rgba(var(--accent-rgb), 0.09);
+    font-size: 1.25rem;
+}
+
+.ccg-page--emulation .emu-community-intro h3,
+.ccg-page--emulation .emu-support-card h3 {
+    margin: 0 0 0.3rem;
+    color: #fff;
+    font-size: 0.98rem;
+}
+
+.ccg-page--emulation .emu-community-intro p,
+.ccg-page--emulation .emu-support-card p {
+    margin: 0;
+    color: var(--emu-muted);
+    font-size: 0.84rem;
+    line-height: 1.55;
+}
+
+.ccg-page--emulation .emu-community-mount {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.ccg-page--emulation .emu-community-status,
+.ccg-page--emulation .emu-community-empty {
+    margin: 0;
+    padding: 0.75rem;
+    border: 1px dashed rgba(var(--accent-rgb), 0.22);
+    border-radius: 8px;
+    color: var(--emu-muted);
+    font-size: 0.82rem;
+}
+
+.ccg-page--emulation .emu-community-form {
+    display: grid;
+    gap: 0.55rem;
+    padding: 0.72rem;
+    border: 1px solid rgba(var(--accent-rgb), 0.18);
+    border-radius: 9px;
+    background: rgba(var(--accent-rgb), 0.035);
+}
+
+.ccg-page--emulation .emu-community-form label {
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.ccg-page--emulation .emu-community-form textarea {
+    width: 100%;
+    min-height: 92px;
+    margin-top: 0.42rem;
+    resize: vertical;
+    padding: 0.65rem;
+    border: 1px solid rgba(var(--accent-rgb), 0.28);
+    border-radius: 7px;
+    background: rgba(0, 0, 0, 0.28);
+    color: #fff;
+    font: inherit;
+    line-height: 1.5;
+}
+
+.ccg-page--emulation .emu-community-form textarea:focus {
+    border-color: var(--accent);
+    outline: 2px solid rgba(var(--accent-rgb), 0.14);
+}
+
+.ccg-page--emulation .emu-community-form__actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+}
+
+.ccg-page--emulation .emu-community-form__actions .ccg-btn,
+.ccg-page--emulation .emu-community-login {
+    min-height: 40px;
+    border-radius: 7px;
+}
+
+.ccg-page--emulation .emu-community-message-list {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.ccg-page--emulation .emu-community-message {
+    padding: 0.72rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.018);
+}
+
+.ccg-page--emulation .emu-community-message__head {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.7rem;
+    margin-bottom: 0.35rem;
+    color: var(--emu-muted);
+    font-size: 0.7rem;
+}
+
+.ccg-page--emulation .emu-community-message__name {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.ccg-page--emulation .emu-community-message p {
+    margin: 0;
+    color: var(--emu-copy);
+    font-size: 0.82rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.ccg-page--emulation .emu-community-guest {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.7rem;
+    padding: 0.65rem 0;
+}
+
+.ccg-page--emulation .emu-community-guest p {
+    margin: 0;
+    color: var(--emu-muted);
+    font-size: 0.8rem;
+}
+
+.ccg-page--emulation .emu-support-card {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.ccg-page--emulation .emu-support-button {
+    width: fit-content;
+    min-width: 0;
+    min-height: 40px;
+    border-radius: 7px;
+}
+
+.ccg-page--emulation .emu-support-card small {
+    color: var(--emu-muted);
+    font-size: 0.72rem;
+    line-height: 1.45;
+}
+
+@media (max-width: 900px) {
+    .ccg-page--emulation .emu-tutorial-list--three {
+        grid-template-columns: 1fr;
+    }
+
+    .ccg-page--emulation .emu-community-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .ccg-page--emulation .emu-smart-nav {
+        position: static;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ccg-page--emulation .emu-smart-nav a {
+        justify-content: center;
+        white-space: normal;
+        text-align: center;
+    }
+
+    .ccg-page--emulation .emu-section-heading-row,
+    .ccg-page--emulation .emu-tutorial-cluster__heading,
+    .ccg-page--emulation .emu-referral-note,
+    .ccg-page--emulation .emu-community-guest {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .ccg-page--emulation .emu-choice-grid,
+    .ccg-page--emulation .emu-tutorial-list {
+        grid-template-columns: 1fr;
+    }
+
+    .ccg-page--emulation .emu-smart-result {
+        grid-template-columns: 1fr;
+    }
+
+    .ccg-page--emulation .emu-smart-result__actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .ccg-page--emulation .emu-smart-result__actions .ccg-btn,
+    .ccg-page--emulation .emu-copy-referral,
+    .ccg-page--emulation .emu-support-button,
+    .ccg-page--emulation .emu-community-login {
+        width: 100%;
+    }
+}
+
 /* Responsive */
 
 @media (max-width: 980px) {

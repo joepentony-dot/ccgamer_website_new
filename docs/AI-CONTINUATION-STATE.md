@@ -1,3 +1,14 @@
+## Master consolidation current state — 25 September 2026
+
+- Current `main` after the latest qualified consolidation merge is `bd5c5308722ffd27003fcc7260b8645a238684d1` (PR #2351).
+- #2351 exact head `454a64fd9bfb95b5970b88dc748891f13474d2ce` was 0 commits behind, mergeable, had no review threads, and passed the complete triggered matrix including C64 Dungeon Carnage Full Qualification before merge.
+- Open PR inventory is now three: #2341 Smart Emulation Hub, #2329 CCG backend containment, and #2176 Commodore Quest 3.
+- #2341 is the next consolidation survivor. Rebuild it in place directly on this `main`, preserve only its unique emulation HTML/CSS/JavaScript, Site Safety hooks and focused regressions, and advance the public code cache to v23 because v22 has already shipped through #2351.
+- #2329 remains valuable preserved backend work but retains its documented staging/production cut-over gates; classify and preserve it rather than forcing a production merge merely to reduce PR count.
+- #2176 remains deliberately deferred until C64 Dungeon Carnage is substantially finished; do not spend priority effort rebasing or completing it now.
+- Search Console remediation #2343 is already merged as `ece6c9d942036bde9979bf6515cf3627c23e5206`. Automated SEO/video output #2350 then merged as `d728434c4e0ebef4675c911951f67167eb071985` before #2351.
+- Older sections below are historical checkpoints where they still describe now-merged PRs as candidates. Live GitHub and this current-state block take precedence.
+
 ## Dungeon dedicated-hazard reservation authority follow-up — 25 September 2026
 
 - Current-main qualification after merged #2348 repeatedly failed the unchanged browser contract `v10-42-critical-combat-trap-recovery.mjs`: a generated Solo floor contained no dedicated hazard room.
