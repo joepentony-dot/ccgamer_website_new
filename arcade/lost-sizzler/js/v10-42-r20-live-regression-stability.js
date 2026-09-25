@@ -388,8 +388,9 @@
     if(spyActive())return;
     if(!recoverOrphanedGameplayMode())return;
     event.preventDefault();
-    attackNow(event.code);
-    event.stopImmediatePropagation();
+    const errorsBefore=diagnostics.directAttackErrors;
+    const handled=attackNow(event.code);
+    if(handled||diagnostics.directAttackErrors===errorsBefore)event.stopImmediatePropagation();
   },true);
   document.addEventListener("keyup",event=>{if(ATTACK_KEYS.has(event.code))try{input?.delete?.(event.code)}catch(_){}},true);
 
