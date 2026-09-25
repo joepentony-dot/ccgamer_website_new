@@ -403,6 +403,8 @@ window.CCGSystems=(()=>{
     const hazardReserveTiny=hazardReserveSort(rooms.filter(room=>room&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=2&&room.h>=2&&!hazardReservePreferredIds.has(room.id)));
     const hazardReserveTinyIds=new Set(hazardReserveTiny.map(room=>room.id));
     const hazardReserveOptionalTiny=hazardReserveSort((world.rooms||[]).filter(room=>room?.optional&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=2&&room.h>=2&&!hazardReservePreferredIds.has(room.id)&&!hazardReserveTinyIds.has(room.id)));
+    const hazardReserveCoveredIds=new Set([...hazardReservePreferredIds,...hazardReserveTinyIds,...hazardReserveOptionalTiny.map(room=>room.id)]);
+    const hazardReserveAnyTiny=hazardReserveSort((world.rooms||[]).filter(room=>room&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=2&&room.h>=2&&!hazardReserveCoveredIds.has(room.id)));
     const hazardReservePriority=list=>[
       ...list.filter(room=>!hauntedCorridorRoomIds.has(room.id)),
       ...list.filter(room=>hauntedCorridorRoomIds.has(room.id))
@@ -415,7 +417,8 @@ window.CCGSystems=(()=>{
       ...hazardReservePriority(hazardReserveCompact),
       ...hazardReservePriority(hazardReserveOptional),
       ...hazardReservePriority(hazardReserveTiny),
-      ...hazardReservePriority(hazardReserveOptionalTiny)
+      ...hazardReservePriority(hazardReserveOptionalTiny),
+      ...hazardReservePriority(hazardReserveAnyTiny)
     ].slice(0,hazardReserveCount);
     const hazardReservedRoomIds=new Set(hazardReserveRooms.map(room=>room.id));
     for(const room of hazardReserveRooms)room.dedicatedHazardReserved=true;
