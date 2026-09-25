@@ -5,7 +5,7 @@
 - The merged R56 tree contains the review-driven repairs: exact player/cell environmental damage signals, hazard cooldown filtering, lethal-hit-safe evidence, mandatory-route hazard preference, disjoint relaxed hazard-room candidates, authoritative trap-contact signals, and purchase feedback that cannot overwrite a successful transaction with a post-purchase INVENTORY FULL/price blocker.
 - Follow-up branch `codex/dungeon-r56-postmerge-qualification-20260925` starts from exact current main `a78269fd49c2c9ca3021c179b896b716239d8c11`. It corrects both public Dungeon Carnage changelogs from stale R54 wording to R56 and adds `v10-42-r56-postmerge-blockers.mjs` to pin the resolved blocker contracts.
 - Candidate identity remains `V10.42 r56` / `20260924r56`. Do not change gameplay ownership merely to satisfy diagnostics.
-- Next gate: open the follow-up as a draft qualification PR, require the complete exact-head workflow matrix and fresh review on that exact head, and do not merge while any required job, Chromium shard or material P1/P2 finding is red, incomplete or unresolved.
+- Follow-up PR #2337 exact head `a857c5b725c47ec5c59eb6f3b79543416b5188df` completed the full required matrix green: Lost Sizzler Load Safety Node/static plus Chromium shards 1–6, Native Mouse Wheel, Site Safety, Arcade Test Package, SEO Automation, Structured Data, Social Metadata, itch.io Package and Public Code Cache Version. Fresh Codex review reported no major issues and no material P1/P2 review thread remains. Preserve the reviewed head unmerged until explicit user authorization; if the branch or `main` advances, reconcile and fully requalify the new exact head before merge.
 
 ## Dungeon Carnage R54 current-main implementation — 23 September 2026
 
