@@ -20,7 +20,8 @@
     5:Object.freeze({id:"sigil",enemyKinds:["ranger","root","guard"],trapKinds:["shock","fire","shock"],trapPeriod:1640,generatorScale:.80,guardianPattern:"sigil-crossfire"})
   });
 
-  const state={installed:false,hosts:0,enemiesTuned:0,trapsTuned:0,hazardsTuned:0,generatorsTuned:0};
+  const TRAP_FAMILIES=Object.freeze(["fire","spike","shock"]);
+  const state={installed:false,hosts:0,enemiesTuned:0,trapsTuned:0,trapFamilyRepairs:0,hazardsTuned:0,generatorsTuned:0};
   function hash32(value){let h=2166136261>>>0;for(const ch of String(value||"")){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
   const clamp=(v,min,max)=>Math.max(min,Math.min(max,Number(v)||0));
   const floorOf=runState=>clamp(Math.floor(Number(runState?.floor)||1),1,C.maxFloors||5);
@@ -97,6 +98,28 @@
     trap.v142Zone=profile.id;trap.v142ZoneRouteRole=role;
     state.trapsTuned++;return trap;
   }
+  function reconcileTrapFamilies(hostState,seed){
+    const traps=(hostState?.traps||[]).filter(trap=>trap?.active);
+    if(traps.length<TRAP_FAMILIES.length)return 0;
+    const counts=Object.fromEntries(TRAP_FAMILIES.map(kind=>[kind,traps.filter(trap=>String(trap.kind||"").toLowerCase()===kind).length]));
+    let repairs=0;
+    for(const kind of TRAP_FAMILIES){
+      if(counts[kind]>0)continue;
+      const donor=traps
+        .filter(trap=>counts[String(trap.kind||"").toLowerCase()]>1)
+        .map(trap=>({trap,key:hash32(`${seed}|${trap.id}|stage6-family|${kind}`)}))
+        .sort((a,b)=>a.key-b.key)[0]?.trap||null;
+      if(!donor)continue;
+      const previous=String(donor.kind||"").toLowerCase();
+      counts[previous]=Math.max(0,Number(counts[previous]||0)-1);
+      donor.kind=kind;
+      donor.v142ZoneFamilyReconciled=true;
+      counts[kind]=1;
+      repairs++;
+    }
+    state.trapFamilyRepairs+=repairs;
+    return repairs;
+  }
   function tuneHazard(hazard,profile,seed,worldState){
     if(!hazard)return hazard;
     const room=worldState?.rooms?.[hazard.roomId]||null,role=routeRole(room),salt=hash32(`${seed}|${hazard.id}|hazard|${role}`);
@@ -134,6 +157,7 @@
     const floor=floorOf(runState),profile=profileForFloor(floor),seed=String(runState.seed||"CCG");
     for(const enemy of hostState.enemies||[]){tuneGuardian(enemy,profile);tuneEnemy(enemy,profile,seed,worldState)}
     (hostState.traps||[]).forEach((trap,index)=>tuneTrap(trap,index,profile,seed,worldState));
+    reconcileTrapFamilies(hostState,seed);
     for(const hazard of hostState.hazardRooms||[])tuneHazard(hazard,profile,seed,worldState);
     for(const generator of hostState.generators||[])tuneGenerator(generator,profile);
     hostState.v142ZoneGameplay={
@@ -153,6 +177,6 @@
 
   window.CCGLostSizzlerV142Stage6ZoneGameplay={
     version:"V10.42-stage6-r1",PROFILES,state,profileForFloor,routeRole,protectedEnemy,
-    ordinaryKind,tuneEnemy,tuneGuardian,tuneTrap,tuneHazard,tuneGenerator,encounterDirectives,applyZoneGameplay
+    ordinaryKind,tuneEnemy,tuneGuardian,tuneTrap,reconcileTrapFamilies,tuneHazard,tuneGenerator,encounterDirectives,applyZoneGameplay
   };
 })();
