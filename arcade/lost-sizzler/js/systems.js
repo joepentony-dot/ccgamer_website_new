@@ -332,6 +332,40 @@ window.CCGSystems=(()=>{
       const q=freeInRoom(world,room,used),hp=10+floor*2,armour=5+floor;host.enemies.push({id:`archive-knight-${floor}-${i}`,...q,kind:"knight",hp,maxHp:hp,armor:armour,maxArmor:armour,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:980,attackCooldown:800,chargeCooldown:999999,healCooldown:999999,flash:0,hpBarMs:0,knight:true,meleeOnly:true,moveSpeedScale:1.18})
     }
 
+    // Dedicated hazards are a floor invariant. Extremely compact or heavily
+    // claimed layouts must still leave the reserved room authoritative. If the
+    // normal candidate pass produced fewer hazards than required, install a
+    // compact emergency hazard into an unused reserved/non-start/non-exit room.
+    while((host.hazardRooms||[]).length<count){
+      const usedHazardRooms=new Set((host.hazardRooms||[]).map(h=>h.roomId));
+      const room=(world.rooms||[]).find(candidate=>
+        candidate?.dedicatedHazardReserved
+        && candidate.id!==world.startRoomId
+        && candidate.id!==world.exitRoomId
+        && !usedHazardRooms.has(candidate.id)
+        && candidate.w>=2&&candidate.h>=2
+      )||(world.rooms||[]).find(candidate=>
+        candidate
+        && candidate.id!==world.startRoomId
+        && candidate.id!==world.exitRoomId
+        && !usedHazardRooms.has(candidate.id)
+        && !candidate.sanctuary
+        && !candidate.sigilRoom
+        && !candidate.spiderNest
+        && candidate.w>=2&&candidate.h>=2
+      )||null;
+      if(!room)break;
+      const i=host.hazardRooms.length,type=types[(floor+i)%types.length],groups=type==="embers"?2:type==="blade"?3:4,cells=[];
+      for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++){
+        const group=type==="embers"?(x+y)%2:type==="blade"?(x-room.x)%3:(y-room.y)%4;
+        cells.push({x,y,group});
+      }
+      if(!cells.length)cells.push({x:Math.max(room.x,Math.min(room.x+room.w,Math.floor(room.x+room.w/2))),y:Math.max(room.y,Math.min(room.y+room.h,Math.floor(room.y+room.h/2))),group:0});
+      const hazard={id:`hazard-${floor}-emergency-${i}`,roomId:room.id,type,cells,groups,period:type==="arrows"?2050:type==="blade"?2300:2550,warningMs:type==="arrows"?780:700,activeMs:type==="embers"?760:560,phase:Math.floor(world.random()*1200),title:type==="blade"?"PENDULUM BLADE GALLERY":type==="embers"?"EMBER-TILE VAULT":"ARROW-SLIT CROSSING"};
+      host.hazardRooms.push(hazard);
+      room.dedicatedHazard=true;room.hazardType=type;room.dangerous=true;
+    }
+
     // Dedicated hazard rooms may replace ordinary trap placements. The public
     // rulebook and live trap diagnostics require every generated floor to retain
     // at least one FIRE, SPIKE and SHOCK trap, so restore any missing kind in a
