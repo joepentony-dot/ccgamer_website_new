@@ -1,3 +1,10 @@
+## Final compact-floor dedicated-hazard repair on #2341 — 25 September 2026
+
+- Final-head qualification of pre-fix head `9da0a1e100b2e22046b1d66b8bb7d711f6bc10a3` reproduced the unchanged shard-1 assertion `generated Solo floor must contain a dedicated hazard room`. This is not classified as a flake.
+- The earlier fallback still imposed a 6x5 minimum on every reservation tier and the installer only re-read reservations from `deepRooms(world)`. A sufficiently compact seed could therefore have zero reservable 6x5 non-optional rooms even after haunted-corridor supplementation.
+- The authoritative reservation chain now prefers 6x5+ non-optional rooms, falls back to 3x3+ non-optional rooms, and only then uses 3x3+ optional rooms. Start and exit remain hard-excluded. The installer reads reserved rooms from the complete `world.rooms` set so an emergency optional reservation cannot disappear before installation.
+- The existing browser assertion is unchanged. Static coverage now guards the layered size/ownership fallback. A fresh complete exact-head matrix is mandatory before #2341 can leave draft or merge.
+
 ## Current-main qualification repairs on #2341 — 25 September 2026
 
 - Post-merge audit of `bd5c5308722ffd27003fcc7260b8645a238684d1` found three independent current-main qualification defects that must be repaired before the Smart Emulation Hub can merge:

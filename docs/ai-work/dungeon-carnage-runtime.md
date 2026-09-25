@@ -1,3 +1,11 @@
+## Final compact-floor dedicated-hazard fallback — 2026-09-25
+
+- Exact-head shard 1 on `9da0a1e100b2e22046b1d66b8bb7d711f6bc10a3` proved the previous current-main repair was still incomplete: a generated Solo seed contained no dedicated hazard room.
+- Root cause is now bounded to candidate exhaustion rather than readiness or soft-owner re-screening. Every prior reservation tier still required at least 6x5 and installation only consulted the non-optional `deepRooms(world)` list.
+- Mandatory reservation now uses three deterministic tiers: large non-optional rooms (6x5+), compact non-optional rooms (3x3+), then compact optional rooms (3x3+). Within each tier non-haunted rooms remain preferred. Start and exit are never eligible.
+- Installation honours `dedicatedHazardReserved` across the complete `world.rooms` set with the same 3x3 emergency floor, while ordinary non-reserved hazard candidates retain their stricter size/owner rules.
+- No assertion, timeout or browser qualification policy is weakened. Full six-shard exact-head qualification must pass before merge.
+
 ## Current-main post-merge qualification repair — 2026-09-25
 
 - Current main `bd5c5308722ffd27003fcc7260b8645a238684d1` can still produce rare compact Solo seeds without the documented dedicated hazard, and a separate seed was observed with only FIRE and SHOCK active ordinary trap families.
