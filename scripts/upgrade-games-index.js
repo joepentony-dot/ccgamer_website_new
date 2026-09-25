@@ -66,7 +66,7 @@ function syncArchiveData(html, games) {
     output = output.replace(resultsPattern, `$1${count}$2`);
     output = output.replace(focusPattern, `$1${count} total$2`);
 
-    const fallbackPattern = /(<section id="gamesStaticFallback"\b[\s\S]*?<ul>)[\s\S]*?(<\/ul>[\s\S]*?<\/section>)/i;
+    const fallbackPattern = /(<section id="gamesStaticFallback"[^>]*>[\s\S]*?<ul>)[\s\S]*?(<\/ul>[\s\S]*?<\/section>)/i;
     if (!fallbackPattern.test(output)) fail("games static fallback section is missing");
     output = output.replace(
         fallbackPattern,
