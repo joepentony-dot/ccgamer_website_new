@@ -277,7 +277,7 @@ window.CCGSystems=(()=>{
     const floor=Math.max(1,run?.floor||1),count=floor>=3?2:1,busy=new Set([world.startRoomId,world.exitRoomId,host.sigilRoomId,host.trader?.roomId,host.startShop?.roomId,host.spiderNest?.roomId].filter(x=>x!=null));
     for(const g of host.generators||[])busy.add(g.roomId);for(const a of host.arenas||[])busy.add(a.roomId);for(const t of host.timedRooms||[])busy.add(t.roomId);if(host.rescue)busy.add(host.rescue.roomId);if(host.guardian)busy.add(W.roomAt(world,host.guardian.x,host.guardian.y));
     for(const feature of [host.bloodClue,host.memoryPuzzle,host.sequenceTorchPuzzle,host.weightBridge])if(feature?.roomId!=null)busy.add(feature.roomId);
-    const hardHazardEligible=(room,minW=6,minH=5)=>Boolean(room&&!room.sanctuary&&!room.sigilRoom&&!room.spiderNest&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=minW&&room.h>=minH),hazardEligible=(room,minW=8,minH=7)=>Boolean(hardHazardEligible(room,minW,minH)&&!busy.has(room.id)),reservedHazardRooms=(world.rooms||[]).filter(room=>Boolean(room?.dedicatedHazardReserved&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=3&&room.h>=3)),reservedHazardRoomIds=new Set(reservedHazardRooms.map(room=>room.id)),primaryHazardRooms=rooms.filter(room=>!reservedHazardRoomIds.has(room.id)&&hazardEligible(room)),fallbackHazardRooms=reservedHazardRooms.length+primaryHazardRooms.length>=count?[]:(world.rooms||[]).filter(room=>hazardEligible(room)&&!reservedHazardRoomIds.has(room.id)&&!primaryHazardRooms.some(candidate=>candidate.id===room.id)),strictHazardRoomIds=new Set([...reservedHazardRooms,...primaryHazardRooms,...fallbackHazardRooms].map(room=>room.id)),relaxedHazardRooms=reservedHazardRooms.length+primaryHazardRooms.length+fallbackHazardRooms.length>=count?[]:(world.rooms||[]).filter(room=>hazardEligible(room,6,5)&&!strictHazardRoomIds.has(room.id)),shuffleHazardRooms=list=>list.map(room=>({room,key:world.random()})).sort((a,b)=>a.key-b.key),choices=[...shuffleHazardRooms(reservedHazardRooms),...shuffleHazardRooms(primaryHazardRooms),...shuffleHazardRooms(fallbackHazardRooms),...shuffleHazardRooms(relaxedHazardRooms)],types=["blade","embers","arrows"];host.hazardRooms=[];
+    const hardHazardEligible=(room,minW=6,minH=5)=>Boolean(room&&!room.sanctuary&&!room.sigilRoom&&!room.spiderNest&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=minW&&room.h>=minH),hazardEligible=(room,minW=8,minH=7)=>Boolean(hardHazardEligible(room,minW,minH)&&!busy.has(room.id)),reservedHazardRooms=(world.rooms||[]).filter(room=>Boolean(room?.dedicatedHazardReserved&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=2&&room.h>=2)),reservedHazardRoomIds=new Set(reservedHazardRooms.map(room=>room.id)),primaryHazardRooms=rooms.filter(room=>!reservedHazardRoomIds.has(room.id)&&hazardEligible(room)),fallbackHazardRooms=reservedHazardRooms.length+primaryHazardRooms.length>=count?[]:(world.rooms||[]).filter(room=>hazardEligible(room)&&!reservedHazardRoomIds.has(room.id)&&!primaryHazardRooms.some(candidate=>candidate.id===room.id)),strictHazardRoomIds=new Set([...reservedHazardRooms,...primaryHazardRooms,...fallbackHazardRooms].map(room=>room.id)),relaxedHazardRooms=reservedHazardRooms.length+primaryHazardRooms.length+fallbackHazardRooms.length>=count?[]:(world.rooms||[]).filter(room=>hazardEligible(room,6,5)&&!strictHazardRoomIds.has(room.id)),shuffleHazardRooms=list=>list.map(room=>({room,key:world.random()})).sort((a,b)=>a.key-b.key),choices=[...shuffleHazardRooms(reservedHazardRooms),...shuffleHazardRooms(primaryHazardRooms),...shuffleHazardRooms(fallbackHazardRooms),...shuffleHazardRooms(relaxedHazardRooms)],types=["blade","embers","arrows"];host.hazardRooms=[];
     const ordinaryTrapKinds=["fire","spike","shock"];
     const activeTrapKind=(trap,kind)=>Boolean(trap?.active)&&String(trap.kind||"").toLowerCase()===kind;
     const preservesOrdinaryTrapKinds=room=>ordinaryTrapKinds.every(kind=>(host.traps||[]).some(trap=>trap.roomId!==room.id&&activeTrapKind(trap,kind)));
@@ -399,17 +399,23 @@ window.CCGSystems=(()=>{
     const hazardReserveCompact=hazardReserveSort(rooms.filter(room=>room&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=3&&room.h>=3&&!hazardReserveLargeIds.has(room.id)));
     const hazardReserveNonOptionalIds=new Set([...hazardReserveLarge,...hazardReserveCompact].map(room=>room.id));
     const hazardReserveOptional=hazardReserveSort((world.rooms||[]).filter(room=>room?.optional&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=3&&room.h>=3&&!hazardReserveNonOptionalIds.has(room.id)));
+    const hazardReservePreferredIds=new Set([...hazardReserveLarge,...hazardReserveCompact,...hazardReserveOptional].map(room=>room.id));
+    const hazardReserveTiny=hazardReserveSort(rooms.filter(room=>room&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=2&&room.h>=2&&!hazardReservePreferredIds.has(room.id)));
+    const hazardReserveTinyIds=new Set(hazardReserveTiny.map(room=>room.id));
+    const hazardReserveOptionalTiny=hazardReserveSort((world.rooms||[]).filter(room=>room?.optional&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=2&&room.h>=2&&!hazardReservePreferredIds.has(room.id)&&!hazardReserveTinyIds.has(room.id)));
     const hazardReservePriority=list=>[
       ...list.filter(room=>!hauntedCorridorRoomIds.has(room.id)),
       ...list.filter(room=>hauntedCorridorRoomIds.has(room.id))
     ];
-    // Dedicated hazard count is mandatory. Prefer large non-optional rooms, then
-    // compact non-optional rooms, and only then optional rooms. Haunted-corridor
-    // identity is soft within each tier; start/exit are always excluded.
+    // Dedicated hazard count is mandatory. Prefer large/compact rooms first.
+    // A final 2x2 emergency tier covers unusually narrow generated floors while
+    // still excluding start/exit and reserving the room before later owners.
     const hazardReserveRooms=[
       ...hazardReservePriority(hazardReserveLarge),
       ...hazardReservePriority(hazardReserveCompact),
-      ...hazardReservePriority(hazardReserveOptional)
+      ...hazardReservePriority(hazardReserveOptional),
+      ...hazardReservePriority(hazardReserveTiny),
+      ...hazardReservePriority(hazardReserveOptionalTiny)
     ].slice(0,hazardReserveCount);
     const hazardReservedRoomIds=new Set(hazardReserveRooms.map(room=>room.id));
     for(const room of hazardReserveRooms)room.dedicatedHazardReserved=true;
