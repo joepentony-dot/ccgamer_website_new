@@ -1,0 +1,114 @@
+name: CCG Backend Staging Live Smoke
+
+on:
+  pull_request:
+    branches:
+      - codex/supabase-egress-containment
+    paths:
+      - '.github/workflows/ccg-backend-staging-live-smoke.yml'
+      - 'services/ccg-backend/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ccg-backend-staging-live-smoke-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  staging-live-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Exercise staging health, auth boundary and Lost Sizzler ownership boundary
+        shell: bash
+        env:
+          BASE_URL: https://ccg-backend-staging.onrender.com
+        run: |
+          set -euo pipefail
+
+          workdir="$(mktemp -d)"
+          trap 'rm -rf "$workdir"' EXIT
+
+          request() {
+            local method="$1"
+            local path="$2"
+            local output="$3"
+            shift 3
+            curl --fail-with-body --silent --show-error \
+              --connect-timeout 15 --max-time 45 \
+              -X "$method" "$BASE_URL$path" \
+              -o "$output" "$@"
+          }
+
+          request GET /health "$workdir/health.json"
+          node - "$workdir/health.json" <<'NODE'
+          const fs = require('fs');
+          const body = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+          const expected = {
+            ok: true,
+            auth_mode: 'local',
+            registration: false,
+            password_recovery: false,
+            lost_sizzler_realtime: false,
+            lost_sizzler_commerce: false,
+          };
+          for (const [key, value] of Object.entries(expected)) {
+            if (body[key] !== value) throw new Error(`/health ${key}: expected ${value}, got ${body[key]}`);
+          }
+          NODE
+
+          request GET /ready "$workdir/ready.json"
+          node - "$workdir/ready.json" <<'NODE'
+          const fs = require('fs');
+          const body = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+          if (body.ok !== true || body.database !== true) throw new Error('/ready did not confirm database readiness');
+          NODE
+
+          request GET /.well-known/jwks.json "$workdir/jwks.json"
+          node - "$workdir/jwks.json" <<'NODE'
+          const fs = require('fs');
+          const body = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+          if (!Array.isArray(body.keys) || body.keys.length !== 1) throw new Error('JWKS must expose exactly one staging key');
+          const key = body.keys[0];
+          if (key.kty !== 'OKP' || key.crv !== 'Ed25519' || !key.kid || key.d) {
+            throw new Error('JWKS public key shape is invalid');
+          }
+          NODE
+
+          status="$(curl --silent --show-error --connect-timeout 15 --max-time 45 \
+            -o "$workdir/me.json" -w '%{http_code}' "$BASE_URL/v1/me")"
+          test "$status" = "401"
+
+          status="$(curl --silent --show-error --connect-timeout 15 --max-time 45 \
+            -o "$workdir/cloud.json" -w '%{http_code}' "$BASE_URL/v1/lost-sizzler/cloud-save")"
+          test "$status" = "401"
+
+          status="$(curl --silent --show-error --connect-timeout 15 --max-time 45 \
+            -o "$workdir/login.json" -w '%{http_code}' \
+            -H 'content-type: application/json' \
+            --data '{"email":"nobody@example.invalid","password":"definitely-not-a-real-password"}' \
+            "$BASE_URL/v1/auth/login")"
+          test "$status" = "401"
+
+          status="$(curl --silent --show-error --connect-timeout 15 --max-time 45 \
+            -o "$workdir/refresh.json" -w '%{http_code}' \
+            -X POST "$BASE_URL/v1/auth/refresh")"
+          test "$status" = "401"
+
+          request POST /v1/lost-sizzler/weekly-vault "$workdir/weekly-status.json" \
+            -H 'content-type: application/json' --data '{"action":"status"}'
+          node - "$workdir/weekly-status.json" <<'NODE'
+          const fs = require('fs');
+          const body = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+          if (!body || typeof body !== 'object' || Array.isArray(body)) throw new Error('Weekly Vault status did not return an object');
+          NODE
+
+          status="$(curl --silent --show-error --connect-timeout 15 --max-time 45 \
+            -o "$workdir/weekly-start.json" -w '%{http_code}' \
+            -H 'content-type: application/json' --data '{"action":"start"}' \
+            "$BASE_URL/v1/lost-sizzler/weekly-vault")"
+          test "$status" = "401"
+
+          echo 'CCG staging live smoke passed.'
