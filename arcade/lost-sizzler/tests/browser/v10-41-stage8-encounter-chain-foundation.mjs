@@ -33,7 +33,9 @@ try{
   const result=await page.evaluate(()=>{
     const scoreBefore=Number(score||0),xpBefore=Number(p1.xp||0),secretsBefore=Number(run.stats?.secrets||0),chestsBefore=Number(run.stats?.chests||0),revisionBefore=Number(host.revision||0);
     const door={id:"stage8-chain-secret",type:"secret",x:p1.x+20,y:p1.y+20,locked:true,hidden:true,open:false,opening:false};
-    host.doors.push(door);
+    // Put the synthetic fixture first so a random generated door at the same
+    // coordinate cannot steal W.doorAt() ownership from this contract.
+    host.doors.unshift(door);
     tryDoor(p1,door.x,door.y);
     const afterDoor={locked:door.locked,hidden:door.hidden,opening:door.opening,secrets:Number(run.stats?.secrets||0),score:Number(score||0),xp:Number(p1.xp||0),revision:Number(host.revision||0)};
 
