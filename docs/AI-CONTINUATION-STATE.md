@@ -1,18 +1,20 @@
-## R56 reserved optional-room ownership repair — 25 September 2026
+## CI qualification optimisation — 25 September 2026
 
-- Fresh #2339 qualification on merged #2342 main reproduced the dedicated-hazard absence again in Chromium shard 1 even though the #2342 runtime/test blobs were preserved exactly.
-- The remaining reservation leaks are the Sigil annex selector and the hidden trader's preferred optional-room selector. Both can claim a room marked `dedicatedHazardReserved` on some seeds because they select directly from `world.rooms` rather than the reservation-safe `featureRooms` pool.
-- Repair branch `codex/dungeon-hazard-reserved-optional-owners-20260925` starts directly from merged #2342 main `e362d3a8e1d2002a300cd8c1dc006db9ab92f2b0`. It excludes reserved rooms from both selectors and extends the R56 static regression contract. No CI-policy files are changed.
-- #2339 remains blocked until this focused runtime repair is fully qualified and merged; then #2339 must be reconciled again and fully requalified.
+- PR #2339 / `codex/ci-qualification-optimisation` is the active CI-policy candidate.
+- Current website main is `da1edd56fa0d5f263df8fe8728e860bc64643077`, containing both merged hazard-reservation repairs #2342 and #2344.
+- The fast PR path remains for non-runtime Dungeon assets, copy, documentation and CSS-only work, while every `arcade/lost-sizzler/js/**` runtime JavaScript change defaults to the complete six-shard Chromium qualification before merge.
+- Native Mouse Wheel Scroll Contract PR triggers include both `resources/js/**` and `quiz/js/**` as audited-page JavaScript dependency trees.
+- Full qualification remains mandatory on relevant pushes to `main`; the itch.io PR job retains deterministic package verification while duplicate packaged Chromium smoke remains reserved for main/manual qualification.
+- The previous #2339 exact head reproduced the remaining dedicated-hazard leak in shard 1 and an isolated desktop ATTACK-soak failure in shard 3. #2344 fixed the product-owned reservation leak and then passed all six Chromium shards, including the unchanged shard-3 ATTACK soak. A fresh exact-head #2339 matrix is therefore mandatory on the repaired main; no old red or green result is being reused.
+- Detailed record: [ci-qualification-strategy.md](ai-work/ci-qualification-strategy.md).
 
-## Current priority: Dungeon hazard reservation repair — 25 September 2026
+## Dungeon hazard reservation repairs — merged 25 September 2026
 
-- Current website main at repair creation: `def0feab8ea92bfd271dd31d5d99b270af522239`.
-- Draft PR #2342 / `codex/dungeon-hazard-reservation-trader-fix-20260925` repairs the seed-dependent no-dedicated-hazard failure exposed by #2339 Chromium shard 1. The hidden trader may no longer fall back into a mandatory room marked `dedicatedHazardReserved`.
-- Preliminary #2342 head `73fd989a0541eac78a89074f3a9df09bc9127888` passed canonical/Node, Chromium shards 1, 2, 4, 5 and 6, Public Code Cache Version and the itch.io package. The original failing shard 1 is now green. The later documentation head `eb505ed6a3e50cc48a1b61e7da8842c7ae3bbcc8` exposed a seed-dependent Stage-8 secret-door test-fixture collision; test-only commit `4e0ef6e820d21a956d53bd5e128d9bc0ecd46c31` makes the synthetic fixture authoritative without weakening its assertions. Final qualification must be repeated on the resulting exact head before merge.
-- #2339 remains blocked behind #2342 even though its review findings are resolved: its old full matrix is red only in shard 1 on the current-main hazard-generation defect. After #2342 integrates, reconcile #2339 onto new main and fully requalify.
-- PR defragmentation closed #2340 as superseded by the stronger current-main reservation architecture and closed #2334 after proving #2338 contains identical per-file Lighthouse Stage-1 patches. #2336 remains preserve/rebuild work because its real `movePlayer()` crossing + dash regression is unique; its remaining arena-route P2 must be repaired on current main.
-- Open website PR count at this checkpoint: **8**.
+- #2342 merged as `e362d3a8e1d2002a300cd8c1dc006db9ab92f2b0`, preventing the hidden trader fallback from stealing a dedicated-hazard reservation and isolating the Stage-8 secret-door test fixture.
+- Fresh #2339 qualification then exposed two remaining preferred optional-room reservation leaks: Sigil annex selection and the hidden trader's preferred optional-room selector.
+- #2344 exact head `77f6461c3515d4580aeb8fcf6f692677f6e8939e` excludes reserved rooms from both selectors and extends the R56 regression contract.
+- #2344 passed Public Code Cache Version, itch.io Package, SEO Automation, Native Mouse Wheel and Lost Sizzler Load Safety with Node/static plus Chromium shards 1–6, then merged as `da1edd56fa0d5f263df8fe8728e860bc64643077`.
+- Open website PR count after #2344 merge: **8**. #2339 is next in the authorised merge/reconciliation order.
 
 ## Dungeon Carnage R56 post-merge qualification — 25 September 2026
 
@@ -298,7 +300,8 @@ No further Dungeon coding stage is justified unless one of these checks exposes 
 
 | Workstream | Record | Current GitHub state |
 | --- | --- | --- |
-| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md), [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md), and [startup/first-visual checkpoint](ai-work/dungeon-carnage-startup-first-visual-2026-09-18.md) | R56 is merged through the #2337 post-merge qualification line; draft #2342 is the current priority repair for the seed-dependent dedicated-hazard reservation leak exposed by #2339 shard 1. Preliminary #2342 head `73fd989a0541eac78a89074f3a9df09bc9127888` made the original shard-1 reproduction green; the documentation head requires a fresh full exact-head matrix before merge. |
+| CI qualification policy | [ci-qualification-strategy.md](ai-work/ci-qualification-strategy.md) | PR #2339 is reconciled onto the #2344-repaired main and requires a fresh complete exact-head matrix before merge. Runtime JavaScript remains full-six-shard pre-merge scope. |
+| Dungeon Carnage runtime | [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md), [#2129 live regression checkpoint](ai-work/dungeon-carnage-live-freeze-cache-2026-09-17.md), and [startup/first-visual checkpoint](ai-work/dungeon-carnage-startup-first-visual-2026-09-18.md) | R56 plus both dedicated-hazard reservation repairs are merged through #2344 at `da1edd56fa0d5f263df8fe8728e860bc64643077`. #2339 is the next CI-policy candidate; fresh exact-head qualification is required on this repaired baseline. |
 | Dungeon Carnage commerce and distribution | [dungeon-carnage-commerce-distribution.md](ai-work/dungeon-carnage-commerce-distribution.md) | Stage 8 #2141 is merged and the verified standalone HTML5 artifact is repository-ready. Public itch.io page creation/upload/final URL remain external; the retired custom commerce/paywall and desktop/Windows graphs stay closed. |
 | Content publishing and game music | [content-publishing-and-music.md](ai-work/content-publishing-and-music.md) | #2150 is merged and the unified Content Publisher no longer exposes game-music upload. Magazine-source recovery is live/archive best-effort and no longer blocks canonical publishing. #2157 materialised the Road Rash archive/reviews and #2159 fixed the successful-refresh counter path. #2110 is closed unmerged as superseded. |
 | Commodore Quest 3 | [commodore-quest-3.md](ai-work/commodore-quest-3.md) | Draft #2176 is the current Quest 3 reconstruction at exact head `09a11f2ce26b4ba5848b29e75ad33534212a0458`; all automated checks are green. Current `main` has advanced without touching any of the 17 candidate paths, so no drift-only rebase is justified. Hands-on Bedroom + 36% Conversion Bout acceptance remains the merge gate. |
