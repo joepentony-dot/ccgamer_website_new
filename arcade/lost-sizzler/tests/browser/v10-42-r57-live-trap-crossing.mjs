@@ -116,6 +116,62 @@ try{
     await page.waitForTimeout(90);
   }
 
+
+  const timestampOnly=await page.evaluate(()=>globalThis.eval(\`(()=>{
+    const api=window.CCGLostSizzlerV142R19MobileTrapLayoutStability;
+    const reporter=window.CCGLostSizzlerBugReporter;
+    const rare=window.CCGLostSizzlerRareEventsBalance;
+    const trap=(host?.traps||[]).find(t=>t?.active&&String(t.kind||"").toLowerCase()==="spike");
+    if(!trap)return{available:false,reason:"spike missing"};
+    const candidates=[
+      {x:Number(trap.x)-1,y:Number(trap.y),dx:1,dy:0},
+      {x:Number(trap.x)+1,y:Number(trap.y),dx:-1,dy:0},
+      {x:Number(trap.x),y:Number(trap.y)-1,dx:0,dy:1},
+      {x:Number(trap.x),y:Number(trap.y)+1,dx:0,dy:-1}
+    ];
+    const entry=candidates.find(q=>W.walkable(world.map,q.x,q.y,host)&&!(host.enemies||[]).some(e=>e?.alive&&e.x===q.x&&e.y===q.y));
+    if(!entry)return{available:false,reason:"no walkable spike entry"};
+    for(const enemy of host?.enemies||[])enemy.alive=false;
+    if(host?.stalker)host.stalker.awake=false;
+    const original={period:Number(trap.period),phase:Number(trap.phase)};
+    p1.x=entry.x;p1.y=entry.y;p1.rx=p1.x;p1.ry=p1.y;
+    p1.maxHealth=Math.max(20,Number(p1.maxHealth||8));p1.armor=3;p1.invuln=0;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
+    move1=0;input.clear();
+    const period=100000,now=performance.now();
+    trap.period=period;trap.phase=((period*.10)-(now%period)+period)%period;
+    api.rearmInactiveTrapContacts();
+    let heldHealth=20,blockHealthWrites=true;
+    Object.defineProperty(p1,"health",{configurable:true,enumerable:true,get(){return heldHealth},set(value){if(!blockHealthWrites)heldHealth=Number(value)}});
+    const before={health:Number(p1.health),hurtAt:Number(p1.__ccgLastHurtAt||0),hits:Number(api.state.trapHits||0),events:reporter.events.length};
+    movePlayer(p1,entry.dx,entry.dy,false);
+    const worldKey=String(rare?.trapRuntime?.worldKey||\`\${String(run?.seed||"run")}|F\${Math.max(1,Number(run?.floor||1))}\`);
+    const playerId=String(p1?.id||p1?.name||"player"),trapId=String(trap?.id||\`\${trap?.x},\${trap?.y}\`);
+    const contactKey=\`\${worldKey}|\${playerId}|\${trapId}\`;
+    const blocked={
+      health:Number(p1.health),hurtAt:Number(p1.__ccgLastHurtAt||0),hits:Number(api.state.trapHits||0),
+      rareLatched:Boolean(rare?.trapRuntime?.contact?.has?.(contactKey)),
+      falseSignal:reporter.events.slice(before.events).some(event=>event.type==="environment-trap-damage-signal")
+    };
+    blockHealthWrites=false;
+    const restored=heldHealth;delete p1.health;p1.health=restored;
+    p1.invuln=0;p1.hitStunMs=0;
+    const retryBefore=Number(p1.health);
+    const retryHandled=api.damageValidatedTrapContact(p1,trap);
+    const retryAfter=Number(p1.health);
+    trap.period=original.period;trap.phase=original.phase;
+    p1.x=world.start.x;p1.y=world.start.y;p1.rx=p1.x;p1.ry=p1.y;p1.invuln=0;p1.hitStunMs=0;
+    api.rearmInactiveTrapContacts();
+    return{available:true,before,blocked,retryBefore,retryAfter,retryHandled};
+  })()\`));
+  assert.equal(timestampOnly.available,true,"timestamp-only SPIKE fixture must be available: "+JSON.stringify(timestampOnly));
+  assert.ok(timestampOnly.blocked.hurtAt>timestampOnly.before.hurtAt,"fixture must prove the damage pipeline advanced its timestamp while HEALTH was blocked: "+JSON.stringify(timestampOnly));
+  assert.equal(timestampOnly.blocked.health,timestampOnly.before.health,"timestamp-only contact must not manufacture HEALTH loss");
+  assert.equal(timestampOnly.blocked.hits,timestampOnly.before.hits,"timestamp-only contact must not increment the verified R19 trap-hit count");
+  assert.equal(timestampOnly.blocked.rareLatched,false,"timestamp-only contact must remain retryable instead of poisoning the canonical trap latch");
+  assert.equal(timestampOnly.blocked.falseSignal,false,"timestamp-only contact must not emit a verified trap-damage signal");
+  assert.equal(timestampOnly.retryHandled,true,"the same still-active SPIKE contact must remain retryable after the false signal");
+  assert.equal(timestampOnly.retryAfter,timestampOnly.retryBefore-1,"retry after a timestamp-only pseudo-hit must remove exactly one HEALTH");
+
   const dash=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV142R19MobileTrapLayoutStability;
     const reporter=window.CCGLostSizzlerBugReporter;
