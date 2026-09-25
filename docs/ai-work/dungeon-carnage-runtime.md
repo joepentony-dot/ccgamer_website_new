@@ -1,3 +1,14 @@
+## Priority live acceptance blockers — 2026-09-25
+
+Hands-on deployed testing on current V10.42 r56 has disproved the previous assumption that repository coding for the current Dungeon defects is complete. Two current-build defects are now **priority / release-blocking** in the CCG development queue:
+
+1. **Sustained Solo FIRE lockout.** A manual bug report captured repeated real `Space` attack intents while the game remained in `playing / solo`, with Tier 2 Field Pulse II equipped, 120/120 ammo, `hitStunMs=0`, 0/5 active projectiles and no blocking inventory/pause state. Repeated attack probes reported `fired:false`; both `ANOMALY_POSSIBLE_ATTACK_FAILURE` and `ANOMALY_POSSIBLE_FIRE_FAILURE` repeated; `deepOwnerFallbacks` increased from 11 to 15 while `deepOwnerFallbackSuccesses` remained 0. Treat this as a failure after attack intent is accepted but before an actual firearm shot completes. Do not close it with another superficial buffer/cooldown reset unless root-cause evidence proves that is the owner.
+2. **Active ordinary floor trap no-damage.** Manual deployed testing still shows a visible `SPIKE TRAP — ACTIVE` contact without the required HEALTH loss. Existing synthetic coordinate tests are therefore insufficient as the sole acceptance gate. FIRE/SPIKE/SHOCK need real movement/contact regression coverage and deployed manual confirmation.
+
+Required FIRE regression must use real input and sustained play, not merely call `firePlayer()` directly: repeated fresh Space presses during movement/combat must create real firearm work when ammo, hit-stun and projectile-cap conditions permit; repeated `ANOMALY_POSSIBLE_FIRE_FAILURE` or unsuccessful deep-owner fallback recovery is a blocker. Acceptance must also cover pause/resume, inventory transitions and pickups.
+
+These blockers take priority over Dungeon release completion and over the later NPC/dialogue/graphics/quest-content expansion. Preserve the existing qualified ownership chain while tracing the actual failing owner; do not weaken existing assertions, timeouts or release/cache discipline.
+
 ## Final compact-floor dedicated-hazard fallback — 2026-09-25
 
 - Exact-head shard 1 on `9da0a1e100b2e22046b1d66b8bb7d711f6bc10a3` proved the previous current-main repair was still incomplete: a generated Solo seed contained no dedicated hazard room.
@@ -617,21 +628,23 @@ Historical Horde/Spy source files and acceptance records remain in the repositor
 
 Preserve Solo, Tutorial, local 2P Split Screen and Weekly Vault/account services. Do not restore retired networked Dungeon Multiplayer, Horde Survivor or Spy/Sizzler Saboteurs behaviour. Do not reopen completed Defects 1, 2, 3, 4, 6 or 7 without new current-build regression evidence. Preserve #2118 projectile lifecycle ownership, #2129 release/cache discipline, the supported R56/R59/R60 startup ownership established by #2131, and the retained R19 trap-damage boundary established through #2193.
 
-Repository coding for the currently reproduced Dungeon defects is complete. The remaining gates are hands-on product acceptance:
+Hands-on product acceptance has now exposed reproducible current-build defects, so repository coding is **not** complete. The active priority queue is:
 
-- current deployed startup/menu transition after #2193;
-- sustained Solo movement/firing/combat/pause-resume stability;
+- **P0: sustained Solo FIRE lockout** — diagnose and repair the authoritative attack/fire owner chain using the captured repeated `fired:false` / FIRE anomaly evidence;
+- **P0: ordinary FIRE/SPIKE/SHOCK active-contact no-damage** — repair the real movement/contact path and strengthen regression coverage beyond synthetic coordinate placement;
+- current deployed startup/menu transition verification;
 - 3 Artefacts/Essences → 1 Banishment Flask without prior Gold purchase, with Gold and Score unchanged;
-- deployed mobile natural spike/fire/shock damage with one HEALTH removed and armour preserved.
+- after both P0 defects are repaired and fully qualified, repeat sustained Solo movement/firing/combat/pause-resume and natural-trap acceptance;
+- only after all hands-on gates pass, use the latest qualified itch.io artifact and complete the external itch.io page/upload/launch verification.
 
 Exact next Dungeon action:
 
-1. retest the deployed startup transition on current post-#2193 main;
-2. complete sustained Solo acceptance;
-3. complete the three-Artefact/Essence Banishment Flask exchange acceptance;
-4. complete deployed mobile natural-trap acceptance;
-5. after all hands-on gates pass, use the latest qualified itch.io artifact and complete the external itch.io page/upload/launch verification;
-6. do not create another Dungeon coding stage unless one of those hands-on checks exposes a reproducible current-build defect.
+1. reproduce and trace the sustained FIRE lockout from real `Space` input through the authoritative attack/fire owner chain;
+2. reproduce and trace the active ordinary trap no-damage path through real player movement/contact;
+3. implement the smallest evidence-backed repairs without stacking another competing owner;
+4. add browser regressions that exercise the real input/contact paths and fail on the captured anomaly conditions;
+5. run the complete required exact-head qualification matrix;
+6. deploy and manually retest FIRE, FIRE/SPIKE/SHOCK damage, pause/resume, inventory transitions and sustained combat before release completion.
 
 ## Historical live-defect remediation checkpoint — 16 September 2026
 
