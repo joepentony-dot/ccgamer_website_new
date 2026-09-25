@@ -117,6 +117,9 @@ try{
     let trap=null,dir=null;
     for(const candidate of host?.traps||[]){
       if(!candidate?.active)continue;
+      const candidateRoomId=Number.isFinite(Number(candidate.roomId))?Number(candidate.roomId):W.roomAt(world,Number(candidate.x),Number(candidate.y));
+      const untriggeredArena=(host.arenas||[]).some(arena=>!arena?.triggered&&Number(arena.roomId)===candidateRoomId);
+      if(untriggeredArena)continue;
       const found=directions.map(([dx,dy])=>({dx,dy,sx:Number(candidate.x)-dx,sy:Number(candidate.y)-dy,ex:Number(candidate.x)+dx,ey:Number(candidate.y)+dy}))
         .find(q=>{
           const entryOpen=W.walkable(world.map,q.sx,q.sy,host);
