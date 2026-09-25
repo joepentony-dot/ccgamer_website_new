@@ -28,6 +28,11 @@ assert.match(
   "fallback hazard rooms must only be considered when primary rooms are insufficient"
 );
 assert.match(
+  systems,
+  /fallbackFinalTrapRooms=\[\.\.\.\(world\.rooms\|\|\[\]\)\][\s\S]*emergencyFinalTrapRooms=\[\.\.\.\(world\.rooms\|\|\[\]\)\][\s\S]*fallbackFinalTrapRooms\[offset%Math\.max\(1,fallbackFinalTrapRooms\.length\)\][\s\S]*emergencyFinalTrapRooms\[offset%Math\.max\(1,emergencyFinalTrapRooms\.length\)\]/,
+  "final trap-family restoration must fall back to progressively relaxed non-hazard rooms when the strict pool is empty"
+);
+assert.match(
   reporter,
   /row\?\.active===true&&Number\(row\?\.hitCooldown\|\|0\)<=0/,
   "dedicated hazard contacts under the normal hit cooldown must not be reported as missed damage"
