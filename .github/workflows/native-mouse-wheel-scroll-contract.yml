@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - "resources/css/**"
+      - "resources/js/**"
+      - "quiz/js/**"
       - "js/**"
       - "home.html"
       - "games/index.html"
@@ -29,6 +31,8 @@ on:
       - main
     paths:
       - "resources/css/**"
+      - "resources/js/**"
+      - "quiz/js/**"
       - "js/**"
       - "home.html"
       - "games/index.html"
