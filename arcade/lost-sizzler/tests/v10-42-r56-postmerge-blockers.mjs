@@ -30,8 +30,8 @@ assert.match(
 );
 assert.match(
   systems,
-  /reservedHazardRooms=rooms\.filter\(room=>room\?\.dedicatedHazardReserved&&hazardEligible\(room,6,5\)\)[\s\S]*choices=\[\.\.\.shuffleHazardRooms\(reservedHazardRooms\),/,
-  "reserved dedicated-hazard rooms must be consumed before ordinary hazard candidates"
+  /hardHazardEligible=\(room,minW=6,minH=5\)=>Boolean\([\s\S]*reservedHazardRooms=rooms\.filter\(room=>room\?\.dedicatedHazardReserved&&hardHazardEligible\(room,6,5\)\)[\s\S]*choices=\[\.\.\.shuffleHazardRooms\(reservedHazardRooms\),/,
+  "reserved dedicated-hazard rooms must remain authoritative over later soft room owners and be consumed before ordinary hazard candidates"
 );
 assert.match(
   systems,
@@ -65,8 +65,8 @@ assert.match(
 );
 assert.match(
   stage6,
-  /TRAP_FAMILIES=Object\.freeze\(\["fire","spike","shock"\]\)[\s\S]*function reconcileTrapFamilies\(hostState,seed\)[\s\S]*counts\[String\(trap\.kind\|\|""\)\.toLowerCase\(\)\]>1[\s\S]*donor\.kind=kind[\s\S]*reconcileTrapFamilies\(hostState,seed\)/,
-  "Stage 6 zone retuning must preserve at least one active FIRE, SPIKE and SHOCK family by retagging only a surplus duplicate"
+  /TRAP_FAMILIES=Object\.freeze\(\["fire","spike","shock"\]\)[\s\S]*function reconcileTrapFamilies\(hostState,seed,worldState,profile\)[\s\S]*counts\[String\(trap\.kind\|\|""\)\.toLowerCase\(\)\]>1[\s\S]*donor\.kind=kind[\s\S]*reserveCell\(kind\)[\s\S]*v142ZoneFamilyReserve:true[\s\S]*reconcileTrapFamilies\(hostState,seed,worldState,\{\.\.\.profile,floor\}\)/,
+  "Stage 6 zone retuning must preserve FIRE, SPIKE and SHOCK families by retagging a surplus duplicate or deterministically restoring a missing family in a non-hazard room"
 );
 assert.match(
   reporter,
