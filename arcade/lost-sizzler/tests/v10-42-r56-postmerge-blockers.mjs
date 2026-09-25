@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const root=new URL("../",import.meta.url);
-const repoRoot=new URL("../../../",root);
+const repoRoot=new URL("../../",root);
 
 const systems=fs.readFileSync(new URL("js/systems.js",root),"utf8");
 const reporter=fs.readFileSync(new URL("js/v10-42-bug-reporter.js",root),"utf8");
