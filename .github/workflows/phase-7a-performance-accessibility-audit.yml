@@ -132,6 +132,7 @@ jobs:
               "scripts/sitewide_lighthouse_aggregate.mjs",
               "docs/seo-baseline/phase-7a-performance-accessibility-audit.md",
               "docs/seo-baseline/phase-7a-performance-accessibility-evidence.json",
+              "docs/ai-work/lighthouse-sitewide.md",
           }
           tracked = subprocess.check_output(
               ["git", "diff", "--name-only", "origin/main"], text=True
