@@ -2,6 +2,8 @@ name: CCG Site-wide Lighthouse Matrix
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "20 3 * * 0"
   pull_request:
     branches:
       - main
@@ -16,11 +18,11 @@ permissions:
 
 concurrency:
   group: ccg-sitewide-lighthouse-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   lighthouse:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.title, '[FULL LIGHTHOUSE]')
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || contains(github.event.pull_request.title, '[FULL LIGHTHOUSE]')
     name: Lighthouse ${{ matrix.device }} shard ${{ matrix.shard }}
     runs-on: ubuntu-latest
     timeout-minutes: 70
@@ -83,7 +85,7 @@ jobs:
           retention-days: 21
 
   aggregate:
-    if: always() && (github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.title, '[FULL LIGHTHOUSE]'))
+    if: always() && (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || contains(github.event.pull_request.title, '[FULL LIGHTHOUSE]'))
     name: Aggregate site-wide Lighthouse
     needs:
       - lighthouse
