@@ -150,6 +150,9 @@ jobs:
       - name: Run adaptive navigation reflow regression guard
         run: node --test tests/navigation-fit-reflow.test.mjs
 
+      - name: Run Home render-blocking CSS regression guard
+        run: node --test tests/home-render-blocking-css.test.mjs
+
       - name: Run mobile-lite startup regression guard
         run: node tests/ccg-mobile-lite-startup.mjs
 
