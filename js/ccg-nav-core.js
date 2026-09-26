@@ -17,6 +17,27 @@ Do Not Override
         { href: "/resources/css/ccg-scroll-authority.css", marker: "data-ccg-scroll-authority-style" },
         { href: "/resources/css/ccg-nav-fit.css", marker: "data-ccg-nav-fit-style" }
     ];
+    function currentPublicPath() {
+        return String(window.location.pathname || "/")
+            .replace(/\/index\.html$/i, "/")
+            .replace(/\/{2,}/g, "/");
+    }
+
+    function isHomeRoute() {
+        const path = currentPublicPath();
+        const pageId = String(document.documentElement.getAttribute("data-ccg-page") || "").toLowerCase();
+        return pageId === "home" || path === "/" || /\/home\.html$/i.test(path);
+    }
+
+    function isArchiveSchemaRoute() {
+        const path = currentPublicPath();
+        return /^\/(?:quiz\/?|games\/?|games\/(?:genres|publishers|developers|years|platforms|collections|downloads)(?:\/[^/]+)?\/?|music(?:\/[^/]+)?\/?|retro-specials(?:\/[^/]+)?\/?|zzap64\/?)$/i.test(path);
+    }
+
+    function isPublisherDetailRoute() {
+        return /^\/games\/publishers\/[^/]+\/?$/i.test(currentPublicPath());
+    }
+
     const OPTIONAL_MODULES = [
         { src: "/js/ccg-legacy-url-consolidation.js", marker: "data-ccg-legacy-url-loader" },
         { src: "/js/ccg-global-search.js", marker: "data-ccg-global-search-loader" },
@@ -25,21 +46,21 @@ Do Not Override
         { src: "/js/ccg-recently-viewed.js", marker: "data-ccg-recently-viewed-loader" },
         { src: "/js/ccg-smart-discovery.js", marker: "data-ccg-smart-discovery-loader" },
         { src: "/js/ccg-engagement-engine.js", marker: "data-ccg-engagement-engine-loader" },
-        { src: "/js/ccg-archive-pulse-randomizer.js", marker: "data-ccg-archive-pulse-randomizer-loader" },
-        { src: "/js/ccg-archive-pulse-thumbnails.js", marker: "data-ccg-archive-pulse-thumbnails-loader" },
+        { src: "/js/ccg-archive-pulse-randomizer.js", marker: "data-ccg-archive-pulse-randomizer-loader", when: isHomeRoute },
+        { src: "/js/ccg-archive-pulse-thumbnails.js", marker: "data-ccg-archive-pulse-thumbnails-loader", when: isHomeRoute },
         { src: "/js/ccg-archive-shortcuts.js", marker: "data-ccg-archive-shortcuts-loader" },
-        { src: "/js/ccg-archive-schema.js", marker: "data-ccg-archive-schema-loader" },
+        { src: "/js/ccg-archive-schema.js", marker: "data-ccg-archive-schema-loader", when: isArchiveSchemaRoute },
         { src: "/js/ccg-pwa.js", marker: "data-ccg-pwa-loader" },
         { src: "/js/ccg-pwa-visible-install.js", marker: "data-ccg-pwa-visible-install-loader" },
         { src: "/js/ccg-release-check.js", marker: "data-ccg-release-check-loader" },
         { src: "/js/ccg-nav-fit.js", marker: "data-ccg-nav-fit-loader" },
         { src: "/js/ccg-header-auth-loader.js", marker: "data-ccg-header-auth-loader" },
-        { src: "/js/ccg-publisher-history.js", marker: "data-ccg-publisher-history-loader" },
+        { src: "/js/ccg-publisher-history.js", marker: "data-ccg-publisher-history-loader", when: isPublisherDetailRoute },
         { src: "/js/ccg-ui-regression-fixes.js", marker: "data-ccg-ui-regression-fixes-loader" },
         { src: "/js/ccg-mode-engine.js", marker: "data-ccg-mode-engine-loader" },
         { src: "/js/ccg-amiga-identity.js", marker: "data-ccg-amiga-identity-loader" },
         { src: "/js/ccg-mode-identity.js", marker: "data-ccg-mode-identity-loader" },
-        { src: "/js/ccg-recent-content.js", marker: "data-ccg-recent-content-loader" },
+        { src: "/js/ccg-recent-content.js", marker: "data-ccg-recent-content-loader", when: isHomeRoute },
         { src: "/js/ccg-member-library-interface.js", marker: "data-ccg-member-library-interface-loader" },
         { src: "/js/ccg-member-library-sync-loader.js", marker: "data-ccg-member-library-sync-loader" },
         { src: "/js/ccg-member-community-loader.js", marker: "data-ccg-member-community-loader" },
@@ -315,7 +336,8 @@ html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-op
     }
 
     function loadOptionalModules() {
-        OPTIONAL_MODULES.forEach(({ src, marker }) => {
+        OPTIONAL_MODULES.forEach(({ src, marker, when }) => {
+            if (typeof when === "function" && !when()) return;
             if (hasModuleScript(src)) return;
             const script = document.createElement("script");
             script.src = src;

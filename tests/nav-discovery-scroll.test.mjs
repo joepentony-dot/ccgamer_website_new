@@ -199,3 +199,16 @@ test('shared CCG releases can update without manual cache clearing', () => {
   assert.match(headers, /\/resources\/css\/\*\s+Cache-Control: public, max-age=0, must-revalidate/s);
   assert.match(headers, /\/service-worker\.js\s+Cache-Control: no-cache, no-store, must-revalidate/s);
 });
+
+test('optional navigation modules are page-scoped instead of downloaded everywhere', () => {
+  assert.match(navCore, /function isHomeRoute\(\)/);
+  assert.match(navCore, /function isArchiveSchemaRoute\(\)/);
+  assert.match(navCore, /function isPublisherDetailRoute\(\)/);
+  assert.match(navCore, /ccg-archive-pulse-randomizer\.js"[\s\S]*when: isHomeRoute/);
+  assert.match(navCore, /ccg-archive-pulse-thumbnails\.js"[\s\S]*when: isHomeRoute/);
+  assert.match(navCore, /ccg-recent-content\.js"[\s\S]*when: isHomeRoute/);
+  assert.match(navCore, /ccg-archive-schema\.js"[\s\S]*when: isArchiveSchemaRoute/);
+  assert.match(navCore, /ccg-publisher-history\.js"[\s\S]*when: isPublisherDetailRoute/);
+  assert.match(navCore, /typeof when === "function" && !when\(\)/);
+});
+
