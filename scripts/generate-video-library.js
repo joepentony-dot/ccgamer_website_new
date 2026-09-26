@@ -4,7 +4,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { youtubeThumbnailIntrinsicAttributes } = require("./lib/youtube-thumbnail-dimensions.js");
+const { youtubeThumbnailCardUrl, youtubeThumbnailIntrinsicAttributes } = require("./lib/youtube-thumbnail-dimensions.js");
 const { applyTemplate, readTemplate } = require("./template-engine");
 const { normalizeRetroSlug, verifiedMetadata } = require("./generate-retro-video-seo");
 const { normaliseHtml, STATIC_SHELL_VERSION } = require("./normalize-public-header-shell");
@@ -409,7 +409,7 @@ function buildGameLibraryItems(games, metadataById) {
       title: stripHtml(metadata?.title || game?.title || "Retro game"),
       description: truncate(game?.description || `Watch ${game?.title || "this game"} on ${platform}.`, 190),
       url: `/games/${slug}/`,
-      thumbnail: youtubeThumbnail(videoId, metadata),
+      thumbnail: youtubeThumbnailCardUrl(youtubeThumbnail(videoId, metadata)),
       platform,
       year: game?.year || "",
       publisher: stripHtml(publisher),
@@ -437,7 +437,7 @@ function buildRetroLibraryItems(metadataById) {
         title: stripHtml(metadata?.title || entry?.title || "Retro feature"),
         description: truncate(entry?.summary || entry?.description || "Cheeky Commodore Gamer video feature.", 190),
         url: `${config.pagePrefix}${slug}/`,
-        thumbnail: youtubeThumbnail(videoId, metadata),
+        thumbnail: youtubeThumbnailCardUrl(youtubeThumbnail(videoId, metadata)),
         platform: "",
         year: "",
         publisher: "",
@@ -555,5 +555,6 @@ module.exports = {
   featuredGamesFor,
   normalizeChapters,
   parseTimestamp,
+  youtubeThumbnailCardUrl,
   youtubeThumbnailIntrinsicAttributes
 };
