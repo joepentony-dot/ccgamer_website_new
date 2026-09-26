@@ -51,7 +51,7 @@ const searchJs = read("js/ccg-global-search.js");
 const searchCss = read("resources/css/ccg-global-search.css");
 const performanceJs = read("resources/js/ccg-performance.js");
 const performanceCss = read("resources/css/ccg-performance-foundations.css");
-const home = read("home.html");
+const home = read("home.html");\nconst placementJs = read("js/ccg-search-command-placement.js");
 
 [
     'const VIDEO_INDEX = "/videos/video-index.json"',
@@ -64,8 +64,24 @@ const home = read("home.html");
     '["Retro Events", "Event"',
     'Search anything on CCG',
     'Search the Entire CCG Website',
-    'homeMain.insertBefore(command, homeMain.firstChild)'
+    'const existingTrigger = document.querySelector("[data-ccg-global-search-trigger]")',
+    'trigger.dataset.ccgGlobalSearchBound = "true"',
+    'bindTrigger(existingTrigger)'
 ].forEach((token) => requireText(searchJs, token, "Whole-site search runtime"));
+
+[
+    'document.documentElement.getAttribute("data-ccg-page") === "home"',
+    'html[data-ccg-page="home"] .ccg-main--home',
+    "if (!isHomePage()) return;",
+    "promoteHomeTrigger()"
+].forEach((token) => requireText(placementJs, token, "Stable search command placement"));
+
+if (placementJs.includes("main.insertBefore(command, main.firstChild)")) {
+    failures.push("Stable search command placement must not inject a command into main after first paint");
+}
+if (placementJs.includes('document.querySelector("main.ccg-main, .ccg-main")')) {
+    failures.push("Stable search command placement must not target arbitrary inner-page main elements");
+}
 
 [
     ".ccg-home-search-command",
@@ -92,8 +108,22 @@ const home = read("home.html");
 [
     '<script src="js/ccg-nav-core.js" defer></script>',
     '<script src="resources/js/ccg-performance.js" defer></script>',
-    'class="ccg-main ccg-main--home"'
+    'class="ccg-main ccg-main--home"',
+    'data-ccg-home-search-static="true"',
+    'data-ccg-global-search-trigger="true"',
+    '<!-- PERFORMANCE-STABLE GLOBAL SEARCH SLOT -->'
 ].forEach((token) => requireText(home, token, "Home integration"));
+
+const homeCss = read("resources/css/home.css");
+[
+    "HOME SEARCH — FIRST-PAINT LAYOUT RESERVATION",
+    ".ccg-main--home > .ccg-home-search-command",
+    "min-height: 76px",
+    "grid-template-columns: 42px minmax(0, 1fr) auto",
+    "@media (max-width: 760px)",
+    "min-height: 74px"
+].forEach((token) => requireText(homeCss, token, "Home first-paint search geometry"));
+balancedBraces(homeCss, "home.css");
 
 balancedBraces(searchCss, "ccg-global-search.css");
 balancedBraces(performanceCss, "ccg-performance-foundations.css");
@@ -109,6 +139,6 @@ if (failures.length) {
 }
 
 console.log("Home search and responsive performance audit passed.");
-console.log("- homepage search is promoted outside the desktop header grid");
+console.log("- homepage search occupies static first-paint space while inner-page search remains in the header");
 console.log("- search covers the main site sections, videos, music and retro events");
 console.log("- scroll pauses decorative effects and viewport capability classes resynchronise after resize");

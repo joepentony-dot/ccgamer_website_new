@@ -476,10 +476,27 @@
         renderForCurrentQuery();
     }
 
+    function bindTrigger(trigger) {
+        if (!(trigger instanceof HTMLElement)) return false;
+        if (trigger.dataset.ccgGlobalSearchBound !== "true") {
+            trigger.addEventListener("click", openSearch);
+            trigger.dataset.ccgGlobalSearchBound = "true";
+        }
+        state.trigger = trigger;
+        return true;
+    }
+
     function createTrigger() {
         const actions = document.querySelector(".ccg-header-actions");
         const homeMain = document.querySelector('html[data-ccg-page="home"] .ccg-main--home');
-        if ((!actions && !homeMain) || document.querySelector("[data-ccg-global-search-trigger]")) return;
+        if (!actions && !homeMain) return;
+
+        const existingTrigger = document.querySelector("[data-ccg-global-search-trigger]");
+        if (existingTrigger) {
+            if (homeMain) existingTrigger.classList.add("ccg-global-search-trigger--home");
+            bindTrigger(existingTrigger);
+            return;
+        }
 
         const trigger = document.createElement("button");
         trigger.type = "button";
@@ -498,7 +515,7 @@
             </span>
             <span class="ccg-global-search-trigger__shortcut" aria-hidden="true">Ctrl K</span>
         `;
-        trigger.addEventListener("click", openSearch);
+        bindTrigger(trigger);
 
         if (homeMain) {
             const command = document.createElement("div");
@@ -512,7 +529,6 @@
             const socialLinks = actions.querySelector(".ccg-header-socials");
             actions.insertBefore(trigger, socialLinks || actions.firstChild);
         }
-        state.trigger = trigger;
     }
 
     function handleGlobalShortcut(event) {

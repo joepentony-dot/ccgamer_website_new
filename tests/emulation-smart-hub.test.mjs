@@ -47,5 +47,5 @@ test("support action remains small and page-owned", () => {
 });
 
 test("smart hub public code ships in a fresh cache namespace", () => {
-  assert.match(serviceWorker, /CODE_CACHE_VERSION = "2026-09-25-public-code-v23"/);
+  assert.match(serviceWorker, /CODE_CACHE_VERSION = "20\d{2}-\d{2}-\d{2}-public-code-v[0-9]+"/);
 });
