@@ -99,35 +99,98 @@
         window.setTimeout(() => panel.remove(), 180);
     }
 
-    async function clearPublicCaches() {
-        const registration = await navigator.serviceWorker?.getRegistration?.("/");
-        const worker = registration?.waiting || registration?.active || navigator.serviceWorker?.controller;
-        worker?.postMessage?.({ type: "CLEAR_PUBLIC_CACHES" });
-        try { await registration?.update?.(); } catch (error) {}
-        return registration;
+    function requestPublicCacheClear(worker) {
+        if (!worker?.postMessage) return Promise.resolve(false);
+
+        if (typeof MessageChannel !== "function") {
+            worker.postMessage({ type: "CLEAR_PUBLIC_CACHES" });
+            return Promise.resolve(false);
+        }
+
+        return new Promise((resolve) => {
+            const channel = new MessageChannel();
+            let settled = false;
+
+            const finish = (ok) => {
+                if (settled) return;
+                settled = true;
+                window.clearTimeout(timeout);
+                try { channel.port1.close(); } catch (error) {}
+                resolve(Boolean(ok));
+            };
+
+            const timeout = window.setTimeout(() => finish(false), 2200);
+            channel.port1.onmessage = (event) => {
+                const data = event?.data || {};
+                finish(data.type === "PUBLIC_CACHES_CLEARED" && data.ok !== false);
+            };
+
+            try {
+                worker.postMessage({ type: "CLEAR_PUBLIC_CACHES" }, [channel.port2]);
+            } catch (error) {
+                finish(false);
+            }
+        });
+    }
+
+    async function clearPublicCaches(registration) {
+        const worker = navigator.serviceWorker?.controller || registration?.active;
+        await requestPublicCacheClear(worker);
+    }
+
+    function waitForWaitingWorker(registration, timeoutMs = 2600) {
+        if (registration?.waiting) return Promise.resolve(registration.waiting);
+        const worker = registration?.installing;
+        if (!worker) return Promise.resolve(null);
+
+        return new Promise((resolve) => {
+            let settled = false;
+            const finish = (value) => {
+                if (settled) return;
+                settled = true;
+                window.clearTimeout(timeout);
+                worker.removeEventListener?.("statechange", onStateChange);
+                resolve(value);
+            };
+            const onStateChange = () => {
+                if (registration.waiting || worker.state === "installed") {
+                    finish(registration.waiting || worker);
+                } else if (worker.state === "redundant") {
+                    finish(null);
+                }
+            };
+            const timeout = window.setTimeout(() => finish(registration.waiting || null), timeoutMs);
+            worker.addEventListener?.("statechange", onStateChange);
+            onStateChange();
+        });
     }
 
     async function activateRelease(button, fingerprint, panel) {
         button.disabled = true;
         button.textContent = "Updating…";
 
-        const registration = await clearPublicCaches();
+        const registration = await navigator.serviceWorker?.getRegistration?.("/");
+        try { await registration?.update?.(); } catch (error) {}
+        const waiting = await waitForWaitingWorker(registration);
         storageSet(STORAGE_KEY, fingerprint);
 
-        if (registration?.waiting) {
-            registration.waiting.postMessage({ type: "SKIP_WAITING" });
+        if (waiting) {
             let reloaded = false;
             navigator.serviceWorker?.addEventListener?.("controllerchange", () => {
                 if (reloaded) return;
                 reloaded = true;
                 window.location.reload();
             }, { once: true });
+            waiting.postMessage({ type: "SKIP_WAITING" });
             window.setTimeout(() => {
                 if (!reloaded) window.location.reload();
-            }, 1400);
+            }, 2600);
             return;
         }
 
+        // If no replacement worker is ready, clear the currently controlled
+        // public caches and wait for acknowledgement before reloading.
+        await clearPublicCaches(registration);
         removePanel(panel);
         window.location.reload();
     }
