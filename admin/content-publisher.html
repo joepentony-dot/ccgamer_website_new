@@ -158,12 +158,13 @@
         </div>
 
         <div class="publisher-grid publisher-grid--2">
-          <label>Thumbnail path *
-            <input type="text" data-game-field="thumbnail" placeholder="resources/images/thumbnails/all/game-name.jpg" required />
+          <label>Thumbnail path (optional override)
+            <input type="text" data-game-field="thumbnail" placeholder="Automatically uses resources/images/thumbnails/all/<slug>.webp" />
+            <small>Normally leave blank. Selecting an image below optimises it to WebP and assigns the slug-based repository path automatically.</small>
           </label>
-          <label>Thumbnail file (optional)
+          <label>Thumbnail image *
             <input type="file" accept="image/png,image/jpeg,image/webp" data-game-thumbnail-file />
-            <small>If selected, it is committed atomically with games.json at the path above.</small>
+            <small>Select PNG, JPEG or WebP. New uploads are optimised locally and committed atomically with games.json.</small>
           </label>
           <label>3D box file (optional)
             <input type="file" accept="image/png,image/jpeg,image/webp" data-game-box3d-file />
