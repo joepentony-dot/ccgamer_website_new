@@ -111,6 +111,7 @@ function isApprovedHomeDiscoveryDashboard(relativePath) {
 const manifestText = read("manifest.webmanifest");
 const serviceWorker = read("service-worker.js");
 const pwaCode = read("js/ccg-pwa.js");
+const releaseCheck = read("js/ccg-release-check.js");
 const pwaCss = read("resources/css/ccg-pwa.css");
 const launchPage = read("app-launch.html");
 const launchCode = read("js/ccg-app-launch.js");
@@ -236,6 +237,17 @@ requireText(serviceWorker, '"/resources/css/ccg-app-launch.css"', "Launch styles
 requireText(serviceWorker, '"/js/ccg-app-launch.js"', "Launch script precache");
 requireText(serviceWorker, "navigationPreload.enable", "Navigation preload");
 requireText(serviceWorker, "CLEAR_PUBLIC_CACHES", "Public cache reset control");
+requireText(serviceWorker, "PUBLIC_CACHES_CLEARED", "Public cache reset acknowledgement");
+requireText(serviceWorker, 'const PAGE_CACHE = `ccg-pages-${CACHE_VERSION}-${CODE_CACHE_VERSION}`', "Versioned page/code cache consistency");
+requireText(serviceWorker, "NAVIGATION_TIMEOUT_MS = 7000", "Bounded navigation network wait");
+requireText(serviceWorker, "SHELL_FETCH_TIMEOUT_MS = 5000", "Bounded shell precache wait");
+requireText(serviceWorker, "fetchShellWithTimeout", "Bounded shell precache helper");
+requireText(serviceWorker, "const cached = await cache.match(request", "Current code-cache lookup");
+requireText(serviceWorker, "const shellCache = await caches.open(SHELL_CACHE)", "Current shell-cache fallback");
+requireText(releaseCheck, "new MessageChannel()", "Reload cache-clear handshake");
+requireText(releaseCheck, "await requestPublicCacheClear(worker)", "Reload waits for cache-clear acknowledgement");
+requireText(releaseCheck, "waitForWaitingWorker", "Fresh service-worker activation wait");
+requireText(releaseCheck, 'waiting.postMessage({ type: "SKIP_WAITING" })', "Fresh worker activation before reload");
 rejectText(serviceWorker, "supabase.co", "Service worker");
 rejectText(serviceWorker, "self.skipWaiting();\n  event.waitUntil(precache", "Automatic update activation");
 
@@ -284,12 +296,15 @@ const allowedPaths = new Set([
   "app-launch.html",
   "js/ccg-app-launch.js",
   "js/ccg-pwa.js",
+  "js/ccg-release-check.js",
   "js/ccg-nav-core.js",
   "resources/css/ccg-app-launch.css",
   "resources/css/ccg-pwa.css",
   "resources/images/ccg-app-icon-v2.svg",
   "resources/images/ccg-app-icon-maskable-v2.svg",
   "scripts/audit-installable-pwa.js",
+  "tests/pwa-reload-reliability.test.mjs",
+  "tests/browser/pwa-reload-reliability.mjs",
   ".github/workflows/ccg-installable-pwa.yml",
   "docs/phase-17-installable-pwa.md"
 ]);

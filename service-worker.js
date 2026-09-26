@@ -2,15 +2,16 @@
 "use strict";
 
 const CACHE_VERSION = "2026-08-25-public-release-v10";
-const CODE_CACHE_VERSION = "2026-09-26-public-code-v36";
+const CODE_CACHE_VERSION = "2026-09-26-public-code-v37";
 const SHELL_CACHE = `ccg-shell-${CACHE_VERSION}-${CODE_CACHE_VERSION}`;
-const PAGE_CACHE = `ccg-pages-${CACHE_VERSION}`;
+const PAGE_CACHE = `ccg-pages-${CACHE_VERSION}-${CODE_CACHE_VERSION}`;
 const CODE_CACHE = `ccg-code-${CODE_CACHE_VERSION}`;
 const ASSET_CACHE = `ccg-assets-${CACHE_VERSION}`;
 const DATA_CACHE = `ccg-public-data-${CACHE_VERSION}`;
 const CACHE_PREFIX = "ccg-";
 const OFFLINE_URL = "/offline.html";
 const NAVIGATION_TIMEOUT_MS = 7000;
+const SHELL_FETCH_TIMEOUT_MS = 5000;
 
 const PUBLIC_SHELL = Object.freeze([
   OFFLINE_URL,
@@ -129,12 +130,28 @@ async function putIfPublic(cacheName, key, response) {
   await cache.put(key, response.clone());
 }
 
+async function fetchShellWithTimeout(request) {
+  let timeoutId = 0;
+  const timeout = new Promise((_, reject) => {
+    timeoutId = setTimeout(
+      () => reject(new Error("CCG shell precache timeout")),
+      SHELL_FETCH_TIMEOUT_MS
+    );
+  });
+
+  try {
+    return await Promise.race([fetch(request), timeout]);
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 async function precachePublicShell() {
   const cache = await caches.open(SHELL_CACHE);
   await Promise.all(PUBLIC_SHELL.map(async (path) => {
     try {
       const request = new Request(path, { cache: "reload", credentials: "same-origin" });
-      const response = await fetch(request);
+      const response = await fetchShellWithTimeout(request);
       if (canStoreResponse(response)) await cache.put(request, response);
     } catch (error) {
       // One optional shell asset must not prevent the service worker installing.
@@ -235,10 +252,18 @@ async function networkFirstAsset(request) {
 }
 
 async function cacheFirstCodeAsset(request) {
-  const cached = await caches.match(request, { ignoreSearch: false });
+  // Only the current public-code namespace may satisfy a CSS/JS request.
+  // Searching every CCG cache can resurrect stale code during an update.
+  const cache = await caches.open(CODE_CACHE);
+  const cached = await cache.match(request, { ignoreSearch: false });
   if (cached) return cached;
 
-  const cache = await caches.open(CODE_CACHE);
+  // PUBLIC_SHELL precaches a small set of shared CSS/JS. Permit that
+  // same-generation fallback without searching older cache namespaces.
+  const shellCache = await caches.open(SHELL_CACHE);
+  const shellCached = await shellCache.match(request, { ignoreSearch: false });
+  if (shellCached) return shellCached;
+
   try {
     // A cache-version bump creates a fresh namespace. The first miss must still
     // bypass any stale browser HTTP entry before the response is stored here.
@@ -325,11 +350,18 @@ self.addEventListener("message", (event) => {
   }
 
   if (event.data?.type === "CLEAR_PUBLIC_CACHES") {
+    const replyPort = event.ports?.[0];
     event.waitUntil((async () => {
-      const keys = await caches.keys();
-      await Promise.all(keys
-        .filter((key) => key.startsWith(CACHE_PREFIX))
-        .map((key) => caches.delete(key)));
+      let ok = true;
+      try {
+        const keys = await caches.keys();
+        await Promise.all(keys
+          .filter((key) => key.startsWith(CACHE_PREFIX))
+          .map((key) => caches.delete(key)));
+      } catch (error) {
+        ok = false;
+      }
+      replyPort?.postMessage?.({ type: "PUBLIC_CACHES_CLEARED", ok });
     })());
   }
 });
