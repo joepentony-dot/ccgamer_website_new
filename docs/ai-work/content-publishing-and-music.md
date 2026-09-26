@@ -1,3 +1,11 @@
+## Generated-output custom-domain verification handoff — 25 September 2026
+
+- The first live generated release after #2355 proved the Omega deployment handoff: Reliable Games Publishing merged #2356 as `b3b9a22b5ebb1bcb4f461cf2970273d38d9ba6fe` and explicitly started Omega Stable run `36155903573` by `workflow_dispatch`.
+- That deployed run passed, but the existing `workflow_run`-based **Live Public Navigation Verification** follower did not start. This matches GitHub's `GITHUB_TOKEN` recursion rule: explicit `workflow_dispatch` is allowed, while the subsequent workflow-completion event is not guaranteed to start another workflow when the chain originated from `GITHUB_TOKEN`.
+- Bounded repair: Omega Stable gains `actions: write` and, only when its own event is `workflow_dispatch`, explicitly dispatches `live-public-navigation.yml` on `main` after deployed-page verification succeeds. Ordinary push deployments retain the existing `workflow_run` follower and therefore do not gain a duplicate explicit dispatch.
+- The publishing-automation integrity audit now guards this final handoff. No public site payload, generated archive content, Dungeon runtime, Quest runtime, backend/auth code, cache namespace, or protected intro-loader file changes here.
+- Exact-head qualification remains mandatory before merge.
+
 ## Post-consolidation generated-output deployment handoff — 25 September 2026
 
 - Live follow-through on current main `e61bc047c31bfd9226f5b8edeeefb1bfc041fcce` found that Reliable Games Publishing run `36151892128` correctly rebuilt and merged generated output as #2354, including the repaired 662-game Games Index.

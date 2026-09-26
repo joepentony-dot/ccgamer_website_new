@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: write
   contents: read
   pages: write
   id-token: write
@@ -428,3 +429,12 @@ jobs:
 
           echo "The deployment completed, but the canonical first-paint shell or another expected public feature was not visible after three minutes." >&2
           exit 1
+
+      - name: Dispatch custom-domain navigation verification
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run live-public-navigation.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main

@@ -1,3 +1,10 @@
+## Generated-output custom-domain navigation handoff — 25 September 2026
+
+- #2355 is merged and its real generated-output follow-through produced #2356 / `b3b9a22b5ebb1bcb4f461cf2970273d38d9ba6fe`. The new explicit Omega deployment dispatch worked and deployed successfully.
+- Live evidence exposed one final Actions-recursion gap: the dispatched Omega run did not start the existing `workflow_run` custom-domain navigation follower.
+- Current bounded candidate makes **workflow-dispatched** Omega deployments explicitly dispatch **Live Public Navigation Verification** after deployed-page checks pass, while normal push deployments continue using the existing follower. Publishing integrity pins the contract.
+- This remains SEO/deployment follow-through only. #2176 and #2329 stay preserved/deferred; UTA remains complete; Dungeon runtime is unchanged.
+
 ## R58 verified ordinary-trap health ownership — 25 September 2026
 
 - R57 FIRE repair is merged on main at `1e9ced56d538f535b846e495d4baf5e02fe470a5`; its exact-head full qualification passed. Deployed hands-on FIRE confirmation remains required.
