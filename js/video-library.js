@@ -21,6 +21,14 @@
 
   const normalize = (value) => String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
+  const cardThumbnail = (value) => {
+    const raw = String(value || '').trim();
+    return raw.replace(
+      /^(https:\/\/(?:i|img)\.ytimg\.com\/vi\/[A-Za-z0-9_-]+\/)(?:maxresdefault|sddefault|hqdefault|mqdefault|default)\.jpg([?#].*)?$/i,
+      '$1mqdefault.jpg$2'
+    );
+  };
+
   const make = (tag, className, text) => {
     const element = document.createElement(tag);
     if (className) element.className = className;
@@ -35,10 +43,12 @@
 
     const media = make('span', 'video-library-card__media');
     const image = document.createElement('img');
-    image.src = item.thumbnail;
+    image.src = cardThumbnail(item.thumbnail);
     image.alt = `${item.title} video thumbnail`;
     image.loading = 'lazy';
     image.decoding = 'async';
+    image.width = 320;
+    image.height = 180;
     media.appendChild(image);
     media.appendChild(make('span', 'video-library-card__badge', item.badge));
 
@@ -64,6 +74,13 @@
       if (!query) return true;
       return normalize(`${item.title} ${item.description} ${item.platform} ${item.year} ${item.publisher || ''} ${item.collectionLabel || ''}`).includes(query);
     });
+  };
+
+  const syncInitialServerRender = () => {
+    const matches = filteredItems();
+    if (count) count.textContent = `${matches.length} ${matches.length === 1 ? 'video' : 'videos'} found`;
+    if (empty) empty.hidden = matches.length !== 0;
+    if (more) more.hidden = matches.length <= visibleLimit;
   };
 
   const render = () => {
@@ -105,7 +122,11 @@
     .then((payload) => {
       items = Array.isArray(payload?.items) ? payload.items : [];
       if (!items.length) return;
-      render();
+      // The generator already emitted the authoritative first 48 cards.
+      // Preserve that first-paint DOM instead of replacing it with an
+      // equivalent client-rendered tree, which caused avoidable CLS and
+      // repeated image work on the large video archive.
+      syncInitialServerRender();
     })
     .catch((error) => {
       console.warn('[video-library] Could not load searchable video index:', error.message);
