@@ -5,6 +5,22 @@
 - Current bounded candidate makes **workflow-dispatched** Omega deployments explicitly dispatch **Live Public Navigation Verification** after deployed-page checks pass, while normal push deployments continue using the existing follower. Publishing integrity pins the contract.
 - This remains SEO/deployment follow-through only. #2176 and #2329 stay preserved/deferred; UTA remains complete; Dungeon runtime is unchanged.
 
+## Dungeon FIRE lockout priority — 25 September 2026
+
+- Current priority is the reproduced deployed Solo FIRE lockout.
+- The 15:53 bug report proves a persistent r56 attack failure with full ammo, zero projectiles, no hit-stun and repeated unsuccessful deep-owner recovery.
+- Active candidate `codex/dungeon-r57-fire-lockout-recovery-20260925` is based on exact main `c25e80464a9dec08787eaa4bb569ef5528731061` and adds only a final existing-owner fallback through the captured R1 canonical FIRE owner.
+- Build/cache advance to `V10.42 r57` / `20260925r57`. Do not close the defect until exact-head full Dungeon qualification passes and deployed hands-on firing remains reliable.
+
+## Dungeon Carnage priority live blockers — 25 September 2026
+
+- Hands-on deployed acceptance has now reproduced two **P0 / release-blocking** Dungeon Carnage defects on V10.42 r56:
+  - sustained Solo FIRE lockout after valid Space input, with full ammo, zero hit-stun, zero projectiles and repeated `ANOMALY_POSSIBLE_ATTACK_FAILURE` / `ANOMALY_POSSIBLE_FIRE_FAILURE`; deep-owner fallback attempts increase but produce no successful recovery;
+  - visibly ACTIVE ordinary SPIKE contact without the required HEALTH loss, proving the present synthetic trap-coordinate tests are not sufficient as the sole acceptance gate for FIRE/SPIKE/SHOCK.
+- These defects now outrank Dungeon release completion and the later NPC/dialogue/graphics/quest-content expansion.
+- FIRE repair must trace the actual post-intent owner chain rather than stacking another generic buffer/cooldown reset. Trap repair must exercise the real movement/contact path. Both require strengthened browser regression, complete exact-head qualification and deployed hands-on retest before itch.io release completion.
+- Detailed system of record: `docs/ai-work/dungeon-carnage-runtime.md`.
+
 ## Generated-output Omega deployment handoff — 25 September 2026
 
 - Post-consolidation live follow-through identified one publishing/deployment gap after generated archive PR #2354 merged as `e61bc047c31bfd9226f5b8edeeefb1bfc041fcce`: the bot-authored merge did not start the authoritative **Deploy GitHub Pages (Omega Stable)** push workflow.
@@ -35,7 +51,7 @@
 This is the single future-work list to use after repository flattening. Do **not** start these items while the current consolidation/qualification cycle is still active. Historical sections below are evidence, not separate active queues.
 
 1. **SEO / Google / Lighthouse live follow-through.** Search Console remediation #2343 and Lighthouse Stage 1 #2346 are already merged. After the flattened main is deployed and qualified, verify live Search Console/indexing behaviour and live Lighthouse/PageSpeed results against that deployed baseline. Continue later performance work only from reproducible live evidence; do not resurrect stale Lighthouse branches.
-2. **C64 Dungeon Carnage hands-on acceptance and external release completion.** Repository coding for the current reproduced defects is complete once the current #2341 qualification repairs merge. Retain the documented hands-on gates: deployed startup/menu transition; sustained Solo movement/firing/combat/pause-resume; 3 Artefacts/Essences → exactly 1 Banishment Flask without prior Gold purchase and with Gold/Score unchanged; deployed mobile natural FIRE/SPIKE/SHOCK damage. When those pass, use the latest qualified itch.io artifact and complete external upload/launch/handoff verification. NPC dialogue/quest-content expansion remains a later product phase and must not be mixed into consolidation.
+2. **C64 Dungeon Carnage P0 live-defect remediation, then hands-on acceptance and external release completion.** Current deployed acceptance has disproved the earlier repository-complete assumption. First repair the sustained Solo FIRE lockout captured by repeated real Space presses and FIRE/ATTACK anomaly evidence, and repair the active ordinary FIRE/SPIKE/SHOCK no-damage path captured by manual testing. Strengthen regressions to exercise real input and real movement/contact rather than only synthetic direct-owner calls/coordinate placement. After both blockers pass full exact-head qualification, repeat sustained Solo movement/firing/combat/pause-resume, inventory-transition and natural-trap acceptance; then complete the 3 Artefacts/Essences → exactly 1 Banishment Flask gate and itch.io release verification. NPC dialogue/quest-content/graphics expansion remains later product work.
 3. **Commodore Quest 3.** #2176 remains the preservation vehicle for the unique Quest 3 work and stays deferred until Dungeon Carnage is substantially finished. When resumed, reconcile only the still-required Quest delta onto then-current main and retain the mandatory hands-on **The Bedroom** and **36% Conversion Bout** acceptance gate before merge.
 4. **CCG backend containment, only if deliberately resumed.** #2329 preserves the experimental CCG backend/migration/staging work. Production browser auth remains Supabase-authoritative. Do not switch production auth or revive retired Dungeon online/realtime scope through consolidation; resume only with an explicit backend programme and complete its documented staging/runtime cut-over gates first.
 5. **UTA is not a new development backlog item.** The full-catalogue audit, curated reconciliation, freshness repair, residual reconciliation and generated publication have already merged through #2298/#2301. Future UTA activity is routine Reliable Games Publishing refresh plus manual-review curation when new evidence appears; do not restart the completed audit as a separate project.
