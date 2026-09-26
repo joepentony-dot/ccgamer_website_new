@@ -64,7 +64,9 @@ const home = read("home.html");
     '["Retro Events", "Event"',
     'Search anything on CCG',
     'Search the Entire CCG Website',
-    'homeMain.insertBefore(command, homeMain.firstChild)'
+    'const existingTrigger = document.querySelector("[data-ccg-global-search-trigger]")',
+    'trigger.dataset.ccgGlobalSearchBound = "true"',
+    'bindTrigger(existingTrigger)'
 ].forEach((token) => requireText(searchJs, token, "Whole-site search runtime"));
 
 [
@@ -92,8 +94,22 @@ const home = read("home.html");
 [
     '<script src="js/ccg-nav-core.js" defer></script>',
     '<script src="resources/js/ccg-performance.js" defer></script>',
-    'class="ccg-main ccg-main--home"'
+    'class="ccg-main ccg-main--home"',
+    'data-ccg-home-search-static="true"',
+    'data-ccg-global-search-trigger="true"',
+    '<!-- PERFORMANCE-STABLE GLOBAL SEARCH SLOT -->'
 ].forEach((token) => requireText(home, token, "Home integration"));
+
+const homeCss = read("resources/css/home.css");
+[
+    "HOME SEARCH — FIRST-PAINT LAYOUT RESERVATION",
+    ".ccg-main--home > .ccg-home-search-command",
+    "min-height: 76px",
+    "grid-template-columns: 42px minmax(0, 1fr) auto",
+    "@media (max-width: 760px)",
+    "min-height: 74px"
+].forEach((token) => requireText(homeCss, token, "Home first-paint search geometry"));
+balancedBraces(homeCss, "home.css");
 
 balancedBraces(searchCss, "ccg-global-search.css");
 balancedBraces(performanceCss, "ccg-performance-foundations.css");
