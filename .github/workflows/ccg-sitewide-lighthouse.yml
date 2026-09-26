@@ -10,6 +10,11 @@ on:
       - "scripts/sitewide_lighthouse_audit.mjs"
       - "scripts/sitewide_lighthouse_aggregate.mjs"
       - "docs/ai-work/lighthouse-sitewide.md"
+      # Keep production performance evidence current after shared runtime/CSS changes.
+      - "home.html"
+      - "resources/css/**"
+      - "js/**"
+      - "service-worker.js"
   schedule:
     - cron: "20 3 * * 0"
 permissions:
