@@ -95,92 +95,19 @@ function isSingleGameMobileViewport() {
     return window.matchMedia("(max-width: 768px)").matches;
 }
 
-function normalizeMobileScrollContainer(element, options = {}) {
-    if (!element || typeof window === "undefined") return;
-    const allowHorizontal = options.allowHorizontal === true;
-    const enforceRoot = options.enforceRoot === true;
-    const style = window.getComputedStyle(element);
-
-    if (enforceRoot) {
-        element.style.height = "auto";
-        element.style.minHeight = "100%";
-        element.style.maxHeight = "none";
-        element.style.overflowY = "auto";
-        element.style.overflowX = "hidden";
-        element.style.overscrollBehavior = "auto";
-        element.style.touchAction = "pan-y";
-        element.style.webkitOverflowScrolling = "touch";
-        element.style.scrollBehavior = "auto";
-        if (style.position === "fixed" || style.position === "sticky") {
-            element.style.position = "static";
-        }
-        return;
-    }
-
-    element.style.height = "auto";
-    element.style.minHeight = "0";
-    element.style.maxHeight = "none";
-    element.style.contain = "none";
-
-    if (allowHorizontal) {
-        element.style.overflowX = "auto";
-        element.style.overflowY = "hidden";
-        element.style.overscrollBehavior = "auto";
-        element.style.touchAction = "pan-x pan-y";
-    } else {
-        element.style.overflow = "visible";
-        element.style.overflowX = "visible";
-        element.style.overflowY = "visible";
-    }
-
-    if (style.position === "fixed" || style.position === "sticky") {
-        element.style.position = "static";
-    }
-    if (style.transform && style.transform !== "none") {
-        element.style.transform = "none";
-    }
-}
-
 function applyMobileSingleScrollFix() {
     if (!isSingleGameMobileViewport()) {
         CCG_MOBILE_SCROLL_FIX.lastAppliedMobile = false;
         return;
     }
 
-    const targets = [
-        { selector: "html[data-ccg-page=\"single-game\"]", enforceRoot: true },
-        { selector: "html[data-ccg-page=\"single-game\"] body", enforceRoot: true },
-        { selector: ".ccg-page--single-game" },
-        { selector: ".ccg-page--single-game .ccg-main" },
-        { selector: ".ccg-page--single-game main" },
-        { selector: ".ccg-page--single-game .game-shell" },
-        { selector: ".ccg-page--single-game .game-hero" },
-        { selector: ".ccg-page--single-game .game-hero__inner" },
-        { selector: ".ccg-page--single-game .game-hero__content" },
-        { selector: ".ccg-page--single-game .game-section" },
-        { selector: ".ccg-page--single-game .game-media" },
-        { selector: ".ccg-page--single-game .game-media__grid" },
-        { selector: ".ccg-page--single-game .game-description" },
-        { selector: ".ccg-page--single-game .game-facts" },
-        { selector: ".ccg-page--single-game .game-credits__list" },
-        { selector: ".ccg-page--single-game .game-media__item--video" },
-        { selector: ".ccg-page--single-game .game-media__item--downloads" },
-        { selector: ".ccg-page--single-game .game-media__item--links" },
-        { selector: ".ccg-page--single-game .game-screenshots" },
-        { selector: ".ccg-page--single-game .game-screenshots__strip" },
-        { selector: ".ccg-page--single-game .game-section--related" },
-        { selector: ".ccg-page--single-game .related-carousel" },
-        { selector: ".ccg-page--single-game .related-carousel__track" },
-        { selector: ".ccg-page--single-game .related-carousel__viewport", allowHorizontal: true },
-    ];
-
-    targets.forEach((target) => {
-        const elements = document.querySelectorAll(target.selector);
-        elements.forEach((element) => {
-            normalizeMobileScrollContainer(element, target);
-        });
-    });
-
+    /*
+     * The single-game mobile scroll contract is now fully first-paint CSS-owned
+     * in resources/css/games.css. Re-applying the same height/overflow/position
+     * rules here after DOMContentLoaded forced synchronous layout and produced
+     * large CLS across the generated game archive. Keep this compatibility hook
+     * for existing callers, but do not mutate page geometry at runtime.
+     */
     CCG_MOBILE_SCROLL_FIX.lastAppliedMobile = true;
 }
 
