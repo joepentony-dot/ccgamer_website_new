@@ -2,7 +2,7 @@
 "use strict";
 
 const CACHE_VERSION = "2026-08-25-public-release-v10";
-const CODE_CACHE_VERSION = "2026-09-26-public-code-v33";
+const CODE_CACHE_VERSION = "2026-09-26-public-code-v34";
 const SHELL_CACHE = `ccg-shell-${CACHE_VERSION}-${CODE_CACHE_VERSION}`;
 const PAGE_CACHE = `ccg-pages-${CACHE_VERSION}`;
 const CODE_CACHE = `ccg-code-${CODE_CACHE_VERSION}`;
@@ -10,6 +10,7 @@ const ASSET_CACHE = `ccg-assets-${CACHE_VERSION}`;
 const DATA_CACHE = `ccg-public-data-${CACHE_VERSION}`;
 const CACHE_PREFIX = "ccg-";
 const OFFLINE_URL = "/offline.html";
+const NAVIGATION_TIMEOUT_MS = 7000;
 
 const PUBLIC_SHELL = Object.freeze([
   OFFLINE_URL,
@@ -160,16 +161,29 @@ async function deleteLostSizzlerCacheEntries() {
   }));
 }
 
+function navigationTimeout() {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => reject(new Error("CCG navigation network timeout")), NAVIGATION_TIMEOUT_MS);
+  });
+}
+
 async function networkFirstPage(event, request, url) {
   const cacheKey = normalisedPageRequest(url);
   const cache = await caches.open(PAGE_CACHE);
   const lostSizzler = isLostSizzlerPath(url.pathname);
 
   try {
-    // Lost Sizzler is a rapidly iterating browser game. Never allow navigation
-    // preload or the browser HTTP cache to hand its page shell an older build.
-    const preloaded = lostSizzler ? null : await event.preloadResponse;
-    const response = preloaded || await fetch(request, lostSizzler ? { cache: "reload" } : undefined);
+    // Bound the entire online navigation path. A stalled origin, navigation
+    // preload, proxy or browser network request must not leave a reload hanging.
+    const response = await Promise.race([
+      (async () => {
+        // Lost Sizzler is a rapidly iterating browser game. Never allow navigation
+        // preload or the browser HTTP cache to hand its page shell an older build.
+        const preloaded = lostSizzler ? null : await event.preloadResponse;
+        return preloaded || await fetch(request, lostSizzler ? { cache: "reload" } : undefined);
+      })(),
+      navigationTimeout()
+    ]);
     if (canStoreResponse(response)) await cache.put(cacheKey, response.clone());
     return response;
   } catch (error) {
