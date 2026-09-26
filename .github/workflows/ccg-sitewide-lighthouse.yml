@@ -4,15 +4,6 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "20 3 * * 0"
-  pull_request:
-    branches:
-      - main
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - edited
-
 permissions:
   contents: read
 
@@ -22,7 +13,6 @@ concurrency:
 
 jobs:
   lighthouse:
-    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || contains(github.event.pull_request.title, '[FULL LIGHTHOUSE]')
     name: Lighthouse ${{ matrix.device }} shard ${{ matrix.shard }}
     runs-on: ubuntu-latest
     timeout-minutes: 70
@@ -85,7 +75,7 @@ jobs:
           retention-days: 21
 
   aggregate:
-    if: always() && (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || contains(github.event.pull_request.title, '[FULL LIGHTHOUSE]'))
+    if: always()
     name: Aggregate site-wide Lighthouse
     needs:
       - lighthouse
