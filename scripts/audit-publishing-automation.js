@@ -55,6 +55,12 @@ requirePattern(gamesPublishing, /permissions:\s*[\s\S]*?actions:\s*write\b/, "Re
 requireText(gamesPublishing, "gh workflow run deploy-github-pages-omega-stable.yml", "Reliable Games Publishing does not dispatch Omega Pages after merging generated output.");
 requireText(gamesPublishing, "--ref main", "Reliable Games Publishing does not dispatch Omega Pages from the merged main branch.");
 
+const omegaPages = read(".github/workflows/deploy-github-pages-omega-stable.yml");
+requirePattern(omegaPages, /permissions:\s*[\s\S]*?actions:\s*write\b/, "Omega Pages cannot dispatch the custom-domain navigation verifier.");
+requireText(omegaPages, "github.event_name == 'workflow_dispatch'", "Omega Pages does not limit the explicit navigation handoff to dispatched deployments.");
+requireText(omegaPages, "gh workflow run live-public-navigation.yml", "Dispatched Omega Pages releases do not start custom-domain navigation verification.");
+requireText(omegaPages, "--ref main", "Omega Pages does not dispatch navigation verification from current main.");
+
 const rebuildGames = read("scripts/rebuild-games.js");
 requireText(rebuildGames, '["integrate-year-platform-discovery.js"]', "The authoritative game rebuild no longer integrates year/platform discovery.");
 requireText(rebuildGames, '["generate-sitemaps.js"]', "The authoritative game rebuild no longer regenerates sitemaps.");
