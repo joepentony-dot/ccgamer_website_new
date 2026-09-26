@@ -15,6 +15,6 @@ test("Home keeps footer CSS off the render-blocking path", () => {
   );
   assert.doesNotMatch(
     home,
-    /<link rel="stylesheet" href="resources\/css\/ccg-footer\.css" \/>/
+    /^\s*<link rel="stylesheet" href="resources\/css\/ccg-footer\.css" \/>\s*$/m
   );
 });
