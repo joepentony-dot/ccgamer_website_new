@@ -218,16 +218,19 @@
         });
     }
 
-    function availableWidth(header) {
+    function measureFitBounds(header) {
         const inner = header.querySelector(".ccg-header-inner");
-        return Math.max(0, Math.floor(inner?.clientWidth || window.innerWidth));
+        return {
+            allowed: Math.max(0, Math.floor(inner?.clientWidth || window.innerWidth)),
+            innerRect: inner?.getBoundingClientRect() || null
+        };
     }
 
-    function isOverflowing(header, nav) {
-        const allowed = availableWidth(header);
+    function isOverflowing(nav, bounds) {
+        const allowed = Number(bounds?.allowed || 0);
         const required = Math.ceil(nav.scrollWidth);
         const navRect = nav.getBoundingClientRect();
-        const innerRect = header.querySelector(".ccg-header-inner")?.getBoundingClientRect();
+        const innerRect = bounds?.innerRect || null;
         const clippedRight = innerRect ? navRect.right > innerRect.right + 1 : false;
         const clippedLeft = innerRect ? navRect.left < innerRect.left - 1 : false;
         return required > allowed + 2 || clippedRight || clippedLeft;
@@ -334,10 +337,15 @@
         populateMore(menu, hiddenItems);
         syncMoreAvailability(nav, more, toggle, menu);
 
-        if (isOverflowing(header, nav)) nav.classList.add("ccg-nav--fit-compact");
-        if (isOverflowing(header, nav)) nav.classList.add("ccg-nav--fit-tight");
+        /*
+         * ccg-nav-fit.css owns the settled desktop density from first paint,
+         * so do not mutate compact/tight classes and immediately re-measure.
+         * Capture the stable header bounds once, then only re-read the nav
+         * itself when overflow candidates are actually removed.
+         */
+        const fitBounds = measureFitBounds(header);
 
-        if (isOverflowing(header, nav)) {
+        if (isOverflowing(nav, fitBounds)) {
             const candidates = items
                 .filter((item) => !hiddenItems.includes(item))
                 .map((item, index) => {
@@ -349,7 +357,7 @@
 
             for (const candidate of candidates) {
                 const visibleCount = items.length - hiddenItems.length;
-                if (!isOverflowing(header, nav) || visibleCount <= 5) break;
+                if (!isOverflowing(nav, fitBounds) || visibleCount <= 5) break;
                 candidate.item.hidden = true;
                 candidate.item.setAttribute("data-ccg-nav-fit-overflow", "true");
                 hiddenItems.push(candidate.item);
