@@ -8,6 +8,8 @@ on:
       - ".github/workflows/phase-7a-performance-accessibility-audit.yml"
       - "scripts/phase7a_static_performance_accessibility_audit.py"
       - "scripts/phase7a_live_audit.mjs"
+      - "scripts/sitewide_lighthouse_audit.mjs"
+      - "scripts/sitewide_lighthouse_aggregate.mjs"
   workflow_dispatch:
 
 permissions:
@@ -67,6 +69,8 @@ jobs:
         run: |
           python -m py_compile scripts/phase7a_static_performance_accessibility_audit.py
           node --check scripts/phase7a_live_audit.mjs
+          node --check scripts/sitewide_lighthouse_audit.mjs
+          node --check scripts/sitewide_lighthouse_aggregate.mjs
 
       - name: Run repository-wide static audit
         run: |
@@ -121,10 +125,14 @@ jobs:
 
           allowed = {
               ".github/workflows/phase-7a-performance-accessibility-audit.yml",
+              ".github/workflows/ccg-sitewide-lighthouse.yml",
               "scripts/phase7a_static_performance_accessibility_audit.py",
               "scripts/phase7a_live_audit.mjs",
+              "scripts/sitewide_lighthouse_audit.mjs",
+              "scripts/sitewide_lighthouse_aggregate.mjs",
               "docs/seo-baseline/phase-7a-performance-accessibility-audit.md",
               "docs/seo-baseline/phase-7a-performance-accessibility-evidence.json",
+              "docs/ai-work/lighthouse-sitewide.md",
           }
           tracked = subprocess.check_output(
               ["git", "diff", "--name-only", "origin/main"], text=True
