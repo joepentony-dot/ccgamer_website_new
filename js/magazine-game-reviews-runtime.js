@@ -177,6 +177,24 @@
         return element;
     }
 
+    function ensureReviewLink(panel, clickable) {
+        const current = panel.querySelector("[data-magazine-link]");
+        if (!current) return null;
+
+        const expectedTag = clickable ? "A" : "SPAN";
+        if (current.tagName === expectedTag) return current;
+
+        const replacement = document.createElement(clickable ? "a" : "span");
+        replacement.className = current.className;
+        replacement.setAttribute("data-magazine-link", "");
+        if (clickable) {
+            replacement.target = "_blank";
+            replacement.rel = "noopener noreferrer external";
+        }
+        current.replaceWith(replacement);
+        return replacement;
+    }
+
     function updateReview(panel, rows, index) {
         const row = rows[index] || rows[0];
         if (!row) return;
@@ -184,7 +202,7 @@
         const magazine = panel.querySelector("[data-magazine-name]");
         const meta = panel.querySelector("[data-magazine-meta]");
         const reviewer = panel.querySelector("[data-magazine-reviewer]");
-        const link = panel.querySelector("[data-magazine-link]");
+        let link = panel.querySelector("[data-magazine-link]");
 
         const hasScore = row.scorePercent !== null && row.scorePercent !== "" && Number.isFinite(Number(row.scorePercent));
         score.hidden = !hasScore;
@@ -203,12 +221,14 @@
         reviewer.textContent = row.reviewer ? `Reviewed by ${row.reviewer}` : "";
 
         if (row.url && row.scanStatus !== "missing") {
+            link = ensureReviewLink(panel, true);
+            if (!link) return;
             link.href = row.url;
             link.hidden = false;
             link.textContent = "Read Original Review";
-            link.removeAttribute("aria-disabled");
         } else {
-            link.removeAttribute("href");
+            link = ensureReviewLink(panel, false);
+            if (!link) return;
             link.hidden = false;
             link.textContent = "Scan Not Available";
             link.setAttribute("aria-disabled", "true");

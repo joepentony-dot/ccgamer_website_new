@@ -171,3 +171,12 @@ test("missing music is explained instead of leaving an empty track area", () => 
   assert.match(loader, /TRACK NOT YET UPLOADED/);
   assert.match(loader, /hasUnavailableNotice/);
 });
+
+
+test("missing magazine scans render as text instead of uncrawlable anchors", () => {
+  const runtime = fs.readFileSync(path.join(root, "js", "magazine-game-reviews-runtime.js"), "utf8");
+  assert.match(runtime, /function ensureReviewLink\(panel, clickable\)/);
+  assert.match(runtime, /document\.createElement\(clickable \? "a" : "span"\)/);
+  assert.match(runtime, /link = ensureReviewLink\(panel, false\)/);
+  assert.doesNotMatch(runtime, /link\.removeAttribute\("href"\)/);
+});

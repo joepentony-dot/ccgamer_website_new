@@ -119,3 +119,16 @@ test("prefilled canonical routes do not replace generated JSON-LD with runtime s
     "runtime JSON-LD injection must stay disabled on generated canonical pages"
   );
 });
+
+
+test("anonymous favourites treat a missing auth session as a normal logged-out state", () => {
+  assert.match(source, /function isExpectedMissingAuthSession\(error\)/);
+  assert.match(source, /name === "AuthSessionMissingError" \|\| \/auth session missing\/i\.test\(message\)/);
+  assert.match(source, /authError && !isExpectedMissingAuthSession\(authError\)/);
+  assert.match(source, /error && !isExpectedMissingAuthSession\(error\)/);
+  assert.match(
+    source,
+    /const currentUser = error && isExpectedMissingAuthSession\(error\)[\s\S]*?showFavouriteLoginNotice\(button\)/,
+    "missing-session favourite clicks must reach the existing login notice without console.error"
+  );
+});

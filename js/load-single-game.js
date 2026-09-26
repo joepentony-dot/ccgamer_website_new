@@ -2056,6 +2056,12 @@ async function toggleFavouriteState({ supabase, profileId, gameSlug, isFavourite
     return true;
 }
 
+function isExpectedMissingAuthSession(error) {
+    const name = String(error?.name || "");
+    const message = String(error?.message || "");
+    return name === "AuthSessionMissingError" || /auth session missing/i.test(message);
+}
+
 async function renderFavouriteAction(game) {
     const button = ensureFavouriteButton();
     if (!button) return;
@@ -2075,10 +2081,12 @@ async function renderFavouriteAction(game) {
     }
 
     const { data: authData, error: authError } = await supabase.auth.getUser();
-    if (authError) {
+    if (authError && !isExpectedMissingAuthSession(authError)) {
         console.error("[CCG FAVOURITES] Unable to resolve user", authError);
     }
-    const user = authData?.user || null;
+    const user = authError && isExpectedMissingAuthSession(authError)
+        ? null
+        : (authData?.user || null);
 
     if (!user) {
         setFavouriteButtonState(button, { isFavourite: false, disabled: false });
@@ -2100,12 +2108,14 @@ async function renderFavouriteAction(game) {
         if (!client) return;
 
         const { data, error } = await client.auth.getUser();
-        if (error) {
+        if (error && !isExpectedMissingAuthSession(error)) {
             console.error("[CCG FAVOURITES] Unable to resolve user before toggle", error);
             return;
         }
 
-        const currentUser = data?.user || null;
+        const currentUser = error && isExpectedMissingAuthSession(error)
+            ? null
+            : (data?.user || null);
         if (!currentUser) {
             if (button.dataset.loginRequired === "true") {
                 window.location.assign("/join.html");
