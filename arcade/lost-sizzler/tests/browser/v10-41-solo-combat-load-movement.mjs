@@ -59,20 +59,55 @@ try{
   assert.ok(ordering.movement>=0&&ordering.fire>=0,"the canonical game-play.js update source must expose keyboard movement and firing blocks");
   assert.ok(ordering.movement<ordering.fire,`keyboard movement must be serviced before firing work in the canonical frame: ${JSON.stringify(ordering)}`);
 
-  const faultBefore=await page.evaluate(()=>Number(window.CCGLostSizzlerV141R29?.state?.updateFaults||0));
+  const faultBefore=await page.evaluate(()=>{
+    const diagnostics=window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics||{};
+    return{
+      updateFaults:Number(window.CCGLostSizzlerV141R29?.state?.updateFaults||0),
+      attackIntents:Number(diagnostics.attackIntents||0),
+      directAttackErrors:Number(diagnostics.directAttackErrors||0),
+      capturedR1Fallbacks:Number(diagnostics.capturedR1Fallbacks||0),
+      capturedR1FallbackSuccesses:Number(diagnostics.capturedR1FallbackSuccesses||0),
+      directAttackRepairs:Number(diagnostics.directAttackRepairs||0),
+      mana:Number(p1.mana||0),
+      bullets:(bullets||[]).filter(projectile=>projectile?.ttl>0&&projectile.owner===p1.id).length
+    };
+  });
   await page.evaluate(()=>{
     window.__ccgSoloCombatLoadRealFire=window.firePlayer;
+    // Sever the current top-level owner without preserving __ccgOriginal.
+    // Real Space input must therefore be recovered by the retained captured
+    // R1 FIRE owner rather than escaping to the legacy R29 update-fault path.
     window.firePlayer=function soloCombatLoadInjectedFireFault(){throw new Error("LS-0826-18 injected fire-path fault")};
     move1=0;fire1=0;fireBuffer1=0;input.clear();p1.hitStunMs=0;
   });
   await page.keyboard.down(direction.code);await page.keyboard.down("Space");await page.waitForTimeout(280);await page.keyboard.up("Space");await page.keyboard.up(direction.code);await page.waitForTimeout(80);
   const faultResult=await page.evaluate(()=>{
-    const result={x:p1.x,y:p1.y,updateFaults:Number(window.CCGLostSizzlerV141R29?.state?.updateFaults||0)};
+    const diagnostics=window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics||{};
+    const result={
+      x:p1.x,
+      y:p1.y,
+      updateFaults:Number(window.CCGLostSizzlerV141R29?.state?.updateFaults||0),
+      attackIntents:Number(diagnostics.attackIntents||0),
+      directAttackErrors:Number(diagnostics.directAttackErrors||0),
+      capturedR1Fallbacks:Number(diagnostics.capturedR1Fallbacks||0),
+      capturedR1FallbackSuccesses:Number(diagnostics.capturedR1FallbackSuccesses||0),
+      directAttackRepairs:Number(diagnostics.directAttackRepairs||0),
+      mana:Number(p1.mana||0),
+      bullets:(bullets||[]).filter(projectile=>projectile?.ttl>0&&projectile.owner===p1.id).length
+    };
     if(window.__ccgSoloCombatLoadRealFire){window.firePlayer=window.__ccgSoloCombatLoadRealFire;delete window.__ccgSoloCombatLoadRealFire}
     input.clear();return result;
   });
   assert.notDeepEqual({x:faultResult.x,y:faultResult.y},{x:direction.x,y:direction.y},"a firing subsystem fault must not prevent the held movement key being serviced first");
-  assert.ok(faultResult.updateFaults>faultBefore,"the injected firing fault must be observed by the retained stable-loop containment path");
+  assert.ok(faultResult.attackIntents>faultBefore.attackIntents,"real Space input must reach the authoritative R20 attack owner");
+  assert.ok(faultResult.directAttackErrors>faultBefore.directAttackErrors,"the injected top-level FIRE fault must be observed by the authoritative R20 containment path");
+  assert.ok(faultResult.capturedR1Fallbacks>faultBefore.capturedR1Fallbacks,"a severed top-level FIRE owner must exercise the retained captured-R1 fallback");
+  assert.ok(faultResult.capturedR1FallbackSuccesses>faultBefore.capturedR1FallbackSuccesses,"the retained captured-R1 FIRE fallback must recover the injected owner failure");
+  assert.ok(faultResult.directAttackRepairs>faultBefore.directAttackRepairs,"the recovered real Space intent must complete through the authoritative attack repair path");
+  assert.ok(
+    faultResult.mana<faultBefore.mana||faultResult.bullets>faultBefore.bullets,
+    `the recovered Space intent must produce real firearm work: before=${JSON.stringify(faultBefore)} after=${JSON.stringify(faultResult)}`
+  );
 
   await prepareSolo(page,"PHASE3-SOLO-SUSTAINED-FIRE");
   const loadedDirection=await directionFor(page);assert.ok(loadedDirection,"sustained-fire regression needs one walkable adjacent tile");
