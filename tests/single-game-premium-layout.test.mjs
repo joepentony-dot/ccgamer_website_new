@@ -44,3 +44,20 @@ test("single-game template preconnects font origins and uses a cover-shaped fall
   assert.match(template, /rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin/);
   assert.match(template, /id="gameHeroThumb"[\s\S]*width="300" height="400"/);
 });
+
+test("single-game template keeps below-fold UI styles off the render-blocking path", () => {
+  for (const href of [
+    "../resources/css/ccg-modal.css",
+    "../resources/css/ccg-footer.css",
+    "/resources/css/ccg-manual-viewer-polish.css"
+  ]) {
+    const escaped = href.replace(/[.*+?^$\{\}()|[\]\\]/g, "\\$&");
+    assert.match(
+      template,
+      new RegExp(`rel="preload" href="${escaped}" as="style" onload="this\\.onload=null;this\\.rel='stylesheet'"`)
+    );
+  }
+  assert.match(template, /<noscript><link rel="stylesheet" href="\.\.\/resources\/css\/ccg-footer\.css"/);
+  assert.match(template, /<noscript><link rel="stylesheet" href="\/resources\/css\/ccg-manual-viewer-polish\.css"/);
+});
+
