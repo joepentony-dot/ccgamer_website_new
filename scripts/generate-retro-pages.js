@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { youtubeThumbnailIntrinsicAttributes } = require('./lib/youtube-thumbnail-dimensions.js');
 const { applyTemplate, readTemplate } = require('./template-engine');
 const { normaliseHtml, STATIC_SHELL_VERSION } = require('./normalize-public-header-shell');
 
@@ -132,6 +133,7 @@ function resolveThumbnail(entry) {
   return youtubeId ? `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg` : '';
 }
 
+
 function normalizeRetroSlug(entry, datasetLabel) {
   const source = String(entry.slug || entry.id || entry.title || '').trim();
   if (!source) return '';
@@ -200,7 +202,7 @@ function buildRelatedItems(items, currentSlug, pagePrefix) {
       const href = `${pagePrefix}${item.slug}/`;
       const thumbnail = resolveThumbnail(item);
       const media = thumbnail
-        ? `<span class="retro-video-page__related-media"><img src="${escapeHtml(thumbnail)}" alt="${escapeHtml(item.title)} video thumbnail" loading="lazy" decoding="async" /></span>`
+        ? `<span class="retro-video-page__related-media"><img src="${escapeHtml(thumbnail)}" alt="${escapeHtml(item.title)} video thumbnail"${youtubeThumbnailIntrinsicAttributes(thumbnail)} loading="lazy" decoding="async" /></span>`
         : '';
       return `<li><a class="retro-video-page__related-card" href="${escapeHtml(href)}">${media}<span class="retro-video-page__related-copy"><span class="retro-video-page__related-title">${escapeHtml(item.title)}</span><p class="retro-video-page__related-summary">${escapeHtml(item.summary || item.description || '')}</p><span class="retro-video-page__related-action">Open feature →</span></span></a></li>`;
     })
@@ -405,4 +407,9 @@ function generateRetroPages() {
   console.log(`[retro] Completed for ${repoRoot}. Generated: ${totalGenerated}. Blocked: ${totalSkipped}.`);
 }
 
-generateRetroPages();
+if (require.main === module) generateRetroPages();
+
+module.exports = {
+  buildRelatedItems,
+  youtubeThumbnailIntrinsicAttributes
+};
