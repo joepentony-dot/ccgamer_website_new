@@ -132,7 +132,10 @@ function ccgRunCollectionLoader() {
 function renderCollectionCardsInBatches(container, games, opts = {}) {
     const initialBatch = Number(opts.initialBatch) > 0 ? Number(opts.initialBatch) : 16;
     const batchSize = Number(opts.batchSize) > 0 ? Number(opts.batchSize) : 24;
-    let cursor = 0;
+    const serverRenderedCards = Array.from(
+        container.querySelectorAll(".ccg-game-card--fallback")
+    );
+    let cursor = Math.min(serverRenderedCards.length, games.length);
     const existingControls = container.parentElement?.querySelector(".ccg-list-load-more");
     if (existingControls) existingControls.remove();
 
@@ -165,8 +168,10 @@ function renderCollectionCardsInBatches(container, games, opts = {}) {
         updateButton();
     };
 
-    container.innerHTML = "";
-    appendBatch(initialBatch);
+    if (!serverRenderedCards.length) {
+        container.innerHTML = "";
+        appendBatch(initialBatch);
+    }
 
     if (cursor < games.length) {
         container.insertAdjacentElement("afterend", controls);

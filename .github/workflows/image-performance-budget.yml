@@ -11,9 +11,12 @@ on:
       - "admin/content-publisher.html"
       - "admin/js/content-publisher-image-optimizer.js"
       - "js/video-library.js"
+      - "js/genre-loader.js"
+      - "js/collection-loader.js"
       - "scripts/image-performance-budget.py"
       - "tests/image-performance-budget.test.mjs"
       - "tests/video-library-performance.test.mjs"
+      - "tests/category-hydration-performance.test.mjs"
       - ".github/workflows/image-performance-budget.yml"
   push:
     branches: [main]
@@ -25,9 +28,12 @@ on:
       - "admin/content-publisher.html"
       - "admin/js/content-publisher-image-optimizer.js"
       - "js/video-library.js"
+      - "js/genre-loader.js"
+      - "js/collection-loader.js"
       - "scripts/image-performance-budget.py"
       - "tests/image-performance-budget.test.mjs"
       - "tests/video-library-performance.test.mjs"
+      - "tests/category-hydration-performance.test.mjs"
       - ".github/workflows/image-performance-budget.yml"
   workflow_dispatch:
 
@@ -63,6 +69,7 @@ jobs:
           node --check admin/js/content-publisher-image-optimizer.js
           node --test tests/image-performance-budget.test.mjs
           node --test tests/video-library-performance.test.mjs
+          node --test tests/category-hydration-performance.test.mjs
           python -m py_compile scripts/image-performance-budget.py
 
       - name: Resolve comparison base
