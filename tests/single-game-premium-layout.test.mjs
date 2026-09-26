@@ -59,3 +59,18 @@ test("single-game mobile scroll stability stays CSS-owned before first paint", (
   assert.doesNotMatch(runtime, /function normalizeMobileScrollContainer/);
 });
 
+test("single-game template keeps below-fold UI styles off the render-blocking path", () => {
+  for (const href of [
+    "../resources/css/ccg-modal.css",
+    "../resources/css/ccg-footer.css",
+    "/resources/css/ccg-manual-viewer-polish.css"
+  ]) {
+    const escaped = href.replace(/[.*+?^$\{\}()|[\]\\]/g, "\\$&");
+    assert.match(
+      template,
+      new RegExp(`rel="preload" href="${escaped}" as="style" onload="this\\.onload=null;this\\.rel='stylesheet'"`)
+    );
+  }
+  assert.match(template, /<noscript><link rel="stylesheet" href="\.\.\/resources\/css\/ccg-footer\.css"/);
+  assert.match(template, /<noscript><link rel="stylesheet" href="\/resources\/css\/ccg-manual-viewer-polish\.css"/);
+});
