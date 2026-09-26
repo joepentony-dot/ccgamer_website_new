@@ -67,7 +67,12 @@
             trapSignal:signal,contactSignals:[signal],source:"pending-exact-signal"
           });
         }
-      }else if(!pending){
+      }else{
+        /* R58 trap signals are emitted only after HEALTH has actually fallen.
+           A fast multi-tile move can advance the reporter's movement-boundary
+           record before this verified signal is observed. Do not discard that
+           proven hit merely because the pending boundary now describes another
+           tile; retain the signal at its own exact trap coordinates. */
         const trap=safe(()=>(host?.traps||[]).find(row=>
           String(row?.id||`${row?.x},${row?.y}`)===signal.trapId
           && Number(row?.x)===signal.x
@@ -77,7 +82,7 @@
         push("environment-trap-crossing-damage-confirmed",{
           world:trapWorldKey(),playerId:signal.playerId,contact:{x:signal.x,y:signal.y},
           healthLoss:1,armorLoss:0,traps:trap?[trapOwnerSnapshot(safe(()=>players?.find?.(p=>trapPlayerId(p)===signal.playerId)||p1,null),trap).trap]:[],
-          trapSignal:signal,contactSignals:[signal],source:"direct-exact-signal"
+          trapSignal:signal,contactSignals:[signal],source:pending?"verified-signal-boundary-mismatch":"direct-exact-signal"
         });
       }
     }
