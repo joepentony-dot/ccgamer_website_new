@@ -633,13 +633,26 @@ if (IS_ADMIN_PATH) {
         }
     }
 
-    function setHeaderHeightVar() {
-        const header = document.querySelector("[data-ccg-header]");
-        if (!header) return;
+    let headerHeightFrame = 0;
+    let lastHeaderHeight = -1;
 
-        const rect = header.getBoundingClientRect();
-        const h = Math.max(0, Math.round(rect.height));
-        document.documentElement.style.setProperty("--ccg-header-height", `${h}px`);
+    function setHeaderHeightVar() {
+        if (headerHeightFrame) return;
+        headerHeightFrame = requestAnimationFrame(() => {
+            headerHeightFrame = 0;
+            const header = document.querySelector("[data-ccg-header]");
+            if (!header) return;
+
+            /*
+             * Measure only after the current style/class mutation batch has
+             * reached the next animation frame. The previous synchronous read
+             * here forced layout immediately after mobile/header writes.
+             */
+            const h = Math.max(0, Math.round(header.getBoundingClientRect().height));
+            if (h === lastHeaderHeight) return;
+            lastHeaderHeight = h;
+            document.documentElement.style.setProperty("--ccg-header-height", `${h}px`);
+        });
     }
 
     function syncMobileHardening() {
