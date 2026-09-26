@@ -2,6 +2,14 @@ name: CCG Site-wide Lighthouse Matrix
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/ccg-sitewide-lighthouse.yml"
+      - "scripts/sitewide_lighthouse_audit.mjs"
+      - "scripts/sitewide_lighthouse_aggregate.mjs"
+      - "docs/ai-work/lighthouse-sitewide.md"
   schedule:
     - cron: "20 3 * * 0"
 permissions:
