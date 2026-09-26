@@ -2,9 +2,6 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import lighthouse from "lighthouse";
-import desktopConfig from "lighthouse/core/config/lr-desktop-config.js";
-import * as chromeLauncher from "chrome-launcher";
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const DEFAULT_SITEMAPS = [
@@ -177,8 +174,7 @@ async function main() {
   fs.mkdirSync(path.dirname(args.output), { recursive: true });
   fs.mkdirSync(args.rawDir, { recursive: true });
 
-  const chromePath = findChrome();
-  const chrome = await chromeLauncher.launch({
+  const [{ default: lighthouse }, { default: desktopConfig }, chromeLauncher] = await Promise.all([\n    import("lighthouse"),\n    import("lighthouse/core/config/lr-desktop-config.js"),\n    import("chrome-launcher"),\n  ]);\n\n  const chromePath = findChrome();\n  const chrome = await chromeLauncher.launch({
     chromePath,
     chromeFlags: ["--headless=new", "--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
   });
