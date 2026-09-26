@@ -7,11 +7,13 @@ on:
     paths:
       - "js/load-single-game.js"
       - "tests/single-game-data-overlap.test.mjs"
+      - "tests/single-game-premium-layout.test.mjs"
       - ".github/workflows/single-game-data-overlap-contract.yml"
   pull_request:
     paths:
       - "js/load-single-game.js"
       - "tests/single-game-data-overlap.test.mjs"
+      - "tests/single-game-premium-layout.test.mjs"
       - ".github/workflows/single-game-data-overlap-contract.yml"
   workflow_dispatch:
 
@@ -31,3 +33,6 @@ jobs:
 
       - name: Enforce parallel single-game data start
         run: node tests/single-game-data-overlap.test.mjs
+
+      - name: Enforce single-game first-paint layout ownership
+        run: node --test tests/single-game-premium-layout.test.mjs
