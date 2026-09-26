@@ -162,10 +162,19 @@ function stripApprovedHomeDiscoveryTransformation(html, role) {
     );
 }
 
+function stripApprovedHomeSearchStability(html) {
+  return String(html).replace(
+    /\s*<!--\s*PERFORMANCE-STABLE GLOBAL SEARCH SLOT\s*-->\s*<div\b(?=[^>]*\bdata-ccg-home-search-static=["']true["'])[^>]*>[\s\S]*?<\/button>\s*<\/div>/i,
+    ""
+  );
+}
+
 function stripApprovedSeoHead(html) {
   return stripApprovedDungeonCarnageCssCacheBust(
     stripApprovedDungeonCarnageHomeCta(
-      stripApprovedRetiredWeeklyVaultCta(String(html))
+      stripApprovedRetiredWeeklyVaultCta(
+        stripApprovedHomeSearchStability(String(html))
+      )
     )
   )
     .replace(/<title>[\s\S]*?<\/title>/i, "")
@@ -208,7 +217,7 @@ const normalizedBaseline = stripApprovedSeoHead(
 );
 
 if (normalizedCurrent !== normalizedBaseline) {
-  fail("home.html changed outside the approved SEO-head, Dungeon Carnage CTA and archive-dashboard fields.");
+  fail("home.html changed outside the approved SEO-head, Dungeon Carnage CTA, first-paint search slot and archive-dashboard fields.");
 }
 
-console.log("[search-home-contract] home.html differs from baseline only by the approved SEO-head / Dungeon Carnage CTA / archive-dashboard changes.");
+console.log("[search-home-contract] home.html differs from baseline only by the approved SEO-head / Dungeon Carnage CTA / first-paint search slot / archive-dashboard changes.");
