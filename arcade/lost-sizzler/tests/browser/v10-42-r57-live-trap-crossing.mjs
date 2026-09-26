@@ -41,6 +41,18 @@ try{
   page.setDefaultTimeout(30000);
   const errors=[];
   page.on("pageerror",error=>errors.push(String(error?.stack||error)));
+  await page.addInitScript(()=>{
+    window.__ccgTrapCrossingErrorDetails=[];
+    addEventListener("error",event=>{
+      window.__ccgTrapCrossingErrorDetails.push({
+        message:String(event?.message||event?.error?.message||""),
+        filename:String(event?.filename||""),
+        lineno:Number(event?.lineno||0),
+        colno:Number(event?.colno||0),
+        stack:String(event?.error?.stack||"")
+      });
+    });
+  });
 
   await page.goto(origin+"/arcade/lost-sizzler/?live-trap-crossing-r57=1&bugreport=1",{waitUntil:"load"});
   await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&document.body.dataset.v142BootstrapReady==="true");
@@ -75,7 +87,7 @@ try{
       trap.period=period;trap.phase=((period*.10)-(now%period)+period)%period;
       api.rearmInactiveTrapContacts();
       const active=Boolean(SYS.trapActive(trap,performance.now()));
-      const before={health:Number(p1.health),armor:Number(p1.armor),events:reporter.events.length,verified:Number(reporter.state.environmentVerifiedHits||0)};
+      const before={health:Number(p1.health),armor:Number(p1.armor),verified:Number(reporter.state.environmentVerifiedHits||0),anomalies:Number(reporter.state.environmentAnomalies||0)};
       movePlayer(p1,entry.dx,entry.dy,false);
       const immediate={x:Number(p1.x),y:Number(p1.y),health:Number(p1.health),armor:Number(p1.armor)};
       return{available:true,id:String(trap.id),kind:String(trap.kind),active,entry,target:{x:Number(trap.x),y:Number(trap.y)},original,before,immediate};
@@ -88,21 +100,27 @@ try{
     assert.equal(result.immediate.armor,result.before.armor,kind+" ACTIVE crossing must preserve armour");
 
     await page.waitForFunction(args=>{
-      const events=window.CCGLostSizzlerBugReporter.events.slice(args.beforeEvents);
-      return events.some(event=>
+      const reporter=window.CCGLostSizzlerBugReporter;
+      const advanced=Number(reporter.state.environmentVerifiedHits||0)>Number(args.beforeVerified||0)||Number(reporter.state.environmentAnomalies||0)>Number(args.beforeAnomalies||0);
+      if(!advanced)return false;
+      return reporter.events.some(event=>
         (event.type==="environment-trap-crossing-damage-confirmed"||event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE")&&
         event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y
       );
-    },{beforeEvents:result.before.events,target:result.target},{timeout:2500,polling:25});
+    },{beforeVerified:result.before.verified,beforeAnomalies:result.before.anomalies,target:result.target},{timeout:2500,polling:25});
     const evidence=await page.evaluate(args=>{
       const reporter=window.CCGLostSizzlerBugReporter;
-      const events=reporter.events.slice(args.beforeEvents);
+      const relevant=reporter.events.filter(event=>
+        (event.type==="environment-trap-crossing-damage-confirmed"||event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE")&&
+        event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y
+      );
+      const latest=relevant[relevant.length-1]||null;
       return{
-        confirmed:events.some(event=>event.type==="environment-trap-crossing-damage-confirmed"&&event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y&&(event.detail?.traps||[]).some(trap=>String(trap?.id||"")===String(args.id)&&String(trap?.kind||"").toLowerCase()===args.kind)),
-        missed:events.some(event=>event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE"&&event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y),
+        confirmed:latest?.type==="environment-trap-crossing-damage-confirmed"&&(latest.detail?.traps||[]).some(trap=>String(trap?.id||"")===String(args.id)&&String(trap?.kind||"").toLowerCase()===args.kind),
+        missed:latest?.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE",
         verified:Number(reporter.state.environmentVerifiedHits||0)
       };
-    },{beforeEvents:result.before.events,kind,id:result.id,target:result.target});
+    },{kind,id:result.id,target:result.target});
     assert.equal(evidence.confirmed,true,kind+" crossing must be confirmed by exact-contact diagnostics: "+JSON.stringify(evidence));
     assert.equal(evidence.missed,false,kind+" successful crossing must not be reported as a missed active trap hit");
     assert.ok(evidence.verified>result.before.verified,kind+" crossing must increment verified environmental hits");
@@ -115,6 +133,62 @@ try{
     },{id:result.id,original:result.original});
     await page.waitForTimeout(90);
   }
+
+
+  const timestampOnly=await page.evaluate(()=>globalThis.eval(`(()=>{
+    const api=window.CCGLostSizzlerV142R19MobileTrapLayoutStability;
+    const reporter=window.CCGLostSizzlerBugReporter;
+    const rare=window.CCGLostSizzlerRareEventsBalance;
+    const trap=(host?.traps||[]).find(t=>t?.active&&String(t.kind||"").toLowerCase()==="spike");
+    if(!trap)return{available:false,reason:"spike missing"};
+    const candidates=[
+      {x:Number(trap.x)-1,y:Number(trap.y),dx:1,dy:0},
+      {x:Number(trap.x)+1,y:Number(trap.y),dx:-1,dy:0},
+      {x:Number(trap.x),y:Number(trap.y)-1,dx:0,dy:1},
+      {x:Number(trap.x),y:Number(trap.y)+1,dx:0,dy:-1}
+    ];
+    const entry=candidates.find(q=>W.walkable(world.map,q.x,q.y,host)&&!(host.enemies||[]).some(e=>e?.alive&&e.x===q.x&&e.y===q.y));
+    if(!entry)return{available:false,reason:"no walkable spike entry"};
+    for(const enemy of host?.enemies||[])enemy.alive=false;
+    if(host?.stalker)host.stalker.awake=false;
+    const original={period:Number(trap.period),phase:Number(trap.phase)};
+    p1.x=entry.x;p1.y=entry.y;p1.rx=p1.x;p1.ry=p1.y;
+    p1.maxHealth=Math.max(20,Number(p1.maxHealth||8));p1.armor=3;p1.invuln=0;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
+    move1=0;input.clear();
+    const period=100000,now=performance.now();
+    trap.period=period;trap.phase=((period*.10)-(now%period)+period)%period;
+    api.rearmInactiveTrapContacts();
+    let heldHealth=20,blockHealthWrites=true;
+    Object.defineProperty(p1,"health",{configurable:true,enumerable:true,get(){return heldHealth},set(value){if(!blockHealthWrites)heldHealth=Number(value)}});
+    const before={health:Number(p1.health),hurtAt:Number(p1.__ccgLastHurtAt||0),hits:Number(api.state.trapHits||0),eventMs:Math.max(0,...reporter.events.map(event=>Number(event?.ms||0)))};
+    movePlayer(p1,entry.dx,entry.dy,false);
+    const worldKey=String(rare?.trapRuntime?.worldKey||\`\${String(run?.seed||"run")}|F\${Math.max(1,Number(run?.floor||1))}\`);
+    const playerId=String(p1?.id||p1?.name||"player"),trapId=String(trap?.id||\`\${trap?.x},\${trap?.y}\`);
+    const contactKey=\`\${worldKey}|\${playerId}|\${trapId}\`;
+    const blocked={
+      health:Number(p1.health),hurtAt:Number(p1.__ccgLastHurtAt||0),hits:Number(api.state.trapHits||0),
+      rareLatched:Boolean(rare?.trapRuntime?.contact?.has?.(contactKey)),
+      falseSignal:reporter.events.filter(event=>Number(event?.ms||0)>Number(before.eventMs||0)).some(event=>event.type==="environment-trap-damage-signal")
+    };
+    blockHealthWrites=false;
+    const restored=heldHealth;delete p1.health;p1.health=restored;
+    p1.invuln=0;p1.hitStunMs=0;
+    const retryBefore=Number(p1.health);
+    const retryHandled=api.damageValidatedTrapContact(p1,trap);
+    const retryAfter=Number(p1.health);
+    trap.period=original.period;trap.phase=original.phase;
+    p1.x=world.start.x;p1.y=world.start.y;p1.rx=p1.x;p1.ry=p1.y;p1.invuln=0;p1.hitStunMs=0;
+    api.rearmInactiveTrapContacts();
+    return{available:true,before,blocked,retryBefore,retryAfter,retryHandled};
+  })()`));
+  assert.equal(timestampOnly.available,true,"timestamp-only SPIKE fixture must be available: "+JSON.stringify(timestampOnly));
+  assert.ok(timestampOnly.blocked.hurtAt>timestampOnly.before.hurtAt,"fixture must prove the damage pipeline advanced its timestamp while HEALTH was blocked: "+JSON.stringify(timestampOnly));
+  assert.equal(timestampOnly.blocked.health,timestampOnly.before.health,"timestamp-only contact must not manufacture HEALTH loss");
+  assert.equal(timestampOnly.blocked.hits,timestampOnly.before.hits,"timestamp-only contact must not increment the verified R19 trap-hit count");
+  assert.equal(timestampOnly.blocked.rareLatched,false,"timestamp-only contact must remain retryable instead of poisoning the canonical trap latch");
+  assert.equal(timestampOnly.blocked.falseSignal,false,"timestamp-only contact must not emit a verified trap-damage signal");
+  assert.equal(timestampOnly.retryHandled,true,"the same still-active SPIKE contact must remain retryable after the false signal");
+  assert.equal(timestampOnly.retryAfter,timestampOnly.retryBefore-1,"retry after a timestamp-only pseudo-hit must remove exactly one HEALTH");
 
   const dash=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV142R19MobileTrapLayoutStability;
@@ -148,7 +222,7 @@ try{
     const period=100000,now=performance.now();
     trap.period=period;trap.phase=((period*.10)-(now%period)+period)%period;
     api.rearmInactiveTrapContacts();
-    const before={health:Number(p1.health),armor:Number(p1.armor),events:reporter.events.length};
+    const before={health:Number(p1.health),armor:Number(p1.armor),verified:Number(reporter.state.environmentVerifiedHits||0),anomalies:Number(reporter.state.environmentAnomalies||0)};
     movePlayer(p1,dir.dx,dir.dy,true);
     return{available:true,id:String(trap.id),kind:String(trap.kind||""),original,dir,target:{x:Number(trap.x),y:Number(trap.y)},before,after:{x:Number(p1.x),y:Number(p1.y),health:Number(p1.health),armor:Number(p1.armor)}};
   });
@@ -158,23 +232,31 @@ try{
   assert.equal(dash.after.health,dash.before.health-1,"fast dash across an ACTIVE trap must still remove exactly one HP");
   assert.equal(dash.after.armor,dash.before.armor,"fast dash trap damage must preserve armour");
   await page.waitForFunction(args=>{
-    const events=window.CCGLostSizzlerBugReporter.events.slice(args.beforeEvents);
-    return events.some(event=>
+    const reporter=window.CCGLostSizzlerBugReporter;
+    const advanced=Number(reporter.state.environmentVerifiedHits||0)>Number(args.beforeVerified||0)||Number(reporter.state.environmentAnomalies||0)>Number(args.beforeAnomalies||0);
+    if(!advanced)return false;
+    return reporter.events.some(event=>
       (event.type==="environment-trap-crossing-damage-confirmed"||event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE")&&
       event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y
     );
-  },{beforeEvents:dash.before.events,target:dash.target},{timeout:2500,polling:25});
+  },{beforeVerified:dash.before.verified,beforeAnomalies:dash.before.anomalies,target:dash.target},{timeout:2500,polling:25});
   const dashEvidence=await page.evaluate(args=>{
-    const events=window.CCGLostSizzlerBugReporter.events.slice(args.beforeEvents);
+    const reporter=window.CCGLostSizzlerBugReporter;
+    const relevant=reporter.events.filter(event=>
+      (event.type==="environment-trap-crossing-damage-confirmed"||event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE")&&
+      event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y
+    );
+    const latest=relevant[relevant.length-1]||null;
     return{
-      confirmed:events.some(event=>event.type==="environment-trap-crossing-damage-confirmed"&&event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y&&(event.detail?.traps||[]).some(trap=>String(trap?.id||"")===String(args.id))),
-      missed:events.some(event=>event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE"&&event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y)
+      confirmed:latest?.type==="environment-trap-crossing-damage-confirmed"&&(latest.detail?.traps||[]).some(trap=>String(trap?.id||"")===String(args.id)),
+      missed:latest?.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE"
     };
-  },{beforeEvents:dash.before.events,target:dash.target,id:dash.id});
+  },{target:dash.target,id:dash.id});
   assert.equal(dashEvidence.confirmed,true,"fast dash crossing must retain exact confirmed contact evidence: "+JSON.stringify(dashEvidence));
   assert.equal(dashEvidence.missed,false,"fast dash crossing must not be misreported as a no-damage contact");
 
-  assert.deepEqual(errors,[],"live FIRE/SPIKE/SHOCK crossing regression must not produce page errors: "+errors.join("\n"));
+  const errorDetails=await page.evaluate(()=>window.__ccgTrapCrossingErrorDetails||[]);
+  assert.deepEqual(errors,[],"live FIRE/SPIKE/SHOCK crossing regression must not produce page errors: "+errors.join("\n")+"\nDETAILS "+JSON.stringify(errorDetails));
   console.log("C64 Dungeon Carnage live FIRE/SPIKE/SHOCK movement and dash trap crossings passed.");
   await context.close();
 }finally{

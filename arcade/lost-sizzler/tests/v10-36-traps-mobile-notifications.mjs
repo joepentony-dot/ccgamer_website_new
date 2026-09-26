@@ -28,7 +28,7 @@ assert.match(r19,/const trapContactCycles=new Map\(\)/,"floor-trap duplicate pro
 assert.match(r19,/function trapCycleId\(trap,now=performance\.now\(\)\)/,"floor traps must derive a stable cycle identity from their period and phase");
 assert.match(r19,/previous!=null&&previous!==cycle[\s\S]*state\.cycleRearms\+\+/,"a new active cycle must rearm stale contact latches even if no inactive frame was sampled");
 assert.match(r19,/CCGLostSizzlerV141R56PlaytestCompletion[\s\S]*CCGLostSizzlerV141R57DesktopPrepStability/,"cycle rearm must reconcile both retained trap-cycle owners");
-assert.match(r19,/afterHurtAt>beforeHurtAt/,"validated trap damage must require canonical hit evidence instead of treating stale invulnerability as a successful hit");
+assert.match(r19,/const canonicalHit=afterHealth<beforeHealth/,"validated trap damage must require real HEALTH loss instead of accepting a timestamp-only pseudo-hit");
 assert.match(r19,/trapHitsByKind:\{fire:0,spike:0,shock:0,other:0\}/,"global trap diagnostics must distinguish FIRE, SPIKE and SHOCK hits");
 
 

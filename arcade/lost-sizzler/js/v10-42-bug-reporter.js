@@ -16,6 +16,7 @@
   const trapChecks=new Set();
   const duplicateTrapTiles=new Set();
   const movementBoundaryChecks=new WeakMap();
+  const movementBoundarySignals=new Map();
   const environmentDamageSignals=[];
   const MAX_ENVIRONMENT_DAMAGE_SIGNALS=80;
   let movementBoundarySerial=0;
@@ -24,16 +25,20 @@
 
   const safe=(fn,fallback=null)=>{try{const value=fn();return value===undefined?fallback:value}catch(_){return fallback}};
   const nowIso=()=>new Date().toISOString();
-  const compact=value=>{
+  const compact=(value,seen=new WeakSet())=>{
     if(value==null||["string","number","boolean"].includes(typeof value))return value;
-    if(Array.isArray(value))return value.slice(0,24).map(compact);
     if(typeof value==="object"){
-      const out={};let count=0;
-      for(const [key,val] of Object.entries(value)){
-        if(count++>=32)break;
-        out[key]=compact(val);
-      }
-      return out;
+      if(seen.has(value))return "[Circular]";
+      seen.add(value);
+      try{
+        if(Array.isArray(value))return value.slice(0,24).map(item=>compact(item,seen));
+        const out={};let count=0;
+        for(const [key,val] of Object.entries(value)){
+          if(count++>=32)break;
+          out[key]=compact(val,seen);
+        }
+        return out;
+      }finally{seen.delete(value)}
     }
     return String(value);
   };
@@ -41,22 +46,67 @@
     events.push({at:nowIso(),ms:Math.round(performance.now()),type:String(type),detail:compact(detail)});
     if(events.length>MAX_EVENTS)events.splice(0,events.length-MAX_EVENTS);
   }
+  function confirmTrapDamageSignal(signal){
+    if(signal?.type!=="trap"||signal.confirmed===true)return signal;
+    const pending=movementBoundarySignals.get(signal.playerId);
+    const exact=pending?.activeTraps?.some(row=>String(row?.trap?.id||"")===signal.trapId&&Number(row?.trap?.x)===signal.x&&Number(row?.trap?.y)===signal.y);
+    if(pending&&signal.serial>Number(pending.beforeDamageSignalSerial||0)&&exact){
+      pending.acceptedTrapSignal=signal;
+      if(pending.trapConfirmedAtSignal){
+        signal.confirmed=true;
+        return signal;
+      }
+      push("environment-trap-crossing-damage-confirmed",{
+        serial:pending.serial,world:pending.world,playerId:pending.playerId,contact:{x:pending.x,y:pending.y},
+        healthLoss:1,armorLoss:0,traps:pending.activeTraps.map(row=>row.trap),
+        trapSignal:signal,contactSignals:[signal],source:"pending-exact-signal"
+      });
+      pending.trapConfirmedAtSignal=true;
+    }else{
+      /* A verified R58 signal proves HEALTH already fell. Fast movement can
+         advance the reporter boundary before this signal is consumed, so the
+         confirmation must remain anchored to the signal's exact trap tile. */
+      const trap=safe(()=>(host?.traps||[]).find(row=>
+        String(row?.id||`${row?.x},${row?.y}`)===signal.trapId
+        && Number(row?.x)===signal.x
+        && Number(row?.y)===signal.y
+      )||null,null);
+      const player=safe(()=>{
+        const rows=typeof localPlayers==="function"?localPlayers():[typeof p1!=="undefined"?p1:null,typeof p2!=="undefined"?p2:null].filter(Boolean);
+        return rows.find(row=>trapPlayerId(row)===signal.playerId)||rows[0]||null;
+      },null);
+      push("environment-trap-crossing-damage-confirmed",{
+        world:trapWorldKey(),playerId:signal.playerId,contact:{x:signal.x,y:signal.y},
+        healthLoss:1,armorLoss:0,traps:trap?[trapOwnerSnapshot(player,trap).trap]:[],
+        trapSignal:signal,contactSignals:[signal],source:pending?"verified-signal-boundary-mismatch":"direct-exact-signal"
+      });
+    }
+    signal.confirmed=true;
+    state.environmentVerifiedHits++;
+    return signal;
+  }
   function recordEnvironmentDamageSignal(type,event){
-    const detail=event?.detail||{};
+    const detail=event?.detail||{},signalType=String(type),playerId=String(detail.playerId||""),trapIdValue=String(detail.trapId||""),hazardIdValue=String(detail.hazardId||""),x=Number(detail.x),y=Number(detail.y),at=Number(detail.at||0);
+    const previous=environmentDamageSignals[environmentDamageSignals.length-1];
+    if(previous&&previous.type===signalType&&previous.playerId===playerId&&previous.trapId===trapIdValue&&previous.hazardId===hazardIdValue&&previous.x===x&&previous.y===y&&previous.at===at){
+      if(previous.type==="trap")confirmTrapDamageSignal(previous);
+      return previous;
+    }
     const signal={
-      serial:++environmentDamageSerial,type:String(type),
-      playerId:String(detail.playerId||""),trapId:String(detail.trapId||""),hazardId:String(detail.hazardId||""),
-      kind:String(detail.kind||detail.type||""),x:Number(detail.x),y:Number(detail.y),at:Number(detail.at||0)
+      serial:++environmentDamageSerial,type:signalType,
+      playerId,trapId:trapIdValue,hazardId:hazardIdValue,
+      kind:String(detail.kind||detail.type||""),x,y,at,confirmed:false
     };
     environmentDamageSignals.push(signal);
     if(environmentDamageSignals.length>MAX_ENVIRONMENT_DAMAGE_SIGNALS)environmentDamageSignals.splice(0,environmentDamageSignals.length-MAX_ENVIRONMENT_DAMAGE_SIGNALS);
+    if(signal.type==="trap")confirmTrapDamageSignal(signal);
     push(`environment-${signal.type}-damage-signal`,signal);
     return signal
   }
-  function contactDamageSignalsSince(before){
-    const serial=Number(before?.beforeDamageSignalSerial||0);
+  function contactDamageSignalsSince(before,throughSerial=Infinity){
+    const serial=Number(before?.beforeDamageSignalSerial||0),upper=Number.isFinite(Number(throughSerial))?Number(throughSerial):Infinity;
     return environmentDamageSignals.filter(signal=>
-      signal.serial>serial&&
+      signal.serial>serial&&signal.serial<=upper&&
       signal.playerId===String(before?.playerId||"")&&
       signal.x===Number(before?.x)&&signal.y===Number(before?.y)
     )
@@ -190,6 +240,7 @@
         activeTraps,activeHazards,meta:compact(meta)
       };
       movementBoundaryChecks.set(player,record);
+      if(activeTraps.length)movementBoundarySignals.set(record.playerId,record);
       if(activeTraps.length||activeHazards.length){
         state.environmentContacts++;
         state.lastEnvironment=record;
@@ -200,6 +251,7 @@
 
     const before=movementBoundaryChecks.get(player);
     movementBoundaryChecks.delete(player);
+    if(before&&movementBoundarySignals.get(before.playerId)===before)movementBoundarySignals.delete(before.playerId);
     if(!before)return false;
     if(!before.activeTraps.length&&!before.activeHazards.length)return true;
 
@@ -215,17 +267,36 @@
       activeHazards:before.activeHazards.map(row=>({id:row.id,type:row.type,title:row.title}))
     });
 
+    const boundaryDamageSignalSerial=environmentDamageSerial;
+    const boundaryContactSignals=contactDamageSignalsSince(before,boundaryDamageSignalSerial);
+    const boundaryTrapIds=new Set(before.activeTraps.map(row=>String(row?.trap?.id||"")));
+    const boundaryTrapKinds=new Set(before.activeTraps.map(row=>String(row?.trap?.kind||"").toLowerCase()).filter(Boolean));
+    const boundaryTrapSignal=before.acceptedTrapSignal||boundaryContactSignals.find(signal=>signal.type==="trap"&&(boundaryTrapIds.has(signal.trapId)||boundaryTrapKinds.has(String(signal.kind||"").toLowerCase())))||null;
+    const immediateTrapHealthLoss=before.beforeHealth-immediate.health;
+    let trapConfirmedAtBoundary=Boolean(before.trapConfirmedAtSignal);
+    if(before.activeTraps.length&&(boundaryTrapSignal||immediateTrapHealthLoss>0)&&!trapConfirmedAtBoundary){
+      state.environmentVerifiedHits++;
+      push("environment-trap-crossing-damage-confirmed",{
+        serial:before.serial,world:before.world,playerId:before.playerId,contact:{x:before.x,y:before.y},
+        healthLoss:immediateTrapHealthLoss,armorLoss:before.beforeArmor-immediate.armor,
+        traps:before.activeTraps.map(row=>row.trap),trapSignal:boundaryTrapSignal,contactSignals:boundaryContactSignals,
+        source:boundaryTrapSignal?"exact-signal":"exact-contact-health-loss"
+      });
+      trapConfirmedAtBoundary=true;
+    }
+
     setTimeout(()=>{
       const finalHealth=Number(player.health||0),finalArmor=Number(player.armor||0),finalHurtAt=Number(player.__ccgLastHurtAt||0);
       const finalDamageAt=Number(player.__ccgLastDamageAt||0),finalDamageSource=String(player.__ccgLastDamageSource||"");
       const healthLoss=before.beforeHealth-finalHealth,armorLoss=before.beforeArmor-finalArmor;
       const contactSignals=contactDamageSignalsSince(before);
+      const trapContactSignals=contactDamageSignalsSince(before,boundaryDamageSignalSerial);
       const trapIds=new Set(before.activeTraps.map(row=>String(row?.trap?.id||"")));
       const trapKinds=new Set(before.activeTraps.map(row=>String(row?.trap?.kind||"").toLowerCase()).filter(Boolean));
-      const trapSignal=contactSignals.find(signal=>signal.type==="trap"&&(trapIds.has(signal.trapId)||trapKinds.has(String(signal.kind||"").toLowerCase())))||null;
+      const trapSignal=trapContactSignals.find(signal=>signal.type==="trap"&&(trapIds.has(signal.trapId)||trapKinds.has(String(signal.kind||"").toLowerCase())))||null;
       const hazardIds=new Set(before.activeHazards.map(row=>String(row?.id||"")));
       const hazardSignal=contactSignals.find(signal=>signal.type==="hazard"&&hazardIds.has(signal.hazardId))||null;
-      const trapDamageObserved=Boolean(trapSignal),hazardDamageObserved=Boolean(hazardSignal);
+      const trapDamageObserved=trapConfirmedAtBoundary||Boolean(trapSignal),hazardDamageObserved=Boolean(hazardSignal);
       if(before.activeTraps.length&&!trapDamageObserved){
         state.anomalies++;state.trapAnomalies++;state.environmentAnomalies++;
         const detail={
@@ -240,7 +311,7 @@
         state.lastEnvironment=detail;
         push("ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE",detail);
         updateBadge();
-      }else if(before.activeTraps.length){
+      }else if(before.activeTraps.length&&!trapConfirmedAtBoundary){
         state.environmentVerifiedHits++;
         push("environment-trap-crossing-damage-confirmed",{
           serial:before.serial,world:before.world,playerId:before.playerId,contact:{x:before.x,y:before.y},
@@ -647,6 +718,8 @@
   window.CCGLostSizzlerBugReporter=Object.freeze({
     version:"V10.42-bug-reporter-v4",observationOnly:true,gameplayOwnership:false,inputOwnership:false,renderOwnership:false,
     get state(){return state},get events(){return [...events]},
+    recordTrapDamage(detail={}){return recordEnvironmentDamageSignal("trap",{detail})},
+    recordHazardDamage(detail={}){return recordEnvironmentDamageSignal("hazard",{detail})},
     snapshot:currentSnapshot,trapProbe,trapSnapshot,observeMovementBoundary,createReport,formatReport,open:openReporter,close:closeReporter,
     enable(){try{localStorage.setItem("ccg-dungeon-bug-reporter","1")}catch(_){}ensureUi();const b=document.getElementById("ccg-bug-report-btn");if(b)b.hidden=false},
     disable(){try{localStorage.removeItem("ccg-dungeon-bug-reporter")}catch(_){}const b=document.getElementById("ccg-bug-report-btn");if(b)b.hidden=true;closeReporter()}
