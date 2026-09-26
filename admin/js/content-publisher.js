@@ -56,7 +56,8 @@ const state = {
   gameIdTouched: false,
   featureSlugTouched: false,
   currentTab: 'game',
-  lastPublish: null
+  lastPublish: null,
+  gameDescriptionTouched: false
 };
 
 const el = {
@@ -85,6 +86,7 @@ const el = {
   gameValidation: document.querySelector('[data-game-validation]'),
   featureValidation: document.querySelector('[data-feature-validation]'),
   resetGame: document.querySelector('[data-action="reset-game"]'),
+  generateGameDescription: document.querySelector('[data-action="generate-game-description"]'),
   resetVideo: document.querySelector('[data-action="reset-video"]'),
   resetZzap: document.querySelector('[data-action="reset-zzap"]'),
   githubOwner: document.querySelector('[data-github-owner]'),
@@ -131,6 +133,10 @@ function bindEvents() {
   el.refresh?.addEventListener('click', refreshLiveData);
   el.showUnverified?.addEventListener('click', toggleUnverifiedList);
   el.resetGame?.addEventListener('click', resetGameForm);
+  el.generateGameDescription?.addEventListener('click', () => {
+    state.gameDescriptionTouched = false;
+    syncAutoGameDescription(true);
+  });
   el.resetVideo?.addEventListener('click', resetFeatureForm);
   el.resetZzap?.addEventListener('click', resetZzapForm);
   el.gameForm?.addEventListener('submit', publishGame);
@@ -145,6 +151,15 @@ function bindEvents() {
   });
 
   document.querySelector('[data-game-field="title"]')?.addEventListener('input', onGameTitleInput);
+  document.querySelector('[data-game-field="description"]')?.addEventListener('input', () => {
+    state.gameDescriptionTouched = true;
+  });
+  ['system', 'year', 'publisher', 'developer'].forEach((name) => {
+    const node = document.querySelector(`[data-game-field="${name}"]`);
+    node?.addEventListener('input', syncAutoGameDescription);
+    node?.addEventListener('change', syncAutoGameDescription);
+  });
+  el.gameGenres?.addEventListener('change', syncAutoGameDescription);
   document.querySelector('[data-game-field="slug"]')?.addEventListener('input', () => {
     state.gameSlugTouched = true;
     updateGameCanonicalPreview();
@@ -444,6 +459,7 @@ function resetGameForm() {
   el.gameForm?.reset();
   state.gameSlugTouched = false;
   state.gameIdTouched = false;
+  state.gameDescriptionTouched = false;
   setGameValue('ccg_rating', '6');
   if (el.gameThumbnailFile) el.gameThumbnailFile.value = '';
   if (el.gameBox3dFile) el.gameBox3dFile.value = '';
@@ -870,6 +886,34 @@ async function publishFeature(event) {
   }
 }
 
+function buildAutoGameDescription() {
+  const title = gameValue('title');
+  const system = gameValue('system').toUpperCase();
+  const year = Number(gameValue('year'));
+  const publishers = parseCommaList(gameValue('publisher'));
+  const developer = gameValue('developer');
+  const genres = selectedChipValues(el.gameGenres);
+
+  if (!title || !['C64', 'AMIGA'].includes(system) || !Number.isInteger(year) || !publishers.length) return '';
+
+  const platform = system === 'C64' ? 'Commodore 64' : 'Amiga';
+  const genreText = genres.length
+    ? `${genres.slice(0, 3).join(', ').replace(/, ([^,]*)$/, ' and $1').toLowerCase()} `
+    : '';
+  const publisherText = publishers.join(', ');
+  const developerText = developer && !publishers.some((publisher) => publisher.toLowerCase() === developer.toLowerCase())
+    ? ` and developed by ${developer}`
+    : '';
+
+  return `${title} is a ${year} ${platform} ${genreText}game published by ${publisherText}${developerText}. This archive entry brings together verified credits, video coverage, magazine review links and preservation resources where available.`;
+}
+
+function syncAutoGameDescription(force = false) {
+  if (!force && state.gameDescriptionTouched) return;
+  const description = buildAutoGameDescription();
+  if (description) setGameValue('description', description);
+}
+
 function buildGameEntry() {
   const title = gameValue('title');
   const slug = slugify(gameValue('slug') || title);
@@ -893,7 +937,7 @@ function buildGameEntry() {
     download_status: gameValue('downloadStatus'),
     lemon: gameValue('lemonUrl') ? [gameValue('lemonUrl')] : [],
     zzap: gameValue('zzapUrl') ? [gameValue('zzapUrl')] : [],
-    description: gameValue('description'),
+    description: gameValue('description') || buildAutoGameDescription(),
     ccg_rating: Number(gameValue('ccg_rating')),
     ccg_rating_reason: gameValue('ccg_rating_reason'),
     credits: {

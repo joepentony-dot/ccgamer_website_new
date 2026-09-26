@@ -154,3 +154,16 @@ test('publisher stylesheet includes responsive layouts', () => {
   assert.match(css, /@media \(max-width: 680px\)/);
   assert.match(css, /publisher-pipeline/);
 });
+
+
+test('game publisher can auto-build factual description copy without overwriting manual edits', () => {
+  assert.match(html, /data-action="generate-game-description"/);
+  assert.match(html, /Automatically built from the factual game metadata/i);
+  assert.match(js, /function buildAutoGameDescription\(\)/);
+  assert.match(js, /Commodore 64/);
+  assert.match(js, /verified credits, video coverage, magazine review links and preservation resources/i);
+  assert.match(js, /gameDescriptionTouched/);
+  assert.match(js, /if \(!force && state\.gameDescriptionTouched\) return/);
+  assert.match(js, /description: gameValue\('description'\) \|\| buildAutoGameDescription\(\)/);
+  assert.doesNotMatch(js, /buildAutoGameDescription[\s\S]*fast-paced|addictive|classic gameplay/i);
+});
