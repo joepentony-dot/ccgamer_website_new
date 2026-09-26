@@ -1814,6 +1814,24 @@ html:not([data-ccg-page="home"]) .ccg-nav__more {
     min-width: 0;
 }
 
+/*
+ * NON-HOME SEARCH FIRST-PAINT RESERVATION
+ * The whole-site search runtime inserts its compact trigger after DOMContentLoaded.
+ * Reserve the exact compact footprint beforehand so header wrapping/height does not
+ * change when that control is hydrated. Home owns its separate static search slot.
+ */
+html:not([data-ccg-page="home"]) .ccg-header-actions:not(:has([data-ccg-global-search-trigger]))::before {
+    content: "";
+    display: block;
+    flex: 0 0 100px;
+    width: 100px;
+    min-width: 100px;
+    min-height: 42px;
+    box-sizing: border-box;
+    visibility: hidden;
+    pointer-events: none;
+}
+
 @media (max-width: 1180px) {
     .ccg-header {
         padding: 12px 0 10px;
@@ -1989,6 +2007,12 @@ html:not([data-ccg-page="home"]) .ccg-nav__more {
     .ccg-header-actions {
         justify-content: space-between;
         gap: 10px;
+    }
+
+    html:not([data-ccg-page="home"]) .ccg-header-actions:not(:has([data-ccg-global-search-trigger]))::before {
+        flex-basis: 42px;
+        width: 100%;
+        min-width: 0;
     }
 
     .ccg-nav-toggle {
