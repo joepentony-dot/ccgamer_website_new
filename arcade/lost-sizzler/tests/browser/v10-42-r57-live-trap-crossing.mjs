@@ -41,6 +41,18 @@ try{
   page.setDefaultTimeout(30000);
   const errors=[];
   page.on("pageerror",error=>errors.push(String(error?.stack||error)));
+  await page.addInitScript(()=>{
+    window.__ccgTrapCrossingErrorDetails=[];
+    addEventListener("error",event=>{
+      window.__ccgTrapCrossingErrorDetails.push({
+        message:String(event?.message||event?.error?.message||""),
+        filename:String(event?.filename||""),
+        lineno:Number(event?.lineno||0),
+        colno:Number(event?.colno||0),
+        stack:String(event?.error?.stack||"")
+      });
+    });
+  });
 
   await page.goto(origin+"/arcade/lost-sizzler/?live-trap-crossing-r57=1&bugreport=1",{waitUntil:"load"});
   await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&document.body.dataset.v142BootstrapReady==="true");
@@ -243,7 +255,8 @@ try{
   assert.equal(dashEvidence.confirmed,true,"fast dash crossing must retain exact confirmed contact evidence: "+JSON.stringify(dashEvidence));
   assert.equal(dashEvidence.missed,false,"fast dash crossing must not be misreported as a no-damage contact");
 
-  assert.deepEqual(errors,[],"live FIRE/SPIKE/SHOCK crossing regression must not produce page errors: "+errors.join("\n"));
+  const errorDetails=await page.evaluate(()=>window.__ccgTrapCrossingErrorDetails||[]);
+  assert.deepEqual(errors,[],"live FIRE/SPIKE/SHOCK crossing regression must not produce page errors: "+errors.join("\n")+"\nDETAILS "+JSON.stringify(errorDetails));
   console.log("C64 Dungeon Carnage live FIRE/SPIKE/SHOCK movement and dash trap crossings passed.");
   await context.close();
 }finally{
