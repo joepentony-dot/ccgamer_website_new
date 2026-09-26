@@ -5,6 +5,7 @@ import test from 'node:test';
 const optimizer = fs.readFileSync('admin/js/content-publisher-image-optimizer.js', 'utf8');
 const publisher = fs.readFileSync('admin/content-publisher.html', 'utf8');
 const budget = fs.readFileSync('scripts/image-performance-budget.py', 'utf8');
+const recentContent = fs.readFileSync('js/ccg-recent-content.js', 'utf8');
 
 test('Content Publisher loads the isolated thumbnail optimiser', () => {
   assert.match(publisher, /content-publisher-image-optimizer\.js/);
@@ -43,4 +44,14 @@ test('budget validator verifies image bytes and never mutates raster assets', ()
   assert.match(budget, /extension-mismatch/);
   assert.match(budget, /pixel-count/);
   assert.doesNotMatch(budget, /Image\.save\(|\.save\([^\n]*format=|\.unlink\(|shutil\.move|shutil\.rmtree|os\.remove|Path\.rename/);
+});
+
+
+test('Home recent-video cards request card-sized YouTube thumbnails', () => {
+  assert.match(recentContent, /function cardThumbnail\(video, id\)/);
+  assert.match(recentContent, /i\\\.ytimg\\\.com\\\/vi/);
+  assert.match(recentContent, /mqdefault\.jpg/);
+  assert.match(recentContent, /width="320"/);
+  assert.match(recentContent, /height="180"/);
+  assert.doesNotMatch(recentContent, /maxresdefault\.jpg/);
 });
