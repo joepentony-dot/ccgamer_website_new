@@ -25,16 +25,20 @@
 
   const safe=(fn,fallback=null)=>{try{const value=fn();return value===undefined?fallback:value}catch(_){return fallback}};
   const nowIso=()=>new Date().toISOString();
-  const compact=value=>{
+  const compact=(value,seen=new WeakSet())=>{
     if(value==null||["string","number","boolean"].includes(typeof value))return value;
-    if(Array.isArray(value))return value.slice(0,24).map(compact);
     if(typeof value==="object"){
-      const out={};let count=0;
-      for(const [key,val] of Object.entries(value)){
-        if(count++>=32)break;
-        out[key]=compact(val);
-      }
-      return out;
+      if(seen.has(value))return "[Circular]";
+      seen.add(value);
+      try{
+        if(Array.isArray(value))return value.slice(0,24).map(item=>compact(item,seen));
+        const out={};let count=0;
+        for(const [key,val] of Object.entries(value)){
+          if(count++>=32)break;
+          out[key]=compact(val,seen);
+        }
+        return out;
+      }finally{seen.delete(value)}
     }
     return String(value);
   };
@@ -42,50 +46,60 @@
     events.push({at:nowIso(),ms:Math.round(performance.now()),type:String(type),detail:compact(detail)});
     if(events.length>MAX_EVENTS)events.splice(0,events.length-MAX_EVENTS);
   }
+  function confirmTrapDamageSignal(signal){
+    if(signal?.type!=="trap"||signal.confirmed===true)return signal;
+    const pending=movementBoundarySignals.get(signal.playerId);
+    const exact=pending?.activeTraps?.some(row=>String(row?.trap?.id||"")===signal.trapId&&Number(row?.trap?.x)===signal.x&&Number(row?.trap?.y)===signal.y);
+    if(pending&&signal.serial>Number(pending.beforeDamageSignalSerial||0)&&exact){
+      pending.acceptedTrapSignal=signal;
+      if(pending.trapConfirmedAtSignal){
+        signal.confirmed=true;
+        return signal;
+      }
+      push("environment-trap-crossing-damage-confirmed",{
+        serial:pending.serial,world:pending.world,playerId:pending.playerId,contact:{x:pending.x,y:pending.y},
+        healthLoss:1,armorLoss:0,traps:pending.activeTraps.map(row=>row.trap),
+        trapSignal:signal,contactSignals:[signal],source:"pending-exact-signal"
+      });
+      pending.trapConfirmedAtSignal=true;
+    }else{
+      /* A verified R58 signal proves HEALTH already fell. Fast movement can
+         advance the reporter boundary before this signal is consumed, so the
+         confirmation must remain anchored to the signal's exact trap tile. */
+      const trap=safe(()=>(host?.traps||[]).find(row=>
+        String(row?.id||`${row?.x},${row?.y}`)===signal.trapId
+        && Number(row?.x)===signal.x
+        && Number(row?.y)===signal.y
+      )||null,null);
+      const player=safe(()=>{
+        const rows=typeof localPlayers==="function"?localPlayers():[typeof p1!=="undefined"?p1:null,typeof p2!=="undefined"?p2:null].filter(Boolean);
+        return rows.find(row=>trapPlayerId(row)===signal.playerId)||rows[0]||null;
+      },null);
+      push("environment-trap-crossing-damage-confirmed",{
+        world:trapWorldKey(),playerId:signal.playerId,contact:{x:signal.x,y:signal.y},
+        healthLoss:1,armorLoss:0,traps:trap?[trapOwnerSnapshot(player,trap).trap]:[],
+        trapSignal:signal,contactSignals:[signal],source:pending?"verified-signal-boundary-mismatch":"direct-exact-signal"
+      });
+    }
+    signal.confirmed=true;
+    state.environmentVerifiedHits++;
+    return signal;
+  }
   function recordEnvironmentDamageSignal(type,event){
     const detail=event?.detail||{},signalType=String(type),playerId=String(detail.playerId||""),trapIdValue=String(detail.trapId||""),hazardIdValue=String(detail.hazardId||""),x=Number(detail.x),y=Number(detail.y),at=Number(detail.at||0);
     const previous=environmentDamageSignals[environmentDamageSignals.length-1];
-    if(previous&&previous.type===signalType&&previous.playerId===playerId&&previous.trapId===trapIdValue&&previous.hazardId===hazardIdValue&&previous.x===x&&previous.y===y&&previous.at===at)return previous;
+    if(previous&&previous.type===signalType&&previous.playerId===playerId&&previous.trapId===trapIdValue&&previous.hazardId===hazardIdValue&&previous.x===x&&previous.y===y&&previous.at===at){
+      if(previous.type==="trap")confirmTrapDamageSignal(previous);
+      return previous;
+    }
     const signal={
       serial:++environmentDamageSerial,type:signalType,
       playerId,trapId:trapIdValue,hazardId:hazardIdValue,
-      kind:String(detail.kind||detail.type||""),x,y,at
+      kind:String(detail.kind||detail.type||""),x,y,at,confirmed:false
     };
     environmentDamageSignals.push(signal);
     if(environmentDamageSignals.length>MAX_ENVIRONMENT_DAMAGE_SIGNALS)environmentDamageSignals.splice(0,environmentDamageSignals.length-MAX_ENVIRONMENT_DAMAGE_SIGNALS);
-    if(signal.type==="trap"){
-      const pending=movementBoundarySignals.get(signal.playerId);
-      const exact=pending?.activeTraps?.some(row=>String(row?.trap?.id||"")===signal.trapId&&Number(row?.trap?.x)===signal.x&&Number(row?.trap?.y)===signal.y);
-      if(pending&&signal.serial>Number(pending.beforeDamageSignalSerial||0)&&exact){
-        pending.acceptedTrapSignal=signal;
-        if(!pending.trapConfirmedAtSignal){
-          pending.trapConfirmedAtSignal=true;
-          state.environmentVerifiedHits++;
-          push("environment-trap-crossing-damage-confirmed",{
-            serial:pending.serial,world:pending.world,playerId:pending.playerId,contact:{x:pending.x,y:pending.y},
-            healthLoss:1,armorLoss:0,traps:pending.activeTraps.map(row=>row.trap),
-            trapSignal:signal,contactSignals:[signal],source:"pending-exact-signal"
-          });
-        }
-      }else{
-        /* R58 trap signals are emitted only after HEALTH has actually fallen.
-           A fast multi-tile move can advance the reporter's movement-boundary
-           record before this verified signal is observed. Do not discard that
-           proven hit merely because the pending boundary now describes another
-           tile; retain the signal at its own exact trap coordinates. */
-        const trap=safe(()=>(host?.traps||[]).find(row=>
-          String(row?.id||`${row?.x},${row?.y}`)===signal.trapId
-          && Number(row?.x)===signal.x
-          && Number(row?.y)===signal.y
-        )||null,null);
-        state.environmentVerifiedHits++;
-        push("environment-trap-crossing-damage-confirmed",{
-          world:trapWorldKey(),playerId:signal.playerId,contact:{x:signal.x,y:signal.y},
-          healthLoss:1,armorLoss:0,traps:trap?[trapOwnerSnapshot(safe(()=>players?.find?.(p=>trapPlayerId(p)===signal.playerId)||p1,null),trap).trap]:[],
-          trapSignal:signal,contactSignals:[signal],source:pending?"verified-signal-boundary-mismatch":"direct-exact-signal"
-        });
-      }
-    }
+    if(signal.type==="trap")confirmTrapDamageSignal(signal);
     push(`environment-${signal.type}-damage-signal`,signal);
     return signal
   }
