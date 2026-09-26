@@ -120,7 +120,11 @@
 
         <label>Description *
           <textarea rows="5" data-game-field="description" required></textarea>
+          <small>Automatically built from the factual game metadata below until you edit it yourself.</small>
         </label>
+        <div class="publisher-header-actions">
+          <button class="ccg-btn ccg-btn--ghost" type="button" data-action="generate-game-description">Regenerate factual description</button>
+        </div>
 
         <div class="publisher-grid publisher-grid--2">
           <label>YouTube URL *
