@@ -1,0 +1,123 @@
+name: CCG Site-wide Lighthouse Matrix
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ccg-sitewide-lighthouse-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lighthouse:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.title, '[FULL LIGHTHOUSE]')
+    name: Lighthouse ${{ matrix.device }} shard ${{ matrix.shard }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        device:
+          - mobile
+          - desktop
+        shard:
+          - 0
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+          - 9
+          - 10
+          - 11
+
+    steps:
+      - name: Check out candidate branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Lighthouse dependencies
+        run: npm install --no-save --package-lock=false --ignore-scripts lighthouse@13.4.1 chrome-launcher@1.2.1
+
+      - name: Validate audit tooling
+        run: |
+          google-chrome --version
+          node --check scripts/sitewide_lighthouse_audit.mjs
+
+      - name: Audit sitemap shard
+        run: |
+          mkdir -p "$RUNNER_TEMP/sitewide-raw"
+          node scripts/sitewide_lighthouse_audit.mjs --device "${{ matrix.device }}" --shard-index "${{ matrix.shard }}" --shard-count "12" --output "$RUNNER_TEMP/sitewide-lighthouse-${{ matrix.device }}-${{ matrix.shard }}.json" --raw-dir "$RUNNER_TEMP/sitewide-raw"
+
+      - name: Upload shard evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: ccg-sitewide-${{ matrix.device }}-${{ matrix.shard }}
+          path: |
+            ${{ runner.temp }}/sitewide-lighthouse-${{ matrix.device }}-${{ matrix.shard }}.json
+            ${{ runner.temp }}/sitewide-raw/*.json
+          if-no-files-found: error
+          retention-days: 21
+
+  aggregate:
+    if: always() && (github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.title, '[FULL LIGHTHOUSE]'))
+    name: Aggregate site-wide Lighthouse
+    needs:
+      - lighthouse
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out candidate branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Download all Lighthouse shards
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ccg-sitewide-*
+          path: ${{ runner.temp }}/ccg-sitewide
+          merge-multiple: false
+
+      - name: Aggregate evidence
+        run: |
+          node --check scripts/sitewide_lighthouse_aggregate.mjs
+          node scripts/sitewide_lighthouse_aggregate.mjs --input-dir "$RUNNER_TEMP/ccg-sitewide" --output-json "$RUNNER_TEMP/sitewide-lighthouse-aggregate.json" --output-md "$RUNNER_TEMP/sitewide-lighthouse-aggregate.md"
+          cat "$RUNNER_TEMP/sitewide-lighthouse-aggregate.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload aggregate report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ccg-sitewide-lighthouse-aggregate
+          path: |
+            ${{ runner.temp }}/sitewide-lighthouse-aggregate.json
+            ${{ runner.temp }}/sitewide-lighthouse-aggregate.md
+          if-no-files-found: error
+          retention-days: 30

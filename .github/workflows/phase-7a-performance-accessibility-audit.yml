@@ -125,6 +125,7 @@ jobs:
 
           allowed = {
               ".github/workflows/phase-7a-performance-accessibility-audit.yml",
+              ".github/workflows/ccg-sitewide-lighthouse.yml",
               "scripts/phase7a_static_performance_accessibility_audit.py",
               "scripts/phase7a_live_audit.mjs",
               "scripts/sitewide_lighthouse_audit.mjs",
