@@ -966,6 +966,9 @@ function validateGameEntry(entry) {
   if (!entry.description || entry.description.length < 70) errors.push('Description should be at least 70 characters for useful page/search copy.');
   if (!entry.videoid || !isYoutubeId(entry.videoid)) errors.push('A valid 11-character YouTube video ID is required.');
   if (!entry.thumbnail || !isSafeThumbnailPath(entry.thumbnail)) errors.push(`Thumbnail must be an image inside ${ALLOWED_THUMBNAIL_PREFIX}`);
+  if (!el.gameThumbnailFile?.files?.[0] && !gameValue('thumbnail')) {
+    errors.push('Select a thumbnail image, or enter an existing repository thumbnail path.');
+  }
   if (!Array.isArray(entry.genres) || !entry.genres.length) errors.push('Choose at least one genre.');
   if (!entry.credits.publisher.length) errors.push('Publisher is required.');
   if (!Number.isInteger(entry.ccg_rating) || entry.ccg_rating < 1 || entry.ccg_rating > 10) errors.push('CCG rating must be an integer from 1 to 10.');
@@ -1486,7 +1489,7 @@ function idify(value) {
 
 function normalizeThumbnailPath(value, slug) {
   const raw = String(value || '').trim().replace(/^\/+/, '');
-  if (!raw) return `${ALLOWED_THUMBNAIL_PREFIX}${slug}.jpg`;
+  if (!raw) return `${ALLOWED_THUMBNAIL_PREFIX}${slug}.webp`;
   if (raw.startsWith(ALLOWED_THUMBNAIL_PREFIX)) return raw;
   if (!raw.includes('/')) return `${ALLOWED_THUMBNAIL_PREFIX}${raw}`;
   return raw;
