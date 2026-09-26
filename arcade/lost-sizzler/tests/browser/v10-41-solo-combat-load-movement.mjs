@@ -65,6 +65,8 @@ try{
       updateFaults:Number(window.CCGLostSizzlerV141R29?.state?.updateFaults||0),
       attackIntents:Number(diagnostics.attackIntents||0),
       directAttackErrors:Number(diagnostics.directAttackErrors||0),
+      deepOwnerFallbacks:Number(diagnostics.deepOwnerFallbacks||0),
+      deepOwnerFallbackSuccesses:Number(diagnostics.deepOwnerFallbackSuccesses||0),
       capturedR1Fallbacks:Number(diagnostics.capturedR1Fallbacks||0),
       capturedR1FallbackSuccesses:Number(diagnostics.capturedR1FallbackSuccesses||0),
       directAttackRepairs:Number(diagnostics.directAttackRepairs||0),
@@ -75,8 +77,9 @@ try{
   await page.evaluate(()=>{
     window.__ccgSoloCombatLoadRealFire=window.firePlayer;
     // Sever the current top-level owner without preserving __ccgOriginal.
-    // Real Space input must therefore be recovered by the retained captured
-    // R1 FIRE owner rather than escaping to the legacy R29 update-fault path.
+    // Real Space input must therefore be recovered inside the authoritative
+    // R20 retained-owner chain (deep owner first, captured R1 as final fallback)
+    // rather than escaping to the legacy R29 update-fault path.
     window.firePlayer=function soloCombatLoadInjectedFireFault(){throw new Error("LS-0826-18 injected fire-path fault")};
     move1=0;fire1=0;fireBuffer1=0;input.clear();p1.hitStunMs=0;
   });
@@ -89,6 +92,8 @@ try{
       updateFaults:Number(window.CCGLostSizzlerV141R29?.state?.updateFaults||0),
       attackIntents:Number(diagnostics.attackIntents||0),
       directAttackErrors:Number(diagnostics.directAttackErrors||0),
+      deepOwnerFallbacks:Number(diagnostics.deepOwnerFallbacks||0),
+      deepOwnerFallbackSuccesses:Number(diagnostics.deepOwnerFallbackSuccesses||0),
       capturedR1Fallbacks:Number(diagnostics.capturedR1Fallbacks||0),
       capturedR1FallbackSuccesses:Number(diagnostics.capturedR1FallbackSuccesses||0),
       directAttackRepairs:Number(diagnostics.directAttackRepairs||0),
@@ -101,8 +106,10 @@ try{
   assert.notDeepEqual({x:faultResult.x,y:faultResult.y},{x:direction.x,y:direction.y},"a firing subsystem fault must not prevent the held movement key being serviced first");
   assert.ok(faultResult.attackIntents>faultBefore.attackIntents,"real Space input must reach the authoritative R20 attack owner");
   assert.ok(faultResult.directAttackErrors>faultBefore.directAttackErrors,"the injected top-level FIRE fault must be observed by the authoritative R20 containment path");
-  assert.ok(faultResult.capturedR1Fallbacks>faultBefore.capturedR1Fallbacks,"a severed top-level FIRE owner must exercise the retained captured-R1 fallback");
-  assert.ok(faultResult.capturedR1FallbackSuccesses>faultBefore.capturedR1FallbackSuccesses,"the retained captured-R1 FIRE fallback must recover the injected owner failure");
+  const retainedFallbackAttempts=(faultResult.deepOwnerFallbacks-faultBefore.deepOwnerFallbacks)+(faultResult.capturedR1Fallbacks-faultBefore.capturedR1Fallbacks);
+  const retainedFallbackSuccesses=(faultResult.deepOwnerFallbackSuccesses-faultBefore.deepOwnerFallbackSuccesses)+(faultResult.capturedR1FallbackSuccesses-faultBefore.capturedR1FallbackSuccesses);
+  assert.ok(retainedFallbackAttempts>0,`a severed top-level FIRE owner must exercise the authoritative retained-owner recovery chain: before=${JSON.stringify(faultBefore)} after=${JSON.stringify(faultResult)}`);
+  assert.ok(retainedFallbackSuccesses>0,`the authoritative retained-owner recovery chain must recover the injected FIRE failure: before=${JSON.stringify(faultBefore)} after=${JSON.stringify(faultResult)}`);
   assert.ok(faultResult.directAttackRepairs>faultBefore.directAttackRepairs,"the recovered real Space intent must complete through the authoritative attack repair path");
   assert.ok(
     faultResult.mana<faultBefore.mana||faultResult.bullets>faultBefore.bullets,
