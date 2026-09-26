@@ -227,12 +227,13 @@
     }
 
     function isOverflowing(nav, bounds) {
+        const allowed = Number(bounds?.allowed || 0);
         const required = Math.ceil(nav.scrollWidth);
         const navRect = nav.getBoundingClientRect();
         const innerRect = bounds?.innerRect || null;
         const clippedRight = innerRect ? navRect.right > innerRect.right + 1 : false;
         const clippedLeft = innerRect ? navRect.left < innerRect.left - 1 : false;
-        return required > Number(bounds?.allowed || 0) + 2 || clippedRight || clippedLeft;
+        return required > allowed + 2 || clippedRight || clippedLeft;
     }
 
     function allNavItems(nav) {
