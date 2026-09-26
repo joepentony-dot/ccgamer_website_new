@@ -51,15 +51,23 @@ const server = http.createServer((req, res) => {
   const url = new URL(req.url || "/", "http://127.0.0.1");
 
   if (url.pathname === "/reload-probe.html") {
+    const sendProbe = () => {
+      res.writeHead(200, {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "no-cache"
+      });
+      res.end(probeDocument());
+    };
+
     if (slowProbe) {
       const timer = setTimeout(() => {
-        if (!res.writableEnded) send(res, 200, probeDocument(), "text/html; charset=utf-8");
+        if (!res.writableEnded) sendProbe();
       }, 20000);
       timer.unref();
       req.on("close", () => clearTimeout(timer));
       return;
     }
-    send(res, 200, probeDocument(), "text/html; charset=utf-8");
+    sendProbe();
     return;
   }
 
