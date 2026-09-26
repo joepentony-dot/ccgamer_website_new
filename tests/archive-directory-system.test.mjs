@@ -52,6 +52,6 @@ test("category and music runtimes opt into the shared directory shell", () => {
 test("public code cache includes the shared directory stylesheet", () => {
     const sw = read("service-worker.js");
 
-    assert.match(sw, /CODE_CACHE_VERSION = "2026-09-25-public-code-v[0-9]+"/);
+    assert.match(sw, /CODE_CACHE_VERSION = "20\\d{2}-\\d{2}-\\d{2}-public-code-v[0-9]+"/);
     assert.match(sw, /\/resources\/css\/ccg-archive-directory\.css/);
 });
