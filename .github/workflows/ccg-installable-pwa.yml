@@ -20,6 +20,7 @@ on:
       - "resources/images/ccg-app-icon-maskable-v2.svg"
       - "scripts/audit-installable-pwa.js"
       - "tests/home-pwa-cta.test.mjs"
+      - "tests/service-worker-navigation-reload.test.mjs"
       - "docs/phase-17-installable-pwa.md"
       - ".github/workflows/ccg-installable-pwa.yml"
   workflow_dispatch:
@@ -54,6 +55,9 @@ jobs:
 
       - name: Run home install CTA regression
         run: node --test tests/home-pwa-cta.test.mjs
+
+      - name: Run reload navigation safety regression
+        run: node --test tests/service-worker-navigation-reload.test.mjs
 
       - name: Confirm audit made no repository changes
         run: |
