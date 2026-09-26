@@ -172,11 +172,11 @@ function stripApprovedHomeSearchStability(html) {
 function stripApprovedHomeFooterCssDeferral(html) {
   return String(html)
     .replace(
-      /\s*<link\s+rel=["']stylesheet["']\s+href=["']resources\/css\/ccg-footer\.css["']\s*\/?\s*>/i,
+      /\s*<link\s+rel=["']preload["']\s+href=["']resources\/css\/ccg-footer\.css["']\s+as=["']style["']\s+onload=["']this\.onload=null;this\.rel='stylesheet'["']\s*>\s*<noscript>\s*<link\s+rel=["']stylesheet["']\s+href=["']resources\/css\/ccg-footer\.css["']\s*\/?\s*>\s*<\/noscript>/i,
       "\n    <link data-ccg-approved-home-footer-css>"
     )
     .replace(
-      /\s*<link\s+rel=["']preload["']\s+href=["']resources\/css\/ccg-footer\.css["']\s+as=["']style["']\s+onload=["']this\.onload=null;this\.rel='stylesheet'["']\s*>\s*<noscript>\s*<link\s+rel=["']stylesheet["']\s+href=["']resources\/css\/ccg-footer\.css["']\s*\/?\s*>\s*<\/noscript>/i,
+      /\s*<link\s+rel=["']stylesheet["']\s+href=["']resources\/css\/ccg-footer\.css["']\s*\/?\s*>/i,
       "\n    <link data-ccg-approved-home-footer-css>"
     );
 }
