@@ -10,6 +10,7 @@ on:
       - "**/*.webp"
       - "admin/content-publisher.html"
       - "admin/js/content-publisher-image-optimizer.js"
+      - "js/ccg-recent-content.js"
       - "js/video-library.js"
       - "js/genre-loader.js"
       - "js/collection-loader.js"
@@ -27,6 +28,7 @@ on:
       - "**/*.webp"
       - "admin/content-publisher.html"
       - "admin/js/content-publisher-image-optimizer.js"
+      - "js/ccg-recent-content.js"
       - "js/video-library.js"
       - "js/genre-loader.js"
       - "js/collection-loader.js"
@@ -89,9 +91,7 @@ jobs:
       - name: Enforce budgets on changed raster assets only
         run: |
           mkdir -p .health
-          python scripts/image-performance-budget.py \
-            --base "${{ steps.comparison.outputs.base }}" \
-            --json .health/image-performance-budget.json
+          python scripts/image-performance-budget.py             --base "${{ steps.comparison.outputs.base }}"             --json .health/image-performance-budget.json
 
       - name: Publish budget summary
         if: always()
