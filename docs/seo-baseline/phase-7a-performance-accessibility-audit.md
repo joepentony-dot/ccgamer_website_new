@@ -1,7 +1,7 @@
 # Phase 7A Performance and Accessibility Audit
 
 **Audit type:** repository-wide static analysis plus representative live browser checks
-**Audited commit:** `4163b51e62d5b94a21ecb9b47dc6d7eb418fb823`
+**Audited commit:** `2cc8f06a7ff6a94a14fbd8cbd5e4e85a2a56f177`
 **Standard target:** WCAG 2.2 Level AA
 **Performance reference:** Core Web Vitals good thresholds are LCP ≤ 2.5 s, INP ≤ 200 ms and CLS ≤ 0.1 at the 75th percentile. Lighthouse is lab data and does not supply field INP.
 
@@ -11,12 +11,12 @@
 
 The site already contains focus styling, reduced-motion handling, semantic landmarks on major pages and responsive infrastructure. The main opportunities are asset delivery, repeated CSS and JavaScript cost, intrinsic media sizing, keyboard bypass and navigation details, and page-family consistency.
 
-- HTML files scanned: **2647**
-- Public HTML files scanned: **2620**
-- Indexable public HTML files: **1573**
-- Client-side redirect shells: **1383**
-- Repository assets scanned: **1666**
-- Median Lighthouse performance score: **60**
+- HTML files scanned: **2771**
+- Public HTML files scanned: **2731**
+- Indexable public HTML files: **1703**
+- Client-side redirect shells: **1440**
+- Repository assets scanned: **2134**
+- Median Lighthouse performance score: **67**
 - Median Lighthouse accessibility score: **100**
 - Live axe violations across representative routes: **0**
 
@@ -31,34 +31,31 @@ The site already contains focus styling, reduced-motion handling, semantic landm
 
 ## Existing strengths
 
-- Focus-visible rules are present in **28** CSS files.
-- Reduced-motion handling appears in **16** CSS files.
-- Document language is missing on **1** scanned public pages.
-- The audit found **654** public pages without a viewport meta tag.
+- Focus-visible rules are present in **78** CSS files.
+- Reduced-motion handling appears in **61** CSS files.
+- Document language is missing on **0** scanned public pages.
+- The audit found **0** public pages without a viewport meta tag.
 - Phase 7A made no public-site changes; every finding remains a proposal for later isolated correction phases.
 
 ## Priority findings
 
-1. Client-side redirect shells: **1383** pages perform a browser redirect before the shared game page renders.
-2. Images without both width and height: **29493** occurrences/pages in the static scan.
-3. Head scripts without defer or async: **2319** occurrences/pages in the static scan.
-4. Duplicate stylesheet references: **5** occurrences/pages in the static scan.
-5. Form controls without a detectable label: **8** occurrences/pages in the static scan.
-6. Iframes without a title: **1** occurrences/pages in the static scan.
-7. Indexable content pages without a skip link: **921** occurrences/pages in the static scan.
-8. Repository assets above 500 KB: **16** shown in evidence; the stored list is capped at 100.
+1. Client-side redirect shells: **1440** pages perform a browser redirect before the shared game page renders.
+2. Images without both width and height: **29101** occurrences/pages in the static scan.
+3. Head scripts without defer or async: **646** occurrences/pages in the static scan.
+4. Indexable content pages without a skip link: **1038** occurrences/pages in the static scan.
+5. Repository assets above 500 KB: **39** shown in evidence; the stored list is capped at 100.
 
 ## Lighthouse lab results
 
 | Route | Mode | Performance | Accessibility | LCP | CLS | TBT | Transfer size |
 |---|---|---:|---:|---:|---:|---:|---:|
-| Home | mobile | 58 | 100 | 9.1 s | 0 | 190 ms | Total size was 3,221 KiB |
-| Games | mobile | 60 | 100 | 7.6 s | 0 | 190 ms | Total size was 768 KiB |
-| Game: Zeewolf | mobile | 58 | 100 | 16.2 s | 0 | 0 ms | Total size was 11,120 KiB |
-| Genres | mobile | 58 | 100 | 14.0 s | 0 | 130 ms | Total size was 2,867 KiB |
-| Quiz | mobile | 75 | 100 | 4.9 s | 0 | 40 ms | Total size was 295 KiB |
-| Home | desktop | 86 | 100 | 1.3 s | 0.212 | 10 ms | Total size was 1,306 KiB |
-| Games | desktop | 75 | 100 | 1.5 s | 0.306 | 150 ms | Total size was 769 KiB |
+| Home | mobile | 43 | 100 | 16.8 s | 0.37 | 390 ms | Total size was 3,665 KiB |
+| Games | mobile | 74 | 100 | 3.6 s | 0.068 | 440 ms | Total size was 855 KiB |
+| Game: Zeewolf | mobile | 60 | 100 | 5.7 s | 0.1 | 490 ms | Total size was 2,723 KiB |
+| Genres | mobile | 50 | 100 | 7.6 s | 0.559 | 120 ms | Total size was 2,486 KiB |
+| Quiz | mobile | 68 | 100 | 3.6 s | 0.392 | 20 ms | Total size was 674 KiB |
+| Home | desktop | 70 | 100 | 1.6 s | 0.868 | 60 ms | Total size was 2,345 KiB |
+| Games | desktop | 67 | 100 | 1.6 s | 2.507 | 140 ms | Total size was 855 KiB |
 
 ## Live axe results
 
@@ -75,49 +72,49 @@ The site already contains focus styling, reduced-motion handling, semantic landm
 
 ## Static accessibility totals
 
-- Missing document language: **1**
-- Missing main landmark: **633**
-- Missing H1: **2**
-- Missing skip link: **921**
-- Images missing an alt attribute: **1**
-- Form controls missing a detectable label: **8**
-- Buttons missing a detectable accessible name: **0**
+- Missing document language: **0**
+- Missing main landmark: **637**
+- Missing H1: **3**
+- Missing skip link: **1038**
+- Images missing an alt attribute: **0**
+- Form controls missing a detectable label: **0**
+- Buttons missing a detectable accessible name: **4**
 - Links missing a detectable accessible name: **0**
-- Iframes missing a title: **1**
+- Iframes missing a title: **0**
 - Positive tabindex values: **0**
-- Duplicate IDs: **3**
+- Duplicate IDs: **1**
 
 ## Static performance-risk totals
 
-- Images missing intrinsic width or height: **29493**
-- Iframes not marked for lazy loading: **23**
-- Head scripts without defer or async: **2319**
-- Duplicate stylesheet references: **5**
-- Pages with at least 10 stylesheets: **962**
-- Pages with at least 12 scripts: **556**
+- Images missing intrinsic width or height: **29101**
+- Iframes not marked for lazy loading: **43**
+- Head scripts without defer or async: **646**
+- Duplicate stylesheet references: **0**
+- Pages with at least 10 stylesheets: **1659**
+- Pages with at least 12 scripts: **1496**
 - CSS files above 100 KB: **1**
 - JavaScript files above 150 KB: **0**
-- CSS outline-suppression declarations: **44**
+- CSS outline-suppression declarations: **104**
 
 ## Largest repository assets identified
 
 | Asset | Size |
 |---|---:|
 | `resources/audio/easter-eggs/party.mp4` | 21.34 MB |
-| `resources/images/icons/download.PNG` | 5.58 MB |
+| `resources/manuals/The_Music_System_User.pdf` | 10.98 MB |
 | `resources/audio/easter-eggs/heman.mp4` | 4.81 MB |
+| `arcade/lost-sizzler/assets/audio/music/horde-survival-wave-10.ogg` | 4.14 MB |
 | `resources/audio/easter-eggs/press-play.mp4` | 3.97 MB |
+| `resources/manuals/The_Image_System.pdf` | 3.94 MB |
+| `arcade/lost-sizzler/assets/audio/music/sizzler-saboteurs-theme.ogg` | 3.02 MB |
+| `arcade/lost-sizzler/assets/audio/music/horde-survival-waves-5-9.ogg` | 2.97 MB |
+| `arcade/lost-sizzler/assets/audio/music/horde-survival-waves-1-4.ogg` | 2.81 MB |
 | `resources/audio/easter-eggs/boing.mp4` | 2.37 MB |
-| `resources/images/affiliate/a500-mini.png` | 1.53 MB |
-| `resources/images/affiliate/c64-maxi.png` | 1.34 MB |
+| `resources/images/publishers/konami.png` | 2.00 MB |
 | `resources/audio/easter-eggs/matrix.mp4` | 1.31 MB |
-| `resources/images/affiliate/joystick-clear.png` | 1.22 MB |
+| `arcade/quest/assets/production/player/cheeky-main-sheet.png` | 1.15 MB |
 | `resources/audio/easter-eggs/vhs.mp4` | 0.84 MB |
-| `resources/images/affiliate/gamepad-white.png` | 0.79 MB |
-| `resources/images/email/ccg-email-banner.png` | 0.75 MB |
-| `resources/images/genres/miscellaneous.png` | 0.63 MB |
-| `resources/images/affiliate/gamepad-black.png` | 0.52 MB |
-| `resources/audio/easter-eggs/zx-clive.jpg` | 0.50 MB |
+| `resources/audio/easter-eggs/zx_1.gif` | 0.81 MB |
 
 ## Recommended correction sequence
 
