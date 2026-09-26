@@ -54,6 +54,14 @@
         return videos;
     }
 
+    function cardThumbnail(video, id) {
+        const configured = String(video?.thumbnail || "").trim();
+        if (!configured || /^https?:\/\/i\.ytimg\.com\/vi\//i.test(configured)) {
+            return `https://i.ytimg.com/vi/${encodeURIComponent(id)}/mqdefault.jpg`;
+        }
+        return configured;
+    }
+
     function render(items) {
         const root = target();
         if (!root || document.querySelector("[data-ccg-recent-content]")) return;
@@ -77,9 +85,7 @@
                 ${videos.map((video) => {
                     const id = String(video.id || "").trim();
                     const title = escapeHtml(video.title || "Cheeky Commodore Gamer video");
-                    const thumbnail = escapeHtml(
-                        video.thumbnail || `https://i.ytimg.com/vi/${id}/hqdefault.jpg`
-                    );
+                    const thumbnail = escapeHtml(cardThumbnail(video, id));
                     const youtubeUrl = `https://www.youtube.com/watch?v=${encodeURIComponent(id)}`;
 
                     return `
@@ -93,8 +99,8 @@
                                      alt="${title}"
                                      loading="lazy"
                                      decoding="async"
-                                     width="480"
-                                     height="270">
+                                     width="320"
+                                     height="180">
                                 <span class="ccg-recent-content__play" aria-hidden="true">▶</span>
                             </span>
                             <span class="ccg-recent-content__name">${title}</span>
