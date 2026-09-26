@@ -1,0 +1,266 @@
+name: Site-wide Lighthouse Sweep
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/sitewide-lighthouse-sweep.yml"
+      - "scripts/sitewide-lighthouse-sweep.mjs"
+      - "docs/ai-work/lighthouse-sitewide.md"
+  workflow_dispatch:
+  schedule:
+    - cron: "20 3 * * 0"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sitewide-lighthouse-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate-inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate sweep syntax
+        run: node --check scripts/sitewide-lighthouse-sweep.mjs
+
+      - name: Build deduplicated public URL inventory
+        run: |
+          node scripts/sitewide-lighthouse-sweep.mjs \
+            --inventory-only \
+            --output "$RUNNER_TEMP/lighthouse-sitewide-inventory.json"
+
+      - name: Validate inventory breadth
+        run: |
+          python - <<'PY'
+          import json, os
+          path = os.path.join(os.environ["RUNNER_TEMP"], "lighthouse-sitewide-inventory.json")
+          data = json.load(open(path, encoding="utf-8"))
+          total = int(data.get("total_unique_urls", 0))
+          families = data.get("family_counts", {})
+          required = {"home", "games-index", "game", "genre", "publisher", "collection", "music", "quiz"}
+          missing = sorted(required - set(families))
+          if total < 500:
+              raise SystemExit(f"Site-wide Lighthouse inventory unexpectedly small: {total}")
+          if missing:
+              raise SystemExit(f"Missing expected public page families: {missing}")
+          print(f"Validated {total} unique public URLs across {len(families)} families.")
+          PY
+
+      - name: Upload inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitewide-lighthouse-inventory
+          path: ${{ runner.temp }}/lighthouse-sitewide-inventory.json
+          retention-days: 30
+
+  sweep:
+    if: github.event_name != 'pull_request'
+    needs: validate-inventory
+    strategy:
+      fail-fast: false
+      max-parallel: 12
+      matrix:
+        shard:
+          - 0
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+          - 9
+          - 10
+          - 11
+          - 12
+          - 13
+          - 14
+          - 15
+          - 16
+          - 17
+          - 18
+          - 19
+          - 20
+          - 21
+          - 22
+          - 23
+          - 24
+          - 25
+          - 26
+          - 27
+          - 28
+          - 29
+          - 30
+          - 31
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Lighthouse dependencies
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts \
+            lighthouse@13.4.1 \
+            chrome-launcher@1.2.1
+          google-chrome --version
+
+      - name: Run mobile and desktop Lighthouse shard
+        run: |
+          mkdir -p "$RUNNER_TEMP/sitewide-lighthouse/raw"
+          node scripts/sitewide-lighthouse-sweep.mjs \
+            --output "$RUNNER_TEMP/sitewide-lighthouse/shard-${{ matrix.shard }}.json" \
+            --raw-dir "$RUNNER_TEMP/sitewide-lighthouse/raw" \
+            --shard-index "${{ matrix.shard }}" \
+            --shard-count 32 \
+            --modes mobile,desktop
+
+      - name: Upload shard evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitewide-lighthouse-shard-${{ matrix.shard }}
+          path: |
+            ${{ runner.temp }}/sitewide-lighthouse/shard-${{ matrix.shard }}.json
+            ${{ runner.temp }}/sitewide-lighthouse/raw/*.json
+          if-no-files-found: error
+          retention-days: 30
+
+  aggregate:
+    if: github.event_name != 'pull_request' && always()
+    needs:
+      - validate-inventory
+      - sweep
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Download shard evidence
+        uses: actions/download-artifact@v4
+        with:
+          pattern: sitewide-lighthouse-shard-*
+          path: lighthouse-results
+          merge-multiple: true
+
+      - name: Build ranked remediation report
+        run: |
+          python - <<'PY'
+          import glob, json, math, os
+          files = sorted(glob.glob("lighthouse-results/shard-*.json"))
+          results, errors = [], []
+          total_urls = 0
+          for file in files:
+              data = json.load(open(file, encoding="utf-8"))
+              total_urls = max(total_urls, int(data.get("total_unique_urls", 0)))
+              results.extend(data.get("results", []))
+              errors.extend(data.get("errors", []))
+
+          def score(item):
+              value = item.get("scores", {}).get("performance")
+              return 999 if value is None else value
+
+          def num(item, key, default=-1):
+              value = item.get("metrics", {}).get(key)
+              return default if value is None else value
+
+          def top(items, key=None, reverse=False, n=50):
+              if key:
+                  return sorted(items, key=lambda x: num(x, key), reverse=reverse)[:n]
+              return sorted(items, key=score)[:n]
+
+          families = {}
+          for item in results:
+              families.setdefault(item.get("family", "unknown"), []).append(item)
+
+          def median(values):
+              values = sorted(v for v in values if isinstance(v, (int, float)))
+              if not values: return None
+              return values[len(values)//2]
+
+          family_summary = {}
+          for family, items in sorted(families.items()):
+              family_summary[family] = {
+                  "runs": len(items),
+                  "median_performance": median([x.get("scores", {}).get("performance") for x in items]),
+                  "median_lcp_ms": median([x.get("metrics", {}).get("lcp_ms") for x in items]),
+                  "median_cls": median([x.get("metrics", {}).get("cls") for x in items]),
+                  "median_tbt_ms": median([x.get("metrics", {}).get("tbt_ms") for x in items]),
+              }
+
+          report = {
+              "total_unique_urls": total_urls,
+              "completed_runs": len(results),
+              "errors": errors,
+              "family_summary": family_summary,
+              "worst_performance": top(results),
+              "worst_lcp": top(results, "lcp_ms", True),
+              "worst_cls": top(results, "cls", True),
+              "worst_tbt": top(results, "tbt_ms", True),
+              "heaviest_pages": top(results, "total_bytes", True),
+          }
+          with open("sitewide-lighthouse-report.json", "w", encoding="utf-8") as fh:
+              json.dump(report, fh, indent=2)
+
+          lines = [
+              "# Site-wide Lighthouse remediation queue",
+              "",
+              f"- Unique public URLs in inventory: **{total_urls}**",
+              f"- Completed Lighthouse runs: **{len(results)}**",
+              f"- Run errors: **{len(errors)}**",
+              "",
+              "## Family medians",
+              "",
+              "| Family | Runs | Performance | LCP ms | CLS | TBT ms |",
+              "|---|---:|---:|---:|---:|---:|",
+          ]
+          for family, row in family_summary.items():
+              perf = row["median_performance"]
+              lines.append(f"| {family} | {row['runs']} | {'' if perf is None else round(perf*100)} | {row['median_lcp_ms'] or ''} | {row['median_cls'] or ''} | {row['median_tbt_ms'] or ''} |")
+
+          def table(title, items, metric):
+              lines.extend(["", f"## {title}", "", "| Mode | Family | URL | Performance | Metric |", "|---|---|---|---:|---:|"])
+              for item in items[:30]:
+                  perf = item.get("scores", {}).get("performance")
+                  value = item.get("metrics", {}).get(metric)
+                  lines.append(f"| {item.get('mode')} | {item.get('family')} | {item.get('url')} | {'' if perf is None else round(perf*100)} | {'' if value is None else value} |")
+
+          table("Worst performance scores", report["worst_performance"], "lcp_ms")
+          table("Worst LCP", report["worst_lcp"], "lcp_ms")
+          table("Worst CLS", report["worst_cls"], "cls")
+          table("Worst TBT", report["worst_tbt"], "tbt_ms")
+          table("Heaviest pages", report["heaviest_pages"], "total_bytes")
+
+          with open("sitewide-lighthouse-report.md", "w", encoding="utf-8") as fh:
+              fh.write("\n".join(lines) + "\n")
+          print("\n".join(lines[:30]))
+          PY
+
+      - name: Upload aggregate remediation queue
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitewide-lighthouse-remediation-queue
+          path: |
+            sitewide-lighthouse-report.json
+            sitewide-lighthouse-report.md
+          if-no-files-found: error
+          retention-days: 30
