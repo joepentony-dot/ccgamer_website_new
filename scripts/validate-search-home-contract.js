@@ -169,11 +169,25 @@ function stripApprovedHomeSearchStability(html) {
   );
 }
 
+function stripApprovedHomeFooterCssDeferral(html) {
+  return String(html)
+    .replace(
+      /\s*<link\s+rel=["']stylesheet["']\s+href=["']resources\/css\/ccg-footer\.css["']\s*\/?\s*>/i,
+      "\n    <link data-ccg-approved-home-footer-css>"
+    )
+    .replace(
+      /\s*<link\s+rel=["']preload["']\s+href=["']resources\/css\/ccg-footer\.css["']\s+as=["']style["']\s+onload=["']this\.onload=null;this\.rel='stylesheet'["']\s*>\s*<noscript>\s*<link\s+rel=["']stylesheet["']\s+href=["']resources\/css\/ccg-footer\.css["']\s*\/?\s*>\s*<\/noscript>/i,
+      "\n    <link data-ccg-approved-home-footer-css>"
+    );
+}
+
 function stripApprovedSeoHead(html) {
   return stripApprovedDungeonCarnageCssCacheBust(
     stripApprovedDungeonCarnageHomeCta(
       stripApprovedRetiredWeeklyVaultCta(
-        stripApprovedHomeSearchStability(String(html))
+        stripApprovedHomeFooterCssDeferral(
+          stripApprovedHomeSearchStability(String(html))
+        )
       )
     )
   )
@@ -217,7 +231,7 @@ const normalizedBaseline = stripApprovedSeoHead(
 );
 
 if (normalizedCurrent !== normalizedBaseline) {
-  fail("home.html changed outside the approved SEO-head, Dungeon Carnage CTA, first-paint search slot and archive-dashboard fields.");
+  fail("home.html changed outside the approved SEO-head, Dungeon Carnage CTA, first-paint search slot, footer CSS deferral and archive-dashboard fields.");
 }
 
-console.log("[search-home-contract] home.html differs from baseline only by the approved SEO-head / Dungeon Carnage CTA / first-paint search slot / archive-dashboard changes.");
+console.log("[search-home-contract] home.html differs from baseline only by the approved SEO-head / Dungeon Carnage CTA / first-paint search slot / footer CSS deferral / archive-dashboard changes.");
