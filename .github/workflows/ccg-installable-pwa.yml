@@ -74,6 +74,9 @@ jobs:
       - name: Run real Chromium reload recovery regression
         run: node tests/browser/pwa-reload-reliability.mjs
 
+      - name: Remove temporary browser-test dependency
+        run: rm -rf node_modules
+
       - name: Confirm audit made no repository changes
         run: |
           git diff --exit-code
