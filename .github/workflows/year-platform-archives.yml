@@ -254,7 +254,10 @@ jobs:
           PY
 
       - name: Commit generated Phase 4D output
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        # Never attempt to write generated output directly back to protected main.
+        # Main pushes are validation-only; branch pushes and manual branch runs may
+        # update their own branch, preserving the repository's PR-only main rule.
+        if: (github.event_name == 'push' && github.ref_name != 'main') || (github.event_name == 'workflow_dispatch' && github.ref_name != 'main')
         shell: bash
         run: |
           git add \
