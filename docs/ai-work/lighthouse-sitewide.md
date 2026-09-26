@@ -32,3 +32,32 @@ Pull requests that change the sweep tooling qualify the scripts and safety contr
 - Lighthouse evidence is read-only against the public website.
 - Optimisation changes remain isolated PRs with normal repository qualification.
 - The existing Home mobile/desktop reports are a baseline, not a ceiling or a substitute for page-specific measurements.
+
+## Full public-site baseline — 26 September 2026
+
+Authoritative GitHub Actions run: `36247886947` at main `9fd3f08e9145aee78f9d86384f1c70ab2d87ad97`.
+
+- Unique public canonical routes: **1,053**
+- Lighthouse runs: **2,106** (**1,053 mobile + 1,053 desktop**)
+- Audit errors: **0**
+- Desktop median performance: **68**
+- Desktop P75 LCP: **1,757 ms**
+- Desktop P75 CLS: **1.939**
+- Desktop P75 TBT: **144 ms**
+- Mobile median performance: **51**
+- Mobile P75 LCP: **6,756 ms**
+- Mobile P75 CLS: **0.785**
+- Mobile P75 TBT: **535 ms**
+
+The largest shared problem family is the individual-game archive: 663 routes, mobile median performance **44**, mobile P75 LCP **7,290 ms**, mobile P75 CLS **0.813**, mobile P75 TBT **624 ms**. Genre and collection families are the next major archive targets. Video-library first-paint hydration, generated thumbnail sizing, Home thumbnail delivery, single-game first-paint CSS, global header measurement and non-Home search reservation are being handled as isolated evidence-backed corrections.
+
+The aggregate artifact is `ccg-sitewide-lighthouse-aggregate` from run `36247886947`. Use the raw per-page evidence when choosing the next correction; do not infer that one page-family repair fixes all routes.
+
+### Current remediation order
+
+1. Individual-game render-blocking, hydration and CLS owners.
+2. Genre / collection first-paint hydration and image/card stability.
+3. Shared header first-frame search/layout stability and forced reflow.
+4. Publisher/year/platform archive family CLS and mobile LCP.
+5. Retro/video/media outliers.
+6. Repeat the complete matrix after the shared-family fixes land, then rank residual outliers again.
