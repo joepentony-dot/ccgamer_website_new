@@ -132,6 +132,22 @@ function resolveThumbnail(entry) {
   return youtubeId ? `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg` : '';
 }
 
+function thumbnailIntrinsicAttributes(url) {
+  const value = String(url || '').trim();
+  const match = value.match(/^https:\/\/(?:i|img)\.ytimg\.com\/vi\/[A-Za-z0-9_-]+\/(maxresdefault|sddefault|hqdefault|mqdefault|default)\.jpg(?:[?#].*)?$/i);
+  if (!match) return '';
+
+  const dimensions = {
+    maxresdefault: [1280, 720],
+    sddefault: [640, 480],
+    hqdefault: [480, 360],
+    mqdefault: [320, 180],
+    default: [120, 90]
+  };
+  const [width, height] = dimensions[match[1].toLowerCase()];
+  return ` width="${width}" height="${height}"`;
+}
+
 function normalizeRetroSlug(entry, datasetLabel) {
   const source = String(entry.slug || entry.id || entry.title || '').trim();
   if (!source) return '';
@@ -200,7 +216,7 @@ function buildRelatedItems(items, currentSlug, pagePrefix) {
       const href = `${pagePrefix}${item.slug}/`;
       const thumbnail = resolveThumbnail(item);
       const media = thumbnail
-        ? `<span class="retro-video-page__related-media"><img src="${escapeHtml(thumbnail)}" alt="${escapeHtml(item.title)} video thumbnail" loading="lazy" decoding="async" /></span>`
+        ? `<span class="retro-video-page__related-media"><img src="${escapeHtml(thumbnail)}" alt="${escapeHtml(item.title)} video thumbnail"${thumbnailIntrinsicAttributes(thumbnail)} loading="lazy" decoding="async" /></span>`
         : '';
       return `<li><a class="retro-video-page__related-card" href="${escapeHtml(href)}">${media}<span class="retro-video-page__related-copy"><span class="retro-video-page__related-title">${escapeHtml(item.title)}</span><p class="retro-video-page__related-summary">${escapeHtml(item.summary || item.description || '')}</p><span class="retro-video-page__related-action">Open feature →</span></span></a></li>`;
     })
@@ -405,4 +421,9 @@ function generateRetroPages() {
   console.log(`[retro] Completed for ${repoRoot}. Generated: ${totalGenerated}. Blocked: ${totalSkipped}.`);
 }
 
-generateRetroPages();
+if (require.main === module) generateRetroPages();
+
+module.exports = {
+  buildRelatedItems,
+  thumbnailIntrinsicAttributes
+};
