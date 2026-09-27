@@ -18,7 +18,8 @@ assert.match(fix,/installInteractionXPSourceContract/,"r18 composition must inst
 assert.match(fix,/function activeRun\(\)[\s\S]*run&&host&&p1[\s\S]*document\.body\.dataset\.runActive="true"/,"late non-FIRE stability must remain attached to a real run even if the presentation flag becomes stale");
 assert.match(fix,/Hidden wall opened[\s\S]*Bronze door unlocked[\s\S]*Hidden wall switch[\s\S]*Gate switch opened/,"r18 composition must preserve all four blocked interaction XP reasons");
 assert.match(fix,/CCGLostSizzlerXPSourceContract/,"r18 composition must expose the interaction XP-source contract for browser verification");
-assert.match(fix,/hurtPlayer=function\(player,\.\.\.args\)\{repairPlayer\(player\)/,"player damage must retain bounded player-state repair at the damage boundary");
+assert.match(play,/function hurtPlayer\(p,n,friendly=false,source="enemy"\)\{[\s\S]*const inv=Number\(p\.invuln\)[\s\S]*if\(!Number\.isFinite\(inv\)\|\|inv<0\|\|\(mode=="playing"&&inv>5000\)\)p\.invuln=0/,"canonical player damage must retain bounded player-state repair at the sole damage boundary");
+assert.doesNotMatch(fix,/hurtPlayer\s*=/,"R18 must not wrap or replace the R58 canonical player-damage owner");
 assert.match(fix,/function repairCombatState\(includeEnemies=true\)/,"background stability maintenance may still request bounded enemy repair");
 assert.doesNotMatch(fix,/queueAttack=function/,"r18 must not wrap the r58 authoritative attack queue");
 assert.match(fix,/function repairAttackLiveness\(\)[\s\S]*return false/,"legacy r18 attack-liveness API must remain callable but non-mutating");
