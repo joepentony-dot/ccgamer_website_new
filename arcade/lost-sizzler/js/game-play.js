@@ -545,7 +545,7 @@ function updateEmergencyAmmo(p,dt){
 }
 function updateLastResortHealth(p,dt){const healthRemains=(host.items||[]).some(i=>i.active&&i.kind==="health");if(healthRemains||p.health>=p.maxHealth){p.healthRegenMs=0;return}p.healthRegenMs=(p.healthRegenMs||0)+dt;if(p.healthRegenMs<120000)return;p.healthRegenMs-=120000;p.health=Math.min(p.maxHealth,p.health+1);p.hpBarMs=3000;S.sfx("heal");floatText(p.x,p.y,"+1 HP",P.green);showToast("LAST-RESORT RECOVERY","No health pickups remain on this floor. Two minutes survived: +1 health.","green",7000)}
 function update(dt){
-  if(mode!=="playing"){fireBuffer1=fireBuffer2=0;return}enemyCD-=dt;projectileCD-=dt;sendCD-=dt;worldCD-=dt;surroundCD-=dt;specialCD-=dt;move1-=dt;move2-=dt;fire1-=dt;fire2-=dt;fireBuffer1=Math.max(0,fireBuffer1-dt);fireBuffer2=Math.max(0,fireBuffer2-dt);lowHealthCD-=dt;updateToast(dt);updateDoors();updateGamepad();
+  if(mode!=="playing"){fireBuffer1=fireBuffer2=0;return}enemyCD-=dt;projectileCD=Math.max(0,projectileCD-dt);sendCD-=dt;worldCD-=dt;surroundCD-=dt;specialCD-=dt;move1-=dt;move2-=dt;fire1=Math.max(0,fire1-dt);fire2=Math.max(0,fire2-dt);fireBuffer1=Math.max(0,fireBuffer1-dt);fireBuffer2=Math.max(0,fireBuffer2-dt);lowHealthCD-=dt;updateToast(dt);updateDoors();updateGamepad();
   for(const p of localPlayers()){
     if(p.invuln>0)p.invuln-=dt;if(p.hitStunMs>0)p.hitStunMs=Math.max(0,p.hitStunMs-dt);if(p.hpBarMs>0)p.hpBarMs=Math.max(0,p.hpBarMs-dt);if(p.torchMs>0)p.torchMs=Math.max(0,p.torchMs-dt);if(p.rapidMs>0)p.rapidMs=Math.max(0,p.rapidMs-dt);if(p.ammoFlashMs>0)p.ammoFlashMs=Math.max(0,p.ammoFlashMs-dt);
     updateEmergencyAmmo(p,dt);updateLastResortHealth(p,dt);p.rx+=(p.x-p.rx)*.32;p.ry+=(p.y-p.ry)*.32;updateCamping(p,dt);reveal(p);markRoomVisit(p);rememberTrail(p)
@@ -555,7 +555,7 @@ function update(dt){
   // Movement is the first keyboard gameplay action in the frame. A busy or faulting
   // combat path must never stop an already-held movement command being serviced.
   if(move1<=0){const d=d1();if(d){movePlayer(p1,d.x,d.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}if(p2&&move2<=0){const d=d2();if(d){movePlayer(p2,d.x,d.y);move2=C.player.moveDelay*(p2.moveMultiplier||1)}}
-  if((input.has("Space")||fireBuffer1>0)&&fire1<=0){firePlayer(p1,attackDirection(p1,d1()));if(fire1>0)fireBuffer1=0}if(p2&&(input.has("Enter")||fireBuffer2>0)&&fire2<=0){firePlayer(p2,attackDirection(p2,d2()));if(fire2>0)fireBuffer2=0}
+  if((input.has("Space")||fireBuffer1>0)&&fire1<=0){const fired=firePlayer(p1,attackDirection(p1,d1()));if(fired)fireBuffer1=0}if(p2&&(input.has("Enter")||fireBuffer2>0)&&fire2<=0){const fired=firePlayer(p2,attackDirection(p2,d2()));if(fired)fireBuffer2=0}
   if(projectileCD<=0){stepProjectiles();projectileCD=70}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendPlayer();sendCD=100}if(worldCD<=0&&net.isHost){broadcastWorld();worldCD=350}
   updateActiveTrapContacts();
   updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBoulder(dt);updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
