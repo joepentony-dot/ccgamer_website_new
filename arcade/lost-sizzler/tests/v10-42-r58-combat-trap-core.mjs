@@ -27,6 +27,10 @@ assert.match(core,/trapContacts\.set\(key,\{cycle,at:now\}\)/,"trap contact may 
 assert.match(core,/if\(record\?\.cycle===cycle\)return true/,"same physical active-cycle contact must not double-hit");
 assert.match(core,/if\(!live\.has\(key\)\)\{trapContacts\.delete\(key\);state\.trapRearms\+\+\}/,"leaving/inactive contacts must rearm without legacy latches");
 assert.match(core,/trapHitsByKind:\{fire:0,spike:0,shock:0,other:0\}/,"core diagnostics must retain FIRE/SPIKE/SHOCK coverage");
+assert.match(core,/function normaliseAttackBoundary\(p\)[\s\S]*document\.body\.dataset\.runActive="true"[\s\S]*p\.controlLocked=false[\s\S]*p\.controlsLocked=false[\s\S]*p\.hitStunMs=0[\s\S]*fire1=0[\s\S]*projectileCD=0/s,"r58 must own stale combat-boundary recovery without a historical FIRE owner chain");
+assert.match(core,/function contextualMelee\(p,direction\)[\s\S]*CCGLostSizzlerMeleeAmmoV125[\s\S]*melee\.meleeAttack\(p,dir\)/s,"r58 must preserve contextual sword/melee combat through the established melee API");
+assert.match(core,/state\.meleeAttacks\+\+/,"r58 must expose successful melee ownership for behavioural qualification");
+assert.match(r20,/CCGLostSizzlerV142R58CombatTrapCore[\s\S]*currentMode\(\)==="playing"[\s\S]*core\.attackNow\(event\.code\)/s,"R20 keyboard bridge must route playing-state attack presses to r58 before the old runActive gate");
 assert.match(core,/active>=max/,"FIRE must keep the projectile-cap guard");
 assert.match(core,/Number\(p\.mana\|\|0\)<1/,"FIRE must keep the ammunition guard");
 assert.match(core,/fireBuffer1=Math\.max\(Number\(fireBuffer1\|\|0\),ATTACK_BUFFER_MS\)/,"finite cooldown attack intents must use one bounded buffer");
