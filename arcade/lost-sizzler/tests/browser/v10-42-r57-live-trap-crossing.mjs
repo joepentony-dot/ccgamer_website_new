@@ -116,6 +116,51 @@ try{
     await page.waitForTimeout(90);
   }
 
+  const retryablePseudoHit=await page.evaluate(()=>globalThis.eval(`(()=>{
+    const api=window.CCGLostSizzlerV142R58AuthoritativeTrapCore;
+    const trap=(host?.traps||[]).find(t=>t?.active&&String(t.kind||"").toLowerCase()==="spike");
+    if(!api||!trap)return{available:false,reason:"canonical spike trap unavailable"};
+    const candidates=[
+      {x:Number(trap.x)-1,y:Number(trap.y),dx:1,dy:0},
+      {x:Number(trap.x)+1,y:Number(trap.y),dx:-1,dy:0},
+      {x:Number(trap.x),y:Number(trap.y)-1,dx:0,dy:1},
+      {x:Number(trap.x),y:Number(trap.y)+1,dx:0,dy:-1}
+    ];
+    const entry=candidates.find(q=>W.walkable(world.map,q.x,q.y,host)&&!(host.enemies||[]).some(e=>e?.alive&&e.x===q.x&&e.y===q.y));
+    if(!entry)return{available:false,reason:"no walkable spike entry"};
+    for(const enemy of host?.enemies||[])enemy.alive=false;
+    if(host?.stalker)host.stalker.awake=false;
+    const original={period:Number(trap.period),phase:Number(trap.phase)};
+    p1.x=entry.x;p1.y=entry.y;p1.rx=p1.x;p1.ry=p1.y;
+    p1.maxHealth=Math.max(20,Number(p1.maxHealth||8));p1.armor=3;p1.invuln=0;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
+    move1=0;input.clear();
+    const period=100000,now=performance.now();
+    trap.period=period;trap.phase=((period*.10)-(now%period)+period)%period;
+    api.rearmInactiveTrapContacts();
+    let heldHealth=20,blockHealthWrites=true;
+    Object.defineProperty(p1,"health",{configurable:true,enumerable:true,get(){return heldHealth},set(value){if(!blockHealthWrites)heldHealth=Number(value)}});
+    const before={health:Number(p1.health),damageAt:Number(p1.__ccgLastDamageAt||0),hits:Number(api.state.trapHits||0),retries:Number(api.state.damageRetries||0)};
+    movePlayer(p1,entry.dx,entry.dy,false);
+    const blocked={health:Number(p1.health),damageAt:Number(p1.__ccgLastDamageAt||0),hits:Number(api.state.trapHits||0),retries:Number(api.state.damageRetries||0)};
+    blockHealthWrites=false;
+    const restored=heldHealth;delete p1.health;p1.health=restored;
+    p1.invuln=0;p1.hitStunMs=0;
+    const retryBefore=Number(p1.health);
+    const retryHandled=api.damageValidatedTrapContact(p1,trap);
+    const retryAfter=Number(p1.health);
+    trap.period=original.period;trap.phase=original.phase;
+    p1.x=world.start.x;p1.y=world.start.y;p1.rx=p1.x;p1.ry=p1.y;p1.invuln=0;p1.hitStunMs=0;
+    api.rearmInactiveTrapContacts();
+    return{available:true,before,blocked,retryBefore,retryAfter,retryHandled};
+  })()`));
+  assert.equal(retryablePseudoHit.available,true,"timestamp-only SPIKE fixture must be available: "+JSON.stringify(retryablePseudoHit));
+  assert.ok(retryablePseudoHit.blocked.damageAt>retryablePseudoHit.before.damageAt,"fixture must advance canonical damage timestamp while the HEALTH write is blocked");
+  assert.equal(retryablePseudoHit.blocked.health,retryablePseudoHit.before.health,"timestamp/source evidence alone must not manufacture HEALTH loss");
+  assert.equal(retryablePseudoHit.blocked.hits,retryablePseudoHit.before.hits,"timestamp/source evidence alone must not consume a verified trap cycle");
+  assert.ok(retryablePseudoHit.blocked.retries>retryablePseudoHit.before.retries,"failed canonical trap HEALTH write must be recorded as retryable");
+  assert.equal(retryablePseudoHit.retryHandled,true,"same still-active SPIKE contact must remain eligible after a failed HEALTH write");
+  assert.equal(retryablePseudoHit.retryAfter,retryablePseudoHit.retryBefore-1,"retry of the same active SPIKE contact must remove exactly one HEALTH");
+
   const dash=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV142R19MobileTrapLayoutStability;
     const reporter=window.CCGLostSizzlerBugReporter;
