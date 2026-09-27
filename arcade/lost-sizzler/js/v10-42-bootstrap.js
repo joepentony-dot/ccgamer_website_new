@@ -4,8 +4,8 @@
   if(window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
-  const BUILD="V10.42 r57";
-  const CACHE="20260925r57";
+  const BUILD="V10.42 r58";
+  const CACHE="20260927r58";
   const prerequisites=[
     ["v10-41-r30-owner-seal.js","CCGLostSizzlerV141R30OwnerSeal"],
     ["v10-41-mode-runtime.js","CCGLostSizzlerModeRuntime"],
@@ -53,12 +53,8 @@
     ["v10-42-warden-hunt-guidance.js","CCGLostSizzlerV142WardenHuntGuidance"],
     ["v10-42-warden-navigation-cues.js","CCGLostSizzlerV142WardenNavigationCues"],
     ["v10-42-warden-interface-consistency.js","CCGLostSizzlerV142WardenInterfaceConsistency"],
-    ["v10-42-r19-mobile-trap-layout-stability.js","CCGLostSizzlerV142R19MobileTrapLayoutStability"],
-    ["v10-42-r20-trap-cycle-handoff-stability.js","CCGLostSizzlerV142R20TrapCycleHandoffStability"],
     ["v10-42-r21-owner-and-attack-seal.js","CCGLostSizzlerV142R21OwnerAndAttackSeal"],
-    ["v10-42-r20-live-regression-stability.js","CCGLostSizzlerV142R20LiveRegressionStability"],
     ["v10-42-r22-stall-elapsed-handoff.js","CCGLostSizzlerV142R22StallElapsedHandoff"],
-    ["v10-42-attack-hold-liveness.js","CCGLostSizzlerV142AttackHoldLiveness"],
     ["v10-42-artefact-shop-stability.js","CCGLostSizzlerV142ArtefactShopStability"],
     ["v10-42-projectile-lifecycle.js","CCGLostSizzlerV142ProjectileLifecycle"],
     ["v10-42-rpg-terminology.js","CCGLostSizzlerV142RpgTerminology"],
@@ -67,7 +63,6 @@
     ["v10-42-r48-shop-firearm-upgrade.js","CCGLostSizzlerV142R48ShopFirearmUpgrade"],
     ["v10-42-r1-stability.js","CCGLostSizzlerV142R1Stability"],
     ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"],
-    ["v10-42-r47-inventory-fire-recovery.js","CCGLostSizzlerV142R47InventoryFireRecovery"],
     ["v10-42-r55-shop-feedback.js","CCGLostSizzlerV142R55ShopFeedback"],
     ["v10-42-bug-reporter.js","CCGLostSizzlerBugReporter"]
   ];
