@@ -225,16 +225,20 @@ addEventListener("keydown",e=>{
   if(e.code==="KeyP"&&(mode==="playing"||mode==="paused")){if(mode==="paused")resumePausedRun();else pause();return}
   if(e.code==="KeyF"){toggleFullscreen();return}
   if(e.code==="Tab"&&["playing","inventory"].includes(mode)){toggleInventory();return}
-  if(mode!=="playing")return;if(p1)setDir(p1,e.code);if(p2)setDir(p2,e.code);
-  const p1AttackKey=e.code==="Space"||e.code==="Numpad0";
-  // A fresh P1 attack press is an intent, not a held-input latch. The r58 core
-  // executes the buffered intent once; sustained FIRE is promoted to canonical
-  // Space only by the physical-hold owner after its hold threshold. This keeps a
-  // quick desktop tap from repeating if keyup is delayed across a busy frame.
-  if(!p1AttackKey)input.add(e.code);
-  if(p1AttackKey&&!e.repeat)queueAttack(p1);if(p2&&e.code==="Enter"&&!e.repeat)queueAttack(p2);if(e.code==="ShiftLeft"&&!e.repeat)dashPlayer(p1,d1()||p1.dir);if(p2&&e.code==="ControlRight"&&!e.repeat)dashPlayer(p2,d2()||p2.dir);if(e.code==="KeyE"&&!e.repeat)usePotion(p1);if(e.code==="KeyQ"&&!e.repeat)useUtility(p1);if(e.code==="KeyR"&&!e.repeat)useTeleport(p1);if(e.code==="KeyC"&&!e.repeat)closeNearbyDoor(p1);if(e.code==="KeyB"&&!e.repeat)useBanishment(p1);if(p2&&e.code==="KeyO"&&!e.repeat)usePotion(p2)
+  if(mode!=="playing")return;if(p1)setDir(p1,e.code);if(p2)setDir(p2,e.code);input.add(e.code);
+  const p1AttackKey=e.code==="Space"||e.code==="Numpad0",p2AttackKey=e.code==="Enter";
+  if(p1AttackKey&&p1){
+    const gamepadHeld=!e.isTrusted&&Boolean(window.CCGLostSizzlerV141R49GamepadInput?.state?.held?.[0]?.has?.(e.code));
+    setAttackHeldInput(p1,Boolean(e.repeat||gamepadHeld));
+    if(!e.repeat)queueAttack(p1)
+  }
+  if(p2&&p2AttackKey){
+    const gamepadHeld=!e.isTrusted&&Boolean(window.CCGLostSizzlerV141R49GamepadInput?.state?.held?.[1]?.has?.(e.code));
+    setAttackHeldInput(p2,Boolean(e.repeat||gamepadHeld));
+    if(!e.repeat)queueAttack(p2)
+  }if(e.code==="ShiftLeft"&&!e.repeat)dashPlayer(p1,d1()||p1.dir);if(p2&&e.code==="ControlRight"&&!e.repeat)dashPlayer(p2,d2()||p2.dir);if(e.code==="KeyE"&&!e.repeat)usePotion(p1);if(e.code==="KeyQ"&&!e.repeat)useUtility(p1);if(e.code==="KeyR"&&!e.repeat)useTeleport(p1);if(e.code==="KeyC"&&!e.repeat)closeNearbyDoor(p1);if(e.code==="KeyB"&&!e.repeat)useBanishment(p1);if(p2&&e.code==="KeyO"&&!e.repeat)usePotion(p2)
 },{passive:false});
-addEventListener("keyup",e=>input.delete(e.code));addEventListener("blur",()=>input.clear());document.addEventListener("visibilitychange",()=>{if(document.hidden)input.clear()});
+addEventListener("keyup",e=>{input.delete(e.code);if((e.code==="Space"||e.code==="Numpad0")&&p1)setAttackHeldInput(p1,false);if(e.code==="Enter"&&p2)setAttackHeldInput(p2,false)});addEventListener("blur",()=>input.clear());document.addEventListener("visibilitychange",()=>{if(document.hidden)input.clear()});
 canvas.addEventListener("pointerdown",()=>{if(document.body.dataset.runActive==="true")try{canvas.tabIndex=-1;canvas.focus({preventScroll:true})}catch(_){}});
 refreshCollection();
 net.setSolo("TITLE");mode="menu";setRunPresentation(false);document.body.dataset.gameReady="true";requestAnimationFrame(loop);
