@@ -278,8 +278,8 @@ try{
       assert.equal(poisoned.controlLocked,true,"ordinary-play regression failed to seed controlLocked");
       assert.equal(poisoned.controlsLocked,true,"ordinary-play regression failed to seed controlsLocked");
       assert.equal(poisoned.hitStunMs,180,"ordinary-play regression failed to seed a numerically valid but stale hit-stun");
-      const handled=await page.evaluate(()=>window.CCGLostSizzlerV142R20LiveRegressionStability?.attackNow?.("Space")===true);
-      assert.equal(handled,true,"ordinary-play attack owner did not recover a stale live-combat lock");
+      const handled=await page.evaluate(()=>window.CCGLostSizzlerV142R58AuthoritativeFireCore?.attackNow?.()===true);
+      assert.equal(handled,true,"authoritative r58 attack owner did not recover a stale live-combat lock");
       await page.waitForTimeout(360);
       const afterLiveRepair=await snap(page);
       assert.ok(afterLiveRepair.mana<beforeLiveRepair.mana||afterLiveRepair.projectileSteps>beforeLiveRepair.projectileSteps,"ordinary-play attack recovery produced no shot/projectile work");
