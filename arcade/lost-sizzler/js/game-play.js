@@ -77,11 +77,7 @@ function updateGamepad(){
   const firePressed=Boolean(gp.buttons?.[0]?.pressed);
   if(firePressed){
     if(!gamepadFireDown)queueAttack(p1,attackDirection(p1,dir));
-    else if(fire1<=0){
-      normalizeAttackState(p1);
-      const fired=(authoritativeCoreFirePlayer||firePlayer)(p1,attackDirection(p1,dir));
-      if(!fired)fire1=0;
-    }
+    else if(fire1<=0)attackNowUnbuffered(p1,attackDirection(p1,dir));
   }
   gamepadFireDown=firePressed;
   const dash=Boolean(gp.buttons?.[1]?.pressed);if(dash&&!gamepadDashDown)dashPlayer(p1,dir||p1.dir);gamepadDashDown=dash
