@@ -17,7 +17,10 @@ const r60Composition=read("js/v10-41-r60-horde-owner-composition.js");
 // game-play damage/trap path. Historical maintenance layers must remain
 // ancestry-safe where they still wrap unrelated damage, but R56/R60 must not
 // recreate environmental damage owners above the canonical trap engine.
-assert.match(play,/function authoritativeDamagePlayer\(p,n,friendly=false,source="enemy"\)[\s\S]*authoritativeTrapDamageDepth\+\+[\s\S]*hurtPlayer\(p,n,friendly,source\)[\s\S]*authoritativeTrapDamageDepth=Math\.max\(0,authoritativeTrapDamageDepth-1\)/,"canonical trap owner must enter raw player damage through one guarded internal boundary");
+const authoritativeDamageBlock=play.match(/function authoritativeDamagePlayer\(p,n,friendly=false,source="enemy"\)\{[\s\S]*?\n\}/)?.[0]||"";
+assert.match(authoritativeDamageBlock,/authoritativeTrapDamageDepth\+\+/,"canonical trap owner must enter the guarded internal damage boundary");
+assert.match(authoritativeDamageBlock,/try\{return hurtPlayer\(p,n,friendly,source\)\}/,"canonical trap owner must call the raw player-damage primitive through the guarded boundary");
+assert.match(authoritativeDamageBlock,/finally\{authoritativeTrapDamageDepth=Math\.max\(0,authoritativeTrapDamageDepth-1\)\}/,"canonical trap owner must always release the guarded internal damage boundary");
 assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeTrapCore=authoritativeTrapApi/,"R58 canonical trap ownership must be exported from game-play");
 assert.match(r29,/function originalChainHasMarker\(fn,marker,limit=64\)/,"R29 must retain its generic ancestry helper for downstream compatibility");
 assert.doesNotMatch(r29,/__ccgV141R29HordeFriendly|installHordeFriendlyFireGuard/,"R29 must not restore retired Horde damage ownership");
