@@ -19,7 +19,8 @@ const r60Composition=read("js/v10-41-r60-horde-owner-composition.js");
 // recreate environmental damage owners above the canonical trap engine.
 const authoritativeDamageBlock=play.match(/function authoritativeDamagePlayer\(p,n,friendly=false,source="enemy"\)\{[\s\S]*?\n\}/)?.[0]||"";
 assert.match(authoritativeDamageBlock,/authoritativeTrapDamageDepth\+\+/,"canonical trap owner must enter the guarded internal damage boundary");
-assert.match(authoritativeDamageBlock,/try\{return hurtPlayer\(p,n,friendly,source\)\}/,"canonical trap owner must call the raw player-damage primitive through the guarded boundary");
+assert.match(play,/const canonicalPlayerDamage=hurtPlayer;/,"canonical trap owner must capture the raw player-damage primitive before later compatibility wrappers load");
+assert.match(authoritativeDamageBlock,/try\{return canonicalPlayerDamage\(p,n,friendly,source\)\}/,"canonical trap owner must call the captured raw player-damage primitive through the guarded boundary");
 assert.match(authoritativeDamageBlock,/finally\{authoritativeTrapDamageDepth=Math\.max\(0,authoritativeTrapDamageDepth-1\)\}/,"canonical trap owner must always release the guarded internal damage boundary");
 assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeTrapCore=authoritativeTrapApi/,"R58 canonical trap ownership must be exported from game-play");
 assert.match(r29,/function originalChainHasMarker\(fn,marker,limit=64\)/,"R29 must retain its generic ancestry helper for downstream compatibility");
