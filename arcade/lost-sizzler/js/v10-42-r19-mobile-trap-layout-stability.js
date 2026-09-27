@@ -205,10 +205,16 @@
     const now=performance.now(),cycleState=rearmStaleCycleContact(player,trap,now);
     const contactKey=cycleState.contactKey,cycle=cycleState.cycle;
     const protectedUntil=Number(trapProtectionUntil.get(contactKey)||0);
-    if(protectedUntil>now){state.trapProtectionBlocks++;return true}
+    if(protectedUntil>now&&trapContacts.has(contactKey)){state.trapProtectionBlocks++;return true}
     if(protectedUntil>0)trapProtectionUntil.delete(contactKey);
-    if(trapContacts.has(contactKey)){state.trapContactBlocks++;return true}
-    if(trapDamageInFlight.has(contactKey))return true;
+    if(trapContacts.has(contactKey)){
+      const consumedCycle=trapContactCycles.get(contactKey);
+      if(consumedCycle===cycle){state.trapContactBlocks++;return true}
+      clearTrapCycleOwners(player,trap,contactKey);
+      trapContactCycles.delete(contactKey);
+      state.cycleRearms++;
+    }
+    if(trapDamageInFlight.has(contactKey))return false;
 
     const owner=typeof baseTrapDamageOwner==="function"
       ?baseTrapDamageOwner
