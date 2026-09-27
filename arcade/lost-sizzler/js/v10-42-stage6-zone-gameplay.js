@@ -244,7 +244,14 @@
       && Number(room.w)>=1
       && Number(room.h)>=1
     );
-    const candidates=[...sortCandidates(preferredCandidates),...sortCandidates(compactFallbackCandidates)];
+    const emergencyCandidates=(worldState?.rooms||[]).filter(room=>
+      room
+      && room.id!==worldState?.startRoomId
+      && room.id!==worldState?.exitRoomId
+      && !preferredIds.has(room.id)
+      && !compactFallbackCandidates.some(candidate=>candidate.id===room.id)
+    );
+    const candidates=[...sortCandidates(preferredCandidates),...sortCandidates(compactFallbackCandidates),...sortCandidates(emergencyCandidates)];
     const floor=floorOf(runState),resolvedProfile=profile||profileForFloor(floor),types=["blade","embers","arrows"],type=types[floor%types.length],groups=type==="embers"?2:type==="blade"?3:4;
     for(const room of candidates){
       const cells=[];
