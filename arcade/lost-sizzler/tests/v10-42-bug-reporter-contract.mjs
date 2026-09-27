@@ -56,8 +56,8 @@ assert.match(reporter,/hazardSignal=contactSignals\.find\(signal=>signal\.type==
 assert.match(reporter,/damageObserved=Boolean\(exactSignal\)/,"polling diagnostics must require exact player-and-trap contact evidence so another player's same-kind hit cannot mask a failure");
 
 
-assert.match(reporter,/pending\.acceptedTrapSignal=signal;\s*return signal;/,"movement-bound trap signals must defer confirmation until the after-movement boundary observes the result");
-assert.match(reporter,/let trapConfirmedAtBoundary=false;[\s\S]*if\(boundaryTrapSignal\)boundaryTrapSignal\.confirmed=true/,"after-movement verification must own final accepted trap confirmation");
+assert.match(reporter,/pending\.acceptedTrapSignal=signal;[\s\S]*environment-trap-crossing-damage-confirmed[\s\S]*signal\.confirmed=true;[\s\S]*state\.environmentVerifiedHits\+\+;[\s\S]*return signal;/,"movement-bound authoritative trap signals must publish one live-bound confirmation before a fast dash leaves the contact boundary");
+assert.match(reporter,/let trapConfirmedAtBoundary=Boolean\(boundaryTrapSignal\?\.confirmed===true\);[\s\S]*if\(boundaryTrapRows\.length&&\(boundaryTrapSignal\|\|trapSourceHealthLoss\)&&!trapConfirmedAtBoundary\)/,"after-movement verification must recognise an already-confirmed live-bound trap signal instead of double-counting it");
 assert.match(reporter,/occupiedTraps=safe\(\(\)=>\(host\?\.traps\|\|\[\]\)[\s\S]*occupiedTraps,activeTraps,activeHazards/,"movement diagnostics must retain bounded physical trap contact even when rich phase sampling is unavailable");
 assert.match(reporter,/immediateTrapHealthLoss>0[\s\S]*immediate\.damageAt>before\.beforeDamageAt[\s\S]*\/trap\/i\.test\(immediate\.damageSource\)/,"phase-disagreed dash evidence must require real HEALTH loss and a fresh trap-attributed damage source");
 assert.match(reporter,/boundaryTrapRows\.length&&\(boundaryTrapSignal\|\|trapSourceHealthLoss\)/,"movement-bound confirmation must accept exact signals or fresh trap-source HEALTH loss at the occupied trap tile");
