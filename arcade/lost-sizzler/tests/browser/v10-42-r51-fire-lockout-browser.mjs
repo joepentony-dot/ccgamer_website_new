@@ -66,11 +66,13 @@ try{
     document.body.dataset.runActive="false";
     const r20=window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics||{};
     const hold=window.CCGLostSizzlerV142AttackHoldLiveness?.diagnostics||{};
+    const core=window.CCGLostSizzlerV142R58CombatTrapCore?.state||{};
     return{
       mana:Number(p1.mana),
       staleRepairs:Number(r20.staleStunRepairs||0),
       controlRepairs:Number(r20.controlLockRepairs||0),
-      verifications:Number(hold.pressVerifications||0)
+      verifications:Number(hold.pressVerifications||0),
+      coreBoundaryRepairs:Number(core.boundaryRepairs||0)
     };
   });
 
@@ -87,7 +89,8 @@ try{
     active:String(document.body.dataset.runActive||""),
     shots:bullets.filter(b=>b&&b.ttl>0&&b.owner===p1.id).length,
     r20:{...window.CCGLostSizzlerV142R20LiveRegressionStability.diagnostics},
-    hold:{...window.CCGLostSizzlerV142AttackHoldLiveness.diagnostics}
+    hold:{...window.CCGLostSizzlerV142AttackHoldLiveness.diagnostics},
+    core:{...window.CCGLostSizzlerV142R58CombatTrapCore.state}
   }));
 
   assert.ok(recovered.mana<before.mana,"a fresh FIRE press must recover the poisoned combat boundary and consume ammo");
@@ -96,10 +99,8 @@ try{
   assert.equal(recovered.controlsLocked,false,"stale controlsLocked must be cleared before FIRE");
   assert.equal(recovered.active,"true","FIRE recovery must restore the live-run presentation flag");
   assert.ok(
-    recovered.r20.staleStunRepairs>before.staleRepairs||
-    recovered.r20.controlLockRepairs>before.controlRepairs||
-    recovered.hold.pressVerifications>before.verifications,
-    "fresh FIRE recovery must pass through an established liveness/repair owner"
+    Number(recovered.core.boundaryRepairs||0)>before.coreBoundaryRepairs,
+    "fresh FIRE recovery must be owned by the rewritten r58 combat boundary"
   );
 
   const normalBefore=Number(recovered.mana);
@@ -126,17 +127,18 @@ try{
     held:input.has("Space"),
     physicalHeld:Number(window.CCGLostSizzlerV142AttackHoldLiveness?.held?.size||0),
     buffer:Number(fireBuffer1||0),
-    meleeRepairs:Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.meleeAttackRepairs||0)
+    meleeRepairs:Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.meleeAttackRepairs||0),
+    coreMelee:Number(window.CCGLostSizzlerV142R58CombatTrapCore?.state?.meleeAttacks||0)
   }));
   assert.equal(swordAfter.swing,firstSwordSwing,"one desktop sword tap must produce one melee swing, not delayed recovery repeats");
   assert.equal(swordAfter.held,false,"a completed sword tap must not synthetically latch Space");
   assert.equal(swordAfter.physicalHeld,0,"a completed sword tap must release the physical hold owner");
   assert.equal(swordAfter.buffer,0,"a successful sword tap must not leave a queued attack buffer");
-  assert.ok(swordAfter.meleeRepairs>=1,"R53 must recognise melee as successful attack work");
+  assert.ok(swordAfter.coreMelee>=1,"rewritten r58 attack core must recognise melee as successful attack work");
 
   const finiteBefore=await page.evaluate(()=>{
     p1.firearmUnlocked=true;p1.weapon=baseWeapon();p1.mana=100;p1.maxMana=Math.max(120,Number(p1.maxMana)||0);fireBuffer1=0;input.clear();
-    return Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.finiteCooldownRepairs||0);
+    return Number(window.CCGLostSizzlerV142R58CombatTrapCore?.state?.shotBuffers||0);
   });
   for(let attempt=0;attempt<5;attempt++){
     await page.evaluate(()=>{
@@ -146,8 +148,8 @@ try{
     await page.waitForTimeout(310);
   }
   await page.evaluate(()=>{fire1=0;fireBuffer1=0});
-  const finiteAfter=await page.evaluate(()=>Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.finiteCooldownRepairs||0));
-  assert.ok(finiteAfter>finiteBefore,"repeated unchanged finite cooldown evidence must recover instead of leaving ATTACK permanently blocked");
+  const finiteAfter=await page.evaluate(()=>Number(window.CCGLostSizzlerV142R58CombatTrapCore?.state?.shotBuffers||0));
+  assert.ok(finiteAfter>finiteBefore,"finite cooldown attack intents must be buffered by r58 instead of leaving ATTACK permanently blocked");
   const postFiniteMana=await page.evaluate(()=>Number(p1.mana));
   await page.keyboard.press("Space");
   await page.waitForFunction(mana=>Number(p1.mana)<mana,postFiniteMana,{timeout:3000});
