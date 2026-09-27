@@ -27,6 +27,7 @@
     try{if(typeof focusGameplayKeyboard==="function")focusGameplayKeyboard();else document.getElementById("game")?.focus?.({preventScroll:true})}catch(_){}
   }
   function clearBoundaryState(){
+    const core=window.CCGLostSizzlerV142R58CombatTrapCore;if(core){core.resetAttackState?.();focusGame();state.boundaryRepairs++;return true}
     try{if(typeof settlePauseAttackCadence==="function")settlePauseAttackCadence("r47-inventory-close")}catch(_){}
     try{window.CCGLostSizzlerV142R18SoloPlaytestStability?.repairAttackLiveness?.("pause-resume")}catch(_){}
     try{window.CCGLostSizzlerV142R20LiveRegressionStability?.recoverOrphanedGameplayMode?.()}catch(_){}
@@ -48,6 +49,7 @@
   }
 
   function verifyAttack(code,before){
+    if(window.CCGLostSizzlerV142R58CombatTrapCore)return;
     setTimeout(()=>{
       const p=player();if(!p||!state.armed||!activeRun()||currentMode()!=="playing")return;
       const afterMana=Number(p.mana||0),afterBullets=bulletCount(p);
