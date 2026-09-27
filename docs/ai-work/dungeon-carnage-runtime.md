@@ -1,3 +1,13 @@
+## R58 single-owner consolidation checkpoint — 27 September 2026
+
+- Authoritative P0 vehicle is now draft PR #2391 / `codex/dungeon-authoritative-fire-traps-rewrite-20260927`; exact candidate head before this documentation commit was `8d941aee21ad9a9e5b08f6eef140283597a9075d`, based on current main `ce125d8e6586c332cc1b9ee2eebc0d9c72697c23`.
+- The rewrite now has one canonical FIRE owner and one canonical ordinary floor-trap owner in `game-play.js`. FIRE commits ammo/cooldown only after projectile creation succeeds; partial/failed projectile creation rolls back. Trap cycles are consumed only after real HEALTH loss or a canonical lethal/death transition; timestamp/source evidence alone is insufficient and failed contacts remain retryable.
+- The canonical trap ledger is reset on every world/floor start so reused trap IDs cannot inherit an earlier floor's cycle latch.
+- Legacy ordinary-trap damage paths are retired: R19/R20 trap owner modules are absent from ordered startup; R56/R60 environmental wrappers are non-owning compatibility surfaces; Rare Events retains warning/render/diagnostic observation only; R54 yields immediately when the R58 authoritative trap core exists.
+- Independent useful #2361 work has been migrated into #2391: compact 2x2 emergency dedicated-hazard reservation/installation, final Stage 6 hazard/trap-family reconciliation, final world-start reconciliation, bounded exact trap reporter evidence, movement-under-FIRE-failure regression and failed-HEALTH-write retry coverage.
+- Repository defragmentation already closed #2381 as superseded and closed #2329/#2176 as preservation-only stale integration vehicles while retaining their exact Git history/source. #2361 remains open only until #2391 proves the replacement qualification path, then it is to be closed as superseded.
+- Merge gate remains exact-head canonical/Node plus Chromium shards 1–6 and all triggered checks green. The user's latest real-phone test is a failed acceptance: deployed sustained FIRE plus natural FIRE/SPIKE/SHOCK HEALTH-loss testing is still mandatory after merge/deploy.
+
 ## R58 authoritative FIRE/trap rewrite — 27 September 2026
 
 - User-directed strategy change: stop incrementally repairing the layered FIRE/trap stack and rebuild the supported paths from current main.
