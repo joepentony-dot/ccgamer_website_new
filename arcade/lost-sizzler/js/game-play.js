@@ -26,13 +26,16 @@ let authoritativeCoreFirePlayer=null;
 function normalizeAttackState(p){
   if(!p)return false;
   const isP2=p===p2;
-  let cooldown=Number(isP2?fire2:fire1),buffer=Number(isP2?fireBuffer2:fireBuffer1),changed=false;
-  if(!Number.isFinite(cooldown)||cooldown<0||cooldown>2500){if(isP2)fire2=0;else fire1=0;cooldown=0;changed=true}
-  if(!Number.isFinite(buffer)||buffer<0||buffer>2500){if(isP2)fireBuffer2=0;else fireBuffer1=0;changed=true}
-  if(!isP2&&(!Number.isFinite(Number(projectileCD))||Number(projectileCD)<0||Number(projectileCD)>140)){projectileCD=0;changed=true}
+  let cooldown=Number(isP2?fire2:fire1),buffer=Number(isP2?fireBuffer2:fireBuffer1),changed=false,staleCombatState=false;
+  if(!Number.isFinite(cooldown)||cooldown<0||cooldown>2500){if(isP2)fire2=0;else fire1=0;cooldown=0;changed=true;staleCombatState=true}
+  if(!Number.isFinite(buffer)||buffer<0||buffer>2500){if(isP2)fireBuffer2=0;else fireBuffer1=0;changed=true;staleCombatState=true}
+  if(!isP2&&(!Number.isFinite(Number(projectileCD))||Number(projectileCD)<0||Number(projectileCD)>140)){projectileCD=0;changed=true;staleCombatState=true}
   const stun=Number(p.hitStunMs||0),lastHurt=Number(p.__ccgLastHurtAt||0),expected=Math.max(1,Number(C?.player?.hitStunMs||180)),staleAfter=Math.max(540,expected*3);
   if((!Number.isFinite(stun)||stun<0||stun>5000)||(stun>0&&(!Number.isFinite(lastHurt)||lastHurt<=0||performance.now()-lastHurt>staleAfter))){
-    p.hitStunMs=0;changed=true
+    p.hitStunMs=0;changed=true;staleCombatState=true
+  }
+  if(mode==="playing"&&staleCombatState&&(p.controlLocked||p.controlsLocked)){
+    p.controlLocked=false;p.controlsLocked=false;changed=true
   }
   return changed
 }
