@@ -25,7 +25,10 @@ assert.match(bootstrap,/v10-42-r20-live-regression-stability\.js/,"non-FIRE R20 
 assert.doesNotMatch(bootstrap,/v10-42-attack-hold-liveness\.js/,"retired held-FIRE recovery module must not load");
 assert.doesNotMatch(bootstrap,/v10-42-r47-inventory-fire-recovery\.js/,"retired inventory FIRE recovery module must not load");
 
-assert.match(play,/function queueAttack\(p,requestedDirection=null\)[\s\S]*firePlayer\(p,attackDirection\(p,requestedDirection\)\)/,"fresh FIRE intent must use the core fire owner directly");
+const queueBlock=play.match(/function queueAttack\(p,requestedDirection=null\)\{[\s\S]*?\n\}/)?.[0]||"";
+assert.match(queueBlock,/fireBuffer2=ATTACK_BUFFER_MS;else fireBuffer1=ATTACK_BUFFER_MS/,"fresh FIRE intent must enter the core buffer");
+assert.doesNotMatch(queueBlock,/firePlayer\(/,"the input queue must never create a shot directly");
+assert.match(play,/if\(\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\|\|fireBuffer1>0\)&&fire1<=0\)\{const fired=firePlayer\(p1,/,"the simulation loop must be the sole P1 FIRE execution owner");
 assert.match(play,/function firePlayer\(p,d\)[\s\S]*return true\n\}/,"core FIRE owner must report a completed shot");
 assert.match(play,/const shotIds=\[\],beforeMana=Number\(p\.mana\|\|0\),beforeCount=[\s\S]*try\{[\s\S]*spawnBullet\(b,false\)[\s\S]*\}catch\(_\)\{[\s\S]*bullets\.splice\(i,1\);[\s\S]*return false/,"projectile creation must fail transactionally and remove any partial volley");
 assert.match(play,/if\(afterCount<=beforeCount\)[\s\S]*return false[\s\S]*p\.mana=beforeMana-ammoCost/,"FIRE must not spend ammo until at least one projectile exists");
