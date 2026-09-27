@@ -45,12 +45,9 @@ function queueAttack(p,requestedDirection=null){
   if(!p||mode!=="playing")return false;
   normalizeAttackState(p);
   const isP2=p===p2;
+  if(requestedDirection&&(requestedDirection.x||requestedDirection.y))p.dir=attackDirection(p,requestedDirection);
   if(isP2)fireBuffer2=ATTACK_BUFFER_MS;else fireBuffer1=ATTACK_BUFFER_MS;
-  const cooldown=isP2?fire2:fire1;
-  if(cooldown>0)return true;
-  const fired=firePlayer(p,attackDirection(p,requestedDirection));
-  if(fired){if(isP2)fireBuffer2=0;else fireBuffer1=0}
-  return fired||true
+  return true
 }
 let gamepadDashDown=false,gamepadFireDown=false;
 function gamepadDirection(){
