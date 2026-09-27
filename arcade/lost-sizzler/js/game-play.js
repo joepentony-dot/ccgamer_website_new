@@ -20,7 +20,16 @@ function d1(){const l=input.has("ArrowLeft")||input.has("KeyA"),r=input.has("Arr
 function d2(){const l=input.has("KeyJ"),r=input.has("KeyL"),u=input.has("KeyI"),d=input.has("KeyK");const x=(r?1:0)-(l?1:0),y=(d?1:0)-(u?1:0);return x||y?{x,y}:null}
 function attackDirection(p,requested){const source=requested&&(requested.x||requested.y)?requested:p?.dir;const x=Math.sign(Number(source?.x||0)),y=Math.sign(Number(source?.y||0));return x||y?{x,y}:{x:1,y:0}}
 const ATTACK_BUFFER_MS=700;
-function queueAttack(p){if(!p)return false;if(p===p2)fireBuffer2=ATTACK_BUFFER_MS;else fireBuffer1=ATTACK_BUFFER_MS;return true}
+function queueAttack(p,requestedDirection=null){
+  if(!p||mode!=="playing")return false;
+  const isP2=p===p2;
+  if(isP2)fireBuffer2=ATTACK_BUFFER_MS;else fireBuffer1=ATTACK_BUFFER_MS;
+  const cooldown=isP2?fire2:fire1;
+  if(cooldown>0)return true;
+  const fired=firePlayer(p,attackDirection(p,requestedDirection));
+  if(fired){if(isP2)fireBuffer2=0;else fireBuffer1=0}
+  return fired||true
+}
 let gamepadDashDown=false,gamepadFireDown=false;
 function gamepadDirection(){
   const pads=typeof navigator!=="undefined"&&navigator.getGamepads?navigator.getGamepads():[];const gp=pads&&[...pads].find(Boolean);if(!gp)return null;
@@ -88,7 +97,42 @@ function activateSwitch(s,p,shot=false){
 }
 function triggerSwitch(p){for(const s of host.switches||[])if(s.active&&s.x===p.x&&s.y===p.y)activateSwitch(s,p,false)}
 function triggerShrine(p){for(const s of host.shrines||[])if(s.active&&s.x===p.x&&s.y===p.y){s.active=false;run.stats.shrines++;S.sfx("shrine");const n=Math.random();if(n<.34){p.maxHealth++;p.health=Math.min(p.maxHealth,p.health+2);p.hpBarMs=3000;showToast("SHRINE OF ENDURANCE","+1 maximum health and +2 health now.","green")}else if(n<.68){p.damageBonus=(p.damageBonus||0)+1;p.maxMana=Math.max(30,p.maxMana-8);p.mana=Math.min(p.mana,p.maxMana);showToast("CURSED FIRE BUTTON","+1 damage, but maximum ammo falls by 8. Power usually sends an invoice.","red",7200)}else{p.armor=Math.min(12,p.armor+4);run.alert=Math.min(100,run.alert+18);showToast("NOISY SHRINE","+4 armour, but the dungeon alert level jumps sharply.","gold")}}}
-function triggerTrap(p){const now=performance.now();for(const t of host.traps||[])if(t.active&&t.x===p.x&&t.y===p.y&&SYS.trapActive(t,now)){const beforeHealth=Number(p.health||0),beforeArmor=Number(p.armor||0),beforeDamageAt=Number(p.__ccgLastDamageAt||0),trapStability=window.CCGLostSizzlerV142R19MobileTrapLayoutStability||null;S.sfx("trap");showToast(`${t.kind.toUpperCase()} TRAP`,`The floor was trying to tell you something. -1 health.`,"red");const routed=typeof trapStability?.damageValidatedTrapContact==="function"&&trapStability.damageValidatedTrapContact(p,t);if(!routed)hurtPlayer(p,1,false,`${t.kind} trap`);trapStability?.guaranteeTrapContactDamage?.(p,t,beforeHealth,beforeArmor);const damageAt=Number(p.__ccgLastDamageAt||0);if(!routed&&damageAt>beforeDamageAt)try{dispatchEvent(new CustomEvent("ccg:trap-damage",{detail:{playerId:String(p.id||p.name||"P1"),trapId:String(t.id||`${t.x},${t.y}`),kind:String(t.kind||"floor"),x:Number(t.x),y:Number(t.y),at:damageAt}}))}catch(_){}}}
+const trapCycleHits=new Map();
+function trapCycleId(t,now=performance.now()){
+  const period=Math.max(1,Number(t?.period)||1),phase=Number(t?.phase)||0;
+  return Math.floor((Number(now)+phase)/period)
+}
+function trapContactKey(p,t){return `${String(p?.id||p?.name||"P1")}|${String(t?.id||`${t?.x},${t?.y}`)}`}
+function applyActiveTrapContact(p,t,now=performance.now()){
+  if(!p||!t?.active||mode!=="playing")return false;
+  if(Number(t.x)!==Number(p.x)||Number(t.y)!==Number(p.y)||!SYS.trapActive(t,now))return false;
+  const key=trapContactKey(p,t),cycle=trapCycleId(t,now);
+  if(trapCycleHits.get(key)===cycle)return false;
+  const beforeHealth=Number(p.health||0),beforeDamageAt=Number(p.__ccgLastDamageAt||0),beforeArmor=Number(p.armor||0);
+  hurtPlayer(p,1,false,`${String(t.kind||"floor")} trap`);
+  const damageAt=Number(p.__ccgLastDamageAt||0),damageSource=String(p.__ccgLastDamageSource||"");
+  const verified=damageAt>beforeDamageAt&&/trap/i.test(damageSource);
+  if(!verified)return false;
+  trapCycleHits.set(key,cycle);
+  if(Number(p.armor||0)!==beforeArmor)p.armor=beforeArmor;
+  S.sfx("trap");
+  showToast(`${String(t.kind||"floor").toUpperCase()} TRAP`,"The floor was trying to tell you something. -1 health.","red");
+  try{dispatchEvent(new CustomEvent("ccg:trap-damage",{detail:{playerId:String(p.id||p.name||"P1"),trapId:String(t.id||`${t.x},${t.y}`),kind:String(t.kind||"floor"),x:Number(t.x),y:Number(t.y),at:damageAt,beforeHealth,afterHealth:Number(p.health||0),cycle}}))}catch(_){}
+  return true
+}
+function triggerTrap(p){
+  const now=performance.now();
+  let hit=false;
+  for(const t of host.traps||[])if(applyActiveTrapContact(p,t,now)){hit=true;break}
+  return hit
+}
+function updateActiveTrapContacts(){
+  const now=performance.now();
+  for(const p of localPlayers()){
+    if(!p||Number(p.health||0)<=0)continue;
+    for(const t of host.traps||[])if(applyActiveTrapContact(p,t,now))break
+  }
+}
 function triggerRescue(p){const r=host.rescue;if(!r||r.rescued)return;if(!r.following&&md(p,r)<=1){r.following=true;r.found=true;showToast("CCG SCOUT FOUND","Escort the scout itself into one of the permanently lit sanctuary rooms. It follows the nearest player.","green",9000)}}
 function triggerArena(p){for(const a of host.arenas||[])if(!a.triggered&&W.roomAt(world,p.x,p.y)===a.roomId){a.triggered=true;a.wave=1;SYS.lockRoomDoors(host,a.roomId,true);showToast("ARENA LOCKDOWN","Doors sealed. Survive the ambush to reopen them and earn a bonus chest.","red",7000);spawnArenaWave(a,4)}}
 function triggerTimed(p){for(const t of host.timedRooms||[])if(!t.triggered&&W.roomAt(world,p.x,p.y)===t.roomId){t.triggered=true;t.timeLeft=30000;const room=world.rooms[t.roomId],q={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)},stalker=host.enemies.find(e=>e.deathStalker&&e.voidStalker);t.hunterId=stalker?.id||`death-stalker-floor-${run.floor||1}`;const alreadyDefeated=!stalker?.alive||Boolean(t.stalkerDefeated||(host.defeatedDeathStalkers||[]).includes(t.hunterId));if(!alreadyDefeated){stalker.x=q.x;stalker.y=q.y;stalker.timedHunter=true;stalker.aiState="chase";stalker.lastSeen={x:p.x,y:p.y};stalker.memoryMs=999999;stalker.searchMs=0;stalker.moveCooldown=250;stalker.attackCooldown=420;showToast("TIMED CHAMBER — DEATH STALKER","This is the floor's one Death Stalker. Trade 3 artefacts or pay 10,000 score at a shop for the Flask that destroys it — or survive until the chamber timer expires.","red",11000)}else showToast("TIMED CHAMBER — STALKER BANISHED","This floor's Death Stalker has already been permanently destroyed. Survive the remaining chamber trial for the reward.","green",8500)}}
@@ -151,10 +195,39 @@ function dashPlayer(p,d){if(!p||!d||mode!=="playing")return;if(p.mana<2){S.sfx("
 function spreadDirections(d){const dirs=[d];if(d.x&&d.y){dirs.push({x:d.x,y:0},{x:0,y:d.y})}else if(d.x)dirs.push({x:d.x,y:1},{x:d.x,y:-1});else dirs.push({x:1,y:d.y},{x:-1,y:d.y});return dirs}
 function weaponDirections(p,d){const w=p.weapon||{};if(w.id==="shock")return[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1},{x:1,y:1},{x:1,y:-1},{x:-1,y:1},{x:-1,y:-1}];if(w.id==="spread"||w.shots>=3)return spreadDirections(d);return[d]}
 function firePlayer(p,d){
-  if(!p||mode!=="playing"||(p.hitStunMs||0)>0)return;const cd=p===p2?fire2:fire1;if(cd>0)return;const w=p.weapon||baseWeapon(),active=bullets.filter(b=>b.owner===p.id&&b.ttl>0).length,max=C.player.maxProjectiles+Math.max(0,(w.shots||1)-1);if(active>=max){S.sfx("empty");return}
-  const ammoCost=1;if(p.mana<ammoCost){S.sfx("empty");if(p.mana<=0&&!(p.emergencyRechargeMs>0)){p.emergencyRechargeMs=C.player.emergencyRechargeMs;showToast("EMERGENCY CAPACITOR CHARGING",`You are completely dry. Survive for ${Math.ceil(C.player.emergencyRechargeMs/1000)} seconds and the reserve capacitor will restore ${C.player.emergencyAmmo} emergency shots.`,"red",8500)}else showToast("LOW AMMO","Find a supply pack or switch tactics.","red");return}
-  d=attackDirection(p,d);p.dir=d;p.mana-=ammoCost;p.ammoFlashMs=C.player.ammoFlashMs;p._fireAnimAt=performance.now();p._fireAnimMs=Math.max(120,Math.min(260,Number((p.rapidMs>0?88:C.player.fireDelay)*(w.delay||1))||180));run.alert=Math.min(100,run.alert+1.8);const delay=(p.rapidMs>0?88:C.player.fireDelay)*(w.delay||1);if(p===p2)fire2=delay;else fire1=delay;
-  const dirs=weaponDirections(p,d);for(const z of dirs.slice(0,Math.max(1,max-active))){const b={id:`${p.id}-${Date.now()}-${Math.random()}`,owner:p.id,ownerName:p.name,x:p.x,y:p.y,dx:z.x,dy:z.y,ttl:w.ttl||18,power:(w.power||1)+(p.damageBonus||0),pierce:w.pierce||0,element:w.element||"energy",style:w.id||"pulse"};spawnBullet(b,false);if(playMode==="online"&&p===p1)net.send("shot",b)}S.sfx("fire");muzzle(p.x,p.y,d);sync()
+  if(!p||mode!=="playing"||(p.hitStunMs||0)>0)return false;
+  const isP2=p===p2,cd=isP2?fire2:fire1;
+  if(cd>0)return false;
+  const w=p.weapon||baseWeapon();
+  const active=bullets.filter(b=>b.owner===p.id&&b.ttl>0).length;
+  const max=C.player.maxProjectiles+Math.max(0,(w.shots||1)-1);
+  if(active>=max){S.sfx("empty");return false}
+  const ammoCost=1;
+  if(p.mana<ammoCost){
+    S.sfx("empty");
+    if(p.mana<=0&&!(p.emergencyRechargeMs>0)){
+      p.emergencyRechargeMs=C.player.emergencyRechargeMs;
+      showToast("EMERGENCY CAPACITOR CHARGING",`You are completely dry. Survive for ${Math.ceil(C.player.emergencyRechargeMs/1000)} seconds and the reserve capacitor will restore ${C.player.emergencyAmmo} emergency shots.`,"red",8500)
+    }else showToast("LOW AMMO","Find a supply pack or switch tactics.","red");
+    return false
+  }
+  d=attackDirection(p,d);p.dir=d;
+  const dirs=weaponDirections(p,d).slice(0,Math.max(1,max-active));
+  if(!dirs.length)return false;
+  p.mana-=ammoCost;
+  p.ammoFlashMs=C.player.ammoFlashMs;
+  p._fireAnimAt=performance.now();
+  p._fireAnimMs=Math.max(120,Math.min(260,Number((p.rapidMs>0?88:C.player.fireDelay)*(w.delay||1))||180));
+  run.alert=Math.min(100,run.alert+1.8);
+  const delay=(p.rapidMs>0?88:C.player.fireDelay)*(w.delay||1);
+  if(isP2)fire2=delay;else fire1=delay;
+  for(const z of dirs){
+    const b={id:`${p.id}-${Date.now()}-${Math.random()}`,owner:p.id,ownerName:p.name,x:p.x,y:p.y,dx:z.x,dy:z.y,ttl:w.ttl||18,power:(w.power||1)+(p.damageBonus||0),pierce:w.pierce||0,element:w.element||"energy",style:w.id||"pulse"};
+    spawnBullet(b,false);
+    if(playMode==="online"&&p===p1)net.send("shot",b)
+  }
+  S.sfx("fire");muzzle(p.x,p.y,d);sync();
+  return true
 }
 function spawnBullet(b,remoteShot){if(b)bullets.push({...b,remote:!!remoteShot})}
 function spawnEnemyShot(b){if(!b)return;enemyBullets.push({...b,ttl:Number(b.ttl||14)});const col=b.style==="fire"?P.orange:b.style==="root"?P.green:b.style==="shock"?P.cyan:P.red;for(let i=0;i<9;i++)particles.push({x:b.x*C.tile+C.tile/2,y:b.y*C.tile+C.tile/2,vx:(b.dx||0)*(1+Math.random()*2)+(Math.random()-.5)*1.4,vy:(b.dy||0)*(1+Math.random()*2)+(Math.random()-.5)*1.4,life:150+Math.random()*180,col,size:1.5+Math.random()*2.5,drag:.93,glow:8});if(localPlayers().some(p=>md(b,p)<9))S.sfx(b.style==="food"?"food":b.style==="fire"?"flame":"enemy")}
@@ -227,7 +300,8 @@ function releaseSealedDeathRoom(roomId){
   return true
 }
 function hurtPlayer(p,n,friendly=false,source="enemy"){
-  if(!p||p.invuln>0||mode!=="playing")return;const damageAt=performance.now(),damageSource=String(source||"enemy");p.__ccgLastHurtAt=damageAt;p.__ccgLastDamageAt=damageAt;p.__ccgLastDamageSource=damageSource;try{dispatchEvent(new CustomEvent("ccg:player-damage",{detail:{playerId:String(p.id||p.name||"P1"),source:damageSource,x:Number(p.x),y:Number(p.y),at:damageAt}}))}catch(_){}p.hitStunMs=Math.max(p.hitStunMs||0,C.player.hitStunMs||180);let left=n;if(p.armor>0){const a=Math.min(p.armor,left);p.armor-=a;left-=a;if(a){S.sfx("armour");floatText(p.x,p.y,"ARMOUR",P.cyan)}}if(left<=0){p.invuln=350;sync();return}
+  const trapDamage=/trap/i.test(String(source||""));
+  if(!p||mode!=="playing"||(!trapDamage&&p.invuln>0))return false;const damageAt=performance.now(),damageSource=String(source||"enemy");p.__ccgLastHurtAt=damageAt;p.__ccgLastDamageAt=damageAt;p.__ccgLastDamageSource=damageSource;try{dispatchEvent(new CustomEvent("ccg:player-damage",{detail:{playerId:String(p.id||p.name||"P1"),source:damageSource,x:Number(p.x),y:Number(p.y),at:damageAt}}))}catch(_){}p.hitStunMs=Math.max(p.hitStunMs||0,C.player.hitStunMs||180);let left=n;if(!trapDamage&&p.armor>0){const a=Math.min(p.armor,left);p.armor-=a;left-=a;if(a){S.sfx("armour");floatText(p.x,p.y,"ARMOUR",P.cyan)}}if(left<=0){p.invuln=350;sync();return}
   p.health-=left;p.hpBarMs=3000;run.stats.damageTaken+=left;if(friendly)run.stats.friendlyFire+=left;p.invuln=800;shake=10;damageFlash=.5;S.sfx("hurt");burst(p.x,p.y,P.red,16,1.4);ring(p.x,p.y,P.red,30);
   if(friendly){showToast("FRIENDLY FIRE",`${source} just shot a team-mate. The monsters are delighted.`,"red");say("<strong>FRIENDLY FIRE.</strong> Try pointing the dangerous end elsewhere.","red")}
   if(p.health<=0){
@@ -373,7 +447,7 @@ function update(dt){
   if(move1<=0){const d=d1();if(d){movePlayer(p1,d.x,d.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}if(p2&&move2<=0){const d=d2();if(d){movePlayer(p2,d.x,d.y);move2=C.player.moveDelay*(p2.moveMultiplier||1)}}
   if((input.has("Space")||fireBuffer1>0)&&fire1<=0){firePlayer(p1,attackDirection(p1,d1()));if(fire1>0)fireBuffer1=0}if(p2&&(input.has("Enter")||fireBuffer2>0)&&fire2<=0){firePlayer(p2,attackDirection(p2,d2()));if(fire2>0)fireBuffer2=0}
   if(projectileCD<=0){stepProjectiles();projectileCD=70}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendPlayer();sendCD=100}if(worldCD<=0&&net.isHost){broadcastWorld();worldCD=350}
-  window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.updateTrapContacts?.("simulation");
+  updateActiveTrapContacts();
   updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBoulder(dt);updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
   if(surroundCD<=0){surroundingsTick();surroundCD=20000}inventoryReminderMs-=dt;if(inventoryReminderMs<=0){inventoryReminderMs=300000;showToast("DON'T FORGET TO HIT TAB TO CHECK YOUR INVENTORY","TAB ALSO EXPLAINS ARTEFACTS, THE BANISHMENT FLASK AND YOUR CURRENT OBJECTIVE.","cyan",8000)}
   const seen=host.enemies.filter(e=>e.alive&&e.aiState==="chase"&&localPlayers().some(p=>visibleTo(p,e.x,e.y))).length;S.setDanger(Math.min(1,(seen+run.alert/45)/4));updateNamedEncounters();
