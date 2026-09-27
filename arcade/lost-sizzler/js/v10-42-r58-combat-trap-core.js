@@ -12,7 +12,8 @@
   const runActive=()=>document.body?.dataset?.runActive==="true";
   const playing=()=>{try{return String(mode)==="playing"}catch(_){return false}};
   const ordinaryDungeon=()=>runActive()&&playing()&&!SPECIAL_BLOCK.has(specialType());
-  const isPlayer2=p=>{try{return Boolean(p2)&&p===p2}catch(_){return false}};\n  const playerId=p=>String(p?.id||p?.name||(isPlayer2(p)?"P2":"P1"));
+  const isPlayer2=p=>{try{return Boolean(p2)&&p===p2}catch(_){return false}};
+  const playerId=p=>String(p?.id||p?.name||(isPlayer2(p)?"P2":"P1"));
   const trapId=t=>String(t?.id||`${t?.x},${t?.y}`);
   const worldKey=()=>{try{return `${String(run?.seed||"run")}|F${Math.max(1,Number(run?.floor||1))}`}catch(_){return"run|F1"}};
   const contactKey=(p,t)=>`${worldKey()}|${playerId(p)}|${trapId(t)}`;
