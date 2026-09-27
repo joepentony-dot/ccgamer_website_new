@@ -1,3 +1,11 @@
+## R58 current-main reconciliation checkpoint — 27 September 2026
+
+- Authoritative PR: #2361, branch `codex/dungeon-r58-verified-trap-damage-20260925`.
+- The stale 72-ahead/89-behind ancestry was flattened safely in place after proving zero file overlap between R58's 34 owned paths and the 300 paths changed on newer main.
+- Current-main base at reconciliation: `ce125d8e6586c332cc1b9ee2eebc0d9c72697c23`; reconciled candidate before this documentation checkpoint: `6c5c48314a9cd89492bf4785d2d629fe4a1b4ad7`.
+- Focused Chromium retry passed unchanged. The previously failing dash path already reduced HEALTH by exactly one and preserved armour; the timeout was in observer evidence rather than the gameplay damage assertion.
+- The dedicated hazard-room regression now passes. Fresh full exact-head qualification remains the merge gate, followed by deployed hands-on sustained FIRE plus natural FIRE/SPIKE/SHOCK acceptance.
+
 ## R58 verified ordinary-trap health ownership — 25 September 2026
 
 - R57 FIRE repair is merged on main at `1e9ced56d538f535b846e495d4baf5e02fe470a5`; its exact-head full qualification passed. Deployed hands-on FIRE confirmation remains required.

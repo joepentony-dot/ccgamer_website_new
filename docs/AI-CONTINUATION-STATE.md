@@ -1,3 +1,11 @@
+## Dungeon R58 current-main reconciliation — 27 September 2026
+
+- PR #2361 remains the authoritative trap-health candidate and has been reconciled in place onto current main `ce125d8e6586c332cc1b9ee2eebc0d9c72697c23`.
+- Reconciled exact head before this documentation checkpoint: `6c5c48314a9cd89492bf4785d2d629fe4a1b4ad7`; the PR is one commit ahead, zero behind, mergeable, and contains only its 34 intended Dungeon/runtime/test/documentation paths.
+- Safety comparison from the previous merge base proved zero path overlap between those 34 R58-owned files and the 300 files changed by newer main, so the in-place reconciliation preserved newer Lighthouse/PWA/site work.
+- The earlier dedicated-hazard-room failure is fixed. Standard real-movement FIRE/SPIKE/SHOCK crossings and the two-tile dash fixture each demonstrate exactly one HEALTH loss with armour preserved.
+- The prior dash diagnostic wait passed unchanged in the focused Chromium retry, so no gameplay assertion or timeout was weakened. Fresh exact-head qualification on the reconciled head is mandatory before merge; deployed hands-on trap and sustained FIRE acceptance remains required afterward.
+
 ## Generated-output custom-domain navigation handoff — 25 September 2026
 
 - #2355 is merged and its real generated-output follow-through produced #2356 / `b3b9a22b5ebb1bcb4f461cf2970273d38d9ba6fe`. The new explicit Omega deployment dispatch worked and deployed successfully.
