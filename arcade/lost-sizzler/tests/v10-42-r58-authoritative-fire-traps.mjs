@@ -47,7 +47,7 @@ assert.match(play,/const healthLost=afterHealth<beforeHealth,deathRecorded=after
 assert.match(play,/if\(!verified\)\{p\.invuln=beforeInvuln;authoritativeTrapState\.damageRetries\+\+;return false\}[\s\S]*trapCycleHits\.set\(key,cycle\)/,"failed trap contacts must restore prior invulnerability, remain retryable and unconsumed");
 assert.match(play,/beforeInvuln=Math\.max\(0,Number\(p\.invuln\|\|0\)\)[\s\S]*p\.invuln=0;[\s\S]*authoritativeDamagePlayer\(p,1,false,/,"validated active trap contacts must bypass unrelated pre-existing player invulnerability at the canonical owner");
 assert.match(play,/p\.invuln=Math\.max\(beforeInvuln,Math\.max\(0,Number\(p\.invuln\|\|0\)\)\)/,"a successful trap hit must preserve the stronger of prior and newly granted post-hit protection");
-assert.match(play,/const trapDamage=\/trap\/i\.test/,"canonical damage owner must identify trap-attributed damage itself");
+assert.match(play,/const damageSource=String\(source\|\|"enemy"\),trapDamage=\/trap\/i\.test\(damageSource\)/,"canonical damage owner must derive trap attribution directly from the canonical damage source");
 assert.match(play,/!trapDamage&&p\.armor>0/,"trap damage must preserve armour while non-trap damage retains armour semantics");
 assert.match(play,/updateActiveTrapContacts\(\);/,"the gameplay simulation must own trap contact checks");
 assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeTrapCore=authoritativeTrapApi/);
