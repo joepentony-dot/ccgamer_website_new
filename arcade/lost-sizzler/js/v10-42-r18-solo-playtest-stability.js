@@ -86,13 +86,8 @@
     return changed;
   }
 
-  try{
-    if(typeof hurtPlayer==="function"&&!hurtPlayer.__ccgV142R18){
-      const baseHurtPlayer=hurtPlayer;
-      hurtPlayer=function(player,...args){repairPlayer(player);return baseHurtPlayer(player,...args)};
-      hurtPlayer.__ccgV142R18=true;hurtPlayer.__ccgOriginal=baseHurtPlayer;
-    }
-  }catch(_){}
+  // r58 owns the canonical player-damage boundary. R18 may repair players through
+  // its maintenance pass, but it must not wrap hurtPlayer or become part of trap ownership.
 
   try{
     const ai=window.CCGAI;
