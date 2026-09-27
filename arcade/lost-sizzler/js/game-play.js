@@ -359,8 +359,8 @@ function releaseSealedDeathRoom(roomId){
   return true
 }
 function hurtPlayer(p,n,friendly=false,source="enemy"){
-  const trapDamage=/trap/i.test(String(source||""));
-  if(!p||mode!=="playing"||(!trapDamage&&p.invuln>0))return false;const damageAt=performance.now(),damageSource=String(source||"enemy");p.__ccgLastHurtAt=damageAt;p.__ccgLastDamageAt=damageAt;p.__ccgLastDamageSource=damageSource;try{dispatchEvent(new CustomEvent("ccg:player-damage",{detail:{playerId:String(p.id||p.name||"P1"),source:damageSource,x:Number(p.x),y:Number(p.y),at:damageAt}}))}catch(_){}p.hitStunMs=Math.max(p.hitStunMs||0,C.player.hitStunMs||180);let left=n;if(!trapDamage&&p.armor>0){const a=Math.min(p.armor,left);p.armor-=a;left-=a;if(a){S.sfx("armour");floatText(p.x,p.y,"ARMOUR",P.cyan)}}if(left<=0){p.invuln=350;sync();return}
+  const damageSource=String(source||"enemy"),trapDamage=/trap/i.test(damageSource),environmentDamage=trapDamage||/anti[- ]loitering blast/i.test(damageSource);
+  if(!p||mode!=="playing"||(!environmentDamage&&p.invuln>0))return false;const damageAt=performance.now();p.__ccgLastHurtAt=damageAt;p.__ccgLastDamageAt=damageAt;p.__ccgLastDamageSource=damageSource;try{dispatchEvent(new CustomEvent("ccg:player-damage",{detail:{playerId:String(p.id||p.name||"P1"),source:damageSource,x:Number(p.x),y:Number(p.y),at:damageAt}}))}catch(_){}p.hitStunMs=Math.max(p.hitStunMs||0,C.player.hitStunMs||180);let left=n;if(!trapDamage&&p.armor>0){const a=Math.min(p.armor,left);p.armor-=a;left-=a;if(a){S.sfx("armour");floatText(p.x,p.y,"ARMOUR",P.cyan)}}if(left<=0){p.invuln=350;sync();return}
   p.health-=left;p.hpBarMs=3000;run.stats.damageTaken+=left;if(friendly)run.stats.friendlyFire+=left;p.invuln=800;shake=10;damageFlash=.5;S.sfx("hurt");burst(p.x,p.y,P.red,16,1.4);ring(p.x,p.y,P.red,30);
   if(friendly){showToast("FRIENDLY FIRE",`${source} just shot a team-mate. The monsters are delighted.`,"red");say("<strong>FRIENDLY FIRE.</strong> Try pointing the dangerous end elsewhere.","red")}
   if(p.health<=0){
