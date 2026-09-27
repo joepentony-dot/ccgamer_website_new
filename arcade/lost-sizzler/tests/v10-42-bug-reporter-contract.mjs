@@ -57,6 +57,8 @@ assert.match(reporter,/CCGLostSizzlerV141R57DesktopPrepStability/,"trap report m
 assert.match(reporter,/__ccgV141R60EnvironmentSeal/,"trap report must expose the retained R60 environmental damage owner");
 assert.match(reporter,/__ccgV142R18/,"trap report must expose the later R18 damage wrapper");
 assert.match(reporter,/owners:\{hurtPlayer:ownerChain\(window\.hurtPlayer\),triggerTrap:ownerChain\(window\.triggerTrap\)\}/,"trap report must capture live hurt/trigger ownership chains");
+assert.match(reporter,/const r19Counters=r19\?\{[\s\S]*trapHits:Number\(r19\.trapHits\|\|0\)[\s\S]*monitorPasses:Number\(r19\.monitorPasses\|\|0\)/,"trap diagnostics must snapshot bounded R19 counters instead of recursively serialising reporter-linked state");
+assert.doesNotMatch(reporter,/r19:compact\(safe\(\(\)=>window\.CCGLostSizzlerV142R19MobileTrapLayoutStability\?\.state/,"trap diagnostics must not recursively compact the complete R19 state");
 assert.match(reporter,/fire1:/);
 assert.match(reporter,/fireBuffer1:/);
 assert.match(reporter,/activeProjectiles/);

@@ -177,6 +177,21 @@
   function trapOwnerSnapshot(player,trap,stamp=performance.now()){
     const rare=window.CCGLostSizzlerRareEventsBalance?.trapRuntime||null;
     const contactKey=trapContactKey(player,trap),cycleKey=trapCycleKey(player,trap),clock=trapClock(trap,stamp);
+    const r19=safe(()=>window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||null,null);
+    const r19Counters=r19?{
+      trapHits:Number(r19.trapHits||0),
+      trapHitsByKind:compact(r19.trapHitsByKind||{}),
+      trapContactBlocks:Number(r19.trapContactBlocks||0),
+      trapProtectionBlocks:Number(r19.trapProtectionBlocks||0),
+      damageOwnerInstalls:Number(r19.damageOwnerInstalls||0),
+      trapTriggerOwnerInstalls:Number(r19.trapTriggerOwnerInstalls||0),
+      directTrapRepairs:Number(r19.directTrapRepairs||0),
+      damageRetries:Number(r19.damageRetries||0),
+      rearms:Number(r19.rearms||0),
+      cycleRearms:Number(r19.cycleRearms||0),
+      simulationPasses:Number(r19.simulationPasses||0),
+      monitorPasses:Number(r19.monitorPasses||0)
+    }:null;
     return{
       trap:{id:trapId(trap),kind:String(trap?.kind||"floor"),x:Number(trap?.x),y:Number(trap?.y),activeFlag:trap?.active!==false,...clock},
       player:{id:trapPlayerId(player),x:Number(player?.x),y:Number(player?.y),health:Number(player?.health),armor:Number(player?.armor||0),invuln:Number(player?.invuln||0),hitStunMs:Number(player?.hitStunMs||0),lastHurtAt:Number(player?.__ccgLastHurtAt||0)},
@@ -185,7 +200,7 @@
         r56Cycle:safe(()=>window.CCGLostSizzlerV141R56PlaytestCompletion?.state?.trapCycles?.get?.(cycleKey)??null,null),
         r57Cycle:safe(()=>window.CCGLostSizzlerV141R57DesktopPrepStability?.state?.trapCycles?.get?.(cycleKey)??null,null)
       },
-      r19:compact(safe(()=>window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||null,null)),
+      r19:r19Counters,
       owners:{hurtPlayer:ownerChain(window.hurtPlayer),triggerTrap:ownerChain(window.triggerTrap)}
     };
   }
