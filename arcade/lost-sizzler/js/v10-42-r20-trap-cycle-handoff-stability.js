@@ -7,6 +7,7 @@
   const state={r56Wraps:0,r57Wraps:0,rearmPasses:0};
 
   function rearmBeforeCycle(){
+    const core=window.CCGLostSizzlerV142R58CombatTrapCore;if(core){const result=core.rearmTrapContacts();if(result!==false)state.rearmPasses++;return result}
     const r19=window.CCGLostSizzlerV142R19MobileTrapLayoutStability;
     if(typeof r19?.rearmInactiveTrapContacts!=="function")return false;
     const result=r19.rearmInactiveTrapContacts();
