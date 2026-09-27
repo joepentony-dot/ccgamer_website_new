@@ -115,15 +115,15 @@ function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
      adoption can replace that wrapper before a Solo run starts. Dedicated
      hazards and all three ordinary trap families are generated-floor invariants,
      so reconcile them independently at the final world-start boundary. */
-  const stage6=window.CCGLostSizzlerV142Stage6ZoneGameplay||null;
+  const stage6=window.CCGLostSizzlerV142Stage6ZoneGameplay||null,stage6Run=run||PGR.makeRun();
   const hasUsableHazard=()=>Boolean((host.hazardRooms||[]).some(hazard=>stage6?.usableDedicatedHazard?.(hazard)??(Array.isArray(hazard?.cells)&&hazard.cells.length>0)));
-  if(!hasUsableHazard()&&!(host.hazardRooms||[]).some(hazard=>hazard?.v142WardenCleansed===true)){
-    try{stage6?.applyZoneGameplay?.(world,host,run||PGR.makeRun())}catch(error){console.error("[Dungeon Carnage] dedicated hazard reconciliation failed",error)}
-  }
   try{
-    const floor=Math.max(1,Number(run?.floor||1)),profile=stage6?.profileForFloor?.(floor);
-    if(profile)stage6?.reconcileTrapFamilies?.(host,String(run?.seed||"CCG"),world,{...profile,floor});
-  }catch(error){console.error("[Dungeon Carnage] ordinary trap-family reconciliation failed",error)}
+    const floor=Math.max(1,Number(stage6Run?.floor||1)),profile=stage6?.profileForFloor?.(floor),seed=String(stage6Run?.seed||"CCG");
+    if(!hasUsableHazard()&&!(host.hazardRooms||[]).some(hazard=>hazard?.v142WardenCleansed===true)){
+      stage6?.ensureDedicatedHazard?.(world,host,stage6Run,profile,seed);
+    }
+    if(profile)stage6?.reconcileTrapFamilies?.(host,seed,world,{...profile,floor});
+  }catch(error){console.error("[Dungeon Carnage] final hazard/trap reconciliation failed",error)}
   p1=old1?preservePlayer(old1,world.start.x,world.start.y):makePlayer(net.sessionId,playerName(),world.start.x,world.start.y);p2=null;if(split||old2){const q=nearbyOpen(world.start.x+2,world.start.y,[p1]);p2=old2?preservePlayer(old2,q.x,q.y):makePlayer("LOCAL-P2","PLAYER 2",q.x,q.y)}
   remote.clear();enemyVisuals.clear();bullets.length=enemyBullets.length=particles.length=rings.length=floaters.length=hazards.length=0;pendingItems.clear();cameras.clear();explored.clear();campStates.clear();roomVisits.clear();playerTrails.clear();questDone.clear();toastQueue.length=0;toastTimer=0;stats.games=stats.elites=stats.doors=stats.weapons=stats.secrets=stats.generators=0;shake=damageFlash=0;move1=move2=fire1=fire2=fireBuffer1=fireBuffer2=0;specialCD=0;inventoryReminderMs=300000;
   host.worldRef=world;host.enteredRoomIds=[];for(const p of localPlayers()){resetCamp(p);reveal(p);if(checkpointRestore){const rid=W.roomAt(world,p.x,p.y),set=new Set();if(rid>=0){set.add(rid);host.enteredRoomIds.push(rid)}roomVisits.set(p.id,set)}else markRoomVisit(p);rememberTrail(p);updateRoomMessage(p,true)}levelQueue.length=0;for(const p of localPlayers())rememberPendingLevelChoice(p);A.stageUnenteredEnemies?.(host,world);sync();
