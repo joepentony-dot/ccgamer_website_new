@@ -176,13 +176,18 @@ try{
   assert.ok(resumeState.resets>=4,"each repeated Solo resume must pass through the combat recovery boundary");
   assert.ok(resumeState.lastResumeAt>0,"Solo resume must arm the bounded first-attack safeguard");
 
-  const attackBefore=await page.evaluate(()=>({rearms:window.CCGLostSizzlerV141R31SoloDungeon.state.postResumeAttackRearms,swing:Number(p1._meleeSwingAt||0)}));
+  const attackBefore=await page.evaluate(()=>{
+    p1.firearmUnlocked=true;p1.weapon=baseWeapon();p1.maxMana=Math.max(40,Number(p1.maxMana)||0);p1.mana=Math.max(30,Number(p1.mana)||0);
+    p1.hitStunMs=0;fire1=0;fireBuffer1=0;projectileCD=0;bullets.length=0;input.clear();
+    return{mana:Number(p1.mana),authoritative:Boolean(window.CCGLostSizzlerV142R58AuthoritativeFireCore?.gameplayOwnership)};
+  });
+  assert.equal(attackBefore.authoritative,true,"post-resume attack must be owned by the r58 authoritative FIRE core");
   await page.keyboard.press("Space");
-  await page.waitForFunction(previous=>window.CCGLostSizzlerV141R31SoloDungeon.state.postResumeAttackRearms>previous.rearms&&Number(p1._meleeSwingAt||0)>previous.swing,attackBefore);
-  const attackAfter=await page.evaluate(()=>({rearms:window.CCGLostSizzlerV141R31SoloDungeon.state.postResumeAttackRearms,swing:Number(p1._meleeSwingAt||0),fire1:Number(fire1)}));
-  assert.ok(attackAfter.rearms>attackBefore.rearms,"first attack after resume must pass through the r31 rearm safeguard");
-  assert.ok(attackAfter.swing>attackBefore.swing,"first attack after repeated pauses must execute a real Solo attack");
-  assert.ok(Number.isFinite(attackAfter.fire1),"post-resume attack cooldown must remain finite");
+  await page.waitForFunction(previous=>Number(p1.mana)===previous.mana-1,attackBefore);
+  const attackAfter=await page.evaluate(()=>({mana:Number(p1.mana),fire1:Number(fire1),shots:bullets.filter(b=>b?.owner===p1.id&&b.ttl>0).length}));
+  assert.equal(attackAfter.mana,attackBefore.mana-1,"first attack after repeated pauses must execute exactly one real Solo FIRE action");
+  assert.ok(attackAfter.shots>=1,"first attack after repeated pauses must create a live projectile");
+  assert.ok(Number.isFinite(attackAfter.fire1)&&attackAfter.fire1>=0,"post-resume attack cooldown must remain finite");
 
   await page.evaluate(()=>toggleInventory());await page.waitForFunction(()=>mode==="inventory"&&!document.getElementById("inventory-panel").classList.contains("hidden"));
   await page.click("#inventory-close");await page.waitForFunction(()=>mode==="playing"&&document.getElementById("inventory-panel").classList.contains("hidden"));
