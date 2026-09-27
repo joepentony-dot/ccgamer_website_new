@@ -45,13 +45,13 @@ assert.match(render,/ctx\.createLinearGradient\(3,-4,24,4\)/,"the equipped sword
 assert.match(render,/drawPlayerWeapon\(p,cx,cy,d\);/,"every player render must draw the current firearm or sword");
 assert.match(play,/const ATTACK_BUFFER_MS=700/,"quick fire taps must remain buffered through the longest melee cooldown");
 assert.match(play,/function queueAttack\(p,requestedDirection=null\)[\s\S]*fireBuffer2=ATTACK_BUFFER_MS;else fireBuffer1=ATTACK_BUFFER_MS/,"keyboard, touch and cadence-blocked gamepad attacks must share the authoritative one-shot input buffer");
-assert.match(play,/input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\|\|fireBuffer1>0[\s\S]*?firePlayer\(p1,attackDirection\(p1,d1\(\)\)\)/,"holding or tapping either desktop FIRE key must attack at the weapon cooldown in the movement direction or last facing direction");
+assert.match(play,/const p1HeldAttack=isAttackHeldInput\(p1\)&&\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\)[\s\S]*?if\(\(p1HeldAttack\|\|fireBuffer1>0\)&&fire1<=0\)[\s\S]*?firePlayer\(p1,attackDirection\(p1,d1\(\)\)\)/,"desktop FIRE must execute one buffered tap and repeat only after held-input ownership is explicitly qualified");
 assert.match(play,/const firePressed=Boolean\(gp\.buttons\?\.\[0\]\?\.pressed\)[\s\S]*const direction=attackDirection\(p1,dir\)[\s\S]*if\(!gamepadFireDown\)\{[\s\S]*if\(!attackNowUnbuffered\(p1,direction\)\)queueAttack\(p1,direction\)[\s\S]*else if\(fire1<=0\)attackNowUnbuffered\(p1,direction\)/,"joystick FIRE must use the authoritative direct owner for the initial press, buffer only when cadence blocks it, and route held repeats through the same core");
 assert.doesNotMatch(play,/const recovery=window\.CCGLostSizzlerV142R20LiveRegressionStability/,"gamepad FIRE must not depend on a historical recovery owner");
 assert.match(play,/const source=requested&&\(requested\.x\|\|requested\.y\)\?requested:p\?\.dir/,"stationary attacks must fall back to the player's facing direction");
 assert.match(touch,/queueAttack\(p1\)/,"a quick touch FIRE tap must not be lost between animation frames");
-assert.match(touch,/input\.add\("Space"\)/,"holding the touch FIRE button must use the same repeat-fire state as the keyboard");
-assert.match(touch,/input\.delete\("Space"\)/,"releasing touch FIRE must stop repeated attacks");
+assert.match(touch,/input\.add\("Space"\)[\s\S]*setAttackHeldInput\(p1,true\)/,"holding touch FIRE must claim the same qualified repeat-fire ownership as the authoritative core");
+assert.match(touch,/input\.delete\("Space"\)[\s\S]*setAttackHeldInput\(p1,false\)/,"releasing touch FIRE must release both canonical Space and qualified held-FIRE ownership");
 assert.doesNotMatch(touch,/setInterval\(fireOnce/ ,"touch FIRE must not run a competing interval that can make combat jitter");
 assert.doesNotMatch(read("js/game-core.js"),/potion:\"[^\"]*8 ammo/i,"item help must not claim that restoration potions replenish ammunition");
 assert.doesNotMatch(render,/POTION\",\"E: heal \+ ammo\"/,"the rendered pickup guide must describe the current health-only potion behaviour");
