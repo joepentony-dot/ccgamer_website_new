@@ -13,7 +13,10 @@ const cache="20260927r58";
 
 assert.match(play,/authoritativeDamagePlayer\(p,1,false,`\$\{hazard\.title\|\|"hazard chamber"\} trap`\)/,"dedicated hazard rooms must continue identifying damage as trap-attributed damage through the guarded R58 boundary");
 assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeFireCore=authoritativeFireApi/,"r58 core must be the supported FIRE authority");
-assert.match(play,/function queueAttack\(p,requestedDirection=null\)[\s\S]*firePlayer\(p,attackDirection\(p,requestedDirection\)\)/,"attack intent must enter one authoritative queue/fire path");
+const queueBlock=play.match(/function queueAttack\(p,requestedDirection=null\)\{[\s\S]*?\n\}/)?.[0]||"";
+assert.match(queueBlock,/fireBuffer2=ATTACK_BUFFER_MS;else fireBuffer1=ATTACK_BUFFER_MS/,"attack intent must enter the authoritative buffer");
+assert.doesNotMatch(queueBlock,/firePlayer\(/,"input queue must not create projectiles directly");
+assert.match(play,/if\(\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\|\|fireBuffer1>0\)&&fire1<=0\)\{const fired=firePlayer\(p1,/,"the simulation loop must be the single P1 FIRE execution owner");
 assert.doesNotMatch(bootstrap,/v10-42-attack-hold-liveness\.js|v10-42-r47-inventory-fire-recovery\.js/,"historical FIRE recovery modules must not load");
 assert.match(r20,/fireOwnership:false/,"retained R20 live safeguards must explicitly disclaim FIRE ownership");
 assert.doesNotMatch(r20,/function attackNow\(|recoverThroughDeepFireOwner|recoverThroughCapturedR1FireOwner/,"retained R20 must not provide fallback shot ownership");
