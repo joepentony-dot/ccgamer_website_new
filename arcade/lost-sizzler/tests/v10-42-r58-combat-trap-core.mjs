@@ -11,6 +11,7 @@ const r56=fs.readFileSync(new URL("../lost-sizzler/js/v10-41-r56-playtest-comple
 const r57=fs.readFileSync(new URL("../lost-sizzler/js/v10-41-r57-desktop-prep-stability.js",root),"utf8");
 const hold=fs.readFileSync(new URL("js/v10-42-attack-hold-liveness.js",root),"utf8");
 const inventory=fs.readFileSync(new URL("js/v10-42-r47-inventory-fire-recovery.js",root),"utf8");
+const rareBalance=fs.readFileSync(new URL("js/v10-15-rare-events-balance.js",root),"utf8");
 
 assert.match(bootstrap,/v10-42-r58-combat-trap-core\.js/,"ordered bootstrap must load the authoritative FIRE/trap core");
 assert.ok(bootstrap.indexOf("v10-42-r58-combat-trap-core.js")<bootstrap.indexOf("v10-42-bug-reporter.js"),"core must own gameplay before observation-only reporting loads");
@@ -28,6 +29,7 @@ assert.match(core,/Number\(p\.mana\|\|0\)<1/,"FIRE must keep the ammunition guar
 assert.match(core,/fireBuffer1=Math\.max\(Number\(fireBuffer1\|\|0\),ATTACK_BUFFER_MS\)/,"finite cooldown attack intents must use one bounded buffer");
 assert.doesNotMatch(core,/recoverThroughDeepFireOwner|recoverThroughCapturedR1FireOwner|deepestFireOwner/,"new FIRE core must not traverse legacy FIRE owner chains");
 
+assert.match(rareBalance,/CCGLostSizzlerV142R58CombatTrapCore;if\(core\).*core\.updateTrapContacts\("v115"\)/s,"legacy rare-event trap runtime must delegate to the new core instead of applying direct trap damage");
 assert.match(r19,/CCGLostSizzlerV142R58CombatTrapCore;if\(core\)return core\.applyTrapDamage/,"R19 damage compatibility must delegate to the new trap core");
 assert.match(r19,/if\(window\.CCGLostSizzlerV142R58CombatTrapCore\)return true;[\s\S]*const current=window\.hurtPlayer/,"R19 must stop installing trap hurtPlayer ownership after the new core exists");
 assert.match(r56,/CCGLostSizzlerV142R58CombatTrapCore;if\(core\)return core\.updateTrapContacts\("r56"\)/,"R56 trap cycle must delegate to the new core");
