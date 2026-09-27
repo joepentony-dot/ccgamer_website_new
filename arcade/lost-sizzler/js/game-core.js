@@ -124,6 +124,29 @@ function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
       stage6?.ensureDedicatedHazard?.(world,host,stage6Run,profile,seed);
     }
     if(profile)stage6?.reconcileTrapFamilies?.(host,seed,world,{...profile,floor});
+    if(!hasUsableHazard()&&!(host.hazardRooms||[]).some(hazard=>hazard?.v142WardenCleansed===true)){
+      const rooms=[...(world?.rooms||[])],ordered=[
+        ...rooms.filter(room=>room&&room.dedicatedHazardReserved&&room.id!==world.startRoomId&&room.id!==world.exitRoomId),
+        ...rooms.filter(room=>room&&room.id!==world.startRoomId&&room.id!==world.exitRoomId),
+        ...rooms.filter(room=>room&&room.id===world.exitRoomId)
+      ];
+      let chosen=null,cells=[];
+      for(const room of ordered){
+        const found=[];
+        for(let y=Number(room.y);y<=Number(room.y)+Number(room.h);y++)for(let x=Number(room.x);x<=Number(room.x)+Number(room.w);x++){
+          if(world?.map?.[y]?.[x]===0)found.push({x,y,group:0})
+        }
+        if(found.length){chosen=room;cells=found;break}
+      }
+      if(chosen&&cells.length){
+        host.hazardRooms=host.hazardRooms||[];
+        host.hazardRooms.push({
+          id:`hazard-${floor}-startworld-fallback`,roomId:chosen.id,type:"embers",cells,groups:2,
+          period:2550,warningMs:700,activeMs:760,phase:0,title:"EMBER-TILE VAULT",v142StartWorldFallback:true
+        });
+        chosen.dedicatedHazard=true;chosen.dedicatedHazardReserved=true;chosen.hazardType="embers";chosen.dangerous=true
+      }
+    }
   }catch(error){console.error("[Dungeon Carnage] final hazard/trap reconciliation failed",error)}
   p1=old1?preservePlayer(old1,world.start.x,world.start.y):makePlayer(net.sessionId,playerName(),world.start.x,world.start.y);p2=null;if(split||old2){const q=nearbyOpen(world.start.x+2,world.start.y,[p1]);p2=old2?preservePlayer(old2,q.x,q.y):makePlayer("LOCAL-P2","PLAYER 2",q.x,q.y)}
   remote.clear();enemyVisuals.clear();bullets.length=enemyBullets.length=particles.length=rings.length=floaters.length=hazards.length=0;pendingItems.clear();cameras.clear();explored.clear();campStates.clear();roomVisits.clear();playerTrails.clear();questDone.clear();toastQueue.length=0;toastTimer=0;stats.games=stats.elites=stats.doors=stats.weapons=stats.secrets=stats.generators=0;shake=damageFlash=0;move1=move2=fire1=fire2=fireBuffer1=fireBuffer2=0;specialCD=0;inventoryReminderMs=300000;
