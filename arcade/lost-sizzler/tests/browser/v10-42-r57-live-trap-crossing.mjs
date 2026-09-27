@@ -116,6 +116,42 @@ try{
     await page.waitForTimeout(90);
   }
 
+  const protectedCrossing=await page.evaluate(()=>globalThis.eval(`(()=>{
+    const api=window.CCGLostSizzlerV142R58AuthoritativeTrapCore;
+    const trap=(host?.traps||[]).find(t=>t?.active&&String(t.kind||"").toLowerCase()==="fire");
+    if(!api||!trap)return{available:false,reason:"canonical FIRE trap unavailable"};
+    const candidates=[
+      {x:Number(trap.x)-1,y:Number(trap.y),dx:1,dy:0},
+      {x:Number(trap.x)+1,y:Number(trap.y),dx:-1,dy:0},
+      {x:Number(trap.x),y:Number(trap.y)-1,dx:0,dy:1},
+      {x:Number(trap.x),y:Number(trap.y)+1,dx:0,dy:-1}
+    ];
+    const entry=candidates.find(q=>W.walkable(world.map,q.x,q.y,host)&&!(host.enemies||[]).some(e=>e?.alive&&e.x===q.x&&e.y===q.y));
+    if(!entry)return{available:false,reason:"no walkable FIRE entry"};
+    for(const enemy of host?.enemies||[])enemy.alive=false;
+    if(host?.stalker)host.stalker.awake=false;
+    const original={period:Number(trap.period),phase:Number(trap.phase)};
+    p1.x=entry.x;p1.y=entry.y;p1.rx=p1.x;p1.ry=p1.y;
+    p1.maxHealth=Math.max(20,Number(p1.maxHealth||8));p1.health=20;p1.armor=4;p1.invuln=650;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
+    move1=0;input.clear();
+    const period=100000,now=performance.now();
+    trap.period=period;trap.phase=((period*.10)-(now%period)+period)%period;
+    api.rearmInactiveTrapContacts();
+    const before={health:Number(p1.health),armor:Number(p1.armor),invuln:Number(p1.invuln||0),hits:Number(api.state.trapHits||0)};
+    movePlayer(p1,entry.dx,entry.dy,false);
+    const after={health:Number(p1.health),armor:Number(p1.armor),invuln:Number(p1.invuln||0),hits:Number(api.state.trapHits||0),x:Number(p1.x),y:Number(p1.y)};
+    trap.period=original.period;trap.phase=original.phase;
+    p1.x=world.start.x;p1.y=world.start.y;p1.rx=p1.x;p1.ry=p1.y;p1.invuln=0;p1.hitStunMs=0;
+    api.rearmInactiveTrapContacts();
+    return{available:true,target:{x:Number(trap.x),y:Number(trap.y)},before,after};
+  })()`));
+  assert.equal(protectedCrossing.available,true,"pre-invulnerable FIRE crossing fixture must be available: "+JSON.stringify(protectedCrossing));
+  assert.deepEqual({x:protectedCrossing.after.x,y:protectedCrossing.after.y},protectedCrossing.target,"player must physically cross onto the ACTIVE FIRE trap");
+  assert.equal(protectedCrossing.after.health,protectedCrossing.before.health-1,"pre-existing enemy/post-hit invulnerability must not make an ACTIVE FIRE trap miss");
+  assert.equal(protectedCrossing.after.armor,protectedCrossing.before.armor,"invulnerability-bypassing FIRE trap contact must still preserve armour");
+  assert.equal(protectedCrossing.after.hits,protectedCrossing.before.hits+1,"invulnerability-bypassing FIRE contact must record exactly one verified trap hit");
+  assert.ok(protectedCrossing.after.invuln>=protectedCrossing.before.invuln,"successful trap contact must preserve or refresh post-hit protection");
+
   const retryablePseudoHit=await page.evaluate(()=>globalThis.eval(`(()=>{
     const api=window.CCGLostSizzlerV142R58AuthoritativeTrapCore;
     const trap=(host?.traps||[]).find(t=>t?.active&&String(t.kind||"").toLowerCase()==="spike");
