@@ -135,7 +135,7 @@ function rearmInactiveTrapContacts(){
   for(const [key,cycle] of [...trapCycleHits.entries()]){
     const split=key.indexOf("|"),playerId=split>=0?key.slice(0,split):key,trapId=split>=0?key.slice(split+1):"";
     const p=playersById.get(playerId),t=(host.traps||[]).find(row=>String(row?.id||`${row?.x},${row?.y}`)===trapId);
-    if(!p||!t||Number(p.x)!==Number(t.x)||Number(p.y)!==Number(t.y)||!t.active||!SYS.trapActive(t,now)){
+    if(!p||!t||!t.active||!SYS.trapActive(t,now)){
       trapCycleHits.delete(key);authoritativeTrapState.rearms++
     }else if(trapCycleId(t,now)!==cycle){
       trapCycleHits.delete(key);authoritativeTrapState.cycleRearms++
