@@ -17,8 +17,9 @@ assert.match(bootstrap,/v10-42-r58-combat-trap-core\.js/,"ordered bootstrap must
 assert.ok(bootstrap.indexOf("v10-42-r58-combat-trap-core.js")<bootstrap.indexOf("v10-42-bug-reporter.js"),"core must own gameplay before observation-only reporting loads");
 
 assert.match(core,/window\.firePlayer=firePlayerFresh;window\.triggerTrap=triggerTrapFresh;window\.queueAttack=queueAttackFresh/,"new core must directly own FIRE, trap and attack-buffer entry points");
-assert.doesNotMatch(core,/window\.hurtPlayer\s*=/,"new trap core must not wrap or replace global hurtPlayer");
+assert.match(core,/function trapDamageFirewall\(player,amount,friendly=false,source="enemy"\)[\s\S]*if\(\/\\btrap\\b\/i\.test\(String\(source\|\|""\)\)\)[\s\S]*return false;[\s\S]*inheritedHurtPlayer\.apply\(this,arguments\)/,"new trap core must firewall legacy trap-labelled damage while preserving non-trap damage");
 assert.match(core,/canonicalHurtPlayer\.call\(window,p,1,false,/,"ordinary traps must use the canonical damage/death primitive exactly once");
+assert.match(core,/window\.hurtPlayer=trapDamageFirewall/,"trap-source firewall must be the final runtime hurtPlayer boundary after the rewrite loads");
 assert.match(core,/const healthLost=Number\(p\.health\|\|0\)<beforeHealth,deathRecorded=Number\(run\?\.stats\?\.deaths\|\|0\)>beforeDeaths;[\s\S]*if\(!healthLost&&!deathRecorded\).*return false/s,"failed trap damage must remain unconsumed/retryable while lethal trap deaths count as successful damage");
 assert.match(core,/trapContacts\.set\(key,\{cycle,at:now\}\)/,"trap contact may be consumed only after verified HEALTH loss");
 assert.match(core,/if\(record\?\.cycle===cycle\)return true/,"same physical active-cycle contact must not double-hit");
