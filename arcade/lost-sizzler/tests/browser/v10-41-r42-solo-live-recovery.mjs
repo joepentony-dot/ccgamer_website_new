@@ -198,7 +198,8 @@ try{
     if(typeof originalSpawn==="function")window.spawnBullet=originalSpawn;delete window.__ccgR42AttackProbe;return result
   });
   assert.ok(attack.mana<attackBefore.mana,"real Space input must consume ammunition through the firearm path after Floor 2 recovery");
-  assert.ok(attack.shots>=1&&attack.fireObserved>0&&attack.bulletObserved>attackBefore.bullets,`real Space input must create a live projectile/cooldown state: ${JSON.stringify(attack)}`);
+  assert.ok(attack.shots>=1&&attack.bulletObserved>attackBefore.bullets,`real Space input must create a live projectile state: ${JSON.stringify(attack)}`);
+  assert.equal(attack.fireObserved,0,"transactional FIRE must not commit cooldown before projectile creation succeeds");
   assert.equal(attack.mode,"playing","successful post-transition attack must remain in live play");
   assert.ok(attack.intents>=1,"r42 must observe real attack intent without synthesizing the shot");
 

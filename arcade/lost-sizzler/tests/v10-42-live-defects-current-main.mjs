@@ -7,12 +7,13 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,"..");
 const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const bootstrap=read("js/v10-42-bootstrap.js");
-const attack=read("js/v10-42-attack-hold-liveness.js");
+const play=read("js/game-play.js");
+const main=read("js/game-main.js");
 const shop=read("js/v10-42-artefact-shop-stability.js");
 
 assert.match(bootstrap,/expectedSubtitle="C64 DUNGEON CARNAGE — V10\.42"/,"authoritative bootstrap must retain the current customer-facing game identity");
 assert.doesNotMatch(bootstrap,/expectedSubtitle="THE LOST SIZZLER/,"authoritative bootstrap must not restamp the retired public title");
-assert.match(bootstrap,/v10-42-attack-hold-liveness\.js/,"ordered bootstrap must load sustained attack-key liveness");
+assert.doesNotMatch(bootstrap,/v10-42-attack-hold-liveness\.js/,"ordered bootstrap must not reload the retired held-FIRE recovery owner");
 assert.match(bootstrap,/v10-42-artefact-shop-stability\.js/,"ordered bootstrap must load Artefact exchange stability");
 assert.match(bootstrap,/window\.addEventListener\("click",blockedStart,true\)/,"V10.42 must capture pre-ready start gestures before older document-level release handlers");
 assert.match(bootstrap,/if\(state\.ready\)\{\s*if\(target\.id!=="solo-btn"&&target\.id!=="tutorial-zone-btn"\)return;/,"after readiness V10.42 must narrow capture ownership to Solo/Tutorial while preserving established handlers for the other supported controls");
@@ -22,11 +23,14 @@ assert.match(bootstrap,/legacyGatePending=window\.CCGLostSizzlerReleaseGate\?\.s
 assert.match(bootstrap,/if\(!button\|\|!button\.isConnected\)\{retry\(\);return\}\s*if\(button\.disabled\|\|legacyGatePending\)\{retry\(\);return\}/,"queued starts must survive missing, detached or transiently disabled buttons and the legacy-gate handoff");
 assert.match(bootstrap,/state\.pendingStartRetries\+=1;\s*setTimeout\(attempt,50\)/,"queued starts must retain the canonical fixed retry cadence until dispatch becomes safe");
 
-assert.match(attack,/new Set\(\["Space","Numpad0"\]\)/,"supported P1 attack keys must share the held-fire normalisation without claiming fullscreen F");
-assert.doesNotMatch(attack,/new Set\([^\n]*"KeyF"/,"held-fire liveness must leave F exclusively to fullscreen");
-assert.match(attack,/input\?\.add\?\.\("Space"\)/,"held attack aliases must normalise to the canonical Space input consumed by the frame loop");
-assert.doesNotMatch(attack,/firePlayer\s*=|function\s+firePlayer/,"held-fire liveness must not replace or wrap the combat owner");
-assert.match(attack,/addEventListener\("blur",clearHeld/,"focus loss must clear held attack state");
+assert.match(main,/if\(\(e\.code==="Space"\|\|e\.code==="Numpad0"\)&&!e\.repeat\)queueAttack\(p1\)/,"fresh keyboard FIRE from Space or Numpad0 must enter the canonical queue directly");
+assert.match(main,/input\.add\(e\.code\)/,"held Space must remain represented by the canonical input set for sustained frame-loop FIRE");
+assert.match(main,/addEventListener\("keyup",e=>input\.delete\(e\.code\)\)/,"key release must clear canonical held input");
+assert.match(main,/addEventListener\("blur",\(\)=>input\.clear\(\)\)/,"focus loss must clear all held gameplay input");
+assert.match(play,/if\(\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\|\|fireBuffer1>0\)&&fire1<=0\)\{const fired=firePlayer\(p1,attackDirection\(p1,d1\(\)\)\);if\(fired\)fireBuffer1=0/,"sustained held and buffered FIRE from either desktop key must be serviced by the same canonical frame-loop owner and consume buffered intent only after success");
+assert.match(play,/function queueAttack\(p,requestedDirection=null\)[\s\S]*if\(isP2\)fireBuffer2=ATTACK_BUFFER_MS;else fireBuffer1=ATTACK_BUFFER_MS;/,"fresh FIRE must enter the canonical buffer owner rather than bypassing frame-loop combat");
+assert.match(play,/if\(\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\|\|fireBuffer1>0\)&&fire1<=0\)\{const fired=firePlayer\(p1,attackDirection\(p1,d1\(\)\)\);if\(fired\)fireBuffer1=0/,"buffered and held FIRE must converge on the single canonical frame-loop fire implementation");
+assert.doesNotMatch(play,/recoverThroughDeepFireOwner|recoverThroughCapturedR1FireOwner/,"the canonical FIRE path must not traverse retired recovery-owner chains");
 
 assert.match(shop,/String\(id\)==="banishment"/,"Artefact repair must be isolated to the Flask exchange action");
 assert.match(shop,/physicalArtefactCount\(player\)/,"Artefact exchange must recognise legacy physical Artefact stacks");

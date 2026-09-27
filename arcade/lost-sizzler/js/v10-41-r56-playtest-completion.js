@@ -66,19 +66,9 @@
 
   function environmentalSource(source){return ENVIRONMENT_SOURCE.test(String(source||""))}
   function installEnvironmentalDamage(){
-    const current=window.hurtPlayer;if(typeof current!=="function")return false;
-    if(originalChainHasMarker(current,"__ccgV141R56EnvironmentDamage"))return true;
-    const wrapped=function hurtPlayerV141R56EnvironmentDamage(player,amount,friendly=false,source="enemy"){
-      if(!ordinaryDungeon()||!environmentalSource(source)||!player)return current.apply(this,arguments);
-      const before=durability(player),oldInv=Number(player.invuln||0);
-      player.invuln=0;
-      const result=current.apply(this,arguments);
-      const after=durability(player);
-      if(after<before)state.environmentHits++;
-      else if(oldInv>0)player.invuln=oldInv;
-      return result
-    };
-    wrapped.__ccgV141R56EnvironmentDamage=true;wrapped.__ccgOriginal=current;window.hurtPlayer=wrapped;return true
+    // r58 owns every trap-attributed HEALTH change in game-play.js.
+    // Retained only as a compatibility surface for older diagnostics.
+    return false
   }
 
   function trapIsActive(trap,now=performance.now()){
@@ -94,22 +84,8 @@
     return removed
   }
   function trapCycleTick(){
-    if(!ordinaryDungeon()||typeof triggerTrap!=="function")return false;
-    let players=[];try{players=typeof localPlayers==="function"?localPlayers():[p1,p2].filter(Boolean)}catch(_){return false}
-    const now=performance.now(),liveKeys=new Set();
-    for(const p of players){
-      for(const t of host?.traps||[]){
-        if(!t)continue;const key=trapKey(p,t),occupied=t.x===p.x&&t.y===p.y,active=occupied&&trapIsActive(t,now);liveKeys.add(key);
-        const was=state.trapCycles.get(key)===true;
-        if(active&&!was){
-          const before=durability(p);state.trapCycles.set(key,true);
-          try{triggerTrap(p)}catch(error){console.warn("[Lost Sizzler r56] trap trigger recovery failed",error)}
-          if(durability(p)<before)state.trapHits++
-        }else if(!active&&was){state.trapCycles.set(key,false);rearmCanonicalTrapContact(p,t)}
-      }
-    }
-    for(const key of [...state.trapCycles.keys()])if(!liveKeys.has(key))state.trapCycles.delete(key);
-    return true
+    // r58 owns player/trap/cycle detection and triggering.
+    return false
   }
 
   function inventoryCanTake(player,loot){
@@ -137,6 +113,9 @@
     return true
   }
   function installChestDelivery(){
+    // V10.42 r58 uses the canonical chest path plus the final R1 confirmation
+    // owner. Do not insert the historical R56 delivery wrapper underneath R1.
+    if(document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content==="V10.42 r58")return false;
     const current=window.openChest;if(typeof current!=="function")return false;
     if(originalChainHasMarker(current,"__ccgV142R1")){
       retireSupersededChestDelivery();
@@ -238,85 +217,19 @@
     state.quickIconPasses++;return true
   }
 
-  function setFire(index,value){try{if(index===2)fire2=value;else fire1=value;return true}catch(_){return false}}
-  function getFire(index){try{return Number(index===2?fire2:fire1)}catch(_){return 0}}
-  function setBuffer(index,value){try{if(index===2)fireBuffer2=value;else fireBuffer1=value;return true}catch(_){return false}}
-  function getBuffer(index){try{return Number(index===2?fireBuffer2:fireBuffer1)}catch(_){return 0}}
-  function getPlayer(index){try{return index===2?p2:p1}catch(_){return null}}
-  function focusGame(){try{document.getElementById("game")?.focus?.({preventScroll:true})}catch(_){}}
-  function recoverOrphanMode(){
-    if(!ordinaryDungeon()||blocked())return false;
-    try{if(["paused","inventory","dossier"].includes(String(mode||""))){mode="playing";state.modeRepairs++;return true}}catch(_){}
-    return false
-  }
-  function repairBuffer(index){
-    const value=getBuffer(index);
-    if(!Number.isFinite(value)||value<0||value>ATTACK_BUFFER_LIMIT){setBuffer(index,0);state.bufferRepairs++;return true}
-    return false
-  }
-  function repairPlayerLocks(player){
-    if(!player)return false;let repaired=false;
-    if(player.controlLocked){player.controlLocked=false;repaired=true}
-    if(player.controlsLocked){player.controlsLocked=false;repaired=true}
-    if(repaired)state.combatRearms++;
-    return repaired
-  }
-  function rearmCombat(reason="runtime",queueIndex=0,forceCooldown=false){
-    if(!ordinaryDungeon()||blocked())return false;recoverOrphanMode();
-    try{if(mode!=="playing")return false}catch(_){return false}
-    for(const index of [1,2]){
-      const p=getPlayer(index);if(!p)continue;
-      repairPlayerLocks(p);
-      if(!Number.isFinite(Number(p.hitStunMs))||Number(p.hitStunMs)<0||Number(p.hitStunMs)>5000){p.hitStunMs=0;state.stunRepairs++}
-      const fire=getFire(index);if(forceCooldown||!Number.isFinite(fire)||fire<0||fire>2500){setFire(index,0);state.cooldownRepairs++}
-      repairBuffer(index)
-    }
-    focusGame();state.combatRearms++;
-    if(queueIndex){const p=getPlayer(queueIndex);try{if(p&&typeof queueAttack==="function"){queueAttack(p);state.attackIntentRepairs++}}catch(_){} }
-    return reason
-  }
-  function watchValue(bucket,index,value,limit,repair){
-    const row=bucket[index===2?"p2":"p1"],now=performance.now();
-    if(!Number.isFinite(value)||value<0||value>limit){repair();row.value=0;row.changedAt=now;return true}
-    if(value<=0){row.value=0;row.changedAt=now;return false}
-    if(Math.abs(value-row.value)>.5){row.value=value;row.changedAt=now;return false}
-    if(now-row.changedAt>900){repair();row.value=0;row.changedAt=now;return true}
+  function rearmCombat(){
+    // r58 owns FIRE cadence, buffers, held input and pause/inventory resets.
     return false
   }
   function combatTick(){
-    if(!ordinaryDungeon()||blocked())return false;recoverOrphanMode();
-    try{if(mode!=="playing")return false}catch(_){return false}
-    for(const index of [1,2]){
-      const p=getPlayer(index);if(!p)continue;
-      repairPlayerLocks(p);repairBuffer(index);
-      const fire=getFire(index);watchValue(state.cooldown,index,fire,2500,()=>{setFire(index,0);state.cooldownRepairs++});
-      const stun=Number(p.hitStunMs||0);watchValue(state.stun,index,stun,5000,()=>{p.hitStunMs=0;state.stunRepairs++});
-    }
-    return true
+    return false
   }
-  function onAttackIntent(event){
-    if(event.repeat||event.ctrlKey||event.altKey||event.metaKey)return;
-    const index=event.code==="Space"?1:event.code==="Enter"?2:0;if(!index||!ordinaryDungeon()||blocked())return;
-    const p=getPlayer(index);if(!p)return;
-    const fire=getFire(index),stun=Number(p.hitStunMs||0),now=performance.now(),recentResume=now-state.lastResumeAt<1800;
-    const stale=!Number.isFinite(fire)||fire<0||fire>2500||!Number.isFinite(stun)||stun<0||stun>5000||p.controlLocked||p.controlsLocked;
-    if(recentResume||stale)rearmCombat("attack intent",index,true)
-  }
-  function onResumeClick(event){
-    if(!event.target?.closest?.("#resume-btn"))return;
-    state.lastResumeAt=performance.now();setTimeout(()=>rearmCombat("resume click",0,true),0);setTimeout(()=>rearmCombat("resume settle",0,false),80)
-  }
-  function onVisibility(){if(document.visibilityState==="visible"){state.lastResumeAt=performance.now();setTimeout(()=>rearmCombat("visibility return",0,true),40)}}
 
-  function installOwners(){installStyle();installEnvironmentalDamage();installApplyLoot();installChestDelivery();installShrineFeedback();installPickupFeedback()}
+  function installOwners(){installStyle();installApplyLoot();installChestDelivery();installShrineFeedback();installPickupFeedback()}
   function tick(){
-    installOwners();trapCycleTick();pendingChestTick();renderQuickIcons();
-    let current="";try{current=String(mode||"")}catch(_){}
-    if(state.lastMode&&state.lastMode!=="playing"&&current==="playing"){state.lastResumeAt=performance.now();setTimeout(()=>rearmCombat("mode resumed",0,true),0)}
-    state.lastMode=current;combatTick()
+    installOwners();pendingChestTick();renderQuickIcons()
   }
 
-  addEventListener("keydown",onAttackIntent,true);document.addEventListener("click",onResumeClick,true);document.addEventListener("visibilitychange",onVisibility);addEventListener("focus",()=>{if(running()){state.lastResumeAt=performance.now();setTimeout(()=>rearmCombat("window focus",0,true),50)}});
   installOwners();tick();state.timer=setInterval(()=>{try{tick()}catch(error){console.warn("[Lost Sizzler r56] completion tick failed",error)}},80);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
   document.body.dataset.v141R56PlaytestCompletion="true";

@@ -5,7 +5,6 @@ const root=new URL("../",import.meta.url);
 const reporter=fs.readFileSync(new URL("js/v10-42-bug-reporter.js",root),"utf8");
 const css=fs.readFileSync(new URL("css/v10-42-bug-reporter.css",root),"utf8");
 const bootstrap=fs.readFileSync(new URL("js/v10-42-bootstrap.js",root),"utf8");
-const r19=fs.readFileSync(new URL("js/v10-42-r19-mobile-trap-layout-stability.js",root),"utf8");
 
 const r18=bootstrap.indexOf('v10-42-r18-solo-playtest-stability.js');
 const bug=bootstrap.indexOf('v10-42-bug-reporter.js');
@@ -42,7 +41,7 @@ assert.match(reporter,/addEventListener\("ccg:trap-damage"/,"reporter must captu
 assert.match(reporter,/addEventListener\("ccg:hazard-damage"/,"reporter must capture exact dedicated-hazard damage signals");
 assert.match(reporter,/beforeDamageSignalSerial:environmentDamageSerial/,"movement verification must snapshot the environmental signal boundary before contact resolution");
 assert.match(reporter,/signal\.playerId===String\(before\?\.playerId\|\|""\)[\s\S]*signal\.x===Number\(before\?\.x\)&&signal\.y===Number\(before\?\.y\)/,"movement verification must restrict evidence to the exact player and contact cell");
-assert.match(reporter,/trapSignal=contactSignals\.find\(signal=>signal\.type==="trap"[\s\S]*trapIds\.has\(signal\.trapId\)/,"ordinary trap confirmation must retain the exact trap contact signal even if later damage overwrites global last-hit fields");
+assert.match(reporter,/trapContactSignals=contactDamageSignalsSince\(before,boundaryDamageSignalSerial\)[\s\S]*trapSignal=trapContactSignals\.find\(signal=>signal\.type==="trap"&&\(trapIds\.has\(signal\.trapId\)\|\|trapKinds\.has\(String\(signal\.kind\|\|""\)\.toLowerCase\(\)\)\)\)/,"ordinary trap confirmation must retain exact bounded trap contact evidence even if later damage overwrites global last-hit fields");
 assert.match(reporter,/hazardSignal=contactSignals\.find\(signal=>signal\.type==="hazard"&&hazardIds\.has\(signal\.hazardId\)/,"dedicated hazard confirmation must retain the exact hazard contact signal");
 assert.match(reporter,/damageObserved=Boolean\(exactSignal\)/,"polling diagnostics must require exact player-and-trap contact evidence so another player's same-kind hit cannot mask a failure");
 
@@ -79,8 +78,8 @@ const gamePlay=fs.readFileSync(new URL("js/game-play.js",root),"utf8");
 assert.match(gamePlay,/CCGLostSizzlerBugReporter\?\.observeMovementBoundary\?\.\(p,"before"/,"movement boundary must snapshot environmental contact before trap resolution");
 assert.match(gamePlay,/triggerTrap\(p\);\s*try\{window\.CCGLostSizzlerBugReporter\?\.observeMovementBoundary\?\.\(p,"after"/s,"movement boundary must verify environmental contact immediately after trap resolution");
 assert.match(gamePlay,/__ccgLastDamageAt=damageAt/,"canonical player damage must expose a timestamp for source-attributed diagnostics");
-assert.match(gamePlay,/damageSource=String\(source\|\|"enemy"\);p\.__ccgLastHurtAt=damageAt;p\.__ccgLastDamageAt=damageAt;p\.__ccgLastDamageSource=damageSource/,"canonical player damage must expose its latest source as supporting diagnostic evidence");
+assert.match(gamePlay,/damageSource=String\(source\|\|"enemy"\)[\s\S]*p\.__ccgLastHurtAt=damageAt;p\.__ccgLastDamageAt=damageAt;p\.__ccgLastDamageSource=damageSource/,"canonical player damage must expose its latest source as supporting diagnostic evidence");
 assert.match(gamePlay,/new CustomEvent\("ccg:trap-damage"[\s\S]*trapId:String\(t\.id\|\|\`\$\{t\.x\},\$\{t\.y\}\`\)[\s\S]*x:Number\(t\.x\),y:Number\(t\.y\),at:damageAt/,"ordinary traps must emit an exact accepted-damage contact signal");
 assert.match(gamePlay,/new CustomEvent\("ccg:hazard-damage"[\s\S]*hazardId:String\(hazard\.id\|\|""\)[\s\S]*x:contactX,y:contactY,at:damageAfter/,"dedicated hazards must emit an exact accepted-damage cell signal");
-assert.match(r19,/function recordTrapHit\(player,trap,contactKey,cycle\)[\s\S]*new CustomEvent\("ccg:trap-damage"[\s\S]*playerId:playerId\(player\)[\s\S]*trapId:trapId\(trap\)[\s\S]*x:Number\(trap\.x\),y:Number\(trap\.y\)/,"the authoritative R19 trap owner must emit the exact accepted player/trap contact signal");
-assert.match(gamePlay,/if\(!routed&&damageAt>beforeDamageAt\)[\s\S]*new CustomEvent\("ccg:trap-damage"/,"canonical triggerTrap must emit fallback contact evidence only when R19 did not route the hit");
+assert.match(gamePlay,/function applyActiveTrapContact\(p,t,now=performance\.now\(\)\)[\s\S]*new CustomEvent\("ccg:trap-damage"[\s\S]*playerId:String\(p\.id\|\|p\.name\|\|"P1"\)[\s\S]*trapId:String\(t\.id\|\|`\$\{t\.x\},\$\{t\.y\}`\)[\s\S]*x:Number\(t\.x\),y:Number\(t\.y\),at:damageAt/,"the authoritative r58 trap core must emit exact accepted player/trap contact evidence");
+assert.match(gamePlay,/if\(!verified\)\{p\.invuln=beforeInvuln;authoritativeTrapState\.damageRetries\+\+;return false\}[\s\S]*trapCycleHits\.set\(key,cycle\)[\s\S]*new CustomEvent\("ccg:trap-damage"/,"trap diagnostics must publish only after the r58 core verifies canonical trap damage");

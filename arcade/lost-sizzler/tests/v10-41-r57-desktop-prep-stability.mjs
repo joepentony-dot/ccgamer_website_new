@@ -49,10 +49,10 @@ assert.match(freezeGuard,/state\.timer=setInterval\(tick,25\);tick\(\)/,"the his
 assert.match(r57,/clearInterval\(api\.state\.timer\);api\.state\.timer=0/,"R57 must retire the flickering R56 periodic DOM icon pass");
 assert.match(r57,/#quick-slots \.quick-slot>\.item-svg-wrap/,"canonical Quick Inventory SVG must become the only visible icon layer");
 assert.match(r57,/\.r56-quick-slot-icon\{opacity:0!important;visibility:hidden!important\}/,"the redundant R56 icon must remain testable but invisible");
-assert.match(r57,/function contactTick\(\)/,"R57 must own stall-safe shrine/trap contact recovery");
+assert.match(r57,/function contactTick\(\)/,"R57 must retain stall-safe shrine contact recovery");
 assert.match(r57,/triggerShrine\?\.\(player\)/,"standing on an active shrine must call the canonical shrine owner");
-assert.match(r57,/triggerTrap\?\.\(player\)/,"new active trap cycles must call the canonical trap owner");
-assert.match(r57,/window\.hurtPlayer\?\.\(player,1,false/,"a trap cycle with no canonical durability loss must receive exactly one fallback damage attempt");
+assert.doesNotMatch(r57,/triggerTrap\?\.\(player\)/,"R57 must not trigger floor traps after r58 becomes authoritative");
+assert.doesNotMatch(r57,/window\.hurtPlayer\?\.\(player,1,false/,"R57 must not retain fallback trap damage after r58 becomes authoritative");
 assert.match(r57,/MAX_TIMED_DT=50/,"Timed Chamber simulation catch-up must be capped after a stall");
 assert.match(r57,/INTERWAVE_MS=360/,"Timed Chamber waves must have a bounded inter-wave breathing interval");
 assert.match(r57,/TIMED_ACTIVE_CAP=3/,"Timed Chamber must never retain more than three active wave enemies");

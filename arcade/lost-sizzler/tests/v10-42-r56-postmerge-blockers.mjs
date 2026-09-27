@@ -12,10 +12,10 @@ const canonical=fs.readFileSync(new URL("index.html",root),"utf8");
 const publicAlias=fs.readFileSync(new URL("arcade/c64-dungeon-carnage/index.html",repoRoot),"utf8");
 
 for(const html of [canonical,publicAlias]){
-  assert.match(html,/ccg-lost-sizzler-build" content="V10\.42 r57"/);
-  assert.match(html,/ccg-lost-sizzler-cache" content="20260925r57"/);
-  assert.match(html,/Latest Build Changes · V10\.42 R56/);
-  assert.match(html,/ACTIVE BUILD: V10\.42 R56/);
+  assert.match(html,/ccg-lost-sizzler-build" content="V10\.42 r58"/);
+  assert.match(html,/ccg-lost-sizzler-cache" content="20260927r58"/);
+  assert.match(html,/Latest Build Changes · V10\.42 R58/);
+  assert.match(html,/ACTIVE BUILD: V10\.42 R58/);
 }
 
 assert.match(
@@ -30,8 +30,13 @@ assert.match(
 );
 assert.match(
   systems,
-  /hardHazardEligible=\(room,minW=6,minH=5\)=>Boolean\([\s\S]*reservedHazardRooms=\(world\.rooms\|\|\[\]\)\.filter\(room=>Boolean\(room\?\.dedicatedHazardReserved&&room\.id!==world\.startRoomId&&room\.id!==world\.exitRoomId&&room\.w>=3&&room\.h>=3\)\)[\s\S]*choices=\[\.\.\.shuffleHazardRooms\(reservedHazardRooms\),/,
+  /hardHazardEligible=\(room,minW=6,minH=5\)=>Boolean\([\s\S]*reservedHazardRooms=\(world\.rooms\|\|\[\]\)\.filter\(room=>Boolean\(room\?\.dedicatedHazardReserved&&room\.id!==world\.startRoomId&&room\.id!==world\.exitRoomId&&room\.w>=2&&room\.h>=2\)\)[\s\S]*choices=\[\.\.\.shuffleHazardRooms\(reservedHazardRooms\),/,
   "reserved dedicated-hazard rooms must remain authoritative even if stale soft room-owner flags survive a repeated decoration pass"
+);
+assert.match(
+  systems,
+  /while\(\(host\.hazardRooms\|\|\[\]\)\.length<count\)[\s\S]*candidate\?\.dedicatedHazardReserved[\s\S]*candidate\.w>=2&&candidate\.h>=2[\s\S]*if\(!cells\.length\)cells\.push\(/,
+  "compact dedicated-hazard fallback must preserve the floor invariant and still synthesize a playable hazard cell when only a tiny reserved room remains"
 );
 assert.match(
   systems,
@@ -90,4 +95,4 @@ assert.match(
 );
 assert.match(shop,/INVENTORY FULL/);
 
-console.log("Dungeon Carnage R56 post-merge blocker regression contract passed.");
+console.log("Dungeon Carnage R58 post-merge blocker regression contract passed.");

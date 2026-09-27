@@ -26,7 +26,7 @@ try{
   const page=await context.newPage();
   page.setDefaultTimeout(60000);
   await page.goto(`${origin}/arcade/lost-sizzler/?bugreport=1&r47-inventory-fire=1`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&window.CCGLostSizzlerV142R47InventoryFireRecovery?.state?.installed===true);
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV142R58AuthoritativeFireCore));
   await page.click("#solo-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(p1),null,{timeout:20000});
   await page.evaluate(()=>{p1.firearmUnlocked=true;p1.mana=Math.max(80,p1.mana||0);fire1=0;fireBuffer1=0;input.clear()});
@@ -37,34 +37,31 @@ try{
     await page.waitForFunction(()=>mode==="playing"&&document.getElementById("inventory-panel")?.classList.contains("hidden"));
     const before=await page.evaluate(()=>({mana:Number(p1.mana),shots:bullets.filter(b=>b.owner===p1.id&&b.ttl>0).length}));
     await page.keyboard.press("Space");
-    await page.waitForFunction(before=>Number(p1.mana)<before.mana||bullets.filter(b=>b.owner===p1.id&&b.ttl>0).length>before.shots||Number(fire1)>0,before,{timeout:3000});
+    await page.waitForFunction(before=>Number(p1.mana)<before.mana||bullets.filter(b=>b.owner===p1.id&&b.ttl>0).length>before.shots,before,{timeout:3000});
     await page.waitForTimeout(250);
   }
   await page.evaluate(()=>{
     p1.firearmUnlocked=true;
     p1.mana=Math.max(80,p1.mana||0);
     p1.hitStunMs=5000;
-    p1.__ccgLastHurtAt=performance.now();
-    fire1=0;fireBuffer1=0;input.clear();
+    p1.__ccgLastHurtAt=performance.now()-2000;
+    fire1=Number.POSITIVE_INFINITY;fireBuffer1=Number.POSITIVE_INFINITY;projectileCD=Number.POSITIVE_INFINITY;input.clear();
   });
-  const stuckBefore=await page.evaluate(()=>Number(p1.mana));
-  for(let attempt=0;attempt<6;attempt++){
-    await page.evaluate(()=>{p1.hitStunMs=5000;p1.__ccgLastHurtAt=performance.now();fire1=0;fireBuffer1=0});
-    await page.keyboard.press("Space");
-    await page.waitForTimeout(180);
-  }
-  await page.waitForFunction(before=>Number(p1.mana)<before,stuckBefore,{timeout:3000});
-  const p0=await page.evaluate(()=>({
-    stun:Number(p1.hitStunMs||0),
-    repairs:Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.persistentFireBlockRepairs||0)
+  const staleBefore=await page.evaluate(()=>Number(p1.mana));
+  await page.keyboard.press("Space");
+  await page.waitForFunction(before=>Number(p1.mana)<before,staleBefore,{timeout:3000});
+  const staleAfter=await page.evaluate(()=>({
+    stun:Number(p1.hitStunMs||0),fire:Number(fire1),buffer:Number(fireBuffer1),
+    r58:Boolean(window.CCGLostSizzlerV142R58AuthoritativeFireCore),
+    r47:Boolean(window.CCGLostSizzlerV142R47InventoryFireRecovery)
   }));
-  assert.ok(p0.repairs>=1,`expected persistent FIRE blocker repair, got ${p0.repairs}`);
-  assert.ok(p0.stun<5000,`expected persistent hit-stun to be cleared or decaying, got ${p0.stun}`);
+  assert.equal(staleAfter.r58,true,"r58 FIRE core must own stale-state recovery");
+  assert.equal(staleAfter.r47,false,"retired r47 inventory FIRE recovery must not load");
+  assert.equal(staleAfter.stun,0,`stale hit-stun must be normalised by the core attack owner: ${JSON.stringify(staleAfter)}`);
 
-  const state=await page.evaluate(()=>window.CCGLostSizzlerV142R47InventoryFireRecovery.state);
-  assert.ok(state.inventoryClosures>=5,`expected at least five observed Inventory closes, got ${state.inventoryClosures}`);
   assert.equal(await page.evaluate(()=>mode),"playing");
-  console.log("Dungeon Carnage r47 repeated Inventory -> FIRE browser regression passed.");
+  assert.equal(await page.evaluate(()=>Boolean(window.CCGLostSizzlerV142R47InventoryFireRecovery)),false,"retired r47 recovery owner must remain absent");
+  console.log("Dungeon Carnage r58 repeated Inventory -> core FIRE browser regression passed.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));

@@ -137,29 +137,20 @@ try{
   await assertKeyboardMove(page,"Solo after periodic ownership recovery");
   }
 
-  await prepareSolo(page,"R30-BARE-DAMAGE-OWNER");
-  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R30?.modernDamageOwnershipPresent?.(window.hurtPlayer)));
-  const damageRepair=await page.evaluate(()=>{
+  await prepareSolo(page,"R30-R58-DAMAGE-BOUNDARY");
+  const damageOwnership=await page.evaluate(()=>{
     const r30=window.CCGLostSizzlerV141R30;
-    const before={ownership:r30.state.ownershipRepairs,damage:r30.state.damageOwnershipRepairs};
-    let base=window.hurtPlayer;const seen=new Set();
-    while(typeof base==="function"&&!seen.has(base)){
-      seen.add(base);const next=r30.originalLink(base);if(typeof next!=="function")break;base=next;
-    }
-    window.hurtPlayer=base;
-    const degraded={functional:typeof window.hurtPlayer==="function",modern:r30.modernDamageOwnershipPresent(window.hurtPlayer),r56:r30.chainHas(window.hurtPlayer,"__ccgV141R56EnvironmentDamage"),r60:r30.chainHas(window.hurtPlayer,"__ccgV141R60EnvironmentSeal")};
-    const repaired=r30.assertNormalRuntimeOwnership("browser injected bare damage owner");
-    return{degraded,repaired,modern:r30.modernDamageOwnershipPresent(window.hurtPlayer),r56:r30.chainHas(window.hurtPlayer,"__ccgV141R56EnvironmentDamage"),r60:r30.chainHas(window.hurtPlayer,"__ccgV141R60EnvironmentSeal"),ownership:r30.state.ownershipRepairs-before.ownership,damage:r30.state.damageOwnershipRepairs-before.damage};
+    return{
+      callable:typeof window.hurtPlayer==="function",
+      authoritativeTrap:Boolean(window.CCGLostSizzlerV142R58AuthoritativeTrapCore?.gameplayOwnership),
+      r56:r30?.chainHas?.(window.hurtPlayer,"__ccgV141R56EnvironmentDamage")===true,
+      r60:r30?.chainHas?.(window.hurtPlayer,"__ccgV141R60EnvironmentSeal")===true
+    };
   });
-  assert.equal(damageRepair.degraded.functional,true,"bare damage-owner fault injection must leave a callable historical damage function");
-  assert.equal(damageRepair.degraded.modern,false,"bare damage-owner fault injection must remove modern environmental ownership");
-  assert.equal(damageRepair.degraded.r56,false,"bare damage-owner fault injection must remove the r56 environmental owner from ancestry");
-  assert.equal(damageRepair.degraded.r60,false,"bare damage-owner fault injection must remove the r60 environmental seal from ancestry");
-  assert.equal(damageRepair.repaired,true,"r30 normal-mode invariant must repair a callable but historically downgraded damage owner");
-  assert.equal(damageRepair.modern,true,"r30 damage recovery must restore every currently required modern environmental owner");
-  assert.equal(damageRepair.r56,true,"r30 damage recovery must restore the r56 environmental owner in ancestry");
-  assert.equal(damageRepair.r60,true,"r30 damage recovery must restore the r60 environmental seal in ancestry");
-  assert.ok(damageRepair.ownership>=1,"bare damage-owner recovery must advance the normal ownership repair counter");
+  assert.equal(damageOwnership.callable,true,"r58 must retain a callable canonical player-damage function");
+  assert.equal(damageOwnership.authoritativeTrap,true,"r58 must own ordinary trap damage at the canonical simulation boundary");
+  assert.equal(damageOwnership.r56,false,"retired R56 environmental damage ownership must not reappear in hurtPlayer ancestry");
+  assert.equal(damageOwnership.r60,false,"retired R60 environmental damage ownership must not reappear in hurtPlayer ancestry");
 
   if(false){
   const spyCycles=await page.evaluate(async()=>{

@@ -8,6 +8,7 @@ const read=file=>fs.readFileSync(path.join(root,file),"utf8");
 const core=read("js/game-core.js");
 const guidance=read("js/v10-23-tutorial-guidance.js");
 const touch=read("js/v10-4-patch.js");
+const play=read("js/game-play.js");
 const r20=read("js/v10-42-r20-live-regression-stability.js");
 const css=read("css/v10-41-r29.css");
 const latePresentation=read("js/v10-37-horde-focus.js");
@@ -23,9 +24,10 @@ assert.match(latePresentation,/R51 ordinary Dungeon reports use the reserved low
 assert.match(railFinalizer,/ratingVisible=Boolean\(rail\.querySelector\("\.ccg-rating-rail:not\(\.hidden\)"\)\)[\s\S]*routineToastVisible=Boolean\(rail\.querySelector\("#pickup-toast\.show"\)\)/,"the runtime rail owner must distinguish the rating prompt from routine gameplay reports");
 assert.match(railFinalizer,/ratingVisible&&!routineToastVisible\)[\s\S]*setProperty\("display","contents","important"\)[\s\S]*else\{[\s\S]*setProperty\("display","block","important"\)[\s\S]*enforceOrdinaryRailGeometry\(rail\)/,"Solo and Tutorial must keep routine reports in the lower rail while allowing the retained rating prompt to overlay independently");
 assert.match(touch,/const tutorialActive=document\.body\?\.dataset\?\.tutorialActive==="true"/,"touch FIRE must detect the Tutorial path");
-assert.match(touch,/if\(!tutorialActive&&!handled&&typeof queueAttack === "function"\) queueAttack\(p1\)/,"Tutorial FIRE must not queue a delayed repeat");
+assert.match(touch,/if\(tutorialActive\)\{[\s\S]*CCGLostSizzlerV142R58AuthoritativeFireCore\?\.attackNow\?\.\(\);[\s\S]*\}else if\(typeof queueAttack === "function"\) queueAttack\(p1\)/,"Tutorial FIRE must use one unbuffered R58 attempt while normal touch FIRE uses the shared queue");
 assert.match(touch,/if\(!tutorialActive&&typeof input !== "undefined"\) input\.add\("Space"\)/,"Tutorial FIRE must not become a held repeat");
-assert.match(r20,/const tutorialActive=\(\)=>document\.body\?\.dataset\?\.tutorialActive==="true"/,"R20 must recognise Tutorial input");
-assert.match(r20,/if\(!tutorialActive\(\)&&mobileFirePointers\.has\(event\.pointerId\)\)/,"R20 must not retain touch FIRE during Tutorial");
+assert.match(play,/function attackNowUnbuffered\(p,requestedDirection=null\)[\s\S]*fireBuffer2=0;else fireBuffer1=0[\s\S]*if\(cooldown>0\)return false[\s\S]*const owner=authoritativeCoreFirePlayer\|\|firePlayer;[\s\S]*return owner\(p,attackDirection\(p,requestedDirection\)\)/,"Tutorial immediate FIRE must clear pending buffer, refuse cooldown-blocked work and use the captured canonical firearm primitive");
+assert.match(r20,/fireOwnership:false/,"R20 must explicitly remain non-owning for FIRE");
+assert.doesNotMatch(r20,/tutorialActive|mobileFirePointers|attackNow\(/,"R20 must not retain a hidden Tutorial or touch FIRE path");
 
 console.log("PASS V10.42 R51 fullscreen, message rail and Tutorial FIRE regression contract");

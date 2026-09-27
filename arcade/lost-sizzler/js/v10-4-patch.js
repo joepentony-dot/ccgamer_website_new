@@ -510,14 +510,13 @@
       for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) button.addEventListener(type, () => releaseKey(button));
     });
     const holdFire = (button, event) => {
-      button.setPointerCapture?.(event.pointerId);
+      try{button.setPointerCapture?.(event.pointerId)}catch(_){}
       const tutorialActive=document.body?.dataset?.tutorialActive==="true";
-      let handled=false;
-      try{handled=window.CCGLostSizzlerV142R20LiveRegressionStability?.attackNow?.("Space")===true}catch(_){}
-      // Tutorial FIRE is an intentional one-action lesson. Do not leave a
-      // buffer or held key behind after its direct press: either would turn
-      // one tap into a later cooldown-repeat. Normal play keeps hold-to-fire.
-      if(!tutorialActive&&!handled&&typeof queueAttack === "function") queueAttack(p1);
+      if(tutorialActive){
+        window.CCGLostSizzlerV142R58AuthoritativeFireCore?.attackNow?.();
+      }else if(typeof queueAttack === "function") queueAttack(p1);
+      // Tutorial FIRE is an intentional one-action lesson. Normal play keeps
+      // the canonical Space hold so repeated fire uses the same core cadence.
       if(!tutorialActive&&typeof input !== "undefined") input.add("Space");
       button.classList.add("held");
     };
@@ -525,20 +524,39 @@
       if (typeof input !== "undefined") input.delete("Space");
       button.classList.remove("held");
     };
+    const boundActionButtons = new WeakSet();
+    const runAction = (button,event) => {
+      const action=button?.dataset?.action;
+      if(!action)return false;
+      event?.preventDefault?.();
+      if (typeof mode === "undefined" || mode !== "playing" || !p1) return false;
+      if (action === "fire") holdFire(button, event);
+      else if (action === "dash") dashPlayer(p1, d1() || p1.dir);
+      else if (action === "potion") usePotion(p1);
+      else if (action === "torch") useUtility(p1);
+      else if (action === "banish") useBanishment(p1);
+      else if (action === "inventory") toggleInventory();
+      return true;
+    };
     controls.querySelectorAll("[data-action]").forEach((button) => {
       const action = button.dataset.action;
-      button.addEventListener("pointerdown", (event) => {
-        event.preventDefault();
-        if (typeof mode === "undefined" || mode !== "playing" || !p1) return;
-        if (action === "fire") holdFire(button, event);
-        else if (action === "dash") dashPlayer(p1, d1() || p1.dir);
-        else if (action === "potion") usePotion(p1);
-        else if (action === "torch") useUtility(p1);
-        else if (action === "banish") useBanishment(p1);
-        else if (action === "inventory") toggleInventory();
-      });
+      boundActionButtons.add(button);
+      button.addEventListener("pointerdown", (event) => runAction(button,event));
       for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) button.addEventListener(type, () => { if (action === "fire") stopFire(button); });
     });
+    // Delegated fallback keeps touch FIRE alive if the visible button is
+    // replaced by layout/presentation code and loses its direct listeners.
+    controls.addEventListener("pointerdown",event=>{
+      const button=event.target instanceof Element?event.target.closest("[data-action]"):null;
+      if(!button||!controls.contains(button)||boundActionButtons.has(button))return;
+      runAction(button,event)
+    });
+    for(const type of ["pointerup","pointercancel"]){
+      controls.addEventListener(type,event=>{
+        const button=event.target instanceof Element?event.target.closest('[data-action="fire"]'):null;
+        if(button&&controls.contains(button)&&!boundActionButtons.has(button))stopFire(button)
+      })
+    }
   }
 
   function injectFeedbackPanel() {

@@ -44,10 +44,10 @@ assert.match(render,/ctx\.arc\(0,0,23,base-1\.02,angle,false\)/,"active melee at
 assert.match(render,/ctx\.createLinearGradient\(3,-4,24,4\)/,"the equipped sword must render as a shaped highlighted blade");
 assert.match(render,/drawPlayerWeapon\(p,cx,cy,d\);/,"every player render must draw the current firearm or sword");
 assert.match(play,/const ATTACK_BUFFER_MS=700/,"quick fire taps must remain buffered through the longest melee cooldown");
-assert.match(play,/function queueAttack\(p\)/,"keyboard and touch attacks must share a one-shot input buffer");
-assert.match(play,/input\.has\("Space"\)\|\|fireBuffer1>0[\s\S]*?firePlayer\(p1,attackDirection\(p1,d1\(\)\)\)/,"holding or tapping desktop fire must attack at the weapon cooldown in the movement direction or last facing direction");
-assert.match(play,/const firePressed=Boolean\(gp\.buttons\?\.\[0\]\?\.pressed\)[\s\S]*firePressed&&\(!gamepadFireDown\|\|fire1<=0\)[\s\S]*CCGLostSizzlerV142R20LiveRegressionStability[\s\S]*attackNow\("Gamepad0"\)/,"initial joystick FIRE must always enter recovery while held FIRE repeats only at the normal weapon cooldown");
-assert.match(play,/else if\(fire1<=0\)firePlayer\(p1,attackDirection\(p1,dir\)\)/,"gamepad fallback must retain the weapon cooldown and the player's last facing direction");
+assert.match(play,/function queueAttack\(p,requestedDirection=null\)[\s\S]*fireBuffer2=ATTACK_BUFFER_MS;else fireBuffer1=ATTACK_BUFFER_MS/,"keyboard, touch and cadence-blocked gamepad attacks must share the authoritative one-shot input buffer");
+assert.match(play,/input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\|\|fireBuffer1>0[\s\S]*?firePlayer\(p1,attackDirection\(p1,d1\(\)\)\)/,"holding or tapping either desktop FIRE key must attack at the weapon cooldown in the movement direction or last facing direction");
+assert.match(play,/const firePressed=Boolean\(gp\.buttons\?\.\[0\]\?\.pressed\)[\s\S]*const direction=attackDirection\(p1,dir\)[\s\S]*if\(!gamepadFireDown\)\{[\s\S]*if\(!attackNowUnbuffered\(p1,direction\)\)queueAttack\(p1,direction\)[\s\S]*else if\(fire1<=0\)attackNowUnbuffered\(p1,direction\)/,"joystick FIRE must use the authoritative direct owner for the initial press, buffer only when cadence blocks it, and route held repeats through the same core");
+assert.doesNotMatch(play,/const recovery=window\.CCGLostSizzlerV142R20LiveRegressionStability/,"gamepad FIRE must not depend on a historical recovery owner");
 assert.match(play,/const source=requested&&\(requested\.x\|\|requested\.y\)\?requested:p\?\.dir/,"stationary attacks must fall back to the player's facing direction");
 assert.match(touch,/queueAttack\(p1\)/,"a quick touch FIRE tap must not be lost between animation frames");
 assert.match(touch,/input\.add\("Space"\)/,"holding the touch FIRE button must use the same repeat-fire state as the keyboard");

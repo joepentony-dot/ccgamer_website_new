@@ -1,3 +1,19 @@
+## Current Dungeon/PR consolidation state — 27 September 2026
+
+- Sole intended Dungeon survivor is draft PR #2391 / `codex/dungeon-authoritative-fire-traps-rewrite-20260927`. It is a from-scratch canonical FIRE/trap rewrite, not another late wrapper stack.
+- Exact candidate before this documentation commit: `8d941aee21ad9a9e5b08f6eef140283597a9075d` on main `ce125d8e6586c332cc1b9ee2eebc0d9c72697c23`. Qualification is in progress; do not merge around failures.
+- #2381 is CLOSED as superseded. Its unique movement-through-FIRE-fault requirement has been re-derived on #2391 using transactional projectile-spawn failure coverage.
+- #2329 and #2176 are CLOSED as stale preservation integration vehicles. Their exact heads/history remain preserved for deliberate future reconstruction; do not reopen/rebase them wholesale.
+- #2361 remains temporarily open only as the older source vehicle while #2391 qualifies. Independent generation, reporter and behavioural fixes worth retaining have been migrated into #2391; wrapper-specific ownership code is intentionally not being carried forward. Close #2361 as superseded once #2391 establishes the replacement qualification path.
+- Manual production gate remains FAILED from the user's mobile test: a visible trap did not reduce HEALTH. Repository green alone is insufficient; after eventual merge/deploy, retest sustained FIRE and natural FIRE/SPIKE/SHOCK on real mobile/desktop before closing the release blocker.
+
+## Dungeon R58 authoritative rewrite — 27 September 2026
+
+- Active P0 vehicle is draft PR #2391 / `codex/dungeon-authoritative-fire-traps-rewrite-20260927`, created directly from current main `ce125d8e6586c332cc1b9ee2eebc0d9c72697c23` after the user explicitly chose a from-scratch FIRE/trap rewrite instead of further incremental repair.
+- #2391 is intended to supersede #2361 and #2381 only after it passes exact-head qualification and deployed hands-on acceptance. Until then, do not merge or discard their history.
+- New supported ownership: one core FIRE path plus one core player/trap/cycle damage ledger; historical R19/R20 FIRE/trap recovery modules are no longer loaded by the V10.42 ordered bootstrap.
+- Required gate remains full canonical/Node + Chromium shards 1–6, followed by real mobile/desktop sustained FIRE and natural FIRE/SPIKE/SHOCK HEALTH-loss acceptance.
+
 ## Generated-output custom-domain navigation handoff — 25 September 2026
 
 - #2355 is merged and its real generated-output follow-through produced #2356 / `b3b9a22b5ebb1bcb4f461cf2970273d38d9ba6fe`. The new explicit Omega deployment dispatch worked and deployed successfully.

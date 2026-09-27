@@ -27,22 +27,39 @@ try{
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof mode!=="undefined"&&mode==="playing"&&Boolean(p1)&&Boolean(host),null,{timeout:20000});
 
   const damage=await page.evaluate(()=>{
-    const api=window.CCGLostSizzlerV141R56PlaytestCompletion;
+    const api=window.CCGLostSizzlerV142R58AuthoritativeTrapCore;
     p1.health=p1.maxHealth=8;p1.armor=12;p1.invuln=999999;
     const start=Number(p1.health)+Number(p1.armor),rows=[];
     for(const kind of ["fire","spike","shock"]){
-      const trap={id:`r56-${kind}`,x:p1.x,y:p1.y,roomId:0,kind,phase:-performance.now(),period:100000000,active:true};
-      host.traps=[trap];p1.invuln=999999;const before=Number(p1.health)+Number(p1.armor);api.trapCycleTick();const after=Number(p1.health)+Number(p1.armor);rows.push({kind,before,after});
-      trap.phase=trap.period*.7-performance.now();api.trapCycleTick();
+      const trap={id:`r58-${kind}`,x:p1.x,y:p1.y,roomId:0,kind,phase:-performance.now(),period:100000000,active:true};
+      host.traps=[trap];p1.invuln=999999;
+      const before={health:Number(p1.health),armor:Number(p1.armor)};
+      api.damageOccupiedActiveTraps();
+      const after={health:Number(p1.health),armor:Number(p1.armor)};
+      rows.push({kind,before,after});
+      trap.phase=trap.period*.7-performance.now();api.rearmInactiveTrapContacts();
     }
-    const repeat={id:"r56-repeat",x:p1.x,y:p1.y,roomId:0,kind:"fire",phase:-performance.now(),period:100000000,active:true};host.traps=[repeat];p1.invuln=999999;const repeatBefore=Number(p1.health)+Number(p1.armor);api.trapCycleTick();const first=Number(p1.health)+Number(p1.armor);repeat.phase=repeat.period*.7-performance.now();api.trapCycleTick();repeat.phase=-performance.now();p1.invuln=999999;api.trapCycleTick();const second=Number(p1.health)+Number(p1.armor);
+    const repeat={id:"r58-repeat",x:p1.x,y:p1.y,roomId:0,kind:"fire",phase:-performance.now(),period:100000000,active:true};
+    host.traps=[repeat];p1.invuln=999999;
+    const repeatBefore=Number(p1.health);
+    api.damageOccupiedActiveTraps();
+    const first=Number(p1.health);
+    api.damageOccupiedActiveTraps();
+    const duplicate=Number(p1.health);
+    repeat.phase=repeat.period*.7-performance.now();api.rearmInactiveTrapContacts();
+    repeat.phase=-performance.now();p1.invuln=999999;api.damageOccupiedActiveTraps();
+    const second=Number(p1.health);
     p1.invuln=999999;const blastBefore=Number(p1.health)+Number(p1.armor);hurtPlayer(p1,1,false,"anti-loitering blast");const blastAfter=Number(p1.health)+Number(p1.armor);
-    return{start,rows,repeatBefore,first,second,blastBefore,blastAfter,state:{trapHits:api.state.trapHits,environmentHits:api.state.environmentHits}};
+    return{start,rows,repeatBefore,first,duplicate,second,blastBefore,blastAfter,state:{...api.state}};
   });
-  for(const row of damage.rows)assert.equal(row.after,row.before-1,`${row.kind} trap must damage through stale invulnerability: ${JSON.stringify(damage)}`);
+  for(const row of damage.rows){
+    assert.equal(row.after.health,row.before.health-1,`${row.kind} trap must remove exactly one HEALTH through stale invulnerability: ${JSON.stringify(damage)}`);
+    assert.equal(row.after.armor,row.before.armor,`${row.kind} trap must preserve armour: ${JSON.stringify(damage)}`);
+  }
   assert.equal(damage.first,damage.repeatBefore-1,`first active trap cycle must damage: ${JSON.stringify(damage)}`);
-  assert.equal(damage.second,damage.first-1,`the same trap must damage again on a new active cycle: ${JSON.stringify(damage)}`);
-  assert.equal(damage.blastAfter,damage.blastBefore-1,`anti-loitering direct blast must damage through stale invulnerability: ${JSON.stringify(damage)}`);
+  assert.equal(damage.duplicate,damage.first,`the same active trap cycle must not double-hit: ${JSON.stringify(damage)}`);
+  assert.equal(damage.second,damage.first-1,`the same trap must damage again after rearm: ${JSON.stringify(damage)}`);
+  assert.equal(damage.blastAfter,damage.blastBefore-1,`anti-loitering direct blast must still damage through stale invulnerability: ${JSON.stringify(damage)}`);
 
   const chest=await page.evaluate(()=>{
     const oldLoot=PGR.lootForChest,loot={kind:"potion",amount:1,qty:1,rarity:"SIZZLER",name:"SIZZLER Restoration Potion"};
@@ -84,26 +101,33 @@ try{
   const icons=await page.evaluate(()=>{p1.inventorySlots=3;p1.inventory=[{kind:"potion",name:"Restoration Potion",qty:2},{kind:"teleport",name:"Teleport Spell",qty:1},{kind:"artefact",name:"Rare Artefact",qty:1}];sync();window.CCGLostSizzlerV141R56PlaytestCompletion.renderQuickIcons();return [...document.querySelectorAll("#quick-slots .quick-slot")].slice(0,3).map((slot,index)=>{const icon=slot.querySelector(".r56-quick-slot-icon svg,.r56-quick-slot-icon img.item-art"),a=slot.getBoundingClientRect(),b=icon?.getBoundingClientRect();return{index,tag:String(icon?.tagName||""),has:Boolean(icon),w:b?.width||0,h:b?.height||0,inside:Boolean(b&&b.left>=a.left&&b.right<=a.right&&b.top>=a.top&&b.bottom<=a.bottom)}})});
   assert.equal(icons.length,3,`three Quick Inventory slots must render: ${JSON.stringify(icons)}`);for(const row of icons){assert.equal(row.has,true,`occupied slot ${row.index+1} must contain graphical item art: ${JSON.stringify(icons)}`);assert.ok(row.w>=16&&row.h>=16&&row.inside,`slot ${row.index+1} icon must remain visible inside the compact bottom strip: ${JSON.stringify(icons)}`)}
 
-  await page.evaluate(()=>{p1.health=p1.maxHealth=8;p1.armor=0;p1.firearmUnlocked=false;p1.weapon=null;p1.mana=0;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;fire1=0;fireBuffer1=0;mode="playing";document.querySelectorAll("#pause,#inventory-panel,#item-info-panel,#named-dossier-panel,#shop-panel").forEach(n=>n.classList.add("hidden"));});
+  await page.evaluate(()=>{p1.health=p1.maxHealth=8;p1.armor=0;p1.firearmUnlocked=false;p1.weapon=null;p1.mana=0;p1.hitStunMs=0;fire1=0;fireBuffer1=0;mode="playing";document.querySelectorAll("#pause,#inventory-panel,#item-info-panel,#named-dossier-panel,#shop-panel").forEach(n=>n.classList.add("hidden"));});
   for(let i=0;i<12;i++){
     await page.keyboard.press("KeyP");await page.waitForFunction(()=>mode==="paused",null,{timeout:3000});
-    await page.evaluate(()=>{fire1=9999;fireBuffer1=700;p1.hitStunMs=9999;p1.controlLocked=true;p1.controlsLocked=true});
+    await page.evaluate(()=>{fire1=9999;fireBuffer1=700;p1.hitStunMs=9999;;p1.controlsLocked=true});
     await page.click("#resume-btn");await page.waitForFunction(()=>mode==="playing",null,{timeout:3000});
     const before=await page.evaluate(()=>Number(p1._meleeSwingAt||0));await page.keyboard.press("Space");await page.waitForFunction(before=>Number(p1._meleeSwingAt||0)>before,before,{timeout:2500});
-    const combat=await page.evaluate(()=>({mana:Number(p1.mana||0),fire:Number(fire1||0),stun:Number(p1.hitStunMs||0),locked:Boolean(p1.controlLocked||p1.controlsLocked)}));
-    assert.equal(combat.mana,0,`cycle ${i+1}: sword recovery must work at zero ammo`);assert.equal(combat.locked,false,`cycle ${i+1}: stale control locks must be cleared`);assert.ok(combat.stun<5000,`cycle ${i+1}: stuck hit-stun must be repaired`);
+    const combat=await page.evaluate(()=>({mana:Number(p1.mana||0),fire:Number(fire1||0),stun:Number(p1.hitStunMs||0)}));
+    assert.equal(combat.mana,0,`cycle ${i+1}: sword recovery must work at zero ammo`);assert.ok(combat.stun<5000,`cycle ${i+1}: stuck hit-stun must be repaired`);
   }
 
   await page.evaluate(()=>{p1.firearmUnlocked=true;p1.weapon=PGR.generateWeapon(0,1,()=>0.1);p1.mana=30;host.enemies=[];host.blockingDecor=[];fire1=0;fireBuffer1=0;});
   for(let i=0;i<4;i++){
-    await page.keyboard.press("KeyP");await page.waitForFunction(()=>mode==="paused",null,{timeout:3000});await page.evaluate(()=>{fire1=9999;p1.hitStunMs=9999;p1.controlLocked=true});await page.click("#resume-btn");await page.waitForFunction(()=>mode==="playing",null,{timeout:3000});const before=await page.evaluate(()=>({mana:Number(p1.mana||0),bullets:bullets.length}));await page.keyboard.press("Space");await page.waitForFunction(before=>Number(p1.mana||0)<before.mana||bullets.length>before.bullets,before,{timeout:2500});
+    await page.keyboard.press("KeyP");await page.waitForFunction(()=>mode==="paused",null,{timeout:3000});await page.evaluate(()=>{fire1=9999;p1.hitStunMs=9999;});await page.click("#resume-btn");await page.waitForFunction(()=>mode==="playing",null,{timeout:3000});const before=await page.evaluate(()=>({mana:Number(p1.mana||0),bullets:bullets.length}));await page.keyboard.press("Space");await page.waitForFunction(before=>Number(p1.mana||0)<before.mana||bullets.length>before.bullets,before,{timeout:2500});
   }
 
-  const finalState=await page.evaluate(()=>({...window.CCGLostSizzlerV141R56PlaytestCompletion.state,trapCycles:window.CCGLostSizzlerV141R56PlaytestCompletion.state.trapCycles.size,pendingChests:window.CCGLostSizzlerV141R56PlaytestCompletion.state.pendingChests.size}));
-  assert.ok(finalState.combatRearms>=12,`repeated pause stress must exercise R56 combat rearming: ${JSON.stringify(finalState)}`);
-  assert.deepEqual(pageErrors,[],`R56 browser regression produced page errors: ${pageErrors.join("\n")}`);
+  const finalState=await page.evaluate(()=>({
+    r56:{...window.CCGLostSizzlerV141R56PlaytestCompletion.state},
+    r58Fire:Boolean(window.CCGLostSizzlerV142R58AuthoritativeFireCore),
+    r58Trap:Boolean(window.CCGLostSizzlerV142R58AuthoritativeTrapCore)
+  }));
+  assert.equal(finalState.r58Fire,true,"r58 FIRE core must own the repeated pause stress");
+  assert.equal(finalState.r58Trap,true,"r58 trap core must own floor-trap damage");
+  assert.equal(Number(finalState.r56.combatRearms||0),0,`R56 combat ownership must remain retired: ${JSON.stringify(finalState)}`);
+  assert.equal(Number(finalState.r56.trapHits||0),0,`R56 trap ownership must remain retired: ${JSON.stringify(finalState)}`);
+  assert.deepEqual(pageErrors,[],`r58/R56 compatibility browser regression produced page errors: ${pageErrors.join("\n")}`);
   await context.close();
-  console.log("R56 traps, chest rewards, feedback, inventory icons and repeated combat recovery browser regression passed.");
+  console.log("R58 traps plus retained R56 chest, reward, feedback and inventory UI regression passed.");
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
 }

@@ -116,9 +116,21 @@
     const strictEligibleRooms=baseEligibleRooms.filter(room=>!room.sanctuary&&!room.sigilRoom&&!room.spiderNest);
     const fallbackEligibleRooms=baseEligibleRooms.filter(room=>!room.sanctuary);
     const emergencyEligibleRooms=baseEligibleRooms;
+    const compactEligibleRooms=(worldState?.rooms||[]).filter(room=>
+      room
+      && room.id!==worldState?.startRoomId
+      && room.id!==worldState?.exitRoomId
+      && !room.dedicatedHazard
+      && !hazardRooms.has(room.id)
+    );
+    const ultimateEligibleRooms=(worldState?.rooms||[]).filter(room=>
+      room
+      && room.id!==worldState?.startRoomId
+      && room.id!==worldState?.exitRoomId
+    );
     const reserveCell=kind=>{
       const visited=new Set();
-      for(const pool of [strictEligibleRooms,fallbackEligibleRooms,emergencyEligibleRooms]){
+      for(const pool of [strictEligibleRooms,fallbackEligibleRooms,emergencyEligibleRooms,compactEligibleRooms,ultimateEligibleRooms]){
         const ordered=pool
           .filter(room=>!visited.has(room.id))
           .map(room=>({room,key:hash32(`${seed}|${room.id}|stage6-family-room|${kind}`)}))
@@ -131,6 +143,15 @@
               if(worldState?.map?.[y]?.[x]!==0)continue;
               if(occupied.has(`${x},${y}`))continue;
               cells.push({x,y});
+            }
+          }
+          if(!cells.length){
+            for(let y=Number(room.y);y<=Number(room.y)+Number(room.h);y++){
+              for(let x=Number(room.x);x<=Number(room.x)+Number(room.w);x++){
+                if(worldState?.map?.[y]?.[x]!==0)continue;
+                if(occupied.has(`${x},${y}`))continue;
+                cells.push({x,y});
+              }
             }
           }
           if(!cells.length)continue;
@@ -212,12 +233,128 @@
       });
     });
   }
+  const usableDedicatedHazard=hazard=>Boolean(hazard&&Array.isArray(hazard.cells)&&hazard.cells.length>0);
+  function ensureDedicatedHazard(worldState,hostState,runState,profile,seed){
+    const existing=Array.isArray(hostState?.hazardRooms)?hostState.hazardRooms:[];
+    if(existing.some(usableDedicatedHazard))return false;
+    if(existing.some(hazard=>hazard?.v142WardenCleansed===true))return false;
+    if(hostState)hostState.hazardRooms=existing.filter(hazard=>usableDedicatedHazard(hazard)||hazard?.v142WardenCleansed===true);
+    const sortCandidates=list=>list.sort((a,b)=>
+      Number(Boolean(b.dedicatedHazardReserved))-Number(Boolean(a.dedicatedHazardReserved))
+      || Number(Boolean(a.sanctuary))-Number(Boolean(b.sanctuary))
+      || (Number(b.w)*Number(b.h))-(Number(a.w)*Number(a.h))
+      || hash32(`${seed}|stage6-hazard|${a.id}`)-hash32(`${seed}|stage6-hazard|${b.id}`)
+    );
+    const preferredCandidates=(worldState?.rooms||[]).filter(room=>
+      room
+      && room.id!==worldState?.startRoomId
+      && room.id!==worldState?.exitRoomId
+      && !room.sigilRoom
+      && !room.spiderNest
+      && Number(room.w)>=2
+      && Number(room.h)>=2
+    );
+    const preferredIds=new Set(preferredCandidates.map(room=>room.id));
+    const compactFallbackCandidates=(worldState?.rooms||[]).filter(room=>
+      room
+      && room.id!==worldState?.startRoomId
+      && room.id!==worldState?.exitRoomId
+      && !room.sigilRoom
+      && !room.spiderNest
+      && !preferredIds.has(room.id)
+      && Number(room.w)>=1
+      && Number(room.h)>=1
+    );
+    const emergencyCandidates=(worldState?.rooms||[]).filter(room=>
+      room
+      && room.id!==worldState?.startRoomId
+      && room.id!==worldState?.exitRoomId
+      && !preferredIds.has(room.id)
+      && !compactFallbackCandidates.some(candidate=>candidate.id===room.id)
+    );
+    const candidates=[...sortCandidates(preferredCandidates),...sortCandidates(compactFallbackCandidates),...sortCandidates(emergencyCandidates)];
+    const floor=floorOf(runState),resolvedProfile=profile||profileForFloor(floor),types=["blade","embers","arrows"],type=types[floor%types.length],groups=type==="embers"?2:type==="blade"?3:4;
+    for(const room of candidates){
+      const cells=[];
+      for(let y=Number(room.y)+1;y<Number(room.y)+Number(room.h);y++){
+        for(let x=Number(room.x)+1;x<Number(room.x)+Number(room.w);x++){
+          if(worldState?.map?.[y]?.[x]!==0)continue;
+          const group=type==="embers"?(x+y)%2:type==="blade"?(x-Number(room.x))%3:(y-Number(room.y))%4;
+          cells.push({x,y,group});
+        }
+      }
+      if(!cells.length){
+        // Compact rooms can expose only walkable boundary cells. Exhaust the
+        // complete room footprint, then continue to the next candidate if this
+        // room still cannot host a real hazard cell.
+        for(let y=Number(room.y);y<=Number(room.y)+Number(room.h)&&!cells.length;y++){
+          for(let x=Number(room.x);x<=Number(room.x)+Number(room.w);x++){
+            if(worldState?.map?.[y]?.[x]!==0)continue;
+            cells.push({x,y,group:0});
+            break;
+          }
+        }
+      }
+      if(!cells.length)continue;
+      const hazard={
+        id:`hazard-${floor}-stage6-emergency`,roomId:room.id,type,cells,groups,
+        period:type==="arrows"?2050:type==="blade"?2300:2550,
+        warningMs:type==="arrows"?780:700,activeMs:type==="embers"?760:560,
+        phase:hash32(`${seed}|stage6-hazard-phase|${room.id}`)%1200,
+        title:type==="blade"?"PENDULUM BLADE GALLERY":type==="embers"?"EMBER-TILE VAULT":"ARROW-SLIT CROSSING"
+      };
+      hostState.hazardRooms=hostState.hazardRooms||[];
+      hostState.hazardRooms.push(hazard);
+      room.dedicatedHazard=true;room.dedicatedHazardReserved=true;room.hazardType=type;room.dangerous=true;
+      tuneHazard(hazard,resolvedProfile,seed,worldState);
+      state.hazardsTuned++;
+      return true
+    }
+
+    // Absolute final guarantee for narrow/procedural edge cases: consume an
+    // already-walkable cell outside the start/exit rooms without carving or
+    // changing topology. Prefer a cell that does not already host a floor trap.
+    const trapCells=new Set((hostState?.traps||[]).filter(trap=>trap?.active).map(trap=>`${Number(trap.x)},${Number(trap.y)}`));
+    const mapFallbacks=[];
+    for(let y=0;y<(worldState?.map||[]).length;y++){
+      const row=worldState.map[y]||[];
+      for(let x=0;x<row.length;x++){
+        if(row[x]!==0)continue;
+        const roomId=W.roomAt(worldState,x,y);
+        if(roomId<0||roomId===worldState?.startRoomId||roomId===worldState?.exitRoomId)continue;
+        const room=(worldState?.rooms||[]).find(candidate=>Number(candidate?.id)===Number(roomId))||worldState?.rooms?.[roomId]||null;
+        if(!room)continue;
+        mapFallbacks.push({x,y,roomId,room,occupied:trapCells.has(`${x},${y}`),key:hash32(`${seed}|stage6-map-hazard|${roomId}|${x},${y}`)});
+      }
+    }
+    mapFallbacks.sort((a,b)=>Number(a.occupied)-Number(b.occupied)||a.key-b.key);
+    const fallback=mapFallbacks[0]||null;
+    if(fallback){
+      const hazard={
+        id:`hazard-${floor}-stage6-map-fallback`,roomId:fallback.roomId,type,cells:[{x:fallback.x,y:fallback.y,group:0}],groups,
+        period:type==="arrows"?2050:type==="blade"?2300:2550,
+        warningMs:type==="arrows"?780:700,activeMs:type==="embers"?760:560,
+        phase:hash32(`${seed}|stage6-map-hazard-phase|${fallback.roomId}|${fallback.x},${fallback.y}`)%1200,
+        title:type==="blade"?"PENDULUM BLADE GALLERY":type==="embers"?"EMBER-TILE VAULT":"ARROW-SLIT CROSSING",
+        v142ZoneHazardMapFallback:true
+      };
+      hostState.hazardRooms=hostState.hazardRooms||[];
+      hostState.hazardRooms.push(hazard);
+      fallback.room.dedicatedHazard=true;fallback.room.dedicatedHazardReserved=true;fallback.room.hazardType=type;fallback.room.dangerous=true;
+      tuneHazard(hazard,resolvedProfile,seed,worldState);
+      state.hazardsTuned++;
+      return true
+    }
+    return false
+  }
+
   function applyZoneGameplay(worldState,hostState,runState){
     if(!worldState||!hostState||!runState)return hostState;
     const floor=floorOf(runState),profile=profileForFloor(floor),seed=String(runState.seed||"CCG");
     for(const enemy of hostState.enemies||[]){tuneGuardian(enemy,profile);tuneEnemy(enemy,profile,seed,worldState)}
     (hostState.traps||[]).forEach((trap,index)=>tuneTrap(trap,index,profile,seed,worldState));
     reconcileTrapFamilies(hostState,seed,worldState,{...profile,floor});
+    ensureDedicatedHazard(worldState,hostState,runState,profile,seed);
     for(const hazard of hostState.hazardRooms||[])tuneHazard(hazard,profile,seed,worldState);
     for(const generator of hostState.generators||[])tuneGenerator(generator,profile);
     hostState.v142ZoneGameplay={
@@ -237,6 +374,6 @@
 
   window.CCGLostSizzlerV142Stage6ZoneGameplay={
     version:"V10.42-stage6-r1",PROFILES,state,profileForFloor,routeRole,protectedEnemy,
-    ordinaryKind,tuneEnemy,tuneGuardian,tuneTrap,reconcileTrapFamilies,tuneHazard,tuneGenerator,encounterDirectives,applyZoneGameplay
+    ordinaryKind,tuneEnemy,tuneGuardian,tuneTrap,reconcileTrapFamilies,usableDedicatedHazard,ensureDedicatedHazard,tuneHazard,tuneGenerator,encounterDirectives,applyZoneGameplay
   };
 })();

@@ -28,16 +28,16 @@ try{
   const preservation=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R56PlaytestCompletion;
     mode="playing";document.querySelectorAll("#pause,#inventory-panel,#item-info-panel,#named-dossier-panel,#shop-panel,#level-up,#artefact-choice-panel,#floor-complete,#save-panel").forEach(node=>node?.classList.add("hidden"));
-    input.add("Space");fireBuffer1=500;fire1=9999;p1.hitStunMs=9999;p1.controlLocked=true;p1.controlsLocked=true;
-    api.rearmCombat("preservation contract",0,true);
-    const result={spaceHeld:input.has("Space"),buffer:Number(fireBuffer1),fire:Number(fire1),stun:Number(p1.hitStunMs),locked:Boolean(p1.controlLocked||p1.controlsLocked)};
-    input.delete("Space");fireBuffer1=0;return result
+    fire1=9999;fireBuffer1=500;p1.hitStunMs=9999;p1.__ccgLastHurtAt=0;
+    const result=api.rearmCombat("retired ownership contract",0,true);
+    const after={result,buffer:Number(fireBuffer1),fire:Number(fire1),stun:Number(p1.hitStunMs)};
+    fire1=0;fireBuffer1=0;p1.hitStunMs=0;
+    return after
   });
-  assert.equal(preservation.spaceHeld,true,`combat recovery must preserve a live canonical Space press: ${JSON.stringify(preservation)}`);
-  assert.equal(preservation.buffer,500,`combat recovery must preserve a valid queued attack buffer: ${JSON.stringify(preservation)}`);
-  assert.equal(preservation.fire,0,`impossible attack cooldown must be repaired: ${JSON.stringify(preservation)}`);
-  assert.equal(preservation.stun,0,`impossible hit-stun must be repaired: ${JSON.stringify(preservation)}`);
-  assert.equal(preservation.locked,false,`stale control locks must be repaired: ${JSON.stringify(preservation)}`);
+  assert.equal(preservation.result,false,`R56 rearmCombat must be retired under r58: ${JSON.stringify(preservation)}`);
+  assert.equal(preservation.fire,9999,`R56 must not mutate the authoritative FIRE cooldown: ${JSON.stringify(preservation)}`);
+  assert.equal(preservation.buffer,500,`R56 must not mutate the authoritative FIRE buffer: ${JSON.stringify(preservation)}`);
+  assert.equal(preservation.stun,9999,`R56 must not repair attack hit-stun: ${JSON.stringify(preservation)}`);
 
   const gamepad=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R49GamepadInput,buttons=Array.from({length:16},()=>({pressed:false,value:0}));
@@ -49,7 +49,7 @@ try{
   assert.ok(gamepad.events>=1,`controller A must dispatch a canonical attack keydown: ${JSON.stringify(gamepad)}`);
 
   await page.evaluate(()=>{
-    p1.health=p1.maxHealth=8;p1.armor=0;p1.firearmUnlocked=true;p1.weapon=PGR.generateWeapon(0,1,()=>0.1);p1.maxMana=240;p1.mana=240;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
+    p1.health=p1.maxHealth=8;p1.armor=0;p1.firearmUnlocked=true;p1.weapon=PGR.generateWeapon(0,1,()=>0.1);p1.maxMana=240;p1.mana=240;p1.hitStunMs=0;
     host.enemies=[];host.blockingDecor=[];fire1=0;fireBuffer1=0;mode="playing";
   });
   for(let i=0;i<12;i++){
@@ -59,9 +59,8 @@ try{
     const before=await page.evaluate(()=>({mana:Number(p1.mana),bullets:Number(bullets?.length||0)}));
     await page.keyboard.press("Space");
     await page.waitForFunction(before=>Number(p1.mana)<before.mana||Number(bullets?.length||0)>before.bullets,before,{timeout:2500});
-    const after=await page.evaluate(()=>({mana:Number(p1.mana),fire:Number(fire1),buffer:Number(fireBuffer1),stun:Number(p1.hitStunMs||0),locked:Boolean(p1.controlLocked||p1.controlsLocked)}));
+    const after=await page.evaluate(()=>({mana:Number(p1.mana),fire:Number(fire1),buffer:Number(fireBuffer1),stun:Number(p1.hitStunMs||0)}));
     assert.ok(after.mana<before.mana,`firearm cycle ${i+1}: plentiful-ammo gun must consume ammo and fire: ${JSON.stringify({before,after})}`);
-    assert.equal(after.locked,false,`firearm cycle ${i+1}: control locks must not survive resume`);
     if(after.mana<80)await page.evaluate(()=>{p1.mana=240});
   }
 
@@ -72,15 +71,19 @@ try{
     await page.click("#resume-btn");await page.waitForFunction(()=>mode==="playing",null,{timeout:3000});
     const before=await page.evaluate(()=>Number(p1._meleeSwingAt||0));await page.keyboard.press("Space");
     await page.waitForFunction(before=>Number(p1._meleeSwingAt||0)>before,before,{timeout:2500});
-    const after=await page.evaluate(()=>({mana:Number(p1.mana||0),stun:Number(p1.hitStunMs||0),locked:Boolean(p1.controlLocked||p1.controlsLocked)}));
-    assert.equal(after.mana,0,`sword cycle ${i+1}: zero ammo must still use melee`);assert.equal(after.locked,false,`sword cycle ${i+1}: control locks must not survive resume`);
+    const after=await page.evaluate(()=>({mana:Number(p1.mana||0),stun:Number(p1.hitStunMs||0)}));
+    assert.equal(after.mana,0,`sword cycle ${i+1}: zero ammo must still use melee`);
   }
 
-  const state=await page.evaluate(()=>({...window.CCGLostSizzlerV141R56PlaytestCompletion.state,trapCycles:window.CCGLostSizzlerV141R56PlaytestCompletion.state.trapCycles.size,pendingChests:window.CCGLostSizzlerV141R56PlaytestCompletion.state.pendingChests.size}));
-  assert.ok(state.cooldownRepairs>=24,`attack stress must exercise cooldown repair in both gun and sword modes: ${JSON.stringify(state)}`);
-  assert.ok(state.attackIntentRepairs>=1,`attack intent recovery must have re-queued at least one canonical attack: ${JSON.stringify(state)}`);
-  assert.deepEqual(pageErrors,[],`R56 attack liveness browser regression produced page errors: ${pageErrors.join("\n")}`);
-  await context.close();console.log("R56 canonical keyboard/gamepad attack preservation and 24-cycle gun/sword liveness stress passed.");
+  const state=await page.evaluate(()=>({
+    r56:{...window.CCGLostSizzlerV141R56PlaytestCompletion.state},
+    r58:Boolean(window.CCGLostSizzlerV142R58AuthoritativeFireCore)
+  }));
+  assert.equal(state.r58,true,"r58 authoritative FIRE core must own the completed stress run");
+  assert.equal(Number(state.r56.cooldownRepairs||0),0,`R56 must not repair FIRE cooldown during the r58 stress: ${JSON.stringify(state)}`);
+  assert.equal(Number(state.r56.attackIntentRepairs||0),0,`R56 must not manufacture attack intents during the r58 stress: ${JSON.stringify(state)}`);
+  assert.deepEqual(pageErrors,[],`r58 attack liveness browser regression produced page errors: ${pageErrors.join("\n")}`);
+  await context.close();console.log("R58 canonical keyboard/gamepad 24-cycle gun/sword liveness stress passed.");
 }finally{
   await browser.close().catch(()=>{});for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
 }

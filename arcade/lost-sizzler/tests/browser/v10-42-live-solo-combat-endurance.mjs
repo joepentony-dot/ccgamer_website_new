@@ -142,10 +142,10 @@ try{
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
   const boot=await page.evaluate(()=>({ready:CCGLostSizzlerV142Bootstrap.ready,failed:CCGLostSizzlerV142Bootstrap.failed,error:CCGLostSizzlerV142Bootstrap.error||"",build:CCGLostSizzlerV142Bootstrap.build,cache:CCGLostSizzlerV142Bootstrap.cache,metaBuild:document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content,metaCache:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content,ordered:[...document.querySelectorAll('script[data-ccg-v142-ordered="true"]')].map(s=>s.src)}));
   assert.equal(boot.failed,false,`r47 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r47 ordered bootstrap must complete");
-  assert.equal(boot.build,"V10.42 r57");assert.equal(boot.cache,"20260925r57");assert.equal(boot.metaBuild,"V10.42 r57");assert.equal(boot.metaCache,"20260925r57");
+  assert.equal(boot.build,"V10.42 r58");assert.equal(boot.cache,"20260927r58");assert.equal(boot.metaBuild,"V10.42 r58");assert.equal(boot.metaCache,"20260927r58");
   assert.ok(boot.ordered.length>=30,"r47 bootstrap must load the complete ordered V10.42 chain");
-  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260925r57"),"every ordered V10.42 module must use the r57 cache token");
-  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260925r57")),"expected r57 projectile lifecycle asset was not requested");
+  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260927r58"),"every ordered V10.42 module must use the r58 cache token");
+  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260927r58")),"expected r58 projectile lifecycle asset was not requested");
   assert.equal(await page.evaluate(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.ownsBoundary?.()===true),true,"#2118 lifecycle owner must be authoritative before play");
 
   await page.evaluate(()=>{const hb=window.__ccgEnduranceHeartbeat={frames:0,stalls:0,maxGap:0,last:0};const beat=t=>{if(hb.last){const gap=t-hb.last;hb.maxGap=Math.max(hb.maxGap,gap);if(gap>300)hb.stalls++}hb.last=t;hb.frames++;requestAnimationFrame(beat)};requestAnimationFrame(beat)});
@@ -188,21 +188,21 @@ try{
       const pausedPoison=await page.evaluate(()=>{
         fire1=4000;fireBuffer1=700;projectileCD=700;
         input.add("Space");input.add("KeyF");input.add("Numpad0");
-        window.CCGLostSizzlerV142AttackHoldLiveness?.held?.add?.("KeyF");
         return{
           mode:String(mode),fire1:Number(fire1),buffer:Number(fireBuffer1),projectileCD:Number(projectileCD),
-          held:Number(window.CCGLostSizzlerV142AttackHoldLiveness?.held?.size||0)
+          retiredHeldOwnerPresent:Boolean(window.CCGLostSizzlerV142AttackHoldLiveness)
         };
       });
       assert.equal(pausedPoison.mode,"paused","extended-pause regression must remain inside the pause boundary while stale attack state is seeded");
-      assert.ok(pausedPoison.fire1>0&&pausedPoison.buffer>0&&pausedPoison.projectileCD>0&&pausedPoison.held>0,"extended-pause regression failed to reproduce stale attack ownership");
+      assert.ok(pausedPoison.fire1>0&&pausedPoison.buffer>0&&pausedPoison.projectileCD>0,"extended-pause regression failed to reproduce stale canonical attack state");
+      assert.equal(pausedPoison.retiredHeldOwnerPresent,false,"retired held-FIRE recovery owner must remain absent during pause poisoning");
       await page.keyboard.press("KeyP");
       await page.waitForFunction(()=>mode==="playing");
       await page.waitForTimeout(80);
       const recovered=await page.evaluate(()=>({
         fire1:Number(fire1),buffer:Number(fireBuffer1),projectileCD:Number(projectileCD),
         space:input.has("Space"),keyF:input.has("KeyF"),numpad0:input.has("Numpad0"),
-        held:Number(window.CCGLostSizzlerV142AttackHoldLiveness?.held?.size||0),
+        retiredHeldOwnerPresent:Boolean(window.CCGLostSizzlerV142AttackHoldLiveness),
         resets:Number(window.__CCG_PAUSE_ATTACK_RESETS__||0)
       }));
       assert.ok(Number.isFinite(recovered.fire1)&&recovered.fire1<=0,`extended pause resume must leave P1 fire cadence ready (<=0), got ${recovered.fire1}`);
@@ -211,7 +211,7 @@ try{
       assert.equal(recovered.space,false,"extended pause resume must clear canonical Space ownership");
       assert.equal(recovered.keyF,false,"extended pause resume must clear KeyF alias ownership");
       assert.equal(recovered.numpad0,false,"extended pause resume must clear Numpad0 alias ownership");
-      assert.equal(recovered.held,0,"extended pause resume must clear the independent held-attack owner");
+      assert.equal(recovered.retiredHeldOwnerPresent,false,"extended pause resume must not recreate the retired held-attack owner");
       assert.ok(recovered.resets>=2,"extended pause resume must execute the guarded attack reset boundary");
       assert.equal(await armEnemy(page),true,"extended-pause recovery enemy unavailable");
       await fireCycle(page,"Space",4801);
@@ -225,16 +225,16 @@ try{
       const inventoryPoison=await page.evaluate(()=>{
         fire1=4000;fireBuffer1=700;projectileCD=700;
         input.add("Space");input.add("KeyF");input.add("Numpad0");
-        window.CCGLostSizzlerV142AttackHoldLiveness?.held?.add?.("KeyF");
         p1.controlLocked=true;p1.controlsLocked=true;p1.hitStunMs=7000;
         return{
           mode:String(mode),fire1:Number(fire1),buffer:Number(fireBuffer1),projectileCD:Number(projectileCD),
-          held:Number(window.CCGLostSizzlerV142AttackHoldLiveness?.held?.size||0),
+          retiredHeldOwnerPresent:Boolean(window.CCGLostSizzlerV142AttackHoldLiveness),
           controlLocked:Boolean(p1.controlLocked),controlsLocked:Boolean(p1.controlsLocked),hitStunMs:Number(p1.hitStunMs)
         };
       });
       assert.equal(inventoryPoison.mode,"inventory","extended inventory regression must remain inside the inventory boundary while stale attack state is seeded");
-      assert.ok(inventoryPoison.fire1>0&&inventoryPoison.buffer>0&&inventoryPoison.projectileCD>0&&inventoryPoison.held>0,"extended inventory regression failed to reproduce stale attack ownership");
+      assert.ok(inventoryPoison.fire1>0&&inventoryPoison.buffer>0&&inventoryPoison.projectileCD>0,"extended inventory regression failed to reproduce stale canonical attack state");
+      assert.equal(inventoryPoison.retiredHeldOwnerPresent,false,"retired held-FIRE recovery owner must remain absent during inventory poisoning");
       assert.equal(inventoryPoison.controlLocked,true,"extended inventory regression failed to seed the primary control lock");
       assert.equal(inventoryPoison.controlsLocked,true,"extended inventory regression failed to seed the aliased control lock");
       await page.locator("#inventory-close").click();
@@ -243,7 +243,7 @@ try{
       const inventoryRecovered=await page.evaluate(()=>({
         fire1:Number(fire1),buffer:Number(fireBuffer1),projectileCD:Number(projectileCD),
         space:input.has("Space"),keyF:input.has("KeyF"),numpad0:input.has("Numpad0"),
-        held:Number(window.CCGLostSizzlerV142AttackHoldLiveness?.held?.size||0),
+        retiredHeldOwnerPresent:Boolean(window.CCGLostSizzlerV142AttackHoldLiveness),
         controlLocked:Boolean(p1.controlLocked),controlsLocked:Boolean(p1.controlsLocked),hitStunMs:Number(p1.hitStunMs),
         lastReset:String(window.__CCG_PAUSE_ATTACK_LAST_RESET__?.reason||"")
       }));
@@ -253,11 +253,11 @@ try{
       assert.equal(inventoryRecovered.space,false,"extended inventory resume must clear canonical Space ownership");
       assert.equal(inventoryRecovered.keyF,false,"extended inventory resume must clear KeyF alias ownership");
       assert.equal(inventoryRecovered.numpad0,false,"extended inventory resume must clear Numpad0 alias ownership");
-      assert.equal(inventoryRecovered.held,0,"extended inventory resume must clear the independent held-attack owner");
+      assert.equal(inventoryRecovered.retiredHeldOwnerPresent,false,"extended inventory resume must not recreate the retired held-attack owner");
       assert.equal(inventoryRecovered.controlLocked,false,"extended inventory resume must clear the primary player control lock");
       assert.equal(inventoryRecovered.controlsLocked,false,"extended inventory resume must clear the aliased player control lock");
       assert.equal(inventoryRecovered.hitStunMs,0,"extended inventory resume must clear a stale over-limit hit-stun lock");
-      assert.equal(inventoryRecovered.lastReset,"r47-inventory-close",`r47 inventory-close recovery must own the combat resume reset, got ${inventoryRecovered.lastReset}`);
+      assert.equal(inventoryRecovered.lastReset,"inventory-close",`canonical inventory-close boundary must own the combat resume reset, got ${inventoryRecovered.lastReset}`);
       assert.equal(await armEnemy(page),true,"extended-inventory direct queue recovery enemy unavailable");
       await directQueueAttackCycle(page,6401);
       assert.equal(await armEnemy(page),true,"extended-inventory keyboard recovery enemy unavailable");
@@ -278,8 +278,8 @@ try{
       assert.equal(poisoned.controlLocked,true,"ordinary-play regression failed to seed controlLocked");
       assert.equal(poisoned.controlsLocked,true,"ordinary-play regression failed to seed controlsLocked");
       assert.equal(poisoned.hitStunMs,180,"ordinary-play regression failed to seed a numerically valid but stale hit-stun");
-      const handled=await page.evaluate(()=>window.CCGLostSizzlerV142R20LiveRegressionStability?.attackNow?.("Space")===true);
-      assert.equal(handled,true,"ordinary-play attack owner did not recover a stale live-combat lock");
+      const handled=await page.evaluate(()=>window.CCGLostSizzlerV142R58AuthoritativeFireCore?.attackNow?.()===true);
+      assert.equal(handled,true,"authoritative r58 attack owner did not recover a stale live-combat lock");
       await page.waitForTimeout(360);
       const afterLiveRepair=await snap(page);
       assert.ok(afterLiveRepair.mana<beforeLiveRepair.mana||afterLiveRepair.projectileSteps>beforeLiveRepair.projectileSteps,"ordinary-play attack recovery produced no shot/projectile work");

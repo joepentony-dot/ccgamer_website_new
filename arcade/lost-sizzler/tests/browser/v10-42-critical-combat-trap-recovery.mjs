@@ -42,20 +42,21 @@ try{
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&String(mode)==="playing"&&Boolean(p1&&host&&run));
 
   const attack=await page.evaluate(()=>globalThis.eval(`(()=>{
-    p1.firearmUnlocked=false;p1.weapon=null;p1.mana=0;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
-    fire1=0;fireBuffer1=0;input.delete("Space");
-    const api=window.CCGLostSizzlerV142R20LiveRegressionStability;
-    const before={melee:Number(p1._meleeSwingAt||0),fallbacks:Number(api.diagnostics.deepOwnerFallbacks||0),successes:Number(api.diagnostics.deepOwnerFallbackSuccesses||0)};
-    const previous=firePlayer;
-    const swallowed=function(){return false};swallowed.__ccgOriginal=previous;
-    firePlayer=swallowed;
-    let fired=false;
-    try{fired=api.attackNow("Space")}finally{firePlayer=previous}
-    return{fired,before,after:{melee:Number(p1._meleeSwingAt||0),fallbacks:Number(api.diagnostics.deepOwnerFallbacks||0),successes:Number(api.diagnostics.deepOwnerFallbackSuccesses||0)}};
+    p1.firearmUnlocked=true;p1.weapon=baseWeapon();p1.maxMana=Math.max(40,Number(p1.maxMana)||0);p1.mana=40;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
+    fire1=0;fireBuffer1=0;projectileCD=0;bullets.length=0;input.delete("Space");
+    const legacy=window.CCGLostSizzlerV142R20LiveRegressionStability;
+    const api=window.CCGLostSizzlerV142R58AuthoritativeFireCore;
+    const before={mana:Number(p1.mana),shots:bullets.filter(b=>b?.ttl>0&&b.owner===p1.id).length};
+    const fired=api?.attackNow?.();
+    const after={mana:Number(p1.mana),shots:bullets.filter(b=>b?.ttl>0&&b.owner===p1.id).length,fire:Number(fire1)};
+    return{fired,before,after,legacyFireOwnership:Boolean(legacy?.fireOwnership),authoritativeOwnership:Boolean(api?.gameplayOwnership)};
   })()`));
-  assert.equal(attack.fired,true,`deep retained fire owner must recover a swallowed outer attack owner: ${JSON.stringify(attack)}`);
-  assert.ok(attack.after.melee>attack.before.melee,"recovered attack must produce a real melee swing");
-  assert.ok(attack.after.fallbacks>attack.before.fallbacks&&attack.after.successes>attack.before.successes,"R20 diagnostics must record the retained-owner recovery");
+  assert.equal(attack.legacyFireOwnership,false,"R20 compatibility support must remain non-owning for FIRE");
+  assert.equal(attack.authoritativeOwnership,true,"R58 core must remain the single authoritative FIRE owner");
+  assert.equal(attack.fired,true,`authoritative FIRE owner must execute a live firearm attack: ${JSON.stringify(attack)}`);
+  assert.equal(attack.before.mana-attack.after.mana,1,"authoritative FIRE must consume exactly one round");
+  assert.ok(attack.after.shots>attack.before.shots,"authoritative FIRE must create a live projectile");
+  assert.ok(attack.after.fire>0,"authoritative FIRE must establish the canonical cooldown after a successful shot");
 
   const hazard=await page.evaluate(()=>globalThis.eval(`(()=>{
     const h=(host?.hazardRooms||[])[0];if(!h||!(h.cells||[]).length)return{available:false};

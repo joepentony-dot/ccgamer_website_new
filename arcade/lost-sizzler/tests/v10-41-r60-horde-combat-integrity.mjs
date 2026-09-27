@@ -63,7 +63,8 @@ assert.match(r60,/movePlayerV141R60CadenceSeal/,"Solo movement must have a hard 
 assert.match(r60,/movementCadence\(player\)-8/,"the cadence seal must stay tied to the configured player movement delay");
 assert.match(r60,/r59PauseBoundary\(\)/,"Solo live-play integrity must reset pause-sensitive state from the authoritative R59 pause boundary");
 assert.match(r60,/ccg-guaranteed-f/ ,"Solo world startup must restore a missing CCG named enemy instead of relying on the old random spawn chance");
-assert.match(r60,/goldenHurt/,"environmental fallback must be able to recover through the normal Dungeon damage owner after stale special-mode ownership");
+assert.doesNotMatch(r60,/goldenHurt/,"R60 must not retain a fallback Dungeon damage owner after r58 becomes authoritative");
+assert.match(r60,/function wrapEnvironmentalDamage\(\)[\s\S]*state\.hurtSource=window\.hurtPlayer;[\s\S]*state\.hurtWrapped=true;[\s\S]*return true/,"R60 environmental wrapper compatibility must be non-owning under r58");
 assert.match(config,/name:"AZALEA"[^\n]+avatar:"assets\/parsnip-celery\.png"/,"AZALEA must use her dedicated portrait asset rather than the CCG fallback logo");
 
 assert.match(frame,/function stopUnsafeR60LiveMonitor\(\)/,"the production loader must retire R60's original unconditional live-owner interval");

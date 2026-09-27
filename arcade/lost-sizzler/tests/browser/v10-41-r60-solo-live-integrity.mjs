@@ -148,37 +148,25 @@ try{
   assert.equal(movementAfter.x,movement.choice.x+movement.choice.dx*2,`movement must resume normally after the configured cadence: ${JSON.stringify({first:movement.first,after:movementAfter,dossierBoundary})}`);
   assert.equal(movementAfter.y,movement.choice.y+movement.choice.dy*2,`movement must resume normally after the configured cadence: ${JSON.stringify({first:movement.first,after:movementAfter,dossierBoundary})}`);
 
-  console.log("[r60 Solo] environmental damage must survive stale invulnerability/owner state");
+  console.log("[r60 Solo] r58 trap damage must remain authoritative through stale invulnerability");
   const environment=await page.evaluate(()=>{
-    const inspectChain=fn=>{
-      const seen=new Set(),chain=[];let current=fn,depth=0;
-      while(typeof current==="function"&&!seen.has(current)&&depth<32){
-        seen.add(current);
-        const markers=Object.getOwnPropertyNames(current).filter(name=>name.startsWith("__ccgV141")||name==="__ccgOriginal").sort();
-        chain.push({depth,name:String(current.name||"anonymous"),markers});
-        current=current.__ccgOriginal||current.__ccgV141Original||null;depth++;
-      }
-      return{depth:chain.length,chain,r60InChain:chain.some(row=>row.markers.includes("__ccgV141R60EnvironmentSeal"))};
-    };
-    const r30=window.CCGLostSizzlerV141R30,r29=window.CCGLostSizzlerV141R29,r56=window.CCGLostSizzlerV141R56PlaytestCompletion,r60=window.CCGLostSizzlerV141R60LivePlayIntegrity,post=window.CCGLostSizzlerV141PostPlaytestStability,spy=window.CCGLostSizzlerV141R29SpyEngine;
-    const before=Number(p1.health||0)+Number(p1.armor||0);p1.invuln=900;p1.hitStunMs=0;
-    const ownership=inspectChain(window.hurtPlayer);
-    const diagnostics={
-      current:ownership,
-      r30:{ownershipRepairs:Number(r30?.state?.ownershipRepairs||0),forcedRestores:Number(r30?.state?.forcedRestores||0),lastRestoreReason:String(r30?.state?.lastRestoreReason||""),nestedOwnershipDetections:Number(r30?.state?.nestedOwnershipDetections||0),goldenLocked:Boolean(r30?.state?.goldenLocked),goldenHurt:inspectChain(r30?.state?.goldenHurt),baselineHurt:inspectChain(r30?.state?.baselineHurt)},
-      r29:{damageInstalled:Boolean(r29?.state?.damageInstalled),lastDamageSource:inspectChain(r29?.state?.lastDamageSource)},
-      r56:{timer:Number(r56?.state?.timer||0)},
-      r60:{timer:Number(r60?.state?.timer||0),hurtWrapped:Boolean(r60?.state?.hurtWrapped),hurtSource:inspectChain(r60?.state?.hurtSource),ownerReassertions:Number(r60?.state?.ownerReassertions||0),lastError:String(r60?.state?.lastError||"")},
-      post:{timer:Number(post?.state?.timer||0),hurtWrapped:Boolean(post?.state?.hurtWrapped)},
-      spy:{isolated:Boolean(spy?.state?.isolated),baseHurt:inspectChain(spy?.state?.baseHurt)}
-    };
-    window.hurtPlayer(p1,1,false,"fire trap");
-    return{before,after:Number(p1.health||0)+Number(p1.armor||0),owner:Boolean(window.hurtPlayer?.__ccgV141R60EnvironmentSeal),ownership,diagnostics};
+    const api=window.CCGLostSizzlerV142R58AuthoritativeTrapCore,r60=window.CCGLostSizzlerV141R60LivePlayIntegrity;
+    if(!api)throw new Error("r58 authoritative trap core unavailable");
+    p1.health=Math.max(4,Number(p1.health||8));p1.maxHealth=Math.max(Number(p1.maxHealth||8),p1.health);p1.armor=5;p1.invuln=900;p1.hitStunMs=0;
+    const trap={id:"r60-r58-authority",x:Number(p1.x),y:Number(p1.y),kind:"fire",active:true,period:100000,phase:0};
+    const now=performance.now();trap.phase=((trap.period*.10)-(now%trap.period)+trap.period)%trap.period;
+    const before={health:Number(p1.health),armor:Number(p1.armor),invuln:Number(p1.invuln)};
+    const handled=api.damageValidatedTrapContact(p1,trap);
+    const after={health:Number(p1.health),armor:Number(p1.armor),invuln:Number(p1.invuln)};
+    const chain=[];let owner=window.hurtPlayer,depth=0;const seen=new Set();
+    while(typeof owner==="function"&&!seen.has(owner)&&depth++<32){seen.add(owner);chain.push({name:String(owner.name||"anonymous"),markers:Object.getOwnPropertyNames(owner).filter(name=>name.startsWith("__ccgV141")).sort()});owner=typeof owner.__ccgOriginal==="function"?owner.__ccgOriginal:null}
+    return{before,after,handled,r58:Boolean(api),r60HurtWrapped:Boolean(r60?.state?.hurtWrapped),r60EnvironmentLayers:chain.filter(row=>row.markers.includes("__ccgV141R60EnvironmentSeal")).length,chain};
   });
-  console.log(`[r60 Solo] hurtPlayer ownership at environmental assertion: ${JSON.stringify(environment.ownership)}`);
-  console.log(`[r60 Solo] damage-owner diagnostics: ${JSON.stringify(environment.diagnostics)}`);
-  assert.equal(environment.ownership.r60InChain,true,`R60 environmental seal must remain in the Solo Dungeon damage ancestry: ${JSON.stringify(environment.ownership)}`);
-  assert.ok(environment.after<environment.before,`active trap damage must not be swallowed by stale invulnerability/owner state: ${JSON.stringify(environment)}`);
+  assert.equal(environment.r58,true,"r58 trap core must be present during R60 Solo live integrity");
+  assert.equal(environment.r60EnvironmentLayers,0,`R60 environmental damage wrapper must remain retired: ${JSON.stringify(environment)}`);
+  assert.equal(environment.handled,true,`r58 trap core must handle the active contact: ${JSON.stringify(environment)}`);
+  assert.equal(environment.after.health,environment.before.health-1,`active r58 trap contact must remove exactly one HEALTH through stale invulnerability: ${JSON.stringify(environment)}`);
+  assert.equal(environment.after.armor,environment.before.armor,`active r58 trap contact must preserve armour: ${JSON.stringify(environment)}`);
 
   const final=await page.evaluate(()=>({...window.CCGLostSizzlerV141R60LivePlayIntegrity.state}));
   assert.ok(final.pauseResets>=6,`R60 must observe repeated pause boundaries: ${JSON.stringify(final)}`);

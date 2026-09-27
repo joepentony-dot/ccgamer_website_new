@@ -77,7 +77,7 @@ try{
 
   await page.goto(`${origin}/arcade/lost-sizzler/?live-defects-current-main=1`,{waitUntil:"domcontentloaded"});
   try{
-    await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&window.CCGLostSizzlerV142Bootstrap?.ready===true&&Boolean(window.CCGLostSizzlerV142AttackHoldLiveness)&&window.CCGDungeonProgressionFoundation?.ready===true&&window.CCGLostSizzlerV142ArtefactShopStability?.isInstalled?.()===true,null,{timeout:90000});
+    await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&window.CCGLostSizzlerV142Bootstrap?.ready===true&&window.CCGLostSizzlerV142R58AuthoritativeFireCore?.gameplayOwnership===true&&window.CCGDungeonProgressionFoundation?.ready===true&&window.CCGLostSizzlerV142ArtefactShopStability?.isInstalled?.()===true,null,{timeout:90000});
   }catch(error){
     const readiness=await page.evaluate(()=>({
       releaseReady:String(document.body.dataset.releaseReady||""),
@@ -92,7 +92,7 @@ try{
         loaded:Number(window.CCGLostSizzlerV142Bootstrap?.loaded?.length||0),
         totalModules:Number(window.CCGLostSizzlerV142Bootstrap?.totalModules||0)
       },
-      attackHold:Boolean(window.CCGLostSizzlerV142AttackHoldLiveness),
+      authoritativeFire:{present:Boolean(window.CCGLostSizzlerV142R58AuthoritativeFireCore),gameplayOwnership:Boolean(window.CCGLostSizzlerV142R58AuthoritativeFireCore?.gameplayOwnership)},
       progressionFoundation:{
         present:Boolean(window.CCGDungeonProgressionFoundation),
         ready:Boolean(window.CCGDungeonProgressionFoundation?.ready)

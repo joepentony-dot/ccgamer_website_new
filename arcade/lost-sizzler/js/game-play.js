@@ -20,7 +20,54 @@ function d1(){const l=input.has("ArrowLeft")||input.has("KeyA"),r=input.has("Arr
 function d2(){const l=input.has("KeyJ"),r=input.has("KeyL"),u=input.has("KeyI"),d=input.has("KeyK");const x=(r?1:0)-(l?1:0),y=(d?1:0)-(u?1:0);return x||y?{x,y}:null}
 function attackDirection(p,requested){const source=requested&&(requested.x||requested.y)?requested:p?.dir;const x=Math.sign(Number(source?.x||0)),y=Math.sign(Number(source?.y||0));return x||y?{x,y}:{x:1,y:0}}
 const ATTACK_BUFFER_MS=700;
-function queueAttack(p){if(!p)return false;if(p===p2)fireBuffer2=ATTACK_BUFFER_MS;else fireBuffer1=ATTACK_BUFFER_MS;return true}
+const ATTACK_INTENT_DEDUPE_MS=45;
+const attackIntentTimes=new WeakMap();
+let authoritativeCoreFirePlayer=null;
+function normalizeAttackState(p){
+  if(!p)return false;
+  const isP2=p===p2;
+  let cooldown=Number(isP2?fire2:fire1),buffer=Number(isP2?fireBuffer2:fireBuffer1),changed=false,staleCombatState=false;
+  if(!Number.isFinite(cooldown)||cooldown<0||cooldown>2500){if(isP2)fire2=0;else fire1=0;cooldown=0;changed=true;staleCombatState=true}
+  if(!Number.isFinite(buffer)||buffer<0||buffer>2500){if(isP2)fireBuffer2=0;else fireBuffer1=0;changed=true;staleCombatState=true}
+  if(!isP2&&(!Number.isFinite(Number(projectileCD))||Number(projectileCD)<0||Number(projectileCD)>140)){projectileCD=0;changed=true;staleCombatState=true}
+  const stun=Number(p.hitStunMs||0),lastHurt=Number(p.__ccgLastHurtAt||0),expected=Math.max(1,Number(C?.player?.hitStunMs||180)),staleAfter=Math.max(540,expected*3);
+  if((!Number.isFinite(stun)||stun<0||stun>5000)||(stun>0&&(!Number.isFinite(lastHurt)||lastHurt<=0||performance.now()-lastHurt>staleAfter))){
+    p.hitStunMs=0;changed=true;staleCombatState=true
+  }
+  // An explicit FIRE intent during live gameplay is also the recovery boundary
+  // for orphaned legacy control-lock flags. Those flags no longer have a FIRE
+  // owner in r58; leaving them set can make the visible mobile FIRE control
+  // appear responsive while movement/combat remains locked.
+  if(mode==="playing"&&(p.controlLocked||p.controlsLocked)){
+    p.controlLocked=false;p.controlsLocked=false;changed=true
+  }
+  return changed
+}
+function attackNowUnbuffered(p,requestedDirection=null){
+  if(!p||mode!=="playing")return false;
+  normalizeAttackState(p);
+  const isP2=p===p2,cooldown=isP2?fire2:fire1;
+  if(isP2)fireBuffer2=0;else fireBuffer1=0;
+  if(cooldown>0)return false;
+  const owner=authoritativeCoreFirePlayer||firePlayer;
+  return owner(p,attackDirection(p,requestedDirection))
+}
+function queueAttack(p,requestedDirection=null){
+  if(!p||mode!=="playing")return false;
+  p.__ccgFireSpawnFault=false;
+  normalizeAttackState(p);
+  const isP2=p===p2,direction=attackDirection(p,requestedDirection),now=performance.now();
+  const previousIntent=Number(attackIntentTimes.get(p)||0),duplicateIntent=previousIntent>0&&now-previousIntent<ATTACK_INTENT_DEDUPE_MS;
+  attackIntentTimes.set(p,now);
+  if(requestedDirection&&(requestedDirection.x||requestedDirection.y))p.dir=direction;
+  if(duplicateIntent)return true;
+  try{dispatchEvent(new CustomEvent("ccg:attack-intent",{detail:{playerId:String(p.id||p.name||"P1"),p2:isP2,at:now}}))}catch(_){}
+  // Input records intent only. The simulation loop is the sole buffered FIRE
+  // executor, preventing one physical keyboard press from racing an immediate
+  // shot against the same-frame held/buffer path.
+  if(isP2)fireBuffer2=ATTACK_BUFFER_MS;else fireBuffer1=ATTACK_BUFFER_MS;
+  return true
+}
 let gamepadDashDown=false,gamepadFireDown=false;
 function gamepadDirection(){
   const pads=typeof navigator!=="undefined"&&navigator.getGamepads?navigator.getGamepads():[];const gp=pads&&[...pads].find(Boolean);if(!gp)return null;
@@ -31,10 +78,11 @@ function gamepadDirection(){
 function updateGamepad(){
   if(mode!=="playing"||!p1)return;const state=gamepadDirection();if(!state){gamepadDashDown=false;gamepadFireDown=false;return}const {gp,dir}=state;if(dir){p1.dir=dir;if(move1<=0){movePlayer(p1,dir.x,dir.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}
   const firePressed=Boolean(gp.buttons?.[0]?.pressed);
-  if(firePressed&&(!gamepadFireDown||fire1<=0)){
-    const recovery=window.CCGLostSizzlerV142R20LiveRegressionStability;
-    if(typeof recovery?.attackNow==="function")recovery.attackNow("Gamepad0");
-    else if(fire1<=0)firePlayer(p1,attackDirection(p1,dir));
+  if(firePressed){
+    const direction=attackDirection(p1,dir);
+    if(!gamepadFireDown){
+      if(!attackNowUnbuffered(p1,direction))queueAttack(p1,direction)
+    }else if(fire1<=0)attackNowUnbuffered(p1,direction);
   }
   gamepadFireDown=firePressed;
   const dash=Boolean(gp.buttons?.[1]?.pressed);if(dash&&!gamepadDashDown)dashPlayer(p1,dir||p1.dir);gamepadDashDown=dash
@@ -88,7 +136,89 @@ function activateSwitch(s,p,shot=false){
 }
 function triggerSwitch(p){for(const s of host.switches||[])if(s.active&&s.x===p.x&&s.y===p.y)activateSwitch(s,p,false)}
 function triggerShrine(p){for(const s of host.shrines||[])if(s.active&&s.x===p.x&&s.y===p.y){s.active=false;run.stats.shrines++;S.sfx("shrine");const n=Math.random();if(n<.34){p.maxHealth++;p.health=Math.min(p.maxHealth,p.health+2);p.hpBarMs=3000;showToast("SHRINE OF ENDURANCE","+1 maximum health and +2 health now.","green")}else if(n<.68){p.damageBonus=(p.damageBonus||0)+1;p.maxMana=Math.max(30,p.maxMana-8);p.mana=Math.min(p.mana,p.maxMana);showToast("CURSED FIRE BUTTON","+1 damage, but maximum ammo falls by 8. Power usually sends an invoice.","red",7200)}else{p.armor=Math.min(12,p.armor+4);run.alert=Math.min(100,run.alert+18);showToast("NOISY SHRINE","+4 armour, but the dungeon alert level jumps sharply.","gold")}}}
-function triggerTrap(p){const now=performance.now();for(const t of host.traps||[])if(t.active&&t.x===p.x&&t.y===p.y&&SYS.trapActive(t,now)){const beforeHealth=Number(p.health||0),beforeArmor=Number(p.armor||0),beforeDamageAt=Number(p.__ccgLastDamageAt||0),trapStability=window.CCGLostSizzlerV142R19MobileTrapLayoutStability||null;S.sfx("trap");showToast(`${t.kind.toUpperCase()} TRAP`,`The floor was trying to tell you something. -1 health.`,"red");const routed=typeof trapStability?.damageValidatedTrapContact==="function"&&trapStability.damageValidatedTrapContact(p,t);if(!routed)hurtPlayer(p,1,false,`${t.kind} trap`);trapStability?.guaranteeTrapContactDamage?.(p,t,beforeHealth,beforeArmor);const damageAt=Number(p.__ccgLastDamageAt||0);if(!routed&&damageAt>beforeDamageAt)try{dispatchEvent(new CustomEvent("ccg:trap-damage",{detail:{playerId:String(p.id||p.name||"P1"),trapId:String(t.id||`${t.x},${t.y}`),kind:String(t.kind||"floor"),x:Number(t.x),y:Number(t.y),at:damageAt}}))}catch(_){}}}
+const trapCycleHits=new Map();
+function trapCycleId(t,now=performance.now()){
+  const period=Math.max(1,Number(t?.period)||1),phase=Number(t?.phase)||0;
+  return Math.floor((Number(now)+phase)/period)
+}
+function trapContactKey(p,t){return `${String(p?.id||p?.name||"P1")}|${String(t?.id||`${t?.x},${t?.y}`)}`}
+function applyActiveTrapContact(p,t,now=performance.now()){
+  if(!p||!t?.active||mode!=="playing")return false;
+  if(Number(t.x)!==Number(p.x)||Number(t.y)!==Number(p.y)||!SYS.trapActive(t,now))return false;
+  const key=trapContactKey(p,t),cycle=trapCycleId(t,now);
+  if(trapCycleHits.get(key)===cycle){authoritativeTrapState.trapContactBlocks++;return false}
+  const beforeHealth=Number(p.health||0),beforeArmor=Number(p.armor||0),beforeInvuln=Math.max(0,Number(p.invuln||0)),beforeDeaths=Number(run?.stats?.deaths||0);
+  // A validated physical floor-trap contact owns its own one-hit-per-cycle
+  // ledger. Existing enemy/post-hit invulnerability must not make a player
+  // ghost through an ACTIVE trap and leave the tile before the retry can land.
+  p.invuln=0;
+  authoritativeDamagePlayer(p,1,false,`${String(t.kind||"floor")} trap`);
+  const afterHealth=Number(p.health||0),damageAt=Number(p.__ccgLastDamageAt||0),damageSource=String(p.__ccgLastDamageSource||""),afterDeaths=Number(run?.stats?.deaths||0);
+  const healthLost=afterHealth<beforeHealth,deathRecorded=afterDeaths>beforeDeaths,verified=(healthLost||deathRecorded)&&/trap/i.test(damageSource);
+  if(!verified){p.invuln=beforeInvuln;authoritativeTrapState.damageRetries++;return false}
+  p.invuln=Math.max(beforeInvuln,Math.max(0,Number(p.invuln||0)));
+  trapCycleHits.set(key,cycle);
+  authoritativeTrapState.trapHits++;
+  const trapKind=["fire","spike","shock"].includes(String(t.kind||"").toLowerCase())?String(t.kind).toLowerCase():"other";
+  authoritativeTrapState.trapHitsByKind[trapKind]=(Number(authoritativeTrapState.trapHitsByKind[trapKind])||0)+1;
+  if(Number(p.armor||0)!==beforeArmor)p.armor=beforeArmor;
+  S.sfx("trap");
+  showToast(`${String(t.kind||"floor").toUpperCase()} TRAP`,"The floor was trying to tell you something. -1 health.","red");
+  try{dispatchEvent(new CustomEvent("ccg:trap-damage",{detail:{playerId:String(p.id||p.name||"P1"),trapId:String(t.id||`${t.x},${t.y}`),kind:String(t.kind||"floor"),x:Number(t.x),y:Number(t.y),at:damageAt,beforeHealth,afterHealth:Number(p.health||0),cycle}}))}catch(_){}
+  return true
+}
+function triggerTrap(p){
+  const now=performance.now();
+  let hit=false;
+  for(const t of host.traps||[])if(applyActiveTrapContact(p,t,now)){hit=true;break}
+  return hit
+}
+const authoritativeTrapState={trapHits:0,trapHitsByKind:{fire:0,spike:0,shock:0,other:0},rearms:0,cycleRearms:0,simulationPasses:0,monitorPasses:0,damageRetries:0,trapContactBlocks:0,trapProtectionBlocks:0,directTrapRepairs:0};
+function resetAuthoritativeTrapContacts(){const count=trapCycleHits.size;if(count){trapCycleHits.clear();authoritativeTrapState.rearms+=count}return true}
+function rearmInactiveTrapContacts(){
+  const now=performance.now(),playersById=new Map(localPlayers().map(p=>[String(p?.id||p?.name||"P1"),p]));
+  for(const [key,cycle] of [...trapCycleHits.entries()]){
+    const split=key.indexOf("|"),playerId=split>=0?key.slice(0,split):key,trapId=split>=0?key.slice(split+1):"";
+    const p=playersById.get(playerId),t=(host.traps||[]).find(row=>String(row?.id||`${row?.x},${row?.y}`)===trapId);
+    if(!p||!t||!t.active||!SYS.trapActive(t,now)){
+      trapCycleHits.delete(key);authoritativeTrapState.rearms++
+    }else if(trapCycleId(t,now)!==cycle){
+      trapCycleHits.delete(key);authoritativeTrapState.cycleRearms++
+    }
+  }
+  return true
+}
+function updateActiveTrapContacts(source="simulation"){
+  rearmInactiveTrapContacts();
+  const now=performance.now();
+  let hit=false;
+  for(const p of localPlayers()){
+    if(!p||Number(p.health||0)<=0)continue;
+    for(const t of host.traps||[])if(applyActiveTrapContact(p,t,now)){hit=true;break}
+  }
+  if(source==="monitor")authoritativeTrapState.monitorPasses++;else authoritativeTrapState.simulationPasses++;
+  return hit
+}
+const authoritativeTrapApi=Object.freeze({
+  version:"V10.42-r58-core",
+  gameplayOwnership:true,
+  damageValidatedTrapContact:(p,t)=>applyActiveTrapContact(p,t,performance.now()),
+  guaranteeTrapContactDamage:(p,t,beforeHealth,beforeArmor)=>{
+    if(Number(p?.health||0)<Number(beforeHealth||0)){if(Number(p?.armor||0)!==Number(beforeArmor||0))p.armor=beforeArmor;return true}
+    return applyActiveTrapContact(p,t,performance.now())
+  },
+  damageOccupiedActiveTraps:()=>updateActiveTrapContacts("simulation"),
+  reset:resetAuthoritativeTrapContacts,
+  rearmInactiveTrapContacts,
+  rearmStaleCycleContact:(p,t,now=performance.now())=>{const key=trapContactKey(p,t),cycle=trapCycleId(t,now),old=trapCycleHits.get(key);if(old!=null&&old!==cycle){trapCycleHits.delete(key);authoritativeTrapState.cycleRearms++}return{contactKey:key,cycle}},
+  updateTrapContacts:updateActiveTrapContacts,
+  trapActive:(t,now=performance.now())=>Boolean(t?.active&&SYS.trapActive(t,now)),
+  trapCycleId,
+  withValidatedTrapContact:(p,t,callback)=>typeof callback==="function"?callback():false,
+  get state(){return authoritativeTrapState}
+});
+window.CCGLostSizzlerV142R19MobileTrapLayoutStability=authoritativeTrapApi;
+window.CCGLostSizzlerV142R58AuthoritativeTrapCore=authoritativeTrapApi;
 function triggerRescue(p){const r=host.rescue;if(!r||r.rescued)return;if(!r.following&&md(p,r)<=1){r.following=true;r.found=true;showToast("CCG SCOUT FOUND","Escort the scout itself into one of the permanently lit sanctuary rooms. It follows the nearest player.","green",9000)}}
 function triggerArena(p){for(const a of host.arenas||[])if(!a.triggered&&W.roomAt(world,p.x,p.y)===a.roomId){a.triggered=true;a.wave=1;SYS.lockRoomDoors(host,a.roomId,true);showToast("ARENA LOCKDOWN","Doors sealed. Survive the ambush to reopen them and earn a bonus chest.","red",7000);spawnArenaWave(a,4)}}
 function triggerTimed(p){for(const t of host.timedRooms||[])if(!t.triggered&&W.roomAt(world,p.x,p.y)===t.roomId){t.triggered=true;t.timeLeft=30000;const room=world.rooms[t.roomId],q={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)},stalker=host.enemies.find(e=>e.deathStalker&&e.voidStalker);t.hunterId=stalker?.id||`death-stalker-floor-${run.floor||1}`;const alreadyDefeated=!stalker?.alive||Boolean(t.stalkerDefeated||(host.defeatedDeathStalkers||[]).includes(t.hunterId));if(!alreadyDefeated){stalker.x=q.x;stalker.y=q.y;stalker.timedHunter=true;stalker.aiState="chase";stalker.lastSeen={x:p.x,y:p.y};stalker.memoryMs=999999;stalker.searchMs=0;stalker.moveCooldown=250;stalker.attackCooldown=420;showToast("TIMED CHAMBER — DEATH STALKER","This is the floor's one Death Stalker. Trade 3 artefacts or pay 10,000 score at a shop for the Flask that destroys it — or survive until the chamber timer expires.","red",11000)}else showToast("TIMED CHAMBER — STALKER BANISHED","This floor's Death Stalker has already been permanently destroyed. Survive the remaining chamber trial for the reward.","green",8500)}}
@@ -151,11 +281,77 @@ function dashPlayer(p,d){if(!p||!d||mode!=="playing")return;if(p.mana<2){S.sfx("
 function spreadDirections(d){const dirs=[d];if(d.x&&d.y){dirs.push({x:d.x,y:0},{x:0,y:d.y})}else if(d.x)dirs.push({x:d.x,y:1},{x:d.x,y:-1});else dirs.push({x:1,y:d.y},{x:-1,y:d.y});return dirs}
 function weaponDirections(p,d){const w=p.weapon||{};if(w.id==="shock")return[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1},{x:1,y:1},{x:1,y:-1},{x:-1,y:1},{x:-1,y:-1}];if(w.id==="spread"||w.shots>=3)return spreadDirections(d);return[d]}
 function firePlayer(p,d){
-  if(!p||mode!=="playing"||(p.hitStunMs||0)>0)return;const cd=p===p2?fire2:fire1;if(cd>0)return;const w=p.weapon||baseWeapon(),active=bullets.filter(b=>b.owner===p.id&&b.ttl>0).length,max=C.player.maxProjectiles+Math.max(0,(w.shots||1)-1);if(active>=max){S.sfx("empty");return}
-  const ammoCost=1;if(p.mana<ammoCost){S.sfx("empty");if(p.mana<=0&&!(p.emergencyRechargeMs>0)){p.emergencyRechargeMs=C.player.emergencyRechargeMs;showToast("EMERGENCY CAPACITOR CHARGING",`You are completely dry. Survive for ${Math.ceil(C.player.emergencyRechargeMs/1000)} seconds and the reserve capacitor will restore ${C.player.emergencyAmmo} emergency shots.`,"red",8500)}else showToast("LOW AMMO","Find a supply pack or switch tactics.","red");return}
-  d=attackDirection(p,d);p.dir=d;p.mana-=ammoCost;p.ammoFlashMs=C.player.ammoFlashMs;p._fireAnimAt=performance.now();p._fireAnimMs=Math.max(120,Math.min(260,Number((p.rapidMs>0?88:C.player.fireDelay)*(w.delay||1))||180));run.alert=Math.min(100,run.alert+1.8);const delay=(p.rapidMs>0?88:C.player.fireDelay)*(w.delay||1);if(p===p2)fire2=delay;else fire1=delay;
-  const dirs=weaponDirections(p,d);for(const z of dirs.slice(0,Math.max(1,max-active))){const b={id:`${p.id}-${Date.now()}-${Math.random()}`,owner:p.id,ownerName:p.name,x:p.x,y:p.y,dx:z.x,dy:z.y,ttl:w.ttl||18,power:(w.power||1)+(p.damageBonus||0),pierce:w.pierce||0,element:w.element||"energy",style:w.id||"pulse"};spawnBullet(b,false);if(playMode==="online"&&p===p1)net.send("shot",b)}S.sfx("fire");muzzle(p.x,p.y,d);sync()
+  if(!p||mode!=="playing"||(p.hitStunMs||0)>0)return false;
+  if(p.__ccgFireSpawnFault)return false;
+  const isP2=p===p2,cd=isP2?fire2:fire1;
+  if(cd>0)return false;
+  const w=p.weapon||baseWeapon();
+  const active=bullets.filter(b=>b.owner===p.id&&b.ttl>0).length;
+  const max=C.player.maxProjectiles+Math.max(0,(w.shots||1)-1);
+  if(active>=max){S.sfx("empty");return false}
+  const ammoCost=1;
+  if(p.mana<ammoCost){
+    S.sfx("empty");
+    if(p.mana<=0&&!(p.emergencyRechargeMs>0)){
+      p.emergencyRechargeMs=C.player.emergencyRechargeMs;
+      showToast("EMERGENCY CAPACITOR CHARGING",`You are completely dry. Survive for ${Math.ceil(C.player.emergencyRechargeMs/1000)} seconds and the reserve capacitor will restore ${C.player.emergencyAmmo} emergency shots.`,"red",8500)
+    }else showToast("LOW AMMO","Find a supply pack or switch tactics.","red");
+    return false
+  }
+
+  d=attackDirection(p,d);
+  const dirs=weaponDirections(p,d).slice(0,Math.max(1,max-active));
+  if(!dirs.length)return false;
+
+  const shotIds=[],beforeMana=Number(p.mana||0),beforeCount=bullets.filter(b=>b.owner===p.id&&b.ttl>0).length;
+  const externalSpawn=typeof window.spawnBullet==="function"&&window.spawnBullet!==spawnBullet?window.spawnBullet:null;
+  try{
+    for(const z of dirs){
+      const b={id:`${p.id}-${Date.now()}-${Math.random()}`,owner:p.id,ownerName:p.name,x:p.x,y:p.y,dx:z.x,dy:z.y,ttl:w.ttl||18,power:(w.power||1)+(p.damageBonus||0),pierce:w.pierce||0,element:w.element||"energy",style:w.id||"pulse"};
+      shotIds.push(b.id);
+      if(externalSpawn)externalSpawn(b,false);else spawnBullet(b,false);
+    }
+  }catch(_){
+    for(let i=bullets.length-1;i>=0;i--)if(shotIds.includes(bullets[i]?.id))bullets.splice(i,1);
+    p.__ccgFireSpawnFault=true;
+    if(isP2)fire2=0;else fire1=0;
+    return false
+  }
+  const afterCount=bullets.filter(b=>b.owner===p.id&&b.ttl>0).length;
+  if(afterCount<=beforeCount){
+    for(let i=bullets.length-1;i>=0;i--)if(shotIds.includes(bullets[i]?.id))bullets.splice(i,1);
+    p.__ccgFireSpawnFault=true;
+    if(isP2)fire2=0;else fire1=0;
+    return false
+  }
+
+  p.dir=d;
+  p.mana=beforeMana-ammoCost;
+  p.ammoFlashMs=C.player.ammoFlashMs;
+  p._fireAnimAt=performance.now();
+  p._fireAnimMs=Math.max(120,Math.min(260,Number((p.rapidMs>0?88:C.player.fireDelay)*(w.delay||1))||180));
+  run.alert=Math.min(100,run.alert+1.8);
+  const delay=(p.rapidMs>0?88:C.player.fireDelay)*(w.delay||1);
+  if(isP2)fire2=delay;else fire1=delay;
+  if(playMode==="online"&&p===p1){
+    for(const id of shotIds){
+      const b=bullets.find(row=>row?.id===id);
+      if(b)try{net.send("shot",b)}catch(_){}
+    }
+  }
+  S.sfx("fire");muzzle(p.x,p.y,d);sync();
+  return true
 }
+authoritativeCoreFirePlayer=firePlayer;
+const authoritativeFireApi=Object.freeze({
+  version:"V10.42-r58-core",
+  gameplayOwnership:true,
+  attackNow:(direction=null)=>attackNowUnbuffered(p1,direction),
+  fire:(player,direction)=>(authoritativeCoreFirePlayer||firePlayer)(player,direction),
+  queue:(player,direction)=>queueAttack(player,direction),
+  recoverOrphanedGameplayMode:()=>false
+});
+window.CCGLostSizzlerV142R58AuthoritativeFireCore=authoritativeFireApi;
 function spawnBullet(b,remoteShot){if(b)bullets.push({...b,remote:!!remoteShot})}
 function spawnEnemyShot(b){if(!b)return;enemyBullets.push({...b,ttl:Number(b.ttl||14)});const col=b.style==="fire"?P.orange:b.style==="root"?P.green:b.style==="shock"?P.cyan:P.red;for(let i=0;i<9;i++)particles.push({x:b.x*C.tile+C.tile/2,y:b.y*C.tile+C.tile/2,vx:(b.dx||0)*(1+Math.random()*2)+(Math.random()-.5)*1.4,vy:(b.dy||0)*(1+Math.random()*2)+(Math.random()-.5)*1.4,life:150+Math.random()*180,col,size:1.5+Math.random()*2.5,drag:.93,glow:8});if(localPlayers().some(p=>md(b,p)<9))S.sfx(b.style==="food"?"food":b.style==="fire"?"flame":"enemy")}
 function damageGenerator(g,power,p){
@@ -226,8 +422,18 @@ function releaseSealedDeathRoom(roomId){
   showToast("CHALLENGE DOORS REOPENED","The room you died in has been unlocked so you can return to your death box and finish the challenge.","gold",9000);
   return true
 }
+let authoritativeTrapDamageDepth=0;
 function hurtPlayer(p,n,friendly=false,source="enemy"){
-  if(!p||p.invuln>0||mode!=="playing")return;const damageAt=performance.now(),damageSource=String(source||"enemy");p.__ccgLastHurtAt=damageAt;p.__ccgLastDamageAt=damageAt;p.__ccgLastDamageSource=damageSource;try{dispatchEvent(new CustomEvent("ccg:player-damage",{detail:{playerId:String(p.id||p.name||"P1"),source:damageSource,x:Number(p.x),y:Number(p.y),at:damageAt}}))}catch(_){}p.hitStunMs=Math.max(p.hitStunMs||0,C.player.hitStunMs||180);let left=n;if(p.armor>0){const a=Math.min(p.armor,left);p.armor-=a;left-=a;if(a){S.sfx("armour");floatText(p.x,p.y,"ARMOUR",P.cyan)}}if(left<=0){p.invuln=350;sync();return}
+  if(p){const inv=Number(p.invuln);if(!Number.isFinite(inv)||inv<0||(mode==="playing"&&inv>5000))p.invuln=0}
+  const damageSource=String(source||"enemy"),trapDamage=/trap/i.test(damageSource),environmentDamage=trapDamage||/anti[- ]loitering blast/i.test(damageSource);
+  if(trapDamage&&authoritativeTrapDamageDepth===0){
+    if(!p||mode!=="playing")return false;
+    const now=performance.now();
+    const trap=(host?.traps||[]).find(t=>t?.active&&Number(t.x)===Number(p.x)&&Number(t.y)===Number(p.y)&&SYS.trapActive(t,now));
+    if(!trap)return false;
+    return applyActiveTrapContact(p,trap,now)
+  }
+  if(!p||mode!=="playing"||(!environmentDamage&&p.invuln>0))return false;const damageAt=performance.now();p.__ccgLastHurtAt=damageAt;p.__ccgLastDamageAt=damageAt;p.__ccgLastDamageSource=damageSource;try{dispatchEvent(new CustomEvent("ccg:player-damage",{detail:{playerId:String(p.id||p.name||"P1"),source:damageSource,x:Number(p.x),y:Number(p.y),at:damageAt}}))}catch(_){}p.hitStunMs=Math.max(p.hitStunMs||0,C.player.hitStunMs||180);let left=n;if(!trapDamage&&p.armor>0){const a=Math.min(p.armor,left);p.armor-=a;left-=a;if(a){S.sfx("armour");floatText(p.x,p.y,"ARMOUR",P.cyan)}}if(left<=0){p.invuln=350;sync();return}
   p.health-=left;p.hpBarMs=3000;run.stats.damageTaken+=left;if(friendly)run.stats.friendlyFire+=left;p.invuln=800;shake=10;damageFlash=.5;S.sfx("hurt");burst(p.x,p.y,P.red,16,1.4);ring(p.x,p.y,P.red,30);
   if(friendly){showToast("FRIENDLY FIRE",`${source} just shot a team-mate. The monsters are delighted.`,"red");say("<strong>FRIENDLY FIRE.</strong> Try pointing the dangerous end elsewhere.","red")}
   if(p.health<=0){
@@ -249,6 +455,12 @@ function hurtPlayer(p,n,friendly=false,source="enemy"){
     const explore=Math.round(PGR.roomCompletion(explored.get(p.id)||new Set(),world)*100),objective=SYS.objectiveText(host,run,explore),cacheText=cache.active?` Your death box holds ${Number(cache.score||0).toLocaleString()} score, ${Number(cache.xp||0).toLocaleString()} XP and dropped loot. Recover it before another death.`:" You had nothing to cache.",xpText=penalty.xpLost?` ${penalty.xpLost} XP moved to the death box.${penalty.levelLost?` Level ${penalty.levelBefore} fell to ${penalty.levelAfter}; ${penalty.lostSkill||"the latest upgrade"} was lost until you earn the level again.`:" Your current level was retained."}`:" No XP was available to lose.",zeroText=penalty.zeroWarning?" FINAL XP WARNING: your XP reserve has reached zero once. Recover this death cache or earn more XP. If a later death leaves XP at zero again, the run ends.":"";
     showToast(penalty.zeroWarning?`${p.name.toUpperCase()} RESPAWNS — FINAL XP WARNING`:`${p.name.toUpperCase()} RESPAWNS — SCORE HALVED`,`OBJECTIVE: ${objective}.${xpText}${cacheText}${zeroText}`,"red",penalty.zeroWarning?13000:10000);host.revision++;broadcastWorld();if(run.consecutiveDeaths>=5)setTimeout(()=>{if(mode==="playing")offerFloorSave(true)},650)
   }sync()
+}
+const canonicalPlayerDamage=hurtPlayer;
+function authoritativeDamagePlayer(p,n,friendly=false,source="enemy"){
+  authoritativeTrapDamageDepth++;
+  try{return canonicalPlayerDamage(p,n,friendly,source)}
+  finally{authoritativeTrapDamageDepth=Math.max(0,authoritativeTrapDamageDepth-1)}
 }
 function updateCamping(p,dt){if(window.CCGLostSizzlerOnboardingV120?.state?.active){resetCamp(p,true);return}let c=campStates.get(p.id);if(!c){resetCamp(p);c=campStates.get(p.id)}const moved=p.x!==c.lastX||p.y!==c.lastY;if(c.active){if(Math.hypot(p.x-c.originX,p.y-c.originY)>=C.camping.resetDistance){resetCamp(p,true);return}c.lastX=p.x;c.lastY=p.y}else if(moved){resetCamp(p,true);return}c.elapsed+=dt;if(c.elapsed<C.camping.graceMs)return;if(!c.active){c.active=true;c.originX=p.x;c.originY=p.y;c.nextBlast=150;c.blastCount=0;S.sfx("campwarn");run.alert=Math.min(100,run.alert+14);showToast("60 SECONDS IDLE — LEAVE THE ZONE","Every second blast targets you for 1 HP. Move six tiles away to stop the barrage.","red",7500)}c.nextBlast-=dt;if(c.nextBlast<=0){c.blastCount++;let q;if(c.blastCount%C.camping.directBlastEvery===0)q={x:p.x,y:p.y,direct:true};else{const a=[];for(let dy=-C.camping.zoneRadius;dy<=C.camping.zoneRadius;dy++)for(let dx=-C.camping.zoneRadius;dx<=C.camping.zoneRadius;dx++){const x=c.originX+dx,y=c.originY+dy;if(W.walkable(world.map,x,y,host)&&Math.hypot(dx,dy)<=C.camping.zoneRadius+.2)a.push({x,y})}q=a[Math.floor(Math.random()*a.length)]||{x:c.originX,y:c.originY}}hazards.push({x:q.x,y:q.y,life:C.camping.warningMs,maxLife:C.camping.warningMs,direct:!!q.direct,campOwner:p.id,originX:c.originX,originY:c.originY});c.nextBlast=C.camping.blastIntervalMs}}
 function updateHazards(dt){for(let i=hazards.length-1;i>=0;i--){const h=hazards[i];h.life-=dt;if(h.life>0)continue;hazards.splice(i,1);S.sfx("explosion");shake=Math.max(shake,h.direct?13:9);burst(h.x,h.y,P.orange,h.direct?32:24,h.direct?2.1:1.8);ring(h.x,h.y,P.red,h.direct?54:42);if(h.direct){const target=localPlayers().find(p=>p.id===h.campOwner);if(target&&Math.hypot(target.x-h.originX,target.y-h.originY)<C.camping.resetDistance)hurtPlayer(target,1,false,"anti-loitering blast")}}}
@@ -274,7 +486,7 @@ function updateRoomMessage(p,force){
   try{window.CCGLostSizzlerStage8NpcDialogue?.onRoomEntered?.(p,r,room,{force:false})}catch(_){}
 }
 
-function updateDedicatedHazards(dt){for(const p of localPlayers()){p.hazardHitCooldown=Math.max(0,(p.hazardHitCooldown||0)-dt);if(p.hazardHitCooldown>0)continue;for(const hazard of host.hazardRooms||[]){if(W.roomAt(world,p.x,p.y)!==hazard.roomId)continue;const state=SYS.hazardCellState(hazard,p.x,p.y,host.floorElapsed||run.elapsed);if(!state.active)continue;const contactX=Number(p.x),contactY=Number(p.y),damageBefore=Number(p.__ccgLastDamageAt||0);p.hazardHitCooldown=1050;S.sfx("trap");burst(p.x,p.y,hazard.type==="embers"?P.orange:P.red,18,1.3);floatText(p.x,p.y,"HAZARD -1",P.red);hurtPlayer(p,1,false,`${hazard.title||"hazard chamber"} trap`);const damageAfter=Number(p.__ccgLastDamageAt||0);if(damageAfter>damageBefore)try{dispatchEvent(new CustomEvent("ccg:hazard-damage",{detail:{playerId:String(p.id||p.name||"P1"),hazardId:String(hazard.id||""),type:String(hazard.type||"hazard"),x:contactX,y:contactY,at:damageAfter}}))}catch(_){}break}}}
+function updateDedicatedHazards(dt){for(const p of localPlayers()){p.hazardHitCooldown=Math.max(0,(p.hazardHitCooldown||0)-dt);if(p.hazardHitCooldown>0)continue;for(const hazard of host.hazardRooms||[]){if(W.roomAt(world,p.x,p.y)!==hazard.roomId)continue;const state=SYS.hazardCellState(hazard,p.x,p.y,host.floorElapsed||run.elapsed);if(!state.active)continue;const contactX=Number(p.x),contactY=Number(p.y),damageBefore=Number(p.__ccgLastDamageAt||0);p.hazardHitCooldown=1050;S.sfx("trap");burst(p.x,p.y,hazard.type==="embers"?P.orange:P.red,18,1.3);floatText(p.x,p.y,"HAZARD -1",P.red);authoritativeDamagePlayer(p,1,false,`${hazard.title||"hazard chamber"} trap`);const damageAfter=Number(p.__ccgLastDamageAt||0);if(damageAfter>damageBefore)try{dispatchEvent(new CustomEvent("ccg:hazard-damage",{detail:{playerId:String(p.id||p.name||"P1"),hazardId:String(hazard.id||""),type:String(hazard.type||"hazard"),x:contactX,y:contactY,at:damageAfter}}))}catch(_){}break}}}
 function surroundingsTick(){
   if(!p1)return;const room=W.roomAt(world,p1.x,p1.y),hidden=host.enemies.filter(e=>e.alive&&W.roomAt(world,e.x,e.y)===room&&!visibleTo(p1,e.x,e.y)).length;
   let text;
@@ -361,7 +573,7 @@ function updateEmergencyAmmo(p,dt){
 }
 function updateLastResortHealth(p,dt){const healthRemains=(host.items||[]).some(i=>i.active&&i.kind==="health");if(healthRemains||p.health>=p.maxHealth){p.healthRegenMs=0;return}p.healthRegenMs=(p.healthRegenMs||0)+dt;if(p.healthRegenMs<120000)return;p.healthRegenMs-=120000;p.health=Math.min(p.maxHealth,p.health+1);p.hpBarMs=3000;S.sfx("heal");floatText(p.x,p.y,"+1 HP",P.green);showToast("LAST-RESORT RECOVERY","No health pickups remain on this floor. Two minutes survived: +1 health.","green",7000)}
 function update(dt){
-  if(mode!=="playing"){fireBuffer1=fireBuffer2=0;return}enemyCD-=dt;projectileCD-=dt;sendCD-=dt;worldCD-=dt;surroundCD-=dt;specialCD-=dt;move1-=dt;move2-=dt;fire1-=dt;fire2-=dt;fireBuffer1=Math.max(0,fireBuffer1-dt);fireBuffer2=Math.max(0,fireBuffer2-dt);lowHealthCD-=dt;updateToast(dt);updateDoors();updateGamepad();
+  if(mode!=="playing"){fireBuffer1=fireBuffer2=0;return}enemyCD-=dt;projectileCD=Math.max(0,projectileCD-dt);sendCD-=dt;worldCD-=dt;surroundCD-=dt;specialCD-=dt;move1-=dt;move2-=dt;fire1=Math.max(0,fire1-dt);fire2=Math.max(0,fire2-dt);fireBuffer1=Math.max(0,fireBuffer1-dt);fireBuffer2=Math.max(0,fireBuffer2-dt);lowHealthCD-=dt;updateToast(dt);updateDoors();updateGamepad();
   for(const p of localPlayers()){
     if(p.invuln>0)p.invuln-=dt;if(p.hitStunMs>0)p.hitStunMs=Math.max(0,p.hitStunMs-dt);if(p.hpBarMs>0)p.hpBarMs=Math.max(0,p.hpBarMs-dt);if(p.torchMs>0)p.torchMs=Math.max(0,p.torchMs-dt);if(p.rapidMs>0)p.rapidMs=Math.max(0,p.rapidMs-dt);if(p.ammoFlashMs>0)p.ammoFlashMs=Math.max(0,p.ammoFlashMs-dt);
     updateEmergencyAmmo(p,dt);updateLastResortHealth(p,dt);p.rx+=(p.x-p.rx)*.32;p.ry+=(p.y-p.ry)*.32;updateCamping(p,dt);reveal(p);markRoomVisit(p);rememberTrail(p)
@@ -371,9 +583,9 @@ function update(dt){
   // Movement is the first keyboard gameplay action in the frame. A busy or faulting
   // combat path must never stop an already-held movement command being serviced.
   if(move1<=0){const d=d1();if(d){movePlayer(p1,d.x,d.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}if(p2&&move2<=0){const d=d2();if(d){movePlayer(p2,d.x,d.y);move2=C.player.moveDelay*(p2.moveMultiplier||1)}}
-  if((input.has("Space")||fireBuffer1>0)&&fire1<=0){firePlayer(p1,attackDirection(p1,d1()));if(fire1>0)fireBuffer1=0}if(p2&&(input.has("Enter")||fireBuffer2>0)&&fire2<=0){firePlayer(p2,attackDirection(p2,d2()));if(fire2>0)fireBuffer2=0}
-  if(projectileCD<=0){stepProjectiles();projectileCD=70}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendPlayer();sendCD=100}if(worldCD<=0&&net.isHost){broadcastWorld();worldCD=350}
-  window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.updateTrapContacts?.("simulation");
+  if((input.has("Space")||input.has("Numpad0")||fireBuffer1>0)&&fire1<=0){const fired=firePlayer(p1,attackDirection(p1,d1()));if(fired)fireBuffer1=0;else fire1=0}if(p2&&(input.has("Enter")||fireBuffer2>0)&&fire2<=0){const fired=firePlayer(p2,attackDirection(p2,d2()));if(fired)fireBuffer2=0;else fire2=0}
+  if(projectileCD<=0){const liveProjectileWork=bullets.some(b=>b&&b.ttl>0)||enemyBullets.some(b=>b&&b.ttl>0);stepProjectiles();projectileCD=liveProjectileWork?70:0}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendPlayer();sendCD=100}if(worldCD<=0&&net.isHost){broadcastWorld();worldCD=350}
+  updateActiveTrapContacts();
   updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBoulder(dt);updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
   if(surroundCD<=0){surroundingsTick();surroundCD=20000}inventoryReminderMs-=dt;if(inventoryReminderMs<=0){inventoryReminderMs=300000;showToast("DON'T FORGET TO HIT TAB TO CHECK YOUR INVENTORY","TAB ALSO EXPLAINS ARTEFACTS, THE BANISHMENT FLASK AND YOUR CURRENT OBJECTIVE.","cyan",8000)}
   const seen=host.enemies.filter(e=>e.alive&&e.aiState==="chase"&&localPlayers().some(p=>visibleTo(p,e.x,e.y))).length;S.setDanger(Math.min(1,(seen+run.alert/45)/4));updateNamedEncounters();

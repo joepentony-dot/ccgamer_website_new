@@ -1,3 +1,22 @@
+## R58 single-owner consolidation checkpoint — 27 September 2026
+
+- Authoritative P0 vehicle is draft PR #2391 / `codex/dungeon-authoritative-fire-traps-rewrite-20260927`; exact candidate head before this documentation commit was `eb885c714cf17d6bce744a637a070582b8da3c3f`, based on current main `ce125d8e6586c332cc1b9ee2eebc0d9c72697c23`.
+- The rewrite now has one canonical FIRE owner and one canonical ordinary floor-trap owner in `game-play.js`. FIRE commits ammo/cooldown only after projectile creation succeeds; partial/failed projectile creation rolls back. Trap cycles are consumed only after real HEALTH loss or a canonical lethal/death transition; timestamp/source evidence alone is insufficient and failed contacts remain retryable.
+- The canonical trap ledger is reset on every world/floor start so reused trap IDs cannot inherit an earlier floor's cycle latch.
+- Legacy ordinary-trap damage paths are retired: R19/R20 trap owner modules are absent from ordered startup; R56/R60 environmental wrappers are non-owning compatibility surfaces; Rare Events retains warning/render/diagnostic observation only; R54 yields immediately when the R58 authoritative trap core exists.
+- Independent useful #2361 work has been migrated into #2391: compact 2x2 emergency dedicated-hazard reservation/installation, final Stage 6 hazard/trap-family reconciliation, final world-start reconciliation, bounded exact trap reporter evidence, movement-under-FIRE-failure regression and failed-HEALTH-write retry coverage.
+- Repository defragmentation closed #2361 and #2381 as superseded and closed #2329/#2176 as preservation-only stale integration vehicles while retaining their exact Git history/source. #2391 is the sole active Dungeon integration candidate.
+- Merge gate remains exact-head canonical/Node plus Chromium shards 1–6 and all triggered checks green. The user's latest real-phone test is a failed acceptance: deployed sustained FIRE plus natural FIRE/SPIKE/SHOCK HEALTH-loss testing is still mandatory after merge/deploy.
+
+## R58 authoritative FIRE/trap rewrite — 27 September 2026
+
+- User-directed strategy change: stop incrementally repairing the layered FIRE/trap stack and rebuild the supported paths from current main.
+- Rewrite branch: `codex/dungeon-authoritative-fire-traps-rewrite-20260927`; draft PR #2391. This is intended to supersede #2361 and #2381 only after exact-head qualification and deployed manual acceptance.
+- FIRE now has one core path in `game-play.js`: keyboard/gamepad/touch input only records buffered FIRE intent, and the simulation loop is the sole normal shot-execution owner. This prevents one physical press from being executed once in the input handler and again in the simulation frame. Cadence-blocked intent remains buffered, held input uses the same simulation owner, and shot completion returns explicit success/failure. The old R20 FIRE recovery, held-FIRE recovery and inventory-FIRE recovery modules are removed from ordered startup.
+- Floor traps now use one core player/trap/cycle ledger. FIRE/SPIKE/SHOCK contact bypasses armour and stale player invulnerability only for trap-attributed damage, uses the canonical damage/death pipeline, and consumes the cycle only after verified damage. A mathematical cycle id re-arms the next active cycle even when an inactive frame is skipped.
+- Old R19/R20 trap modules are removed from ordered startup. Compatibility globals remain as facades onto the new core for diagnostics/tests only; they do not wrap gameplay or create timers.
+- Public identity advances to V10.42 r58 / 20260927r58. Do not merge until canonical/Node and Chromium shards 1–6 are green and real mobile/desktop FIRE plus natural FIRE/SPIKE/SHOCK manual acceptance passes.
+
 ## R57 deployed FIRE lockout recovery — 25 September 2026
 
 - Deployed V10.42 r56 bug-report evidence captured a sustained complete attack lockout: 52 attack anomalies, full 120 ammo, zero live projectiles, zero hit-stun and repeated 650–700 ms attack buffers while the existing deep-owner fallback recorded 15 attempts with 0 successes.

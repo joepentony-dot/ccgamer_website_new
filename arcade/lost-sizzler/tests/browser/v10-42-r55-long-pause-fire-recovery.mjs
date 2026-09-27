@@ -67,32 +67,33 @@ try{
   await page.waitForFunction(()=>mode==="playing"&&Boolean(window.__CCG_PAUSE_ATTACK_LAST_RESET__?.at),null,{timeout:4000});
 
   const keyboardBefore=await page.evaluate(()=>{
-    // Simulate a late compatibility owner restoring stale transient cadence after
-    // the normal pause-resume settlement. The first real attack must still win.
-    fire1=1400;fireBuffer1=500;projectileCD=350;bullets.length=0;input.clear();
-    const r20=window.CCGLostSizzlerV142R20LiveRegressionStability.diagnostics;
-    return{mana:Number(p1.mana),guardFires:Number(r20.resumeAttackGuardFires||0),lastReset:{...window.__CCG_PAUSE_ATTACK_LAST_RESET__}};
+    bullets.length=0;input.clear();
+    return{
+      mana:Number(p1.mana),fire1:Number(fire1),buffer:Number(fireBuffer1),projectileCD:Number(projectileCD),
+      lastReset:{...window.__CCG_PAUSE_ATTACK_LAST_RESET__},
+      authoritative:Boolean(window.CCGLostSizzlerV142R58AuthoritativeFireCore?.gameplayOwnership),
+      legacyFireOwnership:Boolean(window.CCGLostSizzlerV142R20LiveRegressionStability?.fireOwnership)
+    };
   });
+  assert.equal(keyboardBefore.fire1,0,"pause resume must clear stale FIRE cooldown before gameplay resumes");
+  assert.equal(keyboardBefore.buffer,0,"pause resume must clear stale FIRE buffer before gameplay resumes");
+  assert.equal(keyboardBefore.projectileCD,0,"pause resume must clear stale projectile cadence before gameplay resumes");
+  assert.equal(keyboardBefore.authoritative,true,"R58 core must own post-pause FIRE");
+  assert.equal(keyboardBefore.legacyFireOwnership,false,"R20 compatibility support must not own post-pause FIRE");
   await page.keyboard.press("Space");
   await page.waitForFunction(before=>Number(p1.mana)<before.mana,keyboardBefore,{timeout:4000});
   const keyboardAfter=await page.evaluate(()=>({
     mana:Number(p1.mana),
-    fire1:Number(fire1),buffer:Number(fireBuffer1),projectileCD:Number(projectileCD),
-    guardFires:Number(window.CCGLostSizzlerV142R20LiveRegressionStability.diagnostics.resumeAttackGuardFires||0)
+    fire1:Number(fire1),buffer:Number(fireBuffer1),projectileCD:Number(projectileCD)
   }));
   assert.equal(keyboardBefore.mana-keyboardAfter.mana,1,"first keyboard FIRE after a long pause must recover and consume exactly one round");
-  assert.ok(keyboardAfter.guardFires>keyboardBefore.guardFires,"long-pause keyboard FIRE must consume the R55 resume guard");
 
   await page.waitForTimeout(500);
   const followBefore=await page.evaluate(()=>{bullets.length=0;return Number(p1.mana)});
   await page.keyboard.press("Space");
   await page.waitForFunction(before=>Number(p1.mana)<before,followBefore,{timeout:4000});
-  const followAfter=await page.evaluate(()=>({
-    mana:Number(p1.mana),
-    guardFires:Number(window.CCGLostSizzlerV142R20LiveRegressionStability.diagnostics.resumeAttackGuardFires||0)
-  }));
+  const followAfter=await page.evaluate(()=>({mana:Number(p1.mana)}));
   assert.equal(followBefore-followAfter.mana,1,"the next keyboard tap must return to normal one-shot cadence");
-  assert.equal(followAfter.guardFires,keyboardAfter.guardFires,"the pause guard must be one-shot and must not keep bypassing normal cooldown");
 
   await page.keyboard.press("KeyP");
   await page.waitForFunction(()=>mode==="paused");
@@ -102,10 +103,8 @@ try{
   await page.waitForFunction(()=>mode==="playing"&&Boolean(window.__CCG_PAUSE_ATTACK_LAST_RESET__?.at),null,{timeout:4000});
 
   const pad=await page.evaluate(()=>{
-    fire1=1300;fireBuffer1=450;projectileCD=300;bullets.length=0;input.clear();
-    gamepadFireDown=false;
-    const beforeMana=Number(p1.mana);
-    const beforeGuard=Number(window.CCGLostSizzlerV142R20LiveRegressionStability.diagnostics.resumeAttackGuardFires||0);
+    bullets.length=0;input.clear();gamepadFireDown=false;
+    const before={mana:Number(p1.mana),fire1:Number(fire1),buffer:Number(fireBuffer1),projectileCD:Number(projectileCD)};
     const blank=()=>Array.from({length:16},()=>({pressed:false,value:0}));
     const buttons=blank();buttons[0]={pressed:true,value:1};
     const mock={connected:true,axes:[0,0],buttons};
@@ -115,7 +114,6 @@ try{
     try{
       updateGamepad();
       const afterFirst=Number(p1.mana);
-      const afterFirstGuard=Number(window.CCGLostSizzlerV142R20LiveRegressionStability.diagnostics.resumeAttackGuardFires||0);
       // A held button during a live cooldown must not repeatedly bypass cadence.
       for(let i=0;i<8;i++)updateGamepad();
       const afterHeld=Number(p1.mana);
@@ -123,14 +121,16 @@ try{
       fire1=0;fireBuffer1=0;projectileCD=0;bullets.length=0;
       updateGamepad();
       const afterCooldown=Number(p1.mana);
-      return{beforeMana,afterFirst,afterHeld,afterCooldown,beforeGuard,afterFirstGuard};
+      return{before,afterFirst,afterHeld,afterCooldown};
     }finally{
       if(own)Object.defineProperty(navigator,"getGamepads",{configurable:true,value:original});
       else delete navigator.getGamepads;
     }
   });
-  assert.equal(pad.beforeMana-pad.afterFirst,1,"first joystick FIRE after a long pause must recover immediately");
-  assert.ok(pad.afterFirstGuard>pad.beforeGuard,"joystick FIRE must consume the same one-shot pause guard");
+  assert.equal(pad.before.fire1,0,"Continue-button resume must clear stale joystick FIRE cooldown");
+  assert.equal(pad.before.buffer,0,"Continue-button resume must clear stale joystick FIRE buffer");
+  assert.equal(pad.before.projectileCD,0,"Continue-button resume must clear stale projectile cadence");
+  assert.equal(pad.before.mana-pad.afterFirst,1,"first joystick FIRE after a long pause must recover immediately");
   assert.equal(pad.afterHeld,pad.afterFirst,"holding joystick FIRE during cooldown must not bypass weapon cadence");
   assert.equal(pad.afterHeld-pad.afterCooldown,1,"held joystick FIRE may repeat once the normal cooldown becomes ready");
 

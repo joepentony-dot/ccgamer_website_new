@@ -143,26 +143,14 @@ function handleHeaderQuit(){
 function clearPauseAttackCadence(reason="resume"){
   fire1=0;fire2=0;fireBuffer1=0;fireBuffer2=0;projectileCD=0;
   input.delete("Space");input.delete("Enter");input.delete("KeyF");input.delete("Numpad0");
-  try{window.CCGLostSizzlerV142AttackHoldLiveness?.clearHeld?.()}catch(_){}
-  try{
-    const r1=window.CCGLostSizzlerV142R1Stability;
-    r1?.repairCombatTimers?.();r1?.repairProjectilePool?.()
-  }catch(_){}
-  try{window.CCGLostSizzlerV141R56PlaytestCompletion?.rearmCombat?.(reason,0,true)}catch(_){}
+  try{if(p1)normalizeAttackState(p1);if(p2)normalizeAttackState(p2)}catch(_){}
   window.__CCG_PAUSE_ATTACK_RESETS__=Math.max(0,Number(window.__CCG_PAUSE_ATTACK_RESETS__)||0)+1;
   window.__CCG_PAUSE_ATTACK_LAST_RESET__={reason:String(reason),mode:String(mode),at:performance.now()};
+  return true
 }
 function settlePauseAttackCadence(reason="resume"){
-  const settle=()=>{
-    if(mode!=="playing"||!run)return false;
-    clearPauseAttackCadence(reason);
-    try{window.CCGLostSizzlerV142R18SoloPlaytestStability?.repairAttackLiveness?.("pause-resume")}catch(_){}
-    return true
-  };
-  const immediate=settle();
-  queueMicrotask(settle);
-  setTimeout(settle,0);
-  return immediate
+  if(mode!=="playing"||!run)return false;
+  return clearPauseAttackCadence(reason)
 }
 function installInventoryAttackResumeBoundary(){
   try{
@@ -238,7 +226,7 @@ addEventListener("keydown",e=>{
   if(e.code==="KeyF"){toggleFullscreen();return}
   if(e.code==="Tab"&&["playing","inventory"].includes(mode)){toggleInventory();return}
   if(mode!=="playing")return;if(p1)setDir(p1,e.code);if(p2)setDir(p2,e.code);input.add(e.code);
-  if(e.code==="Space"&&!e.repeat)queueAttack(p1);if(p2&&e.code==="Enter"&&!e.repeat)queueAttack(p2);if(e.code==="ShiftLeft"&&!e.repeat)dashPlayer(p1,d1()||p1.dir);if(p2&&e.code==="ControlRight"&&!e.repeat)dashPlayer(p2,d2()||p2.dir);if(e.code==="KeyE"&&!e.repeat)usePotion(p1);if(e.code==="KeyQ"&&!e.repeat)useUtility(p1);if(e.code==="KeyR"&&!e.repeat)useTeleport(p1);if(e.code==="KeyC"&&!e.repeat)closeNearbyDoor(p1);if(e.code==="KeyB"&&!e.repeat)useBanishment(p1);if(p2&&e.code==="KeyO"&&!e.repeat)usePotion(p2)
+  if((e.code==="Space"||e.code==="Numpad0")&&!e.repeat)queueAttack(p1);if(p2&&e.code==="Enter"&&!e.repeat)queueAttack(p2);if(e.code==="ShiftLeft"&&!e.repeat)dashPlayer(p1,d1()||p1.dir);if(p2&&e.code==="ControlRight"&&!e.repeat)dashPlayer(p2,d2()||p2.dir);if(e.code==="KeyE"&&!e.repeat)usePotion(p1);if(e.code==="KeyQ"&&!e.repeat)useUtility(p1);if(e.code==="KeyR"&&!e.repeat)useTeleport(p1);if(e.code==="KeyC"&&!e.repeat)closeNearbyDoor(p1);if(e.code==="KeyB"&&!e.repeat)useBanishment(p1);if(p2&&e.code==="KeyO"&&!e.repeat)usePotion(p2)
 },{passive:false});
 addEventListener("keyup",e=>input.delete(e.code));addEventListener("blur",()=>input.clear());document.addEventListener("visibilitychange",()=>{if(document.hidden)input.clear()});
 canvas.addEventListener("pointerdown",()=>{if(document.body.dataset.runActive==="true")try{canvas.tabIndex=-1;canvas.focus({preventScroll:true})}catch(_){}});

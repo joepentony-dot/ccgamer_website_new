@@ -95,28 +95,16 @@
   }
   function contactTick(){
     if(!ordinaryDungeon()||!host)return false;
-    const players=localPlayerList(),now=nowPerf(),seen=new Set();
-    for(const player of players){
+    for(const player of localPlayerList()){
       if(!player||Number(player.health||0)<=0)continue;
       for(const shrine of host.shrines||[]){
         if(!shrine?.active||Number(shrine.x)!==Number(player.x)||Number(shrine.y)!==Number(player.y))continue;
-        const was=Boolean(shrine.active);try{triggerShrine?.(player)}catch(error){console.warn("[Lost Sizzler r57] shrine contact recovery failed",error)}
-        if(was&&!shrine.active)state.shrinesActivated++;
-      }
-      for(const trap of host.traps||[]){
-        if(!trap)continue;const key=trapKey(player,trap),occupied=Number(trap.x)===Number(player.x)&&Number(trap.y)===Number(player.y),active=occupied&&trapIsActive(trap,now);seen.add(key);
-        const was=state.trapCycles.get(key)===true;
-        if(active&&!was){
-          state.trapCycles.set(key,true);const before=durability(player);
-          try{triggerTrap?.(player)}catch(error){console.warn("[Lost Sizzler r57] canonical trap trigger failed",error)}
-          if(durability(player)===before){
-            try{window.hurtPlayer?.(player,1,false,`${String(trap.kind||"floor")} trap`);state.trapFallbacks++}catch(error){console.warn("[Lost Sizzler r57] trap damage fallback failed",error)}
-          }
-          if(durability(player)<before)state.trapHits++;
-        }else if(!active&&was)state.trapCycles.set(key,false);
+        const was=Boolean(shrine.active);
+        try{triggerShrine?.(player)}catch(error){console.warn("[Lost Sizzler r57] shrine contact recovery failed",error)}
+        if(was&&!shrine.active)state.shrinesActivated++
       }
     }
-    for(const key of [...state.trapCycles.keys()])if(!seen.has(key))state.trapCycles.delete(key);
+    // r58 owns all floor-trap contact detection and damage.
     return true
   }
 

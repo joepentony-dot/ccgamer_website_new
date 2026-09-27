@@ -103,11 +103,13 @@ try{
   if(result.composition?.soloHurtGateUnsupported){
     assert.equal(result.timeline.some(row=>row.descriptor?.configurable===false),true,`an unsupported R60 property gate must correspond to a non-configurable hurtPlayer global: ${JSON.stringify(result)}`)
   }
-  assert.equal(result.transientLosses.length,0,`R56/R60 environmental damage ancestry must never disappear during repeated pause/resume: ${JSON.stringify(result)}`);
-  assert.equal(result.modern,true,`R56/R60 environmental damage ancestry must survive repeated pause/resume: ${JSON.stringify(result)}`);
+  assert.equal(result.transientLosses.length,0,`the retained general damage ancestry must remain stable during repeated pause/resume: ${JSON.stringify(result)}`);
+  assert.equal(result.modern,true,`the retained general damage ancestry must remain modern after repeated pause/resume: ${JSON.stringify(result)}`);
+  assert.equal(result.gateActive,false,`R60 Solo hurtPlayer property gating must remain retired under r58: ${JSON.stringify(result)}`);
+  assert.equal(Boolean(result.composition?.soloHurtGate),false,`R60 must not reclaim canonical r58 damage ownership: ${JSON.stringify(result)}`);
   assert.equal(result.composition?.stable,true,`R60 owner composition must reach a stable state even when the optional hurtPlayer property gate is unavailable: ${JSON.stringify(result)}`);
   assert.equal(result.composition?.retired,true,`R60 owner composition must retire its bounded installer after reaching a stable state: ${JSON.stringify(result)}`);
-  console.log("Lost Sizzler R60 damage-owner transition diagnostic passed.")
+  console.log("Lost Sizzler R60 non-damage-owner transition diagnostic passed.")
 } finally {
   await browser.close();
   for(const socket of sockets)socket.destroy();

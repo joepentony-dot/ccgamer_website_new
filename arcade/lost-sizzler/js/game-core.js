@@ -111,6 +111,110 @@ function reveal(p){let ex=explored.get(p.id);if(!ex){ex=new Set();explored.set(p
 function markRoomVisit(p){const id=W.roomAt(world,p.x,p.y);if(id<0)return;host.enteredRoomIds=host.enteredRoomIds||[];if(!host.enteredRoomIds.includes(id))host.enteredRoomIds.push(id);let set=roomVisits.get(p.id);if(!set){set=new Set();roomVisits.set(p.id,set)}if(!set.has(id)){set.add(id);const ex=explored.get(p.id)||new Set(),room=world.rooms[id],cx=Math.floor(room.x+room.w/2),cy=Math.floor(room.y+room.h/2);ex.add(`${cx},${cy}`);explored.set(p.id,ex);run.stats.rooms++;checkMapRewards(p)}}
 function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
   const old1=preserve?p1:null,old2=preserve?p2:null;if(run)run.playerLevelHint=Math.max(1,old1?.level||p1?.level||1);world=W.generate(seed);world.floor=run?.floor||1;window.__CCG_WORLD=world;host=W.createHostState(world);SYS.decorate(world,host,run||PGR.makeRun());
+  try{window.CCGLostSizzlerV142R58AuthoritativeTrapCore?.reset?.()}catch(_){}
+  /* Stage 6 normally owns the SYS.decorate wrapper, but later runtime owner
+     adoption can replace that wrapper before a Solo run starts. Dedicated
+     hazards and all three ordinary trap families are generated-floor invariants,
+     so reconcile them independently at the final world-start boundary. */
+  const stage6=window.CCGLostSizzlerV142Stage6ZoneGameplay||null,stage6Run=run||PGR.makeRun();
+  const hasUsableHazard=()=>Boolean((host.hazardRooms||[]).some(hazard=>stage6?.usableDedicatedHazard?.(hazard)??(Array.isArray(hazard?.cells)&&hazard.cells.length>0)));
+  try{
+    const floor=Math.max(1,Number(stage6Run?.floor||1)),profile=stage6?.profileForFloor?.(floor),seed=String(stage6Run?.seed||"CCG");
+    if(!hasUsableHazard()&&!(host.hazardRooms||[]).some(hazard=>hazard?.v142WardenCleansed===true)){
+      stage6?.ensureDedicatedHazard?.(world,host,stage6Run,profile,seed);
+    }
+    if(profile)stage6?.reconcileTrapFamilies?.(host,seed,world,{...profile,floor});
+  }catch(error){console.error("[Dungeon Carnage] final hazard/trap reconciliation failed",error)}
+  try{
+    const floor=Math.max(1,Number(stage6Run?.floor||1));
+    if(!hasUsableHazard()&&!(host.hazardRooms||[]).some(hazard=>hazard?.v142WardenCleansed===true)){
+      const rooms=[...(world?.rooms||[])],ordered=[
+        ...rooms.filter(room=>room&&room.dedicatedHazardReserved&&room.id!==world.startRoomId&&room.id!==world.exitRoomId),
+        ...rooms.filter(room=>room&&room.id!==world.startRoomId&&room.id!==world.exitRoomId),
+        ...rooms.filter(room=>room&&room.id===world.exitRoomId),
+        ...rooms.filter(room=>room&&room.id===world.startRoomId)
+      ];
+      let chosen=null,cells=[];
+      for(const room of ordered){
+        const found=[];
+        for(let y=Number(room.y);y<=Number(room.y)+Number(room.h);y++)for(let x=Number(room.x);x<=Number(room.x)+Number(room.w);x++){
+          if(world?.map?.[y]?.[x]===0)found.push({x,y,group:0})
+        }
+        if(found.length){chosen=room;cells=found;break}
+      }
+      if(!chosen||!cells.length){
+        // Absolute map-level fallback for pathological compact seeds where room
+        // bounds expose no walkable cells. Prefer non-start/non-exit rooms, but
+        // never allow a generated Solo floor to ship without a usable hazard.
+        const mapCells=[];
+        for(let y=0;y<(world?.map||[]).length;y++){
+          const row=world.map[y]||[];
+          for(let x=0;x<row.length;x++){
+            if(row[x]!==0)continue;
+            const roomId=W.roomAt(world,x,y);
+            if(roomId<0)continue;
+            const room=rooms.find(candidate=>Number(candidate?.id)===Number(roomId))||rooms[roomId]||null;
+            if(!room)continue;
+            mapCells.push({x,y,room,preferred:roomId!==world.startRoomId&&roomId!==world.exitRoomId});
+          }
+        }
+        mapCells.sort((a,b)=>Number(b.preferred)-Number(a.preferred)||Number(a.room?.id||0)-Number(b.room?.id||0)||a.y-b.y||a.x-b.x);
+        const fallback=mapCells[0]||null;
+        if(fallback){chosen=fallback.room;cells=[{x:fallback.x,y:fallback.y,group:0}]}
+      }
+      if(chosen&&cells.length){
+        host.hazardRooms=host.hazardRooms||[];
+        host.hazardRooms.push({
+          id:`hazard-${floor}-startworld-fallback`,roomId:chosen.id,type:"embers",cells,groups:2,
+          period:2550,warningMs:700,activeMs:760,phase:0,title:"EMBER-TILE VAULT",v142StartWorldFallback:true
+        });
+        chosen.dedicatedHazard=true;chosen.dedicatedHazardReserved=true;chosen.hazardType="embers";chosen.dangerous=true
+      }
+    }
+  }catch(error){console.error("[Dungeon Carnage] final startWorld hazard invariant failed",error)}
+  try{
+    // Final ordinary-trap family guarantee. Stage 6 prefers normal non-hazard
+    // rooms, but pathological compact seeds can leave no eligible room pool.
+    // At this final boundary, reserve walkable cells directly so FIRE, SPIKE
+    // and SHOCK can never all disappear from a generated Solo floor.
+    const families=["fire","spike","shock"],floor=Math.max(1,Number(stage6Run?.floor||1));
+    host.traps=host.traps||[];
+    const present=kind=>host.traps.some(trap=>trap?.active&&String(trap.kind||"").toLowerCase()===kind);
+    const occupied=new Set(host.traps.filter(trap=>trap?.active).map(trap=>`${Number(trap.x)},${Number(trap.y)}`));
+    const hazardCells=new Set((host.hazardRooms||[]).flatMap(hazard=>(hazard?.cells||[]).map(cell=>`${Number(cell.x)},${Number(cell.y)}`)));
+    const candidates=[];
+    for(let y=0;y<(world?.map||[]).length;y++){
+      const row=world.map[y]||[];
+      for(let x=0;x<row.length;x++){
+        if(row[x]!==0)continue;
+        const roomId=W.roomAt(world,x,y);
+        if(roomId<0)continue;
+        const start=Number(x)===Number(world.start?.x)&&Number(y)===Number(world.start?.y);
+        const exit=Number(x)===Number(world.exit?.x)&&Number(y)===Number(world.exit?.y);
+        const edgeRoom=roomId===world.startRoomId||roomId===world.exitRoomId;
+        candidates.push({x,y,roomId,start,exit,edgeRoom,hazard:hazardCells.has(`${x},${y}`)});
+      }
+    }
+    candidates.sort((a,b)=>
+      Number(a.start)-Number(b.start)
+      ||Number(a.exit)-Number(b.exit)
+      ||Number(a.edgeRoom)-Number(b.edgeRoom)
+      ||Number(a.hazard)-Number(b.hazard)
+      ||a.roomId-b.roomId||a.y-b.y||a.x-b.x
+    );
+    families.forEach((kind,index)=>{
+      if(present(kind))return;
+      const cell=candidates.find(candidate=>!occupied.has(`${candidate.x},${candidate.y}`))||null;
+      if(!cell)return;
+      const trap={
+        id:`startworld-family-${kind}-f${floor}-${cell.x}-${cell.y}`,
+        x:cell.x,y:cell.y,roomId:cell.roomId,kind,
+        phase:(cell.x*131+cell.y*197+index*331)%1800,
+        period:2200,active:true,v142StartWorldFamilyFallback:true
+      };
+      host.traps.push(trap);occupied.add(`${cell.x},${cell.y}`);
+    });
+  }catch(error){console.error("[Dungeon Carnage] final startWorld trap-family invariant failed",error)}
   p1=old1?preservePlayer(old1,world.start.x,world.start.y):makePlayer(net.sessionId,playerName(),world.start.x,world.start.y);p2=null;if(split||old2){const q=nearbyOpen(world.start.x+2,world.start.y,[p1]);p2=old2?preservePlayer(old2,q.x,q.y):makePlayer("LOCAL-P2","PLAYER 2",q.x,q.y)}
   remote.clear();enemyVisuals.clear();bullets.length=enemyBullets.length=particles.length=rings.length=floaters.length=hazards.length=0;pendingItems.clear();cameras.clear();explored.clear();campStates.clear();roomVisits.clear();playerTrails.clear();questDone.clear();toastQueue.length=0;toastTimer=0;stats.games=stats.elites=stats.doors=stats.weapons=stats.secrets=stats.generators=0;shake=damageFlash=0;move1=move2=fire1=fire2=fireBuffer1=fireBuffer2=0;specialCD=0;inventoryReminderMs=300000;
   host.worldRef=world;host.enteredRoomIds=[];for(const p of localPlayers()){resetCamp(p);reveal(p);if(checkpointRestore){const rid=W.roomAt(world,p.x,p.y),set=new Set();if(rid>=0){set.add(rid);host.enteredRoomIds.push(rid)}roomVisits.set(p.id,set)}else markRoomVisit(p);rememberTrail(p);updateRoomMessage(p,true)}levelQueue.length=0;for(const p of localPlayers())rememberPendingLevelChoice(p);A.stageUnenteredEnemies?.(host,world);sync();
