@@ -41,6 +41,8 @@ assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeFireCore=authoritat
 assert.doesNotMatch(play,/CCGLostSizzlerV142R20LiveRegressionStability=authoritativeFireApi/,"the r58 FIRE core must not occupy the R20 stability namespace");
 assert.match(play,/if\(firePressed\)[\s\S]*if\(!gamepadFireDown\)\{[\s\S]*if\(!attackNowUnbuffered\(p1,direction\)\)queueAttack\(p1,direction\)[\s\S]*else if\(fire1<=0\)attackNowUnbuffered\(p1,direction\)/,"gamepad FIRE must route the initial press and legal held repeats through the authoritative core, buffering only when cadence blocks the first press");
 assert.match(touch,/if\(typeof queueAttack === "function"\) queueAttack\(p1\)/,"touch FIRE must use the same core queue");
+assert.match(touch,/input\.add\("Space"\)[\s\S]*setAttackHeldInput\(p1,true\)/,"touch hold must explicitly claim qualified held-FIRE ownership");
+assert.match(touch,/input\.delete\("Space"\)[\s\S]*setAttackHeldInput\(p1,false\)/,"touch release must explicitly release qualified held-FIRE ownership");
 assert.doesNotMatch(touch,/CCGLostSizzlerV142R20LiveRegressionStability\?\.attackNow/,"touch FIRE must not call a historical recovery owner");
 
 assert.match(play,/const trapCycleHits=new Map\(\)/,"trap duplicate suppression must be one per-trap/player cycle ledger");
