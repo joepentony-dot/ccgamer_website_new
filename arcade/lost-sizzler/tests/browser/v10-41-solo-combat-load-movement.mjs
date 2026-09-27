@@ -34,8 +34,8 @@ const directionFor=async page=>page.evaluate(()=>{
 const prepareSolo=async(page,seed)=>page.evaluate(seed=>{
   run=PGR.makeRun({difficulty:"ARCADE",seed});playMode="solo";startWorld(PGR.floorSeed(run),false,false);mode="playing";
   document.body.dataset.runActive="true";document.body.dataset.specialMode="";delete document.body.dataset.hordeSolo;UI.menu?.classList.add("hidden");
-  host.enemies=[];host.generators=[];host.traps=[];host.hazardRooms=[];hazards.length=0;enemyBullets.length=0;bullets.length=0;particles.length=0;rings.length=0;floaters.length=0;
-  move1=0;fire1=0;fireBuffer1=0;input.clear();p1.hitStunMs=0;p1.invuln=0;p1.mana=Math.max(100,Number(p1.maxMana||0));p1.firearmUnlocked=true;
+  host.enemies=[];host.generators=[];host.traps=[];host.hazardRooms=[];host.blockingDecor=[];hazards.length=0;enemyBullets.length=0;bullets.length=0;particles.length=0;rings.length=0;floaters.length=0;
+  move1=0;fire1=0;fireBuffer1=0;input.clear();p1.hitStunMs=0;p1.invuln=0;p1.mana=Math.max(100,Number(p1.maxMana||0));p1.firearmUnlocked=true;p1.weapon=baseWeapon();
   window.CCGLostSizzlerModeRuntime?.sync?.("Solo combat-load regression prepare");
   return{x:p1.x,y:p1.y,controller:window.CCGLostSizzlerModeRuntime?.snapshot?.().activeId||""};
 },seed);
