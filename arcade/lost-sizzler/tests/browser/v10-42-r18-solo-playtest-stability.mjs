@@ -77,18 +77,18 @@ try{
   }
 
   await page.keyboard.press("KeyP");await page.waitForFunction(()=>mode==="paused");
-  const keyboardRepairBefore=await page.evaluate(()=>Number(window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics.pauseResumeAttackRepairs||0));
   await page.evaluate(()=>{fire1=1200;fireBuffer1=900;projectileCD=600});
   await page.keyboard.press("KeyP");
-  await page.waitForFunction(before=>mode==="playing"&&Number(window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics.pauseResumeAttackRepairs||0)>before,keyboardRepairBefore,{timeout:4000});
+  await page.waitForFunction(()=>mode==="playing"&&Number(fire1)===0&&Number(fireBuffer1)===0&&Number(projectileCD)===0,{timeout:4000});
 
   const beforeAttack=await page.evaluate(()=>({
     mana:p1.mana,
     bullets:bullets.filter(b=>b?.owner===p1.id&&b.ttl>0).length,
-    fire1,fireBuffer1,projectileCD,
-    diag:{...window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics}
+    fire1,fireBuffer1,projectileCD
   }));
-  assert.ok(beforeAttack.diag.pauseResumeAttackRepairs>keyboardRepairBefore,`repeated P-key resume must repair injected finite attack cadence: ${JSON.stringify({keyboardRepairBefore,beforeAttack})}`);
+  assert.equal(beforeAttack.fire1,0,"P-key resume must clear the core fire cooldown");
+  assert.equal(beforeAttack.fireBuffer1,0,"P-key resume must clear the core fire buffer");
+  assert.equal(beforeAttack.projectileCD,0,"P-key resume must clear the projectile cadence");
 
   await page.keyboard.press("Space");
   await page.waitForFunction(before=>p1.mana<before||bullets.filter(b=>b?.owner===p1.id&&b.ttl>0).length>0,beforeAttack.mana,{timeout:4000});
@@ -97,17 +97,18 @@ try{
   assert.ok(afterAttack.mana<beforeAttack.mana||afterAttack.bullets>beforeAttack.bullets,`a real Space attack must still fire after repeated pause/resume cycles: before=${JSON.stringify(beforeAttack)} after=${JSON.stringify(afterAttack)}`);
 
   await page.keyboard.press("KeyP");await page.waitForFunction(()=>mode==="paused");
-  const buttonRepairBefore=await page.evaluate(()=>Number(window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics.pauseResumeAttackRepairs||0));
   await page.evaluate(()=>{fire1=850;fireBuffer1=650;projectileCD=400});
   await page.click("#resume-btn");
-  await page.waitForFunction(before=>mode==="playing"&&Number(window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics.pauseResumeAttackRepairs||0)>before,buttonRepairBefore,{timeout:4000});
-  const beforeButtonResumeAttack=await page.evaluate(()=>({mana:p1.mana,diag:{...window.CCGLostSizzlerV142R18SoloPlaytestStability.diagnostics}}));
-  assert.ok(beforeButtonResumeAttack.diag.pauseResumeAttackRepairs>buttonRepairBefore,"Continue-button resume must repair the same injected finite attack cadence");
+  await page.waitForFunction(()=>mode==="playing"&&Number(fire1)===0&&Number(fireBuffer1)===0&&Number(projectileCD)===0,{timeout:4000});
+  const beforeButtonResumeAttack=await page.evaluate(()=>({mana:p1.mana,fire1,fireBuffer1,projectileCD}));
+  assert.equal(beforeButtonResumeAttack.fire1,0,"Continue-button resume must clear the core fire cooldown");
+  assert.equal(beforeButtonResumeAttack.fireBuffer1,0,"Continue-button resume must clear the core fire buffer");
+  assert.equal(beforeButtonResumeAttack.projectileCD,0,"Continue-button resume must clear projectile cadence");
   await page.keyboard.press("Space");
   await page.waitForFunction(before=>p1.mana<before,beforeButtonResumeAttack.mana,{timeout:4000});
 
   assert.deepEqual(errors,[],`page errors: ${JSON.stringify(errors,null,2)}`);
-  console.log("V10.42 r18 live solo stability and repeated pause/resume attack-liveness regression passed");
+  console.log("V10.42 r58 live solo stability and core pause/resume FIRE regression passed");
   await context.close();
 }finally{
   await browser.close();
