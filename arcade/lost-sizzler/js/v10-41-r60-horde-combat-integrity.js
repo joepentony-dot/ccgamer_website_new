@@ -507,17 +507,11 @@
   }
 
   function wrapEnvironmentalDamage(){
-    const current=window.hurtPlayer;if(typeof current!=="function")return false;
-    if(originalChainHasMarker(current,"__ccgV141R60EnvironmentSeal")){state.hurtWrapped=true;state.hurtSource=current;return true}
-    const source=current;
-    const wrapped=function hurtPlayerV141R60EnvironmentSeal(player,amount,friendly=false,sourceName="enemy"){
-      if(!soloDungeonPlaying()||!player||!ENVIRONMENT_SOURCE.test(String(sourceName||"")))return source.apply(this,arguments);
-      const before=durability(player),oldInv=Number(player.invuln||0);player.invuln=0;let result=source.apply(this,arguments),recovered=false;
-      if(durability(player)>=before){const golden=window.CCGLostSizzlerV141R30?.state?.goldenHurt;if(typeof golden==="function"&&golden!==source&&golden!==wrapped){player.invuln=0;try{result=golden.call(this,player,amount,friendly,sourceName);recovered=durability(player)<before}catch(error){recordError(error)}}}
-      if(durability(player)>=before)player.invuln=oldInv;else if(recovered)state.environmentRepairs++;
-      return result
-    };
-    wrapped.__ccgV141R60EnvironmentSeal=true;wrapped.__ccgV141R56EnvironmentDamage=true;wrapped.__ccgV141R29HordeFriendly=true;wrapped.__ccgOriginal=source;window.hurtPlayer=wrapped;state.hurtSource=source;state.hurtWrapped=true;state.ownerReassertions++;return true
+    // r58 owns trap/environment HEALTH semantics in the canonical game core.
+    // R60 retains Horde roster, movement and timing responsibilities only.
+    state.hurtSource=window.hurtPlayer;
+    state.hurtWrapped=true;
+    return true
   }
 
   function install(){
