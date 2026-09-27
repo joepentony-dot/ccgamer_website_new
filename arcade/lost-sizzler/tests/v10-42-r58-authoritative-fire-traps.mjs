@@ -7,6 +7,8 @@ const main=fs.readFileSync(new URL("js/game-main.js",root),"utf8");
 const core=fs.readFileSync(new URL("js/game-core.js",root),"utf8");
 const r18=fs.readFileSync(new URL("js/v10-42-r18-solo-playtest-stability.js",root),"utf8");
 const r20=fs.readFileSync(new URL("js/v10-42-r20-live-regression-stability.js",root),"utf8");
+const rare=fs.readFileSync(new URL("js/v10-15-rare-events-balance.js",root),"utf8");
+const r54=fs.readFileSync(new URL("js/v10-41-r54-playtest-regressions.js",root),"utf8");
 const touch=fs.readFileSync(new URL("js/v10-4-patch.js",root),"utf8");
 const bootstrap=fs.readFileSync(new URL("js/v10-42-bootstrap.js",root),"utf8");
 const version=JSON.parse(fs.readFileSync(new URL("version.json",root),"utf8"));
@@ -44,6 +46,11 @@ assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeTrapCore=authoritat
 assert.match(play,/function resetAuthoritativeTrapContacts\(\)[\s\S]*trapCycleHits\.clear\(\)/,"authoritative trap ledger must expose an explicit world-transition reset");
 assert.match(core,/CCGLostSizzlerV142R58AuthoritativeTrapCore\?\.reset\?\.\(\)/,"every new world/floor must clear old player\/trap cycle ownership before play resumes");
 assert.doesNotMatch(play,/CCGLostSizzlerV142R19MobileTrapLayoutStability\?\.updateTrapContacts/,"simulation must not depend on the retired R19 implementation");
+assert.match(rare,/function observeTrapContact\(player,now=performance\.now\(\)\)/,"Rare Events may retain passive trap-contact observation for warnings and diagnostics");
+assert.doesNotMatch(rare,/triggerTrap=function triggerTrapV115Reliable/,"Rare Events must not replace the canonical R58 triggerTrap owner");
+assert.doesNotMatch(rare,/hurtPlayer\(player,1,false,\`\$\{kind\} trap\`\)/,"Rare Events must not apply ordinary floor-trap HEALTH damage");
+assert.match(rare,/update=function updateV115TrapPresentation\(dt\)[\s\S]*warnForNearbyTrap\(player\)[\s\S]*observeTrapContact\(player,now\)/,"Rare Events update wrapper must remain presentation and diagnostics only");
+assert.match(r54,/function trapTick\(\)\{if\(window\.CCGLostSizzlerV142R58AuthoritativeTrapCore\)return;/,"R54 must immediately yield ordinary trap damage to the canonical R58 owner");
 
 const pauseBlock=main.match(/function clearPauseAttackCadence[\s\S]*?function settlePauseAttackCadence/)?.[0]||"";
 assert.doesNotMatch(pauseBlock,/AttackHoldLiveness|repairCombatTimers|rearmCombat|repairAttackLiveness/,"pause/resume must not invoke historical FIRE recovery owners");
