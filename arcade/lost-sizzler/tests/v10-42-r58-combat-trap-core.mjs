@@ -14,11 +14,20 @@ const inventory=fs.readFileSync(new URL("js/v10-42-r47-inventory-fire-recovery.j
 const rareBalance=fs.readFileSync(new URL("js/v10-15-rare-events-balance.js",root),"utf8");
 const r54=fs.readFileSync(new URL("js/v10-41-r54-playtest-regressions.js",root),"utf8");
 const r60Owners=fs.readFileSync(new URL("js/v10-41-r60-horde-owner-composition.js",root),"utf8");
+const gamePlay=fs.readFileSync(new URL("js/game-play.js",root),"utf8");
 
 assert.match(bootstrap,/v10-42-r58-combat-trap-core\.js/,"ordered bootstrap must load the authoritative FIRE/trap core");
 assert.ok(bootstrap.indexOf("v10-42-r58-combat-trap-core.js")<bootstrap.indexOf("v10-42-bug-reporter.js"),"core must own gameplay before observation-only reporting loads");
 
 assert.match(core,/window\.firePlayer=firePlayerFresh;window\.triggerTrap=triggerTrapFresh;window\.queueAttack=queueAttackFresh/,"new core must directly own FIRE, trap and attack-buffer entry points");
+assert.match(core,/document\.addEventListener\("keydown",onAttackKeyDown,true\)/,"R58 must own Space\/Numpad0 in capture phase before legacy bubbling recovery listeners");
+assert.match(core,/event\.stopImmediatePropagation\(\)[\s\S]*attackKeysDown\.add\(event\.code\)[\s\S]*syncHeldAttackInput\(\)[\s\S]*if\(fresh\)attackNow\(event\.code\)/,"authoritative keydown must both own the fresh shot and maintain canonical held-fire state");
+assert.match(core,/document\.addEventListener\("keyup",onAttackKeyUp,true\)/,"R58 must own attack-key release and clear held-fire state itself");
+assert.match(core,/attackKeysDown\.clear\(\)[\s\S]*input\?\.delete\?\.\("Space"\)/,"pause\/inventory\/blur attack reset must clear the R58 physical-key ledger and canonical hold");
+assert.match(gamePlay,/CCGLostSizzlerV142R58CombatTrapCore\?\.updateTrapContacts\?\.\("simulation"\)/,"canonical simulation must call only the rewritten R58 trap engine");
+assert.doesNotMatch(gamePlay,/CCGLostSizzlerV142R19MobileTrapLayoutStability\?\.updateTrapContacts\?\.\("simulation"\)/,"canonical simulation must not continue the old R19 trap engine after the rewrite");
+assert.match(r19,/function tick\(\)[\s\S]*const core=window\.CCGLostSizzlerV142R58CombatTrapCore;[\s\S]*if\(core\)\{syncPortraitCanvasAspect\(\);return\}/,"R19 monitor must become layout-only once R58 is installed");
+
 assert.match(core,/function trapDamageFirewall\(player,amount,friendly=false,source="enemy"\)[\s\S]*if\(\/\\btrap\\b\/i\.test\(String\(source\|\|""\)\)\)[\s\S]*return false;[\s\S]*inheritedHurtPlayer\.apply\(this,arguments\)/,"new trap core must firewall legacy trap-labelled damage while preserving non-trap damage");
 assert.match(core,/canonicalHurtPlayer\.call\(window,p,1,false,/,"ordinary traps must use the canonical damage/death primitive exactly once");
 assert.match(core,/window\.hurtPlayer=trapDamageFirewall/,"trap-source firewall must be the final runtime hurtPlayer boundary after the rewrite loads");
