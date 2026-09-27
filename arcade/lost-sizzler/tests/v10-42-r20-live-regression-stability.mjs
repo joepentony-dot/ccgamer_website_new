@@ -23,7 +23,7 @@ assert.doesNotMatch(r20,/document\.addEventListener\("keydown"[\s\S]*queueAttack
 
 assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeFireCore=authoritativeFireApi/,"r58 core must expose the authoritative FIRE API");
 assert.doesNotMatch(play,/window\.CCGLostSizzlerV142R20LiveRegressionStability=authoritativeFireApi/,"FIRE core must not occupy R20 namespace");
-assert.match(play,/if\(firePressed\)[\s\S]*if\(!gamepadFireDown\)queueAttack\(p1,attackDirection\(p1,dir\)\)[\s\S]*else if\(fire1<=0\)attackNowUnbuffered\(p1,attackDirection\(p1,dir\)\)/,"gamepad FIRE must queue the initial press once and route legal held repeats through the authoritative core");
+assert.match(play,/if\(firePressed\)[\s\S]*const direction=attackDirection\(p1,dir\)[\s\S]*if\(!gamepadFireDown\)\{[\s\S]*if\(!attackNowUnbuffered\(p1,direction\)\)queueAttack\(p1,direction\)[\s\S]*else if\(fire1<=0\)attackNowUnbuffered\(p1,direction\)/,"gamepad FIRE must use the authoritative direct owner for the initial press, buffer only when cadence blocks it, and route legal held repeats through the same core");
 assert.match(touch,/if\(typeof queueAttack === "function"\) queueAttack\(p1\)/,"touch FIRE must use the authoritative queue");
 assert.doesNotMatch(touch,/CCGLostSizzlerV142R20LiveRegressionStability\?\.attackNow/,"touch FIRE must not invoke R20 recovery");
 
