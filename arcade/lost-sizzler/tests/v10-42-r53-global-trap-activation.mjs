@@ -11,6 +11,7 @@ const systems=read("js/systems.js");
 const stage6=read("js/v10-42-stage6-zone-gameplay.js");
 const play=read("js/game-play.js");
 const r19=read("js/v10-42-r19-mobile-trap-layout-stability.js");
+const r58=read("js/v10-42-r58-combat-trap-core.js");
 const rare=read("js/v10-15-rare-events-balance.js");
 const render=read("js/game-render.js");
 
@@ -31,21 +32,18 @@ assert.match(render,/const s=ws\(t\.x,t\.y\),active=SYS\.trapActive\(t,now\)/,"v
 assert.match(stage6,/const fallbackEligibleRooms=baseEligibleRooms\.filter\(room=>!room\.sanctuary\)/,"Stage 6 family repair must have a compact-floor fallback beyond strict ordinary rooms");
 assert.match(stage6,/for\(const pool of \[strictEligibleRooms,fallbackEligibleRooms,emergencyEligibleRooms\]\)/,"Stage 6 family repair must exhaust layered room fallbacks before allowing a trap family to disappear");
 
-assert.match(r19,/function updateTrapContacts\(source="simulation"\)/,"R19 must expose one global floor-trap contact-cycle owner");
-assert.match(r19,/rearmInactiveTrapContacts\(\);[\s\S]*const handled=damageOccupiedActiveTraps\(\)/,"the global cycle must rearm an inactive contact before checking active occupancy");
-assert.match(r19,/owner\.call\(window,player,1,false,/,"validated floor-trap damage must remain exactly one health");
-assert.match(r19,/player\.armor=0;[\s\S]*player\.armor=beforeArmor/,"floor-trap health damage must preserve armour");
-assert.match(r19,/const canonicalHit=afterHealth<beforeHealth/,"R19 must count a trap hit only when HEALTH actually falls");
-assert.doesNotMatch(r19,/canonicalHit=[^\n]*(?:afterHurtAt|lastHurtAt|lastDamageAt)/,"damage timestamps must not substitute for the required HEALTH loss");
-assert.match(r19,/trapContacts\.add\(contactKey\)[\s\S]*trapRuntime\?\.contact\?\.add/,"a verified R19 hit must synchronise the canonical trap latch only after HEALTH loss");
-assert.match(rare,/beforeHealth=Number\(player\.health\|\|0\)[\s\S]*hurtPlayer\(player,1,false,[\s\S]*Number\(player\.health\|\|0\)>=beforeHealth\)continue;[\s\S]*trapRuntime\.contact\.add\(key\)/,"the legacy reliable-trap owner must not latch a contact before proving HEALTH loss");
-assert.match(play,/healthLost=Number\(p\.health\|\|0\)<beforeHealth[\s\S]*if\(healthLost\)/,"base movement diagnostics must emit trap damage evidence only after real HEALTH loss");
-assert.doesNotMatch(play,/if\(healthLost&&damageAt>beforeDamageAt\)/,"base movement diagnostics must not discard verified HEALTH loss because a secondary timestamp comparison did not advance");
-assert.match(r19,/trapContacts\.add\(contactKey\)/,"an active contact must latch after one hit");
-assert.match(r19,/if\(occupied&&trapActive\(trap,now\)\)continue;/,"the latch must remain armed for the complete active phase");
-assert.match(r19,/trapContacts\.delete\(contactKey\)/,"the contact must rearm after leaving the tile or entering a safe cycle");
-
-assert.match(play,/CCGLostSizzlerV142R19MobileTrapLayoutStability\?\.updateTrapContacts\?\.\("simulation"\)/,"every live gameplay simulation frame must check occupied floor traps");
+assert.match(r58,/function updateTrapContacts\(\)/,"R58 must expose the single global floor-trap contact-cycle owner");
+assert.match(r58,/rearmTrapContacts\(\);const now=performance\.now\(\);let handled=false/,"the R58 global cycle must rearm stale contacts before checking active occupancy");
+assert.match(r58,/canonicalHurtPlayer\.call\(window,p,1,false,/,"validated floor-trap damage must remain exactly one health through the canonical damage/death primitive");
+assert.match(r58,/p\.armor=0;p\.invuln=0;[\s\S]*p\.armor=beforeArmor/,"floor-trap health damage must preserve armour");
+assert.match(r58,/const healthLost=Number\(p\.health\|\|0\)<beforeHealth,deathRecorded=/,"R58 must count a trap hit only after verified HEALTH loss or a lethal death transition");
+assert.doesNotMatch(r58,/healthLost=[^\n]*(?:lastHurtAt|lastDamageAt)/,"damage timestamps must not substitute for required HEALTH loss");
+assert.match(r58,/if\(!healthLost&&!deathRecorded\)\{p\.invuln=beforeInvuln;state\.trapRetries\+\+;return false\}[\s\S]*trapContacts\.set\(key,\{cycle,at:now\}\)/,"failed active trap contacts must remain retryable and only a verified hit may consume the current cycle");
+assert.match(r58,/if\(record\?\.cycle===cycle\)return true/,"a verified hit must latch the current active cycle against duplicate damage");
+assert.match(r58,/for\(const key of \[\.\.\.trapContacts\.keys\(\)\]\)if\(!live\.has\(key\)\)\{trapContacts\.delete\(key\);state\.trapRearms\+\+\}/,"the R58 contact ledger must rearm after leaving the tile or entering a safe cycle");
+assert.match(r19,/const core=window\.CCGLostSizzlerV142R58CombatTrapCore;[\s\S]*if\(core\)\{syncPortraitCanvasAspect\(\);return\}/,"R19 must become layout-only once R58 exists");
+assert.match(play,/CCGLostSizzlerV142R58CombatTrapCore\?\.updateTrapContacts\?\.\("simulation"\)/,"every live gameplay simulation frame must check occupied floor traps through R58");
+assert.doesNotMatch(play,/CCGLostSizzlerV142R19MobileTrapLayoutStability\?\.updateTrapContacts\?\.\("simulation"\)/,"the canonical simulation must not restore the retired R19 trap owner");
 assert.doesNotMatch(play,/t\.kind==="shock"[\s\S]{0,120}(?:hurtPlayer|damageValidatedTrapContact)/,"shock traps must not use a separate damage rule");
 assert.doesNotMatch(play,/t\.kind==="spike"[\s\S]{0,120}(?:hurtPlayer|damageValidatedTrapContact)/,"spike traps must not use a separate damage rule");
 assert.doesNotMatch(play,/t\.kind==="fire"[\s\S]{0,120}(?:hurtPlayer|damageValidatedTrapContact)/,"fire traps must not use a separate damage rule");
