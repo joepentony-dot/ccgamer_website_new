@@ -131,6 +131,7 @@
   }
 
   function resolveTrapContact(player,now=performance.now()){
+    const core=window.CCGLostSizzlerV142R58CombatTrapCore;if(core){warnForNearbyTrap(player);return core.updateTrapContacts("v115")}
     if(!player||!host?.traps?.length)return false;
     let hit=false;
     for(const trap of host.traps||[]){
