@@ -58,14 +58,9 @@ function queueAttack(p,requestedDirection=null){
   if(requestedDirection&&(requestedDirection.x||requestedDirection.y))p.dir=direction;
   if(duplicateIntent)return true;
   try{dispatchEvent(new CustomEvent("ccg:attack-intent",{detail:{playerId:String(p.id||p.name||"P1"),p2:isP2,at:now}}))}catch(_){}
-  const cooldown=isP2?fire2:fire1;
-  if(cooldown<=0){
-    const owner=authoritativeCoreFirePlayer||firePlayer;
-    if(owner(p,direction)){
-      if(isP2)fireBuffer2=0;else fireBuffer1=0;
-      return true
-    }
-  }
+  // Input records intent only. The simulation loop is the sole buffered FIRE
+  // executor, preventing one physical keyboard press from racing an immediate
+  // shot against the same-frame held/buffer path.
   if(isP2)fireBuffer2=ATTACK_BUFFER_MS;else fireBuffer1=ATTACK_BUFFER_MS;
   return true
 }
