@@ -298,11 +298,12 @@ function firePlayer(p,d){
   if(!dirs.length)return false;
 
   const shotIds=[],beforeMana=Number(p.mana||0),beforeCount=bullets.filter(b=>b.owner===p.id&&b.ttl>0).length;
+  const externalSpawn=typeof window.spawnBullet==="function"&&window.spawnBullet!==spawnBullet?window.spawnBullet:null;
   try{
     for(const z of dirs){
       const b={id:`${p.id}-${Date.now()}-${Math.random()}`,owner:p.id,ownerName:p.name,x:p.x,y:p.y,dx:z.x,dy:z.y,ttl:w.ttl||18,power:(w.power||1)+(p.damageBonus||0),pierce:w.pierce||0,element:w.element||"energy",style:w.id||"pulse"};
       shotIds.push(b.id);
-      spawnBullet(b,false);
+      if(externalSpawn)externalSpawn(b,false);else spawnBullet(b,false);
     }
   }catch(_){
     for(let i=bullets.length-1;i>=0;i--)if(shotIds.includes(bullets[i]?.id))bullets.splice(i,1);
