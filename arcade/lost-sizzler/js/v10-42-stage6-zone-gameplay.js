@@ -116,9 +116,21 @@
     const strictEligibleRooms=baseEligibleRooms.filter(room=>!room.sanctuary&&!room.sigilRoom&&!room.spiderNest);
     const fallbackEligibleRooms=baseEligibleRooms.filter(room=>!room.sanctuary);
     const emergencyEligibleRooms=baseEligibleRooms;
+    const compactEligibleRooms=(worldState?.rooms||[]).filter(room=>
+      room
+      && room.id!==worldState?.startRoomId
+      && room.id!==worldState?.exitRoomId
+      && !room.dedicatedHazard
+      && !hazardRooms.has(room.id)
+    );
+    const ultimateEligibleRooms=(worldState?.rooms||[]).filter(room=>
+      room
+      && room.id!==worldState?.startRoomId
+      && room.id!==worldState?.exitRoomId
+    );
     const reserveCell=kind=>{
       const visited=new Set();
-      for(const pool of [strictEligibleRooms,fallbackEligibleRooms,emergencyEligibleRooms]){
+      for(const pool of [strictEligibleRooms,fallbackEligibleRooms,emergencyEligibleRooms,compactEligibleRooms,ultimateEligibleRooms]){
         const ordered=pool
           .filter(room=>!visited.has(room.id))
           .map(room=>({room,key:hash32(`${seed}|${room.id}|stage6-family-room|${kind}`)}))
@@ -131,6 +143,15 @@
               if(worldState?.map?.[y]?.[x]!==0)continue;
               if(occupied.has(`${x},${y}`))continue;
               cells.push({x,y});
+            }
+          }
+          if(!cells.length){
+            for(let y=Number(room.y);y<=Number(room.y)+Number(room.h);y++){
+              for(let x=Number(room.x);x<=Number(room.x)+Number(room.w);x++){
+                if(worldState?.map?.[y]?.[x]!==0)continue;
+                if(occupied.has(`${x},${y}`))continue;
+                cells.push({x,y});
+              }
             }
           }
           if(!cells.length)continue;
