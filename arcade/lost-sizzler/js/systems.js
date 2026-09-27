@@ -353,6 +353,11 @@ window.CCGSystems=(()=>{
         && !candidate.sigilRoom
         && !candidate.spiderNest
         && candidate.w>=2&&candidate.h>=2
+      )||(world.rooms||[]).find(candidate=>
+        candidate
+        && candidate.id!==world.startRoomId
+        && candidate.id!==world.exitRoomId
+        && !usedHazardRooms.has(candidate.id)
       )||null;
       if(!room)break;
       const i=host.hazardRooms.length,type=types[(floor+i)%types.length],groups=type==="embers"?2:type==="blade"?3:4,cells=[];

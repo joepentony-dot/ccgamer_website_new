@@ -20,6 +20,7 @@ function d1(){const l=input.has("ArrowLeft")||input.has("KeyA"),r=input.has("Arr
 function d2(){const l=input.has("KeyJ"),r=input.has("KeyL"),u=input.has("KeyI"),d=input.has("KeyK");const x=(r?1:0)-(l?1:0),y=(d?1:0)-(u?1:0);return x||y?{x,y}:null}
 function attackDirection(p,requested){const source=requested&&(requested.x||requested.y)?requested:p?.dir;const x=Math.sign(Number(source?.x||0)),y=Math.sign(Number(source?.y||0));return x||y?{x,y}:{x:1,y:0}}
 const ATTACK_BUFFER_MS=700;
+let authoritativeCoreFirePlayer=null;
 function normalizeAttackState(p){
   if(!p)return false;
   const isP2=p===p2;
@@ -39,7 +40,8 @@ function attackNowUnbuffered(p,requestedDirection=null){
   const isP2=p===p2,cooldown=isP2?fire2:fire1;
   if(isP2)fireBuffer2=0;else fireBuffer1=0;
   if(cooldown>0)return false;
-  return firePlayer(p,attackDirection(p,requestedDirection))
+  const owner=authoritativeCoreFirePlayer||firePlayer;
+  return owner(p,attackDirection(p,requestedDirection))
 }
 function queueAttack(p,requestedDirection=null){
   if(!p||mode!=="playing")return false;
@@ -312,11 +314,12 @@ function firePlayer(p,d){
   S.sfx("fire");muzzle(p.x,p.y,d);sync();
   return true
 }
+authoritativeCoreFirePlayer=firePlayer;
 const authoritativeFireApi=Object.freeze({
   version:"V10.42-r58-core",
   gameplayOwnership:true,
   attackNow:(direction=null)=>attackNowUnbuffered(p1,direction),
-  fire:(player,direction)=>firePlayer(player,direction),
+  fire:(player,direction)=>(authoritativeCoreFirePlayer||firePlayer)(player,direction),
   queue:(player,direction)=>queueAttack(player,direction),
   recoverOrphanedGameplayMode:()=>false
 });
@@ -553,7 +556,7 @@ function update(dt){
   // combat path must never stop an already-held movement command being serviced.
   if(move1<=0){const d=d1();if(d){movePlayer(p1,d.x,d.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}if(p2&&move2<=0){const d=d2();if(d){movePlayer(p2,d.x,d.y);move2=C.player.moveDelay*(p2.moveMultiplier||1)}}
   if((input.has("Space")||input.has("Numpad0")||fireBuffer1>0)&&fire1<=0){const fired=firePlayer(p1,attackDirection(p1,d1()));if(fired)fireBuffer1=0}if(p2&&(input.has("Enter")||fireBuffer2>0)&&fire2<=0){const fired=firePlayer(p2,attackDirection(p2,d2()));if(fired)fireBuffer2=0}
-  if(projectileCD<=0){stepProjectiles();projectileCD=70}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendPlayer();sendCD=100}if(worldCD<=0&&net.isHost){broadcastWorld();worldCD=350}
+  if(projectileCD<=0){const liveProjectileWork=bullets.some(b=>b&&b.ttl>0)||enemyBullets.some(b=>b&&b.ttl>0);stepProjectiles();projectileCD=liveProjectileWork?70:0}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendPlayer();sendCD=100}if(worldCD<=0&&net.isHost){broadcastWorld();worldCD=350}
   updateActiveTrapContacts();
   updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBoulder(dt);updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
   if(surroundCD<=0){surroundingsTick();surroundCD=20000}inventoryReminderMs-=dt;if(inventoryReminderMs<=0){inventoryReminderMs=300000;showToast("DON'T FORGET TO HIT TAB TO CHECK YOUR INVENTORY","TAB ALSO EXPLAINS ARTEFACTS, THE BANISHMENT FLASK AND YOUR CURRENT OBJECTIVE.","cyan",8000)}

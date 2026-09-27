@@ -99,7 +99,8 @@ try{
     if(typeof originalSpawn==="function")window.spawnBullet=originalSpawn;delete window.__ccgR57AttackProbe;return result
   });
   assert.ok(attackAfter.mana<attackBefore.mana,`PULSE with ammunition must fire after stall recovery instead of becoming unresponsive: before=${JSON.stringify(attackBefore)} after=${JSON.stringify(attackAfter)}`);
-  assert.ok(attackAfter.shots>=1&&attackAfter.fireObserved>0&&attackAfter.bulletObserved>attackBefore.bullets,`post-stall PULSE input must create live firearm state at spawn time: ${JSON.stringify(attackAfter)}`);
+  assert.ok(attackAfter.shots>=1&&attackAfter.bulletObserved>attackBefore.bullets,`post-stall PULSE input must create a live projectile at spawn time: ${JSON.stringify(attackAfter)}`);
+  assert.equal(attackAfter.fireObserved,0,"transactional FIRE must not commit cooldown before projectile creation succeeds");
   assert.equal(attackAfter.mode,"playing","combat recovery must not change the active game mode");
 
   assert.deepEqual(errors,[],`video-regression browser test produced page errors: ${errors.join("\n")}`);

@@ -17,6 +17,7 @@
   const now=()=>performance.now();
   const safeNumber=value=>Number.isFinite(Number(value))?Number(value):0;
   const appliedChestLoot=new WeakSet();
+  const CARRIED_CHEST_LOOT=new Set(["potion","torch","teleport","banishment","artefact"]);
   let activeChestConfirmation=null,chestConfirmationObserver=null;
 
   function repairCpuCookIdentity(){
@@ -115,6 +116,10 @@
   }catch(_){}
 
   function chestLootName(loot){return loot?.weapon?.displayName||loot?.name||String(loot?.kind||"CHEST REWARD").toUpperCase()}
+  function chestInventoryCanTake(player,loot){
+    if(!CARRIED_CHEST_LOOT.has(String(loot?.kind||"")))return true;
+    try{return typeof PGR?.inventoryCanAdd==="function"?Boolean(PGR.inventoryCanAdd(player,loot)):true}catch(_){return true}
+  }
   function chestPlayerStillActive(player){
     try{return Boolean(player&&typeof localPlayers==="function"&&localPlayers().includes(player)&&run&&host)}catch(_){return false}
   }
@@ -172,6 +177,12 @@
         if(!chest?.active)return true;
         if(chest.locked&&player?.bronzeKeys<=0)return baseOpenChest(player,chest);
         if(!chest.loot){try{chest.loot=PGR.lootForChest(chest,run,Math.random)}catch(_){} }
+        const preflightLoot=chest.loot||null;
+        if(preflightLoot&&!chestInventoryCanTake(player,preflightLoot)){
+          const name=chestLootName(preflightLoot);
+          try{showToast("INVENTORY FULL — CHEST HELD",`${name} is inside. Free a Quick Inventory slot and reopen this chest; the reward will not be lost.`,"cyan",7500)}catch(_){}
+          return false;
+        }
         const beforeActive=chest.active,result=baseOpenChest(player,chest);
         if(beforeActive&&chest.active===false){
           const loot=chest.loot,name=chestLootName(loot),scoreReward=Math.max(0,safeNumber(chest.rewardScore)),xpReward=Math.max(0,safeNumber(chest.rewardXp));
