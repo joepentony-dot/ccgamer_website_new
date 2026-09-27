@@ -12,6 +12,8 @@ const r57=fs.readFileSync(new URL("../lost-sizzler/js/v10-41-r57-desktop-prep-st
 const hold=fs.readFileSync(new URL("js/v10-42-attack-hold-liveness.js",root),"utf8");
 const inventory=fs.readFileSync(new URL("js/v10-42-r47-inventory-fire-recovery.js",root),"utf8");
 const rareBalance=fs.readFileSync(new URL("js/v10-15-rare-events-balance.js",root),"utf8");
+const r54=fs.readFileSync(new URL("js/v10-41-r54-playtest-regressions.js",root),"utf8");
+const r60Owners=fs.readFileSync(new URL("js/v10-41-r60-horde-owner-composition.js",root),"utf8");
 
 assert.match(bootstrap,/v10-42-r58-combat-trap-core\.js/,"ordered bootstrap must load the authoritative FIRE/trap core");
 assert.ok(bootstrap.indexOf("v10-42-r58-combat-trap-core.js")<bootstrap.indexOf("v10-42-bug-reporter.js"),"core must own gameplay before observation-only reporting loads");
@@ -31,6 +33,9 @@ assert.match(core,/fireBuffer1=Math\.max\(Number\(fireBuffer1\|\|0\),ATTACK_BUFF
 assert.doesNotMatch(core,/recoverThroughDeepFireOwner|recoverThroughCapturedR1FireOwner|deepestFireOwner/,"new FIRE core must not traverse legacy FIRE owner chains");
 
 assert.match(rareBalance,/CCGLostSizzlerV142R58CombatTrapCore;if\(core\).*core\.updateTrapContacts\("v115"\)/s,"legacy rare-event trap runtime must delegate to the new core instead of applying direct trap damage");
+assert.match(r54,/CCGLostSizzlerV142R58CombatTrapCore;if\(core\)\{core\.updateTrapContacts\("r54"\);return\}/,"R54 must not force trap damage outside the rewritten core");
+assert.match(r60Owners,/__ccgV142R58TrapFirewall===true[\s\S]*return gatedHurt/,"R60 solo damage gate must return the r58 trap firewall when installed");
+assert.match(r60Owners,/value\.__ccgV142R58TrapFirewall===true[\s\S]*gatedHurt=value/,"R60 solo damage gate must accept the r58 trap firewall instead of blocking it");
 assert.match(r19,/CCGLostSizzlerV142R58CombatTrapCore;if\(core\)return core\.applyTrapDamage/,"R19 damage compatibility must delegate to the new trap core");
 assert.match(r19,/if\(window\.CCGLostSizzlerV142R58CombatTrapCore\)return true;[\s\S]*const current=window\.hurtPlayer/,"R19 must stop installing trap hurtPlayer ownership after the new core exists");
 assert.match(r56,/CCGLostSizzlerV142R58CombatTrapCore;if\(core\)return core\.updateTrapContacts\("r56"\)/,"R56 trap cycle must delegate to the new core");
