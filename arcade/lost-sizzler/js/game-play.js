@@ -118,11 +118,16 @@ function applyActiveTrapContact(p,t,now=performance.now()){
   if(Number(t.x)!==Number(p.x)||Number(t.y)!==Number(p.y)||!SYS.trapActive(t,now))return false;
   const key=trapContactKey(p,t),cycle=trapCycleId(t,now);
   if(trapCycleHits.get(key)===cycle)return false;
-  const beforeHealth=Number(p.health||0),beforeArmor=Number(p.armor||0),beforeDeaths=Number(run?.stats?.deaths||0);
+  const beforeHealth=Number(p.health||0),beforeArmor=Number(p.armor||0),beforeInvuln=Math.max(0,Number(p.invuln||0)),beforeDeaths=Number(run?.stats?.deaths||0);
+  // A validated physical floor-trap contact owns its own one-hit-per-cycle
+  // ledger. Existing enemy/post-hit invulnerability must not make a player
+  // ghost through an ACTIVE trap and leave the tile before the retry can land.
+  p.invuln=0;
   authoritativeDamagePlayer(p,1,false,`${String(t.kind||"floor")} trap`);
   const afterHealth=Number(p.health||0),damageAt=Number(p.__ccgLastDamageAt||0),damageSource=String(p.__ccgLastDamageSource||""),afterDeaths=Number(run?.stats?.deaths||0);
   const healthLost=afterHealth<beforeHealth,deathRecorded=afterDeaths>beforeDeaths,verified=(healthLost||deathRecorded)&&/trap/i.test(damageSource);
-  if(!verified){authoritativeTrapState.damageRetries++;return false}
+  if(!verified){p.invuln=beforeInvuln;authoritativeTrapState.damageRetries++;return false}
+  p.invuln=Math.max(beforeInvuln,Math.max(0,Number(p.invuln||0)));
   trapCycleHits.set(key,cycle);
   authoritativeTrapState.trapHits++;
   const trapKind=["fire","spike","shock"].includes(String(t.kind||"").toLowerCase())?String(t.kind).toLowerCase():"other";
