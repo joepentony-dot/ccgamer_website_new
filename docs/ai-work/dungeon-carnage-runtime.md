@@ -1,3 +1,12 @@
+## R58 authoritative FIRE/trap rewrite — 27 September 2026
+
+- User-directed strategy change: stop incrementally repairing the layered FIRE/trap stack and rebuild the supported paths from current main.
+- Rewrite branch: `codex/dungeon-authoritative-fire-traps-rewrite-20260927`; draft PR #2391. This is intended to supersede #2361 and #2381 only after exact-head qualification and deployed manual acceptance.
+- FIRE now has one core path in `game-play.js`: fresh presses attempt immediately, cadence-blocked intent remains buffered, held input uses the same owner, and shot completion returns explicit success/failure. The old R20 FIRE recovery, held-FIRE recovery and inventory-FIRE recovery modules are removed from ordered startup.
+- Floor traps now use one core player/trap/cycle ledger. FIRE/SPIKE/SHOCK contact bypasses armour and stale player invulnerability only for trap-attributed damage, uses the canonical damage/death pipeline, and consumes the cycle only after verified damage. A mathematical cycle id re-arms the next active cycle even when an inactive frame is skipped.
+- Old R19/R20 trap modules are removed from ordered startup. Compatibility globals remain as facades onto the new core for diagnostics/tests only; they do not wrap gameplay or create timers.
+- Public identity advances to V10.42 r58 / 20260927r58. Do not merge until canonical/Node and Chromium shards 1–6 are green and real mobile/desktop FIRE plus natural FIRE/SPIKE/SHOCK manual acceptance passes.
+
 ## R57 deployed FIRE lockout recovery — 25 September 2026
 
 - Deployed V10.42 r56 bug-report evidence captured a sustained complete attack lockout: 52 attack anomalies, full 120 ammo, zero live projectiles, zero hit-stun and repeated 650–700 ms attack buffers while the existing deep-owner fallback recorded 15 attempts with 0 successes.
