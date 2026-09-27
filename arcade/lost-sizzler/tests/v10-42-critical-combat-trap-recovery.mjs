@@ -11,7 +11,7 @@ const alias=read("arcade/c64-dungeon-carnage/index.html");
 const version=JSON.parse(read("arcade/lost-sizzler/version.json"));
 const cache="20260927r58";
 
-assert.match(play,/hurtPlayer\(p,1,false,`\$\{hazard\.title\|\|"hazard chamber"\} trap`\)/,"dedicated hazard rooms must continue identifying damage as trap-attributed damage");
+assert.match(play,/authoritativeDamagePlayer\(p,1,false,`\$\{hazard\.title\|\|"hazard chamber"\} trap`\)/,"dedicated hazard rooms must continue identifying damage as trap-attributed damage through the guarded R58 boundary");
 assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeFireCore=authoritativeFireApi/,"r58 core must be the supported FIRE authority");
 assert.match(play,/function queueAttack\(p,requestedDirection=null\)[\s\S]*firePlayer\(p,attackDirection\(p,requestedDirection\)\)/,"attack intent must enter one authoritative queue/fire path");
 assert.doesNotMatch(bootstrap,/v10-42-attack-hold-liveness\.js|v10-42-r47-inventory-fire-recovery\.js/,"historical FIRE recovery modules must not load");
@@ -20,10 +20,10 @@ assert.doesNotMatch(r20,/function attackNow\(|recoverThroughDeepFireOwner|recove
 
 assert.match(play,/const trapCycleHits=new Map\(\)/,"ordinary trap ownership must be one player/trap/cycle ledger");
 assert.match(play,/function applyActiveTrapContact\(p,t,now=performance\.now\(\)\)/);
-assert.match(play,/hurtPlayer\(p,1,false,`\$\{String\(t\.kind\|\|"floor"\)\} trap`\)/,"ordinary active trap contact must apply exactly one canonical damage unit");
-assert.match(play,/const verified=damageAt>beforeDamageAt&&\/trap\/i\.test\(damageSource\)/,"a trap cycle must require fresh trap-attributed canonical damage evidence");
-assert.match(play,/if\(!verified\)return false;[\s\S]*trapCycleHits\.set\(key,cycle\)/,"failed trap contacts must remain retryable and must not consume the cycle");
-assert.match(play,/const trapDamage=\/trap\/i\.test[\s\S]*\(!trapDamage&&p\.invuln>0\)[\s\S]*if\(!trapDamage&&p\.armor>0\)/,"trap-attributed damage must bypass stale invulnerability and armour without changing other damage semantics");
+assert.match(play,/authoritativeDamagePlayer\(p,1,false,`\$\{String\(t\.kind\|\|"floor"\)\} trap`\)/,"ordinary active trap contact must apply exactly one canonical damage unit through the guarded R58 boundary");
+assert.match(play,/const healthLost=afterHealth<beforeHealth,deathRecorded=afterDeaths>beforeDeaths,verified=\(healthLost\|\|deathRecorded\)&&\/trap\/i\.test\(damageSource\)/,"a trap cycle must require real HEALTH loss or a canonical death transition plus trap attribution");
+assert.match(play,/if\(!verified\)\{p\.invuln=beforeInvuln;authoritativeTrapState\.damageRetries\+\+;return false\}[\s\S]*trapCycleHits\.set\(key,cycle\)/,"failed trap contacts must restore prior invulnerability, remain retryable and must not consume the cycle");
+assert.match(play,/const damageSource=String\(source\|\|"enemy"\),trapDamage=\/trap\/i\.test\(damageSource\),environmentDamage=[\s\S]*\(!environmentDamage&&p\.invuln>0\)[\s\S]*if\(!trapDamage&&p\.armor>0\)/,"trap-attributed damage must bypass stale invulnerability and armour without changing other damage semantics");
 
 assert.match(reporter,/dedicatedHazardUnderPlayer:dedicatedHazardSnapshot\(player\)/,"bug reporter must retain dedicated hazard state under the player");
 assert.match(reporter,/meleeSwingAt:Number\(player\._meleeSwingAt\|\|0\)/,"bug reporter must observe melee as valid attack work");
