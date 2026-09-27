@@ -116,7 +116,8 @@ function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
      hazards and all three ordinary trap families are generated-floor invariants,
      so reconcile them independently at the final world-start boundary. */
   const stage6=window.CCGLostSizzlerV142Stage6ZoneGameplay||null;
-  if(!(host.hazardRooms||[]).length){
+  const hasUsableHazard=()=>Boolean((host.hazardRooms||[]).some(hazard=>stage6?.usableDedicatedHazard?.(hazard)??(Array.isArray(hazard?.cells)&&hazard.cells.length>0)));
+  if(!hasUsableHazard()&&!(host.hazardRooms||[]).some(hazard=>hazard?.v142WardenCleansed===true)){
     try{stage6?.applyZoneGameplay?.(world,host,run||PGR.makeRun())}catch(error){console.error("[Dungeon Carnage] dedicated hazard reconciliation failed",error)}
   }
   try{

@@ -5,6 +5,8 @@ const read=path=>fs.readFileSync(path,"utf8");
 const play=read("arcade/lost-sizzler/js/game-play.js");
 const r20=read("arcade/lost-sizzler/js/v10-42-r20-live-regression-stability.js");
 const reporter=read("arcade/lost-sizzler/js/v10-42-bug-reporter.js");
+const stage6=read("arcade/lost-sizzler/js/v10-42-stage6-zone-gameplay.js");
+const core=read("arcade/lost-sizzler/js/game-core.js");
 const canonical=read("arcade/lost-sizzler/index.html");
 const alias=read("arcade/c64-dungeon-carnage/index.html");
 const version=JSON.parse(read("arcade/lost-sizzler/version.json"));
@@ -20,6 +22,9 @@ assert.match(r20,/capturedR1FallbackSuccesses/,"captured R1 fallback must be dia
 assert.match(reporter,/dedicatedHazardUnderPlayer:dedicatedHazardSnapshot\(player\)/,"bug reporter must capture dedicated hazard state under the player");
 assert.match(reporter,/meleeSwingAt:Number\(player\._meleeSwingAt\|\|0\)/,"bug reporter must observe melee as a valid ATTACK result");
 assert.match(reporter,/ANOMALY_POSSIBLE_ATTACK_FAILURE/,"bug reporter must flag complete attack failures, not firearm-only failures");
+assert.match(stage6,/usableDedicatedHazard=hazard=>Boolean\(hazard&&Array\.isArray\(hazard\.cells\)&&hazard\.cells\.length>0\)/,"Stage 6 must distinguish a usable dedicated hazard from an empty placeholder");
+assert.match(stage6,/existing\.some\(usableDedicatedHazard\)/,"Stage 6 must only accept an existing hazard when it has live cells");
+assert.match(core,/hasUsableHazard=\(\)=>Boolean\(\(host\.hazardRooms\|\|\[\]\)\.some/,"final world start must verify usable hazard cells rather than array presence alone");
 assert.ok(canonical.includes(`ccg-lost-sizzler-cache" content="${cache}`),"canonical runtime must publish the critical-fix cache token");
 assert.ok(alias.includes(`ccg-lost-sizzler-cache" content="${cache}`),"raw-main public-route alias must publish the same critical-fix cache token");
 assert.ok(canonical.includes(`game-play.js?v=${cache}`),"canonical game-play script must bypass the older cached R54 core");

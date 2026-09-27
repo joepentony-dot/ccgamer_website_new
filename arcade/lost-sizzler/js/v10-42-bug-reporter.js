@@ -75,9 +75,10 @@
         const rows=typeof localPlayers==="function"?localPlayers():[typeof p1!=="undefined"?p1:null,typeof p2!=="undefined"?p2:null].filter(Boolean);
         return rows.find(row=>trapPlayerId(row)===signal.playerId)||rows[0]||null;
       },null);
+      const minimalTrap={id:signal.trapId,kind:String(signal.kind||trap?.kind||"floor"),x:signal.x,y:signal.y,activeFlag:trap?.active!==false};
       push("environment-trap-crossing-damage-confirmed",{
         world:trapWorldKey(),playerId:signal.playerId,contact:{x:signal.x,y:signal.y},
-        healthLoss:1,armorLoss:0,traps:trap?[trapOwnerSnapshot(player,trap).trap]:[],
+        healthLoss:1,armorLoss:0,traps:[trap?safe(()=>trapOwnerSnapshot(player,trap).trap,minimalTrap):minimalTrap],
         trapSignal:signal,contactSignals:[signal],source:pending?"verified-signal-boundary-mismatch":"direct-exact-signal"
       });
     }

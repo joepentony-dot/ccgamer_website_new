@@ -212,8 +212,12 @@
       });
     });
   }
+  const usableDedicatedHazard=hazard=>Boolean(hazard&&Array.isArray(hazard.cells)&&hazard.cells.length>0);
   function ensureDedicatedHazard(worldState,hostState,runState,profile,seed){
-    if((hostState?.hazardRooms||[]).length)return false;
+    const existing=Array.isArray(hostState?.hazardRooms)?hostState.hazardRooms:[];
+    if(existing.some(usableDedicatedHazard))return false;
+    if(existing.some(hazard=>hazard?.v142WardenCleansed===true))return false;
+    if(hostState)hostState.hazardRooms=existing.filter(hazard=>usableDedicatedHazard(hazard)||hazard?.v142WardenCleansed===true);
     const candidates=(worldState?.rooms||[]).filter(room=>
       room
       && room.id!==worldState?.startRoomId
@@ -284,6 +288,6 @@
 
   window.CCGLostSizzlerV142Stage6ZoneGameplay={
     version:"V10.42-stage6-r1",PROFILES,state,profileForFloor,routeRole,protectedEnemy,
-    ordinaryKind,tuneEnemy,tuneGuardian,tuneTrap,reconcileTrapFamilies,tuneHazard,tuneGenerator,encounterDirectives,applyZoneGameplay
+    ordinaryKind,tuneEnemy,tuneGuardian,tuneTrap,reconcileTrapFamilies,usableDedicatedHazard,ensureDedicatedHazard,tuneHazard,tuneGenerator,encounterDirectives,applyZoneGameplay
   };
 })();
