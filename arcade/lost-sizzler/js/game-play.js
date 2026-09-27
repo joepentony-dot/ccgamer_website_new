@@ -114,6 +114,9 @@ function applyActiveTrapContact(p,t,now=performance.now()){
   const verified=damageAt>beforeDamageAt&&/trap/i.test(damageSource);
   if(!verified)return false;
   trapCycleHits.set(key,cycle);
+  authoritativeTrapState.trapHits++;
+  const trapKind=["fire","spike","shock"].includes(String(t.kind||"").toLowerCase())?String(t.kind).toLowerCase():"other";
+  authoritativeTrapState.trapHitsByKind[trapKind]=(Number(authoritativeTrapState.trapHitsByKind[trapKind])||0)+1;
   if(Number(p.armor||0)!==beforeArmor)p.armor=beforeArmor;
   S.sfx("trap");
   showToast(`${String(t.kind||"floor").toUpperCase()} TRAP`,"The floor was trying to tell you something. -1 health.","red");
@@ -126,13 +129,50 @@ function triggerTrap(p){
   for(const t of host.traps||[])if(applyActiveTrapContact(p,t,now)){hit=true;break}
   return hit
 }
-function updateActiveTrapContacts(){
+const authoritativeTrapState={trapHits:0,trapHitsByKind:{fire:0,spike:0,shock:0,other:0},rearms:0,cycleRearms:0,simulationPasses:0,monitorPasses:0,damageRetries:0,trapContactBlocks:0,trapProtectionBlocks:0,directTrapRepairs:0};
+function rearmInactiveTrapContacts(){
+  const now=performance.now(),playersById=new Map(localPlayers().map(p=>[String(p?.id||p?.name||"P1"),p]));
+  for(const [key,cycle] of [...trapCycleHits.entries()]){
+    const split=key.indexOf("|"),playerId=split>=0?key.slice(0,split):key,trapId=split>=0?key.slice(split+1):"";
+    const p=playersById.get(playerId),t=(host.traps||[]).find(row=>String(row?.id||`${row?.x},${row?.y}`)===trapId);
+    if(!p||!t||Number(p.x)!==Number(t.x)||Number(p.y)!==Number(t.y)||!t.active||!SYS.trapActive(t,now)){
+      trapCycleHits.delete(key);authoritativeTrapState.rearms++
+    }else if(trapCycleId(t,now)!==cycle){
+      trapCycleHits.delete(key);authoritativeTrapState.cycleRearms++
+    }
+  }
+  return true
+}
+function updateActiveTrapContacts(source="simulation"){
+  rearmInactiveTrapContacts();
   const now=performance.now();
+  let hit=false;
   for(const p of localPlayers()){
     if(!p||Number(p.health||0)<=0)continue;
-    for(const t of host.traps||[])if(applyActiveTrapContact(p,t,now))break
+    for(const t of host.traps||[])if(applyActiveTrapContact(p,t,now)){hit=true;break}
   }
+  if(source==="monitor")authoritativeTrapState.monitorPasses++;else authoritativeTrapState.simulationPasses++;
+  return hit
 }
+const authoritativeTrapApi=Object.freeze({
+  version:"V10.42-r58-core",
+  gameplayOwnership:true,
+  damageValidatedTrapContact:(p,t)=>applyActiveTrapContact(p,t,performance.now()),
+  guaranteeTrapContactDamage:(p,t,beforeHealth,beforeArmor)=>{
+    if(Number(p?.health||0)<Number(beforeHealth||0)){if(Number(p?.armor||0)!==Number(beforeArmor||0))p.armor=beforeArmor;return true}
+    return applyActiveTrapContact(p,t,performance.now())
+  },
+  damageOccupiedActiveTraps:()=>updateActiveTrapContacts("simulation"),
+  rearmInactiveTrapContacts,
+  rearmStaleCycleContact:(p,t,now=performance.now())=>{const key=trapContactKey(p,t),cycle=trapCycleId(t,now),old=trapCycleHits.get(key);if(old!=null&&old!==cycle){trapCycleHits.delete(key);authoritativeTrapState.cycleRearms++}return{contactKey:key,cycle}},
+  updateTrapContacts:updateActiveTrapContacts,
+  trapActive:(t,now=performance.now())=>Boolean(t?.active&&SYS.trapActive(t,now)),
+  trapCycleId,
+  withValidatedTrapContact:(p,t,callback)=>typeof callback==="function"?callback():false,
+  get state(){return authoritativeTrapState}
+});
+window.CCGLostSizzlerV142R19MobileTrapLayoutStability=authoritativeTrapApi;
+window.CCGLostSizzlerV142R58AuthoritativeTrapCore=authoritativeTrapApi;
 function triggerRescue(p){const r=host.rescue;if(!r||r.rescued)return;if(!r.following&&md(p,r)<=1){r.following=true;r.found=true;showToast("CCG SCOUT FOUND","Escort the scout itself into one of the permanently lit sanctuary rooms. It follows the nearest player.","green",9000)}}
 function triggerArena(p){for(const a of host.arenas||[])if(!a.triggered&&W.roomAt(world,p.x,p.y)===a.roomId){a.triggered=true;a.wave=1;SYS.lockRoomDoors(host,a.roomId,true);showToast("ARENA LOCKDOWN","Doors sealed. Survive the ambush to reopen them and earn a bonus chest.","red",7000);spawnArenaWave(a,4)}}
 function triggerTimed(p){for(const t of host.timedRooms||[])if(!t.triggered&&W.roomAt(world,p.x,p.y)===t.roomId){t.triggered=true;t.timeLeft=30000;const room=world.rooms[t.roomId],q={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)},stalker=host.enemies.find(e=>e.deathStalker&&e.voidStalker);t.hunterId=stalker?.id||`death-stalker-floor-${run.floor||1}`;const alreadyDefeated=!stalker?.alive||Boolean(t.stalkerDefeated||(host.defeatedDeathStalkers||[]).includes(t.hunterId));if(!alreadyDefeated){stalker.x=q.x;stalker.y=q.y;stalker.timedHunter=true;stalker.aiState="chase";stalker.lastSeen={x:p.x,y:p.y};stalker.memoryMs=999999;stalker.searchMs=0;stalker.moveCooldown=250;stalker.attackCooldown=420;showToast("TIMED CHAMBER — DEATH STALKER","This is the floor's one Death Stalker. Trade 3 artefacts or pay 10,000 score at a shop for the Flask that destroys it — or survive until the chamber timer expires.","red",11000)}else showToast("TIMED CHAMBER — STALKER BANISHED","This floor's Death Stalker has already been permanently destroyed. Survive the remaining chamber trial for the reward.","green",8500)}}
@@ -229,6 +269,16 @@ function firePlayer(p,d){
   S.sfx("fire");muzzle(p.x,p.y,d);sync();
   return true
 }
+const authoritativeFireApi=Object.freeze({
+  version:"V10.42-r58-core",
+  gameplayOwnership:true,
+  attackNow:()=>queueAttack(p1),
+  fire:(player,direction)=>firePlayer(player,direction),
+  queue:(player,direction)=>queueAttack(player,direction),
+  recoverOrphanedGameplayMode:()=>false
+});
+window.CCGLostSizzlerV142R20LiveRegressionStability=authoritativeFireApi;
+window.CCGLostSizzlerV142R58AuthoritativeFireCore=authoritativeFireApi;
 function spawnBullet(b,remoteShot){if(b)bullets.push({...b,remote:!!remoteShot})}
 function spawnEnemyShot(b){if(!b)return;enemyBullets.push({...b,ttl:Number(b.ttl||14)});const col=b.style==="fire"?P.orange:b.style==="root"?P.green:b.style==="shock"?P.cyan:P.red;for(let i=0;i<9;i++)particles.push({x:b.x*C.tile+C.tile/2,y:b.y*C.tile+C.tile/2,vx:(b.dx||0)*(1+Math.random()*2)+(Math.random()-.5)*1.4,vy:(b.dy||0)*(1+Math.random()*2)+(Math.random()-.5)*1.4,life:150+Math.random()*180,col,size:1.5+Math.random()*2.5,drag:.93,glow:8});if(localPlayers().some(p=>md(b,p)<9))S.sfx(b.style==="food"?"food":b.style==="fire"?"flame":"enemy")}
 function damageGenerator(g,power,p){
