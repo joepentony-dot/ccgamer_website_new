@@ -517,11 +517,15 @@
       }else if(typeof queueAttack === "function") queueAttack(p1);
       // Tutorial FIRE is an intentional one-action lesson. Normal play keeps
       // the canonical Space hold so repeated fire uses the same core cadence.
-      if(!tutorialActive&&typeof input !== "undefined") input.add("Space");
+      if(!tutorialActive&&typeof input !== "undefined"){
+        input.add("Space");
+        if(typeof setAttackHeldInput === "function") setAttackHeldInput(p1,true);
+      }
       button.classList.add("held");
     };
     const stopFire = (button) => {
       if (typeof input !== "undefined") input.delete("Space");
+      if(typeof setAttackHeldInput === "function"&&typeof p1 !== "undefined"&&p1)setAttackHeldInput(p1,false);
       button.classList.remove("held");
     };
     const boundActionButtons = new WeakSet();
