@@ -140,7 +140,7 @@ async function prepareTouchTrapFixture(page){
       origin:{x:route.x,y:route.y},
       target:{x:route.targetX,y:route.targetY},
       before:{health:p1.health,armor:p1.armor,xp:Number(p1.xp||0),totalXp:Number(p1.totalXp||0)},
-      trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0)
+      trapHits:Number(window.CCGLostSizzlerV142R58CombatTrapCore?.state?.trapHits||0)
     };
   })()`));
 }
@@ -155,7 +155,7 @@ async function readPlayerTrapStateAndExerciseImmediateDuplicate(page){
       hitStunMs:Number(p1?.hitStunMs||0),
       xp:Number(p1?.xp||0),
       totalXp:Number(p1?.totalXp||0),
-      trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0)
+      trapHits:Number(window.CCGLostSizzlerV142R58CombatTrapCore?.state?.trapHits||0)
     };
     const before={...first};
     const result=window.hurtPlayer?.(p1,1,false,"spike trap");
@@ -165,7 +165,7 @@ async function readPlayerTrapStateAndExerciseImmediateDuplicate(page){
       invuln:Number(p1?.invuln||0),
       xp:Number(p1?.xp||0),
       totalXp:Number(p1?.totalXp||0),
-      trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0)
+      trapHits:Number(window.CCGLostSizzlerV142R58CombatTrapCore?.state?.trapHits||0)
     };
     return{first,duplicate:{before,after,result}};
   })()`));
@@ -302,8 +302,7 @@ async function runViewport(viewport){
         id:String(trap.id),
         beforeHealth:Number(p1.health||0),
         beforeArmor:Number(p1.armor||0),
-        beforeTrapHits:Number(api?.state?.trapHits||0),
-        beforeR57Hits:Number(window.CCGLostSizzlerV141R57DesktopPrepStability?.state?.trapHits||0),
+        beforeTrapHits:Number(window.CCGLostSizzlerV142R58CombatTrapCore?.state?.trapHits||0),
         activeNow:Boolean(SYS.trapActive(trap,performance.now()))
       };
     })()`));
@@ -316,14 +315,13 @@ async function runViewport(viewport){
         health:Number(p1?.health||0),
         armor:Number(p1?.armor||0),
         activeNow:Boolean(trap&&SYS.trapActive(trap,performance.now())),
-        trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0),
-        r57Hits:Number(window.CCGLostSizzlerV141R57DesktopPrepStability?.state?.trapHits||0)
+        trapHits:Number(window.CCGLostSizzlerV142R58CombatTrapCore?.state?.trapHits||0)
       };
     },stationary.id);
     assert.equal(stationaryAfter.health,stationary.beforeHealth-1,"trap switching SAFE to ACTIVE under a stationary player must remove one health");
     assert.equal(stationaryAfter.armor,stationary.beforeArmor,"stationary active-cycle trap damage must preserve armour");
     assert.equal(stationaryAfter.activeNow,true,"stationary damage must occur during the visible ACTIVE phase");
-    assert.ok(stationaryAfter.trapHits>stationary.beforeTrapHits||stationaryAfter.r57Hits>stationary.beforeR57Hits,"an established trap-cycle owner must record the stationary SAFE-to-ACTIVE hit");
+    assert.equal(stationaryAfter.trapHits,stationary.beforeTrapHits+1,"rewritten r58 trap owner must record exactly one stationary SAFE-to-ACTIVE hit");
   }
 
   assert.deepEqual(errors,[],`mobile trap exercise must have no uncaught browser errors: ${errors.join("\n")}`);
