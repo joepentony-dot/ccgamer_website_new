@@ -59,20 +59,33 @@ try{
   assert.ok(ordering.movement>=0&&ordering.fire>=0,"the canonical game-play.js update source must expose keyboard movement and firing blocks");
   assert.ok(ordering.movement<ordering.fire,`keyboard movement must be serviced before firing work in the canonical frame: ${JSON.stringify(ordering)}`);
 
-  const faultBefore=await page.evaluate(()=>Number(window.CCGLostSizzlerV141R29?.state?.updateFaults||0));
+  const faultBefore=await page.evaluate(()=>({
+    updateFaults:Number(window.CCGLostSizzlerV141R29?.state?.updateFaults||0),
+    mana:Number(p1.mana||0),fire:Number(fire1||0),
+    bullets:(bullets||[]).filter(projectile=>projectile?.ttl>0&&projectile.owner===p1.id).length
+  }));
   await page.evaluate(()=>{
-    window.__ccgSoloCombatLoadRealFire=window.firePlayer;
-    window.firePlayer=function soloCombatLoadInjectedFireFault(){throw new Error("LS-0826-18 injected fire-path fault")};
-    move1=0;fire1=0;fireBuffer1=0;input.clear();p1.hitStunMs=0;
+    window.__ccgSoloCombatLoadRealSpawnBullet=spawnBullet;
+    spawnBullet=function soloCombatLoadInjectedSpawnFault(){throw new Error("LS-0826-18 injected projectile-spawn fault")};
+    move1=0;fire1=0;fireBuffer1=0;input.clear();p1.hitStunMs=0;p1.mana=Math.max(20,Number(p1.maxMana||0));
   });
+  const transactionalBefore=await page.evaluate(()=>({mana:Number(p1.mana||0),fire:Number(fire1||0),bullets:(bullets||[]).filter(projectile=>projectile?.ttl>0&&projectile.owner===p1.id).length}));
   await page.keyboard.down(direction.code);await page.keyboard.down("Space");await page.waitForTimeout(280);await page.keyboard.up("Space");await page.keyboard.up(direction.code);await page.waitForTimeout(80);
   const faultResult=await page.evaluate(()=>{
-    const result={x:p1.x,y:p1.y,updateFaults:Number(window.CCGLostSizzlerV141R29?.state?.updateFaults||0)};
-    if(window.__ccgSoloCombatLoadRealFire){window.firePlayer=window.__ccgSoloCombatLoadRealFire;delete window.__ccgSoloCombatLoadRealFire}
+    const result={
+      x:p1.x,y:p1.y,
+      updateFaults:Number(window.CCGLostSizzlerV141R29?.state?.updateFaults||0),
+      mana:Number(p1.mana||0),fire:Number(fire1||0),
+      bullets:(bullets||[]).filter(projectile=>projectile?.ttl>0&&projectile.owner===p1.id).length
+    };
+    if(window.__ccgSoloCombatLoadRealSpawnBullet){spawnBullet=window.__ccgSoloCombatLoadRealSpawnBullet;delete window.__ccgSoloCombatLoadRealSpawnBullet}
     input.clear();return result;
   });
-  assert.notDeepEqual({x:faultResult.x,y:faultResult.y},{x:direction.x,y:direction.y},"a firing subsystem fault must not prevent the held movement key being serviced first");
-  assert.ok(faultResult.updateFaults>faultBefore,"the injected firing fault must be observed by the retained stable-loop containment path");
+  assert.notDeepEqual({x:faultResult.x,y:faultResult.y},{x:direction.x,y:direction.y},"a projectile-spawn failure must not prevent the held movement key being serviced first");
+  assert.equal(faultResult.updateFaults,faultBefore.updateFaults,"transactional FIRE must contain a projectile-spawn failure inside the FIRE owner rather than faulting the whole update frame");
+  assert.equal(faultResult.mana,transactionalBefore.mana,"failed projectile creation must not consume ammo");
+  assert.equal(faultResult.fire,transactionalBefore.fire,"failed projectile creation must not consume FIRE cooldown");
+  assert.equal(faultResult.bullets,transactionalBefore.bullets,"failed projectile creation must not leave a partial projectile behind");
 
   await prepareSolo(page,"PHASE3-SOLO-SUSTAINED-FIRE");
   const loadedDirection=await directionFor(page);assert.ok(loadedDirection,"sustained-fire regression needs one walkable adjacent tile");
