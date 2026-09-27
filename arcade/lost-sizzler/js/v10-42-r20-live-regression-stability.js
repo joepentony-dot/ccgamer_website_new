@@ -386,7 +386,16 @@
       diagnostics.dossierKeyboardCloses++;
       return;
     }
-    if(!ATTACK_KEYS.has(event.code)||!activeRun())return;
+    if(!ATTACK_KEYS.has(event.code))return;
+    const core=window.CCGLostSizzlerV142R58CombatTrapCore;
+    if(typeof core?.attackNow==="function"&&currentMode()==="playing"&&!spyActive()){
+      event.preventDefault();
+      const handled=core.attackNow(event.code);
+      diagnostics.attackIntents++;
+      if(handled)event.stopImmediatePropagation();
+      return
+    }
+    if(!activeRun())return;
     if(spyActive())return;
     if(!recoverOrphanedGameplayMode())return;
     event.preventDefault();
