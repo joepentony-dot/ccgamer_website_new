@@ -396,6 +396,7 @@ function releaseSealedDeathRoom(roomId){
 }
 let authoritativeTrapDamageDepth=0;
 function hurtPlayer(p,n,friendly=false,source="enemy"){
+  if(p){const inv=Number(p.invuln);if(!Number.isFinite(inv)||inv<0||(mode==="playing"&&inv>5000))p.invuln=0}
   const damageSource=String(source||"enemy"),trapDamage=/trap/i.test(damageSource),environmentDamage=trapDamage||/anti[- ]loitering blast/i.test(damageSource);
   if(trapDamage&&authoritativeTrapDamageDepth===0){
     if(!p||mode!=="playing")return false;
