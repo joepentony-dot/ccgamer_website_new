@@ -322,7 +322,8 @@
       const trapSignal=trapContactSignals.find(signal=>signal.type==="trap"&&(trapIds.has(signal.trapId)||trapKinds.has(String(signal.kind||"").toLowerCase())))||null;
       const hazardIds=new Set(before.activeHazards.map(row=>String(row?.id||"")));
       const hazardSignal=contactSignals.find(signal=>signal.type==="hazard"&&hazardIds.has(signal.hazardId))||null;
-      const trapDamageObserved=trapConfirmedAtBoundary||Boolean(trapSignal),hazardDamageObserved=Boolean(hazardSignal);
+      const finalTrapHealthLoss=Boolean(healthLoss>0&&finalDamageAt>before.beforeDamageAt&&/trap/i.test(finalDamageSource));
+      const trapDamageObserved=trapConfirmedAtBoundary||Boolean(trapSignal)||finalTrapHealthLoss,hazardDamageObserved=Boolean(hazardSignal);
       if(before.activeTraps.length&&!trapDamageObserved){
         state.anomalies++;state.trapAnomalies++;state.environmentAnomalies++;
         const detail={
