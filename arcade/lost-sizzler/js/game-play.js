@@ -46,8 +46,17 @@ function attackNowUnbuffered(p,requestedDirection=null){
 function queueAttack(p,requestedDirection=null){
   if(!p||mode!=="playing")return false;
   normalizeAttackState(p);
-  const isP2=p===p2;
-  if(requestedDirection&&(requestedDirection.x||requestedDirection.y))p.dir=attackDirection(p,requestedDirection);
+  const isP2=p===p2,direction=attackDirection(p,requestedDirection);
+  if(requestedDirection&&(requestedDirection.x||requestedDirection.y))p.dir=direction;
+  try{dispatchEvent(new CustomEvent("ccg:attack-intent",{detail:{playerId:String(p.id||p.name||"P1"),p2:isP2,at:performance.now()}}))}catch(_){}
+  const cooldown=isP2?fire2:fire1;
+  if(cooldown<=0){
+    const owner=authoritativeCoreFirePlayer||firePlayer;
+    if(owner(p,direction)){
+      if(isP2)fireBuffer2=0;else fireBuffer1=0;
+      return true
+    }
+  }
   if(isP2)fireBuffer2=ATTACK_BUFFER_MS;else fireBuffer1=ATTACK_BUFFER_MS;
   return true
 }
