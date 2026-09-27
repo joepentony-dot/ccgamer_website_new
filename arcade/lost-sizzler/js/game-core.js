@@ -111,6 +111,7 @@ function reveal(p){let ex=explored.get(p.id);if(!ex){ex=new Set();explored.set(p
 function markRoomVisit(p){const id=W.roomAt(world,p.x,p.y);if(id<0)return;host.enteredRoomIds=host.enteredRoomIds||[];if(!host.enteredRoomIds.includes(id))host.enteredRoomIds.push(id);let set=roomVisits.get(p.id);if(!set){set=new Set();roomVisits.set(p.id,set)}if(!set.has(id)){set.add(id);const ex=explored.get(p.id)||new Set(),room=world.rooms[id],cx=Math.floor(room.x+room.w/2),cy=Math.floor(room.y+room.h/2);ex.add(`${cx},${cy}`);explored.set(p.id,ex);run.stats.rooms++;checkMapRewards(p)}}
 function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
   const old1=preserve?p1:null,old2=preserve?p2:null;if(run)run.playerLevelHint=Math.max(1,old1?.level||p1?.level||1);world=W.generate(seed);world.floor=run?.floor||1;window.__CCG_WORLD=world;host=W.createHostState(world);SYS.decorate(world,host,run||PGR.makeRun());
+  try{window.CCGLostSizzlerV142R58AuthoritativeTrapCore?.reset?.()}catch(_){}
   /* Stage 6 normally owns the SYS.decorate wrapper, but later runtime owner
      adoption can replace that wrapper before a Solo run starts. Dedicated
      hazards and all three ordinary trap families are generated-floor invariants,
