@@ -94,6 +94,7 @@
     return removed
   }
   function trapCycleTick(){
+    const core=window.CCGLostSizzlerV142R58CombatTrapCore;if(core)return core.updateTrapContacts("r56");
     if(!ordinaryDungeon()||typeof triggerTrap!=="function")return false;
     let players=[];try{players=typeof localPlayers==="function"?localPlayers():[p1,p2].filter(Boolean)}catch(_){return false}
     const now=performance.now(),liveKeys=new Set();
