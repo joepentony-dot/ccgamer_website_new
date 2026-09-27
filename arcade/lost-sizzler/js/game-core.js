@@ -142,6 +142,26 @@ function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
         }
         if(found.length){chosen=room;cells=found;break}
       }
+      if(!chosen||!cells.length){
+        // Absolute map-level fallback for pathological compact seeds where room
+        // bounds expose no walkable cells. Prefer non-start/non-exit rooms, but
+        // never allow a generated Solo floor to ship without a usable hazard.
+        const mapCells=[];
+        for(let y=0;y<(world?.map||[]).length;y++){
+          const row=world.map[y]||[];
+          for(let x=0;x<row.length;x++){
+            if(row[x]!==0)continue;
+            const roomId=W.roomAt(world,x,y);
+            if(roomId<0)continue;
+            const room=rooms.find(candidate=>Number(candidate?.id)===Number(roomId))||rooms[roomId]||null;
+            if(!room)continue;
+            mapCells.push({x,y,room,preferred:roomId!==world.startRoomId&&roomId!==world.exitRoomId});
+          }
+        }
+        mapCells.sort((a,b)=>Number(b.preferred)-Number(a.preferred)||Number(a.room?.id||0)-Number(b.room?.id||0)||a.y-b.y||a.x-b.x);
+        const fallback=mapCells[0]||null;
+        if(fallback){chosen=fallback.room;cells=[{x:fallback.x,y:fallback.y,group:0}]}
+      }
       if(chosen&&cells.length){
         host.hazardRooms=host.hazardRooms||[];
         host.hazardRooms.push({
