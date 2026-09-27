@@ -188,11 +188,11 @@ function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
       for(let x=0;x<row.length;x++){
         if(row[x]!==0)continue;
         const roomId=W.roomAt(world,x,y);
-        if(roomId<0)continue;
         const start=Number(x)===Number(world.start?.x)&&Number(y)===Number(world.start?.y);
         const exit=Number(x)===Number(world.exit?.x)&&Number(y)===Number(world.exit?.y);
-        const edgeRoom=roomId===world.startRoomId||roomId===world.exitRoomId;
-        candidates.push({x,y,roomId,start,exit,edgeRoom,hazard:hazardCells.has(`${x},${y}`)});
+        const roomless=roomId<0;
+        const edgeRoom=!roomless&&(roomId===world.startRoomId||roomId===world.exitRoomId);
+        candidates.push({x,y,roomId,start,exit,edgeRoom,roomless,hazard:hazardCells.has(`${x},${y}`)});
       }
     }
     candidates.sort((a,b)=>
@@ -200,17 +200,22 @@ function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
       ||Number(a.exit)-Number(b.exit)
       ||Number(a.edgeRoom)-Number(b.edgeRoom)
       ||Number(a.hazard)-Number(b.hazard)
+      ||Number(a.roomless)-Number(b.roomless)
       ||a.roomId-b.roomId||a.y-b.y||a.x-b.x
     );
     families.forEach((kind,index)=>{
       if(present(kind))return;
-      const cell=candidates.find(candidate=>!occupied.has(`${candidate.x},${candidate.y}`))||null;
+      const uniqueCell=candidates.find(candidate=>!occupied.has(`${candidate.x},${candidate.y}`))||null;
+      // A pathological compact seed may expose fewer distinct walkable cells
+      // than trap families. Prefer every unused cell first; only then reuse a
+      // deterministic walkable cell rather than silently dropping a family.
+      const cell=uniqueCell||candidates[(floor+index)%Math.max(1,candidates.length)]||null;
       if(!cell)return;
       const trap={
         id:`startworld-family-${kind}-f${floor}-${cell.x}-${cell.y}`,
         x:cell.x,y:cell.y,roomId:cell.roomId,kind,
         phase:(cell.x*131+cell.y*197+index*331)%1800,
-        period:2200,active:true,v142StartWorldFamilyFallback:true
+        period:2200,active:true,v142StartWorldFamilyFallback:true,v142StartWorldCellReuse:!uniqueCell
       };
       host.traps.push(trap);occupied.add(`${cell.x},${cell.y}`);
     });
