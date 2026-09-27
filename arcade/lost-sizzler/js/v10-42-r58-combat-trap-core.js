@@ -56,13 +56,14 @@
     const now=performance.now();if(!trapActive(t,now))return false;
     const key=contactKey(p,t),cycle=trapCycleId(t,now),record=trapContacts.get(key);state.trapContacts++;
     if(record?.cycle===cycle)return true;
-    const beforeHealth=Number(p.health||0),beforeArmor=Number(p.armor||0),beforeInvuln=Number(p.invuln||0);
+    const beforeHealth=Number(p.health||0),beforeArmor=Number(p.armor||0),beforeInvuln=Number(p.invuln||0),beforeDeaths=Number(run?.stats?.deaths||0);
     if(beforeHealth<=0||typeof canonicalHurtPlayer!=="function")return false;
     let threw=false;
     try{p.armor=0;p.invuln=0;canonicalHurtPlayer.call(window,p,1,false,`${String(t.kind||"floor")} trap`)}
     catch(error){threw=true;throw error}
     finally{p.armor=beforeArmor;if(threw)p.invuln=beforeInvuln}
-    if(!(Number(p.health||0)<beforeHealth)){p.invuln=beforeInvuln;state.trapRetries++;return false}
+    const healthLost=Number(p.health||0)<beforeHealth,deathRecorded=Number(run?.stats?.deaths||0)>beforeDeaths;
+    if(!healthLost&&!deathRecorded){p.invuln=beforeInvuln;state.trapRetries++;return false}
     trapContacts.set(key,{cycle,at:now});
     const raw=String(t.kind||"other").toLowerCase(),kind=["fire","spike","shock"].includes(raw)?raw:"other";
     state.trapHits++;state.trapHitsByKind[kind]=(Number(state.trapHitsByKind[kind])||0)+1;
@@ -133,7 +134,7 @@
     if(cooldown>0)return queueAttackFresh(p);
     const fired=firePlayerFresh(p,attackDirectionFresh(p));
     if(fired){try{fireBuffer1=0}catch(_){}return true}
-    if(state.lastShotBlock==="cooldown")return queueAttackFresh(p);
+    if(state.lastShotBlock==="cooldown"||state.lastShotBlock==="hit-stun")return queueAttackFresh(p);
     return false
   }
 
