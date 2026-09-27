@@ -34,7 +34,11 @@ function normalizeAttackState(p){
   if((!Number.isFinite(stun)||stun<0||stun>5000)||(stun>0&&(!Number.isFinite(lastHurt)||lastHurt<=0||performance.now()-lastHurt>staleAfter))){
     p.hitStunMs=0;changed=true;staleCombatState=true
   }
-  if(mode==="playing"&&staleCombatState&&(p.controlLocked||p.controlsLocked)){
+  // An explicit FIRE intent during live gameplay is also the recovery boundary
+  // for orphaned legacy control-lock flags. Those flags no longer have a FIRE
+  // owner in r58; leaving them set can make the visible mobile FIRE control
+  // appear responsive while movement/combat remains locked.
+  if(mode==="playing"&&(p.controlLocked||p.controlsLocked)){
     p.controlLocked=false;p.controlsLocked=false;changed=true
   }
   return changed
