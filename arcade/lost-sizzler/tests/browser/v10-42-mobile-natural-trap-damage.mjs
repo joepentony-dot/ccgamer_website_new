@@ -488,6 +488,29 @@ try{
   assert.ok(globalCycle.cycleRearmsAfter-globalCycle.cycleRearmsBefore>=3,`expected one stale-cycle rearm for each floor-trap kind: ${JSON.stringify(globalCycle)}`);
   for(const kind of ["fire","spike","shock"])assert.ok(Number(globalCycle.hitsByKind?.[kind]||0)>=2,`expected R19 diagnostics to record both ${kind} cycle hits`);
 
+  const retryContract=await page.evaluate(()=>globalThis.eval(`(()=>{
+    const api=window.CCGLostSizzlerV142R19MobileTrapLayoutStability;
+    const trap=(host?.traps||[]).find(t=>t?.active);
+    if(!api||!trap)return{available:false};
+    const original={period:Number(trap.period),phase:Number(trap.phase)};
+    p1.x=Number(trap.x);p1.y=Number(trap.y);p1.rx=p1.x;p1.ry=p1.y;
+    p1.maxHealth=Math.max(8,Number(p1.maxHealth||8));p1.health=p1.maxHealth;p1.armor=3;p1.invuln=0;p1.hitStunMs=0;
+    const period=100000,now=performance.now();
+    trap.period=period;trap.phase=((period*.10)-(now%period)+period)%period;
+    api.rearmInactiveTrapContacts();
+    const before=Number(p1.health),armor=Number(p1.armor);
+    const first=api.damageValidatedTrapContact(p1,trap),afterFirst=Number(p1.health);
+    const duplicate=api.damageValidatedTrapContact(p1,trap),afterDuplicate=Number(p1.health);
+    trap.period=original.period;trap.phase=original.phase;
+    return{available:true,before,armor,first,afterFirst,duplicate,afterDuplicate,afterArmor:Number(p1.armor)};
+  })()`));
+  assert.equal(retryContract.available,true,"generated Solo floor must provide a trap for active-contact ownership validation");
+  assert.equal(retryContract.first,true,"first validated active contact must be handled");
+  assert.equal(retryContract.afterFirst,retryContract.before-1,"first validated active contact must remove exactly one HEALTH");
+  assert.equal(retryContract.duplicate,true,"a genuinely consumed same-cycle contact may report handled");
+  assert.equal(retryContract.afterDuplicate,retryContract.afterFirst,"consumed same-cycle contact must not double-hit");
+  assert.equal(retryContract.afterArmor,retryContract.armor,"active-contact ownership validation must preserve armour");
+
   assert.deepEqual(errors,[],`real mobile trap cycle must not raise browser errors: ${errors.join("\n")}`);
   console.log("DUNGEON_MOBILE_NATURAL_TRAPS",JSON.stringify({kinds}));
   console.log("C64 Dungeon Carnage real generated mobile trap damage passed.");
