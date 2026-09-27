@@ -87,13 +87,18 @@
   }
   function recordEnvironmentDamageSignal(type,event){
     const detail=event?.detail||{},signalType=String(type),playerId=String(detail.playerId||""),trapIdValue=String(detail.trapId||""),hazardIdValue=String(detail.hazardId||""),x=Number(detail.x),y=Number(detail.y),at=Number(detail.at||0);
+    const pendingBoundary=movementBoundarySignals.get(playerId)||null,boundarySerial=Number(pendingBoundary?.serial||0);
     const previous=environmentDamageSignals[environmentDamageSignals.length-1];
-    if(previous&&previous.type===signalType&&previous.playerId===playerId&&previous.trapId===trapIdValue&&previous.hazardId===hazardIdValue&&previous.x===x&&previous.y===y&&previous.at===at){
+    const sameIdentity=Boolean(previous&&previous.type===signalType&&previous.playerId===playerId&&previous.trapId===trapIdValue&&previous.hazardId===hazardIdValue&&previous.x===x&&previous.y===y);
+    const duplicate=signalType==="trap"
+      ?Boolean(sameIdentity&&boundarySerial>0&&Number(previous.boundarySerial||0)===boundarySerial)
+      :Boolean(sameIdentity&&previous.at===at);
+    if(duplicate){
       if(previous.type==="trap")confirmTrapDamageSignal(previous);
       return previous;
     }
     const signal={
-      serial:++environmentDamageSerial,type:signalType,
+      serial:++environmentDamageSerial,type:signalType,boundarySerial,
       playerId,trapId:trapIdValue,hazardId:hazardIdValue,
       kind:String(detail.kind||detail.type||""),x,y,at,confirmed:false
     };
