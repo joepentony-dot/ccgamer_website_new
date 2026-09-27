@@ -34,6 +34,9 @@ assert.match(touch,/if\(typeof queueAttack === "function"\) queueAttack\(p1\)/,"
 assert.doesNotMatch(touch,/CCGLostSizzlerV142R20LiveRegressionStability\?\.attackNow/,"touch FIRE must not call a historical recovery owner");
 
 assert.match(play,/const trapCycleHits=new Map\(\)/,"trap duplicate suppression must be one per-trap/player cycle ledger");
+assert.match(play,/if\(trapDamage&&authoritativeTrapDamageDepth===0\)[\s\S]*return applyActiveTrapContact\(p,trap,now\)/,"public trap-labelled damage must re-enter the canonical R58 contact ledger");
+assert.match(play,/function authoritativeDamagePlayer\(p,n,friendly=false,source="enemy"\)[\s\S]*authoritativeTrapDamageDepth\+\+[\s\S]*hurtPlayer\(p,n,friendly,source\)/,"only the guarded internal R58 boundary may reach raw trap-attributed player damage");
+assert.match(play,/if\(trapCycleHits\.get\(key\)===cycle\)\{authoritativeTrapState\.trapContactBlocks\+\+;return false\}/,"same-cycle trap re-entry must be blocked by the canonical ledger");
 assert.match(play,/function trapCycleId\(t,now=performance\.now\(\)\)/);
 assert.match(play,/trapCycleHits\.get\(key\)===cycle/,"one active trap cycle must not double-hit");
 assert.match(play,/trapCycleHits\.set\(key,cycle\)/,"a trap cycle must be consumed only on verified damage");
