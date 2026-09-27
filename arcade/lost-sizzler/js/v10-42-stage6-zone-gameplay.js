@@ -310,6 +310,41 @@
       state.hazardsTuned++;
       return true
     }
+
+    // Absolute final guarantee for narrow/procedural edge cases: consume an
+    // already-walkable cell outside the start/exit rooms without carving or
+    // changing topology. Prefer a cell that does not already host a floor trap.
+    const trapCells=new Set((hostState?.traps||[]).filter(trap=>trap?.active).map(trap=>`${Number(trap.x)},${Number(trap.y)}`));
+    const mapFallbacks=[];
+    for(let y=0;y<(worldState?.map||[]).length;y++){
+      const row=worldState.map[y]||[];
+      for(let x=0;x<row.length;x++){
+        if(row[x]!==0)continue;
+        const roomId=W.roomAt(worldState,x,y);
+        if(roomId<0||roomId===worldState?.startRoomId||roomId===worldState?.exitRoomId)continue;
+        const room=(worldState?.rooms||[]).find(candidate=>Number(candidate?.id)===Number(roomId))||worldState?.rooms?.[roomId]||null;
+        if(!room)continue;
+        mapFallbacks.push({x,y,roomId,room,occupied:trapCells.has(`${x},${y}`),key:hash32(`${seed}|stage6-map-hazard|${roomId}|${x},${y}`)});
+      }
+    }
+    mapFallbacks.sort((a,b)=>Number(a.occupied)-Number(b.occupied)||a.key-b.key);
+    const fallback=mapFallbacks[0]||null;
+    if(fallback){
+      const hazard={
+        id:`hazard-${floor}-stage6-map-fallback`,roomId:fallback.roomId,type,cells:[{x:fallback.x,y:fallback.y,group:0}],groups,
+        period:type==="arrows"?2050:type==="blade"?2300:2550,
+        warningMs:type==="arrows"?780:700,activeMs:type==="embers"?760:560,
+        phase:hash32(`${seed}|stage6-map-hazard-phase|${fallback.roomId}|${fallback.x},${fallback.y}`)%1200,
+        title:type==="blade"?"PENDULUM BLADE GALLERY":type==="embers"?"EMBER-TILE VAULT":"ARROW-SLIT CROSSING",
+        v142ZoneHazardMapFallback:true
+      };
+      hostState.hazardRooms=hostState.hazardRooms||[];
+      hostState.hazardRooms.push(hazard);
+      fallback.room.dedicatedHazard=true;fallback.room.dedicatedHazardReserved=true;fallback.room.hazardType=type;fallback.room.dangerous=true;
+      tuneHazard(hazard,resolvedProfile,seed,worldState);
+      state.hazardsTuned++;
+      return true
+    }
     return false
   }
 
