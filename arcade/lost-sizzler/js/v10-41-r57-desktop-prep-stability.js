@@ -94,6 +94,7 @@
     try{return typeof SYS?.trapActive==="function"?Boolean(SYS.trapActive(trap,now)):true}catch(_){return true}
   }
   function contactTick(){
+    const core=window.CCGLostSizzlerV142R58CombatTrapCore;if(core)return core.updateTrapContacts("r57");
     if(!ordinaryDungeon()||!host)return false;
     const players=localPlayerList(),now=nowPerf(),seen=new Set();
     for(const player of players){
