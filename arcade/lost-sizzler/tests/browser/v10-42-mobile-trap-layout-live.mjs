@@ -145,29 +145,19 @@ async function prepareTouchTrapFixture(page){
   })()`));
 }
 
-async function readPlayerTrapState(page){
-  return page.evaluate(()=>globalThis.eval(`(()=>({
-    x:p1?.x,y:p1?.y,
-    health:Number(p1?.health||0),
-    armor:Number(p1?.armor||0),
-    invuln:Number(p1?.invuln||0),
-    hitStunMs:Number(p1?.hitStunMs||0),
-    xp:Number(p1?.xp||0),
-    totalXp:Number(p1?.totalXp||0),
-    trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0)
-  }))()`));
-}
-
-async function exerciseImmediateDuplicateTrapOwner(page){
+async function readPlayerTrapStateAndExerciseImmediateDuplicate(page){
   return page.evaluate(()=>globalThis.eval(`(()=>{
-    const before={
+    const first={
+      x:p1?.x,y:p1?.y,
       health:Number(p1?.health||0),
       armor:Number(p1?.armor||0),
       invuln:Number(p1?.invuln||0),
+      hitStunMs:Number(p1?.hitStunMs||0),
       xp:Number(p1?.xp||0),
       totalXp:Number(p1?.totalXp||0),
       trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0)
     };
+    const before={...first};
     const result=window.hurtPlayer?.(p1,1,false,"spike trap");
     const after={
       health:Number(p1?.health||0),
@@ -177,7 +167,7 @@ async function exerciseImmediateDuplicateTrapOwner(page){
       totalXp:Number(p1?.totalXp||0),
       trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0)
     };
-    return{before,after,result};
+    return{first,duplicate:{before,after,result}};
   })()`));
 }
 
@@ -268,7 +258,12 @@ async function runViewport(viewport){
   const fixture=await prepareTouchTrapFixture(page);
   assert.equal(fixture.available,true,`live mobile runtime must provide a deterministic walkable trap route: ${JSON.stringify(fixture)}`);
   await touchButton(page,context,`#v104-touch-controls .v104-touch-pad [data-key="${fixture.key}"]`);
-  const first=await readPlayerTrapState(page);
+  // Capture the real touch result and exercise the duplicate owner in one
+  // browser turn. Returning to Node between these observations can consume the
+  // finite post-hit invulnerability window on a busy CI runner, which no longer
+  // represents an immediate duplicate contact.
+  const immediate=await readPlayerTrapStateAndExerciseImmediateDuplicate(page);
+  const first=immediate.first,duplicate=immediate.duplicate;
   assert.deepEqual({x:first.x,y:first.y},fixture.target,"real touch movement must step the player onto the active trap tile");
   assert.equal(first.health,fixture.before.health-1,"active floor trap reached by touch movement must remove one actual health");
   assert.equal(first.armor,fixture.before.armor,"touch-triggered floor trap damage must preserve armour");
@@ -278,13 +273,9 @@ async function runViewport(viewport){
   assert.equal(first.trapHits,fixture.trapHits+1,"one touch trap entry must create exactly one successful health hit");
 
   // Stay on the same live trap contact and exercise the real window.hurtPlayer
-  // chain synchronously. The older regression teleported off the tile, re-armed
-  // the contact and then waited through more browser frames before re-entering;
-  // that is a new contact and can legitimately outlive the original 800ms
-  // invulnerability window. This observation instead proves the production
-  // post-hit owner cannot create a duplicate while invulnerability/contact
-  // ownership from the real touch hit is still active.
-  const duplicate=await exerciseImmediateDuplicateTrapOwner(page);
+  // chain synchronously inside that same browser observation. This proves the
+  // production post-hit owner cannot create a duplicate while the first hit's
+  // invulnerability/contact ownership is still active.
   assert.ok(duplicate.before.invuln>0,"duplicate trap observation must begin inside first-hit invulnerability");
   assert.equal(duplicate.after.health,duplicate.before.health,"invulnerability/contact ownership must suppress an immediate duplicate trap health hit");
   assert.equal(duplicate.after.armor,duplicate.before.armor,"suppressed duplicate trap damage must not consume armour");
