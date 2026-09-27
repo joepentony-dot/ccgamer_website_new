@@ -1,3 +1,10 @@
+## Dungeon FIRE/trap rewrite checkpoint — 27 September 2026
+
+- Manual mobile acceptance again found an active trap that did not reduce HEALTH. The defect remains release-blocking.
+- PR #2361 has therefore moved from layered remediation to a single-owner rewrite. Current rewrite head before this documentation checkpoint: `adc869e033caf9ae4c71f352a4f1e473123656c0`.
+- R58 is now the sole supported FIRE/ordinary floor-trap owner: capture-phase Space/Numpad0 input, held-fire state, `firePlayer`/`queueAttack`, `triggerTrap`, simulation trap contacts and verified HEALTH-loss latching.
+- R19 becomes layout-only once R58 exists; canonical simulation no longer calls R19 trap damage. Do not merge until exact-head Node/static and all six Chromium shards pass and a deployed mobile retest confirms sustained shooting plus natural FIRE/SPIKE/SHOCK HEALTH loss.
+
 ## Dungeon R58 current-main reconciliation — 27 September 2026
 
 - PR #2361 remains the authoritative trap-health candidate and has been reconciled in place onto current main `ce125d8e6586c332cc1b9ee2eebc0d9c72697c23`.
