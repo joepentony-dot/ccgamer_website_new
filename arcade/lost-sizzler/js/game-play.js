@@ -32,8 +32,8 @@ function updateGamepad(){
   if(mode!=="playing"||!p1)return;const state=gamepadDirection();if(!state){gamepadDashDown=false;gamepadFireDown=false;return}const {gp,dir}=state;if(dir){p1.dir=dir;if(move1<=0){movePlayer(p1,dir.x,dir.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}
   const firePressed=Boolean(gp.buttons?.[0]?.pressed);
   if(firePressed&&(!gamepadFireDown||fire1<=0)){
-    const recovery=window.CCGLostSizzlerV142R20LiveRegressionStability;
-    if(typeof recovery?.attackNow==="function")recovery.attackNow("Gamepad0");
+    const core=window.CCGLostSizzlerV142R58CombatTrapCore;
+    if(typeof core?.attackNow==="function")core.attackNow("Gamepad0");
     else if(fire1<=0)firePlayer(p1,attackDirection(p1,dir));
   }
   gamepadFireDown=firePressed;
