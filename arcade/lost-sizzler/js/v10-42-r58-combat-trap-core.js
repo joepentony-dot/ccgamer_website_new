@@ -12,7 +12,7 @@
   const runActive=()=>document.body?.dataset?.runActive==="true";
   const playing=()=>{try{return String(mode)==="playing"}catch(_){return false}};
   const ordinaryDungeon=()=>runActive()&&playing()&&!SPECIAL_BLOCK.has(specialType());
-  const playerId=p=>String(p?.id||p?.name||(p===globalThis.p2?"P2":"P1"));
+  const isPlayer2=p=>{try{return Boolean(p2)&&p===p2}catch(_){return false}};\n  const playerId=p=>String(p?.id||p?.name||(isPlayer2(p)?"P2":"P1"));
   const trapId=t=>String(t?.id||`${t?.x},${t?.y}`);
   const worldKey=()=>{try{return `${String(run?.seed||"run")}|F${Math.max(1,Number(run?.floor||1))}`}catch(_){return"run|F1"}};
   const contactKey=(p,t)=>`${worldKey()}|${playerId(p)}|${trapId(t)}`;
@@ -24,7 +24,7 @@
   }
   const canonicalHurtPlayer=deepestOriginal(window.hurtPlayer);
 
-  function localPlayerList(){try{return typeof localPlayers==="function"?localPlayers():[globalThis.p1,globalThis.p2].filter(Boolean)}catch(_){return[]}}
+  function localPlayerList(){try{return typeof localPlayers==="function"?localPlayers():[typeof p1!=="undefined"?p1:null,typeof p2!=="undefined"?p2:null].filter(Boolean)}catch(_){return[]}}
   function trapActive(trap,now=performance.now()){if(!trap?.active)return false;try{return typeof SYS?.trapActive==="function"?Boolean(SYS.trapActive(trap,now)):true}catch(_){return true}}
   function trapCycleId(trap,now=performance.now()){const period=Number(trap?.period),phase=Number(trap?.phase)||0,stamp=Number(now);if(!Number.isFinite(period)||period<=0||!Number.isFinite(stamp))return 0;return Math.floor((stamp+phase)/period)}
 
@@ -97,13 +97,13 @@
 
   function queueAttackFresh(p){
     if(!p)return false;
-    try{if(p===globalThis.p2)fireBuffer2=Math.max(Number(fireBuffer2||0),ATTACK_BUFFER_MS);else fireBuffer1=Math.max(Number(fireBuffer1||0),ATTACK_BUFFER_MS);state.shotBuffers++;return true}catch(_){return false}
+    try{if(isPlayer2(p))fireBuffer2=Math.max(Number(fireBuffer2||0),ATTACK_BUFFER_MS);else fireBuffer1=Math.max(Number(fireBuffer1||0),ATTACK_BUFFER_MS);state.shotBuffers++;return true}catch(_){return false}
   }
 
   function firePlayerFresh(p,requestedDirection){
     if(!p||!ordinaryDungeon()){state.shotBlocks++;state.lastShotBlock="not-playing";return false}
     if(Number(p.hitStunMs||0)>0){state.shotBlocks++;state.lastShotBlock="hit-stun";return false}
-    let cooldown=0;try{cooldown=Number(p===globalThis.p2?fire2:fire1)||0}catch(_){}
+    let cooldown=0;try{cooldown=Number(isPlayer2(p)?fire2:fire1)||0}catch(_){}
     if(cooldown>0){state.shotBlocks++;state.lastShotBlock="cooldown";return false}
     const w=p.weapon||((typeof baseWeapon==="function")?baseWeapon():null);
     if(!w){state.shotBlocks++;state.lastShotBlock="no-weapon";return false}
@@ -121,15 +121,15 @@
     const delay=(p.rapidMs>0?88:C.player.fireDelay)*(Number(w.delay||1));p._fireAnimMs=Math.max(120,Math.min(260,Number(delay)||180));
     for(const z of selected){
       const b={id:`${p.id}-${Date.now()}-${Math.random()}`,owner:p.id,ownerName:p.name,x:p.x,y:p.y,dx:z.x,dy:z.y,ttl:w.ttl||18,power:(w.power||1)+(p.damageBonus||0),pierce:w.pierce||0,element:w.element||"energy",style:w.id||"pulse"};
-      try{spawnBullet(b,false);if(playMode==="online"&&p===globalThis.p1)net.send("shot",b)}catch(_){}
+      try{spawnBullet(b,false);if(playMode==="online"&&!isPlayer2(p))net.send("shot",b)}catch(_){}
     }
     if(activeProjectiles(p)<=beforeCount){p.mana=beforeMana;state.shotBlocks++;state.lastShotBlock="spawn-failed";return false}
-    try{run.alert=Math.min(100,Number(run.alert||0)+1.8);if(p===globalThis.p2)fire2=delay;else fire1=delay;S?.sfx?.("fire");muzzle?.(p.x,p.y,direction);sync?.()}catch(_){}
+    try{run.alert=Math.min(100,Number(run.alert||0)+1.8);if(isPlayer2(p))fire2=delay;else fire1=delay;S?.sfx?.("fire");muzzle?.(p.x,p.y,direction);sync?.()}catch(_){}
     state.shots++;state.lastShotBlock="";return true
   }
 
   function attackNow(){
-    const p=globalThis.p1;if(!p||!ordinaryDungeon())return false;
+    let p=null;try{p=p1||null}catch(_){}if(!p||!ordinaryDungeon())return false;
     let cooldown=0;try{cooldown=Number(fire1||0)}catch(_){}
     if(cooldown>0)return queueAttackFresh(p);
     const fired=firePlayerFresh(p,attackDirectionFresh(p));
