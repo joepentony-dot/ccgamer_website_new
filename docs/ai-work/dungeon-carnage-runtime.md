@@ -1,3 +1,13 @@
+## R58 single-owner FIRE + trap rewrite — 27 September 2026
+
+- User-directed response to failed mobile production acceptance: stop layering fixes and replace the competing FIRE/trap ownership paths with one authoritative subsystem.
+- Authoritative branch remains PR #2361 / `codex/dungeon-r58-verified-trap-damage-20260925`; current rewrite head before this documentation checkpoint is `adc869e033caf9ae4c71f352a4f1e473123656c0`.
+- `v10-42-r58-combat-trap-core.js` now owns `firePlayer`, `queueAttack`, `triggerTrap`, physical Space/Numpad0 capture, held-fire state, ordinary FIRE/SPIKE/SHOCK contact accounting and retry semantics.
+- Canonical simulation now calls the R58 trap core directly. R19 drops to portrait/layout-only monitoring as soon as R58 exists; its historical trap timer no longer participates in damage ownership.
+- Trap contacts are consumed only after verified HEALTH loss (or a lethal death transition), armour remains preserved for ordinary trap damage, and failed/non-damaging contacts remain retryable.
+- Legacy recovery modules may retain compatibility/presentation roles but must not reinstall FIRE or ordinary trap damage owners over R58.
+- Exact-head Node/static plus Chromium shards 1–6 remain mandatory. The earlier real-phone active-trap/no-HEALTH result is a failed manual acceptance and blocks merge/release until a deployed retest passes.
+
 ## R58 current-main reconciliation checkpoint — 27 September 2026
 
 - Authoritative PR: #2361, branch `codex/dungeon-r58-verified-trap-damage-20260925`.
