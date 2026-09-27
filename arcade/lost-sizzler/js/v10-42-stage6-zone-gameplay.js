@@ -224,8 +224,8 @@
       && room.id!==worldState?.exitRoomId
       && !room.sigilRoom
       && !room.spiderNest
-      && Number(room.w)>=2
-      && Number(room.h)>=2
+      && Number(room.w)>=1
+      && Number(room.h)>=1
     ).sort((a,b)=>
       Number(Boolean(b.dedicatedHazardReserved))-Number(Boolean(a.dedicatedHazardReserved))
       || Number(Boolean(a.sanctuary))-Number(Boolean(b.sanctuary))
