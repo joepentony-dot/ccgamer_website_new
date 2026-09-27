@@ -130,32 +130,23 @@
     return true;
   }
 
-  function resolveTrapContact(player,now=performance.now()){
+  function observeTrapContact(player,now=performance.now()){
     if(!player||!host?.traps?.length)return false;
-    let hit=false;
+    let observed=false;
     for(const trap of host.traps||[]){
       if(!trap)continue;
       const key=trapKey(trap,player),occupied=Boolean(trap.active&&trap.x===player.x&&trap.y===player.y),active=occupied&&trapIsActive(trap,now);
       if(!active){trapRuntime.contact.delete(key);continue}
       if(trapRuntime.contact.has(key))continue;
       trapRuntime.contact.add(key);
-      const kind=String(trap.kind||"floor");
-      try{S.sfx("trap")}catch(_){}
-      try{showToast(`${kind.toUpperCase()} TRAP`,`Active trap triggered. -1 health.`,"red",6500)}catch(_){}
-      try{hurtPlayer(player,1,false,`${kind} trap`)}catch(_){}
-      hit=true;
+      observed=true;
     }
-    return hit;
+    return observed;
   }
 
-  // movementTriggers() still calls triggerTrap(), but this latched replacement
-  // prevents a movement-frame hit and the continuous update check from stacking.
-  if(typeof triggerTrap==="function"){
-    triggerTrap=function triggerTrapV115Reliable(player){
-      warnForNearbyTrap(player);
-      return resolveTrapContact(player,performance.now());
-    };
-  }
+  // V10.42 r58 owns triggerTrap and every ordinary FIRE/SPIKE/SHOCK HEALTH
+  // change in game-play.js. This older module is presentation/diagnostics only
+  // and must never replace triggerTrap or call hurtPlayer for floor traps.
 
   if(typeof startWorld==="function"){
     const originalTrapStartWorld=startWorld;
@@ -168,14 +159,14 @@
 
   if(typeof update==="function"){
     const originalTrapUpdate=update;
-    update=function updateV115TrapRuntime(dt){
+    update=function updateV115TrapPresentation(dt){
       const result=originalTrapUpdate.apply(this,arguments);
       if(typeof mode!=="undefined"&&mode==="playing"&&host){
         const key=trapWorldKey();if(trapRuntime.worldKey!==key)resetTrapRuntime();
         const now=performance.now();
         for(const player of trapPlayers()){
           warnForNearbyTrap(player);
-          resolveTrapContact(player,now);
+          observeTrapContact(player,now);
         }
       }
       return result;
