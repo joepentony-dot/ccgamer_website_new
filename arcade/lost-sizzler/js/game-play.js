@@ -33,6 +33,14 @@ function normalizeAttackState(p){
   }
   return changed
 }
+function attackNowUnbuffered(p,requestedDirection=null){
+  if(!p||mode!=="playing")return false;
+  normalizeAttackState(p);
+  const isP2=p===p2,cooldown=isP2?fire2:fire1;
+  if(isP2)fireBuffer2=0;else fireBuffer1=0;
+  if(cooldown>0)return false;
+  return firePlayer(p,attackDirection(p,requestedDirection))
+}
 function queueAttack(p,requestedDirection=null){
   if(!p||mode!=="playing")return false;
   normalizeAttackState(p);
@@ -310,7 +318,7 @@ function firePlayer(p,d){
 const authoritativeFireApi=Object.freeze({
   version:"V10.42-r58-core",
   gameplayOwnership:true,
-  attackNow:()=>queueAttack(p1),
+  attackNow:(direction=null)=>attackNowUnbuffered(p1,direction),
   fire:(player,direction)=>firePlayer(player,direction),
   queue:(player,direction)=>queueAttack(player,direction),
   recoverOrphanedGameplayMode:()=>false
