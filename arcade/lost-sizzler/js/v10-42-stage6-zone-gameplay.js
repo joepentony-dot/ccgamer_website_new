@@ -232,42 +232,44 @@
       || (Number(b.w)*Number(b.h))-(Number(a.w)*Number(a.h))
       || hash32(`${seed}|stage6-hazard|${a.id}`)-hash32(`${seed}|stage6-hazard|${b.id}`)
     );
-    const room=candidates[0]||null;
-    if(!room)return false;
-    const floor=floorOf(runState),types=["blade","embers","arrows"],type=types[floor%types.length],groups=type==="embers"?2:type==="blade"?3:4,cells=[];
-    for(let y=Number(room.y)+1;y<Number(room.y)+Number(room.h);y++){
-      for(let x=Number(room.x)+1;x<Number(room.x)+Number(room.w);x++){
-        if(worldState?.map?.[y]?.[x]!==0)continue;
-        const group=type==="embers"?(x+y)%2:type==="blade"?(x-Number(room.x))%3:(y-Number(room.y))%4;
-        cells.push({x,y,group});
-      }
-    }
-    if(!cells.length){
-      // Compact generated rooms can have no open interior tile even though the
-      // room itself has walkable boundary cells. Dedicated hazards are a floor
-      // invariant, so exhaust the complete room footprint before giving up.
-      for(let y=Number(room.y);y<=Number(room.y)+Number(room.h)&&!cells.length;y++){
-        for(let x=Number(room.x);x<=Number(room.x)+Number(room.w);x++){
+    const floor=floorOf(runState),resolvedProfile=profile||profileForFloor(floor),types=["blade","embers","arrows"],type=types[floor%types.length],groups=type==="embers"?2:type==="blade"?3:4;
+    for(const room of candidates){
+      const cells=[];
+      for(let y=Number(room.y)+1;y<Number(room.y)+Number(room.h);y++){
+        for(let x=Number(room.x)+1;x<Number(room.x)+Number(room.w);x++){
           if(worldState?.map?.[y]?.[x]!==0)continue;
-          cells.push({x,y,group:0});
-          break;
+          const group=type==="embers"?(x+y)%2:type==="blade"?(x-Number(room.x))%3:(y-Number(room.y))%4;
+          cells.push({x,y,group});
         }
       }
+      if(!cells.length){
+        // Compact rooms can expose only walkable boundary cells. Exhaust the
+        // complete room footprint, then continue to the next candidate if this
+        // room still cannot host a real hazard cell.
+        for(let y=Number(room.y);y<=Number(room.y)+Number(room.h)&&!cells.length;y++){
+          for(let x=Number(room.x);x<=Number(room.x)+Number(room.w);x++){
+            if(worldState?.map?.[y]?.[x]!==0)continue;
+            cells.push({x,y,group:0});
+            break;
+          }
+        }
+      }
+      if(!cells.length)continue;
+      const hazard={
+        id:`hazard-${floor}-stage6-emergency`,roomId:room.id,type,cells,groups,
+        period:type==="arrows"?2050:type==="blade"?2300:2550,
+        warningMs:type==="arrows"?780:700,activeMs:type==="embers"?760:560,
+        phase:hash32(`${seed}|stage6-hazard-phase|${room.id}`)%1200,
+        title:type==="blade"?"PENDULUM BLADE GALLERY":type==="embers"?"EMBER-TILE VAULT":"ARROW-SLIT CROSSING"
+      };
+      hostState.hazardRooms=hostState.hazardRooms||[];
+      hostState.hazardRooms.push(hazard);
+      room.dedicatedHazard=true;room.dedicatedHazardReserved=true;room.hazardType=type;room.dangerous=true;
+      tuneHazard(hazard,resolvedProfile,seed,worldState);
+      state.hazardsTuned++;
+      return true
     }
-    if(!cells.length)return false;
-    const hazard={
-      id:`hazard-${floor}-stage6-emergency`,roomId:room.id,type,cells,groups,
-      period:type==="arrows"?2050:type==="blade"?2300:2550,
-      warningMs:type==="arrows"?780:700,activeMs:type==="embers"?760:560,
-      phase:hash32(`${seed}|stage6-hazard-phase|${room.id}`)%1200,
-      title:type==="blade"?"PENDULUM BLADE GALLERY":type==="embers"?"EMBER-TILE VAULT":"ARROW-SLIT CROSSING"
-    };
-    hostState.hazardRooms=hostState.hazardRooms||[];
-    hostState.hazardRooms.push(hazard);
-    room.dedicatedHazard=true;room.dedicatedHazardReserved=true;room.hazardType=type;room.dangerous=true;
-    tuneHazard(hazard,profile,seed,worldState);
-    state.hazardsTuned++;
-    return true
+    return false
   }
 
   function applyZoneGameplay(worldState,hostState,runState){

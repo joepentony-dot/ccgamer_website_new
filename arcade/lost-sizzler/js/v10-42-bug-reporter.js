@@ -52,36 +52,22 @@
     const exact=pending?.activeTraps?.some(row=>String(row?.trap?.id||"")===signal.trapId&&Number(row?.trap?.x)===signal.x&&Number(row?.trap?.y)===signal.y);
     if(pending&&signal.serial>Number(pending.beforeDamageSignalSerial||0)&&exact){
       pending.acceptedTrapSignal=signal;
-      if(pending.trapConfirmedAtSignal){
-        signal.confirmed=true;
-        return signal;
-      }
-      push("environment-trap-crossing-damage-confirmed",{
-        serial:pending.serial,world:pending.world,playerId:pending.playerId,contact:{x:pending.x,y:pending.y},
-        healthLoss:1,armorLoss:0,traps:pending.activeTraps.map(row=>row.trap),
-        trapSignal:signal,contactSignals:[signal],source:"pending-exact-signal"
-      });
-      pending.trapConfirmedAtSignal=true;
-    }else{
-      /* A verified R58 signal proves HEALTH already fell. Fast movement can
-         advance the reporter boundary before this signal is consumed, so the
-         confirmation must remain anchored to the signal's exact trap tile. */
-      const trap=safe(()=>(host?.traps||[]).find(row=>
-        String(row?.id||`${row?.x},${row?.y}`)===signal.trapId
-        && Number(row?.x)===signal.x
-        && Number(row?.y)===signal.y
-      )||null,null);
-      const player=safe(()=>{
-        const rows=typeof localPlayers==="function"?localPlayers():[typeof p1!=="undefined"?p1:null,typeof p2!=="undefined"?p2:null].filter(Boolean);
-        return rows.find(row=>trapPlayerId(row)===signal.playerId)||rows[0]||null;
-      },null);
-      const minimalTrap={id:signal.trapId,kind:String(signal.kind||trap?.kind||"floor"),x:signal.x,y:signal.y,activeFlag:trap?.active!==false};
-      push("environment-trap-crossing-damage-confirmed",{
-        world:trapWorldKey(),playerId:signal.playerId,contact:{x:signal.x,y:signal.y},
-        healthLoss:1,armorLoss:0,traps:[minimalTrap],
-        trapSignal:signal,contactSignals:[signal],source:pending?"verified-signal-boundary-mismatch":"direct-exact-signal"
-      });
+      return signal;
     }
+    /* R19 emits this signal only after HEALTH has fallen. Outside a live
+       movement boundary, confirm it from a bounded exact-tile payload without
+       re-entering live trap ownership diagnostics. */
+    const trap=safe(()=>(host?.traps||[]).find(row=>
+      String(row?.id||`${row?.x},${row?.y}`)===signal.trapId
+      && Number(row?.x)===signal.x
+      && Number(row?.y)===signal.y
+    )||null,null);
+    const minimalTrap={id:signal.trapId,kind:String(signal.kind||trap?.kind||"floor"),x:signal.x,y:signal.y,activeFlag:trap?.active!==false};
+    push("environment-trap-crossing-damage-confirmed",{
+      world:trapWorldKey(),playerId:signal.playerId,contact:{x:signal.x,y:signal.y},
+      healthLoss:1,armorLoss:0,traps:[minimalTrap],
+      trapSignal:signal,contactSignals:[signal],source:pending?"verified-signal-boundary-mismatch":"direct-exact-signal"
+    });
     signal.confirmed=true;
     state.environmentVerifiedHits++;
     return signal;
@@ -294,9 +280,10 @@
     const boundaryTrapKinds=new Set(before.activeTraps.map(row=>String(row?.trap?.kind||"").toLowerCase()).filter(Boolean));
     const boundaryTrapSignal=before.acceptedTrapSignal||boundaryContactSignals.find(signal=>signal.type==="trap"&&(boundaryTrapIds.has(signal.trapId)||boundaryTrapKinds.has(String(signal.kind||"").toLowerCase())))||null;
     const immediateTrapHealthLoss=before.beforeHealth-immediate.health;
-    let trapConfirmedAtBoundary=Boolean(before.trapConfirmedAtSignal);
+    let trapConfirmedAtBoundary=false;
     if(before.activeTraps.length&&(boundaryTrapSignal||immediateTrapHealthLoss>0)&&!trapConfirmedAtBoundary){
       state.environmentVerifiedHits++;
+      if(boundaryTrapSignal)boundaryTrapSignal.confirmed=true;
       push("environment-trap-crossing-damage-confirmed",{
         serial:before.serial,world:before.world,playerId:before.playerId,contact:{x:before.x,y:before.y},
         healthLoss:immediateTrapHealthLoss,armorLoss:before.beforeArmor-immediate.armor,

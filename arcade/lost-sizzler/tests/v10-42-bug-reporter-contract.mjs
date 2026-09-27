@@ -56,6 +56,9 @@ assert.match(reporter,/hazardSignal=contactSignals\.find\(signal=>signal\.type==
 assert.match(reporter,/damageObserved=Boolean\(exactSignal\)/,"polling diagnostics must require exact player-and-trap contact evidence so another player's same-kind hit cannot mask a failure");
 
 
+assert.match(reporter,/pending\.acceptedTrapSignal=signal;\s*return signal;/,"movement-bound trap signals must defer confirmation until the after-movement boundary observes the result");
+assert.match(reporter,/let trapConfirmedAtBoundary=false;[\s\S]*if\(boundaryTrapSignal\)boundaryTrapSignal\.confirmed=true/,"after-movement verification must own final accepted trap confirmation");
+
 assert.match(reporter,/trapHitsByKind/,"trap diagnostics must retain per-kind FIRE SPIKE and SHOCK hit evidence");
 assert.match(reporter,/CCGLostSizzlerV141R56PlaytestCompletion/,"trap report must capture the retained R56 cycle latch");
 assert.match(reporter,/CCGLostSizzlerV141R57DesktopPrepStability/,"trap report must capture the retained R57 cycle latch");

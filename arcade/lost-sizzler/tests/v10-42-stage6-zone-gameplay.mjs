@@ -98,4 +98,6 @@ assert.match(source,/const baseDecorate=SYS\.decorate\.bind\(SYS\)/,"Stage 6 mus
 assert.match(source,/return applyZoneGameplay\(worldState,result\|\|hostState,runState\)/,"Stage 6 must run as a post-decoration consumer");
 assert.match(source,/protectedEnemy\(enemy\)/,"special enemy identities must be explicitly protected from ordinary composition retyping");
 
+assert.match(source,/for\(const room of candidates\)[\s\S]*if\(!cells\.length\)continue;/,"dedicated hazard fallback must keep trying eligible rooms until one has a usable cell");
+
 console.log("PASS V10.42 Stage 6 zone-specific gameplay");
