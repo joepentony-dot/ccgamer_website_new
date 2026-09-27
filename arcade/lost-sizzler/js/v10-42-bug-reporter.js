@@ -52,6 +52,14 @@
     const exact=pending?.activeTraps?.some(row=>String(row?.trap?.id||"")===signal.trapId&&Number(row?.trap?.x)===signal.x&&Number(row?.trap?.y)===signal.y);
     if(pending&&signal.serial>Number(pending.beforeDamageSignalSerial||0)&&exact){
       pending.acceptedTrapSignal=signal;
+      const trapRow=pending.activeTraps.find(row=>String(row?.trap?.id||"")===signal.trapId&&Number(row?.trap?.x)===signal.x&&Number(row?.trap?.y)===signal.y);
+      push("environment-trap-crossing-damage-confirmed",{
+        serial:pending.serial,world:pending.world,playerId:signal.playerId,contact:{x:signal.x,y:signal.y},
+        healthLoss:1,armorLoss:0,traps:[trapRow?.trap||{id:signal.trapId,kind:String(signal.kind||"floor"),x:signal.x,y:signal.y,activeFlag:true}],
+        trapSignal:signal,contactSignals:[signal],source:"verified-signal-live-boundary"
+      });
+      signal.confirmed=true;
+      state.environmentVerifiedHits++;
       return signal;
     }
     /* R19 emits this signal only after HEALTH has fallen. Outside a live
@@ -290,7 +298,7 @@
       && immediate.damageAt>before.beforeDamageAt
       && /trap/i.test(immediate.damageSource)
     );
-    let trapConfirmedAtBoundary=false;
+    let trapConfirmedAtBoundary=Boolean(boundaryTrapSignal?.confirmed===true);
     if(boundaryTrapRows.length&&(boundaryTrapSignal||trapSourceHealthLoss)&&!trapConfirmedAtBoundary){
       state.environmentVerifiedHits++;
       if(boundaryTrapSignal)boundaryTrapSignal.confirmed=true;
