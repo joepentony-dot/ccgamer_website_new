@@ -218,20 +218,33 @@
     if(existing.some(usableDedicatedHazard))return false;
     if(existing.some(hazard=>hazard?.v142WardenCleansed===true))return false;
     if(hostState)hostState.hazardRooms=existing.filter(hazard=>usableDedicatedHazard(hazard)||hazard?.v142WardenCleansed===true);
-    const candidates=(worldState?.rooms||[]).filter(room=>
-      room
-      && room.id!==worldState?.startRoomId
-      && room.id!==worldState?.exitRoomId
-      && !room.sigilRoom
-      && !room.spiderNest
-      && Number(room.w)>=1
-      && Number(room.h)>=1
-    ).sort((a,b)=>
+    const sortCandidates=list=>list.sort((a,b)=>
       Number(Boolean(b.dedicatedHazardReserved))-Number(Boolean(a.dedicatedHazardReserved))
       || Number(Boolean(a.sanctuary))-Number(Boolean(b.sanctuary))
       || (Number(b.w)*Number(b.h))-(Number(a.w)*Number(a.h))
       || hash32(`${seed}|stage6-hazard|${a.id}`)-hash32(`${seed}|stage6-hazard|${b.id}`)
     );
+    const preferredCandidates=(worldState?.rooms||[]).filter(room=>
+      room
+      && room.id!==worldState?.startRoomId
+      && room.id!==worldState?.exitRoomId
+      && !room.sigilRoom
+      && !room.spiderNest
+      && Number(room.w)>=2
+      && Number(room.h)>=2
+    );
+    const preferredIds=new Set(preferredCandidates.map(room=>room.id));
+    const compactFallbackCandidates=(worldState?.rooms||[]).filter(room=>
+      room
+      && room.id!==worldState?.startRoomId
+      && room.id!==worldState?.exitRoomId
+      && !room.sigilRoom
+      && !room.spiderNest
+      && !preferredIds.has(room.id)
+      && Number(room.w)>=1
+      && Number(room.h)>=1
+    );
+    const candidates=[...sortCandidates(preferredCandidates),...sortCandidates(compactFallbackCandidates)];
     const floor=floorOf(runState),resolvedProfile=profile||profileForFloor(floor),types=["blade","embers","arrows"],type=types[floor%types.length],groups=type==="embers"?2:type==="blade"?3:4;
     for(const room of candidates){
       const cells=[];
