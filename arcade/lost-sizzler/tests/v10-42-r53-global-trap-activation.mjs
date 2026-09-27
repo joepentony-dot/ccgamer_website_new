@@ -35,7 +35,7 @@ assert.match(play,/function updateActiveTrapContacts\(source="simulation"\)[\s\S
 assert.match(play,/authoritativeDamagePlayer\(p,1,false,`\$\{String\(t\.kind\|\|"floor"\)\} trap`\)/,"validated floor-trap damage must remain exactly one canonical damage unit");
 assert.match(play,/const damageSource=String\(source\|\|"enemy"\),trapDamage=\/trap\/i\.test\(damageSource\),environmentDamage=[\s\S]*if\(!trapDamage&&p\.armor>0\)/,"floor-trap HEALTH damage must bypass armour without consuming it while ordinary damage retains armour");
 assert.match(play,/const healthLost=afterHealth<beforeHealth,deathRecorded=afterDeaths>beforeDeaths,verified=\(healthLost\|\|deathRecorded\)&&\/trap\/i\.test\(damageSource\)/,"trap verification must require real HEALTH loss or a canonical death transition");
-assert.match(play,/if\(!verified\)\{authoritativeTrapState\.damageRetries\+\+;return false\}[\s\S]*trapCycleHits\.set\(key,cycle\)/,"an active contact may latch only after verified HEALTH/death and failed contacts must remain retryable");
+assert.match(play,/if\(!verified\)\{p\.invuln=beforeInvuln;authoritativeTrapState\.damageRetries\+\+;return false\}[\s\S]*trapCycleHits\.set\(key,cycle\)/,"an active contact may latch only after verified HEALTH/death while failed contacts restore prior invulnerability and remain retryable");
 assert.match(play,/if\(trapCycleHits\.get\(key\)===cycle\)return false/,"the same player/trap active cycle must not double-hit");
 assert.match(play,/trapCycleId\(t,now\)!==cycle[\s\S]*trapCycleHits\.delete\(key\)/,"the next mathematical trap cycle must rearm even if no inactive frame was sampled");
 
