@@ -27,7 +27,7 @@ function runtime(){
       {id:"trap-b",roomId:3,kind:"shock",period:2200,phase:20}
     ],
     hazardRooms:[
-      {id:"hazard-a",roomId:2,type:"blade",period:2300,warningMs:700,activeMs:560}
+      {id:"hazard-a",roomId:2,type:"blade",period:2300,warningMs:700,activeMs:560,cells:[{x:3,y:3,group:0}]}
     ],
     generators:[{id:"gen-a",spawnCooldown:7000}],
     v142EncounterRuntime:{rooms:[
