@@ -93,6 +93,7 @@
     if(descriptor&&descriptor.configurable===false){state.soloHurtGateUnsupported=true;return false}
     gatedHurt=current;sealedSoloHurt=current;
     hurtGateGetter=function getHurtPlayerV141R60SoloDamageSeal(){
+      if(typeof gatedHurt==="function"&&gatedHurt.__ccgV142R58TrapFirewall===true)return gatedHurt;
       if(soloDungeon()&&!spyDamageOwned()&&completeSoloDamageOwner(sealedSoloHurt)){
         if(!completeSoloDamageOwner(gatedHurt))state.soloHurtFallbackReads++;
         return sealedSoloHurt
@@ -100,6 +101,9 @@
       return gatedHurt
     };
     hurtGateSetter=function setHurtPlayerV141R60SoloDamageSeal(value){
+      if(typeof value==="function"&&value.__ccgV142R58TrapFirewall===true){
+        gatedHurt=value;state.soloHurtAcceptedWrites++;return
+      }
       if(!soloDungeon()||spyDamageOwned()){
         gatedHurt=value;
         if(completeSoloDamageOwner(value))sealedSoloHurt=value;
