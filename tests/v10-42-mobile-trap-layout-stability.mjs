@@ -32,7 +32,7 @@ assert.match(source,/aspect-ratio:auto!important/,"portrait playfield must use l
 assert.match(source,/min-width:44px!important/,"portrait movement controls must retain a 44px touch target");
 assert.match(source,/min-height:44px!important/,"portrait controls must retain a 44px touch target");
 
-assert.match(gameplaySource,/function authoritativeDamagePlayer\(p,n,friendly=false,source="enemy"\)[\s\S]*authoritativeTrapDamageDepth\+\+[\s\S]*hurtPlayer\(p,n,friendly,source\)[\s\S]*authoritativeTrapDamageDepth=Math\.max\(0,authoritativeTrapDamageDepth-1\)/,"canonical gameplay must reach raw player damage only through the guarded R58 internal boundary");
+assert.match(gameplaySource,/const canonicalPlayerDamage=hurtPlayer;[\s\S]*function authoritativeDamagePlayer\(p,n,friendly=false,source="enemy"\)[\s\S]*authoritativeTrapDamageDepth\+\+[\s\S]*canonicalPlayerDamage\(p,n,friendly,source\)[\s\S]*authoritativeTrapDamageDepth=Math\.max\(0,authoritativeTrapDamageDepth-1\)/,"canonical gameplay must reach the captured raw player-damage primitive only through the guarded R58 internal boundary");
 assert.match(gameplaySource,/function applyActiveTrapContact\(p,t,now=performance\.now\(\)\)/,"canonical gameplay must own active floor-trap contacts");
 assert.match(gameplaySource,/beforeInvuln=Math\.max\(0,Number\(p\.invuln\|\|0\)\)[\s\S]*p\.invuln=0[\s\S]*authoritativeDamagePlayer\(p,1,false,/,"validated active trap contact must bypass unrelated pre-existing invulnerability");
 assert.match(gameplaySource,/const healthLost=afterHealth<beforeHealth,deathRecorded=afterDeaths>beforeDeaths,verified=\(healthLost\|\|deathRecorded\)&&\/trap\/i\.test\(damageSource\)/,"trap success must require real HEALTH loss or a canonical death transition");
