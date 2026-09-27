@@ -33,7 +33,7 @@ assert.match(stage6,/function ensureDedicatedHazard\([\s\S]*Number\(room\.w\)>=2
 assert.match(play,/function updateActiveTrapContacts\(source="simulation"\)/,"r58 must expose one global floor-trap contact-cycle owner");
 assert.match(play,/function updateActiveTrapContacts\(source="simulation"\)[\s\S]*rearmInactiveTrapContacts\(\)/,"the global cycle must rearm completed/inactive contacts before checking active occupancy");
 assert.match(play,/authoritativeDamagePlayer\(p,1,false,`\$\{String\(t\.kind\|\|"floor"\)\} trap`\)/,"validated floor-trap damage must remain exactly one canonical damage unit");
-assert.match(play,/const trapDamage=\/trap\/i\.test[\s\S]*if\(!trapDamage&&p\.armor>0\)/,"floor-trap HEALTH damage must bypass armour without consuming it");
+assert.match(play,/const damageSource=String\(source\|\|"enemy"\),trapDamage=\/trap\/i\.test\(damageSource\),environmentDamage=[\s\S]*if\(!trapDamage&&p\.armor>0\)/,"floor-trap HEALTH damage must bypass armour without consuming it while ordinary damage retains armour");
 assert.match(play,/const healthLost=afterHealth<beforeHealth,deathRecorded=afterDeaths>beforeDeaths,verified=\(healthLost\|\|deathRecorded\)&&\/trap\/i\.test\(damageSource\)/,"trap verification must require real HEALTH loss or a canonical death transition");
 assert.match(play,/if\(!verified\)\{authoritativeTrapState\.damageRetries\+\+;return false\}[\s\S]*trapCycleHits\.set\(key,cycle\)/,"an active contact may latch only after verified HEALTH/death and failed contacts must remain retryable");
 assert.match(play,/if\(trapCycleHits\.get\(key\)===cycle\)return false/,"the same player/trap active cycle must not double-hit");
