@@ -124,11 +124,15 @@ function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
       stage6?.ensureDedicatedHazard?.(world,host,stage6Run,profile,seed);
     }
     if(profile)stage6?.reconcileTrapFamilies?.(host,seed,world,{...profile,floor});
+  }catch(error){console.error("[Dungeon Carnage] final hazard/trap reconciliation failed",error)}
+  try{
+    const floor=Math.max(1,Number(stage6Run?.floor||1));
     if(!hasUsableHazard()&&!(host.hazardRooms||[]).some(hazard=>hazard?.v142WardenCleansed===true)){
       const rooms=[...(world?.rooms||[])],ordered=[
         ...rooms.filter(room=>room&&room.dedicatedHazardReserved&&room.id!==world.startRoomId&&room.id!==world.exitRoomId),
         ...rooms.filter(room=>room&&room.id!==world.startRoomId&&room.id!==world.exitRoomId),
-        ...rooms.filter(room=>room&&room.id===world.exitRoomId)
+        ...rooms.filter(room=>room&&room.id===world.exitRoomId),
+        ...rooms.filter(room=>room&&room.id===world.startRoomId)
       ];
       let chosen=null,cells=[];
       for(const room of ordered){
@@ -147,7 +151,7 @@ function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
         chosen.dedicatedHazard=true;chosen.dedicatedHazardReserved=true;chosen.hazardType="embers";chosen.dangerous=true
       }
     }
-  }catch(error){console.error("[Dungeon Carnage] final hazard/trap reconciliation failed",error)}
+  }catch(error){console.error("[Dungeon Carnage] final startWorld hazard invariant failed",error)}
   p1=old1?preservePlayer(old1,world.start.x,world.start.y):makePlayer(net.sessionId,playerName(),world.start.x,world.start.y);p2=null;if(split||old2){const q=nearbyOpen(world.start.x+2,world.start.y,[p1]);p2=old2?preservePlayer(old2,q.x,q.y):makePlayer("LOCAL-P2","PLAYER 2",q.x,q.y)}
   remote.clear();enemyVisuals.clear();bullets.length=enemyBullets.length=particles.length=rings.length=floaters.length=hazards.length=0;pendingItems.clear();cameras.clear();explored.clear();campStates.clear();roomVisits.clear();playerTrails.clear();questDone.clear();toastQueue.length=0;toastTimer=0;stats.games=stats.elites=stats.doors=stats.weapons=stats.secrets=stats.generators=0;shake=damageFlash=0;move1=move2=fire1=fire2=fireBuffer1=fireBuffer2=0;specialCD=0;inventoryReminderMs=300000;
   host.worldRef=world;host.enteredRoomIds=[];for(const p of localPlayers()){resetCamp(p);reveal(p);if(checkpointRestore){const rid=W.roomAt(world,p.x,p.y),set=new Set();if(rid>=0){set.add(rid);host.enteredRoomIds.push(rid)}roomVisits.set(p.id,set)}else markRoomVisit(p);rememberTrail(p);updateRoomMessage(p,true)}levelQueue.length=0;for(const p of localPlayers())rememberPendingLevelChoice(p);A.stageUnenteredEnemies?.(host,world);sync();
