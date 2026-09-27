@@ -4,6 +4,7 @@ import fs from "node:fs";
 const root=new URL("../",import.meta.url);
 const play=fs.readFileSync(new URL("js/game-play.js",root),"utf8");
 const main=fs.readFileSync(new URL("js/game-main.js",root),"utf8");
+const core=fs.readFileSync(new URL("js/game-core.js",root),"utf8");
 const r18=fs.readFileSync(new URL("js/v10-42-r18-solo-playtest-stability.js",root),"utf8");
 const r20=fs.readFileSync(new URL("js/v10-42-r20-live-regression-stability.js",root),"utf8");
 const touch=fs.readFileSync(new URL("js/v10-4-patch.js",root),"utf8");
@@ -40,6 +41,8 @@ assert.match(play,/const trapDamage=\/trap\/i\.test/,"canonical damage owner mus
 assert.match(play,/!trapDamage&&p\.armor>0/,"trap damage must preserve armour while non-trap damage retains armour semantics");
 assert.match(play,/updateActiveTrapContacts\(\);/,"the gameplay simulation must own trap contact checks");
 assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeTrapCore=authoritativeTrapApi/);
+assert.match(play,/function resetAuthoritativeTrapContacts\(\)[\s\S]*trapCycleHits\.clear\(\)/,"authoritative trap ledger must expose an explicit world-transition reset");
+assert.match(core,/CCGLostSizzlerV142R58AuthoritativeTrapCore\?\.reset\?\.\(\)/,"every new world/floor must clear old player\/trap cycle ownership before play resumes");
 assert.doesNotMatch(play,/CCGLostSizzlerV142R19MobileTrapLayoutStability\?\.updateTrapContacts/,"simulation must not depend on the retired R19 implementation");
 
 const pauseBlock=main.match(/function clearPauseAttackCadence[\s\S]*?function settlePauseAttackCadence/)?.[0]||"";
