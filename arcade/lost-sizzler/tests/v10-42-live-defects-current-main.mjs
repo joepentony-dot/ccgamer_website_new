@@ -23,11 +23,11 @@ assert.match(bootstrap,/legacyGatePending=window\.CCGLostSizzlerReleaseGate\?\.s
 assert.match(bootstrap,/if\(!button\|\|!button\.isConnected\)\{retry\(\);return\}\s*if\(button\.disabled\|\|legacyGatePending\)\{retry\(\);return\}/,"queued starts must survive missing, detached or transiently disabled buttons and the legacy-gate handoff");
 assert.match(bootstrap,/state\.pendingStartRetries\+=1;\s*setTimeout\(attempt,50\)/,"queued starts must retain the canonical fixed retry cadence until dispatch becomes safe");
 
-assert.match(main,/if\(e\.code==="Space"&&!e\.repeat\)queueAttack\(p1\)/,"fresh keyboard FIRE must enter the canonical queue directly");
+assert.match(main,/if\(\(e\.code==="Space"\|\|e\.code==="Numpad0"\)&&!e\.repeat\)queueAttack\(p1\)/,"fresh keyboard FIRE from Space or Numpad0 must enter the canonical queue directly");
 assert.match(main,/input\.add\(e\.code\)/,"held Space must remain represented by the canonical input set for sustained frame-loop FIRE");
 assert.match(main,/addEventListener\("keyup",e=>input\.delete\(e\.code\)\)/,"key release must clear canonical held input");
 assert.match(main,/addEventListener\("blur",\(\)=>input\.clear\(\)\)/,"focus loss must clear all held gameplay input");
-assert.match(play,/if\(\(input\.has\("Space"\)\|\|fireBuffer1>0\)&&fire1<=0\)\{firePlayer\(p1,attackDirection\(p1,d1\(\)\)\)/,"sustained held FIRE must be serviced by the same canonical frame-loop owner");
+assert.match(play,/if\(\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\|\|fireBuffer1>0\)&&fire1<=0\)\{const fired=firePlayer\(p1,attackDirection\(p1,d1\(\)\)\);if\(fired\)fireBuffer1=0/,"sustained held and buffered FIRE from either desktop key must be serviced by the same canonical frame-loop owner and consume buffered intent only after success");
 assert.match(play,/function queueAttack\(p,requestedDirection=null\)[\s\S]*firePlayer\(p,attackDirection\(p,requestedDirection\)\)/,"fresh and buffered FIRE must converge on one canonical queue/fire implementation");
 assert.doesNotMatch(play,/recoverThroughDeepFireOwner|recoverThroughCapturedR1FireOwner/,"the canonical FIRE path must not traverse retired recovery-owner chains");
 
