@@ -25,6 +25,7 @@ assert.match(core,/event\.stopImmediatePropagation\(\)[\s\S]*attackKeysDown\.add
 assert.match(core,/document\.addEventListener\("keyup",onAttackKeyUp,true\)/,"R58 must own attack-key release and clear held-fire state itself");
 assert.match(core,/attackKeysDown\.clear\(\)[\s\S]*input\?\.delete\?\.\("Space"\)/,"pause\/inventory\/blur attack reset must clear the R58 physical-key ledger and canonical hold");
 assert.match(gamePlay,/CCGLostSizzlerV142R58CombatTrapCore\?\.updateTrapContacts\?\.\("simulation"\)/,"canonical simulation must call only the rewritten R58 trap engine");
+assert.match(gamePlay,/const core=window\.CCGLostSizzlerV142R58CombatTrapCore;[\s\S]*core\?\.attackNow===\"function\"[\s\S]*core\.attackNow\(\"Gamepad0\"\)/,"gamepad FIRE must terminate directly at R58 rather than the historical R20 recovery owner");
 assert.doesNotMatch(gamePlay,/CCGLostSizzlerV142R19MobileTrapLayoutStability\?\.updateTrapContacts\?\.\("simulation"\)/,"canonical simulation must not continue the old R19 trap engine after the rewrite");
 assert.match(r19,/function tick\(\)[\s\S]*const core=window\.CCGLostSizzlerV142R58CombatTrapCore;[\s\S]*if\(core\)\{syncPortraitCanvasAspect\(\);return\}/,"R19 monitor must become layout-only once R58 is installed");
 
