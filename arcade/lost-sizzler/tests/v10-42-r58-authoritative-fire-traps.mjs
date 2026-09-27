@@ -62,6 +62,7 @@ assert.doesNotMatch(pauseBlock,/AttackHoldLiveness|repairCombatTimers|rearmComba
 assert.doesNotMatch(r18,/queueAttack=function/,"R18 must not wrap the authoritative attack queue");
 assert.doesNotMatch(r18,/hurtPlayer=function/,"R18 must not wrap the canonical player-damage owner after the r58 rewrite");
 assert.match(play,/function hurtPlayer\(p,n,friendly=false,source="enemy"\)\{[\s\S]*if\(p\)\{const inv=Number\(p\.invuln\);[\s\S]*p\.invuln=0\}/,"stale player invulnerability repair must live inside the canonical damage owner rather than a compatibility wrapper");
+assert.match(play,/const canonicalPlayerDamage=hurtPlayer;[\s\S]*function authoritativeDamagePlayer\(p,n,friendly=false,source="enemy"\)[\s\S]*canonicalPlayerDamage\(p,n,friendly,source\)/,"trap damage must use the captured canonical player-damage primitive and bypass later generic wrappers");
 assert.match(r18,/function repairAttackLiveness\(\)[\s\S]*return false/,"legacy R18 attack repair must be observation-compatible and non-mutating");
 assert.match(r20,/fireOwnership:false/,"R20 must explicitly disclaim FIRE ownership");
 assert.doesNotMatch(r20,/function attackNow\(|ATTACK_KEYS|recoverPersistentFireBlock|recoverThroughDeepFireOwner|recoverThroughCapturedR1FireOwner/,"R20 must contain no FIRE recovery implementation");
