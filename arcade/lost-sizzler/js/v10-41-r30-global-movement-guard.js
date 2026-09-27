@@ -85,10 +85,12 @@
 
   function healthyBaseline(fn){return typeof fn==="function"&&!spyContaminated(fn)}
   function modernDamageOwnersRequired(){
+    if(window.CCGLostSizzlerV142R58AuthoritativeTrapCore?.gameplayOwnership===true)return false;
     return Boolean(window.CCGLostSizzlerV141R56PlaytestCompletion||window.CCGLostSizzlerV141R60LivePlayIntegrity)
   }
   function modernDamageOwnershipPresent(fn=window.hurtPlayer){
     if(typeof fn!=="function")return false;
+    if(window.CCGLostSizzlerV142R58AuthoritativeTrapCore?.gameplayOwnership===true)return healthyBaseline(fn);
     if(window.CCGLostSizzlerV141R56PlaytestCompletion&&!chainHas(fn,"__ccgV141R56EnvironmentDamage"))return false;
     if(window.CCGLostSizzlerV141R60LivePlayIntegrity&&!chainHas(fn,"__ccgV141R60EnvironmentSeal"))return false;
     return true
