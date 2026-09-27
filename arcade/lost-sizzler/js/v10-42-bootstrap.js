@@ -54,6 +54,7 @@
     ["v10-42-warden-navigation-cues.js","CCGLostSizzlerV142WardenNavigationCues"],
     ["v10-42-warden-interface-consistency.js","CCGLostSizzlerV142WardenInterfaceConsistency"],
     ["v10-42-r21-owner-and-attack-seal.js","CCGLostSizzlerV142R21OwnerAndAttackSeal"],
+    ["v10-42-r20-live-regression-stability.js","CCGLostSizzlerV142R20LiveRegressionStability"],
     ["v10-42-r22-stall-elapsed-handoff.js","CCGLostSizzlerV142R22StallElapsedHandoff"],
     ["v10-42-artefact-shop-stability.js","CCGLostSizzlerV142ArtefactShopStability"],
     ["v10-42-projectile-lifecycle.js","CCGLostSizzlerV142ProjectileLifecycle"],
