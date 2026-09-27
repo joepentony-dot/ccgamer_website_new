@@ -273,7 +273,6 @@ const authoritativeFireApi=Object.freeze({
   queue:(player,direction)=>queueAttack(player,direction),
   recoverOrphanedGameplayMode:()=>false
 });
-window.CCGLostSizzlerV142R20LiveRegressionStability=authoritativeFireApi;
 window.CCGLostSizzlerV142R58AuthoritativeFireCore=authoritativeFireApi;
 function spawnBullet(b,remoteShot){if(b)bullets.push({...b,remote:!!remoteShot})}
 function spawnEnemyShot(b){if(!b)return;enemyBullets.push({...b,ttl:Number(b.ttl||14)});const col=b.style==="fire"?P.orange:b.style==="root"?P.green:b.style==="shock"?P.cyan:P.red;for(let i=0;i<9;i++)particles.push({x:b.x*C.tile+C.tile/2,y:b.y*C.tile+C.tile/2,vx:(b.dx||0)*(1+Math.random()*2)+(Math.random()-.5)*1.4,vy:(b.dy||0)*(1+Math.random()*2)+(Math.random()-.5)*1.4,life:150+Math.random()*180,col,size:1.5+Math.random()*2.5,drag:.93,glow:8});if(localPlayers().some(p=>md(b,p)<9))S.sfx(b.style==="food"?"food":b.style==="fire"?"flame":"enemy")}
