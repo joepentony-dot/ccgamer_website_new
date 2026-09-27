@@ -179,14 +179,25 @@ try{
   const attackBefore=await page.evaluate(()=>{
     p1.firearmUnlocked=true;p1.weapon=baseWeapon();p1.maxMana=Math.max(40,Number(p1.maxMana)||0);p1.mana=Math.max(30,Number(p1.mana)||0);
     p1.hitStunMs=0;fire1=0;fireBuffer1=0;projectileCD=0;bullets.length=0;input.clear();
+    window.__ccgR31SpawnedShots=0;
+    window.__ccgR31NativeBulletPush=bullets.push;
+    bullets.push=function(...shots){
+      window.__ccgR31SpawnedShots+=shots.filter(shot=>shot&&shot.owner===p1.id&&Number(shot.ttl)>0).length;
+      return window.__ccgR31NativeBulletPush.apply(this,shots);
+    };
     return{mana:Number(p1.mana),authoritative:Boolean(window.CCGLostSizzlerV142R58AuthoritativeFireCore?.gameplayOwnership)};
   });
   assert.equal(attackBefore.authoritative,true,"post-resume attack must be owned by the r58 authoritative FIRE core");
   await page.keyboard.press("Space");
   await page.waitForFunction(previous=>Number(p1.mana)===previous.mana-1,attackBefore);
-  const attackAfter=await page.evaluate(()=>({mana:Number(p1.mana),fire1:Number(fire1),shots:bullets.filter(b=>b?.owner===p1.id&&b.ttl>0).length}));
+  const attackAfter=await page.evaluate(()=>{
+    const result={mana:Number(p1.mana),fire1:Number(fire1),spawned:Number(window.__ccgR31SpawnedShots||0),live:bullets.filter(b=>b?.owner===p1.id&&b.ttl>0).length};
+    if(window.__ccgR31NativeBulletPush)bullets.push=window.__ccgR31NativeBulletPush;
+    delete window.__ccgR31NativeBulletPush;delete window.__ccgR31SpawnedShots;
+    return result;
+  });
   assert.equal(attackAfter.mana,attackBefore.mana-1,"first attack after repeated pauses must execute exactly one real Solo FIRE action");
-  assert.ok(attackAfter.shots>=1,"first attack after repeated pauses must create a live projectile");
+  assert.ok(attackAfter.spawned>=1,"first attack after repeated pauses must create a projectile, even if nearby geometry consumes it before sampling");
   assert.ok(Number.isFinite(attackAfter.fire1)&&attackAfter.fire1>=0,"post-resume attack cooldown must remain finite");
 
   await page.evaluate(()=>toggleInventory());await page.waitForFunction(()=>mode==="inventory"&&!document.getElementById("inventory-panel").classList.contains("hidden"));
