@@ -212,12 +212,73 @@
       });
     });
   }
+  const usableDedicatedHazard=hazard=>Boolean(hazard&&Array.isArray(hazard.cells)&&hazard.cells.length>0);
+  function ensureDedicatedHazard(worldState,hostState,runState,profile,seed){
+    const existing=Array.isArray(hostState?.hazardRooms)?hostState.hazardRooms:[];
+    if(existing.some(usableDedicatedHazard))return false;
+    if(existing.some(hazard=>hazard?.v142WardenCleansed===true))return false;
+    if(hostState)hostState.hazardRooms=existing.filter(hazard=>usableDedicatedHazard(hazard)||hazard?.v142WardenCleansed===true);
+    const candidates=(worldState?.rooms||[]).filter(room=>
+      room
+      && room.id!==worldState?.startRoomId
+      && room.id!==worldState?.exitRoomId
+      && !room.sigilRoom
+      && !room.spiderNest
+      && Number(room.w)>=2
+      && Number(room.h)>=2
+    ).sort((a,b)=>
+      Number(Boolean(b.dedicatedHazardReserved))-Number(Boolean(a.dedicatedHazardReserved))
+      || Number(Boolean(a.sanctuary))-Number(Boolean(b.sanctuary))
+      || (Number(b.w)*Number(b.h))-(Number(a.w)*Number(a.h))
+      || hash32(`${seed}|stage6-hazard|${a.id}`)-hash32(`${seed}|stage6-hazard|${b.id}`)
+    );
+    const floor=floorOf(runState),resolvedProfile=profile||profileForFloor(floor),types=["blade","embers","arrows"],type=types[floor%types.length],groups=type==="embers"?2:type==="blade"?3:4;
+    for(const room of candidates){
+      const cells=[];
+      for(let y=Number(room.y)+1;y<Number(room.y)+Number(room.h);y++){
+        for(let x=Number(room.x)+1;x<Number(room.x)+Number(room.w);x++){
+          if(worldState?.map?.[y]?.[x]!==0)continue;
+          const group=type==="embers"?(x+y)%2:type==="blade"?(x-Number(room.x))%3:(y-Number(room.y))%4;
+          cells.push({x,y,group});
+        }
+      }
+      if(!cells.length){
+        // Compact rooms can expose only walkable boundary cells. Exhaust the
+        // complete room footprint, then continue to the next candidate if this
+        // room still cannot host a real hazard cell.
+        for(let y=Number(room.y);y<=Number(room.y)+Number(room.h)&&!cells.length;y++){
+          for(let x=Number(room.x);x<=Number(room.x)+Number(room.w);x++){
+            if(worldState?.map?.[y]?.[x]!==0)continue;
+            cells.push({x,y,group:0});
+            break;
+          }
+        }
+      }
+      if(!cells.length)continue;
+      const hazard={
+        id:`hazard-${floor}-stage6-emergency`,roomId:room.id,type,cells,groups,
+        period:type==="arrows"?2050:type==="blade"?2300:2550,
+        warningMs:type==="arrows"?780:700,activeMs:type==="embers"?760:560,
+        phase:hash32(`${seed}|stage6-hazard-phase|${room.id}`)%1200,
+        title:type==="blade"?"PENDULUM BLADE GALLERY":type==="embers"?"EMBER-TILE VAULT":"ARROW-SLIT CROSSING"
+      };
+      hostState.hazardRooms=hostState.hazardRooms||[];
+      hostState.hazardRooms.push(hazard);
+      room.dedicatedHazard=true;room.dedicatedHazardReserved=true;room.hazardType=type;room.dangerous=true;
+      tuneHazard(hazard,resolvedProfile,seed,worldState);
+      state.hazardsTuned++;
+      return true
+    }
+    return false
+  }
+
   function applyZoneGameplay(worldState,hostState,runState){
     if(!worldState||!hostState||!runState)return hostState;
     const floor=floorOf(runState),profile=profileForFloor(floor),seed=String(runState.seed||"CCG");
     for(const enemy of hostState.enemies||[]){tuneGuardian(enemy,profile);tuneEnemy(enemy,profile,seed,worldState)}
     (hostState.traps||[]).forEach((trap,index)=>tuneTrap(trap,index,profile,seed,worldState));
     reconcileTrapFamilies(hostState,seed,worldState,{...profile,floor});
+    ensureDedicatedHazard(worldState,hostState,runState,profile,seed);
     for(const hazard of hostState.hazardRooms||[])tuneHazard(hazard,profile,seed,worldState);
     for(const generator of hostState.generators||[])tuneGenerator(generator,profile);
     hostState.v142ZoneGameplay={
@@ -237,6 +298,6 @@
 
   window.CCGLostSizzlerV142Stage6ZoneGameplay={
     version:"V10.42-stage6-r1",PROFILES,state,profileForFloor,routeRole,protectedEnemy,
-    ordinaryKind,tuneEnemy,tuneGuardian,tuneTrap,reconcileTrapFamilies,tuneHazard,tuneGenerator,encounterDirectives,applyZoneGameplay
+    ordinaryKind,tuneEnemy,tuneGuardian,tuneTrap,reconcileTrapFamilies,usableDedicatedHazard,ensureDedicatedHazard,tuneHazard,tuneGenerator,encounterDirectives,applyZoneGameplay
   };
 })();
