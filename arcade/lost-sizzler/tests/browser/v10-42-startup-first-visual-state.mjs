@@ -62,6 +62,10 @@ try{
     const startupCss=[...document.querySelectorAll('link[rel="stylesheet"]')].find(link=>String(link.getAttribute("href")||"").includes("v10-42-startup-first-visual.css"));
     return Boolean(document.getElementById("ccg-release-loading")&&loaderCss?.sheet&&startupCss?.sheet);
   },null,{timeout:10000});
+  // Chromium's speculative preload scanner can request the blocked runtime
+  // script before the parser reaches the menu. Keep that script blocked, then
+  // wait for the underlying shell to finish parsing before sampling first paint.
+  await page.waitForFunction(()=>["solo-btn","split-btn","tutorial-zone-btn","daily-btn"].every(id=>Boolean(document.getElementById(id))),null,{timeout:10000});
 
   const first=await page.evaluate(()=>{
     const loader=document.getElementById("ccg-release-loading"),rect=loader?.getBoundingClientRect(),style=loader?getComputedStyle(loader):null;

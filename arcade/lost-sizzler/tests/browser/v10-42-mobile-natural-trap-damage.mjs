@@ -256,6 +256,12 @@ try{
         return SYS.trapActive(trap,performance.now())&&phase<Math.min(period*.06,120);
       },fixture.id,{timeout:12000});
 
+      const beforeTouch=await page.evaluate(()=>({
+        health:Number(p1.health),armor:Number(p1.armor),
+        trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0)
+      }));
+      assert.equal(beforeTouch.health,fixture.before.health,`real generated ${kind} fixture must enter the touch attempt at its reset HEALTH`);
+      assert.equal(beforeTouch.armor,fixture.before.armor,`real generated ${kind} fixture must enter the touch attempt with reset armour`);
       const touchWindow=await touchButton(page,context,fixture.key,fixture.id);
       const after=await page.evaluate(id=>{
         const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
@@ -271,14 +277,29 @@ try{
       console.log("MOBILE_NATURAL_TRAP_TOUCH",JSON.stringify({kind,attempt,fixture,touchWindow,after}));
 
       const stableCrossing=after.trapCalls.find(call=>call.active);
-      if(stableCrossing&&Number(stableCrossing.afterHealth)===Number(stableCrossing.beforeHealth)-1){
-        assert.equal(Number(stableCrossing.afterArmor),Number(stableCrossing.beforeArmor),`real generated ${kind} trap must preserve armour at the exact active trap crossing`);
-        qualified={attempt,touchWindow,stableCrossing,after};
+      const movementOwnedHit=Boolean(stableCrossing&&Number(stableCrossing.afterHealth)===Number(stableCrossing.beforeHealth)-1);
+      const sameTrapLatched=Boolean(stableCrossing?.canonicalContactsBefore?.some(key=>String(key).endsWith("|"+String(fixture.id))));
+      const monitorOwnedHit=Boolean(
+        stableCrossing&&
+        Number(after.health)===Number(beforeTouch.health)-1&&
+        Number(after.trapHits)===Number(beforeTouch.trapHits)+1&&
+        Number(stableCrossing.beforeHealth)===Number(after.health)&&
+        Number(stableCrossing.afterHealth)===Number(after.health)&&
+        sameTrapLatched
+      );
+      if(movementOwnedHit||monitorOwnedHit){
+        assert.equal(Number(after.health),Number(beforeTouch.health)-1,`real generated ${kind} trap must remove exactly one HEALTH during the natural active contact`);
+        assert.equal(Number(after.armor),Number(beforeTouch.armor),`real generated ${kind} trap must preserve armour during the natural active contact`);
+        assert.equal(Number(after.trapHits),Number(beforeTouch.trapHits)+1,`real generated ${kind} contact must record exactly one verified R19 trap hit`);
+        if(monitorOwnedHit){
+          assert.equal(Number(stableCrossing.afterHealth),Number(stableCrossing.beforeHealth),`real generated ${kind} movement crossing must not double-hit after the monitor already owned this active cycle`);
+        }
+        qualified={attempt,owner:movementOwnedHit?"movement":"monitor",touchWindow,stableCrossing,after};
         break;
       }
 
       if(stableCrossing){
-        assert.fail(`real generated ${kind} trap was naturally active at the exact triggerTrap crossing but did not remove one health: ${JSON.stringify({fixture,touchWindow,stableCrossing,after})}`);
+        assert.fail(`real generated ${kind} trap produced an active crossing without one verified same-cycle HEALTH hit: ${JSON.stringify({fixture,beforeTouch,touchWindow,stableCrossing,after})}`);
       }
     }
     assert.ok(qualified,`real generated ${kind} trap did not produce an active touch contact within six natural active cycles`);
