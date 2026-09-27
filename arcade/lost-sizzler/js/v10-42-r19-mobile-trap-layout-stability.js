@@ -126,6 +126,7 @@
   }
 
   function installTrapDamageOwner(){
+    if(window.CCGLostSizzlerV142R58CombatTrapCore)return true;
     const current=window.hurtPlayer;
     if(typeof current!=="function")return false;
     /* Keep one R19 owner in the linked hurtPlayer ancestry. Later guarded owners
@@ -255,11 +256,13 @@
   }
 
   function damageValidatedTrapContact(player,trap){
+    const core=window.CCGLostSizzlerV142R58CombatTrapCore;if(core)return core.applyTrapDamage(player,trap);
     if(!ordinaryDungeon()||!player||!trap)return false;
     return withValidatedTrapContact(player,trap,()=>applyValidatedTrapHealthDamage(player,trap))===true
   }
 
   function guaranteeTrapContactDamage(player,trap,beforeHealth,beforeArmor){
+    const core=window.CCGLostSizzlerV142R58CombatTrapCore;if(core)return core.applyTrapDamage(player,trap);
     if(!ordinaryDungeon()||!player||!trap||beforeHealth<=0)return false;
     /* Both callers enter only after proving this exact trap contact was active.
        Do not sample the phase clock again here: a contact near the active-window
@@ -277,6 +280,7 @@
   }
 
   function installTrapTriggerOwner(){
+    if(window.CCGLostSizzlerV142R58CombatTrapCore)return true;
     const current=window.triggerTrap;
     if(typeof current!=="function")return false;
     if(chainHas(current,"__ccgV142R19TrapTriggerOwner"))return true;
@@ -295,6 +299,7 @@
   }
 
   function damageOccupiedActiveTraps(){
+    const core=window.CCGLostSizzlerV142R58CombatTrapCore;if(core)return core.updateTrapContacts();
     if(!ordinaryDungeon())return false;
     const now=performance.now();
     let handled=false;
@@ -312,6 +317,7 @@
   }
 
   function rearmInactiveTrapContacts(){
+    const core=window.CCGLostSizzlerV142R58CombatTrapCore;if(core)return core.rearmTrapContacts();
     if(!ordinaryDungeon())return false;
     const rare=window.CCGLostSizzlerRareEventsBalance||null;
     const canonical=rare?.trapRuntime?.contact;
@@ -334,6 +340,7 @@
   }
 
   function updateTrapContacts(source="simulation"){
+    const core=window.CCGLostSizzlerV142R58CombatTrapCore;if(core)return core.updateTrapContacts(source);
     if(!ordinaryDungeon())return false;
     rearmInactiveTrapContacts();
     const handled=damageOccupiedActiveTraps();
