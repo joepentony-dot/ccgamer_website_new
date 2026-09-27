@@ -16,7 +16,7 @@ assert.match(bootstrap,/v10-42-projectile-lifecycle\.js/,"ordered V10.42 bootstr
 assert.match(source,/finally\s*\{\s*sweepExpired\(bullets,"player"\);\s*sweepExpired\(enemyBullets,"enemy"\)/s,"projectile cleanup must run from a finally boundary even when hit/death callbacks fault");
 assert.match(source,/consumeImpact\(b\);\s*const owner=findLocal\(b\.owner\)/s,"enemy impacts must retire or consume piercing state before the enemy damage/death callback");
 assert.doesNotMatch(source,/fireDelay|maxProjectiles|rapidMs|firePlayer\s*=|function\s+firePlayer/,"projectile lifecycle repair must not change fire cadence, projectile allowance or the held-fire owner");
-assert.match(gamePlay,/input\.has\("Space"\)\|\|fireBuffer1>0/,"canonical frame loop must retain held-Space firing");
+assert.match(gamePlay,/input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\|\|fireBuffer1>0/,"canonical frame loop must retain held desktop firing through Space and Numpad0");
 assert.match(heldFireBrowser,/await sustainedFire\(page,"Space"\)/,"retained Chromium contract must continue exercising sustained held-Space firing on the release runtime");
 
 const context={
