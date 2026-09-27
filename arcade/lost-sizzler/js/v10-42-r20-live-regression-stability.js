@@ -320,6 +320,8 @@
   }
 
   function attackNow(code){
+    const core=window.CCGLostSizzlerV142R58CombatTrapCore;
+    if(typeof core?.attackNow==="function"){diagnostics.attackIntents++;return core.attackNow(code)}
     if(!activeRun()||!recoverOrphanedGameplayMode())return false;
     let player=null;try{player=p1}catch(_){}
     if(!player)return false;
