@@ -75,8 +75,10 @@ function updateGamepad(){
   if(mode!=="playing"||!p1)return;const state=gamepadDirection();if(!state){gamepadDashDown=false;gamepadFireDown=false;return}const {gp,dir}=state;if(dir){p1.dir=dir;if(move1<=0){movePlayer(p1,dir.x,dir.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}
   const firePressed=Boolean(gp.buttons?.[0]?.pressed);
   if(firePressed){
-    if(!gamepadFireDown)queueAttack(p1,attackDirection(p1,dir));
-    else if(fire1<=0)attackNowUnbuffered(p1,attackDirection(p1,dir));
+    const direction=attackDirection(p1,dir);
+    if(!gamepadFireDown){
+      if(!attackNowUnbuffered(p1,direction))queueAttack(p1,direction)
+    }else if(fire1<=0)attackNowUnbuffered(p1,direction);
   }
   gamepadFireDown=firePressed;
   const dash=Boolean(gp.buttons?.[1]?.pressed);if(dash&&!gamepadDashDown)dashPlayer(p1,dir||p1.dir);gamepadDashDown=dash
