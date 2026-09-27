@@ -26,7 +26,7 @@
   const inheritedHurtPlayer=window.hurtPlayer;
   const canonicalHurtPlayer=deepestOriginal(inheritedHurtPlayer);
   function trapDamageFirewall(player,amount,friendly=false,source="enemy"){
-    if(/\\btrap\\b/i.test(String(source||""))){
+    if(/\btrap\b/i.test(String(source||""))){
       state.legacyTrapBlocks++;
       return false;
     }
