@@ -20,7 +20,8 @@ assert.match(play,/firePressed&&\(!gamepadFireDown\|\|fire1<=0\)\)queueAttack\(p
 assert.match(touch,/if\(typeof queueAttack === "function"\) queueAttack\(p1\)/,"touch FIRE must use the same core queue");
 assert.match(touch,/if\(!tutorialActive&&typeof input !== "undefined"\) input\.add\("Space"\)/,"held touch FIRE must use the canonical Space-held state");
 assert.match(touch,/input\.delete\("Space"\)/,"touch release must stop held FIRE");
-assert.doesNotMatch(touch,/attackNow|CCGLostSizzlerV142R20LiveRegressionStability\?\.attackNow/,"touch FIRE must not call recovery ownership");
+assert.match(touch,/CCGLostSizzlerV142R58AuthoritativeFireCore\?\.attackNow\?\.\(\)/,"Tutorial touch FIRE may use only the R58 unbuffered immediate entry point");
+assert.doesNotMatch(touch,/CCGLostSizzlerV142R20LiveRegressionStability\?\.attackNow/,"touch FIRE must not call historical R20 recovery ownership");
 
 const reset=main.match(/function clearPauseAttackCadence[\s\S]*?function settlePauseAttackCadence/)?.[0]||"";
 assert.match(reset,/fire1=0;fire2=0;fireBuffer1=0;fireBuffer2=0;projectileCD=0/,"pause/inventory return must reset stale transient cadence once");
