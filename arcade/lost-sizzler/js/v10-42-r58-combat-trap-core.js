@@ -6,7 +6,7 @@
   const ATTACK_BUFFER_MS=700;
   const SPECIAL_BLOCK=new Set(["horde-survivor","sizzler-saboteurs"]);
   const trapContacts=new Map();
-  const state={installed:false,shots:0,shotBlocks:0,shotBuffers:0,lastShotBlock:"",trapContacts:0,trapHits:0,trapRetries:0,trapRearms:0,trapHitsByKind:{fire:0,spike:0,shock:0,other:0}};
+  const state={installed:false,shots:0,shotBlocks:0,shotBuffers:0,lastShotBlock:"",trapContacts:0,trapHits:0,trapRetries:0,trapRearms:0,legacyTrapBlocks:0,trapFirewallRestores:0,trapHitsByKind:{fire:0,spike:0,shock:0,other:0}};
 
   const specialType=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")}catch(_){return""}};
   const runActive=()=>document.body?.dataset?.runActive==="true";
@@ -23,13 +23,30 @@
     while(typeof current==="function"&&!seen.has(current)){seen.add(current);last=current;current=typeof current.__ccgOriginal==="function"?current.__ccgOriginal:null}
     return last
   }
-  const canonicalHurtPlayer=deepestOriginal(window.hurtPlayer);
+  const inheritedHurtPlayer=window.hurtPlayer;
+  const canonicalHurtPlayer=deepestOriginal(inheritedHurtPlayer);
+  function trapDamageFirewall(player,amount,friendly=false,source="enemy"){
+    if(/\\btrap\\b/i.test(String(source||""))){
+      state.legacyTrapBlocks++;
+      return false;
+    }
+    return inheritedHurtPlayer.apply(this,arguments)
+  }
+  trapDamageFirewall.__ccgV142R58TrapFirewall=true;
+  trapDamageFirewall.__ccgOriginal=inheritedHurtPlayer;
+  function enforceTrapFirewall(){
+    if(window.hurtPlayer===trapDamageFirewall)return true;
+    window.hurtPlayer=trapDamageFirewall;
+    state.trapFirewallRestores++;
+    return true
+  }
 
   function localPlayerList(){try{return typeof localPlayers==="function"?localPlayers():[typeof p1!=="undefined"?p1:null,typeof p2!=="undefined"?p2:null].filter(Boolean)}catch(_){return[]}}
   function trapActive(trap,now=performance.now()){if(!trap?.active)return false;try{return typeof SYS?.trapActive==="function"?Boolean(SYS.trapActive(trap,now)):true}catch(_){return true}}
   function trapCycleId(trap,now=performance.now()){const period=Number(trap?.period),phase=Number(trap?.phase)||0,stamp=Number(now);if(!Number.isFinite(period)||period<=0||!Number.isFinite(stamp))return 0;return Math.floor((stamp+phase)/period)}
 
   function rearmTrapContacts(){
+    enforceTrapFirewall();
     if(!runActive()){if(trapContacts.size){state.trapRearms+=trapContacts.size;trapContacts.clear()}return true}
     const now=performance.now(),live=new Set();
     try{
@@ -102,6 +119,7 @@
   }
 
   function firePlayerFresh(p,requestedDirection){
+    enforceTrapFirewall();
     if(!p||!ordinaryDungeon()){state.shotBlocks++;state.lastShotBlock="not-playing";return false}
     if(Number(p.hitStunMs||0)>0){state.shotBlocks++;state.lastShotBlock="hit-stun";return false}
     let cooldown=0;try{cooldown=Number(isPlayer2(p)?fire2:fire1)||0}catch(_){}
@@ -147,7 +165,7 @@
   firePlayerFresh.__ccgV142R58AuthoritativeFire=true;
   triggerTrapFresh.__ccgV142R58AuthoritativeTrap=true;
   queueAttackFresh.__ccgV142R58AuthoritativeQueue=true;
-  window.firePlayer=firePlayerFresh;window.triggerTrap=triggerTrapFresh;window.queueAttack=queueAttackFresh;
+  window.firePlayer=firePlayerFresh;window.triggerTrap=triggerTrapFresh;window.queueAttack=queueAttackFresh;window.hurtPlayer=trapDamageFirewall;
   state.installed=true;
-  window.CCGLostSizzlerV142R58CombatTrapCore=Object.freeze({version:"V10.42-r58-combat-trap-core",state,trapContacts,trapActive,trapCycleId,rearmTrapContacts,applyTrapDamage,triggerTrap:triggerTrapFresh,updateTrapContacts,firePlayer:firePlayerFresh,queueAttack:queueAttackFresh,attackNow,resetAttackState});
+  window.CCGLostSizzlerV142R58CombatTrapCore=Object.freeze({version:"V10.42-r58-combat-trap-core",state,trapContacts,trapActive,trapCycleId,rearmTrapContacts,applyTrapDamage,triggerTrap:triggerTrapFresh,updateTrapContacts,firePlayer:firePlayerFresh,queueAttack:queueAttackFresh,attackNow,resetAttackState,enforceTrapFirewall});
 })();
