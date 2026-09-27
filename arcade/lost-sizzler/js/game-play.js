@@ -22,6 +22,9 @@ function attackDirection(p,requested){const source=requested&&(requested.x||requ
 const ATTACK_BUFFER_MS=700;
 const ATTACK_INTENT_DEDUPE_MS=45;
 const attackIntentTimes=new WeakMap();
+const attackHeldInputs=new WeakMap();
+function setAttackHeldInput(p,held){if(!p)return false;attackHeldInputs.set(p,Boolean(held));return Boolean(held)}
+function isAttackHeldInput(p){return Boolean(p&&attackHeldInputs.get(p))}
 let authoritativeCoreFirePlayer=null;
 function normalizeAttackState(p){
   if(!p)return false;
@@ -583,7 +586,8 @@ function update(dt){
   // Movement is the first keyboard gameplay action in the frame. A busy or faulting
   // combat path must never stop an already-held movement command being serviced.
   if(move1<=0){const d=d1();if(d){movePlayer(p1,d.x,d.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}if(p2&&move2<=0){const d=d2();if(d){movePlayer(p2,d.x,d.y);move2=C.player.moveDelay*(p2.moveMultiplier||1)}}
-  if((input.has("Space")||input.has("Numpad0")||fireBuffer1>0)&&fire1<=0){const fired=firePlayer(p1,attackDirection(p1,d1()));if(fired)fireBuffer1=0;else fire1=0}if(p2&&(input.has("Enter")||fireBuffer2>0)&&fire2<=0){const fired=firePlayer(p2,attackDirection(p2,d2()));if(fired)fireBuffer2=0;else fire2=0}
+  const p1HeldAttack=isAttackHeldInput(p1)&&(input.has("Space")||input.has("Numpad0")),p2HeldAttack=Boolean(p2&&isAttackHeldInput(p2)&&input.has("Enter"));
+  if((p1HeldAttack||fireBuffer1>0)&&fire1<=0){const fired=firePlayer(p1,attackDirection(p1,d1()));if(fired)fireBuffer1=0;else fire1=0}if(p2&&(p2HeldAttack||fireBuffer2>0)&&fire2<=0){const fired=firePlayer(p2,attackDirection(p2,d2()));if(fired)fireBuffer2=0;else fire2=0}
   if(projectileCD<=0){const liveProjectileWork=bullets.some(b=>b&&b.ttl>0)||enemyBullets.some(b=>b&&b.ttl>0);stepProjectiles();projectileCD=liveProjectileWork?70:0}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendPlayer();sendCD=100}if(worldCD<=0&&net.isHost){broadcastWorld();worldCD=350}
   updateActiveTrapContacts();
   updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBoulder(dt);updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();

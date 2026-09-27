@@ -28,7 +28,11 @@ assert.doesNotMatch(bootstrap,/v10-42-r47-inventory-fire-recovery\.js/,"retired 
 const queueBlock=play.match(/function queueAttack\(p,requestedDirection=null\)\{[\s\S]*?\n\}/)?.[0]||"";
 assert.match(queueBlock,/fireBuffer2=ATTACK_BUFFER_MS;else fireBuffer1=ATTACK_BUFFER_MS/,"fresh FIRE intent must enter the core buffer");
 assert.doesNotMatch(queueBlock,/firePlayer\(/,"the input queue must never create a shot directly");
-assert.match(play,/if\(\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\|\|fireBuffer1>0\)&&fire1<=0\)\{const fired=firePlayer\(p1,/,"the simulation loop must be the sole P1 FIRE execution owner");
+assert.match(play,/const attackHeldInputs=new WeakMap\(\);[\s\S]*function setAttackHeldInput\(p,held\)[\s\S]*function isAttackHeldInput\(p\)/,"r58 must track qualified held FIRE separately from fresh attack intent");
+assert.match(main,/const p1AttackKey=e\.code==="Space"\|\|e\.code==="Numpad0"[\s\S]*setAttackHeldInput\(p1,Boolean\(e\.repeat\|\|gamepadHeld\)\)[\s\S]*if\(!e\.repeat\)queueAttack\(p1\)/,"desktop P1 keydown must queue one fresh intent and arm held FIRE only from repeat or gamepad-held ownership");
+assert.match(main,/addEventListener\("keyup",e=>\{input\.delete\(e\.code\);if\(\(e\.code==="Space"\|\|e\.code==="Numpad0"\)&&p1\)setAttackHeldInput\(p1,false\)/,"desktop keyup must explicitly release qualified held FIRE ownership");
+assert.match(play,/const p1HeldAttack=isAttackHeldInput\(p1\)&&\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\)[\s\S]*if\(\(p1HeldAttack\|\|fireBuffer1>0\)&&fire1<=0\)\{const fired=firePlayer\(p1,/,"the simulation loop must execute fresh P1 intent once and repeat only qualified held FIRE");
+assert.doesNotMatch(play,/input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\|\|fireBuffer1>0/,"raw P1 key presence must never bypass qualified held-FIRE ownership");
 assert.match(play,/function firePlayer\(p,d\)[\s\S]*return true\n\}/,"core FIRE owner must report a completed shot");
 assert.match(play,/const shotIds=\[\],beforeMana=Number\(p\.mana\|\|0\),beforeCount=[\s\S]*try\{[\s\S]*spawnBullet\(b,false\)[\s\S]*\}catch\(_\)\{[\s\S]*bullets\.splice\(i,1\);[\s\S]*return false/,"projectile creation must fail transactionally and remove any partial volley");
 assert.match(play,/if\(afterCount<=beforeCount\)[\s\S]*return false[\s\S]*p\.mana=beforeMana-ammoCost/,"FIRE must not spend ammo until at least one projectile exists");
@@ -37,6 +41,8 @@ assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeFireCore=authoritat
 assert.doesNotMatch(play,/CCGLostSizzlerV142R20LiveRegressionStability=authoritativeFireApi/,"the r58 FIRE core must not occupy the R20 stability namespace");
 assert.match(play,/if\(firePressed\)[\s\S]*if\(!gamepadFireDown\)\{[\s\S]*if\(!attackNowUnbuffered\(p1,direction\)\)queueAttack\(p1,direction\)[\s\S]*else if\(fire1<=0\)attackNowUnbuffered\(p1,direction\)/,"gamepad FIRE must route the initial press and legal held repeats through the authoritative core, buffering only when cadence blocks the first press");
 assert.match(touch,/if\(typeof queueAttack === "function"\) queueAttack\(p1\)/,"touch FIRE must use the same core queue");
+assert.match(touch,/input\.add\("Space"\)[\s\S]*setAttackHeldInput\(p1,true\)/,"touch hold must explicitly claim qualified held-FIRE ownership");
+assert.match(touch,/input\.delete\("Space"\)[\s\S]*setAttackHeldInput\(p1,false\)/,"touch release must explicitly release qualified held-FIRE ownership");
 assert.doesNotMatch(touch,/CCGLostSizzlerV142R20LiveRegressionStability\?\.attackNow/,"touch FIRE must not call a historical recovery owner");
 
 assert.match(play,/const trapCycleHits=new Map\(\)/,"trap duplicate suppression must be one per-trap/player cycle ledger");
@@ -56,6 +62,17 @@ assert.match(play,/updateActiveTrapContacts\(\);/,"the gameplay simulation must 
 assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeTrapCore=authoritativeTrapApi/);
 assert.match(play,/function resetAuthoritativeTrapContacts\(\)[\s\S]*trapCycleHits\.clear\(\)/,"authoritative trap ledger must expose an explicit world-transition reset");
 assert.match(core,/CCGLostSizzlerV142R58AuthoritativeTrapCore\?\.reset\?\.\(\)/,"every new world/floor must clear old player\/trap cycle ownership before play resumes");
+const hazardFallbackBlock=core.match(/\/\/ Absolute map-level fallback[\s\S]*?final startWorld hazard invariant failed",error\)\}/)?.[0]||"";
+assert.doesNotMatch(hazardFallbackBlock,/if\(roomId<0\)continue/,"final dedicated-hazard fallback must retain roomless walkable cells");
+assert.match(hazardFallbackBlock,/roomless=roomId<0/,"final dedicated-hazard fallback must classify roomless corridor cells");
+assert.match(hazardFallbackBlock,/hazardRoomId=Number\(fallback\.roomId\)/,"final dedicated-hazard fallback must preserve a roomless -1 ownership id when necessary");
+assert.match(hazardFallbackBlock,/roomId:hazardRoomId/,"final dedicated-hazard object must use the resolved fallback room id rather than require a room object");
+assert.match(hazardFallbackBlock,/v142StartWorldRoomlessFallback:!chosen/,"roomless emergency hazards must remain explicitly diagnosable");
+const familyFallbackBlock=core.match(/\/\/ Final ordinary-trap family guarantee[\s\S]*?final startWorld trap-family invariant failed",error\)\}/)?.[0]||"";
+assert.doesNotMatch(familyFallbackBlock,/if\(roomId<0\)continue/,"final trap-family fallback must retain walkable corridor cells for pathological compact floors");
+assert.match(familyFallbackBlock,/roomless=roomId<0/,"final trap-family fallback must classify roomless corridor cells without discarding them");
+assert.match(familyFallbackBlock,/const uniqueCell=candidates\.find[\s\S]*?const cell=uniqueCell\|\|candidates\[/,"final trap-family fallback must prefer unused cells and retain a deterministic last-resort reuse path");
+assert.match(familyFallbackBlock,/v142StartWorldCellReuse:!uniqueCell/,"last-resort reused trap cells must remain explicitly diagnosable");
 assert.doesNotMatch(play,/CCGLostSizzlerV142R19MobileTrapLayoutStability\?\.updateTrapContacts/,"simulation must not depend on the retired R19 implementation");
 assert.match(rare,/function observeTrapContact\(player,now=performance\.now\(\)\)/,"Rare Events may retain passive trap-contact observation for warnings and diagnostics");
 assert.doesNotMatch(rare,/triggerTrap=function triggerTrapV115Reliable/,"Rare Events must not replace the canonical R58 triggerTrap owner");

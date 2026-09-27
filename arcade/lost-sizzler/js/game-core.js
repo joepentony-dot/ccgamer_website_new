@@ -134,41 +134,50 @@ function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
         ...rooms.filter(room=>room&&room.id===world.exitRoomId),
         ...rooms.filter(room=>room&&room.id===world.startRoomId)
       ];
-      let chosen=null,cells=[];
+      let chosen=null,hazardRoomId=null,cells=[];
       for(const room of ordered){
         const found=[];
         for(let y=Number(room.y);y<=Number(room.y)+Number(room.h);y++)for(let x=Number(room.x);x<=Number(room.x)+Number(room.w);x++){
           if(world?.map?.[y]?.[x]===0)found.push({x,y,group:0})
         }
-        if(found.length){chosen=room;cells=found;break}
+        if(found.length){chosen=room;hazardRoomId=Number(room.id);cells=found;break}
       }
-      if(!chosen||!cells.length){
+      if(!cells.length){
         // Absolute map-level fallback for pathological compact seeds where room
-        // bounds expose no walkable cells. Prefer non-start/non-exit rooms, but
-        // never allow a generated Solo floor to ship without a usable hazard.
+        // bounds expose no walkable cells. Prefer ordinary room-owned cells,
+        // then roomless corridor cells, and keep start/exit coordinates last.
+        // A usable hazard must not disappear merely because roomAt() returns -1.
         const mapCells=[];
         for(let y=0;y<(world?.map||[]).length;y++){
           const row=world.map[y]||[];
           for(let x=0;x<row.length;x++){
             if(row[x]!==0)continue;
             const roomId=W.roomAt(world,x,y);
-            if(roomId<0)continue;
-            const room=rooms.find(candidate=>Number(candidate?.id)===Number(roomId))||rooms[roomId]||null;
-            if(!room)continue;
-            mapCells.push({x,y,room,preferred:roomId!==world.startRoomId&&roomId!==world.exitRoomId});
+            const room=roomId>=0?(rooms.find(candidate=>Number(candidate?.id)===Number(roomId))||rooms[roomId]||null):null;
+            const start=Number(x)===Number(world.start?.x)&&Number(y)===Number(world.start?.y);
+            const exit=Number(x)===Number(world.exit?.x)&&Number(y)===Number(world.exit?.y);
+            const roomless=roomId<0,edgeRoom=!roomless&&(roomId===world.startRoomId||roomId===world.exitRoomId);
+            mapCells.push({x,y,room,roomId,start,exit,roomless,edgeRoom});
           }
         }
-        mapCells.sort((a,b)=>Number(b.preferred)-Number(a.preferred)||Number(a.room?.id||0)-Number(b.room?.id||0)||a.y-b.y||a.x-b.x);
+        mapCells.sort((a,b)=>
+          Number(a.start)-Number(b.start)
+          ||Number(a.exit)-Number(b.exit)
+          ||Number(a.edgeRoom)-Number(b.edgeRoom)
+          ||Number(a.roomless)-Number(b.roomless)
+          ||a.roomId-b.roomId||a.y-b.y||a.x-b.x
+        );
         const fallback=mapCells[0]||null;
-        if(fallback){chosen=fallback.room;cells=[{x:fallback.x,y:fallback.y,group:0}]}
+        if(fallback){chosen=fallback.room;hazardRoomId=Number(fallback.roomId);cells=[{x:fallback.x,y:fallback.y,group:0}]}
       }
-      if(chosen&&cells.length){
+      if(cells.length&&Number.isFinite(hazardRoomId)){
         host.hazardRooms=host.hazardRooms||[];
         host.hazardRooms.push({
-          id:`hazard-${floor}-startworld-fallback`,roomId:chosen.id,type:"embers",cells,groups:2,
-          period:2550,warningMs:700,activeMs:760,phase:0,title:"EMBER-TILE VAULT",v142StartWorldFallback:true
+          id:`hazard-${floor}-startworld-fallback`,roomId:hazardRoomId,type:"embers",cells,groups:2,
+          period:2550,warningMs:700,activeMs:760,phase:0,title:"EMBER-TILE VAULT",
+          v142StartWorldFallback:true,v142StartWorldRoomlessFallback:!chosen
         });
-        chosen.dedicatedHazard=true;chosen.dedicatedHazardReserved=true;chosen.hazardType="embers";chosen.dangerous=true
+        if(chosen){chosen.dedicatedHazard=true;chosen.dedicatedHazardReserved=true;chosen.hazardType="embers";chosen.dangerous=true}
       }
     }
   }catch(error){console.error("[Dungeon Carnage] final startWorld hazard invariant failed",error)}
@@ -188,11 +197,11 @@ function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
       for(let x=0;x<row.length;x++){
         if(row[x]!==0)continue;
         const roomId=W.roomAt(world,x,y);
-        if(roomId<0)continue;
         const start=Number(x)===Number(world.start?.x)&&Number(y)===Number(world.start?.y);
         const exit=Number(x)===Number(world.exit?.x)&&Number(y)===Number(world.exit?.y);
-        const edgeRoom=roomId===world.startRoomId||roomId===world.exitRoomId;
-        candidates.push({x,y,roomId,start,exit,edgeRoom,hazard:hazardCells.has(`${x},${y}`)});
+        const roomless=roomId<0;
+        const edgeRoom=!roomless&&(roomId===world.startRoomId||roomId===world.exitRoomId);
+        candidates.push({x,y,roomId,start,exit,edgeRoom,roomless,hazard:hazardCells.has(`${x},${y}`)});
       }
     }
     candidates.sort((a,b)=>
@@ -200,17 +209,22 @@ function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
       ||Number(a.exit)-Number(b.exit)
       ||Number(a.edgeRoom)-Number(b.edgeRoom)
       ||Number(a.hazard)-Number(b.hazard)
+      ||Number(a.roomless)-Number(b.roomless)
       ||a.roomId-b.roomId||a.y-b.y||a.x-b.x
     );
     families.forEach((kind,index)=>{
       if(present(kind))return;
-      const cell=candidates.find(candidate=>!occupied.has(`${candidate.x},${candidate.y}`))||null;
+      const uniqueCell=candidates.find(candidate=>!occupied.has(`${candidate.x},${candidate.y}`))||null;
+      // A pathological compact seed may expose fewer distinct walkable cells
+      // than trap families. Prefer every unused cell first; only then reuse a
+      // deterministic walkable cell rather than silently dropping a family.
+      const cell=uniqueCell||candidates[(floor+index)%Math.max(1,candidates.length)]||null;
       if(!cell)return;
       const trap={
         id:`startworld-family-${kind}-f${floor}-${cell.x}-${cell.y}`,
         x:cell.x,y:cell.y,roomId:cell.roomId,kind,
         phase:(cell.x*131+cell.y*197+index*331)%1800,
-        period:2200,active:true,v142StartWorldFamilyFallback:true
+        period:2200,active:true,v142StartWorldFamilyFallback:true,v142StartWorldCellReuse:!uniqueCell
       };
       host.traps.push(trap);occupied.add(`${cell.x},${cell.y}`);
     });
