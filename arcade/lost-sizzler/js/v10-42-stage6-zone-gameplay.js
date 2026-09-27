@@ -243,8 +243,16 @@
       }
     }
     if(!cells.length){
-      const x=Math.round(Number(room.x)+Number(room.w)/2),y=Math.round(Number(room.y)+Number(room.h)/2);
-      if(worldState?.map?.[y]?.[x]===0)cells.push({x,y,group:0});
+      // Compact generated rooms can have no open interior tile even though the
+      // room itself has walkable boundary cells. Dedicated hazards are a floor
+      // invariant, so exhaust the complete room footprint before giving up.
+      for(let y=Number(room.y);y<=Number(room.y)+Number(room.h)&&!cells.length;y++){
+        for(let x=Number(room.x);x<=Number(room.x)+Number(room.w);x++){
+          if(worldState?.map?.[y]?.[x]!==0)continue;
+          cells.push({x,y,group:0});
+          break;
+        }
+      }
     }
     if(!cells.length)return false;
     const hazard={
