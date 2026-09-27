@@ -6,6 +6,7 @@ const play=fs.readFileSync(new URL("js/game-play.js",root),"utf8");
 const main=fs.readFileSync(new URL("js/game-main.js",root),"utf8");
 const core=fs.readFileSync(new URL("js/game-core.js",root),"utf8");
 const r18=fs.readFileSync(new URL("js/v10-42-r18-solo-playtest-stability.js",root),"utf8");
+const r19=fs.readFileSync(new URL("js/v10-42-r19-mobile-trap-layout-stability.js",root),"utf8");
 const r20=fs.readFileSync(new URL("js/v10-42-r20-live-regression-stability.js",root),"utf8");
 const rare=fs.readFileSync(new URL("js/v10-15-rare-events-balance.js",root),"utf8");
 const r54=fs.readFileSync(new URL("js/v10-41-r54-playtest-regressions.js",root),"utf8");
@@ -16,7 +17,9 @@ const version=JSON.parse(fs.readFileSync(new URL("version.json",root),"utf8"));
 assert.equal(version.build,"V10.42 r58");
 assert.equal(version.cacheToken,"20260927r58");
 
-assert.doesNotMatch(bootstrap,/v10-42-r19-mobile-trap-layout-stability\.js/,"retired R19 trap owner must not load");
+assert.match(bootstrap,/v10-42-r19-mobile-trap-layout-stability\.js[\s\S]*CCGLostSizzlerV142R19MobileLayoutCompatibility/,"R19 portrait compatibility may load only behind its explicit non-gameplay compatibility marker");
+assert.match(r19,/gameplayOwnership:false/,"R19 portrait compatibility must explicitly disclaim gameplay ownership");
+assert.doesNotMatch(r19,/window\.hurtPlayer\s*=|window\.triggerTrap\s*=/,"R19 portrait compatibility must not restore player-damage or trap gameplay ownership");
 assert.doesNotMatch(bootstrap,/v10-42-r20-trap-cycle-handoff-stability\.js/,"retired trap handoff wrapper must not load");
 assert.match(bootstrap,/v10-42-r20-live-regression-stability\.js/,"non-FIRE R20 presentation/stall safeguards must remain loaded");
 assert.doesNotMatch(bootstrap,/v10-42-attack-hold-liveness\.js/,"retired held-FIRE recovery module must not load");
@@ -35,7 +38,7 @@ assert.doesNotMatch(touch,/CCGLostSizzlerV142R20LiveRegressionStability\?\.attac
 
 assert.match(play,/const trapCycleHits=new Map\(\)/,"trap duplicate suppression must be one per-trap/player cycle ledger");
 assert.match(play,/if\(trapDamage&&authoritativeTrapDamageDepth===0\)[\s\S]*return applyActiveTrapContact\(p,trap,now\)/,"public trap-labelled damage must re-enter the canonical R58 contact ledger");
-assert.match(play,/function authoritativeDamagePlayer\(p,n,friendly=false,source="enemy"\)[\s\S]*authoritativeTrapDamageDepth\+\+[\s\S]*hurtPlayer\(p,n,friendly,source\)/,"only the guarded internal R58 boundary may reach raw trap-attributed player damage");
+assert.match(play,/const canonicalPlayerDamage=hurtPlayer;[\s\S]*function authoritativeDamagePlayer\(p,n,friendly=false,source="enemy"\)[\s\S]*authoritativeTrapDamageDepth\+\+[\s\S]*canonicalPlayerDamage\(p,n,friendly,source\)/,"only the guarded internal R58 boundary may reach the captured raw trap-attributed player-damage primitive");
 assert.match(play,/if\(trapCycleHits\.get\(key\)===cycle\)\{authoritativeTrapState\.trapContactBlocks\+\+;return false\}/,"same-cycle trap re-entry must be blocked by the canonical ledger");
 assert.match(play,/function trapCycleId\(t,now=performance\.now\(\)\)/);
 assert.match(play,/trapCycleHits\.get\(key\)===cycle/,"one active trap cycle must not double-hit");
