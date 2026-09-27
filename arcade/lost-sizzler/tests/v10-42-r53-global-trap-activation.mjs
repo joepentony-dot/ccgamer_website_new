@@ -10,7 +10,6 @@ const read=relative=>fs.readFileSync(path.join(gameDir,relative),"utf8");
 const systems=read("js/systems.js");
 const stage6=read("js/v10-42-stage6-zone-gameplay.js");
 const play=read("js/game-play.js");
-const r19=read("js/v10-42-r19-mobile-trap-layout-stability.js");
 const render=read("js/game-render.js");
 
 assert.match(systems,/kind:i%3===0\?"fire":i%3===1\?"spike":"shock"/,"generated floor traps must still cover fire, spike and shock");
@@ -29,15 +28,15 @@ assert.match(render,/const s=ws\(t\.x,t\.y\),active=SYS\.trapActive\(t,now\)/,"v
 assert.match(stage6,/const fallbackEligibleRooms=baseEligibleRooms\.filter\(room=>!room\.sanctuary\)/,"Stage 6 family repair must have a compact-floor fallback beyond strict ordinary rooms");
 assert.match(stage6,/for\(const pool of \[strictEligibleRooms,fallbackEligibleRooms,emergencyEligibleRooms\]\)/,"Stage 6 family repair must exhaust layered room fallbacks before allowing a trap family to disappear");
 
-assert.match(r19,/function updateTrapContacts\(source="simulation"\)/,"R19 must expose one global floor-trap contact-cycle owner");
-assert.match(r19,/rearmInactiveTrapContacts\(\);[\s\S]*const handled=damageOccupiedActiveTraps\(\)/,"the global cycle must rearm an inactive contact before checking active occupancy");
-assert.match(r19,/owner\.call\(window,player,1,false,/,"validated floor-trap damage must remain exactly one health");
-assert.match(r19,/player\.armor=0;[\s\S]*player\.armor=beforeArmor/,"floor-trap health damage must preserve armour");
-assert.match(r19,/trapContacts\.add\(contactKey\)/,"an active contact must latch after one hit");
-assert.match(r19,/if\(occupied&&trapActive\(trap,now\)\)continue;/,"the latch must remain armed for the complete active phase");
-assert.match(r19,/trapContacts\.delete\(contactKey\)/,"the contact must rearm after leaving the tile or entering a safe cycle");
+assert.match(play,/function updateActiveTrapContacts\(source="simulation"\)/,"r58 must expose one global floor-trap contact-cycle owner");
+assert.match(play,/function updateActiveTrapContacts\(source="simulation"\)[\s\S]*rearmInactiveTrapContacts\(\)/,"the global cycle must rearm completed/inactive contacts before checking active occupancy");
+assert.match(play,/hurtPlayer\(p,1,false,`\$\{String\(t\.kind\|\|"floor"\)\} trap`\)/,"validated floor-trap damage must remain exactly one canonical damage unit");
+assert.match(play,/const trapDamage=\/trap\/i\.test[\s\S]*if\(!trapDamage&&p\.armor>0\)/,"floor-trap HEALTH damage must bypass armour without consuming it");
+assert.match(play,/if\(!verified\)return false;[\s\S]*trapCycleHits\.set\(key,cycle\)/,"an active contact may latch only after verified trap-attributed damage");
+assert.match(play,/if\(trapCycleHits\.get\(key\)===cycle\)return false/,"the same player/trap active cycle must not double-hit");
+assert.match(play,/trapCycleId\(t,now\)!==cycle[\s\S]*trapCycleHits\.delete\(key\)/,"the next mathematical trap cycle must rearm even if no inactive frame was sampled");
 
-assert.match(play,/CCGLostSizzlerV142R19MobileTrapLayoutStability\?\.updateTrapContacts\?\.\("simulation"\)/,"every live gameplay simulation frame must check occupied floor traps");
+assert.match(play,/updateActiveTrapContacts\(\);/,"every live gameplay simulation frame must check occupied floor traps through the r58 core");
 assert.doesNotMatch(play,/t\.kind==="shock"[\s\S]{0,120}(?:hurtPlayer|damageValidatedTrapContact)/,"shock traps must not use a separate damage rule");
 assert.doesNotMatch(play,/t\.kind==="spike"[\s\S]{0,120}(?:hurtPlayer|damageValidatedTrapContact)/,"spike traps must not use a separate damage rule");
 assert.doesNotMatch(play,/t\.kind==="fire"[\s\S]{0,120}(?:hurtPlayer|damageValidatedTrapContact)/,"fire traps must not use a separate damage rule");
