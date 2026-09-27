@@ -6,7 +6,7 @@
   const ATTACK_BUFFER_MS=700;
   const SPECIAL_BLOCK=new Set(["horde-survivor","sizzler-saboteurs"]);
   const trapContacts=new Map();
-  const state={installed:false,shots:0,shotBlocks:0,shotBuffers:0,lastShotBlock:"",trapContacts:0,trapHits:0,trapRetries:0,trapRearms:0,legacyTrapBlocks:0,trapFirewallRestores:0,trapHitsByKind:{fire:0,spike:0,shock:0,other:0}};
+  const state={installed:false,shots:0,meleeAttacks:0,shotBlocks:0,shotBuffers:0,boundaryRepairs:0,lastShotBlock:"",trapContacts:0,trapHits:0,trapRetries:0,trapRearms:0,legacyTrapBlocks:0,trapFirewallRestores:0,trapHitsByKind:{fire:0,spike:0,shock:0,other:0}};
 
   const specialType=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")}catch(_){return""}};
   const runActive=()=>document.body?.dataset?.runActive==="true";
@@ -111,6 +111,43 @@
   }
 
   function attackDirectionFresh(p,requested){try{if(typeof attackDirection==="function")return attackDirection(p,requested)}catch(_){}const source=requested&&(requested.x||requested.y)?requested:p?.dir,x=Math.sign(Number(source?.x||0)),y=Math.sign(Number(source?.y||0));return x||y?{x,y}:{x:1,y:0}}
+  function normaliseAttackBoundary(p){
+    if(!p||!playing())return false;
+    let repaired=false;
+    try{
+      if(document.body?.dataset?.runActive!=="true"&&typeof host!=="undefined"&&host&&typeof run!=="undefined"&&run){document.body.dataset.runActive="true";repaired=true}
+      if(p.controlLocked===true){p.controlLocked=false;repaired=true}
+      if(p.controlsLocked===true){p.controlsLocked=false;repaired=true}
+      const stun=Math.max(0,Number(p.hitStunMs)||0),last=Number(p.__ccgLastHurtAt||0),staleAfter=Math.max(900,Number(C?.player?.hitStunMs||180)*3);
+      if(stun>0&&(!Number.isFinite(last)||last<=0||performance.now()-last>staleAfter)){p.hitStunMs=0;repaired=true}
+      if(isPlayer2(p)){
+        if(!Number.isFinite(Number(fire2))||Number(fire2)<0||Number(fire2)>5000){fire2=0;repaired=true}
+        if(!Number.isFinite(Number(fireBuffer2))||Number(fireBuffer2)<0||Number(fireBuffer2)>5000){fireBuffer2=0;repaired=true}
+      }else{
+        if(!Number.isFinite(Number(fire1))||Number(fire1)<0||Number(fire1)>5000){fire1=0;repaired=true}
+        if(!Number.isFinite(Number(fireBuffer1))||Number(fireBuffer1)<0||Number(fireBuffer1)>5000){fireBuffer1=0;repaired=true}
+      }
+      if(!Number.isFinite(Number(projectileCD))||Number(projectileCD)<0||Number(projectileCD)>5000){projectileCD=0;repaired=true}
+    }catch(_){}
+    if(repaired)state.boundaryRepairs++;
+    return repaired
+  }
+
+  function contextualMelee(p,direction){
+    const melee=window.CCGLostSizzlerMeleeAmmoV125;
+    if(typeof melee?.meleeAttack!=="function")return null;
+    const dir=attackDirectionFresh(p,direction),tx=Number(p.x)+dir.x,ty=Number(p.y)+dir.y;
+    let adjacent=false;
+    try{
+      adjacent=(host?.enemies||[]).some(e=>e?.alive&&Number(e.x)===tx&&Number(e.y)===ty)
+        ||(host?.blockingDecor||[]).some(item=>Number(item?.x)===tx&&Number(item?.y)===ty);
+    }catch(_){}
+    const hasGun=typeof melee.hasGun==="function"?Boolean(melee.hasGun(p)):Boolean(p?.firearmUnlocked&&p?.weapon);
+    if(!adjacent&&hasGun&&Number(p.mana||0)>0)return null;
+    const result=melee.meleeAttack(p,dir)===true;
+    if(result)state.meleeAttacks++;
+    return result
+  }
   function activeProjectiles(p){try{return (bullets||[]).filter(b=>b?.ttl>0&&b.owner===p?.id).length}catch(_){return 0}}
 
   function queueAttackFresh(p){
@@ -120,10 +157,14 @@
 
   function firePlayerFresh(p,requestedDirection){
     enforceTrapFirewall();
+    normaliseAttackBoundary(p);
     if(!p||!ordinaryDungeon()){state.shotBlocks++;state.lastShotBlock="not-playing";return false}
     if(Number(p.hitStunMs||0)>0){state.shotBlocks++;state.lastShotBlock="hit-stun";return false}
     let cooldown=0;try{cooldown=Number(isPlayer2(p)?fire2:fire1)||0}catch(_){}
     if(cooldown>0){state.shotBlocks++;state.lastShotBlock="cooldown";return false}
+    const direction=attackDirectionFresh(p,requestedDirection);
+    const meleeResult=contextualMelee(p,direction);
+    if(meleeResult!==null){state.lastShotBlock=meleeResult?"":"melee-cooldown";return meleeResult}
     const w=p.weapon||((typeof baseWeapon==="function")?baseWeapon():null);
     if(!w){state.shotBlocks++;state.lastShotBlock="no-weapon";return false}
     const active=activeProjectiles(p),max=Math.max(1,Number(C?.player?.maxProjectiles||1)+Math.max(0,Number(w.shots||1)-1));
@@ -133,7 +174,7 @@
       try{if(Number(p.mana||0)<=0&&!(p.emergencyRechargeMs>0)){p.emergencyRechargeMs=C.player.emergencyRechargeMs;showToast?.("EMERGENCY CAPACITOR CHARGING",`You are completely dry. Survive for ${Math.ceil(C.player.emergencyRechargeMs/1000)} seconds and the reserve capacitor will restore ${C.player.emergencyAmmo} emergency shots.`,"red",8500)}else showToast?.("LOW AMMO","Find a supply pack or switch tactics.","red")}catch(_){}
       return false
     }
-    const direction=attackDirectionFresh(p,requestedDirection),dirs=typeof weaponDirections==="function"?weaponDirections(p,direction):[direction],selected=(dirs||[direction]).slice(0,Math.max(1,max-active));
+    const dirs=typeof weaponDirections==="function"?weaponDirections(p,direction):[direction],selected=(dirs||[direction]).slice(0,Math.max(1,max-active));
     if(!selected.length){state.shotBlocks++;state.lastShotBlock="no-direction";return false}
     const beforeCount=activeProjectiles(p),beforeMana=Number(p.mana||0);
     p.dir=direction;p.mana=beforeMana-1;p.ammoFlashMs=C.player.ammoFlashMs;p._fireAnimAt=performance.now();
@@ -148,7 +189,9 @@
   }
 
   function attackNow(){
-    let p=null;try{p=p1||null}catch(_){}if(!p||!ordinaryDungeon())return false;
+    let p=null;try{p=p1||null}catch(_){}if(!p)return false;
+    normaliseAttackBoundary(p);
+    if(!ordinaryDungeon())return false;
     let cooldown=0;try{cooldown=Number(fire1||0)}catch(_){}
     if(cooldown>0)return queueAttackFresh(p);
     const fired=firePlayerFresh(p,attackDirectionFresh(p));
@@ -167,5 +210,5 @@
   queueAttackFresh.__ccgV142R58AuthoritativeQueue=true;
   window.firePlayer=firePlayerFresh;window.triggerTrap=triggerTrapFresh;window.queueAttack=queueAttackFresh;window.hurtPlayer=trapDamageFirewall;
   state.installed=true;
-  window.CCGLostSizzlerV142R58CombatTrapCore=Object.freeze({version:"V10.42-r58-combat-trap-core",state,trapContacts,trapActive,trapCycleId,rearmTrapContacts,applyTrapDamage,triggerTrap:triggerTrapFresh,updateTrapContacts,firePlayer:firePlayerFresh,queueAttack:queueAttackFresh,attackNow,resetAttackState,enforceTrapFirewall});
+  window.CCGLostSizzlerV142R58CombatTrapCore=Object.freeze({version:"V10.42-r58-combat-trap-core",state,trapContacts,trapActive,trapCycleId,rearmTrapContacts,applyTrapDamage,triggerTrap:triggerTrapFresh,updateTrapContacts,firePlayer:firePlayerFresh,queueAttack:queueAttackFresh,attackNow,resetAttackState,enforceTrapFirewall,normaliseAttackBoundary});
 })();
