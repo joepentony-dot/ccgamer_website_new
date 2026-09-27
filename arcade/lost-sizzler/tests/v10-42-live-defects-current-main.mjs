@@ -28,7 +28,8 @@ assert.match(main,/input\.add\(e\.code\)/,"held Space must remain represented by
 assert.match(main,/addEventListener\("keyup",e=>input\.delete\(e\.code\)\)/,"key release must clear canonical held input");
 assert.match(main,/addEventListener\("blur",\(\)=>input\.clear\(\)\)/,"focus loss must clear all held gameplay input");
 assert.match(play,/if\(\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\|\|fireBuffer1>0\)&&fire1<=0\)\{const fired=firePlayer\(p1,attackDirection\(p1,d1\(\)\)\);if\(fired\)fireBuffer1=0/,"sustained held and buffered FIRE from either desktop key must be serviced by the same canonical frame-loop owner and consume buffered intent only after success");
-assert.match(play,/function queueAttack\(p,requestedDirection=null\)[\s\S]*firePlayer\(p,attackDirection\(p,requestedDirection\)\)/,"fresh and buffered FIRE must converge on one canonical queue/fire implementation");
+assert.match(play,/function queueAttack\(p,requestedDirection=null\)[\s\S]*if\(isP2\)fireBuffer2=ATTACK_BUFFER_MS;else fireBuffer1=ATTACK_BUFFER_MS;/,"fresh FIRE must enter the canonical buffer owner rather than bypassing frame-loop combat");
+assert.match(play,/if\(\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\|\|fireBuffer1>0\)&&fire1<=0\)\{const fired=firePlayer\(p1,attackDirection\(p1,d1\(\)\)\);if\(fired\)fireBuffer1=0/,"buffered and held FIRE must converge on the single canonical frame-loop fire implementation");
 assert.doesNotMatch(play,/recoverThroughDeepFireOwner|recoverThroughCapturedR1FireOwner/,"the canonical FIRE path must not traverse retired recovery-owner chains");
 
 assert.match(shop,/String\(id\)==="banishment"/,"Artefact repair must be isolated to the Flask exchange action");
