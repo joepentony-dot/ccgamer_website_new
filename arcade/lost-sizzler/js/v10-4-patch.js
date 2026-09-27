@@ -510,7 +510,7 @@
       for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) button.addEventListener(type, () => releaseKey(button));
     });
     const holdFire = (button, event) => {
-      button.setPointerCapture?.(event.pointerId);
+      try{button.setPointerCapture?.(event.pointerId)}catch(_){}
       const tutorialActive=document.body?.dataset?.tutorialActive==="true";
       if(tutorialActive){
         window.CCGLostSizzlerV142R58AuthoritativeFireCore?.attackNow?.();
