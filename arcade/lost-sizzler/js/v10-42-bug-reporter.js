@@ -78,7 +78,7 @@
       const minimalTrap={id:signal.trapId,kind:String(signal.kind||trap?.kind||"floor"),x:signal.x,y:signal.y,activeFlag:trap?.active!==false};
       push("environment-trap-crossing-damage-confirmed",{
         world:trapWorldKey(),playerId:signal.playerId,contact:{x:signal.x,y:signal.y},
-        healthLoss:1,armorLoss:0,traps:[trap?safe(()=>trapOwnerSnapshot(player,trap).trap,minimalTrap):minimalTrap],
+        healthLoss:1,armorLoss:0,traps:[minimalTrap],
         trapSignal:signal,contactSignals:[signal],source:pending?"verified-signal-boundary-mismatch":"direct-exact-signal"
       });
     }
