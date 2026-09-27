@@ -20,6 +20,8 @@ function d1(){const l=input.has("ArrowLeft")||input.has("KeyA"),r=input.has("Arr
 function d2(){const l=input.has("KeyJ"),r=input.has("KeyL"),u=input.has("KeyI"),d=input.has("KeyK");const x=(r?1:0)-(l?1:0),y=(d?1:0)-(u?1:0);return x||y?{x,y}:null}
 function attackDirection(p,requested){const source=requested&&(requested.x||requested.y)?requested:p?.dir;const x=Math.sign(Number(source?.x||0)),y=Math.sign(Number(source?.y||0));return x||y?{x,y}:{x:1,y:0}}
 const ATTACK_BUFFER_MS=700;
+const ATTACK_INTENT_DEDUPE_MS=45;
+const attackIntentTimes=new WeakMap();
 let authoritativeCoreFirePlayer=null;
 function normalizeAttackState(p){
   if(!p)return false;
@@ -46,9 +48,12 @@ function attackNowUnbuffered(p,requestedDirection=null){
 function queueAttack(p,requestedDirection=null){
   if(!p||mode!=="playing")return false;
   normalizeAttackState(p);
-  const isP2=p===p2,direction=attackDirection(p,requestedDirection);
+  const isP2=p===p2,direction=attackDirection(p,requestedDirection),now=performance.now();
+  const previousIntent=Number(attackIntentTimes.get(p)||0),duplicateIntent=previousIntent>0&&now-previousIntent<ATTACK_INTENT_DEDUPE_MS;
+  attackIntentTimes.set(p,now);
   if(requestedDirection&&(requestedDirection.x||requestedDirection.y))p.dir=direction;
-  try{dispatchEvent(new CustomEvent("ccg:attack-intent",{detail:{playerId:String(p.id||p.name||"P1"),p2:isP2,at:performance.now()}}))}catch(_){}
+  if(duplicateIntent)return true;
+  try{dispatchEvent(new CustomEvent("ccg:attack-intent",{detail:{playerId:String(p.id||p.name||"P1"),p2:isP2,at:now}}))}catch(_){}
   const cooldown=isP2?fire2:fire1;
   if(cooldown<=0){
     const owner=authoritativeCoreFirePlayer||firePlayer;
