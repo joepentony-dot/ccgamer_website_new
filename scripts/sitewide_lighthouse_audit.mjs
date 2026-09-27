@@ -8,8 +8,6 @@ import * as chromeLauncher from "chrome-launcher";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const SITE_ORIGIN = "https://www.cheekycommodoregamer.co.uk";
-const RAW_EVIDENCE_LIMIT = 8;
-
 function parseArgs() {
   const args = process.argv.slice(2);
   const result = {};
@@ -133,14 +131,6 @@ function diagnostic(audits, ids) {
   return null;
 }
 
-function severity(result) {
-  const perfPenalty = result.scores.performance == null ? 100 : 100 - result.scores.performance;
-  const lcpPenalty = result.metrics.lcp_ms == null ? 0 : Math.max(0, result.metrics.lcp_ms - 2500) / 100;
-  const clsPenalty = result.metrics.cls == null ? 0 : Math.max(0, result.metrics.cls - 0.1) * 100;
-  const tbtPenalty = result.metrics.tbt_ms == null ? 0 : Math.max(0, result.metrics.tbt_ms - 200) / 50;
-  return perfPenalty + lcpPenalty + clsPenalty + tbtPenalty;
-}
-
 async function main() {
   const args = parseArgs();
   const routes = discoverRoutes();
@@ -155,7 +145,6 @@ async function main() {
   });
 
   const results = [];
-  const rawCandidates = [];
   try {
     for (let index = 0; index < selected.length; index += 1) {
       const url = selected[index];
@@ -215,10 +204,8 @@ async function main() {
         };
         results.push(result);
 
-        const candidate = { result, lhr, severity: severity(result) };
-        rawCandidates.push(candidate);
-        rawCandidates.sort((left, right) => right.severity - left.severity);
-        if (rawCandidates.length > RAW_EVIDENCE_LIMIT) rawCandidates.pop();
+        const rawPath = path.join(args.rawDir, `${String(index + 1).padStart(4, "0")}-${slug(url)}.json`);
+        fs.writeFileSync(rawPath, JSON.stringify(lhr, null, 2));
 
         console.log(JSON.stringify({
           progress: index + 1,
@@ -242,12 +229,6 @@ async function main() {
     }
   } finally {
     await chrome.kill();
-  }
-
-  for (let index = 0; index < rawCandidates.length; index += 1) {
-    const candidate = rawCandidates[index];
-    const rawPath = path.join(args.rawDir, `${String(index + 1).padStart(2, "0")}-${slug(candidate.result.url)}.json`);
-    fs.writeFileSync(rawPath, JSON.stringify(candidate.lhr, null, 2));
   }
 
   const payload = {
