@@ -16,9 +16,16 @@
     scoreDeltas:0,
     doorLagFreezes:0,
     frameStalls:0,
-    stallClampInstalls:0
+    stallClampInstalls:0,
+    attackIntents:0,
+    directAttackErrors:0,
+    staleStunRepairs:0,
+    controlLockRepairs:0,
+    mobileFireFallbacks:0,
+    mobileFireReleases:0
   };
   let cursorTimer=0,lastDoorTick=performance.now(),presentationResumeObserver=null;
+  addEventListener("ccg:attack-intent",()=>{diagnostics.attackIntents++},{passive:true});
 
   const panelVisible=id=>{
     const node=document.getElementById(id);
