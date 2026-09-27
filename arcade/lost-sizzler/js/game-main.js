@@ -229,12 +229,12 @@ addEventListener("keydown",e=>{
   const p1AttackKey=e.code==="Space"||e.code==="Numpad0",p2AttackKey=e.code==="Enter";
   if(p1AttackKey&&p1){
     const gamepadHeld=!e.isTrusted&&Boolean(window.CCGLostSizzlerV141R49GamepadInput?.state?.held?.[0]?.has?.(e.code));
-    setAttackHeldInput(p1,Boolean(e.repeat||gamepadHeld));
+    setAttackHeldInput(p1,Boolean(e.isTrusted||e.repeat||gamepadHeld));
     if(!e.repeat)queueAttack(p1)
   }
   if(p2&&p2AttackKey){
     const gamepadHeld=!e.isTrusted&&Boolean(window.CCGLostSizzlerV141R49GamepadInput?.state?.held?.[1]?.has?.(e.code));
-    setAttackHeldInput(p2,Boolean(e.repeat||gamepadHeld));
+    setAttackHeldInput(p2,Boolean(e.isTrusted||e.repeat||gamepadHeld));
     if(!e.repeat)queueAttack(p2)
   }if(e.code==="ShiftLeft"&&!e.repeat)dashPlayer(p1,d1()||p1.dir);if(p2&&e.code==="ControlRight"&&!e.repeat)dashPlayer(p2,d2()||p2.dir);if(e.code==="KeyE"&&!e.repeat)usePotion(p1);if(e.code==="KeyQ"&&!e.repeat)useUtility(p1);if(e.code==="KeyR"&&!e.repeat)useTeleport(p1);if(e.code==="KeyC"&&!e.repeat)closeNearbyDoor(p1);if(e.code==="KeyB"&&!e.repeat)useBanishment(p1);if(p2&&e.code==="KeyO"&&!e.repeat)usePotion(p2)
 },{passive:false});
