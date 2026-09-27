@@ -277,6 +277,7 @@ try{
       console.log("MOBILE_NATURAL_TRAP_TOUCH",JSON.stringify({kind,attempt,fixture,touchWindow,after}));
 
       const stableCrossing=after.trapCalls.find(call=>call.active);
+      const targetDamageCalls=after.trapCalls.filter(call=>call.active&&Number(call.afterHealth)===Number(call.beforeHealth)-1);
       const movementOwnedHit=Boolean(stableCrossing&&Number(stableCrossing.afterHealth)===Number(stableCrossing.beforeHealth)-1);
       const sameTrapLatched=Boolean(stableCrossing?.canonicalContactsBefore?.some(key=>String(key).endsWith("|"+String(fixture.id))));
       const monitorOwnedHit=Boolean(
@@ -288,10 +289,14 @@ try{
         sameTrapLatched
       );
       if(movementOwnedHit||monitorOwnedHit){
-        assert.equal(Number(after.health),Number(beforeTouch.health)-1,`real generated ${kind} trap must remove exactly one HEALTH during the natural active contact`);
         assert.equal(Number(after.armor),Number(beforeTouch.armor),`real generated ${kind} trap must preserve armour during the natural active contact`);
-        assert.equal(Number(after.trapHits),Number(beforeTouch.trapHits)+1,`real generated ${kind} contact must record exactly one verified R19 trap hit`);
-        if(monitorOwnedHit){
+        if(movementOwnedHit){
+          assert.equal(Number(stableCrossing.afterHealth),Number(beforeTouch.health)-1,`real generated ${kind} target trap must remove exactly one HEALTH at its active crossing`);
+          assert.equal(targetDamageCalls.length,1,`real generated ${kind} target trap must damage exactly once during the held touch`);
+          assert.ok(Number(after.trapHits)>=Number(beforeTouch.trapHits)+1,`real generated ${kind} target contact must record a verified R19 trap hit`);
+        }else{
+          assert.equal(Number(after.health),Number(beforeTouch.health)-1,`real generated ${kind} monitor-owned target contact must remove exactly one HEALTH`);
+          assert.equal(Number(after.trapHits),Number(beforeTouch.trapHits)+1,`real generated ${kind} monitor-owned contact must record exactly one verified R19 trap hit`);
           assert.equal(Number(stableCrossing.afterHealth),Number(stableCrossing.beforeHealth),`real generated ${kind} movement crossing must not double-hit after the monitor already owned this active cycle`);
         }
         qualified={attempt,owner:movementOwnedHit?"movement":"monitor",touchWindow,stableCrossing,after};

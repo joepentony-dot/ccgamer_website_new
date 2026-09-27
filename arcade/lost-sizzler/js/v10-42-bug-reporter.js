@@ -233,6 +233,9 @@
     const stamp=performance.now(),x=Number(player.x),y=Number(player.y);
 
     if(stage==="before"){
+      const occupiedTraps=safe(()=>(host?.traps||[])
+        .filter(trap=>trap?.active!==false&&Number(trap.x)===x&&Number(trap.y)===y)
+        .map(trap=>({id:trapId(trap),kind:String(trap?.kind||"floor"),x:Number(trap?.x),y:Number(trap?.y),activeFlag:trap?.active!==false})),[]);
       const ordinary=safe(()=>(host?.traps||[])
         .filter(trap=>trap?.active!==false&&Number(trap.x)===x&&Number(trap.y)===y)
         .map(trap=>trapOwnerSnapshot(player,trap,stamp)),[]);
@@ -244,7 +247,7 @@
         beforeHealth:Number(player.health||0),beforeArmor:Number(player.armor||0),beforeHurtAt:Number(player.__ccgLastHurtAt||0),
         beforeDamageAt:Number(player.__ccgLastDamageAt||0),beforeDamageSource:String(player.__ccgLastDamageSource||""),
         beforeDamageSignalSerial:environmentDamageSerial,
-        activeTraps,activeHazards,meta:compact(meta)
+        occupiedTraps,activeTraps,activeHazards,meta:compact(meta)
       };
       movementBoundaryChecks.set(player,record);
       if(activeTraps.length)movementBoundarySignals.set(record.playerId,record);
@@ -260,10 +263,11 @@
     movementBoundaryChecks.delete(player);
     if(before&&movementBoundarySignals.get(before.playerId)===before)movementBoundarySignals.delete(before.playerId);
     if(!before)return false;
-    if(!before.activeTraps.length&&!before.activeHazards.length)return true;
+    if(!before.activeTraps.length&&!before.occupiedTraps?.length&&!before.activeHazards.length)return true;
 
     const immediate={
       health:Number(player.health||0),armor:Number(player.armor||0),hurtAt:Number(player.__ccgLastHurtAt||0),
+      damageAt:Number(player.__ccgLastDamageAt||0),damageSource:String(player.__ccgLastDamageSource||""),
       x:Number(player.x),y:Number(player.y),at:performance.now()
     };
     push("environment-boundary-result",{
@@ -276,19 +280,25 @@
 
     const boundaryDamageSignalSerial=environmentDamageSerial;
     const boundaryContactSignals=contactDamageSignalsSince(before,boundaryDamageSignalSerial);
-    const boundaryTrapIds=new Set(before.activeTraps.map(row=>String(row?.trap?.id||"")));
-    const boundaryTrapKinds=new Set(before.activeTraps.map(row=>String(row?.trap?.kind||"").toLowerCase()).filter(Boolean));
+    const boundaryTrapRows=before.activeTraps.length?before.activeTraps.map(row=>row.trap):(before.occupiedTraps||[]);
+    const boundaryTrapIds=new Set(boundaryTrapRows.map(row=>String(row?.id||"")));
+    const boundaryTrapKinds=new Set(boundaryTrapRows.map(row=>String(row?.kind||"").toLowerCase()).filter(Boolean));
     const boundaryTrapSignal=before.acceptedTrapSignal||boundaryContactSignals.find(signal=>signal.type==="trap"&&(boundaryTrapIds.has(signal.trapId)||boundaryTrapKinds.has(String(signal.kind||"").toLowerCase())))||null;
     const immediateTrapHealthLoss=before.beforeHealth-immediate.health;
+    const trapSourceHealthLoss=Boolean(
+      immediateTrapHealthLoss>0
+      && immediate.damageAt>before.beforeDamageAt
+      && /trap/i.test(immediate.damageSource)
+    );
     let trapConfirmedAtBoundary=false;
-    if(before.activeTraps.length&&(boundaryTrapSignal||immediateTrapHealthLoss>0)&&!trapConfirmedAtBoundary){
+    if(boundaryTrapRows.length&&(boundaryTrapSignal||trapSourceHealthLoss)&&!trapConfirmedAtBoundary){
       state.environmentVerifiedHits++;
       if(boundaryTrapSignal)boundaryTrapSignal.confirmed=true;
       push("environment-trap-crossing-damage-confirmed",{
         serial:before.serial,world:before.world,playerId:before.playerId,contact:{x:before.x,y:before.y},
         healthLoss:immediateTrapHealthLoss,armorLoss:before.beforeArmor-immediate.armor,
-        traps:before.activeTraps.map(row=>row.trap),trapSignal:boundaryTrapSignal,contactSignals:boundaryContactSignals,
-        source:boundaryTrapSignal?"exact-signal":"exact-contact-health-loss"
+        traps:boundaryTrapRows,trapSignal:boundaryTrapSignal,contactSignals:boundaryContactSignals,
+        source:boundaryTrapSignal?"exact-signal":before.activeTraps.length?"exact-contact-health-loss":"occupied-trap-source-health-loss"
       });
       trapConfirmedAtBoundary=true;
     }

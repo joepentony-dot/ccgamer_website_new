@@ -58,6 +58,9 @@ assert.match(reporter,/damageObserved=Boolean\(exactSignal\)/,"polling diagnosti
 
 assert.match(reporter,/pending\.acceptedTrapSignal=signal;\s*return signal;/,"movement-bound trap signals must defer confirmation until the after-movement boundary observes the result");
 assert.match(reporter,/let trapConfirmedAtBoundary=false;[\s\S]*if\(boundaryTrapSignal\)boundaryTrapSignal\.confirmed=true/,"after-movement verification must own final accepted trap confirmation");
+assert.match(reporter,/occupiedTraps=safe\(\(\)=>\(host\?\.traps\|\|\[\]\)[\s\S]*occupiedTraps,activeTraps,activeHazards/,"movement diagnostics must retain bounded physical trap contact even when rich phase sampling is unavailable");
+assert.match(reporter,/immediateTrapHealthLoss>0[\s\S]*immediate\.damageAt>before\.beforeDamageAt[\s\S]*\/trap\/i\.test\(immediate\.damageSource\)/,"phase-disagreed dash evidence must require real HEALTH loss and a fresh trap-attributed damage source");
+assert.match(reporter,/boundaryTrapRows\.length&&\(boundaryTrapSignal\|\|trapSourceHealthLoss\)/,"movement-bound confirmation must accept exact signals or fresh trap-source HEALTH loss at the occupied trap tile");
 
 assert.match(reporter,/trapHitsByKind/,"trap diagnostics must retain per-kind FIRE SPIKE and SHOCK hit evidence");
 assert.match(reporter,/CCGLostSizzlerV141R56PlaytestCompletion/,"trap report must capture the retained R56 cycle latch");
