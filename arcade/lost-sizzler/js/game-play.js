@@ -20,8 +20,22 @@ function d1(){const l=input.has("ArrowLeft")||input.has("KeyA"),r=input.has("Arr
 function d2(){const l=input.has("KeyJ"),r=input.has("KeyL"),u=input.has("KeyI"),d=input.has("KeyK");const x=(r?1:0)-(l?1:0),y=(d?1:0)-(u?1:0);return x||y?{x,y}:null}
 function attackDirection(p,requested){const source=requested&&(requested.x||requested.y)?requested:p?.dir;const x=Math.sign(Number(source?.x||0)),y=Math.sign(Number(source?.y||0));return x||y?{x,y}:{x:1,y:0}}
 const ATTACK_BUFFER_MS=700;
+function normalizeAttackState(p){
+  if(!p)return false;
+  const isP2=p===p2;
+  let cooldown=Number(isP2?fire2:fire1),buffer=Number(isP2?fireBuffer2:fireBuffer1),changed=false;
+  if(!Number.isFinite(cooldown)||cooldown<0||cooldown>2500){if(isP2)fire2=0;else fire1=0;cooldown=0;changed=true}
+  if(!Number.isFinite(buffer)||buffer<0||buffer>2500){if(isP2)fireBuffer2=0;else fireBuffer1=0;changed=true}
+  if(!isP2&&(!Number.isFinite(Number(projectileCD))||Number(projectileCD)<0||Number(projectileCD)>140)){projectileCD=0;changed=true}
+  const stun=Number(p.hitStunMs||0),lastHurt=Number(p.__ccgLastHurtAt||0),expected=Math.max(1,Number(C?.player?.hitStunMs||180)),staleAfter=Math.max(540,expected*3);
+  if((!Number.isFinite(stun)||stun<0||stun>5000)||(stun>0&&(!Number.isFinite(lastHurt)||lastHurt<=0||performance.now()-lastHurt>staleAfter))){
+    p.hitStunMs=0;changed=true
+  }
+  return changed
+}
 function queueAttack(p,requestedDirection=null){
   if(!p||mode!=="playing")return false;
+  normalizeAttackState(p);
   const isP2=p===p2;
   if(isP2)fireBuffer2=ATTACK_BUFFER_MS;else fireBuffer1=ATTACK_BUFFER_MS;
   const cooldown=isP2?fire2:fire1;
