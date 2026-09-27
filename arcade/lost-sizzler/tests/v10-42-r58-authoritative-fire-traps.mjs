@@ -35,7 +35,7 @@ assert.match(play,/if\(afterCount<=beforeCount\)[\s\S]*return false[\s\S]*p\.man
 assert.match(play,/const delay=.*[\s\S]*if\(isP2\)fire2=delay;else fire1=delay/,"FIRE cooldown must be committed only after projectile creation succeeds");
 assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeFireCore=authoritativeFireApi/);
 assert.doesNotMatch(play,/CCGLostSizzlerV142R20LiveRegressionStability=authoritativeFireApi/,"the r58 FIRE core must not occupy the R20 stability namespace");
-assert.match(play,/firePressed&&\(!gamepadFireDown\|\|fire1<=0\)\)queueAttack\(p1,attackDirection\(p1,dir\)\)/,"gamepad FIRE must use the same core queue");
+assert.match(play,/if\(firePressed\)[\s\S]*if\(!gamepadFireDown\)queueAttack\(p1,attackDirection\(p1,dir\)\)[\s\S]*else if\(fire1<=0\)attackNowUnbuffered\(p1,attackDirection\(p1,dir\)\)/,"gamepad FIRE must queue the initial press and route legal held repeats through the authoritative core");
 assert.match(touch,/if\(typeof queueAttack === "function"\) queueAttack\(p1\)/,"touch FIRE must use the same core queue");
 assert.doesNotMatch(touch,/CCGLostSizzlerV142R20LiveRegressionStability\?\.attackNow/,"touch FIRE must not call a historical recovery owner");
 
