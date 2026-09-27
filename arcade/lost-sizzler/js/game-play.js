@@ -117,7 +117,7 @@ function applyActiveTrapContact(p,t,now=performance.now()){
   if(!p||!t?.active||mode!=="playing")return false;
   if(Number(t.x)!==Number(p.x)||Number(t.y)!==Number(p.y)||!SYS.trapActive(t,now))return false;
   const key=trapContactKey(p,t),cycle=trapCycleId(t,now);
-  if(trapCycleHits.get(key)===cycle)return false;
+  if(trapCycleHits.get(key)===cycle){authoritativeTrapState.trapContactBlocks++;return false}
   const beforeHealth=Number(p.health||0),beforeArmor=Number(p.armor||0),beforeInvuln=Math.max(0,Number(p.invuln||0)),beforeDeaths=Number(run?.stats?.deaths||0);
   // A validated physical floor-trap contact owns its own one-hit-per-cycle
   // ledger. Existing enemy/post-hit invulnerability must not make a player
@@ -386,8 +386,16 @@ function releaseSealedDeathRoom(roomId){
   showToast("CHALLENGE DOORS REOPENED","The room you died in has been unlocked so you can return to your death box and finish the challenge.","gold",9000);
   return true
 }
+let authoritativeTrapDamageDepth=0;
 function hurtPlayer(p,n,friendly=false,source="enemy"){
   const damageSource=String(source||"enemy"),trapDamage=/trap/i.test(damageSource),environmentDamage=trapDamage||/anti[- ]loitering blast/i.test(damageSource);
+  if(trapDamage&&authoritativeTrapDamageDepth===0){
+    if(!p||mode!=="playing")return false;
+    const now=performance.now();
+    const trap=(host?.traps||[]).find(t=>t?.active&&Number(t.x)===Number(p.x)&&Number(t.y)===Number(p.y)&&SYS.trapActive(t,now));
+    if(!trap)return false;
+    return applyActiveTrapContact(p,trap,now)
+  }
   if(!p||mode!=="playing"||(!environmentDamage&&p.invuln>0))return false;const damageAt=performance.now();p.__ccgLastHurtAt=damageAt;p.__ccgLastDamageAt=damageAt;p.__ccgLastDamageSource=damageSource;try{dispatchEvent(new CustomEvent("ccg:player-damage",{detail:{playerId:String(p.id||p.name||"P1"),source:damageSource,x:Number(p.x),y:Number(p.y),at:damageAt}}))}catch(_){}p.hitStunMs=Math.max(p.hitStunMs||0,C.player.hitStunMs||180);let left=n;if(!trapDamage&&p.armor>0){const a=Math.min(p.armor,left);p.armor-=a;left-=a;if(a){S.sfx("armour");floatText(p.x,p.y,"ARMOUR",P.cyan)}}if(left<=0){p.invuln=350;sync();return}
   p.health-=left;p.hpBarMs=3000;run.stats.damageTaken+=left;if(friendly)run.stats.friendlyFire+=left;p.invuln=800;shake=10;damageFlash=.5;S.sfx("hurt");burst(p.x,p.y,P.red,16,1.4);ring(p.x,p.y,P.red,30);
   if(friendly){showToast("FRIENDLY FIRE",`${source} just shot a team-mate. The monsters are delighted.`,"red");say("<strong>FRIENDLY FIRE.</strong> Try pointing the dangerous end elsewhere.","red")}
@@ -411,7 +419,11 @@ function hurtPlayer(p,n,friendly=false,source="enemy"){
     showToast(penalty.zeroWarning?`${p.name.toUpperCase()} RESPAWNS — FINAL XP WARNING`:`${p.name.toUpperCase()} RESPAWNS — SCORE HALVED`,`OBJECTIVE: ${objective}.${xpText}${cacheText}${zeroText}`,"red",penalty.zeroWarning?13000:10000);host.revision++;broadcastWorld();if(run.consecutiveDeaths>=5)setTimeout(()=>{if(mode==="playing")offerFloorSave(true)},650)
   }sync()
 }
-const authoritativeDamagePlayer=hurtPlayer;
+function authoritativeDamagePlayer(p,n,friendly=false,source="enemy"){
+  authoritativeTrapDamageDepth++;
+  try{return hurtPlayer(p,n,friendly,source)}
+  finally{authoritativeTrapDamageDepth=Math.max(0,authoritativeTrapDamageDepth-1)}
+}
 function updateCamping(p,dt){if(window.CCGLostSizzlerOnboardingV120?.state?.active){resetCamp(p,true);return}let c=campStates.get(p.id);if(!c){resetCamp(p);c=campStates.get(p.id)}const moved=p.x!==c.lastX||p.y!==c.lastY;if(c.active){if(Math.hypot(p.x-c.originX,p.y-c.originY)>=C.camping.resetDistance){resetCamp(p,true);return}c.lastX=p.x;c.lastY=p.y}else if(moved){resetCamp(p,true);return}c.elapsed+=dt;if(c.elapsed<C.camping.graceMs)return;if(!c.active){c.active=true;c.originX=p.x;c.originY=p.y;c.nextBlast=150;c.blastCount=0;S.sfx("campwarn");run.alert=Math.min(100,run.alert+14);showToast("60 SECONDS IDLE — LEAVE THE ZONE","Every second blast targets you for 1 HP. Move six tiles away to stop the barrage.","red",7500)}c.nextBlast-=dt;if(c.nextBlast<=0){c.blastCount++;let q;if(c.blastCount%C.camping.directBlastEvery===0)q={x:p.x,y:p.y,direct:true};else{const a=[];for(let dy=-C.camping.zoneRadius;dy<=C.camping.zoneRadius;dy++)for(let dx=-C.camping.zoneRadius;dx<=C.camping.zoneRadius;dx++){const x=c.originX+dx,y=c.originY+dy;if(W.walkable(world.map,x,y,host)&&Math.hypot(dx,dy)<=C.camping.zoneRadius+.2)a.push({x,y})}q=a[Math.floor(Math.random()*a.length)]||{x:c.originX,y:c.originY}}hazards.push({x:q.x,y:q.y,life:C.camping.warningMs,maxLife:C.camping.warningMs,direct:!!q.direct,campOwner:p.id,originX:c.originX,originY:c.originY});c.nextBlast=C.camping.blastIntervalMs}}
 function updateHazards(dt){for(let i=hazards.length-1;i>=0;i--){const h=hazards[i];h.life-=dt;if(h.life>0)continue;hazards.splice(i,1);S.sfx("explosion");shake=Math.max(shake,h.direct?13:9);burst(h.x,h.y,P.orange,h.direct?32:24,h.direct?2.1:1.8);ring(h.x,h.y,P.red,h.direct?54:42);if(h.direct){const target=localPlayers().find(p=>p.id===h.campOwner);if(target&&Math.hypot(target.x-h.originX,target.y-h.originY)<C.camping.resetDistance)hurtPlayer(target,1,false,"anti-loitering blast")}}}
 function roomMoodFor(roomId){
