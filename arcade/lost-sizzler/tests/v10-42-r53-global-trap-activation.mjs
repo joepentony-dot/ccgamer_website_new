@@ -27,7 +27,7 @@ assert.match(systems,/function trapActive\(t,now\)\{const phase=\(now\+t\.phase\
 assert.match(render,/const s=ws\(t\.x,t\.y\),active=SYS\.trapActive\(t,now\)/,"visible ACTIVE/SAFE trap presentation must use the canonical trap clock");
 
 assert.match(stage6,/const fallbackEligibleRooms=baseEligibleRooms\.filter\(room=>!room\.sanctuary\)/,"Stage 6 family repair must have a compact-floor fallback beyond strict ordinary rooms");
-assert.match(stage6,/for\(const pool of \[strictEligibleRooms,fallbackEligibleRooms,emergencyEligibleRooms\]\)/,"Stage 6 family repair must exhaust layered room fallbacks before allowing a trap family to disappear");
+assert.match(stage6,/for\(const pool of \[strictEligibleRooms,fallbackEligibleRooms,emergencyEligibleRooms,compactEligibleRooms,ultimateEligibleRooms\]\)/,"Stage 6 family repair must exhaust strict, fallback, emergency, compact and ultimate room tiers before allowing a trap family to disappear");
 assert.match(stage6,/function ensureDedicatedHazard\([\s\S]*Number\(room\.w\)>=2[\s\S]*Number\(room\.h\)>=2[\s\S]*hostState\.hazardRooms\.push\(hazard\)/,"Stage 6 must be able to restore one real dedicated hazard on a compact generated floor");
 
 assert.match(play,/function updateActiveTrapContacts\(source="simulation"\)/,"r58 must expose one global floor-trap contact-cycle owner");
