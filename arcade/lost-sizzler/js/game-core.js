@@ -172,6 +172,49 @@ function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
       }
     }
   }catch(error){console.error("[Dungeon Carnage] final startWorld hazard invariant failed",error)}
+  try{
+    // Final ordinary-trap family guarantee. Stage 6 prefers normal non-hazard
+    // rooms, but pathological compact seeds can leave no eligible room pool.
+    // At this final boundary, reserve walkable cells directly so FIRE, SPIKE
+    // and SHOCK can never all disappear from a generated Solo floor.
+    const families=["fire","spike","shock"],floor=Math.max(1,Number(stage6Run?.floor||1));
+    host.traps=host.traps||[];
+    const present=kind=>host.traps.some(trap=>trap?.active&&String(trap.kind||"").toLowerCase()===kind);
+    const occupied=new Set(host.traps.filter(trap=>trap?.active).map(trap=>`${Number(trap.x)},${Number(trap.y)}`));
+    const hazardCells=new Set((host.hazardRooms||[]).flatMap(hazard=>(hazard?.cells||[]).map(cell=>`${Number(cell.x)},${Number(cell.y)}`)));
+    const candidates=[];
+    for(let y=0;y<(world?.map||[]).length;y++){
+      const row=world.map[y]||[];
+      for(let x=0;x<row.length;x++){
+        if(row[x]!==0)continue;
+        const roomId=W.roomAt(world,x,y);
+        if(roomId<0)continue;
+        const start=Number(x)===Number(world.start?.x)&&Number(y)===Number(world.start?.y);
+        const exit=Number(x)===Number(world.exit?.x)&&Number(y)===Number(world.exit?.y);
+        const edgeRoom=roomId===world.startRoomId||roomId===world.exitRoomId;
+        candidates.push({x,y,roomId,start,exit,edgeRoom,hazard:hazardCells.has(`${x},${y}`)});
+      }
+    }
+    candidates.sort((a,b)=>
+      Number(a.start)-Number(b.start)
+      ||Number(a.exit)-Number(b.exit)
+      ||Number(a.edgeRoom)-Number(b.edgeRoom)
+      ||Number(a.hazard)-Number(b.hazard)
+      ||a.roomId-b.roomId||a.y-b.y||a.x-b.x
+    );
+    families.forEach((kind,index)=>{
+      if(present(kind))return;
+      const cell=candidates.find(candidate=>!occupied.has(`${candidate.x},${candidate.y}`))||null;
+      if(!cell)return;
+      const trap={
+        id:`startworld-family-${kind}-f${floor}-${cell.x}-${cell.y}`,
+        x:cell.x,y:cell.y,roomId:cell.roomId,kind,
+        phase:(cell.x*131+cell.y*197+index*331)%1800,
+        period:2200,active:true,v142StartWorldFamilyFallback:true
+      };
+      host.traps.push(trap);occupied.add(`${cell.x},${cell.y}`);
+    });
+  }catch(error){console.error("[Dungeon Carnage] final startWorld trap-family invariant failed",error)}
   p1=old1?preservePlayer(old1,world.start.x,world.start.y):makePlayer(net.sessionId,playerName(),world.start.x,world.start.y);p2=null;if(split||old2){const q=nearbyOpen(world.start.x+2,world.start.y,[p1]);p2=old2?preservePlayer(old2,q.x,q.y):makePlayer("LOCAL-P2","PLAYER 2",q.x,q.y)}
   remote.clear();enemyVisuals.clear();bullets.length=enemyBullets.length=particles.length=rings.length=floaters.length=hazards.length=0;pendingItems.clear();cameras.clear();explored.clear();campStates.clear();roomVisits.clear();playerTrails.clear();questDone.clear();toastQueue.length=0;toastTimer=0;stats.games=stats.elites=stats.doors=stats.weapons=stats.secrets=stats.generators=0;shake=damageFlash=0;move1=move2=fire1=fire2=fireBuffer1=fireBuffer2=0;specialCD=0;inventoryReminderMs=300000;
   host.worldRef=world;host.enteredRoomIds=[];for(const p of localPlayers()){resetCamp(p);reveal(p);if(checkpointRestore){const rid=W.roomAt(world,p.x,p.y),set=new Set();if(rid>=0){set.add(rid);host.enteredRoomIds.push(rid)}roomVisits.set(p.id,set)}else markRoomVisit(p);rememberTrail(p);updateRoomMessage(p,true)}levelQueue.length=0;for(const p of localPlayers())rememberPendingLevelChoice(p);A.stageUnenteredEnemies?.(host,world);sync();
