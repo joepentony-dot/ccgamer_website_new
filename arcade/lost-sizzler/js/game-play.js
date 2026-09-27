@@ -47,6 +47,7 @@ function attackNowUnbuffered(p,requestedDirection=null){
 }
 function queueAttack(p,requestedDirection=null){
   if(!p||mode!=="playing")return false;
+  p.__ccgFireSpawnFault=false;
   normalizeAttackState(p);
   const isP2=p===p2,direction=attackDirection(p,requestedDirection),now=performance.now();
   const previousIntent=Number(attackIntentTimes.get(p)||0),duplicateIntent=previousIntent>0&&now-previousIntent<ATTACK_INTENT_DEDUPE_MS;
@@ -277,6 +278,7 @@ function spreadDirections(d){const dirs=[d];if(d.x&&d.y){dirs.push({x:d.x,y:0},{
 function weaponDirections(p,d){const w=p.weapon||{};if(w.id==="shock")return[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1},{x:1,y:1},{x:1,y:-1},{x:-1,y:1},{x:-1,y:-1}];if(w.id==="spread"||w.shots>=3)return spreadDirections(d);return[d]}
 function firePlayer(p,d){
   if(!p||mode!=="playing"||(p.hitStunMs||0)>0)return false;
+  if(p.__ccgFireSpawnFault)return false;
   const isP2=p===p2,cd=isP2?fire2:fire1;
   if(cd>0)return false;
   const w=p.weapon||baseWeapon();
@@ -307,12 +309,14 @@ function firePlayer(p,d){
     }
   }catch(_){
     for(let i=bullets.length-1;i>=0;i--)if(shotIds.includes(bullets[i]?.id))bullets.splice(i,1);
+    p.__ccgFireSpawnFault=true;
     if(isP2)fire2=0;else fire1=0;
     return false
   }
   const afterCount=bullets.filter(b=>b.owner===p.id&&b.ttl>0).length;
   if(afterCount<=beforeCount){
     for(let i=bullets.length-1;i>=0;i--)if(shotIds.includes(bullets[i]?.id))bullets.splice(i,1);
+    p.__ccgFireSpawnFault=true;
     if(isP2)fire2=0;else fire1=0;
     return false
   }
