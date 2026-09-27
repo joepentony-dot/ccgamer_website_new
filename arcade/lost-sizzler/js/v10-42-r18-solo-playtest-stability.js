@@ -72,22 +72,10 @@
     return changed;
   }
 
-  function repairAttackLiveness(reason="runtime"){
-    if(!activeRun()||currentMode()!=="playing")return false;
-    let changed=false;
-    try{if(fire1!==0){fire1=0;changed=true}}catch(_){}
-    try{if(fire2!==0){fire2=0;changed=true}}catch(_){}
-    try{if(projectileCD!==0){projectileCD=0;changed=true}}catch(_){}
-    try{if(fireBuffer1!==0){fireBuffer1=0;changed=true}}catch(_){}
-    try{if(fireBuffer2!==0){fireBuffer2=0;changed=true}}catch(_){}
-    try{input?.delete?.("Space");input?.delete?.("Enter")}catch(_){}
-    if(changed&&reason==="pause-resume")diagnostics.pauseResumeAttackRepairs++;
-    try{
-      const r1=window.CCGLostSizzlerV142R1Stability;
-      r1?.repairCombatTimers?.();
-      r1?.repairProjectilePool?.();
-    }catch(_){}
-    return changed;
+  function repairAttackLiveness(){
+    // r58 owns FIRE cadence in game-play.js. R18 remains callable for legacy
+    // diagnostics but must never mutate fire cooldowns, buffers or held input.
+    return false;
   }
 
   function repairCombatState(includeEnemies=true){
@@ -95,73 +83,14 @@
     let changed=false;
     for(const player of localRoster())changed=repairPlayer(player)||changed;
     if(includeEnemies)try{for(const enemy of host?.enemies||[])changed=repairEnemy(enemy)||changed}catch(_){}
-    try{
-      const r1=window.CCGLostSizzlerV142R1Stability;
-      r1?.repairCombatTimers?.();
-      r1?.repairProjectilePool?.();
-    }catch(_){}
     return changed;
   }
-
-  function repairAfterPauseTransition(beforeMode){
-    if(beforeMode!=="paused")return;
-    const attempt=()=>{
-      try{
-        if(currentMode()==="playing"&&activeRun()){repairAttackLiveness("pause-resume");return true}
-      }catch(_){}
-      return false;
-    };
-    if(attempt())return;
-    setTimeout(()=>{if(attempt())return;requestAnimationFrame(()=>attempt())},0);
-  }
-
-  function observeResumeIntent(){
-    if(currentMode()!=="paused"||!activeRun())return;
-    setTimeout(()=>repairAfterPauseTransition("paused"),0);
-  }
-
-  addEventListener("keydown",event=>{
-    if(event.code!=="KeyP"&&event.code!=="Escape")return;
-    observeResumeIntent();
-  },true);
-  document.addEventListener("click",event=>{
-    const target=event.target instanceof Element?event.target.closest("#resume-btn"):null;
-    if(target)observeResumeIntent();
-  },true);
-
-  try{
-    if(typeof pause==="function"&&!pause.__ccgV142R18){
-      const basePause=pause;
-      pause=function(...args){
-        const before=currentMode();
-        const result=basePause(...args);
-        repairAfterPauseTransition(before);
-        return result;
-      };
-      pause.__ccgV142R18=true;pause.__ccgOriginal=basePause;
-    }
-  }catch(_){}
 
   try{
     if(typeof hurtPlayer==="function"&&!hurtPlayer.__ccgV142R18){
       const baseHurtPlayer=hurtPlayer;
       hurtPlayer=function(player,...args){repairPlayer(player);return baseHurtPlayer(player,...args)};
       hurtPlayer.__ccgV142R18=true;hurtPlayer.__ccgOriginal=baseHurtPlayer;
-    }
-  }catch(_){}
-
-  try{
-    if(typeof queueAttack==="function"&&!queueAttack.__ccgV142R18){
-      const baseQueueAttack=queueAttack;
-      queueAttack=function(player,...args){
-        // Player FIRE must not rescan every enemy in the dungeon. Enemy timer
-        // repair remains on the bounded maintenance path; this boundary only
-        // repairs the local combat state needed by the attack being requested.
-        repairCombatState(false);
-        diagnostics.attackBoundaryRepairs++;
-        return baseQueueAttack(player,...args);
-      };
-      queueAttack.__ccgV142R18=true;queueAttack.__ccgOriginal=baseQueueAttack;
     }
   }catch(_){}
 
