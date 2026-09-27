@@ -30,8 +30,13 @@ assert.match(
 );
 assert.match(
   systems,
-  /hardHazardEligible=\(room,minW=6,minH=5\)=>Boolean\([\s\S]*reservedHazardRooms=\(world\.rooms\|\|\[\]\)\.filter\(room=>Boolean\(room\?\.dedicatedHazardReserved&&room\.id!==world\.startRoomId&&room\.id!==world\.exitRoomId&&room\.w>=3&&room\.h>=3\)\)[\s\S]*choices=\[\.\.\.shuffleHazardRooms\(reservedHazardRooms\),/,
+  /hardHazardEligible=\(room,minW=6,minH=5\)=>Boolean\([\s\S]*reservedHazardRooms=\(world\.rooms\|\|\[\]\)\.filter\(room=>Boolean\(room\?\.dedicatedHazardReserved&&room\.id!==world\.startRoomId&&room\.id!==world\.exitRoomId&&room\.w>=2&&room\.h>=2\)\)[\s\S]*choices=\[\.\.\.shuffleHazardRooms\(reservedHazardRooms\),/,
   "reserved dedicated-hazard rooms must remain authoritative even if stale soft room-owner flags survive a repeated decoration pass"
+);
+assert.match(
+  systems,
+  /while\(\(host\.hazardRooms\|\|\[\]\)\.length<count\)[\s\S]*candidate\?\.dedicatedHazardReserved[\s\S]*candidate\.w>=2&&candidate\.h>=2[\s\S]*if\(!cells\.length\)cells\.push\(/,
+  "compact dedicated-hazard fallback must preserve the floor invariant and still synthesize a playable hazard cell when only a tiny reserved room remains"
 );
 assert.match(
   systems,
