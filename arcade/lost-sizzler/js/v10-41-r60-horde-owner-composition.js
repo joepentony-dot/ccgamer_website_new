@@ -70,59 +70,21 @@
     try{return specialType()===SPY_MODE||Boolean(window.CCGLostSizzlerV141R29SpyEngine?.state?.isolated)}catch(_){return false}
   }
 
-  function completeSoloDamageOwner(fn){
-    return typeof fn==="function"&&chainHasMarker(fn,"__ccgV141R56EnvironmentDamage")&&chainHasMarker(fn,"__ccgV141R60EnvironmentSeal")
+  function completeSoloDamageOwner(){
+    return false
   }
 
   function soloHurtGateActive(){
-    if(!state.soloHurtGate||typeof hurtGateGetter!=="function"||typeof hurtGateSetter!=="function")return false;
-    let descriptor=null;
-    try{descriptor=Object.getOwnPropertyDescriptor(window,"hurtPlayer")}catch(_){descriptor=null}
-    const live=Boolean(descriptor&&descriptor.get===hurtGateGetter&&descriptor.set===hurtGateSetter);
-    if(!live){state.soloHurtGate=false;state.soloHurtGateLosses++}
-    return live
+    return false
   }
 
   function installSoloHurtGate(){
-    if(soloHurtGateActive())return true;
-    if(state.soloHurtGateUnsupported)return false;
-    const current=window.hurtPlayer;
-    if(!completeSoloDamageOwner(current))return false;
-    let descriptor=null;
-    try{descriptor=Object.getOwnPropertyDescriptor(window,"hurtPlayer")}catch(_){descriptor=null}
-    if(descriptor&&descriptor.configurable===false){state.soloHurtGateUnsupported=true;return false}
-    gatedHurt=current;sealedSoloHurt=current;
-    hurtGateGetter=function getHurtPlayerV141R60SoloDamageSeal(){
-      if(soloDungeon()&&!spyDamageOwned()&&completeSoloDamageOwner(sealedSoloHurt)){
-        if(!completeSoloDamageOwner(gatedHurt))state.soloHurtFallbackReads++;
-        return sealedSoloHurt
-      }
-      return gatedHurt
-    };
-    hurtGateSetter=function setHurtPlayerV141R60SoloDamageSeal(value){
-      if(!soloDungeon()||spyDamageOwned()){
-        gatedHurt=value;
-        if(completeSoloDamageOwner(value))sealedSoloHurt=value;
-        return
-      }
-      if(completeSoloDamageOwner(value)){
-        gatedHurt=value;sealedSoloHurt=value;state.soloHurtAcceptedWrites++;return
-      }
-      state.soloHurtBlockedWrites++;
-      state.lastBlockedHurtName=typeof value==="function"?String(value.name||"anonymous"):String(typeof value)
-    };
-    try{
-      Object.defineProperty(window,"hurtPlayer",{
-        configurable:true,
-        enumerable:descriptor?.enumerable!==false,
-        get:hurtGateGetter,
-        set:hurtGateSetter
-      });
-      state.soloHurtGate=true;return true
-    }catch(error){
-      state.soloHurtGateUnsupported=true;state.lastError=String(error?.message||error||"unknown").slice(0,260);
-      hurtGateGetter=hurtGateSetter=null;return false
-    }
+    // r58 pins floor-trap damage to its canonical damage function. A property
+    // gate around hurtPlayer would create a second ownership layer, so R60 no
+    // longer seals or filters Solo damage writes.
+    state.soloHurtGate=false;
+    state.soloHurtGateUnsupported=true;
+    return false
   }
 
   function protectSoloInstall(){
