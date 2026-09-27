@@ -140,6 +140,7 @@ function triggerTrap(p){
   return hit
 }
 const authoritativeTrapState={trapHits:0,trapHitsByKind:{fire:0,spike:0,shock:0,other:0},rearms:0,cycleRearms:0,simulationPasses:0,monitorPasses:0,damageRetries:0,trapContactBlocks:0,trapProtectionBlocks:0,directTrapRepairs:0};
+function resetAuthoritativeTrapContacts(){const count=trapCycleHits.size;if(count){trapCycleHits.clear();authoritativeTrapState.rearms+=count}return true}
 function rearmInactiveTrapContacts(){
   const now=performance.now(),playersById=new Map(localPlayers().map(p=>[String(p?.id||p?.name||"P1"),p]));
   for(const [key,cycle] of [...trapCycleHits.entries()]){
@@ -173,6 +174,7 @@ const authoritativeTrapApi=Object.freeze({
     return applyActiveTrapContact(p,t,performance.now())
   },
   damageOccupiedActiveTraps:()=>updateActiveTrapContacts("simulation"),
+  reset:resetAuthoritativeTrapContacts,
   rearmInactiveTrapContacts,
   rearmStaleCycleContact:(p,t,now=performance.now())=>{const key=trapContactKey(p,t),cycle=trapCycleId(t,now),old=trapCycleHits.get(key);if(old!=null&&old!==cycle){trapCycleHits.delete(key);authoritativeTrapState.cycleRearms++}return{contactKey:key,cycle}},
   updateTrapContacts:updateActiveTrapContacts,
