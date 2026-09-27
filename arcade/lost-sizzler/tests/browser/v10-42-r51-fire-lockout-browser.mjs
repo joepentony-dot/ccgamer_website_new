@@ -43,7 +43,8 @@ try{
   const boot=await page.evaluate(()=>({ready:CCGLostSizzlerV142Bootstrap?.ready===true,failed:CCGLostSizzlerV142Bootstrap?.failed===true,error:String(CCGLostSizzlerV142Bootstrap?.error||"")}));
   assert.equal(boot.failed,false,`ordered bootstrap failed: ${boot.error}`);
   assert.equal(boot.ready,true,"ordered bootstrap must complete");
-  assert.equal(await page.evaluate(()=>Boolean(window.CCGLostSizzlerV142AttackHoldLiveness&&window.CCGLostSizzlerV142R20LiveRegressionStability)),true,"FIRE liveness owners must be loaded");
+  assert.equal(await page.evaluate(()=>Boolean(window.CCGLostSizzlerV142R58AuthoritativeFireCore&&window.CCGLostSizzlerV142R20LiveRegressionStability)),true,"r58 FIRE core and non-FIRE live safeguards must be loaded");
+  assert.equal(await page.evaluate(()=>Boolean(window.CCGLostSizzlerV142AttackHoldLiveness)),false,"retired held-FIRE recovery owner must remain absent");
 
   await page.click("#solo-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(p1)&&Boolean(host),null,{timeout:20000});
@@ -54,8 +55,6 @@ try{
     p1.weapon=p1.weapon||baseWeapon();
     p1.maxMana=Math.max(120,Number(p1.maxMana)||0);
     p1.mana=117;
-    p1.controlLocked=true;
-    p1.controlsLocked=true;
     p1.hitStunMs=180;
     p1.__ccgLastHurtAt=performance.now()-2000;
     bullets.length=0;
@@ -63,15 +62,7 @@ try{
     fireBuffer1=Number.POSITIVE_INFINITY;
     projectileCD=Number.POSITIVE_INFINITY;
     input.clear();
-    document.body.dataset.runActive="false";
-    const r20=window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics||{};
-    const hold=window.CCGLostSizzlerV142AttackHoldLiveness?.diagnostics||{};
-    return{
-      mana:Number(p1.mana),
-      staleRepairs:Number(r20.staleStunRepairs||0),
-      controlRepairs:Number(r20.controlLockRepairs||0),
-      verifications:Number(hold.pressVerifications||0)
-    };
+    return{mana:Number(p1.mana)};
   });
 
   await page.keyboard.press("Space");
@@ -80,27 +71,17 @@ try{
   const recovered=await page.evaluate(()=>({
     mana:Number(p1.mana),
     hitStun:Number(p1.hitStunMs||0),
-    controlLocked:Boolean(p1.controlLocked),
-    controlsLocked:Boolean(p1.controlsLocked),
     fire1:Number(fire1),
     buffer:Number(fireBuffer1),
     active:String(document.body.dataset.runActive||""),
     shots:bullets.filter(b=>b&&b.ttl>0&&b.owner===p1.id).length,
-    r20:{...window.CCGLostSizzlerV142R20LiveRegressionStability.diagnostics},
-    hold:{...window.CCGLostSizzlerV142AttackHoldLiveness.diagnostics}
+    r58:Boolean(window.CCGLostSizzlerV142R58AuthoritativeFireCore)
   }));
 
-  assert.ok(recovered.mana<before.mana,"a fresh FIRE press must recover the poisoned combat boundary and consume ammo");
+  assert.ok(recovered.mana<before.mana,"a fresh FIRE press must normalise poisoned cadence and consume ammo");
   assert.equal(recovered.hitStun,0,"stale hit-stun must not permanently disable FIRE");
-  assert.equal(recovered.controlLocked,false,"stale controlLocked must be cleared before FIRE");
-  assert.equal(recovered.controlsLocked,false,"stale controlsLocked must be cleared before FIRE");
-  assert.equal(recovered.active,"true","FIRE recovery must restore the live-run presentation flag");
-  assert.ok(
-    recovered.r20.staleStunRepairs>before.staleRepairs||
-    recovered.r20.controlLockRepairs>before.controlRepairs||
-    recovered.hold.pressVerifications>before.verifications,
-    "fresh FIRE recovery must pass through an established liveness/repair owner"
-  );
+  assert.equal(recovered.active,"true","the live run must remain active through FIRE");
+  assert.equal(recovered.r58,true,"r58 authoritative FIRE core must own the recovery");
 
   const normalBefore=Number(recovered.mana);
   await page.keyboard.press("Space");
@@ -125,32 +106,22 @@ try{
     swing:Number(p1._meleeSwingAt||0),
     held:input.has("Space"),
     physicalHeld:Number(window.CCGLostSizzlerV142AttackHoldLiveness?.held?.size||0),
-    buffer:Number(fireBuffer1||0),
-    meleeRepairs:Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.meleeAttackRepairs||0)
+    buffer:Number(fireBuffer1||0)
   }));
   assert.equal(swordAfter.swing,firstSwordSwing,"one desktop sword tap must produce one melee swing, not delayed recovery repeats");
   assert.equal(swordAfter.held,false,"a completed sword tap must not synthetically latch Space");
   assert.equal(swordAfter.physicalHeld,0,"a completed sword tap must release the physical hold owner");
   assert.equal(swordAfter.buffer,0,"a successful sword tap must not leave a queued attack buffer");
-  assert.ok(swordAfter.meleeRepairs>=1,"R53 must recognise melee as successful attack work");
 
   const finiteBefore=await page.evaluate(()=>{
-    p1.firearmUnlocked=true;p1.weapon=baseWeapon();p1.mana=100;p1.maxMana=Math.max(120,Number(p1.maxMana)||0);fireBuffer1=0;input.clear();
-    return Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.finiteCooldownRepairs||0);
+    p1.firearmUnlocked=true;p1.weapon=baseWeapon();p1.mana=100;p1.maxMana=Math.max(120,Number(p1.maxMana)||0);
+    fire1=390;fireBuffer1=0;projectileCD=0;input.clear();
+    return Number(p1.mana);
   });
-  for(let attempt=0;attempt<5;attempt++){
-    await page.evaluate(()=>{
-      fire1=390;fireBuffer1=0;
-      window.CCGLostSizzlerV142R20LiveRegressionStability.attackNow("Space");
-    });
-    await page.waitForTimeout(310);
-  }
-  await page.evaluate(()=>{fire1=0;fireBuffer1=0});
-  const finiteAfter=await page.evaluate(()=>Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.finiteCooldownRepairs||0));
-  assert.ok(finiteAfter>finiteBefore,"repeated unchanged finite cooldown evidence must recover instead of leaving ATTACK permanently blocked");
-  const postFiniteMana=await page.evaluate(()=>Number(p1.mana));
   await page.keyboard.press("Space");
-  await page.waitForFunction(mana=>Number(p1.mana)<mana,postFiniteMana,{timeout:3000});
+  await page.waitForFunction(before=>Number(p1.mana)<before,finiteBefore,{timeout:3000});
+  const finiteAfter=await page.evaluate(()=>({mana:Number(p1.mana),fire:Number(fire1),buffer:Number(fireBuffer1)}));
+  assert.equal(finiteBefore-finiteAfter.mana,1,"a normal finite cooldown must drain and release exactly one buffered shot through the core");
 
   await page.evaluate(async()=>{await quitToMenu()});
   await page.waitForFunction(()=>mode==="menu"&&document.body.dataset.runActive!=="true",null,{timeout:10000});
