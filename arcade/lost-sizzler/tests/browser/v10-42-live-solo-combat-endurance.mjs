@@ -142,7 +142,7 @@ try{
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
   const boot=await page.evaluate(()=>({ready:CCGLostSizzlerV142Bootstrap.ready,failed:CCGLostSizzlerV142Bootstrap.failed,error:CCGLostSizzlerV142Bootstrap.error||"",build:CCGLostSizzlerV142Bootstrap.build,cache:CCGLostSizzlerV142Bootstrap.cache,metaBuild:document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content,metaCache:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content,ordered:[...document.querySelectorAll('script[data-ccg-v142-ordered="true"]')].map(s=>s.src)}));
   assert.equal(boot.failed,false,`r47 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r47 ordered bootstrap must complete");
-  assert.equal(boot.build,"V10.42 r57");assert.equal(boot.cache,"20260925r57");assert.equal(boot.metaBuild,"V10.42 r57");assert.equal(boot.metaCache,"20260925r57");
+  assert.equal(boot.build,"V10.42 r58");assert.equal(boot.cache,"20260925r57");assert.equal(boot.metaBuild,"V10.42 r58");assert.equal(boot.metaCache,"20260925r57");
   assert.ok(boot.ordered.length>=30,"r47 bootstrap must load the complete ordered V10.42 chain");
   assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260925r57"),"every ordered V10.42 module must use the r57 cache token");
   assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260925r57")),"expected r57 projectile lifecycle asset was not requested");
