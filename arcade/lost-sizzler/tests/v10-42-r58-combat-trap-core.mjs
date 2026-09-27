@@ -18,11 +18,11 @@ assert.ok(bootstrap.indexOf("v10-42-r58-combat-trap-core.js")<bootstrap.indexOf(
 assert.match(core,/window\.firePlayer=firePlayerFresh;window\.triggerTrap=triggerTrapFresh;window\.queueAttack=queueAttackFresh/,"new core must directly own FIRE, trap and attack-buffer entry points");
 assert.doesNotMatch(core,/window\.hurtPlayer\s*=/,"new trap core must not wrap or replace global hurtPlayer");
 assert.match(core,/canonicalHurtPlayer\.call\(window,p,1,false,/,"ordinary traps must use the canonical damage/death primitive exactly once");
-assert.match(core,/if\(!\(Number\(p\.health\|\|0\)<beforeHealth\)\).*return false/s,"failed trap damage must remain unconsumed/retryable");
+assert.match(core,/const healthLost=Number\(p\.health\|\|0\)<beforeHealth,deathRecorded=Number\(run\?\.stats\?\.deaths\|\|0\)>beforeDeaths;[\s\S]*if\(!healthLost&&!deathRecorded\).*return false/s,"failed trap damage must remain unconsumed/retryable while lethal trap deaths count as successful damage");
 assert.match(core,/trapContacts\.set\(key,\{cycle,at:now\}\)/,"trap contact may be consumed only after verified HEALTH loss");
 assert.match(core,/if\(record\?\.cycle===cycle\)return true/,"same physical active-cycle contact must not double-hit");
 assert.match(core,/if\(!live\.has\(key\)\)\{trapContacts\.delete\(key\);state\.trapRearms\+\+\}/,"leaving/inactive contacts must rearm without legacy latches");
-assert.match(core,/state\.trapHitsByKind=\{fire:0,spike:0,shock:0,other:0\}/,"core diagnostics must retain FIRE/SPIKE/SHOCK coverage");
+assert.match(core,/trapHitsByKind:\{fire:0,spike:0,shock:0,other:0\}/,"core diagnostics must retain FIRE/SPIKE/SHOCK coverage");
 assert.match(core,/active>=max/,"FIRE must keep the projectile-cap guard");
 assert.match(core,/Number\(p\.mana\|\|0\)<1/,"FIRE must keep the ammunition guard");
 assert.match(core,/fireBuffer1=Math\.max\(Number\(fireBuffer1\|\|0\),ATTACK_BUFFER_MS\)/,"finite cooldown attack intents must use one bounded buffer");
