@@ -78,6 +78,7 @@
   const attackObserved=(before,after)=>after.mana<before.mana||after.shots>before.shots||after.meleeAt>before.meleeAt;
 
   function verifyFreshPress(code,before){
+    if(window.CCGLostSizzlerV142R58CombatTrapCore)return;
     const MAX_ATTEMPTS=5;
     const attempt=number=>{
       setTimeout(()=>{
