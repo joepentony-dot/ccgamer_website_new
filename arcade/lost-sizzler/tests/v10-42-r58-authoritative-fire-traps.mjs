@@ -56,6 +56,12 @@ assert.match(play,/updateActiveTrapContacts\(\);/,"the gameplay simulation must 
 assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeTrapCore=authoritativeTrapApi/);
 assert.match(play,/function resetAuthoritativeTrapContacts\(\)[\s\S]*trapCycleHits\.clear\(\)/,"authoritative trap ledger must expose an explicit world-transition reset");
 assert.match(core,/CCGLostSizzlerV142R58AuthoritativeTrapCore\?\.reset\?\.\(\)/,"every new world/floor must clear old player\/trap cycle ownership before play resumes");
+const hazardFallbackBlock=core.match(/\/\/ Absolute map-level fallback[\s\S]*?final startWorld hazard invariant failed",error\)\}/)?.[0]||"";
+assert.doesNotMatch(hazardFallbackBlock,/if\(roomId<0\)continue/,"final dedicated-hazard fallback must retain roomless walkable cells");
+assert.match(hazardFallbackBlock,/roomless=roomId<0/,"final dedicated-hazard fallback must classify roomless corridor cells");
+assert.match(hazardFallbackBlock,/hazardRoomId=Number\(fallback\.roomId\)/,"final dedicated-hazard fallback must preserve a roomless -1 ownership id when necessary");
+assert.match(hazardFallbackBlock,/roomId:hazardRoomId/,"final dedicated-hazard object must use the resolved fallback room id rather than require a room object");
+assert.match(hazardFallbackBlock,/v142StartWorldRoomlessFallback:!chosen/,"roomless emergency hazards must remain explicitly diagnosable");
 const familyFallbackBlock=core.match(/\/\/ Final ordinary-trap family guarantee[\s\S]*?final startWorld trap-family invariant failed",error\)\}/)?.[0]||"";
 assert.doesNotMatch(familyFallbackBlock,/if\(roomId<0\)continue/,"final trap-family fallback must retain walkable corridor cells for pathological compact floors");
 assert.match(familyFallbackBlock,/roomless=roomId<0/,"final trap-family fallback must classify roomless corridor cells without discarding them");
