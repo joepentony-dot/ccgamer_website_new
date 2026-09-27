@@ -143,6 +143,7 @@ function handleHeaderQuit(){
 function clearPauseAttackCadence(reason="resume"){
   fire1=0;fire2=0;fireBuffer1=0;fireBuffer2=0;projectileCD=0;
   input.delete("Space");input.delete("Enter");input.delete("KeyF");input.delete("Numpad0");
+  try{if(p1)normalizeAttackState(p1);if(p2)normalizeAttackState(p2)}catch(_){}
   window.__CCG_PAUSE_ATTACK_RESETS__=Math.max(0,Number(window.__CCG_PAUSE_ATTACK_RESETS__)||0)+1;
   window.__CCG_PAUSE_ATTACK_LAST_RESET__={reason:String(reason),mode:String(mode),at:performance.now()};
   return true
