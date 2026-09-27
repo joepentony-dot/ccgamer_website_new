@@ -5,8 +5,10 @@
 
   const ATTACK_BUFFER_MS=700;
   const SPECIAL_BLOCK=new Set(["horde-survivor","sizzler-saboteurs"]);
+  const ATTACK_KEYS=new Set(["Space","Numpad0"]);
   const trapContacts=new Map();
-  const state={installed:false,shots:0,meleeAttacks:0,shotBlocks:0,shotBuffers:0,boundaryRepairs:0,lastShotBlock:"",trapContacts:0,trapHits:0,trapRetries:0,trapRearms:0,legacyTrapBlocks:0,trapFirewallRestores:0,trapHitsByKind:{fire:0,spike:0,shock:0,other:0}};
+  const attackKeysDown=new Set();
+  const state={installed:false,shots:0,meleeAttacks:0,shotBlocks:0,shotBuffers:0,attackInputs:0,boundaryRepairs:0,lastShotBlock:"",trapContacts:0,trapHits:0,trapRetries:0,trapRearms:0,legacyTrapBlocks:0,trapFirewallRestores:0,trapHitsByKind:{fire:0,spike:0,shock:0,other:0}};
 
   const specialType=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")}catch(_){return""}};
   const runActive=()=>document.body?.dataset?.runActive==="true";
@@ -200,15 +202,51 @@
     return false
   }
 
+  const editableTarget=target=>Boolean(target instanceof Element&&(target.matches("input,textarea,select,[contenteditable='true'],[contenteditable='']")||target.closest("input,textarea,select,[contenteditable='true'],[contenteditable='']")));
+
+  function syncHeldAttackInput(){
+    try{
+      if(attackKeysDown.size)input?.add?.("Space");
+      else input?.delete?.("Space");
+      input?.delete?.("Numpad0");
+    }catch(_){}
+  }
+
+  function onAttackKeyDown(event){
+    if(!ATTACK_KEYS.has(event.code)||editableTarget(event.target)||!ordinaryDungeon())return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    const fresh=!attackKeysDown.has(event.code)&&!event.repeat;
+    attackKeysDown.add(event.code);
+    syncHeldAttackInput();
+    state.attackInputs++;
+    if(fresh)attackNow(event.code);
+  }
+
+  function onAttackKeyUp(event){
+    if(!ATTACK_KEYS.has(event.code))return;
+    if(attackKeysDown.has(event.code)){
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+    attackKeysDown.delete(event.code);
+    syncHeldAttackInput();
+  }
+
   function resetAttackState(){
+    attackKeysDown.clear();
     try{input?.delete?.("Space");input?.delete?.("Numpad0");fireBuffer1=0;if(!Number.isFinite(Number(fire1))||Number(fire1)<0||Number(fire1)>5000)fire1=0;if(!Number.isFinite(Number(projectileCD))||Number(projectileCD)<0||Number(projectileCD)>1000)projectileCD=0}catch(_){}
     return true
   }
+
+  document.addEventListener("keydown",onAttackKeyDown,true);
+  document.addEventListener("keyup",onAttackKeyUp,true);
+  addEventListener("blur",resetAttackState);
 
   firePlayerFresh.__ccgV142R58AuthoritativeFire=true;
   triggerTrapFresh.__ccgV142R58AuthoritativeTrap=true;
   queueAttackFresh.__ccgV142R58AuthoritativeQueue=true;
   window.firePlayer=firePlayerFresh;window.triggerTrap=triggerTrapFresh;window.queueAttack=queueAttackFresh;window.hurtPlayer=trapDamageFirewall;
   state.installed=true;
-  window.CCGLostSizzlerV142R58CombatTrapCore=Object.freeze({version:"V10.42-r58-combat-trap-core",state,trapContacts,trapActive,trapCycleId,rearmTrapContacts,applyTrapDamage,triggerTrap:triggerTrapFresh,updateTrapContacts,firePlayer:firePlayerFresh,queueAttack:queueAttackFresh,attackNow,resetAttackState,enforceTrapFirewall,normaliseAttackBoundary});
+  window.CCGLostSizzlerV142R58CombatTrapCore=Object.freeze({version:"V10.42-r58-combat-trap-core",state,trapContacts,attackKeysDown,trapActive,trapCycleId,rearmTrapContacts,applyTrapDamage,triggerTrap:triggerTrapFresh,updateTrapContacts,firePlayer:firePlayerFresh,queueAttack:queueAttackFresh,attackNow,resetAttackState,enforceTrapFirewall,normaliseAttackBoundary});
 })();
