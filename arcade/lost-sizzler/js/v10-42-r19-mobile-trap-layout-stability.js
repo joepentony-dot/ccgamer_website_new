@@ -568,6 +568,8 @@
 
   function tick(){
     installPortraitLayout();
+    const core=window.CCGLostSizzlerV142R58CombatTrapCore;
+    if(core){syncPortraitCanvasAspect();return}
     installTrapDamageOwner();
     installTrapTriggerOwner();
     updateTrapContacts("monitor");
