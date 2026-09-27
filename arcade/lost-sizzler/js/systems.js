@@ -277,7 +277,7 @@ window.CCGSystems=(()=>{
     const floor=Math.max(1,run?.floor||1),count=floor>=3?2:1,busy=new Set([world.startRoomId,world.exitRoomId,host.sigilRoomId,host.trader?.roomId,host.startShop?.roomId,host.spiderNest?.roomId].filter(x=>x!=null));
     for(const g of host.generators||[])busy.add(g.roomId);for(const a of host.arenas||[])busy.add(a.roomId);for(const t of host.timedRooms||[])busy.add(t.roomId);if(host.rescue)busy.add(host.rescue.roomId);if(host.guardian)busy.add(W.roomAt(world,host.guardian.x,host.guardian.y));
     for(const feature of [host.bloodClue,host.memoryPuzzle,host.sequenceTorchPuzzle,host.weightBridge])if(feature?.roomId!=null)busy.add(feature.roomId);
-    const hardHazardEligible=(room,minW=6,minH=5)=>Boolean(room&&!room.sanctuary&&!room.sigilRoom&&!room.spiderNest&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=minW&&room.h>=minH),hazardEligible=(room,minW=8,minH=7)=>Boolean(hardHazardEligible(room,minW,minH)&&!busy.has(room.id)),reservedHazardRooms=(world.rooms||[]).filter(room=>Boolean(room?.dedicatedHazardReserved&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=3&&room.h>=3)),reservedHazardRoomIds=new Set(reservedHazardRooms.map(room=>room.id)),primaryHazardRooms=rooms.filter(room=>!reservedHazardRoomIds.has(room.id)&&hazardEligible(room)),fallbackHazardRooms=reservedHazardRooms.length+primaryHazardRooms.length>=count?[]:(world.rooms||[]).filter(room=>hazardEligible(room)&&!reservedHazardRoomIds.has(room.id)&&!primaryHazardRooms.some(candidate=>candidate.id===room.id)),strictHazardRoomIds=new Set([...reservedHazardRooms,...primaryHazardRooms,...fallbackHazardRooms].map(room=>room.id)),relaxedHazardRooms=reservedHazardRooms.length+primaryHazardRooms.length+fallbackHazardRooms.length>=count?[]:(world.rooms||[]).filter(room=>hazardEligible(room,6,5)&&!strictHazardRoomIds.has(room.id)),shuffleHazardRooms=list=>list.map(room=>({room,key:world.random()})).sort((a,b)=>a.key-b.key),choices=[...shuffleHazardRooms(reservedHazardRooms),...shuffleHazardRooms(primaryHazardRooms),...shuffleHazardRooms(fallbackHazardRooms),...shuffleHazardRooms(relaxedHazardRooms)],types=["blade","embers","arrows"];host.hazardRooms=[];
+    const hardHazardEligible=(room,minW=6,minH=5)=>Boolean(room&&!room.sanctuary&&!room.sigilRoom&&!room.spiderNest&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=minW&&room.h>=minH),hazardEligible=(room,minW=8,minH=7)=>Boolean(hardHazardEligible(room,minW,minH)&&!busy.has(room.id)),reservedHazardRooms=(world.rooms||[]).filter(room=>Boolean(room?.dedicatedHazardReserved&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=2&&room.h>=2)),reservedHazardRoomIds=new Set(reservedHazardRooms.map(room=>room.id)),primaryHazardRooms=rooms.filter(room=>!reservedHazardRoomIds.has(room.id)&&hazardEligible(room)),fallbackHazardRooms=reservedHazardRooms.length+primaryHazardRooms.length>=count?[]:(world.rooms||[]).filter(room=>hazardEligible(room)&&!reservedHazardRoomIds.has(room.id)&&!primaryHazardRooms.some(candidate=>candidate.id===room.id)),strictHazardRoomIds=new Set([...reservedHazardRooms,...primaryHazardRooms,...fallbackHazardRooms].map(room=>room.id)),relaxedHazardRooms=reservedHazardRooms.length+primaryHazardRooms.length+fallbackHazardRooms.length>=count?[]:(world.rooms||[]).filter(room=>hazardEligible(room,6,5)&&!strictHazardRoomIds.has(room.id)),shuffleHazardRooms=list=>list.map(room=>({room,key:world.random()})).sort((a,b)=>a.key-b.key),choices=[...shuffleHazardRooms(reservedHazardRooms),...shuffleHazardRooms(primaryHazardRooms),...shuffleHazardRooms(fallbackHazardRooms),...shuffleHazardRooms(relaxedHazardRooms)],types=["blade","embers","arrows"];host.hazardRooms=[];
     const ordinaryTrapKinds=["fire","spike","shock"];
     const activeTrapKind=(trap,kind)=>Boolean(trap?.active)&&String(trap.kind||"").toLowerCase()===kind;
     const preservesOrdinaryTrapKinds=room=>ordinaryTrapKinds.every(kind=>(host.traps||[]).some(trap=>trap.roomId!==room.id&&activeTrapKind(trap,kind)));
@@ -330,6 +330,40 @@ window.CCGSystems=(()=>{
       const hazard={id:`hazard-${floor}-${i}`,roomId:room.id,type,cells,groups,period:type==="arrows"?2050:type==="blade"?2300:2550,warningMs:type==="arrows"?780:700,activeMs:type==="embers"?760:560,phase:Math.floor(world.random()*1200),title:type==="blade"?"PENDULUM BLADE GALLERY":type==="embers"?"EMBER-TILE VAULT":"ARROW-SLIT CROSSING"};host.hazardRooms.push(hazard);room.dedicatedHazard=true;room.hazardType=type;room.dangerous=true;
       host.traps=(host.traps||[]).filter(trap=>trap.roomId!==room.id||preservedTrapIds.has(trap.id));
       const q=freeInRoom(world,room,used),hp=10+floor*2,armour=5+floor;host.enemies.push({id:`archive-knight-${floor}-${i}`,...q,kind:"knight",hp,maxHp:hp,armor:armour,maxArmor:armour,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:980,attackCooldown:800,chargeCooldown:999999,healCooldown:999999,flash:0,hpBarMs:0,knight:true,meleeOnly:true,moveSpeedScale:1.18})
+    }
+
+    // Dedicated hazards are a floor invariant. Extremely compact or heavily
+    // claimed layouts must still leave the reserved room authoritative. If the
+    // normal candidate pass produced fewer hazards than required, install a
+    // compact emergency hazard into an unused reserved/non-start/non-exit room.
+    while((host.hazardRooms||[]).length<count){
+      const usedHazardRooms=new Set((host.hazardRooms||[]).map(h=>h.roomId));
+      const room=(world.rooms||[]).find(candidate=>
+        candidate?.dedicatedHazardReserved
+        && candidate.id!==world.startRoomId
+        && candidate.id!==world.exitRoomId
+        && !usedHazardRooms.has(candidate.id)
+        && candidate.w>=2&&candidate.h>=2
+      )||(world.rooms||[]).find(candidate=>
+        candidate
+        && candidate.id!==world.startRoomId
+        && candidate.id!==world.exitRoomId
+        && !usedHazardRooms.has(candidate.id)
+        && !candidate.sanctuary
+        && !candidate.sigilRoom
+        && !candidate.spiderNest
+        && candidate.w>=2&&candidate.h>=2
+      )||null;
+      if(!room)break;
+      const i=host.hazardRooms.length,type=types[(floor+i)%types.length],groups=type==="embers"?2:type==="blade"?3:4,cells=[];
+      for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++){
+        const group=type==="embers"?(x+y)%2:type==="blade"?(x-room.x)%3:(y-room.y)%4;
+        cells.push({x,y,group});
+      }
+      if(!cells.length)cells.push({x:Math.max(room.x,Math.min(room.x+room.w,Math.floor(room.x+room.w/2))),y:Math.max(room.y,Math.min(room.y+room.h,Math.floor(room.y+room.h/2))),group:0});
+      const hazard={id:`hazard-${floor}-emergency-${i}`,roomId:room.id,type,cells,groups,period:type==="arrows"?2050:type==="blade"?2300:2550,warningMs:type==="arrows"?780:700,activeMs:type==="embers"?760:560,phase:Math.floor(world.random()*1200),title:type==="blade"?"PENDULUM BLADE GALLERY":type==="embers"?"EMBER-TILE VAULT":"ARROW-SLIT CROSSING"};
+      host.hazardRooms.push(hazard);
+      room.dedicatedHazard=true;room.hazardType=type;room.dangerous=true;
     }
 
     // Dedicated hazard rooms may replace ordinary trap placements. The public
@@ -399,17 +433,26 @@ window.CCGSystems=(()=>{
     const hazardReserveCompact=hazardReserveSort(rooms.filter(room=>room&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=3&&room.h>=3&&!hazardReserveLargeIds.has(room.id)));
     const hazardReserveNonOptionalIds=new Set([...hazardReserveLarge,...hazardReserveCompact].map(room=>room.id));
     const hazardReserveOptional=hazardReserveSort((world.rooms||[]).filter(room=>room?.optional&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=3&&room.h>=3&&!hazardReserveNonOptionalIds.has(room.id)));
+    const hazardReservePreferredIds=new Set([...hazardReserveLarge,...hazardReserveCompact,...hazardReserveOptional].map(room=>room.id));
+    const hazardReserveTiny=hazardReserveSort(rooms.filter(room=>room&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=2&&room.h>=2&&!hazardReservePreferredIds.has(room.id)));
+    const hazardReserveTinyIds=new Set(hazardReserveTiny.map(room=>room.id));
+    const hazardReserveOptionalTiny=hazardReserveSort((world.rooms||[]).filter(room=>room?.optional&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=2&&room.h>=2&&!hazardReservePreferredIds.has(room.id)&&!hazardReserveTinyIds.has(room.id)));
+    const hazardReserveCoveredIds=new Set([...hazardReservePreferredIds,...hazardReserveTinyIds,...hazardReserveOptionalTiny.map(room=>room.id)]);
+    const hazardReserveAnyTiny=hazardReserveSort((world.rooms||[]).filter(room=>room&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=2&&room.h>=2&&!hazardReserveCoveredIds.has(room.id)));
     const hazardReservePriority=list=>[
       ...list.filter(room=>!hauntedCorridorRoomIds.has(room.id)),
       ...list.filter(room=>hauntedCorridorRoomIds.has(room.id))
     ];
-    // Dedicated hazard count is mandatory. Prefer large non-optional rooms, then
-    // compact non-optional rooms, and only then optional rooms. Haunted-corridor
-    // identity is soft within each tier; start/exit are always excluded.
+    // Dedicated hazard count is mandatory. Prefer large/compact rooms first.
+    // A final 2x2 emergency tier covers unusually narrow generated floors while
+    // still excluding start/exit and reserving the room before later owners.
     const hazardReserveRooms=[
       ...hazardReservePriority(hazardReserveLarge),
       ...hazardReservePriority(hazardReserveCompact),
-      ...hazardReservePriority(hazardReserveOptional)
+      ...hazardReservePriority(hazardReserveOptional),
+      ...hazardReservePriority(hazardReserveTiny),
+      ...hazardReservePriority(hazardReserveOptionalTiny),
+      ...hazardReservePriority(hazardReserveAnyTiny)
     ].slice(0,hazardReserveCount);
     const hazardReservedRoomIds=new Set(hazardReserveRooms.map(room=>room.id));
     for(const room of hazardReserveRooms)room.dedicatedHazardReserved=true;

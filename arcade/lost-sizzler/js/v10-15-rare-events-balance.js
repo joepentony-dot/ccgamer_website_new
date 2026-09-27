@@ -138,11 +138,12 @@
       const key=trapKey(trap,player),occupied=Boolean(trap.active&&trap.x===player.x&&trap.y===player.y),active=occupied&&trapIsActive(trap,now);
       if(!active){trapRuntime.contact.delete(key);continue}
       if(trapRuntime.contact.has(key))continue;
+      const kind=String(trap.kind||"floor"),beforeHealth=Number(player.health||0);
+      try{hurtPlayer(player,1,false,`${kind} trap`)}catch(_){}
+      if(Number(player.health||0)>=beforeHealth)continue;
       trapRuntime.contact.add(key);
-      const kind=String(trap.kind||"floor");
       try{S.sfx("trap")}catch(_){}
       try{showToast(`${kind.toUpperCase()} TRAP`,`Active trap triggered. -1 health.`,"red",6500)}catch(_){}
-      try{hurtPlayer(player,1,false,`${kind} trap`)}catch(_){}
       hit=true;
     }
     return hit;

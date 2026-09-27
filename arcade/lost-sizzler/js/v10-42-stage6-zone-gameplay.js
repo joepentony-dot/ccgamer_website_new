@@ -212,12 +212,59 @@
       });
     });
   }
+  function ensureDedicatedHazard(worldState,hostState,runState,profile,seed){
+    if((hostState?.hazardRooms||[]).length)return false;
+    const candidates=(worldState?.rooms||[]).filter(room=>
+      room
+      && room.id!==worldState?.startRoomId
+      && room.id!==worldState?.exitRoomId
+      && !room.sigilRoom
+      && !room.spiderNest
+      && Number(room.w)>=2
+      && Number(room.h)>=2
+    ).sort((a,b)=>
+      Number(Boolean(b.dedicatedHazardReserved))-Number(Boolean(a.dedicatedHazardReserved))
+      || Number(Boolean(a.sanctuary))-Number(Boolean(b.sanctuary))
+      || (Number(b.w)*Number(b.h))-(Number(a.w)*Number(a.h))
+      || hash32(`${seed}|stage6-hazard|${a.id}`)-hash32(`${seed}|stage6-hazard|${b.id}`)
+    );
+    const room=candidates[0]||null;
+    if(!room)return false;
+    const floor=floorOf(runState),types=["blade","embers","arrows"],type=types[floor%types.length],groups=type==="embers"?2:type==="blade"?3:4,cells=[];
+    for(let y=Number(room.y)+1;y<Number(room.y)+Number(room.h);y++){
+      for(let x=Number(room.x)+1;x<Number(room.x)+Number(room.w);x++){
+        if(worldState?.map?.[y]?.[x]!==0)continue;
+        const group=type==="embers"?(x+y)%2:type==="blade"?(x-Number(room.x))%3:(y-Number(room.y))%4;
+        cells.push({x,y,group});
+      }
+    }
+    if(!cells.length){
+      const x=Math.round(Number(room.x)+Number(room.w)/2),y=Math.round(Number(room.y)+Number(room.h)/2);
+      if(worldState?.map?.[y]?.[x]===0)cells.push({x,y,group:0});
+    }
+    if(!cells.length)return false;
+    const hazard={
+      id:`hazard-${floor}-stage6-emergency`,roomId:room.id,type,cells,groups,
+      period:type==="arrows"?2050:type==="blade"?2300:2550,
+      warningMs:type==="arrows"?780:700,activeMs:type==="embers"?760:560,
+      phase:hash32(`${seed}|stage6-hazard-phase|${room.id}`)%1200,
+      title:type==="blade"?"PENDULUM BLADE GALLERY":type==="embers"?"EMBER-TILE VAULT":"ARROW-SLIT CROSSING"
+    };
+    hostState.hazardRooms=hostState.hazardRooms||[];
+    hostState.hazardRooms.push(hazard);
+    room.dedicatedHazard=true;room.dedicatedHazardReserved=true;room.hazardType=type;room.dangerous=true;
+    tuneHazard(hazard,profile,seed,worldState);
+    state.hazardsTuned++;
+    return true
+  }
+
   function applyZoneGameplay(worldState,hostState,runState){
     if(!worldState||!hostState||!runState)return hostState;
     const floor=floorOf(runState),profile=profileForFloor(floor),seed=String(runState.seed||"CCG");
     for(const enemy of hostState.enemies||[]){tuneGuardian(enemy,profile);tuneEnemy(enemy,profile,seed,worldState)}
     (hostState.traps||[]).forEach((trap,index)=>tuneTrap(trap,index,profile,seed,worldState));
     reconcileTrapFamilies(hostState,seed,worldState,{...profile,floor});
+    ensureDedicatedHazard(worldState,hostState,runState,profile,seed);
     for(const hazard of hostState.hazardRooms||[])tuneHazard(hazard,profile,seed,worldState);
     for(const generator of hostState.generators||[])tuneGenerator(generator,profile);
     hostState.v142ZoneGameplay={

@@ -39,7 +39,7 @@ assert.match(render,/chests:make\("assets\/pixel\/chest-sheet-v10-34\.png"\)/,"R
 assert.match(render,/meta\[name="ccg-lost-sizzler-cache"\]/,"R54 renderer must derive its sprite cache identity from the canonical page token");
 assert.match(render,/image\.src=`\$\{packageRoot\}\$\{path\}\?v=\$\{encodeURIComponent\(cache\)\}`/,"R54 renderer must append the canonical cache token to package-aware sprite paths");
 assert.match(render,/image\.fetchPriority="high"/,"R54 sprite sheets must receive high fetch priority");
-assert.match(html,/rel="preload" as="image" href="assets\/pixel\/chest-sheet-v10-34\.png\?v=20260925r57" fetchpriority="high"/,"canonical page must preload the established chest artwork");
+assert.match(html,/rel="preload" as="image" href="assets\/pixel\/chest-sheet-v10-34\.png\?v=20260925r58" fetchpriority="high"/,"canonical page must preload the established chest artwork");
 assert.match(render,/function drawMerchantNpc\(t,s,col\)/,"shops must render a merchant character rather than only a generic shop block");
 assert.match(render,/PLAYER_WALK_RENDER_SEQUENCE=Object\.freeze\(\[/,"player animation must expose expanded renderer-owned walk cadence");
 assert.match(render,/PLAYER_MELEE_RENDER_SEQUENCE=Object\.freeze\(\[/,"player animation must expose expanded renderer-owned melee cadence");

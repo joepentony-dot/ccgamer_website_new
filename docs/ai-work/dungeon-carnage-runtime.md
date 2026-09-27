@@ -1,3 +1,12 @@
+## R58 verified ordinary-trap health ownership — 25 September 2026
+
+- R57 FIRE repair is merged on main at `1e9ced56d538f535b846e495d4baf5e02fe470a5`; its exact-head full qualification passed. Deployed hands-on FIRE confirmation remains required.
+- The next live P0 is the manually reproduced ordinary `SPIKE TRAP — ACTIVE` contact with no HEALTH loss.
+- Root-cause repair is bounded to false-success/latch semantics: the legacy reliable-trap owner could add its contact latch before damage was proved, R19 accepted a newer hurt timestamp as success even when HEALTH did not fall, and the base movement diagnostic could emit `ccg:trap-damage` from a timestamp alone.
+- R58 requires actual HEALTH loss before any ordinary floor-trap contact is latched or reported as verified. A failed active contact therefore remains retryable in the same active cycle; R19 synchronises the canonical contact latch only after real HP loss.
+- Chromium coverage extends the real movement-path FIRE/SPIKE/SHOCK crossing contract with a deliberately blocked HEALTH write that still advances the damage timestamp. That pseudo-hit must not latch or emit a verified trap signal, and the same active SPIKE contact must then successfully retry for exactly one HEALTH.
+- Candidate branch: `codex/dungeon-r58-verified-trap-damage-20260925`. Release/cache identity advances to `V10.42 r58` / `20260925r58`. Full exact-head six-shard qualification and deployed hands-on SPIKE acceptance remain mandatory before closure.
+
 ## R57 deployed FIRE lockout recovery — 25 September 2026
 
 - Deployed V10.42 r56 bug-report evidence captured a sustained complete attack lockout: 52 attack anomalies, full 120 ammo, zero live projectiles, zero hit-stun and repeated 650–700 ms attack buffers while the existing deep-owner fallback recorded 15 attempts with 0 successes.

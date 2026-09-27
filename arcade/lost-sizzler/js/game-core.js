@@ -111,6 +111,13 @@ function reveal(p){let ex=explored.get(p.id);if(!ex){ex=new Set();explored.set(p
 function markRoomVisit(p){const id=W.roomAt(world,p.x,p.y);if(id<0)return;host.enteredRoomIds=host.enteredRoomIds||[];if(!host.enteredRoomIds.includes(id))host.enteredRoomIds.push(id);let set=roomVisits.get(p.id);if(!set){set=new Set();roomVisits.set(p.id,set)}if(!set.has(id)){set.add(id);const ex=explored.get(p.id)||new Set(),room=world.rooms[id],cx=Math.floor(room.x+room.w/2),cy=Math.floor(room.y+room.h/2);ex.add(`${cx},${cy}`);explored.set(p.id,ex);run.stats.rooms++;checkMapRewards(p)}}
 function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
   const old1=preserve?p1:null,old2=preserve?p2:null;if(run)run.playerLevelHint=Math.max(1,old1?.level||p1?.level||1);world=W.generate(seed);world.floor=run?.floor||1;window.__CCG_WORLD=world;host=W.createHostState(world);SYS.decorate(world,host,run||PGR.makeRun());
+  /* Stage 6 normally owns the SYS.decorate wrapper, but later runtime owner
+     adoption can replace that wrapper before a Solo run starts. Dedicated
+     hazards are a generated-floor invariant, so reconcile the already-created
+     host once here if that ownership hand-off left the floor without one. */
+  if(!(host.hazardRooms||[]).length){
+    try{window.CCGLostSizzlerV142Stage6ZoneGameplay?.applyZoneGameplay?.(world,host,run||PGR.makeRun())}catch(error){console.error("[Dungeon Carnage] dedicated hazard reconciliation failed",error)}
+  }
   p1=old1?preservePlayer(old1,world.start.x,world.start.y):makePlayer(net.sessionId,playerName(),world.start.x,world.start.y);p2=null;if(split||old2){const q=nearbyOpen(world.start.x+2,world.start.y,[p1]);p2=old2?preservePlayer(old2,q.x,q.y):makePlayer("LOCAL-P2","PLAYER 2",q.x,q.y)}
   remote.clear();enemyVisuals.clear();bullets.length=enemyBullets.length=particles.length=rings.length=floaters.length=hazards.length=0;pendingItems.clear();cameras.clear();explored.clear();campStates.clear();roomVisits.clear();playerTrails.clear();questDone.clear();toastQueue.length=0;toastTimer=0;stats.games=stats.elites=stats.doors=stats.weapons=stats.secrets=stats.generators=0;shake=damageFlash=0;move1=move2=fire1=fire2=fireBuffer1=fireBuffer2=0;specialCD=0;inventoryReminderMs=300000;
   host.worldRef=world;host.enteredRoomIds=[];for(const p of localPlayers()){resetCamp(p);reveal(p);if(checkpointRestore){const rid=W.roomAt(world,p.x,p.y),set=new Set();if(rid>=0){set.add(rid);host.enteredRoomIds.push(rid)}roomVisits.set(p.id,set)}else markRoomVisit(p);rememberTrail(p);updateRoomMessage(p,true)}levelQueue.length=0;for(const p of localPlayers())rememberPendingLevelChoice(p);A.stageUnenteredEnemies?.(host,world);sync();
