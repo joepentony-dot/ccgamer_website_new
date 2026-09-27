@@ -512,12 +512,9 @@
     const holdFire = (button, event) => {
       button.setPointerCapture?.(event.pointerId);
       const tutorialActive=document.body?.dataset?.tutorialActive==="true";
-      let handled=false;
-      try{handled=window.CCGLostSizzlerV142R20LiveRegressionStability?.attackNow?.("Space")===true}catch(_){}
-      // Tutorial FIRE is an intentional one-action lesson. Do not leave a
-      // buffer or held key behind after its direct press: either would turn
-      // one tap into a later cooldown-repeat. Normal play keeps hold-to-fire.
-      if(!tutorialActive&&!handled&&typeof queueAttack === "function") queueAttack(p1);
+      if(typeof queueAttack === "function") queueAttack(p1);
+      // Tutorial FIRE is an intentional one-action lesson. Normal play keeps
+      // the canonical Space hold so repeated fire uses the same core cadence.
       if(!tutorialActive&&typeof input !== "undefined") input.add("Space");
       button.classList.add("held");
     };
