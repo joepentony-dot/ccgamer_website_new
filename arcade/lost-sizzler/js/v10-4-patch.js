@@ -512,7 +512,9 @@
     const holdFire = (button, event) => {
       button.setPointerCapture?.(event.pointerId);
       const tutorialActive=document.body?.dataset?.tutorialActive==="true";
-      if(typeof queueAttack === "function") queueAttack(p1);
+      if(tutorialActive){
+        window.CCGLostSizzlerV142R58AuthoritativeFireCore?.attackNow?.();
+      }else if(typeof queueAttack === "function") queueAttack(p1);
       // Tutorial FIRE is an intentional one-action lesson. Normal play keeps
       // the canonical Space hold so repeated fire uses the same core cadence.
       if(!tutorialActive&&typeof input !== "undefined") input.add("Space");
