@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "YouTube Data API v3. Verified title, description, thumbnail, uploadDate and duration support video discovery; uploadDate and duration are only emitted into VideoObject when verified here.",
-  "updatedAt": "2026-09-24T19:50:48.614Z",
+  "updatedAt": "2026-09-28T18:19:44.016Z",
   "videos": {
     "_0bKM3s0SMs": {
       "title": "The New Zealand Story C64 – Did Ocean Nail the Arcade Conversion?",
@@ -369,6 +369,15 @@
       "uploadDate": "2024-02-27T18:30:03Z",
       "duration": "PT6M7S",
       "thumbnailUrl": "https://i.ytimg.com/vi/1nFRTpvEVa4/maxresdefault.jpg",
+      "channelTitle": "Cheeky Commodore Gamer",
+      "verifiedBy": "youtube-data-api-v3"
+    },
+    "1oUrlC_BEos": {
+      "title": "Traffic C64 – The Game That Put YOU in Charge of London",
+      "description": "🕹️ Traffic (1984) – Commodore 64 Strategy Game by Andromeda Software\nTraffic is one of the stranger ideas to appear on the Commodore 64 in 1984. Developed by Hungarian studio Andromeda Software and published in the UK by Quicksilva, this is a game where London’s road network is handed over to you — and all you’ve got to keep everything moving are a collection of traffic lights and increasingly questionable judgement.\n\n🌐 Explore more Commodore 64 games on the CCG website:\n👉 https://www.cheekycommodoregamer.co.uk/games/traffic\n\nCars, buses and motorbikes pour into the road network from different directions while you switch junctions between red and green. Let the queues build too far beyond the edges of the screen and it’s game over. There are no weapons, monsters or heroic rescues here. You’re basically attempting to prevent London from grinding to a complete standstill.\n\nAnd it gets surprisingly frantic. What begins as a few simple junctions soon becomes a constant battle of deciding which queue needs attention first, which lights need changing and which unfortunate motorists are going to have to sit there while you deal with something more urgent. Contemporary reviewers were fairly divided over Traffic, which perhaps isn’t surprising considering how unusual the whole thing was.\n\nThere’s also an interesting bit of gaming history behind it. Traffic came from Hungary during the early years of Hungarian developers such as Andromeda and Novotrade finding routes into Western computer-game markets — making this odd little traffic-management game part of a much bigger story than its rudimentary London streets might suggest.\n\nFor this video I’m going back to Traffic on the Commodore 64 to find out how it actually plays more than forty years later. Can I keep London moving, or will handing the traffic lights to the Cheeky Commodore Gamer turn the capital into one enormous queue?\n\n💬 Did you ever play Traffic on the C64, or is this the first time you’ve seen it?\n💬 How long do you think you could keep London moving before everything ground to a halt?\n\n▶️ RELATED PLAYLISTS\nhttps://www.youtube.com/playlist?list=PL_TYjnCNYSexlU7i4H3MRL0tb8DdmE-tv\nhttps://www.youtube.com/playlist?list=PL_TYjnCNYSezoJyqs8AR8V88DMuL311Nn\n\n💙 SUPPORT & CONNECT\nPatreon: https://www.patreon.com/CheekyCommodoreGamer\nJoin: https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join\nTwitter: https://twitter.com/CheekyC64Gamer\nFacebook: https://facebook.com/cheekycommodoregamer\nDiscord: https://discord.gg/83Xw9ktAn4\nWebsite: https://www.cheekycommodoregamer.co.uk\n\n#traffic #commodore64 #c64 #retrogaming #quicksilva\n\nVIDEO TAGS",
+      "uploadDate": "2026-09-28T17:30:07Z",
+      "duration": "PT8M7S",
+      "thumbnailUrl": "https://i.ytimg.com/vi/1oUrlC_BEos/maxresdefault.jpg",
       "channelTitle": "Cheeky Commodore Gamer",
       "verifiedBy": "youtube-data-api-v3"
     },

@@ -43,7 +43,7 @@ assert.match(grants,/ccg_award_badge_code\(uuid, text\)[\s\S]*?from public, anon
 assert.match(invoker,/get_lost_sizzler_badge_catalog\(\) security invoker/,"the Lost Sizzler catalogue reader must not retain unnecessary elevated rights");
 assert.match(invoker,/get_member_badge_catalog\(\) security invoker/,"the combined Member Hub catalogue reader must not retain unnecessary elevated rights");
 
-assert.match(member,/orderedLostSizzlerEntries/,"the private Member Hub must render the Lost Sizzler catalogue");
+assert.match(member,/orderedDungeonCarnageEntries/,"the private Member Hub must render the current C64 Dungeon Carnage catalogue");
 assert.match(member,/LS_CITADEL_PLATINUM/,"the Member Hub must give the Lost Sizzler Platinum badge its completion styling");
 assert.match(publicMember,/key === 'LS_CITADEL_PLATINUM'/,"public profiles must display Lost Sizzler Platinum as a completion badge");
 

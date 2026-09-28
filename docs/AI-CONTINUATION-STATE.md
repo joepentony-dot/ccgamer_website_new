@@ -1,3 +1,13 @@
+## Member Hub Dungeon Carnage badge audit — 28 September 2026
+
+- Profile badge catalogue audit found 89 active legacy game definitions still presented under the retired Lost Sizzler identity, including unsupported Split Screen, online co-op and Weekly Vault completion badges.
+- Production Supabase migration `20260928174100_dungeon_carnage_profile_badge_catalog` is applied. It preserves historical `LS_` award keys, retires five obsolete/unbacked definitions instead of deleting earned history, and leaves 84 current game achievements active.
+- Current five-depth campaign copy is reconciled to The Threshold, Iron Keep, Moss Crypt, Ember Depths and Sigil Sanctum; the final objective is presented as the Sigil ritual/escape rather than the old generic Exit Sigil wording.
+- Three account-backed milestones were added because they can be awarded from existing Member Hub data: Century Critic (100 ratings), Community Regular (25 comments) and Mega Archive (250 library games).
+- Frontend branch `codex/profile-dungeon-carnage-badge-audit-20260928` changes only Member Hub badge presentation/cache/audit/docs plus the recorded migration; it deliberately does not touch active Dungeon runtime ownership while R64 P0 work is in flight.
+- Database verification: 84 active game badge definitions, 5 retired, 0 active names/descriptions containing "Lost Sizzler"; badge catalog RPC remains authenticated-only.
+- Do not merge this branch without explicit user authorization. Run Site Safety / Member Achievements audit and reconcile against latest main before merge.
+
 ## Dungeon R64 P0 runtime integrity — 28 September 2026
 
 - User reproduced another deployed r62 freeze. The browser/event loop remained alive enough to emit periodic diagnostics and focus/blur events while gameplay stopped, so treat this as a simulation/RAF liveness failure rather than a full browser crash.
