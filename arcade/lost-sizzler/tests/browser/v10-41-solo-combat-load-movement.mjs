@@ -59,34 +59,54 @@ try{
   assert.ok(ordering.movement>=0&&ordering.fire>=0,"the canonical game-play.js update source must expose keyboard movement and firing blocks");
   assert.ok(ordering.movement<ordering.fire,`keyboard movement must be serviced before firing work in the canonical frame: ${JSON.stringify(ordering)}`);
 
-  const faultBefore=await page.evaluate(()=>({
+  const ownershipBefore=await page.evaluate(()=>({
     updateFaults:Number(window.CCGLostSizzlerV141R29?.state?.updateFaults||0),
     mana:Number(p1.mana||0),fire:Number(fire1||0),
     bullets:(bullets||[]).filter(projectile=>projectile?.ttl>0&&projectile.owner===p1.id).length
   }));
   await page.evaluate(()=>{
     window.__ccgSoloCombatLoadRealSpawnBullet=spawnBullet;
-    spawnBullet=function soloCombatLoadInjectedSpawnFault(){throw new Error("LS-0826-18 injected projectile-spawn fault")};
+    spawnBullet=function legacySpawnWrapperMustNotOwnCanonicalFire(){throw new Error("legacy spawn wrapper intercepted canonical FIRE")};
     move1=0;fire1=0;fireBuffer1=0;input.clear();p1.hitStunMs=0;p1.mana=Math.max(20,Number(p1.maxMana||0));
   });
-  const transactionalBefore=await page.evaluate(()=>({mana:Number(p1.mana||0),fire:Number(fire1||0),bullets:(bullets||[]).filter(projectile=>projectile?.ttl>0&&projectile.owner===p1.id).length}));
+  const isolatedBefore=await page.evaluate(()=>({mana:Number(p1.mana||0),bullets:(bullets||[]).filter(projectile=>projectile?.ttl>0&&projectile.owner===p1.id).length,fireAnimAt:Number(p1._fireAnimAt||0)}));
   await page.keyboard.down(direction.code);await page.keyboard.down("Space");await page.waitForTimeout(280);await page.keyboard.up("Space");await page.keyboard.up(direction.code);await page.waitForTimeout(80);
-  const faultResult=await page.evaluate(()=>{
+  const ownershipResult=await page.evaluate(()=>{
     const result={
       x:p1.x,y:p1.y,
       updateFaults:Number(window.CCGLostSizzlerV141R29?.state?.updateFaults||0),
-      mana:Number(p1.mana||0),fire:Number(fire1||0),
-      bullets:(bullets||[]).filter(projectile=>projectile?.ttl>0&&projectile.owner===p1.id).length
+      mana:Number(p1.mana||0),
+      bullets:(bullets||[]).filter(projectile=>projectile?.ttl>0&&projectile.owner===p1.id).length,
+      fireAnimAt:Number(p1._fireAnimAt||0)
     };
     if(window.__ccgSoloCombatLoadRealSpawnBullet){spawnBullet=window.__ccgSoloCombatLoadRealSpawnBullet;delete window.__ccgSoloCombatLoadRealSpawnBullet}
     input.clear();return result;
   });
-  assert.notDeepEqual({x:faultResult.x,y:faultResult.y},{x:direction.x,y:direction.y},"a projectile-spawn failure must not prevent the held movement key being serviced first");
-  assert.equal(faultResult.updateFaults,faultBefore.updateFaults,"transactional FIRE must contain a projectile-spawn failure inside the FIRE owner rather than faulting the whole update frame");
-  assert.equal(faultResult.mana,transactionalBefore.mana,"failed projectile creation must not consume ammo");
-  assert.equal(faultResult.fire,transactionalBefore.fire,"failed projectile creation must not consume FIRE cooldown");
-  assert.equal(faultResult.bullets,transactionalBefore.bullets,"failed projectile creation must not leave a partial projectile behind");
+  assert.notDeepEqual({x:ownershipResult.x,y:ownershipResult.y},{x:direction.x,y:direction.y},"legacy projectile wrappers must not prevent the held movement key being serviced");
+  assert.equal(ownershipResult.updateFaults,ownershipBefore.updateFaults,"legacy projectile wrappers must not fault the authoritative update frame");
+  assert.ok(ownershipResult.mana<isolatedBefore.mana,"canonical FIRE must spend ammo even when a legacy spawnBullet wrapper is broken");
+  assert.ok(ownershipResult.bullets>isolatedBefore.bullets||ownershipResult.fireAnimAt>isolatedBefore.fireAnimAt,"canonical FIRE must create or visibly commit a shot without using the mutable legacy spawnBullet owner");
 
+  await prepareSolo(page,"R59-RAPID-PHYSICAL-TAPS");
+  const tapDirection=await directionFor(page);assert.ok(tapDirection,"rapid FIRE regression needs one walkable adjacent tile");
+  const tapBefore=await page.evaluate(()=>{
+    p1.weapon={...baseWeapon(),name:"TIER 2 · Field Pulse II",displayName:"TIER 2 · Field Pulse II",rating:3,power:1,shots:1};
+    p1.firearmUnlocked=true;p1.hitStunMs=0;p1.mana=Math.max(100,Number(p1.maxMana||0));fire1=0;fireBuffer1=0;bullets.length=0;input.clear();
+    return{mana:Number(p1.mana||0),fireAnimAt:Number(p1._fireAnimAt||0)};
+  });
+  await page.keyboard.down(tapDirection.code);
+  for(let n=0;n<8;n++){
+    await page.keyboard.down("Space");await page.waitForTimeout(45);await page.keyboard.up("Space");await page.waitForTimeout(125);
+  }
+  await page.keyboard.up(tapDirection.code);await page.waitForTimeout(80);
+  const tapAfter=await page.evaluate(()=>({
+    mana:Number(p1.mana||0),fireAnimAt:Number(p1._fireAnimAt||0),buffer:Number(fireBuffer1||0),
+    projectiles:(bullets||[]).filter(projectile=>projectile?.ttl>0&&projectile.owner===p1.id).length,
+    mode:String(mode)
+  }));
+  assert.equal(tapAfter.mode,"playing","rapid physical FIRE taps must leave the Solo run active");
+  assert.ok(tapAfter.mana<tapBefore.mana,"rapid physical Space taps must fire at least one shot: "+JSON.stringify({tapBefore,tapAfter}));
+  assert.ok(tapAfter.fireAnimAt>tapBefore.fireAnimAt,"rapid physical Space taps must reach the canonical FIRE animation boundary: "+JSON.stringify({tapBefore,tapAfter}));
   await prepareSolo(page,"PHASE3-SOLO-SUSTAINED-FIRE");
   const loadedDirection=await directionFor(page);assert.ok(loadedDirection,"sustained-fire regression needs one walkable adjacent tile");
   const pressure=await page.evaluate(()=>{
@@ -98,13 +118,14 @@ try{
   });
   assert.ok(pressure.particles>=800&&pressure.rings>=80&&pressure.floaters>=100,"the sustained-fire scenario must create substantial effect pressure");
   await page.keyboard.down(loadedDirection.code);await page.keyboard.down("Space");await page.waitForTimeout(950);await page.keyboard.up("Space");await page.keyboard.up(loadedDirection.code);await page.waitForTimeout(100);
-  const loadedResult=await page.evaluate(()=>({x:p1.x,y:p1.y,mode,controller:window.CCGLostSizzlerModeRuntime?.snapshot?.().activeId||"",recovery:Number(window.CCGLostSizzlerV141R30?.state?.watchdogRecoveries||0)}));
+  const loadedResult=await page.evaluate(()=>({x:p1.x,y:p1.y,mode,controller:window.CCGLostSizzlerModeRuntime?.snapshot?.().activeId||"",recovery:Number(window.CCGLostSizzlerV141R30?.state?.watchdogRecoveries||0),mana:Number(p1.mana||0),fireAnimAt:Number(p1._fireAnimAt||0)}));
   assert.notDeepEqual({x:loadedResult.x,y:loadedResult.y},{x:loadedDirection.x,y:loadedDirection.y},"Dungeon Solo movement must continue while sustained fire and effect pressure are active");
   assert.equal(loadedResult.mode,"playing","combat pressure must not drop the Solo run out of playing state");
   assert.equal(loadedResult.controller,"dungeon-solo","combat pressure must not leak ownership into another game mode");
+  assert.ok(loadedResult.mana<100||loadedResult.fireAnimAt>0,"sustained FIRE under effect pressure must commit at least one real shot");
 
   assert.deepEqual(pageErrors,[],`Solo combat-load movement regression must have no uncaught browser errors: ${pageErrors.join("\n")}`);
-  console.log("Lost Sizzler LS-0826-18 Solo movement-before-fire, fire-fault isolation ordering and sustained combat-load regression passed in Chromium.");
+  console.log("Dungeon Carnage Solo canonical FIRE ownership, rapid physical taps, movement ordering and sustained combat-load regression passed in Chromium.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
