@@ -66,7 +66,7 @@
   }
 
   try{
-    if(typeof spawnBullet==="function"&&!spawnBullet.__ccgV142R1){
+    if(!window.CCGLostSizzlerV142R58AuthoritativeFireCore&&typeof spawnBullet==="function"&&!spawnBullet.__ccgV142R1){
       const baseSpawnBullet=spawnBullet;
       spawnBullet=function(b,remoteShot){if(b&&!Number.isFinite(Number(b.__v142BornAt)))b.__v142BornAt=now();return baseSpawnBullet(b,remoteShot)};
       spawnBullet.__ccgV142R1=true;spawnBullet.__ccgOriginal=baseSpawnBullet;
@@ -74,7 +74,7 @@
   }catch(_){}
 
   try{
-    if(typeof firePlayer==="function"&&!firePlayer.__ccgV142R1){
+    if(!window.CCGLostSizzlerV142R58AuthoritativeFireCore&&typeof firePlayer==="function"&&!firePlayer.__ccgV142R1){
       const baseFirePlayer=firePlayer;
       firePlayer=function(player,direction){repairCombatTimers();repairProjectilePool();return baseFirePlayer(player,direction)};
       firePlayer.__ccgV142R1=true;firePlayer.__ccgOriginal=baseFirePlayer;
