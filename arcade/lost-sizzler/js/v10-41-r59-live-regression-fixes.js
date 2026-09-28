@@ -57,6 +57,7 @@
         !window.CCGLostSizzlerSpecialModes?.active?.type&&!document.body?.dataset?.specialMode;
     }catch(_){return false}
   };
+  const soloRuntimeReady=()=>{try{return Boolean(p1&&host&&run&&world)}catch(_){return false}};
 
   function chainHas(fn,marker){
     const seen=new Set();let current=fn,depth=0;
@@ -119,6 +120,7 @@
     const now=perfNow();
     state.pauseBoundaries++;state.lastPauseReason=String(reason||"pause transition");
     state.suppressRecoveryUntil=Math.max(state.suppressRecoveryUntil,now+PAUSE_GUARD_MS);
+    state.lastAcceptedWallAt=now;
     setAcceptedRafTimestamp(null);
     state.lastMode=currentMode();
     state.soloLastElapsed=0;state.soloLastSteps=0;
@@ -158,7 +160,7 @@
     const hasTimestamp=finite(timestamp),t=hasTimestamp?Number(timestamp):perfNow();
     const accepted=state.lastAcceptedRafTimestamp,hasPreviousAccepted=accepted!==null&&accepted!==undefined&&finite(accepted);
     if(hasTimestamp&&hasPreviousAccepted&&t<=Number(accepted)){
-      noteDuplicateFrame();state.lastAcceptedWallAt=perfNow();
+      noteDuplicateFrame();
       return
     }
 
@@ -250,8 +252,9 @@
 
   function ensureLoopLiveness(){
     state.loopWatchdogChecks++;
-    if(!soloDungeonPlaying())return false;
+    if(!soloDungeonPlaying()||!soloRuntimeReady())return false;
     const now=perfNow(),last=Math.max(0,Number(state.lastAcceptedWallAt||0));
+    if(now<Math.max(0,Number(state.suppressRecoveryUntil||0)))return false;
     if(!last){state.lastAcceptedWallAt=now;return false}
     if(now-last<LOOP_STALL_WATCHDOG_MS)return false;
     if(now-Math.max(0,Number(state.lastLoopWatchdogAt||0))<LOOP_STALL_WATCHDOG_MS)return false;
@@ -273,7 +276,7 @@
 
   window.CCGLostSizzlerV141R59LiveRegressionFixes={
     MONITOR_MS,LONG_GAP_MS,PAUSE_GUARD_MS,SOLO_MAX_STEP_MS,SOLO_MAX_VISIBLE_FRAME_MS,SOLO_MAX_STEPS,LOOP_STALL_WATCHDOG_MS,
-    stableLoopR59,runSoloUpdates,soloDungeonPlaying,markPauseBoundary,safeGapRecovery,noteFault,noteDuplicateFrame,noteFrameStall,setAcceptedRafTimestamp,installClockOwner,installPauseOwners,installSoloSaveTransitionOwner,reassertR58,normaliseAudioRate,ensureLoopLiveness,ensure,
+    stableLoopR59,runSoloUpdates,soloDungeonPlaying,soloRuntimeReady,markPauseBoundary,safeGapRecovery,noteFault,noteDuplicateFrame,noteFrameStall,setAcceptedRafTimestamp,installClockOwner,installPauseOwners,installSoloSaveTransitionOwner,reassertR58,normaliseAudioRate,ensureLoopLiveness,ensure,
     get state(){return state}
   };
 })();

@@ -10,6 +10,10 @@ assert.match(r59,/const LOOP_STALL_WATCHDOG_MS=1400/,"R64 must define a bounded 
 assert.match(r59,/function ensureLoopLiveness\(\)[\s\S]*requestAnimationFrame\(stableLoopR59\)/,"R64 loop watchdog must restart the canonical R59 RAF owner");
 assert.match(r59,/installClockOwner\(\);installPauseOwners\(\);installSoloSaveTransitionOwner\(\);reassertR58\(\);ensureLoopLiveness\(\)/,"the regular R59 monitor must check active Solo loop liveness");
 assert.match(r59,/setAcceptedRafTimestamp\(t\);state\.lastAcceptedWallAt=perfNow\(\)/,"every accepted frame must refresh the wall-clock liveness marker");
+assert.match(r59,/state\.suppressRecoveryUntil=Math\.max\(state\.suppressRecoveryUntil,now\+PAUSE_GUARD_MS\);\s*state\.lastAcceptedWallAt=now;\s*setAcceptedRafTimestamp\(null\)/,"pause and restore boundaries must rebase both RAF and wall-clock liveness");
+assert.match(r59,/if\(!soloDungeonPlaying\(\)\|\|!soloRuntimeReady\(\)\)return false;/,"watchdog recovery must wait for a fully restored Solo runtime");
+assert.match(r59,/if\(now<Math\.max\(0,Number\(state\.suppressRecoveryUntil\|\|0\)\)\)return false;/,"watchdog recovery must respect lifecycle suppression windows");
+assert.doesNotMatch(r59,/noteDuplicateFrame\(\);state\.lastAcceptedWallAt=perfNow\(\)/,"duplicate RAF callbacks must not masquerade as accepted simulation liveness");
 
 assert.match(play,/const leftTile=Boolean\(p&&t&&\(Number\(p\.x\)!==Number\(t\.x\)\|\|Number\(p\.y\)!==Number\(t\.y\)\)\)/,"trap contact ledger must detect when a player has left the trap tile");
 assert.match(play,/if\(!p\|\|!t\|\|!t\.active\|\|leftTile\|\|!SYS\.trapActive\(t,now\)\)/,"trap contact ledger must rearm on tile exit as well as inactive-cycle boundaries");

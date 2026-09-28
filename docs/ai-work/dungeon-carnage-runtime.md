@@ -7,6 +7,7 @@
 - The live FIRE/SPIKE/SHOCK crossing browser contract now includes same-cycle SHOCK exit/re-entry and requires a second HP loss after the exit rearm.
 - Bug reports now expose R59 accepted/duplicate frame counters, loop-watchdog recoveries, last accepted wall time and trap exit-rearm counters.
 - Branch: `codex/dungeon-r64-freeze-trap-integrity-20260928`. Keep R63 unmerged until R64 is qualified; R64 is the P0 runtime track.
+- First exact-head matrix exposed a repeatable Save & Quit -> Continue timeout in the Scout persistence contract and one FIRE projectile sampling failure. R64 watchdog hardening now rebases the wall-clock marker at lifecycle boundaries, respects the existing pause/restore suppression window, refuses recovery until the Solo runtime objects are restored, and does not refresh accepted-frame liveness for duplicate RAF callbacks. This keeps the watchdog focused on genuine simulation stalls instead of lifecycle transitions.
 
 ## R62 authoritative FIRE owner repair — 28 September 2026
 

@@ -4,6 +4,7 @@
 - R64 branch `codex/dungeon-r64-freeze-trap-integrity-20260928` adds a visible-Solo R59 loop watchdog and exact diagnostics for accepted frames/recoveries.
 - The same live run also reported 4 ordinary-trap contacts, 0 verified trap hits and 3 trap anomalies. R64 fixes stale same-cycle trap contact latches by rearming immediately after tile exit, then regression-tests ACTIVE SHOCK trap exit/re-entry.
 - Do not merge R63 while the P0 freeze/trap branch is unresolved. Preserve the already-merged R62 authoritative FIRE owner.
+- First exact-head matrix exposed a repeatable Save & Quit -> Continue timeout in the Scout persistence contract and one FIRE projectile sampling failure. R64 watchdog hardening now rebases the wall-clock marker at lifecycle boundaries, respects the existing pause/restore suppression window, refuses recovery until the Solo runtime objects are restored, and does not refresh accepted-frame liveness for duplicate RAF callbacks. This keeps the watchdog focused on genuine simulation stalls instead of lifecycle transitions.
 
 ## R62 authoritative FIRE owner repair — 28 September 2026
 
