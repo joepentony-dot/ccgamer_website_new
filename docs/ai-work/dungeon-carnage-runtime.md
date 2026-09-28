@@ -1,5 +1,7 @@
 ## R64 freeze + ordinary-trap integrity — 28 September 2026
 
+- Release identity is now advanced to `V10.42 r64` / `20260928r64` across both public entry points, the ordered bootstrap, `version.json`, and current release/cache contracts so the freeze/trap/attack repair cannot deploy behind the cached r62 asset token.
+
 - Exact-head qualification exposed a desktop ATTACK ownership edge in Chromium shard 3: one quick sword tap could be replayed across R59 historical catch-up substeps and deal three hits. R64 now suppresses current held-attack state only while replaying historical Solo substeps; the canonical queued intent remains available for one attack, and live held state is restored after catch-up. The existing three-minute sword/firearm soak remains the browser gate for one-tap/one-hit behaviour.
 
 - Fresh deployed r62 manual evidence shows a live Solo freeze where diagnostics/setInterval activity continued after gameplay stopped progressing. The report remained `mode=playing`, `runActive=true`, `performanceTier=severe`, with repeated periodic snapshots and focus/blur events after the last normal combat event.
