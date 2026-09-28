@@ -259,3 +259,14 @@ No chest gameplay, lock/key, reward or interaction assertion was relaxed.
 - Walkable cells now receive a deterministic floor variant selected from the existing renderer tile hash. The art is alpha-blended over the established theme floor colour so each biome retains its identity.
 - Solid wall cells now receive the authored wall texture, with sparse deterministic damaged-wall variants. Existing theme-specific masonry, ironwork, archive panels, books, webbing and other room detail remains layered above the new texture.
 - Map data, collision, walkability and world-generation ownership are untouched; this slice changes canvas presentation only.
+
+
+## Player animation Stage 2 slice — 28 September 2026
+
+- Imported Shade's free CC0 `Warrior-Blue.png` Puny Characters sheet unmodified. Four independent mirrors carried the identical Git blob SHA `03f4c87f30c7fcb754fccb42e02459294f0acd2e`; the local destination uses the same blob.
+- The 768x256 sheet is 24 columns by 8 direction rows, each cell 32x32.
+- Dungeon Carnage now maps its four directions to Puny rows 0/2/4/6 (down/right/up/left).
+- Idle uses the two authored idle frames; walking uses the two authored walk frames; melee maps the existing eight-stage combat timing over the four authored attack frames; hurt uses the authored hurt sequence.
+- FIRE intentionally retains the idle body pair plus Dungeon Carnage's established recoil/weapon overlay instead of rendering the sheet's bow/staff attack art underneath a firearm.
+- The existing V10.34 explorer sheet and procedural character remain fallback layers if the CC0 sheet cannot decode.
+- Player coordinates, input, collision, projectile ownership, melee timing, firearm cadence and damage are unchanged.
