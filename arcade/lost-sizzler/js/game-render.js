@@ -68,6 +68,7 @@ const lostSizzlerPixelAssets=(()=>{
 })();
 const chestRenderDiagnostics=window.__CCG_CHEST_RENDER_DIAGNOSTICS__=window.__CCG_CHEST_RENDER_DIAGNOSTICS__||{assetFrames:0,richFallbackFrames:0,lastMode:"",lastAt:0};
 const doorRenderDiagnostics=window.__CCG_DOOR_RENDER_DIAGNOSTICS__=window.__CCG_DOOR_RENDER_DIAGNOSTICS__||{assetFrames:0,fallbackFrames:0,lastMode:"",lastOrientation:"",lastState:"",lastAt:0};
+const switchRenderDiagnostics=window.__CCG_SWITCH_RENDER_DIAGNOSTICS__=window.__CCG_SWITCH_RENDER_DIAGNOSTICS__||{assetFrames:0,fallbackFrames:0,lastMode:"",lastState:"",lastSecret:false,lastAt:0};
 function camFor(p,v){let c=cameras.get(p.id)||{x:0,y:0},targetX=p.rx,targetY=p.ry;const roomId=W.roomAt(world,p.x,p.y),room=world.rooms?.[roomId],mem=host.memoryPuzzle;if(mem&&!mem.solved&&roomId===mem.roomId){const points=[...(mem.tiles||[]),mem.activator].filter(Boolean);if(points.length){const minX=Math.min(...points.map(q=>q.x)),maxX=Math.max(...points.map(q=>q.x)),minY=Math.min(...points.map(q=>q.y)),maxY=Math.max(...points.map(q=>q.y));targetX=(minX+maxX)/2;targetY=(minY+maxY)/2}}else if(document.fullscreenElement&&room){const roomPixelW=(room.w+2)*C.tile,roomPixelH=(room.h+2)*C.tile;if(roomPixelW<=v.w&&roomPixelH<=v.h){targetX=room.x+room.w/2;targetY=room.y+room.h/2}}const tx=Math.max(0,Math.min(C.worldWidth*C.tile-v.w,targetX*C.tile+C.tile/2-v.w/2)),ty=Math.max(0,Math.min(C.worldHeight*C.tile-v.h,targetY*C.tile+C.tile/2-v.h/2));c.x=tx;c.y=ty;cameras.set(p.id,c);return c}
 function ws(x,y){return{x:view.x+x*C.tile-cam.x+renderShake.x,y:view.y+y*C.tile-cam.y+renderShake.y}}
 function tileHash(x,y,salt=0){let h=Math.imul(x+17,73856093)^Math.imul(y+31,19349663)^Math.imul(salt+7,83492791);h^=h>>>13;h=Math.imul(h,1274126177);return(h^(h>>>16))>>>0}
@@ -768,6 +769,35 @@ function drawGenerators(){
     if(g.hpBarMs>0)drawTransientHealth(g,s,P.orange);if(md(g,focus)<3)label(powered?`GENERATOR ${g.hp}/${g.maxHp}`:`GENERATOR DORMANT — NEEDS LIGHT`,s,powered?P.red:P.grey)
   }
 }
+function drawSwitchVisual(sw,s,now=performance.now()){
+  if(!sw||!s)return false;
+  const spent=!sw.active,col=spent?P.green:(sw.revealSecret?P.purple:P.cyan),pulse=.65+.35*Math.sin(now/120+Number(sw.x||0)),side=String(sw.wallSide||"north");
+  const switchArt=sw.revealSecret?lostSizzlerPixelAssets.secretSwitches:lostSizzlerPixelAssets.switches;
+  const buttonArt=spent?lostSizzlerPixelAssets.switchButtonDown:lostSizzlerPixelAssets.switchButtonUp;
+  const wallOffset=side==="north"?{x:0,y:-11}:side==="south"?{x:0,y:11}:side==="west"?{x:-11,y:0}:{x:11,y:0};
+  const cx=s.x+C.tile/2+wallOffset.x,cy=s.y+C.tile/2+wallOffset.y;
+  const authoredReady=Boolean(switchArt?.complete&&switchArt.naturalWidth>=16&&buttonArt?.complete&&buttonArt.naturalWidth>=16);
+  switchRenderDiagnostics.lastState=spent?"activated":"armed";
+  switchRenderDiagnostics.lastSecret=Boolean(sw.revealSecret);
+  switchRenderDiagnostics.lastAt=now;
+  ctx.save();
+  if(authoredReady){
+    ctx.translate(cx,cy);ctx.imageSmoothingEnabled=false;ctx.shadowColor=col;ctx.shadowBlur=spent?3:7+pulse*7;ctx.globalAlpha=spent?.72:1;
+    const rot=side==="south"?Math.PI:side==="west"?-Math.PI/2:side==="east"?Math.PI/2:0;ctx.rotate(rot);
+    if(spent)ctx.scale(1,-1);
+    ctx.drawImage(switchArt,-(C.tile-12)/2,-(C.tile-12)/2,C.tile-12,C.tile-12);ctx.globalAlpha=1;
+    ctx.drawImage(buttonArt,5,5,11,11);
+    switchRenderDiagnostics.assetFrames++;switchRenderDiagnostics.lastMode="cc0-switch";
+  }else{
+    ctx.fillStyle="#151b26";ctx.fillRect(cx-12,cy-12,24,24);ctx.fillStyle="#344154";ctx.fillRect(cx-9,cy-9,18,18);
+    ctx.strokeStyle=col;ctx.shadowColor=col;ctx.shadowBlur=8+pulse*8;ctx.lineWidth=2;ctx.strokeRect(cx-10,cy-10,20,20);
+    ctx.fillStyle="#081018";ctx.beginPath();ctx.arc(cx,cy,7,0,Math.PI*2);ctx.fill();ctx.strokeStyle=col;ctx.stroke();
+    ctx.fillStyle=col;ctx.globalAlpha=.6+pulse*.4;ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+    switchRenderDiagnostics.fallbackFrames++;switchRenderDiagnostics.lastMode="procedural-fallback";
+  }
+  ctx.restore();
+  return authoredReady
+}
 function drawShrinesSwitches(){
   for(const sh of host.shrines||[]){
     if(!sh.active||!visibleTo(focus,sh.x,sh.y))continue;
@@ -787,25 +817,8 @@ function drawShrinesSwitches(){
   }
   for(const sw of host.switches||[]){
     if(!visibleTo(focus,sw.x,sw.y))continue;
-    const s=ws(sw.x,sw.y),spent=!sw.active,col=spent?P.green:(sw.revealSecret?P.purple:P.cyan),pulse=.65+.35*Math.sin(performance.now()/120+sw.x),side=String(sw.wallSide||"north");
-    const switchArt=sw.revealSecret?lostSizzlerPixelAssets.secretSwitches:lostSizzlerPixelAssets.switches;
-    const buttonArt=spent?lostSizzlerPixelAssets.switchButtonDown:lostSizzlerPixelAssets.switchButtonUp;
-    const wallOffset=side==="north"?{x:0,y:-11}:side==="south"?{x:0,y:11}:side==="west"?{x:-11,y:0}:{x:11,y:0};
-    const cx=s.x+C.tile/2+wallOffset.x,cy=s.y+C.tile/2+wallOffset.y;
-    ctx.save();
-    if(switchArt?.complete&&switchArt.naturalWidth>=16){
-      ctx.translate(cx,cy);ctx.imageSmoothingEnabled=false;ctx.shadowColor=col;ctx.shadowBlur=spent?3:7+pulse*7;ctx.globalAlpha=spent?.72:1;
-      const rot=side==="south"?Math.PI:side==="west"?-Math.PI/2:side==="east"?Math.PI/2:0;ctx.rotate(rot);
-      if(spent)ctx.scale(1,-1);
-      ctx.drawImage(switchArt,-(C.tile-12)/2,-(C.tile-12)/2,C.tile-12,C.tile-12);ctx.globalAlpha=1;
-      if(buttonArt?.complete&&buttonArt.naturalWidth>=16){ctx.drawImage(buttonArt,5,5,11,11)}
-    }else{
-      ctx.fillStyle="#151b26";ctx.fillRect(cx-12,cy-12,24,24);ctx.fillStyle="#344154";ctx.fillRect(cx-9,cy-9,18,18);
-      ctx.strokeStyle=col;ctx.shadowColor=col;ctx.shadowBlur=8+pulse*8;ctx.lineWidth=2;ctx.strokeRect(cx-10,cy-10,20,20);
-      ctx.fillStyle="#081018";ctx.beginPath();ctx.arc(cx,cy,7,0,Math.PI*2);ctx.fill();ctx.strokeStyle=col;ctx.stroke();
-      ctx.fillStyle=col;ctx.globalAlpha=.6+pulse*.4;ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
-    }
-    ctx.restore();
+    const s=ws(sw.x,sw.y),spent=!sw.active,col=spent?P.green:(sw.revealSecret?P.purple:P.cyan);
+    drawSwitchVisual(sw,s,performance.now());
     if(md(sw,focus)<3)label(spent?"SWITCH TOGGLED":sw.revealSecret?"REMOTE SECRET SWITCH — ACTIVATE":"WALL SWITCH — ACTIVATE",{x:s.x,y:s.y-2},col)
   }
 }
