@@ -276,7 +276,7 @@
           const melee=meleeFor(p1),usingMelee=!hasGun(p1)||Number(p1.mana||0)<=0;
           if(usingMelee&&UI?.weapon)UI.weapon.textContent=String(melee.short||melee.name||"SWORD").slice(0,16).toUpperCase();
           if(usingMelee&&UI?.power)UI.power.textContent=String(meleeDamageFor(p1));
-          if(UI?.weapon)UI.weapon.title=hasGun(p1)?`Firearm: ${p1.weapon?.displayName||p1.weapon?.name}. Melee: ${melee.name}. ${p1.mana>0?"Attack fires the gun.":"Ammo empty — Attack uses melee."}`:`Melee only: ${melee.name}. Find a firearm in the dungeon.`;
+          if(UI?.weapon){const rawWeapon=String(p1.weapon?.displayName||p1.weapon?.name||"Pulse"),level=Math.max(1,Number(p1.weaponLevel||p1.weapon?.rating||1));UI.weapon.title=hasGun(p1)?`Weapon Level ${level} · ${rawWeapon}. Melee: ${melee.name}. ${p1.mana>0?"Attack fires the gun.":"Ammo empty — Attack uses melee."}`:`Melee only: ${melee.name}. Find a firearm in the dungeon.`}
           const touch=document.querySelector('#v104-touch-controls [data-action="fire"]');if(touch)touch.textContent=usingMelee?"SLASH":"FIRE";
         }
       }catch(_){}
