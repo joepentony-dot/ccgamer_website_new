@@ -430,6 +430,7 @@
         soloStability:safe(()=>window.CCGLostSizzlerV142R18SoloPlaytestStability?.diagnostics||null,null),
         fireRecovery:safe(()=>window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics||null,null),
         runtimeRepair:safe(()=>window.CCGLostSizzlerV141R29?.state||null,null),
+        soloClock:safe(()=>window.CCGLostSizzlerV141R59LiveRegressionFixes?.state||null,null),
         trapStability:safe(()=>window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||null,null),
         loopFinalizer:safe(()=>window.CCGLostSizzlerV141R29LoopFinalizer?.state||null,null),
         renderOwnership:safe(()=>window.CCGLostSizzlerV141R51RenderOwnershipFinalizer?.state||null,null),
@@ -461,6 +462,9 @@
       trapHits:s.diagnostics.trapStability?.trapHits??null,trapRepairs:s.diagnostics.trapStability?.directTrapRepairs??null,
       trapUnderPlayer:s.trapUnderPlayer,trapAnomalies:state.trapAnomalies,
       loopReassertions:s.diagnostics.loopFinalizer?.reassertions??null,renderRepairs:s.diagnostics.renderOwnership?.repairs??null,
+      acceptedFrames:s.diagnostics.soloClock?.acceptedFrames??null,duplicateFrames:s.diagnostics.soloClock?.duplicateFramesSkipped??null,
+      loopWatchdogRecoveries:s.diagnostics.soloClock?.loopWatchdogRecoveries??null,lastAcceptedWallAt:s.diagnostics.soloClock?.lastAcceptedWallAt??null,
+      trapContactExitRearms:s.diagnostics.trapStability?.contactExitRearms??null,
       visibility:s.browser.visibility,focus:s.browser.hasFocus
     });
     return s;
@@ -599,6 +603,8 @@
       `Inventory hidden: ${s.panels.inventory.hidden} | Pause hidden: ${s.panels.pause.hidden} | Focus: ${s.browser.hasFocus} | Active element: ${s.browser.activeElement?.tag||""}#${s.browser.activeElement?.id||""}`,
       `Memory puzzle: ${mem?`phase=${mem.phase} input=${mem.inputIndex}/${mem.sequence.length} failures=${mem.failures} flash=${mem.flashTile}`:"none"}`,
       `Trap monitor: contacts=${state.trapContacts} verifiedHits=${state.trapVerifiedHits} trapAnomalies=${state.trapAnomalies}`,
+      `Loop monitor: acceptedFrames=${s.diagnostics.soloClock?.acceptedFrames??"-"} duplicateFrames=${s.diagnostics.soloClock?.duplicateFramesSkipped??"-"} watchdogRecoveries=${s.diagnostics.soloClock?.loopWatchdogRecoveries??"-"} lastAcceptedWallAt=${s.diagnostics.soloClock?.lastAcceptedWallAt??"-"}`,
+      `Trap rearm: exits=${s.diagnostics.trapStability?.contactExitRearms??"-"} totalRearms=${s.diagnostics.trapStability?.rearms??"-"} cycleRearms=${s.diagnostics.trapStability?.cycleRearms??"-"}`,
       `Recorded anomalies: ${report.anomalies}`
     ];
     const anomalyEvents=report.recentEvents.filter(event=>String(event.type||"").startsWith("ANOMALY_"));
