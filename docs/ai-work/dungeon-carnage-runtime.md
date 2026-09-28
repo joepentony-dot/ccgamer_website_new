@@ -1,3 +1,13 @@
+## R64 freeze + ordinary-trap integrity — 28 September 2026
+
+- Fresh deployed r62 manual evidence shows a live Solo freeze where diagnostics/setInterval activity continued after gameplay stopped progressing. The report remained `mode=playing`, `runActive=true`, `performanceTier=severe`, with repeated periodic snapshots and focus/blur events after the last normal combat event.
+- R59 now tracks accepted-frame wall time and runs a visible-Solo liveness watchdog. If no canonical RAF/update frame has been accepted for 1400 ms while the run is actively playing and visible, it requests the canonical `stableLoopR59` owner again and records the recovery.
+- The sustained Solo Chromium soak now forces a stale liveness marker and requires the watchdog to request recovery and the accepted-frame counter to continue advancing.
+- The ordinary floor-trap one-hit ledger had no explicit tile-exit rearm. A player could therefore leave an ACTIVE trap and re-enter during the same active cycle while the old cycle latch still blocked damage. `rearmInactiveTrapContacts()` now clears the latch when the player is no longer occupying that trap tile and records `contactExitRearms`.
+- The live FIRE/SPIKE/SHOCK crossing browser contract now includes same-cycle SHOCK exit/re-entry and requires a second HP loss after the exit rearm.
+- Bug reports now expose R59 accepted/duplicate frame counters, loop-watchdog recoveries, last accepted wall time and trap exit-rearm counters.
+- Branch: `codex/dungeon-r64-freeze-trap-integrity-20260928`. Keep R63 unmerged until R64 is qualified; R64 is the P0 runtime track.
+
 ## R62 authoritative FIRE owner repair — 28 September 2026
 
 - Fresh deployed r60 manual evidence reproduced the random loaded-firearm lockout: Space events reached live Solo with a Tier-2 Field Pulse II, 113/120 ammo, zero FIRE cooldown and zero active projectiles, yet repeated attack probes returned false.
