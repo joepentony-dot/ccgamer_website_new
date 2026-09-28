@@ -11,6 +11,10 @@ const announceJs = fs.readFileSync('admin/js/announce.js', 'utf8');
 const retroLoader = fs.readFileSync('js/retro-specials-loader.js', 'utf8');
 const retroSpecials = JSON.parse(fs.readFileSync('data/retro-specials.json', 'utf8'));
 const css = fs.readFileSync('resources/css/ccg-content-publisher.css', 'utf8');
+const youtubeMetadataSync = fs.readFileSync('scripts/sync-youtube-video-metadata.js', 'utf8');
+const videoSeoValidator = fs.readFileSync('scripts/validate-video-seo.js', 'utf8');
+const gamesPublishingWorkflow = fs.readFileSync('.github/workflows/games-publishing.yml', 'utf8');
+const seoWorkflow = fs.readFileSync('.github/workflows/seo.yml', 'utf8');
 
 test('publisher is a private role-gated admin page', () => {
   assert.match(html, /<meta name="robots" content="noindex,nofollow"/);
@@ -142,6 +146,18 @@ test('YouTube URLs are normalised without exposing credentials', () => {
   assert.match(js, /\['shorts', 'live', 'embed'\]/);
   assert.match(js, /\^\[A-Za-z0-9_-\]\{11\}\$/);
   assert.match(js, /VideoObject markup will be withheld rather than guessed/);
+});
+
+test('scheduled or private YouTube videos are non-blocking and retried automatically', () => {
+  assert.match(js, /scheduled\/private video/i);
+  assert.match(js, /Publishing will continue normally/i);
+  assert.match(js, /automatic retries will add VideoObject metadata/i);
+  assert.match(youtubeMetadataSync, /This is non-blocking for publishing/i);
+  assert.match(youtubeMetadataSync, /private, scheduled, removed or otherwise unavailable/i);
+  assert.match(gamesPublishingWorkflow, /private or scheduled YouTube video is allowed here and does not block game publishing/i);
+  assert.match(videoSeoValidator, /const verified = !external && hasValidUploadDate/);
+  assert.match(videoSeoValidator, /VideoObject was emitted without verified YouTube metadata/);
+  assert.match(seoWorkflow, /cron: "17 6 \* \* \*"/);
 });
 
 test('publisher retains legacy editors as fallbacks', () => {
