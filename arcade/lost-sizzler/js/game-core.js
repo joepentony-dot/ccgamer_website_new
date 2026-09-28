@@ -228,6 +228,13 @@ function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
       };
       host.traps.push(trap);occupied.add(`${cell.x},${cell.y}`);
     });
+    // Freeze one representative of every public trap family at the final
+    // world-start boundary. Later zone retuning may change timing/presentation,
+    // but it must not rewrite the last FIRE, SPIKE or SHOCK out of existence.
+    for(const kind of families){
+      const representative=host.traps.find(trap=>trap?.active&&String(trap.kind||"").toLowerCase()===kind);
+      if(representative){representative.v142FinalFamilyGuaranteed=true;representative.v142FinalFamilyKind=kind}
+    }
   }catch(error){console.error("[Dungeon Carnage] final startWorld trap-family invariant failed",error)}
   p1=old1?preservePlayer(old1,world.start.x,world.start.y):makePlayer(net.sessionId,playerName(),world.start.x,world.start.y);p2=null;if(split||old2){const q=nearbyOpen(world.start.x+2,world.start.y,[p1]);p2=old2?preservePlayer(old2,q.x,q.y):makePlayer("LOCAL-P2","PLAYER 2",q.x,q.y)}
   remote.clear();enemyVisuals.clear();bullets.length=enemyBullets.length=particles.length=rings.length=floaters.length=hazards.length=0;pendingItems.clear();cameras.clear();explored.clear();campStates.clear();roomVisits.clear();playerTrails.clear();questDone.clear();toastQueue.length=0;toastTimer=0;stats.games=stats.elites=stats.doors=stats.weapons=stats.secrets=stats.generators=0;shake=damageFlash=0;move1=move2=fire1=fire2=fireBuffer1=fireBuffer2=0;specialCD=0;inventoryReminderMs=300000;
