@@ -1044,3 +1044,94 @@
   padding: 0;
 }
 
+/* ============================================================
+   CCG MUSIC WHEEL PERFORMANCE CONTRACT — 2026-09-28
+   ------------------------------------------------------------
+   Music hub and composer pages keep the document as the sole
+   vertical scroll owner. During active scrolling, composer-card
+   motion is temporarily suspended so physical mouse-wheel input
+   does not compete with hover/playing animations and transitions.
+============================================================ */
+
+html:is(
+  [data-ccg-page="music-composer"],
+  [data-ccg-page="music-hub"],
+  [data-ccg-page="music-hub-composers"]
+) {
+  height: auto !important;
+  min-height: 100% !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: auto !important;
+  scroll-behavior: auto !important;
+}
+
+html:is(
+  [data-ccg-page="music-composer"],
+  [data-ccg-page="music-hub"],
+  [data-ccg-page="music-hub-composers"]
+) > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
+  position: static !important;
+  height: auto !important;
+  min-height: 100% !important;
+  max-height: none !important;
+  overflow-y: visible !important;
+  overscroll-behavior-y: auto !important;
+  scroll-behavior: auto !important;
+}
+
+html:is(
+  [data-ccg-page="music-composer"],
+  [data-ccg-page="music-hub"],
+  [data-ccg-page="music-hub-composers"]
+) > body.ccg-body :where(.ccg-main, main, .ccg-composer-page, .ccg-music-hub) {
+  height: auto !important;
+  min-height: 0;
+  max-height: none !important;
+  overflow-y: visible !important;
+  overscroll-behavior-y: auto !important;
+  scroll-behavior: auto !important;
+}
+
+html.ccg-perf-paused:is(
+  [data-ccg-page="music-composer"],
+  [data-ccg-page="music-hub"],
+  [data-ccg-page="music-hub-composers"]
+) :where(
+  .ccg-composer-games__item,
+  .ccg-composer-game-thumb,
+  .ccg-composer-game-action,
+  .ccg-composer-game-thumb-overlay,
+  .ccg-composer-chip,
+  .composer-card
+) {
+  transition: none !important;
+  will-change: auto !important;
+}
+
+html.ccg-perf-paused:is(
+  [data-ccg-page="music-composer"],
+  [data-ccg-page="music-hub"],
+  [data-ccg-page="music-hub-composers"]
+) :where(
+  .ccg-composer-games__item,
+  .composer-card
+):is(:hover, :focus-within) {
+  transform: none !important;
+  filter: none !important;
+}
+
+html.ccg-perf-paused:is(
+  [data-ccg-page="music-composer"],
+  [data-ccg-page="music-hub"],
+  [data-ccg-page="music-hub-composers"]
+) .ccg-composer-games__item:is(:hover, :focus-within) .ccg-composer-game-thumb {
+  transform: none !important;
+  filter: none !important;
+}
+
+html.ccg-perf-paused[data-ccg-page="music-composer"]
+.ccg-composer-games__item.is-playing
+.ccg-composer-game-card-shell {
+  animation-play-state: paused !important;
+}
+
