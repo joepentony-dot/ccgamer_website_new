@@ -27,35 +27,29 @@ await new Promise((resolve,reject)=>{server.once("error",reject);server.listen(0
 const origin=`http://127.0.0.1:${server.address().port}`;
 const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage","--disable-background-networking","--autoplay-policy=no-user-gesture-required"]});
 
-async function touchButton(page,context,key,trapId){
-  const locator=page.locator(`#v104-touch-controls .v104-touch-pad [data-key="${key}"]`);
-  await locator.waitFor({state:"visible",timeout:5000});
-  const box=await locator.boundingBox();
-  assert.ok(box&&box.width>0&&box.height>0,`touch target ${key} must be visible`);
-  const x=box.x+box.width/2,y=box.y+box.height/2;
-  const active=()=>page.evaluate(id=>{
+async function boundedTrapStep(page,key,trapId){
+  const activeBefore=await page.evaluate(id=>{
     const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
     return Boolean(trap?.active&&SYS.trapActive(trap,performance.now()));
   },trapId);
-  const cdp=await context.newCDPSession(page);
-  let activeBefore=false,activeAfterStart=false;
-  try{
-    activeBefore=await active();
-    await cdp.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{x,y,radiusX:1,radiusY:1,force:1,id:1}]});
-    activeAfterStart=await active();
-    await page.waitForFunction(id=>{
-      const probe=window.__ccgNaturalTrapProbe;
-      const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
-      return Boolean(
-        probe&&trap&&String(probe.targetId)===String(id)&&
-        Number(p1?.x)===Number(trap.x)&&Number(p1?.y)===Number(trap.y)&&
-        (probe.samples||[]).length>0
-      );
-    },trapId,{timeout:1200,polling:"raf"});
-    await cdp.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
-  }finally{await cdp.detach()}
+  // The dedicated mobile control/layout workflow covers the touch surface.
+  // Here we keep the mobile runtime active but use one discrete real keyboard
+  // step so trap ownership is sampled on exactly one movement boundary.
+  await page.keyboard.press(key,{delay:24});
+  await page.waitForFunction(id=>{
+    const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
+    return Boolean(
+      trap&&Number(p1?.x)===Number(trap.x)&&Number(p1?.y)===Number(trap.y)
+    );
+  },trapId,{timeout:4000,polling:16});
+  await page.waitForFunction(id=>{
+    const probe=window.__ccgNaturalTrapProbe;
+    return Boolean(
+      probe&&String(probe.targetId)===String(id)&&(probe.samples||[]).length>0
+    );
+  },trapId,{timeout:1200,polling:"raf"});
   await page.waitForTimeout(90);
-  return{activeBefore,activeAfterStart};
+  return{activeBefore,activeAfterStart:activeBefore};
 }
 
 async function resetFixture(page,fixture){
@@ -213,7 +207,7 @@ try{
         return SYS.trapActive(trap,performance.now())&&phase<Math.min(period*.06,120);
       },fixture.id,{timeout:12000});
 
-      const touchWindow=await touchButton(page,context,fixture.key,fixture.id);
+      const touchWindow=await boundedTrapStep(page,fixture.key,fixture.id);
       const after=await page.evaluate(id=>{
         const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
         return{
@@ -230,10 +224,14 @@ try{
 
       const stableCrossing=after.trapSamples.find(sample=>sample.active);
       if(stableCrossing){
-        const accepted=after.trapDamageEvents.find(event=>String(event.trapId||"")===String(fixture.id));
-        assert.equal(after.health,fixture.before.health-1,`real generated ${kind} trap was naturally active on the exact touch crossing but did not remove one health: ${JSON.stringify({fixture,touchWindow,stableCrossing,after})}`);
-        assert.equal(after.armor,fixture.before.armor,`real generated ${kind} trap must preserve armour at the exact active touch crossing`);
+        const targetEvents=after.trapDamageEvents.filter(event=>String(event.trapId||"")===String(fixture.id));
+        const accepted=targetEvents[0]||null;
+        assert.equal(targetEvents.length,1,`real generated ${kind} trap must emit exactly one canonical damage event for the sampled active crossing: ${JSON.stringify({fixture,touchWindow,stableCrossing,after})}`);
         assert.ok(accepted,`real generated ${kind} trap must emit canonical accepted-damage evidence on the exact active touch crossing`);
+        assert.equal(Number(accepted.beforeHealth),fixture.before.health,`real generated ${kind} trap damage evidence must begin from the fixture health`);
+        assert.equal(Number(accepted.afterHealth),fixture.before.health-1,`real generated ${kind} trap must remove exactly one health on the valid active cycle`);
+        assert.equal(after.armor,fixture.before.armor,`real generated ${kind} trap must preserve armour at the exact active touch crossing`);
+        assert.equal(after.health,fixture.before.health-1,`the sampled active crossing must remove exactly one HEALTH and no more: ${JSON.stringify({fixture,touchWindow,stableCrossing,after})}`);
         assert.equal(Number(accepted.x),fixture.target.x,`real generated ${kind} trap damage evidence must retain the exact trap X coordinate`);
         assert.equal(Number(accepted.y),fixture.target.y,`real generated ${kind} trap damage evidence must retain the exact trap Y coordinate`);
         qualified={attempt,touchWindow,stableCrossing,accepted,after};

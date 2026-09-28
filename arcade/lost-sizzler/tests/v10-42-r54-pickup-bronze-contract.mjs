@@ -19,7 +19,7 @@ assert.match(local,/armour:"\+2 ARMOUR"/,"armour pickups need visible numeric ar
 assert.match(local,/showToast\("\+2 ARMOUR"/,"armour toast must expose its actual mechanic value");
 assert.match(local,/showToast\(`\+\$\{n\} XP`/,"XP toast must expose its actual mechanic value");
 assert.match(local,/function resolvedPickupWeapon\(i,p\)/,"weapon pickup must resolve one concrete weapon before presentation");
-assert.match(local,/if\(i\.kind==="weapon"\)return resolvedPickupWeapon\(i,p\)\?\.displayName\|\|"WEAPON CACHE"/,"weapon pickup text must name the exact generated weapon");
+assert.match(local,/if\(i\.kind==="weapon"\)return evolvingWeaponMode\(\)\?"WEAPON CACHE":resolvedPickupWeapon\(i,p\)\?\.displayName\|\|"WEAPON CACHE"/,"evolving-firearm weapon pickups must use the generic WEAPON CACHE label while legacy/random-weapon modes may still name the exact generated weapon");
 assert.match(local,/name:collectedName\(i,p\)/,"pickup diagnostics must report the resolved weapon identity shown to the player");
 assert.match(local,/equipWeapon\(p,resolvedPickupWeapon\(i,p\)\)/,"the same resolved weapon must be equipped after collection");
 assert.match(render,/function groundItemLabel\(i\)/,"ground labels need a mechanic-led display owner");
@@ -39,7 +39,7 @@ assert.match(render,/chests:make\("assets\/pixel\/chest-sheet-v10-34\.png"\)/,"R
 assert.match(render,/meta\[name="ccg-lost-sizzler-cache"\]/,"R54 renderer must derive its sprite cache identity from the canonical page token");
 assert.match(render,/image\.src=`\$\{packageRoot\}\$\{path\}\?v=\$\{encodeURIComponent\(cache\)\}`/,"R54 renderer must append the canonical cache token to package-aware sprite paths");
 assert.match(render,/image\.fetchPriority="high"/,"R54 sprite sheets must receive high fetch priority");
-assert.match(html,/rel="preload" as="image" href="assets\/pixel\/chest-sheet-v10-34\.png\?v=20260928r59" fetchpriority="high"/,"canonical page must preload the established chest artwork");
+assert.match(html,/rel="preload" as="image" href="assets\/pixel\/chest-sheet-v10-34\.png\?v=20260928r60" fetchpriority="high"/,"canonical page must preload the established chest artwork");
 assert.match(render,/function drawMerchantNpc\(t,s,col\)/,"shops must render a merchant character rather than only a generic shop block");
 assert.match(render,/PLAYER_WALK_RENDER_SEQUENCE=Object\.freeze\(\[/,"player animation must expose expanded renderer-owned walk cadence");
 assert.match(render,/PLAYER_MELEE_RENDER_SEQUENCE=Object\.freeze\(\[/,"player animation must expose expanded renderer-owned melee cadence");

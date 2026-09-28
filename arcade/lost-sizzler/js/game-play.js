@@ -130,7 +130,7 @@ function openChest(p,chest){
   if(!chest?.active)return true;const roomKeyPaid=chestBronzeDoorAlreadyPaid(chest);if(chest.locked&&!roomKeyPaid&&p.bronzeKeys<=0){const now=performance.now();if(!chest._lockedFeedbackAt||now-chest._lockedFeedbackAt>=1200){chest._lockedFeedbackAt=now;S.sfx("locked");showToast("LOCKED CHEST","A bronze key opens it. Come back after finding one.","red",4200)}return false}
   if(chest.locked&&!roomKeyPaid)p.bronzeKeys--;chest.locked=false;
   chest.opened=true;chest.openedAt=performance.now();chest.active=false;host.revision++;run.stats.chests++;S.sfx("chest");shake=4;
-  const loot=chest.loot||PGR.lootForChest(chest,run,Math.random),name=loot.weapon?.displayName||loot.name||loot.kind.toUpperCase(),col=loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan,scoreReward=chestScoreReward(chest);
+  const loot=chest.loot||PGR.lootForChest(chest,run,Math.random),evolvingWeapon=loot.kind==="weaponLoot"&&Boolean(window.CCGLostSizzlerV142R47FirearmEvolution),name=evolvingWeapon?"WEAPON CACHE":loot.weapon?.displayName||loot.name||loot.kind.toUpperCase(),col=loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan,scoreReward=chestScoreReward(chest);
   chest.rewardScore=scoreReward;score+=scoreReward;
   showToast("CHEST OPENED",`Inside: ${name}. +${scoreReward.toLocaleString()} score.`,loot.rarity==="GOLD MEDAL"?"gold":loot.rarity==="ZZAP! 97%"?"red":"cyan",7000);
   floatText(chest.x,chest.y,`+${scoreReward.toLocaleString()} SCORE`,P.gold,{life:2600});
@@ -293,11 +293,23 @@ function movePlayer(p,dx,dy,dash=false){
 function dashPlayer(p,d){if(!p||!d||mode!=="playing")return;if(p.mana<2){S.sfx("empty");showToast("NOT ENOUGH AMMO/ENERGY","Dash requires 2 reserve units.","red");return}p.mana-=2;movePlayer(p,d.x,d.y,true);sync()}
 function spreadDirections(d){const dirs=[d];if(d.x&&d.y){dirs.push({x:d.x,y:0},{x:0,y:d.y})}else if(d.x)dirs.push({x:d.x,y:1},{x:d.x,y:-1});else dirs.push({x:1,y:d.y},{x:-1,y:d.y});return dirs}
 function weaponDirections(p,d){const w=p.weapon||{};if(w.id==="shock")return[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1},{x:1,y:1},{x:1,y:-1},{x:-1,y:1},{x:-1,y:-1}];if(w.id==="spread"||w.shots>=3)return spreadDirections(d);return[d]}
+function canonicalMeleeAttackIfRequired(p,d){
+  const melee=window.CCGLostSizzlerMeleeAmmoV125;
+  if(!p||typeof melee?.meleeAttack!=="function")return null;
+  const dir=attackDirection(p,d),tx=Number(p.x)+dir.x,ty=Number(p.y)+dir.y;
+  const adjacentEnemy=(host?.enemies||[]).some(e=>e?.alive&&Number(e.x)===tx&&Number(e.y)===ty);
+  const adjacentFurniture=(host?.blockingDecor||[]).some(item=>Number(item?.x)===tx&&Number(item?.y)===ty);
+  const hasGun=Boolean(p.firearmUnlocked&&p.weapon);
+  if(!adjacentEnemy&&!adjacentFurniture&&hasGun&&Number(p.mana||0)>0)return null;
+  return Boolean(melee.meleeAttack(p,dir))
+}
 function firePlayer(p,d){
   if(!p||mode!=="playing"||(p.hitStunMs||0)>0)return false;
   if(p.__ccgFireSpawnFault)return false;
   const isP2=p===p2,cd=isP2?fire2:fire1;
   if(cd>0)return false;
+  const meleeResult=canonicalMeleeAttackIfRequired(p,d);
+  if(meleeResult!==null)return meleeResult;
   const w=p.weapon||baseWeapon();
   const active=bullets.filter(b=>b.owner===p.id&&b.ttl>0).length;
   const max=C.player.maxProjectiles+Math.max(0,(w.shots||1)-1);
@@ -475,7 +487,7 @@ function authoritativeDamagePlayer(p,n,friendly=false,source="enemy"){
   finally{authoritativeTrapDamageDepth=Math.max(0,authoritativeTrapDamageDepth-1)}
 }
 function updateCamping(p,dt){if(window.CCGLostSizzlerOnboardingV120?.state?.active){resetCamp(p,true);return}let c=campStates.get(p.id);if(!c){resetCamp(p);c=campStates.get(p.id)}const moved=p.x!==c.lastX||p.y!==c.lastY;if(c.active){if(Math.hypot(p.x-c.originX,p.y-c.originY)>=C.camping.resetDistance){resetCamp(p,true);return}c.lastX=p.x;c.lastY=p.y}else if(moved){resetCamp(p,true);return}c.elapsed+=dt;if(c.elapsed<C.camping.graceMs)return;if(!c.active){c.active=true;c.originX=p.x;c.originY=p.y;c.nextBlast=150;c.blastCount=0;S.sfx("campwarn");run.alert=Math.min(100,run.alert+14);showToast("60 SECONDS IDLE — LEAVE THE ZONE","Every second blast targets you for 1 HP. Move six tiles away to stop the barrage.","red",7500)}c.nextBlast-=dt;if(c.nextBlast<=0){c.blastCount++;let q;if(c.blastCount%C.camping.directBlastEvery===0)q={x:p.x,y:p.y,direct:true};else{const a=[];for(let dy=-C.camping.zoneRadius;dy<=C.camping.zoneRadius;dy++)for(let dx=-C.camping.zoneRadius;dx<=C.camping.zoneRadius;dx++){const x=c.originX+dx,y=c.originY+dy;if(W.walkable(world.map,x,y,host)&&Math.hypot(dx,dy)<=C.camping.zoneRadius+.2)a.push({x,y})}q=a[Math.floor(Math.random()*a.length)]||{x:c.originX,y:c.originY}}hazards.push({x:q.x,y:q.y,life:C.camping.warningMs,maxLife:C.camping.warningMs,direct:!!q.direct,campOwner:p.id,originX:c.originX,originY:c.originY});c.nextBlast=C.camping.blastIntervalMs}}
-function updateHazards(dt){for(let i=hazards.length-1;i>=0;i--){const h=hazards[i];h.life-=dt;if(h.life>0)continue;hazards.splice(i,1);S.sfx("explosion");shake=Math.max(shake,h.direct?13:9);burst(h.x,h.y,P.orange,h.direct?32:24,h.direct?2.1:1.8);ring(h.x,h.y,P.red,h.direct?54:42);if(h.direct){const target=localPlayers().find(p=>p.id===h.campOwner);if(target&&Math.hypot(target.x-h.originX,target.y-h.originY)<C.camping.resetDistance)hurtPlayer(target,1,false,"anti-loitering blast")}}}
+function updateHazards(dt){for(let i=hazards.length-1;i>=0;i--){const h=hazards[i];h.life-=dt;if(h.life>0)continue;hazards.splice(i,1);S.sfx("explosion");shake=Math.max(shake,h.direct?13:9);burst(h.x,h.y,P.orange,h.direct?16:12,h.direct?1.75:1.5);ring(h.x,h.y,P.red,h.direct?48:38);if(h.direct){const target=localPlayers().find(p=>p.id===h.campOwner);if(target&&Math.hypot(target.x-h.originX,target.y-h.originY)<C.camping.resetDistance)hurtPlayer(target,1,false,"anti-loitering blast")}}}
 function roomMoodFor(roomId){
   const room=world.rooms[roomId];if(!room)return "normal";
   if(room.sanctuary)return "sanctuary";
@@ -573,7 +585,7 @@ function floatText(tx,ty,text,col=P.white,opts={}){const life=opts.life||720;flo
 function floatPickupText(p,text,col=P.gold){if(!p||!text)return;floatText(p.x,p.y,String(text).toUpperCase(),col,{ownerId:p.id,pickup:true,life:1250,startScale:.42,endScale:1.28})}
 function muzzle(tx,ty,d){const x=tx*C.tile+C.tile/2+d.x*13,y=ty*C.tile+C.tile/2+d.y*13;for(let i=0;i<18;i++){const hot=i<7;particles.push({x,y,vx:d.x*(2.2+Math.random()*4)+(Math.random()-.5)*(hot?1.2:2.4),vy:d.y*(2.2+Math.random()*4)+(Math.random()-.5)*(hot?1.2:2.4),life:hot?120+Math.random()*110:190+Math.random()*220,col:hot?(i%3?P.gold:"#fff7c8"):(i%2?P.orange:"#9a7290"),size:hot?2+Math.random()*3:1.5+Math.random()*2.5,drag:hot ? .91 : .96,glow:hot?12:4})}rings.push({x,y,r:2,max:17,life:170,col:P.gold})}
 function trailBetween(x1,y1,x2,y2,col){for(let i=0;i<8;i++){const t=i/7;particles.push({x:(x1+(x2-x1)*t)*C.tile+C.tile/2,y:(y1+(y2-y1)*t)*C.tile+C.tile/2,vx:0,vy:0,life:220+i*12,col,size:3,drag:.97})}}
-function updateEffects(dt){for(const q of particles){q.x+=q.vx;q.y+=q.vy;q.vx*=q.drag;q.vy*=q.drag;q.angle=(q.angle||0)+(q.spin||0);q.life-=dt}for(let i=particles.length-1;i>=0;i--)if(particles[i].life<=0)particles.splice(i,1);if(particles.length>900)particles.splice(0,particles.length-900);for(const r of rings){r.life-=dt;r.r+=(r.max-r.r)*.12}for(let i=rings.length-1;i>=0;i--)if(rings[i].life<=0)rings.splice(i,1);if(rings.length>120)rings.splice(0,rings.length-120);for(const f of floaters){f.life-=dt;if(!f.ownerId)f.y-=dt*.018}for(let i=floaters.length-1;i>=0;i--)if(floaters[i].life<=0)floaters.splice(i,1);if(floaters.length>96)floaters.splice(0,floaters.length-96)}
+function updateEffects(dt){for(const q of particles){q.x+=q.vx;q.y+=q.vy;q.vx*=q.drag;q.vy*=q.drag;q.angle=(q.angle||0)+(q.spin||0);q.life-=dt}for(let i=particles.length-1;i>=0;i--)if(particles[i].life<=0)particles.splice(i,1);if(particles.length>MAX_GAMEPLAY_PARTICLES)particles.splice(0,particles.length-MAX_GAMEPLAY_PARTICLES);for(const r of rings){r.life-=dt;r.r+=(r.max-r.r)*.12}for(let i=rings.length-1;i>=0;i--)if(rings[i].life<=0)rings.splice(i,1);if(rings.length>MAX_GAMEPLAY_RINGS)rings.splice(0,rings.length-MAX_GAMEPLAY_RINGS);for(const f of floaters){f.life-=dt;if(!f.ownerId)f.y-=dt*.018}for(let i=floaters.length-1;i>=0;i--)if(floaters[i].life<=0)floaters.splice(i,1);if(floaters.length>96)floaters.splice(0,floaters.length-96)}
 function updateEmergencyAmmo(p,dt){
   if(p.mana>0){p.emergencyRechargeMs=0;return}
   if(!(p.emergencyRechargeMs>0))p.emergencyRechargeMs=C.player.emergencyRechargeMs;

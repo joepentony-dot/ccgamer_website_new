@@ -18,12 +18,12 @@ assert.match(
 );
 assert.match(
   play,
-  /if\(particles\.length>900\)particles\.splice\(0,particles\.length-900\)/,
+  /if\(particles\.length>MAX_GAMEPLAY_PARTICLES\)particles\.splice\(0,particles\.length-MAX_GAMEPLAY_PARTICLES\)/,
   "particle pool cap must remain bounded"
 );
 assert.match(
   play,
-  /if\(rings\.length>120\)rings\.splice\(0,rings\.length-120\)/,
+  /if\(rings\.length>MAX_GAMEPLAY_RINGS\)rings\.splice\(0,rings\.length-MAX_GAMEPLAY_RINGS\)/,
   "ring pool must be bounded during crowded combat"
 );
 assert.match(

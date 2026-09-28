@@ -1,3 +1,27 @@
+## Dungeon R60 floor/cache/effect safety — 28 September 2026
+
+- Draft PR #2396 is the authoritative R60 gameplay integration vehicle on merged R59 main `9abd513b4bc5b7f1d1d579c8ec9a973d3ce68c46`.
+- Preserve R60 product behaviour: numeric-only ARMOUR; Stay on This Floor + descend + extract; idempotent cleared-floor banking; later-floor notification rail parity; generic WEAPON CACHE / WEAPON EVOLVED / WEAPON CAPPED progression with ammo → XP → score capped fallback; 360-particle / 72-ring hard visual budgets; reduced overload bursts; fresh sword melee; sustained firearm FIRE; and authoritative FIRE/SPIKE/SHOCK contact with encounter enemies active.
+- Qualification reconciled stale pre-R60 contracts rather than reverting runtime design. The historical combat-load browser now deliberately overloads the bounded collections, requires them to saturate at 360/72, and then proves movement/FIRE/ownership continue within budget.
+- Do not merge until the exact current head is 0 behind main, mergeable, fast and canonical Node/static pass, focused Chromium and shards 1–6 pass, all triggered package/itch/site/SEO/cache/mobile/preview checks are green, and no material review finding remains.
+- After merge, refresh main and reconcile visual-overhaul PR #2395 once, preserving its unique local licensed assets/provenance and renderer work without wholesale rebasing stale gameplay history.
+
+## R59 fresh-run attack regression — 28 September 2026
+
+- Manual deployed R59 acceptance failed immediately after #2398: bug report created at 06:20:35Z on `V10.42 r59 / 20260928r59` records Solo Floor 1 in playing mode with HP 8/8, AMMO 0/120, no firearm, fire1=0, buffer=0, projectileCD=0 and zero active projectiles. Repeated Space probes returned false and `_meleeSwingAt` remained zero.
+- The zero-ammo/no-firearm state is intentional V10.25 progression: a fresh player starts with the Archive Sword and earns the first firearm later. The defect is ownership composition. R59's immutable projectile FIRE owner can survive owner sealing while the historical V10.25 `firePlayer` melee wrapper does not, so the canonical attack path can see the expected fresh melee loadout but never dispatch the sword swing.
+- Active candidate remains rebuilt PR #2396. `game-play.js` now performs the melee-vs-firearm decision inside the canonical FIRE owner and delegates melee execution to the established V10.25 melee subsystem. Projectile insertion remains lexical/transactional and unchanged for real firearms.
+- New browser coverage starts a genuine fresh Solo run, verifies zero ammo/no firearm plus starter melee ownership, presses Space through the real keyboard path, and requires a visible melee swing/cooldown with no projectile or ammo consumption. It also exercises the authoritative direct attack API used by non-keyboard input.
+- #2396 must not merge until its new exact head is 0 behind current main, mergeable, all canonical/Node and Chromium shards 1–6 pass, all triggered site/package/cache/SEO checks pass, and no material review finding remains. After deployment, manually test both fresh-run sword attack and sustained firearm firing after the first firearm pickup.
+
+## Dungeon R59 post-merge trap acceptance + armour HUD follow-up — 28 September 2026
+
+- Live main advanced to `9abd513b4bc5b7f1d1d579c8ec9a973d3ce68c46` after PR #2398 merged the authoritative FIRE/live-trap repair at head `f509f4254bf3a9a329aac4ac1ef83a8091684fd7`. Main now publishes `V10.42 r59 / 20260928r59`.
+- #2398 includes the user-screenshot-driven enemy-room trap repair: exact-cell trap contact is checked before encounter activation and again after late encounter systems, while armour is preserved and one HEALTH is removed per verified active cycle.
+- The merged #2398 qualification run exposed a browser-fixture overshoot in `v10-42-r59-live-encounter-trap-contact.mjs`: a held Arrow key could advance one tile beyond the selected trap before the assertion sampled position. The post-merge follow-up changes this to one discrete real keyboard press; the gameplay assertions remain unchanged.
+- PR #2396 has been rebuilt in place directly from current main rather than carrying its obsolete pre-#2398 R59 ancestry. Its remaining product delta is the requested bottom HUD correction: ARMOUR renders only the number, with no repeated `ARM` prefix and no P2-health multiplexing. The static canonical/public-route markup starts at `0`.
+- #2396 must complete a fresh exact-head matrix from current main before merge. This pass also requalifies the merged #2398 trap runtime with the deterministic live encounter trap contract. After deployment, manual acceptance remains sustained FIRE plus natural FIRE/SPIKE/SHOCK with enemies left active.
+
 ## Dungeon R59 live FIRE + encounter-trap remediation — 28 September 2026
 
 - Live `main` baseline remains `00922200267fb915c9dd38a367b0f2c339097fd5` / deployed `V10.42 r58`.

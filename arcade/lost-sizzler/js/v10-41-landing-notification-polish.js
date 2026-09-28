@@ -166,6 +166,13 @@
     if(pending&&typeof state.originalToast==="function")setTimeout(()=>{try{state.originalToast(...pending)}catch(_){}},120);
   }
 
+  function resetForFloor(){
+    clearTimeout(state.majorTimer);state.majorTimer=0;state.majorUntil=0;state.pendingImportant=null;
+    const panel=ensureMajorPanel();if(panel)panel.dataset.visible="false";
+    document.body.removeAttribute("data-ccg-major-notification");
+    return true
+  }
+
   function showMajor(title,text,tone="gold",duration=7600){
     const panel=ensureMajorPanel(),ms=Math.max(5200,Math.min(11500,Number(duration)||7600));
     panel.dataset.tone=["red","cyan","green","gold"].includes(String(tone))?String(tone):"gold";
@@ -213,6 +220,7 @@
   const timer=setInterval(()=>{install();if(state.toastWrapped&&document.querySelector("#menu .game-mode-buttons")){clearInterval(timer)}},100);
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",install,{once:true});else install();
   window.addEventListener("ccg:v142-ready",retireVersionObserver,{once:true});
+  window.addEventListener("ccg:floor-start",resetForFloor);
   window.addEventListener("pagehide",()=>{clearInterval(timer);clearTimeout(state.majorTimer);state.observer?.disconnect?.();state.modeObserver?.disconnect?.()},{once:true});
-  window.CCGLostSizzlerV141LandingNotificationPolish={showMajor,majorPriority,get state(){return state}};
+  window.CCGLostSizzlerV141LandingNotificationPolish={showMajor,majorPriority,resetForFloor,get state(){return state}};
 })();

@@ -93,7 +93,7 @@ async function fireCycle(page,key,round){
   assert.equal(after.renderFaults,before.renderFaults,`round ${round}: render fault loop appeared`);
   assert.equal(after.directAttackErrors,before.directAttackErrors,`round ${round}: direct attack owner threw`);
   assert.ok(after.bullets<80&&after.enemyBullets<160,`round ${round}: projectile pools grew unexpectedly (${after.bullets}/${after.enemyBullets})`);
-  assert.ok(after.particles<=900&&after.rings<=180&&after.floaters<=140,`round ${round}: visual collections exceeded bounded runtime limits`);
+  assert.ok(after.particles<=360&&after.rings<=72&&after.floaters<=140,`round ${round}: visual collections exceeded bounded runtime limits`);
   assert.ok(after.maxRafGap<5000,`round ${round}: browser frame gap reached ${Math.round(after.maxRafGap)}ms`);
   return after;
 }
@@ -142,10 +142,10 @@ try{
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
   const boot=await page.evaluate(()=>({ready:CCGLostSizzlerV142Bootstrap.ready,failed:CCGLostSizzlerV142Bootstrap.failed,error:CCGLostSizzlerV142Bootstrap.error||"",build:CCGLostSizzlerV142Bootstrap.build,cache:CCGLostSizzlerV142Bootstrap.cache,metaBuild:document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content,metaCache:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content,ordered:[...document.querySelectorAll('script[data-ccg-v142-ordered="true"]')].map(s=>s.src)}));
   assert.equal(boot.failed,false,`r47 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r47 ordered bootstrap must complete");
-  assert.equal(boot.build,"V10.42 r59");assert.equal(boot.cache,"20260928r59");assert.equal(boot.metaBuild,"V10.42 r59");assert.equal(boot.metaCache,"20260928r59");
+  assert.equal(boot.build,"V10.42 r60");assert.equal(boot.cache,"20260928r60");assert.equal(boot.metaBuild,"V10.42 r60");assert.equal(boot.metaCache,"20260928r60");
   assert.ok(boot.ordered.length>=30,"r47 bootstrap must load the complete ordered V10.42 chain");
-  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260928r59"),"every ordered V10.42 module must use the r59 cache token");
-  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260928r59")),"expected r59 projectile lifecycle asset was not requested");
+  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260928r60"),"every ordered V10.42 module must use the r59 cache token");
+  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260928r60")),"expected r60 projectile lifecycle asset was not requested");
   assert.equal(await page.evaluate(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.ownsBoundary?.()===true),true,"#2118 lifecycle owner must be authoritative before play");
 
   await page.evaluate(()=>{const hb=window.__ccgEnduranceHeartbeat={frames:0,stalls:0,maxGap:0,last:0};const beat=t=>{if(hb.last){const gap=t-hb.last;hb.maxGap=Math.max(hb.maxGap,gap);if(gap>300)hb.stalls++}hb.last=t;hb.frames++;requestAnimationFrame(beat)};requestAnimationFrame(beat)});

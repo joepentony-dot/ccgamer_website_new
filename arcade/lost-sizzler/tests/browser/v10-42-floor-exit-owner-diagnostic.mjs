@@ -157,7 +157,7 @@ try{
   assert.equal(guardExit?.mode,"floorcomplete","Completion must transfer gameplay mode");
   assert.equal(guardExit?.runFloorComplete,true,"Completion must set the real latch");
   assert.equal(guardExit?.panelHidden,false,"Completion must show the real panel");
-  assert.equal(guardExit?.row?.skipped,true,"Inner domain owner must record skipped Warden debt");
+  assert.equal(guardExit?.row?.skipped,false,"opening the floor-clear panel must not record skipped Warden debt before the player chooses Descend");
   assert.equal(guardExit?.confirm,null,"First valid exit must not leave a re-entry confirmation armed");
   console.log("Floor 1 Warden exit completion ownership regression passed.");
   await context.close();

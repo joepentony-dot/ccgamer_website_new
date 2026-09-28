@@ -83,7 +83,7 @@ try{
     const arenaId="r59-live-trap-arena";
     host.arenas.unshift({id:arenaId,roomId,triggered:false,cleared:false,wave:0,rewarded:false});
     p1.x=entry.x;p1.y=entry.y;p1.rx=entry.x;p1.ry=entry.y;
-    p1.maxHealth=Math.max(8,Number(p1.maxHealth||8));p1.health=8;p1.armor=3;p1.invuln=650;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
+    p1.maxHealth=Math.max(8,Number(p1.maxHealth||8));p1.health=8;p1.armor=3;p1.invuln=10000;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
     move1=0;input.clear();
     const original={period:Number(trap.period),phase:Number(trap.phase)};
     const period=100000,now=performance.now();
@@ -100,14 +100,19 @@ try{
   assert.equal(fixture.available,true,"live encounter trap fixture must be available: "+JSON.stringify(fixture));
   assert.equal(fixture.active,true,"ordinary floor trap must be ACTIVE before the real keyboard crossing");
 
-  await page.keyboard.down(fixture.key);
-  try{
-    await page.waitForFunction(target=>Number(p1?.x)===target.x&&Number(p1?.y)===target.y,fixture.target,{timeout:4000,polling:16});
-  }finally{
-    await page.keyboard.up(fixture.key);
-  }
+  await page.keyboard.press(fixture.key,{delay:24});
+  await page.waitForFunction(target=>Number(p1?.x)===target.x&&Number(p1?.y)===target.y,fixture.target,{timeout:4000,polling:16});
 
   await page.waitForFunction(arenaId=>(host?.arenas||[]).some(a=>a?.id===arenaId&&a.triggered===true),fixture.arenaId,{timeout:2500,polling:16});
+
+  // A newly spawned named enemy may legitimately open its first-encounter
+  // dossier. Close that presentation boundary before asserting resumed Solo
+  // ownership; the trap hit itself has already occurred on the movement edge.
+  if(await page.locator("#named-dossier-panel").isVisible()){
+    await page.locator("#named-dossier-close-top").click({noWaitAfter:true});
+    await page.waitForFunction(()=>String(mode||"")==="playing",{timeout:2500,polling:16});
+  }
+
   const after=await page.evaluate(({arenaId,trapId})=>{
     const api=window.CCGLostSizzlerV142R58AuthoritativeTrapCore;
     const arena=(host?.arenas||[]).find(a=>a?.id===arenaId);
