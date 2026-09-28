@@ -145,7 +145,7 @@ try{
   assert.equal(boot.build,"V10.42 r65");assert.equal(boot.cache,"20260928r65");assert.equal(boot.metaBuild,"V10.42 r65");assert.equal(boot.metaCache,"20260928r65");
   assert.ok(boot.ordered.length>=30,"r47 bootstrap must load the complete ordered V10.42 chain");
   assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260928r65"),"every ordered V10.42 module must use the r65 cache token");
-  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260928r65")),"expected r64 projectile lifecycle asset was not requested");
+  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260928r65")),"expected r65 projectile lifecycle asset was not requested");
   assert.equal(await page.evaluate(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.ownsBoundary?.()===true),true,"#2118 lifecycle owner must be authoritative before play");
 
   await page.evaluate(()=>{const hb=window.__ccgEnduranceHeartbeat={frames:0,stalls:0,maxGap:0,last:0};const beat=t=>{if(hb.last){const gap=t-hb.last;hb.maxGap=Math.max(hb.maxGap,gap);if(gap>300)hb.stalls++}hb.last=t;hb.frames++;requestAnimationFrame(beat)};requestAnimationFrame(beat)});
