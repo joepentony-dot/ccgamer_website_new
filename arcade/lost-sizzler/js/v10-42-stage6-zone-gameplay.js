@@ -88,10 +88,12 @@
   function tuneTrap(trap,index,profile,seed,worldState){
     if(!trap)return trap;
     const room=worldState?.rooms?.[trap.roomId]||null,role=routeRole(room),salt=hash32(`${seed}|${trap.id}|trap|${role}`);
-    // Ember must always advertise its mechanical identity even on a floor
-    // with only one or two retained traps. Other zones keep deterministic
-    // palette selection, while every even Ember trap is guaranteed fire.
-    trap.kind=profile.id==="ash"&&index%2===0?"fire":profile.trapKinds[(index+salt)%profile.trapKinds.length];
+    const guaranteed=String(trap.v142FinalFamilyKind||trap.kind||"").toLowerCase();
+    // A final world-start family representative owns its family identity.
+    // Zone tuning may still adjust cadence/phase, but never retag the last
+    // guaranteed FIRE, SPIKE or SHOCK into another family.
+    if(trap.v142FinalFamilyGuaranteed&&TRAP_FAMILIES.includes(guaranteed))trap.kind=guaranteed;
+    else trap.kind=profile.id==="ash"&&index%2===0?"fire":profile.trapKinds[(index+salt)%profile.trapKinds.length];
     const roleScale=role==="crossroads"?.90:role==="alternate-route"?.94:role==="purposeful-dead-end"?1.08:1;
     trap.period=Math.round(profile.trapPeriod*roleScale);
     trap.phase=salt%Math.max(1,trap.period);
@@ -197,6 +199,10 @@
       occupied.add(`${trap.x},${trap.y}`);
       counts[kind]=1;
       repairs++;
+    }
+    for(const kind of TRAP_FAMILIES){
+      const representative=traps.find(trap=>trap?.active&&String(trap.kind||"").toLowerCase()===kind);
+      if(representative){representative.v142FinalFamilyGuaranteed=true;representative.v142FinalFamilyKind=kind}
     }
     state.trapFamilyRepairs+=repairs;
     return repairs;
