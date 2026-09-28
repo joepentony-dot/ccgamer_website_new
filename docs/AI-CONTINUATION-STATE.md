@@ -1,3 +1,10 @@
+## Dungeon R62 manual-acceptance follow-up — 28 September 2026
+
+- Fresh deployed/manual findings after R61 are now tracked on `codex/dungeon-r62-manual-acceptance-followup-20260928`: tactical-radar marker integrity, clipped Bronze-key/keyring HUD content, and structurally detached generated doors.
+- Door generation must gain a post-carve topology invariant: every ordinary/optional door must be anchored to the correct surrounding wall cells and connect two valid traversable sides; later loop/corridor carving may not orphan an existing door.
+- Do not treat the detached-door screenshot as a renderer-only issue. Fix/reject the invalid topology in world generation and add deterministic generation coverage.
+- Preserve the merged R61 FIRE/death repair and complete its separate hands-on acceptance while R62 qualification runs.
+
 ## Dungeon R61 live runtime-integrity P0 — 28 September 2026
 
 - Manual deployed r60 acceptance failed again: real Space input reaches Solo gameplay repeatedly with full ammo, zero FIRE cooldown and zero active projectiles, while the attack probe reports `fired:false`. User also reports a separate live case where HEALTH reached zero without the normal death/respawn/game-over rules completing.
