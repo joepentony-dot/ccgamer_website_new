@@ -116,18 +116,27 @@ try{
   await page.keyboard.press("Space");
   await page.keyboard.up("ArrowUp");
   await page.waitForFunction(before=>Number(p1?.mana||0)<before,lateOwnerBefore.mana,{timeout:3000});
-  const lateOwnerAfter=await page.evaluate(()=>({
-    mana:Number(p1.mana),
-    shots:bullets.filter(b=>b&&b.ttl>0&&b.owner===p1.id).length,
-    poisonedCalls:Number(window.__ccgR62PoisonedFireCalls||0),
-    trace:(window.CCGLostSizzlerV142R58AuthoritativeFireCore?.trace||[]).map(row=>String(row.stage||"")),
-    r29UpdateFaults:Number(window.CCGLostSizzlerV141R29?.state?.updateFaults||0),
-    r59FaultBridges:Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.faultBridges||0)
-  }));
+  const lateOwnerAfter=await page.evaluate(()=>{
+    const trace=(window.CCGLostSizzlerV142R58AuthoritativeFireCore?.trace||[]).map(row=>({...row}));
+    return{
+      mana:Number(p1.mana),
+      liveShots:bullets.filter(b=>b&&b.ttl>0&&b.owner===p1.id).length,
+      poisonedCalls:Number(window.__ccgR62PoisonedFireCalls||0),
+      trace,
+      stages:trace.map(row=>String(row.stage||"")),
+      inserted:Math.max(0,...trace.filter(row=>String(row.stage||"")==="projectiles-inserted").map(row=>Number(row.inserted||0))),
+      r29UpdateFaults:Number(window.CCGLostSizzlerV141R29?.state?.updateFaults||0),
+      r59FaultBridges:Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.faultBridges||0)
+    }
+  });
   assert.equal(lateOwnerBefore.mana-lateOwnerAfter.mana,1,"late mutable FIRE replacement must not block authoritative buffered FIRE");
-  assert.ok(lateOwnerAfter.shots>=1,"authoritative buffered FIRE must insert a projectile despite the poisoned mutable owner");
+  // Ammo is committed only after the lexical owner has verified insertion.
+  // A valid projectile may immediately hit nearby geometry and leave the live
+  // bullets array before this asynchronous sample, so prove insertion from the
+  // authoritative trace rather than requiring the projectile to remain alive.
+  assert.ok(lateOwnerAfter.inserted>=1,`authoritative buffered FIRE must record projectile insertion despite the poisoned mutable owner: ${JSON.stringify(lateOwnerAfter)}`);
   assert.equal(lateOwnerAfter.poisonedCalls,0,"buffered/direct FIRE must not invoke the poisoned mutable global owner");
-  for(const stage of ["queue","executor-enter","projectiles-inserted","ammo-committed","shot-complete","executor-result"])assert.ok(lateOwnerAfter.trace.includes(stage),`authoritative FIRE trace must record ${stage}`);
+  for(const stage of ["queue","executor-enter","projectiles-inserted","ammo-committed","shot-complete","executor-result"])assert.ok(lateOwnerAfter.stages.includes(stage),`authoritative FIRE trace must record ${stage}`);
   assert.equal(lateOwnerAfter.r29UpdateFaults,lateOwnerBefore.r29UpdateFaults,"late-owner regression must not introduce an R29 update fault");
   assert.equal(lateOwnerAfter.r59FaultBridges,lateOwnerBefore.r59FaultBridges,"late-owner regression must not introduce an R59 fault bridge");
   await page.evaluate(()=>{if(typeof window.__ccgR62OriginalMutableFire==="function")firePlayer=window.__ccgR62OriginalMutableFire;delete window.__ccgR62OriginalMutableFire});
