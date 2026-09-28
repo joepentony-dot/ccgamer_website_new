@@ -10,6 +10,13 @@ window.CCG_ASSET_OVERRIDES={
     visuals:{
       playerSheet:null,
       chestSheet:null,
+      chestFrame0:null,
+      chestFrame1:null,
+      chestFrame2:null,
+      spikeTrapFrame0:null,
+      spikeTrapFrame1:null,
+      spikeTrapFrame2:null,
+      spikeTrapFrame3:null,
       enemyAtlasA:null,
       enemyAtlasB:null,
       environmentAtlas:null,
