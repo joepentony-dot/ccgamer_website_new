@@ -26,6 +26,8 @@ window.CCG_ASSET_OVERRIDES={
       environmentAtlas:null,
       switchSheet:null,
       switchSecretSheet:null,
+      switchButtonUp:null,
+      switchButtonDown:null,
       sigilSheet:null,
       environmentTileset:null,
       floorTile1:null,
