@@ -92,6 +92,46 @@ try{
   assert.equal(normalAfter.held,false,"normal follow-up tap must release Space");
   assert.equal(normalAfter.physicalHeld,0,"normal follow-up tap must not leave the physical hold owner latched");
 
+  // Reproduce the deployed lockout architecture directly: after ordered startup
+  // and late installers have settled, replace the mutable global FIRE owner with
+  // a function that always refuses the shot. Real keyboard FIRE must still route
+  // through the captured authoritative core and complete projectile/ammo commit.
+  await page.waitForTimeout(450);
+  const lateOwnerBefore=await page.evaluate(()=>{
+    p1.firearmUnlocked=true;
+    p1.weapon={...baseWeapon(),name:"TIER 2 · Field Pulse II",displayName:"TIER 2 · Field Pulse II",rating:3};
+    p1.weaponLevel=2;p1.mana=113;p1.maxMana=Math.max(120,Number(p1.maxMana)||0);p1.hitStunMs=0;
+    fire1=0;fireBuffer1=0;projectileCD=0;bullets.length=0;input.clear();
+    window.CCGLostSizzlerV142R58AuthoritativeFireCore?.clearTrace?.();
+    window.__ccgR62OriginalMutableFire=firePlayer;
+    window.__ccgR62PoisonedFireCalls=0;
+    firePlayer=function firePlayerR62PoisonedLateOwner(){window.__ccgR62PoisonedFireCalls++;return false};
+    return{
+      mana:Number(p1.mana),
+      r29UpdateFaults:Number(window.CCGLostSizzlerV141R29?.state?.updateFaults||0),
+      r59FaultBridges:Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.faultBridges||0)
+    };
+  });
+  await page.keyboard.down("ArrowUp");
+  await page.keyboard.press("Space");
+  await page.keyboard.up("ArrowUp");
+  await page.waitForFunction(before=>Number(p1?.mana||0)<before,lateOwnerBefore.mana,{timeout:3000});
+  const lateOwnerAfter=await page.evaluate(()=>({
+    mana:Number(p1.mana),
+    shots:bullets.filter(b=>b&&b.ttl>0&&b.owner===p1.id).length,
+    poisonedCalls:Number(window.__ccgR62PoisonedFireCalls||0),
+    trace:(window.CCGLostSizzlerV142R58AuthoritativeFireCore?.trace||[]).map(row=>String(row.stage||"")),
+    r29UpdateFaults:Number(window.CCGLostSizzlerV141R29?.state?.updateFaults||0),
+    r59FaultBridges:Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.faultBridges||0)
+  }));
+  assert.equal(lateOwnerBefore.mana-lateOwnerAfter.mana,1,"late mutable FIRE replacement must not block authoritative buffered FIRE");
+  assert.ok(lateOwnerAfter.shots>=1,"authoritative buffered FIRE must insert a projectile despite the poisoned mutable owner");
+  assert.equal(lateOwnerAfter.poisonedCalls,0,"buffered/direct FIRE must not invoke the poisoned mutable global owner");
+  for(const stage of ["queue","executor-enter","projectiles-inserted","ammo-committed","shot-complete","executor-result"])assert.ok(lateOwnerAfter.trace.includes(stage),`authoritative FIRE trace must record ${stage}`);
+  assert.equal(lateOwnerAfter.r29UpdateFaults,lateOwnerBefore.r29UpdateFaults,"late-owner regression must not introduce an R29 update fault");
+  assert.equal(lateOwnerAfter.r59FaultBridges,lateOwnerBefore.r59FaultBridges,"late-owner regression must not introduce an R59 fault bridge");
+  await page.evaluate(()=>{if(typeof window.__ccgR62OriginalMutableFire==="function")firePlayer=window.__ccgR62OriginalMutableFire;delete window.__ccgR62OriginalMutableFire});
+
   const swordBefore=await page.evaluate(()=>{
     p1.firearmUnlocked=false;p1.weapon=null;p1.mana=0;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
     fire1=0;fireBuffer1=0;projectileCD=0;bullets.length=0;input.clear();
