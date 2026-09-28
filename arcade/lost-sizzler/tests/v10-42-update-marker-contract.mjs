@@ -8,7 +8,7 @@ const identityOwner = fs.readFileSync(new URL('../js/v10-42-r4-release-identity-
 assert.equal(version.releaseVersion, 'V10.42');
 assert.equal(version.build, 'V10.42 r64');
 assert.equal(version.cacheToken, '20260928r64');
-assert.match(index, /meta name="ccg-lost-sizzler-build" content="V10\.42 r62"/);
+assert.match(index, /meta name="ccg-lost-sizzler-build" content="V10\.42 r64"/);
 assert.match(index, /meta name="ccg-lost-sizzler-cache" content="20260928r64"/);
 assert.match(index, /C64 Dungeon Carnage/);
 assert.match(index, /BUILD V10\.42/);
