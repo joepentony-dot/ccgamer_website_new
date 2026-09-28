@@ -96,17 +96,20 @@ jobs:
           done <<< "$FILES"
 
       - name: Setup Node
+        if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
         uses: actions/setup-node@v5
         with:
           node-version: 20
 
       - name: Install dependencies
+        if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
         run: |
           echo "[seo] Installing dependencies (best effort)..."
           npm install || true
 
       # Verified public YouTube metadata is read via the repository secret below; never commit the API key itself.
       - name: Sync verified YouTube metadata
+        if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
         env:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: |
@@ -118,55 +121,67 @@ jobs:
           fi
 
       - name: Regenerate retro feature pages
+        if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
         run: |
           echo "[seo] Regenerating Retro Specials, Retro Events and Amiga Demo Music from their authoritative datasets..."
           node scripts/generate-retro-pages.js
 
       - name: Require canonical shell on regenerated retro pages
+        if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
         run: |
           node scripts/normalize-public-header-shell.js --root retro-events --check
           node scripts/normalize-public-header-shell.js --root retro-specials --check
           node scripts/normalize-public-header-shell.js --root amiga-demo-music --check
 
       - name: Generate game video SEO
+        if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
         run: |
           echo "[seo] Generating static game video markup and game video sitemap..."
           npm run generate:video-seo
 
       - name: Generate retro watch page video SEO
+        if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
         run: |
           echo "[seo] Generating Retro Specials, Retro Events and Amiga Demo Music watch-page video SEO..."
           npm run generate:retro-video-seo
 
       - name: Generate video library and key moments
+        if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
         run: |
           echo "[seo] Generating the CCG video library, chapter links, Clip markup and internal game discovery..."
           npm run generate:video-library
 
       - name: Generate sitemap index
+        if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
         run: |
           echo "[seo] Generating sitemap artifacts and indexing all child sitemaps..."
           npm run generate:sitemaps
 
       - name: Validate sitemaps
+        if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
         run: npm run validate:sitemaps
 
       - name: Validate game video SEO
+        if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
         run: npm run validate:video-seo
 
       - name: Validate retro watch page video SEO
+        if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
         run: npm run validate:retro-video-seo
 
       - name: Validate video library and key moments
+        if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
         run: npm run validate:video-library
 
       - name: Recheck canonical shell after SEO enrichment
+        if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
         run: |
           node scripts/normalize-public-header-shell.js --root retro-events --check
           node scripts/normalize-public-header-shell.js --root retro-specials --check
           node scripts/normalize-public-header-shell.js --root amiga-demo-music --check
 
       - name: Check generated output whitespace
+        if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
         run: git diff --check
 
       - name: Commit generated SEO artifacts
