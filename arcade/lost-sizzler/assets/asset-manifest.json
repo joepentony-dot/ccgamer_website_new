@@ -19,7 +19,7 @@
       "doorsAndTorches": "assets/pixel/environment-atlas-v10-35.png"
     },
     "visualOverhaul": {
-      "playerSheet": "assets/pixel/visual-overhaul/shade-puny/warrior-blue.png",
+      "playerSheet": "assets/pixel/explorer-sheet-v10-34.png",
       "enemyWarriorSheet": "assets/pixel/visual-overhaul/shade-puny-enemies/warrior-red.png",
       "enemySoldierSheet": "assets/pixel/visual-overhaul/shade-puny-enemies/soldier-red.png",
       "enemyArcherSheet": "assets/pixel/visual-overhaul/shade-puny-enemies/archer-green.png",
@@ -54,7 +54,10 @@
       "floorTile8": "assets/pixel/visual-overhaul/0x72/floor-8.png",
       "wallTileMid": "assets/pixel/visual-overhaul/0x72/wall-mid.png",
       "wallTileHole1": "assets/pixel/visual-overhaul/0x72/wall-hole-1.png",
-      "wallTileHole2": "assets/pixel/visual-overhaul/0x72/wall-hole-2.png"
+      "wallTileHole2": "assets/pixel/visual-overhaul/0x72/wall-hole-2.png",
+      "switchButtonUp": "assets/pixel/visual-overhaul/0x72/button-blue-up.png",
+      "switchButtonDown": "assets/pixel/visual-overhaul/0x72/button-blue-down.png",
+      "playerAnimationReference": "assets/pixel/visual-overhaul/shade-puny/warrior-blue.png"
     }
   },
   "music": {
