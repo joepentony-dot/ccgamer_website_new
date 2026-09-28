@@ -100,12 +100,8 @@ try{
   assert.equal(fixture.available,true,"live encounter trap fixture must be available: "+JSON.stringify(fixture));
   assert.equal(fixture.active,true,"ordinary floor trap must be ACTIVE before the real keyboard crossing");
 
-  await page.keyboard.down(fixture.key);
-  try{
-    await page.waitForFunction(target=>Number(p1?.x)===target.x&&Number(p1?.y)===target.y,fixture.target,{timeout:4000,polling:16});
-  }finally{
-    await page.keyboard.up(fixture.key);
-  }
+  await page.keyboard.press(fixture.key,{delay:24});
+  await page.waitForFunction(target=>Number(p1?.x)===target.x&&Number(p1?.y)===target.y,fixture.target,{timeout:4000,polling:16});
 
   await page.waitForFunction(arenaId=>(host?.arenas||[]).some(a=>a?.id===arenaId&&a.triggered===true),fixture.arenaId,{timeout:2500,polling:16});
   const after=await page.evaluate(({arenaId,trapId})=>{
