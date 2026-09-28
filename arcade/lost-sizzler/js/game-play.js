@@ -26,6 +26,32 @@ const attackHeldInputs=new WeakMap();
 function setAttackHeldInput(p,held){if(!p)return false;attackHeldInputs.set(p,Boolean(held));return Boolean(held)}
 function isAttackHeldInput(p){return Boolean(p&&attackHeldInputs.get(p))}
 let authoritativeCoreFirePlayer=null;
+const AUTHORITATIVE_FIRE_TRACE_LIMIT=96;
+const authoritativeFireTrace=[];
+let authoritativeFireIntentSerial=0;
+function traceAuthoritativeFire(stage,p,details={}){
+  const row={intentId:Number(p?.__ccgFireIntentId||0),stage:String(stage||""),at:performance.now(),playerId:String(p?.id||p?.name||"P1"),...details};
+  authoritativeFireTrace.push(row);
+  if(authoritativeFireTrace.length>AUTHORITATIVE_FIRE_TRACE_LIMIT)authoritativeFireTrace.splice(0,authoritativeFireTrace.length-AUTHORITATIVE_FIRE_TRACE_LIMIT);
+  return row
+}
+function executeAuthoritativeFire(p,requestedDirection=null,source="buffered"){
+  const owner=authoritativeCoreFirePlayer;
+  const direction=attackDirection(p,requestedDirection);
+  traceAuthoritativeFire("executor-enter",p,{source,direction:{...direction},ammo:Number(p?.mana||0)});
+  if(typeof owner!=="function"){
+    traceAuthoritativeFire("executor-rejected",p,{source,reason:"authoritative-owner-unavailable"});
+    return false
+  }
+  try{
+    const fired=Boolean(owner(p,direction));
+    traceAuthoritativeFire("executor-result",p,{source,fired,ammo:Number(p?.mana||0)});
+    return fired
+  }catch(error){
+    traceAuthoritativeFire("executor-exception",p,{source,message:String(error?.message||error||"unknown").slice(0,220)});
+    throw error
+  }
+}
 // Local player FIRE owns projectile insertion all the way into the canonical
 // bullets collection. This reference is deliberately lexical/immutable so a
 // later window.spawnBullet wrapper cannot swallow a valid shot while leaving
@@ -57,8 +83,7 @@ function attackNowUnbuffered(p,requestedDirection=null){
   const isP2=p===p2,cooldown=isP2?fire2:fire1;
   if(isP2)fireBuffer2=0;else fireBuffer1=0;
   if(cooldown>0)return false;
-  const owner=authoritativeCoreFirePlayer||firePlayer;
-  return owner(p,attackDirection(p,requestedDirection))
+  return executeAuthoritativeFire(p,requestedDirection,"direct")
 }
 function queueAttack(p,requestedDirection=null){
   if(!p||mode!=="playing")return false;
@@ -68,8 +93,10 @@ function queueAttack(p,requestedDirection=null){
   const previousIntent=Number(attackIntentTimes.get(p)||0),duplicateIntent=previousIntent>0&&now-previousIntent<ATTACK_INTENT_DEDUPE_MS;
   attackIntentTimes.set(p,now);
   if(requestedDirection&&(requestedDirection.x||requestedDirection.y))p.dir=direction;
-  if(duplicateIntent)return true;
-  try{dispatchEvent(new CustomEvent("ccg:attack-intent",{detail:{playerId:String(p.id||p.name||"P1"),p2:isP2,at:now}}))}catch(_){}
+  if(duplicateIntent){traceAuthoritativeFire("queue-deduped",p,{source:"input"});return true}
+  p.__ccgFireIntentId=++authoritativeFireIntentSerial;
+  traceAuthoritativeFire("queue",p,{source:"input",direction:{...direction},ammo:Number(p.mana||0)});
+  try{dispatchEvent(new CustomEvent("ccg:attack-intent",{detail:{playerId:String(p.id||p.name||"P1"),p2:isP2,at:now,intentId:p.__ccgFireIntentId}}))}catch(_){}
   // Input records intent only. The simulation loop is the sole buffered FIRE
   // executor, preventing one physical keyboard press from racing an immediate
   // shot against the same-frame held/buffer path.
@@ -305,16 +332,18 @@ function canonicalMeleeAttackIfRequired(p,d){
   return Boolean(melee.meleeAttack(p,dir))
 }
 function firePlayer(p,d){
-  if(!p||mode!=="playing"||(p.hitStunMs||0)>0)return false;
-  if(p.__ccgFireSpawnFault)return false;
+  if(!p){traceAuthoritativeFire("rejection",p,{reason:"no-player"});return false}
+  if(mode!=="playing"){traceAuthoritativeFire("rejection",p,{reason:"mode",mode:String(mode||"")});return false}
+  if((p.hitStunMs||0)>0){traceAuthoritativeFire("rejection",p,{reason:"hit-stun",hitStunMs:Number(p.hitStunMs||0)});return false}
+  if(p.__ccgFireSpawnFault){traceAuthoritativeFire("rejection",p,{reason:"spawn-fault-latched"});return false}
   const isP2=p===p2,cd=isP2?fire2:fire1;
-  if(cd>0)return false;
+  if(cd>0){traceAuthoritativeFire("rejection",p,{reason:"cooldown",cooldown:Number(cd)});return false}
   const meleeResult=canonicalMeleeAttackIfRequired(p,d);
   if(meleeResult!==null)return meleeResult;
   const w=p.weapon||baseWeapon();
   const active=bullets.filter(b=>b.owner===p.id&&b.ttl>0).length;
   const max=C.player.maxProjectiles+Math.max(0,(w.shots||1)-1);
-  if(active>=max){S.sfx("empty");return false}
+  if(active>=max){traceAuthoritativeFire("rejection",p,{reason:"projectile-cap",active,max});S.sfx("empty");return false}
   const ammoCost=1;
   if(p.mana<ammoCost){
     S.sfx("empty");
@@ -322,12 +351,13 @@ function firePlayer(p,d){
       p.emergencyRechargeMs=C.player.emergencyRechargeMs;
       showToast("EMERGENCY CAPACITOR CHARGING",`You are completely dry. Survive for ${Math.ceil(C.player.emergencyRechargeMs/1000)} seconds and the reserve capacitor will restore ${C.player.emergencyAmmo} emergency shots.`,"red",8500)
     }else showToast("LOW AMMO","Find a supply pack or switch tactics.","red");
+    traceAuthoritativeFire("rejection",p,{reason:"ammo",ammo:Number(p.mana||0),ammoCost});
     return false
   }
 
   d=attackDirection(p,d);
   const dirs=weaponDirections(p,d).slice(0,Math.max(1,max-active));
-  if(!dirs.length)return false;
+  if(!dirs.length){traceAuthoritativeFire("rejection",p,{reason:"no-directions"});return false}
 
   const shotIds=[],beforeMana=Number(p.mana||0),beforeCount=bullets.filter(b=>b.owner===p.id&&b.ttl>0).length;
   try{
@@ -336,10 +366,11 @@ function firePlayer(p,d){
       shotIds.push(b.id);
       authoritativeLocalProjectileInsert(b,false);
     }
-  }catch(_){
+  }catch(error){
     for(let i=bullets.length-1;i>=0;i--)if(shotIds.includes(bullets[i]?.id))bullets.splice(i,1);
     p.__ccgFireSpawnFault=true;
     if(isP2)fire2=0;else fire1=0;
+    traceAuthoritativeFire("projectile-exception",p,{message:String(error?.message||error||"unknown").slice(0,220)});
     return false
   }
   const afterCount=bullets.filter(b=>b.owner===p.id&&b.ttl>0).length;
@@ -347,11 +378,14 @@ function firePlayer(p,d){
     for(let i=bullets.length-1;i>=0;i--)if(shotIds.includes(bullets[i]?.id))bullets.splice(i,1);
     p.__ccgFireSpawnFault=true;
     if(isP2)fire2=0;else fire1=0;
+    traceAuthoritativeFire("rejection",p,{reason:"projectile-insertion",beforeCount,afterCount});
     return false
   }
+  traceAuthoritativeFire("projectiles-inserted",p,{beforeCount,afterCount,inserted:afterCount-beforeCount});
 
   p.dir=d;
   p.mana=beforeMana-ammoCost;
+  traceAuthoritativeFire("ammo-committed",p,{beforeMana,afterMana:Number(p.mana||0),ammoCost});
   p.ammoFlashMs=C.player.ammoFlashMs;
   p._fireAnimAt=performance.now();
   p._fireAnimMs=Math.max(120,Math.min(260,Number((p.rapidMs>0?88:C.player.fireDelay)*(w.delay||1))||180));
@@ -365,15 +399,18 @@ function firePlayer(p,d){
     }
   }
   S.sfx("fire");muzzle(p.x,p.y,d);sync();
+  traceAuthoritativeFire("shot-complete",p,{ammo:Number(p.mana||0),shots:shotIds.length});
   return true
 }
 authoritativeCoreFirePlayer=firePlayer;
 const authoritativeFireApi=Object.freeze({
-  version:"V10.42-r58-core",
+  version:"V10.42-r62-core-owner",
   gameplayOwnership:true,
   attackNow:(direction=null)=>attackNowUnbuffered(p1,direction),
-  fire:(player,direction)=>(authoritativeCoreFirePlayer||firePlayer)(player,direction),
+  fire:(player,direction)=>executeAuthoritativeFire(player,direction,"api"),
   queue:(player,direction)=>queueAttack(player,direction),
+  clearTrace:()=>{authoritativeFireTrace.length=0},
+  get trace(){return authoritativeFireTrace},
   recoverOrphanedGameplayMode:()=>false
 });
 window.CCGLostSizzlerV142R58AuthoritativeFireCore=authoritativeFireApi;
@@ -631,7 +668,7 @@ function update(dt){
   // combat path must never stop an already-held movement command being serviced.
   if(move1<=0){const d=d1();if(d){movePlayer(p1,d.x,d.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}if(p2&&move2<=0){const d=d2();if(d){movePlayer(p2,d.x,d.y);move2=C.player.moveDelay*(p2.moveMultiplier||1)}}
   const p1HeldAttack=isAttackHeldInput(p1)&&(input.has("Space")||input.has("Numpad0")),p2HeldAttack=Boolean(p2&&isAttackHeldInput(p2)&&input.has("Enter"));
-  if((p1HeldAttack||fireBuffer1>0)&&fire1<=0){const fired=firePlayer(p1,attackDirection(p1,d1()));if(fired)fireBuffer1=0;else fire1=0}if(p2&&(p2HeldAttack||fireBuffer2>0)&&fire2<=0){const fired=firePlayer(p2,attackDirection(p2,d2()));if(fired)fireBuffer2=0;else fire2=0}
+  if((p1HeldAttack||fireBuffer1>0)&&fire1<=0){const fired=executeAuthoritativeFire(p1,d1(),"buffered");if(fired)fireBuffer1=0;else fire1=0}if(p2&&(p2HeldAttack||fireBuffer2>0)&&fire2<=0){const fired=executeAuthoritativeFire(p2,d2(),"buffered");if(fired)fireBuffer2=0;else fire2=0}
   if(projectileCD<=0){const liveProjectileWork=bullets.some(b=>b&&b.ttl>0)||enemyBullets.some(b=>b&&b.ttl>0);stepProjectiles();projectileCD=liveProjectileWork?70:0}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendPlayer();sendCD=100}if(worldCD<=0&&net.isHost){broadcastWorld();worldCD=350}
   updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBoulder(dt);updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
   // Final exact-cell pass runs after room/encounter systems so an occupied tile
