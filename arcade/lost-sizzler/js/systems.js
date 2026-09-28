@@ -61,6 +61,24 @@ window.CCGSystems=(()=>{
     const a=[];for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++){const q={x,y},d=md(q,origin);if(world.map[y]?.[x]!==0||used.has(cell(x,y))||d<minDist||d>maxDist)continue;a.push(q)}
     a.sort((u,v)=>md(u,origin)-md(v,origin));const q=a[0]||freeInRoom(world,room,used);if(q)used.add(cell(q.x,q.y));return q
   }
+  function freeWallSwitchPosition(world,room,used){
+    const candidates=[];
+    for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++){
+      if(world.map[y]?.[x]!==0||used.has(cell(x,y)))continue;
+      const walls=[
+        ["north",world.map[y-1]?.[x]!==0],
+        ["south",world.map[y+1]?.[x]!==0],
+        ["west",world.map[y]?.[x-1]!==0],
+        ["east",world.map[y]?.[x+1]!==0]
+      ].filter(([,blocked])=>blocked);
+      if(!walls.length)continue;
+      const side=walls[(x+y+room.id)%walls.length][0],centreBias=Math.abs(x-(room.x+room.w/2))+Math.abs(y-(room.y+room.h/2));
+      candidates.push({x,y,wallSide:side,centreBias});
+    }
+    candidates.sort((a,b)=>a.centreBias-b.centreBias||a.y-b.y||a.x-b.x);
+    const q=candidates[0]||{...freeInRoom(world,room,used),wallSide:"north"};
+    used.add(cell(q.x,q.y));return q;
+  }
   function wallTorchPositions(room){
     const c=centre(room);return[{x:room.x+1,y:c.y},{x:room.x+room.w-1,y:c.y}].filter(p=>p.x>0&&p.y>0);
   }
@@ -506,8 +524,8 @@ window.CCGSystems=(()=>{
     for(let i=0;i<Math.min(2,rooms.length);i++){const room=rooms[(i*6+4)%rooms.length],q=freeInRoom(world,room,used);host.shrines.push({id:`shrine${i}`,...q,roomId:room.id,active:true})}
 
     host.switches=[];
-    const switchDoor=host.doors.find(d=>d.type==="switch");if(switchDoor){const room=rooms[Math.min(rooms.length-1,5)]||rooms[0],q=freeInRoom(world,room,used);host.switches.push({id:"switch0",...q,active:true,doorId:switchDoor.id,wallMounted:true,remote:false})}
-    const remoteSecret=host.doors.find(d=>d.type==="secret"&&d.hidden);if(remoteSecret&&rooms.length){const room=rooms[Math.min(rooms.length-1,8)]||rooms[0],q=freeInRoom(world,room,used);host.switches.push({id:"remote-secret-switch",...q,active:true,doorId:remoteSecret.id,wallMounted:true,remote:true,revealSecret:true})}
+    const switchDoor=host.doors.find(d=>d.type==="switch");if(switchDoor){const room=rooms[Math.min(rooms.length-1,5)]||rooms[0],q=freeWallSwitchPosition(world,room,used);host.switches.push({id:"switch0",...q,active:true,toggled:false,doorId:switchDoor.id,wallMounted:true,remote:false})}
+    const remoteSecret=host.doors.find(d=>d.type==="secret"&&d.hidden);if(remoteSecret&&rooms.length){const room=rooms[Math.min(rooms.length-1,8)]||rooms[0],q=freeWallSwitchPosition(world,room,used);host.switches.push({id:"remote-secret-switch",...q,active:true,toggled:false,doorId:remoteSecret.id,wallMounted:true,remote:true,revealSecret:true})}
 
     host.deathCaches=[];
     // Per-floor persistent knowledge/state. These reset only when a new floor is generated.
