@@ -96,12 +96,12 @@ try{
     p1.mana=Math.max(100,Number(p1.maxMana||0));p1.rapidMs=5000;move1=0;fire1=0;input.clear();
     return{particles:particles.length,rings:rings.length,floaters:floaters.length};
   });
-  assert.ok(pressure.particles>=800&&pressure.rings>=80&&pressure.floaters>=100,"the sustained-fire scenario must create substantial effect pressure");
+  assert.equal(pressure.particles,360,"attempted particle overload must saturate at the R60 particle ceiling");\n  assert.equal(pressure.rings,72,"attempted ring overload must saturate at the R60 ring ceiling");\n  assert.ok(pressure.floaters>=100,"the sustained-fire scenario must retain substantial non-particle presentation pressure");
   await page.keyboard.down(loadedDirection.code);await page.keyboard.down("Space");await page.waitForTimeout(950);await page.keyboard.up("Space");await page.keyboard.up(loadedDirection.code);await page.waitForTimeout(100);
-  const loadedResult=await page.evaluate(()=>({x:p1.x,y:p1.y,mode,controller:window.CCGLostSizzlerModeRuntime?.snapshot?.().activeId||"",recovery:Number(window.CCGLostSizzlerV141R30?.state?.watchdogRecoveries||0)}));
+  const loadedResult=await page.evaluate(()=>({x:p1.x,y:p1.y,mode,controller:window.CCGLostSizzlerModeRuntime?.snapshot?.().activeId||"",recovery:Number(window.CCGLostSizzlerV141R30?.state?.watchdogRecoveries||0),particles:particles.length,rings:rings.length}));
   assert.notDeepEqual({x:loadedResult.x,y:loadedResult.y},{x:loadedDirection.x,y:loadedDirection.y},"Dungeon Solo movement must continue while sustained fire and effect pressure are active");
   assert.equal(loadedResult.mode,"playing","combat pressure must not drop the Solo run out of playing state");
-  assert.equal(loadedResult.controller,"dungeon-solo","combat pressure must not leak ownership into another game mode");
+  assert.equal(loadedResult.controller,"dungeon-solo","combat pressure must not leak ownership into another game mode");\n  assert.ok(loadedResult.particles<=360&&loadedResult.rings<=72,`combat pressure must remain inside the R60 visual budgets: ${JSON.stringify(loadedResult)}`);
 
   assert.deepEqual(pageErrors,[],`Solo combat-load movement regression must have no uncaught browser errors: ${pageErrors.join("\n")}`);
   console.log("Lost Sizzler LS-0826-18 Solo movement-before-fire, authoritative fire-insert fault isolation ordering and sustained combat-load regression passed in Chromium.");
