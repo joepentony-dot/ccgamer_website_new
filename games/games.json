@@ -24433,6 +24433,50 @@
   },
   {
     "system": "C64",
+    "id": "traffic",
+    "slug": "traffic",
+    "title": "Traffic",
+    "sorttitle": "Traffic",
+    "year": 1984,
+    "genres": [
+      "miscellaneous",
+      "strategy"
+    ],
+    "collections": [],
+    "videoid": "1oUrlC_BEos",
+    "thumbnail": "resources/images/thumbnails/all/traffic.png",
+    "pdf": "",
+    "disk": [],
+    "download_status": "",
+    "lemon": [],
+    "zzap": [],
+    "description": "Traffic is a 1984 Commodore 64 strategy game developed by Andromeda Software and published in the UK by Quicksilva. Set around a busy London road network, the game puts you in control of the traffic lights as cars, buses and motorbikes enter from different directions and queues begin to build. Your task is to keep the traffic moving, prevent gridlock and decide which junctions need attention before the congestion becomes unmanageable. Developed in Hungary during the early years of studios such as Andromeda and Novotrade bringing games to Western markets, Traffic is an unusual C64 title that swaps arcade action for real-time traffic management, timing and decision-making.",
+    "ccg_rating": 7,
+    "ccg_rating_reason": "An unusual and surprisingly demanding strategy game with a great concept, although the basic presentation and repetitive traffic management limit its long-term appeal. Still good though",
+    "credits": {
+      "publisher": [
+        "Quicksilva"
+      ],
+      "producer": "",
+      "coder": [
+        "Katalin Majsa",
+        "Zoltan Horvath",
+        "Csaba Nagy",
+        "Geza Bohus",
+        "Gabor Koranyi",
+        "Ferenc Beleznay"
+      ],
+      "graphics": [],
+      "musician": [],
+      "re_releaser": [],
+      "developer": "Andromeda Software"
+    },
+    "developer": "Andromeda Software",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+  {
+    "system": "C64",
     "id": "the_train_escape_to_normandy",
     "slug": "the-train-escape-to-normandy",
     "title": "The Train: Escape To Normandy",
