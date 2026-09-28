@@ -45,13 +45,14 @@ try{
   ));
 
   const result=await page.evaluate(async()=>globalThis.eval(`(async()=>{
-    const originalDoors=host.doors;
+    const doorList=host.doors;
+    const originalDoors=[...(doorList||[])];
     const d={
       id:"visual-door-contract",x:Number(p1.x)+1,y:Number(p1.y),type:"room",
       orientation:"horizontal",side:"north",locked:false,open:false,opening:false,
       openingStart:0,openAt:0
     };
-    host.doors=[d];focus=p1;
+    doorList.splice(0,doorList.length,d);focus=p1;
     const diagnostics=window.__CCG_DOOR_RENDER_DIAGNOSTICS__;
     const before=Number(diagnostics?.assetFrames||0);
     drawDoors();
@@ -73,7 +74,7 @@ try{
     d.orientation="horizontal";d.open=false;d.opening=false;
     drawDoors();
     const fallback={mode:String(diagnostics?.lastMode||""),orientation:String(diagnostics?.lastOrientation||""),state:String(diagnostics?.lastState||""),before:fallbackBefore,after:Number(diagnostics?.fallbackFrames||0),closedWidth:Number(lostSizzlerPixelAssets.doorLeafClosed?.naturalWidth||0),openWidth:Number(lostSizzlerPixelAssets.doorLeafOpen?.naturalWidth||0)};
-    host.doors=originalDoors;
+    doorList.splice(0,doorList.length,...originalDoors);
     return{before,horizontal,verticalOpen,opening,fallback};
   })()`));
 
