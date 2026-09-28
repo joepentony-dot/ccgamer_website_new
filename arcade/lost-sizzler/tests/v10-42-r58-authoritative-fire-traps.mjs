@@ -10,6 +10,7 @@ const r19=fs.readFileSync(new URL("js/v10-42-r19-mobile-trap-layout-stability.js
 const r20=fs.readFileSync(new URL("js/v10-42-r20-live-regression-stability.js",root),"utf8");
 const rare=fs.readFileSync(new URL("js/v10-15-rare-events-balance.js",root),"utf8");
 const r54=fs.readFileSync(new URL("js/v10-41-r54-playtest-regressions.js",root),"utf8");
+const r1=fs.readFileSync(new URL("js/v10-42-r1-stability.js",root),"utf8");
 const touch=fs.readFileSync(new URL("js/v10-4-patch.js",root),"utf8");
 const bootstrap=fs.readFileSync(new URL("js/v10-42-bootstrap.js",root),"utf8");
 const version=JSON.parse(fs.readFileSync(new URL("version.json",root),"utf8"));
@@ -31,10 +32,13 @@ assert.doesNotMatch(queueBlock,/firePlayer\(/,"the input queue must never create
 assert.match(play,/const attackHeldInputs=new WeakMap\(\);[\s\S]*function setAttackHeldInput\(p,held\)[\s\S]*function isAttackHeldInput\(p\)/,"r58 must track qualified held FIRE separately from fresh attack intent");
 assert.match(main,/const p1AttackKey=e\.code==="Space"\|\|e\.code==="Numpad0"[\s\S]*setAttackHeldInput\(p1,Boolean\(e\.repeat\|\|gamepadHeld\)\)[\s\S]*if\(!e\.repeat\)queueAttack\(p1\)/,"desktop P1 keydown must queue one fresh intent and arm held FIRE only from repeat or gamepad-held ownership");
 assert.match(main,/addEventListener\("keyup",e=>\{input\.delete\(e\.code\);if\(\(e\.code==="Space"\|\|e\.code==="Numpad0"\)&&p1\)setAttackHeldInput\(p1,false\)/,"desktop keyup must explicitly release qualified held FIRE ownership");
-assert.match(play,/const p1HeldAttack=isAttackHeldInput\(p1\)&&\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\)[\s\S]*if\(\(p1HeldAttack\|\|fireBuffer1>0\)&&fire1<=0\)\{const fired=firePlayer\(p1,/,"the simulation loop must execute fresh P1 intent once and repeat only qualified held FIRE");
+assert.match(play,/function executeAuthoritativeFire\(p,d\)[\s\S]*String\(playMode\)==="split"\?firePlayer:\(authoritativeCoreFirePlayer\|\|firePlayer\)/,"Solo FIRE must bypass mutable legacy firePlayer wrappers while split mode retains its dedicated friendly-fire owner");
+assert.match(play,/const p1HeldAttack=isAttackHeldInput\(p1\)&&\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\)[\s\S]*if\(\(p1HeldAttack\|\|fireBuffer1>0\)&&fire1<=0\)\{const fired=executeAuthoritativeFire\(p1,/,"the simulation loop must execute fresh P1 intent through the captured authoritative FIRE owner");
 assert.doesNotMatch(play,/input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\|\|fireBuffer1>0/,"raw P1 key presence must never bypass qualified held-FIRE ownership");
 assert.match(play,/function firePlayer\(p,d\)[\s\S]*return true\n\}/,"core FIRE owner must report a completed shot");
-assert.match(play,/const shotIds=\[\],beforeMana=Number\(p\.mana\|\|0\),beforeCount=[\s\S]*try\{[\s\S]*spawnBullet\(b,false\)[\s\S]*\}catch\(_\)\{[\s\S]*bullets\.splice\(i,1\);[\s\S]*return false/,"projectile creation must fail transactionally and remove any partial volley");
+assert.match(play,/function spawnAuthoritativeProjectile\(b,remoteShot=false\)[\s\S]*bullets\.push\(\{\.\.\.b,__v142BornAt:bornAt,remote:!!remoteShot\}\)/,"the canonical FIRE owner must insert projectiles through a private authoritative boundary");
+assert.match(play,/const shotIds=\[\],beforeMana=Number\(p\.mana\|\|0\),beforeCount=[\s\S]*try\{[\s\S]*spawnAuthoritativeProjectile\(b,false\)[\s\S]*\}catch\(_\)\{[\s\S]*bullets\.splice\(i,1\);[\s\S]*return false/,"projectile creation must remain transactional inside the authoritative boundary");
+assert.doesNotMatch(play,/const externalSpawn=typeof window\.spawnBullet/,"canonical player FIRE must not delegate projectile insertion to a mutable window owner");
 assert.match(play,/if\(afterCount<=beforeCount\)[\s\S]*return false[\s\S]*p\.mana=beforeMana-ammoCost/,"FIRE must not spend ammo until at least one projectile exists");
 assert.match(play,/const delay=.*[\s\S]*if\(isP2\)fire2=delay;else fire1=delay/,"FIRE cooldown must be committed only after projectile creation succeeds");
 assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeFireCore=authoritativeFireApi/);
@@ -44,6 +48,8 @@ assert.match(touch,/if\(typeof queueAttack === "function"\) queueAttack\(p1\)/,"
 assert.match(touch,/input\.add\("Space"\)[\s\S]*setAttackHeldInput\(p1,true\)/,"touch hold must explicitly claim qualified held-FIRE ownership");
 assert.match(touch,/input\.delete\("Space"\)[\s\S]*setAttackHeldInput\(p1,false\)/,"touch release must explicitly release qualified held-FIRE ownership");
 assert.doesNotMatch(touch,/CCGLostSizzlerV142R20LiveRegressionStability\?\.attackNow/,"touch FIRE must not call a historical recovery owner");
+assert.match(r1,/!window\.CCGLostSizzlerV142R58AuthoritativeFireCore&&typeof spawnBullet/,"R1 must yield projectile ownership when the R58 authoritative FIRE core exists");
+assert.match(r1,/!window\.CCGLostSizzlerV142R58AuthoritativeFireCore&&typeof firePlayer/,"R1 must yield FIRE ownership when the R58 authoritative FIRE core exists");
 
 assert.match(play,/const trapCycleHits=new Map\(\)/,"trap duplicate suppression must be one per-trap/player cycle ledger");
 assert.match(play,/if\(trapDamage&&authoritativeTrapDamageDepth===0\)[\s\S]*return applyActiveTrapContact\(p,trap,now\)/,"public trap-labelled damage must re-enter the canonical R58 contact ledger");
