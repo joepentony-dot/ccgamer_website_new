@@ -15,9 +15,11 @@ assert.match(r59,/if\(!soloDungeonPlaying\(\)\|\|!soloRuntimeReady\(\)\)return f
 assert.match(r59,/if\(now<Math\.max\(0,Number\(state\.suppressRecoveryUntil\|\|0\)\)\)return false;/,"watchdog recovery must respect lifecycle suppression windows");
 assert.doesNotMatch(r59,/noteDuplicateFrame\(\);state\.lastAcceptedWallAt=perfNow\(\)/,"duplicate RAF callbacks must not masquerade as accepted simulation liveness");
 assert.match(r59,/const historicalCatchup=bounded>SOLO_MAX_STEP_MS/,"multi-step Solo recovery must identify historical catch-up frames");
-assert.match(r59,/while\(remaining>0&&steps<SOLO_MAX_STEPS\)[\s\S]*update\(step\)[\s\S]*if\(historicalCatchup&&!heldSuppressed&&remaining>0&&heldStateAvailable&&\(p1Held\|\|p2Held\)\)/,"historical catch-up must let the accepted frame service held input before masking it from later substeps");
-assert.match(r59,/if\(p1Held&&p1Ref\)setAttackHeldInput\(p1Ref,false\)/,"later historical substeps must suppress current P1 held-attack state");
-assert.match(r59,/if\(heldSuppressed&&heldStateAvailable\)[\s\S]*if\(p1Held&&p1Ref\)setAttackHeldInput\(p1Ref,true\)/,"held-attack state must be restored after the synchronous catch-up boundary");
+assert.match(r59,/if\(p1Held&&p1Ref\)setAttackHeldInput\(p1Ref,false\)/,"historical catch-up must mask present held attack while older simulation time is paid down");
+assert.match(r59,/if\(p1Buffer>0\)fireBuffer1=0/,"historical catch-up must defer the present queued P1 attack intent");
+assert.match(r59,/finalLiveSubstep=historicalCatchup&&remaining<=SOLO_MAX_STEP_MS;\s*if\(finalLiveSubstep\)restoreLiveAttack\(\);\s*try\{if\(typeof update==="function"\)update\(step\)/,"current held/buffered attack state must be restored only for the final live substep");
+assert.match(r59,/if\(p1Buffer>0\)fireBuffer1=Math\.max\(Number\(fireBuffer1\)\|\|0,p1Buffer\)/,"deferred queued attack must be restored without shortening its live buffer");
+assert.match(r59,/if\(attackDeferred&&!liveAttackRestored\)restoreLiveAttack\(\)/,"an aborted historical catch-up must not lose current attack ownership");
 
 assert.match(play,/const leftTile=Boolean\(p&&t&&\(Number\(p\.x\)!==Number\(t\.x\)\|\|Number\(p\.y\)!==Number\(t\.y\)\)\)/,"trap contact ledger must detect when a player has left the trap tile");
 assert.match(play,/if\(!p\|\|!t\|\|!t\.active\|\|leftTile\|\|!SYS\.trapActive\(t,now\)\)/,"trap contact ledger must rearm on tile exit as well as inactive-cycle boundaries");
