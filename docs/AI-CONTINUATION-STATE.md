@@ -1,3 +1,11 @@
+## Dungeon R60 floor/cache/effect safety — 28 September 2026
+
+- Draft PR #2396 is the authoritative R60 gameplay integration vehicle on merged R59 main `9abd513b4bc5b7f1d1d579c8ec9a973d3ce68c46`.
+- Preserve R60 product behaviour: numeric-only ARMOUR; Stay on This Floor + descend + extract; idempotent cleared-floor banking; later-floor notification rail parity; generic WEAPON CACHE / WEAPON EVOLVED / WEAPON CAPPED progression with ammo → XP → score capped fallback; 360-particle / 72-ring hard visual budgets; reduced overload bursts; fresh sword melee; sustained firearm FIRE; and authoritative FIRE/SPIKE/SHOCK contact with encounter enemies active.
+- Qualification reconciled stale pre-R60 contracts rather than reverting runtime design. The historical combat-load browser now deliberately overloads the bounded collections, requires them to saturate at 360/72, and then proves movement/FIRE/ownership continue within budget.
+- Do not merge until the exact current head is 0 behind main, mergeable, fast and canonical Node/static pass, focused Chromium and shards 1–6 pass, all triggered package/itch/site/SEO/cache/mobile/preview checks are green, and no material review finding remains.
+- After merge, refresh main and reconcile visual-overhaul PR #2395 once, preserving its unique local licensed assets/provenance and renderer work without wholesale rebasing stale gameplay history.
+
 ## R59 fresh-run attack regression — 28 September 2026
 
 - Manual deployed R59 acceptance failed immediately after #2398: bug report created at 06:20:35Z on `V10.42 r59 / 20260928r59` records Solo Floor 1 in playing mode with HP 8/8, AMMO 0/120, no firearm, fire1=0, buffer=0, projectileCD=0 and zero active projectiles. Repeated Space probes returned false and `_meleeSwingAt` remained zero.
