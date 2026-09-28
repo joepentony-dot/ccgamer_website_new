@@ -998,6 +998,32 @@ function composerSortLetter(name) {
     }
   }
 
+  function initMusicScrollPerfPause() {
+    const root = document.documentElement;
+    const pageId = String(root?.getAttribute("data-ccg-page") || "").toLowerCase();
+    if (!pageId.startsWith("music-") || root.dataset.ccgMusicScrollPerf === "ready") {
+      return;
+    }
+
+    root.dataset.ccgMusicScrollPerf = "ready";
+    const pauseClass = "ccg-perf-paused";
+    const resumeDelay = 160;
+    let resumeTimer = 0;
+
+    const onScroll = () => {
+      root.classList.add(pauseClass);
+      if (resumeTimer) {
+        window.clearTimeout(resumeTimer);
+      }
+      resumeTimer = window.setTimeout(() => {
+        root.classList.remove(pauseClass);
+      }, resumeDelay);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("touchmove", onScroll, { passive: true });
+  }
+
   function initBackToTop() {
     const wrap = document.querySelector("[data-ccg-back-to-top-wrap]");
     const button = document.querySelector("[data-ccg-back-to-top]");
@@ -1021,6 +1047,7 @@ function composerSortLetter(name) {
 
   document.addEventListener("DOMContentLoaded", async () => {
     enableArchiveDirectory();
+    initMusicScrollPerfPause();
     initBackToTop();
     ensureBackButton();
 
@@ -1075,6 +1102,8 @@ function composerSortLetter(name) {
       if (gamesList) {
         gamesList.innerHTML = "<li class='ccg-composer-games__item'>Unable to load game archive data. Please try again later.</li>";
       }
+    } finally {
+      window.CCG_MUSIC_PAGE_READY = true;
     }
   });
 })();
