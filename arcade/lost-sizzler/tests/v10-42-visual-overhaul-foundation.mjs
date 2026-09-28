@@ -18,14 +18,24 @@ for(const key of visualKeys){
 }
 
 assert.match(renderer,/window\.CCG_ASSET_OVERRIDES\?\.images\?\.visuals\|\|\{\}/,"renderer must read the visual override registry");
-assert.match(renderer,/selected\("playerSheet","assets\/pixel\/explorer-sheet-v10-34\.png"\)/,"player fallback must remain the current explorer sheet");
-assert.match(renderer,/selected\("chestSheet","assets\/pixel\/chest-sheet-v10-34\.png"\)/,"chest fallback must remain the current chest sheet");
-assert.match(renderer,/selected\("enemyAtlasA","assets\/pixel\/enemy-atlas-standard-a-v10-35\.png"\)/,"enemy atlas A fallback must remain local");
-assert.match(renderer,/selected\("enemyAtlasB","assets\/pixel\/enemy-atlas-standard-b-v10-35\.png"\)/,"enemy atlas B fallback must remain local");
-assert.match(renderer,/selected\("environmentAtlas","assets\/pixel\/environment-atlas-v10-35\.png"\)/,"environment atlas fallback must remain local");
+
+assert.match(renderer,/explorer:make\("assets\/pixel\/explorer-sheet-v10-34\.png"\)/,"player fallback must remain the established explorer sheet");
+assert.match(renderer,/chests:make\("assets\/pixel\/chest-sheet-v10-34\.png"\)/,"chest fallback must remain the established chest sheet");
+assert.match(renderer,/enemyAtlasA:make\("assets\/pixel\/enemy-atlas-standard-a-v10-35\.png"\)/,"enemy atlas A fallback must remain local");
+assert.match(renderer,/enemyAtlasB:make\("assets\/pixel\/enemy-atlas-standard-b-v10-35\.png"\)/,"enemy atlas B fallback must remain local");
+assert.match(renderer,/environmentAtlas:make\("assets\/pixel\/environment-atlas-v10-35\.png"\)/,"environment atlas fallback must remain local");
+
+assert.match(renderer,/playerReplacement:make\(selected\("playerSheet"\)\)/,"player replacement must be optional and layered above the fallback");
+assert.match(renderer,/chestReplacement:make\(selected\("chestSheet"\)\)/,"chest replacement must be optional and layered above the fallback");
+assert.match(renderer,/enemyAtlasAReplacement:make\(selected\("enemyAtlasA"\)\)/,"enemy atlas A replacement slot must remain optional");
+assert.match(renderer,/enemyAtlasBReplacement:make\(selected\("enemyAtlasB"\)\)/,"enemy atlas B replacement slot must remain optional");
+assert.match(renderer,/environmentAtlasReplacement:make\(selected\("environmentAtlas"\)\)/,"environment atlas replacement slot must remain optional");
 assert.match(renderer,/switches:make\(selected\("switchSheet"\)\)/,"switch replacement slot must fail safely to no image");
 assert.match(renderer,/sigils:make\(selected\("sigilSheet"\)\)/,"sigil replacement slot must fail safely to no image");
 assert.match(renderer,/environmentTiles:make\(selected\("environmentTileset"\)\)/,"environment tileset slot must fail safely to no image");
+
+assert.match(renderer,/replacement\?\.complete&&replacement\.naturalWidth\?replacement:lostSizzlerPixelAssets\.chests/,"chest replacement must fall back if it is not decoded");
+assert.match(renderer,/replacement\?\.complete&&replacement\.naturalWidth\?replacement:lostSizzlerPixelAssets\.explorer/,"player replacement must fall back if it is not decoded");
 
 const visualBlock=overrides.match(/visuals:\s*\{([\s\S]*?)\n\s*\},\n\s*namedEnemies:/)?.[1]||"";
 assert.ok(visualBlock,"visual registry block must be discoverable");
