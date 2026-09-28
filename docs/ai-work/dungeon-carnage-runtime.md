@@ -1,3 +1,12 @@
+## R61 deployed FIRE + death-integrity failure — 28 September 2026
+
+- Deployed bug report from `V10.42 r60 / 20260928r60` shows real Space events reaching the canvas while ammo remains 120, `fire1=0`, projectile cooldown is 0 and projectile count stays 0; repeated attack probes report `fired:false`.
+- The failure is not keyboard focus loss. The canonical FIRE owner was being short-circuited by `canonicalMeleeAttackIfRequired()`: an adjacent enemy or blocking decor forced a melee attempt before firearm creation, and a false melee result aborted the gun shot.
+- R61 rule: when `firearmUnlocked && weapon && mana > 0`, firearm FIRE owns ATTACK. Adjacent furniture/enemies must not redirect the attack. Melee remains the no-firearm/zero-ammo fallback.
+- User separately reports reaching 0 HEALTH without normal death rules. Canonical `hurtPlayer()` still contains death-cache/penalty/respawn/game-over ownership, so R61 adds an idempotent simulation-boundary recovery for the invalid state `mode === playing && health <= 0`; it re-enters the captured canonical damage owner once and preserves armour.
+- Regression coverage has been extended in the existing real-browser FIRE-lockout suite rather than adding a competing owner/harness: a loaded Tier-2 Field Pulse is fired with a blocking crate directly adjacent; then HEALTH is forced to zero and a live update must complete canonical death recovery.
+- The same browser pass verifies `L2 FIELD PULSE` HUD presentation and BRONZE KEY visibility above stored inventory rows.
+
 ## R60 floor choice, weapon-cache, HUD and effect-safety candidate — 28 September 2026
 
 - Authoritative integration vehicle remains draft PR #2396 on current main `9abd513b4bc5b7f1d1d579c8ec9a973d3ce68c46`. Preserve the merged R59 FIRE/trap ownership from #2398; do not replace it with older wrapper paths.
