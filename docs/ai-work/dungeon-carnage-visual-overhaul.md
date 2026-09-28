@@ -310,3 +310,14 @@ No chest gameplay, lock/key, reward or interaction assertion was relaxed.
 - The previous procedural swinging-plank door remains the decode/error fallback if either authored state is malformed or unavailable.
 - Focused diagnostics expose whether the current frame used `cc0-door` or `procedural-fallback`, plus orientation/state. Static and Chromium browser contracts cover horizontal closed, vertical open, opening transition and forced image failure.
 - Next visual targets after this slice qualifies: stronger switch/sigil treatment, FIRE/SHOCK trap art, shrines/altars/objective markers, environmental props/furniture and richer biome variation.
+
+
+## Switch state/readability slice — 28 September 2026
+
+- Starts from fully qualified door main `b44508bbb315238644a1875ec16c3aed6de61b68`.
+- Reuses the already-local, already-provenanced 0x72 CC0 `button-blue-up.png` and `button-blue-down.png`; no new third-party source or licence is introduced.
+- The up button is the armed/interactive base and the down button is the completed base. Existing normal/secret lever art is layered above it so the two switch roles keep distinct silhouettes.
+- Triggered switches are no longer removed from presentation merely because `active=false`; they remain visible in a subdued green completed state and their nearby label changes to `ACTIVATED`.
+- Rendering has a focused diagnostic surface and retains the previous procedural switch construction if either authored button/lever image is malformed or unavailable.
+- `activateSwitch()`, door unlocking/opening, remote-secret discovery, projectile/touch ownership, coordinates, collision and progression remain unchanged.
+- Fresh full Dungeon qualification is mandatory because `game-render.js` changes.
