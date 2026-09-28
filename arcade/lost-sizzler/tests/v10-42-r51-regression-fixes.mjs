@@ -26,7 +26,9 @@ assert.match(railFinalizer,/ratingVisible&&!routineToastVisible\)[\s\S]*setPrope
 assert.match(touch,/const tutorialActive=document\.body\?\.dataset\?\.tutorialActive==="true"/,"touch FIRE must detect the Tutorial path");
 assert.match(touch,/if\(tutorialActive\)\{[\s\S]*CCGLostSizzlerV142R58AuthoritativeFireCore\?\.attackNow\?\.\(\);[\s\S]*\}else if\(typeof queueAttack === "function"\) queueAttack\(p1\)/,"Tutorial FIRE must use one unbuffered R58 attempt while normal touch FIRE uses the shared queue");
 assert.match(touch,/if\(!tutorialActive&&typeof input !== "undefined"\)\{[\s\S]*input\.add\("Space"\);[\s\S]*setAttackHeldInput\(p1,true\)/,"Tutorial FIRE must not become a held repeat; only normal touch play may claim held-FIRE ownership");
-assert.match(play,/function attackNowUnbuffered\(p,requestedDirection=null\)[\s\S]*fireBuffer2=0;else fireBuffer1=0[\s\S]*if\(cooldown>0\)return false[\s\S]*const owner=authoritativeCoreFirePlayer\|\|firePlayer;[\s\S]*return owner\(p,attackDirection\(p,requestedDirection\)\)/,"Tutorial immediate FIRE must clear pending buffer, refuse cooldown-blocked work and use the captured canonical firearm primitive");
+assert.match(play,/function attackNowUnbuffered\(p,requestedDirection=null\)[\s\S]*fireBuffer2=0;else fireBuffer1=0[\s\S]*if\(cooldown>0\)return false[\s\S]*return executeAuthoritativeFire\(p,requestedDirection,"direct"\)/,"Tutorial immediate FIRE must clear pending buffer, refuse cooldown-blocked work and use the captured authoritative executor");
+assert.match(play,/if\(\(p1HeldAttack\|\|fireBuffer1>0\)&&fire1<=0\)\{const fired=executeAuthoritativeFire\(p1,d1\(\),"buffered"\)/,"the normal buffered simulation path must use the captured authoritative FIRE executor");
+assert.doesNotMatch(play,/if\(\(p1HeldAttack\|\|fireBuffer1>0\)&&fire1<=0\)\{const fired=firePlayer\(/,"buffered FIRE must never call the mutable global firePlayer owner");
 assert.match(r20,/fireOwnership:false/,"R20 must explicitly remain non-owning for FIRE");
 assert.doesNotMatch(r20,/tutorialActive|mobileFirePointers|attackNow\(/,"R20 must not retain a hidden Tutorial or touch FIRE path");
 
