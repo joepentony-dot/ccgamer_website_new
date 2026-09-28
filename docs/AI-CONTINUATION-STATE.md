@@ -1,3 +1,14 @@
+## Dungeon R59 live FIRE + encounter-trap remediation — 28 September 2026
+
+- Live `main` baseline remains `00922200267fb915c9dd38a367b0f2c339097fd5` / deployed `V10.42 r58`.
+- Authoritative active P0 candidate is draft PR #2398 / `fix/dungeon-r59-fire-projectile-owner`. It now owns both reproduced core-runtime blockers rather than creating another competing branch: the deployed Solo FIRE lockout and ordinary ACTIVE trap contact that can fail in an enemy-spawning room.
+- Manual R58 screenshots supplied on 28 September show visible `SPIKE TRAP — ACTIVE` and `SHOCK TRAP — ACTIVE` contact while HEALTH remains `8/8` and ARMOUR `3`. Treat this as failed deployed acceptance, not as a rendering-only issue.
+- Trap repair keeps one canonical owner: real movement calls the lexical exact-cell trap contact before arena/encounter activation; the continuous exact-cell pass runs after late room/encounter systems before HUD sync. Damage remains exactly 1 HEALTH and preserves ARMOUR.
+- A new browser contract uses real keyboard movement onto an ACTIVE ordinary trap on the same movement boundary that triggers a live enemy-spawning arena. Existing FIRE/SPIKE/SHOCK natural-crossing contracts remain.
+- Exact-head qualification also exposed seed-dependent trap-family loss on an earlier R59 candidate. #2398 now seals one final FIRE/SPIKE/SHOCK representative at world/playable-host boundaries and prevents Stage 6 retuning from rewriting a sealed family.
+- Public identity remains `V10.42 r59 / 20260928r59`. The stale-update badge contract is aligned to R59; changed release contracts were scanned for stale exact R58 identity assertions.
+- #2398 is intentionally draft while fresh canonical/Node, Chromium shards 1–6 and all triggered checks rerun. Do not merge around a red shard or unresolved material review finding. After merge/deploy, repeat real sustained FIRE plus natural FIRE/SPIKE/SHOCK hands-on acceptance before closing either live blocker.
+
 ## Current Dungeon/PR consolidation state — 27 September 2026
 
 - Sole intended Dungeon survivor is draft PR #2391 / `codex/dungeon-authoritative-fire-traps-rewrite-20260927`. It is a from-scratch canonical FIRE/trap rewrite, not another late wrapper stack.
