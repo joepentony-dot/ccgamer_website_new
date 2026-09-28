@@ -23,7 +23,7 @@ assert.match(
   /await cache\.match\(cacheKey\)[\s\S]*caches\.match\(request, \{ ignoreSearch: true \}\)[\s\S]*caches\.match\(OFFLINE_URL\)/,
   "timed-out reloads must fall back to the page cache and then the offline shell"
 );
-const cacheVersion = source.match(/const CODE_CACHE_VERSION = "2026-09-26-public-code-v(\d+)";/);
+const cacheVersion = source.match(/const CODE_CACHE_VERSION = "20\d{2}-\d{2}-\d{2}-public-code-v(\d+)";/);
 assert.ok(cacheVersion, "service worker must publish a numbered public code cache namespace");
 assert.ok(
   Number(cacheVersion[1]) >= 34,

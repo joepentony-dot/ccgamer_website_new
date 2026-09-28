@@ -81,7 +81,7 @@ body[data-ccg-directory^="publisher"] .ccg-publishers-hero__stats span {
 
 body[data-ccg-directory^="publisher"] .ccg-publishers-tools {
     position: sticky;
-    top: calc(var(--ccg-directory-header-offset) + 6px);
+    top: 0;
     z-index: 80;
     grid-template-columns: minmax(220px, 1fr) auto;
     gap: 8px 12px;
@@ -160,7 +160,7 @@ body[data-ccg-directory^="publisher"] .ccg-publishers-visible-count {
 }
 
 body[data-ccg-directory="publisher-index"] #publisherGrid > [data-publisher-card] {
-    scroll-margin-top: calc(var(--ccg-directory-header-offset) + 118px);
+    scroll-margin-top: 118px;
 }
 
 body[data-ccg-directory^="publisher"] .ccg-publisher-grid {
@@ -422,7 +422,7 @@ body[data-ccg-directory="music-record"] .ccg-composer-intro {
     }
 
     body[data-ccg-directory^="publisher"] .ccg-publishers-tools {
-        top: calc(var(--ccg-directory-header-offset) + 3px);
+        top: 0;
         grid-template-columns: 1fr auto;
         padding: 7px;
     }
