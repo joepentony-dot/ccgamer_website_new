@@ -147,39 +147,52 @@
     if(raw>bounded)state.soloDiscardedVisibleMs+=raw-bounded;
     let remaining=bounded,steps=0;
     const historicalCatchup=bounded>SOLO_MAX_STEP_MS;
-    let p1Ref=null,p2Ref=null,p1Held=false,p2Held=false,heldStateAvailable=false,heldSuppressed=false;
+    let p1Ref=null,p2Ref=null,p1Held=false,p2Held=false,p1Buffer=0,p2Buffer=0;
+    let attackBoundaryAvailable=false,attackDeferred=false,liveAttackRestored=false;
     if(historicalCatchup){
       try{
-        heldStateAvailable=typeof isAttackHeldInput==="function"&&typeof setAttackHeldInput==="function";
-        if(heldStateAvailable){
+        attackBoundaryAvailable=typeof isAttackHeldInput==="function"&&typeof setAttackHeldInput==="function";
+        if(attackBoundaryAvailable){
           p1Ref=typeof p1!=="undefined"?p1:null;p2Ref=typeof p2!=="undefined"?p2:null;
           p1Held=Boolean(p1Ref&&isAttackHeldInput(p1Ref));p2Held=Boolean(p2Ref&&isAttackHeldInput(p2Ref));
+          p1Buffer=Math.max(0,Number(typeof fireBuffer1!=="undefined"?fireBuffer1:0)||0);
+          p2Buffer=Math.max(0,Number(typeof fireBuffer2!=="undefined"?fireBuffer2:0)||0);
+          // The backlog predates input sampled for this accepted RAF. Pay down
+          // historical world/cooldown time without replaying that present-time
+          // hold or consuming its queued attack. Restore both only for the final
+          // live substep so a newly spawned projectile is never aged through
+          // simulation time that occurred before the press.
+          if(p1Held&&p1Ref)setAttackHeldInput(p1Ref,false);
+          if(p2Held&&p2Ref)setAttackHeldInput(p2Ref,false);
+          if(p1Buffer>0)fireBuffer1=0;if(p2Buffer>0)fireBuffer2=0;
+          attackDeferred=Boolean(p1Held||p2Held||p1Buffer>0||p2Buffer>0);
+          if(p1Held||p2Held)state.soloHeldInputSuppressions++;
         }
-      }catch(error){noteFault("catchup-input-boundary",error);heldStateAvailable=false}
+      }catch(error){noteFault("catchup-input-boundary",error);attackBoundaryAvailable=false;attackDeferred=false}
     }
+    const restoreLiveAttack=()=>{
+      if(!attackBoundaryAvailable||liveAttackRestored)return false;
+      try{
+        if(p1Held&&p1Ref)setAttackHeldInput(p1Ref,true);
+        if(p2Held&&p2Ref)setAttackHeldInput(p2Ref,true);
+        if(p1Buffer>0)fireBuffer1=Math.max(Number(fireBuffer1)||0,p1Buffer);
+        if(p2Buffer>0)fireBuffer2=Math.max(Number(fireBuffer2)||0,p2Buffer);
+        liveAttackRestored=true;
+        return true
+      }catch(error){noteFault("catchup-input-restore",error);return false}
+    };
     try{
       while(remaining>0&&steps<SOLO_MAX_STEPS){
-        const step=Math.min(SOLO_MAX_STEP_MS,remaining);
+        const step=Math.min(SOLO_MAX_STEP_MS,remaining),finalLiveSubstep=historicalCatchup&&remaining<=SOLO_MAX_STEP_MS;
+        if(finalLiveSubstep)restoreLiveAttack();
         try{if(typeof update==="function")update(step)}catch(error){noteFault("update",error);break}
         remaining-=step;steps++;state.soloSubsteps++;
-        // Current held input belongs to the accepted RAF frame, not every
-        // historical substep being paid down behind it. Let the first substep
-        // service a genuine held attack once, then mask that hold until this
-        // synchronous catch-up batch completes. The queued press intent remains
-        // available independently, so quick taps are not lost.
-        if(historicalCatchup&&!heldSuppressed&&remaining>0&&heldStateAvailable&&(p1Held||p2Held)){
-          try{
-            if(p1Held&&p1Ref)setAttackHeldInput(p1Ref,false);
-            if(p2Held&&p2Ref)setAttackHeldInput(p2Ref,false);
-            heldSuppressed=true;state.soloHeldInputSuppressions++;
-          }catch(error){noteFault("catchup-input-suppress",error)}
-        }
       }
     }finally{
-      if(heldSuppressed&&heldStateAvailable){
-        try{if(p1Held&&p1Ref)setAttackHeldInput(p1Ref,true);if(p2Held&&p2Ref)setAttackHeldInput(p2Ref,true)}
-        catch(error){noteFault("catchup-input-restore",error)}
-      }
+      // If an historical update fault aborted before the final live substep,
+      // return current input ownership to the ordinary next RAF rather than
+      // silently losing the physical hold or queued press.
+      if(attackDeferred&&!liveAttackRestored)restoreLiveAttack();
     }
     state.soloFrames++;state.soloLastElapsed=bounded;state.soloLastSteps=steps;
     if(steps>1)state.soloCatchupFrames++;
