@@ -1,3 +1,13 @@
+## R60 floor choice, weapon-cache, HUD and effect-safety candidate — 28 September 2026
+
+- Authoritative integration vehicle remains draft PR #2396 on current main `9abd513b4bc5b7f1d1d579c8ec9a973d3ce68c46`. Preserve the merged R59 FIRE/trap ownership from #2398; do not replace it with older wrapper paths.
+- R60 adds numeric-only ARMOUR HUD output, a `Stay on This Floor` choice beside descend/extract, idempotent cleared-floor banking, floor-start notification ownership reset and the shared Floor 1-style notification rail on later floors.
+- Evolving firearm pickups are presented as `WEAPON CACHE`; successful progression reports `WEAPON EVOLVED`; capped progression reports `WEAPON CAPPED` and rewards ammo first, then +10 XP when ammo is full, then +250 score only when the XP fallback cannot apply. Random generated firearm names are not exposed during this progression.
+- Shared gameplay visual pressure is hard-bounded at 360 particles and 72 rings. Anti-loitering explosion bursts are reduced so overload cannot grow unbounded while normal combat presentation remains active.
+- Fresh-run Archive Sword melee, sustained firearm FIRE, exact-cell FIRE/SPIKE/SHOCK damage, enemy-room trap contact, one-HEALTH-per-active-cycle trap semantics and armour preservation remain mandatory regressions. The live encounter trap browser fixture uses one discrete keyboard step.
+- Qualification found two obsolete pre-R60 test assumptions rather than product regressions: the old V10.6 static check looked for the 360/72 declaration in `game-play.js` instead of its authoritative `game-core.js` owner, and the historical Solo combat-load browser test expected attempted overload to retain at least 800 particles / 80 rings. The latter now requires overload to saturate at exactly 360/72 and then proves movement, sustained FIRE, Solo ownership and the budgets remain live.
+- Merge gate remains exact current head, 0 behind main, mergeable, fast + canonical Node/static green, focused Chromium green, Chromium shards 1–6 green, package/itch.io/site/SEO/cache/mobile checks green, and no unresolved material review finding.
+
 ## R59 deployed fresh-run FIRE/attack failure — 28 September 2026
 
 - User supplied a manual bug report from deployed `V10.42 r59 / 20260928r59` after #2398 merged. The fresh Solo run is correctly in the V10.25 pre-firearm state: AMMO 0/120, weapon none, starter melee expected. Fire timers/projectile capacity are idle, focus is on the game canvas, yet repeated Space probes fail and `_meleeSwingAt` never advances.
