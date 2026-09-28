@@ -11,11 +11,18 @@ const lostSizzlerPixelAssets=(()=>{
     return image
   };
   return{
-    explorer:make(selected("playerSheet","assets/pixel/explorer-sheet-v10-34.png")),
-    chests:make(selected("chestSheet","assets/pixel/chest-sheet-v10-34.png")),
-    enemyAtlasA:make(selected("enemyAtlasA","assets/pixel/enemy-atlas-standard-a-v10-35.png")),
-    enemyAtlasB:make(selected("enemyAtlasB","assets/pixel/enemy-atlas-standard-b-v10-35.png")),
-    environmentAtlas:make(selected("environmentAtlas","assets/pixel/environment-atlas-v10-35.png")),
+    // Keep established V10.34/V10.35 requests explicit so existing release
+    // contracts and preload/cache ownership remain authoritative fallbacks.
+    explorer:make("assets/pixel/explorer-sheet-v10-34.png"),
+    chests:make("assets/pixel/chest-sheet-v10-34.png"),
+    playerReplacement:make(selected("playerSheet")),
+    chestReplacement:make(selected("chestSheet")),
+    enemyAtlasA:make("assets/pixel/enemy-atlas-standard-a-v10-35.png"),
+    enemyAtlasB:make("assets/pixel/enemy-atlas-standard-b-v10-35.png"),
+    environmentAtlas:make("assets/pixel/environment-atlas-v10-35.png"),
+    enemyAtlasAReplacement:make(selected("enemyAtlasA")),
+    enemyAtlasBReplacement:make(selected("enemyAtlasB")),
+    environmentAtlasReplacement:make(selected("environmentAtlas")),
     switches:make(selected("switchSheet")),
     sigils:make(selected("sigilSheet")),
     environmentTiles:make(selected("environmentTileset"))
@@ -286,7 +293,7 @@ function drawAnimatedChestFallback(c,s,col,now,anim,pulse){
   ctx.restore();
 }
 function drawChests(){
-  const now=performance.now(),pixelSheet=lostSizzlerPixelAssets.chests;
+  const now=performance.now(),replacement=lostSizzlerPixelAssets.chestReplacement,pixelSheet=replacement?.complete&&replacement.naturalWidth?replacement:lostSizzlerPixelAssets.chests;
   for(const c of host.chests||[]){
     const anim=c.openedAt?Math.max(0,Math.min(1,(now-c.openedAt)/650)):0;if(!c.active&&!c.openedAt)continue;if(!visibleTo(focus,c.x,c.y))continue;
     const s=ws(c.x,c.y),rar=c.loot?.rarity,col=PGR.colourForRarity(rar),cx=s.x+C.tile/2,pulse=.6+.4*Math.sin(now/180+c.x*3);
@@ -531,7 +538,7 @@ function playerAnimationPose(p,moving,now=performance.now()){
 function drawPlayer(p,kind="p1"){
   const now=performance.now(),s=ws(p.rx,p.ry),col=kind==="p2"?P.green:kind==="remote"?P.cyan:P.gold,moving=Math.abs((p.x??p.rx)-p.rx)+Math.abs((p.y??p.ry)-p.ry)>.025,pose=playerAnimationPose(p,moving,now),phase=now/105+(String(p.id||kind).length%7),step=moving?Math.sin(phase)*3:0,bob=Number(pose.y||0),cx=s.x+C.tile/2+Number(pose.x||0),cy=s.y+C.tile/2+bob,d=p.dir||{x:1,y:0};ctx.save();ctx.imageSmoothingEnabled=false;
   ctx.fillStyle="rgba(0,0,0,.45)";ctx.beginPath();ctx.ellipse(s.x+C.tile/2,s.y+C.tile-2,13,4,0,0,Math.PI*2);ctx.fill();ctx.shadowColor=col;ctx.shadowBlur=p.torchMs>0?13:6;
-  const sheet=lostSizzlerPixelAssets.explorer,swingActive=pose.state==="melee",hasGun=Boolean(p?.firearmUnlocked&&p?.weapon&&Number(p?.mana||0)>0),hurt=pose.state==="hurt";
+  const replacement=lostSizzlerPixelAssets.playerReplacement,sheet=replacement?.complete&&replacement.naturalWidth?replacement:lostSizzlerPixelAssets.explorer,swingActive=pose.state==="melee",hasGun=Boolean(p?.firearmUnlocked&&p?.weapon&&Number(p?.mana||0)>0),hurt=pose.state==="hurt";
   if(sheet?.complete&&sheet.naturalWidth>=192){const row=d.y>0?0:d.x>0?1:d.y<0?2:3,column=Math.max(0,Math.min(5,Number(pose.column)||0));ctx.drawImage(sheet,column*32,row*32,32,32,Math.round(s.x+Number(pose.x||0)),Math.round(s.y+bob),C.tile,C.tile);if(!hurt&&(!swingActive||hasGun))drawPlayerWeapon(p,cx,cy,d);}else{
     // Fallback uses the same eight-stage movement/attack offsets as the sheet.
     px(cx,cy,-8,-15,16,3,"#21182a");px(cx,cy,-7,-12,14,7,"#c49372");px(cx,cy,-6,-13,12,3,"#392641");px(cx,cy,-5,-9,2,2,"#1a111b");px(cx,cy,3,-9,2,2,"#1a111b");
