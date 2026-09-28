@@ -167,7 +167,8 @@ try{
         const route=dirs.find(d=>{
           const x=Number(trap.x)+d.dx,y=Number(trap.y)+d.dy;
           return world?.map?.[y]?.[x]===0&&W.walkable(world.map,x,y,host)&&
-            !(host?.enemies||[]).some(e=>e?.alive&&Number(e.x)===x&&Number(e.y)===y);
+            !(host?.enemies||[]).some(e=>e?.alive&&Number(e.x)===x&&Number(e.y)===y)&&
+            !(host?.traps||[]).some(other=>other?.active&&String(other.id)!==String(trap.id)&&Number(other.x)===x&&Number(other.y)===y);
         });
         return route?{trap,route}:null;
       }).find(Boolean);
