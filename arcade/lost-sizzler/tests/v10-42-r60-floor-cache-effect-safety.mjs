@@ -53,4 +53,4 @@ assert.match(play,/burst\(h\.x,h\.y,P\.orange,h\.direct\?16:12/,"anti-loitering 
 assert.match(play,/particles\.length>MAX_GAMEPLAY_PARTICLES/,"effect cleanup must preserve the same hard particle ceiling");
 assert.match(play,/rings\.length>MAX_GAMEPLAY_RINGS/,"effect cleanup must preserve the ring ceiling");
 
-console.log("V10.42 R62 floor/cache/effect safety contract passed");
+console.log("V10.42 R63 floor/cache/effect safety contract passed");
