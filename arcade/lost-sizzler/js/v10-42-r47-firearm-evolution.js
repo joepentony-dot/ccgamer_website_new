@@ -57,10 +57,16 @@
     return canonical
   }
   function salvageAmmo(player,floor){
-    const gain=Math.min(30,8+Math.max(1,Number(floor||1))*4),before=Math.max(0,Number(player?.mana||0));
-    if(player){player.mana=Math.min(Number(player.maxMana||before+gain),before+gain);try{player.ammoFlashMs=C.player.ammoFlashMs}catch(_){}}
+    const max=Math.max(1,Number(player?.maxMana||0)),gain=Math.max(1,Math.round(max*.25)),before=Math.max(0,Number(player?.mana||0));
+    if(player){player.mana=Math.min(max,before+gain);try{player.ammoFlashMs=C.player.ammoFlashMs}catch(_){}}
     state.salvages++;
     return Math.max(0,Number(player?.mana||0)-before)
+  }
+  function salvageXp(player){
+    if(!player)return 0;
+    const before=Math.max(0,Number(player.totalXp||0));
+    try{if(typeof awardXP==="function")awardXP(player,10,"Capped weapon cache");else PGR?.gainXP?.(player,currentRun(),10,"Capped weapon cache")}catch(_){}
+    return Math.max(0,Number(player.totalXp||0)-before)
   }
   function applyPickup(player,incoming,baseEquip){
     if(!player||!dungeonMode())return baseEquip(player,incoming);
@@ -70,7 +76,15 @@
     if(tier>=cap&&tier>0){
       const ammo=salvageAmmo(player,floor);
       try{stats.weapons++}catch(_){}
-      try{S.sfx("pickup");showToast("FIREARM PARTS SALVAGED",`Your Tier ${tier} firearm is already at the Floor ${floor} limit. The duplicate weapon is stripped for ${ammo} ammunition. Deeper floors unlock the next weapon tier.`,"cyan",7600)}catch(_){}
+      try{
+        S.sfx("pickup");
+        if(ammo>0)showToast("WEAPON CAPPED — AMMO RESTORED",`Weapon evolution is capped on Floor ${floor}. +${ammo} ammo restored.`,"cyan",7600);
+        else{
+          const xp=salvageXp(player);
+          if(xp>0)showToast("WEAPON CAPPED — +10 XP",`Ammo is already full, so the capped weapon cache has been converted into +${xp} XP.`,"cyan",7600);
+          else{try{score+=250}catch(_){}showToast("WEAPON CAPPED — +250 SCORE","Ammo and floor XP are already capped, so the cache has been converted into +250 score.","gold",7600)}
+        }
+      }catch(_){}
       queueMicrotask(()=>collapseOwnership(player));
       return player.weapon
     }
@@ -80,10 +94,10 @@
     player.firearmUnlocked=true;player.weaponEvolutionTier=next;player.weaponLevel=next;player.weapon=stageWeapon(next);collapseOwnership(player);
     if(first)state.acquisitions++;else state.upgrades++;
     try{
-      const title=first?"FIREARM ACQUIRED":"FIREARM UPGRADED";
+      const title=first?"WEAPON ACQUIRED":"WEAPON EVOLVED";
       const text=first
-        ?`Tier 1: ${weapon.name}. Your Archive Sword remains the unlimited close-range fallback; later weapon pickups improve this firearm.`
-        :`Tier ${tier} → Tier ${next}: ${weapon.name}. ${next===4?"Three-way fire is now unlocked.":next<6?`Floor ${floor} cap: Tier ${cap}.`:"Maximum firearm tier reached."}`;
+        ?"Tier 1 firearm unlocked. Your Archive Sword remains the unlimited close-range fallback; later weapon caches evolve this weapon."
+        :`Tier ${tier} → Tier ${next}. ${next===4?"Three-way fire is now unlocked.":next<6?`Floor ${floor} cap: Tier ${cap}.`:"Maximum firearm tier reached."}`;
       showToast(title,text,"gold",8200)
     }catch(_){}
     return result
