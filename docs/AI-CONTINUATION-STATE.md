@@ -10,6 +10,8 @@
 
 ## Dungeon R64 P0 runtime integrity — 28 September 2026
 
+- Release identity is now advanced to `V10.42 r64` / `20260928r64` across both public entry points, the ordered bootstrap, `version.json`, and current release/cache contracts so the freeze/trap/attack repair cannot deploy behind the cached r62 asset token.
+
 - Exact-head qualification exposed a desktop ATTACK ownership edge in Chromium shard 3: one quick sword tap could be replayed across R59 historical catch-up substeps and deal three hits. R64 now suppresses current held-attack state only while replaying historical Solo substeps; the canonical queued intent remains available for one attack, and live held state is restored after catch-up. The existing three-minute sword/firearm soak remains the browser gate for one-tap/one-hit behaviour.
 
 - User reproduced another deployed r62 freeze. The browser/event loop remained alive enough to emit periodic diagnostics and focus/blur events while gameplay stopped, so treat this as a simulation/RAF liveness failure rather than a full browser crash.
