@@ -71,7 +71,7 @@ function requestCollect(i,p){if(!i?.active||pendingItems.has(i.id))return false;
 function resolvedPickupWeapon(i,p){if(i?.kind!=="weapon")return null;if(!i._generatedWeapon)i._generatedWeapon=PGR.generateWeapon(world.rooms[W.roomAt(world,p?.x??i.x,p?.y??i.y)]?.depth||0,run.floor,Math.random);return i._generatedWeapon}
 function evolvingWeaponMode(){try{const special=String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"");return Boolean(window.CCGLostSizzlerV142R47FirearmEvolution)&&special!=="horde-survivor"&&special!=="sizzler-saboteurs"}catch(_){return false}}
 function collectedName(i,p=null){
-  if(i.kind==="loot")return i.loot?.weapon?.displayName||i.loot?.name||"LOOT";
+  if(i.kind==="loot")return i.loot?.kind==="weaponLoot"&&evolvingWeaponMode()?"WEAPON CACHE":i.loot?.weapon?.displayName||i.loot?.name||"LOOT";
   if(i.kind==="weapon")return evolvingWeaponMode()?"WEAPON CACHE":resolvedPickupWeapon(i,p)?.displayName||"WEAPON CACHE";
   if(i.kind==="game")return i.title||"C64 GAME";
   return({health:"HEALTH POTION",mana:"AMMUNITION",ammo:"AMMUNITION",credits:"GOLD SCORE COIN",xpOrb:`+${pickupXP("xpOrb")} XP`,torch:"FLAMING TORCH",teleport:"TELEPORT SPELL",banishment:"BANISHMENT FLASK",armour:"+2 ARMOUR",potion:"RESTORATION POTION",rapid:"RAPID FIRE",bronze:"BRONZE KEY",exitSigil:"EXIT SIGIL",key:"MAIN VAULT KEY"}[i.kind]||i.kind)
