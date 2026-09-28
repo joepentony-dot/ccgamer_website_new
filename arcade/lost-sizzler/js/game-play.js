@@ -30,7 +30,7 @@ let authoritativeCoreFirePlayer=null;
 // bullets collection. This reference is deliberately lexical/immutable so a
 // later window.spawnBullet wrapper cannot swallow a valid shot while leaving
 // ammo and cooldown untouched.
-const authoritativeLocalProjectileInsert=(b,remoteShot=false)=>{if(b)bullets.push({...b,remote:!!remoteShot})};
+const authoritativeLocalProjectileInsert=(b,remoteShot=false)=>{if(b){if(!Number.isFinite(Number(b.__v142BornAt)))b.__v142BornAt=performance.now();bullets.push({...b,remote:!!remoteShot})}};
 function normalizeAttackState(p){
   if(!p)return false;
   const isP2=p===p2;
