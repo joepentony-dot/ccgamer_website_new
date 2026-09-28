@@ -14,8 +14,8 @@ const touch=fs.readFileSync(new URL("js/v10-4-patch.js",root),"utf8");
 const bootstrap=fs.readFileSync(new URL("js/v10-42-bootstrap.js",root),"utf8");
 const version=JSON.parse(fs.readFileSync(new URL("version.json",root),"utf8"));
 
-assert.equal(version.build,"V10.42 r58");
-assert.equal(version.cacheToken,"20260927r58");
+assert.equal(version.build,"V10.42 r59");
+assert.equal(version.cacheToken,"20260928r59");
 
 assert.match(bootstrap,/v10-42-r19-mobile-trap-layout-stability\.js[\s\S]*CCGLostSizzlerV142R19MobileLayoutCompatibility/,"R19 portrait compatibility may load only behind its explicit non-gameplay compatibility marker");
 assert.match(r19,/gameplayOwnership:false/,"R19 portrait compatibility must explicitly disclaim gameplay ownership");
