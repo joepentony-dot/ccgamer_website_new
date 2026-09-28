@@ -1,0 +1,27 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+
+const root=new URL("../",import.meta.url);
+const play=fs.readFileSync(new URL("js/game-play.js",root),"utf8");
+const core=fs.readFileSync(new URL("js/game-core.js",root),"utf8");
+const inventory=fs.readFileSync(new URL("js/v10-6-inventory-hud-fix.js",root),"utf8");
+
+const melee=play.match(/function canonicalMeleeAttackIfRequired\(p,d\)\{[\s\S]*?\n\}/)?.[0]||"";
+assert.match(melee,/const hasGun=Boolean\(p\.firearmUnlocked&&p\.weapon\)/);
+assert.match(melee,/if\(hasGun&&Number\(p\.mana\|\|0\)>0\)return null/,"a loaded firearm must bypass the melee helper regardless of adjacent furniture or enemies");
+assert.doesNotMatch(melee,/adjacentFurniture|adjacentEnemy/,"loaded-firearm routing must not depend on adjacent melee targets");
+
+assert.match(play,/const runtimeDeathRecovery=new WeakSet\(\)/);
+assert.match(play,/function enforceCanonicalDeathState\(p\)[\s\S]*Number\(p\.health\)>0[\s\S]*authoritativeDamagePlayer\(p,1,false,"runtime integrity death recovery"\)/,"health <= 0 must re-enter the canonical death owner");
+assert.match(play,/for\(const p of localPlayers\(\)\)if\(p&&Number\(p\.health\)<=0\)enforceCanonicalDeathState\(p\)/,"the simulation loop must enforce the death invariant before normal live updates");
+
+assert.match(core,/tierMatch=weaponRaw\.match\(\/TIER\\s\+\(\\d\+\)\/i\)/,"HUD must understand evolved weapon tier names");
+assert.match(core,/UI\.weapon\.textContent=\x60L\$\{weaponLevel\} \$\{weaponFamily\}\x60\.toUpperCase\(\)\.slice\(0,18\)/,"HUD must expose compact weapon level plus readable family");
+assert.match(core,/UI\.weapon\.title=\x60Weapon Level \$\{weaponLevel\} · \$\{weaponRaw\}\x60/,"full weapon identity must remain available as a title");
+
+const keyHeading=inventory.indexOf('section("KEYS & QUEST ITEMS · ALWAYS VISIBLE")');
+const storedHeading=inventory.indexOf('section("STORED ITEMS · NUMBER KEYS USE THE MATCHING QUICK SLOT")');
+assert.ok(keyHeading>=0&&storedHeading>keyHeading,"key and bronze-key status must render before scrollable stored items");
+assert.match(inventory,/name:"BRONZE KEY"[\s\S]*qty:\x60×\$\{bronze\}\x60/);
+
+console.log("Dungeon R61 runtime-integrity and HUD contract passed.");

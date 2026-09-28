@@ -123,6 +123,59 @@ try{
   const finiteAfter=await page.evaluate(()=>({mana:Number(p1.mana),fire:Number(fire1),buffer:Number(fireBuffer1)}));
   assert.equal(finiteBefore-finiteAfter.mana,1,"a normal finite cooldown must drain and release exactly one buffered shot through the core");
 
+  const adjacentBefore=await page.evaluate(()=>{
+    p1.firearmUnlocked=true;
+    p1.weapon={...baseWeapon(),name:"TIER 2 · Field Pulse II",displayName:"TIER 2 · Field Pulse II",rating:3};
+    p1.weaponLevel=2;p1.mana=120;p1.maxMana=Math.max(120,Number(p1.maxMana)||0);p1.hitStunMs=0;
+    fire1=0;fireBuffer1=0;projectileCD=0;bullets.length=0;input.clear();
+    p1.dir={x:1,y:0};
+    host.blockingDecor=host.blockingDecor||[];
+    host.blockingDecor.push({id:"r61-adjacent-firearm-prop",x:Number(p1.x)+1,y:Number(p1.y),type:"crate",blocking:true,structural:false});
+    sync();
+    window.CCGLostSizzlerInventoryHudV106?.render?.();
+    return{
+      mana:Number(p1.mana),
+      hud:String(document.getElementById("hud-weapon")?.textContent||""),
+      title:String(document.getElementById("hud-weapon")?.title||"")
+    };
+  });
+  assert.equal(adjacentBefore.hud,"L2 FIELD PULSE","weapon HUD must show compact level plus readable weapon family");
+  assert.match(adjacentBefore.title,/Weapon Level 2 · TIER 2 · Field Pulse II/,"weapon HUD title must retain full evolved weapon identity");
+  await page.keyboard.press("Space");
+  await page.waitForFunction(before=>Number(p1?.mana||0)<before,adjacentBefore.mana,{timeout:3000});
+  const adjacentAfter=await page.evaluate(()=>({
+    mana:Number(p1.mana),
+    shots:bullets.filter(b=>b&&b.ttl>0&&b.owner===p1.id).length,
+    propPresent:(host.blockingDecor||[]).some(d=>d.id==="r61-adjacent-firearm-prop")
+  }));
+  assert.equal(adjacentBefore.mana-adjacentAfter.mana,1,"loaded firearm must fire even when blocking furniture is directly adjacent");
+  assert.equal(adjacentAfter.propPresent,true,"FIRE regression fixture must actually retain the adjacent blocking prop");
+  await page.evaluate(()=>{host.blockingDecor=(host.blockingDecor||[]).filter(d=>d.id!=="r61-adjacent-firearm-prop")});
+
+  const deathBefore=await page.evaluate(()=>{
+    p1.armor=3;p1.invuln=0;p1.health=0;
+    return{deaths:Number(run.stats?.deaths||0),armor:Number(p1.armor||0)};
+  });
+  await page.evaluate(()=>update(16));
+  await page.waitForFunction(before=>mode!=="playing"||Number(run?.stats?.deaths||0)>before.deaths||Number(p1?.health||0)>0,deathBefore,{timeout:3000});
+  const deathAfter=await page.evaluate(()=>({
+    mode:String(mode||""),
+    health:Number(p1?.health||0),
+    deaths:Number(run?.stats?.deaths||0),
+    armor:Number(p1?.armor||0)
+  }));
+  assert.ok(deathAfter.mode!=="playing"||deathAfter.deaths>deathBefore.deaths||deathAfter.health>0,"health <= 0 may not remain as an unprocessed live-play state");
+  assert.equal(deathAfter.armor,deathBefore.armor,"runtime death recovery must not invent an extra armour penalty");
+
+  const keyHud=await page.evaluate(()=>{
+    p1.bronzeKeys=2;
+    window.CCGLostSizzlerInventoryHudV106?.render?.();
+    const text=String(document.getElementById("item-shortcuts")?.innerText||"");
+    return{bronze:text.indexOf("BRONZE KEY"),potion:text.indexOf("RESTORATION POTION"),text};
+  });
+  assert.ok(keyHud.bronze>=0,"Bronze key status must remain visible in the live sidebar");
+  assert.ok(keyHud.potion<0||keyHud.bronze<keyHud.potion,"Bronze/key status must render before stored items so it is visible without scrolling");
+
   await page.evaluate(async()=>{await quitToMenu()});
   await page.waitForFunction(()=>mode==="menu"&&document.body.dataset.runActive!=="true",null,{timeout:10000});
   const beforeTutorialFullscreen=await page.evaluate(()=>Number(window.__ccgFullscreenRequests||0));

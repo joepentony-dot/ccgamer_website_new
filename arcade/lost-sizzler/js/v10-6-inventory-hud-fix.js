@@ -48,19 +48,17 @@
     if(!target||typeof p1==="undefined"||!p1||typeof host==="undefined"||!host)return;
 
     const potions=count("potion"),torches=count("torch"),teleports=count("teleport"),flasks=count("banishment"),artefacts=count("artefact");
-    const rows=[section("STORED ITEMS · NUMBER KEYS USE THE MATCHING QUICK SLOT")];
-
+    const mainKeys=Math.max(0,Number(host.keysCollected||0)),bronze=Math.max(0,Number(p1.bronzeKeys||0)),sigil=Boolean(host.exitSigilCollected);
+    const rows=[section("KEYS & QUEST ITEMS · ALWAYS VISIBLE")];
+    rows.push(row({kind:"key",name:"MAIN VAULT KEYS",qty:`${mainKeys}/${C.keyTarget}`,desc:"Floor key objective; collected automatically.",tone:"gold",empty:mainKeys===0,auto:true}));
+    rows.push(row({kind:"bronze",name:"BRONZE KEY",qty:`×${bronze}`,desc:"Automatically opens a bronze door or locked chest.",tone:"gold",empty:bronze===0,auto:true}));
+    rows.push(row({kind:"exitSigil",name:"EXIT SIGIL",qty:sigil?"HELD":"NOT HELD",desc:"Automatically unlocks the floor exit when required.",tone:"gold",empty:!sigil,auto:true}));
+    rows.push(section("STORED ITEMS · NUMBER KEYS USE THE MATCHING QUICK SLOT"));
     rows.push(row({kind:"potion",name:"RESTORATION POTION",qty:`×${potions}`,primary:"E",slots:slotsFor("potion"),desc:"Restore health. Ammo must be found separately.",tone:"green",empty:potions===0}));
     rows.push(row({kind:"torch",name:"FLAMING TORCH",qty:Number(p1.torchMs||0)>0?`ACTIVE ${Math.ceil(Number(p1.torchMs)/1000)}s · ×${torches}`:`×${torches}`,primary:"Q",slots:slotsFor("torch"),desc:"Light the dungeon temporarily.",tone:"gold",empty:torches===0&&Number(p1.torchMs||0)<=0}));
     rows.push(row({kind:"teleport",name:"TELEPORT SPELL",qty:`×${teleports}`,primary:"R",slots:slotsFor("teleport"),desc:"Warp to a safe explored room.",tone:"purple",empty:teleports===0}));
     rows.push(row({kind:"banishment",name:"BANISHMENT FLASK",qty:`×${flasks}`,primary:"B",slots:slotsFor("banishment"),desc:"Destroy a nearby Death Stalker when in range.",tone:"purple",empty:flasks===0}));
     rows.push(row({kind:"loot",name:"RARE ARTEFACT",qty:`×${artefacts}`,primary:"TRADE",desc:"Trade 3 at a shop for a Banishment Flask.",tone:"cyan",empty:artefacts===0}));
-
-    rows.push(section("KEYS & QUEST ITEMS · USED AUTOMATICALLY"));
-    const mainKeys=Math.max(0,Number(host.keysCollected||0)),bronze=Math.max(0,Number(p1.bronzeKeys||0)),sigil=Boolean(host.exitSigilCollected);
-    rows.push(row({kind:"key",name:"MAIN VAULT KEYS",qty:`${mainKeys}/${C.keyTarget}`,desc:"Floor key objective; collected automatically.",tone:"gold",empty:mainKeys===0,auto:true}));
-    rows.push(row({kind:"bronze",name:"BRONZE KEY",qty:`×${bronze}`,desc:"Automatically opens a bronze door or locked chest.",tone:"gold",empty:bronze===0,auto:true}));
-    rows.push(row({kind:"exitSigil",name:"EXIT SIGIL",qty:sigil?"HELD":"NOT HELD",desc:"Automatically unlocks the floor exit when required.",tone:"gold",empty:!sigil,auto:true}));
 
     target.innerHTML=rows.join("");
     target.dataset.inventoryHudOwner="v106-live";
