@@ -182,6 +182,10 @@ function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
     }
   }catch(error){console.error("[Dungeon Carnage] final startWorld hazard invariant failed",error)}
   try{
+    const representative=(host.hazardRooms||[]).find(hazard=>Array.isArray(hazard?.cells)&&hazard.cells.length>0);
+    if(representative)representative.v142FinalHazardGuaranteed=true;
+  }catch(error){console.error("[Dungeon Carnage] final dedicated-hazard seal failed",error)}
+  try{
     // Final ordinary-trap family guarantee. Stage 6 prefers normal non-hazard
     // rooms, but pathological compact seeds can leave no eligible room pool.
     // At this final boundary, reserve walkable cells directly so FIRE, SPIKE
