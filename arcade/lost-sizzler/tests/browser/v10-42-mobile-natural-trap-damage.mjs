@@ -230,10 +230,14 @@ try{
 
       const stableCrossing=after.trapSamples.find(sample=>sample.active);
       if(stableCrossing){
-        const accepted=after.trapDamageEvents.find(event=>String(event.trapId||"")===String(fixture.id));
-        assert.equal(after.health,fixture.before.health-1,`real generated ${kind} trap was naturally active on the exact touch crossing but did not remove one health: ${JSON.stringify({fixture,touchWindow,stableCrossing,after})}`);
-        assert.equal(after.armor,fixture.before.armor,`real generated ${kind} trap must preserve armour at the exact active touch crossing`);
+        const targetEvents=after.trapDamageEvents.filter(event=>String(event.trapId||"")===String(fixture.id));
+        const accepted=targetEvents[0]||null;
+        assert.equal(targetEvents.length,1,`real generated ${kind} trap must emit exactly one canonical damage event for the sampled active crossing: ${JSON.stringify({fixture,touchWindow,stableCrossing,after})}`);
         assert.ok(accepted,`real generated ${kind} trap must emit canonical accepted-damage evidence on the exact active touch crossing`);
+        assert.equal(Number(accepted.beforeHealth),fixture.before.health,`real generated ${kind} trap damage evidence must begin from the fixture health`);
+        assert.equal(Number(accepted.afterHealth),fixture.before.health-1,`real generated ${kind} trap must remove exactly one health on the valid active cycle`);
+        assert.equal(after.armor,fixture.before.armor,`real generated ${kind} trap must preserve armour at the exact active touch crossing`);
+        assert.ok(after.health<=fixture.before.health-1,`the accepted trap hit must remain reflected in player health even if the held touch later moves beyond the trap: ${JSON.stringify({fixture,touchWindow,stableCrossing,after})}`);
         assert.equal(Number(accepted.x),fixture.target.x,`real generated ${kind} trap damage evidence must retain the exact trap X coordinate`);
         assert.equal(Number(accepted.y),fixture.target.y,`real generated ${kind} trap damage evidence must retain the exact trap Y coordinate`);
         qualified={attempt,touchWindow,stableCrossing,accepted,after};
