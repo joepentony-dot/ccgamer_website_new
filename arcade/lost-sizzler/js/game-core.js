@@ -6,7 +6,7 @@ const UI={
   mission:$("mission-text"),net:$("net-status"),sound:$("sound-btn"),message:$("message"),list:$("player-list"),quests:$("quest-list"),loadout:$("loadout"),surroundings:$("surroundings"),
   menu:$("menu"),pause:$("pause"),end:$("end"),endTitle:$("end-title"),endText:$("end-text"),name:$("player-name"),roomCode:$("room-code"),note:$("menu-note"),difficulty:$("difficulty"),collection:$("collection-summary"),
   toast:$("pickup-toast"),toastIcon:$("pickup-icon"),toastTitle:$("pickup-title"),toastText:$("pickup-text"),itemShortcuts:$("item-shortcuts"),eventLog:$("event-log"),levelUp:$("level-up"),levelCopy:$("level-up-copy"),levelChoices:$("level-up-choices"),levelLater:$("level-up-later"),
-  floorComplete:$("floor-complete"),floorTitle:$("floor-title"),floorSummary:$("floor-summary"),descend:$("descend-btn"),extract:$("extract-btn"),inventory:$("inventory-panel"),inventoryList:$("inventory-list"),inventoryClose:$("inventory-close"),inventoryObjective:$("inventory-objective"),fullscreenHint:$("fullscreen-hint"),
+  floorComplete:$("floor-complete"),floorTitle:$("floor-title"),floorSummary:$("floor-summary"),descend:$("descend-btn"),stay:$("stay-floor-btn"),extract:$("extract-btn"),inventory:$("inventory-panel"),inventoryList:$("inventory-list"),inventoryClose:$("inventory-close"),inventoryObjective:$("inventory-objective"),fullscreenHint:$("fullscreen-hint"),
   rulebook:$("rulebook-panel"),support:$("support-panel"),itemInfo:$("item-info-panel"),itemInfoTitle:$("item-info-title"),itemInfoIcon:$("item-info-icon"),itemInfoText:$("item-info-text"),namedDossier:$("named-dossier-panel"),namedDossierList:$("named-dossier-list"),
   quickLevel:$("quick-level"),quickLevelUp:$("quick-level-up"),quickXpText:$("quick-xp-text"),quickXpFill:$("quick-xp-fill"),quickXpNext:$("quick-xp-next"),quickUtility:$("quick-utility"),quickPotion:$("quick-potion"),quickKeyring:$("quick-keyring"),quickSlots:$("quick-slots"),quickSpecials:$("quick-specials"),banishAlert:$("banish-alert"),banishAlertText:$("banish-alert-text"),power:$("hud-power"),kills:$("hud-kills"),time:$("hud-time"),alert:$("hud-alert"),
   shop:$("shop-panel"),shopTitle:$("shop-title"),shopCopy:$("shop-copy"),shopItems:$("shop-items"),shopScore:$("shop-score"),shopArtefacts:$("shop-artefacts"),shopNextPrice:$("shop-next-price"),savePanel:$("save-panel"),saveTitle:$("save-title"),saveCopy:$("save-copy"),saveNote:$("save-note"),saveNow:$("save-now-btn"),saveContinue:$("save-continue-btn"),saveReturn:$("save-return-btn"),artefactChoice:$("artefact-choice-panel"),artefactChoiceName:$("artefact-choice-name")
@@ -24,6 +24,15 @@ const avatarImages=new Map();for(const f of C.followerElites){const custom=OVERR
 const pickupOverrideImages=new Map();for(const [kind,src] of Object.entries(OVERRIDES.images?.items||{}))if(src){const im=new Image();im.src=src;pickupOverrideImages.set(kind,im)}
 const P={purple:"#b978ff",gold:"#ffd85a",cyan:"#6cecff",green:"#72ff9b",pink:"#ff5bae",red:"#ff6868",orange:"#ff9950",white:"#faf4ff",blue:"#6aa9ff",brown:"#9b6134",black:"#030205",grey:"#9b8daa"};
 const input=new Set(),remote=new Map(),bullets=[],enemyBullets=[],particles=[],rings=[],floaters=[],hazards=[],pendingItems=new Set(),enemyVisuals=new Map(),cameras=new Map(),explored=new Map(),campStates=new Map(),roomVisits=new Map(),playerTrails=new Map();
+const MAX_GAMEPLAY_PARTICLES=360,MAX_GAMEPLAY_RINGS=72;
+function boundedVisualPush(array,max,items){
+  const rows=items.filter(Boolean);if(!rows.length)return array.length;
+  if(rows.length>=max){array.splice(0,array.length,...rows.slice(-max));return array.length}
+  const overflow=Math.max(0,array.length+rows.length-max);if(overflow)array.splice(0,overflow);
+  return Array.prototype.push.apply(array,rows)
+}
+particles.push=function(...items){return boundedVisualPush(particles,MAX_GAMEPLAY_PARTICLES,items)};
+rings.push=function(...items){return boundedVisualPush(rings,MAX_GAMEPLAY_RINGS,items)};
 let mode="menu",playMode="solo",world=null,host=null,p1=null,p2=null,run=null,score=0,last=0,enemyCD=0,projectileCD=0,sendCD=0,worldCD=0,surroundCD=0,specialCD=0,move1=0,move2=0,fire1=0,fire2=0,fireBuffer1=0,fireBuffer2=0,won=false,shake=0,damageFlash=0,renderShake={x:0,y:0},toastTimer=0,retainedToast=false,lowHealthCD=0,inventoryReminderMs=300000,levelQueue=[],toastQueue=[],lastAmbientMessage="";
 let view={x:0,y:0,w:canvas.width,h:canvas.height},focus=null,cam={x:0,y:0};
 let activeShop=null,floorEntryCheckpoint=null,savePromptReason="",pendingBanishmentReward=null;
@@ -241,7 +250,7 @@ function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
     }
   }catch(error){console.error("[Dungeon Carnage] final startWorld trap-family invariant failed",error)}
   p1=old1?preservePlayer(old1,world.start.x,world.start.y):makePlayer(net.sessionId,playerName(),world.start.x,world.start.y);p2=null;if(split||old2){const q=nearbyOpen(world.start.x+2,world.start.y,[p1]);p2=old2?preservePlayer(old2,q.x,q.y):makePlayer("LOCAL-P2","PLAYER 2",q.x,q.y)}
-  remote.clear();enemyVisuals.clear();bullets.length=enemyBullets.length=particles.length=rings.length=floaters.length=hazards.length=0;pendingItems.clear();cameras.clear();explored.clear();campStates.clear();roomVisits.clear();playerTrails.clear();questDone.clear();toastQueue.length=0;toastTimer=0;stats.games=stats.elites=stats.doors=stats.weapons=stats.secrets=stats.generators=0;shake=damageFlash=0;move1=move2=fire1=fire2=fireBuffer1=fireBuffer2=0;specialCD=0;inventoryReminderMs=300000;
+  remote.clear();enemyVisuals.clear();bullets.length=enemyBullets.length=particles.length=rings.length=floaters.length=hazards.length=0;pendingItems.clear();cameras.clear();explored.clear();campStates.clear();roomVisits.clear();playerTrails.clear();questDone.clear();toastQueue.length=0;toastTimer=0;retainedToast=false;UI.toast?.classList.remove("show");stats.games=stats.elites=stats.doors=stats.weapons=stats.secrets=stats.generators=0;shake=damageFlash=0;move1=move2=fire1=fire2=fireBuffer1=fireBuffer2=0;specialCD=0;inventoryReminderMs=300000;
   host.worldRef=world;host.enteredRoomIds=[];for(const p of localPlayers()){resetCamp(p);reveal(p);if(checkpointRestore){const rid=W.roomAt(world,p.x,p.y),set=new Set();if(rid>=0){set.add(rid);host.enteredRoomIds.push(rid)}roomVisits.set(p.id,set)}else markRoomVisit(p);rememberTrail(p);updateRoomMessage(p,true)}levelQueue.length=0;for(const p of localPlayers())rememberPendingLevelChoice(p);A.stageUnenteredEnemies?.(host,world);
   try{
     // Post-initialisation family seal. Some late world staging paths can
@@ -286,6 +295,7 @@ function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
     }
   }catch(error){console.error("[Dungeon Carnage] post-stage trap-family invariant failed",error)}
   sync();
+  try{dispatchEvent(new CustomEvent("ccg:floor-start",{detail:{floor:Number(run?.floor||1),preserve:Boolean(preserve),checkpointRestore:Boolean(checkpointRestore)}}))}catch(_){}
   const fi=PGR.floorInfo(run);showToast(`FLOOR ${run.floor}: ${fi.name}`,`${PGR.objectiveLabel(run)}${run.modifier?` • MODIFIER: ${run.modifier.name}`:""}`,"cyan",6500);
 }
 function savedRunLabel(data){if(!data)return "Resume Saved Run";const when=new Date(data.savedAt||Date.now()),time=Number.isFinite(when.getTime())?when.toLocaleString():"saved checkpoint";return `Resume Floor ${data.floor||data.run?.floor||1} — ${time}`}
@@ -383,7 +393,17 @@ function renderInventoryPanel(){if(!p1)return;
 }
 function toggleInventory(){if(!p1)return;if(!UI.inventory.classList.contains("hidden")){UI.inventory.classList.add("hidden");if(mode==="inventory")mode="playing";return}renderInventoryPanel();UI.inventory.classList.remove("hidden");if(mode==="playing")mode="inventory"}
 function checkMapRewards(p){if(!host?.mapRewards)return;const pct=PGR.roomCompletion(explored.get(p.id)||new Set(),world);for(const [mark,key,bonus] of [[.75,"r75",180],[.90,"r90",280],[1,"r100",500]])if(pct>=mark&&!host.mapRewards[key]){host.mapRewards[key]=true;score+=bonus;showToast(`${Math.round(mark*100)}% FLOOR MAPPED`,`${mark===1?"Every ordinary room has been charted. Excellent nosiness.":"Exploration milestone reached."} +${bonus} score; entering rooms grants no XP.`,"cyan")}}
-function floorComplete(by){if(run.floorComplete||mode!=="playing")return;run.floorComplete=true;mode="floorcomplete";input.clear();const collection=PGR.bankFloor(run);PGR.checkAchievements(run,p1);UI.floorTitle.textContent=`FLOOR ${run.floor} CLEARED`;UI.floorSummary.innerHTML=`${esc(PGR.floorInfo(run).name)} cleared by ${esc(by)}.<br><br>XP safely kept from cleared floors: ${run.bankedXP}<br>Unique C64 titles permanently saved on this device: ${collection.length}<br><small>Duplicates count once.</small><br>Kills: ${run.stats.kills} • Secrets: ${run.stats.secrets} • Chests: ${run.stats.chests}<br><br>${run.floor<C.maxFloors?"Descend for better loot and more danger, or extract now with everything safely saved.":"The Citadel is finished."}`;UI.descend.style.display=run.floor<C.maxFloors?"":"none";UI.extract.textContent=run.floor<C.maxFloors?"Save Loot & Exit":"Finish Run";UI.floorComplete.classList.remove("hidden");S.sfx("win")}
+function bankClearedFloorProgress(){
+  const floorNo=Number(run?.floor||1),firstBank=Number(run?.v142BankedFloor||0)!==floorNo;
+  if(firstBank){const collection=PGR.bankFloor(run);run.v142BankedFloor=floorNo;return collection}
+  const hasNewProgress=Number(run?.floorXP||0)>0||(Array.isArray(run?.floorGames)&&run.floorGames.length>0);
+  if(!hasNewProgress)return PGR.persistentCollection();
+  const countedFloors=Number(run?.stats?.floors||0),collection=PGR.bankFloor(run);
+  if(run?.stats)run.stats.floors=countedFloors;
+  return collection
+}
+function floorComplete(by){if(run.floorComplete||mode!=="playing")return;run.floorComplete=true;mode="floorcomplete";input.clear();const collection=bankClearedFloorProgress();PGR.checkAchievements(run,p1);UI.floorTitle.textContent=`FLOOR ${run.floor} CLEARED`;UI.floorSummary.innerHTML=`${esc(PGR.floorInfo(run).name)} cleared by ${esc(by)}.<br><br>XP safely kept from cleared floors: ${run.bankedXP}<br>Unique C64 titles permanently saved on this device: ${collection.length}<br><small>Duplicates count once.</small><br>Kills: ${run.stats.kills} • Secrets: ${run.stats.secrets} • Chests: ${run.stats.chests}<br><br>${run.floor<C.maxFloors?"Descend when ready, stay on this floor to finish optional business, or bank your loot and exit.":"The Citadel is finished. You can still stay on this floor before ending the run."}`;UI.descend.style.display=run.floor<C.maxFloors?"":"none";if(UI.stay)UI.stay.style.display="";UI.extract.textContent=run.floor<C.maxFloors?"Save Loot & Exit":"Finish Run";UI.floorComplete.classList.remove("hidden");S.sfx("win")}
+function stayOnFloor(){if(!run||mode!=="floorcomplete")return false;UI.floorComplete.classList.add("hidden");run.floorComplete=false;mode="playing";input.clear();S.startMusic();focusGameplayKeyboard();showToast("FLOOR CLEARED — EXPLORATION CONTINUES","Optional rooms, caches and unresolved objectives remain available. Return to the exit when you are ready to descend.","cyan",7600);sync();return true}
 function descendFloor(){if(!run||run.floor>=C.maxFloors)return endRun("Citadel cleared");UI.floorComplete.classList.add("hidden");run.floor++;run.deepest=Math.max(run.deepest,run.floor);run.floorComplete=false;run.consecutiveDeaths=0;run.modifier=PGR.chooseFloorModifier(run);startWorld(PGR.floorSeed(run),Boolean(p2),true);mode="playing";S.startMusic();captureFloorEntryCheckpoint();setTimeout(()=>offerFloorSave(false),120);PGR.checkAchievements(run,p1)}
 function extractRun(){UI.floorComplete.classList.add("hidden");endRun(run.floor>=C.maxFloors?"Citadel cleared":"Loot banked and run extracted")}
 function weeklyResultPayload(){return{score:Math.floor(score),deepestFloor:run?.deepest||run?.floor||1,durationMs:Math.floor(run?.elapsed||0),level:p1?.level||1,completed:Boolean(run?.runComplete&&run?.deepest>=C.maxFloors),kills:run?.stats?.kills||0,secrets:run?.stats?.secrets||0}}
