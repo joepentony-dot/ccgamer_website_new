@@ -104,6 +104,15 @@ try{
   await page.waitForFunction(target=>Number(p1?.x)===target.x&&Number(p1?.y)===target.y,fixture.target,{timeout:4000,polling:16});
 
   await page.waitForFunction(arenaId=>(host?.arenas||[]).some(a=>a?.id===arenaId&&a.triggered===true),fixture.arenaId,{timeout:2500,polling:16});
+
+  // A newly spawned named enemy may legitimately open its first-encounter
+  // dossier. Close that presentation boundary before asserting resumed Solo
+  // ownership; the trap hit itself has already occurred on the movement edge.
+  if(await page.locator("#named-dossier-panel").isVisible()){
+    await page.locator("#named-dossier-close-top").click({noWaitAfter:true});
+    await page.waitForFunction(()=>String(mode||"")==="playing",{timeout:2500,polling:16});
+  }
+
   const after=await page.evaluate(({arenaId,trapId})=>{
     const api=window.CCGLostSizzlerV142R58AuthoritativeTrapCore;
     const arena=(host?.arenas||[]).find(a=>a?.id===arenaId);
