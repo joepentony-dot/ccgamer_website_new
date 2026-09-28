@@ -226,3 +226,13 @@ Do not import the Puny binaries until the same local-provenance process used for
 - Source and destination Git blob SHAs match exactly and are recorded in the local provenance ledger.
 - Versioned override slots are exposed and the renderer preloads the local files.
 - The live door drawing routine has deliberately not been replaced yet: orientation/composition must be visually verified before switching away from the established door renderer. This avoids guessing at sprite orientation and accidentally reducing readability.
+
+
+## Exit sigil / portal slice — 28 September 2026
+
+- Imported the exact unmodified CC0 animated portal source from a GitHub mirror whose credits point to MatiasVME's OpenGameArt `portal-2` page.
+- The source and destination Git blob SHA are identical: `09ae7bb501d730a159c92276a7b6971d953af3a7`.
+- The 160x40 strip contains five 32x40 frames and is stored locally under `assets/pixel/visual-overhaul/cc0-portal/`.
+- The floor EXIT SIGIL collectible now uses a small animated version of this art when decoded, replacing the previous key-like fallback presentation. Existing item interaction/state is unchanged.
+- The ready floor-exit portal uses the same animated CC0 art inside the established monumental arch/aura, preserving the strong destination silhouette while replacing the synthetic portal core.
+- The previous canvas sigil/key and gradient portal remain decode/error fallbacks; owner-provided item overrides still take precedence.
