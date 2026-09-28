@@ -1,5 +1,7 @@
 ## R64 freeze + ordinary-trap integrity — 28 September 2026
 
+- Exact-head qualification exposed a desktop ATTACK ownership edge in Chromium shard 3: one quick sword tap could be replayed across R59 historical catch-up substeps and deal three hits. R64 now suppresses current held-attack state only while replaying historical Solo substeps; the canonical queued intent remains available for one attack, and live held state is restored after catch-up. The existing three-minute sword/firearm soak remains the browser gate for one-tap/one-hit behaviour.
+
 - Fresh deployed r62 manual evidence shows a live Solo freeze where diagnostics/setInterval activity continued after gameplay stopped progressing. The report remained `mode=playing`, `runActive=true`, `performanceTier=severe`, with repeated periodic snapshots and focus/blur events after the last normal combat event.
 - R59 now tracks accepted-frame wall time and runs a visible-Solo liveness watchdog. If no canonical RAF/update frame has been accepted for 1400 ms while the run is actively playing and visible, it requests the canonical `stableLoopR59` owner again and records the recovery.
 - The sustained Solo Chromium soak now forces a stale liveness marker and requires the watchdog to request recovery and the accepted-frame counter to continue advancing.
