@@ -1,3 +1,13 @@
+## Dungeon Carnage visual overhaul — ACTIVE — 28 September 2026
+
+- Authoritative workstream: `codex/dungeon-visual-overhaul-stage1-20260928`, created directly from current main `00922200267fb915c9dd38a367b0f2c339097fd5`.
+- Detailed system of record: `docs/ai-work/dungeon-carnage-visual-overhaul.md`.
+- Stage 1 is environment + interactables: floors/walls, chests, switches, sigils, doors, shrines, traps and props. Stage 2 expands player animation. Stage 3 expands enemy animation. Stage 4 is consistency/mobile/performance polish.
+- Current implementation establishes versioned local visual-asset slots while retaining V10.34/V10.35 art and canvas rendering as safe fallbacks. No gameplay, collision, trap, FIRE, XP, save/progression or supported-mode ownership is being changed by the foundation slice.
+- External art may be imported only after licence verification and provenance recording. Prefer CC0/public-domain packs, store production assets locally, and never hotlink runtime art.
+- Primary external source candidate is 0x72 DungeonTileset II; Kenney Tiny Dungeon and Screaming Brain Studios Top Down Dungeon Pack are secondary candidates subject to style/scale checks.
+- No open PR existed at branch creation. Open a draft visual-overhaul PR after the foundation contract is committed and qualified.
+
 ## Current Dungeon/PR consolidation state — 27 September 2026
 
 - Sole intended Dungeon survivor is draft PR #2391 / `codex/dungeon-authoritative-fire-traps-rewrite-20260927`. It is a from-scratch canonical FIRE/trap rewrite, not another late wrapper stack.
