@@ -10,6 +10,7 @@ const firearm=fs.readFileSync(new URL("js/v10-42-r47-firearm-evolution.js",root)
 const warden=fs.readFileSync(new URL("js/v10-42-warden-domain-progression.js",root),"utf8");
 const notices=fs.readFileSync(new URL("js/v10-41-landing-notification-polish.js",root),"utf8");
 const index=fs.readFileSync(new URL("index.html",root),"utf8");
+const railCss=fs.readFileSync(new URL("css/v10-41-r29.css",root),"utf8");
 const alias=fs.readFileSync(new URL("../c64-dungeon-carnage/index.html",root),"utf8");
 const version=JSON.parse(fs.readFileSync(new URL("version.json",root),"utf8"));
 
