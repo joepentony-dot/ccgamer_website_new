@@ -77,6 +77,8 @@ assert.doesNotMatch(familyFallbackBlock,/if\(roomId<0\)continue/,"final trap-fam
 assert.match(familyFallbackBlock,/roomless=roomId<0/,"final trap-family fallback must classify roomless corridor cells without discarding them");
 assert.match(familyFallbackBlock,/const uniqueCell=candidates\.find[\s\S]*?const cell=uniqueCell\|\|candidates\[/,"final trap-family fallback must prefer unused cells and retain a deterministic last-resort reuse path");
 assert.match(familyFallbackBlock,/v142StartWorldCellReuse:!uniqueCell/,"last-resort reused trap cells must remain explicitly diagnosable");
+assert.match(core,/Post-initialisation family seal[\s\S]*v142PostStageFamilySeal:true/,"the playable host must re-seal FIRE, SPIKE and SHOCK after late world staging");
+assert.match(core,/post-stage trap-family invariant failed/,"post-stage family sealing must fail safely without breaking world startup");
 assert.doesNotMatch(play,/CCGLostSizzlerV142R19MobileTrapLayoutStability\?\.updateTrapContacts/,"simulation must not depend on the retired R19 implementation");
 assert.match(rare,/function observeTrapContact\(player,now=performance\.now\(\)\)/,"Rare Events may retain passive trap-contact observation for warnings and diagnostics");
 assert.doesNotMatch(rare,/triggerTrap=function triggerTrapV115Reliable/,"Rare Events must not replace the canonical R58 triggerTrap owner");
