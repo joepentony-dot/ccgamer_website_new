@@ -15,7 +15,7 @@ const lostSizzlerPixelAssets=(()=>{
     // contracts and preload/cache ownership remain authoritative fallbacks.
     explorer:make("assets/pixel/explorer-sheet-v10-34.png"),
     chests:make("assets/pixel/chest-sheet-v10-34.png"),
-    playerReplacement:make(selected("playerSheet")),
+    playerReplacement:make(selected("playerSheet","assets/pixel/visual-overhaul/shade-puny/warrior-blue.png")),
     chestReplacement:make(selected("chestSheet")),
     chestFrames:[
       make(selected("chestFrame0","assets/pixel/visual-overhaul/0x72/chest-full-f0.png")),
@@ -588,11 +588,22 @@ function playerAnimationPose(p,moving,now=performance.now()){
   if(moving){const seed=String(p?.id||p?.name||"player").length%PLAYER_WALK_RENDER_SEQUENCE.length,frame=(Math.floor(now/76)+seed)%PLAYER_WALK_RENDER_SEQUENCE.length;return{state:"move",frame,...PLAYER_WALK_RENDER_SEQUENCE[frame]}}
   const frame=Math.floor(now/220)%6;return{state:"idle",frame,column:0,x:0,y:[0,0,-1,0,0,0][frame]}
 }
+const PUNY_PLAYER_MELEE_COLUMNS=Object.freeze([4,4,5,6,7,7,6,5]);
+const PUNY_PLAYER_HURT_COLUMNS=Object.freeze([18,19,20,19]);
+function punyPlayerCell(pose,d,now){
+  const row=d?.y>0?0:d?.x>0?2:d?.y<0?4:6;
+  if(pose?.state==="move")return{row,column:2+(Math.floor(now/125)%2)};
+  if(pose?.state==="melee")return{row,column:PUNY_PLAYER_MELEE_COLUMNS[Math.max(0,Number(pose.frame)||0)%PUNY_PLAYER_MELEE_COLUMNS.length]};
+  if(pose?.state==="hurt")return{row,column:PUNY_PLAYER_HURT_COLUMNS[Math.max(0,Number(pose.frame)||0)%PUNY_PLAYER_HURT_COLUMNS.length]};
+  // FIRE keeps the body in the idle pair because the actual firearm is drawn
+  // separately by Dungeon Carnage. This avoids displaying Puny's bow/staff art.
+  return{row,column:Math.floor(now/240)%2}
+}
 function drawPlayer(p,kind="p1"){
   const now=performance.now(),s=ws(p.rx,p.ry),col=kind==="p2"?P.green:kind==="remote"?P.cyan:P.gold,moving=Math.abs((p.x??p.rx)-p.rx)+Math.abs((p.y??p.ry)-p.ry)>.025,pose=playerAnimationPose(p,moving,now),phase=now/105+(String(p.id||kind).length%7),step=moving?Math.sin(phase)*3:0,bob=Number(pose.y||0),cx=s.x+C.tile/2+Number(pose.x||0),cy=s.y+C.tile/2+bob,d=p.dir||{x:1,y:0};ctx.save();ctx.imageSmoothingEnabled=false;
   ctx.fillStyle="rgba(0,0,0,.45)";ctx.beginPath();ctx.ellipse(s.x+C.tile/2,s.y+C.tile-2,13,4,0,0,Math.PI*2);ctx.fill();ctx.shadowColor=col;ctx.shadowBlur=p.torchMs>0?13:6;
-  const replacement=lostSizzlerPixelAssets.playerReplacement,sheet=replacement?.complete&&replacement.naturalWidth?replacement:lostSizzlerPixelAssets.explorer,swingActive=pose.state==="melee",hasGun=Boolean(p?.firearmUnlocked&&p?.weapon&&Number(p?.mana||0)>0),hurt=pose.state==="hurt";
-  if(sheet?.complete&&sheet.naturalWidth>=192){const row=d.y>0?0:d.x>0?1:d.y<0?2:3,column=Math.max(0,Math.min(5,Number(pose.column)||0));ctx.drawImage(sheet,column*32,row*32,32,32,Math.round(s.x+Number(pose.x||0)),Math.round(s.y+bob),C.tile,C.tile);if(!hurt&&(!swingActive||hasGun))drawPlayerWeapon(p,cx,cy,d);}else{
+  const replacement=lostSizzlerPixelAssets.playerReplacement,punyReady=replacement?.complete&&replacement.naturalWidth>=768&&replacement.naturalHeight>=256,sheet=punyReady?replacement:lostSizzlerPixelAssets.explorer,swingActive=pose.state==="melee",hasGun=Boolean(p?.firearmUnlocked&&p?.weapon&&Number(p?.mana||0)>0),hurt=pose.state==="hurt";
+  if(punyReady){const cell=punyPlayerCell(pose,d,now);ctx.drawImage(sheet,cell.column*32,cell.row*32,32,32,Math.round(s.x+Number(pose.x||0)),Math.round(s.y+bob),C.tile,C.tile);if(!hurt&&(!swingActive||hasGun))drawPlayerWeapon(p,cx,cy,d);}else if(sheet?.complete&&sheet.naturalWidth>=192){const row=d.y>0?0:d.x>0?1:d.y<0?2:3,column=Math.max(0,Math.min(5,Number(pose.column)||0));ctx.drawImage(sheet,column*32,row*32,32,32,Math.round(s.x+Number(pose.x||0)),Math.round(s.y+bob),C.tile,C.tile);if(!hurt&&(!swingActive||hasGun))drawPlayerWeapon(p,cx,cy,d);}else{
     // Fallback uses the same eight-stage movement/attack offsets as the sheet.
     px(cx,cy,-8,-15,16,3,"#21182a");px(cx,cy,-7,-12,14,7,"#c49372");px(cx,cy,-6,-13,12,3,"#392641");px(cx,cy,-5,-9,2,2,"#1a111b");px(cx,cy,3,-9,2,2,"#1a111b");
     px(cx,cy,-11,-6-step*.25,4,15,"#32233d");px(cx,cy,7,-6+step*.25,4,15,"#32233d");px(cx,cy,-9,-6,18,17,"#56366e");px(cx,cy,-8,-5,4,13,"#79509b");px(cx,cy,4,-5,4,13,"#79509b");
