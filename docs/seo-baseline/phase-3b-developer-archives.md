@@ -4,10 +4,10 @@
 
 | Check | Count |
 |---|---:|
-| Game records scanned | **662** |
-| Static developer routes | **44** |
+| Game records scanned | **663** |
+| Static developer routes | **45** |
 | Indexable multi-game routes | **11** |
-| Single-game noindex routes | **33** |
+| Single-game noindex routes | **34** |
 | Developer hub pages | **1** |
 
 ## Indexing policy
@@ -36,9 +36,9 @@ The source records in `games/games.json` remain unchanged.
 - Reaktor Software: **2** games
 - US Gold: **2** games
 - 3-2-1 Software: **1** game
+- Andromeda Software: **1** game
 - Argus Press Software: **1** game
 - Ariolasoft: **1** game
-- Binary Asylum: **1** game
 
 ## Generated features
 

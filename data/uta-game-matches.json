@@ -7531,6 +7531,21 @@
         }
       ]
     },
+    "traffic": {
+      "title": "Traffic",
+      "releases": [
+        {
+          "archiveId": "531",
+          "publisher": "Quicksilva",
+          "year": 1984,
+          "yearLabel": "1984",
+          "loader": null,
+          "sourceRole": "publisher",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Traffic_(1984_Quicksilva)_%5b531%5d/",
+          "titleMatch": "exact"
+        }
+      ]
+    },
     "trashman": {
       "title": "Trashman",
       "releases": [
