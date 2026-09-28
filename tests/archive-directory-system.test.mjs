@@ -19,6 +19,14 @@ test("shared archive directory stylesheet covers archive families without synthe
     assert.match(css, /data-collection="Retro Events"/);
     assert.match(css, /data-collection="Amiga Demo Music"/);
     assert.match(css, /position:\s*sticky/);
+    assert.match(
+        css,
+        /@media \(max-width:\s*760px\)[\s\S]*body\[data-ccg-directory="publisher-index"\] \.ccg-publishers-tools\s*\{[\s\S]*?top:\s*0;/
+    );
+    assert.match(
+        css,
+        /body\[data-ccg-directory="publisher-index"\] #publisherGrid > \[data-publisher-card\]\s*\{[\s\S]*?scroll-margin-top:\s*124px;/
+    );
     assert.doesNotMatch(css, /scroll-behavior:\s*smooth/i);
 });
 
