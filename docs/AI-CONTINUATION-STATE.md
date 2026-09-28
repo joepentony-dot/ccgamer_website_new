@@ -1,3 +1,11 @@
+## R59 fresh-run attack regression — 28 September 2026
+
+- Manual deployed R59 acceptance failed immediately after #2398: bug report created at 06:20:35Z on `V10.42 r59 / 20260928r59` records Solo Floor 1 in playing mode with HP 8/8, AMMO 0/120, no firearm, fire1=0, buffer=0, projectileCD=0 and zero active projectiles. Repeated Space probes returned false and `_meleeSwingAt` remained zero.
+- The zero-ammo/no-firearm state is intentional V10.25 progression: a fresh player starts with the Archive Sword and earns the first firearm later. The defect is ownership composition. R59's immutable projectile FIRE owner can survive owner sealing while the historical V10.25 `firePlayer` melee wrapper does not, so the canonical attack path can see the expected fresh melee loadout but never dispatch the sword swing.
+- Active candidate remains rebuilt PR #2396. `game-play.js` now performs the melee-vs-firearm decision inside the canonical FIRE owner and delegates melee execution to the established V10.25 melee subsystem. Projectile insertion remains lexical/transactional and unchanged for real firearms.
+- New browser coverage starts a genuine fresh Solo run, verifies zero ammo/no firearm plus starter melee ownership, presses Space through the real keyboard path, and requires a visible melee swing/cooldown with no projectile or ammo consumption. It also exercises the authoritative direct attack API used by non-keyboard input.
+- #2396 must not merge until its new exact head is 0 behind current main, mergeable, all canonical/Node and Chromium shards 1–6 pass, all triggered site/package/cache/SEO checks pass, and no material review finding remains. After deployment, manually test both fresh-run sword attack and sustained firearm firing after the first firearm pickup.
+
 ## Dungeon R59 post-merge trap acceptance + armour HUD follow-up — 28 September 2026
 
 - Live main advanced to `9abd513b4bc5b7f1d1d579c8ec9a973d3ce68c46` after PR #2398 merged the authoritative FIRE/live-trap repair at head `f509f4254bf3a9a329aac4ac1ef83a8091684fd7`. Main now publishes `V10.42 r59 / 20260928r59`.
