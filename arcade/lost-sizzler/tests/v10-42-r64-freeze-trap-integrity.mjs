@@ -14,6 +14,9 @@ assert.match(r59,/state\.suppressRecoveryUntil=Math\.max\(state\.suppressRecover
 assert.match(r59,/if\(!soloDungeonPlaying\(\)\|\|!soloRuntimeReady\(\)\)return false;/,"watchdog recovery must wait for a fully restored Solo runtime");
 assert.match(r59,/if\(now<Math\.max\(0,Number\(state\.suppressRecoveryUntil\|\|0\)\)\)return false;/,"watchdog recovery must respect lifecycle suppression windows");
 assert.doesNotMatch(r59,/noteDuplicateFrame\(\);state\.lastAcceptedWallAt=perfNow\(\)/,"duplicate RAF callbacks must not masquerade as accepted simulation liveness");
+assert.match(r59,/const historicalCatchup=bounded>SOLO_MAX_STEP_MS/,"multi-step Solo recovery must identify historical catch-up frames");
+assert.match(r59,/if\(p1Held\)setAttackHeldInput\(p1Ref,false\)/,"historical catch-up must suppress current P1 held-attack state");
+assert.match(r59,/if\(p1Held&&p1Ref\)setAttackHeldInput\(p1Ref,true\)/,"held-attack state must be restored after the synchronous catch-up boundary");
 
 assert.match(play,/const leftTile=Boolean\(p&&t&&\(Number\(p\.x\)!==Number\(t\.x\)\|\|Number\(p\.y\)!==Number\(t\.y\)\)\)/,"trap contact ledger must detect when a player has left the trap tile");
 assert.match(play,/if\(!p\|\|!t\|\|!t\.active\|\|leftTile\|\|!SYS\.trapActive\(t,now\)\)/,"trap contact ledger must rearm on tile exit as well as inactive-cycle boundaries");
