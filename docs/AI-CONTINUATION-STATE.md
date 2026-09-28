@@ -1,3 +1,14 @@
+## Dungeon R61 live runtime-integrity P0 — 28 September 2026
+
+- Manual deployed r60 acceptance failed again: real Space input reaches Solo gameplay repeatedly with full ammo, zero FIRE cooldown and zero active projectiles, while the attack probe reports `fired:false`. User also reports a separate live case where HEALTH reached zero without the normal death/respawn/game-over rules completing.
+- Authoritative repair branch: `codex/dungeon-r61-runtime-integrity-20260928`, created directly from live main `81f4f83c0243d822a60e3ba279bf6a2bd1991fb3`. Keep this P0 separate from visual PRs #2401/#2402.
+- Root cause identified for the firearm lockout: `canonicalMeleeAttackIfRequired()` previously allowed an adjacent enemy or blocking prop to pre-empt a valid loaded firearm. If that melee attempt returned false, `firePlayer()` returned false before projectile creation. R61 makes a usable firearm authoritative; melee is fallback only when there is no usable firearm/ammo.
+- R61 also adds a guarded simulation invariant: a local player found at `health <= 0` while mode is still `playing` is routed once through the captured canonical damage/death owner. The recovery preserves armour and exists only to prevent a legacy/optional state mutation from leaving a dead player alive in simulation.
+- UI fixes in the same P0 slice: key/quest status (including BRONZE KEY) is rendered before stored consumables so it is visible without scrolling; bottom WEAPON HUD uses compact level + family text such as `L2 FIELD PULSE`, with full internal identity retained as title text.
+- Static and real Chromium regressions cover adjacent blocking-furniture firearm FIRE, zero-health canonical death recovery, Bronze-key ordering and compact weapon-level HUD.
+- Merge gate: exact-head 0 behind current main, mergeable, canonical/Node, focused Chromium, Chromium shards 1–6 and relevant package/cache/site checks green. Deployed hands-on FIRE/death acceptance remains mandatory after merge.
+- Once R61 is closed, resume the visual programme. Hard visual rule: the playable hero must remain recognisably the Cheeky Commodore Gamer player; generic knight/elf sheets may not become the default player identity.
+
 ## Dungeon visual doors follow-up — 28 September 2026
 
 - Visual-overhaul PR #2395 merged fully qualified as main `b20390c507058680cf15bc88f0abdb79dc1f3c7b`; there were no remaining open PRs immediately after refresh.
