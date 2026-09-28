@@ -65,8 +65,8 @@ try{
     bullets:(bullets||[]).filter(projectile=>projectile?.ttl>0&&projectile.owner===p1.id).length
   }));
   await page.evaluate(()=>{
-    window.__ccgSoloCombatLoadRealSpawnBullet=spawnBullet;
-    spawnBullet=function soloCombatLoadInjectedSpawnFault(){throw new Error("LS-0826-18 injected projectile-spawn fault")};
+    window.__ccgSoloCombatLoadRealBulletsPush=bullets.push;
+    bullets.push=function soloCombatLoadInjectedAuthoritativeInsertFault(){throw new Error("LS-0826-18 injected authoritative projectile-insert fault")};
     move1=0;fire1=0;fireBuffer1=0;input.clear();p1.hitStunMs=0;p1.mana=Math.max(20,Number(p1.maxMana||0));
   });
   const transactionalBefore=await page.evaluate(()=>({mana:Number(p1.mana||0),fire:Number(fire1||0),bullets:(bullets||[]).filter(projectile=>projectile?.ttl>0&&projectile.owner===p1.id).length}));
@@ -78,7 +78,7 @@ try{
       mana:Number(p1.mana||0),fire:Number(fire1||0),
       bullets:(bullets||[]).filter(projectile=>projectile?.ttl>0&&projectile.owner===p1.id).length
     };
-    if(window.__ccgSoloCombatLoadRealSpawnBullet){spawnBullet=window.__ccgSoloCombatLoadRealSpawnBullet;delete window.__ccgSoloCombatLoadRealSpawnBullet}
+    if(window.__ccgSoloCombatLoadRealBulletsPush){bullets.push=window.__ccgSoloCombatLoadRealBulletsPush;delete window.__ccgSoloCombatLoadRealBulletsPush}
     input.clear();return result;
   });
   assert.notDeepEqual({x:faultResult.x,y:faultResult.y},{x:direction.x,y:direction.y},"a projectile-spawn failure must not prevent the held movement key being serviced first");
@@ -104,7 +104,7 @@ try{
   assert.equal(loadedResult.controller,"dungeon-solo","combat pressure must not leak ownership into another game mode");
 
   assert.deepEqual(pageErrors,[],`Solo combat-load movement regression must have no uncaught browser errors: ${pageErrors.join("\n")}`);
-  console.log("Lost Sizzler LS-0826-18 Solo movement-before-fire, fire-fault isolation ordering and sustained combat-load regression passed in Chromium.");
+  console.log("Lost Sizzler LS-0826-18 Solo movement-before-fire, authoritative fire-insert fault isolation ordering and sustained combat-load regression passed in Chromium.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
