@@ -42,7 +42,7 @@
 
   const state={
     installTimer:0,playerSource:null,playerWrapper:null,enemyScreenSource:null,enemyScreenWrapper:null,
-    atlasSource:null,paddedAtlas:null,atlasBuilds:0,playerDraws:0,safePlayerDraws:0,
+    atlasSource:null,paddedAtlas:null,replacementAtlasSource:null,paddedReplacementAtlas:null,atlasBuilds:0,replacementAtlasBuilds:0,playerDraws:0,safePlayerDraws:0,
     walkFramesUsed:0,attackFramesUsed:0,hurtFramesUsed:0,enemyScreenSamples:0,
     lastPlayerDraw:null,lastError:"",enemyTimes:new Map()
   };
@@ -50,6 +50,7 @@
   const reducedMotion=()=>{try{return Boolean(matchMedia?.("(prefers-reduced-motion: reduce)")?.matches)}catch(_){return false}};
   const nowMs=()=>performance.now();
   const explorerSheet=()=>{try{return typeof lostSizzlerPixelAssets!=="undefined"?lostSizzlerPixelAssets?.explorer||null:null}catch(_){return null}};
+  const replacementSheet=()=>{try{return typeof lostSizzlerPixelAssets!=="undefined"?lostSizzlerPixelAssets?.playerReplacement||null:null}catch(_){return null}};
 
   function buildPaddedExplorerAtlas(){
     const sheet=explorerSheet();
@@ -63,6 +64,37 @@
       }
       state.atlasSource=sheet;state.paddedAtlas=atlas;state.atlasBuilds++;return atlas
     }catch(error){state.lastError=String(error?.message||error);return null}
+  }
+
+  function buildPaddedReplacementAtlas(){
+    const sheet=replacementSheet();
+    if(!sheet?.complete||sheet.naturalWidth<PLAYER_CELL||sheet.naturalHeight<PLAYER_CELL||sheet.naturalWidth%PLAYER_CELL!==0||sheet.naturalHeight%PLAYER_CELL!==0)return null;
+    if(state.paddedReplacementAtlas&&state.replacementAtlasSource===sheet)return state.paddedReplacementAtlas;
+    try{
+      const cols=sheet.naturalWidth/PLAYER_CELL,rows=sheet.naturalHeight/PLAYER_CELL,atlas=document.createElement("canvas");
+      atlas.width=cols*PLAYER_STRIDE;atlas.height=rows*PLAYER_STRIDE;
+      const out=atlas.getContext("2d",{alpha:true});if(!out)return null;out.imageSmoothingEnabled=false;out.clearRect(0,0,atlas.width,atlas.height);
+      for(let row=0;row<rows;row++)for(let column=0;column<cols;column++){
+        out.drawImage(sheet,column*PLAYER_CELL,row*PLAYER_CELL,PLAYER_CELL,PLAYER_CELL,column*PLAYER_STRIDE+PLAYER_PAD,row*PLAYER_STRIDE+PLAYER_PAD,PLAYER_CELL,PLAYER_CELL)
+      }
+      state.replacementAtlasSource=sheet;state.paddedReplacementAtlas=atlas;state.replacementAtlasBuilds++;return atlas
+    }catch(error){state.lastError=String(error?.message||error);return null}
+  }
+
+  function verifyReplacementPaddedAtlas(){
+    const sheet=replacementSheet(),atlas=buildPaddedReplacementAtlas();
+    if(!sheet||!atlas)return{ok:false,reason:"replacement-atlas-unavailable",opaqueGutterPixels:-1,width:0,height:0,frames:0,cols:0,rows:0};
+    try{
+      const cols=sheet.naturalWidth/PLAYER_CELL,rows=sheet.naturalHeight/PLAYER_CELL,out=atlas.getContext("2d",{willReadFrequently:true});let opaque=0;
+      for(let row=0;row<rows;row++)for(let column=0;column<cols;column++){
+        const x=column*PLAYER_STRIDE,y=row*PLAYER_STRIDE,data=out.getImageData(x,y,PLAYER_STRIDE,PLAYER_STRIDE).data;
+        for(let py=0;py<PLAYER_STRIDE;py++)for(let px=0;px<PLAYER_STRIDE;px++){
+          if(px>=PLAYER_PAD&&px<PLAYER_PAD+PLAYER_CELL&&py>=PLAYER_PAD&&py<PLAYER_PAD+PLAYER_CELL)continue;
+          if(data[(py*PLAYER_STRIDE+px)*4+3]!==0)opaque++
+        }
+      }
+      return{ok:opaque===0,opaqueGutterPixels:opaque,width:atlas.width,height:atlas.height,frames:cols*rows,cols,rows}
+    }catch(error){state.lastError=String(error?.message||error);return{ok:false,reason:"replacement-pixel-check-failed",opaqueGutterPixels:-1,width:atlas.width,height:atlas.height,frames:0,cols:0,rows:0}}
   }
 
   function verifySourceFrameMargins(){
@@ -112,14 +144,24 @@
   function drawIsolatedPlayerCell(nativeDrawImage,sheet,args,p){
     if(args.length!==8)return false;
     let [sx,sy,sw,sh,dx,dy,dw,dh]=args;
-    if(sheet!==explorerSheet()||Number(sw)!==PLAYER_CELL||Number(sh)!==PLAYER_CELL)return false;
-    const sourceColumn=Math.round(Number(sx)/PLAYER_CELL),sourceRow=Math.round(Number(sy)/PLAYER_CELL);
-    if(sourceColumn<0||sourceColumn>=PLAYER_COLS||sourceRow<0||sourceRow>=PLAYER_ROWS)return false;
+    if(Number(sw)!==PLAYER_CELL||Number(sh)!==PLAYER_CELL)return false;
+    const sourceColumn=Math.round(Number(sx)/PLAYER_CELL),sourceRow=Math.round(Number(sy)/PLAYER_CELL),scaleX=Number(dw)/PLAYER_CELL,scaleY=Number(dh)/PLAYER_CELL;
+
+    if(sheet===replacementSheet()){
+      const cols=Number(sheet?.naturalWidth||0)/PLAYER_CELL,rows=Number(sheet?.naturalHeight||0)/PLAYER_CELL;
+      if(!Number.isInteger(cols)||!Number.isInteger(rows)||sourceColumn<0||sourceColumn>=cols||sourceRow<0||sourceRow>=rows)return false;
+      const atlas=buildPaddedReplacementAtlas();if(!atlas)return false;
+      const destX=Number(dx)-PLAYER_PAD*scaleX,destY=Number(dy)-PLAYER_PAD*scaleY,destW=PLAYER_STRIDE*scaleX,destH=PLAYER_STRIDE*scaleY;
+      nativeDrawImage.call(ctx,atlas,sourceColumn*PLAYER_STRIDE,sourceRow*PLAYER_STRIDE,PLAYER_STRIDE,PLAYER_STRIDE,destX,destY,destW,destH);
+      state.safePlayerDraws++;state.lastPlayerDraw={column:sourceColumn,row:sourceRow,pose:"replacement",sourceKind:"replacement",sourceX:sourceColumn*PLAYER_STRIDE,sourceY:sourceRow*PLAYER_STRIDE,sourceW:PLAYER_STRIDE,sourceH:PLAYER_STRIDE,atlasWidth:atlas.width,atlasHeight:atlas.height,destX,destY,destW,destH};return true
+    }
+
+    if(sheet!==explorerSheet()||sourceColumn<0||sourceColumn>=PLAYER_COLS||sourceRow<0||sourceRow>=PLAYER_ROWS)return false;
     const atlas=buildPaddedExplorerAtlas();if(!atlas)return false;
-    const pose=playerPose(p,sourceColumn),column=Math.max(0,Math.min(PLAYER_COLS-1,Number(pose.column)||0)),scaleX=Number(dw)/PLAYER_CELL,scaleY=Number(dh)/PLAYER_CELL;
+    const pose=playerPose(p,sourceColumn),column=Math.max(0,Math.min(PLAYER_COLS-1,Number(pose.column)||0));
     const destX=Number(dx)-PLAYER_PAD*scaleX+Number(pose.x||0)*scaleX,destY=Number(dy)-PLAYER_PAD*scaleY+Number(pose.y||0)*scaleY,destW=PLAYER_STRIDE*scaleX,destH=PLAYER_STRIDE*scaleY;
     nativeDrawImage.call(ctx,atlas,column*PLAYER_STRIDE,sourceRow*PLAYER_STRIDE,PLAYER_STRIDE,PLAYER_STRIDE,destX,destY,destW,destH);
-    state.safePlayerDraws++;state.lastPlayerDraw={column,row:sourceRow,pose:pose.label,sourceX:column*PLAYER_STRIDE,sourceY:sourceRow*PLAYER_STRIDE,sourceW:PLAYER_STRIDE,sourceH:PLAYER_STRIDE,destX,destY,destW,destH};return true
+    state.safePlayerDraws++;state.lastPlayerDraw={column,row:sourceRow,pose:pose.label,sourceKind:"explorer",sourceX:column*PLAYER_STRIDE,sourceY:sourceRow*PLAYER_STRIDE,sourceW:PLAYER_STRIDE,sourceH:PLAYER_STRIDE,atlasWidth:atlas.width,atlasHeight:atlas.height,destX,destY,destW,destH};return true
   }
 
   function installPlayerWrapper(){
@@ -160,7 +202,7 @@
     wrapped.__ccgV141R48FrameRateIndependent=true;wrapped.__ccgOriginal=current;window.enemyScreen=wrapped;state.enemyScreenSource=current;state.enemyScreenWrapper=wrapped;return true
   }
 
-  function install(){const player=installPlayerWrapper(),enemy=installEnemyScreenWrapper();buildPaddedExplorerAtlas();return player&&enemy}
+  function install(){const player=installPlayerWrapper(),enemy=installEnemyScreenWrapper();buildPaddedExplorerAtlas();buildPaddedReplacementAtlas();return player&&enemy}
 
   install();
   state.installTimer=setInterval(()=>{install()},700);
@@ -168,7 +210,7 @@
 
   window.CCGLostSizzlerV141R48CharacterAnimation={
     PLAYER_CELL,PLAYER_COLS,PLAYER_ROWS,PLAYER_PAD,PLAYER_STRIDE,WALK_FRAME_MS,WALK_SEQUENCE,ATTACK_SEQUENCE,
-    buildPaddedExplorerAtlas,verifySourceFrameMargins,verifyPaddedAtlas,playerPose,interpolationRate,install,
+    buildPaddedExplorerAtlas,buildPaddedReplacementAtlas,verifySourceFrameMargins,verifyPaddedAtlas,verifyReplacementPaddedAtlas,playerPose,interpolationRate,install,
     get state(){return state}
   };
 })();

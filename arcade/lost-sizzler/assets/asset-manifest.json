@@ -1,5 +1,5 @@
 {
-  "instructions": "Edit js/asset-overrides.js for versioned local assets, or use the Arcade Asset Manager to add multiple live tracks to any Lost Sizzler category.",
+  "instructions": "Edit js/asset-overrides.js for versioned local assets. Visual-overhaul replacements must be local repository assets with recorded provenance; do not hotlink production art. The Arcade Asset Manager continues to own live audio playlists.",
   "images": {
     "logo": "assets/ccgamer-logo-fallback.svg",
     "namedEnemies": {
@@ -17,10 +17,54 @@
       "standardEnemiesB": "assets/pixel/enemy-atlas-standard-b-v10-35.png",
       "hordeEnemies": "assets/pixel/enemy-atlas-horde-v10-35.png",
       "doorsAndTorches": "assets/pixel/environment-atlas-v10-35.png"
+    },
+    "visualOverhaul": {
+      "playerSheet": "assets/pixel/visual-overhaul/shade-puny/warrior-blue.png",
+      "enemyWarriorSheet": "assets/pixel/visual-overhaul/shade-puny-enemies/warrior-red.png",
+      "enemySoldierSheet": "assets/pixel/visual-overhaul/shade-puny-enemies/soldier-red.png",
+      "enemyArcherSheet": "assets/pixel/visual-overhaul/shade-puny-enemies/archer-green.png",
+      "enemyMageSheet": "assets/pixel/visual-overhaul/shade-puny-enemies/mage-red.png",
+      "chestSheet": "assets/pixel/chest-sheet-v10-34.png",
+      "enemyAtlasA": "assets/pixel/enemy-atlas-standard-a-v10-35.png",
+      "enemyAtlasB": "assets/pixel/enemy-atlas-standard-b-v10-35.png",
+      "environmentAtlas": "assets/pixel/environment-atlas-v10-35.png",
+      "switchSheet": "assets/pixel/visual-overhaul/0x72/lever-left.png",
+      "sigilSheet": "assets/pixel/visual-overhaul/cc0-portal/portal-sheet.png",
+      "environmentTileset": null,
+      "switchSecretSheet": "assets/pixel/visual-overhaul/0x72/lever-right.png",
+      "chestFrame0": "assets/pixel/visual-overhaul/0x72/chest-full-f0.png",
+      "chestFrame1": "assets/pixel/visual-overhaul/0x72/chest-full-f1.png",
+      "chestFrame2": "assets/pixel/visual-overhaul/0x72/chest-full-f2.png",
+      "spikeTrapFrame0": "assets/pixel/visual-overhaul/0x72/spikes-f0.png",
+      "spikeTrapFrame1": "assets/pixel/visual-overhaul/0x72/spikes-f1.png",
+      "spikeTrapFrame2": "assets/pixel/visual-overhaul/0x72/spikes-f2.png",
+      "spikeTrapFrame3": "assets/pixel/visual-overhaul/0x72/spikes-f3.png",
+      "doorLeafClosed": "assets/pixel/visual-overhaul/0x72/door-leaf-closed.png",
+      "doorLeafOpen": "assets/pixel/visual-overhaul/0x72/door-leaf-open.png",
+      "doorFrameLeft": "assets/pixel/visual-overhaul/0x72/door-frame-left.png",
+      "doorFrameRight": "assets/pixel/visual-overhaul/0x72/door-frame-right.png",
+      "doorFrameTop": "assets/pixel/visual-overhaul/0x72/door-frame-top.png",
+      "floorTile1": "assets/pixel/visual-overhaul/0x72/floor-1.png",
+      "floorTile2": "assets/pixel/visual-overhaul/0x72/floor-2.png",
+      "floorTile3": "assets/pixel/visual-overhaul/0x72/floor-3.png",
+      "floorTile4": "assets/pixel/visual-overhaul/0x72/floor-4.png",
+      "floorTile5": "assets/pixel/visual-overhaul/0x72/floor-5.png",
+      "floorTile6": "assets/pixel/visual-overhaul/0x72/floor-6.png",
+      "floorTile7": "assets/pixel/visual-overhaul/0x72/floor-7.png",
+      "floorTile8": "assets/pixel/visual-overhaul/0x72/floor-8.png",
+      "wallTileMid": "assets/pixel/visual-overhaul/0x72/wall-mid.png",
+      "wallTileHole1": "assets/pixel/visual-overhaul/0x72/wall-hole-1.png",
+      "wallTileHole2": "assets/pixel/visual-overhaul/0x72/wall-hole-2.png"
     }
   },
   "music": {
-    "categories": ["normal", "danger", "sanctuary", "named", "stalker"],
+    "categories": [
+      "normal",
+      "danger",
+      "sanctuary",
+      "named",
+      "stalker"
+    ],
     "fallbacks": {
       "normal": "assets/audio/music/exploration.wav",
       "danger": "assets/audio/music/danger.wav",
@@ -32,7 +76,13 @@
       "selection": "random within the active category",
       "repeatProtection": "the previous track is excluded when alternatives exist",
       "crossfadeMs": 2500,
-      "priority": ["stalker", "named", "danger", "sanctuary", "normal"],
+      "priority": [
+        "stalker",
+        "named",
+        "danger",
+        "sanctuary",
+        "normal"
+      ],
       "normalBehaviour": "General Exploration resumes when no encounter category is active"
     },
     "adminUploadKeys": {
@@ -45,6 +95,49 @@
   },
   "sfx": {
     "folder": "assets/audio/sfx/",
-    "overrideKeys": ["fire", "hit", "death", "playerDeath", "elite", "hurt", "pickup", "key", "exitSigil", "bronze", "dash", "enemy", "alert", "search", "food", "flame", "wall", "open", "heal", "empty", "respawn", "win", "join", "warp", "door", "dooropen", "locked", "weapon", "armour", "potion", "torch", "room", "campwarn", "explosion", "lowhealth", "cloak", "level", "shrine", "stalker", "trap", "generator", "secret"]
+    "overrideKeys": [
+      "fire",
+      "hit",
+      "death",
+      "playerDeath",
+      "elite",
+      "hurt",
+      "pickup",
+      "key",
+      "exitSigil",
+      "bronze",
+      "dash",
+      "enemy",
+      "alert",
+      "search",
+      "food",
+      "flame",
+      "wall",
+      "open",
+      "heal",
+      "empty",
+      "respawn",
+      "win",
+      "join",
+      "warp",
+      "door",
+      "dooropen",
+      "locked",
+      "weapon",
+      "armour",
+      "potion",
+      "torch",
+      "room",
+      "campwarn",
+      "explosion",
+      "lowhealth",
+      "cloak",
+      "level",
+      "shrine",
+      "stalker",
+      "trap",
+      "generator",
+      "secret"
+    ]
   }
 }

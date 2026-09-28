@@ -1,3 +1,12 @@
+## Dungeon R60 merged + visual-overhaul reconciliation — 28 September 2026
+
+- PR #2396 merged fully qualified as main `2b8c9613255b0e9f3aa7c2f98f13cd6986e1f046`, establishing the authoritative R60 gameplay baseline.
+- Draft PR #2395 / `codex/dungeon-visual-overhaul-stage1-20260928` remains the sole visual-overhaul integration vehicle. Its unique assets, renderer/animation work, visual contracts and provenance are being reconciled main-first onto R60; stale R59 gameplay files must not overwrite R60.
+- The pre-reconciliation visual head is `376b7ff1f2e1daf5637d254108dc57b2cafe7fd3`. Its earlier shard-2 failure was the historical encounter-trap keyboard overshoot fixture, already corrected by the qualified R60 mainline contract; do not revert that mainline correction.
+- Preserve the visual programme: local licensed/provenanced assets, upgraded switches, chests, spike visuals, floors/walls, staged doors, animated portal/sigil, player animation and enemy animation with procedural fallbacks.
+- Next visual priorities after reconciliation qualification: live door integration/orientation; richer switch/sigil treatment; FIRE/SHOCK trap art; shrines/altars/objective markers; environmental props/furniture; stronger biome variation; additional player motion where useful; and more distinct enemy identities.
+- #2395 must complete fresh exact-head canonical/Node, Chromium shards 1–6, visual/image-budget and all triggered site/package/cache/SEO checks before any merge.
+
 ## Dungeon R60 floor/cache/effect safety — 28 September 2026
 
 - Draft PR #2396 is the authoritative R60 gameplay integration vehicle on merged R59 main `9abd513b4bc5b7f1d1d579c8ec9a973d3ce68c46`.
