@@ -330,3 +330,12 @@ This is a hard product rule for all later character-art slices.
 - Do not rename named followers, bosses, Count Loadula, Death Stalkers, Sigil Warden or other identity-bearing enemies merely to fit convenient artwork.
 - Maintain an explicit name → gameplay kind → sprite family mapping and test it so later visual work cannot collapse most enemies back into indistinguishable elves/knights.
 
+
+
+## Current-main switch/sigil/shrine consolidation — 28 September 2026
+
+- Rebuild branch `codex/dungeon-visual-switch-sigil-shrine-consolidated-20260928` starts from live main `0d10ddeebc0265dbd1e9e09d398f85ba2aa9cef5` rather than stale PR ancestry.
+- PR #2402 is the product superset for switch-state plus shrine/sigil presentation; PR #2401 contributes the stronger real-Chromium switch-state regression.
+- Only verified visual deltas were transplanted: wall-adjacent one-shot switches with persistent completed state, CC0 button up/down feedback, animated shrine/sigil cores, Sigil Gate emblem, and the locked CCG hero/enemy identity policy.
+- R64-era FIRE/trap/freeze ownership and unrelated runtime files remain current-main authoritative.
+- Merge only after fresh exact-head canonical/Node, focused Chromium, shards 1–6 and all triggered site/package/cache/image checks are green with no material review blocker.
