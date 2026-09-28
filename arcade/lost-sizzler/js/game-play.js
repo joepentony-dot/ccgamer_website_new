@@ -26,6 +26,11 @@ const attackHeldInputs=new WeakMap();
 function setAttackHeldInput(p,held){if(!p)return false;attackHeldInputs.set(p,Boolean(held));return Boolean(held)}
 function isAttackHeldInput(p){return Boolean(p&&attackHeldInputs.get(p))}
 let authoritativeCoreFirePlayer=null;
+// Local player FIRE owns projectile insertion all the way into the canonical
+// bullets collection. This reference is deliberately lexical/immutable so a
+// later window.spawnBullet wrapper cannot swallow a valid shot while leaving
+// ammo and cooldown untouched.
+const authoritativeLocalProjectileInsert=(b,remoteShot=false)=>{if(b)bullets.push({...b,remote:!!remoteShot})};
 function normalizeAttackState(p){
   if(!p)return false;
   const isP2=p===p2;
@@ -307,12 +312,11 @@ function firePlayer(p,d){
   if(!dirs.length)return false;
 
   const shotIds=[],beforeMana=Number(p.mana||0),beforeCount=bullets.filter(b=>b.owner===p.id&&b.ttl>0).length;
-  const externalSpawn=typeof window.spawnBullet==="function"&&window.spawnBullet!==spawnBullet?window.spawnBullet:null;
   try{
     for(const z of dirs){
       const b={id:`${p.id}-${Date.now()}-${Math.random()}`,owner:p.id,ownerName:p.name,x:p.x,y:p.y,dx:z.x,dy:z.y,ttl:w.ttl||18,power:(w.power||1)+(p.damageBonus||0),pierce:w.pierce||0,element:w.element||"energy",style:w.id||"pulse"};
       shotIds.push(b.id);
-      if(externalSpawn)externalSpawn(b,false);else spawnBullet(b,false);
+      authoritativeLocalProjectileInsert(b,false);
     }
   }catch(_){
     for(let i=bullets.length-1;i>=0;i--)if(shotIds.includes(bullets[i]?.id))bullets.splice(i,1);
