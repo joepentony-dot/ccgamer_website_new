@@ -14,6 +14,7 @@ window.CCG_ASSET_OVERRIDES={
       enemyAtlasB:null,
       environmentAtlas:null,
       switchSheet:null,
+      switchSecretSheet:null,
       sigilSheet:null,
       environmentTileset:null
     },
