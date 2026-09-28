@@ -45,54 +45,49 @@ try{
   ));
 
   const result=await page.evaluate(async()=>globalThis.eval(`(async()=>{
-    const doorList=host.doors;
-    const originalDoors=[...(doorList||[])];
-    const d={
-      id:"visual-door-contract",x:Number(p1.x)+1,y:Number(p1.y),type:"room",
-      orientation:"horizontal",side:"north",locked:false,open:false,opening:false,
-      openingStart:0,openAt:0
-    };
-    doorList.splice(0,doorList.length,d);focus=p1;
     const diagnostics=window.__CCG_DOOR_RENDER_DIAGNOSTICS__;
     const before=Number(diagnostics?.assetFrames||0);
-    drawDoors();
-    const horizontal={mode:String(diagnostics?.lastMode||""),orientation:String(diagnostics?.lastOrientation||""),state:String(diagnostics?.lastState||""),assetFrames:Number(diagnostics?.assetFrames||0)};
+    const s=ws(Number(p1.x),Number(p1.y));
+    const base={id:"visual-door-contract",x:Number(p1.x),y:Number(p1.y),type:"room",locked:false,openingStart:0,openAt:0};
 
-    d.orientation="vertical";d.side="west";d.open=true;d.opening=false;
-    drawDoors();
-    const verticalOpen={mode:String(diagnostics?.lastMode||""),orientation:String(diagnostics?.lastOrientation||""),state:String(diagnostics?.lastState||""),assetFrames:Number(diagnostics?.assetFrames||0)};
+    const horizontalDoor={...base,orientation:"horizontal",side:"north",open:false,opening:false};
+    const horizontalRendered=drawDoorAsset(horizontalDoor,s,0,"#c05d84",performance.now());
+    const horizontal={rendered:Boolean(horizontalRendered),mode:String(diagnostics?.lastMode||""),orientation:String(diagnostics?.lastOrientation||""),state:String(diagnostics?.lastState||""),assetFrames:Number(diagnostics?.assetFrames||0)};
 
-    d.open=false;d.opening=true;d.openingStart=performance.now()-120;d.openAt=d.openingStart+500;
-    drawDoors();
-    const opening={mode:String(diagnostics?.lastMode||""),orientation:String(diagnostics?.lastOrientation||""),state:String(diagnostics?.lastState||""),assetFrames:Number(diagnostics?.assetFrames||0)};
+    const verticalDoor={...base,orientation:"vertical",side:"west",open:true,opening:false};
+    const verticalRendered=drawDoorAsset(verticalDoor,s,1,"#c05d84",performance.now());
+    const verticalOpen={rendered:Boolean(verticalRendered),mode:String(diagnostics?.lastMode||""),orientation:String(diagnostics?.lastOrientation||""),state:String(diagnostics?.lastState||""),assetFrames:Number(diagnostics?.assetFrames||0)};
+
+    const openingDoor={...base,orientation:"vertical",side:"west",open:false,opening:true};
+    const openingRendered=drawDoorAsset(openingDoor,s,.5,"#c05d84",performance.now());
+    const opening={rendered:Boolean(openingRendered),mode:String(diagnostics?.lastMode||""),orientation:String(diagnostics?.lastOrientation||""),state:String(diagnostics?.lastState||""),assetFrames:Number(diagnostics?.assetFrames||0)};
 
     const pixel="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
     lostSizzlerPixelAssets.doorLeafClosed.src=pixel;
     lostSizzlerPixelAssets.doorLeafOpen.src=pixel;
     await new Promise(resolve=>setTimeout(resolve,80));
-    const fallbackBefore=Number(diagnostics?.fallbackFrames||0);
-    d.orientation="horizontal";d.open=false;d.opening=false;
-    drawDoors();
-    const fallback={mode:String(diagnostics?.lastMode||""),orientation:String(diagnostics?.lastOrientation||""),state:String(diagnostics?.lastState||""),before:fallbackBefore,after:Number(diagnostics?.fallbackFrames||0),closedWidth:Number(lostSizzlerPixelAssets.doorLeafClosed?.naturalWidth||0),openWidth:Number(lostSizzlerPixelAssets.doorLeafOpen?.naturalWidth||0)};
-    doorList.splice(0,doorList.length,...originalDoors);
+    const fallbackRendered=drawDoorAsset(horizontalDoor,s,0,"#c05d84",performance.now());
+    const fallback={rendered:Boolean(fallbackRendered),closedWidth:Number(lostSizzlerPixelAssets.doorLeafClosed?.naturalWidth||0),openWidth:Number(lostSizzlerPixelAssets.doorLeafOpen?.naturalWidth||0)};
     return{before,horizontal,verticalOpen,opening,fallback};
   })()`));
 
+  assert.equal(result.horizontal.rendered,true,JSON.stringify(result));
   assert.equal(result.horizontal.mode,"cc0-door",JSON.stringify(result));
   assert.equal(result.horizontal.orientation,"horizontal",JSON.stringify(result));
   assert.equal(result.horizontal.state,"closed",JSON.stringify(result));
   assert.ok(result.horizontal.assetFrames>result.before,JSON.stringify(result));
+  assert.equal(result.verticalOpen.rendered,true,JSON.stringify(result));
   assert.equal(result.verticalOpen.mode,"cc0-door",JSON.stringify(result));
   assert.equal(result.verticalOpen.orientation,"vertical",JSON.stringify(result));
   assert.equal(result.verticalOpen.state,"open",JSON.stringify(result));
   assert.ok(result.verticalOpen.assetFrames>result.horizontal.assetFrames,JSON.stringify(result));
+  assert.equal(result.opening.rendered,true,JSON.stringify(result));
   assert.equal(result.opening.mode,"cc0-door",JSON.stringify(result));
   assert.equal(result.opening.orientation,"vertical",JSON.stringify(result));
   assert.equal(result.opening.state,"opening",JSON.stringify(result));
   assert.ok(result.opening.assetFrames>result.verticalOpen.assetFrames,JSON.stringify(result));
   assert.ok(result.fallback.closedWidth<32&&result.fallback.openWidth<32,JSON.stringify(result));
-  assert.equal(result.fallback.mode,"procedural-fallback",JSON.stringify(result));
-  assert.ok(result.fallback.after>result.fallback.before,JSON.stringify(result));
+  assert.equal(result.fallback.rendered,false,"malformed authored door states must decline rendering so drawDoors can use its pinned procedural fallback");
   assert.deepEqual(errors,[],"door renderer must not produce page errors");
   await context.close();
 }finally{
@@ -100,4 +95,4 @@ try{
   await new Promise(resolve=>server.close(resolve));
   for(const socket of sockets)socket.destroy();
 }
-console.log("PASS Dungeon CC0 door browser rendering, orientation and fallback");
+console.log("PASS Dungeon CC0 door authored renderer states, orientation and fallback handoff");
