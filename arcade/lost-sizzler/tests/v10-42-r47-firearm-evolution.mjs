@@ -12,8 +12,10 @@ assert.match(src,/if\(!player\|\|player\.firearmUnlocked===false\)return 0/,"swo
 assert.match(src,/player\.weapon=null;player\.weaponEvolutionTier=0;player\.weaponLevel=0;player\.ownedWeapons=\[\];player\.activeWeaponIndex=-1/,"locked sword-first state must not be converted into a firearm");
 assert.match(src,/const next=Math\.max\(1,Math\.min\(cap,tier\+1\)\)/,"first firearm pickup must start at Tier 1");
 assert.match(src,/player\.ownedWeapons=\[clone\(canonical\)\]/,"only one acquired firearm may remain owned");
-assert.match(src,/FIREARM PARTS SALVAGED/,"capped pickups must still give a useful reward");
-assert.match(src,/FIREARM ACQUIRED/,"first weapon pickup must be distinguished from later upgrades");
+assert.match(src,/WEAPON CAPPED — AMMO RESTORED/,"capped pickups must convert first to a useful ammo reward");
+assert.match(src,/WEAPON CAPPED — \+10 XP/,"full-ammo capped pickups must retain the small XP fallback");
+assert.match(src,/WEAPON ACQUIRED/,"first weapon pickup must be distinguished from later upgrades");
+assert.match(src,/WEAPON EVOLVED/,"later weapon pickups must use the generic evolution label");
 assert.match(src,/ARCHIVE SWORD ACTIVE/,"Inventory must explain the pre-firearm sword state");
 assert.match(src,/salvageAmmo/);
 assert.match(src,/EVOLVING FIREARM/);
