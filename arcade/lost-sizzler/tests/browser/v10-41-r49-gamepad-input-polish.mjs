@@ -32,15 +32,34 @@ try{
 
   const solo=await page.evaluate(async()=>{
     const api=window.CCGLostSizzlerV141R49GamepadInput,blank=()=>Array.from({length:16},()=>({pressed:false,value:0}));
-    const startX=Number(p1.x),buttons=blank();api.processSnapshot(0,{connected:true,axes:[1,0],buttons},performance.now());const heldRight=input.has("KeyD");
-    await new Promise(resolve=>setTimeout(resolve,260));api.processSnapshot(0,{connected:true,axes:[0,0],buttons},performance.now()+300);const released=!input.has("KeyD"),endX=Number(p1.x);
-    const before=api.state.syntheticDown;buttons[0]={pressed:true,value:1};api.processSnapshot(0,{connected:true,axes:[0,0],buttons},performance.now()+330);const attackHeld=input.has("Space");buttons[0]={pressed:false,value:0};api.processSnapshot(0,{connected:true,axes:[0,0],buttons},performance.now()+350);const attackReleased=!input.has("Space");
-    const p2Before=api.state.syntheticDown;const second=api.processSnapshot(1,{connected:true,axes:[1,0],buttons:blank()},performance.now()+370);
-    return{startX,endX,heldRight,released,attackHeld,attackReleased,attackEvents:api.state.syntheticDown-before,second,p2Events:api.state.syntheticDown-p2Before}
+    const directions=[
+      {label:"right",axes:[1,0],code:"KeyD",dx:1,dy:0},
+      {label:"left",axes:[-1,0],code:"KeyA",dx:-1,dy:0},
+      {label:"down",axes:[0,1],code:"KeyS",dx:0,dy:1},
+      {label:"up",axes:[0,-1],code:"KeyW",dx:0,dy:-1}
+    ];
+    const start={x:Number(p1.x),y:Number(p1.y)};
+    const direction=directions.find(d=>{
+      const x=start.x+d.dx,y=start.y+d.dy;
+      return Boolean(
+        W?.walkable?.(world.map,x,y,host)&&
+        !(host?.enemies||[]).some(e=>e?.alive&&Number(e.x)===x&&Number(e.y)===y)&&
+        !(host?.chests||[]).some(ch=>ch?.active&&Number(ch.x)===x&&Number(ch.y)===y)
+      );
+    })||directions[0];
+    const buttons=blank();
+    api.processSnapshot(0,{connected:true,axes:direction.axes,buttons},performance.now());
+    const held=input.has(direction.code);
+    for(let i=0;i<15&&Number(p1.x)===start.x&&Number(p1.y)===start.y;i++)await new Promise(resolve=>setTimeout(resolve,40));
+    api.processSnapshot(0,{connected:true,axes:[0,0],buttons},performance.now()+650);
+    const released=!input.has(direction.code),end={x:Number(p1.x),y:Number(p1.y)};
+    const before=api.state.syntheticDown;buttons[0]={pressed:true,value:1};api.processSnapshot(0,{connected:true,axes:[0,0],buttons},performance.now()+680);const attackHeld=input.has("Space");buttons[0]={pressed:false,value:0};api.processSnapshot(0,{connected:true,axes:[0,0],buttons},performance.now()+700);const attackReleased=!input.has("Space");
+    const p2Before=api.state.syntheticDown;const second=api.processSnapshot(1,{connected:true,axes:[1,0],buttons:blank()},performance.now()+720);
+    return{start,end,direction,held,released,attackHeld,attackReleased,attackEvents:api.state.syntheticDown-before,second,p2Events:api.state.syntheticDown-p2Before}
   });
-  assert.equal(solo.heldRight,true,"P1 stick-right must enter canonical KeyD input");
-  assert.equal(solo.released,true,"neutral stick must release canonical KeyD input");
-  assert.notEqual(solo.endX,solo.startX,"P1 must move through the real gameplay loop from controller input");
+  assert.equal(solo.held,true,`P1 stick-${solo.direction.label} must enter canonical ${solo.direction.code} input`);
+  assert.equal(solo.released,true,`neutral stick must release canonical ${solo.direction.code} input`);
+  assert.notDeepEqual(solo.end,solo.start,"P1 must move through the real gameplay loop from controller input");
   assert.equal(solo.attackHeld,true,"P1 A must enter canonical Space attack input");
   assert.equal(solo.attackReleased,true,"releasing A must release Space");
   assert.ok(solo.attackEvents>=1,"P1 A must dispatch a real canonical attack keydown");
