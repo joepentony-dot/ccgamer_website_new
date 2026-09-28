@@ -1,7 +1,9 @@
 const lostSizzlerPixelAssets=(()=>{
   const cache=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||"latest").trim();
+  const visualOverrides=window.CCG_ASSET_OVERRIDES?.images?.visuals||{};
+  const selected=(key,fallback="")=>String(visualOverrides[key]||fallback||"").trim();
   const make=path=>{
-    if(typeof Image!=="function")return null;
+    if(!path||typeof Image!=="function")return null;
     const image=new Image();image.decoding="async";
     try{image.fetchPriority="high"}catch(_){}
     const packageRoot=window.CCGDungeonCarnageItchPackage===true?"":"/arcade/lost-sizzler/";
@@ -9,8 +11,14 @@ const lostSizzlerPixelAssets=(()=>{
     return image
   };
   return{
-    explorer:make("assets/pixel/explorer-sheet-v10-34.png"),
-    chests:make("assets/pixel/chest-sheet-v10-34.png")
+    explorer:make(selected("playerSheet","assets/pixel/explorer-sheet-v10-34.png")),
+    chests:make(selected("chestSheet","assets/pixel/chest-sheet-v10-34.png")),
+    enemyAtlasA:make(selected("enemyAtlasA","assets/pixel/enemy-atlas-standard-a-v10-35.png")),
+    enemyAtlasB:make(selected("enemyAtlasB","assets/pixel/enemy-atlas-standard-b-v10-35.png")),
+    environmentAtlas:make(selected("environmentAtlas","assets/pixel/environment-atlas-v10-35.png")),
+    switches:make(selected("switchSheet")),
+    sigils:make(selected("sigilSheet")),
+    environmentTiles:make(selected("environmentTileset"))
   }
 })();
 const chestRenderDiagnostics=window.__CCG_CHEST_RENDER_DIAGNOSTICS__=window.__CCG_CHEST_RENDER_DIAGNOSTICS__||{assetFrames:0,richFallbackFrames:0,lastMode:"",lastAt:0};
