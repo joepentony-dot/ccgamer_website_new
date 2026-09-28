@@ -1,3 +1,10 @@
+## Dungeon R64 P0 runtime integrity — 28 September 2026
+
+- User reproduced another deployed r62 freeze. The browser/event loop remained alive enough to emit periodic diagnostics and focus/blur events while gameplay stopped, so treat this as a simulation/RAF liveness failure rather than a full browser crash.
+- R64 branch `codex/dungeon-r64-freeze-trap-integrity-20260928` adds a visible-Solo R59 loop watchdog and exact diagnostics for accepted frames/recoveries.
+- The same live run also reported 4 ordinary-trap contacts, 0 verified trap hits and 3 trap anomalies. R64 fixes stale same-cycle trap contact latches by rearming immediately after tile exit, then regression-tests ACTIVE SHOCK trap exit/re-entry.
+- Do not merge R63 while the P0 freeze/trap branch is unresolved. Preserve the already-merged R62 authoritative FIRE owner.
+
 ## R62 authoritative FIRE owner repair — 28 September 2026
 
 - Fresh deployed r60 manual evidence reproduced the random loaded-firearm lockout: Space events reached live Solo with a Tier-2 Field Pulse II, 113/120 ammo, zero FIRE cooldown and zero active projectiles, yet repeated attack probes returned false.
