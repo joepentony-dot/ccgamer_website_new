@@ -34,7 +34,7 @@ assert.match(main,/addEventListener\("keyup",e=>\{input\.delete\(e\.code\);if\(\
 assert.match(play,/const p1HeldAttack=isAttackHeldInput\(p1\)&&\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\)[\s\S]*if\(\(p1HeldAttack\|\|fireBuffer1>0\)&&fire1<=0\)\{const fired=firePlayer\(p1,/,"the simulation loop must execute fresh P1 intent once and repeat only qualified held FIRE");
 assert.doesNotMatch(play,/input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\|\|fireBuffer1>0/,"raw P1 key presence must never bypass qualified held-FIRE ownership");
 assert.match(play,/function firePlayer\(p,d\)[\s\S]*return true\n\}/,"core FIRE owner must report a completed shot");
-assert.match(play,/const authoritativeLocalProjectileInsert=\(b,remoteShot=false\)=>\{if\(b\)bullets\.push\(\{\.\.\.b,remote:!!remoteShot\}\)\}/,"authoritative FIRE must retain an immutable lexical projectile insertion path");
+assert.match(play,/const authoritativeLocalProjectileInsert=\(b,remoteShot=false\)=>\{if\(b\)\{if\(!Number\.isFinite\(Number\(b\.__v142BornAt\)\)\)b\.__v142BornAt=performance\.now\(\);bullets\.push\(\{\.\.\.b,remote:!!remoteShot\}\)\}\}/,"authoritative FIRE must retain an immutable lexical projectile insertion path and preserve projectile birth timestamps");
 const firePlayerBlock=play.match(/function firePlayer\(p,d\)\{[\s\S]*?\n\}/)?.[0]||"";
 assert.match(firePlayerBlock,/authoritativeLocalProjectileInsert\(b,false\)/,"local FIRE must insert its own projectile through the immutable core path");
 assert.doesNotMatch(firePlayerBlock,/window\.spawnBullet|externalSpawn|spawnBullet\(b,false\)/,"local FIRE must never delegate projectile creation to a mutable global spawn owner");
