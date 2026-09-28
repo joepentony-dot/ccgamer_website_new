@@ -1,3 +1,11 @@
+## Dungeon switch-state visual follow-up — 28 September 2026
+
+- Door PR #2400 merged fully qualified as current main `b44508bbb315238644a1875ec16c3aed6de61b68`; repository refresh showed no open PRs.
+- Branch `codex/dungeon-visual-switch-states-20260928` starts from that exact main and uses the already-imported/provenanced 0x72 CC0 blue button up/down states beneath the existing lever art.
+- Active switches remain visibly armed; activated switches remain visible as a depressed/green completed state instead of disappearing. Normal and remote-secret lever identities remain distinct.
+- Switch interaction, projectile/touch activation, door ownership, secret discovery, collision, progression and save/runtime state are unchanged. Existing procedural switch art remains the malformed/decode fallback.
+- Require exact-head canonical/Node, Chromium shards 1–6 and all triggered package/cache/SEO/site/image checks before merge. Next target after qualification is stronger locked/ready sigil presentation, then FIRE/SHOCK trap art.
+
 ## Dungeon visual doors follow-up — 28 September 2026
 
 - Visual-overhaul PR #2395 merged fully qualified as main `b20390c507058680cf15bc88f0abdb79dc1f3c7b`; there were no remaining open PRs immediately after refresh.
