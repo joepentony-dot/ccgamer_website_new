@@ -162,10 +162,10 @@ test('scheduled or private YouTube videos are non-blocking and retried automatic
 });
 
 test('authoritative game publishing preserves retro page and video generation on mixed pushes', () => {
-  assert.match(rebuildGames, /generate-retro-pages\\.js/);
-  assert.match(rebuildGames, /generate-retro-video-seo\\.js/);
-  assert.match(rebuildGames, /inject-retro-manual-schema\\.js/);
-  assert.match(rebuildGames, /validate-retro-video-seo\\.js/);
+  assert.match(rebuildGames, /generate-retro-pages\.js/);
+  assert.match(rebuildGames, /generate-retro-video-seo\.js/);
+  assert.match(rebuildGames, /inject-retro-manual-schema\.js/);
+  assert.match(rebuildGames, /validate-retro-video-seo\.js/);
   assert.ok(
     rebuildGames.indexOf('generate-retro-pages.js') < rebuildGames.indexOf('generate-sitemaps.js'),
     'retro pages must be regenerated before sitemap generation'
