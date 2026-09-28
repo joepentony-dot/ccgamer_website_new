@@ -336,7 +336,7 @@ function renderHealth() {
     if (!state.unverifiedIds.length) {
       el.healthSummary.textContent = `All ${ids.size} current site video IDs have verified YouTube metadata.`;
     } else {
-      el.healthSummary.textContent = `${ids.size - state.unverifiedIds.length} of ${ids.size} current site video IDs have verified metadata; ${state.unverifiedIds.length} remain unavailable or await the next sync.`;
+      el.healthSummary.textContent = `${ids.size - state.unverifiedIds.length} of ${ids.size} current site video IDs have verified metadata; ${state.unverifiedIds.length} are pending (including scheduled/private videos) and will be retried automatically.`;
     }
   }
 
@@ -451,7 +451,7 @@ function renderVideoPreview(kind) {
     ].filter(Boolean).join(' · ');
   } else {
     status.textContent = `New/unverified YouTube ID: ${id}`;
-    detail.textContent = 'This is expected for a newly added video. GitHub Actions will verify it with YouTube Data API v3 after the source commit reaches main. If YouTube does not return the video, VideoObject markup will be withheld rather than guessed.';
+    detail.textContent = 'This is expected for a newly added or scheduled/private video. Publishing will continue normally. GitHub Actions will retry YouTube Data API v3 automatically; VideoObject markup stays withheld until YouTube exposes verified metadata.';
   }
 }
 
@@ -1259,7 +1259,7 @@ async function monitorPublish(config, job) {
       const chapterCount = countTimestampLines(metadata.description || '');
       writeLog(`YouTube verified: ${metadata.title || job.videoId}${metadata.duration ? ` · ${formatIsoDuration(metadata.duration)}` : ''}${chapterCount ? ` · ${chapterCount} chapters detected` : ''}`);
     } else {
-      writeLog(`YouTube did not provide verified metadata for ${job.videoId}; VideoObject remains withheld until verification succeeds.`);
+      writeLog(`YouTube metadata pending for ${job.videoId}. Scheduled/private videos are accepted and do not block publishing; automatic retries will add VideoObject metadata after YouTube exposes the video.`);
     }
   } catch (error) {
     ['metadata', 'pages', 'library', 'sitemaps', 'validation'].forEach((step) => {
