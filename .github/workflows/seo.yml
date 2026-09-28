@@ -17,6 +17,10 @@ on:
       - 'arcade/lost-sizzler/tests/**'
       - 'arcade/lost-sizzler/STABILIZATION_DEFECTS.md'
       - '.github/workflows/lost-sizzler-*.yml'
+  schedule:
+      # Recheck private/scheduled YouTube IDs daily so metadata and VideoObject
+      # markup appear automatically after the video becomes public.
+      - cron: "17 6 * * *"
   workflow_dispatch:
 
 permissions:
