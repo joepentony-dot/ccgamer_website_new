@@ -1,3 +1,12 @@
+## R62 manual-acceptance follow-up — 28 September 2026
+
+- R61 is merged and deployed acceptance is in progress. Three fresh current-build findings are now tracked together on branch `codex/dungeon-r62-manual-acceptance-followup-20260928`.
+- **Tactical radar/minimap integrity:** the desktop tactical radar can show oversized/foreign-looking markers that do not match the documented radar legend. Investigate all owners that can draw to or overlay `#radar-canvas`; require the radar to render only explored tiles, player trail and documented SIGIL/SHOP/DEATH CACHE/EXIT/player markers.
+- **Bronze-key HUD visibility:** the R61 key ordering is correct in the persistent inventory owner, but the live lower HUD still clips the Bronze key/keyring strip at the bottom because the fixed-height `.player-hub` can overflow its inventory content. Bronze-key status must remain fully visible in normal desktop gameplay without relying on scrolling or clipped overflow.
+- **Door topology invariant:** generated ordinary/optional doors must be physically anchored to valid wall geometry. No door may float in floor space, sit one tile away from masonry, or remain after later topology carving removes its supporting wall context. Validate door neighbourhoods after all structural carving, not only when the optional room is first attached. Later Stage-5/topology routing must protect door cells and required adjacent wall anchors, and invalid door candidates must be rejected or regenerated.
+- The door defect is classified as **world-generation structure**, not renderer-only polish. Rendering must not fake a wall around an invalid generated door.
+- Preserve R61 FIRE/death ownership while this work proceeds. Deployed sustained FIRE/death acceptance remains required independently of these follow-up defects.
+
 ## R61 deployed FIRE + death-integrity failure — 28 September 2026
 
 - Deployed bug report from `V10.42 r60 / 20260928r60` shows real Space events reaching the canvas while ammo remains 120, `fire1=0`, projectile cooldown is 0 and projectile count stays 0; repeated attack probes report `fired:false`.
