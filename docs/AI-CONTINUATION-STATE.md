@@ -1,3 +1,10 @@
+## Dungeon R64 P0 runtime integrity — 28 September 2026
+
+- Deployed R62 manual testing reproduced two release-blocking symptoms: a visible game freeze while reporter timers remained alive, and a stationary `SHOCK TRAP — ACTIVE` tile that did not damage the player.
+- P0 branch: `codex/dungeon-r64-runtime-freeze-trap-integrity-20260928`, based directly on merged R62 main `ca923a676b08475c8e86611e93b3d6c4e0c387a6`.
+- R64 adds canonical trap-liveness delegation, severe-pressure FX hard caps, richer freeze/FIRE telemetry and an exact SAFE->ACTIVE stationary SHOCK Chromium regression.
+- Draft R63 PR #2409 remains paused/unmerged until R64 runtime integrity is resolved; do not weaken the R62 authoritative FIRE architecture to make its failing browser contract green.
+
 ## R62 authoritative FIRE owner repair — 28 September 2026
 
 - Fresh deployed r60 manual evidence reproduced the random loaded-firearm lockout: Space events reached live Solo with a Tier-2 Field Pulse II, 113/120 ammo, zero FIRE cooldown and zero active projectiles, yet repeated attack probes returned false.
