@@ -22,6 +22,7 @@ const startupFreezeGuard=readGame("js/v10-41-startup-freeze-guard.js");
 const network=readGame("js/network.js");
 const activeEnemyFire=readGame("js/v10-41-active-enemy-fire.js");
 const r29=readGame("js/v10-41-r29-runtime-repair.js");
+const core=readGame("js/game-core.js");
 
 const metaBuild=index.match(/<meta name="ccg-lost-sizzler-build" content="([^"]+)">/)?.[1];
 const metaCache=index.match(/<meta name="ccg-lost-sizzler-cache" content="([^"]+)">/)?.[1];
@@ -31,6 +32,11 @@ assert.equal(metaCache,manifest.cacheToken,"HTML cache token and live version ma
 assert.equal(manifest.releaseVersion,"V10.42","current semantic release must be V10.42");
 assert.equal(manifest.build,"V10.42 r59","current published build must remain explicit in the regression check");
 assert.equal(manifest.cacheToken,"20260928r59","current release cache token must remain explicit in the live manifest");
+
+assert.match(index,/id="hud-p2">0<\/b>/,"static ARMOUR card must show only its numeric starting value");
+assert.doesNotMatch(index,/id="hud-p2">ARM\s+/,"static ARMOUR value must not repeat an ARM prefix");
+assert.match(core,/UI\.p2\.textContent=String\(p1\.armor\|\|0\)/,"runtime ARMOUR card must render only the numeric player armour value");
+assert.doesNotMatch(core,/UI\.p2\.textContent=p2\?/,"bottom ARMOUR card must not be multiplexed into P2 health");
 
 const activeAssets=[
   "css/game.css","css/v10-6-gameplay.css","css/v10-41-r28.css","css/v10-41-r29.css",
