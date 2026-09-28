@@ -1,3 +1,10 @@
+## R59 persistent FIRE lockout repair — 28 September 2026
+
+- **Active branch:** `codex/dungeon-r59-fire-runtime-owner-20260928`, stacked from draft #2396's r59 release head.
+- New live evidence shows valid Solo Space input reaches the attack buffer but still produces no ammo spend/projectile. The repair moves Solo keyboard execution and projectile insertion onto private captured authoritative owners instead of mutable legacy wrappers.
+- Chromium coverage now includes repeated real Space taps while moving and requires actual shot evidence; a deliberately broken legacy projectile wrapper must not suppress the shot.
+- **Status:** IMPLEMENTED / EXACT-HEAD FULL QUALIFICATION REQUIRED / DEPLOYED SUSTAINED FIRE AND NATURAL TRAP ACCEPTANCE STILL REQUIRED.
+
 ## R54 graphics/UI implementation — 23 September 2026
 
 - **Active branch:** `codex/dungeon-r54-graphics-ui-current-main-20260923`, rebuilt from current `main` after #2298 and generated-output #2301 merged. The older R54 scoping PR #2299 is closed and must not be revived.
