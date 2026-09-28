@@ -295,7 +295,7 @@ function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
     }
   }catch(error){console.error("[Dungeon Carnage] post-stage trap-family invariant failed",error)}
   sync();
-  try{dispatchEvent(new CustomEvent("ccg:floor-start",{detail:{floor:Number(run?.floor||1),preserve:Boolean(preserve),checkpointRestore:Boolean(checkpointRestore)}}))}catch(_){}
+  try{const detail={floor:Number(run?.floor||1),preserve:Boolean(preserve),checkpointRestore:Boolean(checkpointRestore)};dispatchEvent(new CustomEvent("ccg:floor-start",{detail}));document.dispatchEvent(new CustomEvent("ccg:floor-start",{detail}))}catch(_){}
   const fi=PGR.floorInfo(run);showToast(`FLOOR ${run.floor}: ${fi.name}`,`${PGR.objectiveLabel(run)}${run.modifier?` • MODIFIER: ${run.modifier.name}`:""}`,"cyan",6500);
 }
 function savedRunLabel(data){if(!data)return "Resume Saved Run";const when=new Date(data.savedAt||Date.now()),time=Number.isFinite(when.getTime())?when.toLocaleString():"saved checkpoint";return `Resume Floor ${data.floor||data.run?.floor||1} — ${time}`}
