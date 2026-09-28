@@ -8,7 +8,7 @@
     || document.documentElement.getAttribute("data-ccg-page") === "member-hub";
   if (!isMemberHub) return;
 
-  import("/resources/js/auth/member-achievement-badges.js").catch((error) => {
+  import("/resources/js/auth/member-achievement-badges.js?v=20260928-dungeon-carnage-badges").catch((error) => {
     console.warn("[CCG] Member achievements could not be loaded:", error);
   });
 })();

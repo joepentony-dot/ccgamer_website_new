@@ -49,7 +49,7 @@ const css = read("resources/css/commodore-completionist.css");
 const workflow = read(".github/workflows/ccg-commodore-completionist.yml");
 const documentation = read("docs/member-hub-phase16-commodore-completionist.md");
 
-const requiredKeys = [
+const completionKeys = [
   "FIRST_RATING",
   "RATED_10",
   "RATED_50",
@@ -64,11 +64,22 @@ const requiredKeys = [
   "DUAL_SYSTEM"
 ];
 
-for (const key of requiredKeys) {
-  requireText(memberCode, `'${key}'`, `Member milestone key ${key}`);
-  requireText(publicCode, `'${key}'`, `Public milestone key ${key}`);
+const expandedMemberKeys = [
+  "RATED_100",
+  "COMMENTER_25",
+  "LIBRARY_250"
+];
+
+for (const key of completionKeys) {
+  requireText(memberCode, `'${key}'`, `Member completion milestone key ${key}`);
+  requireText(publicCode, `'${key}'`, `Public completion milestone key ${key}`);
 }
 
+for (const key of expandedMemberKeys) {
+  requireText(memberCode, `'${key}'`, `Expanded Member Hub milestone key ${key}`);
+}
+
+requireText(memberCode, "COMMODORE_COMPLETION_KEYS", "Original Completionist milestone set");
 requireText(memberCode, "COMMODORE_COMPLETIONIST", "Private completion reward key");
 requireText(memberCode, "Commodore Completionist", "Private completion reward name");
 requireText(memberCode, "Share achievement", "Completion sharing control");
@@ -81,7 +92,7 @@ requireText(memberCode, "legacyGrid.hidden = true", "Legacy badge grid retiremen
 requireText(memberCode, "member-server-badges", "Duplicate activity badge cleanup");
 requireText(memberCode, "if (completion.complete)", "Earned-only completion display");
 requireText(memberCode, "host.prepend(createCompletionCard(completion))", "Prominent earned completion placement");
-requireText(memberCode, "MILESTONE_TOTAL", "Fixed twelve-milestone total");
+requireText(memberCode, "MILESTONE_TOTAL", "Current milestone total");
 
 rejectText(memberCode, "mark.textContent = completion.complete ? '★' : 'FINAL'", "Locked completion teaser");
 rejectText(memberCode, "before the final reward", "Incomplete milestone status");
@@ -104,6 +115,7 @@ requireText(documentation, "Phase 16", "Phase documentation");
 requireText(documentation, "No database migration", "Migration-free documentation");
 requireText(documentation, "sole activity-badge gallery", "Consolidated badge documentation");
 requireText(documentation, "without displaying or naming the Completionist card", "Earned-only reward documentation");
+requireText(documentation, "all twelve Phase 8 activity badges", "Original Completionist contract documentation");
 
 rejectText(memberCode, "insert into", "Member completion code");
 rejectText(publicCode, "insert into", "Public completion code");
@@ -141,8 +153,8 @@ if (failures.length) {
 }
 
 console.log("Commodore Completionist audit passed.");
-console.log("- One account-backed twelve-milestone gallery is authoritative");
+console.log("- One account-backed fifteen-milestone Member Hub gallery is authoritative");
+console.log("- The original twelve milestones remain the Completionist qualification set");
 console.log("- Legacy browser badges and duplicate activity badge chips are retired");
-console.log("- The Completionist reward appears only after all twelve milestones");
 console.log("- Private and public completion displays retain sharing and privacy controls");
-console.log("- No database migration or protected-file change is required");
+console.log("- Expanded activity milestones cannot revoke an already-earned Completionist reward");
