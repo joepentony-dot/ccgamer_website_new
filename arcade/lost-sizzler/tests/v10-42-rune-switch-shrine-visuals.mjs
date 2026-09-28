@@ -19,8 +19,17 @@ const shrineBlock=renderer.slice(shrineStart,shrineEnd);
 
 assert.doesNotMatch(shrineBlock,/if\(!sw\.active\|\|!visibleTo/,"spent switches must remain visible");
 assert.match(shrineBlock,/const s=ws\(sw\.x,sw\.y\),spent=!sw\.active/,"switch visual state must follow existing active flag");
-assert.match(shrineBlock,/spent\?lostSizzlerPixelAssets\.switchButtonDown:lostSizzlerPixelAssets\.switchButtonUp/,"switch button state must reflect activation");
+assert.match(shrineBlock,/drawSwitchVisual\(sw,s,performance\.now\(\)\)/,"switch caller must delegate visual ownership to the shared switch renderer");
 assert.match(shrineBlock,/spent\?"SWITCH TOGGLED"/,"spent switch must show an explicit toggled label");
+
+const switchStart=renderer.indexOf("function drawSwitchVisual(sw,s,now=performance.now()){");
+const switchEnd=renderer.indexOf("\nfunction drawShrinesSwitches(){",switchStart);
+assert.ok(switchStart>=0&&switchEnd>switchStart,"drawSwitchVisual must remain present");
+const switchBlock=renderer.slice(switchStart,switchEnd);
+assert.match(switchBlock,/const buttonArt=spent\?lostSizzlerPixelAssets\.switchButtonDown:lostSizzlerPixelAssets\.switchButtonUp/,"switch button state must reflect activation");
+assert.match(switchBlock,/switchRenderDiagnostics\.lastState=spent\?"activated":"armed"/,"switch diagnostics must expose armed and activated states");
+assert.match(switchBlock,/switchRenderDiagnostics\.lastMode="cc0-switch"/,"authored switch rendering must expose the CC0 switch mode");
+assert.match(switchBlock,/switchRenderDiagnostics\.lastMode="procedural-fallback"/,"switch rendering must retain a procedural fallback");
 assert.match(shrineBlock,/const s=ws\(sh\.x,sh\.y\).*sigilArt=lostSizzlerPixelAssets\.sigils/s,"shrine must use the authored sigil core");
 assert.match(shrineBlock,/ctx\.drawImage\(sigilArt,frame\*32,0,32,40,cx-10,s\.y\+4,20,25\)/,"shrine must render animated sigil art");
 
