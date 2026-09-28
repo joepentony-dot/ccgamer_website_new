@@ -31,6 +31,14 @@ Phase 8 adds private activity badges to the CCG Member Hub.
 - Amiga Explorer — add a Commodore Amiga game
 - Commodore All-Rounder — add games from both systems
 
+### Completionist compatibility
+
+The three expanded account milestones are additional long-term goals. They do
+not revoke or move the established Commodore Completionist reward: that reward
+continues to require the original twelve Phase 8 milestones. Members who
+already earned Completionist therefore keep it when the expanded milestones
+are introduced.
+
 ### C64 Dungeon Carnage
 
 The Member Hub appends the current active C64 Dungeon Carnage achievement
