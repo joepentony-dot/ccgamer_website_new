@@ -208,3 +208,13 @@ Switches are the first production renderer slice to move off the rudimentary can
 Preferred Stage 2/3 candidate: Shade's free **Puny Characters / Puny Monsters** family, CC0. The player pack provides idle, walk, sword, bow, staff, throw, hurt and death animation sets and ships alongside a free monster pack, making it a stronger coherent base for richer player/enemy animation than forcing the environment pack to do both jobs.
 
 Do not import the Puny binaries until the same local-provenance process used for 0x72 is completed.
+
+
+## Chest + spike visual slice — 28 September 2026
+
+- The imported 0x72 chest frames are now the default live chest presentation rather than merely staged binaries.
+- Chest opening uses the three local CC0 frames; rarity/locked aura, lock indicator, labels and gameplay state remain owned by the existing chest runtime.
+- A caller-supplied legacy chest sheet can still override the CC0 defaults, and the established V10.34 sheet plus rich canvas fallback remain available if replacement frames fail to decode.
+- Ordinary SPIKE traps now use the four imported CC0 animation frames. The renderer maps the existing authoritative `SYS.trapActive()` state to safe/retracted versus animated active frames; trap timing and damage ownership are unchanged.
+- FIRE and SHOCK traps remain on their established renderer until equally coherent licensed replacements are selected.
+- Static contracts now require all chest/spike frame slots and the live frame-based rendering paths.
