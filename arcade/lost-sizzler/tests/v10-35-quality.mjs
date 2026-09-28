@@ -35,8 +35,8 @@ assert.match(quality,/installExplorerFrameGutters\(\)/,"player animation cells m
 assert.match(quality,/wsV135Stable/,"world-to-screen coordinates must be pixel aligned");
 assert.match(quality,/shake>0&&shake<1\.25\)shake=0/,"residual sub-pixel screen shake must be removed");
 
-assert.match(melee,/adjacentEnemy\|\|adjacentFurniture/);
-assert.match(melee,/return meleeAttack\(p,dir\)/);
+assert.doesNotMatch(melee,/adjacentEnemy\|\|adjacentFurniture/,"a loaded firearm must not be diverted into contextual melee by an adjacent target");
+assert.match(melee,/if\(!hasGun\(p\)\|\|Number\(p\.mana\|\|0\)<=0\)return meleeAttack\(p,dir\)/,"melee remains the explicit no-gun or zero-ammo fallback");
 assert.match(rare,/spoken=Boolean\(voice\.say\("bountyStart"/);
 assert.match(rare,/if\(!voiceRequired\|\|expired\|\|spoken\)/);
 assert.match(voice,/room\?\.sanctuary/);
