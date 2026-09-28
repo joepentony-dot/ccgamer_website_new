@@ -11,8 +11,8 @@ const hub=fs.readFileSync(path.join(repo,"games/ccg-games/index.html"),"utf8");
 const release=fs.readFileSync(path.join(root,"js/v10-42-zero-server-release.js"),"utf8");
 const version=JSON.parse(fs.readFileSync(path.join(root,"version.json"),"utf8"));
 
-assert.equal(version.build,"V10.42 r62");
-assert.equal(version.cacheToken,"20260928r62");
+assert.equal(version.build,"V10.42 r64");
+assert.equal(version.cacheToken,"20260928r64");
 
 for(const retiredCopy of [
   "Weekly High-Score Vault",
