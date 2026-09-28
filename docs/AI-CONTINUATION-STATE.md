@@ -1,3 +1,11 @@
+## Dungeon R59 post-merge trap acceptance + armour HUD follow-up — 28 September 2026
+
+- Live main advanced to `9abd513b4bc5b7f1d1d579c8ec9a973d3ce68c46` after PR #2398 merged the authoritative FIRE/live-trap repair at head `f509f4254bf3a9a329aac4ac1ef83a8091684fd7`. Main now publishes `V10.42 r59 / 20260928r59`.
+- #2398 includes the user-screenshot-driven enemy-room trap repair: exact-cell trap contact is checked before encounter activation and again after late encounter systems, while armour is preserved and one HEALTH is removed per verified active cycle.
+- The merged #2398 qualification run exposed a browser-fixture overshoot in `v10-42-r59-live-encounter-trap-contact.mjs`: a held Arrow key could advance one tile beyond the selected trap before the assertion sampled position. The post-merge follow-up changes this to one discrete real keyboard press; the gameplay assertions remain unchanged.
+- PR #2396 has been rebuilt in place directly from current main rather than carrying its obsolete pre-#2398 R59 ancestry. Its remaining product delta is the requested bottom HUD correction: ARMOUR renders only the number, with no repeated `ARM` prefix and no P2-health multiplexing. The static canonical/public-route markup starts at `0`.
+- #2396 must complete a fresh exact-head matrix from current main before merge. This pass also requalifies the merged #2398 trap runtime with the deterministic live encounter trap contract. After deployment, manual acceptance remains sustained FIRE plus natural FIRE/SPIKE/SHOCK with enemies left active.
+
 ## Dungeon R59 live FIRE + encounter-trap remediation — 28 September 2026
 
 - Live `main` baseline remains `00922200267fb915c9dd38a367b0f2c339097fd5` / deployed `V10.42 r58`.
