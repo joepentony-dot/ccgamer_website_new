@@ -59,7 +59,7 @@ assert.match(renderer,/environmentTiles:make\(selected\("environmentTileset"\)\)
 assert.match(renderer,/pixelSheet=customSheet\?\.complete&&customSheet\.naturalWidth>=160\?customSheet:lostSizzlerPixelAssets\.chests/,"owner-supplied chest sheet must fall back to the established V10.34 sheet when unavailable");
 assert.match(renderer,/if\(frameArtReady&&\!\(customSheet\?\.complete&&customSheet\.naturalWidth>=160\)\)/,"CC0 frame set must be the normal chest renderer unless an explicit owner sheet is ready");
 assert.match(renderer,/drawAnimatedChestFallback\(c,s,col,now,anim,pulse\)/,"rich canvas chest must remain the final fallback when image layers fail");
-assert.match(renderer,/replacement\?\.complete&&replacement\.naturalWidth\?replacement:lostSizzlerPixelAssets\.explorer/,"player replacement must fall back if it is not decoded");
+assert.match(renderer,/punyReady=replacement\?\.complete&&replacement\.naturalWidth>=768&&replacement\.naturalHeight>=256,sheet=punyReady\?replacement:lostSizzlerPixelAssets\.explorer/,"Puny player art must decode at its expected dimensions or fall back to the established V10.34 explorer sheet");
 
 const visualBlock=overrides.match(/visuals:\s*\{([\s\S]*?)\n\s*\},\n\s*namedEnemies:/)?.[1]||"";
 assert.ok(visualBlock,"visual registry block must be discoverable");
