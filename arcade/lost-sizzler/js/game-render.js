@@ -65,6 +65,7 @@ const lostSizzlerPixelAssets=(()=>{
   }
 })();
 const chestRenderDiagnostics=window.__CCG_CHEST_RENDER_DIAGNOSTICS__=window.__CCG_CHEST_RENDER_DIAGNOSTICS__||{assetFrames:0,richFallbackFrames:0,lastMode:"",lastAt:0};
+const doorRenderDiagnostics=window.__CCG_DOOR_RENDER_DIAGNOSTICS__=window.__CCG_DOOR_RENDER_DIAGNOSTICS__||{assetFrames:0,fallbackFrames:0,lastMode:"",lastOrientation:"",lastState:"",lastAt:0};
 function camFor(p,v){let c=cameras.get(p.id)||{x:0,y:0},targetX=p.rx,targetY=p.ry;const roomId=W.roomAt(world,p.x,p.y),room=world.rooms?.[roomId],mem=host.memoryPuzzle;if(mem&&!mem.solved&&roomId===mem.roomId){const points=[...(mem.tiles||[]),mem.activator].filter(Boolean);if(points.length){const minX=Math.min(...points.map(q=>q.x)),maxX=Math.max(...points.map(q=>q.x)),minY=Math.min(...points.map(q=>q.y)),maxY=Math.max(...points.map(q=>q.y));targetX=(minX+maxX)/2;targetY=(minY+maxY)/2}}else if(document.fullscreenElement&&room){const roomPixelW=(room.w+2)*C.tile,roomPixelH=(room.h+2)*C.tile;if(roomPixelW<=v.w&&roomPixelH<=v.h){targetX=room.x+room.w/2;targetY=room.y+room.h/2}}const tx=Math.max(0,Math.min(C.worldWidth*C.tile-v.w,targetX*C.tile+C.tile/2-v.w/2)),ty=Math.max(0,Math.min(C.worldHeight*C.tile-v.h,targetY*C.tile+C.tile/2-v.h/2));c.x=tx;c.y=ty;cameras.set(p.id,c);return c}
 function ws(x,y){return{x:view.x+x*C.tile-cam.x+renderShake.x,y:view.y+y*C.tile-cam.y+renderShake.y}}
 function tileHash(x,y,salt=0){let h=Math.imul(x+17,73856093)^Math.imul(y+31,19349663)^Math.imul(salt+7,83492791);h^=h>>>13;h=Math.imul(h,1274126177);return(h^(h>>>16))>>>0}
@@ -192,6 +193,35 @@ function drawSecretWall(d,s){
   else{ctx.moveTo(cx-3,s.y+8);ctx.lineTo(cx,cy-7);ctx.lineTo(cx-4,cy-3);ctx.moveTo(cx+3,cy+2);ctx.lineTo(cx-1,cy+6);ctx.lineTo(cx+1,s.y+C.tile-8)}
   ctx.stroke();ctx.restore()
 }
+function drawDoorAsset(d,s,eased,lockedCol,now){
+  const closed=lostSizzlerPixelAssets.doorLeafClosed,open=lostSizzlerPixelAssets.doorLeafOpen;
+  const ready=closed?.complete&&closed.naturalWidth>=32&&closed.naturalHeight>=32&&open?.complete&&open.naturalWidth>=32&&open.naturalHeight>=32;
+  if(!ready)return false;
+  const horizontal=d.orientation==="horizontal",state=d.open?"open":d.opening?"opening":"closed",cx=s.x+C.tile/2,cy=s.y+C.tile/2,size=C.tile;
+  ctx.save();ctx.imageSmoothingEnabled=false;ctx.translate(Math.round(cx),Math.round(cy));
+  // The authored 0x72 doorway faces a horizontal wall. Rotate the complete
+  // doorway state by 90 degrees only when the generated door occupies a
+  // vertical wall; gameplay coordinates and collision remain untouched.
+  if(!horizontal)ctx.rotate(Math.PI/2);
+  ctx.shadowColor=d.locked?lockedCol:"rgba(214,157,82,.34)";ctx.shadowBlur=d.locked?10:5;
+  if(state==="open"){
+    ctx.drawImage(open,-size/2,-size/2,size,size);
+  }else if(state==="opening"){
+    ctx.globalAlpha=Math.min(1,.18+eased*1.05);ctx.drawImage(open,-size/2,-size/2,size,size);
+    ctx.globalAlpha=Math.max(0,1-eased);ctx.drawImage(closed,-size/2,-size/2,size,size);
+  }else{
+    ctx.drawImage(closed,-size/2,-size/2,size,size);
+  }
+  ctx.globalAlpha=1;
+  if(d.locked){
+    ctx.strokeStyle=lockedCol;ctx.lineWidth=2;ctx.globalAlpha=.72;
+    ctx.strokeRect(-size/2+2,-size/2+2,size-4,size-4);
+    ctx.globalAlpha=1;
+  }
+  ctx.restore();
+  doorRenderDiagnostics.assetFrames++;doorRenderDiagnostics.lastMode="cc0-door";doorRenderDiagnostics.lastOrientation=horizontal?"horizontal":"vertical";doorRenderDiagnostics.lastState=state;doorRenderDiagnostics.lastAt=now;
+  return true
+}
 function drawDoors(){
   const now=performance.now();
   for(const d of host.doors||[]){
@@ -204,12 +234,13 @@ function drawDoors(){
       const slide=(C.tile-5)*eased,th=secretWallTheme(d);ctx.fillStyle=th.wall;ctx.strokeStyle=th.hi;ctx.lineWidth=2;
       if(d.orientation==="horizontal"){const y=d.side==="north"?s.y+1:d.side==="south"?s.y+C.tile-8:s.y+C.tile/2-4,dir=d.side==="north"?-1:d.side==="south"?1:(((d.x+d.y)%2)?1:-1);ctx.fillRect(s.x+3,y+dir*slide,C.tile-6,8);ctx.strokeRect(s.x+3,y+dir*slide,C.tile-6,8)}
       else{const x=d.side==="west"?s.x+1:d.side==="east"?s.x+C.tile-8:s.x+C.tile/2-4,dir=d.side==="west"?-1:d.side==="east"?1:(((d.x+d.y)%2)?1:-1);ctx.fillRect(x+dir*slide,s.y+3,8,C.tile-6);ctx.strokeRect(x+dir*slide,s.y+3,8,C.tile-6)}
-    }else{
+    }else if(!drawDoorAsset(d,s,eased,lockedCol,now)){
       const horizontal=d.orientation==="horizontal",hingeAtStart=((d.id?.length||0)+d.x+d.y)%2===0,leafLen=C.tile-7,closedAngle=horizontal?0:Math.PI/2;let swingSign;if(horizontal)swingSign=d.side==="north"?1:d.side==="south"?-1:(hingeAtStart?1:-1);else swingSign=d.side==="west"?-1:d.side==="east"?1:(hingeAtStart?-1:1);const angle=closedAngle+swingSign*eased*Math.PI/2,hx=horizontal?(hingeAtStart?s.x+4:s.x+C.tile-4):(d.side==="west"?s.x+3:d.side==="east"?s.x+C.tile-3:s.x+C.tile/2),hy=horizontal?(d.side==="north"?s.y+3:d.side==="south"?s.y+C.tile-3:s.y+C.tile/2):(hingeAtStart?s.y+4:s.y+C.tile-4),dir=hingeAtStart?1:-1;
       ctx.strokeStyle=d.locked?lockedCol:"#d1b2df";ctx.lineWidth=3;if(horizontal){const fy=d.side==="north"?s.y+2:d.side==="south"?s.y+C.tile-2:s.y+C.tile/2;ctx.beginPath();ctx.moveTo(s.x+1,fy);ctx.lineTo(s.x+C.tile-1,fy);ctx.stroke()}else{const fx=d.side==="west"?s.x+2:d.side==="east"?s.x+C.tile-2:s.x+C.tile/2;ctx.beginPath();ctx.moveTo(fx,s.y+1);ctx.lineTo(fx,s.y+C.tile-1);ctx.stroke()}
       ctx.save();ctx.translate(hx,hy);ctx.rotate(angle);const leafX=dir>0?0:-leafLen,wood=ctx.createLinearGradient(leafX,-6,leafX+leafLen,6);wood.addColorStop(0,"#3b2418");wood.addColorStop(.28,base);wood.addColorStop(.7,"#9b6537");wood.addColorStop(1,"#4a2c1b");ctx.fillStyle=wood;ctx.strokeStyle=d.locked?lockedCol:"#c89557";ctx.lineWidth=2;ctx.fillRect(leafX,-7,leafLen,14);ctx.strokeRect(leafX,-7,leafLen,14);ctx.strokeStyle="rgba(37,18,10,.75)";ctx.lineWidth=1;for(let board=5;board<leafLen;board+=8){const bx=dir>0?leafX+board:leafX+leafLen-board;ctx.beginPath();ctx.moveTo(bx,-6);ctx.lineTo(bx,6);ctx.stroke()}ctx.fillStyle="#343238";ctx.fillRect(leafX+2,-6,Math.max(3,leafLen-4),2);ctx.fillRect(leafX+2,4,Math.max(3,leafLen-4),2);ctx.fillStyle="#9a8c73";for(const rivet of [4,leafLen-5]){const rx=dir>0?leafX+rivet:leafX+leafLen-rivet;ctx.fillRect(rx,-5,2,2);ctx.fillRect(rx,3,2,2)}const handleLocal=dir>0?leafLen-5:-leafLen+5;ctx.fillStyle="#f0d16a";ctx.beginPath();ctx.arc(handleLocal,0,3,0,Math.PI*2);ctx.fill();ctx.restore();ctx.fillStyle="#756b61";ctx.beginPath();ctx.arc(hx,hy,3,0,Math.PI*2);ctx.fill();if(d.opening){ctx.globalAlpha=.45;ctx.strokeStyle=P.cyan;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(hx,hy,leafLen,Math.min(closedAngle,angle),Math.max(closedAngle,angle));ctx.stroke();ctx.globalAlpha=1}
+      doorRenderDiagnostics.fallbackFrames++;doorRenderDiagnostics.lastMode="procedural-fallback";doorRenderDiagnostics.lastOrientation=horizontal?"horizontal":"vertical";doorRenderDiagnostics.lastState=d.open?"open":d.opening?"opening":"closed";doorRenderDiagnostics.lastAt=now;
     }
-    if(d.locked){ctx.fillStyle=lockedCol;ctx.beginPath();ctx.arc(s.x+C.tile/2,s.y+C.tile/2,3.5,0,Math.PI*2);ctx.fill()}ctx.restore();if(md(d,focus)<=2){const text=d.sigilGate&&d.locked?"REINFORCED SIGIL GATE":d.locked?(d.type==="switch"?"SWITCH GATE":d.type==="bronze"?"LOCKED BRONZE DOOR":"SEALED DOOR"):d.open?(d.type==="secret"?"SECRET PASSAGE OPEN":"OPEN DOOR"):d.opening?(d.type==="secret"?"WALL RETRACTING…":"DOOR SWINGING OPEN…"):"CLOSED DOOR";label(text,{x:s.x,y:s.y-2},d.locked?lockedCol:d.open?P.green:P.cyan)}
+    if(d.locked){ctx.fillStyle=lockedCol;ctx.beginPath();ctx.arc(s.x+C.tile/2,s.y+C.tile/2,3.5,0,Math.PI*2);ctx.fill()}ctx.restore();if(md(d,focus)<=2){const text=d.sigilGate&&d.locked?"REINFORCED SIGIL GATE":d.locked?(d.type==="switch"?"SWITCH GATE":d.type==="bronze"?"LOCKED BRONZE DOOR":"SEALED DOOR"):d.open?(d.type==="secret"?"SECRET PASSAGE OPEN":"OPEN DOOR"):d.opening?(d.type==="secret"?"WALL RETRACTING…":"DOOR OPENING…"):"CLOSED DOOR";label(text,{x:s.x,y:s.y-2},d.locked?lockedCol:d.open?P.green:P.cyan)}
   }
 }
 function drawExit(){

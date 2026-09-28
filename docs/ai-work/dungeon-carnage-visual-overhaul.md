@@ -298,3 +298,15 @@ No chest gameplay, lock/key, reward or interaction assertion was relaxed.
 - Reconciliation is main-first and two-parent: retain the complete R60 tree, then overlay only this workstream's unique asset-manifest entries, local visual assets, renderer/animation modules, visual contracts and this documentation.
 - Do not take stale R59 copies of gameplay, FIRE/trap ownership, floor-choice/cache/HUD/effect-safety runtime, version identity or unrelated tests from the visual branch.
 - Fresh exact-head qualification is mandatory after the reconciliation commit. Continue visual development only after that head is green.
+
+
+## Live door integration slice — 28 September 2026
+
+- PR #2395 has merged as main `b20390c507058680cf15bc88f0abdb79dc1f3c7b`; this follow-up starts from that exact fully qualified visual-overhaul baseline.
+- The staged 0x72 CC0 doorway states are now the primary renderer for ordinary non-secret doors. The source closed/open doorway images are complete 32x32 sprites.
+- The authored doorway naturally represents a horizontal wall opening. Generated doors with `orientation === "horizontal"` render it unrotated; vertical-wall doors rotate the complete doorway exactly 90 degrees around the tile centre.
+- Opening presentation cross-fades the authored closed and open states using the existing door opening progress. Door coordinates, collision, lock state, timing, interaction and progression ownership are unchanged.
+- Closed secret doors remain disguised wall masonry and keep their established retracting-wall renderer.
+- The previous procedural swinging-plank door remains the decode/error fallback if either authored state is malformed or unavailable.
+- Focused diagnostics expose whether the current frame used `cc0-door` or `procedural-fallback`, plus orientation/state. Static and Chromium browser contracts cover horizontal closed, vertical open, opening transition and forced image failure.
+- Next visual targets after this slice qualifies: stronger switch/sigil treatment, FIRE/SHOCK trap art, shrines/altars/objective markers, environmental props/furniture and richer biome variation.

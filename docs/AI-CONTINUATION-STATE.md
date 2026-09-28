@@ -1,3 +1,11 @@
+## Dungeon visual doors follow-up — 28 September 2026
+
+- Visual-overhaul PR #2395 merged fully qualified as main `b20390c507058680cf15bc88f0abdb79dc1f3c7b`; there were no remaining open PRs immediately after refresh.
+- Follow-up branch `codex/dungeon-visual-doors-20260928` starts from that exact main and makes the staged 0x72 CC0 32x32 closed/open doorway states the primary renderer for ordinary doors.
+- Horizontal generated doors use the authored orientation; vertical generated doors rotate it 90 degrees. Opening cross-fades existing authored closed/open states. Secret-door masonry and all gameplay/collision/lock/timing ownership remain unchanged.
+- The established procedural swinging door is retained as decode/error fallback, with focused static/browser regressions and diagnostics.
+- Require full exact-head Dungeon qualification, image budget and all triggered package/cache/SEO/site checks before merge. Afterward continue switches/sigils, FIRE/SHOCK trap art, shrines/altars/objective markers, props/furniture and biome variation.
+
 ## Dungeon R60 merged + visual-overhaul reconciliation — 28 September 2026
 
 - PR #2396 merged fully qualified as main `2b8c9613255b0e9f3aa7c2f98f13cd6986e1f046`, establishing the authoritative R60 gameplay baseline.
