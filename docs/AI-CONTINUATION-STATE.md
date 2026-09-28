@@ -8,6 +8,18 @@
 - Database verification: 84 active game badge definitions, 5 retired, 0 active names/descriptions containing "Lost Sizzler"; badge catalog RPC remains authenticated-only.
 - Do not merge this branch without explicit user authorization. Run Site Safety / Member Achievements audit and reconcile against latest main before merge.
 
+## Dungeon R64 P0 runtime integrity — 28 September 2026
+
+- Release identity is now advanced to `V10.42 r64` / `20260928r64` across both public entry points, the ordered bootstrap, `version.json`, and current release/cache contracts so the freeze/trap/attack repair cannot deploy behind the cached r62 asset token.
+
+- Exact-head qualification exposed a desktop ATTACK ownership edge in Chromium shard 3: one quick sword tap could be replayed across R59 historical catch-up substeps and deal three hits. R64 now suppresses current held-attack state only while replaying historical Solo substeps; the canonical queued intent remains available for one attack, and live held state is restored after catch-up. The existing three-minute sword/firearm soak remains the browser gate for one-tap/one-hit behaviour.
+
+- User reproduced another deployed r62 freeze. The browser/event loop remained alive enough to emit periodic diagnostics and focus/blur events while gameplay stopped, so treat this as a simulation/RAF liveness failure rather than a full browser crash.
+- R64 branch `codex/dungeon-r64-freeze-trap-integrity-20260928` adds a visible-Solo R59 loop watchdog and exact diagnostics for accepted frames/recoveries.
+- The same live run also reported 4 ordinary-trap contacts, 0 verified trap hits and 3 trap anomalies. R64 fixes stale same-cycle trap contact latches by rearming immediately after tile exit, then regression-tests ACTIVE SHOCK trap exit/re-entry.
+- Do not merge R63 while the P0 freeze/trap branch is unresolved. Preserve the already-merged R62 authoritative FIRE owner.
+- First exact-head matrix exposed a repeatable Save & Quit -> Continue timeout in the Scout persistence contract and one FIRE projectile sampling failure. R64 watchdog hardening now rebases the wall-clock marker at lifecycle boundaries, respects the existing pause/restore suppression window, refuses recovery until the Solo runtime objects are restored, and does not refresh accepted-frame liveness for duplicate RAF callbacks. This keeps the watchdog focused on genuine simulation stalls instead of lifecycle transitions.
+
 ## R62 authoritative FIRE owner repair — 28 September 2026
 
 - Fresh deployed r60 manual evidence reproduced the random loaded-firearm lockout: Space events reached live Solo with a Tier-2 Field Pulse II, 113/120 ammo, zero FIRE cooldown and zero active projectiles, yet repeated attack probes returned false.

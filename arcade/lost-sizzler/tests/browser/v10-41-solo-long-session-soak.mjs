@@ -312,6 +312,20 @@ try{
   assert.ok(stressed.r30OwnershipRepairs-repairCounts.ownership<=1,`unexplained R30 ownership repairs accumulated during sustained play: ${repairCounts.ownership} -> ${stressed.r30OwnershipRepairs}`);
   assert.ok(stressed.r30MovementRepairs-repairCounts.movement<=1,`unexplained R30 movement repairs accumulated during sustained play: ${repairCounts.movement} -> ${stressed.r30MovementRepairs}`);
   assert.ok(stressed.sealRepairs-repairCounts.seal<=1,`owner-seal repairs accumulated during sustained play: ${repairCounts.seal} -> ${stressed.sealRepairs}`);
+
+  const watchdog=await page.evaluate(()=>{
+    const api=window.CCGLostSizzlerV141R59LiveRegressionFixes,state=api?.state;
+    if(!api||!state)return{available:false};
+    const before={accepted:Number(state.acceptedFrames||0),recoveries:Number(state.loopWatchdogRecoveries||0)};
+    state.lastAcceptedWallAt=performance.now()-Number(api.LOOP_STALL_WATCHDOG_MS||1400)-250;
+    state.lastLoopWatchdogAt=0;
+    const requested=api.ensureLoopLiveness();
+    return{available:true,requested,before,after:{recoveries:Number(state.loopWatchdogRecoveries||0),lastWatchdog:Number(state.lastLoopWatchdogAt||0)}};
+  });
+  assert.equal(watchdog.available,true,"R64 loop watchdog must be available in the sustained Solo runtime");
+  assert.equal(watchdog.requested,true,"stale visible Solo loop must request canonical RAF recovery");
+  assert.equal(watchdog.after.recoveries,watchdog.before.recoveries+1,"loop watchdog must record exactly one recovery request");
+  await page.waitForFunction(before=>Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0)>before,watchdog.before.accepted,{timeout:3000});
   assert.deepEqual(errors,[],`sustained Solo soak produced page errors: ${errors.join("\n")}`);
 
   console.log("SOLO_LONG_SESSION_SOAK_METRICS "+JSON.stringify({

@@ -211,15 +211,16 @@ function applyCurrentActiveTrapContact(p,now=performance.now()){
   return trap?applyActiveTrapContact(p,trap,now):false
 }
 function triggerTrap(p){return applyCurrentActiveTrapContact(p,performance.now())}
-const authoritativeTrapState={trapHits:0,trapHitsByKind:{fire:0,spike:0,shock:0,other:0},rearms:0,cycleRearms:0,simulationPasses:0,monitorPasses:0,damageRetries:0,trapContactBlocks:0,trapProtectionBlocks:0,directTrapRepairs:0};
+const authoritativeTrapState={trapHits:0,trapHitsByKind:{fire:0,spike:0,shock:0,other:0},rearms:0,cycleRearms:0,contactExitRearms:0,simulationPasses:0,monitorPasses:0,damageRetries:0,trapContactBlocks:0,trapProtectionBlocks:0,directTrapRepairs:0};
 function resetAuthoritativeTrapContacts(){const count=trapCycleHits.size;if(count){trapCycleHits.clear();authoritativeTrapState.rearms+=count}return true}
 function rearmInactiveTrapContacts(){
   const now=performance.now(),playersById=new Map(localPlayers().map(p=>[String(p?.id||p?.name||"P1"),p]));
   for(const [key,cycle] of [...trapCycleHits.entries()]){
     const split=key.indexOf("|"),playerId=split>=0?key.slice(0,split):key,trapId=split>=0?key.slice(split+1):"";
     const p=playersById.get(playerId),t=(host.traps||[]).find(row=>String(row?.id||`${row?.x},${row?.y}`)===trapId);
-    if(!p||!t||!t.active||!SYS.trapActive(t,now)){
-      trapCycleHits.delete(key);authoritativeTrapState.rearms++
+    const leftTile=Boolean(p&&t&&(Number(p.x)!==Number(t.x)||Number(p.y)!==Number(t.y)));
+    if(!p||!t||!t.active||leftTile||!SYS.trapActive(t,now)){
+      trapCycleHits.delete(key);authoritativeTrapState.rearms++;if(leftTile)authoritativeTrapState.contactExitRearms++
     }else if(trapCycleId(t,now)!==cycle){
       trapCycleHits.delete(key);authoritativeTrapState.cycleRearms++
     }

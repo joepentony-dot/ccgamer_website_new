@@ -32,13 +32,15 @@
   // those lifecycle boundaries rebase the accepted RAF timestamp.
   const SOLO_MAX_VISIBLE_FRAME_MS=1080;
   const SOLO_MAX_STEPS=24;
+  const LOOP_STALL_WATCHDOG_MS=1400;
   const state={
     timer:0,installed:false,clockInstalled:false,pauseWrapped:false,soloSaveTransitionInstalled:false,
     acceptedFrames:0,duplicateFramesSkipped:0,longGaps:0,longGapRecoveries:0,
-    pausedGapsDiscarded:0,pauseBoundaries:0,lastAcceptedRafTimestamp:null,
+    pausedGapsDiscarded:0,pauseBoundaries:0,lastAcceptedRafTimestamp:null,lastAcceptedWallAt:0,
     lastMode:"",suppressRecoveryUntil:0,lastPauseReason:"",lastError:"",
+    loopWatchdogChecks:0,loopWatchdogRecoveries:0,lastLoopWatchdogAt:0,
     faultBridges:0,diagnosticBridges:0,clockOwnerReassertions:0,r58Reassertions:0,r58Ticks:0,soloSaveTransitionInstalls:0,soloFloorAutosaves:0,
-    soloFrames:0,soloSubsteps:0,soloCatchupFrames:0,soloDiscardedVisibleMs:0,soloLastElapsed:0,soloLastSteps:0
+    soloFrames:0,soloSubsteps:0,soloCatchupFrames:0,soloDiscardedVisibleMs:0,soloLastElapsed:0,soloLastSteps:0,soloHeldInputSuppressions:0
   };
 
   let basePayDownCombatGap=null;
@@ -55,6 +57,7 @@
         !window.CCGLostSizzlerSpecialModes?.active?.type&&!document.body?.dataset?.specialMode;
     }catch(_){return false}
   };
+  const soloRuntimeReady=()=>{try{return Boolean(p1&&host&&run&&world)}catch(_){return false}};
 
   function chainHas(fn,marker){
     const seen=new Set();let current=fn,depth=0;
@@ -117,6 +120,7 @@
     const now=perfNow();
     state.pauseBoundaries++;state.lastPauseReason=String(reason||"pause transition");
     state.suppressRecoveryUntil=Math.max(state.suppressRecoveryUntil,now+PAUSE_GUARD_MS);
+    state.lastAcceptedWallAt=now;
     setAcceptedRafTimestamp(null);
     state.lastMode=currentMode();
     state.soloLastElapsed=0;state.soloLastSteps=0;
@@ -142,10 +146,53 @@
     const raw=Math.max(0,Number(elapsed)||0),bounded=Math.min(SOLO_MAX_VISIBLE_FRAME_MS,raw);
     if(raw>bounded)state.soloDiscardedVisibleMs+=raw-bounded;
     let remaining=bounded,steps=0;
-    while(remaining>0&&steps<SOLO_MAX_STEPS){
-      const step=Math.min(SOLO_MAX_STEP_MS,remaining);
-      try{if(typeof update==="function")update(step)}catch(error){noteFault("update",error);break}
-      remaining-=step;steps++;state.soloSubsteps++;
+    const historicalCatchup=bounded>SOLO_MAX_STEP_MS;
+    let p1Ref=null,p2Ref=null,p1Held=false,p2Held=false,p1Buffer=0,p2Buffer=0;
+    let attackBoundaryAvailable=false,attackDeferred=false,liveAttackRestored=false;
+    if(historicalCatchup){
+      try{
+        attackBoundaryAvailable=typeof isAttackHeldInput==="function"&&typeof setAttackHeldInput==="function";
+        if(attackBoundaryAvailable){
+          p1Ref=typeof p1!=="undefined"?p1:null;p2Ref=typeof p2!=="undefined"?p2:null;
+          p1Held=Boolean(p1Ref&&isAttackHeldInput(p1Ref));p2Held=Boolean(p2Ref&&isAttackHeldInput(p2Ref));
+          p1Buffer=Math.max(0,Number(typeof fireBuffer1!=="undefined"?fireBuffer1:0)||0);
+          p2Buffer=Math.max(0,Number(typeof fireBuffer2!=="undefined"?fireBuffer2:0)||0);
+          // The backlog predates input sampled for this accepted RAF. Pay down
+          // historical world/cooldown time without replaying that present-time
+          // hold or consuming its queued attack. Restore both only for the final
+          // live substep so a newly spawned projectile is never aged through
+          // simulation time that occurred before the press.
+          if(p1Held&&p1Ref)setAttackHeldInput(p1Ref,false);
+          if(p2Held&&p2Ref)setAttackHeldInput(p2Ref,false);
+          if(p1Buffer>0)fireBuffer1=0;if(p2Buffer>0)fireBuffer2=0;
+          attackDeferred=Boolean(p1Held||p2Held||p1Buffer>0||p2Buffer>0);
+          if(p1Held||p2Held)state.soloHeldInputSuppressions++;
+        }
+      }catch(error){noteFault("catchup-input-boundary",error);attackBoundaryAvailable=false;attackDeferred=false}
+    }
+    const restoreLiveAttack=()=>{
+      if(!attackBoundaryAvailable||liveAttackRestored)return false;
+      try{
+        if(p1Held&&p1Ref)setAttackHeldInput(p1Ref,true);
+        if(p2Held&&p2Ref)setAttackHeldInput(p2Ref,true);
+        if(p1Buffer>0)fireBuffer1=Math.max(Number(fireBuffer1)||0,p1Buffer);
+        if(p2Buffer>0)fireBuffer2=Math.max(Number(fireBuffer2)||0,p2Buffer);
+        liveAttackRestored=true;
+        return true
+      }catch(error){noteFault("catchup-input-restore",error);return false}
+    };
+    try{
+      while(remaining>0&&steps<SOLO_MAX_STEPS){
+        const step=Math.min(SOLO_MAX_STEP_MS,remaining),finalLiveSubstep=historicalCatchup&&remaining<=SOLO_MAX_STEP_MS;
+        if(finalLiveSubstep)restoreLiveAttack();
+        try{if(typeof update==="function")update(step)}catch(error){noteFault("update",error);break}
+        remaining-=step;steps++;state.soloSubsteps++;
+      }
+    }finally{
+      // If an historical update fault aborted before the final live substep,
+      // return current input ownership to the ordinary next RAF rather than
+      // silently losing the physical hold or queued press.
+      if(attackDeferred&&!liveAttackRestored)restoreLiveAttack();
     }
     state.soloFrames++;state.soloLastElapsed=bounded;state.soloLastSteps=steps;
     if(steps>1)state.soloCatchupFrames++;
@@ -178,7 +225,7 @@
       }else dt=Math.min(SOLO_MAX_STEP_MS,Math.max(0,gap));
     }
 
-    setAcceptedRafTimestamp(t);state.lastMode=modeNow;state.acceptedFrames++;
+    setAcceptedRafTimestamp(t);state.lastAcceptedWallAt=perfNow();state.lastMode=modeNow;state.acceptedFrames++;
     try{last=t}catch(_){}
     try{if(typeof damageFlash!=="undefined"&&damageFlash>0)damageFlash=Math.max(0,damageFlash-dt/500)}catch(error){noteFault("frame-clock",error)}
     if(soloHandled)runSoloUpdates(gap);
@@ -246,8 +293,21 @@
     return false
   }
 
+  function ensureLoopLiveness(){
+    state.loopWatchdogChecks++;
+    if(!soloDungeonPlaying()||!soloRuntimeReady())return false;
+    const now=perfNow(),last=Math.max(0,Number(state.lastAcceptedWallAt||0));
+    if(now<Math.max(0,Number(state.suppressRecoveryUntil||0)))return false;
+    if(!last){state.lastAcceptedWallAt=now;return false}
+    if(now-last<LOOP_STALL_WATCHDOG_MS)return false;
+    if(now-Math.max(0,Number(state.lastLoopWatchdogAt||0))<LOOP_STALL_WATCHDOG_MS)return false;
+    state.lastLoopWatchdogAt=now;state.loopWatchdogRecoveries++;
+    try{requestAnimationFrame(stableLoopR59);return true}
+    catch(error){noteFault("loop-watchdog",error);return false}
+  }
+
   function ensure(){
-    installClockOwner();installPauseOwners();installSoloSaveTransitionOwner();reassertR58();
+    installClockOwner();installPauseOwners();installSoloSaveTransitionOwner();reassertR58();ensureLoopLiveness();
     state.installed=state.clockInstalled&&state.pauseWrapped;
     return state.installed
   }
@@ -258,8 +318,8 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
   window.CCGLostSizzlerV141R59LiveRegressionFixes={
-    MONITOR_MS,LONG_GAP_MS,PAUSE_GUARD_MS,SOLO_MAX_STEP_MS,SOLO_MAX_VISIBLE_FRAME_MS,SOLO_MAX_STEPS,
-    stableLoopR59,runSoloUpdates,soloDungeonPlaying,markPauseBoundary,safeGapRecovery,noteFault,noteDuplicateFrame,noteFrameStall,setAcceptedRafTimestamp,installClockOwner,installPauseOwners,installSoloSaveTransitionOwner,reassertR58,normaliseAudioRate,ensure,
+    MONITOR_MS,LONG_GAP_MS,PAUSE_GUARD_MS,SOLO_MAX_STEP_MS,SOLO_MAX_VISIBLE_FRAME_MS,SOLO_MAX_STEPS,LOOP_STALL_WATCHDOG_MS,
+    stableLoopR59,runSoloUpdates,soloDungeonPlaying,soloRuntimeReady,markPauseBoundary,safeGapRecovery,noteFault,noteDuplicateFrame,noteFrameStall,setAcceptedRafTimestamp,installClockOwner,installPauseOwners,installSoloSaveTransitionOwner,reassertR58,normaliseAudioRate,ensureLoopLiveness,ensure,
     get state(){return state}
   };
 })();

@@ -116,6 +116,46 @@ try{
     await page.waitForTimeout(90);
   }
 
+  const sameCycleReentry=await page.evaluate(()=>globalThis.eval(`(()=>{
+    const api=window.CCGLostSizzlerV142R58AuthoritativeTrapCore;
+    const trap=(host?.traps||[]).find(t=>t?.active&&String(t.kind||"").toLowerCase()==="shock");
+    if(!api||!trap)return{available:false,reason:"canonical SHOCK trap unavailable"};
+    const candidates=[
+      {x:Number(trap.x)-1,y:Number(trap.y),dx:1,dy:0},
+      {x:Number(trap.x)+1,y:Number(trap.y),dx:-1,dy:0},
+      {x:Number(trap.x),y:Number(trap.y)-1,dx:0,dy:1},
+      {x:Number(trap.x),y:Number(trap.y)+1,dx:0,dy:-1}
+    ];
+    const entry=candidates.find(q=>W.walkable(world.map,q.x,q.y,host)&&!(host.enemies||[]).some(e=>e?.alive&&e.x===q.x&&e.y===q.y));
+    if(!entry)return{available:false,reason:"no walkable SHOCK entry"};
+    for(const enemy of host?.enemies||[])enemy.alive=false;
+    if(host?.stalker)host.stalker.awake=false;
+    const original={period:Number(trap.period),phase:Number(trap.phase)};
+    const period=100000,now=performance.now();
+    trap.period=period;trap.phase=((period*.10)-(now%period)+period)%period;
+    p1.x=entry.x;p1.y=entry.y;p1.rx=p1.x;p1.ry=p1.y;
+    p1.maxHealth=Math.max(20,Number(p1.maxHealth||8));p1.health=20;p1.armor=0;p1.invuln=0;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
+    move1=0;input.clear();api.reset?.();api.rearmInactiveTrapContacts();
+    const before={health:Number(p1.health),exitRearms:Number(api.state.contactExitRearms||0),cycle:api.trapCycleId(trap,performance.now())};
+    movePlayer(p1,entry.dx,entry.dy,false);
+    const first={health:Number(p1.health),x:Number(p1.x),y:Number(p1.y)};
+    p1.hitStunMs=0;move1=0;
+    movePlayer(p1,-entry.dx,-entry.dy,false);
+    p1.hitStunMs=0;move1=0;api.updateTrapContacts("same-cycle-exit");
+    const left={health:Number(p1.health),x:Number(p1.x),y:Number(p1.y),exitRearms:Number(api.state.contactExitRearms||0),cycle:api.trapCycleId(trap,performance.now())};
+    movePlayer(p1,entry.dx,entry.dy,false);
+    const second={health:Number(p1.health),x:Number(p1.x),y:Number(p1.y),cycle:api.trapCycleId(trap,performance.now())};
+    trap.period=original.period;trap.phase=original.phase;
+    p1.x=world.start.x;p1.y=world.start.y;p1.rx=p1.x;p1.ry=p1.y;p1.invuln=0;p1.hitStunMs=0;api.rearmInactiveTrapContacts();
+    return{available:true,target:{x:Number(trap.x),y:Number(trap.y)},before,first,left,second};
+  })()`));
+  assert.equal(sameCycleReentry.available,true,"same-cycle SHOCK re-entry fixture must be available: "+JSON.stringify(sameCycleReentry));
+  assert.equal(sameCycleReentry.first.health,sameCycleReentry.before.health-1,"first ACTIVE SHOCK entry must remove one HP");
+  assert.ok(sameCycleReentry.left.exitRearms>sameCycleReentry.before.exitRearms,"leaving an ACTIVE trap tile must rearm its contact ledger");
+  assert.equal(sameCycleReentry.left.cycle,sameCycleReentry.before.cycle,"fixture must remain inside the same active trap cycle while leaving");
+  assert.equal(sameCycleReentry.second.cycle,sameCycleReentry.before.cycle,"fixture must re-enter during that same active trap cycle");
+  assert.equal(sameCycleReentry.second.health,sameCycleReentry.first.health-1,"re-entering the same ACTIVE SHOCK trap after leaving must remove another HP");
+
   const protectedCrossing=await page.evaluate(()=>globalThis.eval(`(()=>{
     const api=window.CCGLostSizzlerV142R58AuthoritativeTrapCore;
     const trap=(host?.traps||[]).find(t=>t?.active&&String(t.kind||"").toLowerCase()==="fire");

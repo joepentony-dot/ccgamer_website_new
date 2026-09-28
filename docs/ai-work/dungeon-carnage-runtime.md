@@ -1,3 +1,18 @@
+## R64 freeze + ordinary-trap integrity — 28 September 2026
+
+- Release identity is now advanced to `V10.42 r64` / `20260928r64` across both public entry points, the ordered bootstrap, `version.json`, and current release/cache contracts so the freeze/trap/attack repair cannot deploy behind the cached r62 asset token.
+
+- Exact-head qualification exposed a desktop ATTACK ownership edge in Chromium shard 3: one quick sword tap could be replayed across R59 historical catch-up substeps and deal three hits. R64 now suppresses current held-attack state only while replaying historical Solo substeps; the canonical queued intent remains available for one attack, and live held state is restored after catch-up. The existing three-minute sword/firearm soak remains the browser gate for one-tap/one-hit behaviour.
+
+- Fresh deployed r62 manual evidence shows a live Solo freeze where diagnostics/setInterval activity continued after gameplay stopped progressing. The report remained `mode=playing`, `runActive=true`, `performanceTier=severe`, with repeated periodic snapshots and focus/blur events after the last normal combat event.
+- R59 now tracks accepted-frame wall time and runs a visible-Solo liveness watchdog. If no canonical RAF/update frame has been accepted for 1400 ms while the run is actively playing and visible, it requests the canonical `stableLoopR59` owner again and records the recovery.
+- The sustained Solo Chromium soak now forces a stale liveness marker and requires the watchdog to request recovery and the accepted-frame counter to continue advancing.
+- The ordinary floor-trap one-hit ledger had no explicit tile-exit rearm. A player could therefore leave an ACTIVE trap and re-enter during the same active cycle while the old cycle latch still blocked damage. `rearmInactiveTrapContacts()` now clears the latch when the player is no longer occupying that trap tile and records `contactExitRearms`.
+- The live FIRE/SPIKE/SHOCK crossing browser contract now includes same-cycle SHOCK exit/re-entry and requires a second HP loss after the exit rearm.
+- Bug reports now expose R59 accepted/duplicate frame counters, loop-watchdog recoveries, last accepted wall time and trap exit-rearm counters.
+- Branch: `codex/dungeon-r64-freeze-trap-integrity-20260928`. Keep R63 unmerged until R64 is qualified; R64 is the P0 runtime track.
+- First exact-head matrix exposed a repeatable Save & Quit -> Continue timeout in the Scout persistence contract and one FIRE projectile sampling failure. R64 watchdog hardening now rebases the wall-clock marker at lifecycle boundaries, respects the existing pause/restore suppression window, refuses recovery until the Solo runtime objects are restored, and does not refresh accepted-frame liveness for duplicate RAF callbacks. This keeps the watchdog focused on genuine simulation stalls instead of lifecycle transitions.
+
 ## R62 authoritative FIRE owner repair — 28 September 2026
 
 - Fresh deployed r60 manual evidence reproduced the random loaded-firearm lockout: Space events reached live Solo with a Tier-2 Field Pulse II, 113/120 ammo, zero FIRE cooldown and zero active projectiles, yet repeated attack probes returned false.
