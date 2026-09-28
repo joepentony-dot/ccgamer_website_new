@@ -252,7 +252,8 @@
     trapActive:(...args)=>delegate("trapActive",args),
     trapCycleId:(...args)=>delegate("trapCycleId",args),
     withValidatedTrapContact:(p,t,callback)=>typeof callback==="function"?callback():false,
-    serviceTrapLiveness,\n    get state(){return facadeState()}
+    serviceTrapLiveness,
+    get state(){return facadeState()}
   });
 
   function serviceTrapLiveness(){
