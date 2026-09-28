@@ -764,3 +764,10 @@ Branch `codex/dungeon-projectile-lifecycle-current-main` was created from exact 
 
 - 2026-09-18: Stage 5 #2138 qualified at `819c820b1a908a0e5b20f69a2775b5b056b9ef74` and merged as `94ae72bfbbc2bc9ee4ae58a01dc00e6bf37d4fa9` with all eight workflows and all six Chromium shards green. Stage 6 began from that exact merge with the bounded r33 zone-gameplay owner.
 - 2026-09-18: Startup/first-visual PR #2145 qualified on exact head `432af71f6d19612a54e274f9114c6b3ef35e7450` with all eight triggered workflows green, including all six Chromium shards, and merged as `4c56d2bccd73350359c8b3246b0d70142894d353`. The flicker remediation is repository-complete; both manual product gates remain deferred.
+
+
+### R61 qualification follow-up — 28 September 2026
+
+- Exact candidate `606fb89fe27cb82c2e14883c0802b38bf0e2ab95` reached the full Chromium matrix with shards 2/4/5/6 green, but shard 1 exposed one R61 HUD integration defect: the retained V10.25 melee HUD wrapper overwrote canonical `sync()`'s new weapon-level title after each refresh.
+- The failure was limited to title metadata: the compact visible `L2 FIELD PULSE` label and the R61 adjacent-loaded-firearm FIRE regression had already reached the browser contract. The implementation, not the assertion, was corrected in `c8a79088840d97eb8f2c94180c1aa6f5cf8ac5d9` so the older HUD wrapper preserves `Weapon Level N · <full weapon identity>` while retaining melee/fallback guidance.
+- This correction requires a fresh exact-head PR qualification, package/cache/SEO checks and all six Chromium shards before merge. No FIRE, trap, damage or death-owner logic changed in the follow-up.
