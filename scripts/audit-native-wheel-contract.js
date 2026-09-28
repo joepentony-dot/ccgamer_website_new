@@ -36,6 +36,8 @@ const SITEWIDE_WHEEL_PAGES = [
     { path: "/games/publishers/index.html", label: "Publishers" },
     { path: "/games/collections/index.html", label: "Collections" },
     { path: "/games/discover/index.html", label: "Find Me a Game" },
+    { path: "/music/", label: "Music Hub" },
+    { path: "/music/paul-norman/", label: "Music Composer (Paul Norman)" },
     { path: "/videos/index.html", label: "Videos" },
     { path: "/zzap64/index.html", label: "Zzap 64" },
     { path: "/about.html", label: "About" },
@@ -661,6 +663,18 @@ async function auditGenericPageWheel(sessionId, sitePort, page, depth, labelPref
         const ready = await execute(sessionId, "return window.CCG_ZZAP64_AWARDS_ARCHIVE_READY===true;");
         if (!ready) fail(`${labelPrefix} ${page.label}: Zzap archive did not reach its documented ready boundary before wheel qualification`);
         await new Promise((resolve) => setTimeout(resolve, 180));
+    }
+
+    if (page.path.startsWith("/music/")) {
+        const readyDeadline = Date.now() + 10000;
+        while (Date.now() < readyDeadline) {
+            const ready = await execute(sessionId, "return window.CCG_MUSIC_PAGE_READY===true;");
+            if (ready) break;
+            await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+        const ready = await execute(sessionId, "return window.CCG_MUSIC_PAGE_READY===true;");
+        if (!ready) fail(`${labelPrefix} ${page.label}: music page did not reach its documented ready boundary before wheel qualification`);
+        await new Promise((resolve) => setTimeout(resolve, 120));
     }
 
     if (page.path === GAME_MEDIA_PAGE || page.path.startsWith("/games/game.html")) {
