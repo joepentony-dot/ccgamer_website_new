@@ -119,13 +119,12 @@
     if(installed.combat||typeof firePlayer!=="function"||typeof dashPlayer!=="function")return;
     const oldFire=firePlayer;
     firePlayer=function firePlayerV125(p,d){
-      if(!p)return;
-      const dir=d&&(d.x||d.y)?{x:Math.sign(d.x),y:Math.sign(d.y)}:(p.dir||{x:1,y:0}),tx=p.x+dir.x,ty=p.y+dir.y;
-      const adjacentEnemy=(host?.enemies||[]).some(e=>e?.alive&&e.x===tx&&e.y===ty),adjacentFurniture=(host?.blockingDecor||[]).some(item=>item?.x===tx&&item?.y===ty);
-      /* Fire is contextual at one tile: a hostile or smashable directly in the
-       * faced cell always receives the unlimited melee swing. Guns are used,
-       * and ammunition consumed, only when that close target does not exist. */
-      if(adjacentEnemy||adjacentFurniture||!hasGun(p)||Number(p.mana||0)<=0)return meleeAttack(p,dir);
+      if(!p)return false;
+      const dir=d&&(d.x||d.y)?{x:Math.sign(d.x),y:Math.sign(d.y)}:(p.dir||{x:1,y:0});
+      /* A usable firearm owns FIRE regardless of an adjacent enemy/furniture
+       * cell. Contextual melee used to swallow valid gun shots here; melee is
+       * now strictly the no-gun / zero-ammo fallback. */
+      if(!hasGun(p)||Number(p.mana||0)<=0)return meleeAttack(p,dir);
       return oldFire(p,d);
     };
     dashPlayer=function dashPlayerV125(p,d){
