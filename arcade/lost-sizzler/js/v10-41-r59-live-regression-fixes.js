@@ -40,7 +40,7 @@
     lastMode:"",suppressRecoveryUntil:0,lastPauseReason:"",lastError:"",
     loopWatchdogChecks:0,loopWatchdogRecoveries:0,lastLoopWatchdogAt:0,
     faultBridges:0,diagnosticBridges:0,clockOwnerReassertions:0,r58Reassertions:0,r58Ticks:0,soloSaveTransitionInstalls:0,soloFloorAutosaves:0,
-    soloFrames:0,soloSubsteps:0,soloCatchupFrames:0,soloDiscardedVisibleMs:0,soloLastElapsed:0,soloLastSteps:0
+    soloFrames:0,soloSubsteps:0,soloCatchupFrames:0,soloDiscardedVisibleMs:0,soloLastElapsed:0,soloLastSteps:0,soloHeldInputSuppressions:0
   };
 
   let basePayDownCombatGap=null;
@@ -146,10 +146,30 @@
     const raw=Math.max(0,Number(elapsed)||0),bounded=Math.min(SOLO_MAX_VISIBLE_FRAME_MS,raw);
     if(raw>bounded)state.soloDiscardedVisibleMs+=raw-bounded;
     let remaining=bounded,steps=0;
-    while(remaining>0&&steps<SOLO_MAX_STEPS){
-      const step=Math.min(SOLO_MAX_STEP_MS,remaining);
-      try{if(typeof update==="function")update(step)}catch(error){noteFault("update",error);break}
-      remaining-=step;steps++;state.soloSubsteps++;
+    const historicalCatchup=bounded>SOLO_MAX_STEP_MS;
+    let p1Ref=null,p2Ref=null,p1Held=false,p2Held=false,heldStateAvailable=false;
+    if(historicalCatchup){
+      try{
+        heldStateAvailable=typeof isAttackHeldInput==="function"&&typeof setAttackHeldInput==="function";
+        if(heldStateAvailable){
+          p1Ref=typeof p1!=="undefined"?p1:null;p2Ref=typeof p2!=="undefined"?p2:null;
+          p1Held=Boolean(p1Ref&&isAttackHeldInput(p1Ref));p2Held=Boolean(p2Ref&&isAttackHeldInput(p2Ref));
+          if(p1Held)setAttackHeldInput(p1Ref,false);if(p2Held)setAttackHeldInput(p2Ref,false);
+          if(p1Held||p2Held)state.soloHeldInputSuppressions++;
+        }
+      }catch(error){noteFault("catchup-input-boundary",error);heldStateAvailable=false}
+    }
+    try{
+      while(remaining>0&&steps<SOLO_MAX_STEPS){
+        const step=Math.min(SOLO_MAX_STEP_MS,remaining);
+        try{if(typeof update==="function")update(step)}catch(error){noteFault("update",error);break}
+        remaining-=step;steps++;state.soloSubsteps++;
+      }
+    }finally{
+      if(heldStateAvailable){
+        try{if(p1Held&&p1Ref)setAttackHeldInput(p1Ref,true);if(p2Held&&p2Ref)setAttackHeldInput(p2Ref,true)}
+        catch(error){noteFault("catchup-input-restore",error)}
+      }
     }
     state.soloFrames++;state.soloLastElapsed=bounded;state.soloLastSteps=steps;
     if(steps>1)state.soloCatchupFrames++;
