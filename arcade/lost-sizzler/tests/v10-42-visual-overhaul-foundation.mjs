@@ -56,7 +56,9 @@ assert.match(renderer,/k==="exitSigil"/,"exit sigil pickup must have a dedicated
 assert.match(renderer,/sigils:make\(selected\("sigilSheet","assets\/pixel\/visual-overhaul\/cc0-portal\/portal-sheet\.png"\)\)/,"sigil must default to the imported local CC0 portal sheet");
 assert.match(renderer,/environmentTiles:make\(selected\("environmentTileset"\)\)/,"environment tileset slot must fail safely to no image");
 
-assert.match(renderer,/replacement\?\.complete&&replacement\.naturalWidth\?replacement:lostSizzlerPixelAssets\.chests/,"chest replacement must fall back if it is not decoded");
+assert.match(renderer,/pixelSheet=customSheet\?\.complete&&customSheet\.naturalWidth>=160\?customSheet:lostSizzlerPixelAssets\.chests/,"owner-supplied chest sheet must fall back to the established V10.34 sheet when unavailable");
+assert.match(renderer,/if\(frameArtReady&&\!\(customSheet\?\.complete&&customSheet\.naturalWidth>=160\)\)/,"CC0 frame set must be the normal chest renderer unless an explicit owner sheet is ready");
+assert.match(renderer,/drawAnimatedChestFallback\(c,s,col,now,anim,pulse\)/,"rich canvas chest must remain the final fallback when image layers fail");
 assert.match(renderer,/replacement\?\.complete&&replacement\.naturalWidth\?replacement:lostSizzlerPixelAssets\.explorer/,"player replacement must fall back if it is not decoded");
 
 const visualBlock=overrides.match(/visuals:\s*\{([\s\S]*?)\n\s*\},\n\s*namedEnemies:/)?.[1]||"";
