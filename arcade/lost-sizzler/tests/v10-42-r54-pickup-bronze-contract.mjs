@@ -19,7 +19,7 @@ assert.match(local,/armour:"\+2 ARMOUR"/,"armour pickups need visible numeric ar
 assert.match(local,/showToast\("\+2 ARMOUR"/,"armour toast must expose its actual mechanic value");
 assert.match(local,/showToast\(`\+\$\{n\} XP`/,"XP toast must expose its actual mechanic value");
 assert.match(local,/function resolvedPickupWeapon\(i,p\)/,"weapon pickup must resolve one concrete weapon before presentation");
-assert.match(local,/if\(i\.kind==="weapon"\)return resolvedPickupWeapon\(i,p\)\?\.displayName\|\|"WEAPON CACHE"/,"weapon pickup text must name the exact generated weapon");
+assert.match(local,/if\(i\.kind==="weapon"\)return evolvingWeaponMode\(\)\?"WEAPON CACHE":resolvedPickupWeapon\(i,p\)\?\.displayName\|\|"WEAPON CACHE"/,"evolving-firearm weapon pickups must use the generic WEAPON CACHE label while legacy/random-weapon modes may still name the exact generated weapon");
 assert.match(local,/name:collectedName\(i,p\)/,"pickup diagnostics must report the resolved weapon identity shown to the player");
 assert.match(local,/equipWeapon\(p,resolvedPickupWeapon\(i,p\)\)/,"the same resolved weapon must be equipped after collection");
 assert.match(render,/function groundItemLabel\(i\)/,"ground labels need a mechanic-led display owner");
