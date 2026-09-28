@@ -36,7 +36,7 @@ const lostSizzlerPixelAssets=(()=>{
     environmentAtlasReplacement:make(selected("environmentAtlas")),
     switches:make(selected("switchSheet","assets/pixel/visual-overhaul/0x72/lever-left.png")),
     secretSwitches:make(selected("switchSecretSheet","assets/pixel/visual-overhaul/0x72/lever-right.png")),
-    sigils:make(selected("sigilSheet")),
+    sigils:make(selected("sigilSheet","assets/pixel/visual-overhaul/cc0-portal/portal-sheet.png")),
     environmentTiles:make(selected("environmentTileset")),
     doorLeafClosed:make(selected("doorLeafClosed","assets/pixel/visual-overhaul/0x72/door-leaf-closed.png")),
     doorLeafOpen:make(selected("doorLeafOpen","assets/pixel/visual-overhaul/0x72/door-leaf-open.png")),
@@ -205,7 +205,7 @@ function drawExit(){
   // Monumental arch and central portal surface.
   ctx.fillStyle="#190e22";ctx.strokeStyle=primary;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-24,18);ctx.lineTo(-24,-7);ctx.quadraticCurveTo(-23,-34,0,-40);ctx.quadraticCurveTo(23,-34,24,-7);ctx.lineTo(24,18);ctx.stroke();
   ctx.save();ctx.beginPath();ctx.moveTo(-18,16);ctx.lineTo(-18,-6);ctx.quadraticCurveTo(-17,-27,0,-32);ctx.quadraticCurveTo(17,-27,18,-6);ctx.lineTo(18,16);ctx.closePath();ctx.clip();
-  if(ready){const portal=ctx.createRadialGradient(-5,-10,2,0,-3,31);portal.addColorStop(0,"rgba(238,251,255,.98)");portal.addColorStop(.18,"rgba(108,236,255,.92)");portal.addColorStop(.55,"rgba(142,76,218,.88)");portal.addColorStop(1,"rgba(17,4,31,.98)");ctx.fillStyle=portal;ctx.fillRect(-20,-35,40,55);for(let band=0;band<5;band++){ctx.globalAlpha=.24+band*.08;ctx.strokeStyle=band%2?P.cyan:P.white;ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(Math.sin(t*2+band)*3,-5+band*4,15-band*1.7,5+Math.sin(t*3+band)*2,t+band,0,Math.PI*2);ctx.stroke()}}else{ctx.fillStyle="#09060d";ctx.fillRect(-20,-35,40,55);ctx.globalAlpha=.72;ctx.fillStyle=hasObjective?"#261d18":"#18121d";for(let y=-23;y<18;y+=8)ctx.fillRect(-18,y,36,3);ctx.strokeStyle=accent;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-17,-24);ctx.lineTo(17,14);ctx.moveTo(17,-24);ctx.lineTo(-17,14);ctx.stroke()}
+  if(ready){const sigilArt=lostSizzlerPixelAssets.sigils;if(sigilArt?.complete&&sigilArt.naturalWidth>=160&&sigilArt.naturalHeight>=40){const frame=Math.floor(now/105)%5;ctx.imageSmoothingEnabled=false;ctx.globalAlpha=.98;ctx.drawImage(sigilArt,frame*32,0,32,40,-18,-30,36,45);ctx.globalAlpha=1}else{const portal=ctx.createRadialGradient(-5,-10,2,0,-3,31);portal.addColorStop(0,"rgba(238,251,255,.98)");portal.addColorStop(.18,"rgba(108,236,255,.92)");portal.addColorStop(.55,"rgba(142,76,218,.88)");portal.addColorStop(1,"rgba(17,4,31,.98)");ctx.fillStyle=portal;ctx.fillRect(-20,-35,40,55);for(let band=0;band<5;band++){ctx.globalAlpha=.24+band*.08;ctx.strokeStyle=band%2?P.cyan:P.white;ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(Math.sin(t*2+band)*3,-5+band*4,15-band*1.7,5+Math.sin(t*3+band)*2,t+band,0,Math.PI*2);ctx.stroke()}}}else{ctx.fillStyle="#09060d";ctx.fillRect(-20,-35,40,55);ctx.globalAlpha=.72;ctx.fillStyle=hasObjective?"#261d18":"#18121d";for(let y=-23;y<18;y+=8)ctx.fillRect(-18,y,36,3);ctx.strokeStyle=accent;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-17,-24);ctx.lineTo(17,14);ctx.moveTo(17,-24);ctx.lineTo(-17,14);ctx.stroke()}
   ctx.restore();ctx.globalAlpha=1;
   // Crown, status core and drifting pixels reinforce the locked/ready state.
   ctx.fillStyle=primary;ctx.beginPath();ctx.moveTo(0,-48);ctx.lineTo(7,-41);ctx.lineTo(0,-34);ctx.lineTo(-7,-41);ctx.closePath();ctx.fill();ctx.fillStyle=accent;ctx.fillRect(-2,-43,4,4);
@@ -219,6 +219,13 @@ function drawPickupGlyph(i,col){
   ctx.save();ctx.lineWidth=1.5;ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineJoin="round";ctx.lineCap="round";
   const k=i.kind,custom=pickupOverrideImages.get(k);
   if(custom?.complete&&custom.naturalWidth){ctx.drawImage(custom,-15,-15,30,30);ctx.restore();return}
+  if(k==="exitSigil"){
+    const sigilArt=lostSizzlerPixelAssets.sigils;
+    if(sigilArt?.complete&&sigilArt.naturalWidth>=160&&sigilArt.naturalHeight>=40){
+      const frame=Math.floor(performance.now()/105)%5;ctx.save();ctx.imageSmoothingEnabled=false;ctx.shadowColor=P.purple;ctx.shadowBlur=14;
+      ctx.drawImage(sigilArt,frame*32,0,32,40,-12,-15,24,30);ctx.restore();ctx.restore();return
+    }
+  }
 
   // R54 fallback icons are deliberately illustrated at pickup scale rather than
   // generic letters/boxes. Owner-provided image overrides still take priority.
