@@ -21,6 +21,6 @@ assert.match(render,/REMOTE SECRET SWITCH — SHOOT OR TOUCH/);
 assert.match(render,/WALL SWITCH — SHOOT OR TOUCH/);
 assert.match(render,/else\{\s*ctx\.fillStyle="#151b26"/,"canvas switch fallback must remain available");
 assert.match(overrides,/switchSheet:null/);
-assert.match(overrides,/switchSecretSheet:null/);
+assert.match(overrides,/switchSecretSheet:null/);\nassert.match(overrides,/switchButtonUp:null/);\nassert.match(overrides,/switchButtonDown:null/);
 
 console.log("Dungeon Carnage Stage 1 CC0 switch visual replacement contract passed.");
