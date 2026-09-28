@@ -24,9 +24,10 @@
       "enemyAtlasA": "assets/pixel/enemy-atlas-standard-a-v10-35.png",
       "enemyAtlasB": "assets/pixel/enemy-atlas-standard-b-v10-35.png",
       "environmentAtlas": "assets/pixel/environment-atlas-v10-35.png",
-      "switchSheet": null,
+      "switchSheet": "assets/pixel/visual-overhaul/0x72/lever-left.png",
       "sigilSheet": null,
-      "environmentTileset": null
+      "environmentTileset": null,
+      "switchSecretSheet": "assets/pixel/visual-overhaul/0x72/lever-right.png"
     }
   },
   "music": {
