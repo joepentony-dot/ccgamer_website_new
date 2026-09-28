@@ -1,3 +1,13 @@
+## Dungeon R63 UI/topology follow-up — 28 September 2026
+
+- R62 authoritative FIRE-owner repair is merged on main as `ca923a676b08475c8e86611e93b3d6c4e0c387a6`; deployed hands-on sustained-FIRE acceptance remains required.
+- Draft PR #2409 / `codex/dungeon-r63-ui-topology-followup-20260928` addresses three fresh manual findings without changing R62 FIRE ownership: Bronze-key visibility in the persistent lower HUD, tactical-radar canvas-state integrity, and generated doors detached from supporting wall geometry.
+- Bronze status is duplicated into the always-visible Quick Inventory header as `BRONZE KEY ×n`, with wrapping/overflow rules that prevent ellipsis clipping.
+- Tactical radar now resets transform/alpha/composite/filter/shadow state before each render and rejects malformed marker coordinates; discovery/knowledge rules remain unchanged.
+- Optional doors now preserve traversal orientation, Stage-5 route carving reserves door cells plus required wall anchors, and a final post-carve invariant validates/structurally repairs any orphaned doorway.
+- The pre-release functional candidate passed canonical structure, syntax, all Node contracts, PR Qualification and all six Chromium shards before the release/cache bump.
+- Public identity is advancing to `V10.42 r63` / `20260928r63`. Do not merge until that final exact head is 0 behind main, mergeable, all remote qualification/checks are green and no material review finding remains.
+
 ## R62 authoritative FIRE owner repair — 28 September 2026
 
 - Fresh deployed r60 manual evidence reproduced the random loaded-firearm lockout: Space events reached live Solo with a Tier-2 Field Pulse II, 113/120 ammo, zero FIRE cooldown and zero active projectiles, yet repeated attack probes returned false.
