@@ -225,6 +225,7 @@ jobs:
         run: |
           if [ -n "$YOUTUBE_API_KEY" ]; then
             echo "[games-publishing] Syncing verified YouTube titles, descriptions, upload dates, durations and thumbnails..."
+            echo "[games-publishing] A private or scheduled YouTube video is allowed here and does not block game publishing; metadata will remain pending until a later sync can see the public video."
             node scripts/sync-youtube-video-metadata.js
           else
             echo "[games-publishing] YOUTUBE_API_KEY is not configured; keeping the verified metadata store unchanged."
