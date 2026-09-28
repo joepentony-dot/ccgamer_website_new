@@ -83,6 +83,17 @@ try{
   await page.evaluate(()=>window.showToast?.("NEW DUNGEON BOUNTY","Floor 1 stale-notification reset probe.","gold",10000));
   await page.waitForFunction(()=>document.getElementById("ccg-major-notification")?.dataset.visible==="true");
   assert.equal(await page.evaluate(()=>document.body.hasAttribute("data-ccg-major-notification")),true,"Floor 1 bounty must own the major notification rail before descent");
+  await page.evaluate(()=>{
+    window.__ccgR60FloorStartSnapshots=[];
+    window.addEventListener("ccg:floor-start",event=>{
+      const panel=document.getElementById("ccg-major-notification");
+      window.__ccgR60FloorStartSnapshots.push({
+        floor:Number(event?.detail?.floor||run?.floor||0),
+        bodyMajor:document.body.hasAttribute("data-ccg-major-notification"),
+        panelVisible:panel?.dataset.visible||""
+      });
+    },{once:true});
+  });
 
   await page.evaluate(()=>globalThis.eval(`floorComplete("R60 descent regression")`));
   await page.waitForFunction(()=>mode==="floorcomplete");
@@ -94,13 +105,19 @@ try{
 
   const reset=await page.evaluate(()=>({
     floor:Number(run?.floor||0),
+    floorStart:Array.isArray(window.__ccgR60FloorStartSnapshots)?window.__ccgR60FloorStartSnapshots[0]||null:null,
     bodyMajor:document.body.hasAttribute("data-ccg-major-notification"),
     panelVisible:document.getElementById("ccg-major-notification")?.dataset.visible||"",
+    panelText:document.getElementById("ccg-major-notification")?.textContent||"",
     railParent:document.getElementById("ccg-major-notification")?.parentElement?.classList.contains("game-message-rail")===true
   }));
   assert.equal(reset.floor,2,"descent must enter Floor 2");
-  assert.equal(reset.bodyMajor,false,"Floor 2 start must clear stale major-notification ownership");
-  assert.notEqual(reset.panelVisible,"true","Floor 2 start must hide the stale Floor 1 major notice");
+  assert.ok(reset.floorStart,"descent must publish the Floor 2 lifecycle reset event");
+  assert.equal(reset.floorStart.floor,2,"the lifecycle reset event must identify Floor 2");
+  assert.equal(reset.floorStart.bodyMajor,false,"Floor 2 lifecycle reset must release stale major-notification ownership");
+  assert.notEqual(reset.floorStart.panelVisible,"true","Floor 2 lifecycle reset must hide the stale Floor 1 major notice");
+  assert.equal(reset.bodyMajor,reset.panelVisible==="true","post-start major-notification ownership must stay internally consistent");
+  if(reset.bodyMajor)assert.doesNotMatch(reset.panelText,/Floor 1 stale-notification reset probe\./,"a fresh Floor 2 major notice may reclaim the rail, but stale Floor 1 copy must not");
   assert.equal(reset.railParent,true,"major notifications must remain owned by the shared game-message rail");
 
   await page.evaluate(()=>window.showToast?.("NEW DUNGEON BOUNTY","Floor 2 rail visibility regression probe.","gold",7600));
