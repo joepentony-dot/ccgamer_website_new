@@ -9,7 +9,7 @@
 
   const STYLE_ID="ccg-v142-r19-mobile-trap-layout";
   const MONITOR_MS=80;
-  const state={timer:0,canvasAspectRepairs:0,layoutPasses:0};
+  const state={timer:0,canvasAspectRepairs:0,layoutPasses:0,trapLivenessPasses:0,trapLivenessHits:0,trapLivenessErrors:0};
   const specialType=()=>{try{return String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"")}catch(_){return""}};
   const ordinaryDungeon=()=>document.body?.dataset?.runActive==="true"&&!new Set(["horde-survivor","sizzler-saboteurs"]).has(specialType());
 
@@ -235,7 +235,7 @@
 
   function facadeState(){
     const gameplay=core()?.state||{};
-    return Object.freeze({...gameplay,timer:state.timer,canvasAspectRepairs:state.canvasAspectRepairs,layoutPasses:state.layoutPasses});
+    return Object.freeze({...gameplay,timer:state.timer,canvasAspectRepairs:state.canvasAspectRepairs,layoutPasses:state.layoutPasses,trapLivenessPasses:state.trapLivenessPasses,trapLivenessHits:state.trapLivenessHits,trapLivenessErrors:state.trapLivenessErrors});
   }
 
   const facade=Object.freeze({
@@ -252,12 +252,29 @@
     trapActive:(...args)=>delegate("trapActive",args),
     trapCycleId:(...args)=>delegate("trapCycleId",args),
     withValidatedTrapContact:(p,t,callback)=>typeof callback==="function"?callback():false,
-    get state(){return facadeState()}
+    serviceTrapLiveness,\n    get state(){return facadeState()}
   });
+
+  function serviceTrapLiveness(){
+    if(!ordinaryDungeon())return false;
+    const api=core(),fn=api?.updateTrapContacts;
+    if(typeof fn!=="function")return false;
+    state.trapLivenessPasses++;
+    try{
+      const hit=Boolean(fn("monitor"));
+      if(hit)state.trapLivenessHits++;
+      return hit
+    }catch(error){
+      state.trapLivenessErrors++;
+      console.warn("[C64 Dungeon Carnage r64] authoritative trap liveness pass failed safely",error);
+      return false
+    }
+  }
 
   function tick(){
     installPortraitLayout();
     syncPortraitCanvasAspect();
+    serviceTrapLiveness();
     state.layoutPasses++;
   }
 
