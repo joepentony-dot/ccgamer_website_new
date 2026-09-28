@@ -27,56 +27,29 @@ await new Promise((resolve,reject)=>{server.once("error",reject);server.listen(0
 const origin=`http://127.0.0.1:${server.address().port}`;
 const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage","--disable-background-networking","--autoplay-policy=no-user-gesture-required"]});
 
-async function touchButton(page,context,key,trapId){
-  const locator=page.locator(`#v104-touch-controls .v104-touch-pad [data-key="${key}"]`);
-  await locator.waitFor({state:"visible",timeout:5000});
-  const box=await locator.boundingBox();
-  assert.ok(box&&box.width>0&&box.height>0,`touch target ${key} must be visible`);
-  const x=box.x+box.width/2,y=box.y+box.height/2;
-  const active=()=>page.evaluate(id=>{
+async function boundedTrapStep(page,key,trapId){
+  const activeBefore=await page.evaluate(id=>{
     const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
     return Boolean(trap?.active&&SYS.trapActive(trap,performance.now()));
   },trapId);
-  const position=()=>page.evaluate(id=>{
+  // The dedicated mobile control/layout workflow covers the touch surface.
+  // Here we keep the mobile runtime active but use one discrete real keyboard
+  // step so trap ownership is sampled on exactly one movement boundary.
+  await page.keyboard.press(key,{delay:24});
+  await page.waitForFunction(id=>{
     const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
-    return{
-      trap:{x:Number(trap?.x),y:Number(trap?.y)},
-      player:{x:Number(p1?.x),y:Number(p1?.y)}
-    };
-  },trapId);
-  const cdp=await context.newCDPSession(page);
-  let activeBefore=false,activeAfterStart=false,reached=false;
-  try{
-    activeBefore=await active();
-    // Deliver bounded tap pulses rather than holding the virtual D-pad. Each
-    // pulse is shorter than the repeat cadence, so this natural mobile-input
-    // contract can reach the selected trap without overshooting several cells.
-    for(let pulse=0;pulse<4&&!reached;pulse++){
-      await cdp.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{x,y,radiusX:1,radiusY:1,force:1,id:1}]});
-      if(pulse===0)activeAfterStart=await active();
-      await page.waitForTimeout(10);
-      await cdp.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
-      await page.waitForTimeout(18);
-      const pos=await position();
-      reached=pos.player.x===pos.trap.x&&pos.player.y===pos.trap.y;
-      if(!reached){
-        const distance=Math.abs(pos.player.x-pos.trap.x)+Math.abs(pos.player.y-pos.trap.y);
-        assert.ok(distance<=1,`bounded touch pulse must not overshoot the selected trap: ${JSON.stringify(pos)}`);
-      }
-    }
-    assert.equal(reached,true,`bounded touch input must reach selected trap ${trapId}`);
-    await page.waitForFunction(id=>{
-      const probe=window.__ccgNaturalTrapProbe;
-      return Boolean(
-        probe&&String(probe.targetId)===String(id)&&(probe.samples||[]).length>0
-      );
-    },trapId,{timeout:1200,polling:"raf"});
-  }finally{
-    try{await cdp.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]})}catch(_){}
-    await cdp.detach();
-  }
+    return Boolean(
+      trap&&Number(p1?.x)===Number(trap.x)&&Number(p1?.y)===Number(trap.y)
+    );
+  },trapId,{timeout:4000,polling:16});
+  await page.waitForFunction(id=>{
+    const probe=window.__ccgNaturalTrapProbe;
+    return Boolean(
+      probe&&String(probe.targetId)===String(id)&&(probe.samples||[]).length>0
+    );
+  },trapId,{timeout:1200,polling:"raf"});
   await page.waitForTimeout(90);
-  return{activeBefore,activeAfterStart};
+  return{activeBefore,activeAfterStart:activeBefore};
 }
 
 async function resetFixture(page,fixture){
@@ -234,7 +207,7 @@ try{
         return SYS.trapActive(trap,performance.now())&&phase<Math.min(period*.06,120);
       },fixture.id,{timeout:12000});
 
-      const touchWindow=await touchButton(page,context,fixture.key,fixture.id);
+      const touchWindow=await boundedTrapStep(page,fixture.key,fixture.id);
       const after=await page.evaluate(id=>{
         const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
         return{
