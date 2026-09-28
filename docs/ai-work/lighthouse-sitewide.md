@@ -1,5 +1,14 @@
 # Site-wide Lighthouse programme
 
+## Music composer wheel/Lighthouse follow-through — 28 September 2026
+
+- User reported sluggish up/down mouse-wheel response on the deployed `/music/paul-norman/` composer page.
+- The full site-wide Lighthouse inventory already discovers `/music/` routes from `sitemap-pages.xml`; Paul Norman is present there and is therefore included in the mobile/desktop Lighthouse sweep. No score is inferred from that coverage alone.
+- The native physical-wheel representative matrix did not include a music route. The shared music pages also relied on the broad `ccg-master.css` scroll safety but lacked a music-specific active-scroll performance state for composer-card hover/playing effects.
+- Repair branch `fix/music-wheel-performance-20260928` starts from main `3d01e4a2db7cb65a77815704608561dd08ad2838`. It keeps native document scrolling, adds a bounded passive music scroll-performance pause, suspends music-card motion only while scrolling, and adds both `/music/` and `/music/paul-norman/` to the real Chromium wheel matrix.
+- Public code cache advances from v42 to v43 because shared public CSS/JS changes. Exact-head repository qualification and deployed hands-on confirmation remain required before calling the issue closed.
+
+
 ## Authority
 
 The user-supplied Lighthouse reports from **25 September 2026** for the public Home page remain the first measured baseline for this programme. They are evidence for the initial Home CLS/render-blocking/image-delivery work, but they must not be treated as representative of every other page.
