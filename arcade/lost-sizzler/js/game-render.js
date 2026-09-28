@@ -15,7 +15,9 @@ const lostSizzlerPixelAssets=(()=>{
     // contracts and preload/cache ownership remain authoritative fallbacks.
     explorer:make("assets/pixel/explorer-sheet-v10-34.png"),
     chests:make("assets/pixel/chest-sheet-v10-34.png"),
-    playerReplacement:make(selected("playerSheet","assets/pixel/visual-overhaul/shade-puny/warrior-blue.png")),
+    // The established CCG explorer sheet is the authoritative hero identity.
+    // A replacement may be supplied only when it is explicitly CCG-specific.
+    playerReplacement:make(selected("playerSheet")),
     enemyWarrior:make(selected("enemyWarriorSheet","assets/pixel/visual-overhaul/shade-puny-enemies/warrior-red.png")),
     enemySoldier:make(selected("enemySoldierSheet","assets/pixel/visual-overhaul/shade-puny-enemies/soldier-red.png")),
     enemyArcher:make(selected("enemyArcherSheet","assets/pixel/visual-overhaul/shade-puny-enemies/archer-green.png")),
@@ -40,6 +42,8 @@ const lostSizzlerPixelAssets=(()=>{
     environmentAtlasReplacement:make(selected("environmentAtlas")),
     switches:make(selected("switchSheet","assets/pixel/visual-overhaul/0x72/lever-left.png")),
     secretSwitches:make(selected("switchSecretSheet","assets/pixel/visual-overhaul/0x72/lever-right.png")),
+    switchButtonUp:make(selected("switchButtonUp","assets/pixel/visual-overhaul/0x72/button-blue-up.png")),
+    switchButtonDown:make(selected("switchButtonDown","assets/pixel/visual-overhaul/0x72/button-blue-down.png")),
     sigils:make(selected("sigilSheet","assets/pixel/visual-overhaul/cc0-portal/portal-sheet.png")),
     environmentTiles:make(selected("environmentTileset")),
     floorTiles:[
@@ -240,7 +244,15 @@ function drawDoors(){
       ctx.save();ctx.translate(hx,hy);ctx.rotate(angle);const leafX=dir>0?0:-leafLen,wood=ctx.createLinearGradient(leafX,-6,leafX+leafLen,6);wood.addColorStop(0,"#3b2418");wood.addColorStop(.28,base);wood.addColorStop(.7,"#9b6537");wood.addColorStop(1,"#4a2c1b");ctx.fillStyle=wood;ctx.strokeStyle=d.locked?lockedCol:"#c89557";ctx.lineWidth=2;ctx.fillRect(leafX,-7,leafLen,14);ctx.strokeRect(leafX,-7,leafLen,14);ctx.strokeStyle="rgba(37,18,10,.75)";ctx.lineWidth=1;for(let board=5;board<leafLen;board+=8){const bx=dir>0?leafX+board:leafX+leafLen-board;ctx.beginPath();ctx.moveTo(bx,-6);ctx.lineTo(bx,6);ctx.stroke()}ctx.fillStyle="#343238";ctx.fillRect(leafX+2,-6,Math.max(3,leafLen-4),2);ctx.fillRect(leafX+2,4,Math.max(3,leafLen-4),2);ctx.fillStyle="#9a8c73";for(const rivet of [4,leafLen-5]){const rx=dir>0?leafX+rivet:leafX+leafLen-rivet;ctx.fillRect(rx,-5,2,2);ctx.fillRect(rx,3,2,2)}const handleLocal=dir>0?leafLen-5:-leafLen+5;ctx.fillStyle="#f0d16a";ctx.beginPath();ctx.arc(handleLocal,0,3,0,Math.PI*2);ctx.fill();ctx.restore();ctx.fillStyle="#756b61";ctx.beginPath();ctx.arc(hx,hy,3,0,Math.PI*2);ctx.fill();if(d.opening){ctx.globalAlpha=.45;ctx.strokeStyle=P.cyan;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(hx,hy,leafLen,Math.min(closedAngle,angle),Math.max(closedAngle,angle));ctx.stroke();ctx.globalAlpha=1}
       doorRenderDiagnostics.fallbackFrames++;doorRenderDiagnostics.lastMode="procedural-fallback";doorRenderDiagnostics.lastOrientation=horizontal?"horizontal":"vertical";doorRenderDiagnostics.lastState=d.open?"open":d.opening?"opening":"closed";doorRenderDiagnostics.lastAt=now;
     }
-    if(d.locked){ctx.fillStyle=lockedCol;ctx.beginPath();ctx.arc(s.x+C.tile/2,s.y+C.tile/2,3.5,0,Math.PI*2);ctx.fill()}ctx.restore();if(md(d,focus)<=2){const text=d.sigilGate&&d.locked?"REINFORCED SIGIL GATE":d.locked?(d.type==="switch"?"SWITCH GATE":d.type==="bronze"?"LOCKED BRONZE DOOR":"SEALED DOOR"):d.open?(d.type==="secret"?"SECRET PASSAGE OPEN":"OPEN DOOR"):d.opening?(d.type==="secret"?"WALL RETRACTING…":"DOOR OPENING…"):"CLOSED DOOR";label(text,{x:s.x,y:s.y-2},d.locked?lockedCol:d.open?P.green:P.cyan)}
+    if(d.locked){ctx.fillStyle=lockedCol;ctx.beginPath();ctx.arc(s.x+C.tile/2,s.y+C.tile/2,3.5,0,Math.PI*2);ctx.fill()}
+    if(d.sigilGate){
+      const sigilArt=lostSizzlerPixelAssets.sigils;
+      if(sigilArt?.complete&&sigilArt.naturalWidth>=160&&sigilArt.naturalHeight>=40){
+        const frame=Math.floor(now/120)%5;ctx.save();ctx.imageSmoothingEnabled=false;ctx.globalAlpha=d.open?.45:.92;ctx.shadowColor=P.purple;ctx.shadowBlur=d.locked?14:7;
+        ctx.drawImage(sigilArt,frame*32,0,32,40,s.x+C.tile/2-10,s.y+C.tile/2-13,20,25);ctx.restore();
+      }
+    }
+    ctx.restore();if(md(d,focus)<=2){const text=d.sigilGate&&d.locked?"REINFORCED SIGIL GATE":d.locked?(d.type==="switch"?"SWITCH GATE":d.type==="bronze"?"LOCKED BRONZE DOOR":"SEALED DOOR"):d.open?(d.type==="secret"?"SECRET PASSAGE OPEN":"OPEN DOOR"):d.opening?(d.type==="secret"?"WALL RETRACTING…":"DOOR OPENING…"):"CLOSED DOOR";label(text,{x:s.x,y:s.y-2},d.locked?lockedCol:d.open?P.green:P.cyan)}
   }
 }
 function drawExit(){
@@ -558,8 +570,11 @@ const PUNY_ENEMY_ATTACK_COLUMNS=Object.freeze([4,5,6,7]);
 const PUNY_ENEMY_HURT_COLUMNS=Object.freeze([18,19,20]);
 const PUNY_ENEMY_DEATH_COLUMNS=Object.freeze([21,22,23]);
 const PUNY_ENEMY_FAMILY=Object.freeze({
-  skeleton:"warrior",knight:"soldier",scout:"archer",hunter:"soldier",ambusher:"mage",
-  guard:"soldier",charger:"warrior",ranger:"archer",root:"mage",cook:"mage",firebreather:"warrior"
+  // Only use the generic humanoid CC0 sheets where the visual role fits the
+  // enemy identity. Distinct creatures retain their bespoke/procedural art
+  // until a licence-safe sprite matching the name is sourced.
+  knight:"soldier",scout:"archer",hunter:"archer",
+  guard:"soldier",charger:"warrior",ranger:"archer"
 });
 const punyEnemyDiagnostics=window.__CCG_PUNY_ENEMY_DIAGNOSTICS__=window.__CCG_PUNY_ENEMY_DIAGNOSTICS__||{draws:0,fallbacks:0,states:{idle:0,move:0,attack:0,hurt:0,death:0},last:null};
 function punyEnemySheet(e){
@@ -758,32 +773,42 @@ function drawGenerators(){
 function drawShrinesSwitches(){
   for(const sh of host.shrines||[]){
     if(!sh.active||!visibleTo(focus,sh.x,sh.y))continue;
-    const s=ws(sh.x,sh.y),cx=s.x+C.tile/2,cy=s.y+C.tile/2,t=performance.now()/650;
+    const s=ws(sh.x,sh.y),cx=s.x+C.tile/2,cy=s.y+C.tile/2,now=performance.now(),t=now/650,sigilArt=lostSizzlerPixelAssets.sigils;
     ctx.save();ctx.fillStyle="rgba(0,0,0,.46)";ctx.beginPath();ctx.ellipse(cx,s.y+C.tile-4,18,5,0,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle="#261937";ctx.beginPath();ctx.moveTo(cx,s.y+3);ctx.lineTo(s.x+C.tile-4,s.y+C.tile-4);ctx.lineTo(s.x+4,s.y+C.tile-4);ctx.closePath();ctx.fill();
-    ctx.strokeStyle=P.purple;ctx.shadowColor=P.purple;ctx.shadowBlur=18;ctx.lineWidth=2;ctx.stroke();ctx.fillStyle="#4d3169";ctx.fillRect(cx-5,s.y+13,10,20);
-    ctx.fillStyle=P.purple;ctx.globalAlpha=.55+.35*Math.sin(t*5);ctx.fillRect(cx-2,s.y+8,4,23);ctx.globalAlpha=1;
+    ctx.fillStyle="#1b1227";ctx.beginPath();ctx.moveTo(cx,s.y+2);ctx.lineTo(s.x+C.tile-3,s.y+C.tile-4);ctx.lineTo(s.x+3,s.y+C.tile-4);ctx.closePath();ctx.fill();
+    ctx.strokeStyle=P.purple;ctx.shadowColor=P.purple;ctx.shadowBlur=18;ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle="#49305f";ctx.fillRect(cx-7,s.y+14,14,18);ctx.fillStyle="#251932";ctx.fillRect(cx-10,s.y+30,20,5);
+    if(sigilArt?.complete&&sigilArt.naturalWidth>=160&&sigilArt.naturalHeight>=40){
+      const frame=Math.floor(now/110)%5;ctx.imageSmoothingEnabled=false;ctx.globalAlpha=.95;ctx.shadowColor=P.cyan;ctx.shadowBlur=14;
+      ctx.drawImage(sigilArt,frame*32,0,32,40,cx-10,s.y+4,20,25);ctx.globalAlpha=1;
+    }else{
+      ctx.fillStyle=P.purple;ctx.globalAlpha=.55+.35*Math.sin(t*5);ctx.fillRect(cx-2,s.y+8,4,23);ctx.globalAlpha=1;
+    }
     for(let n=0;n<6;n++){const angle=t+n*Math.PI/3;ctx.fillStyle=n%2?P.purple:P.cyan;ctx.fillRect(cx+Math.cos(angle)*14-1,cy+Math.sin(angle)*10-1,3,3)}
-    ctx.restore();if(md(sh,focus)<2)label("SHRINE",s,P.purple)
+    ctx.restore();if(md(sh,focus)<2)label("RUNIC SHRINE",s,P.purple)
   }
   for(const sw of host.switches||[]){
-    if(!sw.active||!visibleTo(focus,sw.x,sw.y))continue;
-    const s=ws(sw.x,sw.y),col=sw.revealSecret?P.purple:P.cyan,pulse=.65+.35*Math.sin(performance.now()/120+sw.x);
+    if(!visibleTo(focus,sw.x,sw.y))continue;
+    const s=ws(sw.x,sw.y),spent=!sw.active,col=spent?P.green:(sw.revealSecret?P.purple:P.cyan),pulse=.65+.35*Math.sin(performance.now()/120+sw.x),side=String(sw.wallSide||"north");
     const switchArt=sw.revealSecret?lostSizzlerPixelAssets.secretSwitches:lostSizzlerPixelAssets.switches;
-    ctx.save();ctx.fillStyle="rgba(0,0,0,.42)";ctx.beginPath();ctx.ellipse(s.x+C.tile/2,s.y+C.tile-3,15,4,0,0,Math.PI*2);ctx.fill();
+    const buttonArt=spent?lostSizzlerPixelAssets.switchButtonDown:lostSizzlerPixelAssets.switchButtonUp;
+    const wallOffset=side==="north"?{x:0,y:-11}:side==="south"?{x:0,y:11}:side==="west"?{x:-11,y:0}:{x:11,y:0};
+    const cx=s.x+C.tile/2+wallOffset.x,cy=s.y+C.tile/2+wallOffset.y;
+    ctx.save();
     if(switchArt?.complete&&switchArt.naturalWidth>=16){
-      ctx.imageSmoothingEnabled=false;ctx.shadowColor=col;ctx.shadowBlur=7+pulse*8;
-      ctx.fillStyle="#11131a";ctx.fillRect(s.x+4,s.y+4,C.tile-8,C.tile-8);
-      ctx.drawImage(switchArt,s.x+5,s.y+5,C.tile-10,C.tile-10);
-      ctx.globalAlpha=.34+pulse*.3;ctx.strokeStyle=col;ctx.lineWidth=2;ctx.strokeRect(s.x+4,s.y+4,C.tile-8,C.tile-8);ctx.globalAlpha=1;
+      ctx.translate(cx,cy);ctx.imageSmoothingEnabled=false;ctx.shadowColor=col;ctx.shadowBlur=spent?3:7+pulse*7;ctx.globalAlpha=spent?.72:1;
+      const rot=side==="south"?Math.PI:side==="west"?-Math.PI/2:side==="east"?Math.PI/2:0;ctx.rotate(rot);
+      if(spent)ctx.scale(1,-1);
+      ctx.drawImage(switchArt,-(C.tile-12)/2,-(C.tile-12)/2,C.tile-12,C.tile-12);ctx.globalAlpha=1;
+      if(buttonArt?.complete&&buttonArt.naturalWidth>=16){ctx.drawImage(buttonArt,5,5,11,11)}
     }else{
-      ctx.fillStyle="#151b26";ctx.fillRect(s.x+4,s.y+4,C.tile-8,C.tile-8);ctx.fillStyle="#344154";ctx.fillRect(s.x+7,s.y+7,C.tile-14,C.tile-14);
-      ctx.strokeStyle=col;ctx.shadowColor=col;ctx.shadowBlur=8+pulse*8;ctx.lineWidth=2;ctx.strokeRect(s.x+6,s.y+6,C.tile-12,C.tile-12);
-      ctx.fillStyle="#081018";ctx.beginPath();ctx.arc(s.x+C.tile/2,s.y+C.tile/2,9,0,Math.PI*2);ctx.fill();ctx.strokeStyle=col;ctx.stroke();
-      ctx.fillStyle=col;ctx.globalAlpha=.6+pulse*.4;ctx.beginPath();ctx.arc(s.x+C.tile/2,s.y+C.tile/2,5,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
-      for(const [rx,ry] of [[8,8],[C.tile-10,8],[8,C.tile-10],[C.tile-10,C.tile-10]])ctx.fillRect(s.x+rx,s.y+ry,2,2);
+      ctx.fillStyle="#151b26";ctx.fillRect(cx-12,cy-12,24,24);ctx.fillStyle="#344154";ctx.fillRect(cx-9,cy-9,18,18);
+      ctx.strokeStyle=col;ctx.shadowColor=col;ctx.shadowBlur=8+pulse*8;ctx.lineWidth=2;ctx.strokeRect(cx-10,cy-10,20,20);
+      ctx.fillStyle="#081018";ctx.beginPath();ctx.arc(cx,cy,7,0,Math.PI*2);ctx.fill();ctx.strokeStyle=col;ctx.stroke();
+      ctx.fillStyle=col;ctx.globalAlpha=.6+pulse*.4;ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
     }
-    ctx.restore();if(md(sw,focus)<3)label(sw.revealSecret?"REMOTE SECRET SWITCH — SHOOT OR TOUCH":"WALL SWITCH — SHOOT OR TOUCH",s,col)
+    ctx.restore();
+    if(md(sw,focus)<3)label(spent?"SWITCH TOGGLED":sw.revealSecret?"REMOTE SECRET SWITCH — ACTIVATE":"WALL SWITCH — ACTIVATE",{x:s.x,y:s.y-2},col)
   }
 }
 function drawTraps(){

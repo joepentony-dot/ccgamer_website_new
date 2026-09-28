@@ -310,3 +310,69 @@ No chest gameplay, lock/key, reward or interaction assertion was relaxed.
 - The previous procedural swinging-plank door remains the decode/error fallback if either authored state is malformed or unavailable.
 - Focused diagnostics expose whether the current frame used `cc0-door` or `procedural-fallback`, plus orientation/state. Static and Chromium browser contracts cover horizontal closed, vertical open, opening transition and forced image failure.
 - Next visual targets after this slice qualifies: stronger switch/sigil treatment, FIRE/SHOCK trap art, shrines/altars/objective markers, environmental props/furniture and richer biome variation.
+
+
+## Rune/switch/shrine visual slice — 28 September 2026
+
+- Live visual foundation and door work are now on current main through PR #2400. Historical PR #2395 has zero unique files relative to main and is no longer an active integration owner.
+- This slice starts directly from main `b44508bbb315238644a1875ec16c3aed6de61b68` on `codex/dungeon-visual-runes-shrines-20260928`.
+- Switches now use both the authored 0x72 lever and its existing CC0 blue button up/down states. Used switches remain visible as a subdued activated state instead of disappearing, improving cause/effect readability without changing interaction ownership.
+- Active normal and secret switches retain distinct cyan/purple treatment; completed switches use green confirmation.
+- Shrines retain their established non-blocking/gameplay geometry but now use the locally packaged animated CC0 portal/sigil core, with the old synthetic core retained as decode fallback.
+- Reinforced Sigil Gates now carry the same animated sigil emblem over the authored door state, giving the gate a distinct objective identity rather than relying only on purple tint.
+- No switch, shrine, door, sigil, collision, reward, progression, trap or FIRE gameplay state changes in this slice.
+- The separate external CC0 rune spritesheet from Zandylion/Futhark was licence-verified but not imported because the available connector could not transfer the PNG byte-for-byte safely. Do not substitute an unverifiable binary; revisit only when authoritative acquisition is available.
+
+
+## Wall-switch interaction correction — 28 September 2026
+
+- Switches are explicitly not collectibles. They remain in `host.switches`, never the item/loot collection.
+- Generated switches now use `freeWallSwitchPosition()`: their logical interaction cell is walkable but must be immediately adjacent to a solid wall, with `wallSide` persisted for rendering.
+- The renderer offsets the authored lever toward that wall edge instead of centring it like a floor pickup.
+- Activation remains one-shot: the established `active` flag changes from true to false once, the linked door action occurs once, and subsequent activation attempts remain no-ops.
+- The lever stays visible after use and flips into a toggled state; the CC0 up/down button state reinforces this visually.
+- Labels now describe ACTIVATE / SWITCH TOGGLED rather than pickup-like interaction.
+- Door, secret, collision, progression and reward ownership remain unchanged.
+
+
+## Locked player identity + enemy art/name policy — 28 September 2026
+
+### Player identity is non-negotiable
+
+- The playable hero must remain recognisably the **Cheeky Commodore Gamer** character.
+- The established `assets/pixel/explorer-sheet-v10-34.png` is the authoritative default player artwork.
+- The generic Shade/Puny `warrior-blue.png` sheet is **not** a production player replacement. It may remain in the repository only as an animation/motion reference.
+- Future player animation work must extend, redraw or restyle the CCG hero identity for additional idle/walk/melee/firearm/hurt/death frames. A third-party sheet may be used as a motion/template reference, but its visible character design must not replace the CCG hero.
+- `CCG_ASSET_OVERRIDES.images.visuals.playerSheet` may only be used for an explicitly CCG-specific replacement sheet.
+
+### Enemy visual identity rule
+
+Every enemy name and sprite must agree semantically.
+
+Preferred order:
+
+1. source a verified free-use/CC0 sprite that fits the existing enemy identity;
+2. retain a bespoke/procedural enemy renderer while a matching sprite is being sourced;
+3. rename a generic enemy only when that produces a better and internally consistent result and does not erase a distinctive Dungeon Carnage identity.
+
+Do **not** force a humanoid knight/elf/mage sheet onto a creature whose name implies a materially different appearance.
+
+The current generic Puny humanoid sheets are therefore limited to compatible roles:
+- Archive Knight → Soldier family;
+- Tape Scout → Archer family;
+- Joystick Hunter → Archer family;
+- 1541 Guard → Soldier family;
+- Charger → Warrior family;
+- Ranger → Archer family.
+
+The following deliberately stay on bespoke/procedural art until matching licensed sprites are found:
+- Crypt Skeleton;
+- Dustweb Spider;
+- Ghost Byte;
+- Raster Ambusher;
+- Root Crawler;
+- CPU Cook;
+- Firebreather;
+- Death Stalker and other named/special enemies.
+
+For each future enemy replacement, record: current enemy name, gameplay kind, proposed sprite family, source/licence, and whether the action is **match sprite to name** or **rename generic enemy to sprite**. Special/named enemies should normally keep their established names and receive matching art rather than being renamed for convenience.
