@@ -10,6 +10,8 @@
 
 ## Dungeon R64 P0 runtime integrity — 28 September 2026
 
+- Exact-head qualification exposed a desktop ATTACK ownership edge in Chromium shard 3: one quick sword tap could be replayed across R59 historical catch-up substeps and deal three hits. R64 now suppresses current held-attack state only while replaying historical Solo substeps; the canonical queued intent remains available for one attack, and live held state is restored after catch-up. The existing three-minute sword/firearm soak remains the browser gate for one-tap/one-hit behaviour.
+
 - User reproduced another deployed r62 freeze. The browser/event loop remained alive enough to emit periodic diagnostics and focus/blur events while gameplay stopped, so treat this as a simulation/RAF liveness failure rather than a full browser crash.
 - R64 branch `codex/dungeon-r64-freeze-trap-integrity-20260928` adds a visible-Solo R59 loop watchdog and exact diagnostics for accepted frames/recoveries.
 - The same live run also reported 4 ordinary-trap contacts, 0 verified trap hits and 3 trap anomalies. R64 fixes stale same-cycle trap contact latches by rearming immediately after tile exit, then regression-tests ACTIVE SHOCK trap exit/re-entry.
