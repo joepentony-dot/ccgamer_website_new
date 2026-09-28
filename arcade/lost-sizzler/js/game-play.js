@@ -175,12 +175,15 @@ function applyActiveTrapContact(p,t,now=performance.now()){
   try{dispatchEvent(new CustomEvent("ccg:trap-damage",{detail:{playerId:String(p.id||p.name||"P1"),trapId:String(t.id||`${t.x},${t.y}`),kind:String(t.kind||"floor"),x:Number(t.x),y:Number(t.y),at:damageAt,beforeHealth,afterHealth:Number(p.health||0),cycle}}))}catch(_){}
   return true
 }
-function triggerTrap(p){
-  const now=performance.now();
-  let hit=false;
-  for(const t of host.traps||[])if(applyActiveTrapContact(p,t,now)){hit=true;break}
-  return hit
+function activeTrapAtPlayer(p,now=performance.now()){
+  if(!p)return null;
+  return(host.traps||[]).find(t=>t?.active&&Number(t.x)===Number(p.x)&&Number(t.y)===Number(p.y)&&SYS.trapActive(t,now))||null
 }
+function applyCurrentActiveTrapContact(p,now=performance.now()){
+  const trap=activeTrapAtPlayer(p,now);
+  return trap?applyActiveTrapContact(p,trap,now):false
+}
+function triggerTrap(p){return applyCurrentActiveTrapContact(p,performance.now())}
 const authoritativeTrapState={trapHits:0,trapHitsByKind:{fire:0,spike:0,shock:0,other:0},rearms:0,cycleRearms:0,simulationPasses:0,monitorPasses:0,damageRetries:0,trapContactBlocks:0,trapProtectionBlocks:0,directTrapRepairs:0};
 function resetAuthoritativeTrapContacts(){const count=trapCycleHits.size;if(count){trapCycleHits.clear();authoritativeTrapState.rearms+=count}return true}
 function rearmInactiveTrapContacts(){
@@ -262,7 +265,9 @@ function triggerHauntedCorridor(p){const nest=host.spiderNest;if(!nest||(nest.co
 function movementTriggers(p,deliberate=false){
   triggerSwitch(p);triggerTrader(p);triggerDeathCache(p);triggerBloodClue(p);triggerMemoryPuzzle(p,deliberate);triggerSequenceTorch(p);triggerWeightBridge(p);triggerShrine(p);
   try{window.CCGLostSizzlerBugReporter?.observeMovementBoundary?.(p,"before",{deliberate:Boolean(deliberate)})}catch(_){}
-  triggerTrap(p);
+  // Commit ordinary floor-trap contact through the lexical R58 owner before
+  // encounter/arena activation can mutate room state on the same movement step.
+  applyCurrentActiveTrapContact(p,performance.now());
   try{window.CCGLostSizzlerBugReporter?.observeMovementBoundary?.(p,"after",{deliberate:Boolean(deliberate)})}catch(_){}
   triggerRescue(p);triggerArena(p);triggerTimed(p);triggerBoulder(p);triggerHauntedCorridor(p);triggerSigilRoom(p);markRoomVisit(p);rememberTrail(p);
   try{window.CCGLostSizzlerStage8NpcDialogue?.onMovementBoundary?.(p)}catch(_){}
@@ -593,8 +598,10 @@ function update(dt){
   const p1HeldAttack=isAttackHeldInput(p1)&&(input.has("Space")||input.has("Numpad0")),p2HeldAttack=Boolean(p2&&isAttackHeldInput(p2)&&input.has("Enter"));
   if((p1HeldAttack||fireBuffer1>0)&&fire1<=0){const fired=firePlayer(p1,attackDirection(p1,d1()));if(fired)fireBuffer1=0;else fire1=0}if(p2&&(p2HeldAttack||fireBuffer2>0)&&fire2<=0){const fired=firePlayer(p2,attackDirection(p2,d2()));if(fired)fireBuffer2=0;else fire2=0}
   if(projectileCD<=0){const liveProjectileWork=bullets.some(b=>b&&b.ttl>0)||enemyBullets.some(b=>b&&b.ttl>0);stepProjectiles();projectileCD=liveProjectileWork?70:0}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendPlayer();sendCD=100}if(worldCD<=0&&net.isHost){broadcastWorld();worldCD=350}
-  updateActiveTrapContacts();
   updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBoulder(dt);updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
+  // Final exact-cell pass runs after room/encounter systems so an occupied tile
+  // that turns ACTIVE cannot reach HUD synchronisation without HEALTH damage.
+  updateActiveTrapContacts("simulation-post");
   if(surroundCD<=0){surroundingsTick();surroundCD=20000}inventoryReminderMs-=dt;if(inventoryReminderMs<=0){inventoryReminderMs=300000;showToast("DON'T FORGET TO HIT TAB TO CHECK YOUR INVENTORY","TAB ALSO EXPLAINS ARTEFACTS, THE BANISHMENT FLASK AND YOUR CURRENT OBJECTIVE.","cyan",8000)}
   const seen=host.enemies.filter(e=>e.alive&&e.aiState==="chase"&&localPlayers().some(p=>visibleTo(p,e.x,e.y))).length;S.setDanger(Math.min(1,(seen+run.alert/45)/4));updateNamedEncounters();
   const critical=localPlayers().find(p=>p.health<=2);if(critical&&lowHealthCD<=0){S.sfx("lowhealth");const hasPotion=PGR.firstInventory(critical,"potion")>=0;showToast("LOW HEALTH",hasPotion?"PRESS E TO USE POTION":"NO HEALING POTION AVAILABLE — FIND HEALTH OR BREAK CONTACT.","red",7000);lowHealthCD=8000}sync()
