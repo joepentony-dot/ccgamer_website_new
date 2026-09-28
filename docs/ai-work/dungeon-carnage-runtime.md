@@ -1,3 +1,15 @@
+## R64 P0 runtime freeze + stationary trap integrity — 28 September 2026
+
+- Live deployed R62 evidence showed a visible gameplay freeze while the bug reporter/timer layer remained alive. The incident remained in `playing / solo`, later periodic snapshots continued at a fixed player position, and the performance governor was already at `severe`.
+- The same live report recorded 4 trap contacts, 0 verified hits and 3 trap anomalies after screenshots showed the player standing on a tile labelled `SHOCK TRAP — ACTIVE` without HEALTH loss.
+- Priority is now: runtime freeze/stall -> trap damage integrity -> FIRE regression qualification -> resume R63 UI/topology -> graphics overhaul.
+- Branch `codex/dungeon-r64-runtime-freeze-trap-integrity-20260928` is isolated directly from merged R62 main so P0 runtime work is not mixed with draft R63.
+- R64 restores an independent 80 ms trap liveness scheduler in the existing R19 compatibility timer, but it delegates only to `CCGLostSizzlerV142R58AuthoritativeTrapCore.updateTrapContacts("monitor")`. It does not create another trap damage implementation.
+- Added a real Chromium regression for the exact live symptom: place P1 on a SAFE SHOCK trap, remain stationary until the same tile cycles ACTIVE, require exactly one HEALTH loss, unchanged armour, one canonical trap hit and one liveness-monitor hit.
+- Combat FX arrays now receive immediate tier-aware hard caps at insertion time (severe: 180 particles / 36 rings / 48 floaters) so a burst cannot outrun the slower periodic visual governor before it trims.
+- Bug reports now surface Solo scheduler cadence, FPS/frame time, live FX counts and the authoritative FIRE trace, and can flag a visible/focused simulation stall when R59 accepted frames and Solo frames both stop advancing.
+- Do not merge R63 while its repeated FIRE browser regression remains red. R64 must qualify independently before the UI/topology branch is reconciled.
+
 ## R62 authoritative FIRE owner repair — 28 September 2026
 
 - Fresh deployed r60 manual evidence reproduced the random loaded-firearm lockout: Space events reached live Solo with a Tier-2 Field Pulse II, 113/120 ammo, zero FIRE cooldown and zero active projectiles, yet repeated attack probes returned false.
