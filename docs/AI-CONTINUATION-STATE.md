@@ -1,3 +1,15 @@
+## R62 authoritative FIRE owner repair — 28 September 2026
+
+- Fresh deployed r60 manual evidence reproduced the random loaded-firearm lockout: Space events reached live Solo with a Tier-2 Field Pulse II, 113/120 ammo, zero FIRE cooldown and zero active projectiles, yet repeated attack probes returned false.
+- Root cause is now architecture-level and reproduced independently in a local Codex worktree: the buffered simulation executor in `game-play.js` called mutable global `firePlayer` even though R58 had already captured `authoritativeCoreFirePlayer`. Late installers can replace/wrap the mutable global; a bad late owner can therefore return false while the attack buffer, ammo and input remain valid.
+- GitHub repair branch: `codex/dungeon-r62-authoritative-fire-owner-20260928`, rebuilt directly from current main rather than copying uncommitted temporary Codex runner/log files.
+- R62 routes direct/API/buffered FIRE through one `executeAuthoritativeFire()` boundary that resolves only the captured authoritative core. V10.25 melee fallback remains inside the captured core for no-firearm/zero-ammo play.
+- A bounded 96-entry per-intent trace records queue/dedupe, executor entry/result, projectile insertion, ammo commit, shot completion, rejection reason and exception evidence.
+- Browser regression deliberately replaces late mutable `firePlayer` with a false-returning owner after startup, then uses real movement + Space. The candidate must still consume exactly one round, insert a projectile, traverse queue -> executor -> projectile -> ammo -> completion trace stages, never call the poisoned owner and add no R29/R59 update fault.
+- User-provided Codex local evidence before its usage limit: focused Chromium regression green; two 60-second sustained-FIRE windows plus 12 pause/focus cycles green; no ownership changes/update-frame faults. Those local results are supporting evidence only. Full remote exact-head qualification remains the merge gate.
+- Release identity advances to `V10.42 r62` / `20260928r62` so deployed acceptance cannot reuse r60-cached runtime JavaScript.
+- Do not merge until the draft PR is current with main, mergeable, all required remote workflows including all six Chromium shards are green, and no unresolved material review finding remains. After deploy, hands-on FIRE acceptance is still required.
+
 ## Music page wheel/Lighthouse follow-through — 28 September 2026
 
 - Draft PR #2407 / `fix/music-wheel-performance-20260928` is the bounded shared repair for sluggish wheel response reported on `/music/paul-norman/`.

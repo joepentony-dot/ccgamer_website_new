@@ -10,6 +10,9 @@ const melee=play.match(/function canonicalMeleeAttackIfRequired\(p,d\)\{[\s\S]*?
 assert.match(melee,/const hasGun=Boolean\(p\.firearmUnlocked&&p\.weapon\)/);
 assert.match(melee,/if\(hasGun&&Number\(p\.mana\|\|0\)>0\)return null/,"a loaded firearm must bypass the melee helper regardless of adjacent furniture or enemies");
 assert.doesNotMatch(melee,/adjacentFurniture|adjacentEnemy/,"loaded-firearm routing must not depend on adjacent melee targets");
+assert.match(play,/function executeAuthoritativeFire\(p,requestedDirection=null,source="buffered"\)[\s\S]*const owner=authoritativeCoreFirePlayer[\s\S]*const fired=Boolean\(owner\(p,direction\)\)/,"R62 FIRE execution must resolve only the captured authoritative owner");
+assert.match(play,/const AUTHORITATIVE_FIRE_TRACE_LIMIT=96[\s\S]*"projectiles-inserted"[\s\S]*"ammo-committed"[\s\S]*"shot-complete"/,"R62 must retain a bounded per-intent FIRE trace through projectile and ammo commit");
+assert.match(play,/if\(\(p1HeldAttack\|\|fireBuffer1>0\)&&fire1<=0\)\{const fired=executeAuthoritativeFire\(p1,d1\(\),"buffered"\)/,"buffered P1 FIRE must use the authoritative executor");
 
 assert.match(play,/const runtimeDeathRecovery=new WeakSet\(\)/);
 assert.match(play,/function enforceCanonicalDeathState\(p\)[\s\S]*Number\(p\.health\)>0[\s\S]*authoritativeDamagePlayer\(p,1,false,"runtime integrity death recovery"\)/,"health <= 0 must re-enter the canonical death owner");
