@@ -29,7 +29,7 @@ assert.match(renderer,/enemyAtlasA:make\("assets\/pixel\/enemy-atlas-standard-a-
 assert.match(renderer,/enemyAtlasB:make\("assets\/pixel\/enemy-atlas-standard-b-v10-35\.png"\)/,"enemy atlas B fallback must remain local");
 assert.match(renderer,/environmentAtlas:make\("assets\/pixel\/environment-atlas-v10-35\.png"\)/,"environment atlas fallback must remain local");
 
-assert.match(renderer,/playerReplacement:make\(selected\("playerSheet"\)\)/,"player replacement must be optional and layered above the fallback");
+assert.match(renderer,/playerReplacement:make\(selected\("playerSheet","assets\/pixel\/visual-overhaul\/shade-puny\/warrior-blue\.png"\)\)/,"player replacement must default to the imported local CC0 Warrior sheet while remaining overrideable");
 assert.match(renderer,/chestReplacement:make\(selected\("chestSheet"\)\)/,"chest replacement must be optional and layered above the fallback");
 assert.match(renderer,/enemyAtlasAReplacement:make\(selected\("enemyAtlasA"\)\)/,"enemy atlas A replacement slot must remain optional");
 assert.match(renderer,/enemyAtlasBReplacement:make\(selected\("enemyAtlasB"\)\)/,"enemy atlas B replacement slot must remain optional");
