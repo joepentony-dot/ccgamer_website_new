@@ -281,3 +281,11 @@ No chest gameplay, lock/key, reward or interaction assertion was relaxed.
 - The defeat queue now feeds its progress into the authored death sequence before falling back to the previous procedural body.
 - Enemy AI, coordinates, collision, attack cadence, damage, trap ownership, FIRE ownership and progression are unchanged. This slice is renderer/assets only.
 - Fresh exact-head canonical/Node + Chromium qualification is mandatory because runtime JavaScript changed.
+
+
+## Main reconciliation checkpoint — 28 September 2026
+
+- Pre-reconciliation visual head `3a7c3669480a9d539cba5d5d132e85684fc7440d` completed all triggered checks successfully.
+- Live main then advanced to `9abd513b4bc5b7f1d1d579c8ec9a973d3ce68c46` through the authoritative R59 FIRE/trap remediation, leaving #2395 55 commits behind and GitHub reporting the PR dirty.
+- Reconciliation is deliberately main-first: preserve the complete R59 runtime tree, overlay only the visual branch's renderer/assets/contracts, and combine continuation documentation rather than taking the stale branch copy.
+- After publishing the merge commit, the new exact head requires fresh visual contracts plus the complete applicable Dungeon qualification matrix before further visual slices are added.

@@ -42,7 +42,7 @@ assert.match(gameplaySource,/window\.CCGLostSizzlerV142R58AuthoritativeTrapCore=
 
 for(const key of ["KeyW","KeyA","KeyD","KeyS"])assert.match(touchSource,new RegExp(`data-key=["']${key}["']`),`touch pad must retain ${key} movement mapping`);
 assert.match(touchSource,/querySelectorAll\("\[data-key\]"\)[\s\S]*?addEventListener\("pointerdown"[\s\S]*?input\.add\(button\.dataset\.key\)/,"touch pointerdown must feed movement into the canonical input Set");
-assert.match(gameplaySource,/function movementTriggers\(p,deliberate=false\)[\s\S]*?triggerTrap\(p\)/,"movement boundary must include canonical floor traps");
+assert.match(gameplaySource,/function movementTriggers\(p,deliberate=false\)[\s\S]*?applyCurrentActiveTrapContact\(p,performance\.now\(\)\)/,"movement boundary must include the authoritative lexical floor-trap contact owner");
 
 const canvas={width:640,height:360};
 const ctx={imageSmoothingEnabled:true};

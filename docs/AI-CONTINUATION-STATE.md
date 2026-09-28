@@ -1,12 +1,22 @@
 ## Dungeon Carnage visual overhaul — ACTIVE — 28 September 2026
 
-- Authoritative workstream: `codex/dungeon-visual-overhaul-stage1-20260928`, created directly from current main `00922200267fb915c9dd38a367b0f2c339097fd5`.
+- Authoritative workstream remains draft PR #2395 / `codex/dungeon-visual-overhaul-stage1-20260928`.
 - Detailed system of record: `docs/ai-work/dungeon-carnage-visual-overhaul.md`.
-- Stage 1 is environment + interactables: floors/walls, chests, switches, sigils, doors, shrines, traps and props. Stage 2 expands player animation. Stage 3 expands enemy animation. Stage 4 is consistency/mobile/performance polish.
-- Current implementation establishes versioned local visual-asset slots while retaining V10.34/V10.35 art and canvas rendering as safe fallbacks. No gameplay, collision, trap, FIRE, XP, save/progression or supported-mode ownership is being changed by the foundation slice.
-- External art may be imported only after licence verification and provenance recording. Prefer CC0/public-domain packs, store production assets locally, and never hotlink runtime art.
-- Primary external source candidate is 0x72 DungeonTileset II; Kenney Tiny Dungeon and Screaming Brain Studios Top Down Dungeon Pack are secondary candidates subject to style/scale checks.
-- No open PR existed at branch creation. Open a draft visual-overhaul PR after the foundation contract is committed and qualified.
+- Stage 1 environment/interactables and the current Stage 2/3 animation slices have qualified on pre-reconciliation head `3a7c3669480a9d539cba5d5d132e85684fc7440d`.
+- Main advanced through merged R59 FIRE/trap remediation to `9abd513b4bc5b7f1d1d579c8ec9a973d3ce68c46`; #2395 must preserve that runtime authority and requalify after reconciliation.
+- Visual ownership remains renderer/assets only: do not move FIRE, trap-health, XP, collision, save/progression or supported-mode ownership into the graphics programme.
+- External art remains local-only with verified licence/provenance; V10.34/V10.35 and canvas fallbacks remain until each replacement slice is qualified.
+
+## Dungeon R59 live FIRE + encounter-trap remediation — 28 September 2026
+
+- Live `main` baseline remains `00922200267fb915c9dd38a367b0f2c339097fd5` / deployed `V10.42 r58`.
+- Authoritative active P0 candidate is draft PR #2398 / `fix/dungeon-r59-fire-projectile-owner`. It now owns both reproduced core-runtime blockers rather than creating another competing branch: the deployed Solo FIRE lockout and ordinary ACTIVE trap contact that can fail in an enemy-spawning room.
+- Manual R58 screenshots supplied on 28 September show visible `SPIKE TRAP — ACTIVE` and `SHOCK TRAP — ACTIVE` contact while HEALTH remains `8/8` and ARMOUR `3`. Treat this as failed deployed acceptance, not as a rendering-only issue.
+- Trap repair keeps one canonical owner: real movement calls the lexical exact-cell trap contact before arena/encounter activation; the continuous exact-cell pass runs after late room/encounter systems before HUD sync. Damage remains exactly 1 HEALTH and preserves ARMOUR.
+- A new browser contract uses real keyboard movement onto an ACTIVE ordinary trap on the same movement boundary that triggers a live enemy-spawning arena. Existing FIRE/SPIKE/SHOCK natural-crossing contracts remain.
+- Exact-head qualification also exposed seed-dependent trap-family loss on an earlier R59 candidate. #2398 now seals one final FIRE/SPIKE/SHOCK representative at world/playable-host boundaries and prevents Stage 6 retuning from rewriting a sealed family.
+- Public identity remains `V10.42 r59 / 20260928r59`. The stale-update badge contract is aligned to R59; changed release contracts were scanned for stale exact R58 identity assertions.
+- #2398 is intentionally draft while fresh canonical/Node, Chromium shards 1–6 and all triggered checks rerun. Do not merge around a red shard or unresolved material review finding. After merge/deploy, repeat real sustained FIRE plus natural FIRE/SPIKE/SHOCK hands-on acceptance before closing either live blocker.
 
 ## Current Dungeon/PR consolidation state — 27 September 2026
 

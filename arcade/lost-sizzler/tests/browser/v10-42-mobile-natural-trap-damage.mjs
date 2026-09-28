@@ -45,7 +45,12 @@ async function touchButton(page,context,key,trapId){
     activeAfterStart=await active();
     await page.waitForFunction(id=>{
       const probe=window.__ccgNaturalTrapProbe;
-      return Boolean(probe&&String(probe.targetId)===String(id)&&(probe.calls||[]).length>0);
+      const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
+      return Boolean(
+        probe&&trap&&String(probe.targetId)===String(id)&&
+        Number(p1?.x)===Number(trap.x)&&Number(p1?.y)===Number(trap.y)&&
+        (probe.samples||[]).length>0
+      );
     },trapId,{timeout:1200,polling:"raf"});
     await cdp.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
   }finally{await cdp.detach()}
@@ -101,81 +106,33 @@ try{
 
   await page.evaluate(()=>globalThis.eval(`(()=>{
     if(window.__ccgNaturalTrapProbe?.installed)return;
-    const previous=triggerTrap;
     const previousTrapActive=SYS.trapActive;
-    const probe={installed:true,targetId:"",calls:[],inTrigger:false,canonical:null};
-    // Record the first trapActive sample made by canonical triggerTrap; pre-call diagnostics can cross a phase boundary.\n    SYS.trapActive=function trapActiveNaturalProbe(trap,now){
+    const probe={installed:true,targetId:"",samples:[],damageEvents:[]};
+    // Passive observation only. The production lexical trap owner remains
+    // untouched; this records the exact occupied-cell active sample it uses.
+    SYS.trapActive=function trapActiveNaturalProbe(trap,now){
       const active=previousTrapActive.call(this,trap,now);
-      if(probe.inTrigger&&probe.canonical===null&&String(trap?.id)===String(probe.targetId)){
+      if(String(trap?.id)===String(probe.targetId)&&p1&&Number(p1.x)===Number(trap.x)&&Number(p1.y)===Number(trap.y)){
         const sampledAt=Number.isFinite(Number(now))?Number(now):performance.now();
         const period=Math.max(1,Number(trap.period||1));
         const phase=(sampledAt+Number(trap.phase||0))%period;
-        probe.canonical={
-          at:sampledAt,
-          active:Boolean(active),
-          phase,
-          period,
-          remainingActiveMs:active?Math.max(0,period*.46-phase):0
+        const sample={
+          at:sampledAt,active:Boolean(active),phase,period,
+          remainingActiveMs:active?Math.max(0,period*.46-phase):0,
+          x:Number(p1.x),y:Number(p1.y),health:Number(p1.health||0),armor:Number(p1.armor||0)
         };
+        const last=probe.samples[probe.samples.length-1];
+        if(!last||last.active!==sample.active||Math.abs(sample.at-last.at)>20)probe.samples.push(sample);
+        if(probe.samples.length>40)probe.samples.splice(0,probe.samples.length-40);
       }
       return active;
     };
-    const wrapped=function triggerTrapNaturalProbe(player){
-      const trap=(host?.traps||[]).find(t=>String(t.id)===String(probe.targetId));
-      let sample=null;
-      if(trap&&player&&Number(player.x)===Number(trap.x)&&Number(player.y)===Number(trap.y)){
-        const r19=window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||{};
-        sample={
-          beforeHealth:Number(player.health||0),beforeArmor:Number(player.armor||0),
-          x:Number(player.x),y:Number(player.y),
-          r19Before:{
-            trapHits:Number(r19.trapHits||0),
-            trapContactBlocks:Number(r19.trapContactBlocks||0),
-            trapProtectionBlocks:Number(r19.trapProtectionBlocks||0),
-            damageOwnerInstalls:Number(r19.damageOwnerInstalls||0),
-            trapTriggerOwnerInstalls:Number(r19.trapTriggerOwnerInstalls||0),
-            directTrapRepairs:Number(r19.directTrapRepairs||0),
-            triggerName:String(globalThis.triggerTrap?.name||""),
-            triggerOwned:Boolean(globalThis.triggerTrap?.__ccgV142R19TrapTriggerOwner),
-            hurtName:String(globalThis.hurtPlayer?.name||"")
-          },
-          canonicalContactsBefore:[...(window.CCGLostSizzlerRareEventsBalance?.trapRuntime?.contact||[])].filter(key=>String(key).endsWith("|"+String(trap?.id||(String(trap?.x)+","+String(trap?.y)))))
-        };
-      }
-      probe.canonical=null;
-      probe.inTrigger=Boolean(sample);
-      let result;
-      try{result=previous.apply(this,arguments)}
-      finally{probe.inTrigger=false}
-      if(sample){
-        const canonical=probe.canonical||{};
-        sample.at=Number(canonical.at||0);
-        sample.active=Boolean(canonical.active);
-        sample.phase=Number(canonical.phase||0);
-        sample.period=Number(canonical.period||0);
-        sample.remainingActiveMs=Number(canonical.remainingActiveMs||0);
-        const r19=window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||{};
-        sample.afterHealth=Number(player.health||0);
-        sample.afterArmor=Number(player.armor||0);
-        sample.r19After={
-          trapHits:Number(r19.trapHits||0),
-          trapContactBlocks:Number(r19.trapContactBlocks||0),
-          trapProtectionBlocks:Number(r19.trapProtectionBlocks||0),
-          damageOwnerInstalls:Number(r19.damageOwnerInstalls||0),
-          trapTriggerOwnerInstalls:Number(r19.trapTriggerOwnerInstalls||0),
-          directTrapRepairs:Number(r19.directTrapRepairs||0),
-          triggerName:String(globalThis.triggerTrap?.name||""),
-          triggerOwned:Boolean(globalThis.triggerTrap?.__ccgV142R19TrapTriggerOwner),
-          hurtName:String(globalThis.hurtPlayer?.name||"")
-        };
-        const currentTrap=(host?.traps||[]).find(t=>String(t.id)===String(probe.targetId));
-        sample.canonicalContactsAfter=[...(window.CCGLostSizzlerRareEventsBalance?.trapRuntime?.contact||[])].filter(key=>String(key).endsWith("|"+String(currentTrap?.id||(String(currentTrap?.x)+","+String(currentTrap?.y)))));
-        probe.calls.push(sample);
-      }
-      return result;
-    };
-    wrapped.__ccgOriginal=previous;
-    triggerTrap=wrapped;
+    addEventListener("ccg:trap-damage",event=>{
+      const detail=event?.detail||{};
+      if(String(detail.trapId||"")!==String(probe.targetId))return;
+      probe.damageEvents.push({...detail});
+      if(probe.damageEvents.length>12)probe.damageEvents.splice(0,probe.damageEvents.length-12);
+    });
     window.__ccgNaturalTrapProbe=probe;
   })()`));
 
@@ -245,7 +202,7 @@ try{
       await resetFixture(page,fixture);
       await page.evaluate(id=>{
         const probe=window.__ccgNaturalTrapProbe;
-        if(probe){probe.targetId=String(id);probe.calls.length=0}
+        if(probe){probe.targetId=String(id);probe.samples.length=0;probe.damageEvents.length=0}
       },fixture.id);
       await page.waitForTimeout(120);
       await page.waitForFunction(id=>{
@@ -262,7 +219,8 @@ try{
         return{
           x:Number(p1.x),y:Number(p1.y),health:Number(p1.health),armor:Number(p1.armor),
           activeNow:Boolean(trap?.active&&SYS.trapActive(trap,performance.now())),
-          trapCalls:[...(window.__ccgNaturalTrapProbe?.calls||[])],
+          trapSamples:[...(window.__ccgNaturalTrapProbe?.samples||[])],
+          trapDamageEvents:[...(window.__ccgNaturalTrapProbe?.damageEvents||[])],
           trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0),
           r57Hits:Number(window.CCGLostSizzlerV141R57DesktopPrepStability?.state?.trapHits||0),
           r57Fallbacks:Number(window.CCGLostSizzlerV141R57DesktopPrepStability?.state?.trapFallbacks||0)
@@ -270,18 +228,19 @@ try{
       },fixture.id);
       console.log("MOBILE_NATURAL_TRAP_TOUCH",JSON.stringify({kind,attempt,fixture,touchWindow,after}));
 
-      const stableCrossing=after.trapCalls.find(call=>call.active);
-      if(stableCrossing&&Number(stableCrossing.afterHealth)===Number(stableCrossing.beforeHealth)-1){
-        assert.equal(Number(stableCrossing.afterArmor),Number(stableCrossing.beforeArmor),`real generated ${kind} trap must preserve armour at the exact active trap crossing`);
-        qualified={attempt,touchWindow,stableCrossing,after};
+      const stableCrossing=after.trapSamples.find(sample=>sample.active);
+      if(stableCrossing){
+        const accepted=after.trapDamageEvents.find(event=>String(event.trapId||"")===String(fixture.id));
+        assert.equal(after.health,fixture.before.health-1,`real generated ${kind} trap was naturally active on the exact touch crossing but did not remove one health: ${JSON.stringify({fixture,touchWindow,stableCrossing,after})}`);
+        assert.equal(after.armor,fixture.before.armor,`real generated ${kind} trap must preserve armour at the exact active touch crossing`);
+        assert.ok(accepted,`real generated ${kind} trap must emit canonical accepted-damage evidence on the exact active touch crossing`);
+        assert.equal(Number(accepted.x),fixture.target.x,`real generated ${kind} trap damage evidence must retain the exact trap X coordinate`);
+        assert.equal(Number(accepted.y),fixture.target.y,`real generated ${kind} trap damage evidence must retain the exact trap Y coordinate`);
+        qualified={attempt,touchWindow,stableCrossing,accepted,after};
         break;
       }
-
-      if(stableCrossing){
-        assert.fail(`real generated ${kind} trap was naturally active at the exact triggerTrap crossing but did not remove one health: ${JSON.stringify({fixture,touchWindow,stableCrossing,after})}`);
-      }
     }
-    assert.ok(qualified,`real generated ${kind} trap did not produce an active touch contact within six natural active cycles`);
+    assert.ok(qualified,`real generated ${kind} trap did not produce a canonical active exact-cell touch sample within six natural active cycles`);
 
     await resetFixture(page,fixture);
     await page.waitForTimeout(120);

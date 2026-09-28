@@ -12,10 +12,12 @@ const rare=fs.readFileSync(new URL("js/v10-15-rare-events-balance.js",root),"utf
 const r54=fs.readFileSync(new URL("js/v10-41-r54-playtest-regressions.js",root),"utf8");
 const touch=fs.readFileSync(new URL("js/v10-4-patch.js",root),"utf8");
 const bootstrap=fs.readFileSync(new URL("js/v10-42-bootstrap.js",root),"utf8");
+const stage6=fs.readFileSync(new URL("js/v10-42-stage6-zone-gameplay.js",root),"utf8");
+const onboarding=fs.readFileSync(new URL("js/v10-20-onboarding-safety.js",root),"utf8");
 const version=JSON.parse(fs.readFileSync(new URL("version.json",root),"utf8"));
 
-assert.equal(version.build,"V10.42 r58");
-assert.equal(version.cacheToken,"20260927r58");
+assert.equal(version.build,"V10.42 r59");
+assert.equal(version.cacheToken,"20260928r59");
 
 assert.match(bootstrap,/v10-42-r19-mobile-trap-layout-stability\.js[\s\S]*CCGLostSizzlerV142R19MobileLayoutCompatibility/,"R19 portrait compatibility may load only behind its explicit non-gameplay compatibility marker");
 assert.match(r19,/gameplayOwnership:false/,"R19 portrait compatibility must explicitly disclaim gameplay ownership");
@@ -34,7 +36,11 @@ assert.match(main,/addEventListener\("keyup",e=>\{input\.delete\(e\.code\);if\(\
 assert.match(play,/const p1HeldAttack=isAttackHeldInput\(p1\)&&\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\)[\s\S]*if\(\(p1HeldAttack\|\|fireBuffer1>0\)&&fire1<=0\)\{const fired=firePlayer\(p1,/,"the simulation loop must execute fresh P1 intent once and repeat only qualified held FIRE");
 assert.doesNotMatch(play,/input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\|\|fireBuffer1>0/,"raw P1 key presence must never bypass qualified held-FIRE ownership");
 assert.match(play,/function firePlayer\(p,d\)[\s\S]*return true\n\}/,"core FIRE owner must report a completed shot");
-assert.match(play,/const shotIds=\[\],beforeMana=Number\(p\.mana\|\|0\),beforeCount=[\s\S]*try\{[\s\S]*spawnBullet\(b,false\)[\s\S]*\}catch\(_\)\{[\s\S]*bullets\.splice\(i,1\);[\s\S]*return false/,"projectile creation must fail transactionally and remove any partial volley");
+assert.match(play,/const authoritativeLocalProjectileInsert=\(b,remoteShot=false\)=>\{if\(b\)\{if\(!Number\.isFinite\(Number\(b\.__v142BornAt\)\)\)b\.__v142BornAt=performance\.now\(\);bullets\.push\(\{\.\.\.b,remote:!!remoteShot\}\)\}\}/,"authoritative FIRE must retain an immutable lexical projectile insertion path and preserve projectile birth timestamps");
+const firePlayerBlock=play.match(/function firePlayer\(p,d\)\{[\s\S]*?\n\}/)?.[0]||"";
+assert.match(firePlayerBlock,/authoritativeLocalProjectileInsert\(b,false\)/,"local FIRE must insert its own projectile through the immutable core path");
+assert.doesNotMatch(firePlayerBlock,/window\.spawnBullet|externalSpawn|spawnBullet\(b,false\)/,"local FIRE must never delegate projectile creation to a mutable global spawn owner");
+assert.match(play,/const shotIds=\[\],beforeMana=Number\(p\.mana\|\|0\),beforeCount=[\s\S]*try\{[\s\S]*authoritativeLocalProjectileInsert\(b,false\)[\s\S]*\}catch\(_\)\{[\s\S]*bullets\.splice\(i,1\);[\s\S]*return false/,"projectile creation must fail transactionally and remove any partial volley");
 assert.match(play,/if\(afterCount<=beforeCount\)[\s\S]*return false[\s\S]*p\.mana=beforeMana-ammoCost/,"FIRE must not spend ammo until at least one projectile exists");
 assert.match(play,/const delay=.*[\s\S]*if\(isP2\)fire2=delay;else fire1=delay/,"FIRE cooldown must be committed only after projectile creation succeeds");
 assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeFireCore=authoritativeFireApi/);
@@ -58,7 +64,9 @@ assert.match(play,/beforeInvuln=Math\.max\(0,Number\(p\.invuln\|\|0\)\)[\s\S]*p\
 assert.match(play,/p\.invuln=Math\.max\(beforeInvuln,Math\.max\(0,Number\(p\.invuln\|\|0\)\)\)/,"a successful trap hit must preserve the stronger of prior and newly granted post-hit protection");
 assert.match(play,/const damageSource=String\(source\|\|"enemy"\),trapDamage=\/trap\/i\.test\(damageSource\)/,"canonical damage owner must derive trap attribution directly from the canonical damage source");
 assert.match(play,/!trapDamage&&p\.armor>0/,"trap damage must preserve armour while non-trap damage retains armour semantics");
-assert.match(play,/updateActiveTrapContacts\(\);/,"the gameplay simulation must own trap contact checks");
+assert.match(play,/function activeTrapAtPlayer\(p,now=performance\.now\(\)\)[\s\S]*function applyCurrentActiveTrapContact\(p,now=performance\.now\(\)\)/,"the canonical owner must resolve the exact active trap on the player cell without a mutable global wrapper");
+assert.match(play,/function movementTriggers\(p,deliberate=false\)[\s\S]*applyCurrentActiveTrapContact\(p,performance\.now\(\)\)[\s\S]*triggerArena\(p\)/,"real movement must commit trap damage before an enemy-spawning arena or encounter mutates the room");
+assert.match(play,/updateRoomEvents\(dt\);processAchievements\(\);[\s\S]*updateActiveTrapContacts\("simulation-post"\)/,"the continuous trap pass must run after late room and encounter systems and before HUD synchronisation");
 assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeTrapCore=authoritativeTrapApi/);
 assert.match(play,/function resetAuthoritativeTrapContacts\(\)[\s\S]*trapCycleHits\.clear\(\)/,"authoritative trap ledger must expose an explicit world-transition reset");
 assert.match(core,/CCGLostSizzlerV142R58AuthoritativeTrapCore\?\.reset\?\.\(\)/,"every new world/floor must clear old player\/trap cycle ownership before play resumes");
@@ -73,6 +81,13 @@ assert.doesNotMatch(familyFallbackBlock,/if\(roomId<0\)continue/,"final trap-fam
 assert.match(familyFallbackBlock,/roomless=roomId<0/,"final trap-family fallback must classify roomless corridor cells without discarding them");
 assert.match(familyFallbackBlock,/const uniqueCell=candidates\.find[\s\S]*?const cell=uniqueCell\|\|candidates\[/,"final trap-family fallback must prefer unused cells and retain a deterministic last-resort reuse path");
 assert.match(familyFallbackBlock,/v142StartWorldCellReuse:!uniqueCell/,"last-resort reused trap cells must remain explicitly diagnosable");
+assert.match(familyFallbackBlock,/v142FinalFamilyGuaranteed=true;representative\.v142FinalFamilyKind=kind/,"final world-start reconciliation must freeze one representative of every public trap family");
+assert.match(core,/Post-initialisation family seal[\s\S]*v142PostStageFamilySeal:true/,"the playable host must re-seal FIRE, SPIKE and SHOCK after late world staging");
+assert.match(core,/post-stage trap-family invariant failed/,"post-stage family sealing must fail safely without breaking world startup");
+assert.match(core,/Post-initialisation family seal[\s\S]*v142FinalFamilyGuaranteed=true;representative\.v142FinalFamilyKind=kind/,"the playable host boundary must freeze the final FIRE, SPIKE and SHOCK representatives");
+assert.match(stage6,/trap\.v142FinalFamilyGuaranteed&&TRAP_FAMILIES\.includes\(guaranteed\)\)trap\.kind=guaranteed/,"Stage 6 must preserve final guaranteed family identity when later tuning runs");
+assert.match(stage6,/for\(const kind of TRAP_FAMILIES\)[\s\S]*v142FinalFamilyGuaranteed=true;representative\.v142FinalFamilyKind=kind/,"Stage 6 reconciliation must seal one representative after family repair");
+assert.match(onboarding,/for\(const t of host\.traps\|\|\[\]\)if\(depth\(t\.roomId\)<=safeDepth&&!t\.v142FinalFamilyGuaranteed\)t\.active=false/,"gentle opening must not deactivate the final sealed FIRE, SPIKE or SHOCK representative");
 assert.doesNotMatch(play,/CCGLostSizzlerV142R19MobileTrapLayoutStability\?\.updateTrapContacts/,"simulation must not depend on the retired R19 implementation");
 assert.match(rare,/function observeTrapContact\(player,now=performance\.now\(\)\)/,"Rare Events may retain passive trap-contact observation for warnings and diagnostics");
 assert.doesNotMatch(rare,/triggerTrap=function triggerTrapV115Reliable/,"Rare Events must not replace the canonical R58 triggerTrap owner");
