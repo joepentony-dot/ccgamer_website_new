@@ -18,7 +18,7 @@ assert.match(renderer,/switchButtonDown:make\(selected\("switchButtonDown","asse
 assert.match(renderer,/const switchRenderDiagnostics=window\.__CCG_SWITCH_RENDER_DIAGNOSTICS__/);
 assert.match(renderer,/function drawSwitchVisual\(sw,s,now=performance\.now\(\)\)/);
 assert.match(renderer,/const buttonArt=active\?lostSizzlerPixelAssets\.switchButtonUp:lostSizzlerPixelAssets\.switchButtonDown/);
-assert.match(renderer,/const leverArt=secret\?lostSizzlerPixelAssets\.secretSwitches:lostSizzlerPixelAssets\.switches/);
+assert.match(renderer,/const switchArt=sw\.revealSecret\?lostSizzlerPixelAssets\.secretSwitches:lostSizzlerPixelAssets\.switches/);
 assert.match(renderer,/switchRenderDiagnostics\.lastState=active\?"armed":"activated"/);
 assert.match(renderer,/if\(!visibleTo\(focus,sw\.x,sw\.y\)\)continue;/,"switch renderer must no longer discard activated switches solely because active=false");
 assert.doesNotMatch(renderer,/if\(!sw\.active\|\|!visibleTo\(focus,sw\.x,sw\.y\)\)continue/);
