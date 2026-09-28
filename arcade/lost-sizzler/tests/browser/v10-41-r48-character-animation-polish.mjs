@@ -27,7 +27,14 @@ try{
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141R48CharacterAnimation)&&Boolean(document.getElementById("solo-btn")),null,{timeout:90000});
   await page.waitForFunction(()=>{
-    try{return Boolean(lostSizzlerPixelAssets?.explorer?.complete&&lostSizzlerPixelAssets.explorer.naturalWidth===192&&lostSizzlerPixelAssets.explorer.naturalHeight===128)}catch(_){return false}
+    try{return Boolean(
+      lostSizzlerPixelAssets?.explorer?.complete
+      &&lostSizzlerPixelAssets.explorer.naturalWidth===192
+      &&lostSizzlerPixelAssets.explorer.naturalHeight===128
+      &&lostSizzlerPixelAssets?.playerReplacement?.complete
+      &&lostSizzlerPixelAssets.playerReplacement.naturalWidth===768
+      &&lostSizzlerPixelAssets.playerReplacement.naturalHeight===256
+    )}catch(_){return false}
   },null,{timeout:20000});
 
   const atlas=await page.evaluate(()=>{
@@ -78,17 +85,22 @@ try{
     const p2=clone(p1);p2.id="r48-p2";p2.name="R48 P2";
     const remote=clone(p1);remote.id="r48-remote";remote.name="R48 REMOTE";
     drawPlayer(p1,"p1");drawPlayer(p2,"p2");drawPlayer(remote,"remote");
-    const last=api.state.lastPlayerDraw,check=api.verifyPaddedAtlas(),source=api.verifySourceFrameMargins();
-    return{delta:api.state.safePlayerDraws-before,last,check,source,playerDraws:api.state.playerDraws}
+    const last=api.state.lastPlayerDraw,check=api.verifyPaddedAtlas(),replacementCheck=api.verifyReplacementPaddedAtlas(),source=api.verifySourceFrameMargins();
+    return{delta:api.state.safePlayerDraws-before,last,check,replacementCheck,source,playerDraws:api.state.playerDraws,replacementBuilds:api.state.replacementAtlasBuilds}
   });
   assert.ok(players.delta>=3,"P1, P2 and remote player rendering must all pass through the padded-cell safety path");
   assert.equal(players.source.ok,true,"live player drawing must continue to use source poses with untouched transparent margins");
-  assert.equal(players.check.ok,true,"runtime player drawing must not contaminate any neighbouring frame gutter");
+  assert.equal(players.check.ok,true,"fallback explorer atlas must retain transparent gutters");
+  assert.equal(players.replacementCheck.ok,true,"active Puny player atlas must isolate every 32x32 frame behind transparent gutters");
+  assert.equal(players.replacementCheck.cols,24,"Puny player safety atlas must preserve all 24 source columns");
+  assert.equal(players.replacementCheck.rows,8,"Puny player safety atlas must preserve all 8 directional rows");
+  assert.ok(players.replacementBuilds>=1,"Puny replacement safety atlas must be constructed in the real browser runtime");
+  assert.equal(players.last.sourceKind,"replacement","live P1/P2/remote drawing must use the padded Puny replacement path when the CC0 sheet is decoded");
   assert.ok(players.last.sourceX%36===0&&players.last.sourceY%36===0,"player source sampling must start exactly on padded-cell boundaries");
   assert.equal(players.last.sourceW,36,"player source sampling must include one whole padded cell and nothing from its neighbour");
   assert.equal(players.last.sourceH,36,"player source sampling must include one whole padded row cell and nothing from its neighbour");
-  assert.ok(players.last.sourceX>=0&&players.last.sourceX+players.last.sourceW<=216,"player frame source must remain inside the padded atlas width");
-  assert.ok(players.last.sourceY>=0&&players.last.sourceY+players.last.sourceH<=144,"player frame source must remain inside the padded atlas height");
+  assert.ok(players.last.sourceX>=0&&players.last.sourceX+players.last.sourceW<=players.last.atlasWidth,"player frame source must remain inside the active padded atlas width");
+  assert.ok(players.last.sourceY>=0&&players.last.sourceY+players.last.sourceH<=players.last.atlasHeight,"player frame source must remain inside the active padded atlas height");
   assert.ok(players.playerDraws>=3,"player animation diagnostics must observe all canonical player variants");
 
   const enemyFamilies=await page.evaluate(()=>{
