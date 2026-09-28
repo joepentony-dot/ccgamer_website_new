@@ -19,7 +19,7 @@
       "doorsAndTorches": "assets/pixel/environment-atlas-v10-35.png"
     },
     "visualOverhaul": {
-      "playerSheet": "assets/pixel/explorer-sheet-v10-34.png",
+      "playerSheet": "assets/pixel/visual-overhaul/shade-puny/warrior-blue.png",
       "chestSheet": "assets/pixel/chest-sheet-v10-34.png",
       "enemyAtlasA": "assets/pixel/enemy-atlas-standard-a-v10-35.png",
       "enemyAtlasB": "assets/pixel/enemy-atlas-standard-b-v10-35.png",
