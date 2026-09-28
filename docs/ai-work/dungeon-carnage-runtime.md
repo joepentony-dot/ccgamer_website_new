@@ -1,3 +1,11 @@
+## R59 numeric armour HUD checkpoint — 28 September 2026
+
+- User screenshot from the deployed/current R58 interface showed the bottom **ARMOUR** card displaying `ARM …` instead of its count. Root cause is the legacy `game-core.js` assignment that multiplexed `hud-p2` between P2 health and `ARM <value>` even though this card is permanently labelled ARMOUR.
+- Draft PR #2396 / `codex/dungeon-armour-hud-number-only-20260928` starts from exact main `00922200267fb915c9dd38a367b0f2c339097fd5`. Static markup now starts at `0`, runtime sync writes only `String(p1.armor||0)`, and regression coverage forbids both the `ARM ` prefix and P2-health multiplex from returning.
+- No armour value, cap, pickup, combat, FIRE/trap or damage semantics change. Dedicated Split Screen/player HUD ownership is left intact.
+- Public identity/cache advances to `V10.42 r59` / `20260928r59` to force the corrected active runtime through the established release-wide cache boundary. The historical R56 chest compatibility gate is made revision-based so its r58+ retirement remains true under r59.
+- Qualification is pending on the final exact head. Require canonical/Node contracts, Chromium shards 1–6 and all triggered checks green before the PR can leave draft; merge still requires explicit user authorization.
+
 ## R58 single-owner consolidation checkpoint — 27 September 2026
 
 - Authoritative P0 vehicle is draft PR #2391 / `codex/dungeon-authoritative-fire-traps-rewrite-20260927`; exact candidate head before this documentation commit was `eb885c714cf17d6bce744a637a070582b8da3c3f`, based on current main `ce125d8e6586c332cc1b9ee2eebc0d9c72697c23`.
