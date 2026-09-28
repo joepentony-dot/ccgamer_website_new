@@ -250,3 +250,12 @@ The contract has been updated without removing the safety boundary:
 - the rich canvas chest remains the final fallback.
 
 No chest gameplay, lock/key, reward or interaction assertion was relaxed.
+
+
+## Floor + wall texture slice — 28 September 2026
+
+- Switched the environment implementation from uncertain atlas coordinates to the pack's individually named 16x16 files: eight floor variants, one standard wall tile and two damaged wall variants.
+- Every imported environment file is unmodified and has a destination Git blob SHA identical to its source blob.
+- Walkable cells now receive a deterministic floor variant selected from the existing renderer tile hash. The art is alpha-blended over the established theme floor colour so each biome retains its identity.
+- Solid wall cells now receive the authored wall texture, with sparse deterministic damaged-wall variants. Existing theme-specific masonry, ironwork, archive panels, books, webbing and other room detail remains layered above the new texture.
+- Map data, collision, walkability and world-generation ownership are untouched; this slice changes canvas presentation only.
