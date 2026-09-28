@@ -47,6 +47,11 @@ assert.match(renderer,/h%31===0\?lostSizzlerPixelAssets\.wallTiles\?\.hole2:h%23
 assert.match(renderer,/doorLeafClosed:make\(selected\("doorLeafClosed","assets\/pixel\/visual-overhaul\/0x72\/door-leaf-closed\.png"\)\)/,"closed door sprite must remain local and overrideable");
 assert.match(renderer,/doorLeafOpen:make\(selected\("doorLeafOpen","assets\/pixel\/visual-overhaul\/0x72\/door-leaf-open\.png"\)\)/,"open door sprite must remain local and overrideable");
 assert.match(renderer,/frame\*32,0,32,40,-18,-30,36,45/,"ready exit must render the five-frame CC0 portal strip");
+assert.match(renderer,/function punyPlayerCell\(pose,d,now\)/,"player animation must have a dedicated Puny-sheet frame mapper");
+assert.match(renderer,/d\?\.y>0\?0:d\?\.x>0\?2:d\?\.y<0\?4:6/,"four-direction player mapping must use the correct Puny direction rows");
+assert.match(renderer,/PUNY_PLAYER_MELEE_COLUMNS=Object\.freeze\(\[4,4,5,6,7,7,6,5\]\)/,"melee must use the real four-frame Puny attack sequence across the existing eight-stage timing");
+assert.match(renderer,/PUNY_PLAYER_HURT_COLUMNS=Object\.freeze\(\[18,19,20,19\]\)/,"hurt state must use the real Puny hurt frames");
+assert.match(renderer,/punyReady\?replacement:lostSizzlerPixelAssets\.explorer/,"the V10.34 explorer sheet must remain the player decode fallback");
 assert.match(renderer,/k==="exitSigil"/,"exit sigil pickup must have a dedicated visual path");
 assert.match(renderer,/sigils:make\(selected\("sigilSheet","assets\/pixel\/visual-overhaul\/cc0-portal\/portal-sheet\.png"\)\)/,"sigil must default to the imported local CC0 portal sheet");
 assert.match(renderer,/environmentTiles:make\(selected\("environmentTileset"\)\)/,"environment tileset slot must fail safely to no image");
