@@ -52,8 +52,7 @@ function attackNowUnbuffered(p,requestedDirection=null){
   const isP2=p===p2,cooldown=isP2?fire2:fire1;
   if(isP2)fireBuffer2=0;else fireBuffer1=0;
   if(cooldown>0)return false;
-  const owner=authoritativeCoreFirePlayer||firePlayer;
-  return owner(p,attackDirection(p,requestedDirection))
+  return executeAuthoritativeFire(p,attackDirection(p,requestedDirection))
 }
 function queueAttack(p,requestedDirection=null){
   if(!p||mode!=="playing")return false;
@@ -283,6 +282,12 @@ function movePlayer(p,dx,dy,dash=false){
 function dashPlayer(p,d){if(!p||!d||mode!=="playing")return;if(p.mana<2){S.sfx("empty");showToast("NOT ENOUGH AMMO/ENERGY","Dash requires 2 reserve units.","red");return}p.mana-=2;movePlayer(p,d.x,d.y,true);sync()}
 function spreadDirections(d){const dirs=[d];if(d.x&&d.y){dirs.push({x:d.x,y:0},{x:0,y:d.y})}else if(d.x)dirs.push({x:d.x,y:1},{x:d.x,y:-1});else dirs.push({x:1,y:d.y},{x:-1,y:d.y});return dirs}
 function weaponDirections(p,d){const w=p.weapon||{};if(w.id==="shock")return[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1},{x:1,y:1},{x:1,y:-1},{x:-1,y:1},{x:-1,y:-1}];if(w.id==="spread"||w.shots>=3)return spreadDirections(d);return[d]}
+function spawnAuthoritativeProjectile(b,remoteShot=false){
+  if(!b)return false;
+  const bornAt=Number.isFinite(Number(b.__v142BornAt))?Number(b.__v142BornAt):performance.now();
+  bullets.push({...b,__v142BornAt:bornAt,remote:!!remoteShot});
+  return true
+}
 function firePlayer(p,d){
   if(!p||mode!=="playing"||(p.hitStunMs||0)>0)return false;
   if(p.__ccgFireSpawnFault)return false;
@@ -307,12 +312,11 @@ function firePlayer(p,d){
   if(!dirs.length)return false;
 
   const shotIds=[],beforeMana=Number(p.mana||0),beforeCount=bullets.filter(b=>b.owner===p.id&&b.ttl>0).length;
-  const externalSpawn=typeof window.spawnBullet==="function"&&window.spawnBullet!==spawnBullet?window.spawnBullet:null;
   try{
     for(const z of dirs){
       const b={id:`${p.id}-${Date.now()}-${Math.random()}`,owner:p.id,ownerName:p.name,x:p.x,y:p.y,dx:z.x,dy:z.y,ttl:w.ttl||18,power:(w.power||1)+(p.damageBonus||0),pierce:w.pierce||0,element:w.element||"energy",style:w.id||"pulse"};
       shotIds.push(b.id);
-      if(externalSpawn)externalSpawn(b,false);else spawnBullet(b,false);
+      spawnAuthoritativeProjectile(b,false);
     }
   }catch(_){
     for(let i=bullets.length-1;i>=0;i--)if(shotIds.includes(bullets[i]?.id))bullets.splice(i,1);
@@ -346,16 +350,20 @@ function firePlayer(p,d){
   return true
 }
 authoritativeCoreFirePlayer=firePlayer;
+function executeAuthoritativeFire(p,d){
+  const owner=String(playMode)==="split"?firePlayer:(authoritativeCoreFirePlayer||firePlayer);
+  return owner(p,d)
+}
 const authoritativeFireApi=Object.freeze({
   version:"V10.42-r58-core",
   gameplayOwnership:true,
   attackNow:(direction=null)=>attackNowUnbuffered(p1,direction),
-  fire:(player,direction)=>(authoritativeCoreFirePlayer||firePlayer)(player,direction),
+  fire:(player,direction)=>executeAuthoritativeFire(player,direction),
   queue:(player,direction)=>queueAttack(player,direction),
   recoverOrphanedGameplayMode:()=>false
 });
 window.CCGLostSizzlerV142R58AuthoritativeFireCore=authoritativeFireApi;
-function spawnBullet(b,remoteShot){if(b)bullets.push({...b,remote:!!remoteShot})}
+function spawnBullet(b,remoteShot){return spawnAuthoritativeProjectile(b,remoteShot)}
 function spawnEnemyShot(b){if(!b)return;enemyBullets.push({...b,ttl:Number(b.ttl||14)});const col=b.style==="fire"?P.orange:b.style==="root"?P.green:b.style==="shock"?P.cyan:P.red;for(let i=0;i<9;i++)particles.push({x:b.x*C.tile+C.tile/2,y:b.y*C.tile+C.tile/2,vx:(b.dx||0)*(1+Math.random()*2)+(Math.random()-.5)*1.4,vy:(b.dy||0)*(1+Math.random()*2)+(Math.random()-.5)*1.4,life:150+Math.random()*180,col,size:1.5+Math.random()*2.5,drag:.93,glow:8});if(localPlayers().some(p=>md(b,p)<9))S.sfx(b.style==="food"?"food":b.style==="fire"?"flame":"enemy")}
 function damageGenerator(g,power,p){
   if(!g?.alive)return;g.hp-=power;g.hpBarMs=2800;S.sfx("generator");floatText(g.x,g.y,`-${power}`,P.orange);if(g.hp>0)return;
@@ -587,7 +595,7 @@ function update(dt){
   // combat path must never stop an already-held movement command being serviced.
   if(move1<=0){const d=d1();if(d){movePlayer(p1,d.x,d.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}if(p2&&move2<=0){const d=d2();if(d){movePlayer(p2,d.x,d.y);move2=C.player.moveDelay*(p2.moveMultiplier||1)}}
   const p1HeldAttack=isAttackHeldInput(p1)&&(input.has("Space")||input.has("Numpad0")),p2HeldAttack=Boolean(p2&&isAttackHeldInput(p2)&&input.has("Enter"));
-  if((p1HeldAttack||fireBuffer1>0)&&fire1<=0){const fired=firePlayer(p1,attackDirection(p1,d1()));if(fired)fireBuffer1=0;else fire1=0}if(p2&&(p2HeldAttack||fireBuffer2>0)&&fire2<=0){const fired=firePlayer(p2,attackDirection(p2,d2()));if(fired)fireBuffer2=0;else fire2=0}
+  if((p1HeldAttack||fireBuffer1>0)&&fire1<=0){const fired=executeAuthoritativeFire(p1,attackDirection(p1,d1()));if(fired)fireBuffer1=0;else fire1=0}if(p2&&(p2HeldAttack||fireBuffer2>0)&&fire2<=0){const fired=executeAuthoritativeFire(p2,attackDirection(p2,d2()));if(fired)fireBuffer2=0;else fire2=0}
   if(projectileCD<=0){const liveProjectileWork=bullets.some(b=>b&&b.ttl>0)||enemyBullets.some(b=>b&&b.ttl>0);stepProjectiles();projectileCD=liveProjectileWork?70:0}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendPlayer();sendCD=100}if(worldCD<=0&&net.isHost){broadcastWorld();worldCD=350}
   updateActiveTrapContacts();
   updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBoulder(dt);updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
