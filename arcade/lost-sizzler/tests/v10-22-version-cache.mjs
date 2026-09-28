@@ -10,6 +10,7 @@ const readGame=relative=>fs.readFileSync(path.join(gameRoot,relative),"utf8");
 const readRepo=relative=>fs.readFileSync(path.join(repoRoot,relative),"utf8");
 
 const index=readGame("index.html");
+const core=readGame("js/game-core.js");
 const checker=readGame("js/version-check.js");
 const manifest=JSON.parse(readGame("version.json"));
 const homeScript=readRepo("js/ccg-home-community.js");
@@ -95,6 +96,10 @@ assert.ok(index.indexOf(`js/v10-41-r29-runtime-repair.js?v=${token}`)<index.inde
 
 assert.ok(index.includes('<h1>C64 Dungeon Carnage</h1>'),"static title bar must identify C64 Dungeon Carnage");
 assert.match(index,/BUILD V10\.42/,"static build badge must identify V10.42");
+assert.match(index,/id="hud-p2">0<\/b>/,"static ARMOUR card must show only the numeric starting armour value");
+assert.doesNotMatch(index,/id="hud-p2">ARM\s+/,"static ARMOUR card must not repeat an ARM prefix inside the value");
+assert.match(core,/UI\.p2\.textContent=String\(p1\.armor\|\|0\)/,"runtime ARMOUR card must render only the numeric player armour value");
+assert.doesNotMatch(core,/UI\.p2\.textContent=p2\?/,"the ARMOUR card must not be multiplexed into a P2 health label");
 assert.match(index,/id="hud-mana">0\/120</,"static HUD must reflect the sword-first ammunition model");
 assert.match(index,/id="hud-weapon">SWORD</,"static HUD must show the starting melee weapon");
 assert.match(index,/SPACE ATTACK/,"keyboard help must describe the shared firearm/melee attack action");
