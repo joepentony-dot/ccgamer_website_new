@@ -53,12 +53,15 @@ const requiredKeys = [
   "FIRST_RATING",
   "RATED_10",
   "RATED_50",
+  "RATED_100",
   "FIRST_COMMENT",
   "COMMENTER_10",
+  "COMMENTER_25",
   "FIRST_LIBRARY_GAME",
   "LIBRARY_10",
   "LIBRARY_50",
   "LIBRARY_100",
+  "LIBRARY_250",
   "C64_EXPLORER",
   "AMIGA_EXPLORER",
   "DUAL_SYSTEM"
@@ -75,13 +78,13 @@ requireText(memberCode, "Share achievement", "Completion sharing control");
 requireText(memberCode, "navigator.share", "Native share support");
 requireText(memberCode, "navigator.clipboard", "Clipboard share fallback");
 requireText(memberCode, "completionState", "Completion derivation");
-requireText(memberCode, "Complete all twelve milestones", "Member Hub completion explanation");
+requireText(memberCode, "Complete every Commodore milestone", "Member Hub completion explanation");
 requireText(memberCode, "retireRedundantBadgeDisplays", "Legacy badge consolidation");
 requireText(memberCode, "legacyGrid.hidden = true", "Legacy badge grid retirement");
 requireText(memberCode, "member-server-badges", "Duplicate activity badge cleanup");
 requireText(memberCode, "if (completion.complete)", "Earned-only completion display");
 requireText(memberCode, "host.prepend(createCompletionCard(completion))", "Prominent earned completion placement");
-requireText(memberCode, "MILESTONE_TOTAL", "Fixed twelve-milestone total");
+requireText(memberCode, "MILESTONE_TOTAL", "Current milestone total");
 
 rejectText(memberCode, "mark.textContent = completion.complete ? '★' : 'FINAL'", "Locked completion teaser");
 rejectText(memberCode, "before the final reward", "Incomplete milestone status");
@@ -141,8 +144,8 @@ if (failures.length) {
 }
 
 console.log("Commodore Completionist audit passed.");
-console.log("- One account-backed twelve-milestone gallery is authoritative");
+console.log("- One account-backed fifteen-milestone gallery is authoritative");
 console.log("- Legacy browser badges and duplicate activity badge chips are retired");
-console.log("- The Completionist reward appears only after all twelve milestones");
+console.log("- The Completionist reward appears only after all fifteen milestones");
 console.log("- Private and public completion displays retain sharing and privacy controls");
-console.log("- No database migration or protected-file change is required");
+console.log("- Completionist display rules remain protected while the current badge catalogue is expanded");
