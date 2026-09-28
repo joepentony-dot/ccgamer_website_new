@@ -115,7 +115,8 @@
   function installChestDelivery(){
     // V10.42 r58 uses the canonical chest path plus the final R1 confirmation
     // owner. Do not insert the historical R56 delivery wrapper underneath R1.
-    if(document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content==="V10.42 r58")return false;
+    const releaseRevision=Number(document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content?.match(/\br(\d+)\b/i)?.[1]||0);
+    if(releaseRevision>=58)return false;
     const current=window.openChest;if(typeof current!=="function")return false;
     if(originalChainHasMarker(current,"__ccgV142R1")){
       retireSupersededChestDelivery();
