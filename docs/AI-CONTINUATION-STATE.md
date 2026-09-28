@@ -1,3 +1,10 @@
+## Music page wheel/Lighthouse follow-through — 28 September 2026
+
+- Draft PR #2407 / `fix/music-wheel-performance-20260928` is the bounded shared repair for sluggish wheel response reported on `/music/paul-norman/`.
+- Lighthouse already inventories sitemap-backed `/music/` routes in mobile and desktop modes; Paul Norman is present in `sitemap-pages.xml`. The missing coverage was the representative physical mouse-wheel regression matrix.
+- #2407 keeps native document scrolling authoritative, adds passive active-scroll suppression for composer-card motion, publishes a music hydration ready boundary, tests both `/music/` and `/music/paul-norman/` with real Chromium wheel input, and advances public code cache v42 → v43.
+- Do not merge until the exact current head is 0 behind main, mergeable, triggered checks are green, and the deployed Paul Norman page is hands-on confirmed smoother.
+
 ## Dungeon R61 live runtime-integrity P0 — 28 September 2026
 
 - Manual deployed r60 acceptance failed again: real Space input reaches Solo gameplay repeatedly with full ammo, zero FIRE cooldown and zero active projectiles, while the attack probe reports `fired:false`. User also reports a separate live case where HEALTH reached zero without the normal death/respawn/game-over rules completing.
