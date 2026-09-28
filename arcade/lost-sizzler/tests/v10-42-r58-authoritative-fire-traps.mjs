@@ -13,6 +13,7 @@ const r54=fs.readFileSync(new URL("js/v10-41-r54-playtest-regressions.js",root),
 const touch=fs.readFileSync(new URL("js/v10-4-patch.js",root),"utf8");
 const bootstrap=fs.readFileSync(new URL("js/v10-42-bootstrap.js",root),"utf8");
 const stage6=fs.readFileSync(new URL("js/v10-42-stage6-zone-gameplay.js",root),"utf8");
+const onboarding=fs.readFileSync(new URL("js/v10-20-onboarding-safety.js",root),"utf8");
 const version=JSON.parse(fs.readFileSync(new URL("version.json",root),"utf8"));
 
 assert.equal(version.build,"V10.42 r59");
@@ -86,6 +87,7 @@ assert.match(core,/post-stage trap-family invariant failed/,"post-stage family s
 assert.match(core,/Post-initialisation family seal[\s\S]*v142FinalFamilyGuaranteed=true;representative\.v142FinalFamilyKind=kind/,"the playable host boundary must freeze the final FIRE, SPIKE and SHOCK representatives");
 assert.match(stage6,/trap\.v142FinalFamilyGuaranteed&&TRAP_FAMILIES\.includes\(guaranteed\)\)trap\.kind=guaranteed/,"Stage 6 must preserve final guaranteed family identity when later tuning runs");
 assert.match(stage6,/for\(const kind of TRAP_FAMILIES\)[\s\S]*v142FinalFamilyGuaranteed=true;representative\.v142FinalFamilyKind=kind/,"Stage 6 reconciliation must seal one representative after family repair");
+assert.match(onboarding,/for\(const t of host\.traps\|\|\[\]\)if\(depth\(t\.roomId\)<=safeDepth&&!t\.v142FinalFamilyGuaranteed\)t\.active=false/,"gentle opening must not deactivate the final sealed FIRE, SPIKE or SHOCK representative");
 assert.doesNotMatch(play,/CCGLostSizzlerV142R19MobileTrapLayoutStability\?\.updateTrapContacts/,"simulation must not depend on the retired R19 implementation");
 assert.match(rare,/function observeTrapContact\(player,now=performance\.now\(\)\)/,"Rare Events may retain passive trap-contact observation for warnings and diagnostics");
 assert.doesNotMatch(rare,/triggerTrap=function triggerTrapV115Reliable/,"Rare Events must not replace the canonical R58 triggerTrap owner");
