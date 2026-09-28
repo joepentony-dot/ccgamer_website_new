@@ -10,7 +10,8 @@ const visualKeys=[
   "playerSheet","chestSheet","enemyAtlasA","enemyAtlasB",
   "environmentAtlas","switchSheet","switchSecretSheet","sigilSheet","environmentTileset",
   "chestFrame0","chestFrame1","chestFrame2",
-  "spikeTrapFrame0","spikeTrapFrame1","spikeTrapFrame2","spikeTrapFrame3"
+  "spikeTrapFrame0","spikeTrapFrame1","spikeTrapFrame2","spikeTrapFrame3",
+  "doorLeafClosed","doorLeafOpen","doorFrameLeft","doorFrameRight","doorFrameTop"
 ];
 
 assert.match(overrides,/visuals:\s*\{/,"visual override registry must exist");
@@ -38,6 +39,8 @@ assert.match(renderer,/chestFrames:\s*\[/,"renderer must load a frame-based CC0 
 assert.match(renderer,/spikeTrapFrames:\s*\[/,"renderer must load a frame-based CC0 spike set");
 assert.match(renderer,/lastMode="cc0-frames"/,"live chest renderer must identify the CC0 frame path");
 assert.match(renderer,/t\.kind==="spike"&&spikeArtReady/,"live spike renderer must prefer the imported animation when decoded");
+assert.match(renderer,/doorLeafClosed:make\(selected\("doorLeafClosed","assets\/pixel\/visual-overhaul\/0x72\/door-leaf-closed\.png"\)\)/,"closed door sprite must remain local and overrideable");
+assert.match(renderer,/doorLeafOpen:make\(selected\("doorLeafOpen","assets\/pixel\/visual-overhaul\/0x72\/door-leaf-open\.png"\)\)/,"open door sprite must remain local and overrideable");
 assert.match(renderer,/sigils:make\(selected\("sigilSheet"\)\)/,"sigil replacement slot must fail safely to no image");
 assert.match(renderer,/environmentTiles:make\(selected\("environmentTileset"\)\)/,"environment tileset slot must fail safely to no image");
 
