@@ -1,3 +1,12 @@
+## R59 authoritative FIRE runtime-owner repair — 28 September 2026
+
+- New deployed/manual bug evidence on V10.42 r58 captured repeated real `Space` keydowns in active Solo play with Tier 2 Field Pulse II, 120/120 ammo, zero hit-stun, zero active projectiles and an active canvas, while every delayed attack probe still reported `fired:false`. The attack buffer was being refreshed, so the failure is after input acceptance and before projectile commitment.
+- Root-cause boundary: the R58 core captured an authoritative `firePlayer` for direct gamepad execution, but the normal keyboard simulation block still called the mutable global `firePlayer`; later compatibility layers could therefore remain in the Solo execution chain. Player projectile insertion also remained reachable through the mutable global `spawnBullet` binding. This contradicted the intended single-owner rewrite.
+- Repair branch: `codex/dungeon-r59-fire-runtime-owner-20260928`, stacked from draft #2396 exact head `29bd1127a245465fca48eaf4b52d924483f5d152` so it shares #2396's V10.42 r59 / `20260928r59` cache generation rather than creating a competing release identity.
+- Solo/Tutorial FIRE now executes through the captured authoritative core owner; Split Screen retains its dedicated friendly-fire wrapper. Canonical player shots are inserted through a private projectile boundary in `game-play.js`, while the public `spawnBullet` remains only a compatibility facade. R1 stability explicitly yields its FIRE/projectile wrappers when the R58 authoritative core exists.
+- Regression coverage now proves the canonical shot succeeds even when a fabricated legacy `spawnBullet` wrapper throws, and adds repeated real physical Space taps while moving with a Tier 2 Field Pulse II-shaped weapon. Success requires real ammo consumption and FIRE animation commitment, not merely a buffer/cooldown change.
+- Required gate remains canonical/Node plus Chromium shards 1–6 and all triggered checks green on the exact head. Deployed hands-on sustained FIRE, pause/resume, inventory transitions and natural FIRE/SPIKE/SHOCK HEALTH-loss acceptance remain mandatory. Do not merge solely from this checkpoint.
+
 ## R59 numeric armour HUD checkpoint — 28 September 2026
 
 - User screenshot from the deployed/current R58 interface showed the bottom **ARMOUR** card displaying `ARM …` instead of its count. Root cause is the legacy `game-core.js` assignment that multiplexed `hud-p2` between P2 health and `ARM <value>` even though this card is permanently labelled ARMOUR.
