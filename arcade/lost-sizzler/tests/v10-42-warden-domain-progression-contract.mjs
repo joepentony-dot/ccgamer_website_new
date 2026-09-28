@@ -27,7 +27,7 @@ const context={
   setInterval:fn=>(tick=fn,1),clearInterval:()=>{},addEventListener:()=>{},host,world,run,p1:player,p2:player2,mode:"playing",UI,
   localPlayers:()=>[player,player2],S:{sfx:()=>{}},showToast:()=>{},broadcastWorld:()=>{},sync:()=>{},resetCamp:()=>{},reveal:()=>{},markRoomVisit:()=>{},
   damageEnemy:(enemy,power)=>{enemy.hp-=power;return power},hitStalker:()=>true,openChest:(p,chest)=>{chest.active=false;return true},
-  hurtPlayer:(p)=>{run.stats.deaths++;p.health=p.maxHealth;p.x=1;p.y=1;return true},floorComplete:()=>{run.floorComplete=true;return true},startWorld:()=>true
+  hurtPlayer:(p)=>{run.stats.deaths++;p.health=p.maxHealth;p.x=1;p.y=1;return true},floorComplete:()=>{run.floorComplete=true;return true},descendFloor:()=>{run.floor+=1;run.floorComplete=false;return true},startWorld:()=>true
 };
 context.window.CCG_CONFIG={maxFloors:5,stalker:{name:"Count Loadula"}};
 context.window.CCGProgression={effectiveSight:()=>7};
@@ -83,7 +83,10 @@ assert.deepEqual({x:player.x,y:player.y},{x:checkpoint.x,y:checkpoint.y},"Normal
 run.floor=3;run.floorComplete=false;delete host.v142WardenDomain;
 death.alive=true;death.v142WardenRewarded=false;death.v142WardenDefeated=false;
 context.floorComplete("contract");
-assert.deepEqual([...run.v142SkippedWardenFloors],[3],"Leaving an available Warden unresolved should record one debt floor");
+assert.deepEqual([...run.v142SkippedWardenFloors],[],"Opening the floor-clear choice must not record Warden debt while the player can still stay and resolve the domain");
+assert.match(UI.floorSummary.innerHTML,/WARDEN DOMAIN: UNRESOLVED/,"Floor-clear summary should explain that unresolved Warden business remains available");
+context.descendFloor();
+assert.deepEqual([...run.v142SkippedWardenFloors],[3],"Actually descending with an available Warden unresolved should record one debt floor");
 
 run.floor=4;run.floorComplete=false;delete host.v142WardenDomain;
 death.alive=true;boss.hp=boss.maxHp=20;boss.armor=boss.maxArmor=4;
