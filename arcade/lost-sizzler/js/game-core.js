@@ -24,15 +24,21 @@ const avatarImages=new Map();for(const f of C.followerElites){const custom=OVERR
 const pickupOverrideImages=new Map();for(const [kind,src] of Object.entries(OVERRIDES.images?.items||{}))if(src){const im=new Image();im.src=src;pickupOverrideImages.set(kind,im)}
 const P={purple:"#b978ff",gold:"#ffd85a",cyan:"#6cecff",green:"#72ff9b",pink:"#ff5bae",red:"#ff6868",orange:"#ff9950",white:"#faf4ff",blue:"#6aa9ff",brown:"#9b6134",black:"#030205",grey:"#9b8daa"};
 const input=new Set(),remote=new Map(),bullets=[],enemyBullets=[],particles=[],rings=[],floaters=[],hazards=[],pendingItems=new Set(),enemyVisuals=new Map(),cameras=new Map(),explored=new Map(),campStates=new Map(),roomVisits=new Map(),playerTrails=new Map();
-const MAX_GAMEPLAY_PARTICLES=360,MAX_GAMEPLAY_RINGS=72;
+const MAX_GAMEPLAY_PARTICLES=360,MAX_GAMEPLAY_RINGS=72,MAX_GAMEPLAY_FLOATERS=96;
+function currentVisualHardCap(normal,reduced,severe){
+  const tier=String(document.body?.dataset?.v141R47PerformanceTier||"normal");
+  return tier==="severe"?severe:tier==="reduced"?reduced:normal
+}
 function boundedVisualPush(array,max,items){
   const rows=items.filter(Boolean);if(!rows.length)return array.length;
+  max=Math.max(1,Number(max)||1);
   if(rows.length>=max){array.splice(0,array.length,...rows.slice(-max));return array.length}
   const overflow=Math.max(0,array.length+rows.length-max);if(overflow)array.splice(0,overflow);
   return Array.prototype.push.apply(array,rows)
 }
-particles.push=function(...items){return boundedVisualPush(particles,MAX_GAMEPLAY_PARTICLES,items)};
-rings.push=function(...items){return boundedVisualPush(rings,MAX_GAMEPLAY_RINGS,items)};
+particles.push=function(...items){return boundedVisualPush(particles,currentVisualHardCap(MAX_GAMEPLAY_PARTICLES,260,180),items)};
+rings.push=function(...items){return boundedVisualPush(rings,currentVisualHardCap(MAX_GAMEPLAY_RINGS,52,36),items)};
+floaters.push=function(...items){return boundedVisualPush(floaters,currentVisualHardCap(MAX_GAMEPLAY_FLOATERS,72,48),items)};
 let mode="menu",playMode="solo",world=null,host=null,p1=null,p2=null,run=null,score=0,last=0,enemyCD=0,projectileCD=0,sendCD=0,worldCD=0,surroundCD=0,specialCD=0,move1=0,move2=0,fire1=0,fire2=0,fireBuffer1=0,fireBuffer2=0,won=false,shake=0,damageFlash=0,renderShake={x:0,y:0},toastTimer=0,retainedToast=false,lowHealthCD=0,inventoryReminderMs=300000,levelQueue=[],toastQueue=[],lastAmbientMessage="";
 let view={x:0,y:0,w:canvas.width,h:canvas.height},focus=null,cam={x:0,y:0};
 let activeShop=null,floorEntryCheckpoint=null,savePromptReason="",pendingBanishmentReward=null;
