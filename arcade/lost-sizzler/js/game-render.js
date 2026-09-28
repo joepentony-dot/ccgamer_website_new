@@ -760,15 +760,15 @@ function drawGenerators(){
 }
 function drawSwitchVisual(sw,s,now=performance.now()){
   const active=sw?.active!==false,secret=Boolean(sw?.revealSecret),armedCol=secret?P.purple:P.cyan,col=active?armedCol:P.green,pulse=active ? .65+.35*Math.sin(now/120+Number(sw?.x||0)) : .32;
-  const leverArt=secret?lostSizzlerPixelAssets.secretSwitches:lostSizzlerPixelAssets.switches;
+  const switchArt=sw.revealSecret?lostSizzlerPixelAssets.secretSwitches:lostSizzlerPixelAssets.switches;
   const buttonArt=active?lostSizzlerPixelAssets.switchButtonUp:lostSizzlerPixelAssets.switchButtonDown;
-  const leverReady=leverArt?.complete&&leverArt.naturalWidth>=16,buttonReady=buttonArt?.complete&&buttonArt.naturalWidth>=16;
+  const leverReady=switchArt?.complete&&switchArt.naturalWidth>=16,buttonReady=buttonArt?.complete&&buttonArt.naturalWidth>=16;
   ctx.save();ctx.fillStyle="rgba(0,0,0,.42)";ctx.beginPath();ctx.ellipse(s.x+C.tile/2,s.y+C.tile-3,15,4,0,0,Math.PI*2);ctx.fill();
   if(buttonReady&&leverReady){
     ctx.imageSmoothingEnabled=false;ctx.shadowColor=col;ctx.shadowBlur=active?7+pulse*8:4;
     ctx.fillStyle="#0d1118";ctx.fillRect(s.x+3,s.y+3,C.tile-6,C.tile-6);
     ctx.globalAlpha=active ? .96 : .72;ctx.drawImage(buttonArt,s.x+4,s.y+4,C.tile-8,C.tile-8);
-    ctx.globalAlpha=active?1:.78;const inset=active?8:9;ctx.drawImage(leverArt,s.x+inset,s.y+inset-(active?2:0),C.tile-inset*2,C.tile-inset*2);
+    ctx.globalAlpha=active?1:.78;const inset=active?8:9;ctx.drawImage(switchArt,s.x+inset,s.y+inset-(active?2:0),C.tile-inset*2,C.tile-inset*2);
     ctx.globalAlpha=active ? .38+pulse*.28 : .36;ctx.strokeStyle=col;ctx.lineWidth=2;ctx.strokeRect(s.x+3,s.y+3,C.tile-6,C.tile-6);ctx.globalAlpha=1;
     switchRenderDiagnostics.assetFrames++;switchRenderDiagnostics.lastMode="cc0-switch";
   }else{
