@@ -293,11 +293,23 @@ function movePlayer(p,dx,dy,dash=false){
 function dashPlayer(p,d){if(!p||!d||mode!=="playing")return;if(p.mana<2){S.sfx("empty");showToast("NOT ENOUGH AMMO/ENERGY","Dash requires 2 reserve units.","red");return}p.mana-=2;movePlayer(p,d.x,d.y,true);sync()}
 function spreadDirections(d){const dirs=[d];if(d.x&&d.y){dirs.push({x:d.x,y:0},{x:0,y:d.y})}else if(d.x)dirs.push({x:d.x,y:1},{x:d.x,y:-1});else dirs.push({x:1,y:d.y},{x:-1,y:d.y});return dirs}
 function weaponDirections(p,d){const w=p.weapon||{};if(w.id==="shock")return[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1},{x:1,y:1},{x:1,y:-1},{x:-1,y:1},{x:-1,y:-1}];if(w.id==="spread"||w.shots>=3)return spreadDirections(d);return[d]}
+function canonicalMeleeAttackIfRequired(p,d){
+  const melee=window.CCGLostSizzlerMeleeAmmoV125;
+  if(!p||typeof melee?.meleeAttack!=="function")return null;
+  const dir=attackDirection(p,d),tx=Number(p.x)+dir.x,ty=Number(p.y)+dir.y;
+  const adjacentEnemy=(host?.enemies||[]).some(e=>e?.alive&&Number(e.x)===tx&&Number(e.y)===ty);
+  const adjacentFurniture=(host?.blockingDecor||[]).some(item=>Number(item?.x)===tx&&Number(item?.y)===ty);
+  const hasGun=Boolean(p.firearmUnlocked&&p.weapon);
+  if(!adjacentEnemy&&!adjacentFurniture&&hasGun&&Number(p.mana||0)>0)return null;
+  return Boolean(melee.meleeAttack(p,dir))
+}
 function firePlayer(p,d){
   if(!p||mode!=="playing"||(p.hitStunMs||0)>0)return false;
   if(p.__ccgFireSpawnFault)return false;
   const isP2=p===p2,cd=isP2?fire2:fire1;
   if(cd>0)return false;
+  const meleeResult=canonicalMeleeAttackIfRequired(p,d);
+  if(meleeResult!==null)return meleeResult;
   const w=p.weapon||baseWeapon();
   const active=bullets.filter(b=>b.owner===p.id&&b.ttl>0).length;
   const max=C.player.maxProjectiles+Math.max(0,(w.shots||1)-1);
