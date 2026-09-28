@@ -43,16 +43,22 @@ async function touchButton(page,context,key,trapId){
     activeBefore=await active();
     await cdp.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{x,y,radiusX:1,radiusY:1,force:1,id:1}]});
     activeAfterStart=await active();
+    // This contract is a single natural crossing, not a held-movement stress
+    // test. Release the touch as soon as the player reaches the trap tile so
+    // mobile repeat cadence cannot carry the fixture one tile beyond it.
     await page.waitForFunction(id=>{
-      const probe=window.__ccgNaturalTrapProbe;
       const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
       return Boolean(
-        probe&&trap&&String(probe.targetId)===String(id)&&
-        Number(p1?.x)===Number(trap.x)&&Number(p1?.y)===Number(trap.y)&&
-        (probe.samples||[]).length>0
+        trap&&Number(p1?.x)===Number(trap.x)&&Number(p1?.y)===Number(trap.y)
       );
     },trapId,{timeout:1200,polling:"raf"});
     await cdp.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
+    await page.waitForFunction(id=>{
+      const probe=window.__ccgNaturalTrapProbe;
+      return Boolean(
+        probe&&String(probe.targetId)===String(id)&&(probe.samples||[]).length>0
+      );
+    },trapId,{timeout:1200,polling:"raf"});
   }finally{await cdp.detach()}
   await page.waitForTimeout(90);
   return{activeBefore,activeAfterStart};
