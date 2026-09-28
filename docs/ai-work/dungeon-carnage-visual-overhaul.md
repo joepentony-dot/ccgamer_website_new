@@ -218,3 +218,11 @@ Do not import the Puny binaries until the same local-provenance process used for
 - Ordinary SPIKE traps now use the four imported CC0 animation frames. The renderer maps the existing authoritative `SYS.trapActive()` state to safe/retracted versus animated active frames; trap timing and damage ownership are unchanged.
 - FIRE and SHOCK traps remain on their established renderer until equally coherent licensed replacements are selected.
 - Static contracts now require all chest/spike frame slots and the live frame-based rendering paths.
+
+
+## Door asset staging — 28 September 2026
+
+- Five additional 0x72 CC0 door assets are now copied byte-for-byte into the local visual-overhaul bundle: closed/open door leaves plus left/right/top frame pieces.
+- Source and destination Git blob SHAs match exactly and are recorded in the local provenance ledger.
+- Versioned override slots are exposed and the renderer preloads the local files.
+- The live door drawing routine has deliberately not been replaced yet: orientation/composition must be visually verified before switching away from the established door renderer. This avoids guessing at sprite orientation and accidentally reducing readability.
