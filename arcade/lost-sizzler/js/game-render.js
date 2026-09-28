@@ -38,6 +38,21 @@ const lostSizzlerPixelAssets=(()=>{
     secretSwitches:make(selected("switchSecretSheet","assets/pixel/visual-overhaul/0x72/lever-right.png")),
     sigils:make(selected("sigilSheet","assets/pixel/visual-overhaul/cc0-portal/portal-sheet.png")),
     environmentTiles:make(selected("environmentTileset")),
+    floorTiles:[
+      make(selected("floorTile1","assets/pixel/visual-overhaul/0x72/floor-1.png")),
+      make(selected("floorTile2","assets/pixel/visual-overhaul/0x72/floor-2.png")),
+      make(selected("floorTile3","assets/pixel/visual-overhaul/0x72/floor-3.png")),
+      make(selected("floorTile4","assets/pixel/visual-overhaul/0x72/floor-4.png")),
+      make(selected("floorTile5","assets/pixel/visual-overhaul/0x72/floor-5.png")),
+      make(selected("floorTile6","assets/pixel/visual-overhaul/0x72/floor-6.png")),
+      make(selected("floorTile7","assets/pixel/visual-overhaul/0x72/floor-7.png")),
+      make(selected("floorTile8","assets/pixel/visual-overhaul/0x72/floor-8.png"))
+    ],
+    wallTiles:{
+      mid:make(selected("wallTileMid","assets/pixel/visual-overhaul/0x72/wall-mid.png")),
+      hole1:make(selected("wallTileHole1","assets/pixel/visual-overhaul/0x72/wall-hole-1.png")),
+      hole2:make(selected("wallTileHole2","assets/pixel/visual-overhaul/0x72/wall-hole-2.png"))
+    },
     doorLeafClosed:make(selected("doorLeafClosed","assets/pixel/visual-overhaul/0x72/door-leaf-closed.png")),
     doorLeafOpen:make(selected("doorLeafOpen","assets/pixel/visual-overhaul/0x72/door-leaf-open.png")),
     doorFrameLeft:make(selected("doorFrameLeft","assets/pixel/visual-overhaul/0x72/door-frame-left.png")),
@@ -92,6 +107,8 @@ function drawTile(x,y){
   const s=ws(x,y),th=W.themeAt(world,x,y),wall=world.map[y][x]!==0,roomId=W.roomAt(world,x,y),room=world.rooms[roomId],variant=room?.variant||0;
   if(wall){
     const h=tileHash(x,y,variant),course=(y+h%2)%2,theme=room?.theme||"WARP_GALLERY";ctx.fillStyle="#08060b";ctx.fillRect(s.x,s.y,C.tile,C.tile);ctx.fillStyle=th.wall;ctx.fillRect(s.x+1,s.y+1,C.tile-2,C.tile-2);
+    const wallArt=h%31===0?lostSizzlerPixelAssets.wallTiles?.hole2:h%23===0?lostSizzlerPixelAssets.wallTiles?.hole1:lostSizzlerPixelAssets.wallTiles?.mid;
+    if(wallArt?.complete&&wallArt.naturalWidth>=16){const alpha=ctx.globalAlpha;ctx.globalAlpha=.72;ctx.drawImage(wallArt,Math.round(s.x),Math.round(s.y),C.tile,C.tile);ctx.globalAlpha=alpha}
     // Deep blockwork: inset courses, mortar, chipped corners and directional bevels.
     ctx.fillStyle="rgba(255,255,255,.075)";ctx.fillRect(s.x+2,s.y+2,C.tile-4,3);ctx.fillRect(s.x+2,s.y+5,2,C.tile-9);ctx.fillStyle="rgba(0,0,0,.34)";ctx.fillRect(s.x+C.tile-5,s.y+5,4,C.tile-6);ctx.fillRect(s.x+5,s.y+C.tile-5,C.tile-9,4);
     ctx.strokeStyle="rgba(8,5,12,.52)";ctx.lineWidth=2;for(let row=0;row<2;row++){const yy=s.y+9+row*16,offset=(row+course)%2?10:-6;ctx.beginPath();ctx.moveTo(s.x+2,yy);ctx.lineTo(s.x+C.tile-3,yy);ctx.stroke();for(let joint=offset;joint<C.tile;joint+=21){ctx.beginPath();ctx.moveTo(s.x+joint,yy);ctx.lineTo(s.x+joint,yy+15);ctx.stroke()}}
@@ -113,6 +130,8 @@ function drawTile(x,y){
     return;
   }
   const h=tileHash(x,y,variant+roomId),theme=room?.theme||"WARP_GALLERY";ctx.fillStyle=(x+y+variant)%2?th.floor:th.alt;ctx.fillRect(s.x,s.y,C.tile,C.tile);
+  const floorSet=lostSizzlerPixelAssets.floorTiles||[],floorArt=floorSet.length?floorSet[h%floorSet.length]:null;
+  if(floorArt?.complete&&floorArt.naturalWidth>=16){const alpha=ctx.globalAlpha;ctx.globalAlpha=.78;ctx.drawImage(floorArt,Math.round(s.x),Math.round(s.y),C.tile,C.tile);ctx.globalAlpha=alpha}
   // Layered flagstone: recessed seams, fine grain, scuffs and theme inlays.
   ctx.fillStyle="rgba(255,255,255,.035)";ctx.fillRect(s.x+2,s.y+2,C.tile-5,2);ctx.fillRect(s.x+2,s.y+4,2,C.tile-7);ctx.fillStyle="rgba(0,0,0,.18)";ctx.fillRect(s.x,s.y+C.tile-4,C.tile,4);ctx.fillRect(s.x+C.tile-4,s.y,4,C.tile);ctx.strokeStyle="rgba(0,0,0,.22)";ctx.lineWidth=1;ctx.strokeRect(s.x+.5,s.y+.5,C.tile-1,C.tile-1);
   for(let grain=0;grain<3;grain++){const gx=4+((h>>>(grain*5))%(C.tile-9)),gy=5+((h>>>(grain*7+3))%(C.tile-10));ctx.fillStyle=grain===0?"rgba(255,255,255,.035)":"rgba(0,0,0,.07)";ctx.fillRect(s.x+gx,s.y+gy,1+(h>>grain)%3,1)}
