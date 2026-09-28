@@ -83,7 +83,7 @@ try{
     const arenaId="r59-live-trap-arena";
     host.arenas.unshift({id:arenaId,roomId,triggered:false,cleared:false,wave:0,rewarded:false});
     p1.x=entry.x;p1.y=entry.y;p1.rx=entry.x;p1.ry=entry.y;
-    p1.maxHealth=Math.max(8,Number(p1.maxHealth||8));p1.health=8;p1.armor=3;p1.invuln=650;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
+    p1.maxHealth=Math.max(8,Number(p1.maxHealth||8));p1.health=8;p1.armor=3;p1.invuln=10000;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
     move1=0;input.clear();
     const original={period:Number(trap.period),phase:Number(trap.phase)};
     const period=100000,now=performance.now();
