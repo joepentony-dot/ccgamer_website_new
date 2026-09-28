@@ -34,7 +34,12 @@
       "spikeTrapFrame0": "assets/pixel/visual-overhaul/0x72/spikes-f0.png",
       "spikeTrapFrame1": "assets/pixel/visual-overhaul/0x72/spikes-f1.png",
       "spikeTrapFrame2": "assets/pixel/visual-overhaul/0x72/spikes-f2.png",
-      "spikeTrapFrame3": "assets/pixel/visual-overhaul/0x72/spikes-f3.png"
+      "spikeTrapFrame3": "assets/pixel/visual-overhaul/0x72/spikes-f3.png",
+      "doorLeafClosed": "assets/pixel/visual-overhaul/0x72/door-leaf-closed.png",
+      "doorLeafOpen": "assets/pixel/visual-overhaul/0x72/door-leaf-open.png",
+      "doorFrameLeft": "assets/pixel/visual-overhaul/0x72/door-frame-left.png",
+      "doorFrameRight": "assets/pixel/visual-overhaul/0x72/door-frame-right.png",
+      "doorFrameTop": "assets/pixel/visual-overhaul/0x72/door-frame-top.png"
     }
   },
   "music": {
