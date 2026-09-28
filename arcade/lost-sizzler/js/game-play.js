@@ -296,11 +296,12 @@ function weaponDirections(p,d){const w=p.weapon||{};if(w.id==="shock")return[{x:
 function canonicalMeleeAttackIfRequired(p,d){
   const melee=window.CCGLostSizzlerMeleeAmmoV125;
   if(!p||typeof melee?.meleeAttack!=="function")return null;
-  const dir=attackDirection(p,d),tx=Number(p.x)+dir.x,ty=Number(p.y)+dir.y;
-  const adjacentEnemy=(host?.enemies||[]).some(e=>e?.alive&&Number(e.x)===tx&&Number(e.y)===ty);
-  const adjacentFurniture=(host?.blockingDecor||[]).some(item=>Number(item?.x)===tx&&Number(item?.y)===ty);
   const hasGun=Boolean(p.firearmUnlocked&&p.weapon);
-  if(!adjacentEnemy&&!adjacentFurniture&&hasGun&&Number(p.mana||0)>0)return null;
+  // A usable firearm always owns FIRE. Nearby furniture/enemies must never
+  // divert a valid gun shot into the melee helper and strand full ammo with
+  // zero projectiles. Melee is the fallback only when no usable firearm exists.
+  if(hasGun&&Number(p.mana||0)>0)return null;
+  const dir=attackDirection(p,d);
   return Boolean(melee.meleeAttack(p,dir))
 }
 function firePlayer(p,d){
@@ -486,6 +487,25 @@ function authoritativeDamagePlayer(p,n,friendly=false,source="enemy"){
   try{return canonicalPlayerDamage(p,n,friendly,source)}
   finally{authoritativeTrapDamageDepth=Math.max(0,authoritativeTrapDamageDepth-1)}
 }
+const runtimeDeathRecovery=new WeakSet();
+function enforceCanonicalDeathState(p){
+  if(!p||mode!=="playing"||Number(p.health)>0||runtimeDeathRecovery.has(p))return false;
+  runtimeDeathRecovery.add(p);
+  const armourBefore=Math.max(0,Number(p.armor||0)),invulnBefore=Math.max(0,Number(p.invuln||0)),deathsBefore=Number(run?.stats?.deaths||0);
+  try{
+    // Health at/below zero while still in live play means some legacy/optional
+    // path mutated state without completing the canonical death transition.
+    // Re-enter the canonical owner once, bypassing armour/invulnerability only
+    // for this recovery hit; restore armour because the missing transition
+    // should not create an extra armour penalty.
+    p.armor=0;p.invuln=0;
+    authoritativeDamagePlayer(p,1,false,"runtime integrity death recovery");
+    const processed=mode!=="playing"||Number(run?.stats?.deaths||0)>deathsBefore||Number(p.health)>0;
+    p.armor=armourBefore;
+    if(!processed){p.health=0;p.invuln=invulnBefore}
+    return processed
+  }finally{runtimeDeathRecovery.delete(p)}
+}
 function updateCamping(p,dt){if(window.CCGLostSizzlerOnboardingV120?.state?.active){resetCamp(p,true);return}let c=campStates.get(p.id);if(!c){resetCamp(p);c=campStates.get(p.id)}const moved=p.x!==c.lastX||p.y!==c.lastY;if(c.active){if(Math.hypot(p.x-c.originX,p.y-c.originY)>=C.camping.resetDistance){resetCamp(p,true);return}c.lastX=p.x;c.lastY=p.y}else if(moved){resetCamp(p,true);return}c.elapsed+=dt;if(c.elapsed<C.camping.graceMs)return;if(!c.active){c.active=true;c.originX=p.x;c.originY=p.y;c.nextBlast=150;c.blastCount=0;S.sfx("campwarn");run.alert=Math.min(100,run.alert+14);showToast("60 SECONDS IDLE — LEAVE THE ZONE","Every second blast targets you for 1 HP. Move six tiles away to stop the barrage.","red",7500)}c.nextBlast-=dt;if(c.nextBlast<=0){c.blastCount++;let q;if(c.blastCount%C.camping.directBlastEvery===0)q={x:p.x,y:p.y,direct:true};else{const a=[];for(let dy=-C.camping.zoneRadius;dy<=C.camping.zoneRadius;dy++)for(let dx=-C.camping.zoneRadius;dx<=C.camping.zoneRadius;dx++){const x=c.originX+dx,y=c.originY+dy;if(W.walkable(world.map,x,y,host)&&Math.hypot(dx,dy)<=C.camping.zoneRadius+.2)a.push({x,y})}q=a[Math.floor(Math.random()*a.length)]||{x:c.originX,y:c.originY}}hazards.push({x:q.x,y:q.y,life:C.camping.warningMs,maxLife:C.camping.warningMs,direct:!!q.direct,campOwner:p.id,originX:c.originX,originY:c.originY});c.nextBlast=C.camping.blastIntervalMs}}
 function updateHazards(dt){for(let i=hazards.length-1;i>=0;i--){const h=hazards[i];h.life-=dt;if(h.life>0)continue;hazards.splice(i,1);S.sfx("explosion");shake=Math.max(shake,h.direct?13:9);burst(h.x,h.y,P.orange,h.direct?16:12,h.direct?1.75:1.5);ring(h.x,h.y,P.red,h.direct?48:38);if(h.direct){const target=localPlayers().find(p=>p.id===h.campOwner);if(target&&Math.hypot(target.x-h.originX,target.y-h.originY)<C.camping.resetDistance)hurtPlayer(target,1,false,"anti-loitering blast")}}}
 function roomMoodFor(roomId){
@@ -597,7 +617,10 @@ function updateEmergencyAmmo(p,dt){
 }
 function updateLastResortHealth(p,dt){const healthRemains=(host.items||[]).some(i=>i.active&&i.kind==="health");if(healthRemains||p.health>=p.maxHealth){p.healthRegenMs=0;return}p.healthRegenMs=(p.healthRegenMs||0)+dt;if(p.healthRegenMs<120000)return;p.healthRegenMs-=120000;p.health=Math.min(p.maxHealth,p.health+1);p.hpBarMs=3000;S.sfx("heal");floatText(p.x,p.y,"+1 HP",P.green);showToast("LAST-RESORT RECOVERY","No health pickups remain on this floor. Two minutes survived: +1 health.","green",7000)}
 function update(dt){
-  if(mode!=="playing"){fireBuffer1=fireBuffer2=0;return}enemyCD-=dt;projectileCD=Math.max(0,projectileCD-dt);sendCD-=dt;worldCD-=dt;surroundCD-=dt;specialCD-=dt;move1-=dt;move2-=dt;fire1=Math.max(0,fire1-dt);fire2=Math.max(0,fire2-dt);fireBuffer1=Math.max(0,fireBuffer1-dt);fireBuffer2=Math.max(0,fireBuffer2-dt);lowHealthCD-=dt;updateToast(dt);updateDoors();updateGamepad();
+  if(mode!=="playing"){fireBuffer1=fireBuffer2=0;return}
+  for(const p of localPlayers())if(p&&Number(p.health)<=0)enforceCanonicalDeathState(p);
+  if(mode!=="playing"){fireBuffer1=fireBuffer2=0;return}
+  enemyCD-=dt;projectileCD=Math.max(0,projectileCD-dt);sendCD-=dt;worldCD-=dt;surroundCD-=dt;specialCD-=dt;move1-=dt;move2-=dt;fire1=Math.max(0,fire1-dt);fire2=Math.max(0,fire2-dt);fireBuffer1=Math.max(0,fireBuffer1-dt);fireBuffer2=Math.max(0,fireBuffer2-dt);lowHealthCD-=dt;updateToast(dt);updateDoors();updateGamepad();
   for(const p of localPlayers()){
     if(p.invuln>0)p.invuln-=dt;if(p.hitStunMs>0)p.hitStunMs=Math.max(0,p.hitStunMs-dt);if(p.hpBarMs>0)p.hpBarMs=Math.max(0,p.hpBarMs-dt);if(p.torchMs>0)p.torchMs=Math.max(0,p.torchMs-dt);if(p.rapidMs>0)p.rapidMs=Math.max(0,p.rapidMs-dt);if(p.ammoFlashMs>0)p.ammoFlashMs=Math.max(0,p.ammoFlashMs-dt);
     updateEmergencyAmmo(p,dt);updateLastResortHealth(p,dt);p.rx+=(p.x-p.rx)*.32;p.ry+=(p.y-p.ry)*.32;updateCamping(p,dt);reveal(p);markRoomVisit(p);rememberTrail(p)
