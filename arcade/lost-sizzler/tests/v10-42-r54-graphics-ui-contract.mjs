@@ -20,7 +20,7 @@ const landing=read("js/v10-41-landing-notification-polish.js");
 assert.ok(html.includes(`preload" as="image" href="assets/pixel/chest-sheet-v10-34.png?v=${version.cacheToken}"`),"the authored chest sheet must be preloaded under the current release cache token");
 assert.match(html,/id="hud-bronze">BRONZE 0<\/strong>/,"the critical HUD must name the Bronze Key count explicitly");
 assert.match(html,/If a chest is inside a room you already unlocked with a bronze key,[\s\S]*costs no second key/i,"the Rulebook must explain the single-key bronze-room rule");
-assert.match(html,/Pickups now name the thing you actually collected:[\s\S]*weapons show their generated weapon name,[\s\S]*armour and XP show the amount gained,[\s\S]*health is identified as a potion,[\s\S]*ammunition shows the rounds added/i,"the Rulebook must describe literal pickup feedback");
+assert.match(html,/Pickups now name the thing you actually collected:[\s\S]*weapon caches evolve your current firearm instead of advertising random gun names,[\s\S]*armour and XP show the amount gained,[\s\S]*health is identified as a potion,[\s\S]*ammunition shows the rounds added/i,"the Rulebook must describe evolving weapon-cache feedback");
 
 assert.match(core,/UI\.bronze\.textContent=\`BRONZE \$\{p1\.bronzeKeys\|\|0\}\`/,"the live HUD must show the actual Bronze Key count rather than a combined key total");
 assert.match(core,/UI\.quickKeyring\.textContent=\`MAIN \$\{host\.keysCollected\|\|0\}\/\$\{C\.keyTarget\}\$\{host\.exitSigilCollected\?" • SIGIL 1":" • SIGIL 0"\}\`/,"the secondary key line must leave Bronze Keys to the dedicated prominent counter");
@@ -40,7 +40,7 @@ assert.match(play,/const roomKeyPaid=chestBronzeDoorAlreadyPaid\(chest\)/,"bronz
 assert.match(play,/if\(chest\.locked&&!roomKeyPaid\)p\.bronzeKeys--/,"standalone locked chests may still consume one Bronze Key while paid Bronze rooms do not");
 
 assert.match(local,/function resolvedPickupWeapon\(i,p\)/,"weapon pickups must resolve one concrete weapon before presentation");
-assert.match(local,/if\(i\.kind==="weapon"\)return resolvedPickupWeapon\(i,p\)\?\.displayName\|\|"WEAPON CACHE"/,"weapon pickup text must use the actual generated weapon name");
+assert.match(local,/if\(i\.kind==="weapon"\)return evolvingWeaponMode\(\)\?"WEAPON CACHE":resolvedPickupWeapon\(i,p\)\?\.displayName\|\|"WEAPON CACHE"/,"evolving weapon pickups must present a generic WEAPON CACHE label while non-evolution modes may retain a resolved weapon name");
 assert.match(local,/if\(i\.kind==="game"\)return i\.title\|\|"C64 GAME"/,"only real C64 game collectibles may present their stored C64 title");
 assert.match(local,/health:"HEALTH POTION"/,"health pickup naming must be literal");
 assert.match(local,/ammo:"AMMUNITION"/,"ammunition pickup naming must be literal");
