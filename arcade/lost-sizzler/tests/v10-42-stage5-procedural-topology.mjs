@@ -90,12 +90,12 @@ const topologySource=worldSource.slice(
 );
 assert.ok(topologySource.includes("addStage5Topology"),"Stage 5 topology helpers must remain a bounded pre-generation layer");
 assert.match(topologySource,/protectedCells\.has\(cell\(point\.x,point\.y\)\)/,"Stage 5 alternate routes must reject established secret-reserve wall cells");
-assert.match(worldSource,/const protectedSecretCells=stage5SecretReserveCells\(seedText,rooms,doorSpecs\);\s*const topology=addStage5Topology\(seedText,map,rooms,edges,graph,startRoom,exitRoom,protectedSecretCells\)/,"Stage 5 must reserve hidden/nested-secret space before carving alternate routes");
+assert.match(worldSource,/const protectedSecretCells=stage5SecretReserveCells\(seedText,rooms,doorSpecs\),protectedDoorCells=reserveDoorTopology\(doorSpecs\),protectedTopologyCells=new Set\(\[\.\.\.protectedSecretCells,\.\.\.protectedDoorCells\]\);\s*const topology=addStage5Topology\(seedText,map,rooms,edges,graph,startRoom,exitRoom,protectedTopologyCells\)/,"Stage 5 must reserve hidden/nested-secret space plus door anchor cells before carving alternate routes");
 assert.ok(worldSource.indexOf("const protectedSecretCells=stage5SecretReserveCells")>worldSource.lastIndexOf("attachBonusRoom(map,source,bonusIndex,rooms)"),"Stage 5 topology must run after the optional annex set is frozen");
 assert.doesNotMatch(topologySource,/\brandom\s*\(/,"Stage 5 topology decisions must not consume the established world RNG stream");
 assert.doesNotMatch(topologySource,/run\.floor|floorComplete\(|descendFloor\(|saveCheckpoint|loadCheckpoint/,"Stage 5 topology must not become a progression or save owner");
 assert.ok(worldSource.includes("const topology=addStage5Topology(seedText,map,rooms,edges,graph,startRoom,exitRoom,protectedTopologyCells)"),"the authoritative world generator must own Stage 5 topology with the combined secret/door reserve boundary");
-  assert.match(worldSource,/for\\(const door of doorSpecs\\)if\\(!doorTopologyValid\\(map,door\\)&&repairDoorTopology\\(map,door\\)\\)repairedDoorTopology\\+\\+/,"the authoritative world generator must post-validate and structurally repair orphaned doors");
+assert.match(worldSource,/for\(const door of doorSpecs\)if\(!doorTopologyValid\(map,door\)&&repairDoorTopology\(map,door\)\)repairedDoorTopology\+\+/,"the authoritative world generator must post-validate and structurally repair orphaned doors");
 assert.match(worldSource,/return\{map,rooms,edges,graph,[^\n]+hauntedCorridor,topology\}/,"Stage 5 metadata must travel with the authoritative generated world");
 
 console.log("PASS V10.42 Stage 5 deterministic procedural topology");
