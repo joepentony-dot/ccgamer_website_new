@@ -1,3 +1,11 @@
+## Dungeon R59 FIRE runtime-owner repair — 28 September 2026
+
+- Fresh user bug-report evidence disproved the post-R58 assumption again: real Solo Space presses were accepted and buffered with full ammo, no hit-stun and zero active projectiles, yet produced no shot.
+- Active FIRE repair branch: `codex/dungeon-r59-fire-runtime-owner-20260928`, stacked from #2396 exact head `29bd1127a245465fca48eaf4b52d924483f5d152` so the FIRE repair shares the already-planned V10.42 r59 / `20260928r59` release generation.
+- The repair removes mutable legacy ownership from Solo shot execution: keyboard-buffer execution uses the captured authoritative FIRE owner, canonical projectile insertion is private, and R1 yields its later FIRE/projectile wrappers. Split friendly-fire ownership is preserved.
+- Browser qualification now reproduces rapid physical Space taps and requires actual ammo/shot evidence; a deliberately broken legacy `spawnBullet` wrapper must not block canonical FIRE.
+- Exact-head full Dungeon qualification is required before merge, followed by deployed sustained FIRE/manual trap acceptance. #2396 remains the release-generation dependency until merged/reconciled.
+
 ## Dungeon R59 armour HUD clarity — 28 September 2026
 
 - Live `main` at candidate start is `00922200267fb915c9dd38a367b0f2c339097fd5`; the R58 authoritative FIRE/trap rewrite from #2391 is already merged, and its R58 ownership globals remain unchanged.
