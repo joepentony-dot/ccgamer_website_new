@@ -11,22 +11,29 @@ const MISSING_SCHEMA_CODES = new Set([
   'PGRST205'
 ]);
 
-const COMMODORE_MILESTONE_KEYS = Object.freeze([
+const COMMODORE_COMPLETION_KEYS = Object.freeze([
   'FIRST_RATING',
   'RATED_10',
   'RATED_50',
-  'RATED_100',
   'FIRST_COMMENT',
   'COMMENTER_10',
-  'COMMENTER_25',
   'FIRST_LIBRARY_GAME',
   'LIBRARY_10',
   'LIBRARY_50',
   'LIBRARY_100',
-  'LIBRARY_250',
   'C64_EXPLORER',
   'AMIGA_EXPLORER',
   'DUAL_SYSTEM'
+]);
+
+const COMMODORE_MILESTONE_KEYS = Object.freeze([
+  ...COMMODORE_COMPLETION_KEYS.slice(0, 3),
+  'RATED_100',
+  ...COMMODORE_COMPLETION_KEYS.slice(3, 5),
+  'COMMENTER_25',
+  ...COMMODORE_COMPLETION_KEYS.slice(5, 9),
+  'LIBRARY_250',
+  ...COMMODORE_COMPLETION_KEYS.slice(9)
 ]);
 
 const MILESTONE_TOTAL = COMMODORE_MILESTONE_KEYS.length;
@@ -118,7 +125,7 @@ function ensurePanel() {
       <div>
         <p class="member-achievement-panel__kicker">Account achievements</p>
         <h3 class="member-achievement-panel__title">Achievements &amp; Badges</h3>
-        <p class="member-achievement-panel__intro">Account activity and C64 Dungeon Carnage accomplishments are saved here. Complete every Commodore milestone for the Commodore Completionist reward, or conquer all five Dungeon Carnage depths for the campaign Platinum badge.</p>
+        <p class="member-achievement-panel__intro">Account activity and C64 Dungeon Carnage accomplishments are saved here. Complete all twelve milestones in the original Commodore set for the Commodore Completionist reward, then keep building the expanded activity milestones or conquer all five Dungeon Carnage depths for the campaign Platinum badge.</p>
       </div>
       <button type="button" class="auth-btn" id="memberRefreshAchievements">Check badges</button>
     </div>
@@ -168,8 +175,8 @@ function categoryLabel(value) {
 }
 
 function completionState(earned) {
-  const missing = COMMODORE_MILESTONE_KEYS.filter((key) => !earned.has(key));
-  const dates = COMMODORE_MILESTONE_KEYS
+  const missing = COMMODORE_COMPLETION_KEYS.filter((key) => !earned.has(key));
+  const dates = COMMODORE_COMPLETION_KEYS
     .map((key) => new Date(earned.get(key)?.assigned_at || 0))
     .filter((date) => !Number.isNaN(date.getTime()) && date.getTime() > 0)
     .sort((a, b) => b.getTime() - a.getTime());
@@ -184,7 +191,7 @@ function completionState(earned) {
 async function shareCompletion(button) {
   const shareData = {
     title: 'Commodore Completionist',
-    text: 'I completed every Commodore Milestone at Cheeky Commodore Gamer.',
+    text: 'I completed all twelve Commodore Milestones in the original set at Cheeky Commodore Gamer.',
     url: 'https://www.cheekycommodoregamer.co.uk/'
   };
 
@@ -329,8 +336,8 @@ function renderAchievements(catalog, earnedRows) {
 
   setStatus(
     completion.complete
-      ? `${earnedTotal} of ${MILESTONE_TOTAL} Commodore Milestones earned; ${gameEarned} of ${gameEntries.length} C64 Dungeon Carnage achievements earned. Commodore Completionist unlocked.`
-      : `${earnedTotal} of ${MILESTONE_TOTAL} Commodore Milestones earned; ${gameEarned} of ${gameEntries.length} C64 Dungeon Carnage achievements earned.`,
+      ? `${earnedTotal} of ${MILESTONE_TOTAL} current Commodore Milestones earned; the original twelve are complete and Commodore Completionist is unlocked; ${gameEarned} of ${gameEntries.length} C64 Dungeon Carnage achievements earned.`
+      : `${earnedTotal} of ${MILESTONE_TOTAL} current Commodore Milestones earned; ${gameEarned} of ${gameEntries.length} C64 Dungeon Carnage achievements earned.`,
     earnedTotal || gameEarned ? 'success' : 'ready'
   );
 }
