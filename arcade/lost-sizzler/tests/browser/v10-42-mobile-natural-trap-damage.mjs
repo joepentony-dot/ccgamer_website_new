@@ -37,29 +37,44 @@ async function touchButton(page,context,key,trapId){
     const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
     return Boolean(trap?.active&&SYS.trapActive(trap,performance.now()));
   },trapId);
+  const position=()=>page.evaluate(id=>{
+    const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
+    return{
+      trap:{x:Number(trap?.x),y:Number(trap?.y)},
+      player:{x:Number(p1?.x),y:Number(p1?.y)}
+    };
+  },trapId);
   const cdp=await context.newCDPSession(page);
-  let activeBefore=false,activeAfterStart=false;
+  let activeBefore=false,activeAfterStart=false,reached=false;
   try{
     activeBefore=await active();
-    await cdp.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{x,y,radiusX:1,radiusY:1,force:1,id:1}]});
-    activeAfterStart=await active();
-    // This contract is a single natural crossing, not a held-movement stress
-    // test. Release the touch as soon as the player reaches the trap tile so
-    // mobile repeat cadence cannot carry the fixture one tile beyond it.
-    await page.waitForFunction(id=>{
-      const trap=(host?.traps||[]).find(t=>String(t.id)===String(id));
-      return Boolean(
-        trap&&Number(p1?.x)===Number(trap.x)&&Number(p1?.y)===Number(trap.y)
-      );
-    },trapId,{timeout:1200,polling:"raf"});
-    await cdp.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
+    // Deliver bounded tap pulses rather than holding the virtual D-pad. Each
+    // pulse is shorter than the repeat cadence, so this natural mobile-input
+    // contract can reach the selected trap without overshooting several cells.
+    for(let pulse=0;pulse<4&&!reached;pulse++){
+      await cdp.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{x,y,radiusX:1,radiusY:1,force:1,id:1}]});
+      if(pulse===0)activeAfterStart=await active();
+      await page.waitForTimeout(10);
+      await cdp.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
+      await page.waitForTimeout(18);
+      const pos=await position();
+      reached=pos.player.x===pos.trap.x&&pos.player.y===pos.trap.y;
+      if(!reached){
+        const distance=Math.abs(pos.player.x-pos.trap.x)+Math.abs(pos.player.y-pos.trap.y);
+        assert.ok(distance<=1,`bounded touch pulse must not overshoot the selected trap: ${JSON.stringify(pos)}`);
+      }
+    }
+    assert.equal(reached,true,`bounded touch input must reach selected trap ${trapId}`);
     await page.waitForFunction(id=>{
       const probe=window.__ccgNaturalTrapProbe;
       return Boolean(
         probe&&String(probe.targetId)===String(id)&&(probe.samples||[]).length>0
       );
     },trapId,{timeout:1200,polling:"raf"});
-  }finally{await cdp.detach()}
+  }finally{
+    try{await cdp.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]})}catch(_){}
+    await cdp.detach();
+  }
   await page.waitForTimeout(90);
   return{activeBefore,activeAfterStart};
 }
@@ -243,7 +258,7 @@ try{
         assert.equal(Number(accepted.beforeHealth),fixture.before.health,`real generated ${kind} trap damage evidence must begin from the fixture health`);
         assert.equal(Number(accepted.afterHealth),fixture.before.health-1,`real generated ${kind} trap must remove exactly one health on the valid active cycle`);
         assert.equal(after.armor,fixture.before.armor,`real generated ${kind} trap must preserve armour at the exact active touch crossing`);
-        assert.ok(after.health<=fixture.before.health-1,`the accepted trap hit must remain reflected in player health even if the held touch later moves beyond the trap: ${JSON.stringify({fixture,touchWindow,stableCrossing,after})}`);
+        assert.equal(after.health,fixture.before.health-1,`the sampled active crossing must remove exactly one HEALTH and no more: ${JSON.stringify({fixture,touchWindow,stableCrossing,after})}`);
         assert.equal(Number(accepted.x),fixture.target.x,`real generated ${kind} trap damage evidence must retain the exact trap X coordinate`);
         assert.equal(Number(accepted.y),fixture.target.y,`real generated ${kind} trap damage evidence must retain the exact trap Y coordinate`);
         qualified={attempt,touchWindow,stableCrossing,accepted,after};
