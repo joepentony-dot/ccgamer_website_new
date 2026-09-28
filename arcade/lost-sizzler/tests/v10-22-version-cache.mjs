@@ -30,8 +30,8 @@ assert.ok(metaBuild,"game HTML must publish its loaded Dungeon Carnage build num
 assert.equal(metaBuild,manifest.build,"HTML build number and live version manifest must match");
 assert.equal(metaCache,manifest.cacheToken,"HTML cache token and live version manifest must match");
 assert.equal(manifest.releaseVersion,"V10.42","current semantic release must be V10.42");
-assert.equal(manifest.build,"V10.42 r64","current R64 published build must remain explicit in the regression check");
-assert.equal(manifest.cacheToken,"20260928r64","current R64 release cache token must remain explicit in the live manifest");
+assert.equal(manifest.build,"V10.42 r65","current R65 published build must remain explicit in the regression check");
+assert.equal(manifest.cacheToken,"20260928r65","current R65 release cache token must remain explicit in the live manifest");
 
 assert.match(index,/id="hud-p2">0<\/b>/,"static ARMOUR card must show only its numeric starting value");
 assert.doesNotMatch(index,/id="hud-p2">ARM\s+/,"static ARMOUR value must not repeat an ARM prefix");

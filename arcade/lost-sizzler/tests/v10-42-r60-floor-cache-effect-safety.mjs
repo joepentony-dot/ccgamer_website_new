@@ -14,8 +14,8 @@ const railCss=fs.readFileSync(new URL("css/v10-41-r29.css",root),"utf8");
 const alias=fs.readFileSync(new URL("../c64-dungeon-carnage/index.html",root),"utf8");
 const version=JSON.parse(fs.readFileSync(new URL("version.json",root),"utf8"));
 
-assert.equal(version.build,"V10.42 r64");
-assert.equal(version.cacheToken,"20260928r64");
+assert.equal(version.build,"V10.42 r65");
+assert.equal(version.cacheToken,"20260928r65");
 
 for(const html of [index,alias]){
   assert.match(html,/id="stay-floor-btn">Stay on This Floor</,"floor-clear overlay must expose a stay-on-floor choice");
@@ -53,4 +53,4 @@ assert.match(play,/burst\(h\.x,h\.y,P\.orange,h\.direct\?16:12/,"anti-loitering 
 assert.match(play,/particles\.length>MAX_GAMEPLAY_PARTICLES/,"effect cleanup must preserve the same hard particle ceiling");
 assert.match(play,/rings\.length>MAX_GAMEPLAY_RINGS/,"effect cleanup must preserve the ring ceiling");
 
-console.log("V10.42 R64 floor/cache/effect safety contract passed");
+console.log("V10.42 R65 floor/cache/effect safety contract passed");

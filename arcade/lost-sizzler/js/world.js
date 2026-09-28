@@ -113,15 +113,15 @@ window.CCGWorld=(()=>{
   function attachBonusRoom(map,source,index,rooms,sizes=[[12,9],[7,6]]){
     const cx=source.x+2+((source.id*7+index*3)%Math.max(1,source.w-3)),cy=source.y+2+((source.id*5+index*7)%Math.max(1,source.h-3));
     const opts=[];for(const [rw,rh] of sizes){const hw=Math.floor(rw/2),hh=Math.floor(rh/2);opts.push(
-      {door:{x:source.x+source.w+1,y:cy},box:{x1:source.x+source.w+2,y1:cy-hh,x2:source.x+source.w+2+rw,y2:cy-hh+rh}},
-      {door:{x:source.x-1,y:cy},box:{x1:source.x-2-rw,y1:cy-hh,x2:source.x-2,y2:cy-hh+rh}},
-      {door:{x:cx,y:source.y+source.h+1},box:{x1:cx-hw,y1:source.y+source.h+2,x2:cx-hw+rw,y2:source.y+source.h+2+rh}},
-      {door:{x:cx,y:source.y-1},box:{x1:cx-hw,y1:source.y-2-rh,x2:cx-hw+rw,y2:source.y-2}}
+      {door:{x:source.x+source.w+1,y:cy},axis:"horizontal",box:{x1:source.x+source.w+2,y1:cy-hh,x2:source.x+source.w+2+rw,y2:cy-hh+rh}},
+      {door:{x:source.x-1,y:cy},axis:"horizontal",box:{x1:source.x-2-rw,y1:cy-hh,x2:source.x-2,y2:cy-hh+rh}},
+      {door:{x:cx,y:source.y+source.h+1},axis:"vertical",box:{x1:cx-hw,y1:source.y+source.h+2,x2:cx-hw+rw,y2:source.y+source.h+2+rh}},
+      {door:{x:cx,y:source.y-1},axis:"vertical",box:{x1:cx-hw,y1:source.y-2-rh,x2:cx-hw+rw,y2:source.y-2}}
     )}
     for(const o of opts){
       if(map[o.door.y]?.[o.door.x]!==1||!areaAllWalls(map,o.box.x1-1,o.box.y1-1,o.box.x2+1,o.box.y2+1))continue;
       carveCell(map,o.door.x,o.door.y);const room={id:rooms.length,x:o.box.x1,y:o.box.y1,w:o.box.x2-o.box.x1,h:o.box.y2-o.box.y1,theme:"TREASURE_VAULT",optional:true,depth:(source.depth||0)+1};carveRoom(map,room);rooms.push(room);
-      return{id:`door${index}`,x:o.door.x,y:o.door.y,roomId:room.id};
+      return{id:`door${index}`,x:o.door.x,y:o.door.y,roomId:room.id,axis:o.axis};
     }
     return null;
   }
@@ -211,6 +211,39 @@ window.CCGWorld=(()=>{
     }
     return valid[0]
   }
+  function doorAnchorCells(door){
+    if(!door)return[];
+    const horizontal=door.axis==="horizontal";
+    return horizontal
+      ?[{x:door.x,y:door.y},{x:door.x,y:door.y-1},{x:door.x,y:door.y+1}]
+      :[{x:door.x,y:door.y},{x:door.x-1,y:door.y},{x:door.x+1,y:door.y}]
+  }
+  function reserveDoorTopology(doorSpecs){
+    const reserved=new Set();
+    for(const door of doorSpecs||[])for(const point of doorAnchorCells(door))reserved.add(cell(point.x,point.y));
+    return reserved
+  }
+  function doorTopologyValid(map,door){
+    if(!door||map?.[door.y]?.[door.x]!==0)return false;
+    if(door.axis==="horizontal"){
+      return map?.[door.y]?.[door.x-1]===0&&map?.[door.y]?.[door.x+1]===0&&map?.[door.y-1]?.[door.x]===1&&map?.[door.y+1]?.[door.x]===1
+    }
+    return map?.[door.y-1]?.[door.x]===0&&map?.[door.y+1]?.[door.x]===0&&map?.[door.y]?.[door.x-1]===1&&map?.[door.y]?.[door.x+1]===1
+  }
+  function repairDoorTopology(map,door){
+    if(!door)return false;
+    carveCell(map,door.x,door.y);
+    if(door.axis==="horizontal"){
+      carveCell(map,door.x-1,door.y);carveCell(map,door.x+1,door.y);
+      if(map?.[door.y-1])map[door.y-1][door.x]=1;
+      if(map?.[door.y+1])map[door.y+1][door.x]=1
+    }else{
+      carveCell(map,door.x,door.y-1);carveCell(map,door.x,door.y+1);
+      if(map?.[door.y]){map[door.y][door.x-1]=1;map[door.y][door.x+1]=1}
+    }
+    return doorTopologyValid(map,door)
+  }
+
   function stage5SecretReserveCells(seedText,rooms,doorSpecs){
     const floor=stage5Floor(seedText),secretRoomIds=new Set((doorSpecs||[]).slice(0,Math.max(0,C.dungeon.secretRooms||0)).map(door=>door.roomId)),reserved=new Set();
     const add=(x,y)=>{if(x>2&&y>2&&x<C.worldWidth-3&&y<C.worldHeight-3)reserved.add(cell(x,y))};
@@ -357,8 +390,11 @@ window.CCGWorld=(()=>{
     // The first optional gates become hidden secret rooms in systems.js, so
     // reserve the exact wall cells its nested-crack generator may need before
     // carving any alternate route.
-    const protectedSecretCells=stage5SecretReserveCells(seedText,rooms,doorSpecs);
-    const topology=addStage5Topology(seedText,map,rooms,edges,graph,startRoom,exitRoom,protectedSecretCells);
+    const protectedSecretCells=stage5SecretReserveCells(seedText,rooms,doorSpecs),protectedDoorCells=reserveDoorTopology(doorSpecs),protectedTopologyCells=new Set([...protectedSecretCells,...protectedDoorCells]);
+    const topology=addStage5Topology(seedText,map,rooms,edges,graph,startRoom,exitRoom,protectedTopologyCells);
+    let repairedDoorTopology=0;
+    for(const door of doorSpecs)if(!doorTopologyValid(map,door)&&repairDoorTopology(map,door))repairedDoorTopology++;
+    topology.doorTopology={checked:doorSpecs.length,repaired:repairedDoorTopology,valid:doorSpecs.every(door=>doorTopologyValid(map,door))};
 
     while(graph.length<rooms.length)graph.push([]);return{map,rooms,edges,graph,start:centre(rooms[startRoom]),exit:centre(rooms[exitRoom]),startRoomId:startRoom,exitRoomId:exitRoom,random,tunnelY,doorSpecs,optionalCells,lockedRooms,hauntedCorridor,topology};
   }
