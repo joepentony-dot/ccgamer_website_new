@@ -1,3 +1,14 @@
+## Dungeon post-R64 UI/topology follow-up — 28 September 2026
+
+- R64 P0 freeze/trap/FIRE integrity is merged on `main` as `ab5893681dd78a907386b83a6e5b3e08d1eb8710`; its unchanged production-smoke rerun passed after the initial smoke raced the still-publishing R62 deployment.
+- Branch `codex/dungeon-post-r64-ui-topology-current-20260928` carries only already-reproduced follow-up defects: Bronze-key visibility in the persistent lower HUD, tactical-radar canvas-state integrity, and optional generated doors losing supporting wall topology after Stage-5 alternate-route carving.
+- Bronze status is duplicated into the always-visible Quick Inventory header as `BRONZE KEY ×n`, with wrapping/overflow rules that prevent ellipsis clipping.
+- Tactical radar resets transform/alpha/composite/filter/shadow state before each render and rejects malformed marker coordinates; discovery/knowledge rules are unchanged.
+- Optional doors now preserve traversal orientation, Stage-5 route carving reserves door cells plus required wall anchors, and a final post-carve invariant validates/repairs orphaned doorway geometry.
+- Focused Node coverage binds all three fixes and the existing Stage-5 procedural contract now validates every generated optional door after alternate-route carving.
+- This branch must not change R64 FIRE ownership, freeze watchdog semantics, trap contact ownership, damage/death ownership, economy, save semantics or unrelated graphics. It remains stacked behind the production-smoke race hardening until that prerequisite settles.
+- Do not merge until the successor is based on current `main`, release/cache identity is advanced for the changed public Dungeon assets, exact-head qualification is fully green, and no material review finding remains.
+
 ## R64 freeze + ordinary-trap integrity — 28 September 2026
 
 - Release identity is now advanced to `V10.42 r64` / `20260928r64` across both public entry points, the ordered bootstrap, `version.json`, and current release/cache contracts so the freeze/trap/attack repair cannot deploy behind the cached r62 asset token.
