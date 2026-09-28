@@ -79,14 +79,15 @@ try{
 
   // Projectile lifetime and the one-frame fire cooldown are deliberately short.
   // On a busy CI runner they can both expire between the successful Space input
-  // and Playwright's next polling/evaluation turn. Latch the real spawn-time
+  // and Playwright's next polling/evaluation turn. Latch the real authoritative insertion-time
   // firearm state rather than weakening the requirement to ammunition loss alone.
   const attackBefore=await page.evaluate(()=>{
-    const originalSpawn=window.spawnBullet;
-    window.__ccgR57AttackProbe={shots:0,fireMax:0,bulletMax:bullets.length,originalSpawn};
-    window.spawnBullet=function(){
-      const result=originalSpawn.apply(this,arguments),probe=window.__ccgR57AttackProbe;
-      probe.shots++;probe.fireMax=Math.max(probe.fireMax,Number(fire1||0));probe.bulletMax=Math.max(probe.bulletMax,Number(bullets.length||0));
+    const originalPush=bullets.push;
+    window.__ccgR57AttackProbe={shots:0,fireMax:0,bulletMax:bullets.length,originalPush};
+    bullets.push=function(){
+      const result=originalPush.apply(this,arguments),probe=window.__ccgR57AttackProbe;
+      const inserted=[...arguments].filter(row=>row&&row.owner===p1?.id);
+      probe.shots+=inserted.length;probe.fireMax=Math.max(probe.fireMax,Number(fire1||0));probe.bulletMax=Math.max(probe.bulletMax,Number(bullets.length||0));
       return result
     };
     return{mana:Number(p1.mana),bullets:bullets.length}
@@ -94,12 +95,12 @@ try{
   await page.keyboard.press("Space");
   await page.waitForFunction(before=>Number(p1?.mana)<before.mana&&Number(window.__ccgR57AttackProbe?.shots||0)>0,attackBefore,{timeout:3000});
   const attackAfter=await page.evaluate(()=>{
-    const probe=window.__ccgR57AttackProbe||{},originalSpawn=probe.originalSpawn;
+    const probe=window.__ccgR57AttackProbe||{},originalPush=probe.originalPush;
     const result={mana:Number(p1.mana),bullets:bullets.length,fire:Number(fire1||0),mode,shots:Number(probe.shots||0),fireObserved:Number(probe.fireMax||0),bulletObserved:Number(probe.bulletMax||0)};
-    if(typeof originalSpawn==="function")window.spawnBullet=originalSpawn;delete window.__ccgR57AttackProbe;return result
+    if(typeof originalPush==="function")bullets.push=originalPush;delete window.__ccgR57AttackProbe;return result
   });
   assert.ok(attackAfter.mana<attackBefore.mana,`PULSE with ammunition must fire after stall recovery instead of becoming unresponsive: before=${JSON.stringify(attackBefore)} after=${JSON.stringify(attackAfter)}`);
-  assert.ok(attackAfter.shots>=1&&attackAfter.bulletObserved>attackBefore.bullets,`post-stall PULSE input must create a live projectile at spawn time: ${JSON.stringify(attackAfter)}`);
+  assert.ok(attackAfter.shots>=1&&attackAfter.bulletObserved>attackBefore.bullets,`post-stall PULSE input must create a live projectile at insertion time: ${JSON.stringify(attackAfter)}`);
   assert.equal(attackAfter.fireObserved,0,"transactional FIRE must not commit cooldown before projectile creation succeeds");
   assert.equal(attackAfter.mode,"playing","combat recovery must not change the active game mode");
 

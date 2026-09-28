@@ -39,7 +39,7 @@ assert.match(play,/if\(!verified\)\{p\.invuln=beforeInvuln;authoritativeTrapStat
 assert.match(play,/if\(trapCycleHits\.get\(key\)===cycle\)\{authoritativeTrapState\.trapContactBlocks\+\+;return false\}/,"the same player/trap active cycle must not double-hit and must remain observable in canonical diagnostics");
 assert.match(play,/trapCycleId\(t,now\)!==cycle[\s\S]*trapCycleHits\.delete\(key\)/,"the next mathematical trap cycle must rearm even if no inactive frame was sampled");
 
-assert.match(play,/updateActiveTrapContacts\(\);/,"every live gameplay simulation frame must check occupied floor traps through the r58 core");
+assert.match(play,/updateActiveTrapContacts\("simulation-post"\);/,"every live gameplay simulation frame must check occupied floor traps through the authoritative post-encounter r58 core");
 assert.doesNotMatch(play,/t\.kind==="shock"[\s\S]{0,120}(?:hurtPlayer|damageValidatedTrapContact)/,"shock traps must not use a separate damage rule");
 assert.doesNotMatch(play,/t\.kind==="spike"[\s\S]{0,120}(?:hurtPlayer|damageValidatedTrapContact)/,"spike traps must not use a separate damage rule");
 assert.doesNotMatch(play,/t\.kind==="fire"[\s\S]{0,120}(?:hurtPlayer|damageValidatedTrapContact)/,"fire traps must not use a separate damage rule");
