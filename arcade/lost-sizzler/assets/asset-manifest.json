@@ -39,7 +39,18 @@
       "doorLeafOpen": "assets/pixel/visual-overhaul/0x72/door-leaf-open.png",
       "doorFrameLeft": "assets/pixel/visual-overhaul/0x72/door-frame-left.png",
       "doorFrameRight": "assets/pixel/visual-overhaul/0x72/door-frame-right.png",
-      "doorFrameTop": "assets/pixel/visual-overhaul/0x72/door-frame-top.png"
+      "doorFrameTop": "assets/pixel/visual-overhaul/0x72/door-frame-top.png",
+      "floorTile1": "assets/pixel/visual-overhaul/0x72/floor-1.png",
+      "floorTile2": "assets/pixel/visual-overhaul/0x72/floor-2.png",
+      "floorTile3": "assets/pixel/visual-overhaul/0x72/floor-3.png",
+      "floorTile4": "assets/pixel/visual-overhaul/0x72/floor-4.png",
+      "floorTile5": "assets/pixel/visual-overhaul/0x72/floor-5.png",
+      "floorTile6": "assets/pixel/visual-overhaul/0x72/floor-6.png",
+      "floorTile7": "assets/pixel/visual-overhaul/0x72/floor-7.png",
+      "floorTile8": "assets/pixel/visual-overhaul/0x72/floor-8.png",
+      "wallTileMid": "assets/pixel/visual-overhaul/0x72/wall-mid.png",
+      "wallTileHole1": "assets/pixel/visual-overhaul/0x72/wall-hole-1.png",
+      "wallTileHole2": "assets/pixel/visual-overhaul/0x72/wall-hole-2.png"
     }
   },
   "music": {
