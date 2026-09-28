@@ -51,3 +51,22 @@ Importing these files does not itself change collision, gameplay, progression or
 | frames/doors_frame_top.png | door-frame-top.png | 8a93cd75be8a1e34143e37625bcf0a2842937de3 | no |
 
 The destination Git blob SHAs match the source Git blob SHAs exactly for all five files.
+
+
+## Named floor and wall tiles imported 28 September 2026
+
+All files below are unmodified 16x16 PNGs from the same CC0 DungeonTileset II source. Source and destination Git blob SHAs match exactly.
+
+| Original | Local | Git blob SHA |
+| --- | --- | --- |
+| frames/floor_1.png | floor-1.png | d5b31cc6f9383e36f693e482a65f9dc59f2311e2 |
+| frames/floor_2.png | floor-2.png | 8c41a63da460eac99f243a355fb9ed498b3e122b |
+| frames/floor_3.png | floor-3.png | c7a02d6385d460e03bda859b6c64cb4430159cd3 |
+| frames/floor_4.png | floor-4.png | 7c035fb73491522a624a901b8842167eea0f5418 |
+| frames/floor_5.png | floor-5.png | 1a6a99298ea38cdfcf3fc0ce5e622a55f46b7759 |
+| frames/floor_6.png | floor-6.png | 3ed27ede48a79cceef4faca6c2717a107994f656 |
+| frames/floor_7.png | floor-7.png | e6cdbb75f17d8fcea52218f0e59188a6ebc42d58 |
+| frames/floor_8.png | floor-8.png | ec857ba26f5f1bc95078fb6122a9da59bbe5d450 |
+| frames/wall_mid.png | wall-mid.png | 7952b085902919cf3ee50b66575d6bb355dfe094 |
+| frames/wall_hole_1.png | wall-hole-1.png | 21ce2b22109daf06fcf2fbf06cb30337b8345c37 |
+| frames/wall_hole_2.png | wall-hole-2.png | 222d06ea4531faf132058c43e08f3a3fd7815583 |
