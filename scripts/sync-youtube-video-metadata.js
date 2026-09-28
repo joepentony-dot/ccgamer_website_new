@@ -164,8 +164,9 @@ async function main() {
     console.log(`[video-metadata] Verified metadata unchanged for ${found}/${ids.length} unique site videos; no file rewrite needed.`);
   }
   if (missingFromYoutube.length) {
-    console.warn(`[video-metadata] ${missingFromYoutube.length} video IDs were not returned by YouTube (private, removed or unavailable).`);
-    console.warn(`[video-metadata] First IDs: ${missingFromYoutube.slice(0, 20).join(", ")}`);
+    console.warn(`[video-metadata] ${missingFromYoutube.length} video IDs were not returned by YouTube yet (commonly private, scheduled, removed or otherwise unavailable).`);
+    console.warn("[video-metadata] This is non-blocking for publishing. Pending videos keep their configured YouTube ID and fallback presentation; verified VideoObject metadata is withheld until a later sync can see the video.");
+    console.warn(`[video-metadata] Pending IDs: ${missingFromYoutube.slice(0, 20).join(", ")}`);
   }
 }
 
