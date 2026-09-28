@@ -87,7 +87,7 @@ try{
   assert.ok(ownershipResult.mana<isolatedBefore.mana,"canonical FIRE must spend ammo even when a legacy spawnBullet wrapper is broken");
   assert.ok(ownershipResult.bullets>isolatedBefore.bullets||ownershipResult.fireAnimAt>isolatedBefore.fireAnimAt,"canonical FIRE must create or visibly commit a shot without using the mutable legacy spawnBullet owner");
 
-  await prepareSolo(page,"R59-RAPID-PHYSICAL-TAPS");
+  await prepareSolo(page,"R58-HOTFIX-RAPID-PHYSICAL-TAPS");
   const tapDirection=await directionFor(page);assert.ok(tapDirection,"rapid FIRE regression needs one walkable adjacent tile");
   const tapBefore=await page.evaluate(()=>{
     p1.weapon={...baseWeapon(),name:"TIER 2 · Field Pulse II",displayName:"TIER 2 · Field Pulse II",rating:3,power:1,shots:1};
