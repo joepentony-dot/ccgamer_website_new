@@ -21,7 +21,7 @@
   const MAX_ENVIRONMENT_DAMAGE_SIGNALS=80;
   let movementBoundarySerial=0;
   let environmentDamageSerial=0;
-  const state={installed:false,reports:0,anomalies:0,trapAnomalies:0,trapContacts:0,trapVerifiedHits:0,environmentContacts:0,environmentAnomalies:0,environmentVerifiedHits:0,lastTrap:null,lastEnvironment:null,lastReport:null,preReportSnapshot:null,sampleTimer:0,trapProbeTimer:0};
+  const state={installed:false,reports:0,anomalies:0,trapAnomalies:0,trapContacts:0,trapVerifiedHits:0,environmentContacts:0,environmentAnomalies:0,environmentVerifiedHits:0,simulationStalls:0,lastFrameProbe:null,lastTrap:null,lastEnvironment:null,lastReport:null,preReportSnapshot:null,sampleTimer:0,trapProbeTimer:0};
 
   const safe=(fn,fallback=null)=>{try{const value=fn();return value===undefined?fallback:value}catch(_){return fallback}};
   const nowIso=()=>new Date().toISOString();
@@ -437,6 +437,11 @@
         projectileLifecycle:safe(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.state||null,null),
         performanceGovernor:safe(()=>window.CCGLostSizzlerV141R47AllModeOptimisation?.getDiagnostics?.()||null,null),
         globalPerformance:safe(()=>window.CCGLostSizzlerV141R37GlobalPerformance?.getDiagnostics?.()||null,null),
+        soloRuntime:safe(()=>window.CCGLostSizzlerSoloDiagnostics?.snapshot?.()||null,null),
+        authoritativeFire:safe(()=>{
+          const api=window.CCGLostSizzlerV142R58AuthoritativeFireCore,trace=Array.isArray(api?.trace)?api.trace:[];
+          return{lastIntentId:Number(player?.__ccgFireIntentId||0),traceLength:trace.length,lastTraceAt:Number(trace.at(-1)?.at||0),tail:trace.slice(-24).map(row=>compact(row))}
+        },null),
         enemySimulation:safe(()=>window.CCGAI?.getSimulationDiagnostics?.()||null,null),
         liveArrays:safe(()=>({
           enemies:Array.isArray(host?.enemies)?host.enemies.length:0,
@@ -461,8 +466,20 @@
       trapHits:s.diagnostics.trapStability?.trapHits??null,trapRepairs:s.diagnostics.trapStability?.directTrapRepairs??null,
       trapUnderPlayer:s.trapUnderPlayer,trapAnomalies:state.trapAnomalies,
       loopReassertions:s.diagnostics.loopFinalizer?.reassertions??null,renderRepairs:s.diagnostics.renderOwnership?.repairs??null,
+      fps:s.diagnostics.performanceGovernor?.fps??s.diagnostics.globalPerformance?.fps??null,
+      frameMs:s.diagnostics.performanceGovernor?.frameMs??s.diagnostics.globalPerformance?.frameMs??null,
+      simulationRatio:s.diagnostics.soloRuntime?.simulationRatio??null,updateRate:s.diagnostics.soloRuntime?.updateRate??null,rafRate:s.diagnostics.soloRuntime?.rafAcceptedRate??null,
+      liveArrays:s.diagnostics.liveArrays,fireTrace:(s.diagnostics.authoritativeFire?.tail||[]).slice(-8),
       visibility:s.browser.visibility,focus:s.browser.hasFocus
     });
+    const frameProbe={accepted:Number(s.diagnostics.soloRuntime?.r59AcceptedFrames||0),soloFrames:Number(s.diagnostics.soloRuntime?.r59SoloFrames||0),at:performance.now()};
+    const previous=state.lastFrameProbe;
+    if(previous&&s.game.mode==="playing"&&s.game.runActive&&s.browser.visibility==="visible"&&s.browser.hasFocus&&frameProbe.at-previous.at>=SAMPLE_MS*.75&&frameProbe.accepted===previous.accepted&&frameProbe.soloFrames===previous.soloFrames){
+      state.simulationStalls++;state.anomalies++;
+      push("ANOMALY_SIMULATION_STALL",{durationMs:Math.round(frameProbe.at-previous.at),acceptedFrames:frameProbe.accepted,soloFrames:frameProbe.soloFrames,performanceTier:s.game.performanceTier,fps:s.diagnostics.performanceGovernor?.fps??null,frameMs:s.diagnostics.performanceGovernor?.frameMs??null,liveArrays:s.diagnostics.liveArrays,loop:s.diagnostics.loopFinalizer,render:s.diagnostics.renderOwnership});
+      updateBadge()
+    }
+    state.lastFrameProbe=frameProbe;
     return s;
   }
 
@@ -470,10 +487,11 @@
     if(!before?.player1||before.game.mode!=="playing"||!before.game.runActive)return;
     setTimeout(()=>{
       const after=currentSnapshot("attack-probe");
-      const fired=Number(after.player1?.mana)<Number(before.player1?.mana)||
+      const traceCutoff=Number(before.diagnostics.authoritativeFire?.lastTraceAt||0),newFireTrace=(after.diagnostics.authoritativeFire?.tail||[]).filter(row=>Number(row?.at||0)>traceCutoff),shotComplete=newFireTrace.some(row=>String(row?.stage||"")==="shot-complete");
+      const fired=shotComplete||Number(after.player1?.mana)<Number(before.player1?.mana)||
         Number(after.game.activeProjectiles)>Number(before.game.activeProjectiles)||
         Number(after.player1?.meleeSwingAt||0)>Number(before.player1?.meleeSwingAt||0);
-      push("attack-probe",{code,fired,before:{mana:before.player1?.mana,hitStunMs:before.player1?.hitStunMs,meleeSwingAt:before.player1?.meleeSwingAt,fire1:before.game.fire1,buffer:before.game.fireBuffer1,projectiles:before.game.activeProjectiles,mode:before.game.mode},after:{mana:after.player1?.mana,hitStunMs:after.player1?.hitStunMs,meleeSwingAt:after.player1?.meleeSwingAt,fire1:after.game.fire1,buffer:after.game.fireBuffer1,projectiles:after.game.activeProjectiles,mode:after.game.mode}});
+      push("attack-probe",{code,fired,shotComplete,fireTrace:newFireTrace,before:{mana:before.player1?.mana,hitStunMs:before.player1?.hitStunMs,meleeSwingAt:before.player1?.meleeSwingAt,fire1:before.game.fire1,buffer:before.game.fireBuffer1,projectiles:before.game.activeProjectiles,mode:before.game.mode},after:{mana:after.player1?.mana,hitStunMs:after.player1?.hitStunMs,meleeSwingAt:after.player1?.meleeSwingAt,fire1:after.game.fire1,buffer:after.game.fireBuffer1,projectiles:after.game.activeProjectiles,mode:after.game.mode}});
       if(!fired&&after.game.mode==="playing"&&after.game.runActive&&after.browser.visibility==="visible"){
         state.anomalies++;
         const anomalyDetail={
@@ -482,7 +500,8 @@
           meleeSwingAt:after.player1?.meleeSwingAt,fire1:after.game.fire1,buffer:after.game.fireBuffer1,projectiles:after.game.activeProjectiles,
           deepOwnerFallbacks:after.diagnostics.fireRecovery?.deepOwnerFallbacks??null,
           deepOwnerFallbackSuccesses:after.diagnostics.fireRecovery?.deepOwnerFallbackSuccesses??null,
-          inventoryHidden:after.panels.inventory.hidden,activeElement:after.browser.activeElement
+          inventoryHidden:after.panels.inventory.hidden,activeElement:after.browser.activeElement,
+          fireTrace:newFireTrace,performance:{tier:after.game.performanceTier,fps:after.diagnostics.performanceGovernor?.fps??null,frameMs:after.diagnostics.performanceGovernor?.frameMs??null,simulationRatio:after.diagnostics.soloRuntime?.simulationRatio??null,updateRate:after.diagnostics.soloRuntime?.updateRate??null},liveArrays:after.diagnostics.liveArrays
         };
         push("ANOMALY_POSSIBLE_ATTACK_FAILURE",anomalyDetail);
         if(String(after.player1?.weapon?.kind||"").toLowerCase()==="firearm"||Number(after.player1?.mana)>0){
@@ -599,6 +618,9 @@
       `Inventory hidden: ${s.panels.inventory.hidden} | Pause hidden: ${s.panels.pause.hidden} | Focus: ${s.browser.hasFocus} | Active element: ${s.browser.activeElement?.tag||""}#${s.browser.activeElement?.id||""}`,
       `Memory puzzle: ${mem?`phase=${mem.phase} input=${mem.inputIndex}/${mem.sequence.length} failures=${mem.failures} flash=${mem.flashTile}`:"none"}`,
       `Trap monitor: contacts=${state.trapContacts} verifiedHits=${state.trapVerifiedHits} trapAnomalies=${state.trapAnomalies}`,
+      `Runtime: tier=${g.performanceTier} fps=${s.diagnostics.performanceGovernor?.fps??s.diagnostics.globalPerformance?.fps??"-"} frameMs=${s.diagnostics.performanceGovernor?.frameMs??s.diagnostics.globalPerformance?.frameMs??"-"} simRatio=${s.diagnostics.soloRuntime?.simulationRatio??"-"} updateRate=${s.diagnostics.soloRuntime?.updateRate??"-"} rafRate=${s.diagnostics.soloRuntime?.rafAcceptedRate??"-"} stalls=${state.simulationStalls}`,
+      `FX/live arrays: particles=${s.diagnostics.liveArrays?.particles??"-"} rings=${s.diagnostics.liveArrays?.rings??"-"} floaters=${s.diagnostics.liveArrays?.floaters??"-"} enemies=${s.diagnostics.liveArrays?.enemies??"-"} bullets=${s.diagnostics.liveArrays?.bullets??"-"} enemyBullets=${s.diagnostics.liveArrays?.enemyBullets??"-"}`,
+      `FIRE trace tail: ${JSON.stringify((s.diagnostics.authoritativeFire?.tail||[]).slice(-12))}`,
       `Recorded anomalies: ${report.anomalies}`
     ];
     const anomalyEvents=report.recentEvents.filter(event=>String(event.type||"").startsWith("ANOMALY_"));
