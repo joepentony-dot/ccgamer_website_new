@@ -12,6 +12,7 @@ const rare=fs.readFileSync(new URL("js/v10-15-rare-events-balance.js",root),"utf
 const r54=fs.readFileSync(new URL("js/v10-41-r54-playtest-regressions.js",root),"utf8");
 const touch=fs.readFileSync(new URL("js/v10-4-patch.js",root),"utf8");
 const bootstrap=fs.readFileSync(new URL("js/v10-42-bootstrap.js",root),"utf8");
+const stage6=fs.readFileSync(new URL("js/v10-42-stage6-zone-gameplay.js",root),"utf8");
 const version=JSON.parse(fs.readFileSync(new URL("version.json",root),"utf8"));
 
 assert.equal(version.build,"V10.42 r59");
@@ -62,7 +63,9 @@ assert.match(play,/beforeInvuln=Math\.max\(0,Number\(p\.invuln\|\|0\)\)[\s\S]*p\
 assert.match(play,/p\.invuln=Math\.max\(beforeInvuln,Math\.max\(0,Number\(p\.invuln\|\|0\)\)\)/,"a successful trap hit must preserve the stronger of prior and newly granted post-hit protection");
 assert.match(play,/const damageSource=String\(source\|\|"enemy"\),trapDamage=\/trap\/i\.test\(damageSource\)/,"canonical damage owner must derive trap attribution directly from the canonical damage source");
 assert.match(play,/!trapDamage&&p\.armor>0/,"trap damage must preserve armour while non-trap damage retains armour semantics");
-assert.match(play,/updateActiveTrapContacts\(\);/,"the gameplay simulation must own trap contact checks");
+assert.match(play,/function activeTrapAtPlayer\(p,now=performance\.now\(\)\)[\s\S]*function applyCurrentActiveTrapContact\(p,now=performance\.now\(\)\)/,"the canonical owner must resolve the exact active trap on the player cell without a mutable global wrapper");
+assert.match(play,/function movementTriggers\(p,deliberate=false\)[\s\S]*applyCurrentActiveTrapContact\(p,performance\.now\(\)\)[\s\S]*triggerArena\(p\)/,"real movement must commit trap damage before an enemy-spawning arena or encounter mutates the room");
+assert.match(play,/updateRoomEvents\(dt\);processAchievements\(\);[\s\S]*updateActiveTrapContacts\("simulation-post"\)/,"the continuous trap pass must run after late room and encounter systems and before HUD synchronisation");
 assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeTrapCore=authoritativeTrapApi/);
 assert.match(play,/function resetAuthoritativeTrapContacts\(\)[\s\S]*trapCycleHits\.clear\(\)/,"authoritative trap ledger must expose an explicit world-transition reset");
 assert.match(core,/CCGLostSizzlerV142R58AuthoritativeTrapCore\?\.reset\?\.\(\)/,"every new world/floor must clear old player\/trap cycle ownership before play resumes");
@@ -77,8 +80,12 @@ assert.doesNotMatch(familyFallbackBlock,/if\(roomId<0\)continue/,"final trap-fam
 assert.match(familyFallbackBlock,/roomless=roomId<0/,"final trap-family fallback must classify roomless corridor cells without discarding them");
 assert.match(familyFallbackBlock,/const uniqueCell=candidates\.find[\s\S]*?const cell=uniqueCell\|\|candidates\[/,"final trap-family fallback must prefer unused cells and retain a deterministic last-resort reuse path");
 assert.match(familyFallbackBlock,/v142StartWorldCellReuse:!uniqueCell/,"last-resort reused trap cells must remain explicitly diagnosable");
+assert.match(familyFallbackBlock,/v142FinalFamilyGuaranteed=true;representative\.v142FinalFamilyKind=kind/,"final world-start reconciliation must freeze one representative of every public trap family");
 assert.match(core,/Post-initialisation family seal[\s\S]*v142PostStageFamilySeal:true/,"the playable host must re-seal FIRE, SPIKE and SHOCK after late world staging");
 assert.match(core,/post-stage trap-family invariant failed/,"post-stage family sealing must fail safely without breaking world startup");
+assert.match(core,/Post-initialisation family seal[\s\S]*v142FinalFamilyGuaranteed=true;representative\.v142FinalFamilyKind=kind/,"the playable host boundary must freeze the final FIRE, SPIKE and SHOCK representatives");
+assert.match(stage6,/trap\.v142FinalFamilyGuaranteed&&TRAP_FAMILIES\.includes\(guaranteed\)\)trap\.kind=guaranteed/,"Stage 6 must preserve final guaranteed family identity when later tuning runs");
+assert.match(stage6,/for\(const kind of TRAP_FAMILIES\)[\s\S]*v142FinalFamilyGuaranteed=true;representative\.v142FinalFamilyKind=kind/,"Stage 6 reconciliation must seal one representative after family repair");
 assert.doesNotMatch(play,/CCGLostSizzlerV142R19MobileTrapLayoutStability\?\.updateTrapContacts/,"simulation must not depend on the retired R19 implementation");
 assert.match(rare,/function observeTrapContact\(player,now=performance\.now\(\)\)/,"Rare Events may retain passive trap-contact observation for warnings and diagnostics");
 assert.doesNotMatch(rare,/triggerTrap=function triggerTrapV115Reliable/,"Rare Events must not replace the canonical R58 triggerTrap owner");
