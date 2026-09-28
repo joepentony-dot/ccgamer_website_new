@@ -1,3 +1,11 @@
+## R59 post-merge live trap acceptance + numeric armour HUD — 28 September 2026
+
+- Current main is `9abd513b4bc5b7f1d1d579c8ec9a973d3ce68c46`, publishing `V10.42 r59 / 20260928r59`. PR #2398 merged the authoritative FIRE and live ordinary-trap contact repair; #2397 is no longer an active competing owner.
+- The user's R58 screenshots remain the manual acceptance evidence: visible ACTIVE SPIKE/SHOCK contact in an enemy-spawning room left HEALTH at 8/8. #2398 addresses that path by applying lexical exact-cell trap contact before encounter activation and a continuous exact-cell pass after late room/encounter systems.
+- The merged #2398 head's shard-2 failure was in the new browser fixture, not a HEALTH-damage assertion: holding the movement key could move the player one tile beyond the trap before final position sampling. Follow-up commit `680907f526eb2f614c189079ab582d6cd36bc818` changed the fixture to a single real keyboard press. That deterministic test correction is now carried on rebuilt PR #2396 so current main receives a full fresh qualification pass.
+- PR #2396 / `codex/dungeon-armour-hud-number-only-20260928` has been force-rebuilt from current main. It now contains only the still-missing armour HUD correction plus the deterministic post-merge encounter-trap regression and checkpoint updates. Bottom ARMOUR renders `String(p1.armor||0)`; canonical and public-route initial markup use `0`, and the card no longer substitutes P2 health.
+- Required gate for #2396: exact head 0 behind current main, mergeable, canonical/Node green, Chromium shards 1–6 green, all triggered site/package/cache/SEO checks green, and no material unresolved review finding. After merge/deploy, manual acceptance remains sustained FIRE and natural FIRE/SPIKE/SHOCK with encounter enemies still active.
+
 ## R59 live FIRE + enemy-room trap-contact checkpoint — 28 September 2026
 
 - Current production/main baseline at this repair start is `00922200267fb915c9dd38a367b0f2c339097fd5`, publishing `V10.42 r58 / 20260927r58`.
