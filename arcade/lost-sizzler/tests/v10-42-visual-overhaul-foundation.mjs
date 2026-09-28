@@ -8,7 +8,7 @@ const workstream=readFileSync(new URL("../../../docs/ai-work/dungeon-carnage-vis
 
 const visualKeys=[
   "playerSheet","chestSheet","enemyAtlasA","enemyAtlasB",
-  "environmentAtlas","switchSheet","sigilSheet","environmentTileset"
+  "environmentAtlas","switchSheet","switchSecretSheet","sigilSheet","environmentTileset"
 ];
 
 assert.match(overrides,/visuals:\s*\{/,"visual override registry must exist");
@@ -30,7 +30,8 @@ assert.match(renderer,/chestReplacement:make\(selected\("chestSheet"\)\)/,"chest
 assert.match(renderer,/enemyAtlasAReplacement:make\(selected\("enemyAtlasA"\)\)/,"enemy atlas A replacement slot must remain optional");
 assert.match(renderer,/enemyAtlasBReplacement:make\(selected\("enemyAtlasB"\)\)/,"enemy atlas B replacement slot must remain optional");
 assert.match(renderer,/environmentAtlasReplacement:make\(selected\("environmentAtlas"\)\)/,"environment atlas replacement slot must remain optional");
-assert.match(renderer,/switches:make\(selected\("switchSheet"\)\)/,"switch replacement slot must fail safely to no image");
+assert.match(renderer,/switches:make\(selected\("switchSheet","assets\/pixel\/visual-overhaul\/0x72\/lever-left\.png"\)\)/,"ordinary switch must default to the imported local CC0 lever");
+assert.match(renderer,/secretSwitches:make\(selected\("switchSecretSheet","assets\/pixel\/visual-overhaul\/0x72\/lever-right\.png"\)\)/,"secret switch must default to the alternate imported local CC0 lever");
 assert.match(renderer,/sigils:make\(selected\("sigilSheet"\)\)/,"sigil replacement slot must fail safely to no image");
 assert.match(renderer,/environmentTiles:make\(selected\("environmentTileset"\)\)/,"environment tileset slot must fail safely to no image");
 
