@@ -8,7 +8,9 @@ const workstream=readFileSync(new URL("../../../docs/ai-work/dungeon-carnage-vis
 
 const visualKeys=[
   "playerSheet","chestSheet","enemyAtlasA","enemyAtlasB",
-  "environmentAtlas","switchSheet","switchSecretSheet","sigilSheet","environmentTileset"
+  "environmentAtlas","switchSheet","switchSecretSheet","sigilSheet","environmentTileset",
+  "chestFrame0","chestFrame1","chestFrame2",
+  "spikeTrapFrame0","spikeTrapFrame1","spikeTrapFrame2","spikeTrapFrame3"
 ];
 
 assert.match(overrides,/visuals:\s*\{/,"visual override registry must exist");
@@ -32,6 +34,10 @@ assert.match(renderer,/enemyAtlasBReplacement:make\(selected\("enemyAtlasB"\)\)/
 assert.match(renderer,/environmentAtlasReplacement:make\(selected\("environmentAtlas"\)\)/,"environment atlas replacement slot must remain optional");
 assert.match(renderer,/switches:make\(selected\("switchSheet","assets\/pixel\/visual-overhaul\/0x72\/lever-left\.png"\)\)/,"ordinary switch must default to the imported local CC0 lever");
 assert.match(renderer,/secretSwitches:make\(selected\("switchSecretSheet","assets\/pixel\/visual-overhaul\/0x72\/lever-right\.png"\)\)/,"secret switch must default to the alternate imported local CC0 lever");
+assert.match(renderer,/chestFrames:\s*\[/,"renderer must load a frame-based CC0 chest set");
+assert.match(renderer,/spikeTrapFrames:\s*\[/,"renderer must load a frame-based CC0 spike set");
+assert.match(renderer,/lastMode="cc0-frames"/,"live chest renderer must identify the CC0 frame path");
+assert.match(renderer,/t\.kind==="spike"&&spikeArtReady/,"live spike renderer must prefer the imported animation when decoded");
 assert.match(renderer,/sigils:make\(selected\("sigilSheet"\)\)/,"sigil replacement slot must fail safely to no image");
 assert.match(renderer,/environmentTiles:make\(selected\("environmentTileset"\)\)/,"environment tileset slot must fail safely to no image");
 
