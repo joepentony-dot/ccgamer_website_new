@@ -1,3 +1,11 @@
+## R59 deployed fresh-run FIRE/attack failure — 28 September 2026
+
+- User supplied a manual bug report from deployed `V10.42 r59 / 20260928r59` after #2398 merged. The fresh Solo run is correctly in the V10.25 pre-firearm state: AMMO 0/120, weapon none, starter melee expected. Fire timers/projectile capacity are idle, focus is on the game canvas, yet repeated Space probes fail and `_meleeSwingAt` never advances.
+- This identifies a composition defect rather than an ammo/cooldown/focus defect. V10.25 intentionally wraps player creation to start at zero ammo/no firearm and historically wrapped `firePlayer` to dispatch the Archive Sword. R59 sealed/captured the canonical FIRE owner to protect firearm projectile creation, so that historical wrapper is no longer a reliable owner boundary.
+- Repair is on rebuilt PR #2396: canonical `game-play.js` now decides whether the attack requires melee (adjacent target, no firearm, or zero ammo) and delegates to `CCGLostSizzlerMeleeAmmoV125.meleeAttack`. Real firearm projectile insertion remains the R59 lexical transactional path.
+- New `v10-42-r59-fresh-solo-melee-attack.mjs` reproduces the exact deployed condition through a fresh Solo run and real Space input, then also checks the authoritative direct attack API. Static V10.25 coverage now requires this canonical melee bridge so later owner sealing cannot remove starter combat again.
+- Release gate remains full exact-head qualification plus deployed hands-on acceptance: fresh sword attack first, then sustained firearm firing after acquiring the first firearm, plus natural FIRE/SPIKE/SHOCK contact with encounter enemies active.
+
 ## R59 post-merge live trap acceptance + numeric armour HUD — 28 September 2026
 
 - Current main is `9abd513b4bc5b7f1d1d579c8ec9a973d3ce68c46`, publishing `V10.42 r59 / 20260928r59`. PR #2398 merged the authoritative FIRE and live ordinary-trap contact repair; #2397 is no longer an active competing owner.
