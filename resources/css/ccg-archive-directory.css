@@ -427,6 +427,17 @@ body[data-ccg-directory="music-record"] .ccg-composer-intro {
         padding: 7px;
     }
 
+    /* On the full publisher directory, the compact mobile header scrolls away.
+       Pin the search/count/alphabet tray to the actual top of the viewport
+       instead of reserving the old header-height gap. */
+    body[data-ccg-directory="publisher-index"] .ccg-publishers-tools {
+        top: 0;
+    }
+
+    body[data-ccg-directory="publisher-index"] #publisherGrid > [data-publisher-card] {
+        scroll-margin-top: 124px;
+    }
+
     body[data-ccg-directory^="publisher"] .ccg-publisher-grid,
     body[data-ccg-directory^="publisher"] .ccg-publisher-grid--featured,
     body[data-ccg-directory="publisher-record"] .ccg-publisher-game-grid {
