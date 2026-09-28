@@ -41,7 +41,9 @@ assert.match(renderer,/lastMode="cc0-frames"/,"live chest renderer must identify
 assert.match(renderer,/t\.kind==="spike"&&spikeArtReady/,"live spike renderer must prefer the imported animation when decoded");
 assert.match(renderer,/doorLeafClosed:make\(selected\("doorLeafClosed","assets\/pixel\/visual-overhaul\/0x72\/door-leaf-closed\.png"\)\)/,"closed door sprite must remain local and overrideable");
 assert.match(renderer,/doorLeafOpen:make\(selected\("doorLeafOpen","assets\/pixel\/visual-overhaul\/0x72\/door-leaf-open\.png"\)\)/,"open door sprite must remain local and overrideable");
-assert.match(renderer,/sigils:make\(selected\("sigilSheet"\)\)/,"sigil replacement slot must fail safely to no image");
+assert.match(renderer,/frame\*32,0,32,40,-18,-30,36,45/,"ready exit must render the five-frame CC0 portal strip");
+assert.match(renderer,/k==="exitSigil"/,"exit sigil pickup must have a dedicated visual path");
+assert.match(renderer,/sigils:make\(selected\("sigilSheet","assets\/pixel\/visual-overhaul\/cc0-portal\/portal-sheet\.png"\)\)/,"sigil must default to the imported local CC0 portal sheet");
 assert.match(renderer,/environmentTiles:make\(selected\("environmentTileset"\)\)/,"environment tileset slot must fail safely to no image");
 
 assert.match(renderer,/replacement\?\.complete&&replacement\.naturalWidth\?replacement:lostSizzlerPixelAssets\.chests/,"chest replacement must fall back if it is not decoded");
