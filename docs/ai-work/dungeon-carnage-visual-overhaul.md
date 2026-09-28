@@ -270,3 +270,14 @@ No chest gameplay, lock/key, reward or interaction assertion was relaxed.
 - FIRE intentionally retains the idle body pair plus Dungeon Carnage's established recoil/weapon overlay instead of rendering the sheet's bow/staff attack art underneath a firearm.
 - The existing V10.34 explorer sheet and procedural character remain fallback layers if the CC0 sheet cannot decode.
 - Player coordinates, input, collision, projectile ownership, melee timing, firearm cadence and damage are unchanged.
+
+## Enemy animation Stage 3 slice — 28 September 2026
+
+- Imported four unmodified Shade Puny-family CC0 sheets locally: Warrior Red, Human Soldier Red, Archer Green and Mage Red.
+- Official licensing remains anchored to Shade's free Puny Characters page, which lists the free Puny character and monster downloads under CC0. Repository acquisition uses byte-addressable public Git blobs and records each exact SHA in `shade-puny-enemies/PROVENANCE.md`.
+- Standard humanoid enemy families now attempt authored 32x32 Puny animation first. Idle uses columns 0–1, movement 2–3, attack 4–7, hurt 18–20 and defeat 21–23, with Dungeon facing mapped to direction rows 0/2/4/6.
+- Warrior, Soldier, Archer and Mage sheets are distributed across enemy roles so enemies no longer share a single procedural pose language.
+- Spider, Ghost, Death Stalker, followers and malformed/missing sheets remain on the established procedural renderer as intentional fallbacks.
+- The defeat queue now feeds its progress into the authored death sequence before falling back to the previous procedural body.
+- Enemy AI, coordinates, collision, attack cadence, damage, trap ownership, FIRE ownership and progression are unchanged. This slice is renderer/assets only.
+- Fresh exact-head canonical/Node + Chromium qualification is mandatory because runtime JavaScript changed.

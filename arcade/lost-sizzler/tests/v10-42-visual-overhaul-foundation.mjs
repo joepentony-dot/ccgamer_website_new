@@ -7,7 +7,7 @@ const manifest=JSON.parse(readFileSync(new URL("../assets/asset-manifest.json",i
 const workstream=readFileSync(new URL("../../../docs/ai-work/dungeon-carnage-visual-overhaul.md",import.meta.url),"utf8");
 
 const visualKeys=[
-  "playerSheet","chestSheet","enemyAtlasA","enemyAtlasB",
+  "playerSheet","enemyWarriorSheet","enemySoldierSheet","enemyArcherSheet","enemyMageSheet","chestSheet","enemyAtlasA","enemyAtlasB",
   "environmentAtlas","switchSheet","switchSecretSheet","sigilSheet","environmentTileset",
   "chestFrame0","chestFrame1","chestFrame2",
   "spikeTrapFrame0","spikeTrapFrame1","spikeTrapFrame2","spikeTrapFrame3",
@@ -30,6 +30,17 @@ assert.match(renderer,/enemyAtlasB:make\("assets\/pixel\/enemy-atlas-standard-b-
 assert.match(renderer,/environmentAtlas:make\("assets\/pixel\/environment-atlas-v10-35\.png"\)/,"environment atlas fallback must remain local");
 
 assert.match(renderer,/playerReplacement:make\(selected\("playerSheet","assets\/pixel\/visual-overhaul\/shade-puny\/warrior-blue\.png"\)\)/,"player replacement must default to the imported local CC0 Warrior sheet while remaining overrideable");
+assert.match(renderer,/enemyWarrior:make\(selected\("enemyWarriorSheet","assets\/pixel\/visual-overhaul\/shade-puny-enemies\/warrior-red\.png"\)\)/,"enemy warrior sheet must default to the local Shade Puny import");
+assert.match(renderer,/enemySoldier:make\(selected\("enemySoldierSheet","assets\/pixel\/visual-overhaul\/shade-puny-enemies\/soldier-red\.png"\)\)/,"enemy soldier sheet must default to the local Shade Puny import");
+assert.match(renderer,/enemyArcher:make\(selected\("enemyArcherSheet","assets\/pixel\/visual-overhaul\/shade-puny-enemies\/archer-green\.png"\)\)/,"enemy archer sheet must default to the local Shade Puny import");
+assert.match(renderer,/enemyMage:make\(selected\("enemyMageSheet","assets\/pixel\/visual-overhaul\/shade-puny-enemies\/mage-red\.png"\)\)/,"enemy mage sheet must default to the local Shade Puny import");
+assert.match(renderer,/PUNY_ENEMY_IDLE_COLUMNS=Object\.freeze\(\[0,1\]\)/,"enemy idle state must use authored Puny frames");
+assert.match(renderer,/PUNY_ENEMY_WALK_COLUMNS=Object\.freeze\(\[2,3\]\)/,"enemy movement state must use authored Puny frames");
+assert.match(renderer,/PUNY_ENEMY_ATTACK_COLUMNS=Object\.freeze\(\[4,5,6,7\]\)/,"enemy attack state must use a four-frame authored Puny sequence");
+assert.match(renderer,/PUNY_ENEMY_HURT_COLUMNS=Object\.freeze\(\[18,19,20\]\)/,"enemy hurt state must use authored Puny frames");
+assert.match(renderer,/PUNY_ENEMY_DEATH_COLUMNS=Object\.freeze\(\[21,22,23\]\)/,"enemy death state must use authored Puny frames");
+assert.match(renderer,/ghost\.__defeatProgress=progress;if\(!drawPunyEnemySprite\(ghost,cx,cy\)\)drawPixelEnemySprite\(ghost,cx,cy\)/,"defeat visuals must attempt authored Puny death frames before procedural fallback");
+assert.match(renderer,/if\(!drawPunyEnemySprite\(e,cx,cy\)\)drawPixelEnemySprite\(e,cx,cy\)/,"live enemies must attempt richer Puny animation before procedural fallback");
 assert.match(renderer,/chestReplacement:make\(selected\("chestSheet"\)\)/,"chest replacement must be optional and layered above the fallback");
 assert.match(renderer,/enemyAtlasAReplacement:make\(selected\("enemyAtlasA"\)\)/,"enemy atlas A replacement slot must remain optional");
 assert.match(renderer,/enemyAtlasBReplacement:make\(selected\("enemyAtlasB"\)\)/,"enemy atlas B replacement slot must remain optional");

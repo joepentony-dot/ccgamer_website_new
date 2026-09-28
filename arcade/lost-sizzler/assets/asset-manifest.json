@@ -20,6 +20,10 @@
     },
     "visualOverhaul": {
       "playerSheet": "assets/pixel/visual-overhaul/shade-puny/warrior-blue.png",
+      "enemyWarriorSheet": "assets/pixel/visual-overhaul/shade-puny-enemies/warrior-red.png",
+      "enemySoldierSheet": "assets/pixel/visual-overhaul/shade-puny-enemies/soldier-red.png",
+      "enemyArcherSheet": "assets/pixel/visual-overhaul/shade-puny-enemies/archer-green.png",
+      "enemyMageSheet": "assets/pixel/visual-overhaul/shade-puny-enemies/mage-red.png",
       "chestSheet": "assets/pixel/chest-sheet-v10-34.png",
       "enemyAtlasA": "assets/pixel/enemy-atlas-standard-a-v10-35.png",
       "enemyAtlasB": "assets/pixel/enemy-atlas-standard-b-v10-35.png",

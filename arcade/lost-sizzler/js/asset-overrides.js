@@ -9,6 +9,10 @@ window.CCG_ASSET_OVERRIDES={
     logo:null,
     visuals:{
       playerSheet:null,
+      enemyWarriorSheet:null,
+      enemySoldierSheet:null,
+      enemyArcherSheet:null,
+      enemyMageSheet:null,
       chestSheet:null,
       chestFrame0:null,
       chestFrame1:null,
