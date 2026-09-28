@@ -33,8 +33,8 @@ assert.match(reporter,/meleeSwingAt:Number\(player\._meleeSwingAt\|\|0\)/,"bug r
 assert.match(reporter,/ANOMALY_POSSIBLE_ATTACK_FAILURE/,"bug reporter must still flag complete attack failures");
 
 assert.ok(canonical.includes(`ccg-lost-sizzler-cache" content="${cache}`),"canonical runtime must publish the r65 cache token");
-assert.ok(alias.includes(`ccg-lost-sizzler-cache" content="${cache}`),"raw-main public-route alias must publish the same r64 cache token");
-assert.ok(canonical.includes(`game-play.js?v=${cache}`),"canonical game-play script must use r64 cache identity");
-assert.ok(alias.includes(`game-play.js?v=${cache}`),"route alias game-play script must use r64 cache identity");
+assert.ok(alias.includes(`ccg-lost-sizzler-cache" content="${cache}`),"raw-main public-route alias must publish the same r65 cache token");
+assert.ok(canonical.includes(`game-play.js?v=${cache}`),"canonical game-play script must use r65 cache identity");
+assert.ok(alias.includes(`game-play.js?v=${cache}`),"route alias game-play script must use r65 cache identity");
 assert.equal(version.cacheToken,cache,"version metadata must publish the r65 cache token");
 console.log("PASS authoritative combat/trap and r65 public cache contract");
