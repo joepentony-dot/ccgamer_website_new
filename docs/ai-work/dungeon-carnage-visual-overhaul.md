@@ -310,3 +310,23 @@ No chest gameplay, lock/key, reward or interaction assertion was relaxed.
 - The previous procedural swinging-plank door remains the decode/error fallback if either authored state is malformed or unavailable.
 - Focused diagnostics expose whether the current frame used `cc0-door` or `procedural-fallback`, plus orientation/state. Static and Chromium browser contracts cover horizontal closed, vertical open, opening transition and forced image failure.
 - Next visual targets after this slice qualifies: stronger switch/sigil treatment, FIRE/SHOCK trap art, shrines/altars/objective markers, environmental props/furniture and richer biome variation.
+
+
+## Locked hero and enemy identity policy — 28 September 2026
+
+This is a hard product rule for all later character-art slices.
+
+### Player
+- The playable hero must retain the established Cheeky Commodore Gamer identity.
+- The current authoritative identity asset is `assets/pixel/explorer-sheet-v10-34.png` until an expanded CCG-specific animation sheet is produced.
+- A generic free knight/elf/warrior sprite must never become the default player merely because it has more animation frames.
+- External CC0 character sheets may be used as motion/reference templates only if the resulting production frames are restyled/rebuilt to remain recognisably the CCG hero.
+- Firearm/melee/hurt/death animation expansion must preserve that identity.
+
+### Enemies
+- Enemy name and visible sprite must agree.
+- First preference: source a verified CC0/public-domain sprite family that materially matches the established enemy archetype/name.
+- If a generic non-iconic enemy cannot be matched safely, its display name may be changed to fit the adopted sprite.
+- Do not rename named followers, bosses, Count Loadula, Death Stalkers, Sigil Warden or other identity-bearing enemies merely to fit convenient artwork.
+- Maintain an explicit name → gameplay kind → sprite family mapping and test it so later visual work cannot collapse most enemies back into indistinguishable elves/knights.
+
