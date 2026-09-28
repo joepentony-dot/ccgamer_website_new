@@ -145,7 +145,7 @@ test('YouTube URLs are normalised without exposing credentials', () => {
   assert.match(js, /host === 'youtu\.be'/);
   assert.match(js, /\['shorts', 'live', 'embed'\]/);
   assert.match(js, /\^\[A-Za-z0-9_-\]\{11\}\$/);
-  assert.match(js, /VideoObject markup will be withheld rather than guessed/);
+  assert.match(js, /VideoObject markup stays withheld until YouTube exposes verified metadata/);
 });
 
 test('scheduled or private YouTube videos are non-blocking and retried automatically', () => {
