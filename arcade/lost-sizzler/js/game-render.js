@@ -37,7 +37,12 @@ const lostSizzlerPixelAssets=(()=>{
     switches:make(selected("switchSheet","assets/pixel/visual-overhaul/0x72/lever-left.png")),
     secretSwitches:make(selected("switchSecretSheet","assets/pixel/visual-overhaul/0x72/lever-right.png")),
     sigils:make(selected("sigilSheet")),
-    environmentTiles:make(selected("environmentTileset"))
+    environmentTiles:make(selected("environmentTileset")),
+    doorLeafClosed:make(selected("doorLeafClosed","assets/pixel/visual-overhaul/0x72/door-leaf-closed.png")),
+    doorLeafOpen:make(selected("doorLeafOpen","assets/pixel/visual-overhaul/0x72/door-leaf-open.png")),
+    doorFrameLeft:make(selected("doorFrameLeft","assets/pixel/visual-overhaul/0x72/door-frame-left.png")),
+    doorFrameRight:make(selected("doorFrameRight","assets/pixel/visual-overhaul/0x72/door-frame-right.png")),
+    doorFrameTop:make(selected("doorFrameTop","assets/pixel/visual-overhaul/0x72/door-frame-top.png"))
   }
 })();
 const chestRenderDiagnostics=window.__CCG_CHEST_RENDER_DIAGNOSTICS__=window.__CCG_CHEST_RENDER_DIAGNOSTICS__||{assetFrames:0,richFallbackFrames:0,lastMode:"",lastAt:0};
