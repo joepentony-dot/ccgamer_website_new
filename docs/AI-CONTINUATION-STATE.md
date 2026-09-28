@@ -1,3 +1,11 @@
+## Dungeon R59 armour HUD clarity — 28 September 2026
+
+- Live `main` at candidate start is `00922200267fb915c9dd38a367b0f2c339097fd5`; the R58 authoritative FIRE/trap rewrite from #2391 is already merged, and its R58 ownership globals remain unchanged.
+- User screenshot evidence exposed a bounded HUD defect: the permanently labelled **ARMOUR** card still rendered `ARM <number>` through the legacy `hud-p2` multiplex, so the real count could clip to `ARM …`.
+- Draft PR #2396 / `codex/dungeon-armour-hud-number-only-20260928` makes that card numeric-only in both static markup and runtime sync, matching the HEALTH and AMMO cards. It does not change armour mechanics, damage, traps, FIRE, inventory or Split Screen ownership.
+- Public build/cache advances to `V10.42 r59` / `20260928r59` so the corrected `game-core.js` is not hidden behind the r58 browser cache. The retained R56 chest wrapper is now retired by revision >=58 rather than one exact r58 string.
+- #2396 remains draft. Require exact-head canonical/Node contracts, Chromium shards 1–6, all triggered checks green and no material review finding before merge; do not merge without user authorization.
+
 ## Current Dungeon/PR consolidation state — 27 September 2026
 
 - Sole intended Dungeon survivor is draft PR #2391 / `codex/dungeon-authoritative-fire-traps-rewrite-20260927`. It is a from-scratch canonical FIRE/trap rewrite, not another late wrapper stack.
