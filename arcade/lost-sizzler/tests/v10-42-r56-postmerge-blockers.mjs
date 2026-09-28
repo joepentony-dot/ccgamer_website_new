@@ -13,7 +13,7 @@ const publicAlias=fs.readFileSync(new URL("arcade/c64-dungeon-carnage/index.html
 
 for(const html of [canonical,publicAlias]){
   assert.match(html,/ccg-lost-sizzler-build" content="V10\.42 r64"/);
-  assert.match(html,/ccg-lost-sizzler-cache" content="20260928r64"/);
+  assert.match(html,/ccg-lost-sizzler-cache" content="20260928r65"/);
   assert.match(html,/Latest Build Changes · V10\.42 R64/);
   assert.match(html,/ACTIVE BUILD: V10\.42 R64/);
 }
