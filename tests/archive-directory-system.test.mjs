@@ -19,6 +19,16 @@ test("shared archive directory stylesheet covers archive families without synthe
     assert.match(css, /data-collection="Retro Events"/);
     assert.match(css, /data-collection="Amiga Demo Music"/);
     assert.match(css, /position:\s*sticky/);
+    assert.match(
+        css,
+        /body\[data-ccg-directory\^="publisher"\] \.ccg-publishers-tools\s*\{[\s\S]*?position:\s*sticky;[\s\S]*?top:\s*0;/,
+        "publisher search/filter controls should pin to the top of the viewport"
+    );
+    assert.match(
+        css,
+        /body\[data-ccg-directory="publisher-index"\] #publisherGrid > \[data-publisher-card\]\s*\{[\s\S]*?scroll-margin-top:\s*118px;/,
+        "publisher alphabet jumps should account for the sticky tools without the old header gap"
+    );
     assert.doesNotMatch(css, /scroll-behavior:\s*smooth/i);
 });
 
