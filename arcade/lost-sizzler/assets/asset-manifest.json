@@ -1,5 +1,5 @@
 {
-  "instructions": "Edit js/asset-overrides.js for versioned local assets, or use the Arcade Asset Manager to add multiple live tracks to any Lost Sizzler category.",
+  "instructions": "Edit js/asset-overrides.js for versioned local assets. Visual-overhaul replacements must be local repository assets with recorded provenance; do not hotlink production art. The Arcade Asset Manager continues to own live audio playlists.",
   "images": {
     "logo": "assets/ccgamer-logo-fallback.svg",
     "namedEnemies": {
@@ -17,10 +17,26 @@
       "standardEnemiesB": "assets/pixel/enemy-atlas-standard-b-v10-35.png",
       "hordeEnemies": "assets/pixel/enemy-atlas-horde-v10-35.png",
       "doorsAndTorches": "assets/pixel/environment-atlas-v10-35.png"
+    },
+    "visualOverhaul": {
+      "playerSheet": "assets/pixel/explorer-sheet-v10-34.png",
+      "chestSheet": "assets/pixel/chest-sheet-v10-34.png",
+      "enemyAtlasA": "assets/pixel/enemy-atlas-standard-a-v10-35.png",
+      "enemyAtlasB": "assets/pixel/enemy-atlas-standard-b-v10-35.png",
+      "environmentAtlas": "assets/pixel/environment-atlas-v10-35.png",
+      "switchSheet": null,
+      "sigilSheet": null,
+      "environmentTileset": null
     }
   },
   "music": {
-    "categories": ["normal", "danger", "sanctuary", "named", "stalker"],
+    "categories": [
+      "normal",
+      "danger",
+      "sanctuary",
+      "named",
+      "stalker"
+    ],
     "fallbacks": {
       "normal": "assets/audio/music/exploration.wav",
       "danger": "assets/audio/music/danger.wav",
@@ -32,7 +48,13 @@
       "selection": "random within the active category",
       "repeatProtection": "the previous track is excluded when alternatives exist",
       "crossfadeMs": 2500,
-      "priority": ["stalker", "named", "danger", "sanctuary", "normal"],
+      "priority": [
+        "stalker",
+        "named",
+        "danger",
+        "sanctuary",
+        "normal"
+      ],
       "normalBehaviour": "General Exploration resumes when no encounter category is active"
     },
     "adminUploadKeys": {
@@ -45,6 +67,49 @@
   },
   "sfx": {
     "folder": "assets/audio/sfx/",
-    "overrideKeys": ["fire", "hit", "death", "playerDeath", "elite", "hurt", "pickup", "key", "exitSigil", "bronze", "dash", "enemy", "alert", "search", "food", "flame", "wall", "open", "heal", "empty", "respawn", "win", "join", "warp", "door", "dooropen", "locked", "weapon", "armour", "potion", "torch", "room", "campwarn", "explosion", "lowhealth", "cloak", "level", "shrine", "stalker", "trap", "generator", "secret"]
+    "overrideKeys": [
+      "fire",
+      "hit",
+      "death",
+      "playerDeath",
+      "elite",
+      "hurt",
+      "pickup",
+      "key",
+      "exitSigil",
+      "bronze",
+      "dash",
+      "enemy",
+      "alert",
+      "search",
+      "food",
+      "flame",
+      "wall",
+      "open",
+      "heal",
+      "empty",
+      "respawn",
+      "win",
+      "join",
+      "warp",
+      "door",
+      "dooropen",
+      "locked",
+      "weapon",
+      "armour",
+      "potion",
+      "torch",
+      "room",
+      "campwarn",
+      "explosion",
+      "lowhealth",
+      "cloak",
+      "level",
+      "shrine",
+      "stalker",
+      "trap",
+      "generator",
+      "secret"
+    ]
   }
 }
