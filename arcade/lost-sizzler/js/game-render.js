@@ -23,7 +23,8 @@ const lostSizzlerPixelAssets=(()=>{
     enemyAtlasAReplacement:make(selected("enemyAtlasA")),
     enemyAtlasBReplacement:make(selected("enemyAtlasB")),
     environmentAtlasReplacement:make(selected("environmentAtlas")),
-    switches:make(selected("switchSheet")),
+    switches:make(selected("switchSheet","assets/pixel/visual-overhaul/0x72/lever-left.png")),
+    secretSwitches:make(selected("switchSecretSheet","assets/pixel/visual-overhaul/0x72/lever-right.png")),
     sigils:make(selected("sigilSheet")),
     environmentTiles:make(selected("environmentTileset"))
   }
@@ -592,7 +593,37 @@ function drawGenerators(){
     if(g.hpBarMs>0)drawTransientHealth(g,s,P.orange);if(md(g,focus)<3)label(powered?`GENERATOR ${g.hp}/${g.maxHp}`:`GENERATOR DORMANT — NEEDS LIGHT`,s,powered?P.red:P.grey)
   }
 }
-function drawShrinesSwitches(){for(const sh of host.shrines||[]){if(!sh.active||!visibleTo(focus,sh.x,sh.y))continue;const s=ws(sh.x,sh.y),cx=s.x+C.tile/2,cy=s.y+C.tile/2,t=performance.now()/650;ctx.save();ctx.fillStyle="rgba(0,0,0,.46)";ctx.beginPath();ctx.ellipse(cx,s.y+C.tile-4,18,5,0,0,Math.PI*2);ctx.fill();ctx.fillStyle="#261937";ctx.beginPath();ctx.moveTo(cx,s.y+3);ctx.lineTo(s.x+C.tile-4,s.y+C.tile-4);ctx.lineTo(s.x+4,s.y+C.tile-4);ctx.closePath();ctx.fill();ctx.strokeStyle=P.purple;ctx.shadowColor=P.purple;ctx.shadowBlur=18;ctx.lineWidth=2;ctx.stroke();ctx.fillStyle="#4d3169";ctx.fillRect(cx-5,s.y+13,10,20);ctx.fillStyle=P.purple;ctx.globalAlpha=.55+.35*Math.sin(t*5);ctx.fillRect(cx-2,s.y+8,4,23);ctx.globalAlpha=1;for(let n=0;n<6;n++){const a=t+n*Math.PI/3;ctx.fillStyle=n%2?P.purple:P.cyan;ctx.fillRect(cx+Math.cos(a)*14-1,cy+Math.sin(a)*10-1,3,3)}ctx.restore();if(md(sh,focus)<2)label("SHRINE",s,P.purple)}for(const sw of host.switches||[]){if(!sw.active||!visibleTo(focus,sw.x,sw.y))continue;const s=ws(sw.x,sw.y),col=sw.revealSecret?P.purple:P.cyan,pulse=.65+.35*Math.sin(performance.now()/120+sw.x);ctx.save();ctx.fillStyle="#151b26";ctx.fillRect(s.x+4,s.y+4,C.tile-8,C.tile-8);ctx.fillStyle="#344154";ctx.fillRect(s.x+7,s.y+7,C.tile-14,C.tile-14);ctx.strokeStyle=col;ctx.shadowColor=col;ctx.shadowBlur=8+pulse*8;ctx.lineWidth=2;ctx.strokeRect(s.x+6,s.y+6,C.tile-12,C.tile-12);ctx.fillStyle="#081018";ctx.beginPath();ctx.arc(s.x+C.tile/2,s.y+C.tile/2,9,0,Math.PI*2);ctx.fill();ctx.strokeStyle=col;ctx.stroke();ctx.fillStyle=col;ctx.globalAlpha=.6+pulse*.4;ctx.beginPath();ctx.arc(s.x+C.tile/2,s.y+C.tile/2,5,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;for(const [rx,ry] of [[8,8],[C.tile-10,8],[8,C.tile-10],[C.tile-10,C.tile-10]])ctx.fillRect(s.x+rx,s.y+ry,2,2);ctx.restore();if(md(sw,focus)<3)label(sw.revealSecret?"REMOTE SECRET SWITCH — SHOOT OR TOUCH":"WALL SWITCH — SHOOT OR TOUCH",s,col)}}
+function drawShrinesSwitches(){
+  for(const sh of host.shrines||[]){
+    if(!sh.active||!visibleTo(focus,sh.x,sh.y))continue;
+    const s=ws(sh.x,sh.y),cx=s.x+C.tile/2,cy=s.y+C.tile/2,t=performance.now()/650;
+    ctx.save();ctx.fillStyle="rgba(0,0,0,.46)";ctx.beginPath();ctx.ellipse(cx,s.y+C.tile-4,18,5,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#261937";ctx.beginPath();ctx.moveTo(cx,s.y+3);ctx.lineTo(s.x+C.tile-4,s.y+C.tile-4);ctx.lineTo(s.x+4,s.y+C.tile-4);ctx.closePath();ctx.fill();
+    ctx.strokeStyle=P.purple;ctx.shadowColor=P.purple;ctx.shadowBlur=18;ctx.lineWidth=2;ctx.stroke();ctx.fillStyle="#4d3169";ctx.fillRect(cx-5,s.y+13,10,20);
+    ctx.fillStyle=P.purple;ctx.globalAlpha=.55+.35*Math.sin(t*5);ctx.fillRect(cx-2,s.y+8,4,23);ctx.globalAlpha=1;
+    for(let n=0;n<6;n++){const angle=t+n*Math.PI/3;ctx.fillStyle=n%2?P.purple:P.cyan;ctx.fillRect(cx+Math.cos(angle)*14-1,cy+Math.sin(angle)*10-1,3,3)}
+    ctx.restore();if(md(sh,focus)<2)label("SHRINE",s,P.purple)
+  }
+  for(const sw of host.switches||[]){
+    if(!sw.active||!visibleTo(focus,sw.x,sw.y))continue;
+    const s=ws(sw.x,sw.y),col=sw.revealSecret?P.purple:P.cyan,pulse=.65+.35*Math.sin(performance.now()/120+sw.x);
+    const switchArt=sw.revealSecret?lostSizzlerPixelAssets.secretSwitches:lostSizzlerPixelAssets.switches;
+    ctx.save();ctx.fillStyle="rgba(0,0,0,.42)";ctx.beginPath();ctx.ellipse(s.x+C.tile/2,s.y+C.tile-3,15,4,0,0,Math.PI*2);ctx.fill();
+    if(switchArt?.complete&&switchArt.naturalWidth>=16){
+      ctx.imageSmoothingEnabled=false;ctx.shadowColor=col;ctx.shadowBlur=7+pulse*8;
+      ctx.fillStyle="#11131a";ctx.fillRect(s.x+4,s.y+4,C.tile-8,C.tile-8);
+      ctx.drawImage(switchArt,s.x+5,s.y+5,C.tile-10,C.tile-10);
+      ctx.globalAlpha=.34+pulse*.3;ctx.strokeStyle=col;ctx.lineWidth=2;ctx.strokeRect(s.x+4,s.y+4,C.tile-8,C.tile-8);ctx.globalAlpha=1;
+    }else{
+      ctx.fillStyle="#151b26";ctx.fillRect(s.x+4,s.y+4,C.tile-8,C.tile-8);ctx.fillStyle="#344154";ctx.fillRect(s.x+7,s.y+7,C.tile-14,C.tile-14);
+      ctx.strokeStyle=col;ctx.shadowColor=col;ctx.shadowBlur=8+pulse*8;ctx.lineWidth=2;ctx.strokeRect(s.x+6,s.y+6,C.tile-12,C.tile-12);
+      ctx.fillStyle="#081018";ctx.beginPath();ctx.arc(s.x+C.tile/2,s.y+C.tile/2,9,0,Math.PI*2);ctx.fill();ctx.strokeStyle=col;ctx.stroke();
+      ctx.fillStyle=col;ctx.globalAlpha=.6+pulse*.4;ctx.beginPath();ctx.arc(s.x+C.tile/2,s.y+C.tile/2,5,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+      for(const [rx,ry] of [[8,8],[C.tile-10,8],[8,C.tile-10],[C.tile-10,C.tile-10]])ctx.fillRect(s.x+rx,s.y+ry,2,2);
+    }
+    ctx.restore();if(md(sw,focus)<3)label(sw.revealSecret?"REMOTE SECRET SWITCH — SHOOT OR TOUCH":"WALL SWITCH — SHOOT OR TOUCH",s,col)
+  }
+}
 function drawTraps(){const now=performance.now();for(const t of host.traps||[]){if(!visibleTo(focus,t.x,t.y))continue;const s=ws(t.x,t.y),active=SYS.trapActive(t,now),col=t.kind==="fire"?P.orange:t.kind==="shock"?P.cyan:P.red;ctx.save();ctx.globalAlpha=active?1:.38;ctx.strokeStyle=active?col:P.green;ctx.fillStyle=active?col:P.green;ctx.lineWidth=active?3:1.5;if(t.kind==="spike"){for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(s.x+5+i*7,s.y+C.tile-5);ctx.lineTo(s.x+9+i*7,s.y+8);ctx.lineTo(s.x+13+i*7,s.y+C.tile-5);ctx.stroke()}}else{ctx.strokeRect(s.x+5,s.y+5,C.tile-10,C.tile-10);ctx.beginPath();ctx.moveTo(s.x+6,s.y+6);ctx.lineTo(s.x+C.tile-6,s.y+C.tile-6);ctx.moveTo(s.x+C.tile-6,s.y+6);ctx.lineTo(s.x+6,s.y+C.tile-6);ctx.stroke()}ctx.globalAlpha=1;ctx.fillStyle=active?col:P.green;ctx.fillRect(s.x+3,s.y+3,6,3);ctx.restore();if(md(t,focus)<=2)label(`${t.kind.toUpperCase()} TRAP — ${active?"ACTIVE":"SAFE CYCLE"}`,s,active?col:P.green)}}
 function drawBoulderTrap(){const b=host.boulderTrap;if(!b||(!b.active&&!b.triggered)||!visibleTo(focus,b.x,b.y))return;const s=ws(b.x,b.y),cx=s.x+C.tile/2,cy=s.y+C.tile/2,t=performance.now()/90;ctx.save();ctx.translate(cx,cy);ctx.rotate(t*(b.dx||b.dy||1));ctx.shadowColor=b.warningMs>0?P.red:"#6e6671";ctx.shadowBlur=b.warningMs>0?18:8;ctx.fillStyle="#403b44";ctx.beginPath();ctx.arc(0,0,15,0,Math.PI*2);ctx.fill();ctx.strokeStyle="#817887";ctx.lineWidth=2;ctx.stroke();ctx.fillStyle="#242029";ctx.fillRect(-8,-8,6,5);ctx.fillRect(4,-3,7,5);ctx.fillRect(-4,6,6,5);ctx.fillStyle="#9b919f";ctx.fillRect(-7,-10,5,3);ctx.restore();if(md(b,focus)<=4)label(b.warningMs>0?"BOULDER — MOVE!":"ROLLING BOULDER",s,P.red)}
 function merchantVisual(t){
