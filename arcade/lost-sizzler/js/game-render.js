@@ -17,6 +17,17 @@ const lostSizzlerPixelAssets=(()=>{
     chests:make("assets/pixel/chest-sheet-v10-34.png"),
     playerReplacement:make(selected("playerSheet")),
     chestReplacement:make(selected("chestSheet")),
+    chestFrames:[
+      make(selected("chestFrame0","assets/pixel/visual-overhaul/0x72/chest-full-f0.png")),
+      make(selected("chestFrame1","assets/pixel/visual-overhaul/0x72/chest-full-f1.png")),
+      make(selected("chestFrame2","assets/pixel/visual-overhaul/0x72/chest-full-f2.png"))
+    ],
+    spikeTrapFrames:[
+      make(selected("spikeTrapFrame0","assets/pixel/visual-overhaul/0x72/spikes-f0.png")),
+      make(selected("spikeTrapFrame1","assets/pixel/visual-overhaul/0x72/spikes-f1.png")),
+      make(selected("spikeTrapFrame2","assets/pixel/visual-overhaul/0x72/spikes-f2.png")),
+      make(selected("spikeTrapFrame3","assets/pixel/visual-overhaul/0x72/spikes-f3.png"))
+    ],
     enemyAtlasA:make("assets/pixel/enemy-atlas-standard-a-v10-35.png"),
     enemyAtlasB:make("assets/pixel/enemy-atlas-standard-b-v10-35.png"),
     environmentAtlas:make("assets/pixel/environment-atlas-v10-35.png"),
@@ -294,20 +305,30 @@ function drawAnimatedChestFallback(c,s,col,now,anim,pulse){
   ctx.restore();
 }
 function drawChests(){
-  const now=performance.now(),replacement=lostSizzlerPixelAssets.chestReplacement,pixelSheet=replacement?.complete&&replacement.naturalWidth?replacement:lostSizzlerPixelAssets.chests;
+  const now=performance.now(),customSheet=lostSizzlerPixelAssets.chestReplacement,frameSet=lostSizzlerPixelAssets.chestFrames||[],frameArtReady=frameSet.length===3&&frameSet.every(image=>image?.complete&&image.naturalWidth>0),pixelSheet=customSheet?.complete&&customSheet.naturalWidth>=160?customSheet:lostSizzlerPixelAssets.chests;
   for(const c of host.chests||[]){
     const anim=c.openedAt?Math.max(0,Math.min(1,(now-c.openedAt)/650)):0;if(!c.active&&!c.openedAt)continue;if(!visibleTo(focus,c.x,c.y))continue;
     const s=ws(c.x,c.y),rar=c.loot?.rarity,col=PGR.colourForRarity(rar),cx=s.x+C.tile/2,pulse=.6+.4*Math.sin(now/180+c.x*3);
-    // The authored chest sheet is authoritative when it is available; the rich fallback below is only a loading/error fallback.
+    // Stage-1 CC0 chest frames are the default live presentation. Explicit
+    // custom sheets can still override them; V10.34 and canvas art remain safe
+    // fallbacks if the new frame set has not decoded.
+    if(frameArtReady&&!(customSheet?.complete&&customSheet.naturalWidth>=160)){
+      const index=c.openedAt?Math.min(2,Math.floor(anim*3)):0,image=frameSet[index];
+      ctx.save();ctx.imageSmoothingEnabled=false;ctx.fillStyle="rgba(0,0,0,.48)";ctx.beginPath();ctx.ellipse(cx,s.y+C.tile-2,14,4,0,0,Math.PI*2);ctx.fill();
+      ctx.shadowColor=c.locked?P.gold:col;ctx.shadowBlur=c.active?8+pulse*7:10;ctx.drawImage(image,Math.round(s.x),Math.round(s.y),C.tile,C.tile);
+      if(c.active){ctx.globalAlpha=.34+pulse*.3;ctx.strokeStyle=c.locked?P.gold:col;ctx.lineWidth=2;ctx.strokeRect(s.x+2,s.y+2,C.tile-4,C.tile-4)}
+      if(c.locked){ctx.globalAlpha=1;ctx.fillStyle=P.gold;ctx.fillRect(cx-2,s.y+C.tile-13,4,6);ctx.fillStyle="#4b3214";ctx.fillRect(cx-1,s.y+C.tile-12,2,3)}
+      if(anim>0){ctx.globalAlpha=1-anim*.25;ctx.fillStyle=c.locked?P.gold:col;for(let n=0;n<8;n++){const a=n*1.7+now/180,rad=5+anim*(8+n%3*3);ctx.fillRect(cx+Math.cos(a)*rad,s.y+10+Math.sin(a)*rad*.5,2,2)}}
+      ctx.restore();chestRenderDiagnostics.assetFrames++;chestRenderDiagnostics.lastMode="cc0-frames";chestRenderDiagnostics.lastAt=now;
+      if(md(c,focus)<=2)label(c.active?(c.locked?"LOCKED DUNGEON CHEST":`${rar||"COMMON"} CHEST`):"CHEST OPENED",{x:s.x,y:s.y-1},c.locked?P.gold:col);continue
+    }
     if(pixelSheet?.complete&&pixelSheet.naturalWidth>=160){
       const rare=/ZZAP|GOLD|SIZZLER/i.test(String(rar||"")),row=c.locked?2:rare?1:0,column=c.openedAt?Math.min(4,2+Math.floor(anim*3)):(Math.sin(now/260+c.x*2+c.y)>.72?1:0);
       ctx.save();ctx.imageSmoothingEnabled=false;ctx.fillStyle="rgba(0,0,0,.48)";ctx.beginPath();ctx.ellipse(cx,s.y+C.tile-2,14,4,0,0,Math.PI*2);ctx.fill();ctx.shadowColor=c.locked?P.gold:col;ctx.shadowBlur=c.active?8+pulse*7:10;ctx.drawImage(pixelSheet,column*32,row*32,32,32,Math.round(s.x),Math.round(s.y),C.tile,C.tile);
       if(c.active){ctx.globalAlpha=.34+pulse*.3;ctx.strokeStyle=c.locked?P.gold:col;ctx.strokeRect(s.x+2,s.y+2,C.tile-4,C.tile-4)}
-      if(anim>0){ctx.globalAlpha=1-anim*.25;ctx.fillStyle=c.locked?P.gold:col;for(let n=0;n<8;n++){const a=n*1.7+now/180,r=5+anim*(8+n%3*3);ctx.fillRect(cx+Math.cos(a)*r,s.y+10+Math.sin(a)*r*.5,2,2)}}
-      ctx.restore();chestRenderDiagnostics.assetFrames++;chestRenderDiagnostics.lastMode="asset";chestRenderDiagnostics.lastAt=now;if(md(c,focus)<=2)label(c.active?(c.locked?"LOCKED DUNGEON CHEST":`${rar||"COMMON"} CHEST`):"CHEST OPENED",{x:s.x,y:s.y-1},c.locked?P.gold:col);continue
+      if(anim>0){ctx.globalAlpha=1-anim*.25;ctx.fillStyle=c.locked?P.gold:col;for(let n=0;n<8;n++){const a=n*1.7+now/180,rad=5+anim*(8+n%3*3);ctx.fillRect(cx+Math.cos(a)*rad,s.y+10+Math.sin(a)*rad*.5,2,2)}}
+      ctx.restore();chestRenderDiagnostics.assetFrames++;chestRenderDiagnostics.lastMode="legacy-sheet";chestRenderDiagnostics.lastAt=now;if(md(c,focus)<=2)label(c.active?(c.locked?"LOCKED DUNGEON CHEST":`${rar||"COMMON"} CHEST`):"CHEST OPENED",{x:s.x,y:s.y-1},c.locked?P.gold:col);continue
     }
-    // Never regress to a wireframe placeholder. If the authored sheet is still
-    // decoding or fails, retain a full animated pixel chest presentation.
     drawAnimatedChestFallback(c,s,col,now,anim,pulse);
     chestRenderDiagnostics.richFallbackFrames++;chestRenderDiagnostics.lastMode="rich-fallback";chestRenderDiagnostics.lastAt=now;
     if(md(c,focus)<=2)label(c.active?(c.locked?"LOCKED DUNGEON CHEST":`${rar||"COMMON"} CHEST`):"CHEST OPENED",{x:s.x,y:s.y-1},c.locked?P.gold:col)
@@ -624,7 +645,25 @@ function drawShrinesSwitches(){
     ctx.restore();if(md(sw,focus)<3)label(sw.revealSecret?"REMOTE SECRET SWITCH — SHOOT OR TOUCH":"WALL SWITCH — SHOOT OR TOUCH",s,col)
   }
 }
-function drawTraps(){const now=performance.now();for(const t of host.traps||[]){if(!visibleTo(focus,t.x,t.y))continue;const s=ws(t.x,t.y),active=SYS.trapActive(t,now),col=t.kind==="fire"?P.orange:t.kind==="shock"?P.cyan:P.red;ctx.save();ctx.globalAlpha=active?1:.38;ctx.strokeStyle=active?col:P.green;ctx.fillStyle=active?col:P.green;ctx.lineWidth=active?3:1.5;if(t.kind==="spike"){for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(s.x+5+i*7,s.y+C.tile-5);ctx.lineTo(s.x+9+i*7,s.y+8);ctx.lineTo(s.x+13+i*7,s.y+C.tile-5);ctx.stroke()}}else{ctx.strokeRect(s.x+5,s.y+5,C.tile-10,C.tile-10);ctx.beginPath();ctx.moveTo(s.x+6,s.y+6);ctx.lineTo(s.x+C.tile-6,s.y+C.tile-6);ctx.moveTo(s.x+C.tile-6,s.y+6);ctx.lineTo(s.x+6,s.y+C.tile-6);ctx.stroke()}ctx.globalAlpha=1;ctx.fillStyle=active?col:P.green;ctx.fillRect(s.x+3,s.y+3,6,3);ctx.restore();if(md(t,focus)<=2)label(`${t.kind.toUpperCase()} TRAP — ${active?"ACTIVE":"SAFE CYCLE"}`,s,active?col:P.green)}}
+function drawTraps(){
+  const now=performance.now(),spikeFrames=lostSizzlerPixelAssets.spikeTrapFrames||[],spikeArtReady=spikeFrames.length===4&&spikeFrames.every(image=>image?.complete&&image.naturalWidth>0);
+  for(const t of host.traps||[]){
+    if(!visibleTo(focus,t.x,t.y))continue;
+    const s=ws(t.x,t.y),active=SYS.trapActive(t,now),col=t.kind==="fire"?P.orange:t.kind==="shock"?P.cyan:P.red;
+    if(t.kind==="spike"&&spikeArtReady){
+      const frame=active?1+(Math.floor(now/110+Number(t.phase||0)/110)%3):0,image=spikeFrames[frame];
+      ctx.save();ctx.imageSmoothingEnabled=false;ctx.globalAlpha=active?1:.62;ctx.shadowColor=active?P.red:P.green;ctx.shadowBlur=active?10:3;
+      ctx.drawImage(image,Math.round(s.x),Math.round(s.y),C.tile,C.tile);
+      ctx.globalAlpha=.8;ctx.strokeStyle=active?P.red:P.green;ctx.lineWidth=active?2:1;ctx.strokeRect(s.x+2,s.y+2,C.tile-4,C.tile-4);ctx.restore();
+    }else{
+      ctx.save();ctx.globalAlpha=active?1:.38;ctx.strokeStyle=active?col:P.green;ctx.fillStyle=active?col:P.green;ctx.lineWidth=active?3:1.5;
+      if(t.kind==="spike"){for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(s.x+5+i*7,s.y+C.tile-5);ctx.lineTo(s.x+9+i*7,s.y+8);ctx.lineTo(s.x+13+i*7,s.y+C.tile-5);ctx.stroke()}}
+      else{ctx.strokeRect(s.x+5,s.y+5,C.tile-10,C.tile-10);ctx.beginPath();ctx.moveTo(s.x+6,s.y+6);ctx.lineTo(s.x+C.tile-6,s.y+C.tile-6);ctx.moveTo(s.x+C.tile-6,s.y+6);ctx.lineTo(s.x+6,s.y+C.tile-6);ctx.stroke()}
+      ctx.globalAlpha=1;ctx.fillStyle=active?col:P.green;ctx.fillRect(s.x+3,s.y+3,6,3);ctx.restore();
+    }
+    if(md(t,focus)<=2)label(`${t.kind.toUpperCase()} TRAP — ${active?"ACTIVE":"SAFE CYCLE"}`,s,active?col:P.green)
+  }
+}
 function drawBoulderTrap(){const b=host.boulderTrap;if(!b||(!b.active&&!b.triggered)||!visibleTo(focus,b.x,b.y))return;const s=ws(b.x,b.y),cx=s.x+C.tile/2,cy=s.y+C.tile/2,t=performance.now()/90;ctx.save();ctx.translate(cx,cy);ctx.rotate(t*(b.dx||b.dy||1));ctx.shadowColor=b.warningMs>0?P.red:"#6e6671";ctx.shadowBlur=b.warningMs>0?18:8;ctx.fillStyle="#403b44";ctx.beginPath();ctx.arc(0,0,15,0,Math.PI*2);ctx.fill();ctx.strokeStyle="#817887";ctx.lineWidth=2;ctx.stroke();ctx.fillStyle="#242029";ctx.fillRect(-8,-8,6,5);ctx.fillRect(4,-3,7,5);ctx.fillRect(-4,6,6,5);ctx.fillStyle="#9b919f";ctx.fillRect(-7,-10,5,3);ctx.restore();if(md(b,focus)<=4)label(b.warningMs>0?"BOULDER — MOVE!":"ROLLING BOULDER",s,P.red)}
 function merchantVisual(t){
   const id=String(t?.stage7NpcId||""),entrance=t?.shopType==="entrance";
