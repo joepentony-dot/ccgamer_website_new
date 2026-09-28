@@ -32,11 +32,13 @@
   // those lifecycle boundaries rebase the accepted RAF timestamp.
   const SOLO_MAX_VISIBLE_FRAME_MS=1080;
   const SOLO_MAX_STEPS=24;
+  const LOOP_STALL_WATCHDOG_MS=1400;
   const state={
     timer:0,installed:false,clockInstalled:false,pauseWrapped:false,soloSaveTransitionInstalled:false,
     acceptedFrames:0,duplicateFramesSkipped:0,longGaps:0,longGapRecoveries:0,
-    pausedGapsDiscarded:0,pauseBoundaries:0,lastAcceptedRafTimestamp:null,
+    pausedGapsDiscarded:0,pauseBoundaries:0,lastAcceptedRafTimestamp:null,lastAcceptedWallAt:0,
     lastMode:"",suppressRecoveryUntil:0,lastPauseReason:"",lastError:"",
+    loopWatchdogChecks:0,loopWatchdogRecoveries:0,lastLoopWatchdogAt:0,
     faultBridges:0,diagnosticBridges:0,clockOwnerReassertions:0,r58Reassertions:0,r58Ticks:0,soloSaveTransitionInstalls:0,soloFloorAutosaves:0,
     soloFrames:0,soloSubsteps:0,soloCatchupFrames:0,soloDiscardedVisibleMs:0,soloLastElapsed:0,soloLastSteps:0
   };
@@ -156,7 +158,7 @@
     const hasTimestamp=finite(timestamp),t=hasTimestamp?Number(timestamp):perfNow();
     const accepted=state.lastAcceptedRafTimestamp,hasPreviousAccepted=accepted!==null&&accepted!==undefined&&finite(accepted);
     if(hasTimestamp&&hasPreviousAccepted&&t<=Number(accepted)){
-      noteDuplicateFrame();
+      noteDuplicateFrame();state.lastAcceptedWallAt=perfNow();
       return
     }
 
@@ -178,7 +180,7 @@
       }else dt=Math.min(SOLO_MAX_STEP_MS,Math.max(0,gap));
     }
 
-    setAcceptedRafTimestamp(t);state.lastMode=modeNow;state.acceptedFrames++;
+    setAcceptedRafTimestamp(t);state.lastAcceptedWallAt=perfNow();state.lastMode=modeNow;state.acceptedFrames++;
     try{last=t}catch(_){}
     try{if(typeof damageFlash!=="undefined"&&damageFlash>0)damageFlash=Math.max(0,damageFlash-dt/500)}catch(error){noteFault("frame-clock",error)}
     if(soloHandled)runSoloUpdates(gap);
@@ -246,8 +248,20 @@
     return false
   }
 
+  function ensureLoopLiveness(){
+    state.loopWatchdogChecks++;
+    if(!soloDungeonPlaying())return false;
+    const now=perfNow(),last=Math.max(0,Number(state.lastAcceptedWallAt||0));
+    if(!last){state.lastAcceptedWallAt=now;return false}
+    if(now-last<LOOP_STALL_WATCHDOG_MS)return false;
+    if(now-Math.max(0,Number(state.lastLoopWatchdogAt||0))<LOOP_STALL_WATCHDOG_MS)return false;
+    state.lastLoopWatchdogAt=now;state.loopWatchdogRecoveries++;
+    try{requestAnimationFrame(stableLoopR59);return true}
+    catch(error){noteFault("loop-watchdog",error);return false}
+  }
+
   function ensure(){
-    installClockOwner();installPauseOwners();installSoloSaveTransitionOwner();reassertR58();
+    installClockOwner();installPauseOwners();installSoloSaveTransitionOwner();reassertR58();ensureLoopLiveness();
     state.installed=state.clockInstalled&&state.pauseWrapped;
     return state.installed
   }
@@ -258,8 +272,8 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
   window.CCGLostSizzlerV141R59LiveRegressionFixes={
-    MONITOR_MS,LONG_GAP_MS,PAUSE_GUARD_MS,SOLO_MAX_STEP_MS,SOLO_MAX_VISIBLE_FRAME_MS,SOLO_MAX_STEPS,
-    stableLoopR59,runSoloUpdates,soloDungeonPlaying,markPauseBoundary,safeGapRecovery,noteFault,noteDuplicateFrame,noteFrameStall,setAcceptedRafTimestamp,installClockOwner,installPauseOwners,installSoloSaveTransitionOwner,reassertR58,normaliseAudioRate,ensure,
+    MONITOR_MS,LONG_GAP_MS,PAUSE_GUARD_MS,SOLO_MAX_STEP_MS,SOLO_MAX_VISIBLE_FRAME_MS,SOLO_MAX_STEPS,LOOP_STALL_WATCHDOG_MS,
+    stableLoopR59,runSoloUpdates,soloDungeonPlaying,markPauseBoundary,safeGapRecovery,noteFault,noteDuplicateFrame,noteFrameStall,setAcceptedRafTimestamp,installClockOwner,installPauseOwners,installSoloSaveTransitionOwner,reassertR58,normaliseAudioRate,ensureLoopLiveness,ensure,
     get state(){return state}
   };
 })();
