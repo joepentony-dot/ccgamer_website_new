@@ -160,24 +160,28 @@ async function readPlayerTrapState(page){
 
 async function exerciseImmediateDuplicateTrapOwner(page){
   return page.evaluate(()=>globalThis.eval(`(()=>{
+    const api=window.CCGLostSizzlerV142R58AuthoritativeTrapCore||window.CCGLostSizzlerV142R19MobileTrapLayoutStability;
+    const trap=(host?.traps||[]).find(candidate=>candidate?.active&&Number(candidate.x)===Number(p1?.x)&&Number(candidate.y)===Number(p1?.y)&&api?.trapActive?.(candidate,performance.now()))||null;
     const before={
       health:Number(p1?.health||0),
       armor:Number(p1?.armor||0),
       invuln:Number(p1?.invuln||0),
       xp:Number(p1?.xp||0),
       totalXp:Number(p1?.totalXp||0),
-      trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0)
+      trapHits:Number(api?.state?.trapHits||0),
+      contactBlocks:Number(api?.state?.trapContactBlocks||0)
     };
-    const result=window.hurtPlayer?.(p1,1,false,"spike trap");
+    const result=trap?api?.damageValidatedTrapContact?.(p1,trap):null;
     const after={
       health:Number(p1?.health||0),
       armor:Number(p1?.armor||0),
       invuln:Number(p1?.invuln||0),
       xp:Number(p1?.xp||0),
       totalXp:Number(p1?.totalXp||0),
-      trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0)
+      trapHits:Number(api?.state?.trapHits||0),
+      contactBlocks:Number(api?.state?.trapContactBlocks||0)
     };
-    return{before,after,result};
+    return{before,after,result,trapFound:Boolean(trap)};
   })()`));
 }
 
@@ -277,20 +281,20 @@ async function runViewport(viewport){
   assert.ok(first.invuln>0,"touch-triggered trap damage must preserve canonical post-hit invulnerability");
   assert.equal(first.trapHits,fixture.trapHits+1,"one touch trap entry must create exactly one successful health hit");
 
-  // Stay on the same live trap contact and exercise the real window.hurtPlayer
-  // chain synchronously. The older regression teleported off the tile, re-armed
-  // the contact and then waited through more browser frames before re-entering;
-  // that is a new contact and can legitimately outlive the original 800ms
-  // invulnerability window. This observation instead proves the production
-  // post-hit owner cannot create a duplicate while invulnerability/contact
-  // ownership from the real touch hit is still active.
+  // Stay on the same live trap contact and invoke the authoritative R64 trap
+  // owner again. Long-frame catch-up is allowed to consume transient post-hit
+  // invulnerability, so duplicate ownership is proved by the cycle/contact
+  // ledger itself rather than by assuming the 800ms invulnerability timer is
+  // still positive when this assertion executes.
   const duplicate=await exerciseImmediateDuplicateTrapOwner(page);
-  assert.ok(duplicate.before.invuln>0,"duplicate trap observation must begin inside first-hit invulnerability");
-  assert.equal(duplicate.after.health,duplicate.before.health,"invulnerability/contact ownership must suppress an immediate duplicate trap health hit");
+  assert.equal(duplicate.trapFound,true,"duplicate trap observation must resolve the occupied active trap through the authoritative owner");
+  assert.equal(duplicate.result,false,"same-cycle duplicate trap contact must be rejected by the authoritative contact ledger");
+  assert.equal(duplicate.after.health,duplicate.before.health,"contact ownership must suppress an immediate duplicate trap health hit");
   assert.equal(duplicate.after.armor,duplicate.before.armor,"suppressed duplicate trap damage must not consume armour");
   assert.equal(duplicate.after.xp,duplicate.before.xp,"suppressed duplicate trap damage must not award XP");
   assert.equal(duplicate.after.totalXp,duplicate.before.totalXp,"suppressed duplicate trap damage must not alter total XP");
   assert.equal(duplicate.after.trapHits,duplicate.before.trapHits,"suppressed duplicate trap damage must not be recorded as another health hit");
+  assert.ok(duplicate.after.contactBlocks>=duplicate.before.contactBlocks+1,"same-cycle duplicate must be observable as an authoritative trap contact block");
 
   // A trap can switch from SAFE to ACTIVE while the player remains on the tile.
   // The r45 lifecycle monitor must apply that visible active phase without
