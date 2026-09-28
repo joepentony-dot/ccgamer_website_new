@@ -17,6 +17,8 @@ assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeTrapCore=authoritat
 assert.match(r56,/PGR\?\.lootForChest\?\.\(chest,run,Math\.random\)/,"a chest without precomputed loot must generate a reward before opening");
 assert.match(r56,/INVENTORY FULL — CHEST HELD/,"full inventory must leave carried chest loot recoverable");
 assert.match(r56,/state\.deliveredChestLoot\.has\(loot\)/,"chest delivery must be idempotent");
+assert.match(r56,/startsWith\("V10\\.42"\)/,"retired R56 chest delivery must remain disabled for every V10.42 revision rather than one exact r-build");
+assert.doesNotMatch(r56,/content==="V10\.42 r\d+"/,"retired R56 chest ownership must not depend on an exact V10.42 revision");
 assert.match(r56,/SHRINE REWARD/,"shrines must announce the exact granted stat changes");
 assert.match(r56,/\+0 XP · FLOOR CAP/,"XP orbs at the floor cap must never fail silently");
 assert.match(r56,/SCORE/,"score pickup feedback must remain available above the player");
