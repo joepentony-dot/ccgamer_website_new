@@ -22,10 +22,12 @@ for(const html of [index,alias]){
   assert.match(html,/id="extract-btn">Bank Loot & Exit</,"floor-clear overlay must retain extraction");
 }
 assert.match(core,/stay:\$\("stay-floor-btn"\)/,"core UI map must own the stay-on-floor control");
+assert.match(main,/UI\.descend\?\.addEventListener\("click",\(\)=>descendFloor\(\)\)/,"descent click must resolve the late authoritative Warden wrapper at click time");
 assert.match(main,/UI\.stay\?\.addEventListener\("click",stayOnFloor\)/,"stay-on-floor control must be wired");
 assert.match(core,/function stayOnFloor\(\)[\s\S]*run\.floorComplete=false;[\s\S]*mode="playing"/,"staying must return the current floor to playable state");
 assert.match(core,/function bankClearedFloorProgress\([\s\S]*v142BankedFloor[\s\S]*hasNewProgress[\s\S]*run\.stats\.floors=countedFloors/,"revisiting the cleared exit must bank later pickups without double-counting the floor");
-assert.match(core,/dispatchEvent\(new CustomEvent\("ccg:floor-start"/,"every generated floor must publish a lifecycle reset event");
+assert.match(core,/dispatchEvent\(new CustomEvent\("ccg:floor-start"/,"every generated floor must publish a window lifecycle reset event");
+assert.match(core,/document\.dispatchEvent\(new CustomEvent\("ccg:floor-start"/,"floor lifecycle must also reach document-owned progression listeners");
 assert.match(core,/retainedToast=false;UI\.toast\?\.classList\.remove\("show"\)/,"floor generation must clear stale ordinary notification ownership");
 assert.match(notices,/function resetForFloor\([\s\S]*removeAttribute\("data-ccg-major-notification"\)/,"major notification owner must clear stale floor state");
 assert.match(notices,/addEventListener\("ccg:floor-start",resetForFloor\)/,"notification rail must reset on every floor");
@@ -41,6 +43,8 @@ assert.match(firearm,/WEAPON CAPPED — \+10 XP/,"full-ammo capped weapon cache 
 assert.match(firearm,/WEAPON CAPPED — \+250 SCORE/,"fully capped cache must retain a final non-wasted fallback");
 assert.doesNotMatch(firearm,/FIREARM PARTS SALVAGED|FIREARM UPGRADED/,"retired misleading firearm pickup labels must remain absent");
 assert.match(local,/if\(i\.kind==="weapon"\)return evolvingWeaponMode\(\)\?"WEAPON CACHE"/,"floating weapon pickup text must not expose random gun names during firearm evolution");
+assert.match(local,/i\.loot\?\.kind==="weaponLoot"&&evolvingWeaponMode\(\)\?"WEAPON CACHE"/,"weapon-loot collection labels must remain generic during evolution");
+assert.match(play,/evolvingWeapon=loot\.kind==="weaponLoot"[\s\S]*name=evolvingWeapon\?"WEAPON CACHE"/,"weapon chests must not announce a generated gun name before evolution is applied");
 
 assert.match(core,/MAX_GAMEPLAY_PARTICLES=360,MAX_GAMEPLAY_RINGS=72/,"gameplay visuals must have a hard bounded budget");
 assert.match(core,/particles\.push=function\(\.\.\.items\)\{return boundedVisualPush\(particles,MAX_GAMEPLAY_PARTICLES,items\)\}/,"all shared particle producers must pass through the hard cap");
