@@ -26,6 +26,7 @@ function requireAll(source, label, needles) {
 }
 
 const migration = read("supabase/migrations/20260805233000_member_badge_engine.sql");
+const dungeonBadgeMigration = read("supabase/migrations/20260928174100_dungeon_carnage_profile_badge_catalog.sql");
 const moduleSource = read("resources/js/auth/member-achievement-badges.js");
 const loader = read("js/ccg-member-achievements-loader.js");
 const css = read("resources/css/member-achievement-badges.css");
@@ -59,6 +60,28 @@ requireAll(migration, "Badge engine migration", [
   "DUAL_SYSTEM"
 ]);
 
+requireAll(dungeonBadgeMigration, "Dungeon Carnage badge migration", [
+  "Dungeon Carnage Platinum",
+  "Threshold Cleared",
+  "Iron Keep Cleared",
+  "Moss Crypt Cleared",
+  "Ember Depths Cleared",
+  "Sigil Sanctum Cleared",
+  "Sigil Awakened",
+  "RATED_100",
+  "COMMENTER_25",
+  "LIBRARY_250",
+  "ls-split-champion",
+  "ls-online-champion",
+  "ls-weekly-champion",
+  "ls-gilded-elf",
+  "ls-rare-melee",
+  "set active = false",
+  "auth.uid() <> target_user_id",
+  "revoke all",
+  "to authenticated"
+]);
+
 requireAll(moduleSource, "Achievement module", [
   "memberAchievementPanel",
   "memberAchievementGrid",
@@ -67,15 +90,29 @@ requireAll(moduleSource, "Achievement module", [
   "get_my_member_badges",
   "ccg:member-badges-updated",
   "ccg:personal-library-updated",
+  "C64 Dungeon Carnage",
+  "RATED_100",
+  "COMMENTER_25",
+  "LIBRARY_250",
   "Achievements are awaiting the Phase 8 Supabase migration",
   "is-earned",
   "is-locked"
 ]);
 
+[
+  "Lost Sizzler",
+  "Sofa Sizzlers",
+  "Weekly Vault Victor"
+].forEach((retiredCopy) => {
+  if (moduleSource.includes(retiredCopy)) {
+    problems.push(`Achievement module still exposes retired profile copy: ${retiredCopy}.`);
+  }
+});
+
 requireAll(loader, "Achievement loader", [
   "CCG_MEMBER_ACHIEVEMENTS_LOADER_READY",
   "memberHub",
-  'import("/resources/js/auth/member-achievement-badges.js")'
+  'import("/resources/js/auth/member-achievement-badges.js?v=20260928-dungeon-carnage-badges")'
 ]);
 
 requireAll(css, "Achievement stylesheet", [
@@ -133,4 +170,4 @@ if (problems.length) {
   process.exit(1);
 }
 
-console.log("Member Achievements audit passed with automatic, private and duplicate-safe badges.");
+console.log("Member Achievements audit passed with current Dungeon Carnage identity, relevant badges and automatic private milestones.");
