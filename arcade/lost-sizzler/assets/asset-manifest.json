@@ -25,7 +25,7 @@
       "enemyAtlasB": "assets/pixel/enemy-atlas-standard-b-v10-35.png",
       "environmentAtlas": "assets/pixel/environment-atlas-v10-35.png",
       "switchSheet": "assets/pixel/visual-overhaul/0x72/lever-left.png",
-      "sigilSheet": null,
+      "sigilSheet": "assets/pixel/visual-overhaul/cc0-portal/portal-sheet.png",
       "environmentTileset": null,
       "switchSecretSheet": "assets/pixel/visual-overhaul/0x72/lever-right.png",
       "chestFrame0": "assets/pixel/visual-overhaul/0x72/chest-full-f0.png",
