@@ -38,3 +38,16 @@ The copied assets are normal PNG blobs rather than Git LFS pointer files. The lo
 | atlas_walls_high-16x32.png | walls-high-atlas-16x32.png | no |
 
 Importing these files does not itself change collision, gameplay, progression or trap damage.
+
+
+## Door family imported 28 September 2026
+
+| Original | Local | Source Git blob | Modified |
+| --- | --- | --- | --- |
+| frames/doors_leaf_closed.png | door-leaf-closed.png | 808614c872558bd948647d61058a2e26f4001dec | no |
+| frames/doors_leaf_open.png | door-leaf-open.png | d71b40c688c2ead642a3702379ccd856ecf22c52 | no |
+| frames/doors_frame_left.png | door-frame-left.png | a6059a9ad5fe54acb339e8c1ea6678a21574a827 | no |
+| frames/doors_frame_right.png | door-frame-right.png | 81d385af6cef60bd5c0621dd79ab198bf078457f | no |
+| frames/doors_frame_top.png | door-frame-top.png | 8a93cd75be8a1e34143e37625bcf0a2842937de3 | no |
+
+The destination Git blob SHAs match the source Git blob SHAs exactly for all five files.
