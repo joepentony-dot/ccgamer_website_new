@@ -100,12 +100,24 @@ try{
     assert.equal(redirected.hostname,"www.cheekycommodoregamer.co.uk","maintenance redirect must stay on the production CCG hostname");
     assert.equal(redirected.pathname,"/games/ccg-games/","maintenance gate must land on the temporary CCG games hub");
 
-    const versionResponse=await fetch(`${versionUrl}${versionUrl.includes("?")?"&":"?"}release-smoke=${Date.now()}`,{headers:{"Cache-Control":"no-cache"}});
-    assert.equal(versionResponse.status,200,"public Dungeon Carnage version.json must remain reachable during maintenance");
-    const versionPayload=await versionResponse.json();
-    assert.equal(String(versionPayload?.releaseVersion||""),expectedReleaseVersion);
-    assert.equal(String(versionPayload?.build||""),expectedBuild);
-    assert.equal(String(versionPayload?.cacheToken||""),expectedCacheToken);
+    let deployedVersion=null,lastVersionPayload=null,lastVersionStatus=0;
+    for(let attempt=1;attempt<=18;attempt++){
+      const versionResponse=await fetch(`${versionUrl}${versionUrl.includes("?")?"&":"?"}release-smoke=${Date.now()}`,{headers:{"Cache-Control":"no-cache"}});
+      lastVersionStatus=versionResponse.status;
+      if(versionResponse.status===200){
+        const versionPayload=await versionResponse.json();
+        lastVersionPayload=versionPayload;
+        if(String(versionPayload?.releaseVersion||"")===expectedReleaseVersion
+          &&String(versionPayload?.build||"")===expectedBuild
+          &&String(versionPayload?.cacheToken||"")===expectedCacheToken){
+          deployedVersion=versionPayload;
+          break
+        }
+      }
+      console.log(`[production smoke] maintenance release identity attempt ${attempt}/18 not ready: status=${lastVersionStatus} payload=${JSON.stringify(lastVersionPayload)}`);
+      if(attempt<18)await sleep(10000);
+    }
+    assert.ok(deployedVersion,`public Dungeon Carnage version.json did not reach expected maintenance release identity: status=${lastVersionStatus} payload=${JSON.stringify(lastVersionPayload)} expected=${expectedBuild} / ${expectedCacheToken}`);
     console.log(`[production smoke] maintenance gate passed; deployed package identity is ${expectedBuild} / ${expectedCacheToken}`);
     await context.close();
   }else{
