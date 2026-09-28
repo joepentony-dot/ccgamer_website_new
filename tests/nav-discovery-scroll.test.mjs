@@ -8,6 +8,9 @@ const navFitCss = fs.readFileSync('resources/css/ccg-nav-fit.css', 'utf8');
 const modeIdentityCss = fs.readFileSync('resources/css/ccg-mode-identity.css', 'utf8');
 const legacyNav = fs.readFileSync('js/ccg-nav.js', 'utf8');
 const musicNavigation = fs.readFileSync('js/ccg-music-navigation.js', 'utf8');
+const musicComposerRuntime = fs.readFileSync('js/music-composer-pages.js', 'utf8');
+const musicComposerCss = fs.readFileSync('resources/css/music-composer.css', 'utf8');
+const nativeWheelAudit = fs.readFileSync('scripts/audit-native-wheel-contract.js', 'utf8');
 const visibleInstall = fs.readFileSync('js/ccg-pwa-visible-install.js', 'utf8');
 const archiveShortcuts = fs.readFileSync('js/ccg-archive-shortcuts.js', 'utf8');
 const releaseCheck = fs.readFileSync('js/ccg-release-check.js', 'utf8');
@@ -152,6 +155,19 @@ test('music waits for adaptive navigation CSS before exposing its injected heade
   assert.ok(musicNavigation.includes('"/resources/css/ccg-nav-fit.css"'), 'Music header must preload adaptive navigation CSS');
   assert.match(musicNavigation, /function waitForStyle\(href\)/);
   assert.match(musicNavigation, /await Promise\.all\(STYLES\.map\(waitForStyle\)\);[\s\S]*const header = ensureHeader\(\);/);
+});
+
+test('music composer pages share the native wheel performance contract', () => {
+  assert.match(musicComposerCss, /CCG MUSIC WHEEL PERFORMANCE CONTRACT/);
+  assert.match(musicComposerCss, /data-ccg-page="music-composer"/);
+  assert.match(musicComposerCss, /> body\.ccg-body:not\(\.ccg-body--locked\):not\(\.ccg-body--nav-open\)[\s\S]*overflow-y:\s*visible\s*!important/);
+  assert.match(musicComposerCss, /html\.ccg-perf-paused[\s\S]*\.ccg-composer-games__item/);
+  assert.match(musicComposerRuntime, /function initMusicScrollPerfPause\(\)/);
+  assert.match(musicComposerRuntime, /window\.addEventListener\("scroll", onScroll, \{ passive: true \}\)/);
+  assert.match(musicComposerRuntime, /window\.CCG_MUSIC_PAGE_READY = true/);
+  assert.match(nativeWheelAudit, /\{ path: "\/music\/", label: "Music Hub" \}/);
+  assert.match(nativeWheelAudit, /\{ path: "\/music\/paul-norman\/", label: "Music Composer \(Paul Norman\)" \}/);
+  assert.match(nativeWheelAudit, /window\.CCG_MUSIC_PAGE_READY===true/);
 });
 
 test('Find Me a Game exposes no removed game-download filter or copy', () => {
