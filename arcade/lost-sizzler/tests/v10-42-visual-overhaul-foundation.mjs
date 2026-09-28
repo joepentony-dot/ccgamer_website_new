@@ -11,7 +11,8 @@ const visualKeys=[
   "environmentAtlas","switchSheet","switchSecretSheet","sigilSheet","environmentTileset",
   "chestFrame0","chestFrame1","chestFrame2",
   "spikeTrapFrame0","spikeTrapFrame1","spikeTrapFrame2","spikeTrapFrame3",
-  "doorLeafClosed","doorLeafOpen","doorFrameLeft","doorFrameRight","doorFrameTop"
+  "doorLeafClosed","doorLeafOpen","doorFrameLeft","doorFrameRight","doorFrameTop",
+  "floorTile1","floorTile2","floorTile3","floorTile4","floorTile5","floorTile6","floorTile7","floorTile8","wallTileMid","wallTileHole1","wallTileHole2"
 ];
 
 assert.match(overrides,/visuals:\s*\{/,"visual override registry must exist");
@@ -39,6 +40,10 @@ assert.match(renderer,/chestFrames:\s*\[/,"renderer must load a frame-based CC0 
 assert.match(renderer,/spikeTrapFrames:\s*\[/,"renderer must load a frame-based CC0 spike set");
 assert.match(renderer,/lastMode="cc0-frames"/,"live chest renderer must identify the CC0 frame path");
 assert.match(renderer,/t\.kind==="spike"&&spikeArtReady/,"live spike renderer must prefer the imported animation when decoded");
+assert.match(renderer,/floorTiles:\s*\[/,"renderer must preload the eight named CC0 floor variants");
+assert.match(renderer,/wallTiles:\s*\{/,"renderer must preload normal and damaged CC0 wall variants");
+assert.match(renderer,/floorArt=floorSet\.length\?floorSet\[h%floorSet\.length\]:null/,"floor texture selection must be deterministic from the existing tile hash");
+assert.match(renderer,/h%31===0\?lostSizzlerPixelAssets\.wallTiles\?\.hole2:h%23===0\?lostSizzlerPixelAssets\.wallTiles\?\.hole1/,"damaged wall variants must remain sparse and deterministic");
 assert.match(renderer,/doorLeafClosed:make\(selected\("doorLeafClosed","assets\/pixel\/visual-overhaul\/0x72\/door-leaf-closed\.png"\)\)/,"closed door sprite must remain local and overrideable");
 assert.match(renderer,/doorLeafOpen:make\(selected\("doorLeafOpen","assets\/pixel\/visual-overhaul\/0x72\/door-leaf-open\.png"\)\)/,"open door sprite must remain local and overrideable");
 assert.match(renderer,/frame\*32,0,32,40,-18,-30,36,45/,"ready exit must render the five-frame CC0 portal strip");
