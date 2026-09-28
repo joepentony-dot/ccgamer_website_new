@@ -29,7 +29,9 @@ assert.match(renderer,/enemyAtlasA:make\("assets\/pixel\/enemy-atlas-standard-a-
 assert.match(renderer,/enemyAtlasB:make\("assets\/pixel\/enemy-atlas-standard-b-v10-35\.png"\)/,"enemy atlas B fallback must remain local");
 assert.match(renderer,/environmentAtlas:make\("assets\/pixel\/environment-atlas-v10-35\.png"\)/,"environment atlas fallback must remain local");
 
-assert.match(renderer,/playerReplacement:make\(selected\("playerSheet","assets\/pixel\/visual-overhaul\/shade-puny\/warrior-blue\.png"\)\)/,"player replacement must default to the imported local CC0 Warrior sheet while remaining overrideable");
+assert.match(renderer,/playerReplacement:make\(selected\("playerSheet"\)\)/,"player replacement must be opt-in so the established CCG explorer remains the default hero");
+assert.equal(manifest.images.visualOverhaul.playerSheet,"assets/pixel/explorer-sheet-v10-34.png","manifest must retain the CCG explorer as the default player identity");
+assert.equal(manifest.images.visualOverhaul.playerAnimationReference,"assets/pixel/visual-overhaul/shade-puny/warrior-blue.png","generic CC0 Warrior sheet may remain only as animation reference");
 assert.match(renderer,/enemyWarrior:make\(selected\("enemyWarriorSheet","assets\/pixel\/visual-overhaul\/shade-puny-enemies\/warrior-red\.png"\)\)/,"enemy warrior sheet must default to the local Shade Puny import");
 assert.match(renderer,/enemySoldier:make\(selected\("enemySoldierSheet","assets\/pixel\/visual-overhaul\/shade-puny-enemies\/soldier-red\.png"\)\)/,"enemy soldier sheet must default to the local Shade Puny import");
 assert.match(renderer,/enemyArcher:make\(selected\("enemyArcherSheet","assets\/pixel\/visual-overhaul\/shade-puny-enemies\/archer-green\.png"\)\)/,"enemy archer sheet must default to the local Shade Puny import");

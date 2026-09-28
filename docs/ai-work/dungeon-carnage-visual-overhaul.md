@@ -330,3 +330,55 @@ This is a hard product rule for all later character-art slices.
 - Do not rename named followers, bosses, Count Loadula, Death Stalkers, Sigil Warden or other identity-bearing enemies merely to fit convenient artwork.
 - Maintain an explicit name → gameplay kind → sprite family mapping and test it so later visual work cannot collapse most enemies back into indistinguishable elves/knights.
 
+
+
+## Current-main switch/sigil/shrine consolidation — 28 September 2026
+
+- Rebuild branch `codex/dungeon-visual-switch-sigil-shrine-consolidated-20260928` starts from live main `0d10ddeebc0265dbd1e9e09d398f85ba2aa9cef5` rather than stale PR ancestry.
+- PR #2402 is the product superset for switch-state plus shrine/sigil presentation; PR #2401 contributes the stronger real-Chromium switch-state regression.
+- Only verified visual deltas were transplanted: wall-adjacent one-shot switches with persistent completed state, CC0 button up/down feedback, animated shrine/sigil cores, Sigil Gate emblem, and the locked CCG hero/enemy identity policy.
+- R64-era FIRE/trap/freeze ownership and unrelated runtime files remain current-main authoritative.
+- Merge only after fresh exact-head canonical/Node, focused Chromium, shards 1–6 and all triggered site/package/cache/image checks are green with no material review blocker.
+
+
+## Locked player identity + enemy art/name policy — 28 September 2026
+
+### Player identity is non-negotiable
+
+- The playable hero must remain recognisably the **Cheeky Commodore Gamer** character.
+- The established `assets/pixel/explorer-sheet-v10-34.png` is the authoritative default player artwork.
+- The generic Shade/Puny `warrior-blue.png` sheet is **not** a production player replacement. It may remain in the repository only as an animation/motion reference.
+- Future player animation work must extend, redraw or restyle the CCG hero identity for additional idle/walk/melee/firearm/hurt/death frames. A third-party sheet may be used as a motion/template reference, but its visible character design must not replace the CCG hero.
+- `CCG_ASSET_OVERRIDES.images.visuals.playerSheet` may only be used for an explicitly CCG-specific replacement sheet.
+
+### Enemy visual identity rule
+
+Every enemy name and sprite must agree semantically.
+
+Preferred order:
+
+1. source a verified free-use/CC0 sprite that fits the existing enemy identity;
+2. retain a bespoke/procedural enemy renderer while a matching sprite is being sourced;
+3. rename a generic enemy only when that produces a better and internally consistent result and does not erase a distinctive Dungeon Carnage identity.
+
+Do **not** force a humanoid knight/elf/mage sheet onto a creature whose name implies a materially different appearance.
+
+The current generic Puny humanoid sheets are therefore limited to compatible roles:
+- Archive Knight → Soldier family;
+- Tape Scout → Archer family;
+- Joystick Hunter → Archer family;
+- 1541 Guard → Soldier family;
+- Charger → Warrior family;
+- Ranger → Archer family.
+
+The following deliberately stay on bespoke/procedural art until matching licensed sprites are found:
+- Crypt Skeleton;
+- Dustweb Spider;
+- Ghost Byte;
+- Raster Ambusher;
+- Root Crawler;
+- CPU Cook;
+- Firebreather;
+- Death Stalker and other named/special enemies.
+
+For each future enemy replacement, record: current enemy name, gameplay kind, proposed sprite family, source/licence, and whether the action is **match sprite to name** or **rename generic enemy to sprite**. Special/named enemies should normally keep their established names and receive matching art rather than being renamed for convenience.
