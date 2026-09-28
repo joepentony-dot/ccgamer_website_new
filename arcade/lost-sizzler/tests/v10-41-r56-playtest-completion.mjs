@@ -17,11 +17,11 @@ assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeTrapCore=authoritat
 assert.match(r56,/PGR\?\.lootForChest\?\.\(chest,run,Math\.random\)/,"a chest without precomputed loot must generate a reward before opening");
 assert.match(r56,/INVENTORY FULL — CHEST HELD/,"full inventory must leave carried chest loot recoverable");
 assert.match(r56,/state\.deliveredChestLoot\.has\(loot\)/,"chest delivery must be idempotent");
-assert.match(r56,/startsWith\("V10\\.42"\)/,"retired R56 chest delivery must remain disabled for every V10.42 revision rather than one exact r-build");
+assert.match(r56,/startsWith\("V10\.42"\)/,"retired R56 chest delivery must remain disabled for every V10.42 revision rather than one exact r-build");
 assert.doesNotMatch(r56,/content==="V10\.42 r\d+"/,"retired R56 chest ownership must not depend on an exact V10.42 revision");
 assert.match(r56,/SHRINE REWARD/,"shrines must announce the exact granted stat changes");
 assert.match(r56,/\+0 XP · FLOOR CAP/,"XP orbs at the floor cap must never fail silently");
 assert.match(r56,/SCORE/,"score pickup feedback must remain available above the player");
 assert.match(r56,/r56-quick-slot-icon/,"bottom Quick Inventory must retain compact graphical icons");
 assert.match(r56,/svg,img\.item-art/,"Quick Inventory must accept canonical inline SVG or image-backed icon art");
-console.log("R56 r58 non-owning playtest completion static contracts passed.");
+console.log("R56 V10.42 non-owning playtest completion static contracts passed.");
