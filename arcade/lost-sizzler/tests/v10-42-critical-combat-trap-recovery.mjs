@@ -9,7 +9,7 @@ const bootstrap=read("arcade/lost-sizzler/js/v10-42-bootstrap.js");
 const canonical=read("arcade/lost-sizzler/index.html");
 const alias=read("arcade/c64-dungeon-carnage/index.html");
 const version=JSON.parse(read("arcade/lost-sizzler/version.json"));
-const cache="20260928r62";
+const cache="20260928r63";
 
 assert.match(play,/authoritativeDamagePlayer\(p,1,false,`\$\{hazard\.title\|\|"hazard chamber"\} trap`\)/,"dedicated hazard rooms must continue identifying damage as trap-attributed damage through the guarded R58 boundary");
 assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeFireCore=authoritativeFireApi/,"r58 core must be the supported FIRE authority");
