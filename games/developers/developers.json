@@ -11,6 +11,17 @@
     "url": "/games/developers/3-2-1-software/"
   },
   {
+    "name": "Andromeda Software",
+    "slug": "andromeda-software",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "indexable": false,
+    "url": "/games/developers/andromeda-software/"
+  },
+  {
     "name": "Argus Press Software",
     "slug": "argus-press-software",
     "count": 1,

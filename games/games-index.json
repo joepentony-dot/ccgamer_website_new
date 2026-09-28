@@ -3654,6 +3654,12 @@
     "thumbnail": "resources/images/thumbnails/all/track_field.jpg"
   },
   {
+    "slug": "traffic",
+    "title": "Traffic",
+    "year": 1984,
+    "thumbnail": "resources/images/thumbnails/all/traffic.png"
+  },
+  {
     "slug": "the-train-escape-to-normandy",
     "title": "The Train: Escape To Normandy",
     "year": 1987,
