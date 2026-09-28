@@ -88,6 +88,8 @@ assert.match(core,/Post-initialisation family seal[\s\S]*v142FinalFamilyGuarante
 assert.match(stage6,/trap\.v142FinalFamilyGuaranteed&&TRAP_FAMILIES\.includes\(guaranteed\)\)trap\.kind=guaranteed/,"Stage 6 must preserve final guaranteed family identity when later tuning runs");
 assert.match(stage6,/for\(const kind of TRAP_FAMILIES\)[\s\S]*v142FinalFamilyGuaranteed=true;representative\.v142FinalFamilyKind=kind/,"Stage 6 reconciliation must seal one representative after family repair");
 assert.match(onboarding,/for\(const t of host\.traps\|\|\[\]\)if\(depth\(t\.roomId\)<=safeDepth&&!t\.v142FinalFamilyGuaranteed\)t\.active=false/,"gentle opening must not deactivate the final sealed FIRE, SPIKE or SHOCK representative");
+assert.match(core,/const representative=\(host\.hazardRooms\|\|\[\]\)\.find\(hazard=>Array\.isArray\(hazard\?\.cells\)&&hazard\.cells\.length>0\);[\s\S]*representative\.v142FinalHazardGuaranteed=true/,"final world-start reconciliation must seal one usable dedicated hazard");
+assert.match(onboarding,/host\.hazardRooms\.filter\(h=>depth\(h\.roomId\)<=safeDepth&&!h\.v142FinalHazardGuaranteed\)/,"gentle opening must preserve the final sealed dedicated hazard");
 assert.doesNotMatch(play,/CCGLostSizzlerV142R19MobileTrapLayoutStability\?\.updateTrapContacts/,"simulation must not depend on the retired R19 implementation");
 assert.match(rare,/function observeTrapContact\(player,now=performance\.now\(\)\)/,"Rare Events may retain passive trap-contact observation for warnings and diagnostics");
 assert.doesNotMatch(rare,/triggerTrap=function triggerTrapV115Reliable/,"Rare Events must not replace the canonical R58 triggerTrap owner");
