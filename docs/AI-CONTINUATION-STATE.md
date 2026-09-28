@@ -1,3 +1,11 @@
+## R64 production-smoke deployment-race hardening — 28 September 2026
+
+- PR #2420 / `codex/dungeon-production-smoke-current-main-20260928` is the current-main production-smoke hardening follow-up. It exists because deployed R64 smoke disproved the assumption that `version.json` must already expose the checked-out release identity when the maintenance-gate path starts; GitHub Pages can still serve the previous deployed identity briefly after repository state advances.
+- The smoke now retries only the public version-identity read within the existing three-minute deployment-visibility window and otherwise preserves the exact expected release/build/cache assertions and fail-closed behaviour.
+- PR #2419 remains intentionally stacked on #2420 and must be refreshed/retargeted after #2420 merges; the later visual consolidation #2421 must also be refreshed from the resulting main before qualification is trusted.
+- Pre-documentation exact head `0ac47a22838777f69cd1776a95bca06066e89199` had Public Code Cache Version, C64 Dungeon Carnage PR Qualification and itch.io Package green. In Full Qualification, Chromium shards 1, 2, 4, 5 and 6 were green while shard 3 was still running. This documentation correction moves the PR head, so those results are historical evidence only and fresh exact-head qualification is required before merge.
+- Do not merge #2420 unless the new exact head is mergeable/current with main, all required workflows including all six Chromium shards are green, and no unresolved material review finding remains.
+
 ## Member Hub Dungeon Carnage badge audit — 28 September 2026
 
 - Profile badge catalogue audit found 89 active legacy game definitions still presented under the retired Lost Sizzler identity, including unsupported Split Screen, online co-op and Weekly Vault completion badges.
