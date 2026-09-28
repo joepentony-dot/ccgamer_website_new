@@ -23,7 +23,12 @@ window.CCG_ASSET_OVERRIDES={
       switchSheet:null,
       switchSecretSheet:null,
       sigilSheet:null,
-      environmentTileset:null
+      environmentTileset:null,
+      doorLeafClosed:null,
+      doorLeafOpen:null,
+      doorFrameLeft:null,
+      doorFrameRight:null,
+      doorFrameTop:null
     },
     namedEnemies:{"Peter Cortens":null,"Swanh8ter":null,"Syragar":null,"Parsnip Celery":null,"CPU":null,"Yoshi Yoshi":null,"CCG":null},
     items:{health:null,ammo:null,potion:null,torch:null,teleport:null,banishment:null,inventorySlot:null,credits:null,xpOrb:null,armour:null,key:null,bronze:null,exitSigil:null,weapon:null,rapid:null,game:null,loot:null}
