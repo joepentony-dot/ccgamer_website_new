@@ -15,6 +15,7 @@ const youtubeMetadataSync = fs.readFileSync('scripts/sync-youtube-video-metadata
 const videoSeoValidator = fs.readFileSync('scripts/validate-video-seo.js', 'utf8');
 const gamesPublishingWorkflow = fs.readFileSync('.github/workflows/games-publishing.yml', 'utf8');
 const seoWorkflow = fs.readFileSync('.github/workflows/seo.yml', 'utf8');
+const rebuildGames = fs.readFileSync('scripts/rebuild-games.js', 'utf8');
 
 test('publisher is a private role-gated admin page', () => {
   assert.match(html, /<meta name="robots" content="noindex,nofollow"/);
@@ -158,6 +159,21 @@ test('scheduled or private YouTube videos are non-blocking and retried automatic
   assert.match(videoSeoValidator, /const verified = !external && hasValidUploadDate/);
   assert.match(videoSeoValidator, /VideoObject was emitted without verified YouTube metadata/);
   assert.match(seoWorkflow, /cron: "17 6 \* \* \*"/);
+});
+
+test('authoritative game publishing preserves retro page and video generation on mixed pushes', () => {
+  assert.match(rebuildGames, /generate-retro-pages\\.js/);
+  assert.match(rebuildGames, /generate-retro-video-seo\\.js/);
+  assert.match(rebuildGames, /inject-retro-manual-schema\\.js/);
+  assert.match(rebuildGames, /validate-retro-video-seo\\.js/);
+  assert.ok(
+    rebuildGames.indexOf('generate-retro-pages.js') < rebuildGames.indexOf('generate-sitemaps.js'),
+    'retro pages must be regenerated before sitemap generation'
+  );
+  assert.ok(
+    rebuildGames.indexOf('generate-retro-video-seo.js') < rebuildGames.indexOf('generate-sitemaps.js'),
+    'retro video SEO must be regenerated before sitemap generation'
+  );
 });
 
 test('publisher retains legacy editors as fallbacks', () => {
