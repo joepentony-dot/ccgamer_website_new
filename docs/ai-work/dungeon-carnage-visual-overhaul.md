@@ -171,3 +171,40 @@ Every visual slice requires:
 - Stage 1 begins by adding explicit visual-overhaul asset slots and preserving existing art as fallback.
 - First external source target is 0x72 DungeonTileset II because its CC0 pack includes switches/buttons, traps and animated characters in one top-down style.
 - Actual third-party binaries must not be committed until the source package has been retrieved from the authoritative source and provenance recorded.
+
+
+## Stage 1 implementation checkpoint — 28 September 2026
+
+The first licensed replacement family is now committed locally under:
+
+`arcade/lost-sizzler/assets/pixel/visual-overhaul/0x72/`
+
+Imported CC0 assets include:
+
+- ordinary and alternate lever graphics;
+- blue button up/down graphics;
+- three chest opening frames;
+- four spike-trap frames;
+- floor atlas;
+- low-wall atlas;
+- high-wall atlas.
+
+The complete source/provenance record travels with the files in `PROVENANCE.md`.
+
+### First live replacement
+
+Switches are the first production renderer slice to move off the rudimentary canvas-only art:
+
+- normal switches default to `lever-left.png`;
+- secret switches default to `lever-right.png`;
+- both remain overrideable through `CCG_ASSET_OVERRIDES.images.visuals`;
+- existing canvas switch art remains the decode/error fallback;
+- switch gameplay position, trigger, shoot/touch interaction and labels are unchanged.
+
+### Character-animation source direction
+
+0x72 remains suitable for Stage 1 environment/interactable work, but its own source documentation does not provide the attack/death breadth required for the player/enemy overhaul.
+
+Preferred Stage 2/3 candidate: Shade's free **Puny Characters / Puny Monsters** family, CC0. The player pack provides idle, walk, sword, bow, staff, throw, hurt and death animation sets and ships alongside a free monster pack, making it a stronger coherent base for richer player/enemy animation than forcing the environment pack to do both jobs.
+
+Do not import the Puny binaries until the same local-provenance process used for 0x72 is completed.
