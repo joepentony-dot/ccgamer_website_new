@@ -276,6 +276,10 @@ function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
         occupied.add(`${cell.x},${cell.y}`);
       });
     }
+    for(const kind of families){
+      const representative=host.traps.find(trap=>trap?.active&&String(trap.kind||"").toLowerCase()===kind);
+      if(representative){representative.v142FinalFamilyGuaranteed=true;representative.v142FinalFamilyKind=kind}
+    }
   }catch(error){console.error("[Dungeon Carnage] post-stage trap-family invariant failed",error)}
   sync();
   const fi=PGR.floorInfo(run);showToast(`FLOOR ${run.floor}: ${fi.name}`,`${PGR.objectiveLabel(run)}${run.modifier?` • MODIFIER: ${run.modifier.name}`:""}`,"cyan",6500);
