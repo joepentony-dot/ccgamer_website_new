@@ -738,6 +738,27 @@ function punyPlayerCell(pose,d,now){
   // separately by Dungeon Carnage. This avoids displaying Puny's bow/staff art.
   return{row,column:Math.floor(now/240)%2}
 }
+function drawPlayerEquipmentOverlay(p,cx,cy,d){
+  const armour=Math.max(0,Math.min(12,Number(p?.armor)||0));if(armour<=0)return;
+  const tier=armour>=10?4:armour>=7?3:armour>=4?2:1,metal=tier>=3?"#aeb8c2":tier===2?"#87929d":"#66717c",edge=tier>=4?P.cyan:"#d8e0e7";
+  ctx.save();ctx.imageSmoothingEnabled=false;ctx.shadowColor=tier>=4?P.cyan:"rgba(120,180,220,.35)";ctx.shadowBlur=tier>=4?9:3;
+  // Armour is presentation-only and mirrors the real p.armor owner.
+  // It never changes collision or damage calculations.
+  ctx.fillStyle=metal;ctx.fillRect(cx-11,cy-6,5,7);ctx.fillRect(cx+6,cy-6,5,7);
+  ctx.fillStyle=edge;ctx.fillRect(cx-10,cy-6,3,2);ctx.fillRect(cx+7,cy-6,3,2);
+  if(tier>=2){
+    ctx.fillStyle="#46515d";ctx.fillRect(cx-6,cy-5,12,12);ctx.fillStyle=metal;ctx.fillRect(cx-5,cy-4,10,7);
+    ctx.fillStyle=edge;ctx.fillRect(cx-4,cy-3,8,1);ctx.fillStyle="#29323b";ctx.fillRect(cx-2,cy+3,4,4)
+  }
+  if(tier>=3){
+    ctx.fillStyle=metal;ctx.fillRect(cx-7,cy-16,14,4);ctx.fillRect(cx-8,cy-13,3,6);ctx.fillRect(cx+5,cy-13,3,6);
+    ctx.fillStyle="#222a32";ctx.fillRect(cx-5,cy-13,10,2);ctx.fillStyle=edge;ctx.fillRect(cx-4,cy-15,8,1)
+  }
+  if(tier>=4){
+    ctx.globalAlpha=.65+.2*Math.sin(performance.now()/130);ctx.strokeStyle=P.cyan;ctx.lineWidth=1;ctx.strokeRect(cx-7,cy-17,14,27);ctx.globalAlpha=1
+  }
+  ctx.restore()
+}
 function drawPlayer(p,kind="p1"){
   const now=performance.now(),s=ws(p.rx,p.ry),col=kind==="p2"?P.green:kind==="remote"?P.cyan:P.gold,moving=Math.abs((p.x??p.rx)-p.rx)+Math.abs((p.y??p.ry)-p.ry)>.025,pose=playerAnimationPose(p,moving,now),phase=now/105+(String(p.id||kind).length%7),step=moving?Math.sin(phase)*3:0,bob=Number(pose.y||0),cx=s.x+C.tile/2+Number(pose.x||0),cy=s.y+C.tile/2+bob,d=p.dir||{x:1,y:0};ctx.save();ctx.imageSmoothingEnabled=false;
   ctx.fillStyle="rgba(0,0,0,.45)";ctx.beginPath();ctx.ellipse(s.x+C.tile/2,s.y+C.tile-2,13,4,0,0,Math.PI*2);ctx.fill();ctx.shadowColor=col;ctx.shadowBlur=p.torchMs>0?13:6;
@@ -748,6 +769,7 @@ function drawPlayer(p,kind="p1"){
     px(cx,cy,-11,-6-step*.25,4,15,"#32233d");px(cx,cy,7,-6+step*.25,4,15,"#32233d");px(cx,cy,-9,-6,18,17,"#56366e");px(cx,cy,-8,-5,4,13,"#79509b");px(cx,cy,4,-5,4,13,"#79509b");
     px(cx,cy,-12,-4-step*.25,4,7,"#a5863d");px(cx,cy,8,-4+step*.25,4,7,"#a5863d");px(cx,cy,-8+step,10,6,7,"#25202b");px(cx,cy,2-step,10,6,7,"#25202b");px(cx,cy,-9+step,15,7,3,"#111015");px(cx,cy,2-step,15,7,3,"#111015");px(cx,cy,-5,-2,10,8,"#17101e");ctx.strokeStyle=col;ctx.lineWidth=1;ctx.strokeRect(cx-5,cy-2,10,8);ctx.fillStyle=col;ctx.font='bold 6px "Courier New"';ctx.textAlign="center";ctx.fillText("CCG",cx,cy+4);drawPlayerWeapon(p,cx,cy,d);
   }
+  drawPlayerEquipmentOverlay(p,cx,cy,d);
   if(p.torchMs>0){const tx=cx-d.y*12-d.x*5,ty=cy+d.x*12-d.y*5;ctx.fillStyle="#76512a";ctx.fillRect(tx-1,ty-1,3,10);ctx.fillStyle=P.orange;ctx.fillRect(tx-4,ty-9,8,8);ctx.fillStyle=P.gold;ctx.fillRect(tx-2,ty-11,4,8)}
   if(hurt){ctx.fillStyle=P.cyan;ctx.fillRect(cx-12,cy-19,4,3);ctx.fillRect(cx+8,cy-18,4,3)}ctx.restore();if(kind==="remote")label(p.name,{x:s.x,y:s.y-2},col);drawTransientHealth(p,s,col);drawPlayerResources(p,s,col,kind)
 }
