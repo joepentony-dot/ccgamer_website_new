@@ -45,7 +45,7 @@ try{
     const before={presentations:api.state.presentations,score,inventory:JSON.stringify(p1.inventory),revision:host.revision};
     const opened=window.openShop(shop,p1);
     const after={presentations:api.state.presentations,score,inventory:JSON.stringify(p1.inventory),revision:host.revision};
-    return{opened,mode:String(mode),activeShopIsSame:activeShop===shop,merchantInstalled:Boolean(api.state.merchantInstalled),wrapperDepth:(()=>{let n=0,current=window.openShop,seen=new Set();while(typeof current==="function"&&!seen.has(current)){if(current.__ccgStage8MerchantDialogue)n++;seen.add(current);current=current.__ccgOriginal}return n})(),presented:after.presentations-before.presentations,last:{...api.state.last},toastTitle:document.getElementById("pickup-title")?.textContent||"",toastText:document.getElementById("pickup-text")?.textContent||"",scoreUnchanged:after.score===before.score,inventoryUnchanged:after.inventory===before.inventory,revisionUnchanged:after.revision===before.revision,scorePurchases:shop.scorePurchases};
+    return{opened,mode:String(mode),activeShopIsSame:activeShop===shop,merchantInstalled:Boolean(api.state.merchantInstalled),wrapperDepth:(()=>{let n=0,current=window.openShop,seen=new Set();while(typeof current==="function"&&!seen.has(current)){if(current.__ccgStage8MerchantDialogue)n++;seen.add(current);current=current.__ccgOriginal}return n})(),presented:after.presentations-before.presentations,last:{...api.state.last},toastTitle:document.getElementById("pickup-title")?.textContent||"",toastText:document.getElementById("pickup-text")?.textContent||"",queued:(Array.isArray(toastQueue)?toastQueue:[]).map(entry=>({title:String(entry?.title||""),text:String(entry?.text||"")})),scoreUnchanged:after.score===before.score,inventoryUnchanged:after.inventory===before.inventory,revisionUnchanged:after.revision===before.revision,scorePurchases:shop.scorePurchases};
   });
   assert.equal(hidden.opened,true,"canonical hidden shop must still open normally");
   assert.equal(hidden.mode,"shop","merchant dialogue must preserve the canonical shop mode");
@@ -55,8 +55,10 @@ try{
   assert.equal(hidden.presented,1,"opening the hidden trader must present exactly one merchant line");
   assert.equal(hidden.last.key,"merchant.hidden","hidden trader must use the hidden merchant dialogue state");
   assert.equal(hidden.last.voiceKey,"npc.merchant.hidden","hidden trader text must carry a stable optional local-voice key");
-  assert.match(hidden.toastTitle,/SECRET ARTEFACT TRADER/i,"hidden trader dialogue must use the existing notification surface");
-  assert.match(hidden.toastText,/Banishment Flask/i,"hidden trader dialogue must describe the existing artefact trade");
+  const hiddenNotificationTitles=[hidden.toastTitle,...hidden.queued.map(entry=>entry.title)].join(" | ");
+  const hiddenNotificationText=[hidden.toastText,...hidden.queued.map(entry=>entry.text)].join(" | ");
+  assert.match(hiddenNotificationTitles,/SECRET ARTEFACT TRADER/i,"hidden trader dialogue must use the existing notification surface, immediately or through the established toast queue");
+  assert.match(hiddenNotificationText,/Banishment Flask/i,"hidden trader dialogue must describe the existing artefact trade");
   assert.equal(hidden.scoreUnchanged,true,"merchant dialogue must not alter player score");
   assert.equal(hidden.inventoryUnchanged,true,"merchant dialogue must not alter inventory");
   assert.equal(hidden.revisionUnchanged,true,"merchant dialogue must not alter canonical world revision");
