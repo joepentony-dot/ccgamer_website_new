@@ -49,6 +49,8 @@ assert.doesNotMatch(r24,/function rehomeEnemy\(|rehomeEnemy\(enemy,preferred\)/,
 assert.match(r24,/if\(criticalEnemy\(enemy\)\)continue;\s*enemy\.alive=false;trimmed\+\+;state\.roomTrims\+\+/,"floor-start overflow must be trimmed in place without repopulating another room");
 assert.match(r24,/respawnPolicy:"no-standard-room-rehome"/,"Solo balance metadata must record the no-standard-room-rehome policy");
 assert.match(r24,/normaliseEnemyAmmoDrops\(\);trimTransientLoad\(\);\s*\}/,"ongoing balance ticks must not rerun room population redistribution");
+assert.match(r24,/wrapperChainHas\(window\.startWorld,"__ccgV141R24SoloBalance"\)/,"r24 startWorld ownership must detect its marker anywhere in the wrapper chain");
+assert.match(r24,/wrapped\.__ccgOriginal=original;window\.startWorld=wrapped/,"r24 startWorld wrapper must publish its predecessor so later ownership checks cannot grow the chain recursively");
 
 // Browser-load containment for ordinary Solo Dungeon sessions.
 assert.match(r24,/MAX_SOLO_ENEMY_BULLETS=96/,"Solo enemy projectile population must be bounded");
