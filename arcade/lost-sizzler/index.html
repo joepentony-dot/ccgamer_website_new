@@ -117,6 +117,7 @@
           <div class="developer-changelog-current">
             <p><strong>ACTIVE BUILD: V10.42 R68</strong></p>
             <ul>
+              <li>R68 fixes the Floor 1 → Floor 2 transition stack overflow by preventing the Solo balance layer from repeatedly re-wrapping the dungeon world-start owner after later runtime composition.</li>
               <li>R67 stops recursive enemy and render wrapper multiplication that could drive long Solo sessions into stack overflows, severe slowdown and intermittent input starvation. It also retires unqualified ordinary procedural floor traps, pins Bronze Key status above the inventory slots, and makes achievement sync bounded and failure-tolerant.</li>
               <li>R66 locks ACTIVE FIRE, SPIKE and SHOCK contacts to the exact movement-boundary timestamp so a visible active trap cannot phase-roll safe before damage is committed.</li>
               <li>R66 wall-clock expires stale projectiles and disposable combat effects during severe browser slowdown, and throttles repeat-key diagnostics so observation cannot amplify frame pressure.</li>
