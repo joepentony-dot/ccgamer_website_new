@@ -41,7 +41,7 @@ function damageEnemy(e,power,element="energy",attacker=p1){
   let xp=e.follower?250:e.spider?(e.xpValue||10):100;
   let reason=e.exitWarden?"Sigil Warden defeated":e.guardian?"Guardian defeated":e.follower?`${e.follower.name} freed`:isDeathStalkerEnemy(e)?"Death Stalker banished":e.champion?"Champion defeated":e.spider?"Dustweb vermin destroyed":e.skeleton?"Crypt skeleton shattered":"Enemy defeated";
   if(e.generatorId){const g=(host.generators||[]).find(x=>x.id===e.generatorId);if(g){g.spawnKills=(g.spawnKills||0)+1;killScore=g.spawnKills<=3?65:10;reason=g.spawnKills<=3?`Generator spawn ${g.spawnKills}/3`:`Generator spawn defeated`}}
-  score+=killScore;awardXP(attacker||p1,xp,reason);
+  score+=killScore;awardXP(attacker||p1,xp,reason);try{if(e.exitWarden)window.CCGLostSizzlerVoice?.say?.("sigilWardenDefeated",{cooldown:0});else if(e.guardian)window.CCGLostSizzlerVoice?.say?.("guardianDefeated",{cooldown:0})}catch(_){}
   if(e.champion)run.stats.champions++;
   if(e.follower){stats.elites++;run.stats.namedDefeats=(run.stats.namedDefeats||0)+1;PGR.recordNamedEncounter(e.follower.name,true)}
   if(isDeathStalkerEnemy(e)){run.stats.stalkerEscapes=(run.stats.stalkerEscapes||0)+1;host.defeatedDeathStalkers=host.defeatedDeathStalkers||[];if(!host.defeatedDeathStalkers.includes(e.id))host.defeatedDeathStalkers.push(e.id);if(e.timedHunter){const tr=(host.timedRooms||[]).find(t=>t.hunterId===e.id||`death-stalker-${t.id}`===e.id);if(tr)tr.stalkerDefeated=true}}
