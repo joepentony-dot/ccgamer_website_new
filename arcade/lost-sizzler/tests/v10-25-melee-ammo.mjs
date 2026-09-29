@@ -19,7 +19,8 @@ assert.match(combat,/const FIRST_GUN_MAGAZINE=16/,"the first discovered firearm 
 assert.match(combat,/p\.mana=0;\s*p\.weapon=null;\s*p\.firearmUnlocked=false/,"fresh players must start with zero ammo and no firearm");
 assert.match(combat,/id:"archive-sword"[\s\S]*?power:1/,"fresh players must start with the Archive Sword");
 assert.match(combat,/const breakable=\(host\?\.blockingDecor\|\|\[\]\)\.some\([\s\S]*?!row\.structural[\s\S]*?Number\(row\.hp\?\?2\)>0\)/,"contextual melee must recognise only the breakable furniture cell directly ahead");
-assert.match(combat,/if\(breakable\|\|!hasGun\(p\)\|\|Number\(p\.mana\|\|0\)<=0\)return meleeAttack\(p,dir\)/,"adjacent breakables must use melee before the no-firearm or zero-ammo fallback");
+assert.match(combat,/if\(breakable\)return meleeAttack\(p,dir\)/,"adjacent breakables must route to melee before firearm ownership");
+assert.match(combat,/if\(!hasGun\(p\)\|\|Number\(p\.mana\|\|0\)<=0\)return meleeAttack\(p,dir\)/,"melee remains the explicit no-gun or zero-ammo fallback");
 assert.doesNotMatch(combat,/adjacentEnemy/,"adjacent enemies must not divert a loaded firearm into melee");
 assert.doesNotMatch(combat,/dashPlayerV125[\s\S]{0,550}p\.mana\s*[-+]=/,"V10.25 dash must not consume firearm ammunition");
 assert.match(combat,/updateEmergencyAmmo=function updateEmergencyAmmoV125\(p\)\{if\(p\)p\.emergencyRechargeMs=0\}/,"emergency ammunition regeneration must be disabled");
