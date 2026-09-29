@@ -500,7 +500,7 @@
 
   function wrapStartWorld(){
     const current=window.startWorld;if(typeof current!=="function")return false;
-    if(current.__ccgV141R60NamedRoster){state.startWrapped=true;state.startSource=current.__ccgOriginal||state.startSource;return true}
+    if(originalChainHasMarker(current,"__ccgV141R60NamedRoster")){state.startWrapped=true;return true}
     const source=current;
     const wrapped=function startWorldV141R60NamedRoster(){const result=source.apply(this,arguments);setTimeout(()=>{try{patchAzalea();ensureCcgEnemy()}catch(error){recordError(error)}},0);return result};
     wrapped.__ccgV141R60NamedRoster=true;wrapped.__ccgOriginal=source;window.startWorld=wrapped;state.startSource=source;state.startWrapped=true;state.ownerReassertions++;return true
