@@ -155,7 +155,7 @@ function chestScoreReward(chest){return 100+Math.min(400,Math.max(0,Math.floor(N
 function chestBronzeDoorAlreadyPaid(chest){const roomId=Number(chest?.roomId);if(!Number.isFinite(roomId))return false;return(host.doors||[]).some(d=>d.type==="bronze"&&Number(d.roomId)===roomId&&!d.locked)}
 function openChest(p,chest){
   if(!chest?.active)return true;const roomKeyPaid=chestBronzeDoorAlreadyPaid(chest);if(chest.locked&&!roomKeyPaid&&p.bronzeKeys<=0){const now=performance.now();if(!chest._lockedFeedbackAt||now-chest._lockedFeedbackAt>=1200){chest._lockedFeedbackAt=now;S.sfx("locked");showToast("LOCKED CHEST","A bronze key opens it. Come back after finding one.","red",4200)}return false}
-  if(chest.locked&&!roomKeyPaid){p.bronzeKeys--;try{window.CCGLostSizzlerVoice?.say?.("chestUnlocked",{cooldown:0})}catch(_){}}chest.locked=false;
+  const paidBronzeKey=Boolean(chest.locked&&!roomKeyPaid);if(chest.locked&&!roomKeyPaid)p.bronzeKeys--;if(paidBronzeKey)try{window.CCGLostSizzlerVoice?.say?.("chestUnlocked",{cooldown:0})}catch(_){}chest.locked=false;
   chest.opened=true;chest.openedAt=performance.now();chest.active=false;host.revision++;run.stats.chests++;S.sfx("chest");shake=4;
   const loot=chest.loot||PGR.lootForChest(chest,run,Math.random),evolvingWeapon=loot.kind==="weaponLoot"&&Boolean(window.CCGLostSizzlerV142R47FirearmEvolution),name=evolvingWeapon?"WEAPON CACHE":loot.weapon?.displayName||loot.name||loot.kind.toUpperCase(),col=loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan,scoreReward=chestScoreReward(chest);
   chest.rewardScore=scoreReward;score+=scoreReward;
