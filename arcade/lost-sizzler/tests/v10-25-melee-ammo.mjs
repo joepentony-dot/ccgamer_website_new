@@ -28,6 +28,7 @@ assert.match(combat,/const FLOOR_AMMO_CASUAL=4/,"Casual must retain a slightly s
 assert.match(combat,/const FLOOR_MELEE_FIND_CHANCE=\.05/,"rare melee finds must use the polished five-percent floor chance");
 assert.match(combat,/const FLOOR_MELEE_PITY_STEP=\.015/,"missed eligible floors must add a mild rare-melee pity increase");
 assert.match(combat,/Math\.floor\(Math\.max\(0,Number\(p\?\.level\|\|1\)-1\)\/5\)/,"melee mastery must add one damage every five levels");
+assert.match(combat,/meleeDamageFor=p=>Math\.max\(1,Number\(meleeFor\(p\)\.power\|\|1\)\+meleeMastery\(p\)\+Math\.max\(0,Math\.floor\(Number\(p\?\.damageBonus\|\|0\)\)\)\)/,"Might/general weapon damage bonus must contribute one-for-one to melee damage, matching firearms");
 assert.match(combat,/SID Sabre[\s\S]*?power:4/,"rare SID Sabre must substantially outperform the starter sword");
 assert.match(combat,/Gold Medal Greatsword[\s\S]*?power:6/,"Gold Medal Greatsword must provide high melee damage");
 assert.match(combat,/Zzap! 97% Power Blade[\s\S]*?power:8/,"top-tier rare melee must provide exceptional damage");
