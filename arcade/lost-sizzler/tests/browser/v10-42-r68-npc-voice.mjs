@@ -23,12 +23,25 @@ const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usag
 
 try{
   const context=await browser.newContext({viewport:{width:1280,height:900}});
-  await context.route("https://*.supabase.co/**",route=>route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:"{}"}));
   await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true");localStorage.setItem("ccg-lost-sizzler-tutorial-complete-v1","true")}catch(_){}});
   const page=await context.newPage();page.setDefaultTimeout(45000);
   const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
   await page.goto(origin+"/arcade/lost-sizzler/?r68-npc-voice=1",{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerStage8NpcDialogue)&&typeof window.CCGLostSizzlerVoice?.sayDialogue==="function",null,{timeout:90000});
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerStage8NpcDialogue)&&Boolean(document.getElementById("solo-btn")),null,{timeout:90000});
+  const startup=await page.evaluate(()=>({
+    releaseReady:document.body.dataset.releaseReady||"",
+    bootstrapReady:document.body.dataset.v142BootstrapReady||"",
+    stage8:Boolean(window.CCGLostSizzlerStage8NpcDialogue),
+    voice:Boolean(window.CCGLostSizzlerVoice),
+    sayDialogue:typeof window.CCGLostSizzlerVoice?.sayDialogue,
+    releaseFailed:Boolean(window.CCGLostSizzlerReleaseGate?.state?.failed),
+    releaseErrors:[...(window.CCGLostSizzlerReleaseGate?.state?.errors||[])],
+    bootstrapError:String(window.CCGLostSizzlerV142Bootstrap?.error||"")
+  }));
+  assert.equal(startup.releaseReady,"true",`R68 release startup failed before NPC voice qualification: ${JSON.stringify(startup)}`);
+  assert.equal(startup.stage8,true,`Stage 8 NPC dialogue API missing after release startup: ${JSON.stringify(startup)}`);
+  assert.equal(startup.voice,true,`voice director missing after release startup: ${JSON.stringify(startup)}`);
+  assert.equal(startup.sayDialogue,"function",`NPC dialogue speech API missing after release startup: ${JSON.stringify(startup)}`);
   await page.click("#solo-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(host)&&Boolean(p1),null,{timeout:20000});
 
