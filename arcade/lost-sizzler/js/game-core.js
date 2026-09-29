@@ -194,106 +194,17 @@ function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
     const representative=(host.hazardRooms||[]).find(hazard=>Array.isArray(hazard?.cells)&&hazard.cells.length>0);
     if(representative)representative.v142FinalHazardGuaranteed=true;
   }catch(error){console.error("[Dungeon Carnage] final dedicated-hazard seal failed",error)}
-  try{
-    // Final ordinary-trap family guarantee. Stage 6 prefers normal non-hazard
-    // rooms, but pathological compact seeds can leave no eligible room pool.
-    // At this final boundary, reserve walkable cells directly so FIRE, SPIKE
-    // and SHOCK can never all disappear from a generated Solo floor.
-    const families=["fire","spike","shock"],floor=Math.max(1,Number(stage6Run?.floor||1));
-    host.traps=host.traps||[];
-    const present=kind=>host.traps.some(trap=>trap?.active&&String(trap.kind||"").toLowerCase()===kind);
-    const occupied=new Set(host.traps.filter(trap=>trap?.active).map(trap=>`${Number(trap.x)},${Number(trap.y)}`));
-    const hazardCells=new Set((host.hazardRooms||[]).flatMap(hazard=>(hazard?.cells||[]).map(cell=>`${Number(cell.x)},${Number(cell.y)}`)));
-    const candidates=[];
-    for(let y=0;y<(world?.map||[]).length;y++){
-      const row=world.map[y]||[];
-      for(let x=0;x<row.length;x++){
-        if(row[x]!==0)continue;
-        const roomId=W.roomAt(world,x,y);
-        const start=Number(x)===Number(world.start?.x)&&Number(y)===Number(world.start?.y);
-        const exit=Number(x)===Number(world.exit?.x)&&Number(y)===Number(world.exit?.y);
-        const roomless=roomId<0;
-        const edgeRoom=!roomless&&(roomId===world.startRoomId||roomId===world.exitRoomId);
-        candidates.push({x,y,roomId,start,exit,edgeRoom,roomless,hazard:hazardCells.has(`${x},${y}`)});
-      }
-    }
-    candidates.sort((a,b)=>
-      Number(a.start)-Number(b.start)
-      ||Number(a.exit)-Number(b.exit)
-      ||Number(a.edgeRoom)-Number(b.edgeRoom)
-      ||Number(a.hazard)-Number(b.hazard)
-      ||Number(a.roomless)-Number(b.roomless)
-      ||a.roomId-b.roomId||a.y-b.y||a.x-b.x
-    );
-    families.forEach((kind,index)=>{
-      if(present(kind))return;
-      const uniqueCell=candidates.find(candidate=>!occupied.has(`${candidate.x},${candidate.y}`))||null;
-      // A pathological compact seed may expose fewer distinct walkable cells
-      // than trap families. Prefer every unused cell first; only then reuse a
-      // deterministic walkable cell rather than silently dropping a family.
-      const cell=uniqueCell||candidates[(floor+index)%Math.max(1,candidates.length)]||null;
-      if(!cell)return;
-      const trap={
-        id:`startworld-family-${kind}-f${floor}-${cell.x}-${cell.y}`,
-        x:cell.x,y:cell.y,roomId:cell.roomId,kind,
-        phase:(cell.x*131+cell.y*197+index*331)%1800,
-        period:2200,active:true,v142StartWorldFamilyFallback:true,v142StartWorldCellReuse:!uniqueCell
-      };
-      host.traps.push(trap);occupied.add(`${cell.x},${cell.y}`);
-    });
-    // Freeze one representative of every public trap family at the final
-    // world-start boundary. Later zone retuning may change timing/presentation,
-    // but it must not rewrite the last FIRE, SPIKE or SHOCK out of existence.
-    for(const kind of families){
-      const representative=host.traps.find(trap=>trap?.active&&String(trap.kind||"").toLowerCase()===kind);
-      if(representative){representative.v142FinalFamilyGuaranteed=true;representative.v142FinalFamilyKind=kind}
-    }
-  }catch(error){console.error("[Dungeon Carnage] final startWorld trap-family invariant failed",error)}
+  // R67: ordinary procedurally generated FIRE/SPIKE/SHOCK floor traps are
+  // retired. Dedicated hazard rooms are the only floor-hazard owner.
+  host.traps=[];
+
   p1=old1?preservePlayer(old1,world.start.x,world.start.y):makePlayer(net.sessionId,playerName(),world.start.x,world.start.y);p2=null;if(split||old2){const q=nearbyOpen(world.start.x+2,world.start.y,[p1]);p2=old2?preservePlayer(old2,q.x,q.y):makePlayer("LOCAL-P2","PLAYER 2",q.x,q.y)}
   remote.clear();enemyVisuals.clear();bullets.length=enemyBullets.length=particles.length=rings.length=floaters.length=hazards.length=0;pendingItems.clear();cameras.clear();explored.clear();campStates.clear();roomVisits.clear();playerTrails.clear();questDone.clear();toastQueue.length=0;toastTimer=0;retainedToast=false;UI.toast?.classList.remove("show");stats.games=stats.elites=stats.doors=stats.weapons=stats.secrets=stats.generators=0;shake=damageFlash=0;move1=move2=fire1=fire2=fireBuffer1=fireBuffer2=0;specialCD=0;inventoryReminderMs=300000;
   host.worldRef=world;host.enteredRoomIds=[];for(const p of localPlayers()){resetCamp(p);reveal(p);if(checkpointRestore){const rid=W.roomAt(world,p.x,p.y),set=new Set();if(rid>=0){set.add(rid);host.enteredRoomIds.push(rid)}roomVisits.set(p.id,set)}else markRoomVisit(p);rememberTrail(p);updateRoomMessage(p,true)}levelQueue.length=0;for(const p of localPlayers())rememberPendingLevelChoice(p);A.stageUnenteredEnemies?.(host,world);
-  try{
-    // Post-initialisation family seal. Some late world staging paths can
-    // reconcile generated objects after the earlier Stage 6/startWorld guard.
-    // Re-check the actual playable host immediately before first sync so every
-    // Solo floor exposes FIRE, SPIKE and SHOCK in its live trap collection.
-    const families=["fire","spike","shock"],floor=Math.max(1,Number(run?.floor||1));
-    host.traps=host.traps||[];
-    const present=new Set(host.traps.filter(trap=>trap?.active).map(trap=>String(trap.kind||"").toLowerCase()));
-    const missing=families.filter(kind=>!present.has(kind));
-    if(missing.length){
-      const occupied=new Set(host.traps.filter(trap=>trap?.active).map(trap=>`${Number(trap.x)},${Number(trap.y)}`));
-      const candidates=[];
-      for(let y=0;y<(world?.map||[]).length;y++){
-        const row=world.map[y]||[];
-        for(let x=0;x<row.length;x++){
-          if(row[x]!==0)continue;
-          const roomId=W.roomAt(world,x,y);
-          const start=Number(x)===Number(world.start?.x)&&Number(y)===Number(world.start?.y);
-          const exit=Number(x)===Number(world.exit?.x)&&Number(y)===Number(world.exit?.y);
-          const roomless=roomId<0,edgeRoom=!roomless&&(roomId===world.startRoomId||roomId===world.exitRoomId);
-          candidates.push({x,y,roomId,start,exit,edgeRoom,roomless});
-        }
-      }
-      candidates.sort((a,b)=>Number(a.start)-Number(b.start)||Number(a.exit)-Number(b.exit)||Number(a.edgeRoom)-Number(b.edgeRoom)||Number(a.roomless)-Number(b.roomless)||a.roomId-b.roomId||a.y-b.y||a.x-b.x);
-      missing.forEach((kind,index)=>{
-        const unique=candidates.find(candidate=>!occupied.has(`${candidate.x},${candidate.y}`))||null;
-        const cell=unique||candidates[(floor+index)%Math.max(1,candidates.length)]||null;
-        if(!cell)return;
-        host.traps.push({
-          id:`poststage-family-${kind}-f${floor}-${cell.x}-${cell.y}`,
-          x:cell.x,y:cell.y,roomId:cell.roomId,kind,
-          phase:(cell.x*149+cell.y*211+index*379)%1800,
-          period:2200,active:true,v142PostStageFamilySeal:true,v142PostStageCellReuse:!unique
-        });
-        occupied.add(`${cell.x},${cell.y}`);
-      });
-    }
-    for(const kind of families){
-      const representative=host.traps.find(trap=>trap?.active&&String(trap.kind||"").toLowerCase()===kind);
-      if(representative){representative.v142FinalFamilyGuaranteed=true;representative.v142FinalFamilyKind=kind}
-    }
-  }catch(error){console.error("[Dungeon Carnage] post-stage trap-family invariant failed",error)}
+  // R67 final playable-host invariant: no ordinary procedural floor traps
+  // may be restored by late world staging or compatibility code.
+  host.traps=[];
+
   sync();
   try{const detail={floor:Number(run?.floor||1),preserve:Boolean(preserve),checkpointRestore:Boolean(checkpointRestore)};dispatchEvent(new CustomEvent("ccg:floor-start",{detail}));document.dispatchEvent(new CustomEvent("ccg:floor-start",{detail}))}catch(_){}
   const fi=PGR.floorInfo(run);showToast(`FLOOR ${run.floor}: ${fi.name}`,`${PGR.objectiveLabel(run)}${run.modifier?` • MODIFIER: ${run.modifier.name}`:""}`,"cyan",6500);
