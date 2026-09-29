@@ -8,8 +8,8 @@ const css=fs.readFileSync(new URL("css/v10-42-r46-final-visual-polish.css",root)
 const gameplay=fs.readFileSync(new URL("js/game-play.js",root),"utf8");
 const version=JSON.parse(fs.readFileSync(new URL("version.json",root),"utf8"));
 
-assert.equal(version.build,"V10.42 r66");
-assert.equal(version.cacheToken,"20260929r66");
+assert.equal(version.build,"V10.42 r67");
+assert.equal(version.cacheToken,"20260929r67");
 const r16=bootstrap.indexOf('v10-42-r16-environment-presentation.js');
 const r46=bootstrap.indexOf('v10-42-r46-final-visual-polish.js');
 const tutorial=bootstrap.indexOf('v10-42-tutorial-campaign.js');

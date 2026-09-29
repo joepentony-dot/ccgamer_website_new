@@ -76,9 +76,9 @@ assert.notDeepEqual(
   assert.equal(host.enemies.find(e=>e.id==="named").kind,"hunter","named followers must not be retyped");
   assert.equal(host.enemies.find(e=>e.id==="guardian").kind,"guardian","guardian identity must remain authoritative");
   assert.equal(host.enemies.find(e=>e.id==="guardian").v142ZoneBossPattern,"armoured-advance");
-  assert.ok(host.traps.every(t=>t.v142Zone==="iron"));
-  assert.ok(host.traps.every(t=>["shock","spike"].includes(t.kind)),"Iron Keep traps must use its bounded mechanical palette");
+  assert.equal(host.traps.length,0,"R67 must retire ordinary procedural floor traps during Stage 6 decoration");
   assert.equal(host.hazardRooms[0].v142Zone,"iron");
+  assert.ok(["blade","arrows"].includes(host.hazardRooms[0].type),"Iron Keep must express its mechanical hazard palette through the dedicated hazard room");
   assert.equal(host.generators[0].v142Zone,"iron");
   assert.ok(host.generators[0].spawnCooldown<7000,"Iron Keep generator pressure must use the real existing cooldown primitive");
 }
@@ -87,7 +87,8 @@ assert.notDeepEqual(
   const {context,host,world}=runtime();
   context.window.CCGSystems.decorate(world,host,{floor:4,seed:"STAGE6-ASH"});
   assert.equal(host.v142ZoneGameplay.zone,"ash");
-  assert.ok(host.traps.some(t=>t.kind==="fire"),"Ember Depths must materially bias real trap kind toward fire");
+  assert.equal(host.traps.length,0,"Ember Depths must not reintroduce retired ordinary floor traps");
+  assert.ok(["embers","blade"].includes(host.hazardRooms[0].type),"Ember Depths must bias the dedicated hazard room toward its ember/blade palette");
   assert.ok(host.generators[0].spawnCooldown<6000,"Ember Depths must increase generator pressure through the existing cooldown");
 }
 

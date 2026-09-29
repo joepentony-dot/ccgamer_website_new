@@ -12,10 +12,10 @@ const canonical=fs.readFileSync(new URL("index.html",root),"utf8");
 const publicAlias=fs.readFileSync(new URL("arcade/c64-dungeon-carnage/index.html",repoRoot),"utf8");
 
 for(const html of [canonical,publicAlias]){
-  assert.match(html,/ccg-lost-sizzler-build" content="V10\.42 r66"/);
-  assert.match(html,/ccg-lost-sizzler-cache" content="20260929r66"/);
-  assert.match(html,/Latest Build Changes · V10\.42 R66/);
-  assert.match(html,/ACTIVE BUILD: V10\.42 R66/);
+  assert.match(html,/ccg-lost-sizzler-build" content="V10\.42 r67"/);
+  assert.match(html,/ccg-lost-sizzler-cache" content="20260929r67"/);
+  assert.match(html,/Latest Build Changes · V10\.42 R67/);
+  assert.match(html,/ACTIVE BUILD: V10\.42 R67/);
 }
 
 assert.match(
@@ -65,13 +65,18 @@ assert.match(
 );
 assert.match(
   systems,
-  /fallbackFinalTrapRooms=\[\.\.\.\(world\.rooms\|\|\[\]\)\][\s\S]*emergencyFinalTrapRooms=\[\.\.\.\(world\.rooms\|\|\[\]\)\][\s\S]*fallbackFinalTrapRooms\[offset%Math\.max\(1,fallbackFinalTrapRooms\.length\)\][\s\S]*emergencyFinalTrapRooms\[offset%Math\.max\(1,emergencyFinalTrapRooms\.length\)\]/,
-  "final trap-family restoration must fall back to progressively relaxed non-hazard rooms when the strict pool is empty"
+  /R67: ordinary single-tile FIRE\/SPIKE\/SHOCK traps are retired[\s\S]*host\.traps=\[\];/,
+  "R67 base decoration must leave the ordinary procedural trap collection empty"
 );
 assert.match(
   stage6,
-  /TRAP_FAMILIES=Object\.freeze\(\["fire","spike","shock"\]\)[\s\S]*function reconcileTrapFamilies\(hostState,seed,worldState,profile\)[\s\S]*counts\[String\(trap\.kind\|\|""\)\.toLowerCase\(\)\]>1[\s\S]*donor\.kind=kind[\s\S]*reserveCell\(kind\)[\s\S]*v142ZoneFamilyReserve:true[\s\S]*reconcileTrapFamilies\(hostState,seed,worldState,\{\.\.\.profile,floor\}\)/,
-  "Stage 6 zone retuning must preserve FIRE, SPIKE and SHOCK families by retagging a surplus duplicate or deterministically restoring a missing family in a non-hazard room"
+  /hostState\.traps=\[\];[\s\S]*ensureDedicatedHazard\(worldState,hostState,runState,profile,seed\)/,
+  "Stage 6 must clear retired ordinary traps and preserve only the dedicated hazard-room path"
+);
+assert.doesNotMatch(
+  stage6,
+  /reconcileTrapFamilies\(hostState,seed,worldState,\{\.\.\.profile,floor\}\);/,
+  "Stage 6 must not restore FIRE, SPIKE or SHOCK procedural trap families"
 );
 assert.match(
   reporter,
@@ -95,4 +100,4 @@ assert.match(
 );
 assert.match(shop,/INVENTORY FULL/);
 
-console.log("Dungeon Carnage R59 post-merge blocker regression contract passed.");
+console.log("Dungeon Carnage R67 post-merge blocker regression contract passed.");

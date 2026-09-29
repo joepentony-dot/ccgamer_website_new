@@ -76,7 +76,7 @@ try{
   assert.equal(hazard.before.active,true,`fixture must place the player on an ACTIVE dedicated hazard cell: ${JSON.stringify(hazard)}`);
   assert.equal(hazard.after.health,hazard.before.health-1,`active dedicated hazard must remove one health even when stale invulnerability was present: ${JSON.stringify(hazard)}`);
   assert.ok(hazard.after.cooldown>0,"dedicated hazard must retain its normal hit cooldown after confirmed damage");
-  for(const kind of ["fire","spike","shock"])assert.ok(Number(hazard.trapKinds?.[kind]||0)>0,`dedicated hazard generation must retain at least one active ${kind.toUpperCase()} floor trap: ${JSON.stringify(hazard)}`);
+  for(const kind of ["fire","spike","shock"])assert.equal(Number(hazard.trapKinds?.[kind]||0),0,`R67 must not restore retired ordinary ${kind.toUpperCase()} floor traps: ${JSON.stringify(hazard)}`);
 
   assert.deepEqual(errors,[],"critical combat/trap recovery browser contract must not produce page errors");
   console.log("PASS critical combat owner recovery and dedicated hazard damage");

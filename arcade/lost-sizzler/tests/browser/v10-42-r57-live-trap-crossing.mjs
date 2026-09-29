@@ -30,273 +30,88 @@ const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usag
 
 try{
   const context=await browser.newContext({viewport:{width:1280,height:900}});
-  await context.addInitScript(()=>{
-    try{
-      localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true");
-      localStorage.setItem("ccg-lost-sizzler-tutorial-complete-v1","true");
-      localStorage.setItem("ccg-dungeon-bug-reporter","1");
-    }catch(_){}
-  });
-  const page=await context.newPage();
-  page.setDefaultTimeout(30000);
-  const errors=[];
-  page.on("pageerror",error=>errors.push(String(error?.stack||error)));
-
-  await page.goto(origin+"/arcade/lost-sizzler/?live-trap-crossing-r57=1&bugreport=1",{waitUntil:"load"});
+  await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true");localStorage.setItem("ccg-lost-sizzler-tutorial-complete-v1","true")}catch(_){}});
+  const page=await context.newPage();page.setDefaultTimeout(30000);
+  const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
+  await page.goto(origin+"/arcade/lost-sizzler/?r67-dedicated-hazard-crossing=1",{waitUntil:"load"});
   await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&document.body.dataset.v142BootstrapReady==="true");
-  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state&&window.CCGLostSizzlerBugReporter?.state?.installed));
   await page.locator("#solo-btn").click({noWaitAfter:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&String(mode)==="playing"&&Boolean(p1&&host&&run));
 
-  const generatedKinds=await page.evaluate(()=>[...new Set((host?.traps||[]).filter(t=>t?.active).map(t=>String(t.kind||"").toLowerCase()))]);
-  for(const kind of ["fire","spike","shock"])assert.ok(generatedKinds.includes(kind),"generated floor must contain an active "+kind.toUpperCase()+" trap");
-
-  for(const kind of ["fire","spike","shock"]){
-    const result=await page.evaluate(kind=>{
-      const api=window.CCGLostSizzlerV142R19MobileTrapLayoutStability;
-      const reporter=window.CCGLostSizzlerBugReporter;
-      const trap=(host?.traps||[]).find(t=>t?.active&&String(t.kind||"").toLowerCase()===kind);
-      if(!trap)return{available:false,reason:"trap missing"};
-      const candidates=[
-        {x:Number(trap.x)-1,y:Number(trap.y),dx:1,dy:0},
-        {x:Number(trap.x)+1,y:Number(trap.y),dx:-1,dy:0},
-        {x:Number(trap.x),y:Number(trap.y)-1,dx:0,dy:1},
-        {x:Number(trap.x),y:Number(trap.y)+1,dx:0,dy:-1}
-      ];
-      const entry=candidates.find(q=>W.walkable(world.map,q.x,q.y,host)&&!(host.enemies||[]).some(e=>e?.alive&&e.x===q.x&&e.y===q.y));
-      if(!entry)return{available:false,reason:"no walkable adjacent entry"};
-      for(const enemy of host?.enemies||[])enemy.alive=false;
-      if(host?.stalker)host.stalker.awake=false;
-      const original={period:Number(trap.period),phase:Number(trap.phase)};
-      p1.x=entry.x;p1.y=entry.y;p1.rx=p1.x;p1.ry=p1.y;
-      p1.maxHealth=Math.max(20,Number(p1.maxHealth||8));p1.health=20;p1.armor=3;p1.invuln=0;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
-      move1=0;input.clear();
-      const period=100000,now=performance.now();
-      trap.period=period;trap.phase=((period*.10)-(now%period)+period)%period;
-      api.rearmInactiveTrapContacts();
-      const active=Boolean(SYS.trapActive(trap,performance.now()));
-      const before={health:Number(p1.health),armor:Number(p1.armor),events:reporter.events.length,verified:Number(reporter.state.environmentVerifiedHits||0)};
-      movePlayer(p1,entry.dx,entry.dy,false);
-      const immediate={x:Number(p1.x),y:Number(p1.y),health:Number(p1.health),armor:Number(p1.armor)};
-      return{available:true,id:String(trap.id),kind:String(trap.kind),active,entry,target:{x:Number(trap.x),y:Number(trap.y)},original,before,immediate};
-    },kind);
-
-    assert.equal(result.available,true,kind+" fixture unavailable: "+JSON.stringify(result));
-    assert.equal(result.active,true,kind+" trap must be ACTIVE when the real movement path crosses it");
-    assert.deepEqual({x:result.immediate.x,y:result.immediate.y},result.target,kind+" movement must land on the trap tile");
-    assert.equal(result.immediate.health,result.before.health-1,kind+" ACTIVE crossing must remove exactly one HP through the real movement path");
-    assert.equal(result.immediate.armor,result.before.armor,kind+" ACTIVE crossing must preserve armour");
-
-    await page.waitForFunction(args=>{
-      const events=window.CCGLostSizzlerBugReporter.events.slice(args.beforeEvents);
-      return events.some(event=>
-        (event.type==="environment-trap-crossing-damage-confirmed"||event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE")&&
-        event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y
-      );
-    },{beforeEvents:result.before.events,target:result.target},{timeout:2500,polling:25});
-    const evidence=await page.evaluate(args=>{
-      const reporter=window.CCGLostSizzlerBugReporter;
-      const events=reporter.events.slice(args.beforeEvents);
-      return{
-        confirmed:events.some(event=>event.type==="environment-trap-crossing-damage-confirmed"&&event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y&&(event.detail?.traps||[]).some(trap=>String(trap?.id||"")===String(args.id)&&String(trap?.kind||"").toLowerCase()===args.kind)),
-        missed:events.some(event=>event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE"&&event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y),
-        verified:Number(reporter.state.environmentVerifiedHits||0)
-      };
-    },{beforeEvents:result.before.events,kind,id:result.id,target:result.target});
-    assert.equal(evidence.confirmed,true,kind+" crossing must be confirmed by exact-contact diagnostics: "+JSON.stringify(evidence));
-    assert.equal(evidence.missed,false,kind+" successful crossing must not be reported as a missed active trap hit");
-    assert.ok(evidence.verified>result.before.verified,kind+" crossing must increment verified environmental hits");
-
-    await page.evaluate(args=>{
-      const trap=(host?.traps||[]).find(t=>String(t.id)===String(args.id));
-      if(trap){trap.period=args.original.period;trap.phase=args.original.phase}
-      p1.x=world.start.x;p1.y=world.start.y;p1.rx=p1.x;p1.ry=p1.y;p1.health=Math.max(8,Number(p1.maxHealth||8));p1.armor=0;p1.invuln=0;p1.hitStunMs=0;
-      window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.rearmInactiveTrapContacts?.();
-    },{id:result.id,original:result.original});
-    await page.waitForTimeout(90);
-  }
-
-  const sameCycleReentry=await page.evaluate(()=>globalThis.eval(`(()=>{
-    const api=window.CCGLostSizzlerV142R58AuthoritativeTrapCore;
-    const trap=(host?.traps||[]).find(t=>t?.active&&String(t.kind||"").toLowerCase()==="shock");
-    if(!api||!trap)return{available:false,reason:"canonical SHOCK trap unavailable"};
-    const candidates=[
-      {x:Number(trap.x)-1,y:Number(trap.y),dx:1,dy:0},
-      {x:Number(trap.x)+1,y:Number(trap.y),dx:-1,dy:0},
-      {x:Number(trap.x),y:Number(trap.y)-1,dx:0,dy:1},
-      {x:Number(trap.x),y:Number(trap.y)+1,dx:0,dy:-1}
+  const fixture=await page.evaluate(()=>globalThis.eval(`(()=>{
+    if((host.traps||[]).length)return{available:false,reason:"ordinary traps restored",ordinary:(host.traps||[]).length};
+    const dirs=[
+      {key:"ArrowRight",dx:1,dy:0},{key:"ArrowLeft",dx:-1,dy:0},
+      {key:"ArrowDown",dx:0,dy:1},{key:"ArrowUp",dx:0,dy:-1}
     ];
-    const entry=candidates.find(q=>W.walkable(world.map,q.x,q.y,host)&&!(host.enemies||[]).some(e=>e?.alive&&e.x===q.x&&e.y===q.y));
-    if(!entry)return{available:false,reason:"no walkable SHOCK entry"};
-    for(const enemy of host?.enemies||[])enemy.alive=false;
-    if(host?.stalker)host.stalker.awake=false;
-    const original={period:Number(trap.period),phase:Number(trap.phase)};
-    const period=100000,now=performance.now();
-    trap.period=period;trap.phase=((period*.10)-(now%period)+period)%period;
-    p1.x=entry.x;p1.y=entry.y;p1.rx=p1.x;p1.ry=p1.y;
-    p1.maxHealth=Math.max(20,Number(p1.maxHealth||8));p1.health=20;p1.armor=0;p1.invuln=0;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
-    move1=0;input.clear();api.reset?.();api.rearmInactiveTrapContacts();
-    const before={health:Number(p1.health),exitRearms:Number(api.state.contactExitRearms||0),cycle:api.trapCycleId(trap,performance.now())};
-    movePlayer(p1,entry.dx,entry.dy,false);
-    const first={health:Number(p1.health),x:Number(p1.x),y:Number(p1.y)};
-    p1.hitStunMs=0;move1=0;
-    movePlayer(p1,-entry.dx,-entry.dy,false);
-    p1.hitStunMs=0;move1=0;api.updateTrapContacts("same-cycle-exit");
-    const left={health:Number(p1.health),x:Number(p1.x),y:Number(p1.y),exitRearms:Number(api.state.contactExitRearms||0),cycle:api.trapCycleId(trap,performance.now())};
-    movePlayer(p1,entry.dx,entry.dy,false);
-    const second={health:Number(p1.health),x:Number(p1.x),y:Number(p1.y),cycle:api.trapCycleId(trap,performance.now())};
-    trap.period=original.period;trap.phase=original.phase;
-    p1.x=world.start.x;p1.y=world.start.y;p1.rx=p1.x;p1.ry=p1.y;p1.invuln=0;p1.hitStunMs=0;api.rearmInactiveTrapContacts();
-    return{available:true,target:{x:Number(trap.x),y:Number(trap.y)},before,first,left,second};
-  })()`));
-  assert.equal(sameCycleReentry.available,true,"same-cycle SHOCK re-entry fixture must be available: "+JSON.stringify(sameCycleReentry));
-  assert.equal(sameCycleReentry.first.health,sameCycleReentry.before.health-1,"first ACTIVE SHOCK entry must remove one HP");
-  assert.ok(sameCycleReentry.left.exitRearms>sameCycleReentry.before.exitRearms,"leaving an ACTIVE trap tile must rearm its contact ledger");
-  assert.equal(sameCycleReentry.left.cycle,sameCycleReentry.before.cycle,"fixture must remain inside the same active trap cycle while leaving");
-  assert.equal(sameCycleReentry.second.cycle,sameCycleReentry.before.cycle,"fixture must re-enter during that same active trap cycle");
-  assert.equal(sameCycleReentry.second.health,sameCycleReentry.first.health-1,"re-entering the same ACTIVE SHOCK trap after leaving must remove another HP");
-
-  const protectedCrossing=await page.evaluate(()=>globalThis.eval(`(()=>{
-    const api=window.CCGLostSizzlerV142R58AuthoritativeTrapCore;
-    const trap=(host?.traps||[]).find(t=>t?.active&&String(t.kind||"").toLowerCase()==="fire");
-    if(!api||!trap)return{available:false,reason:"canonical FIRE trap unavailable"};
-    const candidates=[
-      {x:Number(trap.x)-1,y:Number(trap.y),dx:1,dy:0},
-      {x:Number(trap.x)+1,y:Number(trap.y),dx:-1,dy:0},
-      {x:Number(trap.x),y:Number(trap.y)-1,dx:0,dy:1},
-      {x:Number(trap.x),y:Number(trap.y)+1,dx:0,dy:-1}
-    ];
-    const entry=candidates.find(q=>W.walkable(world.map,q.x,q.y,host)&&!(host.enemies||[]).some(e=>e?.alive&&e.x===q.x&&e.y===q.y));
-    if(!entry)return{available:false,reason:"no walkable FIRE entry"};
-    for(const enemy of host?.enemies||[])enemy.alive=false;
-    if(host?.stalker)host.stalker.awake=false;
-    const original={period:Number(trap.period),phase:Number(trap.phase)};
-    p1.x=entry.x;p1.y=entry.y;p1.rx=p1.x;p1.ry=p1.y;
-    p1.maxHealth=Math.max(20,Number(p1.maxHealth||8));p1.health=20;p1.armor=4;p1.invuln=650;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
-    move1=0;input.clear();
-    const period=100000,now=performance.now();
-    trap.period=period;trap.phase=((period*.10)-(now%period)+period)%period;
-    api.rearmInactiveTrapContacts();
-    const before={health:Number(p1.health),armor:Number(p1.armor),invuln:Number(p1.invuln||0),hits:Number(api.state.trapHits||0)};
-    movePlayer(p1,entry.dx,entry.dy,false);
-    const after={health:Number(p1.health),armor:Number(p1.armor),invuln:Number(p1.invuln||0),hits:Number(api.state.trapHits||0),x:Number(p1.x),y:Number(p1.y)};
-    trap.period=original.period;trap.phase=original.phase;
-    p1.x=world.start.x;p1.y=world.start.y;p1.rx=p1.x;p1.ry=p1.y;p1.invuln=0;p1.hitStunMs=0;
-    api.rearmInactiveTrapContacts();
-    return{available:true,target:{x:Number(trap.x),y:Number(trap.y)},before,after};
-  })()`));
-  assert.equal(protectedCrossing.available,true,"pre-invulnerable FIRE crossing fixture must be available: "+JSON.stringify(protectedCrossing));
-  assert.deepEqual({x:protectedCrossing.after.x,y:protectedCrossing.after.y},protectedCrossing.target,"player must physically cross onto the ACTIVE FIRE trap");
-  assert.equal(protectedCrossing.after.health,protectedCrossing.before.health-1,"pre-existing enemy/post-hit invulnerability must not make an ACTIVE FIRE trap miss");
-  assert.equal(protectedCrossing.after.armor,protectedCrossing.before.armor,"invulnerability-bypassing FIRE trap contact must still preserve armour");
-  assert.equal(protectedCrossing.after.hits,protectedCrossing.before.hits+1,"invulnerability-bypassing FIRE contact must record exactly one verified trap hit");
-  assert.ok(protectedCrossing.after.invuln>=protectedCrossing.before.invuln,"successful trap contact must preserve or refresh post-hit protection");
-
-  const retryablePseudoHit=await page.evaluate(()=>globalThis.eval(`(()=>{
-    const api=window.CCGLostSizzlerV142R58AuthoritativeTrapCore;
-    const trap=(host?.traps||[]).find(t=>t?.active&&String(t.kind||"").toLowerCase()==="spike");
-    if(!api||!trap)return{available:false,reason:"canonical spike trap unavailable"};
-    const candidates=[
-      {x:Number(trap.x)-1,y:Number(trap.y),dx:1,dy:0},
-      {x:Number(trap.x)+1,y:Number(trap.y),dx:-1,dy:0},
-      {x:Number(trap.x),y:Number(trap.y)-1,dx:0,dy:1},
-      {x:Number(trap.x),y:Number(trap.y)+1,dx:0,dy:-1}
-    ];
-    const entry=candidates.find(q=>W.walkable(world.map,q.x,q.y,host)&&!(host.enemies||[]).some(e=>e?.alive&&e.x===q.x&&e.y===q.y));
-    if(!entry)return{available:false,reason:"no walkable spike entry"};
-    for(const enemy of host?.enemies||[])enemy.alive=false;
-    if(host?.stalker)host.stalker.awake=false;
-    const original={period:Number(trap.period),phase:Number(trap.phase)};
-    p1.x=entry.x;p1.y=entry.y;p1.rx=p1.x;p1.ry=p1.y;
-    p1.maxHealth=Math.max(20,Number(p1.maxHealth||8));p1.armor=3;p1.invuln=0;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
-    move1=0;input.clear();
-    const period=100000,now=performance.now();
-    trap.period=period;trap.phase=((period*.10)-(now%period)+period)%period;
-    api.rearmInactiveTrapContacts();
-    let heldHealth=20,blockHealthWrites=true;
-    Object.defineProperty(p1,"health",{configurable:true,enumerable:true,get(){return heldHealth},set(value){if(!blockHealthWrites)heldHealth=Number(value)}});
-    const before={health:Number(p1.health),damageAt:Number(p1.__ccgLastDamageAt||0),hits:Number(api.state.trapHits||0),retries:Number(api.state.damageRetries||0)};
-    movePlayer(p1,entry.dx,entry.dy,false);
-    const blocked={health:Number(p1.health),damageAt:Number(p1.__ccgLastDamageAt||0),hits:Number(api.state.trapHits||0),retries:Number(api.state.damageRetries||0)};
-    blockHealthWrites=false;
-    const restored=heldHealth;delete p1.health;p1.health=restored;
-    p1.invuln=0;p1.hitStunMs=0;
-    const retryBefore=Number(p1.health);
-    const retryHandled=api.damageValidatedTrapContact(p1,trap);
-    const retryAfter=Number(p1.health);
-    trap.period=original.period;trap.phase=original.phase;
-    p1.x=world.start.x;p1.y=world.start.y;p1.rx=p1.x;p1.ry=p1.y;p1.invuln=0;p1.hitStunMs=0;
-    api.rearmInactiveTrapContacts();
-    return{available:true,before,blocked,retryBefore,retryAfter,retryHandled};
-  })()`));
-  assert.equal(retryablePseudoHit.available,true,"timestamp-only SPIKE fixture must be available: "+JSON.stringify(retryablePseudoHit));
-  assert.ok(retryablePseudoHit.blocked.damageAt>retryablePseudoHit.before.damageAt,"fixture must advance canonical damage timestamp while the HEALTH write is blocked");
-  assert.equal(retryablePseudoHit.blocked.health,retryablePseudoHit.before.health,"timestamp/source evidence alone must not manufacture HEALTH loss");
-  assert.equal(retryablePseudoHit.blocked.hits,retryablePseudoHit.before.hits,"timestamp/source evidence alone must not consume a verified trap cycle");
-  assert.ok(retryablePseudoHit.blocked.retries>retryablePseudoHit.before.retries,"failed canonical trap HEALTH write must be recorded as retryable");
-  assert.equal(retryablePseudoHit.retryHandled,true,"same still-active SPIKE contact must remain eligible after a failed HEALTH write");
-  assert.equal(retryablePseudoHit.retryAfter,retryablePseudoHit.retryBefore-1,"retry of the same active SPIKE contact must remove exactly one HEALTH");
-
-  const dash=await page.evaluate(()=>{
-    const api=window.CCGLostSizzlerV142R19MobileTrapLayoutStability;
-    const reporter=window.CCGLostSizzlerBugReporter;
-    const directions=[[1,0],[-1,0],[0,1],[0,-1]];
-    let trap=null,dir=null;
-    for(const candidate of host?.traps||[]){
-      if(!candidate?.active)continue;
-      const candidateRoomId=Number.isFinite(Number(candidate.roomId))?Number(candidate.roomId):W.roomAt(world,Number(candidate.x),Number(candidate.y));
-      const untriggeredArena=(host.arenas||[]).some(arena=>!arena?.triggered&&Number(arena.roomId)===candidateRoomId);
-      if(untriggeredArena)continue;
-      const found=directions.map(([dx,dy])=>({dx,dy,sx:Number(candidate.x)-dx,sy:Number(candidate.y)-dy,ex:Number(candidate.x)+dx,ey:Number(candidate.y)+dy}))
-        .find(q=>{
-          const entryOpen=W.walkable(world.map,q.sx,q.sy,host);
-          const exitOpen=W.walkable(world.map,q.ex,q.ey,host);
-          const exitChest=(host.chests||[]).some(chest=>chest?.active&&Number(chest.x)===q.ex&&Number(chest.y)===q.ey);
-          const exitDoor=(host.doors||[]).some(door=>!door?.open&&Number(door.x)===q.ex&&Number(door.y)===q.ey);
-          const exitTrap=(host.traps||[]).some(other=>other!==candidate&&other?.active&&Number(other.x)===q.ex&&Number(other.y)===q.ey);
-          const exitItem=(host.items||[]).some(item=>item?.active&&Number(item.x)===q.ex&&Number(item.y)===q.ey);
-          return entryOpen&&exitOpen&&!exitChest&&!exitDoor&&!exitTrap&&!exitItem
-        });
-      if(found){trap=candidate;dir=found;break}
+    let selected=null;
+    for(const hazard of host.hazardRooms||[]){
+      for(const cell of hazard.cells||[]){
+        if(world?.map?.[Number(cell.y)]?.[Number(cell.x)]!==0)continue;
+        if((host.enemies||[]).some(e=>e?.alive&&e.x===Number(cell.x)&&e.y===Number(cell.y)))continue;
+        for(const dir of dirs){
+          const entry={x:Number(cell.x)-dir.dx,y:Number(cell.y)-dir.dy};
+          if(W.walkable(world.map,entry.x,entry.y,host)&&!(host.enemies||[]).some(e=>e?.alive&&e.x===entry.x&&e.y===entry.y)){selected={hazard,cell,dir,entry};break}
+        }
+        if(selected)break;
+      }
+      if(selected)break;
     }
-    if(!trap||!dir)return{available:false,reason:"no dashable trap"};
-    for(const enemy of host?.enemies||[])enemy.alive=false;
-    if(host?.stalker)host.stalker.awake=false;
-    const original={period:Number(trap.period),phase:Number(trap.phase)};
-    p1.x=dir.sx;p1.y=dir.sy;p1.rx=p1.x;p1.ry=p1.y;
-    p1.maxHealth=Math.max(20,Number(p1.maxHealth||8));p1.health=20;p1.armor=4;p1.invuln=0;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
+    if(!selected)return{available:false,reason:"no keyboard-reachable dedicated hazard cell",hazards:(host.hazardRooms||[]).length};
+    const {hazard,cell,dir,entry}=selected;
+    for(const enemy of host.enemies||[])enemy.alive=false;
+    if(host.stalker)host.stalker.awake=false;
+    const original={period:Number(hazard.period),warningMs:Number(hazard.warningMs),activeMs:Number(hazard.activeMs),phase:Number(hazard.phase)};
+    hazard.period=100000;hazard.warningMs=120;hazard.activeMs=12000;
+    const groups=Math.max(2,Number(hazard.groups||2)),group=((Number(cell.group||0)%groups)+groups)%groups;
+    const elapsed=Number(host.floorElapsed||run.elapsed||0);
+    let step=group;
+    while(step*hazard.period+hazard.warningMs+240<elapsed)step+=groups;
+    hazard.phase=step*hazard.period+hazard.warningMs+240-elapsed;
+    p1.x=entry.x;p1.y=entry.y;p1.rx=entry.x;p1.ry=entry.y;
+    p1.maxHealth=Math.max(20,Number(p1.maxHealth||8));p1.health=20;p1.armor=4;p1.invuln=0;p1.hitStunMs=0;p1.hazardHitCooldown=0;
     move1=0;input.clear();
-    const period=100000,now=performance.now();
-    trap.period=period;trap.phase=((period*.10)-(now%period)+period)%period;
-    api.rearmInactiveTrapContacts();
-    const before={health:Number(p1.health),armor:Number(p1.armor),events:reporter.events.length};
-    movePlayer(p1,dir.dx,dir.dy,true);
-    return{available:true,id:String(trap.id),kind:String(trap.kind||""),original,dir,target:{x:Number(trap.x),y:Number(trap.y)},before,after:{x:Number(p1.x),y:Number(p1.y),health:Number(p1.health),armor:Number(p1.armor)}};
-  });
-
-  assert.equal(dash.available,true,"dash crossing fixture unavailable: "+JSON.stringify(dash));
-  assert.deepEqual({x:dash.after.x,y:dash.after.y},{x:dash.dir.ex,y:dash.dir.ey},"two-tile dash must move beyond the trap tile");
-  assert.equal(dash.after.health,dash.before.health-1,"fast dash across an ACTIVE trap must still remove exactly one HP");
-  assert.equal(dash.after.armor,dash.before.armor,"fast dash trap damage must preserve armour");
-  await page.waitForFunction(args=>{
-    const events=window.CCGLostSizzlerBugReporter.events.slice(args.beforeEvents);
-    return events.some(event=>
-      (event.type==="environment-trap-crossing-damage-confirmed"||event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE")&&
-      event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y
-    );
-  },{beforeEvents:dash.before.events,target:dash.target},{timeout:2500,polling:25});
-  const dashEvidence=await page.evaluate(args=>{
-    const events=window.CCGLostSizzlerBugReporter.events.slice(args.beforeEvents);
+    window.__r67HazardEvents=[];
+    addEventListener("ccg:hazard-damage",event=>window.__r67HazardEvents.push({...event.detail}));
+    const state=SYS.hazardCellState(hazard,Number(cell.x),Number(cell.y),host.floorElapsed||run.elapsed);
     return{
-      confirmed:events.some(event=>event.type==="environment-trap-crossing-damage-confirmed"&&event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y&&(event.detail?.traps||[]).some(trap=>String(trap?.id||"")===String(args.id))),
-      missed:events.some(event=>event.type==="ANOMALY_ACTIVE_TRAP_CROSSING_NO_DAMAGE"&&event.detail?.contact?.x===args.target.x&&event.detail?.contact?.y===args.target.y)
+      available:true,id:String(hazard.id),type:String(hazard.type||""),key:dir.key,
+      target:{x:Number(cell.x),y:Number(cell.y)},entry,backKey:dir.key==="ArrowRight"?"ArrowLeft":dir.key==="ArrowLeft"?"ArrowRight":dir.key==="ArrowDown"?"ArrowUp":"ArrowDown",
+      before:{health:Number(p1.health),armor:Number(p1.armor)},active:Boolean(state.active),ordinary:(host.traps||[]).length,original
     };
-  },{beforeEvents:dash.before.events,target:dash.target,id:dash.id});
-  assert.equal(dashEvidence.confirmed,true,"fast dash crossing must retain exact confirmed contact evidence: "+JSON.stringify(dashEvidence));
-  assert.equal(dashEvidence.missed,false,"fast dash crossing must not be misreported as a no-damage contact");
+  })()`));
+  assert.equal(fixture.available,true,"dedicated hazard keyboard fixture must be available: "+JSON.stringify(fixture));
+  assert.equal(fixture.ordinary,0,"R67 must keep ordinary FIRE/SPIKE/SHOCK traps absent");
+  assert.equal(fixture.active,true,"dedicated hazard must be ACTIVE before real keyboard entry");
 
-  assert.deepEqual(errors,[],"live FIRE/SPIKE/SHOCK crossing regression must not produce page errors: "+errors.join("\n"));
-  console.log("C64 Dungeon Carnage live FIRE/SPIKE/SHOCK movement and dash trap crossings passed.");
+  await page.keyboard.press(fixture.key,{delay:24});
+  await page.waitForFunction(target=>Number(p1.x)===target.x&&Number(p1.y)===target.y,fixture.target,{timeout:3000,polling:16});
+  await page.waitForFunction(before=>Number(p1.health)===before-1,fixture.before.health,{timeout:2500,polling:16});
+  const first=await page.evaluate(({id,target})=>{
+    const hazard=(host.hazardRooms||[]).find(h=>String(h.id)===id);
+    return{health:Number(p1.health),armor:Number(p1.armor),x:Number(p1.x),y:Number(p1.y),active:Boolean(SYS.hazardCellState(hazard,target.x,target.y,host.floorElapsed||run.elapsed).active),events:[...(window.__r67HazardEvents||[])],ordinary:(host.traps||[]).length};
+  },{id:fixture.id,target:fixture.target});
+  assert.deepEqual({x:first.x,y:first.y},fixture.target,"keyboard movement must land on the dedicated hazard cell");
+  assert.equal(first.health,fixture.before.health-1,"first ACTIVE dedicated hazard crossing must remove exactly one HP");
+  assert.equal(first.armor,fixture.before.armor,"dedicated hazard crossing must preserve armour");
+  assert.equal(first.active,true,"hazard must remain ACTIVE when the first hit is inspected");
+  assert.equal(first.ordinary,0,"ordinary traps must remain absent after first crossing");
+  assert.equal(first.events.filter(e=>String(e.hazardId||"")===fixture.id).length,1,"first crossing must emit one canonical hazard-damage event");
+
+  await page.keyboard.press(fixture.backKey,{delay:24});
+  await page.waitForFunction(entry=>Number(p1.x)===entry.x&&Number(p1.y)===entry.y,fixture.entry,{timeout:3000,polling:16});
+  await page.waitForTimeout(1150);
+  await page.evaluate(()=>{p1.hitStunMs=0;move1=0;});
+  await page.keyboard.press(fixture.key,{delay:24});
+  await page.waitForFunction(args=>Number(p1.x)===args.target.x&&Number(p1.y)===args.target.y&&Number(p1.health)===args.health-1,{target:fixture.target,health:first.health},{timeout:3000,polling:16});
+  const second=await page.evaluate(()=>({health:Number(p1.health),armor:Number(p1.armor),events:[...(window.__r67HazardEvents||[])],ordinary:(host.traps||[]).length,mode:String(mode||"")}));
+  assert.equal(second.health,first.health-1,"leaving and re-entering the still ACTIVE dedicated hazard after cooldown must remove another HP");
+  assert.equal(second.armor,fixture.before.armor,"second dedicated hazard hit must still preserve armour");
+  assert.equal(second.events.filter(e=>String(e.hazardId||"")===fixture.id).length,2,"two qualified entries must emit exactly two canonical hazard-damage events");
+  assert.equal(second.ordinary,0,"ordinary procedural traps must stay absent throughout the crossing regression");
+  assert.equal(second.mode,"playing","dedicated hazard re-entry must leave Solo gameplay active");
+  assert.deepEqual(errors,[],"R67 dedicated hazard crossing regression must not produce page errors: "+errors.join("\n"));
+  console.log("C64 Dungeon Carnage R67 dedicated hazard keyboard crossing and re-entry passed.");
   await context.close();
 }finally{
   await browser.close();

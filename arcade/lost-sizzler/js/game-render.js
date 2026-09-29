@@ -516,7 +516,7 @@ function drawPixelEnemySprite(e,cx,cy){
     px(0,0,-10,-17,20,5,pal.outline);px(0,0,-8,-15,16,10,pal.main);px(0,0,-6,-12,12,3,"#100b16");px(0,0,-5,-11,10,2,pal.accent);px(0,0,-14,-6,28,17,pal.outline);px(0,0,-11,-5,22,16,pal.main);px(0,0,-16,-6,7,9,pal.light);px(0,0,9,-6,7,9,pal.light);px(0,0,-5,-1,10,9,pal.dark);px(0,0,-2,1,4,5,pal.accent);px(0,0,14,-14,4,30,pal.light);px(0,0,10,-17,12,5,pal.accent);px(0,0,17,-21,4,9,pal.accent);px(0,0,11,13,10,3,pal.dark);if(e.exitWarden){ctx.strokeStyle=P.gold;ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,2,8,0,Math.PI*2);ctx.stroke()}
   }
   drawEnemyArmour(e,pal);
-  if(f){const portrait=avatarImages?.get?.(f.name);if(portrait?.complete&&portrait.naturalWidth){ctx.save();ctx.imageSmoothingEnabled=false;ctx.shadowBlur=0;ctx.globalAlpha=.98;ctx.drawImage(portrait,-7,-14,14,14);ctx.strokeStyle=P.gold;ctx.lineWidth=1.5;ctx.strokeRect(-8,-15,16,16);ctx.restore()}ctx.fillStyle=P.gold;ctx.font='bold 6px "Courier New"';ctx.textAlign="center";ctx.fillText(f.initials||f.name.slice(0,2).toUpperCase(),0,8);drawEnemyTorch(17,-1,phase)}
+  if(f){const portrait=avatarImages?.get?.(f.name);if(portrait?.complete&&portrait.naturalWidth){ctx.save();ctx.imageSmoothingEnabled=false;ctx.shadowBlur=0;ctx.globalAlpha=.98;ctx.drawImage(portrait,-7,-14,14,14);ctx.strokeStyle=P.gold;ctx.lineWidth=1.5;ctx.strokeRect(-8,-15,16,16);ctx.restore()}ctx.fillStyle=P.gold;ctx.font='bold 6px "Courier New"';ctx.textAlign="center";ctx.fillText(f.initials||String(f.name||e?.kind||"EN").slice(0,2).toUpperCase(),0,8);drawEnemyTorch(17,-1,phase)}
   if((e.hitStunMs||0)>0){ctx.globalAlpha=.8;for(let n=0;n<5;n++){const a=phase+n*1.26;px(0,0,Math.cos(a)*17,Math.sin(a)*12-7,3,3,n%2?P.cyan:"#fff")}}
   ctx.restore()
 }

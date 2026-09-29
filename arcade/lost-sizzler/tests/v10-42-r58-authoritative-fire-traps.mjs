@@ -16,8 +16,8 @@ const stage6=fs.readFileSync(new URL("js/v10-42-stage6-zone-gameplay.js",root),"
 const onboarding=fs.readFileSync(new URL("js/v10-20-onboarding-safety.js",root),"utf8");
 const version=JSON.parse(fs.readFileSync(new URL("version.json",root),"utf8"));
 
-assert.equal(version.build,"V10.42 r66");
-assert.equal(version.cacheToken,"20260929r66");
+assert.equal(version.build,"V10.42 r67");
+assert.equal(version.cacheToken,"20260929r67");
 
 assert.match(bootstrap,/v10-42-r19-mobile-trap-layout-stability\.js[\s\S]*CCGLostSizzlerV142R19MobileLayoutCompatibility/,"R19 portrait compatibility may load only behind its explicit non-gameplay compatibility marker");
 assert.match(r19,/gameplayOwnership:false/,"R19 portrait compatibility must explicitly disclaim gameplay ownership");
@@ -77,18 +77,12 @@ assert.match(hazardFallbackBlock,/roomless=roomId<0/,"final dedicated-hazard fal
 assert.match(hazardFallbackBlock,/hazardRoomId=Number\(fallback\.roomId\)/,"final dedicated-hazard fallback must preserve a roomless -1 ownership id when necessary");
 assert.match(hazardFallbackBlock,/roomId:hazardRoomId/,"final dedicated-hazard object must use the resolved fallback room id rather than require a room object");
 assert.match(hazardFallbackBlock,/v142StartWorldRoomlessFallback:!chosen/,"roomless emergency hazards must remain explicitly diagnosable");
-const familyFallbackBlock=core.match(/\/\/ Final ordinary-trap family guarantee[\s\S]*?final startWorld trap-family invariant failed",error\)\}/)?.[0]||"";
-assert.doesNotMatch(familyFallbackBlock,/if\(roomId<0\)continue/,"final trap-family fallback must retain walkable corridor cells for pathological compact floors");
-assert.match(familyFallbackBlock,/roomless=roomId<0/,"final trap-family fallback must classify roomless corridor cells without discarding them");
-assert.match(familyFallbackBlock,/const uniqueCell=candidates\.find[\s\S]*?const cell=uniqueCell\|\|candidates\[/,"final trap-family fallback must prefer unused cells and retain a deterministic last-resort reuse path");
-assert.match(familyFallbackBlock,/v142StartWorldCellReuse:!uniqueCell/,"last-resort reused trap cells must remain explicitly diagnosable");
-assert.match(familyFallbackBlock,/v142FinalFamilyGuaranteed=true;representative\.v142FinalFamilyKind=kind/,"final world-start reconciliation must freeze one representative of every public trap family");
-assert.match(core,/Post-initialisation family seal[\s\S]*v142PostStageFamilySeal:true/,"the playable host must re-seal FIRE, SPIKE and SHOCK after late world staging");
-assert.match(core,/post-stage trap-family invariant failed/,"post-stage family sealing must fail safely without breaking world startup");
-assert.match(core,/Post-initialisation family seal[\s\S]*v142FinalFamilyGuaranteed=true;representative\.v142FinalFamilyKind=kind/,"the playable host boundary must freeze the final FIRE, SPIKE and SHOCK representatives");
-assert.match(stage6,/trap\.v142FinalFamilyGuaranteed&&TRAP_FAMILIES\.includes\(guaranteed\)\)trap\.kind=guaranteed/,"Stage 6 must preserve final guaranteed family identity when later tuning runs");
-assert.match(stage6,/for\(const kind of TRAP_FAMILIES\)[\s\S]*v142FinalFamilyGuaranteed=true;representative\.v142FinalFamilyKind=kind/,"Stage 6 reconciliation must seal one representative after family repair");
-assert.match(onboarding,/for\(const t of host\.traps\|\|\[\]\)if\(depth\(t\.roomId\)<=safeDepth&&!t\.v142FinalFamilyGuaranteed\)t\.active=false/,"gentle opening must not deactivate the final sealed FIRE, SPIKE or SHOCK representative");
+assert.doesNotMatch(core,/Final ordinary-trap family guarantee/,"R67 must not recreate ordinary FIRE/SPIKE/SHOCK families at final world start");
+assert.doesNotMatch(core,/Post-initialisation family seal/,"R67 must not re-seal ordinary FIRE/SPIKE/SHOCK after late world staging");
+assert.match(core,/R67: ordinary procedurally generated FIRE\/SPIKE\/SHOCK floor traps are[\s\S]*host\.traps=\[\];/,"final world-start must hard-clear retired ordinary traps");
+assert.match(core,/R67 final playable-host invariant:[\s\S]*host\.traps=\[\];/,"the playable-host boundary must hard-clear any late restored ordinary traps");
+assert.match(stage6,/hostState\.traps=\[\];[\s\S]*ensureDedicatedHazard\(worldState,hostState,runState,profile,seed\)/,"Stage 6 must preserve only dedicated hazard rooms");
+assert.doesNotMatch(stage6,/reconcileTrapFamilies\(hostState,seed,worldState,\{\.\.\.profile,floor\}\);/,"Stage 6 must not call the legacy ordinary trap-family repair path");
 assert.match(core,/const representative=\(host\.hazardRooms\|\|\[\]\)\.find\(hazard=>Array\.isArray\(hazard\?\.cells\)&&hazard\.cells\.length>0\);[\s\S]*representative\.v142FinalHazardGuaranteed=true/,"final world-start reconciliation must seal one usable dedicated hazard");
 assert.match(onboarding,/host\.hazardRooms\.filter\(h=>depth\(h\.roomId\)<=safeDepth&&!h\.v142FinalHazardGuaranteed\)/,"gentle opening must preserve the final sealed dedicated hazard");
 assert.doesNotMatch(play,/CCGLostSizzlerV142R19MobileTrapLayoutStability\?\.updateTrapContacts/,"simulation must not depend on the retired R19 implementation");
@@ -108,4 +102,4 @@ assert.match(r18,/function repairAttackLiveness\(\)[\s\S]*return false/,"legacy 
 assert.match(r20,/fireOwnership:false/,"R20 must explicitly disclaim FIRE ownership");
 assert.doesNotMatch(r20,/function attackNow\(|ATTACK_KEYS|recoverPersistentFireBlock|recoverThroughDeepFireOwner|recoverThroughCapturedR1FireOwner/,"R20 must contain no FIRE recovery implementation");
 
-console.log("Dungeon r58 authoritative FIRE/trap ownership contract passed.");
+console.log("Dungeon R67 authoritative FIRE and dedicated-hazard ownership contract passed.");

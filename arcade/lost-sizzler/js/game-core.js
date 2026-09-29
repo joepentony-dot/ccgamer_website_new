@@ -2,7 +2,7 @@
 const C=window.CCG_CONFIG,W=window.CCGWorld,A=window.CCGAI,S=window.CCGSound,PGR=window.CCGProgression,SYS=window.CCGSystems,$=id=>document.getElementById(id);
 const canvas=$("game"),ctx=canvas.getContext("2d");ctx.imageSmoothingEnabled=false;
 const UI={
-  health:$("hud-health"),p2:$("hud-p2"),mana:$("hud-mana"),keys:$("hud-keys"),bronze:$("hud-bronze"),weapon:$("hud-weapon"),score:$("hud-score"),room:$("hud-room"),
+  health:$("hud-health"),p2:$("hud-p2"),mana:$("hud-mana"),keys:$("hud-keys"),bronze:$("hud-bronze"),bronzeHub:$("hud-bronze-hub"),weapon:$("hud-weapon"),score:$("hud-score"),room:$("hud-room"),
   mission:$("mission-text"),net:$("net-status"),sound:$("sound-btn"),message:$("message"),list:$("player-list"),quests:$("quest-list"),loadout:$("loadout"),surroundings:$("surroundings"),
   menu:$("menu"),pause:$("pause"),end:$("end"),endTitle:$("end-title"),endText:$("end-text"),name:$("player-name"),roomCode:$("room-code"),note:$("menu-note"),difficulty:$("difficulty"),collection:$("collection-summary"),
   toast:$("pickup-toast"),toastIcon:$("pickup-icon"),toastTitle:$("pickup-title"),toastText:$("pickup-text"),itemShortcuts:$("item-shortcuts"),eventLog:$("event-log"),levelUp:$("level-up"),levelCopy:$("level-up-copy"),levelChoices:$("level-up-choices"),levelLater:$("level-up-later"),
@@ -194,106 +194,17 @@ function startWorld(seed,split=false,preserve=false,checkpointRestore=false){
     const representative=(host.hazardRooms||[]).find(hazard=>Array.isArray(hazard?.cells)&&hazard.cells.length>0);
     if(representative)representative.v142FinalHazardGuaranteed=true;
   }catch(error){console.error("[Dungeon Carnage] final dedicated-hazard seal failed",error)}
-  try{
-    // Final ordinary-trap family guarantee. Stage 6 prefers normal non-hazard
-    // rooms, but pathological compact seeds can leave no eligible room pool.
-    // At this final boundary, reserve walkable cells directly so FIRE, SPIKE
-    // and SHOCK can never all disappear from a generated Solo floor.
-    const families=["fire","spike","shock"],floor=Math.max(1,Number(stage6Run?.floor||1));
-    host.traps=host.traps||[];
-    const present=kind=>host.traps.some(trap=>trap?.active&&String(trap.kind||"").toLowerCase()===kind);
-    const occupied=new Set(host.traps.filter(trap=>trap?.active).map(trap=>`${Number(trap.x)},${Number(trap.y)}`));
-    const hazardCells=new Set((host.hazardRooms||[]).flatMap(hazard=>(hazard?.cells||[]).map(cell=>`${Number(cell.x)},${Number(cell.y)}`)));
-    const candidates=[];
-    for(let y=0;y<(world?.map||[]).length;y++){
-      const row=world.map[y]||[];
-      for(let x=0;x<row.length;x++){
-        if(row[x]!==0)continue;
-        const roomId=W.roomAt(world,x,y);
-        const start=Number(x)===Number(world.start?.x)&&Number(y)===Number(world.start?.y);
-        const exit=Number(x)===Number(world.exit?.x)&&Number(y)===Number(world.exit?.y);
-        const roomless=roomId<0;
-        const edgeRoom=!roomless&&(roomId===world.startRoomId||roomId===world.exitRoomId);
-        candidates.push({x,y,roomId,start,exit,edgeRoom,roomless,hazard:hazardCells.has(`${x},${y}`)});
-      }
-    }
-    candidates.sort((a,b)=>
-      Number(a.start)-Number(b.start)
-      ||Number(a.exit)-Number(b.exit)
-      ||Number(a.edgeRoom)-Number(b.edgeRoom)
-      ||Number(a.hazard)-Number(b.hazard)
-      ||Number(a.roomless)-Number(b.roomless)
-      ||a.roomId-b.roomId||a.y-b.y||a.x-b.x
-    );
-    families.forEach((kind,index)=>{
-      if(present(kind))return;
-      const uniqueCell=candidates.find(candidate=>!occupied.has(`${candidate.x},${candidate.y}`))||null;
-      // A pathological compact seed may expose fewer distinct walkable cells
-      // than trap families. Prefer every unused cell first; only then reuse a
-      // deterministic walkable cell rather than silently dropping a family.
-      const cell=uniqueCell||candidates[(floor+index)%Math.max(1,candidates.length)]||null;
-      if(!cell)return;
-      const trap={
-        id:`startworld-family-${kind}-f${floor}-${cell.x}-${cell.y}`,
-        x:cell.x,y:cell.y,roomId:cell.roomId,kind,
-        phase:(cell.x*131+cell.y*197+index*331)%1800,
-        period:2200,active:true,v142StartWorldFamilyFallback:true,v142StartWorldCellReuse:!uniqueCell
-      };
-      host.traps.push(trap);occupied.add(`${cell.x},${cell.y}`);
-    });
-    // Freeze one representative of every public trap family at the final
-    // world-start boundary. Later zone retuning may change timing/presentation,
-    // but it must not rewrite the last FIRE, SPIKE or SHOCK out of existence.
-    for(const kind of families){
-      const representative=host.traps.find(trap=>trap?.active&&String(trap.kind||"").toLowerCase()===kind);
-      if(representative){representative.v142FinalFamilyGuaranteed=true;representative.v142FinalFamilyKind=kind}
-    }
-  }catch(error){console.error("[Dungeon Carnage] final startWorld trap-family invariant failed",error)}
+  // R67: ordinary procedurally generated FIRE/SPIKE/SHOCK floor traps are
+  // retired. Dedicated hazard rooms are the only floor-hazard owner.
+  host.traps=[];
+
   p1=old1?preservePlayer(old1,world.start.x,world.start.y):makePlayer(net.sessionId,playerName(),world.start.x,world.start.y);p2=null;if(split||old2){const q=nearbyOpen(world.start.x+2,world.start.y,[p1]);p2=old2?preservePlayer(old2,q.x,q.y):makePlayer("LOCAL-P2","PLAYER 2",q.x,q.y)}
   remote.clear();enemyVisuals.clear();bullets.length=enemyBullets.length=particles.length=rings.length=floaters.length=hazards.length=0;pendingItems.clear();cameras.clear();explored.clear();campStates.clear();roomVisits.clear();playerTrails.clear();questDone.clear();toastQueue.length=0;toastTimer=0;retainedToast=false;UI.toast?.classList.remove("show");stats.games=stats.elites=stats.doors=stats.weapons=stats.secrets=stats.generators=0;shake=damageFlash=0;move1=move2=fire1=fire2=fireBuffer1=fireBuffer2=0;specialCD=0;inventoryReminderMs=300000;
   host.worldRef=world;host.enteredRoomIds=[];for(const p of localPlayers()){resetCamp(p);reveal(p);if(checkpointRestore){const rid=W.roomAt(world,p.x,p.y),set=new Set();if(rid>=0){set.add(rid);host.enteredRoomIds.push(rid)}roomVisits.set(p.id,set)}else markRoomVisit(p);rememberTrail(p);updateRoomMessage(p,true)}levelQueue.length=0;for(const p of localPlayers())rememberPendingLevelChoice(p);A.stageUnenteredEnemies?.(host,world);
-  try{
-    // Post-initialisation family seal. Some late world staging paths can
-    // reconcile generated objects after the earlier Stage 6/startWorld guard.
-    // Re-check the actual playable host immediately before first sync so every
-    // Solo floor exposes FIRE, SPIKE and SHOCK in its live trap collection.
-    const families=["fire","spike","shock"],floor=Math.max(1,Number(run?.floor||1));
-    host.traps=host.traps||[];
-    const present=new Set(host.traps.filter(trap=>trap?.active).map(trap=>String(trap.kind||"").toLowerCase()));
-    const missing=families.filter(kind=>!present.has(kind));
-    if(missing.length){
-      const occupied=new Set(host.traps.filter(trap=>trap?.active).map(trap=>`${Number(trap.x)},${Number(trap.y)}`));
-      const candidates=[];
-      for(let y=0;y<(world?.map||[]).length;y++){
-        const row=world.map[y]||[];
-        for(let x=0;x<row.length;x++){
-          if(row[x]!==0)continue;
-          const roomId=W.roomAt(world,x,y);
-          const start=Number(x)===Number(world.start?.x)&&Number(y)===Number(world.start?.y);
-          const exit=Number(x)===Number(world.exit?.x)&&Number(y)===Number(world.exit?.y);
-          const roomless=roomId<0,edgeRoom=!roomless&&(roomId===world.startRoomId||roomId===world.exitRoomId);
-          candidates.push({x,y,roomId,start,exit,edgeRoom,roomless});
-        }
-      }
-      candidates.sort((a,b)=>Number(a.start)-Number(b.start)||Number(a.exit)-Number(b.exit)||Number(a.edgeRoom)-Number(b.edgeRoom)||Number(a.roomless)-Number(b.roomless)||a.roomId-b.roomId||a.y-b.y||a.x-b.x);
-      missing.forEach((kind,index)=>{
-        const unique=candidates.find(candidate=>!occupied.has(`${candidate.x},${candidate.y}`))||null;
-        const cell=unique||candidates[(floor+index)%Math.max(1,candidates.length)]||null;
-        if(!cell)return;
-        host.traps.push({
-          id:`poststage-family-${kind}-f${floor}-${cell.x}-${cell.y}`,
-          x:cell.x,y:cell.y,roomId:cell.roomId,kind,
-          phase:(cell.x*149+cell.y*211+index*379)%1800,
-          period:2200,active:true,v142PostStageFamilySeal:true,v142PostStageCellReuse:!unique
-        });
-        occupied.add(`${cell.x},${cell.y}`);
-      });
-    }
-    for(const kind of families){
-      const representative=host.traps.find(trap=>trap?.active&&String(trap.kind||"").toLowerCase()===kind);
-      if(representative){representative.v142FinalFamilyGuaranteed=true;representative.v142FinalFamilyKind=kind}
-    }
-  }catch(error){console.error("[Dungeon Carnage] post-stage trap-family invariant failed",error)}
+  // R67 final playable-host invariant: no ordinary procedural floor traps
+  // may be restored by late world staging or compatibility code.
+  host.traps=[];
+
   sync();
   try{const detail={floor:Number(run?.floor||1),preserve:Boolean(preserve),checkpointRestore:Boolean(checkpointRestore)};dispatchEvent(new CustomEvent("ccg:floor-start",{detail}));document.dispatchEvent(new CustomEvent("ccg:floor-start",{detail}))}catch(_){}
   const fi=PGR.floorInfo(run);showToast(`FLOOR ${run.floor}: ${fi.name}`,`${PGR.objectiveLabel(run)}${run.modifier?` • MODIFIER: ${run.modifier.name}`:""}`,"cyan",6500);
@@ -331,12 +242,12 @@ function sync(){
   UI.health.textContent=`${p1.health}/${p1.maxHealth}`;UI.p2.textContent=String(p1.armor||0);UI.mana.textContent=`${p1.mana}/${p1.maxMana}`;UI.keys.textContent=host.objective?.type==="keys"?`${host.keysCollected}/${C.keyTarget}`:`${host.objective?.complete?"DONE":"ACTIVE"}`;const weaponRaw=String(weapon.name||"Pulse"),tierMatch=weaponRaw.match(/TIER\s+(\d+)/i),weaponLevel=Math.max(1,Number(tierMatch?.[1]||p1.weaponLevel||weapon.rating||1)),weaponFamily=weaponRaw.replace(/^TIER\s+\d+\s*[·-]\s*/i,"").replace(/\s+BLASTER$/i,"").replace(/\s+[IVX]+$/i,"").trim()||"PULSE";UI.weapon.textContent=`L${weaponLevel} ${weaponFamily}`.toUpperCase().slice(0,18);UI.weapon.title=`Weapon Level ${weaponLevel} · ${weaponRaw}`;UI.score.textContent=pad(score);UI.room.textContent=`F${run.floor}`;if(UI.power)UI.power.textContent=String((weapon.power||1)+(p1.damageBonus||0));if(UI.kills)UI.kills.textContent=String(run.stats.kills||0);if(UI.time)UI.time.textContent=formatRunTime(run.elapsed);if(UI.alert)UI.alert.textContent=`${Math.round(run.alert||0)}%`;
   const root=document.documentElement;if(root?.style){root.style.setProperty("--health-pct",`${Math.max(0,Math.min(100,p1.health/Math.max(1,p1.maxHealth)*100))}%`);root.style.setProperty("--armour-pct",`${Math.max(0,Math.min(100,(p1.armor||0)/12*100))}%`);root.style.setProperty("--ammo-pct",`${Math.max(0,Math.min(100,p1.mana/Math.max(1,p1.maxMana)*100))}%`);root.style.setProperty("--alert-pct",`${Math.max(0,Math.min(100,run.alert||0))}%`)}
   const cap=PGR.floorLevelCap(run),atCap=p1.level>=cap,xpNeed=PGR.xpNeed(p1.level),xpPct=atCap?100:Math.max(0,Math.min(100,(p1.xp/Math.max(1,xpNeed))*100)),torches=PGR.inventoryKindCount(p1,"torch"),potions=PGR.inventoryKindCount(p1,"potion"),flasks=PGR.inventoryKindCount(p1,"banishment");
-  if(UI.bronze)UI.bronze.textContent=`BRONZE ${p1.bronzeKeys||0}`;if(UI.quickPotion)UI.quickPotion.textContent=`${potions} HELD`;if(UI.quickLevel)UI.quickLevel.textContent=`LEVEL ${p1.level} / CAP ${cap}`;if(UI.quickXpText)UI.quickXpText.textContent=atCap?`FLOOR ${run.floor} CAP REACHED • XP STOPPED`:`EARNED XP ${p1.totalXp||0}`;if(UI.quickXpFill)UI.quickXpFill.style.width=`${xpPct}%`;if(UI.quickXpNext)UI.quickXpNext.textContent=atCap?`NO XP IS BANKED AT CAP — DESCEND TO RESUME`:`${Math.max(0,xpNeed-p1.xp)} TO NEXT • FLOOR CAP ${cap}`;const pendingUpgrades=pendingLevelCount(p1);if(UI.quickLevelUp){UI.quickLevelUp.classList.toggle("hidden",pendingUpgrades<=0);UI.quickLevelUp.textContent=pendingUpgrades===1?"LEVEL-UP AVAILABLE":`${pendingUpgrades} LEVEL-UPS AVAILABLE`;UI.quickLevelUp.setAttribute("aria-label",pendingUpgrades===1?"Choose your unused level-up":`Choose one of ${pendingUpgrades} unused level-ups`)};
+  if(UI.bronze)UI.bronze.textContent=`BRONZE ${p1.bronzeKeys||0}`;if(UI.bronzeHub)UI.bronzeHub.textContent=`BRONZE ×${p1.bronzeKeys||0}`;if(UI.quickPotion)UI.quickPotion.textContent=`${potions} HELD`;if(UI.quickLevel)UI.quickLevel.textContent=`LEVEL ${p1.level} / CAP ${cap}`;if(UI.quickXpText)UI.quickXpText.textContent=atCap?`FLOOR ${run.floor} CAP REACHED • XP STOPPED`:`EARNED XP ${p1.totalXp||0}`;if(UI.quickXpFill)UI.quickXpFill.style.width=`${xpPct}%`;if(UI.quickXpNext)UI.quickXpNext.textContent=atCap?`NO XP IS BANKED AT CAP — DESCEND TO RESUME`:`${Math.max(0,xpNeed-p1.xp)} TO NEXT • FLOOR CAP ${cap}`;const pendingUpgrades=pendingLevelCount(p1);if(UI.quickLevelUp){UI.quickLevelUp.classList.toggle("hidden",pendingUpgrades<=0);UI.quickLevelUp.textContent=pendingUpgrades===1?"LEVEL-UP AVAILABLE":`${pendingUpgrades} LEVEL-UPS AVAILABLE`;UI.quickLevelUp.setAttribute("aria-label",pendingUpgrades===1?"Choose your unused level-up":`Choose one of ${pendingUpgrades} unused level-ups`)};
   if(UI.quickUtility){UI.quickUtility.textContent=p1.torchMs>0?`ACTIVE ${Math.ceil(p1.torchMs/1000)}s • ${torches} SPARE`:`${torches} HELD`;UI.quickUtility.closest?.(".critical-card")?.classList.toggle("available",torches>0||p1.torchMs>0)}if(UI.quickKeyring)UI.quickKeyring.textContent=`MAIN ${host.keysCollected||0}/${C.keyTarget}${host.exitSigilCollected?" • SIGIL 1":" • SIGIL 0"}`;
   const useKeys={potion:"E",torch:"Q",teleport:"R",banishment:"B"};
   if(UI.quickSlots)UI.quickSlots.innerHTML=Array.from({length:PGR.inventoryCapacity(p1)},(_,i)=>{const it=p1.inventory?.[i],qty=it?Math.max(1,Number(it.qty)||1):0,code=it?({potion:"POT",torch:"TOR",teleport:"WARP",banishment:"BAN",artefact:"ART"}[it.kind]||(it.short||it.kind||"ITEM").slice(0,4).toUpperCase()):"",key=it?useKeys[it.kind]:"";return `<span class="quick-slot ${it?"filled":"empty"}" title="${esc(it?PGR.inventoryLabel(it):`Empty slot ${i+1}`)}"><b>${i+1}</b>${key?`<kbd class="quick-slot-key">${key}</kbd>`:""}${it?itemIconSVG(inventoryVisualKind(it),PGR.inventoryLabel(it)):`<i></i>`}${it?`<em class="stack-name">${esc(code)}</em>`:""}${qty>1?`<strong class="stack-count">×${qty}</strong>`:""}</span>`}).join("");
   if(UI.itemShortcuts){const usable=(p1.inventory||[]).filter(it=>useKeys[it.kind]);UI.itemShortcuts.innerHTML=usable.map(it=>`<span class="item-command item-command-${esc(it.kind)}">${itemIconSVG(inventoryVisualKind(it),PGR.inventoryLabel(it))}<kbd>${useKeys[it.kind]}</kbd><b>${esc(PGR.inventoryLabel(it))}</b><em>×${Math.max(1,Number(it.qty)||1)}</em></span>`).join("")||`<p>Collect usable items to reveal their coloured action buttons here.</p>`}
-  if(UI.quickSpecials){const badges=[`BRONZE KEY ×${p1.bronzeKeys||0}`];if(p1.torchMs>0)badges.push(`TORCH ${Math.ceil(p1.torchMs/1000)}s`);if(p1.rapidMs>0)badges.push(`RAPID ${Math.ceil(p1.rapidMs/1000)}s`);if(flasks)badges.push(`BANISH ×${flasks}`);UI.quickSpecials.textContent=badges.join(" · ")}
+  if(UI.quickSpecials){const badges=[];if(p1.torchMs>0)badges.push(`TORCH ${Math.ceil(p1.torchMs/1000)}s`);if(p1.rapidMs>0)badges.push(`RAPID ${Math.ceil(p1.rapidMs/1000)}s`);if(flasks)badges.push(`BANISH ×${flasks}`);UI.quickSpecials.textContent=badges.join(" · ")||"NO ACTIVE BUFFS"}
   const bs=typeof banishmentState==="function"?banishmentState(p1):{ready:false};document.querySelector(".ccg-game")?.classList.toggle("banish-ready",Boolean(bs.ready));if(UI.banishAlert){UI.banishAlert.classList.toggle("hidden",!bs.ready);if(bs.ready&&UI.banishAlertText){const threat=bs.nearest===host.stalker?C.stalker.name:"DEATH STALKER",dist=Math.max(0,Math.round(md(bs.nearest,p1)));UI.banishAlertText.textContent=`${threat.toUpperCase()} ${dist} TILE${dist===1?"":"S"} AWAY — PRESS B`}}
   UI.net.textContent=playMode==="online"?(net.transport==="supabase"?(net.isHost?"ONLINE • HOST":"ONLINE • CO-OP"):(net.isHost?"LOCAL ROOM • HOST":"LOCAL ROOM • CO-OP")):playMode==="split"?"LOCAL SPLIT":"SOLO";UI.net.classList.toggle("online",playMode==="online"&&net.connected);UI.sound.textContent=S.isEnabled()?"SOUND ON":"SOUND OFF";
   UI.mission.textContent=`${PGR.floorInfo(run).name} — ${SYS.objectiveText(host,run,explore)}${run.modifier?` • ${run.modifier.name}`:""}`;

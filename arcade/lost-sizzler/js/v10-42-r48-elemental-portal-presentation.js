@@ -93,6 +93,7 @@
   }
 
   function install(){
+    if(state.installs>0)return true;
     const current=window.renderView;if(typeof current!=="function")return false;
     if(current.__ccgV142R48PortalPresentation)return true;
     const wrapped=function renderViewV142R48PortalPresentation(player,viewBox){

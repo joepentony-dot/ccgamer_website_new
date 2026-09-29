@@ -296,57 +296,13 @@ window.CCGSystems=(()=>{
     for(const g of host.generators||[])busy.add(g.roomId);for(const a of host.arenas||[])busy.add(a.roomId);for(const t of host.timedRooms||[])busy.add(t.roomId);if(host.rescue)busy.add(host.rescue.roomId);if(host.guardian)busy.add(W.roomAt(world,host.guardian.x,host.guardian.y));
     for(const feature of [host.bloodClue,host.memoryPuzzle,host.sequenceTorchPuzzle,host.weightBridge])if(feature?.roomId!=null)busy.add(feature.roomId);
     const hardHazardEligible=(room,minW=6,minH=5)=>Boolean(room&&!room.sanctuary&&!room.sigilRoom&&!room.spiderNest&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=minW&&room.h>=minH),hazardEligible=(room,minW=8,minH=7)=>Boolean(hardHazardEligible(room,minW,minH)&&!busy.has(room.id)),reservedHazardRooms=(world.rooms||[]).filter(room=>Boolean(room?.dedicatedHazardReserved&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=2&&room.h>=2)),reservedHazardRoomIds=new Set(reservedHazardRooms.map(room=>room.id)),primaryHazardRooms=rooms.filter(room=>!reservedHazardRoomIds.has(room.id)&&hazardEligible(room)),fallbackHazardRooms=reservedHazardRooms.length+primaryHazardRooms.length>=count?[]:(world.rooms||[]).filter(room=>hazardEligible(room)&&!reservedHazardRoomIds.has(room.id)&&!primaryHazardRooms.some(candidate=>candidate.id===room.id)),strictHazardRoomIds=new Set([...reservedHazardRooms,...primaryHazardRooms,...fallbackHazardRooms].map(room=>room.id)),relaxedHazardRooms=reservedHazardRooms.length+primaryHazardRooms.length+fallbackHazardRooms.length>=count?[]:(world.rooms||[]).filter(room=>hazardEligible(room,6,5)&&!strictHazardRoomIds.has(room.id)),shuffleHazardRooms=list=>list.map(room=>({room,key:world.random()})).sort((a,b)=>a.key-b.key),choices=[...shuffleHazardRooms(reservedHazardRooms),...shuffleHazardRooms(primaryHazardRooms),...shuffleHazardRooms(fallbackHazardRooms),...shuffleHazardRooms(relaxedHazardRooms)],types=["blade","embers","arrows"];host.hazardRooms=[];
-    const ordinaryTrapKinds=["fire","spike","shock"];
-    const activeTrapKind=(trap,kind)=>Boolean(trap?.active)&&String(trap.kind||"").toLowerCase()===kind;
-    const preservesOrdinaryTrapKinds=room=>ordinaryTrapKinds.every(kind=>(host.traps||[]).some(trap=>trap.roomId!==room.id&&activeTrapKind(trap,kind)));
-    const reserveLastOrdinaryTrapKinds=room=>{
-      const preservedIds=new Set(),outside=(host.traps||[]).filter(trap=>trap?.active&&trap.roomId!==room.id);
-      const endangered=ordinaryTrapKinds.filter(kind=>!outside.some(trap=>activeTrapKind(trap,kind)));
-      if(!endangered.length)return preservedIds;
-
-      let relocationRoom=rooms.find(candidate=>
-        candidate.id!==room.id
-        && !candidate.sanctuary
-        && !candidate.sigilRoom
-        && !candidate.spiderNest
-        && !candidate.dedicatedHazard
-        && !busy.has(candidate.id)
-        && candidate.optional
-      )||rooms.find(candidate=>
-        candidate.id!==room.id
-        && !candidate.sanctuary
-        && !candidate.sigilRoom
-        && !candidate.spiderNest
-        && !candidate.dedicatedHazard
-        && !busy.has(candidate.id)
-      )||null;
-
-      if(relocationRoom){
-        const reservedChoice=choices.findIndex(choice=>choice.room.id===relocationRoom.id);
-        if(reservedChoice>=0)choices.splice(reservedChoice,1);
-        busy.add(relocationRoom.id);
-      }
-
-      for(const kind of endangered){
-        const trap=(host.traps||[]).find(candidate=>candidate.roomId===room.id&&activeTrapKind(candidate,kind));
-        if(!trap)continue;
-        if(relocationRoom){
-          const q=freeInRoom(world,relocationRoom,used);
-          trap.x=q.x;trap.y=q.y;trap.roomId=relocationRoom.id;
-          relocationRoom.dangerous=true;
-        }else preservedIds.add(trap.id);
-      }
-      return preservedIds;
-    };
     for(let i=0;i<count&&choices.length;i++){
-      let choiceIndex=choices.findIndex(choice=>preservesOrdinaryTrapKinds(choice.room));
-      if(choiceIndex<0)choiceIndex=0;
-      const room=choices.splice(choiceIndex,1)[0].room,preservedTrapIds=reserveLastOrdinaryTrapKinds(room),type=types[(floor+i)%types.length],groups=type==="embers"?2:type==="blade"?3:4,cells=[];
+      const room=choices.splice(0,1)[0].room,type=types[(floor+i)%types.length],groups=type==="embers"?2:type==="blade"?3:4,cells=[];
       for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++){
         const group=type==="embers"?(x+y)%2:type==="blade"?(x-room.x)%3:(y-room.y)%4;cells.push({x,y,group})
       }
       const hazard={id:`hazard-${floor}-${i}`,roomId:room.id,type,cells,groups,period:type==="arrows"?2050:type==="blade"?2300:2550,warningMs:type==="arrows"?780:700,activeMs:type==="embers"?760:560,phase:Math.floor(world.random()*1200),title:type==="blade"?"PENDULUM BLADE GALLERY":type==="embers"?"EMBER-TILE VAULT":"ARROW-SLIT CROSSING"};host.hazardRooms.push(hazard);room.dedicatedHazard=true;room.hazardType=type;room.dangerous=true;
-      host.traps=(host.traps||[]).filter(trap=>trap.roomId!==room.id||preservedTrapIds.has(trap.id));
+      // Dedicated hazard rooms are the sole floor-hazard owner in R67.
       const q=freeInRoom(world,room,used),hp=10+floor*2,armour=5+floor;host.enemies.push({id:`archive-knight-${floor}-${i}`,...q,kind:"knight",hp,maxHp:hp,armor:armour,maxArmor:armour,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:980,attackCooldown:800,chargeCooldown:999999,healCooldown:999999,flash:0,hpBarMs:0,knight:true,meleeOnly:true,moveSpeedScale:1.18})
     }
 
@@ -393,38 +349,9 @@ window.CCGSystems=(()=>{
       room.dedicatedHazard=true;room.hazardType=type;room.dangerous=true;
     }
 
-    // Dedicated hazard rooms may replace ordinary trap placements. The public
-    // rulebook and live trap diagnostics require every generated floor to retain
-    // at least one FIRE, SPIKE and SHOCK trap, so restore any missing kind in a
-    // non-hazard room after hazard conversion has finished.
-    const hazardRoomIds=new Set((host.hazardRooms||[]).map(h=>h.roomId));
-    const reserveRooms=rooms.filter(room=>
-      !room.optional
-      && !room.sanctuary
-      && !room.sigilRoom
-      && !room.spiderNest
-      && !hazardRoomIds.has(room.id)
-      && room.id!==world.startRoomId
-      && room.id!==world.exitRoomId
-    );
-    ordinaryTrapKinds.forEach((kind,kindIndex)=>{
-      if((host.traps||[]).some(trap=>activeTrapKind(trap,kind)))return;
-      const room=reserveRooms[(floor+kindIndex)%Math.max(1,reserveRooms.length)]
-        || rooms.find(candidate=>!hazardRoomIds.has(candidate.id)&&candidate.id!==world.exitRoomId)
-        || null;
-      if(!room)return;
-      const q=freeInRoom(world,room,used);
-      host.traps.push({
-        id:`trap-${kind}-reserve-f${floor}`,
-        ...q,
-        roomId:room.id,
-        kind,
-        phase:Math.floor(world.random()*1800),
-        period:kind==="fire"?1800:kind==="spike"?2150:2500,
-        active:true
-      });
-      room.dangerous=true;
-    });
+    // R67 intentionally does not restore ordinary FIRE/SPIKE/SHOCK traps.
+    // Dedicated blade/ember/arrow hazard rooms are the only generated floor hazards.
+
   }
 
   function installSkeletonHorde(world,host,run,rooms,used){
@@ -508,11 +435,11 @@ window.CCGSystems=(()=>{
       const room=lightPool[(i*5+2)%lightPool.length];if(!room)continue;for(const q of wallTorchPositions(room).slice(0,1))world.wallLights.push({...q,roomId:room.id,radius:7,permanent:true,kind:"wall"});
     }
 
+    // R67: ordinary single-tile FIRE/SPIKE/SHOCK traps are retired from
+    // procedural generation. Only dedicated hazard rooms own floor hazards.
+    // Keeping this array empty preserves compatibility for older readers
+    // without allowing unqualified trap placements back into a run.
     host.traps=[];
-    const trapRooms=rooms.filter(r=>!r.sanctuary&&r.id!==world.exitRoomId);
-    for(let i=0;i<Math.min(C.dungeon.trapCount,trapRooms.length*2);i++){
-      const room=trapRooms[(i*7+3)%trapRooms.length],q=freeInRoom(world,room,used);host.traps.push({id:`trap${i}`,...q,roomId:room.id,kind:i%3===0?"fire":i%3===1?"spike":"shock",phase:Math.floor(world.random()*1800),period:1800+(i%3)*350,active:true});
-    }
 
     host.generators=[];
     const genCount=PGR.objectiveFor(run)==="generators"?C.dungeon.generatorCount:Math.min(2,C.dungeon.generatorCount);
@@ -650,51 +577,9 @@ window.CCGSystems=(()=>{
     decorateFurniture(world,host,rooms,used,run);
     installBoulderTrap(world,host,run);
 
-    // Final generation invariant: every finished floor must still expose one
-    // active FIRE, SPIKE and SHOCK floor trap after hazard-room conversion and
-    // all later room decoration. This runs at the end of world decoration so a
-    // late room owner cannot silently erase one of the public trap families.
-    const finalTrapKinds=["fire","spike","shock"],finalHazardRoomIds=new Set((host.hazardRooms||[]).map(row=>row.roomId));
-    const finalTrapRooms=[...(world.rooms||[])].filter(room=>
-      room
-      && room.id!==world.startRoomId
-      && room.id!==world.exitRoomId
-      && !room.sanctuary
-      && !room.sigilRoom
-      && !room.spiderNest
-      && !finalHazardRoomIds.has(room.id)
-    );
-    const fallbackFinalTrapRooms=[...(world.rooms||[])].filter(room=>
-      room
-      && room.id!==world.startRoomId
-      && room.id!==world.exitRoomId
-      && !room.sanctuary
-      && !finalHazardRoomIds.has(room.id)
-    );
-    const emergencyFinalTrapRooms=[...(world.rooms||[])].filter(room=>
-      room
-      && room.id!==world.startRoomId
-      && room.id!==world.exitRoomId
-      && !finalHazardRoomIds.has(room.id)
-    );
-    for(const [kind,index] of finalTrapKinds.entries()){
-      if((host.traps||[]).some(trap=>trap?.active&&String(trap.kind||"").toLowerCase()===kind))continue;
-      const offset=Math.max(1,Number(run?.floor||1))+index;
-      const room=finalTrapRooms[offset%Math.max(1,finalTrapRooms.length)]
-        || fallbackFinalTrapRooms[offset%Math.max(1,fallbackFinalTrapRooms.length)]
-        || emergencyFinalTrapRooms[offset%Math.max(1,emergencyFinalTrapRooms.length)]
-        || null;
-      if(!room)continue;
-      const q=freeInRoom(world,room,used);
-      host.traps.push({
-        id:`trap-${kind}-final-f${Math.max(1,Number(run?.floor||1))}`,
-        ...q,roomId:room.id,kind,
-        phase:Math.floor(world.random()*1800),
-        period:kind==="fire"?1800:kind==="spike"?2150:2500,
-        active:true
-      });
-      room.dangerous=true;
-    }
+    // R67: do not synthesize ordinary single-tile trap families at the end
+    // of decoration. Dedicated hazard rooms already provide the qualified
+    // warning/telegraph/damage path.
     for(const room of world.rooms){room.dangerous=Boolean(room.spiderNest||room.dedicatedHazard||room.skeletonHorde);room.verminRoom=Boolean(room.spiderNest);room.voidRoom=false}
     for(const t of host.traps||[]){const r=world.rooms[t.roomId];if(r)r.dangerous=true}
     for(const g of host.generators||[]){const r=world.rooms[g.roomId];if(r)r.dangerous=true}

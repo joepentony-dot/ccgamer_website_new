@@ -23,10 +23,19 @@
     return ax>=ay?{...shot,dx:Math.sign(Number(target.x)-ex)||Math.sign(shot.dx)||1,dy:0}:{...shot,dx:0,dy:Math.sign(Number(target.y)-ey)||Math.sign(shot.dy)||1};
   }
 
+  function wrapperChainHas(fn,marker){
+    const seen=new Set();let current=fn,depth=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth<16){
+      if(current[marker])return true;
+      seen.add(current);current=current.__ccgOriginal;depth++;
+    }
+    return false;
+  }
+
   function installEnemyCardinalFire(){
+    if(state.aiSource)return true;
     const ai=window.CCGAI,current=ai?.stepEnemies;if(typeof current!=="function")return false;
-    if(current.__ccgV141ActiveEnemyCardinal){state.aiSource=current;return true}
-    if(current===state.aiSource)return true;
+    if(wrapperChainHas(current,"__ccgV141ActiveEnemyCardinal")){state.aiSource=current;return true}
     const wrapped=function stepEnemiesV141ActiveCardinal(hostState,map,players,dt,hooks={},worldState){
       if(typeof hooks.shoot!=="function")return current.apply(this,arguments);
       const originalShoot=hooks.shoot,patched={...hooks,shoot:(shot,...rest)=>originalShoot(cardinalEnemyShot(hostState,players,shot),...rest)};

@@ -12,6 +12,12 @@ const post=read("js/v10-41-post-playtest-stability.js");
 const r56=read("js/v10-41-r56-playtest-completion.js");
 const r60=read("js/v10-41-r60-horde-combat-integrity.js");
 const r60Composition=read("js/v10-41-r60-horde-owner-composition.js");
+const activeEnemyFire=read("js/v10-41-active-enemy-fire.js");
+const r24Live=read("js/v10-41-r24-live-regressions.js");
+const r6Environment=read("js/v10-42-r6-biome-environment-director.js");
+const r46Visual=read("js/v10-42-r46-final-visual-polish.js");
+const r48Portal=read("js/v10-42-r48-elemental-portal-presentation.js");
+const render=read("js/game-render.js");
 
 // R58 moved ordinary FIRE/SPIKE/SHOCK HEALTH ownership into the canonical
 // game-play damage/trap path. Historical maintenance layers must remain
@@ -57,5 +63,56 @@ assert.equal(finalChain.filter(node=>node.name==="R29").length,0,"retired R29 da
 assert.equal(finalChain.filter(node=>node.name==="R56").length,0,"retired R56 environmental damage ownership unexpectedly returned");
 assert.equal(finalChain.filter(node=>node.name==="R60").length,0,"retired R60 environmental damage ownership unexpectedly returned");
 assert.equal(finalChain.length-initialDepth,cycles,"only the synthetic external owner may add depth in this isolation model");
+
+
+// R67: the ActiveCardinal and R24EnemyFire maintenance installers used to
+// alternately wrap CCGAI.stepEnemies every 80/180 ms. That produced an
+// unbounded A -> R24 -> A -> R24 chain and eventually Maximum call stack size
+// exceeded during ordinary Solo combat. Both owners must inspect ancestry and
+// preserve a traversable __ccgOriginal link.
+assert.match(activeEnemyFire,/function wrapperChainHas\(fn,marker\)/,"ActiveCardinal must detect its owner anywhere in the wrapper ancestry");
+assert.match(activeEnemyFire,/wrapperChainHas\(current,"__ccgV141ActiveEnemyCardinal"\)/,"ActiveCardinal installer must not append a second owner above R24");
+assert.match(activeEnemyFire,/wrapped\.__ccgOriginal=current/,"ActiveCardinal must preserve traversable wrapper ancestry");
+assert.match(r24Live,/function wrapperChainHas\(fn,marker\)/,"R24 enemy fire must detect its owner anywhere in the wrapper ancestry");
+assert.match(r24Live,/wrapperChainHas\(current,"__ccgV141R24EnemyFire"\)/,"R24 installer must not append a second owner above ActiveCardinal");
+assert.match(r24Live,/wrapped\.__ccgOriginal=current/,"R24 enemy fire must preserve traversable wrapper ancestry");
+assert.match(activeEnemyFire,/if\(state\.aiSource\)return true/,"ActiveCardinal self-repair must latch after its first successful install");
+assert.match(r24Live,/if\(state\.aiInstalled\)return true/,"R24 enemy-fire self-repair must latch after its first successful install");
+assert.match(r6Environment,/if\(state\.installed\.view\)return true/,"R6 render presentation must not wrap renderView again on later lifecycle events");
+assert.match(r6Environment,/if\(state\.installed\.tile\)return true/,"R6 tile presentation must not wrap drawTile again on later lifecycle events");
+assert.match(r46Visual,/if\(state\.renderInstalls>0\)return true/,"R46 render presentation must be a one-time wrapper");
+assert.match(r46Visual,/if\(state\.trapInstalls>0\)return true/,"R46 trap presentation must be a one-time wrapper");
+assert.match(r48Portal,/if\(state\.installs>0\)return true/,"R48 portal presentation must be a one-time render wrapper");
+assert.match(render,/String\(f\.name\|\|e\?\.kind\|\|"EN"\)\.slice\(0,2\)/,"enemy defeat rendering must tolerate follower metadata without a name");
+
+const chainHasMarker=(fn,marker)=>{
+  const seen=new Set();let current=fn,depth=0;
+  while(typeof current==="function"&&!seen.has(current)&&depth<64){
+    if(current[marker])return true;
+    seen.add(current);current=current.__ccgOriginal;depth++;
+  }
+  return false;
+};
+const baseEnemyStep=()=>true;
+const installActive=current=>{
+  if(chainHasMarker(current,"__ccgV141ActiveEnemyCardinal"))return current;
+  const wrapped=function stepEnemiesV141ActiveCardinal(){return current.apply(this,arguments)};
+  wrapped.__ccgV141ActiveEnemyCardinal=true;wrapped.__ccgOriginal=current;return wrapped;
+};
+const installR24=current=>{
+  if(chainHasMarker(current,"__ccgV141R24EnemyFire"))return current;
+  const wrapped=function stepEnemiesV141R24EnemyFire(){return current.apply(this,arguments)};
+  wrapped.__ccgV141R24EnemyFire=true;wrapped.__ccgOriginal=current;return wrapped;
+};
+let enemyOwner=baseEnemyStep;
+for(let cycle=0;cycle<500;cycle++){
+  enemyOwner=installActive(enemyOwner);
+  enemyOwner=installR24(enemyOwner);
+}
+const enemyChain=(()=>{const rows=[],seen=new Set();let current=enemyOwner;while(typeof current==="function"&&!seen.has(current)&&rows.length<64){seen.add(current);rows.push(current);current=current.__ccgOriginal}return rows})().map(node=>node.name);
+assert.equal(enemyChain.filter(name=>name==="stepEnemiesV141ActiveCardinal").length,1,"ActiveCardinal owner multiplied");
+assert.equal(enemyChain.filter(name=>name==="stepEnemiesV141R24EnemyFire").length,1,"R24EnemyFire owner multiplied");
+assert.equal(enemyChain.length,3,"enemy step wrapper chain must remain base + exactly two compatible owners");
+assert.equal(enemyOwner(),true,"bounded enemy wrapper chain must execute without recursion");
 
 console.log(`Solo damage ownership ceiling passed: canonical R58 trap owner + ${postLayers} retained generic post layer across ${cycles} external-owner cycles.`);

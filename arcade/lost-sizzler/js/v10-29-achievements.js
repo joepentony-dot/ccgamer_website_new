@@ -1,4 +1,4 @@
-/* The Lost Sizzler V10.29 — extensive local and account-backed achievement system. */
+/* C64 Dungeon Carnage — local-first and account-backed achievement system. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_ACHIEVEMENTS_V129__)return;
@@ -6,27 +6,24 @@
 
   const STORAGE_KEY="ccg-lost-sizzler-achievements-v1";
   const rows=[
-    ["LS_FIRST_RUN","Dungeon Door Open","Start a Lost Sizzler run.","journey","bronze"],
+    ["LS_FIRST_RUN","Dungeon Door Open","Start a C64 Dungeon Carnage run.","journey","bronze"],
     ["LS_TUTORIAL_GRADUATE","Training Archive Graduate","Complete the Tutorial.","journey","silver"],
-    ["LS_FLOOR_1","Archive Cleared","Clear Floor 1.","journey","bronze"],
-    ["LS_FLOOR_2","Workshop Cleared","Clear Floor 2.","journey","bronze"],
-    ["LS_FLOOR_3","Reactor Cleared","Clear Floor 3.","journey","silver"],
-    ["LS_FLOOR_4","Crypt Cleared","Clear Floor 4.","journey","silver"],
-    ["LS_FLOOR_5","Citadel Cleared","Clear Floor 5.","journey","gold"],
-    ["LS_CITADEL_PLATINUM","Lost Sizzler Platinum","Complete the full five-floor game and recover the Lost Sizzler.","platinum","platinum"],
-    ["LS_SOLO_CHAMPION","Solo Sizzler","Complete the game in Solo mode.","journey","gold"],
-    ["LS_SPLIT_CHAMPION","Sofa Sizzlers","Complete the game in local split-screen co-op.","journey","gold"],
-    ["LS_ONLINE_CHAMPION","Network Heroes","Complete the game in online co-op.","journey","gold"],
-    ["LS_WEEKLY_CHAMPION","Weekly Vault Victor","Complete the Weekly High-Score Vault.","journey","gold"],
+    ["LS_FLOOR_1","Threshold Cleared","Clear The Threshold.","journey","bronze"],
+    ["LS_FLOOR_2","Iron Keep Cleared","Clear Iron Keep.","journey","bronze"],
+    ["LS_FLOOR_3","Moss Crypt Cleared","Clear Moss Crypt.","journey","silver"],
+    ["LS_FLOOR_4","Ember Depths Cleared","Clear Ember Depths.","journey","silver"],
+    ["LS_FLOOR_5","Sigil Sanctum Cleared","Clear the Sigil Sanctum.","journey","gold"],
+    ["LS_CITADEL_PLATINUM","Dungeon Carnage Platinum","Complete all five Dungeon Carnage depths, finish the Sigil and escape.","platinum","platinum"],
+    ["LS_SOLO_CHAMPION","Solo Dungeon Conqueror","Complete the C64 Dungeon Carnage campaign in Solo mode.","journey","gold"],
     ["LS_SPEEDRUN_45","Fast Loader","Complete the game in under 45 minutes.","journey","gold"],
-    ["LS_NO_DEATH_VICTORY","One Life, Five Floors","Complete the game without dying.","journey","gold"],
+    ["LS_NO_DEATH_VICTORY","One Life, Five Depths","Complete all five Dungeon Carnage depths without dying.","journey","gold"],
     ["LS_FIRST_KILL","First Blood","Defeat your first enemy in a run.","combat","bronze"],
     ["LS_KILLS_10","Ten Down","Defeat 10 enemies in one run.","combat","bronze"],
     ["LS_KILLS_25","Dungeon Sweeper","Defeat 25 enemies in one run.","combat","silver"],
     ["LS_KILLS_50","Fifty Freed","Defeat 50 enemies in one run.","combat","silver"],
     ["LS_KILLS_100","Centurion","Defeat 100 enemies in one run.","combat","gold"],
     ["LS_CHAMPION_1","Champion Tamer","Defeat a champion enemy.","combat","bronze"],
-    ["LS_CHAMPIONS_5","Sizzler Hunter","Defeat 5 champions in one run.","combat","silver"],
+    ["LS_CHAMPIONS_5","Champion Hunter","Defeat 5 champion enemies in one run.","combat","silver"],
     ["LS_CHAMPIONS_10","Champion of Champions","Defeat 10 champions in one run.","combat","gold"],
     ["LS_GUARDIAN_DOWN","Guardian Breaker","Defeat a floor Guardian.","combat","silver"],
     ["LS_SIGIL_WARDEN_DOWN","Warden Dismissed","Defeat a Sigil Warden.","combat","silver"],
@@ -40,11 +37,11 @@
     ["LS_VORTEX_KILL","Into the Vortex","Knock an enemy into a rare vortex.","combat","gold"],
     ["LS_STALKER_BANISHED","No More Stalking","Permanently banish a Death Stalker.","combat","gold"],
     ["LS_BOUNTY_1","Bounty Claimed","Complete a floor Dungeon Bounty.","combat","silver"],
-    ["LS_BOUNTIES_5","Bounty Grand Slam","Complete the Dungeon Bounty on all five floors in one run.","combat","gold"],
-    ["LS_MAIN_KEY_1","Key Person","Collect a Main Vault Key.","objectives","bronze"],
-    ["LS_MAIN_KEYS_ALL","Vault Route Open","Collect every required Main Vault Key on a floor.","objectives","silver"],
-    ["LS_EXIT_SIGIL","Sigil Bearer","Recover an Exit Sigil.","objectives","silver"],
-    ["LS_FLOOR_EXIT","Extraction Route","Reach an unlocked floor exit.","objectives","bronze"],
+    ["LS_BOUNTIES_5","Bounty Grand Slam","Complete the Dungeon Bounty on all five depths in one run.","combat","gold"],
+    ["LS_MAIN_KEY_1","Key Claimed","Recover the required campaign Key on a key depth.","objectives","bronze"],
+    ["LS_MAIN_KEYS_ALL","Domain Secured","Complete a campaign Key objective and open the route deeper.","objectives","silver"],
+    ["LS_EXIT_SIGIL","Sigil Awakened","Complete the final Sigil ritual in the Sigil Sanctum.","objectives","silver"],
+    ["LS_FLOOR_EXIT","Extraction Route","Reach an unlocked stairway to the next depth.","objectives","bronze"],
     ["LS_GENERATOR_1","Machine Breaker","Destroy a monster generator.","objectives","bronze"],
     ["LS_GENERATORS_ALL","Power Cut","Destroy every required generator on a floor.","objectives","silver"],
     ["LS_RESCUE_SCOUT","Nobody Left Behind","Rescue the trapped CCG Scout.","objectives","silver"],
@@ -66,14 +63,12 @@
     ["LS_BOULDER_SURVIVOR","Rock and Run","Survive a Boulder Corridor.","exploration","silver"],
     ["LS_RARE_LOOT","Something Rare","Collect rare loot.","collection","bronze"],
     ["LS_ZZAP_LOOT","Zzap! 97%","Collect a Zzap! 97% item.","collection","gold"],
-    ["LS_RARE_MELEE","Blade Upgrade","Find and equip a rare melee weapon.","collection","silver"],
     ["LS_GAME_PICKUP_1","Rescue Disk","Collect a C64 game pickup.","collection","bronze"],
     ["LS_GAME_PICKUPS_5","Five Saved Games","Collect 5 C64 game pickups in one run.","collection","silver"],
     ["LS_GAME_PICKUPS_10","Archive Haul","Collect 10 C64 game pickups in one run.","collection","gold"],
     ["LS_DEATH_CACHE","Back for More","Recover a death cache.","collection","silver"],
     ["LS_BURIED_CACHE","X Marks the Spot","Find a buried Treasure Map cache.","collection","silver"],
     ["LS_MIMIC","Chest Dentist","Defeat a Mimic.","rare_events","silver"],
-    ["LS_GILDED_ELF","Caught in Gold","Catch the Gilded Elf.","rare_events","gold"],
     ["LS_TREASURE_BAT","Batting Average","Defeat a Treasure Bat before it escapes.","rare_events","silver"],
     ["LS_TAXMAN","Tax Rebate","Catch the Taxman.","rare_events","silver"],
     ["LS_ADVENTURER","Escort Service","Save a Lost Adventurer.","rare_events","silver"],
@@ -98,7 +93,8 @@
   ];
   const catalog=Object.freeze(rows.map(([key,name,description,category,rarity],index)=>Object.freeze({key,name,description,category,rarity,sort:index+1})));
   const byKey=new Map(catalog.map(item=>[item.key,item]));
-  const state={earned:readEarned(),run:null,profileQueue:new Set(),profileSynced:new Set(),syncing:false,panel:null,installed:false};
+  const PROFILE_RETRY_MS=60000,PROFILE_TICK_MS=2500;
+  const state={earned:readEarned(),run:null,profileQueue:new Set(),profileSynced:new Set(),profileRejected:new Set(),syncing:false,profileRetryAt:0,profileLastError:"",panel:null,installed:false};
 
   function readEarned(){try{const value=JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}");return value&&typeof value==="object"?value:{}}catch(_){return{}}}
   function saveEarned(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state.earned))}catch(_){}}
@@ -112,14 +108,30 @@
     document.dispatchEvent(new CustomEvent("ccg:lost-sizzler-achievement",{detail:{...item}}));return true;
   }
   async function clientAndUser(){try{const client=await window.ccgSupabase?.getClient?.();if(!client)return null;const {data}=await client.auth.getSession();const user=data?.session?.user;if(!user)return null;return{client,user}}catch(_){return null}}
-  async function drainProfileQueue(){
-    if(state.syncing||!state.profileQueue.size)return;state.syncing=true;
+  function profileErrorText(error){return String(error?.message||error?.details||error?.hint||error?.code||"").trim()}
+  function permanentProfileError(error){const text=profileErrorText(error).toLowerCase();return text.includes("unknown lost sizzler achievement")||text.includes("unknown dungeon carnage achievement")||text.includes("invalid achievement")}
+  async function drainProfileQueue({force=false}={}){
+    if(state.syncing||!state.profileQueue.size)return;
+    const now=Date.now();if(!force&&now<state.profileRetryAt)return;
+    state.syncing=true;
     try{
-      const auth=await clientAndUser();if(!auth)return;
-      for(const key of [...state.profileQueue]){const {error}=await auth.client.rpc("award_lost_sizzler_achievement",{target_badge_key:key});if(error)break;state.profileQueue.delete(key);state.profileSynced.add(key)}
-    }catch(_){}finally{state.syncing=false}
+      const auth=await clientAndUser();if(!auth){state.profileRetryAt=now+PROFILE_RETRY_MS;return}
+      for(const key of [...state.profileQueue]){
+        if(!byKey.has(key)||state.profileRejected.has(key)){state.profileQueue.delete(key);continue}
+        const {error}=await auth.client.rpc("award_lost_sizzler_achievement",{target_badge_key:key});
+        if(error){
+          state.profileLastError=profileErrorText(error);
+          if(permanentProfileError(error)){
+            state.profileRejected.add(key);state.profileQueue.delete(key);continue;
+          }
+          state.profileRetryAt=Date.now()+PROFILE_RETRY_MS;break;
+        }
+        state.profileQueue.delete(key);state.profileSynced.add(key);state.profileLastError="";state.profileRetryAt=0;
+      }
+    }catch(error){state.profileLastError=profileErrorText(error);state.profileRetryAt=Date.now()+PROFILE_RETRY_MS}
+    finally{state.syncing=false}
   }
-  function queueAllEarned(){for(const key of Object.keys(state.earned))if(byKey.has(key)&&!state.profileSynced.has(key))state.profileQueue.add(key);drainProfileQueue()}
+  function queueAllEarned(){for(const key of Object.keys(state.earned))if(byKey.has(key)&&!state.profileSynced.has(key)&&!state.profileRejected.has(key))state.profileQueue.add(key);drainProfileQueue()}
 
   function checkSnapshot(){
     if(typeof run==="undefined"||!run||typeof p1==="undefined"||!p1)return;const s=runState(),r=run.stats||{};
@@ -140,7 +152,7 @@
   }
   function runCompleted(){
     if(!run||Number(run.floor||0)<Number(C?.maxFloors||5)||run.dailyFailed||run.xpGameOver)return;award("LS_CITADEL_PLATINUM");
-    if(playMode==="solo")award("LS_SOLO_CHAMPION");else if(playMode==="split")award("LS_SPLIT_CHAMPION");else if(playMode==="online")award("LS_ONLINE_CHAMPION");if(run.daily)award("LS_WEEKLY_CHAMPION");
+    if(playMode==="solo")award("LS_SOLO_CHAMPION");
     if(Number(run.elapsed||Infinity)<45*60*1000)award("LS_SPEEDRUN_45");if(Number(run.stats?.deaths||0)===0)award("LS_NO_DEATH_VICTORY");
   }
   function classifyToast(title,text){
@@ -149,13 +161,13 @@
     if(/MAIN VAULT KEY/.test(value)){award("LS_MAIN_KEY_1");if(host?.keysCollected>=C?.keyTarget)award("LS_MAIN_KEYS_ALL")}
     if(/EXIT SIGIL ACQUIRED/.test(value))award("LS_EXIT_SIGIL");if(/GENERATOR DESTROYED/.test(value))award("LS_GENERATOR_1");if(/SCOUT RESCUED|CCG SCOUT.*SANCTUARY/.test(value))award("LS_RESCUE_SCOUT");
     if(/MEMORY SEQUENCE SOLVED/.test(value))award("LS_MEMORY_PUZZLE");if(/TORCH VAULT OPEN/.test(value))award("LS_TORCH_PUZZLE");if(/BRIDGE STABILIZED/.test(value))award("LS_WEIGHT_BRIDGE");if(/BOULDER CORRIDOR SURVIVED/.test(value))award("LS_BOULDER_SURVIVOR");
-    if(/BURIED CACHE FOUND/.test(value))award("LS_BURIED_CACHE");if(/MIMIC DEFEATED/.test(value))award("LS_MIMIC");if(/GILDED ELF CAUGHT|100 GOLD JACKPOT/.test(value))award("LS_GILDED_ELF");if(/TREASURE BAT DOWN/.test(value))award("LS_TREASURE_BAT");if(/TAXMAN CAUGHT/.test(value))award("LS_TAXMAN");if(/ADVENTURER RESCUED/.test(value))award("LS_ADVENTURER");if(/GOLDEN ROOM CLEARED|GOLDEN ROOM SURVIVED/.test(value))award("LS_GOLDEN_ROOM");if(/WANDERING MERCHANT/.test(value))award("LS_MERCHANT");
+    if(/BURIED CACHE FOUND/.test(value))award("LS_BURIED_CACHE");if(/MIMIC DEFEATED/.test(value))award("LS_MIMIC");if(/TREASURE BAT DOWN/.test(value))award("LS_TREASURE_BAT");if(/TAXMAN CAUGHT/.test(value))award("LS_TAXMAN");if(/ADVENTURER RESCUED/.test(value))award("LS_ADVENTURER");if(/GOLDEN ROOM CLEARED|GOLDEN ROOM SURVIVED/.test(value))award("LS_GOLDEN_ROOM");if(/WANDERING MERCHANT/.test(value))award("LS_MERCHANT");
     if(/DEATH STALKER.*BANISHED|BANISHMENT COMPLETE/.test(value))award("LS_STALKER_BANISHED");if(/DUNGEON BOUNTY COMPLETE/.test(value)){s.bounties++;award("LS_BOUNTY_1");if(s.bounties>=5)award("LS_BOUNTIES_5")}
     if(/VORTEX KILL/.test(value)){award("LS_HAZARD_KILL");award("LS_VORTEX_KILL")}
   }
   function noteItem(item){
     if(!item)return;const s=runState();if(item.kind==="game"){s.gamePickups++;award("LS_GAME_PICKUP_1")}
-    if(item.kind==="meleeWeapon")award("LS_RARE_MELEE");const rarity=String(item.loot?.rarity||item.rarity||"").toUpperCase();if(rarity&&rarity!=="COMMON"){award("LS_RARE_LOOT");if(rarity.includes("ZZAP! 97%"))award("LS_ZZAP_LOOT")}
+    const rarity=String(item.loot?.rarity||item.rarity||"").toUpperCase();if(rarity&&rarity!=="COMMON"){award("LS_RARE_LOOT");if(rarity.includes("ZZAP! 97%"))award("LS_ZZAP_LOOT")}
   }
 
   function installHooks(){
@@ -187,6 +199,6 @@
     .ls-achievements-panel{width:min(1040px,96vw)!important;max-height:92dvh;overflow:auto}.ls-achievements-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;position:sticky;top:0;z-index:2;padding:4px 0 14px;background:#090611}.ls-achievements-head span{color:#6cecff;font-size:.72rem;letter-spacing:.16em;font-weight:900}.ls-achievements-head h2{margin:4px 0}.ls-achievements-head p{margin:0;color:#ffd85a}.ls-achievements-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(265px,1fr));gap:9px}.ls-achievement{display:grid;grid-template-columns:42px 1fr;gap:10px;padding:11px;border:1px solid rgba(255,255,255,.13);background:rgba(8,6,14,.78);text-align:left}.ls-achievement.locked{opacity:.52}.ls-achievement.earned{border-color:rgba(255,216,90,.55)}.ls-achievement.platinum{border-color:#b9f5ff;background:linear-gradient(135deg,rgba(108,236,255,.18),rgba(255,255,255,.07));box-shadow:0 0 22px rgba(108,236,255,.16)}.ls-achievement-mark{display:grid;place-items:center;width:38px;height:38px;border:1px solid currentColor;border-radius:50%;color:#ffd85a;font-size:20px}.ls-achievement.platinum .ls-achievement-mark{color:#dffcff}.ls-achievement small{color:#6cecff;text-transform:uppercase}.ls-achievement h3{margin:3px 0;color:#fff;font-size:.95rem}.ls-achievement p{margin:0;color:#c9c1d2;font-size:.78rem;line-height:1.35}.ls-achievement em{display:block;margin-top:6px;color:#72ff9b;font-size:.68rem;font-style:normal}@media(max-width:620px){.ls-achievements-grid{grid-template-columns:1fr}.ls-achievements-head{position:static}}
   `;document.head.appendChild(style);
 
-  installHooks();ensureUi();const timer=setInterval(()=>{ensureUi();checkSnapshot();queueAllEarned()},600);window.addEventListener("pagehide",()=>clearInterval(timer),{once:true});
+  installHooks();ensureUi();queueAllEarned();const timer=setInterval(()=>{ensureUi();checkSnapshot();if(state.profileQueue.size&&Date.now()>=state.profileRetryAt)drainProfileQueue()},PROFILE_TICK_MS);window.addEventListener("online",()=>{state.profileRetryAt=0;drainProfileQueue({force:true})});window.addEventListener("pagehide",()=>clearInterval(timer),{once:true});
   window.CCGLostSizzlerAchievementsV129={catalog,state,award,earned,renderPanel,checkSnapshot};
 })();

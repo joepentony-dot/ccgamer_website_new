@@ -12,23 +12,17 @@ const stage6=read("js/v10-42-stage6-zone-gameplay.js");
 const play=read("js/game-play.js");
 const render=read("js/game-render.js");
 
-assert.match(systems,/kind:i%3===0\?"fire":i%3===1\?"spike":"shock"/,"generated floor traps must still cover fire, spike and shock");
-assert.match(systems,/const ordinaryTrapKinds=\["fire","spike","shock"\]/,"dedicated hazard conversion must protect all three ordinary trap families");
-assert.match(systems,/hazardReserveCount=.*>=3\?2:1[\s\S]*dedicatedHazardReserved=true/,"floor generation must reserve dedicated-hazard capacity before other room owners are assigned");
-assert.match(systems,/hazardReserveLarge=[\s\S]*room\.w>=6&&room\.h>=5[\s\S]*hazardReserveCompact=[\s\S]*room\.w>=3&&room\.h>=3[\s\S]*hazardReserveOptional=[\s\S]*room\?\.optional[\s\S]*room\.w>=3&&room\.h>=3[\s\S]*hazardReserveTiny=[\s\S]*room\.w>=2&&room\.h>=2[\s\S]*hazardReserveOptionalTiny=[\s\S]*room\?\.optional[\s\S]*room\.w>=2&&room\.h>=2[\s\S]*hazardReserveRooms=\[[\s\S]*hazardReservePriority\(hazardReserveLarge\)[\s\S]*hazardReservePriority\(hazardReserveCompact\)[\s\S]*hazardReservePriority\(hazardReserveOptional\)[\s\S]*hazardReservePriority\(hazardReserveTiny\)[\s\S]*hazardReservePriority\(hazardReserveOptionalTiny\)/,"narrow floors must exhaust large, compact, optional and 2x2 reservation tiers before allowing a mandatory dedicated hazard to disappear");
-assert.match(systems,/reservedHazardRooms=\(world\.rooms\|\|\[\]\)\.filter\(room=>Boolean\(room\?\.dedicatedHazardReserved[\s\S]*room\.w>=2&&room\.h>=2\)\)/,"dedicated hazard installation must honour emergency reservations from the complete room set down to the final narrow-room floor");
-assert.match(systems,/hazardReserveAnyTiny=hazardReserveSort\([\s\S]*room\.w>=2&&room\.h>=2[\s\S]*hazardReservePriority\(hazardReserveAnyTiny\)/,"mandatory dedicated hazards must include a final any-room 2x2 non-start/non-exit reservation tier");
-assert.match(systems,/fallbackHazardRooms=reservedHazardRooms\.length\+primaryHazardRooms\.length>=count\?\[\]:/,"optional/fallback rooms must only supplement dedicated hazards when reserved plus primary mandatory rooms are insufficient");
-assert.match(systems,/relaxedHazardRooms=reservedHazardRooms\.length\+primaryHazardRooms\.length\+fallbackHazardRooms\.length>=count\?\[\]:/,"relaxed hazard rooms must only be considered when reserved, primary and fallback candidates are still insufficient");
-assert.match(systems,/strictHazardRoomIds=new Set\(\[\.\.\.reservedHazardRooms,\.\.\.primaryHazardRooms,\.\.\.fallbackHazardRooms\]\.map\(room=>room\.id\)\)/,"reserved and strict hazard candidates must be tracked before relaxed selection");
-assert.match(systems,/hazardEligible\(room,6,5\)&&!strictHazardRoomIds\.has\(room\.id\)/,"relaxed hazard candidates must exclude every strict candidate so one room cannot receive duplicate dedicated hazards");
-assert.match(systems,/choices\.findIndex\(choice=>preservesOrdinaryTrapKinds\(choice\.room\)\)/,"hazard-room selection must skip rooms whose conversion would erase a trap family");
-assert.match(systems,/function trapActive\(t,now\)\{const phase=\(now\+t\.phase\)%t\.period;return phase<t\.period\*\.46\}/,"all floor-trap kinds must share the canonical active-cycle clock");
-assert.match(render,/const s=ws\(t\.x,t\.y\),active=SYS\.trapActive\(t,now\)/,"visible ACTIVE/SAFE trap presentation must use the canonical trap clock");
-
-assert.match(stage6,/const fallbackEligibleRooms=baseEligibleRooms\.filter\(room=>!room\.sanctuary\)/,"Stage 6 family repair must have a compact-floor fallback beyond strict ordinary rooms");
-assert.match(stage6,/for\(const pool of \[strictEligibleRooms,fallbackEligibleRooms,emergencyEligibleRooms,compactEligibleRooms,ultimateEligibleRooms\]\)/,"Stage 6 family repair must exhaust strict, fallback, emergency, compact and ultimate room tiers before allowing a trap family to disappear");
-assert.match(stage6,/function ensureDedicatedHazard\([\s\S]*Number\(room\.w\)>=2[\s\S]*Number\(room\.h\)>=2[\s\S]*hostState\.hazardRooms\.push\(hazard\)/,"Stage 6 must be able to restore one real dedicated hazard on a compact generated floor");
+assert.match(systems,/host\.traps=\[\];/,"R67 base floor generation must leave ordinary procedural traps empty");
+assert.doesNotMatch(systems,/kind:i%3===0\?"fire":i%3===1\?"spike":"shock"/,"R67 must not procedurally scatter ordinary FIRE/SPIKE/SHOCK traps");
+assert.match(systems,/types=\["blade","embers","arrows"\];host\.hazardRooms=\[\];/,"dedicated blade, ember and arrow rooms must remain the generated hazard families");
+assert.match(systems,/const hazard=\{id:\`hazard-\$\{floor\}-\$\{i\}\`[\s\S]*host\.hazardRooms\.push\(hazard\)[\s\S]*room\.dedicatedHazard=true/,"dedicated hazards must be owned by marked hazard rooms");
+assert.match(systems,/while\(\(host\.hazardRooms\|\|\[\]\)\.length<count\)/,"compact floors must still receive the required dedicated hazard-room count");
+assert.match(systems,/R67 intentionally does not restore ordinary FIRE\/SPIKE\/SHOCK traps/,"the base decorator must document the retired ordinary-trap boundary");
+assert.match(stage6,/hostState\.traps=\[\];[\s\S]*ensureDedicatedHazard\(worldState,hostState,runState,profile,seed\)/,"Stage 6 must clear ordinary traps and then preserve/restore only a dedicated hazard room");
+assert.doesNotMatch(stage6,/reconcileTrapFamilies\(hostState,seed,worldState,\{\.\.\.profile,floor\}\);/,"Stage 6 must not invoke the legacy ordinary trap-family restoration path");
+assert.match(stage6,/function ensureDedicatedHazard\([\s\S]*hostState\.hazardRooms\.push\(hazard\)/,"Stage 6 must be able to restore a real dedicated hazard room when needed");
+assert.match(systems,/function hazardCellState\(hazard,x,y,elapsed=0\)/,"dedicated hazards must use the canonical warning/active phase resolver");
+assert.match(render,/function drawDedicatedHazards\(\)[\s\S]*SYS\.hazardCellState\(hazard,cell\.x,cell\.y,elapsed\)/,"dedicated hazard presentation must use the same canonical warning/active phase resolver");
 
 assert.match(play,/function updateActiveTrapContacts\(source="simulation"\)/,"r58 must expose one global floor-trap contact-cycle owner");
 assert.match(play,/function updateActiveTrapContacts\(source="simulation"\)[\s\S]*rearmInactiveTrapContacts\(\)/,"the global cycle must rearm completed/inactive contacts before checking active occupancy");
@@ -44,4 +38,4 @@ assert.doesNotMatch(play,/t\.kind==="shock"[\s\S]{0,120}(?:hurtPlayer|damageVali
 assert.doesNotMatch(play,/t\.kind==="spike"[\s\S]{0,120}(?:hurtPlayer|damageValidatedTrapContact)/,"spike traps must not use a separate damage rule");
 assert.doesNotMatch(play,/t\.kind==="fire"[\s\S]{0,120}(?:hurtPlayer|damageValidatedTrapContact)/,"fire traps must not use a separate damage rule");
 
-console.log("C64 Dungeon Carnage global floor-trap activation contract passed.");
+console.log("C64 Dungeon Carnage R67 dedicated-hazard-only activation contract passed.");

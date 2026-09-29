@@ -171,7 +171,7 @@ try{
       platinum:Boolean(window.CCGLostSizzlerAchievementsV129?.catalog?.some?.(item=>item.key==="LS_CITADEL_PLATINUM"&&item.rarity==="platinum")),
       button:Boolean(document.getElementById("lost-sizzler-achievements-btn"))
     }));
-    assert.deepEqual(achievementRuntime,{count:89,firstRun:true,platinum:true,button:true},`the live run must install, persist and expose the complete achievement system: ${JSON.stringify(achievementRuntime)}`);
+    assert.deepEqual(achievementRuntime,{count:84,firstRun:true,platinum:true,button:true},`the live run must install, persist and expose the 84 active Dungeon Carnage achievements: ${JSON.stringify(achievementRuntime)}`);
 
     logStage("canonical desktop: keyboard movement");
     const keyboardMove=await state.page.evaluate(()=>{
