@@ -233,7 +233,8 @@
     score=Math.max(0,Number(score||0))+ADVENTURER_SCORE_REWARD;
     awardAdventurerXp(target);
     if(host)host.revision=(host.revision||0)+1;
-    try{showToast("ADVENTURER RESCUED","Safe at last! +1,000 score and +200 XP.","green",9000)}catch(_){}
+    let rescueSpoken=false;try{rescueSpoken=Boolean(window.CCGLostSizzlerVoice?.say?.("adventurerSafe",{cooldown:0}))}catch(_){}
+    try{showToast("ADVENTURER RESCUED","Safe at last! +1,000 score and +200 XP.","green",9000,rescueSpoken?{ccgDialogueVoiceHandled:true}:undefined)}catch(_){}
     try{floatText?.(target?.x??adventurer.x,target?.y??adventurer.y,"+1000 SCORE / +200 XP",P?.gold||"#ffd75a")}catch(_){}
     try{broadcastWorld?.();sync?.()}catch(_){}
     return true;
@@ -255,7 +256,8 @@
       adventurer._v141EscortStuckMs=0;
       if(!adventurer._v141EscortAnnounced){
         adventurer._v141EscortAnnounced=true;
-        try{showToast("LOST ADVENTURER","Please get me out of here! I'll follow you. Lead me to any SANCTUARY. Reward: +1,000 score and +200 XP.","cyan",11500)}catch(_){}
+        let recruitSpoken=false;try{recruitSpoken=Boolean(window.CCGLostSizzlerVoice?.say?.("adventurerHelp",{cooldown:0}))}catch(_){}
+        try{showToast("LOST ADVENTURER","Please get me out of here! I'll follow you. Lead me to any SANCTUARY. Reward: +1,000 score and +200 XP.","cyan",11500,recruitSpoken?{ccgDialogueVoiceHandled:true}:undefined)}catch(_){}
       }
       if(host)host.revision=(host.revision||0)+1;
     }
