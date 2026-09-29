@@ -13,11 +13,14 @@ const stage8=read("js/v10-41-stage8-npc-dialogue.js");
 const play=read("js/game-play.js");
 const runtime=read("js/game-local-runtime.js");
 const loader=read("js/asset-overrides.js");
+const sanctuary=read("js/v10-41-sanctuary-azalea.js");
+const sanctuaryHardening=read("js/v10-41-sanctuary-hardening.js");
+const core=read("js/game-core.js");
 
 assert.match(map,/ccg-recorded-voices-r69\.ogg/,"R69 must target the owner-recorded browser voice sprite");
 assert.match(map,/"hello-big-boy":\{start:/,"sanctuary greeting must have an explicit sprite cue");
 assert.match(map,/"npc\.sanctuary\.keeper":"hello-big-boy"/,"sanctuary keeper must resolve to the recorded greeting");
-assert.match(map,/"bronzeKeyRequired":"bronze-key-required"/,"bronze lock feedback must resolve to the recorded cue");
+assert.match(map,/"bronzeKeyRequired":"you-need-a-bronze-key"/,"bronze lock feedback must resolve to the supplied full recorded cue");
 assert.match(map,/"chestKeyRequired":"you-need-a-key-to-open-this-chest"/,"locked chest feedback must resolve to the recorded cue");
 assert.match(loader,/v10-42-r69-recorded-voices\.js[\s\S]*v10-16-voice-director\.js/,"recorded voice metadata must load before the single voice director");
 assert.match(voice,/recorded\?\.aliases\?\.\[key\]/,"voice playback must prefer the recorded sprite alias without adding a competing audio owner");
@@ -29,5 +32,13 @@ assert.match(stage8,/voiceKey:"npc\.sanctuary\.keeper"/,"sanctuary greeting must
 assert.match(play,/bronzeLocked[\s\S]*CCGLostSizzlerVoice\?\.say\?\.\("chestUnlocked"/,"a paid locked chest must announce unlock only after the bronze-key path succeeds");
 assert.match(play,/dedicatedHazard[\s\S]*CCGLostSizzlerVoice\?\.say\?\.\("trapsNearby"/,"dedicated hazards must issue the recorded proximity warning");
 assert.match(runtime,/e\.exitWarden[\s\S]*sigilWardenDefeated[\s\S]*e\.guardian[\s\S]*guardianDefeated/,"guardian defeat recordings must be tied to actual enemy death ownership");
+assert.match(sanctuary,/sayDialogue\?\.\("npc\.sanctuary\.keeper","Hello, big boy\."/,"walking onto a sanctuary dancer must play the supplied greeting directly");
+assert.match(sanctuary,/ccgDialogueVoiceHandled:true/,"sanctuary dancer greeting must suppress duplicate generic speech when the recording starts");
+assert.match(sanctuaryHardening,/say\?\.\("adventurerHelp"/,"lost adventurer recruitment must use the supplied rescue plea");
+assert.match(sanctuaryHardening,/say\?\.\("adventurerSafe"/,"lost adventurer rescue must use the supplied safe-arrival recording");
+assert.match(core,/function descendFloor\(\)[\s\S]*CCGLostSizzlerVoice\?\.say\?\.\("descending"/,"descending to the next floor must use the supplied descent recording");
+assert.match(voice,/ccg:hazard-damage[\s\S]*hazardPain/,"actual hazard damage must be able to trigger the supplied post-hit voice");
+assert.match(voice,/ccg:shop-firearm-upgrade[\s\S]*weaponUpgraded/,"successful firearm upgrades must trigger the supplied upgrade recording");
+assert.match(voice,/FURNITURE AMBUSH[\s\S]*return"ambush"/,"furniture ambushes must use the supplied ambush recording");
 
 console.log("Dungeon R69 recorded voice integration regression checks passed.");
