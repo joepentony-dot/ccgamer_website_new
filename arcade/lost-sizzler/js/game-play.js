@@ -615,7 +615,25 @@ function updateGenerators(dt){
     g.spawnTotal=(g.spawnTotal||0)+1;host.enemies.push({id:`spawn-${Date.now()}-${Math.random()}`,...pos,kind:Math.random()<.3?"hunter":"scout",hp:2+run.floor,maxHp:2+run.floor,alive:true,aiState:"idle",facing:{x:1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:900,attackCooldown:800,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0,generatorId:g.id,generatorSpawnOrdinal:g.spawnTotal});S.sfx("generator");host.revision++
   }
 }
-function updateRescue(){const r=host.rescue;if(!r?.following||r.rescued)return;const target=localPlayers().sort((a,b)=>md(a,r)-md(b,r))[0];if(!target)return;if(md(target,r)>1){const next=SYS.pathStep(world,host,r,target,true);if(next){r.x=next.x;r.y=next.y}}if(SYS.inSanctuary(world,r.x,r.y)){r.rescued=true;r.following=false;showToast("SCOUT REACHES SANCTUARY","The rescue objective is complete.","green");SYS.updateObjective(host,run,Math.round(PGR.roomCompletion(explored.get(target.id)||new Set(),world)*100))}}
+function updateRescue(){
+  const r=host.rescue;if(!r?.following||r.rescued)return;
+  const target=localPlayers().sort((a,b)=>md(a,r)-md(b,r))[0];if(!target)return;
+  const distance=md(target,r),now=performance.now();
+  if(distance>=8&&now-Number(r._ccgLaggingVoiceAt||0)>=12000){
+    r._ccgLaggingVoiceAt=now;
+    try{window.CCGLostSizzlerVoice?.say?.("scoutLagging",{cooldown:0})}catch(_){}
+  }
+  if(SYS.inSanctuary(world,target.x,target.y)&&!SYS.inSanctuary(world,r.x,r.y)&&!r._ccgSanctuaryVoice){
+    r._ccgSanctuaryVoice=true;
+    try{window.CCGLostSizzlerVoice?.say?.("scoutSanctuaryNear",{cooldown:0})}catch(_){}
+  }
+  if(distance>1){const next=SYS.pathStep(world,host,r,target,true);if(next){r.x=next.x;r.y=next.y}}
+  if(SYS.inSanctuary(world,r.x,r.y)){
+    r.rescued=true;r.following=false;
+    showToast("SCOUT REACHES SANCTUARY","The rescue objective is complete.","green");
+    SYS.updateObjective(host,run,Math.round(PGR.roomCompletion(explored.get(target.id)||new Set(),world)*100))
+  }
+}
 function updateStalker(dt){
   const s=host.stalker;if(!s||s.permanentlyBanished||!C.stalker.enabled||run.floor<C.stalker.startFloor){S.setStalkerNear(Boolean(host.voidStalkerInSight));return}
   s.spawnTimer-=dt;if(!s.awake&&s.spawnTimer<=0){s.awake=true;s.seen=false;s.hp=s.maxHp;s.vulnerableMs=0;s._banishWarned=false;S.sfx("stalker");showToast("SOMETHING HAS ENTERED THE VAULT","FIND 3 ARTEFACTS TO EXCHANGE FOR THE POTION TO KILL THIS INDESTRUCTIBLE ENEMY","red",9000);logEvent("The normal music seems suddenly less confident.","red",10000)}if(!s.awake)return;
