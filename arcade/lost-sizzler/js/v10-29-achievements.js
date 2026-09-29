@@ -1,4 +1,4 @@
-/* The Lost Sizzler V10.29 — extensive local and account-backed achievement system. */
+/* C64 Dungeon Carnage — local-first and account-backed achievement system. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_ACHIEVEMENTS_V129__)return;
@@ -6,24 +6,24 @@
 
   const STORAGE_KEY="ccg-lost-sizzler-achievements-v1";
   const rows=[
-    ["LS_FIRST_RUN","Dungeon Door Open","Start a Lost Sizzler run.","journey","bronze"],
+    ["LS_FIRST_RUN","Dungeon Door Open","Start a C64 Dungeon Carnage run.","journey","bronze"],
     ["LS_TUTORIAL_GRADUATE","Training Archive Graduate","Complete the Tutorial.","journey","silver"],
-    ["LS_FLOOR_1","Archive Cleared","Clear Floor 1.","journey","bronze"],
-    ["LS_FLOOR_2","Workshop Cleared","Clear Floor 2.","journey","bronze"],
-    ["LS_FLOOR_3","Reactor Cleared","Clear Floor 3.","journey","silver"],
-    ["LS_FLOOR_4","Crypt Cleared","Clear Floor 4.","journey","silver"],
-    ["LS_FLOOR_5","Citadel Cleared","Clear Floor 5.","journey","gold"],
-    ["LS_CITADEL_PLATINUM","Lost Sizzler Platinum","Complete the full five-floor game and recover the Lost Sizzler.","platinum","platinum"],
-    ["LS_SOLO_CHAMPION","Solo Sizzler","Complete the game in Solo mode.","journey","gold"],
+    ["LS_FLOOR_1","Threshold Cleared","Clear The Threshold.","journey","bronze"],
+    ["LS_FLOOR_2","Iron Keep Cleared","Clear Iron Keep.","journey","bronze"],
+    ["LS_FLOOR_3","Moss Crypt Cleared","Clear Moss Crypt.","journey","silver"],
+    ["LS_FLOOR_4","Ember Depths Cleared","Clear Ember Depths.","journey","silver"],
+    ["LS_FLOOR_5","Sigil Sanctum Cleared","Clear the Sigil Sanctum.","journey","gold"],
+    ["LS_CITADEL_PLATINUM","Dungeon Carnage Platinum","Complete all five Dungeon Carnage depths, finish the Sigil and escape.","platinum","platinum"],
+    ["LS_SOLO_CHAMPION","Solo Dungeon Conqueror","Complete the C64 Dungeon Carnage campaign in Solo mode.","journey","gold"],
     ["LS_SPEEDRUN_45","Fast Loader","Complete the game in under 45 minutes.","journey","gold"],
-    ["LS_NO_DEATH_VICTORY","One Life, Five Floors","Complete the game without dying.","journey","gold"],
+    ["LS_NO_DEATH_VICTORY","One Life, Five Depths","Complete all five Dungeon Carnage depths without dying.","journey","gold"],
     ["LS_FIRST_KILL","First Blood","Defeat your first enemy in a run.","combat","bronze"],
     ["LS_KILLS_10","Ten Down","Defeat 10 enemies in one run.","combat","bronze"],
     ["LS_KILLS_25","Dungeon Sweeper","Defeat 25 enemies in one run.","combat","silver"],
     ["LS_KILLS_50","Fifty Freed","Defeat 50 enemies in one run.","combat","silver"],
     ["LS_KILLS_100","Centurion","Defeat 100 enemies in one run.","combat","gold"],
     ["LS_CHAMPION_1","Champion Tamer","Defeat a champion enemy.","combat","bronze"],
-    ["LS_CHAMPIONS_5","Sizzler Hunter","Defeat 5 champions in one run.","combat","silver"],
+    ["LS_CHAMPIONS_5","Champion Hunter","Defeat 5 champion enemies in one run.","combat","silver"],
     ["LS_CHAMPIONS_10","Champion of Champions","Defeat 10 champions in one run.","combat","gold"],
     ["LS_GUARDIAN_DOWN","Guardian Breaker","Defeat a floor Guardian.","combat","silver"],
     ["LS_SIGIL_WARDEN_DOWN","Warden Dismissed","Defeat a Sigil Warden.","combat","silver"],
@@ -37,11 +37,11 @@
     ["LS_VORTEX_KILL","Into the Vortex","Knock an enemy into a rare vortex.","combat","gold"],
     ["LS_STALKER_BANISHED","No More Stalking","Permanently banish a Death Stalker.","combat","gold"],
     ["LS_BOUNTY_1","Bounty Claimed","Complete a floor Dungeon Bounty.","combat","silver"],
-    ["LS_BOUNTIES_5","Bounty Grand Slam","Complete the Dungeon Bounty on all five floors in one run.","combat","gold"],
-    ["LS_MAIN_KEY_1","Key Person","Collect a Main Vault Key.","objectives","bronze"],
-    ["LS_MAIN_KEYS_ALL","Vault Route Open","Collect every required Main Vault Key on a floor.","objectives","silver"],
-    ["LS_EXIT_SIGIL","Sigil Bearer","Recover an Exit Sigil.","objectives","silver"],
-    ["LS_FLOOR_EXIT","Extraction Route","Reach an unlocked floor exit.","objectives","bronze"],
+    ["LS_BOUNTIES_5","Bounty Grand Slam","Complete the Dungeon Bounty on all five depths in one run.","combat","gold"],
+    ["LS_MAIN_KEY_1","Key Claimed","Recover the required campaign Key on a key depth.","objectives","bronze"],
+    ["LS_MAIN_KEYS_ALL","Domain Secured","Complete a campaign Key objective and open the route deeper.","objectives","silver"],
+    ["LS_EXIT_SIGIL","Sigil Awakened","Complete the final Sigil ritual in the Sigil Sanctum.","objectives","silver"],
+    ["LS_FLOOR_EXIT","Extraction Route","Reach an unlocked stairway to the next depth.","objectives","bronze"],
     ["LS_GENERATOR_1","Machine Breaker","Destroy a monster generator.","objectives","bronze"],
     ["LS_GENERATORS_ALL","Power Cut","Destroy every required generator on a floor.","objectives","silver"],
     ["LS_RESCUE_SCOUT","Nobody Left Behind","Rescue the trapped CCG Scout.","objectives","silver"],
