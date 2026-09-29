@@ -10,6 +10,7 @@
   const SAMPLE_MS=3000;
   const TRAP_PROBE_MS=40;
   const TRAP_VERIFY_MS=220;
+  const REPEAT_KEY_SAMPLE_MS=250;
   const STYLE_PATH="css/v10-42-bug-reporter.css";
   const events=[];
   const trapObservations=new Map();
@@ -21,7 +22,7 @@
   const MAX_ENVIRONMENT_DAMAGE_SIGNALS=80;
   let movementBoundarySerial=0;
   let environmentDamageSerial=0;
-  const state={installed:false,reports:0,anomalies:0,trapAnomalies:0,trapContacts:0,trapVerifiedHits:0,environmentContacts:0,environmentAnomalies:0,environmentVerifiedHits:0,lastTrap:null,lastEnvironment:null,lastReport:null,preReportSnapshot:null,sampleTimer:0,trapProbeTimer:0};
+  const state={installed:false,reports:0,anomalies:0,trapAnomalies:0,trapContacts:0,trapVerifiedHits:0,environmentContacts:0,environmentAnomalies:0,environmentVerifiedHits:0,lastTrap:null,lastEnvironment:null,lastReport:null,preReportSnapshot:null,sampleTimer:0,trapProbeTimer:0,lastRepeatKeySampleAt:0};
 
   const safe=(fn,fallback=null)=>{try{const value=fn();return value===undefined?fallback:value}catch(_){return fallback}};
   const nowIso=()=>new Date().toISOString();
@@ -589,7 +590,7 @@
     return report;
   }
   function formatReport(report){
-    const s=report.summary,g=s.game,p=s.player1,mem=s.puzzle;
+    const s=report.summary,g=s.game,p=s.player1,mem=s.puzzle,perf=s.diagnostics.performanceGovernor||{},globalPerf=s.diagnostics.globalPerformance||{},liveArrays=s.diagnostics.liveArrays||{};
     const lines=[
       "CCG DUNGEON CARNAGE BUG REPORT",
       `Created: ${report.createdAt}`,
@@ -604,6 +605,7 @@
       `Memory puzzle: ${mem?`phase=${mem.phase} input=${mem.inputIndex}/${mem.sequence.length} failures=${mem.failures} flash=${mem.flashTile}`:"none"}`,
       `Trap monitor: contacts=${state.trapContacts} verifiedHits=${state.trapVerifiedHits} trapAnomalies=${state.trapAnomalies}`,
       `Loop monitor: acceptedFrames=${s.diagnostics.soloClock?.acceptedFrames??"-"} duplicateFrames=${s.diagnostics.soloClock?.duplicateFramesSkipped??"-"} watchdogRecoveries=${s.diagnostics.soloClock?.loopWatchdogRecoveries??"-"} lastAcceptedWallAt=${s.diagnostics.soloClock?.lastAcceptedWallAt??"-"}`,
+      `Performance: tier=${g.performanceTier} fps=${perf.fps??globalPerf.fps??"-"} frameMs=${perf.frameMs??globalPerf.frameMs??"-"} longTasks=${perf.longTasks??"-"} maxLongTaskMs=${perf.maxLongTaskMs??"-"} arrays=${JSON.stringify(liveArrays)}`,
       `Trap rearm: exits=${s.diagnostics.trapStability?.contactExitRearms??"-"} totalRearms=${s.diagnostics.trapStability?.rearms??"-"} cycleRearms=${s.diagnostics.trapStability?.cycleRearms??"-"}`,
       `Recorded anomalies: ${report.anomalies}`
     ];
@@ -714,9 +716,19 @@
       openReporter("F8",snap);return;
     }
     if(!interesting.has(event.code))return;
+    // Auto-repeat can arrive dozens of times per second while FIRE is held.
+    // Never build a full diagnostic snapshot for repeat events: that observer
+    // work must not compete with the gameplay frame it is measuring.
+    if(event.repeat){
+      const tick=performance.now();
+      if(tick-state.lastRepeatKeySampleAt<REPEAT_KEY_SAMPLE_MS)return;
+      state.lastRepeatKeySampleAt=tick;
+      push("keydown-repeat",{code:event.code,repeat:true,mode:safe(()=>String(mode),""),input:safe(()=>[...input].map(String),[]),fire1:safe(()=>Number(fire1),null),buffer:safe(()=>Number(fireBuffer1),null)});
+      return;
+    }
     const before=currentSnapshot(`keydown-${event.code}`);
-    push("keydown",{code:event.code,repeat:Boolean(event.repeat),mode:before.game.mode,input:before.game.inputKeys,fire1:before.game.fire1,buffer:before.game.fireBuffer1,inventoryHidden:before.panels.inventory.hidden});
-    if(["Space","KeyF","Numpad0"].includes(event.code)&&!event.repeat)fireProbe(event.code,before);
+    push("keydown",{code:event.code,repeat:false,mode:before.game.mode,input:before.game.inputKeys,fire1:before.game.fire1,buffer:before.game.fireBuffer1,inventoryHidden:before.panels.inventory.hidden});
+    if(["Space","KeyF","Numpad0"].includes(event.code))fireProbe(event.code,before);
     if(["Tab","Escape","KeyP"].includes(event.code))setTimeout(()=>snapshotSummary(`after-${event.code}`),80);
   },true);
   addEventListener("keyup",event=>{if(interesting.has(event.code))push("keyup",{code:event.code,mode:safe(()=>String(mode),""),input:safe(()=>[...input].map(String),[])})},true);
