@@ -16,8 +16,8 @@ const stage6=fs.readFileSync(new URL("js/v10-42-stage6-zone-gameplay.js",root),"
 const onboarding=fs.readFileSync(new URL("js/v10-20-onboarding-safety.js",root),"utf8");
 const version=JSON.parse(fs.readFileSync(new URL("version.json",root),"utf8"));
 
-assert.equal(version.build,"V10.42 r65");
-assert.equal(version.cacheToken,"20260928r65");
+assert.equal(version.build,"V10.42 r66");
+assert.equal(version.cacheToken,"20260929r66");
 
 assert.match(bootstrap,/v10-42-r19-mobile-trap-layout-stability\.js[\s\S]*CCGLostSizzlerV142R19MobileLayoutCompatibility/,"R19 portrait compatibility may load only behind its explicit non-gameplay compatibility marker");
 assert.match(r19,/gameplayOwnership:false/,"R19 portrait compatibility must explicitly disclaim gameplay ownership");
