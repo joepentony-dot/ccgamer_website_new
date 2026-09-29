@@ -284,6 +284,13 @@
     const sound=document.getElementById("sound-btn");if(sound?.nextSibling)row.insertBefore(btn,sound.nextSibling);else row.appendChild(btn);state.button=btn;updateButton();
   }
   function unlock(){state.unlocked=true}
+  function onRecordedPickupVoice(event){
+    const detail=event?.detail||{},kind=String(detail.kind||""),lootKind=String(detail.lootKind||"");
+    const key=kind==="health"?"healthRestored":kind==="ammo"||kind==="mana"?"ammoCollected":kind==="armour"?"armourRestored":kind==="bronze"?"bronzeKeyCollected":kind==="exitSigil"?"exitSigilAcquired":kind==="loot"&&lootKind==="artefact"?"artefactCollected":"";
+    if(key)try{sayKey(key)}catch(_){}
+  }
+  window.addEventListener("ccg:item-collected",onRecordedPickupVoice);
+  window.addEventListener("pagehide",()=>window.removeEventListener("ccg:item-collected",onRecordedPickupVoice),{once:true});
   document.addEventListener("pointerdown",unlock,{once:true,capture:true});document.addEventListener("keydown",unlock,{once:true,capture:true});
   if(window.speechSynthesis){const refresh=()=>{state.voices=window.speechSynthesis.getVoices?.()||[]};refresh();window.speechSynthesis.onvoiceschanged=refresh}
 
@@ -323,7 +330,10 @@
     if(/MEMORY SEQUENCE SOLVED/.test(s))return"sequenceComplete";
     if(/MEMORY SEQUENCE RESET|SEQUENCE INCORRECT/.test(s))return"sequenceIncorrect";
     if(/SCOUT REACHES SANCTUARY/.test(s))return"sanctuaryReached";
-    if(/SIGIL CHAMBER LOCKDOWN/.test(s))return"roomLockdown";
+    if(/SIGIL CHAMBER LOCKDOWN/.test(s))return"sigilWardenEncountered";
+    if(/SIGIL WARDEN DOWN/.test(s))return"sigilWardenDefeated";
+    if(/SHOP PURCHASE/.test(s))return"purchaseComplete";
+    if(/FLOOR EXIT SEALED/.test(s))return"exitSealed";
     if(/NOT ENOUGH SCORE/.test(s))return"notEnoughScore";
     if(/NOT ENOUGH ARTEFACTS/.test(s))return"notEnoughArtefacts";
     if(/INVENTORY FULL/.test(s))return"inventoryFull";
