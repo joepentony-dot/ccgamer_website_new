@@ -14,6 +14,10 @@ const r60=read("js/v10-41-r60-horde-combat-integrity.js");
 const r60Composition=read("js/v10-41-r60-horde-owner-composition.js");
 const activeEnemyFire=read("js/v10-41-active-enemy-fire.js");
 const r24Live=read("js/v10-41-r24-live-regressions.js");
+const r6Environment=read("js/v10-42-r6-biome-environment-director.js");
+const r46Visual=read("js/v10-42-r46-final-visual-polish.js");
+const r48Portal=read("js/v10-42-r48-elemental-portal-presentation.js");
+const render=read("js/game-render.js");
 
 // R58 moved ordinary FIRE/SPIKE/SHOCK HEALTH ownership into the canonical
 // game-play damage/trap path. Historical maintenance layers must remain
@@ -72,6 +76,14 @@ assert.match(activeEnemyFire,/wrapped\.__ccgOriginal=current/,"ActiveCardinal mu
 assert.match(r24Live,/function wrapperChainHas\(fn,marker\)/,"R24 enemy fire must detect its owner anywhere in the wrapper ancestry");
 assert.match(r24Live,/wrapperChainHas\(current,"__ccgV141R24EnemyFire"\)/,"R24 installer must not append a second owner above ActiveCardinal");
 assert.match(r24Live,/wrapped\.__ccgOriginal=current/,"R24 enemy fire must preserve traversable wrapper ancestry");
+assert.match(activeEnemyFire,/if\(state\.aiSource\)return true/,"ActiveCardinal self-repair must latch after its first successful install");
+assert.match(r24Live,/if\(state\.aiInstalled\)return true/,"R24 enemy-fire self-repair must latch after its first successful install");
+assert.match(r6Environment,/if\(state\.installed\.view\)return true/,"R6 render presentation must not wrap renderView again on later lifecycle events");
+assert.match(r6Environment,/if\(state\.installed\.tile\)return true/,"R6 tile presentation must not wrap drawTile again on later lifecycle events");
+assert.match(r46Visual,/if\(state\.renderInstalls>0\)return true/,"R46 render presentation must be a one-time wrapper");
+assert.match(r46Visual,/if\(state\.trapInstalls>0\)return true/,"R46 trap presentation must be a one-time wrapper");
+assert.match(r48Portal,/if\(state\.installs>0\)return true/,"R48 portal presentation must be a one-time render wrapper");
+assert.match(render,/String\(f\.name\|\|e\?\.kind\|\|"EN"\)\.slice\(0,2\)/,"enemy defeat rendering must tolerate follower metadata without a name");
 
 const chainHasMarker=(fn,marker)=>{
   const seen=new Set();let current=fn,depth=0;
