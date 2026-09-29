@@ -101,7 +101,7 @@
     const now=clockNow(),previous=memory.get(entity);
     if(!force&&previous?.key===line.key&&now-previous.at<REPEAT_MS){state.suppressed++;return false}
     const spoken=speakDialogueLine(line);
-    try{showToast(line.title,`${line.speaker}: ${line.text}`,line.tone,line.duration,spoken?{ccgDialogueVoiceHandled:true}:undefined)}catch(_){return false}
+    try{showToast(line.title,`${line.speaker}: ${line.text}`,line.tone,line.duration,spoken?{ccgDialogueVoiceHandled:true,retain:true}:{retain:true})}catch(_){return false}
     memory.set(entity,{key:line.key,at:now});
     state.presentations++;
     state.last={key:line.key,title:line.title,text:line.text,voiceKey:line.voiceKey,at:now};
