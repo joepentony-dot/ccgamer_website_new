@@ -135,20 +135,28 @@
     return{shot:next,suppress:false,reason:dx&&dy?"diagonal":"aim"};
   }
 
+  function wrapperChainHas(fn,marker){
+    const seen=new Set();let current=fn,depth=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth<16){
+      if(current[marker])return true;
+      seen.add(current);current=current.__ccgOriginal;depth++;
+    }
+    return false;
+  }
+
   function installEnemyFireGuard(){
-    const ai=window.CCGAI;if(!ai||typeof ai.stepEnemies!=="function")return false;
-    if(ai.stepEnemies.__ccgV141R24EnemyFire){state.aiInstalled=true;return true}
-    const original=ai.stepEnemies.bind(ai);
-    ai.stepEnemies=function stepEnemiesV141R24EnemyFire(hostState,map,players,dt,hooks={},worldState){
-      if(typeof hooks.shoot!=="function")return original(hostState,map,players,dt,hooks,worldState);
-      const wrapped={...hooks,shoot:(shot,...rest)=>{
+    const ai=window.CCGAI,current=ai?.stepEnemies;if(typeof current!=="function")return false;
+    if(wrapperChainHas(current,"__ccgV141R24EnemyFire")){state.aiInstalled=true;return true}
+    const wrapped=function stepEnemiesV141R24EnemyFire(hostState,map,players,dt,hooks={},worldState){
+      if(typeof hooks.shoot!=="function")return current.call(ai,hostState,map,players,dt,hooks,worldState);
+      const patched={...hooks,shoot:(shot,...rest)=>{
         const decision=normaliseEnemyShot(hostState,players,shot,performance.now(),Math.random());
         if(decision.suppress)return false;
         return hooks.shoot(decision.shot,...rest);
       }};
-      return original(hostState,map,players,dt,wrapped,worldState);
+      return current.call(ai,hostState,map,players,dt,patched,worldState);
     };
-    ai.stepEnemies.__ccgV141R24EnemyFire=true;state.aiInstalled=true;return true;
+    wrapped.__ccgV141R24EnemyFire=true;wrapped.__ccgOriginal=current;ai.stepEnemies=wrapped;state.aiInstalled=true;return true;
   }
 
   function hostile(enemy){return Boolean(enemy?.alive&&!enemy?.lostAdventurer&&!enemy?.passiveNpc&&!enemy?.treasureGoblin)}
