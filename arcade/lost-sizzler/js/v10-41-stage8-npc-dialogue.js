@@ -9,6 +9,7 @@
   const EXPLORATION_INTERACTION_BUDGET=2;
   const SPECIAL_MODES=new Set(["horde-survivor","sizzler-saboteurs"]);
   const memory=new WeakMap();
+  const merchantVoiceVisits=new WeakMap();
   const environmentalSeen=new WeakSet();
   const environmentalFloors=new WeakMap();
   const explorationFloors=new WeakMap();
@@ -28,7 +29,13 @@
     }),
     merchant:Object.freeze({
       entrance:Object.freeze({key:"merchant.entrance",title:"DUNGEON QUARTERMASTER",speaker:"Quartermaster",text:"Ammo, armour, whatever keeps you alive.",tone:"gold",duration:6200,voiceKey:"npc.merchant.entrance"}),
-      hidden:Object.freeze({key:"merchant.hidden",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"You found me. That usually means you’ve been nosing around.",tone:"purple",duration:6500,voiceKey:"npc.merchant.hidden"})
+      entranceRepeat:Object.freeze({key:"merchant.entrance.repeat",title:"DUNGEON QUARTERMASTER",speaker:"Quartermaster",text:"Need supplies?",tone:"gold",duration:5200,voiceKey:"npc.merchant.entrance.repeat"}),
+      entranceLook:Object.freeze({key:"merchant.entrance.look",title:"DUNGEON QUARTERMASTER",speaker:"Quartermaster",text:"Take a look.",tone:"gold",duration:5200,voiceKey:"npc.merchant.entrance.look"}),
+      hidden:Object.freeze({key:"merchant.hidden",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"You found me. That usually means you’ve been nosing around.",tone:"purple",duration:6500,voiceKey:"npc.merchant.hidden"}),
+      hiddenEmpty:Object.freeze({key:"merchant.hidden.empty",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"Bring me something interesting.",tone:"purple",duration:5600,voiceKey:"npc.merchant.hidden.empty"}),
+      hiddenPartial:Object.freeze({key:"merchant.hidden.partial",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"Bring me three and I can help you deal with the Stalker.",tone:"purple",duration:6500,voiceKey:"npc.merchant.hidden.partial"}),
+      hiddenReady:Object.freeze({key:"merchant.hidden.ready",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"I can trade those artefacts for a Banishment Flask.",tone:"purple",duration:6500,voiceKey:"npc.merchant.hidden.ready"}),
+      hiddenLore:Object.freeze({key:"merchant.hidden.lore",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"I deal in things the other merchants won’t touch.",tone:"purple",duration:6200,voiceKey:"npc.merchant.hidden.lore"})
     }),
     sanctuary:Object.freeze({
       keeper:Object.freeze({key:"sanctuary.keeper",title:"SANCTUARY KEEPER",speaker:"Keeper",text:"Hello, big boy.",tone:"green",duration:5200,voiceKey:"npc.sanctuary.keeper"})
@@ -83,7 +90,18 @@
     return tasks.find(task=>task.progress<task.target)||{id:"complete",label:"All field commissions complete",progress:3,target:3,complete:true}
   }
   function lineForMerchant(shop,task=fieldTaskSnapshot()){
-    const base=shop?.shopType==="hidden"?lines.merchant.hidden:lines.merchant.entrance;
+    const visits=Math.max(0,Number(merchantVoiceVisits.get(shop)||0));
+    let base;
+    if(shop?.shopType==="hidden"){
+      let artefacts=0;try{artefacts=Math.max(0,Number(PGR?.inventoryKindCount?.(p1,"artefact")||0))}catch(_){}
+      if(visits===0)base=lines.merchant.hidden;
+      else if(artefacts>=3)base=lines.merchant.hiddenReady;
+      else if(artefacts>0)base=lines.merchant.hiddenPartial;
+      else base=visits%3===0?lines.merchant.hiddenLore:lines.merchant.hiddenEmpty;
+    }else{
+      base=visits===0?lines.merchant.entrance:(visits%2?lines.merchant.entranceRepeat:lines.merchant.entranceLook);
+    }
+    merchantVoiceVisits.set(shop,visits+1);
     const briefing=task.complete
       ?"Field board: all three commissions are complete; their normal +350 score reward path remains unchanged."
       :`Field commission: ${task.label} (${task.progress}/${task.target}). The existing +350 score reward is handled automatically.`;
