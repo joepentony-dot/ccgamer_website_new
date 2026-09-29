@@ -95,13 +95,25 @@
     if(typeof voice?.sayDialogue!=="function")return false;
     try{return Boolean(voice.sayDialogue(line.voiceKey,line.text,{priority,cooldown,interrupt:false}))}catch(_){return false}
   }
+  function queueDialogueSubtitleBehindActiveToast(line,spoken){
+    if(!line?.text)return false;
+    try{
+      if(typeof toastTimer==="undefined"||Number(toastTimer)<=0||typeof toastQueue==="undefined"||!Array.isArray(toastQueue))return false;
+      const current=String(document.getElementById("pickup-text")?.textContent||"");
+      const text=`${line.speaker}: ${line.text}`;
+      if(!current||current.includes(line.text)||toastQueue.some(entry=>String(entry?.text||"")===text))return false;
+      toastQueue.push({title:String(line.title),text,tone:line.tone,duration:Math.max(5200,Number(line.duration)||7600),retain:true,ccgDialogueVoiceHandled:Boolean(spoken)});
+      state.deferredSubtitles=(state.deferredSubtitles||0)+1;
+      return true
+    }catch(_){return false}
+  }
   function present(entity,line,{player=null,force=false}={}){
     if(!soloDungeon()||!entity||!line)return false;
     if(player&&!withinReach(player,entity))return false;
     const now=clockNow(),previous=memory.get(entity);
     if(!force&&previous?.key===line.key&&now-previous.at<REPEAT_MS){state.suppressed++;return false}
-    const spoken=speakDialogueLine(line);
-    try{showToast(line.title,`${line.speaker}: ${line.text}`,line.tone,line.duration,spoken?{ccgDialogueVoiceHandled:true,retain:true}:{retain:true})}catch(_){return false}
+    const spoken=speakDialogueLine(line),deferred=queueDialogueSubtitleBehindActiveToast(line,spoken);
+    if(!deferred)try{showToast(line.title,`${line.speaker}: ${line.text}`,line.tone,line.duration,spoken?{ccgDialogueVoiceHandled:true,retain:true}:{retain:true})}catch(_){return false}
     memory.set(entity,{key:line.key,at:now});
     state.presentations++;
     state.last={key:line.key,title:line.title,text:line.text,voiceKey:line.voiceKey,at:now};
@@ -432,5 +444,5 @@
   installWhenReady();
   queueMicrotask(installWhenReady);
   if(document.readyState!=="complete")addEventListener("load",installWhenReady,{once:true});
-  window.CCGLostSizzlerStage8NpcDialogue={state,lines,LEVEL_PROFILES,soloDungeon,lineForScout,lineForMerchant,fieldTaskSnapshot,speakDialogueLine,present,presentScout,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,environmentalEligible,currentFloorNumber,levelProfile,directedEncounterEligible,directedSpawnCells,spawnDirectedEnemy,applyDirectedEncounter,presentEnvironmentalStory,onRoomEntered,explorationFeatureAt,presentExplorationFeature,onMovementBoundary,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
+  window.CCGLostSizzlerStage8NpcDialogue={state,lines,LEVEL_PROFILES,soloDungeon,lineForScout,lineForMerchant,fieldTaskSnapshot,speakDialogueLine,queueDialogueSubtitleBehindActiveToast,present,presentScout,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,environmentalEligible,currentFloorNumber,levelProfile,directedEncounterEligible,directedSpawnCells,spawnDirectedEnemy,applyDirectedEncounter,presentEnvironmentalStory,onRoomEntered,explorationFeatureAt,presentExplorationFeature,onMovementBoundary,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
 })();
