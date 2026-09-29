@@ -18,10 +18,10 @@ const cacheMeta=html.match(/<meta name="ccg-lost-sizzler-cache" content="([^"]+)
 const localAssets=[...html.matchAll(/(?:src|href)="((?:js|css)\/[^"?]+\?v=([^"&]+))"/g)].map(match=>({url:match[1],token:match[2]}));
 
 assert.equal(buildMeta,BUILD,"the blocking page identity must already be the current r67 build before any runtime restamp");
-assert.equal(cacheMeta,CACHE,"the cache guard must read the r66 token on its first execution");
+assert.equal(cacheMeta,CACHE,"the cache guard must read the r67 token on its first execution");
 assert.equal(version.build,BUILD,"version.json must describe the same current build as the blocking page and bootstrap");
 assert.equal(version.cacheToken,CACHE,"version.json must describe the same current cache token as the blocking page and bootstrap");
-assert.match(bootstrap,/const BUILD="V10\.42 r66";/,"ordered bootstrap build identity changed unexpectedly");
+assert.match(bootstrap,/const BUILD="V10\\.42 r67";/,"ordered bootstrap build identity changed unexpectedly");
 assert.match(bootstrap,/const CACHE="20260929r67";/,"ordered bootstrap cache identity changed unexpectedly");
 assert.match(bootstrap,/function versionCheckOutdated\(\)\{[\s\S]*?CCGLostSizzlerVersion\?\.state\?\.outdated===true/,"ordered bootstrap must observe the version checker's stale-browser ownership");
 assert.match(bootstrap,/if\(!versionCheckOutdated\(\)\)\{[\s\S]*?expectedBadge=`BUILD \${BUILD\.toUpperCase\(\)}`[\s\S]*?badge\.textContent=expectedBadge[\s\S]*?\}/,"ordered bootstrap must not overwrite the stale-browser Update Available presentation while still stamping release metadata");
@@ -43,4 +43,4 @@ assert.match(html,/v10-41-cache-guard\.js\?v=20260929r67/,"the cache guard itsel
 
 assert.match(bootstrap,/v10-42-stage6-zone-gameplay\.js/,"r52 must load the Stage 6 zone gameplay owner through the ordered bootstrap");
 
-console.log("Dungeon Carnage r66 blocking release/cache identity contract passed.");
+console.log("Dungeon Carnage r67 blocking release/cache identity contract passed.");
