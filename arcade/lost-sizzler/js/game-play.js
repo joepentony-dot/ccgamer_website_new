@@ -154,8 +154,8 @@ function tryDoor(p,x,y){
 function chestScoreReward(chest){return 100+Math.min(400,Math.max(0,Math.floor(Number(chest?.depth)||0))*25)}
 function chestBronzeDoorAlreadyPaid(chest){const roomId=Number(chest?.roomId);if(!Number.isFinite(roomId))return false;return(host.doors||[]).some(d=>d.type==="bronze"&&Number(d.roomId)===roomId&&!d.locked)}
 function openChest(p,chest){
-  if(!chest?.active)return true;const roomKeyPaid=chestBronzeDoorAlreadyPaid(chest);if(chest.locked&&!roomKeyPaid&&p.bronzeKeys<=0){const now=performance.now();if(!chest._lockedFeedbackAt||now-chest._lockedFeedbackAt>=1200){chest._lockedFeedbackAt=now;S.sfx("locked");showToast("LOCKED CHEST","A bronze key opens it. Come back after finding one.","red",4200)}return false}
-  if(chest.locked&&!roomKeyPaid)p.bronzeKeys--;chest.locked=false;
+  if(!chest?.active)return true;const roomKeyPaid=chestBronzeDoorAlreadyPaid(chest),bronzeLocked=Boolean(chest.locked&&!roomKeyPaid);if(bronzeLocked&&p.bronzeKeys<=0){const now=performance.now();if(!chest._lockedFeedbackAt||now-chest._lockedFeedbackAt>=1200){chest._lockedFeedbackAt=now;S.sfx("locked");showToast("LOCKED CHEST","A bronze key opens it. Come back after finding one.","red",4200)}return false}
+  if(bronzeLocked){p.bronzeKeys--;try{window.CCGLostSizzlerVoice?.say?.("chestUnlocked",{cooldown:0})}catch(_){}}chest.locked=false;
   chest.opened=true;chest.openedAt=performance.now();chest.active=false;host.revision++;run.stats.chests++;S.sfx("chest");shake=4;
   const loot=chest.loot||PGR.lootForChest(chest,run,Math.random),evolvingWeapon=loot.kind==="weaponLoot"&&Boolean(window.CCGLostSizzlerV142R47FirearmEvolution),name=evolvingWeapon?"WEAPON CACHE":loot.weapon?.displayName||loot.name||loot.kind.toUpperCase(),col=loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan,scoreReward=chestScoreReward(chest);
   chest.rewardScore=scoreReward;score+=scoreReward;
@@ -576,7 +576,7 @@ function updateRoomMessage(p,force){
   else if(room?.sigilRoom)showToast("SIGIL CHAMBER",host.sigilLockdown?"LOCKDOWN ACTIVE. Defeat every Sigil defender before the Exit Sigil can appear.":"The reinforced route is open. Crossing the threshold will seal the chamber and alert every defender.","red",9500);
   else if(room?.spiderNest){host.spiderNest.revealed=true;showToast("DUSTWEB NEST",`${host.enemies.filter(e=>e.alive&&e.spiderNestId===host.spiderNest.id).length} fragile spiders are moving through the webs. Each has 1 HP, but the room is packed with them.`,"red",9000)}
   else if(room?.skeletonHorde){host.skeletonHorde.revealed=true;showToast("THE BONE HORDE RISES",`${host.enemies.filter(e=>e.alive&&e.skeletonHordeId===host.skeletonHorde.id).length} low-HP skeletons have animated in this floor's single horde room.`,"red",9000)}
-  else if(room?.dedicatedHazard){const hazard=(host.hazardRooms||[]).find(h=>h.roomId===r);showToast(hazard?.title||"HAZARD CHAMBER","Amber floor signals warn which lane is about to activate; red means move now. Each hit costs 1 HP.","red",9500)}
+  else if(room?.dedicatedHazard){const hazard=(host.hazardRooms||[]).find(h=>h.roomId===r);showToast(hazard?.title||"HAZARD CHAMBER","Amber floor signals warn which lane is about to activate; red means move now. Each hit costs 1 HP.","red",9500);try{window.CCGLostSizzlerVoice?.say?.("trapsNearby")}catch(_){}}
   else if(room?.dangerous)showToast(`DANGER — ${th.name}`,"This room contains an active hazard, challenge or major threat. Watch the floor before charging in.","red",8500);
   try{window.CCGLostSizzlerStage8NpcDialogue?.onRoomEntered?.(p,r,room,{force:false})}catch(_){}
 }
