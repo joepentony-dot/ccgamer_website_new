@@ -7,14 +7,14 @@ const run={floor:2,v142WardenFloors:{"2":{floor:2,available:true,resolved:false,
 const player={x:2,y:2};
 let world={rooms:[null,{id:1,x:10,y:10,w:8,h:8}],map:[]};
 let host={v142WardenDomain:{floor:2,roomId:1,profileName:"IRON SURGE",active:true,cleansed:false,inside:false},enemies:[],chests:[]};
-let baseRadarCalls=0;
+let baseRadarCalls=0;\nconst toasts=[];
 const drawCalls=[];
 const ctx=new Proxy({save(){},restore(){},beginPath(){},closePath(){},moveTo(){},lineTo(){},fill(){},stroke(){},fillRect(){},strokeRect(){},arc(){}},{set(target,key,value){target[key]=value;return true}});
 const canvas={width:320,height:160,getBoundingClientRect:()=>({width:320,height:160}),getContext:()=>ctx};
 const context={
   console,window:{},run,host,world,p1:player,
   document:{getElementById:id=>id==="radar-canvas"?canvas:null},
-  renderRadarPanel:p=>{baseRadarCalls++;drawCalls.push({x:p.x,y:p.y});return"BASE RADAR"}
+  renderRadarPanel:p=>{baseRadarCalls++;drawCalls.push({x:p.x,y:p.y});return"BASE RADAR"},\n  showToast:(title,text,tone,duration)=>toasts.push({title,text,tone,duration})
 };
 context.window.CCG_CONFIG={maxFloors:5,worldWidth:80,worldHeight:60};
 context.window.CCGWorld={roomAt:(w,x,y)=>{const room=w?.rooms?.[1];return room&&x>=room.x&&x<=room.x+room.w&&y>=room.y&&y<=room.y+room.h?1:-1}};
@@ -28,7 +28,7 @@ assert.equal(run.v142WardenFloors["2"].domainDiscovered,undefined,"Knowledge sho
 
 player.x=12;player.y=13;
 let markers=api.markerState(player,run,host,world);
-assert.equal(run.v142WardenFloors["2"].domainDiscovered,true,"Entering the corruption room should persist earned domain knowledge");
+assert.equal(run.v142WardenFloors["2"].domainDiscovered,true,"Entering the corruption room should persist earned domain knowledge");\nassert.equal(toasts.length,1,"First discovery should explain Warden corruption exactly once");\nassert.equal(toasts[0].title,"WARDEN CORRUPTION DISCOVERED","Discovery explanation should identify the Warden corruption marker");\nassert.match(toasts[0].text,/purple diamond now stays on your radar/i,"Discovery explanation should connect the domain to its radar marker");
 assert.equal(markers.filter(m=>m.kind==="corruption").length,1,"A discovered active corruption domain should appear on radar");
 assert.deepEqual({...markers.find(m=>m.kind==="corruption")},{kind:"corruption",x:14,y:14,label:"IRON SURGE",roomId:1},"Corruption marker should use the corrupted room centre");
 
@@ -38,7 +38,7 @@ context.host=host;
 world={rooms:[null,{id:1,x:10,y:10,w:8,h:8}],map:[]};
 context.world=world;
 markers=api.markerState(player,run,host,world);
-assert.equal(markers.filter(m=>m.kind==="corruption").length,1,"Persisted domain knowledge should survive a same-floor host/world rebuild after the player leaves the room");
+assert.equal(markers.filter(m=>m.kind==="corruption").length,1,"Persisted domain knowledge should survive a same-floor host/world rebuild after the player leaves the room");\nassert.equal(toasts.length,1,"Persisted domain knowledge must not repeatedly interrupt play with the same explanation");
 
 host.v142WardenDomain.active=false;host.v142WardenDomain.cleansed=true;
 host.v142WardenCheckpoint={active:true,floor:2,x:15,y:14,roomId:1};
