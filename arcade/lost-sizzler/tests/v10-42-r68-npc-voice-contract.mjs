@@ -24,6 +24,7 @@ assert.match(hordeSafety,/sayDialogue\(key,text,\.\.\.args\)\{if\(isHorde\(\)\)r
 assert.match(dialogue,/function speakDialogueLine\(line,/,"Stage 8 must route character lines through one reusable voice bridge");
 assert.match(dialogue,/voice\.sayDialogue\(line\.voiceKey,line\.text/,"Stage 8 must pass the stable voice key and actual NPC text to the existing voice owner");
 assert.match(dialogue,/ccgDialogueVoiceHandled:true/,"spoken NPC toasts must suppress duplicate generic voice classification");
+assert.match(dialogue,/ccgDialogueVoiceHandled:true,retain:true/,"spoken NPC dialogue must retain its visible subtitle while routine notices arrive");
 assert.match(bootstrap,/marker==="CCGLostSizzlerVoice"[\s\S]*typeof value\.say==="function"[\s\S]*typeof value\.sayDialogue==="function"/,"R68 bootstrap must reject incomplete legacy voice globals that lack arbitrary NPC dialogue speech");
 assert.match(bootstrap,/delete window\.__CCG_LOST_SIZZLER_VOICE_DIRECTOR_V116__/,"R68 bootstrap must clear a stale voice-director guard before reloading the current prerequisite");
 assert.doesNotMatch(dialogue,/\bsetInterval\s*\(/,"NPC voice integration must not add a polling interval");
