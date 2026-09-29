@@ -93,7 +93,7 @@
     p._meleeSwingAt=performance.now();p._meleeSwingMs=Math.max(220,Math.min(320,Number(melee.cooldown||390)*.68));p._meleeSwingDir={...dir};p._meleeSwingColour=melee.colour||"#ffd85a";
     if(p===p2)fire2=Number(melee.cooldown||390);else fire1=Number(melee.cooldown||390);
     p.emergencyRechargeMs=0;
-    try{S.sfx("dash")}catch(_){}
+    try{S.sfx("melee")}catch(_){}
     slashFx(p,dir,melee);
     const tx=p.x+dir.x,ty=p.y+dir.y;
     const enemy=(host?.enemies||[]).find(e=>e?.alive&&e.x===tx&&e.y===ty);
