@@ -18,8 +18,9 @@ assert.match(combat,/const MAX_START_AMMO=60/,"base firearm capacity must be red
 assert.match(combat,/const FIRST_GUN_MAGAZINE=16/,"the first discovered firearm must arrive with a fair 16-round magazine");
 assert.match(combat,/p\.mana=0;\s*p\.weapon=null;\s*p\.firearmUnlocked=false/,"fresh players must start with zero ammo and no firearm");
 assert.match(combat,/id:"archive-sword"[\s\S]*?power:1/,"fresh players must start with the Archive Sword");
-assert.match(combat,/if\(!hasGun\(p\)\|\|Number\(p\.mana\|\|0\)<=0\)return meleeAttack\(p,dir\)/,"melee must be the no-firearm or zero-ammo fallback");
-assert.doesNotMatch(combat,/adjacentEnemy\|\|adjacentFurniture/,"adjacent enemies or furniture must not divert a loaded firearm into melee");
+assert.match(combat,/const breakable=\(host\?\.blockingDecor\|\|\[\]\)\.some\([\s\S]*?!row\.structural[\s\S]*?Number\(row\.hp\?\?2\)>0\)/,"contextual melee must recognise only the breakable furniture cell directly ahead");
+assert.match(combat,/if\(breakable\|\|!hasGun\(p\)\|\|Number\(p\.mana\|\|0\)<=0\)return meleeAttack\(p,dir\)/,"adjacent breakables must use melee before the no-firearm or zero-ammo fallback");
+assert.doesNotMatch(combat,/adjacentEnemy/,"adjacent enemies must not divert a loaded firearm into melee");
 assert.doesNotMatch(combat,/dashPlayerV125[\s\S]{0,550}p\.mana\s*[-+]=/,"V10.25 dash must not consume firearm ammunition");
 assert.match(combat,/updateEmergencyAmmo=function updateEmergencyAmmoV125\(p\)\{if\(p\)p\.emergencyRechargeMs=0\}/,"emergency ammunition regeneration must be disabled");
 assert.match(combat,/const FLOOR_AMMO_ARCADE=3/,"Arcade floors must be pruned to three ordinary ammo packs");
@@ -45,8 +46,9 @@ assert.match(render,/ctx\.arc\(0,0,23,base-1\.02,angle,false\)/,"active melee at
 assert.match(render,/ctx\.createLinearGradient\(3,-4,24,4\)/,"the equipped sword must render as a shaped highlighted blade");
 assert.match(render,/drawPlayerWeapon\(p,cx,cy,d\);/,"every player render must draw the current firearm or sword");
 assert.match(play,/const ATTACK_BUFFER_MS=700/,"quick fire taps must remain buffered through the longest melee cooldown");
-assert.match(play,/function canonicalMeleeAttackIfRequired\(p,d\)[\s\S]*CCGLostSizzlerMeleeAmmoV125[\s\S]*hasGun&&Number\(p\.mana\|\|0\)>0\)return null[\s\S]*melee\.meleeAttack\(p,dir\)/,"the canonical FIRE owner must keep a loaded firearm authoritative and use melee only as fallback");
-assert.doesNotMatch(play.match(/function canonicalMeleeAttackIfRequired\(p,d\)\{[\s\S]*?\n\}/)?.[0]||"",/adjacentEnemy|adjacentFurniture/,"canonical FIRE routing must not depend on an adjacent target");
+assert.match(play,/function breakableFurnitureAhead\(p,d\)[\s\S]*?!row\.structural[\s\S]*?Number\(row\.hp\?\?2\)>0/,"canonical combat must distinguish an adjacent breakable from structural decor");
+assert.match(play,/function canonicalMeleeAttackIfRequired\(p,d\)[\s\S]*breakableFurnitureAhead\(p,dir\)[\s\S]*melee\.meleeAttack\(p,dir\)[\s\S]*hasGun&&Number\(p\.mana\|\|0\)>0\)return null/,"canonical FIRE must slash a facing breakable before preserving firearm ownership for normal combat");
+assert.doesNotMatch(play.match(/function canonicalMeleeAttackIfRequired\(p,d\)\{[\s\S]*?\n\}/)?.[0]||"",/adjacentEnemy/,"canonical FIRE routing must never switch to melee merely because an enemy is adjacent");
 assert.match(play,/function firePlayer\(p,d\)[\s\S]*const meleeResult=canonicalMeleeAttackIfRequired\(p,d\);[\s\S]*if\(meleeResult!==null\)return meleeResult/,"canonical FIRE must preserve melee fallback even if a later owner seal removes the historical firePlayer wrapper");
 assert.match(play,/function queueAttack\(p,requestedDirection=null\)[\s\S]*fireBuffer2=ATTACK_BUFFER_MS;else fireBuffer1=ATTACK_BUFFER_MS/,"keyboard, touch and cadence-blocked gamepad attacks must share the authoritative one-shot input buffer");
 assert.match(play,/const p1HeldAttack=isAttackHeldInput\(p1\)&&\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\)[\s\S]*?if\(\(p1HeldAttack\|\|fireBuffer1>0\)&&fire1<=0\)[\s\S]*?executeAuthoritativeFire\(p1,d1\(\),"buffered"\)/,"desktop FIRE must execute one buffered tap through the captured authoritative owner and repeat only after held-input ownership is explicitly qualified");
