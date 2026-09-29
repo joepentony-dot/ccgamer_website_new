@@ -18,6 +18,7 @@ assert.match(bridge,/if\(moveOwned\)\{state\.soloMoveReuse\+\+;if\(live\.state\)
 assert.match(bridge,/if\(updateOwned\)\{state\.soloUpdateReuse\+\+;if\(live\.state\)live\.state\.updateWrapped=true\}else live\.wrapUpdate\?\.\(\)/,"an inherited R60 update owner must be reused instead of wrapped again");
 assert.match(bridge,/protectedInstall\.__ccgV141R60ChainAwareMaintenance=true/,"the consolidated maintenance delegate must be idempotently identifiable");
 assert.match(bridge,/if\(live\.install\.__ccgV141R60ChainAwareMaintenance===true\)/,"the composition bridge must never stack its maintenance delegate");
+assert.match(bridge,/originalChainHasMarker\(current,"__ccgV141R60NamedRoster"\)/,"R60 startWorld maintenance must reuse an existing named-roster owner anywhere in the ancestry");
 assert.doesNotMatch(bridge,/setInterval\([^\n]*protectSoloInstall/,"Solo owner consolidation must not add another permanent maintenance timer");
 
 console.log("Lost Sizzler R60 Solo movement/update ancestry consolidation and special-mode isolation contract passed.");
