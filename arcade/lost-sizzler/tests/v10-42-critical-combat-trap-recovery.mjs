@@ -9,7 +9,7 @@ const bootstrap=read("arcade/lost-sizzler/js/v10-42-bootstrap.js");
 const canonical=read("arcade/lost-sizzler/index.html");
 const alias=read("arcade/c64-dungeon-carnage/index.html");
 const version=JSON.parse(read("arcade/lost-sizzler/version.json"));
-const cache="20260928r65";
+const cache="20260929r66";
 
 assert.match(play,/authoritativeDamagePlayer\(p,1,false,`\$\{hazard\.title\|\|"hazard chamber"\} trap`\)/,"dedicated hazard rooms must continue identifying damage as trap-attributed damage through the guarded R58 boundary");
 assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeFireCore=authoritativeFireApi/,"r58 core must be the supported FIRE authority");
@@ -32,9 +32,9 @@ assert.match(reporter,/dedicatedHazardUnderPlayer:dedicatedHazardSnapshot\(playe
 assert.match(reporter,/meleeSwingAt:Number\(player\._meleeSwingAt\|\|0\)/,"bug reporter must observe melee as valid attack work");
 assert.match(reporter,/ANOMALY_POSSIBLE_ATTACK_FAILURE/,"bug reporter must still flag complete attack failures");
 
-assert.ok(canonical.includes(`ccg-lost-sizzler-cache" content="${cache}`),"canonical runtime must publish the r65 cache token");
-assert.ok(alias.includes(`ccg-lost-sizzler-cache" content="${cache}`),"raw-main public-route alias must publish the same r65 cache token");
-assert.ok(canonical.includes(`game-play.js?v=${cache}`),"canonical game-play script must use r65 cache identity");
-assert.ok(alias.includes(`game-play.js?v=${cache}`),"route alias game-play script must use r65 cache identity");
-assert.equal(version.cacheToken,cache,"version metadata must publish the r65 cache token");
-console.log("PASS authoritative combat/trap and r65 public cache contract");
+assert.ok(canonical.includes(`ccg-lost-sizzler-cache" content="${cache}`),"canonical runtime must publish the r66 cache token");
+assert.ok(alias.includes(`ccg-lost-sizzler-cache" content="${cache}`),"raw-main public-route alias must publish the same r66 cache token");
+assert.ok(canonical.includes(`game-play.js?v=${cache}`),"canonical game-play script must use r66 cache identity");
+assert.ok(alias.includes(`game-play.js?v=${cache}`),"route alias game-play script must use r66 cache identity");
+assert.equal(version.cacheToken,cache,"version metadata must publish the r66 cache token");
+console.log("PASS authoritative combat/trap and r66 public cache contract");

@@ -23,6 +23,12 @@ assert.match(reporter,/ANOMALY_POSSIBLE_FIRE_FAILURE/,"reporter must flag a fail
 assert.match(reporter,/addEventListener\("ccg:sfx"/,"reporter must retain named SFX evidence");
 assert.match(reporter,/ccg:shop-firearm-upgrade/,"reporter must retain firearm shop transaction evidence");
 assert.match(reporter,/const TRAP_PROBE_MS=40/,"trap contact observation must sample faster than the tile movement cadence");
+assert.match(reporter,/const REPEAT_KEY_SAMPLE_MS=250/,"held-key diagnostic sampling must be throttled so observation cannot become a frame-pressure source");
+const repeatStart=reporter.indexOf("if(event.repeat){");
+const firstFullSnapshotAfterRepeat=reporter.indexOf("const before=currentSnapshot",repeatStart);
+assert.ok(repeatStart>=0&&firstFullSnapshotAfterRepeat>repeatStart,"repeat-key path must precede the full keydown snapshot path");
+assert.doesNotMatch(reporter.slice(repeatStart,firstFullSnapshotAfterRepeat),/currentSnapshot\(/,"repeat keydown telemetry must never build a full runtime snapshot");
+assert.match(reporter.slice(repeatStart,firstFullSnapshotAfterRepeat),/push\("keydown-repeat"/,"repeat keydown telemetry must retain a bounded lightweight breadcrumb");
 assert.match(reporter,/function trapProbe\(\)/,"reporter must observe real player/trap overlap without taking gameplay ownership");
 assert.match(reporter,/ANOMALY_ACTIVE_TRAP_NO_DAMAGE/,"reporter must flag an active floor trap that fails to remove health");
 assert.match(reporter,/ANOMALY_MULTIPLE_TRAPS_SAME_TILE/,"reporter must expose duplicate ordinary trap objects occupying one tile");
@@ -76,7 +82,7 @@ console.log("Dungeon Carnage bounded incident reporter contract passed.");
 
 const gamePlay=fs.readFileSync(new URL("js/game-play.js",root),"utf8");
 assert.match(gamePlay,/CCGLostSizzlerBugReporter\?\.observeMovementBoundary\?\.\(p,"before"/,"movement boundary must snapshot environmental contact before trap resolution");
-assert.match(gamePlay,/applyCurrentActiveTrapContact\(p,performance\.now\(\)\);\s*try\{window\.CCGLostSizzlerBugReporter\?\.observeMovementBoundary\?\.\(p,"after"/s,"movement boundary must verify environmental contact immediately after authoritative trap resolution");
+assert.match(gamePlay,/const trapBoundaryAt=performance\.now\(\),trapBoundary=activeTrapAtPlayer\(p,trapBoundaryAt\)[\s\S]*?if\(trapBoundary\)applyActiveTrapContact\(p,trapBoundary,trapBoundaryAt\);\s*try\{window\.CCGLostSizzlerBugReporter\?\.observeMovementBoundary\?\.\(p,"after"/s,"movement boundary must verify environmental contact immediately after deterministic authoritative trap resolution");
 assert.match(gamePlay,/__ccgLastDamageAt=damageAt/,"canonical player damage must expose a timestamp for source-attributed diagnostics");
 assert.match(gamePlay,/damageSource=String\(source\|\|"enemy"\)[\s\S]*p\.__ccgLastHurtAt=damageAt;p\.__ccgLastDamageAt=damageAt;p\.__ccgLastDamageSource=damageSource/,"canonical player damage must expose its latest source as supporting diagnostic evidence");
 assert.match(gamePlay,/new CustomEvent\("ccg:trap-damage"[\s\S]*trapId:String\(t\.id\|\|\`\$\{t\.x\},\$\{t\.y\}\`\)[\s\S]*x:Number\(t\.x\),y:Number\(t\.y\),at:damageAt/,"ordinary traps must emit an exact accepted-damage contact signal");

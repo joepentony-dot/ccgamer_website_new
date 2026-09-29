@@ -12,10 +12,10 @@ const canonical=fs.readFileSync(new URL("index.html",root),"utf8");
 const publicAlias=fs.readFileSync(new URL("arcade/c64-dungeon-carnage/index.html",repoRoot),"utf8");
 
 for(const html of [canonical,publicAlias]){
-  assert.match(html,/ccg-lost-sizzler-build" content="V10\.42 r65"/);
-  assert.match(html,/ccg-lost-sizzler-cache" content="20260928r65"/);
-  assert.match(html,/Latest Build Changes · V10\.42 R65/);
-  assert.match(html,/ACTIVE BUILD: V10\.42 R65/);
+  assert.match(html,/ccg-lost-sizzler-build" content="V10\.42 r66"/);
+  assert.match(html,/ccg-lost-sizzler-cache" content="20260929r66"/);
+  assert.match(html,/Latest Build Changes · V10\.42 R66/);
+  assert.match(html,/ACTIVE BUILD: V10\.42 R66/);
 }
 
 assert.match(
