@@ -123,7 +123,8 @@
   }
 
   function installTileWrapper(){
-    const base=window.drawTile;if(typeof base!=="function")return false;if(base.__ccgV142R6Environment)return true;
+    if(state.installed.tile)return true;
+    const base=window.drawTile;if(typeof base!=="function")return false;if(base.__ccgV142R6Environment){state.installed.tile=true;return true}
     const wrapped=function drawTileV142R6(x,y){const result=base.apply(this,arguments);try{const profile=profileAt(x,y),s=screenFor(x,y);if(profile&&s){const h=hash32(`${profile.dressingSeed}|${x},${y}`);if(unit(`${h}|draw`)<=profile.density+.22)drawFloorDressing(x,y,profile,h,s);state.tileFrames++}}catch(_){}return result};
     wrapped.__ccgV142R6Environment=true;wrapped.__ccgOriginal=base;window.drawTile=wrapped;state.installed.tile=true;return true;
   }
@@ -144,7 +145,8 @@
   }
 
   function installViewWrapper(){
-    const base=window.renderView;if(typeof base!=="function")return false;if(base.__ccgV142R6Environment)return true;
+    if(state.installed.view)return true;
+    const base=window.renderView;if(typeof base!=="function")return false;if(base.__ccgV142R6Environment){state.installed.view=true;return true}
     const wrapped=function renderViewV142R6(p,v){const result=base.apply(this,arguments);try{drawAtmosphere(p,v)}catch(_){}return result};
     wrapped.__ccgV142R6Environment=true;wrapped.__ccgOriginal=base;window.renderView=wrapped;state.installed.view=true;return true;
   }
