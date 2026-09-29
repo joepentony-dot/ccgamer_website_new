@@ -143,7 +143,15 @@
     notEnoughScore:{text:"Not enough score.",priority:38,cooldown:2500},
     notEnoughArtefacts:{text:"Not enough artefacts.",priority:38,cooldown:2500},
     purchaseComplete:{text:"Purchase complete.",priority:28,cooldown:1800},
-    inventoryFull:{text:"Your inventory is full.",priority:42,cooldown:2500}
+    inventoryFull:{text:"Your inventory is full.",priority:42,cooldown:2500},
+    ambush:{text:"Ambush.",priority:66,cooldown:6000},
+    descending:{text:"Descending.",priority:52,cooldown:2500},
+    deathStalkerImmune:{text:"Weapons cannot kill the Death Stalker.",priority:82,cooldown:10000,interrupt:true},
+    hazardPain:{text:"Well, that looked painful.",priority:22,cooldown:18000},
+    shopNoScore:{text:"No score, no sale.",priority:34,cooldown:2800},
+    merchantPurchase:{text:"Pleasure doing business.",priority:28,cooldown:2400},
+    adventurerHelp:{text:"Get me out of here.",priority:46,cooldown:9000},
+    adventurerSafe:{text:"We made it.",priority:42,cooldown:9000}
   };
 
   function readEnabled(){try{const raw=localStorage.getItem(STORAGE_KEY);return raw==null?DEFAULT_ENABLED:raw!=="false"}catch(_){return DEFAULT_ENABLED}}
@@ -289,8 +297,18 @@
     const key=kind==="health"?"healthRestored":kind==="ammo"||kind==="mana"?"ammoCollected":kind==="armour"?"armourRestored":kind==="bronze"?"bronzeKeyCollected":kind==="exitSigil"?"exitSigilAcquired":kind==="loot"&&lootKind==="artefact"?"artefactCollected":"";
     if(key)try{sayKey(key)}catch(_){}
   }
+  function onHazardDamageVoice(){
+    setTimeout(()=>{try{sayKey("hazardPain",{cooldown:18000})}catch(_){}},420);
+  }
+  function onShopFirearmUpgradeVoice(){try{sayKey("weaponUpgraded",{cooldown:0})}catch(_){}}
   window.addEventListener("ccg:item-collected",onRecordedPickupVoice);
-  window.addEventListener("pagehide",()=>window.removeEventListener("ccg:item-collected",onRecordedPickupVoice),{once:true});
+  window.addEventListener("ccg:hazard-damage",onHazardDamageVoice);
+  window.addEventListener("ccg:shop-firearm-upgrade",onShopFirearmUpgradeVoice);
+  window.addEventListener("pagehide",()=>{
+    window.removeEventListener("ccg:item-collected",onRecordedPickupVoice);
+    window.removeEventListener("ccg:hazard-damage",onHazardDamageVoice);
+    window.removeEventListener("ccg:shop-firearm-upgrade",onShopFirearmUpgradeVoice);
+  },{once:true});
   document.addEventListener("pointerdown",unlock,{once:true,capture:true});document.addEventListener("keydown",unlock,{once:true,capture:true});
   if(window.speechSynthesis){const refresh=()=>{state.voices=window.speechSynthesis.getVoices?.()||[]};refresh();window.speechSynthesis.onvoiceschanged=refresh}
 
@@ -324,27 +342,30 @@
     if(/DOOR SEALED/.test(s))return"doorSealed";
     if(/FLOOR OBJECTIVE COMPLETE/.test(s))return"exitSealed";
     if(/EXIT UNSEALED/.test(s))return"exitOpen";
+    if(/FURNITURE AMBUSH/.test(s))return"ambush";
     if(/ARENA LOCKDOWN/.test(s))return"arenaLockdown";
     if(/TIMED CHAMBER/.test(s)&&!/CLEARED/.test(s))return"timedChamber";
     if(/MEMORY PAD SEQUENCE/.test(s))return"memorySequenceStarted";
     if(/MEMORY SEQUENCE SOLVED/.test(s))return"sequenceComplete";
-    if(/MEMORY SEQUENCE RESET|SEQUENCE INCORRECT/.test(s))return"sequenceIncorrect";
+    if(/MEMORY SEQUENCE RESET|SEQUENCE INCORRECT|WRONG MEMORY PAD|TORCH ORDER WRONG/.test(s))return"sequenceIncorrect";
+    if(/TORCH VAULT OPEN/.test(s))return"sequenceComplete";
     if(/SCOUT REACHES SANCTUARY/.test(s))return"sanctuaryReached";
     if(/SIGIL CHAMBER LOCKDOWN/.test(s))return"sigilWardenEncountered";
     if(/SIGIL WARDEN DOWN/.test(s))return"sigilWardenDefeated";
-    if(/SHOP PURCHASE/.test(s))return"purchaseComplete";
+    if(/SHOP PURCHASE/.test(s))return"merchantPurchase";
     if(/FLOOR EXIT SEALED/.test(s))return"exitSealed";
-    if(/NOT ENOUGH SCORE/.test(s))return"notEnoughScore";
+    if(/NOT ENOUGH SCORE/.test(s))return"shopNoScore";
     if(/NOT ENOUGH ARTEFACTS/.test(s))return"notEnoughArtefacts";
     if(/INVENTORY FULL/.test(s))return"inventoryFull";
     if(/BANISHMENT FLASK ACQUIRED/.test(s))return"banishmentFlaskAcquired";
     if(/EXIT SIGIL/.test(s)&&/ACQUIRED|FOUND|COLLECTED/.test(s))return"exitSigilAcquired";
     if(/BRONZE KEY/.test(s)&&/FOUND|COLLECTED|ACQUIRED/.test(s))return"bronzeKeyCollected";
-    if(/WEAPON.*UPGRADE/.test(s))return"weaponUpgraded";
+    if(/WEAPON.*UPGRADE|WEAPON CACHE/.test(s))return"weaponUpgraded";
     if(/HAZARD CHAMBER|TRAPS NEARBY/.test(s))return"trapsNearby";
     // Lore, door and shop messages also mention these names. A threat cue is
     // authorised only by the corresponding live enemy in the player's room.
     if(/COUNT LOADULA|LOADULA/.test(s)&&loadulaEncounterVisible())return"loadula";
+    if(/WEAPONS CANNOT|CANNOT BE KNOCKED BACK|RESISTS THE BLADE/.test(s)&&deathStalkerEncounterVisible())return"deathStalkerImmune";
     if(/DEATH STALKER/.test(s)&&deathStalkerEncounterVisible())return"deathStalker";
     if(/RADAR HINT/.test(s))return"objectiveHint";
     if(/OBJECTIVE NEAR|GETTING WARM/.test(s))return"objectiveNear";
@@ -356,7 +377,7 @@
       try{const room=world?.rooms?.[W.roomAt(world,p1?.x,p1?.y)];if(room?.sanctuary)return"sanctuary"}catch(_){}
       return"";
     }
-    if(/LEVEL UP|UPGRADE AVAILABLE/.test(s))return"levelUp";
+    if(/LEVEL UP|UPGRADE AVAILABLE|^LEVEL\s+\d+\b/.test(s))return"levelUp";
     if(/GOLD MEDAL|ZZAP! 97%|RARE.*LOOT|ARTEFACT/.test(s))return"rareLoot";
     return"";
   }
