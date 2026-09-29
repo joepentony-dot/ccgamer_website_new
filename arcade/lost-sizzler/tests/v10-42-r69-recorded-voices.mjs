@@ -31,7 +31,7 @@ assert.match(voice,/LOCKED CHEST[\s\S]*chestKeyRequired/,"locked chests must cla
 assert.match(voice,/ccg:item-collected/,"pickup recordings must be driven by the established collection event");
 assert.match(stage8,/text:"Hello, big boy\."/,"sanctuary keeper subtitle must match the supplied recorded line");
 assert.match(stage8,/voiceKey:"npc\.sanctuary\.keeper"/,"sanctuary greeting must stay on the Stage 8 dialogue voice owner");
-assert.match(play,/bronzeLocked[\s\S]*CCGLostSizzlerVoice\?\.say\?\.\("chestUnlocked"/,"a paid locked chest must announce unlock only after the bronze-key path succeeds");
+assert.match(play,/if\(chest\.locked&&!roomKeyPaid\)\{p\.bronzeKeys--;[\s\S]*CCGLostSizzlerVoice\?\.say\?\.\("chestUnlocked"/,"a standalone locked chest must announce unlock only after the canonical bronze-key debit succeeds");
 assert.match(play,/dedicatedHazard[\s\S]*CCGLostSizzlerVoice\?\.say\?\.\("trapsNearby"/,"dedicated hazards must issue the recorded proximity warning");
 assert.match(runtime,/e\.exitWarden[\s\S]*sigilWardenDefeated[\s\S]*e\.guardian[\s\S]*guardianDefeated/,"guardian defeat recordings must be tied to actual enemy death ownership");
 assert.match(sanctuary,/sayDialogue\?\.\("npc\.sanctuary\.keeper","Hello, big boy\."/,"walking onto a sanctuary dancer must play the supplied greeting directly");
