@@ -21,9 +21,9 @@ assert.doesNotMatch(bootstrap,/v10-42-attack-hold-liveness\.js|v10-42-r47-invent
 assert.match(r20,/fireOwnership:false/,"retained R20 live safeguards must explicitly disclaim FIRE ownership");
 assert.doesNotMatch(r20,/function attackNow\(|recoverThroughDeepFireOwner|recoverThroughCapturedR1FireOwner/,"retained R20 must not provide fallback shot ownership");
 
-assert.match(play,/const trapCycleHits=new Map\(\)/,"ordinary trap ownership must be one player/trap/cycle ledger");
+assert.match(play,/const trapCycleHits=new Map\(\)/,"legacy trap compatibility ownership must be one player/trap/cycle ledger");
 assert.match(play,/function applyActiveTrapContact\(p,t,now=performance\.now\(\)\)/);
-assert.match(play,/authoritativeDamagePlayer\(p,1,false,`\$\{String\(t\.kind\|\|"floor"\)\} trap`\)/,"ordinary active trap contact must apply exactly one canonical damage unit through the guarded R58 boundary");
+assert.match(play,/authoritativeDamagePlayer\(p,1,false,`\$\{String\(t\.kind\|\|"floor"\)\} trap`\)/,"legacy active trap compatibility contact must apply exactly one canonical damage unit through the guarded R58 boundary");
 assert.match(play,/const healthLost=afterHealth<beforeHealth,deathRecorded=afterDeaths>beforeDeaths,verified=\(healthLost\|\|deathRecorded\)&&\/trap\/i\.test\(damageSource\)/,"a trap cycle must require real HEALTH loss or a canonical death transition plus trap attribution");
 assert.match(play,/if\(!verified\)\{p\.invuln=beforeInvuln;authoritativeTrapState\.damageRetries\+\+;return false\}[\s\S]*trapCycleHits\.set\(key,cycle\)/,"failed trap contacts must restore prior invulnerability, remain retryable and must not consume the cycle");
 assert.match(play,/const damageSource=String\(source\|\|"enemy"\),trapDamage=\/trap\/i\.test\(damageSource\),environmentDamage=[\s\S]*\(!environmentDamage&&p\.invuln>0\)[\s\S]*if\(!trapDamage&&p\.armor>0\)/,"trap-attributed damage must bypass stale invulnerability and armour without changing other damage semantics");
@@ -34,7 +34,7 @@ assert.match(reporter,/ANOMALY_POSSIBLE_ATTACK_FAILURE/,"bug reporter must still
 
 assert.ok(canonical.includes(`ccg-lost-sizzler-cache" content="${cache}`),"canonical runtime must publish the r67 cache token");
 assert.ok(alias.includes(`ccg-lost-sizzler-cache" content="${cache}`),"raw-main public-route alias must publish the same r67 cache token");
-assert.ok(canonical.includes(`game-play.js?v=${cache}`),"canonical game-play script must use r66 cache identity");
-assert.ok(alias.includes(`game-play.js?v=${cache}`),"route alias game-play script must use r66 cache identity");
+assert.ok(canonical.includes(`game-play.js?v=${cache}`),"canonical game-play script must use r67 cache identity");
+assert.ok(alias.includes(`game-play.js?v=${cache}`),"route alias game-play script must use r67 cache identity");
 assert.equal(version.cacheToken,cache,"version metadata must publish the r67 cache token");
-console.log("PASS authoritative combat/trap and r66 public cache contract");
+console.log("PASS authoritative combat/trap and r67 public cache contract");
