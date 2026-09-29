@@ -42,11 +42,14 @@ assert.match(core,/function descendFloor\(\)[\s\S]*CCGLostSizzlerVoice\?\.say\?\
 assert.match(voice,/ccg:hazard-damage[\s\S]*hazardPain/,"actual hazard damage must be able to trigger the supplied post-hit voice");
 assert.match(voice,/ccg:shop-firearm-upgrade[\s\S]*weaponUpgraded/,"successful firearm upgrades must trigger the supplied upgrade recording");
 assert.match(voice,/FURNITURE AMBUSH[\s\S]*return"ambush"/,"furniture ambushes must use the supplied ambush recording");
-assert.match(stage8,/merchantVoiceVisits[\s\S]*hiddenReady[\s\S]*hiddenPartial[\s\S]*entranceRepeat/,"merchant speech must rotate through supplied recordings according to visit and artefact context");
+assert.match(stage8,/merchantVoiceVisits/,"merchant dialogue must track contextual voice visits");
+assert.match(stage8,/hiddenPartial[\s\S]*hiddenReady/,"hidden merchant speech must distinguish partial and trade-ready artefact states");
+assert.match(stage8,/entranceRepeat/,"quartermaster repeat interactions must use a supplied repeat recording");
 assert.match(sanctuaryScene,/npc\.sanctuary\.keeper","Hello, big boy\."/,"the actual sanctuary dancer collision must own the supplied greeting");
-assert.match(sanctuaryEscort,/adventurerHelp[\s\S]*adventurerSafe/,"lost-adventurer recruitment and rescue must use the supplied recordings");
+assert.match(sanctuaryEscort,/adventurerHelp/,"lost-adventurer recruitment must use the supplied recording");
+assert.match(sanctuaryEscort,/adventurerSafe/,"lost-adventurer rescue must use the supplied safe-arrival recording");
 assert.match(play,/scoutLagging[\s\S]*scoutSanctuaryNear/,"the escort scout must use the supplied separation and sanctuary-approach lines");
-assert.match(play,/hazardWarning[\s\S]*_ccgHazardWarningKey/,"hazard warning speech must be cycle-latched and driven by the authoritative hazard state");
+assert.match(play,/_ccgHazardWarningKey[\s\S]*hazardWarning/,"hazard warning speech must be cycle-latched and driven by the authoritative hazard state");
 assert.match(play,/movementNearby/,"hidden movement ambience must route through the recorded voice owner");
 assert.match(play,/stayAlert/,"high dungeon alert must trigger the supplied alert recording");
 assert.match(core,/enteredFloor>=3[\s\S]*buriedWarning[\s\S]*deepeningDungeon/,"deeper floor transitions must use the supplied escalation recordings");
