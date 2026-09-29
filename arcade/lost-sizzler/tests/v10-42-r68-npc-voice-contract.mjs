@@ -18,6 +18,7 @@ assert.match(voice,/function sayDialogue\(key,text,opts=\{\}\)/,"R68 must expose
 assert.match(voice,/say:sayKey,sayDialogue,stop:stopActive/,"the public voice API must export the bounded dialogue path");
 assert.match(voice,/meta\?\.ccgDialogueVoiceHandled!==true/,"generic V10.16 toast voice classification must skip already-spoken character dialogue");
 assert.match(expansion,/meta\?\.ccgDialogueVoiceHandled!==true/,"V10.17 rare-event voice classification must also skip handled dialogue");
+assert.match(expansion,/if\(window\.CCGLostSizzlerVoiceExpansion\)return;[\s\S]*const voice=window\.CCGLostSizzlerVoice;[\s\S]*if\(!voice\?\.lines\|\|typeof voice\.say!=="function"\)return;[\s\S]*window\.__CCG_LOST_SIZZLER_VOICE_EXPANSION_V117__=true;/,"V10.17 must not permanently claim its load guard before the voice director dependency exists");
 assert.match(dialogue,/function speakDialogueLine\(line,/,"Stage 8 must route character lines through one reusable voice bridge");
 assert.match(dialogue,/voice\.sayDialogue\(line\.voiceKey,line\.text/,"Stage 8 must pass the stable voice key and actual NPC text to the existing voice owner");
 assert.match(dialogue,/ccgDialogueVoiceHandled:true/,"spoken NPC toasts must suppress duplicate generic voice classification");
