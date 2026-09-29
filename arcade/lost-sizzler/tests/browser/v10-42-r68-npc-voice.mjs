@@ -57,7 +57,9 @@ try{
     const repeated=api.presentScout(p1,{stateKey:"trapped"});
     const afterRepeat=api.state.presentations;
     voice.sayDialogue=original;
-    return{first,repeated,calls,presentedFirst:afterFirst-before,presentedRepeat:afterRepeat-afterFirst,last:{...api.state.last},toast:String(document.getElementById("pickup-text")?.textContent||"")};
+    const toast=String(document.getElementById("pickup-text")?.textContent||"");
+    const queued=(Array.isArray(toastQueue)?toastQueue:[]).map(entry=>({title:String(entry?.title||""),text:String(entry?.text||"")}));
+    return{first,repeated,calls,presentedFirst:afterFirst-before,presentedRepeat:afterRepeat-afterFirst,last:{...api.state.last},toast,queued};
   });
 
   assert.equal(scout.first,true,"focused Scout contact must present its dialogue line");
@@ -69,7 +71,7 @@ try{
   assert.equal(scout.repeated,false,"immediate repeated Scout contact must be suppressed by the existing dialogue memory window");
   assert.equal(scout.presentedRepeat,0,"suppressed Scout dialogue must not produce another presentation");
   assert.equal(scout.calls.length,1,"suppressed Scout dialogue must not create another voice request");
-  assert.match(scout.toast,/Scout: There you are/,"spoken Scout dialogue must remain fully visible as text");
+  assert.ok(/Scout: There you are/.test(scout.toast)||scout.queued.some(entry=>/Scout: There you are/.test(entry.text)),"spoken Scout dialogue must remain visible now or queued behind a retained system notice");
 
   const merchant=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerStage8NpcDialogue,voice=window.CCGLostSizzlerVoice,calls=[];
