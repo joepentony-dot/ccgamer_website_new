@@ -121,10 +121,12 @@
     firePlayer=function firePlayerV125(p,d){
       if(!p)return false;
       const dir=d&&(d.x||d.y)?{x:Math.sign(d.x),y:Math.sign(d.y)}:(p.dir||{x:1,y:0});
-      /* A usable firearm owns FIRE regardless of an adjacent enemy/furniture
-       * cell. Contextual melee used to swallow valid gun shots here; melee is
-       * now strictly the no-gun / zero-ammo fallback. */
-      if(!hasGun(p)||Number(p.mana||0)<=0)return meleeAttack(p,dir);
+      const tx=Math.round(Number(p.x||0)+dir.x),ty=Math.round(Number(p.y||0)+dir.y);
+      const breakable=(host?.blockingDecor||[]).some(row=>row&&row.x===tx&&row.y===ty&&!row.structural&&Number(row.hp??2)>0);
+      /* Adjacent breakable furniture is a sword interaction and must never
+       * spend firearm ammunition. Enemies remain firearm targets so the
+       * historical contextual-melee firing lockout cannot return. */
+      if(breakable||!hasGun(p)||Number(p.mana||0)<=0)return meleeAttack(p,dir);
       return oldFire(p,d);
     };
     dashPlayer=function dashPlayerV125(p,d){
