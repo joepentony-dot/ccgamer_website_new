@@ -75,6 +75,9 @@ assert.match(r24,/function corridorLayoutAudit\(candidate\)/,"r24 must audit gen
 assert.match(r24,/if\(contacts\.size>2\)mergedComponents\+=contacts\.size-2/,"corridor components touching several rooms must be penalised");
 assert.match(r24,/if\(clusters>1\)multiEntrances\+=clusters-1/,"multiple separated entrances from one corridor component must be penalised");
 assert.match(r24,/R24-LAYOUT-/,"bad layouts must receive deterministic reroll candidates");
+assert.match(r24,/function startWorldChainHasMarker\(fn,marker,limit=128\)/,"r24 startWorld maintenance must inspect the existing wrapper ancestry instead of insisting on outer ownership");
+assert.match(r24,/if\(startWorldChainHasMarker\(window\.startWorld,"__ccgV141R24SoloBalance"\)\)\{state\.startInstalled=true;return true\}/,"r24 must reuse its existing startWorld owner anywhere in the wrapper chain");
+assert.match(r24,/wrapped\.__ccgV141R24SoloBalance=true;wrapped\.__ccgOriginal=original/,"r24 startWorld wrappers must expose ancestry for later supported owners");
 
 // Rating modal: desktop position is based on the viewport, not the message rail.
 assert.match(r24,/#ccg-rating-panel:not\(\.hidden\)[\s\S]*position:fixed!important;left:50%!important;top:50%!important/,"desktop rating panel must be viewport-centred");
