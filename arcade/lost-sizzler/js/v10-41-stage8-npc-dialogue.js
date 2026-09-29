@@ -89,12 +89,19 @@
       :`Field commission: ${task.label} (${task.progress}/${task.target}). The existing +350 score reward is handled automatically.`;
     return{...base,text:`${base.text} ${briefing}`}
   }
+  function speakDialogueLine(line,{priority=44,cooldown=REPEAT_MS}={}){
+    if(!line?.voiceKey||!line?.text)return false;
+    const voice=window.CCGLostSizzlerVoice;
+    if(typeof voice?.sayDialogue!=="function")return false;
+    try{return Boolean(voice.sayDialogue(line.voiceKey,line.text,{priority,cooldown,interrupt:false}))}catch(_){return false}
+  }
   function present(entity,line,{player=null,force=false}={}){
     if(!soloDungeon()||!entity||!line)return false;
     if(player&&!withinReach(player,entity))return false;
     const now=clockNow(),previous=memory.get(entity);
     if(!force&&previous?.key===line.key&&now-previous.at<REPEAT_MS){state.suppressed++;return false}
-    try{showToast(line.title,`${line.speaker}: ${line.text}`,line.tone,line.duration)}catch(_){return false}
+    const spoken=speakDialogueLine(line);
+    try{showToast(line.title,`${line.speaker}: ${line.text}`,line.tone,line.duration,spoken?{ccgDialogueVoiceHandled:true}:undefined)}catch(_){return false}
     memory.set(entity,{key:line.key,at:now});
     state.presentations++;
     state.last={key:line.key,title:line.title,text:line.text,voiceKey:line.voiceKey,at:now};
@@ -127,6 +134,8 @@
     const now=clockNow(),previous=memory.get(room);
     if(previous?.key===line.key&&now-previous.at<REPEAT_MS){state.suppressed++;return args}
     args[1]=`${String(args[1]||"")} ${line.speaker}: ${line.text}`.trim();
+    const spoken=speakDialogueLine(line,{priority:42,cooldown:REPEAT_MS});
+    if(spoken)args[4]={...(args[4]&&typeof args[4]==="object"?args[4]:{}),ccgDialogueVoiceHandled:true};
     memory.set(room,{key:line.key,at:now});
     state.presentations++;
     state.last={key:line.key,title:line.title,text:line.text,voiceKey:line.voiceKey,at:now};
@@ -423,5 +432,5 @@
   installWhenReady();
   queueMicrotask(installWhenReady);
   if(document.readyState!=="complete")addEventListener("load",installWhenReady,{once:true});
-  window.CCGLostSizzlerStage8NpcDialogue={state,lines,LEVEL_PROFILES,soloDungeon,lineForScout,lineForMerchant,fieldTaskSnapshot,present,presentScout,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,environmentalEligible,currentFloorNumber,levelProfile,directedEncounterEligible,directedSpawnCells,spawnDirectedEnemy,applyDirectedEncounter,presentEnvironmentalStory,onRoomEntered,explorationFeatureAt,presentExplorationFeature,onMovementBoundary,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
+  window.CCGLostSizzlerStage8NpcDialogue={state,lines,LEVEL_PROFILES,soloDungeon,lineForScout,lineForMerchant,fieldTaskSnapshot,speakDialogueLine,present,presentScout,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,environmentalEligible,currentFloorNumber,levelProfile,directedEncounterEligible,directedSpawnCells,spawnDirectedEnemy,applyDirectedEncounter,presentEnvironmentalStory,onRoomEntered,explorationFeatureAt,presentExplorationFeature,onMovementBoundary,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
 })();
