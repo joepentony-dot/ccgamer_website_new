@@ -46,7 +46,7 @@ try{
     const shop={active:true,x:p1.x,y:p1.y,shopType:"entrance",title:"DUNGEON SUPPLY SHOP",scorePurchases:0,sold:{}};
     const before={score:Number(score||0),health:Number(p1.health||0),maxHealth:Number(p1.maxHealth||0),inventory:JSON.stringify(p1.inventory||[]),revision:Number(host.revision||0),briefings:Number(api.state.merchantTaskBriefings||0)};
     const opened=window.openShop(shop,p1);
-    const after={score:Number(score||0),health:Number(p1.health||0),maxHealth:Number(p1.maxHealth||0),inventory:JSON.stringify(p1.inventory||[]),revision:Number(host.revision||0),briefings:Number(api.state.merchantTaskBriefings||0),lastTask:{...(api.state.lastMerchantTask||{})},last:{...(api.state.last||{})},title:document.getElementById("pickup-title")?.textContent||"",text:document.getElementById("pickup-text")?.textContent||""};
+    const after={score:Number(score||0),health:Number(p1.health||0),maxHealth:Number(p1.maxHealth||0),inventory:JSON.stringify(p1.inventory||[]),revision:Number(host.revision||0),briefings:Number(api.state.merchantTaskBriefings||0),lastTask:{...(api.state.lastMerchantTask||{})},last:{...(api.state.last||{})},title:document.getElementById("pickup-title")?.textContent||"",text:document.getElementById("pickup-text")?.textContent||"",queued:(Array.isArray(toastQueue)?toastQueue:[]).map(entry=>({title:String(entry?.title||""),text:String(entry?.text||"")}))};
     closeShop();
 
     document.body.dataset.specialMode="horde-survivor";
@@ -72,9 +72,11 @@ try{
   assert.equal(result.after.briefings,result.before.briefings+1,"opening a merchant must present one field briefing");
   assert.equal(result.after.lastTask.id,"games","merchant briefing must record the authoritative next side quest");
   assert.equal(result.after.last.key,"merchant.entrance","field service must stay inside the existing merchant dialogue state");
-  assert.match(result.after.title,/DUNGEON QUARTERMASTER/i,"field service must reuse the merchant notification surface");
-  assert.match(result.after.text,/Field commission: Rescue 1 C64 game \(0\/1\)/i,"merchant must report live side-quest progress");
-  assert.match(result.after.text,/existing \+350 score reward is handled automatically/i,"merchant must identify the existing automatic reward path");
+  const merchantNotificationTitles=[result.after.title,...result.after.queued.map(entry=>entry.title)].join(" | ");
+  const merchantNotificationText=[result.after.text,...result.after.queued.map(entry=>entry.text)].join(" | ");
+  assert.match(merchantNotificationTitles,/DUNGEON QUARTERMASTER/i,"field service must reuse the merchant notification surface, immediately or through the established toast queue");
+  assert.match(merchantNotificationText,/Field commission: Rescue 1 C64 game \(0\/1\)/i,"merchant must report live side-quest progress");
+  assert.match(merchantNotificationText,/existing \+350 score reward is handled automatically/i,"merchant must identify the existing automatic reward path");
   assert.equal(result.after.score,result.before.score,"field service must not change score");
   assert.equal(result.after.health,result.before.health,"field service must not change health");
   assert.equal(result.after.maxHealth,result.before.maxHealth,"field service must not change maximum health");
