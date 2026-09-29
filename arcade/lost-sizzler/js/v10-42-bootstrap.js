@@ -16,6 +16,8 @@
     ["v10-41-r31-solo-dungeon-regressions.js","CCGLostSizzlerV141R31SoloDungeon"],
     ["v10-41-horde-frame-performance.js","CCGLostSizzlerV141HordeFramePerformance"],
     ["v10-41-r60-horde-owner-composition.js","CCGLostSizzlerV141R60HordeOwnerComposition"],
+    ["v10-16-voice-director.js","CCGLostSizzlerVoice"],
+    ["v10-17-voice-expansion.js","CCGLostSizzlerVoiceExpansion"],
     ["v10-41-stage8-npc-dialogue.js","CCGLostSizzlerStage8NpcDialogue"],
     ["v10-41-stage13-encounter-completion.js","CCGLostSizzlerStage13EncounterCompletion"]
   ];
