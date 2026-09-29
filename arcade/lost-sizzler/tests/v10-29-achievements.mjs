@@ -13,18 +13,21 @@ const rows=JSON.parse(achievements.match(/const rows=(\[[\s\S]*?\]);\r?\n  const
 const migration=readRepo("supabase/migrations/20260824120000_lost_sizzler_achievements.sql");
 const grants=readRepo("supabase/migrations/20260824123000_lost_sizzler_badge_grants.sql");
 const invoker=readRepo("supabase/migrations/20260824124500_lost_sizzler_catalog_invoker.sql");
+const reconciliation=readRepo("supabase/migrations/20260928174100_dungeon_carnage_profile_badge_catalog.sql");
 const member=readRepo("resources/js/auth/member-achievement-badges.js");
 const publicMember=readRepo("resources/js/auth/public-member.js");
 const loader=readGame("js/asset-overrides.js");
 
-assert.equal(rows.length,89,"Lost Sizzler must ship an extensive 89-achievement catalogue");
+const retiredKeys=["LS_SPLIT_CHAMPION","LS_ONLINE_CHAMPION","LS_WEEKLY_CHAMPION","LS_GILDED_ELF","LS_RARE_MELEE"];
+assert.equal(rows.length,84,"Dungeon Carnage must expose the 84 active achievements accepted by the live profile catalogue");
+for(const key of retiredKeys)assert.ok(!rows.some(row=>row[0]===key),`retired achievement must stay out of the active client catalogue: ${key}`);
 assert.equal(new Set(rows.map(row=>row[0])).size,rows.length,"every Lost Sizzler achievement key must be unique");
 assert.ok(rows.every(row=>/^LS_[A-Z0-9_]+$/.test(row[0])&&row[1]&&row[2]),"every achievement needs a stable profile key, name and description");
 for(const category of ["journey","platinum","combat","objectives","exploration","collection","rare_events","mastery"]){
   assert.ok(rows.some(row=>row[3]===category),`achievement category must be represented: ${category}`);
 }
 const platinum=rows.find(row=>row[0]==="LS_CITADEL_PLATINUM");
-assert.deepEqual(platinum,["LS_CITADEL_PLATINUM","Lost Sizzler Platinum","Complete the full five-floor game and recover the Lost Sizzler.","platinum","platinum"],"the five-floor completion badge must be the Platinum-style profile achievement");
+assert.deepEqual(platinum,["LS_CITADEL_PLATINUM","Dungeon Carnage Platinum","Complete all five Dungeon Carnage depths, finish the Sigil and escape.","platinum","platinum"],"the five-depth completion badge must be the Platinum-style profile achievement");
 assert.match(achievements,/Number\(run\.floor\|\|0\)<Number\(C\?\.maxFloors\|\|5\)/,"Platinum must not unlock before the final floor");
 assert.match(achievements,/award\("LS_CITADEL_PLATINUM"\)/,"a successful full-game completion must award Platinum");
 assert.match(achievements,/ccg-lost-sizzler-achievements-v1/,"guest achievements must persist locally");
@@ -32,7 +35,9 @@ assert.match(achievements,/rpc\("award_lost_sizzler_achievement",\{target_badge_
 assert.match(achievements,/state\.run=\{[^}]+\};const result=original\.apply/,"run achievement baselines must exist before startWorld records floor checkpoint totals");
 assert.match(loader,/v10-29-achievements\.js\?v=\$\{CCG_ACHIEVEMENTS_REV\}/,"the achievement module must load through a dedicated cache revision");
 
-assert.equal((migration.match(/^  \('ls-/gm)||[]).length,rows.length,"the database migration must seed every client achievement");
+assert.equal((migration.match(/^  \('ls-/gm)||[]).length,89,"the historical migration must retain all 89 original keys for earned-badge history");
+for(const slug of ["ls-split-champion","ls-online-champion","ls-weekly-champion","ls-gilded-elf","ls-rare-melee"])assert.match(reconciliation,new RegExp(`['"]${slug}['"]`),`Dungeon Carnage reconciliation must retire ${slug}`);
+assert.match(reconciliation,/set active = false[\s\S]*ls-split-champion[\s\S]*ls-online-champion[\s\S]*ls-weekly-champion[\s\S]*ls-gilded-elf[\s\S]*ls-rare-melee/,"the current profile migration must deactivate the same five client-retired achievements");
 assert.match(migration,/auth\.uid\(\)/,"profile awards must always resolve the signed-in member on the server");
 assert.match(migration,/from public\.get_lost_sizzler_badge_catalog\(\) catalog[\s\S]*?catalog\.badge_key = normalized_key/,"the award RPC must reject keys outside the fixed Lost Sizzler catalogue");
 assert.match(migration,/revoke all[\s\S]*?award_lost_sizzler_achievement\(text\)[\s\S]*?from public/,"anonymous/public execution must be revoked from the award RPC");
