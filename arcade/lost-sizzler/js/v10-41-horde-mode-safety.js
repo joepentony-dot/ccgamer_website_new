@@ -211,6 +211,7 @@
     const legacy=window.CCGLostSizzlerVoice;if(!legacy?.say||!legacy?.classifyToast)return false;
     window.CCGLostSizzlerVoice={
       say(key,...args){if(isHorde())return false;return legacy.say.call(legacy,key,...args)},
+      sayDialogue(key,text,...args){if(isHorde())return false;return legacy.sayDialogue?.call(legacy,key,text,...args)??false},
       stop(...args){return legacy.stop?.call(legacy,...args)},
       classifyToast(...args){if(isHorde())return"";return legacy.classifyToast.call(legacy,...args)},
       setEnabled(...args){return legacy.setEnabled?.call(legacy,...args)},
