@@ -41,9 +41,9 @@
 
   if(typeof showToast==="function"){
     const originalShowToast=showToast;
-    showToast=function showToastV117VoiceExpansion(title,text,tone,duration){
+    showToast=function showToastV117VoiceExpansion(title,text,tone,duration,meta){
       const result=originalShowToast.apply(this,arguments);
-      try{const key=classifyRare(title,text);if(key)voice.say(key)}catch(_){}
+      try{if(meta?.ccgDialogueVoiceHandled!==true){const key=classifyRare(title,text);if(key)voice.say(key)}}catch(_){}
       return result;
     };
   }
