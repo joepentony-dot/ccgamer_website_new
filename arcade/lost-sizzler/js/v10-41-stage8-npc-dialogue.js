@@ -22,13 +22,13 @@
   const state={installed:false,merchantInstalled:false,sanctuaryInstalled:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,merchantTaskBriefings:0,environmentalPresentations:0,environmentalBudgetSkips:0,explorationPresentations:0,explorationBudgetSkips:0,scoutEventObserver:false,levelDirectorEncounters:0,levelDirectorEnemies:0,levelDirectorSkips:0,lastLevelProfile:null,last:null,lastMerchantTask:null};
   const lines=Object.freeze({
     scout:Object.freeze({
-      trapped:Object.freeze({key:"scout.trapped",title:"CCG SCOUT — FOUND",speaker:"Scout",text:"There you are. Get me to one of the permanently lit sanctuary rooms and I’ll stay close.",tone:"green",duration:7600,voiceKey:"npc.scout.found"}),
-      following:Object.freeze({key:"scout.following",title:"CCG SCOUT — FOLLOWING",speaker:"Scout",text:"Still here. Keep heading for the lights; I’m right behind you.",tone:"cyan",duration:6000,voiceKey:"npc.scout.following"}),
-      rescued:Object.freeze({key:"scout.rescued",title:"CCG SCOUT — SAFE",speaker:"Scout",text:"Made it. I’m staying with the lights. If you find anyone else down here, send them this way.",tone:"green",duration:7000,voiceKey:"npc.scout.safe"})
+      trapped:Object.freeze({key:"scout.trapped",title:"CCG SCOUT — FOUND",speaker:"Scout",text:"Thank God you found me.",tone:"green",duration:6200,voiceKey:"npc.scout.found"}),
+      following:Object.freeze({key:"scout.following",title:"CCG SCOUT — FOLLOWING",speaker:"Scout",text:"I’ll follow you.",tone:"cyan",duration:5200,voiceKey:"npc.scout.following"}),
+      rescued:Object.freeze({key:"scout.rescued",title:"CCG SCOUT — SAFE",speaker:"Scout",text:"We made it.",tone:"green",duration:5200,voiceKey:"npc.scout.safe"})
     }),
     merchant:Object.freeze({
-      entrance:Object.freeze({key:"merchant.entrance",title:"DUNGEON QUARTERMASTER",speaker:"Quartermaster",text:"Stock’s on the counter. Score buys supplies; rare artefacts buy the Flask. Take what you need and keep moving.",tone:"gold",duration:7200,voiceKey:"npc.merchant.entrance"}),
-      hidden:Object.freeze({key:"merchant.hidden",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"You found me. Bring enough rare artefacts and I’ll exchange them for a Banishment Flask. Score works too.",tone:"purple",duration:7600,voiceKey:"npc.merchant.hidden"})
+      entrance:Object.freeze({key:"merchant.entrance",title:"DUNGEON QUARTERMASTER",speaker:"Quartermaster",text:"Ammo, armour, whatever keeps you alive.",tone:"gold",duration:6200,voiceKey:"npc.merchant.entrance"}),
+      hidden:Object.freeze({key:"merchant.hidden",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"You found me. That usually means you’ve been nosing around.",tone:"purple",duration:6500,voiceKey:"npc.merchant.hidden"})
     }),
     sanctuary:Object.freeze({
       keeper:Object.freeze({key:"sanctuary.keeper",title:"SANCTUARY KEEPER",speaker:"Keeper",text:"Hello, big boy.",tone:"green",duration:5200,voiceKey:"npc.sanctuary.keeper"})
