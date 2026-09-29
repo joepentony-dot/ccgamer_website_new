@@ -9,6 +9,7 @@ const voice=fs.readFileSync(path.join(root,"js/v10-16-voice-director.js"),"utf8"
 const expansion=fs.readFileSync(path.join(root,"js/v10-17-voice-expansion.js"),"utf8");
 const dialogue=fs.readFileSync(path.join(root,"js/v10-41-stage8-npc-dialogue.js"),"utf8");
 const bootstrap=fs.readFileSync(path.join(root,"js/v10-42-bootstrap.js"),"utf8");
+const notifications=fs.readFileSync(path.join(root,"js/v10-41-landing-notification-polish.js"),"utf8");
 const hordeSafety=fs.readFileSync(path.join(root,"js/v10-41-horde-mode-safety.js"),"utf8");
 
 assert.match(bootstrap,/\["v10-16-voice-director\.js","CCGLostSizzlerVoice"\]/,"ordered bootstrap must load the voice director before Stage 8 dialogue");
@@ -25,6 +26,8 @@ assert.match(dialogue,/function speakDialogueLine\(line,/,"Stage 8 must route ch
 assert.match(dialogue,/voice\.sayDialogue\(line\.voiceKey,line\.text/,"Stage 8 must pass the stable voice key and actual NPC text to the existing voice owner");
 assert.match(dialogue,/ccgDialogueVoiceHandled:true/,"spoken NPC toasts must suppress duplicate generic voice classification");
 assert.match(dialogue,/ccgDialogueVoiceHandled:true,retain:true/,"spoken NPC dialogue must retain its visible subtitle while routine notices arrive");
+assert.match(notifications,/const pending=state\.pendingImportant;state\.pendingImportant=null;/,"priority notification owner must preserve a deferred important message");
+assert.match(notifications,/state\.originalToast\(\.\.\.pending\)/,"deferred important notifications must replay through the saved toast owner after a major notice closes");
 assert.match(bootstrap,/marker==="CCGLostSizzlerVoice"[\s\S]*typeof value\.say==="function"[\s\S]*typeof value\.sayDialogue==="function"/,"R68 bootstrap must reject incomplete legacy voice globals that lack arbitrary NPC dialogue speech");
 assert.match(bootstrap,/delete window\.__CCG_LOST_SIZZLER_VOICE_DIRECTOR_V116__/,"R68 bootstrap must clear a stale voice-director guard before reloading the current prerequisite");
 assert.doesNotMatch(dialogue,/\bsetInterval\s*\(/,"NPC voice integration must not add a polling interval");
