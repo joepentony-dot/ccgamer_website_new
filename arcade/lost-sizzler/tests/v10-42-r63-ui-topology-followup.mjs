@@ -7,8 +7,10 @@ const world=fs.readFileSync(new URL("js/world.js",root),"utf8");
 const render=fs.readFileSync(new URL("js/game-render.js",root),"utf8");
 const gameplayCss=fs.readFileSync(new URL("css/v10-6-gameplay.css",root),"utf8");
 
-assert.match(core,/BRONZE KEY ×\$\{p1\.bronzeKeys\|\|0\}/,"lower HUD must expose Bronze key count independently of the hidden critical strip");
-assert.match(gameplayCss,/hub-inventory-head>span\{[^}]*white-space:normal!important[^}]*overflow:visible!important[^}]*text-overflow:clip!important/s,"Bronze key/effect text must not be clipped by the HUD header");
+assert.match(core,/bronzeHub:\$\("hud-bronze-hub"\)/,"persistent quick-inventory header must own an independent Bronze key HUD field");
+assert.match(core,/if\(UI\.bronzeHub\)UI\.bronzeHub\.textContent=\`BRONZE ×\$\{p1\.bronzeKeys\|\|0\}\`/,"persistent Bronze key header must update directly from the authoritative player count");
+assert.match(gameplayCss,/\.hub-inventory-flags\{[^}]*overflow:visible!important/s,"quick-inventory status flags must not be clipped by their header");
+assert.match(gameplayCss,/\.hub-bronze-key\{[^}]*flex:0 0 auto!important[^}]*white-space:nowrap!important/s,"Bronze key status must stay pinned and non-wrapping above the inventory slots");
 
 assert.match(world,/axis:"horizontal"/,"bonus-room door specs must preserve horizontal orientation");
 assert.match(world,/axis:"vertical"/,"bonus-room door specs must preserve vertical orientation");
@@ -20,4 +22,4 @@ assert.match(render,/radarCtx\.setTransform\(1,0,0,1,0,0\)/,"radar renderer must
 assert.match(render,/radarCtx\.globalCompositeOperation="source-over"/,"radar renderer must reset compositing ownership");
 assert.match(render,/validPoint=q=>Boolean\(q&&Number\.isFinite\(Number\(q\.x\)\)&&Number\.isFinite\(Number\(q\.y\)\)\)/,"radar markers must reject malformed coordinates");
 
-console.log("Dungeon Carnage R63 HUD, radar and door-topology follow-up contract passed.");
+console.log("Dungeon Carnage R67 persistent Bronze HUD, radar and door-topology contract passed.");
