@@ -358,8 +358,9 @@
     if(!worldState||!hostState||!runState)return hostState;
     const floor=floorOf(runState),profile=profileForFloor(floor),seed=String(runState.seed||"CCG");
     for(const enemy of hostState.enemies||[]){tuneGuardian(enemy,profile);tuneEnemy(enemy,profile,seed,worldState)}
-    (hostState.traps||[]).forEach((trap,index)=>tuneTrap(trap,index,profile,seed,worldState));
-    reconcileTrapFamilies(hostState,seed,worldState,{...profile,floor});
+    // R67: ordinary FIRE/SPIKE/SHOCK floor traps are retired. Stage 6 must
+    // never rebuild or retag them after the base decorator clears the array.
+    hostState.traps=[];
     ensureDedicatedHazard(worldState,hostState,runState,profile,seed);
     for(const hazard of hostState.hazardRooms||[])tuneHazard(hazard,profile,seed,worldState);
     for(const generator of hostState.generators||[])tuneGenerator(generator,profile);
