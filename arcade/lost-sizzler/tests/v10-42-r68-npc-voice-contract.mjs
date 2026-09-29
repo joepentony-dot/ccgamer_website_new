@@ -25,6 +25,8 @@ assert.match(hordeSafety,/sayDialogue\(key,text,\.\.\.args\)\{if\(isHorde\(\)\)r
 assert.match(dialogue,/function speakDialogueLine\(line,/,"Stage 8 must route character lines through one reusable voice bridge");
 assert.match(dialogue,/voice\.sayDialogue\(line\.voiceKey,line\.text/,"Stage 8 must pass the stable voice key and actual NPC text to the existing voice owner");
 assert.match(dialogue,/ccgDialogueVoiceHandled:true/,"spoken NPC toasts must suppress duplicate generic voice classification");
+assert.match(dialogue,/function queueDialogueSubtitleBehindActiveToast\(line,spoken\)/,"R68 must defer NPC subtitles through the existing toast queue when another ordinary notification already owns the rail");
+assert.match(dialogue,/toastQueue\.push\(\{title:String\(line\.title\),text,tone:line\.tone/,"deferred NPC subtitles must remain in the established core toast queue rather than creating a second notification owner");
 assert.match(dialogue,/ccgDialogueVoiceHandled:true,retain:true/,"spoken NPC dialogue must retain its visible subtitle while routine notices arrive");
 assert.match(notifications,/const pending=state\.pendingImportant;state\.pendingImportant=null;/,"priority notification owner must preserve a deferred important message");
 assert.match(notifications,/state\.originalToast\(\.\.\.pending\)/,"deferred important notifications must replay through the saved toast owner after a major notice closes");
