@@ -8,6 +8,11 @@ const root=path.resolve(here,"..");
 const voice=fs.readFileSync(path.join(root,"js/v10-16-voice-director.js"),"utf8");
 const expansion=fs.readFileSync(path.join(root,"js/v10-17-voice-expansion.js"),"utf8");
 const dialogue=fs.readFileSync(path.join(root,"js/v10-41-stage8-npc-dialogue.js"),"utf8");
+const bootstrap=fs.readFileSync(path.join(root,"js/v10-42-bootstrap.js"),"utf8");
+
+assert.match(bootstrap,/\["v10-16-voice-director\.js","CCGLostSizzlerVoice"\]/,"ordered bootstrap must load the voice director before Stage 8 dialogue");
+assert.match(bootstrap,/\["v10-17-voice-expansion\.js","CCGLostSizzlerVoiceExpansion"\]/,"ordered bootstrap must load the voice expansion before Stage 8 dialogue");
+assert.ok(bootstrap.indexOf('"v10-16-voice-director.js"')<bootstrap.indexOf('"v10-41-stage8-npc-dialogue.js"'),"voice director must initialise before Stage 8 NPC dialogue");
 
 assert.match(voice,/function sayDialogue\(key,text,opts=\{\}\)/,"R68 must expose arbitrary NPC dialogue through the existing voice owner");
 assert.match(voice,/say:sayKey,sayDialogue,stop:stopActive/,"the public voice API must export the bounded dialogue path");
