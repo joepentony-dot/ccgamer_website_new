@@ -62,7 +62,7 @@
     }
   };
   const MAX_RECORDED_CLIP_MS=10000;
-  const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),rareLootFloor:0,gildedFiveWarned:new Set(),lowHealthLatch:new WeakSet(),criticalHealthLatch:new WeakSet(),voices:[],button:null,serial:0,played:0,skipped:0,interrupted:0,lastSkipped:null,dungeonFxApplied:0};
+  const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),rareLootFloor:0,artefactLorePlayed:false,gildedFiveWarned:new Set(),lowHealthLatch:new WeakSet(),criticalHealthLatch:new WeakSet(),voices:[],button:null,serial:0,played:0,skipped:0,interrupted:0,lastSkipped:null,dungeonFxApplied:0};
   let voiceContext=null,voiceImpulse=null;
 
   const lines={
@@ -151,7 +151,20 @@
     shopNoScore:{text:"No score, no sale.",priority:34,cooldown:2800},
     merchantPurchase:{text:"Pleasure doing business.",priority:28,cooldown:2400},
     adventurerHelp:{text:"Get me out of here.",priority:46,cooldown:9000},
-    adventurerSafe:{text:"We made it.",priority:42,cooldown:9000}
+    adventurerSafe:{text:"We made it.",priority:42,cooldown:9000},
+    scoutLagging:{text:"Don’t leave me behind.",priority:42,cooldown:12000},
+    scoutSanctuaryNear:{text:"Is that sanctuary?",priority:44,cooldown:12000},
+    artefactLore:{text:"Artefacts are worth more than they look.",priority:24,cooldown:30000},
+    hazardWarning:{text:"Probably best not to stand on that.",priority:48,cooldown:10000},
+    dangerRoom:{text:"That doesn’t look safe.",priority:44,cooldown:10000},
+    secretDoor:{text:"Secret door discovered.",priority:44,cooldown:6000},
+    movementNearby:{text:"Something is moving nearby.",priority:36,cooldown:18000},
+    stayAlert:{text:"Stay alert.",priority:32,cooldown:30000},
+    deepeningDungeon:{text:"This place is getting worse.",priority:34,cooldown:30000},
+    buriedWarning:{text:"There are things buried down here that should have stayed buried.",priority:45,cooldown:30000},
+    uneasySound:{text:"I don’t like the sound of that.",priority:38,cooldown:18000},
+    needThreeArtefacts:{text:"You need three artefacts.",priority:38,cooldown:3000},
+    comeBackFunded:{text:"Come back when you have enough.",priority:30,cooldown:5000}
   };
 
   function readEnabled(){try{const raw=localStorage.getItem(STORAGE_KEY);return raw==null?DEFAULT_ENABLED:raw!=="false"}catch(_){return DEFAULT_ENABLED}}
@@ -296,6 +309,10 @@
     const detail=event?.detail||{},kind=String(detail.kind||""),lootKind=String(detail.lootKind||"");
     const key=kind==="health"?"healthRestored":kind==="ammo"||kind==="mana"?"ammoCollected":kind==="armour"?"armourRestored":kind==="bronze"?"bronzeKeyCollected":kind==="exitSigil"?"exitSigilAcquired":kind==="loot"&&lootKind==="artefact"?"artefactCollected":"";
     if(key)try{sayKey(key)}catch(_){}
+    if(kind==="loot"&&lootKind==="artefact"&&!state.artefactLorePlayed){
+      state.artefactLorePlayed=true;
+      setTimeout(()=>{try{sayKey("artefactLore",{cooldown:0})}catch(_){}},2300)
+    }
   }
   function onHazardDamageVoice(){
     setTimeout(()=>{try{sayKey("hazardPain",{cooldown:18000})}catch(_){}},420);
@@ -369,9 +386,11 @@
     if(/DEATH STALKER/.test(s)&&deathStalkerEncounterVisible())return"deathStalker";
     if(/RADAR HINT/.test(s))return"objectiveHint";
     if(/OBJECTIVE NEAR|GETTING WARM/.test(s))return"objectiveNear";
-    if(/SECRET DOOR|SECRET.*FOUND|HIDDEN WALL|SECRET REVEALED/.test(s))return"secret";
+    if(/SECRET DOOR/.test(s))return"secretDoor";
+    if(/SECRET.*FOUND|HIDDEN WALL|SECRET REVEALED/.test(s))return"secret";
     if(/WEEKLY VAULT.*RUN OVER/.test(s))return"weeklyDeath";
     if(/BOULDER.*RUN/.test(s))return"boulder";
+    if(/^DANGER\s*—/.test(s))return"dangerRoom";
     if(/TRAP|HAZARD.*MOVE/.test(s))return"trap";
     if(/SANCTUARY/.test(s)){
       try{const room=world?.rooms?.[W.roomAt(world,p1?.x,p1?.y)];if(room?.sanctuary)return"sanctuary"}catch(_){}
@@ -417,7 +436,7 @@
     const originalBeginRun=beginRun;
     beginRun=function beginRunV116Voice(opts={}){
       const result=originalBeginRun.apply(this,arguments);
-      stopActive();state.queue.length=0;state.rareLootFloor=0;state.gildedFiveWarned.clear();state.lastByKey.delete("noAmmo");const activeRun=run;
+      stopActive();state.queue.length=0;state.rareLootFloor=0;state.artefactLorePlayed=false;state.gildedFiveWarned.clear();state.lastByKey.delete("noAmmo");const activeRun=run;
       setTimeout(()=>{
         try{
           if(run!==activeRun||mode!=="playing")return;
