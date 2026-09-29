@@ -28,7 +28,7 @@
   const hasGun=p=>Boolean(p?.firearmUnlocked&&p?.weapon);
   const meleeFor=p=>p?.meleeWeapon||START_SWORD;
   const meleeMastery=p=>Math.floor(Math.max(0,Number(p?.level||1)-1)/5);
-  const meleeDamageFor=p=>Math.max(1,Number(meleeFor(p).power||1)+meleeMastery(p)+Math.floor(Number(p?.damageBonus||0)*.5));
+  const meleeDamageFor=p=>Math.max(1,Number(meleeFor(p).power||1)+meleeMastery(p)+Math.max(0,Math.floor(Number(p?.damageBonus||0))));
   const toneFor=rarity=>rarity==="ZZAP! 97%"?"red":rarity==="GOLD MEDAL"?"gold":"cyan";
 
   function configureAmmoModel(){
