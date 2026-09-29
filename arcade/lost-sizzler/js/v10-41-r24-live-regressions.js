@@ -145,6 +145,7 @@
   }
 
   function installEnemyFireGuard(){
+    if(state.aiInstalled)return true;
     const ai=window.CCGAI,current=ai?.stepEnemies;if(typeof current!=="function")return false;
     if(wrapperChainHas(current,"__ccgV141R24EnemyFire")){state.aiInstalled=true;return true}
     const wrapped=function stepEnemiesV141R24EnemyFire(hostState,map,players,dt,hooks={},worldState){
