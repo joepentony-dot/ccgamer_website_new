@@ -62,7 +62,7 @@
     }
   };
   const MAX_RECORDED_CLIP_MS=10000;
-  const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),rareLootFloor:0,gildedFiveWarned:new Set(),lowHealthLatch:new WeakSet(),voices:[],button:null,serial:0,played:0,skipped:0,interrupted:0,lastSkipped:null,dungeonFxApplied:0};
+  const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),rareLootFloor:0,gildedFiveWarned:new Set(),lowHealthLatch:new WeakSet(),criticalHealthLatch:new WeakSet(),voices:[],button:null,serial:0,played:0,skipped:0,interrupted:0,lastSkipped:null,dungeonFxApplied:0};
   let voiceContext=null,voiceImpulse=null;
 
   const lines={
@@ -101,7 +101,49 @@
     mysteryPotion:{variants:["Mystery potion.","Well, something happened."],priority:32,cooldown:7000},
     weeklyGhost:{variants:["Weekly ghost loaded.","Another player's route is in the dungeon."],priority:22,cooldown:30000},
     weeklyDeath:{text:"Weekly Vault run over. Your score is being recorded.",priority:95,cooldown:6000,interrupt:true},
-    weeklyReset:{text:"Weekly Dungeon reset. A new ranked attempt is available.",priority:50,cooldown:60000}
+    weeklyReset:{text:"Weekly Dungeon reset. A new ranked attempt is available.",priority:50,cooldown:60000},
+    criticalHealth:{text:"Critical health.",priority:72,cooldown:0,interrupt:true},
+    trapsNearby:{text:"Traps nearby.",priority:48,cooldown:8000},
+    watchStep:{text:"Watch your step.",priority:42,cooldown:9000},
+    enemiesNearby:{text:"Enemies nearby.",priority:38,cooldown:9000},
+    roomLockdown:{text:"Room locked down.",priority:62,cooldown:5000},
+    bronzeKeyRequired:{text:"Bronze key required.",priority:48,cooldown:2500},
+    bronzeDoorUnlocked:{text:"Bronze door unlocked.",priority:40,cooldown:2000},
+    chestKeyRequired:{text:"You need a key to open this chest.",priority:48,cooldown:2500},
+    chestUnlocked:{text:"Chest unlocked.",priority:35,cooldown:2000},
+    doorSealed:{text:"The door is sealed.",priority:45,cooldown:3500},
+    findSwitch:{text:"Find the switch.",priority:40,cooldown:5000},
+    exitSealed:{text:"The exit is still sealed.",priority:52,cooldown:7000},
+    exitOpen:{text:"The exit is open.",priority:58,cooldown:5000},
+    ammoCollected:{text:"Ammunition collected.",priority:16,cooldown:2500},
+    healthRestored:{text:"Health restored.",priority:18,cooldown:2500},
+    armourRestored:{text:"Armour restored.",priority:18,cooldown:2500},
+    bronzeKeyCollected:{text:"Bronze key collected.",priority:28,cooldown:2500},
+    artefactCollected:{text:"Artefact collected.",priority:28,cooldown:2500},
+    weaponUpgraded:{text:"Weapon upgraded.",priority:36,cooldown:2500},
+    upgradeAvailable:{text:"Upgrade available.",priority:44,cooldown:2500},
+    exitSigilAcquired:{text:"Exit Sigil acquired.",priority:62,cooldown:2500},
+    banishmentFlaskAcquired:{text:"Banishment Flask acquired.",priority:55,cooldown:2500},
+    arenaLockdown:{text:"Arena lockdown.",priority:64,cooldown:5000},
+    surviveAmbush:{text:"Survive the ambush.",priority:50,cooldown:6000},
+    timedChamber:{text:"Timed chamber.",priority:58,cooldown:5000},
+    memorySequenceStarted:{text:"Memory sequence initiated.",priority:44,cooldown:5000},
+    watchSequence:{text:"Watch the sequence.",priority:38,cooldown:5000},
+    sequenceIncorrect:{text:"Sequence incorrect.",priority:46,cooldown:2500},
+    sequenceComplete:{text:"Sequence complete.",priority:46,cooldown:2500},
+    scoutFound:{text:"Scout found.",priority:44,cooldown:5000},
+    escortScout:{text:"Escort the scout to sanctuary.",priority:40,cooldown:9000},
+    sanctuaryReached:{text:"Sanctuary reached.",priority:38,cooldown:7000},
+    guardianEncountered:{text:"Guardian encountered.",priority:58,cooldown:8000},
+    guardianDefeated:{text:"Guardian defeated.",priority:58,cooldown:5000},
+    sigilWardenEncountered:{text:"Sigil Warden encountered.",priority:68,cooldown:8000},
+    sigilWardenDefeated:{text:"Sigil Warden defeated.",priority:68,cooldown:5000},
+    deathStalkerBanished:{text:"Death Stalker banished.",priority:82,cooldown:5000,interrupt:true},
+    useBanishmentFlask:{text:"Use the Banishment Flask.",priority:72,cooldown:7000},
+    notEnoughScore:{text:"Not enough score.",priority:38,cooldown:2500},
+    notEnoughArtefacts:{text:"Not enough artefacts.",priority:38,cooldown:2500},
+    purchaseComplete:{text:"Purchase complete.",priority:28,cooldown:1800},
+    inventoryFull:{text:"Your inventory is full.",priority:42,cooldown:2500}
   };
 
   function readEnabled(){try{const raw=localStorage.getItem(STORAGE_KEY);return raw==null?DEFAULT_ENABLED:raw!=="false"}catch(_){return DEFAULT_ENABLED}}
@@ -165,9 +207,10 @@
     }catch(_){return false}
   }
   function playSprite(key,priority,fallbackText=""){
-    const cue=BUNDLED_SPRITE.cues[key];if(!cue)return false;
+    const recorded=window.CCG_RECORDED_VOICE_SPRITE,recordedKey=String(recorded?.aliases?.[key]||key),recordedCue=recorded?.cues?.[recordedKey],pack=recordedCue?recorded:BUNDLED_SPRITE,cue=recordedCue||BUNDLED_SPRITE.cues[key];
+    if(!cue||!pack?.src)return false;
     try{
-      const audio=new Audio(BUNDLED_SPRITE.src),active={id:++state.serial,key,priority,audio,timer:null,watchdog:null};let failed=false,started=false;
+      const audio=new Audio(pack.src),active={id:++state.serial,key,priority,audio,timer:null,watchdog:null};let failed=false,started=false;
       const fallback=()=>{
         if(failed||state.active!==active)return;failed=true;clearActiveTimers(active);
         try{audio.onerror=null;audio.pause()}catch(_){}releaseDungeonFx(active);
@@ -267,6 +310,28 @@
     if(/FLOOR MUTATION/.test(s))return"mutation";
     if(/CURSED CARTRIDGE/.test(s))return"cursed";
     if(/MYSTERY POTION/.test(s))return"mysteryPotion";
+    if(/LOCKED BRONZE DOOR/.test(s))return"bronzeKeyRequired";
+    if(/BRONZE DOOR UNLOCKED/.test(s))return"bronzeDoorUnlocked";
+    if(/LOCKED CHEST/.test(s))return"chestKeyRequired";
+    if(/MECHANICAL GATE/.test(s))return"findSwitch";
+    if(/DOOR SEALED/.test(s))return"doorSealed";
+    if(/FLOOR OBJECTIVE COMPLETE/.test(s))return"exitSealed";
+    if(/EXIT UNSEALED/.test(s))return"exitOpen";
+    if(/ARENA LOCKDOWN/.test(s))return"arenaLockdown";
+    if(/TIMED CHAMBER/.test(s)&&!/CLEARED/.test(s))return"timedChamber";
+    if(/MEMORY PAD SEQUENCE/.test(s))return"memorySequenceStarted";
+    if(/MEMORY SEQUENCE SOLVED/.test(s))return"sequenceComplete";
+    if(/MEMORY SEQUENCE RESET|SEQUENCE INCORRECT/.test(s))return"sequenceIncorrect";
+    if(/SCOUT REACHES SANCTUARY/.test(s))return"sanctuaryReached";
+    if(/SIGIL CHAMBER LOCKDOWN/.test(s))return"roomLockdown";
+    if(/NOT ENOUGH SCORE/.test(s))return"notEnoughScore";
+    if(/NOT ENOUGH ARTEFACTS/.test(s))return"notEnoughArtefacts";
+    if(/INVENTORY FULL/.test(s))return"inventoryFull";
+    if(/BANISHMENT FLASK ACQUIRED/.test(s))return"banishmentFlaskAcquired";
+    if(/EXIT SIGIL/.test(s)&&/ACQUIRED|FOUND|COLLECTED/.test(s))return"exitSigilAcquired";
+    if(/BRONZE KEY/.test(s)&&/FOUND|COLLECTED|ACQUIRED/.test(s))return"bronzeKeyCollected";
+    if(/WEAPON.*UPGRADE/.test(s))return"weaponUpgraded";
+    if(/HAZARD CHAMBER|TRAPS NEARBY/.test(s))return"trapsNearby";
     // Lore, door and shop messages also mention these names. A threat cue is
     // authorised only by the corresponding live enemy in the player's room.
     if(/COUNT LOADULA|LOADULA/.test(s)&&loadulaEncounterVisible())return"loadula";
@@ -297,7 +362,7 @@
       try{
         const painPlayed=after<before?sayKey("hurt"):false;
         if(deathsAfter>deathsBefore)setTimeout(()=>sayKey("playerDeath"),painPlayed?800:0);
-        if(player&&player.maxHealth&&player.health>0&&player.health/player.maxHealth<=.28&&!state.lowHealthLatch.has(player)){state.lowHealthLatch.add(player);sayKey("lowHealth")}
+        if(player&&player.maxHealth&&player.health>0&&player.health/player.maxHealth<=.12&&!state.criticalHealthLatch.has(player)){state.criticalHealthLatch.add(player);sayKey("criticalHealth")}else if(player&&player.maxHealth&&player.health>0&&player.health/player.maxHealth<=.28&&!state.lowHealthLatch.has(player)){state.lowHealthLatch.add(player);sayKey("lowHealth")}
       }catch(_){}return result;
     };
   }
@@ -305,7 +370,7 @@
     const originalUpdate=update;
     update=function updateV116LowHealthLatch(dt){
       const result=originalUpdate.apply(this,arguments);
-      try{for(const player of (typeof localPlayers==="function"?localPlayers():[p1,p2].filter(Boolean)))if(player?.maxHealth&&Number(player.health||0)/Number(player.maxHealth)>=.5)state.lowHealthLatch.delete(player)}catch(_){}
+      try{for(const player of (typeof localPlayers==="function"?localPlayers():[p1,p2].filter(Boolean)))if(player?.maxHealth&&Number(player.health||0)/Number(player.maxHealth)>=.5){state.lowHealthLatch.delete(player);state.criticalHealthLatch.delete(player)}}catch(_){}
       return result;
     };
   }
@@ -346,7 +411,7 @@
   function voiceWatch(dt){
     watchMs-=Number(dt||0);if(watchMs>0||mode!=="playing"||!p1||tutorialSilent())return;watchMs=350;
     try{
-      if(p1.maxHealth&&p1.health>0&&p1.health/p1.maxHealth<=.28&&!state.lowHealthLatch.has(p1)){state.lowHealthLatch.add(p1);sayKey("lowHealth")}
+      if(p1.maxHealth&&p1.health>0&&p1.health/p1.maxHealth<=.12&&!state.criticalHealthLatch.has(p1)){state.criticalHealthLatch.add(p1);sayKey("criticalHealth")}else if(p1.maxHealth&&p1.health>0&&p1.health/p1.maxHealth<=.28&&!state.lowHealthLatch.has(p1)){state.lowHealthLatch.add(p1);sayKey("lowHealth")}
       for(const elf of host?.enemies||[])if(elf?.gildedElf&&elf.alive&&Number(elf.lifeMs||0)<=5200&&!state.gildedFiveWarned.has(elf.id)){state.gildedFiveWarned.add(elf.id);sayKey("gildedFive",{cooldown:0})}
     }catch(_){}
   }
