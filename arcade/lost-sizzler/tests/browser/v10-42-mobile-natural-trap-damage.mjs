@@ -136,7 +136,7 @@ try{
   assert.equal(after.active,true,"dedicated hazard must be live-active when damage lands");
   assert.equal(after.health,fixture.before.health-1,"dedicated hazard must remove exactly one HEALTH");
   assert.equal(after.armor,fixture.before.armor,"dedicated hazard damage must bypass armour rather than consuming it");
-  assert.deepEqual({x:after.x,y:after.y},fixture.cell,"dedicated hazard damage must occur on the exact occupied hazard cell");
+  assert.deepEqual({x:after.x,y:after.y},{x:fixture.cell.x,y:fixture.cell.y},"dedicated hazard damage must occur on the exact occupied hazard cell");
   assert.match(after.source,/trap/i,"dedicated hazard damage must retain environmental trap source ownership");
   assert.ok(after.cooldown>0,"dedicated hazard must arm its bounded hit cooldown after damage");
   assert.equal(after.ordinaryCount,0,"ordinary procedural traps must remain absent after dedicated hazard damage");
