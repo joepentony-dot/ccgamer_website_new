@@ -31,7 +31,7 @@
       hidden:Object.freeze({key:"merchant.hidden",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"You found me. Bring enough rare artefacts and I’ll exchange them for a Banishment Flask. Score works too.",tone:"purple",duration:7600,voiceKey:"npc.merchant.hidden"})
     }),
     sanctuary:Object.freeze({
-      keeper:Object.freeze({key:"sanctuary.keeper",title:"SANCTUARY KEEPER",speaker:"Keeper",text:"You’re safe while you’re in here. Use the green square if you need patching up, then get back to it.",tone:"green",duration:9000,voiceKey:"npc.sanctuary.keeper"})
+      keeper:Object.freeze({key:"sanctuary.keeper",title:"SANCTUARY KEEPER",speaker:"Keeper",text:"Hello, big boy.",tone:"green",duration:5200,voiceKey:"npc.sanctuary.keeper"})
     }),
     environment:Object.freeze({
       C64_ARCHIVE:Object.freeze({key:"environment.c64-archive",title:"ARCHIVE MAINTENANCE CARD",text:"The catalogue marks cracked masonry separately from ordinary doors. Hidden routes are optional, but their shelves usually hold better supplies.",tone:"cyan",duration:8200,voiceKey:"environment.c64-archive"}),
