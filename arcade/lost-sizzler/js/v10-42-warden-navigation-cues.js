@@ -23,7 +23,7 @@
     const inside=roomAt(w,p.x,p.y)===Number(domain.roomId);
     if(!inside&&!domain.inside)return false;
     if(row.domainDiscovered)return false;
-    row.domainDiscovered=true;row.domainDiscoveredAt=Date.now();return true;
+    row.domainDiscovered=true;row.domainDiscoveredAt=Date.now();\n    try{if(typeof showToast==="function")showToast("WARDEN CORRUPTION DISCOVERED",String(domain.profileName||"Warden corruption")+" marks a Warden room you have found. The purple diamond now stays on your radar. Use a Ward-Break Charge near the Warden to remove its immunity, then finish the fight with normal weapons.","purple",10500)}catch(_){}\n    return true;
   }
 
   function brokenWarden(h=H()){
