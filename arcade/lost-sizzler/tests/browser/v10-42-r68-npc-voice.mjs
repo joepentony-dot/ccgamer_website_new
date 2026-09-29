@@ -68,12 +68,12 @@ try{
   assert.equal(scout.presentedFirst,1,"Scout contact must create exactly one dialogue presentation");
   assert.equal(scout.calls.length,1,"one Scout presentation must create exactly one voice request");
   assert.equal(scout.calls[0].key,"npc.scout.found","Scout voice request must use its stable local/recorded-override key");
-  assert.match(scout.calls[0].text,/There you are/,"Scout voice request must carry the actual character dialogue");
+  assert.match(scout.calls[0].text,/Thank God you found me/,"Scout voice request must carry the supplied recorded character dialogue");
   assert.equal(scout.calls[0].opts.interrupt,false,"ordinary NPC dialogue must not interrupt a higher-priority active voice");
   assert.equal(scout.repeated,false,"immediate repeated Scout contact must be suppressed by the existing dialogue memory window");
   assert.equal(scout.presentedRepeat,0,"suppressed Scout dialogue must not produce another presentation");
   assert.equal(scout.calls.length,1,"suppressed Scout dialogue must not create another voice request");
-  assert.ok(/Scout: There you are/.test(scout.toast)||scout.queued.some(entry=>/Scout: There you are/.test(entry.text))||/Scout: There you are/.test(scout.priorityQueued?.text||""),`spoken Scout dialogue must remain visible or deferred by a supported notification owner: ${JSON.stringify({toast:scout.toast,queued:scout.queued,priorityQueued:scout.priorityQueued})}`);
+  assert.ok(/Scout: Thank God you found me/.test(scout.toast)||scout.queued.some(entry=>/Scout: Thank God you found me/.test(entry.text))||/Scout: Thank God you found me/.test(scout.priorityQueued?.text||""),`spoken Scout dialogue must remain visible or deferred by a supported notification owner: ${JSON.stringify({toast:scout.toast,queued:scout.queued,priorityQueued:scout.priorityQueued})}`);
 
   const merchant=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerStage8NpcDialogue,voice=window.CCGLostSizzlerVoice,calls=[];
@@ -87,11 +87,11 @@ try{
   assert.equal(merchant.shown,true,"hidden Trader must remain available through the existing non-blocking dialogue surface");
   assert.equal(merchant.calls.length,1,"one Trader presentation must create exactly one voice request");
   assert.equal(merchant.calls[0].key,"npc.merchant.hidden","hidden Trader must use its stable recorded-override key");
-  assert.match(merchant.calls[0].text,/Banishment Flask/,"Trader voice request must carry the actual trade guidance");
+  assert.match(merchant.calls[0].text,/You found me\. That usually means you’ve been nosing around/,"Trader voice request must carry the supplied recorded first-contact line");
   assert.equal(merchant.mode,"playing","direct character speech must not introduce a dialogue gameplay mode");
 
   assert.deepEqual(errors,[],"R68 NPC voice browser contract must not raise page errors: "+errors.join("\n"));
-  console.log("C64 Dungeon Carnage R68 NPC dialogue voice browser contract passed.");
+  console.log("C64 Dungeon Carnage R69 recorded NPC dialogue voice browser contract passed.");
   await context.close();
 }finally{
   await browser.close();
