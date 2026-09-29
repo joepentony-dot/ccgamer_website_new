@@ -100,6 +100,7 @@
   }
 
   function installRenderView(){
+    if(state.renderInstalls>0)return true;
     const current=window.renderView;if(typeof current!=="function")return false;
     if(current.__ccgV142R46FinalVisual)return true;
     const wrapped=function renderViewV142R46(player,viewBox){
@@ -132,6 +133,7 @@
   }
 
   function installTrapWrapper(){
+    if(state.trapInstalls>0)return true;
     const current=window.drawTraps;if(typeof current!=="function")return false;
     if(current.__ccgV142R46FinalVisual)return true;
     const wrapped=function drawTrapsV142R46(){const result=current.apply(this,arguments);try{drawTrapTelegraph()}catch(_){}return result};
