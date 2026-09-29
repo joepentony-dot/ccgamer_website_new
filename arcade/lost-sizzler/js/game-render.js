@@ -752,9 +752,27 @@ function drawFurniture(){
     if(d.type==="fireplace"){
       const now=performance.now(),flicker=Math.sin(now/67+d.x)*2,cx=q.x+C.tile/2;ctx.fillStyle="#2a2423";ctx.fillRect(q.x+2,q.y+3,C.tile-4,C.tile-4);ctx.fillStyle="#7f614b";ctx.fillRect(q.x+3,q.y+3,C.tile-6,6);ctx.fillRect(q.x+3,q.y+3,6,C.tile-6);ctx.fillRect(q.x+C.tile-9,q.y+3,6,C.tile-6);ctx.fillStyle="#0b0808";ctx.fillRect(q.x+9,q.y+12,C.tile-18,C.tile-12);ctx.fillStyle="#5c341d";ctx.fillRect(q.x+9,q.y+C.tile-10,C.tile-18,5);ctx.shadowColor=P.orange;ctx.shadowBlur=22;ctx.fillStyle="#d54b27";ctx.beginPath();ctx.moveTo(cx-10,q.y+C.tile-9);ctx.quadraticCurveTo(cx-12+flicker,q.y+13,cx-3,q.y+8);ctx.quadraticCurveTo(cx+2,q.y+16,cx+9,q.y+C.tile-9);ctx.fill();ctx.fillStyle=P.orange;ctx.beginPath();ctx.moveTo(cx-6,q.y+C.tile-9);ctx.quadraticCurveTo(cx-4-flicker,q.y+16,cx+1,q.y+12);ctx.quadraticCurveTo(cx+7,q.y+18,cx+6,q.y+C.tile-9);ctx.fill();ctx.fillStyle=P.gold;ctx.fillRect(cx-2,q.y+18,4,10);for(let n=0;n<5;n++){ctx.globalAlpha=.35+n*.1;ctx.fillStyle=n%2?P.gold:P.orange;ctx.fillRect(cx-9+n*4+Math.sin(now/90+n)*3,q.y+10-((now/35+n*7)%18),2,2)}ctx.globalAlpha=1;ctx.shadowBlur=0
     }else if(["shelf","bookcase","tapeStack","slotRack","rack"].includes(d.type)){
-      ctx.fillStyle="#3e2418";ctx.fillRect(q.x+3,q.y+3,C.tile-6,C.tile-5);ctx.fillStyle=woodHi;ctx.fillRect(q.x+5,q.y+5,3,C.tile-9);ctx.fillRect(q.x+C.tile-8,q.y+5,3,C.tile-9);for(let y=8;y<C.tile-6;y+=7){ctx.fillStyle="#9a6937";ctx.fillRect(q.x+6,q.y+y,C.tile-12,2);for(let x=8;x<C.tile-9;x+=5){ctx.fillStyle=[P.red,P.cyan,P.gold,P.green,"#a97be0"][(x+y+d.variant)%5];ctx.fillRect(q.x+x,q.y+y-4,3,4)}}
+      // Tall furniture gets a full silhouette with shelves and side depth so it
+      // reads as a solid collision object rather than flat wall decoration.
+      ctx.fillStyle="#281811";ctx.fillRect(q.x+2,q.y+2,C.tile-4,C.tile-3);
+      ctx.fillStyle="#4b2d1d";ctx.fillRect(q.x+4,q.y+3,C.tile-8,C.tile-5);
+      ctx.fillStyle=woodHi;ctx.fillRect(q.x+4,q.y+3,C.tile-8,4);ctx.fillRect(q.x+4,q.y+C.tile-7,C.tile-8,4);
+      ctx.fillStyle="#8a552e";ctx.fillRect(q.x+5,q.y+5,4,C.tile-10);ctx.fillRect(q.x+C.tile-9,q.y+5,4,C.tile-10);
+      for(let y=10;y<C.tile-7;y+=8){
+        ctx.fillStyle="#b5793d";ctx.fillRect(q.x+8,q.y+y,C.tile-16,2);
+        for(let x=10;x<C.tile-11;x+=5){
+          const palette=d.type==="slotRack"?["#334f44","#50735f","#6f9c7d"]:(d.type==="tapeStack"?["#d8d0b5","#a68f72","#605b65"]:[P.red,P.cyan,P.gold,P.green,"#a97be0"]);
+          ctx.fillStyle=palette[(x+y+d.variant)%palette.length];ctx.fillRect(q.x+x,q.y+y-5,3,5)
+        }
+      }
+      ctx.fillStyle="rgba(255,225,165,.28)";ctx.fillRect(q.x+10,q.y+5,C.tile-20,2);
     }else if(["desk","readingDesk","table","bench","counter","driveBench"].includes(d.type)){
-      ctx.fillStyle=woodHi;ctx.fillRect(q.x+3,q.y+10,C.tile-6,8);ctx.fillStyle=wood;ctx.fillRect(q.x+6,q.y+18,4,10);ctx.fillRect(q.x+C.tile-10,q.y+18,4,10);ctx.fillStyle="#c58b4a";ctx.fillRect(q.x+6,q.y+11,C.tile-12,2)
+      // Chunkier top slab and separated legs make walk-blocking tables obvious.
+      ctx.fillStyle="#352117";ctx.fillRect(q.x+2,q.y+9,C.tile-4,11);
+      ctx.fillStyle=woodHi;ctx.fillRect(q.x+3,q.y+8,C.tile-6,7);ctx.fillStyle="#c98b4c";ctx.fillRect(q.x+5,q.y+9,C.tile-10,2);
+      ctx.fillStyle=wood;ctx.fillRect(q.x+6,q.y+18,5,12);ctx.fillRect(q.x+C.tile-11,q.y+18,5,12);
+      ctx.fillStyle="#3b261b";ctx.fillRect(q.x+7,q.y+20,3,8);ctx.fillRect(q.x+C.tile-10,q.y+20,3,8);
+      if(["desk","readingDesk","driveBench"].includes(d.type)){ctx.fillStyle="#d8cfb6";ctx.fillRect(q.x+9,q.y+10,11,5);ctx.strokeStyle="#81755e";ctx.strokeRect(q.x+9,q.y+10,11,5)}
     }else if(d.type==="roundChair"){
       ctx.fillStyle="#4b2a24";ctx.beginPath();ctx.arc(q.x+C.tile/2,q.y+15,10,0,Math.PI*2);ctx.fill();ctx.strokeStyle="#b17745";ctx.lineWidth=2;ctx.stroke();ctx.fillStyle=wood;ctx.fillRect(q.x+C.tile/2-7,q.y+23,3,8);ctx.fillRect(q.x+C.tile/2+4,q.y+23,3,8)
     }else if(d.type==="pool"){
@@ -768,7 +786,21 @@ function drawFurniture(){
     }else if(["reactor","coil","obelisk","statue","pedestal"].includes(d.type)){
       ctx.fillStyle="#303640";ctx.fillRect(q.x+C.tile/2-8,q.y+4,16,C.tile-7);ctx.fillStyle=metal;ctx.fillRect(q.x+C.tile/2-5,q.y+6,10,C.tile-11);ctx.strokeStyle=glow;ctx.shadowColor=glow;ctx.shadowBlur=10+pulse*8;ctx.lineWidth=2;ctx.strokeRect(q.x+C.tile/2-10,q.y+8,20,C.tile-15);ctx.fillStyle=glow;ctx.globalAlpha=.35+pulse*.45;ctx.fillRect(q.x+C.tile/2-3,q.y+11,6,C.tile-21);for(let ry=12;ry<C.tile-10;ry+=7)ctx.fillRect(q.x+C.tile/2-12,q.y+ry,24,2);ctx.globalAlpha=1;ctx.fillStyle="#b8c1ca";ctx.fillRect(q.x+C.tile/2-10,q.y+5,20,3);ctx.fillRect(q.x+C.tile/2-11,q.y+C.tile-7,22,3)
     }else if(d.type==="barrel"){
-      ctx.fillStyle="#714526";ctx.fillRect(q.x+8,q.y+5,C.tile-16,C.tile-8);ctx.fillStyle="#9b6233";ctx.fillRect(q.x+6,q.y+9,C.tile-12,C.tile-16);ctx.fillStyle="#b77a40";ctx.fillRect(q.x+9,q.y+7,4,C.tile-12);ctx.fillStyle="#3d4650";ctx.fillRect(q.x+5,q.y+9,C.tile-10,3);ctx.fillRect(q.x+5,q.y+C.tile-12,C.tile-10,3);ctx.strokeStyle="#d5a15c";ctx.strokeRect(q.x+8,q.y+5,C.tile-16,C.tile-8);
+      const cx=q.x+C.tile/2;
+      ctx.fillStyle="#4a2b19";ctx.beginPath();ctx.ellipse(cx,q.y+8,12,5,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="#8f5730";ctx.fillRect(cx-12,q.y+8,24,C.tile-17);
+      ctx.fillStyle="#a86b3a";for(const off of [-7,-2,3,8])ctx.fillRect(cx+off,q.y+9,3,C.tile-19);
+      ctx.fillStyle="#b97a43";ctx.beginPath();ctx.ellipse(cx,q.y+8,11,4,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="#6e4226";ctx.beginPath();ctx.ellipse(cx,q.y+C.tile-9,12,5,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="#3d4650";for(const yy of [q.y+11,q.y+C.tile-14])ctx.fillRect(cx-13,yy,26,3);
+      ctx.strokeStyle="#d5a15c";ctx.strokeRect(cx-12,q.y+8,24,C.tile-17);
+    }else if(d.type==="crate"){
+      ctx.fillStyle="#4a2b1a";ctx.fillRect(q.x+4,q.y+5,C.tile-8,C.tile-9);
+      ctx.fillStyle="#8b572f";ctx.fillRect(q.x+6,q.y+7,C.tile-12,C.tile-13);
+      ctx.fillStyle="#a66a37";for(let y=q.y+8;y<q.y+C.tile-8;y+=7)ctx.fillRect(q.x+7,y,C.tile-14,2);
+      ctx.strokeStyle="#d69a55";ctx.lineWidth=2;ctx.strokeRect(q.x+5,q.y+6,C.tile-10,C.tile-11);
+      ctx.beginPath();ctx.moveTo(q.x+8,q.y+9);ctx.lineTo(q.x+C.tile-8,q.y+C.tile-9);ctx.moveTo(q.x+C.tile-8,q.y+9);ctx.lineTo(q.x+8,q.y+C.tile-9);ctx.stroke();
+      ctx.fillStyle="#32241c";for(const [nx,ny] of [[8,9],[C.tile-10,9],[8,C.tile-11],[C.tile-10,C.tile-11]])ctx.fillRect(q.x+nx,q.y+ny,2,2);
     }else if(["sofa","display","bin","chestPile"].includes(d.type)){
       ctx.fillStyle=d.type==="sofa"?"#5d315f":wood;ctx.fillRect(q.x+4,q.y+11,C.tile-8,13);ctx.fillStyle=glow+"66";ctx.fillRect(q.x+6,q.y+8,C.tile-12,5);ctx.fillStyle="#2c1b31";ctx.fillRect(q.x+7,q.y+24,5,5);ctx.fillRect(q.x+C.tile-12,q.y+24,5,5)
     }else if(["speaker","lightBar","arch"].includes(d.type)){
