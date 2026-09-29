@@ -126,7 +126,8 @@
       /* Adjacent breakable furniture is a sword interaction and must never
        * spend firearm ammunition. Enemies remain firearm targets so the
        * historical contextual-melee firing lockout cannot return. */
-      if(breakable||!hasGun(p)||Number(p.mana||0)<=0)return meleeAttack(p,dir);
+      if(breakable)return meleeAttack(p,dir);
+      if(!hasGun(p)||Number(p.mana||0)<=0)return meleeAttack(p,dir);
       return oldFire(p,d);
     };
     dashPlayer=function dashPlayerV125(p,d){
