@@ -33,6 +33,7 @@
   }
 
   function installEnemyCardinalFire(){
+    if(state.aiSource)return true;
     const ai=window.CCGAI,current=ai?.stepEnemies;if(typeof current!=="function")return false;
     if(wrapperChainHas(current,"__ccgV141ActiveEnemyCardinal")){state.aiSource=current;return true}
     const wrapped=function stepEnemiesV141ActiveCardinal(hostState,map,players,dt,hooks={},worldState){
