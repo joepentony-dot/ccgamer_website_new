@@ -36,7 +36,7 @@ assert.match(render,/function drawItem\(i\)[\s\S]*!tileInRenderView\(i\.x,i\.y,2
   "item rendering must cull offscreen pickups before expensive visibility checks");
 assert.match(render,/for\(const d of world\.decor\|\|\[\]\)[\s\S]*!tileInRenderView\(d\.x,d\.y,2\)[\s\S]*!visibleTo/,
   "furniture rendering must cull offscreen decor before line-of-sight work");
-assert.match(render,/function drawFog\(\)[\s\S]*lowFps=Boolean[\s\S]*torchEnemies=lowFps\?\[\]/,
-  "fog lighting must remove secondary light-source comparisons when low FPS is active");
+assert.match(render,/function drawFog\(\)[\s\S]*lowFps=Boolean[\s\S]*torchEnemies=\(host\.enemies\|\|\[\]\)\.filter\(e=>e\.alive&&e\.follower\)\.filter\(e=>!lowFps/,
+  "fog lighting must preserve follower discovery while removing secondary light-source comparisons when low FPS is active");
 
 console.log("Dungeon R69 hazard presentation and low-FPS regression checks passed.");
