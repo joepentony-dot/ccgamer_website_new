@@ -20,7 +20,7 @@ const sanctuaryScene=read("js/v10-41-sanctuary-azalea.js");
 const sanctuaryEscort=read("js/v10-41-sanctuary-hardening.js");
 
 assert.match(map,/ccg-recorded-voices-r69\.ogg/,"R69 must target the owner-recorded browser voice sprite");
-assert.match(map,/"hello-big-boy":\{start:/,"sanctuary greeting must have an explicit sprite cue");
+assert.match(map,/"hello-big-boy":\{"start":/,"sanctuary greeting must have an explicit sprite cue");
 assert.match(map,/"npc\.sanctuary\.keeper":"hello-big-boy"/,"sanctuary keeper must resolve to the recorded greeting");
 assert.match(map,/"bronzeKeyRequired":"you-need-a-bronze-key"/,"bronze lock feedback must resolve to the supplied full recorded cue");
 assert.match(map,/"chestKeyRequired":"you-need-a-key-to-open-this-chest"/,"locked chest feedback must resolve to the recorded cue");
