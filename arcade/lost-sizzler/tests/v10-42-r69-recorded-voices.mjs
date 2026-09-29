@@ -16,6 +16,8 @@ const loader=read("js/asset-overrides.js");
 const sanctuary=read("js/v10-41-sanctuary-azalea.js");
 const sanctuaryHardening=read("js/v10-41-sanctuary-hardening.js");
 const core=read("js/game-core.js");
+const sanctuaryScene=read("js/v10-41-sanctuary-azalea.js");
+const sanctuaryEscort=read("js/v10-41-sanctuary-hardening.js");
 
 assert.match(map,/ccg-recorded-voices-r69\.ogg/,"R69 must target the owner-recorded browser voice sprite");
 assert.match(map,/"hello-big-boy":\{start:/,"sanctuary greeting must have an explicit sprite cue");
@@ -40,5 +42,13 @@ assert.match(core,/function descendFloor\(\)[\s\S]*CCGLostSizzlerVoice\?\.say\?\
 assert.match(voice,/ccg:hazard-damage[\s\S]*hazardPain/,"actual hazard damage must be able to trigger the supplied post-hit voice");
 assert.match(voice,/ccg:shop-firearm-upgrade[\s\S]*weaponUpgraded/,"successful firearm upgrades must trigger the supplied upgrade recording");
 assert.match(voice,/FURNITURE AMBUSH[\s\S]*return"ambush"/,"furniture ambushes must use the supplied ambush recording");
+assert.match(stage8,/merchantVoiceVisits[\s\S]*hiddenReady[\s\S]*hiddenPartial[\s\S]*entranceRepeat/,"merchant speech must rotate through supplied recordings according to visit and artefact context");
+assert.match(sanctuaryScene,/npc\.sanctuary\.keeper","Hello, big boy\."/,"the actual sanctuary dancer collision must own the supplied greeting");
+assert.match(sanctuaryEscort,/adventurerHelp[\s\S]*adventurerSafe/,"lost-adventurer recruitment and rescue must use the supplied recordings");
+assert.match(play,/scoutLagging[\s\S]*scoutSanctuaryNear/,"the escort scout must use the supplied separation and sanctuary-approach lines");
+assert.match(play,/hazardWarning[\s\S]*_ccgHazardWarningKey/,"hazard warning speech must be cycle-latched and driven by the authoritative hazard state");
+assert.match(play,/movementNearby/,"hidden movement ambience must route through the recorded voice owner");
+assert.match(play,/stayAlert/,"high dungeon alert must trigger the supplied alert recording");
+assert.match(core,/enteredFloor>=3[\s\S]*buriedWarning[\s\S]*deepeningDungeon/,"deeper floor transitions must use the supplied escalation recordings");
 
 console.log("Dungeon R69 recorded voice integration regression checks passed.");
