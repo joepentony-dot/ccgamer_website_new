@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
 
-const source=fs.readFileSync(new URL("../js/v10-42-warden-navigation-cues.js",import.meta.url),"utf8");
+const source=fs.readFileSync(new URL("../js/v10-42-warden-navigation-cues.js",import.meta.url),"utf8");\nconst indexHtml=fs.readFileSync(new URL("../index.html",import.meta.url),"utf8");\nassert.match(indexHtml,/WARDEN CORRUPTION/,"Radar legend must name the purple Warden corruption marker");\nassert.match(indexHtml,/WARD BROKEN/,"Radar legend must name the active Ward-Broken combat marker");
 const run={floor:2,v142WardenFloors:{"2":{floor:2,available:true,resolved:false,cacheFragmentAwarded:false}}};
 const player={x:2,y:2};
 let world={rooms:[null,{id:1,x:10,y:10,w:8,h:8}],map:[]};
