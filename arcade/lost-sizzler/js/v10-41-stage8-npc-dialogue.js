@@ -35,7 +35,8 @@
       hiddenEmpty:Object.freeze({key:"merchant.hidden.empty",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"Bring me something interesting.",tone:"purple",duration:5600,voiceKey:"npc.merchant.hidden.empty"}),
       hiddenPartial:Object.freeze({key:"merchant.hidden.partial",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"Bring me three and I can help you deal with the Stalker.",tone:"purple",duration:6500,voiceKey:"npc.merchant.hidden.partial"}),
       hiddenReady:Object.freeze({key:"merchant.hidden.ready",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"I can trade those artefacts for a Banishment Flask.",tone:"purple",duration:6500,voiceKey:"npc.merchant.hidden.ready"}),
-      hiddenLore:Object.freeze({key:"merchant.hidden.lore",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"I deal in things the other merchants won’t touch.",tone:"purple",duration:6200,voiceKey:"npc.merchant.hidden.lore"})
+      hiddenLore:Object.freeze({key:"merchant.hidden.lore",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"I deal in things the other merchants won’t touch.",tone:"purple",duration:6200,voiceKey:"npc.merchant.hidden.lore"}),
+      hiddenComeBack:Object.freeze({key:"merchant.hidden.comeback",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"Come back when you have enough.",tone:"purple",duration:5600,voiceKey:"comeBackFunded"})
     }),
     sanctuary:Object.freeze({
       keeper:Object.freeze({key:"sanctuary.keeper",title:"SANCTUARY KEEPER",speaker:"Keeper",text:"Hello, big boy.",tone:"green",duration:5200,voiceKey:"npc.sanctuary.keeper"})
@@ -97,7 +98,7 @@
       if(visits===0)base=lines.merchant.hidden;
       else if(artefacts>=3)base=lines.merchant.hiddenReady;
       else if(artefacts>0)base=lines.merchant.hiddenPartial;
-      else base=visits%3===0?lines.merchant.hiddenLore:lines.merchant.hiddenEmpty;
+      else base=visits%4===0?lines.merchant.hiddenLore:visits%4===3?lines.merchant.hiddenComeBack:lines.merchant.hiddenEmpty;
     }else{
       base=visits===0?lines.merchant.entrance:(visits%2?lines.merchant.entranceRepeat:lines.merchant.entranceLook);
     }
