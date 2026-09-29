@@ -869,9 +869,12 @@ if (IS_ADMIN_PATH) {
     }
 
     function openEasterEggOverlay(content, options = {}) {
+        const inheritedFocusTarget = secretState.activeEgg?.lastFocusedElement || null;
         stopActiveEasterEgg();
 
-        const lastFocusedElement = secretState.lastFocusedElement
+        const lastFocusedElement = options.lastFocusedElement
+            || inheritedFocusTarget
+            || secretState.lastFocusedElement
             || (document.activeElement instanceof HTMLElement ? document.activeElement : null);
         secretState.lastFocusedElement = null;
 
@@ -1153,6 +1156,55 @@ if (IS_ADMIN_PATH) {
             if (!secretState.activeEgg || secretState.activeEgg.overlay !== overlay) return;
             loading.innerHTML = "<span>?BASIC LOAD ERROR</span>";
             overlay.dataset.ccgBasicModule = "error";
+        }
+    }
+
+
+    /* CCG EASTER EGG E11 INTERACTIVE ARCHIVE EXPANSION */
+    async function triggerE11(code) {
+        const normalized = String(code || "").toLowerCase().replace(/\s+/g, "");
+        recordEasterEggDiscovery(normalized);
+
+        const styleId = "ccg-easter-egg-e11-css";
+        if (!document.getElementById(styleId)) {
+            const style = document.createElement("link");
+            style.id = styleId;
+            style.rel = "stylesheet";
+            style.href = `${getSiteRoot()}resources/css/easter-eggs-e11.css`;
+            document.head.appendChild(style);
+        }
+
+        const loading = document.createElement("div");
+        loading.className = "ccg-egg-overlay__audio";
+        loading.innerHTML = "<span>OPENING CCG INTERACTIVE ARCHIVE...</span>";
+        const overlay = openEasterEggOverlay(loading, { className: "ccg-egg-overlay--e11" });
+        overlay.dataset.ccgE11Module = "loading";
+
+        try {
+            const moduleUrl = new URL(`${getSiteRoot()}js/easter-eggs/e11-interactive-archive.js`, window.location.origin).href;
+            const module = await import(moduleUrl);
+            const experience = await module.createE11Experience(normalized, {
+                siteRoot: getSiteRoot(),
+                prefersReducedMotion: prefersReducedMotion(),
+                onLaunch: nextCode => triggerE11(nextCode),
+            });
+
+            if (!secretState.activeEgg || secretState.activeEgg.overlay !== overlay) {
+                experience.cleanup?.();
+                return;
+            }
+
+            const mediaContainer = overlay.querySelector(".ccg-egg-overlay__media");
+            if (!mediaContainer) throw new Error("E11 media container was not created");
+            mediaContainer.replaceChildren(experience.content);
+            secretState.activeEgg.cleanup = () => experience.cleanup?.();
+            overlay.dataset.ccgE11Module = "ready";
+            requestAnimationFrame(() => experience.focus?.());
+        } catch (error) {
+            console.error("[CCG] E11 Easter egg failed", error);
+            if (!secretState.activeEgg || secretState.activeEgg.overlay !== overlay) return;
+            loading.innerHTML = "<span>INTERACTIVE ARCHIVE FAILED TO START.</span>";
+            overlay.dataset.ccgE11Module = "error";
         }
     }
 
@@ -1525,7 +1577,50 @@ if (IS_ADMIN_PATH) {
             });
         },
         "konamicode": () => triggerKonami(),
+        "bbs": () => triggerE11("bbs"),
+        "guru": () => triggerE11("guru"),
+        "sid": () => triggerE11("sid"),
+        "1541": () => triggerE11("1541"),
+        "cracktro": () => triggerE11("cracktro"),
+        "workbench": () => triggerE11("workbench"),
+        "sprite": () => triggerE11("sprite"),
+        "modem": () => triggerE11("modem"),
+        "readerror": () => triggerE11("readerror"),
+        "kickstart": () => triggerE11("kickstart"),
     };
+
+    const EASTER_DISCOVERY_KEY = "ccg:easter-eggs:discovered:v1";
+
+    function readEasterEggDiscoveries() {
+        try {
+            const saved = JSON.parse(window.localStorage.getItem(EASTER_DISCOVERY_KEY) || "[]");
+            return new Set(Array.isArray(saved) ? saved.map(value => String(value)) : []);
+        } catch (_) {
+            return new Set();
+        }
+    }
+
+    function updateEasterEggDiscoveryDisplay() {
+        const count = readEasterEggDiscoveries().size;
+        document.querySelectorAll("[data-ccg-secret-discovery-count]").forEach(node => {
+            node.textContent = `SECRETS FOUND: ${count} / ???`;
+        });
+    }
+
+    function recordEasterEggDiscovery(code) {
+        const normalized = String(code || "").toLowerCase().replace(/\s+/g, "");
+        if (!normalized) return;
+        const found = readEasterEggDiscoveries();
+        if (found.has(normalized)) {
+            updateEasterEggDiscoveryDisplay();
+            return;
+        }
+        found.add(normalized);
+        try {
+            window.localStorage.setItem(EASTER_DISCOVERY_KEY, JSON.stringify(Array.from(found)));
+        } catch (_) {}
+        updateEasterEggDiscoveryDisplay();
+    }
 
     function normalizeCode(code) {
         return code.toLowerCase().replace(/\s+/g, "");
@@ -1534,6 +1629,7 @@ if (IS_ADMIN_PATH) {
     function triggerCheat(code) {
         const normalized = normalizeCode(code);
         if (cheats[normalized]) {
+            recordEasterEggDiscovery(normalized);
             /* CCG BASIC PRE-CLOSE SCROLL BOOKMARK */
             const launchContext = normalized === "basic" && secretState.scrollLock
                 ? {
@@ -1614,6 +1710,7 @@ if (IS_ADMIN_PATH) {
                 </div>
                 <h2>SYSTEM COMMANDS</h2>
                 <p class="ccg-secret-modal__hint">Tap to activate, or type a code.</p>
+                <p class="ccg-secret-modal__hint" data-ccg-secret-discovery-count>SECRETS FOUND: 0 / ???</p>
                 <ul class="ccg-secret-list">
                     <li data-ccg-secret-code="sys64738">SYS64738</li>
                     <li data-ccg-secret-code="pressplay">PRESS PLAY</li>
@@ -1636,12 +1733,23 @@ if (IS_ADMIN_PATH) {
                     <li data-ccg-secret-code="lemmings">LEMMINGS</li>
                     <li data-ccg-secret-code="cheeky">CHEEKY</li>
                     <li data-ccg-secret-code="konamicode">KONAMI CODE</li>
+                    <li data-ccg-secret-code="bbs">CCG BBS</li>
+                    <li data-ccg-secret-code="guru">GURU MEDITATION</li>
+                    <li data-ccg-secret-code="sid">SID LAB</li>
+                    <li data-ccg-secret-code="1541">1541 DRIVE</li>
+                    <li data-ccg-secret-code="cracktro">CCG CRACKTRO</li>
+                    <li data-ccg-secret-code="workbench">AMIGA WORKBENCH</li>
+                    <li data-ccg-secret-code="sprite">SPRITE EDITOR</li>
+                    <li data-ccg-secret-code="modem">MODEM</li>
+                    <li data-ccg-secret-code="readerror">DISK ERROR</li>
+                    <li data-ccg-secret-code="kickstart">AMIGA BOOT</li>
                 </ul>
             </div>
         `;
 
         document.body.appendChild(modal);
         secretState.modal = modal;
+        updateEasterEggDiscoveryDisplay();
 
         /* CCG EASTER EGG THIRD CLICK STABILITY */
         const blockOpeningGesture = event => {

@@ -62,7 +62,7 @@ try{
     if(!selected)return{available:false,reason:"no dedicated hazard with live room enemy",hazards:(host.hazardRooms||[]).length};
     const {hazard,cell,dir,entry,pressure}=selected;
     for(const e of host.enemies||[])if(e!==pressure)e.alive=false;
-    pressure.aiState="idle";pressure.moveCooldown=999999;pressure.attackCooldown=999999;pressure.hitStunMs=0;
+    pressure.aiState="idle";pressure.moveCooldown=999999;pressure.attackCooldown=999999;pressure.hitStunMs=0;pressure.dossierSeen=true;
     if(host.stalker)host.stalker.awake=false;
     hazard.period=100000;hazard.warningMs=120;hazard.activeMs=12000;
     const groups=Math.max(2,Number(hazard.groups||2)),group=((Number(cell.group||0)%groups)+groups)%groups;

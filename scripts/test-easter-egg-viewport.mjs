@@ -138,7 +138,7 @@ async function waitForTestPageReady(page, testCase) {
 }
 
 async function settleAtPageBottom(page) {
-  const deadline = Date.now() + 6000;
+  const deadline = Date.now() + 8000;
   let previous = null;
   let stableSamples = 0;
   let latest = null;
@@ -164,9 +164,15 @@ async function settleAtPageBottom(page) {
       };
     });
 
+    // The physically reachable scrollY is authoritative here. Chromium mobile
+    // emulation can report scrollHeight - innerHeight several CSS pixels below
+    // the actual reachable bottom because the layout and visual viewports do
+    // not have identical rounding. Require repeated physical stability while
+    // allowing only a small amount of late layout-height drift; the real modal
+    // containment, scroll-lock and restoration assertions still run afterwards.
     const stable = previous
-      && Math.abs(latest.scrollHeight - previous.scrollHeight) <= 1
-      && Math.abs(latest.scrollY - previous.scrollY) <= 1;
+      && Math.abs(latest.scrollHeight - previous.scrollHeight) <= 12
+      && Math.abs(latest.scrollY - previous.scrollY) <= 4;
 
     if (stable) {
       stableSamples += 1;

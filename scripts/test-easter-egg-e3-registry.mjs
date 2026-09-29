@@ -21,6 +21,8 @@ const expectedCodes = [
     "sys64738", "pressplay", "load", "basic", "vhs", "terminator", "bsod",
     "mario", "nokia", "sonic", "warp", "party", "zxspectrum", "pacman",
     "boing", "matrix", "invaders", "heman", "lemmings", "cheeky", "konamicode",
+    "bbs", "guru", "sid", "1541", "cracktro", "workbench", "sprite", "modem",
+    "readerror", "kickstart",
 ];
 
 assert.equal(EASTER_EGG_REGISTRY.length, expectedCodes.length, "Registry command count changed");

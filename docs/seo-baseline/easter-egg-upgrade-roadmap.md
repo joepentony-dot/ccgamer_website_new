@@ -107,6 +107,33 @@ Improve SYS64738, BSOD and WARP with stronger transitions, reliable cancellation
 - Show desktop and mobile availability.
 - Add optional hidden-command hints without revealing every surprise immediately.
 
+### E11 — Interactive Archive Expansion
+
+Add ten original, local, interactive experiences rather than media-only overlays:
+
+- **CCG BBS** — command-driven 2400-baud bulletin board with hidden commands and links into other E11 experiences.
+- **Guru Meditation** — responsive Amiga-style failure/recovery screen with diagnostics and reduced-motion handling.
+- **SID Lab** — three-voice browser synth lab with waveform, detune, level, filter and keyboard controls plus oscilloscope.
+- **1541 Drive** — interactive drive terminal with directory/status/load commands, generated head/noise audio and activity states.
+- **CCG Cracktro** — original canvas starfield/raster presentation with scroller, pause and generated chiptune-style audio.
+- **Amiga Workbench** — interactive desktop with drawers, draggable window and archive link.
+- **C64 Sprite Editor** — 24×21 editor with pointer/touch drawing, mirror/invert/random tools and live 63-byte export.
+- **Modem** — Hayes-style terminal with local generated handshake and a live handoff into the BBS.
+- **Disk Error** — recoverable 1541-style fault puzzle which hands off into the working 1541 experience.
+- **Amiga Boot** — Kickstart-inspired disk insertion sequence which hands off into Workbench.
+
+E11 also adds persistent local discovery tracking. The secret console shows **SECRETS FOUND: n / ???** without revealing the catalogue total, and nested handoffs count as discoveries.
+
+Implementation rules:
+
+- lazy-load E11 modules only when requested;
+- keep all E11 runtime dependencies local;
+- keep styling in `resources/css/`;
+- preserve the shared overlay lifecycle, Escape handling, viewport binding, focus restoration and scroll restoration;
+- support desktop, mobile, short-mobile and reduced-motion contexts;
+- do not touch the intro loader stack or `games/games.json`;
+- require the E3 registry regression and dedicated E11 Chromium qualification before merge.
+
 ## Completion standard
 
 A phase is complete only when:

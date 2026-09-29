@@ -1,0 +1,15 @@
+/* CCG E11 BBS, modem and error terminals */
+.ccg-e11__chrome,.ccg-e11__error-screen{width:100%;height:100%;min-height:0;display:flex;flex-direction:column}
+.ccg-e11__lamp{width:12px;height:12px;border-radius:50%;background:#69ff9c;box-shadow:0 0 16px rgba(105,255,156,.7);flex:0 0 auto}
+.ccg-e11__terminal,.ccg-e11__error-terminal{flex:1;min-height:0;overflow:auto;padding:20px;line-height:1.5;scrollbar-width:thin;background:linear-gradient(rgba(255,255,255,.018) 50%,transparent 50%) 0 0/100% 4px,#030805;color:#8fffaa;text-shadow:0 0 8px rgba(85,255,127,.22)}
+.ccg-e11__line,.ccg-e11__error-terminal>div{min-height:1.5em;white-space:pre-wrap;overflow-wrap:anywhere}
+.ccg-e11__terminal-link{display:inline-block;color:#9bddff;text-decoration:underline;margin:6px 0}
+.ccg-e11__command{min-height:52px;display:flex;align-items:center;gap:10px;padding:8px 14px;border-top:1px solid rgba(101,255,145,.2);background:#061008;color:#8fffaa}
+.ccg-e11__command input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:inherit;caret-color:currentColor}
+.ccg-e11--bbs .ccg-e11__terminal{background:radial-gradient(circle at 50% 0%,rgba(0,255,98,.07),transparent 56%),linear-gradient(rgba(64,255,113,.035) 50%,transparent 50%) 0 0/100% 4px,#020804}
+.ccg-e11--modem .ccg-e11__terminal{background:radial-gradient(circle at 50% 50%,rgba(51,190,255,.05),transparent 60%),linear-gradient(rgba(95,195,255,.03) 50%,transparent 50%) 0 0/100% 4px,#020a0f;color:#8ed8ff;text-shadow:0 0 8px rgba(65,178,255,.26)}
+.ccg-e11--modem .ccg-e11__command{color:#8ed8ff;border-color:rgba(95,195,255,.2);background:#041018}
+.ccg-e11--diskerror{display:grid;place-items:stretch;background:#191448}
+.ccg-e11__error-screen{background:#352879;padding:clamp(14px,3vw,28px)}
+.ccg-e11__error-terminal{background:#352879;color:#b8b3ff;border:10px solid #7668ce;margin-bottom:10px}
+.ccg-e11--diskerror .ccg-e11__command{background:#352879;color:#cfcaff;border:2px solid #7668ce}.ccg-e11--diskerror .ccg-e11__hint{color:#d2ceff}

@@ -1,0 +1,113 @@
+name: Easter Egg E11 Interactive Archive
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'js/ccg-global.js'
+      - 'js/easter-eggs/easter-egg-registry.js'
+      - 'js/easter-eggs/e11-interactive-archive.js'
+      - 'js/easter-eggs/e11/**'
+      - 'resources/css/easter-eggs-e11*.css'
+      - 'scripts/test-easter-egg-e3-registry.mjs'
+      - 'scripts/test-easter-egg-e11-expansion.mjs'
+      - 'docs/seo-baseline/easter-egg-upgrade-roadmap.md'
+      - '.github/workflows/easter-egg-e11-interactive-archive.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-e11:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out submitted revision
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Record protected hashes
+        run: sha256sum index.html resources/css/intro.css js/index-intro.js home.html games/games.json > "$RUNNER_TEMP/e11-protected.sha256"
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check js/ccg-global.js
+          node --check js/easter-eggs/easter-egg-registry.js
+          node --check js/easter-eggs/e11-interactive-archive.js
+          for file in js/easter-eggs/e11/*.js; do node --check "$file"; done
+          node --check scripts/test-easter-egg-e3-registry.mjs
+          node --check scripts/test-easter-egg-e11-expansion.mjs
+
+      - name: Validate registry and integration contracts
+        run: |
+          node scripts/test-easter-egg-e3-registry.mjs
+          grep -q 'CCG EASTER EGG E11 INTERACTIVE ARCHIVE EXPANSION' js/ccg-global.js
+          grep -q 'ccg:easter-eggs:discovered:v1' js/ccg-global.js
+          grep -q 'SECRETS FOUND:' js/ccg-global.js
+          for code in bbs guru sid 1541 cracktro workbench sprite modem readerror kickstart; do
+            grep -q "data-ccg-secret-code=\"$code\"" js/ccg-global.js
+            grep -q "code: \"$code\"" js/easter-eggs/easter-egg-registry.js
+          done
+          test -f resources/css/easter-eggs-e11.css
+          for part in core terminals machines amiga tools demo; do
+            test -f "resources/css/easter-eggs-e11-$part.css"
+            grep -q "easter-eggs-e11-$part.css" resources/css/easter-eggs-e11.css
+          done
+          if grep -R -E 'https?://' js/easter-eggs/e11 js/easter-eggs/e11-interactive-archive.js resources/css/easter-eggs-e11*.css; then
+            echo "E11 must remain locally implemented without external runtime dependencies."
+            exit 1
+          fi
+
+      - name: Confirm protected catalogue integrity
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const games = JSON.parse(fs.readFileSync('games/games.json', 'utf8'));
+          if (!Array.isArray(games) || games.length < 600) throw new Error('Game catalogue unexpectedly empty or truncated');
+          console.log('Catalogue integrity passed:', games.length, 'games.');
+          NODE
+
+      - name: Install browser dependency
+        run: npm install --no-save --no-package-lock playwright-core@1.58.2
+
+      - name: Start local website
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > "$RUNNER_TEMP/e11-http.log" 2>&1 &
+          for attempt in {1..30}; do
+            curl -sf http://127.0.0.1:4173/home.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/e11-http.log"
+          exit 1
+
+      - name: Exercise all E11 experiences in Chromium
+        env:
+          CHROMIUM_PATH: /usr/bin/chromium
+        run: |
+          node scripts/test-easter-egg-e11-expansion.mjs             --base-url http://127.0.0.1:4173/             --output "$RUNNER_TEMP/e11-evidence.json"
+
+      - name: Confirm protected files unchanged
+        run: sha256sum --check "$RUNNER_TEMP/e11-protected.sha256"
+
+      - name: Remove temporary dependencies
+        if: always()
+        run: rm -rf node_modules scripts/__pycache__
+
+      - name: Upload qualification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: easter-egg-e11-interactive-archive
+          path: ${{ runner.temp }}/e11-evidence.json
+          retention-days: 30
