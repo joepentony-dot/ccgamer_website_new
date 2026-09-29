@@ -109,7 +109,7 @@ for(let cycle=0;cycle<500;cycle++){
   enemyOwner=installActive(enemyOwner);
   enemyOwner=installR24(enemyOwner);
 }
-const enemyChain=chain(enemyOwner).map(node=>node.name);
+const enemyChain=(()=>{const rows=[],seen=new Set();let current=enemyOwner;while(typeof current==="function"&&!seen.has(current)&&rows.length<64){seen.add(current);rows.push(current);current=current.__ccgOriginal}return rows})().map(node=>node.name);
 assert.equal(enemyChain.filter(name=>name==="stepEnemiesV141ActiveCardinal").length,1,"ActiveCardinal owner multiplied");
 assert.equal(enemyChain.filter(name=>name==="stepEnemiesV141R24EnemyFire").length,1,"R24EnemyFire owner multiplied");
 assert.equal(enemyChain.length,3,"enemy step wrapper chain must remain base + exactly two compatible owners");
