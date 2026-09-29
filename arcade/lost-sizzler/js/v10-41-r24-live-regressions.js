@@ -338,14 +338,14 @@
 
   function installStartGuard(){
     if(typeof window.startWorld!=="function")return false;
-    if(window.startWorld.__ccgV141R24SoloBalance){state.startInstalled=true;return true}
+    if(wrapperChainHas(window.startWorld,"__ccgV141R24SoloBalance")){state.startInstalled=true;return true}
     const original=window.startWorld;
-    window.startWorld=function startWorldV141R24SoloBalance(){
+    const wrapped=function startWorldV141R24SoloBalance(){
       const result=original.apply(this,arguments);
       setTimeout(()=>{try{rebalanceFloor("floor-start")}catch(error){console.warn("[Lost Sizzler r24] Solo balance start sweep failed safely",error)}},0);
       return result;
     };
-    window.startWorld.__ccgV141R24SoloBalance=true;state.startInstalled=true;return true;
+    wrapped.__ccgV141R24SoloBalance=true;wrapped.__ccgOriginal=original;window.startWorld=wrapped;state.startInstalled=true;return true;
   }
 
   function installRatingCentreStyle(){
