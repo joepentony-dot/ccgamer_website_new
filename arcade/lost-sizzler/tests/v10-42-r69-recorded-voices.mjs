@@ -39,8 +39,10 @@ assert.match(sanctuary,/ccgDialogueVoiceHandled:true/,"sanctuary dancer greeting
 assert.match(sanctuaryHardening,/say\?\.\("adventurerHelp"/,"lost adventurer recruitment must use the supplied rescue plea");
 assert.match(sanctuaryHardening,/say\?\.\("adventurerSafe"/,"lost adventurer rescue must use the supplied safe-arrival recording");
 assert.match(core,/function descendFloor\(\)[\s\S]*CCGLostSizzlerVoice\?\.say\?\.\("descending"/,"descending to the next floor must use the supplied descent recording");
-assert.match(voice,/ccg:hazard-damage[\s\S]*hazardPain/,"actual hazard damage must be able to trigger the supplied post-hit voice");
-assert.match(voice,/ccg:shop-firearm-upgrade[\s\S]*weaponUpgraded/,"successful firearm upgrades must trigger the supplied upgrade recording");
+assert.match(voice,/ccg:hazard-damage/,"voice director must subscribe to authoritative hazard damage");
+assert.match(voice,/sayKey\("hazardPain"/,"actual hazard damage must be able to trigger the supplied post-hit voice");
+assert.match(voice,/ccg:shop-firearm-upgrade/,"voice director must subscribe to successful shop firearm upgrades");
+assert.match(voice,/sayKey\("weaponUpgraded"/,"successful firearm upgrades must trigger the supplied upgrade recording");
 assert.match(voice,/FURNITURE AMBUSH[\s\S]*return"ambush"/,"furniture ambushes must use the supplied ambush recording");
 assert.match(stage8,/merchantVoiceVisits/,"merchant dialogue must track contextual voice visits");
 assert.match(stage8,/hiddenPartial[\s\S]*hiddenReady/,"hidden merchant speech must distinguish partial and trade-ready artefact states");
