@@ -19,7 +19,17 @@ export const EASTER_EGG_REGISTRY = Object.freeze([
     { code: "heman", label: "HE-MAN", category: "video", desktop: true, mobile: true, reducedMotion: "media-controls", runtime: "local" },
     { code: "lemmings", label: "LEMMINGS", category: "amiga", desktop: true, mobile: true, reducedMotion: "media-controls", runtime: "local" },
     { code: "cheeky", label: "CHEEKY", category: "hidden", desktop: true, mobile: true, reducedMotion: "audio-only", runtime: "external-redirect", hidden: true },
-    { code: "konamicode", label: "KONAMI CODE", category: "hidden", desktop: true, mobile: false, reducedMotion: "media-controls", runtime: "local", hidden: true }
+    { code: "konamicode", label: "KONAMI CODE", category: "hidden", desktop: true, mobile: false, reducedMotion: "media-controls", runtime: "local", hidden: true },
+    { code: "bbs", label: "CCG BBS", category: "interactive", desktop: true, mobile: true, reducedMotion: "supported", runtime: "local", phase: "E11" },
+    { code: "guru", label: "GURU MEDITATION", category: "amiga", desktop: true, mobile: true, reducedMotion: "supported", runtime: "local", phase: "E11" },
+    { code: "sid", label: "SID LAB", category: "commodore", desktop: true, mobile: true, reducedMotion: "supported", runtime: "local", phase: "E11" },
+    { code: "1541", label: "1541 DRIVE", category: "commodore", desktop: true, mobile: true, reducedMotion: "supported", runtime: "local", phase: "E11" },
+    { code: "cracktro", label: "CCG CRACKTRO", category: "demoscene", desktop: true, mobile: true, reducedMotion: "supported", runtime: "local", phase: "E11" },
+    { code: "workbench", label: "AMIGA WORKBENCH", category: "amiga", desktop: true, mobile: true, reducedMotion: "supported", runtime: "local", phase: "E11" },
+    { code: "sprite", label: "SPRITE EDITOR", category: "commodore", desktop: true, mobile: true, reducedMotion: "supported", runtime: "local", phase: "E11" },
+    { code: "modem", label: "MODEM", category: "interactive", desktop: true, mobile: true, reducedMotion: "supported", runtime: "local", phase: "E11" },
+    { code: "readerror", label: "DISK ERROR", category: "commodore", desktop: true, mobile: true, reducedMotion: "supported", runtime: "local", phase: "E11" },
+    { code: "kickstart", label: "AMIGA BOOT", category: "amiga", desktop: true, mobile: true, reducedMotion: "supported", runtime: "local", phase: "E11" }
 ]);
 
 export const EASTER_EGG_BY_CODE = new Map(EASTER_EGG_REGISTRY.map(entry => [entry.code, entry]));

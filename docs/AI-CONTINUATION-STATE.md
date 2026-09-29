@@ -552,3 +552,11 @@ No further Dungeon coding stage is justified unless one of these checks exposes 
 ## Checkpoint update template
 
 In the affected workstream file, record: date/time; branch/PR and base; verified current commit or merge-base relationship; files or interfaces touched; tests/checks actually run and result; blockers/decisions; and the smallest safe next action. If the open-PR inventory or top-level status changed materially, update this file too.
+
+
+## E11 Interactive Archive current-main reconciliation — 2026-09-29
+- Rebuilt the E11 Interactive Archive expansion directly on the current R67 main line after Dungeon R67 merged.
+- Preserves the ten local interactive Easter eggs: CCG BBS, Guru Meditation, SID Lab, 1541 Drive, CCG Cracktro, Amiga-style Workbench, C64 24×21 Sprite Editor, Hayes-style Modem, recoverable Disk Error and Amiga-style Boot/Kickstart.
+- The latest E11 feature head already includes the touch-drag sprite editor correction, nested-launch focus-return preservation and pending modem dial cancellation on hang-up.
+- Protected intro/home/game-source files remain outside the E11 change set.
+- Merge only after the rebuilt exact head is current with main and its full qualification is green.
