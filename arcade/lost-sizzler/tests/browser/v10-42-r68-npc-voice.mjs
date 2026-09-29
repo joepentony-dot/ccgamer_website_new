@@ -59,7 +59,9 @@ try{
     voice.sayDialogue=original;
     const toast=String(document.getElementById("pickup-text")?.textContent||"");
     const queued=(Array.isArray(toastQueue)?toastQueue:[]).map(entry=>({title:String(entry?.title||""),text:String(entry?.text||"")}));
-    return{first,repeated,calls,presentedFirst:afterFirst-before,presentedRepeat:afterRepeat-afterFirst,last:{...api.state.last},toast,queued};
+    const priorityPending=window.CCGLostSizzlerV141LandingNotificationPolish?.state?.pendingImportant;
+    const priorityQueued=Array.isArray(priorityPending)?{title:String(priorityPending[0]||""),text:String(priorityPending[1]||"")}:null;
+    return{first,repeated,calls,presentedFirst:afterFirst-before,presentedRepeat:afterRepeat-afterFirst,last:{...api.state.last},toast,queued,priorityQueued};
   });
 
   assert.equal(scout.first,true,"focused Scout contact must present its dialogue line");
@@ -71,7 +73,7 @@ try{
   assert.equal(scout.repeated,false,"immediate repeated Scout contact must be suppressed by the existing dialogue memory window");
   assert.equal(scout.presentedRepeat,0,"suppressed Scout dialogue must not produce another presentation");
   assert.equal(scout.calls.length,1,"suppressed Scout dialogue must not create another voice request");
-  assert.ok(/Scout: There you are/.test(scout.toast)||scout.queued.some(entry=>/Scout: There you are/.test(entry.text)),"spoken Scout dialogue must remain visible now or queued behind a retained system notice");
+  assert.ok(/Scout: There you are/.test(scout.toast)||scout.queued.some(entry=>/Scout: There you are/.test(entry.text))||/Scout: There you are/.test(scout.priorityQueued?.text||""),`spoken Scout dialogue must remain visible or deferred by a supported notification owner: ${JSON.stringify({toast:scout.toast,queued:scout.queued,priorityQueued:scout.priorityQueued})}`);
 
   const merchant=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerStage8NpcDialogue,voice=window.CCGLostSizzlerVoice,calls=[];
