@@ -65,7 +65,7 @@ assert.equal(finalChain.filter(node=>node.name==="R60").length,0,"retired R60 en
 assert.equal(finalChain.length-initialDepth,cycles,"only the synthetic external owner may add depth in this isolation model");
 
 
-// R67: the ActiveCardinal and R24EnemyFire maintenance installers used to
+// R68: the ActiveCardinal and R24EnemyFire maintenance installers used to
 // alternately wrap CCGAI.stepEnemies every 80/180 ms. That produced an
 // unbounded A -> R24 -> A -> R24 chain and eventually Maximum call stack size
 // exceeded during ordinary Solo combat. Both owners must inspect ancestry and
