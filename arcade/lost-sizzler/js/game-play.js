@@ -326,15 +326,22 @@ function movePlayer(p,dx,dy,dash=false){
 function dashPlayer(p,d){if(!p||!d||mode!=="playing")return;if(p.mana<2){S.sfx("empty");showToast("NOT ENOUGH AMMO/ENERGY","Dash requires 2 reserve units.","red");return}p.mana-=2;movePlayer(p,d.x,d.y,true);sync()}
 function spreadDirections(d){const dirs=[d];if(d.x&&d.y){dirs.push({x:d.x,y:0},{x:0,y:d.y})}else if(d.x)dirs.push({x:d.x,y:1},{x:d.x,y:-1});else dirs.push({x:1,y:d.y},{x:-1,y:d.y});return dirs}
 function weaponDirections(p,d){const w=p.weapon||{};if(w.id==="shock")return[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1},{x:1,y:1},{x:1,y:-1},{x:-1,y:1},{x:-1,y:-1}];if(w.id==="spread"||w.shots>=3)return spreadDirections(d);return[d]}
+function breakableFurnitureAhead(p,d){
+  if(!p||!host?.blockingDecor)return false;
+  const dir=attackDirection(p,d),tx=Math.round(Number(p.x||0)+dir.x),ty=Math.round(Number(p.y||0)+dir.y);
+  return (host.blockingDecor||[]).some(row=>row&&row.x===tx&&row.y===ty&&!row.structural&&Number(row.hp??2)>0)
+}
 function canonicalMeleeAttackIfRequired(p,d){
   const melee=window.CCGLostSizzlerMeleeAmmoV125;
   if(!p||typeof melee?.meleeAttack!=="function")return null;
-  const hasGun=Boolean(p.firearmUnlocked&&p.weapon);
-  // A usable firearm always owns FIRE. Nearby furniture/enemies must never
-  // divert a valid gun shot into the melee helper and strand full ammo with
-  // zero projectiles. Melee is the fallback only when no usable firearm exists.
+  const hasGun=Boolean(p.firearmUnlocked&&p.weapon),dir=attackDirection(p,d);
+  // A breakable immediately in the facing/attack cell is a deliberate
+  // close-range interaction: use the equipped blade without consuming ammo.
+  // Enemies do not trigger this override, preserving firearm ownership in combat.
+  if(breakableFurnitureAhead(p,dir))return Boolean(melee.meleeAttack(p,dir));
+  // Otherwise a usable firearm continues to own FIRE. Melee remains the
+  // no-gun / zero-ammo fallback so the historical firing-lockout fix is preserved.
   if(hasGun&&Number(p.mana||0)>0)return null;
-  const dir=attackDirection(p,d);
   return Boolean(melee.meleeAttack(p,dir))
 }
 function firePlayer(p,d){
