@@ -28,4 +28,15 @@ assert.match(render,/if\(!lowFps\)for\(const l of world\.wallLights/,
 assert.match(render,/if\(lowFps\)return;[\s\S]*Soft vignette|Soft vignette[\s\S]*if\(lowFps\)return;/,
   "the vignette pass must be removable during low-FPS recovery");
 
+assert.match(render,/function tileInRenderView\(x,y,pad=2\)/,
+  "renderer must expose a cheap camera-bound culling predicate");
+assert.match(render,/function drawEnemy\(e\)[\s\S]*!tileInRenderView\(e\.x,e\.y,3\)[\s\S]*!visibleTo/,
+  "enemy rendering must cull offscreen entities before expensive visibility checks");
+assert.match(render,/function drawItem\(i\)[\s\S]*!tileInRenderView\(i\.x,i\.y,2\)[\s\S]*!visibleTo/,
+  "item rendering must cull offscreen pickups before expensive visibility checks");
+assert.match(render,/for\(const d of world\.decor\|\|\[\]\)[\s\S]*!tileInRenderView\(d\.x,d\.y,2\)[\s\S]*!visibleTo/,
+  "furniture rendering must cull offscreen decor before line-of-sight work");
+assert.match(render,/function drawFog\(\)[\s\S]*lowFps=Boolean[\s\S]*torchEnemies=lowFps\?\[\]/,
+  "fog lighting must remove secondary light-source comparisons when low FPS is active");
+
 console.log("Dungeon R69 hazard presentation and low-FPS regression checks passed.");
