@@ -66,12 +66,16 @@ try{
   await page.waitForFunction(before=>Number(p1?._meleeSwingAt||0)>before,fresh.swingAt,{timeout:2500,polling:16});
   const keyboard=await page.evaluate(()=>({
     swingAt:Number(p1._meleeSwingAt||0),
+    swingMs:Number(p1._meleeSwingMs||0),
     fire:Number(fire1||0),
+    age:Math.max(0,performance.now()-Number(p1._meleeSwingAt||0)),
+    expectedCooldown:Number(p1.meleeWeapon?.cooldown||390),
     mana:Number(p1.mana||0),
     projectiles:bullets.filter(b=>b?.ttl>0&&b.owner===p1.id).length
   }));
   assert.ok(keyboard.swingAt>fresh.swingAt,"fresh-run Space attack must execute the starter sword swing");
-  assert.ok(keyboard.fire>0,"starter sword swing must establish its normal attack cooldown");
+  assert.ok(keyboard.swingMs>0,"starter sword swing must establish its melee animation/cooldown window");
+  assert.ok(keyboard.fire>0||keyboard.age>=keyboard.expectedCooldown-40,`keyboard cooldown may be zero only after the real cooldown elapsed before async sampling: ${JSON.stringify(keyboard)}`);
   assert.equal(keyboard.mana,0,"starter sword attack must not require or consume firearm ammunition");
   assert.equal(keyboard.projectiles,0,"starter sword attack must not manufacture a projectile");
 
