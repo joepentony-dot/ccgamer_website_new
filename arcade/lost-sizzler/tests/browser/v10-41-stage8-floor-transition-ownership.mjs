@@ -47,7 +47,7 @@ try{
   page.setDefaultTimeout(45000);
   const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerStage8NpcDialogue)&&Boolean(window.CCGLostSizzlerV141R30)&&Boolean(window.CCGLostSizzlerV141R57DesktopPrepStability)&&Boolean(window.CCGLostSizzlerV141R59LiveRegressionFixes)&&Boolean(window.CCGLostSizzlerV141R60LivePlayIntegrity)&&Boolean(window.CCGLostSizzlerModeRuntime)&&Boolean(document.getElementById("solo-btn")),null,{timeout:90000});
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerStage8NpcDialogue)&&Boolean(window.CCGLostSizzlerV141R30)&&Boolean(window.CCGLostSizzlerV141R57DesktopPrepStability)&&Boolean(window.CCGLostSizzlerV141R24LiveRegressions)&&Boolean(window.CCGLostSizzlerV141R59LiveRegressionFixes)&&Boolean(window.CCGLostSizzlerV141R60LivePlayIntegrity)&&Boolean(window.CCGLostSizzlerModeRuntime)&&Boolean(document.getElementById("solo-btn")),null,{timeout:90000});
   await page.click("#solo-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&playMode==="solo"&&window.CCGLostSizzlerModeRuntime?.detect?.()==="dungeon-solo"&&Boolean(host)&&Boolean(p1),null,{timeout:20000});
   await page.waitForTimeout(220);
@@ -58,6 +58,7 @@ try{
     return{
       floor:Number(run?.floor||0),mode:String(mode||""),controller:window.CCGLostSizzlerModeRuntime?.detect?.()||"",
       stage8:{rescueDepth:depth(window.triggerRescue,"__ccgStage8NpcDialogue"),toastDepth:depth(window.showToast,"__ccgStage8ScoutToastBridge")},
+      r24:{startWorldDepth:depth(window.startWorld,"__ccgV141R24SoloBalance")},
       r30:{goldenMoveSame:r30.goldenMove===window.movePlayer,repairs:Number(r30.ownershipRepairs||0)},
       r57:{r56Timer:Number(window.CCGLostSizzlerV141R56PlaytestCompletion?.state?.timer||0),bridges:Number(r57.r56Bridges||0),dirty:Boolean(r57.r56BridgeDirty)},
       r59:{loop:Boolean(window.loop?.__ccgV141R59PauseClock),stable:Boolean(window.CCGLostSizzlerV141R29?.stableLoop?.__ccgV141R59PauseClock),checkpoint:Boolean(window.captureFloorEntryCheckpoint?.__ccgV141R59SoloAutosave),reassertions:Number(r59.clockOwnerReassertions||0)},
@@ -71,6 +72,7 @@ try{
   assert.equal(before.controller,"dungeon-solo","Stage 8 transition qualification must begin under the Solo Dungeon controller");
   assert.equal(before.stage8.rescueDepth,1,"Stage 8 rescue wrapper depth must be exactly 1 before descending");
   assert.equal(before.stage8.toastDepth,1,"Stage 8 Scout toast bridge depth must be exactly 1 before descending");
+  assert.equal(before.r24.startWorldDepth,1,"r24 Solo balance startWorld wrapper depth must be exactly 1 before descending");
   assert.equal(before.r30.goldenMoveSame,true,"R30 golden movement owner must match the live movement owner before descending");
   assert.equal(before.r57.r56Timer,0,"R57 must keep the retired R56 recurring timer at zero before descending");
   assert.equal(before.r59.loop,true,"R59 must own the authoritative Solo RAF loop before descending");
@@ -78,6 +80,19 @@ try{
   assert.equal(before.r59.checkpoint,true,"R59 must own the floor-entry checkpoint boundary before descending");
   assert.equal(before.r60.move,true,"R60 Solo cadence seal must remain composed on movement before descending");
   assert.equal(before.r60.update,true,"R60 time smoothing must remain composed on update before descending");
+
+  await page.evaluate(()=>{
+    const current=window.startWorld;
+    const outer=function ccgR68SyntheticOuterStartWorld(){return current.apply(this,arguments)};
+    outer.__ccgOriginal=current;outer.__ccgR68SyntheticOuter=true;window.startWorld=outer;
+    for(let i=0;i<8;i++)window.CCGLostSizzlerV141R24LiveRegressions?.install?.();
+  });
+  const r24Composed=await page.evaluate(()=>{
+    const seen=new Set();let current=window.startWorld,depth=0,outer=0;
+    while(typeof current==="function"&&!seen.has(current)){if(current.__ccgV141R24SoloBalance)depth++;if(current.__ccgR68SyntheticOuter)outer++;seen.add(current);current=current.__ccgOriginal}
+    return{depth,outer};
+  });
+  assert.deepEqual(r24Composed,{depth:1,outer:1},"repeated r24 installation under a later outer startWorld wrapper must not grow the wrapper chain");
 
   await page.evaluate(()=>floorComplete("Stage 8 lifecycle regression"));
   await page.waitForFunction(()=>mode==="floorcomplete"&&!document.getElementById("floor-complete").classList.contains("hidden"));
@@ -91,6 +106,7 @@ try{
   assert.equal(after.controller,"dungeon-solo","floor descent must retain the Solo Dungeon controller");
   assert.equal(after.stage8.rescueDepth,1,"floor descent must not grow or lose the Stage 8 rescue wrapper");
   assert.equal(after.stage8.toastDepth,1,"floor descent must not grow or lose the Stage 8 Scout toast bridge");
+  assert.equal(after.r24.startWorldDepth,1,"floor descent must not grow the r24 Solo balance startWorld wrapper depth");
   assert.equal(after.r30.goldenMoveSame,true,"R30 golden movement ownership must remain aligned after floor descent");
   assert.equal(after.r57.r56Timer,0,"floor descent must not resurrect the retired R56 recurring timer");
   assert.equal(after.r59.loop,true,"R59 must retain authoritative Solo RAF ownership after floor descent");
