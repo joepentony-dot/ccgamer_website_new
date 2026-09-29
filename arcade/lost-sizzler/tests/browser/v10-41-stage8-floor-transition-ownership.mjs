@@ -79,6 +79,22 @@ try{
   assert.equal(before.r60.move,true,"R60 Solo cadence seal must remain composed on movement before descending");
   assert.equal(before.r60.update,true,"R60 time smoothing must remain composed on update before descending");
 
+  const startWorldMaintenance=await page.evaluate(()=>{
+    const r24=window.CCGLostSizzlerV141R24LiveRegressions,r60=window.CCGLostSizzlerV141R60LivePlayIntegrity;
+    if(typeof r24?.install!=="function"||typeof r60?.wrapStartWorld!=="function")return{available:false};
+    const initial=window.startWorld,beforeReassertions=Number(r60.state?.ownerReassertions||0);
+    for(let i=0;i<180;i++){r24.install();r60.wrapStartWorld()}
+    const afterReassertions=Number(r60.state?.ownerReassertions||0),seen=new Set();let current=window.startWorld,depth=0,r24Owners=0,r60Owners=0;
+    while(typeof current==="function"&&!seen.has(current)&&depth<256){seen.add(current);depth++;if(current.__ccgV141R24SoloBalance)r24Owners++;if(current.__ccgV141R60NamedRoster)r60Owners++;current=current.__ccgOriginal||current.__ccgV141ModeOwnedSource||current.__ccgV141R31Original||null}
+    return{available:true,same:window.startWorld===initial,reassertionDelta:afterReassertions-beforeReassertions,depth,r24Owners,r60Owners};
+  });
+  assert.equal(startWorldMaintenance.available,true,"R24 and R60 startWorld maintenance APIs must be available for transition qualification");
+  assert.equal(startWorldMaintenance.same,true,"repeated R24/R60 maintenance must not replace startWorld once both supported owners are present");
+  assert.equal(startWorldMaintenance.reassertionDelta,0,"repeated R24/R60 maintenance must not grow the R60 startWorld owner chain");
+  assert.equal(startWorldMaintenance.r24Owners,1,"startWorld ancestry must retain exactly one R24 Solo-balance owner");
+  assert.equal(startWorldMaintenance.r60Owners,1,"startWorld ancestry must retain exactly one R60 named-roster owner");
+  assert.ok(startWorldMaintenance.depth<32,`startWorld ancestry must remain shallow before Floor 2 descent: ${JSON.stringify(startWorldMaintenance)}`);
+
   await page.evaluate(()=>floorComplete("Stage 8 lifecycle regression"));
   await page.waitForFunction(()=>mode==="floorcomplete"&&!document.getElementById("floor-complete").classList.contains("hidden"));
   await page.evaluate(()=>descendFloor());
