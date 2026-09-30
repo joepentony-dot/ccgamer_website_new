@@ -41,7 +41,7 @@ markers=api.markerState(player,run,host,world);
 assert.equal(markers.filter(m=>m.kind==="corruption").length,1,"Persisted domain knowledge should survive a same-floor host/world rebuild after the player leaves the room");
 
 host.v142WardenDomain.active=false;host.v142WardenDomain.cleansed=true;
-host.v142CleansedRefuge={active:true,floor:2,x:15,y:14,roomId:1};
+host.v142WardenCheckpoint={active:true,floor:2,x:15,y:14,roomId:1};
 markers=api.markerState(player,run,host,world);
 assert.equal(markers.some(m=>m.kind==="corruption"),false,"Cleansing the domain should remove the corruption radar marker");
 assert.equal(markers.some(m=>m.kind==="refuge"),false,"The legacy Warden checkpoint must not create the R72 Refuge marker");
