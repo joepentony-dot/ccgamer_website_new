@@ -17,6 +17,7 @@ const play=read("js/game-play.js");
 const mapDeath=read("js/v10-42-r72-map-death-feedback.js");
 const procedural=read("js/v10-42-procedural-overhaul.js");
 const rpgExpansion=read("js/v10-42-r23-rpg-build-expansion.js");
+const index=read("index.html");
 
 assert.match(config,/name:"C64 Dungeon Carnage — Five Depths"/,
   "campaign config must expose the current C64 Dungeon Carnage name");
@@ -56,8 +57,8 @@ assert.ok(play.includes("MEMORY SEQUENCE SOLVED"),
   "owner acceptance must retain Memory Vault completion feedback");
 assert.ok(mapDeath.includes("YOU DIED"),
   "owner acceptance must retain explicit death feedback");
-assert.ok(mapDeath.includes("SANCTUARY"),
-  "owner acceptance must retain Sanctuary map identity");
+assert.ok(index.includes("radar-sanctuary")&&index.includes("SANCTUARY"),
+  "owner acceptance must retain Sanctuary map identity in the public tactical radar");
 
 assert.match(play,/showToast\("LOCKED BRONZE DOOR","You need a bronze key\./,
   "locked bronze doors must give explicit visual key-required feedback");
