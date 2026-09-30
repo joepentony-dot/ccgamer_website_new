@@ -93,6 +93,7 @@
     const result=baseEquip(player,weapon);
     player.firearmUnlocked=true;player.weaponEvolutionTier=next;player.weaponLevel=next;player.weapon=stageWeapon(next);collapseOwnership(player);
     if(first)state.acquisitions++;else state.upgrades++;
+    try{window.dispatchEvent(new CustomEvent("ccg:firearm-evolved",{detail:{playerId:String(player?.id||player?.name||"P1"),floor,first,beforeTier:tier,afterTier:next,weaponName:String(player.weapon?.name||player.weapon?.displayName||"")}}))}catch(_){}
     try{
       const title=first?"WEAPON ACQUIRED":"WEAPON EVOLVED";
       const text=first
