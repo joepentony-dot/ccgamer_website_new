@@ -33,8 +33,22 @@
   function cleanFlaskCards(){
     try{
       const root=typeof UI!=="undefined"?UI?.shopItems:null;if(!root)return 0;
-      const ids=alchemistOpen()?["banishmentScore"]:["banishment","banishmentScore"];let removed=0;
-      for(const id of ids){const button=root.querySelector?.(`[data-shop-buy="${id}"]`),article=button?.closest?.("article");if(article){article.remove();removed++}}
+      let removed=0;
+      const scoreButton=root.querySelector?.('[data-shop-buy="banishmentScore"]'),scoreArticle=scoreButton?.closest?.("article");
+      if(scoreArticle){scoreArticle.remove();removed++}
+      const trade=root.querySelector?.('[data-shop-buy="banishment"]'),article=trade?.closest?.("article");
+      if(!alchemistOpen()){
+        if(article){article.remove();removed++}
+        return removed;
+      }
+      if(trade&&article){
+        const player=currentPlayer(),need=Math.max(1,Math.floor(Number(window.CCGLostSizzlerV142ProceduralOverhaul?.essenceCost?.(player))||Number(window.CCG_CONFIG?.stalker?.flaskArtefacts)||3));
+        trade.textContent="DISTIL FLASK";
+        const title=article.querySelector("h3"),price=article.querySelector(".price"),copy=article.querySelector("p");
+        if(title)title.textContent="DISTIL BANISHMENT FLASK";
+        if(price)price.textContent=`${need} ESSENCE`;
+        if(copy)copy.textContent="Consumes Banishment Essence from the Vessel and creates exactly one Banishment Flask. Score and Gold are unchanged.";
+      }
       return removed;
     }catch(_){return 0}
   }
