@@ -8,7 +8,7 @@ const moduleSource=fs.readFileSync(new URL("js/v10-42-r71-equipment-inventory.js
 const css=fs.readFileSync(new URL("css/v10-42-r71-equipment-inventory.css",root),"utf8");
 const render=fs.readFileSync(new URL("js/game-render.js",root),"utf8");
 
-assert.ok(html.includes("v10-42-r71-equipment-inventory.css?v=20260930r71"));
+assert.ok(html.includes("v10-42-r71-equipment-inventory.css?v=20260930r72"));
 assert.ok(bootstrap.includes('v10-42-r71-equipment-inventory.js'));
 assert.ok(moduleSource.includes("Equipment & Inventory"));
 assert.ok(moduleSource.includes("r71-equipment-board"));
@@ -47,4 +47,4 @@ assert.ok(!render.includes("fillRect(cx-5,cy-3,10,5)"));
 assert.ok(render.includes("fillRect(cx-4,cy-2,8,2)"));
 assert.ok(render.includes("fillRect(cx-4,cy-12,8,2)"));
 
-console.log("PASS V10.42 R71 equipment inventory contract");
+console.log("PASS V10.42 R72 equipment inventory contract");
